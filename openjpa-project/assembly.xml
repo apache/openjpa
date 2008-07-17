@@ -65,14 +65,6 @@
             <outputDirectory>docs/manual</outputDirectory>
         </fileSet>
         <fileSet>
-            <directory>src/doc/manual/img</directory>
-            <outputDirectory>docs/manual/img</outputDirectory>
-        </fileSet>
-        <fileSet>
-            <directory>src/doc/manual/css</directory>
-            <outputDirectory>docs/manual/css</outputDirectory>
-        </fileSet>
-        <fileSet>
             <directory>../target/site/apidocs</directory>
             <outputDirectory>docs/javadoc</outputDirectory>
         </fileSet>

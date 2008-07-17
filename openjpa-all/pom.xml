@@ -35,9 +35,9 @@
     </properties>
 
     <scm>
-        <connection>scm:svn:http://svn.apache.org/repos/asf/openjpa/tags/1.0.3/openjpa-all</connection>
-        <developerConnection>scm:svn:https://svn.apache.org/repos/asf/openjpa/tags/1.0.3/openjpa-all</developerConnection>
-        <url>https://svn.apache.org/repos/asf/openjpa/tags/1.0.3/openjpa-all</url>
+        <connection>scm:svn:http://svn.apache.org/repos/asf/openjpa/tags/1.0.4/openjpa-all</connection>
+        <developerConnection>scm:svn:https://svn.apache.org/repos/asf/openjpa/tags/1.0.4/openjpa-all</developerConnection>
+        <url>https://svn.apache.org/repos/asf/openjpa/tags/1.0.4/openjpa-all</url>
     </scm>
 
     <build>
