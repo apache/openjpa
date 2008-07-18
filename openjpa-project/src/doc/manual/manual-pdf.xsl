@@ -169,7 +169,7 @@
 			<xsl:text>pt</xsl:text>
 		</xsl:attribute>
 
-		<xsl:attribute name="font-style">bold</xsl:attribute>
+		<xsl:attribute name="font-weight">bold</xsl:attribute>
 		<xsl:attribute name="text-align">center</xsl:attribute>
 
 		<xsl:attribute name="color">#FFFFFF</xsl:attribute>
