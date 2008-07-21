@@ -1450,6 +1450,7 @@ public class StateManagerImpl
             return null;
 
         ClassMetaData relmeta = fmd.getDeclaredTypeMetaData();
+        pk = ApplicationIds.wrap(relmeta, pk);
         if (relmeta.getIdentityType() == ClassMetaData.ID_DATASTORE
             && fmd.getObjectIdFieldTypeCode() == JavaTypes.LONG)
             pk = _broker.getStoreManager().newDataStoreId(pk, relmeta);

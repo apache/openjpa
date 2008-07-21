@@ -1963,6 +1963,11 @@ public class PCEnhancer {
                 code.iadd();
                 code.invokeinterface().setMethod
                     (getFieldSupplierMethod(type));
+                if (fmds[i].getObjectIdFieldTypeCode() == JavaTypes.OBJECT) {
+                	code.checkcast().setType(ObjectId.class);
+                	code.invokevirtual().setMethod(ObjectId.class, "getId", 
+            			Object.class, null);                	
+                }
 
                 // if the type of this field meta data is
                 // non-primitive and non-string, be sure to cast
@@ -2157,6 +2162,11 @@ public class PCEnhancer {
             }
         } else if (pkmeta.getObjectIdType() != null) {
             code.aload().setLocal(oid);
+            if (pkcode == JavaTypes.OBJECT) {
+                code.checkcast().setType(ObjectId.class);
+                code.invokevirtual().setMethod(ObjectId.class, "getId", 
+            			Object.class, null);
+            } 
             code.checkcast().setType(pktype);
         } else
             code.aload().setLocal(oid);

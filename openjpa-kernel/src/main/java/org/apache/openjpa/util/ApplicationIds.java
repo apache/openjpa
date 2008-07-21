@@ -58,7 +58,7 @@ public class ApplicationIds {
     /**
      * Return the primary key values for the given object id. The values
      * will be returned in the same order as the metadata primary key fields.
-     * Values for PC primary key fields will be the primarky key value or
+     * Values for PC primary key fields will be the primary key value or
      * oid value of the related instance (depending on 
      * {@link FieldMetaData#isObjectIdFieldIdOfPC}).
      */
@@ -89,6 +89,7 @@ public class ApplicationIds {
             // copy fields from the oid
             PrimaryKeyFieldManager consumer = new PrimaryKeyFieldManager();
             consumer.setStore(pks);
+            oid = wrap(meta, oid);
             PCRegistry.copyKeyFieldsFromObjectId(meta.getDescribedType(),
                 consumer, oid);
             return consumer.getStore();
@@ -108,10 +109,28 @@ public class ApplicationIds {
         }
         return pks;
     }
+    
+    /**
+     * Wraps the given object for the given type into a OpenJPA specific 
+     * application identity object wrapper instance (i.e. ObjectId) if all of 
+     * the following is true:
+     * the given type is not using built-in OpenJPA identity types
+     * the given type is using a shared OpenJPA identity type
+     * the given object is not already a wrapper identity type
+     */
+    public static Object wrap(ClassMetaData meta, Object oid) {
+        if (!meta.isOpenJPAIdentity() 
+         && meta.isObjectIdTypeShared() 
+         && !(oid instanceof ObjectId)) {
+        	return new ObjectId(meta.getDescribedType(), oid);
+        } 
+        return oid;
+    }
+    
 
     /**
      * Return a new object id constructed from the given primary key values.
-     * Values for PC primary key fields should be the primarky key value or
+     * Values for PC primary key fields should be the primary key value or
      * oid value of the related instance (depending on 
      * {@link FieldMetaData#isObjectIdFieldIdOfPC}).
      */
@@ -194,7 +213,7 @@ public class ApplicationIds {
                 producer.setMetaData(meta);
             PCRegistry.copyKeyFieldsToObjectId(meta.getDescribedType(),
                 producer, oid);
-            return oid;
+            return ApplicationIds.wrap(meta, oid);
         }
 
         // default to reflection

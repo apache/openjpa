@@ -872,7 +872,7 @@ public class RelationFieldStrategy
             fieldVal = store.getContext().getObjectId(fieldVal);
         if (fieldVal instanceof OpenJPAId)
             fieldVal = ((OpenJPAId) fieldVal).getIdObject();
-        else if (relmapping.getObjectIdType() != null
+        if (relmapping.getObjectIdType() != null
             && relmapping.getObjectIdType().isInstance(fieldVal)) {
             Object[] pks = ApplicationIds.toPKValues(fieldVal, relmapping);
             fieldVal = pks[relmapping.getField(j.getFieldIndex()).

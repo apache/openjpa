@@ -106,4 +106,21 @@ public abstract class SingleEMFTestCase
                 .getMetaDataRepositoryInstance().getMetaData(entityClass,
                         getClass().getClassLoader(), true);
     }
+    
+    /**
+     * Get number of instances by an aggregate query with the given alias.
+     */
+    public int count(String alias) {
+    	return ((Number)emf.createEntityManager()
+    					   .createQuery("SELECT COUNT(p) FROM " + alias + " p")
+    					   .getSingleResult()).intValue();
+    }
+    
+    /**
+     * Count number of instances of the given class assuming that the alias
+     * for the class is its simple name.
+     */
+    public int count(Class c) {
+    	return count(c.getSimpleName());
+    }
 }
