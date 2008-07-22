@@ -38,6 +38,7 @@ import org.apache.openjpa.jdbc.schema.ForeignKey;
 import org.apache.openjpa.jdbc.sql.Joins;
 import org.apache.openjpa.jdbc.sql.LogicalUnion;
 import org.apache.openjpa.jdbc.sql.Result;
+import org.apache.openjpa.jdbc.sql.SQLBuffer;
 import org.apache.openjpa.jdbc.sql.Select;
 import org.apache.openjpa.jdbc.sql.SelectExecutor;
 import org.apache.openjpa.jdbc.sql.SelectImpl;
@@ -466,7 +467,7 @@ public abstract class StoreCollectionFieldStrategy
         SelectImpl sel = null;
         Map<JDBCStoreManager.SelectKey, Object[]> storeCollectionUnionCache = null;
         JDBCStoreManager.SelectKey selKey = null;
-        if (!((JDBCStoreManager)store).isQuerySQLCacheOn())
+        if (!((JDBCStoreManager)store).isQuerySQLCacheOn() || elems.length > 1)
             union = newUnion(sm, store, fetch, elems, resJoins);
         else {
             parmList = new ArrayList();
@@ -503,7 +504,7 @@ public abstract class StoreCollectionFieldStrategy
                     }
 
                     // only cache the union when elems length is 1 for now
-                    if (!found && elems.length == 1) { 
+                    if (!found) { 
                         Object[] objs1 = new Object[2];
                         objs1[0] = union;
                         objs1[1] = resJoins[0];
@@ -531,6 +532,9 @@ public abstract class StoreCollectionFieldStrategy
 
             sel.wherePrimaryKey(mapping, cols, cols, oid, store, 
                 	null, null, parmList);
+            List nonFKParams = sel.getSQL().getNonFKParameters();
+            if (nonFKParams != null && nonFKParams.size() > 0) 
+                parmList.addAll(nonFKParams);
         }
         
         // create proxy
