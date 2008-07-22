@@ -80,6 +80,8 @@ public abstract class AbstractResult
     private boolean _locking = false;
     private boolean _ignoreNext = false;
     private boolean _last = false;
+    private FieldMapping _mappedByFieldMapping = null;
+    private Object _mappedByValue = null;
 
     public Object getEager(FieldMapping key) {
         Map map = getEagerMap(true);
@@ -118,6 +120,8 @@ public abstract class AbstractResult
      */
     public void close() {
         closeEagerMap(_eager);
+        _mappedByFieldMapping = null;
+        _mappedByValue = null;
     }
 
     /**
@@ -236,6 +240,22 @@ public abstract class AbstractResult
 
     public void setBaseMapping(ClassMapping base) {
         _base = base;
+    }
+
+    public FieldMapping getMappedByFieldMapping() {
+        return (_gotEager) ? null : _mappedByFieldMapping;
+    }
+
+    public void setMappedByFieldMapping(FieldMapping fieldMapping) {
+        _mappedByFieldMapping = fieldMapping;
+    }
+
+    public Object getMappedByValue() {
+        return (_gotEager) ? null : _mappedByValue;
+    }
+
+    public void setMappedByValue(Object mappedByValue) {
+        _mappedByValue = mappedByValue;
     }
 
     public int indexOf() {
