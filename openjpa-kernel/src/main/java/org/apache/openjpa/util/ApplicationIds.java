@@ -193,12 +193,16 @@ public class ApplicationIds {
                     return new ObjectId(meta.getDescribedType(), val);
                 case JavaTypes.BIGDECIMAL:
                     if (!convert && !(val instanceof BigDecimal))
-                        throw new ClassCastException("!(x instanceof BigDecimal)");
-                    return new BigDecimalId(meta.getDescribedType(), (BigDecimal)val);
+                        throw new ClassCastException(
+                            "!(x instanceof BigDecimal)");
+                    return new BigDecimalId(meta.getDescribedType(), 
+                        (BigDecimal)val);
                 case JavaTypes.BIGINTEGER:
                     if (!convert && !(val instanceof BigInteger))
-                        throw new ClassCastException("!(x instanceof BigInteger)");
-                    return new BigIntegerId(meta.getDescribedType(), (BigInteger)val);
+                        throw new ClassCastException(
+                            "!(x instanceof BigInteger)");
+                    return new BigIntegerId(meta.getDescribedType(), 
+                        (BigInteger)val);
                 default:
                     throw new InternalException();
             }

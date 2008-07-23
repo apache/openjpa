@@ -189,34 +189,27 @@ public class ClassMapping
                     return null;
             }
         }
-        Object oid = ApplicationIds.fromPKValues(vals, cls);
-        
-        /**
-         * For polymorphic relations,
-         * the type field in the oid is initially set to base type.
-         * If the discriminator value is preset in the current result,
-         * then the type field needs reset based on the discriminator value.
-         * If the discriminator value is not present or invalid,
-         * ignore any exceptions being thrown.
-         */        
+
+        // the oid data is loaded by the base type, but if discriminator data
+        // is present, make sure to use it to construct the actual oid instance
+        // so that we get the correct app id class, etc
+        ClassMapping dcls = cls;
+        if (subs) {
+            res.startDataRequest(cls.getDiscriminator());
+            try {
+                Class dtype = cls.getDiscriminator().getClass(store, cls, res);
+                if (dtype != cls.getDescribedType())
+                  dcls = cls.getMappingRepository().getMapping(dtype, 
+                    store.getContext().getClassLoader(), true); 
+            } catch (Exception e) {
+                // intentionally ignored
+            }
+            res.endDataRequest();  
+        }
+        Object oid = ApplicationIds.fromPKValues(vals, dcls);
         if (oid instanceof OpenJPAId) {
-            Class type = cls.getDescribedType();
-            if (!subs)
-                // non-polymorphic relations
-                ((OpenJPAId) oid).setManagedInstanceType(type);
-            else if (cls.getDiscriminator() != null
-                && !StringUtils.equals("none",
-                    cls.getDiscriminator().getStrategy().getAlias())) {
-                // polymorphic relations
-                res.startDataRequest(cls.getDiscriminator());
-                try {
-                    type = cls.getDiscriminator().getClass(store, cls, res);
-                    ((OpenJPAId) oid).setManagedInstanceType(type, true);
-                } catch (Exception e) {
-                    // intentionally ignored
-                }
-                res.endDataRequest();  
-            } 
+            ((OpenJPAId) oid).setManagedInstanceType(dcls.getDescribedType(), 
+                subs);
         }
         return oid;
     }
