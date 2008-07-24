@@ -527,13 +527,16 @@ public abstract class MappingInfo
      */
     private void setIOFromColumnFlags(Column col, int i) {
         if (col == null || (!col.getFlag(Column.FLAG_UNINSERTABLE)
-            && !col.getFlag(Column.FLAG_UNUPDATABLE)))
+            && !col.getFlag(Column.FLAG_UNUPDATABLE)
+            && !col.isNotNull()))
             return;
 
         if (_io == null)
             _io = new ColumnIO();
         _io.setInsertable(i, !col.getFlag(Column.FLAG_UNINSERTABLE));
         _io.setUpdatable(i, !col.getFlag(Column.FLAG_UNUPDATABLE));
+        _io.setNullInsertable(i, !col.isNotNull());
+        _io.setNullUpdatable(i, !col.isNotNull());
     }
 
     /**
