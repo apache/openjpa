@@ -52,45 +52,45 @@
         <openjpa.assembly.finalName>
             ${artifactId}-${version}</openjpa.assembly.finalName>
         <openjpa.assembly.outputDirectory>
-            ${project.basedir}/../target/site/downloads
+        ${project.basedir}/target/site/downloads
         </openjpa.assembly.outputDirectory>
 
         <openjpa.assembly.binarySuffix>binary</openjpa.assembly.binarySuffix>
         <openjpa.assembly.binaryBase>
-            ${openjpa.assembly.outputDirectory}/${openjpa.assembly.finalName}-${openjpa.assembly.binarySuffix}
+        ${openjpa.assembly.outputDirectory}/${openjpa.assembly.finalName}-${openjpa.assembly.binarySuffix}
         </openjpa.assembly.binaryBase>
         <openjpa.assembly.binaryFile>
-            ${openjpa.assembly.binaryBase}.zip
+        ${openjpa.assembly.binaryBase}.zip
         </openjpa.assembly.binaryFile>
 
         <openjpa.assembly.sourceSuffix>source</openjpa.assembly.sourceSuffix>
         <openjpa.assembly.sourceBase>
-            ${openjpa.assembly.outputDirectory}/${openjpa.assembly.finalName}-${openjpa.assembly.sourceSuffix}
+        ${openjpa.assembly.outputDirectory}/${openjpa.assembly.finalName}-${openjpa.assembly.sourceSuffix}
         </openjpa.assembly.sourceBase>
         <openjpa.assembly.sourceFile>
-            ${openjpa.assembly.sourceBase}.zip
+        ${openjpa.assembly.sourceBase}.zip
         </openjpa.assembly.sourceFile>
 
         <parent.site.docs>
-            ${project.basedir}/../target/site/docs
+        ${project.basedir}/target/site/docs
         </parent.site.docs>
 
         <docbook.source>${project.basedir}/src/doc/manual</docbook.source>
         <docbook.target>${project.basedir}/target/manual</docbook.target>
         <docbook.version>1.67.2</docbook.version>
         <local.repository>${settings.localRepository}</local.repository>
-    </properties>
+        </properties>
 
-    <build>
+        <build>
         <!-- needed to let maven pass the "compile" phase -->
         <testSourceDirectory>/none/</testSourceDirectory>
 
         <!-- filter site resources -->
         <resources>
-            <resource>
-                <directory>${project.basedir}/src/site</directory>
-                <!-- targetPath is relative to target/classes/ -->
-                <targetPath>../filtered-site</targetPath>
+        <resource>
+        <directory>${project.basedir}/src/site</directory>
+        <!-- targetPath is relative to target/classes/ -->
+        <targetPath>../filtered-site</targetPath>
                 <filtering>false</filtering>
             </resource>
         </resources>
