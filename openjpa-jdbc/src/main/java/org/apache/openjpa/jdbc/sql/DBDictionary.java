@@ -3062,7 +3062,9 @@ public class DBDictionary
      */
     public String[] getCreateTableSQL(Table table) {
         StringBuffer buf = new StringBuffer();
-        buf.append("CREATE TABLE ").append(getFullName(table, false));
+        String tableName = checkNameLength(getFullName(table, false), 
+        		maxTableNameLength, "long-table-name");
+        buf.append("CREATE TABLE ").append(tableName);
         if (supportsComments && table.hasComment()) {
             buf.append(" ");
             comment(buf, table.getComment());
@@ -3135,7 +3137,9 @@ public class DBDictionary
 
         StringBuffer buf = new StringBuffer();
         buf.append("CREATE SEQUENCE ");
-        buf.append(getFullName(seq));
+        String seqName = checkNameLength(getFullName(seq), maxTableNameLength, 
+        		"long-seq-name");
+        buf.append(seqName);
         if (seq.getInitialValue() != 0)
             buf.append(" START WITH ").append(seq.getInitialValue());
         if (seq.getIncrement() > 1)
@@ -3162,8 +3166,9 @@ public class DBDictionary
         if (index.isUnique())
             buf.append("UNIQUE ");
         buf.append("INDEX ").append(index.getName());
-
-        buf.append(" ON ").append(getFullName(index.getTable(), false));
+        String indexName = checkNameLength(getFullName(index.getTable(), false), 
+        		maxIndexNameLength, "long-index-name");
+        buf.append(" ON ").append(indexName);
         buf.append(" (").append(Strings.join(index.getColumns(), ", ")).
             append(")");
 
@@ -3272,7 +3277,9 @@ public class DBDictionary
      */
     protected String getDeclareColumnSQL(Column col, boolean alter) {
         StringBuffer buf = new StringBuffer();
-        buf.append(col).append(" ");
+        String columnName = checkNameLength(col.getName(), maxColumnNameLength, 
+        		"long-column-name");
+        buf.append(columnName).append(" ");
         buf.append(getTypeName(col));
 
         // can't add constraints to a column we're adding after table
@@ -3459,11 +3466,11 @@ public class DBDictionary
         if (!supportsUniqueConstraints
             || (unq.isDeferred() && !supportsDeferredUniqueConstraints()))
             return null;
-
         StringBuffer buf = new StringBuffer();
         if (unq.getName() != null
             && CONS_NAME_BEFORE.equals(constraintNameMode))
-            buf.append("CONSTRAINT ").append(unq.getName()).append(" ");
+            buf.append("CONSTRAINT ").append(checkNameLength(unq.getName(), 
+            	maxConstraintNameLength, "long-constraint-name")).append(" ");
         buf.append("UNIQUE ");
         if (unq.getName() != null && CONS_NAME_MID.equals(constraintNameMode))
             buf.append(unq.getName()).append(" ");
@@ -4535,5 +4542,17 @@ public class DBDictionary
     
     public void deleteStream(JDBCStore store, Select sel) throws SQLException {
         // Do nothing
+    }
+    
+    /**
+     * Validate that the given name is no longer than given maximum length.
+     * If the given name is indeed longer then raises an UserException with the 
+     * given message key otherwise returns the same name.
+     */
+    final String checkNameLength(String name, int length, String msgKey) {
+    	if (name.length() > length)
+    		throw new UserException(_loc.get(msgKey, name, name.length(), 
+    				length));
+    	return name;
     }
 }
