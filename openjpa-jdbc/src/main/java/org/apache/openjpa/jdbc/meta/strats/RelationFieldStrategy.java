@@ -24,6 +24,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.openjpa.enhance.PersistenceCapable;
 import org.apache.openjpa.jdbc.conf.JDBCConfiguration;
 import org.apache.openjpa.jdbc.kernel.JDBCFetchConfiguration;
 import org.apache.openjpa.jdbc.kernel.JDBCFetchConfigurationImpl;
@@ -55,6 +56,7 @@ import org.apache.openjpa.jdbc.sql.Union;
 import org.apache.openjpa.kernel.OpenJPAStateManager;
 import org.apache.openjpa.lib.log.Log;
 import org.apache.openjpa.lib.util.Localizer;
+import org.apache.openjpa.meta.ClassMetaData;
 import org.apache.openjpa.meta.JavaTypes;
 import org.apache.openjpa.util.ApplicationIds;
 import org.apache.openjpa.util.ImplHelper;
@@ -516,6 +518,23 @@ public class RelationFieldStrategy
         JDBCFetchConfiguration fetch, Result res)
         throws SQLException {
         ClassMapping cls = field.getIndependentTypeMappings()[0];
+
+        // for inverseEager field
+        FieldMapping mappedByFieldMapping = field.getMappedByMapping();
+        PersistenceCapable mappedByValue = null;
+
+        if (mappedByFieldMapping != null) {
+        	ValueMapping val = mappedByFieldMapping.getValueMapping();
+        	ClassMetaData decMeta = val.getTypeMetaData();
+        	// this inverse field does not have corresponding classMapping
+        	// its value may be a collection/map etc.
+        	if (decMeta != null) {
+        	    mappedByValue = sm.getPersistenceCapable();
+        	    res.setMappedByFieldMapping(mappedByFieldMapping);
+        	    res.setMappedByValue(mappedByValue);
+        	}
+        }
+
         sm.storeObject(field.getIndex(), res.load(cls, store, fetch,
             eagerJoin(res.newJoins(), cls, false)));
     }

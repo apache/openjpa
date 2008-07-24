@@ -243,7 +243,7 @@ public abstract class AbstractResult
     }
 
     public FieldMapping getMappedByFieldMapping() {
-        return (_gotEager) ? null : _mappedByFieldMapping;
+        return _mappedByFieldMapping;
     }
 
     public void setMappedByFieldMapping(FieldMapping fieldMapping) {
@@ -251,7 +251,7 @@ public abstract class AbstractResult
     }
 
     public Object getMappedByValue() {
-        return (_gotEager) ? null : _mappedByValue;
+        return _mappedByValue;
     }
 
     public void setMappedByValue(Object mappedByValue) {
