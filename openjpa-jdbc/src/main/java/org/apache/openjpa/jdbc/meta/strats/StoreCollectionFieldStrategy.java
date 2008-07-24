@@ -347,15 +347,12 @@ public abstract class StoreCollectionFieldStrategy
                     ((Collection) coll).iterator().next();
                 OpenJPAStateManager sm1 = (OpenJPAStateManager) pc.
                     pcGetStateManager();
-                FieldMapping[] fms = ((ClassMapping) sm1.getMetaData()).
-                    getDeclaredFieldMappings();
-                for (int i = 0; i < fms.length; i++) {
-                    if (fms[i] == mappedByFieldMapping) {
-                        res.setMappedByValue(sm1.fetchObject(fms[i].
-                            getIndex()));
-                        break;
-                    }
-                } 
+                
+                ClassMapping clm = ((ClassMapping) sm1.getMetaData());
+                FieldMapping fm = (FieldMapping) clm.getField(
+                    mappedByFieldMapping.getName());
+                if (fm == mappedByFieldMapping)
+                    res.setMappedByValue(sm1.fetchObject(fm.getIndex()));
             } else {
                 res.setMappedByValue(null);
             }
