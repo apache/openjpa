@@ -693,6 +693,13 @@ in schema names, you need to set the "schemaCase=preserve" parameter in the
 property.
                     </para>
                 </listitem>
+                <listitem>
+                    <para>
+SQL Server 2005 does not support native sequences. If you would like to use 
+generated values with SQL Server you should use GenerationType.IDENTITY, 
+GenerationType.TABLE, or GenerationType.AUTO.
+                    </para> 
+                </listitem>
             </itemizedlist>
         </section>
     </section>
