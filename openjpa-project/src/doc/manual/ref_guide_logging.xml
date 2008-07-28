@@ -268,7 +268,7 @@ and <literal>ERROR</literal>. Defaults to <literal>INFO</literal>.
             <listitem>
                 <para>
 <literal>DiagnosticContext</literal>: A string that will be prepended to all
-log messages. If this is not supplied and a <literal>openjpa.Id</literal>
+log messages. If this is not supplied and an <literal>openjpa.Id</literal>
 property value is available, that value will be used.
                 </para>
             </listitem>

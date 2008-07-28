@@ -530,7 +530,7 @@ the JDBC connection URL of a slice.
      Any OpenJPA property can be configured for each individual slice. The property name
      is of the form <code>openjpa.slice.[Logical slice name].[OpenJPA Property Name]</code>.
      For example, <code>openjpa.slice.One.ConnectionURL</code> where <code>One</code>
-     is the logical slice name and <code>ConnectionURL</code> is a OpenJPA property
+     is the logical slice name and <code>ConnectionURL</code> is an OpenJPA property
      name. 
      </para>
      <para>

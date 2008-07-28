@@ -167,7 +167,7 @@ or equal to 5.00.
 SELECT x FROM Magazine x WHERE x.price &lt;&gt; 3.00
 </programlisting>
             <para>
-This query returns all Magazines whose price is not equals to 3.00.
+This query returns all Magazines whose price is not equal to 3.00.
             </para>
             <para>
 You can group expressions together using parentheses in order to specify how
@@ -309,7 +309,7 @@ SELECT x FROM Magazine x WHERE x.price &lt;&gt; 10.0
             </title>
             <para>
 Relations between objects can be traversed using Java-like syntax. For example,
-if the Magazine class has a field named "publisher" or type Company, that
+if the Magazine class has a field named "publisher" of type Company, that
 relation can be queried as follows:
             </para>
 <programlisting>
@@ -338,7 +338,7 @@ SELECT x FROM Magazine x, IN(x.articles) y WHERE y.authorName = 'John Doe'
             <para>
 This query says that for each <classname>Magazine</classname><literal> x
 </literal>, traverse the <literal>articles</literal> relation and check each
-<classname>Article</classname><literal>y</literal>, and pass the filter if
+<classname>Article</classname> <literal>y</literal>, and pass the filter if
 <literal>y</literal>'s <literal>authorName</literal> field is equal to "John
 Doe". In short, this query will return all magazines that have any articles
 written by John Doe.
@@ -1580,7 +1580,7 @@ An identification variable is a valid identifier declared in the <literal>FROM
 </literal> clause of a query. All identification variables must be declared in
 the <literal>FROM</literal> clause. Identification variables cannot be declared
 in other clauses. An identification variable must not be a reserved identifier
-or have the same name as any entity in the same persistence unit: Identification
+or have the same name as any entity in the same persistence unit. Identification
 variables are case insensitive. An identification variable evaluates to a value
 of the type of the expression used in declaring the variable. For example,
 consider the previous query: <programlisting>SELECT DISTINCT mag FROM Magazine mag JOIN mag.articles art JOIN art.author auth WHERE auth.firstName = 'John'
@@ -1955,9 +1955,9 @@ A string literal is enclosed in single quotes--for example: 'literal'. A string
 literal that includes a single quote is represented by two single quotes--for
 example: 'literal''s'. String literals in queries, like Java String literals,
 use unicode character encoding. The use of Java escape notation is not supported
-in query string literals Exact numeric literals support the use of Java integer
+in query string literals. Exact numeric literals support the use of Java integer
 literal syntax as well as SQL exact numeric literal syntax. Approximate literals
-support the use Java floating point literal syntax as well as SQL approximate
+support the use of Java floating point literal syntax as well as SQL approximate
 numeric literal syntax. Enum literals support the use of Java enum literal
 syntax. The enum class name must be specified. Appropriate suffixes may be used
 to indicate the specific type of a numeric literal in accordance with the Java
@@ -2126,8 +2126,8 @@ Comparison operators: =, &gt;, &gt;=, &lt;, &lt;=, &lt;&gt; (not equal), [
                         </listitem>
                         <listitem>
                             <para>
-Logical operators: <literal>NOT</literal><literal>AND</literal><literal>OR
-</literal>
+Logical operators: <literal>NOT</literal>, <literal>AND</literal>,
+<literal>OR</literal>
                             </para>
                         </listitem>
                     </itemizedlist>
@@ -2676,7 +2676,7 @@ The type of the query result specified by the <literal>SELECT</literal> clause
 of a query is an entity abstract schema type, a state-field type, the result of
 an aggregate function, the result of a construction operation, or some sequence
 of these. The result type of the <literal>SELECT</literal> clause is defined by
-the the result types of the select_expressions contained in it. When multiple
+the result types of the select_expressions contained in it. When multiple
 select_expressions are used in the <literal>SELECT</literal> clause, the result
 of the query is of type Object[], and the elements in this result correspond in
 order to the order of their specification in the <literal>SELECT</literal>
@@ -2724,7 +2724,7 @@ defined by the above rules.
                     JPQL Constructor Expressions
                 </title>
                 <para>
-in the <literal>SELECT</literal> Clause A constructor may be used in the
+A constructor may be used in the
 <literal>SELECT</literal> list to return one or more Java instances. The
 specified class is not required to be an entity or to be mapped to the database.
 The constructor name must be fully qualified.
@@ -2755,7 +2755,7 @@ type as a result type must not return a null value.
                     JPQL Aggregate Functions
                 </title>
                 <para>
-in the <literal>SELECT</literal> Clause The result of a query may be the result
+The result of a query may be the result
 of an aggregate function applied to a path expression. The following aggregate
 functions can be used in the <literal>SELECT</literal> clause of a query:
 <literal>AVG</literal>, <literal>COUNT</literal>, <literal>MAX</literal>,
@@ -2811,7 +2811,7 @@ DISTINCT</literal> is specified.
                         JPQL Aggregate Examples
                     </title>
                     <para>
-Examples The following query returns the average price of all magazines:
+The following query returns the average price of all magazines:
 <programlisting>SELECT AVG(mag.price) FROM Magazine mag</programlisting> The
 following query returns the sum total cost of all the prices from all the
 magazines published by 'Larry': <programlisting>SELECT SUM(mag.price) FROM Publisher pub JOIN pub.magazines mag pub.firstName = 'Larry'
@@ -2870,7 +2870,7 @@ the <literal>ORDER BY</literal> clause is used.
                 JPQL Bulk Update and Delete
             </title>
             <para>
-Operations Bulk update and delete operations apply to entities of a single
+Bulk update and delete operations apply to entities of a single
 entity class (together with its subclasses, if any). Only one entity abstract
 schema type may be specified in the <literal>FROM</literal> or <literal>UPDATE
 </literal> clause. The syntax of these operations is as follows:

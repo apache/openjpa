@@ -427,7 +427,7 @@ Java 6 class retransformation.
 <emphasis>Java 5 class redefinition</emphasis>: if you are running your
 application in a Java 5 environment, and you specify the OpenJPA javaagent,
 OpenJPA will use Java 5 class redefinition to redefine any persistent classes
-that are not enhanced by thet OpenJPA javaagent. Aside from the requirement
+that are not enhanced by the OpenJPA javaagent. Aside from the requirement
 that you specify a javaagent on the command line, this behavior is exactly the
 same as the Java 6 class retransformation behavior. Of course, since the
 OpenJPA javaagent performs enhancement by default, this will only be available
@@ -1547,7 +1547,7 @@ The OpenJPA
 org.apache.openjpa.persistence.Factory</classname></ulink> annotation
 contains the name of a method that will be invoked to instantiate the field from
 the external form stored in the database. Specify a static method name. The
-method will will be invoked with the externalized value and must return an
+method will be invoked with the externalized value and must return an
 instance of the field type. The method can also take an optional
 <ulink url="../javadoc/org/apache/openjpa/kernel/StoreContext.html"><classname>
 StoreContext</classname></ulink> parameter for access to a persistence context.

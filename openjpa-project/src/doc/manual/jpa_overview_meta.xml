@@ -756,7 +756,7 @@ attribute:
 The previous section showed you how to declare your identity fields with the
 <classname>Id</classname> annotation. It is often convenient to allow the
 persistence implementation to assign a unique value to your identity fields
-automatically. JPA includes the the <classname>GeneratedValue</classname>
+automatically. JPA includes the <classname>GeneratedValue</classname>
 annotation for this purpose. It has the following properties:
             </para>
             <itemizedlist>

@@ -476,7 +476,7 @@ require it, consider disabling it again.  Some JDBC drivers and databases
                         </para>
                     </entry>
                     <entry colname="desc">
-If you are using a <link linkend="openjpa.jdbc.SchemaFactory"><literal>
+If you are using an <link linkend="openjpa.jdbc.SchemaFactory"><literal>
 openjpa.jdbc.SchemaFactory</literal></link> setting of something other than 
 the default of <literal>dynamic</literal>, consider switching back.  While other
 factories can ensure that object-relational mapping information is valid when 

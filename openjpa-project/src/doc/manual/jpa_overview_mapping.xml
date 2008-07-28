@@ -973,7 +973,7 @@ allocation size defaults to 50.
             </itemizedlist>
             <note>
                 <para>
-OpenJPA allows you to use describe one of OpenJPA's built-in generator
+OpenJPA allows you to use one of OpenJPA's built-in generator
 implementations in the <literal>sequenceName</literal> property. You can also
 set the <literal>sequenceName</literal> to <literal>system</literal> to use the
 system sequence defined by the <link linkend="openjpa.Sequence"><literal>
@@ -3317,7 +3317,7 @@ The same metadata expressed in XML:
                 </secondary>
             </indexterm>
             <para>
-Sometimes a a logical record is spread over multiple database tables. JPA
+Sometimes a logical record is spread over multiple database tables. JPA
 calls a class' declared table the <emphasis>primary</emphasis>
 table, and calls other tables that make up a logical record <emphasis>secondary
 </emphasis> tables. You can map any persistent field to a secondary table. Just
@@ -4017,7 +4017,7 @@ name of the related entity's table.
                 <listitem>
                     <para>
 <literal>JoinColumn[] joinColumns</literal>: Array of <classname>JoinColumn
-</classname> sshowing how to associate join table records with the owning row in
+</classname> showing how to associate join table records with the owning row in
 the primary table. This property mirrors the <literal>pkJoinColumns</literal>
 property of the <classname> SecondaryTable</classname> annotation in
 functionality. See <xref linkend="jpa_overview_mapping_secondary"/> to

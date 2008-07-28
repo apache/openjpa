@@ -32,11 +32,11 @@ interfaces, and outlines some additional features of the OpenJPA runtime.
         <para>
 Internally, OpenJPA does not adhere to any persistence specification. The
 OpenJPA kernel has its own set of APIs and components. Specifications like JPA
-and JDO are simply different "personalities" that can OpenJPA's native kernel
+and JDO are simply different "personalities" that OpenJPA's native kernel
 can adopt.
         </para>
         <para>
-As a OpenJPA user, you will not normally see beneath
+As an OpenJPA user, you will not normally see beneath
 OpenJPA's JPA personality. OpenJPA allows you to access its feature set without
 leaving the comfort of JPA. Where OpenJPA goes beyond standard JPA
 functionality, we have crafted JPA-specific APIs to each OpenJPA extension for

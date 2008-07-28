@@ -125,7 +125,7 @@ transactions, you will use multiple <classname>EntityManager</classname>s.
         <para>
 You can retrieve the <classname>EntityTransaction</classname> associated with an
 <classname>EntityManager</classname> through the <methodname>getTransaction
-</methodname> method. Note that most most JPA implementations can
+</methodname> method. Note that most JPA implementations can
 integrate with an application server's managed transactions. If you take
 advantage of this feature, you will control transactions by declarative
 demarcation or through the Java Transaction API (JTA) rather than through the

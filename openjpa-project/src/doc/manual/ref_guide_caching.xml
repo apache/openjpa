@@ -341,7 +341,7 @@ public void unpinAll(Class cls, Collection oids);
 </programlisting>
             <para>
 Most caches are of limited size. Pinning an identity to the cache ensures that
-the cache will will not kick the data for the corresponding instance out of the
+the cache will not kick the data for the corresponding instance out of the
 cache, unless you manually evict it. Note that even after manual eviction, the
 data will get pinned again the next time it is fetched from the store. You can
 only remove a pin and make the data once again available for normal cache
@@ -501,7 +501,7 @@ database to lock the appropriate rows.
                 </listitem>
                 <listitem>
                     <para>
-Caching is not used when the the data cache does not have any cached data for an
+Caching is not used when the data cache does not have any cached data for an
 id in a query result.
                     </para>
                 </listitem>

@@ -1347,7 +1347,7 @@ element.
                     <para>
 <classname>ExcludeSuperclassListeners</classname>: This annotation will cause
 OpenJPA to skip invoking any listeners declared in superclasses. The XML
-equivalent is empty the <literal>exclude-superclass-listeners</literal> element.
+equivalent is the empty <literal>exclude-superclass-listeners</literal> element.
                     </para>
                 </listitem>
             </itemizedlist>

@@ -204,9 +204,9 @@ their lifecycle, and they can access datastore resources.
 When a persistence context ends, previously-managed entities become <emphasis>
 detached</emphasis>. A detached entity is no longer under the control of the
 <classname>EntityManager</classname>, and no longer has access to datastore
-resources. We discuss detachment is detail in
+resources. We discuss detachment in detail in
 <xref linkend="jpa_overview_em_lifecycle"/>. For now, it is sufficient to
-know that detachment as has two obvious consequences:
+know that detachment has two obvious consequences:
         </para>
         <orderedlist>
             <listitem>
@@ -234,8 +234,9 @@ merging detached entities.
             </para>
         </note>
         <para>
-Injected <classname>EntityManager</classname>s have use a <emphasis>transaction
-</emphasis>, while <classname> EntityManager</classname>s obtained through the
+Injected <classname>EntityManager</classname>s have a <emphasis>transaction
+</emphasis> persistence context,
+while <classname> EntityManager</classname>s obtained through the
 <classname>EntityManagerFactory</classname> have an <emphasis>extended
 </emphasis> persistence context. We describe these persistence context types
 below.
@@ -395,7 +396,7 @@ no longer needs an <classname>EntityManagerFactory</classname>, you should
 close it to free these resources. When an <classname>EntityManagerFactory
 </classname> closes, all <classname>EntityManager</classname>s from that
 factory, and by extension all entities managed by those <classname>
-EntityManager</classname> s, become invalid. Attempting to close an <classname>
+EntityManager</classname>s, become invalid. Attempting to close an <classname>
 EntityManagerFactory</classname> while one or more of its <classname>
 EntityManager</classname>s has an active transaction may result in an
 <classname>IllegalStateException</classname>.

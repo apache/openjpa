@@ -162,7 +162,7 @@ do not have a default resource in place, or when you wish to override the
 defaults. The given value can be the path to a file, or the resource name of a
 file somewhere in the <literal>CLASSPATH</literal>. OpenJPA will search the
 given location as well as the location prefixed by <filename> META-INF/
-</filename>. Thus, to point a OpenJPA tool at <filename>
+</filename>. Thus, to point an OpenJPA tool at <filename>
 META-INF/my-persistence.xml</filename>, you can use:
                 </para>
 <programlisting>
