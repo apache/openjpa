@@ -408,7 +408,7 @@ openjpa.AggregateListeners</literal>
             </para>
             <para>
 <emphasis role="bold">Configuration API:</emphasis>
-<ulink url="../javadoc/org/apache/openjpa/conf/OpenJPAConfiguration.html#getAggregateListeners">
+<ulink url="../javadoc/org/apache/openjpa/conf/OpenJPAConfiguration.html#getAggregateListeners()">
 <methodname>org.apache.openjpa.conf.OpenJPAConfiguration.getAggregateListeners
 </methodname></ulink>
             </para>
@@ -456,7 +456,7 @@ standard set of listeners. See <xref linkend="ref_guide_enterprise_queryext"/>
             </para>
             <para>
 <emphasis role="bold">Configuration API:</emphasis>
-<ulink url="../javadoc/org/apache/openjpa/conf/OpenJPAConfiguration.html#getAutoClear">
+<ulink url="../javadoc/org/apache/openjpa/conf/OpenJPAConfiguration.html#getAutoClear()">
 <methodname>org.apache.openjpa.conf.OpenJPAConfiguration.getAutoClear
 </methodname></ulink>
             </para>
@@ -503,7 +503,7 @@ transaction.
             </para>
             <para>
 <emphasis role="bold">Configuration API:</emphasis>
-<ulink url="../javadoc/org/apache/openjpa/conf/OpenJPAConfiguration.html#getAutoDetach">
+<ulink url="../javadoc/org/apache/openjpa/conf/OpenJPAConfiguration.html#getAutoDetach()">
 <methodname>org.apache.openjpa.conf.OpenJPAConfiguration.getAutoDetach
 </methodname></ulink>
             </para>
@@ -538,7 +538,7 @@ when managed instances will be automatically detached.
             </para>
             <para>
 <emphasis role="bold">Configuration API:</emphasis>
-<ulink url="../javadoc/org/apache/openjpa/conf/OpenJPAConfiguration.html#getBrokerFactory">
+<ulink url="../javadoc/org/apache/openjpa/conf/OpenJPAConfiguration.html#getBrokerFactory()">
 <methodname>org.apache.openjpa.conf.OpenJPAConfiguration.getBrokerFactory
 </methodname></ulink>
             </para>
@@ -584,7 +584,7 @@ use.
             </para>
             <para>
 <emphasis role="bold">Configuration API:</emphasis>
-<ulink url="../javadoc/org/apache/openjpa/conf/OpenJPAConfiguration.html#getBrokerImpl">
+<ulink url="../javadoc/org/apache/openjpa/conf/OpenJPAConfiguration.html#getBrokerImpl()">
 <methodname>org.apache.openjpa.conf.OpenJPAConfiguration.getBrokerImpl
 </methodname></ulink>
             </para>
@@ -626,7 +626,7 @@ org.apache.openjpa.kernel.Broker</classname></ulink> type to use at runtime. See
             </para>
             <para>
 <emphasis role="bold">Configuration API:</emphasis>
-<ulink url="../javadoc/org/apache/openjpa/conf/OpenJPAConfiguration.html#getClassResolver">
+<ulink url="../javadoc/org/apache/openjpa/conf/OpenJPAConfiguration.html#getClassResolver()">
 <methodname>org.apache.openjpa.conf.OpenJPAConfiguration.getClassResolver
 </methodname></ulink>
             </para>
@@ -666,7 +666,7 @@ special classloading needs.
             </para>
             <para>
 <emphasis role="bold">Configuration API:</emphasis>
-<ulink url="../javadoc/org/apache/openjpa/conf/OpenJPAConfiguration.html#getCompatibility">
+<ulink url="../javadoc/org/apache/openjpa/conf/OpenJPAConfiguration.html#getCompatibility()">
 <methodname>org.apache.openjpa.conf.OpenJPAConfiguration.getCompatibility
 </methodname></ulink>
             </para>
@@ -705,7 +705,7 @@ openjpa.ConnectionDriverName</literal>
             </para>
             <para>
 <emphasis role="bold">Configuration API:</emphasis>
-<ulink url="../javadoc/org/apache/openjpa/conf/OpenJPAConfiguration.html#getConnectionDriverName">
+<ulink url="../javadoc/org/apache/openjpa/conf/OpenJPAConfiguration.html#getConnectionDriverName()">
 <methodname>
 org.apache.openjpa.conf.OpenJPAConfiguration.getConnectionDriverName
 </methodname></ulink>
@@ -747,7 +747,7 @@ openjpa.Connection2DriverName</literal>
             </para>
             <para>
 <emphasis role="bold">Configuration API:</emphasis>
-<ulink url="../javadoc/org/apache/openjpa/conf/OpenJPAConfiguration.html#getConnection2DriverName">
+<ulink url="../javadoc/org/apache/openjpa/conf/OpenJPAConfiguration.html#getConnection2DriverName()">
 <methodname>
 org.apache.openjpa.conf.OpenJPAConfiguration.getConnection2DriverName
 </methodname></ulink>
@@ -790,7 +790,7 @@ openjpa.ConnectionFactory</literal>
             </para>
             <para>
 <emphasis role="bold">Configuration API:</emphasis>
-<ulink url="../javadoc/org/apache/openjpa/conf/OpenJPAConfiguration.html#getConnectionFactory">
+<ulink url="../javadoc/org/apache/openjpa/conf/OpenJPAConfiguration.html#getConnectionFactory()">
 <methodname>org.apache.openjpa.conf.OpenJPAConfiguration.getConnectionFactory
 </methodname></ulink>
             </para>
@@ -830,7 +830,7 @@ openjpa.ConnectionFactory2</literal>
             </para>
             <para>
 <emphasis role="bold">Configuration API:</emphasis>
-<ulink url="../javadoc/org/apache/openjpa/conf/OpenJPAConfiguration.html#getConnectionFactory2">
+<ulink url="../javadoc/org/apache/openjpa/conf/OpenJPAConfiguration.html#getConnectionFactory2()">
 <methodname>org.apache.openjpa.conf.OpenJPAConfiguration.getConnectionFactory2
 </methodname></ulink>
             </para>
@@ -870,7 +870,7 @@ openjpa.ConnectionFactoryName</literal>
             </para>
             <para>
 <emphasis role="bold">Configuration API:</emphasis>
-<ulink url="../javadoc/org/apache/openjpa/conf/OpenJPAConfiguration.html#getConnectionFactoryName">
+<ulink url="../javadoc/org/apache/openjpa/conf/OpenJPAConfiguration.html#getConnectionFactoryName()">
 <methodname>
 org.apache.openjpa.conf.OpenJPAConfiguration.getConnectionFactoryName
 </methodname></ulink>
@@ -911,7 +911,7 @@ openjpa.ConnectionFactory2Name</literal>
             </para>
             <para>
 <emphasis role="bold">Configuration API:</emphasis>
-<ulink url="../javadoc/org/apache/openjpa/conf/OpenJPAConfiguration.html#getConnectionFactory2Name">
+<ulink url="../javadoc/org/apache/openjpa/conf/OpenJPAConfiguration.html#getConnectionFactory2Name()">
 <methodname>
 org.apache.openjpa.conf.OpenJPAConfiguration.getConnectionFactory2Name
 </methodname></ulink>
@@ -952,7 +952,7 @@ openjpa.ConnectionFactoryMode</literal>
             </para>
             <para>
 <emphasis role="bold">Configuration API:</emphasis>
-<ulink url="../javadoc/org/apache/openjpa/conf/OpenJPAConfiguration.html#getConnectionFactoryMode">
+<ulink url="../javadoc/org/apache/openjpa/conf/OpenJPAConfiguration.html#getConnectionFactoryMode()">
 <methodname>
 org.apache.openjpa.conf.OpenJPAConfiguration.getConnectionFactoryMode
 </methodname></ulink>
@@ -997,7 +997,7 @@ openjpa.ConnectionFactoryProperties</literal>
             </para>
             <para>
 <emphasis role="bold">Configuration API:</emphasis>
-<ulink url="../javadoc/org/apache/openjpa/conf/OpenJPAConfiguration.html#getConnectionFactoryProperties">
+<ulink url="../javadoc/org/apache/openjpa/conf/OpenJPAConfiguration.html#getConnectionFactoryProperties()">
 <methodname>
 org.apache.openjpa.conf.OpenJPAConfiguration.getConnectionFactoryProperties
 </methodname></ulink>
@@ -1039,7 +1039,7 @@ openjpa.ConnectionFactory2Properties</literal>
             </para>
             <para>
 <emphasis role="bold">Configuration API:</emphasis>
-<ulink url="../javadoc/org/apache/openjpa/conf/OpenJPAConfiguration.html#getConnectionFactory2Properties">
+<ulink url="../javadoc/org/apache/openjpa/conf/OpenJPAConfiguration.html#getConnectionFactory2Properties()">
 <methodname>
 org.apache.openjpa.conf.OpenJPAConfiguration.getConnectionFactory2Properties
 </methodname></ulink>
@@ -1082,7 +1082,7 @@ openjpa.ConnectionPassword</literal>
             </para>
             <para>
 <emphasis role="bold">Configuration API:</emphasis>
-<ulink url="../javadoc/org/apache/openjpa/conf/OpenJPAConfiguration.html#getConnectionPassword">
+<ulink url="../javadoc/org/apache/openjpa/conf/OpenJPAConfiguration.html#getConnectionPassword()">
 <methodname>org.apache.openjpa.conf.OpenJPAConfiguration.getConnectionPassword
 </methodname></ulink>
             </para>
@@ -1122,7 +1122,7 @@ openjpa.Connection2Password</literal>
             </para>
             <para>
 <emphasis role="bold">Configuration API:</emphasis>
-<ulink url="../javadoc/org/apache/openjpa/conf/OpenJPAConfiguration.html#getConnection2Password">
+<ulink url="../javadoc/org/apache/openjpa/conf/OpenJPAConfiguration.html#getConnection2Password()">
 <methodname>org.apache.openjpa.conf.OpenJPAConfiguration.getConnection2Password
 </methodname></ulink>
             </para>
@@ -1164,7 +1164,7 @@ openjpa.ConnectionProperties</literal>
             </para>
             <para>
 <emphasis role="bold">Configuration API:</emphasis>
-<ulink url="../javadoc/org/apache/openjpa/conf/OpenJPAConfiguration.html#getConnectionProperties">
+<ulink url="../javadoc/org/apache/openjpa/conf/OpenJPAConfiguration.html#getConnectionProperties()">
 <methodname>
 org.apache.openjpa.conf.OpenJPAConfiguration.getConnectionProperties
 </methodname></ulink>
@@ -1206,7 +1206,7 @@ openjpa.Connection2Properties</literal>
             </para>
             <para>
 <emphasis role="bold">Configuration API:</emphasis>
-<ulink url="../javadoc/org/apache/openjpa/conf/OpenJPAConfiguration.html#getConnection2Properties">
+<ulink url="../javadoc/org/apache/openjpa/conf/OpenJPAConfiguration.html#getConnection2Properties()">
 <methodname>
 org.apache.openjpa.conf.OpenJPAConfiguration.getConnection2Properties
 </methodname></ulink>
@@ -1249,7 +1249,7 @@ alternate connection factory used for unmanaged connections. See
             </para>
             <para>
 <emphasis role="bold">Configuration API:</emphasis>
-<ulink url="../javadoc/org/apache/openjpa/conf/OpenJPAConfiguration.html#getConnectionURL">
+<ulink url="../javadoc/org/apache/openjpa/conf/OpenJPAConfiguration.html#getConnectionURL()">
 <methodname>org.apache.openjpa.conf.OpenJPAConfiguration.getConnectionURL
 </methodname></ulink>
             </para>
@@ -1288,7 +1288,7 @@ ConnectionURL</literal>
             </para>
             <para>
 <emphasis role="bold">Configuration API:</emphasis>
-<ulink url="../javadoc/org/apache/openjpa/conf/OpenJPAConfiguration.html#getConnection2URL">
+<ulink url="../javadoc/org/apache/openjpa/conf/OpenJPAConfiguration.html#getConnection2URL()">
 <methodname>org.apache.openjpa.conf.OpenJPAConfiguration.getConnection2URL
 </methodname></ulink>
             </para>
@@ -1330,7 +1330,7 @@ openjpa.ConnectionUserName</literal>
             </para>
             <para>
 <emphasis role="bold">Configuration API:</emphasis>
-<ulink url="../javadoc/org/apache/openjpa/conf/OpenJPAConfiguration.html#getConnectionUserName">
+<ulink url="../javadoc/org/apache/openjpa/conf/OpenJPAConfiguration.html#getConnectionUserName()">
 <methodname>org.apache.openjpa.conf.OpenJPAConfiguration.getConnectionUserName
 </methodname></ulink>
             </para>
@@ -1370,7 +1370,7 @@ openjpa.Connection2UserName</literal>
             </para>
             <para>
 <emphasis role="bold">Configuration API:</emphasis>
-<ulink url="../javadoc/org/apache/openjpa/conf/OpenJPAConfiguration.html#getConnection2UserName">
+<ulink url="../javadoc/org/apache/openjpa/conf/OpenJPAConfiguration.html#getConnection2UserName()">
 <methodname>org.apache.openjpa.conf.OpenJPAConfiguration.getConnection2UserName
 </methodname></ulink>
             </para>
@@ -1412,7 +1412,7 @@ openjpa.ConnectionRetainMode</literal>
             </para>
             <para>
 <emphasis role="bold">Configuration API:</emphasis>
-<ulink url="../javadoc/org/apache/openjpa/conf/OpenJPAConfiguration.html#getConnectionRetainMode">
+<ulink url="../javadoc/org/apache/openjpa/conf/OpenJPAConfiguration.html#getConnectionRetainMode()">
 <methodname>
 org.apache.openjpa.conf.OpenJPAConfiguration.getConnectionRetainMode
 </methodname></ulink>
@@ -1453,7 +1453,7 @@ sessions. See <xref linkend="ref_guide_dbsetup_retain"/> for details.
             </para>
             <para>
 <emphasis role="bold">Configuration API:</emphasis>
-<ulink url="../javadoc/org/apache/openjpa/conf/OpenJPAConfiguration.html#getDataCache">
+<ulink url="../javadoc/org/apache/openjpa/conf/OpenJPAConfiguration.html#getDataCache()">
 <methodname>org.apache.openjpa.conf.OpenJPAConfiguration.getDataCache
 </methodname></ulink>
             </para>
@@ -1495,7 +1495,7 @@ openjpa.DataCacheManager</literal>
             </para>
             <para>
 <emphasis role="bold">Configuration API:</emphasis>
-<ulink url="../javadoc/org/apache/openjpa/conf/OpenJPAConfiguration.html#getDataCacheManager">
+<ulink url="../javadoc/org/apache/openjpa/conf/OpenJPAConfiguration.html#getDataCacheManager()">
 <methodname>org.apache.openjpa.conf.OpenJPAConfiguration.getDataCacheManager
 </methodname></ulink>
             </para>
@@ -1538,7 +1538,7 @@ openjpa.DataCacheTimeout</literal>
             </para>
             <para>
 <emphasis role="bold">Configuration API:</emphasis>
-<ulink url="../javadoc/org/apache/openjpa/conf/OpenJPAConfiguration.html#getDataCacheTimeout">
+<ulink url="../javadoc/org/apache/openjpa/conf/OpenJPAConfiguration.html#getDataCacheTimeout()">
 <methodname>org.apache.openjpa.conf.OpenJPAConfiguration.getDataCacheTimeout
 </methodname></ulink>
             </para>
@@ -1582,7 +1582,7 @@ classes. See <xref linkend="ref_guide_cache_conf"/> for details.
             </para>
             <para>
 <emphasis role="bold">Configuration API:</emphasis>
-<ulink url="../javadoc/org/apache/openjpa/conf/OpenJPAConfiguration.html#getDetachState">
+<ulink url="../javadoc/org/apache/openjpa/conf/OpenJPAConfiguration.html#getDetachState()">
 <methodname>org.apache.openjpa.conf.OpenJPAConfiguration.getDetachState
 </methodname></ulink>
             </para>
@@ -1634,7 +1634,7 @@ openjpa.DynamicDataStructs</literal>
             </para>
             <para>
 <emphasis role="bold">Configuration API:</emphasis>
-<ulink url="../javadoc/org/apache/openjpa/conf/OpenJPAConfiguration.html#getDynamicDataStructs">
+<ulink url="../javadoc/org/apache/openjpa/conf/OpenJPAConfiguration.html#getDynamicDataStructs()">
 <methodname>org.apache.openjpa.conf.OpenJPAConfiguration.getDynamicDataStructs
 </methodname></ulink>
             </para>
@@ -1681,7 +1681,7 @@ memory and speed optimization over time.
             </para>
             <para>
 <emphasis role="bold">Configuration API:</emphasis>
-<ulink url="../javadoc/org/apache/openjpa/conf/OpenJPAConfiguration.html#getFetchBatchSize">
+<ulink url="../javadoc/org/apache/openjpa/conf/OpenJPAConfiguration.html#getFetchBatchSize()">
 <methodname>org.apache.openjpa.conf.OpenJPAConfiguration.getFetchBatchSize
 </methodname></ulink>
             </para>
@@ -1716,7 +1716,7 @@ runtime. See <xref linkend="ref_guide_dbsetup_lrs"/> for details.
             </para>
             <para>
 <emphasis role="bold">Configuration API:</emphasis>
-<ulink url="../javadoc/org/apache/openjpa/conf/OpenJPAConfiguration.html#getFetchGroups">
+<ulink url="../javadoc/org/apache/openjpa/conf/OpenJPAConfiguration.html#getFetchGroups()">
 <methodname>org.apache.openjpa.conf.OpenJPAConfiguration.getFetchGroups
 </methodname></ulink>
             </para>
@@ -1758,7 +1758,7 @@ Fetch groups can also be set at runtime. See <xref linkend="ref_guide_fetch"/>
             </para>
             <para>
 <emphasis role="bold">Configuration API:</emphasis>
-<ulink url="../javadoc/org/apache/openjpa/conf/OpenJPAConfiguration.html#getFilterListeners">
+<ulink url="../javadoc/org/apache/openjpa/conf/OpenJPAConfiguration.html#getFilterListeners()">
 <methodname>org.apache.openjpa.conf.OpenJPAConfiguration.getFilterListeners
 </methodname></ulink>
             </para>
@@ -1815,7 +1815,7 @@ openjpa.FlushBeforeQueries</literal>
             </para>
             <para>
 <emphasis role="bold">Configuration API:</emphasis>
-<ulink url="../javadoc/org/apache/openjpa/conf/OpenJPAConfiguration.html#getFlushBeforeQueries">
+<ulink url="../javadoc/org/apache/openjpa/conf/OpenJPAConfiguration.html#getFlushBeforeQueries()">
 <methodname>org.apache.openjpa.conf.OpenJPAConfiguration.getFlushBeforeQueries
 </methodname></ulink>
             </para>
@@ -1847,7 +1847,7 @@ query. See <xref linkend="ref_guide_dbsetup_retain"/> for details.
             </para>
             <para>
 <emphasis role="bold">Configuration API:</emphasis>
-<ulink url="../javadoc/org/apache/openjpa/conf/OpenJPAConfiguration.html#getIgnoreChanges">
+<ulink url="../javadoc/org/apache/openjpa/conf/OpenJPAConfiguration.html#getIgnoreChanges()">
 <methodname>org.apache.openjpa.conf.OpenJPAConfiguration.getIgnoreChanges
 </methodname></ulink>
             </para>
@@ -1914,7 +1914,7 @@ or flush before running it against the datastore.
             </para>
             <para>
 <emphasis role="bold">Configuration API:</emphasis>
-<ulink url="../javadoc/org/apache/openjpa/conf/OpenJPAConfiguration.html#getInverseManager">
+<ulink url="../javadoc/org/apache/openjpa/conf/OpenJPAConfiguration.html#getInverseManager()">
 <methodname>org.apache.openjpa.conf.OpenJPAConfiguration.getInverseManager
 </methodname></ulink>
             </para>
@@ -1961,7 +1961,7 @@ for managing bidirectional relations upon a flush. See
             </para>
             <para>
 <emphasis role="bold">Configuration API:</emphasis>
-<ulink url="../javadoc/org/apache/openjpa/conf/OpenJPAConfiguration.html#getLockManager">
+<ulink url="../javadoc/org/apache/openjpa/conf/OpenJPAConfiguration.html#getLockManager()">
 <methodname>org.apache.openjpa.conf.OpenJPAConfiguration.getLockManager
 </methodname></ulink>
             </para>
@@ -2009,7 +2009,7 @@ locks on persistent instances during transactions.  See
             </para>
             <para>
 <emphasis role="bold">Configuration API:</emphasis>
-<ulink url="../javadoc/org/apache/openjpa/conf/OpenJPAConfiguration.html#getLockTimeout">
+<ulink url="../javadoc/org/apache/openjpa/conf/OpenJPAConfiguration.html#getLockTimeout()">
 <methodname>org.apache.openjpa.conf.OpenJPAConfiguration.getLockTimeout
 </methodname></ulink>
             </para>
@@ -2048,7 +2048,7 @@ for an object lock before throwing an exception, or -1 for no limit. See
             </para>
             <para>
 <emphasis role="bold">Configuration API:</emphasis>
-<ulink url="../javadoc/org/apache/openjpa/conf/OpenJPAConfiguration.html#getLog">
+<ulink url="../javadoc/org/apache/openjpa/conf/OpenJPAConfiguration.html#getLog()">
 <methodname>org.apache.openjpa.conf.OpenJPAConfiguration.getLog</methodname>
 </ulink>
             </para>
@@ -2097,7 +2097,7 @@ For details on logging, see <xref linkend="ref_guide_logging"/>.
             </para>
             <para>
 <emphasis role="bold">Configuration API:</emphasis>
-<ulink url="../javadoc/org/apache/openjpa/conf/OpenJPAConfiguration.html#getManagedRuntime">
+<ulink url="../javadoc/org/apache/openjpa/conf/OpenJPAConfiguration.html#getManagedRuntime()">
 <methodname>org.apache.openjpa.conf.OpenJPAConfiguration.getManagedRuntime
 </methodname></ulink>
             </para>
@@ -2132,7 +2132,7 @@ enterprise environment.
             </para>
             <para>
 <emphasis role="bold">Configuration API:</emphasis>
-<ulink url="../javadoc/org/apache/openjpa/conf/OpenJPAConfiguration.html#getMapping">
+<ulink url="../javadoc/org/apache/openjpa/conf/OpenJPAConfiguration.html#getMapping()">
 <methodname>org.apache.openjpa.conf.OpenJPAConfiguration.getMapping</methodname>
 </ulink>
             </para>
@@ -2171,7 +2171,7 @@ object-to-datastore mapping to use.
             </para>
             <para>
 <emphasis role="bold">Configuration API:</emphasis>
-<ulink url="../javadoc/org/apache/openjpa/conf/OpenJPAConfiguration.html#getMaxFetchDepth">
+<ulink url="../javadoc/org/apache/openjpa/conf/OpenJPAConfiguration.html#getMaxFetchDepth()">
 <methodname>org.apache.openjpa.conf.OpenJPAConfiguration.getMaxFetchDepth
 </methodname></ulink>
             </para>
@@ -2211,7 +2211,7 @@ traverse when eager fetching. Use -1 for no limit. Defaults to no limit.  See
             </para>
             <para>
 <emphasis role="bold">Configuration API:</emphasis>
-<ulink url="../javadoc/org/apache/openjpa/conf/OpenJPAConfiguration.html#getMetaDataFactory">
+<ulink url="../javadoc/org/apache/openjpa/conf/OpenJPAConfiguration.html#getMetaDataFactory()">
 <methodname>org.apache.openjpa.conf.OpenJPAConfiguration.getMetaDataFactory
 </methodname></ulink>
             </para>
@@ -2254,7 +2254,7 @@ retrieve metadata for your persistent classes. See
             </para>
             <para>
 <emphasis role="bold">Configuration API:</emphasis>
-<ulink url="../javadoc/org/apache/openjpa/conf/OpenJPAConfiguration.html#getMultithreaded">
+<ulink url="../javadoc/org/apache/openjpa/conf/OpenJPAConfiguration.html#getMultithreaded()">
 <methodname>org.apache.openjpa.conf.OpenJPAConfiguration.getMultithreaded
 </methodname></ulink>
             </para>
@@ -2294,7 +2294,7 @@ will be accessed by multiple threads at once.
             </para>
             <para>
 <emphasis role="bold">Configuration API:</emphasis>
-<ulink url="../javadoc/org/apache/openjpa/conf/OpenJPAConfiguration.html#getOptimistic">
+<ulink url="../javadoc/org/apache/openjpa/conf/OpenJPAConfiguration.html#getOptimistic()">
 <methodname>org.apache.openjpa.conf.OpenJPAConfiguration.getOptimistic
 </methodname></ulink>
             </para>
@@ -2333,7 +2333,7 @@ openjpa.OrphanedKeyAction</literal>
             </para>
             <para>
 <emphasis role="bold">Configuration API:</emphasis>
-<ulink url="../javadoc/org/apache/openjpa/conf/OpenJPAConfiguration.html#getOrphanedKeyAction">
+<ulink url="../javadoc/org/apache/openjpa/conf/OpenJPAConfiguration.html#getOrphanedKeyAction()">
 <methodname>org.apache.openjpa.conf.OpenJPAConfiguration.getOrphanedKeyAction
 </methodname></ulink>
             </para>
@@ -2372,7 +2372,7 @@ openjpa.NontransactionalRead</literal>
             </para>
             <para>
 <emphasis role="bold">Configuration API:</emphasis>
-<ulink url="../javadoc/org/apache/openjpa/conf/OpenJPAConfiguration.html#getNontransactionalRead">
+<ulink url="../javadoc/org/apache/openjpa/conf/OpenJPAConfiguration.html#getNontransactionalRead()">
 <methodname>
 org.apache.openjpa.conf.OpenJPAConfiguration.getNontransactionalRead
 </methodname></ulink>
@@ -2404,7 +2404,7 @@ openjpa.NontransactionalWrite</literal>
             </para>
             <para>
 <emphasis role="bold">Configuration API:</emphasis>
-<ulink url="../javadoc/org/apache/openjpa/conf/OpenJPAConfiguration.html#getNontransactionalWrite">
+<ulink url="../javadoc/org/apache/openjpa/conf/OpenJPAConfiguration.html#getNontransactionalWrite()">
 <methodname>
 org.apache.openjpa.conf.OpenJPAConfiguration.getNontransactionalWrite
 </methodname></ulink>
@@ -2445,7 +2445,7 @@ will take effect on the next transaction.
             </para>
             <para>
 <emphasis role="bold">Configuration API:</emphasis>
-<ulink url="../javadoc/org/apache/openjpa/conf/OpenJPAConfiguration.html#getProxyManager">
+<ulink url="../javadoc/org/apache/openjpa/conf/OpenJPAConfiguration.html#getProxyManager()">
 <methodname>org.apache.openjpa.conf.OpenJPAConfiguration.getProxyManager
 </methodname></ulink>
             </para>
@@ -2488,7 +2488,7 @@ mutable second class objects. See
             </para>
             <para>
 <emphasis role="bold">Configuration API:</emphasis>
-<ulink url="../javadoc/org/apache/openjpa/conf/OpenJPAConfiguration.html#getQueryCache">
+<ulink url="../javadoc/org/apache/openjpa/conf/OpenJPAConfiguration.html#getQueryCache()">
 <methodname>org.apache.openjpa.conf.OpenJPAConfiguration.getQueryCache
 </methodname></ulink>
             </para>
@@ -2568,7 +2568,7 @@ query compilation.  See <xref linkend="ref_guide_cache_querycomp"/> for details.
             </para>
             <para>
 <emphasis role="bold">Configuration API:</emphasis>
-<ulink url="../javadoc/org/apache/openjpa/conf/OpenJPAConfiguration.html#getReadLockLevel">
+<ulink url="../javadoc/org/apache/openjpa/conf/OpenJPAConfiguration.html#getReadLockLevel()">
 <methodname>org.apache.openjpa.conf.OpenJPAConfiguration.getReadLockLevel
 </methodname></ulink>
             </para>
@@ -2622,7 +2622,7 @@ openjpa.RemoteCommitProvider</literal>
             </para>
             <para>
 <emphasis role="bold">Configuration API:</emphasis>
-<ulink url="../javadoc/org/apache/openjpa/conf/OpenJPAConfiguration.html#getRemoteCommitProvider">
+<ulink url="../javadoc/org/apache/openjpa/conf/OpenJPAConfiguration.html#getRemoteCommitProvider()">
 <methodname>
 org.apache.openjpa.conf.OpenJPAConfiguration.getRemoteCommitProvider
 </methodname></ulink>
@@ -2658,7 +2658,7 @@ implementation to use for distributed event notification. See
             </para>
             <para>
 <emphasis role="bold">Configuration API:</emphasis>
-<ulink url="../javadoc/org/apache/openjpa/conf/OpenJPAConfiguration.html#getRestoreState">
+<ulink url="../javadoc/org/apache/openjpa/conf/OpenJPAConfiguration.html#getRestoreState()">
 <methodname>org.apache.openjpa.conf.OpenJPAConfiguration.getRestoreState
 </methodname></ulink>
             </para>
@@ -2693,7 +2693,7 @@ to their pre-transaction values when a rollback occurs.
             </para>
             <para>
 <emphasis role="bold">Configuration API:</emphasis>
-<ulink url="../javadoc/org/apache/openjpa/conf/OpenJPAConfiguration.html#getRetainState">
+<ulink url="../javadoc/org/apache/openjpa/conf/OpenJPAConfiguration.html#getRetainState()">
 <methodname>org.apache.openjpa.conf.OpenJPAConfiguration.getRetainState
 </methodname></ulink>
             </para>
@@ -2732,7 +2732,7 @@ openjpa.RetryClassRegistration</literal>
             </para>
             <para>
 <emphasis role="bold">Configuration API:</emphasis>
-<ulink url="../javadoc/org/apache/openjpa/conf/OpenJPAConfiguration.html#getRetryClassRegistration">
+<ulink url="../javadoc/org/apache/openjpa/conf/OpenJPAConfiguration.html#getRetryClassRegistration()">
 <methodname>
 org.apache.openjpa.conf.OpenJPAConfiguration.getRetryClassRegistration
 </methodname></ulink>
@@ -2763,7 +2763,7 @@ openjpa.SavepointManager</literal>
             </para>
             <para>
 <emphasis role="bold">Configuration API:</emphasis>
-<ulink url="../javadoc/org/apache/openjpa/conf/OpenJPAConfiguration.html#getSavepointManager">
+<ulink url="../javadoc/org/apache/openjpa/conf/OpenJPAConfiguration.html#getSavepointManager()">
 org.apache.openjpa.conf.OpenJPAConfiguration.getSavepointManager</ulink>
             </para>
             <para>
@@ -2801,7 +2801,7 @@ use for managing transaction savepoints. See
             </para>
             <para>
 <emphasis role="bold">Configuration API:</emphasis>
-<ulink url="../javadoc/org/apache/openjpa/conf/OpenJPAConfiguration.html#getSequence">
+<ulink url="../javadoc/org/apache/openjpa/conf/OpenJPAConfiguration.html#getSequence()">
 <methodname>org.apache.openjpa.conf.OpenJPAConfiguration.getSequence
 </methodname></ulink>
             </para>
@@ -2844,7 +2844,7 @@ information.
             </para>
             <para>
 <emphasis role="bold">Configuration API:</emphasis>
-<ulink url="../javadoc/org/apache/openjpa/conf/OpenJPAConfiguration.html#getTransactionMode">
+<ulink url="../javadoc/org/apache/openjpa/conf/OpenJPAConfiguration.html#getTransactionMode()">
 <methodname>org.apache.openjpa.conf.OpenJPAConfiguration.getTransactionMode
 </methodname></ulink>
             </para>
@@ -2887,7 +2887,7 @@ use. You can override this setting per-session.
             </para>
             <para>
 <emphasis role="bold">Configuration API:</emphasis>
-<ulink url="../javadoc/org/apache/openjpa/conf/OpenJPAConfiguration.html#getWriteLockLevel">
+<ulink url="../javadoc/org/apache/openjpa/conf/OpenJPAConfiguration.html#getWriteLockLevel()">
 <methodname>org.apache.openjpa.conf.OpenJPAConfiguration.getWriteLockLevel
 </methodname></ulink>
             </para>
@@ -2949,7 +2949,7 @@ openjpa.jdbc.ConnectionDecorators</literal>
             </para>
             <para>
 <emphasis role="bold">Configuration API:</emphasis>
-<ulink url="../javadoc/org/apache/openjpa/jdbc/conf/JDBCConfiguration.html#getConnectionDecorators">
+<ulink url="../javadoc/org/apache/openjpa/jdbc/conf/JDBCConfiguration.html#getConnectionDecorators()">
 <methodname>
 org.apache.openjpa.jdbc.conf.JDBCConfiguration.getConnectionDecorators
 </methodname></ulink>
@@ -2997,7 +2997,7 @@ openjpa.jdbc.DBDictionary</literal>
             </para>
             <para>
 <emphasis role="bold">Configuration API:</emphasis>
-<ulink url="../javadoc/org/apache/openjpa/jdbc/conf/JDBCConfiguration.html#getDBDictionary">
+<ulink url="../javadoc/org/apache/openjpa/jdbc/conf/JDBCConfiguration.html#getDBDictionary()">
 <methodname>org.apache.openjpa.jdbc.conf.JDBCConfiguration.getDBDictionary
 </methodname></ulink>
             </para>
@@ -3046,7 +3046,7 @@ openjpa.jdbc.DriverDataSource</literal>
             </para>
             <para>
 <emphasis role="bold">Configuration API:</emphasis>
-<ulink url="../javadoc/org/apache/openjpa/jdbc/conf/JDBCConfiguration.html#getDriverDataSource">
+<ulink url="../javadoc/org/apache/openjpa/jdbc/conf/JDBCConfiguration.html#getDriverDataSource()">
 <methodname>org.apache.openjpa.jdbc.conf.JDBCConfiguration.getDriverDataSource
 </methodname></ulink>
             </para>
@@ -3089,7 +3089,7 @@ openjpa.jdbc.EagerFetchMode</literal>
             </para>
             <para>
 <emphasis role="bold">Configuration API:</emphasis>
-<ulink url="../javadoc/org/apache/openjpa/jdbc/conf/JDBCConfiguration.html#getEagerFetchMode">
+<ulink url="../javadoc/org/apache/openjpa/jdbc/conf/JDBCConfiguration.html#getEagerFetchMode()">
 <methodname>org.apache.openjpa.jdbc.conf.JDBCConfiguration.getEagerFetchMode
 </methodname></ulink>
             </para>
@@ -3133,7 +3133,7 @@ openjpa.jdbc.FetchDirection</literal>
             </para>
             <para>
 <emphasis role="bold">Configuration API:</emphasis>
-<ulink url="../javadoc/org/apache/openjpa/jdbc/conf/JDBCConfiguration.html#getFetchDirection">
+<ulink url="../javadoc/org/apache/openjpa/jdbc/conf/JDBCConfiguration.html#getFetchDirection()">
 <methodname>org.apache.openjpa.jdbc.conf.JDBCConfiguration.getFetchDirection
 </methodname></ulink>
             </para>
@@ -3177,7 +3177,7 @@ openjpa.jdbc.JDBCListeners</literal>
             </para>
             <para>
 <emphasis role="bold">Configuration API:</emphasis>
-<ulink url="../javadoc/org/apache/openjpa/jdbc/conf/JDBCConfiguration.html#getJDBCListeners">
+<ulink url="../javadoc/org/apache/openjpa/jdbc/conf/JDBCConfiguration.html#getJDBCListeners()">
 <methodname>org.apache.openjpa.jdbc.conf.JDBCConfiguration.getJDBCListeners
 </methodname></ulink>
             </para>
@@ -3220,7 +3220,7 @@ events.
             </para>
             <para>
 <emphasis role="bold">Configuration API:</emphasis>
-<ulink url="../javadoc/org/apache/openjpa/jdbc/conf/JDBCConfiguration.html#getLRSSize">
+<ulink url="../javadoc/org/apache/openjpa/jdbc/conf/JDBCConfiguration.html#getLRSSize()">
 <methodname>org.apache.openjpa.jdbc.conf.JDBCConfiguration.getLRSSize
 </methodname></ulink>
             </para>
@@ -3264,7 +3264,7 @@ openjpa.jdbc.MappingDefaults</literal>
             </para>
             <para>
 <emphasis role="bold">Configuration API:</emphasis>
-<ulink url="../javadoc/org/apache/openjpa/jdbc/conf/JDBCConfiguration.html#getMappingDefaults">
+<ulink url="../javadoc/org/apache/openjpa/jdbc/conf/JDBCConfiguration.html#getMappingDefaults()">
 <methodname>org.apache.openjpa.jdbc.conf.JDBCConfiguration.getMappingDefaults
 </methodname></ulink>
             </para>
@@ -3308,7 +3308,7 @@ openjpa.jdbc.MappingFactory</literal>
             </para>
             <para>
 <emphasis role="bold">Configuration API:</emphasis>
-<ulink url="../javadoc/org/apache/openjpa/jdbc/conf/JDBCConfiguration.html#getMappingFactory">
+<ulink url="../javadoc/org/apache/openjpa/jdbc/conf/JDBCConfiguration.html#getMappingFactory()">
 <methodname>org.apache.openjpa.jdbc.conf.JDBCConfiguration.getMappingFactory
 </methodname></ulink>
             </para>
@@ -3387,7 +3387,7 @@ openjpa.jdbc.ResultSetType</literal>
             </para>
             <para>
 <emphasis role="bold">Configuration API:</emphasis>
-<ulink url="../javadoc/org/apache/openjpa/jdbc/conf/JDBCConfiguration.html#getResultSetType">
+<ulink url="../javadoc/org/apache/openjpa/jdbc/conf/JDBCConfiguration.html#getResultSetType()">
 <methodname>org.apache.openjpa.jdbc.conf.JDBCConfiguration.getResultSetType
 </methodname></ulink>
             </para>
@@ -3426,7 +3426,7 @@ when fetching result lists. This property can also be varied at runtime. See
             </para>
             <para>
 <emphasis role="bold">Configuration API:</emphasis>
-<ulink url="../javadoc/org/apache/openjpa/jdbc/conf/JDBCConfiguration.html#getSchema">
+<ulink url="../javadoc/org/apache/openjpa/jdbc/conf/JDBCConfiguration.html#getSchema()">
 <methodname>org.apache.openjpa.jdbc.conf.JDBCConfiguration.getSchema
 </methodname></ulink>
             </para>
@@ -3466,7 +3466,7 @@ openjpa.jdbc.SchemaFactory</literal>
             </para>
             <para>
 <emphasis role="bold">Configuration API:</emphasis>
-<ulink url="../javadoc/org/apache/openjpa/jdbc/conf/JDBCConfiguration.html#getSchemaFactory">
+<ulink url="../javadoc/org/apache/openjpa/jdbc/conf/JDBCConfiguration.html#getSchemaFactory()">
 <methodname>org.apache.openjpa.jdbc.conf.JDBCConfiguration.getSchemaFactory
 </methodname></ulink>
             </para>
@@ -3509,7 +3509,7 @@ use to store and retrieve information about the database schema. See
             </para>
             <para>
 <emphasis role="bold">Configuration API:</emphasis>
-<ulink url="../javadoc/org/apache/openjpa/jdbc/conf/JDBCConfiguration.html#getSchemas">
+<ulink url="../javadoc/org/apache/openjpa/jdbc/conf/JDBCConfiguration.html#getSchemas()">
 <methodname>org.apache.openjpa.jdbc.conf.JDBCConfiguration.getSchemas
 </methodname></ulink>
             </para>
@@ -3549,7 +3549,7 @@ schemas and/or tables used for your persistent data. See
             </para>
             <para>
 <emphasis role="bold">Configuration API:</emphasis>
-<ulink url="../javadoc/org/apache/openjpa/jdbc/conf/JDBCConfiguration.html#getSQLFactory">
+<ulink url="../javadoc/org/apache/openjpa/jdbc/conf/JDBCConfiguration.html#getSQLFactory()">
 <methodname>org.apache.openjpa.jdbc.conf.JDBCConfiguration.getSQLFactory
 </methodname></ulink>
             </para>
@@ -3599,7 +3599,7 @@ openjpa.jdbc.SubclassFetchMode</literal>
             </para>
             <para>
 <emphasis role="bold">Configuration API:</emphasis>
-<ulink url="../javadoc/org/apache/openjpa/jdbc/conf/JDBCConfiguration.html#getSubclassFetchMode">
+<ulink url="../javadoc/org/apache/openjpa/jdbc/conf/JDBCConfiguration.html#getSubclassFetchMode()">
 <methodname>org.apache.openjpa.jdbc.conf.JDBCConfiguration.getSubclassFetchMode
 </methodname></ulink>
             </para>
@@ -3643,7 +3643,7 @@ openjpa.jdbc.SynchronizeMappings</literal>
             </para>
             <para>
 <emphasis role="bold">Configuration API:</emphasis>
-<ulink url="../javadoc/org/apache/openjpa/jdbc/conf/JDBCConfiguration.html#getSynchronizeMappings">
+<ulink url="../javadoc/org/apache/openjpa/jdbc/conf/JDBCConfiguration.html#getSynchronizeMappings()">
 <methodname>
 org.apache.openjpa.jdbc.conf.JDBCConfiguration.getSynchronizeMappings
 </methodname></ulink>
@@ -3693,7 +3693,7 @@ openjpa.jdbc.TransactionIsolation</literal>
             </para>
             <para>
 <emphasis role="bold">Configuration API:</emphasis>
-<ulink url="../javadoc/org/apache/openjpa/jdbc/conf/JDBCConfiguration.html#getTransactionIsolation">
+<ulink url="../javadoc/org/apache/openjpa/jdbc/conf/JDBCConfiguration.html#getTransactionIsolation()">
 <methodname>
 org.apache.openjpa.jdbc.conf.JDBCConfiguration.getTransactionIsolation
 </methodname></ulink>
@@ -3740,7 +3740,7 @@ openjpa.jdbc.UpdateManager</literal>
             </para>
             <para>
 <emphasis role="bold">Configuration API:</emphasis>
-<ulink url="../javadoc/org/apache/openjpa/jdbc/conf/JDBCConfiguration.html#getUpdateManager">
+<ulink url="../javadoc/org/apache/openjpa/jdbc/conf/JDBCConfiguration.html#getUpdateManager()">
 <methodname>org.apache.openjpa.jdbc.conf.JDBCConfiguration.getUpdateManager
 </methodname></ulink>
             </para>
