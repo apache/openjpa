@@ -64,7 +64,8 @@ public class JMSRemoteCommitProvider
     private TopicConnection _connection;
     private TopicSession _session;
     private TopicPublisher _publisher;
-
+    private ClassLoader _appClassLoader;
+    
     /**
      * Sets the JMS Topic name. Defaults to
      * <code>topic/OpenJPACommitProviderTopic</code>.
@@ -151,6 +152,7 @@ public class JMSRemoteCommitProvider
      */
     public void endConfiguration() {
         super.endConfiguration();
+        _appClassLoader = Thread.currentThread().getContextClassLoader();
         connect();
     }
 
@@ -204,29 +206,36 @@ public class JMSRemoteCommitProvider
                             _topicName, m.getClass().getName()));
                     return;
                 }
-
-                ObjectMessage om = (ObjectMessage) m;
-                Object o;
+                
+                ClassLoader saveCls = Thread.currentThread()
+                    .getContextClassLoader();
                 try {
-                    o = om.getObject();
+                    if (saveCls != _appClassLoader)
+                        Thread.currentThread().setContextClassLoader(
+                            _appClassLoader);
+                    ObjectMessage om = (ObjectMessage) m;
+                    Object o = om.getObject();
+
+                    if (o instanceof RemoteCommitEvent) {
+                    	if (log.isTraceEnabled())
+                    		log.trace(s_loc.get("jms-received-update",
+                    				_topicName));
+
+                    	RemoteCommitEvent rce = (RemoteCommitEvent) o;
+                    	fireEvent(rce);
+                    } else {
+                    	if (log.isWarnEnabled())
+                    		log.warn(s_loc.get("jms-receive-error-2",
+                    				o.getClass().getName(), _topicName));
+                    }
                 } catch (JMSException jmse) {
                     if (log.isWarnEnabled())
                         log.warn(s_loc.get("jms-receive-error-1"), jmse);
-                    return;
+                } finally {
+                    if (saveCls != _appClassLoader)
+                        Thread.currentThread().setContextClassLoader(saveCls);
                 }
 
-                if (o instanceof RemoteCommitEvent) {
-                    if (log.isTraceEnabled())
-                        log.trace(s_loc.get("jms-received-update",
-                            _topicName));
-
-                    RemoteCommitEvent rce = (RemoteCommitEvent) o;
-                    fireEvent(rce);
-                } else {
-                    if (log.isWarnEnabled())
-                        log.warn(s_loc.get("jms-receive-error-2",
-                            o.getClass().getName(), _topicName));
-                }
             }
         };
     }
