@@ -65,7 +65,13 @@ an entity by its persistent identity (covered later in this chapter), or use a
 An instance of an embeddable class, on the other hand, is only stored as part of
 a separate entity. Embeddable instances have no persistent identity, and are
 never returned directly from the <classname>EntityManager</classname> or from a
-<classname>Query</classname>.
+<classname>Query</classname> unless the query uses a projection on owning class 
+to the embedded instance. For example, if <classname>Address</classname> is 
+embedded in <classname>Company</classname>, then 
+a query <classname>"SELECT a FROM Address a"</classname> will never return the 
+embedded <classname>Address</classname> of <classname>Company</classname>; 
+but a projection query such as 
+</classname>"SELECT c.address FROM Company c"</classname> will.
     </para>
     <para>
 Despite these differences, there are few distinctions between entity classes and
