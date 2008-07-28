@@ -3165,10 +3165,10 @@ public class DBDictionary
         buf.append("CREATE ");
         if (index.isUnique())
             buf.append("UNIQUE ");
-        buf.append("INDEX ").append(index.getName());
-        String indexName = checkNameLength(getFullName(index.getTable(), false), 
-        		maxIndexNameLength, "long-index-name");
-        buf.append(" ON ").append(indexName);
+        String indexName = checkNameLength(index.getName(), maxIndexNameLength, 
+                "long-index-name");
+        buf.append("INDEX ").append(indexName);
+        buf.append(" ON ").append(getFullName(index.getTable(), false));
         buf.append(" (").append(Strings.join(index.getColumns(), ", ")).
             append(")");
 
