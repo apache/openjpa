@@ -112,8 +112,7 @@
                         <phase>process-sources</phase>
                         <configuration>
                             <tasks>
-                                <delete
-                                    file="${project.build.directory}/generated-sources/javacc/org/apache/openjpa/kernel/jpql/ParseException.java"/>
+                                <delete file="${project.build.directory}/generated-sources/javacc/org/apache/openjpa/kernel/jpql/ParseException.java" />
                             </tasks>
                         </configuration>
                         <goals>
