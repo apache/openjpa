@@ -270,7 +270,8 @@ public class SequenceMetaData
                     J2DoPrivHelper.newInstanceAction(cls));
                 Configurations.configureInstance(seq,
                     _repos.getConfiguration(), props.toString());
-                seq.setType(_type);
+                if(_type != Seq.TYPE_DEFAULT)
+                    seq.setType(_type);
             } else if (_factory != null)
                 seq = _factory.toSequence(cls, props.toString());
             else
@@ -339,6 +340,7 @@ public class SequenceMetaData
             }
     }
 
+    @Override
     public String toString() {
         return _name;
     }

@@ -42,6 +42,7 @@ import org.apache.openjpa.lib.util.Localizer;
 import org.apache.openjpa.lib.util.Options;
 import org.apache.openjpa.util.MetaDataException;
 import org.apache.openjpa.util.UserException;
+
 import serp.util.Numbers;
 import serp.util.Strings;
 
@@ -98,6 +99,7 @@ public class NativeJDBCSeq
      * @deprecated Use {@link #setSequence}. Retained for
      * backwards-compatibility for auto-configuration.
      */
+    @Deprecated
     public void setSequenceName(String seqName) {
         setSequence(seqName);
     }
@@ -147,6 +149,7 @@ public class NativeJDBCSeq
     /**
      * @deprecated Retained for backwards-compatibility for auto-configuration.
      */
+    @Deprecated
     public void setTableName(String table) {
         _tableName = table;
     }
@@ -154,11 +157,13 @@ public class NativeJDBCSeq
     /**
      * @deprecated Retained for backwards-compatibility for auto-configuration.
      */
+    @Deprecated
     public void setFormat(String format) {
         _format = format;
         _subTable = true;
     }
 
+    @Override
     public void addSchema(ClassMapping mapping, SchemaGroup group) {
         // sequence already exists?
         if (group.isKnownSequence(_seqName))
@@ -175,6 +180,7 @@ public class NativeJDBCSeq
         schema.importSequence(_seq);
     }
 
+    @Override
     public JDBCConfiguration getConfiguration() {
         return _conf;
     }
@@ -202,8 +208,11 @@ public class NativeJDBCSeq
         Object[] subs = (_subTable) ? new Object[]{ name, _tableName }
             : new Object[]{ name };
         _select = MessageFormat.format(_format, subs);
+        
+        type = dict.nativeSequenceType;
     }
     
+    @Override
     protected Object nextInternal(JDBCStore store, ClassMapping mapping)
         throws SQLException {
         Connection conn = getConnection(store);

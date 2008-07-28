@@ -89,6 +89,7 @@ import org.apache.openjpa.jdbc.schema.Table;
 import org.apache.openjpa.jdbc.schema.Unique;
 import org.apache.openjpa.kernel.Filters;
 import org.apache.openjpa.kernel.OpenJPAStateManager;
+import org.apache.openjpa.kernel.Seq;
 import org.apache.openjpa.kernel.exps.Path;
 import org.apache.openjpa.lib.conf.Configurable;
 import org.apache.openjpa.lib.conf.Configuration;
@@ -327,6 +328,8 @@ public class DBDictionary
     public String sequenceSQL = null;
     public String sequenceSchemaSQL = null;
     public String sequenceNameSQL = null;
+    // most native sequences can be run inside the business transaction
+    public int nativeSequenceType= Seq.TYPE_CONTIGUOUS;
 
     protected JDBCConfiguration conf = null;
     protected Log log = null;
