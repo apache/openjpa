@@ -174,6 +174,7 @@ public class XMLPersistenceMetaDataParser
     private Class _listener = null;
     private Collection<LifecycleCallbacks>[] _callbacks = null;
     private int[] _highs = null;
+    private boolean _isXMLMappingMetaDataComplete = false;
 
     /**
      * Constructor; supply configuration.
@@ -477,8 +478,10 @@ public class XMLPersistenceMetaDataParser
             }
         } else if (tag == ELEM_PU_META || tag == ELEM_PU_DEF)
             ret = isMetaDataMode();
-        else if (tag == ELEM_XML_MAP_META_COMPLETE)
+        else if (tag == ELEM_XML_MAP_META_COMPLETE) {
             setAnnotationParser(null);
+            _isXMLMappingMetaDataComplete = true;
+        }
         else if (tag == ELEM_ACCESS)
             ret = _mode != MODE_QUERY;
         else if (tag == ELEM_LISTENER)
@@ -718,16 +721,30 @@ public class XMLPersistenceMetaDataParser
         throws SAXException {
     }
 
+    boolean isMetaDataComplete(Attributes attrs) {
+    	return attrs != null 
+    	    && "true".equals(attrs.getValue("metadata-complete"));
+    }
+    
+    void resetAnnotationParser() {
+    	setAnnotationParser(((PersistenceMetaDataFactory)getRepository()
+    			.getMetaDataFactory()).getAnnotationParser());
+    }
+    
     @Override
     protected boolean startClass(String elem, Attributes attrs)
         throws SAXException {
         super.startClass(elem, attrs);
+        if (isMetaDataComplete(attrs)) {
+        	setAnnotationParser(null);
+        } else if (!_isXMLMappingMetaDataComplete){
+        	resetAnnotationParser();
+        }
 
         // query mode only?
         _cls = classForName(currentClassName());
         if (_mode == MODE_QUERY) {
-            if (_parser != null &&
-                !"true".equals(attrs.getValue("metadata-complete")))
+            if (_parser != null)
                 _parser.parse(_cls);
             return true;
         }
@@ -765,8 +782,7 @@ public class XMLPersistenceMetaDataParser
             meta.setSourceMode(MODE_NONE);
 
             // parse annotations first so XML overrides them
-            if (_parser != null &&
-                !"true".equals(attrs.getValue("metadata-complete")))
+            if (_parser != null)
                 _parser.parse(_cls);
         }
 
