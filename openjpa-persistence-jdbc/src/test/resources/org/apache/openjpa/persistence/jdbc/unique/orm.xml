@@ -23,8 +23,7 @@
 	version="1.0">
 	
 	<persistence-unit-metadata>
-		<xml-mapping-metadata-complete>
-		</xml-mapping-metadata-complete>
+		<xml-mapping-metadata-complete/>
 	</persistence-unit-metadata>
 	
 	
@@ -76,10 +75,8 @@
 
 			<many-to-many name="bs">
 				<join-table name="UNIQUE_JOINTABLE_XML">
-					<join-column name="FK_A_XML" referenced-column-name="aid" nullable="false">
-					</join-column>
-					<inverse-join-column name="FK_B_XML" referenced-column-name="bid" nullable="false">
-					</inverse-join-column>
+					<join-column name="FK_A_XML" referenced-column-name="aid" nullable="false"/>
+					<inverse-join-column name="FK_B_XML" referenced-column-name="bid" nullable="false"/>
 					<unique-constraint>
 						<column-name>FK_A_XML</column-name>
 						<column-name>FK_B_XML</column-name>
