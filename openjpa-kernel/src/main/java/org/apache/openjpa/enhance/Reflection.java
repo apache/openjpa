@@ -220,6 +220,30 @@ public class Reflection {
             throw wrapReflectionException(t);
         }
     }
+    
+    /**
+     * Get the value of the given named field or a corresponding getter method.
+     * 
+     * @return null if the field does not exist and mustExist is set to false or
+     * the given target is null.
+     * 
+     * @exception UserException if mustExist is true and the field or getter 
+     * method is non-existent
+     */
+    public static Object getValue(Object obj, String prop, boolean mustExist) {
+    	if (obj == null)
+    		return null;
+    	Class cls = obj.getClass();
+    	Field field = findField(cls, prop, false);
+    	if (field != null)
+    		return get(obj, field);
+    	Method getter = findGetter(cls, prop, false);
+    	if (getter != null)
+    		return get(obj, getter);
+        if (mustExist)
+            throw new UserException(_loc.get("bad-field", cls, prop));
+        return null; // should not reach
+    }
 
     /**
      * Make the given member accessible if it isn't already.
