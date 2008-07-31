@@ -18,6 +18,8 @@
  */
 package org.apache.openjpa.jdbc.meta;
 
+import java.lang.reflect.Field;
+import java.lang.reflect.Method;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -31,6 +33,8 @@ import java.util.Map;
 import java.util.Set;
 
 import org.apache.commons.lang.StringUtils;
+import org.apache.openjpa.enhance.PersistenceCapable;
+import org.apache.openjpa.enhance.Reflection;
 import org.apache.openjpa.jdbc.kernel.JDBCFetchConfiguration;
 import org.apache.openjpa.jdbc.kernel.JDBCStore;
 import org.apache.openjpa.jdbc.meta.strats.NoneClassStrategy;
@@ -228,12 +232,19 @@ public class ClassMapping
         // from other persistence contexts, so try to get sm directly from
         // instance before asking our context
         OpenJPAStateManager sm;
-        if (ImplHelper.isManageable(obj))
-            sm = (OpenJPAStateManager) (ImplHelper.toPersistenceCapable(obj,
-                getRepository().getConfiguration()))
-                .pcGetStateManager();
-        else
+        if (ImplHelper.isManageable(obj)) {
+        	PersistenceCapable pc = ImplHelper.toPersistenceCapable(obj,
+                    getRepository().getConfiguration());
+            sm = (OpenJPAStateManager) pc.pcGetStateManager();
+            if (sm == null) {
+            	ret = getValueFromUnmanagedInstance(obj, cols, true);
+            } else if (sm.isDetached()) {
+            	obj = store.getContext().find(sm.getObjectId(), false, null);
+            	sm = store.getContext().getStateManager(obj);
+            }
+        } else {
             sm = store.getContext().getStateManager(obj);
+        }
         if (sm == null)
             return ret;
 
@@ -247,7 +258,7 @@ public class ClassMapping
         }
         return ret;
     }
-
+    
     /**
      * Return the joinable for the given column, or throw an exception if
      * none is available.
@@ -978,5 +989,77 @@ public class ClassMapping
         if (_strategy == null)
             throw new InternalException();
         return _strategy;
+    }
+    
+    /**
+     * Find the field mappings that correspond to the given columns.
+     * 
+     * @return null if no columns are given or no field mapping uses the given
+     * columns.
+     */
+    private List<FieldMapping> getFieldMappings(Column[] cols, boolean prime) {
+    	if (cols == null || cols.length == 0)
+    		return null;
+    	List<FieldMapping> result = null;
+    	for (Column c : cols) {
+    		List<FieldMapping> fms = hasColumn(c, prime);
+    		if (fms == null) continue;
+			if (result == null)
+				result = new ArrayList<FieldMapping>();
+			for (FieldMapping fm : fms)
+				if (!result.contains(fm))
+					result.add(fm);
+    	}
+    	return result;
+    }
+    
+    /**
+     * Looks up in reverse to find the list of field mappings that include the
+     * given column. Costly.
+     * 
+     * @return null if no field mappings carry this column. 
+     */
+    private List<FieldMapping> hasColumn(Column c, boolean prime) {
+    	List<FieldMapping> result = null;
+    	FieldMapping[] fms = (prime) ? 
+    		getPrimaryKeyFieldMappings() : getFieldMappings();
+    	for (FieldMapping fm : fms) {
+    		Column[] cols = fm.getColumns();
+    		if (contains(cols, c)) {
+    			if (result == null)
+    				result = new ArrayList<FieldMapping>();
+    			result.add(fm);
+    		}
+    	}
+    	return result;
+    }
+    
+    boolean contains(Column[] cols, Column c) {
+    	for (Column col : cols)
+    		if (col == c)
+    			return true;
+    	return false;
+    }
+    
+    /**
+     * Gets the field values of the given instance for the given columns.
+     * The given columns are used to identify the fields by a reverse lookup.
+     *  
+     * @return a single object or an array of objects based on number of 
+     * fields the given columns represent.
+     */
+    private Object getValueFromUnmanagedInstance(Object obj, Column[] cols, 
+    		boolean prime) {
+    	List<FieldMapping> fms = getFieldMappings(cols, prime);
+    	if (fms == null)
+    		return null;
+    	if (fms.size() == 1)
+    		return Reflection.getValue(obj, fms.get(0).getName(), true);
+    	Object[] result = new Object[fms.size()];
+    	int i = 0;
+    	for (FieldMapping fm : fms) {
+    		result[i++] = Reflection.getValue(obj, fm.getName(), true);
+    	}
+    	return result;
     }
 }
