@@ -71,7 +71,7 @@ embedded in <classname>Company</classname>, then
 a query <classname>"SELECT a FROM Address a"</classname> will never return the 
 embedded <classname>Address</classname> of <classname>Company</classname>; 
 but a projection query such as 
-</classname>"SELECT c.address FROM Company c"</classname> will.
+<classname>"SELECT c.address FROM Company c"</classname> will.
     </para>
     <para>
 Despite these differences, there are few distinctions between entity classes and
