@@ -24,6 +24,7 @@ import java.security.PrivilegedActionException;
 import java.sql.Types;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -312,6 +313,20 @@ public class MappingRepository
         ClassMapping sup = mapping.getPCSuperclassMapping();
         if (sup != null && (mapping.getResolve() & MODE_MAPPING) != 0)
             return;
+        
+        // if this mapping is not for a managed interface, ensure that if 
+        // we have an inheritance hierarchy there is a default strategy
+        // applied to the root class
+        if (!mapping.getDescribedType().isInterface() &&
+            !mapping.isEmbeddedOnly()) {
+            // if an inheritance strategy has not been set on this mapping
+            // determine if needs one and if so, set it
+            if (!hasInheritanceStrategy(mapping)) {
+                ClassMapping baseMapping = findBaseClassMapping(mapping); 
+                if (baseMapping != null)
+                    setDefaultInheritanceStrategy(baseMapping);
+            }            
+        }
 
         // define superclass fields after mapping class, so we can tell whether
         // the class is mapped and needs to redefine abstract superclass fields
@@ -1255,5 +1270,78 @@ public class MappingRepository
             ((Configurable) _schema).startConfiguration();
             ((Configurable) _schema).endConfiguration();
         }            
+    }
+    
+    /**
+     * Finds the base class mapping for the specified mapping.  Loads all
+     * persistent types if necessary, since all persistent subclasses of this
+     * mapping may not have been resolved before this method is called.
+     */
+    protected ClassMapping findBaseClassMapping(ClassMapping mapping) {        
+        ClassMapping baseMapping = null;
+        ClassMapping sup = mapping.getPCSuperclassMapping();
+        if (sup == null) {
+            // no superclass metadata was provided.  check to see if this class
+            // has any persistent subclasses.
+            if (mapping.getPCSubclasses().length > 0)
+                baseMapping = mapping;
+            else {
+                // persistent subclasses may not have been resolved yet.  
+                // run through the persistent types to see if any of them 
+                // or their superclass is a subclass of this class.
+                Collection classes = loadPersistentTypes(false, 
+                        mapping.getEnvClassLoader());
+                Class cls;
+                for (Iterator itr = classes.iterator(); itr.hasNext();) {
+                    cls = (Class) itr.next();
+                    Class supcl = cls.getSuperclass();
+                    while (supcl != null && 
+                           !supcl.getClass().equals(java.lang.Object.class)) {
+                        if (!supcl.isInterface() &&
+                            supcl.equals(mapping.getDescribedType())) {
+                            baseMapping = mapping;    
+                            break;
+                        }
+                        supcl = supcl.getSuperclass();
+                    }
+                    if (baseMapping != null) break;
+                }
+            }
+        } else if (!sup.getDescribedType().isInterface()) {
+            // if the superclass is not a managed interface, find the root
+            // superclass and get its mapping info
+            ClassMapping supcm = sup;
+            while (supcm != null && 
+                    !supcm.getDescribedType().isInterface() &&
+                    !supcm.isEmbeddedOnly()) {
+                ClassMapping supcm2 = supcm.getPCSuperclassMapping();
+                if (supcm2 == null)
+                    baseMapping = supcm;
+                supcm = supcm2;
+            }
+        }
+        return baseMapping;
+    }
+   
+    /**
+     * If an inheritance strategy has not been set on this mapping, set it
+     * to the default (flat).  This method should be called before strategies
+     * are created for the specified mapping.
+     */
+    protected void setDefaultInheritanceStrategy(ClassMapping mapping) {
+        ClassMappingInfo info = mapping.getMappingInfo();
+        if (info != null && info.getHierarchyStrategy() == null)
+            info.setHierarchyStrategy(FlatClassStrategy.ALIAS);        
+    } 
+    
+    /**
+     * Determines whether an inhertance strategy has been set on the
+     * specified mapping.
+     */
+    protected boolean hasInheritanceStrategy(ClassMapping mapping) {
+        ClassMappingInfo info = mapping.getMappingInfo();
+        if (info != null && info.getHierarchyStrategy() != null)
+            return true;
+        return false;        
     }
 }

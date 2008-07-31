@@ -226,7 +226,8 @@ public abstract class PersistenceTestCase
         em.getTransaction().begin();
         for (ClassMetaData meta : types) {
             if (!meta.isMapped() || meta.isEmbeddedOnly() 
-                || Modifier.isAbstract(meta.getDescribedType().getModifiers()))
+                || Modifier.isAbstract(meta.getDescribedType().getModifiers())
+                    && !isBaseManagedInterface(meta, types))
                 continue;
             em.createQuery("DELETE FROM " + meta.getTypeAlias() + " o").
                 executeUpdate();
@@ -241,6 +242,50 @@ public abstract class PersistenceTestCase
     protected String entityName(EntityManagerFactory emf, Class c) {
         ClassMetaData meta = JPAFacadeHelper.getMetaData(emf, c);
         return (meta == null) ? null : meta.getTypeAlias();
+    }
+    
+    
+    /**
+     * Determines if the class assocated with the provided metadata is
+     * a managed interface and does not extend another managed interface.
+     * @param meta class metadata for the class to examine
+     * @param types array of class meta data for persistent types
+     * @return true if the cmd is for an interface and the interface does not
+     * extend another managed interface
+     */
+    private boolean isBaseManagedInterface(ClassMetaData meta, 
+        ClassMetaData... types) {
+        
+        if (Modifier.isInterface(meta.getDescribedType().getModifiers()) &&
+            !isExtendedManagedInterface(meta, types))
+            return true;
+        return false;
+    }
+
+    /**
+     * Determines if the class assocated with the provided metadata is
+     * an interface and if it extends another managed interface. 
+     * @param meta class metadata for the class to examine
+     * @param types array of class meta data for persistent types
+     * @return true if the cmd is for an interface and the interface extends
+     * another managed interface
+     */
+    private boolean isExtendedManagedInterface(ClassMetaData meta, 
+        ClassMetaData... types) {
+        
+        if (!Modifier.isInterface(meta.getDescribedType().getModifiers()))
+            return false;
+
+        // Run through the interface this class extends.  If any of them
+        // are managed/have class metadata, return true.
+        Class[] ifaces = meta.getDescribedType().getInterfaces();
+        for (int i = 0; ifaces != null && i < ifaces.length; i++) {
+            for (ClassMetaData meta2 : types) {
+                if (ifaces[i].equals(meta2.getDescribedType()))
+                    return true;
+            }            
+        }
+        return false;
     }
 
     public static void assertNotEquals(Object o1, Object o2) {
