@@ -195,33 +195,37 @@ container.
             Interaction of Interfaces Outside Container
         </title>
 <programlisting>
-// get an EntityManagerFactory using the Persistence class; typically 
-// the factory is cached for easy repeated use
-EntityManagerFactory factory = Persistence.createEntityManagerFactory(null);
+  // get an EntityManagerFactory using the Persistence class
+  // It is not recommended to obtain a factory often, as construction of a
+  // factory is a costly operation. Typically you will like to cache  
+  // a factory and then refer it for repeated use
+  EntityManagerFactory factory = Persistence.createEntityManagerFactory(null);
 
-// get an EntityManager from the factory
-EntityManager em = factory.createEntityManager(PersistenceContextType.EXTENDED);
+  // get an EntityManager from the factory
+  EntityManager em = factory.createEntityManager();
 
-// updates take place within transactions
-EntityTransaction tx = em.getTransaction();
-tx.begin();
+  // Begin a transaction
+  em.getTransaction().begin();
 
-// query for all employees who work in our research division
-// and put in over 40 hours a week average
-Query query = em.createQuery("select e from Employee e where "
-    + "e.division.name = 'Research' AND e.avgHours &gt; 40");
-List results = query.getResultList ();
+  // query for all employees who work in our research division
+  // and put in over 40 hours a week average
+  Query query = em.createQuery("SELECT e " +
+                               "  FROM Employee e " +
+                               " WHERE e.division.name = 'Research' " +
+                               "   AND e.avgHours &gt; 40");
+  List results = query.getResultList ();
 
-// give all those hard-working employees a raise
-for (Object res : results) {
+  // give all those hard-working employees a raise
+  for (Object res : results) {
     Employee emp = (Employee) res;
     emp.setSalary(emp.getSalary() * 1.1);
-}
+  }
 
-// commit the updates and free resources
-tx.commit();
-em.close();
-factory.close();
+  // commit will detect all updated entities and save them in database
+  em.getTransaction().commit();
+
+  // free the resources
+  em.close();
 </programlisting>
     </example>
     <para>
