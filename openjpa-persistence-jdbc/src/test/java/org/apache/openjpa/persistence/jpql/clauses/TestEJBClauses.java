@@ -165,16 +165,13 @@ public class TestEJBClauses extends AbstractTestCase {
         String failure = "SELECT DISTINCT s " +
             "FROM Student s WHERE" +
             " s.department.name = 'CompSci1'";
-
-        try {
-            List ls = em.createQuery(failure).getResultList();
-            fail(
-                "cannot compose path expressions from a path expression that evaluates to a collection.");
-        }
-        catch (Exception e) {
-            //
-        }
-
+        // Changes related to OPENJPA-485 allows this query to pass.
+        // The query is not kosher as it does navigate through a 
+        // collection-valued-path-expression (s.department.name) where
+        // department is a Collection. 
+        // But we allow this because of the convenience of the query expression 
+        List ls = em.createQuery(failure).getResultList();
+        assertFalse(ls.isEmpty());
         endEm(em);
     }
 

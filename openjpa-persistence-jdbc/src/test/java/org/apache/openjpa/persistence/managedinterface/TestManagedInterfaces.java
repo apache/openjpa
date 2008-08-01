@@ -330,26 +330,22 @@ public class TestManagedInterfaces extends SingleEMFTestCase {
         createMixed();
 
         OpenJPAEntityManager em = emf.createEntityManager();
-        try {
-            Query q = em.createQuery("select o from MixedInterface o " +
-                "where o.intField = 4");
-            Collection c = q.getResultList();
-            Set seen = new HashSet();
-            assertEquals(2, c.size());
-            MixedInterface pc;
-            for (Iterator it = c.iterator(); it.hasNext();) {
-                pc = (MixedInterface) it.next();
-                assertEquals(4, pc.getIntField());
-                seen.add(pc.getClass());
-            }
-            assertEquals(2, seen.size());
-
-            fail("OPENJPA-481");
-        } catch (PersistenceException e) {
-            // expected
-        } finally {
-            em.close();
+        Query q = em.createQuery("select o from MixedInterface o " +
+            "where o.intField = 4");
+        Collection c = q.getResultList();
+        Set seen = new HashSet();
+        assertEquals(2, c.size());
+        MixedInterface pc;
+        for (Iterator it = c.iterator(); it.hasNext();) {
+            pc = (MixedInterface) it.next();
+            assertEquals(4, pc.getIntField());
+            seen.add(pc.getClass());
         }
+        assertEquals(2, seen.size());
+        
+        // Changes of OPENJPA-485 had the positive (but unintended) consequence
+        // of making this case pass, which was failing before as reported in
+        // OPENJPA-481
     }
 
     public void testQueryForMixedInterfaceImpls() {
