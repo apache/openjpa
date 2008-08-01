@@ -18,6 +18,7 @@
  */
 package org.apache.openjpa.kernel.exps;
 
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -27,6 +28,7 @@ import java.util.Set;
 
 import org.apache.openjpa.kernel.Filters;
 import org.apache.openjpa.lib.util.Localizer;
+import org.apache.openjpa.lib.util.StringDistance;
 import org.apache.openjpa.lib.util.Localizer.Message;
 import org.apache.openjpa.meta.ClassMetaData;
 import org.apache.openjpa.meta.FieldMetaData;
@@ -280,9 +282,14 @@ public abstract class AbstractExpressionBuilder {
         FieldMetaData fmd = meta.getField(field);
         if (fmd == null) {
             Object val = traverseStaticField(meta.getDescribedType(), field);
-            if (val == null)
+            if (val == null) {
+            	String[] all = meta.getFieldNames();
+            	Class cls = meta.getDescribedType();
                 throw parseException(EX_USER, "no-field",
-                    new Object[]{ meta.getDescribedType(), field }, null);
+                    new Object[] {field, cls.getSimpleName(), 
+                	StringDistance.getClosestLevenshteinDistance(field, all), 
+                	cls.getName(), Arrays.toString(all)}, null);
+            }
 
             return factory.newLiteral(val, Literal.TYPE_UNKNOWN);
         }

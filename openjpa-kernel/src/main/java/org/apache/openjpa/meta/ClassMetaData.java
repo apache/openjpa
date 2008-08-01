@@ -26,6 +26,7 @@ import java.security.AccessController;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -2374,5 +2375,30 @@ public class ClassMetaData
     	if ("DataCacheTimeout".equals(key)) {
     		_cacheTimeout = Integer.MIN_VALUE;
     	}
+    }
+    
+    /**
+     * Utility method to get names of all fields including the superclasses'
+     * sorted in lexical order.
+     */
+    public String[] getFieldNames() {
+    	return toNames(getFields());
+    }
+    
+    /**
+     * Utility method to get names of all declared fields excluding the 
+     * superclasses' sorted in lexical order.
+     */
+    public String[] getDeclaredFieldNames() {
+    	return toNames(getDeclaredFields());
+    }
+    
+    String[] toNames(FieldMetaData[] fields) {
+    	List<String> result = new ArrayList<String>();
+    	for (FieldMetaData fmd : fields) {
+    		result.add(fmd.getName());
+    	}
+    	Collections.sort(result);
+    	return result.toArray(new String[result.size()]);
     }
 }
