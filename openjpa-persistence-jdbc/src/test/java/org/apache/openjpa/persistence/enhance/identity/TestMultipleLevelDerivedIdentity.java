@@ -25,19 +25,20 @@ import javax.persistence.EntityManager;
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
 
 /**
- * Tests entities that use compound keys that includes entity relationship at
+ * Tests entities with compound keys that include entity relationship at
  * more than one level.
  * 
- * Page has a compound identity to Book which itself uses a compound identity to
- * Library.
+ * Page has a compound identity to Book which in turn uses a compound identity 
+ * to Library.
  * 
- * Test case and domain classes were originally part of the reported issue <A
- * href="https://issues.apache.org/jira/browse/OPENJPA-207">OPENJPA-207</A>
+ * Test case and domain classes were originally part of the reported issue 
+ * <A href="https://issues.apache.org/jira/browse/OPENJPA-207">OPENJPA-207</A>
  * 
  * @author Jeffrey Blattman
  * @author Pinaki Poddar
  * 
  */
+@SuppressWarnings("unchecked")
 public class TestMultipleLevelDerivedIdentity extends SingleEMFTestCase {
 	private static String LIBRARY_NAME = "LIB";
 	private static String BOOK_NAME    = "foo";
@@ -48,10 +49,6 @@ public class TestMultipleLevelDerivedIdentity extends SingleEMFTestCase {
 				"openjpa.RuntimeUnenhancedClasses", "unsupported");
 		create();
 	}
-	
-//	public void tearDown() throws Exception {
-//		
-//	}
 	
 	public void testPersist() {
 		create();
@@ -82,7 +79,6 @@ public class TestMultipleLevelDerivedIdentity extends SingleEMFTestCase {
 			assertEquals(page, page.getBook().getPage(page.getNumber()));
 		}
 	}
-
 	
 	public void testQueryLeafLevel() {
 		EntityManager em = emf.createEntityManager();
@@ -141,7 +137,7 @@ public class TestMultipleLevelDerivedIdentity extends SingleEMFTestCase {
 		em.getTransaction().commit();
 	}
 	
-	public void testDelete() {
+	public void testDeleteRoot() {
 		EntityManager em = emf.createEntityManager();
 		em.getTransaction().begin();
 		Library lib = em.find(Library.class, LIBRARY_NAME);
@@ -151,6 +147,39 @@ public class TestMultipleLevelDerivedIdentity extends SingleEMFTestCase {
 	    assertEquals(0, count(Library.class));
 	    assertEquals(0, count(Book.class));
 	    assertEquals(0, count(Page.class));
+	}
+	
+	public void testDeleteLeafObtainedByQuery() {
+		EntityManager em = emf.createEntityManager();
+		em.getTransaction().begin();
+		Page page = (Page)em.createQuery("SELECT p FROM Page p WHERE p.number=2")
+			.getSingleResult();
+		assertNotNull(page);
+		em.remove(page);
+		em.getTransaction().commit();
+		
+	    assertEquals(1, count(Library.class));
+	    assertEquals(1, count(Book.class));
+	    assertEquals(NUM_PAGES-1, count(Page.class));
+	}
+	
+	public void testDeleteLeafObtainedByFind() {
+		EntityManager em = emf.createEntityManager();
+		em.getTransaction().begin();
+		BookId bookId = new BookId();
+		bookId.setLibrary(LIBRARY_NAME);
+		bookId.setName(BOOK_NAME);
+		PageId pageId = new PageId();
+		pageId.setBook(bookId);
+		pageId.setNumber(2);
+		Page page = em.find(Page.class, pageId);
+		assertNotNull(page);
+		em.remove(page);
+		em.getTransaction().commit();
+		
+	    assertEquals(1, count(Library.class));
+	    assertEquals(1, count(Book.class));
+	    assertEquals(NUM_PAGES-1, count(Page.class));
 	}
 
 	

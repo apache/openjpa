@@ -51,7 +51,7 @@ public class Page implements Serializable {
 
     @Id
     @Column(nullable = false)
-    @ManyToOne (cascade = CascadeType.ALL)
+    @ManyToOne
     @JoinColumns({
         @JoinColumn(name="BOOK_LIBRARY_LIBRARY_NAME", referencedColumnName="LIBRARY_LIBRARY_NAME"),
         @JoinColumn(name="BOOK_BOOK_NAME", referencedColumnName="BOOK_NAME")    
