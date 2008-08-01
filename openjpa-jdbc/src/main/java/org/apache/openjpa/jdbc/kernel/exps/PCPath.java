@@ -488,8 +488,11 @@ public class PCPath
                     }
 
                     for (; from != null && from != to;
-                        from = from.getJoinablePCSuperclassMapping())
+                        from = from.getJoinablePCSuperclassMapping()) {
+                    	pstate.field = from.getFieldMapping(pstate.field
+                    	    .getName());
                         pstate.joins = from.joinSuperclass(pstate.joins, false);
+                    }
                 }
                 // nothing more to do from here on as we encountered an xpath action
                 if (action.op == Action.GET_XPATH)
