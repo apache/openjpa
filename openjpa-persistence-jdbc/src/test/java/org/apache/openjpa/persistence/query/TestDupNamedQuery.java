@@ -55,7 +55,7 @@ public class TestDupNamedQuery extends SingleEMFTestCase {
         String ValueTwo) {
         EntityManager em = emf.createEntityManager();
 
-        List list = em.createNamedQuery(findOneQName).setParameter(1, nameOne)
+        List list = em.createNamedQuery(findOneQName).setParameter("fname", nameOne)
             .getResultList();
         assertNotNull(list);
         assertEquals(list.size(), 1);

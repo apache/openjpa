@@ -80,7 +80,6 @@ public class TestNonPrimaryKeyQueryParameters extends SQLListenerTestCase {
 		EntityManager em = emf.createEntityManager();
 
 		Query query = em.createQuery("SELECT d from Department d");
-		query.setParameter(1, DEPT_NAME);
 		Department dept = (Department) query.getSingleResult();
 
 		assertEquals(FULLTIME_EMPLOYEE_COUNT, dept.getFullTimeEmployees()
