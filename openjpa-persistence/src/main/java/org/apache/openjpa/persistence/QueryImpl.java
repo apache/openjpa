@@ -322,9 +322,8 @@ public class QueryImpl implements OpenJPAQuerySPI, Serializable {
 				if (expectedParamType.isPrimitive() && actualValue == null)
 					newValidationException("param-type-null", 
 							position, query, expectedParamType.getName());
-				if (actualValue == null)
-					continue;
-				if (!Filters.wrap(expectedParamType).isInstance(actualValue)) 
+				if (actualValue != null &&
+				   !Filters.wrap(expectedParamType).isInstance(actualValue)) 
 					newValidationException("param-type-mismatch",
 							position, query, actualValue,
 							actualValue.getClass().getName(),
@@ -347,8 +346,8 @@ public class QueryImpl implements OpenJPAQuerySPI, Serializable {
 					if (expectedParamType.isPrimitive() && actualValue == null)
 						newValidationException("param-type-null", 
 								position, query, expectedParamType.getName());
-					if (!Filters.wrap(expectedParamType)
-							.isInstance(actualValue)) 
+					if (actualValue != null 
+					 && !Filters.wrap(expectedParamType).isInstance(actualValue)) 
 						newValidationException("param-type-mismatch",
 								position, query, actualValue,
 								actualValue.getClass().getName(),
@@ -375,9 +374,8 @@ public class QueryImpl implements OpenJPAQuerySPI, Serializable {
 				if (expectedParamType.isPrimitive() && actualValue == null)
 					newValidationException("param-type-null", 
 							expectedName, query, expectedParamType.getName());
-				if (actualValue == null)
-					continue;
-				if (!Filters.wrap(expectedParamType).isInstance(actualValue)) {
+				if (actualValue != null 
+				 && !Filters.wrap(expectedParamType).isInstance(actualValue)) {
 					newValidationException("param-type-mismatch",
 							expectedName, query, actualValue,
 							actualValue.getClass().getName(),
@@ -395,7 +393,8 @@ public class QueryImpl implements OpenJPAQuerySPI, Serializable {
 				if (expectedParamType.isPrimitive() && actualValue == null)
 					newValidationException("param-type-null", 
 							actualName, query, expectedParamType.getName());
-				if (!Filters.wrap(expectedParamType).isInstance(actualValue)) {
+				if (actualValue != null 
+				 && !Filters.wrap(expectedParamType).isInstance(actualValue)) {
 					newValidationException("param-type-mismatch",
 							actualName, query, actualValue,
 							actualValue.getClass().getName(),
