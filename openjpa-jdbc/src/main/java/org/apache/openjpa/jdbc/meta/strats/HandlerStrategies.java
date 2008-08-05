@@ -23,6 +23,7 @@ import java.sql.SQLException;
 import org.apache.openjpa.jdbc.kernel.JDBCFetchConfiguration;
 import org.apache.openjpa.jdbc.kernel.JDBCStore;
 import org.apache.openjpa.jdbc.meta.ClassMapping;
+import org.apache.openjpa.jdbc.meta.FieldMapping;
 import org.apache.openjpa.jdbc.meta.RelationId;
 import org.apache.openjpa.jdbc.meta.ValueHandler;
 import org.apache.openjpa.jdbc.meta.ValueMapping;
@@ -35,6 +36,7 @@ import org.apache.openjpa.jdbc.sql.Row;
 import org.apache.openjpa.kernel.OpenJPAStateManager;
 import org.apache.openjpa.lib.util.Localizer;
 import org.apache.openjpa.util.InvalidStateException;
+import org.apache.openjpa.util.UserException;
 
 /**
  * Utility methods for strategies using value handlers.
@@ -78,28 +80,38 @@ public class HandlerStrategies {
 
     /**
      * Set the given value into the given row.
+     * Return false if the given value can not be set, for example, due to 
+     * null constraints on the columns. 
      */
-    public static void set(ValueMapping vm, Object val, JDBCStore store,
+    public static boolean set(ValueMapping vm, Object val, JDBCStore store,
         Row row, Column[] cols, ColumnIO io, boolean nullNone)
         throws SQLException {
         if (!canSetAny(row, io, cols))
-            return;
+            return false;
 
         ValueHandler handler = vm.getHandler();
         val = handler.toDataStoreValue(vm, val, store);
+        boolean isSet = false;
         if (val == null) {
             for (int i = 0; i < cols.length; i++)
-                if (canSet(row, io, i, true))
+                if (canSet(row, io, i, true)) {
+                    isSet = true;
                     set(row, cols[i], null, handler, nullNone);
+                }
         } else if (cols.length == 1) {
-            if (canSet(row, io, 0, val == null))
+            if (canSet(row, io, 0, val == null)) {
+                isSet = true;
                 set(row, cols[0], val, handler, nullNone);
+            }
         } else {
             Object[] vals = (Object[]) val;
             for (int i = 0; i < vals.length; i++)
-                if (canSet(row, io, i, vals[i] == null))
+                if (canSet(row, io, i, vals[i] == null)) {
+                    isSet = true;
                     set(row, cols[i], vals[i], handler, nullNone);
+                }
         }
+        return isSet;
     }
 
     /**
@@ -108,9 +120,9 @@ public class HandlerStrategies {
     private static boolean canSet(Row row, ColumnIO io, int i,
         boolean nullValue) {
         if (row.getAction() == Row.ACTION_INSERT)
-            return io.isInsertable(i, nullValue);
+        	return io.isInsertable(i, nullValue);
         if (row.getAction() == Row.ACTION_UPDATE)
-            return io.isUpdatable(i, nullValue);
+        	return io.isUpdatable(i, nullValue);
         return true;
     }
 
