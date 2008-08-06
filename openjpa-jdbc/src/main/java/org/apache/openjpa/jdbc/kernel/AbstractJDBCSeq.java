@@ -184,13 +184,12 @@ public abstract class AbstractJDBCSeq
             // The seq is part of the business transaction however we need
             // to decrement the ref count so that the connection may be 
             // closed appropriately.
-            	try { 
-            		conn.close();
-            	}
-            	catch(SQLException se) { 
-            		throw SQLExceptions.getStore(se);
-            	}
-            }
+          	try { 
+           		conn.close();
+           	}
+           	catch(SQLException se) { 
+           		throw SQLExceptions.getStore(se);
+           	}
             return;
         }
         else {
