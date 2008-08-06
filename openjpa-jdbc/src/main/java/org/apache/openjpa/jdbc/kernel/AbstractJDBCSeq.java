@@ -190,7 +190,6 @@ public abstract class AbstractJDBCSeq
             	catch(SQLException se) { 
             		throw SQLExceptions.getStore(se);
             	}
-            }
             return;
         }
         else {
