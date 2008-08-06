@@ -21,7 +21,9 @@ package org.apache.openjpa.persistence.nullity;
 import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.Version;
 
 /**
  * Persistent entity used to test behavior of null constraint on basic fields.
@@ -32,6 +34,7 @@ import javax.persistence.Id;
 @Entity
 public class NullValues {
 	@Id
+	@GeneratedValue
 	private long id;
 	
 	@Column(nullable=true)
@@ -46,6 +49,22 @@ public class NullValues {
 	@Basic(optional=false)
 	private Integer notOptional;
 	
+	@Column(nullable=true)
+	private BlobValue nullableBlob;
+	
+	@Column(nullable=false)
+	private BlobValue notNullableBlob;
+	
+	@Basic(optional=true)
+	private BlobValue optionalBlob;
+	
+	@Basic(optional=false)
+	private BlobValue notOptionalBlob;
+	
+	@Version
+	private int version;
+	
+	
 	/**
 	 * Construct with all fields set to non-null values.
 	 */
@@ -54,6 +73,11 @@ public class NullValues {
 		setNotOptional(42);
 		setNotNullable(42);
 		setNullable(42);
+		
+		setNullableBlob(new BlobValue());
+		setNotNullableBlob(new BlobValue());
+		setOptionalBlob(new BlobValue());
+		setNotOptionalBlob(new BlobValue());
 	}
 	
 	public long getId() {
@@ -90,5 +114,37 @@ public class NullValues {
 	
 	public void setNotOptional(Integer notOptional) {
 		this.notOptional = notOptional;
+	}
+
+	public BlobValue getNullableBlob() {
+		return nullableBlob;
+	}
+
+	public void setNullableBlob(BlobValue nullableBlob) {
+		this.nullableBlob = nullableBlob;
+	}
+
+	public BlobValue getNotNullableBlob() {
+		return notNullableBlob;
+	}
+
+	public void setNotNullableBlob(BlobValue notNullableBlob) {
+		this.notNullableBlob = notNullableBlob;
+	}
+
+	public BlobValue getOptionalBlob() {
+		return optionalBlob;
+	}
+
+	public void setOptionalBlob(BlobValue optionalBlob) {
+		this.optionalBlob = optionalBlob;
+	}
+
+	public BlobValue getNotOptionalBlob() {
+		return notOptionalBlob;
+	}
+
+	public void setNotOptionalBlob(BlobValue notOptionalBlob) {
+		this.notOptionalBlob = notOptionalBlob;
 	}
 }

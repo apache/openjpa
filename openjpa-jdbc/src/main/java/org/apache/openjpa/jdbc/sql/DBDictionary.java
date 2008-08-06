@@ -329,7 +329,7 @@ public class DBDictionary
     public String sequenceSchemaSQL = null;
     public String sequenceNameSQL = null;
     // most native sequences can be run inside the business transaction
-    public int nativeSequenceType= Seq.TYPE_CONTIGUOUS;
+    public int nativeSequenceType= Seq.TYPE_TRANSACTIONAL;
 
     protected JDBCConfiguration conf = null;
     protected Log log = null;

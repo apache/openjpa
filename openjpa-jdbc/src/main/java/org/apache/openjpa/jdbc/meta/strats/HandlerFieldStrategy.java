@@ -42,6 +42,7 @@ import org.apache.openjpa.meta.JavaTypes;
 import org.apache.openjpa.meta.ValueStrategies;
 import org.apache.openjpa.util.InternalException;
 import org.apache.openjpa.util.MetaDataException;
+import org.apache.openjpa.util.UserException;
 
 /**
  * Mapping for a single-valued field that delegates to a {@link ValueHandler}.
@@ -122,19 +123,27 @@ public class HandlerFieldStrategy
     public void insert(OpenJPAStateManager sm, JDBCStore store, RowManager rm)
         throws SQLException {
         Row row = field.getRow(sm, store, rm, Row.ACTION_INSERT);
-        if (row != null)
-            HandlerStrategies.set(field, sm.fetch(field.getIndex()), store,
-                row, _cols, _io, field.getNullValue() ==
-                FieldMapping.NULL_NONE);
+        if (row != null) {
+            Object value = sm.fetch(field.getIndex());
+            if (!HandlerStrategies.set(field, value, store, row, _cols, _io, 
+            	field.getNullValue() == FieldMapping.NULL_NONE))
+            	if (field.getValueStrategy() != ValueStrategies.AUTOASSIGN)
+            		throw new UserException(_loc.get("cant-set-value", 
+            				row.getFailedObject(), field, value));
+        }
     }
 
     public void update(OpenJPAStateManager sm, JDBCStore store, RowManager rm)
         throws SQLException {
         Row row = field.getRow(sm, store, rm, Row.ACTION_UPDATE);
-        if (row != null)
-            HandlerStrategies.set(field, sm.fetch(field.getIndex()), store,
-                row, _cols, _io, field.getNullValue() ==
-                FieldMapping.NULL_NONE);
+        if (row != null){
+            Object value = sm.fetch(field.getIndex());
+            if (!HandlerStrategies.set(field, value, store, row, _cols, _io,
+                 field.getNullValue() == FieldMapping.NULL_NONE)) 
+            	if (field.getValueStrategy() != ValueStrategies.AUTOASSIGN)
+            	throw new UserException(_loc.get("cant-set-value", 
+            			row.getFailedObject(), field, value));
+        }
     }
 
     public void delete(OpenJPAStateManager sm, JDBCStore store, RowManager rm)

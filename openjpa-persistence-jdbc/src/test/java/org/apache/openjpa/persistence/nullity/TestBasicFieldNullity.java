@@ -22,6 +22,7 @@ import javax.persistence.EntityManager;
 import javax.persistence.RollbackException;
 
 import org.apache.openjpa.persistence.InvalidStateException;
+import org.apache.openjpa.persistence.OpenJPAPersistence;
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
 
 
@@ -34,86 +35,125 @@ import org.apache.openjpa.persistence.test.SingleEMFTestCase;
  * @author Pinaki Poddar
  */
 public class TestBasicFieldNullity extends SingleEMFTestCase {
-
+	private static boolean NEW = true;
 
     public void setUp() {
-        setUp(NullValues.class);
+        setUp(CLEAR_TABLES, NullValues.class);
     }
 
     public void testNullOnOptionalFieldIsAllowed() {
     	NullValues pc = new NullValues();
-    	pc.setOptional(null);
-    	assertCommitSucceeds(pc);
+    	pc.setOptional(null); 
+    	assertCommitSucceeds(pc, NEW);
     }
     
     public void testNullOnNonOptionalFieldIsDisallowed() {
     	NullValues pc = new NullValues();
     	pc.setNotOptional(null);
-    	assertCommitFails(pc, InvalidStateException.class);
+    	assertCommitFails(pc, NEW, InvalidStateException.class);
     }
     
     public void testNotNullOnOptionalFieldIsAllowed() {
     	NullValues pc = new NullValues();
-    	assertCommitSucceeds(pc);
+    	assertCommitSucceeds(pc, NEW);
     }
     
     public void testNotNullOnNonOptionalFieldIsAllowed() {
     	NullValues pc = new NullValues();
-    	assertCommitSucceeds(pc);
+    	assertCommitSucceeds(pc, NEW);
     }
     
     public void testNullOnNullableColumnAllowed() {
     	NullValues pc = new NullValues();
     	pc.setNullable(null);
-    	assertCommitSucceeds(pc);
+    	assertCommitSucceeds(pc, NEW);
     }
     
     public void testNullOnNonNullableColumnIsDisallowed() {
     	NullValues pc = new NullValues();
     	pc.setNotNullable(null);
-    	assertCommitFails(pc, RollbackException.class);
+    	assertCommitFails(pc, NEW, RollbackException.class);
     }
     
     public void testNotNullOnNullableColumnIsAllowed() {
     	NullValues pc = new NullValues();
-    	assertCommitSucceeds(pc);
+    	assertCommitSucceeds(pc, NEW);
     }
     
     public void testNotNullOnNonNullableColumnIsAllowed() {
     	NullValues pc = new NullValues();
-    	assertCommitSucceeds(pc);
+    	assertCommitSucceeds(pc, NEW);
+    }
+    
+    public void testNullOnOptionalBlobFieldIsAllowed() {
+    	NullValues pc = new NullValues();
+    	pc.setOptionalBlob(null);
+    	assertCommitSucceeds(pc, NEW);
+    }
+    
+    public void testNullOnNonOptionalBlobFieldIsDisallowed() {
+    	NullValues pc = new NullValues();
+    	pc.setNotOptionalBlob(null);
+    	assertCommitFails(pc, NEW, InvalidStateException.class);
+    }
+    
+    public void testNullOnNullableBlobColumnAllowed() {
+    	NullValues pc = new NullValues();
+    	pc.setNullableBlob(null);
+    	assertCommitSucceeds(pc, NEW);
+    }
+    
+    public void testNullOnNonNullableBlobColumnIsDisallowed() {
+    	NullValues pc = new NullValues();
+    	pc.setNotNullableBlob(null);
+    	assertCommitFails(pc, NEW, RollbackException.class);
+    }
+    
+    public void testX() {
+    	NullValues pc = new NullValues();
+    	assertCommitSucceeds(pc, NEW);
+    	OpenJPAPersistence.getEntityManager(pc).close();
+    	
+    	pc.setNotNullableBlob(null);
+    	assertCommitFails(pc, !NEW, RollbackException.class);
+    	
     }
     
     /**
      * Asserts that the given instance can not be committed.
      */
-    void assertCommitFails(Object pc, Class expected) {
+    void assertCommitFails(Object pc, boolean isNew, Class expected) {
     	EntityManager em = emf.createEntityManager();
     	em.getTransaction().begin();
-    	em.persist(pc);
+    	if (isNew)
+    		em.persist(pc);
+    	else {
+    		Object merged = em.merge(pc);
+    	}
     	try {
 			em.getTransaction().commit();
 			fail();
-		} catch (RuntimeException e) {
+		} catch (Exception e) {
 			if (!expected.isAssignableFrom(e.getClass())) {
-				fail("Expected " + expected.getName());
 				e.printStackTrace();
-			}
+				fail("Expected " + expected.getName());
+			} 
 		}
     }
     
-    void assertCommitSucceeds(Object pc) {
+    void assertCommitSucceeds(Object pc, boolean isNew) {
     	EntityManager em = emf.createEntityManager();
     	em.getTransaction().begin();
-    	em.persist(pc);
+    	if (isNew)
+    		em.persist(pc);
+    	else 
+    		em.merge(pc);
     	try {
 			em.getTransaction().commit();
 		} catch (RuntimeException e) {
-			fail();
 			e.printStackTrace();
+			fail();
 		}
     }
-
-
 }
 

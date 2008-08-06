@@ -25,6 +25,7 @@ import javax.transaction.Transaction;
 import javax.transaction.TransactionManager;
 
 import org.apache.openjpa.jdbc.conf.JDBCConfiguration;
+import org.apache.openjpa.jdbc.kernel.JDBCStoreManager.RefCountConnection;
 import org.apache.openjpa.jdbc.meta.ClassMapping;
 import org.apache.openjpa.jdbc.schema.SchemaGroup;
 import org.apache.openjpa.jdbc.sql.SQLExceptions;
@@ -156,8 +157,10 @@ public abstract class AbstractJDBCSeq
      */
     protected Connection getConnection(JDBCStore store)
         throws SQLException {
-        if (type == TYPE_TRANSACTIONAL || type == TYPE_CONTIGUOUS)
+        if (type == TYPE_TRANSACTIONAL || type == TYPE_CONTIGUOUS) {
+            // Also increments ref count.
             return store.getConnection();
+        }
         else {
             JDBCConfiguration conf = store.getConfiguration();
             DataSource ds = conf.getDataSource2(store.getContext());
@@ -171,13 +174,22 @@ public abstract class AbstractJDBCSeq
     /**
      * Close the current connection. If the sequence is
      * <code>TYPE_TRANSACTIONAL</code> or <code>TYPE_CONTIGUOUS</code>
-     * nothing will be done. Otherwise the connection will be closed.
+     * we will decrement the ref count. Otherwise the connection will be
+     * committed and then closed. 
      */
     protected void closeConnection(Connection conn) {
         if (conn == null)
             return;
         if (type == TYPE_TRANSACTIONAL || type == TYPE_CONTIGUOUS) {
-            // do nothing; this seq is part of the business transaction
+            // The seq is part of the business transaction however we need
+            // to decrement the ref count so that the connection may be 
+            // closed appropriately.
+            	try { 
+            		conn.close();
+            	}
+            	catch(SQLException se) { 
+            		throw SQLExceptions.getStore(se);
+            	}
             return;
         }
         else {

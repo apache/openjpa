@@ -429,6 +429,20 @@ Fields of type BLOB and CLOB are limited to 1M. This number can be increased by
 extending <classname>DB2Dictionary</classname>.
                     </para>
                 </listitem>
+                <listitem>
+                    <para>
+Explicit creation of indexes specified by the OpenJPA @Index annotation will 
+fail on DB2 for iSeries if the default schema used by the JDBC driver does not 
+exist.  If a default schema is not specified on the connection, the iSeries 
+will default to the user profile name.  If a schema of that name does not 
+exist, DB2 on iSeries will not create the schema, resulting in a failure when 
+creating the index.  The failure message will look similar to: "[SQL0204] 
+USERNAME in QSYS type *LIB not found."  To work around this issue, specify a 
+default schema on the JDBC URL or data source property and make sure that 
+schema exists or create a schema which matches the user profile of the 
+connection.
+                    </para>
+                </listitem>
             </itemizedlist>
         </section>
     </section>

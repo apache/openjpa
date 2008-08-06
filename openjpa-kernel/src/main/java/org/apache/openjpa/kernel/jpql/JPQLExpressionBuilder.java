@@ -345,7 +345,7 @@ public class JPQLExpressionBuilder
 
     private void evalGroupingClause(QueryExpressions exps) {
         // handle GROUP BY clauses
-        JPQLNode groupByNode = root().findChildByID(JJTGROUPBY, true);
+        JPQLNode groupByNode = root().findChildByID(JJTGROUPBY, false);
 
         if (groupByNode == null)
             return;
@@ -362,7 +362,7 @@ public class JPQLExpressionBuilder
 
     private void evalHavingClause(QueryExpressions exps) {
         // handle HAVING clauses
-        JPQLNode havingNode = root().findChildByID(JJTHAVING, true);
+        JPQLNode havingNode = root().findChildByID(JJTHAVING, false);
 
         if (havingNode == null)
             return;

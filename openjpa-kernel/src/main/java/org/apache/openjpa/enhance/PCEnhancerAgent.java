@@ -20,6 +20,8 @@ package org.apache.openjpa.enhance;
 
 import java.lang.instrument.Instrumentation;
 import java.security.AccessController;
+import java.util.Iterator;
+import java.util.List;
 
 import org.apache.openjpa.conf.OpenJPAConfiguration;
 import org.apache.openjpa.conf.OpenJPAConfigurationImpl;
@@ -90,30 +92,39 @@ public class PCEnhancerAgent {
 
     private static void registerClassLoadEnhancer(Instrumentation inst,
         Options opts) {
-        OpenJPAConfiguration conf = new OpenJPAConfigurationImpl();
-        Configurations.populateConfiguration(conf, opts);
-        // don't allow connections
-        conf.setConnectionUserName(null);
-        conf.setConnectionPassword(null);
-        conf.setConnectionURL(null);
-        conf.setConnectionDriverName(null);
-        conf.setConnectionFactoryName(null);
-        // set single class resolver
-        final ClassLoader tmpLoader = (ClassLoader) AccessController
-            .doPrivileged(J2DoPrivHelper
-                .newTemporaryClassLoaderAction((ClassLoader) AccessController
-                    .doPrivileged(J2DoPrivHelper.getContextClassLoaderAction())
-                    ));
-        conf.setClassResolver(new ClassResolver() {
-            public ClassLoader getClassLoader(Class context, ClassLoader env) {
-                return tmpLoader;
-            }
-        });
-        conf.setReadOnly(Configuration.INIT_STATE_FREEZING);
-        conf.instantiateAll(); // avoid threading issues
+    	List<String> anchors = Configurations.
+            getFullyQualifiedAnchorsInPropertiesLocation(opts);
+    	for (String a : anchors) {
+    		Options clonedOptions = (Options) opts.clone();
+    		clonedOptions.setProperty("properties", a);
+    		OpenJPAConfiguration conf = new OpenJPAConfigurationImpl();
+    		Configurations.populateConfiguration(conf, clonedOptions);
+    		// don't allow connections
+    		conf.setConnectionUserName(null);
+    		conf.setConnectionPassword(null);
+    		conf.setConnectionURL(null);
+    		conf.setConnectionDriverName(null);
+    		conf.setConnectionFactoryName(null);
+    		// set single class resolver
+    		final ClassLoader tmpLoader = (ClassLoader) AccessController
+    		    .doPrivileged(J2DoPrivHelper
+    		    .newTemporaryClassLoaderAction((ClassLoader) AccessController
+    		    .doPrivileged(J2DoPrivHelper.getContextClassLoaderAction())
+    		    ));
+    		conf.setClassResolver(new ClassResolver() {
+    		    public ClassLoader getClassLoader(Class context,
+                    ClassLoader env) {
+    		        return tmpLoader;
+    		    }
+    		});
+    		conf.setReadOnly(Configuration.INIT_STATE_FREEZING);
+    		conf.instantiateAll(); // avoid threading issues
 
-        PCClassFileTransformer transformer = new PCClassFileTransformer
-            (conf.newMetaDataRepositoryInstance(), opts, tmpLoader);
-        inst.addTransformer(transformer);
+    		PCClassFileTransformer transformer = new PCClassFileTransformer
+    		    (conf.newMetaDataRepositoryInstance(), clonedOptions,
+    		    tmpLoader);
+    		inst.addTransformer(transformer);
+    		conf.close();
+    	}
     }
 }
