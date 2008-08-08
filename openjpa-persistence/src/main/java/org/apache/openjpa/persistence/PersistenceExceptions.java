@@ -68,7 +68,7 @@ public class PersistenceExceptions
                     try {
                         throwing = true;
                         if (em.isOpen() && ((EntityManagerImpl) em).isActive())
-                            ((EntityManagerImpl) em).setRollbackOnly(re);
+                            ((EntityManagerImpl) em).setRollbackOnly(ex);
                     } finally {
                         // handle re-entrancy
                         throwing = false;
