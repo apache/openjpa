@@ -292,7 +292,8 @@ high-level
 <ulink url="../javadoc/org/apache/openjpa/persistence/StoreCache.html">
 <classname>org.apache.openjpa.persistence.StoreCache</classname></ulink> facade.
 This facade has methods to pin and unpin records, evict data from the cache, and
-more.
+provides basic statistics of number of read or write requests and hit ratio of 
+the cache.  
             </para>
 <programlisting>
 public StoreCache getStoreCache();
@@ -307,9 +308,7 @@ OpenJPAEntityManagerFactory.getStoreCache</methodname> method.
                 </title>
 <programlisting>
 import org.apache.openjpa.persistence.*;
-
 ...
-
 OpenJPAEntityManagerFactory oemf = OpenJPAPersistence.cast(emf);
 StoreCache cache = oemf.getStoreCache();
 ...
@@ -349,15 +348,15 @@ overflow eviction through the <methodname>unpin</methodname> methods. Use
 pinning when you want a guarantee that a certain object will always be available
 from cache, rather than requiring a datastore trip.
             </para>
+            
+            
             <example id="ref_guide_cache_use_jpa">
                 <title>
                     StoreCache Usage
                 </title>
 <programlisting>
 import org.apache.openjpa.persistence.*;
-
 ...
-
 OpenJPAEntityManagerFactory oemf = OpenJPAPersistence.cast(emf);
 StoreCache cache = oemf.getStoreCache();
 cache.pin(Magazine.class, popularMag.getId());
@@ -395,6 +394,73 @@ oem.evict(changedMag);  // will evict from data cache also
 </programlisting>
             </example>
         </section>
+        
+        <section id="ref_guide_cache_statistics">
+        	<title>
+        		Cache Statistics
+        	</title>
+        	<indexterm>
+                <primary>
+                    caching
+                </primary>
+                <secondary>
+                    statistics
+                </secondary>
+        	</indexterm>
+        	
+        	<para>
+        	Number of requests to read and write requests and hit ratio of the 
+data cache is available via 
+<ulink url="../javadoc/org/apache/openjpa/datacache/CacheStatistics.html">
+<classname>org.apache.openjpa.datacache.CacheStatistics</classname></ulink> 
+interface. You can access this statistics via StoreCache 
+<programlisting>
+import org.apache.openjpa.datacache.CacheStatistics;
+...
+OpenJPAEntityManagerFactory oemf = OpenJPAPersistence.cast(emf);
+CacheStatistics statistics = oemf.getStoreCache().getCacheStatistics();
+</programlisting>
+The statistics includes number of read and write requests made to the cache 
+since start and last reset. The statistics can be obtained also per class basis.
+<programlisting>
+public interface org.apache.openjpa.datacache.CacheStatistics extends java.io.Serializable{
+    // Statistics since last reset
+    public long getReadCount();
+    public long getHitCount();
+    public long getWriteCount();
+    
+    // Statistics since start
+    public long getTotalReadCount();
+    public long getTotalHitCount();
+    public long getTotalWriteCount();
+    
+    // Per-Class statistics since last reset
+    public long getReadCount(java.lang.Class);
+    public long getHitCount(java.lang.Class);
+    public long getWriteCount(java.lang.Class);
+    
+    // Per-Class statistics since start
+    public long getTotalReadCount(java.lang.Class);
+    public long getTotalHitCount(java.lang.Class);
+    public long getTotalWriteCount(java.lang.Class);
+    
+    // Starting and last reset time 
+    public java.util.Date since();
+    public java.util.Date start();
+    
+    // Resets the statistics. 
+    public void reset();
+}
+</programlisting>
+Collecting per-class statistics depends on determining the runtime type of a
+cached data element, when the given context does not permit determination of
+exact runtime type, the statistics is registered against generic 
+<classname>java.lang.Object</classname>. Also each method that accepts Class 
+argument, treats null argument as <classname>java.lang.Object</classname>
+</para> 
+
+        </section>
+        
         <section id="ref_guide_cache_query">
             <title>
                 Query Cache
