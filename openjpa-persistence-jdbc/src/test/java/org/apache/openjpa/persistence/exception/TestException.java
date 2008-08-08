@@ -26,11 +26,13 @@ import javax.persistence.EntityExistsException;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityNotFoundException;
 import javax.persistence.OptimisticLockException;
+import javax.persistence.Query;
 import javax.persistence.TransactionRequiredException;
 
 import org.apache.openjpa.jdbc.sql.DBDictionary;
 import org.apache.openjpa.jdbc.sql.SQLErrorCodeReader;
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
+import org.apache.openjpa.util.UserException;
 
 /**
  * Tests proper JPA exceptions are raised by the implementation. 
@@ -156,6 +158,40 @@ public class TestException extends SingleEMFTestCase {
 			}
 		}
 	}
+	
+	/**
+	 * Invalid query does not throw IllegalArgumentException on construction 
+	 * as per JPA spec. The exception is thrown during execution.
+	 * 
+	 * A patch
+	 * <A HREF="http://issues.apache.org/jira/browse/OPENJPA-678">OPENJPA-678</A>
+	 * by Xiaoqin Feng has proposed eager compilation of the query to raise the
+	 * error before execution and as per JPA spec. 
+	 * However, this patch has not yet been applied as eagerly compiling query
+	 * has other side-effects. 
+	 * 
+	 */
+	public void testIllegalArgumennExceptionOnInvalidQuery() {
+	    EntityManager em = emf.createEntityManager();
+	    Query query = em.createQuery("This is not a valid JPQL query");
+	    try {
+		   query.getResultList();
+	    } catch (Throwable t) {
+		   assertException(t, IllegalArgumentException.class);
+	    }
+	}
+	
+	/**
+	 * Invalid named query fails as per spec on factory based construction. 
+	 */
+     public void testIllegalArgumennExceptionOnInvalidNamedQuery() {
+         EntityManager em = emf.createEntityManager();
+         try {
+             Query query = em.createNamedQuery("This is invalid Named query");
+         } catch (Throwable t) {
+             assertException(t, IllegalArgumentException.class);
+         }
+      }
 	
 	/**
 	 * Asserts that the given expected type of the exception is equal to or a
