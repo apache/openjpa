@@ -53,27 +53,23 @@ public class TestUniqueConstraint extends SQLListenerTestCase {
 		List<String> sqls = super.sql;
 		
 		assertSQLFragnments(sqls, "CREATE TABLE UNIQUE_A",
-				"UNIQUE \\w*\\(a1, a2\\)", 
-				"UNIQUE \\w*\\(a3, a4\\)");
+				"UNIQUE .*\\(a1, a2\\)", 
+				"UNIQUE .*\\(a3, a4\\).*");
 		assertSQLFragnments(sqls, "CREATE TABLE UNIQUE_B",
-				"UNIQUE \\w*\\(b1, b2\\)");
+				"UNIQUE .*\\(b1, b2\\).*");
 		assertSQLFragnments(sqls, "CREATE TABLE UNIQUE_SECONDARY",
-				"UNIQUE \\w*\\(sa1\\)");
+				"UNIQUE .*\\(sa1\\)");
 		assertSQLFragnments(sqls, "CREATE TABLE UNIQUE_GENERATOR",
-				"UNIQUE \\w*\\(GEN1, GEN2\\)");
+				"UNIQUE .*\\(GEN1, GEN2\\)");
 		assertSQLFragnments(sqls, "CREATE TABLE UNIQUE_JOINTABLE",
-				"UNIQUE \\w*\\(FK_A, FK_B\\)");
+				"UNIQUE .*\\(FK_A, FK_B\\)");
 	}
 	
 	void assertSQLFragnments(List<String> list, String... keys) {
 		if (SQLSniffer.matches(list, keys))
 			return;
-		int i = 0;
-		for (String sql : list) {
-			i++;
-			System.out.println("" + i + ":" + sql);
-		}
-		fail("None of the " + sql.size() + " SQL contains all keys "
-				+ Arrays.toString(keys));
+		fail("None of the following " + sql.size() + " SQL \r\n" + 
+				toString(sql) + "\r\n contains all keys \r\n"
+				+ toString(Arrays.asList(keys)));
 	}
 }

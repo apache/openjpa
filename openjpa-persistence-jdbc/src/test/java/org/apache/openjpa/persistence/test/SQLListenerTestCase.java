@@ -18,6 +18,7 @@
  */
 package org.apache.openjpa.persistence.test;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.ArrayList;
 import java.util.Map;
@@ -57,10 +58,10 @@ public abstract class SQLListenerTestCase
                 return;
         }
 
-        fail("Expected regular expression <" + sqlExp + "> to have"
-            + " existed in SQL statements: " + sql);
+        fail("Expected regular expression\r\n <" + sqlExp 
+           + ">\r\n to have existed in SQL statements: \r\n" + toString(sql));
     }
-
+    
     /**
      * Confirm that the specified SQL has not been executed.
      *
@@ -75,8 +76,8 @@ public abstract class SQLListenerTestCase
         }
 
         if (failed)
-            fail("Regular expression <" + sqlExp + ">"
-                + " should not have been executed in SQL statements: " + sql);
+            fail("Regular expression\r\n <" + sqlExp + ">\r\n should not have"
+                    + " been executed in SQL statements: \r\n" + toString(sql));
     }
 
     /**
@@ -90,8 +91,8 @@ public abstract class SQLListenerTestCase
                 return;
         }
 
-        fail("Expected regular expression <" + sqlExp + "> to be"
-            + " contained in SQL statements: " + sql);
+        fail("Expected regular expression\r\n <" + sqlExp + ">\r\n to be"
+                + " contained in SQL statements: \r\n" + toString(sql));
     }
     
     /**
@@ -109,6 +110,13 @@ public abstract class SQLListenerTestCase
     	int tmp = sqlCount;
     	sqlCount = 0;
     	return tmp;
+    }
+
+    public String toString(List<String> list) {
+    	StringBuffer buf = new StringBuffer();
+    	for (String s : list)
+    		buf.append(s).append("\r\n");
+    	return buf.toString();
     }
 
     public class Listener

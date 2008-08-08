@@ -18,6 +18,10 @@
  */
 package org.apache.openjpa.persistence.test;
 
+import java.util.List;
+
+import javax.persistence.EntityManager;
+
 import org.apache.openjpa.jdbc.meta.ClassMapping;
 import org.apache.openjpa.persistence.OpenJPAEntityManagerFactorySPI;
 
@@ -122,5 +126,26 @@ public abstract class SingleEMFTestCase
      */
     public int count(Class c) {
     	return count(c.getSimpleName());
+    }
+    
+    /**
+     * Get all the instances of given type.
+     * The returned instances are obtained without a persistence context. 
+     */
+    public <T> List<T> getAll(Class<T> t) {
+    	String alias = t.getSimpleName();
+    	return (List<T>)emf.createEntityManager()
+				   .createQuery("SELECT p FROM " + alias + " p")
+				   .getResultList();
+    }
+    
+    /**
+     * Get all the instances of given type.
+     * The returned instances are obtained within the given persistence context. 
+     */
+    public <T> List<T> getAll(EntityManager em, Class<T> t) {
+    	String alias = t.getSimpleName();
+    	return (List<T>)em.createQuery("SELECT p FROM " + alias + " p")
+				   .getResultList();
     }
 }

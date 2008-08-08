@@ -163,7 +163,7 @@ public class TestException extends SingleEMFTestCase {
 	 * Otherwise fails assertion and prints the given throwable and its nested
 	 * exception on the console. 
 	 */
-	void assertException(Throwable t, Class expectedType) {
+	public void assertException(Throwable t, Class expectedType) {
 		if (!isExpectedException(t, expectedType)) {
 			t.printStackTrace();
 			print(t, 0);

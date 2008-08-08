@@ -60,27 +60,23 @@ public class TestUniqueConstraintWithXMLDescriptor extends SQLListenerTestCase {
 		// Following verification techniques is fragile as databases DDL
 		// syntax vary greatly on UNIQUE CONSTRAINT
 		assertSQLFragnments(sqls, "CREATE TABLE UNIQUE_A_XML",
-				"UNIQUE \\w*\\(a1x, a2x\\)", 
-				"UNIQUE \\w*\\(a3x, a4x\\)");
+				"UNIQUE .*\\(a1x, a2x\\)", 
+				"UNIQUE .*\\(a3x, a4x\\)");
 		assertSQLFragnments(sqls, "CREATE TABLE UNIQUE_B_XML",
-				"UNIQUE \\w*\\(b1x, b2x\\)");
+				"UNIQUE .*\\(b1x, b2x\\)");
 		assertSQLFragnments(sqls, "CREATE TABLE UNIQUE_SECONDARY_XML",
-				"UNIQUE \\w*\\(sa1x\\)");
+				"UNIQUE .*\\(sa1x\\)");
 		assertSQLFragnments(sqls, "CREATE TABLE UNIQUE_GENERATOR_XML",
-				"UNIQUE \\w*\\(GEN1_XML, GEN2_XML\\)");
+				"UNIQUE .*\\(GEN1_XML, GEN2_XML\\)");
 		assertSQLFragnments(sqls, "CREATE TABLE UNIQUE_JOINTABLE_XML",
-				"UNIQUE \\w*\\(FK_A_XML, FK_B_XML\\)");
+				"UNIQUE .*\\(FK_A_XML, FK_B_XML\\)");
 	}
 
 	void assertSQLFragnments(List<String> list, String... keys) {
 		if (SQLSniffer.matches(list, keys))
 			return;
-		int i = 0;
-		for (String sql : list) {
-			i++;
-			System.out.println("" + i + ":" + sql);
-		}
-		fail("None of the " + sql.size() + " SQL contains all keys "
-				+ Arrays.toString(keys));
+		fail("None of the following " + sql.size() + " SQL \r\n" + 
+				toString(sql) + "\r\n contains all keys \r\n"
+				+ toString(Arrays.asList(keys)));
 	}
 }
