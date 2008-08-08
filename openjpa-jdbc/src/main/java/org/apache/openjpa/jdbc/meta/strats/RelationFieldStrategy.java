@@ -556,8 +556,10 @@ public class RelationFieldStrategy
         ClassMapping relMapping = field.getTypeMapping();
         Object oid = null;
         if (relMapping.isMapped()) {
+        	boolean subs = field.getPolymorphic() != ValueMapping.POLY_FALSE 
+        		&& relMapping.getPCSubclasses().length > 0;
             oid = relMapping.getObjectId(store, res, field.getForeignKey(),
-                field.getPolymorphic() != ValueMapping.POLY_FALSE, null);
+                subs, null);
         } else {
             Column[] cols = field.getColumns();
             if (relMapping.getIdentityType() == ClassMapping.ID_DATASTORE) {
