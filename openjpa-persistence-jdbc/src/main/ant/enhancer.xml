@@ -24,7 +24,7 @@
         processing easier.
         
         Test classes will not be compiled if maven is invoked with 
-        -Dmaven.tests.skip=true. 
+        -Dmaven.test.skip=true. 
     -->
 
     <condition property="maven.test.skip.istrue">
@@ -76,6 +76,7 @@
             <exclude name="**/xml/*.class" />
             <exclude name="**/Unenhanced*.class" />
             <exclude name="**/AbstractUnenhanced*.class" />
+            <exclude name="**/unenhanced/*.class" />
         </fileset>
         <openjpac>
             <classpath refid="cp" />
