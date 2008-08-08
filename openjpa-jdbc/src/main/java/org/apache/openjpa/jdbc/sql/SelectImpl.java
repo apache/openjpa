@@ -618,8 +618,10 @@ public class SelectImpl
         // if alias is defined and referenced, return true.
         String value = "t" + alias.toString() + ".";
         if (_tableAliases != null)
-            return _tableAliases.containsValue(value) &&
-               _tables.containsKey(alias);
+            if (_tableAliases.containsValue(value))
+               return _tables.containsKey(alias);
+           else
+               return _joins != null;
         else
             return true;
     }
