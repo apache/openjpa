@@ -20,6 +20,7 @@ package org.apache.openjpa.persistence;
 
 import java.util.Collection;
 
+import org.apache.openjpa.datacache.CacheStatistics;
 import org.apache.openjpa.datacache.DataCache;
 
 /**
@@ -96,6 +97,14 @@ public interface StoreCache {
      * Clear the cache.
      */
     public void evictAll();
+    
+    /**
+     * Gets the number of read/write/hit on this receiver in total and per
+     * class basis.
+     * 
+     * @since 1.3.0
+     */
+    public CacheStatistics getStatistics();
 
     /**
      * @deprecated cast to {@link StoreCacheImpl} instead. This

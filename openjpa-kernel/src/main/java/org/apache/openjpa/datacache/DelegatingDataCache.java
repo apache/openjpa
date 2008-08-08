@@ -345,4 +345,8 @@ public class DelegatingDataCache
             throw translate(re);
         }
     }
+    
+    public CacheStatistics getStatistics() {
+    	return (_cache == null) ? null : _cache.getStatistics();
+    }
 }

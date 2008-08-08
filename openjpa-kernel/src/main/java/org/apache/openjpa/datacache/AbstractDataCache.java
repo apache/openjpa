@@ -46,11 +46,14 @@ import org.apache.openjpa.lib.util.concurrent.AbstractConcurrentEventManager;
 public abstract class AbstractDataCache
     extends AbstractConcurrentEventManager
     implements DataCache, Configurable {
+	
+    protected CacheStatistics.Default stats = new CacheStatistics.Default();
 
     private static final BitSet EMPTY_BITSET = new BitSet(0);
 
     private static final Localizer s_loc =
         Localizer.forPackage(AbstractDataCache.class);
+    
 
     /**
      * The configuration set by the system.
@@ -152,19 +155,30 @@ public abstract class AbstractDataCache
             if (log.isTraceEnabled())
                 log.trace(s_loc.get("cache-timeout", key));
         }
-
         if (log.isTraceEnabled()) {
             if (o == null)
                 log.trace(s_loc.get("cache-miss", key));
             else
                 log.trace(s_loc.get("cache-hit", key));
         }
-
+        stats.newGet((o == null) ? null : o.getType(), o != null);
         return o;
+    }
+
+
+    /**
+     * Returns the objects for the given key List.
+     */
+    public Map getAll(List keys) {
+        Map resultMap = new HashMap(keys.size());
+        for(Object key : keys)
+            resultMap.put(key, get(key));
+        return resultMap;
     }
 
     public DataCachePCData put(DataCachePCData data) {
         DataCachePCData o = putInternal(data.getId(), data);
+    	stats.newPut((o == null) ? null : o.getType());
         if (log.isTraceEnabled())
             log.trace(s_loc.get("cache-put", data.getId()));
         return (o == null || o.isTimedOut()) ? null : o;
@@ -352,15 +366,16 @@ public abstract class AbstractDataCache
      * given oid.
      */
     protected abstract DataCachePCData putInternal(Object oid,
-        DataCachePCData pc);
-
+            DataCachePCData pc);
+    
     /**
-     * All all of the given objects to the cache.
+     * Add all of the given objects to the cache.
      */
     protected void putAllInternal(Collection pcs) {
         DataCachePCData pc;
         for (Iterator iter = pcs.iterator(); iter.hasNext();) {
             pc = (DataCachePCData) iter.next();
+            stats.newPut(pc.getType());
             putInternal(pc.getId(), pc);
         }
     }
@@ -414,6 +429,10 @@ public abstract class AbstractDataCache
      * Unpin an object from the cache.
      */
     protected abstract boolean unpinInternal(Object oid);
+    
+    public CacheStatistics getStatistics() {
+    	return stats;
+    }
 
     // ---------- Configurable implementation ----------
 
@@ -442,14 +461,4 @@ public abstract class AbstractDataCache
                 log.warn(s_loc.get("exp-listener-ex"), e);
 		}
 	}
-
-    /**
-     * Returns the objects for the given key List.
-     */
-    public Map getAll(List keys) {
-        Map resultMap = new HashMap(keys.size());
-        for(int i=0; i<keys.size(); i++)
-            resultMap.put(keys.get(i), get(keys.get(i)));
-        return resultMap;
-    }
 }

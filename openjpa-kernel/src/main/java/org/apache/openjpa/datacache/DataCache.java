@@ -264,4 +264,9 @@ public interface DataCache
 	 * returns objects from the caches for a given list of keys
      */
     public Map getAll(List keys);
+    
+    /**
+     * Returns number of read/write request and cache hit ratio data.
+     */
+    public CacheStatistics getStatistics();
 }

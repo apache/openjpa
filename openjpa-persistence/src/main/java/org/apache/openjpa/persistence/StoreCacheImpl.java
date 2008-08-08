@@ -22,6 +22,7 @@ import java.util.Arrays;
 import java.util.BitSet;
 import java.util.Collection;
 
+import org.apache.openjpa.datacache.CacheStatistics;
 import org.apache.openjpa.datacache.DataCache;
 import org.apache.openjpa.datacache.DelegatingDataCache;
 import org.apache.openjpa.meta.ClassMetaData;
@@ -128,6 +129,10 @@ public class StoreCacheImpl
 
     public void evictAll() {
         _cache.clear();
+    }
+    
+    public CacheStatistics getStatistics() {
+    	return (_cache == null) ? null : _cache.getStatistics();
     }
 
     /**
