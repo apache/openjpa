@@ -123,8 +123,13 @@ public abstract class PersistenceTestCase
                 "jpa(Types=" + buf.toString() + ")");
         }
 
-        return (OpenJPAEntityManagerFactorySPI) Persistence.
-            createEntityManagerFactory(pu, map);
+        OpenJPAEntityManagerFactorySPI oemf = (OpenJPAEntityManagerFactorySPI) 
+                Persistence.createEntityManagerFactory(pu, map);
+        if (oemf == null)
+            throw new NullPointerException(
+                    "Expected an entity manager factory " +
+                    "for the persistence unit named: \"" + pu + "\"");
+        return oemf;
     }
 
     @Override
