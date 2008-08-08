@@ -66,6 +66,8 @@ public class TestSubquery
             " and (select min(o2.amount) from Customer c, in(c.orders) o2)",
         "select o.oid from Customer c, in(c.orders)o where o.amount >" +
             " (select sum(o2.amount) from c.orders o2)",
+        "select o1.oid, c.name from Order o1, Customer c where o1.amount = " +
+            " any(select o2.amount from in(c.orders) o2)",
     // outstanding problem subqueries:
     //"select o from Order o where o.amount > (select count(o) from Order o)",
     //"select o from Order o where o.amount > (select count(o2) from Order o2)",
