@@ -45,6 +45,7 @@ import org.apache.openjpa.jdbc.meta.ClassMapping;
 import org.apache.openjpa.jdbc.meta.FieldMapping;
 import org.apache.openjpa.jdbc.meta.strats.VerticalClassStrategy;
 import org.apache.openjpa.jdbc.schema.Column;
+import org.apache.openjpa.jdbc.schema.ForeignKey;
 import org.apache.openjpa.jdbc.schema.Table;
 import org.apache.openjpa.jdbc.sql.DBDictionary;
 import org.apache.openjpa.jdbc.sql.SQLBuffer;
@@ -590,6 +591,8 @@ public class JDBCStoreQuery
             else if (table != columns[i].getTable())
                 return INVALID;
         }
+        if (fm.isBidirectionalJoinTableMappingOwner())
+        	return INVALID;
         return table;
     }
 

@@ -44,6 +44,7 @@ import org.apache.openjpa.meta.FieldMetaData;
 import org.apache.openjpa.meta.JavaTypes;
 import org.apache.openjpa.util.InternalException;
 import org.apache.openjpa.util.MetaDataException;
+import org.apache.tools.ant.taskdefs.condition.IsReference;
 
 /**
  * Specialization of metadata for relational databases.
@@ -71,6 +72,7 @@ public class FieldMapping
     private boolean _outer = false;
     private int _fetchMode = Integer.MAX_VALUE;
     private Unique[] _joinTableUniques; // Unique constraints on JoinTable
+    private Boolean _bidirectionalJoinTableOwner = null;
     
     /**
      * Constructor.
@@ -1046,5 +1048,47 @@ public class FieldMapping
 
     public void copyMappingInfo(ValueMapping vm) {
         _val.copyMappingInfo(vm);
+    }
+    
+    /**
+     * Affirms if this field is the owning side of a bidirectional relation
+     * with a join table. Evaluated only once and the result cached for 
+     * subsequent call. Hence must be called after resolution.
+     */
+    public boolean isBidirectionalJoinTableMappingOwner() {
+    	if (_bidirectionalJoinTableOwner != null)
+    		return _bidirectionalJoinTableOwner.booleanValue();
+    	
+    	_bidirectionalJoinTableOwner = false;
+        ForeignKey fk = getForeignKey();
+        if (fk != null) 
+        	return false;
+        ForeignKey jfk = getJoinForeignKey();
+        if (jfk == null) 
+        	return false;
+        FieldMapping mappedBy = getValueMappedByMapping();
+        if (mappedBy != null) 
+        	return false;
+        ValueMapping elem = getElementMapping();
+        if (elem == null) 
+        	return false;
+        ClassMapping relType = elem.getDeclaredTypeMapping();
+        if (relType == null) 
+        	return false;
+        FieldMetaData[] relFmds = relType.getFields();
+        for (int i=0; i<relFmds.length;i++) {
+            if (relFmds[i].getDeclaredTypeMetaData() == getDeclaringMapping()) {
+                FieldMapping rfm = (FieldMapping)relFmds[i];
+        		ForeignKey rjfk = rfm.getJoinForeignKey();
+        		if (rjfk == null) 
+        		    continue;
+        		if (rjfk.getTable() == jfk.getTable()
+        		 && jfk.getTable().getColumns().length 
+        		 == jfk.getColumns().length + rjfk.getColumns().length) {
+        			_bidirectionalJoinTableOwner = true;
+        		}
+        	}
+        }
+        return _bidirectionalJoinTableOwner.booleanValue();
     }
 }

@@ -29,6 +29,7 @@ import org.apache.openjpa.jdbc.schema.Column;
 import org.apache.openjpa.jdbc.schema.ForeignKey;
 import org.apache.openjpa.jdbc.sql.Joins;
 import org.apache.openjpa.jdbc.sql.Result;
+import org.apache.openjpa.jdbc.sql.RowManager;
 import org.apache.openjpa.jdbc.sql.Select;
 import org.apache.openjpa.kernel.OpenJPAStateManager;
 import org.apache.openjpa.lib.util.Localizer;
@@ -92,5 +93,23 @@ public class RelationCollectionTableFieldStrategy
             && field.getTypeCode() != JavaTypes.ARRAY)
             throw new MetaDataException(_loc.get("not-coll", field));
         super.map(adapt);
+    }
+    
+    public void insert(OpenJPAStateManager sm, JDBCStore store, RowManager rm)
+        throws SQLException {
+    	if (!field.isBidirectionalJoinTableMappingOwner())
+    		super.insert(sm, store, rm);
+    }
+    
+    public void update(OpenJPAStateManager sm, JDBCStore store, RowManager rm)
+        throws SQLException {
+    	if (!field.isBidirectionalJoinTableMappingOwner())
+    		super.update(sm, store, rm);
+    }
+    
+    public void delete(OpenJPAStateManager sm, JDBCStore store, RowManager rm)
+        throws SQLException {
+    	if (!field.isBidirectionalJoinTableMappingOwner())
+    		super.delete(sm, store, rm);
     }
 }
