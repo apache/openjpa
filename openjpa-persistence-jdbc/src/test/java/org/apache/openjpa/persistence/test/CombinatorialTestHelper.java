@@ -188,7 +188,7 @@ public class CombinatorialTestHelper {
 	 * Affirms if this receiver has more combinations.
 	 */
 	public boolean hasMoreCombination() {
-		return cursor < combos.length-1;
+		return cursor < combos.length;
 	}
 	
 	/**
