@@ -25,7 +25,7 @@ import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
 @Entity
-@Table(name="ORDERS")
+@Table(name="P_ORDER")
 public class Order {
 	@Id
 	@GeneratedValue

@@ -25,8 +25,10 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
+import javax.persistence.Table;
 
 @Entity
+@Table(name="P_CUSTOMER")
 public class Customer {
 	@Id
 	@GeneratedValue
