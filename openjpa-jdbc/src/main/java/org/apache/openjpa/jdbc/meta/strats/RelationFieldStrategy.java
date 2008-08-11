@@ -230,7 +230,10 @@ public class RelationFieldStrategy
             nullInverse(sm, rm);
             updateInverse(sm, rel, store, rm);
         } else {
-            Row row = field.getRow(sm, store, rm, Row.ACTION_UPDATE);
+        	int action = (rel == null 
+        			&& field.isBidirectionalJoinTableMappingNonOwner()) ?
+        					Row.ACTION_DELETE : Row.ACTION_UPDATE;
+            Row row = field.getRow(sm, store, rm, action);
             if (row != null)
                 field.setForeignKey(row, rel);
         }

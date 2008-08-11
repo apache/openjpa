@@ -19,6 +19,7 @@
 package org.apache.openjpa.persistence.jdbc.mapping.bidi;
 
 import java.util.Arrays;
+import java.util.Set;
 
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
@@ -123,6 +124,20 @@ public class TestBiDirectionalJoinTable extends SQLListenerTestCase {
 		
 		assertEquals(0, count(Person.class));
 		assertEquals(0, count(Address.class));
+		assertSQL("DELETE FROM .*J_PERSON_ADDRESSES .*");
+	}
+	
+	public void testBreakingRelationCausesDeleteFromJoinTable() {
+		EntityManager em = emf.createEntityManager();
+		Person person = em.find(Person.class, SSN);
+		em.getTransaction().begin();
+		Set<Address> addresses = person.getAddresses();
+		assertFalse(addresses.isEmpty());
+		Address address = addresses.iterator().next();
+		addresses.remove(address);
+		address.setPerson(null);
+		em.getTransaction().commit();
+		
 		assertSQL("DELETE FROM .*J_PERSON_ADDRESSES .*");
 	}
 
