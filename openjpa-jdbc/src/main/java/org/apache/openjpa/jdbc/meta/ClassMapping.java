@@ -18,8 +18,6 @@
  */
 package org.apache.openjpa.jdbc.meta;
 
-import java.lang.reflect.Field;
-import java.lang.reflect.Method;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -32,12 +30,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.apache.commons.lang.StringUtils;
 import org.apache.openjpa.enhance.PersistenceCapable;
 import org.apache.openjpa.enhance.Reflection;
 import org.apache.openjpa.jdbc.kernel.JDBCFetchConfiguration;
 import org.apache.openjpa.jdbc.kernel.JDBCStore;
 import org.apache.openjpa.jdbc.meta.strats.NoneClassStrategy;
+import org.apache.openjpa.jdbc.meta.strats.RelationFieldStrategy;
 import org.apache.openjpa.jdbc.schema.Column;
 import org.apache.openjpa.jdbc.schema.ColumnIO;
 import org.apache.openjpa.jdbc.schema.ForeignKey;
@@ -91,6 +89,7 @@ public class ClassMapping
 
     // maps columns to joinables
     private final Map _joinables = Collections.synchronizedMap(new HashMap());
+    private boolean redoPrimaryKeyColumns = false;
 
     /**
      * Constructor. Supply described type and owning repository.
@@ -418,17 +417,25 @@ public class ClassMapping
      * class uses to link to its superclass table.
      */
     public Column[] getPrimaryKeyColumns() {
-        if (_cols.length == 0 && getIdentityType() == ID_APPLICATION
-            && isMapped()) {
-            FieldMapping[] pks = getPrimaryKeyFieldMappings();
-            Collection cols = new ArrayList(pks.length);
-            Column[] fieldCols;
-            for (int i = 0; i < pks.length; i++) {
-                fieldCols = pks[i].getColumns();
-                for (int j = 0; j < fieldCols.length; j++)
-                    cols.add(fieldCols[j]);
+        if (getIdentityType() == ID_APPLICATION && isMapped()) {
+            if (_cols.length == 0 || redoPrimaryKeyColumns) {            
+                FieldMapping[] pks = getPrimaryKeyFieldMappings();
+                Collection cols = new ArrayList(pks.length);
+                Column[] fieldCols;
+                for (int i = 0; i < pks.length; i++) {
+                    fieldCols = pks[i].getColumns();
+                    if (fieldCols.length == 0) {
+                        // some pk columns depends on fk. At this moment, 
+                        // the fk may not contain complete information.
+                        // need to redo the primary key again later on
+                        redoPrimaryKeyColumns = true;
+                        continue;
+                    }
+                    for (int j = 0; j < fieldCols.length; j++)
+                        cols.add(fieldCols[j]);
+                }
+                _cols = (Column[]) cols.toArray(new Column[cols.size()]);
             }
-            _cols = (Column[]) cols.toArray(new Column[cols.size()]);
         }
         return _cols;
     }
@@ -826,9 +833,27 @@ public class ClassMapping
         // recursion, then resolve all fields
         resolveNonRelationMappings();
         FieldMapping[] fms = getFieldMappings();
-        for (int i = 0; i < fms.length; i++)
-            if (fms[i].getDefiningMetaData() == this)
+        for (int i = 0; i < fms.length; i++) {
+            if (fms[i].getDefiningMetaData() == this) {
+                if (fms[i].getForeignKey() != null &&
+                    fms[i].getStrategy() instanceof RelationFieldStrategy) {
+                    // set resolve mode to force this field mapping to be 
+                    // resolved again. The need to resolve again occurs when 
+                    // a primary key is a relation field with the foreign key
+                    // annotation. In this situation, this primary key field
+                    // mapping is resolved during the call to 
+                    // resolveNonRelationMapping. Since it is a relation
+                    // field, the foreign key will be constructed. However, 
+                    // the primary key of the parent entity may not have been 
+                    // resolved yet, resulting in missing informaiton in the fk
+                    fms[i].setResolve(MODE_META); 
+
+                    // set strategy to null to force fk to be re-constructed
+                    fms[i].setStrategy(null, false); 
+                }                
                 fms[i].resolve(MODE_MAPPING);
+            }
+        }
         fms = getDeclaredUnmanagedFieldMappings();
         for (int i = 0; i < fms.length; i++)
             fms[i].resolve(MODE_MAPPING);
