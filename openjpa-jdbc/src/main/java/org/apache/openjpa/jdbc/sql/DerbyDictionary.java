@@ -46,11 +46,9 @@ public class DerbyDictionary
         stringLengthFunction = "LENGTH({0})";
         substringFunctionName = "SUBSTR";
 
-        // Derby name length restriction has been relaxed 
-        // http://www.archivum.info/derby-dev@db.apache.org/2004-12/msg00270.html
-        maxConstraintNameLength = 128;
+        maxConstraintNameLength = 18;
         maxIndexNameLength = 128;
-        maxColumnNameLength = 128;
+        maxColumnNameLength = 30;
         maxTableNameLength = 128;
 
         useGetBytesForBlobs = true;
