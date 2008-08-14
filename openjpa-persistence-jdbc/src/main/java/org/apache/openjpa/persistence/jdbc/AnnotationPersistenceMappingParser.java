@@ -682,8 +682,13 @@ public class AnnotationPersistenceMappingParser
      * Parse the given foreign key.
      */
     private void parseForeignKey(MappingInfo info, ForeignKey fk) {
-        parseForeignKey(info, fk.name(), fk.enabled(), fk.deferred(),
-            fk.deleteAction(), fk.updateAction());
+    	if (!fk.implicit()) {
+    		parseForeignKey(info, fk.name(), fk.enabled(), fk.deferred(),
+    				fk.deleteAction(), fk.updateAction());
+    	} else {
+            info.setImplicitRelation(true);
+            assertDefault(fk);
+    	}
     }
 
     /**
@@ -706,6 +711,20 @@ public class AnnotationPersistenceMappingParser
         fk.setUpdateAction(toForeignKeyAction(updateAction));
         info.setForeignKey(fk);
     }
+    
+    void assertDefault(ForeignKey fk) {
+    	boolean isDefault = StringUtils.isEmpty(fk.name()) 
+    		&& fk.enabled() 
+    		&& !fk.deferred() 
+    		&& fk.deleteAction() == ForeignKeyAction.RESTRICT
+    		&& fk.updateAction() == ForeignKeyAction.RESTRICT
+    		&& fk.columnNames().length == 0
+    		&& fk.specified();
+    	if (!isDefault)
+    		throw new UserException(_loc.get("implicit-non-default-fk", _cls, 
+    				getSourceFile()).getMessage());
+    }
+    
 
     /**
      * Convert our FK action enum to an internal OpenJPA action.

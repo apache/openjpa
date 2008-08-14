@@ -331,19 +331,39 @@ public class PrimaryRow
         boolean overrideDefault)
         throws SQLException {
         // make sure we're not setting two different values
+    	// unless the given column is an implicit relationship and value
+    	// changes from logical default to non-default
         Object prev = getSet(col);
         if (prev != null) {
             if (prev == NULL)
                 prev = null;
             if (!rowValueEquals(prev, val)) {
-                throw new InvalidStateException(_loc.get("diff-values",
-                    new Object[]{ col.getFullName(),
-                        (prev == null) ? null : prev.getClass(), prev,
-                        (val == null) ? null : val.getClass(), val })).
-                    setFatal(true);
+            	if (allowsUpdate(col, prev, val)) {
+            		super.setObject(col, val, metaType, overrideDefault);
+            	} else if (!isDefaultValue(val)) {
+            		throw new InvalidStateException(_loc.get("diff-values",
+            				new Object[]{ col.getFullName(),
+            				(prev == null) ? null : prev.getClass(), prev,
+            				(val == null) ? null : val.getClass(), val })).
+            				setFatal(true);
+            	}
             }
         }
         super.setObject(col, val, metaType, overrideDefault);
+    }
+    
+    /**
+     * Allow the given column value to be updated only if old or current value
+     * is a default value or was not set and the column is not a primary key.
+     */
+    boolean allowsUpdate(Column col, Object old, Object cur) {
+    	return !col.isPrimaryKey() && col.isImplicitRelation()
+    	   && (isDefaultValue(old));
+    }
+    
+    boolean isDefaultValue(Object val) {
+    	return val == null || val == NULL
+    	    || (val instanceof Number && ((Number)val).longValue() == 0);
     }
 
     /**

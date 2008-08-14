@@ -84,7 +84,9 @@ public class PrimitiveFieldStrategy
             new Column[]{ tmpCol }, field.getTable(), adapt);
         if (field.getValueStrategy() == ValueStrategies.AUTOASSIGN)
             cols[0].setAutoAssigned(true);
-
+        if (vinfo.isImplicitRelation())
+        	for (int i = 0; i < cols.length; i++)
+        		cols[i].setImplicitRelation(true);
         field.setColumns(cols);
         field.setColumnIO(vinfo.getColumnIO());
         field.mapConstraints(field.getName(), adapt);

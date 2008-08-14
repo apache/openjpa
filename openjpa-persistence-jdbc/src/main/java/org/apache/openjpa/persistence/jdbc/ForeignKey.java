@@ -47,4 +47,6 @@ public @interface ForeignKey {
     String[] columnNames() default {};
 
     boolean specified() default true;
+    
+    boolean implicit() default false;
 }

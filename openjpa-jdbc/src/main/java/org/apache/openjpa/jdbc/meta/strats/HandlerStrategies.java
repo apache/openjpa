@@ -62,6 +62,9 @@ public class HandlerStrategies {
         if (cols.length > 0 && cols[0].getTable() == null) {
             cols = vinfo.getColumns(vm, name, cols,
                 vm.getFieldMapping().getTable(), adapt);
+            if (vinfo.isImplicitRelation())
+            	for (int i = 0; i < cols.length; i++)
+            		cols[i].setImplicitRelation(true);
             ColumnIO mappedIO = vinfo.getColumnIO();
             vm.setColumns(cols);
             vm.setColumnIO(mappedIO);
@@ -138,7 +141,7 @@ public class HandlerStrategies {
     }
 
     /**
-     * Set a value into a row, taking care not to override column defualts
+     * Set a value into a row, taking care not to override column defaults
      * with nulls unless the user wants us to.
      */
     private static void set(Row row, Column col, Object val,

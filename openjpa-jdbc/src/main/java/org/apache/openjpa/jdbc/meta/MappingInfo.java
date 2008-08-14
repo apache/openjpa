@@ -71,6 +71,7 @@ public abstract class MappingInfo
     private boolean _canIdx = true;
     private boolean _canUnq = true;
     private boolean _canFK = true;
+    private boolean _implicitRelation = false;
     private int _join = JOIN_NONE;
     private ColumnIO _io = null;
 
@@ -128,6 +129,30 @@ public abstract class MappingInfo
      */
     public void setCanIndex(boolean indexable) {
         _canIdx = indexable;
+    }
+
+    /** 
+	 *  Affirms if this instance represents an implicit relation. For example, a 
+	 *  relation expressed as the value of primary key of the related class and 
+	 *  not as object reference.
+     *
+     * @since 1.3.0
+     */
+    public boolean isImplicitRelation() {
+    	return _implicitRelation;
+    }
+    
+    /**
+     * Sets a marker to imply a logical relation that can not have any physical
+     * manifest in the database. For example, a relation expressed as the value
+     * of primary key of the related class and not as object reference.
+     * Populated from @ForeignKey(implicit=true) annotation.
+     * The mutator can only transit from false to true but not vice versa.
+     * 
+     * @since 1.3.0
+     */
+    public void setImplicitRelation(boolean flag) {
+    	_implicitRelation |= flag;
     }
 
     /**
@@ -280,7 +305,7 @@ public abstract class MappingInfo
             else
                 _canFK = info.canForeignKey();
         }
-
+        _implicitRelation = info.isImplicitRelation();
         List cols = getColumns();
         List icols = info.getColumns();
         if (!icols.isEmpty() && (cols.isEmpty()
@@ -386,10 +411,11 @@ public abstract class MappingInfo
     }
 
     /**
-     * Assert that the user did not try to place a foreign key on this mapping.
+     * Assert that the user did not try to place a foreign key on this mapping
+     * or placed an implicit foreign key. 
      */
     public void assertNoForeignKey(MetaDataContext context, boolean die) {
-        if (_fk == null)
+        if (_fk == null || isImplicitRelation())
             return;
 
         Message msg = _loc.get("unexpected-fk", context);
@@ -610,6 +636,7 @@ public abstract class MappingInfo
         String defStr = tmplate.getDefaultString();
         boolean autoAssign = tmplate.isAutoAssigned();
         boolean relationId = tmplate.isRelationId();
+        boolean implicitRelation = tmplate.isImplicitRelation();
         String targetField = tmplate.getTargetField();
         if (given != null) {
             // use given type if provided, but warn if it isn't compatible with
@@ -640,6 +667,8 @@ public abstract class MappingInfo
                 autoAssign = true;
             if (given.isRelationId())
                 relationId = true;
+            if (given.isImplicitRelation())
+            	implicitRelation = true;
         }
 
         // default char column size if original type is char (test original
@@ -684,6 +713,7 @@ public abstract class MappingInfo
         }
         col.setAutoAssigned(autoAssign);
         col.setRelationId(relationId);
+        col.setImplicitRelation(implicitRelation);
         col.setTargetField(targetField);
 
         // we need this for runtime, and the dynamic schema factory might

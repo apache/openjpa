@@ -188,7 +188,7 @@ public class AnnotationPersistenceMetaDataParser
     private final Map<Package, Integer> _pkgs = new HashMap<Package, Integer>();
 
     // the class we were invoked to parse
-    private Class _cls = null;
+    protected Class _cls = null;
     private File _file = null;
 
     /**
