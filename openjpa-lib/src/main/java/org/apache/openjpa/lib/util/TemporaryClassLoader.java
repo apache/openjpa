@@ -70,7 +70,10 @@ public class TemporaryClassLoader extends ClassLoader {
                 bout.write(b, 0, n))
                 ;
             byte[] classBytes = bout.toByteArray();
-            if (isAnnotation(classBytes))
+            // To avoid classloader issues with the JVM (Sun and IBM), we
+            // will not load Enums via the TemporaryClassLoader either.
+            // Reference JIRA Issue OPENJPA-646 for more information.
+            if (isAnnotation(classBytes) || isEnum(classBytes))
                 return Class.forName(name, resolve, getClass().
                     getClassLoader());
 
@@ -96,5 +99,17 @@ public class TemporaryClassLoader extends ClassLoader {
         int idx = ConstantPoolTable.getEndIndex(b);
         int access = ConstantPoolTable.readUnsignedShort(b, idx);
         return (access & 0x2000) != 0; // access constant for annotation type
+    }
+
+    /**
+     * Fast-parse the given class bytecode to determine if it is an
+     * enum class.
+     */
+    private static boolean isEnum(byte[] b) {
+        if (JavaVersions.VERSION < 5)
+            return false;
+        int idx = ConstantPoolTable.getEndIndex(b);
+        int access = ConstantPoolTable.readUnsignedShort(b, idx);
+        return (access & 0x4000) != 0; // access constant for enum type
     }
 }
