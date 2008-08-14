@@ -52,7 +52,6 @@
 		<class>org.apache.openjpa.persistence.kernel.common.apps.ConcreteMappedAppIdSub</class>
 		<class>org.apache.openjpa.persistence.kernel.common.apps.DateVersion</class>
 		<class>org.apache.openjpa.persistence.kernel.common.apps.DependentFieldsPC</class>
-		<class>org.apache.openjpa.persistence.kernel.common.apps.DetachAttachEvent</class>
 		<class>org.apache.openjpa.persistence.kernel.common.apps.DetachSMPC</class>
 		<class>org.apache.openjpa.persistence.kernel.common.apps.EmbeddedOwnerPC</class>
 		<class>org.apache.openjpa.persistence.kernel.common.apps.EmbeddedPC</class>
