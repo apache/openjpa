@@ -160,22 +160,14 @@ public class TestException extends SingleEMFTestCase {
 	}
 	
 	/**
-	 * Invalid query does not throw IllegalArgumentException on construction 
-	 * as per JPA spec. The exception is thrown during execution.
-	 * 
-	 * A patch
-	 * <A HREF="http://issues.apache.org/jira/browse/OPENJPA-678">OPENJPA-678</A>
-	 * by Xiaoqin Feng has proposed eager compilation of the query to raise the
-	 * error before execution and as per JPA spec. 
-	 * However, this patch has not yet been applied as eagerly compiling query
-	 * has other side-effects. 
-	 * 
+	 * Invalid query throws IllegalArgumentException on construction 
+	 * as per JPA spec.
 	 */
 	public void testIllegalArgumennExceptionOnInvalidQuery() {
 	    EntityManager em = emf.createEntityManager();
-	    Query query = em.createQuery("This is not a valid JPQL query");
 	    try {
-		   query.getResultList();
+	      em.createQuery("This is not a valid JPQL query");
+        fail("Did not throw IllegalArgumentException for invalid query.");
 	    } catch (Throwable t) {
 		   assertException(t, IllegalArgumentException.class);
 	    }

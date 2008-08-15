@@ -79,12 +79,9 @@ public class QueryImpl implements OpenJPAQuerySPI, Serializable {
 	/**
 	 * Constructor; supply factory exception translator and delegate.
 	 * 
-	 * @param em
-	 *            The EntityManager which created this query
-	 * @param ret
-	 *            Exception translater for this query
-	 * @param query
-	 *            The underlying "kernel" query.
+	 * @param em  The EntityManager which created this query
+	 * @param ret Exception translater for this query
+	 * @param query The underlying "kernel" query.
 	 */
 	public QueryImpl(EntityManagerImpl em, RuntimeExceptionTranslator ret,
 			org.apache.openjpa.kernel.Query query) {
