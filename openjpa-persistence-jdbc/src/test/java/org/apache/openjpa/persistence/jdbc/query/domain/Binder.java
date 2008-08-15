@@ -18,16 +18,17 @@
  */
 package org.apache.openjpa.persistence.jdbc.query.domain;
 
-import java.sql.Time;
-import java.sql.Timestamp;
-import java.util.Date;
-
-import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.NamedNativeQuery;
+import javax.persistence.NamedQuery;
 
 @Entity
+@NamedQuery(name="JPQL_POSITIONAL", 
+		query="SELECT p FROM Binder p WHERE p.p1=?1 AND p.p2=?2 AND p.p3=?3")
+@NamedNativeQuery(name="SQL_POSITIONAL",
+		query="SELECT id, p1 FROM Binder WHERE p1=?1 AND p2=?2 AND p3=?3")
 public class Binder {
 	@Id
 	@GeneratedValue

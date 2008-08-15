@@ -262,6 +262,8 @@ public class QueryImpl implements OpenJPAQuerySPI, Serializable {
 	 * Validate that the types of the parameters are correct.
 	 * The idea is to catch as many validation error as possible at the facade
 	 * layer itself.
+	 * For native SQL queries, however, parameter validation is bypassed as
+	 * we do not parse SQL.
 	 * 
 	 * The expected parameters are parsed from the query and in a LinkedMap 
 	 *	key   : name of the parameter as declared in query
@@ -294,6 +296,10 @@ public class QueryImpl implements OpenJPAQuerySPI, Serializable {
 	 *    f) parameter is primitive type but bound to null value
 	 */
 	private void validateParameters() {
+		if (isNative()) {
+			removeGaps(_positional);
+			return;
+		}
 		String query = getQueryString();
 		if (_positional != null) {
 			LinkedMap expected = _query.getParameterTypes();
@@ -399,6 +405,19 @@ public class QueryImpl implements OpenJPAQuerySPI, Serializable {
 				}
 			}
 		}
+	}
+	
+	Map<Integer, Object> removeGaps(Map<Integer, Object> map) {
+		if (map == null || !map.containsValue(GAP_FILLER))
+			return map;
+		List<Integer> gaps = new ArrayList<Integer>();
+		for (Integer key : map.keySet())
+			if (map.get(key) == GAP_FILLER)
+				gaps.add(key);
+		for (Integer gap : gaps) {
+			map.remove(gap);
+		}
+		return map;
 	}
 
 	void newValidationException(String msgKey, Object...args) {

@@ -28,8 +28,10 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Set;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.openjpa.jdbc.meta.ClassMapping;
@@ -118,13 +120,17 @@ public class SQLStoreQuery
             }
         }
 
+        int distinctParams = countDistinct(paramOrder);
+        if (params.size() < distinctParams)
+        	throw new UserException(_loc.get("sqlquery-fewer-params", 
+        		new Object[] {sql, distinctParams, params.size(), params}));
         // now go through the paramOrder list and re-order the params array
         List translated = new ArrayList();
         for (Iterator i = paramOrder.iterator(); i.hasNext();) {
             int index = ((Number) i.next()).intValue() - 1;
             if (index >= params.size())
                 throw new UserException(_loc.get("sqlquery-missing-params",
-                    sql, String.valueOf(index), params));
+                    sql, String.valueOf(index+1), params));
             translated.add(params.get(index));
         }
 
@@ -132,6 +138,18 @@ public class SQLStoreQuery
         params.clear();
         params.addAll(translated);
         return buf.toString();
+    }
+    
+    static int countDistinct(List list) {
+    	if (list == null || list.isEmpty())
+    		return 0;
+    	int distinct = 0;
+    	Set set = new HashSet();
+    	for (Object o : list) {
+    		if (set.add(o))
+    			distinct++;
+    	}
+    	return distinct;
     }
 
     public boolean supportsParameterDeclarations() {

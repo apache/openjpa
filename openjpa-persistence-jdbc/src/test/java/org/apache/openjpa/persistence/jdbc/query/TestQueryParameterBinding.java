@@ -203,8 +203,8 @@ public class TestQueryParameterBinding extends SingleEMFTestCase {
 	}
 	
 	public void testPositionalParameterWithWrongType() {
-		String JPQL_NAMED  = JPQL + "WHERE p.p1=?1 AND p.p2=?2 AND p.p3=?3";
-		Query q = em.createQuery(JPQL_NAMED);
+		String JPQL_POSITIONAL  = JPQL + "WHERE p.p1=?1 AND p.p2=?2 AND p.p3=?3";
+		Query q = em.createQuery(JPQL_POSITIONAL);
 		q.setParameter(1,  INT_VALUE);
 		q.setParameter(2,  DBL_VALUE);
 		q.setParameter(3,  STR_VALUE);
@@ -213,8 +213,8 @@ public class TestQueryParameterBinding extends SingleEMFTestCase {
 	}
 	
 	public void testNamedParameterWithNullValue() {
-		String JPQL_NAMED  = JPQL + "WHERE p.p1=:p1 AND p.p2=:p2 AND p.p3=:p3";
-		Query q = em.createQuery(JPQL_NAMED);
+		String JPQL_POSITIONAL  = JPQL + "WHERE p.p1=:p1 AND p.p2=:p2 AND p.p3=:p3";
+		Query q = em.createQuery(JPQL_POSITIONAL);
 		q.setParameter("p1",  INT_VALUE);
 		q.setParameter("p2",  null);
 		q.setParameter("p3",  null);
@@ -223,8 +223,8 @@ public class TestQueryParameterBinding extends SingleEMFTestCase {
 	}
 	
 	public void testPositionalParameterWithNullValue() {
-		String JPQL_NAMED  = JPQL + "WHERE p.p1=?1 AND p.p2=?2 AND p.p3=?3";
-		Query q = em.createQuery(JPQL_NAMED);
+		String JPQL_POSITIONAL  = JPQL + "WHERE p.p1=?1 AND p.p2=?2 AND p.p3=?3";
+		Query q = em.createQuery(JPQL_POSITIONAL);
 		q.setParameter(1,  INT_VALUE);
 		q.setParameter(2,  null);
 		q.setParameter(3,  null);
@@ -232,10 +232,55 @@ public class TestQueryParameterBinding extends SingleEMFTestCase {
 		fail(q);
 	}
 	
+	public void testPositionalParameterWithSingleResult() {
+		Query q = em.createNamedQuery("JPQL_POSITIONAL");
+		// "SELECT p FROM Binder p WHERE p.p1=?1 AND p.p2=?2 AND p.p3=?3"
+		q.setParameter(1,  INT_VALUE);
+		q.setParameter(2,  null);
+		q.setParameter(3,  null);
+		
+		fail(q, true);
+	}
+	
+	public void testPositionalParameterWithNativeQuery() {
+		Query q = em.createNamedQuery("SQL_POSITIONAL");
+		// "SELECT p.id FROM Binder WHERE p.p1=?1 AND p.p2=?2 AND p.p3=?3"
+		q.setParameter(1,  INT_VALUE);
+		q.setParameter(2,  STR_VALUE);
+		q.setParameter(3,  DBL_VALUE);
+		
+		assertEquals(1,q.getResultList().size());
+	}
+	
+	public void testPositionalParameterWithNativeQueryFails() {
+		Query q = em.createNamedQuery("SQL_POSITIONAL");
+		// "SELECT p.id FROM Binder WHERE p.p1=?1 AND p.p2=?2 AND p.p3=?3"
+		q.setParameter(1,  INT_VALUE);
+		q.setParameter(2,  STR_VALUE);
+		
+		fail(q);
+	}
+	
+	public void testPositionalParameterWithNativeQueryFailsWithGap() {
+		Query q = em.createNamedQuery("SQL_POSITIONAL");
+		// "SELECT p.id FROM Binder WHERE p.p1=?1 AND p.p2=?2 AND p.p3=?3"
+		q.setParameter(1,  INT_VALUE);
+		q.setParameter(3,  DBL_VALUE);
+		
+		fail(q);
+	}
+	
 	
 	void fail(Query q) {
+		fail(q, false);
+	}
+	
+	void fail(Query q, boolean single) {
 		try {
-			q.getResultList();
+			if (single) 
+				q.getSingleResult();
+			else 
+				q.getResultList();
 			fail("Expeceted " + ArgumentException.class.getName());
 		} catch (IllegalArgumentException ex) {
 		// good
