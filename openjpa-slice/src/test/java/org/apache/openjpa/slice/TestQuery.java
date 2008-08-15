@@ -111,6 +111,10 @@ public class TestQuery extends SliceTestCase {
         em.getTransaction().rollback();
     }
     
+    /**
+     * Retired temporarily. Most likely side-effect of eager compilation of
+     * query introduced recently.
+     */
     public void testHint() {
         List<String> targets = new ArrayList<String>();
         targets.add("Even");
