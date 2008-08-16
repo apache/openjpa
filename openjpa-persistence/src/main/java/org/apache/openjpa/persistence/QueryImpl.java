@@ -21,6 +21,7 @@ package org.apache.openjpa.persistence;
 import java.io.Serializable;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Collection;
 import java.util.Collections;
@@ -30,6 +31,8 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.TreeMap;
+
 import javax.persistence.FlushModeType;
 import javax.persistence.Query;
 import javax.persistence.TemporalType;
@@ -67,18 +70,17 @@ public class QueryImpl
     private transient EntityManagerImpl _em;
     private transient FetchPlan _fetch;
 
-    private Map _named;
-    private List _positional;
+	private Map<String, Object> _named;
+	private Map<Integer, Object> _positional;
+
+	private static Object GAP_FILLER = new Object();
 
     /**
      * Constructor; supply factory exception translator and delegate.
      * 
-     * @param em
-     *            The EntityManager which created this query
-     * @param ret
-     *            Exception translater for this query
-     * @param query
-     *            The underlying "kernel" query.
+     * @param em  The EntityManager which created this query
+     * @param ret Exception translater for this query
+     * @param query The underlying "kernel" query.
      */
     public QueryImpl(EntityManagerImpl em, RuntimeExceptionTranslator ret,
         org.apache.openjpa.kernel.Query query) {
@@ -246,47 +248,133 @@ public class QueryImpl
 
         validateParameters();
 
-        // handle which types of parameters we are using, if any
-        if (_positional != null)
-            return _query.execute(_positional.toArray());
-        if (_named != null)
-            return _query.execute(_named);
-        return _query.execute();
-    }
+		// handle which types of parameters we are using, if any
+		if (_positional != null)
+			return _query.execute(_positional);
+		if (_named != null)
+			return _query.execute(_named);
+		return _query.execute();
+	}
+	
+	/**
+	 * Validate that the types of the parameters are correct.
+	 * The idea is to catch as many validation error as possible at the facade
+	 * layer itself.
+	 * For native SQL queries, however, parameter validation is bypassed as
+	 * we do not parse SQL.
+	 * 
+	 * The expected parameters are parsed from the query and in a LinkedMap 
+	 *	key   : name of the parameter as declared in query
+	 *  value : expected Class of allowed value
+	 *  
+	 * The bound parameters depends on positional or named parameter style
+	 * 
+	 * TreeMap<Integer, Object> for positional parameters:
+	 *   key   : 1-based Integer index
+	 *   value : bound value. GAP_FILLER if the position is not set. This
+	 *   simplifies validation at the kernel layer
+	 *   
+	 * Map<String, Object> for named parameters:
+	 *   key   : parameter name
+	 *   value : the bound value
+	 *   
+	 *  Validation accounts for 
+	 *    a) gaps in positional parameters
+	 *       SELECT p FROM PObject p WHERE p.a1=?1 AND p.a3=?3
+	 *    
+	 *    b) repeated parameters
+	 *       SELECT p FROM PObject p WHERE p.a1=?1 AND p.a2=?1 AND p.a3=?2
+	 *       
+	 *    c) parameter is bound but not declared
+	 *    
+	 *    d) parameter is declared but not bound
+	 *    
+	 *    e) parameter does not match the value type
+	 *    
+	 *    f) parameter is primitive type but bound to null value
+	 */
+	private void validateParameters() {
+		if (isNative()) {
+			removeGaps(_positional);
+			return;
+		}
+		String query = getQueryString();
+		if (_positional != null) {
+			LinkedMap expected = _query.getParameterTypes();
+			Map<Integer, Object> actual = _positional;
+			for (Object o : expected.keySet()) {
+				String position = (String) o;
+				Class expectedParamType = (Class) expected.get(position);
+				try {
+					Integer.parseInt(position);
+				} catch (NumberFormatException ex) {
+					newValidationException("param-style-mismatch", query,
+							expected.asList(),
+							Arrays.toString(actual.keySet().toArray()));
+				}
+				Object actualValue = actual.get(Integer.parseInt(position));
+				boolean valueUnspecified = (actualValue == GAP_FILLER)
+						|| (actualValue == null && (actual.size() < expected
+								.size()));
+				if (valueUnspecified) 
+					newValidationException("param-missing", position, query,
+							Arrays.toString(actual.keySet().toArray()));
+				
+				if (expectedParamType.isPrimitive() && actualValue == null)
+					newValidationException("param-type-null", 
+							position, query, expectedParamType.getName());
+				if (actualValue != null &&
+				   !Filters.wrap(expectedParamType).isInstance(actualValue)) 
+					newValidationException("param-type-mismatch",
+							position, query, actualValue,
+							actualValue.getClass().getName(),
+							expectedParamType.getName());
+				
+			}
+			for (Integer position : actual.keySet()) {
+				Object actualValue = actual.get(position);
+				Class expectedParamType = (Class) expected.get("" + position);
+				boolean paramExpected = expected.containsKey("" + position);
+				if (actualValue == GAP_FILLER) {
+					if (paramExpected) {
+						newValidationException("param-missing", position, query,
+								Arrays.toString(actual.keySet().toArray()));
+					}
+				} else {
+					if (!paramExpected)
+						newValidationException("param-extra", position, query,
+								expected.asList());
+					if (expectedParamType.isPrimitive() && actualValue == null)
+						newValidationException("param-type-null", 
+								position, query, expectedParamType.getName());
+					if (actualValue != null 
+					 && !Filters.wrap(expectedParamType).isInstance(actualValue)) 
+						newValidationException("param-type-mismatch",
+								position, query, actualValue,
+								actualValue.getClass().getName(),
+								expectedParamType.getName());
+					
+				}
+			}
+		}
+	}
+	
+	Map<Integer, Object> removeGaps(Map<Integer, Object> map) {
+		if (map == null || !map.containsValue(GAP_FILLER))
+			return map;
+		List<Integer> gaps = new ArrayList<Integer>();
+		for (Integer key : map.keySet())
+			if (map.get(key) == GAP_FILLER)
+				gaps.add(key);
+		for (Integer gap : gaps) {
+			map.remove(gap);
+		}
+		return map;
+	}
 
-    /**
-     * Validate that the types of the parameters are correct.
-     */
-    private void validateParameters() {
-        if (_positional != null) {
-            LinkedMap types = _query.getParameterTypes();
-            for (int i = 0,
-                size = Math.min(_positional.size(), types.size());
-                i < size; i++)
-                validateParameter(String.valueOf(i),
-                    (Class) types.getValue(i), _positional.get(i));
-        } else if (_named != null) {
-            Map types = _query.getParameterTypes();
-            for (Iterator i = _named.entrySet().iterator(); i.hasNext();) {
-                Map.Entry entry = (Map.Entry) i.next();
-                String name = (String) entry.getKey();
-                validateParameter(name, (Class) types.get(name),
-                    entry.getValue());
-            }
-        }
-    }
-
-    private void validateParameter(String paramDesc, Class type, Object param) {
-        // null parameters are allowed, so are not validated
-        if (param == null || type == null)
-            return;
-
-        // check the parameter against the wrapped type
-        if (!Filters.wrap(type).isInstance(param))
-            throw new ArgumentException(_loc.get("bad-param-type",
-                paramDesc, param.getClass().getName(), type.getName()),
-                null, null, false);
-    }
+	void newValidationException(String msgKey, Object...args) {
+		throw new ArgumentException(_loc.get(msgKey, args), null, null, false);
+	}
 
     public List getResultList() {
         _em.assertNotCloseInvoked();
@@ -324,7 +412,7 @@ public class QueryImpl
         if (_query.getOperation() == QueryOperations.OP_DELETE) {
             // handle which types of parameters we are using, if any
             if (_positional != null)
-                return asInt(_query.deleteAll(_positional.toArray()));
+                return asInt(_query.deleteAll(_positional));
             if (_named != null)
                 return asInt(_query.deleteAll(_named));
             return asInt(_query.deleteAll());
@@ -332,7 +420,7 @@ public class QueryImpl
         if (_query.getOperation() == QueryOperations.OP_UPDATE) {
             // handle which types of parameters we are using, if any
             if (_positional != null)
-                return asInt(_query.updateAll(_positional.toArray()));
+                return asInt(_query.updateAll(_positional));
             if (_named != null)
                 return asInt(_query.updateAll(_named));
             return asInt(_query.updateAll());
@@ -441,40 +529,39 @@ public class QueryImpl
         return setParameter(position, value);
     }
 
-    public OpenJPAQuery setParameter(int position, Object value) {
-        _query.assertOpen();
-        _em.assertNotCloseInvoked();
-        _query.lock();
-        try {
-        	if (isNative() && position < 1) {
-        		throw new IllegalArgumentException(_loc.get("bad-pos-params", 
-        		      position, _query.getQueryString()).toString());
-        	}
-            // not allowed to mix positional and named parameters (EDR2 3.6.4)
-            if (_named != null)
-                throw new InvalidStateException(_loc.get
-                    ("no-pos-named-params-mix", _query.getQueryString()),
-                    null, null, false);
+	public OpenJPAQuery setParameter(int position, Object value) {
+		_query.assertOpen();
+		_em.assertNotCloseInvoked();
+		_query.lock();
+		try {
+			if (isNative() && position < 1) {
+				throw new IllegalArgumentException(_loc.get("bad-pos-params",
+						position, _query.getQueryString()).toString());
+			}
+			// not allowed to mix positional and named parameters (EDR2 3.6.4)
+			if (_named != null)
+				throw new InvalidStateException(_loc.get(
+						"no-pos-named-params-mix", _query.getQueryString()),
+						null, null, false);
 
-            if (position < 1)
-                throw new InvalidStateException(_loc.get
-                    ("illegal-index", position), null, null, false);
+			if (position < 1)
+				throw new InvalidStateException(_loc.get("illegal-index",
+						position), null, null, false);
 
-            if (_positional == null)
-                _positional = new ArrayList();
+			if (_positional == null)
+				_positional = new TreeMap<Integer, Object>();
 
-            // make sure it is at least the requested size
-            while (_positional.size() < position)
-                _positional.add(null);
+			_positional.put(position, value);
+			for (int i = 1; i < position; i++)
+				if (!_positional.containsKey(i))
+					_positional.put(i, GAP_FILLER);
 
-            // note that we add it to position - 1, since setPosition
-            // starts at 1, while List starts at 0
-            _positional.set(position - 1, value);
-            return this;
-        } finally {
-            _query.unlock();
-        }
-    }
+			return this;
+		} finally {
+			_query.unlock();
+		}
+	}
+
 
     public OpenJPAQuery setParameter(String name, Calendar value,
         TemporalType t) {
@@ -518,14 +605,21 @@ public class QueryImpl
         return _positional != null;
     }
 
-    public Object[] getPositionalParameters() {
-        _query.lock();
-        try {
-            return (_positional == null) ? EMPTY_ARRAY : _positional.toArray();
-        } finally {
-            _query.unlock();
-        }
-    }
+	/**
+	 * Gets the array of positional parameter values. A value of
+	 * <code>GAP_FILLER</code> indicates that user has not set the
+	 * corresponding positional parameter. A value of null implies that user has
+	 * set the value as null.
+	 */
+	public Object[] getPositionalParameters() {
+		_query.lock();
+		try {
+			return (_positional == null) ? EMPTY_ARRAY : _positional.values()
+					.toArray();
+		} finally {
+			_query.unlock();
+		}
+	}
 
     public OpenJPAQuery setParameters(Object... params) {
         _query.assertOpen();

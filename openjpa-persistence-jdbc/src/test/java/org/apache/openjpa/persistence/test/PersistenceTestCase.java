@@ -18,7 +18,13 @@
  */
 package org.apache.openjpa.persistence.test;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.lang.reflect.Modifier;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -296,4 +302,99 @@ public abstract class PersistenceTestCase
         else if (o1.equals(o2))
             fail("expected args to be different; compared equal.");
     }
+
+    /**
+     * Round-trip a serializable object to bytes.
+     */
+    public static Object roundtrip(Object o) 
+        throws ClassNotFoundException, IOException {
+        ByteArrayOutputStream bytes = new ByteArrayOutputStream();
+        ObjectOutputStream out = new ObjectOutputStream(bytes);
+        out.writeObject(o);
+        out.flush();
+        ObjectInputStream in = new ObjectInputStream(
+            new ByteArrayInputStream(bytes.toByteArray()));
+        return in.readObject();
+    }
+    
+    // ================================================ 
+    // Utility methods for exception handling
+    // ================================================
+    /**
+	 * Asserts that the given targetType is assignable from given actual 
+	 * Throwable.
+	 */
+    protected void assertException(final Throwable actual, Class targetType) {
+		assertException(actual, targetType, null);
+	}
+	
+	/**
+	 * Asserts that the given targetType is assignable from given actual 
+	 * Throwable. Asserts that the nestedType is nested (possibly recursively) 
+	 * within the given actual Throwable.
+	 * 
+	 * @param actual is the actual throwable to be tested
+	 * @param targetType is expected type or super type of actual. If null, then
+	 * the check is omitted.
+	 * @param nestedTargetType is expected type of exception nested within
+	 * actual. If null this search is omitted. 
+	 * 
+	 */
+    protected void assertException(final Throwable actual, Class targetType,
+			Class nestedTargetType) {
+		assertNotNull(actual);
+		Class actualType = actual.getClass();
+		if (targetType != null && !targetType.isAssignableFrom(actualType)) {
+			actual.printStackTrace();
+			fail(targetType.getName() + " is not assignable from "
+					+ actualType.getName());
+		}
+
+		if (nestedTargetType != null) {
+			Throwable nested = actual.getCause();
+			Class nestedActualType = (nested == null) ? null : nested.getClass();
+			while (nestedActualType != null) {
+				if (nestedTargetType.isAssignableFrom(nestedActualType)) {
+					return;
+				} else {
+					Throwable next = nested.getCause();
+					if (next == null || next == nested)
+						break;
+					nestedActualType = next.getClass();
+					nested     = next;
+				}
+			}
+			actual.printStackTrace();
+			fail("No nested type " + nestedTargetType + " in " + actual);
+		}
+	}
+
+	/**
+	 * Assert that each of given keys are present in the message of the given
+	 * Throwable.
+	 */
+    protected void assertMessage(Throwable actual, String... keys) {
+		if (actual == null || keys == null)
+			return;
+		String message = actual.getMessage();
+		for (String key : keys) {
+			assertTrue(key + " is not in " + message, message.contains(key));
+		}
+	}
+    
+    public void printException(Throwable t) {
+    	printException(t, 2);
+    }
+    
+    public void printException(Throwable t, int tab) {
+		if (t == null) return;
+		for (int i=0; i<tab*4;i++) System.out.print(" ");
+		String sqlState = (t instanceof SQLException) ? 
+			"(SQLState=" + ((SQLException)t).getSQLState() + ":" 
+				+ t.getMessage() + ")" : "";
+		System.out.println(t.getClass().getName() + sqlState);
+		if (t.getCause() == t) 
+			return;
+		printException(t.getCause(), tab+2);
+	}
 }
