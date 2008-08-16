@@ -102,6 +102,10 @@ class DistributedStoreManager extends JDBCStoreManager {
     public DistributedJDBCConfiguration getConfiguration() {
         return _conf;
     }
+    
+    public SliceStoreManager getSlice(int i) {
+    	return _slices.get(i);
+    }
 
     /**
      * Decides the index of the StoreManager by first looking at the
