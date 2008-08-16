@@ -38,7 +38,6 @@ import java.util.TreeMap;
 import javax.persistence.FlushModeType;
 import javax.persistence.Query;
 import javax.persistence.TemporalType;
-import javax.swing.text.Position;
 
 import org.apache.commons.collections.map.LinkedMap;
 import org.apache.openjpa.enhance.Reflection;
