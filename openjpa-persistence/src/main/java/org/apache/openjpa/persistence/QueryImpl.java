@@ -20,6 +20,8 @@ package org.apache.openjpa.persistence;
 
 import java.io.Serializable;
 import java.lang.reflect.Method;
+import java.sql.Time;
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
@@ -356,6 +358,52 @@ public class QueryImpl
 					
 				}
 			}
+
+		} else if (_named != null) {
+			LinkedMap expected = _query.getParameterTypes();
+			// key : name of the parameter used while binding
+			// value : user supplied parameter value. null may mean either
+			// user has supplied a value or not specified at all
+			Map<String, Object> actual = _named;
+			for (Object o : expected.keySet()) {
+				String expectedName = (String) o;
+				Class expectedParamType = (Class) expected.get(expectedName);
+				Object actualValue = actual.get(expectedName);
+				boolean valueUnspecified = !actual.containsKey(expectedName);
+				if (valueUnspecified) {
+					newValidationException("param-missing", expectedName, query,
+							Arrays.toString(actual.keySet().toArray()));
+				}
+				if (expectedParamType.isPrimitive() && actualValue == null)
+					newValidationException("param-type-null", 
+							expectedName, query, expectedParamType.getName());
+				if (actualValue != null 
+				 && !Filters.wrap(expectedParamType).isInstance(actualValue)) {
+					newValidationException("param-type-mismatch",
+							expectedName, query, actualValue,
+							actualValue.getClass().getName(),
+							expectedParamType.getName());
+				}
+			}
+			for (String actualName : actual.keySet()) {
+				Object actualValue = actual.get(actualName);
+				Class expectedParamType = (Class) expected.get(actualName);
+				boolean paramExpected = expected.containsKey(actualName);
+				if (!paramExpected) {
+					newValidationException("param-extra", actualName, query,
+							expected.asList());
+				}
+				if (expectedParamType.isPrimitive() && actualValue == null)
+					newValidationException("param-type-null", 
+							actualName, query, expectedParamType.getName());
+				if (actualValue != null 
+				 && !Filters.wrap(expectedParamType).isInstance(actualValue)) {
+					newValidationException("param-type-mismatch",
+							actualName, query, actualValue,
+							actualValue.getClass().getName(),
+							expectedParamType.getName());
+				}
+			}
 		}
 	}
 	
@@ -521,15 +569,35 @@ public class QueryImpl
 
     public OpenJPAQuery setParameter(int position, Calendar value,
         TemporalType t) {
-        return setParameter(position, value);
+        return setParameter(position, convertTemporalType(value, t));
     }
 
     public OpenJPAQuery setParameter(int position, Date value,
         TemporalType type) {
-        return setParameter(position, value);
+        return setParameter(position, convertTemporalType(value, type));
     }
 
-	public OpenJPAQuery setParameter(int position, Object value) {
+    /**
+     * Converts the given Date to a value corresponding to given temporal type.
+     */
+    Object convertTemporalType(Date value, TemporalType type) {
+            switch (type) {
+            case DATE:
+                    return value;
+            case TIME:
+                    return new Time(value.getTime());
+            case TIMESTAMP:
+                    return new Timestamp(value.getTime());
+            default:
+                    return null;
+            }
+    }
+    
+    Object convertTemporalType(Calendar value, TemporalType type) {
+            return convertTemporalType(value.getTime(), type);
+    }
+    
+    public OpenJPAQuery setParameter(int position, Object value) {
 		_query.assertOpen();
 		_em.assertNotCloseInvoked();
 		_query.lock();
@@ -565,12 +633,12 @@ public class QueryImpl
 
     public OpenJPAQuery setParameter(String name, Calendar value,
         TemporalType t) {
-        return setParameter(name, value);
+        return setParameter(name, convertTemporalType(value, t));
     }
 
     public OpenJPAQuery setParameter(String name, Date value,
         TemporalType type) {
-        return setParameter(name, value);
+        return setParameter(name, convertTemporalType(value, type));
     }
 
     public OpenJPAQuery setParameter(String name, Object value) {
