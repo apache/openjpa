@@ -442,6 +442,9 @@ public class PCPath
                 // unbound vars are cross-joined to the candidate table
                 var = (Variable) action.data;
                 rel = (ClassMapping) var.getMetaData();
+                if (rel == null)
+                	throw new IllegalArgumentException(_loc.get(
+                	    "invalid-unbound-var", var.getName()).toString());
                 pstate.joins = pstate.joins.setVariable(var.getName());
                 pstate.joins = pstate.joins.crossJoin(_candidate.getTable(), 
                     rel.getTable());

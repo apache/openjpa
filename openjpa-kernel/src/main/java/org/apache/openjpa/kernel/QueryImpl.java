@@ -854,7 +854,8 @@ public class QueryImpl
             } catch (OpenJPAException ke) {
                 throw ke;
             } catch (Exception e) {
-                throw new UserException(e);
+                throw new UserException(_loc.get("query-execution-error", 
+                		_query), e);
             } finally {
                 _broker.endOperation();
             }
