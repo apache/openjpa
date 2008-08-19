@@ -27,11 +27,11 @@ import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.Table;
 
-@NamedQuery(name="FindXTwo", query="select s from simple2 s where s.name = ?1")
+@NamedQuery(name="FindXTwo", query="select s from simple2 s where s.name = :fname")
 
 @NamedQueries( {
-    @NamedQuery(name="FindOne", query="select s from simple2 s where s.name = ?1"),
-    @NamedQuery(name="Find2One", query="select s from simple2 s where s.name = ?1"),
+    @NamedQuery(name="FindOne", query="select s from simple2 s where s.name = :fname"),
+    @NamedQuery(name="Find2One", query="select s from simple2 s where s.name = :fname"),
     @NamedQuery(name="Find2All", query="select s from simple2 s")
 })
 

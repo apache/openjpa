@@ -1582,17 +1582,14 @@ public class AnnotationPersistenceMetaDataParser
             if (_log.isTraceEnabled())
                 _log.trace(_loc.get("parse-query", query.name()));
 
-            meta = getRepository().searchQueryMetaDataByName(query.name());
+            meta = getRepository().getCachedQueryMetaData(null, query.name());
             if (meta != null) {
-            	Class definingType = meta.getDefiningType();
-                if ((definingType == null || definingType != _cls) 
-                  && _log.isWarnEnabled()) {
-                    _log.warn(_loc.get("dup-query", query.name(), el, 
-                    		definingType));
-                }
+                if (_log.isWarnEnabled())
+                    _log.warn(_loc.get("dup-query", query.name(), el));
                 continue;
             }
-            meta = getRepository().addQueryMetaData(_cls, query.name());
+
+            meta = getRepository().addQueryMetaData(null, query.name());
             meta.setQueryString(query.query());
             meta.setLanguage(JPQLParser.LANG_JPQL);
             for (QueryHint hint : query.hints())
@@ -1626,12 +1623,10 @@ public class AnnotationPersistenceMetaDataParser
             if (_log.isTraceEnabled())
                 _log.trace(_loc.get("parse-native-query", query.name()));
 
-            meta = getRepository().searchQueryMetaDataByName(query.name());
+            meta = getRepository().getCachedQueryMetaData(null, query.name());
             if (meta != null) {
-            	Class defType = meta.getDefiningType();
-                if ((defType != _cls) && _log.isWarnEnabled()) {
-                    _log.warn(_loc.get("dup-query", query.name(), el, defType));
-                }
+                if (_log.isWarnEnabled())
+                    _log.warn(_loc.get("dup-query", query.name(), el));
                 continue;
             }
 

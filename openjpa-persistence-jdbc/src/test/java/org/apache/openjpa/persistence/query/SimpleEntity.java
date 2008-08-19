@@ -33,11 +33,11 @@ import javax.persistence.NamedQuery;
 import javax.persistence.SqlResultSetMapping;
 import javax.persistence.Table;
 
-@NamedQuery(name="FindXTwo", query="select s from simple s where s.name = ?1")
+@NamedQuery(name="FindXTwo", query="select s from simple s where s.name = :fname")
 
 @NamedQueries( {
-    @NamedQuery(name="FindOne", query="select s from simple s where s.name = ?1"),
-    @NamedQuery(name="FindOne", query="select s from simple s where s.name = ?1"),
+    @NamedQuery(name="FindOne", query="select s from simple s where s.name = :fname"),
+    @NamedQuery(name="FindOne", query="select s from simple s where s.name = :fname"),
     @NamedQuery(name="FindAll", query="select s from simple s")
 })
 

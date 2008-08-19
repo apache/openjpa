@@ -32,7 +32,6 @@ import org.apache.openjpa.kernel.ExpressionStoreQuery;
 import org.apache.openjpa.kernel.FetchConfiguration;
 import org.apache.openjpa.kernel.OrderingMergedResultObjectProvider;
 import org.apache.openjpa.kernel.QueryContext;
-import org.apache.openjpa.kernel.StoreManager;
 import org.apache.openjpa.kernel.StoreQuery;
 import org.apache.openjpa.kernel.exps.ExpressionParser;
 import org.apache.openjpa.lib.rop.MergedResultObjectProvider;
@@ -62,15 +61,17 @@ class DistributedStoreQuery extends JDBCStoreQuery {
 		_queries.add(q);
 	}
 	
-	public DistributedStoreManager getDistributedStore() {
-		return (DistributedStoreManager)getStore();
-	}
-	
     public Executor newDataStoreExecutor(ClassMetaData meta, boolean subs) {
     	ParallelExecutor ex = new ParallelExecutor(this, meta, subs, _parser, 
     			ctx.getCompilation());
-        for (StoreQuery q : _queries) {
-            ex.addExecutor(q.newDataStoreExecutor(meta, subs));
+    	
+    	FetchConfiguration fetch = getContext().getFetchConfiguration();
+    	DistributedStoreManager store = (DistributedStoreManager)getContext()
+    	    .getStoreContext().getStoreManager().getInnermostDelegate();
+        List<SliceStoreManager> targets = store.getTargets(fetch);
+        for (StoreQuery q:_queries) {
+            if (targets.contains(((JDBCStoreQuery)q).getStore()))
+                ex.addExecutor(q.newDataStoreExecutor(meta, subs));
         }
         return ex;
     }
@@ -116,23 +117,19 @@ class DistributedStoreQuery extends JDBCStoreQuery {
          */
         public ResultObjectProvider executeQuery(StoreQuery q,
                 final Object[] params, final Range range) {
+        	ResultObjectProvider[] tmp = new ResultObjectProvider[executors.size()];
+        	final Iterator<StoreQuery> qs = owner._queries.iterator();
         	final List<Future<ResultObjectProvider>> futures = 
         		new ArrayList<Future<ResultObjectProvider>>();
-        	List<SliceStoreManager> targets = findTargets();
-        	for (int i = 0; i < owner._queries.size(); i++) {
-        		StoreQuery query = owner._queries.get(i);
-        		StoreManager sm  = owner.getDistributedStore().getSlice(i);
-        		if (!targets.contains(sm))
-        			continue;
+        	int i = 0;
+        	for (Executor ex:executors)  {
         		QueryExecutor call = new QueryExecutor();
-        		call.executor = executors.get(i);
-        		call.query    = query;
+        		call.executor = ex;
+        		call.query    = qs.next();
         		call.params   = params;
         		call.range    = range;
         		futures.add(threadPool.submit(call)); 
         	}
-        	int i = 0;
-        	ResultObjectProvider[] tmp = new ResultObjectProvider[futures.size()];
         	for (Future<ResultObjectProvider> future:futures) {
         		try {
 					tmp[i++] = future.get();
@@ -212,11 +209,6 @@ class DistributedStoreQuery extends JDBCStoreQuery {
 				}
         	}
         	return new Integer(N);
-        }
-        
-        List<SliceStoreManager> findTargets() {
-        	FetchConfiguration fetch = owner.getContext().getFetchConfiguration();
-        	return owner.getDistributedStore().getTargets(fetch);
         }
 
 	}

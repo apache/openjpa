@@ -908,11 +908,7 @@ public class QueryImpl
             else if (key instanceof Number) {
                 if (base == -1)
                     base = positionalParameterBase(params.keySet());
-                int arrayIndex = ((Number) key).intValue() - base;
-                if (arrayIndex >= arr.length)
-                	throw new UserException(_loc.get("gap-query-param", 
-                		new Object[]{_query, key, params.size(), params}));
-                arr[arrayIndex] = entry.getValue();
+                arr[((Number) key).intValue() - base] = entry.getValue();
             } else
                 throw new UserException(_loc.get("bad-param-name", key));
         }

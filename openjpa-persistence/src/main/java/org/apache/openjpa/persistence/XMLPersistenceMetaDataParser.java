@@ -1391,15 +1391,9 @@ public class XMLPersistenceMetaDataParser
         if (log.isTraceEnabled())
             log.trace(_loc.get("parse-query", name));
 
-        QueryMetaData meta = getRepository().searchQueryMetaDataByName(name);
-        if (meta != null) {
-        	Class defType = meta.getDefiningType();
-            if ((defType != _cls) && log.isWarnEnabled()) {
-            	log.warn(_loc.get("dup-query", name, currentLocation(), defType));
-            }
-            pushElement(meta);
-            return true;
-        }
+        QueryMetaData meta = getRepository().getCachedQueryMetaData(null, name);
+        if (meta != null && log.isWarnEnabled())
+            log.warn(_loc.get("override-query", name, currentLocation()));
 
         meta = getRepository().addQueryMetaData(null, name);
         meta.setDefiningType(_cls);

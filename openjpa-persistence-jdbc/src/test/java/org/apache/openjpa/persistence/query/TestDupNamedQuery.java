@@ -60,8 +60,8 @@ public class TestDupNamedQuery extends SingleEMFTestCase {
         assertNotNull(list);
         assertEquals(list.size(), 1);
         Object o = list.get(0);
-        assertTrue(simple2 ? o instanceof SimpleEntity2 
-        		: o instanceof SimpleEntity);
+        assertSame(o.getClass(), simple2 ? SimpleEntity2.class
+            : SimpleEntity.class);
         assertEquals(simple2 ? ((SimpleEntity2) o).getValue()
             : ((SimpleEntity) o).getValue(), ValueOne);
 
@@ -71,8 +71,8 @@ public class TestDupNamedQuery extends SingleEMFTestCase {
             assertEquals(list.size(), 2);
             for (Iterator resultIter = list.iterator(); resultIter.hasNext();) {
                 o = resultIter.next();
-                assertTrue(simple2 ? o instanceof SimpleEntity2 
-                		: o instanceof SimpleEntity);
+                assertSame(o.getClass(), simple2 ? SimpleEntity2.class
+                    : SimpleEntity.class);
                 String n = null;
                 String v = null;
                 if (simple2) {

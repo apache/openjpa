@@ -87,7 +87,7 @@ public class EntityManagerImpl
     private Map<FetchConfiguration,FetchPlan> _plans =
         new IdentityHashMap<FetchConfiguration,FetchPlan>(1);
 
-    private RuntimeExceptionTranslator _ret =
+    private RuntimeExceptionTranslator ret =
         PersistenceExceptions.getRollbackTranslator(this);
 
     public EntityManagerImpl() {
@@ -104,8 +104,8 @@ public class EntityManagerImpl
 
     private void initialize(EntityManagerFactoryImpl factory, Broker broker) {
         _emf = factory;
-        _broker = new DelegatingBroker(broker, _ret);
-        _broker.setImplicitBehavior(this, _ret);
+        _broker = new DelegatingBroker(broker, ret);
+        _broker.setImplicitBehavior(this, ret);
     }
 
     /**
@@ -867,16 +867,7 @@ public class EntityManagerImpl
 
     public OpenJPAQuery createQuery(String language, String query) {
         assertNotCloseInvoked();
-        try {
-            org.apache.openjpa.kernel.Query q = _broker.newQuery(language, 
-                query);
-            // have to validate JPQL according to spec
-            if (JPQLParser.LANG_JPQL.equals(language))
-                q.compile(); 
-            return new QueryImpl(this, _ret, q);
-        } catch (RuntimeException re) {
-            throw PersistenceExceptions.toPersistenceException(re);
-        }
+        return new QueryImpl(this, ret, _broker.newQuery(language, query));
     }
 
     public OpenJPAQuery createQuery(Query query) {
@@ -884,7 +875,7 @@ public class EntityManagerImpl
             return createQuery((String) null);
         assertNotCloseInvoked();
         org.apache.openjpa.kernel.Query q = ((QueryImpl) query).getDelegate();
-        return new QueryImpl(this, _ret, _broker.newQuery(q.getLanguage(),
+        return new QueryImpl(this, ret, _broker.newQuery(q.getLanguage(),
             q));
     }
 
@@ -900,7 +891,7 @@ public class EntityManagerImpl
             meta.setInto(del);
             del.compile();
 
-            OpenJPAQuery q = new QueryImpl(this, _ret, del);
+            OpenJPAQuery q = new QueryImpl(this, ret, del);
             String[] hints = meta.getHintKeys();
             Object[] values = meta.getHintValues();
             for (int i = 0; i < hints.length; i++)
@@ -926,7 +917,7 @@ public class EntityManagerImpl
         org.apache.openjpa.kernel.Query kernelQuery = _broker.newQuery(
             QueryLanguages.LANG_SQL, query);
         kernelQuery.setResultMapping(null, mappingName);
-        return new QueryImpl(this, _ret, kernelQuery);
+        return new QueryImpl(this, ret, kernelQuery);
     }
 
     /**
@@ -1244,7 +1235,7 @@ public class EntityManagerImpl
     public void readExternal(ObjectInput in)
         throws IOException, ClassNotFoundException {
         try {
-            _ret = PersistenceExceptions.getRollbackTranslator(this);
+            ret = PersistenceExceptions.getRollbackTranslator(this);
 
             // this assumes that serialized Brokers are from something
             // that extends AbstractBrokerFactory.
@@ -1263,7 +1254,7 @@ public class EntityManagerImpl
             initialize(emf, broker);
         } catch (RuntimeException re) {
             try {
-                re = _ret.translate(re);
+                re = ret.translate(re);
             } catch (Exception e) {
                 // ignore
             }
@@ -1285,7 +1276,7 @@ public class EntityManagerImpl
             out.writeObject(baos.toByteArray());
         } catch (RuntimeException re) {
             try {
-                re = _ret.translate(re);
+                re = ret.translate(re);
             } catch (Exception e) {
                 // ignore
             }

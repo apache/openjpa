@@ -1618,15 +1618,10 @@ public class MetaDataRepository
         ClassLoader envLoader) {
         if (name == null)
             return null;
-        QueryMetaData qm = null;
-        if (cls == null) {
-        	qm = searchQueryMetaDataByName(name);
-        	if (qm != null)
-        		return qm;
-        }
+
         // check cache
         Object key = getQueryKey(cls, name);
-        qm = (QueryMetaData) _queries.get(key);
+        QueryMetaData qm = (QueryMetaData) _queries.get(key);
         if (qm != null)
             return qm;
 
@@ -1698,18 +1693,6 @@ public class MetaDataRepository
         if (name == null)
             return false;
         return _queries.remove(getQueryKey(cls, name)) != null;
-    }
-    
-    /**
-     * Searches all cached query metadata by name. 
-     */
-    public QueryMetaData searchQueryMetaDataByName(String name) {
-    	for (Object key : _queries.keySet()) {
-    		if (key instanceof QueryKey)
-    			if (StringUtils.equals(((QueryKey)key).name, name))
-    				return (QueryMetaData)_queries.get(key);
-    	}
-    	return null;
     }
 
     /**
