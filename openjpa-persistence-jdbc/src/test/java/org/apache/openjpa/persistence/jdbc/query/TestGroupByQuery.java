@@ -1,13 +1,4 @@
 /*
- * TestLockGroupsWithHorizontalBaseType.java
- *
- * Created on October 4, 2006, 5:03 PM
- *
- * To change this template, choose Tools | Template Manager
- * and open the template in the editor.
- */
-
-/*
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
  * distributed with this work for additional information
