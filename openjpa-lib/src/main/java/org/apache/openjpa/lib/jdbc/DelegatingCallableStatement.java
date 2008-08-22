@@ -63,7 +63,7 @@ public class DelegatingCallableStatement
             _del = null;
     }
 
-    private ResultSet wrapResult(boolean wrap, ResultSet rs) {
+    protected ResultSet wrapResult(boolean wrap, ResultSet rs) {
         if (!wrap)
             return rs;
 
@@ -102,7 +102,7 @@ public class DelegatingCallableStatement
     }
 
     public String toString() {
-        StringBuffer buf = new StringBuffer("prepstmnt ").append(hashCode());
+        StringBuffer buf = new StringBuffer("callstmnt ").append(hashCode());
         appendInfo(buf);
         return buf.toString();
     }
