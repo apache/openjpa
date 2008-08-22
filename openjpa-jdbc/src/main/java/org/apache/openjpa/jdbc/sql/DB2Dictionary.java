@@ -289,6 +289,10 @@ public class DB2Dictionary
 
         // platform specific settings
         switch (db2ServerType) {
+        case db2UDBV82OrLater:
+            lastGeneratedKeyQuery = "SELECT IDENTITY_VAL_LOCAL() FROM "
+                + "SYSIBM.SYSDUMMY1";
+            break;
         case  db2ZOSV8xOrLater:
             // DB2 Z/OS 
             characterColumnSize = 255;
