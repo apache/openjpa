@@ -2306,6 +2306,19 @@ supported by the database.
                         </para>
                     </listitem>
                     <listitem>
+                    <para>
+<literal>boolean implicit</literal>: Whether to mark a relation field value as 
+implicitly referring to a related entity. This property can be used, for 
+example, when a field value represents primary key field of a related
+entity, but for legacy or other logistic reasons, the field is declared as the
+same type of the primary key of the related entity instead of a reference to
+the entity itself. Hence no actual mapping can be defined on the field itself.
+If this implicit property is set, then no other property on
+the ForeignKey annotation can be set to their non-default value. This setting
+does not manifest as a database foreign key constraint.                      
+                    </para>
+                    </listitem>
+                    <listitem>
                         <para>
 <literal>ForeignKeyAction deleteAction</literal>: Value from the
 <ulink url="../javadoc/org/apache/openjpa/persistence/jdbc/ForeignKeyAction.html">
