@@ -73,6 +73,7 @@ import org.apache.openjpa.jdbc.meta.strats.FlatClassStrategy;
 import org.apache.openjpa.jdbc.meta.strats.FullClassStrategy;
 import org.apache.openjpa.jdbc.meta.strats.VerticalClassStrategy;
 import org.apache.openjpa.jdbc.schema.Column;
+import org.apache.openjpa.jdbc.schema.Schemas;
 import org.apache.openjpa.jdbc.schema.Unique;
 import org.apache.openjpa.jdbc.sql.DBDictionary;
 import org.apache.openjpa.lib.log.Log;
@@ -808,14 +809,18 @@ public class AnnotationPersistenceMappingParser
         Column col = new Column();
         if (!StringUtils.isEmpty(anno.name()))
             col.setName(anno.name());
-        if (!StringUtils.isEmpty(anno.columnDefinition()))
-            col.setTypeName(anno.columnDefinition());
         if (anno.precision() != 0)
             col.setSize(anno.precision());
         else if (anno.length() != 255)
             col.setSize(anno.length());
         col.setNotNull(!anno.nullable());
         col.setDecimalDigits(anno.scale());
+        if (!StringUtils.isEmpty(anno.columnDefinition())) {
+            col.setTypeName(anno.columnDefinition());
+            col.setType(Schemas.getJDBCType(col.getTypeName()));
+            col.setJavaType(JavaTypes.getTypeCode(Schemas.getJavaType
+            	(col.getType(), col.getSize(), col.getDecimalDigits())));
+        }
         col.setFlag(Column.FLAG_UNINSERTABLE, !anno.insertable());
         col.setFlag(Column.FLAG_UNUPDATABLE, !anno.updatable());
         return col;

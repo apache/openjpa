@@ -25,6 +25,7 @@ import org.apache.openjpa.jdbc.meta.MappingDefaultsImpl;
 import org.apache.openjpa.jdbc.meta.ValueMapping;
 import org.apache.openjpa.jdbc.meta.Version;
 import org.apache.openjpa.jdbc.meta.strats.FlatClassStrategy;
+import org.apache.openjpa.jdbc.meta.strats.MultiColumnVersionStrategy;
 import org.apache.openjpa.jdbc.meta.strats.NoneDiscriminatorStrategy;
 import org.apache.openjpa.jdbc.meta.strats.NoneVersionStrategy;
 import org.apache.openjpa.jdbc.meta.strats.NumberVersionStrategy;
@@ -84,9 +85,12 @@ public class PersistenceMappingDefaults
             || cls.getVersionField() != null)
             return strat;
 
-        if (vers.getMappingInfo().getColumns().isEmpty())
-            return NoneVersionStrategy.getInstance();
-        return new NumberVersionStrategy();
+        int nColumn = vers.getMappingInfo().getColumns().size();
+        switch (nColumn) {
+	        case 0 : return NoneVersionStrategy.getInstance();
+	        case 1 : return new NumberVersionStrategy();
+	        default: return new MultiColumnVersionStrategy();
+        }
     }
 
     @Override

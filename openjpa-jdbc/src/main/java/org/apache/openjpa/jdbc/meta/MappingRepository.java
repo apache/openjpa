@@ -50,6 +50,7 @@ import org.apache.openjpa.jdbc.meta.strats.MaxEmbeddedBlobFieldStrategy;
 import org.apache.openjpa.jdbc.meta.strats.MaxEmbeddedByteArrayFieldStrategy;
 import org.apache.openjpa.jdbc.meta.strats.MaxEmbeddedCharArrayFieldStrategy;
 import org.apache.openjpa.jdbc.meta.strats.MaxEmbeddedClobFieldStrategy;
+import org.apache.openjpa.jdbc.meta.strats.MultiColumnVersionStrategy;
 import org.apache.openjpa.jdbc.meta.strats.NanoPrecisionTimestampVersionStrategy;
 import org.apache.openjpa.jdbc.meta.strats.NoneClassStrategy;
 import org.apache.openjpa.jdbc.meta.strats.NoneDiscriminatorStrategy;
@@ -626,6 +627,8 @@ public class MappingRepository
 
         if (NumberVersionStrategy.ALIAS.equals(name))
             strat = NumberVersionStrategy.class;
+        else if (MultiColumnVersionStrategy.ALIAS.equals(name))
+        	strat = MultiColumnVersionStrategy.class;
         else if (TimestampVersionStrategy.ALIAS.equals(name))
             strat = TimestampVersionStrategy.class;
         else if (NanoPrecisionTimestampVersionStrategy.ALIAS.equals(name))

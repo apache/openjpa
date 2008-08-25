@@ -25,6 +25,7 @@ import java.util.Date;
 
 import org.apache.openjpa.jdbc.meta.JavaSQLTypes;
 import org.apache.openjpa.jdbc.schema.Column;
+import org.apache.openjpa.util.InternalException;
 
 /**
  * Uses a timestamp for optimistic versioning.
@@ -42,6 +43,10 @@ public class TimestampVersionStrategy
 
     protected int getJavaType() {
         return JavaSQLTypes.TIMESTAMP;
+    }
+    
+    protected int getJavaType(int i) {
+        throw new InternalException("multi-column-version-not-supported");
     }
 
     protected Object nextVersion(Object version) {

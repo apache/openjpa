@@ -18,9 +18,12 @@
  */
 package org.apache.openjpa.jdbc.meta.strats;
 
+import java.lang.reflect.Array;
 import java.math.BigDecimal;
 import java.sql.SQLException;
 import java.util.Comparator;
+import java.util.HashSet;
+import java.util.Set;
 
 import org.apache.openjpa.jdbc.kernel.JDBCStore;
 import org.apache.openjpa.jdbc.meta.ClassMapping;
@@ -36,7 +39,10 @@ import org.apache.openjpa.kernel.OpenJPAStateManager;
 import org.apache.openjpa.kernel.StoreManager;
 import org.apache.openjpa.lib.util.Localizer;
 import org.apache.openjpa.meta.JavaTypes;
+import org.apache.openjpa.util.InternalException;
 import org.apache.openjpa.util.MetaDataException;
+
+import serp.util.Numbers;
 
 /**
  * Uses a single column and corresponding version object.
@@ -54,6 +60,13 @@ public abstract class ColumnVersionStrategy
      * strategy uses. This method is only used during mapping installation.
      */
     protected abstract int getJavaType();
+    
+    /**
+     * Return the code from {@link JavaTypes} for the version value this given
+     * column index uses. Only used if the version strategy employs more than
+     * one column. 
+     */
+    protected abstract int getJavaType(int i);
 
     /**
      * Return the next version given the current one, which may be null.
@@ -73,7 +86,12 @@ public abstract class ColumnVersionStrategy
             return -1;
         if (v2 == null)
             return 1;
-
+        
+        if (v1.getClass().isArray()) {
+        	if (!v2.getClass().isArray())
+        		throw new InternalException();
+        	return compare((Object[])v1, (Object[])v2);
+        }
         if (v1.getClass() != v2.getClass()) {
             if (v1 instanceof Number && !(v1 instanceof BigDecimal))
                 v1 = new BigDecimal(((Number) v1).doubleValue());
@@ -85,6 +103,29 @@ public abstract class ColumnVersionStrategy
         return ((Comparable) v1).compareTo(v2);
     }
 
+
+	/**
+	 * Compare each element of the given arrays that must be of equal size. 
+	 * 
+	 * @return If each element comparison results into same sign then returns 
+	 * that sign. If some elements compare equal and all the rest has the same
+	 * sign then return that sign. Otherwise, return 1.
+	 */
+	protected int compare(Object[] a1, Object[] a2) {
+		if (a1.length != a2.length)
+	    	throw new InternalException();
+		Set<Integer> comps = new HashSet<Integer>();
+		for (int i = 0; i < a1.length; i++)
+			comps.add(sign(compare(a1[i], a2[i])));
+		if (comps.size() == 1 || (comps.size() == 2 && comps.remove(0)))
+			return comps.iterator().next();
+		return 1;
+	}
+	
+	int sign(int i) {
+		return (i > 0) ? 1 : (i == 0) ? 0 : -1;
+	}
+
     public void map(boolean adapt) {
         ClassMapping cls = vers.getClassMapping();
         if (cls.getJoinablePCSuperclassMapping() != null
@@ -95,18 +136,35 @@ public abstract class ColumnVersionStrategy
         info.assertNoJoin(vers, true);
         info.assertNoForeignKey(vers, !adapt);
         info.assertNoUnique(vers, false);
+        if (info.getColumns().size() > 1) {
+        	Column[] templates = new Column[info.getColumns().size()];
+        	for (int i = 0; i < info.getColumns().size(); i++) {
+                templates[i] = new Column();
+        		Column infoColumn = (Column)info.getColumns().get(i);
+        		templates[i].setType(infoColumn.getType());
+        		templates[i].setSize(infoColumn.getSize());
+        		templates[i].setDecimalDigits(infoColumn.getDecimalDigits());
+        		templates[i].setJavaType(getJavaType(i));
+        		templates[i].setName("versn" +i);
+        	}
+        	Column[] cols = info.getColumns(vers, templates, adapt);
+        	for (int i = 0; i < cols.length; i++)
+        		cols[i].setVersionStrategy(this);
+        	vers.setColumns(cols);
+        	vers.setColumnIO(info.getColumnIO());
+        } else {
+           Column tmplate = new Column();
+           tmplate.setJavaType(getJavaType());
+           tmplate.setName("versn");
 
-        Column tmplate = new Column();
-        tmplate.setJavaType(getJavaType());
-        tmplate.setName("versn");
+           Column[] cols = info.getColumns(vers, new Column[]{ tmplate }, adapt);
+           cols[0].setVersionStrategy(this);
+           vers.setColumns(cols);
+           vers.setColumnIO(info.getColumnIO());
 
-        Column[] cols = info.getColumns(vers, new Column[]{ tmplate }, adapt);
-        cols[0].setVersionStrategy(this);
-        vers.setColumns(cols);
-        vers.setColumnIO(info.getColumnIO());
-
-        Index idx = info.getIndex(vers, cols, adapt);
-        vers.setIndex(idx);
+           Index idx = info.getIndex(vers, cols, adapt);
+           vers.setIndex(idx);
+        }
     }
 
     public void insert(OpenJPAStateManager sm, JDBCStore store, RowManager rm)
@@ -118,7 +176,7 @@ public abstract class ColumnVersionStrategy
             Row.ACTION_INSERT, sm, true);
         for (int i = 0; i < cols.length; i++)
             if (io.isInsertable(i, initial == null))
-                row.setObject(cols[i], initial);
+                row.setObject(cols[i], getColumnValue(initial, i));
 
         // set initial version into state manager
         Object nextVersion;
@@ -143,9 +201,9 @@ public abstract class ColumnVersionStrategy
         // set where and update conditions on row
         for (int i = 0; i < cols.length; i++) {
             if (curVersion != null && sm.isVersionCheckRequired())
-                row.whereObject(cols[i], curVersion);
+                row.whereObject(cols[i], getColumnValue(curVersion, i));
             if (vers.getColumnIO().isUpdatable(i, nextVersion == null))
-                row.setObject(cols[i], nextVersion);
+                row.setObject(cols[i], getColumnValue(nextVersion, i));
         }
 
         if (nextVersion != null)
@@ -162,11 +220,7 @@ public abstract class ColumnVersionStrategy
         Object curVersion = sm.getVersion();
         Object cur;
         for (int i = 0; i < cols.length; i++) {
-            if (cols.length == 1 || curVersion == null)
-                cur = curVersion;
-            else
-                cur = ((Object[]) curVersion)[i];
-
+            cur = getColumnValue(curVersion, i);
             // set where and update conditions on row
             if (cur != null)
                 row.whereObject(cols[i], cur);
@@ -186,19 +240,8 @@ public abstract class ColumnVersionStrategy
         if (!res.contains(cols[0]))
             return null;
 
-        Object version = null;
-        if (cols.length > 0)
-            version = new Object[cols.length];
-        Object cur;
-        for (int i = 0; i < cols.length; i++) {
-            if (i > 0 && !res.contains(cols[i]))
-                return null;
-            cur = res.getObject(cols[i], -1, null);
-            if (cols.length == 1)
-                version = cur;
-            else
-                ((Object[]) version)[i] = cur;
-        }
+        Object version = populateFromResult(res);
+
         // OPENJPA-662 Allow a null StateManager because this method may just be
         // invoked to get the result of projection query
         if (sm != null)
@@ -220,31 +263,8 @@ public abstract class ColumnVersionStrategy
                 return false;
 
             Object memVersion = sm.getVersion();
-            Object dbVersion = null;
-            if (cols.length > 1)
-                dbVersion = new Object[cols.length];
-
-            boolean refresh = false;
-            Object mem, db;
-            for (int i = 0; i < cols.length; i++) {
-                db = res.getObject(cols[i], -1, null);
-                if (cols.length == 1)
-                    dbVersion = db;
-                else
-                    ((Object[]) dbVersion)[i] = db;
-
-                // if we haven't already determined that we need a refresh,
-                // check if the mem version is earlier than the db one
-                if (!refresh) {
-                    if (cols.length == 1 || memVersion == null)
-                        mem = memVersion;
-                    else
-                        mem = ((Object[]) memVersion)[i];
-
-                    if (mem == null || (db != null && compare(mem, db) < 0))
-                        refresh = true;
-                }
-            }
+            Object dbVersion  = populateFromResult(res);
+            boolean refresh   = compare(memVersion, dbVersion) < 0;
 
             if (updateVersion)
                 sm.setVersion(dbVersion);
@@ -266,5 +286,31 @@ public abstract class ColumnVersionStrategy
         if (cmp > 0)
             return StoreManager.VERSION_LATER;
         return StoreManager.VERSION_SAME;
+    }
+        
+    /**
+     * Populate values of a version object from the given result.
+     * 
+     * @return a single Object or an array depending on whether using a single
+     * or multiple columns being used for representation.
+    */
+    Object populateFromResult(Result res) throws SQLException {
+        if (res == null)
+ 		return null;
+    	
+        Column[] cols = vers.getColumns();
+        Object[] values = new Object[cols.length];
+        for (int i = 0; i < cols.length; i++) {
+            values[i] = res.getObject(cols[i], -1, null);
+        }
+        return (cols.length == 1) ? values[0] : values;
+    }
+    
+    Object getColumnValue(Object o, int idx) {
+    	if (o == null) 
+    		return null;
+    	if (o.getClass().isArray())
+    		return Array.get(o, idx);
+    	return o;
     }
 }
