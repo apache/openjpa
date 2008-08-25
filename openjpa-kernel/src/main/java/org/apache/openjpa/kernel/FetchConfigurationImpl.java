@@ -574,14 +574,14 @@ public class FetchConfigurationImpl
         clone._fromField = fm.getFullName(false);
         clone._fromType = type;
         clone._availableRecursion = getAvailableRecursionDepth(fm, type, true);
-        if (StringUtils.equals(_directRelationOwner, fm.getFullName()))
+        if (StringUtils.equals(_directRelationOwner, fm.getFullName(false)))
             clone._load = false;
         else
             clone._load = _load;
 
         FieldMetaData owner = fm.getMappedByMetaData();
         if (owner != null && owner.getTypeCode() == JavaTypes.PC)
-            clone._directRelationOwner = owner.getFullName();
+            clone._directRelationOwner = owner.getFullName(false);
         
         return clone;
     }
@@ -593,7 +593,8 @@ public class FetchConfigurationImpl
         if (hasFetchGroupAll()
             || (fmd.isInDefaultFetchGroup() 
             && hasFetchGroupDefault())
-            || hasField(fmd.getFullName(false)))
+            || hasField(fmd.getFullName(false))
+            || hasField(fmd.getRealName()))
             return true;
         String[] fgs = fmd.getCustomFetchGroups();
         for (int i = 0; i < fgs.length; i++)
