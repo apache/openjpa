@@ -443,6 +443,16 @@ schema exists or create a schema which matches the user profile of the
 connection.
                     </para>
                 </listitem>
+                <listitem>
+                    <para>
+Use of DB2 on z/OS with the IBM JCC driver requires the DESCSTAT subsystem 
+parameter value to be set to 'YES'.  If this parameter is set to 'NO', the 
+mapping tool will fail with a persistence exception containing this text: 
+"Invalid parameter: Unknown column name TABLE_SCHEM".  After changing the value 
+of DESCSTAT, DB2 metadata tables must be recreated by running the DSNTIJMS job. 
+See DB2 for z/OS documentation for additional information.
+                    </para>
+                </listitem>
             </itemizedlist>
         </section>
     </section>
