@@ -153,11 +153,20 @@ public class FieldMappingInfo
     public ForeignKey getJoin(final FieldMapping field, Table table,
         boolean adapt) {
         // if we have no join columns defined, check class-level join
+    	// if the given field is embedded then consider primary table of owner
         List cols = getColumns();
-        if (cols.isEmpty())
-            cols = field.getDefiningMapping().getMappingInfo().
+        if (cols.isEmpty()) {
+        	ClassMapping mapping;
+        	if (field.isEmbedded() && 
+        		field.getDeclaringMapping().getEmbeddingMapping() != null) {
+        		mapping = field.getDeclaringMapping().getEmbeddingMapping()
+        			.getFieldMapping().getDeclaringMapping();
+        	} else {
+        		mapping = field.getDefiningMapping();
+        	}
+            cols = mapping.getMappingInfo().
                 getSecondaryTableJoinColumns(_tableName);
-
+        }
         ForeignKeyDefaults def = new ForeignKeyDefaults() {
             public ForeignKey get(Table local, Table foreign, boolean inverse) {
                 return field.getMappingRepository().getMappingDefaults().
