@@ -60,10 +60,6 @@ public class NumberVersionStrategy
         return JavaTypes.INT;
     }
     
-    protected int getJavaType(int i) {
-       throw new InternalException("multi-column-version-not-supported");
-    }
-
     protected Object nextVersion(Object version) {
         if (version == null)
             return _initial;

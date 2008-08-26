@@ -66,8 +66,11 @@ public abstract class ColumnVersionStrategy
      * column index uses. Only used if the version strategy employs more than
      * one column. 
      */
-    protected abstract int getJavaType(int i);
-
+    protected int getJavaType(int i) {
+    	throw new AbstractMethodError(
+    		_loc.get("multi-column-version-unsupported",getAlias()).toString());
+    }
+    
     /**
      * Return the next version given the current one, which may be null.
      */

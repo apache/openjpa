@@ -45,10 +45,6 @@ public class TimestampVersionStrategy
         return JavaSQLTypes.TIMESTAMP;
     }
     
-    protected int getJavaType(int i) {
-        throw new InternalException("multi-column-version-not-supported");
-    }
-
     protected Object nextVersion(Object version) {
         return new Timestamp(System.currentTimeMillis());
     }
