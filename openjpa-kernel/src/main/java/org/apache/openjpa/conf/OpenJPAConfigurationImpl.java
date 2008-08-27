@@ -135,6 +135,7 @@ public class OpenJPAConfigurationImpl
     public QueryCompilationCacheValue queryCompilationCachePlugin;
     public IntValue runtimeUnenhancedClasses;
     public CacheMarshallersValue cacheMarshallerPlugins;
+    public BooleanValue eagerInitialization;
 
     // custom values
     public BrokerFactoryValue brokerFactoryPlugin;
@@ -507,6 +508,8 @@ public class OpenJPAConfigurationImpl
 
         cacheMarshallerPlugins = (CacheMarshallersValue)
             addValue(new CacheMarshallersValue(this));
+        
+        eagerInitialization = addBoolean("InitializeEagerly");
 
         // initialize supported options that some runtimes may not support
         supportedOptions.add(OPTION_NONTRANS_READ);
@@ -1427,12 +1430,24 @@ public class OpenJPAConfigurationImpl
     public Map getCacheMarshallerInstances() {
         return cacheMarshallerPlugins.getInstancesAsMap();
     }
+    
+    public boolean isInitializeEagerly() {
+    	return eagerInitialization.get();
+    }
+    
+    public void setInitializeEagerly(boolean retry) {
+    	eagerInitialization.set(retry);
+    }
 
     public void instantiateAll() {
         super.instantiateAll();
         getMetaDataRepositoryInstance();
         getRemoteCommitEventManager();
         cacheMarshallerPlugins.initialize();
+        if (isInitializeEagerly()) {
+        	getConnectionFactory();
+        	getConnectionFactory2();
+        }
     }
 
     protected void preClose() {

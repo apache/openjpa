@@ -1252,6 +1252,11 @@ public class MetaDataRepository
         ClassLoader envLoader) {
         return _factory.getPersistentTypeNames(devpath, envLoader);
     }
+    
+    public synchronized Collection loadPersistentTypes(boolean devpath,
+            ClassLoader envLoader) {
+    	return loadPersistentTypes(devpath, envLoader, false);
+    }
 
     /**
      * Load the persistent classes named in configuration.
@@ -1263,13 +1268,19 @@ public class MetaDataRepository
      * @param devpath if true, search for metadata files in directories
      * in the classpath if the no classes are configured explicitly
      * @param envLoader the class loader to use, or null for default
+     * @param mustExist if true then empty list of classes or any unloadable
+     * but specified class will raise an exception. 
      * @return the loaded classes, or empty collection if none
      */
     public synchronized Collection loadPersistentTypes(boolean devpath,
-        ClassLoader envLoader) {
+        ClassLoader envLoader, boolean mustExist) {
         Set names = getPersistentTypeNames(devpath, envLoader);
-        if (names == null || names.isEmpty())
-            return Collections.EMPTY_LIST;
+        if (names == null || names.isEmpty()) {
+        	if (!mustExist)
+        		return Collections.EMPTY_LIST;
+        	else
+        		throw new MetaDataException(_loc.get("eager-no-class-found"));
+        }
 
         // attempt to load classes so that they get processed
         ClassLoader clsLoader = _conf.getClassResolverInstance().
@@ -1277,7 +1288,8 @@ public class MetaDataRepository
         List classes = new ArrayList(names.size());
         Class cls;
         for (Iterator itr = names.iterator(); itr.hasNext();) {
-            cls = classForName((String) itr.next(), clsLoader);
+        	String className = (String) itr.next();
+            cls = classForName(className, clsLoader);
             if (cls != null) {
                 classes.add(cls);
 
@@ -1285,6 +1297,9 @@ public class MetaDataRepository
                 // off the impl generator
                 if (cls.isInterface())
                     getMetaData(cls, clsLoader, false);
+            } else if (cls == null && mustExist) {
+        		throw new MetaDataException(_loc.get("eager-class-not-found", 
+        				className));
             }
         }
         return classes;

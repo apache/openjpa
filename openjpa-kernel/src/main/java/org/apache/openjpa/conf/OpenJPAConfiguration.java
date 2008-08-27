@@ -1510,4 +1510,20 @@ public interface OpenJPAConfiguration
      * @since 1.1.0 
      */
     public Map getCacheMarshallerInstances();
+    
+    /**
+     * Affirms if all configured elements are initialized eagerly as opposed
+     * to lazily on-demand.
+     * 
+     * @since 1.3.0
+     */
+    public boolean isInitializeEagerly();
+    
+    /**
+     * Sets whether all configured elements will be initialized eagerly or
+     * lazily on-demand.
+     * 
+     * @since 1.3.0
+     */
+    public void setInitializeEagerly(boolean flag);
 }

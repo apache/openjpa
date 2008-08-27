@@ -1891,6 +1891,59 @@ or flush before running it against the datastore.
             more-unique value available in the current environment.
             </para>
         </section>
+        
+InitializeEagerly
+        <section id="openjpa.InitializeEagerly">
+            <title>
+                openjpa.InitializeEagerly
+            </title>
+            <indexterm zone="openjpa.InitializeEagerly">
+                <primary>
+                    InverseManager
+                </primary>
+            </indexterm>
+            <indexterm zone="openjpa.InitializeEagerly">
+                <primary>
+                    Initialization
+                </primary>
+                <secondary>
+                    Configuration
+                </secondary>
+            </indexterm>
+            <para>
+<emphasis role="bold">Property name: </emphasis><literal>openjpa.InitializeEagerly
+</literal>
+            </para>
+            <para>
+<emphasis role="bold">Configuration API:</emphasis>
+<ulink url="../javadoc/org/apache/openjpa/conf/OpenJPAConfiguration.html#isInitializeEagerly()">
+<methodname>org.apache.openjpa.conf.OpenJPAConfiguration.isInitializeEagerly
+</methodname></ulink>
+            </para>
+            <para>
+<emphasis role="bold">Resource adaptor config-property: </emphasis><literal>
+InitializeEagerly</literal>
+            </para>
+            <para>
+<emphasis role="bold">Default: </emphasis><literal>false</literal>
+            </para>
+            <para>
+<emphasis role="bold">Possible values: </emphasis><literal>false</literal>,
+<literal>true</literal>
+            </para>
+            <para>
+<emphasis role="bold">Description:</emphasis> Controls whether initialization
+is eager or lazy. Eager initialization imply all persistent classes, their 
+mapping information, database connectivity and all other resources specified in
+the configuration of a persistence unit will be initialized when a persistent 
+unit is constructed. The default behavior is
+lazy i.e. persistent classes, database and other resources are initialized only
+when the application refers to a resource for the first time.
+            </para>
+        </section>
+
+
+        
         <section id="openjpa.InverseManager">
             <title>
                 openjpa.InverseManager
