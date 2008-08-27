@@ -237,6 +237,7 @@ public class DBDictionary
     public boolean supportsModOperator = false;
     public boolean supportsXMLColumn = false;
     public boolean reportsSuccessNoInfoOnBatchUpdates = false;
+    public boolean supportsSelectFromFinalTable = false;
     
     /**
      * Some Databases append whitespace after the schema name 

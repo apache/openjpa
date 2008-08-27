@@ -344,11 +344,16 @@ public class ConstraintUpdateManager
 
         // flush delete updates to null fks, then all rows in order, then
         // the insert updates to set circular fk values
-        flush(deleteUpdates, psMgr);
         Collection nodes = dfa.getSortedNodes();
+        flush(deleteUpdates, nodes, psMgr);
+        flush(insertUpdates, psMgr);
+    }
+
+    protected void flush(Collection deleteUpdates, Collection nodes,
+    	PreparedStatementManager psMgr) {
+        flush(deleteUpdates, psMgr);
         for (Iterator itr = nodes.iterator(); itr.hasNext();)
             psMgr.flush((RowImpl) itr.next());
-        flush(insertUpdates, psMgr);
     }
 
     /**
