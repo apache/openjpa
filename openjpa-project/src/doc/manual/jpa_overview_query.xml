@@ -2814,7 +2814,7 @@ DISTINCT</literal> is specified.
 The following query returns the average price of all magazines:
 <programlisting>SELECT AVG(mag.price) FROM Magazine mag</programlisting> The
 following query returns the sum total cost of all the prices from all the
-magazines published by 'Larry': <programlisting>SELECT SUM(mag.price) FROM Publisher pub JOIN pub.magazines mag pub.firstName = 'Larry'
+magazines published by 'Larry': <programlisting>SELECT SUM(mag.price) FROM Publisher pub JOIN pub.magazines mag WHERE pub.firstName = 'Larry'
 </programlisting> The following query returns the total number of magazines:
 <programlisting>SELECT COUNT(mag) FROM Magazine mag</programlisting>
                     </para>
