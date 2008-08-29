@@ -807,6 +807,7 @@ public class AnnotationPersistenceMappingParser
      */
     private static Column newColumn(VersionColumn anno) {
         Column col = new Column();
+        col.setTableName(anno.table());
         if (!StringUtils.isEmpty(anno.name()))
             col.setName(anno.name());
         if (anno.precision() != 0)

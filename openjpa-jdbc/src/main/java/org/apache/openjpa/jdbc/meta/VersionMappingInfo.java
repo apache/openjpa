@@ -18,12 +18,23 @@
  */
 package org.apache.openjpa.jdbc.meta;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
+import org.apache.commons.lang.StringUtils;
 import org.apache.openjpa.jdbc.meta.strats.NoneVersionStrategy;
 import org.apache.openjpa.jdbc.meta.strats.SuperclassVersionStrategy;
 import org.apache.openjpa.jdbc.schema.Column;
 import org.apache.openjpa.jdbc.schema.Index;
 import org.apache.openjpa.jdbc.schema.SchemaGroup;
 import org.apache.openjpa.jdbc.schema.Table;
+import org.apache.openjpa.lib.util.Localizer;
+import org.apache.openjpa.util.UserException;
 
 /**
  * Information about the mapping from a version indicator to the schema, in
@@ -36,17 +47,59 @@ import org.apache.openjpa.jdbc.schema.Table;
 public class VersionMappingInfo
     extends MappingInfo {
 
+    private static final Localizer _loc = Localizer.forPackage
+    	(VersionMappingInfo.class);
     /**
      * Return the columns set for this version, based on the given templates.
      */
-    public Column[] getColumns(Version version, Column[] tmplates,
+    public Column[] getColumns(Version version, Column[] templates,
         boolean adapt) {
-        Table table = version.getClassMapping().getTable();
+    	if (spansMultipleTables(templates))
+    		return getMultiTableColumns(version, templates, adapt);
+        Table table = getSingleTable(version, templates);
         version.getMappingRepository().getMappingDefaults().populateColumns
-            (version, table, tmplates);
-        return createColumns(version, null, tmplates, table, adapt);
+            (version, table, templates);
+        return createColumns(version, null, templates, table, adapt);
     }
-
+    
+    /**
+     * Return the columns set for this version when the columns are spread 
+     * across multiple tables.
+     */
+    public Column[] getMultiTableColumns(Version vers, Column[] templates,
+            boolean adapt) {
+    	Table primaryTable = vers.getClassMapping().getTable();
+    	List<String> secondaryTableNames = Arrays.asList(vers
+    		.getClassMapping().getMappingInfo().getSecondaryTableNames());
+    	Map<Table, List<Column>> assign = new HashMap<Table, List<Column>>();
+    	for (Column col : templates) {
+    	    String tableName = col.getTableName();
+    	    Table table;
+    		if (StringUtils.isEmpty(tableName) 
+    		  || tableName.equals(primaryTable.getName())) {
+    			table = primaryTable;
+    		} else if (secondaryTableNames.contains(tableName)) {
+    			table = primaryTable.getSchema().getTable(tableName);
+    		} else {
+    			throw new UserException(_loc.get("bad-version-column-table", 
+    					col.getName(), tableName));
+    		}
+    		if (!assign.containsKey(table))
+    			assign.put(table, new ArrayList<Column>());
+    		assign.get(table).add(col);
+    	}
+    	MappingDefaults def = vers.getMappingRepository().getMappingDefaults();
+    	List<Column> result = new ArrayList<Column>();
+    	for (Table table : assign.keySet()) {
+    		List<Column> cols = assign.get(table);
+    		Column[] partTemplates = cols.toArray(new Column[cols.size()]);
+    		def.populateColumns(vers, table, partTemplates);
+    		result.addAll(Arrays.asList(createColumns(vers, null, partTemplates, 
+    				table, adapt)));
+    	}
+    	return result.toArray(new Column[result.size()]);
+    }
+    
     /**
      * Return the index to set on the version columns, or null if none.
      */
@@ -86,4 +139,30 @@ public class VersionMappingInfo
             && cls.getJoinablePCSuperclassMapping() == null))
             setStrategy(strat);
     }
+    
+    /**
+     * Affirms if the given columns belong to more than one tables.
+     */
+    boolean spansMultipleTables(Column[] cols) {
+    	if (cols == null || cols.length <= 1) 
+    		return false;
+    	Set<String> tables = new HashSet<String>();
+    	for (Column col : cols)
+    		if (tables.add(col.getTableName()) && tables.size() > 1)
+    			return true;
+    	return false;
+    }
+    
+    /**
+     * Gets the table where this version columns are mapped.
+     */
+    private Table getSingleTable(Version version, Column[] cols) {
+    	if (cols == null || cols.length == 0 
+    	 || StringUtils.isEmpty(cols[0].getTableName()))
+    		return version.getClassMapping().getTable();
+    	return version.getClassMapping().getTable().getSchema()
+    		.getTable(cols[0].getTableName());
+    }
+
+
 }

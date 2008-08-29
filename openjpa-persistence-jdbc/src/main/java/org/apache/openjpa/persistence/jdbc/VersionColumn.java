@@ -49,4 +49,6 @@ public @interface VersionColumn {
     int precision() default 0; // decimal precision
 
     int scale() default 0; // decimal scale
+    
+    String table() default  "";
 }

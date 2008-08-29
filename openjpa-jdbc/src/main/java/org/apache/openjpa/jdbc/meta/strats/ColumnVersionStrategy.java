@@ -31,6 +31,7 @@ import org.apache.openjpa.jdbc.meta.VersionMappingInfo;
 import org.apache.openjpa.jdbc.schema.Column;
 import org.apache.openjpa.jdbc.schema.ColumnIO;
 import org.apache.openjpa.jdbc.schema.Index;
+import org.apache.openjpa.jdbc.schema.Table;
 import org.apache.openjpa.jdbc.sql.Result;
 import org.apache.openjpa.jdbc.sql.Row;
 import org.apache.openjpa.jdbc.sql.RowManager;
@@ -48,6 +49,7 @@ import serp.util.Numbers;
  * Uses a single column and corresponding version object.
  *
  * @author Marc Prud'hommeaux
+ * @author Pinaki Poddar
  */
 public abstract class ColumnVersionStrategy
     extends AbstractVersionStrategy {
@@ -110,19 +112,23 @@ public abstract class ColumnVersionStrategy
 	/**
 	 * Compare each element of the given arrays that must be of equal size. 
 	 * 
-	 * @return If each element comparison results into same sign then returns 
-	 * that sign. If some elements compare equal and all the rest has the same
-	 * sign then return that sign. Otherwise, return 1.
+	 * @return If any element of a1 is later than corresponding element of
+	 * a2 then return 1 i.e. a1 as a whole is later than a2.
+	 * If each element of a1 is to equal corresponding element of a2 then return
+	 * 0 i.e. a1 is as a whole equals to a2.
+	 * else return a negative number i.e. a1 is earlier than a2.
 	 */
 	protected int compare(Object[] a1, Object[] a2) {
 		if (a1.length != a2.length)
 	    	throw new InternalException();
-		Set<Integer> comps = new HashSet<Integer>();
-		for (int i = 0; i < a1.length; i++)
-			comps.add(sign(compare(a1[i], a2[i])));
-		if (comps.size() == 1 || (comps.size() == 2 && comps.remove(0)))
-			return comps.iterator().next();
-		return 1;
+		int total = 0;
+		for (int i = 0; i < a1.length; i++) {
+			int c =  compare(a1[i], a2[i]);
+			if (c > 0) 
+				return 1;
+			total += c;
+		}
+		return total;
 	}
 	
 	int sign(int i) {
@@ -144,11 +150,12 @@ public abstract class ColumnVersionStrategy
         	for (int i = 0; i < info.getColumns().size(); i++) {
                 templates[i] = new Column();
         		Column infoColumn = (Column)info.getColumns().get(i);
+        		templates[i].setTableName(infoColumn.getTableName());
         		templates[i].setType(infoColumn.getType());
         		templates[i].setSize(infoColumn.getSize());
         		templates[i].setDecimalDigits(infoColumn.getDecimalDigits());
         		templates[i].setJavaType(getJavaType(i));
-        		templates[i].setName("versn" +i);
+        		templates[i].setName(infoColumn.getName());
         	}
         	Column[] cols = info.getColumns(vers, templates, adapt);
         	for (int i = 0; i < cols.length; i++)
@@ -175,12 +182,11 @@ public abstract class ColumnVersionStrategy
         Column[] cols = vers.getColumns();
         ColumnIO io = vers.getColumnIO();
         Object initial = nextVersion(null);
-        Row row = rm.getRow(vers.getClassMapping().getTable(),
-            Row.ACTION_INSERT, sm, true);
-        for (int i = 0; i < cols.length; i++)
+        for (int i = 0; i < cols.length; i++) {
+            Row row = rm.getRow(cols[i].getTable(), Row.ACTION_INSERT, sm, true);
             if (io.isInsertable(i, initial == null))
                 row.setObject(cols[i], getColumnValue(initial, i));
-
+        }
         // set initial version into state manager
         Object nextVersion;
         nextVersion = initial;
@@ -197,12 +203,11 @@ public abstract class ColumnVersionStrategy
         Object curVersion = sm.getVersion();
         Object nextVersion = nextVersion(curVersion);
 
-        Row row = rm.getRow(vers.getClassMapping().getTable(),
-            Row.ACTION_UPDATE, sm, true);
-        row.setFailedObject(sm.getManagedInstance());
 
         // set where and update conditions on row
         for (int i = 0; i < cols.length; i++) {
+            Row row = rm.getRow(cols[i].getTable(), Row.ACTION_UPDATE, sm, true);
+            row.setFailedObject(sm.getManagedInstance());
             if (curVersion != null && sm.isVersionCheckRequired())
                 row.whereObject(cols[i], getColumnValue(curVersion, i));
             if (vers.getColumnIO().isUpdatable(i, nextVersion == null))
@@ -215,14 +220,14 @@ public abstract class ColumnVersionStrategy
 
     public void delete(OpenJPAStateManager sm, JDBCStore store, RowManager rm)
         throws SQLException {
-        Row row = rm.getRow(vers.getClassMapping().getTable(),
-            Row.ACTION_DELETE, sm, true);
-        row.setFailedObject(sm.getManagedInstance());
         Column[] cols = vers.getColumns();
 
         Object curVersion = sm.getVersion();
         Object cur;
         for (int i = 0; i < cols.length; i++) {
+            Row row = rm.getRow(cols[i].getTable(),
+            	Row.ACTION_DELETE, sm, true);
+            row.setFailedObject(sm.getManagedInstance());
             cur = getColumnValue(curVersion, i);
             // set where and update conditions on row
             if (cur != null)

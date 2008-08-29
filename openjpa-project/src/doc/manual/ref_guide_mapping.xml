@@ -1629,6 +1629,11 @@ values. Each <classname>VersionColumn</classname> has the following properties:
                 </listitem>
                 <listitem>
                     <para>
+<literal>String table</literal>                     
+                    </para>
+                </listitem>
+                <listitem>
+                    <para>
 <literal>int length</literal>
                     </para>
                 </listitem>
@@ -1674,6 +1679,46 @@ strategy. You can choose a different strategy with the <classname>
 VersionStrategy</classname> annotation described in
 <xref linkend="version-strategy"/>.
             </para>
+            <para>
+If multiple columns are used for surrogate versioning, then each column,
+by default, uses a version number. But column definition for each version 
+column can be set independently to other numeric types. The version values are
+compared to detect optimistic concurrent modification. Such comparison must
+determine whether a version value <literal>v1</literal> represents an earlier,
+later or same with respect to another version value <literal>v2</literal>. While
+result of such comparison is obvious for a single numeric column that 
+monotonically increases on each update, the same is not true when version value
+is an array of numbers. By default, OpenJPA compares a version 
+<literal>v1</literal> as later than another version <literal>v2</literal>, 
+if any array element of <literal>v1</literal> is 
+later than the corresponding element of <literal>v2</literal>. 
+<literal>v1</literal> is equal to <literal>v2</literal> if every array element
+is equal and <literal>v1</literal> is earlier to <literal>v1</literal> if some
+elements of <literal>v1</literal> are earlier and rest are equal to corresponding
+element of <literal>v2</literal>.
+        </para>
+        <para>
+Multiple surrogate version columns can be spread across primary and secondary
+tables. For example, following example shows 3 version columns 
+<literal>v01, v11, v12, v21</literal> defined across the primary and secondary tables of 
+a persistent entity       
+        </para>
+        <programlisting>
+@Entity
+@Table(name="PRIMARY")
+@SecondaryTables({ 
+    @SecondaryTable(name = "SECONDARY_1"),
+    @SecondaryTable(name = "SECONDARY_2") 
+})
+@VersionStrategy("version-numbers")
+@VersionColumns({ 
+    @VersionColumn(name = "v01") // default is the PRIMARY table
+    @VersionColumn(name = "v11", table="SECONDARY_1", columnDefinition="FLOAT", scale=3, precision=10), 
+    @VersionColumn(name = "v12", table="SECONDARY_1"), 
+    @VersionColumn(name = "v21", table="SECONDARY_2"),
+})
+</programlisting>
+
         </section>
         <section id="ref_guide_mapping_jpa_columns">
             <title>

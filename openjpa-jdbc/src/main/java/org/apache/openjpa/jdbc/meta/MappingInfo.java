@@ -95,6 +95,21 @@ public abstract class MappingInfo
     public List getColumns() {
         return (_cols == null) ? Collections.EMPTY_LIST : _cols;
     }
+    
+    /**
+     * Gets the columns whose table name matches the given table name. 
+     */
+    public List getColumns(String tableName) {
+        if (_cols == null) 
+        	return Collections.EMPTY_LIST;
+        List result = new ArrayList();
+        for (Object col : _cols) {
+        	if (StringUtils.equals(((Column)col).getTableName(), 
+        			tableName)) 
+        		result.add(col);
+        }
+        return result;
+    }
 
     /**
      * Raw column data.
@@ -531,10 +546,19 @@ public abstract class MappingInfo
         boolean fill = ((MappingRepository) context.getRepository()).
             getMappingDefaults().defaultMissingInfo();
         if ((!given.isEmpty() || (!adapt && !fill))
-            && given.size() != tmplates.length)
-            throw new MetaDataException(_loc.get(prefix + "-num-cols",
-                context, String.valueOf(tmplates.length),
-                String.valueOf(given.size())));
+            && given.size() != tmplates.length) {
+        	// also consider when this info has columns from multiple tables
+        	given = getColumns(table.getName());
+        	if ((!adapt && !fill) && given.size() != tmplates.length) {
+        		// try default table
+        		given = getColumns("");
+            	if ((!adapt && !fill) && given.size() != tmplates.length) {
+            		throw new MetaDataException(_loc.get(prefix + "-num-cols",
+            			context, String.valueOf(tmplates.length),
+            			String.valueOf(given.size())));
+            	}
+        	}
+        }
 
         Column[] cols = new Column[tmplates.length];
         _io = null;
@@ -546,6 +570,11 @@ public abstract class MappingInfo
             setIOFromColumnFlags(col, i);
         }
         return cols;
+    }
+    
+    boolean canMerge(List given, Column[] templates, boolean adapt, boolean fill) {
+    	return !((!given.isEmpty() || (!adapt && !fill)) 
+    			&& given.size() != templates.length);
     }
 
     /**
