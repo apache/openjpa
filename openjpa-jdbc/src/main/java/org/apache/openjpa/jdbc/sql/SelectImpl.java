@@ -576,7 +576,10 @@ public class SelectImpl
         
         if (_parent.getAliases() == null || _subPath == null)
             return;
-        
+
+        if (_parent._aliases.size() <= 1)
+            return;
+ 
         // resolve aliases for subselect from parent
         Set<Map.Entry> entries = _parent.getAliases().entrySet();
         for (Map.Entry entry : entries) {
