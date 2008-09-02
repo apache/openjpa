@@ -1143,6 +1143,7 @@ public class BrokerImpl
                 throw new UserException(_loc.get("meta-unknownid", cls));
             }
         } catch (IllegalArgumentException iae) {
+        	// OPENJPA-365
         	throw new UserException(_loc.get("bad-id-value", val,
                 val.getClass().getName(), cls)).setCause(iae);
         } catch (OpenJPAException ke) {
