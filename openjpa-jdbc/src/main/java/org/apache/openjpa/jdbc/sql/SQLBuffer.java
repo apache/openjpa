@@ -480,19 +480,9 @@ public final class SQLBuffer
      * the SQL in this buffer.
      */
     public PreparedStatement prepareStatement(Connection conn, int rsType,
-        int rsConcur, List parms)
-        throws SQLException {
-        return prepareStatement(conn, null, rsType, rsConcur, parms);
-    }
-    
-    /**
-     * Create and populate the parameters of a prepared statement using
-     * the SQL in this buffer.
-     */
-    public PreparedStatement prepareStatement(Connection conn, int rsType,
         int rsConcur)
         throws SQLException {
-        return prepareStatement(conn, rsType, rsConcur, null);
+        return prepareStatement(conn, null, rsType, rsConcur);
     }
 
     /**
@@ -501,16 +491,6 @@ public final class SQLBuffer
      */
     public PreparedStatement prepareStatement(Connection conn,
         JDBCFetchConfiguration fetch, int rsType, int rsConcur)
-        throws SQLException {
-        return prepareStatement(conn, fetch, rsType, rsConcur, null);
-    }
-    
-    /**
-     * Create and populate the parameters of a prepred statement using the
-     * SQL in this buffer and the given fetch configuration.
-     */
-    public PreparedStatement prepareStatement(Connection conn,
-        JDBCFetchConfiguration fetch, int rsType, int rsConcur, List parms)
         throws SQLException {
         if (rsType == -1 && fetch == null)
             rsType = ResultSet.TYPE_FORWARD_ONLY;
@@ -526,7 +506,7 @@ public final class SQLBuffer
         else
             stmnt = conn.prepareStatement(getSQL(), rsType, rsConcur);
         try {
-            setParameters(stmnt, parms);
+            setParameters(stmnt);
             if (fetch != null) {
                 if (fetch.getFetchBatchSize() > 0)
                     stmnt.setFetchSize(fetch.getFetchBatchSize());
@@ -609,25 +589,13 @@ public final class SQLBuffer
      */
     public void setParameters(PreparedStatement ps)
         throws SQLException {
-        setParameters(ps, null);
-    }
-    
-    /**
-     * Populate the parameters of an existing PreparedStatement
-     * with values from this buffer.
-     */
-    public void setParameters(PreparedStatement ps, List cacheParams)
-        throws SQLException {
-        List params = ((cacheParams != null && cacheParams.size() > 0) ? 
-            cacheParams : _params);    
-        
-        if (params == null)
+        if (_params == null)
             return;
 
         Column col;
-        for (int i = 0; i < params.size(); i++) {
+        for (int i = 0; i < _params.size(); i++) {
             col = (_cols == null) ? null : (Column) _cols.get(i);
-            _dict.setUnknown(ps, i + 1, params.get(i), col);
+            _dict.setUnknown(ps, i + 1, _params.get(i), col);
         }
     }
 

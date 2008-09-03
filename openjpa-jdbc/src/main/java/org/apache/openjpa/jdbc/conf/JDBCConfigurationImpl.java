@@ -20,9 +20,6 @@ package org.apache.openjpa.jdbc.conf;
 
 import java.sql.Connection;
 import java.sql.ResultSet;
-import java.util.HashMap;
-import java.util.Map;
-
 import javax.sql.DataSource;
 
 import org.apache.commons.lang.StringUtils;
@@ -85,8 +82,6 @@ public class JDBCConfigurationImpl
     public ObjectValue mappingDefaultsPlugin;
     public PluginValue driverDataSourcePlugin;
     public MappingFactoryValue mappingFactoryPlugin;
-    public QuerySQLCacheValue querySQLCache;
-    private Map querySQLCacheInstance = new HashMap(); 
 
     // used internally
     private String firstUser = null;
@@ -306,9 +301,6 @@ public class JDBCConfigurationImpl
         seqPlugin.setAliases(JDBCSeqValue.ALIASES);
         seqPlugin.setDefault(JDBCSeqValue.ALIASES[0]);
         seqPlugin.setString(JDBCSeqValue.ALIASES[0]);
-
-        querySQLCache = new QuerySQLCacheValue("jdbc.QuerySQLCache");
-        addValue(querySQLCache);
 
         // this static initializer is to get past a weird
         // ClassCircularityError that happens only under IBM's
@@ -864,21 +856,4 @@ public class JDBCConfigurationImpl
                 return true; 
         return false;
     }
-    
-    public void setQuerySQLCache(String querySQLCache) {
-        this.querySQLCache.setString(querySQLCache);
-    }
-
-    public QuerySQLCacheValue getQuerySQLCache() {
-        return querySQLCache;
-    }
-    
-    public boolean isQuerySQLCacheOn() {
-        return querySQLCache.isSQLCacheOn();
-    }
-
-    public Map getQuerySQLCacheInstance() {
-        return querySQLCacheInstance;
-    }
-    
 }

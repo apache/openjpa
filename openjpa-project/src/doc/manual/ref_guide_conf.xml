@@ -3381,42 +3381,6 @@ store and retrieve object-relational mapping information for your persistent
 classes. See <xref linkend="ref_guide_mapping_factory"/> for details.
             </para>
         </section>
-        <section id="openjpa.jdbc.QuerySQLCache">
-            <title>
-                openjpa.jdbc.QuerySQLCache
-            </title>
-            <indexterm zone="openjpa.jdbc.QuerySQLCache">
-                <primary>
-                    QuerySQLCache
-                </primary>
-            </indexterm>
-            <indexterm zone="openjpa.jdbc.QuerySQLCache">
-                <primary>
-                    caching
-                </primary>
-                <secondary>
-                    QuerySQLCache
-                </secondary>
-            </indexterm>
-            <para>
-<emphasis role="bold">Property name:</emphasis>
-<literal>openjpa.jdbc.QuerySQLCache</literal>
-            </para>
-            <para>
-<emphasis role="bold">Resource adaptor config-property:</emphasis> 
-<literal>QuerySQLCache</literal>
-            </para>
-            <para>
-<emphasis role="bold">Default:</emphasis> <literal>true</literal>.
-            </para>
-            <para>
-<emphasis role="bold">Description:</emphasis> A plugin string (see 
-<xref linkend="ref_guide_conf_plugins"/>) describing the 
-<classname>java.util.Map</classname> to use for caching of the SQL string 
-used by the find operation.  See <xref linkend="ref_guide_cache_querysql"/> for 
-details.
-            </para>
-        </section>
         <section id="openjpa.jdbc.ResultSetType">
             <title>
                 openjpa.jdbc.ResultSetType

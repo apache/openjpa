@@ -19,7 +19,6 @@
 package org.apache.openjpa.jdbc.sql;
 
 import java.sql.SQLException;
-import java.util.List;
 
 import org.apache.openjpa.jdbc.conf.JDBCConfiguration;
 import org.apache.openjpa.jdbc.kernel.JDBCFetchConfiguration;
@@ -128,20 +127,6 @@ public interface SelectExecutor {
      * Execute this select in the context of the given store manager.
      */
     public Result execute(JDBCStore store, JDBCFetchConfiguration fetch)
-        throws SQLException;
-
-    /**
-     * Execute this select in the context of the given store manager.
-     */
-    public Result execute(JDBCStore store, JDBCFetchConfiguration fetch,
-        List params) 
-        throws SQLException;
-
-    /**
-     * Execute this select in the context of the given store manager.
-     */
-    public Result execute(JDBCStore store, JDBCFetchConfiguration fetch,
-        int lockLevel, List params)
         throws SQLException;
 
     /**

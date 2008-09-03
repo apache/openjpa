@@ -82,9 +82,6 @@ public class FetchConfigurationImpl
         public Set rootClasses;
         public Set rootInstances;
         public Map hints = null;
-        
-        public boolean fetchGroupContainsDefault = false;
-        public boolean fetchGroupContainsAll = false;
     }
 
     private final ConfigurationState _state;
@@ -95,7 +92,7 @@ public class FetchConfigurationImpl
     private boolean _load = true;
     private int _availableRecursion;
     private int _availableDepth;
-    
+
     public FetchConfigurationImpl() {
         this(null);
     }
@@ -224,22 +221,10 @@ public class FetchConfigurationImpl
 
     public boolean hasFetchGroup(String group) {
         return _state.fetchGroups != null
-            && (hasFetchGroupAll()
-            ||  _state.fetchGroups.contains(group));
+            && (_state.fetchGroups.contains(group)
+            || _state.fetchGroups.contains(FetchGroup.NAME_ALL));
     }
 
-    public boolean hasFetchGroupDefault()
-    {
-        // Fetch group All includes fetch group Default by definition
-        return _state.fetchGroupContainsDefault || 
-            _state.fetchGroupContainsAll;
-    }
-    
-    public boolean hasFetchGroupAll()
-    {
-        return _state.fetchGroupContainsAll;
-    }
-    
     public FetchConfiguration addFetchGroup(String name) {
         if (StringUtils.isEmpty(name))
             throw new UserException(_loc.get("null-fg"));
@@ -249,10 +234,6 @@ public class FetchConfigurationImpl
             if (_state.fetchGroups == null)
                 _state.fetchGroups = new HashSet();
             _state.fetchGroups.add(name);
-            if (FetchGroup.NAME_ALL.equals(name))
-                _state.fetchGroupContainsAll = true;
-            else if (FetchGroup.NAME_DEFAULT.equals(name))
-                _state.fetchGroupContainsDefault = true;
         } finally {
             unlock();
         }
@@ -270,13 +251,8 @@ public class FetchConfigurationImpl
     public FetchConfiguration removeFetchGroup(String group) {
         lock();
         try {
-            if (_state.fetchGroups != null) {
+            if (_state.fetchGroups != null)
                 _state.fetchGroups.remove(group);
-                if (FetchGroup.NAME_ALL.equals(group))
-                    _state.fetchGroupContainsAll = false;
-                else if (FetchGroup.NAME_DEFAULT.equals(group))
-                    _state.fetchGroupContainsDefault = false;
-            }
         } finally {
             unlock();
         }
@@ -286,9 +262,8 @@ public class FetchConfigurationImpl
     public FetchConfiguration removeFetchGroups(Collection groups) {
         lock();
         try {
-            if (_state.fetchGroups != null && groups != null)
-                for (Object group : groups)
-                    removeFetchGroup(group.toString());
+            if (_state.fetchGroups != null)
+                _state.fetchGroups.removeAll(groups);
         } finally {
             unlock();
         }
@@ -298,11 +273,8 @@ public class FetchConfigurationImpl
     public FetchConfiguration clearFetchGroups() {
         lock();
         try {
-            if (_state.fetchGroups != null) {
+            if (_state.fetchGroups != null)
                 _state.fetchGroups.clear();
-                _state.fetchGroupContainsAll = false;
-                _state.fetchGroupContainsDefault = true;
-            }
         } finally {
             unlock();
         }
@@ -590,9 +562,9 @@ public class FetchConfigurationImpl
      * Whether our configuration state includes the given field.
      */
     private boolean includes(FieldMetaData fmd) {
-        if (hasFetchGroupAll()
-            || (fmd.isInDefaultFetchGroup() 
-            && hasFetchGroupDefault())
+        if ((fmd.isInDefaultFetchGroup() 
+            && hasFetchGroup(FetchGroup.NAME_DEFAULT))
+            || hasFetchGroup(FetchGroup.NAME_ALL)
             || hasField(fmd.getFullName(false))
             || hasField(fmd.getRealName()))
             return true;

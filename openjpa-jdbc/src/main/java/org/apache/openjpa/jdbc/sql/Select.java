@@ -193,19 +193,6 @@ public interface Select
     public SQLBuffer getHaving();
 
     /**
-     * Return the SQL for this select. This buffer contains
-     * the final SQL to be executed/cached.
-     */
-    public SQLBuffer getSQL();    
-    
-    /**
-     * Create and set the SQLBuffer object to this select. This buffer contains
-     * the final SQL to be executed/cached.
-     */
-    public void setSQL(JDBCStore store, JDBCFetchConfiguration fetch); 
-    
-    
-    /**
      * Apply class conditions from relation joins.  This may affect the return
      * values of {@link #getJoins}, {@link #getJoinIterator}, and
      * {@link #getWhere}.
@@ -528,19 +515,6 @@ public interface Select
      */
     public void wherePrimaryKey(Object oid, ClassMapping mapping,
         JDBCStore store);
-    
-    
-    /**
-     * Add where conditions setting the mapping's primary key to the given
-     * oid values. If the parmList is not null, the value of the primary
-     * key will be collected and saved into the parmList. If the parmList is 
-     * null, this method will build the where clause with the value
-     * incorporated in the where clause.
-     */
-    public int wherePrimaryKey(ClassMapping mapping, Column[] toCols, 
-            Column[] fromCols, Object oid, JDBCStore store, PathJoins pj,
-            SQLBuffer buf, List parmList);
-    
 
     /**
      * Add where conditions setting the given foreign key to the given
