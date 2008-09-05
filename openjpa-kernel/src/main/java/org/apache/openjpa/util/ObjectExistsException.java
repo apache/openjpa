@@ -28,6 +28,10 @@ import org.apache.openjpa.lib.util.Localizer.Message;
 public class ObjectExistsException
     extends StoreException {
 
+    public ObjectExistsException(String msg) {
+		super(msg);
+    }
+	
     public ObjectExistsException(Message msg) {
         super(msg);
     }
