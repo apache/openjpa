@@ -55,7 +55,7 @@ public abstract class OpenJPAId
     }
 
     /**
-     * Return the persitent class which this id instance represents.
+     * Return the persistent class which this id instance represents.
      */
     public Class getType() {
         return type;
@@ -73,8 +73,7 @@ public abstract class OpenJPAId
      * Set the exact type of the described instance once it is known.
      */
     public void setManagedInstanceType(Class type) {
-        this.type = type;
-        this.subs = false;
+        setManagedInstanceType(type, false);
     }
 
     /**
