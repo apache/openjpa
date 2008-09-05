@@ -4382,7 +4382,7 @@ public class BrokerImpl
             if (sm != null) {
                 // if it's a new instance, we know it's the only match, because
                 // other pers instances override new instances in _cache
-                if (sm.isNew())
+                if (sm.isNew() && !sm.isDeleted())
                     return (allowNew) ? sm : null;
                 if (!allowNew || !sm.isDeleted())
                     return sm;
