@@ -18,6 +18,11 @@
  */
 package org.apache.openjpa.persistence.jdbc.query;
 
+import java.sql.Timestamp;
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
 
 import javax.persistence.EntityManager;
@@ -72,6 +77,15 @@ public class TestMultipleEntityProjection extends SingleEMFTestCase {
 				Publisher pub = new Publisher();
 				pub.setName(pubName);
 				mag.setPublisher(pub);
+				try {
+					DateFormat df = new SimpleDateFormat ("yyyy-MM-dd");
+					Date date = df.parse("2001-01-01");
+					mag.setDatePublished(date);
+				} catch (ParseException e) {
+					mag.setDatePublished(null);
+				}
+				mag.setTsPublished(new Timestamp(System.currentTimeMillis()));
+				
 				em.persist(pub);
 			}
 			em.persist(mag);
@@ -132,6 +146,24 @@ public class TestMultipleEntityProjection extends SingleEMFTestCase {
 			assertNotNull(row[1]);
 			assertEquals(((Magazine)row[0]).getPublisher(), row[1]);
 		}
+	}
+	
+	public void testAggregateExpressionInHavingExpression() {
+        String jpql = "select m.publisher, max(m.datePublished) " + 
+					  "from Magazine m group by m.publisher " + 
+					  "having max(m.datePublished) is null";
+		
+		EntityManager em = emf.createEntityManager();
+		Query query = em.createQuery(jpql);
+		List result = query.getResultList();
+		assertTrue(result.isEmpty());
+		
+        jpql = "select m.publisher, max(m.datePublished) " + 
+		       "from Magazine m group by m.publisher " + 
+		       "having max(m.tsPublished) = CURRENT_TIMESTAMP";
+		query = em.createQuery(jpql);
+		result = query.getResultList();
+		assertTrue(result.isEmpty());
 	}
 	
 	/**

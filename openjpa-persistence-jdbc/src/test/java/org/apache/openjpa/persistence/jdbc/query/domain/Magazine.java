@@ -18,6 +18,9 @@
  */
 package org.apache.openjpa.persistence.jdbc.query.domain;
 
+import java.sql.Timestamp;
+import java.util.Date;
+
 import javax.persistence.*;
 
 /**
@@ -38,6 +41,10 @@ public class Magazine {
 	@OneToOne
 	private Publisher publisher;
 
+	private Date datePublished;
+
+	private Timestamp tsPublished;
+	
 	public String getName() {
 		return name;
 	}
@@ -58,4 +65,20 @@ public class Magazine {
 		this.publisher = publisher;
 	}
 
+	public Date getDatePublished() {
+		return datePublished;
+	}
+
+	public void setDatePublished(Date datePublished) {
+		this.datePublished = datePublished;
+	}
+
+	public Date getTsPublished() {
+		return tsPublished;
+	}
+
+	public void setTsPublished(Timestamp tsPublished) {
+		this.tsPublished = tsPublished;
+	}
+	
 }
