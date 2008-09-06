@@ -51,6 +51,7 @@ import java.util.Calendar;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedHashSet;
@@ -93,7 +94,12 @@ import org.apache.openjpa.lib.util.Localizer.Message;
 import org.apache.openjpa.meta.FieldMetaData;
 import org.apache.openjpa.meta.JavaTypes;
 import org.apache.openjpa.util.GeneralException;
+import org.apache.openjpa.util.LockException;
+import org.apache.openjpa.util.ObjectExistsException;
+import org.apache.openjpa.util.ObjectNotFoundException;
 import org.apache.openjpa.util.OpenJPAException;
+import org.apache.openjpa.util.OptimisticException;
+import org.apache.openjpa.util.ReferentialIntegrityException;
 import org.apache.openjpa.util.Serialization;
 import org.apache.openjpa.util.StoreException;
 import org.apache.openjpa.util.UnsupportedException;
@@ -143,16 +149,6 @@ public class DBDictionary
     private static final String ZERO_TIMESTAMP_STR =
         "'" + new Timestamp(0) + "'";
 
-    public static final List EMPTY_STRING_LIST = Arrays.asList(new String[]{});
-    public static final List[] SQL_STATE_CODES = 
-    	{EMPTY_STRING_LIST,                     // 0: Default
-    	 Arrays.asList(new String[]{"41000"}),  // 1: LOCK
-    	 EMPTY_STRING_LIST,                     // 2: OBJECT_NOT_FOUND
-    	 EMPTY_STRING_LIST,                     // 3: OPTIMISTIC
-    	 Arrays.asList(new String[]{"23000"}),  // 4: REFERENTIAL_INTEGRITY
-    	 EMPTY_STRING_LIST                      // 5: OBJECT_EXISTS
-    	}; 
-                                              
     private static final Localizer _loc = Localizer.forPackage
         (DBDictionary.class);
 
@@ -322,6 +318,8 @@ public class DBDictionary
     private Method _setBytes = null;
     private Method _setString = null;
     private Method _setCharStream = null;
+
+    public final Map sqlStateCodes = new HashMap();
 
     public DBDictionary() {
         fixedSizeTypeNameSet.addAll(Arrays.asList(new String[]{
@@ -3727,8 +3725,32 @@ public class DBDictionary
         // if user has unset sequence sql, null it out so we know sequences
         // aren't supported
         nextSequenceQuery = StringUtils.trimToNull(nextSequenceQuery);
+
+        // initialize the error codes
+        SQLErrorCodeReader codeReader = new SQLErrorCodeReader();
+        String rsrc = "sql-error-state-codes.xml";
+        InputStream stream = getClass().getResourceAsStream(rsrc);
+        String dictionaryClassName = getClass().getName();
+        if (stream == null) { // User supplied dictionary but no error codes xml
+        	stream = DBDictionary.class.getResourceAsStream(rsrc); // use default
+        	dictionaryClassName = getClass().getSuperclass().getName();
+        }
+        codeReader.parse(stream, dictionaryClassName, this);
     }
 
+    public void addErrorCode(Integer errorType, String errorCode) {
+    	if (errorCode == null || errorCode.trim().length() == 0)
+    		return;
+		Set codes = (Set) sqlStateCodes.get(errorType);
+    	if (codes == null) {
+    		codes = new HashSet();
+    		codes.add(errorCode.trim());
+    		sqlStateCodes.put(errorType, codes);
+    	} else {
+    		codes.add(errorCode.trim());
+    	}
+    }
+    
     //////////////////////////////////////
     // ConnectionDecorator implementation
     //////////////////////////////////////
@@ -3737,7 +3759,7 @@ public class DBDictionary
      * Decorate the given connection if needed. Some databases require special
      * handling for JDBC bugs. This implementation issues any
      * {@link #initializationSQL} that has been set for the dictionary but
-     * does not decoreate the connection.
+     * does not decorate the connection.
      */
     public Connection decorate(Connection conn)
         throws SQLException {
@@ -3788,7 +3810,7 @@ public class DBDictionary
     public OpenJPAException newStoreException(String msg, SQLException[] causes,
         Object failed) {
     	if (causes != null && causes.length > 0) {
-    		OpenJPAException ret = SQLExceptions.narrow(msg, causes[0], this);
+    		OpenJPAException ret = narrow(msg, causes[0]);
     		ret.setFailedObject(failed).setNestedThrowables(causes);
     		return ret;
     	}
@@ -3797,24 +3819,35 @@ public class DBDictionary
     }
     
     /**
-     * Gets the list of String, each represents an error that can help 
-     * to narrow down a SQL exception to specific type of StoreException.<br>
-     * For example, error code <code>"23000"</code> represents referential
-     * integrity violation and hence can be narrowed down to 
-     * {@link ReferentialIntegrityException} rather than more general
-     * {@link StoreException}.<br>
-     * JDBC Drivers are not uniform in return values of SQLState for the same
-     * error and hence each database specific Dictionary can specialize.<br>
-     * 
-     * 
-     * @return an <em>unmodifiable</em> list of Strings representing supposedly 
-     * uniform SQL States for a given type of StoreException. 
-     * Default behavior is to return an empty list.
+     * Gets the subtype of StoreException by matching the given SQLException's
+     * error state code to the list of error codes supplied by the dictionary.
+     * Returns -1 if no matching code can be found.
      */
-    public List/*<String>*/ getSQLStates(int exceptionType) {
-    	if (exceptionType>=0 && exceptionType<SQL_STATE_CODES.length)
-    		return SQL_STATE_CODES[exceptionType];
-    	return EMPTY_STRING_LIST;
+    OpenJPAException narrow(String msg, SQLException ex) {
+    	String errorState = ex.getSQLState();
+    	int errorType = StoreException.GENERAL;
+    	for (Iterator iter = sqlStateCodes.keySet().iterator(); iter.hasNext(); ) {
+        	Integer type = (Integer) iter.next();
+    		Set erroStates = (Set) sqlStateCodes.get(type);
+    		if (erroStates != null && erroStates.contains(errorState)) {
+    			errorType = type.intValue();
+    			break;
+    		}
+    	}
+    	switch (errorType) {
+	    	case StoreException.LOCK: 
+	            return new LockException(msg);
+	    	case StoreException.OBJECT_EXISTS:
+	            return new ObjectExistsException(msg);
+	    	case StoreException.OBJECT_NOT_FOUND:
+	            return new ObjectNotFoundException(msg);
+	    	case StoreException.OPTIMISTIC:
+	            return new OptimisticException(msg);
+	    	case StoreException.REFERENTIAL_INTEGRITY: 
+	            return new ReferentialIntegrityException(msg);
+	        default:
+	            return new StoreException(msg);
+        }
     }
 
     /**

@@ -22,7 +22,10 @@ import java.lang.reflect.InvocationTargetException;
 
 import org.apache.openjpa.kernel.Broker;
 import org.apache.openjpa.util.Exceptions;
+import org.apache.openjpa.util.ObjectExistsException;
+import org.apache.openjpa.util.ObjectNotFoundException;
 import org.apache.openjpa.util.OpenJPAException;
+import org.apache.openjpa.util.OptimisticException;
 import org.apache.openjpa.util.RuntimeExceptionTranslator;
 import org.apache.openjpa.util.StoreException;
 import org.apache.openjpa.util.UserException;
@@ -64,7 +67,7 @@ public class PersistenceExceptions
                     try {
                         throwing = true;
                         if (em.isOpen() && em.isActive())
-                            em.setRollbackOnly(re);
+                            em.setRollbackOnly(ex);
                     } finally {
                         // handle re-entrancy
                         throwing = false;
@@ -139,24 +142,26 @@ public class PersistenceExceptions
      */
     private static Throwable translateStoreException(OpenJPAException ke) {
         Exception e;
-        switch (ke.getSubtype()) {
-            case StoreException.OBJECT_NOT_FOUND:
+        Throwable cause = (ke.getNestedThrowables() != null 
+                        && ke.getNestedThrowables().length == 1)
+                         ? ke.getNestedThrowables()[0] : null;
+        if (ke.getSubtype() == StoreException.OBJECT_NOT_FOUND 
+         || cause instanceof ObjectNotFoundException) {
                 e = new org.apache.openjpa.persistence.EntityNotFoundException
                     (ke.getMessage(), getNestedThrowables(ke),
                         getFailedObject(ke), ke.isFatal());
-                break;
-            case StoreException.OPTIMISTIC:
-            case StoreException.LOCK:
-                e = new org.apache.openjpa.persistence.OptimisticLockException
+        } else if (ke.getSubtype() == StoreException.OPTIMISTIC 
+        		|| ke.getSubtype() == StoreException.LOCK
+        		|| cause instanceof OptimisticException) {
+            	e = new org.apache.openjpa.persistence.OptimisticLockException
                     (ke.getMessage(), getNestedThrowables(ke),
                         getFailedObject(ke), ke.isFatal());
-                break;
-            case StoreException.OBJECT_EXISTS:
+        } else if (ke.getSubtype() == StoreException.OBJECT_EXISTS
+        		|| cause instanceof ObjectExistsException) {
                 e = new org.apache.openjpa.persistence.EntityExistsException
                     (ke.getMessage(), getNestedThrowables(ke),
                         getFailedObject(ke), ke.isFatal());
-                break;
-            default:
+        } else {
                 e = new org.apache.openjpa.persistence.PersistenceException
                     (ke.getMessage(), getNestedThrowables(ke),
                         getFailedObject(ke), ke.isFatal());

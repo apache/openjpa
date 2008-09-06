@@ -117,32 +117,4 @@ public class SQLExceptions {
         }
         return (SQLException[]) errs.toArray(new SQLException[errs.size()]);
     }
-    
-    /**
-     * Narrows the given SQLException to a specific type of 
-     * {@link StoreException#getSubtype() StoreException} by analyzing the
-     * SQLState code supplied by SQLException. Each database-specific 
-     * {@link DBDictionary dictionary} can supply a set of error codes that will
-     * map to a specific specific type of StoreException via 
-     * {@link DBDictionary#getSQLStates(int) getSQLStates()} method.
-     * The default behavior is to return generic {@link StoreException 
-     * StoreException}.
-     */
-    public static OpenJPAException narrow(String msg, SQLException se, 
-    		DBDictionary dict) {
-        String e = se.getSQLState();
-        if (dict.getSQLStates(StoreException.LOCK).contains(e)) 
-            return new LockException(msg);
-        else if (dict.getSQLStates(StoreException.OBJECT_EXISTS).contains(e))
-            return new ObjectExistsException(msg);
-        else if (dict.getSQLStates(StoreException.OBJECT_NOT_FOUND).contains(e))
-            return new ObjectNotFoundException(msg);
-        else if (dict.getSQLStates(StoreException.OPTIMISTIC).contains(e))
-            return new OptimisticException(msg);
-        else if (dict.getSQLStates(StoreException.REFERENTIAL_INTEGRITY)
-        		.contains(e)) 
-            return new ReferentialIntegrityException(msg);
-        else
-            return new StoreException(msg);
-    }
 }
