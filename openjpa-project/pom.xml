@@ -303,6 +303,61 @@
                 </pluginRepository>
             </pluginRepositories>
         </profile>
+        <profile>
+            <id>nightly-upload</id>
+            <build>
+                <plugins>
+                    <plugin>
+                        <artifactId>maven-antrun-plugin</artifactId>
+                        <executions>
+                            <execution>
+                                <phase>package</phase>
+                                <configuration>
+                                    <tasks> 
+                                        <mkdir dir="target/site/tempDocs"/>
+                                        <unzip dest="target/site/tempDocs">
+                                            <fileset dir="target/site/downloads">
+                                                <include name="*binary*.zip"/>
+                                            </fileset>
+                                            <patternset>
+                                                <include name="**/javadoc/**"/>
+                                                <include name="**/manual/**"/>
+                                            </patternset>
+                                        </unzip>
+                                        <chmod perm="g+rw">
+                                             <fileset dir="target/site/downloads"/>
+                                        </chmod>
+                                        <!-- chmod returns 255 on the javadoc and manual dirs -->
+                                        <exec executable="chmod">
+                                            <arg value="-R"/>
+                                            <arg value="g+w"/>
+                                            <arg value="target/site/tempDocs"/>
+                                        </exec>
+                                        
+                                        <!-- From the ant manual if we need to 
+                                             preserve permissions we should use exec
+                                          -->
+                                        <exec executable="scp">
+                                            <arg value="-rp"/>
+                                            <arg value="target/site/downloads"/>
+                                            <arg value="people.apache.org:/www/openjpa.apache.org/builds/latest/"/>
+                                        </exec>
+                                        <exec executable="scp">
+                                            <arg value="-rp"/>
+                                            <arg value="target/site/tempDocs/apache-openjpa-${pom.version}/docs/"/>
+                                            <arg value="people.apache.org:/www/openjpa.apache.org/builds/latest/"/>
+                                        </exec>
+                                    </tasks>
+                                </configuration>
+                                <goals>
+                                    <goal>run</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
     </profiles>
 
     <!-- need to explicitly list dependencies for assembly to work -->
