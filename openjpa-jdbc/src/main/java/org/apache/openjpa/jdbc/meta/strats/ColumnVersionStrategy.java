@@ -22,16 +22,14 @@ import java.lang.reflect.Array;
 import java.math.BigDecimal;
 import java.sql.SQLException;
 import java.util.Comparator;
-import java.util.HashSet;
-import java.util.Set;
 
 import org.apache.openjpa.jdbc.kernel.JDBCStore;
 import org.apache.openjpa.jdbc.meta.ClassMapping;
 import org.apache.openjpa.jdbc.meta.VersionMappingInfo;
 import org.apache.openjpa.jdbc.schema.Column;
 import org.apache.openjpa.jdbc.schema.ColumnIO;
+import org.apache.openjpa.jdbc.schema.ForeignKey;
 import org.apache.openjpa.jdbc.schema.Index;
-import org.apache.openjpa.jdbc.schema.Table;
 import org.apache.openjpa.jdbc.sql.Result;
 import org.apache.openjpa.jdbc.sql.Row;
 import org.apache.openjpa.jdbc.sql.RowManager;
@@ -43,10 +41,8 @@ import org.apache.openjpa.meta.JavaTypes;
 import org.apache.openjpa.util.InternalException;
 import org.apache.openjpa.util.MetaDataException;
 
-import serp.util.Numbers;
-
 /**
- * Uses a single column and corresponding version object.
+ * Uses a one or more column(s) and corresponding version object.
  *
  * @author Marc Prud'hommeaux
  * @author Pinaki Poddar
@@ -111,12 +107,15 @@ public abstract class ColumnVersionStrategy
 
 	/**
 	 * Compare each element of the given arrays that must be of equal size. 
+	 * The given array values represent version values and the result designate
+	 * whether first version is earlier, same or later than the second one.
 	 * 
 	 * @return If any element of a1 is later than corresponding element of
-	 * a2 then return 1 i.e. a1 as a whole is later than a2.
-	 * If each element of a1 is to equal corresponding element of a2 then return
-	 * 0 i.e. a1 is as a whole equals to a2.
-	 * else return a negative number i.e. a1 is earlier than a2.
+	 * a2 then returns 1 i.e. the first version is later than the second version.
+	 * If each element of a1 is equal to corresponding element of a2 then return
+	 * 0 i.e. the first version is same as the second version.
+	 * else return a negative number i.e. the first version is earlier than 
+	 * the second version.
 	 */
 	protected int compare(Object[] a1, Object[] a2) {
 		if (a1.length != a2.length)
@@ -131,10 +130,6 @@ public abstract class ColumnVersionStrategy
 		return total;
 	}
 	
-	int sign(int i) {
-		return (i > 0) ? 1 : (i == 0) ? 0 : -1;
-	}
-
     public void map(boolean adapt) {
         ClassMapping cls = vers.getClassMapping();
         if (cls.getJoinablePCSuperclassMapping() != null
@@ -208,8 +203,15 @@ public abstract class ColumnVersionStrategy
         for (int i = 0; i < cols.length; i++) {
             Row row = rm.getRow(cols[i].getTable(), Row.ACTION_UPDATE, sm, true);
             row.setFailedObject(sm.getManagedInstance());
-            if (curVersion != null && sm.isVersionCheckRequired())
+            if (curVersion != null && sm.isVersionCheckRequired()) {
                 row.whereObject(cols[i], getColumnValue(curVersion, i));
+                if (isSecondaryColumn(cols[i], sm)) {
+                	ForeignKey[] fks = cols[i].getTable().getForeignKeys();
+                	for (ForeignKey fk : fks) {
+                		row.whereForeignKey(fk, sm);
+                	}
+                }
+            }
             if (vers.getColumnIO().isUpdatable(i, nextVersion == null))
                 row.setObject(cols[i], getColumnValue(nextVersion, i));
         }
@@ -230,8 +232,15 @@ public abstract class ColumnVersionStrategy
             row.setFailedObject(sm.getManagedInstance());
             cur = getColumnValue(curVersion, i);
             // set where and update conditions on row
-            if (cur != null)
+            if (cur != null) {
                 row.whereObject(cols[i], cur);
+                if (isSecondaryColumn(cols[i], sm)) {
+                	ForeignKey[] fks = cols[i].getTable().getForeignKeys();
+                	for (ForeignKey fk : fks) {
+                		row.whereForeignKey(fk, sm);
+                	}
+                }
+            }
         }
     }
 
@@ -320,5 +329,16 @@ public abstract class ColumnVersionStrategy
     	if (o.getClass().isArray())
     		return Array.get(o, idx);
     	return o;
+    }
+    
+    boolean isSecondaryColumn(Column col, OpenJPAStateManager sm) {
+    	ClassMapping mapping = (ClassMapping)sm.getMetaData();
+    	while (mapping != null) {
+    		if (mapping.getTable() == col.getTable())
+    			return false;
+    		else
+    			mapping = mapping.getPCSuperclassMapping();
+    	}
+    	return true;
     }
 }
