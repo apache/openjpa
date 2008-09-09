@@ -19,6 +19,7 @@
 package org.apache.openjpa.persistence;
 
 import org.apache.openjpa.kernel.Query;
+import org.apache.openjpa.kernel.QueryHints;
 
 /**
  * A prepared query binds a compiled query to its target SQL. 
@@ -29,8 +30,18 @@ import org.apache.openjpa.kernel.Query;
  * the post-compilation state of the original query is captured in this receiver
  * to be transferred to the executable query instance.  
  * 
+ * The target SQL depends on context of query execution such as fetch plan or
+ * lock group. No attempt is made to monitor and automatically invalidate a
+ * prepared SQL when the same query is executed with different context 
+ * parameters.
+ * 
+ * The user must set a {@link QueryHints#HINT_INVALIDATE_PREPARED_QUERY hint} to 
+ * invalidate.
+ * 
  * @author Pinaki Poddar
  *
+ * @since 1.3.0
+ * @nojavadoc
  */
 public class PreparedQuery  {
 	public static final PreparedQuery NOT_CACHABLE = new PreparedQuery();
@@ -42,6 +53,9 @@ public class PreparedQuery  {
 	boolean _subclasses = true;
 	boolean _isProjection = false;
 	
+	/**
+	 * Private constructor to designate a null marker.
+	 */
 	private PreparedQuery() {
 		_sql  = null;
 		_id  = null;
@@ -78,10 +92,9 @@ public class PreparedQuery  {
 //		q.setIgnoreChanges(last.getIgnoreChanges());
 //		q.setRange(last.getStartRange(), last.getEndRange());
 //		q.setReadOnly(last.isReadOnly());
-//		q.setResultMapping(last.getResultMappingScope(), last.getResultMappingName());
+//		q.setResultMapping(last.getResultMappingScope(), 
+//		last.getResultMappingName());
 //		q.setResultType(last.getResultType());
 //		q.setUnique(last.isUnique());
 	}
-	
-
 }
