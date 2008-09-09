@@ -1526,4 +1526,24 @@ public interface OpenJPAConfiguration
      * @since 1.3.0
      */
     public void setInitializeEagerly(boolean flag);
+    
+    /**
+     * Configuration settings for the Prepared Query Cache to use. 
+     * @see PreparedQueryCacheValue
+     * @since 1.3.0
+     */
+    public String getPreparedQueryCache();
+    
+    /**
+     * Configuration settings for the Prepared Query Cache to use. 
+     * @see PreparedQueryCacheValue
+     * @since 1.3.0
+     */
+    public void setPreparedQueryCache(String cache);    
+    
+    /**
+     * Gets the modifable map of the cached prepared query indexed by query
+     * String.
+     */
+    public Map getPreparedQueryCacheInstance();
 }

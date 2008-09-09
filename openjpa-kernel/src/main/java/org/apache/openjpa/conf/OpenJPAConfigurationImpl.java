@@ -136,6 +136,7 @@ public class OpenJPAConfigurationImpl
     public IntValue runtimeUnenhancedClasses;
     public CacheMarshallersValue cacheMarshallerPlugins;
     public BooleanValue eagerInitialization;
+    public PreparedQueryCacheValue preparedQueryCachePlugin;
 
     // custom values
     public BrokerFactoryValue brokerFactoryPlugin;
@@ -492,6 +493,13 @@ public class OpenJPAConfigurationImpl
         queryCompilationCachePlugin.setInstantiatingGetter(
             "getQueryCompilationCacheInstance");
         addValue(queryCompilationCachePlugin);
+        
+        preparedQueryCachePlugin = new PreparedQueryCacheValue(
+        	"PreparedQueryCache");
+        preparedQueryCachePlugin.setInstantiatingGetter(
+        	"getPreparedQueryCacheInstance");
+        addValue(preparedQueryCachePlugin);
+        preparedQueryCachePlugin.setDynamic(true);
         
         runtimeUnenhancedClasses = addInt("RuntimeUnenhancedClasses");
         runtimeUnenhancedClasses.setAliases(new String[] {
@@ -1393,6 +1401,20 @@ public class OpenJPAConfigurationImpl
         if (queryCompilationCachePlugin.get() == null)
             queryCompilationCachePlugin.instantiate(Map.class, this);
         return (Map) queryCompilationCachePlugin.get();
+    }
+
+    public String getPreparedQueryCache() {
+        return preparedQueryCachePlugin.getString();
+    }
+
+    public void setPreparedQueryCache(String queryCompilationCache) {
+    	preparedQueryCachePlugin.setString(queryCompilationCache);
+    }
+    
+    public Map getPreparedQueryCacheInstance() {
+        if (preparedQueryCachePlugin.get() == null)
+        	preparedQueryCachePlugin.instantiate(Map.class, this);
+        return (Map) preparedQueryCachePlugin.get();
     }
 
     public StoreFacadeTypeRegistry getStoreFacadeTypeRegistry() {

@@ -33,6 +33,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
+import org.apache.commons.collections.map.LinkedMap;
 import org.apache.commons.lang.StringUtils;
 import org.apache.openjpa.jdbc.meta.ClassMapping;
 import org.apache.openjpa.jdbc.meta.MappingRepository;
@@ -409,5 +410,40 @@ public class SQLStoreQuery
             throws SQLException {
             return stmnt.executeQuery();
         }
+        
+        /**
+         * Counts number of bind parameter marker <code>'?'</code> in the
+         * query string. The type of these parameters are unknown but the
+         * count can be used.
+         */
+        public LinkedMap getParameterTypes(StoreQuery q) {
+        	int count = -1;
+        	try {
+        		count = countParamMarker(q.getContext().getQueryString());
+        	} catch (IOException e) {
+        		
+        	}
+            LinkedMap map = new LinkedMap();
+            for (int i = 0; i < count; i++) {
+            	map.put(i+1, null);
+            }
+            return map;
+        }
+        
+    	private static int countParamMarker(String sql) throws IOException {
+    		if (sql.indexOf("?") == -1)
+    			return 0;
+
+    		StreamTokenizer tok = new StreamTokenizer(new StringReader(sql));
+    		tok.resetSyntax();
+    		tok.quoteChar('\'');
+    		tok.wordChars('?', '?');
+    		int count = 0;
+    		for (int ttype; (ttype = tok.nextToken()) != StreamTokenizer.TT_EOF;) {
+    			if (ttype == StreamTokenizer.TT_WORD && "?".equals(tok.sval))
+    				count++;
+    		}
+        	return count;
+    	}
     }
 }

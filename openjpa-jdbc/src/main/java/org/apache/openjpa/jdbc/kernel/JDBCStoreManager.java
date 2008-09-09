@@ -736,7 +736,8 @@ public class JDBCStoreManager
         ExpressionParser ep = QueryLanguages.parserForLanguage(language);
         if (ep != null)
             return new JDBCStoreQuery(this, ep);
-        if (QueryLanguages.LANG_SQL.equals(language))
+        if (QueryLanguages.LANG_SQL.equals(language) 
+         || QueryLanguages.LANG_PREPARED_SQL.equals(language))
             return new SQLStoreQuery(this);
         return null;
     }

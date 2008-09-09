@@ -1809,6 +1809,16 @@ public class SelectImpl
     public Map getEagerMap() {
         return _eager;
     }
+    
+    public boolean hasNewEagerSelects() {
+    	if (_eager == null)
+    		return false;
+        for (Object eagerRes : _eager.values()) {
+            if (eagerRes != this)
+                return true;
+        }
+        return false;
+    }
 
     public SelectExecutor getEager(FieldMapping key) {
         if (_eager == null || !_eagerKeys.contains(key))

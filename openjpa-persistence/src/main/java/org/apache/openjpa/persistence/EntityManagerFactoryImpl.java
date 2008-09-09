@@ -28,6 +28,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
+
 import javax.persistence.EntityManagerFactory;
 
 import org.apache.openjpa.conf.OpenJPAConfiguration;
@@ -41,9 +43,10 @@ import org.apache.openjpa.kernel.FetchConfiguration;
 import org.apache.openjpa.lib.conf.Configurations;
 import org.apache.openjpa.lib.conf.ProductDerivations;
 import org.apache.openjpa.lib.conf.Value;
-import org.apache.openjpa.lib.util.Localizer;
 import org.apache.openjpa.lib.util.Closeable;
+import org.apache.openjpa.lib.util.Localizer;
 import org.apache.openjpa.util.OpenJPAException;
+
 import serp.util.Strings;
 
 /**
@@ -64,6 +67,7 @@ public class EntityManagerFactoryImpl
     private transient Constructor<FetchPlan> _plan = null;
     private transient StoreCache _cache = null;
     private transient QueryResultCache _queryCache = null;
+    private transient Map<String, PreparedQuery> _sqlQueryCache = null;
 
     /**
      * Default constructor provided for auto-instantiation.
@@ -332,4 +336,23 @@ public class EntityManagerFactoryImpl
             throw PersistenceExceptions.toPersistenceException(e);
         }
 	}
+    
+//    boolean cacheQuery(String qid, PreparedQuery sql) {
+//    	if (!isCacheingSQL())
+//    		return false;
+//    	if (_sqlQueryCache == null)
+//    		_sqlQueryCache = new ConcurrentHashMap<String, PreparedQuery>();
+//    	_sqlQueryCache.put(qid, sql);
+//    	return true;
+//    }
+//    
+//    PreparedQuery getPreparedQuery(String qid) {
+//    	if (!isCacheingSQL())
+//    		return null;
+//    	if (_sqlQueryCache == null)
+//    		return null;
+//    	PreparedQuery result = _sqlQueryCache.get(qid);
+//    	return result;
+//    }
+    
 }

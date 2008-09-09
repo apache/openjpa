@@ -64,6 +64,7 @@ import org.apache.openjpa.meta.QueryMetaData;
 import org.apache.openjpa.meta.SequenceMetaData;
 import org.apache.openjpa.util.Exceptions;
 import org.apache.openjpa.util.ImplHelper;
+import org.apache.openjpa.util.ParameterMap;
 import org.apache.openjpa.util.RuntimeExceptionTranslator;
 import org.apache.openjpa.util.UserException;
 
@@ -868,12 +869,21 @@ public class EntityManagerImpl
     public OpenJPAQuery createQuery(String language, String query) {
         assertNotCloseInvoked();
         try {
+            String qid = query;
+            PreparedQuery cached = getPreparedQuery(qid);
+            if (cached != null) {
+                language = QueryLanguages.LANG_PREPARED_SQL;
+                query = cached.getSQL();
+            }
             org.apache.openjpa.kernel.Query q = _broker.newQuery(language, 
                 query);
             // have to validate JPQL according to spec
             if (JPQLParser.LANG_JPQL.equals(language))
                 q.compile(); 
-            return new QueryImpl(this, _ret, q);
+            if (cached != null) {
+            	cached.setInto(q);
+            }
+            return new QueryImpl(this, _ret, q).setId(qid);
         } catch (RuntimeException re) {
             throw PersistenceExceptions.toPersistenceException(re);
         }
@@ -935,6 +945,16 @@ public class EntityManagerImpl
     private static void validateSQL(String query) {
         if (StringUtils.trimToNull(query) == null)
             throw new ArgumentException(_loc.get("no-sql"), null, null, false);
+    }
+    
+    private PreparedQuery getPreparedQuery(String id) {
+    	Map cache = getConfiguration().getPreparedQueryCacheInstance();
+    	if (cache == null)
+    		return null;
+    	Object val = cache.get(id);
+    	if (val == PreparedQuery.NOT_CACHABLE)
+    		return null;
+    	return (PreparedQuery)val;
     }
 
     public void setFlushMode(FlushModeType flushMode) {

@@ -657,6 +657,11 @@ public interface Select
      * Return the eager select for the given key.
      */
     public SelectExecutor getEager(FieldMapping key);
+    
+    /**
+     * Affirms if this select will use extra selects for eager loading.
+     */
+    public boolean hasNewEagerSelects();
 
     /**
      * Return a new instance to use for joining.

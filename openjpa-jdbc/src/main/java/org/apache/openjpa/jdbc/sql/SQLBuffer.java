@@ -25,6 +25,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.BitSet;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
@@ -33,7 +34,6 @@ import org.apache.commons.lang.ObjectUtils;
 import org.apache.openjpa.jdbc.kernel.JDBCFetchConfiguration;
 import org.apache.openjpa.jdbc.kernel.exps.Val;
 import org.apache.openjpa.jdbc.schema.Column;
-import org.apache.openjpa.jdbc.schema.ForeignKey;
 import org.apache.openjpa.jdbc.schema.Sequence;
 import org.apache.openjpa.jdbc.schema.Table;
 import serp.util.Numbers;
@@ -41,22 +41,33 @@ import serp.util.Numbers;
 /**
  * Buffer for SQL statements that can be used to create
  * java.sql.PreparedStatements.
+ * 
+ * The buffer holds both the literals and bind variables in the same parameter
+ * list and substitutes them to PreparedStatement. However, a bind variable
+ * is distinguished from the literals by a bit mask on the index of the list
+ * index.
  *
  * @author Marc Prud'hommeaux
  * @author Abe White
+ * @author Pinaki Poddar
  * @since 0.2.4
  */
 public final class SQLBuffer
     implements Serializable, Cloneable {
 
     private static final String PARAMETER_TOKEN = "?";
-
+    private static final char   PARAMETER_TOKEN_CHAR = '?';
+    private static final String SINGLE_QUOTE    = "'";
+    private static final String NULL_STRING     = "NULL";
+    private static final String OPEN_BRACKET    = "(";
+    private static final String CLOSE_BRACKET   = ")";
+    
     private final DBDictionary _dict;
     private final StringBuffer _sql = new StringBuffer();
     private List _subsels = null;
     private List _params = null;
+    private BitSet _varIndex = null;
     private List _cols = null;
-    private List _nonFKParams = null;
 
     /**
      * Default constructor.
@@ -123,8 +134,10 @@ public final class SQLBuffer
             _sql.insert(sqlIndex, buf._sql.toString());
 
         if (buf._params != null) {
-            if (_params == null)
+            if (_params == null) {
                 _params = new ArrayList();
+                _varIndex = new BitSet();
+            }
             if (_cols == null && buf._cols != null) {
                 _cols = new ArrayList();
                 while (_cols.size() < _params.size())
@@ -133,6 +146,8 @@ public final class SQLBuffer
 
             if (paramIndex == _params.size()) {
                 _params.addAll(buf._params);
+                for (int i = 0; i < buf._varIndex.size(); i++) 
+                	_varIndex.set(paramIndex + i, buf._varIndex.get(i));
                 if (buf._cols != null)
                     _cols.addAll(buf._cols);
                 else if (_cols != null)
@@ -140,17 +155,17 @@ public final class SQLBuffer
                         _cols.add(null);
             } else {
                 _params.addAll(paramIndex, buf._params);
+                for (int i = 0; i < buf._varIndex.size(); i++) {
+                	_varIndex.set(paramIndex + i + buf._varIndex.size(), 
+                			_varIndex.get(paramIndex+i));
+                	_varIndex.set(paramIndex + i, buf._varIndex.get(i));
+                }
                 if (buf._cols != null)
                     _cols.addAll(paramIndex, buf._cols);
                 else if (_cols != null)
                     while (_cols.size() < _params.size())
                         _cols.add(paramIndex, null);
             }
-        }
-        if (buf._nonFKParams != null) {
-            if (_nonFKParams == null)
-                _nonFKParams = new ArrayList();
-            _nonFKParams.addAll(buf._nonFKParams);
         }
     }
 
@@ -193,14 +208,14 @@ public final class SQLBuffer
      */
     private SQLBuffer append(Select sel, JDBCFetchConfiguration fetch,
         boolean count) {
-        _sql.append("(");
+        _sql.append(OPEN_BRACKET);
         Subselect sub = new Subselect();
         sub.select = sel;
         sub.fetch = fetch;
         sub.count = count;
         sub.sqlIndex = _sql.length();
         sub.paramIndex = (_params == null) ? 0 : _params.size();
-        _sql.append(")");
+        _sql.append(CLOSE_BRACKET);
 
         if (_subsels == null)
             _subsels = new ArrayList(2);
@@ -224,6 +239,13 @@ public final class SQLBuffer
         }
         return false;
     }
+    
+    /**
+     * Appends a bind variable.
+     */
+    public SQLBuffer appendBindParameter(Object o, Column col) {
+    	return appendValue(o, col, true);
+    }
 
     /**
      * Append a parameter value.
@@ -231,13 +253,17 @@ public final class SQLBuffer
     public SQLBuffer appendValue(Object o) {
         return appendValue(o, null);
     }
-
+    
+    public SQLBuffer appendValue(Object o, Column col) {
+    	return appendValue(o, col, false);
+    }
+    
     /**
      * Append a parameter value for a specific column.
      */
-    public SQLBuffer appendValue(Object o, Column col) {
+    public SQLBuffer appendValue(Object o, Column col, boolean isParam) {
         if (o == null)
-            _sql.append("NULL");
+            _sql.append(NULL_STRING);
         else if (o instanceof Raw)
             _sql.append(o.toString());
         else {
@@ -245,37 +271,20 @@ public final class SQLBuffer
 
             // initialize param and col lists; we hold off on col list until
             // we get the first non-null col
-            if (_params == null)
+            if (_params == null) {
                 _params = new ArrayList();
+                _varIndex = new BitSet();
+            }
             if (col != null && _cols == null) {
                 _cols = new ArrayList();
                 while (_cols.size() < _params.size())
                     _cols.add(null);
             }
 
+            _varIndex.set(_params.size(), isParam);
             _params.add(o);
             if (_cols != null)
                 _cols.add(col);
-            if (col == null)
-                return this;
-            boolean isFK = false;
-            ForeignKey[] fks = col.getTable().getForeignKeys();
-            for (int i = 0; i < fks.length; i++) {
-                Column[] cols = fks[i].getColumns();
-                for (int j = 0; j < cols.length; j++) {
-                    if (cols[j] == col) {
-                        isFK = true;
-                        break;
-                    }
-                }
-                if (isFK)
-                    break;
-            }
-            if (!isFK) {
-                if (_nonFKParams == null)
-                    _nonFKParams = new ArrayList();
-                _nonFKParams.add(o);                
-            }
         }
         return this;
     }
@@ -399,21 +408,16 @@ public final class SQLBuffer
         return (_params == null) ? Collections.EMPTY_LIST : _params;
     }
 
-    public List getNonFKParameters() {
-        return (_nonFKParams == null) ? Collections.EMPTY_LIST : _nonFKParams;
-    }
     /**
      * Return the SQL for this buffer.
      */
     public String getSQL() {
         return getSQL(false);
     }
-    
+
     /**
      * Returns the SQL for this buffer.
      *
-     * @param replaceParams if true, then replace parameters with the
-     * actual parameter values
      */
     public String getSQL(boolean replaceParams) {
         resolveSubselects();
@@ -423,21 +427,26 @@ public final class SQLBuffer
 
         StringBuffer buf = new StringBuffer();
         Iterator pi = _params.iterator();
+        int iParam = 0;
         for (int i = 0; i < sql.length(); i++) {
-            if (sql.charAt(i) != '?') {
+            if (sql.charAt(i) != PARAMETER_TOKEN_CHAR) {
                 buf.append(sql.charAt(i));
                 continue;
             }
-
             Object param = pi.hasNext() ? pi.next() : null;
+            // bind parameter variables are never replaced
+            if (_varIndex.get(iParam++)) {
+            	buf.append(PARAMETER_TOKEN);
+            	continue;
+            }
             if (param == null)
-                buf.append("NULL");
+                buf.append(NULL_STRING);
             else if (param instanceof Number || param instanceof Boolean)
                 buf.append(param);
             else if (param instanceof String || param instanceof Character)
-                buf.append("'").append(param).append("'");
+                buf.append(SINGLE_QUOTE).append(param).append(SINGLE_QUOTE);
             else
-                buf.append("?");
+                buf.append(PARAMETER_TOKEN);
         }
         return buf.toString();
     }
@@ -598,7 +607,7 @@ public final class SQLBuffer
             _dict.setUnknown(ps, i + 1, _params.get(i), col);
         }
     }
-
+    
     public int hashCode() {
         int hash = _sql.hashCode();
         return (_params == null) ? hash : hash ^ _params.hashCode();
@@ -629,7 +638,7 @@ public final class SQLBuffer
      * @param val
      */
     public void addCastForParam(String oper, Val val) {
-        if (_sql.charAt(_sql.length() - 1) == '?') {
+        if (_sql.charAt(_sql.length() - 1) == PARAMETER_TOKEN_CHAR) {
             String castString = _dict.addCastAsType(oper, val);
             if (castString != null)
                 _sql.replace(_sql.length() - 1, _sql.length(), castString);

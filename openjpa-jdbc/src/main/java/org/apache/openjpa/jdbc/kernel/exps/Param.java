@@ -123,9 +123,9 @@ public class Param
         SQLBuffer sql, int index) {
         ParamExpState pstate = (ParamExpState) state;
         if (pstate.otherLength > 1)
-            sql.appendValue(((Object[]) pstate.sqlValue)[index], 
+            sql.appendBindParameter(((Object[]) pstate.sqlValue)[index], 
                 pstate.getColumn(index));
         else
-            sql.appendValue(pstate.sqlValue, pstate.getColumn(index));
+            sql.appendBindParameter(pstate.sqlValue, pstate.getColumn(index));
     }
 }

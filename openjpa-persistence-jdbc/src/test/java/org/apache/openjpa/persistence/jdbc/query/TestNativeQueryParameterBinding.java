@@ -21,8 +21,6 @@ package org.apache.openjpa.persistence.jdbc.query;
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
 
-import org.apache.openjpa.persistence.jdbc.query.domain.Applicant;
-import org.apache.openjpa.persistence.jdbc.query.domain.Application;
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
 
 /**

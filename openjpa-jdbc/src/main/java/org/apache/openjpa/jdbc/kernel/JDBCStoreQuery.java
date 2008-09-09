@@ -658,11 +658,24 @@ public class JDBCStoreQuery
                     idx++;
             }
         }
-
-        String[] sql = new String[sels.size()];
+        // add a sentinel null String to denote that extra SQL will be
+        // required during execution
+        String[] sql = new String[sels.size() + (hasExtraSQL(sels) ? 1 : 0)];
         for (int i = 0; i < sels.size(); i++)
             sql[i] = ((Select) sels.get(i)).toSelect(false, fetch).getSQL(true);
         return sql;
+    }
+    
+    /**
+     * Affirms if any of the given Selects will require extra Select to load
+     * requisite data
+     */
+    boolean hasExtraSQL(List sels) {
+    	for (Object sel : sels) {
+    		if (sel instanceof Select && ((Select)sel).hasNewEagerSelects())
+    			return true;
+    	}
+    	return false;
     }
     
     /**

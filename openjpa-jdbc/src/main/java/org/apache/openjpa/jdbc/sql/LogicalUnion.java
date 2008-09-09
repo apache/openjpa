@@ -819,6 +819,10 @@ public class LogicalUnion
             SelectExecutor ex = sel.getEager(key);
             return (ex == sel) ? this : ex;
         }
+        
+        public boolean hasNewEagerSelects() {
+        	return sel.hasNewEagerSelects();
+        }
 
         public Joins newJoins() {
             return sel.newJoins();
