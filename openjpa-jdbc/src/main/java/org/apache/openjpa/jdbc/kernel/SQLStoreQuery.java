@@ -44,6 +44,7 @@ import org.apache.openjpa.jdbc.sql.SQLBuffer;
 import org.apache.openjpa.jdbc.sql.SQLExceptions;
 import org.apache.openjpa.kernel.AbstractStoreQuery;
 import org.apache.openjpa.kernel.QueryContext;
+import org.apache.openjpa.kernel.QueryHints;
 import org.apache.openjpa.kernel.StoreQuery;
 import org.apache.openjpa.lib.rop.RangeResultObjectProvider;
 import org.apache.openjpa.lib.rop.ResultObjectProvider;
@@ -419,7 +420,10 @@ public class SQLStoreQuery
         public LinkedMap getParameterTypes(StoreQuery q) {
         	int count = -1;
         	try {
-        		count = countParamMarker(q.getContext().getQueryString());
+        		boolean simple = q.getContext().getFetchConfiguration()
+        			.getHint(QueryHints.HINT_PARAM_MARKER_IN_QUERY) == null;
+        		count = countParamMarker(q.getContext().getQueryString(), 
+        			simple);
         	} catch (IOException e) {
         		
         	}
@@ -430,18 +434,38 @@ public class SQLStoreQuery
             return map;
         }
         
-    	private static int countParamMarker(String sql) throws IOException {
+        /**
+         * Parse given SQL for parameter marker <code>?</code>. How to parse 
+         * is controlled by the second boolean argument. The <em>simple</em>
+         * parse assumes that the given SQL string does not contain any
+         * <code>?</code> other than the parameter markers, which is usually
+         * the case and saves considerable computation time as revealed during
+         * profiling. 
+         * If the user query is using <code>?</code> character within the query
+         * itself then the user must instruct more complex parsing to be used
+         * by setting a {@link QueryHints#HINT_PARAM_MARKER_IN_QUERY hint}.
+         */
+    	private static int countParamMarker(String sql, boolean simple) 
+    		throws IOException {
     		if (sql.indexOf("?") == -1)
     			return 0;
-
-    		StreamTokenizer tok = new StreamTokenizer(new StringReader(sql));
-    		tok.resetSyntax();
-    		tok.quoteChar('\'');
-    		tok.wordChars('?', '?');
-    		int count = 0;
-    		for (int ttype; (ttype = tok.nextToken()) != StreamTokenizer.TT_EOF;) {
+			int count = 0;
+    		if (simple) {
+    			int index = -1;
+    			while ((index = sql.indexOf("?", index + 1)) != -1)
+    				count++;
+    			return count;
+    		} else {
+    			StreamTokenizer tok = new StreamTokenizer(
+    				new StringReader(sql));
+    			tok.resetSyntax();
+    			tok.quoteChar('\'');
+    			tok.wordChars('?', '?');
+    			for (int ttype; (ttype = tok.nextToken()) != 
+    				StreamTokenizer.TT_EOF;) {
     			if (ttype == StreamTokenizer.TT_WORD && "?".equals(tok.sval))
     				count++;
+    			}
     		}
         	return count;
     	}

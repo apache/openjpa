@@ -28,7 +28,6 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import javax.persistence.FlushModeType;
 import javax.persistence.Query;
@@ -39,6 +38,7 @@ import org.apache.openjpa.enhance.Reflection;
 import org.apache.openjpa.kernel.DelegatingQuery;
 import org.apache.openjpa.kernel.DelegatingResultList;
 import org.apache.openjpa.kernel.Filters;
+import org.apache.openjpa.kernel.QueryHints;
 import org.apache.openjpa.kernel.QueryLanguages;
 import org.apache.openjpa.kernel.QueryOperations;
 import org.apache.openjpa.kernel.exps.AggregateListener;
@@ -327,8 +327,6 @@ public class QueryImpl implements OpenJPAQuerySPI, Serializable {
 				if (value instanceof String)
 					value = Boolean.valueOf((String) value);
 				setSubclasses(((Boolean) value).booleanValue());
-			} else if ("InvalidateCache".equals(k)) {
-				invalidate();
 			} else if ("FilterListener".equals(k))
 				addFilterListener(Filters.hintToFilterListener(value, _query
 						.getBroker().getClassLoader()));
@@ -361,8 +359,10 @@ public class QueryImpl implements OpenJPAQuerySPI, Serializable {
 						throw new ArgumentException(_loc.get(
 								"bad-query-hint-value", key, value), null,
 								null, false);
-				}
-				_query.getFetchConfiguration().setHint(key, value);
+				} else if (QueryHints.HINT_INVALIDATE_PREPARED_QUERY.equals(key)) {
+					invalidatePreparedQueryCache();
+				} else 
+					_query.getFetchConfiguration().setHint(key, value);
 			} else
 				throw new ArgumentException(_loc.get("bad-query-hint", key),
 						null, null, false);
@@ -588,7 +588,10 @@ public class QueryImpl implements OpenJPAQuerySPI, Serializable {
 		return cached;
 	}
 	
-	public boolean invalidate() {
+	/**
+	 * Remove this query from PreparedQueryCache. 
+	 */
+	public boolean invalidatePreparedQueryCache() {
 		Map cache = _em.getConfiguration().getPreparedQueryCacheInstance();
 		return cache != null && cache.remove(_id) != null;
 	}
