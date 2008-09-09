@@ -79,6 +79,10 @@
         <docbook.target>${project.basedir}/target/manual</docbook.target>
         <docbook.version>1.67.2</docbook.version>
         <local.repository>${settings.localRepository}</local.repository>
+
+        <!-- authentication for nightly uploads -->
+        <nightly.user.name>${user.name}</nightly.user.name>
+        <nightly.password>passw0rd</nightly.password>
         </properties>
 
         <build>
@@ -303,6 +307,17 @@
                 </pluginRepository>
             </pluginRepositories>
         </profile>
+        <!-- 
+          Upload distribution files, javadoc and manual to openjpa.apache.org/builds/latest. 
+          This profile is designed to be run nightly by a continuous build server, but can
+          also be run manually.
+
+          The nightly.user.name and nightly.password properties need to be set prior to using
+          this profile, ie : 
+          $ mvn -Dnightly.user.name=mikedd -Dnightly.password=mikesPassword -Pnightly-upload package
+          or (using a profile defined in $user.home/.m2/settings.xml )
+          $ mvn -Pnightly-upload,mikes-nightly-credentials package
+          -->
         <profile>
             <id>nightly-upload</id>
             <build>
@@ -313,7 +328,7 @@
                             <execution>
                                 <phase>package</phase>
                                 <configuration>
-                                    <tasks> 
+                                    <tasks>
                                         <mkdir dir="target/site/tempDocs"/>
                                         <unzip dest="target/site/tempDocs">
                                             <fileset dir="target/site/downloads">
@@ -324,29 +339,23 @@
                                                 <include name="**/manual/**"/>
                                             </patternset>
                                         </unzip>
-                                        <chmod perm="g+rw">
-                                             <fileset dir="target/site/downloads"/>
-                                        </chmod>
-                                        <!-- chmod returns 255 on the javadoc and manual dirs -->
-                                        <exec executable="chmod">
-                                            <arg value="-R"/>
-                                            <arg value="g+w"/>
-                                            <arg value="target/site/tempDocs"/>
-                                        </exec>
+                                        <move todir="target/site/tempDocs/docs">
+                                            <fileset dir="target/site/tempDocs/apache-openjpa-${pom.version}/docs"/> 
+                                        </move>
+                                        <scp todir="${nightly.user.name}:${nightly.password}@people.apache.org:/www/openjpa.apache.org/builds/latest/downloads">
+                                            <fileset dir="target/site/downloads"/>
+                                        </scp>
                                         
-                                        <!-- From the ant manual if we need to 
-                                             preserve permissions we should use exec
-                                          -->
-                                        <exec executable="scp">
-                                            <arg value="-rp"/>
-                                            <arg value="target/site/downloads"/>
-                                            <arg value="people.apache.org:/www/openjpa.apache.org/builds/latest/"/>
-                                        </exec>
-                                        <exec executable="scp">
-                                            <arg value="-rp"/>
-                                            <arg value="target/site/tempDocs/apache-openjpa-${pom.version}/docs/"/>
-                                            <arg value="people.apache.org:/www/openjpa.apache.org/builds/latest/"/>
-                                        </exec>
+                                        <scp todir="${nightly.user.name}:${nightly.password}@people.apache.org:/www/openjpa.apache.org/builds/latest/docs">
+                                            <fileset dir="target/site/tempDocs/docs"/> 
+                                        </scp>
+                                        <sshexec host="people.apache.org" 
+                                                 username="${nightly.user.name}" 
+                                                 password="${nightly.password}"
+                                                 command="chmod -R g+w /www/openjpa.apache.org/builds/latest"/>
+                                        <delete>
+                                            <fileset dir="target/site/tempDocs"/>
+                                        </delete>
                                     </tasks>
                                 </configuration>
                                 <goals>
@@ -354,6 +363,13 @@
                                 </goals>
                             </execution>
                         </executions>
+                        <dependencies>
+                            <dependency>
+                                <groupId>org.apache.ant</groupId>
+                                <artifactId>ant-jsch</artifactId>
+                                <version>1.7.0</version>
+                            </dependency>
+                        </dependencies>
                     </plugin>
                 </plugins>
             </build>
