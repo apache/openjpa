@@ -20,8 +20,8 @@ package org.apache.openjpa.jdbc.meta;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -71,7 +71,7 @@ public class VersionMappingInfo
     	Table primaryTable = vers.getClassMapping().getTable();
     	List<String> secondaryTableNames = Arrays.asList(vers
     		.getClassMapping().getMappingInfo().getSecondaryTableNames());
-    	Map<Table, List<Column>> assign = new HashMap<Table, List<Column>>();
+    	Map<Table, List<Column>> assign = new LinkedHashMap<Table, List<Column>>();
     	for (Column col : templates) {
     	    String tableName = col.getTableName();
     	    Table table;
