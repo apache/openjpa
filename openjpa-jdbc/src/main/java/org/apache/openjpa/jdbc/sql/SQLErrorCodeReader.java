@@ -139,8 +139,9 @@ public class SQLErrorCodeReader {
 			short nodeType = child.getNodeType();
 			if (nodeType == Node.ELEMENT_NODE) {
 				String errorType = child.getNodeName();
-				if (storeErrorTypes.containsKey(errorType)) {
-					String errorCodes = child.getTextContent();
+				Node textNode = child.getFirstChild();
+				if (storeErrorTypes.containsKey(errorType) && textNode != null){
+					String errorCodes = textNode.getNodeValue();
 					if (!StringUtils.isEmpty(errorCodes)) {
 						String[] codes = errorCodes.split(ERROR_CODE_DELIMITER);
 						for (int k = 0; k < codes.length; k++ ) {
