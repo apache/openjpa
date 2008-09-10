@@ -342,17 +342,20 @@
                                         <move todir="target/site/tempDocs/docs">
                                             <fileset dir="target/site/tempDocs/apache-openjpa-${pom.version}/docs"/> 
                                         </move>
-                                        <scp todir="${nightly.user.name}:${nightly.password}@people.apache.org:/www/openjpa.apache.org/builds/latest/downloads">
+                                        <scp todir="${nightly.user.name}:${nightly.password}@people.apache.org:/www/openjpa.apache.org/builds/latest/downloads" 
+                                             trust="true">
                                             <fileset dir="target/site/downloads"/>
                                         </scp>
                                         
-                                        <scp todir="${nightly.user.name}:${nightly.password}@people.apache.org:/www/openjpa.apache.org/builds/latest/docs">
+                                        <scp todir="${nightly.user.name}:${nightly.password}@people.apache.org:/www/openjpa.apache.org/builds/latest/docs" 
+                                             trust="true">
                                             <fileset dir="target/site/tempDocs/docs"/> 
                                         </scp>
                                         <sshexec host="people.apache.org" 
                                                  username="${nightly.user.name}" 
                                                  password="${nightly.password}"
-                                                 command="chmod -R g+w /www/openjpa.apache.org/builds/latest"/>
+                                                 command="chmod -R g+w /www/openjpa.apache.org/builds/latest"
+                                                 trust="true"/>
                                         <delete>
                                             <fileset dir="target/site/tempDocs"/>
                                         </delete>
