@@ -16,7 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.    
  */
-package org.apache.openjpa.persistence;
+package org.apache.openjpa.kernel;
 
 import java.io.Serializable;
 import java.util.Date;
@@ -26,6 +26,11 @@ import java.util.Map;
 /**
  * Records query execution statistics.
  * 
+ * Statistics can be reset.
+ * 
+ * Gathers both accumulated statistics since start as well as statistics since
+ * last reset.
+ *  
  * @since 1.3.0
  * 
  * @author Pinaki Poddar
@@ -103,9 +108,9 @@ public interface QueryStatistics extends Serializable {
 			return getCount(astats, query, READ);
 		}
 
-		private long getCount(Map<String, long[]> target, String query, int index) {
+		private long getCount(Map<String, long[]> target, String query, int i) {
 			long[] row = target.get(query);
-			return (row == null) ? 0 : row[index];
+			return (row == null) ? 0 : row[i];
 		}
 
 		public Date since() {
@@ -129,12 +134,12 @@ public interface QueryStatistics extends Serializable {
 			addSample(astats, query, index);
 		}
 		
-		private void addSample(Map<String, long[]> target, String query, int index) {
+		private void addSample(Map<String, long[]> target, String query, int i) {
 			long[] row = target.get(query);
 			if (row == null) {
 				row = new long[1];
 			}
-			row[index]++;
+			row[i]++;
 			target.put(query, row);
 		}
 		

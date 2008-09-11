@@ -50,6 +50,8 @@ import org.apache.openjpa.kernel.FindCallbacks;
 import org.apache.openjpa.kernel.LockLevels;
 import org.apache.openjpa.kernel.OpCallbacks;
 import org.apache.openjpa.kernel.OpenJPAStateManager;
+import org.apache.openjpa.kernel.PreparedQuery;
+import org.apache.openjpa.kernel.PreparedQueryCache;
 import org.apache.openjpa.kernel.QueryFlushModes;
 import org.apache.openjpa.kernel.QueryLanguages;
 import org.apache.openjpa.kernel.Seq;
@@ -871,7 +873,7 @@ public class EntityManagerImpl
             PreparedQuery cached = getPreparedQuery(qid);
             if (cached != null) {
                 language = QueryLanguages.LANG_PREPARED_SQL;
-                query = cached.getSQL();
+                query = cached.getDatastoreAction();
             }
             org.apache.openjpa.kernel.Query q = _broker.newQuery(language, 
                 query);

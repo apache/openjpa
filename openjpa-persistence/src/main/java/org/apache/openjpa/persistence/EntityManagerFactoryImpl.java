@@ -67,7 +67,6 @@ public class EntityManagerFactoryImpl
     private transient Constructor<FetchPlan> _plan = null;
     private transient StoreCache _cache = null;
     private transient QueryResultCache _queryCache = null;
-    private transient Map<String, PreparedQuery> _sqlQueryCache = null;
 
     /**
      * Default constructor provided for auto-instantiation.

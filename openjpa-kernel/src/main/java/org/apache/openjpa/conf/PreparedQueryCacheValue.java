@@ -19,7 +19,6 @@
 package org.apache.openjpa.conf;
 
 import org.apache.openjpa.lib.conf.PluginValue;
-import org.apache.openjpa.persistence.PreparedQueryCache;
 
 /**
  * A cache of prepared queries indexed by an identifier.
@@ -32,7 +31,7 @@ public class PreparedQueryCacheValue
     extends PluginValue {
 
     public static final String[] ALIASES = {
-	    "true", PreparedQueryCache.class.getName(),
+	    "true", "org.apache.openjpa.kernel.PreparedQueryCacheImpl",
 	    "false", null,
     };
 	  

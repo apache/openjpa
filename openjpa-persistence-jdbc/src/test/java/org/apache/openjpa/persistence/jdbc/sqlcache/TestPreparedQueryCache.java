@@ -21,18 +21,15 @@ package org.apache.openjpa.persistence.jdbc.sqlcache;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.Map;
-
-import javax.persistence.EntityManager;
 
 import org.apache.openjpa.conf.OpenJPAConfiguration;
+import org.apache.openjpa.kernel.PreparedQuery;
+import org.apache.openjpa.kernel.PreparedQueryCache;
 import org.apache.openjpa.kernel.QueryHints;
 import org.apache.openjpa.kernel.QueryLanguages;
 import org.apache.openjpa.kernel.jpql.JPQLParser;
 import org.apache.openjpa.persistence.OpenJPAEntityManager;
 import org.apache.openjpa.persistence.OpenJPAQuery;
-import org.apache.openjpa.persistence.PreparedQuery;
-import org.apache.openjpa.persistence.PreparedQueryCache;
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
 
 /**
@@ -90,7 +87,6 @@ public class TestPreparedQueryCache extends SingleEMFTestCase {
 	}
 	
 	public void testExclusionPattern() {
-		List<String> patterns = getCache().getExcludes(); 
 		OpenJPAEntityManager em = emf.createEntityManager();
 		OpenJPAQuery q1 = em.createQuery(EXCLUDED_QUERY_1);
 		q1.getResultList();
@@ -129,13 +125,13 @@ public class TestPreparedQueryCache extends SingleEMFTestCase {
 		assertNotCached(jpql);
 		assertLanguage(q1, JPQLParser.LANG_JPQL);
 		
-		List result = q1.getResultList();
+		q1.getResultList();
 		assertCached(jpql);
 		assertLanguage(q1, JPQLParser.LANG_JPQL);
 		
 		PreparedQuery cached = getCache().get(jpql);
 		assertEquals(jpql, cached.getIdentifier());
-		assertNotEquals(jpql, cached.getSQL());
+		assertNotEquals(jpql, cached.getDatastoreAction());
 	}
 
 	public void testPreparedQueryIsCachedAcrossExecution() {
@@ -146,7 +142,7 @@ public class TestPreparedQueryCache extends SingleEMFTestCase {
 		assertLanguage(q1, JPQLParser.LANG_JPQL);
 		
 		
-		List result = q1.getResultList();
+		q1.getResultList();
 		assertCached(jpql);
 		assertLanguage(q1, JPQLParser.LANG_JPQL);
 		
@@ -162,7 +158,8 @@ public class TestPreparedQueryCache extends SingleEMFTestCase {
 		OpenJPAEntityManager em = emf.createEntityManager();
 		OpenJPAQuery q1 = em.createQuery(jpql);
 		assertNotCached(jpql);
-		List result = q1.getResultList();
+		
+		q1.getResultList();
 		assertCached(jpql);
 		assertLanguage(q1, JPQLParser.LANG_JPQL);
 		
@@ -192,7 +189,8 @@ public class TestPreparedQueryCache extends SingleEMFTestCase {
 		OpenJPAEntityManager em = emf.createEntityManager();
 		OpenJPAQuery q1 = em.createQuery(jpql);
 		assertNotCached(jpql);
-		List result = q1.getResultList();
+		
+		q1.getResultList();
 		assertCached(jpql);
 		assertLanguage(q1, JPQLParser.LANG_JPQL);
 		
@@ -330,7 +328,7 @@ public class TestPreparedQueryCache extends SingleEMFTestCase {
 		if (cache == null)
 			return "null";
 		if (cache.get(jpql) != null)
-			return cache.get(jpql).getSQL();
+			return cache.get(jpql).getDatastoreAction();
 		return "null";
 	}
 
