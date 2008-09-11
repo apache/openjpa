@@ -218,6 +218,23 @@ public class TestPreparedQueryCache extends SingleEMFTestCase {
 		assertLanguage(q3, QueryLanguages.LANG_PREPARED_SQL);
 	}
 
+	public void testQueryStatistics() {
+		String jpql1 = "select p from Company p";
+		String jpql2 = "select p from Company p where p.name = 'PObject'";
+		OpenJPAEntityManager em = emf.createEntityManager();
+		OpenJPAQuery q1 = em.createQuery(jpql1);
+		OpenJPAQuery q2 = em.createQuery(jpql2);
+		int N1 = 5;
+		int N2 = 8;
+		for (int i = 0; i < N1; i++)
+			em.createQuery(q1).getResultList();
+		for (int i = 0; i < N2; i++)
+			em.createQuery(q2).getResultList();
+		
+		assertEquals(N1, getCache().getStatistics().getExecutionCount(jpql1));
+		assertEquals(N2, getCache().getStatistics().getExecutionCount(jpql2));
+		assertEquals(N1+N2, getCache().getStatistics().getExecutionCount());
+	}
 
 	public void testQueryWithNoParameter() {
 		compare("select p from Company p");

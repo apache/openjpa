@@ -248,6 +248,8 @@ public class QueryImpl implements OpenJPAQuerySPI, Serializable {
 		PreparedQuery cachedQuery = cache();
 		boolean usingCachedQuery = (cachedQuery != null);
 		validate(_query.getParameterTypes(), !usingCachedQuery);
+		recordStatistics(usingCachedQuery ? cachedQuery.getIdentifier() 
+			: _query.getQueryString());
 		Object result = _query.execute(getParameterMap(usingCachedQuery));
 		return result;
 	}
@@ -634,6 +636,14 @@ public class QueryImpl implements OpenJPAQuerySPI, Serializable {
 		newQuery.compile();
 		_query = new DelegatingQuery(newQuery, 
 				broker.getInstanceExceptionTranslator());
+	}
+	
+	private void recordStatistics(String query) {
+		PreparedQueryCache cache = _em.getConfiguration()
+			.getPreparedQueryCacheInstance();
+		if (cache == null)
+			return;
+		cache.getStatistics().recordExecution(query);
 	}
 
 	public int hashCode() {

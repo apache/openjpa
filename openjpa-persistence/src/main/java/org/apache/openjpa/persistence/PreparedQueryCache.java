@@ -55,12 +55,14 @@ public class PreparedQueryCache implements Configurable {
 
 	private final Map<String, PreparedQuery> _delegate;
 	private final Set<String> _uncachables;
+	private final QueryStatistics _stats;
 	private List<String> _excludes;
 	private ReentrantLock _lock = new ReentrantLock();
 
 	public PreparedQueryCache() {
 		_delegate = new HashMap<String, PreparedQuery>();
 		_uncachables = new HashSet<String>();
+		_stats = new QueryStatistics.Default();
 	}
 	
 	/**
@@ -172,6 +174,10 @@ public class PreparedQueryCache implements Configurable {
 		} finally {
 			unlock();
 		}
+	}
+	
+	public QueryStatistics getStatistics() {
+		return _stats;
 	}
 	
     void lock() {
