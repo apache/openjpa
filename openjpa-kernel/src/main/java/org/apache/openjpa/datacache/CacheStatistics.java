@@ -184,7 +184,7 @@ public interface CacheStatistics extends Serializable {
 		
 		private long getCount(Map<Class, long[]> target, Class c, int index) {
 			long[] row = target.get(c);
-			return (row == null) ? 0 : row[WRITE];
+			return (row == null) ? 0 : row[index];
 		}
 
 		public Date since() {
