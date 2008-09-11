@@ -363,7 +363,7 @@ public class QueryImpl implements OpenJPAQuerySPI, Serializable {
 								null, false);
 				} else if (QueryHints.HINT_INVALIDATE_PREPARED_QUERY.equals
 					(key)) {
-					_query.getFetchConfiguration().setHint(key, value);
+					_query.getFetchConfiguration().setHint(key, (Boolean)value);
 					invalidatePreparedQuery();
 				} else if (QueryHints.HINT_IGNORE_PREPARED_QUERY.equals(key)) {
 					_query.getFetchConfiguration().setHint(key, (Boolean)value);
