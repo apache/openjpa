@@ -370,7 +370,7 @@ public class BrokerImpl
             _extrans = ex;
     }
 
-    RuntimeExceptionTranslator getInstanceExceptionTranslator() {
+    public RuntimeExceptionTranslator getInstanceExceptionTranslator() {
         return (_operationCount == 0) ? _extrans : null;
     }
 

@@ -52,6 +52,14 @@ public interface Broker
      */
     public void setImplicitBehavior(OpCallbacks call,
         RuntimeExceptionTranslator ex);
+    
+    /**
+     * Gets the translator for runtime exceptions.
+     * 
+     * @see #setImplicitBehavior(OpCallbacks, RuntimeExceptionTranslator)
+     * @since 1.3.0
+     */
+    public RuntimeExceptionTranslator getInstanceExceptionTranslator();
 
     /**
      * Return the factory that produced this broker.

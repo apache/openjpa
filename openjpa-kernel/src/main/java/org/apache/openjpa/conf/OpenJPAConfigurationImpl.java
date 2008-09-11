@@ -49,6 +49,7 @@ import org.apache.openjpa.lib.log.Log;
 import org.apache.openjpa.lib.util.Localizer;
 import org.apache.openjpa.meta.MetaDataFactory;
 import org.apache.openjpa.meta.MetaDataRepository;
+import org.apache.openjpa.persistence.PreparedQueryCache;
 import org.apache.openjpa.util.ClassResolver;
 import org.apache.openjpa.util.ImplHelper;
 import org.apache.openjpa.util.ProxyManager;
@@ -1403,18 +1404,19 @@ public class OpenJPAConfigurationImpl
         return (Map) queryCompilationCachePlugin.get();
     }
 
-    public String getPreparedQueryCache() {
-        return preparedQueryCachePlugin.getString();
+    public boolean getPreparedQueryCache() {
+        String str = preparedQueryCachePlugin.getString();
+        return str != null && str.toLowerCase().startsWith("true");
     }
 
-    public void setPreparedQueryCache(String queryCompilationCache) {
-    	preparedQueryCachePlugin.setString(queryCompilationCache);
+    public void setPreparedQueryCache(boolean flag) {
+    	preparedQueryCachePlugin.setString(""+flag);
     }
     
-    public Map getPreparedQueryCacheInstance() {
+    public PreparedQueryCache getPreparedQueryCacheInstance() {
         if (preparedQueryCachePlugin.get() == null)
-        	preparedQueryCachePlugin.instantiate(Map.class, this);
-        return (Map) preparedQueryCachePlugin.get();
+        	preparedQueryCachePlugin.instantiate(PreparedQueryCache.class, this);
+        return (PreparedQueryCache) preparedQueryCachePlugin.get();
     }
 
     public StoreFacadeTypeRegistry getStoreFacadeTypeRegistry() {

@@ -44,7 +44,6 @@ import org.apache.openjpa.kernel.QueryHints;
  * @nojavadoc
  */
 public class PreparedQuery  {
-	public static final PreparedQuery NOT_CACHABLE = new PreparedQuery();
 	private final String _sql;
 	private final String _id;
 	
@@ -52,14 +51,6 @@ public class PreparedQuery  {
 	Class _candidate = null;
 	boolean _subclasses = true;
 	boolean _isProjection = false;
-	
-	/**
-	 * Private constructor to designate a null marker.
-	 */
-	private PreparedQuery() {
-		_sql  = null;
-		_id  = null;
-	}
 	
 	public PreparedQuery(String id, String sql, Query compiled) {
 		this._id = id;

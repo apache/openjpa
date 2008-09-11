@@ -158,10 +158,23 @@ public class FetchConfigurationImpl
         addFetchGroups(fetch.getFetchGroups());
         clearFields();
         addFields(fetch.getFields());
-
+        copyHints(fetch);
         // don't use setters because require active transaction
         _state.readLockLevel = fetch.getReadLockLevel();
         _state.writeLockLevel = fetch.getWriteLockLevel();
+    }
+    
+    void copyHints(FetchConfiguration fetch) {
+    	if (fetch instanceof FetchConfigurationImpl == false)
+    		return;
+    	FetchConfigurationImpl from = (FetchConfigurationImpl)fetch;
+    	if (from._state == null || from._state.hints == null)
+    		return;
+    	if (this._state == null)
+    		return;
+    	if (this._state.hints == null)
+    		this._state.hints = new HashMap();
+    	this._state.hints.putAll(from._state.hints);
     }
 
     public int getFetchBatchSize() {

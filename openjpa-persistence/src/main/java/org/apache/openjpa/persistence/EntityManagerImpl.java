@@ -32,7 +32,6 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.EnumSet;
 import java.util.Map;
-import java.util.HashMap;
 import java.util.IdentityHashMap;
 import javax.persistence.EntityManager;
 import javax.persistence.FlushModeType;
@@ -64,7 +63,6 @@ import org.apache.openjpa.meta.QueryMetaData;
 import org.apache.openjpa.meta.SequenceMetaData;
 import org.apache.openjpa.util.Exceptions;
 import org.apache.openjpa.util.ImplHelper;
-import org.apache.openjpa.util.ParameterMap;
 import org.apache.openjpa.util.RuntimeExceptionTranslator;
 import org.apache.openjpa.util.UserException;
 
@@ -947,14 +945,15 @@ public class EntityManagerImpl
             throw new ArgumentException(_loc.get("no-sql"), null, null, false);
     }
     
-    private PreparedQuery getPreparedQuery(String id) {
-    	Map cache = getConfiguration().getPreparedQueryCacheInstance();
-    	if (cache == null)
-    		return null;
-    	Object val = cache.get(id);
-    	if (val == PreparedQuery.NOT_CACHABLE)
-    		return null;
-    	return (PreparedQuery)val;
+    /**
+     * Gets the prepared query cached by the given key. 
+     * 
+     * @return the cached PreparedQuery or null if none exists.
+     */
+    PreparedQuery getPreparedQuery(String id) {
+    	PreparedQueryCache cache = getConfiguration()
+    		.getPreparedQueryCacheInstance();
+    	return (cache == null) ? null : cache.get(id);
     }
 
     public void setFlushMode(FlushModeType flushMode) {

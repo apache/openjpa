@@ -46,6 +46,7 @@ import org.apache.openjpa.kernel.exps.FilterListener;
 import org.apache.openjpa.lib.conf.Configuration;
 import org.apache.openjpa.meta.MetaDataFactory;
 import org.apache.openjpa.meta.MetaDataRepository;
+import org.apache.openjpa.persistence.PreparedQueryCache;
 import org.apache.openjpa.util.ClassResolver;
 import org.apache.openjpa.util.ProxyManager;
 import org.apache.openjpa.util.StoreFacadeTypeRegistry;
@@ -1528,22 +1529,22 @@ public interface OpenJPAConfiguration
     public void setInitializeEagerly(boolean flag);
     
     /**
-     * Configuration settings for the Prepared Query Cache to use. 
-     * @see PreparedQueryCacheValue
+     * Affirms if Prepared Query Cache is activated.
+     * 
      * @since 1.3.0
      */
-    public String getPreparedQueryCache();
+    public boolean getPreparedQueryCache();
     
     /**
-     * Configuration settings for the Prepared Query Cache to use. 
-     * @see PreparedQueryCacheValue
+     * Sets whether Prepared Query Cache is activated.
+     * 
      * @since 1.3.0
      */
-    public void setPreparedQueryCache(String cache);    
+    public void setPreparedQueryCache(boolean flag);    
     
     /**
-     * Gets the modifable map of the cached prepared query indexed by query
+     * Gets the modifable view of the cached prepared query indexed by query
      * String.
      */
-    public Map getPreparedQueryCacheInstance();
+    public PreparedQueryCache getPreparedQueryCacheInstance();
 }

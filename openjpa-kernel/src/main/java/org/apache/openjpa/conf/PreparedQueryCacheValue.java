@@ -18,15 +18,8 @@
  */
 package org.apache.openjpa.conf;
 
-import java.util.Collections;
-import java.util.Hashtable;
-import java.util.Map;
-
-import org.apache.openjpa.lib.conf.Configuration;
 import org.apache.openjpa.lib.conf.PluginValue;
-import java.util.concurrent.ConcurrentHashMap;
-import org.apache.openjpa.lib.util.ParseException;
-import org.apache.openjpa.util.CacheMap;
+import org.apache.openjpa.persistence.PreparedQueryCache;
 
 /**
  * A cache of prepared queries indexed by an identifier.
@@ -39,40 +32,19 @@ public class PreparedQueryCacheValue
     extends PluginValue {
 
     public static final String[] ALIASES = {
-        "true", CacheMap.class.getName(),
-        "all", ConcurrentHashMap.class.getName(),
-        "false", null,
+	    "true", PreparedQueryCache.class.getName(),
+	    "false", null,
     };
-
+	  
     public PreparedQueryCacheValue(String prop) {
         super(prop, true);
         setAliases(ALIASES);
         setDefault(ALIASES[0]);
         setClassName(ALIASES[1]);
     }
-
-    public Object newInstance(String clsName, Class type,
-        Configuration conf, boolean fatal) {
-        // make sure map handles concurrency
-        Map map;
-        
-        try {
-            map = (Map) super.newInstance(clsName, type, conf, fatal);
-        } catch (ParseException pe) {
-        	// For comment on special classloading see QueryCompilationCacheValue  
-            map = (Map) super.newInstance(clsName,
-                PreparedQueryCacheValue.class, conf, fatal);
-        } catch (IllegalArgumentException iae) {
-           map = (Map) super.newInstance(clsName,
-                PreparedQueryCacheValue.class, conf, fatal);
-        }
-
-        if (map != null && !(map instanceof Hashtable)
-            && !(map instanceof CacheMap)
-            && !(map instanceof
-                    org.apache.openjpa.lib.util.concurrent.ConcurrentMap)
-            && !(map instanceof java.util.concurrent.ConcurrentMap))
-            map = Collections.synchronizedMap(map);
-        return map;
-	}
+    
+    @Override
+    public boolean isAliasListComprehensive() {
+    	return true;
+    }
 }

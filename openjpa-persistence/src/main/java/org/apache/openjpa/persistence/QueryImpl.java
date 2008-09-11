@@ -35,6 +35,7 @@ import javax.persistence.TemporalType;
 
 import org.apache.commons.collections.map.LinkedMap;
 import org.apache.openjpa.enhance.Reflection;
+import org.apache.openjpa.kernel.Broker;
 import org.apache.openjpa.kernel.DelegatingQuery;
 import org.apache.openjpa.kernel.DelegatingResultList;
 import org.apache.openjpa.kernel.Filters;
@@ -43,6 +44,7 @@ import org.apache.openjpa.kernel.QueryLanguages;
 import org.apache.openjpa.kernel.QueryOperations;
 import org.apache.openjpa.kernel.exps.AggregateListener;
 import org.apache.openjpa.kernel.exps.FilterListener;
+import org.apache.openjpa.kernel.jpql.JPQLParser;
 import org.apache.openjpa.lib.rop.ResultList;
 import org.apache.openjpa.lib.util.Localizer;
 import org.apache.openjpa.util.ImplHelper;
@@ -64,7 +66,7 @@ public class QueryImpl implements OpenJPAQuerySPI, Serializable {
 
 	private static final Localizer _loc = Localizer.forPackage(QueryImpl.class);
 
-	private final DelegatingQuery _query;
+	private DelegatingQuery _query;
 	private transient EntityManagerImpl _em;
 	private transient FetchPlan _fetch;
 	private ParameterMap _params;
@@ -359,10 +361,15 @@ public class QueryImpl implements OpenJPAQuerySPI, Serializable {
 						throw new ArgumentException(_loc.get(
 								"bad-query-hint-value", key, value), null,
 								null, false);
-				} else if (QueryHints.HINT_INVALIDATE_PREPARED_QUERY.equals(key)) {
-					invalidatePreparedQueryCache();
-				} else 
+				} else if (QueryHints.HINT_INVALIDATE_PREPARED_QUERY.equals
+					(key)) {
 					_query.getFetchConfiguration().setHint(key, value);
+					invalidatePreparedQuery();
+				} else if (QueryHints.HINT_IGNORE_PREPARED_QUERY.equals(key)) {
+					_query.getFetchConfiguration().setHint(key, (Boolean)value);
+					ignorePreparedQuery();
+				} else 
+					_query.getFetchConfiguration().setHint(key, (Boolean)value);
 			} else
 				throw new ArgumentException(_loc.get("bad-query-hint", key),
 						null, null, false);
@@ -559,41 +566,74 @@ public class QueryImpl implements OpenJPAQuerySPI, Serializable {
 	}
 	
 	/**
-	 * Cache this query with its identifier as key and SQL as value if this
-	 * query is amenable to caching and has not already been cached.
+	 * Cache this query if this query is amenable to caching and has not 
+	 * already been cached. If the query can not be cached, then mark it as such
+	 * to avoid computing for the same key again.
 	 * 
 	 * @return non-null if this query has already been cached. null if it can 
-	 * not be cached or cached in this call.
+	 * not be cached or cached in this call or hint is set to ignore the cached
+	 * version.
 	 */
 	PreparedQuery cache() {
-		if (_id == null)
+		if (_id == null 
+			|| !_em.getConfiguration().getPreparedQueryCache() 
+			|| isHinted(QueryHints.HINT_IGNORE_PREPARED_QUERY)
+			|| isHinted(QueryHints.HINT_INVALIDATE_PREPARED_QUERY))
 			return null;
-		Map cache = _em.getConfiguration().getPreparedQueryCacheInstance();
-		if (cache == null)
+		PreparedQueryCache cache = _em.getConfiguration()
+			.getPreparedQueryCacheInstance();
+		if (cache.isCachable(_id) == Boolean.FALSE)
 			return null;
-		PreparedQuery cached = (PreparedQuery)cache.get(_id);
-		if (cached == PreparedQuery.NOT_CACHABLE)
-			return null;
+		PreparedQuery cached = cache.get(_id);
 		if (cached == null) {
 			String[] sqls = _query.getDataStoreActions(getParameterMap(true));
-			boolean cacheable = sqls.length == 1;
+			boolean cacheable = (sqls.length == 1);
 			if (!cacheable) {
-				cache.put(_id, PreparedQuery.NOT_CACHABLE);
+				cache.markUncachable(_id);
 				return null;
 			}
 			cached = new PreparedQuery(_id, sqls[0], _query); 
-			cache.put(_id, cached);
-			return null;
+			// Attempt to cache may fail if query matches exclusion pattern
+			if (!cache.cache(cached)) {
+				cached = null;
+			}
 		}
 		return cached;
+	}
+	
+	boolean isHinted(String hint) {
+		Object result = _query.getFetchConfiguration().getHint(hint);
+		return result != null && "true".equalsIgnoreCase(result.toString());
 	}
 	
 	/**
 	 * Remove this query from PreparedQueryCache. 
 	 */
-	public boolean invalidatePreparedQueryCache() {
-		Map cache = _em.getConfiguration().getPreparedQueryCacheInstance();
-		return cache != null && cache.remove(_id) != null;
+	private boolean invalidatePreparedQuery() {
+		if (!_em.getConfiguration().getPreparedQueryCache())
+			return false;
+		ignorePreparedQuery();
+		PreparedQueryCache cache = _em.getConfiguration()
+			.getPreparedQueryCacheInstance();
+		return cache.invalidate(_id);
+	}
+	
+	/**
+	 * Ignores this query from PreparedQueryCache by recreating the original
+	 * query if it has been cached. 
+	 */
+	private void ignorePreparedQuery() {
+		PreparedQuery cached = _em.getPreparedQuery(_id);
+		if (cached == null)
+			return;
+		Broker broker = _em.getBroker();
+		String JPQL = JPQLParser.LANG_JPQL;
+		String jpql = _id;
+		org.apache.openjpa.kernel.Query newQuery = broker.newQuery(JPQL, jpql);
+		newQuery.getFetchConfiguration().copy(_query.getFetchConfiguration());
+		newQuery.compile();
+		_query = new DelegatingQuery(newQuery, 
+				broker.getInstanceExceptionTranslator());
 	}
 
 	public int hashCode() {

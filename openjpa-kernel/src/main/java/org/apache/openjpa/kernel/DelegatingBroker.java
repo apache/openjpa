@@ -495,6 +495,15 @@ public class DelegatingBroker
             throw translate(re);
         }
     }
+    
+    public RuntimeExceptionTranslator getInstanceExceptionTranslator() {
+        try {
+           return _broker.getInstanceExceptionTranslator();
+        } catch (RuntimeException re) {
+            throw translate(re);
+        }
+    }
+
 
     public BrokerFactory getBrokerFactory() {
         try {
