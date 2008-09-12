@@ -299,25 +299,25 @@ public class TestPreparedQueryCache extends SingleEMFTestCase {
 	 * 
 	 */
 	void compare(boolean isNamed, String jpql, boolean append, Object... params) {
-//		if (true) return;
+		String realJPQL = isNamed ? getJPQL(jpql) : jpql;
 		// run the query once for warming up 
 		run(jpql, params, !USE_CACHE, 1, isNamed, append);
 		
 		// run N times without cache
 		long without = run(jpql, params, !USE_CACHE, SAMPLE_SIZE, isNamed, append);
-		assertNotCached(isNamed ? getJPQL(jpql) : jpql);
+		assertNotCached(realJPQL);
 		
 		// run N times with cache
 		long with = run(jpql, params, USE_CACHE, SAMPLE_SIZE, isNamed, append);
-		assertCached(isNamed ? getJPQL(jpql) : jpql);
+		assertCached(realJPQL);
 		
 		long delta = (without == 0) ? 0 : (without - with) * 100 / without;
 		
-		String sql = getSQL(jpql);
+		String sql = getSQL(realJPQL);
 		System.err.println("Execution time in nanos for " + SAMPLE_SIZE
 				+ " query execution with and without SQL cache:" + with + " "
 				+ without + " (" + delta + "%)");
-		System.err.println("JPQL: " + jpql);
+		System.err.println("JPQL: " + realJPQL);
 		System.err.println("SQL : " + sql);
 		assertFalse("change in execution time = " + delta + "%", delta < 0);
 	}
@@ -361,13 +361,17 @@ public class TestPreparedQueryCache extends SingleEMFTestCase {
 		return stats.get(N/2);
 	}	
 	
-	String getSQL(String jpql) {
+	/**
+	 * Get the SQL corresponding to the given query key.
+	 * @param jpql
+	 * @return
+	 */
+	String getSQL(String queryKey) {
 		PreparedQueryCache cache = emf.getConfiguration().getPreparedQueryCacheInstance();
 		if (cache == null)
 			return "null";
-		if (cache.get(jpql) != null)
-			return cache.get(jpql).getDatastoreAction();
-		return "null";
+		PreparedQuery query = cache.get(queryKey);
+		return (query != null) ? query.getDatastoreAction() : "null";
 	}
 	
 	String getJPQL(String namedQuery) {
