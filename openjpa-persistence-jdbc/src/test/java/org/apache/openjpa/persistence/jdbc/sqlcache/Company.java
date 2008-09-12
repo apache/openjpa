@@ -24,12 +24,20 @@ import java.util.HashSet;
 import javax.persistence.*;
 
 @Entity
+@NamedQueries({
+	@NamedQuery(name="Company.PreparedQueryWithNoParameter", query="select x from Company x"),
+	@NamedQuery(name="Company.PreparedQueryWithNamedParameter", query="select x from Company x where x.name=:name and x.startYear=:startYear"),
+	@NamedQuery(name="Company.PreparedQueryWithPositionalParameter", query="select x from Company x where x.name=?1 and x.startYear=?2"),
+	@NamedQuery(name="Company.PreparedQueryWithLiteral", query="select x from Company x where x.name='X' and x.startYear=1960"),
+})
 public class Company {
 	@Id
 	@GeneratedValue
 	private long id;
 	
 	private String name;
+	
+	private int startYear;
 	
 	@OneToMany(mappedBy="company", cascade=CascadeType.ALL)
 	private Collection<Department> departments = new HashSet<Department>();
@@ -54,7 +62,12 @@ public class Company {
 	public long getId() {
 		return id;
 	}
-	
-	
 
+	public int getStartYear() {
+		return startYear;
+	}
+
+	public void setStartYear(int startYear) {
+		this.startYear = startYear;
+	}
 }
