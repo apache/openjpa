@@ -71,8 +71,7 @@ public class QueryImpl implements OpenJPAQuerySPI, Serializable {
 	private DelegatingQuery _query;
 	private transient EntityManagerImpl _em;
 	private transient FetchPlan _fetch;
-	private ParameterMap _params;
-	private transient Boolean _cacheable = null;
+	private transient ParameterMap _params;
 	private String _id;
 
 
@@ -631,8 +630,12 @@ public class QueryImpl implements OpenJPAQuerySPI, Serializable {
 		if (cached == null)
 			return;
 		Broker broker = _em.getBroker();
+		// Critical assumption: Only JPQL queries are cached and more 
+		// importantly, the identifier of the prepared query is the original
+		// JPQL String
 		String JPQL = JPQLParser.LANG_JPQL;
 		String jpql = _id;
+		
 		org.apache.openjpa.kernel.Query newQuery = broker.newQuery(JPQL, jpql);
 		newQuery.getFetchConfiguration().copy(_query.getFetchConfiguration());
 		newQuery.compile();

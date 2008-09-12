@@ -905,12 +905,25 @@ public class EntityManagerImpl
             QueryMetaData meta = _broker.getConfiguration().
                 getMetaDataRepositoryInstance().getQueryMetaData(null, name,
                 _broker.getClassLoader(), true);
-            org.apache.openjpa.kernel.Query del =
-                _broker.newQuery(meta.getLanguage(), null);
-            meta.setInto(del);
-            del.compile();
-
-            OpenJPAQuery q = new QueryImpl(this, _ret, del);
+            String query = null;
+            String language = meta.getLanguage();
+            String qid = meta.getQueryString();
+            
+            PreparedQuery cached = getPreparedQuery(qid);
+            if (cached != null) {
+                language = QueryLanguages.LANG_PREPARED_SQL;
+                query = cached.getDatastoreAction();
+            }
+            org.apache.openjpa.kernel.Query del = _broker.newQuery(language, 
+            	query);
+            if (cached != null) {
+                cached.setInto(del);
+            } else {
+              	meta.setInto(del);
+            }
+           	del.compile();
+           	
+            OpenJPAQuery q = new QueryImpl(this, _ret, del).setId(qid);
             String[] hints = meta.getHintKeys();
             Object[] values = meta.getHintValues();
             for (int i = 0; i < hints.length; i++)
