@@ -353,6 +353,7 @@ public class FieldMetaData
      * The field name, qualified by the defining class.
      */
     public String getRealName() {
+    	// Added to support OPENJPA-704
         return getDefiningMetaData().getDescribedType().getName() + "." + _name;
     }
 
