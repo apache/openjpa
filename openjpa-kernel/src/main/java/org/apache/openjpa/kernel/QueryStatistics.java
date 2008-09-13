@@ -18,6 +18,7 @@
  */
 package org.apache.openjpa.kernel;
 
+import java.io.PrintStream;
 import java.io.Serializable;
 import java.util.Date;
 import java.util.HashMap;
@@ -39,9 +40,10 @@ import java.util.Map;
 public interface QueryStatistics extends Serializable {
 	
 	/**
-	 * Record that the given query has been executed.
+	 * Record that the given query has been executed. The boolean parameter
+	 * designates whether the executed query is a cached version.  
 	 */
-	void recordExecution(String query);
+	void recordExecution(String query, boolean cached);
 		
 	/**
 	 * Gets number of total query execution since last reset.
@@ -64,6 +66,28 @@ public interface QueryStatistics extends Serializable {
 	public long getTotalExecutionCount(String query);
 
 	/**
+	 * Gets number of total query execution that are cached since last reset.
+	 */
+	public long getHitCount();
+
+	/**
+	 * Gets number of total query execution that are cached since start.
+	 */
+	public long getTotalHitCount();
+
+	/**
+	 * Gets number of executions for the given query that are cached since 
+	 * last reset.
+	 */
+	public long getHitCount(String query);
+
+	/**
+	 * Gets number of executions for the given query that are cached since 
+	 * start.
+	 */
+	public long getTotalHitCount(String query);
+
+	/**
 	 * Gets the time of last reset.
 	 */
 	public Date since();
@@ -79,18 +103,25 @@ public interface QueryStatistics extends Serializable {
 	public void reset();
 	
 	/**
+	 * Dumps on the given output stream.
+	 */
+	public void dump(PrintStream out);
+	
+	/**
 	 * A default implementation.
 	 *
 	 */
 	public static class Default implements QueryStatistics {
-		private long[] astat = new long[1];
-		private long[] stat  = new long[1];
+		private static final int ARRAY_SIZE = 2;
+		private long[] astat = new long[ARRAY_SIZE];
+		private long[] stat  = new long[ARRAY_SIZE];
 		private Map<String, long[]> stats  = new HashMap<String, long[]>();
 		private Map<String, long[]> astats = new HashMap<String, long[]>();
 		private Date start = new Date();
-		private Date since = new Date();
+		private Date since = start;
 
 		private static final int READ  = 0;
+		private static final int HIT   = 1;
 
 		public long getExecutionCount() {
 			return stat[READ];
@@ -108,6 +139,22 @@ public interface QueryStatistics extends Serializable {
 			return getCount(astats, query, READ);
 		}
 
+		public long getHitCount() {
+			return stat[HIT];
+		}
+
+		public long getTotalHitCount() {
+			return astat[HIT];
+		}
+
+		public long getHitCount(String query) {
+			return getCount(stats, query, HIT);
+		}
+
+		public long getTotalHitCount(String query) {
+			return getCount(astats, query, HIT);
+		}
+
 		private long getCount(Map<String, long[]> target, String query, int i) {
 			long[] row = target.get(query);
 			return (row == null) ? 0 : row[i];
@@ -122,7 +169,7 @@ public interface QueryStatistics extends Serializable {
 		}
 
 		public void reset() {
-			stat = new long[1];
+			stat = new long[ARRAY_SIZE];
 			stats.clear();
 			since = new Date();
 		}
@@ -137,14 +184,54 @@ public interface QueryStatistics extends Serializable {
 		private void addSample(Map<String, long[]> target, String query, int i) {
 			long[] row = target.get(query);
 			if (row == null) {
-				row = new long[1];
+				row = new long[ARRAY_SIZE];
 			}
 			row[i]++;
 			target.put(query, row);
 		}
 		
-		public void recordExecution(String query) {
+		public void recordExecution(String query, boolean cached) {
 			addSample(query, READ);
+			if (cached)
+				addSample(query, HIT);
+		}
+		
+		public void dump(PrintStream out) {
+			String header = "Query Statistics starting from " + start;
+			out.print(header);
+			if (since == start) {
+				out.println();
+				out.println("Total Query Execution: " + toString(astat)); 
+				out.println("\tTotal \t\tQuery");
+			} else {
+				out.println(" last reset on " + since);
+				out.println("Total Query Execution since start " 
+					+ toString(astat)  + " since reset " +  toString(stat));
+				out.println("\tSince Start \tSince Reset \t\tQuery");
+			}
+			int i = 0;
+			for (String key : stats.keySet()) {
+				i++;
+				long[] arow = astats.get(key);
+				if (since == start) {
+					out.println(i + ". \t" + toString(arow) + " \t"	+ key);
+				} else {
+					long[] row  = stats.get(key);
+					out.println(i + ". \t" + toString(arow) + " \t"  
+					    + toString(row) + " \t\t" + key);
+				}
+			}
+		}
+		
+		long pct(long per, long cent) {
+			if (cent <= 0)
+				return 0;
+			return (100*per)/cent;
+		}
+		
+		String toString(long[] row) {
+			return row[READ] + ":" + row[HIT] + "(" + pct(row[HIT], row[READ]) 
+			+ "%)";
 		}
 	}
 }

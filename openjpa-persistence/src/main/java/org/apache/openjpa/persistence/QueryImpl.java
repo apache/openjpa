@@ -250,7 +250,7 @@ public class QueryImpl implements OpenJPAQuerySPI, Serializable {
 		boolean usingCachedQuery = (cachedQuery != null);
 		validate(_query.getParameterTypes(), !usingCachedQuery);
 		recordStatistics(usingCachedQuery ? cachedQuery.getIdentifier() 
-			: _query.getQueryString());
+			: _query.getQueryString(), usingCachedQuery);
 		Object result = _query.execute(getParameterMap(usingCachedQuery));
 		return result;
 	}
@@ -588,20 +588,18 @@ public class QueryImpl implements OpenJPAQuerySPI, Serializable {
 		if (cache.isCachable(_id) == Boolean.FALSE)
 			return null;
 		PreparedQuery cached = cache.get(_id);
-		if (cached == null) {
-			String[] sqls = _query.getDataStoreActions(getParameterMap(true));
-			boolean cacheable = (sqls.length == 1);
-			if (!cacheable) {
-				cache.markUncachable(_id);
-				return null;
-			}
-			cached = new PreparedQuery(_id, sqls[0], _query); 
-			// Attempt to cache may fail if query matches exclusion pattern
-			if (!cache.cache(cached)) {
-				cached = null;
-			}
+		if (cached != null)
+			return cached;
+		
+		String[] sqls = _query.getDataStoreActions(getParameterMap(true));
+		boolean cacheable = (sqls.length == 1);
+		if (!cacheable) {
+			cache.markUncachable(_id);
+			return null;
 		}
-		return cached;
+		PreparedQuery newEntry = new PreparedQuery(_id, sqls[0], _query); 
+		cache.cache(newEntry);
+		return null; // because we cached it as a result of this call
 	}
 	
 	boolean isHinted(String hint) {
@@ -643,12 +641,12 @@ public class QueryImpl implements OpenJPAQuerySPI, Serializable {
 				broker.getInstanceExceptionTranslator());
 	}
 	
-	private void recordStatistics(String query) {
+	private void recordStatistics(String query, boolean usingCachedVersion) {
 		PreparedQueryCache cache = _em.getConfiguration()
 			.getPreparedQueryCacheInstance();
 		if (cache == null)
 			return;
-		cache.getStatistics().recordExecution(query);
+		cache.getStatistics().recordExecution(query,usingCachedVersion);
 	}
 
 	public int hashCode() {

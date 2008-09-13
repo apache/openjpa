@@ -27,6 +27,7 @@ import org.apache.openjpa.kernel.PreparedQuery;
 import org.apache.openjpa.kernel.PreparedQueryCache;
 import org.apache.openjpa.kernel.QueryHints;
 import org.apache.openjpa.kernel.QueryLanguages;
+import org.apache.openjpa.kernel.QueryStatistics;
 import org.apache.openjpa.kernel.jpql.JPQLParser;
 import org.apache.openjpa.persistence.OpenJPAEntityManager;
 import org.apache.openjpa.persistence.OpenJPAQuery;
@@ -40,6 +41,10 @@ import org.apache.openjpa.persistence.test.SingleEMFTestCase;
  * 
  */
 public class TestPreparedQueryCache extends SingleEMFTestCase {
+	// Fail if performance degrades with cache compared to without cache
+	public static final boolean FAIL_ON_PERF_DEGRADE = 
+		Boolean.getBoolean("FailOnPerformanceRegression");
+	
 	// # observations to compute timing statistics
 	public static final int SAMPLE_SIZE = 100;
 	
@@ -222,21 +227,76 @@ public class TestPreparedQueryCache extends SingleEMFTestCase {
 	}
 
 	public void testQueryStatistics() {
-		String jpql1 = "select p from Company p";
-		String jpql2 = "select p from Company p where p.name = 'PObject'";
+		String jpql1 = "select c from Company c";
+		String jpql2 = "select c from Company c where c.name = 'PObject'";
 		OpenJPAEntityManager em = emf.createEntityManager();
 		OpenJPAQuery q1 = em.createQuery(jpql1);
 		OpenJPAQuery q2 = em.createQuery(jpql2);
 		int N1 = 5;
 		int N2 = 8;
 		for (int i = 0; i < N1; i++)
-			em.createQuery(q1).getResultList();
+			q1.getResultList();
 		for (int i = 0; i < N2; i++)
-			em.createQuery(q2).getResultList();
+			q2.getResultList();
 		
-		assertEquals(N1, getCache().getStatistics().getExecutionCount(jpql1));
-		assertEquals(N2, getCache().getStatistics().getExecutionCount(jpql2));
-		assertEquals(N1+N2, getCache().getStatistics().getExecutionCount());
+		QueryStatistics stats = getCache().getStatistics();
+		stats.dump(System.out);
+
+		assertEquals(N1,      stats.getExecutionCount(jpql1));
+		assertEquals(N2,      stats.getExecutionCount(jpql2));
+		assertEquals(N1+N2,   stats.getExecutionCount());
+		assertEquals(N1-1,    stats.getHitCount(jpql1));
+		assertEquals(N2-1,    stats.getHitCount(jpql2));
+		assertEquals(N1+N2-2, stats.getHitCount());
+		
+	}
+
+	public void testResetQueryStatistics() {
+		String jpql1 = "select c from Company c";
+		String jpql2 = "select c from Company c where c.name = 'PObject'";
+		OpenJPAEntityManager em = emf.createEntityManager();
+		OpenJPAQuery q1 = em.createQuery(jpql1);
+		OpenJPAQuery q2 = em.createQuery(jpql2);
+		int N10 = 4;
+		int N20 = 7;
+		for (int i = 0; i < N10; i++)
+			q1.getResultList();
+		for (int i = 0; i < N20; i++)
+			q2.getResultList();
+		
+		QueryStatistics stats = getCache().getStatistics();
+		assertEquals(N10,       stats.getExecutionCount(jpql1));
+		assertEquals(N20,       stats.getExecutionCount(jpql2));
+		assertEquals(N10+N20,   stats.getExecutionCount());
+		assertEquals(N10-1,     stats.getHitCount(jpql1));
+		assertEquals(N20-1,     stats.getHitCount(jpql2));
+		assertEquals(N10+N20-2, stats.getHitCount());
+		
+		stats.reset();
+		
+		int N11 = 7;
+		int N21 = 4;
+		for (int i = 0; i < N11; i++)
+			q1.getResultList();
+		for (int i = 0; i < N21; i++)
+			q2.getResultList();
+
+		stats.dump(System.out);
+		
+		assertEquals(N11,     stats.getExecutionCount(jpql1));
+		assertEquals(N21,     stats.getExecutionCount(jpql2));
+		assertEquals(N11+N21, stats.getExecutionCount());
+		assertEquals(N11,     stats.getHitCount(jpql1));
+		assertEquals(N21,     stats.getHitCount(jpql2));
+		assertEquals(N11+N21, stats.getHitCount());
+		
+		assertEquals(N10+N11,     stats.getTotalExecutionCount(jpql1));
+		assertEquals(N20+N21,     stats.getTotalExecutionCount(jpql2));
+		assertEquals(N10+N11+N20+N21, stats.getTotalExecutionCount());
+		assertEquals(N10+N11-1,     stats.getTotalHitCount(jpql1));
+		assertEquals(N20+N21-1,     stats.getTotalHitCount(jpql2));
+		assertEquals(N10+N11+N20+N21-2, stats.getTotalHitCount());
+		
 	}
 
 	public void testQueryWithNoParameter() {
@@ -319,7 +379,14 @@ public class TestPreparedQueryCache extends SingleEMFTestCase {
 				+ without + " (" + delta + "%)");
 		System.err.println("JPQL: " + realJPQL);
 		System.err.println("SQL : " + sql);
-		assertFalse("change in execution time = " + delta + "%", delta < 0);
+		if (delta < 0) {
+			if (FAIL_ON_PERF_DEGRADE)
+				assertFalse("change in execution time = " + delta + "%", 
+						delta < 0);
+			else 
+				System.err.println("*** WARN: Perforamce regression with cache." + 
+					" Execution time degrades by " + delta + "%");
+		}
 	}
 
 	/**
