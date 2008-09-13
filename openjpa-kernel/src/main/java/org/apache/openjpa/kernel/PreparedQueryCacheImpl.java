@@ -28,7 +28,11 @@ import java.util.TreeMap;
 import java.util.concurrent.locks.ReentrantLock;
 
 import org.apache.commons.lang.StringUtils;
+import org.apache.openjpa.conf.OpenJPAConfiguration;
 import org.apache.openjpa.lib.conf.Configuration;
+import org.apache.openjpa.lib.log.Log;
+import org.apache.openjpa.lib.log.LogFactory;
+import org.apache.openjpa.lib.util.Localizer;
 
 /**
  * An implementation of the cache of {@link PreparedQuery prepared queries}. 
@@ -41,7 +45,7 @@ import org.apache.openjpa.lib.conf.Configuration;
 public class PreparedQueryCacheImpl implements PreparedQueryCache {
 	private static final String PATTERN_SEPARATOR = "\\;";
 	private static final String EXLUDED_BY_USER = "Excluded by user";
-	
+
 	// Key: Query identifier 
 	private final Map<String, PreparedQuery> _delegate;
 	// Key: Query identifier Value: Reason why excluded
@@ -49,6 +53,8 @@ public class PreparedQueryCacheImpl implements PreparedQueryCache {
 	private List<String> _exclusionPatterns;
 	private final QueryStatistics _stats;
 	private ReentrantLock _lock = new ReentrantLock();
+	private Log _log;
+	private Localizer _loc = Localizer.forPackage(PreparedQueryCacheImpl.class);
 
 	public PreparedQueryCacheImpl() {
 		_delegate = new HashMap<String, PreparedQuery>();
@@ -78,13 +84,19 @@ public class PreparedQueryCacheImpl implements PreparedQueryCache {
 		lock();
 		try {
 			String id = q.getIdentifier();
-			if (isCachable(id) == Boolean.FALSE)
+			if (isCachable(id) == Boolean.FALSE) {
+				if (_log.isWarnEnabled())
+					_log.warn(_loc.get("prepared-query-not-cachable", id));
 				return false;
+			}
 			String pattern = getMatchedExclusionPattern(id);
 			if (pattern != null) {
 				markUncachable(q.getIdentifier(), pattern);
 				return false;
 			}
+			if (_log.isTraceEnabled())
+				_log.trace(_loc.get("prepared-query-cache", q.getIdentifier(), 
+					q.getDatastoreAction()));
 			_delegate.put(q.getIdentifier(), q);
 			return true;
 		} finally {
@@ -95,6 +107,8 @@ public class PreparedQueryCacheImpl implements PreparedQueryCache {
 	public boolean invalidate(String id) {
 		lock();
 		try {
+			if (_log.isTraceEnabled())
+				_log.trace(_loc.get("prepared-query-invalidate", id));
 			return _delegate.remove(id) != null;
 		} finally {
 			unlock();
@@ -127,11 +141,19 @@ public class PreparedQueryCacheImpl implements PreparedQueryCache {
 		return markUncachable(id, EXLUDED_BY_USER);
 	}
 	
-	private PreparedQuery markUncachable(String id, String pattern) {
+	private PreparedQuery markUncachable(String id, String reason) {
 		lock();
 		try {
-			if (_uncachables.get(id) != EXLUDED_BY_USER)
-				_uncachables.put(id, pattern);
+			boolean excludedByUser = _uncachables.get(id) == EXLUDED_BY_USER;
+			if (!excludedByUser)
+				_uncachables.put(id, reason);
+			if (_log.isInfoEnabled()) {
+				if (excludedByUser) 
+					_log.info(_loc.get("prepared-query-uncache-strong", id));
+				else 
+					_log.info(_loc.get("prepared-query-uncache-weak", id, 
+						reason));
+			}
 			return _delegate.remove(id);
 		} finally {
 			unlock();
@@ -174,6 +196,9 @@ public class PreparedQueryCacheImpl implements PreparedQueryCache {
 			_exclusionPatterns.add(pattern);
 			Collection<String> invalidKeys = getMatchedKeys(pattern, 
 					_delegate.keySet());
+			if (!invalidKeys.isEmpty() && _log.isInfoEnabled())
+				_log.info(_loc.get("prepared-query-add-pattern", pattern, 
+					invalidKeys.size(), invalidKeys));
 			for (String invalidKey : invalidKeys)
 				markUncachable(invalidKey, pattern);
 		} finally {
@@ -192,8 +217,11 @@ public class PreparedQueryCacheImpl implements PreparedQueryCache {
 			if (_exclusionPatterns == null)
 				return;
 			_exclusionPatterns.remove(pattern);
-			Collection<String> rebornKeys = getMatchedKeys(pattern, _uncachables);
-			for (String rebornKey : rebornKeys)
+			Collection<String> reborns = getMatchedKeys(pattern, _uncachables);
+			if (!reborns.isEmpty() && _log.isInfoEnabled())
+				_log.info(_loc.get("prepared-query-remove-pattern", pattern, 
+					reborns.size(), reborns));
+			for (String rebornKey : reborns)
 				_uncachables.remove(rebornKey);
 		} finally {
 			unlock();
@@ -268,6 +296,7 @@ public class PreparedQueryCacheImpl implements PreparedQueryCache {
 	// Configurable contract
 	//-------------------------------------------------------
     public void setConfiguration(Configuration conf) {
+    	_log = conf.getLog(OpenJPAConfiguration.LOG_RUNTIME);
     }
 
     public void startConfiguration() {
