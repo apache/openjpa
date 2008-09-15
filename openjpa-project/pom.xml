@@ -80,6 +80,24 @@
         <docbook.version>1.67.2</docbook.version>
         <local.repository>${settings.localRepository}</local.repository>
 
+        <!-- 
+            Java imaging apis are needed to include images in a PDF.
+            JIMI or JAI may be used. Neither is available in a maven
+            repository and should be downloaded and installed manually
+            to your local repository.
+
+            ie :
+            $ mvn install:install-file -Dfile=jai_core.jar \
+              -DgroupId=javax.media -DartifactId=jai-core \ 
+              -Dversion=1.1.3 -Dpackaging=jar
+
+            Alternatively if you have installed the JAI artifacts to an 
+            internal repository you can specify it with the 
+            -Djai.maven.repos=REPOS_URL command line argument.
+            -->
+        <jai.maven.repo>http://not.a.real.repository</jai.maven.repo>
+        <jai.version>1.1.3</jai.version>
+
         <!-- authentication for nightly uploads -->
         <nightly.user.name>${user.name}</nightly.user.name>
         <nightly.password>passw0rd</nightly.password>
@@ -289,6 +307,18 @@
                             <version>4.4</version>
                             <scope>runtime</scope>
                         </dependency>
+                        <dependency>
+                            <groupId>javax.media</groupId>
+                            <artifactId>jai_core</artifactId>
+                            <version>${jai.version}</version>
+                            <scope>runtime</scope>
+                        </dependency>
+                        <dependency>
+                            <groupId>javax.media</groupId>
+                            <artifactId>jai_codec</artifactId>
+                            <version>${jai.version}</version>
+                            <scope>runtime</scope>
+                        </dependency>
                         </dependencies>
                     </plugin>
                 </plugins>
@@ -306,6 +336,13 @@
                     <url>http://agilejava.com/maven</url>
                 </pluginRepository>
             </pluginRepositories>
+            <repositories>
+                <repository>
+                    <id>jai.repository</id>
+                    <name>JAI Repository (indirectly used by Docbook plugin)</name>
+                    <url>${jai.maven.repo}</url>
+                </repository>
+            </repositories>
         </profile>
         <!-- 
           Upload distribution files, javadoc and manual to openjpa.apache.org/builds/latest. 
