@@ -379,11 +379,15 @@
                                         <move todir="target/site/tempDocs/docs">
                                             <fileset dir="target/site/tempDocs/apache-openjpa-${pom.version}/docs"/> 
                                         </move>
+                                        <checksum> 
+                                            <fileset dir="target/site/downloads/">
+                                                <include name="*.zip"/>
+                                            </fileset>
+                                        </checksum>
                                         <scp todir="${nightly.user.name}:${nightly.password}@people.apache.org:/www/openjpa.apache.org/builds/latest-1.2.x/downloads" 
                                              trust="true">
                                             <fileset dir="target/site/downloads"/>
                                         </scp>
-                                        
                                         <scp todir="${nightly.user.name}:${nightly.password}@people.apache.org:/www/openjpa.apache.org/builds/latest-1.2.x/docs" 
                                              trust="true">
                                             <fileset dir="target/site/tempDocs/docs"/> 
