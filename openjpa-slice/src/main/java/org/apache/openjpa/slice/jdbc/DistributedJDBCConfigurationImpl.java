@@ -218,7 +218,7 @@ public class DistributedJDBCConfigurationImpl extends JDBCConfigurationImpl
                 DecoratingDataSource dds = new DecoratingDataSource(ds);
                 ds = DataSourceFactory.installDBDictionary(
                         conf.getDBDictionaryInstance(), dds, conf, false);
-                if (verifyDataSource(slice, ds)) {
+                if (verifyDataSource(slice, ds, conf)) {
                     dataSources.add(ds);
                     isXA &= isXACompliant(ds);
                 }
@@ -254,10 +254,12 @@ public class DistributedJDBCConfigurationImpl extends JDBCConfigurationImpl
      * Verify that a connection can be established to the given slice. If
      * connection can not be established then slice is set to INACTIVE state.
      */
-    private boolean verifyDataSource(Slice slice, DataSource ds) {
+    private boolean verifyDataSource(Slice slice, DataSource ds, 
+    		JDBCConfiguration conf) {
         Connection con = null;
         try {
-            con = ds.getConnection();
+            con = ds.getConnection(conf.getConnectionUserName(), 
+            		conf.getConnectionPassword());
             slice.setStatus(Slice.Status.ACTIVE);
             if (con == null) {
                 slice.setStatus(Slice.Status.INACTIVE);
