@@ -130,7 +130,7 @@ Keywords in JPQL expressions are case-insensitive, but entity, identifier, and
 member names are not. For example, the expression above could also be expressed
 as:
             </para>
-<programlisting>SELECT x FROM Magazine x WHERE x.title = 'JDJ'</programlisting>
+<programlisting>select x from Magazine x where x.title = 'JDJ'</programlisting>
             <para>
 But it could not be expressed as:
             </para>
@@ -175,18 +175,18 @@ they are evaluated. This is similar to how parentheses are used in Java. For
 example:
             </para>
 <programlisting>
-SELECT x FROM Magazine x WHERE (x.price &gt; 3.00 AND x.price &lt;= 5.00) OR x.price = 7.00
+SELECT x FROM Magazine x WHERE (x.price &gt; 3.00 AND x.price &lt;= 5.00) OR x.price &lt; 7.00
 </programlisting>
             <para>
-This expression would match magazines whose price is 4.00, 5.00, or 7.00, but
-not 6.00. Alternately:
+This expression would match magazines whose price is less than 7.00.
+Alternately:
             </para>
 <programlisting>
-SELECT x FROM Magazine x WHERE x.price &gt; 3.00 AND (x.price &lt;= 5.00 OR x.price = 7.00)
+SELECT x FROM Magazine x WHERE x.price &gt; 3.00 AND (x.price &lt;= 5.00 OR x.price &lt; 7.00)
 </programlisting>
             <para>
-This expression will magazines whose price is 5.00 or 7.00, but not 4.00 or
-6.00.
+This expression would match magazines whose price is 4.00, 5.00 or 6.00, but not
+1.00, 2.00 or 3.00.
             </para>
             <para>
 JPQL also includes the following conditionals:
@@ -2247,7 +2247,7 @@ for '_foo' and false for 'bar'
                         <listitem>
                             <para>
 <programlisting>address.phone NOT LIKE '12%3'</programlisting> is false for
-'123' and '12993' and true for '1234' If the value of the string_expression or
+'123' and '12993' and true for '1234'. If the value of the string_expression or
 pattern_value is <literal>NULL</literal> or unknown, the value of the <literal>
 LIKE</literal> expression is unknown. If the escape_character is specified and
 is <literal>NULL</literal>, the value of the <literal>LIKE</literal> expression
@@ -2301,8 +2301,10 @@ comparison expression is unknown.
                     JPQL Collection Member Expressions
                 </title>
                 <para>
-The use of the comparison collection_member_expression is as follows: syntax for
-the operator <literal>MEMBER OF</literal> in an <itemizedlist><listitem><para>
+The use of the comparison collection_member_expression is as follows:
+                    <itemizedlist>
+                        <listitem>
+                            <para>
 collection_member_expression ::= entity_expression [NOT] MEMBER [OF]
 collection_valued_path_expression
                             </para>
@@ -2331,6 +2333,9 @@ single-valued association-field path expression in the collection member
 expression is <literal>NULL</literal> or unknown, the value of the collection
 member expression is unknown.
                 </para>
+                <para>
+The use of the reserved word OF is optional in this expression.
+                </para>
             </section>
             <section id="jpa_langref_exists">
                 <title>
@@ -2344,9 +2349,6 @@ exists_expression ::= [NOT] EXISTS (subquery)
                             </para>
                         </listitem>
                     </itemizedlist>
-                </para>
-                <para>
-The use of the reserved word OF is optional in this expression.
                 </para>
                 <para>
 Example: <programlisting>SELECT DISTINCT auth FROM Author auth
@@ -2802,7 +2804,10 @@ COUNT</literal> can be applied, the result of the aggregate function is 0.
                 <para>
 The argument to an aggregate function may be preceded by the keyword <literal>
 DISTINCT</literal> to specify that duplicate values are to be eliminated before
-the aggregate function is applied. Null values are eliminated before the
+the aggregate function is applied.
+It is legal to specify <literal>DISTINCT</literal> with <literal>MAX</literal>
+or <literal>MIN</literal>, but it does not affect the result.
+Null values are eliminated before the
 aggregate function is applied, regardless of whether the keyword <literal>
 DISTINCT</literal> is specified.
                 </para>
@@ -2813,7 +2818,7 @@ DISTINCT</literal> is specified.
                     <para>
 Examples The following query returns the average price of all magazines:
 <programlisting>SELECT AVG(mag.price) FROM Magazine mag</programlisting> The
-following query returns the sum total cost of all the prices from all the
+following query returns the sum of all the prices from all the
 magazines published by 'Larry': <programlisting>SELECT SUM(mag.price) FROM Publisher pub JOIN pub.magazines mag pub.firstName = 'Larry'
 </programlisting> The following query returns the total number of magazines:
 <programlisting>SELECT COUNT(mag) FROM Magazine mag</programlisting>
@@ -2843,16 +2848,12 @@ orderby_item ::= state_field_path_expression [ASC | DESC]
                 </itemizedlist>
             </para>
             <para>
-It is legal to specify <literal>DISTINCT</literal> with <literal>MAX</literal>
-or <literal>MIN</literal>, but it does not affect the result.
-            </para>
-            <para>
 When the <literal>ORDER BY</literal> clause is used in a query, each element of
 the <literal>SELECT</literal> clause of the query must be one of the following:
 an identification variable x, optionally denoted as <literal>OBJECT(x)</literal>
 , a single_valued_association_path_expression, or a state_field_path_expression.
 For example: <programlisting>
-SELECT pub FROM Publisher pub JOIN pub.magazines mag ORDER BY o.revenue, o.name
+SELECT pub FROM Publisher pub ORDER BY pub.revenue, pub.name
 </programlisting> If more than one orderby_item is specified, the left-to-right
 sequence of the orderby_item elements determines the precedence, whereby the
 leftmost orderby_item has highest precedence. The keyword <literal>ASC</literal>

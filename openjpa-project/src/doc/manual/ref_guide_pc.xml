@@ -592,9 +592,9 @@ method:
                     Finding an Entity with an Entity Identity Field
                 </title>
 <programlisting>
-public Delivery createDelivery(EntityManager em, Order order) {
+public Delivery createDelivery(Order order) {
     Delivery delivery = new Delivery();
-    delivery.setId(o);
+    delivery.setId(order);
     delivery.setDelivered(new Date());
     return delivery;
 }
