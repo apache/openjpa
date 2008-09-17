@@ -184,22 +184,10 @@ consider the class' primary table. Later, we will see how to map certain fields
 to other tables.
         </para>
         <para>
-The example below maps classes to tables according to the following diagram. The
+The example below maps classes to tables to separate schemas. The
 <literal>CONTRACT</literal>, <literal>SUB</literal>, and <literal>LINE_ITEM
 </literal> tables are in the <literal>CNTRCT</literal> schema; all other tables
 are in the default schema.
-        </para>
-        <mediaobject>
-            <imageobject>
-                <!-- PNG image data, 513 x 410 (see README) -->
-                <imagedata fileref="img/mapping-tables.png" width="341px"/>
-                
-            </imageobject>
-        </mediaobject>
-        <para>
-Note that the diagram does not include our model's <classname>Document
-</classname> and <classname>Address</classname> classes. Mapped superclasses and
-embeddable classes are never mapped to tables.
         </para>
         <example id="jpa_overview_mapping_classex">
             <title>
