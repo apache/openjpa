@@ -174,13 +174,13 @@
          <section><title>Distributed Transaction</title>
             <para> 
             The database slices participate in a global transaction provided
-            each slice is configured with a XA-complaint JDBC driver, even
+            each slice is configured with a XA-compliant JDBC driver, even
             when the persistence unit is configured for <code>RESOURCE_LOCAL</code>
             transaction.
             </para>
             <para>
             <warning>
-            If any of the configured slices is not XA-complaint <emphasis>and</emphasis> 
+            If any of the configured slices is not XA-compliant <emphasis>and</emphasis> 
             the persistence unit is configured for <code>RESOURCE_LOCAL</code>
             transaction then each slice is committed without any two-phase
             commit protocol. If commit on any slice fails, then atomic nature of
@@ -512,13 +512,13 @@ the JDBC connection URL of a slice.
       or rolls back transaction on individual
       slices using a two-phase commit protocol. The prerequisite to use this scheme
       is, of course, that all the slices must be configured to use
-      XA-complaint JDBC driver. 
+      XA-compliant JDBC driver. 
       </para>
       <para>
       The <code>jndi</code> policy employs a Transaction Manager by looking up the
       JNDI context. The prerequisite to use this transaction
       manager is, of course, that all the slices must be configured to use
-      XA-complaint JDBC driver. 
+      XA-compliant JDBC driver. 
       <warning>This JNDI based policy is not available currently.</warning>
       </para>
     </section>

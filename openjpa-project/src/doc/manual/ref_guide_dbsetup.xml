@@ -3471,7 +3471,7 @@ SQL 92 syntax or a database-specific syntax with outer join support.
         </para>
         <para>
 The <link linkend="openjpa.jdbc.DBDictionary"><literal>
-openjpa.jdbc.DBDictionary</literal></link> plugin accepts the the <literal>
+openjpa.jdbc.DBDictionary</literal></link> plugin accepts the <literal>
 JoinSyntax</literal> property to set the system's default syntax. The available
 values are:
         </para>
