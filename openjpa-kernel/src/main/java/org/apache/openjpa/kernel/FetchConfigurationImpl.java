@@ -594,7 +594,9 @@ public class FetchConfigurationImpl
             || (fmd.isInDefaultFetchGroup() 
             && hasFetchGroupDefault())
             || hasField(fmd.getFullName(false))
-            || hasField(fmd.getRealName())) // OPENJPA-704
+            || hasField(fmd.getRealName()) // OPENJPA-704
+            || (_fromField != null 
+            	&& hasField(_fromField + "." + fmd.getName())))
             return true;
         String[] fgs = fmd.getCustomFetchGroups();
         for (int i = 0; i < fgs.length; i++)
