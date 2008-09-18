@@ -226,7 +226,11 @@ public abstract class StoreCollectionFieldStrategy
                 joins = sel.outer(joins);
             if (!selectOid) {
                 Column[] refs = getJoinForeignKey(elem).getColumns();
-                sel.orderBy(refs, true, joins, true);
+                if (requiresOrderBy()) {
+                    sel.orderBy(refs, true, joins, true);
+                } else {
+                    sel.select(refs, joins);
+                }
             }
             field.orderLocal(sel, elem, joins);
         }
@@ -661,5 +665,9 @@ public abstract class StoreCollectionFieldStrategy
 
     protected ForeignKey getJoinForeignKey() {
         return getJoinForeignKey(getDefaultElementMapping(false));
+    }
+    
+    boolean requiresOrderBy() {
+    	return List.class.isAssignableFrom(field.getProxyType());
     }
 }
