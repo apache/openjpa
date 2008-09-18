@@ -494,7 +494,7 @@ public class StateManagerImpl
      * Ask store manager to assign our oid, optionally flushing and
      * optionally recaching on the new oid.
      */
-    private boolean assignObjectId(boolean flush, boolean preFlushing) {
+    boolean assignObjectId(boolean flush, boolean preFlushing) {
         if (_oid != null || isEmbedded() || !isPersistent())
             return true;
 

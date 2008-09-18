@@ -327,7 +327,7 @@ public class TableJDBCSeq
     }
 
     /**
-     * Return the primary key value for the given class.
+     * Return the primary key value for the sequence table for the given class.
      */
     protected Object getPrimaryKey(ClassMapping mapping) {
         return Numbers.valueOf(0);
