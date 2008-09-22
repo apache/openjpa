@@ -74,38 +74,6 @@
                     </excludes>
                 </configuration>
             </plugin>
-            <!-- ###
-            <plugin>
-                <artifactId>maven-antrun-plugin</artifactId>
-                <executions>
-                    <execution>
-                        <phase>test-compile</phase>
-                        <configuration>
-                            <tasks>
-                                <path id="cp">
-                                    <path refid="maven.test.classpath" />
-                                    <path refid="maven.compile.classpath" />
-                                    <path refid="maven.dependency.classpath" />
-                                </path>
-								<taskdef name="openjpac" classname= "org.apache.openjpa.ant.PCEnhancerTask">
-									<classpath refid="cp" />
-								</taskdef>
-                                <fileset id="enhance.path.ref" dir="${project.build.testOutputDirectory}">
-                                    <include name="**/*.class" />
-                                </fileset>
-								<openjpac>
-									<classpath refid="cp" />
-									<fileset refid="enhance.path.ref" />
-								</openjpac>
-                            </tasks>
-                        </configuration>
-                        <goals>
-                            <goal>run</goal>
-                        </goals>
-                    </execution>
-                </executions>
-            </plugin>
-            -->
         </plugins>
     </build>
 </project>

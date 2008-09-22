@@ -59,8 +59,6 @@
           -->
         <path id="cp">
             <path refid="maven.test.classpath" />
-            <path refid="maven.compile.classpath" />
-            <path refid="maven.dependency.classpath" />
         </path>
 
         <taskdef name="openjpac"
