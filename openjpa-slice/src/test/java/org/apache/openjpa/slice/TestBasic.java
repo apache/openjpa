@@ -30,18 +30,22 @@ import javax.persistence.EntityManager;
  *
  */
 public class TestBasic extends SliceTestCase {
-    
+    /**
+     * Specify persistence unit name as System property <code>-Dunit</code> or
+     * use the default value as <code>"slice"</code>.
+     */
     protected String getPersistenceUnitName() {
-        return "slice";
+        return System.getProperty("unit","slice");
     }
 
 
     public void setUp() throws Exception {
-        super.setUp(PObject.class, Person.class, Address.class, CLEAR_TABLES);
+        super.setUp(PObject.class, Person.class, Address.class, Country.class, 
+        	CLEAR_TABLES);
     }
 
     /**
-     * Persist N objects.
+     * Persist N independent objects.
      */
     List<PObject> create(int N) {
         List<PObject> pcs = new ArrayList<PObject>();
@@ -128,18 +132,25 @@ public class TestBasic extends SliceTestCase {
     }
 
     public void testPersistConnectedObjectGraph() {
+        EntityManager em = emf.createEntityManager();
+        em.getTransaction().begin();
         Person p1 = new Person("A");
         Person p2 = new Person("B");
         Person p3 = new Person("C");
         Address a1 = new Address("Rome", 12345);
         Address a2 = new Address("San Francisco", 23456);
         Address a3 = new Address("New York", 34567);
+        Country c1 = em.find(Country.class, "Italy");
+        if (c1 == null) {
+        	c1 = new Country();
+        	c1.setName("Italy");
+        	em.persist(c1);
+        }
+    	a1.setCountry(c1);
         p1.setAddress(a1);
         p2.setAddress(a2);
         p3.setAddress(a3);
 
-        EntityManager em = emf.createEntityManager();
-        em.getTransaction().begin();
         em.persist(p1);
         em.persist(p2);
         em.persist(p3);
@@ -184,6 +195,47 @@ public class TestBasic extends SliceTestCase {
         assertNotEquals(pc, pc2);
         assertEquals(pc.getId(), pc2.getId());
         assertEquals(value + 1, pc2.getValue());
+    }
+    
+    public void testPersistReplicatedObjects() {
+        EntityManager em = emf.createEntityManager();
+        em.getTransaction().begin();
+        String[] names = {"USA", "India", "China"};
+        for (String name : names) {
+        	Country country = new Country();
+        	country.setName(name);
+        	em.persist(country);
+        }
+        em.getTransaction().commit();
+        assertEquals(names.length, count(Country.class));
+        
+        Country india = em.find(Country.class, "India");
+        assertNotNull(india);
+        assertEquals("India", india.getName());
+    }
+    
+    public void testUpdateReplicatedObjects() {
+        EntityManager em = emf.createEntityManager();
+        em.getTransaction().begin();
+        String[] names = {"USA", "India", "China"};
+        long[] population = {300,1200,1400};
+        for (int i = 0; i < names.length; i++) {
+        	Country country = new Country();
+        	country.setName(names[i]);
+        	country.setPopulation(population[i]);
+        	em.persist(country);
+        }
+        em.getTransaction().commit();
+        
+        assertEquals(names.length, count(Country.class));
+        Country india = em.find(Country.class, "India");
+
+        assertNotNull(india);
+        assertEquals("India", india.getName());
+        india.setPopulation(1201);
+        em.getTransaction().begin();
+        em.merge(india);
+        em.getTransaction().commit();
     }
 
 }

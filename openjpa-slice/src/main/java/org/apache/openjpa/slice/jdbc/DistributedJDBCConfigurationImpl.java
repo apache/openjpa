@@ -49,6 +49,7 @@ import org.apache.openjpa.slice.DistributedBrokerImpl;
 import org.apache.openjpa.slice.DistributionPolicy;
 import org.apache.openjpa.slice.ExecutorServiceValue;
 import org.apache.openjpa.slice.ProductDerivation;
+import org.apache.openjpa.slice.ReplicationPolicy;
 import org.apache.openjpa.slice.Slice;
 import org.apache.openjpa.util.UserException;
 
@@ -73,11 +74,13 @@ public class DistributedJDBCConfigurationImpl extends JDBCConfigurationImpl
     protected StringValue masterPlugin;
     protected StringListValue namesPlugin;
     protected ExecutorServiceValue executorServicePlugin;
-    protected PluginValue distributionPolicyPlugin;
+    public PluginValue distributionPolicyPlugin;
+    public PluginValue replicationPolicyPlugin;
 
     public static final String DOT = ".";
     public static final String REGEX_DOT = "\\.";
-    public static final String PREFIX_SLICE = ProductDerivation.PREFIX_SLICE + DOT;
+    public static final String PREFIX_SLICE = ProductDerivation.PREFIX_SLICE + 
+    	DOT;
     public static final String PREFIX_OPENJPA = "openjpa.";
     private static Localizer _loc =
             Localizer.forPackage(DistributedJDBCConfigurationImpl.class);
@@ -95,7 +98,17 @@ public class DistributedJDBCConfigurationImpl extends JDBCConfigurationImpl
         brokerPlugin.setString(DistributedBrokerImpl.class.getName());
         
         distributionPolicyPlugin = addPlugin("DistributionPolicy", true);
+        distributionPolicyPlugin.setAlias("random", 
+        	DistributionPolicy.Default.class.getName());
+        distributionPolicyPlugin.setDefault("random");
         distributionPolicyPlugin.setDynamic(true);
+        
+        replicationPolicyPlugin = addPlugin
+        	("ReplicatedDistributionPolicy", true);
+        replicationPolicyPlugin.setAlias("all", 
+        	ReplicationPolicy.Default.class.getName());
+        replicationPolicyPlugin.setDefault("all");
+        replicationPolicyPlugin.setDynamic(true);
         
         lenientPlugin = addBoolean("Lenient");
         
@@ -185,6 +198,18 @@ public class DistributedJDBCConfigurationImpl extends JDBCConfigurationImpl
     }
 
     public void setDistributionPolicyInstance(String val) {
+    	replicationPolicyPlugin.set(val);
+    }
+
+    public ReplicationPolicy getReplicationPolicyInstance() {
+        if (replicationPolicyPlugin.get() == null) {
+        	replicationPolicyPlugin.instantiate(ReplicationPolicy.class,
+                    this, true);
+        }
+        return (ReplicationPolicy) replicationPolicyPlugin.get();
+    }
+
+    public void setReplicatedDistributionPolicyInstance(String val) {
         distributionPolicyPlugin.set(val);
     }
 

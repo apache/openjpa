@@ -22,7 +22,9 @@ import java.util.Map;
 
 import org.apache.openjpa.conf.OpenJPAProductDerivation;
 import org.apache.openjpa.lib.conf.AbstractProductDerivation;
+import org.apache.openjpa.lib.conf.Configuration;
 import org.apache.openjpa.slice.jdbc.DistributedJDBCBrokerFactory;
+import org.apache.openjpa.slice.jdbc.DistributedJDBCConfigurationImpl;
 
 /**
  * Derives configuration for Slice.
@@ -58,6 +60,28 @@ public class ProductDerivation extends AbstractProductDerivation implements
 	}
 
 	public int getType() {
-		return TYPE_FEATURE;
+		return TYPE_STORE;
 	}
+	
+	/**
+	 * Sets the {@link DistributionPolicy} and {@link ReplicationPolicy} to
+	 * their respective defaults if not set by the user.
+	 */
+    @Override
+    public boolean afterSpecificationSet(Configuration c) {
+        if (!(c instanceof DistributedJDBCConfigurationImpl))
+            return false;
+        DistributedJDBCConfigurationImpl conf = 
+        	(DistributedJDBCConfigurationImpl)c;
+        boolean modified = false;
+        if (conf.getDistributionPolicyInstance() == null) {
+        	conf.distributionPolicyPlugin.setString("random");
+        	modified = true;
+        }
+        if (conf.getReplicationPolicyInstance() == null) {
+        	conf.replicationPolicyPlugin.setString("all");
+        	modified = true;
+        }
+        return modified;
+    }
 }

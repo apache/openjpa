@@ -19,19 +19,18 @@
 package org.apache.openjpa.slice;
 
 import java.util.List;
-import java.util.Random;
 
 
 /**
  * Policy to select one of the physical databases referred as <em>slice</em>
- * in which a given persistent instance will be stored.
+ * in which a given persistent instance will be replicated.
  *  
  * @author Pinaki Poddar 
  *
  */
-public interface DistributionPolicy {
+public interface ReplicationPolicy {
 	/**
-	 * Gets the name of the slice where a given instance will be stored.
+	 * Gets the name of the slices where a given instance will be replicated.
 	 *  
 	 * @param pc The newly persistent or to-be-merged object. 
 	 * @param slices list of names of the active slices. The ordering of 
@@ -40,21 +39,22 @@ public interface DistributionPolicy {
 	 * <code>openjpa.slice.Names</code> is unspecified.  
 	 * @param context generic persistence context managing the given instance.
 	 * 
-	 * @return identifier of the slice. This name must match one of the
-	 * given slice names. 
+	 * @return identifier of the slices. This names must match one of the
+	 * given slice names. Return null or empty list to imply all active slices.
+	 *  
 	 * @see DistributedConfiguration#getActiveSliceNames()
 	 */
-	String distribute(Object pc, List<String> slices, Object context);
+	String[] replicate(Object pc, List<String> slices, Object context);
 	
 	/**
-	 * Implements a default distribution policy to store the given 
-	 * instance to a randomly selected available slice.
+	 * Implements a default replication policy to replicate the given 
+	 * instance across all available slices.
 	 *
 	 */
-	public static class Default implements DistributionPolicy {
-		private static Random RNG = new Random();
-		public String distribute(Object pc, List<String> slices, Object ctx) {
-			return slices.get(RNG.nextInt(slices.size()));
+	public static class Default implements ReplicationPolicy {
+		public String[] replicate(Object pc, List<String> slices, 
+			Object context) {
+			return null;
 		}
 	}
 }

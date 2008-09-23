@@ -77,7 +77,7 @@ class DistributedStoreQuery extends JDBCStoreQuery {
     
     public void setContext(QueryContext ctx) {
     	super.setContext(ctx);
-    	for (StoreQuery q:_queries) 
+    	for (StoreQuery q : _queries) 
     		q.setContext(ctx); 
     }
     
@@ -124,6 +124,9 @@ class DistributedStoreQuery extends JDBCStoreQuery {
         		StoreManager sm  = owner.getDistributedStore().getSlice(i);
         		if (!targets.contains(sm))
         			continue;
+        		// if replicated, then execute only on single slice
+        		if (i > 0 && containsReplicated(query.getContext()))
+        			continue;
         		QueryExecutor call = new QueryExecutor();
         		call.executor = executors.get(i);
         		call.query    = query;
@@ -162,6 +165,27 @@ class DistributedStoreQuery extends JDBCStoreQuery {
         	            q.getContext().getStartRange(), 
         	            q.getContext().getEndRange());
         	return result;
+        }
+        
+        /**
+		 * Scans metadata to find out if a replicated class is the candidate.
+        **/
+        boolean containsReplicated(QueryContext query) {
+        	Class candidate = query.getCandidateType();
+        	if (candidate != null) {
+        		ClassMetaData meta = query.getStoreContext().getConfiguration()
+        			.getMetaDataRepositoryInstance()
+        			.getMetaData(candidate, null, true);
+        		if (meta != null && meta.isReplicated())
+        			return true;
+        	}
+        	ClassMetaData[] metas = query.getAccessPathMetaDatas();
+        	if (metas == null || metas.length < 1)
+        		return false;
+        	for (ClassMetaData type : metas)
+        		if (type.isReplicated())
+        			return true;
+        	return false;
         }
         
         public Number executeDelete(StoreQuery q, Object[] params) {

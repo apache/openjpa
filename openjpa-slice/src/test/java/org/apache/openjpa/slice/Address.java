@@ -28,6 +28,9 @@ public class Address {
 
     private String city;
     private int zip;
+    
+    @OneToOne
+    private Country country;
 
     @OneToOne(mappedBy = "address")
     Person owner;
@@ -79,4 +82,12 @@ public class Address {
     public String toString() {
         return city;
     }
+
+	public Country getCountry() {
+		return country;
+	}
+
+	public void setCountry(Country country) {
+		this.country = country;
+	}
 }

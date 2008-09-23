@@ -80,4 +80,5 @@ public enum MetaDataTag {
     MANAGED_INTERFACE,
     READ_ONLY,
     TYPE,
+    REPLICATED
 }

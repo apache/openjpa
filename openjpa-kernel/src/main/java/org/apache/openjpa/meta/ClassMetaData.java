@@ -164,7 +164,8 @@ public class ClassMetaData
     private int _identity = ID_UNKNOWN;
     private int _idStrategy = ValueStrategies.NONE;
     private int _accessType = ACCESS_UNKNOWN;
-
+    private boolean _replicated = false;
+    
     private String _seqName = DEFAULT_STRING;
     private SequenceMetaData _seqMeta = null;
     private String _cacheName = DEFAULT_STRING;
@@ -2400,5 +2401,21 @@ public class ClassMetaData
     	}
     	Collections.sort(result);
     	return result.toArray(new String[result.size()]);
+    }
+    
+    /**
+     * Affirms the persistence instances of this receiver is replicated across
+     * multiple databases.
+     */
+    public boolean isReplicated() {
+    	return _replicated;
+    }
+    
+    /**
+     * Sets the persistence instances of this receiver to be replicated across
+     * multiple databases.
+     */
+    public void setReplicated(boolean flag) {
+    	_replicated = flag;
     }
 }

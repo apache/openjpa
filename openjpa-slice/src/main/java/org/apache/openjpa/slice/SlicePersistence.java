@@ -18,6 +18,8 @@
  */
 package org.apache.openjpa.slice;
 
+import java.util.Arrays;
+
 import org.apache.openjpa.enhance.PersistenceCapable;
 import org.apache.openjpa.kernel.StateManagerImpl;
 import org.apache.openjpa.util.ImplHelper;
@@ -32,6 +34,8 @@ public class SlicePersistence {
 	/**
 	 * Get the slice identifier for the given instance if it is a managed
 	 * instance and has been assigned to a slice.
+	 * If the given instance is replicated across multiple slices then returns
+	 * comma-separated list of slice names.
 	 * 
 	 * @return name of the slice, if any. null otherwise.
 	 */
@@ -45,6 +49,13 @@ public class SlicePersistence {
 		if (sm == null)
 			return null;
 		Object slice = sm.getImplData();
-		return (slice instanceof String) ? (String)slice : null;
+		if (slice instanceof String[]) {
+			if (((String[])slice).length == 1) {
+				return ((String[])slice)[0];
+			} else {
+				return Arrays.toString(((String[])slice));
+			}
+		}
+		return null;
 	}
 }

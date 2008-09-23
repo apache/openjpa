@@ -22,7 +22,6 @@ import org.apache.openjpa.kernel.FinalizingBrokerImpl;
 import org.apache.openjpa.kernel.OpCallbacks;
 import org.apache.openjpa.kernel.OpenJPAStateManager;
 import org.apache.openjpa.lib.util.Localizer;
-import org.apache.openjpa.util.UserException;
 
 /**
  * A specialized Broker to associate slice identifiers with the StateManagers as
@@ -36,11 +35,17 @@ import org.apache.openjpa.util.UserException;
  */
 @SuppressWarnings("serial")
 public class DistributedBrokerImpl extends FinalizingBrokerImpl {
-	private transient String slice;
-
+	private transient String _rootSlice;
+	private transient DistributedConfiguration _conf;
 	private static final Localizer _loc =
 			Localizer.forPackage(DistributedBrokerImpl.class);
 
+    public DistributedConfiguration getConfiguration() {
+    	if (_conf == null) {
+    		_conf = (DistributedConfiguration)super.getConfiguration();
+    	}
+        return _conf;
+    }
 	/**
 	 * Assigns slice identifier to the resultant StateManager as initialized by
 	 * the super class implementation. The slice identifier is decided by
@@ -54,32 +59,28 @@ public class DistributedBrokerImpl extends FinalizingBrokerImpl {
 	public OpenJPAStateManager persist(Object pc, Object id, boolean explicit,
 			OpCallbacks call) {
 		OpenJPAStateManager sm = getStateManager(pc);
+		String[] targets = null;
+		boolean replicated = SliceImplHelper.isReplicated(sm);
 		if (getOperatingSet().isEmpty()
-				&& (sm == null || sm.getImplData() == null)) {
-			slice = getSlice(pc);
+			&& (sm == null || sm.getImplData() == null)) {
+			targets = SliceImplHelper.getSlicesByPolicy(pc, getConfiguration(), 
+				this);
+			if (!replicated) {
+				_rootSlice = targets[0];
+			} 
 		}
 		sm = super.persist(pc, id, explicit, call);
-		if (sm.getImplData() == null)
-			sm.setImplData(slice, true);
-
+		if (sm.getImplData() == null) {
+			if (targets == null) {
+			   targets = replicated 
+			   ? SliceImplHelper.getSlicesByPolicy(pc, getConfiguration(), this) 
+			   : new String[]{_rootSlice}; 
+			}
+			sm.setImplData(targets, true);
+		}
 		return sm;
 	}
 
-	/**
-	 * Gets the slice by the user-defined distribution policy.
-	 */
-	String getSlice(Object pc) {
-		DistributedConfiguration conf =
-				(DistributedConfiguration) getConfiguration();
-		String slice =
-				(conf.getDistributionPolicyInstance().distribute(pc, conf
-						.getActiveSliceNames(), this));
-		if (!conf.getActiveSliceNames().contains(slice))
-			throw new UserException(_loc.get("bad-policy-slice", new Object[] {
-					conf.getDistributionPolicyInstance().getClass().getName(),
-					slice, pc, conf.getActiveSliceNames() }));
-		return slice;
-	}
 	
 	@Override
 	public boolean endOperation() {

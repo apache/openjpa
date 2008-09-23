@@ -75,4 +75,10 @@ public interface DistributedConfiguration extends OpenJPAConfiguration {
 	 * the available slices.
 	 */
 	DistributionPolicy getDistributionPolicyInstance();
+	
+	/**
+	 * Gets the policy that governs how new replicated instances will be 
+	 * replicated across the available slices.
+	 */
+	ReplicationPolicy getReplicationPolicyInstance();
 }
