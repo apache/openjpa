@@ -501,8 +501,12 @@ public class QueryImpl implements OpenJPAQuerySPI, Serializable {
 
 	public OpenJPAQuery setHint(String key, Object value) {
 		_em.assertNotCloseInvoked();
-		if (key == null || !key.startsWith("openjpa."))
+		if (key == null)
 			return this;
+		if (!key.startsWith("openjpa.")) {
+			_query.getFetchConfiguration().setHint(key, value);
+			return this;
+		}
 		String k = key.substring("openjpa.".length());
 
 		try {
