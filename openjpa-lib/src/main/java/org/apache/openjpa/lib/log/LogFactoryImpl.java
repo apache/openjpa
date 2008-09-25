@@ -241,7 +241,7 @@ public class LogFactoryImpl
      * Returns a symbolic constant for the specified string level.
      */
     public static short getLevel(String str) {
-        str = str.toUpperCase().trim();
+        str = str.toUpperCase(Locale.ENGLISH).trim();
         short val = TRACE_STR.equals(str) ? Log.TRACE :
             INFO_STR.equals(str) ? Log.INFO :
                 WARN_STR.equals(str) ? Log.WARN :
