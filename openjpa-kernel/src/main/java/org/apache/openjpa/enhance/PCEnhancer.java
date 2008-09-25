@@ -41,6 +41,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 
@@ -2566,7 +2567,7 @@ public class PCEnhancer {
         // or 'Object'; figure out what type to use
         String typeName = type.getName();
         if (type.isPrimitive())
-            typeName = typeName.substring(0, 1).toUpperCase()
+            typeName = typeName.substring(0, 1).toUpperCase(Locale.ENGLISH)
                 + typeName.substring(1);
         else if (type.equals(String.class))
             typeName = "String";
@@ -3971,7 +3972,7 @@ public class PCEnhancer {
         String methName;
         if (type.isPrimitive()) {
             methName = type.getName();
-            methName = Character.toUpperCase(methName.charAt(0))
+            methName = methName.substring(0, 1).toUpperCase(Locale.ENGLISH)
                 + methName.substring(1);
             methName = "read" + methName;
         } else
@@ -4128,7 +4129,7 @@ public class PCEnhancer {
         String methName;
         if (type.isPrimitive()) {
             methName = type.getName();
-            methName = Character.toUpperCase(methName.charAt(0))
+            methName = methName.substring(0, 1).toUpperCase(Locale.ENGLISH)
                 + methName.substring(1);
             methName = "write" + methName;
         } else
