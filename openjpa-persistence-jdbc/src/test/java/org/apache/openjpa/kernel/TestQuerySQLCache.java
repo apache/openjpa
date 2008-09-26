@@ -18,6 +18,7 @@
  */
 package org.apache.openjpa.kernel;
 
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
@@ -34,6 +35,9 @@ import org.apache.openjpa.jdbc.kernel.JDBCStoreManager;
 import org.apache.openjpa.persistence.EntityManagerImpl;
 import org.apache.openjpa.persistence.OpenJPAEntityManagerFactorySPI;
 import org.apache.openjpa.persistence.OpenJPAPersistence;
+import org.apache.openjpa.persistence.relations.TblChild;
+import org.apache.openjpa.persistence.relations.TblGrandChild;
+import org.apache.openjpa.persistence.relations.TblParent;
 import org.apache.openjpa.persistence.simple.Person;
 
 /*
@@ -269,6 +273,72 @@ public class TestQuerySQLCache
         props.put("openjpa.jdbc.QuerySQLCache", 
             "true");
         runMultiEMCaching(props);
+    }
+
+    /*
+     * Verify QuerySQLCacheValue setting "true" uses the expected cache
+     * implementation and is caching.
+     */
+    public void testEagerFetch() {
+        Map props = new HashMap(System.getProperties());
+        props.put("openjpa.MetaDataFactory", "jpa(Types="
+            + TblChild.class.getName() + ";"
+            + TblGrandChild.class.getName() + ";"
+            + TblParent.class.getName() + ")");
+        props.put("openjpa.jdbc.QuerySQLCache", "true");
+        OpenJPAEntityManagerFactorySPI emf = (OpenJPAEntityManagerFactorySPI)
+            OpenJPAPersistence.cast(
+                Persistence.createEntityManagerFactory("test", props));
+        
+        EntityManagerImpl em = (EntityManagerImpl)emf.createEntityManager();
+        
+        em.getTransaction().begin();
+        for (int i = 0; i < 2; i++) {
+        	TblParent p = new TblParent();
+        	p.setParentId(i);
+    		TblChild c = new TblChild();
+    		c.setChildId(i);
+            c.setTblParent(p);
+            p.addTblChild(c);
+     		em.persist(p);
+    		em.persist(c);
+
+    		TblGrandChild gc = new TblGrandChild();
+    		gc.setGrandChildId(i);
+    		gc.setTblChild(c);
+    		c.addTblGrandChild(gc);
+    		
+    		em.persist(p);
+    		em.persist(c);
+    		em.persist(gc);
+        }
+        em.flush();
+        em.getTransaction().commit();
+        em.clear();
+        
+        for (int i = 0; i < 2; i++) {
+        	TblParent p = em.find(TblParent.class, i);
+        	int pid = p.getParentId();
+        	assertEquals(pid, i);
+        	Collection<TblChild> children = p.getTblChildren();
+        	boolean hasChild = false;
+        	for (TblChild c : children) {
+        		hasChild = true;
+        		Collection<TblGrandChild> gchildren = c.getTblGrandChildren();
+        		int cid = c.getChildId();
+        		assertEquals(cid, i);
+	        	boolean hasGrandChild = false;
+        		for (TblGrandChild gc : gchildren) {
+        			hasGrandChild = true;
+        			int gcId = gc.getGrandChildId();
+        			assertEquals(gcId, i);
+        		}
+        		assertTrue(hasGrandChild);
+        	}
+        	assertTrue(hasChild);
+        }
+        em.close();
+        emf.close();
     }
 
     private void runMultiEMCaching(Map props) {

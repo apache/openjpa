@@ -391,7 +391,7 @@ public class SelectImpl
         }
 
         return getEagerResult(conn, stmnt, rs, store, fetch, forUpdate, 
-            _sql.getSQL());
+            _sql.getSQL(), params);
     }
     
     private boolean isForUpdate(JDBCStore store, int lockLevel) {
@@ -409,7 +409,7 @@ public class SelectImpl
      * to the given result.
      */
     private static void addEagerResults(SelectResult res, SelectImpl sel,
-        JDBCStore store, JDBCFetchConfiguration fetch)
+        JDBCStore store, JDBCFetchConfiguration fetch, List params)
         throws SQLException {
         if (sel._eager == null)
             return;
@@ -428,7 +428,7 @@ public class SelectImpl
                 eres = res;
             else
                 eres = ((SelectExecutor) entry.getValue()).execute(store,
-                    fetch);
+                    fetch, params);
 
             eager = res.getEagerMap(false);
             if (eager == null) {
@@ -511,14 +511,15 @@ public class SelectImpl
      */
     protected Result getEagerResult(Connection conn, 
         PreparedStatement stmnt, ResultSet rs, JDBCStore store, 
-        JDBCFetchConfiguration fetch, boolean forUpdate, String sqlStr) 
+        JDBCFetchConfiguration fetch, boolean forUpdate, String sqlStr,
+        List params) 
         throws SQLException {
         SelectResult res = new SelectResult(conn, stmnt, rs, _dict);
         res.setSelect(this);
         res.setStore(store);
         res.setLocking(forUpdate);
         try {
-            addEagerResults(res, this, store, fetch);
+            addEagerResults(res, this, store, fetch, params);
         } catch (SQLException se) {
             res.close();
             throw se;
