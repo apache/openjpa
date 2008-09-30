@@ -39,6 +39,7 @@
             -Dtest.jvm.arguments="-Xmx500m -agentlib:jdwp=transport=dt_socket,server=y,address=8000"
         -->
         <test.jvm.arguments>-Xmx500m</test.jvm.arguments>
+        <dbcp.args>MaxActive=100,MaxIdle=0,MaxWait=10000</dbcp.args>
     </properties>
     <profiles>
 
@@ -486,7 +487,7 @@
                         </property>
                         <property>
                             <name>openjpa.ConnectionProperties</name>
-                            <value>DriverClassName=${connection.driver.name},Url=${connection.url},MaxActive=100,MaxIdle=0,MaxWait=10000,TestOnBorrow=true,Username=${connection.username},Password=${connection.password}</value>
+                            <value>DriverClassName=${connection.driver.name},Url=${connection.url},Username=${connection.username},Password=${connection.password},${dbcp.args}</value>
                         </property>
                     </systemProperties>
                 </configuration>
