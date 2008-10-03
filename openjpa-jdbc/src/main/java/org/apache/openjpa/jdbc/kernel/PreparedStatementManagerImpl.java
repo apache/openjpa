@@ -91,10 +91,10 @@ public class PreparedStatementManagerImpl
      * Flush the given row immediately. 
      */
     protected void flushAndUpdate(RowImpl row)
-        throws SQLException {
-    	Column[] autoAssign = getAutoAssignColumns(row);
-    	String[] autoAssignColNames = getAutoAssignColNames(autoAssign, row);
-        
+    throws SQLException {
+        Column[] autoAssign = getAutoAssignColumns(row);
+        String[] autoAssignColNames = getAutoAssignColNames(autoAssign, row);
+
         // prepare statement
         String sql = row.getSQL(_dict);
         PreparedStatement stmnt = prepareStatement(sql, autoAssignColNames);
@@ -114,8 +114,8 @@ public class PreparedStatementManagerImpl
                         sql).getMessage());
             }
             if (autoAssignColNames != null)
-            	populateAutoAssignCols(stmnt, autoAssign, autoAssignColNames, row);
-            
+                populateAutoAssignCols(stmnt, autoAssign, autoAssignColNames, row);
+
         } catch (SQLException se) {
             throw SQLExceptions.getStore(se, row.getFailedObject(), _dict);
         } finally {
@@ -127,7 +127,7 @@ public class PreparedStatementManagerImpl
             }
         }
     }
-    
+
     /** 
      * This method will only be called when there is auto assign columns.
      * If database supports getGeneratedKeys, the keys will be obtained
@@ -135,67 +135,67 @@ public class PreparedStatementManagerImpl
      * sql to select the key will be issued from DBDictionary. 
      */
     protected List populateAutoAssignCols(PreparedStatement stmnt, 
-    	Column[] autoAssign, String[] autoAssignColNames, RowImpl row) 
-    	throws SQLException {
-    	List vals = null;
-       	if (_dict.supportsGetGeneratedKeys) {
-        	// set auto assign values to id col
-	   		vals = getGeneratedKeys(stmnt, autoAssignColNames);
-   		}
-       	setObjectId(vals, autoAssign, autoAssignColNames, row);
-       	return vals;
+        Column[] autoAssign, String[] autoAssignColNames, RowImpl row) 
+        throws SQLException {
+        List vals = null;
+        if (_dict.supportsGetGeneratedKeys) {
+            // set auto assign values to id col
+            vals = getGeneratedKeys(stmnt, autoAssignColNames);
+        }
+        setObjectId(vals, autoAssign, autoAssignColNames, row);
+        return vals;
     }
-    
+
     protected void setObjectId(List vals, Column[] autoAssign, 
-    	String[] autoAssignColNames, RowImpl row) 
-    	throws SQLException{
-   		OpenJPAStateManager sm = row.getPrimaryKey();
-   		ClassMapping mapping = (ClassMapping) sm.getMetaData();
-   		Object val = null;
-   		for (int i = 0; i < autoAssign.length; i++) {
-   			if (_dict.supportsGetGeneratedKeys && vals != null && 
-   				vals.size() > 0)
-   				val = vals.get(i);
-   			else
-   				val = _dict.getGeneratedKey(autoAssign[i], _conn);
-   			mapping.assertJoinable(autoAssign[i]).setAutoAssignedValue(sm,
-   				_store, autoAssign[i], val);
-   		}
-   		sm.setObjectId(
-   			ApplicationIds.create(sm.getPersistenceCapable(), mapping));
+        String[] autoAssignColNames, RowImpl row) 
+        throws SQLException{
+        OpenJPAStateManager sm = row.getPrimaryKey();
+        ClassMapping mapping = (ClassMapping) sm.getMetaData();
+        Object val = null;
+        for (int i = 0; i < autoAssign.length; i++) {
+            if (_dict.supportsGetGeneratedKeys && vals != null && 
+                vals.size() > 0)
+                val = vals.get(i);
+            else
+                val = _dict.getGeneratedKey(autoAssign[i], _conn);
+            mapping.assertJoinable(autoAssign[i]).setAutoAssignedValue(sm,
+                _store, autoAssign[i], val);
+        }
+        sm.setObjectId(
+            ApplicationIds.create(sm.getPersistenceCapable(), mapping));
     }
-    
+
     /**
      * This method will only be called when the database supports
      * getGeneratedKeys.
      */
     protected List getGeneratedKeys(PreparedStatement stmnt, 
-    	String[] autoAssignColNames) 
-    	throws SQLException {
+        String[] autoAssignColNames) 
+        throws SQLException {
         ResultSet rs = stmnt.getGeneratedKeys();
-    	List vals = new ArrayList();
-    	while (rs.next()) {
-    		for (int i = 0; i < autoAssignColNames.length; i++)
-    			vals.add(rs.getObject(autoAssignColNames[i]));
-    	}
-    	rs.close();
-    	return vals;
+        List vals = new ArrayList();
+        while (rs.next()) {
+            for (int i = 0; i < autoAssignColNames.length; i++)
+                vals.add(rs.getObject(autoAssignColNames[i]));
+        }
+        rs.close();
+        return vals;
     }
-    
+
     protected Column[] getAutoAssignColumns(RowImpl row) {
         Column[] autoAssign = null;
         if (row.getAction() == Row.ACTION_INSERT)
             autoAssign = row.getTable().getAutoAssignedColumns();
         return autoAssign;
     }
-    
+
     protected String[] getAutoAssignColNames(Column[] autoAssign, RowImpl row) {
-    	String[] autoAssignColNames = null;
+        String[] autoAssignColNames = null;
         if (autoAssign != null && autoAssign.length > 0
             && row.getPrimaryKey() != null) {
-        	autoAssignColNames = new String[autoAssign.length];
-        	for (int i = 0; i < autoAssign.length; i++)
-        		autoAssignColNames[i] = autoAssign[i].getName();
+            autoAssignColNames = new String[autoAssign.length];
+            for (int i = 0; i < autoAssign.length; i++)
+                autoAssignColNames[i] = autoAssign[i].getName();
         }
         return autoAssignColNames;
     }
@@ -217,20 +217,20 @@ public class PreparedStatementManagerImpl
      * implementation of preparing statement.
      */
     protected PreparedStatement prepareStatement(String sql) 
-    	throws SQLException {
-    	return prepareStatement(sql, null);
-	}    
+        throws SQLException {
+        return prepareStatement(sql, null);
+    }    
     /**
      * This method is to provide override for non-JDBC or JDBC-like 
      * implementation of preparing statement.
      */
     protected PreparedStatement prepareStatement(String sql, 
-    	String[] autoAssignColNames)
+        String[] autoAssignColNames)
         throws SQLException {
-    	// pass in AutoAssignColumn names
-    	if (autoAssignColNames != null && _dict.supportsGetGeneratedKeys) 
-   	    	return _conn.prepareStatement(sql, autoAssignColNames);
-    	else
-    		return _conn.prepareStatement(sql);
+        // pass in AutoAssignColumn names
+        if (autoAssignColNames != null && _dict.supportsGetGeneratedKeys) 
+            return _conn.prepareStatement(sql, autoAssignColNames);
+        else
+            return _conn.prepareStatement(sql);
     }
 }
