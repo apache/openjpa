@@ -415,7 +415,7 @@ public class DelegatingPreparedStatement
     }
 
     public ResultSet getGeneratedKeys() throws SQLException {
-        throw new UnsupportedOperationException();
+        return _stmnt.getGeneratedKeys();
     }
 
     public int executeUpdate(String s, int i) throws SQLException {

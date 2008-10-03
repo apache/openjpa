@@ -193,6 +193,7 @@ public class DBDictionary
     public boolean supportsAlterTableWithAddColumn = true;
     public boolean supportsAlterTableWithDropColumn = true;
     public boolean supportsComments = false;
+    public boolean supportsGetGeneratedKeys = false;
     public String reservedWords = null;
     public String systemSchemas = null;
     public String systemTables = null;
@@ -393,6 +394,7 @@ public class DBDictionary
                     // JDBC3-only method, so it might throw a 
                     // AbstractMethodError
                     isJDBC3 = metaData.getJDBCMajorVersion() >= 3;
+                    supportsGetGeneratedKeys = metaData.supportsGetGeneratedKeys();
                 } catch (Throwable t) {
                     // ignore if not JDBC3
                 }
