@@ -25,12 +25,13 @@ public class TestLibService extends SingleEMFTestCase
     
     public void setUp() {
         // declare the library model classes
-        super.setUp(Book.class, Borrower.class, Subject.class, Volunteer.class);
+        super.setUp(DROP_TABLES, Book.class, Borrower.class, Subject.class,
+            Volunteer.class);
         
         // put golden data in database
         LibTestingService libTestingService = new LibTestingService();
         libTestingService.setEntityManager(emf.createEntityManager());
-        libTestingService. repopulateDB();
+        libTestingService.repopulateDB();
         libTestingService.close();
         
         // create the LibService

@@ -98,7 +98,7 @@ public class TestParentChild extends CombinatorialPersistenceTestCase {
 		// The last argument tells that this is a runtime option. So the
 		// values are included to generate combinations but are excluded
 		// from generating OpenJPA configuration.
-		getHelper().addOption("persist-order", PersistOrder.values(), true);
+		getHelper().addOption(Key_PersistOrder, PersistOrder.values(), true);
 	}
 
 	public void setUp() {
@@ -109,7 +109,7 @@ public class TestParentChild extends CombinatorialPersistenceTestCase {
 		getHelper().addOption(Key_SchemaFactory, Option_SchemaFactory);
 		getHelper().addOption(Key_UpdateManager, Option_UpdateManager);
 
-		getHelper().addOption("persist-order", PersistOrder.values(), true);
+		getHelper().addOption(Key_PersistOrder, PersistOrder.values(), true);
 		
 		sql.clear();
 		super.setUp(DROP_TABLES, Parent.class, Child.class);
@@ -191,7 +191,8 @@ public class TestParentChild extends CombinatorialPersistenceTestCase {
 	 */
 	void assertPostInsertUpdate() {
 		if (getPersistOrder().equals(PersistOrder.CHILD_THEN_PARENT)
-		 && getMappingDefaults().contains("restrict")) {
+		 && getMappingDefaults().contains("restrict")
+		 && getUpdateManagerDefaults().contains("operation-order")) {
 			assertSQL("UPDATE .* SET PARENT_ID .* WHERE .*");
 		}
 	}
@@ -225,6 +226,10 @@ public class TestParentChild extends CombinatorialPersistenceTestCase {
 	String getMappingDefaults() {
 		return getHelper().getOptionAsString(Key_MappingDefaults);
 	}
+
+    String getUpdateManagerDefaults() {
+        return getHelper().getOptionAsString(Key_UpdateManager);
+    }
 
 	String getSchemaFactory() {
 		return getHelper().getOptionAsString(Key_SchemaFactory);
