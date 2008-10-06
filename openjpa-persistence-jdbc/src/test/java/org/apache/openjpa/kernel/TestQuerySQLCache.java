@@ -291,6 +291,26 @@ public class TestQuerySQLCache
                 Persistence.createEntityManagerFactory("test", props));
         
         EntityManagerImpl em = (EntityManagerImpl)emf.createEntityManager();
+
+        // Set/clean up tables for subsequent tests
+        em.getTransaction().begin();
+        for (int i = 0; i < 2; i++) {
+            TblParent p = em.find(TblParent.class, i);
+            if (p != null) {
+                Collection<TblChild> children = p.getTblChildren();
+                for (TblChild c : children) {
+                    Collection<TblGrandChild> gchildren = c
+                        .getTblGrandChildren();
+                    for (TblGrandChild gc : gchildren) {
+                        em.remove(gc);
+                    }
+                    em.remove(c);
+                }
+                em.remove(p);
+            }
+        }
+        em.getTransaction().commit();
+        em.clear();
         
         em.getTransaction().begin();
         for (int i = 0; i < 2; i++) {
