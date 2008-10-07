@@ -26,7 +26,7 @@ import org.apache.openjpa.persistence.OpenJPAEntityManager;
 public class TestMessageListeners extends SingleEMFTestCase {
 
     public void setUp() {
-        setUp(CLEAR_TABLES);
+        setUp(DROP_TABLES);
     }
 
     @Override
@@ -96,7 +96,6 @@ public class TestMessageListeners extends SingleEMFTestCase {
     }
 
     public void testUpdateInPreUpdate() {
-        if( false ) {
         // Create a new EntityManager from the EntityManagerFactory. The
         // EntityManager is the main object in the persistence API, and is
         // used to create, delete, and query objects, as well as access
@@ -165,7 +164,6 @@ public class TestMessageListeners extends SingleEMFTestCase {
                 em.getTransaction().rollback();
             if (em != null && em.isOpen())
                 em.close();
-        }
         }
     }
 

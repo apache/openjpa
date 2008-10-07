@@ -23,6 +23,7 @@ import java.util.Date;
 import javax.persistence.Basic;
 import javax.persistence.Entity;
 import javax.persistence.EntityListeners;
+import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.Version;
 
@@ -35,7 +36,8 @@ import javax.persistence.Version;
 @EntityListeners(value = MessageListenerImpl.class)
 public class Message {
     @Id
-    private long id = System.currentTimeMillis();
+    @GeneratedValue
+    private long id;
 
     @Basic
     private String message;
