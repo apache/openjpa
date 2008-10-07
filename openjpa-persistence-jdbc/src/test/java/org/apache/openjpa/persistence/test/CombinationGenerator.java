@@ -73,30 +73,26 @@ public class CombinationGenerator {
 	 * the dimensions were added.
 	 */
 	public List[] generate() {
-		int n = getSize();
-		List[] result = new ArrayList[n];
-		for (int i = 0; i < n; i++) {
-			ArrayList elem = new ArrayList(dimensions.size());
-			for (int j=0; j < dimensions.size(); j++)
+		int comboSize = getSize();
+		int dimsSize = dimensions.size();
+		List[] result = new ArrayList[comboSize];
+		for (int i = 0; i < comboSize; i++) {
+			ArrayList elem = new ArrayList(dimsSize);
+			for (int j=0; j < dimsSize; j++)
 				elem.add(null);
 			result[i] = elem;
 		}
-		
-		for (int i = 0; i < dimensions.size(); i++) {
-			fill(i, dimensions.get(i), result);
+		int dimRepeatingStep = 1;
+		for (int dimIndex = 0; dimIndex < dimsSize; dimIndex++) {
+			List dimValueList = dimensions.get(dimIndex);
+			int valuListSize = dimValueList.size();
+			for (int j = 0; j < comboSize; j++) {
+				result[j].set(dimIndex, dimValueList.get((j / dimRepeatingStep)
+					% valuListSize));
+			}
+			dimRepeatingStep *= valuListSize;
 		}
 		return result;
-	}
-	
-	private void fill(int where, List elements, List[] fill) {
-		if (fill.length%elements.size() != 0)
-			throw new RuntimeException();
-		int n = fill.length/elements.size();
-		int k = 0;
-		for (int i = 0; i < n; i++) {
-			for (Object e : elements)	
-				fill[k++].set(where, e);
-		}
 	}
 	
 	/**

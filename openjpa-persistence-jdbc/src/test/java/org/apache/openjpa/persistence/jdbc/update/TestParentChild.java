@@ -126,7 +126,6 @@ public class TestParentChild extends CombinatorialPersistenceTestCase {
 		// see the methods as exemplars how verification can vary based on
 		// configuration.
 		assertLogicalOrPhysicalForeignKey();
-		assertPostInsertUpdate();
 		assertPhysicalForeignKeyCreation();
 	}
 
@@ -191,8 +190,7 @@ public class TestParentChild extends CombinatorialPersistenceTestCase {
 	 */
 	void assertPostInsertUpdate() {
 		if (getPersistOrder().equals(PersistOrder.CHILD_THEN_PARENT)
-		 && getMappingDefaults().contains("restrict")
-		 && getUpdateManagerDefaults().contains("operation-order")) {
+			&& getMappingDefaults().contains("restrict")) {
 			assertSQL("UPDATE .* SET PARENT_ID .* WHERE .*");
 		}
 	}
@@ -226,10 +224,6 @@ public class TestParentChild extends CombinatorialPersistenceTestCase {
 	String getMappingDefaults() {
 		return getHelper().getOptionAsString(Key_MappingDefaults);
 	}
-
-    String getUpdateManagerDefaults() {
-        return getHelper().getOptionAsString(Key_UpdateManager);
-    }
 
 	String getSchemaFactory() {
 		return getHelper().getOptionAsString(Key_SchemaFactory);
