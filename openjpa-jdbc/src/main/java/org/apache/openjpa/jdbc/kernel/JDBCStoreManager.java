@@ -354,7 +354,11 @@ public class JDBCStoreManager
                     getMappedByFieldMapping();
                 Object mappedByObject = info.result.getMappedByValue();
                 if (mappedByFieldMapping != null && mappedByObject != null)
-                    setMappedBy(sm, mappedByFieldMapping, mappedByObject);
+                    if (mappedByObject instanceof OpenJPAId)
+                        sm.setIntermediate(mappedByFieldMapping.getIndex(),
+                            mappedByObject);
+                    else
+                        setMappedBy(sm, mappedByFieldMapping, mappedByObject);
             }
             // load the selected mappings into the given state manager
             if (res != null) {
@@ -914,7 +918,27 @@ public class JDBCStoreManager
         ConnectionInfo info = new ConnectionInfo();
         info.result = result;
         info.mapping = mapping;
+
+        // if inverse relation is known, exclude loading during find
+        exclude = excludeInverseRelation(mapping, info, exclude);
         return _ctx.find(oid, fetch, exclude, info, 0);
+    }
+
+    private BitSet excludeInverseRelation(ClassMapping mapping,
+        ConnectionInfo info, BitSet exclude) {
+        FieldMapping inverse = info.result.getMappedByFieldMapping();
+        if (inverse != null) {
+            FieldMapping[] fms = mapping.getDefinedFieldMappings();
+            if (exclude == null)
+                exclude = new BitSet(fms.length);
+            for (int i = 0; i < fms.length; i++) {
+                if (fms[i] == inverse) {
+                    exclude.set(fms[i].getIndex());
+                    break;
+                }
+            }
+        }
+        return exclude;
     }
 
     /**

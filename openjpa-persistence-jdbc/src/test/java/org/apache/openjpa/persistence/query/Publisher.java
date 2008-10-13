@@ -21,6 +21,7 @@ package org.apache.openjpa.persistence.query;
 import java.io.Serializable;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.Id;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -38,7 +39,7 @@ public class Publisher implements Serializable {
     @Column(name="name")
     private String name;
 
-    @OneToMany(mappedBy="idPublisher")
+    @OneToMany(mappedBy="idPublisher",  fetch=FetchType.EAGER)
     private Set<Magazine> magazineCollection;
 
 
