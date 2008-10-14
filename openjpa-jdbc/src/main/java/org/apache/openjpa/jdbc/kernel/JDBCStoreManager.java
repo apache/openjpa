@@ -35,6 +35,7 @@ import java.util.Set;
 
 import javax.sql.DataSource;
 
+import org.apache.openjpa.enhance.PersistenceCapable;
 import org.apache.openjpa.event.OrphanedKeyAction;
 import org.apache.openjpa.jdbc.conf.JDBCConfiguration;
 import org.apache.openjpa.jdbc.conf.QuerySQLCacheValue;
@@ -355,6 +356,14 @@ public class JDBCStoreManager
                 Object mappedByObject = info.result.getMappedByValue();
                 if (mappedByFieldMapping != null && mappedByObject != null)
                     if (mappedByObject instanceof OpenJPAId)
+                        // The inverse relation can not be set since
+                        // we are eagerly loading this sm for
+                        // a sm owner that is still in the process of 
+                        // initializing itself.
+                        // Remember owner oid by setIntermediate().
+                        // The inverse relation is set later by
+                        // setInverseRelation() when the sm owner is fully
+                        // initialized.
                         sm.setIntermediate(mappedByFieldMapping.getIndex(),
                             mappedByObject);
                     else
@@ -366,11 +375,53 @@ public class JDBCStoreManager
                 mapping = (ClassMapping) sm.getMetaData();
                 load(mapping, sm, fetch, res);
                 getVersion(mapping, sm, res);
+                setInverseRelation(sm, mapping, res);
             }
             return true;
         } finally {
             if (res != null && (info == null || res != info.result))
                 res.close();
+        }
+    }
+
+    private void setInverseRelation(OpenJPAStateManager owner,
+        ClassMapping mapping, Result res) {
+        FieldMapping[] fms = mapping.getFieldMappings();
+
+        // At this point, the owner is fully initialized.
+        // Check if the owner has eagerly loaded ToMany relations.
+        for (int i = 0; i < fms.length; i++) {
+            if (res.getEager(fms[i]) != null) {
+                Object coll =  owner.fetchObject(fms[i].getIndex());
+                if (coll instanceof Collection && 
+                    ((Collection) coll).size() > 0) {
+                    // Found eagerly loaded collection.
+                    // Publisher (1) <==>  (M) Magazine
+                    //    publisher has a EAGER OneToMany relation
+                    //    magazine has a EAGER or LAZY ManyToOne publisher
+                    // For each member (Magazine) in the collection, 
+                    // set its inverse relation (Publisher).
+                    for (Iterator itr = ((Collection) coll).iterator();
+                        itr.hasNext();) {
+                        PersistenceCapable pc = (PersistenceCapable) itr.next();
+                        OpenJPAStateManager sm = (OpenJPAStateManager) pc.
+                            pcGetStateManager();
+                        FieldMapping[] fmd = ((ClassMapping) sm.getMetaData()).
+                            getFieldMappings();
+                        for (int j = 0; j < fmd.length; j++) {
+                            Object oid = sm.getIntermediate(fmd[j].getIndex());
+                            // if oid was setIntermediate() previously
+                            // and it is the same as the owner,
+                            // then set the inverse relation
+                            if (oid != null &&
+                                oid.equals(owner.getObjectId())) {
+                                sm.storeObject(fmd[j].getIndex(),
+                                    owner.getPersistenceCapable());
+                            }
+                        }
+                    }
+                }
+            }
         }
     }
 

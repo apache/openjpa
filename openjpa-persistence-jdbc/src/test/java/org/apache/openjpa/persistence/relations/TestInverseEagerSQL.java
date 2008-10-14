@@ -235,6 +235,7 @@ public class TestInverseEagerSQL
         assertEquals(2, sql.size());
 
         sql.clear();
+        em.clear();
         for (int i = 0; i < list.size(); i++) {
             Publisher p = (Publisher) list.get(i);
             Set<Magazine> magazines = p.getMagazineCollection();
