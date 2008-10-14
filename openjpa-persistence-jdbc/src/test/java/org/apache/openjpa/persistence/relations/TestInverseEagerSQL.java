@@ -21,12 +21,16 @@ package org.apache.openjpa.persistence.relations;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Set;
+
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
 
 import junit.textui.TestRunner;
 import org.apache.openjpa.persistence.OpenJPAEntityManager;
 import org.apache.openjpa.persistence.OpenJPAQuery;
+import org.apache.openjpa.persistence.query.Magazine;
+import org.apache.openjpa.persistence.query.Publisher;
 import org.apache.openjpa.persistence.test.SQLListenerTestCase;
 
 
@@ -36,7 +40,8 @@ public class TestInverseEagerSQL
     public void setUp() {
         setUp(Customer.class, Customer.CustomerKey.class, Order.class, 
         	EntityAInverseEager.class, EntityA1InverseEager.class, EntityA2InverseEager.class, 
-        	EntityBInverseEager.class, EntityCInverseEager.class, EntityDInverseEager.class);
+        	EntityBInverseEager.class, EntityCInverseEager.class, EntityDInverseEager.class,
+            Publisher.class, Magazine.class);
         
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
@@ -93,7 +98,29 @@ public class TestInverseEagerSQL
             c1.setD(d1);
             d1.setC(c1);
         }
-        
+
+        Publisher p1 = new Publisher();
+        p1.setName("publisher1");
+        em.persist(p1);
+   
+        for (int i = 0; i < 4; i++) {
+            Magazine magazine = new Magazine();
+            magazine.setIdPublisher(p1);
+            magazine.setName("magagine"+i+"_"+p1.getName());
+            em.persist(magazine);
+        }
+
+        Publisher p2 = new Publisher();
+        p2.setName("publisher2");
+        em.persist(p2);
+   
+        for (int i = 0; i < 4; i++) {
+            Magazine magazine = new Magazine();
+            magazine.setIdPublisher(p2);
+            magazine.setName("magagine"+i+"_"+p2.getName());
+            em.persist(magazine);
+        }
+
         em.flush();
         em.getTransaction().commit();
         em.close();
@@ -194,6 +221,33 @@ public class TestInverseEagerSQL
         }
         
         assertEquals(2, sql.size());
+        em.close();
+    }
+
+    public void testOneToManyEagerInverseLazyQuery() {
+        sql.clear();
+
+        OpenJPAEntityManager em = emf.createEntityManager();
+        String query = "select p FROM Publisher p";
+        Query q = em.createQuery(query);
+        List list = q.getResultList();
+        assertEquals(2, list.size());
+        assertEquals(2, sql.size());
+
+        sql.clear();
+        em.clear();
+        for (int i = 0; i < list.size(); i++) {
+            Publisher p = (Publisher) list.get(i);
+            Set<Magazine> magazines = p.getMagazineCollection();
+            assertEquals(4, magazines.size());
+            for (Iterator iter = magazines.iterator(); iter.hasNext();) {
+                Magazine m = (Magazine) iter.next();
+                Publisher mp = m.getIdPublisher();
+                assertEquals(p, mp);
+            }
+        }
+
+        assertEquals(0, sql.size());
         em.close();
     }
 
