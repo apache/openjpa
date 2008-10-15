@@ -18,3 +18,4 @@ COPYRIGHT NOTICES
 
 * OpenJPA includes software written by Miroslav Nachev
 
+* OpenJPA uses test code written by Charles Tillman.
