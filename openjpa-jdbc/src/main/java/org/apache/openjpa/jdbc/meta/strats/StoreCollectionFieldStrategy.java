@@ -313,7 +313,8 @@ public abstract class StoreCollectionFieldStrategy
                 seq = res.getInt(field.getOrderColumn(), orderJoins) + 1;
 
             // for inverse relation field
-            setMappedBy(oid, res);
+            setMappedBy(oid.equals(sm.getObjectId()) ? 
+                sm.getPersistenceCapable() : oid, res);
             Object val = loadElement(null, store, fetch, res, dataJoins);
             add(store, coll, val);
         }

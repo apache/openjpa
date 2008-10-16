@@ -417,6 +417,7 @@ public class JDBCStoreManager
                                 oid.equals(owner.getObjectId())) {
                                 sm.storeObject(fmd[j].getIndex(),
                                     owner.getPersistenceCapable());
+                                break;
                             }
                         }
                     }
