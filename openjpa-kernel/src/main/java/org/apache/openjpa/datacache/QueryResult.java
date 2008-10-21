@@ -31,6 +31,7 @@ public class QueryResult
 
     private final long _ex;
 
+    private long _timestamp = 0L;
     /**
      * Constructor; supply corresponding query key and result data.
      */
@@ -64,4 +65,20 @@ public class QueryResult
     public boolean isTimedOut() {
         return _ex != -1 && _ex < System.currentTimeMillis();
 	}
+
+    /**
+     * Sets the timestamp of the query result.
+     * @param ts  -- Timestamp value in long
+     */
+    public void setTimestamp(long ts) {
+        this._timestamp = ts;
+    }
+
+    /**
+     * Returns the timestamp of the query result.
+     * @return -- the timestamp value in long
+     */
+    public long getTimestamp() {
+        return this._timestamp;
+    }
 }

@@ -200,6 +200,8 @@ public class QueryKey
             // since the class change framework deals with least-derived types,
             // record the least-derived access path types
             meta = metas[i];
+            if (meta.getDataCache() != null)
+                accessPathClassNames.add(meta.getDescribedType().getName());
             while (meta.getPCSuperclass() != null)
                 meta = meta.getPCSuperclassMetaData();
 
@@ -232,6 +234,7 @@ public class QueryKey
                 if (metas[i].getDataCache() == null)
                     return null;
 
+                accessPathClassNames.add(metas[i].getDescribedType().getName());
                 subTimeout = metas[i].getDataCacheTimeout();
                 if (subTimeout != -1 && subTimeout < timeout)
                     timeout = subTimeout;
@@ -466,4 +469,12 @@ public class QueryKey
         _rangeEnd = in.readLong ();
 		_timeout = in.readInt ();
 	}
+    
+    /**
+     * Returns the set of the accessPathClassnames that exists in the query
+     * @return -- Returns a set of accesspath classnames.
+     */
+    public Set<String> getAcessPathClassNames() {
+        return this._accessPathClassNames;
+    }
 }

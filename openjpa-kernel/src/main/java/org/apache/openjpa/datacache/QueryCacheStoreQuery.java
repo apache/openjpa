@@ -28,6 +28,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Set;
 import java.util.TreeMap;
 
 import org.apache.commons.collections.map.LinkedMap;
@@ -119,9 +120,33 @@ public class QueryCacheStoreQuery
         // get the cached data
         QueryResult res = _cache.get(qk);
         if (res == null)
-            return null;
+            return null;        
         if (res.isEmpty())
             return Collections.EMPTY_LIST;
+
+        // this if block is invoked if the evictOnTimestamp is set to true
+        if (_cache instanceof AbstractQueryCache) {
+            AbstractQueryCache qcache = (AbstractQueryCache) _cache;
+            if (qcache.getEvictPolicy().equalsIgnoreCase("timestamp")) {
+                Set<String> classNames = qk.getAcessPathClassNames();
+                List<String> keyList = new ArrayList<String>();      
+                keyList.addAll(classNames);
+
+                List<Long> timestamps = 
+                    qcache.getAllEntityTimestampFromMap(keyList);
+                long queryTS = res.getTimestamp();
+                if (timestamps != null) {
+                    for (Long ts: timestamps) {
+                        // if this is true we have to evict the query 
+                        // from cache
+                        if (queryTS < ts) { 
+                            qcache.remove(qk);
+                            return null;
+                        }
+                    }
+                }
+            }
+        }
 
         int projs = getContext().getProjectionAliases().length;
         if (projs == 0) {
@@ -572,6 +597,7 @@ public class QueryCacheStoreQuery
                         QueryResult res = null;
                         synchronized (this) {
                             res = new QueryResult(_qk, _data.values());
+                            res.setTimestamp(System.currentTimeMillis());
                         }
                         _cache.put(_qk, res);
                         abortCaching();

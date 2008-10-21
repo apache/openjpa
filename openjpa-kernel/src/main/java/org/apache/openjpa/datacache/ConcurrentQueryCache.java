@@ -137,4 +137,11 @@ public class ConcurrentQueryCache
     protected Collection keySet() {
         return _cache.keySet ();
 	}
+
+    /**
+     * Returns the eviction policy of the query cache
+     */
+    public String getEvictPolicy() {
+        return super.evictPolicy;
+    }
 }
