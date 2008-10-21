@@ -920,6 +920,7 @@ public class JDBCStoreManager
                 _conn = connectInternal();
             if (ref)
                 _conn.ref();
+            _dict.initializeSettings(_conn);
         } catch (SQLException se) {
             throw SQLExceptions.getStore(se, _dict);
         } finally {

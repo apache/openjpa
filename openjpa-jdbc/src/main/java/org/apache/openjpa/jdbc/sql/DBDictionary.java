@@ -200,6 +200,7 @@ public class DBDictionary
     public String selectWords = null;
     public String fixedSizeTypeNames = null;
     public String schemaCase = SCHEMA_CASE_UPPER;
+    public boolean setStringRightTruncationOn = true;
 
     // sql
     public String validationSQL = null;
@@ -4560,5 +4561,9 @@ public class DBDictionary
     		throw new UserException(_loc.get(msgKey, name, name.length(), 
     				length));
     	return name;
+    }
+    
+    public void initializeSettings(Connection conn) 
+        throws SQLException {
     }
 }

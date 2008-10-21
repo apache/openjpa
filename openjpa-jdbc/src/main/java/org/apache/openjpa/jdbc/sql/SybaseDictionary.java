@@ -268,6 +268,20 @@ public class SybaseDictionary
         throws SQLException {
         return new SybaseConnection(super.decorate(conn));
     }
+    
+    public void initializeSettings(Connection conn)
+        throws SQLException {
+        // In order for Sybase to raise the truncation exception when the 
+        // string length is greater than the column length for Char, VarChar, 
+        // Binary, VarBinary, the "set string_rtruncation on" must be executed. 
+        // This setting is effective for the duration of current connection.
+        if (setStringRightTruncationOn) {
+            String str = "set string_rtruncation on";
+            PreparedStatement stmnt = prepareStatement(conn, str);        
+            stmnt.execute();
+            stmnt.close();
+        }
+    }
 
     /**
      * Connection wrapper to cache the {@link Connection#getCatalog} result,
