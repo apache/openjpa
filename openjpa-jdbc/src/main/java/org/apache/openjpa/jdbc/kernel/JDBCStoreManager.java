@@ -916,11 +916,12 @@ public class JDBCStoreManager
         try {
             // connect if the connection is currently null, or if
             // the connection has been closed out from under us
-            if (_conn == null)
+            if (_conn == null){
                 _conn = connectInternal();
+                _dict.initializeSettings(_conn);
+            }
             if (ref)
                 _conn.ref();
-            _dict.initializeSettings(_conn);
         } catch (SQLException se) {
             throw SQLExceptions.getStore(se, _dict);
         } finally {
