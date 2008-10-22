@@ -4562,8 +4562,4 @@ public class DBDictionary
     				length));
     	return name;
     }
-    
-    public void initializeSettings(Connection conn) 
-        throws SQLException {
-    }
 }

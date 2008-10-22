@@ -266,11 +266,7 @@ public class SybaseDictionary
 
     public Connection decorate(Connection conn)
         throws SQLException {
-        return new SybaseConnection(super.decorate(conn));
-    }
-    
-    public void initializeSettings(Connection conn)
-        throws SQLException {
+        conn = super.decorate(conn);
         // In order for Sybase to raise the truncation exception when the 
         // string length is greater than the column length for Char, VarChar, 
         // Binary, VarBinary, the "set string_rtruncation on" must be executed. 
@@ -281,6 +277,7 @@ public class SybaseDictionary
             stmnt.execute();
             stmnt.close();
         }
+        return new SybaseConnection(conn);
     }
 
     /**
