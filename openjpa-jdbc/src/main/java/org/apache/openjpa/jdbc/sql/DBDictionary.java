@@ -199,6 +199,7 @@ public class DBDictionary
     public String selectWords = null;
     public String fixedSizeTypeNames = null;
     public String schemaCase = SCHEMA_CASE_UPPER;
+    public boolean setStringRightTruncationOn = true;
 
     // sql
     public String validationSQL = null;
