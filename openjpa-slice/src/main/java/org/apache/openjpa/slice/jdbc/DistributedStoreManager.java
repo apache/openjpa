@@ -18,7 +18,6 @@
  */
 package org.apache.openjpa.slice.jdbc;
 
-import java.io.IOException;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -43,7 +42,6 @@ import org.apache.openjpa.jdbc.sql.ResultSetResult;
 import org.apache.openjpa.kernel.FetchConfiguration;
 import org.apache.openjpa.kernel.OpenJPAStateManager;
 import org.apache.openjpa.kernel.PCState;
-import org.apache.openjpa.kernel.QueryContext;
 import org.apache.openjpa.kernel.QueryLanguages;
 import org.apache.openjpa.kernel.Seq;
 import org.apache.openjpa.kernel.StoreContext;
@@ -55,16 +53,10 @@ import org.apache.openjpa.lib.rop.ResultObjectProvider;
 import org.apache.openjpa.lib.util.Localizer;
 import org.apache.openjpa.meta.ClassMetaData;
 import org.apache.openjpa.meta.FieldMetaData;
-import org.apache.openjpa.slice.DistributionPolicy;
-import org.apache.openjpa.slice.SliceImplHelper;
 import org.apache.openjpa.slice.ProductDerivation;
-import org.apache.openjpa.slice.ReplicationPolicy;
+import org.apache.openjpa.slice.SliceImplHelper;
 import org.apache.openjpa.util.InternalException;
 import org.apache.openjpa.util.StoreException;
-import org.apache.openjpa.util.UserException;
-import org.apache.tools.ant.taskdefs.condition.IsReference;
-
-import sun.reflect.ReflectionFactory.GetReflectionFactoryAction;
 
 /**
  * A Store manager for multiple physical databases referred as <em>slice</em>.
