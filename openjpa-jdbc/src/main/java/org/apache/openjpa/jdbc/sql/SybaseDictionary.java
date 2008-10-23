@@ -75,6 +75,13 @@ public class SybaseDictionary
      */
     public String identityColumnName = "UNQ_INDEX";
 
+    /**
+     * If true, Sybase will ignore numeric truncation on insert or
+     * update operations.  Otherwise, the operation will fail. The default
+     * value, false is in accordance with SQL92.
+     */
+    public boolean ignoreNumericTruncation = false;
+    
     public SybaseDictionary() {
         platform = "Sybase";
         schemaCase = SCHEMA_CASE_PRESERVE;
@@ -277,6 +284,18 @@ public class SybaseDictionary
             stmnt.execute();
             stmnt.close();
         }
+        
+        // By default, Sybase will fail to insert or update if a numeric
+        // truncation occurs as a result of, for example, loss of decimal
+        // precision.  This setting specifies that the operation should not 
+        // fail if a numeric truncation occurs.
+        if (ignoreNumericTruncation) {
+            String str = "set arithabort numeric_truncation off";
+            PreparedStatement stmnt = prepareStatement(conn, str);        
+            stmnt.execute();
+            stmnt.close();            
+        }        
+        
         return new SybaseConnection(conn);
     }
 

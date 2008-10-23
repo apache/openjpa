@@ -3360,7 +3360,41 @@ detects that this is the case, a warning will be logged.
                 </listitem>
             </itemizedlist>
         </section>
-    </section>
+        <section id="ref_guide_dbsetup_dbsupport_sybase">
+            <title>
+                SybaseDictionary Properties
+            </title>
+            <indexterm zone="ref_guide_dbsetup_dbsupport_sybase">
+                <primary>
+                    Sybase
+                </primary>
+                <seealso>
+                    DBDictionary
+                </seealso>
+            </indexterm>
+            <para>
+The <literal>sybase</literal> dictionary understands the following additional
+properties:
+            </para>
+            <itemizedlist>
+                <listitem id="OracleDictionary.IgnoreNumericTruncation">
+                    <para>
+                    <indexterm>
+                        <primary>
+                            Sybase
+                        </primary>
+                        <secondary>
+                            IgnoreNumericTruncation
+                        </secondary>
+                    </indexterm>
+<literal>IgnoreNumericTruncation</literal>: If true, Sybase will ignore numeric
+truncation on SQL operations.  Otherwise, if numeric trunctation is detected, 
+the operation will fail.
+                    </para>
+                </listitem>
+            </itemizedlist>
+        </section>        
+    </section>    
     <section id="ref_guide_dbsetup_isolation">
         <title>
             Setting the Transaction Isolation

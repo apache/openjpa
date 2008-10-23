@@ -22,11 +22,13 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.SQLWarning;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
 
+import org.apache.openjpa.jdbc.conf.JDBCConfiguration;
 import org.apache.openjpa.jdbc.meta.ClassMapping;
 import org.apache.openjpa.jdbc.schema.Column;
 import org.apache.openjpa.jdbc.sql.DBDictionary;
@@ -34,6 +36,7 @@ import org.apache.openjpa.jdbc.sql.Row;
 import org.apache.openjpa.jdbc.sql.RowImpl;
 import org.apache.openjpa.jdbc.sql.SQLExceptions;
 import org.apache.openjpa.kernel.OpenJPAStateManager;
+import org.apache.openjpa.lib.log.Log;
 import org.apache.openjpa.lib.util.Localizer;
 import org.apache.openjpa.util.ApplicationIds;
 import org.apache.openjpa.util.OpenJPAException;
@@ -53,6 +56,7 @@ public class PreparedStatementManagerImpl
     protected final JDBCStore _store;
     protected final Connection _conn;
     protected final DBDictionary _dict;
+    protected transient Log _log = null;
 
     // track exceptions
     protected final Collection _exceptions = new LinkedList();
@@ -64,6 +68,8 @@ public class PreparedStatementManagerImpl
         _store = store;
         _dict = store.getDBDictionary();
         _conn = conn;
+        if (store.getConfiguration() != null)
+            _log = store.getConfiguration().getLog(JDBCConfiguration.LOG_JDBC);
     }
 
     public Collection getExceptions() {
@@ -105,6 +111,7 @@ public class PreparedStatementManagerImpl
         try {
             int count = executeUpdate(stmnt, sql, row);
             if (count != 1) {
+                logSQLWarnings(stmnt);
                 Object failed = row.getFailedObject();
                 if (failed != null)
                     _exceptions.add(new OptimisticException(failed));
@@ -232,5 +239,33 @@ public class PreparedStatementManagerImpl
             return _conn.prepareStatement(sql, autoAssignColNames);
         else
             return _conn.prepareStatement(sql);
+    }
+    
+    /**
+     * Provided the JDBC log category is logging warnings, this method will 
+     * log any SQL warnings that result from the execution of a SQL statement. 
+     */
+    protected void logSQLWarnings(PreparedStatement stmt) {
+        if (stmt != null && _log != null && _log.isTraceEnabled()) {
+            try {
+                SQLWarning warn = stmt.getWarnings();
+                while (warn != null) {
+                    logSQLWarning(warn);
+                    warn = warn.getNextWarning();
+                } while (warn != null);
+            } catch (SQLException e) {}
+        }
+    }
+
+    /*
+     * Log the SQLWarning message.  Some drivers report expected conditions 
+     * such as "no rows returned" as a warning.  These types of messages can 
+     * clutter up the default log very quickly, so trace level will be used to
+     * log SQL warnings.
+     */
+    private void logSQLWarning(SQLWarning warn) {
+        if (warn != null) {
+            _log.trace(_loc.get("sql-warning", warn.getMessage()));
+        }
     }
 }

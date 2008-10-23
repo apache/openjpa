@@ -55,7 +55,6 @@ public class BatchingPreparedStatementManagerImpl extends
     private List _batchedRows = new ArrayList();
     private int _batchLimit;
     private boolean _disableBatch = false;
-    private transient Log _log = null;
 
     /**
      * Constructor. Supply connection.
@@ -64,7 +63,6 @@ public class BatchingPreparedStatementManagerImpl extends
         Connection conn, int batchLimit) {
         super(store, conn);
         _batchLimit = batchLimit;
-        _log = store.getConfiguration().getLog(JDBCConfiguration.LOG_JDBC);
         if (_log.isTraceEnabled())
             _log.trace(_loc.get("batch_limit", String.valueOf(_batchLimit)));
     }
@@ -216,6 +214,7 @@ public class BatchingPreparedStatementManagerImpl extends
             row.flush(ps, _dict, _store);
         int count = executeUpdate(ps, row.getSQL(_dict), row);
         if (count != 1) {
+            logSQLWarnings(ps);
             Object failed = row.getFailedObject();
             if (failed != null)
                 _exceptions.add(new OptimisticException(failed));
@@ -280,6 +279,7 @@ public class BatchingPreparedStatementManagerImpl extends
                 break;
             case 0: // no row is inserted, treats it as failed
                 // case
+                logSQLWarnings(ps);
                 if (failed != null)
                     _exceptions.add(new OptimisticException(failed));
                 else if (row.getAction() == Row.ACTION_INSERT)
