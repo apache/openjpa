@@ -3377,7 +3377,7 @@ The <literal>sybase</literal> dictionary understands the following additional
 properties:
             </para>
             <itemizedlist>
-                <listitem id="OracleDictionary.IgnoreNumericTruncation">
+                <listitem id="SybaseDictionary.IgnoreNumericTruncation">
                     <para>
                     <indexterm>
                         <primary>

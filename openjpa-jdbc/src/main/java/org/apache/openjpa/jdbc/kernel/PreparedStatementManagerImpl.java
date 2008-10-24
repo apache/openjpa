@@ -250,22 +250,10 @@ public class PreparedStatementManagerImpl
             try {
                 SQLWarning warn = stmt.getWarnings();
                 while (warn != null) {
-                    logSQLWarning(warn);
+                    _log.trace(_loc.get("sql-warning", warn.getMessage()));
                     warn = warn.getNextWarning();
-                } while (warn != null);
+                }
             } catch (SQLException e) {}
-        }
-    }
-
-    /*
-     * Log the SQLWarning message.  Some drivers report expected conditions 
-     * such as "no rows returned" as a warning.  These types of messages can 
-     * clutter up the default log very quickly, so trace level will be used to
-     * log SQL warnings.
-     */
-    private void logSQLWarning(SQLWarning warn) {
-        if (warn != null) {
-            _log.trace(_loc.get("sql-warning", warn.getMessage()));
         }
     }
 }
