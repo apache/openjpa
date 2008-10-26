@@ -48,7 +48,7 @@ public class MappingRepositoryValue
         // we need to manually perform the instantiation
         try {
             Class cls = Strings.toClass(clsName,
-                (ClassLoader) AccessController.doPrivileged(
+                AccessController.doPrivileged(
                     J2DoPrivHelper.getClassLoaderAction(type)));        
             return cls.getConstructor(new Class[]{ JDBCConfiguration.class }).
                 newInstance(new Object[]{ conf });

@@ -40,7 +40,7 @@ class ZipResourceBundleProvider implements ResourceBundleProvider {
         ClassLoader loader) {
         String rsrc = name.replace('.', '/') + ".properties";
         if (loader == null)
-            loader = (ClassLoader) AccessController.doPrivileged(
+            loader = AccessController.doPrivileged(
                 J2DoPrivHelper.getContextClassLoaderAction());
 
         InputStream in = loader.getResourceAsStream(rsrc);

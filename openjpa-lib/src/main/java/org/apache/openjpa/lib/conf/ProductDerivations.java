@@ -52,7 +52,7 @@ public class ProductDerivations {
     private static final Throwable[] _derivationErrors;
     private static String[] _prefixes;
     static {
-        ClassLoader l = (ClassLoader) AccessController.doPrivileged(
+        ClassLoader l = AccessController.doPrivileged(
             J2DoPrivHelper.getClassLoaderAction(ProductDerivation.class)); 
         _derivationNames = Services.getImplementors(ProductDerivation.class, l);
         _derivationErrors = new Throwable[_derivationNames.length];
@@ -250,7 +250,7 @@ public class ProductDerivations {
         if (StringUtils.isEmpty(resource))
             return null;
         if (loader == null)
-            loader = (ClassLoader) AccessController.doPrivileged(
+            loader = AccessController.doPrivileged(
                 J2DoPrivHelper.getContextClassLoaderAction());
         ConfigurationProvider provider = null;
         StringBuffer errs = null;
@@ -285,7 +285,7 @@ public class ProductDerivations {
         if (file == null)
             return null;
         if (loader == null)
-            loader = (ClassLoader) AccessController.doPrivileged(
+            loader = AccessController.doPrivileged(
                 J2DoPrivHelper.getContextClassLoaderAction());
         ConfigurationProvider provider = null;
         StringBuffer errs = null;
@@ -302,7 +302,7 @@ public class ProductDerivations {
                 errs.append(_derivations[i].getClass().getName() + ":" + t);
             }
         }
-        String aPath = (String) AccessController.doPrivileged(
+        String aPath = AccessController.doPrivileged(
             J2DoPrivHelper.getAbsolutePathAction(file));
         reportErrors(errs, aPath, err);
         String rsrc = aPath + "#" + anchor;
@@ -331,7 +331,7 @@ public class ProductDerivations {
     private static ConfigurationProvider load(ClassLoader loader, 
        boolean globals) {
         if (loader == null)
-            loader = (ClassLoader) AccessController.doPrivileged(
+            loader = AccessController.doPrivileged(
                 J2DoPrivHelper.getContextClassLoaderAction());
         
         ConfigurationProvider provider = null;

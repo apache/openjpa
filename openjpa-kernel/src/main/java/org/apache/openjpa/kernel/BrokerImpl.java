@@ -269,7 +269,7 @@ public class BrokerImpl
         DelegatingStoreManager sm, boolean managed, int connMode,
         boolean fromDeserialization) {
         _initializeWasInvoked = true;
-        _loader = (ClassLoader) AccessController.doPrivileged(
+        _loader = AccessController.doPrivileged(
             J2DoPrivHelper.getContextClassLoaderAction());
         if (!fromDeserialization)
             _conf = factory.getConfiguration();
@@ -4183,7 +4183,7 @@ public class BrokerImpl
         if (!PCRegistry.isRegistered(cls)) {
             try {
                 Class.forName(cls.getName(), true, 
-                    (ClassLoader) AccessController.doPrivileged(
+                    AccessController.doPrivileged(
                         J2DoPrivHelper.getClassLoaderAction(cls)));
             } catch (Throwable t) {
             }
@@ -4341,10 +4341,10 @@ public class BrokerImpl
             if (intfs[i].getName().equals(PersistenceCapable.class.getName())) {
                 throw new UserException(_loc.get("pc-loader-different",
                     Exceptions.toString(obj),
-                    (ClassLoader) AccessController.doPrivileged(
+                    AccessController.doPrivileged(
                         J2DoPrivHelper.getClassLoaderAction(
                             PersistenceCapable.class)),
-                    (ClassLoader) AccessController.doPrivileged(
+                    AccessController.doPrivileged(
                         J2DoPrivHelper.getClassLoaderAction(intfs[i]))))
                     .setFailedObject(obj);
             }

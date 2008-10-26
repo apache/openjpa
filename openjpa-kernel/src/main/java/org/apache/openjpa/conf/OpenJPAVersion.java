@@ -111,10 +111,9 @@ public class OpenJPAVersion {
         appendProperty("java.vendor", buf).append("\n\n");
 
         buf.append("java.class.path:\n");
-        StringTokenizer tok = new StringTokenizer
-            ((String) AccessController.doPrivileged(
-                J2DoPrivHelper.getPropertyAction("java.class.path")),
-            File.pathSeparator);
+        StringTokenizer tok =
+            new StringTokenizer(AccessController.doPrivileged(J2DoPrivHelper
+                .getPropertyAction("java.class.path")), File.pathSeparator);
         while (tok.hasMoreTokens()) {
             buf.append("\t").append(tok.nextToken());
             buf.append("\n");
@@ -136,8 +135,8 @@ public class OpenJPAVersion {
     }
 
     private StringBuffer appendProperty(String prop, StringBuffer buf) {
-        return buf.append(prop).append(": ")
-            .append((String) AccessController.doPrivileged(
-                J2DoPrivHelper.getPropertyAction(prop)));
+        return buf.append(prop).append(": ").append(
+            AccessController.doPrivileged(J2DoPrivHelper
+                .getPropertyAction(prop)));
     }
 }

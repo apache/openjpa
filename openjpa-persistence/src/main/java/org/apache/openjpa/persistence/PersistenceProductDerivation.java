@@ -228,7 +228,7 @@ public class PersistenceProductDerivation
     public List getAnchorsInResource(String resource) throws Exception {
         ConfigurationParser parser = new ConfigurationParser(null);
         try {
-            ClassLoader loader = (ClassLoader) AccessController.doPrivileged(
+            ClassLoader loader = AccessController.doPrivileged(
                 J2DoPrivHelper.getContextClassLoaderAction());
             List<URL> urls = getResourceURLs(resource, loader);
             if (urls != null) {
@@ -249,7 +249,7 @@ public class PersistenceProductDerivation
         String[] prefixes = ProductDerivations.getConfigurationPrefixes();
         String rsrc = null;
         for (int i = 0; i < prefixes.length && StringUtils.isEmpty(rsrc); i++)
-           rsrc = (String) AccessController.doPrivileged(J2DoPrivHelper
+           rsrc = AccessController.doPrivileged(J2DoPrivHelper
                 .getPropertyAction(prefixes[i] + ".properties")); 
         boolean explicit = !StringUtils.isEmpty(rsrc);
         String anchor = null;
@@ -284,11 +284,11 @@ public class PersistenceProductDerivation
         throws IOException {
         Enumeration<URL> urls = null;
         try {
-            urls = (Enumeration) AccessController.doPrivileged(
+            urls = AccessController.doPrivileged(
                 J2DoPrivHelper.getResourcesAction(loader, rsrc)); 
             if (!urls.hasMoreElements()) {
                 if (!rsrc.startsWith("META-INF"))
-                    urls = (Enumeration) AccessController.doPrivileged(
+                    urls = AccessController.doPrivileged(
                         J2DoPrivHelper.getResourcesAction(
                             loader, "META-INF/" + rsrc)); 
                 if (!urls.hasMoreElements())
@@ -315,7 +315,7 @@ public class PersistenceProductDerivation
         String name, Map m, ClassLoader loader, boolean explicit)
         throws IOException {
         if (loader == null)
-            loader = (ClassLoader) AccessController.doPrivileged(
+            loader = AccessController.doPrivileged(
                 J2DoPrivHelper.getContextClassLoaderAction());
 
         List<URL> urls = getResourceURLs(rsrc, loader);
@@ -401,7 +401,7 @@ public class PersistenceProductDerivation
             return true;
 
         if (loader == null)
-            loader = (ClassLoader) AccessController.doPrivileged(
+            loader = AccessController.doPrivileged(
                 J2DoPrivHelper.getContextClassLoaderAction());
         try {
             if (PersistenceProviderImpl.class.isAssignableFrom
@@ -513,7 +513,7 @@ public class PersistenceProductDerivation
         public void parse(File file)
             throws IOException {
             try {
-                _source = (URL) AccessController.doPrivileged(J2DoPrivHelper
+                _source = AccessController.doPrivileged(J2DoPrivHelper
                     .toURLAction(file));
             } catch (PrivilegedActionException pae) {
                 throw (MalformedURLException) pae.getException();

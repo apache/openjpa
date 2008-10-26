@@ -31,7 +31,7 @@ import org.apache.openjpa.lib.util.MultiClassLoader;
  */
 public class MultiLoaderClassResolver implements ClassResolver {
 
-    final private MultiClassLoader _loader = (MultiClassLoader) AccessController
+    final private MultiClassLoader _loader = AccessController
         .doPrivileged(J2DoPrivHelper.newMultiClassLoaderAction());
 
     public MultiLoaderClassResolver() {

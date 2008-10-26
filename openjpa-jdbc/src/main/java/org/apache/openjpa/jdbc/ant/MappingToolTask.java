@@ -178,14 +178,14 @@ public class MappingToolTask
         if (MappingTool.ACTION_IMPORT.equals(flags.action))
             assertFiles(files);
 
-        ClassLoader toolLoader = (ClassLoader) AccessController
+        ClassLoader toolLoader = AccessController
                 .doPrivileged(J2DoPrivHelper
                         .getClassLoaderAction(MappingTool.class));
         ClassLoader loader = toolLoader;
         MultiLoaderClassResolver resolver = new MultiLoaderClassResolver();
 
         if (tmpClassLoader) {
-            loader = (ClassLoader) AccessController.doPrivileged(J2DoPrivHelper
+            loader = AccessController.doPrivileged(J2DoPrivHelper
                     .newTemporaryClassLoaderAction(getClassLoader()));
             resolver.addClassLoader(loader);
         }

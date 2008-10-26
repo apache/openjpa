@@ -75,7 +75,7 @@ public class ClassMetaDataIterator implements MetaDataIterator {
         }
 
         if (loader == null) {
-            MultiClassLoader multi = (MultiClassLoader) AccessController
+            MultiClassLoader multi = AccessController
                 .doPrivileged(J2DoPrivHelper.newMultiClassLoaderAction());
             multi.addClassLoader(multi.SYSTEM_LOADER);
             multi.addClassLoader(multi.THREAD_LOADER);
@@ -156,7 +156,7 @@ public class ClassMetaDataIterator implements MetaDataIterator {
             _url = -1;
             _urls.clear();
             try {
-                e = (Enumeration) AccessController.doPrivileged(
+                e = AccessController.doPrivileged(
                     J2DoPrivHelper.getResourcesAction(
                         _loader, (String) _locs.get(_loc)));
             } catch (PrivilegedActionException pae) {
@@ -178,7 +178,7 @@ public class ClassMetaDataIterator implements MetaDataIterator {
         if (_url == -1 || _url >= _urls.size())
             throw new IllegalStateException();
         try {
-            return (InputStream) AccessController.doPrivileged(
+            return AccessController.doPrivileged(
                 J2DoPrivHelper.openStreamAction((URL) _urls.get(_url)));
         } catch (PrivilegedActionException pae) {
             throw (IOException) pae.getException();
@@ -190,7 +190,7 @@ public class ClassMetaDataIterator implements MetaDataIterator {
             throw new IllegalStateException();
         File file = new File(URLDecoder.decode(((URL) _urls.get(_url)).
             getFile()));
-        return (((Boolean) AccessController.doPrivileged(
+        return ((AccessController.doPrivileged(
             J2DoPrivHelper.existsAction(file))).booleanValue()) ? file:null;
     }
 

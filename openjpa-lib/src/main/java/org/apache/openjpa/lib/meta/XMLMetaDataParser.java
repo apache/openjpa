@@ -271,7 +271,7 @@ public abstract class XMLMetaDataParser extends DefaultHandler
     public void parse(File file) throws IOException {
         if (file == null)
             return;
-        if (!((Boolean) AccessController.doPrivileged(J2DoPrivHelper
+        if (!(AccessController.doPrivileged(J2DoPrivHelper
             .isDirectoryAction(file))).booleanValue())
             parse(new FileMetaDataIterator(file));
         else {
@@ -632,7 +632,7 @@ public abstract class XMLMetaDataParser extends DefaultHandler
         if (_loader != null)
             return _loader;
         if (_curLoader == null)
-            _curLoader = (ClassLoader) AccessController.doPrivileged(
+            _curLoader = AccessController.doPrivileged(
                 J2DoPrivHelper.getContextClassLoaderAction());
         return _curLoader;
     }

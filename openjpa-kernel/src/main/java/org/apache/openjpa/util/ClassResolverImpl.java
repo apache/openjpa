@@ -40,15 +40,15 @@ public class ClassResolverImpl
         // class (the bootstrap loader is the parent of the system loader)
         ClassLoader contextLoader = null;
         if (contextClass != null) {
-            contextLoader = (ClassLoader) AccessController.doPrivileged(
+            contextLoader = AccessController.doPrivileged(
                 J2DoPrivHelper.getClassLoaderAction(contextClass)); 
             if (contextLoader == null)
-                contextLoader = (ClassLoader) AccessController.doPrivileged(
+                contextLoader = AccessController.doPrivileged(
                     J2DoPrivHelper.getSystemClassLoaderAction()); 
         }
 
         // if there is only one unique loader, just return it
-        ClassLoader threadLoader = (ClassLoader) AccessController.doPrivileged(
+        ClassLoader threadLoader = AccessController.doPrivileged(
             J2DoPrivHelper.getContextClassLoaderAction());
         if ((contextLoader == null || contextLoader == threadLoader)
             && (envLoader == null || envLoader == threadLoader))
@@ -56,7 +56,7 @@ public class ClassResolverImpl
 
         // construct a multi class loader that will delegate in the order
         // described in section 12.5 of the spec
-        MultiClassLoader loader = (MultiClassLoader) AccessController
+        MultiClassLoader loader = AccessController
             .doPrivileged(J2DoPrivHelper.newMultiClassLoaderAction());
         if (contextLoader != null)
             loader.addClassLoader(contextLoader);

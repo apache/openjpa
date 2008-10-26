@@ -48,10 +48,10 @@ public class Proxies {
     public static void assertAllowedType(Object value, Class allowed) {
         if (value != null && allowed != null && !allowed.isInstance(value)) {
             throw new UserException(_loc.get("bad-elem-type", new Object[]{
-                (ClassLoader) AccessController.doPrivileged(
+                AccessController.doPrivileged(
                     J2DoPrivHelper.getClassLoaderAction(allowed)),
                 allowed,
-                (ClassLoader) AccessController.doPrivileged(
+                AccessController.doPrivileged(
                     J2DoPrivHelper.getClassLoaderAction(value.getClass())),
                 value.getClass()
             }));

@@ -188,7 +188,7 @@ public class LogFactoryImpl
                 _out = new PrintStream((FileOutputStream)
                     AccessController.doPrivileged(
                         J2DoPrivHelper.newFileOutputStreamAction(
-                            (String) AccessController.doPrivileged(
+                            AccessController.doPrivileged(
                                 J2DoPrivHelper.getCanonicalPathAction(f)),
                             true)));
             } catch (PrivilegedActionException pae) {

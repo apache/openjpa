@@ -262,11 +262,11 @@ public class ReverseMappingToolTask
         // load customizer properties
         Properties customProps = new Properties();
         File propsFile = Files.getFile(customizerProperties, loader);
-        if (propsFile != null && ((Boolean) AccessController.doPrivileged(
+        if (propsFile != null && (AccessController.doPrivileged(
             J2DoPrivHelper.existsAction(propsFile))).booleanValue()) {
             FileInputStream fis = null;
             try {
-                fis = (FileInputStream) AccessController.doPrivileged(
+                fis = AccessController.doPrivileged(
                     J2DoPrivHelper.newFileInputStreamAction(propsFile));
             } catch (PrivilegedActionException pae) {
                  throw (FileNotFoundException) pae.getException();
@@ -278,7 +278,7 @@ public class ReverseMappingToolTask
         JDBCConfiguration conf = (JDBCConfiguration) getConfiguration();
         flags.customizer = (ReverseCustomizer) Configurations.
             newInstance(customizerClass, conf, null,
-                (ClassLoader) AccessController.doPrivileged(
+                AccessController.doPrivileged(
                     J2DoPrivHelper.getClassLoaderAction(
                         ReverseCustomizer.class)));
         if (flags.customizer != null)

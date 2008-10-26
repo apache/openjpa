@@ -440,9 +440,10 @@ public class ProxyManagerImpl
                 ProxyBean.class);
             Class pcls = loadBuildTimeProxy(type, l);
             if (pcls == null) {
-                BCClass bc = (BCClass) AccessController
-                    .doPrivileged(new PrivilegedAction() {
-                        public Object run() {
+                // TODO Move this to J2DOPrivHelper? 
+                BCClass bc = AccessController
+                    .doPrivileged(new PrivilegedAction<BCClass>() {
+                        public BCClass run() {
                             return generateProxyBeanBytecode(type, true);
                         }
                     });
@@ -513,7 +514,7 @@ public class ProxyManagerImpl
         boolean runtime) {
         assertNotFinal(type);
         Project project = new Project(); 
-        BCClass bc = (BCClass) AccessController.doPrivileged(J2DoPrivHelper
+        BCClass bc = AccessController.doPrivileged(J2DoPrivHelper
             .loadProjectClassAction(project, getProxyClassName(type, runtime))); 
         bc.setSuperclass(type);
         bc.declareInterface(ProxyCollection.class);
@@ -551,7 +552,7 @@ public class ProxyManagerImpl
     protected BCClass generateProxyMapBytecode(Class type, boolean runtime) {
         assertNotFinal(type);
         Project project = new Project(); 
-        BCClass bc = (BCClass) AccessController.doPrivileged(J2DoPrivHelper
+        BCClass bc = AccessController.doPrivileged(J2DoPrivHelper
             .loadProjectClassAction(project, getProxyClassName(type, runtime))); 
         bc.setSuperclass(type);
         bc.declareInterface(ProxyMap.class);
@@ -571,7 +572,7 @@ public class ProxyManagerImpl
     protected BCClass generateProxyDateBytecode(Class type, boolean runtime) {
         assertNotFinal(type);
         Project project = new Project(); 
-        BCClass bc = (BCClass) AccessController.doPrivileged(J2DoPrivHelper
+        BCClass bc = AccessController.doPrivileged(J2DoPrivHelper
             .loadProjectClassAction(project, getProxyClassName(type, runtime))); 
         bc.setSuperclass(type);
         bc.declareInterface(ProxyDate.class);
@@ -591,7 +592,7 @@ public class ProxyManagerImpl
         boolean runtime) {
         assertNotFinal(type);
         Project project = new Project(); 
-        BCClass bc = (BCClass) AccessController.doPrivileged(J2DoPrivHelper
+        BCClass bc = AccessController.doPrivileged(J2DoPrivHelper
             .loadProjectClassAction(project, getProxyClassName(type, runtime))); 
         bc.setSuperclass(type);
         bc.declareInterface(ProxyCalendar.class);
@@ -626,7 +627,7 @@ public class ProxyManagerImpl
         }
 
         Project project = new Project(); 
-        BCClass bc = (BCClass) AccessController.doPrivileged(J2DoPrivHelper
+        BCClass bc = AccessController.doPrivileged(J2DoPrivHelper
             .loadProjectClassAction(project, getProxyClassName(type, runtime))); 
         bc.setSuperclass(type);
         bc.declareInterface(ProxyBean.class);
@@ -1585,7 +1586,7 @@ public class ProxyManagerImpl
     public static void main(String[] args) 
         throws ClassNotFoundException, IOException {
         File dir = Files.getClassFile(ProxyManagerImpl.class);
-        dir = (dir == null) ? new File((String) AccessController.doPrivileged(
+        dir = (dir == null) ? new File(AccessController.doPrivileged(
             J2DoPrivHelper.getPropertyAction("user.dir")))
             : dir.getParentFile();
 
@@ -1647,9 +1648,10 @@ public class ProxyManagerImpl
                 bc = mgr.generateProxyCalendarBytecode(cls, false);
             else {
                 final Class fCls = cls;
-                bc = (BCClass) AccessController
-                    .doPrivileged(new PrivilegedAction() {
-                        public Object run() {
+                // TODO Move this to J2DOPrivHelper
+                bc = AccessController
+                    .doPrivileged(new PrivilegedAction<BCClass>() {
+                        public BCClass run() {
                             return mgr.generateProxyBeanBytecode(fCls, false);
                         }
                     });

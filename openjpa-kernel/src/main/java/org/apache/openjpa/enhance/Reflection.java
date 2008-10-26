@@ -198,7 +198,7 @@ public class Reflection {
      * @since 0.9.8
      */
     private static Field getDeclaredField(Class cls, String name) {
-        Field[] fields = (Field[]) AccessController.doPrivileged(
+        Field[] fields = AccessController.doPrivileged(
             J2DoPrivHelper.getDeclaredFieldsAction(cls));
         for (int i = 0 ; i < fields.length; i++) {
     	    if (name.equals(fields[i].getName()))

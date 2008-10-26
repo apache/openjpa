@@ -78,10 +78,11 @@ public abstract class AbstractQueryCache
             entityTimestampMap = new ConcurrentHashMap<String,Long>();
         
             // Get all persistence types to pre-load the entityTimestamp Map
-            Collection perTypes = conf.getMetaDataRepositoryInstance().
-            getPersistentTypeNames(false,
-                (ClassLoader) AccessController.doPrivileged(
-                J2DoPrivHelper.getContextClassLoaderAction()));
+            Collection perTypes =
+                conf.getMetaDataRepositoryInstance().getPersistentTypeNames(
+                    false,
+                    AccessController.doPrivileged(J2DoPrivHelper
+                        .getContextClassLoaderAction()));
             
             // Pre-load all the entity types into the HashMap to handle 
             // synchronization on the map efficiently

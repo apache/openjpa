@@ -117,7 +117,7 @@ public class DBDictionaryFactory {
         DBDictionary dict = null;
         try {
             Class c = Class.forName(dclass, true,
-                (ClassLoader) AccessController.doPrivileged(
+                AccessController.doPrivileged(
                     J2DoPrivHelper.getClassLoaderAction(
                         DBDictionary.class)));
             dict = (DBDictionary) AccessController.doPrivileged(

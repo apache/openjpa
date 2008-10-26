@@ -51,7 +51,7 @@ public class ClasspathMetaDataIterator extends MetaDataIteratorChain {
      */
     public ClasspathMetaDataIterator(String[] dirs, MetaDataFilter filter)
         throws IOException {
-        Properties props = (Properties) AccessController.doPrivileged(
+        Properties props = AccessController.doPrivileged(
             J2DoPrivHelper.getPropertiesAction()); 
         String path = props.getProperty("java.class.path");
         String[] tokens = Strings.split(path,
@@ -62,15 +62,15 @@ public class ClasspathMetaDataIterator extends MetaDataIteratorChain {
                 continue;
 
             File file = new File(tokens[i]);
-            if (!((Boolean) AccessController.doPrivileged(
+            if (!(AccessController.doPrivileged(
                 J2DoPrivHelper.existsAction(file))).booleanValue())
                 continue;
-            if (((Boolean) AccessController.doPrivileged(J2DoPrivHelper
+            if ((AccessController.doPrivileged(J2DoPrivHelper
                 .isDirectoryAction(file))).booleanValue())
                 addIterator(new FileMetaDataIterator(file, filter));
             else if (tokens[i].endsWith(".jar")) {
                 try {
-                    ZipFile zFile = (ZipFile) AccessController
+                    ZipFile zFile = AccessController
                         .doPrivileged(J2DoPrivHelper.newZipFileAction(file));
                     addIterator(new ZipFileMetaDataIterator(zFile, filter));
                 } catch (PrivilegedActionException pae) {

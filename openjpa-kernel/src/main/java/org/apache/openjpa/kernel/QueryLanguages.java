@@ -41,7 +41,7 @@ public class QueryLanguages {
         // Load and cache all the query languages available in the system.
         Class[] classes = Services.getImplementorClasses(
             ExpressionParser.class,
-            (ClassLoader) AccessController.doPrivileged(
+            AccessController.doPrivileged(
                 J2DoPrivHelper.getClassLoaderAction(ExpressionParser.class)));
         for (int i = 0; i < classes.length; i++) {
             ExpressionParser ep;

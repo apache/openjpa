@@ -80,9 +80,9 @@ public class XMLFileHandler {
      */
     public Collection load(ClassMetaData meta) {
         File f = getFile(meta);
-        if (!((Boolean) AccessController.doPrivileged(
+        if (!(AccessController.doPrivileged(
             J2DoPrivHelper.existsAction(f))).booleanValue() || 
-            ((Long) AccessController.doPrivileged(
+            (AccessController.doPrivileged(
             J2DoPrivHelper.lengthAction(f))).longValue() == 0)
             return Collections.EMPTY_SET;
         try {
@@ -133,7 +133,7 @@ public class XMLFileHandler {
             throw new InternalException();
 
         File f = getFile(meta);
-        if (!((Boolean) AccessController.doPrivileged(
+        if (!(AccessController.doPrivileged(
             J2DoPrivHelper.existsAction(f.getParentFile()))).booleanValue())
             AccessController.doPrivileged(
                 J2DoPrivHelper.mkdirsAction(f.getParentFile()));

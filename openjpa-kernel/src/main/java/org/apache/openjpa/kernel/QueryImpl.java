@@ -1569,7 +1569,7 @@ public class QueryImpl
 
         // first check the aliases map in the MetaDataRepository
         ClassLoader loader = (_class == null) ? _loader
-            : (ClassLoader) AccessController.doPrivileged(
+            : AccessController.doPrivileged(
                 J2DoPrivHelper.getClassLoaderAction(_class)); 
         ClassMetaData meta = _broker.getConfiguration().
             getMetaDataRepositoryInstance().getMetaData(name, loader, false);

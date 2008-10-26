@@ -173,9 +173,9 @@ public class AnnotationPersistenceXMLMetaDataParser {
     private XMLMetaData parseXMLClassAnnotations() {
         // check immediately whether the class has JAXB XML annotations
         if (_cls == null || xmlTypeClass == null
-            || !(((Boolean) AccessController.doPrivileged(J2DoPriv5Helper
+            || !((AccessController.doPrivileged(J2DoPriv5Helper
                 .isAnnotationPresentAction(_cls, xmlTypeClass))).booleanValue()
-                && ((Boolean) AccessController
+                && (AccessController
                 .doPrivileged(J2DoPriv5Helper.isAnnotationPresentAction(_cls,
                     xmlRootElementClass))).booleanValue()))
             return null;
@@ -225,7 +225,7 @@ public class AnnotationPersistenceXMLMetaDataParser {
         Class superclass = cls.getSuperclass();
 
         // handle inheritance at sub-element level
-        if (((Boolean) AccessController.doPrivileged(J2DoPriv5Helper
+        if ((AccessController.doPrivileged(J2DoPriv5Helper
             .isAnnotationPresentAction(superclass, xmlTypeClass)))
             .booleanValue())
             populateFromReflection(superclass, meta);
@@ -247,7 +247,7 @@ public class AnnotationPersistenceXMLMetaDataParser {
                     // avoid JAXB XML bind default name
                     if (StringUtils.equals(XMLMetaData.defaultName, xmlname))
                         xmlname = member.getName();
-                    if (((Boolean) AccessController.doPrivileged(J2DoPriv5Helper
+                    if ((AccessController.doPrivileged(J2DoPriv5Helper
                         .isAnnotationPresentAction(((Field) member).getType(),
                             xmlTypeClass))).booleanValue()) {
                         field = _repos.addXMLMetaData(((Field) member).getType()

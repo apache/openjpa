@@ -43,7 +43,7 @@ public class TestEnhancementWithMultiplePUs
         OpenJPAConfiguration conf = new OpenJPAConfigurationImpl();
         Configurations.populateConfiguration(conf, new Options());
         MetaDataRepository repos = conf.getMetaDataRepositoryInstance();
-        ClassLoader loader = (ClassLoader) AccessController
+        ClassLoader loader = AccessController
             .doPrivileged(J2DoPrivHelper.newTemporaryClassLoaderAction(
                 getClass().getClassLoader()));
         Project project = new Project();
@@ -76,7 +76,7 @@ public class TestEnhancementWithMultiplePUs
             "META-INF/persistence.xml#second-persistence-unit");
         Configurations.populateConfiguration(conf, opts);
         MetaDataRepository repos = conf.getMetaDataRepositoryInstance();
-        ClassLoader loader = (ClassLoader) AccessController
+        ClassLoader loader = AccessController
             .doPrivileged(J2DoPrivHelper.newTemporaryClassLoaderAction(
                 getClass().getClassLoader()));
         Project project = new Project();
@@ -115,7 +115,7 @@ public class TestEnhancementWithMultiplePUs
         opts.setProperty("p", "META-INF/persistence.xml");
         Configurations.populateConfiguration(conf, opts);
         MetaDataRepository repos = conf.getMetaDataRepositoryInstance();
-        ClassLoader loader = (ClassLoader) AccessController
+        ClassLoader loader = AccessController
             .doPrivileged(J2DoPrivHelper.newTemporaryClassLoaderAction(
                 getClass().getClassLoader()));
         Project project = new Project();

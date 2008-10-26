@@ -95,8 +95,8 @@ public class PersistenceUnitInfoImpl
     }
 
     public ClassLoader getNewTempClassLoader() {
-        return (ClassLoader) AccessController.doPrivileged(J2DoPrivHelper
-            .newTemporaryClassLoaderAction((ClassLoader) AccessController
+        return AccessController.doPrivileged(J2DoPrivHelper
+            .newTemporaryClassLoaderAction(AccessController
                 .doPrivileged(J2DoPrivHelper.getContextClassLoaderAction())));
     }
 
@@ -203,11 +203,11 @@ public class PersistenceUnitInfoImpl
     }
 
     public void addJarFileName(String name) {
-        MultiClassLoader loader = (MultiClassLoader) AccessController
+        MultiClassLoader loader = AccessController
             .doPrivileged(J2DoPrivHelper.newMultiClassLoaderAction());
         loader.addClassLoader(getClass().getClassLoader());
         loader.addClassLoader(MultiClassLoader.THREAD_LOADER);
-        URL url = (URL) AccessController.doPrivileged(
+        URL url = AccessController.doPrivileged(
             J2DoPrivHelper.getResourceAction(loader, name));
         if (url != null) {
             addJarFile(url);
@@ -215,14 +215,14 @@ public class PersistenceUnitInfoImpl
         }
 
         // jar file is not a resource; check classpath
-        String[] cp = ((String) AccessController.doPrivileged(
+        String[] cp = (AccessController.doPrivileged(
             J2DoPrivHelper.getPropertyAction("java.class.path"))) 
             .split(J2DoPrivHelper.getPathSeparator());
         for (int i = 0; i < cp.length; i++) {
             if (cp[i].equals(name)
                 || cp[i].endsWith(File.separatorChar + name)) {
                 try {
-                    addJarFile((URL) AccessController
+                    addJarFile(AccessController
                         .doPrivileged(J2DoPrivHelper
                             .toURLAction(new File(cp[i]))));
                     return;

@@ -467,7 +467,7 @@ public class MappingRepository
         try {
             if (strat == null)
                 strat = JavaTypes.classForName(name, cls,
-                    (ClassLoader) AccessController.doPrivileged(
+                    AccessController.doPrivileged(
                         J2DoPrivHelper.getClassLoaderAction(
                             ClassStrategy.class)));
             ClassStrategy strategy = 
@@ -501,7 +501,7 @@ public class MappingRepository
         name = Configurations.getClassName(name);
         try {
             Class c = JavaTypes.classForName(name, field,
-                (ClassLoader) AccessController.doPrivileged(
+                AccessController.doPrivileged(
                     J2DoPrivHelper.getClassLoaderAction(FieldStrategy.class)));
             if (FieldStrategy.class.isAssignableFrom(c)) {
                 FieldStrategy strat = (FieldStrategy)
@@ -574,7 +574,7 @@ public class MappingRepository
             if (strat == null)
                 strat = JavaTypes.classForName(name,
                     discrim.getClassMapping(),
-                    (ClassLoader) AccessController.doPrivileged(
+                    AccessController.doPrivileged(
                         J2DoPrivHelper.getClassLoaderAction(
                             DiscriminatorStrategy.class)));
             DiscriminatorStrategy strategy = (DiscriminatorStrategy)
@@ -640,7 +640,7 @@ public class MappingRepository
             if (strat == null)
                 strat = JavaTypes.classForName(name,
                     version.getClassMapping(),
-                    (ClassLoader) AccessController.doPrivileged(
+                    AccessController.doPrivileged(
                         J2DoPrivHelper.getClassLoaderAction(
                             VersionStrategy.class)));
         } catch (Exception e) {
@@ -982,7 +982,7 @@ public class MappingRepository
         name = Configurations.getClassName(name);
         try {
             Class c = JavaTypes.classForName(name, val,
-                (ClassLoader) AccessController.doPrivileged(
+                AccessController.doPrivileged(
                     J2DoPrivHelper.getClassLoaderAction(FieldStrategy.class)));
             Object o = AccessController.doPrivileged(
                 J2DoPrivHelper.newInstanceAction(c));
@@ -1009,7 +1009,7 @@ public class MappingRepository
         name = Configurations.getClassName(name);
         try {
             Class c = JavaTypes.classForName(name, val,
-                (ClassLoader) AccessController.doPrivileged(
+                AccessController.doPrivileged(
                     J2DoPrivHelper.getClassLoaderAction(ValueHandler.class)));
             if (ValueHandler.class.isAssignableFrom(c)) {
                 ValueHandler vh = (ValueHandler) AccessController.doPrivileged(

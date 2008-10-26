@@ -1308,7 +1308,7 @@ public class AnnotationPersistenceMappingParser
             
             if (xmlTypeClass != null
                 && StringUtils.isEmpty(pcols[i].columnDefinition())
-                && ((Boolean) AccessController.doPrivileged(J2DoPriv5Helper
+                && (AccessController.doPrivileged(J2DoPriv5Helper
                     .isAnnotationPresentAction(fm.getDeclaredType(),
                         xmlTypeClass))).booleanValue()) {
                 DBDictionary dict = ((MappingRepository) getRepository())

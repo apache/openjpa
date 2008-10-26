@@ -57,7 +57,7 @@ public abstract class AbstractTask extends MatchingTask {
     private static final Localizer _loc = Localizer.forPackage
         (AbstractTask.class);
 
-    protected final List fileSets = new ArrayList();
+    protected final List<FileSet> fileSets = new ArrayList<FileSet>();
     protected boolean haltOnError = true;
     protected Path classpath = null;
     protected boolean useParent = false;
@@ -117,10 +117,10 @@ public abstract class AbstractTask extends MatchingTask {
             return _cl;
 
         if (classpath != null)
-            _cl = new AntClassLoader(project, classpath, useParent);
+            _cl = new AntClassLoader(getProject(), classpath, useParent);
         else
-            _cl = new AntClassLoader(project.getCoreLoader(), project,
-                new Path(project), useParent);
+            _cl = new AntClassLoader(getProject().getCoreLoader(), getProject(),
+                new Path(getProject()), useParent);
         _cl.setIsolated(isolate);
 
         return _cl;
@@ -143,7 +143,7 @@ public abstract class AbstractTask extends MatchingTask {
 
     public Path createClasspath() {
         if (classpath == null)
-            classpath = new Path(project);
+            classpath = new Path(getProject());
         return classpath.createPath();
     }
 
@@ -161,7 +161,7 @@ public abstract class AbstractTask extends MatchingTask {
             _conf = newConfiguration();
         if (_conf.getPropertiesResource() == null) {
             ConfigurationProvider cp = ProductDerivations.loadDefaults
-                ((ClassLoader) AccessController.doPrivileged(
+                (AccessController.doPrivileged(
                     J2DoPrivHelper.getClassLoaderAction(_conf.getClass())));
             if (cp != null)
                 cp.setInto(_conf);
@@ -181,18 +181,17 @@ public abstract class AbstractTask extends MatchingTask {
     }
 
     private String[] getFiles() {
-        List files = new ArrayList();
-        for (Iterator i = fileSets.iterator(); i.hasNext();) {
-            FileSet fs = (FileSet) i.next();
-            DirectoryScanner ds = fs.getDirectoryScanner(project);
+        List<String> files = new ArrayList<String>();
+        for(FileSet fs : fileSets) { 
+            DirectoryScanner ds = fs.getDirectoryScanner(getProject());
 
             String[] dsFiles = ds.getIncludedFiles();
             for (int j = 0; j < dsFiles.length; j++) {
                 File f = new File(dsFiles[j]);
-                if (!((Boolean) AccessController.doPrivileged(J2DoPrivHelper
+                if (!( AccessController.doPrivileged(J2DoPrivHelper
                     .isFileAction(f))).booleanValue())
                     f = new File(ds.getBasedir(), dsFiles[j]);
-                files.add((String) AccessController.doPrivileged(
+                files.add(AccessController.doPrivileged(
                     J2DoPrivHelper.getAbsolutePathAction(f)));
             }
         }

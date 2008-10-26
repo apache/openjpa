@@ -129,7 +129,7 @@ public class Serialization {
 
         protected Class resolveClass(ObjectStreamClass desc) 
             throws IOException, ClassNotFoundException {
-            MultiClassLoader loader = (MultiClassLoader) AccessController
+            MultiClassLoader loader = AccessController
                 .doPrivileged(J2DoPrivHelper.newMultiClassLoaderAction());
             addContextClassLoaders(loader);
             loader.addClassLoader(getClass().getClassLoader());
@@ -138,7 +138,7 @@ public class Serialization {
         }
 
         protected void addContextClassLoaders(MultiClassLoader loader) {
-            loader.addClassLoader((ClassLoader) AccessController.doPrivileged(
+            loader.addClassLoader(AccessController.doPrivileged(
                 J2DoPrivHelper.getContextClassLoaderAction()));
         }
     }

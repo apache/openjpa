@@ -118,7 +118,7 @@ public class PersistenceMetaDataDefaults
         if (member == null)
             return null;
         AnnotatedElement el = (AnnotatedElement) member;
-        if (((Boolean) AccessController.doPrivileged(J2DoPriv5Helper
+        if ((AccessController.doPrivileged(J2DoPriv5Helper
             .isAnnotationPresentAction(el, Transient.class))).booleanValue())
             return TRANSIENT;
         if (fmd != null
@@ -185,7 +185,7 @@ public class PersistenceMetaDataDefaults
         }
 
         //### EJB3: what if defined in XML?
-        if (((Boolean) AccessController.doPrivileged(J2DoPriv5Helper
+        if ((AccessController.doPrivileged(J2DoPriv5Helper
             .isAnnotationPresentAction(type, Embeddable.class))).booleanValue())
             return EMBEDDED;
         if (Serializable.class.isAssignableFrom(type))
@@ -312,7 +312,7 @@ public class PersistenceMetaDataDefaults
         if (member instanceof Method) {
             try {
                 // check for setters for methods
-                Method setter = (Method) AccessController.doPrivileged(
+                Method setter = AccessController.doPrivileged(
                     J2DoPriv5Helper.getDeclaredMethodAction(
                         meta.getDescribedType(), "set" +
                         StringUtils.capitalize(name), new Class[] { 
@@ -337,7 +337,7 @@ public class PersistenceMetaDataDefaults
 
     private boolean isAnnotatedTransient(Member member) {
         return member instanceof AnnotatedElement
-            && ((Boolean) AccessController.doPrivileged(J2DoPriv5Helper
+            && (AccessController.doPrivileged(J2DoPriv5Helper
                 .isAnnotationPresentAction(((AnnotatedElement) member),
                     Transient.class))).booleanValue();
     }

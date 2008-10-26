@@ -1198,7 +1198,7 @@ public class AnnotationPersistenceMetaDataSerializer
 
     public void serialize(File file, int flags) throws IOException {
         try {
-            FileWriter out = new FileWriter((String) AccessController
+            FileWriter out = new FileWriter(AccessController
                 .doPrivileged(J2DoPrivHelper.getCanonicalPathAction(file)),
                 (flags & APPEND) > 0);
             serialize(out, flags);

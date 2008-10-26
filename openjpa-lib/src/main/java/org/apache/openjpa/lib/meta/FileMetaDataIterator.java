@@ -113,7 +113,7 @@ public class FileMetaDataIterator implements MetaDataIterator {
 
         _file = (File) _itr.next();
         try {
-            File f = (File) AccessController.doPrivileged(J2DoPrivHelper
+            File f = AccessController.doPrivileged(J2DoPrivHelper
                 .getAbsoluteFileAction(_file));
             return AccessController.doPrivileged(
                 J2DoPrivHelper.toURLAction(f));
@@ -127,7 +127,7 @@ public class FileMetaDataIterator implements MetaDataIterator {
             throw new IllegalStateException();
         FileInputStream fis = null;
         try {
-            fis = (FileInputStream) AccessController.doPrivileged(
+            fis = AccessController.doPrivileged(
                 J2DoPrivHelper.newFileInputStreamAction(_file));
             return fis;
         } catch (PrivilegedActionException pae) {
@@ -157,11 +157,11 @@ public class FileMetaDataIterator implements MetaDataIterator {
         }
 
         public byte[] getContent() throws IOException {
-            long len = ((Long) AccessController.doPrivileged(
+            long len = (AccessController.doPrivileged(
                 J2DoPrivHelper.lengthAction(_file))).longValue();
             FileInputStream fin = null;
             try {
-                fin = (FileInputStream) AccessController.doPrivileged(
+                fin = AccessController.doPrivileged(
                     J2DoPrivHelper.newFileInputStreamAction(_file));
             } catch (PrivilegedActionException pae) {
                  throw (FileNotFoundException) pae.getException();

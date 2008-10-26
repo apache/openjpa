@@ -138,7 +138,7 @@ public abstract class XMLMetaDataSerializer implements MetaDataSerializer {
         File backup = Files.backup(file, false);
         if (backup == null) {
             File parent = file.getParentFile();
-            if (parent != null && !((Boolean) AccessController.doPrivileged(
+            if (parent != null && !(AccessController.doPrivileged(
                 J2DoPrivHelper.existsAction(parent))).booleanValue())
                 AccessController.doPrivileged(
                     J2DoPrivHelper.mkdirsAction(parent));
@@ -198,7 +198,7 @@ public abstract class XMLMetaDataSerializer implements MetaDataSerializer {
         _backup = prepareWrite(file);
         try {
             FileWriter out = new FileWriter(
-                (String) AccessController.doPrivileged(
+                AccessController.doPrivileged(
                     J2DoPrivHelper.getCanonicalPathAction(file)),
                 (flags & APPEND) > 0);
             serialize(out, flags);

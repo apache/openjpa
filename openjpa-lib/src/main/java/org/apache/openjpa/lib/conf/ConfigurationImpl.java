@@ -165,9 +165,9 @@ public class ConfigurationImpl
      * {@link ProductDerivation}s, and from System properties.
      */
     public boolean loadGlobals() {
-        MultiClassLoader loader = (MultiClassLoader) AccessController
+        MultiClassLoader loader = AccessController
             .doPrivileged(J2DoPrivHelper.newMultiClassLoaderAction()); 
-        loader.addClassLoader((ClassLoader) AccessController.doPrivileged(
+        loader.addClassLoader(AccessController.doPrivileged(
             J2DoPrivHelper.getContextClassLoaderAction()));
         loader.addClassLoader(getClass().getClassLoader());
         ConfigurationProvider provider = ProductDerivations.loadGlobals(loader);
@@ -177,7 +177,7 @@ public class ConfigurationImpl
         // let system properties override other globals
         try {
             fromProperties(new HashMap(
-                (Properties) AccessController.doPrivileged(
+                AccessController.doPrivileged(
                     J2DoPrivHelper.getPropertiesAction())));
         } catch (SecurityException se) {
             // security manager might disallow

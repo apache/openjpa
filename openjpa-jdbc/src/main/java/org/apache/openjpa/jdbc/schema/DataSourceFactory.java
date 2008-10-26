@@ -114,7 +114,7 @@ public class DataSourceFactory {
             // see if their driver name is actually a data source
             if (DataSource.class.isAssignableFrom(driverClass)) {
                 return (DataSource) Configurations.newInstance(driver,
-                    conf, props, (ClassLoader) AccessController.doPrivileged(
+                    conf, props, AccessController.doPrivileged(
                         J2DoPrivHelper.getClassLoaderAction(
                             DataSource.class))); 
             }

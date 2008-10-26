@@ -88,12 +88,12 @@ public class Services {
     public static String[] getImplementors(String serviceName,
         ClassLoader loader) {
         if (loader == null)
-            loader = (ClassLoader) AccessController.doPrivileged(
+            loader = AccessController.doPrivileged(
                 J2DoPrivHelper.getContextClassLoaderAction());
 
         try {
             Set resourceList = new TreeSet();
-            Enumeration resources = (Enumeration) AccessController.doPrivileged(
+            Enumeration resources = AccessController.doPrivileged(
                 J2DoPrivHelper.getResourcesAction(loader, PREFIX + serviceName)); 
             while (resources.hasMoreElements())
                 addResources((URL) resources.nextElement(), resourceList);
@@ -205,7 +205,7 @@ public class Services {
     public static Class[] getImplementorClasses(String serviceName,
         ClassLoader loader, boolean skipMissing) throws ClassNotFoundException {
         if (loader == null)
-            loader = (ClassLoader) AccessController.doPrivileged(
+            loader = AccessController.doPrivileged(
                 J2DoPrivHelper.getContextClassLoaderAction());
 
         String[] names = getImplementors(serviceName, loader);

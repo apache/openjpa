@@ -1370,7 +1370,7 @@ public class ApplicationIdTool {
         ApplicationIdTool tool;
         Class cls;
         ClassMetaData meta;
-        BCClassLoader bc = (BCClassLoader) AccessController
+        BCClassLoader bc = AccessController
             .doPrivileged(J2DoPrivHelper.newBCClassLoaderAction(new Project()));
         for (Iterator itr = classes.iterator(); itr.hasNext();) {
             cls = (Class) itr.next();
@@ -1424,10 +1424,10 @@ public class ApplicationIdTool {
             name = Strings.getPackageName(context) + "." + name;
 
         // first try with regular class loader
-        ClassLoader loader = (ClassLoader) AccessController.doPrivileged(
+        ClassLoader loader = AccessController.doPrivileged(
             J2DoPrivHelper.getClassLoaderAction(context)); 
         if (loader == null)
-            loader = (ClassLoader) AccessController.doPrivileged(
+            loader = AccessController.doPrivileged(
                 J2DoPrivHelper.getContextClassLoaderAction()); 
         try {
             return Class.forName(name, false, loader);

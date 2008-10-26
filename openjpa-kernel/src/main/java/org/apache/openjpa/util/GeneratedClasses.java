@@ -39,9 +39,9 @@ public class GeneratedClasses {
      * classes.
      */
     public static ClassLoader getMostDerivedLoader(Class c1, Class c2) {
-        ClassLoader l1 = (ClassLoader) AccessController.doPrivileged(
+        ClassLoader l1 = AccessController.doPrivileged(
             J2DoPrivHelper.getClassLoaderAction(c1));
-        ClassLoader l2 = (ClassLoader) AccessController.doPrivileged(
+        ClassLoader l2 = AccessController.doPrivileged(
             J2DoPrivHelper.getClassLoaderAction(c2));
         if (l1 == l2)
             return l1;
@@ -60,7 +60,7 @@ public class GeneratedClasses {
      * Load the class represented by the given bytecode.
      */
     public static Class loadBCClass(BCClass bc, ClassLoader loader) {
-        BCClassLoader bcloader = (BCClassLoader) AccessController
+        BCClassLoader bcloader = AccessController
                 .doPrivileged(J2DoPrivHelper.newBCClassLoaderAction(bc
                         .getProject(), loader));
         try {

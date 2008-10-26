@@ -255,7 +255,7 @@ public class SequenceMetaData
             String clsName = plugin.getClassName();
 
             Class cls = Class.forName(clsName, true,
-                (ClassLoader) AccessController.doPrivileged(
+                AccessController.doPrivileged(
                     J2DoPrivHelper.getClassLoaderAction(Seq.class)));
             StringBuffer props = new StringBuffer();
             if (plugin.getProperties() != null)

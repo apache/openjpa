@@ -179,7 +179,7 @@ public class ReverseMappingTool
     private final Log _log;
     private final Map _tables = new HashMap();
     private final Project _project = new Project();
-    private final BCClassLoader _loader = (BCClassLoader) AccessController
+    private final BCClassLoader _loader = AccessController
         .doPrivileged(J2DoPrivHelper.newBCClassLoaderAction(_project));
     private StrategyInstaller _strat = null;
     private String _package = null;
@@ -1899,11 +1899,11 @@ public class ReverseMappingTool
         File customFile = Files.getFile
             (opts.removeProperty("customizerProperties", "cp", null), null);
         Properties customProps = new Properties();
-        if (customFile != null && ((Boolean) AccessController.doPrivileged(
+        if (customFile != null && (AccessController.doPrivileged(
             J2DoPrivHelper.existsAction(customFile))).booleanValue()) {
             FileInputStream fis = null;
             try {
-                fis = (FileInputStream) AccessController.doPrivileged(
+                fis = AccessController.doPrivileged(
                     J2DoPrivHelper.newFileInputStreamAction(customFile));
             } catch (PrivilegedActionException pae) {
                  throw (FileNotFoundException) pae.getException();

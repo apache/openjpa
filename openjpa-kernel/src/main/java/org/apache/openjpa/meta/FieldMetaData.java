@@ -2087,12 +2087,12 @@ public class FieldMetaData
             String memberName = (String) in.readObject();
             try {
                 if (isField)
-                    _member = (Field) AccessController.doPrivileged(
+                    _member = AccessController.doPrivileged(
                         J2DoPrivHelper.getDeclaredFieldAction(
                             cls, memberName)); 
                 else {
                     Class[] parameterTypes = (Class[]) in.readObject();
-                    _member = (Method) AccessController.doPrivileged(
+                    _member = AccessController.doPrivileged(
                         J2DoPrivHelper.getDeclaredMethodAction(
                             cls, memberName, parameterTypes));
                 }

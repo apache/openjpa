@@ -238,7 +238,7 @@ public class TCPRemoteCommitProvider
                     hostname = host;
                     tmpPort = DEFAULT_PORT;
                 }
-                InetAddress tmpAddress = (InetAddress) AccessController
+                InetAddress tmpAddress = AccessController
                     .doPrivileged(J2DoPrivHelper.getByNameAction(hostname)); 
 
                 // bleair: For each address we would rather make use of
@@ -505,7 +505,7 @@ public class TCPRemoteCommitProvider
             _port = port;
             _log = log;
             try {
-                _receiveSocket = (ServerSocket) AccessController
+                _receiveSocket = AccessController
                     .doPrivileged(J2DoPrivHelper.newServerSocketAction(_port));
             } catch (PrivilegedActionException pae) {
                 throw (IOException) pae.getException();
@@ -576,7 +576,7 @@ public class TCPRemoteCommitProvider
                 try {
                     s = null;
                     // Block, waiting to accept new connection from a peer
-                    s = (Socket) AccessController.doPrivileged(J2DoPrivHelper
+                    s = AccessController.doPrivileged(J2DoPrivHelper
                         .acceptAction(_receiveSocket));
                     if (_log.isTraceEnabled()) {
                         _log.trace(s_loc.get("tcp-received-connection",
@@ -770,12 +770,12 @@ public class TCPRemoteCommitProvider
             int colon = host.indexOf(':');
             try {
                 if (colon != -1) {
-                    _address = (InetAddress) AccessController
+                    _address = AccessController
                         .doPrivileged(J2DoPrivHelper.getByNameAction(host
                             .substring(0, colon)));
                     _port = Integer.parseInt(host.substring(colon + 1));
                 } else {
-                    _address = (InetAddress) AccessController
+                    _address = AccessController
                         .doPrivileged(J2DoPrivHelper.getByNameAction(host));
                     _port = DEFAULT_PORT;
                 }
@@ -905,7 +905,7 @@ public class TCPRemoteCommitProvider
             public Object makeObject()
                 throws IOException {
                 try {
-                    Socket s = (Socket) AccessController
+                    Socket s = AccessController
                         .doPrivileged(J2DoPrivHelper.newSocketAction(_address,
                             _port));
                     if (log.isTraceEnabled()) {

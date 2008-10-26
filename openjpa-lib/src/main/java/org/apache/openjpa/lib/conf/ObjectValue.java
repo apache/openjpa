@@ -98,10 +98,10 @@ public class ObjectValue extends Value {
             boolean fatal) {
         ClassLoader cl = (ClassLoader) _classloaderCache.get(type);
         if (cl == null) {
-            cl = (ClassLoader) AccessController.doPrivileged(
+            cl = AccessController.doPrivileged(
                 J2DoPrivHelper.getClassLoaderAction(type));
             if (cl == null) {  // System classloader is returned as null
-                cl = (ClassLoader) AccessController.doPrivileged(
+                cl = AccessController.doPrivileged(
                     J2DoPrivHelper.getSystemClassLoaderAction()); 
             }
             _classloaderCache.put(type, cl);

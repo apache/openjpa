@@ -77,12 +77,12 @@ class InterfaceImplGenerator {
         if (impl != null)
             return impl;
 
-        ClassLoader parentLoader = (ClassLoader) AccessController.doPrivileged(
+        ClassLoader parentLoader = AccessController.doPrivileged(
             J2DoPrivHelper.getClassLoaderAction(iface)); 
-        BCClassLoader loader = (BCClassLoader) AccessController
+        BCClassLoader loader = AccessController
             .doPrivileged(J2DoPrivHelper.newBCClassLoaderAction(_project,
                 parentLoader));
-        BCClassLoader enhLoader = (BCClassLoader) AccessController
+        BCClassLoader enhLoader = AccessController
             .doPrivileged(J2DoPrivHelper.newBCClassLoaderAction(_enhProject,
                 parentLoader));
         BCClass bc = _project.loadClass(getClassName(meta));
@@ -90,9 +90,9 @@ class InterfaceImplGenerator {
         ClassMetaData sup = meta.getPCSuperclassMetaData();
         if (sup != null) {
             bc.setSuperclass(sup.getInterfaceImpl());
-            enhLoader = (BCClassLoader) AccessController
+            enhLoader = AccessController
                 .doPrivileged(J2DoPrivHelper.newBCClassLoaderAction(
-                    _enhProject, (ClassLoader) AccessController
+                    _enhProject, AccessController
                         .doPrivileged(J2DoPrivHelper.getClassLoaderAction(sup
                             .getInterfaceImpl()))));
         }
@@ -209,7 +209,7 @@ class InterfaceImplGenerator {
      */
     private static Method getMethodSafe(Class iface, String name, Class arg) {
         try {
-            return (Method) AccessController.doPrivileged(
+            return AccessController.doPrivileged(
                 J2DoPrivHelper.getDeclaredMethodAction(
                     iface, name, arg == null ? null : new Class[]{arg}));
         } catch (PrivilegedActionException pae) {
@@ -221,7 +221,7 @@ class InterfaceImplGenerator {
         if (fmd.getType() != boolean.class && fmd.getType() != Boolean.class)
             return true;
         try {
-            Method meth = (Method) AccessController.doPrivileged(
+            Method meth = AccessController.doPrivileged(
                 J2DoPrivHelper.getDeclaredMethodAction(iface, "is" +
                     StringUtils.capitalize(fmd.getName()), (Class[]) null));
             return meth == null;

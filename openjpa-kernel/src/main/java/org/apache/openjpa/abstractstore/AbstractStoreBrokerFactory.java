@@ -133,10 +133,10 @@ public class AbstractStoreBrokerFactory
 
     private static AbstractStoreManager createStoreManager(String cls,
         String props) {
-        AbstractStoreManager store = (AbstractStoreManager) Configurations.
-            newInstance(cls, (ClassLoader) AccessController.doPrivileged(
-                J2DoPrivHelper.getClassLoaderAction(
-                    AbstractStoreManager.class))); 
+        AbstractStoreManager store =
+            (AbstractStoreManager) Configurations.newInstance(cls,
+                AccessController.doPrivileged(J2DoPrivHelper
+                    .getClassLoaderAction(AbstractStoreManager.class))); 
         Configurations.configureInstance(store, null, props,
             PROP_ABSTRACT_STORE);
         if (store == null)

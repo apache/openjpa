@@ -116,7 +116,7 @@ public class Bootstrap {
             // handle cases where there is a mismatch between loaders by falling
             // back to the configuration's class loader for broker resolution
             cls = getFactoryClass(conf,
-                (ClassLoader) AccessController.doPrivileged(
+                AccessController.doPrivileged(
                     J2DoPrivHelper.getClassLoaderAction(conf.getClass()))); 
             meth = cls.getMethod(methodName, FACTORY_ARGS); 
         }
@@ -139,7 +139,7 @@ public class Bootstrap {
     private static Class getFactoryClass(ConfigurationProvider conf,
         ClassLoader loader) {
         if (loader == null)
-            loader = (ClassLoader) AccessController.doPrivileged(
+            loader = AccessController.doPrivileged(
                 J2DoPrivHelper.getContextClassLoaderAction()); 
 
         Object cls = BrokerFactoryValue.get(conf);

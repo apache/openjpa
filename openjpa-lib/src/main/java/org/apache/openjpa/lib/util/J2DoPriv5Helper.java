@@ -18,6 +18,7 @@
  */
 package org.apache.openjpa.lib.util;
 
+import java.lang.annotation.Annotation;
 import java.lang.reflect.AnnotatedElement;
 import java.security.PrivilegedAction;
 
@@ -44,10 +45,10 @@ public abstract class J2DoPriv5Helper extends J2DoPrivHelper {
      *
      * @return Annotation[]
      */
-    public static final PrivilegedAction getAnnotationsAction(
+    public static final PrivilegedAction<Annotation []> getAnnotationsAction(
         final AnnotatedElement element) {
-        return new PrivilegedAction() {
-            public Object run() {
+        return new PrivilegedAction<Annotation []>() {
+            public Annotation [] run() {
                 return element.getAnnotations();
             }
         };
@@ -62,10 +63,11 @@ public abstract class J2DoPriv5Helper extends J2DoPrivHelper {
      *
      * @return Annotation[]
      */
-    public static final PrivilegedAction getDeclaredAnnotationsAction(
+    public static final PrivilegedAction<Annotation []> 
+        getDeclaredAnnotationsAction(
         final AnnotatedElement element) {
-        return new PrivilegedAction() {
-            public Object run() {
+        return new PrivilegedAction<Annotation[]>() {
+            public Annotation [] run() {
                 return element.getDeclaredAnnotations();
             }
         };
@@ -80,10 +82,11 @@ public abstract class J2DoPriv5Helper extends J2DoPrivHelper {
      *
      * @return Boolean
      */
-    public static final PrivilegedAction isAnnotationPresentAction(
-        final AnnotatedElement element, final Class annotationClazz) {
-        return new PrivilegedAction() {
-            public Object run() {
+    public static final PrivilegedAction<Boolean> isAnnotationPresentAction(
+        final AnnotatedElement element,
+        final Class<? extends Annotation> annotationClazz) {
+        return new PrivilegedAction<Boolean>() {
+            public Boolean run() {
                 return element.isAnnotationPresent(annotationClazz)
                     ? Boolean.TRUE : Boolean.FALSE;
             }

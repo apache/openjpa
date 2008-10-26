@@ -49,7 +49,7 @@ public class SourceTrackers {
         for (int i = 0; i < trackers.length; i++) {
             sourceFilePath = (trackers[i].getSourceFile() == null ?
                 _loc.get("source-tracker-file-unknown").getMessage() :
-                (String) AccessController.doPrivileged(
+                AccessController.doPrivileged(
                     J2DoPrivHelper.getAbsolutePathAction(
                         trackers[i].getSourceFile())));
             buf.append("  ").append(_loc.get(

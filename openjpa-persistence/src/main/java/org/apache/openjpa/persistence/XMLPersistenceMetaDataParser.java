@@ -1105,13 +1105,13 @@ public class XMLPersistenceMetaDataParser
                     String cap = StringUtils.capitalize(name);
                     type = meta.getDescribedType();
                     try {
-                        member = (Method) AccessController.doPrivileged(
+                        member = AccessController.doPrivileged(
                             J2DoPrivHelper.getDeclaredMethodAction(
                                 type, "get" + cap,
                                 (Class[]) null));// varargs disambiguate
                     } catch (Exception excep) {
                         try {
-                            member = (Method) AccessController.doPrivileged(
+                            member = AccessController.doPrivileged(
                                 J2DoPrivHelper.getDeclaredMethodAction(
                                     type, "is" + cap, (Class[]) null));
                         } catch (Exception excep2) {
@@ -1120,7 +1120,7 @@ public class XMLPersistenceMetaDataParser
                     }
                     type = ((Method) member).getReturnType();
                 } else {
-                    member = (Field) AccessController.doPrivileged(
+                    member = AccessController.doPrivileged(
                         J2DoPrivHelper.getDeclaredFieldAction(
                             meta.getDescribedType(), name));
                     type = ((Field) member).getType();

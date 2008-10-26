@@ -46,7 +46,7 @@ public class JavaVersions {
     private static Method INIT_CAUSE = null;
 
     static {
-        String specVersion = (String) AccessController.doPrivileged(
+        String specVersion = AccessController.doPrivileged(
             J2DoPrivHelper.getPropertyAction("java.specification.version")); 
         if ("1.2".equals(specVersion))
             VERSION = 2;

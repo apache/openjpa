@@ -198,7 +198,7 @@ public abstract class AbstractMetaDataDefaults
             FieldMetaData fmd;
             for (int i = 0; i < fieldNames.length; i ++) {
                 if (meta.getAccessType() == ClassMetaData.ACCESS_FIELD)
-                    member = (Field) AccessController.doPrivileged(
+                    member = AccessController.doPrivileged(
                         J2DoPrivHelper.getDeclaredFieldAction(
                             cls,fieldNames[i])); 
                 else
@@ -362,7 +362,7 @@ public abstract class AbstractMetaDataDefaults
             //### where the superclass uses a different access type
             if (fmd.getDefiningMetaData().getAccessType() ==
                 ClassMetaData.ACCESS_FIELD)
-                return (Field) AccessController.doPrivileged(
+                return AccessController.doPrivileged(
                     J2DoPrivHelper.getDeclaredFieldAction(
                         fmd.getDeclaringType(), fmd.getName())); 
             return Reflection.findGetter(fmd.getDeclaringType(), fmd.getName(),

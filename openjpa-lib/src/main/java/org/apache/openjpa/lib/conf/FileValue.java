@@ -60,7 +60,7 @@ public class FileValue extends Value {
     }
 
     protected String getInternalString() {
-        return (value == null) ? null : (String) AccessController.doPrivileged(
+        return (value == null) ? null : AccessController.doPrivileged(
             J2DoPrivHelper.getAbsolutePathAction(value));
     }
 
