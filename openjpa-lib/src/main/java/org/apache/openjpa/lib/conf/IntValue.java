@@ -33,7 +33,7 @@ public class IntValue extends Value {
         super(prop);
     }
 
-    public Class getValueType() {
+    public Class<Integer> getValueType() {
         return int.class;
     }
 

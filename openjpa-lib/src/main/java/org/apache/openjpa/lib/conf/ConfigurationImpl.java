@@ -115,7 +115,7 @@ public class ConfigurationImpl
     private Map _props = null;
     private boolean _globals = false;
     private String _auto = null;
-    private final List _vals = new ArrayList();
+    private final List<Value> _vals = new ArrayList<Value>();
 
     // property listener helper
     private PropertyChangeSupport _changeSupport = null;
@@ -248,9 +248,7 @@ public class ConfigurationImpl
 
         // search backwards so that custom values added after construction
         // are found quickly, since this will be the std way of accessing them
-        Value val;
-        for (int i = _vals.size() - 1; i >= 0; i--) {
-            val = (Value) _vals.get(i);
+        for(Value val : _vals) { 
             if (val.getProperty().equals(property))
                 return val;
         }
@@ -266,12 +264,10 @@ public class ConfigurationImpl
     public void instantiateAll() {
         StringWriter errs = null;
         PrintWriter stack = null;
-        Value val;
         String getterName;
         Method getter;
         Object getterTarget;
-        for (int i = 0; i < _vals.size(); i++) {
-            val = (Value) _vals.get(i);
+        for(Value val : _vals) { 
             getterName = val.getInstantiatingGetter();
             if (getterName == null)
                 continue;
@@ -347,17 +343,17 @@ public class ConfigurationImpl
         preClose();
         
         ObjectValue val;
-        for (int i = 0; i < _vals.size(); i++) {
-            if (_vals.get(i) instanceof Closeable) {
-                try { ((Closeable) _vals.get(i)).close(); }
+        for(Value v : _vals) { 
+            if (v instanceof Closeable) {
+                try { ((Closeable)v).close(); }
                 catch (Exception e) {} 
                 continue;
             }
 
-            if (!(_vals.get(i) instanceof ObjectValue))
+            if (!(v  instanceof ObjectValue))
                 continue;
 
-            val = (ObjectValue) _vals.get(i);
+            val = (ObjectValue) v;
             if (val.get() instanceof Closeable) {
                 try {
                     ((Closeable) val.get()).close();
@@ -410,7 +406,7 @@ public class ConfigurationImpl
             return _mds;
 
         PropertyDescriptor[] pds = getPropertyDescriptors();
-        List descs = new ArrayList(); 
+        List<MethodDescriptor> descs = new ArrayList<MethodDescriptor>(); 
         for (int i = 0; i < pds.length; i++) {
             Method write = pds[i].getWriteMethod();
             Method read = pds[i].getReadMethod();
@@ -429,7 +425,8 @@ public class ConfigurationImpl
             return _pds;
 
         _pds = new PropertyDescriptor[_vals.size()];
-        List failures = null;
+        
+        List<String> failures = null;
         Value val;
         for (int i = 0; i < _vals.size(); i++) {
             val = (Value) _vals.get(i);
@@ -437,11 +434,11 @@ public class ConfigurationImpl
                 _pds[i] = getPropertyDescriptor(val);
             } catch (MissingResourceException mre) {
                 if (failures == null)
-                    failures = new ArrayList();
+                    failures = new ArrayList<String>();
                 failures.add(val.getProperty());
             } catch (IntrospectionException ie) {
                 if (failures == null)
-                    failures = new ArrayList();
+                    failures = new ArrayList<String>();
                 failures.add(val.getProperty());
             }
         }
@@ -506,8 +503,8 @@ public class ConfigurationImpl
 
         // collect allowed values from alias keys, listed values, and
         // interface implementors
-        Collection allowed = new TreeSet();
-        List aliases = Collections.EMPTY_LIST;
+        Collection<String> allowed = new TreeSet<String>();
+        List<String> aliases = Collections.emptyList();
         if (val.getAliases() != null) {
             aliases = Arrays.asList(val.getAliases());
             for (int i = 0; i < aliases.size(); i += 2)
@@ -519,7 +516,7 @@ public class ConfigurationImpl
             if (!aliases.contains(vals[i]))
                 allowed.add(vals[i]);
         try {
-            Class intf = Class.forName(findLocalized(prop
+            Class<?> intf = Class.forName(findLocalized(prop
                 + "-interface", true, val.getScope()), false,
                 getClass().getClassLoader());
             pd.setValue(ATTRIBUTE_INTERFACE, intf.getName());
@@ -539,7 +536,8 @@ public class ConfigurationImpl
     /**
      * Find the given localized string, or return null if not found.
      */
-    private String findLocalized(String key, boolean fatal, Class scope) {
+    @SuppressWarnings("unchecked")
+    private String findLocalized(String key, boolean fatal, Class<?> scope) {
         // find the localizer package that contains this key
         Localizer loc = null;
 
@@ -586,12 +584,10 @@ public class ConfigurationImpl
         // if no existing properties or the properties should contain entries
         // with default values, add values to properties
         if (_props == null || storeDefaults) {
-            Value val;
             String str;
-            for (int i = 0; i < _vals.size(); i++) {
+            for(Value val : _vals) { 
                 // if key in existing properties, we already know value is up
                 // to date
-                val = (Value) _vals.get(i);
                 if (_props != null && Configurations.containsProperty
                     (val.getProperty(), _props))
                     continue;
@@ -632,10 +628,8 @@ public class ConfigurationImpl
 
         Map remaining = new HashMap(map);
         boolean ser = true;
-        Value val;
         Object o;
-        for (int i = 0; i < _vals.size(); i++) {
-            val = (Value) _vals.get(i);
+        for(Value val : _vals) {
             o = get(map, val, true);
             if (o == null)
                 continue;
@@ -719,12 +713,13 @@ public class ConfigurationImpl
     /**
      * Return a comprehensive list of recognized map keys.
      */
-    private Collection newPropertyList() {
+    // TODO MDD checkme
+    private Collection<String> newPropertyList() {
         String[] prefixes = ProductDerivations.getConfigurationPrefixes();
-        List l = new ArrayList(_vals.size() * prefixes.length);
-        for (int i = 0; i < _vals.size(); i++) {
+        List<String> l = new ArrayList<String>(_vals.size() * prefixes.length);
+        for(Value v : _vals) { 
             for (int j = 0; j < prefixes.length; j++)
-                l.add(prefixes[j] + "." + ((Value) _vals.get(i)).getProperty());
+                l.add(prefixes[j] + "." + v.getProperty());
         }
         return l;
     }
@@ -804,9 +799,7 @@ public class ConfigurationImpl
         ConfigurationImpl conf = (ConfigurationImpl) other;
         if (_vals.size() != conf.getValues().length)
         	return false;
-        Iterator values = _vals.iterator();
-        while (values.hasNext()) {
-        	Value v = (Value)values.next();
+        for(Value v : _vals) { 
         	Value thatV = conf.getValue(v.getProperty());
         	if (!v.equals(thatV)) {
         		return false;
@@ -821,10 +814,8 @@ public class ConfigurationImpl
      * {@link Value#isDynamic() dynamic}.  
      */
     public int hashCode() {
-        Iterator values = _vals.iterator();
         int hash = 0;
-        while (values.hasNext()) {
-        	Value v = (Value)values.next();
+        for(Value v : _vals) { 
         	hash += v.hashCode();
         }
         return hash;
@@ -871,6 +862,7 @@ public class ConfigurationImpl
      * Implementation of the {@link Externalizable} interface to read from
      * the properties written by {@link #writeExternal}.
      */
+    @SuppressWarnings("unchecked")
     public void readExternal(ObjectInput in)
         throws IOException, ClassNotFoundException {
         fromProperties((Map) in.readObject());

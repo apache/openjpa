@@ -33,7 +33,7 @@ public class StringValue extends Value {
         super(prop);
     }
 
-    public Class getValueType() {
+    public Class<String> getValueType() {
         return String.class;
     }
 

@@ -98,7 +98,7 @@ public class PluginValue extends ObjectValue {
     /**
      * Instantiate the plugin as an instance of the given class.
      */
-    public Object instantiate(Class type, Configuration conf, boolean fatal) {
+    public Object instantiate(Class<?> type, Configuration conf, boolean fatal) {
         Object obj = newInstance(_name, type, conf, fatal);
         Configurations.configureInstance(obj, conf, _props,
             (fatal) ? getProperty() : null);
@@ -128,7 +128,7 @@ public class PluginValue extends ObjectValue {
         valueChanged();
     }
 
-    public Class getValueType() {
+    public Class<Object> getValueType() {
         return Object.class;
     }
 

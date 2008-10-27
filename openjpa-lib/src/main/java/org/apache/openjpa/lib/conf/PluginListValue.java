@@ -81,7 +81,7 @@ public class PluginListValue extends ObjectValue {
     /**
      * Instantiate the plugins as instances of the given class.
      */
-    public Object instantiate(Class elemType, Configuration conf,
+    public Object instantiate(Class<?> elemType, Configuration conf,
         boolean fatal) {
         Object[] ret;
         if (_names.length == 0)
@@ -135,7 +135,7 @@ public class PluginListValue extends ObjectValue {
 
         // split up the string; each element might be a class name, or a
         // class name with properties settings
-        List plugins = new ArrayList();
+        List<String> plugins = new ArrayList<String>();
         StringBuffer plugin = new StringBuffer();
         boolean inParen = false;
         char c;
@@ -166,24 +166,23 @@ public class PluginListValue extends ObjectValue {
             plugins.add(plugin.toString());
 
         // parse each plugin element into its name and properties
-        List names = new ArrayList();
-        List props = new ArrayList();
+        List<String> names = new ArrayList<String>();
+        List<String> props = new ArrayList<String>();
         String clsName;
-        for (int i = 0; i < plugins.size(); i++) {
-            str = (String) plugins.get(i);
-            clsName = unalias(Configurations.getClassName(str));
+        for(String s : plugins) { 
+            clsName = unalias(Configurations.getClassName(s));
             if (clsName != null) {
                 names.add(clsName);
-                props.add(Configurations.getProperties(str));
+                props.add(Configurations.getProperties(s));
             }
         }
-        _names = (String[]) names.toArray(new String[names.size()]);
-        _props = (String[]) props.toArray(new String[props.size()]);
+        _names =  names.toArray(new String[names.size()]);
+        _props = props.toArray(new String[props.size()]);
         set(null, true);
         valueChanged();
     }
 
-    public Class getValueType() {
+    public Class<Object []> getValueType() {
         return Object[].class;
     }
 

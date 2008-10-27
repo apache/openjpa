@@ -35,7 +35,7 @@ public class TestAnchorParsing extends TestCase {
         String fqLoc = "META-INF/persistence.xml#test";
         Options opts = new Options();
         opts.setProperty("p", fqLoc);
-        List locs =
+        List<String> locs =
             Configurations.getFullyQualifiedAnchorsInPropertiesLocation(opts);
         assertNotNull(locs);
         assertEquals(1, locs.size());
@@ -54,7 +54,7 @@ public class TestAnchorParsing extends TestCase {
         Options opts = new Options();
         if (resource != null)
             opts.setProperty("p", resource);
-        List locs =
+        List<String> locs =
             Configurations.getFullyQualifiedAnchorsInPropertiesLocation(opts);
         assertNotNull(locs);
         // approximate so that if someone adds more units, this doesn't break

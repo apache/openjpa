@@ -256,11 +256,11 @@ public class Options extends TypedProperties {
      * @return The available option names in <code>type</code>. The
      * names will have initial caps. They will be ordered alphabetically.
      */
-    public static Collection findOptionsFor(Class type) {
-        Collection names = new TreeSet();
+    public static Collection<String> findOptionsFor(Class<?> type) {
+        Collection<String> names = new TreeSet<String>();
         // look for a setter method matching the key
         Method[] meths = type.getMethods();
-        Class[] params;
+        Class<?>[] params;
         for (int i = 0; i < meths.length; i++) {
             if (meths[i].getName().startsWith("set")) {
                 params = meths[i].getParameterTypes();

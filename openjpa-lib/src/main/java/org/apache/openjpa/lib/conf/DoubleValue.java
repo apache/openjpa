@@ -33,7 +33,7 @@ public class DoubleValue extends Value {
         super(prop);
     }
 
-    public Class getValueType() {
+    public Class<Double> getValueType() {
         return double.class;
     }
 

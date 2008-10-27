@@ -114,15 +114,14 @@ public class StringDistance {
      * @see #getLevenshteinDistance
      */
     public static String getClosestLevenshteinDistance(String str,
-        Collection candidates, int threshold) {
+        Collection<String> candidates, int threshold) {
         if (candidates == null || candidates.isEmpty())
             return null;
 
         String minString = null;
         int minValue = Integer.MAX_VALUE;
 
-        for (Iterator i = candidates.iterator(); i.hasNext();) {
-            String candidate = (String) i.next();
+        for(String candidate : candidates) { 
             int distance = getLevenshteinDistance(str, candidate);
             if (distance < minValue) {
                 minValue = distance;

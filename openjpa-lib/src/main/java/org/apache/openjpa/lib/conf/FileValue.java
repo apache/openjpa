@@ -37,7 +37,7 @@ public class FileValue extends Value {
         super(prop);
     }
 
-    public Class getValueType() {
+    public Class<File> getValueType() {
         return File.class;
     }
 

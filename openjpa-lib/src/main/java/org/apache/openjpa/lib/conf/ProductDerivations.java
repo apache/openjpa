@@ -56,7 +56,8 @@ public class ProductDerivations {
             J2DoPrivHelper.getClassLoaderAction(ProductDerivation.class)); 
         _derivationNames = Services.getImplementors(ProductDerivation.class, l);
         _derivationErrors = new Throwable[_derivationNames.length];
-        List derivations = new ArrayList(_derivationNames.length);
+        List<ProductDerivation> derivations =
+            new ArrayList<ProductDerivation>(_derivationNames.length);
         for (int i = 0; i < _derivationNames.length; i++) {
             try {
                 ProductDerivation d = (ProductDerivation)
@@ -91,10 +92,10 @@ public class ProductDerivations {
         }
 
         Collections.sort(derivations, new ProductDerivationComparator());
-        _derivations = (ProductDerivation[]) derivations.toArray
-            (new ProductDerivation[derivations.size()]);
+        _derivations =
+            derivations.toArray(new ProductDerivation[derivations.size()]);
 
-        List prefixes = new ArrayList(2);
+        List<String> prefixes = new ArrayList<String>(2);
         for (int i = 0; i < _derivations.length; i++) {
             if (_derivations[i].getConfigurationPrefix() != null
                 && !"openjpa".equals(_derivations[i].getConfigurationPrefix()))
@@ -376,9 +377,9 @@ public class ProductDerivations {
      *
      * @since 1.1.0
      */
-    public static List getFullyQualifiedAnchorsInPropertiesLocation(
+    public static List<String> getFullyQualifiedAnchorsInPropertiesLocation(
         final String propertiesLocation) {
-        List fqAnchors = new ArrayList();
+        List<String> fqAnchors = new ArrayList<String>();
         StringBuffer errs = null;
         Throwable err = null;
         for (int i = _derivations.length - 1; i >= 0; i--) {
@@ -433,11 +434,11 @@ public class ProductDerivations {
      * Compare {@link ProductDerivation}s.
      */
     private static class ProductDerivationComparator
-        implements Comparator {
+        implements Comparator<ProductDerivation> {
 
-        public int compare(Object o1, Object o2) {
-            int type1 = ((ProductDerivation) o1).getType();
-            int type2 = ((ProductDerivation) o2).getType();
+        public int compare(ProductDerivation o1, ProductDerivation o2) {
+            int type1 = o1.getType();
+            int type2 = o2.getType();
             if (type1 != type2)
                 return type1 - type2;
 

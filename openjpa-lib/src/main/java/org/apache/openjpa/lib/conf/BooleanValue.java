@@ -32,7 +32,7 @@ public class BooleanValue extends Value {
         setAliasListComprehensive(true);
     }
 
-    public Class getValueType() {
+    public Class<Boolean> getValueType() {
         return boolean.class;
     }
 

@@ -60,7 +60,7 @@ public class StringListValue extends Value {
         return _values;
     }
 
-    public Class getValueType() {
+    public Class<String []> getValueType() {
         return String[].class;
     }
     
@@ -137,7 +137,7 @@ public class StringListValue extends Value {
         set((String[]) obj);
     }
     
-    protected List getAliasList() {
+    protected List<String> getAliasList() {
         return Arrays.asList(getAliases());
     }
     

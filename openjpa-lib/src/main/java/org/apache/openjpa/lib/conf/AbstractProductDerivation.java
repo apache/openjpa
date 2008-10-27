@@ -19,7 +19,6 @@
 package org.apache.openjpa.lib.conf;
 
 import java.io.File;
-import java.io.IOException;
 import java.util.List;
 
 /**
@@ -64,11 +63,11 @@ public abstract class AbstractProductDerivation
         return null;
     }
 
-    public List getAnchorsInFile(File file) throws Exception {
+    public List<String> getAnchorsInFile(File file) throws Exception {
         return null;
     }
 
-    public List getAnchorsInResource(String resource) throws Exception {
+    public List<String> getAnchorsInResource(String resource) throws Exception {
         return null;
     }
 

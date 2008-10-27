@@ -21,7 +21,6 @@ package org.apache.openjpa.lib.conf;
 import java.io.File;
 import java.security.AccessController;
 import java.security.PrivilegedActionException;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Iterator;
@@ -30,6 +29,8 @@ import java.util.Map;
 import java.util.MissingResourceException;
 import java.util.Properties;
 import java.util.TreeSet;
+import java.util.concurrent.ConcurrentHashMap;
+
 import javax.naming.Context;
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
@@ -39,11 +40,12 @@ import org.apache.commons.lang.exception.NestableRuntimeException;
 import org.apache.openjpa.lib.log.Log;
 import org.apache.openjpa.lib.util.J2DoPrivHelper;
 import org.apache.openjpa.lib.util.Localizer;
+import org.apache.openjpa.lib.util.MultiClassLoader;
 import org.apache.openjpa.lib.util.Options;
 import org.apache.openjpa.lib.util.ParseException;
 import org.apache.openjpa.lib.util.StringDistance;
-import java.util.concurrent.ConcurrentHashMap;
 import org.apache.openjpa.lib.util.concurrent.ConcurrentReferenceHashMap;
+
 import serp.util.Strings;
 
 /**
@@ -293,7 +295,7 @@ public class Configurations {
      *
      * @since 1.1.0
      */
-    public static List getFullyQualifiedAnchorsInPropertiesLocation(
+    public static List<String> getFullyQualifiedAnchorsInPropertiesLocation(
         Options opts) {
         String props = opts.getProperty("properties", "p", null);
         if (props != null) {
@@ -386,12 +388,12 @@ public class Configurations {
             msg = "invalid-plugin-aliases";
             params = new Object[]{
                 val.getProperty(), alias, e.toString(),
-                new TreeSet(Arrays.asList(keys)), };
+                new TreeSet<String>(Arrays.asList(keys)), };
         } else {
             msg = "invalid-plugin-aliases-hint";
             params = new Object[]{
                 val.getProperty(), alias, e.toString(),
-                new TreeSet(Arrays.asList(keys)), closest, };
+                new TreeSet<String>(Arrays.asList(keys)), closest, };
         }
         return new ParseException(_loc.get(msg, params), e);
     }
@@ -484,7 +486,7 @@ public class Configurations {
 				first.indexOf('.') == -1) {
 				// if there's just one misspelling and this is not a
 				// path traversal, check for near misses.
-				Collection options = findOptionsFor(obj.getClass());
+				Collection<String> options = findOptionsFor(obj.getClass());
 				String close = StringDistance.getClosestLevenshteinDistance
 					(first, options, 0.75f);
 				if (close != null)
@@ -505,8 +507,8 @@ public class Configurations {
             configurable.endConfiguration();
     }
 
-    private static Collection findOptionsFor(Class cls) {
-        Collection c = Options.findOptionsFor(cls);
+    private static Collection<String> findOptionsFor(Class<?> cls) {
+        Collection<String> c = Options.findOptionsFor(cls);
         
         // remove Configurable.setConfiguration() and 
         // GenericConfigurable.setInto() from the set, if applicable.
@@ -679,7 +681,7 @@ public class Configurations {
         if (opts.containsKey("help") || opts.containsKey("-help")) {
             return false;
         }
-        List anchors =
+        List<String> anchors =
             Configurations.getFullyQualifiedAnchorsInPropertiesLocation(opts);
 
         // We use 'properties' below; get rid of 'p' to avoid conflicts. This
@@ -692,9 +694,9 @@ public class Configurations {
         if (anchors.size() == 0) {
             ret = launchRunnable(opts, runnable);
         } else {
-            for (Iterator iter = anchors.iterator(); iter.hasNext(); ) { 
+            for(String s : anchors ) { 
                 Options clonedOptions = (Options) opts.clone();
-                clonedOptions.setProperty("properties", iter.next().toString());
+                clonedOptions.setProperty("properties", s);
                 ret &= launchRunnable(clonedOptions, runnable);
             }
         }

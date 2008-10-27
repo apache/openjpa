@@ -112,7 +112,7 @@ public interface ProductDerivation {
      *
      * @since 1.1.0
      */
-    public List getAnchorsInFile(File file) throws IOException, Exception;
+    public List<String> getAnchorsInFile(File file) throws IOException, Exception;
 
     /**
      * Return a List<String> of all the anchors defined in
@@ -124,7 +124,7 @@ public interface ProductDerivation {
      *
      * @since 1.1.0
      */
-    public List getAnchorsInResource(String resource) throws Exception;
+    public List<String> getAnchorsInResource(String resource) throws Exception;
     
     /**
      * Provides the instance with a callback to mutate the initial properties

@@ -79,14 +79,14 @@ public class ObjectValue extends Value {
      * Instantiate the object as an instance of the given class. Equivalent
      * to <code>instantiate(type, conf, true)</code>.
      */
-    public Object instantiate(Class type, Configuration conf) {
+    public Object instantiate(Class<?> type, Configuration conf) {
         return instantiate(type, conf, true);
     }
 
     /**
      * Instantiate the object as an instance of the given class.
      */
-    public Object instantiate(Class type, Configuration conf, boolean fatal) {
+    public Object instantiate(Class<?> type, Configuration conf, boolean fatal) {
         throw new UnsupportedOperationException();
     }
 
@@ -94,7 +94,7 @@ public class ObjectValue extends Value {
      * Allow subclasses to instantiate additional plugins. This method does
      * not perform configuration.
      */
-    public Object newInstance(String clsName, Class type, Configuration conf,
+    public Object newInstance(String clsName, Class<?> type, Configuration conf,
             boolean fatal) {
         ClassLoader cl = (ClassLoader) _classloaderCache.get(type);
         if (cl == null) {
@@ -109,7 +109,7 @@ public class ObjectValue extends Value {
         return Configurations.newInstance(clsName, this, conf, cl, fatal);
     }
 
-    public Class getValueType() {
+    public Class<?> getValueType() {
         return Object.class;
     }
 
