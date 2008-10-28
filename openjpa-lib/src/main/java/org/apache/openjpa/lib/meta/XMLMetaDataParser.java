@@ -82,7 +82,7 @@ public abstract class XMLMetaDataParser extends DefaultHandler
 
     // map of classloaders to sets of parsed locations, so that we don't parse
     // the same resource multiple times for the same class
-    private Map _parsed = null;
+    private Map<ClassLoader, Set<String>> _parsed = null;
 
     private Log _log = null;
     private boolean _validating = true;
@@ -100,7 +100,7 @@ public abstract class XMLMetaDataParser extends DefaultHandler
     private String _sourceName = null;
     private File _sourceFile = null;
     private StringBuffer _text = null;
-    private List _comments = null;
+    private List<String> _comments = null;
     private Location _location = new Location();
     private LexicalHandler _lh = null;
     private int _depth = -1;
@@ -254,7 +254,7 @@ public abstract class XMLMetaDataParser extends DefaultHandler
 
     public List getResults() {
         if (_results == null)
-            return Collections.EMPTY_LIST;
+            return Collections.emptyList();
         return _results;
     }
 
@@ -392,12 +392,12 @@ public abstract class XMLMetaDataParser extends DefaultHandler
         if (!_caching)
             return false;
         if (_parsed == null)
-            _parsed = new HashMap();
+            _parsed = new HashMap<ClassLoader, Set<String>>();
 
         ClassLoader loader = currentClassLoader();
-        Set set = (Set) _parsed.get(loader);
+        Set<String> set = _parsed.get(loader);
         if (set == null) {
-            set = new HashSet();
+            set = new HashSet<String>();
             _parsed.put(loader, set);
         }
         boolean added = set.add(src);
@@ -456,7 +456,7 @@ public abstract class XMLMetaDataParser extends DefaultHandler
     public void comment(char[] ch, int start, int length) throws SAXException {
         if (_parseComments && _depth <= _ignore) {
             if (_comments == null)
-                _comments = new ArrayList(3);
+                _comments = new ArrayList<String>(3);
             _comments.add(String.valueOf(ch, start, length));
         }
         if (_lh != null)
@@ -597,7 +597,7 @@ public abstract class XMLMetaDataParser extends DefaultHandler
     protected String[] currentComments() {
         if (_comments == null || _comments.isEmpty())
             return Commentable.EMPTY_COMMENTS;
-        return (String[]) _comments.toArray(new String[_comments.size()]);
+        return _comments.toArray(new String[_comments.size()]);
     }
 
     /**

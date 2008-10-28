@@ -28,17 +28,17 @@ import org.apache.openjpa.lib.util.Localizer;
  * @author Abe White
  * @nojavadoc
  */
-abstract class AbstractListIterator implements ListIterator {
+abstract class AbstractListIterator<E> implements ListIterator<E> {
 
     private static final Localizer _loc = Localizer.forPackage
         (AbstractListIterator.class);
 
-    public void add(Object o) {
+    public void add(E o) {
         throw new UnsupportedOperationException(_loc.get("read-only")
             .getMessage());
     }
 
-    public void set(Object o) {
+    public void set(E o) {
         throw new UnsupportedOperationException(_loc.get("read-only")
             .getMessage());
     }

@@ -50,7 +50,7 @@ public class URLMetaDataIterator implements MetaDataIterator {
         return _url != null && !_iterated;
     }
 
-    public Object next() throws IOException {
+    public URL next() throws IOException {
         if (!hasNext())
             throw new IllegalStateException();
 

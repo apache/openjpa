@@ -157,9 +157,9 @@ public class ClassArgParser {
      * @param arg a class name, .java file, .class file, or metadata
      * file naming the type(s) to act on
      */
-    public Class[] parseTypes(String arg) {
+    public Class<?>[] parseTypes(String arg) {
         String[] names = parseTypeNames(arg);
-        Class[] objs = new Class[names.length];
+        Class<?>[] objs = new Class[names.length];
         for (int i = 0; i < names.length; i++)
             objs[i] = Strings.toClass(names[i], _loader);
         return objs;
@@ -169,9 +169,9 @@ public class ClassArgParser {
      * Return the {@link Class} representation of the class(es) named in the
      * given metadatas.
      */
-    public Class[] parseTypes(MetaDataIterator itr) {
+    public Class<?>[] parseTypes(MetaDataIterator itr) {
         String[] names = parseTypeNames(itr);
-        Class[] objs = new Class[names.length];
+        Class<?>[] objs = new Class[names.length];
         for (int i = 0; i < names.length; i++)
             objs[i] = Strings.toClass(names[i], _loader);
         return objs;
@@ -181,20 +181,23 @@ public class ClassArgParser {
      * Return a mapping of each metadata resource to an array of its
      * contained classes.
      */
-    public Map mapTypes(MetaDataIterator itr) {
-        Map map = mapTypeNames(itr);
-        Map.Entry entry;
+    public Map<Object, Class<?>[]> mapTypes(MetaDataIterator itr) {
+        Map<Object, String[]> map = mapTypeNames(itr);
+        Map<Object, Class<?>[]> rval = new HashMap<Object, Class<?>[]>();
+        Map.Entry<Object, String[]> entry;
         String[] names;
-        Class[] objs;
-        for (Iterator i = map.entrySet().iterator(); i.hasNext();) {
-            entry = (Map.Entry) i.next();
-            names = (String[]) entry.getValue();
+        Class<?>[] objs;
+        for (Iterator<Map.Entry<Object, String[]>> i =
+            map.entrySet().iterator(); i.hasNext();) {
+            entry = i.next();
+            names = entry.getValue();
             objs = new Class[names.length];
-            for (int j = 0; j < names.length; j++)
+            for (int j = 0; j < names.length; j++) {
                 objs[j] = Strings.toClass(names[j], _loader);
-            entry.setValue(objs);
+            }
+            rval.put(entry.getKey(), objs);
         }
-        return map;
+        return rval;
     }
 
     /**
@@ -216,8 +219,8 @@ public class ClassArgParser {
                 return new String[]{ getFromJavaFile(file) };
             if ((AccessController.doPrivileged(
                 J2DoPrivHelper.existsAction(file))).booleanValue()) {
-                Collection col = getFromMetaDataFile(file);
-                return (String[]) col.toArray(new String[col.size()]);
+                Collection<String> col = getFromMetaDataFile(file);
+                return col.toArray(new String[col.size()]);
             }
         } catch (Exception e) {
             throw new NestableRuntimeException(
@@ -235,7 +238,7 @@ public class ClassArgParser {
         if (itr == null)
             return new String[0];
 
-        List names = new ArrayList();
+        List<String> names = new ArrayList<String>();
         Object source = null;
         try {
             while (itr.hasNext()) {
@@ -246,15 +249,15 @@ public class ClassArgParser {
             throw new NestableRuntimeException(
                 _loc.get("class-arg", source).getMessage(), e);
         }
-        return (String[]) names.toArray(new String[names.size()]);
+        return names.toArray(new String[names.size()]);
     }
 
     /**
      * Parse the names in the given metadata iterator stream, closing the
      * stream on completion.
      */
-    private void appendTypeNames(Object source, InputStream in, List names)
-        throws IOException {
+    private void appendTypeNames(Object source, InputStream in,
+        List<String> names) throws IOException {
         try {
             if (source.toString().endsWith(".class"))
                 names.add(getFromClass(in));
@@ -271,20 +274,20 @@ public class ClassArgParser {
      * Return a mapping of each metadata resource to an array of its contained
      * class names.
      */
-    public Map mapTypeNames(MetaDataIterator itr) {
+    public Map<Object, String[]> mapTypeNames(MetaDataIterator itr) {
         if (itr == null)
-            return Collections.EMPTY_MAP;
+            return Collections.emptyMap();
 
-        Map map = new HashMap();
+        Map<Object, String []> map = new HashMap<Object, String[]>();
         Object source = null;
-        List names = new ArrayList();
+        List<String> names = new ArrayList<String>();
         try {
             while (itr.hasNext()) {
                 source = itr.next();
                 appendTypeNames(source, itr.getInputStream(), names);
-                if (!names.isEmpty())
-                    map.put(source, (String[]) names.toArray
-                        (new String[names.size()]));
+                if (!names.isEmpty()) {
+                    map.put(source, names.toArray(new String[names.size()]));
+                }
                 names.clear();
             }
         } catch (Exception e) {
@@ -372,7 +375,8 @@ public class ClassArgParser {
     /**
      * Returns the classes named in the given common format metadata file.
      */
-    private Collection getFromMetaDataFile(File file) throws IOException {
+    private Collection<String> getFromMetaDataFile(File file)
+        throws IOException {
         FileReader in = null;
         try {
             in = new FileReader(file);
@@ -389,8 +393,8 @@ public class ClassArgParser {
     /**
      * Returns the classes named in the given common format metadata stream.
      */
-    private Collection getFromMetaData(Reader xml) throws IOException {
-        Collection names = new ArrayList();
+    private Collection<String> getFromMetaData(Reader xml) throws IOException {
+        Collection<String> names = new ArrayList<String>();
         BufferedReader in = new BufferedReader(xml);
 
         boolean comment = false;

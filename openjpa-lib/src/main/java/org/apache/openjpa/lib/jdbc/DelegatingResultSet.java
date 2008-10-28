@@ -146,6 +146,7 @@ public class DelegatingResultSet implements ResultSet, Closeable {
         return _rs.getDouble(a);
     }
 
+    @Deprecated
     public BigDecimal getBigDecimal(int a, int b) throws SQLException {
         return _rs.getBigDecimal(a, b);
     }
@@ -170,6 +171,7 @@ public class DelegatingResultSet implements ResultSet, Closeable {
         return _rs.getAsciiStream(a);
     }
 
+    @Deprecated
     public InputStream getUnicodeStream(int a) throws SQLException {
         return _rs.getUnicodeStream(a);
     }
@@ -210,6 +212,7 @@ public class DelegatingResultSet implements ResultSet, Closeable {
         return _rs.getDouble(a);
     }
 
+    @Deprecated
     public BigDecimal getBigDecimal(String a, int b) throws SQLException {
         return _rs.getBigDecimal(a, b);
     }
@@ -234,6 +237,7 @@ public class DelegatingResultSet implements ResultSet, Closeable {
         return _rs.getAsciiStream(a);
     }
 
+    @Deprecated
     public InputStream getUnicodeStream(String a) throws SQLException {
         return _rs.getUnicodeStream(a);
     }
@@ -568,7 +572,7 @@ public class DelegatingResultSet implements ResultSet, Closeable {
         return _stmnt;
     }
 
-    public Object getObject(int a, Map b) throws SQLException {
+    public Object getObject(int a, Map<String, Class<?>> b) throws SQLException {
         return _rs.getObject(a, b);
     }
 
@@ -588,7 +592,7 @@ public class DelegatingResultSet implements ResultSet, Closeable {
         return _rs.getArray(a);
     }
 
-    public Object getObject(String a, Map b) throws SQLException {
+    public Object getObject(String a, Map<String, Class<?>> b) throws SQLException {
         return _rs.getObject(a, b);
     }
 

@@ -46,16 +46,16 @@ import serp.util.Strings;
 public class ClassMetaDataIterator implements MetaDataIterator {
 
     private final ClassLoader _loader;
-    private final List _locs;
+    private final List<String> _locs;
     private int _loc = -1;
-    private final List _urls = new ArrayList(3);
+    private final List<URL> _urls = new ArrayList<URL>(3);
     private int _url = -1;
 
     /**
      * Constructor; supply the class whose metadata to find, the suffix
      * of metadata files, and whether to parse top-down or bottom-up.
      */
-    public ClassMetaDataIterator(Class cls, String suffix, boolean topDown) {
+    public ClassMetaDataIterator(Class<?> cls, String suffix, boolean topDown) {
         this(cls, suffix, null, topDown);
     }
 
@@ -63,22 +63,22 @@ public class ClassMetaDataIterator implements MetaDataIterator {
      * Constructor; supply the class whose metadata to find, the suffix
      * of metadata files, and whether to parse top-down or bottom-up.
      */
-    public ClassMetaDataIterator(Class cls, String suffix, ClassLoader loader,
+    public ClassMetaDataIterator(Class<?> cls, String suffix, ClassLoader loader,
         boolean topDown) {
         // skip classes that can't have metadata
         if (cls != null && (cls.isPrimitive()
             || cls.getName().startsWith("java.")
             || cls.getName().startsWith("javax."))) {
             _loader = null;
-            _locs = Collections.EMPTY_LIST;
+            _locs = Collections.emptyList();
             return;
         }
 
         if (loader == null) {
             MultiClassLoader multi = AccessController
                 .doPrivileged(J2DoPrivHelper.newMultiClassLoaderAction());
-            multi.addClassLoader(multi.SYSTEM_LOADER);
-            multi.addClassLoader(multi.THREAD_LOADER);
+            multi.addClassLoader(MultiClassLoader.SYSTEM_LOADER);
+            multi.addClassLoader(MultiClassLoader.THREAD_LOADER);
             multi.addClassLoader(getClass().getClassLoader());
             if (cls != null)
             {
@@ -94,7 +94,7 @@ public class ClassMetaDataIterator implements MetaDataIterator {
 
         // collect the set of all possible metadata locations; start with
         // system locations
-        _locs = new ArrayList();
+        _locs = new ArrayList<String>();
         _locs.add("META-INF/package" + suffix);
         _locs.add("WEB-INF/package" + suffix);
         _locs.add("package" + suffix);
@@ -148,7 +148,7 @@ public class ClassMetaDataIterator implements MetaDataIterator {
     }
 
     public boolean hasNext() throws IOException {
-        Enumeration e;
+        Enumeration<URL> e;
         while (_url + 1 >= _urls.size()) {
             if (++_loc >= _locs.size())
                 return false;
@@ -158,7 +158,7 @@ public class ClassMetaDataIterator implements MetaDataIterator {
             try {
                 e = AccessController.doPrivileged(
                     J2DoPrivHelper.getResourcesAction(
-                        _loader, (String) _locs.get(_loc)));
+                        _loader, _locs.get(_loc)));
             } catch (PrivilegedActionException pae) {
                 throw (IOException) pae.getException();
             }    
@@ -168,7 +168,7 @@ public class ClassMetaDataIterator implements MetaDataIterator {
         return true;
     }
 
-    public Object next() throws IOException {
+    public URL next() throws IOException {
         if (!hasNext())
             throw new NoSuchElementException();
         return _urls.get(++_url);
@@ -179,7 +179,7 @@ public class ClassMetaDataIterator implements MetaDataIterator {
             throw new IllegalStateException();
         try {
             return AccessController.doPrivileged(
-                J2DoPrivHelper.openStreamAction((URL) _urls.get(_url)));
+                J2DoPrivHelper.openStreamAction(_urls.get(_url)));
         } catch (PrivilegedActionException pae) {
             throw (IOException) pae.getException();
         }
@@ -188,8 +188,7 @@ public class ClassMetaDataIterator implements MetaDataIterator {
     public File getFile() throws IOException {
         if (_url == -1 || _url >= _urls.size())
             throw new IllegalStateException();
-        File file = new File(URLDecoder.decode(((URL) _urls.get(_url)).
-            getFile()));
+        File file = new File(URLDecoder.decode((_urls.get(_url)).getFile()));
         return ((AccessController.doPrivileged(
             J2DoPrivHelper.existsAction(file))).booleanValue()) ? file:null;
     }

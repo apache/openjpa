@@ -44,7 +44,7 @@ public class ZipFileMetaDataIterator
 
     private final ZipFile _file;
     private final MetaDataFilter _filter;
-    private final Enumeration _entries;
+    private final Enumeration<? extends ZipEntry> _entries;
     private ZipEntry _entry = null;
     private ZipEntry _last = null;
 
@@ -84,14 +84,14 @@ public class ZipFileMetaDataIterator
 
         // search for next metadata file
         while (_entry == null && _entries.hasMoreElements()) {
-            _entry = (ZipEntry) _entries.nextElement();
+            _entry = _entries.nextElement();
             if (_filter != null && !_filter.matches(this))
                 _entry = null;
         }
         return _entry != null;
     }
 
-    public Object next() throws IOException {
+    public String next() throws IOException {
         if (!hasNext())
             throw new NoSuchElementException();
         String ret = _entry.getName();

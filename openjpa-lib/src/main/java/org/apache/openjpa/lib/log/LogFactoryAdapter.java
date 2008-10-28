@@ -31,11 +31,11 @@ import java.util.concurrent.ConcurrentHashMap;
 public abstract class LogFactoryAdapter implements LogFactory {
 
     // cache category to log adapters
-    private Map _logs = new ConcurrentHashMap();
+    private Map<String, Log> _logs = new ConcurrentHashMap<String, Log>();
 
     public Log getLog(String channel) {
         // no locking; OK if same adapter created multiple times
-        Log log = (Log) _logs.get(channel);
+        Log log = _logs.get(channel);
         if (log == null) {
             log = newLogAdapter(channel);
             _logs.put(channel, log);

@@ -44,14 +44,14 @@ public class ClassAnnotationMetaDataFilter implements MetaDataFilter {
     /**
      * Constructor; supply annotation to match against.
      */
-    public ClassAnnotationMetaDataFilter(Class anno) {
+    public ClassAnnotationMetaDataFilter(Class<?> anno) {
         this(new Class[]{ anno });
     }
 
     /**
      * Constructor; supply annotations to match against.
      */
-    public ClassAnnotationMetaDataFilter(Class[] annos) {
+    public ClassAnnotationMetaDataFilter(Class<?>[] annos) {
         _annos = new String[annos.length];
         for (int i = 0; i < annos.length; i++)
             _annos[i] = "L" + annos[i].getName().replace('.', '/') + ";";

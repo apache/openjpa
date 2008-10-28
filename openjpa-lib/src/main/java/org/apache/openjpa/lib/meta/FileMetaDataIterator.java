@@ -25,6 +25,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.MalformedURLException;
+import java.net.URL;
 import java.security.AccessController;
 import java.security.PrivilegedActionException;
 import java.util.ArrayList;
@@ -49,7 +50,7 @@ public class FileMetaDataIterator implements MetaDataIterator {
     private static final Localizer _loc = Localizer.forPackage
         (FileMetaDataIterator.class);
 
-    private final Iterator _itr;
+    private final Iterator<File> _itr;
     private File _file = null;
 
     /**
@@ -68,7 +69,7 @@ public class FileMetaDataIterator implements MetaDataIterator {
         if (dir == null)
             _itr = null;
         else {
-            Collection metas = new ArrayList();
+            Collection<File> metas = new ArrayList<File>();
             FileResource rsrc = (filter == null) ? null : new FileResource();
             scan(dir, filter, rsrc, metas, 0);
             _itr = metas.iterator();
@@ -80,7 +81,7 @@ public class FileMetaDataIterator implements MetaDataIterator {
      * to the given collection.
      */
     private int scan(File file, MetaDataFilter filter, FileResource rsrc,
-        Collection metas, int scanned) throws IOException {
+        Collection<File> metas, int scanned) throws IOException {
         if (scanned > SCAN_LIMIT)
             throw new IllegalStateException(_loc.get("too-many-files",
                 String.valueOf(SCAN_LIMIT)).getMessage());
@@ -107,11 +108,11 @@ public class FileMetaDataIterator implements MetaDataIterator {
         return _itr != null && _itr.hasNext();
     }
 
-    public Object next() throws IOException {
+    public URL next() throws IOException {
         if (_itr == null)
             throw new NoSuchElementException();
 
-        _file = (File) _itr.next();
+        _file = _itr.next();
         try {
             File f = AccessController.doPrivileged(J2DoPrivHelper
                 .getAbsoluteFileAction(_file));

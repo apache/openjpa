@@ -53,21 +53,23 @@ public abstract class CFMetaDataSerializer extends XMLMetaDataSerializer {
 
     /**
      * Helper method to group objects by package.
-     *
-     * @return mapping of package name to a collection of objects in
-     * that package
+     * 
+     * @return mapping of package name to a collection of objects in that
+     *         package
      */
-    protected Map groupByPackage(Collection objs) throws SAXException {
-        Map packages = new LinkedHashMap();
+    protected Map<String, Collection<Object>> groupByPackage(
+        Collection<Object> objs) throws SAXException {
+        Map<String, Collection<Object>> packages =
+            new LinkedHashMap<String, Collection<Object>>();
         String packageName;
-        Collection packageObjs;
+        Collection<Object> packageObjs;
         Object obj;
-        for (Iterator itr = objs.iterator(); itr.hasNext();) {
+        for (Iterator<Object> itr = objs.iterator(); itr.hasNext();) {
             obj = itr.next();
             packageName = getPackage(obj);
-            packageObjs = (Collection) packages.get(packageName);
+            packageObjs = packages.get(packageName);
             if (packageObjs == null) {
-                packageObjs = new LinkedList();
+                packageObjs = new LinkedList<Object>();
                 packages.put(packageName, packageObjs);
             }
             packageObjs.add(obj);

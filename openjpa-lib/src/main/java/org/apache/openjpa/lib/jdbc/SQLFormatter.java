@@ -184,7 +184,7 @@ public class SQLFormatter {
         int start = 0;
         int end = -1;
         StringBuffer clause;
-        List clauses = new ArrayList();
+        List<StringBuffer> clauses = new ArrayList<StringBuffer>();
         clauses.add(new StringBuffer());
         for (int i = 0; i < separators.length; i++) {
             end = lowerCaseSql.indexOf(" " + separators[i].toLowerCase(),
@@ -192,7 +192,7 @@ public class SQLFormatter {
             if (end == -1)
                 break;
 
-            clause = (StringBuffer) clauses.get(clauses.size() - 1);
+            clause = clauses.get(clauses.size() - 1);
             clause.append(sql.substring(start, end));
 
             clause = new StringBuffer();
@@ -203,12 +203,12 @@ public class SQLFormatter {
             start = end + 1 + separators[i].length();
         }
 
-        clause = (StringBuffer) clauses.get(clauses.size() - 1);
+        clause = clauses.get(clauses.size() - 1);
         clause.append(sql.substring(start));
 
         StringBuffer pp = new StringBuffer(sql.length());
-        for (Iterator iter = clauses.iterator(); iter.hasNext();) {
-            pp.append(wrapLine(((StringBuffer) iter.next()).toString()));
+        for (Iterator<StringBuffer> iter = clauses.iterator(); iter.hasNext();){
+            pp.append(wrapLine(iter.next().toString()));
             if (iter.hasNext())
                 pp.append(newline);
         }

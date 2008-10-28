@@ -20,7 +20,6 @@ package org.apache.openjpa.lib.log;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Iterator;
 import java.util.List;
 
 import java.util.concurrent.CopyOnWriteArrayList;
@@ -33,7 +32,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
  */
 public class MultiLogFactory implements LogFactory {
 
-    private List _delegates;
+    private List<LogFactory> _delegates;
 
     /**
      * Create an instance with the given delegates.
@@ -53,7 +52,8 @@ public class MultiLogFactory implements LogFactory {
      * Create an instance with the given delegates.
      */
     public MultiLogFactory(LogFactory[] delegates) {
-        _delegates = new CopyOnWriteArrayList(Arrays.asList(delegates));
+        _delegates =
+            new CopyOnWriteArrayList<LogFactory>(Arrays.asList(delegates));
     }
 
     public void addLogFactory(LogFactory factory) {
@@ -75,16 +75,15 @@ public class MultiLogFactory implements LogFactory {
      * Returns a Log impl that combines all logs.
      */
     public synchronized Log getLog(String channel) {
-        List logs = new ArrayList(_delegates.size());
-        for (Iterator i = _delegates.iterator(); i.hasNext();) {
-            LogFactory f = (LogFactory) i.next();
+        List<Log> logs = new ArrayList<Log>(_delegates.size());
+        for(LogFactory f : _delegates) { 
             if (f != null) {
                 Log l = f.getLog(channel);
                 if (l != null)
                     logs.add(l);
             }
         }
-        return new MultiLog((Log[]) logs.toArray(new Log[logs.size()]));
+        return new MultiLog(logs.toArray(new Log[logs.size()]));
     }
 
     /**

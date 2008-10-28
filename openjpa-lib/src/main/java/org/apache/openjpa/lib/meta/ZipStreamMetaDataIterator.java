@@ -75,7 +75,7 @@ public class ZipStreamMetaDataIterator
         return _entry != null;
     }
 
-    public Object next() throws IOException {
+    public String next() throws IOException {
         if (!hasNext())
             throw new NoSuchElementException();
         String ret = _entry.getName();

@@ -32,6 +32,7 @@ import org.apache.openjpa.lib.util.concurrent.AbstractConcurrentEventManager;
  * @author Abe White
  * @nojavadoc
  */
+@SuppressWarnings("serial")
 public class JDBCEventConnectionDecorator extends AbstractConcurrentEventManager
     implements ConnectionDecorator {
 

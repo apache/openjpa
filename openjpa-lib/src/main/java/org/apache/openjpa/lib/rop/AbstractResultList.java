@@ -30,7 +30,8 @@ import org.apache.openjpa.lib.util.Localizer;
  * @author Abe White
  * @nojavadoc
  */
-public abstract class AbstractResultList implements ResultList {
+@SuppressWarnings("serial")
+public abstract class AbstractResultList<E> implements ResultList<E> {
 
     private static final Localizer _loc = Localizer.forPackage
         (AbstractResultList.class);
@@ -48,15 +49,15 @@ public abstract class AbstractResultList implements ResultList {
         throw readOnly();
     }
 
-    public boolean addAll(Collection c) {
+    public boolean addAll(Collection<? extends E> c) {
         throw readOnly();
     }
 
-    public boolean addAll(int index, Collection c) {
+    public boolean addAll(int index, Collection<? extends E> c) {
         throw readOnly();
     }
 
-    public Object remove(int index) {
+    public E remove(int index) {
         throw readOnly();
     }
 
@@ -64,15 +65,15 @@ public abstract class AbstractResultList implements ResultList {
         throw readOnly();
     }
 
-    public boolean removeAll(Collection c) {
+    public boolean removeAll(Collection<?> c) {
         throw readOnly();
     }
 
-    public boolean retainAll(Collection c) {
+    public boolean retainAll(Collection<?> c) {
         throw readOnly();
     }
 
-    public Object set(int index, Object element) {
+    public E set(int index, Object element) {
         throw readOnly();
     }
 
@@ -80,7 +81,7 @@ public abstract class AbstractResultList implements ResultList {
         throw readOnly();
     }
 
-    public List subList(int from, int to) {
+    public List<E> subList(int from, int to) {
         throw new UnsupportedOperationException();
     }
 

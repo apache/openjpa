@@ -330,6 +330,9 @@ public class DelegatingPreparedStatement
         _stmnt.setAsciiStream(i1, is, i2);
     }
 
+    /**
+     * @deprecated 
+     */
     public void setUnicodeStream(int i1, InputStream is, int i2)
         throws SQLException {
         _stmnt.setUnicodeStream(i1, is, i2);

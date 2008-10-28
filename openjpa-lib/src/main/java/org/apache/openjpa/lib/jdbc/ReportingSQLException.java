@@ -28,6 +28,7 @@ import java.sql.Statement;
  * @author Marc Prud'hommeaux
  * @nojavadoc
  */
+@SuppressWarnings("serial")
 public class ReportingSQLException extends SQLException {
 
     private final transient Statement _stmnt;

@@ -893,8 +893,8 @@ public class LoggingConnectionDecorator implements ConnectionDecorator {
             extends DelegatingPreparedStatement {
 
             private final String _sql;
-            private List _params = null;
-            private List _paramBatch = null;
+            private List<String> _params = null;
+            private List<List<String>> _paramBatch = null;
 
             public LoggingPreparedStatement(PreparedStatement stmnt, String sql)
                 throws SQLException {
@@ -1025,7 +1025,7 @@ public class LoggingConnectionDecorator implements ConnectionDecorator {
 
                             // set the current params to the saved values
                             if (index < _paramBatch.size())
-                                _params = (List) _paramBatch.get(index);
+                                _params = (List<String>) _paramBatch.get(index);
                         }
                     }
                     err = wrap(se, LoggingPreparedStatement.this);
@@ -1138,6 +1138,7 @@ public class LoggingConnectionDecorator implements ConnectionDecorator {
                 super.setAsciiStream(i1, is, i2);
             }
 
+            @Deprecated
             public void setUnicodeStream(int i1, InputStream is, int i2)
                 throws SQLException {
                 setLogParameter(i1, "InputStream", is);
@@ -1181,10 +1182,12 @@ public class LoggingConnectionDecorator implements ConnectionDecorator {
                     if (shouldTrackParameters()) {
                         // make sure our list is initialized
                         if (_paramBatch == null)
-                            _paramBatch = new ArrayList();
+                            _paramBatch = new ArrayList<List<String>>();
                         // copy parameters since they will be re-used
-                        if (_params != null)
-                            _paramBatch.add(new ArrayList(_params));
+                        if (_params != null) {
+                            List<String> copyParms = new ArrayList<String>(_params);
+                            _paramBatch.add(copyParms);
+                        }
                         else
                             _paramBatch.add(null);
                     }
@@ -1258,7 +1261,8 @@ public class LoggingConnectionDecorator implements ConnectionDecorator {
                 StringBuffer paramBuf = null;
                 if (_params != null && !_params.isEmpty()) {
                     paramBuf = new StringBuffer();
-                    for (Iterator itr = _params.iterator(); itr.hasNext();) {
+                    for (Iterator<String> itr = _params.iterator(); itr
+                        .hasNext();) {
                         paramBuf.append(itr.next());
                         if (itr.hasNext())
                             paramBuf.append(", ");
@@ -1327,7 +1331,7 @@ public class LoggingConnectionDecorator implements ConnectionDecorator {
 
             private void setLogParameter(int index, String val) {
                 if (_params == null)
-                    _params = new ArrayList();
+                    _params = new ArrayList<String>();
                 while (_params.size() < index)
                     _params.add(null);
                 if (val.length() > 80)
@@ -1462,8 +1466,8 @@ public class LoggingConnectionDecorator implements ConnectionDecorator {
         private class LoggingCallableStatement extends 
             DelegatingCallableStatement {
             private final String _sql;
-            private List _params = null;
-            private List _paramBatch = null;
+            private List<String> _params = null;
+            private List<List<String>> _paramBatch = null;
 
             public LoggingCallableStatement(CallableStatement stmt, String sql) 
                 throws SQLException {
@@ -1594,7 +1598,7 @@ public class LoggingConnectionDecorator implements ConnectionDecorator {
 
                             // set the current params to the saved values
                             if (index < _paramBatch.size())
-                                _params = (List) _paramBatch.get(index);
+                                _params = (List<String>) _paramBatch.get(index);
                         }
                     }
                     err = wrap(se, LoggingCallableStatement.this);
@@ -1707,6 +1711,7 @@ public class LoggingConnectionDecorator implements ConnectionDecorator {
                 super.setAsciiStream(i1, is, i2);
             }
 
+            @Deprecated
             public void setUnicodeStream(int i1, InputStream is, int i2)
                 throws SQLException {
                 setLogParameter(i1, "InputStream", is);
@@ -1750,10 +1755,13 @@ public class LoggingConnectionDecorator implements ConnectionDecorator {
                     if (shouldTrackParameters()) {
                         // make sure our list is initialized
                         if (_paramBatch == null)
-                            _paramBatch = new ArrayList();
+                            _paramBatch = new ArrayList<List<String>>();
                         // copy parameters since they will be re-used
-                        if (_params != null)
-                            _paramBatch.add(new ArrayList(_params));
+                        if (_params != null) {
+                            List<String> copyParams =
+                                new ArrayList<String>(_params);
+                            _paramBatch.add(copyParams);
+                        }
                         else
                             _paramBatch.add(null);
                     }
@@ -1827,7 +1835,8 @@ public class LoggingConnectionDecorator implements ConnectionDecorator {
                 StringBuffer paramBuf = null;
                 if (_params != null && !_params.isEmpty()) {
                     paramBuf = new StringBuffer();
-                    for (Iterator itr = _params.iterator(); itr.hasNext();) {
+                    for (Iterator<String> itr = _params.iterator(); itr
+                        .hasNext();) {
                         paramBuf.append(itr.next());
                         if (itr.hasNext())
                             paramBuf.append(", ");
@@ -1896,7 +1905,7 @@ public class LoggingConnectionDecorator implements ConnectionDecorator {
 
             private void setLogParameter(int index, String val) {
                 if (_params == null)
-                    _params = new ArrayList();
+                    _params = new ArrayList<String>();
                 while (_params.size() < index)
                     _params.add(null);
                 if (val.length() > 80)

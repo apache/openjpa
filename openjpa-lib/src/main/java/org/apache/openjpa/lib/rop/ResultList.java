@@ -37,7 +37,7 @@ import org.apache.openjpa.lib.util.Closeable;
  *
  * @author Marc Prud'hommeaux
  */
-public interface ResultList extends List, Serializable, Closeable {
+public interface ResultList<E> extends List<E>, Serializable, Closeable {
 
     /**
      * Returns true if the provider backing this list is open.

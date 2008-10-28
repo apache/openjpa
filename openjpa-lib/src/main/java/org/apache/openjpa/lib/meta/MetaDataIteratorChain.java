@@ -22,7 +22,6 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 import java.util.NoSuchElementException;
 
@@ -34,7 +33,7 @@ import java.util.NoSuchElementException;
  */
 public class MetaDataIteratorChain implements MetaDataIterator {
 
-    private List _itrs = null;
+    private List<MetaDataIterator> _itrs = null;
     private int _cur = -1;
     private MetaDataIterator _itr = null;
 
@@ -48,7 +47,7 @@ public class MetaDataIteratorChain implements MetaDataIterator {
      * Combine two iterators.
      */
     public MetaDataIteratorChain(MetaDataIterator itr1, MetaDataIterator itr2) {
-        _itrs = new ArrayList(2);
+        _itrs = new ArrayList<MetaDataIterator>(2);
         _itrs.add(itr1);
         _itrs.add(itr2);
     }
@@ -60,7 +59,7 @@ public class MetaDataIteratorChain implements MetaDataIterator {
         if (_cur != -1)
             throw new IllegalStateException();
         if (_itrs == null)
-            _itrs = new ArrayList(4);
+            _itrs = new ArrayList<MetaDataIterator>(4);
         _itrs.add(itr);
     }
 
@@ -101,8 +100,10 @@ public class MetaDataIteratorChain implements MetaDataIterator {
     }
 
     public void close() {
-        if (_itrs != null)
-            for (Iterator itr = _itrs.iterator(); itr.hasNext();)
-                ((MetaDataIterator) itr.next()).close();
+        if (_itrs != null) {
+            for(MetaDataIterator mdi: _itrs) {
+                mdi.close();
+            }
+        }
     }
 }

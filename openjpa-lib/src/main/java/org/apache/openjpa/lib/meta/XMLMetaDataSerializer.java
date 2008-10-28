@@ -29,7 +29,9 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
+
 import javax.xml.transform.Result;
 import javax.xml.transform.TransformerConfigurationException;
 import javax.xml.transform.TransformerFactory;
@@ -37,17 +39,17 @@ import javax.xml.transform.sax.SAXTransformerFactory;
 import javax.xml.transform.sax.TransformerHandler;
 import javax.xml.transform.stream.StreamResult;
 
-import org.xml.sax.Attributes;
-import org.xml.sax.ContentHandler;
-import org.xml.sax.SAXException;
-import org.xml.sax.ext.LexicalHandler;
-import org.xml.sax.helpers.AttributesImpl;
 import org.apache.openjpa.lib.log.Log;
 import org.apache.openjpa.lib.util.Files;
 import org.apache.openjpa.lib.util.J2DoPrivHelper;
 import org.apache.openjpa.lib.util.Localizer;
 import org.apache.openjpa.lib.xml.Commentable;
 import org.apache.openjpa.lib.xml.XMLWriter;
+import org.xml.sax.Attributes;
+import org.xml.sax.ContentHandler;
+import org.xml.sax.SAXException;
+import org.xml.sax.ext.LexicalHandler;
+import org.xml.sax.helpers.AttributesImpl;
 
 /**
  * Abstract base type for serlializers that transfer groups of objects
@@ -90,18 +92,16 @@ public abstract class XMLMetaDataSerializer implements MetaDataSerializer {
         serialize((Map) null, flags);
     }
 
-    public void serialize(Map output, int flags) throws IOException {
-        Map files = getFileMap();
+    public void serialize(Map output, int flags)
+        throws IOException {
+        Map<File, Collection<Object>> files = getFileMap();
         if (files == null)
             return;
 
         // for each file, serialize objects
-        Map.Entry entry;
-        for (Iterator itr = files.entrySet().iterator(); itr.hasNext();) {
-            entry = (Map.Entry) itr.next();
-            File file = (File) entry.getKey();
-            Collection fileObjs = (Collection) entry.getValue();
-
+        Collection<Object> fileObjs; 
+        for(File file : files.keySet()) { 
+            fileObjs = files.get(file); 
             if (_log != null && _log.isInfoEnabled())
                 _log.info(_loc.get("ser-file", file));
 
@@ -151,18 +151,17 @@ public abstract class XMLMetaDataSerializer implements MetaDataSerializer {
      * written to, and values of a {@link Collection} of
      * {@link SourceTracker} instances.
      */
-    protected Map getFileMap() {
-        Collection objs = getObjects();
+    protected Map<File, Collection<Object>> getFileMap() {
+        Collection<Object> objs = getObjects();
         if (objs == null || objs.isEmpty())
             return null;
 
         // create a map of files to lists of objects
-        Map files = new HashMap();
+        Map<File, Collection<Object>> files =
+            new HashMap<File, Collection<Object>>();
         File file;
-        Collection fileObjs;
-        Object obj;
-        for (Iterator itr = objs.iterator(); itr.hasNext();) {
-            obj = itr.next();
+        Collection<Object> fileObjs;
+        for(Object obj : objs) { 
             file = getSourceFile(obj);
             if (file == null) {
                 if (_log != null && _log.isTraceEnabled())
@@ -170,9 +169,9 @@ public abstract class XMLMetaDataSerializer implements MetaDataSerializer {
                 continue;
             }
 
-            fileObjs = (Collection) files.get(file);
+            fileObjs = (Collection<Object>) files.get(file);
             if (fileObjs == null) {
-                fileObjs = new LinkedList();
+                fileObjs = new LinkedList<Object>();
                 files.put(file, fileObjs);
             }
             fileObjs.add(obj);
@@ -244,8 +243,8 @@ public abstract class XMLMetaDataSerializer implements MetaDataSerializer {
     /**
      * Serialize the given collection of objects to the given handler.
      */
-    private void serialize(Collection objs, ContentHandler handler, int flags)
-        throws SAXException {
+    private void serialize(Collection<Object> objs, ContentHandler handler,
+        int flags) throws SAXException {
         if (_log != null && _log.isTraceEnabled())
             _log.trace(_loc.get("ser-objs", objs));
 
@@ -352,10 +351,10 @@ public abstract class XMLMetaDataSerializer implements MetaDataSerializer {
     /**
      * Serialize the given set of objects.
      */
-    protected abstract void serialize(Collection objs) throws SAXException;
+    protected abstract void serialize(Collection<Object> objs) throws SAXException;
 
     /**
      * Return the current set of objects for serialization.
      */
-    protected abstract Collection getObjects();
+    protected abstract Collection<Object> getObjects();
 }

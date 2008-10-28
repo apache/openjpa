@@ -64,7 +64,7 @@ public interface MetaDataParser {
      * top-down or bottom-up. If the class is null, only top-level locations
      * will be parsed.
      */
-    public void parse(Class cls, boolean topDown) throws IOException;
+    public void parse(Class<?> cls, boolean topDown) throws IOException;
 
     /**
      * Parse the metadata in the given reader.

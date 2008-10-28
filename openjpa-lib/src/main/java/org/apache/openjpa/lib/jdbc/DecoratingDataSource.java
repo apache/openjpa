@@ -22,7 +22,6 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Iterator;
 import java.util.List;
 import javax.sql.DataSource;
 
@@ -36,7 +35,8 @@ import java.util.concurrent.CopyOnWriteArrayList;
  */
 public class DecoratingDataSource extends DelegatingDataSource {
 
-    private List _decorators = new CopyOnWriteArrayList();
+    private List<ConnectionDecorator> _decorators =
+        new CopyOnWriteArrayList<ConnectionDecorator>();
 
     /**
      * Constructor. Supply wrapped data source.
@@ -49,7 +49,7 @@ public class DecoratingDataSource extends DelegatingDataSource {
      * Return a read-only list of connection decorators in the order they were
      * added.
      */
-    public Collection getDecorators() {
+    public Collection<ConnectionDecorator> getDecorators() {
         return Collections.unmodifiableCollection(_decorators);
     }
 
@@ -64,7 +64,7 @@ public class DecoratingDataSource extends DelegatingDataSource {
     /**
      * Add multiple connection decorators efficiently.
      */
-    public void addDecorators(Collection decorators) {
+    public void addDecorators(Collection<ConnectionDecorator> decorators) {
         if (decorators != null)
             _decorators.addAll(decorators);
     }
@@ -95,9 +95,9 @@ public class DecoratingDataSource extends DelegatingDataSource {
     }
 
     private Connection decorate(Connection conn) throws SQLException {
-        if (!_decorators.isEmpty())
-            for (Iterator itr = _decorators.iterator(); itr.hasNext();)
-                conn = ((ConnectionDecorator) itr.next()).decorate(conn);
+        for(ConnectionDecorator decorator : _decorators) { 
+            conn = decorator.decorate(conn);
+        }
         return conn;
     }
 }

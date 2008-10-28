@@ -73,7 +73,8 @@ public class LogFactoryImpl
     /**
      * The {@link Log}s that this factory manages, keyed by log channel name.
      */
-    private Map _logs = new ConcurrentHashMap(); // <String,Log>
+    private Map<String, LogImpl> _logs =
+        new ConcurrentHashMap<String, LogImpl>(); 
 
     /**
      * The default logging level.
@@ -83,7 +84,8 @@ public class LogFactoryImpl
     /**
      * Storage for logging level configuration specified at configuration time.
      */
-    private Map _configuredLevels = new HashMap(); // <String,Integer>
+    private Map<String, Short> _configuredLevels =
+        new HashMap<String, Short>(); 
 
     /**
      * The stream to write to. Defaults to System.err.
@@ -106,11 +108,11 @@ public class LogFactoryImpl
 
     public Log getLog(String channel) {
         // no locking; ok if same log created multiple times
-        LogImpl l = (LogImpl) _logs.get(channel);
+        LogImpl l = _logs.get(channel);
         if (l == null) {
             l = newLogImpl();
-            l.setChannel(channel);
-            Short lvl = (Short) _configuredLevels.get(shorten(channel));
+            l.setChannel(channel);  // TODO add to interface?
+            Short lvl = _configuredLevels.get(shorten(channel));
             l.setLevel(lvl == null ? _defaultLogLevel : lvl.shortValue());
             _logs.put(channel, l);
         }
@@ -271,11 +273,12 @@ public class LogFactoryImpl
 
     public void setInto(Options opts) {
         if (!opts.isEmpty()) {
-            Map.Entry e;
-            for (Iterator iter = opts.entrySet().iterator(); iter.hasNext();) {
-                e = (Map.Entry) iter.next();
-                _configuredLevels.put(shorten((String) e.getKey()),
-                    new Short(getLevel((String) e.getValue())));
+            Map.Entry<Object, Object> e;
+            for (Iterator<Map.Entry<Object, Object>> iter =
+                opts.entrySet().iterator(); iter.hasNext();) {
+                e = iter.next();
+                _configuredLevels.put(shorten((String) e.getKey()), new Short(
+                    getLevel((String) e.getValue())));
             }
             opts.clear();
         }

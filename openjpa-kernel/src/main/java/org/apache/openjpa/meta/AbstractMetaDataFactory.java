@@ -84,7 +84,7 @@ public abstract class AbstractMetaDataFactory
     }
 
     public boolean store(ClassMetaData[] metas, QueryMetaData[] queries,
-        SequenceMetaData[] seqs, int mode, Map output) {
+        SequenceMetaData[] seqs, int mode, Map<File, String> output) {
         return false;
     }
 

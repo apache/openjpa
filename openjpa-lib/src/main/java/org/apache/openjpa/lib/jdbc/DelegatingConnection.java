@@ -63,7 +63,7 @@ public class DelegatingConnection implements Connection, Closeable {
     private static final Localizer _loc = Localizer.forPackage
         (DelegatingConnection.class);
 
-    private static final Map _jdbc3;
+    private static final Map<Object, Method> _jdbc3;
 
     static {
         boolean jdbc3 = false;
@@ -76,7 +76,7 @@ public class DelegatingConnection implements Connection, Closeable {
         }
 
         if (jdbc3) {
-            _jdbc3 = new HashMap();
+            _jdbc3 = new HashMap<Object,Method>();
             _jdbc3.put(SET_SAVEPOINT, m);
         } else
             _jdbc3 = null;
@@ -331,11 +331,11 @@ public class DelegatingConnection implements Connection, Closeable {
         return stmnt;
     }
 
-    public Map getTypeMap() throws SQLException {
+    public Map<String, Class<?>> getTypeMap() throws SQLException {
         return _conn.getTypeMap();
     }
 
-    public void setTypeMap(Map map) throws SQLException {
+    public void setTypeMap(Map<String, Class<?>> map) throws SQLException {
         _conn.setTypeMap(map);
     }
 
@@ -578,7 +578,7 @@ public class DelegatingConnection implements Connection, Closeable {
     }
 
     private static Method createJDBC3Method(Object key, String name,
-        Class[] args) {
+        Class<?>[] args) {
         try {
             Method m = Connection.class.getMethod(name, args);
             _jdbc3.put(key, m);

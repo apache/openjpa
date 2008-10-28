@@ -51,6 +51,7 @@ import serp.util.Strings;
  * @author Abe White
  * @nojavadoc
  */
+@SuppressWarnings("serial")
 public class Options extends TypedProperties {
 
     /**

@@ -29,6 +29,7 @@ import java.util.EventObject;
  * @author Abe White
  * @see JDBCListener
  */
+@SuppressWarnings("serial")
 public class JDBCEvent extends EventObject {
 
     /**

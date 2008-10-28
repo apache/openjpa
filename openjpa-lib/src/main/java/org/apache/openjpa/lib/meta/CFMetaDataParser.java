@@ -278,11 +278,12 @@ public class CFMetaDataParser extends XMLMetaDataParser {
      * taking into account the package currently being parsed for relative
      * class names.
      */
-    protected Class classForName(String name, boolean resolve)
+    protected Class<?> classForName(String name, boolean resolve)
         throws SAXException {
         if (name == null)
             return null;
-        Class cls = classForName(name, _package, resolve, currentClassLoader());
+        Class<?> cls =
+            classForName(name, _package, resolve, currentClassLoader());
         if (cls == null)
             throw getException(_loc.get("invalid-class", name).getMessage());
         return cls;
@@ -292,7 +293,7 @@ public class CFMetaDataParser extends XMLMetaDataParser {
      * Load the given class name against the given package and the set
      * of accepted standard packages. Return null if the class cannot be loaded.
      */
-    public static Class classForName(String name, String pkg,
+    public static Class<?> classForName(String name, String pkg,
         boolean resolve, ClassLoader loader) {
         if (StringUtils.isEmpty(name))
             return null;

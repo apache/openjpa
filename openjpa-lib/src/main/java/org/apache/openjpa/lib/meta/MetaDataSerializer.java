@@ -50,9 +50,9 @@ public interface MetaDataSerializer {
      * parsed. The objects must implement the {@link SourceTracker} interface.
      *
      * @param output if null, then serialize directly to the file system;
-     * othwerwise, populate the specified {@link Map} with
+     * otherwise, populate the specified {@link Map} with
      * keys that are the {@link File} instances, and
-     * values that are the {@link String} contents of the metadata
+     * values that are the {@link String} contents of the MetaData
      * @param flags bit flags specifying the output flags; e.g. {@link #PRETTY}
      */
     public void serialize(Map output, int flags) throws IOException;

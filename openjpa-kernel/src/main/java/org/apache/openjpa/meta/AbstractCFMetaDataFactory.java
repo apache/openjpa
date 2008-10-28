@@ -167,7 +167,7 @@ public abstract class AbstractCFMetaDataFactory
     }
 
     public boolean store(ClassMetaData[] metas, QueryMetaData[] queries,
-        SequenceMetaData[] seqs, int mode, Map output) {
+        SequenceMetaData[] seqs, int mode, Map<File,String> output) {
         if (mode == MODE_NONE)
             return true;
         if (isMappingOnlyFactory() && (mode & MODE_MAPPING) == 0)
@@ -338,14 +338,14 @@ public abstract class AbstractCFMetaDataFactory
                 for (int i = 0; i < cls.length; i++)
                     ser.removeMetaData(pr.getMetaData(cls[i], envLoader,
                         false));
-            serialize(ser, null, ser.PRETTY);
+            serialize(ser, null, Serializer.PRETTY);
         }
         if (qqs != null && !qqs.isEmpty()) {
             ser = newSerializer();
             ser.setMode(MODE_QUERY);
             for (int i = 0; i < qqs.size(); i++)
                 ser.addQueryMetaData((QueryMetaData) qqs.get(i));
-            serialize(ser, null, ser.PRETTY);
+            serialize(ser, null, Serializer.PRETTY);
         }
         return true;
     }
@@ -473,7 +473,8 @@ public abstract class AbstractCFMetaDataFactory
     /**
      * Tell the given serialier to write its metadatas.
      */
-    protected void serialize(MetaDataSerializer ser, Map output, int flags) {
+    protected void serialize(MetaDataSerializer ser, Map<File, String> output,
+        int flags) {
         try {
             if (output == null)
                 ser.serialize(flags);

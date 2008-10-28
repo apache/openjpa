@@ -336,6 +336,9 @@ public class DelegatingCallableStatement
         _stmnt.setAsciiStream(i1, is, i2);
     }
 
+    /**
+     * @deprecated 
+     */
     public void setUnicodeStream(int i1, InputStream is, int i2)
         throws SQLException {
         _stmnt.setUnicodeStream(i1, is, i2);
@@ -509,6 +512,10 @@ public class DelegatingCallableStatement
         return _stmnt.getDouble(i);
     }
 
+    /**
+     * @deprecated use <code>getBigDecimal(int parameterIndex)</code> or
+     *             <code>getBigDecimal(String parameterName)</code>
+     */
     public BigDecimal getBigDecimal(int a, int b) throws SQLException {
         return _stmnt.getBigDecimal(a, b);
     }
@@ -537,7 +544,7 @@ public class DelegatingCallableStatement
         return _stmnt.getBigDecimal(i);
     }
 
-    public Object getObject(int i, Map m) throws SQLException {
+    public Object getObject(int i, Map<String,Class<?>> m) throws SQLException {
         return _stmnt.getObject(i, m);
     }
 
@@ -760,7 +767,7 @@ public class DelegatingCallableStatement
         throw new UnsupportedOperationException();
     }
 
-    public Object getObject(String a, Map b) throws SQLException {
+    public Object getObject(String a, Map<String, Class<?>>b) throws SQLException {
         throw new UnsupportedOperationException();
     }
 

@@ -87,7 +87,7 @@ public interface MetaDataFactory
      * @return false if this factory is unable to store metadata
      */
     public boolean store(ClassMetaData[] metas, QueryMetaData[] queries,
-        SequenceMetaData[] seqs, int mode, Map output);
+        SequenceMetaData[] seqs, int mode, Map<File, String> output);
 
     /**
      * Drop the metadata for the given classes in the given mode(s).
