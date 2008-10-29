@@ -58,6 +58,8 @@ public abstract class AbstractQueryCache
     private static final Localizer s_loc =
         Localizer.forPackage(AbstractQueryCache.class);
 
+    private static final String TIMESTAMP = "timestamp";
+    public enum EvictPolicy {DEFAULT, TIMESTAMP};
     /**
      * The configuration set by the system.
      */
@@ -70,11 +72,11 @@ public abstract class AbstractQueryCache
 
     protected ConcurrentHashMap<String,Long> entityTimestampMap = null;
     private boolean _closed = false;
-
-    protected String evictPolicy = "default";
+    // default evict policy
+    public EvictPolicy evictPolicy = EvictPolicy.DEFAULT;
 
     public void initialize(DataCacheManager manager) {
-        if(evictPolicy.equalsIgnoreCase("timestamp")) {
+        if (evictPolicy == EvictPolicy.TIMESTAMP) {
             entityTimestampMap = new ConcurrentHashMap<String,Long>();
         
             // Get all persistence types to pre-load the entityTimestamp Map
@@ -94,7 +96,7 @@ public abstract class AbstractQueryCache
     public void onTypesChanged(TypesChangedEvent ev) {
         writeLock();
         Collection keys = null;
-        if (!evictPolicy.equalsIgnoreCase("timestamp")) {
+        if (evictPolicy == EvictPolicy.DEFAULT) {
             try {
                 if (hasListeners())
                     fireEvent(ev);
@@ -126,7 +128,7 @@ public abstract class AbstractQueryCache
                         new Long(System.currentTimeMillis()));
             }           
             // Now update entity timestamp map
-            updateEntityTimestampMap(changedClasses);
+            updateEntityTimestamp(changedClasses);
         }
     }
 
@@ -362,22 +364,23 @@ public abstract class AbstractQueryCache
      * @param evictPolicy -- String value that specifies the eviction policy
      */
     public void setEvictPolicy(String evictPolicy) {
-        this.evictPolicy = evictPolicy;
+        if (evictPolicy.equalsIgnoreCase(TIMESTAMP))
+            this.evictPolicy = EvictPolicy.TIMESTAMP;
     }
 
     /**
      * Returns the evictionPolicy for QueryCache
      * @return -- returns a String value of evictPolicy attribute
      */
-    public String getEvictPolicy() {
-        return null;
+    public EvictPolicy getEvictPolicy() {
+        return this.evictPolicy;
     }
 
     /**
      * Updates the entity timestamp map with the current time in milliseconds
      * @param timestampMap -- a map that contains entityname and its last updated timestamp
      */
-    protected void updateEntityTimestampMap(Map<String,Long> timestampMap) {
+    protected void updateEntityTimestamp(Map<String,Long> timestampMap) {
         if (entityTimestampMap != null)
             entityTimestampMap.putAll(timestampMap);
      }
@@ -389,7 +392,7 @@ public abstract class AbstractQueryCache
      * @param keyList -- List of entity names 
      * @return -- Returns a list that has the timestamp for the given entities
      */
-    public List<Long> getAllEntityTimestampFromMap(List<String> keyList) { 
+    public List<Long> getAllEntityTimestamp(List<String> keyList) { 
         ArrayList<Long> tmval = null;
         if (entityTimestampMap != null) {
             for (String s: keyList) {

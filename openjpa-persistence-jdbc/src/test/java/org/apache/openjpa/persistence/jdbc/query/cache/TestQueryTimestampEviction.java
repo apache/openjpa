@@ -18,8 +18,6 @@
  */
 package org.apache.openjpa.persistence.jdbc.query.cache;
 
-import java.util.List;
-
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
 
@@ -33,11 +31,11 @@ import org.apache.openjpa.util.CacheMap;
 public class TestQueryTimestampEviction extends SingleEMFTestCase {
     public void setUp() throws Exception {
         super.setUp(Part.class, PartBase.class, PartComposite.class,
-            Supplier.class, Usage.class,
-            "openjpa.DataCache", "true",
-            "openjpa.QueryCache",
-            "CacheSize=1000, evictPolicy='timestamp'",
-            "openjpa.RemoteCommitProvider", "sjvm");
+                Supplier.class, Usage.class,
+                "openjpa.DataCache", "true",
+                "openjpa.QueryCache",
+                "CacheSize=1000, EvictPolicy='timestamp'",
+                "openjpa.RemoteCommitProvider", "sjvm");
 
         if (recreateData) {
             // deletes any data leftover data in the database due to the failed
@@ -59,10 +57,7 @@ public class TestQueryTimestampEviction extends SingleEMFTestCase {
 
         // If evictPolicy is timestamp the querycache size should be equal to
         // cacheSizeBeforeUpdate value.
-        String evictPolicy = getQueryCache().getEvictPolicy();
-
-        if(evictPolicy.equalsIgnoreCase("timestamp")) 
-            assertEquals(cacheSizeBeforeUpdate, cacheSizeAfterUpdate);
+        assertEquals(cacheSizeBeforeUpdate, cacheSizeAfterUpdate);
 
         this.recreateData = false;
     }
@@ -94,7 +89,7 @@ public class TestQueryTimestampEviction extends SingleEMFTestCase {
 
         String sql = "select partno from part where cost > 120 ";
         Query nativeq = em.createNativeQuery(sql);
-        List nativelist = nativeq.getResultList();
+        int nativelistSize = nativeq.getResultList().size();
 
         em.getTransaction().commit();
         em.close();
@@ -103,14 +98,14 @@ public class TestQueryTimestampEviction extends SingleEMFTestCase {
         em.getTransaction().begin();
         Query q = em.createQuery("select p from PartBase p where p.cost>?1");
         q.setParameter(1, new Double(120));
-        List jpalist = q.getResultList();
+        int jpalistSize = q.getResultList().size();
 
         em.getTransaction().commit();
         em.close();
 
         // The resultlist of nativelist and jpalist should be the same 
         // in both eviction policies(dafault/timestamp)
-        assertEquals(nativelist.size(),jpalist.size());
+        assertEquals(nativelistSize,jpalistSize);
 
         this.deleteData = true;
         this.recreateData = true;
@@ -146,7 +141,7 @@ public class TestQueryTimestampEviction extends SingleEMFTestCase {
     private ConcurrentQueryCache getQueryCache() {
         OpenJPAEntityManagerFactory oemf = OpenJPAPersistence.cast(emf);
         QueryResultCacheImpl scache = (QueryResultCacheImpl) oemf.
-            getQueryResultCache();
+        getQueryResultCache();
 
         return (ConcurrentQueryCache ) scache.getDelegate();
     }

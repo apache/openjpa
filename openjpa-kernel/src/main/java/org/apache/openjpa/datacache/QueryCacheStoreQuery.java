@@ -32,6 +32,7 @@ import java.util.Set;
 import java.util.TreeMap;
 
 import org.apache.commons.collections.map.LinkedMap;
+import org.apache.openjpa.datacache.AbstractQueryCache.EvictPolicy;
 import org.apache.openjpa.kernel.FetchConfiguration;
 import org.apache.openjpa.kernel.LockLevels;
 import org.apache.openjpa.kernel.OpenJPAStateManager;
@@ -127,13 +128,13 @@ public class QueryCacheStoreQuery
         // this if block is invoked if the evictOnTimestamp is set to true
         if (_cache instanceof AbstractQueryCache) {
             AbstractQueryCache qcache = (AbstractQueryCache) _cache;
-            if (qcache.getEvictPolicy().equalsIgnoreCase("timestamp")) {
+            if (qcache.getEvictPolicy() == EvictPolicy.TIMESTAMP) {
                 Set<String> classNames = qk.getAcessPathClassNames();
                 List<String> keyList = new ArrayList<String>();      
                 keyList.addAll(classNames);
 
                 List<Long> timestamps = 
-                    qcache.getAllEntityTimestampFromMap(keyList);
+                    qcache.getAllEntityTimestamp(keyList);
                 long queryTS = res.getTimestamp();
                 if (timestamps != null) {
                     for (Long ts: timestamps) {

@@ -26,70 +26,66 @@ import org.apache.openjpa.persistence.DataCache;
 @DataCache(timeout=100000)
 
 public class Usage {
-	@Id  
-	@GeneratedValue(strategy=GenerationType.IDENTITY)
-	 int id;
-	 int quantity;
-	 
-	@ManyToOne
-	 Part child;
-	@ManyToOne
-	 PartComposite parent ;
-	
-	@Version
-	long version;
-	
-	
-	public Usage(PartComposite p, int quantity, Part subpart) {
-		parent=p;
-		this.quantity=quantity;
-		parent.getPartsUsed().add(this);
-		setChild(subpart);
-		subpart.getUsedIn().add(this);
-	}
-	
-	// JPA entity needs a public no-arg constructor ! 
-	public Usage() {}
+    @Id  
+    @GeneratedValue(strategy=GenerationType.IDENTITY)
+    int id;
+    int quantity;
+
+    @ManyToOne
+    Part child;
+    @ManyToOne
+    PartComposite parent ;
+
+    @Version
+    long version;
 
 
-	public int getId() {
-		return id;
-	}
+    public Usage(PartComposite p, int quantity, Part subpart) {
+        parent=p;
+        this.quantity=quantity;
+        parent.getPartsUsed().add(this);
+        setChild(subpart);
+        subpart.getUsedIn().add(this);
+    }
 
-	public void setId(int id) {
-		this.id = id;
-	}
+    // JPA entity needs a public no-arg constructor ! 
+    public Usage() {}
 
-	public Part getParent() {
-		return parent;
-	}
 
-	public void setParent(PartComposite parent) {
-		this.parent = parent;
-	}
+    public int getId() {
+        return id;
+    }
 
-	public int getQuantity() {
-		return quantity;
-	}
+    public void setId(int id) {
+        this.id = id;
+    }
 
-	public void setQuantity(int quantity) {
-		this.quantity = quantity;
-	}
+    public Part getParent() {
+        return parent;
+    }
 
-	public Part getChild() {
-		return child;
-	}
+    public void setParent(PartComposite parent) {
+        this.parent = parent;
+    }
 
-	public void setChild(Part child) {
-		this.child = child;
-	}
+    public int getQuantity() {
+        return quantity;
+    }
 
-	public String toString() {
-		return "Usage:"+id+" quantity:"+quantity+" child:"+child.getPartno()+" parent"+parent.getPartno();
-	}
+    public void setQuantity(int quantity) {
+        this.quantity = quantity;
+    }
 
-	
-	
-	
+    public Part getChild() {
+        return child;
+    }
 
+    public void setChild(Part child) {
+        this.child = child;
+    }
+
+    public String toString() {
+        return "Usage:"+id+" quantity:"+quantity+" child:"+child.getPartno()+
+            " parent"+parent.getPartno();
+    }
 }

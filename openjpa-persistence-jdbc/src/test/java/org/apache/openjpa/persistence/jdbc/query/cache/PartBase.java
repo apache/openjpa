@@ -30,64 +30,64 @@ import org.apache.openjpa.persistence.DataCache;
 @Entity
 @DataCache
 public class PartBase extends Part  {
-	
-	 double cost;
-	 double mass;
-	 int backOrder;
-	
-	@ManyToMany(mappedBy="supplies")
-	protected List<Supplier> suppliers = new ArrayList<Supplier>();
-	
-	public PartBase() {}
-	
-  public PartBase(int partno, String name, double cost, double mass){
-  	this.partno=partno;
-  	this.name = name;
-  	this.cost = cost;
-  	this.mass= mass;
-  	this.backOrder=0;
-  	this.inventory=0;
-  }
 
-	public double getCost() {
-		return cost;
-	}
+    double cost;
+    double mass;
+    int backOrder;
 
-	public void setCost(double cost) {
-		this.cost = cost;
-	}
+    @ManyToMany(mappedBy="supplies")
+    protected List<Supplier> suppliers = new ArrayList<Supplier>();
 
-	public double getMass() {
-		return mass;
-	}
+    public PartBase() {}
 
-	public void setMass(double mass) {
-		this.mass = mass;
-	}
+    public PartBase(int partno, String name, double cost, double mass){
+        this.partno=partno;
+        this.name = name;
+        this.cost = cost;
+        this.mass= mass;
+        this.backOrder=0;
+        this.inventory=0;
+    }
 
-	public Collection<Supplier> getSuppliers() {
-		return suppliers;
-	}
+    public double getCost() {
+        return cost;
+    }
 
-	public void setSuppliers(List<Supplier> suppliers) {
-		this.suppliers = suppliers;
-	}
-	
-	public String toString() {
-		String sup= "";
-		if (getSuppliers()!=null)
-			for (Supplier s : getSuppliers()){
-				sup= sup+s.sid+",";
-			}
-		return "PartBase:"+partno+" name:+"+name+" cost:"+cost+" mass:"+mass+" supplies=["+sup+"]";
-	}
+    public void setCost(double cost) {
+        this.cost = cost;
+    }
 
-	public int getBackOrder() {
-		return backOrder;
-	}
+    public double getMass() {
+        return mass;
+    }
 
-	public void setBackOrder(int backOrder) {
-		this.backOrder = backOrder;
-	}
+    public void setMass(double mass) {
+        this.mass = mass;
+    }
 
+    public Collection<Supplier> getSuppliers() {
+        return suppliers;
+    }
+
+    public void setSuppliers(List<Supplier> suppliers) {
+        this.suppliers = suppliers;
+    }
+
+    public String toString() {
+        String sup= "";
+        if (getSuppliers()!=null)
+            for (Supplier s : getSuppliers()){
+                sup= sup+s.sid+",";
+            }
+        return "PartBase:"+partno+" name:+"+name+" cost:"+cost+" mass:"+
+            mass+" supplies=["+sup+"]";
+    }
+
+    public int getBackOrder() {
+        return backOrder;
+    }
+
+    public void setBackOrder(int backOrder) {
+        this.backOrder = backOrder;
+    }
 }

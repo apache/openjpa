@@ -29,59 +29,56 @@ import org.apache.openjpa.persistence.DataCache;
 @DataCache
 
 public class Supplier {
-	
-	@Id  int sid;
-	@Column(length=20)
-	 String name;
-	
-	@ManyToMany
-	List<PartBase> supplies = new ArrayList<PartBase>();
-	
-	@Version 
-	long version;
-	
-	public Supplier(){}
-	
-	public Supplier(int sid, String name){
-		this.sid=sid;
-		this.name=name;
-	}
-	
-	public Supplier addPart( PartBase p ) {
-		supplies.add(p);
-		p.getSuppliers().add(this);
-		return this;
-	}
 
-	public String getName() {
-		return name;
-	}
+    @Id  int sid;
+    @Column(length=20)
+    String name;
 
-	public void setName(String name) {
-		this.name = name;
-	}
+    @ManyToMany
+    List<PartBase> supplies = new ArrayList<PartBase>();
 
-	public int getSid() {
-		return sid;
-	}
+    @Version 
+    long version;
 
-	public void setSid(int sid) {
-		this.sid = sid;
-	}
+    public Supplier(){}
 
-	public Collection<PartBase> getSupplies() {
-		return supplies;
-	}
+    public Supplier(int sid, String name){
+        this.sid=sid;
+        this.name=name;
+    }
 
-	public void setSupplies(List<PartBase> supplies) {
-		this.supplies = supplies;
-	}
-	
-	public String toString() {
+    public Supplier addPart( PartBase p ) {
+        supplies.add(p);
+        p.getSuppliers().add(this);
+        return this;
+    }
 
-		return "Supplier:"+sid+" name:+"+name;
-	}
+    public String getName() {
+        return name;
+    }
 
-	
+    public void setName(String name) {
+        this.name = name;
+    }
 
+    public int getSid() {
+        return sid;
+    }
+
+    public void setSid(int sid) {
+        this.sid = sid;
+    }
+
+    public Collection<PartBase> getSupplies() {
+        return supplies;
+    }
+
+    public void setSupplies(List<PartBase> supplies) {
+        this.supplies = supplies;
+    }
+
+    public String toString() {
+
+        return "Supplier:"+sid+" name:+"+name;
+    }
 }

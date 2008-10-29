@@ -541,6 +541,29 @@ To disable the query cache completely, set the <literal>openjpa.QueryCache
 &lt;property name="openjpa.QueryCache" value="false"/&gt;
 </programlisting>
             </example>
+       <para>
+Query Cache's default behaviour on eviction is to evict all the queries from
+the cache if any of the entities that are in the access path of the query are 
+modified. Scanning through the whole query cache to evict the queries upon an 
+entity update slows down the entity updation. 
+
+The configurable eviction policy "timestamp" is to track the timestamp of the
+query and the timestamp of last update for each entity class and compare the 
+timestamps when retrieving the query for reuse.  If the timestamp of the query 
+result is older than the last update time of any entity in the access path of 
+the query, the query result would not be reused and the query result would be 
+evicted from the query cache.
+To configure the <literal>EvictPolicy</literal> to timestamp, 
+here is an example:
+       </para>
+            <example id="ref_guide_cache_evictionPolicy">
+                <title>
+                    Query Cache Eviction Policy
+                </title>
+<programlisting>
+&lt;property name="openjpa.QueryCache" value="EvictPolicy='timestamp'"/&gt;
+</programlisting>
+            </example>
             <para>
 There are certain situations in which the query cache is bypassed:
             </para>

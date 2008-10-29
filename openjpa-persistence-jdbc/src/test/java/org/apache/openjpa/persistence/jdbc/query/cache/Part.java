@@ -40,42 +40,41 @@ import org.apache.openjpa.persistence.DataCache;
 
 @DataCache
 abstract public class Part {
-	
-	@Id  int partno;
-	@Column(length=20)
-	String name;
-	int inventory;
-	
-	@OneToMany(mappedBy="child",cascade=CascadeType.PERSIST)
-	protected Collection<Usage> usedIn = new ArrayList<Usage>();
-	
-	@Version
-	long version;
-	
-	
-	public String getName() {
-		return name;
-	}
-	public void setName(String name) {
-		this.name = name;
-	}
-	public int getPartno() {
-		return partno;
-	}
-	public void setPartno(int partno) {
-		this.partno = partno;
-	}
-	public Collection<Usage> getUsedIn() {
-		return usedIn;
-	}
-	public void setUsedIn(Collection<Usage> usedIn) {
-		this.usedIn = usedIn;
-	}
-	public int getInventory() {
-		return inventory;
-	}
-	public void setInventory(int inventory) {
-		this.inventory = inventory;
-	}
 
+    @Id  int partno;
+    @Column(length=20)
+    String name;
+    int inventory;
+
+    @OneToMany(mappedBy="child",cascade=CascadeType.PERSIST)
+    protected Collection<Usage> usedIn = new ArrayList<Usage>();
+
+    @Version
+    long version;
+
+
+    public String getName() {
+        return name;
+    }
+    public void setName(String name) {
+        this.name = name;
+    }
+    public int getPartno() {
+        return partno;
+    }
+    public void setPartno(int partno) {
+        this.partno = partno;
+    }
+    public Collection<Usage> getUsedIn() {
+        return usedIn;
+    }
+    public void setUsedIn(Collection<Usage> usedIn) {
+        this.usedIn = usedIn;
+    }
+    public int getInventory() {
+        return inventory;
+    }
+    public void setInventory(int inventory) {
+        this.inventory = inventory;
+    }
 }

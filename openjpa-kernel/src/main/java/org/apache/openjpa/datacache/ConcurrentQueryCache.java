@@ -141,7 +141,7 @@ public class ConcurrentQueryCache
     /**
      * Returns the eviction policy of the query cache
      */
-    public String getEvictPolicy() {
+    public EvictPolicy getEvictPolicy() {
         return super.evictPolicy;
     }
 }
