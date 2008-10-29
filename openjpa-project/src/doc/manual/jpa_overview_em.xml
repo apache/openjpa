@@ -530,7 +530,7 @@ but cannot concurrently update it.
                 <para>
 <literal>WRITE</literal>: Other transactions cannot concurrently read or write
 the object. When a transaction is committed that holds WRITE locks on any
-entites, those entites will have their version incremented even if the entities
+entities, those entities will have their version incremented even if the entities
 themselves did not change in the transaction.
                 </para>
             </listitem>

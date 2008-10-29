@@ -361,7 +361,7 @@ types, see <xref linkend="jpa_overview_meta_field"/>.
             <note>
                 <para>
 OpenJPA allows a persistent class to be both an entity and an embeddable class.
-Instances of the class will act as entites when persisted explicitly or assigned
+Instances of the class will act as entities when persisted explicitly or assigned
 to non-embedded fields of entities. Instances will act as embedded values when
 assigned to embedded fields of entities.
                 </para>
@@ -1159,7 +1159,7 @@ types.
 With a mix of eager and lazily-loaded fields, you can ensure that commonly-used
 fields load efficiently, and that other state loads transparently when accessed.
 As you will see in <xref linkend="jpa_overview_emfactory_perscontext"/>,
-you can also use eager fetching to ensure that entites have all needed data
+you can also use eager fetching to ensure that entities have all needed data
 loaded before they become <emphasis>detached</emphasis> at the end of a
 persistence context.
                 </para>

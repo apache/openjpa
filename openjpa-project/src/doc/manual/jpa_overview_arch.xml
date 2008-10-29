@@ -110,7 +110,7 @@ Query</classname> instances.
                 </primary>
             </indexterm>
 <emphasis role="bold"><link linkend="jpa_overview_pc"><classname>Entity
-</classname></link></emphasis>: Entites are persistent objects that represent
+</classname></link></emphasis>: Entities are persistent objects that represent
 datastore records.
             </para>
         </listitem>

@@ -1585,7 +1585,7 @@ variables are case insensitive. An identification variable evaluates to a value
 of the type of the expression used in declaring the variable. For example,
 consider the previous query: <programlisting>SELECT DISTINCT mag FROM Magazine mag JOIN mag.articles art JOIN art.author auth WHERE auth.firstName = 'John'
 </programlisting> In the <literal>FROM</literal> clause declaration <literal>
-mag.articles</literal><literal>art</literal>, the identification variable
+mag.articles</literal> <literal>art</literal>, the identification variable
 <literal>art</literal> evaluates to any <literal>Article</literal> value
 directly reachable from <literal>Magazine</literal>. The association-field
 <literal>articles</literal> is a collection of instances of the abstract schema
@@ -2286,7 +2286,7 @@ collection_valued_path_expression IS [NOT] EMPTY
                 </para>
                 <para>
 This expression tests whether or not the collection designated by the
-collection-valued path expression is empty (i.e, has no elements).
+collection-valued path expression is empty (i.e. has no elements).
                 </para>
                 <para>
 For example, the following query will return all magazines that don't have any

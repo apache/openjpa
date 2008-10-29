@@ -332,7 +332,7 @@ You can pass settings to the agent using OpenJPA's plugin syntax (see
 <xref linkend="ref_guide_conf_plugins"/>). The agent accepts the long
 form of any of the standard configuration options
 (<xref linkend="ref_guide_conf_devtools"/> ). It also accepts the following
-options, the first three of which correspond exactly to to the same-named
+options, the first three of which correspond exactly to the same-named
 options of the enhancer tool described in
 <xref linkend="ref_guide_pc_enhance_build"/>:
             </para>
@@ -436,7 +436,7 @@ if you set the <literal>classLoadEnhancement</literal> javaagent flag to
 runtime enhancement process for some reason.
                 </para></listitem>
                 <listitem><para>
-<emphasis>Runtime Unenhanced Classes</emphasis>: AKA statte comparison and 
+<emphasis>Runtime Unenhanced Classes</emphasis>: AKA state comparison and 
 subclassing. If you are running
 in a Java 5 environment without a javaagent, or in a Java 6 environment that
 does not support class retransformation, OpenJPA will still create subclasses
@@ -1141,7 +1141,7 @@ of type <classname>Calendar</classname>, with one exception: when using Java
 version 1.3, the <methodname>set()</methodname> method cannot be overridden, so
 when altering the calendar using that method, the field must be explicitly
 marked as dirty. This limitation does not apply when running with Java version
-1.4 and higer.
+1.4 and higher.
                 </para>
             </note>
         </section>
@@ -1674,7 +1674,7 @@ your field to be a persistence-capable type in order to embed it). This means
 that a field can externalize to something as simple as a primitive, something as
 complex as a collection or map of entities, or anything in
 between. If you do choose to externalize to a collection or map, OpenJPA
-recognizes a family of metadata extensions for specying type information for the
+recognizes a family of metadata extensions for specifying type information for the
 externalized form of your fields - see <xref linkend="type"/>. If the
 external form of your field is an entity object or contains entities, OpenJPA 
 will correctly include the objects in its persistence-by-reachability 
@@ -1841,7 +1841,7 @@ public class Magazine {
             </primary>
         </indexterm>
         <para>
-Fetch groups are sets of fields that load together. They can be used to to pool
+Fetch groups are sets of fields that load together. They can be used to pool
 together associated fields in order to provide performance improvements over
 standard data fetching. Specifying fetch groups allows for tuning of lazy
 loading and eager fetching behavior.

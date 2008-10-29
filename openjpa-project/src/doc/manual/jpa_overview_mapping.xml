@@ -377,7 +377,7 @@ constraint spans.
 In XML, unique constraints are represented by nesting <literal>
 unique-constraint</literal> elements within the <literal> table</literal>
 element. Each <literal>unique-constraint</literal> element in turn nests
-<literal>column-name</literal> text elements to enumerate the contraint's
+<literal>column-name</literal> text elements to enumerate the constraint's
 columns.
         </para>
         <example id="jpa_overview_mapping_unq_attrex">
@@ -2349,7 +2349,7 @@ the discriminator strategy of the hierarchy.
         </itemizedlist>
         <para>
 The corresponding XML element is <literal> discriminator-column</literal>. Its
-attribues mirror the annotation properties above:
+attributes mirror the annotation properties above:
         </para>
         <itemizedlist>
             <listitem>
@@ -4212,7 +4212,7 @@ fields, namely dedicated <link linkend="jpa_overview_mapping_assoccoll">join
 tables</link> or <link linkend="jpa_overview_mapping_bidi">bidirectional
 relations</link>. The only additions are the <classname>MapKey</classname>
 annotation and <literal>map-key</literal> element to declare the key field. We
-covered these additions in in <xref linkend="jpa_overview_meta_mapkey"/>.
+covered these additions in <xref linkend="jpa_overview_meta_mapkey"/>.
             </para>
             <mediaobject>
                 <imageobject>
