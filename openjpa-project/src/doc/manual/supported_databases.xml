@@ -1002,7 +1002,7 @@ primary key field is manually added to the table.
                 <listitem>
                     <para>
 Persisting a zero-length string results in a string with a single space
-characted being returned from Sybase, Inc.'s JDBC driver.
+character being returned from Sybase, Inc.'s JDBC driver.
                     </para>
                 </listitem>
                 <listitem>
@@ -1016,11 +1016,11 @@ procedure.</literal> ".
                 </listitem>
                 <listitem>
                     <para> 
-Applications performing update/insert data of the BigDecimal java type may fail 
+Applications performing update/insert data of the BigDecimal Java type may fail 
 with OptimisticException if the data exceeds the scale or precision of the
 column on Sybase. To avoid this problem, applications can specify the precision
 and scale for the numeric type by setting numericTypeName='NUMERIC(p,s)' for
-the column type mapped by the BigDecimal java type. See
+the column type mapped by the BigDecimal Java type. See
 <link linkend="openjpa.jdbc.DBDictionary">openjpa.jdbc.DBDictionary</link> for
 more detail. Alternatively, application can set the precision and scale using
 the standard <classname>Column</classname> annotation, described in

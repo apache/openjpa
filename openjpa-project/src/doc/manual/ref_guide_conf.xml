@@ -2834,11 +2834,11 @@ serious problems.
             <para>
                 <emphasis role="bold">Description:</emphasis>
                 The RuntimeUnenhancedClasses property controls how OpenJPA 
-                handles classes that have not been enhanced byt the PCEnhancer 
-                tool or automatically by a javaagent. If RuntimeUnenhanced is 
+                handles classes that have not been enhanced by the PCEnhancer 
+                tool or automatically by a javaagent. If RuntimeUnenhancedClasses is 
                 set to <literal>supported</literal> OpenJPA will automatically 
                 create subclasses for unenhanced entity classes. If set to 
-                <literal>unsupported</literal>OpenJPA will not create subclasses 
+                <literal>unsupported</literal> OpenJPA will not create subclasses 
                 for unenhanced entity classes and will throw an exception when 
                 they are detected. If set to <literal>warn</literal> OpenJPA 
                 will not create subclasses for unenhanced entity classes 

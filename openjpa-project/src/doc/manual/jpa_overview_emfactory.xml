@@ -127,7 +127,7 @@ public EntityManager createEntityManager(Map map);
         <para>
 The two <methodname>createEntityManager</methodname> methods above create a new
 <classname>EntityManager</classname> each time they are invoked. The optional
-<classname>Map</classname> is used to to supply vendor-specific settings. If you
+<classname>Map</classname> is used to supply vendor-specific settings. If you
 have configured your implementation for JTA transactions and a JTA transaction
 is active, the returned <classname>EntityManager</classname> will be 
 synchronized with that transaction.
@@ -277,7 +277,7 @@ object.
 When the next transaction begins, the <classname>EntityManager</classname> will
 begin a new persistence context, and will again start returning managed
 entities. As you'll see in <xref linkend="jpa_overview_em"/>, you can
-also merge the previously-detached entites back into the new persistence
+also merge the previously-detached entities back into the new persistence
 context.
             </para>
             <example id="jpa_overview_emfactory_perscontext_transex">
@@ -285,7 +285,7 @@ context.
                     Behavior of Transaction Persistence Context
                 </title>
                 <para>
-The following code illustrates the behavior of entites under an <classname>
+The following code illustrates the behavior of entities under an <classname>
 EntityManager</classname> using a transaction persistence context.
                 </para>
 <programlisting>
@@ -339,7 +339,7 @@ only become detached when you finally close the <classname>EntityManager
                     Behavior of Extended Persistence Context
                 </title>
                 <para>
-The following code illustrates the behavior of entites under an <classname>
+The following code illustrates the behavior of entities under an <classname>
 EntityManager</classname> using an extended persistence context.
                 </para>
 <programlisting>

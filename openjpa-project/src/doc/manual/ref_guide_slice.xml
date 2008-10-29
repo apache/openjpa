@@ -58,18 +58,18 @@
          <section><title>Transparency</title>
             <para>
 			  The primary design objective for Slice is to make the user 
-			  application transparent to the change in storage stratgey where 
+			  application transparent to the change in storage strategy where 
 			  data resides in multiple (possibly heterogeneous) databases instead
 			  of a single database. Slice achieves this transparency by 
 			  virtualization of multiple databases as a single database such 
-			  that OpenJPA object management kernel continues to intract in
+			  that OpenJPA object management kernel continues to interact in
 			  exactly the same manner with storage layer. Similarly, 
               the existing application or the persistent domain model requires 
               <emphasis>no change</emphasis> to upgrade from a single database 
               to a distributed database environment. 
             </para>
 			<para>
-			  An existing application developed for a single databse can be 
+			  An existing application developed for a single database can be 
 			  adapted to work with multiple databases purely by configuring
 			  a persistence unit via <classname>META-INF/persistence.xml</classname>. 
 			</para>
@@ -89,7 +89,7 @@
 			where the data is naturally amenable to horizontal partitions, 
 			for example, by temporal interval (e.g. Purchase Orders per month) 
 			or by geographical regions (e.g. Customer by Zip Code) can derive
-			singnificant performance benefit and favorable scaling behavior by 
+			significant performance benefit and favorable scaling behavior by 
 			using Slice.     
 			</para>
 		</section>
@@ -109,9 +109,9 @@
             </para>
          
             <para>
-            By deafult, any query is executed against all available slices. 
+            By default, any query is executed against all available slices. 
 			However, the application can target the query only to a subset of 
-			slices vy setting <emphasis>hint</emphasis> on <classname>javax.persistence.Query</classname>. 
+			slices by setting <emphasis>hint</emphasis> on <classname>javax.persistence.Query</classname>. 
 			The hint key is  <classname>openjpa.hint.slice.Target</classname> and 
             hint value is a comma-separated list of slice identifiers. The following 
             example shows how to target a query only to a pair of slices 
@@ -124,7 +124,7 @@
               Query query = em.createQuery("SELECT p FROM PObject")
 				              .setHint(hint, "One, Two");
               List result = query.getResultList();
-              // verify that each instance is originaing from the hinted slices
+              // verify that each instance is originating from the hinted slices
               for (Object pc : result) {
                  String sliceOrigin = SlicePersistence.getSlice(pc);
                  assertTrue ("One".equals(sliceOrigin) || "Two".equals(sliceOrigin));
@@ -167,7 +167,7 @@
 			 
 		 <para>
 			 Slice runtime invokes this user-supplied method for the newly
-			 persistent instance that are explict argument of the 
+			 persistent instance that is explicit argument of the 
 			 <classname>javax.persistence.EntityManager.persist(Object pc)</classname>
 			 method. The user application must return a valid slice name from
 			 this method to designate the target slice for the given instance.
@@ -183,7 +183,7 @@
              
 		<para>
 			The user application needs to specify the target slice <emphasis>only</emphasis>
-			for the <emphasis>root</emphasis> instance i.e. the explict argument for the
+			for the <emphasis>root</emphasis> instance i.e. the explicit argument for the
 			<classname>EntityManager.persist(Object pc)</classname> method. Slice computes
 			the transitive closure of the graph i.e. the set of all instances 
 			directly or indirectly reachable from the root instance and stores
@@ -270,7 +270,7 @@
             No relationship can exist across database slices. In O-R mapping parlance,
             this condition translates to the limitation that the transitive closure of an object graph must be 
             <emphasis>collocated</emphasis> in the same database.
-            For example, consider a domain model where Person relates to Adress.
+            For example, consider a domain model where Person relates to Address.
             Person X refers to Address A while Person Y refers to Address B. 
             Collocation Constraint means that <emphasis>both</emphasis> X and A 
             must be stored in the same
@@ -431,7 +431,7 @@ public interface DistributionPolicy {
 		<para>
 			The entities that are annotated with <classname>@Replicated</classname> 
 			annotation can be stored in multiple slices as identical copies.
-        Specify the implementation class of <classname>ReplicationPolicy</classname>in configuration as
+        Specify the implementation class of <classname>ReplicationPolicy</classname> in configuration as
         <programlisting> 
          <![CDATA[ <property name="openjpa.slice.ReplicationPolicy" value="com.acme.foo.MyReplicationPolicy"/>]]>
         </programlisting>
@@ -485,14 +485,14 @@ the JDBC connection URL of a slice.
 		 <para>
 			 The user application often directs OpenJPA to generate primary keys 
 			 for persistence instances automatically or from a specific database 
-			 sequence. For such primary key value generation startegy where 
+			 sequence. For such primary key value generation strategy where 
 			 a database instance is required, Slice uses a designated slice 
 			 referred as <emphasis>master</emphasis> slice. 
 		 </para>
          <para>
-			 The master slice can be specified explictly via 
+			 The master slice can be specified explicitly via 
 			 <classname>openjpa.slice.Master</classname> property and whose value is one
-			 of the configured slice name. If this property is not explictly
+			 of the configured slice names. If this property is not explicitly
 			 specified then, by default, the master slice is the first slice 
 			 in the list of configured slice names. 
        </para>

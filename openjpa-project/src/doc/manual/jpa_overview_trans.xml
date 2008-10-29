@@ -390,7 +390,7 @@ any exception is thrown during the commit process.
         </para>
         <para>
 Unless you are using an extended persistence context, committing or rolling back
-also ends the persistence context. All managed entites will be detached from the
+also ends the persistence context. All managed entities will be detached from the
 <classname>EntityManager</classname>.
         </para>
 <programlisting>

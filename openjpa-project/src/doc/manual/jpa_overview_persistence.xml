@@ -126,7 +126,7 @@ The root element of a <filename>persistence.xml</filename> file is <literal>
 persistence</literal>, which then contains one or more <literal>
 persistence-unit</literal> definitions. Each persistence unit describes the
 configuration for the entity managers created by the persistence unit's entity
-manager factory. The persistence unit can specify these elements and attribtues.
+manager factory. The persistence unit can specify these elements and attributes.
         </para>
         <itemizedlist>
             <listitem>

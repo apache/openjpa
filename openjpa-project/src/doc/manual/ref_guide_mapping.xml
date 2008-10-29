@@ -547,7 +547,8 @@ generation.
                     </listitem>
                     <listitem>
                         <para>
-<literal>-annotations/-ann &lt;true/t | false/f&gt;</literal>: Set to true to
+<literal>-annotations/-ann &lt;true/t | false/f&gt;</literal>: Set to
+<literal>true</literal> to
 generate JPA annotations in generated java classes.
                         </para>
                     </listitem>
@@ -625,7 +626,7 @@ all generated classes.
                         <para>
 <literal>-useBuiltinIdentityClass/-bic &lt;true/t | false/f&gt;</literal>: Set
 to <literal>false</literal> to prevent the tool from using built-in application
-identity classes when possible. This will force the tool to to create custom
+identity classes when possible. This will force the tool to create custom
 application identity classes even when there is only one primary key column.
                         </para>
                     </listitem>
@@ -732,7 +733,7 @@ Your persistent classes are now ready to access your existing schema.
             </title>
             <para>
 The <classname>org.apache.openjpa.jdbc.meta.ReverseCustomizer</classname> plugin
-interface allows you to customze the reverse mapping process. See the class
+interface allows you to customize the reverse mapping process. See the class
 <ulink url="../javadoc/org/apache/openjpa/jdbc/meta/ReverseCustomizer.html">
 Javadoc</ulink> for details on the hooks that this interface provides. Specify
 the concrete plugin implementation to use with the <literal>
@@ -1118,7 +1119,7 @@ strings (see <xref linkend="ref_guide_conf_plugins"/> ), without the class
 name. It is a comma-separated list of key/value pairs, where each key is a
 possible field type, and each value is itself a plugin string describing the
 strategy for that type. We present an example below. See
-<xref linkend="ref_guide_mapping_custom_field"/> for information on custum
+<xref linkend="ref_guide_mapping_custom_field"/> for information on custom
 field strategies.
                         </para>
                     </listitem>
@@ -1137,8 +1138,8 @@ keys on relation columns. This is the default.
                     </listitem>
                     <listitem>
                         <para>
-<literal>JoinForeignKeyDeleteAction</literal>: The defualt delete action of
-foreign keys that join join secondary, collection, map, or subclass tables to
+<literal>JoinForeignKeyDeleteAction</literal>: The default delete action of
+foreign keys that join secondary, collection, map, or subclass tables to
 the primary table. Accepts the same values as the <literal>
 ForeignKeyDeleteAction</literal> property above.
                         </para>
@@ -1808,7 +1809,7 @@ JPA uses the <classname>AttributeOverride</classname> annotation to override the
 default mappings of an embeddable class. The JPA Overview details this process
 in <xref linkend="jpa_overview_mapping_embed"/>. <classname>
 AttributeOverride</classname>s suffice for simple mappings, but do not allow
-you to override complex mappings. Also, JPA has no way to differentitate between
+you to override complex mappings. Also, JPA has no way to differentiate between
 a null embedded object and one with default values for all of its fields.
             </para>
             <para>
@@ -1861,7 +1862,7 @@ class to override a complex mapping of its mapped superclass, just as you can
 with <classname> AttributeOverride</classname> and <classname>
 AssociationOverride</classname> s. The <classname>MappingOverrides</classname>
 annotation, whose value is an array of <classname>MappingOverride</classname> s,
-allows you to overide multiple mapped superclass mappings.
+allows you to override multiple mapped superclass mappings.
             </para>
             <para>
 Each
@@ -2412,7 +2413,7 @@ to discover existing foreign keys (see
                 <para>
 The <ulink url="../javadoc/org/apache/openjpa/persistence/jdbc/Unique.html">
 <classname>org.apache.openjpa.persistence.jdbc.Unique</classname></ulink>
-annotation represents a unqiue constraint on the columns of a field. It is more
+annotation represents a unique constraint on the columns of a field. It is more
 convenient than using the <literal>uniqueConstraints</literal> property of
 standard JPA <classname>Table</classname> and <classname>SecondaryTable
 </classname> annotations, because you can apply it directly to the constrained
@@ -2461,7 +2462,7 @@ supported by the database.
               </indexterm>
               <para>
 DB2, Oracle and SQLServer support XML column types and
-XPath queries and indexes over these columns.OpenJPA supports mapping of an
+XPath queries and indexes over these columns. OpenJPA supports mapping of an
 entity property mapped to an XML column.
               </para>
               <para>
@@ -2480,7 +2481,7 @@ The default fetch type is EAGER but can be changed to LAZY by using:
               <para>
 The entity property class is required to have
 jaxb binding annotations.  This is produced when the classes are generated
-from an xml schema using the jaxb generator XJC.Ensure that <classname>@XmlRootElement</classname>
+from an XML schema using the jaxb generator XJC.Ensure that <classname>@XmlRootElement</classname>
 appears in the root class. In some case this annotation needs to be added manually if it is missing.
               </para>
               <para>
@@ -2496,7 +2497,7 @@ The path expression is rewritten into an equivalent XPATH expression using SQL
 XML functions.
               </para>
               <para>
-The path expression must be single valued.Path expressions over xml
+The path expression must be single valued. Path expressions over XML
 mapped classes can only be used in WHERE as an operand to a simple predicate
 (=  &lt;&gt;  &lt;  &gt;  &gt;=  &lt;=).
               </para>
@@ -2527,7 +2528,7 @@ used in the FROM , GROUP BY, HAVING, ORDER BY clauses
               </itemizedlist>
               <para>
 XML schema must not contain namespace declarations. The EJB query path
-expressions can not refer to java fields generated from XML ANY type or
+expressions can not refer to Java fields generated from XML ANY type or
 XML mixed element types.
               </para>
               <para>
@@ -2877,7 +2878,7 @@ import org.apache.openjpa.persistence.jdbc.*;
 
 @Entity
 @Table(name="AUTH")
-@DataStoreIdColumn(name="AID" columnDefinition="INTEGER64")
+@DataStoreIdColumn(name="AID", columnDefinition="INTEGER64")
 public class Author {
     ...
 }
@@ -3233,7 +3234,7 @@ identify the record for the related object. Under some rare mappings, however,
 you may need to consider both foreign key values and the expected class of the
 related object - for example, if you have an inverse relation that shares the
 foreign key with another inverse relation to an object of a different subclass.
-In these cases, set the proper class critera extension to <literal>true
+In these cases, set the proper class criteria extension to <literal>true
 </literal> to force OpenJPA to append class criteria to its select SQL.
                 </para>
                 <para>
@@ -3482,7 +3483,7 @@ properties in these extensions using OpenJPA's plugin format (see
         <para>
 Unless you apply database foreign key constraints extensively, it is possible to
 end up with orphaned keys in your database. For example, suppose <classname>
-Magazine</classname><literal>m</literal> has a reference to <classname>Article
+Magazine</classname> <literal>m</literal> has a reference to <classname>Article
 </classname><literal>a</literal>. If you delete <literal>a</literal> without
 nulling <literal>m</literal>'s reference, <literal>m</literal>'s database
 record will wind up with an orphaned key to the non-existent <literal>a

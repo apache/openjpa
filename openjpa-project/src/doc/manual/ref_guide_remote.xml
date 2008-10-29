@@ -130,7 +130,7 @@ ways :
         <listitem>
             <para>
                 Invoke <methodname>EntityTransaction.setRollbackOnly
-                </methodname> prior to detachingyour objects. Setting the 
+                </methodname> prior to detaching your objects. Setting the 
                 <literal>RollbackOnly</literal> flag prevents OpenJPA from 
                 flushing when detaching dirty objects; instead OpenJPA just 
                 runs its pre-flush actions (see the 
@@ -638,7 +638,7 @@ which notifications should be sent. No default value.
                     <listitem>
                         <para>
 <literal>NumBroadcastThreads</literal>: The number of threads to create for the
-purpose of transmitting events to peers. You sould increase this value as the
+purpose of transmitting events to peers. You should increase this value as the
 number of concurrent transactions increases. The maximum number of concurrent
 transactions is a function of the size of the connection pool. See the
 <literal>MaxActive</literal> property of <literal>

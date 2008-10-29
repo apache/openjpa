@@ -256,7 +256,7 @@ different parts of your application.
                         <para>
 The default setting of <literal>on-demand</literal> minimizes the amount of time
 that OpenJPA holds onto a datastore connection. This is generally the best
-option from a scalability standpoind, as database resources are held for a
+option from a scalability standpoint, as database resources are held for a
 minimal amount of time. However, if you are not using connection pooling, or
 if your <classname>DataSource</classname> is not efficient at managing its
 pool, then this default value could cause undesirable pool contention.

@@ -709,7 +709,7 @@ The entity identity of each persistent instance is encapsulated in its
 <emphasis>identity field(s)</emphasis>. If two entities of the same type have
 the same identity field values, then the two entities represent the same state
 in the datastore. Each entity's identity field values must be unique among all
-other entites of the same type.
+other entities of the same type.
         </para>
         <para>
 Identity fields must be primitives, primitive wrappers, <classname>
@@ -1112,7 +1112,7 @@ This is equivalent to the XML element tag <literal>post-load</literal>.
                     <para>
 <classname>PostLoad</classname> is often used to initialize non-persistent
 fields whose values depend on the values of persistent fields, such as a complex
-datastructure.
+data structure.
                     </para>
                 </listitem>
                 <listitem>

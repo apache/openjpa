@@ -737,7 +737,7 @@ manager does not distinguish between read locks and write locks; all locks are
 write locks.
                     </para>
                     <para>
-The <literal>pessimistic</literal> LockManager can be configued to additionally
+The <literal>pessimistic</literal> LockManager can be configured to additionally
 perform the version checking and incrementing behavior of the <literal>version
 </literal> lock manager described below by setting its <literal>
 VersionCheckOnReadLock</literal> and <literal>VersionUpdateOnWriteLock</literal>
@@ -932,7 +932,7 @@ points in your transaction. You can then choose to rollback changes made only
 after a specific savepoint, then commit or continue making new changes in the
 transaction. This feature is useful for multi-stage transactions, such as
 editing a set of objects over several web pages or user screens. Savepoints also
-provide more flexibilty to conditional transaction behavior, such as choosing to
+provide more flexibility to conditional transaction behavior, such as choosing to
 commit or rollback a portion of the transaction based on the results of the
 changes. This chapter describes how to use and configure OpenJPA savepoints.
         </para>
@@ -1024,7 +1024,7 @@ oem.getTransaction().commit();
 OpenJPA uses the 
 <ulink url="../javadoc/org/apache/openjpa/kernel/SavepointManager">
 <classname>org.apache.openjpa.kernel.SavepointManager</classname></ulink>
-<link linkend="ref_guide_conf_plugins">plugin</link> to handle perserving the
+<link linkend="ref_guide_conf_plugins">plugin</link> to handle preserving the
 savepoint state. OpenJPA includes the following <classname>SavepointManager
 </classname> plugins:
             </para>
