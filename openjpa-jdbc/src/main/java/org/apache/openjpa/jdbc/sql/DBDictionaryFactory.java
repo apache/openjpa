@@ -73,9 +73,9 @@ public class DBDictionaryFactory {
      */
     public static DBDictionary calculateDBDictionary(JDBCConfiguration conf,
         String url, String driver, String props) {
-        String dclass = dictionaryClassForString(url, conf);
+        String dclass = dictionaryClassForString(driver, conf);
         if (dclass == null)
-            dclass = dictionaryClassForString(driver, conf);
+            dclass = dictionaryClassForString(url, conf);
         if (dclass == null)
             return null;
         return newDBDictionary(conf, dclass, props);
@@ -90,10 +90,10 @@ public class DBDictionaryFactory {
         try {
             conn = ds.getConnection();
             DatabaseMetaData meta = conn.getMetaData();
-            String dclass = dictionaryClassForString(meta.getURL(), conf);
+            String dclass = dictionaryClassForString(meta
+                .getDatabaseProductName(), conf);
             if (dclass == null)
-                dclass = dictionaryClassForString
-                    (meta.getDatabaseProductName(), conf);
+                dclass = dictionaryClassForString(meta.getURL(), conf);
             if (dclass == null)
                 dclass = DBDictionary.class.getName();
             return newDBDictionary(conf, dclass, props, conn);
