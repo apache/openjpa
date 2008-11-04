@@ -791,8 +791,13 @@ public class SchemaGenerator {
 
             if (invalids == null || !invalids.contains(fk)) {
                 try {
-                    fk.join(table.getColumn(fkColName),
-                        pkTable.getColumn(pkColName));
+                    Column fkCol = table.getColumn(fkColName);
+                    if (fkCol == null) {
+                        throw new IllegalArgumentException(_loc.get(
+                            "no-column", fkColName, table.getName())
+                            .getMessage());
+                    }
+                    fk.join(fkCol, pkTable.getColumn(pkColName));
                 } catch (IllegalArgumentException iae) {
                     if (_log.isWarnEnabled())
                         _log.warn(_loc.get("bad-join", iae.toString()));
