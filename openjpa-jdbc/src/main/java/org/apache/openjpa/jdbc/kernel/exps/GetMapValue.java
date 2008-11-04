@@ -185,10 +185,10 @@ class GetMapValue
         for (int i = 0; i < values.length; i++) {
             if (i > 0)
                 sql.append(", ");
-            sql.append(values[i].getFullName());
+            sql.append(values[i].getTable()).append(".").append(values[i]);
         }
-        sql.append(" FROM ").append(values[0].getTable().getFullName()).
-            append(" WHERE ");
+        sql.append(" FROM ").append(values[0].getTable());
+        sql.append(" WHERE ");
 
         // add in the joins
         ContainerFieldStrategy.appendUnaliasedJoin(sql, sel, null, 
@@ -200,7 +200,7 @@ class GetMapValue
         Object[] vals = (cols.length == 1) ? null : (Object[]) key;
 
         for (int i = 0; i < cols.length; i++) {
-            sql.append(cols[i].getFullName());
+            sql.append(cols[i].getTable()).append(".").append(cols[i]);
             if (vals == null)
                 sql.append((key == null) ? " IS " : " = ").
                     appendValue(key, cols[i]);
