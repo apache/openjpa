@@ -1112,7 +1112,7 @@ public class OracleDictionary
 
     public int getBatchUpdateCount(PreparedStatement ps) throws SQLException {
         int updateSuccessCnt = 0;
-        if (batchLimit > 0 && ps != null) {
+        if (batchLimit != 0 && ps != null) {
             updateSuccessCnt = ps.getUpdateCount();
             if (log.isTraceEnabled())
                 log.trace(_loc.get("batch-update-success-count",
