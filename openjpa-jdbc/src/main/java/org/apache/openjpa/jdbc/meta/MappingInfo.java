@@ -584,7 +584,8 @@ public abstract class MappingInfo
 
         // find existing column
         Column col = table.getColumn(colName);
-        if (col == null && !adapt)
+        boolean existingCol = col != null;
+        if (!existingCol && !adapt)
             throw new MetaDataException(_loc.get(prefix + "-bad-col-name",
                 context, colName, table));
 
@@ -687,7 +688,9 @@ public abstract class MappingInfo
         // not know it, so set it even if not adapting
         if (defStr != null)
             col.setDefaultString(defStr);
-        if (notNull != null)
+        // don't turn off nullability for existing columns unless this col
+        // is shared with other mappings
+        if (notNull != null && (!existingCol || notNull.booleanValue())) 
             col.setNotNull(notNull.booleanValue());
 
         // add other details if adapting
@@ -1650,7 +1653,7 @@ public abstract class MappingInfo
         if (col.getDefaultString() != null)
             copy.setDefaultString(col.getDefaultString());
         if (col.isNotNull() && !col.isPrimaryKey()
-            && (!isPrimitive(col.getJavaType()) || isForeignKey(col)))
+            && (!isPrimitive(col.getJavaType()) || isForeignKey(col))) 
             copy.setNotNull(true);
 
         // set type name if not default
