@@ -28,7 +28,8 @@ import org.apache.commons.lang.StringUtils;
  */
 public class Unique
     extends LocalConstraint {
-	private boolean _autoNaming = false;
+    private boolean _autoNaming = false;
+    private static int _counter = 1;
     
 	/**
      * Default constructor without a name.
@@ -110,7 +111,9 @@ public class Unique
 	private String createAutoName() {
 		Column[] columns = getColumns();
 		int l = 32/Math.max(columns.length,1);
-		StringBuffer autoName = new StringBuffer("UNQ_");
+		StringBuffer autoName = new StringBuffer("UNQ_"); 
+		if (columns.length == 0) 
+			autoName.append(_counter++);
 		for (Column column : columns)
 			autoName.append(chop(column.getName(),l));
 		return autoName.toString();

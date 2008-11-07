@@ -65,7 +65,9 @@
 			<basic name="a6">
 				<column name="a6x"/>
 			</basic>
-			
+			<basic name="same">
+				<column name="SAME" unique="true"/>
+			</basic>
 			<basic name="sa1">
 				<column name="sa1x" table="UNIQUE_SECONDARY_XML" />
 			</basic>
@@ -112,6 +114,9 @@
 			<basic name="b2">
 				<column name="b2x"/>
 			</basic>
+            <basic name="same">
+                <column name="SAME" unique="true"/>
+            </basic>
 		</attributes>
 	</entity>
 </entity-mappings>

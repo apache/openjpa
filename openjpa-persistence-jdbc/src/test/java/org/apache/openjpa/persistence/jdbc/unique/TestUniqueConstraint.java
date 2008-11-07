@@ -63,8 +63,12 @@ public class TestUniqueConstraint extends SQLListenerTestCase {
 				"UNIQUE .*\\(GEN1, GEN2\\)");
 		assertSQLFragnments(sqls, "CREATE TABLE UNIQUE_JOINTABLE",
 				"UNIQUE .*\\(FK_A, FK_B\\)");
+		assertSQLFragnments(sqls, "CREATE TABLE UNIQUE_A",
+			    "UNIQUE .*\\(SAME\\)");
+		assertSQLFragnments(sqls, "CREATE TABLE UNIQUE_B",
+			    "UNIQUE .*\\(SAME\\)");
 	}
-	
+		
 	void assertSQLFragnments(List<String> list, String... keys) {
 		if (SQLSniffer.matches(list, keys))
 			return;

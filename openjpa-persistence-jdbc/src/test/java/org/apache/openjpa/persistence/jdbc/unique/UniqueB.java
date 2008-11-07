@@ -35,4 +35,6 @@ public class UniqueB {
 	private int b1;
 	@Column(nullable=false)
 	private int b2;
+	@Column(name="SAME", unique=true)
+	private int same;
 }

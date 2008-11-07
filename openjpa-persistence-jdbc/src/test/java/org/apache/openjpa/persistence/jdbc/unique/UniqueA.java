@@ -67,6 +67,8 @@ public class UniqueA {
 	@Column(nullable=false)
 	private int a4;
 	
+	@Column(name="SAME", unique=true)
+	private int same;
 	
 	private int a5;
 	private int a6;
