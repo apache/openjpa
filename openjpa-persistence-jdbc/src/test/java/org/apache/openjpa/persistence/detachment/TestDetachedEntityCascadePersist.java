@@ -27,18 +27,18 @@ import org.apache.openjpa.persistence.test.SingleEMFTestCase;
 
 public class TestDetachedEntityCascadePersist extends SingleEMFTestCase {
 
-	public void setUp() {		
+    public void setUp() {		
         setUp(
-        	CLEAR_TABLES,
-        	DMCustomer.class, 
-        	DMItem.class,
-        	DMCustomerInventory.class
-        );        
+            CLEAR_TABLES,
+            DMCustomer.class,
+            DMItem.class,
+            DMCustomerInventory.class
+        );
     }
-	
+
     public void testDetachedEntityCascadePersist() {
-    	// Persist an item for finding later 
-    	EntityManager em = emf.createEntityManager();
+        // Persist an item for finding later 
+        EntityManager em = emf.createEntityManager();
         DMItem item = new DMItem(); 
         item.setName("openjpa");
         item.setPrice(0.0);
@@ -51,7 +51,7 @@ public class TestDetachedEntityCascadePersist extends SingleEMFTestCase {
         em.persist(customer);
         em.getTransaction().commit();
         em.close();
-        
+
         em = emf.createEntityManager();
         DMItem itemDetached = em.find(DMItem.class, item.getId());
         em.close();        

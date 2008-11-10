@@ -29,8 +29,8 @@ import javax.persistence.OneToMany;
 
 @Entity 
 public class DMCustomer {
-    
-	private static long idCounter = System.currentTimeMillis();	
+
+    private static long idCounter = System.currentTimeMillis();	
     @Id private long id = idCounter++;    
     private String firstName;    
     private String lastName;    
@@ -38,40 +38,40 @@ public class DMCustomer {
     @OneToMany(mappedBy="customer", 
             fetch=FetchType.EAGER,
             cascade=CascadeType.ALL)
-    private List<DMCustomerInventory> customerInventories = new ArrayList<DMCustomerInventory>();
-    
+            private List<DMCustomerInventory> customerInventories = new ArrayList<DMCustomerInventory>();
+
     public DMCustomer() {
     }
 
-	public long getId() {
-		return id;
-	}
+    public long getId() {
+        return id;
+    }
 
-	public void setId(long id) {
-		this.id = id;
-	}
+    public void setId(long id) {
+        this.id = id;
+    }
 
-	public String getFirstName() {
-		return firstName;
-	}
+    public String getFirstName() {
+        return firstName;
+    }
 
-	public void setFirstName(String firstName) {
-		this.firstName = firstName;
-	}
+    public void setFirstName(String firstName) {
+        this.firstName = firstName;
+    }
 
-	public String getLastName() {
-		return lastName;
-	}
+    public String getLastName() {
+        return lastName;
+    }
 
-	public void setLastName(String lastName) {
-		this.lastName = lastName;
-	}
+    public void setLastName(String lastName) {
+        this.lastName = lastName;
+    }
 
-	public List<DMCustomerInventory> getCustomerInventories() {
-		return customerInventories;
-	}
+    public List<DMCustomerInventory> getCustomerInventories() {
+        return customerInventories;
+    }
 
-	public void setCustomerInventories(List<DMCustomerInventory> customerInventories) {
-		this.customerInventories = customerInventories;
-	}
+    public void setCustomerInventories(List<DMCustomerInventory> customerInventories) {
+        this.customerInventories = customerInventories;
+    }
 }

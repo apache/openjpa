@@ -26,50 +26,50 @@ import javax.persistence.ManyToOne;
 
 @Entity
 public class DMCustomerInventory  {
-	private static long idCounter = System.currentTimeMillis();
+    private static long idCounter = System.currentTimeMillis();
     @Id private long id = idCounter++;
-    
+
     @ManyToOne(cascade=CascadeType.ALL)
     @JoinColumn(name = "CI_ITEMID")
     private DMItem  item;    
     private int quantity;
-    
+
     @ManyToOne(cascade=CascadeType.MERGE)
     @JoinColumn(name="CI_CUSTOMERID")
     private DMCustomer customer;
-    
+
     public DMCustomerInventory() {
     }
 
-	public long getId() {
-		return id;
-	}
+    public long getId() {
+        return id;
+    }
 
-	public void setId(long id) {
-		this.id = id;
-	}
+    public void setId(long id) {
+        this.id = id;
+    }
 
-	public DMItem getItem() {
-		return item;
-	}
+    public DMItem getItem() {
+        return item;
+    }
 
-	public void setItem(DMItem item) {
-		this.item = item;
-	}
+    public void setItem(DMItem item) {
+        this.item = item;
+    }
 
-	public int getQuantity() {
-		return quantity;
-	}
+    public int getQuantity() {
+        return quantity;
+    }
 
-	public void setQuantity(int quantity) {
-		this.quantity = quantity;
-	}
+    public void setQuantity(int quantity) {
+        this.quantity = quantity;
+    }
 
-	public DMCustomer getCustomer() {
-		return customer;
-	}
+    public DMCustomer getCustomer() {
+        return customer;
+    }
 
-	public void setCustomer(DMCustomer customer) {
-		this.customer = customer;
-	}    
+    public void setCustomer(DMCustomer customer) {
+        this.customer = customer;
+    }    
 }
