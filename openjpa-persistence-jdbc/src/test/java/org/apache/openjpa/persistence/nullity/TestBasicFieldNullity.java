@@ -18,13 +18,10 @@
  */
 package org.apache.openjpa.persistence.nullity;
 
-import javax.persistence.EntityManager;
 import javax.persistence.RollbackException;
 
 import org.apache.openjpa.persistence.InvalidStateException;
 import org.apache.openjpa.persistence.OpenJPAPersistence;
-import org.apache.openjpa.persistence.test.SingleEMFTestCase;
-
 
 /**
  * Test @Basic(optional=true|false) and @Column(nullable=true|false) 
@@ -34,8 +31,7 @@ import org.apache.openjpa.persistence.test.SingleEMFTestCase;
  *
  * @author Pinaki Poddar
  */
-public class TestBasicFieldNullity extends SingleEMFTestCase {
-	private static boolean NEW = true;
+public class TestBasicFieldNullity extends AbstractNullityTestCase {
 
     public void setUp() {
         setUp(CLEAR_TABLES, NullValues.class);
@@ -116,44 +112,6 @@ public class TestBasicFieldNullity extends SingleEMFTestCase {
     	
     	pc.setNotNullableBlob(null);
     	assertCommitFails(pc, !NEW, RollbackException.class);
-    	
-    }
-    
-    /**
-     * Asserts that the given instance can not be committed.
-     */
-    void assertCommitFails(Object pc, boolean isNew, Class expected) {
-    	EntityManager em = emf.createEntityManager();
-    	em.getTransaction().begin();
-    	if (isNew)
-    		em.persist(pc);
-    	else {
-    		Object merged = em.merge(pc);
-    	}
-    	try {
-			em.getTransaction().commit();
-			fail();
-		} catch (Exception e) {
-			if (!expected.isAssignableFrom(e.getClass())) {
-				e.printStackTrace();
-				fail("Expected " + expected.getName());
-			} 
-		}
-    }
-    
-    void assertCommitSucceeds(Object pc, boolean isNew) {
-    	EntityManager em = emf.createEntityManager();
-    	em.getTransaction().begin();
-    	if (isNew)
-    		em.persist(pc);
-    	else 
-    		em.merge(pc);
-    	try {
-			em.getTransaction().commit();
-		} catch (RuntimeException e) {
-			e.printStackTrace();
-			fail();
-		}
     }
 }
 

@@ -27,7 +27,32 @@ import java.io.Serializable;
  *
  */
 public class BlobValue implements Serializable {
+    private static final long serialVersionUID = 833553627832894685L;
     private String  strVal;
     private int     intVal;
     private byte[]  bytes;
+    
+    public String getStrVal() {
+        return strVal;
+    }
+    
+    public void setStrVal(String strVal) {
+        this.strVal = strVal;
+    }
+    
+    public int getIntVal() {
+        return intVal;
+    }
+    
+    public void setIntVal(int intVal) {
+        this.intVal = intVal;
+    }
+    
+    public byte[] getBytes() {
+        return bytes;
+    }
+    
+    public void setBytes(byte[] bytes) {
+        this.bytes = bytes;
+    }
 }

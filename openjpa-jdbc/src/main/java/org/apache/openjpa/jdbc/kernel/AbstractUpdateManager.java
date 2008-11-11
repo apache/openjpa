@@ -193,8 +193,9 @@ public abstract class AbstractUpdateManager
         BitSet dirty = sm.getDirty();
         for (int i = 0; i < fields.length; i++) {
             if (dirty.get(fields[i].getIndex())
-                && !bufferCustomInsert(fields[i], sm, store, customs))
+                && !bufferCustomInsert(fields[i], sm, store, customs)) {
                 fields[i].insert(sm, store, rowMgr);
+            }
         }
         if (sup == null) {
             Version vers = mapping.getVersion();
@@ -279,8 +280,9 @@ public abstract class AbstractUpdateManager
         FieldMapping[] fields = mapping.getDefinedFieldMappings();
         for (int i = 0; i < fields.length; i++) {
             if (dirty.get(fields[i].getIndex())
-                && !bufferCustomUpdate(fields[i], sm, store, customs))
+                && !bufferCustomUpdate(fields[i], sm, store, customs)) {
                 fields[i].update(sm, store, rowMgr);
+            }
         }
 
         ClassMapping sup = mapping.getJoinablePCSuperclassMapping();
