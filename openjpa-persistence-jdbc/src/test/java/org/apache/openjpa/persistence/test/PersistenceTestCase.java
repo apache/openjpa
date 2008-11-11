@@ -23,6 +23,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -34,6 +35,7 @@ import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.Persistence;
 
+import junit.framework.AssertionFailedError;
 import junit.framework.TestCase;
 import junit.framework.TestResult;
 import org.apache.openjpa.kernel.AbstractBrokerFactory;
@@ -402,6 +404,43 @@ public abstract class PersistenceTestCase
 			return;
 		printException(t.getCause(), tab+2);
 	}
-
-
+    
+    /**
+     * Overrides to allow tests annotated with @AllowFailure to fail. 
+     * If the test is in error then the normal pathway is executed.
+     */
+    @Override
+    public void runBare() throws Throwable {
+        try {
+            super.runBare();
+        } catch (Throwable t) {
+            if (allowFailure() && t instanceof AssertionFailedError) {
+                System.err.println("*** Failed but ignored:" + this);
+            } else {
+                throw t;
+            }
+        }
+    }
+    
+    /**
+     * Affirms if the test case or the test method is annotated with 
+     * @AllowFailure. Method level annotation has higher precedence than Class
+     * level annotation.
+     */
+    protected boolean allowFailure() {
+		try {
+            Method runMethod = getClass().getMethod(getName(), (Class[])null);
+            AllowFailure anno = runMethod.getAnnotation(AllowFailure.class);
+	    	if (anno != null)
+	    		return anno.value();
+		} catch (SecurityException e) {
+			//ignore
+		} catch (NoSuchMethodException e) {
+			//ignore
+		}
+		AllowFailure anno = getClass().getAnnotation(AllowFailure.class);
+    	if (anno != null) 
+            return anno.value();
+    	return false;
+    }
 }
