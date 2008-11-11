@@ -122,27 +122,31 @@ public class HandlerFieldStrategy
 
     public void insert(OpenJPAStateManager sm, JDBCStore store, RowManager rm)
         throws SQLException {
-        Row row = field.getRow(sm, store, rm, Row.ACTION_INSERT);
-        if (row != null) {
-            Object value = sm.fetch(field.getIndex());
-            if (!HandlerStrategies.set(field, value, store, row, _cols, _io, 
-            	field.getNullValue() == FieldMapping.NULL_NONE))
-            	if (field.getValueStrategy() != ValueStrategies.AUTOASSIGN)
-            		throw new UserException(_loc.get("cant-set-value", 
-            				row.getFailedObject(), field, value));
+        if (field.getColumnIO().isInsertable(0, false)) {
+            Row row = field.getRow(sm, store, rm, Row.ACTION_INSERT);
+            if (row != null) {
+                Object value = sm.fetch(field.getIndex());
+                if (!HandlerStrategies.set(field, value, store, row, _cols,
+                    _io, field.getNullValue() == FieldMapping.NULL_NONE))
+                    if (field.getValueStrategy() != ValueStrategies.AUTOASSIGN)
+                        throw new UserException(_loc.get("cant-set-value", row
+                            .getFailedObject(), field, value));
+            }
         }
     }
 
     public void update(OpenJPAStateManager sm, JDBCStore store, RowManager rm)
         throws SQLException {
-        Row row = field.getRow(sm, store, rm, Row.ACTION_UPDATE);
-        if (row != null){
-            Object value = sm.fetch(field.getIndex());
-            if (!HandlerStrategies.set(field, value, store, row, _cols, _io,
-                 field.getNullValue() == FieldMapping.NULL_NONE)) 
-            	if (field.getValueStrategy() != ValueStrategies.AUTOASSIGN)
-            	throw new UserException(_loc.get("cant-set-value", 
-            			row.getFailedObject(), field, value));
+        if (field.getColumnIO().isUpdatable(0, false)) {
+            Row row = field.getRow(sm, store, rm, Row.ACTION_UPDATE);
+            if (row != null) {
+                Object value = sm.fetch(field.getIndex());
+                if (!HandlerStrategies.set(field, value, store, row, _cols,
+                    _io, field.getNullValue() == FieldMapping.NULL_NONE))
+                    if (field.getValueStrategy() != ValueStrategies.AUTOASSIGN)
+                        throw new UserException(_loc.get("cant-set-value", row
+                            .getFailedObject(), field, value));
+            }
         }
     }
 
@@ -154,7 +158,7 @@ public class HandlerFieldStrategy
     public int supportsSelect(Select sel, int type, OpenJPAStateManager sm,
         JDBCStore store, JDBCFetchConfiguration fetch) {
         if ((type == Select.TYPE_JOINLESS && sel.isSelected(field.getTable()))
-            || (_load && type == sel.TYPE_TWO_PART))
+            || (_load && type == Select.TYPE_TWO_PART))
             return 1;
         return 0;
     }

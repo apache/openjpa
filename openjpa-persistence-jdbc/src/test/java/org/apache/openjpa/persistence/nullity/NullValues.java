@@ -147,4 +147,8 @@ public class NullValues {
 	public void setNotOptionalBlob(BlobValue notOptionalBlob) {
 		this.notOptionalBlob = notOptionalBlob;
 	}
+	
+	public int getVersion() { 
+	    return version;
+	}
 }
