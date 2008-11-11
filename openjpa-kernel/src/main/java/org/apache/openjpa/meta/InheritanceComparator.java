@@ -40,6 +40,10 @@ public class InheritanceComparator
         _base = base;
     }
 
+    public Class getBase() {
+        return _base;
+    }
+
     /**
      * Subclasses can override this method to extract the class to compare
      * on from the elements of the collection.
@@ -75,7 +79,12 @@ public class InheritanceComparator
                 return 1;
             return c1.getName().compareTo(c2.getName());
         }
-        return i1 - i2;
+        if (i1 < i2)
+            return -1;
+        else if (i1 > i2)
+            return 1;
+        else
+            return 0;
     }
 
     /**

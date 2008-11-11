@@ -29,7 +29,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.SortedSet;
 import java.util.TreeSet;
 
 import org.apache.commons.lang.StringUtils;
@@ -127,10 +126,10 @@ public class MetaDataRepository
     private final Collection _registered = new ArrayList();
 
     // set of metadatas we're in the process of resolving
-    private final SortedSet _resolving = new TreeSet
-        (new MetaDataInheritanceComparator());
-    private final SortedSet _mapping = new TreeSet
-        (new MetaDataInheritanceComparator());
+    private final InheritanceOrderedMetaDataList _resolving =
+        new InheritanceOrderedMetaDataList();
+    private final InheritanceOrderedMetaDataList _mapping =
+        new InheritanceOrderedMetaDataList();
     private final List _errs = new LinkedList();
 
     // system listeners
@@ -558,7 +557,7 @@ public class MetaDataRepository
         // resolved
         return processBuffer(meta, _resolving, MODE_META);
     }
-
+    
     /**
      * Load mapping information for the given metadata.
      */
@@ -639,7 +638,8 @@ public class MetaDataRepository
     /**
      * Process the given metadata and the associated buffer.
      */
-    private List processBuffer(ClassMetaData meta, SortedSet buffer, int mode) {
+    private List processBuffer(ClassMetaData meta,
+        InheritanceOrderedMetaDataList buffer, int mode) {
         // if we're already processing a metadata, just buffer this one; when
         // the initial metadata finishes processing, we traverse the buffer
         // and process all the others that were introduced during reentrant
@@ -654,7 +654,7 @@ public class MetaDataRepository
         ClassMetaData buffered;
         List processed = new ArrayList(5);
         while (!buffer.isEmpty()) {
-            buffered = (ClassMetaData) buffer.first();
+            buffered = buffer.peek();
             try {
                 buffered.resolve(mode);
                 processed.add(buffered);
