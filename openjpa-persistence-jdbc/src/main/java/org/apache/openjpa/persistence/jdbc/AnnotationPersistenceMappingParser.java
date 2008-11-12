@@ -77,7 +77,7 @@ import org.apache.openjpa.jdbc.schema.Schemas;
 import org.apache.openjpa.jdbc.schema.Unique;
 import org.apache.openjpa.jdbc.sql.DBDictionary;
 import org.apache.openjpa.lib.log.Log;
-import org.apache.openjpa.lib.util.J2DoPriv5Helper;
+import org.apache.openjpa.lib.util.J2DoPrivHelper;
 import org.apache.openjpa.lib.util.Localizer;
 import org.apache.openjpa.meta.ClassMetaData;
 import org.apache.openjpa.meta.FieldMetaData;
@@ -1308,7 +1308,7 @@ public class AnnotationPersistenceMappingParser
             
             if (xmlTypeClass != null
                 && StringUtils.isEmpty(pcols[i].columnDefinition())
-                && (AccessController.doPrivileged(J2DoPriv5Helper
+                && (AccessController.doPrivileged(J2DoPrivHelper
                     .isAnnotationPresentAction(fm.getDeclaredType(),
                         xmlTypeClass))).booleanValue()) {
                 DBDictionary dict = ((MappingRepository) getRepository())

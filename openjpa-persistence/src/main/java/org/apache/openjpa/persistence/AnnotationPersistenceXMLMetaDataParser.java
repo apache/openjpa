@@ -27,7 +27,7 @@ import java.security.AccessController;
 import org.apache.commons.lang.StringUtils;
 import org.apache.openjpa.conf.OpenJPAConfiguration;
 import org.apache.openjpa.lib.log.Log;
-import org.apache.openjpa.lib.util.J2DoPriv5Helper;
+import org.apache.openjpa.lib.util.J2DoPrivHelper;
 import org.apache.openjpa.lib.util.Localizer;
 import org.apache.openjpa.meta.DelegatingMetaDataFactory;
 import org.apache.openjpa.meta.FieldMetaData;
@@ -173,10 +173,10 @@ public class AnnotationPersistenceXMLMetaDataParser {
     private XMLMetaData parseXMLClassAnnotations() {
         // check immediately whether the class has JAXB XML annotations
         if (_cls == null || xmlTypeClass == null
-            || !((AccessController.doPrivileged(J2DoPriv5Helper
+            || !((AccessController.doPrivileged(J2DoPrivHelper
                 .isAnnotationPresentAction(_cls, xmlTypeClass))).booleanValue()
                 && (AccessController
-                .doPrivileged(J2DoPriv5Helper.isAnnotationPresentAction(_cls,
+                .doPrivileged(J2DoPrivHelper.isAnnotationPresentAction(_cls,
                     xmlRootElementClass))).booleanValue()))
             return null;
 
@@ -225,7 +225,7 @@ public class AnnotationPersistenceXMLMetaDataParser {
         Class superclass = cls.getSuperclass();
 
         // handle inheritance at sub-element level
-        if ((AccessController.doPrivileged(J2DoPriv5Helper
+        if ((AccessController.doPrivileged(J2DoPrivHelper
             .isAnnotationPresentAction(superclass, xmlTypeClass)))
             .booleanValue())
             populateFromReflection(superclass, meta);
@@ -247,7 +247,7 @@ public class AnnotationPersistenceXMLMetaDataParser {
                     // avoid JAXB XML bind default name
                     if (StringUtils.equals(XMLMetaData.defaultName, xmlname))
                         xmlname = member.getName();
-                    if ((AccessController.doPrivileged(J2DoPriv5Helper
+                    if ((AccessController.doPrivileged(J2DoPrivHelper
                         .isAnnotationPresentAction(((Field) member).getType(),
                             xmlTypeClass))).booleanValue()) {
                         field = _repos.addXMLMetaData(((Field) member).getType()

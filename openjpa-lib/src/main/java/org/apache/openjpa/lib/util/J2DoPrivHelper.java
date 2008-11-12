@@ -24,7 +24,9 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.lang.annotation.Annotation;
 import java.lang.reflect.AccessibleObject;
+import java.lang.reflect.AnnotatedElement;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.net.InetAddress;
@@ -98,6 +100,9 @@ import serp.bytecode.Project;
  * <li>serp.bytecode.BCClass.getFields
  * <li>serp.bytecode.FieldInstruction.getField
  * <li>serp.bytecode.Project.loadClass
+ * <li>AnnotatedElement.getAnnotations
+ * <li>AnnotatedElement.getDeclaredAnnotations
+ * <li>AnnotatedElement.isAnnotationPresent
  * </ul>
  * 
  * If these methods are used, the following sample usage patterns should be
@@ -1044,6 +1049,62 @@ public abstract class J2DoPrivHelper {
         return new PrivilegedAction<BCClass>() {
             public BCClass run() {
                 return project.loadClass(clazzName);
+            }
+        };
+    }
+    
+    /**
+     * Return a PrivilegeAction object for AnnotatedElement.getAnnotations().
+     *
+     * Requires security policy:
+     *   'permission java.lang.RuntimePermission "accessDeclaredMembers";'
+     *
+     * @return Annotation[]
+     */
+    public static final PrivilegedAction<Annotation []> getAnnotationsAction(
+        final AnnotatedElement element) {
+        return new PrivilegedAction<Annotation []>() {
+            public Annotation [] run() {
+                return element.getAnnotations();
+            }
+        };
+    }
+
+    /**
+     * Return a PrivilegeAction object for
+     *   AnnotatedElement.getDeclaredAnnotations().
+     *
+     * Requires security policy:
+     *   'permission java.lang.RuntimePermission "accessDeclaredMembers";'
+     *
+     * @return Annotation[]
+     */
+    public static final PrivilegedAction<Annotation []> 
+        getDeclaredAnnotationsAction(
+        final AnnotatedElement element) {
+        return new PrivilegedAction<Annotation[]>() {
+            public Annotation [] run() {
+                return element.getDeclaredAnnotations();
+            }
+        };
+    }
+
+    /**
+     * Return a PrivilegeAction object for
+     *   AnnotatedElement.isAnnotationPresent().
+     *
+     * Requires security policy:
+     *   'permission java.lang.RuntimePermission "accessDeclaredMembers";'
+     *
+     * @return Boolean
+     */
+    public static final PrivilegedAction<Boolean> isAnnotationPresentAction(
+        final AnnotatedElement element,
+        final Class<? extends Annotation> annotationClazz) {
+        return new PrivilegedAction<Boolean>() {
+            public Boolean run() {
+                return element.isAnnotationPresent(annotationClazz)
+                    ? Boolean.TRUE : Boolean.FALSE;
             }
         };
     }
