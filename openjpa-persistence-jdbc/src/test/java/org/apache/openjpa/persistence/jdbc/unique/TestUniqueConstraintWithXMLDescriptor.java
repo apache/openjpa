@@ -60,12 +60,12 @@ public class TestUniqueConstraintWithXMLDescriptor extends SQLListenerTestCase {
 		// Following verification techniques is fragile as databases DDL
 		// syntax vary greatly on UNIQUE CONSTRAINT
 		assertSQLFragnments(sqls, "CREATE TABLE UNIQUE_A_XML",
-				"UNIQUE .*\\(a1x, a2x\\)", 
-				"UNIQUE .*\\(a3x, a4x\\)");
+				"UNIQUE .*\\(f1x, f2x\\)", 
+				"UNIQUE .*\\(f3x, f4x\\)");
 		assertSQLFragnments(sqls, "CREATE TABLE UNIQUE_B_XML",
-				"UNIQUE .*\\(b1x, b2x\\)");
+				"UNIQUE .*\\(f1x, f2x\\)");
 		assertSQLFragnments(sqls, "CREATE TABLE UNIQUE_SECONDARY_XML",
-				"UNIQUE .*\\(sa1x\\)");
+				"UNIQUE .*\\(sf1x\\)");
 		assertSQLFragnments(sqls, "CREATE TABLE UNIQUE_GENERATOR_XML",
 				"UNIQUE .*\\(GEN1_XML, GEN2_XML\\)");
 		assertSQLFragnments(sqls, "CREATE TABLE UNIQUE_JOINTABLE_XML",

@@ -53,20 +53,20 @@ public class TestUniqueConstraint extends SQLListenerTestCase {
 		List<String> sqls = super.sql;
 		
 		assertSQLFragnments(sqls, "CREATE TABLE UNIQUE_A",
-				"UNIQUE .*\\(a1, a2\\)", 
-				"UNIQUE .*\\(a3, a4\\).*");
+				"UNIQUE .*\\(f1, f2\\)", 
+				"UNIQUE .*\\(f3, f4\\).*");
 		assertSQLFragnments(sqls, "CREATE TABLE UNIQUE_B",
-				"UNIQUE .*\\(b1, b2\\).*");
+				"UNIQUE .*\\(f1, f2\\).*");
 		assertSQLFragnments(sqls, "CREATE TABLE UNIQUE_SECONDARY",
-				"UNIQUE .*\\(sa1\\)");
+				"UNIQUE .*\\(sf1\\)");
 		assertSQLFragnments(sqls, "CREATE TABLE UNIQUE_GENERATOR",
 				"UNIQUE .*\\(GEN1, GEN2\\)");
 		assertSQLFragnments(sqls, "CREATE TABLE UNIQUE_JOINTABLE",
 				"UNIQUE .*\\(FK_A, FK_B\\)");
 		assertSQLFragnments(sqls, "CREATE TABLE UNIQUE_A",
-			    "UNIQUE .*\\(SAME\\)");
+			    "UNIQUE .*\\(f1\\)");
 		assertSQLFragnments(sqls, "CREATE TABLE UNIQUE_B",
-			    "UNIQUE .*\\(SAME\\)");
+			    "UNIQUE .*\\(f1\\)");
 	}
 		
 	void assertSQLFragnments(List<String> list, String... keys) {
