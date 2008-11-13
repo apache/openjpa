@@ -24,11 +24,11 @@ import java.io.Serializable;
 import java.util.BitSet;
 import java.util.Collection;
 import java.util.Map;
+import java.util.concurrent.locks.ReentrantLock;
 
 import org.apache.openjpa.enhance.PersistenceCapable;
 import org.apache.openjpa.enhance.StateManager;
 import org.apache.openjpa.lib.util.Localizer;
-import java.util.concurrent.locks.ReentrantLock;
 import org.apache.openjpa.meta.ClassMetaData;
 import org.apache.openjpa.meta.FieldMetaData;
 import org.apache.openjpa.meta.JavaTypes;
@@ -555,7 +555,7 @@ public class DetachedStateManager
         String next, int set) {
         accessingField(idx);
         if (cur == next || (cur != null && cur.equals(next))
-                || !_loaded.get(idx))
+            || !_loaded.get(idx))
             return;
         lock();
         try {
