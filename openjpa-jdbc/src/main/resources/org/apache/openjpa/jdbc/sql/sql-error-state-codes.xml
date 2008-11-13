@@ -1,0 +1,146 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+ Licensed to the Apache Software Foundation (ASF) under one
+ or more contributor license agreements.  See the NOTICE file
+ distributed with this work for additional information
+ regarding copyright ownership.  The ASF licenses this file
+ to you under the Apache License, Version 2.0 (the
+ "License"); you may not use this file except in compliance
+ with the License.  You may obtain a copy of the License at
+ 
+ http://www.apache.org/licenses/LICENSE-2.0
+ 
+ Unless required by applicable law or agreed to in writing,
+ software distributed under the License is distributed on an
+ "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ KIND, either express or implied.  See the License for the
+ specific language governing permissions and limitations
+ under the License.   
+-->
+<!-- ======================================================================= -->
+<!-- Lists SQL Error State codes for specific type of faults per database    -->
+<!-- dictionary.                                                             -->
+<!-- SQL Exceptions raised by JDBC should carry standard error state code    -->
+<!-- but they hardly do. Hence, the error state codes for specific type of   -->
+<!-- database error can be listed here. These codes help to narrow down the  -->
+<!-- cause of failure at JDBC layer and bubbles up as more intelligible      -->
+<!-- exception to the application.                                           -->
+<!-- ======================================================================= -->
+<sql-state-codes>
+
+	<dictionary class="org.apache.openjpa.jdbc.sql.DB2Dictionary">
+		<lock>-911,-913</lock>
+		<referential-integrity>-407,-530,-531,-532,-543,-544,-545,-603,-667,-803</referential-integrity>
+		<object-exists></object-exists>
+		<object-not-found></object-not-found>
+		<optimistic></optimistic>
+	</dictionary>
+	
+	<dictionary class="org.apache.openjpa.jdbc.sql.DerbyDictionary">
+		<lock>40001</lock>
+		<referential-integrity>22001,22005,23502,23503,23513,X0Y32</referential-integrity>
+		<object-exists>23505</object-exists>
+		<object-not-found></object-not-found>
+		<optimistic>40XL1,40001</optimistic>
+	</dictionary>
+	
+	<dictionary class="org.apache.openjpa.jdbc.sql.SQLServerDictionary">
+		<lock>1205</lock>
+		<referential-integrity>544,2601,2627,8114,8115</referential-integrity>
+		<optimistic>1205</optimistic>
+	</dictionary>
+	
+	<dictionary class="org.apache.openjpa.jdbc.sql.SybaseDictionary">
+		<lock>1205</lock>
+		<referential-integrity>423,511,515,530,547,2601,2615,2714</referential-integrity>
+		<object-exists></object-exists>
+		<object-not-found></object-not-found>
+		<optimistic>1205</optimistic>
+	</dictionary>
+	
+	<dictionary class="org.apache.openjpa.jdbc.sql.AccessDictionary">
+		<lock>40001</lock>
+		<referential-integrity>22001,22005,23502,23503,23513,X0Y32</referential-integrity>
+		<object-exists>23505,456c</object-exists>
+		<object-not-found></object-not-found>
+		<optimistic>40XL1,40001</optimistic>
+	</dictionary>
+	
+	<dictionary class="org.apache.openjpa.jdbc.sql.CacheDictionary">
+		<lock>40001</lock>
+		<referential-integrity>22001,22005,23502,23503,23513,X0Y32</referential-integrity>
+		<object-exists>23505,456c</object-exists>
+		<object-not-found></object-not-found>
+		<optimistic>40XL1,40001</optimistic>
+	</dictionary>
+	
+	<dictionary class="org.apache.openjpa.jdbc.sql.EmpressDictionary">
+		<lock>40001</lock>
+		<referential-integrity>22001,22005,23502,23503,23513,X0Y32</referential-integrity>
+		<object-exists>23505,456c</object-exists>
+		<object-not-found></object-not-found>
+		<optimistic>40XL1,40001</optimistic>
+	</dictionary>
+	
+	<dictionary class="org.apache.openjpa.jdbc.sql.FoxProDictionary">
+		<lock>40001</lock>
+		<referential-integrity>22001,22005,23502,23503,23513,X0Y32</referential-integrity>
+		<object-exists>23505,456c</object-exists>
+		<object-not-found></object-not-found>
+		<optimistic>40XL1,40001</optimistic>
+	</dictionary>
+	
+	<dictionary class="org.apache.openjpa.jdbc.sql.H2Dictionary">
+		<referential-integrity>22003,22012,22025,23000,23001</referential-integrity>
+	</dictionary>
+	
+	<dictionary class="org.apache.openjpa.jdbc.sql.HSQLDictionary">
+		<referential-integrity>-9</referential-integrity>
+	</dictionary>
+	
+	<dictionary class="org.apache.openjpa.jdbc.sql.InformixDictionary">
+		<referential-integrity>-239,-268,-692,-11030</referential-integrity>
+	</dictionary>
+	
+	<dictionary class="org.apache.openjpa.jdbc.sql.InterbaseDictionary">
+	</dictionary>
+	
+	<dictionary class="org.apache.openjpa.jdbc.sql.FirebirdDictionary">
+	</dictionary>
+	
+	<dictionary class="org.apache.openjpa.jdbc.sql.JDataStoreDictionary">
+	</dictionary>
+	
+	<dictionary class="org.apache.openjpa.jdbc.sql.MySQLDictionary">
+		<lock>1213</lock>
+		<referential-integrity>630,839,840,893,1062,1169,1215,1216,1217,1451,1452,1557</referential-integrity>
+		<object-exists>23000</object-exists>
+		<object-not-found></object-not-found>
+		<optimistic>41000,1205,1213</optimistic>
+	</dictionary>
+	
+	<dictionary class="org.apache.openjpa.jdbc.sql.OracleDictionary">
+		<lock></lock>
+		<referential-integrity>1,1400,1722,2291,2292</referential-integrity>
+		<object-exists></object-exists>
+		<object-not-found></object-not-found>
+		<optimistic></optimistic>
+	</dictionary>
+	
+	<dictionary class="org.apache.openjpa.jdbc.sql.PointbaseDictionary">
+		<lock></lock>
+		<referential-integrity>22001,22005,23502,23503,23513,X0Y32</referential-integrity>
+		<object-exists></object-exists>
+		<object-not-found></object-not-found>
+		<optimistic></optimistic>
+	</dictionary>
+	
+	<dictionary class="org.apache.openjpa.jdbc.sql.PostgresDictionary">
+		<lock>55P03,40P01</lock>
+		<referential-integrity>23000,23502,23503,23505,23514</referential-integrity>
+		<object-exists></object-exists>
+		<object-not-found></object-not-found>
+		<optimistic>55P03</optimistic>
+	</dictionary>
+	
+</sql-state-codes>
