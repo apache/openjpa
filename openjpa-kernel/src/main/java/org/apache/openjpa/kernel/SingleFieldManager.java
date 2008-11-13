@@ -744,6 +744,7 @@ class SingleFieldManager
             return;
 
         OpenJPAStateManager sm;
+
         if (vmd.getCascadePersist() == ValueMetaData.CASCADE_NONE) {
             if (!_broker.isDetachedNew() && _broker.isDetached(obj))
                 return; // allow but ignore
@@ -754,6 +755,10 @@ class SingleFieldManager
                     _loc.get("cant-cascade-persist", vmd))
                     .setFailedObject(obj);
         } else {
+            if (vmd.getCascadePersist() == ValueMetaData.CASCADE_IMMEDIATE) {
+                if (!_broker.isDetachedNew() && _broker.isDetached(obj))
+                    return; // allow but ignore
+            }        	
             sm = _broker.getStateManager(obj);
             if (sm == null || !sm.isProvisional()) { 
                 sm = _broker.persist(obj, null, true, call);
