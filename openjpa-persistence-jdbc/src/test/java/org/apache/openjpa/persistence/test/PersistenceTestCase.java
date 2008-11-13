@@ -414,8 +414,10 @@ public abstract class PersistenceTestCase
         try {
             super.runBare();
         } catch (Throwable t) {
-            if (allowFailure() && t instanceof AssertionFailedError) {
-                System.err.println("*** Failed but ignored:" + this);
+            if (allowFailure()) {
+                System.err.println("*** FAILED (but ignored):" + this);
+                System.err.println("Stacktrace of failure");
+                t.printStackTrace();
             } else {
                 throw t;
             }

@@ -34,6 +34,7 @@ import java.util.Map;
 
 
 import org.apache.openjpa.persistence.kernel.common.apps.RuntimeTest1;
+import org.apache.openjpa.persistence.test.AllowFailure;
 
 import org.apache.openjpa.kernel.OpenJPAStateManager;
 import org.apache.openjpa.meta.FieldMetaData;
@@ -97,6 +98,7 @@ public class TestInitialValueFetching extends BaseKernelTest {
         endEm(pm);
     }
 
+    @AllowFailure
     public void testInitialValueMutableValueFailures() {
         Map props = new HashMap();
         props.put("openjpa.RestoreMutableValues", "false");
@@ -120,6 +122,7 @@ public class TestInitialValueFetching extends BaseKernelTest {
         pmf.close();
     }
 
+    @AllowFailure
     public void testInitialValueDate() {
         Map props = new HashMap();
         props.put("openjpa.RestoreState", "all");
