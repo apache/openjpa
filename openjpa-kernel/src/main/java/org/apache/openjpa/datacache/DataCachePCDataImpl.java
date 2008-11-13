@@ -121,8 +121,8 @@ public class DataCachePCDataImpl
     }
 
     /**
-     * Store field-level information from the given state manager.
-     * Special process of checking if the cached collection data is out of order.
+     * Store field-level information from the given state manager. Special 
+     * process of checking if the cached collection data is out of order.
      */
     protected void storeField(OpenJPAStateManager sm, FieldMetaData fmd) {
         if (fmd.getManagement() != fmd.MANAGE_PERSISTENT)
@@ -170,8 +170,7 @@ public class DataCachePCDataImpl
                     Object oid = sm.getContext().getObjectId(sm.fetch(i));
                     DataCachePCData data = cache == null ? null
                         : cache.get(oid);
-                    if ((data != null) &&
-                        (data instanceof DataCachePCDataImpl)) {
+                    if (data != null && (data instanceof DataCachePCDataImpl)) {
                         ((DataCachePCDataImpl) data)
                             .clearData(inverses[j].getIndex());
                     }

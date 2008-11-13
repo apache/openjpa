@@ -156,9 +156,10 @@ public abstract class AbstractUpdateManager
                     store, customs, true);
             } else if (sm.isVersionCheckRequired()) {
                 if (!((ClassMapping) sm.getMetaData()).getVersion().
-                    checkVersion(sm, store, false))
+                    checkVersion(sm, store, false)) {
                     exceps = addException(exceps, new OptimisticException(sm.
                         getManagedInstance()));
+                }
             }
         } catch (SQLException se) {
             exceps = addException(exceps, SQLExceptions.getStore(se, dict));

@@ -1121,6 +1121,7 @@ public class FieldMetaData
                         decs[i] = decs[i].substring(0, spc);
                     }
                     orders[i] = getRepository().newOrder(this, decs[i], asc);
+
                     //set "isUsedInOrderBy" to the field
                     ClassMetaData elemCls = getElement()
                         .getDeclaredTypeMetaData();
@@ -2010,25 +2011,21 @@ public class FieldMetaData
         _val.setValueMappedBy(mapped);
     }
 
-    public FieldMetaData getValueMappedByMetaData ()
-	{
-		return _val.getValueMappedByMetaData ();
-	}
+    public FieldMetaData getValueMappedByMetaData () {
+        return _val.getValueMappedByMetaData ();
+	  }
 
-	public Class getTypeOverride ()
-	{
-		return _val.getTypeOverride ();
-	}
+    public Class getTypeOverride () {
+		    return _val.getTypeOverride ();
+	  }
 
-	public void setTypeOverride (Class type)
-	{
-		_val.setTypeOverride (type);
-	}
+    public void setTypeOverride (Class type) {
+		    _val.setTypeOverride (type);
+	  }
 
-	public void copy (ValueMetaData vmd)
-	{
-		_val.copy (vmd);
-	}
+    public void copy (ValueMetaData vmd) {
+		    _val.copy (vmd);
+	  }
 
     /**
      * Check if this field is used by other field as "order by" value.
@@ -2036,7 +2033,7 @@ public class FieldMetaData
      * @since 1.1.0
      */
     public boolean isUsedInOrderBy() {
-    	return _usedInOrderBy;
+        return _usedInOrderBy;
     }
     
     /**
@@ -2045,14 +2042,14 @@ public class FieldMetaData
      * @since 1.1.0
      */
     public void setUsedInOrderBy(boolean isUsed) {
-    	_usedInOrderBy = isUsed;
+        _usedInOrderBy = isUsed;
     }
     
     /**
      * Serializable wrapper around a {@link Method} or {@link Field}. For 
      * space considerations, this does not support {@link Constructor}s.
      */
-	public static class MemberProvider
+    public static class MemberProvider
         implements Externalizable {
 
         private transient Member _member;
