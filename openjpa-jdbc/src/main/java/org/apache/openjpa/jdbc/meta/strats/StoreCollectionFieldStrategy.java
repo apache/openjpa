@@ -312,14 +312,32 @@ public abstract class StoreCollectionFieldStrategy
             if (field.getOrderColumn() != null)
                 seq = res.getInt(field.getOrderColumn(), orderJoins) + 1;
 
-            // for inverseEager field
-            setMappedBy(oid, sm, coll, res);
+            // for inverse relation field
+            setMappedBy(oid.equals(sm.getObjectId()) ? 
+                sm.getPersistenceCapable() : oid, res);
             Object val = loadElement(null, store, fetch, res, dataJoins);
             add(store, coll, val);
         }
         res.close();
 
         return rels;
+    }
+
+    private void setMappedBy(Object oid, Result res) {
+        //  for inverse toOne relation field
+        FieldMapping mappedByFieldMapping = field.getMappedByMapping();
+        
+        if (mappedByFieldMapping != null) {
+            ValueMapping val = mappedByFieldMapping.getValueMapping();
+            ClassMetaData decMeta = val.getTypeMetaData();
+            // this inverse field does not have corresponding classMapping
+            // its value may be a collection/map etc.
+            if (decMeta == null) 
+                return;
+            
+            res.setMappedByFieldMapping(mappedByFieldMapping);
+            res.setMappedByValue(oid);
+        }
     }
 
     private void setMappedBy(Object oid, OpenJPAStateManager sm, Object coll,
