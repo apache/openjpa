@@ -157,6 +157,17 @@ public class TestException extends SingleEMFTestCase {
 		}
 	}
 	
+    public void testThrowsIllegalArgumentExceptionForCreateQuery() {
+        try {
+            EntityManager em = emf.createEntityManager();
+            em.createQuery("This is all nonsense");
+            fail("IllegalArgumentException is expected in case the query is "
+                + "incorrect");
+        } catch (IllegalArgumentException e) {
+            //expected
+        }
+    }
+
 	/**
 	 * Asserts that the given expected type of the exception is equal to or a
 	 * subclass of the given throwable or any of its nested exception.

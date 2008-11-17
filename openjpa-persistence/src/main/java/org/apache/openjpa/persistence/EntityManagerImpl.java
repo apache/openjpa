@@ -763,7 +763,16 @@ public class EntityManagerImpl
 
     public OpenJPAQuery createQuery(String language, String query) {
         assertNotCloseInvoked();
-        return new QueryImpl(this, _broker.newQuery(language, query));
+        try {
+            org.apache.openjpa.kernel.Query q = _broker.newQuery(language, 
+                query);
+            // have to validate JPQL according to spec
+            if (JPQLParser.LANG_JPQL.equals(language))
+                q.compile();
+            return new QueryImpl(this, q);
+        } catch (RuntimeException re) {
+            throw PersistenceExceptions.toPersistenceException(re);
+        }
     }
 
     public OpenJPAQuery createQuery(Query query) {
