@@ -56,6 +56,9 @@ public class QueryMetaData
     private List _hintKeys;
     private List _hintVals;
     private String _resultSetMappingName;
+    private int _lineNum;  
+    private int _colNum;  
+
     /**
      * Construct with the given name.
      */
@@ -274,4 +277,20 @@ public class QueryMetaData
     public String getResourceName() {
         return (_class == null) ? _name : _class.getName () + ":" + _name;
 	}
+    
+    public int getLineNumber() {
+        return _lineNum;
+    }
+
+    public void setLineNumber(int lineNum) {
+        _lineNum = lineNum;
+    }
+
+    public int getColNumber() {
+        return _colNum;
+    }
+
+    public void setColNumber(int colNum) {
+        _colNum = colNum;
+    }
 }

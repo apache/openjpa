@@ -53,4 +53,15 @@ public interface SourceTracker {
      * class, this would return the name of the class.
      */
     public String getResourceName();
+    
+    /**
+     * Return the line number of the file at which this instance was parsed.
+     */
+    public int getLineNumber();
+
+    /**
+     * Return the column number in the line of the file at which this
+     * instance was parsed.
+     */
+    public int getColNumber();
 }

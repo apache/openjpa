@@ -61,6 +61,8 @@ public class Table
     private Index[] _idxs = null;
     private Unique[] _unqs = null;
     private String _comment = null;
+    private int _lineNum = 0;  
+    private int _colNum = 0;  
 
     /**
      * Default constructor.
@@ -717,5 +719,21 @@ public class Table
 
     public void setComment(String comment) {
         _comment = comment;
+    }
+    
+    public int getLineNumber() {
+        return _lineNum;
+    }
+
+    public void setLineNumber(int lineNum) {
+        _lineNum = lineNum;
+    }
+
+    public int getColNumber() {
+        return _colNum;
+    }
+
+    public void setColNumber(int colNum) {
+        _colNum = colNum;
     }
 }

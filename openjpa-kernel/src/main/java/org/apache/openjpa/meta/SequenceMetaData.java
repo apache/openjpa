@@ -80,6 +80,8 @@ public class SequenceMetaData
     private File _source = null;
     private Object _scope = null;
     private int _srcType = SRC_OTHER;
+    private int _lineNum = 0;  
+    private int _colNum = 0;  
     private String[] _comments = null;
     private String _sequence = null;
     private int _increment = -1;
@@ -129,6 +131,22 @@ public class SequenceMetaData
         _srcType = srcType;
     }
 
+    public int getLineNumber() {
+        return _lineNum;
+    }
+
+    public void setLineNumber(int lineNum) {
+        _lineNum = lineNum;
+    }
+
+    public int getColNumber() {
+        return _colNum;
+    }
+
+    public void setColNumber(int colNum) {
+        _colNum = colNum;
+    }
+    
     public String getResourceName() {
         return _name;
     }

@@ -40,6 +40,9 @@ public class NonPersistentMetaData
     private final int _type;
 	
     private File _srcFile = null;
+    private int _lineNum = 0;  
+    private int _colNum = 0;  
+    
     private int _srcType = SRC_OTHER;
     private String[] _comments = null;
     private int _listIndex = -1;
@@ -105,6 +108,22 @@ public class NonPersistentMetaData
         _srcType = srcType;
     }
 
+    public int getLineNumber() {
+        return _lineNum;
+    }
+
+    public void setLineNumber(int lineNum) {
+        _lineNum = lineNum;
+    }
+
+    public int getColNumber() {
+        return _colNum;
+    }
+
+    public void setColNumber(int colNum) {
+        _colNum = colNum;
+    }
+    
     public String getResourceName() {
         return _class.getName();
     }

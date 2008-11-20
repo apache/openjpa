@@ -36,6 +36,7 @@ import static javax.persistence.CascadeType.*;
 
 import org.apache.commons.lang.StringUtils;
 import org.xml.sax.Attributes;
+import org.xml.sax.Locator;
 import org.xml.sax.SAXException;
 import org.apache.openjpa.conf.OpenJPAConfiguration;
 import org.apache.openjpa.enhance.PersistenceCapable;
@@ -66,6 +67,8 @@ import org.apache.openjpa.meta.ValueMetaData;
 import static org.apache.openjpa.persistence.MetaDataTag.*;
 import static org.apache.openjpa.persistence.PersistenceStrategy.*;
 import org.apache.openjpa.util.ImplHelper;
+
+import serp.util.Numbers;
 
 /**
  * Custom SAX parser used by the system to quickly parse persistence i
@@ -774,6 +777,11 @@ public class XMLPersistenceMetaDataParser
         if (isMetaDataMode()) {
             meta.setSource(getSourceFile(), meta.SRC_XML);
             meta.setSourceMode(MODE_META, true);
+            Locator locator = getLocation().getLocator();
+            if (locator != null) {
+                meta.setLineNumber(Numbers.valueOf(locator.getLineNumber()));
+                meta.setColNumber(Numbers.valueOf(locator.getColumnNumber()));
+            }
             meta.setListingIndex(_clsPos);
             String name = attrs.getValue("name");
             if (!StringUtils.isEmpty(name))
@@ -896,6 +904,11 @@ public class XMLPersistenceMetaDataParser
         Object scope = (cur instanceof ClassMetaData)
             ? ((ClassMetaData) cur).getDescribedType() : null;
         meta.setSource(getSourceFile(), scope, meta.SRC_XML);
+        Locator locator = getLocation().getLocator();
+        if (locator != null) {
+            meta.setLineNumber(Numbers.valueOf(locator.getLineNumber()));
+            meta.setColNumber(Numbers.valueOf(locator.getColumnNumber()));
+        }
         return true;
     }
 
@@ -1399,7 +1412,11 @@ public class XMLPersistenceMetaDataParser
         meta.setDefiningType(_cls);
         meta.setQueryString(attrs.getValue("query"));
         meta.setLanguage(JPQLParser.LANG_JPQL);
-
+        Locator locator = getLocation().getLocator();
+        if (locator != null) {
+            meta.setLineNumber(Numbers.valueOf(locator.getLineNumber()));
+            meta.setColNumber(Numbers.valueOf(locator.getColumnNumber()));
+        }
         Object cur = currentElement();
         Object scope = (cur instanceof ClassMetaData)
             ? ((ClassMetaData) cur).getDescribedType() : null;
@@ -1482,6 +1499,11 @@ public class XMLPersistenceMetaDataParser
         Object scope = (cur instanceof ClassMetaData)
             ? ((ClassMetaData) cur).getDescribedType() : null;
         meta.setSource(getSourceFile(), scope, meta.SRC_XML);
+        Locator locator = getLocation().getLocator();
+        if (locator != null) {
+            meta.setLineNumber(Numbers.valueOf(locator.getLineNumber()));
+            meta.setColNumber(Numbers.valueOf(locator.getColumnNumber()));
+        }
         if (isMetaDataMode())
             meta.setSourceMode(MODE_META);
         else if (isMappingMode())
