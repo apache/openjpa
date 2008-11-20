@@ -135,6 +135,8 @@ public class ClassMetaData
     private final LifecycleMetaData _lifeMeta = new LifecycleMetaData(this);
     private File _srcFile = null;
     private int _srcType = SRC_OTHER;
+    private int _lineNum = 0;  
+    private int _colNum = 0;  
     private String[] _comments = null;
     private int _listIndex = -1;
     private int _srcMode = MODE_META | MODE_MAPPING;
@@ -2173,6 +2175,23 @@ public class ClassMetaData
     public String getResourceName() {
         return _type.getName();
     }
+    
+    public int getLineNumber() {
+        return _lineNum;
+    }
+
+    public void setLineNumber(int lineNum) {
+        _lineNum = lineNum;
+    }
+
+    public int getColNumber() {
+        return _colNum;
+    }
+
+    public void setColNumber(int colNum) {
+        _colNum = colNum;
+    }
+    
 
     /**
      * The source mode this metadata has been loaded under.

@@ -67,6 +67,9 @@ public class ClassMappingInfo
     private File _file = null;
     private int _srcType = SRC_OTHER;
     private String[] _comments = null;
+    private int _lineNum = 0;  
+    private int _colNum = 0;  
+    
     // Unique constraints indexed by primary or secondary table name
     private Map<String,List<Unique>> _uniques;
 
@@ -471,4 +474,21 @@ public class ClassMappingInfo
     public void setComments(String[] comments) {
         _comments = comments;
     }
+    
+    public int getLineNumber() {
+        return _lineNum;
+    }
+
+    public void setLineNumber(int lineNum) {
+        _lineNum = lineNum;
+    }
+
+    public int getColNumber() {
+        return _colNum;
+    }
+
+    public void setColNumber(int colNum) {
+        _colNum = colNum;
+    }
+    
 }

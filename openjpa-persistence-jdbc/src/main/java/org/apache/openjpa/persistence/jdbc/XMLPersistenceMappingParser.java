@@ -33,6 +33,7 @@ import javax.persistence.TemporalType;
 
 import org.apache.commons.lang.StringUtils;
 import org.xml.sax.Attributes;
+import org.xml.sax.Locator;
 import org.xml.sax.SAXException;
 import org.apache.openjpa.jdbc.conf.JDBCConfiguration;
 import org.apache.openjpa.jdbc.meta.ClassMapping;
@@ -61,7 +62,7 @@ import org.apache.openjpa.persistence.XMLPersistenceMetaDataParser;
 import org.apache.openjpa.util.InternalException;
 
 import static org.apache.openjpa.persistence.jdbc.MappingTag.*;
-
+import serp.util.Numbers;
 /**
  * Custom SAX parser used by the system to parse persistence mapping files.
  *
@@ -414,6 +415,11 @@ public class XMLPersistenceMappingParser
         Object scope = (cur instanceof ClassMetaData)
             ? ((ClassMetaData) cur).getDescribedType() : null;
         seq.setSource(getSourceFile(), scope, seq.SRC_XML);
+        Locator locator = getLocation().getLocator();
+        if (locator != null) {
+            seq.setLineNumber(Numbers.valueOf(locator.getLineNumber()));
+            seq.setColNumber(Numbers.valueOf(locator.getColumnNumber()));
+        }
         pushElement(seq);
         return true;
     }
@@ -829,7 +835,11 @@ public class XMLPersistenceMappingParser
         Object scope = (cur instanceof ClassMetaData)
             ? ((ClassMetaData) cur).getDescribedType() : null;
         result.setSource(getSourceFile(), scope, result.SRC_XML);
-
+        Locator locator = getLocation().getLocator();
+        if (locator != null) {
+            result.setLineNumber(Numbers.valueOf(locator.getLineNumber()));
+            result.setColNumber(Numbers.valueOf(locator.getColumnNumber()));
+        }
         pushElement(result);
         return true;
     }

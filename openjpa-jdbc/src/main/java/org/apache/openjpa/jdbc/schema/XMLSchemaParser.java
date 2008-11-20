@@ -26,6 +26,7 @@ import java.util.Iterator;
 import java.util.LinkedList;
 
 import org.xml.sax.Attributes;
+import org.xml.sax.Locator;
 import org.xml.sax.SAXException;
 import org.apache.openjpa.jdbc.conf.JDBCConfiguration;
 import org.apache.openjpa.jdbc.sql.DBDictionary;
@@ -33,6 +34,8 @@ import org.apache.openjpa.lib.meta.XMLMetaDataParser;
 import org.apache.openjpa.lib.util.Localizer;
 import org.apache.openjpa.lib.util.Localizer.Message;
 import org.apache.openjpa.util.UserException;
+
+import serp.util.Numbers;
 
 /**
  * Custom SAX parser used to parse {@link Schema} objects. The parser
@@ -404,6 +407,11 @@ public class XMLSchemaParser
 
     private void startSequence(Attributes attrs) {
         Sequence seq = _schema.addSequence(attrs.getValue("name"));
+        Locator locator = getLocation().getLocator();
+        if (locator != null) {
+            seq.setLineNumber(Numbers.valueOf(locator.getLineNumber()));
+            seq.setColNumber(Numbers.valueOf(locator.getColumnNumber()));
+        }
         seq.setSource(getSourceFile(), seq.SRC_XML);
         try {
             String val = attrs.getValue("initial-value");
@@ -423,6 +431,11 @@ public class XMLSchemaParser
     private void startTable(Attributes attrs) {
         _table = _schema.addTable(attrs.getValue("name"));
         _table.setSource(getSourceFile(), _table.SRC_XML);
+        Locator locator = getLocation().getLocator();
+        if (locator != null) {
+            _table.setLineNumber(Numbers.valueOf(locator.getLineNumber()));
+            _table.setColNumber(Numbers.valueOf(locator.getColumnNumber()));
+        }
     }
 
     private void endTable() {

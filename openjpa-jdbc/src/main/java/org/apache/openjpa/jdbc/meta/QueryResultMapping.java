@@ -57,6 +57,8 @@ public class QueryResultMapping
     private File _file = null;
     private Object _scope = null;
     private int _srcType = SRC_OTHER;
+    private int _lineNum = 0;  
+    private int _colNum = 0;  
     private int _mode = MODE_QUERY;
     private Class _class = null;
     private int _idx = 0;
@@ -223,6 +225,22 @@ public class QueryResultMapping
 
     public String getResourceName() {
         return (_class == null) ? _name : _class.getName() + ":" + _name;
+    }
+    
+    public int getLineNumber() {
+        return _lineNum;
+    }
+
+    public void setLineNumber(int lineNum) {
+        _lineNum = lineNum;
+    }
+
+    public int getColNumber() {
+        return _colNum;
+    }
+
+    public void setColNumber(int colNum) {
+        _colNum = colNum;
     }
 
     /**

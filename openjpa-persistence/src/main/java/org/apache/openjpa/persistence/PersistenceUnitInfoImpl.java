@@ -471,6 +471,14 @@ public class PersistenceUnitInfoImpl
     public int getSourceType() {
         return SRC_XML;
     }
+    
+    public int getLineNumber() {
+        return 0;
+    }
+        
+    public int getColNumber() {
+        return 0;
+    }
 
     public String getResourceName() {
         return "PersistenceUnitInfo:" + _name;

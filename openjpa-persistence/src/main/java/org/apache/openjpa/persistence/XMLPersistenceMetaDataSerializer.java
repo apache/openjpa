@@ -1229,6 +1229,14 @@ public class XMLPersistenceMetaDataSerializer
             return _seqs[0].getResourceName();
         }
 
+        public int getLineNumber() {
+            return _seqs[0].getLineNumber();
+        }
+
+        public int getColNumber() {
+            return _seqs[0].getColNumber();
+        }
+        
         public int compareTo(ClassSeqs other) {
             if (other == this)
                 return 0;
@@ -1296,6 +1304,14 @@ public class XMLPersistenceMetaDataSerializer
 
         public String getResourceName() {
             return _queries[0].getResourceName();
+        }
+
+        public int getLineNumber() {
+            return _queries[0].getLineNumber();
+        }
+
+        public int getColNumber() {
+            return _queries[0].getColNumber();
         }
 
         public int compareTo(ClassQueries other) {

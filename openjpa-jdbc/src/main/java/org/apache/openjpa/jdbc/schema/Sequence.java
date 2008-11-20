@@ -38,6 +38,8 @@ public class Sequence
     private int _initial = 1;
     private int _increment = 1;
     private int _cache = 0;
+    private int _lineNum = 0;  
+    private int _colNum = 0;  
 
     // keep track of source
     private File _source = null;
@@ -205,5 +207,21 @@ public class Sequence
 
     public String toString() {
         return getFullName();
+    }
+    
+    public int getLineNumber() {
+        return _lineNum;
+    }
+
+    public void setLineNumber(int lineNum) {
+        _lineNum = lineNum;
+    }
+
+    public int getColNumber() {
+        return _colNum;
+    }
+
+    public void setColNumber(int colNum) {
+        _colNum = colNum;
     }
 }
