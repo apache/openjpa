@@ -57,8 +57,7 @@ class MetaDataParsers {
             case POST_UPDATE:
                 return new int[]{ LifecycleEvent.AFTER_UPDATE_PERFORMED };
             case POST_LOAD:
-                return new int[]{ LifecycleEvent.AFTER_LOAD,
-                    LifecycleEvent.AFTER_REFRESH };
+                return new int[]{ LifecycleEvent.AFTER_LOAD };
             default:
                 return null;
         }
