@@ -433,7 +433,8 @@ public class DetachManager
         // detach fields and set detached variables
         DetachedStateManager detSM = null;
         if (_opts.getDetachedStateManager()
-            && useDetachedStateManager(sm, _opts))
+            && useDetachedStateManager(sm, _opts)
+            && !(sm.isNew() && !sm.isDeleted() && !sm.isFlushed()))
             detSM = new DetachedStateManager(detachedPC, sm, fields,
                 _opts.getAccessUnloaded(), _broker.getMultithreaded());
         if (_full) {

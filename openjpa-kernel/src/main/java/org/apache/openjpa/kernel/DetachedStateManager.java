@@ -76,7 +76,10 @@ public class DetachedStateManager
         _embedded = sm.isEmbedded();
         _loaded = load;
         _access = access;
-        _dirty = new BitSet(_loaded.length());
+        if (!sm.isFlushed()) //save dirty flag if it is not flushed
+               _dirty = sm.getDirty();
+        else
+               _dirty = new BitSet(_loaded.length());
         _oid = sm.fetchObjectId();
         _version = sm.getVersion();
         if (multithreaded)
