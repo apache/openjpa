@@ -320,7 +320,8 @@ public class StateManagerImpl
      */
     protected boolean load(FetchConfiguration fetch, int loadMode,
         BitSet exclude, Object sdata, boolean forWrite) {
-        if (!forWrite && (!isPersistent() || isNew() || isDeleted()))
+        if (!forWrite
+            && (!isPersistent() || (isNew() && !isFlushed()) || isDeleted()))
             return false;
 
         // if any fields being loaded, do state transitions for read

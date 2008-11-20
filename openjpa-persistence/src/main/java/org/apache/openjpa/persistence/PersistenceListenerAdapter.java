@@ -91,7 +91,7 @@ class PersistenceListenerAdapter
     }
 
     public void afterRefresh(LifecycleEvent event) {
-        makeCallback(event);
+        // no analagous callback
     }
 
     public void beforeStore(LifecycleEvent event) {
