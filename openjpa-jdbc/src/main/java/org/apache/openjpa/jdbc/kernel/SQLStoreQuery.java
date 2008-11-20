@@ -242,8 +242,11 @@ public class SQLStoreQuery
 
             PreparedStatement stmnt = null;
             try {
-                stmnt = prepareCall(conn, buf);
-
+                if (_call)
+                    stmnt = prepareCall(conn, buf);
+                else
+                    stmnt = prepareStatement(conn, buf);
+                
                 buf.setParameters(paramList);
                 if (stmnt != null)
                     buf.setParameters(stmnt);
