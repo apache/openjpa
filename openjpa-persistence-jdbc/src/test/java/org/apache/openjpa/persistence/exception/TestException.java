@@ -26,11 +26,13 @@ import javax.persistence.EntityExistsException;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityNotFoundException;
 import javax.persistence.OptimisticLockException;
+import javax.persistence.Query;
 import javax.persistence.TransactionRequiredException;
 
 import org.apache.openjpa.jdbc.sql.DBDictionary;
 import org.apache.openjpa.jdbc.sql.SQLErrorCodeReader;
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
+import org.apache.openjpa.util.UserException;
 
 /**
  * Tests proper JPA exceptions are raised by the implementation. 
@@ -156,6 +158,32 @@ public class TestException extends SingleEMFTestCase {
 			}
 		}
 	}
+	
+	/**
+	 * Invalid query throws IllegalArgumentException on construction 
+	 * as per JPA spec.
+	 */
+	public void testIllegalArgumennExceptionOnInvalidQuery() {
+	    EntityManager em = emf.createEntityManager();
+	    try {
+	      em.createQuery("This is not a valid JPQL query");
+        fail("Did not throw IllegalArgumentException for invalid query.");
+	    } catch (Throwable t) {
+		   assertException(t, IllegalArgumentException.class);
+	    }
+	}
+	
+	/**
+	 * Invalid named query fails as per spec on factory based construction. 
+	 */
+     public void testIllegalArgumennExceptionOnInvalidNamedQuery() {
+         EntityManager em = emf.createEntityManager();
+         try {
+             Query query = em.createNamedQuery("This is invalid Named query");
+         } catch (Throwable t) {
+             assertException(t, IllegalArgumentException.class);
+         }
+      }
 	
 	/**
 	 * Asserts that the given expected type of the exception is equal to or a

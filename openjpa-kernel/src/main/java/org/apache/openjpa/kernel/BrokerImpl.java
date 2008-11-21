@@ -3163,8 +3163,8 @@ public class BrokerImpl
         beginOperation(true);
         try {
             // If a flush is desired (based on input parm), then check if the
-            //   "dirty" flag is set before calling flush().
-            if ((flush) && ((_flags & FLAG_FLUSH_REQUIRED) != 0))
+            // "dirty" flag is set before calling flush().
+            if (flush && (_flags & FLAG_FLUSH_REQUIRED) != 0)
                 flush();
             detachAllInternal(call);
         } catch (OpenJPAException ke) {

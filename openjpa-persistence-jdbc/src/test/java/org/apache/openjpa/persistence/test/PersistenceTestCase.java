@@ -18,6 +18,11 @@
  */
 package org.apache.openjpa.persistence.test;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -238,4 +243,19 @@ public abstract class PersistenceTestCase
         else if (o1.equals(o2))
             fail("expected args to be different; compared equal.");
     }
+
+    /**
+     * Round-trip a serializable object to bytes.
+     */
+    public static Object roundtrip(Object o) 
+        throws ClassNotFoundException, IOException {
+        ByteArrayOutputStream bytes = new ByteArrayOutputStream();
+        ObjectOutputStream out = new ObjectOutputStream(bytes);
+        out.writeObject(o);
+        out.flush();
+        ObjectInputStream in = new ObjectInputStream(
+            new ByteArrayInputStream(bytes.toByteArray()));
+        return in.readObject();
+    }
+
 }
