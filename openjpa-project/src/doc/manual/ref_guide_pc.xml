@@ -679,6 +679,10 @@ public class Order {
     ... 
 }
 
+	/**
+	 * LineItem uses a compound primary key. Part of the compound key 
+	 * LineItemId is relation or refernce to Order instance.
+	**/   
 @Entity
 @IdClass(LineItemId.class)
 public class LineItem {
@@ -696,9 +700,9 @@ public class LineItem {
 public class LineItemId {
 
     public int index;
-    public long order; // same type as order's identity
-
-    ...
+    public long order; // same type as identity of Order i.e Order.id
+                       // also the variable name must match the name of the
+                       // variable in LineItem that refers to Order.
 }
 </programlisting>    
             </example>
