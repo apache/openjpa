@@ -74,33 +74,17 @@
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>javacc-maven-plugin</artifactId>
-                <version>2.1</version>
+                <version>2.4</version>
                 <executions>
                     <execution>
-                        <id>jjtree-jpql</id>
+                        <id>jjtree-javacc-jpql</id>
                         <phase>generate-sources</phase>
                         <configuration>
-                            <sourceDirectory>
-                                ${basedir}/src/main/jjtree/org/apache/openjpa/kernel/jpql</sourceDirectory>
-                            <outputDirectory>
-                                ${project.build.directory}/generated-sources/jjtree/org/apache/openjpa/kernel/jpql</outputDirectory>
                             <buildNodeFiles>false</buildNodeFiles>
+                            <jdkVersion>1.5</jdkVersion>
                         </configuration>
                         <goals>
-                            <goal>jjtree</goal>
-                        </goals>
-                    </execution>
-                    <execution>
-                        <id>javacc-jpql</id>
-                        <phase>generate-sources</phase>
-                        <configuration>
-                            <sourceDirectory>
-                                ${project.build.directory}/generated-sources/jjtree/org/apache/openjpa/kernel/jpql</sourceDirectory>
-                            <outputDirectory>
-                                ${project.build.directory}/generated-sources/javacc/org/apache/openjpa/kernel/jpql</outputDirectory>
-                        </configuration>
-                        <goals>
-                            <goal>javacc</goal>
+                            <goal>jjtree-javacc</goal>
                         </goals>
                     </execution>
                 </executions>
@@ -108,17 +92,6 @@
             <plugin>
                 <artifactId>maven-antrun-plugin</artifactId>
                 <executions>
-                    <execution>
-                        <phase>process-sources</phase>
-                        <configuration>
-                            <tasks>
-                                <delete file="${project.build.directory}/generated-sources/javacc/org/apache/openjpa/kernel/jpql/ParseException.java" />
-                            </tasks>
-                        </configuration>
-                        <goals>
-                            <goal>run</goal>
-                        </goals>
-                    </execution>
                     <execution>
 						<id>add-was-interfaces</id>
 						<phase>process-classes</phase>
