@@ -36,6 +36,7 @@ import java.util.Set;
 import java.util.TreeMap;
 
 import javax.persistence.FlushModeType;
+import javax.persistence.LockModeType;
 import javax.persistence.Query;
 import javax.persistence.TemporalType;
 
@@ -62,7 +63,7 @@ import org.apache.openjpa.util.RuntimeExceptionTranslator;
  */
 public class QueryImpl implements OpenJPAQuerySPI, Serializable {
 
-	private static final Object[] EMPTY_ARRAY = new Object[0];
+    private static final List EMPTY_LIST = new ArrayList(0);
 
 	private static final Localizer _loc = Localizer.forPackage(QueryImpl.class);
 
@@ -673,21 +674,21 @@ public class QueryImpl implements OpenJPAQuerySPI, Serializable {
 		return _positional != null;
 	}
 
-	/**
-	 * Gets the array of positional parameter values. A value of
-	 * <code>GAP_FILLER</code> indicates that user has not set the
-	 * corresponding positional parameter. A value of null implies that user has
-	 * set the value as null.
-	 */
-	public Object[] getPositionalParameters() {
-		_query.lock();
-		try {
-			return (_positional == null) ? EMPTY_ARRAY : _positional.values()
-					.toArray();
-		} finally {
-			_query.unlock();
-		}
-	}
+    /**
+     * Gets the list of positional parameter values. A value of
+     * <code>GAP_FILLER</code> indicates that user has not set the
+     * corresponding positional parameter. A value of null implies that user has
+     * set the value as null.
+     */
+    public List getPositionalParameters() {
+        _query.lock();
+        try {
+            return (_positional == null) ? EMPTY_LIST : 
+                    new ArrayList<Object>(_positional.values());
+        } finally {
+            _query.unlock();
+        }
+    }
 
 	public OpenJPAQuery setParameters(Object... params) {
 		_query.assertOpen();
@@ -705,7 +706,7 @@ public class QueryImpl implements OpenJPAQuerySPI, Serializable {
 		}
 	}
 
-	public Map getNamedParameters() {
+	public Map<String, Object> getNamedParameters() {
 		_query.lock();
 		try {
 			return (_named == null) ? Collections.EMPTY_MAP : Collections
@@ -751,4 +752,29 @@ public class QueryImpl implements OpenJPAQuerySPI, Serializable {
 			return false;
 		return _query.equals(((QueryImpl) other)._query);
 	}
+
+    public Map<String, Object> getHints() {
+        throw new UnsupportedOperationException(
+            "JPA 2.0 - Method not yet implemented");
+    }
+
+    public LockModeType getLockMode() {
+        throw new UnsupportedOperationException(
+            "JPA 2.0 - Method not yet implemented");
+    }
+
+    public Set<String> getSupportedHints() {
+        throw new UnsupportedOperationException(
+            "JPA 2.0 - Method not yet implemented");
+    }
+
+    public Query setLockMode(LockModeType lockMode) {
+        throw new UnsupportedOperationException(
+            "JPA 2.0 - Method not yet implemented");
+    }
+
+    public <T> T unwrap(Class<T> cls) {
+        throw new UnsupportedOperationException(
+            "JPA 2.0 - Method not yet implemented");
+    }
 }

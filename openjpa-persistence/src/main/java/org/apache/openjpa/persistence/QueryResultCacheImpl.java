@@ -84,7 +84,7 @@ public class QueryResultCacheImpl
         QueryImpl impl = (QueryImpl) q;
         if (impl.hasPositionalParameters())
             return QueryKey.newInstance(impl.getDelegate(),
-                impl.getPositionalParameters());
+                impl.getPositionalParameters().toArray());
         return QueryKey.newInstance(impl.getDelegate(),
             impl.getNamedParameters());
     }

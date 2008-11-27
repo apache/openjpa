@@ -28,7 +28,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
+
+import javax.persistence.Cache;
 import javax.persistence.EntityManagerFactory;
+import javax.persistence.QueryBuilder;
 
 import org.apache.openjpa.conf.OpenJPAConfiguration;
 import org.apache.openjpa.enhance.Reflection;
@@ -332,4 +335,19 @@ public class EntityManagerFactoryImpl
             throw PersistenceExceptions.toPersistenceException(e);
         }
 	}
+
+    public Cache getCache() {
+        throw new UnsupportedOperationException(
+            "JPA 2.0 - Method not yet implemented");
+    }
+
+    public QueryBuilder getQueryBuilder() {
+        throw new UnsupportedOperationException(
+           "JPA 2.0 - Method not yet implemented");
+    }
+
+    public Set<String> getSupportedProperties() {
+        throw new UnsupportedOperationException(
+            "JPA 2.0 - Method not yet implemented");
+    }
 }

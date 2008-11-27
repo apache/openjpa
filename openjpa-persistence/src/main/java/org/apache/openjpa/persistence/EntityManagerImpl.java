@@ -34,10 +34,14 @@ import java.util.EnumSet;
 import java.util.Map;
 import java.util.HashMap;
 import java.util.IdentityHashMap;
+import java.util.Set;
+
 import javax.persistence.EntityManager;
 import javax.persistence.FlushModeType;
 import javax.persistence.LockModeType;
 import javax.persistence.Query;
+import javax.persistence.QueryBuilder;
+import javax.persistence.QueryDefinition;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.openjpa.conf.OpenJPAConfiguration;
@@ -1379,5 +1383,60 @@ public class EntityManagerImpl
                 }
             }
         }
+    }
+
+    public void clear(Object entity) {
+        throw new UnsupportedOperationException(
+            "JPA 2.0 - Method not yet implemented");
+    }
+
+    public Query createQuery(QueryDefinition qdef) {
+        throw new UnsupportedOperationException(
+            "JPA 2.0 - Method not yet implemented");
+    }
+
+    public <T> T find(Class<T> entityClass, Object primaryKey, LockModeType lockMode) {
+        throw new UnsupportedOperationException(
+            "JPA 2.0 - Method not yet implemented");
+    }
+
+    public <T> T find(Class<T> entityClass, Object primaryKey, LockModeType lockMode, Map<String, Object> properties) {
+        throw new UnsupportedOperationException(
+            "JPA 2.0 - Method not yet implemented");
+    }
+
+    public Map<String, Object> getProperties() {
+        throw new UnsupportedOperationException(
+            "JPA 2.0 - Method not yet implemented");
+    }
+
+    public QueryBuilder getQueryBuilder() {
+        throw new UnsupportedOperationException(
+            "JPA 2.0 - Method not yet implemented");
+    }
+
+    public Set<String> getSupportedProperties() {
+        throw new UnsupportedOperationException(
+            "JPA 2.0 - Method not yet implemented");
+    }
+
+    public void lock(Object entity, LockModeType lockMode, Map<String, Object> properties) {
+        throw new UnsupportedOperationException(
+            "JPA 2.0 - Method not yet implemented");
+    }
+
+    public void refresh(Object entity, LockModeType lockMode) {
+        throw new UnsupportedOperationException(
+            "JPA 2.0 - Method not yet implemented");
+    }
+
+    public void refresh(Object entity, LockModeType lockMode, Map<String, Object> properties) {
+        throw new UnsupportedOperationException(
+            "JPA 2.0 - Method not yet implemented");
+    }
+
+    public <T> T unwrap(Class<T> cls) {
+        throw new UnsupportedOperationException(
+            "JPA 2.0 - Method not yet implemented");
     }
 }

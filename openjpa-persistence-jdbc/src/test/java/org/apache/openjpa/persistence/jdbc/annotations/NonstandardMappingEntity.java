@@ -28,6 +28,7 @@ import javax.persistence.*;
 import org.apache.openjpa.jdbc.meta.strats.*;
 import org.apache.openjpa.persistence.*;
 import org.apache.openjpa.persistence.jdbc.*;
+import org.apache.openjpa.persistence.jdbc.OrderColumn;
 
 
 @Entity

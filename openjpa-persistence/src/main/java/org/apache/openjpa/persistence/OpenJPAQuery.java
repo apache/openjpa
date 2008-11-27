@@ -21,6 +21,7 @@ package org.apache.openjpa.persistence;
 import java.util.Calendar;
 import java.util.Collection;
 import java.util.Date;
+import java.util.List;
 import java.util.Map;
 import javax.persistence.FlushModeType;
 import javax.persistence.Query;
@@ -133,16 +134,18 @@ public interface OpenJPAQuery
     public boolean hasPositionalParameters();
 
     /**
-     * The positional parameters for the query; empty array if none or
+     * The positional parameters for the query; empty list if none or
      * if query uses named parameters.
+     * Note: This method signature was changed in 2.0 to return a List
+     * instead of Object[] to match the JPA 2.0 spec.
      */
-    public Object[] getPositionalParameters();
+    public List getPositionalParameters();
 
     /**
      * The named parameters for the query; empty map if none or
      * if query uses positional parameters.
      */
-    public Map getNamedParameters();
+    public Map<String, Object> getNamedParameters();
 
     /**
      * Set parameters.
