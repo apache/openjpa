@@ -85,12 +85,17 @@ public class TestQuery extends SliceTestCase {
         Object max   = em.createQuery("SELECT MAX(p.value) FROM PObject p").getSingleResult();
         Object min   = em.createQuery("SELECT MIN(p.value) FROM PObject p").getSingleResult();
         Object sum   = em.createQuery("SELECT SUM(p.value) FROM PObject p").getSingleResult();
+        Object minmax   = em.createQuery("SELECT MIN(p.value),MAX(p.value) FROM PObject p").getSingleResult();
+        Object min1 = ((Object[])minmax)[0];
+        Object max1 = ((Object[])minmax)[1];
         em.getTransaction().rollback();
         
         assertEquals(POBJECT_COUNT, ((Number)count).intValue());
         assertEquals(VALUE_MAX, ((Number)max).intValue());
         assertEquals(VALUE_MIN, ((Number)min).intValue());
         assertEquals((VALUE_MIN+VALUE_MAX)*POBJECT_COUNT, 2*((Number)sum).intValue());
+        assertEquals(min, min1);
+        assertEquals(max, max1);
     }
     
     public void testSetMaxResult() {

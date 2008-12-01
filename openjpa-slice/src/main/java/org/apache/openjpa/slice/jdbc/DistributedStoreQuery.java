@@ -147,10 +147,10 @@ class DistributedStoreQuery extends JDBCStoreQuery {
         	}
         	boolean[] ascending = getAscending(q);
         	boolean isAscending = ascending.length > 0;
-        	boolean isUnique    = q.getContext().isUnique();
+        	boolean isAggregate = q.getContext().isAggregate();
         	boolean hasRange    = q.getContext().getEndRange() != Long.MAX_VALUE;
         	ResultObjectProvider result = null;
-        	if (isUnique) {
+        	if (isAggregate) {
         	    result = new UniqueResultObjectProvider(tmp, q, 
         	            getQueryExpressions());
         	} else if (isAscending) {

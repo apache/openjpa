@@ -88,7 +88,8 @@ public class UniqueResultObjectProvider implements ResultObjectProvider {
             boolean isAggregate = v.isAggregate();
             String op = v.getClass().getSimpleName();
             for (ResultObjectProvider rop:_rops) {
-                rop.next();
+                if (i == 0) 
+                	rop.next();
                 Object[] row = (Object[]) rop.getResultObject();
                 if (isAggregate) {
                     if (COUNT.equals(op)) {

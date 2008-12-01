@@ -47,7 +47,7 @@ public class TestBasic extends SliceTestCase {
     /**
      * Persist N independent objects.
      */
-    List<PObject> create(int N) {
+    List<PObject> createIndependentObjects(int N) {
         List<PObject> pcs = new ArrayList<PObject>();
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
@@ -65,8 +65,8 @@ public class TestBasic extends SliceTestCase {
     /**
      * Create a single object.
      */
-    PObject create() {
-        return create(1).get(0);
+    PObject createIndependentObject() {
+        return createIndependentObjects(1).get(0);
     }
 
     /**
@@ -74,7 +74,7 @@ public class TestBasic extends SliceTestCase {
      */
     public void testDelete() {
         int N = 10;
-        create(N);
+        createIndependentObjects(N);
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
         int before = count(PObject.class);
@@ -106,7 +106,7 @@ public class TestBasic extends SliceTestCase {
      * Store and find the same object.
      */
     public void testFind() {
-        PObject pc = create();
+        PObject pc = createIndependentObject();
         int value = pc.getValue();
 
         EntityManager em = emf.createEntityManager();
@@ -181,7 +181,7 @@ public class TestBasic extends SliceTestCase {
      * from which the instance was fetched.
      */
     public void testMerge() {
-        PObject pc = create(1).get(0);
+        PObject pc = createIndependentObjects(1).get(0);
         int value = pc.getValue();
         pc.setValue(value + 1);
         assertNotNull(pc);
@@ -236,6 +236,22 @@ public class TestBasic extends SliceTestCase {
         em.getTransaction().begin();
         em.merge(india);
         em.getTransaction().commit();
+    }
+    
+    public void testQuerySingleObject() {
+    	PObject pc = createIndependentObject();
+    	long pid = pc.getId();
+        int value = pc.getValue();
+
+        EntityManager em = emf.createEntityManager();
+        em.getTransaction().begin();
+        String jpql = "select p from PObject p where p.id=:id";
+        PObject pc2 = (PObject)em.createQuery(jpql).setParameter("id", pid)
+        			.getSingleResult();
+        assertNotNull(pc2);
+        assertNotEquals(pc, pc2);
+        assertEquals(pc.getId(), pc2.getId());
+        assertEquals(value, pc2.getValue());
     }
 
 }
