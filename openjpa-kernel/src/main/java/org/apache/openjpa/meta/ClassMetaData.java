@@ -1861,7 +1861,8 @@ public class ClassMetaData
                 throw new MetaDataException(_loc.get("unsupported-id-type",
                     _type, pks[0].getName(),
                     pks[0].getDeclaredType().getName()));
-            throw new MetaDataException(_loc.get("no-id-class", _type));
+            throw new MetaDataException(_loc.get("no-id-class", _type, 
+            		Arrays.asList(toNames(pks))));
         }
         if (_objectId == null)
             return;
