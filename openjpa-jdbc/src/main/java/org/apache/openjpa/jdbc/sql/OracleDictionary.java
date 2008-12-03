@@ -51,6 +51,7 @@ import org.apache.openjpa.lib.jdbc.DelegatingPreparedStatement;
 import org.apache.openjpa.lib.util.J2DoPrivHelper;
 import org.apache.openjpa.lib.util.Localizer;
 import org.apache.openjpa.util.StoreException;
+import org.apache.openjpa.util.UserException;
 
 import serp.util.Numbers;
 
@@ -501,6 +502,9 @@ public class OracleDictionary
     public void setNull(PreparedStatement stmnt, int idx, int colType,
         Column col)
         throws SQLException {
+        if ((colType == Types.CLOB || colType == Types.BLOB) && col.isNotNull())
+            throw new UserException(_loc.get("null-blob-in-not-nullable", col
+                .getFullName()));
         if (colType == Types.BLOB && _driverBehavior == BEHAVE_ORACLE)
             stmnt.setBlob(idx, getEmptyBlob());
         else if (colType == Types.CLOB && _driverBehavior == BEHAVE_ORACLE
