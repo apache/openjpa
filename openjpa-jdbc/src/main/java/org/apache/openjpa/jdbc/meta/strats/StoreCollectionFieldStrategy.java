@@ -594,13 +594,21 @@ public abstract class StoreCollectionFieldStrategy
             
             ClassMapping mapping = field.getDefiningMapping();
             Object oid = sm.getObjectId();
-            Column[] cols = mapping.getPrimaryKeyColumns();
+            
             if (sel == null)
                 sel = ((LogicalUnion.UnionSelect)union.getSelects()[0]).
                 getDelegate();
+           
+            ValueMapping embed = mapping.getEmbeddingMapping();
+            if (embed != null) 
+                mapping = getOwner(embed);
 
-            sel.wherePrimaryKey(mapping, cols, cols, oid, store, 
-                	null, null, parmList);
+            if (mapping != null) {
+                Column[] cols = mapping.getPrimaryKeyColumns();
+                sel.wherePrimaryKey(mapping, cols, cols, oid, store, 
+                    null, null, parmList);
+            }
+
             List nonFKParams = sel.getSQL().getNonFKParameters();
             if (nonFKParams != null && nonFKParams.size() > 0) 
                 parmList.addAll(nonFKParams);
@@ -640,6 +648,16 @@ public abstract class StoreCollectionFieldStrategy
                 ((Collection) coll, field.getElement().getType()));
         else
             sm.storeObject(field.getIndex(), coll);
+    }
+    
+    private ClassMapping getOwner(ValueMapping embed) {
+        if (embed == null)
+            return null;
+        ClassMapping owner = embed.getFieldMapping().getDefiningMapping();
+        if (owner.getPrimaryKeyFields().length > 0)
+            return owner;
+        ValueMapping embed1 = (ValueMapping) owner.getEmbeddingMetaData();
+        return getOwner(embed1);
     }
 
     protected Union newUnion(final OpenJPAStateManager sm, final JDBCStore store,
