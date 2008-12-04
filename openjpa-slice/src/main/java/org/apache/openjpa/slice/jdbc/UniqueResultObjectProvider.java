@@ -116,13 +116,16 @@ public class UniqueResultObjectProvider implements ResultObjectProvider {
     Object count(Object current, Object other) {
         if (current == null)
             return other;
+        if (other == null)
+        	return current;
         return ((Number)current).longValue() + ((Number)other).longValue();
     }
     
     Object max(Object current, Object other) {
         if (current == null)
             return other;
-        
+        if (other == null)
+        	return current;
         return Math.max(((Number)current).doubleValue(), 
                 ((Number)other).doubleValue());
     }
@@ -130,6 +133,8 @@ public class UniqueResultObjectProvider implements ResultObjectProvider {
     Object min(Object current, Object other) {
         if (current == null)
             return other;
+        if (other == null)
+        	return current;
         return Math.min(((Number)current).doubleValue(), 
                 ((Number)other).doubleValue());
     }
@@ -137,6 +142,8 @@ public class UniqueResultObjectProvider implements ResultObjectProvider {
     Object sum(Object current, Object other) {
         if (current == null)
             return other;
+        if (other == null)
+        	return current;
         return (((Number)current).doubleValue() +
                 ((Number)other).doubleValue());
     }

@@ -98,6 +98,15 @@ public class TestQuery extends SliceTestCase {
         assertEquals(max, max1);
     }
     
+    public void testAggregateQueryWithMissingValueFromSlice() {
+        EntityManager em = emf.createEntityManager();
+        em.getTransaction().begin();
+        Object max   = em.createQuery("SELECT MAX(p.value) FROM PObject p WHERE MOD(p.value,2)=0").getSingleResult();
+        em.getTransaction().rollback();
+        
+        assertEquals(VALUE_MAX, ((Number)max).intValue());
+    }
+
     public void testSetMaxResult() {
         EntityManager em = emf.createEntityManager();
         int limit = 3;
