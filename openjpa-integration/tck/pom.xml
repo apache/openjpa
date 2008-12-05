@@ -100,7 +100,6 @@
                             <!-- use official JPA API instead of GM's -->
                             <fileset dir="${tck.dir}/lib">
                                 <include name="**/*.jar" />
-                                <exclude name="**/geronimo-jpa*" />
                             </fileset>
                             <pathelement path="${java.class.path}" />
                             <pathelement path="${db.jar}" />
@@ -278,11 +277,11 @@ databaseName=${db.name}
     </repositories>
 
     <dependencies>
-        <!-- use the authoritative javax.persistence API for testing -->
+        <!--  Use early access version of JPA spec from Geronimo -->
         <dependency>
-            <groupId>javax.persistence</groupId>
-            <artifactId>persistence-api</artifactId>
-            <version>1.0b</version>
+            <groupId>org.apache.geronimo.specs</groupId>
+            <artifactId>geronimo-jpa_2.0_spec</artifactId>
+            <scope>compile</scope>
         </dependency>
         <dependency>
             <groupId>org.apache.openjpa</groupId>
