@@ -58,7 +58,7 @@ public class ConstraintUpdateManager
         (ConstraintUpdateManager.class);
 
     public boolean orderDirty() {
-        return true;
+        return false;
     }
 
     protected PreparedStatementManager newPreparedStatementManager
