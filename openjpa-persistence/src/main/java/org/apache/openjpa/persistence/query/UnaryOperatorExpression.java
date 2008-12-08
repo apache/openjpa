@@ -47,6 +47,7 @@ class UnaryOperatorExpression extends ExpressionImpl implements Aggregate {
 	}
 	
 	public String asProjection(AliasContext ctx) {
-		return _op + "(" + ((Selectable)_e).asProjection(ctx) + ")";
+		return _op + "(" + ((Visitable)_e).asProjection(ctx) + ")" +
+		    (ctx.hasAlias(this) ? " " + ctx.getAlias(this) : "");
 	}
 }

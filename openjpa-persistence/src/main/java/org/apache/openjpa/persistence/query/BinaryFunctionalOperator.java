@@ -34,9 +34,7 @@ public enum BinaryFunctionalOperator {
 	MOD("MOD"),
 	PLUS("+"),
 	RANGE(","),
-	SUBSTR("SUBSTR"),
-	TIMES("*"),
-	TRIM("TRIM");
+	TIMES("*");
 	
 	private final String _symbol;
 	

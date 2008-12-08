@@ -26,22 +26,27 @@ import javax.persistence.OrderByItem;
  * @author Pinaki Poddar
  *
  */
-public class OrderableItem implements OrderByItem {
+public class OrderableItem extends AbstractVisitable 
+    implements OrderByItem, Visitable {
 	private final Boolean _asc;
-	private final ExpressionImpl path;
+	private final ExpressionImpl _e;
 	
 	OrderableItem(ExpressionImpl path) {
 		this(path, null);
 	}
 	
+	public ExpressionImpl getExpression() {
+		return _e;
+	}
+	
 	OrderableItem(ExpressionImpl path, Boolean asc) {
 		super();
 		this._asc = asc;
-		this.path = path;
+		this._e = path;
 	}
 	
-	public String toJPQL(AliasContext ctx) {
-		return path.asExpression(ctx) + " " 
-		    + (_asc == null ? "" : (_asc ? " ASC " : "DESC"));
+	public String asExpression(AliasContext ctx) {
+		return (ctx.hasAlias(_e) ? ctx.getAlias(_e) : _e.asExpression(ctx)) 
+		    + (_asc == null ? "" : (_asc ? " ASC " : " DESC"));
 	}
 }

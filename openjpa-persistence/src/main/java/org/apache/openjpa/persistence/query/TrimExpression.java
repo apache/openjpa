@@ -27,15 +27,29 @@ import javax.persistence.TrimSpec;
  * @author Pinaki Poddar
  *
  */
-public class TrimExpression extends BinaryOperatorExpression {
-	TrimSpec _spec;
-	public TrimExpression(Expression op1, char ch, TrimSpec spec) {
-		super(op1, BinaryFunctionalOperator.TRIM, new ConstantExpression(ch));
+public class TrimExpression extends UnaryOperatorExpression {
+	private final Expression _trimChar;
+	private final TrimSpec _spec;
+	private static final String BLANK = "' '";
+	
+	public TrimExpression(Expression op, char ch, TrimSpec spec) {
+		super(op, UnaryFunctionalOperator.TRIM);
+		_trimChar = new ConstantExpression(ch);
+		_spec     = spec;
+	}
+	
+	public TrimExpression(Expression op, Expression ch, TrimSpec spec) {
+		super(op, UnaryFunctionalOperator.TRIM);
+		_trimChar = ch;
 		_spec = spec;
 	}
 	
-	public TrimExpression(Expression op, Expression op1, TrimSpec spec) {
-		super(op, BinaryFunctionalOperator.TRIM, op1);
-		_spec = spec;
+	public String asExpression(AliasContext ctx) {
+		String trim = _trimChar == null ? BLANK 
+			: ((Visitable)_trimChar).asExpression(ctx);
+		String spec = _spec == null ? "" : _spec.toString();
+		return _op + "(" + spec + " " + trim + " FROM " 
+			+ ((Visitable)_e).asExpression(ctx) + ")";
 	}
+
 }

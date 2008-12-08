@@ -26,7 +26,8 @@ import javax.persistence.Predicate;
  * @author Pinaki Poddar
  *
  */
-public class LogicalPredicate implements Predicate, Visitable {
+public class LogicalPredicate extends AbstractVisitable 
+    implements Predicate, Visitable {
 	private final Predicate _p1;
 	private final Predicate _p2;
 	private final ConditionalOperator _op;

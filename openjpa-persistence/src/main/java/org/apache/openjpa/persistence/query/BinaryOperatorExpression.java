@@ -56,7 +56,9 @@ public class BinaryOperatorExpression extends ExpressionImpl {
 	}
 	
 	public String asProjection(AliasContext ctx) {
-		return ((Selectable)_e1).asProjection(ctx) + _op 
-		     + ((Selectable)_e2).asProjection(ctx);
+		return ((Visitable)_e1).asProjection(ctx) + _op 
+		     + ((Visitable)_e2).asProjection(ctx) 
+		     + (ctx.hasAlias(this) ? " as " + ctx.getAlias(this) : "");
+
 	}
 }

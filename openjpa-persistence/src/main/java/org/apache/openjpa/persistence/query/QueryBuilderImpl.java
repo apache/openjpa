@@ -18,10 +18,18 @@
  */
 package org.apache.openjpa.persistence.query;
 
+import java.io.Serializable;
+
 import javax.persistence.DomainObject;
 import javax.persistence.PathExpression;
 import javax.persistence.QueryBuilder;
 import javax.persistence.QueryDefinition;
+
+import org.apache.openjpa.meta.ClassMetaData;
+import org.apache.openjpa.meta.MetaDataRepository;
+import org.apache.openjpa.persistence.EntityManagerFactoryImpl;
+import org.apache.openjpa.persistence.OpenJPAEntityManagerFactory;
+import org.apache.openjpa.persistence.OpenJPAEntityManagerFactorySPI;
 
 /**
  * The factory for QueryDefinition.
@@ -31,25 +39,39 @@ import javax.persistence.QueryDefinition;
  *
  */
 public class QueryBuilderImpl implements QueryBuilder {
+	private final OpenJPAEntityManagerFactorySPI _emf;
+	
+	public QueryBuilderImpl(OpenJPAEntityManagerFactorySPI emf) {
+		_emf = emf;
+	}
+	
 	/**
-	 * Creates a QueryDefinition without a domain root.
+	 * Creates a QueryDefinition without a domain.
 	 */
 	public QueryDefinition createQueryDefinition() {
 		return new QueryDefinitionImpl(this);
 	}
 
 	/**
-	 * Creates a QueryDefinition with given class as domain root.
+	 * Creates a QueryDefinition with given class as domain.
 	 */
 	public DomainObject createQueryDefinition(Class root) {
 		return new QueryDefinitionImpl(this).addRoot(root);
 	}
 
 	/**
-	 * Creates a QueryDefinition that can be used as a subquery to some
-	 * other query.
+	 * Creates a QueryDefinition that can be used a correlated subquery 
+	 * with the given path as domain.
 	 */
 	public DomainObject createSubqueryDefinition(PathExpression path) {
 		return new QueryDefinitionImpl(this).addSubqueryRoot(path);
+	}
+	
+	public String toJPQL(QueryDefinition query) {
+		MetaDataRepository repos = null;//_emf.getConfiguration().getMetaDataRepositoryInstance()
+		AliasContext ctx = new AliasContext(repos);
+		if (query instanceof AbstractDomainObject)
+			return ((AbstractDomainObject)query).getOwner().asExpression(ctx);
+		return ((QueryDefinitionImpl)query).asExpression(ctx);
 	}
 }

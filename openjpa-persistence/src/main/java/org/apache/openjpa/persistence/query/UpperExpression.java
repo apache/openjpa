@@ -18,25 +18,16 @@
  */
 package org.apache.openjpa.persistence.query;
 
+import javax.persistence.Expression;
+
 /**
- * Denotes a parameter in a query.
+ * Denotes UPPER(e) Expression.
  * 
  * @author Pinaki Poddar
  *
  */
-public class ParameterExpression extends ExpressionImpl {
-	private final String _name;
-	public ParameterExpression(String name) {
-		_name = ":" + name;
-	}
-	
-	@Override
-	public String asExpression(AliasContext ctx) {
-		return _name;
-	}
-	
-	@Override
-	public String asProjection(AliasContext ctx) {
-		return _name;
+public class UpperExpression extends UnaryOperatorExpression {
+	public UpperExpression(Expression op) {
+		super(op, UnaryFunctionalOperator.UPPER);
 	}
 }

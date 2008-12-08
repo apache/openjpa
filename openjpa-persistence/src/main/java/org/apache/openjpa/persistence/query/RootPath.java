@@ -20,8 +20,8 @@ public class RootPath extends AbstractDomainObject implements DomainObject {
 	}
 	
 	@Override
-	public String getAliasHint() {
-		return getLastSegment().getSimpleName();
+	public String getAliasHint(AliasContext ctx) {
+		return ctx.getEntityName(getLastSegment());
 	}
 
 	@Override
@@ -31,7 +31,7 @@ public class RootPath extends AbstractDomainObject implements DomainObject {
 	
 	@Override
 	public String asJoinable(AliasContext ctx) {
-		return getLastSegment().getSimpleName() + " " + ctx.getAlias(this);
+		return ctx.getEntityName(getLastSegment()) + " " + ctx.getAlias(this);
 	}
 	
 	@Override

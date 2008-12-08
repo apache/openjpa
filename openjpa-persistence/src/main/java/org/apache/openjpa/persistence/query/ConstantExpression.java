@@ -33,28 +33,13 @@ class ConstantExpression extends ExpressionImpl {
 		_value = value;
 	}
 	
-	public Object getValue() {
-		return _value;
-	}
-	
 	@Override
 	public String asExpression(AliasContext ctx) {
-		if (_value.getClass().isArray()) {
-			return Arrays.asList((Object[])_value).toString();
-		}
-		return quoted(_value);
+		return JPQLHelper.toJPQL(ctx, _value);
 	}
 	
 	@Override
 	public String asProjection(AliasContext ctx) {
 		return asExpression(ctx);
-	}
-	
-	String quoted(Object o) {
-		if (o instanceof String)
-			return "'" + o + "'";
-		if (o instanceof Class)
-			return ((Class)o).getSimpleName();
-		return o.toString();
 	}
 }

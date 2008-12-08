@@ -37,8 +37,8 @@ public class OperatorPath extends AbstractDomainObject {
 	}
 
 	@Override
-	public String getAliasHint() {
-		return getParent().getAliasHint();
+	public String getAliasHint(AliasContext ctx) {
+		return getParent().getAliasHint(ctx);
 	}
 	
 	@Override

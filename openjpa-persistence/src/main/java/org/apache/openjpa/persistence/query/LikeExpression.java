@@ -27,18 +27,28 @@ import javax.persistence.Expression;
  *
  */
 public class LikeExpression extends BinaryExpressionPredicate {
-	public LikeExpression(Expression op1, Expression op2, Object echar) {
-		super(escape(op1, echar), BinaryConditionalOperator.LIKE, 
-			BinaryConditionalOperator.LIKE_NOT, escape(op2, echar));
+	private final Object  _echar;
+	private final boolean _escaped;
+	
+	public LikeExpression(Expression e, Expression pattern, Object echar) {
+		super(e, BinaryConditionalOperator.LIKE, 
+			BinaryConditionalOperator.LIKE_NOT, pattern);
+		_echar = echar;
+		_escaped = true;
 	}
 	
-	static Expression escape(Expression o, Object echar) {
-		if (echar != null && o instanceof ConstantExpression 
-				&& ((ConstantExpression)o).getValue() instanceof String) {
-			String escapeChar = echar.toString();
-			return new ConstantExpression(escapeChar + o.toString() + escapeChar);
-		}
-		return o;
+	public LikeExpression(Expression e, Expression pattern) {
+		super(e, BinaryConditionalOperator.LIKE, 
+			BinaryConditionalOperator.LIKE_NOT, pattern);
+		
+		_echar = null;
+		_escaped = false;
+	}
+	
+	@Override
+	public String asExpression(AliasContext ctx) {
+		return super.asExpression(ctx) 
+		    + (_escaped ? "ESCAPE " + JPQLHelper.toJPQL(ctx, _echar) : "");
 	}
 
 }

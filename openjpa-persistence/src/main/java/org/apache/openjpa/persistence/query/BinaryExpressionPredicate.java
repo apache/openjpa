@@ -27,7 +27,8 @@ import javax.persistence.Predicate;
  * @author Pinaki Poddar
  *
  */
-class BinaryExpressionPredicate implements Predicate, Visitable {
+class BinaryExpressionPredicate extends AbstractVisitable 
+    implements Predicate, Visitable {
 	protected final Expression _e1;
 	protected final Expression _e2;
 	protected final BinaryConditionalOperator   _op;

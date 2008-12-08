@@ -390,6 +390,5 @@ public abstract class AbstractDomainObject extends AbstractPath
 				join.setAlias(ctx);
 	}
 	
-	abstract public String asJoinable(AliasContext ctx);
 
 }

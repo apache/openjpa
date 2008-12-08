@@ -32,22 +32,25 @@ public enum UnaryFunctionalOperator {
 	ALL("ALL"),
 	ANY("ANY"),
 	AVG("AVG"),
+	CONCAT("CONCAT"),
 	COUNT("COUNT"),
 	DISTINCT("DISTINCT"),
 	EXISTS("EXISTS"),
 	INDEX("INDEX"),
 	LENGTH("LENGTH"),
 	LOCATE("LOCATE"),
-	LOWER("TOLOWER"),
+	LOWER("LOWER"),
 	MAX("MAX"),
 	MIN("MIN"),
 	MINUS("-"),
 	SIZE("SIZE"),
 	SOME("SOME"),
 	SQRT("SQRT"),
+	SUBSTR("SUBSTRING"),
 	SUM("SUM"),
+	TRIM("TRIM"),
 	TYPE("TYPE"),
-	UPPER("TOUPPER");
+	UPPER("UPPER");
 	
 	private final String _symbol;
 	

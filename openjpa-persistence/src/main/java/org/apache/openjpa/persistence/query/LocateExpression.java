@@ -21,13 +21,42 @@ package org.apache.openjpa.persistence.query;
 import javax.persistence.Expression;
 
 /**
- * Denotes LOCATE(e)
+ * Denotes LOCATE(e1, e2, n) Expression.
+ * e1 : string to be located
+ * e2 : string to be searched
+ * n  : starting poistion in e2, default is 1
  * 
  * @author Pinaki Poddar
  *
  */
 public class LocateExpression extends BinaryOperatorExpression  {
-	public LocateExpression(Expression op, Expression op2, Object pos) {
-		super(op, BinaryFunctionalOperator.LOCATE, op2);
+	private final Expression _start;
+
+	public LocateExpression(Expression key, String str, int start) {
+		super(key, BinaryFunctionalOperator.LOCATE, new ConstantExpression(str));
+		_start = new ConstantExpression(start);
 	}
+	
+	public LocateExpression(Expression key, Expression str, int start) {
+		super(key, BinaryFunctionalOperator.LOCATE, str);
+		_start = new ConstantExpression(start);
+	}
+	
+	public LocateExpression(Expression key, String str, Expression start) {
+		super(key, BinaryFunctionalOperator.LOCATE, new ConstantExpression(str));
+		_start = start;
+	}
+	
+	public LocateExpression(Expression key, Expression str, Expression start) {
+		super(key, BinaryFunctionalOperator.LOCATE, str);
+		_start = start;
+	}
+	
+	public String asExpression(AliasContext ctx) {
+		return _op + "(" + ((Visitable)_e1).asExpression(ctx) + "," 
+		    + ((Visitable)_e2).asExpression(ctx) 
+		    + (_start == null ? "" : "," + ((Visitable)_start).asExpression(ctx))
+		    + ")";
+	}
+
 }

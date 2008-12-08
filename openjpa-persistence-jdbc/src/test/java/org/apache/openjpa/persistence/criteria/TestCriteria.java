@@ -19,12 +19,15 @@
 
 package org.apache.openjpa.persistence.criteria;
 
+import javax.persistence.CaseExpression;
 import javax.persistence.DomainObject;
+import javax.persistence.Expression;
 import javax.persistence.QueryBuilder;
 import javax.persistence.QueryDefinition;
 import javax.persistence.SelectItem;
 
 import org.apache.openjpa.persistence.query.AbstractDomainObject;
+import org.apache.openjpa.persistence.query.QueryBuilderImpl;
 import org.apache.openjpa.persistence.query.QueryDefinitionImpl;
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
 
@@ -45,7 +48,7 @@ import org.apache.openjpa.persistence.test.SingleEMFTestCase;
  *
  */
 public class TestCriteria extends SingleEMFTestCase {
-	protected QueryBuilder qb; 
+	protected QueryBuilderImpl qb; 
 	protected StringComparison comparator = new StringComparison();
 	
 	public void setUp() {
@@ -53,7 +56,7 @@ public class TestCriteria extends SingleEMFTestCase {
 			Department.class, Employee.class, Exempt.class, Item.class,
 			Manager.class, Person.class, VideoStore.class, Order.class, 
 			Customer.class);
-		qb = emf.getQueryBuilder();
+		qb = (QueryBuilderImpl)emf.getQueryBuilder();
 	}
 	
 	public void tearDown() {
@@ -61,19 +64,12 @@ public class TestCriteria extends SingleEMFTestCase {
 	}
 	
 	void compare(String s, QueryDefinition q) {
-		String actual = ((QueryDefinitionImpl)q).toJPQL();
+		String actual = qb.toJPQL(q);
 		if (!comparator.compare(s,actual)) {
 			fail("\r\nExpected: [" + s + "]\r\nActual  : [" + actual + "]");
 		}
 	}
 	
-	void compare(String s, DomainObject q) {
-		String actual = ((AbstractDomainObject)q).getOwner().toJPQL();
-		if (!comparator.compare(s,actual)) {
-			fail("\r\nExpected: [" + s + "]\r\nActual  : [" + actual + "]");
-		}
-	}
-
 	public void testMultipleDomainOfSameClass() {
 		DomainObject o1 = qb.createQueryDefinition(Order.class);
 		DomainObject o2 = o1.addRoot(Order.class);
@@ -353,11 +349,11 @@ public class TestCriteria extends SingleEMFTestCase {
 	DomainObject address = customer.join("address");
 	q.where(address.get("state").equal("CA"))
 	.select(order.get("quantity"), address.get("zipcode"))
-	.orderBy(order.get("quantity"), address.get("zipcode"));
+	.orderBy(order.get("quantity").desc(), address.get("zipcode"));
 	String jpql = "SELECT o.quantity, a.zipcode"
 				+ " FROM Customer c JOIN c.orders o JOIN c.address a"
 				+ " WHERE a.state = 'CA'"
-				+ " ORDER BY o.quantity, a.zipcode";
+				+ " ORDER BY o.quantity DESC, a.zipcode";
 	compare(jpql, q);
 	}
 	
@@ -370,10 +366,10 @@ public class TestCriteria extends SingleEMFTestCase {
 	.and(a.get("county").equal("Santa Clara")))
 	.orderBy(o.get("quantity"), taxedCost, a.get("zipcode"));
 	
-	String jpql = "SELECT o.quantity, o.cost*1.08, a.zipcode" 
+	String jpql = "SELECT o.quantity, o.cost*1.08 as o2, a.zipcode" 
 				+ " FROM Order o JOIN o.customer c JOIN c.address a"
 				+ " WHERE a.state = 'CA' AND a.county = 'Santa Clara'"
-				+ " ORDER BY o.quantity, o.cost*1.08, a.zipcode";
+				+ " ORDER BY o.quantity, o2, a.zipcode";
 	
 	compare(jpql, o);
 	}
@@ -408,6 +404,56 @@ public class TestCriteria extends SingleEMFTestCase {
 					+ " WHERE (SELECT AVG(o.price) FROM c.orders o) > 100";
 		
 		compare(jpql, customer);
+	}
+	
+	public void testTypeList() {
+		DomainObject q = qb.createQueryDefinition(Employee.class);
+		q.where(q.type().in(Exempt.class, Contractor.class));
+		
+		String jpql = "SELECT e "
+			+ " FROM Employee e"
+			+ " WHERE TYPE(e) IN (Exempt, Contractor)";
+		compare(jpql, q);
+	}
+	
+	public void testStringList() {
+		DomainObject q = qb.createQueryDefinition(Employee.class);
+		q.where(q.get("country").in("USA", "UK", "France"));
+		
+		String jpql = "SELECT e "
+			+ " FROM Employee e"
+			+ " WHERE e.country IN ('USA', 'UK', 'France')";
+		compare(jpql, q);
+	}
+	
+	public void testConcat() {
+		DomainObject e = qb.createQueryDefinition(Employee.class);
+		DomainObject f = e.join("frequentFlierPlan");
+		Expression c = 
+		e.generalCase().when(f.get("annualMiles").greaterThan(50000)).then("Platinum")
+		               .when(f.get("annualMiles").greaterThan(25000)).then("Gold")
+		               .elseCase("");
+		e.select(e.get("name"), f.get("name"), e.concat(c,e.literal("Frequent Flyer")));
+		
+		String jpql = "SELECT e.name, f.name, CONCAT(" 
+			+ " CASE WHEN f.annualMiles > 50000 THEN 'Platinum'" 
+			+ "      WHEN f.annualMiles > 25000 THEN 'Gold'" 
+			+ " ELSE '' END, 'Frequent Flyer')" 
+			+ "FROM Employee e JOIN e.frequentFlierPlan f";
+			
+		compare(jpql, e);
+	}
+	
+	public void testRecursiveDefinitionIsNotAllowed() {
+		DomainObject q = qb.createQueryDefinition(Customer.class);
+		q.where(q.exists().and(q.get("name").equal("wrong")));
+		
+		try {
+			compare("?", q);
+			fail();
+		} catch (RuntimeException e) {
+			// good
+		}
 	}
 	
 }

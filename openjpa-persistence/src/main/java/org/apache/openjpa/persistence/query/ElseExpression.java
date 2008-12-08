@@ -36,28 +36,14 @@ public class ElseExpression extends ExpressionImpl {
 	@Override
 	public String asExpression(AliasContext ctx) {
 		return _caseClause.toJPQL(ctx) 
-		    + " ELSE " + toJPQL(ctx, _elseClause) 
+		    + " ELSE " + JPQLHelper.toJPQL(ctx, _elseClause) 
 		    + " END ";
 	}
 	
 	@Override
 	public String asProjection(AliasContext ctx) {
 		return _caseClause.toJPQL(ctx) 
-		     + " ELSE " + toJPQL(ctx, _elseClause) 
+		     + " ELSE " + JPQLHelper.toJPQL(ctx, _elseClause) 
 		     + " END ";
-	}
-		
-	String toJPQL(AliasContext ctx, Object o) {
-		if (o instanceof Visitable) {
-			return ((Visitable)o).asExpression(ctx);
-		}
-		return o.toString();
-	}
-	
-	String asProjection(AliasContext ctx, Object o) {
-		if (o instanceof Selectable) {
-			return ((Selectable)o).asProjection(ctx);
-		}
-		return o.toString();
 	}
 }

@@ -18,7 +18,6 @@
  */
 package org.apache.openjpa.persistence.query;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -31,7 +30,8 @@ import javax.persistence.SelectItem;
  * @author Pinaki Poddar
  *
  */
-public class NewInstance implements Selectable {
+public class NewInstance extends AbstractVisitable 
+	implements SelectItem, Visitable {
 	private final Class _cls;
 	private List<SelectItem> _args;
 	NewInstance(Class cls, SelectItem...args) {
@@ -59,12 +59,9 @@ public class NewInstance implements Selectable {
 		int N = _args.size();
 		for (SelectItem arg : _args) {
 			i++;
-			tmp.append(((Selectable)arg).asProjection(ctx))
+			tmp.append(((Visitable)arg).asProjection(ctx))
 			   .append(i == N ? ")" : ",");
 		}
 		return tmp.toString();
-	}
-	
-	public void setAlias(AliasContext ctx) {
 	}
 }

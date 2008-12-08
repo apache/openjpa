@@ -20,7 +20,6 @@ package org.apache.openjpa.persistence.query;
 
 import javax.persistence.Aggregate;
 import javax.persistence.Expression;
-import javax.persistence.OrderByItem;
 import javax.persistence.PathExpression;
 import javax.persistence.Predicate;
 
@@ -112,13 +111,5 @@ abstract class AbstractPath extends ExpressionImpl implements
 
 	public Expression type() {
 		return new TypeExpression(this);
-	}
-	
-	public OrderByItem asc() {
-		return new OrderableItem(this, Boolean.TRUE);
-	}
-
-	public OrderByItem desc() {
-		return new OrderableItem(this, Boolean.FALSE);
 	}
 }

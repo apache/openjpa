@@ -27,7 +27,8 @@ import javax.persistence.Predicate;
  * @author Pinaki Poddar
  *
  */
-class UnaryExpressionPredicate implements Predicate, Visitable {
+class UnaryExpressionPredicate extends AbstractVisitable 
+	implements Predicate, Visitable {
 	protected final Expression _e;
 	protected final UnaryConditionalOperator _op;
 	private final UnaryConditionalOperator _nop;

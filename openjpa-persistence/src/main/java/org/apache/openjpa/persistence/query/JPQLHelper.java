@@ -25,9 +25,17 @@ package org.apache.openjpa.persistence.query;
  *
  */
 public class JPQLHelper {
+	private static final String SINGLE_QUOTE = "'";
+	
 	static String toJPQL(AliasContext ctx, Object o) {
+		if (o == null)
+			return "NULL";
 		if (o instanceof Visitable)
 			return ((Visitable)o).asExpression(ctx);
+		if (o instanceof Class)
+			return ctx.getEntityName((Class)o);
+		if (o instanceof String)
+			return SINGLE_QUOTE + (String)o + SINGLE_QUOTE;
 		return o.toString();
 	}
 }

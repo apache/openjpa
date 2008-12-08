@@ -26,7 +26,8 @@ package org.apache.openjpa.persistence.query;
  */
 public class ExistsExpression extends UnaryExpressionPredicate {
 	public ExistsExpression(QueryDefinitionImpl op) {
-		super(op, UnaryConditionalOperator.EXISTS, UnaryConditionalOperator.EXISTS_NOT);
+		super(op, UnaryConditionalOperator.EXISTS, 
+			UnaryConditionalOperator.EXISTS_NOT);
 	}
 
 }

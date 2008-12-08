@@ -343,7 +343,7 @@ public class EntityManagerFactoryImpl
     }
 
     public QueryBuilder getQueryBuilder() {
-    	return new QueryBuilderImpl();
+    	return new QueryBuilderImpl(this);
     }
 
     public Set<String> getSupportedProperties() {

@@ -26,7 +26,8 @@ import javax.persistence.FetchJoinObject;
  * @author Pinaki Poddar
  *
  */
-public class FetchPath implements FetchJoinObject, Visitable {
+public class FetchPath extends AbstractVisitable 
+    implements FetchJoinObject, Visitable {
 	private NavigationPath _path;
 	private PathOperator _joinType;
 	

@@ -18,15 +18,15 @@
  */
 package org.apache.openjpa.persistence.query;
 
-import javax.persistence.SelectItem;
 
 /**
- * An item that can be selected in a query.
+ * Denotes CONCAT(e1,e2,..) Expression.
  * 
  * @author Pinaki Poddar
  *
  */
-public interface Selectable extends SelectItem {
-	String asProjection(AliasContext ctx);
-	void setAlias(AliasContext ctx);
+public class ConcatExpression extends UnaryOperatorExpression {
+	public ConcatExpression(ArrayExpression op) {
+		super(op, UnaryFunctionalOperator.CONCAT);
+	}
 }

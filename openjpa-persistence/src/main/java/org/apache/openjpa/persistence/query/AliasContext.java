@@ -20,12 +20,21 @@ package org.apache.openjpa.persistence.query;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Stack;
 
 import javax.persistence.Expression;
 
+import org.apache.openjpa.meta.MetaDataRepository;
+
 class AliasContext {
+	private Stack<Object> _operating = new Stack<Object>();
 	private Map<ExpressionImpl, String> _aliases = 
 		new HashMap<ExpressionImpl, String>();
+	private final MetaDataRepository _repos;
+	
+	public AliasContext(MetaDataRepository repos) {
+		_repos = repos;
+	}
 	
 	/**
 	 * Sets alias for the given Expression or gets the alias if the given
@@ -40,10 +49,10 @@ class AliasContext {
 		String alias = _aliases.get(path);
 		if (alias != null)
 			return alias;
-		alias = path.getAliasHint().substring(0,1).toLowerCase();
+		alias = path.getAliasHint(this).substring(0,1).toLowerCase();
 		int i = 2;
 		while (_aliases.containsValue(alias)) {
-			alias = alias + i;
+			alias = alias.substring(0,1) + i;
 			i++;
 		}
 		_aliases.put(path, alias);
@@ -56,5 +65,17 @@ class AliasContext {
 	 */
 	public boolean hasAlias(Expression path) {
 		return _aliases.containsKey(path);
+	}
+	
+	public AliasContext push(Object e) {
+		if (_operating.contains(e))
+			throw new RuntimeException(e + " is already in this ctx");
+		_operating.add(e);
+		return this;
+	}
+	
+	public String getEntityName(Class cls) {
+		return cls.getSimpleName();
+//		return _repos.getMetaData(cls, null, true).getTypeAlias();
 	}
 }

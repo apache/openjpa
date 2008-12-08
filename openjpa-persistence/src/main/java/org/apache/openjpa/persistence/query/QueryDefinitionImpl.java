@@ -49,16 +49,21 @@ public class QueryDefinitionImpl extends ExpressionImpl
 	private final QueryBuilderImpl _builder;
 	private List<AbstractDomainObject> _domains;
 	private List<PathExpression> _groupBys;
-	private List<Subquery> _subqueries;
 	private List<OrderableItem> _orderBys;
-	private List<Selectable>  _projections;
+	private List<SelectItem>  _projections;
 	private boolean  _distinct;
 	private Predicate _where;
 	private Predicate _having;
 	
+	private static enum Visit {PROJECTION, EXPRESSION, JOINABLE};
+	
 	protected static Localizer _loc = 
 		Localizer.forPackage(QueryDefinitionImpl.class);
 	
+	/**
+	 * 
+	 * @param builder
+	 */
 	protected QueryDefinitionImpl(QueryBuilderImpl builder) {
 		_builder = builder;
 	}
@@ -73,14 +78,9 @@ public class QueryDefinitionImpl extends ExpressionImpl
 	}
 	
 	public DomainObject addSubqueryRoot(PathExpression path) {
-		if (_domains != null && _domains.contains(path))
-			throw new IllegalArgumentException(_loc.get("query-subroot-clash", 
-					path).toString());
 		AbstractPath impl = (AbstractPath)path;
-		if (_subqueries == null) 
-			_subqueries = new ArrayList<Subquery>();
-		AbstractDomainObject newRoot = new NavigationPath(this, impl.getParent(), 
-				impl.getLastSegment().toString());
+		AbstractDomainObject newRoot = new NavigationPath(this,  
+				impl.getParent(), impl.getLastSegment().toString());
 		addDomain(newRoot);
 		return newRoot;
 	}
@@ -229,11 +229,13 @@ public class QueryDefinitionImpl extends ExpressionImpl
 	public QueryDefinition orderBy(OrderByItem... orderByItems) {
 		if (_orderBys == null)
 			_orderBys = new ArrayList<OrderableItem>();
+		else
+			_orderBys.clear();
 		for (OrderByItem i : orderByItems) {
 			if (i instanceof OrderableItem)
 				_orderBys.add((OrderableItem)i);
 			else
-				_orderBys.add(new OrderableItem((ExpressionImpl)i, null));
+				_orderBys.add(new OrderableItem((ExpressionImpl)i));
 		}
 		return this;
 	}
@@ -241,6 +243,8 @@ public class QueryDefinitionImpl extends ExpressionImpl
 	public QueryDefinition orderBy(List<OrderByItem> orderByItemList) {
 		if (_orderBys == null)
 			_orderBys = new ArrayList<OrderableItem>();
+		else
+			_orderBys.clear();
 		for (OrderByItem i : orderByItemList) {
 			if (i instanceof OrderableItem)
 				_orderBys.add((OrderableItem)i);
@@ -276,13 +280,13 @@ public class QueryDefinitionImpl extends ExpressionImpl
 	
 	private QueryDefinition select(List<SelectItem> items, boolean isDistinct) {
 		if (_projections == null) {
-			_projections = new ArrayList<Selectable>();
+			_projections = new ArrayList<SelectItem>();
 		} else {
 			_projections.clear();
 		}
 		_distinct = isDistinct;
 		for (SelectItem item : items)
-			_projections.add((Selectable)item);
+			_projections.add(item);
 		return this;
 	}
 
@@ -323,84 +327,74 @@ public class QueryDefinitionImpl extends ExpressionImpl
 		return this;
 	}
 	
-	private List<Selectable> getProjections() {
+	private List<SelectItem> getProjections() {
 		if (_projections == null) {
-			List<Selectable> defaultProjection = new ArrayList<Selectable>();
+			List<SelectItem> defaultProjection = new ArrayList<SelectItem>();
 			defaultProjection.add(_domains.get(0));
 			return defaultProjection;
 		}
 		return _projections;
 	}
 
-	public String toJPQL() {
-		return asExpression(new AliasContext());
-	}
-	
 	/**
 	 * 
 	 */
 	@Override
 	public String asExpression(AliasContext ctx) {
+		ctx.push(this);
 		StringBuffer buffer = new StringBuffer();
 		registerDomains(ctx);
-		buffer.append("SELECT ");
-		if (_distinct) 
-			buffer.append("DISTINCT ");
-		List<Selectable> projs = getProjections();
-		for (int i=0; i < projs.size(); i++) {
-			projs.get(i).setAlias(ctx);
-			buffer.append(projs.get(i).asProjection(ctx));
-			if (i != projs.size()-1)
-				buffer.append(",");
-		}
+
+		fillBuffer(_distinct ? "SELECT DISTINCT " : "SELECT ", buffer, ctx, 
+			getProjections(), Visit.PROJECTION);
 		buffer.append(" FROM ");
 		for (int i=0; _domains != null && i < _domains.size(); i++) {
 			buffer.append(_domains.get(i).asJoinable(ctx));
-			List<JoinPath> joins = _domains.get(i).getJoins();
-			if (joins != null) {
-				for (int j = 0; j < joins.size(); j++) {
-					buffer.append(joins.get(j).asJoinable(ctx));
-				}
-			}
-			List<FetchPath> fetchJoins = _domains.get(i).getFetchJoins();
-			if (fetchJoins != null) {
-				for (int j = 0; j < fetchJoins.size(); j++) {
-					buffer.append(fetchJoins.get(j).asExpression(ctx));
-				}
-			}
-			
+			fillBuffer(" ", buffer, ctx, _domains.get(i).getJoins(), 
+					Visit.JOINABLE);
+			fillBuffer(" ", buffer, ctx, _domains.get(i).getFetchJoins(), 
+					Visit.EXPRESSION);
 			if (i != _domains.size()-1)
 				buffer.append(",");
 		}
 		if (_where != null) {
-			buffer.append(" WHERE ").append(((Visitable)_where).asExpression(ctx));
+			buffer.append(" WHERE ")
+			      .append(((Visitable)_where).asExpression(ctx));
 		}
 		
-		if (_groupBys != null) {
-			buffer.append(" GROUP BY ");
-			for (int i = 0; i<_groupBys.size(); i++) {
-				buffer.append(((ExpressionImpl)_groupBys.get(i)).asExpression(ctx));
-				if (i != _groupBys.size()-1)
-					buffer.append(",");
-			}
-		}
+		fillBuffer(" GROUP BY ", buffer, ctx, _groupBys, Visit.EXPRESSION);
+		
 		if (_having != null) {
-			buffer.append(" HAVING ").append(((Visitable)_having).asExpression(ctx));
+			buffer.append(" HAVING ")
+			      .append(((Visitable)_having).asExpression(ctx));
 		}
-		if (_orderBys != null) {
-			buffer.append(" ORDER BY ");
-			for (int i = 0; i<_orderBys.size(); i++) {
-				buffer.append(((OrderableItem)_orderBys.get(i)).toJPQL(ctx));
-				if (i != _orderBys.size()-1)
-					buffer.append(",");
-			}
-		}
+		fillBuffer(" ORDER BY ", buffer, ctx, _orderBys, Visit.EXPRESSION);
 		
 		return buffer.toString();
 	}
 	
 	public String asProjection(AliasContext ctx) {
 		return asExpression(ctx);
+	}
+	
+	public void fillBuffer(String header, StringBuffer buffer, AliasContext ctx, 
+		List list, Visit visit) {
+		if (list == null || list.isEmpty())
+			return;
+		buffer.append(header);
+		for (int i = 0; i < list.size(); i++) {
+			Visitable v = (Visitable)list.get(i);
+			switch(visit) {
+			case PROJECTION : buffer.append(v.asProjection(ctx))
+				                    .append(i != list.size()-1 ? ", " : " ");
+				break;
+			case EXPRESSION : buffer.append(v.asExpression(ctx))
+				                    .append(i != list.size()-1 ? ", " : " ");
+				break;
+			case JOINABLE   : buffer.append(v.asJoinable(ctx)); 
+				break;
+			}
+		}
 	}
 	
 	/**
@@ -413,12 +407,11 @@ public class QueryDefinitionImpl extends ExpressionImpl
 				domain.setAlias(ctx);
 			}
 		}
-		if (_subqueries != null) {
-			for (Subquery sub : _subqueries) {
-				if (sub instanceof QueryDefinitionImpl)
-					((QueryDefinitionImpl)sub).registerDomains(ctx);
-				else
-					((AbstractDomainObject)sub).setAlias(ctx);
+		if (_orderBys != null) {
+			for (OrderableItem o : _orderBys) {
+				ExpressionImpl e = o.getExpression();
+				if (_projections != null && _projections.contains(e))
+					e.setAlias(ctx);
 			}
 		}
 	}

@@ -26,20 +26,37 @@ import javax.persistence.Expression;
  * @author Pinaki Poddar
  *
  */
-public class SubStringExpression extends BinaryOperatorExpression {
-	public SubStringExpression(Expression op, Expression op2) {
-		this(op, op2, new ConstantExpression(0));
+public class SubStringExpression extends UnaryOperatorExpression {
+	private final Expression _start;
+	private final Expression _length;
+	public SubStringExpression(Expression op, Expression start) {
+		super(op, UnaryFunctionalOperator.SUBSTR);
+		_start  = start;
+		_length = null;
 	}
 	
 	public SubStringExpression(Expression op, int start) {
-		this(op, start, 0);
+		super(op, UnaryFunctionalOperator.SUBSTR);
+		_start  = new ConstantExpression(start);
+		_length = null;
 	}
 	
 	public SubStringExpression(Expression op, int start, int len) {
-		this(op, new ConstantExpression(start), new ConstantExpression(len));
+		super(op, UnaryFunctionalOperator.SUBSTR);
+		_start  = new ConstantExpression(start);
+		_length = new ConstantExpression(len);
 	}
 	
-	public SubStringExpression(Expression op, Expression op2, Expression pos) {
-		super(op, BinaryFunctionalOperator.SUBSTR, op2);
+	public SubStringExpression(Expression op, Expression start, Expression l) {
+		super(op, UnaryFunctionalOperator.SUBSTR);
+		_start  = start;
+		_length = new ConstantExpression(l);
+	}
+	
+	public String asExpression(AliasContext ctx) {
+		return _op + "(" + ((Visitable)_e).asExpression(ctx)  
+			 + "," + ((Visitable)_start).asExpression(ctx)
+			 + (_length == null ? "" : "," + ((Visitable)_length).asExpression(ctx))
+			 + ")";
 	}
 }

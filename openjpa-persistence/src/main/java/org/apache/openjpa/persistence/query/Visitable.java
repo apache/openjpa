@@ -18,6 +18,8 @@
  */
 package org.apache.openjpa.persistence.query;
 
+import java.io.Serializable;
+
 /**
  * An element of query that is convertible to a JPQL String given a aliasing 
  * scheme. QueryDefinition visits each of its element and translates them.
@@ -25,9 +27,26 @@ package org.apache.openjpa.persistence.query;
  * @author Pinaki Poddar
  *
  */
-public interface Visitable {
+public interface Visitable extends Serializable {
 	/**
 	 * Get a JPQL fragment as used in a WHERE clause.
 	 */
 	String asExpression(AliasContext ctx);
+	
+	/**
+	 * Gets the string representation in a SELECT projection.
+	 */
+	String asProjection(AliasContext ctx);
+	
+	/**
+	 * Sets alias.
+	 */
+	void setAlias(AliasContext ctx);
+	
+	String getAliasHint(AliasContext ctx);
+	
+	String asJoinable(AliasContext ctx);
+
+
+
 }

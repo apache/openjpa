@@ -18,6 +18,7 @@
  */
 package org.apache.openjpa.persistence.query;
 
+import java.io.Serializable;
 import java.util.Calendar;
 import java.util.Date;
 
@@ -36,18 +37,19 @@ import javax.persistence.TrimSpec;
  * @author Pinaki Poddar
  *
  */
-abstract class ExpressionImpl implements Expression, Selectable, Visitable {
+abstract class ExpressionImpl extends AbstractVisitable 
+   implements Expression, Visitable {
 	
 	public Expression abs() {
 		return new AbsExpression(this);
 	}
 
 	public Expression concat(String... str) {
-		throw new UnsupportedOperationException();
+		return new ConcatExpression(new ArrayExpression(str));
 	}
 
 	public Expression concat(Expression... str) {
-		throw new UnsupportedOperationException();
+		return new ConcatExpression(new ArrayExpression(str));
 	}
 
 	public Expression dividedBy(Number num) {
@@ -59,27 +61,23 @@ abstract class ExpressionImpl implements Expression, Selectable, Visitable {
 	}
 
 	public Predicate in(String... strings) {
-		return new InExpression(this, new ConstantExpression(strings));
+		return new InExpression(this, new ArrayExpression(strings));
 	}
 
 	public Predicate in(Number... nums) {
-		return new InExpression(this, 
-				new ConstantExpression(nums));
+		return new InExpression(this, new ArrayExpression(nums));
 	}
 
 	public Predicate in(Enum<?>... enums) {
-		return new InExpression(this, 
-				new ConstantExpression(enums));
+		return new InExpression(this, new ArrayExpression(enums));
 	}
 
 	public Predicate in(Class... classes) {
-		return new InExpression(this, 
-				new ConstantExpression(classes));
+		return new InExpression(this, new ArrayExpression(classes));
 	}
 
 	public Predicate in(Expression... params) {
-		return new InExpression(this, 
-				new ConstantExpression(params));
+		return new InExpression(this, new ArrayExpression(params));
 	}
 
 	public Predicate in(Subquery subquery) {
@@ -95,7 +93,7 @@ abstract class ExpressionImpl implements Expression, Selectable, Visitable {
 	}
 
 	public Expression locate(String str) {
-		return locate(str, 0);
+		return new LocateExpression(this, str, 0);
 	}
 
 	public Expression locate(Expression expr) {
@@ -103,11 +101,11 @@ abstract class ExpressionImpl implements Expression, Selectable, Visitable {
 	}
 
 	public Expression locate(String str, int position) {
-		return new LocateExpression(this, new ConstantExpression(str), position);
+		return new LocateExpression(this, str, position);
 	}
 
 	public Expression locate(String str, Expression position) {
-		return new LocateExpression(this, new ConstantExpression(str), position);
+		return new LocateExpression(this, str, position);
 	}
 
 	public Expression locate(Expression str, int position) {
@@ -215,15 +213,15 @@ abstract class ExpressionImpl implements Expression, Selectable, Visitable {
 	}
 
 	public Expression upper() {
-		return new ToUpperExpression(this);
+		return new UpperExpression(this);
 	}
 
 	public OrderByItem asc() {
-		throw new UnsupportedOperationException(this.toString());
+		return new OrderableItem(this, true);
 	}
 
 	public OrderByItem desc() {
-		throw new UnsupportedOperationException(this.toString());
+		return new OrderableItem(this, false);
 	}
 
 	public Predicate between(PredicateOperand arg1, PredicateOperand arg2) {
@@ -404,7 +402,7 @@ abstract class ExpressionImpl implements Expression, Selectable, Visitable {
 	}
 
 	public Predicate like(PredicateOperand pattern) {
-		return new LikeExpression(this, (Expression)pattern, null);
+		return new LikeExpression(this, (Expression)pattern);
 	}
 
 	public Predicate like(PredicateOperand pattern, PredicateOperand escChar) {
@@ -416,7 +414,7 @@ abstract class ExpressionImpl implements Expression, Selectable, Visitable {
 	}
 
 	public Predicate like(String pattern) {
-		return new LikeExpression(this, new ConstantExpression(pattern), null);
+		return new LikeExpression(this, new ConstantExpression(pattern));
 	}
 
 	public Predicate like(String pattern, PredicateOperand escapeChar) {
@@ -468,7 +466,7 @@ abstract class ExpressionImpl implements Expression, Selectable, Visitable {
 		ctx.getAlias(this);
 	}
 	
-	public String getAliasHint() {
+	public String getAliasHint(AliasContext ctx) {
 		return "o";
 	}
 	

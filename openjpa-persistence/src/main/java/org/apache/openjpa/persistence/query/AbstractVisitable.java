@@ -14,20 +14,37 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.persistence.query;
 
-import javax.persistence.Expression;
-
 /**
- * Denotes UPPER(e) Expression.
+ * An abstract implementation that throws UnsupportedOperationException on
+ * every method.
  * 
  * @author Pinaki Poddar
  *
  */
-public class ToUpperExpression extends UnaryOperatorExpression {
-	public ToUpperExpression(Expression op) {
-		super(op, UnaryFunctionalOperator.UPPER);
+abstract class AbstractVisitable implements Visitable {
+
+	public String asExpression(AliasContext ctx) {
+		throw new UnsupportedOperationException(this.getClass().getName());
 	}
+
+	public String asProjection(AliasContext ctx) {
+		throw new UnsupportedOperationException(this.getClass().getName());
+	}
+
+	public String getAliasHint(AliasContext ctx) {
+		throw new UnsupportedOperationException(this.getClass().getName());
+	}
+
+	public void setAlias(AliasContext ctx) {
+		throw new UnsupportedOperationException(this.getClass().getName());
+	}
+	
+	public String asJoinable(AliasContext ctx) {
+		throw new UnsupportedOperationException(this.getClass().getName());
+	}
+
 }

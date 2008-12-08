@@ -33,7 +33,7 @@ public class JoinPath extends AbstractDomainObject implements DomainObject {
 	}
 	
 	@Override
-	public String getAliasHint() {
+	public String getAliasHint(AliasContext ctx) {
 		return getLastSegment();
 	}
 	
@@ -47,7 +47,7 @@ public class JoinPath extends AbstractDomainObject implements DomainObject {
 		return (AbstractDomainObject)super.getParent();
 	}
 		
-//	@Override
+	@Override
 	public String asJoinable(AliasContext ctx) {
 		StringBuffer tmp = new StringBuffer(getOperator().toString());
 		tmp.append(getParent().asProjection(ctx))
