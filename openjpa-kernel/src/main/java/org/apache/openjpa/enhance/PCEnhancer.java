@@ -2486,14 +2486,23 @@ public class PCEnhancer {
             // new ObjectId (cls, oid)
             code.anew().setType(ObjectId.class);
             code.dup();
-            code.classconstant().setClass(getType(_meta));
+            if(_meta.isEmbeddedOnly()) {
+                code.aload().setThis();
+                code.invokevirtual().setMethod(Object.class, "getClass", Class.class, null);
+            }else
+                code.classconstant().setClass(getType(_meta));
         }
 
         // new <oid class> ();
         code.anew().setType(oidType);
         code.dup();
-        if (_meta.isOpenJPAIdentity() || (obj && usesClsString == Boolean.TRUE))
-            code.classconstant().setClass(getType(_meta));
+        if (_meta.isOpenJPAIdentity() || (obj && usesClsString == Boolean.TRUE)) {
+            if(_meta.isEmbeddedOnly()) {
+                code.aload().setThis();
+                code.invokevirtual().setMethod(Object.class, "getClass", Class.class, null);
+            }else
+                code.classconstant().setClass(getType(_meta));
+        }
         if (obj) {
             code.aload().setParam(0);
             code.checkcast().setType(String.class);

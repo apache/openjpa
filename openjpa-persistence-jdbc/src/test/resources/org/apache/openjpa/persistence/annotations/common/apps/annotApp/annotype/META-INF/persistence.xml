@@ -44,5 +44,11 @@
 		<class>org.apache.openjpa.persistence.annotations.common.apps.annotApp.annotype.EmbeddedIdClass</class>
 		<class>org.apache.openjpa.persistence.annotations.common.apps.annotApp.annotype.EmbeddableSuper</class>
 		<class>org.apache.openjpa.persistence.annotations.common.apps.annotApp.annotype.TxRollbackEntity</class>
+		<class>org.apache.openjpa.persistence.annotations.common.apps.annotApp.annotype.Party</class>
+		<class>org.apache.openjpa.persistence.annotations.common.apps.annotApp.annotype.Store</class>
+		<class>org.apache.openjpa.persistence.annotations.common.apps.annotApp.annotype.Site</class>
+		<class>org.apache.openjpa.persistence.annotations.common.apps.annotApp.annotype.Party1</class>
+		<class>org.apache.openjpa.persistence.annotations.common.apps.annotApp.annotype.Store1</class>
+		<class>org.apache.openjpa.persistence.annotations.common.apps.annotApp.annotype.Site1</class>
 	</persistence-unit>
 </persistence>
