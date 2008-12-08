@@ -209,6 +209,7 @@ public class FieldMetaData
     private String _orderDec = null;
     // indicate if this field is used by other field as "order by" value 
     private boolean _usedInOrderBy = false;
+    private boolean _isElementCollection = false;
 
     /**
      * Constructor.
@@ -2125,5 +2126,13 @@ public class FieldMetaData
 
     public void setValueGenerated(boolean generated) {
         this._generated = generated;
+    }
+
+    public boolean isElementCollection() {
+        return _isElementCollection;
+    }
+
+    public void setElementCollection(boolean isElementCollection) {
+        this._isElementCollection = isElementCollection;
     }
 }

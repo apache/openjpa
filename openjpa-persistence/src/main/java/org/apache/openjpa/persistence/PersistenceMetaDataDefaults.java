@@ -33,6 +33,7 @@ import java.util.Set;
 import java.util.List;
 import java.util.ArrayList;
 import javax.persistence.Basic;
+import javax.persistence.ElementCollection;
 import javax.persistence.Embeddable;
 import javax.persistence.Embedded;
 import javax.persistence.EmbeddedId;
@@ -91,6 +92,7 @@ public class PersistenceMetaDataDefaults
         _strats.put(ManyToMany.class, MANY_MANY);
         _strats.put(Persistent.class, PERS);
         _strats.put(PersistentCollection.class, PERS_COLL);
+        _strats.put(ElementCollection.class, ELEM_COLL);
         _strats.put(PersistentMap.class, PERS_MAP);
 
         _ignoredAnnos.add(DetachedState.class.getName());

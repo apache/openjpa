@@ -97,7 +97,10 @@ public class HandlerCollectionTableFieldStrategy
             throw new MetaDataException(_loc.get("not-coll", field));
 
         assertNotMappedBy();
-        field.getValueInfo().assertNoSchemaComponents(field, !adapt);
+        // JPA2.0 allows schema for @CollectionTable(used with
+        // @ElementCollection)  
+        if (!field.isElementCollection())
+            field.getValueInfo().assertNoSchemaComponents(field, !adapt);
         field.getKeyMapping().getValueInfo().assertNoSchemaComponents
             (field.getKey(), !adapt);
 

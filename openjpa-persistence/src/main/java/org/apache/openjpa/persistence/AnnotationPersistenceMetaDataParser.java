@@ -52,6 +52,7 @@ import javax.persistence.FlushModeType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import static javax.persistence.GenerationType.AUTO;
+import javax.persistence.ElementCollection;
 import javax.persistence.Id;
 import javax.persistence.IdClass;
 import javax.persistence.Lob;
@@ -1019,6 +1020,10 @@ public class AnnotationPersistenceMetaDataParser
                     parsePersistentCollection(fmd, (PersistentCollection)
                         el.getAnnotation(PersistentCollection.class));
                     break;
+                case ELEM_COLL:
+                    parseElementCollection(fmd, (ElementCollection)
+                        el.getAnnotation(ElementCollection.class));
+                    break;
                 case PERS_MAP:
                     parsePersistentMap(fmd, (PersistentMap)
                         el.getAnnotation(PersistentMap.class));
@@ -1470,6 +1475,27 @@ public class AnnotationPersistenceMetaDataParser
         }
     }
 
+    /**
+     * Parse @ElementCollection.
+     */
+    private void parseElementCollection(FieldMetaData fmd,
+        ElementCollection anno) {
+        if (fmd.getDeclaredTypeCode() != JavaTypes.COLLECTION &&
+            fmd.getDeclaredTypeCode() != JavaTypes.MAP)
+            throw new MetaDataException(_loc.get("bad-meta-anno", fmd,
+                "ElementCollection"));
+
+        if (anno.targetClass() != void.class)
+            fmd.getElement().setDeclaredType(anno.targetClass());
+        fmd.setInDefaultFetchGroup(anno.fetch() == FetchType.EAGER);
+        fmd.setElementCollection(true);
+        if (JavaTypes.maybePC(fmd.getElement())) {
+            fmd.getElement().setEmbedded(true);
+            if (fmd.getElement().getEmbeddedMetaData() == null)
+                fmd.getElement().addEmbeddedMetaData();
+        }
+    }
+    
     /**
      * Parse @PersistentMap.
      */

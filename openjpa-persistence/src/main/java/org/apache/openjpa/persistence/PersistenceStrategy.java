@@ -41,5 +41,6 @@ public enum PersistenceStrategy {
     // openjpa extensions
     PERS,
     PERS_COLL,
+    ELEM_COLL,
     PERS_MAP,
 }

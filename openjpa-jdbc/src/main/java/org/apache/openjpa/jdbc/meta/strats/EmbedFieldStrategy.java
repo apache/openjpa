@@ -40,9 +40,11 @@ import org.apache.openjpa.enhance.StateManager;
 import org.apache.openjpa.jdbc.kernel.JDBCFetchConfiguration;
 import org.apache.openjpa.jdbc.kernel.JDBCStore;
 import org.apache.openjpa.jdbc.meta.ClassMapping;
+import org.apache.openjpa.jdbc.meta.Embeddable;
 import org.apache.openjpa.jdbc.meta.FieldMapping;
 import org.apache.openjpa.jdbc.meta.JavaSQLTypes;
 import org.apache.openjpa.jdbc.meta.RelationId;
+import org.apache.openjpa.jdbc.meta.ValueMapping;
 import org.apache.openjpa.jdbc.meta.ValueMappingInfo;
 import org.apache.openjpa.jdbc.schema.Column;
 import org.apache.openjpa.jdbc.schema.ColumnIO;
@@ -61,9 +63,12 @@ import org.apache.openjpa.kernel.StoreContext;
 import org.apache.openjpa.lib.util.Localizer;
 import org.apache.openjpa.meta.ClassMetaData;
 import org.apache.openjpa.meta.FieldMetaData;
+import org.apache.openjpa.meta.JavaTypes;
 import org.apache.openjpa.meta.ValueMetaData;
+import org.apache.openjpa.util.ApplicationIds;
 import org.apache.openjpa.util.InternalException;
 import org.apache.openjpa.util.MetaDataException;
+import org.apache.openjpa.util.OpenJPAId;
 import org.apache.openjpa.util.UserException;
 
 /**
@@ -73,7 +78,8 @@ import org.apache.openjpa.util.UserException;
  * @since 0.4.0
  */
 public class EmbedFieldStrategy
-    extends AbstractFieldStrategy {
+    extends AbstractFieldStrategy   
+    implements Embeddable {
 
     private static final int INSERT = 0;
     private static final int UPDATE = 1;
@@ -529,6 +535,41 @@ public class EmbedFieldStrategy
         throws SQLException {
         throw new UserException(_loc.get("cant-project-owned", field));
     }
+    
+    /////////////////////////////
+    // Embeddable implementation
+    /////////////////////////////
+
+    public Column[] getColumns() {
+        return field.getColumns();
+    }
+
+    public ColumnIO getColumnIO() {
+        return field.getColumnIO();
+    }
+
+    public Object[] getResultArguments() {
+        return null;
+    }
+
+    public Object toEmbeddedDataStoreValue(Object val, JDBCStore store) {
+        return toDataStoreValue(val, store);
+    }
+
+    public Object toEmbeddedObjectValue(Object val) {
+        //return UNSUPPORTED;
+        return null;
+    }
+
+    public void loadEmbedded(OpenJPAStateManager sm, JDBCStore store,
+        JDBCFetchConfiguration fetch, Object val)
+        throws SQLException {
+        if (val != null)
+            sm.storeObject(field.getIndex(), val);
+        else
+            sm.storeObject(field.getIndex(), null);
+    }
+    
 
     /**
      * State manager that represents a null embedded object.

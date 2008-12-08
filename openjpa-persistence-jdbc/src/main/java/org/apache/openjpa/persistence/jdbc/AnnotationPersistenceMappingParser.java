@@ -32,6 +32,7 @@ import javax.persistence.AssociationOverride;
 import javax.persistence.AssociationOverrides;
 import javax.persistence.AttributeOverride;
 import javax.persistence.AttributeOverrides;
+import javax.persistence.CollectionTable;
 import javax.persistence.ColumnResult;
 import javax.persistence.DiscriminatorColumn;
 import javax.persistence.DiscriminatorValue;
@@ -152,6 +153,7 @@ public class AnnotationPersistenceMappingParser
         _tags.put(ClassCriteria.class, CLASS_CRIT);
         _tags.put(Columns.class, COLS);
         _tags.put(ContainerTable.class, CONTAINER_TABLE);
+        _tags.put(CollectionTable.class, COLLECTION_TABLE);
         _tags.put(DataStoreIdColumn.class, DATASTORE_ID_COL);
         _tags.put(DiscriminatorStrategy.class, DISCRIM_STRAT);
         _tags.put(EagerFetchMode.class, EAGER_FETCH_MODE);
@@ -1070,6 +1072,9 @@ public class AnnotationPersistenceMappingParser
                 case CONTAINER_TABLE:
                     parseContainerTable(fm, (ContainerTable) anno);
                     break;
+                case COLLECTION_TABLE:
+                    parseCollectionTable(fm, (CollectionTable) anno);
+                    break;
                 case EAGER_FETCH_MODE:
                     fm.setEagerFetchMode(toEagerFetchModeConstant
                         (((EagerFetchMode) anno).value()));
@@ -1223,9 +1228,11 @@ public class AnnotationPersistenceMappingParser
     private void parseAttributeOverrides(FieldMapping fm,
         AttributeOverride... attrs) {
         ClassMapping embed = fm.getEmbeddedMapping();
-        if (embed == null)
-            throw new MetaDataException(_loc.get("not-embedded", fm));
-
+        if (embed == null) {
+            embed = fm.getElementMapping().getEmbeddedMapping();
+            if (embed == null)
+                throw new MetaDataException(_loc.get("not-embedded", fm));
+        }
         FieldMapping efm;
         for (AttributeOverride attr : attrs) {
             efm = embed.getFieldMapping(attr.name());
@@ -1322,7 +1329,10 @@ public class AnnotationPersistenceMappingParser
         	secondary = trackSecondaryTable(fm, secondary,	pcols[i].table(), i);
         }
 
-        setColumns(fm, fm.getValueInfo(), cols, unique);
+        if (fm.isElementCollection())
+            setColumns(fm, fm.getElementMapping().getValueInfo(), cols, unique);
+        else
+            setColumns(fm, fm.getValueInfo(), cols, unique);
         if (secondary != null)
             fm.getMappingInfo().setTableName(secondary);
     }
@@ -1620,6 +1630,19 @@ public class AnnotationPersistenceMappingParser
             parseIndex(fm.getMappingInfo(), ctbl.joinIndex());
     }
 
+    /**
+     * Parse @CollectionTable.
+     */
+    protected void parseCollectionTable(FieldMapping fm, CollectionTable ctbl) {
+        FieldMappingInfo info = fm.getMappingInfo(); 
+        info.setTableName(toTableName(ctbl.schema(),
+            ctbl.name()));
+        //ctbl.catalog()
+        parseJoinColumns(fm, fm.getMappingInfo(), false, ctbl.joinColumns());
+        addUniqueConstraints(info.getTableName(), fm.getDefiningMetaData(), 
+            info, ctbl.uniqueConstraints());
+    }
+    
     /**
      * Parse @OrderColumn.
      */
