@@ -414,8 +414,10 @@ class PCPath
 
                     for (; from != null && from != to;
                         from = from.getJoinablePCSuperclassMapping()) {
-                    	pstate.field = from.getFieldMapping(pstate.field
-                    	    .getName());
+                        FieldMapping cast = from.getFieldMapping(pstate.field
+                                         .getName());
+                        if (cast != null)
+                            pstate.field = cast;
                         pstate.joins = from.joinSuperclass(pstate.joins, false);
                     }
                 }
