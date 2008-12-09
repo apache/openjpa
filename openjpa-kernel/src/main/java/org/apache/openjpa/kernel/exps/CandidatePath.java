@@ -37,11 +37,11 @@ import org.apache.openjpa.util.ImplHelper;
  *
  * @author Abe White
  */
-class CandidatePath
+public class CandidatePath
     extends Val
     implements Path {
 
-    private LinkedList _actions = null;
+    protected LinkedList _actions = null;
 
     /**
      * Traverse into the given field of the current object, and update

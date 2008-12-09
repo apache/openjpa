@@ -37,6 +37,7 @@ import org.apache.openjpa.jdbc.sql.Result;
 import org.apache.openjpa.jdbc.sql.SQLBuffer;
 import org.apache.openjpa.jdbc.sql.Select;
 import org.apache.openjpa.kernel.Filters;
+import org.apache.openjpa.kernel.exps.CandidatePath;
 import org.apache.openjpa.lib.util.Localizer;
 import org.apache.openjpa.meta.ClassMetaData;
 import org.apache.openjpa.meta.FieldMetaData;
@@ -50,8 +51,11 @@ import org.apache.openjpa.util.UserException;
  * @author Abe White
  */
 public class PCPath
-    extends AbstractVal
+    extends CandidatePath
     implements JDBCPath {
+	
+    protected static final String TRUE = "1 = 1";
+    protected static final String FALSE = "1 <> 1";
 
     private static final int PATH = 0;
     private static final int BOUND_VAR = 1;
@@ -63,7 +67,6 @@ public class PCPath
 
     private final ClassMapping _candidate;
     private ClassMapping _class = null;
-    private LinkedList _actions = null;
     private boolean _key = false;
     private int _type = PATH;
     private String _varName = null;
@@ -794,6 +797,11 @@ public class PCPath
         return ObjectUtils.equals(_candidate, path._candidate)
             && ObjectUtils.equals(_actions, path._actions);
     }
+    
+    public int getId() {
+        return Val.VAL;
+    }
+
 
     /**
      * Helper class representing an action.

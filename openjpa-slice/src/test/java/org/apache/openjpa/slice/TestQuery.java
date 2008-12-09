@@ -139,4 +139,12 @@ public class TestQuery extends SliceTestCase {
         }
         em.getTransaction().rollback();
     }
+    
+    public void testInMemoryOrderBy() {
+        EntityManager em = emf.createEntityManager();
+        em.getTransaction().begin();
+        Query query = em.createQuery("SELECT p FROM PObject p ORDER BY p.value");
+        List result = query.getResultList();
+        em.getTransaction().rollback();
+    }
 }
