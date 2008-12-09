@@ -21,7 +21,6 @@ package org.apache.openjpa.persistence.test;
 import java.util.Arrays;
 import java.util.List;
 import java.util.ArrayList;
-import java.util.Map;
 
 import org.apache.openjpa.lib.jdbc.AbstractJDBCListener;
 import org.apache.openjpa.lib.jdbc.JDBCEvent;
@@ -34,7 +33,7 @@ import org.apache.openjpa.lib.jdbc.JDBCListener;
  */
 public abstract class SQLListenerTestCase
     extends SingleEMFTestCase {
-
+    private static String _nl = System.getProperty("line.separator");
     protected List<String> sql = new ArrayList<String>();
     protected int sqlCount;
     
@@ -130,4 +129,28 @@ public abstract class SQLListenerTestCase
             }
 		}
 	}
+    
+    public void assertSQLOrder(String... expected) {
+        int hits = 0;
+
+        for (String executedSQL : sql) {
+            if (executedSQL.matches(expected[hits])) {
+                hits++;
+            }
+        }
+
+        if (hits != expected.length) {
+            StringBuilder sb = new StringBuilder();
+            sb.append("Did not find SQL in expected order : ").append(_nl);
+            for (String s : expected) {
+                sb.append(s).append(_nl);
+            }
+
+            sb.append("SQL Statements issued : ");
+            for (String s : sql) {
+                sb.append(s).append(_nl);
+            }
+            fail(sb.toString());
+        }
+    }
 }
