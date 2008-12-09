@@ -18,6 +18,8 @@
  */
 package org.apache.openjpa.persistence.query;
 
+import static org.apache.openjpa.persistence.query.PathOperator.NAVIGATION;
+
 import javax.persistence.FetchJoinObject;
 
 /**
@@ -26,18 +28,21 @@ import javax.persistence.FetchJoinObject;
  * @author Pinaki Poddar
  *
  */
-public class FetchPath extends AbstractVisitable 
+public class FetchPath extends AbstractDomainObject 
     implements FetchJoinObject, Visitable {
-	private NavigationPath _path;
-	private PathOperator _joinType;
+	FetchPath(AbstractDomainObject parent, PathOperator joinType, String attr) {
+		super(parent.getOwner(), parent, joinType, attr);
+	}
 	
+	@Override
+	public String asJoinable(AliasContext ctx) {
+		StringBuffer tmp = new StringBuffer(getOperator().toString());
+		tmp.append(getParent().asProjection(ctx))
+		   .append(NAVIGATION)
+		   .append(getLastSegment())
+		   .append(" ");
+		
+		return tmp.toString();
+	}
 
-	FetchPath(NavigationPath path, PathOperator joinType) {
-		_path = path;
-		_joinType = joinType;
-	}
-	
-	public String asExpression(AliasContext ctx) {
-		return _joinType + " " + _path.asExpression(ctx);
-	}
 }

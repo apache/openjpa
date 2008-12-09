@@ -55,4 +55,9 @@ public class OperatorPath extends AbstractDomainObject {
 	public String asJoinable(AliasContext ctx) {
 		throw new UnsupportedOperationException();
 	}
+	
+	public String toString() {
+		return getOperator() + "(" + getParent().toString() + ")";
+	}
+
 }

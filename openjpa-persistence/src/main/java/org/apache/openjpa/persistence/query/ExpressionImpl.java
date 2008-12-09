@@ -462,14 +462,7 @@ abstract class ExpressionImpl extends AbstractVisitable
 	//
 	// Visitable/Selectable implementation
 	//
-	public void setAlias(AliasContext ctx) {
-		ctx.getAlias(this);
-	}
-	
 	public String getAliasHint(AliasContext ctx) {
 		return "o";
 	}
-	
-	public abstract String asExpression(AliasContext ctx);
-	public abstract String asProjection(AliasContext ctx);
 }

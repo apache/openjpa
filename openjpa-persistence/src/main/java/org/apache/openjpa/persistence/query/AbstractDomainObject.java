@@ -18,7 +18,6 @@
  */
 package org.apache.openjpa.persistence.query;
 
-import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
@@ -43,38 +42,12 @@ import javax.persistence.Subquery;
  */
 public abstract class AbstractDomainObject extends AbstractPath 
 	implements DomainObject {
-	private final QueryDefinitionImpl _owner;
-	private List<JoinPath> _joins;
-	private List<FetchPath> _fetchJoins;
 	
 	protected AbstractDomainObject(QueryDefinitionImpl owner, 
 		AbstractPath parent, PathOperator op, Object part2) {
-		super(parent, op, part2);
-		_owner = owner;
+		super(owner, parent, op, part2);
 	}
 
-	/**
-	 * Gets the QueryDefinition that created this path.
-	 * @return
-	 */
-	public QueryDefinitionImpl getOwner() {
-		return _owner;
-	}
-	
-	/**
-	 * Gets the fetch joins associated with this path. Can be null.
-	 */
-	public List<FetchPath> getFetchJoins() {
-		return _fetchJoins;
-	}
-	
-	/**
-	 * Gets the joins associated with this path. Can be null.
-	 */
-	public List<JoinPath> getJoins() {
-		return _joins;
-	}
-	
 	/**
 	 * Adding a root adds a root domain to the owning query. 
 	 */
@@ -100,49 +73,32 @@ public abstract class AbstractDomainObject extends AbstractPath
 	 * Derives a path from this path by joining the given field.
 	 * Also the joined path becomes a domain of the owning query.
 	 */
-	public DomainObject join(String attribute) {
-		return join(attribute, PathOperator.INNER);
+	public DomainObject join(String attr) {
+		return _owner.addDomain(new JoinPath(this, PathOperator.INNER, attr));
 	}
 	
 	/**
 	 * Derives a path from this path by outer joining the given field.
 	 * Also the joined path becomes a domain of the owning query.
 	 */
-	public DomainObject leftJoin(String attribute) {
-		return join(attribute, PathOperator.OUTER);
-	}
-	
-	protected DomainObject join(String attr, PathOperator joinType) {
-		JoinPath join = new JoinPath(this, joinType, attr);
-		if (_joins == null) {
-			_joins = new ArrayList<JoinPath>();
-		}
-		_joins.add(join);
-		return join;
+	public DomainObject leftJoin(String attr) {
+		return _owner.addDomain(new JoinPath(this, PathOperator.OUTER, attr));
 	}
 	
 	/**
 	 * Derives a path from this path by fetch joining the given field.
 	 */
-	public FetchJoinObject joinFetch(String attribute) {
-		return fetchJoin(attribute, PathOperator.FETCH_INNER);
+	public FetchJoinObject joinFetch(String attr) {
+		return _owner.addDomain(new FetchPath(this, PathOperator.FETCH_INNER, 
+			attr));
 	}
 
 	/**
 	 * Derives a path from this path by fetch joining the given field.
 	 */
-	public FetchJoinObject leftJoinFetch(String attribute) {
-		return fetchJoin(attribute, PathOperator.FETCH_OUTER);
-	}
-
-	private FetchJoinObject fetchJoin(String attr, PathOperator joinType) {
-		NavigationPath path = new NavigationPath(_owner, this, attr);
-		FetchPath join = new FetchPath(path, joinType);
-		if (_fetchJoins == null) {
-			_fetchJoins = new ArrayList<FetchPath>();
-		}
-		_fetchJoins.add(join);
-		return join;
+	public FetchJoinObject leftJoinFetch(String attr) {
+		return _owner.addDomain(new FetchPath(this, PathOperator.FETCH_OUTER, 
+			attr));
 	}
 
 	/**
@@ -376,19 +332,4 @@ public abstract class AbstractDomainObject extends AbstractPath
 	public QueryDefinition where(Predicate predicate) {
 		return _owner.where(predicate);
 	}
-	
-	// -----------------------------------------------------------------------
-	// contract for conversion to JPQL.
-	// -----------------------------------------------------------------------
-	/**
-	 * Sets alias for this domain and all its joins.
-	 */
-	public void setAlias(AliasContext ctx) {
-		ctx.getAlias(this);
-		if (_joins != null)
-			for (JoinPath join : _joins)
-				join.setAlias(ctx);
-	}
-	
-
 }

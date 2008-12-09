@@ -23,7 +23,10 @@ import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Date;
+import java.util.LinkedList;
 import java.util.List;
 
 import javax.persistence.CaseExpression;
@@ -79,16 +82,34 @@ public class QueryDefinitionImpl extends ExpressionImpl
 	
 	public DomainObject addSubqueryRoot(PathExpression path) {
 		AbstractPath impl = (AbstractPath)path;
-		AbstractDomainObject newRoot = new NavigationPath(this,  
-				impl.getParent(), impl.getLastSegment().toString());
-		addDomain(newRoot);
+		LinkedList<AbstractPath> paths = impl.split();
+		QueryDefinitionImpl owner = impl.getOwner();
+		int i = 0;
+		while (i < paths.size() && owner.hasDomain(paths.get(i))) {
+			i++;
+		}
+		
+		AbstractPath next = paths.get(i);
+		DomainObject newRoot = new NavigationPath(this, 
+				next.getParent(), next.getLastSegment().toString());
+		addDomain((AbstractDomainObject)newRoot);
+		i++;
+		for (; i < paths.size(); i++) {
+			next = paths.get(i);
+			newRoot = newRoot.join(next.getLastSegment().toString());
+		}
 		return newRoot;
 	}
 	
-	protected void addDomain(AbstractDomainObject path) {
+	boolean hasDomain(PathExpression path) {
+		return _domains != null && _domains.contains(path);
+	}
+	
+	protected <T extends AbstractDomainObject> T addDomain(T path) {
 		if (_domains == null)
 			_domains = new ArrayList<AbstractDomainObject>();
 		_domains.add(path);
+		return path;
 	}
 
 	public Subquery all() {
@@ -138,6 +159,8 @@ public class QueryDefinitionImpl extends ExpressionImpl
 	public QueryDefinition groupBy(PathExpression... pathExprs) {
 		if (_groupBys == null) {
 			_groupBys = new ArrayList<PathExpression>();
+		} else {
+			_groupBys.clear();
 		}
 		for (PathExpression e : pathExprs)
 			_groupBys.add(e);
@@ -147,6 +170,8 @@ public class QueryDefinitionImpl extends ExpressionImpl
 	public QueryDefinition groupBy(List<PathExpression> pathExprList) {
 		if (_groupBys == null) {
 			_groupBys = new ArrayList<PathExpression>();
+		} else {
+			_groupBys.clear();
 		}
 		for (PathExpression e : pathExprList)
 			_groupBys.add(e);
@@ -336,38 +361,17 @@ public class QueryDefinitionImpl extends ExpressionImpl
 		return _projections;
 	}
 
-	/**
-	 * 
-	 */
 	@Override
 	public String asExpression(AliasContext ctx) {
 		ctx.push(this);
 		StringBuffer buffer = new StringBuffer();
 		registerDomains(ctx);
-
-		fillBuffer(_distinct ? "SELECT DISTINCT " : "SELECT ", buffer, ctx, 
-			getProjections(), Visit.PROJECTION);
-		buffer.append(" FROM ");
-		for (int i=0; _domains != null && i < _domains.size(); i++) {
-			buffer.append(_domains.get(i).asJoinable(ctx));
-			fillBuffer(" ", buffer, ctx, _domains.get(i).getJoins(), 
-					Visit.JOINABLE);
-			fillBuffer(" ", buffer, ctx, _domains.get(i).getFetchJoins(), 
-					Visit.EXPRESSION);
-			if (i != _domains.size()-1)
-				buffer.append(",");
-		}
-		if (_where != null) {
-			buffer.append(" WHERE ")
-			      .append(((Visitable)_where).asExpression(ctx));
-		}
-		
+		String select = _distinct ? "SELECT DISTINCT " : "SELECT ";
+		fillBuffer(select, buffer, ctx, getProjections(), Visit.PROJECTION);
+		fillBuffer(" FROM ", buffer, ctx, _domains, Visit.JOINABLE);
+		fillBuffer(" WHERE ", buffer, ctx, _where);
 		fillBuffer(" GROUP BY ", buffer, ctx, _groupBys, Visit.EXPRESSION);
-		
-		if (_having != null) {
-			buffer.append(" HAVING ")
-			      .append(((Visitable)_having).asExpression(ctx));
-		}
+		fillBuffer(" HAVING ", buffer, ctx, _having);
 		fillBuffer(" ORDER BY ", buffer, ctx, _orderBys, Visit.EXPRESSION);
 		
 		return buffer.toString();
@@ -391,28 +395,50 @@ public class QueryDefinitionImpl extends ExpressionImpl
 			case EXPRESSION : buffer.append(v.asExpression(ctx))
 				                    .append(i != list.size()-1 ? ", " : " ");
 				break;
-			case JOINABLE   : buffer.append(v.asJoinable(ctx)); 
+			case JOINABLE   : buffer.append(v.asJoinable(ctx))
+								    .append(i > 0 && v instanceof RootPath ? 
+									"," : " ");
 				break;
 			}
 		}
 	}
 	
+	public void fillBuffer(String header, StringBuffer buffer, AliasContext ctx,
+			Predicate p) {
+		if (p == null)
+			return;
+		Visitable v = (Visitable)p;
+		buffer.append(header);
+		buffer.append(v.asExpression(ctx));
+	}
+	
 	/**
-	 * Registers each domain with an alias.
-	 * @param ctx
+	 * Registers each domain with an alias. Also set alias for order by items
+	 * that are projected.
 	 */
 	private void registerDomains(AliasContext ctx) {
 		if (_domains != null) {
+			Collections.sort(_domains, new DomainSorter());
 			for (AbstractDomainObject domain : _domains) {
-				domain.setAlias(ctx);
+				ctx.setAlias(domain);
 			}
 		}
 		if (_orderBys != null) {
 			for (OrderableItem o : _orderBys) {
 				ExpressionImpl e = o.getExpression();
 				if (_projections != null && _projections.contains(e))
-					e.setAlias(ctx);
+					ctx.setAlias(e);
 			}
+		}
+	}
+	
+	static class DomainSorter implements Comparator<AbstractDomainObject> {
+		static List<Class> _order = Arrays.asList(new Class[] {
+				RootPath.class, NavigationPath.class, OperatorPath.class, 
+				JoinPath.class, FetchPath.class, } );
+		
+		public int compare(AbstractDomainObject a, AbstractDomainObject b) {
+			return _order.indexOf(a.getClass()) - _order.indexOf(b.getClass());
 		}
 	}
 }

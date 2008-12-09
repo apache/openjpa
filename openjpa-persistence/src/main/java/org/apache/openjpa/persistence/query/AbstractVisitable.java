@@ -39,10 +39,6 @@ abstract class AbstractVisitable implements Visitable {
 		throw new UnsupportedOperationException(this.getClass().getName());
 	}
 
-	public void setAlias(AliasContext ctx) {
-		throw new UnsupportedOperationException(this.getClass().getName());
-	}
-	
 	public String asJoinable(AliasContext ctx) {
 		throw new UnsupportedOperationException(this.getClass().getName());
 	}

@@ -118,7 +118,9 @@ public class TestCriteria extends SingleEMFTestCase {
 		    .where(photo.key().like("egret"));
 		
 		
-		String jpql = "select i.name, VALUE(p) from Item i join i.photos p where KEY(p) like 'egret'";
+		String jpql = "select i.name, VALUE(p)"
+			        + " from Item i join i.photos p"
+			        + " where KEY(p) like 'egret'";
 		compare(jpql, qdef);
 	}
 	
@@ -442,6 +444,33 @@ public class TestCriteria extends SingleEMFTestCase {
 			+ "FROM Employee e JOIN e.frequentFlierPlan f";
 			
 		compare(jpql, e);
+	}
+	
+	public void testCorrelatedSubquerySpecialCase1() {
+		DomainObject o = qb.createQueryDefinition(Order.class);
+		DomainObject a = qb.createSubqueryDefinition(o.get("customer").get("accounts"));
+		o.select(o)
+		 .where(o.literal(10000).lessThan(a.select(a.get("balance")).all()));
+		
+		String jpql = "select o from Order o"
+			        + " where 10000 < ALL "
+			        + " (select a.balance from o.customer c join o.customer.accounts a)";
+		
+		compare(jpql, o);
+	}
+	
+	public void testCorrelatedSubquerySpecialCase2() {
+		DomainObject o = qb.createQueryDefinition(Order.class);
+		DomainObject c = o.join("customer");
+		DomainObject a = qb.createSubqueryDefinition(c.get("accounts"));
+		o.select(o)
+		 .where(o.literal(10000).lessThan(a.select(a.get("balance")).all()));
+		
+		String jpql = "select o from Order o JOIN o.customer c"
+			        + " where 10000 < ALL "
+			        + " (select a.balance from c.accounts a)";
+		
+		compare(jpql, o);
 	}
 	
 	public void testRecursiveDefinitionIsNotAllowed() {

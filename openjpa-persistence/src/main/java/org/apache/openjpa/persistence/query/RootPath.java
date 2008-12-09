@@ -38,4 +38,8 @@ public class RootPath extends AbstractDomainObject implements DomainObject {
 	public String asProjection(AliasContext ctx) {
 		return ctx.getAlias(this);
 	}
+	
+	public String toString() {
+		return getLastSegment().getSimpleName();
+	}
 }

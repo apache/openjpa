@@ -18,17 +18,12 @@
  */
 package org.apache.openjpa.persistence.query;
 
-import java.io.Serializable;
-
 import javax.persistence.DomainObject;
 import javax.persistence.PathExpression;
 import javax.persistence.QueryBuilder;
 import javax.persistence.QueryDefinition;
 
-import org.apache.openjpa.meta.ClassMetaData;
 import org.apache.openjpa.meta.MetaDataRepository;
-import org.apache.openjpa.persistence.EntityManagerFactoryImpl;
-import org.apache.openjpa.persistence.OpenJPAEntityManagerFactory;
 import org.apache.openjpa.persistence.OpenJPAEntityManagerFactorySPI;
 
 /**

@@ -38,6 +38,11 @@ class NavigationPath extends AbstractDomainObject implements PathExpression {
 	}
 	
 	@Override
+	public String getAliasHint(AliasContext ctx) {
+		return getLastSegment();
+	}
+
+	@Override
 	public String asProjection(AliasContext ctx) {
 		AbstractPath parent = getParent();
 		if (ctx.hasAlias(parent))
@@ -59,4 +64,9 @@ class NavigationPath extends AbstractDomainObject implements PathExpression {
 	public String asJoinable(AliasContext ctx) {
 		return asProjection(ctx) + " " + ctx.getAlias(this);
 	}
+	
+	public String toString() {
+		return getParent().toString()+"."+getLastSegment();
+	}
+
 }

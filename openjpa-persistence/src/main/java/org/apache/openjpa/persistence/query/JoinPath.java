@@ -49,17 +49,12 @@ public class JoinPath extends AbstractDomainObject implements DomainObject {
 		
 	@Override
 	public String asJoinable(AliasContext ctx) {
-		StringBuffer tmp = new StringBuffer(getOperator().toString());
-		tmp.append(getParent().asProjection(ctx))
+		return new StringBuffer(getOperator().toString())
+		   .append(getParent().asProjection(ctx))
 		   .append(NAVIGATION)
 		   .append(getLastSegment())
 		   .append(" ")
-		   .append(ctx.getAlias(this));
-		
-		if (getJoins() != null)
-			for (JoinPath join : getJoins())
-				tmp.append(join.asJoinable(ctx));
-		return tmp.toString();
+		   .append(ctx.getAlias(this)).toString();
 	}
 	
 	@Override
@@ -75,4 +70,9 @@ public class JoinPath extends AbstractDomainObject implements DomainObject {
 			return ctx.getAlias(this);
 		return getParent().asProjection(ctx) + NAVIGATION + getLastSegment();
 	}
+	
+	public String toString() {
+		return getOperator() + getParent().toString() + "*" + getLastSegment();
+	}
+
 }

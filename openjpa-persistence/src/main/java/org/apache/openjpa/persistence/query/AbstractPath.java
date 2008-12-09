@@ -18,6 +18,8 @@
  */
 package org.apache.openjpa.persistence.query;
 
+import java.util.LinkedList;
+
 import javax.persistence.Aggregate;
 import javax.persistence.Expression;
 import javax.persistence.PathExpression;
@@ -45,8 +47,10 @@ abstract class AbstractPath extends ExpressionImpl implements
 	protected final AbstractPath  _parent;
 	protected final Object 		  _part2;
 	protected final PathOperator  _operator;
+	protected final QueryDefinitionImpl _owner;
 	
-	protected AbstractPath(AbstractPath parent, PathOperator op, Object part2) {
+	protected AbstractPath(QueryDefinitionImpl owner, AbstractPath parent, PathOperator op, Object part2) {
+		_owner = owner;
 		_parent = parent;
 		_part2  = part2;
 		_operator = op;
@@ -55,6 +59,10 @@ abstract class AbstractPath extends ExpressionImpl implements
 	// ------------------------------------------------------------------------
 	// Path related functions.
 	// ------------------------------------------------------------------------
+	
+	final QueryDefinitionImpl getOwner() {
+		return _owner;
+	}
 	/**
 	 * Gets the parent from which this receiver has been derived. Can be null
 	 * for a root path.
@@ -111,5 +119,18 @@ abstract class AbstractPath extends ExpressionImpl implements
 
 	public Expression type() {
 		return new TypeExpression(this);
+	}
+	
+	LinkedList<AbstractPath> split() {
+		return _split(this, new LinkedList<AbstractPath>());
+	}
+	
+	private LinkedList<AbstractPath> _split(AbstractPath path, 
+		LinkedList<AbstractPath> list) {
+		if (path == null)
+			return list;
+		_split(path.getParent(), list);
+		list.add(path);
+		return list;
 	}
 }

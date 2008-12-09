@@ -29,24 +29,23 @@ import java.io.Serializable;
  */
 public interface Visitable extends Serializable {
 	/**
-	 * Get a JPQL fragment as used in a WHERE clause.
+	 * Get a JPQL fragment as used in WHERE clause.
 	 */
 	String asExpression(AliasContext ctx);
 	
 	/**
-	 * Gets the string representation in a SELECT projection.
+	 * Gets the string representation in SELECT projection.
 	 */
 	String asProjection(AliasContext ctx);
 	
 	/**
-	 * Sets alias.
+	 * Gets the string representation in FROM clause.
 	 */
-	void setAlias(AliasContext ctx);
-	
-	String getAliasHint(AliasContext ctx);
-	
 	String asJoinable(AliasContext ctx);
-
-
+	
+	/**
+	 * Gets the hint to be used while creating alias.
+	 */
+	String getAliasHint(AliasContext ctx);
 
 }
