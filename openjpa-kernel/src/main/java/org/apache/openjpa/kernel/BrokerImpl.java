@@ -32,10 +32,13 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.locks.ReentrantLock;
+
 import javax.transaction.Status;
 import javax.transaction.Synchronization;
 
@@ -61,7 +64,6 @@ import org.apache.openjpa.lib.util.Localizer;
 import org.apache.openjpa.lib.util.ReferenceHashMap;
 import org.apache.openjpa.lib.util.ReferenceHashSet;
 import org.apache.openjpa.lib.util.ReferenceMap;
-import java.util.concurrent.locks.ReentrantLock;
 import org.apache.openjpa.meta.ClassMetaData;
 import org.apache.openjpa.meta.FieldMetaData;
 import org.apache.openjpa.meta.MetaDataRepository;
@@ -3310,7 +3312,7 @@ public class BrokerImpl
             Object obj;
             StateManagerImpl sm;
             ClassMetaData meta;
-            Collection sms = new HashSet(objs.size());
+            Collection sms = new LinkedHashSet(objs.size());
             List exceps = null;
             for (Iterator itr = objs.iterator(); itr.hasNext();) {
                 obj = itr.next();
@@ -3637,7 +3639,7 @@ public class BrokerImpl
         try {
             assertActiveTransaction();
 
-            Collection sms = new HashSet(objs.size());
+            Collection sms = new LinkedHashSet(objs.size());
             Object obj;
             StateManagerImpl sm;
             for (Iterator itr = objs.iterator(); itr.hasNext();) {
@@ -3815,7 +3817,7 @@ public class BrokerImpl
     protected Collection getPendingTransactionalStates() {
         if (_pending == null)
             return Collections.EMPTY_SET;
-        return new HashSet(_pending);
+        return new LinkedHashSet(_pending);
     }
 
     /**
@@ -4508,7 +4510,7 @@ public class BrokerImpl
             // size may not be entirely accurate due to refs expiring, so
             // manually copy each object; doesn't matter this way if size too
             // big by some
-            Set copy = new HashSet(size());
+            Set copy = new LinkedHashSet(size());
             if (_dirty != null)
                 for (Iterator itr = _dirty.iterator(); itr.hasNext();)
                     copy.add(itr.next());
@@ -4524,7 +4526,7 @@ public class BrokerImpl
         public Collection copyDirty() {
             if (_dirty == null || _dirty.isEmpty())
                 return Collections.EMPTY_SET;
-            return new HashSet(_dirty);
+            return new LinkedHashSet(_dirty);
         }
 
         /**
