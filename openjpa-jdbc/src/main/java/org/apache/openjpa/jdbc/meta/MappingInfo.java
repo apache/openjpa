@@ -492,9 +492,10 @@ public abstract class MappingInfo
         }
 
         String fullName;
-        int dotIdx = given.lastIndexOf('.');
+        String sep = repos.getDBDictionary().catalogSeparator;
+        int dotIdx = given.lastIndexOf(sep);
         if (dotIdx == -1)
-            fullName = (schemaName == null) ? given : schemaName + "." + given;
+            fullName = (schemaName == null) ? given : schemaName + sep + given;
         else {
             fullName = given;
             schema = null;
@@ -626,12 +627,15 @@ public abstract class MappingInfo
             throw new MetaDataException(_loc.get(prefix + "-no-col-name",
                 context));
 
+        MappingRepository repos = (MappingRepository) context.getRepository();
+        DBDictionary dict = repos.getDBDictionary();
+
         // determine the column name based on given info, or template if none;
         // also make sure that if the user gave a column name, he didn't try
         // to put the column in an unexpected table
         if (colName == null)
             colName = tmplate.getName();
-        int dotIdx = colName.lastIndexOf('.');
+        int dotIdx = colName.lastIndexOf(dict.catalogSeparator);
         if (dotIdx == 0)
             colName = colName.substring(1);
         else if (dotIdx != -1) {
@@ -645,9 +649,6 @@ public abstract class MappingInfo
         if (col == null && !adapt)
             throw new MetaDataException(_loc.get(prefix + "-bad-col-name",
                 context, colName, table));
-
-        MappingRepository repos = (MappingRepository) context.getRepository();
-        DBDictionary dict = repos.getDBDictionary();
 
         // use information from template column by default, allowing any
         // user-given specifics to override it
@@ -1686,7 +1687,7 @@ public abstract class MappingInfo
         Column copy = new Column();
         if (col.getTable() != colTable || inverse)
             copy.setName(dict.getFullName(col.getTable(), true)
-                + "." + col.getName());
+                + dict.catalogSeparator + col.getName());
         else
             copy.setName(col.getName());
 
@@ -1699,7 +1700,7 @@ public abstract class MappingInfo
                 if ((!inverse && tcol.getTable() != targetTable)
                     || (inverse && tcol.getTable() != colTable))
                     copy.setTarget(dict.getFullName(tcol.getTable(), true)
-                        + "." + tcol.getName());
+                        + dict.catalogSeparator + tcol.getName());
                 else if (!defaultTarget(col, tcol, num))
                     copy.setTarget(tcol.getName());
             } else if (target instanceof Number)
