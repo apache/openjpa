@@ -269,7 +269,7 @@ class DistributedStoreQuery extends JDBCStoreQuery {
 		Executor executor;
 		Object[] params;
 		public Number call() throws Exception {
-			return executor.executeDelete(query, params);
+			return executor.executeUpdate(query, params);
 		}
 	}
 }
