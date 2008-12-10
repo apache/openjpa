@@ -40,7 +40,8 @@ public class TestQuery extends SliceTestCase {
     }
 
     public void setUp() throws Exception {
-        super.setUp(PObject.class, Person.class, Address.class, CLEAR_TABLES);
+        super.setUp(PObject.class, Person.class, Address.class, Country.class, 
+        		CLEAR_TABLES);
         int count = count(PObject.class);
         if (count == 0) {
             create(POBJECT_COUNT);
@@ -58,6 +59,21 @@ public class TestQuery extends SliceTestCase {
             String expected = (pc.getValue()%2 == 0) ? "Even" : "Odd";
             assertEquals(expected, slice);
         }
+        Person p1 = new Person();
+        Person p2 = new Person();
+        Address a1 = new Address();
+        Address a2 = new Address();
+        p1.setName("Even");
+        p2.setName("Odd");
+        a1.setCity("San Francisco");
+        a2.setCity("Rome");
+        p1.setAddress(a1);
+        p2.setAddress(a2);
+        em.persist(p1);
+        em.persist(p2);
+        assertEquals("Even", SlicePersistence.getSlice(p1));
+        assertEquals("Odd", SlicePersistence.getSlice(p2));
+        
         em.getTransaction().commit();
     }
     
@@ -145,6 +161,32 @@ public class TestQuery extends SliceTestCase {
         em.getTransaction().begin();
         Query query = em.createQuery("SELECT p FROM PObject p ORDER BY p.value");
         List result = query.getResultList();
+        em.getTransaction().rollback();
+    }
+    
+    public void testQueryParameter() {
+        EntityManager em = emf.createEntityManager();
+        em.getTransaction().begin();
+        Query query = em.createQuery("SELECT p FROM PObject p WHERE p.value > :v")
+        	.setParameter("v", 200);
+        List result = query.getResultList();
+        em.getTransaction().rollback();
+    }
+    
+    public void testQueryParameterEntity() {
+        EntityManager em = emf.createEntityManager();
+        em.getTransaction().begin();
+        Address a = (Address)em.createQuery("select a from Address a where a.city = :city")
+        	.setParameter("city", "Rome").getSingleResult();
+        assertNotNull(a);
+        assertEquals("Odd", SlicePersistence.getSlice(a));
+        Query query = em.createQuery("SELECT p FROM Person p WHERE p.address = :a")
+        	.setParameter("a", a);
+        List<Person> result = query.getResultList();
+        assertEquals(1, result.size());
+        Person p = result.get(0);
+        assertEquals("Odd", SlicePersistence.getSlice(p));
+        assertEquals("Rome", p.getAddress().getCity());
         em.getTransaction().rollback();
     }
 }

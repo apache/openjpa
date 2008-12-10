@@ -30,6 +30,11 @@ public class EvenOddDistributionPolicy implements DistributionPolicy {
             int v = ((PObject)pc).getValue();
             return (v%2 == 0) ? "Even" : "Odd";
         }
+        if (pc instanceof Person) {
+        	String name = ((Person)pc).getName();
+        	char firstChar = Character.toLowerCase(name.charAt(0));
+        	return (firstChar >= 'a' && firstChar <='m') ? "Even" : "Odd";
+        }
         return null;
     }
 

@@ -108,6 +108,9 @@
    
       <persistence-unit name="ordering">
         <class>org.apache.openjpa.slice.PObject</class>
+        <class>org.apache.openjpa.slice.Person</class>
+        <class>org.apache.openjpa.slice.Address</class>
+        <class>org.apache.openjpa.slice.Country</class>
         <properties>
             <property name="openjpa.BrokerFactory" value="slice"/>
             <property name="openjpa.ConnectionDriverName" value="org.apache.derby.jdbc.EmbeddedDriver"/>
