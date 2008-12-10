@@ -321,11 +321,17 @@ public class JPQLExpressionBuilder
         Expression exp = null;
         for (int i = 0; i < count; i++) {
             JPQLNode parent = parametersNode.getChild(i);
-            JPQLNode node = onlyChild(parent);
+            JPQLNode node = firstChild(parent);
+            JPQLNode aliasNode = parent.children.length > 1 ? right(parent)
+                : null;; 
             Value proj = getValue(node);
+            String alias = aliasNode == null ? nextAlias()
+                 : aliasNode.text;
             exps.projections[i] = proj;
-            exps.projectionClauses[i] = assemble(node);
-            exps.projectionAliases[i] = nextAlias();
+            exps.projectionClauses[i] = aliasNode == null ?
+                assemble(node.id == JJTSCALAREXPRESSION ? firstChild(node)
+                    : node) : alias;
+            exps.projectionAliases[i] = alias;
         }
         return exp;
     }
@@ -377,14 +383,29 @@ public class JPQLExpressionBuilder
             int ordercount = orderby.getChildCount();
             exps.ordering = new Value[ordercount];
             exps.orderingClauses = new String[ordercount];
+            exps.orderingAliases = new String[ordercount];
             exps.ascending = new boolean[ordercount];
             for (int i = 0; i < ordercount; i++) {
                 JPQLNode node = orderby.getChild(i);
                 exps.ordering[i] = getValue(firstChild(node));
                 exps.orderingClauses[i] = assemble(firstChild(node));
+                exps.orderingAliases[i] = firstChild(node).text;
                 // ommission of ASC/DESC token implies ascending
                 exps.ascending[i] = node.getChildCount() <= 1 ||
                     lastChild(node).id == JJTASCENDING ? true : false;
+            }
+            // check if order by selec item alias
+            for (int i = 0; i < ordercount; i++) {
+                if (exps.orderingClauses[i] != null && 
+                    !exps.orderingClauses[i].equals(""))
+                    continue;
+                for (int j = 0; j < exps.projections.length; j++) {
+                    if (exps.projectionAliases[j].equalsIgnoreCase(
+                        exps.orderingAliases[i])) {
+                        exps.ordering[i] = exps.projections[j];
+                        break;
+                    }
+                }
             }
         }
     }
@@ -719,6 +740,9 @@ public class JPQLExpressionBuilder
         boolean not = node.not;
 
         switch (node.id) {
+            case JJTSCALAREXPRESSION:
+                return eval(onlyChild(node));
+
             case JJTWHERE: // top-level WHERE clause
                 return getExpression(onlyChild(node));
 

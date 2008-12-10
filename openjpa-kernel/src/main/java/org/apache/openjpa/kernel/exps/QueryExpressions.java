@@ -61,6 +61,7 @@ public class QueryExpressions
     public Value[] ordering = EMPTY_VALUES;
     public boolean[] ascending = StoreQuery.EMPTY_BOOLEANS;
     public String[] orderingClauses = StoreQuery.EMPTY_STRINGS;
+    public String[] orderingAliases = StoreQuery.EMPTY_STRINGS;
     public LinkedMap parameterTypes = StoreQuery.EMPTY_PARAMS;
     public int operation = QueryOperations.OP_SELECT;
     public ClassMetaData[] accessPath = StoreQuery.EMPTY_METAS;
