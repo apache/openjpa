@@ -407,4 +407,25 @@ public interface ExpressionFactory {
 	 * Return the object id of the given value.
 	 */
 	public Value getObjectId (Value val);
+
+    /**
+     * Return a simple case expression
+     */
+    public Value simpleCaseExpression(Value caseOperand,
+            Expression[] exp, Value val);
+
+    /**
+     * Return a general case expression
+     */
+    public Value generalCaseExpression(Expression[] exp, Value val);
+
+    /**
+     * Return a when condidional clause
+     */
+    public Expression whenCondition(Expression exp, Value val);
+
+    /**
+     * Return a when scalar_expression clause
+     */
+    public Expression whenScalar(Value val1, Value val2);
 }

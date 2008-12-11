@@ -23,6 +23,7 @@ import java.io.Serializable;
 import org.apache.openjpa.jdbc.meta.ClassMapping;
 import org.apache.openjpa.jdbc.meta.JavaSQLTypes;
 import org.apache.openjpa.jdbc.sql.DBDictionary;
+import org.apache.openjpa.jdbc.sql.Raw;
 import org.apache.openjpa.kernel.exps.AggregateListener;
 import org.apache.openjpa.kernel.exps.Arguments;
 import org.apache.openjpa.kernel.exps.Expression;
@@ -399,5 +400,51 @@ public class JDBCExpressionFactory
     public Value getMapValue(Value map, Value arg) {
         return new GetMapValue((Val) map, (Val) arg, 
             "gmv" + _getMapValueAlias++);
+    }
+
+    public Value simpleCaseExpression(Value caseOperand, Expression[] exp,
+            Value val1) {
+        Exp[] exps = new Exp[exp.length];
+        for (int i = 0; i < exp.length; i++)
+            exps[i] = (Exp) exp[i];
+        if (val1 instanceof Lit) {
+            Lit val = (Lit) val1;
+            StringBuffer value = new StringBuffer(val.getValue().toString());
+            if (val.getParseType() == Literal.TYPE_SQ_STRING)
+                value.insert(0, "'").append("'");
+            val.setValue(new Raw(value.toString()));
+        }
+        return new SimpleCaseExpression((Val) caseOperand, exps,
+            (Val) val1);
+    }
+
+    public Value generalCaseExpression(Expression[] exp,
+            Value val) {
+        Exp[] exps = new Exp[exp.length];
+        for (int i = 0; i < exp.length; i++)
+            exps[i] = (Exp) exp[i];
+        return new GeneralCaseExpression(exps, (Val) val);
+    }
+
+    public Expression whenCondition(Expression exp, Value val) {
+        return new WhenCondition((Exp) exp, (Val) val);
+    }
+
+    public Expression whenScalar(Value val1, Value val2) {
+        if (val1 instanceof Lit) {
+            Lit val = (Lit) val1;
+            StringBuffer value = new StringBuffer(val.getValue().toString());
+            if (val.getParseType() == Literal.TYPE_SQ_STRING)
+                value.insert(0, "'").append("'");
+            val.setValue(new Raw(value.toString()));
+        }
+        if (val2 instanceof Lit) {
+            Lit val = (Lit) val2;
+            StringBuffer value = new StringBuffer(val.getValue().toString());
+            if (val.getParseType() == Literal.TYPE_SQ_STRING)
+                value.insert(0, "'").append("'");
+            val.setValue(new Raw(value.toString()));
+        }
+        return new WhenScalar((Val) val1, (Val) val2);
     }
 }

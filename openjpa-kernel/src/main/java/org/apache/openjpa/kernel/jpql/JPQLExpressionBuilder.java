@@ -745,6 +745,27 @@ public class JPQLExpressionBuilder
             case JJTSCALAREXPRESSION:
                 return eval(onlyChild(node));
 
+            case JJTTYPE:
+                return eval(onlyChild(node));
+
+            case JJTCLASSNAME:
+                return getPathOrConstant(node);
+
+            case JJTCASE:
+                return eval(onlyChild(node));
+
+            case JJTSCASE:
+                return getSimpleCaseExpression(node);
+
+            case JJTGCASE:
+                return getGeneralCaseExpression(node);
+
+            case JJTWHEN:
+                return getWhenCondition(node);
+
+            case JJTWHENSCALAR:
+                return getWhenScalar(node);
+
             case JJTWHERE: // top-level WHERE clause
                 return getExpression(onlyChild(node));
 
@@ -1437,6 +1458,48 @@ public class JPQLExpressionBuilder
         if (!(exp instanceof Expression))
             return factory.asExpression((Value) exp);
         return (Expression) exp;
+    }
+
+    /**
+     * Returns a Simple Case Expression for the given node by eval'ing it.
+     */
+    private Value getSimpleCaseExpression(JPQLNode node) {
+        Object caseOperand = eval(node.getChild(0));
+        int nChild = node.getChildCount();
+
+        Object val = eval(lastChild(node));
+        Object exp[] = new Expression[nChild - 2];
+        for (int i = 1; i < nChild - 1; i++)
+            exp[i-1] = eval(node.children[i]);
+        
+        return factory.simpleCaseExpression((Value) caseOperand,
+            (Expression[]) exp, (Value) val);
+    }
+
+    /**
+     * Returns a General Case Expression for the given node by eval'ing it.
+     */
+    private Value getGeneralCaseExpression(JPQLNode node) {
+        int nChild = node.getChildCount();
+
+        Object val = eval(lastChild(node));
+        Object exp[] = new Expression[nChild - 1];
+        for (int i = 0; i < nChild - 1; i++)
+            exp[i] = (Expression) eval(node.children[i]);
+        
+        return factory.generalCaseExpression((Expression[]) exp, (Value) val);
+    }
+
+    private Expression getWhenCondition(JPQLNode node) {
+        Object exp = eval(firstChild(node));
+        Object val = eval(secondChild(node));
+        return factory.whenCondition((Expression) exp, (Value) val);
+    }
+
+    private Expression getWhenScalar(JPQLNode node) {
+        Object val1 = eval(firstChild(node));
+        Object val2 = eval(secondChild(node));
+        return factory.whenScalar((Value) val1, (Value) val2);
     }
 
     private Value getValue(JPQLNode node) {

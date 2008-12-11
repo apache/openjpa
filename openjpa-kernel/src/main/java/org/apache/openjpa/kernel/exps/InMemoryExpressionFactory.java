@@ -725,4 +725,24 @@ public class InMemoryExpressionFactory
 			}
 		}
 	}
+
+    public Value generalCaseExpression(Expression[] exp, Value val) {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    public Value simpleCaseExpression(Value caseOperand, Expression[] exp, Value val) {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    public Expression whenCondition(Expression exp, Value val) {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    public Expression whenScalar(Value val1, Value val2) {
+        // TODO Auto-generated method stub
+        return null;
+    }
 }
