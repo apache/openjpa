@@ -19,11 +19,14 @@
 package org.apache.openjpa.persistence.criteria;
 
 import javax.persistence.Entity;
+import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
 @Entity
-@Table(name="CR_MANAGER")
+@Table(name="CR_LINEITEM")
 
-public class Manager {
-
+public class LineItem {
+	private int price;
+	@ManyToOne
+	private Order order;
 }

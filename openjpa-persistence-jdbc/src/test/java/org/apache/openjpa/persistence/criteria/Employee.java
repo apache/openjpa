@@ -18,9 +18,26 @@
  */
 package org.apache.openjpa.persistence.criteria;
 
+import javax.persistence.Embedded;
 import javax.persistence.Entity;
+import javax.persistence.ManyToOne;
+import javax.persistence.OneToOne;
+import javax.persistence.Table;
 
 @Entity
+@Table(name="CR_EMPLOYEE")
+
 public class Employee {
-	private Address contactInfo;
+	private String name;
+	@Embedded
+	private Contact contactInfo;
+	@ManyToOne
+	private Department department;
+	private int rating;
+	private float salary;
+	@OneToOne
+	private Employee spouse;
+	@ManyToOne
+	private Manager manager;
+
 }

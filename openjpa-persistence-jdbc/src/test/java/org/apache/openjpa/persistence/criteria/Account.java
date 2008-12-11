@@ -19,11 +19,22 @@
 package org.apache.openjpa.persistence.criteria;
 
 import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
 import javax.persistence.Table;
 
+/**
+ * Persistent class used in testing QueryDefinition API.
+ * 
+ * @author Pinaki Poddar
+ *
+ */
 @Entity
-@Table(name="CR_MANAGER")
-
-public class Manager {
-
+@Table(name="CR_ACCOUNT")
+public class Account {
+	@Id
+	@GeneratedValue
+	private long id;
+	
+	private int balance;
 }

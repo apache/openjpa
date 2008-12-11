@@ -18,9 +18,18 @@
  */
 package org.apache.openjpa.persistence.criteria;
 
+import java.util.List;
+
 import javax.persistence.Entity;
+import javax.persistence.OneToMany;
+import javax.persistence.Table;
+
+import org.apache.openjpa.persistence.PersistentCollection;
 
 @Entity
-public class Person {
+@Table(name="CR_PERSON")
 
+public class Person {
+	@PersistentCollection
+	private List<String> nicknames;
 }

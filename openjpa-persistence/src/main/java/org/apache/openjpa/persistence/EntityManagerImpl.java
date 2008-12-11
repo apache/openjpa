@@ -60,6 +60,7 @@ import org.apache.openjpa.kernel.QueryLanguages;
 import org.apache.openjpa.kernel.Seq;
 import org.apache.openjpa.kernel.FetchConfiguration;
 import org.apache.openjpa.kernel.jpql.JPQLParser;
+import org.apache.openjpa.kernel.jpql.ParseException;
 import org.apache.openjpa.lib.util.Closeable;
 import org.apache.openjpa.lib.util.Localizer;
 import org.apache.openjpa.meta.ClassMetaData;
@@ -1392,8 +1393,8 @@ public class EntityManagerImpl
     }
 
     public Query createQuery(QueryDefinition qdef) {
-        throw new UnsupportedOperationException(
-            "JPA 2.0 - Method not yet implemented");
+        String jpql = getQueryBuilder().toJPQL(qdef);
+        return createQuery(jpql);
     }
 
     public <T> T find(Class<T> entityClass, Object primaryKey, 
@@ -1413,7 +1414,7 @@ public class EntityManagerImpl
             "JPA 2.0 - Method not yet implemented");
     }
 
-    public QueryBuilder getQueryBuilder() {
+    public QueryBuilderImpl getQueryBuilder() {
         return new QueryBuilderImpl(_emf);
     }
 

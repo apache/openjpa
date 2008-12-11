@@ -18,9 +18,20 @@
  */
 package org.apache.openjpa.persistence.criteria;
 
+import java.util.List;
+
 import javax.persistence.Entity;
+import javax.persistence.OneToMany;
+import javax.persistence.OrderBy;
+import javax.persistence.Table;
 
 @Entity
-public class Course {
+@Table(name="CR_COURSE")
 
+public class Course {
+	private String name;
+	
+	@OneToMany
+	@OrderBy
+	private List<Student> studentWaitList;
 }

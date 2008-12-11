@@ -18,9 +18,18 @@
  */
 package org.apache.openjpa.persistence.criteria;
 
+import java.util.Map;
+
 import javax.persistence.Entity;
+import javax.persistence.OneToMany;
+import javax.persistence.OneToOne;
+import javax.persistence.Table;
 
 @Entity
-public class Item {
+@Table(name="CR_ITEM")
 
+public class Item {
+	private String name;
+	@OneToMany
+	private Map<String, Photo> photos;
 }

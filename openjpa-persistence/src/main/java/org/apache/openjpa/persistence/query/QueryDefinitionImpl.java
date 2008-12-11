@@ -395,9 +395,8 @@ public class QueryDefinitionImpl extends ExpressionImpl
 			case EXPRESSION : buffer.append(v.asExpression(ctx))
 				                    .append(i != list.size()-1 ? ", " : " ");
 				break;
-			case JOINABLE   : buffer.append(v.asJoinable(ctx))
-								    .append(i > 0 && v instanceof RootPath ? 
-									"," : " ");
+			case JOINABLE   : buffer.append(i > 0 && v instanceof RootPath ? 
+								", " : " ").append(v.asJoinable(ctx));
 				break;
 			}
 		}

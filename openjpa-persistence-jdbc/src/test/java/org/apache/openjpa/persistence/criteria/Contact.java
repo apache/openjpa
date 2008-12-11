@@ -18,9 +18,17 @@
  */
 package org.apache.openjpa.persistence.criteria;
 
+import java.util.List;
+
+import javax.persistence.Embeddable;
+import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 
+@Embeddable
 public class Contact {
 	@OneToOne 
 	private Address address;
+	
+	@OneToMany
+	private List<Phone> phones;
 }

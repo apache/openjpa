@@ -18,10 +18,11 @@
  */
 package org.apache.openjpa.persistence.criteria;
 
-import java.util.List;
-
+import javax.persistence.Embeddable;
 import javax.persistence.Entity;
-import javax.persistence.OneToMany;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.Table;
 
 /**
  * Used for testing Criteria API.
@@ -32,8 +33,14 @@ import javax.persistence.OneToMany;
  *
  */
 @Entity
+@Table(name="CR_ADDRESS")
+@Embeddable
 public class Address {
+	@Id
+	@GeneratedValue
+	private long id;
+
+	private String state;
+	private String county;
 	private String zipCode;
-	@OneToMany
-	private List<Phone> phones;
 }

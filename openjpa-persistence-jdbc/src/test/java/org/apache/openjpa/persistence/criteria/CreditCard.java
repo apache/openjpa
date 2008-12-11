@@ -18,9 +18,18 @@
  */
 package org.apache.openjpa.persistence.criteria;
 
+import java.util.List;
+
 import javax.persistence.Entity;
+import javax.persistence.OrderBy;
+import javax.persistence.Table;
 
 @Entity
-public class CreditCard {
+@Table(name="CR_CREDITCARD")
 
+public class CreditCard {
+	private String holdr;
+	
+	@OrderBy
+	private List<String> transactionHistory;
 }

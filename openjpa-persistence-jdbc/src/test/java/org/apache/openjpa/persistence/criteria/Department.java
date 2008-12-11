@@ -22,8 +22,11 @@ import java.util.Set;
 
 import javax.persistence.Entity;
 import javax.persistence.OneToMany;
+import javax.persistence.Table;
 
 @Entity
+@Table(name="CR_DEPARTMENT")
+
 public class Department {
 	private int deptNo;
 	private String name;

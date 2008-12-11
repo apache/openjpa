@@ -32,10 +32,4 @@ abstract class QueryExpression extends UnaryOperatorExpression
 	public QueryExpression(QueryDefinitionImpl q, UnaryFunctionalOperator op) {
 		super(q, op);
 	}
-	
-	@Override
-	public String asExpression(AliasContext ctx) {
-		return "(" + super.asExpression(ctx) + ")";
-	}
-
 }

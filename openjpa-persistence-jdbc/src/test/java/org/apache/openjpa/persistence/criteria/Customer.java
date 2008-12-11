@@ -18,10 +18,40 @@
  */
 package org.apache.openjpa.persistence.criteria;
 
+import java.util.List;
+import java.util.Set;
+
 import javax.persistence.Entity;
+import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
+import javax.persistence.OneToOne;
+import javax.persistence.Table;
 
 @Entity
+@Table(name="CR_CUSTOMER")
+
 public class Customer {
+	private long id;
 	private String firstName;
 	private String lastName;
+	@OneToMany
+	private Set<Order> orders;
+	private int status;
+	private int balanceOwned;
+	@OneToOne
+	private Address address;
+	
+	private int filledOrderCount;
+	private String country;
+	
+	@OneToMany
+	private List<Account> accounts;
+	
+	public Customer() {
+		
+	}
+	
+	public Customer(long id, int status, int count) {
+		
+	}
 }

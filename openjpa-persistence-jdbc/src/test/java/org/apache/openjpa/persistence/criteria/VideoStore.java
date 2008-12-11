@@ -19,8 +19,15 @@
 package org.apache.openjpa.persistence.criteria;
 
 import javax.persistence.Entity;
+import javax.persistence.Table;
 
+/**
+ * 
+ * @author Pinaki Poddar
+ *
+ */
 @Entity
+@Table(name="CR_VIDEOSTORE")
 public class VideoStore {
 
 }

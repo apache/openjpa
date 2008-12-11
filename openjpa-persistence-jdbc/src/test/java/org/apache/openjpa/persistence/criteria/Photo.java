@@ -22,8 +22,8 @@ import javax.persistence.Entity;
 import javax.persistence.Table;
 
 @Entity
-@Table(name="CR_MANAGER")
+@Table(name="CR_PHOTO")
 
-public class Manager {
-
+public class Photo {
+	private String label;
 }

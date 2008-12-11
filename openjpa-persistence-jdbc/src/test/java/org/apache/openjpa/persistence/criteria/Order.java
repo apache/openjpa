@@ -18,16 +18,24 @@
  */
 package org.apache.openjpa.persistence.criteria;
 
+import java.util.List;
+
 import javax.persistence.Entity;
 import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
 @Entity
-@Table(name="C_ORDER")
+@Table(name="CR_ORDER")
 public class Order {
 	private int quantity;
-	
+	private int cost;
+	private int totalcost;
+	private int count;
 	@ManyToOne
 	private Customer customer;
+	
+	@OneToMany(mappedBy="order")
+	private List<LineItem> lineItems;
 
 }

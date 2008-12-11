@@ -45,7 +45,12 @@ public class JPQLParser
         if (query.getContext().getParameterDeclaration() != null)
             throw new UserException(_loc.get("param-decs-invalid"));
 
-        return new JPQLExpressionBuilder.ParsedJPQL(ql);
+        try {
+        	return new JPQLExpressionBuilder.ParsedJPQL(ql);
+        } catch (ParseException e) {
+        	throw new ParseException(_loc.get("jpql-parse-error", 
+        		ql, e.getMessage()).getMessage(), e);
+        }
     }
 
     public void populate(Object parsed, ExpressionStoreQuery query) {

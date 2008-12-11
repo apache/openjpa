@@ -75,6 +75,10 @@ public class ParseException
     public ParseException(String message) {
         super(message);
     }
+    
+    public ParseException(String message, Throwable t) {
+    	super(message, t);
+    }
 
     /**
      * This method has the standard behavior when this object has been
