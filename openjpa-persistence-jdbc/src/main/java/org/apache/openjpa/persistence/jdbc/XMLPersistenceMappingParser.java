@@ -32,16 +32,12 @@ import javax.persistence.InheritanceType;
 import javax.persistence.TemporalType;
 
 import org.apache.commons.lang.StringUtils;
-import org.xml.sax.Attributes;
-import org.xml.sax.Locator;
-import org.xml.sax.SAXException;
 import org.apache.openjpa.jdbc.conf.JDBCConfiguration;
 import org.apache.openjpa.jdbc.meta.ClassMapping;
 import org.apache.openjpa.jdbc.meta.ClassMappingInfo;
 import org.apache.openjpa.jdbc.meta.DiscriminatorMappingInfo;
 import org.apache.openjpa.jdbc.meta.FieldMapping;
 import org.apache.openjpa.jdbc.meta.FieldMappingInfo;
-import org.apache.openjpa.jdbc.meta.MappingInfo;
 import org.apache.openjpa.jdbc.meta.MappingRepository;
 import org.apache.openjpa.jdbc.meta.QueryResultMapping;
 import org.apache.openjpa.jdbc.meta.SequenceMapping;
@@ -51,15 +47,18 @@ import org.apache.openjpa.jdbc.meta.strats.FullClassStrategy;
 import org.apache.openjpa.jdbc.meta.strats.NoneClassStrategy;
 import org.apache.openjpa.jdbc.meta.strats.VerticalClassStrategy;
 import org.apache.openjpa.jdbc.schema.Column;
+import org.apache.openjpa.jdbc.schema.Table;
 import org.apache.openjpa.jdbc.schema.Unique;
 import org.apache.openjpa.lib.log.Log;
 import org.apache.openjpa.lib.util.Localizer;
 import org.apache.openjpa.meta.ClassMetaData;
 import org.apache.openjpa.meta.FieldMetaData;
 import org.apache.openjpa.meta.JavaTypes;
-import org.apache.openjpa.meta.MetaDataRepository;
 import org.apache.openjpa.persistence.XMLPersistenceMetaDataParser;
 import org.apache.openjpa.util.InternalException;
+import org.xml.sax.Attributes;
+import org.xml.sax.Locator;
+import org.xml.sax.SAXException;
 
 import static org.apache.openjpa.persistence.jdbc.MappingTag.*;
 import serp.util.Numbers;
@@ -78,6 +77,7 @@ public class XMLPersistenceMappingParser
     static {
         _elems.put("association-override", ASSOC_OVERRIDE);
         _elems.put("attribute-override", ATTR_OVERRIDE);
+        _elems.put("collection-table", COLLECTION_TABLE);
         _elems.put("column", COL);
         _elems.put("column-name", COLUMN_NAME);
         _elems.put("column-result", COLUMN_RESULT);
@@ -253,6 +253,9 @@ public class XMLPersistenceMappingParser
                 break;
             case COLUMN_NAME:
                 ret = true;
+                break;
+            case COLLECTION_TABLE:
+                ret = startCollectionTable(attrs);
                 break;
             default:
                 ret = false;
@@ -651,9 +654,11 @@ public class XMLPersistenceMappingParser
     private FieldMapping getAttributeOverride(FieldMapping fm)
         throws SAXException {
         ClassMapping embed = fm.getEmbeddedMapping();
-        if (embed == null)
-            throw getException(_loc.get("not-embedded", fm));
-
+        if (embed == null) {
+            embed = fm.getElementMapping().getEmbeddedMapping();
+            if (embed == null)
+                throw getException(_loc.get("not-embedded", fm));
+        }
         FieldMapping efm = embed.getFieldMapping(_override);
         if (efm == null)
             throw getException(_loc.get("embed-override-name",
@@ -732,7 +737,17 @@ public class XMLPersistenceMappingParser
         throws SAXException {
         // only join cols in a join table join field table to class table;
         // others act as data fk cols
-        if (currentParent() != JOIN_TABLE)
+        Object currentParent = currentParent();
+        if (currentParent == COLLECTION_TABLE) {
+            FieldMapping fm = (FieldMapping) peekElement();
+            Column col = parseColumn(attrs);
+            List colList = new ArrayList();
+            colList.add(col);
+            fm.getMappingInfo().setColumns(colList);
+            return true;
+        }
+        
+        if (currentParent != JOIN_TABLE)
             return startColumn(attrs);
 
         if (_joinCols == null)
@@ -746,9 +761,26 @@ public class XMLPersistenceMappingParser
      */
     private boolean startColumn(Attributes attrs)
         throws SAXException {
+        Column col = parseColumn(attrs);
+        Object obj = peekElement();
+        if (obj instanceof FieldMapping) {
+            FieldMapping fm = (FieldMapping)obj;
+            // a collection of basic types
+            // the column is in a separate table
+            if (fm.isElementCollection() &&
+                fm.getElementMapping().getEmbeddedMapping() == null) {
+                List list = fm.getElementMapping().getValueInfo().getColumns();
+                if (list.size() == 0) {
+                    list = new ArrayList();
+                    fm.getElementMapping().getValueInfo().setColumns(list);
+                }
+                list.add(col);
+                return true;
+            }
+        }
         if (_cols == null)
             _cols = new ArrayList<Column>(3);
-        _cols.add(parseColumn(attrs));
+        _cols.add(col);
         return true;
     }
 
@@ -799,6 +831,35 @@ public class XMLPersistenceMappingParser
         return col;
     }
 
+    /**
+     * Parse collectionTable.
+     */
+    private boolean startCollectionTable(Attributes attrs)
+        throws SAXException {
+        FieldMapping fm = (FieldMapping) peekElement();
+
+        FieldMappingInfo info = fm.getMappingInfo();
+        Table ctbl = parseCollectionTable(attrs);
+        info.setTableName(toTableName(ctbl.getSchemaName(),
+            ctbl.getName()));
+        return true;
+    }
+
+    private Table parseCollectionTable(Attributes attrs) {
+        Table table = new Table();
+        String val = attrs.getValue("name");
+        if (val != null)
+            table.setName(val);
+        val = attrs.getValue("schema");
+        if (val != null)
+            table.setSchemaName(val);
+        //val = attrs.getValue("catalog");
+        //if (val != null)
+        //    table.setCatalog(val);
+                
+        return table; 
+    }
+  
     /**
      * Return a table name for the given attributes.
      */

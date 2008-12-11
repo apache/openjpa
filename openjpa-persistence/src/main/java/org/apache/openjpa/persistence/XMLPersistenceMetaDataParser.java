@@ -31,6 +31,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.Stack;
 import javax.persistence.CascadeType;
+import javax.persistence.FetchType;
 import javax.persistence.GenerationType;
 import static javax.persistence.CascadeType.*;
 
@@ -67,6 +68,7 @@ import org.apache.openjpa.meta.ValueMetaData;
 import static org.apache.openjpa.persistence.MetaDataTag.*;
 import static org.apache.openjpa.persistence.PersistenceStrategy.*;
 import org.apache.openjpa.util.ImplHelper;
+import org.apache.openjpa.util.MetaDataException;
 
 import serp.util.Numbers;
 
@@ -151,6 +153,7 @@ public class XMLPersistenceMetaDataParser
         _elems.put("one-to-many", ONE_MANY);
         _elems.put("many-to-many", MANY_MANY);
         _elems.put("transient", TRANSIENT);
+        _elems.put("element-collection", ELEM_COLL);
     }
 
     private static final Localizer _loc = Localizer.forPackage
@@ -355,6 +358,13 @@ public class XMLPersistenceMetaDataParser
         return _elements.pop();
     }
 
+    /**
+     * Peek a parse element from the stack.
+     */
+    protected Object peekElement() {
+        return _elements.peek();
+    }
+    
     /**
      * Return the current element being parsed. May be a class metadata,
      * field metadata, query metadata, etc.
@@ -1276,6 +1286,8 @@ public class XMLPersistenceMetaDataParser
             case TRANSIENT:
                 fmd.setManagement(FieldMetaData.MANAGE_NONE);
                 break;
+            case ELEM_COLL:
+                parseElementCollection(fmd, attrs);
         }
     }
 
@@ -1378,6 +1390,27 @@ public class XMLPersistenceMetaDataParser
         fmd.setSerialized(false); // override any Lob annotation
     }
 
+    protected void parseElementCollection(FieldMetaData fmd, Attributes attrs)
+        throws SAXException {
+        String val = attrs.getValue("target-entity");
+        if (val != null)
+            fmd.getElement().setDeclaredType(classForName(val));
+
+        if (fmd.getDeclaredTypeCode() != JavaTypes.COLLECTION &&
+            fmd.getDeclaredTypeCode() != JavaTypes.MAP)
+            throw getException(_loc.get("bad-meta-anno", fmd, "ElementCollection"));
+
+        val = attrs.getValue("fetch");
+        if (val != null)
+            fmd.setInDefaultFetchGroup("EAGER".equals(val));
+        fmd.setElementCollection(true);
+        if (JavaTypes.maybePC(fmd.getElement())) {
+            fmd.getElement().setEmbedded(true);
+            if (fmd.getElement().getEmbeddedMetaData() == null)
+                fmd.getElement().addEmbeddedMetaData();
+        }
+    }
+    
     /**
      * Parse map-key.
      */

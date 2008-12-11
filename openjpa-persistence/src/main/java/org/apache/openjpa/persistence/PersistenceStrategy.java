@@ -32,6 +32,7 @@ package org.apache.openjpa.persistence;
 public enum PersistenceStrategy {
     // order matters to match XML spec
     BASIC,
+    ELEM_COLL,
     MANY_ONE,
     ONE_MANY,
     ONE_ONE,
@@ -41,6 +42,5 @@ public enum PersistenceStrategy {
     // openjpa extensions
     PERS,
     PERS_COLL,
-    ELEM_COLL,
     PERS_MAP,
 }
