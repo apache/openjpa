@@ -29,6 +29,7 @@ import java.util.List;
 import org.apache.openjpa.jdbc.conf.JDBCConfiguration;
 import org.apache.openjpa.jdbc.kernel.JDBCFetchConfiguration;
 import org.apache.openjpa.jdbc.kernel.JDBCStore;
+import org.apache.openjpa.kernel.exps.Value;
 import org.apache.openjpa.jdbc.meta.ClassMapping;
 import org.apache.openjpa.jdbc.meta.FieldMapping;
 import org.apache.openjpa.jdbc.schema.Column;
@@ -721,14 +722,15 @@ public class LogicalUnion
             return sel.orderBy(cols, asc, joins, select, isUnion());
         }
 
-        public boolean orderBy(SQLBuffer sql, boolean asc, boolean select) {
-            return orderBy(sql, asc, null, select);
+        public boolean orderBy(SQLBuffer sql, boolean asc, boolean select,
+            Value selAs) {
+            return orderBy(sql, asc, null, select, selAs);
         }
 
         public boolean orderBy(SQLBuffer sql, boolean asc, Joins joins,
-            boolean select) {
+            boolean select, Value selAs) {
             recordOrder(sql.getSQL(false), asc);
-            return sel.orderBy(sql, asc, joins, select, isUnion());
+            return sel.orderBy(sql, asc, joins, select, isUnion(), selAs);
         }
 
         public boolean orderBy(String sql, boolean asc, boolean select) {

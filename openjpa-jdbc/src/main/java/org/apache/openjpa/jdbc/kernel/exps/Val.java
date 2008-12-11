@@ -64,6 +64,10 @@ public interface Val
     public final int INDEXOF_VAL = 10;
     public final int ABS_VAL = 11;
     public final int SQRT_VAL = 12;
+    public final int SIMPLECASE_VAL = 13;
+    public final int GENERALCASE_VAL = 14;
+    public final int WHENCONDITION_VAL = 15;
+    public final int WHENSCALAR_VAL = 16;
 
     /**
      * Initialize the value. This method should recursively initialize any
@@ -160,4 +164,6 @@ public interface Val
         SQLBuffer sql);
 
     public int getId();
+
+    public Value getSelectAs();
 }

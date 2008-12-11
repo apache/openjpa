@@ -240,6 +240,8 @@ public class DBDictionary
     public boolean supportsXMLColumn = false;
     public boolean reportsSuccessNoInfoOnBatchUpdates = false;
     public boolean supportsSelectFromFinalTable = false;
+    public boolean supportsSimpleCaseExpression = true;
+    public boolean supportsGeneralCaseExpression = true;
     
     /**
      * Some Databases append whitespace after the schema name 

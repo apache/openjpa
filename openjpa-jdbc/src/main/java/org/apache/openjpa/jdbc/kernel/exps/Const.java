@@ -130,7 +130,7 @@ abstract class Const
 
     public void orderBy(Select sel, ExpContext ctx, ExpState state, 
         boolean asc) {
-        sel.orderBy(newSQLBuffer(sel, ctx, state), asc, false);
+        sel.orderBy(newSQLBuffer(sel, ctx, state), asc, false, getSelectAs());
     }
 
     public Object load(ExpContext ctx, ExpState state, Result res)

@@ -36,6 +36,7 @@ public abstract class Val
     implements Value {
 
     private ClassMetaData _meta = null;
+    private String _alias = null;
 
     /**
      * Return this value as a projection on the given candidate.
@@ -117,5 +118,17 @@ public abstract class Val
     public void acceptVisit(ExpressionVisitor visitor) {
         visitor.enter(this);
         visitor.exit(this);
+    }
+
+    public String getAlias() {
+        return _alias;
+    }
+
+    public void setAlias(String alias) {
+        _alias = alias;
+    }
+
+    public Value getSelectAs() {
+        return _alias != null ? this : null;
     }
 }

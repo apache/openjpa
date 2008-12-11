@@ -327,6 +327,8 @@ public class JPQLExpressionBuilder
             Value proj = getValue(node);
             String alias = aliasNode == null ? nextAlias()
                  : aliasNode.text;
+            if (aliasNode != null)
+                proj.setAlias(alias);
             exps.projections[i] = proj;
             exps.projectionClauses[i] = aliasNode == null ?
                 assemble(node.id == JJTSCALAREXPRESSION ? firstChild(node)

@@ -64,6 +64,31 @@ public class TestOrderByQuery extends SingleEMFTestCase {
 		em.getTransaction().commit();
 	}
     
+    public void testOrderByAliasAscending() {
+        String jpql = "SELECT p.name as name FROM Game p ORDER BY name ASC";
+        EntityManager em = emf.createEntityManager();
+        
+        List<String> names = em.createQuery(jpql).getResultList();
+        assertOrdering(names.toArray(new String[names.size()]), true);
+    }
+    
+    public void testOrderByConcatAliasDescending() {
+        String jpql = "SELECT CONCAT(p.name, '123') as cname " +
+            "FROM Game p ORDER BY cname DESC";
+        EntityManager em = emf.createEntityManager();
+        
+        List<String> names = em.createQuery(jpql).getResultList();
+        assertOrdering(names.toArray(new String[names.size()]), false);
+    }
+    
+    public void testOrderByAliasDescending() {
+        String jpql = "SELECT p.name as name FROM Game p ORDER BY name DESC";
+        EntityManager em = emf.createEntityManager();
+        
+        List<String> names = em.createQuery(jpql).getResultList();
+        assertOrdering(names.toArray(new String[names.size()]), false);
+    }
+    
     public void testOrderByQueryAscending() {
     	String jpql = "SELECT p FROM Game p ORDER BY p.name ASC";
     	EntityManager em = emf.createEntityManager();

@@ -62,6 +62,7 @@ public class DerbyDictionary
         supportsDefaultDeleteAction = false;
         requiresCastForMathFunctions = true;
         requiresCastForComparisons = true;
+        supportsSimpleCaseExpression = false;
 
         supportsComments = true;
 

@@ -29,6 +29,7 @@ import org.apache.openjpa.jdbc.meta.FieldMapping;
 import org.apache.openjpa.jdbc.schema.Column;
 import org.apache.openjpa.jdbc.schema.ForeignKey;
 import org.apache.openjpa.jdbc.schema.Table;
+import org.apache.openjpa.kernel.exps.Value;
 
 /**
  * Abstraction of a SQL SELECT statement.
@@ -499,14 +500,14 @@ public interface Select
      * Add an ORDER BY clause.
      * Optionally selects ordering data if not already selected.
      */
-    public boolean orderBy(SQLBuffer sql, boolean asc, boolean sel);
+    public boolean orderBy(SQLBuffer sql, boolean asc, boolean sel, Value selAs);
 
     /**
      * Add an ORDER BY clause.
      * Optionally selects ordering data if not already selected.
      */
     public boolean orderBy(SQLBuffer sql, boolean asc, Joins joins,
-        boolean sel);
+        boolean sel, Value selAs);
 
     /**
      * Add an ORDER BY clause.

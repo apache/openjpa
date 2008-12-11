@@ -95,7 +95,7 @@ public class Substring
 
     public void orderBy(Select sel, ExpContext ctx, ExpState state, 
         boolean asc) {
-        sel.orderBy(newSQLBuffer(sel, ctx, state), asc, false);
+        sel.orderBy(newSQLBuffer(sel, ctx, state), asc, false, getSelectAs());
     }
 
     private SQLBuffer newSQLBuffer(Select sel, ExpContext ctx, ExpState state) {

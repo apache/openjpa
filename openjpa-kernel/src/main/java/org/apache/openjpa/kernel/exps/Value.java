@@ -73,4 +73,19 @@ public interface Value
      * Accept a visit from a tree visitor.
      */
     public void acceptVisit(ExpressionVisitor visitor);
+
+    /**
+     * Return select item alias
+     */
+    public String getAlias();
+
+    /**
+     * Set select item alias
+     */
+    public void setAlias(String alias);
+
+    /**
+     * Return 'this' concrete class if alias is set, otherwise null
+     */
+    public Value getSelectAs();
 }

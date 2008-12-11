@@ -55,6 +55,7 @@ import org.apache.openjpa.jdbc.schema.Column;
 import org.apache.openjpa.jdbc.schema.ForeignKey;
 import org.apache.openjpa.jdbc.schema.Table;
 import org.apache.openjpa.kernel.StoreContext;
+import org.apache.openjpa.kernel.exps.Value;
 import org.apache.openjpa.lib.log.Log;
 import org.apache.openjpa.lib.util.Localizer;
 import org.apache.openjpa.util.ApplicationIds;
@@ -1235,28 +1236,28 @@ public class SelectImpl
         return seld;
     }
 
-    public boolean orderBy(SQLBuffer sql, boolean asc, boolean sel) {
-        return orderBy(sql, asc, (Joins) null, sel);
+    public boolean orderBy(SQLBuffer sql, boolean asc, boolean sel, Value selAs) {
+        return orderBy(sql, asc, (Joins) null, sel, selAs);
     }
 
     public boolean orderBy(SQLBuffer sql, boolean asc, Joins joins,
-        boolean sel) {
-        return orderBy(sql, asc, joins, sel, false);
+        boolean sel, Value selAs) {
+        return orderBy(sql, asc, joins, sel, false, selAs);
     }
 
     /**
      * Allow unions to set aliases on order columns.
      */
     boolean orderBy(SQLBuffer sql, boolean asc, Joins joins, boolean sel,
-        boolean aliasOrder) {
-        return orderBy((Object) sql, asc, joins, sel, aliasOrder);
+        boolean aliasOrder, Value selAs) {
+        return orderBy((Object) sql, asc, joins, sel, aliasOrder, selAs);
     }
 
     /**
      * Order on a SQL buffer or string.
      */
     private boolean orderBy(Object sql, boolean asc, Joins joins, boolean sel,
-        boolean aliasOrder) {
+        boolean aliasOrder, Value selAs) {
         Object order = sql;
         if (aliasOrder) {
             order = toOrderAlias(_orders++);
@@ -1265,11 +1266,11 @@ public class SelectImpl
         if ((_flags & RECORD_ORDERED) != 0) {
             if (_ordered == null)
                 _ordered = new ArrayList(5);
-            _ordered.add(sql);
+            _ordered.add(selAs == null ? sql : selAs);
         }
 
         getJoins(joins, true);
-        appendOrdering(order, asc);
+        appendOrdering(selAs != null ? selAs.getAlias() : order, asc);
         if (sel) {
             int idx = _selects.indexOfAlias(sql);
             if (idx == -1) {
@@ -1293,7 +1294,7 @@ public class SelectImpl
      */
     boolean orderBy(String sql, boolean asc, Joins joins, boolean sel,
         boolean aliasOrder) {
-        return orderBy((Object) sql, asc, joins, sel, aliasOrder);
+        return orderBy((Object) sql, asc, joins, sel, aliasOrder, null);
     }
 
     public void clearOrdering() {
@@ -3027,6 +3028,8 @@ public class SelectImpl
                         as = ((String) alias).replace('.', '_');
                     else if (_selectAs != null)
                         as = (String) _selectAs.get(id);
+                    else if (id instanceof Value)
+                        as = ((Value) id).getAlias();
 
                     if (as != null) {
                         if (ident && _idents != null)
