@@ -447,4 +447,37 @@ public class JDBCExpressionFactory
         }
         return new WhenScalar((Val) val1, (Val) val2);
     }
+
+    public Value coalesceExpression(Value[] vals) {;
+        Object[] values = new Val[vals.length];
+        for (int i = 0; i < vals.length; i++) {
+            if (vals[i] instanceof Lit) {
+                Lit val = (Lit) vals[i];
+                StringBuffer value = new StringBuffer(val.getValue().toString());
+                if (val.getParseType() == Literal.TYPE_SQ_STRING)
+                    value.insert(0, "'").append("'");
+                val.setValue(new Raw(value.toString()));
+            }
+            values[i] = vals[i];
+        }
+        return new CoalesceExpression((Val[]) values);
+    }
+
+    public Value nullIfExpression(Value val1, Value val2) {
+        if (val1 instanceof Lit) {
+            Lit val = (Lit) val1;
+            StringBuffer value = new StringBuffer(val.getValue().toString());
+            if (val.getParseType() == Literal.TYPE_SQ_STRING)
+                value.insert(0, "'").append("'");
+            val.setValue(new Raw(value.toString()));
+        }
+        if (val2 instanceof Lit) {
+            Lit val = (Lit) val2;
+            StringBuffer value = new StringBuffer(val.getValue().toString());
+            if (val.getParseType() == Literal.TYPE_SQ_STRING)
+                value.insert(0, "'").append("'");
+            val.setValue(new Raw(value.toString()));
+        }
+        return new NullIfExpression((Val) val1, (Val) val2);
+    }
 }

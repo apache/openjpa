@@ -68,6 +68,8 @@ public interface Val
     public final int GENERALCASE_VAL = 14;
     public final int WHENCONDITION_VAL = 15;
     public final int WHENSCALAR_VAL = 16;
+    public final int COALESCE_VAL = 17;
+    public final int NULLIF_VAL = 18;
 
     /**
      * Initialize the value. This method should recursively initialize any

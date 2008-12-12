@@ -745,4 +745,14 @@ public class InMemoryExpressionFactory
         // TODO Auto-generated method stub
         return null;
     }
+
+    public Value coalesceExpression(Value[] val) {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    public Value nullIfExpression(Value val1, Value val2) {
+        // TODO Auto-generated method stub
+        return null;
+    }
 }

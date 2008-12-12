@@ -428,4 +428,14 @@ public interface ExpressionFactory {
      * Return a when scalar_expression clause
      */
     public Expression whenScalar(Value val1, Value val2);
+
+    /**
+     * Return a coalesce expression
+     */
+    public Value coalesceExpression(Value[] val);
+
+    /**
+     * Return a nullif expression
+     */
+    public Value nullIfExpression(Value val1, Value val2);
 }

@@ -69,6 +69,40 @@ public class TestJPQLScalarExpressions extends AbstractTestCase {
         endEm(em);
     }
 
+    public void testCoalesceExpressions() {
+        EntityManager em = currentEntityManager();
+        startTx(em);
+
+
+        String query = "SELECT e.name, " +
+            "COALESCE (e.address.country, 'Unknown')" +
+            " FROM CompUser e";
+        List rs = em.createQuery(query).getResultList();
+        Object[] result = (Object[]) rs.get(rs.size()-1);
+        assertEquals("the name is not shade", "Shade", result[0]);        
+        assertEquals("Unknown", result[1]);
+
+        endTx(em);
+        endEm(em);
+    }
+
+    public void testNullIfExpressions() {
+        EntityManager em = currentEntityManager();
+        startTx(em);
+
+        String query = "SELECT e.name, " +
+            "NULLIF (e.address.country, 'USA')" +
+            " FROM CompUser e";
+
+        List rs = em.createQuery(query).getResultList();
+        Object[] result = (Object[]) rs.get(1);
+        assertEquals("the name is not shannon ", "Shannon ", result[0]);        
+        assertNull("is not null", result[1]);
+        
+        endTx(em);
+        endEm(em);
+    }
+
     public void testSimpleCaseExpressions() {
         EntityManager em = currentEntityManager();
 

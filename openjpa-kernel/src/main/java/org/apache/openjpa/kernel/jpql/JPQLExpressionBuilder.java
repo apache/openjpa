@@ -766,6 +766,12 @@ public class JPQLExpressionBuilder
             case JJTWHENSCALAR:
                 return getWhenScalar(node);
 
+            case JJTCOALESCE:
+                return getCoalesceExpression(node);
+
+            case JJTNULLIF:
+                return getNullIfExpression(node);
+
             case JJTWHERE: // top-level WHERE clause
                 return getExpression(onlyChild(node));
 
@@ -1500,6 +1506,23 @@ public class JPQLExpressionBuilder
         Object val1 = eval(firstChild(node));
         Object val2 = eval(secondChild(node));
         return factory.whenScalar((Value) val1, (Value) val2);
+    }
+
+    private Value getCoalesceExpression(JPQLNode node) {
+        int nChild = node.getChildCount();
+        
+        Object vals[] = new Value[nChild];
+        for (int i = 0; i < nChild; i++)
+            vals[i] = eval(node.children[i]);
+        
+        return factory.coalesceExpression((Value[]) vals);
+    }
+
+    private Value getNullIfExpression(JPQLNode node) {
+        Object val1 = eval(firstChild(node));
+        Object val2 = eval(secondChild(node));
+        
+        return factory.nullIfExpression((Value) val1, (Value) val2);
     }
 
     private Value getValue(JPQLNode node) {
