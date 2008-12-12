@@ -18,9 +18,12 @@
  */
 package org.apache.openjpa.persistence;
 
+import java.io.File;
+import java.io.IOException;
 import java.lang.reflect.Field;
 import java.lang.reflect.Member;
 import java.lang.reflect.Method;
+import java.net.URL;
 import java.security.AccessController;
 import java.security.PrivilegedActionException;
 import java.util.ArrayList;
@@ -31,7 +34,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.Stack;
 import javax.persistence.CascadeType;
-import javax.persistence.FetchType;
 import javax.persistence.GenerationType;
 import static javax.persistence.CascadeType.*;
 
@@ -50,6 +52,7 @@ import org.apache.openjpa.kernel.jpql.JPQLParser;
 import org.apache.openjpa.lib.conf.Configurations;
 import org.apache.openjpa.lib.log.Log;
 import org.apache.openjpa.lib.meta.CFMetaDataParser;
+import org.apache.openjpa.lib.meta.XMLVersionParser;
 import org.apache.openjpa.lib.util.J2DoPrivHelper;
 import org.apache.openjpa.lib.util.Localizer;
 import org.apache.openjpa.meta.ClassMetaData;
@@ -68,8 +71,6 @@ import org.apache.openjpa.meta.ValueMetaData;
 import static org.apache.openjpa.persistence.MetaDataTag.*;
 import static org.apache.openjpa.persistence.PersistenceStrategy.*;
 import org.apache.openjpa.util.ImplHelper;
-import org.apache.openjpa.util.MetaDataException;
-
 import serp.util.Numbers;
 
 /**
@@ -182,6 +183,12 @@ public class XMLPersistenceMetaDataParser
     private int[] _highs = null;
     private boolean _isXMLMappingMetaDataComplete = false;
 
+    private String _ormVersion;
+    private String _schemaLocation;
+    
+    private static final String ORM_XSD_1_0 = "orm_1_0.xsd";
+    private static final String ORM_XSD_2_0 = "orm_2_0.xsd";
+    
     /**
      * Constructor; supply configuration.
      */
@@ -311,6 +318,37 @@ public class XMLPersistenceMetaDataParser
             _parser.setMode(mode);
     }
 
+    public void parse(URL url) throws IOException {
+        // peek at the doc to determine the version
+        XMLVersionParser vp = new XMLVersionParser("entity-mappings");
+        try {
+            vp.parse(url);
+            _ormVersion = vp.getVersion();
+            _schemaLocation = vp.getSchemaLocation();
+        } catch (Throwable t) {
+                Log log = getLog();
+                if (log.isInfoEnabled())
+                    log.trace(_loc.get("version-check-error", 
+                        url.toString()));
+        }       
+        super.parse(url);
+    }
+
+    public void parse(File file) throws IOException {        
+        // peek at the doc to determine the version
+        XMLVersionParser vp = new XMLVersionParser("entity-mappings");
+        try {
+            vp.parse(file);
+            _ormVersion = vp.getVersion();
+            _schemaLocation = vp.getSchemaLocation();
+        } catch (Throwable t) {
+                Log log = getLog();
+                if (log.isInfoEnabled())
+                    log.trace(_loc.get("version-check-error", 
+                        file.toString()));
+        }       
+        super.parse(file);
+    }
     /**
      * Convenience method for interpreting {@link #getMode}.
      */
@@ -400,9 +438,19 @@ public class XMLPersistenceMetaDataParser
     }
 
     @Override
-    protected Object getSchemaSource() {
-        return XMLPersistenceMetaDataParser.class.getResourceAsStream
-            ("orm-xsd.rsrc");
+    protected Object getSchemaSource() {        
+        // use the latest schema by default.  'unknown' docs should parse
+        // with the latest schema.
+        String ormxsd = "orm_2_0-xsd.rsrc";
+        // if the version and/or schema location is for 1.0, use the 1.0 
+        // schema
+        if (_ormVersion != null &&
+            _ormVersion.equals(XMLVersionParser.VERSION_1_0) ||
+            (_schemaLocation != null && 
+            _schemaLocation.indexOf(ORM_XSD_1_0) != -1)) {
+            ormxsd = "orm-xsd.rsrc";
+        }        
+        return XMLPersistenceMetaDataParser.class.getResourceAsStream(ormxsd);
     }
 
     @Override

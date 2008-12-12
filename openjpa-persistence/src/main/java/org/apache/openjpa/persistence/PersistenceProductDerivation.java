@@ -45,6 +45,7 @@ import org.apache.openjpa.lib.conf.MapConfigurationProvider;
 import org.apache.openjpa.lib.conf.ProductDerivations;
 import org.apache.openjpa.lib.log.Log;
 import org.apache.openjpa.lib.meta.XMLMetaDataParser;
+import org.apache.openjpa.lib.meta.XMLVersionParser;
 import org.apache.openjpa.lib.util.J2DoPrivHelper;
 import org.apache.openjpa.lib.util.Localizer;
 import org.xml.sax.Attributes;
@@ -491,9 +492,17 @@ public class PersistenceProductDerivation
     public static class ConfigurationParser
         extends XMLMetaDataParser {
 
+        private static final String PERSISTENCE_XSD_1_0 = "persistence_1_0.xsd";
+        private static final String PERSISTENCE_XSD_2_0 = "persistence_2_0.xsd";
+
+        private static final Localizer _loc = Localizer.forPackage
+            (ConfigurationParser.class);
+
         private final Map _map;
         private PersistenceUnitInfoImpl _info = null;
         private URL _source = null;
+        private String _persistenceVersion;
+        private String _schemaLocation;
 
         public ConfigurationParser(Map map) {
             _map = map;
@@ -506,6 +515,17 @@ public class PersistenceProductDerivation
         public void parse(URL url)
             throws IOException {
             _source = url;
+
+            // peek at the doc to determine the version
+            XMLVersionParser vp = new XMLVersionParser("persistence");
+            try {
+                vp.parse(url);
+                _persistenceVersion = vp.getVersion();
+                _schemaLocation = vp.getSchemaLocation();
+            } catch (Throwable t) {
+                    log(_loc.get("version-check-error", 
+                        _source.toString()).toString());
+            }            
             super.parse(url);
         }
 
@@ -518,12 +538,36 @@ public class PersistenceProductDerivation
             } catch (PrivilegedActionException pae) {
                 throw (MalformedURLException) pae.getException();
             }
+            // peek at the doc to determine the version
+            XMLVersionParser vp = new XMLVersionParser("persistence");
+            try {
+                vp.parse(file);
+                _persistenceVersion = vp.getVersion();
+                _schemaLocation = vp.getSchemaLocation();                
+            } catch (Throwable t) {
+                    log(_loc.get("version-check-error", 
+                        _source.toString()).toString());
+            }            
             super.parse(file);
         }
 
         @Override
         protected Object getSchemaSource() {
-            return getClass().getResourceAsStream("persistence-xsd.rsrc");
+            // use the version 1 schema by default.  non-versioned docs will 
+            // continue to parse with the old xml if they do not contain a 
+            // persistence-unit.  that is currently the only signficant change
+            // to the schema.  if more significant changes are made in the 
+            // future, the 2.0 schema may be preferable.
+            String persistencexsd = "persistence-xsd.rsrc";
+            // if the version and/or schema location is for 1.0, use the 1.0 
+            // schema
+            if (_persistenceVersion != null &&
+                _persistenceVersion.equals(XMLVersionParser.VERSION_2_0) ||
+                (_schemaLocation != null && 
+                _schemaLocation.indexOf(PERSISTENCE_XSD_2_0) != -1)) {
+                persistencexsd = "persistence_2_0-xsd.rsrc";
+            }
+            return getClass().getResourceAsStream(persistencexsd);
         }
 
         @Override
