@@ -241,30 +241,40 @@ class DistributedStoreManager extends JDBCStoreManager {
         Collection exceptions = new ArrayList();
         List<Future<Collection>> futures = new ArrayList<Future<Collection>>();
         Map<String, List<OpenJPAStateManager>> subsets = bin(sms, null);
+        
+        boolean serialMode = getConfiguration().getMultithreaded();
         for (SliceStoreManager slice : _slices) {
             List<OpenJPAStateManager> subset = subsets.get(slice.getName());
             if (subset.isEmpty())
                 continue;
             if (containsReplicated(subset)) {
-            	slice.flush(subset);
+            	collectException(slice.flush(subset), exceptions);
             } else {
-            	futures.add(threadPool.submit(new Flusher(slice, subset)));
+            	if (serialMode) {
+                	collectException(slice.flush(subset), exceptions);
+            	} else {
+            		futures.add(threadPool.submit(new Flusher(slice, subset)));
+            	}
             }
         }
-        for (Future<Collection> future : futures) {
-            Collection error;
-            try {
-                error = future.get();
-                if (!(error == null || error.isEmpty())) {
-                    exceptions.addAll(error);
-                }
-            } catch (InterruptedException e) {
-                throw new StoreException(e);
-            } catch (ExecutionException e) {
-                throw new StoreException(e.getCause());
-            }
+        if (!serialMode) {
+	        for (Future<Collection> future : futures) {
+	            try {
+	            	collectException(future.get(), exceptions);
+	            } catch (InterruptedException e) {
+	                throw new StoreException(e);
+	            } catch (ExecutionException e) {
+	                throw new StoreException(e.getCause());
+	            }
+	        }
         }
-        return exceptions;
+	    return exceptions;
+    }
+    
+    private void collectException(Collection error,  Collection holder) {
+        if (!(error == null || error.isEmpty())) {
+        	holder.addAll(error);
+        }
     }
     
     boolean containsReplicated(List<OpenJPAStateManager> sms) {

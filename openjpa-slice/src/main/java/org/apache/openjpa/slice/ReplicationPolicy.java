@@ -20,12 +20,16 @@ package org.apache.openjpa.slice;
 
 import java.util.List;
 
-
 /**
- * Policy to select one of the physical databases referred as <em>slice</em>
- * in which a given persistent instance will be replicated.
+ * Policy to select one or more of the physical databases referred as 
+ * <em>slice</em> in which a given persistent instance will be persisted.
+ * 
+ * This interface is invoked for entity types annotated as @Replicated
  *  
  * @author Pinaki Poddar 
+ * 
+ * @see DistributionPolicy
+ * @see Replicated
  *
  */
 public interface ReplicationPolicy {
@@ -40,7 +44,7 @@ public interface ReplicationPolicy {
 	 * @param context generic persistence context managing the given instance.
 	 * 
 	 * @return identifier of the slices. This names must match one of the
-	 * given slice names. Return null or empty list to imply all active slices.
+	 * given slice names. 
 	 *  
 	 * @see DistributedConfiguration#getActiveSliceNames()
 	 */
@@ -54,7 +58,7 @@ public interface ReplicationPolicy {
 	public static class Default implements ReplicationPolicy {
 		public String[] replicate(Object pc, List<String> slices, 
 			Object context) {
-			return null;
+			return slices.toArray(new String[slices.size()]);
 		}
 	}
 }

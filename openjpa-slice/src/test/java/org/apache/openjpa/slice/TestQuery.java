@@ -31,6 +31,7 @@ import javax.persistence.Query;
  *
  */
 public class TestQuery extends SliceTestCase {
+
     private int POBJECT_COUNT = 25;
     private int VALUE_MIN = 100;
     private int VALUE_MAX = VALUE_MIN + POBJECT_COUNT - 1;
