@@ -40,7 +40,7 @@ import org.apache.openjpa.lib.conf.Value;
  *
  * @author Marc Prud'hommeaux
  */
-public class TestOpenJPAConfigurationConfiguration
+public class TestOpenJPAConfiguration
     extends AbstractTestCase {
 
     public TestOpenJPAConfiguration(String test) {
