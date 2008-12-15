@@ -40,10 +40,10 @@ import org.apache.openjpa.lib.conf.Value;
  *
  * @author Marc Prud'hommeaux
  */
-public class TestKodoConfiguration
+public class TestOpenJPAConfigurationConfiguration
     extends AbstractTestCase {
 
-    public TestKodoConfiguration(String test) {
+    public TestOpenJPAConfiguration(String test) {
         super(test, "confcactusapp");
     }
 
@@ -131,11 +131,16 @@ public class TestKodoConfiguration
             try {
                 assertNotNull(pds[i].getShortDescription());
                 assertNotNull(pds[i].getDisplayName());
-
-                Method setter = pds[i].getWriteMethod();
+                
+                // skip the EntityManagerFactory property added by
+                // product derivation code as it has no accessor methods
+                if ("EntityManagerFactory".equals(values[i].getProperty()))
+                        continue;
+                        
                 Method getter = pds[i].getReadMethod();
-                assertNotNull(setter);
+                Method setter = pds[i].getWriteMethod();
                 assertNotNull(getter);
+                assertNotNull(setter);
 
                 assertNotNull("Missing attribute ("
                     + Configuration.ATTRIBUTE_TYPE
@@ -199,7 +204,7 @@ public class TestKodoConfiguration
         log.clear();
 
         // now make sure we do *not* try to validate sub-configurations (such
-        // as kodo.jdbc.Foo).
+        // as openjpa.jdbc.Foo).
         props.clear();
         props.setProperty("openjpa.jdbc.Foo", "XXX");
         props.setProperty("oponjpa", "XXX");
