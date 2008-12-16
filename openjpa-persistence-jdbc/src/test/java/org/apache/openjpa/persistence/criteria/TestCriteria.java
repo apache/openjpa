@@ -226,7 +226,7 @@ public class TestCriteria extends SingleEMFTestCase {
 					+ " FROM Employee e"
 					+ " WHERE e.department.name = 'Engineering'";
 		
-		compare(jpql, e, "Case not supported");
+		compare(jpql, e);
 	}
 	
 	public void testMemberOf() {
@@ -245,7 +245,7 @@ public class TestCriteria extends SingleEMFTestCase {
 		
 		String jpql = "select c from Customer c " +
 		              " where c.status = :status";
-		compare(jpql, qdef, null, "status", 1);
+		compare(jpql, qdef, "status", 1);
 	}
 	
 	public void testBetween() {
