@@ -89,7 +89,7 @@ public class ReflectingPersistenceCapable
 
     public void pcProvideField(int i) {
         Object value = getValue(i, o);
-        switch (meta.getField(i).getTypeCode()) {
+        switch (meta.getField(i).getDeclaredTypeCode()) {
             case JavaTypes.BOOLEAN:
                 sm.providedBooleanField(this, i, value == null ? false :
                     ((Boolean) value).booleanValue());
@@ -137,7 +137,7 @@ public class ReflectingPersistenceCapable
     }
 
     public void pcReplaceField(int i) {
-        switch(meta.getField(i).getTypeCode()) {
+        switch(meta.getField(i).getDeclaredTypeCode()) {
             case JavaTypes.BOOLEAN:
                 setValue(i, o, Boolean.valueOf(
                     sm.replaceBooleanField(this, i)));
