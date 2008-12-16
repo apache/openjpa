@@ -727,32 +727,36 @@ public class InMemoryExpressionFactory
 	}
 
     public Value generalCaseExpression(Expression[] exp, Value val) {
-        // TODO Auto-generated method stub
-        return null;
+        Exp[] exps = new Exp[exp.length];
+        for (int i = 0; i < exp.length; i++)
+            exps[i] = (Exp) exp[i];
+        return new GeneralCase(exps, (Val) val);
     }
 
-    public Value simpleCaseExpression(Value caseOperand, Expression[] exp, Value val) {
-        // TODO Auto-generated method stub
-        return null;
+    public Value simpleCaseExpression(Value caseOperand, Expression[] exp,
+        Value val) {
+            Exp[] exps = new Exp[exp.length];
+            for (int i = 0; i < exp.length; i++)
+                exps[i] = (Exp) exp[i];
+            return new SimpleCase((Val) caseOperand, exps, (Val) val);
     }
 
     public Expression whenCondition(Expression exp, Value val) {
-        // TODO Auto-generated method stub
-        return null;
+        return new WhenCondition((Exp) exp, (Val) val);
     }
 
     public Expression whenScalar(Value val1, Value val2) {
-        // TODO Auto-generated method stub
-        return null;
+        return new WhenScalar((Val) val1, (Val) val2);
     }
 
     public Value coalesceExpression(Value[] val) {
-        // TODO Auto-generated method stub
-        return null;
+        Val[] vals = new Val[val.length];
+        for (int i = 0; i < val.length; i++)
+            vals[i] = (Val) val[i];
+        return new Coalesce(vals);
     }
 
     public Value nullIfExpression(Value val1, Value val2) {
-        // TODO Auto-generated method stub
-        return null;
+        return new NullIf((Val) val1, (Val) val2);
     }
 }
