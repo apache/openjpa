@@ -844,7 +844,7 @@ public class FieldMetaData
             }
 
             FieldMetaData field = (meta == null) ? null
-                : meta.getField(_mappedBy);
+                : getMappedByField(meta, _mappedBy);
             if (field == null)
                 throw new MetaDataException(_loc.get("no-mapped-by", this,
                     _mappedBy));
@@ -856,6 +856,25 @@ public class FieldMetaData
         return _mappedByMeta;
     }
 
+    public FieldMetaData getMappedByField(ClassMetaData meta, String mappedBy) {
+        FieldMetaData field = meta.getField(mappedBy);
+        if (field != null)
+            return field;
+        int dotIdx = mappedBy.indexOf("."); 
+        if ( dotIdx == -1)
+            return null;
+        String fieldName = mappedBy.substring(0, dotIdx);
+        FieldMetaData field1 = meta.getField(fieldName);
+        if (field1 == null)
+            return null;
+        ClassMetaData meta1 = field1.getEmbeddedMetaData();
+        if (meta1 == null)
+            return null;
+        String mappedBy1 = mappedBy.substring(dotIdx + 1);
+        return getMappedByField(meta1, mappedBy1);
+    }
+    
+    
     /**
      * Logical inverse field.
      */

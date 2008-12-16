@@ -23,6 +23,7 @@ import org.apache.openjpa.jdbc.meta.Discriminator;
 import org.apache.openjpa.jdbc.meta.FieldMapping;
 import org.apache.openjpa.jdbc.meta.MappingDefaultsImpl;
 import org.apache.openjpa.jdbc.meta.ValueMapping;
+import org.apache.openjpa.jdbc.meta.ValueMappingImpl;
 import org.apache.openjpa.jdbc.meta.Version;
 import org.apache.openjpa.jdbc.meta.strats.FlatClassStrategy;
 import org.apache.openjpa.jdbc.meta.strats.MultiColumnVersionStrategy;
@@ -36,6 +37,7 @@ import org.apache.openjpa.jdbc.schema.Column;
 import org.apache.openjpa.jdbc.schema.Schema;
 import org.apache.openjpa.jdbc.schema.Table;
 import org.apache.openjpa.jdbc.sql.JoinSyntaxes;
+import org.apache.openjpa.meta.FieldMetaData;
 import org.apache.openjpa.meta.JavaTypes;
 import serp.util.Strings;
 
@@ -130,7 +132,10 @@ public class PersistenceMappingDefaults
     @Override
     public String getTableName(FieldMapping fm, Schema schema) {
         // base name is table of defining type + '_'
-        String name = fm.getDefiningMapping().getTable().getName() + "_";
+        ClassMapping clm = fm.getDefiningMapping();
+        Table table = getTable(clm);
+        
+        String name = table.getName() + "_";
 
         // if this is an assocation table, spec says to suffix with table of
         // the related type. spec doesn't cover other cases; we're going to
@@ -143,6 +148,19 @@ public class PersistenceMappingDefaults
         else
             name += fm.getName();
         return name.replace('$', '_');
+    }
+    
+    private Table getTable(ClassMapping clm) {
+        Table table = clm.getTable();
+        if (table == null) {
+            ValueMappingImpl value = (ValueMappingImpl)clm.getEmbeddingMetaData();
+            if (value == null)
+                return table;
+            FieldMetaData field = value.getFieldMetaData();
+            clm = (ClassMapping)field.getDefiningMetaData();
+            return getTable(clm);
+        }
+        return table;
     }
 
     @Override

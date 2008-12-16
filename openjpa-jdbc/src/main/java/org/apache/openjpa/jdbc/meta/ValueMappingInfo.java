@@ -101,11 +101,24 @@ public class ValueMappingInfo
                         target, inverse, pos, cols);
             }
         };
+        Table table = getTable(val);
         return createForeignKey(val, null, getColumns(), def,
-            val.getFieldMapping().getTable(), val.getFieldMapping().
+            table, val.getFieldMapping().
             getDefiningMapping(), rel, inversable, adapt);
     }
 
+    private Table getTable(ValueMapping val) {
+        FieldMapping field = val.getFieldMapping();
+        Table table = field.getTable();
+        if (table == null) {
+            ClassMapping cls = (ClassMapping)field.getDefiningMetaData();
+            ValueMapping val1 = (ValueMapping)cls.getEmbeddingMetaData();
+            if (val1 != null)
+                return getTable(val1);
+        }
+        return table;
+    }
+    
     /**
      * Return the join from the related type to this value.
      */

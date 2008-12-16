@@ -35,7 +35,6 @@ import org.apache.openjpa.lib.xml.Commentable;
 import org.apache.openjpa.meta.JavaTypes;
 import org.apache.openjpa.meta.MetaDataContext;
 import org.apache.openjpa.util.MetaDataException;
-import org.apache.openjpa.util.UserException;
 
 /**
  * Information about the mapping from a field to the schema, in raw form.
@@ -180,11 +179,20 @@ public class FieldMappingInfo
                         pos, cols);
             }
         };
-        ClassMapping cls = field.getDefiningMapping();
+        ClassMapping cls = getDefiningMapping(field);
         return createForeignKey(field, "join", cols, def, table, cls, cls,
             false, adapt);
     }
-
+    
+    private ClassMapping getDefiningMapping(FieldMapping field) {
+        ClassMapping clm = field.getDefiningMapping();
+        ValueMappingImpl value = (ValueMappingImpl)clm.getEmbeddingMetaData();
+        if (value == null)
+            return clm;
+        FieldMapping field1 = value.getFieldMapping();
+        return getDefiningMapping(field1);
+    }
+    
     /**
      * Unique constraint on the field join.
      */
