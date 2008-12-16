@@ -21,6 +21,8 @@ package org.apache.openjpa.persistence.criteria;
 import java.util.List;
 
 import javax.persistence.Entity;
+import javax.persistence.OneToMany;
+import javax.persistence.OneToOne;
 import javax.persistence.OrderBy;
 import javax.persistence.Table;
 
@@ -28,8 +30,10 @@ import javax.persistence.Table;
 @Table(name="CR_CREDITCARD")
 
 public class CreditCard {
-	private String holdr;
+	@OneToOne
+	private Employee holder;
 	
+	@OneToMany
 	@OrderBy
-	private List<String> transactionHistory;
+	private List<Transaction> transactionHistory;
 }

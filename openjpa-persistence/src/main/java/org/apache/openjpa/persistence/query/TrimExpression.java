@@ -29,27 +29,35 @@ import javax.persistence.TrimSpec;
  */
 public class TrimExpression extends UnaryOperatorExpression {
 	private final Expression _trimChar;
-	private final TrimSpec _spec;
-	private static final String BLANK = "' '";
+	private final TrimSpec _trimSpec;
+	private static final String DEFAULT_TRIM_CHAR = "' '";
+	private static final String DEFAULT_TRIM_SPEC = EMPTY;
 	
 	public TrimExpression(Expression op, char ch, TrimSpec spec) {
 		super(op, UnaryFunctionalOperator.TRIM);
 		_trimChar = new ConstantExpression(ch);
-		_spec     = spec;
+		_trimSpec     = spec;
 	}
 	
 	public TrimExpression(Expression op, Expression ch, TrimSpec spec) {
 		super(op, UnaryFunctionalOperator.TRIM);
 		_trimChar = ch;
-		_spec = spec;
+		_trimSpec = spec;
 	}
 	
 	public String asExpression(AliasContext ctx) {
-		String trim = _trimChar == null ? BLANK 
+		String trimChar = _trimChar == null ? DEFAULT_TRIM_CHAR 
 			: ((Visitable)_trimChar).asExpression(ctx);
-		String spec = _spec == null ? "" : _spec.toString();
-		return _op + "(" + spec + " " + trim + " FROM " 
-			+ ((Visitable)_e).asExpression(ctx) + ")";
+		String trimSpec = _trimSpec == null ? DEFAULT_TRIM_SPEC : 
+			_trimSpec.toString();
+		return _op.toString()
+		       + OPEN_BRACE
+		       + trimSpec
+			   + SPACE
+			   + trimChar
+			   + " FROM "
+			   + ((Visitable)_e).asExpression(ctx)
+			   + CLOSE_BRACE;
 	}
 
 }

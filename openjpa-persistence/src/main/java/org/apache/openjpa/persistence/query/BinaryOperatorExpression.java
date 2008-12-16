@@ -51,13 +51,15 @@ public class BinaryOperatorExpression extends ExpressionImpl {
 	}
 	
 	public String asExpression(AliasContext ctx) {
-		return ((Visitable)_e1).asExpression(ctx) + _op 
-		     + ((Visitable)_e2).asExpression(ctx);
+		return ((Visitable)_e1).asExpression(ctx)
+			+ _op 
+		    + ((Visitable)_e2).asExpression(ctx);
 	}
 	
 	public String asProjection(AliasContext ctx) {
-		return ((Visitable)_e1).asProjection(ctx) + _op 
-		     + ((Visitable)_e2).asProjection(ctx) 
+		return ((Visitable)_e1).asProjection(ctx)
+			 + _op 
+		     + (((Visitable)_e2).asProjection(ctx))
 		     + (ctx.hasAlias(this) ? " as " + ctx.getAlias(this) : "");
 
 	}

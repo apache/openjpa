@@ -67,6 +67,7 @@ import org.apache.openjpa.meta.ClassMetaData;
 import org.apache.openjpa.meta.FieldMetaData;
 import org.apache.openjpa.meta.QueryMetaData;
 import org.apache.openjpa.meta.SequenceMetaData;
+import org.apache.openjpa.persistence.query.OpenJPAQueryBuilder;
 import org.apache.openjpa.persistence.query.QueryBuilderImpl;
 import org.apache.openjpa.util.Exceptions;
 import org.apache.openjpa.util.ImplHelper;
@@ -1414,7 +1415,7 @@ public class EntityManagerImpl
             "JPA 2.0 - Method not yet implemented");
     }
 
-    public QueryBuilderImpl getQueryBuilder() {
+    public OpenJPAQueryBuilder getQueryBuilder() {
         return new QueryBuilderImpl(_emf);
     }
 

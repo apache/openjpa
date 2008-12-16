@@ -36,13 +36,11 @@ public class FetchPath extends AbstractDomainObject
 	
 	@Override
 	public String asJoinable(AliasContext ctx) {
-		StringBuffer tmp = new StringBuffer(getOperator().toString());
-		tmp.append(getParent().asProjection(ctx))
-		   .append(NAVIGATION)
-		   .append(getLastSegment())
-		   .append(" ");
-		
-		return tmp.toString();
+		return getOperator() 
+		     + getParent().asProjection(ctx) 
+		     + NAVIGATION 
+		     + getLastSegment() 
+		     + SPACE;
 	}
 
 }

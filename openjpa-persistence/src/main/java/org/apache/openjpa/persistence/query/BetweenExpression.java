@@ -32,8 +32,4 @@ public class BetweenExpression extends BinaryExpressionPredicate {
 		super(arg1, BinaryConditionalOperator.BETWEEN, 
 			BinaryConditionalOperator.BETWEEN_NOT, arg2);
 	}
-	
-//	public String toJPQL(AliasContext ctx) {
-//		return super.toJPQL(ctx) + " AND " + ((ExpressionImpl)arg3).toJPQL(ctx);
-//	}
 }

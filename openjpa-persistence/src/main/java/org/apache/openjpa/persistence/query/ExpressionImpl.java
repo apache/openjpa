@@ -45,11 +45,14 @@ abstract class ExpressionImpl extends AbstractVisitable
 	}
 
 	public Expression concat(String... str) {
-		return new ConcatExpression(new ArrayExpression(str));
+		ConstantExpression[] exprs = new ConstantExpression[str.length];
+		for (int i = 0; i < str.length; i++)
+			exprs[i] = new ConstantExpression(str[i]);
+		return new ConcatExpression(new VarArgsExpression(exprs));
 	}
 
-	public Expression concat(Expression... str) {
-		return new ConcatExpression(new ArrayExpression(str));
+	public Expression concat(Expression... exprs) {
+		return new ConcatExpression(new VarArgsExpression(exprs));
 	}
 
 	public Expression dividedBy(Number num) {

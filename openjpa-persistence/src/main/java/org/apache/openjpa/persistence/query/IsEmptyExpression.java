@@ -11,6 +11,6 @@ public class IsEmptyExpression extends UnaryExpressionPredicate {
 	
 	@Override
 	public String asExpression(AliasContext ctx) {
-		return ((Visitable)_e).asExpression(ctx) + " " + _op;
+		return ((Visitable)_e).asExpression(ctx) + SPACE + _op;
 	}
 }

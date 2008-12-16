@@ -26,7 +26,7 @@ import javax.persistence.CaseExpression;
 import javax.persistence.Expression;
 import javax.persistence.Predicate;
 
-public class CaseExpressionImpl implements CaseExpression {
+public class CaseExpressionImpl implements CaseExpression, Visitable {
 	private LinkedList<WhenClause> _whens = new LinkedList<WhenClause>();
 	private final Object _caseOperand;
 	
@@ -43,27 +43,27 @@ public class CaseExpressionImpl implements CaseExpression {
 	}
 
 	public Expression elseCase(String arg) {
-		return new ElseExpression(this, arg);
+		return new ElseExpression(this, new ConstantExpression(arg));
 	}
 
 	public Expression elseCase(Number arg) {
-		return new ElseExpression(this, arg);
+		return new ElseExpression(this, new ConstantExpression(arg));
 	}
 
 	public Expression elseCase(Date arg) {
-		return new ElseExpression(this, arg);
+		return new ElseExpression(this, new ConstantExpression(arg));
 	}
 
 	public Expression elseCase(Calendar arg) {
-		return new ElseExpression(this, arg);
+		return new ElseExpression(this, new ConstantExpression(arg));
 	}
 
 	public Expression elseCase(Class arg) {
-		return new ElseExpression(this, arg);
+		return new ElseExpression(this, new ConstantExpression(arg));
 	}
 
 	public Expression elseCase(Enum<?> arg) {
-		return new ElseExpression(this, arg);
+		return new ElseExpression(this, new ConstantExpression(arg));
 	}
 
 	public CaseExpression then(Expression then) {
@@ -176,7 +176,7 @@ public class CaseExpressionImpl implements CaseExpression {
 			throw new IllegalStateException("then() can not be called now");
 	}
 	
-	public String toJPQL(AliasContext ctx) {
+	public String asExpression(AliasContext ctx) {
 		StringBuffer tmp = new StringBuffer("CASE ");
 		if (_caseOperand != null) {
 			tmp.append(toJPQL(ctx, _caseOperand));
@@ -186,6 +186,19 @@ public class CaseExpressionImpl implements CaseExpression {
 		}
 		return tmp.toString();
 	}
+	
+	public String asProjection(AliasContext ctx) {
+		return asExpression(ctx);
+	}
+	
+	public String asJoinable(AliasContext ctx) {
+		throw new UnsupportedOperationException();
+	}
+	
+	public String getAliasHint(AliasContext ctx) {
+		throw new UnsupportedOperationException();
+	}
+	
 	
 
 	String toJPQL(AliasContext ctx, Object o) {

@@ -18,6 +18,8 @@
  */
 package org.apache.openjpa.persistence.query;
 
+import javax.persistence.Expression;
+
 /**
  * Else clause in a Case Statement.
  * 
@@ -26,24 +28,24 @@ package org.apache.openjpa.persistence.query;
  */
 public class ElseExpression extends ExpressionImpl {
 	private final CaseExpressionImpl _caseClause;
-	private final Object _elseClause;
+	private final Expression _elseClause;
 	
-	public ElseExpression(CaseExpressionImpl owner, Object op) {
+	public ElseExpression(CaseExpressionImpl owner, Expression op) {
 		_caseClause = owner;
 		_elseClause = op;
 	}
 	
 	@Override
 	public String asExpression(AliasContext ctx) {
-		return _caseClause.toJPQL(ctx) 
-		    + " ELSE " + JPQLHelper.toJPQL(ctx, _elseClause) 
-		    + " END ";
+		return ((Visitable)_caseClause).asExpression(ctx) 
+		    + " ELSE " + ((Visitable)_elseClause).asExpression(ctx) 
+		    + " END";
 	}
 	
 	@Override
 	public String asProjection(AliasContext ctx) {
-		return _caseClause.toJPQL(ctx) 
-		     + " ELSE " + JPQLHelper.toJPQL(ctx, _elseClause) 
-		     + " END ";
+		return ((Visitable)_caseClause).asProjection(ctx) 
+	    + " ELSE " + ((Visitable)_elseClause).asProjection(ctx) 
+	    + " END";
 	}
 }

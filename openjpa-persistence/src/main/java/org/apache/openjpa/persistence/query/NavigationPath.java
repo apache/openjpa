@@ -62,11 +62,11 @@ class NavigationPath extends AbstractDomainObject implements PathExpression {
 	 */
 	@Override
 	public String asJoinable(AliasContext ctx) {
-		return asProjection(ctx) + " " + ctx.getAlias(this);
+		return asProjection(ctx) + SPACE + ctx.getAlias(this);
 	}
 	
 	public String toString() {
-		return getParent().toString()+"."+getLastSegment();
+		return getParent().toString()+ NAVIGATION +getLastSegment();
 	}
 
 }

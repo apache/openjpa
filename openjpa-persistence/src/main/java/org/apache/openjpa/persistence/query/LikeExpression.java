@@ -48,7 +48,7 @@ public class LikeExpression extends BinaryExpressionPredicate {
 	@Override
 	public String asExpression(AliasContext ctx) {
 		return super.asExpression(ctx) 
-		    + (_escaped ? "ESCAPE " + JPQLHelper.toJPQL(ctx, _echar) : "");
+		    + (_escaped ? "ESCAPE " + JPQLHelper.toJPQL(ctx, _echar) : EMPTY);
 	}
 
 }

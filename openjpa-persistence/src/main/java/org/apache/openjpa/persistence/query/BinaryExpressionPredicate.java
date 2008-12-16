@@ -33,6 +33,7 @@ class BinaryExpressionPredicate extends AbstractVisitable
 	protected final Expression _e2;
 	protected final BinaryConditionalOperator   _op;
 	private final BinaryConditionalOperator   _nop;
+	private static final StringBuffer SPACE = new StringBuffer(" ");
 	
 	BinaryExpressionPredicate(Expression e1, BinaryConditionalOperator op, 
 		BinaryConditionalOperator nop, Expression e2) {
@@ -70,7 +71,7 @@ class BinaryExpressionPredicate extends AbstractVisitable
 
 	public String asExpression(AliasContext ctx) {
 		return ((Visitable)_e1).asExpression(ctx) 
-		     + " " + _op + " "
+		     + SPACE + _op + SPACE
 		     + ((Visitable)_e2).asExpression(ctx);
 	}
 }

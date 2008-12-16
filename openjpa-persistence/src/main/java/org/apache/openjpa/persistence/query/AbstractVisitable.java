@@ -26,7 +26,12 @@ package org.apache.openjpa.persistence.query;
  *
  */
 abstract class AbstractVisitable implements Visitable {
-
+	public static final String SPACE = " ";
+	public static final String OPEN_BRACE = "(";
+	public static final String CLOSE_BRACE = ")";
+	public static final String COMMA = ",";
+	public static final String EMPTY = "";
+	
 	public String asExpression(AliasContext ctx) {
 		throw new UnsupportedOperationException(this.getClass().getName());
 	}

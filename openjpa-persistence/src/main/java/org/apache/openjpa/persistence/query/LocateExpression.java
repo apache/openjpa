@@ -53,10 +53,14 @@ public class LocateExpression extends BinaryOperatorExpression  {
 	}
 	
 	public String asExpression(AliasContext ctx) {
-		return _op + "(" + ((Visitable)_e1).asExpression(ctx) + "," 
-		    + ((Visitable)_e2).asExpression(ctx) 
-		    + (_start == null ? "" : "," + ((Visitable)_start).asExpression(ctx))
-		    + ")";
+		String start = _start == null ? EMPTY : COMMA + ((Visitable)_start).asExpression(ctx);
+		return new StringBuffer(_op.toString())
+		    .append(OPEN_BRACE)
+		    .append(((Visitable)_e1).asExpression(ctx))
+		    .append(COMMA) 
+		    .append(((Visitable)_e2).asExpression(ctx)) 
+		    .append(start)
+		    .append(CLOSE_BRACE).toString();
 	}
 
 }

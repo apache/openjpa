@@ -20,7 +20,7 @@ package org.apache.openjpa.persistence.query;
 
 import javax.persistence.DomainObject;
 import javax.persistence.PathExpression;
-import javax.persistence.QueryBuilder;
+import javax.persistence.Query;
 import javax.persistence.QueryDefinition;
 
 import org.apache.openjpa.meta.MetaDataRepository;
@@ -33,7 +33,7 @@ import org.apache.openjpa.persistence.OpenJPAEntityManagerFactorySPI;
  * @author Pinaki Poddar
  *
  */
-public class QueryBuilderImpl implements QueryBuilder {
+public class QueryBuilderImpl implements OpenJPAQueryBuilder {
 	private final OpenJPAEntityManagerFactorySPI _emf;
 	
 	public QueryBuilderImpl(OpenJPAEntityManagerFactorySPI emf) {
@@ -63,10 +63,19 @@ public class QueryBuilderImpl implements QueryBuilder {
 	}
 	
 	public String toJPQL(QueryDefinition query) {
-		MetaDataRepository repos = null;//_emf.getConfiguration().getMetaDataRepositoryInstance()
+		MetaDataRepository repos = _emf.getConfiguration()
+			.getMetaDataRepositoryInstance();
 		AliasContext ctx = new AliasContext(repos);
 		if (query instanceof AbstractDomainObject)
 			return ((AbstractDomainObject)query).getOwner().asExpression(ctx);
 		return ((QueryDefinitionImpl)query).asExpression(ctx);
+	}
+	
+	public QueryDefinition createQueryDefinition(String jpql) {
+		throw new UnsupportedOperationException();
+	}
+	
+	public QueryDefinition createQueryDefinition(Query jpql) {
+		throw new UnsupportedOperationException();		
 	}
 }

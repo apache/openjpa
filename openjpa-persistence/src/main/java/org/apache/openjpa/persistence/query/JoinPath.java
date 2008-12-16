@@ -61,14 +61,18 @@ public class JoinPath extends AbstractDomainObject implements DomainObject {
 	public String asExpression(AliasContext ctx) {
 		if (ctx.hasAlias(this))
 			return ctx.getAlias(this);
-		return getParent().asExpression(ctx) + NAVIGATION + getLastSegment();
+		return getParent().asExpression(ctx)
+		       + NAVIGATION
+		       + getLastSegment();
 	}
 	
 	@Override
 	public String asProjection(AliasContext ctx) {
 		if (ctx.hasAlias(this))
 			return ctx.getAlias(this);
-		return getParent().asProjection(ctx) + NAVIGATION + getLastSegment();
+		return getParent().asProjection(ctx)
+		       + NAVIGATION
+		       + getLastSegment();
 	}
 	
 	public String toString() {

@@ -39,5 +39,8 @@ public class Employee {
 	private Employee spouse;
 	@ManyToOne
 	private Manager manager;
+	
+	@OneToOne
+	FrequentFlierPlan frequentFlierPlan;
 
 }

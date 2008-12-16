@@ -26,7 +26,7 @@ package org.apache.openjpa.persistence.query;
  *
  */
 public class ConcatExpression extends UnaryOperatorExpression {
-	public ConcatExpression(ArrayExpression op) {
+	public ConcatExpression(VarArgsExpression op) {
 		super(op, UnaryFunctionalOperator.CONCAT);
 	}
 }

@@ -46,6 +46,7 @@ import org.apache.openjpa.lib.conf.ProductDerivations;
 import org.apache.openjpa.lib.conf.Value;
 import org.apache.openjpa.lib.util.Localizer;
 import org.apache.openjpa.lib.util.Closeable;
+import org.apache.openjpa.persistence.query.OpenJPAQueryBuilder;
 import org.apache.openjpa.persistence.query.QueryBuilderImpl;
 import org.apache.openjpa.util.OpenJPAException;
 import serp.util.Strings;
@@ -342,7 +343,7 @@ public class EntityManagerFactoryImpl
             "JPA 2.0 - Method not yet implemented");
     }
 
-    public QueryBuilder getQueryBuilder() {
+    public OpenJPAQueryBuilder getQueryBuilder() {
     	return new QueryBuilderImpl(this);
     }
 

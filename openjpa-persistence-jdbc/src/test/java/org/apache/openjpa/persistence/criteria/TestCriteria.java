@@ -20,30 +20,32 @@
 package org.apache.openjpa.persistence.criteria;
 
 import java.util.List;
+import java.util.Map;
+import java.util.TreeMap;
 
-import javax.persistence.CaseExpression;
 import javax.persistence.DomainObject;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.Expression;
 import javax.persistence.Query;
-import javax.persistence.QueryBuilder;
 import javax.persistence.QueryDefinition;
 import javax.persistence.SelectItem;
 
-import org.apache.openjpa.kernel.jpql.ParseException;
-import org.apache.openjpa.persistence.query.AbstractDomainObject;
+import org.apache.openjpa.persistence.query.OpenJPAQueryBuilder;
 import org.apache.openjpa.persistence.query.QueryBuilderImpl;
-import org.apache.openjpa.persistence.query.QueryDefinitionImpl;
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
 
 
 /**
- * Tests QueryDefinition and comparing the resultant string
- * with an equivalent JPQL.
+ * Tests QueryDefinition via a set of example use cases from Criteria API 
+ * Section of Java Persistence API Version 2.0 [1].
  * 
- * The examples are taken from Criteria API Section of Java Persistence API 
- * Version 2.0 [1].
+ * For each use case, a corresponding JPQL String is specified. The dynamically
+ * constructed QueryDefinition and JPQL are both executed and their results
+ * are compared for verification. As some of the use cases employ few 
+ * yet unimplemented JPQL 2.0 constructs such as KEY() or INDEX() or CASE, 
+ * when such queries fail to execute, the JPQL String is literally compared
+ * to the stringified QueryDefinition.
  * 
  * [1] <A href="http://jcp.org/aboutJava/communityprocess/pr/jsr317/index.html">
  * JPA API Specification Version 2.0</A>
@@ -52,7 +54,7 @@ import org.apache.openjpa.persistence.test.SingleEMFTestCase;
  *
  */
 public class TestCriteria extends SingleEMFTestCase {
-	protected QueryBuilderImpl qb; 
+	protected OpenJPAQueryBuilder qb; 
 	private static EntityManagerFactory emf = null;
 	protected StringComparison comparator = new StringComparison();
 	
@@ -69,6 +71,7 @@ public class TestCriteria extends SingleEMFTestCase {
 				Department.class, 
 				Employee.class, 
 				Exempt.class, 
+				FrequentFlierPlan.class,
 				Item.class,
 				LineItem.class,
 				Manager.class, 
@@ -77,7 +80,9 @@ public class TestCriteria extends SingleEMFTestCase {
 				Phone.class,
 				Photo.class,
 				Student.class, 
-				VideoStore.class);
+				Transaction.class,
+				VideoStore.class,
+				"openjpa.Log","SQL=TRACE, Query=TRACE");
 			emf = super.emf;
 		} 
 		qb = (QueryBuilderImpl)emf.getQueryBuilder();
@@ -139,7 +144,7 @@ public class TestCriteria extends SingleEMFTestCase {
 		String jpql = "select i.name, VALUE(p)"
 			        + " from Item i join i.photos p"
 			        + " where KEY(p) like 'egret'";
-		compare(jpql, qdef, "VALUE(p) not supported");
+		compare(jpql, qdef);
 	}
 	
 	public void testLiteral() {
@@ -163,7 +168,7 @@ public class TestCriteria extends SingleEMFTestCase {
 		String jpql = "select TYPE(e)" +
 		              " from Employee e" +
 		              " where TYPE(e) <> Exempt";
-		compare(jpql, e, "Type() not supported");
+		compare(jpql, e);
 	}
 
 	public void testIndex() {
@@ -175,7 +180,7 @@ public class TestCriteria extends SingleEMFTestCase {
 		String jpql = "select s.name" +
 		              " from Course c join c.studentWaitList s" +
 		              " where c.name = 'Calculus' and INDEX(s) = 0";
-		compare(jpql, c, "Index() not supported");
+		compare(jpql, c);
 	}
 	
 	public void testSum() {
@@ -254,7 +259,7 @@ public class TestCriteria extends SingleEMFTestCase {
 		              " where c.holder.name = 'John Doe' AND INDEX(t) " +
 		              " BETWEEN 0 AND 9";
 		
-		compare(jpql, c, "Index() not supported");
+		compare(jpql, c);
 	}
 	
 	public void testIsEmpty() {
@@ -288,10 +293,9 @@ public class TestCriteria extends SingleEMFTestCase {
 		DomainObject customer = q.addRoot(Customer.class);
 		DomainObject order = customer.join("orders");
 		q.where(order.get("count").greaterThan(100))
-		.select(q.newInstance(Customer.class,
-		customer.get("id"),
-		customer.get("status"),
-		order.get("count")));
+		 .select(q.newInstance(Customer.class, customer.get("id"),
+		                                       customer.get("status"),
+		                                       order.get("count")));
 		
 		
 		String jpql = "SELECT NEW org.apache.openjpa.persistence.criteria.Customer" 
@@ -302,30 +306,27 @@ public class TestCriteria extends SingleEMFTestCase {
 	}
 	
 	public void testKeyValueOperatorPath() {
-	QueryDefinition q = qb.createQueryDefinition();
-	DomainObject v = q.addRoot(VideoStore.class);
-	DomainObject i = v.join("videoInventory");
-	q.where(v.get("location").get("zipCode").equal("94301")
-	.and(i.value().greaterThan(0)));
-	q.select(v.get("location").get("street"),
-	i.key().get("title"),
-	i.value());
-	
-	String jpql = "SELECT v.location.street, KEY(v2).title, VALUE(v2)" 
-				+ " FROM VideoStore v JOIN v.videoInventory v2"
-				+ " WHERE v.location.zipCode = '94301' AND VALUE(v2) > 0";
-	
-	compare(jpql, q, "KEY() and/or VALUE() not supported");
+		QueryDefinition q = qb.createQueryDefinition();
+		DomainObject v = q.addRoot(VideoStore.class);
+		DomainObject i = v.join("videoInventory");
+		q.where(v.get("location").get("zipCode").equal("94301")
+		 .and(i.value().greaterThan(0)));
+		q.select(v.get("location").get("street"), i.key().get("title"), i.value());
+		
+		String jpql = "SELECT v.location.street, KEY(v2).title, VALUE(v2)" 
+					+ " FROM VideoStore v JOIN v.videoInventory v2"
+					+ " WHERE v.location.zipCode = '94301' AND VALUE(v2) > 0";
+		
+		compare(jpql, q);
 	}
 	
 	public void testGroupByHaving() {
 		QueryDefinition q = qb.createQueryDefinition();
 		DomainObject customer = q.addRoot(Customer.class);
-		q.select(customer.get("status"),
-		customer.get("filledOrderCount").avg(),
-		customer.count())
-		.groupBy(customer.get("status"))
-		.having(customer.get("status").in(1, 2));
+		q.select(customer.get("status"), customer.get("filledOrderCount").avg(),
+		         customer.count())
+		 .groupBy(customer.get("status"))
+		 .having(customer.get("status").in(1, 2));
 		
 		String jpql = "SELECT c.status, AVG(c.filledOrderCount), COUNT(c)"
 					+ " FROM Customer c"
@@ -338,10 +339,9 @@ public class TestCriteria extends SingleEMFTestCase {
 	public void testGroupByHaving2() {
 		QueryDefinition q = qb.createQueryDefinition();
 		DomainObject customer = q.addRoot(Customer.class);
-		q.select(customer.get("country"),
-		customer.count())
-		.groupBy(customer.get("country"))
-		.having(customer.count().greaterThan(30));
+		q.select(customer.get("country"), customer.count())
+		 .groupBy(customer.get("country"))
+		 .having(customer.count().greaterThan(30));
 		
 		String jpql = "SELECT c.country, COUNT(c)" 
 					+ " FROM Customer c"
@@ -437,7 +437,7 @@ public class TestCriteria extends SingleEMFTestCase {
 			+ " FROM Employee e"
 			+ " WHERE TYPE(e) IN (Exempt, Contractor)";
 		
-		compare(jpql, q, "Type() not supported");
+		compare(jpql, q);
 	}
 	
 	public void testStringList() {
@@ -456,16 +456,16 @@ public class TestCriteria extends SingleEMFTestCase {
 		Expression c = 
 		e.generalCase().when(f.get("annualMiles").greaterThan(50000)).then("Platinum")
 		               .when(f.get("annualMiles").greaterThan(25000)).then("Gold")
-		               .elseCase("");
+		               .elseCase("XYZ");
 		e.select(e.get("name"), f.get("name"), e.concat(c,e.literal("Frequent Flyer")));
 		
 		String jpql = "SELECT e.name, f.name, CONCAT(" 
 			+ " CASE WHEN f.annualMiles > 50000 THEN 'Platinum'" 
 			+ " WHEN f.annualMiles > 25000 THEN 'Gold'" 
-			+ " ELSE '' END, 'Frequent Flyer')" 
+			+ " ELSE 'XYZ' END, 'Frequent Flyer')" 
 			+ " FROM Employee e JOIN e.frequentFlierPlan f";
 			
-		compare(jpql, e, "Case not supported");
+		compare(jpql, e);
 	}
 	
 	public void testCorrelatedSubquerySpecialCase1() {
@@ -478,7 +478,7 @@ public class TestCriteria extends SingleEMFTestCase {
 			        + " where 10000 < ALL "
 			        + " (select a.balance from o.customer c join o.customer.accounts a)";
 		
-		compare(jpql, o, "SubQuery generates invalid SQL on Derby");
+		compare(jpql, o);
 	}
 	
 	public void testCorrelatedSubquerySpecialCase2() {
@@ -492,7 +492,7 @@ public class TestCriteria extends SingleEMFTestCase {
 			        + " where 10000 < ALL "
 			        + " (select a.balance from c.accounts a)";
 		
-		compare(jpql, o, "SubQuery generates invalid SQL on Derby");
+		compare(jpql, o);
 	}
 	
 	public void testRecursiveDefinitionIsNotAllowed() {
@@ -516,7 +516,7 @@ public class TestCriteria extends SingleEMFTestCase {
 	 * QueryDefinition. 
 	 */
 	void compare(String jpql, QueryDefinition q) {
-		compare(jpql, q, null, (Object[])null);
+		compare(jpql, q, (Object[])null);
 	}
 	
 	/**
@@ -524,15 +524,8 @@ public class TestCriteria extends SingleEMFTestCase {
 	 * If skip is null then execute both queries against the database, otherwise
 	 * compare them literally. 
 	 */
-	void compare(String jpql, QueryDefinition q, String skip, Object...p) {
-		boolean execute = (skip == null);
-		if (execute) {
-			executeActually(jpql, q, p);
-		} else {
-			System.err.println("***WARN: " + this.getName()  
-				+ ": skips executing ["+ jpql + "] because " + skip);
-			compareLiterally(jpql, q);
-		}
+	void compare(String jpql, QueryDefinition q, Object...p) {
+		executeActually(jpql, q, p);
 	}
 	
 	/**
@@ -582,11 +575,12 @@ public class TestCriteria extends SingleEMFTestCase {
 					+ "JPQL [" + jpql + "]\r\n"
 					+ "error : " + jpqlError.getMessage());
 		} else {
-			fail("Both JPQL and QueryDefinition failed to execute.\r\n"
-			  + "JPQL " + jpql + "\r\n"
-			  + "error :" + jpqlError.getMessage() + "\r\n"
-			  + "Criteria " + qb.toJPQL(q) + "\r\n"
-			  + "error : " + criteriaError.getMessage());
+			System.err.println("WARN: Both JPQL and QueryDefinition are invalid"
+					  + "\r\nJPQL " + jpql + "\r\n"
+					  + "error :" + jpqlError.getMessage() + "\r\n"
+					  + "Criteria " + qb.toJPQL(q) + "\r\n"
+					  + "error : " + criteriaError.getMessage());
+			compareLiterally(jpql, q);
 		}
 	}
 	    void setParameters(Query q, Object...p) {

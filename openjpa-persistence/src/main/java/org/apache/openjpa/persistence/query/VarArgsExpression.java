@@ -18,22 +18,39 @@
  */
 package org.apache.openjpa.persistence.query;
 
+import java.util.Arrays;
+
 import javax.persistence.Expression;
 
 /**
- * Denotes a range used by e1 BETWEEN x AND y operation.
+ * A expression that holds an array of Expressions. Used as operand for 
+ * CONCAT(e1,e2,e3,...), for example. Different than {@link ArrayExpression} 
+ * which represents a single expression with array of values. 
  * 
  * @author Pinaki Poddar
  *
  */
-public class RangeExpression extends BinaryOperatorExpression {
-	public RangeExpression(Expression e1, Expression e2) {
-		super(e1, BinaryFunctionalOperator.RANGE, e2);
-	}
+public class VarArgsExpression extends ExpressionImpl {
+	private final Expression[] _values;
 	
+	public VarArgsExpression(Expression[] values) {
+		_values = values;
+	}
+
 	@Override
 	public String asExpression(AliasContext ctx) {
-		return ((Visitable)_e1).asExpression(ctx) 
-		     + " AND " + ((Visitable)_e2).asExpression(ctx);
+		StringBuffer tmp = new StringBuffer();
+		for (int i = 0; i < _values.length; i++) {
+			Visitable v = (Visitable)_values[i];
+			tmp.append(v.asExpression(ctx))
+			   .append(i == _values.length-1 ? "" : ", ");
+		}
+		return tmp.toString();
 	}
+
+	@Override
+	public String asProjection(AliasContext ctx) {
+		return asExpression(ctx);
+	}
+
 }

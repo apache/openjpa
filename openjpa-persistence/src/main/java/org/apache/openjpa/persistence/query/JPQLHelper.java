@@ -25,7 +25,7 @@ package org.apache.openjpa.persistence.query;
  *
  */
 public class JPQLHelper {
-	private static final String SINGLE_QUOTE = "'";
+	private static final StringBuffer SINGLE_QUOTE = new StringBuffer("'");
 	
 	static String toJPQL(AliasContext ctx, Object o) {
 		if (o == null)

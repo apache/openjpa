@@ -18,22 +18,30 @@
  */
 package org.apache.openjpa.persistence.query;
 
-import javax.persistence.Expression;
+import javax.persistence.Query;
+import javax.persistence.QueryBuilder;
+import javax.persistence.QueryDefinition;
 
 /**
- * Denotes a range used by e1 BETWEEN x AND y operation.
- * 
+ * An extension of standard JPA Specification interface to add equivalence of 
+ * QueryDefinition and Query and JPQL String.
+ *  
  * @author Pinaki Poddar
  *
  */
-public class RangeExpression extends BinaryOperatorExpression {
-	public RangeExpression(Expression e1, Expression e2) {
-		super(e1, BinaryFunctionalOperator.RANGE, e2);
-	}
+public interface OpenJPAQueryBuilder extends QueryBuilder {
+	/**
+	 * Create a QueryDefinition from the given JPQL String.
+	 */
+	public QueryDefinition createQueryDefinition(String jpql);
 	
-	@Override
-	public String asExpression(AliasContext ctx) {
-		return ((Visitable)_e1).asExpression(ctx) 
-		     + " AND " + ((Visitable)_e2).asExpression(ctx);
-	}
+	/**
+	 * Create a QueryDefinition from the given OpenJPA Query instance.
+	 */
+	public QueryDefinition createQueryDefinition(Query jpql);
+	
+	/**
+	 * Gets equivalent JPQL String for the given QueryDefinition.
+	 */
+	public String toJPQL(QueryDefinition qdef);
 }
