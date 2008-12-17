@@ -56,6 +56,7 @@ import org.apache.openjpa.kernel.ExpressionStoreQuery;
 import org.apache.openjpa.kernel.Filters;
 import org.apache.openjpa.kernel.OpenJPAStateManager;
 import org.apache.openjpa.kernel.OrderingMergedResultObjectProvider;
+import org.apache.openjpa.kernel.QueryContext;
 import org.apache.openjpa.kernel.QueryHints;
 import org.apache.openjpa.kernel.exps.Constant;
 import org.apache.openjpa.kernel.exps.ExpressionFactory;
@@ -83,6 +84,7 @@ import serp.util.Numbers;
 public class JDBCStoreQuery 
     extends ExpressionStoreQuery {
 
+	private boolean _isUnique = false;
     private static final Table INVALID = new Table();
 
     // add all standard filter and aggregate listeners to these maps
@@ -110,6 +112,11 @@ public class JDBCStoreQuery
         _store = store;
     }
 
+    @Override
+    public void setContext(QueryContext ctx) {
+    	super.setContext(ctx);
+    	_isUnique = ctx.isUnique();
+    }
     /**
      * Return the store.
      */
@@ -341,7 +348,7 @@ public class JDBCStoreQuery
                 evaluate(ctx, null, null, exps[i], states[i]);
             if (optHint != null)
                sel.setExpectedResultCount(optHint.intValue(), true);
-            else if (this.ctx.isUnique())
+            else if (_isUnique)
                 sel.setExpectedResultCount(1, false);
             for (int j = 0; j < verts.length; j++) {
                 selMappings.add(verts[j]);
@@ -423,7 +430,7 @@ public class JDBCStoreQuery
         long end) {
         if (exps.projections.length > 0 || start >= end)
             return EagerFetchModes.EAGER_NONE;
-        if (end - start == 1 || ctx.isUnique())
+        if (end - start == 1 || _isUnique)
             return EagerFetchModes.EAGER_JOIN;
         return EagerFetchModes.EAGER_PARALLEL;
     }

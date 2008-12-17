@@ -458,8 +458,8 @@ public class QueryImpl
             // no explicit setting; default
             StoreQuery.Executor ex = compileForExecutor();
             if (!ex.isAggregate(_storeQuery))
-                return false;
-            return !ex.hasGrouping(_storeQuery);
+                return _unique = false;
+            return _unique = !ex.hasGrouping(_storeQuery);
         } finally {
             unlock();
         }

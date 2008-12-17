@@ -108,7 +108,7 @@ class DistributedStoreQuery extends JDBCStoreQuery {
         	super(dsq, meta, subclasses, parser, parsed);
         	owner = dsq;
         	threadPool = dsq.getExecutorServiceInstance();
-        	serialMode = serial;
+        	serialMode = false;//serial;
         }
         
 		public void addExecutor(Executor ex) {

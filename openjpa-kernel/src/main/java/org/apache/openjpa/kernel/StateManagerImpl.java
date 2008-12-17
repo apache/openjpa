@@ -34,6 +34,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.TimeZone;
+import java.util.concurrent.locks.ReentrantLock;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.openjpa.conf.OpenJPAConfiguration;
@@ -147,6 +148,8 @@ public class StateManagerImpl
     // information about the owner of this instance, if it is embedded
     private StateManagerImpl _owner = null;
     private int _ownerIndex = -1;
+    
+    private transient ReentrantLock _instanceLock = null;
 
     /**
      * Constructor; supply id, type metadata, and owning persistence manager.
@@ -157,6 +160,8 @@ public class StateManagerImpl
         _meta = meta;
         _broker = broker;
         _single = new SingleFieldManager(this, broker);
+        if (broker.getMultithreaded())
+        	_instanceLock = new ReentrantLock();
 
         if (_meta.getIdentityType() == ClassMetaData.ID_UNKNOWN)
             throw new UserException(_loc.get("meta-unknownid", _meta));
@@ -3184,19 +3189,16 @@ public class StateManagerImpl
      * Lock the state manager if the multithreaded option is set.
      */
     protected void lock() {
-        // use broker-level lock to avoid deadlock situations with the state
-        // manager lock and broker lock being obtained in different orders
-        _broker.lock();
+        if (_instanceLock != null)
+        	_instanceLock.lock();
     }
 
     /**
      * Unlock the state manager.
      */
-	protected void unlock ()
-	{
-		// use broker-level lock to avoid deadlock situations with the state 
-		// manager lock and broker lock being obtained in different orders
-		_broker.unlock ();
+	protected void unlock () {
+        if (_instanceLock != null)
+        	_instanceLock.unlock();
 	}
 
     private void writeObject(ObjectOutputStream oos) throws IOException {
