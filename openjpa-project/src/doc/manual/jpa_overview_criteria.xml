@@ -1,0 +1,156 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+ Licensed to the Apache Software Foundation (ASF) under one
+ or more contributor license agreements.  See the NOTICE file
+ distributed with this work for additional information
+ regarding copyright ownership.  The ASF licenses this file
+ to you under the Apache License, Version 2.0 (the
+ "License"); you may not use this file except in compliance
+ with the License.  You may obtain a copy of the License at
+ 
+ http://www.apache.org/licenses/LICENSE-2.0
+ 
+ Unless required by applicable law or agreed to in writing,
+ software distributed under the License is distributed on an
+ "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ KIND, either express or implied.  See the License for the
+ specific language governing permissions and limitations
+ under the License.   
+-->
+<chapter id="jpa_overview_criteria">
+    <title>
+        JPA Criteria
+    </title>
+    <indexterm zone="jpa_overview_criteria">
+        <primary>
+            JP Criteria
+        </primary>
+        <seealso>
+            JPQL
+        </seealso>
+    </indexterm>
+    <indexterm>
+        <primary>
+            queries
+        </primary>
+        <see>
+            Query
+        </see>
+    </indexterm>
+    <para>
+    JPA 2.0 Specification introduces a new API to define queries dynamically
+    via construction of an object-based 
+    <classname>javax.persistence.QueryDefinition</classname> instance, rather
+    than string-based approach used in JPQL (Java Persistence Query Language).
+    This dynamic query definition capability, referred as Criteria API, is 
+    based on the abstract persistent schema of the entities, their embedded
+    objects and their relationships. The syntax is designed to construct a
+    <emphasis>Query Tree</emphasis> whose nodes represent the semantic query
+    elements such as projections, conditional predicates of WHERE clause or
+    GROUP BY elements etc. 
+    </para>
+    
+    <section>
+    	<title>Constructing a QueryDefinition</title>
+    	<para>
+    	The QueryBuilder interface is the factory for QueryDefinition. A
+    	QueryBuilder is obtained from either the EntityManagerFactory or 
+    	the EntityManager as follows:
+    	<programlisting>
+EntityManager em = ... ; 
+QueryBuilder queryBuilder = em.getQueryBuilder();
+QueryDefinition qdef = queryBuilder.createQueryDefinition();
+    	</programlisting>
+    	The first step in constructing a query definition is specification of 
+    	query roots.  Query roots specify the domain objects on which the query 
+    	is evaluated. Query root is an instance of the DomainObject interface. A
+    	query root is added to a QueryDefinition by 
+    	<methodname>addRoot(Class c)</methodname> method.
+    	<programlisting>
+    	DomainObject customer = qdef.addRoot(Customer.class);
+    	</programlisting>
+    	Often a query definition has a single root, so the 
+    	QueryBuilder interface allows to construct and add
+    	a root via a single method.
+    	<programlisting>
+DomainObject customer = queryBuilder.createQueryDefinition(Customer.class);    	
+    	</programlisting>
+    	A query domain can be further refined by joining to other domain objects.
+    	For example, for the above query definition to operate over customers 
+    	and their orders, use <methodname>join(String attribute)</methodname>:
+		<programlisting>
+DomainObject order = customer.join("orders");
+		</programlisting>  
+		The condition of a query definition is set via 
+		<methodname>where(Predicate p)</methodname> where the argument 
+		designates a conditional predicate. Conditional predicates are often
+		composed of one or more comparisons between the attribute values of
+		the domain objects and some variable. For example, to select the
+		Customers whose name is <emphasis>John Doe</emphasis> and has 
+		orders that are not yet delivered, you can build the predicate and set  
+		it to the query definition as
+		<programlisting>
+qdef.where(customer.get("name").equal("John Doe")
+      .and(order.get("status").equal(OrderStatus.DELIVERED).not()));
+		</programlisting>
+		The <methodname>select()</methodname> method defines the result of the
+		query. If left unspecified, the select projection is assumed to be the
+		root domain object. However, you can specify the selected projections
+		explicitly as a list 
+		<programlisting>
+qdef.select(customer.get("name"), order.get("status"));
+		</programlisting>
+		Attribute of a domain object is specified by navigating via 
+		<methodname>get(String attr)</methodname>. The attribute 
+		<emphasis>should</emphasis> refer
+		to a valid persistent property of the receiving domain object, however
+		no such validation is enforced during the construction of the query 
+		definition. All validation is deferred till query is actually executed.
+    	</para>
+    </section> 
+    
+    <section>
+    <title>Executing a QueryDefinition</title>
+    <para>
+    A QueryDefinition is executed in a similar fashion of a string-based JPQL
+    query via the EntityManager and Query interfaces.
+    <programlisting>
+EntityManager em = ...
+Query query = em.createQuery(qdef);
+List result = query.getResultList();    
+    </programlisting>
+    </para>
+    <para>
+    A query definition can use named parameters, and the parameter values are
+    set as usual in the Query instance. 
+    </para>
+    
+    <para>
+    The JPA 2.0 Specification on Criteria API is evolving and hence for an
+    up-to-date version of the API, please consult the  
+    <ulink url="http://jcp.org/aboutJava/communityprocess/pr/jsr317/index.html">
+    public draft</ulink>.
+    </para>
+    </section>
+    
+    <section>
+    <title>Extension to Criteria API</title>
+    <para>
+    Criteria API has provided an alternative means to string-based JPQL to 
+    execute a query. However, JPA 2.0 Specification has not explicitly specified 
+    any equivalence between a dynamically constructed QueryDefinition and
+    a JPQL string. OpenJPA provides a mechanism to convert a QueryDefinition to
+    an equivalent JPQL query string via the extended OpenJPAQueryBuilder API.
+    <programlisting>
+    	public interface OpenJPAQueryBuilder extends QueryBuilder {
+			/**
+		 	 * Gets equivalent JPQL String for the given QueryDefinition.
+	 		*/
+			public String toJPQL(QueryDefinition qdef);
+		}
+	</programlisting>
+    
+    </para>
+    </section>
+
+</chapter>

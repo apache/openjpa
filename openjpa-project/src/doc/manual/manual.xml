@@ -32,6 +32,7 @@
     <!ENTITY jpa_overview_em.xml SYSTEM "jpa_overview_em.xml">
     <!ENTITY jpa_overview_trans.xml SYSTEM "jpa_overview_trans.xml">
     <!ENTITY jpa_overview_query.xml SYSTEM "jpa_overview_query.xml">
+    <!ENTITY jpa_overview_criteria.xml SYSTEM "jpa_overview_criteria.xml">
     <!ENTITY jpa_overview_sqlquery.xml SYSTEM "jpa_overview_sqlquery.xml">
     <!ENTITY jpa_overview_mapping.xml SYSTEM "jpa_overview_mapping.xml">
     <!ENTITY jpa_overview_conclusion.xml SYSTEM "jpa_overview_conclusion.xml">
@@ -76,6 +77,7 @@
         &jpa_overview_em.xml;
         &jpa_overview_trans.xml;
         &jpa_overview_query.xml;
+        &jpa_overview_criteria.xml;
         &jpa_overview_sqlquery.xml;
         &jpa_overview_mapping.xml;
         &jpa_overview_conclusion.xml;
