@@ -18,20 +18,41 @@
  */
 package org.apache.openjpa.persistence.embed;
 
+import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import javax.persistence.EntityManager;
+import javax.persistence.EntityManagerFactory;
 import javax.persistence.EntityTransaction;
 import javax.persistence.Query;
 
+
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
+
 
 public class TestEmbeddable extends SingleEMFTestCase {
    
     public int numEmbeddables = 1;
     public int numBasicTypes = 1;
     public int ID = 1;
+    public int numProgramManagers = 2;
+    public int numNickNames = 3;
+    
+    public int numEmployeesPerPhoneNumber = 1;
+    public int numPhoneNumbersPerEmployee = 2;
+    public int numEmployeesPerProgramManager = 2;
+    public int numEmployees = numProgramManagers * numEmployeesPerProgramManager;
+    public int numPhoneNumbers = numEmployees * numPhoneNumbersPerEmployee;
+    
+    public Map<Integer, PhoneNumber> phones = new HashMap<Integer, PhoneNumber>();
+    public Map<Integer, Employee> employees = new HashMap<Integer, Employee>();
+    public int empId = 1;
+    public int phoneId = 1;
+    public int pmId = 1;
+    public int parkingSpotId = 1;
 
     public void setUp() {
         setUp(Embed.class, Embed_Coll_Embed.class, Embed_Coll_Integer.class, 
@@ -41,7 +62,9 @@ public class TestEmbeddable extends SingleEMFTestCase {
             EntityA_Embed_Coll_Integer.class, EntityA_Embed_Embed.class, 
             EntityA_Embed_Embed_ToMany.class, EntityA_Embed_ToMany.class, 
             EntityA_Embed_ToOne.class, EntityB1.class, 
-            EntityA_Coll_Embed_Embed.class,
+            EntityA_Coll_Embed_Embed.class, ContactInfo.class,
+            Employee.class, JobInfo.class, LocationDetails.class,
+            ParkingSpot.class, PhoneNumber.class, ProgramManager.class,
             CLEAR_TABLES);
     }
     
@@ -87,7 +110,7 @@ public class TestEmbeddable extends SingleEMFTestCase {
         findEntityA_Embed_Embed();
     }
 
-    public void atestEntityA_Coll_Embed_Embed() {
+    public void testEntityA_Coll_Embed_Embed() {
         createEntityA_Coll_Embed_Embed();
         queryEntityA_Coll_Embed_Embed();
         findEntityA_Coll_Embed_Embed();
@@ -97,6 +120,12 @@ public class TestEmbeddable extends SingleEMFTestCase {
         createEntityA_Embed_Coll_Embed();
         queryEntityA_Embed_Coll_Embed();
         findEntityA_Embed_Coll_Embed();
+    }
+    
+    public void testEmployee() {
+        createEmployeeObj();
+        queryEmployeeObj();
+        findEmployeeObj();
     }
 
     /*
@@ -392,6 +421,209 @@ public class TestEmbeddable extends SingleEMFTestCase {
         return embed;
     }
 
+    /*
+     * Create Employee
+     */
+    public void createEmployeeObj() {
+        EntityManager em = emf.createEntityManager();
+        EntityTransaction tran = em.getTransaction();
+        createPhoneNumbers(em);
+        createEmployees(em);
+        createProgramManagers(em);
+        
+        tran.begin();
+        em.flush();
+        tran.commit();
+        em.close();
+    }
+    
+    public void createProgramManagers(EntityManager em) {
+        empId = 1;
+        for (int i = 0; i < numProgramManagers; i++)
+            createProgramManager(em, pmId++);
+    }
+    
+    public void createProgramManager(EntityManager em, int id) {
+        ProgramManager pm = new ProgramManager();
+        pm.setId(id);
+        for (int i = 0; i < numEmployeesPerProgramManager; i++) {
+            Employee e = employees.get(empId++);
+            pm.addManage(e);
+            JobInfo jobInfo = new JobInfo();
+            jobInfo.setJobDescription("jobDescription" + e.getEmpId());
+            jobInfo.setProgramManager(pm);
+            e.setJobInfo(jobInfo);
+        }
+        em.persist(pm);
+    }
+    
+    public void createEmployees(EntityManager em) {
+        phoneId = 1;
+        for (int i = 0; i < numEmployees; i++) {
+            Employee e = createEmployee(em, empId++);
+            employees.put(e.getEmpId(), e);
+        }
+    }
+
+    public Employee createEmployee(EntityManager em, int id) {
+        Employee e = new Employee();
+        e.setEmpId(id);
+        ContactInfo contactInfo = new ContactInfo();
+        for (int i = 0; i < numPhoneNumbersPerEmployee; i++) { 
+            PhoneNumber phoneNumber = phones.get(phoneId++);
+            contactInfo.addPhoneNumber(phoneNumber);
+            e.setContactInfo(contactInfo);
+            phoneNumber.addEmployees(e);
+            em.persist(phoneNumber);
+        }
+        ParkingSpot parkingSpot = createParkingSpot(em, parkingSpotId++);
+        LocationDetails location = new LocationDetails();
+        location.setOfficeNumber(id);
+        location.setParkingSpot(parkingSpot);
+        e.setLocationDetails(location);
+        parkingSpot.setAssignedTo(e);
+        for (int i = 0; i < numNickNames; i++)
+            e.addNickName("nickName" + id + i);
+        em.persist(parkingSpot);
+        em.persist(e);
+        return e;
+    }
+    
+    public void createPhoneNumbers(EntityManager em) {
+        for (int i = 0; i < numPhoneNumbers; i++) {
+            PhoneNumber p = new PhoneNumber();
+            p.setNumber(phoneId++);
+            phones.put(p.getNumber(), p);
+            em.persist(p);
+        }
+    }    
+    
+    public ParkingSpot createParkingSpot(EntityManager em, int id) {
+        ParkingSpot p = new ParkingSpot();
+        p.setId(id);
+        p.setGarage("garage" + id);
+        em.persist(p);
+        return p;
+    }    
+
+    public void findEmployeeObj() {
+        EntityManager em = emf.createEntityManager();
+        ProgramManager pm = em.find(ProgramManager.class, 1);
+        assertProgramManager(pm);
+
+        pm = em.find(ProgramManager.class, 2);
+        assertProgramManager(pm);
+
+        Employee e = em.find(Employee.class, 1);
+        assertEmployee(e);
+        
+        PhoneNumber p = em.find(PhoneNumber.class, 1);
+        assertPhoneNumber(p);
+        
+        ParkingSpot ps = em.find(ParkingSpot.class, 1);
+        assertParkingSpot(ps);
+       
+        em.close();
+    }
+    
+    public void queryEmployeeObj() {
+        queryProgramManager(emf);
+        queryEmployee(emf);
+        queryPhoneNumber(emf);
+        queryParkingSpot(emf);
+    }
+    
+    public void queryParkingSpot(EntityManagerFactory emf) {
+        EntityManager em = emf.createEntityManager();
+        EntityTransaction tran = em.getTransaction();
+        tran.begin();
+        Query q = em.createQuery("select p from ParkingSpot p");
+        List<ParkingSpot> ps = q.getResultList();
+        for (ParkingSpot p : ps){
+            assertParkingSpot(p);
+        }
+        tran.commit();
+        em.close();
+    }
+    
+    public void queryProgramManager(EntityManagerFactory emf) {
+        EntityManager em = emf.createEntityManager();
+        EntityTransaction tran = em.getTransaction();
+        tran.begin();
+        Query q = em.createQuery("select pm from ProgramManager pm");
+        List<ProgramManager> pms = q.getResultList();
+        for (ProgramManager pm : pms){
+            assertProgramManager(pm);
+        }
+        tran.commit();
+        em.close();
+    }
+
+    public void queryPhoneNumber(EntityManagerFactory emf) {
+        EntityManager em = emf.createEntityManager();
+        EntityTransaction tran = em.getTransaction();
+        tran.begin();
+        Query q = em.createQuery("select p from PhoneNumber p");
+        List<PhoneNumber> ps = q.getResultList();
+        for (PhoneNumber p : ps){
+            assertPhoneNumber(p);
+        }
+        tran.commit();
+        em.close();
+    }
+
+    public void queryEmployee(EntityManagerFactory emf) {
+        EntityManager em = emf.createEntityManager();
+        EntityTransaction tran = em.getTransaction();
+        tran.begin();
+        Query q = em.createQuery("select e from Employee e");
+        List<Employee> es = q.getResultList();
+        for (Employee e : es){
+            assertEmployee(e);
+        }
+        tran.commit();
+        em.close();
+    }
+
+    public void assertProgramManager(ProgramManager pm) {
+        int id = pm.getId();
+        Collection<Employee> es = pm.getManages();
+        assertEquals(numEmployeesPerProgramManager, es.size());
+        for (Employee e : es) {
+            assertEmployee(e);
+        }
+    }
+    
+    public void assertEmployee(Employee e) {
+        int id = e.getEmpId();
+        ContactInfo c = e.getContactInfo();
+        List<PhoneNumber> phones = c.getPhoneNumbers();
+        assertEquals(numPhoneNumbersPerEmployee, phones.size());
+        for (PhoneNumber p : phones) {
+            assertPhoneNumber(p);
+        }
+        
+        LocationDetails loc = e.getLocationDetails();
+        int officeNumber = loc.getOfficeNumber();
+        ParkingSpot p = loc.getParkingSpot();
+        assertParkingSpot(p);
+        ProgramManager pm = e.getJobInfo().getProgramManager();
+        Set<String> nickNames = e.getNickNames();
+        assertEquals(numNickNames, nickNames.size());
+        
+    }
+    
+    public void assertPhoneNumber(PhoneNumber p) {
+        int number = p.getNumber();
+        Collection<Employee> es = p.getEmployees();
+        assertEquals(numEmployeesPerPhoneNumber, es.size());
+    }
+    
+    public void assertParkingSpot(ParkingSpot p) {
+        String garage = p.getGarage();
+        Employee e = p.getAssignedTo();
+    }
+    
     /*
      * Find EntityA_Coll_String
      */
