@@ -101,4 +101,16 @@
         <mapping-file>org/apache/openjpa/persistence/annotations/xml/orm.xml</mapping-file>
     </persistence-unit>
     
+    <persistence-unit name="embed-pu">
+        <mapping-file>org/apache/openjpa/persistence/embed/embed-orm.xml</mapping-file>
+        <class>org.apache.openjpa.persistence.embed.EntityA_Coll_StringXml</class>
+        <class>org.apache.openjpa.persistence.embed.EntityA_Coll_Embed_EmbedXml</class>
+        <class>org.apache.openjpa.persistence.embed.Embed_EmbedXml</class>
+        <class>org.apache.openjpa.persistence.embed.EmbedXml</class>
+        <properties>
+            <property name="openjpa.jdbc.SynchronizeMappings"
+                  value="buildSchema(ForeignKeys=true)"/>
+        </properties>
+    </persistence-unit>
+
 </persistence>

@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- AtestCatalog metadata in xml -->
+<entity-mappings xmlns="http://java.sun.com/xml/ns/persistence/orm"
+xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+xsi:schemaLocation="http://java.sun.com/xml/ns/persistence/orm orm_2_0.xsd"
+version="2.0">
+	<package>embeddableXml</package>
+
+    <entity name="EntityA_Coll_StringXml" 
+            class="org.apache.openjpa.persistence.embed.EntityA_Coll_StringXml" 
+            access="FIELD">
+        <table name="EntityA_Coll_String_XML" />
+        
+        <attributes>
+            <id name="id">
+            </id>
+            
+            <basic name="name">
+                <column length="30" />
+            </basic>
+            
+            <basic name="age" fetch="LAZY">
+            </basic>
+            
+            <element-collection name="nickNames">
+              <column name="nickName_xml" length="20"/>
+              <collection-table name="NickNames_xml">
+                 <join-column name="A_ID_xml" nullable="false"/>
+                 <unique-constraint>
+                   <column-name>A_ID_xml</column-name>
+                    <column-name>nickName_xml</column-name>
+                 </unique-constraint>
+              </collection-table>
+	        </element-collection>
+        </attributes>
+    </entity>
+     
+    <entity name="EntityA_Coll_Embed_EmbedXml" 
+            class="org.apache.openjpa.persistence.embed.EntityA_Coll_Embed_EmbedXml" 
+            access="FIELD">
+        <table name="EntityA_Coll_Embed_EmbedXML" />
+        <attributes>
+            <id name="id">
+            </id>
+            <basic name="name">
+                <column length="30" />
+            </basic>
+            <basic name="age" fetch="LAZY">
+            </basic>
+            <element-collection name="embeds">
+            </element-collection>
+        </attributes>
+    </entity>
+ 
+    <embeddable class="org.apache.openjpa.persistence.embed.Embed_EmbedXml" 
+                access="FIELD">
+        <attributes>
+            <basic name="intVal1">
+            </basic>
+            <basic name="intVal2">
+            </basic>
+            <basic name="intVal3">
+            </basic>
+            <embedded name="embed">
+                 <attribute-override name="intVal1">
+                   <column name="embed_intVal1"/>
+                 </attribute-override>
+                 <attribute-override name="intVal2">
+                   <column name="embed_intVal2"/>
+                 </attribute-override>
+                 <attribute-override name="intVal3">
+                   <column name="embed_intVal3"/>
+                 </attribute-override>
+            </embedded>
+        </attributes>
+    </embeddable>
+
+    <embeddable class="org.apache.openjpa.persistence.embed.EmbedXml" 
+                access="FIELD">
+        <attributes>
+            <basic name="intVal1">
+            </basic>
+            <basic name="intVal2">
+            </basic>
+            <basic name="intVal3">
+            </basic>
+        </attributes>
+    </embeddable>
+    
+</entity-mappings>
