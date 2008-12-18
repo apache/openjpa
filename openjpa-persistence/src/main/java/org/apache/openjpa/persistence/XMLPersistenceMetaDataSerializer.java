@@ -919,6 +919,11 @@ public class XMLPersistenceMetaDataSerializer
                     strategy = "many-to-many";
                     cascades = fmd.getElement();
                     break;
+                case ELEM_COLL:
+                    if (isMetaDataMode())
+                        addElementCollectionAttributes(fmd);
+                    strategy = "element-collection";
+                    break;
             }
             if (isMappingMode())
                 addStrategyMappingAttributes(fmd);
@@ -1069,6 +1074,8 @@ public class XMLPersistenceMetaDataSerializer
             case JavaTypes.ARRAY:
             case JavaTypes.COLLECTION:
             case JavaTypes.MAP:
+                if (fmd.isElementCollection())
+                    return PersistenceStrategy.ELEM_COLL;
                 mappedBy = fmd.getMappedByMetaData();
                 if (mappedBy == null || mappedBy.getTypeCode() != JavaTypes.PC)
                     return PersistenceStrategy.MANY_MANY;
@@ -1127,6 +1134,16 @@ public class XMLPersistenceMetaDataSerializer
      * Add many-to-many attributes.
      */
     private void addManyToManyAttributes(FieldMetaData fmd)
+        throws SAXException {
+        if (fmd.isInDefaultFetchGroup())
+            addAttribute("fetch", "EAGER");
+        addTargetEntityAttribute(fmd);
+    }
+
+    /**
+     * Add element-collection attributes.
+     */
+    private void addElementCollectionAttributes(FieldMetaData fmd)
         throws SAXException {
         if (fmd.isInDefaultFetchGroup())
             addAttribute("fetch", "EAGER");

@@ -39,6 +39,7 @@ import org.apache.openjpa.jdbc.meta.MappingInfo;
 import org.apache.openjpa.jdbc.meta.MappingRepository;
 import org.apache.openjpa.jdbc.meta.QueryResultMapping;
 import org.apache.openjpa.jdbc.meta.SequenceMapping;
+import org.apache.openjpa.jdbc.meta.ValueMappingImpl;
 import org.apache.openjpa.jdbc.meta.ValueMappingInfo;
 import org.apache.openjpa.jdbc.meta.strats.EnumValueHandler;
 import org.apache.openjpa.jdbc.meta.strats.FlatClassStrategy;
@@ -390,6 +391,27 @@ public class XMLPersistenceMappingSerializer
                     serializeColumns(field.getElementMapping().getValueInfo(),
                         ColType.INVERSE, null);
                     endElement("join-table");
+                }
+                return;
+            case ELEM_COLL:
+                if (field.getMappingInfo().hasSchemaComponents()
+                    || field.getElementMapping().getValueInfo()
+                    .hasSchemaComponents()) {
+                    String table = field.getMappingInfo().getTableName();
+                    if (table != null) {
+                        int index = table.indexOf('.');
+                        if (index < 0)
+                            addAttribute("name", table);
+                        else {
+                            addAttribute("schema", table.substring(0, index));
+                            addAttribute("name", table.substring(index + 1));
+                        }
+                    }
+                    startElement("collection-table");
+                    ValueMappingImpl elem = (ValueMappingImpl) field.getElement();
+                    serializeColumns(elem.getValueInfo(), ColType.COL,
+                            null);
+                    endElement("collection-table");
                 }
                 return;
         }
