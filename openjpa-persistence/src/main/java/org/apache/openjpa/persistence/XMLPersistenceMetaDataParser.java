@@ -958,6 +958,8 @@ public class XMLPersistenceMetaDataParser
         int initial = val == null ? 1 : Integer.parseInt(val);
         val = attrs.getValue("allocation-size");
         int allocate = val == null ? 50 : Integer.parseInt(val);
+        String schema = attrs.getValue("schema");
+        String catalog = attrs.getValue("catalog");
 
         String clsName, props;
         if (seq == null || seq.indexOf('(') == -1) {
@@ -973,6 +975,8 @@ public class XMLPersistenceMetaDataParser
         meta.setSequence(seq);
         meta.setInitialValue(initial);
         meta.setAllocate(allocate);
+        meta.setSchema(schema);
+        meta.setCatalog(catalog);
 
         Object cur = currentElement();
         Object scope = (cur instanceof ClassMetaData)

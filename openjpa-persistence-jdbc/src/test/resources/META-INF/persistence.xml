@@ -113,4 +113,14 @@
         </properties>
     </persistence-unit>
 
+    <persistence-unit name="native-seq-pu">
+        <mapping-file>org/apache/openjpa/persistence/sequence/sequence-orm.xml</mapping-file>
+        <class>org.apache.openjpa.persistence.jdbc.annotations.NativeSequenceEntity</class>
+        <class>org.apache.openjpa.persistence.jdbc.annotations.NativeORMSequenceEntity</class>
+        <properties>
+            <property name="openjpa.jdbc.SynchronizeMappings"
+                  value="buildSchema"/>
+        </properties>
+    </persistence-unit>
+
 </persistence>

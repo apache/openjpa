@@ -696,6 +696,10 @@ public class AnnotationPersistenceMetaDataSerializer
             ab.add("initialValue", meta.getInitialValue());
         if (meta.getAllocate() != 50 && meta.getAllocate() != -1)
             ab.add("allocationSize", meta.getAllocate());
+        if (meta.getSchema() != null)
+            ab.add("schema", meta.getSchema());
+        if (meta.getCatalog() != null)
+            ab.add("catalog", meta.getCatalog());
     }
 
     /**

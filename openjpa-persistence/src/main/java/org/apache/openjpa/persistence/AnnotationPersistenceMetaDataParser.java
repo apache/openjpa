@@ -1570,6 +1570,8 @@ public class AnnotationPersistenceMetaDataParser
         String seq = gen.sequenceName();
         int initial = gen.initialValue();
         int allocate = gen.allocationSize();
+        String schema = gen.schema();
+        String catalog = gen.catalog();
         // don't allow initial of 0 b/c looks like def value
         if (initial == 0)
             initial = 1;
@@ -1593,6 +1595,8 @@ public class AnnotationPersistenceMetaDataParser
         meta.setSequence(seq);
         meta.setInitialValue(initial);
         meta.setAllocate(allocate);
+        meta.setSchema(schema);
+        meta.setCatalog(catalog);
         meta.setSource(getSourceFile(), (el instanceof Class) ? el : null,
             meta.SRC_ANNOTATIONS);
     }

@@ -81,6 +81,8 @@ public class NativeJDBCSeq
     private String _tableName = "DUAL";
     private boolean _subTable = false;
 
+    private String _schema = null;
+        
     /**
      * The sequence name. Defaults to <code>OPENJPA_SEQUENCE</code>.
      */
@@ -169,9 +171,12 @@ public class NativeJDBCSeq
         if (group.isKnownSequence(_seqName))
             return;
 
-        String schemaName = Strings.getPackageName(_seqName);
-        if (schemaName.length() == 0)
-            schemaName = Schemas.getNewTableSchema(_conf);
+        String schemaName = getSchema();
+        if (schemaName == null || schemaName.length() == 0) {
+            schemaName = Strings.getPackageName(_seqName);
+            if (schemaName.length() == 0)
+                schemaName = Schemas.getNewTableSchema(_conf);
+        }
 
         // create table in this group
         Schema schema = group.getSchema(schemaName);
@@ -228,9 +233,17 @@ public class NativeJDBCSeq
      */
     private void buildSequence() {
         String seqName = Strings.getClassName(_seqName);
-        String schemaName = Strings.getPackageName(_seqName);
-        if (schemaName.length() == 0)
-            schemaName = Schemas.getNewTableSchema(_conf);
+        // JPA 2 added schema as a configurable attribute on  
+        // sequence generator.  OpenJPA <= 1.x allowed this via
+        // schema.sequence on the sequence name.  Specifying a schema
+        // name on the annotation or in the orm will override the old 
+        // behavior.
+        String schemaName = _schema;
+        if (schemaName == null || schemaName.length() == 0) {
+            schemaName = Strings.getPackageName(_seqName);
+            if (schemaName.length() == 0)
+                schemaName = Schemas.getNewTableSchema(_conf);
+        }
 
         // build the sequence in one of the designated schemas
         SchemaGroup group = new SchemaGroup();
@@ -379,5 +392,13 @@ public class NativeJDBCSeq
         } else
             return false;
         return true;
+    }
+
+    public void setSchema(String _schema) {
+        this._schema = _schema;
+    }
+
+    public String getSchema() {
+        return _schema;
     }
 }

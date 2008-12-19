@@ -67,6 +67,8 @@ public class SequenceMetaData
     private static final String PROP_INITIAL_VALUE = "InitialValue";
     private static final String PROP_ALLOCATE = "Allocate";
     private static final String PROP_INCREMENT = "Increment";
+    private static final String PROP_SCHEMA = "Schema";
+    private static final String PROP_CATALOG = "Catalog";
 
     private static final Localizer _loc = Localizer.forPackage
         (SequenceMetaData.class);
@@ -87,6 +89,8 @@ public class SequenceMetaData
     private int _increment = -1;
     private int _allocate = -1;
     private int _initial = -1;
+    private String _schema = null;
+    private String _catalog = null;
 
     // instantiated lazily
     private transient Seq _instance = null;
@@ -306,6 +310,28 @@ public class SequenceMetaData
         }
     }
 
+    /*
+     * Set/Get the schema name
+     */
+    public void setSchema(String schema) {
+        this._schema = schema;
+    }
+
+    public String getSchema() {
+        return _schema;
+    }
+
+    /*
+     * Set/Get the catalog name
+     */
+    public void setCatalog(String catalog) {
+        this._catalog = catalog;
+    }
+
+    public String getCatalog() {
+        return _catalog;
+    }
+
     /**
      * Create a new plugin value for sequences. Returns a standard
      * {@link SeqValue} by default.
@@ -322,6 +348,8 @@ public class SequenceMetaData
         appendProperty(props, PROP_INITIAL_VALUE, _initial);
         appendProperty(props, PROP_ALLOCATE, _allocate);
         appendProperty(props, PROP_INCREMENT, _increment);
+        appendProperty(props, PROP_SCHEMA, _schema);
+        appendProperty(props, PROP_CATALOG, _catalog);
     }
 
     /**
