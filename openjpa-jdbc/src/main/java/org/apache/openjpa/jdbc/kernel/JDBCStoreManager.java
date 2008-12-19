@@ -355,7 +355,9 @@ public class JDBCStoreManager
                     getMappedByFieldMapping();
                 Object mappedByObject = info.result.getMappedByValue();
                 if (mappedByFieldMapping != null && mappedByObject != null)
-                    if (mappedByObject instanceof OpenJPAId)
+                    if (mappedByObject instanceof OpenJPAId &&
+                        mapping.getExtraFieldDataIndex(mappedByFieldMapping.
+                        getIndex()) != -1)
                         // The inverse relation can not be set since
                         // we are eagerly loading this sm for
                         // a sm owner that is still in the process of 
