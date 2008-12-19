@@ -218,7 +218,7 @@ public class TestBasic extends SliceTestCase {
      * Disable this test temporarily as we undergo changes in internal slice 
      * information structure.
      */
-    public void xtestUpdateReplicatedObjects() {
+    public void testUpdateReplicatedObjects() {
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
         String[] names = {"USA", "India", "China"};

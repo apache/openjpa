@@ -18,6 +18,9 @@
  */
 package org.apache.openjpa.slice;
 
+import java.io.PrintStream;
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.Callable;
@@ -25,6 +28,9 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
+import java.util.concurrent.SynchronousQueue;
+import java.util.concurrent.ThreadFactory;
+import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
 import javax.persistence.EntityManager;
@@ -42,7 +48,7 @@ public class TestQueryMultiThreaded extends SliceTestCase {
 	private int POBJECT_COUNT = 25;
 	private int VALUE_MIN = 100;
 	private int VALUE_MAX = VALUE_MIN + POBJECT_COUNT - 1;
-	private static int THREADS = 3;
+	private static int THREADS = 5;
 	private ExecutorService group; 
 	private Future[] futures;
 
@@ -57,7 +63,14 @@ public class TestQueryMultiThreaded extends SliceTestCase {
 		if (count == 0) {
 			create(POBJECT_COUNT);
 		}
-		group = Executors.newCachedThreadPool();
+		group = new ThreadPoolExecutor(THREADS, THREADS,
+                60, TimeUnit.SECONDS,
+                new SynchronousQueue<Runnable>(), new ThreadFactory() {
+					public Thread newThread(Runnable r) {
+						return new Thread(r);
+					}
+				
+				});
 		futures = new Future[THREADS];
 	}
 	
@@ -293,8 +306,9 @@ public class TestQueryMultiThreaded extends SliceTestCase {
 					f.get();
 				} catch (ExecutionException e) {
 					Throwable t = e.getCause();
-					t.getCause().printStackTrace();
-					fail("Failed " + t.getCause());
+					StringWriter writer = new StringWriter();
+					t.printStackTrace(new PrintWriter(writer));
+					fail("Failed " + writer.toString());
 				}
 		} catch (InterruptedException e) {
 

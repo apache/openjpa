@@ -37,6 +37,8 @@ import java.util.TreeMap;
 
 import javax.persistence.FlushModeType;
 import javax.persistence.LockModeType;
+import javax.persistence.NoResultException;
+import javax.persistence.NonUniqueResultException;
 import javax.persistence.Query;
 import javax.persistence.TemporalType;
 
@@ -444,15 +446,14 @@ public class QueryImpl implements OpenJPAQuerySPI, Serializable {
 	 */
 	public Object getSingleResult() {
 		_em.assertNotCloseInvoked();
-		// temporarily set query to unique so that a single result is validated
-		// and returned; unset again in case the user executes query again
-		// via getResultList
-		_query.setUnique(true);
-		try {
-			return execute();
-		} finally {
-			_query.setUnique(false);
-		}
+		List result = getResultList();
+		if (result == null || result.isEmpty())
+			throw new NoResultException(_loc.get("no-result", getQueryString())
+				.getMessage());
+		if (result.size() > 1)
+			throw new NonUniqueResultException(_loc.get("non-unique-result",
+				getQueryString(), result.size()).getMessage());
+		return result.get(0);
 	}
 
 	public int executeUpdate() {

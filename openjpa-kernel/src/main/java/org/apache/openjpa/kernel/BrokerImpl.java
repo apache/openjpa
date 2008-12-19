@@ -37,6 +37,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.locks.LockSupport;
 import java.util.concurrent.locks.ReentrantLock;
 
 import javax.transaction.Status;
@@ -4161,13 +4162,31 @@ public class BrokerImpl
     ///////////////////
 
     public void lock() {
-        if (_lock != null)
+        if (_lock != null) 
             _lock.lock();
     }
 
     public void unlock() {
         if (_lock != null)
             _lock.unlock();
+    }
+    
+    /**
+     * Creates a locks irrespective of multithreaded support. Used only by 
+     * internal implementation to guard access when it spawns its own threads 
+     * and user configured the broker for single-threaded access. 
+     */
+    public synchronized void startLocking() {
+    	if (_lock == null)
+    		_lock = new ReentrantLock();
+    }
+    
+    /**
+     * Destroys the lock if not multithreaded support. 
+     */
+    public synchronized void stopLocking() {
+    	if (_lock != null && !getMultithreaded())
+    		_lock = null;
     }
 
     ////////////////////

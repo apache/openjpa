@@ -39,6 +39,7 @@ import org.apache.openjpa.jdbc.kernel.JDBCStore;
 import org.apache.openjpa.jdbc.kernel.JDBCStoreManager;
 import org.apache.openjpa.jdbc.sql.Result;
 import org.apache.openjpa.jdbc.sql.ResultSetResult;
+import org.apache.openjpa.kernel.BrokerImpl;
 import org.apache.openjpa.kernel.FetchConfiguration;
 import org.apache.openjpa.kernel.OpenJPAStateManager;
 import org.apache.openjpa.kernel.PCState;
@@ -242,7 +243,7 @@ class DistributedStoreManager extends JDBCStoreManager {
         List<Future<Collection>> futures = new ArrayList<Future<Collection>>();
         Map<String, List<OpenJPAStateManager>> subsets = bin(sms, null);
         
-        boolean serialMode = getConfiguration().getMultithreaded();
+        boolean parallel = !getConfiguration().getMultithreaded();
         for (SliceStoreManager slice : _slices) {
             List<OpenJPAStateManager> subset = subsets.get(slice.getName());
             if (subset.isEmpty())
@@ -250,14 +251,14 @@ class DistributedStoreManager extends JDBCStoreManager {
             if (containsReplicated(subset)) {
             	collectException(slice.flush(subset), exceptions);
             } else {
-            	if (serialMode) {
-                	collectException(slice.flush(subset), exceptions);
-            	} else {
+            	if (parallel) {
             		futures.add(threadPool.submit(new Flusher(slice, subset)));
+            	} else {
+                	collectException(slice.flush(subset), exceptions);
             	}
             }
         }
-        if (!serialMode) {
+        if (parallel) {
 	        for (Future<Collection> future : futures) {
 	            try {
 	            	collectException(future.get(), exceptions);
@@ -459,7 +460,12 @@ class DistributedStoreManager extends JDBCStoreManager {
         }
 
         public Collection call() throws Exception {
-            return store.flush(toFlush);
+        	((BrokerImpl)store.getContext()).startLocking();
+        	try {
+        		return store.flush(toFlush);
+        	} finally {
+            	((BrokerImpl)store.getContext()).stopLocking();
+        	}
         }
     }
 

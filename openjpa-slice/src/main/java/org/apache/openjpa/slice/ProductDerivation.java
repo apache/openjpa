@@ -23,6 +23,10 @@ import java.util.Map;
 import org.apache.openjpa.conf.OpenJPAProductDerivation;
 import org.apache.openjpa.lib.conf.AbstractProductDerivation;
 import org.apache.openjpa.lib.conf.Configuration;
+import org.apache.openjpa.lib.conf.PluginValue;
+import org.apache.openjpa.lib.conf.Value;
+import org.apache.openjpa.lib.log.Log;
+import org.apache.openjpa.lib.util.Localizer;
 import org.apache.openjpa.slice.jdbc.DistributedJDBCBrokerFactory;
 import org.apache.openjpa.slice.jdbc.DistributedJDBCConfigurationImpl;
 
@@ -37,10 +41,12 @@ import org.apache.openjpa.slice.jdbc.DistributedJDBCConfigurationImpl;
  */
 public class ProductDerivation extends AbstractProductDerivation implements
 		OpenJPAProductDerivation {
+	private static final Localizer _loc = 
+		Localizer.forPackage(ProductDerivation.class);
     /**
      * Prefix for all Slice-specific configuration properties. 
      */
-    public static final String PREFIX_SLICE = "openjpa.slice";
+    public static final String PREFIX_SLICE   = "openjpa.slice";
     
     /**
      * Hint key <code>openjpa.hint.slice.Target </code> to specify a subset of 
@@ -74,14 +80,22 @@ public class ProductDerivation extends AbstractProductDerivation implements
         DistributedJDBCConfigurationImpl conf = 
         	(DistributedJDBCConfigurationImpl)c;
         boolean modified = false;
+        Log log = conf.getConfigurationLog();
         if (conf.getDistributionPolicyInstance() == null) {
-        	conf.distributionPolicyPlugin.setString("random");
+        	forceSet(PREFIX_SLICE, conf.distributionPolicyPlugin,"random", log);
         	modified = true;
         }
         if (conf.getReplicationPolicyInstance() == null) {
-        	conf.replicationPolicyPlugin.setString("all");
+        	forceSet(PREFIX_SLICE, conf.replicationPolicyPlugin, "all", log);
         	modified = true;
         }
         return modified;
+    }
+    
+    void forceSet(String prefix, Value v, String forced, Log log) {
+    	v.setString(forced);
+    	if (log.isWarnEnabled())
+        	log.warn(_loc.get("forced-set-config", 
+        		prefix+"."+v.getProperty(), forced));
     }
 }

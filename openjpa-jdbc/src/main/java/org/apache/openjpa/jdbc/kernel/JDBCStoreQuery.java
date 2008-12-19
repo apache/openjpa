@@ -84,7 +84,6 @@ import serp.util.Numbers;
 public class JDBCStoreQuery 
     extends ExpressionStoreQuery {
 
-	private boolean _isUnique = false;
     private static final Table INVALID = new Table();
 
     // add all standard filter and aggregate listeners to these maps
@@ -112,11 +111,6 @@ public class JDBCStoreQuery
         _store = store;
     }
 
-    @Override
-    public void setContext(QueryContext ctx) {
-    	super.setContext(ctx);
-    	_isUnique = ctx.isUnique();
-    }
     /**
      * Return the store.
      */
@@ -348,7 +342,7 @@ public class JDBCStoreQuery
                 evaluate(ctx, null, null, exps[i], states[i]);
             if (optHint != null)
                sel.setExpectedResultCount(optHint.intValue(), true);
-            else if (_isUnique)
+            else if (this.ctx.isUnique())
                 sel.setExpectedResultCount(1, false);
             for (int j = 0; j < verts.length; j++) {
                 selMappings.add(verts[j]);
@@ -430,7 +424,7 @@ public class JDBCStoreQuery
         long end) {
         if (exps.projections.length > 0 || start >= end)
             return EagerFetchModes.EAGER_NONE;
-        if (end - start == 1 || _isUnique)
+        if (end - start == 1 || ctx.isUnique())
             return EagerFetchModes.EAGER_JOIN;
         return EagerFetchModes.EAGER_PARALLEL;
     }

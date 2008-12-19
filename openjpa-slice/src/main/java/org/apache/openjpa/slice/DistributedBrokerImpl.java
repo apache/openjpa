@@ -91,4 +91,11 @@ public class DistributedBrokerImpl extends FinalizingBrokerImpl {
 	    }
 	    return true;
 	}
+	
+	/**
+	 * A virtual datastore need not be opened.
+	 */
+	@Override
+	public void beginStore() {
+	}
 }

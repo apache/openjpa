@@ -84,7 +84,7 @@ public class QueryImpl
     private transient ClassLoader _loader = null;
 
     // query has its own internal lock
-    private final ReentrantLock _lock;
+    private ReentrantLock _lock;
 
     // unparsed state
     private Class _class = null;
@@ -138,8 +138,6 @@ public class QueryImpl
 
         if (_broker != null && _broker.getMultithreaded())
             _lock = new ReentrantLock();
-        else
-            _lock = null;
     }
 
     /**
@@ -458,8 +456,8 @@ public class QueryImpl
             // no explicit setting; default
             StoreQuery.Executor ex = compileForExecutor();
             if (!ex.isAggregate(_storeQuery))
-                return _unique = false;
-            return _unique = !ex.hasGrouping(_storeQuery);
+                return false;
+            return !ex.hasGrouping(_storeQuery);
         } finally {
             unlock();
         }
@@ -1553,9 +1551,22 @@ public class QueryImpl
     }
 
     public void unlock() {
-        if (_lock != null && _lock.isLocked())
+        if (_lock != null)
             _lock.unlock();
     }
+    
+    public synchronized void startLocking() {
+    	if (_lock == null) {
+    		_lock = new ReentrantLock();
+    	}
+    }
+    
+    public synchronized void stopLocking() {
+    	if (_lock != null && !_broker.getMultithreaded())
+    		_lock = null;
+    }
+    
+    
 
     /////////
     // Utils
