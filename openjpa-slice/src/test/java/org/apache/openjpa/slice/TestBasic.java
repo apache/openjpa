@@ -22,6 +22,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import javax.persistence.EntityManager;
+import javax.persistence.Query;
 
 /**
  * Tests basic create, read, update and delete operations.
@@ -55,7 +56,7 @@ public class TestBasic extends SliceTestCase {
             PObject pc = new PObject();
             pcs.add(pc);
             em.persist(pc);
-            pc.setValue(i);
+            pc.setValue(10+i);
         }
         em.getTransaction().commit();
         em.clear();
@@ -117,6 +118,33 @@ public class TestBasic extends SliceTestCase {
         assertEquals(pc.getId(), pc2.getId());
         assertEquals(value, pc2.getValue());
     }
+    
+    /**
+     * Store and find the same object via reference.
+     */
+    public void testReference() {
+        PObject pc = createIndependentObject();
+        int value = pc.getValue();
+
+        EntityManager em = emf.createEntityManager();
+        em.getTransaction().begin();
+        PObject pc2 = em.getReference(PObject.class, pc.getId());
+        assertNotNull(pc2);
+        assertNotEquals(pc, pc2);
+        assertEquals(pc.getId(), pc2.getId());
+        assertEquals(value, pc2.getValue());
+        pc2.setValue(value+1);
+        em.merge(pc2);
+        em.getTransaction().commit();
+        em.clear();
+        
+        em.getTransaction().begin();
+        PObject pc3 = em.getReference(PObject.class, pc.getId());
+        assertEquals(value+1, pc3.getValue());
+        em.getTransaction().commit();
+        
+    }
+
 
     public void testPersistIndependentObjects() {
         int before = count(PObject.class);
@@ -209,9 +237,13 @@ public class TestBasic extends SliceTestCase {
         em.getTransaction().commit();
         assertEquals(names.length, count(Country.class));
         
+        em.getTransaction().begin();
         Country india = em.find(Country.class, "India");
         assertNotNull(india);
         assertEquals("India", india.getName());
+        assertTrue(SlicePersistence.isReplicated(india));
+        assertTrue(SlicePersistence.getSlice(india).indexOf("One") != -1);
+        assertTrue(SlicePersistence.getSlice(india).indexOf("Two") != -1);
     }
     
     /**
@@ -241,6 +273,21 @@ public class TestBasic extends SliceTestCase {
         em.getTransaction().begin();
         em.merge(india);
         em.getTransaction().commit();
+        
+        String[] hints = new String[] {"One", "Two"};
+        String jpql = "select c from Country c where c.name=:name";
+        em.getTransaction().begin();
+        for (String hint : hints) {
+            em.clear();
+            Query query = em.createQuery(jpql).setParameter("name", "India");
+            query.setHint(ProductDerivation.HINT_TARGET, hint);
+            india = (Country)query.getSingleResult();
+            assertEquals(india.getPopulation(), 1201);
+            assertTrue(SlicePersistence.isReplicated(india));
+            assertTrue(SlicePersistence.getSlice(india).indexOf("One") != -1);
+            assertTrue(SlicePersistence.getSlice(india).indexOf("Two") != -1);
+        }
+        em.getTransaction().rollback();
     }
     
     public void testQuerySingleObject() {

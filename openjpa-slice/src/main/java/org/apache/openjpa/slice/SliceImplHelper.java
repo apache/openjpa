@@ -42,30 +42,45 @@ public class SliceImplHelper {
 	 * {@link DistributionPolicy} or {@link ReplicationPolicy} 
 	 * depending on whether the given instance is {@link Replicated replicated}.
 	 */
-	public static String[] getSlicesByPolicy(Object pc, 
+	public static SliceInfo getSlicesByPolicy(Object pc, 
 			DistributedConfiguration conf, Object ctx) {
-		List<String> availables = conf.getActiveSliceNames();
+		List<String> actives = conf.getActiveSliceNames();
 		Object policy = null;
 		String[] targets = null;
-		if (isReplicated(pc, conf)) {
+		boolean replicated = isReplicated(pc, conf);
+		if (replicated) {
 			policy = conf.getReplicationPolicyInstance();
-			targets = ((ReplicationPolicy)policy).replicate
-				(pc, availables, ctx);
-			if (targets == null || targets.length == 0)
-				targets = availables.toArray(new String[availables.size()]);
+			targets = ((ReplicationPolicy)policy).replicate(pc, actives, ctx);
 		} else {
 			policy = conf.getDistributionPolicyInstance();
-			String slice = ((DistributionPolicy)policy).distribute 
-				(pc, availables, ctx);
-			targets = new String[]{slice};
+			targets = new String[]{((DistributionPolicy)policy).distribute 
+				(pc, actives, ctx)};
 		}
-		for (String target : targets) 
-			if (!availables.contains(target))
-			throw new UserException(_loc.get("bad-policy-slice", new Object[] {
-					policy.getClass().getName(), target, pc, availables}));
-		return targets;
+		assertSlices(targets, pc, actives, policy);
+		return new SliceInfo(replicated, targets);
 	}
 	
+	private static void assertSlices(String[] targets, Object pc, 
+	    List<String> actives, Object policy) {
+	    if (targets == null || targets.length == 0)
+            throw new UserException(_loc.get("no-policy-slice", new Object[] {
+                policy.getClass().getName(), pc, actives}));
+        for (String target : targets) 
+            if (!actives.contains(target))
+                throw new UserException(_loc.get("bad-policy-slice", 
+                   new Object[] {policy.getClass().getName(), target, pc, 
+                    actives}));
+	}
+	
+    /**
+     * Gets the target slices for the given StateManager.
+     */
+    public static SliceInfo getSlicesByPolicy(OpenJPAStateManager sm, 
+        DistributedConfiguration conf, Object ctx) {
+        return getSlicesByPolicy(sm.getPersistenceCapable(), conf, ctx);
+    }
+    
+    
 	/**
 	 * Affirms if the given instance be replicated to multiple slices.
 	 */
@@ -85,4 +100,19 @@ public class SliceImplHelper {
 			return false;
 		return sm.getMetaData().isReplicated();
 	}
+	
+	/**
+	 * Affirms if the given StateManager has an assigned slice.
+	 */
+	public static boolean isSliceAssigned(OpenJPAStateManager sm) {
+	     return sm != null && sm.getImplData() != null 
+	         && sm.getImplData() instanceof SliceInfo;
+	}
+
+    /**
+     * Gets the assigned slice information, if any, from the given StateManager.
+     */
+    public static SliceInfo getSliceInfo(OpenJPAStateManager sm) {
+        return isSliceAssigned(sm) ? (SliceInfo) sm.getImplData() : null;
+    }
 }

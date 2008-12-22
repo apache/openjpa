@@ -132,8 +132,8 @@ class DistributedStoreQuery extends JDBCStoreQuery {
 			boolean isReplicated = containsReplicated(ctx);
 			for (int i = 0; i < owner._queries.size(); i++) {
 				// if replicated, then execute only on single slice
-				if (i > 0 && isReplicated) {
-					continue;
+				if (isReplicated && !usedExecutors.isEmpty()) {
+					break;
 				}
 				StoreManager sm = owner.getDistributedStore().getSlice(i);
 				if (!targets.contains(sm))
@@ -153,7 +153,6 @@ class DistributedStoreQuery extends JDBCStoreQuery {
 					call.range = range;
 					futures.add(threadPool.submit(call));
 				}
-
 			}
 			if (parallel) {
 				for (Future<ResultObjectProvider> future : futures) {

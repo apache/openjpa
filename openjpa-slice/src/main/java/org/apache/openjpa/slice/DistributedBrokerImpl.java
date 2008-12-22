@@ -59,24 +59,21 @@ public class DistributedBrokerImpl extends FinalizingBrokerImpl {
 	public OpenJPAStateManager persist(Object pc, Object id, boolean explicit,
 			OpCallbacks call) {
 		OpenJPAStateManager sm = getStateManager(pc);
-		String[] targets = null;
+		SliceInfo info = null;
 		boolean replicated = SliceImplHelper.isReplicated(sm);
-		if (getOperatingSet().isEmpty()
-			&& (sm == null || sm.getImplData() == null)) {
-			targets = SliceImplHelper.getSlicesByPolicy(pc, getConfiguration(), 
+		if (getOperatingSet().isEmpty()	&& !SliceImplHelper.isSliceAssigned(sm)) {
+			info = SliceImplHelper.getSlicesByPolicy(pc, getConfiguration(), 
 				this);
-			if (!replicated) {
-				_rootSlice = targets[0];
-			} 
+			_rootSlice = info.getSlices()[0]; 
 		}
 		sm = super.persist(pc, id, explicit, call);
-		if (sm.getImplData() == null) {
-			if (targets == null) {
-			   targets = replicated 
+		if (!SliceImplHelper.isSliceAssigned(sm)) {
+			if (info == null) {
+			   info = replicated 
 			   ? SliceImplHelper.getSlicesByPolicy(pc, getConfiguration(), this) 
-			   : new String[]{_rootSlice}; 
+			   : new SliceInfo(_rootSlice); 
 			}
-			sm.setImplData(targets, true);
+			info.setInto(sm);
 		}
 		return sm;
 	}

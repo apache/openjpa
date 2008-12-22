@@ -20,37 +20,46 @@ package org.apache.openjpa.slice;
 
 import javax.persistence.Entity;
 import javax.persistence.Id;
+import javax.persistence.Version;
 
 import org.apache.openjpa.persistence.Replicated;
 
 /**
- * A persistence entity to be replicated across multiple databases.
- * A non-replicated entity can refer to a replicated entity.
+ * A persistence entity to be replicated across multiple databases. A
+ * non-replicated entity can refer to a replicated entity.
  * 
  * @author Pinaki Poddar
- *
+ * 
  */
 @Entity
 @Replicated
 public class Country {
-	@Id
-	private String name;
-	
-	private long population;
+    @Id
+    private String name;
 
-	public String getName() {
-		return name;
-	}
+    private long population;
 
-	public void setName(String name) {
-		this.name = name;
-	}
-	
-	public long getPopulation() {
-		return population;
-	}
+    @Version
+    private int version;
 
-	public void setPopulation(long population) {
-		this.population = population;
-	}
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public long getPopulation() {
+        return population;
+    }
+
+    public void setPopulation(long population) {
+        this.population = population;
+    }
+
+    public int getVersion() {
+        return version;
+    }
+
 }
