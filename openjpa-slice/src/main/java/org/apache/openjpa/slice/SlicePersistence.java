@@ -31,6 +31,13 @@ import org.apache.openjpa.util.ImplHelper;
  *
  */
 public class SlicePersistence {
+    /**
+     * The key for setting the Query hints. The value is comma-separated Slice
+     * names. If the hint is specified then the query is executed only on the
+     * listed slices. 
+     */
+    public static final String HINT_TARGET = ProductDerivation.HINT_TARGET;
+    
 	/**
 	 * Get the slice identifier for the given instance if it is a managed
 	 * instance and has been assigned to a slice.
@@ -69,5 +76,4 @@ public class SlicePersistence {
             return false;
         return info.isReplicated();
     }
-
 }
