@@ -18,214 +18,318 @@
  */
 package org.apache.openjpa.persistence.xmlmapping.query;
 
-import java.io.FileWriter;
+import java.sql.Connection;
 import java.util.List;
 
 import javax.persistence.EntityManager;
-import javax.persistence.EntityTransaction;
 import javax.persistence.Query;
 
 import junit.textui.TestRunner;
 
 import org.apache.openjpa.jdbc.conf.JDBCConfiguration;
-import org.apache.openjpa.jdbc.sql.DB2Dictionary;
 import org.apache.openjpa.jdbc.sql.DBDictionary;
-import org.apache.openjpa.jdbc.sql.OracleDictionary;
-import org.apache.openjpa.jdbc.sql.SQLServerDictionary;
-import org.apache.openjpa.persistence.OpenJPAEntityManager;
-import org.apache.openjpa.persistence.OpenJPAPersistence;
-import org.apache.openjpa.persistence.OpenJPAEntityManagerFactory;
 import org.apache.openjpa.persistence.OpenJPAEntityManagerFactorySPI;
 import org.apache.openjpa.persistence.OpenJPAEntityManagerSPI;
-import org.apache.openjpa.persistence.test.SQLListenerTestCase;
-import org.apache.openjpa.persistence.xmlmapping.xmlbindings.myaddress.*;
-import org.apache.openjpa.persistence.xmlmapping.entities.*;
+import org.apache.openjpa.persistence.test.AllowFailure;
+import org.apache.openjpa.persistence.test.SingleEMFTestCase;
+import org.apache.openjpa.persistence.xmlmapping.entities.Customer;
+import org.apache.openjpa.persistence.xmlmapping.entities.EAddress;
+import org.apache.openjpa.persistence.xmlmapping.entities.Order;
 import org.apache.openjpa.persistence.xmlmapping.entities.Customer.CreditRating;
+import org.apache.openjpa.persistence.xmlmapping.xmlbindings.myaddress.Address;
+import org.apache.openjpa.persistence.xmlmapping.xmlbindings.myaddress.CANAddress;
+import org.apache.openjpa.persistence.xmlmapping.xmlbindings.myaddress.ObjectFactory;
+import org.apache.openjpa.persistence.xmlmapping.xmlbindings.myaddress.USAAddress;
 
 /**
  * Test query with predicates on persistent field mapped to XML column.
+ * Samples of platform specific sqls are under resources in
+ * TestXMLCustomerOrder.[dbname] files.
  * 
  * @author Catalina Wei
+ * @author Milosz Tylenda
  * @since 1.0.0
  */
 public class TestXMLCustomerOrder
-    extends SQLListenerTestCase {
+    extends SingleEMFTestCase {
 
     private boolean enabled = false;
+    
+    private static final int ORDER_1_OID = 10;
+    private static final double ORDER_1_AMOUNT = 850;
+    private static final boolean ORDER_1_DELIVERED = false;
+
+    private static final int ORDER_2_OID = 20;
+    private static final double ORDER_2_AMOUNT = 1000;
+    private static final boolean ORDER_2_DELIVERED = false;
 
     public void setUp() {
-        OpenJPAEntityManagerFactorySPI emf = createEMF();
-        DBDictionary dict = ((JDBCConfiguration) emf.getConfiguration())
-            .getDBDictionaryInstance();
-
-        // skip if dictionary has no support for XML column type
-        if (!dict.supportsXMLColumn)
+        // skip test if dictionary has no support for XML column type
+        if (!dictionarySupportsXMLColumn()) {
+            System.err.println("*** " + getName() + " skipped since "
+                + "DBDictionary.supportsXMLColumn property is false.");
             return;
+        }
 
         enabled = true;
+        setUp(Customer.class, Customer.CustomerKey.class, Order.class,
+            EAddress.class, CLEAR_TABLES);
+        EntityManager em = emf.createEntityManager();
+        em.getTransaction().begin();
+        persistEntities(em);
+        em.getTransaction().commit();
+        em.close();
+    }
 
-        setUp(org.apache.openjpa.persistence.xmlmapping.entities.Customer.class
-            , org.apache.openjpa.persistence.xmlmapping.entities.Customer
-                .CustomerKey.class
-            , org.apache.openjpa.persistence.xmlmapping.entities.Order.class
-            , org.apache.openjpa.persistence.xmlmapping.entities.EAddress.class
-            );
+    public void testXMLFieldProjection() {
+        if (!enabled)
+            return;
+        
+        EntityManager em = emf.createEntityManager();
+        List<Address> addrs = em.createQuery(
+            "select o.shipAddress from Order o order by o.oid")
+            .getResultList();
+        
+        assertEquals(2, addrs.size());
+        
+        Address addressFromDb = addrs.get(0);
+        Address address = createUSAAddress("Harry's Auto");
+        assertEquals(address.toString(), addressFromDb.toString());
+        
+        addressFromDb = addrs.get(1);
+        address = createCANAddress("A&J Auto");
+        assertEquals(address.toString(), addressFromDb.toString());
+        
+        em.close();
+    }
+
+    @AllowFailure
+    public void testXMLFieldInEntity() {
+        if (!enabled)
+            return;
+        
+        EntityManager em = emf.createEntityManager();
+        List<Order> orders = em.createQuery(
+            "select o from Order o order by o.oid")
+            .getResultList();
+        
+        assertEquals(2, orders.size());
+        
+        Order orderFromDb = orders.get(0);
+        Address addressFromDb = orderFromDb.getShipAddress();
+        Address address = createUSAAddress("Harry's Auto");
+        assertEquals(address.toString(), addressFromDb.toString());
+        
+        orderFromDb = orders.get(1);
+        addressFromDb = orderFromDb.getShipAddress();
+        address = createCANAddress("A&J Auto");
+        assertEquals(address.toString(), addressFromDb.toString());
+        
+        em.close();
+    }
+
+    public void testXMLStringToXMLStringComparison() {
+        if (!enabled)
+            return;
+        
+        EntityManager em = emf.createEntityManager();
+        List<Object[]> orders = em.createQuery(
+            "select o, o2 from Order o, Order o2 where o.shipAddress.city " +
+            "= o2.shipAddress.city order by o.oid")
+            .getResultList();
+        
+        assertEquals(2, orders.size());
+
+        Object[] ordersFromDb = orders.get(0);
+        Order order1 = (Order) ordersFromDb[0];
+        Order order2 = (Order) ordersFromDb[1];
+        assertEquals(ORDER_1_OID, order1.getOid());
+        assertOrdersEqual(order1, order2);
+
+        ordersFromDb = orders.get(1);
+        order1 = (Order) ordersFromDb[0];
+        order2 = (Order) ordersFromDb[1];
+        assertEquals(ORDER_2_OID, order1.getOid());
+        assertOrdersEqual(order1, order2);
+        
+        em.close();
+    }
+
+    public void testXMLStringToEmbeddedStringComparison() {
+        if (!enabled)
+            return;
+        
+        EntityManager em = emf.createEntityManager();
+        List<Order> orders = em.createQuery(
+            "select o from Order o, Customer c where o.shipAddress.city " +
+            "= c.address.city")
+            .getResultList();
+        
+        assertEquals(1, orders.size());
+        Order order = orders.get(0);
+        assertEquals(ORDER_1_OID, order.getOid());
+        
+        em.close();
+    }
+
+    public void testXMLStringToConstantStringComparison() {
+        if (!enabled)
+            return;
+        
+        EntityManager em = emf.createEntityManager();
+        List<Order> orders = em.createQuery(
+            "select o from Order o where o.shipAddress.city = 'San Jose'")
+            .getResultList();
+        
+        assertEquals(1, orders.size());
+        Order order = orders.get(0);
+        assertEquals(ORDER_1_OID, order.getOid());
+        
+        em.close();
+    }
+
+    public void testXMLStringToParameterStringComparison() {
+        if (!enabled)
+            return;
+        
+        EntityManager em = emf.createEntityManager();
+        Query query = em.createQuery(
+            "select o from Order o where o.shipAddress.city = :city");
+        query.setParameter("city", "San Jose");
+        List<Order> orders = query.getResultList();
+
+        assertEquals(1, orders.size());
+        Order order = orders.get(0);
+        assertEquals(ORDER_1_OID, order.getOid());
+        
+        em.close();
+    }
+
+    public void testParameterStringToXMLStringComparison() {
+        if (!enabled)
+            return;
+        
+        EntityManager em = emf.createEntityManager();
+        Query query = em.createQuery(
+            "select o from Order o where :city = o.shipAddress.city");
+        query.setParameter("city", "San Jose");
+        List<Order> orders = query.getResultList();
+
+        assertEquals(1, orders.size());
+        Order order = orders.get(0);
+        assertEquals(ORDER_1_OID, order.getOid());
+        
+        em.close();
+    }
+
+    public void testUpdate() {
+        if (!enabled)
+            return;
+        
+        EntityManager em = emf.createEntityManager();
+        em.getTransaction().begin();
+
+        Order order = em.find(Order.class, ORDER_1_OID);
+        USAAddress address = (USAAddress) order.getShipAddress();
+        address.setCity("Cupertino");
+        address.setZIP(95014);
+
+        em.getTransaction().commit();
+        em.close();
+
+        em = emf.createEntityManager();
+        em.getTransaction().begin();
+
+        order = em.find(Order.class, ORDER_1_OID);
+        address = (USAAddress) order.getShipAddress();
+        assertEquals("Cupertino", address.getCity());
+        assertEquals(95014, address.getZIP());
+        
+        em.getTransaction().commit();
+        em.close();
+    }
+
+    public void testNullify() {
+        if (!enabled)
+            return;
+        
+        EntityManager em = emf.createEntityManager();
+        em.getTransaction().begin();
+
+        Order order = em.find(Order.class, ORDER_1_OID);
+        order.setShipAddress(null);
+
+        em.getTransaction().commit();
+        em.close();
+
+        em = emf.createEntityManager();
+        em.getTransaction().begin();
+
+        order = em.find(Order.class, ORDER_1_OID);
+        Address address = order.getShipAddress();
+        assertNull(address);
+        
+        em.getTransaction().commit();
+        em.close();
+    }
+
+    public void testXMLStringToConstantIntComparison() {
+        if (!enabled)
+            return;
+        
+        EntityManager em = emf.createEntityManager();
+        try {
+        List<Order> orders = em.createQuery(
+            "select o from Order o where o.shipAddress.city = 95141")
+            .getResultList();
+        } catch (IllegalArgumentException iae) {
+            return;
+        } finally {
+            em.close();
+        }
+        fail("createQuery should throw IllegalArgumentException.");
+    }
+
+    public void testXMLListToConstantStringComparison() {
+        if (!enabled)
+            return;
+        
+        EntityManager em = emf.createEntityManager();
+        try {
+        List<Order> orders = em.createQuery(
+            "select o from Order o where o.shipAddress.street " +
+            "= '555 Bailey'")
+            .getResultList();
+        } catch (IllegalArgumentException iae) {
+            return;
+        } finally {
+            em.close();
+        }
+        fail("createQuery should throw IllegalArgumentException.");
+    }
+
+    public void testSubclassPropertyInXMLFieldComparison() {
+        if (!enabled)
+            return;
+        
+        EntityManager em = emf.createEntityManager();
+        try {
+        List<Order> orders = em.createQuery(
+            "select o from Order o where o.shipAddress.zip = 95141")
+            .getResultList();
+        } catch (IllegalArgumentException iae) {
+            return;
+        } finally {
+            em.close();
+        }
+        fail("createQuery should throw IllegalArgumentException.");
     }
 
     public static void main(String[] args) {
         TestRunner.run(TestXMLCustomerOrder.class);
     }
 
-    public void testXMLCustomerOrder() {	
-        // skip if dictionary has no support for XML column type
-        if (!enabled)
-            return;
-
-        OpenJPAEntityManagerSPI em = emf.createEntityManager();
-        DBDictionary dict = ((JDBCConfiguration) em.getConfiguration())
-            .getDBDictionaryInstance();
-
-        String sqllog = TestXMLCustomerOrder.class.getName();
-        sqllog = sqllog.replace('.', '/');
-        sqllog = "./" + sqllog;
-        if (dict instanceof DB2Dictionary)
-            sqllog += ".db2";
-        else if (dict instanceof OracleDictionary)
-            sqllog += ".oracle";
-        else if (dict instanceof SQLServerDictionary)
-            sqllog += ".sqlserver";
-
-        // For platform specific expected sqls are under resources.
-        // The generated sql of the test is captured and written to file:
-        //     ./TestXMLCustomerOrder.log
-        // This output file contents should match with the platform specfic 
-        // sqls.        
-        System.out.println("Expected pushdown SQL log file is in: " + sqllog);
-        
-        sql.clear();
-
-        try {
-            em.getTransaction().begin();
-            deleteAllData(em );
-            em.getTransaction().commit();
-
-            em.getTransaction().begin();
-            loadData(em);
-            em.getTransaction().commit();
-
-            em.close();
-
-            // By closing and recreating the EntityManager, 
-            // this guarantees that data will be retrieved from 
-            // the database rather than just reused from the 
-            // persistence context created by the load methods above.
-
-            em = emf.createEntityManager();
-
-            System.err.println("Main started.");
-            int test=1;
-            List<Address> addrs = em.createQuery(
-                "select o.shipAddress from Order o")
-                .getResultList();
-            for (Address addr : addrs) {
-                System.out.println("addr= " + addr.toString());
-            }
-            String qstrings[] = {
-                "select o from Order o",
-                "select o from Order o, Order o2 where o.shipAddress.city " +
-                    "= o2.shipAddress.city",
-                "select o from Order o, Customer c where o.shipAddress.city " +
-                    "= c.address.city",
-                "select o from Order o where o.shipAddress.city = 'San Jose'"
-            };
-            String qstring = null;
-            for (int i = 0;i < qstrings.length; i++) {
-                qstring = qstrings[i];
-                List orders = em.createQuery(qstring).getResultList();
-                printOrders(orders, test++);
-            }
-
-            // query passing parameters
-            qstring = "select o from Order o where o.shipAddress.city = ?1";
-            Query q5 = em.createQuery(qstring);
-            q5.setParameter(1, "San Jose");
-            List orders =q5.getResultList();
-            printOrders(orders, test++);
-
-            qstring = "select o from Order o where ?1 = o.shipAddress.city";
-            Query q6 = em.createQuery(qstring);
-            q6.setParameter(1, "San Jose");
-            orders = q6.getResultList();
-            printOrders(orders, test++);
-
-            em.close();
-
-            // test updates
-            em = emf.createEntityManager();
-            testUpdateShipaddress(em, test++);
-
-            em.close();
-            em = emf.createEntityManager();
-
-            // query after updates 
-            orders = em.createQuery("select o from Order o").getResultList();
-            System.out.println("After Update:");
-            printOrders(orders, test++);
-
-            // queries expecting exceptions
-            String[] badqstrings = {
-                "select o from Order o where o.shipAddress.city = 95141",
-                "select o from Order o where o.shipAddress.street " +
-                    "= '555 Bailey'",
-                "select o from Order o where o.shipAddress.zip = 95141"
-            };
-            for (int i = 0; i < badqstrings.length; i++) {
-                qstring = badqstrings[i];
-                try {
-                    System.out.println("\n>> Query "+test+": "+qstring);
-                    test++;
-                    orders = em.createQuery(qstring).getResultList();
-                }
-                catch (Exception e){
-                    System.out.println("Exception: "+e);
-                }  
-            }
-
-            dumpSql();
-            em.close();
-            emf.close();
-            System.out.println("Main ended normally.");
-        } catch (Exception e){
-            System.out.println("Exception: "+e);
-            e.printStackTrace();
-        }       
-    }
-
-    private void dumpSql() {
-        String out = "./TestXMLCustomerOrder.log";
-        try {
-            FileWriter fw = new FileWriter(out);
-            for (int i = 0; i < sql.size(); i++) {
-                System.out.println(sql.get(i));
-                fw.write(sql.get(i)+"\n");
-            }
-            fw.close();
-        } catch (Exception e) {            
-        }
-    }
-
-    private void printOrders(List orders, int test) {
-        System.out.println("\n>> Query "+test);
-        System.out.println("result size = "+orders.size());
-        for (int i = 0; i < orders.size(); i++) {
-            printOrder((Order) orders.get(i));
-        }
-    }
-
-    private void loadData(EntityManager em) {
-
-        ObjectFactory addressFactory = new ObjectFactory();
-
+    private void persistEntities(EntityManager em) {
         Customer c2 = new Customer();
         c2.setCid( new Customer.CustomerKey("USA", 2) );
         c2.setName("A&J Auto");
@@ -242,60 +346,55 @@ public class TestXMLCustomerOrder
                 , "95141"));
         em.persist(c1);
 
-        Order o1 = new Order(10, 850, false, c1);
-        USAAddress addr1 = addressFactory.createUSAAddress();
-        addr1.setCity("San Jose");
-        addr1.setState("CA");
-        addr1.setZIP(new Integer("95141"));
-        addr1.getStreet().add("12500 Monterey");
-        addr1.setName( c1.getName());
-        o1.setShipAddress(addr1);
+        Order o1 = new Order(ORDER_1_OID, ORDER_1_AMOUNT, ORDER_1_DELIVERED, c1);
+        o1.setShipAddress(createUSAAddress(c1.getName()));
         em.persist(o1);
 
-        Order o2 = new Order(20, 1000, false, c1);
-        CANAddress addr2 = addressFactory.createCANAddress();
-        addr2.setName(c2.getName());
-        addr2.getStreet().add("123 Warden Road");
-        addr2.setCity("Markham");
-        addr2.setPostalCode("L6G 1C7");
-        addr2.setProvince("ON");
-        o2.setShipAddress(addr2);
+        Order o2 = new Order(ORDER_2_OID, ORDER_2_AMOUNT, ORDER_2_DELIVERED, c1);
+        o2.setShipAddress(createCANAddress(c2.getName()));
         em.persist(o2);
     }
 
-    private void testUpdateShipaddress(EntityManager em, int test)
-        throws Exception {
-        em.getTransaction().begin();
-        String query = "select o from Order o where o.shipAddress.city " +
-        "= 'San Jose'";
-        List orders = em.createQuery(query).getResultList(); 
-        System.out.println("Before Update: ");
-        printOrders(orders, test);
-        em.getTransaction().commit();
-
-        // update in separate transaction                    
-        Order o = (Order) orders.get(0);
-        EntityTransaction et = em.getTransaction();
-        et.begin();
-        Address addr = o.getShipAddress();
-        addr.setCity("Cupertino");
-        if (addr instanceof USAAddress)
-            ((USAAddress) addr).setZIP(95014);
-
-        // update shipAddress
-        o.setShipAddress(addr);
-        et.commit();
+    /**
+     * Check whether DBDictionary supports XML column.
+     * This is done by forcing the execution of
+     * {@link DBDictionary#connectedConfiguration(Connection)}.
+     * This is where some dictionaries actually determine whether XML column is supported.
+     * @return true if {@link DBDictionary} supports XML column
+     */
+    private boolean dictionarySupportsXMLColumn() {
+        OpenJPAEntityManagerFactorySPI emf = createEMF();
+        OpenJPAEntityManagerSPI em = emf.createEntityManager();
+        DBDictionary dict = ((JDBCConfiguration) em.getConfiguration())
+            .getDBDictionaryInstance();
+        closeEMF(emf);
+        return dict.supportsXMLColumn;
+    }
+    
+    private USAAddress createUSAAddress(String name) {
+        USAAddress address = new ObjectFactory().createUSAAddress();
+        address.setName(name);
+        address.getStreet().add("12500 Monterey");
+        address.setCity("San Jose");
+        address.setState("CA");
+        address.setZIP(new Integer("95141"));
+        return address;
     }
 
-    private void deleteAllData(EntityManager em) {
-        em.createQuery("delete from Order o").executeUpdate();
-        em.createQuery("delete from Customer c").executeUpdate();
+    private CANAddress createCANAddress(String name) {
+        CANAddress address = new ObjectFactory().createCANAddress();
+        address.setName(name);
+        address.getStreet().add("123 Warden Road");
+        address.setCity("Markham");
+        address.setPostalCode("L6G 1C7");
+        address.setProvince("ON");
+        return address;
+    }
+    
+    private void assertOrdersEqual(Order o1, Order o2) {
+        assertEquals(o1.getOid(), o2.getOid());
+        assertEquals(o1.getAmount(), o2.getAmount());
+        assertEquals(o1.isDelivered(), o2.isDelivered());
     }
 
-    private void printOrder(Order o){
-        System.out.println(" Customer ID:"+o.getCustomer().getCid());
-        System.out.println(" Order Number:"+o.getOid());
-        System.out.println("Ship to: "+o.getShipAddress().toString());
-        System.out.println();		
-    }
 }

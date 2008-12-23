@@ -44,6 +44,11 @@
             <artifactId>jaxb-api</artifactId>
         </dependency>
         <dependency>
+            <groupId>com.sun.xml.bind</groupId>
+            <artifactId>jaxb-impl</artifactId>
+            <scope>runtime</scope>
+        </dependency>
+        <dependency>
             <groupId>hsqldb</groupId>
             <artifactId>hsqldb</artifactId>
             <scope>provided</scope>
@@ -51,7 +56,7 @@
         <dependency>
             <groupId>postgresql</groupId>
             <artifactId>postgresql</artifactId>
-            <version>8.1-407.jdbc3</version>
+            <version>8.3-603.jdbc3</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
