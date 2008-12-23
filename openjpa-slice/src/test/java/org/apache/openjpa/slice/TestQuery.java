@@ -78,11 +78,12 @@ public class TestQuery extends SliceTestCase {
         em.getTransaction().commit();
     }
     
-    public void testQueryResultIsOrderedAcrossSlice() {
+    public void testOrderedQueryResultWhenOrderableItemSelected() {
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
         Query query = em.createQuery("SELECT p.value,p FROM PObject p ORDER BY p.value ASC");
         List result = query.getResultList();
+        assertValidResult(result);
         Integer old = Integer.MIN_VALUE;
         for (Object row : result) {
             Object[] line = (Object[])row;
@@ -91,6 +92,40 @@ public class TestQuery extends SliceTestCase {
             assertTrue(value >= old);
             old = value;
             assertEquals(value, pc.getValue());
+        }
+        em.getTransaction().rollback();
+    }
+    
+    public void testOrderedQueryResultWhenOrderableItemNotSelected() {
+        EntityManager em = emf.createEntityManager();
+        em.getTransaction().begin();
+        Query query = em.createQuery("SELECT p FROM PObject p ORDER BY p.value ASC");
+        List<PObject> result = query.getResultList();
+        assertValidResult(result);
+        Integer old = Integer.MIN_VALUE;
+        for (PObject pc : result) {
+            int value = pc.getValue();
+            assertTrue(value >= old);
+            old = value;
+        }
+        em.getTransaction().rollback();
+    }
+    
+    public void testOrderedQueryResultWhenNavigatedOrderableItemNotSelected() {
+        EntityManager em = emf.createEntityManager();
+        em.getTransaction().begin();
+        Query query = em.createQuery("SELECT p FROM Person p JOIN p.address a ORDER BY a.zip ASC, a.city DESC");
+        List<Person> result = query.getResultList();
+        assertValidResult(result);
+        Integer oldZip = Integer.MIN_VALUE;
+        String oldCity = null;
+        for (Person pc : result) {
+            int zip = pc.getAddress().getZip();
+            String city = pc.getAddress().getCity();
+            assertTrue(zip >= oldZip);
+            assertTrue(oldCity == null || oldCity.compareTo(city) >= 0);
+            oldZip = zip;
+            oldCity = city;
         }
         em.getTransaction().rollback();
     }
@@ -128,15 +163,14 @@ public class TestQuery extends SliceTestCase {
         EntityManager em = emf.createEntityManager();
         int limit = 3;
         em.getTransaction().begin();
-        List result = em.createQuery("SELECT p.value,p FROM PObject p ORDER BY p.value ASC")
+        List<PObject> result = em.createQuery("SELECT p FROM PObject p ORDER BY p.value ASC")
             .setMaxResults(limit).getResultList();
-        int i = 0;
-        for (Object row : result) {
-            Object[] line = (Object[])row;
-            int value = ((Integer)line[0]).intValue();
-            PObject pc = (PObject)line[1];
-            System.err.println(++i + "." + SlicePersistence.getSlice(pc) + ":" 
-                    + pc.getId() + "," + pc.getValue());
+        assertValidResult(result);
+        Integer old = Integer.MIN_VALUE;
+        for (PObject pc : result) {
+            int value = pc.getValue();
+            assertTrue(value >= old);
+            old = value;
         }
         assertEquals(limit, result.size());
         em.getTransaction().rollback();
@@ -189,5 +223,11 @@ public class TestQuery extends SliceTestCase {
         assertEquals("Odd", SlicePersistence.getSlice(p));
         assertEquals("Rome", p.getAddress().getCity());
         em.getTransaction().rollback();
+    }
+    
+    void assertValidResult(List result) {
+        assertNotNull(result);
+        assertFalse(result.isEmpty());
+        assertTrue(result.size() > 1);
     }
 }

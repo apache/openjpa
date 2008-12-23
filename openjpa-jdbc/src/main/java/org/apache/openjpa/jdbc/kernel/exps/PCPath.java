@@ -36,13 +36,17 @@ import org.apache.openjpa.jdbc.sql.Joins;
 import org.apache.openjpa.jdbc.sql.Result;
 import org.apache.openjpa.jdbc.sql.SQLBuffer;
 import org.apache.openjpa.jdbc.sql.Select;
+import org.apache.openjpa.kernel.Broker;
 import org.apache.openjpa.kernel.Filters;
+import org.apache.openjpa.kernel.OpenJPAStateManager;
+import org.apache.openjpa.kernel.StoreContext;
 import org.apache.openjpa.kernel.exps.CandidatePath;
 import org.apache.openjpa.lib.util.Localizer;
 import org.apache.openjpa.meta.ClassMetaData;
 import org.apache.openjpa.meta.FieldMetaData;
 import org.apache.openjpa.meta.JavaTypes;
 import org.apache.openjpa.meta.XMLMetaData;
+import org.apache.openjpa.util.ImplHelper;
 import org.apache.openjpa.util.UserException;
 
 /**
@@ -555,6 +559,45 @@ public class PCPath
             if (fk.getPrimaryKeyColumn(rels[i]) != pks[i])
                 return false;
         return true;
+    }
+    
+    protected Object eval(Object candidate, Object orig,
+        StoreContext ctx, Object[] params) {
+        if (_actions == null)
+            return candidate;
+
+        Action action;
+        OpenJPAStateManager sm;
+        Broker tmpBroker;
+        for (Iterator itr = _actions.iterator(); itr.hasNext();) {
+            action = (Action)itr.next();
+            sm = null;
+            tmpBroker = null;
+            if (ImplHelper.isManageable(candidate))
+                sm = (OpenJPAStateManager) (ImplHelper.toPersistenceCapable(
+                    candidate, ctx.getConfiguration())).
+                    pcGetStateManager();
+            if (sm == null) {
+                tmpBroker = ctx.getBroker();
+                tmpBroker.transactional(candidate, false, null);
+                sm = tmpBroker.getStateManager(candidate);
+            }
+            if (action.op != Action.GET && action.op != Action.GET_OUTER)
+                continue;
+            try {
+                candidate = sm.fetchField(((FieldMapping)action.data).getIndex(), 
+                    true);
+            } catch (ClassCastException cce) {
+                throw new RuntimeException(action.data + " not a field path");
+            } finally {
+                // transactional does not clear the state, which is
+                // important since tmpCandidate might be also managed by
+                // another broker if it's a proxied non-pc instance
+                if (tmpBroker != null)
+                    tmpBroker.nontransactional(sm.getManagedInstance(), null);
+            }
+        }
+        return candidate;
     }
 
     /**
