@@ -32,9 +32,12 @@ import java.util.concurrent.SynchronousQueue;
 import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
+
+import com.sun.org.apache.bcel.internal.generic.GETSTATIC;
 
 /**
  * Tests when multiple user threads enter the same EntityManager and executes 
@@ -303,16 +306,21 @@ public class TestQueryMultiThreaded extends SliceTestCase {
 		try {
 			for (Future f : futures)
 				try {
-					f.get();
+					f.get(60, TimeUnit.SECONDS);
+				} catch (TimeoutException te) {
+				    fail("Failed " + te + "\r\n" + getStackDump(te));
 				} catch (ExecutionException e) {
-					Throwable t = e.getCause();
-					StringWriter writer = new StringWriter();
-					t.printStackTrace(new PrintWriter(writer));
-					fail("Failed " + writer.toString());
+					fail("Failed " + "\r\n" + getStackDump(e.getCause()));
 				}
 		} catch (InterruptedException e) {
 
 		}
+	}
+	
+	String getStackDump(Throwable t) {
+        StringWriter writer = new StringWriter();
+        t.printStackTrace(new PrintWriter(writer));
+        return writer.toString();
 	}
 
 }
