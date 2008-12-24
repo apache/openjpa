@@ -18,7 +18,6 @@
  */
 package org.apache.openjpa.slice;
 
-import java.io.PrintStream;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.util.ArrayList;
@@ -26,7 +25,6 @@ import java.util.List;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.concurrent.SynchronousQueue;
 import java.util.concurrent.ThreadFactory;
@@ -36,8 +34,6 @@ import java.util.concurrent.TimeoutException;
 
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
-
-import com.sun.org.apache.bcel.internal.generic.GETSTATIC;
 
 /**
  * Tests when multiple user threads enter the same EntityManager and executes 
