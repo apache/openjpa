@@ -18,41 +18,27 @@
  */
 package org.apache.openjpa.persistence.generationtype;
 
-import javax.persistence.*;
-import java.io.*;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.Table;
 
-@Entity(name = "Dog2")
-@Table(name = "DOGAUTO", schema = "SCHEMA2")
-public class Dog2 implements Serializable
-
-{
+@Entity(name = "Dog4")
+@Table(name = "DOGIDENT4")
+public class Dog4 {
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
-    private int id2;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private int id;
 
     private String name;
 
-    private float price;
-
-    private boolean domestic;
-
-    public Dog2() {
-        super();
-
+    public int getId() {
+        return id;
     }
 
-    public Dog2(String name) {
-        this.id2 = id2;
-        this.name = name;
-
-    }
-
-    public int getId2() {
-        return id2;
-    }
-
-    public void setId2(int id) {
-        this.id2 = id;
+    public void setId(int id) {
+        this.id = id;
     }
 
     public String getName() {
@@ -62,21 +48,4 @@ public class Dog2 implements Serializable
     public void setName(String name) {
         this.name = name;
     }
-
-    public float getPrice() {
-        return price;
-    }
-
-    public void setPrice(float price) {
-        this.price = price;
-    }
-
-    public boolean isDomestic() {
-        return domestic;
-    }
-
-    public void setDomestic(boolean domestic) {
-        this.domestic = domestic;
-    }
-
 }

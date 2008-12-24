@@ -21,9 +21,6 @@ package org.apache.openjpa.persistence.generationtype;
 import java.io.*;
 import javax.persistence.*;
 
-/**
- * Extension of Animal class illustrating inheritance.
- */
 @Entity(name = "DogTable2")
 @Table(name = "DOGTABLES", schema = "SCHEMA2")
 public class DogTable2 implements Serializable

@@ -19,15 +19,31 @@
 package org.apache.openjpa.persistence.generationtype;
 
 import java.util.List;
+
 import javax.persistence.EntityManager;
+import javax.persistence.PersistenceException;
 import javax.persistence.Query;
-import org.apache.openjpa.persistence.*;
+
+import org.apache.openjpa.jdbc.conf.JDBCConfiguration;
+import org.apache.openjpa.jdbc.sql.DBDictionary;
+import org.apache.openjpa.jdbc.sql.PostgresDictionary;
+import org.apache.openjpa.persistence.OpenJPAEntityManager;
+import org.apache.openjpa.persistence.OpenJPAEntityManagerFactorySPI;
+import org.apache.openjpa.persistence.OpenJPAEntityManagerSPI;
+import org.apache.openjpa.persistence.OpenJPAPersistence;
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
 
 public class TestMultipleSchemaNames extends SingleEMFTestCase {
+
     public void setUp() {
-        setUp(Dog1.class, Dog2.class, DogTable.class, DogTable2.class,
-                DogTable3.class, DogTable4.class);
+        // Create schemas when database requires this and we are about
+        // to execute the first test.
+        if ("testGeneratedAUTO".equals(getName())) {
+            createSchemas();
+        }
+
+        setUp(Dog1.class, Dog2.class, Dog3.class, Dog4.class,
+            DogTable.class, DogTable2.class, DogTable3.class, DogTable4.class);
 
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
@@ -74,6 +90,22 @@ public class TestMultipleSchemaNames extends SingleEMFTestCase {
 
         for (int index = 0; index < result6.size(); index++) {
             DogTable4 Obj = (DogTable4) result6.get(index);
+            em.remove(Obj);
+        }
+
+        Query qry7 = em.createQuery("select d from Dog3 d");
+        List result7 = qry7.getResultList();
+
+        for (int index = 0; index < result7.size(); index++) {
+            Dog3 Obj = (Dog3) result7.get(index);
+            em.remove(Obj);
+        }
+
+        Query qry8 = em.createQuery("select d from Dog4 d");
+        List result8 = qry8.getResultList();
+
+        for (int index = 0; index < result8.size(); index++) {
+            Dog4 Obj = (Dog4) result8.get(index);
             em.remove(Obj);
         }
 
@@ -321,4 +353,83 @@ public class TestMultipleSchemaNames extends SingleEMFTestCase {
         em.getTransaction().commit();
         em.close();
     }
+    
+    public void testGeneratedIDENTITY() {
+        EntityManager em = emf.createEntityManager();
+        OpenJPAEntityManager kem = OpenJPAPersistence.cast(em);
+
+        // Dog3 is a schema dog.
+        em.getTransaction().begin();
+        Dog3 dog30 = new Dog3();
+        dog30.setName("Dog30");
+        em.persist(dog30);
+        
+        Dog3 dog31 = new Dog3();
+        dog31.setName("Dog31");
+        em.persist(dog31);
+        em.getTransaction().commit();
+
+        // We can't assume generated values start with 1 as
+        // the table might have already existed and had some rows.
+        Dog3 dog30x = em.find(Dog3.class, kem.getObjectId(dog30));
+        Dog3 dog31x = em.find(Dog3.class, kem.getObjectId(dog31));
+        assertTrue((dog30x.getId() + 1 == dog31x.getId()) ||
+            (dog30x.getId() == dog31x.getId() + 1));
+        assertEquals(dog30x.getName(), "Dog30");
+
+        // Dog4 is a non-schema dog.
+        em.getTransaction().begin();
+        Dog4 dog40 = new Dog4();
+        dog40.setName("Dog40");
+        em.persist(dog40);
+        
+        Dog4 dog41 = new Dog4();
+        dog41.setName("Dog41");
+        em.persist(dog41);
+        em.getTransaction().commit();
+
+        Dog4 dog40x = em.find(Dog4.class, kem.getObjectId(dog40));
+        Dog4 dog41x = em.find(Dog4.class, kem.getObjectId(dog41));
+        assertTrue((dog40x.getId() + 1 == dog41x.getId()) ||
+            (dog40x.getId() == dog41x.getId() + 1));
+        assertEquals(dog40x.getName(), "Dog40");
+
+        em.close();
+    }
+    
+    /**
+     * Create necessary schemas if running on PostgreSQL as it does
+     * not create them automatically.
+     * Oracle and MySQL also don't create schemas automatically but
+     * we give up as they treat schemas in special ways.
+     */
+    private void createSchemas() {
+        OpenJPAEntityManagerFactorySPI emf = createEMF();
+        OpenJPAEntityManagerSPI em = emf.createEntityManager();
+        DBDictionary dict = ((JDBCConfiguration) em.getConfiguration())
+            .getDBDictionaryInstance();
+
+        if (!(dict instanceof PostgresDictionary)) {
+            closeEMF(emf);
+            return;
+        }
+        
+        String[] schemas =
+            { "SCHEMA1", "SCHEMA2", "SCHEMA3", "SCHEMA3G", "SCHEMA4G" };
+        for (String schema : schemas) {
+            try {
+                em.getTransaction().begin();
+                Query q = em.createNativeQuery("create schema " + schema);
+                q.executeUpdate();
+                em.getTransaction().commit();
+            } catch (PersistenceException e) {
+                System.err.println("Exception caught while creating schema "
+                    + schema + ". Schema already exists? Message: "
+                    + e.getMessage());
+                em.getTransaction().rollback();
+            }
+        }
+        closeEMF(emf);
+    }
+
 } // end of TestMultipleSchemaNames

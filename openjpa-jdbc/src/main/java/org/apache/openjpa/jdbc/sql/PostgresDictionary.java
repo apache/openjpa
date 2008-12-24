@@ -113,9 +113,8 @@ public class PostgresDictionary
         requiresAliasForSubselect = true;
         allowsAliasInBulkClause = false;
 
-        // {2} is the result of getGeneratedKeySequenceName; the
         // single-quote escape will result in SELECT CURVAL('mysequence')
-        lastGeneratedKeyQuery = "SELECT CURRVAL(''{2}'')";
+        lastGeneratedKeyQuery = "SELECT CURRVAL(''{1}_{0}_seq'')";
         supportsAutoAssign = true;
         autoAssignTypeName = "BIGSERIAL";
         nextSequenceQuery = "SELECT NEXTVAL(''{0}'')";
