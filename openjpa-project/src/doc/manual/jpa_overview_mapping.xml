@@ -958,6 +958,20 @@ cache, rather than physically incrementing the sequence with every request. This
 allocation size defaults to 50.
                     </para>
                 </listitem>
+                <listitem>
+                    <para>
+                    <indexterm>
+                        <primary>
+                            SequenceGenerator
+                        </primary>
+                        <secondary>
+                            schema property
+                        </secondary>
+                    </indexterm>
+                <literal>String schema</literal>: The sequence's schema. If you do not name a
+schema, JPA uses the default schema for the database connection.
+                    </para>
+                </listitem>
             </itemizedlist>
             <note>
                 <para>
@@ -992,6 +1006,11 @@ The XML element for a sequence generator is <literal>sequence-generator
                 <listitem>
                     <para>
 <literal>allocation-size</literal>
+                    </para>
+                </listitem>
+                <listitem>
+                    <para>
+<literal>schema</literal>
                     </para>
                 </listitem>
             </itemizedlist>

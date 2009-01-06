@@ -98,35 +98,244 @@ conf/META-INF/persistence.xml</filename>.
             persistence.xml
         </title>
         <para>
-The <filename>persistence.xml</filename> file format obeys the following
-Document Type Descriptor (DTD):
+With the introduction of JPA 2.0, there are two versions of the
+<filename>persistence.xml</filename>.  The most current revision of the
+2.0 persistence schema is presented below.  Version 1.0 of the persistence
+schema can be found at 
+<ulink url="http://java.sun.com/xml/ns/persistence/persistence_1_0.xsd"/>.
         </para>
 <programlisting>
-&lt;!ELEMENT persistence (persistence-unit*)&gt;
-&lt;!ELEMENT persistence-unit (description?,provider?,jta-data-source?,
-  non-jta-data-source?,(class|jar-file|mapping-file)*,
-  exclude-unlisted-classes?,properties?)&gt;
-&lt;!ATTLIST persistence-unit name CDATA #REQUIRED&gt;
-&lt;!ATTLIST persistence-unit transaction-type (JTA|RESOURCE_LOCAL) "JTA"&gt;
-&lt;!ELEMENT description (#PCDATA)&gt;
-&lt;!ELEMENT provider (#PCDATA)&gt;
-&lt;!ELEMENT jta-data-source (#PCDATA)&gt;
-&lt;!ELEMENT non-jta-data-source (#PCDATA)&gt;
-&lt;!ELEMENT mapping-file (#PCDATA)&gt;
-&lt;!ELEMENT jar-file (#PCDATA)&gt;
-&lt;!ELEMENT class (#PCDATA)&gt;
-&lt;!ELEMENT exclude-unlisted-classes EMPTY&gt;
-&lt;!ELEMENT properties (property*)&gt;
-&lt;!ELEMENT property EMPTY&gt;
-&lt;!ATTLIST property name CDATA #REQUIRED&gt;
-&lt;!ATTLIST property value CDATA #REQUIRED&gt;
+&lt;?xml version="1.0" encoding="UTF-8"?&gt;
+&lt;!-- persistence.xml schema --&gt;
+&lt;xsd:schema targetNamespace="http://java.sun.com/xml/ns/persistence"
+    xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+    xmlns:persistence="http://java.sun.com/xml/ns/persistence"
+    elementFormDefault="qualified" attributeFormDefault="unqualified"
+    version="2.0"&gt;
+    &lt;xsd:annotation&gt;
+        &lt;xsd:documentation&gt;
+            @(#)persistence_2_0.xsd 1.0 August 27 2008
+        &lt;/xsd:documentation&gt;
+    &lt;/xsd:annotation&gt;
+    &lt;xsd:annotation&gt;
+        &lt;xsd:documentation&gt;
+        &lt;![CDATA[
+            This is the XML Schema for the persistence configuration file.
+            The file must be named "META-INF/persistence.xml" in the
+            persistence archive.
+            Persistence configuration files must indicate
+            the persistence schema by using the persistence namespace:
+            http://java.sun.com/xml/ns/persistence
+            and indicate the version of the schema by
+            using the version element as shown below:
+            &lt;persistence xmlns="http://java.sun.com/xml/ns/persistence"
+            xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+            xsi:schemaLocation="http://java.sun.com/xml/ns/persistence
+            http://java.sun.com/xml/ns/persistence/persistence_2_0.xsd"
+            version="2.0"&gt;
+            ...
+            &lt;/persistence&gt;
+        ]]&gt;
+        &lt;/xsd:documentation&gt;
+    &lt;/xsd:annotation&gt;
+    &lt;xsd:simpleType name="versionType"&gt;
+        &lt;xsd:restriction base="xsd:token"&gt;
+            &lt;xsd:pattern value="[0-9]+(\.[0-9]+)*" /&gt;
+        &lt;/xsd:restriction&gt;
+    &lt;/xsd:simpleType&gt;
+    &lt;!-- **************************************************** --&gt;
+    &lt;xsd:element name="persistence"&gt;
+        &lt;xsd:complexType&gt;
+            &lt;xsd:sequence&gt;
+                &lt;!-- **************************************************** --&gt;
+                &lt;xsd:element name="persistence-unit" minOccurs="1"
+                    maxOccurs="unbounded"&gt;
+                    &lt;xsd:complexType&gt;
+                        &lt;xsd:annotation&gt;
+                            &lt;xsd:documentation&gt;
+                                Configuration of a persistence unit.
+                            &lt;/xsd:documentation&gt;
+                        &lt;/xsd:annotation&gt;
+                        &lt;xsd:sequence&gt;
+                            &lt;!-- **************************************************** --&gt;
+                            &lt;xsd:element name="description"
+                                type="xsd:string" minOccurs="0"&gt;
+                                &lt;xsd:annotation&gt;
+                                    &lt;xsd:documentation&gt;
+                                        Description of this persistence
+                                        unit.
+                                    &lt;/xsd:documentation&gt;
+                                &lt;/xsd:annotation&gt;
+                            &lt;/xsd:element&gt;
+                            &lt;!-- **************************************************** --&gt;
+                            &lt;xsd:element name="provider"
+                                type="xsd:string" minOccurs="0"&gt;
+                                &lt;xsd:annotation&gt;
+                                    &lt;xsd:documentation&gt;
+                                        Provider class that supplies
+                                        EntityManagers for this
+                                        persistence unit.
+                                    &lt;/xsd:documentation&gt;
+                                &lt;/xsd:annotation&gt;
+                            &lt;/xsd:element&gt;
+                            &lt;!-- **************************************************** --&gt;
+                            &lt;xsd:element name="jta-data-source"
+                                type="xsd:string" minOccurs="0"&gt;
+                                &lt;xsd:annotation&gt;
+                                    &lt;xsd:documentation&gt;
+                                        The container-specific name of
+                                        the JTA datasource to use.
+                                    &lt;/xsd:documentation&gt;
+                                &lt;/xsd:annotation&gt;
+                            &lt;/xsd:element&gt;
+                            &lt;!-- **************************************************** --&gt;
+                            &lt;xsd:element name="non-jta-data-source"
+                                type="xsd:string" minOccurs="0"&gt;
+                                &lt;xsd:annotation&gt;
+                                    &lt;xsd:documentation&gt;
+                                        The container-specific name of a
+                                        non-JTA datasource to use.
+                                    &lt;/xsd:documentation&gt;
+                                &lt;/xsd:annotation&gt;
+                            &lt;/xsd:element&gt;
+                            &lt;!-- **************************************************** --&gt;
+                            &lt;xsd:element name="mapping-file"
+                                type="xsd:string" minOccurs="0"
+                                maxOccurs="unbounded"&gt;
+                                &lt;xsd:annotation&gt;
+                                    &lt;xsd:documentation&gt;
+                                        File containing mapping
+                                        information. Loaded as a
+                                        resource by the persistence
+                                        provider.
+                                    &lt;/xsd:documentation&gt;
+                                &lt;/xsd:annotation&gt;
+                            &lt;/xsd:element&gt;
+                            &lt;!-- **************************************************** --&gt;
+                            &lt;xsd:element name="jar-file"
+                                type="xsd:string" minOccurs="0"
+                                maxOccurs="unbounded"&gt;
+                                &lt;xsd:annotation&gt;
+                                    &lt;xsd:documentation&gt;
+                                        Jar file that should be scanned
+                                        for entities. Not applicable to
+                                        Java SE persistence units.
+                                    &lt;/xsd:documentation&gt;
+                                &lt;/xsd:annotation&gt;
+                            &lt;/xsd:element&gt;
+                            &lt;!-- **************************************************** --&gt;
+                            &lt;xsd:element name="class" type="xsd:string"
+                                minOccurs="0" maxOccurs="unbounded"&gt;
+                                &lt;xsd:annotation&gt;
+                                    &lt;xsd:documentation&gt;
+                                        Class to scan for annotations.
+                                        It should be annotated with
+                                        either @Entity, @Embeddable or
+                                        @MappedSuperclass.
+                                    &lt;/xsd:documentation&gt;
+                                &lt;/xsd:annotation&gt;
+                            &lt;/xsd:element&gt;
+                            &lt;!-- **************************************************** --&gt;
+                            &lt;xsd:element name="exclude-unlisted-classes"
+                                type="xsd:boolean" default="false"
+                                minOccurs="0"&gt;
+                                &lt;xsd:annotation&gt;
+                                    &lt;xsd:documentation&gt;
+                                        When set to true then only
+                                        listed classes and jars will be
+                                        scanned for persistent classes,
+                                        otherwise the enclosing jar or
+                                        directory will also be scanned.
+                                        Not applicable to Java SE
+                                        persistence units.
+                                    &lt;/xsd:documentation&gt;
+                                &lt;/xsd:annotation&gt;
+                            &lt;/xsd:element&gt;
+                            &lt;!-- **************************************************** --&gt;
+                            &lt;xsd:element name="properties"
+                                minOccurs="0"&gt;
+                                &lt;xsd:annotation&gt;
+                                    &lt;xsd:documentation&gt;
+                                        A list of vendor-specific
+                                        properties.
+                                    &lt;/xsd:documentation&gt;
+                                &lt;/xsd:annotation&gt;
+                                &lt;xsd:complexType&gt;
+                                    &lt;xsd:sequence&gt;
+                                        &lt;xsd:element name="property"
+                                            minOccurs="0"
+                                            maxOccurs="unbounded"&gt;
+                                            &lt;xsd:annotation&gt;
+                                                &lt;xsd:documentation&gt;
+                                                    A name-value pair.
+                                                &lt;/xsd:documentation&gt;
+                                            &lt;/xsd:annotation&gt;
+                                            &lt;xsd:complexType&gt;
+                                                &lt;xsd:attribute
+                                                    name="name"
+                                                    type="xsd:string"
+                                                    use="required" /&gt;
+                                                &lt;xsd:attribute
+                                                    name="value"
+                                                    type="xsd:string"
+                                                    use="required" /&gt;
+                                            &lt;/xsd:complexType&gt;
+                                        &lt;/xsd:element&gt;
+                                    &lt;/xsd:sequence&gt;
+                                &lt;/xsd:complexType&gt;
+                            &lt;/xsd:element&gt;
+                        &lt;/xsd:sequence&gt;
+                        &lt;!-- **************************************************** --&gt;
+                        &lt;xsd:attribute name="name" type="xsd:string"
+                            use="required"&gt;
+                            &lt;xsd:annotation&gt;
+                                &lt;xsd:documentation&gt;
+                                    Name used in code to reference this
+                                    persistence unit.
+                                &lt;/xsd:documentation&gt;
+                            &lt;/xsd:annotation&gt;
+                        &lt;/xsd:attribute&gt;
+                        &lt;!-- **************************************************** --&gt;
+                        &lt;xsd:attribute name="transaction-type"
+                            type="persistence:persistence-unit-transaction-type"&gt;
+                            &lt;xsd:annotation&gt;
+                                &lt;xsd:documentation&gt;
+                                    Type of transactions used by
+                                    EntityManagers from this persistence
+                                    unit.
+                                &lt;/xsd:documentation&gt;
+                            &lt;/xsd:annotation&gt;
+                        &lt;/xsd:attribute&gt;
+                    &lt;/xsd:complexType&gt;
+                &lt;/xsd:element&gt;
+            &lt;/xsd:sequence&gt;
+            &lt;xsd:attribute name="version" type="persistence:versionType"
+                fixed="2.0" use="required" /&gt;
+        &lt;/xsd:complexType&gt;
+    &lt;/xsd:element&gt;
+    &lt;!-- **************************************************** --&gt;
+    &lt;xsd:simpleType name="persistence-unit-transaction-type"&gt;
+        &lt;xsd:annotation&gt;
+            &lt;xsd:documentation&gt;
+                public enum TransactionType { JTA, RESOURCE_LOCAL };
+            &lt;/xsd:documentation&gt;
+        &lt;/xsd:annotation&gt;
+        &lt;xsd:restriction base="xsd:token"&gt;
+            &lt;xsd:enumeration value="JTA" /&gt;
+            &lt;xsd:enumeration value="RESOURCE_LOCAL" /&gt;
+        &lt;/xsd:restriction&gt;
+    &lt;/xsd:simpleType&gt;
+&lt;/xsd:schema&gt;
 </programlisting>
         <para>
 The root element of a <filename>persistence.xml</filename> file is <literal>
 persistence</literal>, which then contains one or more <literal>
-persistence-unit</literal> definitions. Each persistence unit describes the
-configuration for the entity managers created by the persistence unit's entity
-manager factory. The persistence unit can specify these elements and attributes.
+persistence-unit</literal> definitions. The root element should include the
+version attribute with the appropriate version, <literal>1.0</literal> for a
+version 1.0 file and <literal>2.0</literal> for a version 2.0 file.  Each
+persistence unit describes the configuration for the entity managers created by
+the persistence unit's entity manager factory. The persistence unit can specify 
+these elements and attributes.
         </para>
         <itemizedlist>
             <listitem>
@@ -215,7 +424,7 @@ environment:
             </title>
 <programlisting>
 &lt;?xml version="1.0"?&gt;
-&lt;persistence&gt;
+&lt;persistence version="1.0"&gt;
   &lt;persistence-unit name="openjpa"&gt;
     &lt;provider&gt;org.apache.openjpa.persistence.PersistenceProviderImpl&lt;/provider&gt;
     &lt;class&gt;tutorial.Animal&lt;/class&gt;
