@@ -44,7 +44,6 @@ import org.apache.openjpa.meta.FieldMetaData;
 import org.apache.openjpa.meta.JavaTypes;
 import org.apache.openjpa.util.InternalException;
 import org.apache.openjpa.util.MetaDataException;
-import org.apache.tools.ant.taskdefs.condition.IsReference;
 
 /**
  * Specialization of metadata for relational databases.
