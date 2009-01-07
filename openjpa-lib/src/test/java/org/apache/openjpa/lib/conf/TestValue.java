@@ -54,4 +54,47 @@ public class TestValue extends TestCase {
                 sValue.getAliases()[1]);
         assertEquals("Array of aliases not set by value", aName, aStrings[1]);
     }
+    
+    public void testEquivalentValueCanBeSet() {
+        SimpleValue v = new SimpleValue();
+        v.setProperty("main");
+        v.addEquivalentKey("eqivalent1");
+        v.addEquivalentKey("eqivalent2");
+        assertEquals(2, v.getEquivalentKeys().size());
+        assertEquals(3, v.getPropertyKeys().size());
+        assertEquals(v.getProperty(), v.getPropertyKeys().get(0));
+        
+        assertTrue(v.matches("main"));
+        assertTrue(v.matches("eqivalent1"));
+        assertTrue(v.matches("eqivalent2"));
+        assertFalse(v.matches("eqivalent3"));
+    }
+    
+    public void testEquivalentValuesAreUnmodifable() {
+        SimpleValue v = new SimpleValue();
+        v.setProperty("main");
+        v.addEquivalentKey("eqivalent1");
+        v.addEquivalentKey("eqivalent2");
+        
+        try {
+            v.getPropertyKeys().add("extra");
+            fail();
+        } catch (UnsupportedOperationException ex) {
+            // good
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            fail();
+        }
+        
+        try {
+            v.getEquivalentKeys().add("impossible");
+            fail();
+        } catch (UnsupportedOperationException ex) {
+            // good
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            fail();
+        }
+    }
+    
 }

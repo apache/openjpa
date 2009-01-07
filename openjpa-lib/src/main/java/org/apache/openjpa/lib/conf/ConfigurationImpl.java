@@ -248,8 +248,8 @@ public class ConfigurationImpl
 
         // search backwards so that custom values added after construction
         // are found quickly, since this will be the std way of accessing them
-        for(Value val : _vals) { 
-            if (val.getProperty().equals(property))
+        for (Value val : _vals) { 
+            if (val.matches(property))
                 return val;
         }
         return null;
@@ -327,10 +327,10 @@ public class ConfigurationImpl
         if (_props != null) {
             if (newString == null)
                 Configurations.removeProperty(val.getProperty(), _props);
-            else if (Configurations.containsProperty(val.getProperty(), _props)
+            else if (Configurations.containsProperty(val, _props)
                 || val.getDefault() == null
                 || !val.getDefault().equals(newString))
-                put(_props, val, newString);
+                setValue(_props, val, newString);
         }
     }
 
@@ -589,13 +589,13 @@ public class ConfigurationImpl
                 // if key in existing properties, we already know value is up
                 // to date
                 if (_props != null && Configurations.containsProperty
-                    (val.getProperty(), _props))
+                    (val, _props))
                     continue;
 
                 str = val.getString();
                 if (str != null && (storeDefaults
                     || !str.equals(val.getDefault())))
-                    put(clone, val, str);
+                    setValue(clone, val, str);
             }
             if (_props == null)
                 _props = new HashMap(clone);
@@ -629,11 +629,10 @@ public class ConfigurationImpl
         Map remaining = new HashMap(map);
         boolean ser = true;
         Object o;
-        for(Value val : _vals) {
-            o = get(map, val, true);
+        for (Value val : _vals) {
+            o = findValue(map, val);
             if (o == null)
                 continue;
-
             if (o instanceof String) {
                 if (!StringUtils.equals((String) o, val.getString()))
                     val.setString((String) o);
@@ -671,7 +670,7 @@ public class ConfigurationImpl
      * Use this method instead of attempting to add the value directly because 
      * this will account for the property prefix.
      */
-    private void put(Map map, Value val, Object o) {
+    private void setValue(Map map, Value val, Object o) {
         Object key = val.getLoadKey();
         if (key == null)
             key = "openjpa." + val.getProperty();
@@ -679,14 +678,25 @@ public class ConfigurationImpl
     }
 
     /**
-     * Look up the given value, testing all available prefixes.
+     * Look up the given value, testing all available prefixes and all possible
+     * property names. Detects if the given map contains multiple keys that
+     * are equivalent names for the given value. 
      */
-    private Object get(Map map, Value val, boolean setLoadKey) {
-        String key = ProductDerivations.getConfigurationKey(
-            val.getProperty(), map);
-        if (map.containsKey(key) && setLoadKey)
-            val.setLoadKey(key);
-        return map.get(key);
+    private Object findValue(Map map, Value val) {
+        Object result = null;
+        List<String> partialKeys = val.getPropertyKeys();
+        for (String partialKey : partialKeys) {
+            String key = ProductDerivations.getConfigurationKey(
+                partialKey, map);
+            if (map.containsKey(key)) {
+                // do not return immediately. Looping through all equivalent
+                // property names will detect if the Map contains multiple keys
+                // that are equivalent as it tries to set load key.
+                val.setLoadKey(key);
+                result = map.get(key);
+            }
+        }
+        return result;
     }
 
     /**

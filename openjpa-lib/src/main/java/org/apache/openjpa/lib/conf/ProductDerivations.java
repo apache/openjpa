@@ -40,6 +40,7 @@ import org.apache.openjpa.lib.util.Services;
  * Utilities for running product derivations.
  *
  * @author Abe White
+ * @author Pinaki Poddar
  * @nojavadoc
  */
 public class ProductDerivations {
@@ -133,18 +134,22 @@ public class ProductDerivations {
     }
     
     /**
-     * Determine the full key name for <code>key</code>, given the registered
-     * prefixes and the entries in <code>map</code>. This method
+     * Determine the full key name for <code>partialKey</code>, given the 
+     * registered prefixes and the entries in <code>map</code>. This method
      * computes the appropriate configuration prefix to use by looking 
      * through <code>map</code> for a key starting with any of the known
-     * configuration prefixes and ending with <code>key</code> and, if a
+     * configuration prefixes and ending with <code>partialKey</code> and, if a
      * value is found, using the prefix of that key. Otherwise, it uses
      * the first registered prefix. 
      * 
+     * The given <code>partialKey</code> is first tested for containment in the
+     * given map without any prefix.
+     *  
      * @since 0.9.7
      */
     public static String getConfigurationKey(String partialKey, Map map) {
-        String firstKey = null;
+        String firstKey = (map != null && map.containsKey(partialKey)) 
+            ? partialKey : null;
         for (int i = 0; map != null && i < _prefixes.length; i++) {
             String fullKey = _prefixes[i] + "." + partialKey;
             if (map.containsKey(fullKey)) {

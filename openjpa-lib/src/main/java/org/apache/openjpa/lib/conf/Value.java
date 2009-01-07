@@ -21,8 +21,10 @@ package org.apache.openjpa.lib.conf;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.openjpa.lib.util.Localizer;
@@ -32,7 +34,7 @@ import org.apache.openjpa.lib.util.ParseException;
  * A configuration value.
  *
  * @author Marc Prud'hommeaux
- * @author Pinaki Poddar (added dynamic Value support)
+ * @author Pinaki Poddar
  */
 public abstract class Value implements Cloneable {
 
@@ -49,6 +51,7 @@ public abstract class Value implements Cloneable {
     private Class scope = null;
     private boolean isDynamic = false;
     private String originalValue = null;
+    private Set<String> otherNames = null;
 
     /**
      * Default constructor.
@@ -80,7 +83,56 @@ public abstract class Value implements Cloneable {
     public void setProperty(String prop) {
         this.prop = prop;
     }
-
+    
+    /**
+     * Adds a moniker that is equivalent to the original property key used
+     * during construction. 
+     * 
+     * @since 2.0.0
+     */
+    public void addEquivalentKey(String other) {
+        if (otherNames == null)
+            otherNames = new HashSet<String>();
+        otherNames.add(other);
+    }
+    
+    /**
+     * Gets the unmodifiable view of the equivalent keys or an empty set if
+     * no equivalent key has been added. 
+     * 
+     * @since 2.0.0
+     */
+    public Set<String> getEquivalentKeys() {
+        return otherNames == null ? Collections.EMPTY_SET 
+            : Collections.unmodifiableSet(otherNames);
+    }
+    
+    /**
+     * Gets unmodifiable view of all the property keys set on this receiver.  
+     * The 0-th element in the returned list is always the same as the original 
+     * key returned by {@link #getProperty()} method. 
+     * 
+     * @since 2.0.0
+     */
+    public List<String> getPropertyKeys() {
+        List<String> result = new ArrayList<String>(1 + 
+            (otherNames ==null ? 0 : otherNames.size()));
+        result.add(getProperty());
+        if (otherNames != null)
+            result.addAll(otherNames);
+        return Collections.unmodifiableList(result);
+    }
+    
+    /**
+     * Affirms if the given key matches the property (or any of its equivalent).
+     * 
+     * @since 2.0.0
+     */
+    public boolean matches(String p) {
+        return getProperty().equals(p) || 
+          (otherNames != null && otherNames.contains(p));
+    }
+    
     /**
      * The key under which this value was loaded, or null.
      */
@@ -89,10 +141,15 @@ public abstract class Value implements Cloneable {
     }
 
     /**
-     * The key under which this value was loaded, or null.
+     * Sets key under which this value was loaded. 
+     * @exception if called with a non-null key which is different from an
+     * already loaded key. 
      */
-    public void setLoadKey(String loadKey) {
-        this.loadKey = loadKey;
+    public void setLoadKey(String key) {
+        if (this.loadKey != null && key != null && !this.loadKey.equals(key)) 
+            throw new ParseException(s_loc.get("multiple-load-key", 
+                loadKey, key));
+        loadKey = key;
     }
 
     /**

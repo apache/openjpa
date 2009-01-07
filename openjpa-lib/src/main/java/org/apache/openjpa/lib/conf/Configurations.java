@@ -635,6 +635,22 @@ public class Configurations {
      * Test whether the map contains the given partial key, prefixed with any
      * possible configuration prefix.
      */
+    public static boolean containsProperty(Value value, Map props) {
+        if (value == null || props == null || props.isEmpty())
+            return false;
+        List<String> partialKeys = value.getPropertyKeys();
+        for (String partialKey : partialKeys) {
+            if (props.containsKey(
+                ProductDerivations.getConfigurationKey(partialKey, props)))
+                return true;
+        }
+        return false;
+    }
+    
+    /**
+     * Test whether the map contains the given partial key, prefixed with any
+     * possible configuration prefix.
+     */
     public static boolean containsProperty(String partialKey, Map props) {
         if (partialKey == null || props == null || props.isEmpty())
             return false;

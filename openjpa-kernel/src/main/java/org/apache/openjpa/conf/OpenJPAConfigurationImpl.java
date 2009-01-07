@@ -320,9 +320,17 @@ public class OpenJPAConfigurationImpl
 
 
         connectionUserName = addString("ConnectionUserName");
+        connectionUserName.addEquivalentKey("javax.persistence.jdbc.user");
+        
         connectionPassword = addString("ConnectionPassword");
+        connectionPassword.addEquivalentKey("javax.persistence.jdbc.password");
+
         connectionURL = addString("ConnectionURL");
+        connectionURL.addEquivalentKey("javax.persistence.jdbc.url");
+        
         connectionDriverName = addString("ConnectionDriverName");
+        connectionDriverName.addEquivalentKey("javax.persistence.jdbc.driver");
+        
         connectionFactoryName = addString("ConnectionFactoryName");
         connectionProperties = addString("ConnectionProperties");
         connectionFactoryProperties = addString("ConnectionFactoryProperties");
