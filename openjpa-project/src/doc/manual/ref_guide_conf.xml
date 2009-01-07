@@ -360,9 +360,10 @@ property, so to use the standard implementation and configure the size, specify:
 <programlisting>
 true(CacheSize=1000)
 </programlisting>
+
         <para>
 The remainder of this chapter reviews the set of configuration properties
-OpenJPA recognizes.
+OpenJPA recognizes. 
         </para>
     </section>
     <section id="ref_guide_conf_openjpa">
@@ -384,6 +385,51 @@ majority of developers can omit them. The following properties apply to any
 OpenJPA back-end, though the given descriptions are tailored to OpenJPA's
 default JDBC store.
         </para>
+        
+        <para>
+Few of the properties recognized by OpenJPA have been standardized in JPA 2.0 
+Specification using equivalent names. These properties can be specified either
+by the JPA standard key or equivalent OpenJPA key. Specifying the same key once
+as JPA standard key and again as equivalent OpenJPA key in the same configuration, 
+however, is not allowed. The following table lists these standard JPA properties 
+and their OpenJPA equivalent.
+        </para>
+    <table tocentry="1">
+        <title>
+            Standard JPA Properties and OpenJPA equivalents
+        </title>
+        <tgroup rowsep="1" colsep="8" align="left" cols="2">
+            <colspec colname="StandardJPA"/>
+            <colspec colname="OpenJPAEquivalent"/>
+            <thead>
+                <row>
+                    <entry colname="StandardJPA">Standard JPA 2.0</entry>
+                    <entry colname="OpenJPAEquivalent">OpenJPA Equivalent</entry>
+                </row>
+            </thead>
+            <tbody>
+                <row>
+                    <entry colname="StandardJPA">javax.persistence.jdbc.driver</entry>
+                    <entry colname="OpenJPAEquivalent">openjpa.ConnectionDriverName</entry>
+                </row>
+                <row>
+                    <entry colname="StandardJPA">javax.persistence.jdbc.url</entry>
+                    <entry colname="OpenJPAEquivalent">openjpa.ConnectionURL</entry>
+                </row>
+                <row>
+                    <entry colname="StandardJPA">javax.persistence.jdbc.user</entry>
+                    <entry colname="OpenJPAEquivalent">openjpa.ConnectionUserName</entry>
+                </row>
+                <row>
+                    <entry colname="StandardJPA">javax.persistence.jdbc.password</entry>
+                    <entry colname="OpenJPAEquivalent">openjpa.ConnectionPassword</entry>
+                </row>
+           </tbody>
+        </tgroup>
+    </table>
+        
+        
+        
         <!--
         <section id="openjpa.AggregateListeners">
             <title>
@@ -3865,5 +3911,6 @@ implementation is
 
             </para>
         </section>
+        
     </section>
 </chapter>
