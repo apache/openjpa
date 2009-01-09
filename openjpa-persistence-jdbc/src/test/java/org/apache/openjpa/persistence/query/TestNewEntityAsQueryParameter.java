@@ -47,8 +47,7 @@ public class TestNewEntityAsQueryParameter extends SingleEMFTestCase {
 	public static final int MEMBER_COUNT_TOTAL    = 8;
 	
 	public void setUp() throws Exception {
-		super.setUp(CLEAR_TABLES, Osoba.class, Projekt.class,
-				"openjpa.Log", "SQL=TRACE");
+		super.setUp(CLEAR_TABLES, Osoba.class, Projekt.class);
 		createData();
 	}
 	
@@ -110,7 +109,8 @@ public class TestNewEntityAsQueryParameter extends SingleEMFTestCase {
 		queryWithParameter(em, projekt1, projekt2);
 	}
 	
-	void queryWithParameter(EntityManager em, Projekt projekt1, Projekt projekt2) {
+	@SuppressWarnings("unchecked")
+    void queryWithParameter(EntityManager em, Projekt projekt1, Projekt projekt2) {
 		String jpql = "SELECT DISTINCT o FROM Osoba o WHERE :projekt MEMBER OF o.projekty";
 		em.getTransaction().begin();
 		Query query = em.createQuery(jpql);
