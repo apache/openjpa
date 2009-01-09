@@ -37,7 +37,7 @@ public class TestStatistics extends SingleEMFTestCase {
 	public void setUp() {
 		super.setUp(CLEAR_TABLES, Customer.class, Order.class,
 				"openjpa.DataCache", "true", "openjpa.RemoteCommitProvider",
-				"sjvm", "openjpa.Log", "DefaultLevel=WARN");
+				"sjvm");
 		startCaching(Customer.class);
 		startCaching(Order.class);
 		assertTrue(((EntityManagerImpl) emf.createEntityManager()).getBroker()
@@ -46,7 +46,7 @@ public class TestStatistics extends SingleEMFTestCase {
 		assertNotNull(stats);
 	}
 
-	void startCaching(Class cls) {
+	void startCaching(Class<?> cls) {
 		ClassMetaData meta = emf.getConfiguration()
 				.getMetaDataRepositoryInstance().getMetaData(cls, null, true);
 		meta.setDataCacheName(DataCache.NAME_DEFAULT);
@@ -56,7 +56,8 @@ public class TestStatistics extends SingleEMFTestCase {
 	 * Tests that statistics captures correct data under perfect caching
 	 * condition.
 	 */
-	public void testPerfectCache() {
+	@SuppressWarnings("unchecked")
+    public void testPerfectCache() {
 		print(stats);
 		// populate a bunch of customer and order
 		int nCustomer = 20;

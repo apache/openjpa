@@ -48,20 +48,20 @@ import org.apache.openjpa.persistence.test.SingleEMFTestCase;
  */
 public class TestTablePerClassInheritanceWithAbstractRoot extends
 		SingleEMFTestCase {
-	Class[] UNJOINED_SUBCLASSES = {
+	Class<?>[] UNJOINED_SUBCLASSES = {
 			EnglishParagraph.class, 
 			FrenchParagraph.class, 
 			GermanParagraph.class};
 	
     public void setUp() {
         setUp(CLEAR_TABLES, 
-        		"openjpa.Log", "SQL=TRACE", 
         		Translation.class, BaseEntity.class,
         		EnglishParagraph.class, FrenchParagraph.class, 
         		GermanParagraph.class, Translatable.class);
     }
     
-	public void testConsistency() {
+	@SuppressWarnings("unchecked")
+    public void testConsistency() {
 		OpenJPAEntityManager em = emf.createEntityManager();
 		em.getTransaction().begin();
 		/**
@@ -144,9 +144,9 @@ public class TestTablePerClassInheritanceWithAbstractRoot extends
 	 * Count total number of instances of all the given classes by separate JPQL
 	 * aggregate query. Useful when a base class has unjoined subclasses.
 	 */
-	public int count(Class... classes) {
+	public int count(Class<?>... classes) {
 		int total = 0;
-		for (Class c:classes) {
+		for (Class<?> c:classes) {
 			total += count(c);
 		}
 		return total;

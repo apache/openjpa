@@ -49,8 +49,8 @@ public class TestAutoIncrement extends SingleEMFTestCase {
 		if ("testAutoIncrementIdentityWithNamedSequence".equals(getName())) {
 			super.setUp(CLEAR_TABLES, PObject.class,
 			    "openjpa.jdbc.DBDictionary",
-			    "oracle(UseTriggersForAutoAssign=true,autoAssignSequenceName=autoIncrementSequence)",
-			    "openjpa.Log", "SQL=TRACE");
+			    "oracle(UseTriggersForAutoAssign=true," + 
+			    "autoAssignSequenceName=autoIncrementSequence)");
 		} else {
 			super.setUp(CLEAR_TABLES, PObjectNative.class,
 					"openjpa.jdbc.DBDictionary",

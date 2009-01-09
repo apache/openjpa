@@ -20,8 +20,6 @@
 package org.apache.openjpa.persistence.criteria;
 
 import java.util.List;
-import java.util.Map;
-import java.util.TreeMap;
 
 import javax.persistence.DomainObject;
 import javax.persistence.EntityManager;
@@ -81,8 +79,7 @@ public class TestCriteria extends SingleEMFTestCase {
 				Photo.class,
 				Student.class, 
 				Transaction.class,
-				VideoStore.class,
-				"openjpa.Log","SQL=TRACE, Query=TRACE");
+				VideoStore.class);
 			emf = super.emf;
 		} 
 		qb = (QueryBuilderImpl)emf.getQueryBuilder();
@@ -544,8 +541,8 @@ public class TestCriteria extends SingleEMFTestCase {
 	 */
 	private void executeActually(String jpql, QueryDefinition q, Object...p) {
 		EntityManager em = emf.createEntityManager();
-		List criteriaResult = null;
-		List jpqlResult = null;
+		List<?> criteriaResult = null;
+		List<?> jpqlResult = null;
 		Throwable criteriaError = null;
 		Throwable jpqlError = null;
 		
