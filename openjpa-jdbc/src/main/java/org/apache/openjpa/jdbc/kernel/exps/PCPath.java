@@ -761,6 +761,13 @@ public class PCPath
         // we eventually call appendIsEmpty or appendIsNull rather than appendTo
     }
 
+    public void verifyIndexedField() {
+        Action lastAction = (Action) lastFieldAction();
+        FieldMapping fm = (FieldMapping) lastAction.data;
+        if (fm.getOrderColumn() == null)
+            throw new UserException(_loc.get("no-order-column", fm.getName()));
+    }
+
     public int length(Select sel, ExpContext ctx, ExpState state) {
         return getColumns(state).length;
     }
@@ -796,6 +803,15 @@ public class PCPath
             sql.append(FALSE);
         else
             pstate.field.appendIsNotEmpty(sql, sel, pstate.joins);
+    }
+
+    public void appendIndex(Select sel, ExpContext ctx, ExpState state, 
+        SQLBuffer sql) {
+        PathExpState pstate = (PathExpState) state;
+        if (pstate.field == null)
+            sql.append("1");
+        else
+            pstate.field.appendIndex(sql, sel, pstate.joins);;
     }
 
     public void appendSize(Select sel, ExpContext ctx, ExpState state, 

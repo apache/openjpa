@@ -721,4 +721,9 @@ public interface Select
      * Implement toString to generate SQL string for profiling/debuggging.
      */
     public String toString();
+
+    /**
+     * Return the alias for the given ordered column.
+     */
+    public String getOrderedColumnAlias(Column col, Object path);
 }

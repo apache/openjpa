@@ -391,6 +391,11 @@ public class JDBCExpressionFactory
         return new Size((Val) val);
     }
 
+    public Value index(Value val) {
+        ((PCPath) val).verifyIndexedField();
+        return new Index((Val) val);
+    }
+
     public Value getObjectId(Value val) {
         if (val instanceof Const)
             return new ConstGetObjectId((Const) val);

@@ -74,6 +74,11 @@ abstract class AbstractVal
         sql.append(" IS NOT ").appendValue(null);
     }
 
+    public void appendIndex(Select sel, ExpContext ctx, ExpState state, 
+        SQLBuffer sql) {
+        sql.append("1");
+    }
+
     public void appendSize(Select sel, ExpContext ctx, ExpState state, 
         SQLBuffer sql) {
         sql.append("1");

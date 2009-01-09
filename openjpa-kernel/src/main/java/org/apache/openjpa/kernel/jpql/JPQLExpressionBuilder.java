@@ -965,6 +965,9 @@ public class JPQLExpressionBuilder
             case JJTSIZE:
                 return factory.size(getValue(onlyChild(node)));
 
+            case JJTINDEX:
+                return factory.index(getValue(onlyChild(node)));
+
             case JJTUPPER:
                 val1 = getValue(onlyChild(node));
                 setImplicitType(val1, TYPE_STRING);

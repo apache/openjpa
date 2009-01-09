@@ -91,6 +91,11 @@ public abstract class ContainerFieldStrategy
         appendJoinCount(sql, sel, joins, dict, field, fk);
     }
 
+    public void appendIndex(SQLBuffer sql, Select sel, Joins joins) {
+        sql.append(sel.getOrderedColumnAlias(field.getOrderColumn(),
+            field.getName()));
+    }
+
     protected static void appendJoinCount(SQLBuffer sql, Select sel,
         Joins joins, DBDictionary dict, FieldMapping field, ForeignKey fk) {
         String fullTable = dict.getFullName(fk.getTable(), false);

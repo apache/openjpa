@@ -540,6 +540,10 @@ public class LogicalUnion
             return sel.getColumnAlias(col, joins);
         }
 
+        public String getOrderedColumnAlias(Column col, Object alias) {
+            return sel.getOrderedColumnAlias(col, alias);
+        }
+
         public String getColumnAlias(String col, Table table) {
             return sel.getColumnAlias(col, table);
         }

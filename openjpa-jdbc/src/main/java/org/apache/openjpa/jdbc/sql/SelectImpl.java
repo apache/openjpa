@@ -784,6 +784,29 @@ public class SelectImpl
         return getColumnAlias(col, table, getJoins(joins, false));
     }
 
+    public String getOrderedColumnAlias(Column col, Object path) {
+        String columnName = col.getName();
+        String tableName = col.getTable().getFullName();
+        Set<Map.Entry> entries = _aliases.entrySet();
+        Integer tableAlias = null;
+        for (Map.Entry entry : entries) {
+            Object obj = entry.getKey();
+            Key key = null;
+            if (obj instanceof Key)
+                key = (Key) obj;
+            String str = key != null ? key.getKey().toString() : obj.toString();
+            if (str.equals(tableName)) {
+                tableAlias = (Integer) entry.getValue();
+                break;
+            }
+        }
+        if (tableAlias != null)
+            return new StringBuffer("t").append(tableAlias.toString()).append(".").
+                append(columnName).toString();
+        else
+            throw new InternalException(path.toString());
+    }
+
     /**
      * Return the alias for the given column.
      */
@@ -2326,6 +2349,10 @@ public class SelectImpl
 
         public String toString() {
             return _path + "|" + _key;
+        }
+        
+        Object getKey() {
+            return _key;
         }
     }
 

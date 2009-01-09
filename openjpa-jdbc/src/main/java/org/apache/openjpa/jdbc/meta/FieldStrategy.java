@@ -181,6 +181,11 @@ public interface FieldStrategy
     public void appendSize(SQLBuffer sql, Select sel, Joins joins);
 
     /**
+     * Append the ordered column alias to the given statement.
+     */
+    public void appendIndex(SQLBuffer sql, Select sel, Joins joins);
+
+    /**
      * Join this value to the class table. Does nothing by default.
      */
     public Joins join(Joins joins, boolean forceOuter);

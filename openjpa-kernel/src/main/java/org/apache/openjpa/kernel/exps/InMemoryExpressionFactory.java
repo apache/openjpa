@@ -631,6 +631,10 @@ public class InMemoryExpressionFactory
         return new Size((Val) val);
     }
 
+    public Value index(Value val) {
+        return new Index((Val) val);
+    }
+
     public Value getObjectId(Value val) {
         return new GetObjectId((Val) val);
     }

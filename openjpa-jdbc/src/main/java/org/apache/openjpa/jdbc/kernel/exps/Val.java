@@ -147,6 +147,12 @@ public interface Val
         SQLBuffer sql);
 
     /**
+     * Append the SQL checking the index of this value.
+     */
+    public void appendIndex(Select sel, ExpContext ctx, ExpState state, 
+        SQLBuffer sql);
+
+    /**
      * Append the SQL checking the size of this value.
      */
     public void appendSize(Select sel, ExpContext ctx, ExpState state, 

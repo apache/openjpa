@@ -396,6 +396,13 @@ public interface ExpressionFactory {
     public Value size(Value target);
 
     /**
+     * Return an index/position of the given value within a collection/map.
+     *
+     * @since 2.0.0
+     */
+    public Value index(Value target);
+
+    /**
      * Return distinct values of the given value. This is typically used
      * within aggregates, for example: max(distinct(path))
 	 *
