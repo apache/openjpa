@@ -245,6 +245,15 @@ public class InformixDictionary
     public Connection decorate(Connection conn)
         throws SQLException {
         conn = super.decorate(conn);
+        if (isJDBC3 && conn.getHoldability() != 
+            ResultSet.HOLD_CURSORS_OVER_COMMIT) {
+            conn.setHoldability(ResultSet.HOLD_CURSORS_OVER_COMMIT);
+            if (log.isTraceEnabled()) {                    
+                log.trace(_loc.get("connection-defaults", new Object[]{
+                    conn.getAutoCommit(), conn.getHoldability(),
+                    conn.getTransactionIsolation()}));
+            }
+        }
 
         // if we haven't already done so, initialize the lock mode of the
         // connection
