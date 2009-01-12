@@ -144,7 +144,7 @@ public abstract class AbstractUpdateManager
                     customs);
             } else if ((dirty = ImplHelper.getUpdateFields(sm)) != null) {
                 update(sm, dirty, (ClassMapping) sm.getMetaData(), rowMgr,
-                    store, customs);
+                    store, customs, false);
             } else if (sm.isVersionUpdateRequired()) {
                 updateIndicators(sm, (ClassMapping) sm.getMetaData(), rowMgr,
                     store, customs, true);
@@ -268,7 +268,7 @@ public abstract class AbstractUpdateManager
      */
     protected void update(OpenJPAStateManager sm, BitSet dirty,
         ClassMapping mapping, RowManager rowMgr, JDBCStore store,
-        Collection customs) throws SQLException {
+        Collection customs, boolean updateIndicators) throws SQLException {
         Boolean custom = mapping.isCustomUpdate(sm, store);
         if (!Boolean.FALSE.equals(custom))
             mapping.customUpdate(sm, store);
@@ -279,17 +279,38 @@ public abstract class AbstractUpdateManager
         // detect whether any fields in their rows have been modified
         FieldMapping[] fields = mapping.getDefinedFieldMappings();
         for (int i = 0; i < fields.length; i++) {
-            if (dirty.get(fields[i].getIndex())
-                && !bufferCustomUpdate(fields[i], sm, store, customs)) {
-                fields[i].update(sm, store, rowMgr);
+            FieldMapping field = fields[i];
+            if (dirty.get(field.getIndex())
+                && !bufferCustomUpdate(field, sm, store, customs)) {
+                field.update(sm, store, rowMgr);
+                if (!updateIndicators) {
+                    FieldMapping[] inverseFieldMappings =
+                        field.getInverseMappings();
+                    if (inverseFieldMappings.length == 0) {
+                        updateIndicators = true;
+                    }
+                    else {
+                        for (FieldMapping inverseFieldMapping :
+                            inverseFieldMappings) {
+                            if (inverseFieldMapping.getMappedBy() != null) {
+                                updateIndicators = true;
+                                break;
+                            }
+                        }
+                    }
+                }
             }
         }
 
         ClassMapping sup = mapping.getJoinablePCSuperclassMapping();
-        if (sup == null)
-            updateIndicators(sm, mapping, rowMgr, store, customs, false);
+        if (sup == null) {
+            if (updateIndicators) {
+                updateIndicators(sm, mapping, rowMgr, store, customs, false);
+            }
+        }
         else
-            update(sm, dirty, sup, rowMgr, store, customs);
+            update(sm, dirty, sup, rowMgr, store, customs, updateIndicators);
+
         mapping.update(sm, store, rowMgr);
     }
 
