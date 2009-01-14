@@ -269,8 +269,17 @@ public class PCDataImpl
             return;
 
         int index = fmd.getIndex();
+        OpenJPAStateManager dsm = null;
+        if (sm.getPersistenceCapable().pcIsDetached()) {
+            dsm = (DetachedStateManager) sm.getPersistenceCapable().
+                pcGetStateManager();
+            sm.getPersistenceCapable().pcReplaceStateManager(sm);
+        }
+
         Object val = toData(fmd, sm.fetchField(index, false),
             sm.getContext());
+        if (dsm != null)
+            sm.getPersistenceCapable().pcReplaceStateManager(dsm);
         if (val != NULL)
             setData(index, val);
         else // unable to store field value; clear out any old values
