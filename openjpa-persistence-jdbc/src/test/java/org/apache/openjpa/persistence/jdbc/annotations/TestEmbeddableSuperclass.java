@@ -24,6 +24,7 @@ import org.apache.openjpa.jdbc.conf.JDBCConfiguration;
 import org.apache.openjpa.jdbc.meta.ClassMapping;
 import org.apache.openjpa.jdbc.meta.FieldMapping;
 import org.apache.openjpa.jdbc.meta.strats.ClobValueHandler;
+import org.apache.openjpa.jdbc.meta.strats.EmbedFieldStrategy;
 import org.apache.openjpa.jdbc.meta.strats.FullClassStrategy;
 import org.apache.openjpa.jdbc.meta.strats.MaxEmbeddedClobFieldStrategy;
 import org.apache.openjpa.jdbc.meta.strats.NoneClassStrategy;
@@ -106,7 +107,7 @@ public class TestEmbeddableSuperclass
         assertTrue(fm.getStrategy() instanceof RelationFieldStrategy);
 
         fm = cls.getFieldMapping("sup");
-        assertTrue(fm.getStrategy() instanceof RelationFieldStrategy);
+        assertTrue(fm.getStrategy() instanceof EmbedFieldStrategy);
     }
 
     public void testPersistAndFind() {

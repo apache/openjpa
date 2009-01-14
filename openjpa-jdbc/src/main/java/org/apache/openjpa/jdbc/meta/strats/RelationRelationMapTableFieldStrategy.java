@@ -110,7 +110,10 @@ public class RelationRelationMapTableFieldStrategy
 
                 // order before select in case we're faking union with
                 // multiple selects; order vals used to merge results
-                Joins joins = joinValueRelation(sel.newJoins(), vals[idx]);
+                FieldMapping mapped = field.getMappedByMapping();
+                Joins joins = null;
+                if (mapped == null)
+                    joins = joinValueRelation(sel.newJoins(), vals[idx]);
                 sel.orderBy(field.getKeyMapping().getColumns(), true, true);
                 sel.select(vals[idx], field.getElementMapping().
                     getSelectSubclasses(), store, fetch, eagerMode, joins);
@@ -176,11 +179,14 @@ public class RelationRelationMapTableFieldStrategy
         ValueMapping val = field.getElementMapping();
         if (val.getTypeCode() != JavaTypes.PC || val.isEmbeddedPC())
             throw new MetaDataException(_loc.get("not-relation", val));
-        assertNotMappedBy();
-
-        field.mapJoin(adapt, true);
+        FieldMapping mapped = field.getMappedByMapping();
+        if (mapped != null)         
+            handleMappedBy(adapt);
+        else {
+            field.mapJoin(adapt, true);
+            mapTypeJoin(val, "value", adapt);
+        }
         mapTypeJoin(key, "key", adapt);
-        mapTypeJoin(val, "value", adapt);
 
         field.mapPrimaryKey(adapt);
     }
@@ -211,6 +217,9 @@ public class RelationRelationMapTableFieldStrategy
     private void insert(OpenJPAStateManager sm, RowManager rm, Map map)
         throws SQLException {
         if (map == null || map.isEmpty())
+            return;
+        
+        if (field.getMappedBy() != null)
             return;
 
         Row row = rm.getSecondaryRow(field.getTable(), Row.ACTION_INSERT);

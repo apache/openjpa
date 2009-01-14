@@ -44,6 +44,9 @@ import javax.persistence.Inheritance;
 import javax.persistence.JoinColumn;
 import javax.persistence.JoinColumns;
 import javax.persistence.JoinTable;
+import javax.persistence.MapKeyColumn;
+import javax.persistence.MapKeyJoinColumn;
+import javax.persistence.MapKeyJoinColumns;
 import javax.persistence.PrimaryKeyJoinColumn;
 import javax.persistence.PrimaryKeyJoinColumns;
 import javax.persistence.SecondaryTable;
@@ -141,6 +144,9 @@ public class AnnotationPersistenceMappingParser
         _tags.put(KeyJoinColumns.class, KEY_JOIN_COLS);
         _tags.put(KeyNonpolymorphic.class, KEY_NONPOLY);
         _tags.put(KeyStrategy.class, KEY_STRAT);
+        _tags.put(MapKeyColumn.class, MAP_KEY_COL);
+        _tags.put(MapKeyJoinColumn.class, MAP_KEY_JOIN_COL);
+        _tags.put(MapKeyJoinColumns.class, MAP_KEY_JOIN_COLS);
         _tags.put(PrimaryKeyJoinColumn.class, PK_JOIN_COL);
         _tags.put(PrimaryKeyJoinColumns.class, PK_JOIN_COLS);
         _tags.put(SecondaryTable.class, SECONDARY_TABLE);
@@ -1051,6 +1057,16 @@ public class AnnotationPersistenceMappingParser
                     fm.getKeyMapping().getValueInfo()
                         .setStrategy(((KeyStrategy) anno).value());
                     break;
+                case MAP_KEY_COL:
+                    parseMapKeyColumn(fm, (MapKeyColumn) anno);
+                    break;
+                case MAP_KEY_JOIN_COL:
+                    parseMapKeyJoinColumns(fm, (MapKeyJoinColumn) anno);
+                    break;
+                case MAP_KEY_JOIN_COLS:
+                    parseMapKeyJoinColumns(fm,
+                        ((MapKeyJoinColumns) anno).value());
+                    break;
                 case PK_JOIN_COL:
                     parsePrimaryKeyJoinColumns(fm, (PrimaryKeyJoinColumn) anno);
                     break;
@@ -1699,4 +1715,89 @@ public class AnnotationPersistenceMappingParser
 		col.setFlag (Column.FLAG_UNUPDATABLE, !join.updatable ());
 		return col;
 	}
+    
+    /**
+     * Parse @MapKeyColumn.
+     */
+    protected void parseMapKeyColumn(FieldMapping fm, MapKeyColumn anno) {
+        if (!fm.isElementCollection())
+            throw new UnsupportedException(_loc.get("unsupported", fm,
+                  anno.toString()));
+        
+        int unique = 0;
+        Column col = new Column();
+        setupMapKeyColumn(fm, col, anno);
+        unique |= (anno.unique()) ? TRUE : FALSE;
+        setMapKeyColumn(fm, fm.getKeyMapping().getValueInfo(), col, unique);
+    }
+
+    /**
+     * Setup the given column with information from the given annotation.
+     */
+    private static void setupMapKeyColumn(FieldMapping fm, Column col, 
+        MapKeyColumn anno) {
+        if (!StringUtils.isEmpty(anno.name()))
+            col.setName(anno.name());
+        else 
+            col.setName(fm.getName() + "_" + "KEY");
+        if (!StringUtils.isEmpty(anno.columnDefinition()))
+            col.setTypeName(anno.columnDefinition());
+        if (anno.precision() != 0)
+            col.setSize(anno.precision());
+        else if (anno.length() != 255)
+            col.setSize(anno.length());
+        col.setNotNull(!anno.nullable());
+        col.setDecimalDigits(anno.scale());
+        col.setFlag(Column.FLAG_UNINSERTABLE, !anno.insertable());
+        col.setFlag(Column.FLAG_UNUPDATABLE, !anno.updatable());
+    }
+
+    /**
+     * Set the given map key column as the map key column for <code>fm</code>.
+     *
+     * @param unique bitwise combination of TRUE and FALSE for the
+     * unique attribute of the column
+     */
+    protected void setMapKeyColumn(FieldMapping fm, MappingInfo info,
+        Column col, int unique) {
+        List cols = new ArrayList();
+        cols.add(col);
+        info.setColumns(cols);
+        if (unique == TRUE)
+            info.setUnique(new org.apache.openjpa.jdbc.schema.Unique());
+    }
+    
+    /**
+     * Parse @MapKeyJoinColumn(s).
+     */
+    private void parseMapKeyJoinColumns(FieldMapping fm, MapKeyJoinColumn... joins) {
+        if (joins.length == 0)
+            return;
+
+        List<Column> cols = new ArrayList<Column>(joins.length);
+        int unique = 0;
+        for (int i = 0; i < joins.length; i++) {
+            cols.add(newColumn(joins[i]));
+            unique |= (joins[i].unique()) ? TRUE : FALSE;
+        }
+        setColumns(fm, fm.getKeyMapping().getValueInfo(), cols, unique);
+    }
+    
+    /**
+     *  Create a new schema column with information from the given annotation.
+     */
+    private static Column newColumn(MapKeyJoinColumn join) {
+        Column col = new Column();
+        if (!StringUtils.isEmpty(join.name()))
+            col.setName(join.name());
+        if (!StringUtils.isEmpty(join.columnDefinition()))
+            col.setName(join.columnDefinition());
+        if (!StringUtils.isEmpty(join.referencedColumnName()))
+            col.setTarget(join.referencedColumnName());
+        col.setNotNull(!join.nullable());
+        col.setFlag(Column.FLAG_UNINSERTABLE, !join.insertable());
+        col.setFlag(Column.FLAG_UNUPDATABLE, !join.updatable ());
+        return col;
+    }
+    
 }

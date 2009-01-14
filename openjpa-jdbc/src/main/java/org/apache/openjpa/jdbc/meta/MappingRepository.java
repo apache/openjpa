@@ -882,6 +882,11 @@ public class MappingRepository
                         return new RelationMapInverseKeyFieldStrategy();
                     return new RelationMapTableFieldStrategy();
                 }
+                //TODO: in JPA 2.0 if MapKeyClass type is not specified
+                // an exception is thrown. In OpenJpa 1.x, the map will
+                // be serialized to a blob (the null value returned by
+                // this method will lead to a strategy to serialize
+                // the map).
                 if (!krel && khandler == null)
                     break;
                 if (!vrel && vhandler == null)
@@ -901,6 +906,7 @@ public class MappingRepository
      */
     protected FieldStrategy handlerCollectionStrategy(FieldMapping field, 
         ValueHandler ehandler, boolean installHandlers) {
+        // TODO: JPA 2.0 should ignore this flag and not to serialize
         if (getConfiguration().getCompatibilityInstance()
             .getStoreMapCollectionInEntityAsBlob())
             return null;
@@ -916,6 +922,7 @@ public class MappingRepository
     protected FieldStrategy handlerMapStrategy(FieldMapping field, 
         ValueHandler khandler, ValueHandler vhandler, boolean krel, 
         boolean vrel,  boolean installHandlers) {
+        // TODO: JPA 2.0 should ignore this flag and not to serialize
         if (getConfiguration().getCompatibilityInstance()
             .getStoreMapCollectionInEntityAsBlob())
             return null;

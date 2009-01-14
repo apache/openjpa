@@ -51,6 +51,10 @@ public class HandlerRelationMapTableFieldStrategy
         return _kcols;
     }
 
+    public ColumnIO getKeyColumnIO() {
+        return _kio;
+    }
+
     public Column[] getValueColumns(ClassMapping cls) {
         return field.getElementMapping().getColumns();
     }
@@ -83,8 +87,11 @@ public class HandlerRelationMapTableFieldStrategy
                 sel.select(_kcols);
                 sel.whereForeignKey(field.getJoinForeignKey(),
                     sm.getObjectId(), field.getDefiningMapping(), store);
-
-                Joins joins = joinValueRelation(sel.newJoins(), vals[idx]);
+                FieldMapping mapped = field.getMappedByMapping();
+                Joins joins = null;
+                if (mapped == null)
+                    joins = joinValueRelation(sel.newJoins(), vals[idx]);
+                
                 sel.select(vals[idx], field.getElementMapping().
                     getSelectSubclasses(), store, fetch, eagerMode, joins);
 
@@ -129,23 +136,28 @@ public class HandlerRelationMapTableFieldStrategy
         ValueMapping val = field.getElementMapping();
         if (val.getTypeCode() != JavaTypes.PC || val.isEmbeddedPC())
             throw new MetaDataException(_loc.get("not-relation", val));
-        assertNotMappedBy();
+        FieldMapping mapped = field.getMappedByMapping();
+        
+        if (mapped != null) // map to the owner table
+            handleMappedBy(adapt);
+        else { 
+            // map to a separate table
+            field.mapJoin(adapt, true);
+            if (val.getTypeMapping().isMapped()) {
+                ValueMappingInfo vinfo = val.getValueInfo();
+                ForeignKey fk = vinfo.getTypeJoin(val, "value", false, adapt);
+                val.setForeignKey(fk);
+                val.setColumnIO(vinfo.getColumnIO());
+            } else
+                RelationStrategies.mapRelationToUnmappedPC(val, "value", adapt);
 
-        field.mapJoin(adapt, true);
+            val.mapConstraints("value", adapt);
+        }
         _kio = new ColumnIO();
         DBDictionary dict = field.getMappingRepository().getDBDictionary();
         _kcols = HandlerStrategies.map(key, 
             dict.getValidColumnName("key", field.getTable()), _kio, adapt);
 
-        if (val.getTypeMapping().isMapped()) {
-            ValueMappingInfo vinfo = val.getValueInfo();
-            ForeignKey fk = vinfo.getTypeJoin(val, "value", false, adapt);
-            val.setForeignKey(fk);
-            val.setColumnIO(vinfo.getColumnIO());
-        } else
-            RelationStrategies.mapRelationToUnmappedPC(val, "value", adapt);
-
-        val.mapConstraints("value", adapt);
         field.mapPrimaryKey(adapt);
     }
 
@@ -163,6 +175,8 @@ public class HandlerRelationMapTableFieldStrategy
         Map map)
         throws SQLException {
         if (map == null || map.isEmpty())
+            return;
+        if (field.getMappedBy() != null)
             return;
 
         Row row = rm.getSecondaryRow(field.getTable(), Row.ACTION_INSERT);

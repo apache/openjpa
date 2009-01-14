@@ -141,6 +141,15 @@ public class FieldMapping
             return _fk.getTable();
         if (_val.getForeignKey() != null)
             return _val.getForeignKey().getTable();
+        
+        // if this is a map of bi-directional relation,
+        // the column of this field should be in the table 
+        // of the entity that is the value of the map
+        if (_val.getDeclaredTypeCode() == JavaTypes.MAP) {
+            ClassMapping meta = _elem.getDeclaredTypeMapping();
+            if (meta != null)
+                return meta.getTable();
+        }
         return getDefiningMapping().getTable();
     }
 

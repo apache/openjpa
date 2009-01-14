@@ -108,10 +108,15 @@ public class HandlerHandlerMapTableFieldStrategy
 
         field.mapJoin(adapt, true);
         _kio = new ColumnIO();
-        DBDictionary dict = field.getMappingRepository().getDBDictionary();
-        _kcols = HandlerStrategies.map(key, 
-            dict.getValidColumnName("key", field.getTable()), _kio, adapt);
-
+        List columns = key.getValueInfo().getColumns(); 
+        if (columns != null && columns.size() > 0) {
+            // MapKeyColumn is used
+            _kcols = HandlerStrategies.map(key, "key", _kio, adapt);
+        } else {
+            DBDictionary dict = field.getMappingRepository().getDBDictionary();
+            _kcols = HandlerStrategies.map(key, 
+                    dict.getValidColumnName("key", field.getTable()), _kio, adapt);
+        }
         _vio = new ColumnIO();
         _vcols = HandlerStrategies.map(val, "value", _vio, adapt);
         field.mapPrimaryKey(adapt);

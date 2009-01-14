@@ -26,6 +26,7 @@ import org.apache.openjpa.jdbc.kernel.JDBCStore;
 import org.apache.openjpa.jdbc.meta.ClassMapping;
 import org.apache.openjpa.jdbc.meta.FieldMapping;
 import org.apache.openjpa.jdbc.meta.FieldStrategy;
+import org.apache.openjpa.jdbc.meta.ValueMapping;
 import org.apache.openjpa.jdbc.schema.ForeignKey;
 import org.apache.openjpa.jdbc.sql.Joins;
 import org.apache.openjpa.jdbc.sql.Result;
@@ -33,6 +34,7 @@ import org.apache.openjpa.jdbc.sql.Row;
 import org.apache.openjpa.jdbc.sql.RowManager;
 import org.apache.openjpa.jdbc.sql.Select;
 import org.apache.openjpa.kernel.OpenJPAStateManager;
+import org.apache.openjpa.lib.log.Log;
 import org.apache.openjpa.lib.util.Localizer;
 import org.apache.openjpa.meta.JavaTypes;
 import org.apache.openjpa.util.MetaDataException;
@@ -172,5 +174,79 @@ public abstract class MapTableFieldStrategy
 
     protected ClassMapping[] getIndependentElementMappings(boolean traverse) {
         return ClassMapping.EMPTY_MAPPINGS;
+    }
+    
+    protected void handleMappedBy(boolean adapt){
+        boolean criteria = field.getValueInfo().getUseClassCriteria();
+        // check for named inverse
+        FieldMapping mapped = field.getMappedByMapping();
+        if (mapped != null) {
+            field.getMappingInfo().assertNoSchemaComponents(field, !adapt);
+            field.getValueInfo().assertNoSchemaComponents(field, !adapt);
+            mapped.resolve(mapped.MODE_META | mapped.MODE_MAPPING);
+
+            if (!mapped.isMapped() || mapped.isSerialized())
+                throw new MetaDataException(_loc.get("mapped-by-unmapped",
+                    field, mapped));
+
+            if (mapped.getTypeCode() == JavaTypes.PC) {
+                if (mapped.getJoinDirection() == mapped.JOIN_FORWARD) {
+                    field.setJoinDirection(field.JOIN_INVERSE);
+                    field.setColumns(mapped.getDefiningMapping().
+                        getPrimaryKeyColumns());
+                } else if (isTypeUnjoinedSubclass(mapped))
+                    throw new MetaDataException(_loc.get
+                        ("mapped-inverse-unjoined", field.getName(),
+                            field.getDefiningMapping(), mapped));
+                ForeignKey fk = mapped.getForeignKey(field.getDefiningMapping());
+                field.setForeignKey(fk);
+                field.setJoinForeignKey(fk);
+            } else if (mapped.getElement().getTypeCode() == JavaTypes.PC) {
+                if (isTypeUnjoinedSubclass(mapped.getElementMapping()))
+                    throw new MetaDataException(_loc.get
+                        ("mapped-inverse-unjoined", field.getName(),
+                            field.getDefiningMapping(), mapped));
+
+                // warn the user about making the collection side the owner
+                Log log = field.getRepository().getLog();
+                if (log.isInfoEnabled())
+                    log.info(_loc.get("coll-owner", field, mapped));
+                ValueMapping elem = mapped.getElementMapping();
+                ForeignKey fk = elem.getForeignKey();
+                field.setForeignKey(fk);
+                field.setJoinForeignKey(fk);
+            } else
+                throw new MetaDataException(_loc.get("not-inv-relation",
+                    field, mapped));
+
+            field.setUseClassCriteria(criteria);
+            return;
+        }
+/*
+        // this is necessary to support openjpa 3 mappings, which didn't
+        // differentiate between secondary table joins and relations built
+        // around an inverse key: check to see if we're mapped as a secondary
+        // table join but we're in the table of the related type, and if so
+        // switch our join mapping info to our value mapping info
+        String tableName = field.getMappingInfo().getTableName();
+        Table table = field.getTypeMapping().getTable();
+        ValueMappingInfo vinfo = field.getValueInfo();
+        if (tableName != null && table != null
+            && (tableName.equalsIgnoreCase(table.getName())
+            || tableName.equalsIgnoreCase(table.getFullName()))) {
+            vinfo.setJoinDirection(MappingInfo.JOIN_INVERSE);
+            vinfo.setColumns(field.getMappingInfo().getColumns());
+            field.getMappingInfo().setTableName(null);
+            field.getMappingInfo().setColumns(null);
+        }
+*/        
+    }
+
+    protected boolean isTypeUnjoinedSubclass(ValueMapping mapped) {
+        ClassMapping def = field.getDefiningMapping();
+        for (; def != null; def = def.getJoinablePCSuperclassMapping())
+            if (def == mapped.getTypeMapping())
+                return false;
+        return true;
     }
 }

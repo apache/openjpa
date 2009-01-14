@@ -44,6 +44,7 @@ public enum MetaDataTag {
     ID_CLASS,
     LOB,
     MAP_KEY,
+    MAP_KEY_CLASS,
     NATIVE_QUERIES,
     NATIVE_QUERY,
     QUERY_STRING,

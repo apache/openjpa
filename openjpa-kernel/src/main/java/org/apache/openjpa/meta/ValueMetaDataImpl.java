@@ -432,7 +432,11 @@ public class ValueMetaDataImpl
             _owner.getDefiningMetaData().getEnvClassLoader(), false);
         if (meta != null)
             _decCode = JavaTypes.PC;
-        if (!isEmbedded())
+        
+        if (meta != null && meta.isEmbeddedOnly())
+            setEmbedded(true);
+                
+        if (!isEmbedded()) 
             _decTypeMeta = meta;
     }
 

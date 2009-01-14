@@ -23,6 +23,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.apache.openjpa.enhance.PersistenceCapable;
 import org.apache.openjpa.jdbc.conf.JDBCConfiguration;
@@ -33,6 +34,7 @@ import org.apache.openjpa.jdbc.kernel.JDBCStoreManager;
 import org.apache.openjpa.jdbc.meta.ClassMapping;
 import org.apache.openjpa.jdbc.meta.Embeddable;
 import org.apache.openjpa.jdbc.meta.FieldMapping;
+import org.apache.openjpa.jdbc.meta.FieldStrategy;
 import org.apache.openjpa.jdbc.meta.Joinable;
 import org.apache.openjpa.jdbc.meta.MappingInfo;
 import org.apache.openjpa.jdbc.meta.ValueMapping;
@@ -57,6 +59,7 @@ import org.apache.openjpa.kernel.OpenJPAStateManager;
 import org.apache.openjpa.lib.log.Log;
 import org.apache.openjpa.lib.util.Localizer;
 import org.apache.openjpa.meta.ClassMetaData;
+import org.apache.openjpa.meta.FieldMetaData;
 import org.apache.openjpa.meta.JavaTypes;
 import org.apache.openjpa.util.ApplicationIds;
 import org.apache.openjpa.util.ImplHelper;
@@ -213,9 +216,66 @@ public class RelationFieldStrategy
             updateInverse(sm, rel, store, rm);
         else {
             Row row = field.getRow(sm, store, rm, Row.ACTION_INSERT);
-            if (row != null)
+            if (row != null) {
                 field.setForeignKey(row, rel);
+                // this is for bi-directional maps, the key and value of the 
+                // map are stored in the table of the mapped-by entity  
+                setMapKey(sm, rel, store, row);
+            }
         }
+    }
+    
+    private void setMapKey(OpenJPAStateManager sm, OpenJPAStateManager rel, 
+        JDBCStore store, Row row) throws SQLException {
+        if (rel == null)
+            return;
+        ClassMetaData meta = rel.getMetaData();
+        FieldMapping[] fields = ((ClassMapping)meta).getFieldMappings();
+        for (int i = 0; i < fields.length; i++) {
+            FieldMetaData mappedBy = fields[i].getMappedByMetaData();
+            if (mappedBy == field) {
+                if (fields[i].getDeclaredTypeCode() == JavaTypes.MAP) {
+                    Map mapObj = (Map)rel.fetchObjectField(
+                        fields[i].getIndex());
+                    Object keyObj = getMapKeyObj(mapObj, 
+                        sm.getPersistenceCapable());
+                    ValueMapping key = fields[i].getKeyMapping();
+                    if (!key.isEmbedded()) {
+                        if (keyObj instanceof PersistenceCapable) {
+                            OpenJPAStateManager keySm = RelationStrategies.
+                                getStateManager(keyObj, store.getContext());
+                            // key is an entity
+                            ForeignKey fk = fields[i].getKeyMapping().
+                                getForeignKey();
+                            ColumnIO io = new ColumnIO();
+                            row.setForeignKey(fk, io, keySm);
+                        } 
+                    } else {
+                        // key is an embeddable or basic type
+                        FieldStrategy strategy = fields[i].getStrategy(); 
+                        if (strategy instanceof  
+                            HandlerRelationMapTableFieldStrategy) {
+                            HandlerRelationMapTableFieldStrategy strat = 
+                                (HandlerRelationMapTableFieldStrategy) strategy;
+                            Column[] kcols = strat.getKeyColumns((ClassMapping)meta);
+                            ColumnIO kio = strat.getKeyColumnIO();
+                            HandlerStrategies.set(key, keyObj, store, row, kcols,
+                                kio, true);
+                        }
+                    } 
+                    break;
+                }
+            }
+        }
+    }
+    
+    private Object getMapKeyObj(Map mapObj, Object value) {
+        Set keySet = mapObj.keySet();
+        for (Object key : keySet) {
+            if (mapObj.get(key) == value)
+                return key;
+        }
+        return null;
     }
 
     public void update(OpenJPAStateManager sm, JDBCStore store, RowManager rm)

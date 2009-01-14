@@ -59,6 +59,7 @@ import javax.persistence.Lob;
 import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 import javax.persistence.MapKey;
+import javax.persistence.MapKeyClass;
 import javax.persistence.MappedSuperclass;
 import javax.persistence.NamedNativeQueries;
 import javax.persistence.NamedNativeQuery;
@@ -143,6 +144,7 @@ public class AnnotationPersistenceMetaDataParser
         _tags.put(Id.class, ID);
         _tags.put(IdClass.class, ID_CLASS);
         _tags.put(MapKey.class, MAP_KEY);
+        _tags.put(MapKeyClass.class, MAP_KEY_CLASS);
         _tags.put(NamedNativeQueries.class, NATIVE_QUERIES);
         _tags.put(NamedNativeQuery.class, NATIVE_QUERY);
         _tags.put(NamedQueries.class, QUERIES);
@@ -1064,6 +1066,10 @@ public class AnnotationPersistenceMetaDataParser
                     if (isMappingOverrideMode())
                         parseMapKey(fmd, (MapKey) anno);
                     break;
+                case MAP_KEY_CLASS:
+                    if (isMappingOverrideMode())
+                        parseMapKeyClass(fmd, (MapKeyClass) anno);
+                    break;
                 case ORDER_BY:
                     parseOrderBy(fmd,
                         (OrderBy) el.getAnnotation(OrderBy.class));
@@ -1400,6 +1406,17 @@ public class AnnotationPersistenceMetaDataParser
     }
 
     /**
+     * Parse @MapKeyClass.
+     */
+    private void parseMapKeyClass(FieldMetaData fmd, MapKeyClass anno) {
+        if (anno.value() != void.class)
+            fmd.getKey().setDeclaredType(anno.value());
+        else
+            throw new IllegalArgumentException(
+                 "The value of the MapClassClass cannot be null");
+    }
+
+    /**
      * Setup the field as a LOB mapping.
      */
     protected void parseLobMapping(FieldMetaData fmd) {
@@ -1480,6 +1497,8 @@ public class AnnotationPersistenceMetaDataParser
      */
     private void parseElementCollection(FieldMetaData fmd,
         ElementCollection anno) {
+        // TODO: throw exception if the runtime env is OpenJpa 1.x
+            
         if (fmd.getDeclaredTypeCode() != JavaTypes.COLLECTION &&
             fmd.getDeclaredTypeCode() != JavaTypes.MAP)
             throw new MetaDataException(_loc.get("bad-meta-anno", fmd,
