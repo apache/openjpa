@@ -1717,7 +1717,7 @@ public class XMLPersistenceMetaDataParser
         throws SAXException {
         if (!isMetaDataMode())
             return false;
-        int[] events = MetaDataParsers.getEventTypes(callback);
+        int[] events = MetaDataParsers.getEventTypes(callback, _conf);
         if (events == null)
             return false;
 
@@ -1748,11 +1748,11 @@ public class XMLPersistenceMetaDataParser
             if (_listener != null) {
                 MetaDataParsers.validateMethodsForSameCallback(_listener,
                     _callbacks[event], ((BeanLifecycleCallbacks) adapter).
-                    getCallbackMethod(), callback, def, getLog());
+                    getCallbackMethod(), callback, _conf, getLog());
             } else {
                 MetaDataParsers.validateMethodsForSameCallback(_cls,
                     _callbacks[event], ((MethodLifecycleCallbacks) adapter).
-                    getCallbackMethod(), callback, def, getLog());
+                    getCallbackMethod(), callback, _conf, getLog());
 
             }
             if (_callbacks[event] == null)

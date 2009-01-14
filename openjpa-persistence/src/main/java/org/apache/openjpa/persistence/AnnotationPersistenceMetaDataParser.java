@@ -845,7 +845,7 @@ public class AnnotationPersistenceMetaDataParser
             sup = sup.getSuperclass();
         } while (sups && !Object.class.equals(sup));
 
-        MetaDataDefaults def = repos.getMetaDataFactory().getDefaults();
+        OpenJPAConfiguration conf = repos.getConfiguration();
         for (Method m : methods) {
             for (Annotation anno : (Annotation[]) AccessController
                 .doPrivileged(J2DoPrivHelper
@@ -853,7 +853,7 @@ public class AnnotationPersistenceMetaDataParser
                 MetaDataTag tag = _tags.get(anno.annotationType());
                 if (tag == null)
                     continue;
-                int[] events = MetaDataParsers.getEventTypes(tag);
+                int[] events = MetaDataParsers.getEventTypes(tag, conf);
                 if (events == null)
                     continue;
 
@@ -866,7 +866,7 @@ public class AnnotationPersistenceMetaDataParser
                     if (callbacks[e] == null)
                         callbacks[e] = new ArrayList(3);
                     MetaDataParsers.validateMethodsForSameCallback(cls, 
-                        callbacks[e], m, tag, def, repos.getLog());
+                        callbacks[e], m, tag, conf, repos.getLog());
                     if (listener) {
                         callbacks[e].add(new BeanLifecycleCallbacks(cls, m,
                             false));

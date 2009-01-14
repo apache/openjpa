@@ -132,6 +132,7 @@ public class OpenJPAConfigurationImpl
     public ObjectValue savepointManagerPlugin;
     public ObjectValue orphanedKeyPlugin;
     public ObjectValue compatibilityPlugin;
+    public ObjectValue callbackPlugin;
     public QueryCompilationCacheValue queryCompilationCachePlugin;
     public IntValue runtimeUnenhancedClasses;
     public CacheMarshallersValue cacheMarshallerPlugins;
@@ -495,6 +496,13 @@ public class OpenJPAConfigurationImpl
         compatibilityPlugin.setString(aliases[0]);
         compatibilityPlugin.setInstantiatingGetter("getCompatibilityInstance");
         
+        callbackPlugin = addPlugin("Callbacks", true);
+        aliases = new String[] { "default", CallbackOptions.class.getName() };
+        callbackPlugin.setAliases(aliases);
+        callbackPlugin.setDefault(aliases[0]);
+        callbackPlugin.setString(aliases[0]);
+        callbackPlugin.setInstantiatingGetter("getCallbackOptionsInstance");
+           
         queryCompilationCachePlugin = new QueryCompilationCacheValue(
             "QueryCompilationCache");
         queryCompilationCachePlugin.setInstantiatingGetter(
@@ -1387,6 +1395,20 @@ public class OpenJPAConfigurationImpl
         if (compatibilityPlugin.get() == null)
             compatibilityPlugin.instantiate(Compatibility.class, this);
         return (Compatibility) compatibilityPlugin.get();
+    }
+    
+    public String getCallbackOptions() {
+        return callbackPlugin.getString();
+    }
+    
+    public void setCallbackOptions(String options) {
+        callbackPlugin.setString(options);
+    }
+    
+    public CallbackOptions getCallbackOptionsInstance() {
+        if (callbackPlugin.get() == null)
+            callbackPlugin.instantiate(CallbackOptions.class, this);
+        return (CallbackOptions) callbackPlugin.get();
     }
 
     public String getQueryCompilationCache() {

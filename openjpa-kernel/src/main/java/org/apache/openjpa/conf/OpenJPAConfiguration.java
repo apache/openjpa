@@ -1399,6 +1399,28 @@ public interface OpenJPAConfiguration
 	 * Backwards compatibility options.
 	 */
 	public Compatibility getCompatibilityInstance ();
+	
+	/**
+	 * Options for configuring callbacks as a String.
+     *
+     * @since 2.0.0
+	 */
+	public String getCallbackOptions();
+
+	/**
+	 * Options for configuring callbacks.
+	 * 
+	 * @since 2.0.0
+	 */
+	public CallbackOptions getCallbackOptionsInstance();
+	
+    /**
+     * Options for configuring callbacks set as a comma-separated string value
+     * pair.
+     * 
+     * @since 2.0.0
+     */
+	public void setCallbackOptions(String options);
 
     /**
      * Configuration settings for the query compilation cache to use. 

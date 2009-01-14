@@ -126,8 +126,10 @@ public abstract class PersistenceTestCase
                     buf.append(";");
                 buf.append(c.getName());
             }
+            String oldValue = map.containsKey("openjpa.MetaDataFactory") 
+                ? ","+map.get("openjpa.MetaDataFactory").toString() : "";
             map.put("openjpa.MetaDataFactory",
-                "jpa(Types=" + buf.toString() + ")");
+                "jpa(Types=" + buf.toString() + oldValue + ")");
         }
 
         OpenJPAEntityManagerFactorySPI oemf = (OpenJPAEntityManagerFactorySPI) 

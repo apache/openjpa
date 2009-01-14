@@ -73,8 +73,6 @@ import org.apache.openjpa.conf.OpenJPAConfiguration;
 public class PersistenceMetaDataDefaults
     extends AbstractMetaDataDefaults {
 
-    private boolean _allowsMultipleMethodsForSameCallback = false;
-
     private static final Localizer _loc = Localizer.forPackage
         (PersistenceMetaDataDefaults.class);
 
@@ -195,22 +193,6 @@ public class PersistenceMetaDataDefaults
         return null;
     }
     
-    /** 
-     * Flags if multiple methods of the same class can handle the same 
-     * callback event.
-     */
-    public boolean getAllowsMultipleMethodsForSameCallback() {
-        return _allowsMultipleMethodsForSameCallback;
-    }
-    
-    /** 
-     * Flags if multiple methods of the same class can handle the same 
-     * callback event.
-     */
-    public void setAllowsMultipleMethodsForSameCallback(boolean flag) {
-        _allowsMultipleMethodsForSameCallback = flag;
-    }
-
     /**
      * Auto-configuration method for the default access type of base classes 
      * with ACCESS_UNKNOWN
