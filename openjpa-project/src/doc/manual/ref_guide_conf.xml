@@ -649,6 +649,53 @@ org.apache.openjpa.kernel.Broker</classname></ulink> type to use at runtime. See
 <xref linkend="ref_guide_runtime_broker_extension"/> on for details.
             </para>
         </section>
+
+<section id="openjpa.Callbacks">
+            <title>openjpa.Callbacks</title>
+            <indexterm zone="openjpa.Callbacks">
+                <primary>Callbacks</primary>
+            </indexterm>
+            <indexterm>
+                <primary>Callbacks</primary>
+                <see>Callbacks</see>
+            </indexterm>
+  <para>
+     <emphasis role="bold">Property name: </emphasis><literal>openjpa.Callbacks</literal>
+  </para>
+  <para>
+     <emphasis role="bold">Configuration API:</emphasis>
+     <ulink url="../javadoc/org/apache/openjpa/conf/OpenJPAConfiguration.html#getCallbackOptionsInstance()">
+     <methodname>org.apache.openjpa.conf.OpenJPAConfiguration.getCallbackOptionsInstance</methodname></ulink>
+  </para>
+  <para>
+     <emphasis role="bold">Resource adaptor config-property: </emphasis><literal>Callbacks</literal>
+  </para>
+  <para>
+     <emphasis role="bold">Default: </emphasis><literal>default</literal>
+  </para>
+  <para>
+     <emphasis role="bold">Description:</emphasis> A plugin string (see
+<xref linkend="ref_guide_conf_plugins"/>) to fine tune some of the configurable
+properties related to callbacks. The plug-in supports two boolean properties:
+   </para>
+   <itemizedlist>
+   	<listitem>
+   		<para><literal>PostPersistCallbackImmediate</literal>: whether the 
+   		post-persist callback is invoked as soon as a new instance
+        is managed. The default is <literal>false</literal>, implies that 
+        the post-persist callback is invoked after the instance been committed 
+        or flushed to the datastore.
+        </para>
+   	</listitem>
+   	<listitem>
+   	    <para><literal>AllowsMultipleMethodsForSameCallback</literal>: whether
+   	    multiple methods of the same class can handle the same callback event.
+   	    Defaults to <literal>false</literal>.
+   	    </para>
+   	</listitem>
+   </itemizedlist>
+</section>
+
         <section id="openjpa.ClassResolver">
             <title>
                 openjpa.ClassResolver
