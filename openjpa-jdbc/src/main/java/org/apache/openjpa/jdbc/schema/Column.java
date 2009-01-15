@@ -74,6 +74,7 @@ public class Column
     private boolean _pk = false;
     private VersionStrategy _versionStrategy = null;
     private String _comment = null;
+    private boolean _XML = false;
 
     /**
      * Default constructor.
@@ -721,13 +722,22 @@ public class Column
             setTargetField(from.getTargetField());
         if (_flags == 0)
             _flags = from._flags;
+        if (!isXML())
+            setXML(from.isXML());
     }
     
     /**
-     * Whether this column is an XML type.
+     * Whether this column is of XML type.
      */
     public boolean isXML() {
-        return _typeName != null && _typeName.startsWith("XML");
+        return _XML;
+    }
+
+    /**
+     * Whether this column is of XML type.
+     */
+    public void setXML(boolean xml) {
+        _XML = xml;
     }
 
     public VersionStrategy getVersionStrategy() {

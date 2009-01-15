@@ -765,6 +765,8 @@ public abstract class MappingInfo
 
         if (tmplate.hasComment())
             col.setComment(tmplate.getComment());
+        if (tmplate.isXML())
+            col.setXML(tmplate.isXML());
         return col;
     }
 

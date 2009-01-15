@@ -27,6 +27,7 @@ import java.util.Arrays;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.openjpa.jdbc.kernel.JDBCStore;
+import org.apache.openjpa.jdbc.kernel.exps.FilterValue;
 import org.apache.openjpa.jdbc.schema.Column;
 import org.apache.openjpa.jdbc.schema.ForeignKey;
 import org.apache.openjpa.jdbc.schema.Index;
@@ -94,6 +95,7 @@ public class MySQLDictionary
         longVarcharTypeName = "TEXT";
         longVarbinaryTypeName = "LONG VARBINARY";
         timestampTypeName = "DATETIME";
+        xmlTypeName = "TEXT";
         fixedSizeTypeNameSet.addAll(Arrays.asList(new String[]{
             "BOOL", "LONG VARBINARY", "MEDIUMBLOB", "LONGBLOB",
             "TINYBLOB", "LONG VARCHAR", "MEDIUMTEXT", "LONGTEXT", "TEXT",
@@ -130,6 +132,8 @@ public class MySQLDictionary
                 supportsSubselect = false;
                 allowsAliasInBulkClause = false;
             }
+            if (maj > 5 || (maj == 5 && min >= 1))
+                supportsXMLColumn = true;
 
             versions = getMajorMinorVersions(driverVersion);
             maj = versions[0];
@@ -261,5 +265,43 @@ public class MySQLDictionary
         if (type == Types.CLOB && !useClobs)
             return Types.LONGVARCHAR;
         return super.getPreferredType(type);
+    }
+    
+    /**
+     * Append XML comparison.
+     * 
+     * @param buf the SQL buffer to write the comparison
+     * @param op the comparison operation to perform
+     * @param lhs the left hand side of the comparison
+     * @param rhs the right hand side of the comparison
+     * @param lhsxml indicates whether the left operand maps to XML
+     * @param rhsxml indicates whether the right operand maps to XML
+     */
+    public void appendXmlComparison(SQLBuffer buf, String op, FilterValue lhs,
+        FilterValue rhs, boolean lhsxml, boolean rhsxml) {
+        super.appendXmlComparison(buf, op, lhs, rhs, lhsxml, rhsxml);
+        if (lhsxml)
+            appendXmlValue(buf, lhs);
+        else
+            lhs.appendTo(buf);
+        buf.append(" ").append(op).append(" ");
+        if (rhsxml)
+            appendXmlValue(buf, rhs);
+        else
+            rhs.appendTo(buf);
+    }
+    
+    /**
+     * Append XML column value so that it can be used in comparisons.
+     * 
+     * @param buf the SQL buffer to write the value
+     * @param val the value to be written
+     */
+    private void appendXmlValue(SQLBuffer buf, FilterValue val) {
+        buf.append("ExtractValue(").
+            append(val.getColumnAlias(val.getFieldMapping().getColumns()[0])).
+            append(",'/*/");
+        val.appendTo(buf);
+        buf.append("')");
     }
 }
