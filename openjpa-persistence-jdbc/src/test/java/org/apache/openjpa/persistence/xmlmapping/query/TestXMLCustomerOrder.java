@@ -103,7 +103,6 @@ public class TestXMLCustomerOrder
         em.close();
     }
 
-    @AllowFailure
     public void testXMLFieldInEntity() {
         if (!enabled)
             return;
