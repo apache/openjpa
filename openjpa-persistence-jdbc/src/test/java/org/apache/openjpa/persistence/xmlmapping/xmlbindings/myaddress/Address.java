@@ -35,7 +35,9 @@ import javax.xml.bind.annotation.XmlType;
  * &lt;/complexType>
  * </pre>
  * 
- * 
+ * <p>The JAXB generated source has been modified by adding
+ * a <CODE>set</CODE> method for the street property. Otherwise
+ * the proxying mechanism will not work - see OPENJPA-834.
  */
 
 @XmlRootElement
@@ -85,7 +87,6 @@ public class Address {
      * This accessor method returns a reference to the live list,
      * not a snapshot. Therefore any modification you make to the
      * returned list will be present inside the JAXB object.
-     * This is why there is not a <CODE>set</CODE> method for the street property.
      * 
      * <p>
      * For example, to add a new item, do as follows:
@@ -105,6 +106,15 @@ public class Address {
             street = new ArrayList<String>();
         }
         return this.street;
+    }
+
+    /**
+     * Sets the value of the street property.
+     * 
+     * @param value a List of String instances
+     */
+    public void setStreet(List<String> value) {
+        this.street = value;
     }
 
     /**
