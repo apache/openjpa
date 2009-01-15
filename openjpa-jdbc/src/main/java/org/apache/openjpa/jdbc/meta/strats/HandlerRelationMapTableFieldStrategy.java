@@ -201,6 +201,9 @@ public class HandlerRelationMapTableFieldStrategy
 
     public void update(OpenJPAStateManager sm, JDBCStore store, RowManager rm)
         throws SQLException {
+        if (field.getMappedBy() != null)
+            return;
+
         Map map = (Map) sm.fetchObject(field.getIndex());
         ChangeTracker ct = null;
         if (map instanceof Proxy) {

@@ -230,43 +230,49 @@ public class RelationFieldStrategy
         if (rel == null)
             return;
         ClassMetaData meta = rel.getMetaData();
+        FieldMapping mapField = getMapField(meta);
+        
+        // there is no bi-directional map field
+        if (mapField == null)
+            return;
+        
+        Map mapObj = (Map)rel.fetchObjectField(mapField.getIndex());
+        Object keyObj = getMapKeyObj(mapObj, sm.getPersistenceCapable());
+        ValueMapping key = mapField.getKeyMapping();
+        if (!key.isEmbedded()) {
+            if (keyObj instanceof PersistenceCapable) {
+                OpenJPAStateManager keySm = RelationStrategies.
+                    getStateManager(keyObj, store.getContext());
+                // key is an entity
+                ForeignKey fk = mapField.getKeyMapping().
+                    getForeignKey();
+                ColumnIO io = new ColumnIO();
+                row.setForeignKey(fk, io, keySm);
+            } 
+        } else {
+            // key is an embeddable or basic type
+            FieldStrategy strategy = mapField.getStrategy(); 
+            if (strategy instanceof  
+                    HandlerRelationMapTableFieldStrategy) {
+                HandlerRelationMapTableFieldStrategy strat = 
+                    (HandlerRelationMapTableFieldStrategy) strategy;
+                Column[] kcols = strat.getKeyColumns((ClassMapping)meta);
+                ColumnIO kio = strat.getKeyColumnIO();
+                HandlerStrategies.set(key, keyObj, store, row, kcols,
+                        kio, true);
+            }
+        } 
+    }
+    
+    private FieldMapping getMapField(ClassMetaData meta) {
         FieldMapping[] fields = ((ClassMapping)meta).getFieldMappings();
         for (int i = 0; i < fields.length; i++) {
             FieldMetaData mappedBy = fields[i].getMappedByMetaData();
-            if (mappedBy == field) {
-                if (fields[i].getDeclaredTypeCode() == JavaTypes.MAP) {
-                    Map mapObj = (Map)rel.fetchObjectField(
-                        fields[i].getIndex());
-                    Object keyObj = getMapKeyObj(mapObj, 
-                        sm.getPersistenceCapable());
-                    ValueMapping key = fields[i].getKeyMapping();
-                    if (!key.isEmbedded()) {
-                        if (keyObj instanceof PersistenceCapable) {
-                            OpenJPAStateManager keySm = RelationStrategies.
-                                getStateManager(keyObj, store.getContext());
-                            // key is an entity
-                            ForeignKey fk = fields[i].getKeyMapping().
-                                getForeignKey();
-                            ColumnIO io = new ColumnIO();
-                            row.setForeignKey(fk, io, keySm);
-                        } 
-                    } else {
-                        // key is an embeddable or basic type
-                        FieldStrategy strategy = fields[i].getStrategy(); 
-                        if (strategy instanceof  
-                            HandlerRelationMapTableFieldStrategy) {
-                            HandlerRelationMapTableFieldStrategy strat = 
-                                (HandlerRelationMapTableFieldStrategy) strategy;
-                            Column[] kcols = strat.getKeyColumns((ClassMapping)meta);
-                            ColumnIO kio = strat.getKeyColumnIO();
-                            HandlerStrategies.set(key, keyObj, store, row, kcols,
-                                kio, true);
-                        }
-                    } 
-                    break;
-                }
-            }
-        }
+            if (fields[i].getDeclaredTypeCode() == JavaTypes.MAP &&
+                mappedBy == field)  
+                return fields[i];
+        } 
+        return null;    
     }
     
     private Object getMapKeyObj(Map mapObj, Object value) {
@@ -294,8 +300,12 @@ public class RelationFieldStrategy
         			&& field.isBidirectionalJoinTableMappingNonOwner()) ?
         					Row.ACTION_DELETE : Row.ACTION_UPDATE;
             Row row = field.getRow(sm, store, rm, action);
-            if (row != null)
+            if (row != null) {
                 field.setForeignKey(row, rel);
+                // this is for bi-directional maps, the key and value of the 
+                // map are stored in the table of the mapped-by entity  
+                setMapKey(sm, rel, store, row);
+            }
         }
     }
 
@@ -325,6 +335,9 @@ public class RelationFieldStrategy
                     fk.getDeleteAction() == ForeignKey.ACTION_CASCADE) {
                     Row row = field.getRow(sm, store, rm, Row.ACTION_DELETE);
                     row.setForeignKey(fk, null, rel);
+                    // this is for bi-directional maps, the key and value of the 
+                    // map are stored in the table of the mapped-by entity  
+                    setMapKey(sm, rel, store, row);
                 }
             }
         }
