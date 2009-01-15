@@ -627,7 +627,7 @@ public abstract class AbstractCFMetaDataFactory
         throws IOException {
         ClassArgParser cparser = newClassArgParser();
         String[] clss;
-        Set names = new HashSet();
+        Set<String> names = new HashSet<String>();
         if (files != null) {
             File file;
             for (Iterator itr = files.iterator(); itr.hasNext();) {
@@ -655,9 +655,10 @@ public abstract class AbstractCFMetaDataFactory
                         log.trace(_loc.get("scanning-file", file));
                     clss = cparser.parseTypeNames(new FileMetaDataIterator
                         (file));
+                    List<String> newNames = Arrays.asList(clss);
                     if (log.isTraceEnabled())
-                        log.trace(_loc.get("scan-found-names", clss, file));
-                    names.addAll(Arrays.asList(clss));
+                        log.trace(_loc.get("scan-found-names", newNames, file));
+                    names.addAll(newNames);
                     File f = AccessController
                         .doPrivileged(J2DoPrivHelper
                             .getAbsoluteFileAction(file));
@@ -714,9 +715,10 @@ public abstract class AbstractCFMetaDataFactory
                     if (log.isTraceEnabled())
                         log.trace(_loc.get("scanning-url", url));
                     clss = cparser.parseTypeNames(new URLMetaDataIterator(url));
+                    List<String> newNames = Arrays.asList(clss);
                     if (log.isTraceEnabled())
-                        log.trace(_loc.get("scan-found-names", clss, url));
-                    names.addAll(Arrays.asList(clss));
+                        log.trace(_loc.get("scan-found-names", newNames, url));
+                    names.addAll(newNames);
                     mapPersistentTypeNames(url, clss);
                 }
             }
@@ -752,9 +754,10 @@ public abstract class AbstractCFMetaDataFactory
                         url = (URL) mitr.next();
                         clss = cparser.parseTypeNames(new URLMetaDataIterator
                             (url));
+                        List<String> newNames = Arrays.asList(clss);
                         if (log.isTraceEnabled())
                             log.trace(_loc.get("scan-found-names", clss, rsrc));
-                        names.addAll(Arrays.asList(clss));
+                        names.addAll(newNames);
                         mapPersistentTypeNames(url, clss);
                     }
                     mitr.close();
