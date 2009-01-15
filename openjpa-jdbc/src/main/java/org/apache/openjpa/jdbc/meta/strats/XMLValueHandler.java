@@ -53,6 +53,7 @@ public class XMLValueHandler
         col.setSize(-1);
         col.setTypeName(vm.getMappingRepository().getDBDictionary()
             .xmlTypeName);
+        col.setXML(true);
         return new Column[]{ col };
     }
 
