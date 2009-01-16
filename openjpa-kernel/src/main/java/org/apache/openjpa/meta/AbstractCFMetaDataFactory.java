@@ -756,7 +756,7 @@ public abstract class AbstractCFMetaDataFactory
                             (url));
                         List<String> newNames = Arrays.asList(clss);
                         if (log.isTraceEnabled())
-                            log.trace(_loc.get("scan-found-names", clss, rsrc));
+                            log.trace(_loc.get("scan-found-names", newNames, rsrc));
                         names.addAll(newNames);
                         mapPersistentTypeNames(url, clss);
                     }
