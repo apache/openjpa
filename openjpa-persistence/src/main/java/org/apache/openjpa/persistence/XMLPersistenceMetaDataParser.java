@@ -155,6 +155,7 @@ public class XMLPersistenceMetaDataParser
         _elems.put("many-to-many", MANY_MANY);
         _elems.put("transient", TRANSIENT);
         _elems.put("element-collection", ELEM_COLL);
+        _elems.put("map-key-class", MAP_KEY_CLASS);
     }
 
     private static final Localizer _loc = Localizer.forPackage
@@ -654,6 +655,9 @@ public class XMLPersistenceMetaDataParser
                     break;
                 case MAP_KEY:
                     ret = startMapKey(attrs);
+                    break;
+                case MAP_KEY_CLASS:
+                    ret = startMapKeyClass(attrs);
                     break;
                 case FLUSH_MODE:
                     ret = startFlushMode(attrs);
@@ -1480,6 +1484,30 @@ public class XMLPersistenceMetaDataParser
         return true;
     }
 
+    
+    /**
+     * Parse map-key-class.
+     */
+    private boolean startMapKeyClass(Attributes attrs)
+    throws SAXException {
+        if (!isMappingOverrideMode())
+            return false;
+
+        FieldMetaData fmd = (FieldMetaData) currentElement();
+        String mapKeyClass = attrs.getValue("class");
+
+        if (mapKeyClass != null) {
+            try {
+                fmd.getKey().setDeclaredType(Class.forName(mapKeyClass));
+            } catch (ClassNotFoundException e) {
+                throw new IllegalArgumentException("Class not found");
+            }
+        } else
+            throw new IllegalArgumentException(
+            "The value of the MapKeyClass cannot be null");
+        return true;
+    }
+    
     /**
      * Parse order-by.
      */

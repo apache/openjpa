@@ -38,6 +38,7 @@ import org.apache.openjpa.jdbc.meta.ClassMappingInfo;
 import org.apache.openjpa.jdbc.meta.DiscriminatorMappingInfo;
 import org.apache.openjpa.jdbc.meta.FieldMapping;
 import org.apache.openjpa.jdbc.meta.FieldMappingInfo;
+import org.apache.openjpa.jdbc.meta.MappingInfo;
 import org.apache.openjpa.jdbc.meta.MappingRepository;
 import org.apache.openjpa.jdbc.meta.QueryResultMapping;
 import org.apache.openjpa.jdbc.meta.SequenceMapping;
@@ -90,6 +91,8 @@ public class XMLPersistenceMappingParser
         _elems.put("join-column", JOIN_COL);
         _elems.put("inverse-join-column", COL);
         _elems.put("join-table", JOIN_TABLE);
+        _elems.put("map-key-column", MAP_KEY_COL);
+        _elems.put("map-key-join-column", MAP_KEY_JOIN_COL);
         _elems.put("primary-key-join-column", PK_JOIN_COL);
         _elems.put("secondary-table", SECONDARY_TABLE);
         _elems.put("sql-result-set-mapping", SQL_RESULT_SET_MAPPING);
@@ -256,6 +259,12 @@ public class XMLPersistenceMappingParser
                 break;
             case COLLECTION_TABLE:
                 ret = startCollectionTable(attrs);
+                break;
+            case MAP_KEY_COL:
+                ret = startMapKeyColumn(attrs);
+                break;
+            case MAP_KEY_JOIN_COL:
+                ret = startMapKeyJoinColumn(attrs);
                 break;
             default:
                 ret = false;
@@ -784,6 +793,39 @@ public class XMLPersistenceMappingParser
         return true;
     }
 
+    /**
+     * Parse map-key-column.
+     */
+    private boolean startMapKeyColumn(Attributes attrs)
+    throws SAXException {
+        FieldMapping fm = (FieldMapping) peekElement();
+        Column col = parseColumn(attrs);
+        MappingInfo info = fm.getKeyMapping().getValueInfo();
+        List cols = new ArrayList();
+        cols.add(col);
+        info.setColumns(cols);
+        return true;
+    }
+
+    /**
+     * Parse map-key-join-column.
+     */
+    private boolean startMapKeyJoinColumn(Attributes attrs)
+    throws SAXException {
+        boolean retVal = startMapKeyColumn(attrs);
+        // check if name is not set, set it to default: the
+        // concatenation of the name of the referencing property
+        // or field name, "-", "KEY"
+        FieldMapping fm = (FieldMapping) peekElement();
+        MappingInfo info = fm.getKeyMapping().getValueInfo();
+        List cols = info.getColumns();
+        Column col = (Column)cols.get(0);
+        if (col.getName() == null)
+            col.setName(fm.getName() + "_" + "KEY");
+
+        return retVal;
+    }
+    
     /**
      * Create a column with the given attributes.
      */

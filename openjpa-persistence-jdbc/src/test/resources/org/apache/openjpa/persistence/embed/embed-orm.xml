@@ -52,6 +52,78 @@ version="2.0">
         </attributes>
     </entity>
  
+ 	<entity name="DepartmentXml"
+		class="org.apache.openjpa.persistence.embed.DepartmentXml"
+		access="FIELD">
+		<attributes>
+			<id name="deptId"></id>
+			<one-to-many name="empMap">
+				<map-key name="empId" />
+				<cascade>
+					<cascade-all />
+				</cascade>
+			</one-to-many>
+		</attributes>
+	</entity>
+
+	<entity name="EmployeeXml"
+		class="org.apache.openjpa.persistence.embed.EmployeeXml"
+		access="FIELD">
+		<attributes>
+			<id name="empId"></id>
+			<many-to-one name="department">
+				<join-column name="dept_id" />
+			</many-to-one>
+		</attributes>
+	</entity>
+
+	<entity name="ItemXml"
+		class="org.apache.openjpa.persistence.embed.ItemXml" access="FIELD">
+		<attributes>
+			<id name="id"></id>
+			<element-collection name="images"
+				target-entity="java.lang.String">
+				<column name="IMAGE_FILENAME" />
+				<map-key-class class="java.lang.String" />
+				<map-key-column name="IMAGE_NAME" />
+				<collection-table name="IMAGE_XML" />
+			</element-collection>
+		</attributes>
+	</entity>
+
+	<entity name="DivisionXml"
+		class="org.apache.openjpa.persistence.embed.DivisionXml"
+		access="FIELD">
+		<attributes>
+			<id name="id"></id>
+			<basic name="name" />
+		</attributes>
+	</entity>
+
+	<entity name="VicePresidentXml"
+		class="org.apache.openjpa.persistence.embed.VicePresidentXml"
+		access="FIELD">
+		<attributes>
+			<id name="id"></id>
+			<basic name="name" />
+		</attributes>
+	</entity>
+
+	<entity name="CompanyXml"
+		class="org.apache.openjpa.persistence.embed.CompanyXml"
+		access="FIELD">
+		<attributes>
+			<id name="id"></id>
+			<one-to-many name="organization">
+				<map-key-join-column name="DIVISION" />
+				<join-table name="COMPANY_ORG_XML">
+					<join-column name="COMPANY" />
+					<inverse-join-column name="VP" />
+				</join-table>
+			</one-to-many>
+		</attributes>
+	</entity>
+ 
     <embeddable class="org.apache.openjpa.persistence.embed.Embed_EmbedXml" 
                 access="FIELD">
         <attributes>

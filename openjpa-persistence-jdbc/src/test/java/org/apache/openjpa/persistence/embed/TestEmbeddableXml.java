@@ -18,7 +18,9 @@
  */
 package org.apache.openjpa.persistence.embed;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import javax.persistence.EntityManager;
@@ -33,6 +35,21 @@ public class TestEmbeddableXml extends SingleEMFTestCase {
     public int numEmbeddables = 1;
     public int numBasicTypes = 1;
     public int ID = 1;
+    public int deptId = 1;
+    public int empId = 1;
+    public int compId = 1;
+    public int divId = 1;
+    public int vpId = 1;
+    public int newDivId = 100;
+    public int newVpId = 100;
+    public int numItems = 2;
+    public int itemId = 1;
+
+    public int numImagesPerItem = 3;
+    public int numDepartments = 2;
+    public int numEmployeesPerDept = 2;
+    public int numCompany = 2;
+    public int numDivisionsPerCo = 2;
     
     public void setUp() {
         setUp(CLEAR_TABLES);
@@ -222,4 +239,391 @@ public class TestEmbeddableXml extends SingleEMFTestCase {
         tran.commit();
         em.close();
     }
+
+     
+    public void testMapKeyAnnotations(){
+        createObj();
+        queryObj();
+        findObj();
+    }
+
+    public void createObj() {
+        createDepartments();
+        createCompanies();
+        createItems();
+    }
+
+    public void findObj() {
+        findDepartment();
+        findCompany();
+        findItem();
+    }
+
+    public void createDepartments() {
+        EntityManager em = emf.createEntityManager();
+        EntityTransaction tran = em.getTransaction();
+        for (int i = 0; i < numDepartments; i++)
+            createDepartment(em, deptId++);
+        tran.begin();
+        em.flush();
+        tran.commit();
+        em.close();
+    }
+
+    public void createCompanies() {
+        EntityManager em = emf.createEntityManager();
+        EntityTransaction tran = em.getTransaction();
+        for (int i = 0; i < numCompany; i++)
+            createCompany(em, compId++);
+        tran.begin();
+        em.flush();
+        tran.commit();
+        em.close();
+    }
+
+    public void createItems() {
+        EntityManager em = emf.createEntityManager();
+        EntityTransaction tran = em.getTransaction();
+        for (int i = 0; i < numItems; i++)
+            createItem(em, itemId++);
+        tran.begin();
+        em.flush();
+        tran.commit();
+        em.close();
+    }
+
+    public void createItem(EntityManager em, int id) {
+        ItemXml item = new ItemXml();
+        item.setId(id);
+        for (int i = 0; i < numImagesPerItem; i++) {
+            item.addImage("image" + id + i, "file" + id + i);
+        }
+        em.persist(item);
+    }
+
+    public void createDepartment(EntityManager em, int id) {
+        DepartmentXml d = new DepartmentXml();
+        d.setDeptId(id);
+        Map emps = new HashMap();
+        for (int i = 0; i < numEmployeesPerDept; i++) {
+            EmployeeXml e = createEmployee(em, empId++);
+            d.addEmployee(e);
+            emps.put(e.getEmpId(), e);
+            e.setDepartment(d);
+            em.persist(e);
+        }
+        em.persist(d);
+    }
+
+    public EmployeeXml createEmployee(EntityManager em, int id) {
+        EmployeeXml e = new EmployeeXml();
+        e.setEmpId(id);
+        return e;
+    }
+
+    public void createCompany(EntityManager em, int id) {
+        CompanyXml c = new CompanyXml();
+        c.setId(id);
+        for (int i = 0; i < numDivisionsPerCo; i++) {
+            DivisionXml d = createDivision(em, divId++);
+            VicePresidentXml vp = createVicePresident(em, vpId++);
+            c.addToOrganization(d, vp);
+            em.persist(d);
+            em.persist(vp);
+        }
+        em.persist(c);
+    }
+
+    public DivisionXml createDivision(EntityManager em, int id) {
+        DivisionXml d = new DivisionXml();
+        d.setId(id);
+        d.setName("d" + id);
+        return d;
+    }
+
+    public VicePresidentXml createVicePresident(EntityManager em, int id) {
+        VicePresidentXml vp = new VicePresidentXml();
+        vp.setId(id);
+        vp.setName("vp" + id);
+        return vp;
+    }
+
+    public void findCompany() {
+        EntityManager em = emf.createEntityManager();
+        CompanyXml c = em.find(CompanyXml.class, 1);
+        assertCompany(c);
+
+        DivisionXml d = em.find(DivisionXml.class, 1);
+        assertDivision(d);
+
+        VicePresidentXml vp = em.find(VicePresidentXml.class, 1);
+        assertVicePresident(vp);
+
+        updateCompany(em, c);
+        em.close();
+
+        em = emf.createEntityManager();
+        c = em.find(CompanyXml.class, 1);
+        assertCompany(c);
+        deleteCompany(em, c);
+        em.close();
+    }
+
+    public void findDepartment() {
+        EntityManager em = emf.createEntityManager();
+        DepartmentXml d = em.find(DepartmentXml.class, 1);
+        assertDepartment(d);
+
+        EmployeeXml e = em.find(EmployeeXml.class, 1);
+        assertEmployee(e);
+
+        // updateObj by adding a new Employee
+        updateDepartment(em, d);
+        deleteDepartment(em, d);
+        em.close();
+    }
+
+    public void findItem() {
+        EntityManager em = emf.createEntityManager();
+        ItemXml item = em.find(ItemXml.class, 1);
+        assertItem(item);
+        updateItem(em, item);
+        deleteItem(em, item);
+        em.close();
+    }
+
+    public void updateItem(EntityManager em, ItemXml item) {
+        // remove an element
+        EntityTransaction tran = em.getTransaction();
+        tran.begin();
+        item.removeImage("image" + item.getId() + "0");
+        em.persist(item);
+        em.flush();
+        tran.commit();
+
+        // add an element
+        String key = "image" + item.getId() + "new";
+        tran.begin();
+        item.addImage(key, "file" + item.getId() + "new");
+        em.persist(item);
+        em.flush();
+        tran.commit();
+
+        // modify an element
+        tran.begin();
+        String fileName = item.getImage(key);
+        fileName = fileName + "newAgain";
+        item.addImage(key, fileName);
+        em.persist(item);
+        em.flush();
+        tran.commit();
+    }
+
+    public void deleteItem(EntityManager em, ItemXml item) {
+        EntityTransaction tran = em.getTransaction();
+        tran.begin();
+        em.remove(item);
+        tran.commit();
+    }
+
+    public void updateCompany(EntityManager em, CompanyXml c) {
+        EntityTransaction tran = em.getTransaction();
+        // remove an element
+        tran.begin();
+        Map orgs = c.getOrganization();
+        Set keys = orgs.keySet();
+        for (Object key : keys) {
+            DivisionXml d = (DivisionXml) key;
+            c.removeFromOrganization(d);
+            break;
+        }
+        em.persist(c);
+        em.flush();
+        tran.commit();
+
+        // add an element
+        tran.begin();
+        DivisionXml d = createDivision(em, newDivId++);
+        VicePresidentXml vp = createVicePresident(em, newVpId++);
+        c.addToOrganization(d, vp);
+        em.persist(d);
+        em.persist(vp);
+        em.persist(c);
+        em.flush();
+        tran.commit();
+
+        // modify an element
+        tran.begin();
+        orgs = c.getOrganization();
+        vp = c.getOrganization(d);
+        vp.setName("newNameAgain");
+        em.persist(c);
+        em.persist(vp);
+        em.flush();
+        tran.commit();
+    }
+
+    public void deleteCompany(EntityManager em, CompanyXml c) {
+        EntityTransaction tran = em.getTransaction();
+        tran.begin();
+        em.remove(c);
+        tran.commit();
+    }
+
+    public void updateDepartment(EntityManager em, DepartmentXml d) {
+        EntityTransaction tran = em.getTransaction();
+
+        // add an element
+        tran.begin();
+        EmployeeXml e = createEmployee(em, numDepartments * numEmployeesPerDept + 1);
+        d.addEmployee(e);
+        e.setDepartment(d);
+        em.persist(d);
+        em.persist(e);
+        em.flush();
+        tran.commit();
+
+        // remove an element
+        tran.begin();
+        d.removeEmployee(e.getEmpId());
+        e.setDepartment(null);
+        em.persist(d);
+        em.persist(e);
+        em.flush();
+        tran.commit();
+    }
+
+    public void deleteDepartment(EntityManager em, DepartmentXml d) {
+        EntityTransaction tran = em.getTransaction();
+        tran.begin();
+        em.remove(d);
+        tran.commit();
+    }
+
+    public void queryObj() {
+        queryDepartment();
+        queryEmployee();
+        queryCompany();
+        queryDivision();
+        queryVicePresident();
+        queryItem();
+    }
+
+    public void queryDepartment() {
+        EntityManager em = emf.createEntityManager();
+        EntityTransaction tran = em.getTransaction();
+        tran.begin();
+        Query q = em.createQuery("select d from DepartmentXml d");
+        List<DepartmentXml> ds = q.getResultList();
+        for (DepartmentXml d : ds) {
+            assertDepartment(d);
+        }
+        tran.commit();
+        em.close();
+    }
+
+    public void queryEmployee() {
+        EntityManager em = emf.createEntityManager();
+        EntityTransaction tran = em.getTransaction();
+        tran.begin();
+        Query q = em.createQuery("select e from EmployeeXml e");
+        List<EmployeeXml> es = q.getResultList();
+        for (EmployeeXml e : es) {
+            assertEmployee(e);
+        }
+        tran.commit();
+        em.close();
+    }
+
+    public void queryCompany() {
+        EntityManager em = emf.createEntityManager();
+        EntityTransaction tran = em.getTransaction();
+        tran.begin();
+        Query q = em.createQuery("select c from CompanyXml c");
+        List<CompanyXml> cs = q.getResultList();
+        for (CompanyXml c : cs){
+            assertCompany(c);
+        }
+        tran.commit();
+        em.close();
+    }
+
+    public void queryDivision() {
+        EntityManager em = emf.createEntityManager();
+        EntityTransaction tran = em.getTransaction();
+        tran.begin();
+        Query q = em.createQuery("select d from DivisionXml d");
+        List<DivisionXml> ds = q.getResultList();
+        for (DivisionXml d : ds){
+            assertDivision(d);
+        }
+        tran.commit();
+        em.close();
+    }
+
+    public void queryVicePresident() {
+        EntityManager em = emf.createEntityManager();
+        EntityTransaction tran = em.getTransaction();
+        tran.begin();
+        Query q = em.createQuery("select vp from VicePresidentXml vp");
+        List<VicePresidentXml> vps = q.getResultList();
+        for (VicePresidentXml vp : vps){
+            assertVicePresident(vp);
+        }
+        tran.commit();
+        em.close();
+    }
+
+    public void queryItem() {
+        EntityManager em = emf.createEntityManager();
+        EntityTransaction tran = em.getTransaction();
+        tran.begin();
+        Query q = em.createQuery("select i from ItemXml i");
+        List<ItemXml> is = q.getResultList();
+        for (ItemXml item : is){
+            assertItem(item);
+        }
+        tran.commit();
+        em.close();
+    }
+
+    public void assertDepartment(DepartmentXml d) {
+        int id = d.getDeptId();
+        Map<Integer, EmployeeXml> es = d.getEmpMap();
+        assertEquals(2, es.size());
+        Set keys = es.keySet();
+        for (Object obj : keys) {
+            Integer empId = (Integer) obj;
+            EmployeeXml e = es.get(empId);
+            assertEquals(empId.intValue(), e.getEmpId());
+        }
+    }
+
+    public void assertItem(ItemXml item) {
+        int id = item.getId();
+        Map images = item.getImages();
+        assertEquals(numImagesPerItem, images.size());
+    }
+
+    public void assertEmployee(EmployeeXml e) {
+        int id = e.getEmpId();
+        DepartmentXml d = e.getDepartment();
+        assertDepartment(d);
+    }
+
+    public void assertCompany(CompanyXml c) {
+        int id = c.getId();
+        Map organization = c.getOrganization();
+        assertEquals(2,organization.size());
+    }
+
+    public void assertDivision(DivisionXml d) {
+        int id = d.getId();
+        String name = d.getName();
+    }
+
+    public void assertVicePresident(VicePresidentXml vp) {
+        int id = vp.getId();
+        String name = vp.getName();
+    } 
 }
