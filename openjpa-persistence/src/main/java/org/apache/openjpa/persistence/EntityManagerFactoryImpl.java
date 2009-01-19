@@ -18,11 +18,13 @@
  */
 package org.apache.openjpa.persistence;
 
+import java.io.InputStream;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -69,6 +71,7 @@ public class EntityManagerFactoryImpl
     private transient Constructor<FetchPlan> _plan = null;
     private transient StoreCache _cache = null;
     private transient QueryResultCache _queryCache = null;
+    private Set<String> _supportedPropertyKeys; 
 
     /**
      * Default constructor provided for auto-instantiation.
@@ -348,7 +351,22 @@ public class EntityManagerFactoryImpl
     }
 
     public Set<String> getSupportedProperties() {
-        throw new UnsupportedOperationException(
-            "JPA 2.0 - Method not yet implemented");
+        if (_supportedPropertyKeys != null)
+            return _supportedPropertyKeys;
+        _supportedPropertyKeys = new HashSet<String>();
+        try {
+            InputStream rsrc = this.getClass()
+                .getResourceAsStream("supported_emf.properties");
+            if (rsrc == null)
+                return _supportedPropertyKeys;
+            Properties p = new Properties();
+            p.load(rsrc);
+            for (Object key : p.keySet()) {
+                _supportedPropertyKeys.add(key.toString());
+            }
+        } catch (Exception ex) {
+            
+        }
+        return _supportedPropertyKeys;
     }
 }
