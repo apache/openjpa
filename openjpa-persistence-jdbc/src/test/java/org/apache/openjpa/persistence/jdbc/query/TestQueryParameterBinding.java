@@ -283,9 +283,7 @@ public class TestQueryParameterBinding extends SingleEMFTestCase {
 				q.getResultList();
 			fail("Expeceted " + ArgumentException.class.getName());
 		} catch (IllegalArgumentException ex) {
-		// good
-			System.err.println("*** ERROR " + getName());
-			System.err.println("*** ERROR " + ex.getMessage());
+		    // good   
 		}
 	}
 	

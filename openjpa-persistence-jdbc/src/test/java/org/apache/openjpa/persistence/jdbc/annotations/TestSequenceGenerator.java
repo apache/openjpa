@@ -40,11 +40,23 @@ import org.apache.openjpa.persistence.test.SingleEMFTestCase;
 @AllowFailure(true)
 public class TestSequenceGenerator extends SingleEMFTestCase {
 
+    private boolean enabled = true;
+    
     public void setUp()
         throws Exception {
         setUp(NativeSequenceEntity.class, 
             NativeORMSequenceEntity.class, 
             CLEAR_TABLES);
+        
+        // disable testcase for dictionaries which do not have a native sequence
+        // query.
+        try {
+            enabled =
+                ((JDBCConfiguration) emf.getConfiguration())
+                    .getDBDictionaryInstance().nextSequenceQuery == null;
+        } catch (Throwable t) {
+            enabled = false;
+        }
     }
 
     @Override
@@ -58,20 +70,22 @@ public class TestSequenceGenerator extends SingleEMFTestCase {
      * currently allowed to fail. 
      */
     public void testSequenceSchema() {
-        OpenJPAEntityManagerSPI em = emf.createEntityManager();
-        NativeSequenceEntity nse = new NativeSequenceEntity();
-        nse.setName("Test");
-        em.getTransaction().begin();
-        em.persist(nse);
-        em.getTransaction().commit();
-        em.refresh(nse);
-        // Validate the id is >= the initial value 
-        // Assert the sequence was created in the DB
-        assertTrue(sequenceExists(em, NativeSequenceEntity.SCHEMA_NAME,
+        if (enabled) {
+            OpenJPAEntityManagerSPI em = emf.createEntityManager();
+            NativeSequenceEntity nse = new NativeSequenceEntity();
+            nse.setName("Test");
+            em.getTransaction().begin();
+            em.persist(nse);
+            em.getTransaction().commit();
+            em.refresh(nse);
+            // Validate the id is >= the initial value
+            // Assert the sequence was created in the DB
+            assertTrue(sequenceExists(em, NativeSequenceEntity.SCHEMA_NAME,
                 NativeSequenceEntity.SEQ_NAME));
-        // Assert the id is >= the initial value 
-        assertTrue(nse.getId() >= 10);
-        em.close();
+            // Assert the id is >= the initial value
+            assertTrue(nse.getId() >= 10);
+            em.close();
+        }
     }
 
     /*
@@ -80,19 +94,21 @@ public class TestSequenceGenerator extends SingleEMFTestCase {
      * currently allowed to fail. 
      */
     public void testORMSequenceSchema() {
-        OpenJPAEntityManagerSPI em = emf.createEntityManager();
-        NativeORMSequenceEntity nse = new NativeORMSequenceEntity();
-        nse.setName("TestORM");
-        em.getTransaction().begin();
-        em.persist(nse);
-        em.getTransaction().commit();
-        em.refresh(nse);
-        // Assert the sequence was created in the DB
-        assertTrue(sequenceExists(em, NativeORMSequenceEntity.SCHEMA_NAME,
-                NativeORMSequenceEntity.SEQ_NAME));        
-        // Assert the id is >= the initial value 
-        assertTrue(nse.getId() >= 2000);
-        em.close();
+        if (enabled) {
+            OpenJPAEntityManagerSPI em = emf.createEntityManager();
+            NativeORMSequenceEntity nse = new NativeORMSequenceEntity();
+            nse.setName("TestORM");
+            em.getTransaction().begin();
+            em.persist(nse);
+            em.getTransaction().commit();
+            em.refresh(nse);
+            // Assert the sequence was created in the DB
+            assertTrue(sequenceExists(em, NativeORMSequenceEntity.SCHEMA_NAME,
+                NativeORMSequenceEntity.SEQ_NAME));
+            // Assert the id is >= the initial value
+            assertTrue(nse.getId() >= 2000);
+            em.close();
+        }
     }
 
     /**

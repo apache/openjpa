@@ -41,9 +41,8 @@ public class TestAutoIncrement extends SingleEMFTestCase {
 	private static String PLATFORM = "oracle";
 
 	public void setUp() throws Exception {
+	    // run with -Dplatform= ${PLATFORM} to activate
 		if (!isTargetPlatform(PLATFORM)) {
-			System.err.println("*** " + getName() + " skipped. Run with "
-					+ "-Dplatform=" + PLATFORM + " to activate");
 			return;
 		}
 		if ("testAutoIncrementIdentityWithNamedSequence".equals(getName())) {

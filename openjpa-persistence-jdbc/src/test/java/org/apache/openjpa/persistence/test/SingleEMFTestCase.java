@@ -124,18 +124,18 @@ public abstract class SingleEMFTestCase
      * Count number of instances of the given class assuming that the alias
      * for the class is its simple name.
      */
-    public int count(Class c) {
-    	return count(c.getSimpleName());
+    public int count(Class<?> c) {
+    	return count(getAlias(c));
     }
     
     /**
      * Get all the instances of given type.
      * The returned instances are obtained without a persistence context. 
      */
+    @SuppressWarnings("unchecked")
     public <T> List<T> getAll(Class<T> t) {
-    	String alias = t.getSimpleName();
     	return (List<T>)emf.createEntityManager()
-				   .createQuery("SELECT p FROM " + alias + " p")
+				   .createQuery("SELECT p FROM " + getAlias(t) + " p")
 				   .getResultList();
     }
     
@@ -143,9 +143,14 @@ public abstract class SingleEMFTestCase
      * Get all the instances of given type.
      * The returned instances are obtained within the given persistence context. 
      */
+    @SuppressWarnings("unchecked")
     public <T> List<T> getAll(EntityManager em, Class<T> t) {
-    	String alias = t.getSimpleName();
-    	return (List<T>)em.createQuery("SELECT p FROM " + alias + " p")
+    	return (List<T>)em.createQuery("SELECT p FROM " + getAlias(t) + " p")
 				   .getResultList();
+    }
+    
+    public String getAlias(Class<?> t) {
+        return emf.getConfiguration().getMetaDataRepositoryInstance()
+            .getMetaData(t, null, true).getTypeAlias();
     }
 }

@@ -21,8 +21,6 @@ package org.apache.openjpa.persistence.jdbc.query;
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
 
-import org.apache.openjpa.persistence.jdbc.query.domain.Applicant;
-import org.apache.openjpa.persistence.jdbc.query.domain.Application;
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
 
 /**
@@ -36,7 +34,7 @@ import org.apache.openjpa.persistence.test.SingleEMFTestCase;
  *
  */
 public class TestNativeQueryParameterBinding extends SingleEMFTestCase {
-	private static Class NO_ERROR = null;
+	private static Class<? extends Exception> NO_ERROR = null;
 	
 	@Override
 	public void setUp() throws Exception {
@@ -58,28 +56,28 @@ public class TestNativeQueryParameterBinding extends SingleEMFTestCase {
 		verifyParams(sql, IllegalArgumentException.class, 0, 10);
 	}
 	
-	void verifyParams(String jpql, Class error, Object...params) {
-		EntityManager em = emf.createEntityManager();
-		em.getTransaction().begin();
-		Query query = em.createNativeQuery(jpql);
-		for (int i=0; params != null && i<params.length; i=+2) {
-			try {
-				if (params[i] instanceof Number) {
-					query.setParameter(((Number)params[i]).intValue(), params[i+1]);
-				} else { 
-					query.setParameter(params[i].toString(), params[i+1]);
-				}
+	void verifyParams(String jpql, Class<? extends Exception> error,
+        Object... params) {
+        EntityManager em = emf.createEntityManager();
+        em.getTransaction().begin();
+        Query query = em.createNativeQuery(jpql);
+        for (int i = 0; params != null && i < params.length; i = +2) {
+            try {
+                if (params[i] instanceof Number) {
+                    query.setParameter(((Number) params[i]).intValue(),
+                        params[i + 1]);
+                } else {
+                    query.setParameter(params[i].toString(), params[i + 1]);
+                }
 				if (error != null)
 					fail("Expected " + error.getName());
 			} catch (Exception e) {
-				if (error.isAssignableFrom(e.getClass())) {
-					System.err.println(e.getMessage());
-				} else {
-					e.printStackTrace();
-					fail();
-				}
-			} 
-				
+				if (!error.isAssignableFrom(e.getClass())) {
+				    // let the test harness handle the exception.
+				    throw new RuntimeException("An unexpected exception " + 
+				        "occurred see the initCause for details", e);
+				} 
+			}		
 		}
 		em.getTransaction().commit();
 	}

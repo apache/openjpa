@@ -66,8 +66,6 @@ public class TestXMLCustomerOrder
     public void setUp() {
         // skip test if dictionary has no support for XML column type
         if (!dictionarySupportsXMLColumn()) {
-            System.err.println("*** " + getName() + " skipped since "
-                + "DBDictionary.supportsXMLColumn property is false.");
             return;
         }
 
@@ -81,6 +79,7 @@ public class TestXMLCustomerOrder
         em.close();
     }
 
+    @SuppressWarnings("unchecked")
     public void testXMLFieldProjection() {
         if (!enabled)
             return;
@@ -102,7 +101,8 @@ public class TestXMLCustomerOrder
         
         em.close();
     }
-
+    
+    @SuppressWarnings("unchecked")
     public void testXMLFieldInEntity() {
         if (!enabled)
             return;
@@ -127,6 +127,7 @@ public class TestXMLCustomerOrder
         em.close();
     }
 
+    @SuppressWarnings("unchecked")
     public void testXMLStringToXMLStringComparison() {
         if (!enabled)
             return;
@@ -154,6 +155,7 @@ public class TestXMLCustomerOrder
         em.close();
     }
 
+    @SuppressWarnings("unchecked")
     public void testXMLStringToEmbeddedStringComparison() {
         if (!enabled)
             return;
@@ -171,6 +173,7 @@ public class TestXMLCustomerOrder
         em.close();
     }
 
+    @SuppressWarnings("unchecked")
     public void testXMLStringToConstantStringComparison() {
         if (!enabled)
             return;
@@ -187,6 +190,7 @@ public class TestXMLCustomerOrder
         em.close();
     }
 
+    @SuppressWarnings("unchecked")
     public void testXMLStringToParameterStringComparison() {
         if (!enabled)
             return;
@@ -204,6 +208,7 @@ public class TestXMLCustomerOrder
         em.close();
     }
 
+    @SuppressWarnings("unchecked")
     public void testParameterStringToXMLStringComparison() {
         if (!enabled)
             return;
@@ -278,9 +283,9 @@ public class TestXMLCustomerOrder
         
         EntityManager em = emf.createEntityManager();
         try {
-        List<Order> orders = em.createQuery(
-            "select o from Order o where o.shipAddress.city = 95141")
-            .getResultList();
+            em.createQuery(
+                "select o from Order o where o.shipAddress.city = 95141")
+                .getResultList();
         } catch (IllegalArgumentException iae) {
             return;
         } finally {
@@ -295,10 +300,9 @@ public class TestXMLCustomerOrder
         
         EntityManager em = emf.createEntityManager();
         try {
-        List<Order> orders = em.createQuery(
-            "select o from Order o where o.shipAddress.street " +
-            "= '555 Bailey'")
-            .getResultList();
+            em.createQuery(
+                "select o from Order o where o.shipAddress.street "
+                    + "= '555 Bailey'").getResultList();
         } catch (IllegalArgumentException iae) {
             return;
         } finally {
@@ -313,9 +317,9 @@ public class TestXMLCustomerOrder
         
         EntityManager em = emf.createEntityManager();
         try {
-        List<Order> orders = em.createQuery(
-            "select o from Order o where o.shipAddress.zip = 95141")
-            .getResultList();
+            em.createQuery(
+                "select o from Order o where o.shipAddress.zip = 95141")
+                .getResultList();
         } catch (IllegalArgumentException iae) {
             return;
         } finally {

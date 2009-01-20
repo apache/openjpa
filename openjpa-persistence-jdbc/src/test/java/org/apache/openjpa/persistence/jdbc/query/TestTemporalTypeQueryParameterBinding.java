@@ -54,9 +54,11 @@ public class TestTemporalTypeQueryParameterBinding extends SingleEMFTestCase {
 	
 	
 	private static String JPQL_NAMED  = 
-		"SELECT p FROM TimeKeeper p WHERE p.date=:d AND p.time=:t AND p.tstamp=:ts";
+		"SELECT p FROM TimeKeeper p " + 
+		"WHERE p.date=:d AND p.time=:t AND p.tstamp=:ts";
 	private static String JPQL_POSITIONAL  = 
-		"SELECT p FROM TimeKeeper p WHERE p.date=?1 AND p.time=?2 AND p.tstamp=?3";
+		"SELECT p FROM TimeKeeper p " + 
+		"WHERE p.date=?1 AND p.time=?2 AND p.tstamp=?3";
 	
 	private EntityManager em;
 	@Override
@@ -147,7 +149,6 @@ public class TestTemporalTypeQueryParameterBinding extends SingleEMFTestCase {
 			fail("Expeceted " + ArgumentException.class.getName());
 		} catch (ArgumentException ex) {
 			// good
-			System.err.println(ex.getMessage());
 		}
 	}
 	
@@ -165,33 +166,33 @@ public class TestTemporalTypeQueryParameterBinding extends SingleEMFTestCase {
 			q.getResultList();
 			fail("Expeceted " + ArgumentException.class.getName());
 		} catch (ArgumentException ex) {
+		    // MDD I'm assuming good == expected.
 			// good
-			System.err.println(ex.getMessage());
 		}
 	}
 	
-	void verifyParams(String jpql, Class error, Object...params) {
-		EntityManager em = emf.createEntityManager();
-		em.getTransaction().begin();
+	void verifyParams(String jpql, Class<? extends Exception> error,
+        Object... params) {
+        EntityManager em = emf.createEntityManager();
+        em.getTransaction().begin();
 		Query query = em.createNativeQuery(jpql);
 		for (int i=0; params != null && i<params.length; i=+2) {
 			try {
 				if (params[i] instanceof Number) {
-					query.setParameter(((Number)params[i]).intValue(), params[i+1]);
-				} else { 
-					query.setParameter(params[i].toString(), params[i+1]);
+                    query.setParameter(((Number) params[i]).intValue(),
+                        params[i + 1]);
+                } else {
+                    query.setParameter(params[i].toString(), params[i+1]);
 				}
 				if (error != null)
 					fail("Expected " + error.getName());
 			} catch (Exception e) {
-				if (error.isAssignableFrom(e.getClass())) {
-					System.err.println(e.getMessage());
-				} else {
-					e.printStackTrace();
-					fail();
+				if (!error.isAssignableFrom(e.getClass())) {
+				    // let the test harness handle the exception
+				    throw new RuntimeException("An unexpected exception " + 
+				        "occurred see initCause for details", e);
 				}
 			} 
-				
 		}
 		em.getTransaction().commit();
 	}
