@@ -342,8 +342,7 @@ public class EntityManagerFactoryImpl
 	}
 
     public Cache getCache() {
-        throw new UnsupportedOperationException(
-            "JPA 2.0 - Method not yet implemented");
+        return getStoreCache();
     }
 
     public OpenJPAQueryBuilder getQueryBuilder() {

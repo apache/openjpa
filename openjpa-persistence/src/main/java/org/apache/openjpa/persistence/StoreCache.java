@@ -20,6 +20,8 @@ package org.apache.openjpa.persistence;
 
 import java.util.Collection;
 
+import javax.persistence.Cache;
+
 import org.apache.openjpa.datacache.CacheStatistics;
 import org.apache.openjpa.datacache.DataCache;
 
@@ -30,7 +32,7 @@ import org.apache.openjpa.datacache.DataCache;
  * @since 0.4.1
  * @published
  */
-public interface StoreCache {
+public interface StoreCache extends Cache {
 
     public static final String NAME_DEFAULT = DataCache.NAME_DEFAULT;
 

@@ -35,10 +35,12 @@ public class ConcurrentDataCache
     extends AbstractDataCache
     implements RemoteCommitListener {
 
+    private static final long serialVersionUID = 7331996968322793473L;
+
     private static final Localizer _loc = Localizer.forPackage
         (ConcurrentDataCache.class);
 
-    private final CacheMap _cache = newCacheMap();
+    private CacheMap _cache = newCacheMap();
 
     /**
      * Returns the underlying {@link CacheMap} that this cache is using.
@@ -92,7 +94,7 @@ public class ConcurrentDataCache
         conf.getRemoteCommitEventManager().addInternalListener(this);
     }
 
-    public void unpinAll(Class cls, boolean subs) {
+    public void unpinAll(Class<?> cls, boolean subs) {
         if (log.isWarnEnabled())
             log.warn(_loc.get("cache-class-unpin-all", getName()));
         unpinAll(_cache.getPinnedKeys());
@@ -131,12 +133,21 @@ public class ConcurrentDataCache
         return (DataCachePCData) _cache.remove(key);
     }
 
-    protected void removeAllInternal(Class cls, boolean subs) {
-        // we could keep a histogram of the counts of contained classes and
-        // only clear if we have the class, but that still wouldn't support subs
-        // well, would involve synching, and won't yield much benefit when we're
-        // used as a primary cache
-        _cache.clear();
+    protected void removeAllInternal(Class<?> cls, boolean subs) {
+        // The performance in this area can be improved upon, however it seems
+        // unlikely that this method will be called in a performance intensive
+        // environment. In any event applications can revert to the old behavior
+        // by simply calling removeAll().
+        CacheMap orig = _cache;
+        _cache = newCacheMap(); 
+        for (Object o : orig.values()) {
+            Class<?> curClass = ((DataCachePCData) o).getType();
+            if (cls == curClass
+                || (curClass != null && curClass.isAssignableFrom(cls))) {
+                orig.remove(((DataCachePCData) o).getId());
+            }
+        }
+        _cache.putAll(orig, false);
     }
 
     protected void clearInternal() {

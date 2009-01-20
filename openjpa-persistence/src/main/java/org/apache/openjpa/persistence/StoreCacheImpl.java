@@ -158,4 +158,13 @@ public class StoreCacheImpl
             return false;
         return _cache.equals (((StoreCacheImpl) other)._cache);
 	}
+
+    @SuppressWarnings("unchecked")
+    public void evict(Class cls) {
+        // Check MetaData throws a consistent exception with evict(Class,
+        // Object)
+        if(getMetaData(cls) != null) {
+            _cache.removeAll(cls, false);
+        }
+    }
 }

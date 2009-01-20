@@ -170,7 +170,7 @@ public interface DataCache
     /**
      * Evict all values of a specified type.
      */
-    public void removeAll(Class cls, boolean subclasses);
+    public void removeAll(Class<?> cls, boolean subclasses);
 
     /**
      * Remove all data from this cache. This does <em>not</em> result
@@ -203,7 +203,7 @@ public interface DataCache
      * Pin all oids for the given type.
      * @param subs Whether to include subclasses.
      */
-    public void pinAll(Class cls, boolean subs);
+    public void pinAll(Class<?> cls, boolean subs);
 
     /**
      * Unpin the value stored under <code>oid</code> from the cache.
@@ -229,7 +229,7 @@ public interface DataCache
      * Unpin all oids associaed with the given type from the cache.
      * @param subs Whether to include subclasses.
      */
-    public void unpinAll(Class cls, boolean subs);
+    public void unpinAll(Class<?> cls, boolean subs);
 
     /**
      * Obtain a write lock on the cache.

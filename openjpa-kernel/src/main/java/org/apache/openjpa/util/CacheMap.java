@@ -401,11 +401,17 @@ public class CacheMap
         }
     }
 
-    public void putAll(Map map) {
+    public void putAll(Map map) { 
+        putAll(map, true);
+    }
+    
+    public void putAll(Map map, boolean replaceExisting) {
         Map.Entry entry;
         for (Iterator itr = map.entrySet().iterator(); itr.hasNext();) {
             entry = (Map.Entry) itr.next();
-            put(entry.getKey(), entry.getValue());
+            if(replaceExisting || !containsKey(entry.getKey())) { 
+                put(entry.getKey(), entry.getValue());
+            }
         }
     }
 

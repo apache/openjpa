@@ -244,7 +244,7 @@ public abstract class AbstractDataCache
         return set;
     }
 
-    public void pinAll(Class cls, boolean subs) {
+    public void pinAll(Class<?> cls, boolean subs) {
         if (log.isWarnEnabled())
             log.warn(s_loc.get("cache-class-pin", getName()));
     }
@@ -272,7 +272,7 @@ public abstract class AbstractDataCache
         return set;
     }
 
-    public void unpinAll(Class cls, boolean subs) {
+    public void unpinAll(Class<?> cls, boolean subs) {
         if (log.isWarnEnabled())
             log.warn(s_loc.get("cache-class-unpin", getName()));
     }
@@ -388,7 +388,7 @@ public abstract class AbstractDataCache
     /**
      * Evict objects in cache by class.
      */
-    protected abstract void removeAllInternal(Class cls, boolean subclasses);
+    protected abstract void removeAllInternal(Class<?> cls, boolean subclasses);
 
     /**
      * Remove all objects under the given oids from the cache.
