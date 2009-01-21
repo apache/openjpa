@@ -25,6 +25,7 @@ import org.apache.openjpa.lib.util.*;
 import org.apache.openjpa.meta.*;
 import org.apache.openjpa.kernel.*;
 import org.apache.openjpa.util.*;
+import org.apache.openjpa.enhance.PersistenceCapable;
 import org.apache.openjpa.jdbc.meta.*;
 import org.apache.openjpa.jdbc.kernel.*;
 import org.apache.openjpa.jdbc.schema.*;
@@ -111,9 +112,7 @@ public class RelationRelationMapTableFieldStrategy
                 // order before select in case we're faking union with
                 // multiple selects; order vals used to merge results
                 FieldMapping mapped = field.getMappedByMapping();
-                Joins joins = null;
-                if (mapped == null)
-                    joins = joinValueRelation(sel.newJoins(), vals[idx]);
+                Joins joins = joinValueRelation(sel.newJoins(), vals[idx]);
                 sel.orderBy(field.getKeyMapping().getColumns(), true, true);
                 sel.select(vals[idx], field.getElementMapping().
                     getSelectSubclasses(), store, fetch, eagerMode, joins);
@@ -166,7 +165,10 @@ public class RelationRelationMapTableFieldStrategy
 
     public Joins joinValueRelation(Joins joins, ClassMapping val) {
         ValueMapping vm = field.getElementMapping();
-        return joins.joinRelation(field.getName(), vm.getForeignKey(val), val,
+        ForeignKey fk = vm.getForeignKey(val);
+        if (fk == null)
+            return null;
+        return joins.joinRelation(field.getName(), fk, val,
             vm.getSelectSubclasses(), false, false);
     }
 
@@ -180,13 +182,17 @@ public class RelationRelationMapTableFieldStrategy
         if (val.getTypeCode() != JavaTypes.PC || val.isEmbeddedPC())
             throw new MetaDataException(_loc.get("not-relation", val));
         FieldMapping mapped = field.getMappedByMapping();
-        if (mapped != null)         
+        DBDictionary dict = field.getMappingRepository().getDBDictionary();
+        String keyName = null;
+        if (mapped != null) {         
             handleMappedBy(adapt);
-        else {
+            keyName = dict.getValidColumnName("vkey", field.getTable());
+         } else {
             field.mapJoin(adapt, true);
             mapTypeJoin(val, "value", adapt);
+            keyName = dict.getValidColumnName("key", field.getTable());
         }
-        mapTypeJoin(key, "key", adapt);
+        mapTypeJoin(key, keyName, adapt);
 
         field.mapPrimaryKey(adapt);
     }
@@ -211,10 +217,11 @@ public class RelationRelationMapTableFieldStrategy
 
     public void insert(OpenJPAStateManager sm, JDBCStore store, RowManager rm)
         throws SQLException {
-        insert(sm, rm, (Map) sm.fetchObject(field.getIndex()));
+        insert(sm, rm, (Map) sm.fetchObject(field.getIndex()), store);
     }
 
-    private void insert(OpenJPAStateManager sm, RowManager rm, Map map)
+    private void insert(OpenJPAStateManager sm, RowManager rm, Map map, 
+        JDBCStore store)
         throws SQLException {
         if (map == null || map.isEmpty())
             return;
@@ -237,7 +244,16 @@ public class RelationRelationMapTableFieldStrategy
             valsm = RelationStrategies.getStateManager(entry.getValue(), ctx);
             key.setForeignKey(row, keysm);
             val.setForeignKey(row, valsm);
-            rm.flushSecondaryRow(row);
+            
+            // so far, we poplulated the key/value of each
+            // map element owned by the entity.
+            // In the case of ToMany, and both sides
+            // use Map to represent the relation,
+            // we need to populate the key value of the owner
+            // from the view point of the owned side
+            PersistenceCapable obj = sm.getPersistenceCapable();
+            if (!populateKey(row, valsm, obj, ctx, rm, store))
+                rm.flushSecondaryRow(row);
         }
     }
 
@@ -257,7 +273,7 @@ public class RelationRelationMapTableFieldStrategy
         // if no fine-grained change tracking then just delete and reinsert
         if (ct == null || !ct.isTracking()) {
             delete(sm, store, rm);
-            insert(sm, rm, map);
+            insert(sm, rm, map, store);
             return;
         }
 

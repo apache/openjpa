@@ -19,21 +19,26 @@
 package org.apache.openjpa.jdbc.meta.strats;
 
 import java.sql.SQLException;
+import java.util.Collection;
 import java.util.Map;
 
+import org.apache.openjpa.enhance.PersistenceCapable;
 import org.apache.openjpa.jdbc.kernel.JDBCFetchConfiguration;
 import org.apache.openjpa.jdbc.kernel.JDBCStore;
 import org.apache.openjpa.jdbc.meta.ClassMapping;
 import org.apache.openjpa.jdbc.meta.FieldMapping;
 import org.apache.openjpa.jdbc.meta.FieldStrategy;
+import org.apache.openjpa.jdbc.meta.Strategy;
 import org.apache.openjpa.jdbc.meta.ValueMapping;
 import org.apache.openjpa.jdbc.schema.ForeignKey;
 import org.apache.openjpa.jdbc.sql.Joins;
 import org.apache.openjpa.jdbc.sql.Result;
 import org.apache.openjpa.jdbc.sql.Row;
+import org.apache.openjpa.jdbc.sql.RowImpl;
 import org.apache.openjpa.jdbc.sql.RowManager;
 import org.apache.openjpa.jdbc.sql.Select;
 import org.apache.openjpa.kernel.OpenJPAStateManager;
+import org.apache.openjpa.kernel.StoreContext;
 import org.apache.openjpa.lib.log.Log;
 import org.apache.openjpa.lib.util.Localizer;
 import org.apache.openjpa.meta.JavaTypes;
@@ -213,8 +218,8 @@ public abstract class MapTableFieldStrategy
                     log.info(_loc.get("coll-owner", field, mapped));
                 ValueMapping elem = mapped.getElementMapping();
                 ForeignKey fk = elem.getForeignKey();
-                field.setForeignKey(fk);
                 field.setJoinForeignKey(fk);
+                field.getElementMapping().setForeignKey(mapped.getJoinForeignKey());
             } else
                 throw new MetaDataException(_loc.get("not-inv-relation",
                     field, mapped));
@@ -248,5 +253,52 @@ public abstract class MapTableFieldStrategy
             if (def == mapped.getTypeMapping())
                 return false;
         return true;
+    }
+
+    protected boolean populateKey(Row row, OpenJPAStateManager valsm, Object obj,
+            StoreContext ctx, RowManager rm, JDBCStore store) throws SQLException {
+        ClassMapping meta = (ClassMapping)valsm.getMetaData();
+        FieldMapping fm = getFieldMapping(meta);
+        if (fm == null) 
+            return false;
+        Map mapObj = (Map)valsm.fetchObject(fm.getIndex());
+        Collection<Map.Entry> entrySets = mapObj.entrySet();
+        boolean found = false;
+        for (Map.Entry entry : entrySets) {
+            if (entry.getValue() == obj) {
+                Row newRow = (Row) ((RowImpl)row).clone();
+                Object keyObj = entry.getKey();
+                Strategy strat = fm.getStrategy();
+                if (strat instanceof HandlerRelationMapTableFieldStrategy) {
+                    HandlerRelationMapTableFieldStrategy hrStrat = 
+                        (HandlerRelationMapTableFieldStrategy) strat;
+                    hrStrat.setKey(keyObj, store, newRow);
+                } else if (keyObj instanceof PersistenceCapable) {
+                    OpenJPAStateManager keysm = 
+                        RelationStrategies.getStateManager(entry.getKey(), ctx);
+                    ValueMapping key = fm.getKeyMapping();
+                    if (keysm != null) 
+                        key.setForeignKey(newRow, keysm);
+                    else
+                        key.setForeignKey(newRow, null);
+                } 
+                rm.flushSecondaryRow(newRow);
+                found = true;
+            }
+        }
+        if (found)
+            return true;
+        return false;        
+    }
+
+    private FieldMapping getFieldMapping(ClassMapping meta) {
+        FieldMapping[] fields = meta.getFieldMappings();
+        for (int i = 0; i < fields.length; i++) {
+            ValueMapping val = fields[i].getValueMapping();
+            if (fields[i].getMappedByMetaData() == field && 
+                    val.getDeclaredTypeCode() == JavaTypes.MAP)
+                return fields[i];
+        }
+        return null;
     }
 }

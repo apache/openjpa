@@ -25,6 +25,7 @@ import org.apache.openjpa.lib.util.*;
 import org.apache.openjpa.meta.*;
 import org.apache.openjpa.kernel.*;
 import org.apache.openjpa.util.*;
+import org.apache.openjpa.enhance.PersistenceCapable;
 import org.apache.openjpa.jdbc.meta.*;
 import org.apache.openjpa.jdbc.kernel.*;
 import org.apache.openjpa.jdbc.schema.*;
@@ -88,9 +89,7 @@ public class HandlerRelationMapTableFieldStrategy
                 sel.whereForeignKey(field.getJoinForeignKey(),
                     sm.getObjectId(), field.getDefiningMapping(), store);
                 FieldMapping mapped = field.getMappedByMapping();
-                Joins joins = null;
-                if (mapped == null)
-                    joins = joinValueRelation(sel.newJoins(), vals[idx]);
+                Joins joins = joinValueRelation(sel.newJoins(), vals[idx]);
                 
                 sel.select(vals[idx], field.getElementMapping().
                     getSelectSubclasses(), store, fetch, eagerMode, joins);
@@ -123,7 +122,10 @@ public class HandlerRelationMapTableFieldStrategy
 
     public Joins joinValueRelation(Joins joins, ClassMapping val) {
         ValueMapping vm = field.getElementMapping();
-        return joins.joinRelation(field.getName(), vm.getForeignKey(val), val,
+        ForeignKey fk = vm.getForeignKey(val);
+        if (fk == null)
+            return null;
+        return joins.joinRelation(field.getName(), fk, val,
             vm.getSelectSubclasses(), false, false);
     }
 
@@ -195,8 +197,24 @@ public class HandlerRelationMapTableFieldStrategy
             valsm = RelationStrategies.getStateManager(entry.getValue(),
                 ctx);
             val.setForeignKey(row, valsm);
-            rm.flushSecondaryRow(row);
+            
+            // So far we poplulated the key/value of each
+            // map element owned by the entity.
+            // In the case of ToMany, and both sides
+            // use Map to represent the relation,
+            // we need to populate the key value of the owner
+            // from the view point of the owned side
+            PersistenceCapable obj = sm.getPersistenceCapable();
+            if (!populateKey(row, valsm, obj, ctx, rm, store))
+                rm.flushSecondaryRow(row);
         }
+    }
+    
+    public void setKey(Object keyObj, JDBCStore store, Row row) 
+        throws SQLException {
+        ValueMapping key = field.getKeyMapping();
+        HandlerStrategies.set(key, keyObj, store, row, _kcols,
+            _kio, true);
     }
 
     public void update(OpenJPAStateManager sm, JDBCStore store, RowManager rm)
