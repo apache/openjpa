@@ -476,43 +476,46 @@ public class SelectImpl
         
         if (_parent.getAliases() == null || _subPath == null)
             return;
-        
-        // resolve aliases for subselect from parent
-        Set entries = _parent.getAliases().entrySet();
-        Iterator it = entries.iterator();
-        while (it.hasNext()) {
-        	Map.Entry entry = (Map.Entry) it.next();
-            Object key = entry.getKey();
-            Integer alias = (Integer) entry.getValue();
-            if (key.toString().indexOf(_subPath) != -1 ||
-                _parent.findTableAlias(alias) == false) {
-                if (_aliases == null)
-                    _aliases = new HashMap();
-                _aliases.put(key, alias);
 
-                Object tableString = _parent.getTables().get(alias);
-                if (_tables == null)
-                    _tables = new TreeMap();
-                _tables.put(alias, tableString);
-                
-                _removedAliasFromParent.set(alias.intValue());
-            }
-        }
-        
-        if (_aliases != null) {
-            // aliases moved into subselect should be removed from parent
-            entries = _aliases.entrySet();
-            it = entries.iterator();
+        // Do not remove aliases for databases that use SYNTAX_DATABASE (oracle)
+        if(_parent._joinSyntax != JoinSyntaxes.SYNTAX_DATABASE) {
+            // resolve aliases for subselect from parent
+            Set entries = _parent.getAliases().entrySet();
+            Iterator it = entries.iterator();
             while (it.hasNext()) {
-            	Map.Entry entry = (Map.Entry) it.next();
+                Map.Entry entry = (Map.Entry) it.next();
                 Object key = entry.getKey();
                 Integer alias = (Integer) entry.getValue();
                 if (key.toString().indexOf(_subPath) != -1 ||
-                    _parent.findTableAlias(alias) == false) {
-                    _parent.removeAlias(key);
+                        _parent.findTableAlias(alias) == false) {
+                    if (_aliases == null)
+                        _aliases = new HashMap();
+                    _aliases.put(key, alias);
 
                     Object tableString = _parent.getTables().get(alias);
-                    _parent.removeTable(alias);
+                    if (_tables == null)
+                        _tables = new TreeMap();
+                    _tables.put(alias, tableString);
+
+                    _removedAliasFromParent.set(alias.intValue());
+                }
+            }
+
+            if (_aliases != null) {
+                // aliases moved into subselect should be removed from parent
+                entries = _aliases.entrySet();
+                it = entries.iterator();
+                while (it.hasNext()) {
+                    Map.Entry entry = (Map.Entry) it.next();
+                    Object key = entry.getKey();
+                    Integer alias = (Integer) entry.getValue();
+                    if (key.toString().indexOf(_subPath) != -1 ||
+                            _parent.findTableAlias(alias) == false) {
+                        _parent.removeAlias(key);
+
+                        Object tableString = _parent.getTables().get(alias);
+                        _parent.removeTable(alias);
+                    }
                 }
             }
         }
