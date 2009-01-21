@@ -56,6 +56,6 @@ public class TestSQLBigDecimalId
     }
 
     public static void main(String[] args) {
-        TestRunner.run(SQLBigDecimalIdEntity.class);
+        TestRunner.run(TestSQLBigDecimalId.class);
     }
 }
