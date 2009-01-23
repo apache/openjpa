@@ -355,6 +355,12 @@ StoreCache cache = oemf.getStoreCache();
 ...
 </programlisting>
 Alternatively you can just cast the same object returned from 
+the EntityManager.getCache() method.
+<programlisting>
+import org.apache.openjpa.persistence.StoreCache;
+...
+StoreCache cache = (StoreCache) emf.getCache();
+</programlisting>
             </example>
 <programlisting>
 public void evict(Class cls, Object oid);
