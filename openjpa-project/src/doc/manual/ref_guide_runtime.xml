@@ -361,11 +361,12 @@ for (Magazine m : mags)
                 </primary>
             </indexterm>
             <para>
-In addition to the <classname>EntityManager</classname> object cache mandated by
-the JPA specification, OpenJPA includes a flexible datastore-level cache. You
-can access this cache from your JPA code using the
+In addition to the <classname>EntityManager</classname> object cache the JPA 
+specification provides access to a second level cache via the 
+javax.persistence.Cache interface. OpenJPA provides further extensions via 
+the org.apache.openjpa.persistence.StoreCache interface documented at 
 <ulink url="../javadoc/org/apache/openjpa/persistence/StoreCache.html">
-<classname>org.apache.openjpa.persistence.StoreCache</classname></ulink> facade.
+<classname>org.apache.openjpa.persistence.StoreCache</classname></ulink>.
 <xref linkend="ref_guide_cache"/> has detailed information on OpenJPA's
 data caching system, including the <classname>StoreCache</classname> facade.
             </para>

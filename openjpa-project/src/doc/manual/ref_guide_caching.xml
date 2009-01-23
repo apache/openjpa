@@ -287,17 +287,58 @@ tips on how to use this package to extend OpenJPA's caching service yourself.
             </para>
             <para>
 Rather than use the low-level <literal>org.apache.openjpa.datacache</literal>
-package APIs, JPA users should typically access the data cache through OpenJPA's
+package APIs, JPA users should typically access the data cache through the JPA
+standard <classname>javax.persistence.Cache</classname> interface, or OpenJPA's
 high-level 
 <ulink url="../javadoc/org/apache/openjpa/persistence/StoreCache.html">
-<classname>org.apache.openjpa.persistence.StoreCache</classname></ulink> facade.
-This facade has methods to pin and unpin records, evict data from the cache, and
-provides basic statistics of number of read or write requests and hit ratio of 
-the cache.  
+<classname>org.apache.openjpa.persistence.StoreCache</classname></ulink> facade. 
             </para>
-<programlisting>
-public StoreCache getStoreCache();
-</programlisting>
+            <para>
+Both interfaces provide methods to evict data from the cache and detect whether
+an entity is in the cache. The OpenJPA facade adds methods to pin and unpin 
+records, additional methods to evict data, and provides basic statistics of 
+number of read or write requests and hit ratio of the cache.  
+            </para>
+<section id="ref_guide_cache_use_JPA">
+<title>Using the JPA standard Cache interface</title>
+    You may obtain the <classname>javax.persistence.Cache</classname> through
+    the EntityManagerFactory.getCache() method. 
+    <example id="ref_guide_cache_access_jpa_standard">
+        <title>
+            Accessing the Cache
+        </title>
+        <programlisting>
+import javax.persistence.Cache;
+import javax.persistence.EntityManagerFactory;
+import javax.persistence.Persistence;
+. . .
+EntityManagerFactory em = 
+    Persistence.createEntityManagerFactory("myPersistenceUnit");
+Cache cache = em.getCache();
+. . .
+        </programlisting>
+    </example>
+
+    <example id="ref_guide_cache_use_jpa_standard">
+        <title>Using the javax.persistence.Cache interface</title>
+        <programlisting>
+// Check whether the cache contains a entity with a provided ID
+Cache cache = em.getCache();
+boolean contains = cache.contains(MyEntity.class, entityID);
+
+// evict a specific entity from the cache
+cache.evict(MyEntity.class, entityID);
+
+// evict all instances of an entity class from the cache
+cache.evict(AnotherEntity.class);
+
+// evict everything from the cache 
+cache.evictAll();
+        </programlisting>
+    </example>
+</section>
+<section id="ref_guide_cache_use_openJPA">
+<title>Using the OpenJPA StoreCache extensions</title>
             <para>
 You obtain the <classname>StoreCache</classname> through the <methodname>
 OpenJPAEntityManagerFactory.getStoreCache</methodname> method.
@@ -313,6 +354,7 @@ OpenJPAEntityManagerFactory oemf = OpenJPAPersistence.cast(emf);
 StoreCache cache = oemf.getStoreCache();
 ...
 </programlisting>
+Alternatively you can just cast the same object returned from 
             </example>
 <programlisting>
 public void evict(Class cls, Object oid);
@@ -370,6 +412,7 @@ Javadoc</ulink> for information on additional functionality it provides. Also,
 <xref linkend="ref_guide_runtime"/> discusses OpenJPA's other extensions
 to the standard set of JPA runtime interfaces.
             </para>
+</section>
             <para>
 The examples above include calls to <methodname>evict</methodname> to manually
 remove data from the data cache. Rather than evicting objects from the data
