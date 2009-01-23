@@ -69,10 +69,10 @@ public class TestJPQLScalarExpressions extends AbstractTestCase {
         endEm(em);
     }
 
+    @SuppressWarnings("unchecked")
     public void testCoalesceExpressions() {
         EntityManager em = currentEntityManager();
         startTx(em);
-
 
         String query = "SELECT e.name, " +
             "COALESCE (e.address.country, 'Unknown')" +
@@ -86,6 +86,7 @@ public class TestJPQLScalarExpressions extends AbstractTestCase {
         endEm(em);
     }
 
+    @SuppressWarnings("unchecked")
     public void testNullIfExpressions() {
         EntityManager em = currentEntityManager();
         startTx(em);
@@ -103,6 +104,7 @@ public class TestJPQLScalarExpressions extends AbstractTestCase {
         endEm(em);
     }
 
+    @SuppressWarnings("unchecked")
     public void testSimpleCaseExpressions() {
         EntityManager em = currentEntityManager();
 
@@ -129,15 +131,23 @@ public class TestJPQLScalarExpressions extends AbstractTestCase {
         Object[] result2 = (Object[]) rs2.get(rs2.size()-1);
         assertEquals("the name is not seetha", "Seetha", result2[0]);
 
-        // TODO: needs entity-type-expression
         String query3 = "SELECT e.name, " +
             " CASE TYPE(e) WHEN FemaleUser THEN 'Female' " +
             " ELSE 'Male' " +
-            " END " +
+            " END as result" +
             " FROM CompUser e";
+        List rs3 = em.createQuery(query3).getResultList();
+        Object[] result3 = (Object[]) rs3.get(rs3.size()-1);
+        assertEquals("the result is not female", "Female", result3[1]);
+        assertEquals("the name is not shade", "Shade", result3[0]);
+        result3 = (Object[]) rs3.get(0);
+        assertEquals("the result is not male", "Male", result3[1]);
+        assertEquals("the name is not seetha", "Seetha", result3[0]);
+
         endEm(em);
     }
 
+    @SuppressWarnings("unchecked")
     public void testGeneralCaseExpressions() {
         EntityManager em = currentEntityManager();
         startTx(em);
@@ -154,7 +164,6 @@ public class TestJPQLScalarExpressions extends AbstractTestCase {
             " FROM CompUser e ORDER BY cage";
         
         List rs = em.createQuery(query).getResultList();
-       
 
         String update = "UPDATE CompUser e SET e.age = " +
             "CASE WHEN e.age > 30 THEN e.age - 1 " +
@@ -169,6 +178,7 @@ public class TestJPQLScalarExpressions extends AbstractTestCase {
         endEm(em);
     }
 
+    @SuppressWarnings("unchecked")
     public void testMathFuncOrderByAlias() {
         EntityManager em = currentEntityManager();
 

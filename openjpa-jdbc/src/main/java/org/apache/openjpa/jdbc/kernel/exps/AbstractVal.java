@@ -79,6 +79,11 @@ abstract class AbstractVal
         sql.append("1");
     }
 
+    public void appendType(Select sel, ExpContext ctx, ExpState state, 
+        SQLBuffer sql) {
+        sql.append("1");
+    }
+
     public void appendSize(Select sel, ExpContext ctx, ExpState state, 
         SQLBuffer sql) {
         sql.append("1");

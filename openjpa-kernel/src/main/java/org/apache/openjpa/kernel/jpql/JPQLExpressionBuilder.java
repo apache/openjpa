@@ -330,14 +330,23 @@ public class JPQLExpressionBuilder
             if (aliasNode != null)
                 proj.setAlias(alias);
             exps.projections[i] = proj;
-            exps.projectionClauses[i] = aliasNode == null ?
-                assemble(node.id == JJTSCALAREXPRESSION ? firstChild(node)
-                    : node) : alias;
+            exps.projectionClauses[i] = aliasNode != null ? alias :
+                projectionClause(node.id == JJTSCALAREXPRESSION ?
+                    firstChild(node) : node);
             exps.projectionAliases[i] = alias;
         }
         return exp;
     }
 
+    private String projectionClause(JPQLNode node) {
+        switch (node.id) {
+        case JJTTYPE:
+            return projectionClause(firstChild(node));
+        default:
+            return assemble(node);
+        }
+    }
+    
     private void evalQueryOperation(QueryExpressions exps) {
         // determine whether we want to select, delete, or update
         if (root().id == JJTSELECT || root().id == JJTSUBSELECT)
@@ -746,7 +755,10 @@ public class JPQLExpressionBuilder
                 return eval(onlyChild(node));
 
             case JJTTYPE:
-                return eval(onlyChild(node));
+                return getType(onlyChild(node));
+
+            case JJTTYPELITERAL:
+                return getTypeLiteral(node);
 
             case JJTCLASSNAME:
                 return getPathOrConstant(node);
@@ -754,10 +766,10 @@ public class JPQLExpressionBuilder
             case JJTCASE:
                 return eval(onlyChild(node));
 
-            case JJTSCASE:
+            case JJTSIMPLECASE:
                 return getSimpleCaseExpression(node);
 
-            case JJTGCASE:
+            case JJTGENERALCASE:
                 return getGeneralCaseExpression(node);
 
             case JJTWHEN:
@@ -813,6 +825,10 @@ public class JPQLExpressionBuilder
 
             case JJTPOSITIONALINPUTPARAMETER:
                 return getParameter(node.text, true);
+
+            case JJTCOLLECTIONPARAMETER:
+                // TODO: support collection valued parameters
+                return getParameter(onlyChild(node).text, true);
 
             case JJTOR: // x OR y
                 return factory.or(getExpression(left(node)),
@@ -892,14 +908,19 @@ public class JPQLExpressionBuilder
                     factory.lessThanEqual(val1, val3)));
 
             case JJTIN: // x.field [NOT] IN ('a', 'b', 'c')
-
+                        // TYPE(x...) [NOT] IN (entityTypeLiteral1,...)
                 Expression inExp = null;
                 Iterator inIterator = node.iterator();
                 // the first child is the path
-                val1 = getValue((JPQLNode) inIterator.next());
+                JPQLNode first = (JPQLNode) inIterator.next();
+                val1 = getValue(first);
 
                 while (inIterator.hasNext()) {
-                    val2 = getValue((JPQLNode) inIterator.next());
+                    JPQLNode next = (JPQLNode) inIterator.next();
+                    if (first.id == JJTTYPE && next.id == JJTTYPELITERAL)
+                        val2 = getTypeLiteral(next);
+                    else
+                        val2 = getValue(next);
 
                     // special case for <value> IN (<subquery>) or
                     // <value> IN (<single value>)
@@ -1360,10 +1381,43 @@ public class JPQLExpressionBuilder
         } else if (val instanceof Path) {
             return (Path) val;
         } else if (val instanceof Value) {
+            if (val.isVariable()) {
+                // can be an entity type literal
+                Class c = resolver.classForName(name, null);
+                if (c != null) {
+                    Value lit = factory.newTypeLiteral(c, Literal.TYPE_CLASS);
+                    Class<?> candidate = getCandidateType();
+                    ClassMetaData can = getClassMetaData(candidate.getName(), false);
+                    ClassMetaData meta = getClassMetaData(name, false);
+                    if (candidate.isAssignableFrom(c))
+                        lit.setMetaData(meta);
+                    else
+                        lit.setMetaData(can);
+                    return lit;
+                }
+            }
             return (Value) val;
         }
 
         throw parseException(EX_USER, "unknown-identifier",
+            new Object[]{ name }, null);
+    }
+
+    private Value getTypeLiteral(JPQLNode node) {
+        JPQLNode type = onlyChild(node);
+        final String name = type.text;
+        final Value val = getVariable(name, false);
+
+        if (val instanceof Value && val.isVariable()) {
+            Class c = resolver.classForName(name, null);
+            if (c != null) {
+                Value typeLit = factory.newTypeLiteral(c, Literal.TYPE_CLASS);
+                typeLit.setMetaData(getClassMetaData(name, false));
+                return typeLit;
+            }
+        }
+
+        throw parseException(EX_USER, "not-type-literal",
             new Object[]{ name }, null);
     }
 
@@ -1391,6 +1445,36 @@ public class JPQLExpressionBuilder
             }
         } else {
             return getPath(node, false, true);
+        }
+    }
+
+    /**
+     * Process type_discriminator
+     *     type_discriminator ::=
+     *         TYPE(identification_variable |
+     *         single_valued_object_path_expression |
+     *         input_parameter )
+     */
+    private Value getType(JPQLNode node) {
+        switch (node.id) {
+        case JJTIDENTIFIER:
+            return factory.type(getValue(node));
+
+        case JJTNAMEDINPUTPARAMETER:
+            return factory.type(getParameter(node.text, false));
+
+        case JJTPOSITIONALINPUTPARAMETER:
+            return factory.type(getParameter(node.text, true));
+
+        default:
+            // TODO: enforce jpa2.0 spec rules.
+            // A single_valued_object_field is designated by the name of
+            // an association field in a one-to-one or many-to-one relationship
+            // or a field of embeddable class type.
+            // The type of a single_valued_object_field is the abstract schema
+            // type of the related entity or embeddable class
+            Value path = getPath(node, false, true);
+            return factory.type(path);
         }
     }
 

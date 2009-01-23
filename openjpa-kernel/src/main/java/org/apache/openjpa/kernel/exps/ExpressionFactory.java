@@ -403,6 +403,13 @@ public interface ExpressionFactory {
     public Value index(Value target);
 
     /**
+     * Return the type/class of the given value.
+     *
+     * @since 2.0.0
+     */
+    public Value type(Value target);
+
+    /**
      * Return distinct values of the given value. This is typically used
      * within aggregates, for example: max(distinct(path))
 	 *
@@ -445,4 +452,10 @@ public interface ExpressionFactory {
      * Return a nullif expression
      */
     public Value nullIfExpression(Value val1, Value val2);
+
+    /**
+     * Return a value representing the given constant, which will be
+     * a {@link Number}, {@link String}, or {@link Boolean} instance.
+     */
+    public Literal newTypeLiteral(Object val, int parseType);
 }

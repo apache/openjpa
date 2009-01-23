@@ -27,6 +27,7 @@ import java.util.ListIterator;
 import org.apache.commons.lang.ObjectUtils;
 import org.apache.openjpa.jdbc.kernel.JDBCFetchConfiguration;
 import org.apache.openjpa.jdbc.meta.ClassMapping;
+import org.apache.openjpa.jdbc.meta.Discriminator;
 import org.apache.openjpa.jdbc.meta.FieldMapping;
 import org.apache.openjpa.jdbc.meta.ValueMapping;
 import org.apache.openjpa.jdbc.schema.Column;
@@ -812,6 +813,33 @@ public class PCPath
             sql.append("1");
         else
             pstate.field.appendIndex(sql, sel, pstate.joins);;
+    }
+
+    public void appendType(Select sel, ExpContext ctx, ExpState state, 
+        SQLBuffer sql) {
+        Discriminator disc = null;
+        ClassMapping sup = _class;
+        while (sup.getMappedPCSuperclassMapping() != null)
+            sup = sup.getMappedPCSuperclassMapping();
+
+        disc = sup.getDiscriminator();
+
+        Column[] cols = null;
+        if (disc != null)
+            cols = disc.getColumns();
+        else
+            cols = getColumns(state);
+
+        if (cols == null) {
+            sql.append("1");
+            return;
+        }
+
+        for (int i = 0; i < cols.length; i++) {
+            if (i > 0)
+                sql.append(", ");
+            sql.append(sel.getColumnAlias(cols[i], state.joins));
+        }
     }
 
     public void appendSize(Select sel, ExpContext ctx, ExpState state, 

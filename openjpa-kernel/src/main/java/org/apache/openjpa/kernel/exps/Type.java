@@ -18,35 +18,46 @@
  */
 package org.apache.openjpa.kernel.exps;
 
+import java.util.Collection;
+import java.util.Map;
+
+import org.apache.openjpa.kernel.StoreContext;
+
+import serp.util.Numbers;
+
 /**
- * Interface for any literal value.
+ * Returns the entity type.
  *
- * @author Abe White
- * @nojavadoc
+ * @author Catalina Wei
  */
-public interface Literal
-    extends Value, Constant {
+class Type extends Val {
 
-    public static final int TYPE_UNKNOWN = 0;
-    public static final int TYPE_NUMBER = 1;
-    public static final int TYPE_BOOLEAN = 2;
-    public static final int TYPE_STRING = 3;
-    public static final int TYPE_SQ_STRING = 4; // single-quoted string
-    public static final int TYPE_CLASS = 5;
+    private final Val _val;
 
     /**
-     * The value of this literal.
+     * Constructor. Provide target string and the arguments to the
+     * indexOf method.
      */
-    public Object getValue();
+    public Type(Val val) {
+        _val = val;
+    }
 
-    /**
-     * The value of this literal.
-     */
-    public void setValue(Object val);
+    public Class getType() {
+        return Class.class;
+    }
 
-    /**
-     * The type the literal was parsed as.
-     */
-    public int getParseType();
+    public void setImplicitType(Class type) {
+    }
+
+    protected Object eval(Object candidate, Object orig,
+        StoreContext ctx, Object[] params) {
+        _val.eval(candidate, orig, ctx, params);
+        return _val.getType();
+    }
+
+    public void acceptVisit(ExpressionVisitor visitor) {
+        visitor.enter(this);
+        _val.acceptVisit(visitor);
+        visitor.exit(this);
+    }
 }
-

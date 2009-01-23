@@ -91,7 +91,11 @@ class InExpression
     public void appendTo(Select sel, ExpContext ctx, ExpState state, 
         SQLBuffer buf) {
         InExpState istate = (InExpState) state; 
-        _const.calculateValue(sel, ctx, istate.constantState, null, null);
+        if (_val instanceof Type)
+            _const.calculateValue(sel, ctx, istate.constantState, _val,
+                istate.valueState);
+        else
+            _const.calculateValue(sel, ctx, istate.constantState, null, null);
         _val.calculateValue(sel, ctx, istate.valueState, null, null);
 
         List list = null;

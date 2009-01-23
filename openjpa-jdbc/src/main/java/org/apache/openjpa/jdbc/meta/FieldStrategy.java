@@ -186,6 +186,11 @@ public interface FieldStrategy
     public void appendIndex(SQLBuffer sql, Select sel, Joins joins);
 
     /**
+     * Append the entity discriminator value to the given statement.
+     */
+    public void appendType(SQLBuffer sql, Select sel, Joins joins);
+
+    /**
      * Join this value to the class table. Does nothing by default.
      */
     public Joins join(Joins joins, boolean forceOuter);

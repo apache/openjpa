@@ -139,6 +139,10 @@ public abstract class AbstractFieldStrategy
         sql.append("1");
     }
 
+    public void appendType(SQLBuffer sql, Select sel, Joins joins) {
+        sql.append("1");
+    }
+
     public Joins join(Joins joins, boolean forceOuter) {
         return joins;
     }

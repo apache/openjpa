@@ -22,6 +22,7 @@ import java.util.Collection;
 import java.util.Map;
 
 import org.apache.openjpa.jdbc.meta.ClassMapping;
+import org.apache.openjpa.jdbc.meta.Discriminator;
 import org.apache.openjpa.jdbc.sql.SQLBuffer;
 import org.apache.openjpa.jdbc.sql.Select;
 import org.apache.openjpa.kernel.Filters;
@@ -82,6 +83,12 @@ public class Param
         return Filters.convert(params[_idx], getType());
     }
 
+    public Object getValue(ExpContext ctx, ExpState state) {
+        ParamExpState pstate = (ParamExpState) state;
+        return (pstate.discValue != null) ? pstate.discValue :
+            getValue(ctx.params);
+    }
+
     public Object getSQLValue(Select sel, ExpContext ctx, ExpState state) {
         return ((ParamExpState) state).sqlValue;
     }
@@ -97,7 +104,10 @@ public class Param
         extends ConstExpState {
 
         public Object sqlValue = null;
-        public int otherLength = 1; 
+        public int otherLength = 1;
+        public ClassMapping mapping = null;
+        public Discriminator disc = null;
+        public Object discValue = null;
     } 
 
     public void calculateValue(Select sel, ExpContext ctx, ExpState state, 
@@ -108,6 +118,14 @@ public class Param
         if (other != null && !_container) {
             pstate.sqlValue = other.toDataStoreValue(sel, ctx, otherState, val);
             pstate.otherLength = other.length(sel, ctx, otherState);
+            if (other instanceof Type) {
+                pstate.mapping = ctx.store.getConfiguration().
+                    getMappingRepositoryInstance().getMapping((Class) val,
+                        ctx.store.getContext().getClassLoader(), true);
+                pstate.disc = pstate.mapping.getDiscriminator();
+                pstate.discValue = pstate.disc != null ? pstate.disc.getValue()
+                    : null;
+            }
         } else if (ImplHelper.isManageable(val)) {
             ClassMapping mapping = ctx.store.getConfiguration().
                 getMappingRepositoryInstance().getMapping(val.getClass(),
@@ -125,6 +143,10 @@ public class Param
         if (pstate.otherLength > 1)
             sql.appendValue(((Object[]) pstate.sqlValue)[index], 
                 pstate.getColumn(index));
+        else if (pstate.cols != null)
+            sql.appendValue(pstate.sqlValue, pstate.getColumn(index));
+        else if (pstate.discValue != null)
+            sql.appendValue(pstate.discValue);
         else
             sql.appendValue(pstate.sqlValue, pstate.getColumn(index));
     }

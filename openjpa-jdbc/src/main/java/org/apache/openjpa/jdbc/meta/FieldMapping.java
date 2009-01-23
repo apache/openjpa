@@ -862,6 +862,10 @@ public class FieldMapping
         assertStrategy().appendIndex(sql, sel, joins);
     }
 
+    public void appendType(SQLBuffer sql, Select sel, Joins joins) {
+        assertStrategy().appendType(sql, sel, joins);
+    }
+
     public Joins join(Joins joins, boolean forceOuter) {
         return assertStrategy().join(joins, forceOuter);
     }

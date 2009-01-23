@@ -247,6 +247,10 @@ public class JDBCExpressionFactory
         return new Lit(val, ptype);
     }
 
+    public Literal newTypeLiteral(Object val, int ptype) {
+        return new TypeLit(val, ptype);
+    }
+
     public Value getThis() {
         return new PCPath(_type);
     }
@@ -394,6 +398,10 @@ public class JDBCExpressionFactory
     public Value index(Value val) {
         ((PCPath) val).verifyIndexedField();
         return new Index((Val) val);
+    }
+
+    public Value type(Value val) {
+        return new Type((Val) val);
     }
 
     public Value getObjectId(Value val) {

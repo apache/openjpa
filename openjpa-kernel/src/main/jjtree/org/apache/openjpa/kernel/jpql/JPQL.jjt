@@ -745,19 +745,26 @@ void between_expression() #BETWEEN : { }
 
 void in_expression() #IN : { }
 {
-	(path() | scalar_function()) [ LOOKAHEAD(1) <NOT> { jjtThis.not = true; }] <IN>
-		"(" (literal_or_param()
+	(path() | scalar_function() | type_discriminator()) [ LOOKAHEAD(1) <NOT> { jjtThis.not = true; }] <IN>
+		("(" (literal_or_param()
 			(<COMMA> (literal_or_param()))* | subquery())
-		")" 
+		 ")"  
+		| collection_valued_input_parameter()
+		)
 }
 
+void entity_type_literal() #TYPELITERAL : { }
+{
+    identification_variable()
+}
 
 void literal_or_param() : { }
 {
 	(numeric_literal()
 	| string_literal()
 	| boolean_literal()
-	| input_parameter())
+	| input_parameter()
+	| entity_type_literal())
 }
 
 
@@ -941,46 +948,51 @@ void arithmetic_factor() : { }
 	LOOKAHEAD(2) "(" arithmetic_expression() ")" | 
 	functions_returning_numerics() | 
 	aggregate_select_expression() |	
+	LOOKAHEAD(case_expression()) case_expression() |
 	subquery()
 }
 
 
-void qualified_path() #QPATH : { }
+void qualified_path() #QUALIFIEDPATH : { }
 {
     general_identification_variable() (LOOKAHEAD(2) <DOT> path_component())+
 }
 
-void qualified_identification_variable() #QIDENTIFIER : { }
+void qualified_identification_variable() #QUALIFIEDIDENTIFIER : { }
 {
-    ( <KEY> "(" identification_variable() ")" #KEY
-    | <VALUE> "(" identification_variable() ")" #VALUE
-    | <ENTRY> "(" identification_variable() ")" #ENTRY
+    ( <KEY> "(" identification_variable() ")" #KEY(1)
+    | <VALUE> "(" identification_variable() ")" #VALUE(1)
+    | <ENTRY> "(" identification_variable() ")" #ENTRY(1)
     )
 }
 
-void general_identification_variable() #GIDENTIFIER : { }
+void general_identification_variable() #GENERALIDENTIFIER : { }
 {
-    ( <KEY> "(" identification_variable() ")" #KEY
-    | <VALUE> "(" identification_variable() ")" #VALUE
+    ( <KEY> "(" identification_variable() ")" #KEY(1)
+    | <VALUE> "(" identification_variable() ")" #VALUE(1)
     )
 }
 
 void entity_type_comp() : { }
 {
-    entity_type_expression()
-	( <EQ> entity_type_expression() #EQUALS(2)
-	| <NE> entity_type_expression() #NOTEQUALS(2)
+    (entity_type_expression() | entity_type_literal())
+	( <EQ> (entity_type_expression() | entity_type_literal()) #EQUALS(2)
+	| <NE> (entity_type_expression() | entity_type_literal()) #NOTEQUALS(2)
 	)
 }
 
-void entity_type_expression() #TYPE : { }
+void type_discriminator() #TYPE : { }
 {
-    <TYPE> "(" (LOOKAHEAD(identification_variable()) identification_variable()
-               | LOOKAHEAD(path()) path()
+    <TYPE> "(" (LOOKAHEAD(path()) path()
                | LOOKAHEAD(general_identification_variable()) general_identification_variable()
+               | LOOKAHEAD(identification_variable()) identification_variable()
                | LOOKAHEAD(input_parameter()) input_parameter())
-            ")" |
-    classname() #TYPE_LITERAL |
+            ")"
+}
+
+void entity_type_expression(): { }
+{
+    type_discriminator() |
     input_parameter()
 }
 
@@ -990,7 +1002,7 @@ void scalar_expression() #SCALAREXPRESSION : { }
     LOOKAHEAD(case_expression()) case_expression() |
     LOOKAHEAD(string_primary()) string_primary() |
     LOOKAHEAD(datetime_primary()) datetime_primary() |
-    LOOKAHEAD(enum_primary()) enum_primary()
+    LOOKAHEAD(enum_primary()) enum_primary() |
     LOOKAHEAD(entity_type_expression()) entity_type_expression()
 }
 
@@ -1004,29 +1016,31 @@ void case_expression() #CASE : { }
     <NULLIF> nullif_expression()
 }
 
-void general_case_expression() #GCASE : { }
+void general_case_expression() #GENERALCASE : { }
 {
     (when_clause())+
-    <ELSE> scalar_expression()
+    <ELSE> (LOOKAHEAD(2) scalar_expression() | entity_type_literal())
     <END>
 }
 
 void when_clause() #WHEN : { }
 {
-    <WHEN> conditional_expression() <THEN> scalar_expression()
+    <WHEN> conditional_expression()
+    <THEN> (LOOKAHEAD(2) scalar_expression() | entity_type_literal())
 }
 
-void simple_case_expression() #SCASE : { }
+void simple_case_expression() #SIMPLECASE : { }
 {
-    (LOOKAHEAD(2) path() | entity_type_expression())
+    (LOOKAHEAD(type_discriminator()) type_discriminator() | LOOKAHEAD(path()) path())
     (simple_when_clause())+
-    <ELSE> scalar_expression()
+    <ELSE> (LOOKAHEAD(2) scalar_expression() | entity_type_literal())
     <END>
 }
 
 void simple_when_clause() #WHENSCALAR : { }
 {
-    <WHEN> scalar_expression() <THEN> scalar_expression()
+    <WHEN> (LOOKAHEAD(2) scalar_expression() | entity_type_literal())
+    <THEN> (LOOKAHEAD(2) scalar_expression() | entity_type_literal())
 }
 
 void coalesce_expression() #COALESCE : { }
@@ -1404,6 +1418,12 @@ void string_literal() #STRINGLITERAL :
 
 
 void input_parameter() : { }
+{
+	named_input_parameter() | positional_input_parameter()
+}
+
+
+void collection_valued_input_parameter() #COLLECTIONPARAMETER: { }
 {
 	named_input_parameter() | positional_input_parameter()
 }

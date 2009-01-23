@@ -480,6 +480,10 @@ public class InMemoryExpressionFactory
         return new Lit(val, parseType);
     }
 
+    public Literal newTypeLiteral(Object val, int parseType) {
+        return new TypeLit(val, parseType);
+    }
+
     public Value getThis() {
         return new This();
     }
@@ -633,6 +637,10 @@ public class InMemoryExpressionFactory
 
     public Value index(Value val) {
         return new Index((Val) val);
+    }
+
+    public Value type(Value val) {
+        return new Type((Val) val);
     }
 
     public Value getObjectId(Value val) {
