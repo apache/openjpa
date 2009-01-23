@@ -165,7 +165,6 @@ public class TestEntityTypeExpression extends AbstractTestCase {
             List<Object> rs1 = em.createQuery(query).getResultList();
             Object obj = rs1.get(0);
             obj.toString();
-            System.err.println(obj+" rs size="+rs1.size());
         }
 
         endEm(em);
