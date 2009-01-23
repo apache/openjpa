@@ -56,6 +56,7 @@ public class Compatibility {
     private int _jpql = JPQL_WARN;
     private boolean _storeMapCollectionInEntityAsBlob = false;
     private boolean _flushBeforeDetach = true; 
+    private boolean _useJPA2DefaultOrderColumnName = true;
 
     /**
      * Whether to require exact identity value types when creating object
@@ -269,4 +270,27 @@ public class Compatibility {
         _flushBeforeDetach = beforeDetach;
     }
 
+    /**
+     * Whether OpenJPA should use the new default order column name defined
+     * by JPA 2.0: name; "_"; "ORDER" or the pre-JPA 2.0 default name "ordr".
+     * 
+     * @since 2.0.0
+     * @return true if the JPA2 default name should be used
+     */
+    public boolean getUseJPA2DefaultOrderColumnName() {
+        return _useJPA2DefaultOrderColumnName;
+    }
+
+    /**
+     * Whether OpenJPA should use the new default order column name defined
+     * by JPA 2.0: name; "_"; "ORDER" or the pre-JPA 2.0 default name "ordr".
+     * 
+     * @param useJPA2 true if the JPA 2.0 default name should be used.  false if
+     * the 1.x name should be used.
+     * 
+     * @since 2.0.0
+     */
+    public void setUseJPA2DefaultOrderColumnName(boolean useJPA2Name) {
+        _useJPA2DefaultOrderColumnName = useJPA2Name;
+    }
 }

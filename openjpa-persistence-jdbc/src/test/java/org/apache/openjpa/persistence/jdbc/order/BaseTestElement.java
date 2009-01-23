@@ -16,31 +16,44 @@
  * specific language governing permissions and limitations
  * under the License.    
  */
-package org.apache.openjpa.persistence;
+package org.apache.openjpa.persistence.jdbc.order;
 
-///////////////////////////////////////////////////////////////////
-// NOTE: when adding a new classification, make sure to update the
-// table in PersistenceMetaDataDefaults
-///////////////////////////////////////////////////////////////////
+public class BaseTestElement {
 
-/**
- * Set of field persistence strategies used in JPA.
- *
- * @author Abe White
- * @nojavadoc
- */
-public enum PersistenceStrategy {
-    // order matters to match XML spec
-    BASIC,
-    MANY_ONE,
-    ONE_MANY,
-    ONE_ONE,
-    MANY_MANY,
-    ELEM_COLL,
-    EMBEDDED,
-    TRANSIENT,
-    // openjpa extensions
-    PERS,
-    PERS_COLL,
-    PERS_MAP,
+  private int id;
+  
+  private String name;
+  
+
+  public BaseTestElement() {        
+  }
+  
+  public BaseTestElement(String name) {
+      this.name = name;
+  }
+  
+  public void setName(String name) {
+      this.name = name;
+  }
+
+  public String getName() {
+      return name;
+  }
+
+  public void setId(int id) {
+      this.id = id;
+  }
+
+  public int getId() {
+      return id;
+  }
+  
+  public boolean equals(Object obj) {
+      if (obj instanceof BaseTestElement) {
+          BaseTestElement bte = (BaseTestElement)obj;
+          return getId() == bte.getId() &&
+             bte.getName().equalsIgnoreCase(bte.getName());                
+      }
+      return false;
+  }
 }

@@ -176,6 +176,7 @@ public class AnnotationPersistenceMappingParser
         _tags.put(MappingOverrides.class, MAPPING_OVERRIDES);
         _tags.put(Nonpolymorphic.class, NONPOLY);
         _tags.put(OrderColumn.class, ORDER_COL);
+        _tags.put(javax.persistence.OrderColumn.class, ORDER_COLUMN);
         _tags.put(Strategy.class, STRAT);
         _tags.put(SubclassFetchMode.class, SUBCLASS_FETCH_MODE);
         _tags.put(Unique.class, UNIQUE);
@@ -1151,6 +1152,10 @@ public class AnnotationPersistenceMappingParser
                     fm.setPolymorphic(toPolymorphicConstant
                         (((Nonpolymorphic) anno).value()));
                     break;
+                case ORDER_COLUMN:
+                    parseJavaxOrderColumn(fm, 
+                        (javax.persistence.OrderColumn)anno);
+                    break;
                 case ORDER_COL:
                     parseOrderColumn(fm, (OrderColumn) anno);
                     break;
@@ -1660,7 +1665,7 @@ public class AnnotationPersistenceMappingParser
     }
     
     /**
-     * Parse @OrderColumn.
+     * Parse @org.apache.openjpa.persistence.jdbc.OrderColumn.
      */
     private void parseOrderColumn(FieldMapping fm, OrderColumn order) {
         if (!order.enabled()) {
@@ -1678,6 +1683,28 @@ public class AnnotationPersistenceMappingParser
         col.setFlag(Column.FLAG_UNINSERTABLE, !order.insertable());
         col.setFlag(Column.FLAG_UNUPDATABLE, !order.updatable());
         fm.getMappingInfo().setOrderColumn(col);
+    }
+    
+    /**
+     * Parse @javax.persistence.OrderColumn
+     */
+    private void parseJavaxOrderColumn(FieldMapping fm, 
+        javax.persistence.OrderColumn order) {
+        
+        Column col = new Column();
+        if (!StringUtils.isEmpty(order.name()))
+            col.setName(order.name());
+        if (!StringUtils.isEmpty(order.columnDefinition()))
+            col.setTypeName(order.columnDefinition());
+        col.setNotNull(!order.nullable());
+        col.setFlag(Column.FLAG_UNINSERTABLE, !order.insertable());
+        col.setFlag(Column.FLAG_UNUPDATABLE, !order.updatable());
+        if (!StringUtils.isEmpty(order.table()))
+            col.setTableName(order.table());
+        col.setBase(order.base());
+        col.setContiguous(order.contiguous());
+        
+        fm.getMappingInfo().setOrderColumn(col);        
     }
 
     /**

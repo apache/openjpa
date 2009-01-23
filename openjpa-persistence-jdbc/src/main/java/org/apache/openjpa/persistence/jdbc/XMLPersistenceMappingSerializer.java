@@ -438,6 +438,35 @@ public class XMLPersistenceMappingSerializer
     }
 
     /**
+     * Serialize order column.
+     */
+    protected void serializeOrderColumn(FieldMetaData fmd)
+        throws SAXException {
+        FieldMapping field = (FieldMapping) fmd;
+        Column orderCol = field.getOrderColumn();
+        if (orderCol != null) {
+            if (orderCol.getName() != null)
+                addAttribute("name", orderCol.getName());
+            if (orderCol.isNotNull())
+                addAttribute("nullable", "false");
+            if (orderCol.getFlag(Column.FLAG_UNINSERTABLE))
+                addAttribute("insertable", "false");
+            if (orderCol.getFlag(Column.FLAG_UNUPDATABLE))
+                addAttribute("updatable", "false");
+            if (orderCol.getTypeName() != null)
+                addAttribute("column-definition", orderCol.getTypeName());
+            if (orderCol.isContiguous() != true)
+                addAttribute("contiguous", "false");
+            if (orderCol.getBase() != 0)
+                addAttribute("base", orderCol.getBase() + "");
+            if (orderCol.getTableName() != null)
+                addAttribute("table", orderCol.getTableName());
+            startElement("order-column");
+            endElement("order-column");
+        }        
+    }
+
+    /**
      * Determine if the field is a lob.
      */
     private boolean isLob(FieldMapping field) {

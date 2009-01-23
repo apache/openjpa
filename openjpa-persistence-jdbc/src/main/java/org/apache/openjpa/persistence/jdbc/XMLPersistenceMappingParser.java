@@ -93,6 +93,7 @@ public class XMLPersistenceMappingParser
         _elems.put("join-table", JOIN_TABLE);
         _elems.put("map-key-column", MAP_KEY_COL);
         _elems.put("map-key-join-column", MAP_KEY_JOIN_COL);
+        _elems.put("order-column", ORDER_COLUMN);
         _elems.put("primary-key-join-column", PK_JOIN_COL);
         _elems.put("secondary-table", SECONDARY_TABLE);
         _elems.put("sql-result-set-mapping", SQL_RESULT_SET_MAPPING);
@@ -1078,5 +1079,65 @@ public class XMLPersistenceMappingParser
             _discType = DiscriminatorType.STRING;
         }
             
-	}
+	}  
+    
+    /**
+     * Process OrderColumn.
+     */
+    protected boolean startOrderColumn(Attributes attrs)
+        throws SAXException {
+        Column col = parseOrderColumn(attrs);
+        Object obj = peekElement();
+        if (obj instanceof FieldMapping) {
+            FieldMapping fm = (FieldMapping)obj;
+            fm.getMappingInfo().setOrderColumn(col);
+        }
+        return true;
+    }
+    /**
+     * Create an order column with the given attributes.
+     */
+    private Column parseOrderColumn(Attributes attrs)
+        throws SAXException {
+
+        Column col = new Column();
+        String val = attrs.getValue("name");
+        if (val != null)
+            col.setName(val);
+        val = attrs.getValue("column-definition");
+        if (val != null)
+            col.setTypeName(val);
+        val = attrs.getValue("precision");
+        if (val != null)
+            col.setSize(Integer.parseInt(val));
+        val = attrs.getValue("length");
+        if (val != null)
+            col.setSize(Integer.parseInt(val));
+        val = attrs.getValue("scale");
+        if (val != null)
+            col.setDecimalDigits(Integer.parseInt(val));
+        val = attrs.getValue("nullable");
+        if (val != null)
+            col.setNotNull("false".equals(val));
+        val = attrs.getValue("insertable");
+        if (val != null)
+            col.setFlag(Column.FLAG_UNINSERTABLE, "false".equals(val));
+        val = attrs.getValue("updatable");
+        if (val != null)
+            col.setFlag(Column.FLAG_UNUPDATABLE, "false".equals(val));
+
+        val = attrs.getValue("base");
+        if (val != null)
+            col.setBase(Integer.parseInt(val));
+        
+        val = attrs.getValue("contiguous");
+        if (val != null)
+            col.setContiguous("false".equals(val));
+        
+        val = attrs.getValue("table");
+        if (val != null) {
+            col.setTableName(val);
+        }
+        return col;
+    }
 }

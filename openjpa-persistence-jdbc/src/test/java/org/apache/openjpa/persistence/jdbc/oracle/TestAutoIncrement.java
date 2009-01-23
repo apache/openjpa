@@ -58,15 +58,6 @@ public class TestAutoIncrement extends SingleEMFTestCase {
 		}
 	}
 
-	boolean isTargetPlatform(String target) {
-		String url = getPlatform();
-		return url != null && url.indexOf(target) != -1;
-	}
-
-	public String getPlatform() {
-		return System.getProperty("platform", "derby");
-	}
-
 	public void testAutoIncrementIdentityWithNamedSequence() {
 		if (!isTargetPlatform(PLATFORM))
 			return;

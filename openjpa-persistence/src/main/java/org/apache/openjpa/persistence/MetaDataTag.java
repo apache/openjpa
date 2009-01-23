@@ -49,6 +49,7 @@ public enum MetaDataTag {
     NATIVE_QUERY,
     QUERY_STRING,
     ORDER_BY,
+    ORDER_COLUMN,
     QUERIES,
     QUERY,
     QUERY_HINT,

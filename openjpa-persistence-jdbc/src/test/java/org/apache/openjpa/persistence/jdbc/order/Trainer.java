@@ -16,31 +16,33 @@
  * specific language governing permissions and limitations
  * under the License.    
  */
-package org.apache.openjpa.persistence;
+package org.apache.openjpa.persistence.jdbc.order;
 
-///////////////////////////////////////////////////////////////////
-// NOTE: when adding a new classification, make sure to update the
-// table in PersistenceMetaDataDefaults
-///////////////////////////////////////////////////////////////////
+import java.util.List;
 
-/**
- * Set of field persistence strategies used in JPA.
- *
- * @author Abe White
- * @nojavadoc
- */
-public enum PersistenceStrategy {
-    // order matters to match XML spec
-    BASIC,
-    MANY_ONE,
-    ONE_MANY,
-    ONE_ONE,
-    MANY_MANY,
-    ELEM_COLL,
-    EMBEDDED,
-    TRANSIENT,
-    // openjpa extensions
-    PERS,
-    PERS_COLL,
-    PERS_MAP,
+import javax.persistence.Entity;
+import javax.persistence.ManyToMany;
+import javax.persistence.OrderColumn;
+
+@Entity
+public class Trainer extends Person {
+    
+    @OrderColumn(name="trainingOrder")
+    @ManyToMany
+    private List<Player> playersTrained;
+    
+    public Trainer() {        
+    }
+    
+    public Trainer(String name) {
+        setName(name);
+    }
+    public void setPlayersTrained(List<Player> playersTrained) {
+        this.playersTrained = playersTrained;
+    }
+
+    public List<Player> getPlayersTrained() {
+        return playersTrained;
+    }
+    
 }

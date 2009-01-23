@@ -571,8 +571,8 @@ public class XMLPersistenceMetaDataSerializer
         addAttribute("xmlns", "http://java.sun.com/xml/ns/persistence/orm");
         addAttribute("xmlns:xsi", "http://www.w3.org/2001/XMLSchema-instance");
         addAttribute("xsi:schemaLocation",
-            "http://java.sun.com/xml/ns/persistence/orm orm_1_0.xsd");
-        addAttribute("version", "1.0");
+            "http://java.sun.com/xml/ns/persistence/orm orm_2_0.xsd");
+        addAttribute("version", "2.0");
     }
 
     /**
@@ -937,6 +937,8 @@ public class XMLPersistenceMetaDataSerializer
             if (!(Order.ELEMENT + " asc").equals(fmd.getOrderDeclaration()))
                 addText(fmd.getOrderDeclaration());
             endElement("order-by");
+        } else if (isMappingMode(fmd)) {
+            serializeOrderColumn(fmd);
         }
         if (isMappingMode() && fmd.getKey().getValueMappedBy() != null) {
             FieldMetaData mapBy = fmd.getKey().getValueMappedByMetaData();
@@ -1195,6 +1197,14 @@ public class XMLPersistenceMetaDataSerializer
         throws SAXException {
         if (fmd.getMappedBy() != null)
             addAttribute("mapped-by", fmd.getMappedBy());
+    }
+    
+    /**
+     * Order column is not processed as meta data, instead it
+     * can be processed as mapping data if in mapping mode.
+     */
+    protected void serializeOrderColumn(FieldMetaData fmd)
+        throws SAXException {
     }
 
     /**

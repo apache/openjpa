@@ -145,6 +145,7 @@ public class XMLPersistenceMetaDataParser
         _elems.put("generated-value", GENERATED_VALUE);
         _elems.put("map-key", MAP_KEY);
         _elems.put("order-by", ORDER_BY);
+        _elems.put("order-column", ORDER_COLUMN);
         _elems.put("lob", LOB);
 
         _elems.put("basic", BASIC);
@@ -661,6 +662,9 @@ public class XMLPersistenceMetaDataParser
                     break;
                 case FLUSH_MODE:
                     ret = startFlushMode(attrs);
+                    break;
+                case ORDER_COLUMN:
+                    ret = startOrderColumn(attrs);
                     break;
                 case ORDER_BY:
                 case ENTITY_LISTENERS:
@@ -1824,6 +1828,11 @@ public class XMLPersistenceMetaDataParser
         }
         _callbacks = null;
         _highs = null;
+    }
+
+    protected boolean startOrderColumn(Attributes attrs)
+        throws SAXException {
+        return true;
     }
 
     /**

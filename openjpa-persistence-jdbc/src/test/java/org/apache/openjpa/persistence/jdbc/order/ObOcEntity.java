@@ -16,31 +16,42 @@
  * specific language governing permissions and limitations
  * under the License.    
  */
-package org.apache.openjpa.persistence;
+package org.apache.openjpa.persistence.jdbc.order;
 
-///////////////////////////////////////////////////////////////////
-// NOTE: when adding a new classification, make sure to update the
-// table in PersistenceMetaDataDefaults
-///////////////////////////////////////////////////////////////////
+import java.util.List;
 
-/**
- * Set of field persistence strategies used in JPA.
- *
- * @author Abe White
- * @nojavadoc
- */
-public enum PersistenceStrategy {
-    // order matters to match XML spec
-    BASIC,
-    MANY_ONE,
-    ONE_MANY,
-    ONE_ONE,
-    MANY_MANY,
-    ELEM_COLL,
-    EMBEDDED,
-    TRANSIENT,
-    // openjpa extensions
-    PERS,
-    PERS_COLL,
-    PERS_MAP,
+import javax.persistence.ElementCollection;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.OrderBy;
+import javax.persistence.OrderColumn;
+
+@Entity
+public class ObOcEntity {
+
+    @Id
+    @GeneratedValue
+    private int id;
+    
+    @OrderBy("ASC")
+    @OrderColumn(name="myCol")
+    @ElementCollection
+    private List<Integer> intList;
+
+    public void setId(int id) {
+        this.id = id;
+    }
+
+    public int getId() {
+        return id;
+    }
+
+    public void setIntList(List<Integer> intList) {
+        this.intList = intList;
+    }
+
+    public List<Integer> getIntList() {
+        return intList;
+    }    
 }

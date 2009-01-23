@@ -49,6 +49,7 @@ enum MappingTag {
     JOIN_COL,
     JOIN_COLS,
     JOIN_TABLE,
+    ORDER_COLUMN,
     PK_JOIN_COL,
     PK_JOIN_COLS,
     SECONDARY_TABLE,

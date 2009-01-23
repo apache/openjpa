@@ -22,6 +22,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
+import org.apache.openjpa.conf.Compatibility;
 import org.apache.openjpa.jdbc.schema.Column;
 import org.apache.openjpa.jdbc.schema.ColumnIO;
 import org.apache.openjpa.jdbc.schema.ForeignKey;
@@ -285,15 +286,25 @@ public class FieldMappingInfo
             return null;
 
         Column tmplate = new Column();
-        tmplate.setName("ordr");
+        // Compatibility option determines what should be used for
+        // the default order column name
+        if (field.getMappingRepository().getConfiguration()
+            .getCompatibilityInstance().getUseJPA2DefaultOrderColumnName()) {
+            // Use the same strategy as column to build the field name
+            tmplate.setName(field.getName() + "_ORDER");            
+        } else {        
+            tmplate.setName("ordr");
+        }
+        
         tmplate.setJavaType(JavaTypes.INT);
         if (!def.populateOrderColumns(field, table, new Column[]{ tmplate })
             && _orderCol == null)
             return null;
 
-        if (_orderCol != null && (_orderCol.getFlag(Column.FLAG_UNINSERTABLE)
-            || _orderCol.getFlag(Column.FLAG_UNUPDATABLE))) {
+        if (_orderCol != null) {
             ColumnIO io = new ColumnIO();
+            io.setNullInsertable(0, !_orderCol.isNotNull());
+            io.setNullUpdatable(0, !_orderCol.isNotNull());
             io.setInsertable(0, !_orderCol.getFlag(Column.FLAG_UNINSERTABLE));
             io.setUpdatable(0, !_orderCol.getFlag(Column.FLAG_UNUPDATABLE));
             setColumnIO(io);
