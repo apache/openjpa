@@ -23,10 +23,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.openjpa.enhance.PersistenceCapable;
-import org.apache.openjpa.enhance.StateManager;
 import org.apache.openjpa.jdbc.kernel.JDBCFetchConfiguration;
 import org.apache.openjpa.jdbc.kernel.JDBCStore;
-import org.apache.openjpa.jdbc.meta.ClassMapping;
 import org.apache.openjpa.jdbc.meta.Embeddable;
 import org.apache.openjpa.jdbc.meta.FieldMapping;
 import org.apache.openjpa.jdbc.meta.FieldStrategy;
@@ -34,7 +32,6 @@ import org.apache.openjpa.jdbc.meta.ValueMapping;
 import org.apache.openjpa.jdbc.schema.Column;
 import org.apache.openjpa.jdbc.schema.ColumnIO;
 import org.apache.openjpa.kernel.OpenJPAStateManager;
-import org.apache.openjpa.kernel.StateManagerImpl;
 import org.apache.openjpa.lib.util.Localizer;
 import org.apache.openjpa.util.MetaDataException;
 
@@ -109,12 +106,26 @@ public abstract class EmbedValueHandler
      */
     protected Object toDataStoreValue(OpenJPAStateManager em, ValueMapping vm,
             JDBCStore store, Column[] cols, Object rval, int idx) {
-        toDataStoreValue1(em, vm, store, cols, rval, idx);
-        return rval;
+        
+        // This is a placeholder to hold the value generated in 
+        // toDataStoreValue1. When this method is called from 
+        // ElementEmbedValueHandler or ObjectIdValueHandler, 
+        // if the dimension of cols > 1, rval is an array of the 
+        // same dimension. If the dimension of cols is 1, rval is null.
+        // If rval is not null, it is an array of objects and this array
+        // will be populated in toDatastoreValue1. If rval is null,
+        // a new value will be added to rvals in toDataStoreValue1
+        // and return to the caller.
+        List rvals = new ArrayList();
+        if (rval != null)
+            rvals.add(rval);
+        
+        toDataStoreValue1(em, vm, store, cols, rvals, idx);
+        return rvals.get(0);
     }    
     
     protected int toDataStoreValue1(OpenJPAStateManager em, ValueMapping vm,
-        JDBCStore store, Column[] cols, Object rval, int idx) {
+        JDBCStore store, Column[] cols, List rvals, int idx) {
         // set rest of columns from fields
         FieldMapping[] fms = vm.getEmbeddedMapping().getFieldMappings();
         Object cval;
@@ -124,13 +135,20 @@ public abstract class EmbedValueHandler
             if (fms[i].getManagement() != FieldMapping.MANAGE_PERSISTENT)
                 continue;
             
+            // This recursive code is mainly to deal with situations
+            // where an entity contains a collection of embeddableA.
+            // The embeddableA element in the collection contains an 
+            // embeddableB. The parameter vm to toDataStoreValue is 
+            // embeddableA. If some field in embeddableA is of type 
+            // embeddableB, recursive call is required to populate the 
+            // value for embeddableB.
             ValueMapping val = fms[i].getValueMapping();
             if (val.getEmbeddedMapping() != null) {
                 cval = (em == null) ? null : em.fetch(i);
                 if (cval instanceof PersistenceCapable) {
                     OpenJPAStateManager embedSm = (OpenJPAStateManager)
                         ((PersistenceCapable)cval).pcGetStateManager();
-                    idx = toDataStoreValue1(embedSm, val, store, cols, rval, idx);
+                    idx = toDataStoreValue1(embedSm, val, store, cols, rvals, idx);
                 }
             }
             
@@ -141,11 +159,14 @@ public abstract class EmbedValueHandler
 
             cval = (em == null) ? null : em.fetch(i);
             cval = embed.toEmbeddedDataStoreValue(cval, store);
-            if (cols.length == 1)
-                rval = cval;
-            else if (ecols.length == 1)
+            if (cols.length == 1) {
+                // rvals is empty
+                rvals.add(cval); // save the return value
+            } else if (ecols.length == 1) {
+                Object rval = rvals.get(0);
                 ((Object[]) rval)[idx++] = cval;
-            else {
+            } else {
+                Object rval = rvals.get(0);
                 System.arraycopy(cval, 0, rval, idx, ecols.length);
                 idx += ecols.length;
             }
