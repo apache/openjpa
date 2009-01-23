@@ -18,6 +18,7 @@
  */
 package org.apache.openjpa.kernel;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Iterator;
@@ -32,6 +33,7 @@ import org.apache.openjpa.event.CallbackModes;
 import org.apache.openjpa.event.LifecycleEvent;
 import org.apache.openjpa.lib.util.Localizer;
 import org.apache.openjpa.meta.ClassMetaData;
+import org.apache.openjpa.meta.FieldMetaData;
 import org.apache.openjpa.meta.ValueMetaData;
 import org.apache.openjpa.util.CallbackException;
 import org.apache.openjpa.util.Exceptions;
@@ -57,6 +59,7 @@ class AttachManager {
     private final boolean _copyNew;
     private final boolean _failFast;
     private final IdentityMap _attached = new IdentityMap();
+    private final Collection _visitedNodes = new ArrayList();
 
     // reusable strategies
     private AttachStrategy _version = null;
@@ -230,6 +233,13 @@ class AttachManager {
 
         //### need to handle ACT_CASCADE
         int action = processArgument(toAttach);
+        if ((action & OpCallbacks.ACT_RUN) == 0 &&
+            (action & OpCallbacks.ACT_CASCADE) != 0) {
+            if(_visitedNodes.contains(_broker.getStateManager(toAttach)))
+                return toAttach;
+            return handleCascade(toAttach,owner);
+        }
+
         if ((action & OpCallbacks.ACT_RUN) == 0)
             return toAttach;
 
@@ -242,6 +252,24 @@ class AttachManager {
             owner, ownerMeta, explicit);
     }
 
+    private Object handleCascade(Object toAttach, OpenJPAStateManager owner) {
+        FieldMetaData[] fields = _broker.getStateManager(toAttach).getMetaData()
+            .getDefinedFields();
+        for (int i = 0; i < fields.length; i++) {
+            FieldMetaData fd = (FieldMetaData) fields[i];
+            if (fd.getElement().getCascadeAttach() == fd.CASCADE_IMMEDIATE) {
+                FieldMetaData[] inverseFieldMappings = fd.getInverseMetaDatas();
+                if (inverseFieldMappings.length != 0) {
+                    OpenJPAStateManager sm = _broker.getStateManager(toAttach);
+                    _visitedNodes.add(sm);
+                    getStrategy(toAttach).attachField(this, toAttach,
+                        _broker.getStateManagerImpl(toAttach, true), fd, true);
+                }
+            }
+        }
+        return toAttach;
+    }
+    
     /**
      * Determine the action to take on the given argument.
      */
