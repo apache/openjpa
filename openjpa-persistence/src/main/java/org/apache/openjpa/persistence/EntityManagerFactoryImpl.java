@@ -350,22 +350,7 @@ public class EntityManagerFactoryImpl
     }
 
     public Set<String> getSupportedProperties() {
-        if (_supportedPropertyKeys != null)
-            return _supportedPropertyKeys;
-        _supportedPropertyKeys = new HashSet<String>();
-        try {
-            InputStream rsrc = this.getClass()
-                .getResourceAsStream("supported_emf.properties");
-            if (rsrc == null)
-                return _supportedPropertyKeys;
-            Properties p = new Properties();
-            p.load(rsrc);
-            for (Object key : p.keySet()) {
-                _supportedPropertyKeys.add(key.toString());
-            }
-        } catch (Exception ex) {
-            
-        }
-        return _supportedPropertyKeys;
+        throw new UnsupportedOperationException(
+            "JPA 2.0 - Method not yet implemented");
     }
 }
