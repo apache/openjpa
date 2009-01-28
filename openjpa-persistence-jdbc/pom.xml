@@ -236,6 +236,80 @@
                 <connection.password>${openjpa.custom.password}</connection.password>
             </properties>
         </profile>
+        
+        <!--  
+            The test-custom2 profile does not work very well when used with a 
+            continuous build system. As a convenience I've added profiles for 
+            some of the proprietary databases to make testing easier. 
+          -->
+        <profile>
+            <!-- 
+                Example db2 profile. Unfortunately the version, groupId and 
+                artifactId are hard coded. You may use this profile if you have 
+                a copy of the DB2 JCC driver and run the following commands :
+                mvn install:install-file -Dfile=${path to db2jcc.jar} \
+                                         -DgroupId=com.ibm.db2 \
+                                         -DartifactId=jcc-driver \ 
+                                         -Dversion=9.5
+                                         
+                mvn install:install-file -Dfile=${path to db2jcc_license.jar} \
+                                         -DgroupId=com.ibm.db2 \
+                                         -DartifactId=jcc-license \ 
+                                         -Dversion=9.5
+                You should also set the openjpa.db2.url, openjpa.db2.user, and
+                openjpa.db2.password properties. 
+              -->
+            <id>test-db2-jcc</id>
+            <dependencies>
+                <dependency>
+                    <groupId>com.ibm.db2</groupId>
+                    <artifactId>jcc-driver</artifactId>
+                    <version>9.5</version>
+                    <scope>test</scope>
+                </dependency>
+                <dependency>
+                    <groupId>com.ibm.db2</groupId>
+                    <artifactId>jcc-license</artifactId>
+                    <version>9.5</version>
+                    <scope>test</scope>
+                </dependency>
+            </dependencies>
+            <properties>
+                <connection.driver.name>com.ibm.db2.jcc.DB2Driver</connection.driver.name>
+                <connection.url>${openjpa.db2.url}</connection.url>
+                <connection.username>${openjpa.db2.username}</connection.username>
+                <connection.password>${openjpa.db2.password}</connection.password>
+            </properties>
+        </profile>          
+        <profile>
+            <!-- 
+                Example oracle profile. Unfortunately the version, groupId and 
+                artifactId are hard coded. You may use this profile if you have 
+                a copy of the Oracle driver and run the following commands :
+                mvn install:install-file -Dfile=${ojdbc.jar} \
+                                         -DgroupId=com.oracle \
+                                         -DartifactId=jdbc-driver \ 
+                                         -Dversion=10g
+                                         
+                You should also set the openjpa.oracle.url, openjpa.oracle.user,
+                and openjpa.oracle.password properties. 
+              -->
+            <id>test-oracle</id>
+            <dependencies>
+                <dependency>
+                    <groupId>com.oracle</groupId>
+                    <artifactId>jdbc-driver</artifactId>
+                    <version>10g</version>
+                    <scope>test</scope>
+                </dependency>
+            </dependencies>
+            <properties>
+                <connection.driver.name>oracle.jdbc.driver.OracleDriver</connection.driver.name>
+                <connection.url>${openjpa.oracle.url}</connection.url>
+                <connection.username>${openjpa.oracle.username}</connection.username>
+                <connection.password>${openjpa.oracle.password}</connection.password>
+            </properties>
+        </profile>  
     </profiles>
 
     <dependencies>
