@@ -139,12 +139,19 @@ public class HandlerRelationMapTableFieldStrategy
         if (val.getTypeCode() != JavaTypes.PC || val.isEmbeddedPC())
             throw new MetaDataException(_loc.get("not-relation", val));
         FieldMapping mapped = field.getMappedByMapping();
-        
-        if (mapped != null) // map to the owner table
+        String keyName = null;
+        _kio = new ColumnIO();
+        if (mapped != null) { // map to the owner table
+            keyName = field.getName() + "_KEY";
+            _kcols = HandlerStrategies.map(key, keyName, _kio, adapt);
             handleMappedBy(adapt);
-        else { 
+        } else { 
             // map to a separate table
             field.mapJoin(adapt, true);
+            DBDictionary dict = field.getMappingRepository().getDBDictionary();
+            keyName = dict.getValidColumnName("key", field.getTable()); 
+            _kcols = HandlerStrategies.map(key, keyName, _kio, adapt);
+
             if (val.getTypeMapping().isMapped()) {
                 ValueMappingInfo vinfo = val.getValueInfo();
                 ForeignKey fk = vinfo.getTypeJoin(val, "value", false, adapt);
@@ -155,10 +162,6 @@ public class HandlerRelationMapTableFieldStrategy
 
             val.mapConstraints("value", adapt);
         }
-        _kio = new ColumnIO();
-        DBDictionary dict = field.getMappingRepository().getDBDictionary();
-        _kcols = HandlerStrategies.map(key, 
-            dict.getValidColumnName("key", field.getTable()), _kio, adapt);
 
         field.mapPrimaryKey(adapt);
     }
@@ -346,5 +349,12 @@ public class HandlerRelationMapTableFieldStrategy
     public Object toKeyDataStoreValue(Object val, JDBCStore store) {
         return HandlerStrategies.toDataStoreValue(field.getKeyMapping(), val,
             _kcols, store);
+    }
+    
+    public void delete(OpenJPAStateManager sm, JDBCStore store, RowManager rm)
+        throws SQLException {
+        if (field.getMappedBy() != null)
+            return;
+        super.delete(sm, store, rm);
     }
 }

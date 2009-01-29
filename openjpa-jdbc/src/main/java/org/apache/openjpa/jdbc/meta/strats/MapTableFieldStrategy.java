@@ -23,6 +23,7 @@ import java.util.Collection;
 import java.util.Map;
 
 import org.apache.openjpa.enhance.PersistenceCapable;
+import org.apache.openjpa.enhance.ReflectingPersistenceCapable;
 import org.apache.openjpa.jdbc.kernel.JDBCFetchConfiguration;
 import org.apache.openjpa.jdbc.kernel.JDBCStore;
 import org.apache.openjpa.jdbc.meta.ClassMapping;
@@ -265,7 +266,10 @@ public abstract class MapTableFieldStrategy
         Collection<Map.Entry> entrySets = mapObj.entrySet();
         boolean found = false;
         for (Map.Entry entry : entrySets) {
-            if (entry.getValue() == obj) {
+            Object value = entry.getValue();
+            if (obj instanceof ReflectingPersistenceCapable)
+               obj = ((ReflectingPersistenceCapable)obj).getManagedInstance(); 
+            if (value == obj) {
                 Row newRow = (Row) ((RowImpl)row).clone();
                 Object keyObj = entry.getKey();
                 Strategy strat = fm.getStrategy();

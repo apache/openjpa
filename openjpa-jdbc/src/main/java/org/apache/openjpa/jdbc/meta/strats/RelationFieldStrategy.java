@@ -26,6 +26,7 @@ import java.util.Map;
 import java.util.Set;
 
 import org.apache.openjpa.enhance.PersistenceCapable;
+import org.apache.openjpa.enhance.ReflectingPersistenceCapable;
 import org.apache.openjpa.jdbc.conf.JDBCConfiguration;
 import org.apache.openjpa.jdbc.kernel.JDBCFetchConfiguration;
 import org.apache.openjpa.jdbc.kernel.JDBCFetchConfigurationImpl;
@@ -276,6 +277,8 @@ public class RelationFieldStrategy
     }
     
     private Object getMapKeyObj(Map mapObj, Object value) {
+        if (value instanceof ReflectingPersistenceCapable)
+            value = ((ReflectingPersistenceCapable)value).getManagedInstance(); 
         Set keySet = mapObj.keySet();
         for (Object key : keySet) {
             if (mapObj.get(key) == value)
