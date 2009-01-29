@@ -39,7 +39,11 @@
             -Dtest.jvm.arguments="-Xmx500m -agentlib:jdwp=transport=dt_socket,server=y,address=8000"
         -->
         <test.jvm.arguments>-Xmx500m</test.jvm.arguments>
-        <dbcp.args>MaxActive=100,MaxIdle=0,MaxWait=10000</dbcp.args>
+        <dbcp.maxActive>10</dbcp.maxActive>
+        <dbcp.maxIdle>5</dbcp.maxIdle>
+        <dbcp.minIdle>2</dbcp.minIdle>
+        <dbcp.maxWait>10000</dbcp.maxWait>
+        <dbcp.args>MaxActive=${dbcp.maxActive},MaxIdle=${dbcp.maxIdle},MinIdle=${dbcp.minIdle},MaxWait=${dbcp.maxWait}</dbcp.args>
     </properties>
     <profiles>
 
