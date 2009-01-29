@@ -248,6 +248,12 @@ public interface ExpressionFactory {
     public Parameter newParameter(String name, Class type);
 
     /**
+     * Return a value representing a collection-valued parameter. The
+     * type may be <code>Object</code> if the parameter is not declared.
+     */
+    public Parameter newCollectionValuedParameter(String name, Class type);
+
+    /**
      * Return the value of the given extension.
      */
     public Value newExtension(FilterListener listener, Value target,

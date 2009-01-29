@@ -827,8 +827,7 @@ public class JPQLExpressionBuilder
                 return getParameter(node.text, true);
 
             case JJTCOLLECTIONPARAMETER:
-                // TODO: support collection valued parameters
-                return getParameter(onlyChild(node).text, true);
+                return getCollectionValuedParameter(node);
 
             case JJTOR: // x OR y
                 return factory.or(getExpression(left(node)),
@@ -1320,6 +1319,47 @@ public class JPQLExpressionBuilder
         }
 
         Parameter param = factory.newParameter(id, type);
+        param.setMetaData(meta);
+        param.setIndex(index);
+
+        return param;
+    }
+
+    /**
+     * Record the names and order of collection valued input parameters.
+     */
+    private Parameter getCollectionValuedParameter(JPQLNode node) {        
+        JPQLNode child = onlyChild(node);
+        String id = child.text;
+        boolean positional = child.id == JJTPOSITIONALINPUTPARAMETER;
+
+        if (parameterTypes == null)
+            parameterTypes = new LinkedMap(6);
+        if (!parameterTypes.containsKey(id))
+            parameterTypes.put(id, TYPE_OBJECT);
+
+        Class type = Object.class;
+        ClassMetaData meta = null;
+        int index;
+        if (positional) {
+            try {
+                // indexes in JPQL are 1-based, as opposed to 0-based in
+                // the core ExpressionFactory
+                index = Integer.parseInt(id) - 1;
+            } catch (NumberFormatException e) {
+                throw parseException(EX_USER, "bad-positional-parameter",
+                    new Object[]{ id }, e);
+            }
+
+            if (index < 0)
+                throw parseException(EX_USER, "bad-positional-parameter",
+                    new Object[]{ id }, null);
+        } else {
+            // otherwise the index is just the current size of the params
+            index = parameterTypes.indexOf(id);
+        }
+
+        Parameter param = factory.newCollectionValuedParameter(id, type);
         param.setMetaData(meta);
         param.setIndex(index);
 

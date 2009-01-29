@@ -79,15 +79,38 @@ public class TestEntityTypeExpression extends AbstractTestCase {
         List<CompUser> rs = null;
         CompUser user = null;
 
-//      TODO: test when support for collection valued parameters is available
-//        Collection params = new ArrayList();
-//        params.add(FemaleUser.class);
-//        params.add(MaleUser.class);
-//        query = "SELECT e FROM CompUser e where TYPE(e) = :params";
-//        rs =  em.createQuery(query).
-//            setParameter("params", params).getResultList();
-//        user = rs.get(0);
-//        assertEquals("the name is not shannon", "Shannon ", user.getName());
+        // test collection-valued input parameters in in-expressions
+        Collection params = new ArrayList(2);
+        params.add(FemaleUser.class);
+        params.add(MaleUser.class);
+
+        Collection params2 = new ArrayList(3);
+        params2.add(36);
+        params2.add(29);
+        params2.add(19);
+        String param3 = "PC";
+
+        query = "SELECT e FROM CompUser e where TYPE(e) in ?1 and e.age in ?2" +
+                " and e.computerName = ?3";
+        rs = em.createQuery(query).
+            setParameter(1, params).
+            setParameter(2, params2).
+            setParameter(3, param3).getResultList();
+        user = rs.get(0);
+        assertEquals("the name is not shannon", "Shannon ", user.getName());
+
+        query = "SELECT e FROM CompUser e where TYPE(e) in ?1 and e.age in ?2";
+        rs = em.createQuery(query).
+            setParameter(1, params).
+            setParameter(2, params2).getResultList();
+        user = rs.get(0);
+        assertEquals("the name is not shannon", "Shannon ", user.getName());
+
+        query = "SELECT e FROM CompUser e where TYPE(e) in :params";
+        rs = em.createQuery(query).
+            setParameter("params", params).getResultList();
+        user = rs.get(0);
+        assertEquals("the name is not shannon", "Shannon ", user.getName());
         
         query = "SELECT TYPE(e) FROM MaleUser e where TYPE(e) = MaleUser";
         rs = em.createQuery(query).getResultList();

@@ -275,6 +275,10 @@ public class JDBCExpressionFactory
         return new Param(name, type);
     }
 
+    public Parameter newCollectionValuedParameter(String name, Class type) {
+        return new CollectionParam(name, type);
+    }
+
     public Value newExtension(FilterListener listener, Value target,
         Value arg) {
         return new Extension((JDBCFilterListener) listener,
