@@ -25,10 +25,6 @@ import org.apache.openjpa.persistence.JPAFacadeHelper;
 
 public class TestMetaDataInheritanceComparator extends PersistenceTestCase {
 
-    public void testInheritanceComparatorWithoutBase() {
-        inheritanceComparatorHelper(false);
-    }
-
     public void testInheritanceComparatorWithBase() {
         inheritanceComparatorHelper(true);
     }
@@ -45,10 +41,6 @@ public class TestMetaDataInheritanceComparator extends PersistenceTestCase {
         assertEquals(-1, comp.compare(AbstractThing.class, A.class));
         assertEquals(-1, comp.compare(AbstractThing.class, B.class));
         assertTrue(comp.compare(AbstractThing.class, C.class) < 0);
-    }
-
-    public void testMetaDataInheritanceComparatorWithoutBase() {
-        metaDataInheritanceComparatorHelper(false);
     }
 
     public void testMetaDataInheritanceComparatorWithBase() {
