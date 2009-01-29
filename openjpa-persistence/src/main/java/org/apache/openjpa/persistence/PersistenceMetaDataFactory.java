@@ -48,6 +48,7 @@ import org.apache.openjpa.lib.meta.MetaDataFilter;
 import org.apache.openjpa.lib.meta.MetaDataParser;
 import org.apache.openjpa.lib.util.J2DoPrivHelper;
 import org.apache.openjpa.lib.util.Localizer;
+import org.apache.openjpa.lib.util.MultiClassLoader;
 import org.apache.openjpa.lib.util.Options;
 import org.apache.openjpa.meta.AbstractCFMetaDataFactory;
 import org.apache.openjpa.meta.ClassMetaData;
@@ -237,10 +238,24 @@ public class PersistenceMetaDataFactory
      * Parse the given XML resource.
      */
     private void parseXML(URL xml, Class cls, int mode, ClassLoader envLoader) {
+        // spring needs to use the envLoader first for all class resolution,
+        // but we must still fall back on application loader
         ClassLoader loader = repos.getConfiguration().
-            getClassResolverInstance().getClassLoader(cls, envLoader);
+            getClassResolverInstance().getClassLoader(cls, null);
+        if (envLoader != null && envLoader != loader) {
+          MultiClassLoader mult = new MultiClassLoader();
+          mult.addClassLoader(envLoader);
+
+          // loader from resolver is usually a multi loader itself
+          if (loader instanceof MultiClassLoader)
+            mult.addClassLoaders((MultiClassLoader)loader);
+          else
+            mult.addClassLoader(loader);
+          loader = mult;
+        }
+    
         XMLPersistenceMetaDataParser xmlParser = getXMLParser();
-        xmlParser.setClassLoader(envLoader != null ? envLoader : loader);
+        xmlParser.setClassLoader(loader);
         xmlParser.setEnvClassLoader(envLoader);
         xmlParser.setMode(mode);
         try {
