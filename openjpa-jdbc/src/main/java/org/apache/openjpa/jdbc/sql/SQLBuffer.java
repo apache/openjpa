@@ -160,7 +160,8 @@ public final class SQLBuffer
             if (_userIndex == null)
                 _userIndex = new ArrayList();
             for (int i = 0; i < buf._userIndex.size(); i+=2) {
-                int newIndex = ((Integer)buf._userIndex.get(i)).intValue() + paramIndex;
+                int newIndex = ((Integer)buf._userIndex.get(i)).intValue() 
+                    + paramIndex;
                 Object userParam = buf._userIndex.get(i+1);
                 _userIndex.add(newIndex);
                 _userIndex.add(userParam);
@@ -254,10 +255,12 @@ public final class SQLBuffer
     }
     
     /**
-     * Append a user parameter value for a specific column.
+     * Append a user parameter value for a specific column. User parameters
+     * are marked as opposed to the parameters inserted by the internal runtime
+     * system. This helps to reuse the buffer by reparmeterizing it with new
+     * set of user parameters while the 'internal' parameters remain unchanged.  
      * 
-     * @param userParam if non-null, designates the user parameter from a
-     * Query Expression tree.
+     * @param userParam if non-null, designates a 'user' parameter.
      */
     public SQLBuffer appendValue(Object o, Column col, Parameter userParam) {
         if (o == null)

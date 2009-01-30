@@ -29,19 +29,14 @@ import java.util.concurrent.locks.ReentrantLock;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.openjpa.conf.OpenJPAConfiguration;
-import org.apache.openjpa.jdbc.sql.SQLBuffer;
-import org.apache.openjpa.jdbc.sql.SelectExecutor;
 import org.apache.openjpa.kernel.FetchConfiguration;
 import org.apache.openjpa.kernel.PreparedQuery;
 import org.apache.openjpa.kernel.PreparedQueryCache;
 import org.apache.openjpa.kernel.Query;
 import org.apache.openjpa.kernel.QueryHints;
 import org.apache.openjpa.kernel.QueryStatistics;
-import org.apache.openjpa.kernel.QueryStatistics.Default;
 import org.apache.openjpa.lib.conf.Configuration;
 import org.apache.openjpa.lib.log.Log;
-import org.apache.openjpa.lib.log.LogFactory;
-import org.apache.openjpa.lib.rop.ResultList;
 import org.apache.openjpa.lib.util.Localizer;
 
 /**
@@ -49,7 +44,8 @@ import org.apache.openjpa.lib.util.Localizer;
  * 
  * @author Pinaki Poddar
  *
- * @since 1.3.0
+ * @since 2.0.0
+ * 
  * @nojavadoc
  */
 public class PreparedQueryCacheImpl implements PreparedQueryCache {
@@ -101,8 +97,6 @@ public class PreparedQueryCacheImpl implements PreparedQueryCache {
 		}
 	}
 	
-
-	
 	/**
 	 * Cache the given query keyed by its identifier. Does not cache if the 
 	 * identifier matches any exclusion pattern or has been marked as 
@@ -120,13 +114,13 @@ public class PreparedQueryCacheImpl implements PreparedQueryCache {
 			}
 			String pattern = getMatchedExclusionPattern(id);
 			if (pattern != null) {
-				markUncachable(q.getIdentifier(), pattern);
+				markUncachable(id, pattern);
 				return false;
 			}
-			if (_log != null && _log.isTraceEnabled())
-				_log.trace(_loc.get("prepared-query-cache", q.getIdentifier(), 
-					q.getTargetQuery()));
-			_delegate.put(q.getIdentifier(), q);
+			_delegate.put(id, q);
+            if (_log != null && _log.isTraceEnabled())
+                _log.trace(_loc.get("prepared-query-cached", id, 
+                    q.getTargetQuery()));
 			return true;
 		} finally {
 			unlock();
@@ -145,7 +139,6 @@ public class PreparedQueryCacheImpl implements PreparedQueryCache {
         } 
         return pq;
     }
-
 	
 	public boolean invalidate(String id) {
 		lock();
@@ -288,17 +281,12 @@ public class PreparedQueryCacheImpl implements PreparedQueryCache {
 	 * Gets the pattern that matches the given identifier.
 	 */
 	private String getMatchedExclusionPattern(String id) {
-		lock();
-		try {
-			if (_exclusionPatterns == null || _exclusionPatterns.isEmpty())
-				return null;
-			for (String pattern : _exclusionPatterns)
-				if (matches(pattern, id))
-					return pattern;
+		if (_exclusionPatterns == null || _exclusionPatterns.isEmpty())
 			return null;
-		} finally {
-			unlock();
-		}
+		for (String pattern : _exclusionPatterns)
+			if (matches(pattern, id))
+				return pattern;
+		return null;
 	}
 	
 	/**
@@ -306,7 +294,7 @@ public class PreparedQueryCacheImpl implements PreparedQueryCache {
 	 */
 	private Collection<String> getMatchedKeys(String pattern, 
 			Map<String,String> map) {
-		List<String> result = new ArrayList<String>();
+        List<String> result = new ArrayList<String>();
 		for (Map.Entry<String, String> entry : map.entrySet()) {
 			if (matches(pattern, entry.getValue())) {
 				result.add(entry.getKey());
@@ -350,9 +338,7 @@ public class PreparedQueryCacheImpl implements PreparedQueryCache {
         Object result = fetch.getHint(hint);
         return result != null && "true".equalsIgnoreCase(result.toString());
     }
-    
-
-    
+        
 	//-------------------------------------------------------
 	// Configurable contract
 	//-------------------------------------------------------

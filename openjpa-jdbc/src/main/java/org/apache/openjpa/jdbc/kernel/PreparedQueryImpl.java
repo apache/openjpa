@@ -30,6 +30,12 @@ import org.apache.openjpa.kernel.PreparedQuery;
 import org.apache.openjpa.kernel.Query;
 import org.apache.openjpa.lib.rop.ResultList;
 
+/**
+ * Implements {@link PreparedQuery} for SQL queries.
+ * 
+ * @author Pinaki Poddar
+ *
+ */
 public class PreparedQueryImpl implements PreparedQuery {
     private final String _id;
     private String _sql;
@@ -41,7 +47,8 @@ public class PreparedQueryImpl implements PreparedQuery {
     
     // Parameters of the query
     private List    _params;
-    private List    _userParams;
+    // Position of the user defined parameters in the _params list
+    private Map<Object, int[]>    _userParamPositions;
     
     
     /**
@@ -75,6 +82,10 @@ public class PreparedQueryImpl implements PreparedQuery {
         return _id;
     }
     
+    /**
+     * Get the original query string which is same as the identifier of this 
+     * receiver.
+     */
     public String getOriginalQuery() {
         return getIdentifier();
     }
@@ -83,7 +94,7 @@ public class PreparedQueryImpl implements PreparedQuery {
         return _sql;
     }
     
-    public void setDatastoreAction(String sql) {
+    void setTargetQuery(String sql) {
         _sql = sql;
     }
     
@@ -96,6 +107,12 @@ public class PreparedQueryImpl implements PreparedQuery {
             q.setCandidateType(_candidate, _subclasses);
     }
     
+    /**
+     * Initialize this receiver with post-execution result.
+     * The input argument is processed only if it is a {@link ResultList} with
+     * an attached {@link SelectResultObjectProvider} as its
+     * {@link ResultList#getUserObject() user object}. 
+     */
     public boolean initialize(Object result) {
         boolean initialized = false;
         if (result instanceof ResultList) {
@@ -106,9 +123,9 @@ public class PreparedQueryImpl implements PreparedQuery {
                 SelectExecutor selector = rop.getSelect();
                 SQLBuffer buffer = selector == null ? null : selector.getSQL();
                 if (buffer != null && !selector.hasMultipleSelects()) {
-                    setDatastoreAction(buffer.getSQL());
-                    setUserParameters(buffer.getUserParameters());
+                    setTargetQuery(buffer.getSQL());
                     setParameters(buffer.getParameters());
+                    setUserParameterPositions(buffer.getUserParameters());
                     initialized = true;
                 }
             }
@@ -117,7 +134,9 @@ public class PreparedQueryImpl implements PreparedQuery {
     }
     
     /**
-     * Merge the given user parameters with its own parameter.
+     * Merge the given user parameters with its own parameter. The given map
+     * must be compatible with the user parameters extracted during 
+     * {@link #initialize(Object) initialization}. 
      * 
      * @return key index starting from 1 and corresponding values.
      */
@@ -126,31 +145,46 @@ public class PreparedQueryImpl implements PreparedQuery {
         for (int i = 0; i < _params.size(); i++) {
             result.put(i, _params.get(i));
         }
-        if (user == null)
+        if (user == null || user.isEmpty())
             return result;
         for (Object key : user.keySet()) {
-            List<Integer> indices = findUserParameterPositions(key);
+            int[] indices = _userParamPositions.get(key);
+            if (indices == null)
+                continue;
             for (int j : indices)
                 result.put(j, user.get(key));
         }
         return result;
     }
     
-    private List<Integer> findUserParameterPositions(Object key) {
-        List<Integer> result = new ArrayList<Integer>();
-        for (int i = 1; _userParams != null && i < _userParams.size(); i+=2) {
-            if (_userParams.get(i).equals(key))
-                result.add((Integer)_userParams.get(i-1));
+    /**
+     * Marks the positions of user parameters.
+     * 
+     * @param list odd elements are numbers representing the position of a 
+     * user parameter in the _param list. Even elements are the user parameter
+     * key. A user parameter key may appear more than once.
+     */
+    void setUserParameterPositions(List list) {
+        _userParamPositions = new HashMap<Object, int[]>();
+        for (int i = 1; list != null && i < list.size(); i+=2) {
+            Object key = list.get(i);
+            int p = (Integer)list.get(i-1);
+            int[] positions = _userParamPositions.get(key);
+            if (positions == null) {
+                positions = new int[]{p};
+            } else {
+                int[] temp = new int[positions.length+1];
+                System.arraycopy(positions, 0, temp, 0, positions.length);
+                temp[positions.length] = p;
+                positions = temp;
+            }
+            _userParamPositions.put(key, positions);
         }
-        return result;
-    }
-    
-    void setUserParameters(List list) {
-        _userParams = list;
     }
     
     void setParameters(List list) {
-        _params = list;
+        _params = new ArrayList();
+        _params.addAll(list);
     }
     
     public String toString() {

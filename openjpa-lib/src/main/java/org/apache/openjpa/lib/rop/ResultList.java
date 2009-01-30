@@ -32,7 +32,7 @@ import org.apache.openjpa.lib.util.Closeable;
  * objects, and thus allow very large result sets to be obtained and
  * manipulated. Note that wrapping a ResultList in another Collection will
  * always instantiate the entire set of elements contained in the
- * ResultList. This may not always be desireable, since the list may
+ * ResultList. This may not always be desirable, since the list may
  * be very large.
  *
  * @author Marc Prud'hommeaux
@@ -44,7 +44,14 @@ public interface ResultList<E> extends List<E>, Serializable, Closeable {
      */
     public boolean isProviderOpen();
     
+    /**
+     * Get the opaque user object attached to this receiver.
+     */
     public Object getUserObject();
+    
+    /**
+     * Set the opaque user object to this receiver.
+     */
     public void   setUserObject(Object opaque);
 
     /**
