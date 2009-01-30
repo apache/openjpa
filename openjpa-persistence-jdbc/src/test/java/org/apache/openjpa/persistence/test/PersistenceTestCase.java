@@ -27,29 +27,40 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.HashMap;
+
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.Persistence;
 
-import junit.framework.AssertionFailedError;
 import junit.framework.TestCase;
 import junit.framework.TestResult;
+
 import org.apache.openjpa.kernel.AbstractBrokerFactory;
 import org.apache.openjpa.kernel.Broker;
 import org.apache.openjpa.meta.ClassMetaData;
-import org.apache.openjpa.persistence.OpenJPAEntityManagerFactorySPI;
 import org.apache.openjpa.persistence.JPAFacadeHelper;
+import org.apache.openjpa.persistence.OpenJPAEntityManagerFactorySPI;
 
 /**
  * Base test class providing persistence utilities.
+ * 
+ * EntityManagerFactory created by this receiver is statically cached indexed
+ * by a key which is a combination of the persistence unit name and the user
+ * configuration. 
+ * If a extended test does not want cached EntityManagerFactory
+ * then it must specify FRESH_EMF as one of the arguments of #setUp(Object[]).
+ * 
+ * 
  */
 public abstract class PersistenceTestCase
     extends TestCase {
-
+    private static FixedMap _emfs = new FixedMap();
+    public static final String FRESH_EMF = "Creates new EntityManagerFactory";
     /**
      * Marker object you pass to {@link #setUp} to indicate that the
      * database table rows should be cleared.
@@ -98,10 +109,15 @@ public abstract class PersistenceTestCase
      */
     protected OpenJPAEntityManagerFactorySPI createNamedEMF(String pu,
         Object... props) {
-        Map map = new HashMap(System.getProperties());
+        Map map = new HashMap();//System.getProperties());
         List<Class> types = new ArrayList<Class>();
         boolean prop = false;
+        boolean fresh = false;
         for (int i = 0; i < props.length; i++) {
+            if (props[i] == FRESH_EMF) {
+                fresh = true;
+                continue;
+            }
             if (prop) {
                 map.put(props[i - 1], props[i]);
                 prop = false;
@@ -131,13 +147,21 @@ public abstract class PersistenceTestCase
             map.put("openjpa.MetaDataFactory",
                 "jpa(Types=" + buf.toString() + oldValue + ")");
         }
-
-        OpenJPAEntityManagerFactorySPI oemf = (OpenJPAEntityManagerFactorySPI) 
-                Persistence.createEntityManagerFactory(pu, map);
-        if (oemf == null)
-            throw new NullPointerException(
+        EMFKey key = new EMFKey(pu, map);
+        OpenJPAEntityManagerFactorySPI oemf = _emfs.get(key);
+        if (fresh || oemf == null) {
+            Map config = new HashMap(System.getProperties());
+            config.putAll(map);
+            oemf = (OpenJPAEntityManagerFactorySPI) 
+                Persistence.createEntityManagerFactory(pu, config);
+            if (oemf == null) {
+                throw new NullPointerException(
                     "Expected an entity manager factory " +
                     "for the persistence unit named: \"" + pu + "\"");
+            } else if (!fresh) {
+                _emfs.put(key, oemf);
+            }
+        }
         return oemf;
     }
 
@@ -446,5 +470,29 @@ public abstract class PersistenceTestCase
     	if (anno != null) 
             return anno.value();
     	return false;
+    }
+    
+    private static class FixedMap extends LinkedHashMap<EMFKey, OpenJPAEntityManagerFactorySPI> {
+        public boolean removeEldestEntry(Map.Entry<EMFKey, OpenJPAEntityManagerFactorySPI> entry) {
+            return this.size() > 2;
+        }
+    }
+    
+    private static class EMFKey {
+        final String unit;
+        final Map config;
+        EMFKey(String unit, Map config) {
+            this.unit = unit;
+            this.config = config;
+        }
+        
+        public int hashCode() {
+            return unit.hashCode() + config.hashCode();
+        }
+        
+        public boolean equals(Object other) {
+            EMFKey that = (EMFKey)other;
+            return unit.equals(that.unit) && config.equals(that.config);
+        }
     }
 }
