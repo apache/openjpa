@@ -43,7 +43,7 @@ public class CollectionParam
     private static final Localizer _loc = Localizer.forPackage(
         CollectionParam.class);
 
-    private final String _name;
+    private final Object _key;
     private Class _type = null;
     private int _idx = -1;
     private boolean _container = false;
@@ -51,17 +51,13 @@ public class CollectionParam
     /**
      * Constructor. Supply parameter name and type.
      */
-    public CollectionParam(String name, Class type) {
-        _name = name;
+    public CollectionParam(Object key, Class type) {
+        _key = key;
         setImplicitType(type);
     }
 
-    public String getName() {
-        return _name;
-    }
-
-    public String getParameterName() {
-        return getName();
+    public Object getParameterKey() {
+        return _key;
     }
 
     public Class getType() {
@@ -143,11 +139,11 @@ public class CollectionParam
 
         if (!(value instanceof Collection))
             throw new IllegalArgumentException(_loc.get(
-                "not-collection-parm", _name).toString());
+                "not-collection-parm", _key).toString());
 
         if (((Collection) value).isEmpty())
             throw new IllegalArgumentException(_loc.get(
-                "empty-collection-parm", _name).toString());
+                "empty-collection-parm", _key).toString());
 
         Iterator itr = ((Collection) value).iterator();
         for (int i = 0; i < pstate.size && itr.hasNext(); i++) {
@@ -182,13 +178,13 @@ public class CollectionParam
         for (int i = 0; i < pstate.size; i++) {
             if (pstate.otherLength[i] > 1)
                 sql.appendValue(((Object[]) pstate.sqlValue[i])[index], 
-                        pstate.getColumn(index));
+                        pstate.getColumn(index), this);
             else if (pstate.cols != null)
-                sql.appendValue(pstate.sqlValue[i], pstate.getColumn(index));
+                sql.appendValue(pstate.sqlValue[i], pstate.getColumn(index), this);
             else if (pstate.discValue[i] != null)
                 sql.appendValue(pstate.discValue[i]);
             else
-                sql.appendValue(pstate.sqlValue[i], pstate.getColumn(index));
+                sql.appendValue(pstate.sqlValue[i], pstate.getColumn(index), this);
         }
     }
 }

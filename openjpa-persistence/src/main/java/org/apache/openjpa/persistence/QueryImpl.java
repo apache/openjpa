@@ -23,13 +23,11 @@ import java.lang.reflect.Method;
 import java.sql.Time;
 import java.sql.Timestamp;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -42,19 +40,26 @@ import javax.persistence.NonUniqueResultException;
 import javax.persistence.Query;
 import javax.persistence.TemporalType;
 
-import org.apache.commons.collections.map.LinkedMap;
 import org.apache.openjpa.enhance.Reflection;
+import org.apache.openjpa.kernel.Broker;
 import org.apache.openjpa.kernel.DelegatingQuery;
 import org.apache.openjpa.kernel.DelegatingResultList;
+import org.apache.openjpa.kernel.FetchConfiguration;
 import org.apache.openjpa.kernel.Filters;
+import org.apache.openjpa.kernel.PreparedQuery;
+import org.apache.openjpa.kernel.PreparedQueryCache;
+import org.apache.openjpa.kernel.QueryHints;
 import org.apache.openjpa.kernel.QueryLanguages;
 import org.apache.openjpa.kernel.QueryOperations;
+import org.apache.openjpa.kernel.QueryStatistics;
 import org.apache.openjpa.kernel.exps.AggregateListener;
 import org.apache.openjpa.kernel.exps.FilterListener;
+import org.apache.openjpa.kernel.jpql.JPQLParser;
 import org.apache.openjpa.lib.rop.ResultList;
 import org.apache.openjpa.lib.util.Localizer;
 import org.apache.openjpa.util.ImplHelper;
 import org.apache.openjpa.util.RuntimeExceptionTranslator;
+import static org.apache.openjpa.kernel.QueryLanguages.LANG_PREPARED_SQL;
 
 /**
  * Implementation of {@link Query} interface.
@@ -69,14 +74,13 @@ public class QueryImpl implements OpenJPAQuerySPI, Serializable {
 
 	private static final Localizer _loc = Localizer.forPackage(QueryImpl.class);
 
-	private final DelegatingQuery _query;
+	private DelegatingQuery _query;
 	private transient EntityManagerImpl _em;
 	private transient FetchPlan _fetch;
 
 	private Map<String, Object> _named;
 	private Map<Integer, Object> _positional;
-
-	private static Object GAP_FILLER = new Object();
+	private String _id;
 
 	/**
 	 * Constructor; supply factory exception translator and delegate.
@@ -249,183 +253,32 @@ public class QueryImpl implements OpenJPAQuerySPI, Serializable {
 		if (_query.getOperation() != QueryOperations.OP_SELECT)
 			throw new InvalidStateException(_loc.get("not-select-query", _query
 					.getQueryString()), null, null, false);
-
-		validateParameters();
-
-		// handle which types of parameters we are using, if any
-		if (_positional != null)
-			return _query.execute(_positional);
-		if (_named != null)
-			return _query.execute(_named);
-		return _query.execute();
+		
+        Map params = _positional != null ? _positional : _named;
+        Boolean registered = null;
+		PreparedQueryCache cache = _em.getPreparedQueryCache();
+		if (cache != null) {
+		    FetchConfiguration fetch = _query.getFetchConfiguration();
+		    registered = cache.register(_id, _query, fetch);
+		    boolean alreadyCached = (registered == null);
+		    String lang = _query.getLanguage();
+		    QueryStatistics stats = cache.getStatistics();
+		    if (alreadyCached && LANG_PREPARED_SQL.equals(lang)) {
+		        PreparedQuery pq = _em.getPreparedQuery(_id);
+		        params = pq.reparametrize(params);
+		        stats.recordExecution(pq.getOriginalQuery(), alreadyCached);
+		    } else {
+                stats.recordExecution(_query.getQueryString(), alreadyCached);
+		    }
+		}
+        Object result = _query.execute(params);
+        
+        if (registered == Boolean.TRUE) {
+            cache.initialize(_id, result);
+        }
+        return result;
 	}
 	
-	/**
-	 * Validate that the types of the parameters are correct.
-	 * The idea is to catch as many validation error as possible at the facade
-	 * layer itself.
-	 * For native SQL queries, however, parameter validation is bypassed as
-	 * we do not parse SQL.
-	 * 
-	 * The expected parameters are parsed from the query and in a LinkedMap 
-	 *	key   : name of the parameter as declared in query
-	 *  value : expected Class of allowed value
-	 *  
-	 * The bound parameters depends on positional or named parameter style
-	 * 
-	 * TreeMap<Integer, Object> for positional parameters:
-	 *   key   : 1-based Integer index
-	 *   value : bound value. GAP_FILLER if the position is not set. This
-	 *   simplifies validation at the kernel layer
-	 *   
-	 * Map<String, Object> for named parameters:
-	 *   key   : parameter name
-	 *   value : the bound value
-	 *   
-	 *  Validation accounts for 
-	 *    a) gaps in positional parameters
-	 *       SELECT p FROM PObject p WHERE p.a1=?1 AND p.a3=?3
-	 *    
-	 *    b) repeated parameters
-	 *       SELECT p FROM PObject p WHERE p.a1=?1 AND p.a2=?1 AND p.a3=?2
-	 *       
-	 *    c) parameter is bound but not declared
-	 *    
-	 *    d) parameter is declared but not bound
-	 *    
-	 *    e) parameter does not match the value type
-	 *    
-	 *    f) parameter is primitive type but bound to null value
-	 */
-	private void validateParameters() {
-		if (isNative()) {
-			removeGaps(_positional);
-			return;
-		}
-		String query = getQueryString();
-		if (_positional != null) {
-			LinkedMap expected = _query.getParameterTypes();
-			Map<Integer, Object> actual = _positional;
-			for (Object o : expected.keySet()) {
-				String position = (String) o;
-				Class expectedParamType = (Class) expected.get(position);
-				try {
-					Integer.parseInt(position);
-				} catch (NumberFormatException ex) {
-					newValidationException("param-style-mismatch", query,
-							expected.asList(),
-							Arrays.toString(actual.keySet().toArray()));
-				}
-				Object actualValue = actual.get(Integer.parseInt(position));
-				boolean valueUnspecified = (actualValue == GAP_FILLER)
-						|| (actualValue == null && (actual.size() < expected
-								.size()));
-				if (valueUnspecified) 
-					newValidationException("param-missing", position, query,
-							Arrays.toString(actual.keySet().toArray()));
-				
-				if (expectedParamType.isPrimitive() && actualValue == null)
-					newValidationException("param-type-null", 
-							position, query, expectedParamType.getName());
-				if (actualValue != null &&
-				   !Filters.wrap(expectedParamType).isInstance(actualValue)) 
-					newValidationException("param-type-mismatch",
-							position, query, actualValue,
-							actualValue.getClass().getName(),
-							expectedParamType.getName());
-				
-			}
-			for (Integer position : actual.keySet()) {
-				Object actualValue = actual.get(position);
-				Class expectedParamType = (Class) expected.get("" + position);
-				boolean paramExpected = expected.containsKey("" + position);
-				if (actualValue == GAP_FILLER) {
-					if (paramExpected) {
-						newValidationException("param-missing", position, query,
-								Arrays.toString(actual.keySet().toArray()));
-					}
-				} else {
-					if (!paramExpected)
-						newValidationException("param-extra", position, query,
-								expected.asList());
-					if (expectedParamType.isPrimitive() && actualValue == null)
-						newValidationException("param-type-null", 
-								position, query, expectedParamType.getName());
-					if (actualValue != null 
-					 && !Filters.wrap(expectedParamType).isInstance(actualValue)) 
-						newValidationException("param-type-mismatch",
-								position, query, actualValue,
-								actualValue.getClass().getName(),
-								expectedParamType.getName());
-					
-				}
-			}
-
-		} else if (_named != null) {
-			LinkedMap expected = _query.getParameterTypes();
-			// key : name of the parameter used while binding
-			// value : user supplied parameter value. null may mean either
-			// user has supplied a value or not specified at all
-			Map<String, Object> actual = _named;
-			for (Object o : expected.keySet()) {
-				String expectedName = (String) o;
-				Class expectedParamType = (Class) expected.get(expectedName);
-				Object actualValue = actual.get(expectedName);
-				boolean valueUnspecified = !actual.containsKey(expectedName);
-				if (valueUnspecified) {
-					newValidationException("param-missing", expectedName, query,
-							Arrays.toString(actual.keySet().toArray()));
-				}
-				if (expectedParamType.isPrimitive() && actualValue == null)
-					newValidationException("param-type-null", 
-							expectedName, query, expectedParamType.getName());
-				if (actualValue != null 
-				 && !Filters.wrap(expectedParamType).isInstance(actualValue)) {
-					newValidationException("param-type-mismatch",
-							expectedName, query, actualValue,
-							actualValue.getClass().getName(),
-							expectedParamType.getName());
-				}
-			}
-			for (String actualName : actual.keySet()) {
-				Object actualValue = actual.get(actualName);
-				Class expectedParamType = (Class) expected.get(actualName);
-				boolean paramExpected = expected.containsKey(actualName);
-				if (!paramExpected) {
-					newValidationException("param-extra", actualName, query,
-							expected.asList());
-				}
-				if (expectedParamType.isPrimitive() && actualValue == null)
-					newValidationException("param-type-null", 
-							actualName, query, expectedParamType.getName());
-				if (actualValue != null 
-				 && !Filters.wrap(expectedParamType).isInstance(actualValue)) {
-					newValidationException("param-type-mismatch",
-							actualName, query, actualValue,
-							actualValue.getClass().getName(),
-							expectedParamType.getName());
-				}
-			}
-		}
-	}
-	
-	Map<Integer, Object> removeGaps(Map<Integer, Object> map) {
-		if (map == null || !map.containsValue(GAP_FILLER))
-			return map;
-		List<Integer> gaps = new ArrayList<Integer>();
-		for (Integer key : map.keySet())
-			if (map.get(key) == GAP_FILLER)
-				gaps.add(key);
-		for (Integer gap : gaps) {
-			map.remove(gap);
-		}
-		return map;
-	}
-
-	void newValidationException(String msgKey, Object...args) {
-		throw new ArgumentException(_loc.get(msgKey, args), null, null, false);
-	}
-
 	public List getResultList() {
 		_em.assertNotCloseInvoked();
 		Object ob = execute();
@@ -548,9 +401,17 @@ public class QueryImpl implements OpenJPAQuerySPI, Serializable {
 						throw new ArgumentException(_loc.get(
 								"bad-query-hint-value", key, value), null,
 								null, false);
-				}
-				_query.getFetchConfiguration().setHint(key, value);
-			} else
+				}  else if (QueryHints.HINT_INVALIDATE_PREPARED_QUERY.equals
+                    (key)) {
+                    _query.getFetchConfiguration().setHint(key, (Boolean)value);
+                    invalidatePreparedQuery();
+                } else if (QueryHints.HINT_IGNORE_PREPARED_QUERY.equals(key)) {
+                    _query.getFetchConfiguration().setHint(key, (Boolean)value);
+                    ignorePreparedQuery();
+                } else {
+                    _query.getFetchConfiguration().setHint(key, value);
+                }
+            } else
 				throw new ArgumentException(_loc.get("bad-query-hint", key),
 						null, null, false);
 			return this;
@@ -624,10 +485,6 @@ public class QueryImpl implements OpenJPAQuerySPI, Serializable {
 				_positional = new TreeMap<Integer, Object>();
 
 			_positional.put(position, value);
-			for (int i = 1; i < position; i++)
-				if (!_positional.containsKey(i))
-					_positional.put(i, GAP_FILLER);
-
 			return this;
 		} finally {
 			_query.unlock();
@@ -778,4 +635,50 @@ public class QueryImpl implements OpenJPAQuerySPI, Serializable {
         throw new UnsupportedOperationException(
             "JPA 2.0 - Method not yet implemented");
     }
+    
+    
+    /**
+     * Remove this query from PreparedQueryCache. 
+     */
+    private boolean invalidatePreparedQuery() {
+        PreparedQueryCache cache = _em.getPreparedQueryCache();
+        if (cache == null)
+            return false;
+        ignorePreparedQuery();
+        return cache.invalidate(_id);
+    }
+    
+    /**
+     * Ignores this query from PreparedQueryCache by recreating the original
+     * query if it has been cached. 
+     */
+    private void ignorePreparedQuery() {
+        PreparedQuery cached = _em.getPreparedQuery(_id);
+        if (cached == null)
+            return;
+        Broker broker = _em.getBroker();
+        // Critical assumption: Only JPQL queries are cached and more 
+        // importantly, the identifier of the prepared query is the original
+        // JPQL String
+        String JPQL = JPQLParser.LANG_JPQL;
+        String jpql = _id;
+        
+        org.apache.openjpa.kernel.Query newQuery = broker.newQuery(JPQL, jpql);
+        newQuery.getFetchConfiguration().copy(_query.getFetchConfiguration());
+        newQuery.compile();
+        _query = new DelegatingQuery(newQuery, _em.getExceptionTranslator());
+    }
+    
+    private void recordStatistics(String query, boolean usingCachedVersion) {
+        PreparedQueryCache cache = _em.getPreparedQueryCache();
+        if (cache == null)
+            return;
+        cache.getStatistics().recordExecution(query,usingCachedVersion);
+    }
+    
+    QueryImpl setId(String id) {
+        _id = id;
+        return this;
+    }
+
 }

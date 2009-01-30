@@ -115,6 +115,22 @@ public class DelegatingResultList
         }
     }
 
+    public Object getUserObject() {
+        try {
+            return _del.getUserObject();
+        } catch (RuntimeException re) {
+            throw translate(re);
+        }
+    }
+    
+    public void setUserObject(Object opaque) {
+        try {
+            _del.setUserObject(opaque);
+        } catch (RuntimeException re) {
+            throw translate(re);
+        }
+    }
+
     public void close() {
         try {
             _del.close();

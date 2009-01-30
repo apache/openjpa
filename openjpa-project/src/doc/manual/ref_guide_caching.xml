@@ -1035,73 +1035,61 @@ Disables the compilation cache.
                 query sql cache
             </secondary>
         </indexterm>
-        <para>
-The query SQL cache is a <classname>Map</classname> used to cache 
-pushed-down SQL query strings for the find operation.  As a result, 
-the SQL queries are only generated once in OpenJPA, and cached thereafter.  
-This query SQL cache is shared across entity managers and the fetch plan 
-is part of the cache key. You can control the SQL cache through 
-the <link linkend="openjpa.jdbc.QuerySQLCache"><literal>
-openjpa.jdbc.QuerySQLCache</literal></link> configuration property.  This 
-property accepts a plugin string (see <xref linkend="ref_guide_conf_plugins"/>) 
-describing the <classname>Map</classname> used to associate query strings and 
-their parsed form.  This property accepts the following aliases:
-        </para>
-        <table>
-            <title>
-                Pre-defined aliases
-            </title>
-            <tgroup cols="2" align="left" colsep="1" rowsep="1">
-                <colspec colname="alias"/>
-                <colspec colname="value"/>
-                <colspec colname="notes"/>
-                <thead>
-                    <row>
-                        <entry colname="alias">Alias</entry>
-                        <entry colname="value">Value</entry>
-                        <entry colname="notes">Notes</entry>
-                    </row>
-                </thead>
-                <tbody>
-                    <row>
-                        <entry colname="alias">
-<literal>true</literal>
-                        </entry>
-                        <entry colname="value">
-<literal>org.apache.openjpa.util.CacheMap</literal>
-                        </entry>
-                        <entry colname="notes">
-The default option.  Uses a 
-<ulink url="../javadoc/org/apache/openjpa/util/CacheMap.html"> 
-<literal>CacheMap</literal></ulink> to store sql string.  
-<literal>CacheMap</literal> maintains a fixed number of cache entries, and an 
-optional soft reference map for entries that are moved out of the LRU space. 
-So, for applications that have a monotonically increasing number of distinct 
-queries, this option can be used to ensure that a fixed amount of memory is 
-used by the cache.
-                        </entry>
-                    </row>
-                    <row>
-                        <entry colname="alias"><literal>all</literal></entry>
-                        <entry colname="value">
-<literal>org.apache.openjpa.lib.util.ConcurrentHashMap</literal>
-                        </entry>
-                        <entry colname="notes">
-This is the fastest option, but sql string is never dropped from the 
-cache, so if you use a large number of dynamic queries, this option may result 
-in ever-increasing memory usage. Note that if your queries only differ in the 
-values of the parameters, this should not be an issue.
-                        </entry>
-                    </row>
-                    <row>
-                        <entry colname="alias"><literal>false</literal></entry>
-                        <entry colname="value"><emphasis>none</emphasis></entry>
-                        <entry colname="notes">
-Disables the sql cache.
-                        </entry>
-                    </row>
-                </tbody>
-            </tgroup>
-        </table>
+<para>
+The Query SQL Cache caches SQL statements corresponding to JPQL queries.
+If a JPQL query is executed more than once in the same or different persistence
+context, the SQL statement generated during the first execution is cached and
+executed directly for subsequent execution. Direct execution of SQL offers
+significant performance gain as it saves the cost of parsing query string and,
+more importantly, populating the query expression tree during every execution.
+</para>
+<para>
+The Query SQL Cache is configured by the <link linkend="openjpa.jdbc.QuerySQLCache">
+<literal>openjpa.QuerySQLCache</literal></link> configuration property. This
+property accepts a a plugin string (see <xref linkend="ref_guide_conf_plugins"/>)
+with value of <literal>true</literal> or <literal>false</literal>. 
+</para>
+<para>
+Depending upon the mapping of your persistent domain object model, 
+lazy/eager fetch settings on the relation paths and fetch configuration, a 
+single JPQL may result in multiple SQL statements. If a JPQL query requires
+more than one SQL statement to be executed, then the JPQL query is not cached.
+The other critical point to remember while using the Query SQL Cache is that
+change in fetch plan or locking mode may cause a different target SQL statement 
+than the original. But Query SQL Cache does not track such changes and reuses
+the cached SQL under the assumption that the query execution context has 
+remained unchanged. 
+</para>
+<para>
+Several mechanisms are available to the application to deactivate SQL cacheing
+for a query. 
+	<listitem>A user application can deactivate SQL Query Cache
+	for entire lifetime of a persistence context by invoking the following
+	method on OpenJPA's EntityMananger interface:
+	<programlisting>
+	<methodname>OpenJPAEntityManager.setQuerySQLCache(boolean)</methodname> 
+	</programlisting>
+	</listitem>
+	<listitem>
+	A user application can instruct a particular execution of a JPQL query to
+	ignore any cached SQL query, by setting 
+	<literal>QueryHints.HINT_IGNORE_PREPARED_QUERY</literal> or 
+	<literal>"openjpa.hint.IgnorePreparedQuery"</literal> to <literal>true</literal>
+	via standard <literal>javax.persistence.Query.setHints()</literal>. If a
+	SQL query has been cached corresponding to the JPQL query prior to this 
+	execution, then the cached SQL remains in the cache and will be reused
+	for any subsequent execution of the same JPQL query.
+	</listitem>
+	<listitem>
+	A user application can instruct all subsequent execution of a JPQL query to
+	ignore any cached SQL query, by setting 
+	<literal>QueryHints.HINT_INVALIDATE_PREPARED_QUERY</literal> or 
+	<literal>"openjpa.hint.InvalidatePreparedQuery"</literal> to <literal>true</literal>
+	The SQL query is removed from the cache and the JPQL query will never be
+	cached again during the lifetime of the entire persistence unit i.e.
+	EntityManagerFactory.
+	</listitem>
+</para>
+ 
     </section>
 </chapter>

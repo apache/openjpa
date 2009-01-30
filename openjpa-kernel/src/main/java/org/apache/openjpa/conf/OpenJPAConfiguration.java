@@ -36,6 +36,7 @@ import org.apache.openjpa.kernel.ConnectionRetainModes;
 import org.apache.openjpa.kernel.FetchConfiguration;
 import org.apache.openjpa.kernel.InverseManager;
 import org.apache.openjpa.kernel.LockManager;
+import org.apache.openjpa.kernel.PreparedQueryCache;
 import org.apache.openjpa.kernel.QueryFlushModes;
 import org.apache.openjpa.kernel.RestoreState;
 import org.apache.openjpa.kernel.SavepointManager;
@@ -1548,4 +1549,33 @@ public interface OpenJPAConfiguration
      * @since 1.3.0
      */
     public void setInitializeEagerly(boolean flag);
+    
+    /**
+     * Return PreparedQueryCache used for caching datastore queries.
+     * 
+     * @since 2.0.0
+     */
+    public PreparedQueryCache getQuerySQLCacheInstance();
+        
+    /**
+     * Gets the configuration of QuerySQLCache.
+     * 
+     * @since 2.0.0
+     */
+    public String getQuerySQLCache();
+    
+    /**
+     * Sets QuerySQLCache with the given cache.
+     * 
+     * @since 2.0.0
+     */
+    public void setQuerySQLCache(PreparedQueryCache cache);   
+    
+    /**
+     * Sets QuerySQLCache with the given configuration.
+     * 
+     * @since 2.0.0
+     */
+    public void setQuerySQLCache(String config);     
+
 }

@@ -43,6 +43,9 @@ public interface ResultList<E> extends List<E>, Serializable, Closeable {
      * Returns true if the provider backing this list is open.
      */
     public boolean isProviderOpen();
+    
+    public Object getUserObject();
+    public void   setUserObject(Object opaque);
 
     /**
      * Close the list.

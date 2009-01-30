@@ -284,6 +284,23 @@ public interface Broker
      */
     public void setLifecycleListenerCallbackMode(int mode);
 
+    
+    /**
+     * Affirms if this receiver is caching prepared queries.
+     *  
+     * @since 2.0.0
+     */
+    public boolean getCachePreparedQuery();
+    
+    /**
+     * Sets whether this receiver will cache prepared queries during its 
+     * lifetime. The cache configured at BrokerFactory level is not affected by 
+     * setting it inactive for this receiver. 
+     * 
+     * @since 2.0.0
+     */
+    public void setCachePreparedQuery(boolean flag);
+
     /**
      * Begin a transaction.
      */

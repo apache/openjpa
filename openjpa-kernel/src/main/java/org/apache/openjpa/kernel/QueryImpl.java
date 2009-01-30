@@ -836,9 +836,9 @@ public class QueryImpl
                 StoreQuery.Executor ex = (isInMemory(operation))
                     ? compileForInMemory(comp) : compileForDataStore(comp);
 
+                assertParameters(_storeQuery, ex, params);
                 Object[] arr = (params.isEmpty()) ? StoreQuery.EMPTY_OBJECTS :
                     toParameterArray(ex.getParameterTypes(_storeQuery), params);
-                assertParameters(_storeQuery, ex, arr);
                 if (_log.isTraceEnabled())
                     logExecution(operation, params);
 
@@ -887,6 +887,12 @@ public class QueryImpl
         return ((Number) execute(OP_UPDATE, params)).longValue();
     }
 
+    /**
+     * 
+     * @param paramTypes parameter key mapped to parameter value type
+     * @param params parameter key mapped to actual parameter value
+     * @return
+     */
     private Object[] toParameterArray(LinkedMap paramTypes, Map params) {
         if (params == null || params.isEmpty())
             return StoreQuery.EMPTY_OBJECTS;
@@ -1230,7 +1236,7 @@ public class QueryImpl
         boolean lrs = range.lrs && !ex.isAggregate(q) && !ex.hasGrouping(q);
         ResultList res = (!detach && lrs) ? _fc.newResultList(rop)
             : new EagerResultList(rop);
-
+        res.setUserObject(rop);
         _resultLists.add(decorateResultList(res));
         return res;
     }
@@ -1401,9 +1407,9 @@ public class QueryImpl
             assertOpen();
 
             StoreQuery.Executor ex = compileForExecutor();
+            assertParameters(_storeQuery, ex, params);
             Object[] arr = toParameterArray(ex.getParameterTypes(_storeQuery),
                 params);
-            assertParameters(_storeQuery, ex, arr);
             StoreQuery.Range range = new StoreQuery.Range(_startIdx, _endIdx);
             if (!_rangeSet)
                 ex.getRange(_storeQuery, arr, range);
@@ -1702,6 +1708,35 @@ public class QueryImpl
                     entry.getKey()));
         }
     }
+    
+    protected void assertParameters(StoreQuery q, StoreQuery.Executor ex, 
+        Map params) {
+        if (!q.requiresParameterDeclarations())
+            return;
+
+        LinkedMap paramTypes = ex.getParameterTypes(q);
+        for (Object actual : params.keySet()) {
+            if (!paramTypes.containsKey(actual))
+            throw new UserException(_loc.get("unbound-params",
+                actual, paramTypes.keySet()));
+        }
+        for (Object expected : paramTypes.keySet()) {
+            if (!params.containsKey(expected))
+            throw new UserException(_loc.get("unbound-params",
+                params.keySet()));
+        }
+
+        Iterator itr = paramTypes.entrySet().iterator();
+        Map.Entry entry;
+        for (int i = 0; itr.hasNext(); i++) {
+            entry = (Map.Entry) itr.next();
+            if (((Class) entry.getValue()).isPrimitive() 
+                && params.get(entry.getKey()) == null)
+                throw new UserException(_loc.get("null-primitive-param",
+                    entry.getKey()));
+        }
+    }
+
 
     public String toString() {
         StringBuffer buf = new StringBuffer(64);
@@ -2031,6 +2066,14 @@ public class QueryImpl
 
         public boolean isProviderOpen() {
             return _res.isProviderOpen();
+        }
+        
+        public Object getUserObject() {
+            return _res.getUserObject();
+        }
+        
+        public void setUserObject(Object opaque) {
+            _res.setUserObject(opaque);
         }
 
         public boolean isClosed() {

@@ -245,13 +245,13 @@ public interface ExpressionFactory {
      * Return a value representing a parameter for the given value. The
      * type may be <code>Object</code> if the parameter is not declared.
      */
-    public Parameter newParameter(String name, Class type);
+    public Parameter newParameter(Object name, Class type);
 
     /**
      * Return a value representing a collection-valued parameter. The
      * type may be <code>Object</code> if the parameter is not declared.
      */
-    public Parameter newCollectionValuedParameter(String name, Class type);
+    public Parameter newCollectionValuedParameter(Object name, Class type);
 
     /**
      * Return the value of the given extension.

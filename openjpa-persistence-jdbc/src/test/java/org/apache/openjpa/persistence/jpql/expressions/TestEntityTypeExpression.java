@@ -48,7 +48,7 @@ public class TestEntityTypeExpression extends AbstractTestCase {
             new Address("22 Montgomery", "SF", null, "50054") };
 
         CompUser user1 = createUser("Seetha", "MAC", add[0], 36, true);
-        CompUser user2 = createUser("Shannon ", "PC", add[1], 36, false);
+        CompUser user2 = createUser("Shannon", "PC", add[1], 36, false);
         CompUser user3 = createUser("Ugo", "PC", add[2], 19, true);
         CompUser user4 = createUser("_Jacob", "LINUX", add[3], 10, true);
         CompUser user5 = createUser("Famzy", "UNIX", add[4], 29, false);
@@ -91,26 +91,26 @@ public class TestEntityTypeExpression extends AbstractTestCase {
         String param3 = "PC";
 
         query = "SELECT e FROM CompUser e where TYPE(e) in ?1 and e.age in ?2" +
-                " and e.computerName = ?3";
+                " and e.computerName = ?3 ORDER By e.name";
         rs = em.createQuery(query).
             setParameter(1, params).
             setParameter(2, params2).
             setParameter(3, param3).getResultList();
         user = rs.get(0);
-        assertEquals("the name is not shannon", "Shannon ", user.getName());
+        assertEquals("Shannon", user.getName());
 
-        query = "SELECT e FROM CompUser e where TYPE(e) in ?1 and e.age in ?2";
+        query = "SELECT e FROM CompUser e where TYPE(e) in ?1 and e.age in ?2 ORDER By e.name";
         rs = em.createQuery(query).
             setParameter(1, params).
             setParameter(2, params2).getResultList();
         user = rs.get(0);
-        assertEquals("the name is not shannon", "Shannon ", user.getName());
+        assertEquals("Famzy", user.getName());
 
-        query = "SELECT e FROM CompUser e where TYPE(e) in :params";
+        query = "SELECT e FROM CompUser e where TYPE(e) in :params ORDER BY e.name DESC";
         rs = em.createQuery(query).
             setParameter("params", params).getResultList();
         user = rs.get(0);
-        assertEquals("the name is not shannon", "Shannon ", user.getName());
+        assertEquals("_Jacob", user.getName());
         
         query = "SELECT TYPE(e) FROM MaleUser e where TYPE(e) = MaleUser";
         rs = em.createQuery(query).getResultList();
@@ -139,26 +139,26 @@ public class TestEntityTypeExpression extends AbstractTestCase {
         rs =  em.createQuery(query).
             setParameter("typeName", FemaleUser.class).getResultList();
         user = rs.get(0);
-        assertEquals("the name is not shannon", "Shannon ", user.getName());
+        assertEquals("Shannon", user.getName());
 
-        query = "SELECT e FROM CompUser e where TYPE(e) = ?1";
+        query = "SELECT e FROM CompUser e where TYPE(e) = ?1 ORDER BY e.name";
         rs = em.createQuery(query).
             setParameter(1, FemaleUser.class).getResultList();
         user = rs.get(0);
-        assertEquals("the name is not shannon", "Shannon ", user.getName());
+        assertEquals("Famzy", user.getName());
         
-        query = "SELECT e FROM CompUser e where TYPE(e) in (?1)";
+        query = "SELECT e FROM CompUser e where TYPE(e) in (?1) ORDER BY e.name";
         rs = em.createQuery(query).
             setParameter(1, MaleUser.class).getResultList();
         user = rs.get(0);
-        assertEquals(user.getName(), "Seetha");
+        assertEquals("Seetha", user.getName());
         
-        query = "SELECT e FROM CompUser e where TYPE(e) in (?1, ?2)";
+        query = "SELECT e FROM CompUser e where TYPE(e) in (?1, ?2) ORDER BY e.name";
         rs = em.createQuery(query).
             setParameter(1, FemaleUser.class).setParameter(2, MaleUser.class).
             getResultList();
         user = rs.get(0);
-        assertEquals("the name is not shannon", "Shannon ", user.getName());
+        assertEquals("Famzy", user.getName());
 
         query = "select sum(e.age) FROM CompUser e GROUP BY e.age" +
             " HAVING ABS(e.age) = :param";

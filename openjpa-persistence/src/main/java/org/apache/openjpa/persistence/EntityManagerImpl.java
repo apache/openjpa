@@ -31,16 +31,14 @@ import java.lang.reflect.Array;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.EnumSet;
-import java.util.Map;
-import java.util.HashMap;
 import java.util.IdentityHashMap;
+import java.util.Map;
 import java.util.Set;
 
 import javax.persistence.EntityManager;
 import javax.persistence.FlushModeType;
 import javax.persistence.LockModeType;
 import javax.persistence.Query;
-import javax.persistence.QueryBuilder;
 import javax.persistence.QueryDefinition;
 
 import org.apache.commons.lang.StringUtils;
@@ -51,16 +49,17 @@ import org.apache.openjpa.enhance.PCRegistry;
 import org.apache.openjpa.kernel.AbstractBrokerFactory;
 import org.apache.openjpa.kernel.Broker;
 import org.apache.openjpa.kernel.DelegatingBroker;
+import org.apache.openjpa.kernel.FetchConfiguration;
 import org.apache.openjpa.kernel.FindCallbacks;
 import org.apache.openjpa.kernel.LockLevels;
 import org.apache.openjpa.kernel.OpCallbacks;
 import org.apache.openjpa.kernel.OpenJPAStateManager;
+import org.apache.openjpa.kernel.PreparedQuery;
+import org.apache.openjpa.kernel.PreparedQueryCache;
 import org.apache.openjpa.kernel.QueryFlushModes;
 import org.apache.openjpa.kernel.QueryLanguages;
 import org.apache.openjpa.kernel.Seq;
-import org.apache.openjpa.kernel.FetchConfiguration;
 import org.apache.openjpa.kernel.jpql.JPQLParser;
-import org.apache.openjpa.kernel.jpql.ParseException;
 import org.apache.openjpa.lib.util.Closeable;
 import org.apache.openjpa.lib.util.Localizer;
 import org.apache.openjpa.meta.ClassMetaData;
@@ -875,17 +874,26 @@ public class EntityManagerImpl
     public OpenJPAQuery createQuery(String language, String query) {
         assertNotCloseInvoked();
         try {
+            String qid = query;
+            PreparedQuery cached = getPreparedQuery(qid);
+            if (cached != null) {
+                language = QueryLanguages.LANG_PREPARED_SQL;
+                query = cached.getTargetQuery();
+            }
             org.apache.openjpa.kernel.Query q = _broker.newQuery(language, 
                 query);
             // have to validate JPQL according to spec
             if (JPQLParser.LANG_JPQL.equals(language))
                 q.compile(); 
-            return new QueryImpl(this, _ret, q);
+            if (cached != null) {
+                cached.setInto(q);
+            }
+            return new QueryImpl(this, _ret, q).setId(qid);
         } catch (RuntimeException re) {
             throw PersistenceExceptions.toPersistenceException(re);
         }
     }
-
+    
     public OpenJPAQuery createQuery(Query query) {
         if (query == null)
             return createQuery((String) null);
@@ -902,12 +910,25 @@ public class EntityManagerImpl
             QueryMetaData meta = _broker.getConfiguration().
                 getMetaDataRepositoryInstance().getQueryMetaData(null, name,
                 _broker.getClassLoader(), true);
-            org.apache.openjpa.kernel.Query del =
-                _broker.newQuery(meta.getLanguage(), null);
-            meta.setInto(del);
+            String query = null;
+            String language = meta.getLanguage();
+            String qid = meta.getQueryString();
+            
+            PreparedQuery cached = getPreparedQuery(qid);
+            if (cached != null) {
+                language = QueryLanguages.LANG_PREPARED_SQL;
+                query = cached.getTargetQuery();
+            }
+            org.apache.openjpa.kernel.Query del = _broker.newQuery(language, 
+                query);
+            if (cached != null) {
+                cached.setInto(del);
+            } else {
+                meta.setInto(del);
+            }
             del.compile();
-
-            OpenJPAQuery q = new QueryImpl(this, _ret, del);
+            
+            OpenJPAQuery q = new QueryImpl(this, _ret, del).setId(qid);
             String[] hints = meta.getHintKeys();
             Object[] values = meta.getHintValues();
             for (int i = 0; i < hints.length; i++)
@@ -916,7 +937,7 @@ public class EntityManagerImpl
         } catch (RuntimeException re) {
             throw PersistenceExceptions.toPersistenceException(re);
         }
-    }
+    }    
 
     public OpenJPAQuery createNativeQuery(String query) {
         validateSQL(query);
@@ -943,7 +964,23 @@ public class EntityManagerImpl
         if (StringUtils.trimToNull(query) == null)
             throw new ArgumentException(_loc.get("no-sql"), null, null, false);
     }
+    
+    PreparedQueryCache getPreparedQueryCache() {
+        return _broker.getCachePreparedQuery() ?
+            getConfiguration().getQuerySQLCacheInstance() : null;
+    }
 
+    /**
+     * Gets the prepared query cached by the given key. 
+     * 
+     * @return the cached PreparedQuery or null if none exists.
+     */
+    PreparedQuery getPreparedQuery(String id) {
+        PreparedQueryCache cache = getPreparedQueryCache();
+        return (cache == null) ? null : cache.get(id);
+    }
+
+    
     public void setFlushMode(FlushModeType flushMode) {
         assertNotCloseInvoked();
         _broker.assertOpen();
@@ -1445,4 +1482,18 @@ public class EntityManagerImpl
         throw new UnsupportedOperationException(
             "JPA 2.0 - Method not yet implemented");
     }
+    
+    
+    public void setQuerySQLCache(boolean flag) {
+        _broker.setCachePreparedQuery(flag);
+    }
+    
+    public boolean getQuerySQLCache() {
+        return _broker.getCachePreparedQuery();
+    }
+    
+    RuntimeExceptionTranslator getExceptionTranslator() {
+        return _ret;
+    }
+
 }

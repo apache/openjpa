@@ -33,7 +33,7 @@ public interface Parameter
     public void setIndex(int index);
 
     /**
-     * Returns the name of the parameter.
+     * Returns the key of the parameter.
      */
-    public String getParameterName();
+    public Object getParameterKey();
 }

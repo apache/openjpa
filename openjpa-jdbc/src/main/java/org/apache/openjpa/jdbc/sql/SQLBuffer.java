@@ -33,17 +33,23 @@ import org.apache.commons.lang.ObjectUtils;
 import org.apache.openjpa.jdbc.kernel.JDBCFetchConfiguration;
 import org.apache.openjpa.jdbc.kernel.exps.Val;
 import org.apache.openjpa.jdbc.schema.Column;
-import org.apache.openjpa.jdbc.schema.ForeignKey;
 import org.apache.openjpa.jdbc.schema.Sequence;
 import org.apache.openjpa.jdbc.schema.Table;
+import org.apache.openjpa.kernel.exps.Parameter;
+
 import serp.util.Numbers;
 
 /**
  * Buffer for SQL statements that can be used to create
  * java.sql.PreparedStatements.
+ * This buffer holds the SQL statement parameters and their corresponding 
+ * columns. The parameters introduced by the runtime system are distinguished
+ * from the parameters set by the user.  
  *
  * @author Marc Prud'hommeaux
  * @author Abe White
+ * @author Pinaki Poddar
+ * 
  * @since 0.2.4
  */
 public final class SQLBuffer
@@ -56,7 +62,11 @@ public final class SQLBuffer
     private List _subsels = null;
     private List _params = null;
     private List _cols = null;
-
+    
+    // Odd element refers to an index of the _params list
+    // Even element refers to the user parameter key
+    private List _userIndex = null;
+    
     /**
      * Default constructor.
      */
@@ -146,6 +156,16 @@ public final class SQLBuffer
                         _cols.add(paramIndex, null);
             }
         }
+        if (buf._userIndex != null) {
+            if (_userIndex == null)
+                _userIndex = new ArrayList();
+            for (int i = 0; i < buf._userIndex.size(); i+=2) {
+                int newIndex = ((Integer)buf._userIndex.get(i)).intValue() + paramIndex;
+                Object userParam = buf._userIndex.get(i+1);
+                _userIndex.add(newIndex);
+                _userIndex.add(userParam);
+            }
+        }
     }
 
     public SQLBuffer append(Table table) {
@@ -225,11 +245,21 @@ public final class SQLBuffer
     public SQLBuffer appendValue(Object o) {
         return appendValue(o, null);
     }
-
+    
     /**
-     * Append a parameter value for a specific column.
+     * Append a system inserted parameter value for a specific column.
      */
     public SQLBuffer appendValue(Object o, Column col) {
+        return appendValue(o, col, null);
+    }
+    
+    /**
+     * Append a user parameter value for a specific column.
+     * 
+     * @param userParam if non-null, designates the user parameter from a
+     * Query Expression tree.
+     */
+    public SQLBuffer appendValue(Object o, Column col, Parameter userParam) {
         if (o == null)
             _sql.append("NULL");
         else if (o instanceof Raw)
@@ -248,23 +278,15 @@ public final class SQLBuffer
             }
 
             _params.add(o);
+            if (userParam != null) {
+                if (_userIndex == null)
+                    _userIndex = new ArrayList();
+                int index = _params.size()-1;
+                _userIndex.add(index);
+                _userIndex.add(userParam.getParameterKey());
+            }
             if (_cols != null)
                 _cols.add(col);
-            if (col == null)
-                return this;
-            boolean isFK = false;
-            ForeignKey[] fks = col.getTable().getForeignKeys();
-            for (int i = 0; i < fks.length; i++) {
-                Column[] cols = fks[i].getColumns();
-                for (int j = 0; j < cols.length; j++) {
-                    if (cols[j] == col) {
-                        isFK = true;
-                        break;
-                    }
-                }
-                if (isFK)
-                    break;
-            }
         }
         return this;
     }
@@ -387,6 +409,20 @@ public final class SQLBuffer
     public List getParameters() {
         return (_params == null) ? Collections.EMPTY_LIST : _params;
     }
+    
+    /**
+     * Get the user parameter positions in the list of parameters. The odd 
+     * element of the returned list contains an integer index that refers
+     * to the position in the {@link #getParameters()} list. The even element
+     * of the returned list refers to the user parameter key. 
+     * This structure is preferred over a normal map because a user parameter 
+     * may occur more than one in the parameters. 
+     */
+    public List getUserParameters() {
+        if (_userIndex == null)
+            return Collections.EMPTY_LIST;
+        return _userIndex;
+    }
 
     /**
      * Return the SQL for this buffer.
@@ -466,19 +502,9 @@ public final class SQLBuffer
      * the SQL in this buffer.
      */
     public PreparedStatement prepareStatement(Connection conn, int rsType,
-        int rsConcur, List parms)
-        throws SQLException {
-        return prepareStatement(conn, null, rsType, rsConcur, parms);
-    }
-    
-    /**
-     * Create and populate the parameters of a prepared statement using
-     * the SQL in this buffer.
-     */
-    public PreparedStatement prepareStatement(Connection conn, int rsType,
         int rsConcur)
         throws SQLException {
-        return prepareStatement(conn, rsType, rsConcur, null);
+        return prepareStatement(conn, null, rsType, rsConcur);
     }
 
     /**
@@ -487,16 +513,6 @@ public final class SQLBuffer
      */
     public PreparedStatement prepareStatement(Connection conn,
         JDBCFetchConfiguration fetch, int rsType, int rsConcur)
-        throws SQLException {
-        return prepareStatement(conn, fetch, rsType, rsConcur, null);
-    }
-    
-    /**
-     * Create and populate the parameters of a prepred statement using the
-     * SQL in this buffer and the given fetch configuration.
-     */
-    public PreparedStatement prepareStatement(Connection conn,
-        JDBCFetchConfiguration fetch, int rsType, int rsConcur, List parms)
         throws SQLException {
         if (rsType == -1 && fetch == null)
             rsType = ResultSet.TYPE_FORWARD_ONLY;
@@ -512,7 +528,7 @@ public final class SQLBuffer
         else
             stmnt = conn.prepareStatement(getSQL(), rsType, rsConcur);
         try {
-            setParameters(stmnt, parms);
+            setParameters(stmnt);
             if (fetch != null) {
                 if (fetch.getFetchBatchSize() > 0)
                     stmnt.setFetchSize(fetch.getFetchBatchSize());
@@ -595,25 +611,13 @@ public final class SQLBuffer
      */
     public void setParameters(PreparedStatement ps)
         throws SQLException {
-        setParameters(ps, null);
-    }
-    
-    /**
-     * Populate the parameters of an existing PreparedStatement
-     * with values from this buffer.
-     */
-    public void setParameters(PreparedStatement ps, List cacheParams)
-        throws SQLException {
-        List params = ((cacheParams != null && cacheParams.size() > 0) ? 
-            cacheParams : _params);    
-        
-        if (params == null)
+        if (_params == null)
             return;
 
         Column col;
-        for (int i = 0; i < params.size(); i++) {
+        for (int i = 0; i < _params.size(); i++) {
             col = (_cols == null) ? null : (Column) _cols.get(i);
-            _dict.setUnknown(ps, i + 1, params.get(i), col);
+            _dict.setUnknown(ps, i + 1, _params.get(i), col);
         }
     }
 

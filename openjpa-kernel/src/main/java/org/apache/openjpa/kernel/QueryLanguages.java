@@ -34,6 +34,7 @@ import org.apache.openjpa.util.InternalException;
 public class QueryLanguages {
 
     public static final String LANG_SQL = "openjpa.SQL";
+    public static final String LANG_PREPARED_SQL = "openjpa.prepared.SQL";
     public static final String LANG_METHODQL = "openjpa.MethodQL";
 
     private static Map _expressionParsers = new HashMap();

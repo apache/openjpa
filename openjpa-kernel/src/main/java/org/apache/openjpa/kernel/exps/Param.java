@@ -29,20 +29,20 @@ class Param
     extends Val
     implements Parameter {
 
-    private String _name = null;
+    private Object _key = null;
     private Class _type = null;
     private int _index = -1;
 
     /**
      * Constructor. Provide parameter name and type.
      */
-    public Param(String name, Class type) {
-        _name = name;
+    public Param(Object key, Class type) {
+        _key = key;
         _type = type;
     }
 
-    public String getParameterName() {
-        return _name;
+    public Object getParameterKey() {
+        return _key;
     }
 
     public Class getType() {

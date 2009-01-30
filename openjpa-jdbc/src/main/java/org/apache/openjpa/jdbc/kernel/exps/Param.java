@@ -38,7 +38,7 @@ public class Param
     extends Const
     implements Parameter {
 
-    private final String _name;
+    private final Object _key;
     private Class _type = null;
     private int _idx = -1;
     private boolean _container = false;
@@ -46,17 +46,13 @@ public class Param
     /**
      * Constructor. Supply parameter name and type.
      */
-    public Param(String name, Class type) {
-        _name = name;
+    public Param(Object key, Class type) {
+        _key = key;
         setImplicitType(type);
     }
 
-    public String getName() {
-        return _name;
-    }
-
-    public String getParameterName() {
-        return getName();
+    public Object getParameterKey() {
+        return _key;
     }
 
     public Class getType() {
@@ -142,12 +138,12 @@ public class Param
         ParamExpState pstate = (ParamExpState) state;
         if (pstate.otherLength > 1)
             sql.appendValue(((Object[]) pstate.sqlValue)[index], 
-                pstate.getColumn(index));
+                pstate.getColumn(index), this);
         else if (pstate.cols != null)
-            sql.appendValue(pstate.sqlValue, pstate.getColumn(index));
+            sql.appendValue(pstate.sqlValue, pstate.getColumn(index), this);
         else if (pstate.discValue != null)
             sql.appendValue(pstate.discValue);
         else
-            sql.appendValue(pstate.sqlValue, pstate.getColumn(index));
+            sql.appendValue(pstate.sqlValue, pstate.getColumn(index), this);
     }
 }

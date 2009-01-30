@@ -18,8 +18,6 @@
  */
 package org.apache.openjpa.jdbc.conf;
 
-import java.util.Map;
-
 import javax.sql.DataSource;
 
 import org.apache.openjpa.conf.OpenJPAConfiguration;
@@ -604,23 +602,4 @@ public interface JDBCConfiguration
      * @see #getDataSource
      */
     public DataSource getDataSource2(StoreContext ctx);
-    
-    /**
-     * Return QuerySQLCacheValue.
-     * @since 1.2.0
-     */
-    public QuerySQLCacheValue getQuerySQLCache();
-        
-    /**
-     * Whether querySQLCache is enabled or not.
-     * @since 1.2.0
-     */
-    public boolean isQuerySQLCacheOn();
-    
-    /**
-     * Return QuerySQLCacheInstance.
-     * @since 1.2.0
-     */
-    public Map getQuerySQLCacheInstance();     
-    
 }

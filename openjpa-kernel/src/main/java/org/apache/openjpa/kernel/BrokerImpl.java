@@ -222,6 +222,8 @@ public class BrokerImpl
     private int _detachState = DETACH_LOADED;
     private boolean _detachedNew = true;
     private boolean _orderDirty = false;
+    private boolean _cachePreparedQuery = true;
+    
 
     // status
     private int _flags = 0;
@@ -4773,5 +4775,24 @@ public class BrokerImpl
         if (other != null && !other.isDeleted() && !other.isNew())
             throw new ObjectExistsException(_loc.get("cache-exists",
                 obj.getClass().getName(), id)).setFailedObject(obj);
+    }
+    
+    public boolean getCachePreparedQuery() {
+        lock();
+        try {
+            return _cachePreparedQuery 
+               && _conf.getQuerySQLCacheInstance() != null;
+        } finally {
+            unlock();
+        }
+    }
+    
+    public void setCachePreparedQuery(boolean flag) {
+        lock();
+        try {
+            _cachePreparedQuery = flag;
+        } finally {
+            unlock();
+        }
     }
 }

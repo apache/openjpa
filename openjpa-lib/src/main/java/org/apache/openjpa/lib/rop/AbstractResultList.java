@@ -32,7 +32,8 @@ import org.apache.openjpa.lib.util.Localizer;
  */
 @SuppressWarnings("serial")
 public abstract class AbstractResultList<E> implements ResultList<E> {
-
+    private Object _userObject;
+    
     private static final Localizer _loc = Localizer.forPackage
         (AbstractResultList.class);
 
@@ -89,4 +90,13 @@ public abstract class AbstractResultList<E> implements ResultList<E> {
         if (isClosed())
             throw new NoSuchElementException(_loc.get("closed").getMessage());
     }
+    
+    public final Object getUserObject() {
+        return _userObject;
+    }
+    
+    public final void setUserObject(Object opaque) {
+        _userObject = opaque;
+    }
+    
 }

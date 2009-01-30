@@ -1241,13 +1241,13 @@ public class JPQLExpressionBuilder
         if (type == null)
             return;
 
-        String paramName = param.getParameterName();
-        if (paramName == null)
+        Object paramKey = param.getParameterKey();
+        if (paramKey == null)
             return;
 
         // make sure we have already declared the parameter
-        if (parameterTypes.containsKey(paramName))
-            parameterTypes.put(paramName, type);
+        if (parameterTypes.containsKey(paramKey))
+            parameterTypes.put(paramKey, type);
     }
 
     private Value getStringValue(JPQLNode node) {
@@ -1293,8 +1293,9 @@ public class JPQLExpressionBuilder
     private Parameter getParameter(String id, boolean positional) {
         if (parameterTypes == null)
             parameterTypes = new LinkedMap(6);
-        if (!parameterTypes.containsKey(id))
-            parameterTypes.put(id, TYPE_OBJECT);
+        Object paramKey = positional ? Integer.parseInt(id) : id;
+        if (!parameterTypes.containsKey(paramKey))
+            parameterTypes.put(paramKey, TYPE_OBJECT);
 
         Class type = Object.class;
         ClassMetaData meta = null;
@@ -1317,8 +1318,7 @@ public class JPQLExpressionBuilder
             // otherwise the index is just the current size of the params
             index = parameterTypes.indexOf(id);
         }
-
-        Parameter param = factory.newParameter(id, type);
+        Parameter param = factory.newParameter(paramKey, type);
         param.setMetaData(meta);
         param.setIndex(index);
 
@@ -1335,8 +1335,9 @@ public class JPQLExpressionBuilder
 
         if (parameterTypes == null)
             parameterTypes = new LinkedMap(6);
+        Object paramKey = positional ? Integer.parseInt(id) : id;
         if (!parameterTypes.containsKey(id))
-            parameterTypes.put(id, TYPE_OBJECT);
+            parameterTypes.put(paramKey, TYPE_OBJECT);
 
         Class type = Object.class;
         ClassMetaData meta = null;

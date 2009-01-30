@@ -504,11 +504,11 @@ public class InMemoryExpressionFactory
         return CURRENT_DATE;
     }
 
-    public Parameter newParameter(String name, Class type) {
+    public Parameter newParameter(Object name, Class type) {
         return new Param(name, type);
     }
 
-    public Parameter newCollectionValuedParameter(String name, Class type) {
+    public Parameter newCollectionValuedParameter(Object name, Class type) {
         return new CollectionParam(name, type);
     }
 

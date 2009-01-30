@@ -271,12 +271,12 @@ public class JDBCExpressionFactory
         return CURRENT_TIMESTAMP;
     }
 
-    public Parameter newParameter(String name, Class type) {
+    public Parameter newParameter(Object name, Class type) {
         return new Param(name, type);
     }
 
-    public Parameter newCollectionValuedParameter(String name, Class type) {
-        return new CollectionParam(name, type);
+    public Parameter newCollectionValuedParameter(Object key, Class type) {
+        return new CollectionParam(key, type);
     }
 
     public Value newExtension(FilterListener listener, Value target,

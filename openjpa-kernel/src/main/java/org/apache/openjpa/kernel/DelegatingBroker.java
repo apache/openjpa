@@ -1384,4 +1384,13 @@ public class DelegatingBroker
             throw translate(re);
         }
     }
+        
+    public boolean getCachePreparedQuery() {
+        return _broker.getCachePreparedQuery();
+    }
+    
+    public void setCachePreparedQuery(boolean flag) {
+        _broker.setCachePreparedQuery(flag);
+    }
+
 }

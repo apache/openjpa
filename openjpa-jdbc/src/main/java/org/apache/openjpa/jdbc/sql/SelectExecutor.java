@@ -19,7 +19,6 @@
 package org.apache.openjpa.jdbc.sql;
 
 import java.sql.SQLException;
-import java.util.List;
 
 import org.apache.openjpa.jdbc.conf.JDBCConfiguration;
 import org.apache.openjpa.jdbc.kernel.JDBCFetchConfiguration;
@@ -42,6 +41,14 @@ public interface SelectExecutor {
      * dictionary.
      */
     public SQLBuffer toSelect(boolean forUpdate, JDBCFetchConfiguration fetch);
+    
+    /**
+     * Get the buffer if it has been computed by a previous call to 
+     * {@link #toSelect(boolean, JDBCFetchConfiguration)}, if any.
+     * 
+     * @since 2.0.0
+     */
+    public SQLBuffer getSQL();
 
     /**
      * Return this select as a COUNT SQL statement formatted for the current
@@ -134,20 +141,14 @@ public interface SelectExecutor {
      * Execute this select in the context of the given store manager.
      */
     public Result execute(JDBCStore store, JDBCFetchConfiguration fetch,
-        List params) 
-        throws SQLException;
-
-    /**
-     * Execute this select in the context of the given store manager.
-     */
-    public Result execute(JDBCStore store, JDBCFetchConfiguration fetch,
-        int lockLevel, List params)
-        throws SQLException;
-
-    /**
-     * Execute this select in the context of the given store manager.
-     */
-    public Result execute(JDBCStore store, JDBCFetchConfiguration fetch,
         int lockLevel)
         throws SQLException;
+    
+    /**
+     * Affirm if this receiver requires more than one selects to fetch its
+     * data. 
+     * 
+     * @since 2.0.0
+     */
+    public boolean hasMultipleSelects();
 }

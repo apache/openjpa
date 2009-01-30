@@ -38,6 +38,7 @@ import org.apache.openjpa.kernel.ConnectionRetainModes;
 import org.apache.openjpa.kernel.InverseManager;
 import org.apache.openjpa.kernel.LockLevels;
 import org.apache.openjpa.kernel.LockManager;
+import org.apache.openjpa.kernel.PreparedQueryCache;
 import org.apache.openjpa.kernel.QueryFlushModes;
 import org.apache.openjpa.kernel.RestoreState;
 import org.apache.openjpa.kernel.SavepointManager;
@@ -137,6 +138,7 @@ public class OpenJPAConfigurationImpl
     public IntValue runtimeUnenhancedClasses;
     public CacheMarshallersValue cacheMarshallerPlugins;
     public BooleanValue eagerInitialization;
+    public PluginValue preparedQueryCachePlugin;
 
     // custom values
     public BrokerFactoryValue brokerFactoryPlugin;
@@ -526,7 +528,7 @@ public class OpenJPAConfigurationImpl
             addValue(new CacheMarshallersValue(this));
         
         eagerInitialization = addBoolean("InitializeEagerly");
-
+        
         // initialize supported options that some runtimes may not support
         supportedOptions.add(OPTION_NONTRANS_READ);
         supportedOptions.add(OPTION_OPTIMISTIC);
@@ -1489,4 +1491,25 @@ public class OpenJPAConfigurationImpl
     public Log getConfigurationLog() {
         return getLog(LOG_RUNTIME);
     }
+    
+    public void setQuerySQLCache(String querySQLCache) {
+        preparedQueryCachePlugin.setString(querySQLCache);
+    }
+    
+    public void setQuerySQLCache(PreparedQueryCache querySQLCache) {
+        preparedQueryCachePlugin.set(querySQLCache);
+    }
+
+    public String getQuerySQLCache() {
+        return preparedQueryCachePlugin.getString();
+    }
+    
+    public PreparedQueryCache getQuerySQLCacheInstance() {
+        if (preparedQueryCachePlugin.get() == null) {
+            preparedQueryCachePlugin.instantiate(PreparedQueryCache.class, this);
+        }
+        return (PreparedQueryCache)preparedQueryCachePlugin.get();
+    }
+
+
 }

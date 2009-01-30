@@ -60,9 +60,6 @@ import org.apache.openjpa.util.Proxy;
 public abstract class StoreCollectionFieldStrategy
     extends ContainerFieldStrategy {
 
-    private static final Localizer _loc = Localizer.forPackage
-        (StoreCollectionFieldStrategy.class);
-    
     /**
      * Return the foreign key used to join to the owning field for the given
      * element mapping from {@link #getIndependentElementMappings} (or null).
