@@ -37,6 +37,9 @@ import org.apache.openjpa.persistence.test.SQLListenerTestCase;
 public class TestInverseEagerSQL
     extends SQLListenerTestCase {
 
+    public int numCustomers = 1;
+    public int numOrdersPerCustomer = 4;
+
     public void setUp() {
         setUp(Customer.class, Customer.CustomerKey.class, Order.class, 
         	EntityAInverseEager.class, EntityA1InverseEager.class, EntityA2InverseEager.class, 
@@ -52,7 +55,7 @@ public class TestInverseEagerSQL
         c.setName("customer1");
         em.persist(c);
         
-        for (int i = 0; i < 4; i++) {
+        for (int i = 0; i < numOrdersPerCustomer; i++) {
             Order order = new Order();
             order.setCustomer(c);
             em.persist(order);
@@ -251,6 +254,68 @@ public class TestInverseEagerSQL
         em.close();
     }
 
+    public void testTargetOrphanRemoval() {
+        OpenJPAEntityManager em = emf.createEntityManager();
+        int count = count(Order.class);
+        assertEquals(numOrdersPerCustomer * numCustomers, count);
+
+        Customer.CustomerKey ck = new Customer.CustomerKey("USA", 1);
+        Customer c = em.find(Customer.class, ck);
+        Collection<Order> orders = c.getOrders();
+        assertEquals(numOrdersPerCustomer, orders.size());
+
+        // OrphanRemoval: remove target: the order will be deleted from db
+        for (Order order : orders) {
+            orders.remove(order);
+            break;
+        }
+        em.getTransaction().begin();
+        em.persist(c);
+        em.flush();
+        em.getTransaction().commit();
+        em.clear();
+
+        c = em.find(Customer.class, ck);
+        orders = c.getOrders();
+        assertEquals(numOrdersPerCustomer - 1, orders.size());
+        count = count(Order.class);
+        assertEquals(numOrdersPerCustomer * numCustomers - 1, count);
+        em.clear();
+
+        // OrphanRemoval: remove target: setOrders to null
+        c = em.find(Customer.class, ck);
+        c.setOrders(null);
+        em.getTransaction().begin();
+        em.persist(c);
+        em.flush();
+        em.getTransaction().commit();
+        em.clear();
+
+        count = count(Order.class);
+        assertEquals(numOrdersPerCustomer * (numCustomers - 1), count);
+        c = em.find(Customer.class, ck);
+        orders = c.getOrders();
+        if (orders != null)
+            assertEquals(0, orders.size());
+        em.close();
+    }
+    
+    public void testSourceOrphanRemoval() {
+        OpenJPAEntityManager em = emf.createEntityManager();
+        // OrphanRemoval: remove source
+        Customer.CustomerKey ck = new Customer.CustomerKey("USA", 1);
+        Customer c = em.find(Customer.class, ck);
+        em.getTransaction().begin();
+        em.remove(c);
+        em.flush();
+        em.getTransaction().commit();
+        em.clear();
+        
+        int count = count(Order.class);
+        assertEquals(numOrdersPerCustomer * (numCustomers - 1), count);
+        em.close();
+    }
+    
     public static void main(String[] args) {
         TestRunner.run(TestInverseEagerSQL.class);
     }

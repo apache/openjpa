@@ -72,7 +72,7 @@ public class Customer {
     @Version
     long version;
 
-    @OneToMany(fetch=FetchType.LAZY, mappedBy="customer")
+    @OneToMany(fetch=FetchType.LAZY, mappedBy="customer", orphanRemoval=true)
     private Collection<Order> orders = new ArrayList<Order>();
 
     public Customer() {}

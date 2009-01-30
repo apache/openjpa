@@ -479,7 +479,13 @@ class SingleFieldManager
 
         // manage inverses
         InverseManager manager = _broker.getInverseManager();
-        if (manager != null)
+        FieldMetaData[] inverses = fmd.getInverseMetaDatas();
+        
+        // if there is bi-di relation and InverseManager is on,
+        // use InverseManager to remove the orphans. 
+        // for uni-directional relation or InverseManager is not on,
+        // we need to use OrphanRemovalManager to remove the orphans
+        if (manager != null && inverses.length > 0)
             manager.correctRelations(_sm, fmd, objval);
         else {
             FieldMetaData[] orphans = fmd.getOrphanRemovalMetaDatas();
