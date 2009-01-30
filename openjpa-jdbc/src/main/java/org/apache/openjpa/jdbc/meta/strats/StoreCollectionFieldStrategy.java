@@ -40,6 +40,7 @@ import org.apache.openjpa.jdbc.sql.Select;
 import org.apache.openjpa.jdbc.sql.SelectExecutor;
 import org.apache.openjpa.jdbc.sql.Union;
 import org.apache.openjpa.kernel.OpenJPAStateManager;
+import org.apache.openjpa.kernel.StateManagerImpl;
 import org.apache.openjpa.lib.util.Localizer;
 import org.apache.openjpa.meta.ClassMetaData;
 import org.apache.openjpa.meta.JavaTypes;
@@ -345,8 +346,9 @@ public abstract class StoreCollectionFieldStrategy
             if (decMeta == null) 
                 return;
         	
-            if (oid.equals(sm.getObjectId())) {
-                mappedByValue = sm.getPersistenceCapable();
+            StateManagerImpl owner = ((StateManagerImpl)sm).getObjectIdOwner();
+            if (oid.equals(owner.getObjectId())) {
+                mappedByValue = owner.getPersistenceCapable();
                 res.setMappedByFieldMapping(mappedByFieldMapping);
                 res.setMappedByValue(mappedByValue);
             } else if (coll instanceof Collection && 

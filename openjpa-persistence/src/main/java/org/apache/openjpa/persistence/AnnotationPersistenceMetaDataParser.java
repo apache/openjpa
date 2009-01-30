@@ -1330,6 +1330,7 @@ public class AnnotationPersistenceMetaDataParser
         if (anno.targetEntity() != void.class)
             fmd.setTypeOverride(anno.targetEntity());
         setCascades(fmd, anno.cascade());
+        setOrphanRemoval(fmd, anno.orphanRemoval());
     }
 
     /**
@@ -1368,6 +1369,7 @@ public class AnnotationPersistenceMetaDataParser
         if (anno.targetEntity() != void.class)
             fmd.getElement().setDeclaredType(anno.targetEntity());
         setCascades(fmd.getElement(), anno.cascade());
+        setOrphanRemoval(fmd.getElement(), anno.orphanRemoval());
     }
 
     /**
@@ -1562,6 +1564,11 @@ public class AnnotationPersistenceMetaDataParser
             if (cascade == CascadeType.ALL || cascade == CascadeType.REFRESH)
                 vmd.setCascadeRefresh(ValueMetaData.CASCADE_IMMEDIATE);
         }
+    }
+    private void setOrphanRemoval(ValueMetaData vmd, boolean orphanRemoval) {
+        vmd.setOrphanRemoval(orphanRemoval);
+        if (orphanRemoval)
+            setCascades(vmd, new CascadeType[] {CascadeType.REMOVE});
     }
 
     /**

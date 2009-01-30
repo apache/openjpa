@@ -1747,10 +1747,6 @@ public class AnnotationPersistenceMappingParser
      * Parse @MapKeyColumn.
      */
     protected void parseMapKeyColumn(FieldMapping fm, MapKeyColumn anno) {
-        if (!fm.isElementCollection())
-            throw new UnsupportedException(_loc.get("unsupported", fm,
-                  anno.toString()));
-        
         int unique = 0;
         Column col = new Column();
         setupMapKeyColumn(fm, col, anno);

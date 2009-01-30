@@ -481,6 +481,11 @@ class SingleFieldManager
         InverseManager manager = _broker.getInverseManager();
         if (manager != null)
             manager.correctRelations(_sm, fmd, objval);
+        else {
+            FieldMetaData[] orphans = fmd.getOrphanRemovalMetaDatas();
+            if (orphans.length > 0)
+                OrphanRemovalManager.correctRelations(_sm, fmd, objval);
+        }
         return ret;
     }
 
