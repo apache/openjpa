@@ -26,10 +26,12 @@ import javax.persistence.Persistence;
 
 import org.apache.openjpa.conf.OpenJPAConfiguration;
 import org.apache.openjpa.enhance.TestEnhancementWithMultiplePUs;
+import org.apache.openjpa.jdbc.schema.DataSourceFactory;
 import org.apache.openjpa.persistence.OpenJPAEntityManagerFactorySPI;
 import org.apache.openjpa.persistence.OpenJPAPersistence;
 import org.apache.openjpa.persistence.common.utils.AbstractTestCase;
 import org.apache.openjpa.persistence.test.AllowFailure;
+import org.apache.openjpa.persistence.test.SingleEMFTestCase;
 
 import junit.framework.TestCase;
 
@@ -45,7 +47,7 @@ import junit.framework.TestCase;
  * @author Pinaki Poddar
  * 
  */
-public class TestEquivalentConfiguration extends TestCase {
+public class TestEquivalentConfiguration extends SingleEMFTestCase {
     private EntityManagerFactory emf;
 
     private Properties _system;
@@ -82,7 +84,6 @@ public class TestEquivalentConfiguration extends TestCase {
      */
     @Override
     public void setUp() throws Exception {
-        super.setUp();
         _system = backup();
         clear(_system);
     }
@@ -328,6 +329,8 @@ public class TestEquivalentConfiguration extends TestCase {
     }
 
     void verifyDatabaseConnection() {
+        String driver = OpenJPAPersistence.cast(emf).getConfiguration().getConnectionDriverName();
+        
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
         em.flush();
