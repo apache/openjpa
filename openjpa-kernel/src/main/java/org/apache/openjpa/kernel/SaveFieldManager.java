@@ -113,12 +113,11 @@ public class SaveFieldManager
                 mutable = true;
         }
 
-        // if this is not an inverse field or a field subject to orphanRemoval
-        // and the proper restore flag is not set, skip it
+        // if this is not an inverse field and the proper restore flag is
+        // not set, skip it
 
-        if ((_sm.getBroker().getInverseManager() == null
-            || fmd.getInverseMetaDatas().length == 0) && 
-            (fmd.getOrphanRemovalMetaDatas().length == 0)) {
+        if (_sm.getBroker().getInverseManager() == null
+            || fmd.getInverseMetaDatas().length == 0) {
             // use sm's restore directive, not broker's
             int restore = _sm.getBroker().getRestoreState();
             if (restore == RestoreState.RESTORE_NONE

@@ -18,21 +18,17 @@
  */
 package org.apache.openjpa.kernel;
 
-import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 
 import org.apache.openjpa.conf.OpenJPAConfiguration;
 import org.apache.openjpa.datacache.DataCache;
-import org.apache.openjpa.enhance.PersistenceCapable;
 import org.apache.openjpa.lib.conf.Configurable;
 import org.apache.openjpa.lib.conf.Configuration;
 import org.apache.openjpa.lib.log.Log;
 import org.apache.openjpa.lib.util.Localizer;
-import org.apache.openjpa.meta.ClassMetaData;
 import org.apache.openjpa.meta.FieldMetaData;
 import org.apache.openjpa.meta.JavaTypes;
 import org.apache.openjpa.meta.ValueMetaData;
@@ -152,43 +148,23 @@ public class InverseManager implements Configurable {
         // clear any restorable relations
         clearInverseRelations(sm, fmd, inverses, value);
 
-        // create inverse relations
-        createInverseRelations(sm, fmd, inverses, value);
+        if (value != null) {
+            StoreContext ctx = sm.getContext();
+            switch (fmd.getDeclaredTypeCode()) {
+                case JavaTypes.PC:
+                    createInverseRelations(ctx, sm.getManagedInstance(),
+                        value, fmd, inverses);
+                    break;
+                case JavaTypes.COLLECTION:
+                    for (Iterator itr = ((Collection) value).iterator();
+                        itr.hasNext();)
+                        createInverseRelations(ctx, sm.getManagedInstance(),
+                            itr.next(), fmd, inverses);
+                    break;
+            }
+        }
     }
 
-    protected void createInverseRelations(OpenJPAStateManager sm,
-        FieldMetaData fmd, FieldMetaData[] inverses, Object value) {
-        if (value == null) 
-            return;
-        StoreContext ctx = sm.getContext();
-        if (isEmbedded(sm))
-            return;
-        Object obj = sm.getManagedInstance();
-        createInverseRelations(ctx, obj, fmd, inverses, value);
-    }
-    
-    protected void createInverseRelations(StoreContext ctx, Object obj,
-        FieldMetaData fmd, FieldMetaData[] inverses, Object value) {
-        switch (fmd.getDeclaredTypeCode()) {
-        case JavaTypes.PC:
-            createInverseRelations(ctx, obj, value, fmd, inverses);
-            break;
-        case JavaTypes.COLLECTION:
-            for (Iterator itr = ((Collection) value).iterator();
-            itr.hasNext();)
-                createInverseRelations(ctx, obj, itr.next(), fmd, inverses);
-            break;
-        }        
-    }
-    
-    protected boolean isEmbedded(OpenJPAStateManager sm) {
-        ClassMetaData meta = sm.getMetaData();
-        ValueMetaData owner = meta.getEmbeddingMetaData();
-        if (owner != null)
-            return true;
-        return false;
-    }
-    
     /**
      * Create the inverse relations for all the given inverse fields.
      * A relation exists from <code>fromRef</code> to <code>toRef</code>; this
@@ -320,10 +296,7 @@ public class InverseManager implements Configurable {
                 case JavaTypes.PC:
                     if (!owned || inverses[i].getCascadeDelete()
                         == ValueMetaData.CASCADE_AUTO)
-                        if (fmd.getOrphanRemoval() || fmd.getElement().getOrphanRemoval())
-                            ((StateManagerImpl)other).delete();
-                        else
-                            storeNull(other, inverses[i], sm.getManagedInstance()); 
+                        storeNull(other, inverses[i], sm.getManagedInstance());
                     break;
                 case JavaTypes.COLLECTION:
                     if (!owned || inverses[i].getElement().getCascadeDelete()

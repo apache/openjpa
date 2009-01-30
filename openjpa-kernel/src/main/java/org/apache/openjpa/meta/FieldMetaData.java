@@ -210,7 +210,6 @@ public class FieldMetaData
     // indicate if this field is used by other field as "order by" value 
     private boolean _usedInOrderBy = false;
     private boolean _isElementCollection = false;
-    private FieldMetaData[] _orphanRemoves = null;
 
     /**
      * Constructor.
@@ -981,72 +980,6 @@ public class FieldMetaData
         return _inverses;
     }
 
-    /**
-     * Return all orphanRemoval meta data of this field.
-     */
-    public FieldMetaData[] getOrphanRemovalMetaDatas() {
-        if (_orphanRemoves == null) {
-            // get the metadata for the type on the other side of this relation
-            ClassMetaData meta = null;
-            switch (getTypeCode()) {
-            case JavaTypes.PC:
-                meta = getTypeMetaData();
-                break;
-            case JavaTypes.ARRAY:
-            case JavaTypes.COLLECTION:
-            case JavaTypes.MAP:
-                meta = _elem.getTypeMetaData();
-                break;
-            }
-            Collection orphanRemoves = null;
-            if (meta != null) {
-                // scan rel type for fields that name this field as an inverse
-                FieldMetaData[] fields = meta.getFields();
-                Class type = getOwnerType();
-                //Class type = getDeclaringMetaData().getDescribedType();
-                for (int i = 0; i < fields.length; i++) {
-                    // skip fields that aren't compatible with our owning class
-                    switch (fields[i].getTypeCode()) {
-                    case JavaTypes.PC:
-                        if (!type.isAssignableFrom(fields[i].getType()))
-                            continue;
-                        break;
-                    case JavaTypes.COLLECTION:
-                    case JavaTypes.ARRAY:
-                        if (!type.isAssignableFrom(fields[i].
-                                getElement().getType()))
-                            continue;
-                        break;
-                    default:
-                        continue;
-                    }
-
-                    if (orphanRemoves == null)
-                        orphanRemoves = new ArrayList(3);
-                    if (!orphanRemoves.contains(fields[i]))
-                        orphanRemoves.add(fields[i]);
-                }
-            }
-
-            MetaDataRepository repos = getRepository();
-            if (orphanRemoves == null)
-                _orphanRemoves = repos.EMPTY_FIELDS;
-            else
-                _orphanRemoves = (FieldMetaData[]) orphanRemoves.toArray
-                (repos.newFieldMetaDataArray(orphanRemoves.size()));
-        }
-        return _orphanRemoves;
-    }
-    
-    public Class getOwnerType() {
-        ClassMetaData owner = getDefiningMetaData(); 
-        ValueMetaData vm = owner.getEmbeddingMetaData();
-        if (vm == null)
-            return owner.getDescribedType();
-        FieldMetaData fmd = vm.getFieldMetaData();
-        return fmd.getOwnerType();
-    }
-    
     /**
      * The strategy to use for insert value generation.
      * One of the constants from {@link ValueStrategies}.
@@ -2064,14 +1997,6 @@ public class FieldMetaData
 
     public void setCascadeDelete(int delete) {
         _val.setCascadeDelete(delete);
-    }
-    
-    public boolean getOrphanRemoval() {
-        return _val.getOrphanRemoval();
-    }
-    
-    public void setOrphanRemoval(boolean orphanRemoval) {
-        _val.setOrphanRemoval(orphanRemoval);
     }
 
     public int getCascadePersist() {

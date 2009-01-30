@@ -57,7 +57,6 @@ public class ValueMetaDataImpl
     private int _resMode = MODE_NONE;
     private String _mappedBy = null;
     private FieldMetaData _mappedByMeta = null;
-    private boolean _orphanRemoval = false;
 
     protected ValueMetaDataImpl(FieldMetaData owner) {
         _owner = owner;
@@ -226,14 +225,6 @@ public class ValueMetaDataImpl
 
     public void setCascadeDelete(int delete) {
         _delete = delete;
-    }
-
-    public boolean getOrphanRemoval() {
-        return _orphanRemoval;
-    }
-
-    public void setOrphanRemoval(boolean orphanRemoval) {
-        _orphanRemoval = orphanRemoval;
     }
 
     public int getCascadePersist() {

@@ -105,7 +105,6 @@ public class StateManagerImpl
     private static final int FLAG_VERSION_CHECK = 2 << 14;
     private static final int FLAG_VERSION_UPDATE = 2 << 15;
     private static final int FLAG_DETACHING = 2 << 16;
-    private static final int FLAG_ORPHAN_REMOVAL = 2 << 17;
 
     private static final Localizer _loc = Localizer.forPackage
         (StateManagerImpl.class);
@@ -307,10 +306,6 @@ public class StateManagerImpl
             if (_broker.getInverseManager() != null
                 && fmds[i].getInverseMetaDatas().length > 0)
                 _flags |= FLAG_INVERSES;
-            // record whether there are any managed fields subject to
-            // orphan removal
-            if (fmds[i].getOrphanRemovalMetaDatas().length > 0)
-                _flags |= FLAG_ORPHAN_REMOVAL;
         }
 
         pc.pcSetDetachedState(null);
@@ -864,12 +859,9 @@ public class StateManagerImpl
 
     public Object fetchInitialField(int field) {
         FieldMetaData fmd = _meta.getField(field);
-        boolean hasInverse = (_flags & FLAG_INVERSES) != 0
-            && fmd.getInverseMetaDatas().length > 0;
-        boolean hasOrphanRemoval = (_flags & FLAG_ORPHAN_REMOVAL) != 0
-            && fmd.getOrphanRemovalMetaDatas().length > 0;
         if (_broker.getRestoreState() == RestoreState.RESTORE_NONE
-            && (!hasInverse && !hasOrphanRemoval))
+            && ((_flags & FLAG_INVERSES) == 0
+            || fmd.getInverseMetaDatas().length == 0))
             throw new InvalidStateException(_loc.get("restore-unset"));
 
         switch (fmd.getDeclaredTypeCode()) {
@@ -881,7 +873,8 @@ public class StateManagerImpl
             case JavaTypes.OBJECT:
                 // if we're not saving mutable types, throw an exception
                 if (_broker.getRestoreState() != RestoreState.RESTORE_ALL
-                    && (!hasInverse && !hasOrphanRemoval)) 
+                    && ((_flags & FLAG_INVERSES) == 0
+                    || fmd.getInverseMetaDatas().length == 0))
                     throw new InvalidStateException(_loc.get
                         ("mutable-restore-unset"));
         }
@@ -2679,8 +2672,7 @@ public class StateManagerImpl
      */
     void saveFields(boolean immediate) {
         if (_broker.getRestoreState() == RestoreState.RESTORE_NONE
-            && (((_flags & FLAG_INVERSES) == 0) 
-            || ((_flags & FLAG_ORPHAN_REMOVAL) == 0))) 
+            && (_flags & FLAG_INVERSES) == 0)
             return;
 
         _flags |= FLAG_SAVE;
@@ -2708,12 +2700,8 @@ public class StateManagerImpl
 
         // if this is a managed inverse field, load it so we're sure to have
         // the original value
-        FieldMetaData fmd = _meta.getField(field);
-        boolean hasInverse = (_flags & FLAG_INVERSES) != 0
-            && fmd.getInverseMetaDatas().length > 0;
-        boolean hasOrphanRemoval = (_flags & FLAG_ORPHAN_REMOVAL) != 0
-            && fmd.getOrphanRemovalMetaDatas().length > 0;
-        if (!_loaded.get(field) && (hasInverse || hasOrphanRemoval))
+        if (!_loaded.get(field) && ((_flags & FLAG_INVERSES) != 0
+            && _meta.getField(field).getInverseMetaDatas().length > 0))
             loadField(field, LockLevels.LOCK_NONE, false, false);
 
         // don't bother creating the save field manager if we're not going to

@@ -302,14 +302,4 @@ public interface ValueMetaData
      * information.
      */
     public void copy(ValueMetaData vmd);
-    
-    /**
-     * Whether this value is subject to orphanRemoval.
-     */
-    public void setOrphanRemoval(boolean orphanRemoval);
-    
-    /**
-     * Whether this value is subject to orphanRemoval.
-     */
-    public boolean getOrphanRemoval();
 }

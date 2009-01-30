@@ -1566,9 +1566,8 @@ public class AnnotationPersistenceMetaDataParser
         }
     }
     private void setOrphanRemoval(ValueMetaData vmd, boolean orphanRemoval) {
-        vmd.setOrphanRemoval(orphanRemoval);
-        if (orphanRemoval)
-            setCascades(vmd, new CascadeType[] {CascadeType.REMOVE});
+        if (orphanRemoval) 
+            vmd.setCascadeDelete(ValueMetaData.CASCADE_AUTO);
     }
 
     /**
