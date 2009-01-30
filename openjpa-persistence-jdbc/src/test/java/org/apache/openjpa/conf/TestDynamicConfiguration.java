@@ -40,11 +40,11 @@ public class TestDynamicConfiguration extends SingleEMFTestCase {
 	}
 	
     public void testConfigurationIsEqualByValueAndHashCode() {
-		OpenJPAEntityManagerFactorySPI emf1 = createEMF();
+		OpenJPAEntityManagerFactorySPI emf1 = createEMF(FRESH_EMF);
 		assertNotNull(emf1);
 		OpenJPAConfiguration conf1 = emf1.getConfiguration();
 		
-		OpenJPAEntityManagerFactorySPI emf2 = createEMF();
+		OpenJPAEntityManagerFactorySPI emf2 = createEMF(FRESH_EMF);
 		assertNotNull(emf2);
 		OpenJPAConfiguration conf2 = emf2.getConfiguration();
 		

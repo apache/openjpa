@@ -149,7 +149,7 @@ public abstract class PersistenceTestCase
         }
         EMFKey key = new EMFKey(pu, map);
         OpenJPAEntityManagerFactorySPI oemf = _emfs.get(key);
-        if (fresh || oemf == null) {
+        if (fresh || oemf == null || !oemf.isOpen()) {
             Map config = new HashMap(System.getProperties());
             config.putAll(map);
             oemf = (OpenJPAEntityManagerFactorySPI) 
