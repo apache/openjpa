@@ -93,6 +93,6 @@ public interface PreparedQuery  {
 	 * @param user the map of parameter key and value set by the user on the
 	 * original query.
 	 */
-	public Map reparametrize(Map user);
+	public Map reparametrize(Map user, Broker broker);
 	
 }

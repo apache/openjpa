@@ -24,11 +24,17 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.openjpa.jdbc.meta.ClassMapping;
+import org.apache.openjpa.jdbc.meta.MappingRepository;
+import org.apache.openjpa.jdbc.schema.Column;
 import org.apache.openjpa.jdbc.sql.SQLBuffer;
 import org.apache.openjpa.jdbc.sql.SelectExecutor;
+import org.apache.openjpa.kernel.Broker;
 import org.apache.openjpa.kernel.PreparedQuery;
 import org.apache.openjpa.kernel.Query;
 import org.apache.openjpa.lib.rop.ResultList;
+import org.apache.openjpa.util.ImplHelper;
+import org.apache.openjpa.util.InternalException;
 
 /**
  * Implements {@link PreparedQuery} for SQL queries.
@@ -138,9 +144,9 @@ public class PreparedQueryImpl implements PreparedQuery {
      * must be compatible with the user parameters extracted during 
      * {@link #initialize(Object) initialization}. 
      * 
-     * @return key index starting from 1 and corresponding values.
+     * @return 0-based parameter index mapped to corresponding values.
      */
-    public Map<Integer, Object> reparametrize(Map user) {
+    public Map<Integer, Object> reparametrize(Map user, Broker broker) {
         Map<Integer, Object> result = new HashMap<Integer, Object>();
         for (int i = 0; i < _params.size(); i++) {
             result.put(i, _params.get(i));
@@ -151,10 +157,51 @@ public class PreparedQueryImpl implements PreparedQuery {
             int[] indices = _userParamPositions.get(key);
             if (indices == null)
                 continue;
-            for (int j : indices)
-                result.put(j, user.get(key));
+            Object value = user.get(key);
+            if (ImplHelper.isManageable(value)) {
+                setPersistenceCapableParameter(result, value, indices, broker);
+            } else {
+                for (int j : indices)
+                    result.put(j, value);
+            }
         }
         return result;
+    }
+    
+    /**
+     * Calculate primary key identity value(s) of the given managable instance
+     * and fill in the given map.
+     * 
+     * @param values a map of integer parameter index to parameter value
+     * @param pc a manageable instance
+     * @param indices the indices of the column values
+     * @param broker used to obtain the primary key values
+     */
+    private void setPersistenceCapableParameter(Map<Integer,Object> result, 
+        Object pc, int[] indices, Broker broker) {
+        JDBCStore store = (JDBCStore)broker.getStoreManager()
+            .getInnermostDelegate();
+        MappingRepository repos = store.getConfiguration()
+            .getMappingRepositoryInstance();
+        ClassMapping mapping = repos.getMapping(pc.getClass(), 
+            broker.getClassLoader(), true);
+        Column[] pks = mapping.getPrimaryKeyColumns();
+        Object cols = mapping.toDataStoreValue(pc, pks, store);
+        if (cols instanceof Object[]) {
+            Object[] array = (Object[])cols;
+            int n = array.length;
+            if (n > indices.length || indices.length%n != 0)
+                throw new InternalException();
+            int k = 0;
+            for (int j : indices) {
+                result.put(j, array[k%n]);
+                k++;
+            }
+        } else {
+            for (int j : indices) {
+                result.put(j, cols);
+            }
+        } 
     }
     
     /**

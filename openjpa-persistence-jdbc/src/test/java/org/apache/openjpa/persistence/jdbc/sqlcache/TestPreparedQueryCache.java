@@ -20,7 +20,10 @@ package org.apache.openjpa.persistence.jdbc.sqlcache;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Iterator;
 import java.util.List;
+
+import javax.persistence.EntityManager;
 
 import org.apache.openjpa.conf.OpenJPAConfiguration;
 import org.apache.openjpa.kernel.PreparedQuery;
@@ -33,6 +36,7 @@ import org.apache.openjpa.persistence.OpenJPAEntityManager;
 import org.apache.openjpa.persistence.OpenJPAEntityManagerSPI;
 import org.apache.openjpa.persistence.OpenJPAPersistence;
 import org.apache.openjpa.persistence.OpenJPAQuery;
+import org.apache.openjpa.persistence.test.SQLListenerTestCase;
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
 
 /**
@@ -42,33 +46,65 @@ import org.apache.openjpa.persistence.test.SingleEMFTestCase;
  * @author Pinaki Poddar
  * 
  */
-public class TestPreparedQueryCache extends SingleEMFTestCase {
+public class TestPreparedQueryCache extends SQLListenerTestCase {
 	// Fail if performance degrades with cache compared to without cache
-	public static final boolean FAIL_ON_PERF_DEGRADE = 
-		Boolean.getBoolean("FailOnPerformanceRegression");
+    public static final boolean FAIL_ON_PERF_DEGRADE = 
+        Boolean.getBoolean("FailOnPerformanceRegression");
 	
 	// # observations to compute timing statistics
 	public static final int SAMPLE_SIZE = 100;
 	
 	public static final boolean USE_CACHE                  = true;
-	public static final boolean BIND_DIFFERENT_PARM_VALUES = true;
 	public static final boolean IS_NAMED_QUERY             = true;
 	
-	public static final String[] COMPANY_NAMES = { "acme.org" };
+    public static final String[] COMPANY_NAMES = {"IBM", "BEA", "acme.org" };
+    public static final int[] START_YEARS = {1900, 2000, 2010 };
 	public static final String[] DEPARTMENT_NAMES = { "Marketing", "Sales",
 			"Engineering" };
 	public static final String[] EMPLOYEE_NAMES = { "Tom", "Dick", "Harray" };
+	public static final String[] CITY_NAMES = {"Tulsa", "Durban", "Harlem"};
 	
 	public static final String EXCLUDED_QUERY_1 = "select count(p) from Company p";
 	public static final String EXCLUDED_QUERY_2 = "select count(p) from Department p";
 	public static final String INCLUDED_QUERY   = "select p from Address p";
+	private Company IBM;
 	
 	public void setUp() throws Exception {
 		super.setUp(Company.class, Department.class, Employee.class,
 				Address.class, 
-				"openjpa.Log", "SQL=WARN",
 				"openjpa.QuerySQLCache", 
 				"true(excludes='select count(p) from Company p;select count(p) from Department p')");
+		createTestData();
+	}
+	
+	void createTestData() {
+	    EntityManager em = emf.createEntityManager();
+	    em.getTransaction().begin();
+	    for (int i = 0; i < COMPANY_NAMES.length; i++) {
+	        Company company = new Company();
+	        if (i == 0) 
+	            IBM = company;
+	        company.setName(COMPANY_NAMES[i]);
+	        company.setStartYear(START_YEARS[i]);
+	        em.persist(company);
+	        for (int j = 0; j < DEPARTMENT_NAMES.length; j++) {
+	            Department dept = new Department();
+	            dept.setName(DEPARTMENT_NAMES[j]);
+	            company.addDepartment(dept);
+	            em.persist(dept);
+	            for (int k = 0; k < EMPLOYEE_NAMES.length; k++) {
+	                Employee emp = new Employee();
+	                emp.setName(EMPLOYEE_NAMES[k]);
+	                Address addr = new Address();
+	                addr.setCity(CITY_NAMES[k]);
+                    em.persist(emp);
+	                em.persist(addr);
+	                emp.setAddress(addr);
+                    dept.addEmployees(emp);
+	            }
+	        }
+	    }
+	    em.getTransaction().commit();
 	}
 
 	public void tearDown() throws Exception {
@@ -323,56 +359,60 @@ public class TestPreparedQueryCache extends SingleEMFTestCase {
 	public void testQueryWithNoParameter() {
 		String jpql = "select p from Company p";
 		Object[] params = null;
-		compare(!IS_NAMED_QUERY, jpql, BIND_DIFFERENT_PARM_VALUES, params);
+		compare(!IS_NAMED_QUERY, jpql, COMPANY_NAMES.length, params);
 	}
 
 	public void testQueryWithLiteral() {
-		String jpql = "select p from Company p where p.name = 'PObject'";
+		String jpql = "select p from Company p where p.name = " + literal(COMPANY_NAMES[0]);
 		Object[] params = null;
-		compare(!IS_NAMED_QUERY, jpql, BIND_DIFFERENT_PARM_VALUES, params);
+		compare(!IS_NAMED_QUERY, jpql, 1, params);
 	}
 
 	public void testQueryWithParameter() {
 		String jpql = "select p from Company p where p.name = :param";
-		Object[] params = {"param", "x"};
-		compare(!IS_NAMED_QUERY, jpql, BIND_DIFFERENT_PARM_VALUES, params);
+		Object[] params = {"param", COMPANY_NAMES[0]};
+		compare(!IS_NAMED_QUERY, jpql, 1, params);
 	}
 
 	public void testQueryWithJoinsAndParameters() {
-		String jpql = "select e from Employee e " + "where e.name = :emp "
-					+ "and e.department.name = :dept "
-					+ "and e.department.company.name LIKE 'IBM' " 
-					+ "and e.department.company.name = :company " 
-					+ "and e.address.zip = :zip";
-		Object[] params = { "emp", "John", 
-							"dept",	"Engineering",
-							"company", "acme.org",
-							"zip", 12345};
-		compare(!IS_NAMED_QUERY, jpql, BIND_DIFFERENT_PARM_VALUES, params);
+		String jpql = "select e from Employee e " + "where e.name = :emp"
+					+ " and e.department.name = :dept"
+					+ " and e.department.company.name LIKE  " + literal(COMPANY_NAMES[0]) 
+					+ " and e.address.city = :city";
+		Object[] params = { "emp", EMPLOYEE_NAMES[0], 
+							"dept",	DEPARTMENT_NAMES[0],
+							"city", CITY_NAMES[0]};
+		compare(!IS_NAMED_QUERY, jpql, 1, params);
 	}
 
 	public void testNamedQueryWithNoParameter() {
 		String namedQuery = "Company.PreparedQueryWithNoParameter";
 		Object[] params = null;
-		compare(IS_NAMED_QUERY, namedQuery, BIND_DIFFERENT_PARM_VALUES, params);
+		compare(IS_NAMED_QUERY, namedQuery, COMPANY_NAMES.length, params);
 	}
 
 	public void testNamedQueryWithLiteral() {
 		String namedQuery = "Company.PreparedQueryWithLiteral";
 		Object[] params = null;
-		compare(IS_NAMED_QUERY, namedQuery, BIND_DIFFERENT_PARM_VALUES, params);
+		compare(IS_NAMED_QUERY, namedQuery, 1, params);
 	}
 
 	public void testNamedQueryWithPositionalParameter() {
 		String namedQuery = "Company.PreparedQueryWithPositionalParameter";
-		Object[] params = {1, "x", 2, 1960};
-		compare(IS_NAMED_QUERY, namedQuery, BIND_DIFFERENT_PARM_VALUES, params);
+		Object[] params = {1, COMPANY_NAMES[0], 2, START_YEARS[0]};
+		compare(IS_NAMED_QUERY, namedQuery, 1, params);
 	}
 	
 	public void testNamedQueryWithNamedParameter() {
 		String namedQuery = "Company.PreparedQueryWithNamedParameter";
-		Object[] params = {"name", "x", "startYear", 1960};
-		compare(IS_NAMED_QUERY, namedQuery, BIND_DIFFERENT_PARM_VALUES, params);
+		Object[] params = {"name", COMPANY_NAMES[0], "startYear", START_YEARS[0]};
+		compare(IS_NAMED_QUERY, namedQuery, 1, params);
+	}
+	
+	public void testPersistenceCapableParameter() {
+	    String jpql = "select e from Employee e where e.department.company=:company";
+	    Object[] params = {"company", IBM};
+	    compare(!IS_NAMED_QUERY, jpql, EMPLOYEE_NAMES.length*DEPARTMENT_NAMES.length, params);
 	}
 	
 	/**
@@ -380,36 +420,36 @@ public class TestPreparedQueryCache extends SingleEMFTestCase {
 	 * Prepared Query Cache.
 	 * 
 	 */
-	void compare(boolean isNamed, String jpql, boolean append, Object... params) {
+	void compare(boolean isNamed, String jpql, int expectedCount, Object... params) {
 		String realJPQL = isNamed ? getJPQL(jpql) : jpql;
 		// run the query once for warming up 
-		run(jpql, params, !USE_CACHE, 1, isNamed, append);
+		run(jpql, params, !USE_CACHE, 1, isNamed, expectedCount);
 		
 		// run N times without cache
-		long without = run(jpql, params, !USE_CACHE, SAMPLE_SIZE, isNamed, append);
+		long without = run(jpql, params, !USE_CACHE, SAMPLE_SIZE, isNamed, expectedCount);
 		assertNotCached(realJPQL);
 		
 		// run N times with cache
-		long with = run(jpql, params, USE_CACHE, SAMPLE_SIZE, isNamed, append);
+		long with = run(jpql, params, USE_CACHE, SAMPLE_SIZE, isNamed, expectedCount);
 		assertCached(realJPQL);
 		
 		long delta = (without == 0) ? 0 : (without - with) * 100 / without;
 		
 		String sql = getSQL(realJPQL);
-		System.err.println("Execution time in nanos for " + SAMPLE_SIZE
+		log("Execution time in nanos for " + SAMPLE_SIZE
 				+ " query execution with and without SQL cache:" + with + " "
 				+ without + " (" + delta + "%)");
-		System.err.println("JPQL: " + realJPQL);
-		System.err.println("SQL : " + sql);
+		log("JPQL: " + realJPQL);
+		log("SQL : " + sql);
 		if (delta < 0) {
 			if (FAIL_ON_PERF_DEGRADE)
 				assertFalse("change in execution time = " + delta + "%", 
 						delta < 0);
 			else 
-				System.err.println("*** WARN: Perforamce regression with cache." + 
+				log("*** WARN: Perforamce regression with cache." + 
 					" Execution time degrades by " + delta + "%");
 		} else {
-		    System.err.println("change in execution time = +" + delta + "%");
+		    log("change in execution time = +" + delta + "%");
 		}
 	}
 
@@ -421,12 +461,14 @@ public class TestPreparedQueryCache extends SingleEMFTestCase {
 	 * returns median time taken for single execution.
 	 */
 	long run(String jpql, Object[] params, boolean useCache, int N, 
-			boolean isNamedQuery, boolean appendIndexValuetoParameters) {
-		OpenJPAEntityManager em = emf.createEntityManager();
-		((OpenJPAEntityManagerSPI)em).setQuerySQLCache(useCache);
-		assertEquals(useCache, ((OpenJPAEntityManagerSPI)em).getQuerySQLCache());
+			boolean isNamedQuery, int expectedCount) {
+	    trace("Executing " + N + " times " + (useCache ? " with " : "without") + " cache");
 		List<Long> stats = new ArrayList<Long>();
+		sql.clear();
 		for (int i = 0; i < N; i++) {
+	        OpenJPAEntityManager em = emf.createEntityManager();
+	        ((OpenJPAEntityManagerSPI)em).setQuerySQLCache(useCache);
+	        assertEquals(useCache, ((OpenJPAEntityManagerSPI)em).getQuerySQLCache());
 			long start = System.nanoTime();
 			OpenJPAQuery q = isNamedQuery 
 				? em.createNamedQuery(jpql) : em.createQuery(jpql);
@@ -438,15 +480,26 @@ public class TestPreparedQueryCache extends SingleEMFTestCase {
 				else if (key instanceof String)
 					q.setParameter(key.toString(), val); 
 				else
-					throw new RuntimeException("key " + key + " is neither Number nor String");
+					fail("key " + key + " is neither Number nor String");
 			}
-			q.getResultList();
+			List list = q.getResultList();
+			walk(list);
+			int actual = list.size();
 			q.closeAll();
+			assertEquals(expectedCount, actual);
 			long end = System.nanoTime();
 			stats.add(end - start);
+	        em.close();
 		}
-		em.close();
-		Collections.sort(stats);
+        if (useCache) {
+            String cacheKey = isNamedQuery ? getJPQL(jpql) : jpql;
+            long total = getCache().getStatistics().getExecutionCount(cacheKey);
+            long hits = getCache().getStatistics().getHitCount(cacheKey);
+            assertEquals(N, total);
+            assertEquals(N-1, hits);
+        }
+        assertEquals(N, sql.size());
+        Collections.sort(stats);
 		return stats.get(N/2);
 	}	
 	
@@ -468,28 +521,23 @@ public class TestPreparedQueryCache extends SingleEMFTestCase {
 				  .getQueryMetaData(null, namedQuery, null, true)
 				  .getQueryString();
 	}
-
-
-
-	public static void main(String[] args) throws Exception {
-		TestPreparedQueryCache _this = new TestPreparedQueryCache();
-		_this.setUp();
-		String jpql = "select e from Employee e where e.name = :emp and "
-				+ "e.department.name = :dept and "
-				+ "e.department.company.name = :company and e.address.zip = :zip";
-		Object[] params = { "emp", "John", "dept", "Engineering", "company",
-				"acme.org", "zip", 12345 };
-		System.err.println("Executing  100 times [" + jpql + "]");
-		System.err.println("Press return to continue...");
-//		System.in.read();
-		long start = System.nanoTime();
-		_this.run(jpql, params, 
-				USE_CACHE, 
-				SAMPLE_SIZE, 
-				!IS_NAMED_QUERY, 
-				BIND_DIFFERENT_PARM_VALUES);
-		long end = System.nanoTime();
-		System.err.println("Time taken " + (end-start) + "ns");
+	
+	String literal(String s) {
+	    return "'"+s+"'";
 	}
-
+	
+    void log(String s) {
+        System.err.println(s);
+    }
+    
+    void trace(String s) {
+        if (Boolean.getBoolean("trace"))
+            System.err.println(s);
+    }
+	
+	void walk(List list) {
+	    Iterator i = list.iterator();
+	    while (i.hasNext())
+	        i.next();
+	}
 }
