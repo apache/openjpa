@@ -1982,7 +1982,7 @@ public class QueryImpl
     /**
      * Result object provider that packs results before returning them.
      */
-    private static class PackingResultObjectProvider
+    public static class PackingResultObjectProvider
         implements ResultObjectProvider {
 
         private final ResultObjectProvider _delegate;
@@ -2044,6 +2044,10 @@ public class QueryImpl
 
         public void handleCheckedException(Exception e) {
             _delegate.handleCheckedException(e);
+        }
+        
+        public ResultObjectProvider getDelegate() {
+            return _delegate;
         }
     }
 

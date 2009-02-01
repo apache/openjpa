@@ -32,6 +32,7 @@ import org.apache.openjpa.jdbc.sql.SelectExecutor;
 import org.apache.openjpa.kernel.Broker;
 import org.apache.openjpa.kernel.PreparedQuery;
 import org.apache.openjpa.kernel.Query;
+import org.apache.openjpa.kernel.QueryImpl;
 import org.apache.openjpa.kernel.QueryLanguages;
 import org.apache.openjpa.lib.rop.ResultList;
 import org.apache.openjpa.util.ImplHelper;
@@ -125,23 +126,35 @@ public class PreparedQueryImpl implements PreparedQuery {
      * {@link ResultList#getUserObject() user object}. 
      */
     public boolean initialize(Object result) {
-        boolean initialized = false;
-        if (result instanceof ResultList) {
-            Object provider = ((ResultList)result).getUserObject();
-            if (provider instanceof SelectResultObjectProvider) {
-                SelectResultObjectProvider rop = 
-                    (SelectResultObjectProvider)provider;
-                SelectExecutor selector = rop.getSelect();
-                SQLBuffer buffer = selector == null ? null : selector.getSQL();
-                if (buffer != null && !selector.hasMultipleSelects()) {
-                    setTargetQuery(buffer.getSQL());
-                    setParameters(buffer.getParameters());
-                    setUserParameterPositions(buffer.getUserParameters());
-                    initialized = true;
-                }
-            }
+        SelectExecutor selector = extractSelectExecutor(result);
+        if (selector == null)
+            return false;
+        SQLBuffer buffer = selector == null ? null : selector.getSQL();
+        if (buffer != null && !selector.hasMultipleSelects()) {
+            setTargetQuery(buffer.getSQL());
+            setParameters(buffer.getParameters());
+            setUserParameterPositions(buffer.getUserParameters());
+            return true;
         }
-        return initialized;
+        return false;
+    }
+    
+    /**
+     * Extract the underlying SelectExecutor from the given argument, if 
+     * possible.
+     */
+    private SelectExecutor extractSelectExecutor(Object result) {
+        if (result instanceof ResultList == false)
+            return null;
+        Object provider = ((ResultList)result).getUserObject();
+        if (provider instanceof QueryImpl.PackingResultObjectProvider) {
+            provider = ((QueryImpl.PackingResultObjectProvider)provider)
+                .getDelegate();
+        }
+        if (provider instanceof SelectResultObjectProvider) {
+            return ((SelectResultObjectProvider)provider).getSelect();
+        } 
+        return null;
     }
     
     /**

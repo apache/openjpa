@@ -416,6 +416,15 @@ public class TestPreparedQueryCache extends SQLListenerTestCase {
 	}
 	
 	/**
+	 * Project results are returned with different types of ROP.
+	 */
+	public void testProjectionResult() {
+	    String jpql = "select e.name from Employee e where e.address.city=:city";
+        Object[] params = {"city", CITY_NAMES[0]};
+        compare(!IS_NAMED_QUERY, jpql, COMPANY_NAMES.length*DEPARTMENT_NAMES.length, params);
+	}
+	
+	/**
 	 * Compare the result of execution of the same query with and without
 	 * Prepared Query Cache.
 	 * 
