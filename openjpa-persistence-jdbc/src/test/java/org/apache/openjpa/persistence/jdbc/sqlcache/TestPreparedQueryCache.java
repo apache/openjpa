@@ -70,8 +70,8 @@ public class TestPreparedQueryCache extends SQLListenerTestCase {
 	private Company IBM;
 	
 	public void setUp() throws Exception {
-		super.setUp(Company.class, Department.class, Employee.class,
-				Address.class, 
+		super.setUp(CLEAR_TABLES, Company.class, Department.class, 
+		    Employee.class, Address.class, 
 				"openjpa.QuerySQLCache", 
 				"true(excludes='select count(p) from Company p;select count(p) from Department p')");
 		createTestData();

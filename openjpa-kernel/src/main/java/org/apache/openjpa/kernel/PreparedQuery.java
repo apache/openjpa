@@ -65,6 +65,8 @@ public interface PreparedQuery  {
      */
     public String getOriginalQuery();
     
+    public String getLanguage();
+    
     /**
      * Fill in the post-compilation state of the given Query. This must be
      * called when a original query is substituted by this receiver and hence 

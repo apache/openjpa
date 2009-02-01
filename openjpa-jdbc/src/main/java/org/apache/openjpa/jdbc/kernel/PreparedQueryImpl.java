@@ -32,6 +32,7 @@ import org.apache.openjpa.jdbc.sql.SelectExecutor;
 import org.apache.openjpa.kernel.Broker;
 import org.apache.openjpa.kernel.PreparedQuery;
 import org.apache.openjpa.kernel.Query;
+import org.apache.openjpa.kernel.QueryLanguages;
 import org.apache.openjpa.lib.rop.ResultList;
 import org.apache.openjpa.util.ImplHelper;
 import org.apache.openjpa.util.InternalException;
@@ -86,6 +87,10 @@ public class PreparedQueryImpl implements PreparedQuery {
     
     public String getIdentifier() {
         return _id;
+    }
+    
+    public String getLanguage() {
+        return QueryLanguages.LANG_PREPARED_SQL;
     }
     
     /**
@@ -207,13 +212,13 @@ public class PreparedQueryImpl implements PreparedQuery {
     /**
      * Marks the positions of user parameters.
      * 
-     * @param list odd elements are numbers representing the position of a 
-     * user parameter in the _param list. Even elements are the user parameter
+     * @param list even elements are numbers representing the position of a 
+     * user parameter in the _param list. Odd elements are the user parameter
      * key. A user parameter key may appear more than once.
      */
     void setUserParameterPositions(List list) {
         _userParamPositions = new HashMap<Object, int[]>();
-        for (int i = 1; list != null && i < list.size(); i+=2) {
+        for (int i = 1; list != null && i < list.size(); i += 2) {
             Object key = list.get(i);
             int p = (Integer)list.get(i-1);
             int[] positions = _userParamPositions.get(key);
@@ -238,5 +243,4 @@ public class PreparedQueryImpl implements PreparedQuery {
         return "PreparedQuery: [" + getOriginalQuery() + "] --> [" + 
                getTargetQuery() + "]";
     }
-
 }

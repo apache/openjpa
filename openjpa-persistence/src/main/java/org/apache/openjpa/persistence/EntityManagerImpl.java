@@ -875,18 +875,15 @@ public class EntityManagerImpl
         assertNotCloseInvoked();
         try {
             String qid = query;
-            PreparedQuery cached = getPreparedQuery(qid);
-            if (cached != null) {
-                language = QueryLanguages.LANG_PREPARED_SQL;
-                query = cached.getTargetQuery();
-            }
-            org.apache.openjpa.kernel.Query q = _broker.newQuery(language, 
-                query);
+            PreparedQuery pq = getPreparedQuery(qid);
+            org.apache.openjpa.kernel.Query q = (pq == null)
+                ? _broker.newQuery(language, query)
+                : _broker.newQuery(pq.getLanguage(), pq.getTargetQuery());
             // have to validate JPQL according to spec
             if (JPQLParser.LANG_JPQL.equals(language))
                 q.compile(); 
-            if (cached != null) {
-                cached.setInto(q);
+            if (pq != null) {
+                pq.setInto(q);
             }
             return new QueryImpl(this, _ret, q).setId(qid);
         } catch (RuntimeException re) {
@@ -910,19 +907,15 @@ public class EntityManagerImpl
             QueryMetaData meta = _broker.getConfiguration().
                 getMetaDataRepositoryInstance().getQueryMetaData(null, name,
                 _broker.getClassLoader(), true);
-            String query = null;
-            String language = meta.getLanguage();
             String qid = meta.getQueryString();
             
-            PreparedQuery cached = getPreparedQuery(qid);
-            if (cached != null) {
-                language = QueryLanguages.LANG_PREPARED_SQL;
-                query = cached.getTargetQuery();
-            }
-            org.apache.openjpa.kernel.Query del = _broker.newQuery(language, 
-                query);
-            if (cached != null) {
-                cached.setInto(del);
+            PreparedQuery pq = getPreparedQuery(qid);
+            org.apache.openjpa.kernel.Query del = (pq == null)
+                ? _broker.newQuery(meta.getLanguage(), meta.getQueryString())
+                : _broker.newQuery(pq.getLanguage(), pq.getTargetQuery());
+            
+            if (pq != null) {
+                pq.setInto(del);
             } else {
                 meta.setInto(del);
             }

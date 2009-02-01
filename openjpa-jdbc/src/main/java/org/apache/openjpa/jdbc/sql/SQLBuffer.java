@@ -63,8 +63,8 @@ public final class SQLBuffer
     private List _params = null;
     private List _cols = null;
     
-    // Odd element refers to an index of the _params list
-    // Even element refers to the user parameter key
+    // Even element refers to an index of the _params list
+    // Odd element refers to the user parameter key
     private List _userIndex = null;
     
     /**
