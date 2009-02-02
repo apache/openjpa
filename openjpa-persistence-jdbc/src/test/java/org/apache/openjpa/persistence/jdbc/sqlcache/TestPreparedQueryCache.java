@@ -19,6 +19,7 @@
 package org.apache.openjpa.persistence.jdbc.sqlcache;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
@@ -424,6 +425,25 @@ public class TestPreparedQueryCache extends SQLListenerTestCase {
         compare(!IS_NAMED_QUERY, jpql, COMPANY_NAMES.length*DEPARTMENT_NAMES.length, params);
 	}
 	
+	public void testCollectionValuedParameters() {
+	    String jpql = "select e from Employee e where e.name in :names";
+	    Object[] params1 = {"names", Arrays.asList(new String[]{EMPLOYEE_NAMES[0], EMPLOYEE_NAMES[1]})};
+        Object[] params2 = {"names", Arrays.asList(new String[]{EMPLOYEE_NAMES[2]})};
+        Object[] params3 = {"names", Arrays.asList(EMPLOYEE_NAMES)};
+        
+        boolean checkHits = false;
+        
+        int expectedCount = 2*COMPANY_NAMES.length*DEPARTMENT_NAMES.length;
+        run(jpql, params1, USE_CACHE, 2, !IS_NAMED_QUERY, expectedCount, checkHits);
+        assertCached(jpql);
+        
+        expectedCount = 1*COMPANY_NAMES.length*DEPARTMENT_NAMES.length;
+        run(jpql, params2, USE_CACHE, 2, !IS_NAMED_QUERY, expectedCount, checkHits);
+        
+        expectedCount = EMPLOYEE_NAMES.length*COMPANY_NAMES.length*DEPARTMENT_NAMES.length;
+        run(jpql, params3, USE_CACHE, 2, !IS_NAMED_QUERY, expectedCount, checkHits);
+	}
+	
 	/**
 	 * Compare the result of execution of the same query with and without
 	 * Prepared Query Cache.
@@ -462,6 +482,10 @@ public class TestPreparedQueryCache extends SQLListenerTestCase {
 		}
 	}
 
+    long run(String jpql, Object[] params, boolean useCache, int N, 
+        boolean isNamedQuery, int expectedCount) {
+        return run(jpql, params, useCache, N, isNamedQuery, expectedCount, true);
+    }
 	/**
 	 * Create and run a query N times with the given parameters. The time for 
 	 * each query execution is measured in nanosecond precision and 
@@ -470,7 +494,7 @@ public class TestPreparedQueryCache extends SQLListenerTestCase {
 	 * returns median time taken for single execution.
 	 */
 	long run(String jpql, Object[] params, boolean useCache, int N, 
-			boolean isNamedQuery, int expectedCount) {
+			boolean isNamedQuery, int expectedCount, boolean checkHits) {
 	    trace("Executing " + N + " times " + (useCache ? " with " : "without") + " cache");
 		List<Long> stats = new ArrayList<Long>();
 		sql.clear();
@@ -500,7 +524,7 @@ public class TestPreparedQueryCache extends SQLListenerTestCase {
 			stats.add(end - start);
 	        em.close();
 		}
-        if (useCache) {
+        if (useCache && checkHits) {
             String cacheKey = isNamedQuery ? getJPQL(jpql) : jpql;
             long total = getCache().getStatistics().getExecutionCount(cacheKey);
             long hits = getCache().getStatistics().getHitCount(cacheKey);

@@ -821,13 +821,15 @@ public class JPQLExpressionBuilder
                 return eval(firstChild(node));
 
             case JJTNAMEDINPUTPARAMETER:
-                return getParameter(node.text, false);
+                return getParameter(node.text, false, false);
 
             case JJTPOSITIONALINPUTPARAMETER:
-                return getParameter(node.text, true);
+                return getParameter(node.text, true, false);
 
             case JJTCOLLECTIONPARAMETER:
-                return getCollectionValuedParameter(node);
+                JPQLNode child = onlyChild(node);
+                return getParameter(child.text, 
+                    child.id == JJTPOSITIONALINPUTPARAMETER, true);
 
             case JJTOR: // x OR y
                 return factory.or(getExpression(left(node)),
@@ -1288,58 +1290,23 @@ public class JPQLExpressionBuilder
     }
 
     /**
-     * Record the names and order of implicit parameters.
+     * Creates and records the names and order of parameters. The parameters are
+     * identified by a key with its type preserved. The second argument
+     * determines whether the first argument is used as-is or converted to
+     * an Integer as parameter key. 
+     * 
+     * @param the text as it appears in the parsed node
+     * @param positional if true the first argument is converted to an integer
+     * @param isCollectionValued true for collection-valued parameters
      */
-    private Parameter getParameter(String id, boolean positional) {
+    private Parameter getParameter(String id, boolean positional, 
+        boolean isCollectionValued) {
         if (parameterTypes == null)
             parameterTypes = new LinkedMap(6);
         Object paramKey = positional ? Integer.parseInt(id) : id;
         if (!parameterTypes.containsKey(paramKey))
             parameterTypes.put(paramKey, TYPE_OBJECT);
 
-        Class type = Object.class;
-        ClassMetaData meta = null;
-        int index;
-
-        if (positional) {
-            try {
-                // indexes in JPQL are 1-based, as opposed to 0-based in
-                // the core ExpressionFactory
-                index = Integer.parseInt(id) - 1;
-            } catch (NumberFormatException e) {
-                throw parseException(EX_USER, "bad-positional-parameter",
-                    new Object[]{ id }, e);
-            }
-
-            if (index < 0)
-                throw parseException(EX_USER, "bad-positional-parameter",
-                    new Object[]{ id }, null);
-        } else {
-            // otherwise the index is just the current size of the params
-            index = parameterTypes.indexOf(id);
-        }
-        Parameter param = factory.newParameter(paramKey, type);
-        param.setMetaData(meta);
-        param.setIndex(index);
-
-        return param;
-    }
-
-    /**
-     * Record the names and order of collection valued input parameters.
-     */
-    private Parameter getCollectionValuedParameter(JPQLNode node) {        
-        JPQLNode child = onlyChild(node);
-        String id = child.text;
-        boolean positional = child.id == JJTPOSITIONALINPUTPARAMETER;
-
-        if (parameterTypes == null)
-            parameterTypes = new LinkedMap(6);
-        Object paramKey = positional ? Integer.parseInt(id) : id;
-        if (!parameterTypes.containsKey(id))
-            parameterTypes.put(paramKey, TYPE_OBJECT);
-
-        Class type = Object.class;
         ClassMetaData meta = null;
         int index;
         if (positional) {
@@ -1359,11 +1326,12 @@ public class JPQLExpressionBuilder
             // otherwise the index is just the current size of the params
             index = parameterTypes.indexOf(id);
         }
-
-        Parameter param = factory.newCollectionValuedParameter(id, type);
+        Parameter param = isCollectionValued 
+            ? factory.newCollectionValuedParameter(paramKey, TYPE_OBJECT) 
+            : factory.newParameter(paramKey, TYPE_OBJECT);
         param.setMetaData(meta);
         param.setIndex(index);
-
+        
         return param;
     }
 
@@ -1502,10 +1470,10 @@ public class JPQLExpressionBuilder
             return factory.type(getValue(node));
 
         case JJTNAMEDINPUTPARAMETER:
-            return factory.type(getParameter(node.text, false));
+            return factory.type(getParameter(node.text, false, false));
 
         case JJTPOSITIONALINPUTPARAMETER:
-            return factory.type(getParameter(node.text, true));
+            return factory.type(getParameter(node.text, true, false));
 
         default:
             // TODO: enforce jpa2.0 spec rules.

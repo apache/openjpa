@@ -19,7 +19,9 @@
 
 package org.apache.openjpa.jdbc.kernel;
 
-import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -35,8 +37,9 @@ import org.apache.openjpa.kernel.Query;
 import org.apache.openjpa.kernel.QueryImpl;
 import org.apache.openjpa.kernel.QueryLanguages;
 import org.apache.openjpa.lib.rop.ResultList;
+import org.apache.openjpa.lib.util.Localizer;
 import org.apache.openjpa.util.ImplHelper;
-import org.apache.openjpa.util.InternalException;
+import org.apache.openjpa.util.UserException;
 
 /**
  * Implements {@link PreparedQuery} for SQL queries.
@@ -45,6 +48,9 @@ import org.apache.openjpa.util.InternalException;
  *
  */
 public class PreparedQueryImpl implements PreparedQuery {
+    private static Localizer _loc = 
+        Localizer.forPackage(PreparedQueryImpl.class);
+
     private final String _id;
     private String _sql;
     
@@ -53,11 +59,9 @@ public class PreparedQueryImpl implements PreparedQuery {
     private boolean _subclasses;
     private boolean _isProjection;
     
-    // Parameters of the query
-    private List    _params;
     // Position of the user defined parameters in the _params list
     private Map<Object, int[]>    _userParamPositions;
-    
+    private Map<Integer, Object> _template;
     
     /**
      * Construct.
@@ -163,31 +167,43 @@ public class PreparedQueryImpl implements PreparedQuery {
      * {@link #initialize(Object) initialization}. 
      * 
      * @return 0-based parameter index mapped to corresponding values.
+     * 
      */
     public Map<Integer, Object> reparametrize(Map user, Broker broker) {
-        Map<Integer, Object> result = new HashMap<Integer, Object>();
-        for (int i = 0; i < _params.size(); i++) {
-            result.put(i, _params.get(i));
+        if (user == null || user.isEmpty()) {
+            if (!_userParamPositions.isEmpty()) {
+                throw new UserException(_loc.get("uparam-null", 
+                    _userParamPositions.keySet(), this));
+            } else {
+                return _template;
+            }
         }
-        if (user == null || user.isEmpty())
-            return result;
+        if (!_userParamPositions.keySet().equals(user.keySet())) {
+            throw new UserException(_loc.get("uparam-mismatch", 
+                _userParamPositions.keySet(), user.keySet(), this));
+        }
+        Map<Integer, Object> result = new HashMap<Integer, Object>(_template);
+        
         for (Object key : user.keySet()) {
             int[] indices = _userParamPositions.get(key);
-            if (indices == null)
-                continue;
-            Object value = user.get(key);
-            if (ImplHelper.isManageable(value)) {
-                setPersistenceCapableParameter(result, value, indices, broker);
+            if (indices == null || indices.length == 0)
+                throw new UserException(_loc.get("uparam-no-pos", key, this));
+            Object val = user.get(key);
+            if (ImplHelper.isManageable(val)) {
+                setPersistenceCapableParameter(result, val, indices, broker);
+            } else if (val instanceof Collection) {
+                setCollectionValuedParameter(result, (Collection)val, indices, 
+                    key);
             } else {
                 for (int j : indices)
-                    result.put(j, value);
+                    result.put(j, val);
             }
         }
         return result;
     }
     
     /**
-     * Calculate primary key identity value(s) of the given managable instance
+     * Calculate primary key identity value(s) of the given manageable instance
      * and fill in the given map.
      * 
      * @param values a map of integer parameter index to parameter value
@@ -209,7 +225,8 @@ public class PreparedQueryImpl implements PreparedQuery {
             Object[] array = (Object[])cols;
             int n = array.length;
             if (n > indices.length || indices.length%n != 0)
-                throw new InternalException();
+                throw new UserException(_loc.get("uparam-pc-key", 
+                    pc.getClass(), n, Arrays.toString(indices)));
             int k = 0;
             for (int j : indices) {
                 result.put(j, array[k%n]);
@@ -222,8 +239,23 @@ public class PreparedQueryImpl implements PreparedQuery {
         } 
     }
     
+    private void setCollectionValuedParameter(Map<Integer,Object> result, 
+        Collection values, int[] indices, Object param) {
+        int n = values.size();
+        Object[] array = values.toArray();
+        if (n > indices.length || indices.length%n != 0) {
+            throw new UserException(_loc.get("uparam-coll-size", param, values, 
+                Arrays.toString(indices)));
+        }
+        int k = 0;
+        for (int j : indices) {
+            result.put(j, array[k%n]);
+            k++;
+        }
+        
+    }
     /**
-     * Marks the positions of user parameters.
+     * Marks the positions and keys of user parameters.
      * 
      * @param list even elements are numbers representing the position of a 
      * user parameter in the _param list. Odd elements are the user parameter
@@ -248,8 +280,11 @@ public class PreparedQueryImpl implements PreparedQuery {
     }
     
     void setParameters(List list) {
-        _params = new ArrayList();
-        _params.addAll(list);
+        Map<Integer, Object> tmp = new HashMap<Integer, Object>();
+        for (int i = 0; list != null && i < list.size(); i++) {
+            tmp.put(i, list.get(i));
+        }
+        _template = Collections.unmodifiableMap(tmp);
     }
     
     public String toString() {

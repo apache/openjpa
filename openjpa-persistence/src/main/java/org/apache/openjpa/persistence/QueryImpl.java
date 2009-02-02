@@ -40,6 +40,7 @@ import javax.persistence.NonUniqueResultException;
 import javax.persistence.Query;
 import javax.persistence.TemporalType;
 
+import org.apache.openjpa.conf.OpenJPAConfiguration;
 import org.apache.openjpa.enhance.Reflection;
 import org.apache.openjpa.kernel.Broker;
 import org.apache.openjpa.kernel.DelegatingQuery;
@@ -55,10 +56,13 @@ import org.apache.openjpa.kernel.QueryStatistics;
 import org.apache.openjpa.kernel.exps.AggregateListener;
 import org.apache.openjpa.kernel.exps.FilterListener;
 import org.apache.openjpa.kernel.jpql.JPQLParser;
+import org.apache.openjpa.lib.log.Log;
 import org.apache.openjpa.lib.rop.ResultList;
 import org.apache.openjpa.lib.util.Localizer;
 import org.apache.openjpa.util.ImplHelper;
 import org.apache.openjpa.util.RuntimeExceptionTranslator;
+import org.apache.openjpa.util.UserException;
+
 import static org.apache.openjpa.kernel.QueryLanguages.LANG_PREPARED_SQL;
 
 /**
@@ -86,7 +90,7 @@ public class QueryImpl implements OpenJPAQuerySPI, Serializable {
 	 * Constructor; supply factory exception translator and delegate.
 	 * 
 	 * @param em  The EntityManager which created this query
-	 * @param ret Exception translater for this query
+	 * @param ret Exception translator for this query
 	 * @param query The underlying "kernel" query.
 	 */
 	public QueryImpl(EntityManagerImpl em, RuntimeExceptionTranslator ret,
@@ -248,33 +252,18 @@ public class QueryImpl implements OpenJPAQuerySPI, Serializable {
 		_query.compile();
 		return this;
 	}
-
+	
 	private Object execute() {
 		if (_query.getOperation() != QueryOperations.OP_SELECT)
 			throw new InvalidStateException(_loc.get("not-select-query", _query
 					.getQueryString()), null, null, false);
 		
-        Map params = _positional != null ? _positional : _named;
-        Boolean registered = null;
-		PreparedQueryCache cache = _em.getPreparedQueryCache();
-		if (cache != null) {
-		    FetchConfiguration fetch = _query.getFetchConfiguration();
-		    registered = cache.register(_id, _query, fetch);
-		    boolean alreadyCached = (registered == null);
-		    String lang = _query.getLanguage();
-		    QueryStatistics stats = cache.getStatistics();
-		    if (alreadyCached && LANG_PREPARED_SQL.equals(lang)) {
-		        PreparedQuery pq = _em.getPreparedQuery(_id);
-		        params = pq.reparametrize(params, _em.getBroker());
-		        stats.recordExecution(pq.getOriginalQuery(), alreadyCached);
-		    } else {
-                stats.recordExecution(_query.getQueryString(), alreadyCached);
-		    }
-		}
+        Map params = _positional != null ? _positional 
+            : _named != null ? _named : new HashMap();
+        boolean registered = preExecute(params);
         Object result = _query.execute(params);
-        
-        if (registered == Boolean.TRUE) {
-            cache.initialize(_id, result);
+        if (registered) {
+            postExecute(result);
         }
         return result;
 	}
@@ -636,6 +625,68 @@ public class QueryImpl implements OpenJPAQuerySPI, Serializable {
             "JPA 2.0 - Method not yet implemented");
     }
     
+    //
+    // Prepared Query Cache related methods
+    //
+    
+    /**
+     * Invoked before a query is executed.
+     * If this receiver is cached as a {@linkplain PreparedQuery prepared query}
+     * then re-parameterizes the given user parameters. The given map is cleared
+     * and re-parameterized values are filled in. 
+     * 
+     * @param params user supplied parameter key-values. Always supply a 
+     * non-null map even if the user has not specified any parameter, because 
+     * the same map will to be populated by re-parameterization.
+     * 
+     * @return true if this invocation caused the query being registered in the
+     * cache. 
+     */
+    private boolean preExecute(Map params) {
+        PreparedQueryCache cache = _em.getPreparedQueryCache();
+        if (cache == null) {
+            return false;
+        }
+        FetchConfiguration fetch = _query.getFetchConfiguration();
+        Boolean registered = cache.register(_id, _query, fetch);
+        boolean alreadyCached = (registered == null);
+        String lang = _query.getLanguage();
+        QueryStatistics stats = cache.getStatistics();
+        if (alreadyCached && LANG_PREPARED_SQL.equals(lang)) {
+            PreparedQuery pq = _em.getPreparedQuery(_id);
+            try {
+                Map rep = pq.reparametrize(params, _em.getBroker());
+                params.clear();
+                params.putAll(rep);
+            } catch (UserException ue) {
+                invalidatePreparedQuery();
+                Log log = _em.getConfiguration().getLog(
+                    OpenJPAConfiguration.LOG_RUNTIME);
+                if (log.isWarnEnabled())
+                    log.warn(ue.getMessage());
+                return false;
+            }
+            stats.recordExecution(pq.getOriginalQuery(), alreadyCached);
+        } else {
+            stats.recordExecution(_query.getQueryString(), alreadyCached);
+        }
+        return registered == Boolean.TRUE;
+    }
+    
+    /**
+     * Initialize the registered Prepared Query from the given opaque object.
+     * 
+     * @param result an opaque object representing execution result of a query
+     * 
+     * @return true if the prepared query can be initialized.
+     */
+    boolean postExecute(Object result) {
+        PreparedQueryCache cache = _em.getPreparedQueryCache();
+        if (cache == null) {
+            return false;
+        }
+        return cache.initialize(_id, result) != null;
+    }
     
     /**
      * Remove this query from PreparedQueryCache. 
@@ -680,5 +731,4 @@ public class QueryImpl implements OpenJPAQuerySPI, Serializable {
         _id = id;
         return this;
     }
-
 }
