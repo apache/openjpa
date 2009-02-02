@@ -254,12 +254,15 @@
                 mvn install:install-file -Dfile=${path to db2jcc.jar} \
                                          -DgroupId=com.ibm.db2 \
                                          -DartifactId=jcc-driver \ 
-                                         -Dversion=9.5
+                                         -Dversion=9.5 \
+                                         -Dpackaging=jar
                                          
                 mvn install:install-file -Dfile=${path to db2jcc_license.jar} \
                                          -DgroupId=com.ibm.db2 \
                                          -DartifactId=jcc-license \ 
-                                         -Dversion=9.5
+                                         -Dversion=9.5 \
+                                         -Dpackaging=jar
+                                         
                 You should also set the openjpa.db2.url, openjpa.db2.user, and
                 openjpa.db2.password properties. 
               -->
@@ -293,7 +296,8 @@
                 mvn install:install-file -Dfile=${ojdbc.jar} \
                                          -DgroupId=com.oracle \
                                          -DartifactId=jdbc-driver \ 
-                                         -Dversion=10g
+                                         -Dversion=10g \
+                                         -Dpackaging=jar
                                          
                 You should also set the openjpa.oracle.url, openjpa.oracle.user,
                 and openjpa.oracle.password properties. 
