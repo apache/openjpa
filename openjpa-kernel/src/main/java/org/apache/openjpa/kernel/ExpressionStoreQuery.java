@@ -405,7 +405,9 @@ public class ExpressionStoreQuery
                         throw new UserException(_loc.get("gap-query-param", 
                             new Object[]{q.getContext().getQueryString(), key, 
                             userParams.size(), userParams}));
-                arr[idx] = userParams.get(key);
+                Object value = userParams.get(key);
+                validateParameterValue(key, value, (Class)paramTypes.get(key));
+                arr[idx] = value;
             }
             return arr;
         }
@@ -430,7 +432,25 @@ public class ExpressionStoreQuery
             }
             return low;
         }
-
+        
+        private static void validateParameterValue(Object key, Object value, 
+            Class expected) {
+            if (expected == null)
+                return;
+            
+            if (value == null) {
+                if (expected.isPrimitive()) 
+                    throw new UserException(_loc.get("null-primitive-param", 
+                        key, expected));
+            } else {
+                Class actual = value.getClass();
+                boolean strict = true;
+                if (!Filters.canConvert(actual, expected, strict)) 
+                    throw new UserException(_loc.get("param-value-mismatch", 
+                        new Object[]{key, expected, value, actual}));
+            }
+        }
+        
         public final Map getUpdates(StoreQuery q) {
             return assertQueryExpression().updates;
         }

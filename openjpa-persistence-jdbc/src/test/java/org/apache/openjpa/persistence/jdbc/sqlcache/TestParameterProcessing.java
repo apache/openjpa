@@ -94,5 +94,37 @@ public class TestParameterProcessing extends SingleEMFTestCase {
         
         assertEquals(1, result2.size());
     }
+    
+    public void testWrongParameterValueTypeThrowException() {
+        String jpql = "select p from Person p where p.firstName=:first" 
+                    + " and p.age > :age";
+        EntityManager em = emf.createEntityManager();
+
+        OpenJPAQuery q1 = OpenJPAPersistence.cast(em.createQuery(jpql));
+        try {
+            List result1 = q1.setParameter("first", (short)40)
+                             .setParameter("age", "John")
+                             .getResultList();
+            fail("Expected to fail with wrong parameter value");
+        } catch (IllegalArgumentException e) {
+            // good
+        }
+    }
+    
+    public void testNullParameterValueForPrimitiveTypeThrowsException() {
+        String jpql = "select p from Person p where p.firstName=:first" 
+                    + " and p.age > :age";
+        EntityManager em = emf.createEntityManager();
+
+        OpenJPAQuery q1 = OpenJPAPersistence.cast(em.createQuery(jpql));
+        try {
+            List result1 = q1.setParameter("first", "John")
+                             .setParameter("age", null)
+                             .getResultList();
+            fail("Expected to fail with null parameter value for primitives");
+        } catch (RuntimeException e) {
+            // good
+        }
+    }
 
 }
