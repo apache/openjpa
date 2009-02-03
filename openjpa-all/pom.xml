@@ -50,6 +50,7 @@
                     multiple same-named files to each other (which is
                     required for correctly aggregating services files).
                 -->
+                <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-antrun-plugin</artifactId>
                 <executions>
                     <execution>
