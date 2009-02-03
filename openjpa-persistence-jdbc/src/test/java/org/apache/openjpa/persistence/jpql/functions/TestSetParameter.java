@@ -110,6 +110,17 @@ public class TestSetParameter extends SingleEMFTestCase {
         
         verifyUpdate();
     }
+    
+    public void testNativeSQL() {
+        EntityManager em = emf.createEntityManager();
+        em.getTransaction().begin();
+        String randomName = "Student"+"-"+System.currentTimeMillis();
+        int count = em.createNativeQuery("INSERT INTO Student (name) VALUES (?)")
+          .setParameter(1, randomName)
+          .executeUpdate();
+        em.getTransaction().commit();
+        assertEquals(1, count);
+    }
 
     public CompUser createUser(String name, String cName, int age,
         boolean isMale) {

@@ -359,9 +359,9 @@ public class SQLStoreQuery
          */
         static String substituteParams(String sql, List<Integer> paramOrder)
             throws IOException {
-            // if there's no "?1" positional parameter, then we don't need to
+            // if there's no "?" parameter marker, then we don't need to
             // perform the parsing process
-            if (sql.indexOf("?1") == -1)
+            if (sql.indexOf("?") == -1)
                 return sql;
 
             paramOrder.clear();
@@ -377,10 +377,14 @@ public class SQLStoreQuery
                     case StreamTokenizer.TT_WORD:
                         // a token is a positional parameter if it starts with
                         // a "?" and the rest of the token are all numbers
-                        if (tok.sval.startsWith("?") && tok.sval.length() > 1 &&
-                            tok.sval.substring(1).indexOf("?") == -1) {
+                        if (tok.sval.startsWith("?")) {
                             buf.append("?");
-                            paramOrder.add(Integer.valueOf(tok.sval.substring(1)));
+                            String pIndex = tok.sval.substring(1);
+                            if (pIndex.length() > 0) {
+                                paramOrder.add(Integer.valueOf(pIndex));
+                            } else { // or nothing
+                                paramOrder.add(paramOrder.size()+1);
+                            }
                         } else
                             buf.append(tok.sval);
                         break;
