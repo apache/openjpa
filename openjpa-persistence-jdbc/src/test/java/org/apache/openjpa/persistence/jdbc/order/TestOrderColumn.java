@@ -632,10 +632,12 @@ public class TestOrderColumn extends SingleEMFTestCase {
         // Do a projection query to verify the base values
 
         validateIndexAndValues(em, "BaseTestEntity", "one2Melems", 10000, 
-                new Object[] { elems[3], elems[4], elems[5]});
+                new Object[] { elems[3], elems[4], elems[5]}, "id", 
+                bte.getId());
 
         validateIndexAndValues(em, "BaseTestEntity", "m2melems", -50, 
-                new Object[] { elems[6], elems[7], elems[8]});
+                new Object[] { elems[6], elems[7], elems[8]}, "id",
+                bte.getId());
 
 // This test is disabled until INDEX projection supports element collections
 //        validateIndexAndValues(em, "BaseTestEntity", "collelems", 10, 
@@ -853,11 +855,14 @@ public class TestOrderColumn extends SingleEMFTestCase {
     }
     
     private void validateIndexAndValues(OpenJPAEntityManagerSPI em, 
-            String entity, String indexedCol, int base, Object[] objs) {
+            String entity, String indexedCol, int base, Object[] objs, String
+            idField, Object idValue) {
         String queryString = "SELECT INDEX(b), b FROM " + entity + " a JOIN a." +
-            indexedCol + " b";
+            indexedCol + " b WHERE a." + idField + " = :idVal";
         Query qry = em.createQuery(queryString);
-        List rlist = qry.getResultList();       
+        qry.setParameter("idVal", idValue);
+        List rlist = qry.getResultList();  
+        
         assertNotNull(rlist);
         assertEquals(rlist.size(), objs.length);        
         for (int i = 0; i < objs.length; i++)
