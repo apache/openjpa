@@ -34,6 +34,7 @@ import org.apache.openjpa.kernel.PreparedQuery;
 import org.apache.openjpa.kernel.PreparedQueryCache;
 import org.apache.openjpa.kernel.Query;
 import org.apache.openjpa.kernel.QueryHints;
+import org.apache.openjpa.kernel.QueryLanguages;
 import org.apache.openjpa.kernel.QueryStatistics;
 import org.apache.openjpa.lib.conf.Configuration;
 import org.apache.openjpa.lib.log.Log;
@@ -51,7 +52,8 @@ import org.apache.openjpa.lib.util.Localizer;
 public class PreparedQueryCacheImpl implements PreparedQueryCache {
 	private static final String PATTERN_SEPARATOR = "\\;";
 	private static final String EXLUDED_BY_USER = "Excluded by user";
-
+    private static final String JPQL = "javax.persistence.JPQL";
+    private static final String SELECT = "SELECT ";
 	// Key: Query identifier 
 	private final Map<String, PreparedQuery> _delegate;
 	private final Map<Class, PreparedQuery> _finders;
@@ -72,6 +74,9 @@ public class PreparedQueryCacheImpl implements PreparedQueryCache {
 	
 	public Boolean register(String id, Query query, FetchConfiguration hints) {
         if (id == null 
+            || query == null 
+            || QueryLanguages.LANG_SQL.equals(query.getLanguage()) 
+            || !isSelect(query.getQueryString())
             || isHinted(hints, QueryHints.HINT_IGNORE_PREPARED_QUERY)
             || isHinted(hints, QueryHints.HINT_INVALIDATE_PREPARED_QUERY))
             return Boolean.FALSE;
@@ -337,6 +342,12 @@ public class PreparedQueryCacheImpl implements PreparedQueryCache {
             return false;
         Object result = fetch.getHint(hint);
         return result != null && "true".equalsIgnoreCase(result.toString());
+    }
+    
+    boolean isSelect(String s) {
+        return s != null
+            && s.length()>SELECT.length()
+            && s.trim().substring(0,SELECT.length()).equalsIgnoreCase(SELECT);
     }
         
 	//-------------------------------------------------------

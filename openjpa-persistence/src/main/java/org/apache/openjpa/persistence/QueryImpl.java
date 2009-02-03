@@ -720,13 +720,6 @@ public class QueryImpl implements OpenJPAQuerySPI, Serializable {
         _query = new DelegatingQuery(newQuery, _em.getExceptionTranslator());
     }
     
-    private void recordStatistics(String query, boolean usingCachedVersion) {
-        PreparedQueryCache cache = _em.getPreparedQueryCache();
-        if (cache == null)
-            return;
-        cache.getStatistics().recordExecution(query,usingCachedVersion);
-    }
-    
     QueryImpl setId(String id) {
         _id = id;
         return this;

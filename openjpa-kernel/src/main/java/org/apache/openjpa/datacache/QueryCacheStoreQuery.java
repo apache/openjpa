@@ -454,6 +454,10 @@ public class QueryCacheStoreQuery
         public LinkedMap getParameterTypes(StoreQuery q) {
             return _ex.getParameterTypes(unwrap(q));
         }
+        
+        public Object[] toParameterArray(StoreQuery q, Map userParams) {
+            return _ex.toParameterArray(q, userParams);
+        }
 
         public Map getUpdates(StoreQuery q) {
             return _ex.getUpdates(unwrap(q));

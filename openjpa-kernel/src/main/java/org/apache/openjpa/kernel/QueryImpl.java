@@ -39,8 +39,10 @@ import org.apache.openjpa.kernel.exps.AggregateListener;
 import org.apache.openjpa.kernel.exps.FilterListener;
 import org.apache.openjpa.kernel.exps.Constant;
 import org.apache.openjpa.kernel.exps.Literal;
+import org.apache.openjpa.kernel.exps.Parameter;
 import org.apache.openjpa.kernel.exps.Path;
 import org.apache.openjpa.kernel.exps.Val;
+import org.apache.openjpa.kernel.jpql.JPQLExpressionBuilder;
 import org.apache.openjpa.lib.log.Log;
 import org.apache.openjpa.lib.rop.EagerResultList;
 import org.apache.openjpa.lib.rop.MergedResultObjectProvider;
@@ -838,7 +840,7 @@ public class QueryImpl
 
                 assertParameters(_storeQuery, ex, params);
                 Object[] arr = (params.isEmpty()) ? StoreQuery.EMPTY_OBJECTS :
-                    toParameterArray(ex.getParameterTypes(_storeQuery), params);
+                    ex.toParameterArray(_storeQuery, params);
                 if (_log.isTraceEnabled())
                     logExecution(operation, params);
 
@@ -888,62 +890,50 @@ public class QueryImpl
     }
 
     /**
+     * Converts the values of given <code>params</code> Map into an array in
+     * consultation of the <code>paramTypes</code> Map.
      * 
-     * @param paramTypes parameter key mapped to parameter value type
-     * @param params parameter key mapped to actual parameter value
-     * @return
+     * The indexing of the resultant array is significant for following 
+     * interrelated but tacit assumptions:
+     * The values in the returned Object[] is consumed by {@link Parameter}
+     * expressions. Query parsing creates these Parameters and sets their
+     * key and index. The index set on the Parameter by the parser is the
+     * same index used to access the Object[] elements returned by this method.
+     * 
+     * {@link JPQLExpressionBuilder} creates and populates parameters as follows:
+     * The parameter key is not the token encountered by the parser, but 
+     * converted to Integer or String based on the context in which the token 
+     * appeared. 
+     * The index for positional (Integer) parameter is the value of the key   
+     * minus 1. 
+     * The index for named (String) parameter is the order in which the  
+     * token appeared to parser during scanning. 
+     * 
+     * 
+     * The first LinkedMap argument to this method is the result of parsing.
+     * This LinkedMap contains the parameter key and their expected 
+     * (if determinable) value types. That it is a LinkedMap points to the 
+     * fact that an ordering is implicit. The ordering of the keys in this Map 
+     * is the same as the order in which parser encountered the parameter tokens.
+     * 
+     * For example, parsing result of the following two JPQL queries
+     *   a) UPDATE CompUser e SET e.name= ?1, e.age = ?2 WHERE e.userid = ?3
+     *   b) UPDATE CompUser e SET e.name= :name, e.age = :age WHERE e.userid = :id
+     * The parameter keys will appear in the order (3,2,1) or (:id, :name, :age) 
+     * in the given LinkedMap because WHERE clause is parsed before SET clause.
+     * The corresponding Parameter Expressions created by the parser will have
+     * following key and index:
+     *    a) 1:0, 2:1, 3:2
+     *    b) name:1, age:2, id:0
+     *    
+     * The purpose of this method is to produce an Object[] with an indexing
+     * scheme that matches the indexing of the Parameter Expression.
+     * The user map (the second argument) should produce the following Object[]
+     * in two above-mentioned cases
+     *   a) {1:"Shannon",2:29,3:5032} --> ["Shannon", 29, 5032]
+     *   b) {"name":"Shannon", "age":29, "id":5032} --> [5032, "Shannon", 29]
+     *   
      */
-    private Object[] toParameterArray(LinkedMap paramTypes, Map params) {
-        if (params == null || params.isEmpty())
-            return StoreQuery.EMPTY_OBJECTS;
-
-        Object[] arr = new Object[params.size()];
-        Map.Entry entry;
-        Object key;
-        int idx;
-        int base = -1;
-        for (Iterator itr = params.entrySet().iterator(); itr.hasNext();) {
-            entry = (Map.Entry) itr.next();
-            key = entry.getKey();
-            idx = (paramTypes == null) ? -1 : paramTypes.indexOf(key);
-
-            // allow positional parameters and natural order parameters
-            if (idx != -1)
-                arr[idx] = entry.getValue();
-            else if (key instanceof Number) {
-                if (base == -1)
-                    base = positionalParameterBase(params.keySet());
-                int arrayIndex = ((Number) key).intValue() - base;
-                if (arrayIndex >= arr.length)
-                	throw new UserException(_loc.get("gap-query-param", 
-                		new Object[]{_query, key, params.size(), params}));
-                arr[arrayIndex] = entry.getValue();
-            } else
-                throw new UserException(_loc.get("bad-param-name", key));
-        }
-        return arr;
-    }
-
-    /**
-     * Return the base (generally 0 or 1) to use for positional parameters.
-     */
-    private static int positionalParameterBase(Collection params) {
-        int low = Integer.MAX_VALUE;
-        Object obj;
-        int val;
-        for (Iterator itr = params.iterator(); itr.hasNext();) {
-            obj = itr.next();
-            if (!(obj instanceof Number))
-                return 0; // use 0 base when params are mixed types
-
-            val = ((Number) obj).intValue();
-            if (val == 0)
-                return val;
-            if (val < low)
-                low = val;
-        }
-        return low;
-    }
 
     /**
      * Return whether we should execute this query in memory.
@@ -1408,8 +1398,7 @@ public class QueryImpl
 
             StoreQuery.Executor ex = compileForExecutor();
             assertParameters(_storeQuery, ex, params);
-            Object[] arr = toParameterArray(ex.getParameterTypes(_storeQuery),
-                params);
+            Object[] arr = ex.toParameterArray(_storeQuery, params);
             StoreQuery.Range range = new StoreQuery.Range(_startIdx, _endIdx);
             if (!_rangeSet)
                 ex.getRange(_storeQuery, arr, range);
@@ -1973,6 +1962,11 @@ public class QueryImpl
         public LinkedMap getParameterTypes(StoreQuery q) {
             return _executors[0].getParameterTypes(q);
         }
+        
+        public Object[] toParameterArray(StoreQuery q, Map userParams) {
+            return _executors[0].toParameterArray(q, userParams);
+        }
+
 
         public Map getUpdates(StoreQuery q) {
             return _executors[0].getUpdates(q);

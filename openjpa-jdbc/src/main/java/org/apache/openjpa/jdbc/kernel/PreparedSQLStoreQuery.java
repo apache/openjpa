@@ -22,6 +22,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.Map;
 
 import org.apache.openjpa.jdbc.meta.ClassMapping;
 import org.apache.openjpa.jdbc.sql.DBDictionary;
@@ -101,6 +102,23 @@ public class PreparedSQLStoreQuery extends SQLStoreQuery {
             if (range.start != 0 || range.end != Long.MAX_VALUE)
                 rop = new RangeResultObjectProvider(rop, range.start,range.end);
             return rop;
+        }
+        
+        /**
+         * Convert given userParams to an array whose ordering matches as 
+         * per expected during executeXXX() methods.
+         * The given userParams is already re-parameterized, so this method have 
+         * to merely copy the given Map values.
+         * 
+         * @see PreparedQueryImpl#reparametrize(Map, org.apache.openjpa.kernel.Broker)
+         */
+        public Object[] toParameterArray(StoreQuery q, Map userParams) {
+            Object[] array = new Object[userParams.size()];
+            for (Object key : userParams.keySet()) {
+                int idx = ((Integer)key).intValue();
+                array[idx] = userParams.get(key);
+            }
+            return array;
         }
     }
 }

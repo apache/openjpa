@@ -875,7 +875,8 @@ public class EntityManagerImpl
         assertNotCloseInvoked();
         try {
             String qid = query;
-            PreparedQuery pq = getPreparedQuery(qid);
+            PreparedQuery pq = JPQLParser.LANG_JPQL.equals(language)
+                ? getPreparedQuery(qid) : null;
             org.apache.openjpa.kernel.Query q = (pq == null)
                 ? _broker.newQuery(language, query)
                 : _broker.newQuery(pq.getLanguage(), pq.getTargetQuery());
@@ -909,7 +910,8 @@ public class EntityManagerImpl
                 _broker.getClassLoader(), true);
             String qid = meta.getQueryString();
             
-            PreparedQuery pq = getPreparedQuery(qid);
+            PreparedQuery pq = JPQLParser.LANG_JPQL.equals(meta.getLanguage())
+                ? getPreparedQuery(qid) : null;
             org.apache.openjpa.kernel.Query del = (pq == null)
                 ? _broker.newQuery(meta.getLanguage(), meta.getQueryString())
                 : _broker.newQuery(pq.getLanguage(), pq.getTargetQuery());

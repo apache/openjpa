@@ -258,5 +258,46 @@ public class MethodStoreQuery
         public LinkedMap getParameterTypes(StoreQuery q) {
             return ((MethodStoreQuery) q).bindParameterTypes();
 		}
+        
+        public Object[] toParameterArray(StoreQuery q, Map userParams) {
+            if (userParams == null || userParams.isEmpty())
+                return StoreQuery.EMPTY_OBJECTS;
+
+            LinkedMap paramTypes = getParameterTypes(q);
+            Object[] arr = new Object[userParams.size()];
+            int base = positionalParameterBase(userParams.keySet());
+            for (Object key : paramTypes.keySet()) {
+                int idx = (key instanceof Integer) 
+                    ? ((Integer)key).intValue() - base 
+                    : paramTypes.indexOf(key);
+                if (idx >= arr.length || idx < 0)
+                        throw new UserException(_loc.get("gap-query-param", 
+                            new Object[]{q.getContext().getQueryString(), key, 
+                            userParams.size(), userParams}));
+                    arr[idx] = userParams.get(key);
+            }
+            return arr;
+        }
+        
+        /**
+         * Return the base (generally 0 or 1) to use for positional parameters.
+         */
+        private static int positionalParameterBase(Collection params) {
+            int low = Integer.MAX_VALUE;
+            Object obj;
+            int val;
+            for (Iterator itr = params.iterator(); itr.hasNext();) {
+                obj = itr.next();
+                if (!(obj instanceof Number))
+                    return 0; // use 0 base when params are mixed types
+
+                val = ((Number) obj).intValue();
+                if (val == 0)
+                    return val;
+                if (val < low)
+                    low = val;
+            }
+            return low;
+        }
 	}
 }

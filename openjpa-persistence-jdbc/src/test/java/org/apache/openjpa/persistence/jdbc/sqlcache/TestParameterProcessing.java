@@ -1,21 +1,37 @@
+/*
+ * Licensed to the Apache Software Foundation (ASF) under one
+ * or more contributor license agreements.  See the NOTICE file
+ * distributed with this work for additional information
+ * regarding copyright ownership.  The ASF licenses this file
+ * to you under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied.  See the License for the
+ * specific language governing permissions and limitations
+ * under the License.
+ */
 package org.apache.openjpa.persistence.jdbc.sqlcache;
 
 import java.util.List;
 
 import javax.persistence.EntityManager;
-import javax.persistence.EntityManagerFactory;
-import javax.persistence.Query;
 
 import org.apache.openjpa.kernel.QueryLanguages;
 import org.apache.openjpa.kernel.jpql.JPQLParser;
 import org.apache.openjpa.persistence.OpenJPAPersistence;
+import org.apache.openjpa.persistence.OpenJPAQuery;
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
 
 public class TestParameterProcessing extends SingleEMFTestCase {
     public void setUp() {
-        super.setUp(CLEAR_TABLES, Person.class, "openjpa.LogLevel=SQL=TRACE,Query=TRACE");
+        super.setUp(CLEAR_TABLES, Person.class, Address.class);
         createTestData();
-//        super.setUp(Person.class, "openjpa.LogLevel=SQL=TRACE,Query=TRACE");
     }
     
     private void createTestData() {
@@ -34,11 +50,12 @@ public class TestParameterProcessing extends SingleEMFTestCase {
     }
     
     public void testPositional() {
-        String jpql = "select p from Person p where p.firstName=?1 and p.lastName='Doe' and p.age > ?2";
+        String jpql = "select p from Person p where p.firstName=?1" +
+                      " and p.lastName='Doe' and p.age > ?2";
         EntityManager em = emf.createEntityManager();
         
-        Query q1 = em.createQuery(jpql);
-        assertEquals(JPQLParser.LANG_JPQL, OpenJPAPersistence.cast(q1).getLanguage());
+        OpenJPAQuery q1 = OpenJPAPersistence.cast(em.createQuery(jpql));
+        assertEquals(JPQLParser.LANG_JPQL, q1.getLanguage());
         
         List result1 = q1.setParameter(1, "John")
                        .setParameter(2, (short)40)
@@ -46,8 +63,8 @@ public class TestParameterProcessing extends SingleEMFTestCase {
         
         assertEquals(2, result1.size());
         
-        Query q2 = em.createQuery(jpql);
-        assertEquals(QueryLanguages.LANG_PREPARED_SQL, OpenJPAPersistence.cast(q2).getLanguage());
+        OpenJPAQuery q2 = OpenJPAPersistence.cast(em.createQuery(jpql));
+        assertEquals(QueryLanguages.LANG_PREPARED_SQL, q2.getLanguage());
         List result2 = q2.setParameter(1, "Harry")
                   .setParameter(2, (short)10)
                   .getResultList();
@@ -56,11 +73,12 @@ public class TestParameterProcessing extends SingleEMFTestCase {
     }
     
     public void testNamed() {
-        String jpql = "select p from Person p where p.firstName=:first and p.lastName='Doe' and p.age > :age";
+        String jpql = "select p from Person p where p.firstName=:first" +
+                      " and p.lastName='Doe' and p.age > :age";
         EntityManager em = emf.createEntityManager();
         
-        Query q1 = em.createQuery(jpql);
-        assertEquals(JPQLParser.LANG_JPQL, OpenJPAPersistence.cast(q1).getLanguage());
+        OpenJPAQuery q1 = OpenJPAPersistence.cast(em.createQuery(jpql));
+        assertEquals(JPQLParser.LANG_JPQL, q1.getLanguage());
         
         List result1 = q1.setParameter("first", "John")
                        .setParameter("age", (short)40)
@@ -68,8 +86,8 @@ public class TestParameterProcessing extends SingleEMFTestCase {
         
         assertEquals(2, result1.size());
         
-        Query q2 = em.createQuery(jpql);
-        assertEquals(QueryLanguages.LANG_PREPARED_SQL, OpenJPAPersistence.cast(q2).getLanguage());
+        OpenJPAQuery q2 = OpenJPAPersistence.cast(em.createQuery(jpql));
+        assertEquals(QueryLanguages.LANG_PREPARED_SQL, q2.getLanguage());
         List result2 = q2.setParameter("first", "Barry")
                   .setParameter("age", (short)20)
                   .getResultList();

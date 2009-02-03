@@ -310,6 +310,20 @@ public interface StoreQuery
          * order in which they were declared or used.
          */
         public LinkedMap getParameterTypes(StoreQuery q);
+        
+        /**
+         * Return an array from the given user parameter values.
+         * The array ordering is same as what this executor expects for its 
+         * executeXXX() methods as its Object[] parameters.
+         * If the given userParams is null or empty return an empty array
+         * rather than null.
+         * 
+         * @return array with parameter values ordered in the same way as this
+         * receiver's executeXXX() method expects.
+         * 
+         * @since 2.0.0
+         */
+        public Object[] toParameterArray(StoreQuery q, Map userParams);
 
         /**
          * Returns the result class, if any.
