@@ -417,11 +417,16 @@ public class TestMultipleSchemaNames extends SingleEMFTestCase {
         String[] schemas =
             { "SCHEMA1", "SCHEMA2", "SCHEMA3", "SCHEMA3G", "SCHEMA4G" };
         for (String schema : schemas) {
-            em.getTransaction().begin();
-            Query q = em.createNativeQuery("create schema " + schema);
-            q.executeUpdate();
-            em.getTransaction().commit();
+            try {
+                em.getTransaction().begin();
+                Query q = em.createNativeQuery("create schema " + schema);
+                q.executeUpdate();
+                em.getTransaction().commit();
+            } catch (PersistenceException e) {          
+                em.getTransaction().rollback();
+            }
         }
+        closeEMF(emf);
     }
 
 } // end of TestMultipleSchemaNames
