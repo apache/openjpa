@@ -113,7 +113,7 @@ public abstract class PersistenceTestCase
         List<Class> types = new ArrayList<Class>();
         boolean prop = false;
         boolean fresh = false;
-        for (int i = 0; i < props.length; i++) {
+        for (int i = 0; props != null && i < props.length; i++) {
             if (props[i] == FRESH_EMF) {
                 fresh = true;
                 continue;
@@ -146,6 +146,8 @@ public abstract class PersistenceTestCase
                 ? ","+map.get("openjpa.MetaDataFactory").toString() : "";
             map.put("openjpa.MetaDataFactory",
                 "jpa(Types=" + buf.toString() + oldValue + ")");
+        } else {
+            map.put("openjpa.MetaDataFactory", "jpa");
         }
         EMFKey key = new EMFKey(pu, map);
         OpenJPAEntityManagerFactorySPI oemf = _emfs.get(key);

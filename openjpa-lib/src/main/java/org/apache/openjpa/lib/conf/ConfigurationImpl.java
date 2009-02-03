@@ -703,6 +703,9 @@ public class ConfigurationImpl
      * Issue a warning that the specified property is not valid.
      */
     private void warnInvalidProperty(String propName) {
+        if (propName != null && propName.startsWith("java.") 
+            || propName.startsWith("sun.")) 
+            return;
         if (!isInvalidProperty(propName))
             return;
         Log log = getConfigurationLog();

@@ -23,6 +23,7 @@ import java.util.Map;
 
 import org.apache.openjpa.conf.OpenJPAConfiguration;
 import org.apache.openjpa.conf.OpenJPAProductDerivation;
+import org.apache.openjpa.conf.Specification;
 import org.apache.openjpa.jdbc.conf.JDBCConfigurationImpl;
 import org.apache.openjpa.jdbc.kernel.JDBCStoreManager;
 import org.apache.openjpa.lib.conf.AbstractProductDerivation;
@@ -67,22 +68,22 @@ public class JDBCPersistenceProductDerivation
             return false;
 
         JDBCConfigurationImpl conf = (JDBCConfigurationImpl) c;
-        String jpa = PersistenceProductDerivation.SPEC_JPA;
-        String ejb = PersistenceProductDerivation.ALIAS_EJB;
+        Specification jpa = PersistenceProductDerivation.SPEC_JPA;
+        Specification ejb = PersistenceProductDerivation.ALIAS_EJB;
 
-        conf.metaFactoryPlugin.setAlias(ejb,
+        conf.metaFactoryPlugin.setAlias(ejb.getName(),
             PersistenceMappingFactory.class.getName());
-        conf.metaFactoryPlugin.setAlias(jpa,
-            PersistenceMappingFactory.class.getName());
-
-        conf.mappingFactoryPlugin.setAlias(ejb,
-            PersistenceMappingFactory.class.getName());
-        conf.mappingFactoryPlugin.setAlias(jpa,
+        conf.metaFactoryPlugin.setAlias(jpa.getName(),
             PersistenceMappingFactory.class.getName());
 
-        conf.mappingDefaultsPlugin.setAlias(ejb,
+        conf.mappingFactoryPlugin.setAlias(ejb.getName(),
+            PersistenceMappingFactory.class.getName());
+        conf.mappingFactoryPlugin.setAlias(jpa.getName(),
+            PersistenceMappingFactory.class.getName());
+
+        conf.mappingDefaultsPlugin.setAlias(ejb.getName(),
             PersistenceMappingDefaults.class.getName());
-        conf.mappingDefaultsPlugin.setAlias(jpa,
+        conf.mappingDefaultsPlugin.setAlias(jpa.getName(),
             PersistenceMappingDefaults.class.getName());
         return true;
     }
@@ -92,12 +93,12 @@ public class JDBCPersistenceProductDerivation
         if (!(c instanceof JDBCConfigurationImpl))
             return false;
         JDBCConfigurationImpl conf = (JDBCConfigurationImpl) c;
-        String jpa = PersistenceProductDerivation.SPEC_JPA;
-        if (!jpa.equals(conf.getSpecification()))
+        Specification jpa = PersistenceProductDerivation.SPEC_JPA;
+        if (!jpa.equals(conf.getSpecificationInstance()))
             return false;
         
-        conf.mappingDefaultsPlugin.setDefault(jpa);
-        conf.mappingDefaultsPlugin.setString(jpa);
+        conf.mappingDefaultsPlugin.setDefault(jpa.getName());
+        conf.mappingDefaultsPlugin.setString(jpa.getName());
         return true;
     }
 }

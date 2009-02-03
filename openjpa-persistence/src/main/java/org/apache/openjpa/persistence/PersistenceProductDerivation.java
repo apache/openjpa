@@ -37,6 +37,7 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.openjpa.conf.OpenJPAConfiguration;
 import org.apache.openjpa.conf.OpenJPAConfigurationImpl;
 import org.apache.openjpa.conf.OpenJPAProductDerivation;
+import org.apache.openjpa.conf.Specification;
 import org.apache.openjpa.lib.conf.AbstractProductDerivation;
 import org.apache.openjpa.lib.conf.Configuration;
 import org.apache.openjpa.lib.conf.ConfigurationProvider;
@@ -70,8 +71,8 @@ public class PersistenceProductDerivation
     extends AbstractProductDerivation
     implements OpenJPAProductDerivation {
 
-    public static final String SPEC_JPA = "jpa";
-    public static final String ALIAS_EJB = "ejb";
+    public static final Specification SPEC_JPA = Specification.create("jpa", 2);
+    public static final Specification ALIAS_EJB = Specification.create("ejb", 3);
     public static final String RSRC_GLOBAL = "META-INF/openjpa.xml";
     public static final String RSRC_DEFAULT = "META-INF/persistence.xml";
 
@@ -99,9 +100,9 @@ public class PersistenceProductDerivation
             return false;
         
         OpenJPAConfigurationImpl conf = (OpenJPAConfigurationImpl) c;
-        conf.metaFactoryPlugin.setAlias(ALIAS_EJB,
+        conf.metaFactoryPlugin.setAlias(ALIAS_EJB.getName(),
             PersistenceMetaDataFactory.class.getName());
-        conf.metaFactoryPlugin.setAlias(SPEC_JPA,
+        conf.metaFactoryPlugin.setAlias(SPEC_JPA.getName(),
             PersistenceMetaDataFactory.class.getName());
         
         conf.addValue(new EntityManagerFactoryValue());
@@ -115,8 +116,8 @@ public class PersistenceProductDerivation
           return false;
  
         OpenJPAConfigurationImpl conf = (OpenJPAConfigurationImpl) c;
-        conf.metaFactoryPlugin.setDefault(SPEC_JPA);
-        conf.metaFactoryPlugin.setString(SPEC_JPA);
+        conf.metaFactoryPlugin.setDefault(SPEC_JPA.getName());
+        conf.metaFactoryPlugin.setString(SPEC_JPA.getName());
         conf.lockManagerPlugin.setDefault("version");
         conf.lockManagerPlugin.setString("version");
         conf.nontransactionalWrite.setDefault("true");

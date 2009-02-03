@@ -28,10 +28,11 @@ import org.apache.openjpa.datacache.ConcurrentQueryCache;
 import org.apache.openjpa.datacache.DataCacheManager;
 import org.apache.openjpa.datacache.DataCacheManagerImpl;
 import org.apache.openjpa.ee.ManagedRuntime;
+import org.apache.openjpa.enhance.RuntimeUnenhancedClasssesModes;
+import org.apache.openjpa.event.BrokerFactoryEventManager;
 import org.apache.openjpa.event.OrphanedKeyAction;
 import org.apache.openjpa.event.RemoteCommitEventManager;
 import org.apache.openjpa.event.RemoteCommitProvider;
-import org.apache.openjpa.event.BrokerFactoryEventManager;
 import org.apache.openjpa.kernel.AutoClear;
 import org.apache.openjpa.kernel.BrokerImpl;
 import org.apache.openjpa.kernel.ConnectionRetainModes;
@@ -45,7 +46,16 @@ import org.apache.openjpa.kernel.SavepointManager;
 import org.apache.openjpa.kernel.Seq;
 import org.apache.openjpa.kernel.exps.AggregateListener;
 import org.apache.openjpa.kernel.exps.FilterListener;
-import org.apache.openjpa.lib.conf.*;
+import org.apache.openjpa.lib.conf.BooleanValue;
+import org.apache.openjpa.lib.conf.ConfigurationImpl;
+import org.apache.openjpa.lib.conf.Configurations;
+import org.apache.openjpa.lib.conf.IntValue;
+import org.apache.openjpa.lib.conf.ObjectValue;
+import org.apache.openjpa.lib.conf.PluginListValue;
+import org.apache.openjpa.lib.conf.PluginValue;
+import org.apache.openjpa.lib.conf.ProductDerivations;
+import org.apache.openjpa.lib.conf.StringListValue;
+import org.apache.openjpa.lib.conf.StringValue;
 import org.apache.openjpa.lib.log.Log;
 import org.apache.openjpa.lib.util.Localizer;
 import org.apache.openjpa.meta.MetaDataFactory;
@@ -54,7 +64,6 @@ import org.apache.openjpa.util.ClassResolver;
 import org.apache.openjpa.util.ImplHelper;
 import org.apache.openjpa.util.ProxyManager;
 import org.apache.openjpa.util.StoreFacadeTypeRegistry;
-import org.apache.openjpa.enhance.RuntimeUnenhancedClasssesModes;
 
 /**
  * Implementation of the {@link OpenJPAConfiguration} interface.
@@ -139,7 +148,8 @@ public class OpenJPAConfigurationImpl
     public CacheMarshallersValue cacheMarshallerPlugins;
     public BooleanValue eagerInitialization;
     public PluginValue preparedQueryCachePlugin;
-
+    public ObjectValue specification;
+    
     // custom values
     public BrokerFactoryValue brokerFactoryPlugin;
     public RemoteCommitProviderValue remoteProviderPlugin;
@@ -529,6 +539,11 @@ public class OpenJPAConfigurationImpl
         
         eagerInitialization = addBoolean("InitializeEagerly");
         
+        specification = new SpecificationPlugin("Specification", 
+            getConfigurationLog());
+        addValue(specification);
+        specification.setInstantiatingGetter("getSpecificationInstance");
+        
         // initialize supported options that some runtimes may not support
         supportedOptions.add(OPTION_NONTRANS_READ);
         supportedOptions.add(OPTION_OPTIMISTIC);
@@ -556,22 +571,38 @@ public class OpenJPAConfigurationImpl
         return supportedOptions;
     }
 
+    /**
+     * Get the name of the Specification only (not the version or other 
+     * information) or an empty String if not set.
+     * 
+     */
     public String getSpecification() {
-        return spec;
+        Specification spec = getSpecificationInstance();
+        return spec == null ? "" : spec.getName();
+    }
+    
+    public Specification getSpecificationInstance() {
+        return (Specification)specification.get();
     }
 
+    /**
+     * Sets Specification from the given String.
+     * 
+     * @param spec should be encoded in the format specified in {@link 
+     * Specification#create(String)}.
+     */
     public boolean setSpecification(String spec) {
         if (spec == null)
             return false;
-
-        if (this.spec != null) {
-            if (!this.spec.equals(spec)
-                && getConfigurationLog().isWarnEnabled())
-                getConfigurationLog().warn(
-                    _loc.get("diff-specs", this.spec, spec));
+        specification.setString(spec);
+        ProductDerivations.afterSpecificationSet(this);
+        return true;
+    }
+    
+    public boolean setSpecification(Specification newSpec) {
+        if (newSpec == null)
             return false;
-        }
-        this.spec = spec;
+        specification.set(newSpec);
         ProductDerivations.afterSpecificationSet(this);
         return true;
     }

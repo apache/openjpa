@@ -24,12 +24,13 @@ import java.util.Map;
 import org.apache.openjpa.datacache.DataCache;
 import org.apache.openjpa.datacache.DataCacheManager;
 import org.apache.openjpa.ee.ManagedRuntime;
+import org.apache.openjpa.enhance.RuntimeUnenhancedClasssesModes;
+import org.apache.openjpa.event.BrokerFactoryEventManager;
 import org.apache.openjpa.event.OrphanedKeyAction;
 import org.apache.openjpa.event.RemoteCommitEventManager;
 import org.apache.openjpa.event.RemoteCommitProvider;
 import org.apache.openjpa.kernel.AutoClear;
 import org.apache.openjpa.kernel.AutoDetach;
-import org.apache.openjpa.kernel.Broker;
 import org.apache.openjpa.kernel.BrokerFactory;
 import org.apache.openjpa.kernel.BrokerImpl;
 import org.apache.openjpa.kernel.ConnectionRetainModes;
@@ -41,7 +42,6 @@ import org.apache.openjpa.kernel.QueryFlushModes;
 import org.apache.openjpa.kernel.RestoreState;
 import org.apache.openjpa.kernel.SavepointManager;
 import org.apache.openjpa.kernel.Seq;
-import org.apache.openjpa.event.BrokerFactoryEventManager;
 import org.apache.openjpa.kernel.exps.AggregateListener;
 import org.apache.openjpa.kernel.exps.FilterListener;
 import org.apache.openjpa.lib.conf.Configuration;
@@ -213,20 +213,47 @@ public interface OpenJPAConfiguration
     public Collection supportedOptions();
 
     /**
-     * A configuration can be set with defaults for a specific specification.
+     * Get a name of the Specification. Specification determines various 
+     * important default behaviors.
      */
     public String getSpecification();
     
     /**
+     * Get the Specification. Specification determines various important default 
+     * behaviors.
+     * 
+     * @since 2.0.0
+     */
+    public Specification getSpecificationInstance();
+    
+    /**
+     * Set the Specification that this configuration should use for the
+     * various properties that need to have different defaults for different
+     * specification environments..
+     * 
+     * @param fullname of the specification that possibly encodes major and
+     * minor version information. For encoding format
+     * @see Specification#create(String)
+     */
+    public boolean setSpecification(String spec);
+    
+    /**
      * Set the specification that this configuration should use for the
      * various properties that need to have different defaults for different
-     * spec environments. This should be invoked before any configuration
-     * options are set, as it will mutate various values.
+     * specification environments. The given specification also carry version
+     * information which can help for setting, for example, various
+     * {@link Compatibility compatibility} options during runtime.
+     *   
+     * This should be invoked before any configuration options are set, as it 
+     * will mutate various values.
      * You can only assign the specification once, though it is not fatal
      * to attempt to do so multiple times. Attempts to set to null will
      * be ignored.
+     * 
+     * @since 2.0.0
+     * 
      */
-    public boolean setSpecification(String spec);
+    public boolean setSpecification(Specification spec);
 
     /**
      * The plugin string for the {@link ClassResolver} to use for custom
