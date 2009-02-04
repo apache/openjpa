@@ -390,6 +390,7 @@ public class QueryImpl implements OpenJPAQuerySPI, Serializable {
 						throw new ArgumentException(_loc.get(
 								"bad-query-hint-value", key, value), null,
 								null, false);
+                    _query.getFetchConfiguration().setHint(key, value);
 				}  else if (QueryHints.HINT_INVALIDATE_PREPARED_QUERY.equals
                     (key)) {
                     _query.getFetchConfiguration().setHint(key, (Boolean)value);
