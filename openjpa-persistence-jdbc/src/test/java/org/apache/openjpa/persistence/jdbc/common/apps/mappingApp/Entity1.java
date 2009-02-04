@@ -28,7 +28,9 @@ import javax.persistence.EntityResult;
 import javax.persistence.Id;
 import javax.persistence.Inheritance;
 import javax.persistence.InheritanceType;
+import javax.persistence.NamedNativeQuery;
 import javax.persistence.OneToOne;
+import javax.persistence.QueryHint;
 import javax.persistence.SqlResultSetMapping;
 import javax.persistence.Table;
 import javax.persistence.Version;
@@ -37,7 +39,10 @@ import javax.persistence.Version;
 @Entity
 @Table(name="entity_1")
 @Inheritance(strategy=InheritanceType.JOINED)
-@SqlResultSetMapping(name="NativeTestResult", entities=@EntityResult(entityClass=Entity1.class))
+@SqlResultSetMapping(name="NativeTestResult", 
+    entities=@EntityResult(entityClass=Entity1.class))
+@NamedNativeQuery(name="SQLWithHints", query="SELECT * FROM ENTITY_1",
+    hints={@QueryHint(name="XYZ", value="abc")})
 public class Entity1 implements Serializable
 {
 	private static final long serialVersionUID = 2882935803066041165L;

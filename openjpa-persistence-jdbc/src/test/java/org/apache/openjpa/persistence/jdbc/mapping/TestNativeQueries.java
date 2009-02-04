@@ -18,153 +18,139 @@
  */
 package org.apache.openjpa.persistence.jdbc.mapping;
 
+import java.util.List;
 
-import javax.persistence.*;
-import java.util.*;
+import javax.persistence.EntityManager;
+import javax.persistence.Query;
 
-import org.apache.openjpa.persistence.jdbc.common.apps.mappingApp.*;
-import org.apache.openjpa.persistence.common.utils.*;
-import junit.framework.*;
+import org.apache.openjpa.kernel.QueryLanguages;
+import org.apache.openjpa.persistence.OpenJPAPersistence;
+import org.apache.openjpa.persistence.jdbc.common.apps.mappingApp.Entity1;
+import org.apache.openjpa.persistence.jdbc.common.apps.mappingApp.Entity2;
+import org.apache.openjpa.persistence.test.SingleEMFTestCase;
 
+public class TestNativeQueries extends SingleEMFTestCase {
+    private static final String TABLE_NAME = "entity_1";
+    private static final String CONST_NAME = "testSimple";
+    private static final int CONST_INT = 42;
+    
+    private EntityManager em;
+    
+    public void setUp() {
+        super.setUp(CLEAR_TABLES, Entity1.class, Entity2.class);
 
-public class TestNativeQueries	extends AbstractTestCase
-{
-	
-	public TestNativeQueries(String name)
-	{
-		super(name, "jdbccactusapp");
-	}
+        em = emf.createEntityManager();
+        em.getTransaction().begin();
+        em.persist(new Entity1(1, CONST_NAME, CONST_INT));
+        em.persist(new Entity1(2, CONST_NAME+" Changed", CONST_INT+1));
+        em.persist(new Entity1(3, CONST_NAME+" Changed 2", CONST_INT+2));
+        em.getTransaction().commit();
+        em.getTransaction().begin();
+    }
 
-    public void setUp ()
-	{
-		deleteAll (Entity1.class);
-	}
+    public void testNoParameter() {
+        String sql = "SELECT * FROM " + TABLE_NAME;
+        assertSize(3, em.createNativeQuery(sql, Entity1.class).getResultList());
+    }
+    
+    public void testLiteral() {
+        String sql = "SELECT * FROM " + TABLE_NAME 
+                   + " WHERE INTFIELD = " + CONST_INT;
+        assertSize(1, em.createNativeQuery(sql, Entity1.class).getResultList());
+    }
+    
+    public void testParameter() {
+        String sql = "SELECT * FROM " + TABLE_NAME 
+                   + " WHERE INTFIELD = ?1";
+        assertSize(1, em.createNativeQuery(sql, Entity1.class)
+            .setParameter(1, CONST_INT)
+            .getResultList());
+    }
+    
+    public void testOutOfOrderParameter() {
+        String sql = "SELECT * FROM " + TABLE_NAME 
+                   + " WHERE INTFIELD = ?2 AND STRINGFIELD = ?1";
+        assertSize(1, em.createNativeQuery(sql, Entity1.class)
+            .setParameter(2, CONST_INT)
+            .setParameter(1, CONST_NAME)
+            .getResultList());
+    }
+    
+    public void testDuplicateParameter() {
+        String sql = "SELECT * FROM " + TABLE_NAME
+                   + " WHERE INTFIELD = ?1 AND INTFIELD = ?1";
+        assertSize(1, em.createNativeQuery(sql, Entity1.class)
+            .setParameter(1, CONST_INT)
+            .getResultList());
+    }
+    
+    public void testDifferentParameterToSameField() {
+        String sql = "SELECT * FROM " + TABLE_NAME
+                   + " WHERE INTFIELD = ?1 OR INTFIELD = ?2";
+        assertSize(2, em.createNativeQuery(sql, Entity1.class)
+            .setParameter(1, CONST_INT)
+            .setParameter(2, CONST_INT+1)
+            .getResultList());
+    }
 
-	public void testSimple ()
-	{
-		deleteAll (Entity1.class);
+    public void testQuoteParameterIgnored() {
+        String sql = "SELECT * FROM " + TABLE_NAME
+                   + " WHERE INTFIELD = ?1 OR STRINGFIELD = '?2'";
+        assertSize(1, em.createNativeQuery(sql, Entity1.class)
+            .setParameter(1, CONST_INT)
+            .getResultList());
+    }
+    
+    public void testParameterMarkerWithoutSpaces() {
+        String sql = "SELECT * FROM " + TABLE_NAME
+                   + " WHERE INTFIELD=?1";
+        assertSize(1, em.createNativeQuery(sql, Entity1.class)
+            .setParameter(1, CONST_INT)
+            .getResultList());
+    }
+    
+    public void testZeroBasedParameterSettingFails() {
+        try {
+            String sql = "SELECT * FROM " + TABLE_NAME 
+                       + " WHERE INTFIELD = ?1";
+            em.createNativeQuery(sql, Entity1.class)
+                .setParameter(0, 12);
+            fail("Expected to fail with 0 parameter index");
+        } catch (Exception e) {
+            // as expected
+        }
+    }
 
-		// test create
-		{
-			EntityManager em = currentEntityManager( );
-			startTx(em);
-			em.persist (new Entity1 (0, "testSimple", 12));
-			endTx(em);
-			endEm(em);
-		}
+    public void testNamedParameterFails() {
+        /*
+         * Named parameters are not supported according to Section 3.6.8 of
+         * JPA 2.0 (pp 100) public draft Oct 31, 2008:
+         * "The use of named parameters is not defined for native queries. 
+         * Only positional parameter binding for SQL queries may be used by 
+         * portable applications."
+         */
+        String sql = "SELECT * FROM " + TABLE_NAME + " WHERE INTFIELD = :p";
+        try {
+            em.createNativeQuery (sql, Entity1.class)
+              .setParameter ("p", 12);
+            fail("Expected to fail with NAMED parameter");
+        } catch (IllegalArgumentException ex) {
+            // good
+        }
+    }
+    
+    public void testHintsAreProcessed() {
+        Query q = em.createNamedQuery("SQLWithHints");
+        assertEquals(QueryLanguages.LANG_SQL, 
+            OpenJPAPersistence.cast(q).getLanguage());
+        String hintKey = "XYZ";
+        assertTrue(q.getHints().containsKey(hintKey));
+        assertEquals("abc", q.getHints().get(hintKey));
+        
+    }
 
-		// test Query
-		{
-/*			JDBCConfiguration conf = (JDBCConfiguration)getConfiguration ();
-			DBDictionary dict = conf.getDBDictionaryInstance ();*/
-
-/*			String tableName = dict.getFullName (conf.getMappingRepository ().
-				getMapping (Entity1.class, getClass ().getClassLoader (), true).
-				getTable (), false);*/
-
-			EntityManager em = currentEntityManager( );
-			startTx(em);
-			String tableName = "entity_1";
-			assertSize (1, em.createNativeQuery
-				("SELECT * FROM " + tableName, Entity1.class).
-				getResultList ());
-			assertSize (1, em.createNativeQuery ("SELECT * FROM " + tableName
-				+ " WHERE INTFIELD = 12", Entity1.class).
-				getResultList ());
-
-			assertSize (1, em.createNativeQuery ("SELECT * FROM " + tableName
-				+ " WHERE INTFIELD = ?1", Entity1.class).
-				setParameter (1, 12).
-				getResultList ());
-
-			// make sure that out-of-order parameters work
-			assertSize (1, em.createNativeQuery ("SELECT * FROM " + tableName
-				+ " WHERE INTFIELD = ?2 AND STRINGFIELD = ?1", Entity1.class).
-				setParameter (2, 12).
-				setParameter (1, "testSimple").
-				getResultList ());
-
-			// make sure duplicate parameters work
-			assertSize (1, em.createNativeQuery ("SELECT * FROM " + tableName
-				+ " WHERE INTFIELD = ?1 AND INTFIELD = ?1", Entity1.class).
-				setParameter (1, 12).
-				getResultList ());
-
-			assertSize (1, em.createNativeQuery ("SELECT * FROM " + tableName
-				+ " WHERE INTFIELD = ?1 OR INTFIELD = ?2", Entity1.class).
-				setParameter (1, 12).
-				setParameter (2, 13).
-				getResultList ());
-
-			// make sure that quoted parameters are ignored as expected
-			assertSize (1, em.createNativeQuery ("SELECT * FROM " + tableName
-				+ " WHERE INTFIELD = ?1 OR STRINGFIELD = '?5'", Entity1.class).
-				setParameter (1, 12).
-				getResultList ());
-
-			// test without spaces
-			assertSize (1, em.createNativeQuery ("SELECT * FROM " + tableName
-				+ " WHERE INTFIELD=?1 OR STRINGFIELD='?5'", Entity1.class).
-				setParameter (1, 12).
-				getResultList ());
-
-/*			assertSize (1, ((QueryImpl)em.createNativeQuery
-				("SELECT * FROM " + tableName
-					+ " WHERE INTFIELD = ?1 OR INTFIELD = ?2", Entity1.class)).
-				setParameters (12, 1).
-				getResultList ());
-
-			assertSize (0, ((QueryImpl)em.createNativeQuery
-				("SELECT * FROM " + tableName
-					+ " WHERE INTFIELD = ?1 AND INTFIELD = ?2", Entity1.class)).
-				setParameters (12, 1).
-				getResultList ());
-*/
-			assertSize (0, em.createNativeQuery ("SELECT * FROM " + tableName
-				+ " WHERE INTFIELD = ?1 AND INTFIELD = ?2", Entity1.class).
-				setParameter (1, 12).
-				setParameter (2, 13).
-				getResultList ());
-
-			try
-			{
-				em.createNativeQuery ("SELECT * FROM " + tableName
-					+ " WHERE INTFIELD = ?1", Entity1.class).
-					setParameter (0, 12).
-					getResultList ();
-				fail ("Should not have been able to use param index 0");
-			}
-			catch (Exception e)
-			{
-				// as expected
-			}
-
-
-			/*
-			 * Named parameters are not supported according to 19 June 3.5.2:
-			 *
-			 * The use of named parameters is not defined for
-			 * native queries. Only positional parameter binding
-			 * for SQL queries may be used by portable applications.
-			 *
-			assertSize (1, em.createNativeQuery ("SELECT * FROM " + tableName
-				+ " WHERE INTFIELD = :p",  Entity1.class).
-				setParameter ("p", 12).
-				getResultList ());
-			assertSize (1, em.createNativeQuery ("SELECT * FROM " + tableName
-				+ " WHERE INTFIELD = :p OR INTFIELD = :p", Entity1.class).
-				setParameter ("p", 12).
-				getResultList ());
-			*/
-
-			endTx(em);
-			endEm(em);
-		}
-	}
-	
-	public boolean assertSize(int num, List l)
-	{
-		return(num == l.size());
-	}
+    public void assertSize(int num, List l) {
+        assertNotNull(l);
+        assertEquals(num, l.size());
+    }
 }
-

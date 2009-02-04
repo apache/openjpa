@@ -19,6 +19,7 @@
 package org.apache.openjpa.kernel;
 
 import java.util.Collection;
+import java.util.Map;
 import java.util.Set;
 
 import org.apache.openjpa.lib.rop.ResultList;
@@ -436,8 +437,16 @@ public class DelegatingFetchConfiguration
             return _fetch.getHint(name);
         } catch (RuntimeException re) {
             throw translate(re);
-		}
-	}
+        }
+    }
+    
+    public Map<String, Object> getHints() {
+        try {
+            return _fetch.getHints();
+        } catch (RuntimeException re) {
+            throw translate(re);
+        }
+    }
 
     public int requiresFetch(FieldMetaData fmd) {
         try {

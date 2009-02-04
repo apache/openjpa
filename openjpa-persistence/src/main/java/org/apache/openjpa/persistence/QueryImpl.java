@@ -601,9 +601,13 @@ public class QueryImpl implements OpenJPAQuerySPI, Serializable {
 		return _query.equals(((QueryImpl) other)._query);
 	}
 
+	/**
+	 * Get all the active hints and their values.
+	 * 
+	 */
+    //TODO: JPA 2.0 Hints that are not set to FetchConfiguration 
     public Map<String, Object> getHints() {
-        throw new UnsupportedOperationException(
-            "JPA 2.0 - Method not yet implemented");
+        return _query.getFetchConfiguration().getHints();
     }
 
     public LockModeType getLockMode() {

@@ -20,6 +20,7 @@ package org.apache.openjpa.kernel;
 
 import java.io.Serializable;
 import java.util.Collection;
+import java.util.Map;
 import java.util.Set;
 
 import org.apache.openjpa.lib.rop.ResultList;
@@ -305,6 +306,13 @@ public interface FetchConfiguration
 	 * @since 0.4.0
 	 */
 	public Object getHint (String name);
+	
+	/**
+	 * Returns an immutable view of the currently active hints and their values. 
+	 * 
+	 * @since 2.0.0
+	 */
+	public Map<String, Object> getHints();
 
     /**
      * Root classes for recursive operations. This set is not thread safe.

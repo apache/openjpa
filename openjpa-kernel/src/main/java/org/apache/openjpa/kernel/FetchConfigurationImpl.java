@@ -29,6 +29,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.TreeMap;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.openjpa.conf.OpenJPAConfiguration;
@@ -462,6 +463,16 @@ public class FetchConfigurationImpl
 
     public Object getHint(String name) {
         return (_state.hints == null) ? null : _state.hints.get(name);
+    }
+    
+    public Map<String, Object> getHints() {
+        if (_state.hints == null)
+            return (Map<String, Object>)Collections.EMPTY_MAP;
+        Map<String, Object> result = new TreeMap<String, Object>();
+        for (Object key : _state.hints.keySet()) {
+            result.put(key.toString(), _state.hints.get(key));
+        }
+        return result;
     }
 
     public Set getRootClasses() {
