@@ -42,6 +42,7 @@
 	<xsl:param name="preface.autolabel" select="0"/>
 	<xsl:param name="qandadiv.autolabel" select="1"/>
 	<xsl:param name="section.autolabel" select="1"/>
+    <xsl:param name="html.base">display</xsl:param>
 
 	<xsl:param name="use.id.as.filename" select="'1'"/>
 	<xsl:template name="process.image.attributes"/>

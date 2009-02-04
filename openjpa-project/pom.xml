@@ -260,7 +260,11 @@
                                     <postProcess>
                                         <!-- rename manual to index -->
                                         <move file="${docbook.target}/manual.html" tofile="${docbook.target}/index.html" />
-
+                                        <!-- Replace a 'base href' token to 'base target' in the index.html -->
+                                        <!-- This base href was inserted by manual-xhtml-chunk.xsl parameter 'html.base' -->
+										<replace file="${docbook.target}/index.html" token="base href" value="base target"/>
+                                        <!-- Copy main.html from original location to docbook target  -->
+                                        <copy file="${docbook.source}/main.html" tofile="${docbook.target}/main.html" />
                                         <!-- copy over images and styles -->
                                         <mkdir dir="${docbook.target}/img" />
                                         <copy todir="${docbook.target}/img">
