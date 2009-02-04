@@ -1392,6 +1392,9 @@ public class XMLPersistenceMetaDataParser
         fmd.setSerialized(false); // override any Lob annotation
         if (!fmd.isDefaultFetchGroupExplicit())
             fmd.setInDefaultFetchGroup(true);
+        boolean orphanRemoval = Boolean.valueOf(attrs.getValue(
+            "orphan-removal"));
+        setOrphanRemoval(fmd, orphanRemoval);
     }
 
     /**
@@ -1448,8 +1451,16 @@ public class XMLPersistenceMetaDataParser
             fmd.getElement().setDeclaredType(classForName(val));
         assertPCCollection(fmd, "OneToMany");
         fmd.setSerialized(false); // override any Lob annotation
+        boolean orphanRemoval = Boolean.valueOf(attrs.getValue(
+            "orphan-removal"));
+        setOrphanRemoval(fmd.getElement(), orphanRemoval);
     }
-
+    
+    protected void setOrphanRemoval(ValueMetaData vmd, boolean orphanRemoval) {
+        if (orphanRemoval) 
+            vmd.setCascadeDelete(ValueMetaData.CASCADE_AUTO);
+    }
+    
     protected void parseElementCollection(FieldMetaData fmd, Attributes attrs)
         throws SAXException {
         String val = attrs.getValue("target-entity");

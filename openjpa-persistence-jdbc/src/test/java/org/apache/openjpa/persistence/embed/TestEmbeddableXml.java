@@ -44,12 +44,16 @@ public class TestEmbeddableXml extends SingleEMFTestCase {
     public int newVpId = 100;
     public int numItems = 2;
     public int itemId = 1;
+    public int cId = 1;
+    public int oId = 1;
 
     public int numImagesPerItem = 3;
     public int numDepartments = 2;
     public int numEmployeesPerDept = 2;
     public int numCompany = 2;
     public int numDivisionsPerCo = 2;
+    public int numCustomers = 1;
+    public int numOrdersPerCustomer = 2;
     
     public void setUp() {
         setUp(CLEAR_TABLES);
@@ -625,5 +629,107 @@ public class TestEmbeddableXml extends SingleEMFTestCase {
     public void assertVicePresident(VicePresidentXml vp) {
         int id = vp.getId();
         String name = vp.getName();
-    } 
+    }
+    
+    public void createOrphanRemoval() {
+        EntityManager em = emf.createEntityManager();
+        EntityTransaction tran = em.getTransaction();
+        for (int i = 0; i < numCustomers; i++)
+            createCustomer(em, cId++);
+        tran.begin();
+        em.flush();
+        tran.commit();
+        em.close();
+    }
+
+    public CustomerXml createCustomer(EntityManager em, int id) {
+        CustomerXml c = new CustomerXml();
+        c.setId(id);
+        c.setName("name" + id);
+        for (int i = 0; i < numOrdersPerCustomer; i++) {
+            OrderXml order = createOrder(em, oId++);
+            c.addOrder(order);
+            order.setCust(c);
+            em.persist(order);
+        }
+        em.persist(c);
+        return c;
+    }
+
+    public OrderXml createOrder(EntityManager em, int id) {
+        OrderXml o = new OrderXml();
+        o.setId(id);
+        em.persist(o);
+        return o;
+    }
+    
+    public void testOrphanRemovalTarget() {
+        createOrphanRemoval();
+        EntityManager em = emf.createEntityManager();
+        int count = count(OrderXml.class);
+        assertEquals(numOrdersPerCustomer * numCustomers, count);
+
+        CustomerXml c = em.find(CustomerXml.class, 1);
+        Set<OrderXml> orders = c.getOrders();
+        assertEquals(numOrdersPerCustomer, orders.size());
+
+        // OrphanRemoval: remove target: the order will be deleted from db
+        for (OrderXml order : orders) {
+            orders.remove(order);
+            break;
+        }
+        em.getTransaction().begin();
+        em.persist(c);
+        em.flush();
+        em.getTransaction().commit();
+        em.clear();
+
+        c = em.find(CustomerXml.class, 1);
+        orders = c.getOrders();
+        assertEquals(numOrdersPerCustomer - 1, orders.size());
+        count = count(OrderXml.class);
+        assertEquals(numOrdersPerCustomer * numCustomers - 1, count);
+        em.close();
+    }
+    
+    public void testOrphanRemovalTargetSetNull() {
+        createOrphanRemoval();
+        EntityManager em = emf.createEntityManager();
+        CustomerXml c = em.find(CustomerXml.class, 1);
+        System.err.println("C name = " + c.getName());
+        System.err.println("size before = " + c.getOrders().size());
+        c.setOrders(null);
+        em.getTransaction().begin();
+        em.persist(c);
+        em.flush();
+        em.getTransaction().commit();
+        em.clear();
+
+        int count = count(OrderXml.class);
+        assertEquals(numOrdersPerCustomer * (numCustomers - 1), count);
+        
+        c = em.find(CustomerXml.class, 1);
+        Set<OrderXml> orders = c.getOrders();
+        if (orders != null)
+            assertEquals(0, orders.size());
+        em.close();
+    }
+    
+    public void testOrphanRemovalSource() {
+        createOrphanRemoval();
+        EntityManager em = emf.createEntityManager();
+        
+        // OrphanRemoval: remove source
+        CustomerXml c = em.find(CustomerXml.class, 1);
+        em.getTransaction().begin();
+        em.remove(c);
+        em.flush();
+        em.getTransaction().commit();
+        em.clear();
+        
+        int count = count(OrderXml.class);
+        assertEquals(numOrdersPerCustomer * (numCustomers - 1), count);
+        
+        em.close();
+    }
 }

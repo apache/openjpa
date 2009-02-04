@@ -18,29 +18,44 @@
  */
 package org.apache.openjpa.persistence.embed;
 
-import javax.persistence.*;
 
-@Embeddable
-public class JobInfo {
+public class OrderXml {
+    protected int id;
     
-    String jobDescription;
+    protected String description;
     
-    @ManyToOne 
-    ProgramManager pm; // Bidirectional
+    protected CustomerXml cust;
     
-    public void setJobDescription(String jobDescription) {
-        this.jobDescription = jobDescription;
+    public CustomerXml getCust() {
+        return cust;
     }
     
-    public String getJobDescription() {
-        return jobDescription;
-    }
- 
-    public void setProgramManager(ProgramManager pm) {
-        this.pm = pm;
+    public void setCust(CustomerXml cust) {
+        this.cust = cust;
     }
     
-    public ProgramManager getProgramManager() {
-        return pm;
+    public int getId() {
+        return id;
+    }
+    
+    public void setId(int id) {
+        this.id = id;
+    }
+    
+    public String getDescription() {
+        return description;
+    }
+    
+    public void setDescription(String desc) {
+        this.description = desc;
+    }
+    
+    public boolean equals(Object obj) {
+        OrderXml o0 = (OrderXml) obj;
+        if (o0 == null) return false;
+        if (o0.getId() != id) return false;
+        if (!o0.getDescription().equals(description)) return false;
+        if (!o0.getCust().equals(cust)) return false;
+        return true;
     }
 }

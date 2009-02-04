@@ -123,40 +123,60 @@ version="2.0">
 			</one-to-many>
 		</attributes>
 	</entity>
- 
-    <embeddable class="org.apache.openjpa.persistence.embed.Embed_EmbedXml" 
-                access="FIELD">
-        <attributes>
-            <basic name="intVal1">
-            </basic>
-            <basic name="intVal2">
-            </basic>
-            <basic name="intVal3">
-            </basic>
-            <embedded name="embed">
-                 <attribute-override name="intVal1">
-                   <column name="embed_intVal1"/>
-                 </attribute-override>
-                 <attribute-override name="intVal2">
-                   <column name="embed_intVal2"/>
-                 </attribute-override>
-                 <attribute-override name="intVal3">
-                   <column name="embed_intVal3"/>
-                 </attribute-override>
-            </embedded>
-        </attributes>
-    </embeddable>
 
-    <embeddable class="org.apache.openjpa.persistence.embed.EmbedXml" 
-                access="FIELD">
-        <attributes>
-            <basic name="intVal1">
-            </basic>
-            <basic name="intVal2">
-            </basic>
-            <basic name="intVal3">
-            </basic>
-        </attributes>
-    </embeddable>
-    
+	<entity name="CustomerXml"
+		class="org.apache.openjpa.persistence.embed.CustomerXml"
+		access="FIELD">
+		<table name="Customer_XML" />
+		<attributes>
+			<id name="id"></id>
+			<basic name="name" />
+			<one-to-many name="orders" mapped-by="cust"
+				orphan-removal="true" />
+		</attributes>
+	</entity>
+
+	<entity name="OrderXml"
+		class="org.apache.openjpa.persistence.embed.OrderXml"
+		access="FIELD">
+		<table name="Order_XML" />
+		<attributes>
+			<id name="id"></id>
+			<basic name="description" />
+			<many-to-one name="cust">
+				<join-column name="CUST_ID" nullable="false" />
+			</many-to-one>
+		</attributes>
+	</entity>
+
+	<embeddable
+		class="org.apache.openjpa.persistence.embed.Embed_EmbedXml"
+		access="FIELD">
+		<attributes>
+			<basic name="intVal1"></basic>
+			<basic name="intVal2"></basic>
+			<basic name="intVal3"></basic>
+			<embedded name="embed">
+				<attribute-override name="intVal1">
+					<column name="embed_intVal1" />
+				</attribute-override>
+				<attribute-override name="intVal2">
+					<column name="embed_intVal2" />
+				</attribute-override>
+				<attribute-override name="intVal3">
+					<column name="embed_intVal3" />
+				</attribute-override>
+			</embedded>
+		</attributes>
+	</embeddable>
+
+	<embeddable class="org.apache.openjpa.persistence.embed.EmbedXml"
+		access="FIELD">
+		<attributes>
+			<basic name="intVal1"></basic>
+			<basic name="intVal2"></basic>
+			<basic name="intVal3"></basic>
+		</attributes>
+	</embeddable>
+
 </entity-mappings>
