@@ -54,6 +54,8 @@
     <!ENTITY samples_guide.xml SYSTEM "samples_guide.xml">
     <!ENTITY jpa_resources.xml SYSTEM "jpa_resources.xml">
     <!ENTITY supported_databases.xml SYSTEM "supported_databases.xml">
+    <!ENTITY migration_considerations.xml SYSTEM "migration_considerations.xml">
+    <!ENTITY properties_info.xml SYSTEM "properties_info.xml">
 ]>
 <book id="manual">
     <bookinfo>
@@ -118,4 +120,5 @@
 
     &jpa_resources.xml;
     &supported_databases.xml;
+    &migration_considerations.xml;
 </book>

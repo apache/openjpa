@@ -75,6 +75,33 @@ opportunities OpenJPA provides. Later, you can use the guide when you need
 details on a specific aspect of OpenJPA.
                 </para>
             </listitem>
+            <listitem>
+            	<para>
+            	Appendices
+            	<itemizedlist>
+            		<listitem>
+            			<para>
+            			The appendix <link linkend="jpa_resources">JPA Resources
+            			</link> provides links to other resources.
+            			</para>
+            		</listitem>
+            		<listitem>
+            			<para>
+            			The appendix <link linkend="supported_databases">
+            			Supported Databases</link> provides information on
+            			databases supported by OpenJPA.
+            			</para>
+            		</listitem>
+            		<listitem>
+            			<para>
+            			The appendix <link linkend="migration_considerations">
+            			Migration Considerations</link> provides information
+            			related to migration to a different release.
+            			</para>
+            		</listitem>
+            	</itemizedlist>
+            	</para>
+            </listitem>
         </itemizedlist>
     </section>
 </chapter>

@@ -1025,6 +1025,20 @@ language. For relational databases, this the Structured Query Language (SQL).
 native query support.
         </para>
     </section>
+    <section id="jpa_overview_em_properties">
+		<title>
+			Retrieving Properties Information
+		</title>
+		<indexterm zone="jpa_overview_em_properties">
+            <primary>
+                EntityManager
+            </primary>
+            <secondary>
+                properties information
+            </secondary>
+        </indexterm>
+        &properties_info.xml;
+    </section>
     <section id="jpa_overview_em_closing">
         <title>
             Closing
