@@ -305,7 +305,7 @@ public class JDBCConfigurationImpl
         // This plug-in is declared in superclass but defined here
         // because PreparedQueryCache is currently available for JDBC
         // backend only
-        preparedQueryCachePlugin = addPlugin("QuerySQLCache", true);
+        preparedQueryCachePlugin = addPlugin("jdbc.QuerySQLCache", true);
         aliases = new String[] {
             "true", "org.apache.openjpa.jdbc.kernel.PreparedQueryCacheImpl",
             "false", null

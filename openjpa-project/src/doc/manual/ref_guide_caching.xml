@@ -1023,47 +1023,82 @@ Disables the compilation cache.
 			</tgroup>
 		</table>
 	</section>
+	
     <section id="ref_guide_cache_querysql">
-        <title>
-            Query SQL Cache
-        </title>
+        <title>Prepared SQL Cache</title>
         <indexterm zone="ref_guide_cache_querysql">
-            <primary>
-                caching
-            </primary>
-            <secondary>
-                query sql cache
-            </secondary>
+            <primary>caching</primary>
+            <secondary>query sql cache</secondary>
         </indexterm>
-<para>
-The Query SQL Cache caches SQL statements corresponding to JPQL queries.
+         <para>
+Prepared SQL Cache caches SQL statements corresponding to JPQL queries.
 If a JPQL query is executed more than once in the same or different persistence
-context, the SQL statement generated during the first execution is cached and
+contexts, the SQL statement generated during the first execution is cached and
 executed directly for subsequent execution. Direct execution of SQL offers
 significant performance gain as it saves the cost of parsing query string and,
 more importantly, populating the query expression tree during every execution.
+Relative performance gain becomes higher as the complexity of forming a SQL 
+query from a JPQL string increases. For example, a JPQL query <code>Q1</code>
+that involves multiple joins across tables takes more computation to translate 
+into a SQL statement than a JPQL query <code>Q2</code> to select by simple 
+primary key identifier. Correspondingly, repeated execution of <code>Q1</code>
+will gain more performance advantage than <code>Q2</code> with Prepared SQL
+Cache. 
 </para>
 <para>
-The Query SQL Cache is configured by the <link linkend="openjpa.jdbc.QuerySQLCache">
-<literal>openjpa.QuerySQLCache</literal></link> configuration property. This
+Prepared SQL Cache is configured by the <link linkend="openjpa.jdbc.QuerySQLCache">
+<literal>openjpa.jdbc.QuerySQLCache</literal></link> configuration property. This
 property accepts a a plugin string (see <xref linkend="ref_guide_conf_plugins"/>)
-with value of <literal>true</literal> or <literal>false</literal>. 
+with value of <literal>true</literal> or <literal>false</literal>. The default
+is <literal>true</literal>. 
 </para>
 <para>
-Depending upon the mapping of your persistent domain object model, 
-lazy/eager fetch settings on the relation paths and fetch configuration, a 
-single JPQL may result in multiple SQL statements. If a JPQL query requires
-more than one SQL statement to be executed, then the JPQL query is not cached.
-The other critical point to remember while using the Query SQL Cache is that
-change in fetch plan or locking mode may cause a different target SQL statement 
-than the original. But Query SQL Cache does not track such changes and reuses
-the cached SQL under the assumption that the query execution context has 
-remained unchanged. 
+Following salient points to be noted regarding usage of Prepared Query Cache.
+<itemizedlist>
+	<listitem>
+	Prepared Query Cache uses the original JPQL string as the key to index the 
+	corresponding SQL statement. Hence the JPQL strings that are semantically 
+	identical but differ by character case or identification variables are 
+	considered as different by this cache. 
+	</listitem>
+	<listitem>
+    A JPQL query may not always translate into a <emphasis>single</emphasis> 
+    SQL query. The JPQL queries that require multiple select statements are 
+    never cached. 
+    </listitem>
+	<listitem>
+	Same JPQL query may result into different SQL statements under different
+	execution context. Execution context parameters such as fetch configuration 
+	or locking mode determine the resultant SQL. However, Prepared SQL Cache
+	<emphasis>does not</emphasis> capture the execution context parameters
+	while caching a generated SQL.  
+	</listitem>
+	<listitem>
+	The named or positional parameters of a JPQL query can be set to different
+	values across executions. In general, the corresponding cached SQL statement 
+	will be re-parameterized accordingly. However, the parameter value itself can 
+	determine the SQL query. For example, when a JPQL query compares a relation 
+	field for equality against a parameter <code>p</code>, whether the actual
+	value of <code>p</code> is <code>null</code> or not will determine the
+	generated SQL statement. Another example is collection valued parameter for
+	<code>IN</code> expression. Each element of a collection valued parameter 
+	results into a SQL parameter. If a collection valued parameter across
+	executions are set to different number of elements, then the parameters of
+	the cached SQL do not correspond. If such situations are encountered while 
+	re-parameterizing the cached SQL, the cached version is not reused and the
+	original JPQL query is used to generate a new SQL statement for execution. 
+	</listitem>
+	<listitem>
+	JPQL query that returns a <emphasis>numeric</emphasis> value such as 
+	<code>SELECT count(p) FROM PObject p</code> is never cached.
+	</listitem>
+</itemizedlist>
 </para>
 <para>
-Several mechanisms are available to the application to deactivate SQL cacheing
-for a query. 
-	<listitem>A user application can deactivate SQL Query Cache
+Several mechanisms are available to the application to bypass SQL caching
+for a JPQL query. 
+<itemizedlist>
+	<listitem>A user application can disable Prepared SQL Cache
 	for entire lifetime of a persistence context by invoking the following
 	method on OpenJPA's EntityMananger interface:
 	<programlisting>
@@ -1071,11 +1106,11 @@ for a query.
 	</programlisting>
 	</listitem>
 	<listitem>
-	A user application can instruct a particular execution of a JPQL query to
+	A user application can instruct particular execution of a JPQL query to
 	ignore any cached SQL query, by setting 
 	<literal>QueryHints.HINT_IGNORE_PREPARED_QUERY</literal> or 
 	<literal>"openjpa.hint.IgnorePreparedQuery"</literal> to <literal>true</literal>
-	via standard <literal>javax.persistence.Query.setHints()</literal>. If a
+	via standard <literal>javax.persistence.Query.setHint(String, Object)</literal> method. If a
 	SQL query has been cached corresponding to the JPQL query prior to this 
 	execution, then the cached SQL remains in the cache and will be reused
 	for any subsequent execution of the same JPQL query.
@@ -1085,10 +1120,19 @@ for a query.
 	ignore any cached SQL query, by setting 
 	<literal>QueryHints.HINT_INVALIDATE_PREPARED_QUERY</literal> or 
 	<literal>"openjpa.hint.InvalidatePreparedQuery"</literal> to <literal>true</literal>
-	The SQL query is removed from the cache and the JPQL query will never be
-	cached again during the lifetime of the entire persistence unit i.e.
-	EntityManagerFactory.
+	The SQL query is removed from the cache. Also the JPQL query will never be
+	cached again during the lifetime of the entire persistence unit.
 	</listitem>
+	<listitem>
+	Plug-in property <literal>openjpa.jdbc.QuerySQLCache</literal> can be 
+	configured to exclude certain JPQL queries as shown below.
+	<programlisting>
+	&lt;property name="openjpa.jdbc.QuerySQLCache" value="true(excludes='select c from Company c;select d from Department d')"/&gt;
+	</programlisting> 
+	will never cache JPQL queries <code>select c from Company c</code> and 
+	<code>select d from Department d</code>.
+	</listitem>
+	</itemizedlist>
 </para>
  
     </section>
