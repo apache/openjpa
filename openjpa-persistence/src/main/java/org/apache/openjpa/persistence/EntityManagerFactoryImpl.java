@@ -18,23 +18,18 @@
  */
 package org.apache.openjpa.persistence;
 
-import java.io.InputStream;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.Properties;
 import java.util.Set;
 
 import javax.persistence.Cache;
 import javax.persistence.EntityManagerFactory;
-import javax.persistence.QueryBuilder;
-
 import org.apache.openjpa.conf.OpenJPAConfiguration;
 import org.apache.openjpa.enhance.Reflection;
 import org.apache.openjpa.kernel.AutoDetach;
@@ -71,7 +66,6 @@ public class EntityManagerFactoryImpl
     private transient Constructor<FetchPlan> _plan = null;
     private transient StoreCache _cache = null;
     private transient QueryResultCache _queryCache = null;
-    private Set<String> _supportedPropertyKeys; 
 
     /**
      * Default constructor provided for auto-instantiation.
@@ -104,9 +98,20 @@ public class EntityManagerFactoryImpl
     public OpenJPAConfiguration getConfiguration() {
         return _factory.getConfiguration();
     }
-
-    public Properties getProperties() {
-        return _factory.getProperties();
+    
+    /* 
+     * @see javax.persistence.EntityManagerFactory#getProperties()
+     * 
+     * This does not return the password property.
+     */
+    public Map getProperties() {
+        Map properties = _factory.getAllProperties();
+        
+        // Remove the password property
+        properties.remove("javax.persistence.jdbc.password");
+        properties.remove("openjpa.ConnectionPassword");
+        
+        return properties;
     }
 
     public Object putUserObject(Object key, Object val) {
@@ -350,7 +355,6 @@ public class EntityManagerFactoryImpl
     }
 
     public Set<String> getSupportedProperties() {
-        throw new UnsupportedOperationException(
-            "JPA 2.0 - Method not yet implemented");
+        return _factory.getSupportedProperties();
     }
 }

@@ -36,7 +36,7 @@ public interface OpenJPAEntityManagerFactory
     /**
      * Return properties describing this runtime.
      */
-    public Properties getProperties();
+    public Map<String, Object> getProperties();
 
     /**
      * Put the specified key-value pair into the map of user objects.

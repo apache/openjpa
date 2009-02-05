@@ -31,6 +31,7 @@ import java.lang.reflect.Array;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.EnumSet;
+import java.util.HashMap;
 import java.util.IdentityHashMap;
 import java.util.Map;
 import java.util.Set;
@@ -964,7 +965,7 @@ public class EntityManagerImpl
         return _broker.getCachePreparedQuery() ?
             getConfiguration().getQuerySQLCacheInstance() : null;
     }
-
+    
     /**
      * Gets the prepared query cached by the given key. 
      * 
@@ -975,7 +976,6 @@ public class EntityManagerImpl
         return (cache == null) ? null : cache.get(id);
     }
 
-    
     public void setFlushMode(FlushModeType flushMode) {
         assertNotCloseInvoked();
         _broker.assertOpen();
@@ -1442,9 +1442,23 @@ public class EntityManagerImpl
             "JPA 2.0 - Method not yet implemented");
     }
 
+    /* 
+     * @see javax.persistence.EntityManager#getProperties()
+     * 
+     * This does not return the password property.
+     */
     public Map<String, Object> getProperties() {
-        throw new UnsupportedOperationException(
-            "JPA 2.0 - Method not yet implemented");
+        Map<String, String> currentProperties = _broker.getProperties();
+        
+        // Convert the <String, String> map into a <String, Object> map
+        Map<String, Object> finalMap =
+            new HashMap<String, Object>(currentProperties);
+        
+        // Remove the password property
+        finalMap.remove("javax.persistence.jdbc.password");
+        finalMap.remove("openjpa.ConnectionPassword");
+        
+        return finalMap;
     }
 
     public OpenJPAQueryBuilder getQueryBuilder() {
@@ -1452,8 +1466,7 @@ public class EntityManagerImpl
     }
 
     public Set<String> getSupportedProperties() {
-        throw new UnsupportedOperationException(
-            "JPA 2.0 - Method not yet implemented");
+        return _broker.getSupportedProperties();
     }
 
     public void lock(Object entity, LockModeType lockMode, Map<String, 
