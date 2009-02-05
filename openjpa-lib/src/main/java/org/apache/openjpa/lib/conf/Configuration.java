@@ -23,6 +23,7 @@ import java.beans.PropertyChangeListener;
 import java.io.Serializable;
 import java.util.Map;
 import java.util.Properties;
+import java.util.Set;
 
 import org.apache.openjpa.lib.log.Log;
 import org.apache.openjpa.lib.log.LogFactory;
@@ -162,6 +163,14 @@ public interface Configuration
      * Remove the given value from the set of configuration properties.
      */
     public boolean removeValue(Value val);
+    
+    /**
+     * Retrieve all properties in this Configuration, including
+     * those that are null or have the default value.
+     * Note that changes made to this properties object will
+     * not be automatically reflected in this Configuration object.
+     **/
+    public Map<String, String> getAllProperties();
 
     /**
      * A properties representation of this Configuration.
@@ -171,7 +180,18 @@ public interface Configuration
      * @param storeDefaults if true, then properties will be written
      * out even if they match the default value for a property
      */
-    public Map toProperties(boolean storeDefaults);
+    public Map<String, String> toProperties(boolean storeDefaults);
+    
+    /**
+     * Get the set of all known property keys, including any equivalent keys,
+     * appropriately prefixed.
+     * 
+     * @param propertyName the name of the property for which the keys are
+     * to be retrieved.
+     * 
+     * @since 2.0.0
+     */
+    public Set<String> getPropertyKeys(String propertyName);
 
     /**
      * Set this Configuration via the given map. Any keys missing from

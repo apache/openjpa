@@ -45,12 +45,14 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.MissingResourceException;
 import java.util.Properties;
+import java.util.Set;
 import java.util.TreeSet;
 
 import org.apache.commons.lang.StringUtils;
@@ -569,17 +571,29 @@ public class ConfigurationImpl
     // To/from maps
     ////////////////
 
-    public Map toProperties(boolean storeDefaults) {
+    /**
+     * An internal method to retrieve properties, to support 2 public methods,
+     * getAllProperties() and toProperties(boolean).
+     * 
+     * @param storeDefaults
+     *            whether or not to retrieve a property if its value is the
+     *            default value. This parameter is irrelevant if getAll is true.
+     * @param getAll
+     *            whether or not to get all of the properties
+     * @return
+     */
+    private Map<String, String> toProperties(boolean storeDefaults,
+        boolean getAll) {
         // clone properties before making any modifications; we need to keep
         // the internal properties instance consistent to maintain equals and
         // hashcode contracts
-        Map clone;
+        Map<String, String> clone;
         if (_props == null)
-            clone = new HashMap();
+            clone = new HashMap<String, String>();
         else if (_props instanceof Properties)
             clone = (Map) ((Properties) _props).clone();
         else
-            clone = new HashMap(_props);
+            clone = new HashMap<String, String>(_props);
 
         // if no existing properties or the properties should contain entries
         // with default values, add values to properties
@@ -593,14 +607,23 @@ public class ConfigurationImpl
                     continue;
 
                 str = val.getString();
-                if (str != null && (storeDefaults
-                    || !str.equals(val.getDefault())))
+                if (getAll
+                    || (str != null && (storeDefaults || !str.equals(val
+                        .getDefault()))))
                     setValue(clone, val, str);
             }
             if (_props == null)
                 _props = new HashMap(clone);
         }
         return clone;
+    }
+    
+    public Map<String, String> getAllProperties() {
+        return toProperties(true, true);
+    }
+
+    public Map<String, String> toProperties(boolean storeDefaults) {
+        return toProperties(storeDefaults, false);
     }
 
     public void fromProperties(Map map) {
@@ -664,6 +687,16 @@ public class ConfigurationImpl
         if (_props == null && ser)
             _props = map;
     }
+    
+    public Set<String> getPropertyKeys(String propertyName) {
+        Set<String> keys = new TreeSet<String>();
+        Map<String,String> properties = getAllProperties();
+        Value value = getValue(propertyName);
+        keys.add(ProductDerivations.getConfigurationKey(value.getProperty(),
+            properties));
+        keys.addAll(value.getEquivalentKeys());
+        return keys;
+    }
 
     /**
      * Adds <code>o</code> to <code>map</code> under key for <code>val</code>.
@@ -672,8 +705,26 @@ public class ConfigurationImpl
      */
     private void setValue(Map map, Value val, Object o) {
         Object key = val.getLoadKey();
-        if (key == null)
-            key = "openjpa." + val.getProperty();
+        // TODO: This change can be removed later when Value.setLoadKey() no
+        // longer throws an exception. Then, we can use setLoadKey() at 
+        // creation time for the spec keys.
+        if (key == null) {
+            Set<String> equivalentKeys = val.getEquivalentKeys();
+            if (equivalentKeys.isEmpty()) {
+                key = "openjpa." + val.getProperty();
+            }
+            else {
+                for (String equivalentKey : equivalentKeys) {
+                    if (equivalentKey.startsWith("javax.persistence.")) {
+                        key = equivalentKey;
+                        break;
+                    }
+                }
+                if (key == null) {
+                    key = "openjpa." + val.getProperty();
+                }
+            }
+        }
         map.put(key, o);
     }
 
