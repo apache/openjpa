@@ -59,7 +59,7 @@ public class TestBadJdbcUrl extends TestCase {
 	 */
 	public void testBadUrlProtocolValueWithValidDriverClass() {
 		Properties p = new Properties();
-		p.put("openjpa.ConnectionDriverName", GOOD_DRIVER);
+		p.put("javax.persistence.jdbc.driver", GOOD_DRIVER);
 		p.put("openjpa.ConnectionURL", BAD_URL_PROTOCOL);
 		verifyConnectException(p, PersistenceException.class,
 				UserException.class, GOOD_DRIVER, BAD_URL_PROTOCOL);
@@ -70,7 +70,7 @@ public class TestBadJdbcUrl extends TestCase {
 	 */
 	public void testBadUrlProtocolValueWithValidDataSource() {
 		Properties p = new Properties();
-		p.put("openjpa.ConnectionDriverName", GOOD_DATASOURCE);
+		p.put("javax.persistence.jdbc.driver", GOOD_DATASOURCE);
 		p.put("openjpa.ConnectionURL", BAD_URL_PROTOCOL);
 		p.put("openjpa.ConnectionProperties", BAD_CONN_PROPS);
 		verifyConnectException(p, PersistenceException.class,
@@ -82,7 +82,7 @@ public class TestBadJdbcUrl extends TestCase {
 	 */
 	public void testBadUrlSubprotocolValueWithValidDriverClass() {
 		Properties p = new Properties();
-		p.put("openjpa.ConnectionDriverName", GOOD_DRIVER);
+		p.put("javax.persistence.jdbc.driver", GOOD_DRIVER);
 		p.put("openjpa.ConnectionURL", BAD_URL_SUBPROTOCOL);
 		verifyConnectException(p, PersistenceException.class,
 				UserException.class, GOOD_DRIVER, BAD_URL_SUBPROTOCOL);
@@ -93,7 +93,7 @@ public class TestBadJdbcUrl extends TestCase {
 	 */
 	public void testBadUrlSubprotocolValueWithValidDataSource() {
 		Properties p = new Properties();
-		p.put("openjpa.ConnectionDriverName", GOOD_DRIVER);
+		p.put("javax.persistence.jdbc.driver", GOOD_DRIVER);
 		p.put("openjpa.ConnectionURL", BAD_URL_SUBPROTOCOL);
 		verifyConnectException(p, PersistenceException.class,
 				UserException.class, GOOD_DRIVER, BAD_URL_SUBPROTOCOL);
@@ -104,7 +104,7 @@ public class TestBadJdbcUrl extends TestCase {
 	 */
 	public void testValidUrlWithInvalidDriver() {
 		Properties p = new Properties();
-		p.put("openjpa.ConnectionDriverName", BAD_DRIVER);
+		p.put("javax.persistence.jdbc.driver", BAD_DRIVER);
 		p.put("openjpa.ConnectionURL", GOOD_URL);
 		verifyConnectException(p, PersistenceException.class,
 				UserException.class, GOOD_URL, BAD_DRIVER);
