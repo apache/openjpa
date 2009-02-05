@@ -352,12 +352,13 @@ public class SQLStoreQuery
             q.getContext().getQuery().setQuery(sql);
             return result;
         }
-        
-        /**
-         * Utility method to substitute '?num' for parameters in the given SQL
-         * statement, and fill-in the order of the parameter tokens
-         */
-        static String substituteParams(String sql, List<Integer> paramOrder)
+    }
+    
+    /**
+     * Utility method to substitute '?num' for parameters in the given SQL
+     * statement, and fill-in the order of the parameter tokens
+     */
+    public static String substituteParams(String sql, List<Integer> paramOrder)
             throws IOException {
             // if there's no "?" parameter marker, then we don't need to
             // perform the parsing process
@@ -400,6 +401,5 @@ public class SQLStoreQuery
                 }
             }
             return buf.toString();
-        }
     }
 }
