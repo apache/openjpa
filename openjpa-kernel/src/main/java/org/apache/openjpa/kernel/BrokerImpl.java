@@ -37,6 +37,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.TreeSet;
 import java.util.concurrent.locks.LockSupport;
 import java.util.concurrent.locks.ReentrantLock;
 
@@ -59,6 +60,7 @@ import org.apache.openjpa.event.RemoteCommitEventManager;
 import org.apache.openjpa.event.TransactionEvent;
 import org.apache.openjpa.event.TransactionEventManager;
 import org.apache.openjpa.kernel.exps.ExpressionParser;
+import org.apache.openjpa.lib.conf.Value;
 import org.apache.openjpa.lib.log.Log;
 import org.apache.openjpa.lib.util.J2DoPrivHelper;
 import org.apache.openjpa.lib.util.Localizer;
@@ -225,6 +227,10 @@ public class BrokerImpl
     private boolean _cachePreparedQuery = true;
     
 
+    // Map of properties whose values have been changed
+    private Map<String, String> _changedProperties =
+        new HashMap<String, String>();
+
     // status
     private int _flags = 0;
 
@@ -243,6 +249,9 @@ public class BrokerImpl
 
     private transient boolean _initializeWasInvoked = false;
     private LinkedList _fcs;
+    
+    // Set of supported properties
+    private Set<String> _supportedPropertyNames;
 
     /**
      * Set the persistence manager's authentication. This is the first
@@ -461,6 +470,8 @@ public class BrokerImpl
     public void setIgnoreChanges(boolean val) {
         assertOpen();
         _ignoreChanges = val;
+        _changedProperties.put("IgnoreChanges", String
+            .valueOf(_ignoreChanges));
     }
 
     public boolean getNontransactionalRead() {
@@ -479,6 +490,8 @@ public class BrokerImpl
                 ("nontrans-read-not-supported"));
 
         _nontransRead = val;
+        _changedProperties.put("NontransactionalRead", String
+            .valueOf(_nontransRead));
     }
 
     public boolean getNontransactionalWrite() {
@@ -491,6 +504,8 @@ public class BrokerImpl
             throw new UserException(_loc.get("illegal-op-in-prestore"));
 
         _nontransWrite = val;
+        _changedProperties.put("NontransactionalWrite", String
+            .valueOf(_nontransWrite));
     }
 
     public boolean getOptimistic() {
@@ -509,6 +524,8 @@ public class BrokerImpl
                 ("optimistic-not-supported"));
 
         _optimistic = val;
+        _changedProperties.put("Optimistic", String
+            .valueOf(_optimistic));
     }
 
     public int getRestoreState() {
@@ -522,6 +539,8 @@ public class BrokerImpl
                 "Restore"));
 
         _restoreState = val;
+        _changedProperties.put("RestoreState", String
+            .valueOf(_restoreState));
     }
 
     public boolean getRetainState() {
@@ -533,6 +552,8 @@ public class BrokerImpl
         if ((_flags & FLAG_PRESTORING) != 0)
             throw new UserException(_loc.get("illegal-op-in-prestore"));
         _retainState = val;
+        _changedProperties.put("RetainState", String
+            .valueOf(_retainState));
     }
 
     public int getAutoClear() {
@@ -542,6 +563,7 @@ public class BrokerImpl
     public void setAutoClear(int val) {
         assertOpen();
         _autoClear = val;
+        _changedProperties.put("AutoClear", String.valueOf(_autoClear));
     }
 
     public int getAutoDetach() {
@@ -551,6 +573,8 @@ public class BrokerImpl
     public void setAutoDetach(int detachFlags) {
         assertOpen();
         _autoDetach = detachFlags;
+        _changedProperties.put("AutoDetach", String
+            .valueOf(_autoDetach));
     }
 
     public void setAutoDetach(int detachFlag, boolean on) {
@@ -559,6 +583,8 @@ public class BrokerImpl
             _autoDetach |= detachFlag;
         else
             _autoDetach &= ~detachFlag;
+        _changedProperties.put("AutoDetach", String
+            .valueOf(_autoDetach));
     }
 
     public int getDetachState() {
@@ -568,6 +594,8 @@ public class BrokerImpl
     public void setDetachState(int mode) {
         assertOpen();
         _detachState = mode;
+        _changedProperties.put("DetachState", String
+            .valueOf(_detachState));
     }
 
     public boolean isDetachedNew() {
@@ -638,9 +666,69 @@ public class BrokerImpl
         }
     }
 
-    //////////
+    public Map<String, String> getProperties() {
+        Map<String, String> currentProperties = _conf.getAllProperties();
+        
+        // Update the properties from the config with properties that may
+        // have changed for this broker
+        if (!_changedProperties.isEmpty()) {
+            Set<String> changedKeys = _changedProperties.keySet();
+            for (String changedKey : changedKeys) {
+                Value value = _conf.getValue(changedKey);
+                String valueKey = value.getLoadKey();
+                if (valueKey == null) {
+                    valueKey = "openjpa." + value.getProperty();
+                }
+                
+                if (currentProperties.containsKey(valueKey)) {
+                    currentProperties.put(valueKey, _changedProperties
+                        .get(changedKey));
+                }
+                else {
+                    Set<String> equivalentKeys = value.getEquivalentKeys();
+                    if (!equivalentKeys.isEmpty()) {
+                        for (String equivalentKey : equivalentKeys) {
+                            if (currentProperties.containsKey(equivalentKey)) {
+                                currentProperties.put(equivalentKey,
+                                    _changedProperties.get(changedKey));
+                                break;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        return currentProperties;
+    }
+    
+    public Set<String> getSupportedProperties() {
+        if (_supportedPropertyNames == null) {
+            _supportedPropertyNames = new TreeSet<String>();
+            _supportedPropertyNames.add("AutoClear");
+            _supportedPropertyNames.add("AutoDetach");
+            _supportedPropertyNames.add("DetachState");
+            _supportedPropertyNames.add("IgnoreChanges");
+            _supportedPropertyNames.add("LockTimeout");
+            _supportedPropertyNames.add("Multithreaded");
+            _supportedPropertyNames.add("NontransactionalRead");
+            _supportedPropertyNames.add("NontransactionalWrite");
+            _supportedPropertyNames.add("Optimistic");
+            _supportedPropertyNames.add("javax.persistence.query.timeout");
+            _supportedPropertyNames.add("RestoreState");
+            _supportedPropertyNames.add("RetainState");
+        }
+        Set<String> supportedProperties = new LinkedHashSet<String>();
+        for (String propertyName : _supportedPropertyNames) {
+            supportedProperties.addAll(_conf.getPropertyKeys(propertyName));
+        }
+        
+        return supportedProperties;
+    }
+
+    // ////////
     // Events
-    //////////
+    // ////////
 
     public void addLifecycleListener(Object listener, Class[] classes) {
         beginOperation(false);

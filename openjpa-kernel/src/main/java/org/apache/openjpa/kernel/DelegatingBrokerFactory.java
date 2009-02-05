@@ -18,7 +18,9 @@
  */
 package org.apache.openjpa.kernel;
 
+import java.util.Map;
 import java.util.Properties;
+import java.util.Set;
 
 import org.apache.openjpa.conf.OpenJPAConfiguration;
 import org.apache.openjpa.util.RuntimeExceptionTranslator;
@@ -107,6 +109,22 @@ public class DelegatingBrokerFactory
     public Properties getProperties() {
         try {
             return _factory.getProperties();
+        } catch (RuntimeException re) {
+            throw translate(re);
+        }
+    }
+    
+    public Set<String> getSupportedProperties() {
+        try {
+            return _factory.getSupportedProperties();
+        } catch (RuntimeException re) {
+            throw translate(re);
+        }
+    }
+    
+    public Map<String, String> getAllProperties() {
+        try {
+            return _factory.getAllProperties();
         } catch (RuntimeException re) {
             throw translate(re);
         }

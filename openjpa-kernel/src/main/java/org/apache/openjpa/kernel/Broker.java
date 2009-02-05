@@ -19,6 +19,9 @@
 package org.apache.openjpa.kernel;
 
 import java.util.Collection;
+import java.util.Map;
+import java.util.Set;
+
 import javax.transaction.Synchronization;
 
 import org.apache.openjpa.ee.ManagedRuntime;
@@ -188,6 +191,24 @@ public interface Broker
      * managed objects should be automatically detached in-place.
      */
     public void setAutoDetach(int flag, boolean on);
+    
+    /**
+     * Retrieve the current properties for this broker Some of these properties
+     * may have been changed from the original configuration.
+     * 
+     * @return the changed properties
+     * 
+     * @since 2.0.0
+     */
+    public Map<String, String> getProperties();
+    
+    /**
+     * Return the supported properties for this broker as property keys. If a
+     * property has multiple keys, all keys will be returned.
+     * 
+     * @since 2.0.0
+     */
+    public Set<String> getSupportedProperties();
 
     /**
      * Whether to treat relations to detached instances during persist

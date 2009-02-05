@@ -19,7 +19,9 @@
 package org.apache.openjpa.kernel;
 
 import java.io.Serializable;
+import java.util.Map;
 import java.util.Properties;
+import java.util.Set;
 
 import org.apache.openjpa.conf.OpenJPAConfiguration;
 import org.apache.openjpa.lib.util.Closeable;
@@ -42,6 +44,22 @@ public interface BrokerFactory
      * Return properties describing this runtime.
      */
     public Properties getProperties();
+    
+    /**
+     * Return all of the configured properties plus those returned in 
+     * @see #getProperties().
+     * 
+     * @since 2.0.0
+     */
+    public Map<String, String> getAllProperties();
+    
+    /**
+     * Return all of the supported properties as a set of keys. If a property
+     * has multiple keys, all keys will be returned.
+     * 
+     * @since 2.0.0
+     */
+    public Set<String>  getSupportedProperties();
 
     /**
      * Put the specified key-value pair into the map of user objects.

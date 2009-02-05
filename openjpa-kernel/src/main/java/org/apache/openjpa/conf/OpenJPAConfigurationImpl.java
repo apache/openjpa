@@ -149,6 +149,7 @@ public class OpenJPAConfigurationImpl
     public BooleanValue eagerInitialization;
     public PluginValue preparedQueryCachePlugin;
     public ObjectValue specification;
+    public IntValue queryTimeout;
     
     // custom values
     public BrokerFactoryValue brokerFactoryPlugin;
@@ -441,6 +442,7 @@ public class OpenJPAConfigurationImpl
         flushBeforeQueries.setAliasListComprehensive(true);
 
         lockTimeout = addInt("LockTimeout");
+        lockTimeout.addEquivalentKey("javax.persistence.lock.timeout");
         lockTimeout.setDefault("-1");
         lockTimeout.set(-1);
         lockTimeout.setDynamic(true);
@@ -543,6 +545,12 @@ public class OpenJPAConfigurationImpl
             getConfigurationLog());
         addValue(specification);
         specification.setInstantiatingGetter("getSpecificationInstance");
+        
+        queryTimeout = addInt("javax.persistence.query.timeout");
+        queryTimeout.setLoadKey("javax.persistence.query.timeout");
+        queryTimeout.setDefault("-1");
+        queryTimeout.set(-1);
+        queryTimeout.setDynamic(true);
         
         // initialize supported options that some runtimes may not support
         supportedOptions.add(OPTION_NONTRANS_READ);
