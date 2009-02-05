@@ -1056,11 +1056,48 @@ is <literal>true</literal>.
 Following salient points to be noted regarding usage of Prepared Query Cache.
 <itemizedlist>
 	<listitem>
+	<para>
 	Prepared Query Cache uses the original JPQL string as the key to index the 
 	corresponding SQL statement. Hence the JPQL strings that are semantically 
 	identical but differ by character case or identification variables are 
-	considered as different by this cache. 
+	considered as different by this cache. One of the implications is that the 
+	applications can gain better advantage from the Prepared Query Cache by
+	using parameters in their JPQL query rather than concatenating the parameter 
+	values in the query string itself . 
+	</para>
+	<para>
+	For example, contrast the following two examples of executing JPQL queries.
+	<example id="jpa_caching_hardcode_jpql"> 
+	   <title>Hardcoded Selection Value in JPQL Query</title> 
+	<programlisting>
+	String jpql = "SELECT p FROM Person p WHERE p.name='John'";
+	List johns = em.createQuery(jpql).getResultList();
+	jpql = "SELECT p FROM Person p WHERE p.name='Tom'";
+	List toms = em.createQuery(jpql).getResultList();
+	</programlisting>
+	</example>
+	In <xref linkend="jpa_caching_hardcode_jpql"></xref>, the queries have 
+	<emphasis>hardcoded</emphasis> the	selection value for the <code>p.name</code> 
+	field. Prepared Query Cache will not recognize the second execution as
+	same as the first, though both will result in same SQL statement. 
+	</para>
+	<para>
+	While in <xref linkend="jpa_caching_parametrize_jpql"></xref>, the the 
+	selection value for the <code>p.name</code> field is parameterized. 
+	Prepared Query Cache will recognize the second execution as
+	same as the first, and will execute the cached SQL statement directly. 
+	
+	<example id="jpa_caching_parametrize_jpql"> 
+	   <title>Parameterized Selection Value in JPQL Query</title> 
+	<programlisting>
+	String jpql = "SELECT p FROM Person p WHERE p.name=:name";
+	List johns = em.createQuery(jpql).setParameter("name","John").getResultList();
+	List toms = em.createQuery(jpql).setParameter("name","John").getResultList();
+	</programlisting>
+	</example>
+	</para>
 	</listitem>
+	
 	<listitem>
     A JPQL query may not always translate into a <emphasis>single</emphasis> 
     SQL query. The JPQL queries that require multiple select statements are 
