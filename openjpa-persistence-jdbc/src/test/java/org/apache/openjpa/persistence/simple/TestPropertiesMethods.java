@@ -64,7 +64,7 @@ public class TestPropertiesMethods extends SingleEMFTestCase {
         // openjpa.ConnectionProperties. If either one of these are changed,
         // this test case may fail.
         String javaxConnectionDriver =
-            (String) emProperties.get("javax.persistence.jdbc.driver");
+            (String) emProperties.get("openjpa.ConnectionDriverName");
         assertNotNull(javaxConnectionDriver);
         String openjpaConnectionURL =
             (String) emProperties.get("openjpa.ConnectionURL");

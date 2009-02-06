@@ -71,7 +71,7 @@
 
     <persistence-unit name="invalid">
         <properties>
-            <property name="javax.persistence.jdbc.driver"
+            <property name="openjpa.ConnectionDriverName"
                 value="org.apache.commons.dbcp.BasicDataSource" />
             <property name="openjpa.ConnectionProperties"
                 value="DriverClassName=not.a.real.Driver,Url=jdbc:notreal://"/>

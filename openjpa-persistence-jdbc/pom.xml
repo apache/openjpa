@@ -552,7 +552,7 @@
                             <value>DefaultLevel=${openjpa.loglevel}</value>
                         </property>
                         <property>
-                            <name>javax.persistence.jdbc.driver</name>
+                            <name>openjpa.ConnectionDriverName</name>
                             <value>org.apache.commons.dbcp.BasicDataSource</value>
                         </property>
                         <property>
