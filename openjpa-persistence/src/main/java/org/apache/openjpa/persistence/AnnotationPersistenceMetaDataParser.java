@@ -60,6 +60,7 @@ import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 import javax.persistence.MapKey;
 import javax.persistence.MapKeyClass;
+import javax.persistence.MappedById;
 import javax.persistence.MappedSuperclass;
 import javax.persistence.NamedNativeQueries;
 import javax.persistence.NamedNativeQuery;
@@ -145,6 +146,7 @@ public class AnnotationPersistenceMetaDataParser
         _tags.put(IdClass.class, ID_CLASS);
         _tags.put(MapKey.class, MAP_KEY);
         _tags.put(MapKeyClass.class, MAP_KEY_CLASS);
+        _tags.put(MappedById.class, MAPPED_BY_ID);
         _tags.put(NamedNativeQueries.class, NATIVE_QUERIES);
         _tags.put(NamedNativeQuery.class, NATIVE_QUERY);
         _tags.put(NamedQueries.class, QUERIES);
@@ -1062,6 +1064,9 @@ public class AnnotationPersistenceMetaDataParser
                 case EMBEDDED_ID:
                     fmd.setPrimaryKey(true);
                     break;
+                case MAPPED_BY_ID:
+                    parseMappedById(fmd, (MappedById)anno);
+                    break;
                 case MAP_KEY:
                     if (isMappingOverrideMode())
                         parseMapKey(fmd, (MapKey) anno);
@@ -1418,6 +1423,17 @@ public class AnnotationPersistenceMetaDataParser
                  "The value of the MapClassClass cannot be null");
     }
 
+    /**
+     * Parse @MappedById.
+     */
+    private void parseMappedById(FieldMetaData fmd, MappedById anno) {
+        String value = anno.value();
+        if (value != null)
+            fmd.setMappedByIdValue(value);
+        else
+            fmd.setMappedByIdValue("");
+    }
+    
     /**
      * Setup the field as a LOB mapping.
      */

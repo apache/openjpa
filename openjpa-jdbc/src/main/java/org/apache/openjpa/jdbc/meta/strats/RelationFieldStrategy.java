@@ -19,7 +19,9 @@
 package org.apache.openjpa.jdbc.meta.strats;
 
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -35,6 +37,7 @@ import org.apache.openjpa.jdbc.meta.FieldStrategy;
 import org.apache.openjpa.jdbc.meta.Joinable;
 import org.apache.openjpa.jdbc.meta.MappingInfo;
 import org.apache.openjpa.jdbc.meta.ValueMapping;
+import org.apache.openjpa.jdbc.meta.ValueMappingImpl;
 import org.apache.openjpa.jdbc.meta.ValueMappingInfo;
 import org.apache.openjpa.jdbc.schema.Column;
 import org.apache.openjpa.jdbc.schema.ColumnIO;
@@ -151,6 +154,9 @@ public class RelationFieldStrategy
 
         field.mapJoin(adapt, false);
         if (field.getTypeMapping().isMapped()) {
+            if (field.getMappedByIdValue() != null) 
+                setMappedByIdColumns();            
+             
             ForeignKey fk = vinfo.getTypeJoin(field, field.getName(), true,
                 adapt);
             field.setForeignKey(fk);
@@ -175,6 +181,44 @@ public class RelationFieldStrategy
 
         // map constraints after pk so we don't re-index / re-unique pk col
         field.mapConstraints(field.getName(), adapt);
+    }
+
+    /**
+     * When there is MappedById annotation, the owner of the one-to-one/
+     * many-to-one relationship will use its primary key to represent 
+     * foreign key relation. No need to create a separate foreign key
+     * column. 
+     */
+    private void setMappedByIdColumns() {
+        ClassMetaData owner = field.getDefiningMetaData();
+        FieldMetaData[] pks = owner.getPrimaryKeyFields();
+        for (int i = 0; i < pks.length; i++) {
+            FieldMapping fm = (FieldMapping) pks[i];
+            ValueMappingImpl val = (ValueMappingImpl) field.getValue();
+            ValueMappingInfo info = val.getValueInfo();
+            info.setColumns(getMappedByIdColumns(fm));
+        }
+    }
+
+    private List getMappedByIdColumns(FieldMapping pk) {
+        ClassMetaData embeddedId = ((ValueMappingImpl)pk.getValue()).getEmbeddedMetaData();
+        Column[] pkCols = null;
+        if (embeddedId != null) {
+            FieldMetaData[] fmds = embeddedId.getFields();
+            for (int i = 0; i < fmds.length; i++) {
+                if (fmds[i].getName().equals(field.getMappedByIdValue())) {
+                    pkCols =  ((ValueMappingImpl)fmds[i].getValue()).getColumns();
+                    break;
+                }
+            }
+        }
+        List cols = new ArrayList();
+        for (int i = 0; i < pkCols.length; i++) {
+            Column newCol = new Column();
+            newCol.setName(pkCols[i].getName());
+            cols.add(newCol);
+        }
+        return cols;
     }
 
     /**

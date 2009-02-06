@@ -142,6 +142,7 @@ public class FieldMetaData
     private String _fullName = null;
     private String _embedFullName = null;
     private int _resMode = MODE_NONE;
+    private String _mappedByIdValue = null;
 
     // load/store info
     private String[] _comments = null;
@@ -2154,5 +2155,13 @@ public class FieldMetaData
 
     public void setElementCollection(boolean isElementCollection) {
         this._isElementCollection = isElementCollection;
+    }
+
+    public String getMappedByIdValue() {
+        return _mappedByIdValue;
+    }
+
+    public void setMappedByIdValue(String mappedByIdValue) {
+        this._mappedByIdValue = mappedByIdValue;
     }
 }

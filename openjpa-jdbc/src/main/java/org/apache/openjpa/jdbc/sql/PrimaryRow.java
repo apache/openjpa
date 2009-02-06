@@ -346,6 +346,10 @@ public class PrimaryRow
             				(prev == null) ? null : prev.getClass(), prev,
             				(val == null) ? null : val.getClass(), val })).
             				setFatal(true);
+            	} else {
+            	    // since not allow to update and the new value is 0 or null,
+            	    // just return.
+            	    return;
             	}
             }
         }
