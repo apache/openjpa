@@ -288,6 +288,7 @@ public class QueryImpl implements OpenJPAQuerySPI, Serializable {
 	 */
 	public Object getSingleResult() {
 		_em.assertNotCloseInvoked();
+		setHint("openjpa.hint.OptimizeResultCount", 1); // for DB2 optimization
 		List result = getResultList();
 		if (result == null || result.isEmpty())
 			throw new NoResultException(_loc.get("no-result", getQueryString())
@@ -295,7 +296,12 @@ public class QueryImpl implements OpenJPAQuerySPI, Serializable {
 		if (result.size() > 1)
 			throw new NonUniqueResultException(_loc.get("non-unique-result",
 				getQueryString(), result.size()).getMessage());
-		return result.get(0);
+		try {
+		    return result.get(0);
+		} catch (Exception e) {
+            throw new NoResultException(_loc.get("no-result", getQueryString())
+                .getMessage());
+		}
 	}
 
 	public int executeUpdate() {

@@ -22,6 +22,8 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 
+import javax.persistence.NoResultException;
+
 
 import org.apache.openjpa.persistence.query.common.apps.RuntimeTest1;
 import org.apache.openjpa.persistence.query.common.apps.RuntimeTest2;
@@ -256,10 +258,12 @@ public class TestQueryResults extends BaseQueryTest {
         query =
             "SELECT DISTINCT r FROM RuntimeTest1 r WHERE r.stringField = \'xxxx\'";
         OpenJPAQuery q = em.createQuery(query);
-        List l = q.getResultList();
-        assertNotNull(
-            "expecting l to be null since there is no RuntimeTest1 instance with stringfield=xxxx",
-            l);
+        try {
+            Object l = q.getSingleResult();
+            fail("Expected NoResultException since there is no RuntimeTest1 instance with stringfield=xxxx");
+        } catch (NoResultException e) {
+            // good
+        }
 
         q.closeAll();
         endTx(em);
