@@ -50,7 +50,7 @@ public class TestEntityTypeExpression extends AbstractTestCase {
         CompUser user1 = createUser("Seetha", "MAC", add[0], 36, true);
         CompUser user2 = createUser("Shannon", "PC", add[1], 36, false);
         CompUser user3 = createUser("Ugo", "PC", add[2], 19, true);
-        CompUser user4 = createUser("_Jacob", "LINUX", add[3], 10, true);
+        CompUser user4 = createUser("Jacob", "LINUX", add[3], 10, true);
         CompUser user5 = createUser("Famzy", "UNIX", add[4], 29, false);
         CompUser user6 = createUser("Shade", "UNIX", add[5], 23, false);
 
@@ -106,11 +106,11 @@ public class TestEntityTypeExpression extends AbstractTestCase {
         user = rs.get(0);
         assertEquals("Famzy", user.getName());
 
-        query = "SELECT e FROM CompUser e where TYPE(e) in :params ORDER BY e.name DESC";
+        query = "SELECT e FROM CompUser e where TYPE(e) in :params ORDER BY e.age";
         rs = em.createQuery(query).
             setParameter("params", params).getResultList();
         user = rs.get(0);
-        assertEquals("_Jacob", user.getName());
+        assertEquals("Jacob", user.getName());
         
         query = "SELECT TYPE(e) FROM MaleUser e where TYPE(e) = MaleUser";
         rs = em.createQuery(query).getResultList();
@@ -147,18 +147,19 @@ public class TestEntityTypeExpression extends AbstractTestCase {
         user = rs.get(0);
         assertEquals("Famzy", user.getName());
         
-        query = "SELECT e FROM CompUser e where TYPE(e) in (?1) ORDER BY e.name";
+        query = "SELECT e FROM CompUser e where TYPE(e) in (?1) ORDER BY e.name DESC";
         rs = em.createQuery(query).
             setParameter(1, MaleUser.class).getResultList();
         user = rs.get(0);
-        assertEquals("Seetha", user.getName());
+        assertEquals("Ugo", user.getName());
         
-        query = "SELECT e FROM CompUser e where TYPE(e) in (?1, ?2) ORDER BY e.name";
+        query = "SELECT e FROM CompUser e where TYPE(e) in (?1, ?2)" +
+                " ORDER BY e.name DESC";
         rs = em.createQuery(query).
             setParameter(1, FemaleUser.class).setParameter(2, MaleUser.class).
             getResultList();
         user = rs.get(0);
-        assertEquals("Famzy", user.getName());
+        assertEquals("Ugo", user.getName());
 
         query = "select sum(e.age) FROM CompUser e GROUP BY e.age" +
             " HAVING ABS(e.age) = :param";
