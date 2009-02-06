@@ -40,7 +40,7 @@ public class TestMappedById extends SingleEMFTestCase {
     public int dId = 1;
 
     public void setUp() throws Exception {
-        super.setUp(CLEAR_TABLES, Dependent1.class, Employee1.class, 
+        super.setUp(DROP_TABLES, Dependent1.class, Employee1.class, 
                 DependentId1.class);
     }
 

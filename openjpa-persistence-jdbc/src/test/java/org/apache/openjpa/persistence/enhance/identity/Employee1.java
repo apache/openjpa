@@ -22,6 +22,7 @@ import javax.persistence.*;
 import java.util.*;
 
 @Entity
+@Table(name="EMP1_MBI")
 public class Employee1 {
     @Id
     int empId;

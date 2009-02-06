@@ -22,6 +22,7 @@ import javax.persistence.*;
 
 
 @Entity
+@Table(name="DEP1_MBI")
 public class Dependent1 {
     @EmbeddedId
     DependentId1 id;
