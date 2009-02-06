@@ -48,7 +48,7 @@ public class TestJPQLScalarExpressions extends AbstractTestCase {
         CompUser user1 = createUser("Seetha", "MAC", add[0], 36, true);
         CompUser user2 = createUser("Shannon ", "PC", add[1], 36, false);
         CompUser user3 = createUser("Ugo", "PC", add[2], 19, true);
-        CompUser user4 = createUser("_Jacob", "LINUX", add[3], 10, true);
+        CompUser user4 = createUser("Jacob", "LINUX", add[3], 10, true);
         CompUser user5 = createUser("Famzy", "UNIX", add[4], 29, false);
         CompUser user6 = createUser("Shade", "UNIX", add[5], 23, false);
 
@@ -76,10 +76,10 @@ public class TestJPQLScalarExpressions extends AbstractTestCase {
 
         String query = "SELECT e.name, " +
             "COALESCE (e.address.country, 'Unknown')" +
-            " FROM CompUser e";
+            " FROM CompUser e ORDER BY e.name DESC";
         List rs = em.createQuery(query).getResultList();
         Object[] result = (Object[]) rs.get(rs.size()-1);
-        assertEquals("the name is not shade", "Shade", result[0]);        
+        assertEquals("the name is not famzy", "Famzy", result[0]);        
         assertEquals("Unknown", result[1]);
 
         endTx(em);
@@ -93,7 +93,7 @@ public class TestJPQLScalarExpressions extends AbstractTestCase {
 
         String query = "SELECT e.name, " +
             "NULLIF (e.address.country, 'USA')" +
-            " FROM CompUser e";
+            " FROM CompUser e ORDER BY e.name DESC";
 
         List rs = em.createQuery(query).getResultList();
         Object[] result = (Object[]) rs.get(1);
