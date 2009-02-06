@@ -18,12 +18,12 @@
  */
 package org.apache.openjpa.persistence.jdbc;
 
+import javax.persistence.NoResultException;
 import javax.persistence.Query;
 
 import org.apache.openjpa.persistence.test.SQLListenerTestCase;
 import org.apache.openjpa.persistence.simple.AllFieldTypes;
 import org.apache.openjpa.persistence.OpenJPAPersistence;
-import org.apache.openjpa.persistence.OpenJPAEntityManager;
 import org.apache.openjpa.persistence.OpenJPAQuery;
 import org.apache.openjpa.persistence.InvalidStateException;
 import org.apache.openjpa.persistence.OpenJPAEntityManagerSPI;
@@ -39,17 +39,39 @@ public class TestOptimizeForClause
         setUp(AllFieldTypes.class);
     }
 
+    public void testOptimizeForClauseViaGetSingleResult() {
+        OpenJPAEntityManagerSPI em = emf.createEntityManager();
+        DBDictionary dict = ((JDBCConfiguration) em.getConfiguration())
+            .getDBDictionaryInstance();
+
+        sql.clear();
+
+        try {
+            Object result = em.createQuery
+                ("select o from AllFieldTypes o where o.intField = 0").
+                getSingleResult();
+
+            assertNull(result);
+            if (dict instanceof DB2Dictionary ) {
+                assertContainsSQL(" optimize for 1 row");
+            }
+        } catch (NoResultException pe) {
+            ;
+        }
+        em.close();
+    }
+
     public void testOptimizeForClauseViaHint() {
-        testOptimizeForClause(true,false,false);
+        tstOptimizeForClause(true,false,false);
     }
 
     public void testOptimizeForClauseViaFind() {
-        testOptimizeForClause(false,true,false);
+        tstOptimizeForClause(false,true,false);
     }
     public void testOptimizeForClauseViaQueryHint() {
-        testOptimizeForClause(false,true,true);
+        tstOptimizeForClause(false,true,true);
     }
-    public void testOptimizeForClause(boolean hint,
+    public void tstOptimizeForClause(boolean hint,
         boolean find, boolean queryHint) {
         OpenJPAEntityManagerSPI em = emf.createEntityManager();
         DBDictionary dict = ((JDBCConfiguration) em.getConfiguration())
