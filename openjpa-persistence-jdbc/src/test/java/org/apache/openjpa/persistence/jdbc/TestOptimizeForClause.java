@@ -43,20 +43,22 @@ public class TestOptimizeForClause
         OpenJPAEntityManagerSPI em = emf.createEntityManager();
         DBDictionary dict = ((JDBCConfiguration) em.getConfiguration())
             .getDBDictionaryInstance();
+        
+        em.getTransaction().begin();
+        AllFieldTypes a = new AllFieldTypes();
+        a.setIntField(123);
+        em.persist(a);
+        em.getTransaction().commit();
+        em.clear();
 
         sql.clear();
+        Object result = em.createQuery
+            ("select o from AllFieldTypes o where o.intField = 123").
+            getSingleResult();
 
-        try {
-            Object result = em.createQuery
-                ("select o from AllFieldTypes o where o.intField = 0").
-                getSingleResult();
-
-            assertNull(result);
-            if (dict instanceof DB2Dictionary ) {
-                assertContainsSQL(" optimize for 1 row");
-            }
-        } catch (NoResultException pe) {
-            ;
+        assertNotNull(result);
+        if (dict instanceof DB2Dictionary ) {
+            assertContainsSQL(" optimize for 1 row");
         }
         em.close();
     }
