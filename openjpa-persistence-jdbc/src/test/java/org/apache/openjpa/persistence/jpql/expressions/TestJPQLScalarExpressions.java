@@ -135,12 +135,13 @@ public class TestJPQLScalarExpressions extends AbstractTestCase {
             " CASE TYPE(e) WHEN FemaleUser THEN 'Female' " +
             " ELSE 'Male' " +
             " END as result" +
-            " FROM CompUser e";
+            " FROM CompUser e WHERE e.name like 'S%' " +
+            " ORDER BY e.name DESC";
         List rs3 = em.createQuery(query3).getResultList();
-        Object[] result3 = (Object[]) rs3.get(rs3.size()-1);
+        Object[] result3 = (Object[]) rs3.get(0);
         assertEquals("the result is not female", "Female", result3[1]);
-        assertEquals("the name is not shade", "Shade", result3[0]);
-        result3 = (Object[]) rs3.get(0);
+        assertEquals("the name is not shannon", "Shannon ", result3[0]);
+        result3 = (Object[]) rs3.get(2);
         assertEquals("the result is not male", "Male", result3[1]);
         assertEquals("the name is not seetha", "Seetha", result3[0]);
 
