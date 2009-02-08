@@ -32,7 +32,8 @@ public class TestChainEntities extends SingleEMFTestCase {
 	long aid;
 
 	public void setUp () {
-		setUp (ChainEntityA.class, ChainEntityB.class, ChainEntityC.class);
+		setUp (DROP_TABLES,
+		    ChainEntityA.class, ChainEntityB.class, ChainEntityC.class);
 		// Create A
 		ChainEntityA a = new ChainEntityA ();
 		a.setName ("TEST_A");
