@@ -18,7 +18,6 @@
  */
 package org.apache.openjpa.persistence.jdbc;
 
-import javax.persistence.NoResultException;
 import javax.persistence.Query;
 
 import org.apache.openjpa.persistence.test.SQLListenerTestCase;
