@@ -858,7 +858,9 @@ public class TestOrderColumn extends SingleEMFTestCase {
             String entity, String indexedCol, int base, Object[] objs, String
             idField, Object idValue) {
         String queryString = "SELECT INDEX(b), b FROM " + entity + " a JOIN a." +
-            indexedCol + " b WHERE a." + idField + " = :idVal";
+            indexedCol + " b WHERE a." + idField + " = :idVal " +
+            " ORDER BY a." + idField;
+        em.clear();
         Query qry = em.createQuery(queryString);
         qry.setParameter("idVal", idValue);
         List rlist = qry.getResultList();  
