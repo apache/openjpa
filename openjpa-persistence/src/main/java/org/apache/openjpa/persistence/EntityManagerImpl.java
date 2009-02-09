@@ -880,9 +880,9 @@ public class EntityManagerImpl
                 ? getPreparedQuery(qid) : null;
             org.apache.openjpa.kernel.Query q = (pq == null)
                 ? _broker.newQuery(language, query)
-                : _broker.newQuery(pq.getLanguage(), pq.getTargetQuery());
+                : _broker.newQuery(pq.getLanguage(), pq);
             // have to validate JPQL according to spec
-            if (JPQLParser.LANG_JPQL.equals(language))
+            if (pq == null && JPQLParser.LANG_JPQL.equals(language))
                 q.compile(); 
             if (pq != null) {
                 pq.setInto(q);
@@ -915,14 +915,14 @@ public class EntityManagerImpl
                 ? getPreparedQuery(qid) : null;
             org.apache.openjpa.kernel.Query del = (pq == null)
                 ? _broker.newQuery(meta.getLanguage(), meta.getQueryString())
-                : _broker.newQuery(pq.getLanguage(), pq.getTargetQuery());
+                : _broker.newQuery(pq.getLanguage(), pq);
             
             if (pq != null) {
                 pq.setInto(del);
             } else {
                 meta.setInto(del);
+                del.compile();
             }
-            del.compile();
             
             OpenJPAQuery q = new QueryImpl(this, _ret, del).setId(qid);
             String[] hints = meta.getHintKeys();

@@ -76,7 +76,6 @@ public class PreparedQueryCacheImpl implements PreparedQueryCache {
         if (id == null 
             || query == null 
             || QueryLanguages.LANG_SQL.equals(query.getLanguage()) 
-            || !isSelect(query.getQueryString())
             || isHinted(hints, QueryHints.HINT_IGNORE_PREPARED_QUERY)
             || isHinted(hints, QueryHints.HINT_INVALIDATE_PREPARED_QUERY))
             return Boolean.FALSE;
@@ -342,12 +341,6 @@ public class PreparedQueryCacheImpl implements PreparedQueryCache {
             return false;
         Object result = fetch.getHint(hint);
         return result != null && "true".equalsIgnoreCase(result.toString());
-    }
-    
-    boolean isSelect(String s) {
-        return s != null
-            && s.length()>SELECT.length()
-            && s.trim().substring(0,SELECT.length()).equalsIgnoreCase(SELECT);
     }
         
 	//-------------------------------------------------------

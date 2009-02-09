@@ -65,6 +65,9 @@ public interface PreparedQuery  {
      */
     public String getOriginalQuery();
     
+    /**
+     * Gets the language in which this query is expressed.
+     */
     public String getLanguage();
     
     /**
@@ -89,8 +92,15 @@ public interface PreparedQuery  {
 	public boolean initialize(Object o);
 	
 	/**
+	 * Affirms if this receiver has been initialized.
+	 */
+	public boolean isInitialized();
+	
+	/**
 	 * Get the list of parameters in a map where an entry represents a parameter
 	 * key and value after replacing with the given user parameters. 
+	 * 
+	 * Must be invoked after initialize().  
 	 * 
 	 * @param user the map of parameter key and value set by the user on the
 	 * original query.

@@ -26,13 +26,16 @@ import java.util.Map;
 
 import org.apache.openjpa.jdbc.meta.ClassMapping;
 import org.apache.openjpa.jdbc.sql.DBDictionary;
+import org.apache.openjpa.jdbc.sql.Result;
 import org.apache.openjpa.jdbc.sql.ResultSetResult;
 import org.apache.openjpa.jdbc.sql.SQLBuffer;
 import org.apache.openjpa.jdbc.sql.SQLExceptions;
+import org.apache.openjpa.jdbc.sql.SelectImpl;
 import org.apache.openjpa.kernel.StoreQuery;
 import org.apache.openjpa.lib.rop.RangeResultObjectProvider;
 import org.apache.openjpa.lib.rop.ResultObjectProvider;
 import org.apache.openjpa.meta.ClassMetaData;
+import org.apache.openjpa.util.InternalException;
 
 /**
  * A executor for Prepared SQL Query.
@@ -41,6 +44,7 @@ import org.apache.openjpa.meta.ClassMetaData;
  *
  */
 public class PreparedSQLStoreQuery extends SQLStoreQuery {
+    private PreparedQueryImpl _cached;
     public PreparedSQLStoreQuery(JDBCStore store) {
         super(store);
     }
@@ -49,6 +53,19 @@ public class PreparedSQLStoreQuery extends SQLStoreQuery {
         boolean subclasses) {
         return new PreparedSQLExecutor(this, meta);
     }
+    
+    public boolean setQuery(Object query) {
+        if (query instanceof PreparedQueryImpl == false) {
+            throw new InternalException(query.getClass() + " not recognized");
+        }
+        _cached = (PreparedQueryImpl)query;
+        return true;
+    }
+    
+    PreparedQueryImpl getPreparedQuery() {
+        return _cached;
+    }
+
     
     public static class PreparedSQLExecutor extends AbstractExecutor {
         private final ClassMetaData _meta;
@@ -63,11 +80,12 @@ public class PreparedSQLStoreQuery extends SQLStoreQuery {
 
         public ResultObjectProvider executeQuery(StoreQuery q,
             Object[] params, Range range) {
-            JDBCStore store = ((SQLStoreQuery) q).getStore();
+            PreparedSQLStoreQuery psq = (PreparedSQLStoreQuery) q;
+            PreparedQueryImpl pq = psq.getPreparedQuery();
+            JDBCStore store = psq.getStore();
             DBDictionary dict = store.getDBDictionary();
 
-            SQLBuffer buf = new SQLBuffer(dict)
-                .append(q.getContext().getQueryString());
+            SQLBuffer buf = new SQLBuffer(dict).append(pq.getTargetQuery());
             Connection conn = store.getConnection();
             JDBCFetchConfiguration fetch = (JDBCFetchConfiguration)
                 q.getContext().getFetchConfiguration();
@@ -84,14 +102,16 @@ public class PreparedSQLStoreQuery extends SQLStoreQuery {
                     dict.setUnknown(stmnt, ++index, params[i], null);
 
                 ResultSet rs = stmnt.executeQuery();
-                ResultSetResult res = new ResultSetResult(conn, stmnt, rs, 
-                    store);
+                
+                SelectImpl cachedSelect = pq.getSelect();
+                Result res = cachedSelect.getEagerResult(conn, stmnt, rs, 
+                    store, fetch, false, null);
                 if (q.getContext().getCandidateType() != null)
-                    rop = new GenericResultObjectProvider((ClassMapping) _meta,
-                        store, fetch, res);
+                    rop = new PreparedResultObjectProvider(cachedSelect, 
+                        (ClassMapping) _meta, store, fetch, res);
                 else
                     rop = new SQLProjectionResultObjectProvider(store, fetch,
-                        res, q.getContext().getResultType());
+                        (ResultSetResult)res, q.getContext().getResultType());
             } catch (SQLException se) {
                 if (stmnt != null)
                     try { stmnt.close(); } catch (SQLException se2) {}

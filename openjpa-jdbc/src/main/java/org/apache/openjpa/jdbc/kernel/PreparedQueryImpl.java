@@ -29,8 +29,12 @@ import java.util.Map;
 import org.apache.openjpa.jdbc.meta.ClassMapping;
 import org.apache.openjpa.jdbc.meta.MappingRepository;
 import org.apache.openjpa.jdbc.schema.Column;
+import org.apache.openjpa.jdbc.sql.LogicalUnion;
 import org.apache.openjpa.jdbc.sql.SQLBuffer;
+import org.apache.openjpa.jdbc.sql.Select;
 import org.apache.openjpa.jdbc.sql.SelectExecutor;
+import org.apache.openjpa.jdbc.sql.SelectImpl;
+import org.apache.openjpa.jdbc.sql.Union;
 import org.apache.openjpa.kernel.Broker;
 import org.apache.openjpa.kernel.PreparedQuery;
 import org.apache.openjpa.kernel.Query;
@@ -39,6 +43,7 @@ import org.apache.openjpa.kernel.QueryLanguages;
 import org.apache.openjpa.lib.rop.ResultList;
 import org.apache.openjpa.lib.util.Localizer;
 import org.apache.openjpa.util.ImplHelper;
+import org.apache.openjpa.util.InternalException;
 import org.apache.openjpa.util.UserException;
 
 /**
@@ -53,6 +58,7 @@ public class PreparedQueryImpl implements PreparedQuery {
 
     private final String _id;
     private String _sql;
+    private boolean _initialized;
     
     // Post-compilation state of an executable query, populated on construction
     private Class _candidate;
@@ -62,7 +68,8 @@ public class PreparedQueryImpl implements PreparedQuery {
     // Position of the user defined parameters in the _params list
     private Map<Object, int[]>    _userParamPositions;
     private Map<Integer, Object> _template;
-    
+    private SelectImpl select;
+
     /**
      * Construct.
      * 
@@ -114,6 +121,10 @@ public class PreparedQueryImpl implements PreparedQuery {
         _sql = sql;
     }
     
+    public boolean isInitialized() {
+        return _initialized;
+    }
+    
     /**
      * Pours the post-compilation state held by this receiver to the given
      * query.
@@ -122,7 +133,7 @@ public class PreparedQueryImpl implements PreparedQuery {
         if (!_isProjection)
             q.setCandidateType(_candidate, _subclasses);
     }
-    
+
     /**
      * Initialize this receiver with post-execution result.
      * The input argument is processed only if it is a {@link ResultList} with
@@ -130,17 +141,25 @@ public class PreparedQueryImpl implements PreparedQuery {
      * {@link ResultList#getUserObject() user object}. 
      */
     public boolean initialize(Object result) {
-        SelectExecutor selector = extractSelectExecutor(result);
-        if (selector == null)
-            return false;
-        SQLBuffer buffer = selector == null ? null : selector.getSQL();
-        if (buffer != null && !selector.hasMultipleSelects()) {
-            setTargetQuery(buffer.getSQL());
-            setParameters(buffer.getParameters());
-            setUserParameterPositions(buffer.getUserParameters());
+        if (isInitialized())
             return true;
-        }
-        return false;
+        SelectExecutor selector = extractSelectExecutor(result);
+        if (selector == null || selector.hasMultipleSelects()
+          || ((selector instanceof Union) 
+          && (((Union)selector).getSelects().length != 1)))
+            return false;
+        select = extractImplementation(selector);
+        if (select == null)
+            return false;
+        SQLBuffer buffer = selector.getSQL();
+        if (buffer == null)
+            return false;
+        setTargetQuery(buffer.getSQL());
+        setParameters(buffer.getParameters());
+        setUserParameterPositions(buffer.getUserParameters());
+        _initialized = true;
+        
+        return true;
     }
     
     /**
@@ -161,6 +180,19 @@ public class PreparedQueryImpl implements PreparedQuery {
         return null;
     }
     
+    private SelectImpl extractImplementation(SelectExecutor selector) {
+        if (selector == null)
+            return null;
+        if (selector instanceof SelectImpl) 
+            return (SelectImpl)selector;
+        if (selector instanceof LogicalUnion.UnionSelect)
+            return ((LogicalUnion.UnionSelect)selector).getDelegate();
+        if (selector instanceof Union) 
+            return extractImplementation(((Union)selector).getSelects()[0]);
+        
+        return null;
+    }
+    
     /**
      * Merge the given user parameters with its own parameter. The given map
      * must be compatible with the user parameters extracted during 
@@ -170,6 +202,8 @@ public class PreparedQueryImpl implements PreparedQuery {
      * 
      */
     public Map<Integer, Object> reparametrize(Map user, Broker broker) {
+        if (!isInitialized())
+            throw new InternalException("reparameterize() on uninitialized.");
         if (user == null || user.isEmpty()) {
             if (!_userParamPositions.isEmpty()) {
                 throw new UserException(_loc.get("uparam-null", 
@@ -285,6 +319,10 @@ public class PreparedQueryImpl implements PreparedQuery {
             tmp.put(i, list.get(i));
         }
         _template = Collections.unmodifiableMap(tmp);
+    }
+    
+    SelectImpl getSelect() {
+        return select;
     }
     
     public String toString() {

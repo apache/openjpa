@@ -39,7 +39,7 @@ public abstract class SelectResultObjectProvider
     private final SelectExecutor _sel;
     private final JDBCStore _store;
     private final JDBCFetchConfiguration _fetch;
-    private Result _res = null;
+    protected Result _res = null;
     private int _size = -1;
     private Boolean _ra = null;
 

@@ -482,7 +482,7 @@ public class SelectImpl
      * This method is to provide override for non-JDBC or JDBC-like 
      * implementation of executing eager selects.
      */
-    protected Result getEagerResult(Connection conn, 
+    public Result getEagerResult(Connection conn, 
         PreparedStatement stmnt, ResultSet rs, JDBCStore store, 
         JDBCFetchConfiguration fetch, boolean forUpdate, SQLBuffer sql) 
         throws SQLException {

@@ -315,7 +315,7 @@ public class LogicalUnion
     /**
      * A select that is part of a logical union.
      */
-    protected class UnionSelect
+    public class UnionSelect
         implements Select {
 
         protected final SelectImpl sel;

@@ -665,17 +665,19 @@ public class QueryImpl implements OpenJPAQuerySPI, Serializable {
         QueryStatistics stats = cache.getStatistics();
         if (alreadyCached && LANG_PREPARED_SQL.equals(lang)) {
             PreparedQuery pq = _em.getPreparedQuery(_id);
-            try {
-                Map rep = pq.reparametrize(params, _em.getBroker());
-                params.clear();
-                params.putAll(rep);
-            } catch (UserException ue) {
-                invalidatePreparedQuery();
-                Log log = _em.getConfiguration().getLog(
-                    OpenJPAConfiguration.LOG_RUNTIME);
-                if (log.isWarnEnabled())
-                    log.warn(ue.getMessage());
-                return false;
+            if (pq.isInitialized()) {
+                try {
+                    Map rep = pq.reparametrize(params, _em.getBroker());
+                    params.clear();
+                    params.putAll(rep);
+                } catch (UserException ue) {
+                    invalidatePreparedQuery();
+                    Log log = _em.getConfiguration().getLog(
+                        OpenJPAConfiguration.LOG_RUNTIME);
+                    if (log.isWarnEnabled())
+                        log.warn(ue.getMessage());
+                    return false;
+                }
             }
             stats.recordExecution(pq.getOriginalQuery(), alreadyCached);
         } else {
