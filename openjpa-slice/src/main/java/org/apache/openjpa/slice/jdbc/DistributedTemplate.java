@@ -263,11 +263,11 @@ class DistributedTemplate<T extends Statement>
 
 	public void setMaxRows(int n) throws SQLException {
 		for (T s:this)
-			s.setMaxFieldSize(n);
+			s.setMaxRows(n);
 	}
 	
 	public void setQueryTimeout(int n) throws SQLException {
 		for (T s:this)
-			s.setMaxFieldSize(n);
+			s.setQueryTimeout(n);
 	}
 }
