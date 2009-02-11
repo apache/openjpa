@@ -18,11 +18,14 @@
  */
 package org.apache.openjpa.jdbc.conf;
 
+import java.util.Collections;
 import java.util.Map;
+import java.util.Set;
 
 import org.apache.openjpa.conf.BrokerFactoryValue;
 import org.apache.openjpa.conf.OpenJPAProductDerivation;
 import org.apache.openjpa.jdbc.kernel.JDBCBrokerFactory;
+import org.apache.openjpa.jdbc.sql.OracleDictionary;
 import org.apache.openjpa.lib.conf.AbstractProductDerivation;
 import org.apache.openjpa.lib.conf.ConfigurationProvider;
 
@@ -47,5 +50,10 @@ public class JDBCProductDerivation extends AbstractProductDerivation
             return true;
         }
         return false;
+    }
+    
+    @Override
+    public Set<String> getSupportedQueryHints() {
+        return Collections.singleton(OracleDictionary.SELECT_HINT);
     }
 }

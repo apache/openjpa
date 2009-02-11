@@ -18,8 +18,9 @@
  */
 package org.apache.openjpa.persistence;
 
+import static org.apache.openjpa.kernel.QueryLanguages.LANG_PREPARED_SQL;
+
 import java.io.Serializable;
-import java.lang.reflect.Method;
 import java.sql.Time;
 import java.sql.Timestamp;
 import java.util.ArrayList;
@@ -41,15 +42,12 @@ import javax.persistence.Query;
 import javax.persistence.TemporalType;
 
 import org.apache.openjpa.conf.OpenJPAConfiguration;
-import org.apache.openjpa.enhance.Reflection;
 import org.apache.openjpa.kernel.Broker;
 import org.apache.openjpa.kernel.DelegatingQuery;
 import org.apache.openjpa.kernel.DelegatingResultList;
 import org.apache.openjpa.kernel.FetchConfiguration;
-import org.apache.openjpa.kernel.Filters;
 import org.apache.openjpa.kernel.PreparedQuery;
 import org.apache.openjpa.kernel.PreparedQueryCache;
-import org.apache.openjpa.kernel.QueryHints;
 import org.apache.openjpa.kernel.QueryLanguages;
 import org.apache.openjpa.kernel.QueryOperations;
 import org.apache.openjpa.kernel.QueryStatistics;
@@ -62,8 +60,6 @@ import org.apache.openjpa.lib.util.Localizer;
 import org.apache.openjpa.util.ImplHelper;
 import org.apache.openjpa.util.RuntimeExceptionTranslator;
 import org.apache.openjpa.util.UserException;
-
-import static org.apache.openjpa.kernel.QueryLanguages.LANG_PREPARED_SQL;
 
 /**
  * Implementation of {@link Query} interface.
@@ -85,6 +81,8 @@ public class QueryImpl implements OpenJPAQuerySPI, Serializable {
 	private Map<String, Object> _named;
 	private Map<Integer, Object> _positional;
 	private String _id;
+	
+	private final HintHandler _hintHandler;
 
 	/**
 	 * Constructor; supply factory exception translator and delegate.
@@ -97,6 +95,7 @@ public class QueryImpl implements OpenJPAQuerySPI, Serializable {
 			org.apache.openjpa.kernel.Query query) {
 		_em = em;
 		_query = new DelegatingQuery(query, ret);
+		_hintHandler = new HintHandler(this);
 	}
 
 	/**
@@ -254,7 +253,7 @@ public class QueryImpl implements OpenJPAQuerySPI, Serializable {
 	}
 	
 	private Object execute() {
-		if (_query.getOperation() != QueryOperations.OP_SELECT)
+		if (!isNative() && _query.getOperation() != QueryOperations.OP_SELECT)
 			throw new InvalidStateException(_loc.get("not-select-query", _query
 					.getQueryString()), null, null, false);
 		
@@ -351,81 +350,8 @@ public class QueryImpl implements OpenJPAQuerySPI, Serializable {
 
 	public OpenJPAQuery setHint(String key, Object value) {
 		_em.assertNotCloseInvoked();
-		if (key == null)
-			return this;
-		if (!key.startsWith("openjpa.")) {
-			_query.getFetchConfiguration().setHint(key, value);
-			return this;
-		}
-		String k = key.substring("openjpa.".length());
-
-		try {
-			if ("Subclasses".equals(k)) {
-				if (value instanceof String)
-					value = Boolean.valueOf((String) value);
-				setSubclasses(((Boolean) value).booleanValue());
-			} else if ("FilterListener".equals(k))
-				addFilterListener(Filters.hintToFilterListener(value, _query
-						.getBroker().getClassLoader()));
-			else if ("FilterListeners".equals(k)) {
-				FilterListener[] arr = Filters.hintToFilterListeners(value,
-						_query.getBroker().getClassLoader());
-				for (int i = 0; i < arr.length; i++)
-					addFilterListener(arr[i]);
-			} else if ("AggregateListener".equals(k))
-				addAggregateListener(Filters.hintToAggregateListener(value,
-						_query.getBroker().getClassLoader()));
-			else if ("FilterListeners".equals(k)) {
-				AggregateListener[] arr = Filters.hintToAggregateListeners(
-						value, _query.getBroker().getClassLoader());
-				for (int i = 0; i < arr.length; i++)
-					addAggregateListener(arr[i]);
-			} else if (k.startsWith("FetchPlan.")) {
-				k = k.substring("FetchPlan.".length());
-				hintToSetter(getFetchPlan(), k, value);
-			} else if (k.startsWith("hint.")) {
-				if ("hint.OptimizeResultCount".equals(k)) {
-					if (value instanceof String) {
-						try {
-							value = new Integer((String) value);
-						} catch (NumberFormatException nfe) {
-						}
-					}
-					if (!(value instanceof Number)
-							|| ((Number) value).intValue() < 0)
-						throw new ArgumentException(_loc.get(
-								"bad-query-hint-value", key, value), null,
-								null, false);
-                    _query.getFetchConfiguration().setHint(key, value);
-				}  else if (QueryHints.HINT_INVALIDATE_PREPARED_QUERY.equals
-                    (key)) {
-                    _query.getFetchConfiguration().setHint(key, (Boolean)value);
-                    invalidatePreparedQuery();
-                } else if (QueryHints.HINT_IGNORE_PREPARED_QUERY.equals(key)) {
-                    _query.getFetchConfiguration().setHint(key, (Boolean)value);
-                    ignorePreparedQuery();
-                } else {
-                    _query.getFetchConfiguration().setHint(key, value);
-                }
-            } else
-				throw new ArgumentException(_loc.get("bad-query-hint", key),
-						null, null, false);
-			return this;
-		} catch (Exception e) {
-			throw PersistenceExceptions.toPersistenceException(e);
-		}
-	}
-
-	private void hintToSetter(FetchPlan fetchPlan, String k, Object value) {
-		if (fetchPlan == null || k == null)
-			return;
-
-		Method setter = Reflection.findSetter(fetchPlan.getClass(), k, true);
-		Class paramType = setter.getParameterTypes()[0];
-		if (Enum.class.isAssignableFrom(paramType) && value instanceof String)
-			value = Enum.valueOf(paramType, (String) value);
-
-		Filters.hintToSetter(fetchPlan, k, value);
+		_hintHandler.setHint(key, value);
+		return this;
 	}
 
 	public OpenJPAQuery setParameter(int position, Calendar value,
@@ -613,7 +539,7 @@ public class QueryImpl implements OpenJPAQuerySPI, Serializable {
 	 */
     //TODO: JPA 2.0 Hints that are not set to FetchConfiguration 
     public Map<String, Object> getHints() {
-        return _query.getFetchConfiguration().getHints();
+        return _hintHandler.getHints();
     }
 
     public LockModeType getLockMode() {
@@ -622,8 +548,7 @@ public class QueryImpl implements OpenJPAQuerySPI, Serializable {
     }
 
     public Set<String> getSupportedHints() {
-        throw new UnsupportedOperationException(
-            "JPA 2.0 - Method not yet implemented");
+        return _hintHandler.getSupportedHints();
     }
 
     public Query setLockMode(LockModeType lockMode) {
@@ -704,7 +629,7 @@ public class QueryImpl implements OpenJPAQuerySPI, Serializable {
     /**
      * Remove this query from PreparedQueryCache. 
      */
-    private boolean invalidatePreparedQuery() {
+    boolean invalidatePreparedQuery() {
         PreparedQueryCache cache = _em.getPreparedQueryCache();
         if (cache == null)
             return false;
@@ -716,7 +641,7 @@ public class QueryImpl implements OpenJPAQuerySPI, Serializable {
      * Ignores this query from PreparedQueryCache by recreating the original
      * query if it has been cached. 
      */
-    private void ignorePreparedQuery() {
+    void ignorePreparedQuery() {
         PreparedQuery cached = _em.getPreparedQuery(_id);
         if (cached == null)
             return;

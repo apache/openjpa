@@ -29,6 +29,8 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.MissingResourceException;
+import java.util.Set;
+import java.util.TreeSet;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.openjpa.lib.util.J2DoPrivHelper;
@@ -434,6 +436,19 @@ public class ProductDerivations {
                 collection.add(fqLoc);
         }
     }
+    
+    
+    public static Set<String> getSupportedQueryHints() {
+        Set<String> result = new TreeSet<String>();
+        // most specific to least
+        for (int i = _derivations.length - 1; i >= 0; i--) {
+            Set<String> members = _derivations[i].getSupportedQueryHints();
+            if (members != null || !members.isEmpty())
+                result.addAll(members);
+        }
+        return result;
+    }
+
 
     /**
      * Compare {@link ProductDerivation}s.

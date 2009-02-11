@@ -247,12 +247,23 @@ public class Filters {
         if (type.isAssignableFrom(o.getClass()))
             return o;
 
-        // the only non-numeric conversions we do are to string, or from
+        // the non-numeric conversions we do are to string, or from
         // string/char to number, or calendar/date
+        // String to Boolean
+        // String to Integer
         boolean num = o instanceof Number;
         if (!num) {
             if (type == String.class)
                 return o.toString();
+            else if (type == Boolean.class && o instanceof String) 
+                return Boolean.valueOf(o.toString());
+            else if (type == Integer.class && o instanceof String)
+                try {
+                    return new Integer(o.toString());
+                } catch (NumberFormatException e) {
+                    throw new ClassCastException(_loc.get("cant-convert", o,
+                        o.getClass(), type).getMessage());
+                }
             else if (type == Character.class) {
                 String str = o.toString();
                 if (str != null && str.length() == 1)

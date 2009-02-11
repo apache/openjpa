@@ -18,7 +18,9 @@
  */
 package org.apache.openjpa.slice;
 
+import java.util.Collections;
 import java.util.Map;
+import java.util.Set;
 
 import org.apache.openjpa.conf.OpenJPAProductDerivation;
 import org.apache.openjpa.lib.conf.AbstractProductDerivation;
@@ -97,5 +99,9 @@ public class ProductDerivation extends AbstractProductDerivation implements
     	if (log.isWarnEnabled())
         	log.warn(_loc.get("forced-set-config", 
         		prefix+"."+v.getProperty(), forced));
+    }
+    
+    public Set<String> getSupportedQueryHints() {
+        return Collections.singleton(HINT_TARGET);
     }
 }

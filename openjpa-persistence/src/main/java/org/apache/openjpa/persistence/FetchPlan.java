@@ -22,6 +22,7 @@ import java.util.Collection;
 import javax.persistence.LockModeType;
 
 import org.apache.openjpa.kernel.FetchConfiguration;
+import org.apache.openjpa.lib.util.Reflectable;
 import org.apache.openjpa.meta.FetchGroup;
 
 /**
@@ -88,6 +89,7 @@ public interface FetchPlan {
      *
      * @since 1.0.0
      */
+    @Reflectable(false)
     public boolean getQueryResultCacheEnabled();
 
     /**
@@ -102,6 +104,7 @@ public interface FetchPlan {
     /**
      * @deprecated use {@link #getQueryResultCacheEnabled()} instead.
      */
+    @Reflectable(false)
     public boolean getQueryResultCache();
 
     /**
@@ -293,5 +296,6 @@ public interface FetchPlan {
      * @deprecated cast to {@link FetchPlanImpl} instead. This
      * method pierces the published-API boundary, as does the SPI cast.
      */
+    @Reflectable(false)
     public org.apache.openjpa.kernel.FetchConfiguration getDelegate();
 }

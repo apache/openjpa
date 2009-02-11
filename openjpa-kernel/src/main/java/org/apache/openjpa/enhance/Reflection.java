@@ -21,13 +21,18 @@ package org.apache.openjpa.enhance;
 import java.lang.reflect.AccessibleObject;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Member;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.security.AccessController;
+import java.util.Collections;
+import java.util.Set;
+import java.util.TreeSet;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.openjpa.lib.util.J2DoPrivHelper;
 import org.apache.openjpa.lib.util.Localizer;
+import org.apache.openjpa.lib.util.Reflectable;
 import org.apache.openjpa.util.GeneralException; 
 import org.apache.openjpa.util.UserException; 
 
@@ -754,4 +759,166 @@ public class Reflection {
     public static void set(Object target, Method setter, short value) {
         set(target, setter, new Short(value));
     }
+    
+    /**
+     * Gets all bean-style property names of the given Class or its superclass.
+     * A bean-style property 'abc' exists in Class C iff C has declared 
+     * following pair of methods:
+     *   public void setAbc(Y y) or public C setAbc(Y y)
+     *   public Y getAbc();
+     *   
+     * If a getter property is annotated with {@link Reflectable}, then
+     * it is ignored.
+     *   
+     */
+    public static Set<String> getBeanStylePropertyNames(Class c) {
+        if (c == null)
+            return Collections.EMPTY_SET;
+        Method[] methods = c.getMethods();
+        if (methods == null || methods.length < 2)
+            return Collections.EMPTY_SET;
+        Set<String> result = new TreeSet<String>();
+        for (Method m : methods) {
+            if (m.getName().startsWith("get")) {
+                if (!canReflect(m))
+                    continue;
+                String prop = StringUtils.capitalize(m.getName()
+                    .substring("get".length()));
+                Class rtype = m.getReturnType();
+                try {
+                  Method setter = c.getMethod("set"+prop, new Class[]{rtype});
+                  if (setter.getReturnType() == void.class || 
+                      setter.getReturnType().isAssignableFrom(c))
+                  result.add(prop);
+                } catch (NoSuchMethodException e) {
+                    
+                }
+            }
+        }
+        return result;
+    }
+    
+    /**
+     * Gets all public field names of the given Class.
+     *   
+     */
+    public static Set<String> getPublicFieldNames(Class c) {
+        if (c == null)
+            return Collections.EMPTY_SET;
+        Field[] fields = c.getFields();
+        if (fields == null || fields.length == 0)
+            return Collections.EMPTY_SET;
+        Set<String> result = new TreeSet<String>();
+        for (Field f : fields) {
+            if (canReflect(f))
+                result.add(f.getName());
+        }
+        return result;
+    }
+    
+    /**
+     * Gets values of all field f the given class such that f exactly 
+     * match the given modifiers and are of given type (Object implies any type)
+     * unless f is annotated as {@link Reflectable}. 
+     *   
+     */
+    public static <T> Set<T> getFieldValues(Class c, int mods, Class<T> t){
+        if (c == null)
+            return Collections.EMPTY_SET;
+        Field[] fields = c.getFields();
+        if (fields == null || fields.length == 0)
+            return Collections.EMPTY_SET;
+        Set<T> result = new TreeSet<T>();
+        for (Field f : fields) {
+            if (mods == f.getModifiers() 
+            && (t == Object.class || t.isAssignableFrom(f.getType()))
+            && canReflect(f)) {
+                try {
+                    result.add((T)f.get(null));
+                } catch (IllegalArgumentException e) {
+                } catch (IllegalAccessException e) {
+                }
+            }
+        }
+        return result;
+    }
+
+    /**
+     * Affirms if the given member is selected for reflection. The decision is
+     * based on the following truth table on both the class-level and 
+     * member-level annotation (null annotation represents MAYBE) 
+     * 
+     * Class   member  
+     * MAYBE   MAYBE   YES
+     * MAYBE   YES     YES
+     * MAYBE   NO      NO
+     *
+     * YES     MAYBE   YES
+     * YES     YES     YES
+     * YES     NO      NO
+     *
+     * NO      YES     YES
+     * NO      MAYBE   NO
+     * NO      NO      NO 
+     * 
+    */   
+    static boolean canReflect(Reflectable cls, Reflectable member) {
+        if (cls == null || cls.value()) {
+            return member == null || member.value() == true;
+        } else {
+            return member != null && member.value() == true;
+        }
+    }
+    
+    /**
+     * Affirms if the original declaration the given field is annotated
+     * for reflection. 
+     */
+    static boolean canReflect(Field field) {
+        Class cls = field.getDeclaringClass();
+        return canReflect((Reflectable)cls.getAnnotation(Reflectable.class), 
+            field.getAnnotation(Reflectable.class));
+    }
+    
+    /**
+     * Affirms if the original declaration the given method is annotated
+     * for reflection. 
+     */
+    static boolean canReflect(Method method) {
+        Class cls = getDeclaringClass(method);
+        if (cls != method.getDeclaringClass())
+            method = getDeclaringMethod(cls, method);
+        return canReflect((Reflectable)cls.getAnnotation(Reflectable.class), 
+            method.getAnnotation(Reflectable.class));
+    }
+    
+    /**
+     * Gets the declaring class of the given method signature but also checks
+     * if the method is declared in an interface. If yes, then returns the
+     * interface. 
+     */
+    public static Class getDeclaringClass(Method m) {
+        if (m == null)
+            return null;
+        Class cls = m.getDeclaringClass();
+        Class[] intfs =  cls.getInterfaces();
+        for (Class intf : intfs) {
+            if (getDeclaringMethod(intf, m) != null)
+                cls = intf;
+        }
+        return cls;
+    }
+    
+    /**
+     * Gets the method in the given class that has the same signature of the
+     * given method, if exists. Otherwise, null.
+     */
+    public static Method getDeclaringMethod(Class c, Method m) {
+        try {
+            Method m0 = c.getMethod(m.getName(), m.getParameterTypes());
+            return m0;
+        } catch (Exception e) {
+            return null;
+        }
+    }    
 }

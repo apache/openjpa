@@ -21,6 +21,7 @@ package org.apache.openjpa.lib.conf;
 import java.io.File;
 import java.io.IOException;
 import java.util.List;
+import java.util.Set;
 
 /**
  * Hooks for deriving products with additional functionality.
@@ -157,4 +158,13 @@ public interface ProductDerivation {
      * @since 0.9.7
      */
     public void beforeConfigurationClose(Configuration conf);
+    
+       
+    /**
+     * Return set of Query hint keys recognized by this receiver. 
+     * 
+     * @since 2.0.0
+     */
+    public Set<String> getSupportedQueryHints();
+
 }
