@@ -82,7 +82,8 @@ class MetaDataParsers {
             if (!(lc instanceof MethodLifecycleCallbacks))
                 continue;
             Method exists = ((MethodLifecycleCallbacks) lc).getCallbackMethod();
-            if (!exists.getDeclaringClass().equals(method.getDeclaringClass()))
+            if (!exists.getDeclaringClass().equals(method.getDeclaringClass())
+             || exists.equals(method))
                 continue;
 
             Localizer.Message msg = _loc.get("multiple-methods-on-callback", 
