@@ -685,8 +685,15 @@ public class BrokerImpl
         int eventType) {
         if (_lifeEventManager == null)
             return false;
-        handleCallbackExceptions(_lifeEventManager.fireEvent(src, related, 
-            meta, eventType), _lifeCallbackMode);
+
+        lock();
+        Exception[] exs;
+        try {
+            exs = _lifeEventManager.fireEvent(src, related, meta, eventType);
+        } finally {
+            unlock();
+        } 
+        handleCallbackExceptions(exs, _lifeCallbackMode);
         return true;
     }
 
