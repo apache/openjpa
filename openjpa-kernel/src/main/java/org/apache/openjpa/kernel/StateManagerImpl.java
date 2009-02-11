@@ -60,6 +60,7 @@ import org.apache.openjpa.util.Exceptions;
 import org.apache.openjpa.util.ImplHelper;
 import org.apache.openjpa.util.InternalException;
 import org.apache.openjpa.util.InvalidStateException;
+import org.apache.openjpa.util.ObjectId;
 import org.apache.openjpa.util.ObjectNotFoundException;
 import org.apache.openjpa.util.OpenJPAId;
 import org.apache.openjpa.util.ProxyManager;
@@ -148,6 +149,7 @@ public class StateManagerImpl
     // information about the owner of this instance, if it is embedded
     private StateManagerImpl _owner = null;
     private int _ownerIndex = -1;
+    private int _mappedByIdValueFrom = -1;
     
     private transient ReentrantLock _instanceLock = null;
 
@@ -301,7 +303,12 @@ public class StateManagerImpl
             if (fmds[i].isPrimaryKey()
                 || fmds[i].getManagement() != fmds[i].MANAGE_PERSISTENT)
                 _loaded.set(i);
-
+            
+            if (_meta.getIdentityType() == ClassMetaData.ID_APPLICATION &&
+                fmds[i].getMappedByIdValue() != null && 
+                ((ObjectId)_id).getId() == null) {
+                _mappedByIdValueFrom = fmds[i].getIndex();
+            }
             // record whether there are any managed inverse fields
             if (_broker.getInverseManager() != null
                 && fmds[i].getInverseMetaDatas().length > 0)
@@ -3271,5 +3278,9 @@ public class StateManagerImpl
 
         pc.pcReplaceStateManager(this);
         return pc;
+    }
+    
+    public int getMappedByIdValueFrom() {
+        return _mappedByIdValueFrom;
     }
 }

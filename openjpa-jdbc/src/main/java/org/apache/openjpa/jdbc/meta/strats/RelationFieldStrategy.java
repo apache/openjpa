@@ -20,6 +20,7 @@ package org.apache.openjpa.jdbc.meta.strats;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -27,7 +28,6 @@ import java.util.Set;
 
 import org.apache.openjpa.enhance.PersistenceCapable;
 import org.apache.openjpa.enhance.ReflectingPersistenceCapable;
-import org.apache.openjpa.jdbc.conf.JDBCConfiguration;
 import org.apache.openjpa.jdbc.kernel.JDBCFetchConfiguration;
 import org.apache.openjpa.jdbc.kernel.JDBCStore;
 import org.apache.openjpa.jdbc.meta.ClassMapping;
@@ -201,24 +201,26 @@ public class RelationFieldStrategy
     }
 
     private List getMappedByIdColumns(FieldMapping pk) {
-        ClassMetaData embeddedId = ((ValueMappingImpl)pk.getValue()).getEmbeddedMetaData();
+        ClassMetaData embeddedId = ((ValueMappingImpl)pk.getValue()).
+            getEmbeddedMetaData();
         Column[] pkCols = null;
+        List cols = new ArrayList();
+        String mappedByIdValue = field.getMappedByIdValue();
         if (embeddedId != null) {
             FieldMetaData[] fmds = embeddedId.getFields();
             for (int i = 0; i < fmds.length; i++) {
-                if (fmds[i].getName().equals(field.getMappedByIdValue())) {
-                    pkCols =  ((ValueMappingImpl)fmds[i].getValue()).getColumns();
-                    break;
+                if ((fmds[i].getName().equals(mappedByIdValue)) ||
+                    mappedByIdValue.length() == 0) {
+                    if (fmds[i].getValue().getEmbeddedMetaData() != null) {
+                        EmbedValueHandler.getEmbeddedIdCols((FieldMapping)fmds[i], cols);
+                    } else {
+                        EmbedValueHandler.getIdColumns((FieldMapping)fmds[i], cols);
                 }
             }
         }
-        List cols = new ArrayList();
-        for (int i = 0; i < pkCols.length; i++) {
-            Column newCol = new Column();
-            newCol.setName(pkCols[i].getName());
-            cols.add(newCol);
+            return cols;
         }
-        return cols;
+        return Collections.EMPTY_LIST;
     }
 
     /**

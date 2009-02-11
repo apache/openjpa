@@ -491,6 +491,10 @@ public class ApplicationIds {
             }
         return true;
     }
+    
+    public static void setKey(ObjectId fromId, ObjectId toId) {
+        toId.setId(fromId.getId());        
+    }
 
     /**
      * Helper class used to transfer pk values to/from application oids.

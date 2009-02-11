@@ -20,6 +20,7 @@ package org.apache.openjpa.jdbc.meta;
 
 import java.sql.SQLException;
 
+import org.apache.openjpa.enhance.PersistenceCapable;
 import org.apache.openjpa.jdbc.kernel.JDBCFetchConfiguration;
 import org.apache.openjpa.jdbc.kernel.JDBCStore;
 import org.apache.openjpa.jdbc.meta.strats.NoneFieldStrategy;
@@ -38,12 +39,15 @@ import org.apache.openjpa.jdbc.sql.Select;
 import org.apache.openjpa.jdbc.sql.SelectExecutor;
 import org.apache.openjpa.kernel.FetchConfiguration;
 import org.apache.openjpa.kernel.OpenJPAStateManager;
+import org.apache.openjpa.kernel.StateManagerImpl;
 import org.apache.openjpa.lib.log.Log;
 import org.apache.openjpa.lib.util.Localizer;
 import org.apache.openjpa.meta.FieldMetaData;
 import org.apache.openjpa.meta.JavaTypes;
+import org.apache.openjpa.util.ApplicationIds;
 import org.apache.openjpa.util.InternalException;
 import org.apache.openjpa.util.MetaDataException;
+import org.apache.openjpa.util.ObjectId;
 
 /**
  * Specialization of metadata for relational databases.
@@ -587,6 +591,19 @@ public class FieldMapping
 
     public void insert(OpenJPAStateManager sm, JDBCStore store, RowManager rm)
         throws SQLException {
+        if (sm instanceof StateManagerImpl) {
+            int mappedByIdValueFrom = ((StateManagerImpl)sm).getMappedByIdValueFrom(); 
+            if (isPrimaryKey() && mappedByIdValueFrom != -1) {
+                PersistenceCapable pc = (PersistenceCapable)sm.fetchObject(mappedByIdValueFrom);
+                StateManagerImpl pkSm = (StateManagerImpl)pc.pcGetStateManager();
+                ObjectId fromId = (ObjectId)pkSm.getId();
+                sm.storeObject(getIndex(), fromId.getId());
+                ObjectId toId = (ObjectId)sm.getId();
+                ApplicationIds.setKey(fromId, toId);
+                ObjectId toObjectId = (ObjectId)sm.getObjectId();
+                ApplicationIds.setKey(fromId, toObjectId);
+            }
+        }
         assertStrategy().insert(sm, store, rm);
     }
 

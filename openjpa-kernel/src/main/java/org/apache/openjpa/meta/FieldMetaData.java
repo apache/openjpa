@@ -565,7 +565,7 @@ public class FieldMetaData
      */
     public Class getObjectIdFieldType() {
         ClassMetaData relmeta = getDeclaredTypeMetaData();
-        if (relmeta == null)
+        if (relmeta == null || getValue().isEmbedded())
             return getDeclaredType();
         switch (relmeta.getIdentityType()) {
             case ClassMetaData.ID_DATASTORE:

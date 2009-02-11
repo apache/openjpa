@@ -25,13 +25,17 @@ import java.util.List;
 import org.apache.openjpa.enhance.PersistenceCapable;
 import org.apache.openjpa.jdbc.kernel.JDBCFetchConfiguration;
 import org.apache.openjpa.jdbc.kernel.JDBCStore;
+import org.apache.openjpa.jdbc.meta.ClassMapping;
 import org.apache.openjpa.jdbc.meta.Embeddable;
 import org.apache.openjpa.jdbc.meta.FieldMapping;
 import org.apache.openjpa.jdbc.meta.FieldStrategy;
 import org.apache.openjpa.jdbc.meta.ValueMapping;
+import org.apache.openjpa.jdbc.meta.ValueMappingImpl;
 import org.apache.openjpa.jdbc.schema.Column;
 import org.apache.openjpa.jdbc.schema.ColumnIO;
+import org.apache.openjpa.kernel.ObjectIdStateManager;
 import org.apache.openjpa.kernel.OpenJPAStateManager;
+import org.apache.openjpa.kernel.StateManagerImpl;
 import org.apache.openjpa.lib.util.Localizer;
 import org.apache.openjpa.util.MetaDataException;
 
@@ -149,6 +153,8 @@ public abstract class EmbedValueHandler
                     OpenJPAStateManager embedSm = (OpenJPAStateManager)
                         ((PersistenceCapable)cval).pcGetStateManager();
                     idx = toDataStoreValue1(embedSm, val, store, cols, rvals, idx);
+                } else if (cval == null) {
+                    idx = toDataStoreValue1(null, val, store, cols, rvals, idx);
                 }
             }
             
@@ -209,8 +215,13 @@ public abstract class EmbedValueHandler
             
             embed = (Embeddable) fms[i].getStrategy();
             if (vm1.getEmbeddedMapping() != null) {
+                if (em instanceof StateManagerImpl) {
                 em1 = store.getContext().embed(null, null, em, vm1);
                 idx = toObjectValue1(em1, vm1, val, store, fetch, cols, idx);
+                } else if (em instanceof ObjectIdStateManager) {
+                    em1 = new ObjectIdStateManager(null, null, vm1);
+                    idx = toObjectValue1(em1, vm1, val, store, null, getColumns(fms[i]), idx);
+                }
                 cval = em1.getManagedInstance();
             } else {
                 ecols = embed.getColumns();
@@ -227,13 +238,45 @@ public abstract class EmbedValueHandler
                 }
             }
 
-            if (store != null)
+            if (store != null && em instanceof StateManagerImpl)
                 embed.loadEmbedded(em, store, fetch, cval);
             else {
+                if (!(em instanceof ObjectIdStateManager))
                 cval = embed.toEmbeddedObjectValue(cval);
                 em.store(fms[i].getIndex(), cval);
             }
         }
         return idx;
+    }
+    private Column[] getColumns(FieldMapping fm) {
+        List<Column> colList = new ArrayList<Column>();
+        getEmbeddedIdCols(fm, colList);
+        Column[] cols = new Column[colList.size()];
+        int i = 0;
+        for (Column col : colList) {
+            cols[i++] = col;
+        }
+        return cols;
+    }
+    
+    public static void getEmbeddedIdCols(FieldMapping fmd, List cols) {
+        ClassMapping embed = fmd.getEmbeddedMapping();
+        FieldMapping[] fmds = embed.getFieldMappings();
+        for (int i = 0; i < fmds.length; i++) {
+            if (fmds[i].getValue().getEmbeddedMetaData() == null) {
+                getIdColumns(fmds[i], cols);
+            } else {
+                getEmbeddedIdCols(fmd, cols);
+            }
+        }
+    }
+    
+    public static void getIdColumns(FieldMapping fmd, List cols) {
+        Column[] pkCols =  ((ValueMappingImpl)fmd.getValue()).getColumns();
+        for (int j = 0; j < pkCols.length; j++) {
+            Column newCol = new Column();
+            newCol.setName(pkCols[j].getName());
+            cols.add(newCol);
+        }
     }
 }
