@@ -243,7 +243,8 @@ public class QueryImpl implements OpenJPAQuerySPI, Serializable {
 	}
 
 	private Object execute() {
-		if (_query.getOperation() != QueryOperations.OP_SELECT)
+		if ((!isNative()) &&
+            _query.getOperation() != QueryOperations.OP_SELECT)
 			throw new InvalidStateException(_loc.get("not-select-query", _query
 					.getQueryString()), null, null, false);
 
