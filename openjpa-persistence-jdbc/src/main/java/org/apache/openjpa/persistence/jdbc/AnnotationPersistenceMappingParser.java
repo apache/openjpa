@@ -1690,6 +1690,14 @@ public class AnnotationPersistenceMappingParser
      */
     private void parseJavaxOrderColumn(FieldMapping fm, 
         javax.persistence.OrderColumn order) {
+        // If a table name is specified on the annotation and a table
+        // name has not been defined, set the table name to the name
+        // specified.  This will be the name of the join table or
+        // collection table.
+        if (!StringUtils.isEmpty(order.table()) &&
+            StringUtils.isEmpty(fm.getMappingInfo().getTableName())) {
+            fm.getMappingInfo().setTableName(order.table());
+        }
         
         Column col = new Column();
         if (!StringUtils.isEmpty(order.name()))

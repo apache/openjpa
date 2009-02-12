@@ -22,6 +22,9 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
+import java.sql.Connection;
+import java.sql.DatabaseMetaData;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collection;
@@ -38,6 +41,9 @@ import org.apache.openjpa.jdbc.conf.JDBCConfiguration;
 import org.apache.openjpa.jdbc.meta.ClassMapping;
 import org.apache.openjpa.jdbc.meta.FieldMapping;
 import org.apache.openjpa.jdbc.schema.Column;
+import org.apache.openjpa.jdbc.schema.Sequence;
+import org.apache.openjpa.jdbc.schema.Table;
+import org.apache.openjpa.jdbc.sql.DBDictionary;
 import org.apache.openjpa.lib.meta.MetaDataSerializer;
 import org.apache.openjpa.meta.ClassMetaData;
 import org.apache.openjpa.meta.MetaDataRepository;
@@ -57,7 +63,9 @@ public class TestOrderColumn extends SingleEMFTestCase {
         super.setUp(DROP_TABLES,
                 Person.class, Player.class, BattingOrder.class,
                 Trainer.class, Game.class, Inning.class,
-                Course.class, Student.class);
+                Course.class, Student.class,
+                Owner.class, Bicycle.class, Car.class, Home.class,
+                Widget.class);
         try {
             createQueryData();
         } catch (Exception e) {
@@ -639,10 +647,13 @@ public class TestOrderColumn extends SingleEMFTestCase {
                 new Object[] { elems[6], elems[7], elems[8]}, "id",
                 bte.getId());
 
-// This test is disabled until INDEX projection supports element collections
+// This validator is disabled until INDEX projection supports element 
+// collections
 //        validateIndexAndValues(em, "BaseTestEntity", "collelems", 10, 
-//                new Object[] { elems[0], elems[1], elems[2]});
+//                new Object[] { elems[0], elems[1], elems[2]} "id",
+//                bte.getId());
 
+        em.close();
         try {
             if (emf1 != null)
                 cleanupEMF(emf1);
@@ -652,20 +663,118 @@ public class TestOrderColumn extends SingleEMFTestCase {
     }
 
     /*
-     * Validates the use of the table attribute on OrderColumn
+     * Validates the use of the table attribute on OrderColumn with
+     * o2o, o2m, m2m, and collection table - with and without join
+     * tables.
      */
-    public void verifyOrderColumnTable() {        
-        /*
-         * If the relationship is a many-to-many or unidirectional one-to-many 
-         * relationship, the table is the join table for the relationship. If 
-         * the relationship is a bidirectional one-to-many or unidirectional 
-         * one-to-many mapped by a join column, the table is the primary 
-         * table for the entity on the mapny side of the relationship. If the 
-         * ordering is for a collection of elements, the table is the 
-         * collection table for the element collection.
-         */      
+    public void testOrderColumnTable() {   
+        
+        OpenJPAEntityManagerSPI em = emf.createEntityManager();
+
+        validateOrderColumnTable(emf, Owner.class, "cars", 
+            "OC_CAR", "car_o2m_order"); 
+                
+        validateOrderColumnTable(emf, Owner.class, "homes", 
+             "home_o2m_table", "homes_ORDER"); 
+
+        validateOrderColumnTable(emf, Owner.class, "bikeColl", 
+             "bike_table", "bike_coll_order"); 
+
+        validateOrderColumnTable(emf, Owner.class, "widgets", 
+                "widget_m2m_table", "widgets_ORDER"); 
+
+        Owner owner = new Owner();
+        Collection<Car> cars = new ArrayList<Car>();
+        Collection<Home> homes = new ArrayList<Home>();
+        Collection<Bicycle> bicycles = new ArrayList<Bicycle>();
+        Collection<Widget> widgets = new ArrayList<Widget>();
+        Collection<Owner> owners = new ArrayList<Owner>(); 
+        owner.setCars(cars);
+        owner.setHomes(homes);
+        owner.setBikeColl(bicycles);
+        owner.setWidgets(widgets);
+        
+        for (int i = 0;  i < 5; i++){
+            Car car = new Car(2000 + 1, "Make"+i, "Model"+i);
+            car.setOwner(owner);
+            cars.add(car);
+            
+            Home home = new Home(2000 + i);
+            homes.add(home);
+            
+            Bicycle bike = new Bicycle("Brand"+i, "Model"+i);
+            bicycles.add(bike);   
+            
+            Widget widget = new Widget("Name"+i);
+            widgets.add(widget);
+            widget.setOwners(owners);
+        }
+        
+        Object[] carArr = cars.toArray();
+        Object[] homeArr = homes.toArray();
+        Object[] bikeArr = bicycles.toArray();
+        Object[] widgetArr = widgets.toArray();
+        
+        em.getTransaction().begin();
+        em.persist(owner);
+        em.getTransaction().commit();
+        String oid = owner.getId();
+        
+        em.clear();
+        
+        // Run queries to ensure the query component uses the correct tables
+        validateIndexAndValues(em, "Owner", "cars", 0, 
+                carArr, "id", 
+                oid);
+
+        validateIndexAndValues(em, "Owner", "homes", 0, 
+                homeArr, "id", 
+                oid);
+
+        validateIndexAndValues(em, "Owner", "widgets", 0, 
+                widgetArr, "id", 
+                oid);
+
+//      This validator is disabled until INDEX projection supports element 
+//      collections
+//        validateIndexAndValues(em, "Owner", "bikeColl", 0, 
+//                bikeArr, "id", 
+//                oid);
+        
+        em.close();
     }    
-    
+
+    /**
+     * Validates the use of the table attribute defined in XML
+     */
+    public void testOrderColumnTableXML() {   
+        
+        OpenJPAEntityManagerFactorySPI emf1 = 
+            (OpenJPAEntityManagerFactorySPI)OpenJPAPersistence.
+            createEntityManagerFactory("TableTest", 
+            "org/apache/openjpa/persistence/jdbc/order/" +
+            "order-persistence-5.xml");
+        
+        OpenJPAEntityManagerSPI em = emf1.createEntityManager();
+        
+        validateOrderColumnTable(emf1, BaseTestEntity.class, "one2Melems", 
+            "xml_o2m_table", "one2MOrder"); 
+                    
+        validateOrderColumnTable(emf1, BaseTestEntity.class, "m2melems", 
+             "xml_m2m_table", "m2morder"); 
+
+        validateOrderColumnTable(emf1, BaseTestEntity.class, "collelems", 
+             "xml_coll_table", "collelems_ORDER"); 
+        
+        em.close();
+        try {
+            if (emf1 != null)
+                cleanupEMF(emf1);
+        } catch (Exception e) {
+            fail(e.getMessage());
+        }        
+    }
+
     /*
      * Validates the use of order column (via INDEX) in the predicate of a
      * JPQL query.
@@ -698,7 +807,9 @@ public class TestOrderColumn extends SingleEMFTestCase {
         qry.setParameter("widx", 1);
         idx0 = (Student)qry.getSingleResult();
         assertNotNull(idx0);
-        assertEquals(idx0, students[10]);        
+        assertEquals(idx0, students[10]);  
+        
+        em.close();
     }
 
     /*
@@ -727,6 +838,8 @@ public class TestOrderColumn extends SingleEMFTestCase {
         Long idx = (Long)qry.getSingleResult();       
         assertNotNull(idx);
         assertEquals((Long)idx, (Long)1L);
+        
+        em.close();
     }
     
     /*
@@ -735,14 +848,15 @@ public class TestOrderColumn extends SingleEMFTestCase {
      */
     public void testOrderColumnOrderBy() {
         
+        OpenJPAEntityManagerFactorySPI emf1 = null;
+        OpenJPAEntityManagerSPI em = null;
         try {
-            OpenJPAEntityManagerFactorySPI emf1 = 
-                (OpenJPAEntityManagerFactorySPI)OpenJPAPersistence.
+            emf1 = (OpenJPAEntityManagerFactorySPI)OpenJPAPersistence.
                 createEntityManagerFactory("ObOcTest", 
                     "org/apache/openjpa/persistence/jdbc/order/" +
                     "order-persistence-3.xml");
         
-            OpenJPAEntityManagerSPI em = emf1.createEntityManager();
+            em = emf1.createEntityManager();
             
             ObOcEntity ent = new ObOcEntity();
             List<Integer> intList = new ArrayList<Integer>();
@@ -755,10 +869,20 @@ public class TestOrderColumn extends SingleEMFTestCase {
             em.getTransaction().commit();
 
             em.close();
+            em = null;
             fail("An exception should have been thrown.");
         } catch (Exception e) {
             assertException(e, ArgumentException.class);
+        } finally {
+            if (em != null)
+                em.close();
         }
+        try {
+            if (emf1 != null)
+                cleanupEMF(emf1);
+        } catch (Exception e) {
+            fail(e.getMessage());
+        }        
     }
     
     public void testOrderColumnMetaDataSerialization() 
@@ -809,7 +933,14 @@ public class TestOrderColumn extends SingleEMFTestCase {
         oc = fm.getOrderColumn();
         assertNotNull(oc);
         assertEquals(oc.getName(),"collelems_ORDER");
-        assertEquals(oc.getBase(), 10);        
+        assertEquals(oc.getBase(), 10);    
+
+        try {
+            if (emf1 != null)
+                cleanupEMF(emf1);
+        } catch (Exception e) {
+            fail(e.getMessage());
+        }        
     }
     
     /*
@@ -852,6 +983,7 @@ public class TestOrderColumn extends SingleEMFTestCase {
         em.persist(courseA);
         em.persist(courseB);
         em.getTransaction().commit();
+        em.close();
     }
     
     private void validateIndexAndValues(OpenJPAEntityManagerSPI em, 
@@ -898,7 +1030,19 @@ public class TestOrderColumn extends SingleEMFTestCase {
         Column oc = getOrderColumn(emf1, clazz, fieldName);
         assertTrue(oc.getName().equalsIgnoreCase(columnName));
     }
-    
+
+    private void validateOrderColumnTable(
+            OpenJPAEntityManagerFactorySPI emf1, 
+            Class clazz, String fieldName, String tableName, 
+            String columnName) {        
+            Column oc = getOrderColumn(emf1, clazz, fieldName);
+            // Verify the oc has the correct table name
+            assertTrue(oc.getTableName().equalsIgnoreCase(tableName));
+            // Verify the table exists in the db
+            assertTrue(tableAndColumnExists(emf1, null, tableName, null, 
+                columnName));
+        }
+
     private void validateOrderColumnContiguous(
         OpenJPAEntityManagerFactorySPI emf1, Class clazz, String fieldName, 
         boolean contiguous) {        
@@ -934,6 +1078,44 @@ public class TestOrderColumn extends SingleEMFTestCase {
             assertEquals(insertable, !oc.getFlag(Column.FLAG_DIRECT_INSERT));
     }
 
+    /**
+     * Method to verify a table was created for the given name and schema
+     */
+    private boolean tableAndColumnExists(OpenJPAEntityManagerFactorySPI emf1, 
+            OpenJPAEntityManagerSPI em, String tableName, String schemaName,
+            String columnName) {
+        JDBCConfiguration conf = (JDBCConfiguration) emf1.getConfiguration();
+        DBDictionary dict = conf.getDBDictionaryInstance();
+        OpenJPAEntityManagerSPI em1 = em;
+                
+        // If no em supplied, create one
+        if (em1 == null) {
+            em1 = emf1.createEntityManager();
+        }
+        Connection conn = (Connection)em1.getConnection();
+        try {
+            DatabaseMetaData dbmd = conn.getMetaData();
+            // (meta, catalog, schemaName, tableName, conn)
+            Column[] cols = dict.getColumns(dbmd, null, null, 
+                    tableName, columnName, conn);
+            if (cols != null && cols.length == 1) {
+                Column col = cols[0];
+                String colName = col.getName();
+                if (col.getTableName().equalsIgnoreCase(tableName) &&
+                    (schemaName == null || 
+                    col.getSchemaName().equalsIgnoreCase(schemaName)) &&
+                    colName.equalsIgnoreCase(columnName))
+                    return true;
+            }
+        } catch (Throwable e) {
+            fail("Unable to get column information.");
+        } finally {
+            if (em == null) {
+                em1.close();
+            }
+        }
+        return false;
+    }
     /**
      * Closes a specific entity manager factory and cleans up 
      * associated tables.

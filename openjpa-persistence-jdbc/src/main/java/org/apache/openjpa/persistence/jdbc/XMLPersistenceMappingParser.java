@@ -1091,6 +1091,15 @@ public class XMLPersistenceMappingParser
         if (obj instanceof FieldMapping) {
             FieldMapping fm = (FieldMapping)obj;
             fm.getMappingInfo().setOrderColumn(col);
+
+            // If a table name is specified on the element and a table
+            // name has not been defined, set the table name to the name
+            // specified.  This will be the name of the join table or
+            // collection table.
+            if (!StringUtils.isEmpty(col.getTableName()) &&
+                StringUtils.isEmpty(fm.getMappingInfo().getTableName())) {
+                fm.getMappingInfo().setTableName(col.getTableName());
+            }
         }
         return true;
     }
