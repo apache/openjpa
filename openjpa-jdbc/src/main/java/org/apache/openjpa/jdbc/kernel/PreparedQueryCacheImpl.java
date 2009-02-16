@@ -52,11 +52,8 @@ import org.apache.openjpa.lib.util.Localizer;
 public class PreparedQueryCacheImpl implements PreparedQueryCache {
 	private static final String PATTERN_SEPARATOR = "\\;";
 	private static final String EXLUDED_BY_USER = "Excluded by user";
-    private static final String JPQL = "javax.persistence.JPQL";
-    private static final String SELECT = "SELECT ";
 	// Key: Query identifier 
 	private final Map<String, PreparedQuery> _delegate;
-	private final Map<Class, PreparedQuery> _finders;
 	// Key: Query identifier Value: Reason why excluded
 	private final Map<String, String> _uncachables;
 	private List<String> _exclusionPatterns;
@@ -67,7 +64,6 @@ public class PreparedQueryCacheImpl implements PreparedQueryCache {
 
 	public PreparedQueryCacheImpl() {
 		_delegate = new HashMap<String, PreparedQuery>();
-		_finders = new HashMap<Class, PreparedQuery>();
 		_uncachables = new HashMap<String, String>();
 		_stats = new QueryStatistics.Default();
 	}
@@ -164,15 +160,6 @@ public class PreparedQueryCacheImpl implements PreparedQueryCache {
         }
     }
     
-    public PreparedQuery get(Class c) {
-        lock();
-        try {
-            return _finders.get(c);
-        } finally {
-            unlock();
-        }
-    }
-	
 	public Boolean isCachable(String id) {
 		lock();
 		try {

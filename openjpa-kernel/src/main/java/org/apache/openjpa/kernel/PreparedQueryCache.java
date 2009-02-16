@@ -129,13 +129,6 @@ public interface PreparedQueryCache extends Configurable {
 	public PreparedQuery get(String id);
 	
 	/**
-	 * Get the PreparedQuery for the finder query of the given class.
-	 * 
-	 * @param c class for which a find-by-primary-key query is looked up
-	 */
-	public PreparedQuery get(Class c);
-
-	/**
 	 * Affirms if a PreparedQuery can be cached against the given key.
 	 * 
 	 * @return Boolean.FALSE if the given key is explicitly marked before as not
