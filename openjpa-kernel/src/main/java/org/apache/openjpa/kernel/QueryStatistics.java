@@ -37,13 +37,13 @@ import java.util.Map;
  * @author Pinaki Poddar
  * 
  */
-public interface QueryStatistics extends Serializable {
+public interface QueryStatistics<T> extends Serializable {
 	
 	/**
 	 * Record that the given query has been executed. The boolean parameter
 	 * designates whether the executed query is a cached version.  
 	 */
-	void recordExecution(String query, boolean cached);
+	void recordExecution(T query, boolean cached);
 		
 	/**
 	 * Gets number of total query execution since last reset.
@@ -58,12 +58,12 @@ public interface QueryStatistics extends Serializable {
 	/**
 	 * Gets number of executions for the given query since last reset.
 	 */
-	public long getExecutionCount(String query);
+	public long getExecutionCount(T query);
 
 	/**
 	 * Gets number of executions for the given query since start.
 	 */
-	public long getTotalExecutionCount(String query);
+	public long getTotalExecutionCount(T query);
 
 	/**
 	 * Gets number of total query execution that are cached since last reset.
@@ -79,13 +79,13 @@ public interface QueryStatistics extends Serializable {
 	 * Gets number of executions for the given query that are cached since 
 	 * last reset.
 	 */
-	public long getHitCount(String query);
+	public long getHitCount(T query);
 
 	/**
 	 * Gets number of executions for the given query that are cached since 
 	 * start.
 	 */
-	public long getTotalHitCount(String query);
+	public long getTotalHitCount(T query);
 
 	/**
 	 * Gets the time of last reset.
@@ -111,12 +111,12 @@ public interface QueryStatistics extends Serializable {
 	 * A default implementation.
 	 *
 	 */
-	public static class Default implements QueryStatistics {
+	public static class Default<T> implements QueryStatistics<T> {
 		private static final int ARRAY_SIZE = 2;
 		private long[] astat = new long[ARRAY_SIZE];
 		private long[] stat  = new long[ARRAY_SIZE];
-		private Map<String, long[]> stats  = new HashMap<String, long[]>();
-		private Map<String, long[]> astats = new HashMap<String, long[]>();
+		private Map<T, long[]> stats  = new HashMap<T, long[]>();
+		private Map<T, long[]> astats = new HashMap<T, long[]>();
 		private Date start = new Date();
 		private Date since = start;
 
@@ -131,11 +131,11 @@ public interface QueryStatistics extends Serializable {
 			return astat[READ];
 		}
 
-		public long getExecutionCount(String query) {
+		public long getExecutionCount(T query) {
 			return getCount(stats, query, READ);
 		}
 
-		public long getTotalExecutionCount(String query) {
+		public long getTotalExecutionCount(T query) {
 			return getCount(astats, query, READ);
 		}
 
@@ -147,15 +147,15 @@ public interface QueryStatistics extends Serializable {
 			return astat[HIT];
 		}
 
-		public long getHitCount(String query) {
+		public long getHitCount(T query) {
 			return getCount(stats, query, HIT);
 		}
 
-		public long getTotalHitCount(String query) {
+		public long getTotalHitCount(T query) {
 			return getCount(astats, query, HIT);
 		}
 
-		private long getCount(Map<String, long[]> target, String query, int i) {
+		private long getCount(Map<T, long[]> target, T query, int i) {
 			long[] row = target.get(query);
 			return (row == null) ? 0 : row[i];
 		}
@@ -174,14 +174,14 @@ public interface QueryStatistics extends Serializable {
 			since = new Date();
 		}
 
-		private void addSample(String query, int index) {
+		private void addSample(T query, int index) {
 			stat[index]++;
 			astat[index]++;
 			addSample(stats, query, index);
 			addSample(astats, query, index);
 		}
 		
-		private void addSample(Map<String, long[]> target, String query, int i) {
+		private void addSample(Map<T, long[]> target, T query, int i) {
 			long[] row = target.get(query);
 			if (row == null) {
 				row = new long[ARRAY_SIZE];
@@ -190,7 +190,7 @@ public interface QueryStatistics extends Serializable {
 			target.put(query, row);
 		}
 		
-		public void recordExecution(String query, boolean cached) {
+		public void recordExecution(T query, boolean cached) {
 			addSample(query, READ);
 			if (cached)
 				addSample(query, HIT);
@@ -210,7 +210,7 @@ public interface QueryStatistics extends Serializable {
 				out.println("\tSince Start \tSince Reset \t\tQuery");
 			}
 			int i = 0;
-			for (String key : stats.keySet()) {
+			for (T key : stats.keySet()) {
 				i++;
 				long[] arow = astats.get(key);
 				if (since == start) {

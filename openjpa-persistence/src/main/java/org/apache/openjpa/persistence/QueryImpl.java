@@ -587,7 +587,7 @@ public class QueryImpl implements OpenJPAQuerySPI, Serializable {
         Boolean registered = cache.register(_id, _query, fetch);
         boolean alreadyCached = (registered == null);
         String lang = _query.getLanguage();
-        QueryStatistics stats = cache.getStatistics();
+        QueryStatistics<String> stats = cache.getStatistics();
         if (alreadyCached && LANG_PREPARED_SQL.equals(lang)) {
             PreparedQuery pq = _em.getPreparedQuery(_id);
             if (pq.isInitialized()) {

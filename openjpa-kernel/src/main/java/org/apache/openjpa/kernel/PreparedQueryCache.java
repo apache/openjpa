@@ -188,5 +188,5 @@ public interface PreparedQueryCache extends Configurable {
 	/**
 	 * Gets the simple statistics for executed queries.
 	 */
-	public QueryStatistics getStatistics();
+	public QueryStatistics<String> getStatistics();
 }
