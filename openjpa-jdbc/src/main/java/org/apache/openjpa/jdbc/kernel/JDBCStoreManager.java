@@ -30,6 +30,7 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
+
 import javax.sql.DataSource;
 
 import org.apache.openjpa.enhance.PersistenceCapable;
@@ -48,7 +49,10 @@ import org.apache.openjpa.jdbc.sql.SQLFactory;
 import org.apache.openjpa.jdbc.sql.Select;
 import org.apache.openjpa.jdbc.sql.SelectExecutor;
 import org.apache.openjpa.jdbc.sql.Union;
+import org.apache.openjpa.kernel.BrokerImpl;
 import org.apache.openjpa.kernel.FetchConfiguration;
+import org.apache.openjpa.kernel.FinderCache;
+import org.apache.openjpa.kernel.FinderQuery;
 import org.apache.openjpa.kernel.LockManager;
 import org.apache.openjpa.kernel.OpenJPAStateManager;
 import org.apache.openjpa.kernel.PCState;
@@ -483,13 +487,18 @@ public class JDBCStoreManager
     private Result getInitializeStateResult(OpenJPAStateManager sm,
         ClassMapping mapping, JDBCFetchConfiguration fetch, int subs)
         throws SQLException {
+        FinderQueryImpl fq = getFinder(mapping, fetch);
+        if (fq != null)
+            return fq.execute(sm, this, fetch);
         Select sel = _sql.newSelect();
         if (!select(sel, mapping, subs, sm, null, fetch,
             JDBCFetchConfiguration.EAGER_JOIN, true, false))
             return null;
         sel.wherePrimaryKey(sm.getObjectId(), mapping, this);
         sel.setExpectedResultCount(1, false);
-        return sel.execute(this, fetch);
+        Result result = sel.execute(this, fetch);
+        cacheFinder(mapping, sel, fetch);
+        return result;
     }
 
     /**
@@ -499,6 +508,9 @@ public class JDBCStoreManager
     private Result getInitializeStateUnionResult(final OpenJPAStateManager sm,
         ClassMapping mapping, final ClassMapping[] mappings,
         final JDBCFetchConfiguration fetch) throws SQLException {
+        FinderQueryImpl fq = getFinder(mapping, fetch);
+        if (fq != null)
+            return fq.execute(sm, this, fetch);
         final JDBCStoreManager store = this;
         final int eager = Math.min(fetch.getEagerFetchMode(),
             JDBCFetchConfiguration.EAGER_JOIN);
@@ -514,7 +526,9 @@ public class JDBCStoreManager
                 sel.wherePrimaryKey(sm.getObjectId(), mappings[i], store);
             }
         });
-        return union.execute(this, fetch);
+        Result result = union.execute(this, fetch);
+        cacheFinder(mapping, union, fetch);
+        return result;
     }
 
     /**
@@ -1349,6 +1363,24 @@ public class JDBCStoreManager
     private void afterExecuteStatement(Statement stmnt) {
         _stmnts.remove(stmnt);
     }
+    
+    FinderQueryImpl getFinder(ClassMapping mapping, FetchConfiguration fetch) {
+        FinderCache cache = getFinderCache();
+        return cache == null 
+             ? null : (FinderQueryImpl)cache.get(mapping, fetch);
+    }
+    
+    boolean cacheFinder(ClassMapping mapping, SelectExecutor select, 
+        FetchConfiguration fetch) {
+        FinderCache cache = getFinderCache();
+        return cache != null && cache.cache(mapping, select, fetch) != null;
+    }
+    
+    FinderCache getFinderCache() {
+        return (((BrokerImpl)getContext()).getCacheFinderQuery())
+             ? getConfiguration().getFinderCacheInstance() : null;
+    }
+
 
     /**
      * Connection returned to client code. Makes sure its wrapped connection

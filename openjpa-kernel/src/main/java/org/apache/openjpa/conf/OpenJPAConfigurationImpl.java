@@ -36,6 +36,7 @@ import org.apache.openjpa.event.RemoteCommitProvider;
 import org.apache.openjpa.kernel.AutoClear;
 import org.apache.openjpa.kernel.BrokerImpl;
 import org.apache.openjpa.kernel.ConnectionRetainModes;
+import org.apache.openjpa.kernel.FinderCache;
 import org.apache.openjpa.kernel.InverseManager;
 import org.apache.openjpa.kernel.LockLevels;
 import org.apache.openjpa.kernel.LockManager;
@@ -148,6 +149,7 @@ public class OpenJPAConfigurationImpl
     public CacheMarshallersValue cacheMarshallerPlugins;
     public BooleanValue eagerInitialization;
     public PluginValue preparedQueryCachePlugin;
+    public PluginValue finderCachePlugin;
     public ObjectValue specification;
     public IntValue queryTimeout;
     
@@ -1550,5 +1552,18 @@ public class OpenJPAConfigurationImpl
         return (PreparedQueryCache)preparedQueryCachePlugin.get();
     }
 
-
+    public void setFinderCache(String finderCache) {
+        finderCachePlugin.setString(finderCache);
+    }
+    
+    public String getFinderCache() {
+        return finderCachePlugin.getString();
+    }
+    
+    public FinderCache getFinderCacheInstance() {
+        if (finderCachePlugin.get() == null) {
+            finderCachePlugin.instantiate(FinderCache.class, this);
+        }
+        return (FinderCache)finderCachePlugin.get();
+    }
 }

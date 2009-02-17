@@ -35,6 +35,7 @@ import org.apache.openjpa.kernel.BrokerFactory;
 import org.apache.openjpa.kernel.BrokerImpl;
 import org.apache.openjpa.kernel.ConnectionRetainModes;
 import org.apache.openjpa.kernel.FetchConfiguration;
+import org.apache.openjpa.kernel.FinderCache;
 import org.apache.openjpa.kernel.InverseManager;
 import org.apache.openjpa.kernel.LockManager;
 import org.apache.openjpa.kernel.PreparedQueryCache;
@@ -1603,6 +1604,26 @@ public interface OpenJPAConfiguration
      * 
      * @since 2.0.0
      */
-    public void setQuerySQLCache(String config);     
-
+    public void setQuerySQLCache(String config);    
+    
+    /**
+     * Get the cache of finder queries.
+     * 
+     * @since 2.0.0
+     */
+    public FinderCache getFinderCacheInstance();
+    
+    /**
+     * Get the string configuration of the finder cache.
+     * 
+     * @since 2.0.0
+     */
+    public String getFinderCache();
+    
+    /**
+     * Set the finder cache from a string configuration. 
+     * 
+     * @since 2.0.0
+     */
+    public void setFinderCache(String cache);
 }

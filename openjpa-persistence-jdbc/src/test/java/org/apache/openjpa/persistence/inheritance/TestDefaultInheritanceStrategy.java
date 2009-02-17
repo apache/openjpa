@@ -77,7 +77,9 @@ public class TestDefaultInheritanceStrategy
             BaseClass4.class, SubclassG.class,
             BaseClass5.class, MidClass2.class, SubclassH.class,
             AbstractClass.class, SubclassI.class, SubclassJ.class,
-            BaseClass6.class, SubclassK.class);
+            BaseClass6.class, SubclassK.class,
+            "openjpa.jdbc.FinderCache", "true",
+            CLEAR_TABLES);
     }
 
     private Class[] classArray(Class... classes) {
@@ -550,6 +552,43 @@ public class TestDefaultInheritanceStrategy
 
         em.close();        
     }
+    
+    public void testFinder() {
+        EntityManager em = emf.createEntityManager();
+        SubclassK sck = new SubclassK();
+        sck.setId(479);
+        sck.setClassKName("SubclassKName");
+        sck.setMidClass3Name("SubclassKMidClass3Name");
+        sck.setName("SubclassKBaseClass6Name");
+                
+        BaseClass6 bk6 = new BaseClass6();
+        bk6.setId(302);
+        bk6.setName("BaseClass6Name");
+        
+        SubclassI sci = new SubclassI();
+        sci.setId(109);
+        sci.setClassIName("SubclassIName");
+        sci.setName("SubclassIBaseClassName");
+        
+        SubclassJ scj = new SubclassJ();
+        scj.setId(238);
+        scj.setClassJName("SubclassJName");
+        scj.setName("SubclassJBaseClassName");
+
+        em.getTransaction().begin();
+        em.persist(sck);
+        em.persist(bk6);
+        em.persist(sci);
+        em.persist(scj);
+        em.getTransaction().commit();
+        
+        em.clear();
+
+        verifyInheritanceFinderResult(em, SubclassK.class, 479);
+        verifyInheritanceFinderResult(em, BaseClass6.class, 479, 302);
+        verifyInheritanceFinderResult(em, SubclassI.class, 109);
+        verifyInheritanceFinderResult(em, SubclassJ.class, 238);
+    }
 
     /**
      * Verifies that a table contains the specified number of entries
@@ -637,4 +676,16 @@ public class TestDefaultInheritanceStrategy
         assertTrue("Returned expected entities", 
                 count == expectedValues.length);
     }    
+    
+    private void verifyInheritanceFinderResult(EntityManager em, 
+        Class entityType, int... ids) {
+        for (int j = 0; j < 2; j++) {
+            em.clear();
+            for (int id : ids) {
+                Object pc = em.find(entityType, id);
+                assertTrue(entityType.isAssignableFrom(pc.getClass()));
+            }
+        }
+    }    
+
 }

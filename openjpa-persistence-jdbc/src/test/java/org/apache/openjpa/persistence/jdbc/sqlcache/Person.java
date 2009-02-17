@@ -18,6 +18,7 @@
  */
 package org.apache.openjpa.persistence.jdbc.sqlcache;
 
+import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
@@ -32,6 +33,7 @@ import javax.persistence.OneToOne;
 
 @Entity
 @Inheritance(strategy=InheritanceType.SINGLE_TABLE)
+@DiscriminatorValue("PERSON")
 @NamedQueries({
     @NamedQuery(name="JPQLNamedSelectPositionalParameter",
         query="select p from Person p where p.firstName=?2" +

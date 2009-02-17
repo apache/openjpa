@@ -75,4 +75,21 @@ public interface QueryHints {
     public static final String HINT_IGNORE_PREPARED_QUERY =
         "openjpa.hint.IgnorePreparedQuery";
 
+    /**
+     * A directive to ignore any cached finder query for find() operation.
+     * The cached entry, if any, remains in the cache.
+     */
+    public static final String HINT_IGNORE_FINDER = "openjpa.hint.IgnoreFinder";
+    
+    /**
+     * A directive to invalidate any cached finder query.
+     */
+    public static final String HINT_INVALIDATE_FINDER = 
+        "openjpa.hint.InvalidateFinder";
+    
+    /**
+     * A directive to overwrite a cached finder query by a new query. 
+     */
+    public static final String HINT_RECACHE_FINDER = 
+        "openjpa.hint.RecacheFinder";
 }

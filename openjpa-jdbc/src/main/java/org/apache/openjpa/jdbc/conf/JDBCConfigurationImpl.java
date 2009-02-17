@@ -40,6 +40,8 @@ import org.apache.openjpa.jdbc.sql.DBDictionary;
 import org.apache.openjpa.jdbc.sql.DBDictionaryFactory;
 import org.apache.openjpa.jdbc.sql.SQLFactory;
 import org.apache.openjpa.kernel.BrokerImpl;
+import org.apache.openjpa.kernel.FinderCache;
+import org.apache.openjpa.kernel.PreparedQueryCache;
 import org.apache.openjpa.kernel.StoreContext;
 import org.apache.openjpa.lib.conf.IntValue;
 import org.apache.openjpa.lib.conf.ObjectValue;
@@ -317,6 +319,17 @@ public class JDBCConfigurationImpl
         preparedQueryCachePlugin.setDynamic(true);
         preparedQueryCachePlugin.setInstantiatingGetter("getQuerySQLCacheInstance");
 
+        finderCachePlugin = addPlugin("jdbc.FinderCache", true);
+        aliases = new String[] {
+            "true", "org.apache.openjpa.jdbc.kernel.FinderCacheImpl",
+            "false", null
+        };
+        finderCachePlugin.setAliases(aliases);
+        finderCachePlugin.setAliasListComprehensive(true);
+        finderCachePlugin.setDefault(aliases[0]);
+        finderCachePlugin.setClassName(aliases[1]);
+        finderCachePlugin.setDynamic(true);
+        finderCachePlugin.setInstantiatingGetter("getFinderCacheInstance");
 
         // this static initializer is to get past a weird
         // ClassCircularityError that happens only under IBM's

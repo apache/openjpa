@@ -41,6 +41,10 @@ public class TxRollbackEntity
 	@Basic
 	private String name;
 
+	protected TxRollbackEntity() {
+	    this("?");
+	}
+	
 	public TxRollbackEntity(String name)
 	{
 		this.name = name;

@@ -199,10 +199,9 @@ public class LogicalUnion
     }
 
     public boolean hasMultipleSelects() {
-        for (UnionSelect sel : sels)
-            if (sel.hasMultipleSelects())
-                return true;
-        return false;
+        if (sels != null && sels.length > 1)
+            return true;
+        return sels[0].hasMultipleSelects();
     }
 
     public int getCount(JDBCStore store)

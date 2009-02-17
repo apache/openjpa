@@ -225,6 +225,7 @@ public class BrokerImpl
     private boolean _detachedNew = true;
     private boolean _orderDirty = false;
     private boolean _cachePreparedQuery = true;
+    private boolean _cacheFinderQuery = true;
     
 
     // Map of properties whose values have been changed
@@ -4883,6 +4884,25 @@ public class BrokerImpl
     }
     
     public void setCachePreparedQuery(boolean flag) {
+        lock();
+        try {
+            _cachePreparedQuery = flag;
+        } finally {
+            unlock();
+        }
+    }
+    
+    public boolean getCacheFinderQuery() {
+        lock();
+        try {
+            return _cacheFinderQuery 
+               && _conf.getFinderCacheInstance() != null;
+        } finally {
+            unlock();
+        }
+    }
+    
+    public void setCacheFinderQuery(boolean flag) {
         lock();
         try {
             _cachePreparedQuery = flag;
