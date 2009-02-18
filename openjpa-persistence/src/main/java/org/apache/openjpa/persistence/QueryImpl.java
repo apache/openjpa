@@ -240,8 +240,7 @@ public class QueryImpl
     }
 
     private Object execute() {
-        if ((!isNative()) &&
-            _query.getOperation() != QueryOperations.OP_SELECT)
+        if (_query.getOperation() != QueryOperations.OP_SELECT)
             throw new InvalidStateException(_loc.get("not-select-query",
                 _query.getQueryString()), null, null, false);
 
