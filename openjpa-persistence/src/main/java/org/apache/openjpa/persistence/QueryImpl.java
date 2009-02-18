@@ -33,6 +33,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
+import java.util.concurrent.locks.ReentrantLock;
 
 import javax.persistence.FlushModeType;
 import javax.persistence.LockModeType;
@@ -81,7 +82,7 @@ public class QueryImpl implements OpenJPAQuerySPI, Serializable {
 	private Map<String, Object> _named;
 	private Map<Integer, Object> _positional;
 	private String _id;
-	
+    private transient ReentrantLock _lock = null;
 	private final HintHandler _hintHandler;
 
 	/**
@@ -96,6 +97,7 @@ public class QueryImpl implements OpenJPAQuerySPI, Serializable {
 		_em = em;
 		_query = new DelegatingQuery(query, ret);
 		_hintHandler = new HintHandler(this);
+		_lock = new ReentrantLock();
 	}
 
 	/**
@@ -256,15 +258,19 @@ public class QueryImpl implements OpenJPAQuerySPI, Serializable {
 		if (!isNative() && _query.getOperation() != QueryOperations.OP_SELECT)
 			throw new InvalidStateException(_loc.get("not-select-query", _query
 					.getQueryString()), null, null, false);
-		
-        Map params = _positional != null ? _positional 
-            : _named != null ? _named : new HashMap();
-        boolean registered = preExecute(params);
-        Object result = _query.execute(params);
-        if (registered) {
-            postExecute(result);
-        }
-        return result;
+		try {
+		    lock();
+            Map params = _positional != null ? _positional 
+                : _named != null ? _named : new HashMap();
+            boolean registered = preExecute(params);
+            Object result = _query.execute(params);
+            if (registered) {
+                postExecute(result);
+            }
+            return result;
+		} finally {
+		    unlock();
+		}
 	}
 	
 	public List getResultList() {
@@ -618,7 +624,7 @@ public class QueryImpl implements OpenJPAQuerySPI, Serializable {
      * 
      * @return true if the prepared query can be initialized.
      */
-    boolean postExecute(Object result) {
+    private boolean postExecute(Object result) {
         PreparedQueryCache cache = _em.getPreparedQueryCache();
         if (cache == null) {
             return false;
@@ -662,4 +668,15 @@ public class QueryImpl implements OpenJPAQuerySPI, Serializable {
         _id = id;
         return this;
     }
+    
+    public void lock() {
+        if (_lock != null) 
+            _lock.lock();
+    }
+
+    public void unlock() {
+        if (_lock != null)
+            _lock.unlock();
+    }
+
 }
