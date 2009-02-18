@@ -33,7 +33,7 @@ public class TestManyEagerSQL
     extends SQLListenerTestCase {
 
     public void setUp() {
-        setUp(
+        setUp(DROP_TABLES,
             OneManyEagerParent.class, OneManyEagerChild.class,
             OneManyLazyChild.class, OneOneParent.class, 
             OneOneChild.class);
@@ -212,11 +212,9 @@ public class TestManyEagerSQL
         assertEquals(3, list.size());
 
         // Expected SQLs:
-        //   SELECT t0.id, t0.optLock, t1.id, t1.optLock, t1.name, t2.id, 
-        //   t2.optLock, t2.CHILD_ID, t2.name, t0.name 
-        //       FROM OneOneParent t0 
-        //       LEFT OUTER JOIN OneOneChild t1 ON t0.CHILD_ID = t1.id 
-        //       LEFT OUTER JOIN OneOneParent t2 ON t1.PARENT_ID = t2.id
+        //   SELECT t0.id, t0.optLock, t1.id, t1.optLock, t1.name, t0.name
+        //   FROM OneOneParent t0 
+        //   LEFT OUTER JOIN OneOneChild t1 ON t0.id = t1.PARENT_ID
 
         assertEquals(1, sql.size());
 
@@ -241,6 +239,9 @@ public class TestManyEagerSQL
         assertEquals(3, list.size());
 
         // Expected SQLs:
+        //   SELECT t0.id, t0.optLock, t1.id, t1.optLock, t1.name, t0.name 
+        //   FROM OneOneParent t0 
+        //   LEFT OUTER JOIN OneOneChild t1 ON t0.id = t1.PARENT_ID
 
         assertEquals(1, sql.size());
 
