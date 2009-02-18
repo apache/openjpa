@@ -18,10 +18,10 @@
  */
 package org.apache.openjpa.persistence.jdbc.query.cache;
 
-import java.util.List;
+import java.util.ArrayList;
+import java.util.Collection;
 
 import javax.persistence.EntityManager;
-import javax.persistence.EntityTransaction;
 import javax.persistence.Query;
 
 import org.apache.openjpa.persistence.test.SQLListenerTestCase;
@@ -45,21 +45,18 @@ import org.apache.openjpa.persistence.test.SQLListenerTestCase;
  * 
  * @author Pinaki Poddar
  * @author Vikram Bhatia
- * @author David Blevins
+ * 
  */
 public class TestNonPrimaryKeyQueryParameters extends SQLListenerTestCase {
 	private static final int FULLTIME_EMPLOYEE_COUNT = 3;
 	private static final int PARTTIME_EMPLOYEE_COUNT = 2;
-    private static final int LINEITEM_PER_INVOICE = 1;
 	private static final String DEPT_NAME = "ENGINEERING";
 
 	public void setUp() {
 		super.setUp(CLEAR_TABLES, Department.class, Employee.class,
 				FullTimeEmployee.class, PartTimeEmployee.class,
-				Invoice.class, LineItem.class,
 				"openjpa.jdbc.QuerySQLCache", "true");
 		createDepartment(DEPT_NAME);
-		createInvoice();
 		sql.clear();
 	}
 
@@ -106,10 +103,6 @@ public class TestNonPrimaryKeyQueryParameters extends SQLListenerTestCase {
 				.size());
 
 		assertSQL(".* AND t0.TYPE = .*");
-		
-        Invoice invoice = em.find(Invoice.class, new InvoiceKey(1, "Red"));
-        List<LineItem> list = invoice.getLineItems();
-        assertEquals(LINEITEM_PER_INVOICE, list.size());
 		em.close();
 	}
 
@@ -161,20 +154,4 @@ public class TestNonPrimaryKeyQueryParameters extends SQLListenerTestCase {
 		em.close();
 
 	}
-	
-    private void createInvoice() {
-        EntityManager em = emf.createEntityManager();
-        EntityTransaction tran = em.getTransaction();
-        tran.begin();
-        Invoice invoice = new Invoice(1, "Red", 1.30);
-        for (int i = 1;  i <= LINEITEM_PER_INVOICE; i++) {
-            LineItem item = new LineItem(String.valueOf(i), 10);
-            item.setInvoice(invoice);
-            invoice.getLineItems().add(item);
-            em.persist(invoice);
-        }
-        em.flush();
-        tran.commit();
-        em.close();        
-    }	
 }

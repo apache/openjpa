@@ -56,6 +56,7 @@ public final class SQLBuffer
     private List _subsels = null;
     private List _params = null;
     private List _cols = null;
+    private List _nonFKParams = null;
 
     /**
      * Default constructor.
@@ -145,6 +146,11 @@ public final class SQLBuffer
                     while (_cols.size() < _params.size())
                         _cols.add(paramIndex, null);
             }
+        }
+        if (buf._nonFKParams != null) {
+            if (_nonFKParams == null)
+                _nonFKParams = new ArrayList();
+            _nonFKParams.addAll(buf._nonFKParams);
         }
     }
 
@@ -264,6 +270,11 @@ public final class SQLBuffer
                 }
                 if (isFK)
                     break;
+            }
+            if (!isFK) {
+                if (_nonFKParams == null)
+                    _nonFKParams = new ArrayList();
+                _nonFKParams.add(o);                
             }
         }
         return this;
@@ -388,6 +399,9 @@ public final class SQLBuffer
         return (_params == null) ? Collections.EMPTY_LIST : _params;
     }
 
+    public List getNonFKParameters() {
+        return (_nonFKParams == null) ? Collections.EMPTY_LIST : _nonFKParams;
+    }
     /**
      * Return the SQL for this buffer.
      */

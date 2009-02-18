@@ -26,8 +26,11 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.openjpa.enhance.PersistenceCapable;
+import org.apache.openjpa.jdbc.conf.JDBCConfiguration;
 import org.apache.openjpa.jdbc.kernel.JDBCFetchConfiguration;
+import org.apache.openjpa.jdbc.kernel.JDBCFetchConfigurationImpl;
 import org.apache.openjpa.jdbc.kernel.JDBCStore;
+import org.apache.openjpa.jdbc.kernel.JDBCStoreManager;
 import org.apache.openjpa.jdbc.meta.ClassMapping;
 import org.apache.openjpa.jdbc.meta.FieldMapping;
 import org.apache.openjpa.jdbc.meta.FieldStrategy;
@@ -35,11 +38,14 @@ import org.apache.openjpa.jdbc.meta.ValueMapping;
 import org.apache.openjpa.jdbc.schema.Column;
 import org.apache.openjpa.jdbc.schema.ForeignKey;
 import org.apache.openjpa.jdbc.sql.Joins;
+import org.apache.openjpa.jdbc.sql.LogicalUnion;
 import org.apache.openjpa.jdbc.sql.Result;
 import org.apache.openjpa.jdbc.sql.Select;
 import org.apache.openjpa.jdbc.sql.SelectExecutor;
+import org.apache.openjpa.jdbc.sql.SelectImpl;
 import org.apache.openjpa.jdbc.sql.Union;
 import org.apache.openjpa.kernel.OpenJPAStateManager;
+import org.apache.openjpa.lib.log.Log;
 import org.apache.openjpa.lib.util.Localizer;
 import org.apache.openjpa.meta.ClassMetaData;
 import org.apache.openjpa.meta.JavaTypes;
@@ -520,19 +526,86 @@ public abstract class StoreCollectionFieldStrategy
             return;
         }
 
+        //cache union for field here
         // select data for this sm
+        boolean found = true;
         final ClassMapping[] elems = getIndependentElementMappings(true);
         final Joins[] resJoins = new Joins[Math.max(1, elems.length)];
-        Union union = store.getSQLFactory().newUnion
-            (Math.max(1, elems.length));
-        union.select(new Union.Selector() {
-            public void select(Select sel, int idx) {
-                ClassMapping elem = (elems.length == 0) ? null : elems[idx];
-                resJoins[idx] = selectAll(sel, elem, sm, store, fetch,
-                    JDBCFetchConfiguration.EAGER_PARALLEL);
+        List parmList = null;
+        Union union = null;
+        SelectImpl sel = null;
+        Map<JDBCStoreManager.SelectKey, Object[]> storeCollectionUnionCache = null;
+        JDBCStoreManager.SelectKey selKey = null;
+        if (!((JDBCStoreManager)store).isQuerySQLCacheOn() || elems.length > 1)
+            union = newUnion(sm, store, fetch, elems, resJoins);
+        else {
+            parmList = new ArrayList();
+            JDBCFetchConfiguration fetchClone = new JDBCFetchConfigurationImpl();
+            fetchClone.copy(fetch);
+           
+            // to specify the type so that no cast is needed
+            storeCollectionUnionCache = ((JDBCStoreManager)store).
+                getCacheMapFromQuerySQLCache(StoreCollectionFieldStrategy.class);
+            selKey = 
+                new JDBCStoreManager.SelectKey(null, field, fetchClone);
+            Object[] objs = storeCollectionUnionCache.get(selKey);
+            if (objs != null) {
+                union = (Union) objs[0];
+                resJoins[0] = (Joins) objs[1];
             }
-        });
+            else {
+                synchronized(storeCollectionUnionCache) {
+                    objs = storeCollectionUnionCache.get(selKey);
+                    if (objs == null) {
+                        // select data for this sm
+                        union = newUnion(sm, store, fetch, elems, resJoins);
+                        found = false;
+                    } else {
+                        union = (Union) objs[0];
+                        resJoins[0] = (Joins) objs[1];
+                    }
 
+                    sel = ((LogicalUnion.UnionSelect)union.getSelects()[0]).
+                        getDelegate();
+                    if (sel.getSQL() == null) {
+                    	((SelectImpl)sel).setSQL(store, fetch);
+                        found = false;
+                    }
+
+                    // only cache the union when elems length is 1 for now
+                    if (!found) { 
+                        Object[] objs1 = new Object[2];
+                        objs1[0] = union;
+                        objs1[1] = resJoins[0];
+                        ((JDBCStoreManager)store).addToSqlCache(
+                            storeCollectionUnionCache, selKey, objs1);
+                     }
+                }
+            }
+            
+            Log log = store.getConfiguration().
+                getLog(JDBCConfiguration.LOG_JDBC);
+            if (log.isTraceEnabled()) {
+                if (found)
+                    log.trace(_loc.get("cache-hit", field, this.getClass()));
+                else
+                    log.trace(_loc.get("cache-missed", field, this.getClass())); 
+            }
+            
+            ClassMapping mapping = field.getDefiningMapping();
+            Object oid = sm.getObjectId();
+            Column[] cols = mapping.getPrimaryKeyColumns();
+            if (sel == null)
+                sel = ((LogicalUnion.UnionSelect)union.getSelects()[0]).
+                getDelegate();
+
+            sel.wherePrimaryKey(mapping, cols, cols, oid, store, 
+                	null, null, parmList);
+            List nonFKParams = sel.getSQL().getNonFKParameters();
+            if (nonFKParams != null && nonFKParams.size() > 0) 
+                parmList.addAll(nonFKParams);
+        }
+        
         // create proxy
         Object coll;
         ChangeTracker ct = null;
@@ -545,7 +618,7 @@ public abstract class StoreCollectionFieldStrategy
         }
 
         // load values
-        Result res = union.execute(store, fetch);
+        Result res = union.execute(store, fetch, parmList);
         try {
             int seq = -1;
             while (res.next()) {
@@ -569,6 +642,21 @@ public abstract class StoreCollectionFieldStrategy
             sm.storeObject(field.getIndex(), coll);
     }
 
+    protected Union newUnion(final OpenJPAStateManager sm, final JDBCStore store,
+        final JDBCFetchConfiguration fetch, final ClassMapping[] elems,
+        final Joins[] resJoins) {
+        Union union = store.getSQLFactory().newUnion
+        (Math.max(1, elems.length));
+        union.select(new Union.Selector() {
+            public void select(Select sel, int idx) {
+                ClassMapping elem = (elems.length == 0) ? null : elems[idx];
+                resJoins[idx] = selectAll(sel, elem, sm, store, fetch,
+                        JDBCFetchConfiguration.EAGER_PARALLEL);
+            }
+        });
+        return union;
+    }
+    
     /**
      * Select data for loading, starting in field table.
      */
