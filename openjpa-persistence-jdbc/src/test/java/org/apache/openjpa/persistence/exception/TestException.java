@@ -167,7 +167,7 @@ public class TestException extends SingleEMFTestCase {
 	    EntityManager em = emf.createEntityManager();
 	    try {
 	      em.createQuery("This is not a valid JPQL query");
-        fail("Did not throw IllegalArgumentException for invalid query.");
+	      fail("Did not throw IllegalArgumentException for invalid query.");
 	    } catch (Throwable t) {
 		   assertException(t, IllegalArgumentException.class);
 	    }
@@ -180,6 +180,7 @@ public class TestException extends SingleEMFTestCase {
          EntityManager em = emf.createEntityManager();
          try {
              Query query = em.createNamedQuery("This is invalid Named query");
+             fail("Did not throw IllegalArgumentException for invalid query.");
          } catch (Throwable t) {
              assertException(t, IllegalArgumentException.class);
          }
