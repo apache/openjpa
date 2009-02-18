@@ -60,8 +60,7 @@ public class FinderCacheImpl
     // Key: class name Value: Reason why excluded
     private final Map<String, String> _uncachables;
     private List<String> _exclusionPatterns;
-    private QueryStatistics<FinderQuery<ClassMapping,SelectExecutor,Result>> 
-        _stats;
+    private QueryStatistics<ClassMapping> _stats;
     private ReentrantLock _lock = new ReentrantLock();
     private Log _log;
     private Localizer _loc = Localizer.forPackage(FinderCacheImpl.class);
@@ -71,8 +70,7 @@ public class FinderCacheImpl
         _delegate = new HashMap<ClassMapping, 
             FinderQuery<ClassMapping, SelectExecutor, Result>>();
         _uncachables = new HashMap<String, String>();
-        _stats = new QueryStatistics.Default<FinderQuery<ClassMapping,
-            SelectExecutor,Result>>();
+        _stats = new QueryStatistics.Default<ClassMapping>();
     }
     
     /**
@@ -96,8 +94,7 @@ public class FinderCacheImpl
     /**
      * Gets basic statistics of execution and hit count of finder queries. 
      */
-    public QueryStatistics<FinderQuery<ClassMapping,SelectExecutor,Result>> 
-        getStatistics() {
+    public QueryStatistics<ClassMapping> getStatistics() {
         return _stats;
     }
 
@@ -121,7 +118,7 @@ public class FinderCacheImpl
             return null;
         FinderQuery<ClassMapping, SelectExecutor, Result> result = 
             _delegate.get(mapping);
-        _stats.recordExecution(result, result != null);
+        _stats.recordExecution(mapping, result != null);
         return result;
     }
     

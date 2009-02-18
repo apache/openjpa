@@ -36,6 +36,7 @@ import org.apache.openjpa.kernel.FetchConfiguration;
 import org.apache.openjpa.kernel.FinderQuery;
 import org.apache.openjpa.kernel.OpenJPAStateManager;
 import org.apache.openjpa.kernel.StoreManager;
+import org.apache.openjpa.meta.FieldMetaData;
 import org.apache.openjpa.util.ApplicationIds;
 import org.apache.openjpa.util.Id;
 
@@ -55,6 +56,7 @@ public class FinderQueryImpl
     private final SelectImpl _select;
     private final Column[] _pkCols;
     private final Joinable[]  _joins;
+    private final int[] _pkIndices;
     private final SQLBuffer _buffer;
     private final String _sql;
     
@@ -86,6 +88,12 @@ public class FinderQueryImpl
         _joins = new Joinable[_pkCols.length];
         for (int i = 0; i < _pkCols.length; i++)
             _joins[i] = _mapping.assertJoinable(_pkCols[i]);
+        _pkIndices = new int[_pkCols.length];
+        for (int i = 0; i < _pkCols.length; i++) {
+            FieldMetaData pk = _mapping.getField(_joins[i].getFieldIndex());
+            _pkIndices[i] = pk == null ? 0 : pk.getPrimaryKeyIndex();
+        }
+        
     }
     
     public ClassMapping getIdentifier() {
@@ -111,12 +119,10 @@ public class FinderQueryImpl
         for (int i = 0; i < _pkCols.length; i++, count++) {
             if (pks == null)
                 val[0] = (oid == null) 
-                    ? null 
-                    : Numbers.valueOf(((Id) oid).getId());
+                    ? null : Numbers.valueOf(((Id) oid).getId());
             else {
-                val[i] = pks[_mapping.getField(_joins[i].getFieldIndex()).
-                    getPrimaryKeyIndex()];
-                val[i] = _joins[i].getJoinValue(val[i], _pkCols[i], store);
+                val[i] = _joins[i].getJoinValue(pks[_pkIndices[i]], _pkCols[i], 
+                    store);
             }
         }
         return val;

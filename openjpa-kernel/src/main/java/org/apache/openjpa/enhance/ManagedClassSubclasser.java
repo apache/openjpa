@@ -203,7 +203,8 @@ public class ManagedClassSubclasser {
     private static Set<Class> collectUnspecifiedType(Class cls,
         Collection<? extends Class> classes, Set<Class> unspecified) {
         if (cls != null && !classes.contains(cls)
-            && !ImplHelper.isManagedType(null, cls)) {
+            && !ImplHelper.isManagedType(null, cls)
+            && !cls.isInterface()) {
             if (unspecified == null)
                 unspecified = new HashSet<Class>();
             unspecified.add(cls);

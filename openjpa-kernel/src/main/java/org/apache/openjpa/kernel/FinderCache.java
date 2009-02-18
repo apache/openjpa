@@ -140,5 +140,5 @@ public interface FinderCache<K,V,R> extends Configurable {
 	/**
 	 * Gets the simple statistics for executed finder queries.
 	 */
-	public QueryStatistics<FinderQuery<K,V,R>> getStatistics();
+	public QueryStatistics<K> getStatistics();
 }
