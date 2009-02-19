@@ -22,7 +22,7 @@ import javax.persistence.*;
 
 
 @Entity
-@Table(name="PRT2_MBI")
+@Table(name="PRT3_MBI")
 public class Parent3 {
     @Id 
     @GeneratedValue(strategy=GenerationType.IDENTITY)

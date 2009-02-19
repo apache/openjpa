@@ -23,7 +23,7 @@ import javax.persistence.*;
 import java.util.*;
 
 @Entity
-@Table(name="EMP2_MBI")
+@Table(name="EMP3_MBI")
 public class Employee3 {
     @Id
     @GeneratedValue(strategy=GenerationType.IDENTITY)
