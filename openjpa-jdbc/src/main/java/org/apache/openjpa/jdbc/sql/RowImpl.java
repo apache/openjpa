@@ -68,6 +68,7 @@ public class RowImpl
     private final int[] _types;
 
     private String _sql = null;
+    private boolean _isFlushed = false;
 
     /**
      * Constructor.
@@ -959,5 +960,13 @@ public class RowImpl
     
     public int[] getTypes() {
         return _types;
+    }
+    
+    public boolean isFlushed() {
+        return _isFlushed;
+    }
+    
+    public void setFlushed(boolean isFlushed) {
+        _isFlushed = isFlushed;
     }
 }

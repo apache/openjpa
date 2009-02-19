@@ -491,9 +491,80 @@ public class ApplicationIds {
             }
         return true;
     }
+
+    /**
+     * Check if object id is set or not. 
+     */
+    public static boolean isIdSet(Object id, ClassMetaData meta, 
+        String mappedByIdFieldName) {
+        Object key = null;
+        if (meta.isOpenJPAIdentity())
+            key = ApplicationIds.getKey(id, meta);
+        else
+            key = ((ObjectId)id).getId();
+        Object val = null;
+        if (mappedByIdFieldName.length() != 0) {
+            Class idClass = ((ObjectId)id).getId().getClass();
+            val = Reflection.get(key, 
+                    Reflection.findField(idClass, mappedByIdFieldName, true)); 
+        } else
+            val = key;
+        
+        boolean notSet = (val == null  
+                || (val instanceof String && ((String)val).length() == 0)
+                || (val instanceof Number && ((Number)val).longValue() == 0));
+        return !notSet;
+    }
     
-    public static void setKey(ObjectId fromId, ObjectId toId) {
-        toId.setId(fromId.getId());        
+    /**
+     * Return the key from the given id. 
+     */
+    public static Object getKey(Object id, ClassMetaData meta) {
+        if (meta == null || id == null)
+            return null;
+
+        if (meta.isOpenJPAIdentity()) {
+            int type = meta.getPrimaryKeyFields()[0].getObjectIdFieldTypeCode();
+            switch (type) {
+                case JavaTypes.BYTE:
+                case JavaTypes.BYTE_OBJ:
+                    return ((ByteId)id).getId();
+                case JavaTypes.CHAR:
+                case JavaTypes.CHAR_OBJ:
+                    return ((CharId)id).getId();
+                case JavaTypes.DOUBLE:
+                case JavaTypes.DOUBLE_OBJ:
+                    return ((DoubleId)id).getId();
+                case JavaTypes.FLOAT:
+                case JavaTypes.FLOAT_OBJ:
+                    return ((FloatId)id).getId();
+                case JavaTypes.INT:
+                case JavaTypes.INT_OBJ:
+                    return ((IntId)id).getId();
+                case JavaTypes.LONG:
+                case JavaTypes.LONG_OBJ:
+                    return ((LongId)id).getId();
+                case JavaTypes.SHORT:
+                case JavaTypes.SHORT_OBJ:
+                    return ((ShortId)id).getId();
+                case JavaTypes.STRING:
+                    return ((StringId)id).getId();
+                case JavaTypes.DATE:
+                    return ((DateId)id).getId();
+                case JavaTypes.OID:
+                case JavaTypes.OBJECT:
+                    return ((ObjectId)id).getId();
+                case JavaTypes.BIGDECIMAL:
+                    return ((BigDecimalId)id).getId(); 
+                case JavaTypes.BIGINTEGER:
+                    return ((BigIntegerId)id).getId();
+                default:
+                    throw new InternalException();
+            }
+        } else { // IdClass
+            return ((ObjectId)id).getId();
+        }
+
     }
 
     /**

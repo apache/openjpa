@@ -33,6 +33,7 @@ import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 import java.util.TimeZone;
 import java.util.concurrent.locks.ReentrantLock;
 
@@ -60,7 +61,6 @@ import org.apache.openjpa.util.Exceptions;
 import org.apache.openjpa.util.ImplHelper;
 import org.apache.openjpa.util.InternalException;
 import org.apache.openjpa.util.InvalidStateException;
-import org.apache.openjpa.util.ObjectId;
 import org.apache.openjpa.util.ObjectNotFoundException;
 import org.apache.openjpa.util.OpenJPAId;
 import org.apache.openjpa.util.ProxyManager;
@@ -149,7 +149,7 @@ public class StateManagerImpl
     // information about the owner of this instance, if it is embedded
     private StateManagerImpl _owner = null;
     private int _ownerIndex = -1;
-    private int _mappedByIdValueFrom = -1;
+    private List _mappedByIdFields = null;
     
     private transient ReentrantLock _instanceLock = null;
 
@@ -304,10 +304,15 @@ public class StateManagerImpl
                 || fmds[i].getManagement() != fmds[i].MANAGE_PERSISTENT)
                 _loaded.set(i);
             
-            if (_meta.getIdentityType() == ClassMetaData.ID_APPLICATION &&
-                fmds[i].getMappedByIdValue() != null && 
-                ((ObjectId)_id).getId() == null) {
-                _mappedByIdValueFrom = fmds[i].getIndex();
+            if (_meta.getIdentityType() == ClassMetaData.ID_APPLICATION) {
+                String mappedByIdValue = fmds[i].getMappedByIdValue(); 
+                if (mappedByIdValue != null) { 
+                    if (!ApplicationIds.isIdSet(_id, _meta, mappedByIdValue)) {
+                        if (_mappedByIdFields == null)
+                            _mappedByIdFields = new ArrayList();
+                        _mappedByIdFields.add(fmds[i]);
+                    }
+                }
             }
             // record whether there are any managed inverse fields
             if (_broker.getInverseManager() != null
@@ -3280,7 +3285,7 @@ public class StateManagerImpl
         return pc;
     }
     
-    public int getMappedByIdValueFrom() {
-        return _mappedByIdValueFrom;
+    public List getMappedByIdFields() {
+        return _mappedByIdFields;
     }
 }

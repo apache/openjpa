@@ -2164,4 +2164,8 @@ public class FieldMetaData
     public void setMappedByIdValue(String mappedByIdValue) {
         this._mappedByIdValue = mappedByIdValue;
     }
+    
+    public boolean isMappedById() {
+    	return (_mappedByIdValue != null);
+    }
 }

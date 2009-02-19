@@ -26,6 +26,8 @@ import javax.persistence.EntityManager;
 import javax.persistence.EntityTransaction;
 import javax.persistence.Query;
 
+import junit.framework.Assert;
+
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
 
 public class TestMappedById extends SingleEMFTestCase {
@@ -40,6 +42,9 @@ public class TestMappedById extends SingleEMFTestCase {
     public Map<String, Person1> persons1 = new HashMap<String, Person1>();
     public Map<String, MedicalHistory1> medicals1 = 
         new HashMap<String, MedicalHistory1>();
+    public Map<String, Person2> persons2 = new HashMap<String, Person2>();
+    public Map<String, MedicalHistory2> medicals2 = 
+        new HashMap<String, MedicalHistory2>();
 
     public int eId1 = 1;
     public int dId1 = 1;
@@ -47,12 +52,15 @@ public class TestMappedById extends SingleEMFTestCase {
     public int dId2 = 1;
     public int pId1 = 1;
     public int mId1 = 1;
+    public int pId2 = 1;
+    public int mId2 = 1;
 
     public void setUp() throws Exception {
         super.setUp(DROP_TABLES, Dependent1.class, Employee1.class, 
             DependentId1.class, Dependent2.class, Employee2.class,
             DependentId2.class, EmployeeId2.class, MedicalHistory1.class,
-            Person1.class, PersonId1.class);
+            Person1.class, PersonId1.class, MedicalHistory2.class,
+            Person2.class);
     }
 
     /**
@@ -80,6 +88,14 @@ public class TestMappedById extends SingleEMFTestCase {
         createObj3();
         findObj3();
         queryObj3();
+    }
+
+    /**
+     * This is spec 2.4.1.2 Example 4, case(b) with generated key
+     */
+    public void testMappedById4() {
+        createObj4();
+        queryObj4();
     }
 
     public void createObj1() {
@@ -282,22 +298,103 @@ public class TestMappedById extends SingleEMFTestCase {
         Query q = em.createQuery(jpql);
         List<MedicalHistory1> ms = q.getResultList();
         for (MedicalHistory1 m : ms) {
-            assertMedicalHistory(m, firstName);
+            assertMedicalHistory1(m, firstName);
         }
         
         jpql = "select m from MedicalHistory1 m where m.id.firstName = '" + firstName + "'";
         q = em.createQuery(jpql);
         ms = q.getResultList();
         for (MedicalHistory1 m : ms) {
-            assertMedicalHistory(m, firstName);
+            assertMedicalHistory1(m, firstName);
         }
         
         tran.commit();
         em.close();
     }
 
-    public void assertMedicalHistory(MedicalHistory1 m, String firstName) {
+    public void assertMedicalHistory1(MedicalHistory1 m, String firstName) {
         MedicalHistory1 m0 = medicals1.get(firstName);
         assertEquals(m0, m);
     }
+    
+    public void createObj4() {
+        EntityManager em = emf.createEntityManager();
+        EntityTransaction tran = em.getTransaction();
+        for (int i = 0; i < numPersons; i++)
+            createPerson2(em, pId2++);
+        tran.begin();
+        em.flush();
+        tran.commit();
+        em.close();
+    }
+
+    public Person2 createPerson2(EntityManager em, int id) {
+        Person2 p = new Person2();
+        p.setName("p_" + id);
+        
+        MedicalHistory2 m = createMedicalHistory2(em, mId2++);
+        m.setPatient(p);  // automatically set the id
+        p.setMedical(m);
+        em.persist(m);
+        medicals2.put(m.getName(), m);
+
+        em.persist(p);
+        persons2.put(p.getName(), p);
+        return p;
+    }
+
+    public MedicalHistory2 createMedicalHistory2(EntityManager em, int id) {
+        MedicalHistory2 m = new MedicalHistory2();
+        m.setName("medical_" + id);
+        return m;
+    }
+
+    public void findObj4(long ssn) {
+        EntityManager em = emf.createEntityManager();
+        Person2 p = em.find(Person2.class, ssn);
+        Person2 p1 = p.getMedical().getPatient();
+        Assert.assertEquals(p1, p);
+    }
+
+    public void queryObj4() {
+        queryMedicalHistory4();
+    }
+
+    public void queryMedicalHistory4() {
+        EntityManager em = emf.createEntityManager();
+        Map medicals = new HashMap();
+        long ssn = 0;
+        EntityTransaction tran = em.getTransaction();
+        tran.begin();
+        String jpql = "select m from MedicalHistory2 m";
+        Query q = em.createQuery(jpql);
+        List<MedicalHistory2> ms = q.getResultList();
+        for (MedicalHistory2 m : ms) {
+            ssn = m.getId();
+        }
+        tran.commit();
+        em.close();
+        
+        em = emf.createEntityManager();
+        tran = em.getTransaction();
+        tran.begin();
+        jpql = "select m from MedicalHistory2 m where m.patient.ssn = " + ssn;
+        q = em.createQuery(jpql);
+        ms = q.getResultList();
+        for (MedicalHistory2 m : ms) {
+            assertMedicalHistory2(m);
+        }
+        tran.commit();
+        em.close();
+        
+        findObj4(ssn);
+    }
+
+    public void assertMedicalHistory2(MedicalHistory2 m) {
+        String name = m.getName();
+        MedicalHistory2 m0 = medicals2.get(name);
+        MedicalHistory2 m1 = m.getPatient().getMedical();
+        Assert.assertEquals(m1, m);
+    }
+    
 }

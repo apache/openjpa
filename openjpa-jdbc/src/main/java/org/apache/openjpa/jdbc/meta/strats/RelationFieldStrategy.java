@@ -54,6 +54,7 @@ import org.apache.openjpa.jdbc.sql.Select;
 import org.apache.openjpa.jdbc.sql.SelectExecutor;
 import org.apache.openjpa.jdbc.sql.Union;
 import org.apache.openjpa.kernel.OpenJPAStateManager;
+import org.apache.openjpa.kernel.StateManagerImpl;
 import org.apache.openjpa.lib.log.Log;
 import org.apache.openjpa.lib.util.Localizer;
 import org.apache.openjpa.meta.ClassMetaData;
@@ -213,14 +214,21 @@ public class RelationFieldStrategy
                     mappedByIdValue.length() == 0) {
                     if (fmds[i].getValue().getEmbeddedMetaData() != null) {
                         EmbedValueHandler.getEmbeddedIdCols((FieldMapping)fmds[i], cols);
-                    } else {
+                    } else 
                         EmbedValueHandler.getIdColumns((FieldMapping)fmds[i], cols);
                 }
             }
-        }
+            return cols;
+        } else { // primary key is single-value
+            Class pkType = pk.getDeclaredType();
+            FieldMetaData[] pks = field.getValue().getDeclaredTypeMetaData().getPrimaryKeyFields();
+            if (pks.length != 1 || pks[0].getDeclaredType() != pkType)
+                return Collections.EMPTY_LIST;
+            pkCols = pk.getColumns();
+            for (int i = 0; i < pkCols.length; i++)
+                cols.add(pkCols[i]);
             return cols;
         }
-        return Collections.EMPTY_LIST;
     }
 
     /**
