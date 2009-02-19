@@ -33,10 +33,11 @@ public class TestManyEagerSQL
     extends SQLListenerTestCase {
 
     public void setUp() {
-        setUp(
+        setUp(DROP_TABLES,
             OneManyEagerParent.class, OneManyEagerChild.class,
-            OneManyLazyChild.class);
-        
+            OneManyLazyChild.class, OneOneParent.class, 
+            OneOneChild.class);
+
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
 
@@ -53,6 +54,17 @@ public class TestManyEagerSQL
                 parent.addLazyChild(lazychild);
                 em.persist(lazychild);
             }
+            em.persist(parent);
+        }
+
+        for (int i = 0; i < 3; i++) {
+            OneOneParent parent = new OneOneParent();
+            parent.setName("parent" + i);
+            OneOneChild child = new OneOneChild();
+            child.setName("child" + i);
+            parent.setChild(child);
+            child.setParent(parent);
+            em.persist(child);
             em.persist(parent);
         }
 
@@ -184,6 +196,60 @@ public class TestManyEagerSQL
             assertEquals(id, p.getLazyChildren().get(1).getParent().getId());
             assertEquals("lazychild0", p.getLazyChildren().get(0).getName());
             assertEquals("lazychild1", p.getLazyChildren().get(1).getName());            
+        }
+
+        assertEquals(0, sql.size());
+        em.close();
+    }
+
+    public void testOneToOneParentQuery() {
+        sql.clear();
+
+        OpenJPAEntityManager em = emf.createEntityManager();
+        String query = "select p FROM OneOneParent p";
+        Query q = em.createQuery(query);
+        List list = q.getResultList();
+        assertEquals(3, list.size());
+
+        // Expected SQLs:
+        //   SELECT t0.id, t0.optLock, t1.id, t1.optLock, t1.name, t0.name
+        //   FROM OneOneParent t0 
+        //   LEFT OUTER JOIN OneOneChild t1 ON t0.id = t1.PARENT_ID
+
+        assertEquals(1, sql.size());
+
+        sql.clear();
+
+        for (int i = 0; i < list.size(); i++) {
+            OneOneParent p = (OneOneParent) list.get(i);
+            assertEquals(p, p.getChild().getParent());
+        }
+
+        assertEquals(0, sql.size());
+        em.close();
+    }
+
+    public void testOneToOneChildQuery() {
+        sql.clear();
+
+        OpenJPAEntityManager em = emf.createEntityManager();
+        String query = "select c FROM OneOneChild c";
+        Query q = em.createQuery(query);
+        List list = q.getResultList();
+        assertEquals(3, list.size());
+
+        // Expected SQLs:
+        //   SELECT t0.id, t0.optLock, t1.id, t1.optLock, t1.name, t0.name 
+        //   FROM OneOneParent t0 
+        //   LEFT OUTER JOIN OneOneChild t1 ON t0.id = t1.PARENT_ID
+
+        assertEquals(1, sql.size());
+
+        sql.clear();
+
+        for (int i = 0; i < list.size(); i++) {
+            OneOneChild c = (OneOneChild) list.get(i);
+            assertEquals(c, c.getParent().getChild());
         }
 
         assertEquals(0, sql.size());

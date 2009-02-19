@@ -524,19 +524,28 @@ public class RelationFieldStrategy
         PersistenceCapable mappedByValue = null;
 
         if (mappedByFieldMapping != null) {
-        	ValueMapping val = mappedByFieldMapping.getValueMapping();
-        	ClassMetaData decMeta = val.getTypeMetaData();
-        	// this inverse field does not have corresponding classMapping
-        	// its value may be a collection/map etc.
-        	if (decMeta != null) {
-        	    mappedByValue = sm.getPersistenceCapable();
-        	    res.setMappedByFieldMapping(mappedByFieldMapping);
-        	    res.setMappedByValue(mappedByValue);
-        	}
+            ValueMapping val = mappedByFieldMapping.getValueMapping();
+            ClassMetaData decMeta = val.getTypeMetaData();
+            // eager loading a child from its toOne parent and
+            // the parent has @OneToOne(mappedBy="parent") child relation.
+            // By saving the mapped-by info in 'res' is to
+            // avoid unneeded SQL pushdown that would otherwise gets
+            // generated.
+            if (decMeta != null) {
+                mappedByValue = sm.getPersistenceCapable();
+                res.setMappedByFieldMapping(mappedByFieldMapping);
+                res.setMappedByValue(mappedByValue);
+            }
         }
 
         sm.storeObject(field.getIndex(), res.load(cls, store, fetch,
-            eagerJoin(res.newJoins(), cls, false)));
+        eagerJoin(res.newJoins(), cls, false)));
+
+        // reset mapped by is needed for OneToOne bidirectional relations
+        // having a mapped-by parent to correctly set the parent-child
+        // relation.
+        res.setMappedByFieldMapping(null);
+        res.setMappedByValue(null);
     }
 
     public void load(OpenJPAStateManager sm, JDBCStore store,
