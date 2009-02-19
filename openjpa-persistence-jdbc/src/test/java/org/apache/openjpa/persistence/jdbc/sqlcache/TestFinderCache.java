@@ -27,6 +27,7 @@ import javax.persistence.EntityManager;
 import org.apache.openjpa.jdbc.conf.JDBCConfiguration;
 import org.apache.openjpa.kernel.FinderCache;
 import org.apache.openjpa.persistence.OpenJPAPersistence;
+import org.apache.openjpa.persistence.test.SQLListenerTestCase;
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
 
 /**
@@ -35,7 +36,7 @@ import org.apache.openjpa.persistence.test.SingleEMFTestCase;
  * @author Pinaki Poddar
  *
  */
-public class TestFinderCache extends SingleEMFTestCase {
+public class TestFinderCache extends SQLListenerTestCase {
     public static final long[] BOOK_IDS = {1000, 2000, 3000};
     public static final String[] BOOK_NAMES = {"Argumentative Indian", "Tin Drum", "Blink"};
     public static final long[] CD_IDS = {1001, 2001, 3001};
@@ -85,6 +86,20 @@ public class TestFinderCache extends SingleEMFTestCase {
         System.err.println("with    " + with);
         System.err.println("without " + without);
         System.err.println("delta   " + (pct > 0 ? "+" : "") + pct + "%");
+    }
+    
+    public void testSQLEventListener() {
+        EntityManager em = emf.createEntityManager();
+        int N = 3;
+        sql.clear();
+        for (int i = 0; i < N; i++) {
+            em.clear();
+            for (long id : BOOK_IDS) {
+                Book pc = em.find(Book.class, id);
+                assertNotNull(pc);
+            }
+        }
+        assertEquals(BOOK_IDS.length*N, sql.size());
     }
     
     /**

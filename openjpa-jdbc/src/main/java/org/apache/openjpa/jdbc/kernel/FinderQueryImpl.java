@@ -26,6 +26,7 @@ import java.sql.SQLException;
 import org.apache.openjpa.jdbc.meta.ClassMapping;
 import org.apache.openjpa.jdbc.meta.Joinable;
 import org.apache.openjpa.jdbc.schema.Column;
+import org.apache.openjpa.jdbc.sql.DBDictionary;
 import org.apache.openjpa.jdbc.sql.LogicalUnion;
 import org.apache.openjpa.jdbc.sql.Result;
 import org.apache.openjpa.jdbc.sql.SQLBuffer;
@@ -131,18 +132,19 @@ public class FinderQueryImpl
     public Result execute(OpenJPAStateManager sm, StoreManager store, 
         FetchConfiguration fetch) {
         boolean forUpdate = false;
-        Connection conn = ((JDBCStore)store).getConnection();
+        JDBCStore jstore = (JDBCStore)store;
+        Connection conn = jstore.getConnection();
+        DBDictionary dict = jstore.getDBDictionary();
         PreparedStatement stmnt = null;
         ResultSet rs = null;
         try {
             stmnt = conn.prepareStatement(_sql);
-            Object[] params = getPKValues(sm, (JDBCStore)store);
-            int i = 0;
-            for (Object o : params) {
-                stmnt.setObject(++i, o);
+            Object[] params = getPKValues(sm, jstore);
+            for (int i = 0; i <params.length; i++) {
+                dict.setUnknown(stmnt, i+1, params[i], _pkCols[i]);
             }
             rs = stmnt.executeQuery();
-            return _select.getEagerResult(conn, stmnt, rs, (JDBCStore)store, 
+            return _select.getEagerResult(conn, stmnt, rs, jstore, 
                 (JDBCFetchConfiguration)fetch, forUpdate, _buffer);
         } catch (SQLException se) {
             if (stmnt != null)
