@@ -18,6 +18,7 @@
  */
 package org.apache.openjpa.persistence.enhance.identity;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -28,7 +29,10 @@ import javax.persistence.Query;
 
 import junit.framework.Assert;
 
+import org.apache.openjpa.enhance.PersistenceCapable;
+import org.apache.openjpa.kernel.StateManagerImpl;
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
+import org.apache.openjpa.util.ObjectId;
 
 public class TestMappedById extends SingleEMFTestCase {
     public int numEmployees = 4;
@@ -46,10 +50,18 @@ public class TestMappedById extends SingleEMFTestCase {
     public Map<String, MedicalHistory2> medicals2 = 
         new HashMap<String, MedicalHistory2>();
 
+    public Map<Integer, Employee3> emps3 = new HashMap<Integer, Employee3>();
+    public Map<Object, Dependent3> depMap3 = 
+    	new HashMap<Object, Dependent3>();
+    public List dids3 = new ArrayList();
+    public List<Dependent3> deps3 = new ArrayList<Dependent3>();
+    
     public int eId1 = 1;
     public int dId1 = 1;
     public int eId2 = 1;
     public int dId2 = 1;
+    public int eId3 = 1;
+    public int dId3 = 1;
     public int pId1 = 1;
     public int mId1 = 1;
     public int pId2 = 1;
@@ -60,7 +72,8 @@ public class TestMappedById extends SingleEMFTestCase {
             DependentId1.class, Dependent2.class, Employee2.class,
             DependentId2.class, EmployeeId2.class, MedicalHistory1.class,
             Person1.class, PersonId1.class, MedicalHistory2.class,
-            Person2.class);
+            Person2.class, Dependent3.class, Employee3.class, 
+            DependentId3.class, Parent3.class);
     }
 
     /**
@@ -91,11 +104,22 @@ public class TestMappedById extends SingleEMFTestCase {
     }
 
     /**
-     * This is spec 2.4.1.2 Example 4, case(b) with generated key
+     * This is a variation of spec 2.4.1.2 Example 4, case(b) with generated key
      */
     public void testMappedById4() {
         createObj4();
         queryObj4();
+    }
+
+    /**
+     * This is a variation of spec 2.4.1.2 Example 1, case(b):
+     * two MappedById annotations in Dependent3 and both parent
+     * classes use generated key 
+     */
+    public void testMappedById5() {
+        createObj5();
+        findObj5();
+        queryObj5();
     }
 
     public void createObj1() {
@@ -395,6 +419,82 @@ public class TestMappedById extends SingleEMFTestCase {
         MedicalHistory2 m0 = medicals2.get(name);
         MedicalHistory2 m1 = m.getPatient().getMedical();
         Assert.assertEquals(m1, m);
+    }
+
+    
+    public void createObj5() {
+        EntityManager em = emf.createEntityManager();
+        EntityTransaction tran = em.getTransaction();
+        for (int i = 0; i < numEmployees; i++)
+            createEmployee3(em, eId3++);
+        tran.begin();
+        em.flush();
+        tran.commit();
+        for (Dependent3 d: deps3) {
+        	ObjectId did = (ObjectId)((StateManagerImpl)((PersistenceCapable)d).pcGetStateManager()).getObjectId();
+        	dids3.add(did.getId());
+        	depMap3.put(did.getId(), d);
+        }
+        
+        
+        em.close();
+    }
+
+    public Employee3 createEmployee3(EntityManager em, int id) {
+        Employee3 e = new Employee3();
+        e.setName("emp_" + id);
+        for (int i = 0; i < numDependentsPerEmployee; i++) {
+            Dependent3 d = createDependent3(em, dId3++, e);
+            e.addDependent(d);
+            em.persist(d);
+        }
+        em.persist(e);
+        emps3.put(id, e);
+        return e;
+    }
+
+    public Dependent3 createDependent3(EntityManager em, int id, Employee3 e) {
+        Dependent3 d = new Dependent3();
+        DependentId3 did = new DependentId3();
+        did.setName("dep_" + id);
+        d.setId(did);
+        d.setEmp(e);
+        deps3.add(d);
+        Parent3 p = new Parent3();
+        p.setName("p_" + id);
+        p.setDependent(d);
+        d.setParent(p);
+        em.persist(p);
+        return d;
+    }
+
+    public void findObj5() {
+        EntityManager em = emf.createEntityManager();
+        Dependent3 d = em.find(Dependent3.class, dids3.get(1));
+        Dependent3 d0 = depMap3.get(dids3.get(1));
+        assertEquals(d0, d);
+    }
+
+    public void queryObj5() {
+        EntityManager em = emf.createEntityManager();
+        EntityTransaction tran = em.getTransaction();
+        tran.begin();
+        String jpql = "select d from Dependent3 d where d.id.name = 'dep_1' AND d.emp.name = 'emp_1'";
+        Query q = em.createQuery(jpql);
+        List<Dependent3> ds = q.getResultList();
+        for (Dependent3 d : ds) {
+            assertDependent3(d);
+        }
+        tran.commit();
+        em.close();
+    }
+
+    public void assertDependent3(Dependent3 d) {
+        DependentId3 id = d.getId();
+        Dependent3 d0 = depMap3.get(id);
+        if (d0.id.empPK == 0)
+            d0.id.empPK = d0.emp.getEmpId();
+        assertEquals(d0, d);
     }
     
 }
