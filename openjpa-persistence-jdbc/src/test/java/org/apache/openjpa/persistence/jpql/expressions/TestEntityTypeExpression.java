@@ -135,10 +135,16 @@ public class TestEntityTypeExpression extends AbstractTestCase {
         type = ((Object[]) rs2.get(0))[1];
         assertEquals(type, FemaleUser.class);
         
-        query = "SELECT e FROM CompUser e where TYPE(e) = :typeName";
+        query = "SELECT e FROM CompUser e where TYPE(e) = :typeName " +
+            " ORDER BY e.name";
         rs =  em.createQuery(query).
             setParameter("typeName", FemaleUser.class).getResultList();
+        assertTrue(rs.size()==3);
         user = rs.get(0);
+        assertEquals("Famzy", user.getName());
+        user = rs.get(1);
+        assertEquals("Shade", user.getName());
+        user = rs.get(2);
         assertEquals("Shannon", user.getName());
 
         query = "SELECT e FROM CompUser e where TYPE(e) = ?1 ORDER BY e.name";
@@ -147,7 +153,8 @@ public class TestEntityTypeExpression extends AbstractTestCase {
         user = rs.get(0);
         assertEquals("Famzy", user.getName());
         
-        query = "SELECT e FROM CompUser e where TYPE(e) in (?1) ORDER BY e.name DESC";
+        query = "SELECT e FROM CompUser e where TYPE(e) in (?1)" +
+            " ORDER BY e.name DESC";
         rs = em.createQuery(query).
             setParameter(1, MaleUser.class).getResultList();
         user = rs.get(0);
