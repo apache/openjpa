@@ -406,6 +406,10 @@ public class JDBCStoreManager
                     for (Iterator itr = ((Collection) coll).iterator();
                         itr.hasNext();) {
                         PersistenceCapable pc = (PersistenceCapable) itr.next();
+
+                        if (pc == null)
+                            continue;
+
                         OpenJPAStateManager sm = (OpenJPAStateManager) pc.
                             pcGetStateManager();
                         FieldMapping[] fmd = ((ClassMapping) sm.getMetaData()).
