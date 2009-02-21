@@ -693,17 +693,22 @@ public class ObjectIdStateManager
             return null;
 
         FieldMetaData fmd = getMetaData().getField(field);
-        if (fmd.getBackingMember() instanceof Field)
-            return Reflection.get(_oid, (Field) fmd.getBackingMember());
-        if (fmd.getBackingMember() instanceof Method)
-            return Reflection.get(_oid, (Method) fmd.getBackingMember());
-
-        if (fmd.getDefiningMetaData().getAccessType()
+        Object val = null;
+        if (fmd.getBackingMember() instanceof Field) 
+            val = Reflection.get(_oid, (Field) fmd.getBackingMember());
+        else if (fmd.getBackingMember() instanceof Method) 
+            val = Reflection.get(_oid, (Method) fmd.getBackingMember());
+        else if (fmd.getDefiningMetaData().getAccessType()
             == ClassMetaData.ACCESS_FIELD)
-            return Reflection.get(_oid, Reflection.findField(_oid.getClass(), 
+            val = Reflection.get(_oid, Reflection.findField(_oid.getClass(), 
                 fmd.getName(), true));
-        return Reflection.get(_oid, Reflection.findGetter(_oid.getClass(),
+        else 
+            val = Reflection.get(_oid, Reflection.findGetter(_oid.getClass(),
             fmd.getName(), true));
+
+        if (fmd.getValue().getEmbeddedMetaData() != null) 
+            return new ObjectIdStateManager(val, null, fmd);
+        return val;
     }
 
     /**

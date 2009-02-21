@@ -153,6 +153,8 @@ public abstract class EmbedValueHandler
                     OpenJPAStateManager embedSm = (OpenJPAStateManager)
                         ((PersistenceCapable)cval).pcGetStateManager();
                     idx = toDataStoreValue1(embedSm, val, store, cols, rvals, idx);
+                } else if (cval instanceof ObjectIdStateManager) {
+                    idx = toDataStoreValue1((ObjectIdStateManager)cval, val, store, cols, rvals, idx);
                 } else if (cval == null) {
                     idx = toDataStoreValue1(null, val, store, cols, rvals, idx);
                 }
