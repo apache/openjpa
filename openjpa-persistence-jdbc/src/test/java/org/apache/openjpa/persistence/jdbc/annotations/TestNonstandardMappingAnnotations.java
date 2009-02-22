@@ -48,7 +48,7 @@ public class TestNonstandardMappingAnnotations
         setUp(NonstandardMappingEntity.class, ExtensionsEntity.class,
             NonstandardMappingMappedSuper.class, EmbedValue2.class,
             EmbedValue.class,
-            CLEAR_TABLES);
+            CLEAR_TABLES, RETAIN_DATA);
 
         // trigger complete resolution of metadata etc.
         emf.createEntityManager().close();

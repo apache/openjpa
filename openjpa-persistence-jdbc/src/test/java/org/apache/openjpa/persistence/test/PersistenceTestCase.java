@@ -61,6 +61,8 @@ public abstract class PersistenceTestCase
     extends TestCase {
     private static FixedMap _emfs = new FixedMap();
     public static final String FRESH_EMF = "Creates new EntityManagerFactory";
+    public static final String RETAIN_DATA = "Retain data after test run";
+    private boolean retainDataOnTearDown; 
     /**
      * Marker object you pass to {@link #setUp} to indicate that the
      * database table rows should be cleared.
@@ -116,6 +118,10 @@ public abstract class PersistenceTestCase
         for (int i = 0; props != null && i < props.length; i++) {
             if (props[i] == FRESH_EMF) {
                 fresh = true;
+                continue;
+            }
+            if (props[i] == RETAIN_DATA) {
+                retainDataOnTearDown= true;
                 continue;
             }
             if (prop) {
@@ -262,7 +268,8 @@ public abstract class PersistenceTestCase
         // before issuing delete statements on a new entity manager.
         if (closeEMs)
             closeAllOpenEMs(emf);
-
+        if (retainDataOnTearDown)
+            return;
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
         for (ClassMetaData meta : types) {
