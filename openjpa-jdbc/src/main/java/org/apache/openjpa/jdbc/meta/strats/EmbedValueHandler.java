@@ -268,7 +268,7 @@ public abstract class EmbedValueHandler
             if (fmds[i].getValue().getEmbeddedMetaData() == null) {
                 getIdColumns(fmds[i], cols);
             } else {
-                getEmbeddedIdCols(fmd, cols);
+                getEmbeddedIdCols(fmds[i], cols);
             }
         }
     }

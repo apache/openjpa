@@ -25,6 +25,7 @@ import java.security.AccessController;
 import java.sql.Types;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -71,6 +72,7 @@ import org.apache.openjpa.jdbc.meta.MappingRepository;
 import org.apache.openjpa.jdbc.meta.QueryResultMapping;
 import org.apache.openjpa.jdbc.meta.SequenceMapping;
 import org.apache.openjpa.jdbc.meta.ValueMapping;
+import org.apache.openjpa.jdbc.meta.ValueMappingImpl;
 import org.apache.openjpa.jdbc.meta.ValueMappingInfo;
 import org.apache.openjpa.jdbc.meta.strats.EnumValueHandler;
 import org.apache.openjpa.jdbc.meta.strats.FlatClassStrategy;
@@ -87,6 +89,7 @@ import org.apache.openjpa.meta.ClassMetaData;
 import org.apache.openjpa.meta.FieldMetaData;
 import org.apache.openjpa.meta.JavaTypes;
 import org.apache.openjpa.meta.MetaDataContext;
+import org.apache.openjpa.meta.ValueMetaData;
 import org.apache.openjpa.persistence.AnnotationPersistenceMetaDataParser;
 import static org.apache.openjpa.persistence.jdbc.MappingTag.*;
 import org.apache.openjpa.util.InternalException;
@@ -1248,23 +1251,85 @@ public class AnnotationPersistenceMappingParser
      */
     private void parseAttributeOverrides(FieldMapping fm,
         AttributeOverride... attrs) {
-        ClassMapping embed = fm.getEmbeddedMapping();
-        if (embed == null) {
-            embed = fm.getElementMapping().getEmbeddedMapping();
-            if (embed == null)
-                throw new MetaDataException(_loc.get("not-embedded", fm));
-        }
-        FieldMapping efm;
         for (AttributeOverride attr : attrs) {
-            efm = embed.getFieldMapping(attr.name());
-            if (efm == null)
-                throw new MetaDataException(_loc.get("embed-override-name",
-                    fm, attr.name()));
+            String attrName = attr.name();
+            FieldMapping efm = getEmbeddedFieldMapping(fm, attrName);
             if (attr.column() != null)
                 parseColumns(efm, attr.column());
         }
     }
+    
+    private FieldMapping getEmbeddedFieldMapping(FieldMapping fm, String attrName) {
+        ClassMapping embed = null;
+        boolean isKey = false;
+        boolean isValue = false;
+        if (attrName != null && attrName.startsWith("key."))
+            isKey = true;
+        else if (attrName != null && attrName.startsWith("value."))
+            isValue = true;
+        if (isKey || isValue)
+            attrName = attrName.substring(attrName.indexOf(".")+1);
+            
+        int typeCode = fm.getValue().getDeclaredTypeCode();
+        switch (typeCode) {
+            case JavaTypes.COLLECTION : // a collection of embeddables
+                if (isKey || isValue)
+                    throw new MetaDataException(_loc.get("embed-override-name",
+                        fm, attrName));
+                embed = fm.getElementMapping().getEmbeddedMapping();
+                break;
+            case JavaTypes.MAP: // a map
+                if (!isKey && !isValue)
+                    throw new MetaDataException(_loc.get("embed-override-name",
+                        fm, attrName));
+                if (isKey) 
+                    embed = getEmbeddedMapping(fm.getKeyMapping());
+                else if (isValue)     
+                    embed = getEmbeddedMapping(fm.getElementMapping());
+                break;
+            default: // an embeddable
+                if (isKey || isValue)
+                    throw new MetaDataException(_loc.get("embed-override-name",
+                        fm, attrName));
+                embed = getEmbeddedMapping(fm.getValueMapping());
+                break;
+        }
+        
+        if (embed == null) 
+            throw new MetaDataException(_loc.get("not-embedded", fm));
+        return getAttributeOverrideField(attrName, fm, embed);
+    }
+    
+    private ClassMapping getEmbeddedMapping(ValueMapping val) {
+        ClassMapping embed = val.getEmbeddedMapping();
+        if (embed != null) 
+            return embed;
+        
+        val.addEmbeddedMetaData();
+        return val.getEmbeddedMapping();
 
+    }
+    
+    public FieldMapping getAttributeOverrideField(String attrName, FieldMapping fm, ClassMapping embed) {
+        FieldMapping efm;
+        int idxOfDot = attrName.indexOf("."); 
+        if (idxOfDot == -1) {
+            efm = embed.getFieldMapping(attrName);
+            if (efm == null)
+                throw new MetaDataException(_loc.get("embed-override-name",
+                    fm, attrName));
+            return efm;
+        } 
+        String attrName1 = attrName.substring(0, idxOfDot);
+        String attrName2 = attrName.substring(idxOfDot+1);
+        efm = embed.getFieldMapping(attrName1);
+        if (efm == null)
+            throw new MetaDataException(_loc.get("embed-override-name",
+                fm, attrName1));
+        ClassMapping embed1 = getEmbeddedMapping(efm.getValueMapping());
+        return getAttributeOverrideField(attrName2, efm, embed1);
+    }
+    
     /**
      * Parse @Enumerated.
      */
