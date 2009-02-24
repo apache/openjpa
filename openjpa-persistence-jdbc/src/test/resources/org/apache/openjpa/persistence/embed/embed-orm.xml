@@ -149,6 +149,44 @@ version="2.0">
 		</attributes>
 	</entity>
 
+    <entity name="CustomerXml1" 
+        class="org.apache.openjpa.persistence.embed.attrOverrides.CustomerXml" 
+        access="FIELD">
+        <attributes>
+            <id name="id"><column length="12"/></id>
+            <basic name="name"><column length="12"/></basic>
+            <embedded name="address">
+                <attribute-override name="state">
+                    <column name="ADDR_STATE" />
+                </attribute-override>
+                <attribute-override name="zipcode.zip">
+                    <column name="ADDR_ZIP" />
+                </attribute-override>
+            </embedded>
+        </attributes>
+    </entity>
+
+    <embeddable 
+        class="org.apache.openjpa.persistence.embed.attrOverrides.AddressXml" 
+        access="FIELD">
+        <attributes>
+            <basic name="street"><column length="12"/>
+            </basic>
+            <basic name="city"><column length="12"/></basic>
+            <basic name="state"><column length="12"/></basic>
+            <embedded name="zipcode"/>
+        </attributes>
+    </embeddable>
+
+    <embeddable 
+        class="org.apache.openjpa.persistence.embed.attrOverrides.ZipcodeXml" 
+        access="FIELD">
+        <attributes>
+            <basic name="zip"><column length="12"/></basic>
+            <basic name="plusFour"><column length="12"/></basic>
+        </attributes>
+    </embeddable>
+
 	<embeddable
 		class="org.apache.openjpa.persistence.embed.Embed_EmbedXml"
 		access="FIELD">

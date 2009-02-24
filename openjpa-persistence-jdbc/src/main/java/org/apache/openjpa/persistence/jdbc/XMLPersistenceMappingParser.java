@@ -42,6 +42,7 @@ import org.apache.openjpa.jdbc.meta.MappingInfo;
 import org.apache.openjpa.jdbc.meta.MappingRepository;
 import org.apache.openjpa.jdbc.meta.QueryResultMapping;
 import org.apache.openjpa.jdbc.meta.SequenceMapping;
+import org.apache.openjpa.jdbc.meta.ValueMapping;
 import org.apache.openjpa.jdbc.meta.strats.EnumValueHandler;
 import org.apache.openjpa.jdbc.meta.strats.FlatClassStrategy;
 import org.apache.openjpa.jdbc.meta.strats.FullClassStrategy;
@@ -661,19 +662,10 @@ public class XMLPersistenceMappingParser
     /**
      * Return the proper override.
      */
-    private FieldMapping getAttributeOverride(FieldMapping fm)
-        throws SAXException {
-        ClassMapping embed = fm.getEmbeddedMapping();
-        if (embed == null) {
-            embed = fm.getElementMapping().getEmbeddedMapping();
-            if (embed == null)
-                throw getException(_loc.get("not-embedded", fm));
-        }
-        FieldMapping efm = embed.getFieldMapping(_override);
-        if (efm == null)
-            throw getException(_loc.get("embed-override-name",
-                fm, _override));
-        return efm;
+    private FieldMapping getAttributeOverride(FieldMapping fm) 
+    throws SAXException {
+        return AnnotationPersistenceMappingParser.getEmbeddedFieldMapping(fm, 
+            _override);
     }
 
     /**

@@ -1259,7 +1259,7 @@ public class AnnotationPersistenceMappingParser
         }
     }
     
-    private FieldMapping getEmbeddedFieldMapping(FieldMapping fm, String attrName) {
+    public static FieldMapping getEmbeddedFieldMapping(FieldMapping fm, String attrName) {
         ClassMapping embed = null;
         boolean isKey = false;
         boolean isValue = false;
@@ -1300,7 +1300,7 @@ public class AnnotationPersistenceMappingParser
         return getAttributeOverrideField(attrName, fm, embed);
     }
     
-    private ClassMapping getEmbeddedMapping(ValueMapping val) {
+    public static ClassMapping getEmbeddedMapping(ValueMapping val) {
         ClassMapping embed = val.getEmbeddedMapping();
         if (embed != null) 
             return embed;
@@ -1310,7 +1310,7 @@ public class AnnotationPersistenceMappingParser
 
     }
     
-    public FieldMapping getAttributeOverrideField(String attrName, FieldMapping fm, ClassMapping embed) {
+    public static FieldMapping getAttributeOverrideField(String attrName, FieldMapping fm, ClassMapping embed) {
         FieldMapping efm;
         int idxOfDot = attrName.indexOf("."); 
         if (idxOfDot == -1) {
