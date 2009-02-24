@@ -30,10 +30,19 @@ import org.apache.openjpa.persistence.test.AllowFailure;
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
 
 /**
- * Test for sequence generator. Some databases currently (Derby) do not support
- * native sequences so this method is allowed to fail until such time when the
- * test corpus can support database or dictionary support specific 
- * configuration.
+ * Test for sequence generator. 
+ * 
+ * The test variations execute only when the target database dictionary has
+ * a native sequence query defined. Even that condition is not sufficient for
+ * exclusion, since some databases support sequences, but not named sequences.  
+ * For that reason, and due to specific configuration needs for some databases 
+ * (Oracle) this test is allowed to fail.  
+ * 
+ * To run these tests successfully on Oracle a ORMSCHEMA user and SEQSCHEMA 
+ * user need to exist.  In addition, the Oracle user profile used to run the 
+ * test must have SELECT object priviledge on the ORMSCHEMA.ORMSEQ and 
+ * SEQSCHEMA.SCHEMASEQ sequences and CREATE ANY SEQUENCE (or equivalent)
+ * authority.
  *
  * @author Jeremy Bauer
  */
@@ -53,7 +62,7 @@ public class TestSequenceGenerator extends SingleEMFTestCase {
         try {
             enabled =
                 ((JDBCConfiguration) emf.getConfiguration())
-                    .getDBDictionaryInstance().nextSequenceQuery == null;
+                    .getDBDictionaryInstance().nextSequenceQuery != null;
         } catch (Throwable t) {
             enabled = false;
         }
@@ -122,7 +131,7 @@ public class TestSequenceGenerator extends SingleEMFTestCase {
         Connection conn = (Connection)em.getConnection();
         try {
             DatabaseMetaData dbmd = conn.getMetaData();
-            Sequence[] seqs = dict.getSequences(dbmd, null, schema, 
+            Sequence[] seqs = dict.getSequences(dbmd, conn.getCatalog(), schema,
                     sequence, conn);
             if (seqs != null && seqs.length == 1 && 
                     seqs[0].getName().equalsIgnoreCase(sequence) &&
