@@ -52,7 +52,6 @@ import org.apache.openjpa.jdbc.sql.Union;
 import org.apache.openjpa.kernel.BrokerImpl;
 import org.apache.openjpa.kernel.FetchConfiguration;
 import org.apache.openjpa.kernel.FinderCache;
-import org.apache.openjpa.kernel.FinderQuery;
 import org.apache.openjpa.kernel.LockManager;
 import org.apache.openjpa.kernel.OpenJPAStateManager;
 import org.apache.openjpa.kernel.PCState;
@@ -270,7 +269,8 @@ public class JDBCStoreManager
         } catch (ClassNotFoundException cnfe) {
             throw new UserException(cnfe);
         } catch (SQLException se) {
-            throw SQLExceptions.getStore(se, _dict);
+            throw SQLExceptions.getStoreSQLException(sm, se, _dict,
+                fetch.getReadLockLevel());
         }
     }
 

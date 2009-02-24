@@ -59,7 +59,7 @@ public class TestInsertOrder extends SQLListenerTestCase {
         em.getTransaction().commit();
         em.close();
 
-        assertSQLOrder("INSERT INTO " + empTableName + ".*", "INSERT INTO "
+        assertAllSQLInOrder("INSERT INTO " + empTableName + ".*", "INSERT INTO "
             + taskTableName + ".*", "INSERT INTO " + storyTableName + ".*");
     }
     
@@ -75,7 +75,7 @@ public class TestInsertOrder extends SQLListenerTestCase {
         em.getTransaction().commit();
         em.close();
 
-        assertSQLOrder("INSERT INTO " + empTableName + ".*", "INSERT INTO "
+        assertAllSQLInOrder("INSERT INTO " + empTableName + ".*", "INSERT INTO "
             + taskTableName + ".*", "INSERT INTO " + storyTableName + ".*");
     }
 

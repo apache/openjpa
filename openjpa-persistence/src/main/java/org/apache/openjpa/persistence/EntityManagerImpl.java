@@ -28,6 +28,7 @@ import java.io.ObjectOutput;
 import java.io.ObjectOutputStream;
 import java.io.ObjectStreamClass;
 import java.lang.reflect.Array;
+import java.sql.Connection;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.EnumSet;
@@ -47,6 +48,8 @@ import org.apache.openjpa.conf.OpenJPAConfiguration;
 import org.apache.openjpa.ee.ManagedRuntime;
 import org.apache.openjpa.enhance.PCEnhancer;
 import org.apache.openjpa.enhance.PCRegistry;
+import org.apache.openjpa.jdbc.conf.JDBCConfiguration;
+import org.apache.openjpa.jdbc.kernel.JDBCFetchConfiguration;
 import org.apache.openjpa.kernel.AbstractBrokerFactory;
 import org.apache.openjpa.kernel.Broker;
 import org.apache.openjpa.kernel.DelegatingBroker;
@@ -61,6 +64,8 @@ import org.apache.openjpa.kernel.QueryFlushModes;
 import org.apache.openjpa.kernel.QueryLanguages;
 import org.apache.openjpa.kernel.Seq;
 import org.apache.openjpa.kernel.jpql.JPQLParser;
+import org.apache.openjpa.lib.conf.Configuration;
+import org.apache.openjpa.lib.conf.IntValue;
 import org.apache.openjpa.lib.util.Closeable;
 import org.apache.openjpa.lib.util.Localizer;
 import org.apache.openjpa.meta.ClassMetaData;
@@ -459,6 +464,26 @@ public class EntityManagerImpl
         return (T) _broker.find(oid, true, this);
     }
 
+    public <T> T find(Class<T> cls, Object oid, LockModeType mode) {
+        return find(cls, oid, mode, null);
+    }
+
+    @SuppressWarnings("unchecked")
+    public <T> T find(Class<T> cls, Object oid, LockModeType mode,
+        Map<String, Object> properties) {
+        assertNotCloseInvoked();
+        if (mode != LockModeType.NONE)
+            _broker.assertActiveTransaction();
+
+        boolean fcPushed = pushLockProperties(mode, properties);
+        try {
+            oid = _broker.newObjectId(cls, oid);
+            return (T) _broker.find(oid, true, this);
+        } finally {
+            popLockProperties(fcPushed);
+        }
+    }
+
     @SuppressWarnings("unchecked")
     public <T> T[] findAll(Class<T> cls, Object... oids) {
         if (oids.length == 0)
@@ -693,6 +718,23 @@ public class EntityManagerImpl
         assertNotCloseInvoked();
         _broker.assertWriteOperation();
         _broker.refresh(entity, this);
+    }
+
+    public void refresh(Object entity, LockModeType mode) {
+        refresh(entity, mode, null);
+    }
+
+    public void refresh(Object entity, LockModeType mode,
+        Map<String, Object> properties) {
+        assertNotCloseInvoked();
+        _broker.assertWriteOperation();
+
+        boolean fcPushed = pushLockProperties(mode, properties);
+        try {
+            _broker.refresh(entity, this);
+        } finally {
+            popLockProperties(fcPushed);
+        }
     }
 
     public void refreshAll() {
@@ -1049,6 +1091,20 @@ public class EntityManagerImpl
         _broker.lock(entity, toLockLevel(mode), timeout, this);
     }
 
+    public void lock(Object entity, LockModeType mode,
+        Map<String, Object> properties) {
+        assertNotCloseInvoked();
+        _broker.assertActiveTransaction();
+
+        boolean fcPushed = pushLockProperties(mode, properties);
+        try {
+            _broker.lock(entity, toLockLevel(mode), _broker
+                .getFetchConfiguration().getLockTimeout(), this);
+        } finally {
+            popLockProperties(fcPushed);
+        }
+    }
+
     public void lockAll(Collection entities) {
         assertNotCloseInvoked();
         _broker.lockAll(entities, this);
@@ -1071,23 +1127,38 @@ public class EntityManagerImpl
      * Translate our internal lock level to a javax.persistence enum value.
      */
     static LockModeType fromLockLevel(int level) {
-        if (level < LockLevels.LOCK_READ)
+        if (level < JPA2LockLevels.LOCK_OPTIMISTIC)
             return null;
-        if (level < LockLevels.LOCK_WRITE)
+        if (level < JPA2LockLevels.LOCK_OPTIMISTIC_FORCE_INCREMENT)
             return LockModeType.READ;
-        return LockModeType.WRITE;
+        if (level < JPA2LockLevels.LOCK_PESSIMISTIC_READ)
+            return LockModeType.WRITE;
+        if (level < JPA2LockLevels.LOCK_PESSIMISTIC_WRITE)
+            return LockModeType.PESSIMISTIC;
+// TODO:         return LockModeType.PESSIMISTIC_READ;
+        if (level < JPA2LockLevels.LOCK_PESSIMISTIC_FORCE_INCREMENT)
+            return LockModeType.PESSIMISTIC;
+// TODO:         return LockModeType.PESSIMISTIC_WRITE;
+        return LockModeType.PESSIMISTIC_FORCE_INCREMENT;
     }
 
     /**
      * Translate the javax.persistence enum value to our internal lock level.
      */
     static int toLockLevel(LockModeType mode) {
-        if (mode == null)
+        if (mode == null || mode == LockModeType.NONE)
             return LockLevels.LOCK_NONE;
-        if (mode == LockModeType.READ)
+        if (mode == LockModeType.READ || mode == LockModeType.OPTIMISTIC)
             return LockLevels.LOCK_READ;
-        if (mode == LockModeType.WRITE)
+        if (mode == LockModeType.WRITE
+            || mode == LockModeType.OPTIMISTIC_FORCE_INCREMENT)
             return LockLevels.LOCK_WRITE;
+// TODO:      if (mode == LockModeType.PESSIMISTIC_READ)
+// TODO:         return LockLevels.LOCK_PESSIMISTIC_READ;
+        if (mode == LockModeType.PESSIMISTIC)
+            return JPA2LockLevels.LOCK_PESSIMISTIC_WRITE;
+        if (mode == LockModeType.PESSIMISTIC_FORCE_INCREMENT)
+            return JPA2LockLevels.LOCK_PESSIMISTIC_FORCE_INCREMENT;
         throw new ArgumentException(mode.toString(), null, null, true);
     }
 
@@ -1430,19 +1501,7 @@ public class EntityManagerImpl
         return createQuery(jpql);
     }
 
-    public <T> T find(Class<T> entityClass, Object primaryKey, 
-    	LockModeType lockMode) {
-        throw new UnsupportedOperationException(
-            "JPA 2.0 - Method not yet implemented");
-    }
-
-    public <T> T find(Class<T> entityClass, Object primaryKey, 
-    	LockModeType lockMode, Map<String, Object> properties) {
-        throw new UnsupportedOperationException(
-            "JPA 2.0 - Method not yet implemented");
-    }
-
-    /* 
+    /*
      * @see javax.persistence.EntityManager#getProperties()
      * 
      * This does not return the password property.
@@ -1469,23 +1528,6 @@ public class EntityManagerImpl
         return _broker.getSupportedProperties();
     }
 
-    public void lock(Object entity, LockModeType lockMode, Map<String, 
-    	Object> properties) {
-        throw new UnsupportedOperationException(
-            "JPA 2.0 - Method not yet implemented");
-    }
-
-    public void refresh(Object entity, LockModeType lockMode) {
-        throw new UnsupportedOperationException(
-            "JPA 2.0 - Method not yet implemented");
-    }
-
-    public void refresh(Object entity, LockModeType lockMode, Map<String, 
-    	Object> properties) {
-        throw new UnsupportedOperationException(
-            "JPA 2.0 - Method not yet implemented");
-    }
-
     public <T> T unwrap(Class<T> cls) {
         throw new UnsupportedOperationException(
             "JPA 2.0 - Method not yet implemented");
@@ -1504,4 +1546,135 @@ public class EntityManagerImpl
         return _ret;
     }
 
+    private enum FetchConfigProperty {
+        LockTimeout, ReadLockLevel, WriteLockLevel
+    };
+
+    private boolean setFetchConfigProperty(FetchConfigProperty[] validProps,
+        Map<String, Object> properties) {
+        boolean fcPushed = false;
+        if (properties != null && properties.size() > 0) {
+            Configuration conf = _broker.getConfiguration();
+            Set<String> inKeys = properties.keySet();
+            for (String inKey : inKeys) {
+                for (FetchConfigProperty validProp : validProps) {
+                    String validPropStr = validProp.toString();
+                    Set<String> validPropKeys = conf
+                        .getPropertyKeys(validPropStr);
+
+                    if (validPropKeys.contains(inKey)) {
+                        FetchConfiguration fCfg = _broker
+                            .getFetchConfiguration();
+                        IntValue intVal = new IntValue(inKey);
+                        try {
+                            Object setValue = properties.get(inKey);
+                            if (setValue instanceof String) {
+                                intVal.setString((String) setValue);
+                            } else if (Number.class.isAssignableFrom(setValue
+                                .getClass())) {
+                                intVal.setObject(setValue);
+                            } else {
+                                intVal.setString(setValue.toString());
+                            }
+                            int value = intVal.get();
+                            switch (validProp) {
+                            case LockTimeout:
+                                if (!fcPushed) {
+                                    fCfg = _broker.pushFetchConfiguration();
+                                    fcPushed = true;
+                                }
+                                fCfg.setLockTimeout(value);
+                                break;
+                            case ReadLockLevel:
+                                if (value != LockLevels.LOCK_NONE
+                                    && value != fCfg.getReadLockLevel()) {
+                                    if (!fcPushed) {
+                                        fCfg = _broker.pushFetchConfiguration();
+                                        fcPushed = true;
+                                    }
+                                    fCfg.setReadLockLevel(value);
+                                }
+                                break;
+                            case WriteLockLevel:
+                                if (value != LockLevels.LOCK_NONE
+                                    && value != fCfg.getWriteLockLevel()) {
+                                    if (!fcPushed) {
+                                        fCfg = _broker.pushFetchConfiguration();
+                                        fcPushed = true;
+                                    }
+                                    fCfg.setWriteLockLevel(value);
+                                }
+                                break;
+                            }
+                        } catch (Exception e) {
+                            // silently ignore the property
+                        }
+                        break; // for(String inKey : inKeys)
+                    }
+                }
+            }
+        }
+        return fcPushed;
+    }
+
+    private boolean pushLockProperties(LockModeType mode,
+        Map<String, Object> properties) {
+        boolean fcPushed = false;
+        // handle properties in map first
+        if (properties != null) {
+            fcPushed = setFetchConfigProperty(new FetchConfigProperty[] {
+                FetchConfigProperty.LockTimeout,
+                FetchConfigProperty.ReadLockLevel,
+                FetchConfigProperty.WriteLockLevel }, properties);
+        }
+        // override with the specific lockMode, if needed.
+        int setReadLevel = toLockLevel(mode);
+        if (setReadLevel != JPA2LockLevels.LOCK_NONE) {
+            // Set overriden read lock level
+            FetchConfiguration fCfg = _broker.getFetchConfiguration();
+            int curReadLevel = fCfg.getReadLockLevel();
+            if (setReadLevel != curReadLevel) {
+                if (!fcPushed) {
+                    fCfg = _broker.pushFetchConfiguration();
+                    fcPushed = true;
+                }
+                fCfg.setReadLockLevel(setReadLevel);
+            }
+            // Set overriden isolation level for pessimistic-read/write
+            if (((JDBCConfiguration) _broker.getConfiguration())
+                .getDBDictionaryInstance().supportIsolationForUpdate()) {
+                switch (setReadLevel) {
+                case JPA2LockLevels.LOCK_PESSIMISTIC_READ:
+                    fcPushed = setIsolationForPessimisticLock(fCfg, fcPushed,
+                        Connection.TRANSACTION_REPEATABLE_READ);
+                    break;
+
+                case JPA2LockLevels.LOCK_PESSIMISTIC_WRITE:
+                case JPA2LockLevels.LOCK_PESSIMISTIC_FORCE_INCREMENT:
+                    fcPushed = setIsolationForPessimisticLock(fCfg, fcPushed,
+                        Connection.TRANSACTION_SERIALIZABLE);
+                    break;
+
+                default:
+                }
+            }
+        }
+        return fcPushed;
+    }
+
+    private boolean setIsolationForPessimisticLock(FetchConfiguration fCfg,
+        boolean fcPushed, int level) {
+        if (!fcPushed) {
+            fCfg = _broker.pushFetchConfiguration();
+            fcPushed = true;
+        }
+        ((JDBCFetchConfiguration) fCfg).setIsolation(level);
+        return fcPushed;
+    }
+
+    private void popLockProperties(boolean fcPushed) {
+        if (fcPushed) {
+            _broker.popFetchConfiguration();
+        }
+    }
 }

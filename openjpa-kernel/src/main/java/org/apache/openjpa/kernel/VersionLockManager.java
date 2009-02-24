@@ -95,6 +95,11 @@ public class VersionLockManager
      */
     protected void lockInternal(OpenJPAStateManager sm, int level, int timeout,
         Object sdata) {
+        optimisticLockInternal(sm, level, timeout, sdata);
+    }
+
+    protected void optimisticLockInternal(OpenJPAStateManager sm, int level,
+        int timeout, Object sdata) {
         // Set lock level first to prevent infinite recursion with
         // transactional(..) call
         setLockLevel(sm, level);

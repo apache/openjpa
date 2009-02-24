@@ -22,13 +22,12 @@ import java.sql.SQLException;
 import java.util.LinkedList;
 import java.util.List;
 
+import org.apache.openjpa.conf.OpenJPAConfiguration;
+import org.apache.openjpa.kernel.LockLevels;
+import org.apache.openjpa.kernel.OpenJPAStateManager;
 import org.apache.openjpa.lib.util.Localizer.Message;
 import org.apache.openjpa.util.LockException;
-import org.apache.openjpa.util.ObjectExistsException;
-import org.apache.openjpa.util.ObjectNotFoundException;
 import org.apache.openjpa.util.OpenJPAException;
-import org.apache.openjpa.util.OptimisticException;
-import org.apache.openjpa.util.ReferentialIntegrityException;
 import org.apache.openjpa.util.StoreException;
 
 /**
@@ -116,5 +115,23 @@ public class SQLExceptions {
             se = se.getNextException();
         }
         return (SQLException[]) errs.toArray(new SQLException[errs.size()]);
+    }
+    
+    public static OpenJPAException getStoreSQLException(OpenJPAStateManager sm,
+        SQLException se, DBDictionary dict, int level) {
+        return getStoreSQLException(sm.getContext().getConfiguration(), se,
+            dict, level);
+    }
+    
+    public static OpenJPAException getStoreSQLException(
+        OpenJPAConfiguration config, SQLException se, DBDictionary dict,
+        int level) {
+        OpenJPAException storeEx = SQLExceptions.getStore(se, dict);
+        String lm = config.getLockManager();
+        if (storeEx.getSubtype() == StoreException.LOCK) {
+            LockException lockEx = (LockException) storeEx;
+            lockEx.setLockLevel(level);
+        }
+        return storeEx;
     }
 }

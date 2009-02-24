@@ -97,16 +97,16 @@ public class PessimisticLockManager
             // only need to lock if not loaded from locking result
             ConnectionInfo info = (ConnectionInfo) sdata;
             if (info == null || info.result == null || !info.result.isLocking())
-                lockRow(sm, timeout);
+                lockRow(sm, timeout, level);
         }
-        super.lockInternal(sm, level, timeout, sdata);
+        optimisticLockInternal(sm, level, timeout, sdata);
     }
 
     /**
      * Lock the specified instance row by issuing a "SELECT ... FOR UPDATE"
      * statement.
      */
-    private void lockRow(OpenJPAStateManager sm, int timeout) {
+    private void lockRow(OpenJPAStateManager sm, int timeout, int level) {
         // assert that the dictionary supports the "SELECT ... FOR UPDATE"
         // construct; if not, and we the assertion does not throw an
         // exception, then just return without locking
@@ -135,9 +135,10 @@ public class PessimisticLockManager
             stmnt = prepareStatement(conn, sql);
             setTimeout(stmnt, timeout);
             rs = executeQuery(conn, stmnt, sql);
-            checkLock(rs, sm);
+            checkLock(rs, sm, timeout);
         } catch (SQLException se) {
-            throw SQLExceptions.getStore(se, dict);
+            throw SQLExceptions.getStoreSQLException(sm, se, dict,
+                level);
         } finally {
             if (stmnt != null)
                 try { stmnt.close(); } catch (SQLException se) {}
@@ -204,10 +205,10 @@ public class PessimisticLockManager
      * This method is to provide override for non-JDBC or JDBC-like 
      * implementation of checking lock from the result set.
      */
-    protected void checkLock(ResultSet rs, OpenJPAStateManager sm)
+    protected void checkLock(ResultSet rs, OpenJPAStateManager sm, int timeout)
         throws SQLException { 
         if (!rs.next())
-            throw new LockException(sm.getManagedInstance());
+            throw new LockException(sm.getManagedInstance(), timeout);
         return;
     }
 }

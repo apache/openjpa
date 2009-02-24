@@ -24,6 +24,7 @@ import java.sql.DatabaseMetaData;
 import java.sql.SQLException;
 import java.sql.Types;
 import java.util.Arrays;
+import java.util.Set;
 import java.util.StringTokenizer;
 
 import org.apache.openjpa.jdbc.kernel.JDBCFetchConfiguration;
@@ -40,6 +41,7 @@ import org.apache.openjpa.kernel.Filters;
 import org.apache.openjpa.lib.util.Localizer;
 import org.apache.openjpa.meta.JavaTypes;
 import org.apache.openjpa.util.OpenJPAException;
+import org.apache.openjpa.util.StoreException;
 import org.apache.openjpa.util.UnsupportedException;
 
 import serp.util.Strings;
@@ -323,6 +325,10 @@ public class DB2Dictionary
             sequenceNameSQL = "SEQUENCE_NAME = ?";
             break;
         }
+    }
+
+    public boolean supportIsolationForUpdate() {
+        return true;
     }
 
     /**
@@ -831,5 +837,20 @@ public class DB2Dictionary
     
     String nullSafe(String s) {
     	return s == null ? "" : s;
+    }
+
+	@Override
+    protected Boolean matchErrorState(int subtype, Set<String> errorStates,
+        SQLException ex) {
+        Boolean recoverable = null;
+        String errorState = ex.getSQLState();
+        if (errorStates.contains(errorState)) {
+            recoverable = Boolean.FALSE;
+            if (subtype == StoreException.LOCK && errorState.equals("57033")
+                && ex.getMessage().indexOf("80") != -1) {
+                recoverable = Boolean.TRUE;
+            }
+        }
+        return recoverable;
     }
 }

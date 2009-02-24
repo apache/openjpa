@@ -30,6 +30,7 @@ import java.util.Enumeration;
 import java.util.List;
 import java.util.Map;
 import java.util.MissingResourceException;
+
 import javax.persistence.spi.PersistenceUnitInfo;
 import javax.persistence.spi.PersistenceUnitTransactionType;
 
@@ -106,6 +107,32 @@ public class PersistenceProductDerivation
             PersistenceMetaDataFactory.class.getName());
         
         conf.addValue(new EntityManagerFactoryValue());
+        
+        conf.readLockLevel.setAlias("optimistic", String
+            .valueOf(JPA2LockLevels.LOCK_OPTIMISTIC));
+        conf.readLockLevel.setAlias("optimistic-force-increment", String
+            .valueOf(JPA2LockLevels.LOCK_OPTIMISTIC_FORCE_INCREMENT));
+        conf.readLockLevel.setAlias("pessimistic-read", String
+            .valueOf(JPA2LockLevels.LOCK_PESSIMISTIC_READ));
+        conf.readLockLevel.setAlias("pessimistic-write", String
+            .valueOf(JPA2LockLevels.LOCK_PESSIMISTIC_WRITE));
+        conf.readLockLevel.setAlias("pessimistic-force-increment", String
+            .valueOf(JPA2LockLevels.LOCK_PESSIMISTIC_FORCE_INCREMENT));
+
+        conf.writeLockLevel.setAlias("optimistic", String
+            .valueOf(JPA2LockLevels.LOCK_OPTIMISTIC));
+        conf.writeLockLevel.setAlias("optimistic-force-increment", String
+            .valueOf(JPA2LockLevels.LOCK_OPTIMISTIC_FORCE_INCREMENT));
+        conf.writeLockLevel.setAlias("pessimistic-read", String
+            .valueOf(JPA2LockLevels.LOCK_PESSIMISTIC_READ));
+        conf.writeLockLevel.setAlias("pessimistic-write", String
+            .valueOf(JPA2LockLevels.LOCK_PESSIMISTIC_WRITE));
+        conf.writeLockLevel.setAlias("pessimistic-force-increment", String
+            .valueOf(JPA2LockLevels.LOCK_PESSIMISTIC_FORCE_INCREMENT));
+
+        conf.lockManagerPlugin.setAlias("jpa2",
+            JPA2LockManager.class.getName());
+
         return true;
     }
 
@@ -118,8 +145,8 @@ public class PersistenceProductDerivation
         OpenJPAConfigurationImpl conf = (OpenJPAConfigurationImpl) c;
         conf.metaFactoryPlugin.setDefault(SPEC_JPA.getName());
         conf.metaFactoryPlugin.setString(SPEC_JPA.getName());
-        conf.lockManagerPlugin.setDefault("version");
-        conf.lockManagerPlugin.setString("version");
+        conf.lockManagerPlugin.setDefault("jpa2");
+        conf.lockManagerPlugin.setString("jpa2");
         conf.nontransactionalWrite.setDefault("true");
         conf.nontransactionalWrite.set(true);
         return true;

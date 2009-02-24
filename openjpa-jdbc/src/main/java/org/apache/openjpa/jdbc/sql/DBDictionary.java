@@ -2400,6 +2400,14 @@ public class DBDictionary
     }
 
     /**
+     * Return true if the dictionary uses isolation level to compute the 
+     * returned getForUpdateClause() SQL clause.  
+     */
+    public boolean supportIsolationForUpdate() {
+        return false;
+    }
+    
+    /**
      * Return the "SELECT" operation clause, adding any available hints, etc.
      */
     public String getSelectOperation(JDBCFetchConfiguration fetch) {
@@ -4220,29 +4228,56 @@ public class DBDictionary
      * Returns -1 if no matching code can be found.
      */
     OpenJPAException narrow(String msg, SQLException ex) {
-    	String errorState = ex.getSQLState();
-    	int errorType = StoreException.GENERAL;
-    	for (Integer type : sqlStateCodes.keySet()) {
-    		Set<String> erroStates = sqlStateCodes.get(type);
-    		if (erroStates != null && erroStates.contains(errorState)) {
-    			errorType = type;
-    			break;
-    		}
-    	}
-    	switch (errorType) {
-	    	case StoreException.LOCK: 
-	            return new LockException(msg);
-	    	case StoreException.OBJECT_EXISTS:
-	            return new ObjectExistsException(msg);
-	    	case StoreException.OBJECT_NOT_FOUND:
-	            return new ObjectNotFoundException(msg);
-	    	case StoreException.OPTIMISTIC:
-	            return new OptimisticException(msg);
-	    	case StoreException.REFERENTIAL_INTEGRITY: 
-	            return new ReferentialIntegrityException(msg);
-	        default:
-	            return new StoreException(msg);
+        Boolean recoverable = null;
+        int errorType = StoreException.GENERAL;
+        for (Integer type : sqlStateCodes.keySet()) {
+            Set<String> errorStates = sqlStateCodes.get(type);
+            if (errorStates != null) {
+                recoverable = matchErrorState(type, errorStates, ex);
+                if (recoverable != null) {
+                    errorType = type;
+                    break;
+                }
+            }
         }
+        StoreException storeEx;
+        switch (errorType) {
+        case StoreException.LOCK:
+            storeEx = new LockException(msg);
+            break;
+        case StoreException.OBJECT_EXISTS:
+            storeEx = new ObjectExistsException(msg);
+            break;
+        case StoreException.OBJECT_NOT_FOUND:
+            storeEx = new ObjectNotFoundException(msg);
+            break;
+        case StoreException.OPTIMISTIC:
+            storeEx = new OptimisticException(msg);
+            break;
+        case StoreException.REFERENTIAL_INTEGRITY:
+            storeEx = new ReferentialIntegrityException(msg);
+            break;
+        default:
+            storeEx = new StoreException(msg);
+        }
+        if (recoverable != null) {
+            storeEx.setRecoverable(recoverable);
+        }
+        return storeEx;
+    }
+
+    /*
+     * Determine if the SQLException argument matches any element in the
+     * errorStates. Dictionary subclass can override this method and extract
+     * SQLException data to figure out if the exception is recoverable.
+     * 
+     * @return null if no match is found or a Boolean value indicates the
+     * exception is recoverable.
+     */
+    protected Boolean matchErrorState(int subtype, Set<String> errorStates,
+        SQLException ex) {
+        String errorState = ex.getSQLState();
+        return errorStates.contains(errorState) ? Boolean.FALSE : null;
     }
     
     /**

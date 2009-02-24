@@ -29,24 +29,26 @@
 <sql-state-codes>
 
 	<dictionary class="org.apache.openjpa.jdbc.sql.DB2Dictionary">
-		<lock>-911,-913</lock>
-		<referential-integrity>-407,-530,-531,-532,-543,-544,-545,-603,-667,-803</referential-integrity>
+		<lock>40001,57033,57014</lock>
+		<referential-integrity>23502,42912,23001,23504,23511,23512,23513,23515,23520,23505</referential-integrity>
 		<object-exists></object-exists>
 		<object-not-found></object-not-found>
 		<optimistic></optimistic>
 	</dictionary>
 	
 	<dictionary class="org.apache.openjpa.jdbc.sql.DerbyDictionary">
-		<lock>40001</lock>
+		<lock>40001,40XL1,40XL2</lock>
 		<referential-integrity>22001,22005,23502,23503,23513,X0Y32</referential-integrity>
 		<object-exists>23505</object-exists>
 		<object-not-found></object-not-found>
-		<optimistic>40XL1,40001</optimistic>
+		<optimistic></optimistic>
 	</dictionary>
 	
 	<dictionary class="org.apache.openjpa.jdbc.sql.SQLServerDictionary">
 		<lock>1205</lock>
 		<referential-integrity>544,2601,2627,8114,8115</referential-integrity>
+		<object-exists></object-exists>
+		<object-not-found></object-not-found>
 		<optimistic>1205</optimistic>
 	</dictionary>
 	
@@ -91,24 +93,51 @@
 	</dictionary>
 	
 	<dictionary class="org.apache.openjpa.jdbc.sql.H2Dictionary">
+		<lock></lock>
 		<referential-integrity>22003,22012,22025,23000,23001</referential-integrity>
+		<object-exists></object-exists>
+		<object-not-found></object-not-found>
+		<optimistic></optimistic>
 	</dictionary>
 	
 	<dictionary class="org.apache.openjpa.jdbc.sql.HSQLDictionary">
+		<lock></lock>
 		<referential-integrity>-9</referential-integrity>
+		<object-exists></object-exists>
+		<object-not-found></object-not-found>
+		<optimistic></optimistic>
 	</dictionary>
 	
 	<dictionary class="org.apache.openjpa.jdbc.sql.InformixDictionary">
+		<lock></lock>
 		<referential-integrity>-239,-268,-692,-11030</referential-integrity>
+		<object-exists></object-exists>
+		<object-not-found></object-not-found>
+		<optimistic></optimistic>
 	</dictionary>
 	
 	<dictionary class="org.apache.openjpa.jdbc.sql.InterbaseDictionary">
+		<lock></lock>
+		<referential-integrity></referential-integrity>
+		<object-exists></object-exists>
+		<object-not-found></object-not-found>
+		<optimistic></optimistic>
 	</dictionary>
 	
 	<dictionary class="org.apache.openjpa.jdbc.sql.FirebirdDictionary">
+		<lock></lock>
+		<referential-integrity></referential-integrity>
+		<object-exists></object-exists>
+		<object-not-found></object-not-found>
+		<optimistic></optimistic>
 	</dictionary>
 	
 	<dictionary class="org.apache.openjpa.jdbc.sql.JDataStoreDictionary">
+		<lock></lock>
+		<referential-integrity></referential-integrity>
+		<object-exists></object-exists>
+		<object-not-found></object-not-found>
+		<optimistic></optimistic>
 	</dictionary>
 	
 	<dictionary class="org.apache.openjpa.jdbc.sql.MySQLDictionary">

@@ -2116,12 +2116,12 @@ for managing bidirectional relations upon a flush. See
 LockManager</literal>
             </para>
             <para>
-<emphasis role="bold">Default: </emphasis><literal>version</literal>
+<emphasis role="bold">Default: </emphasis><literal>jpa2</literal>
             </para>
             <para>
 <emphasis role="bold">Possible values: </emphasis><literal>none</literal>,
-<literal>sjvm</literal>, <literal>pessimistic</literal>, 
-<literal>version</literal>
+<literal>sjvm</literal>, <literal>version</literal>,
+<literal>pessimistic</literal>, <literal>jpa2</literal>
             </para>
             <para>
 <emphasis role="bold">Description:</emphasis> A plugin string (see
@@ -2727,7 +2727,10 @@ ReadLockLevel</literal>
             </para>
             <para>
 <emphasis role="bold">Possible values: </emphasis><literal>none</literal>,
-<literal>read</literal>, <literal>write</literal>, numeric values for
+<literal>read</literal>, <literal>write</literal>,
+<literal>optimistic</literal>, <literal>optimistic-force-increment</literal>,
+<literal>pessimistic-read</literal>, <literal>pessimistic-write</literal>,
+<literal>pessimistic-force-increment</literal>, numeric values for
 lock-manager specific lock levels
             </para>
             <para>
@@ -3090,7 +3093,10 @@ WriteLockLevel</literal>
             </para>
             <para>
 <emphasis role="bold">Possible values: </emphasis><literal>none</literal>,
-<literal>read</literal>, <literal>write</literal>, numeric values for
+<literal>read</literal>, <literal>write</literal>,
+<literal>optimistic</literal>, <literal>optimistic-force-increment</literal>,
+<literal>pessimistic-read</literal>, <literal>pessimistic-write</literal>,
+<literal>pessimistic-force-increment</literal>, numeric values for
 lock-manager specific lock levels
             </para>
             <para>

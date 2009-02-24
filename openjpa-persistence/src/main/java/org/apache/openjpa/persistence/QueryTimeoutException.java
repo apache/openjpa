@@ -30,21 +30,20 @@ import org.apache.openjpa.util.Exceptions;
 import org.apache.openjpa.util.StoreException;
 
 /**
- * Optimistic concurrency violation.
+ * Query lock timeout violation.
  *
- * @author Abe White
- * @since 0.4.0
+ * @since 2.0.0
  * @nojavadoc
  */
-public class OptimisticLockException
-    extends javax.persistence.OptimisticLockException
+public class QueryTimeoutException
+    extends javax.persistence.QueryTimeoutException
     implements Serializable, ExceptionInfo {
 
     private transient boolean _fatal = false;
     private transient Object _failed = null;
     private transient Throwable[] _nested = null;
 
-    public OptimisticLockException(String msg, Throwable[] nested,
+    public QueryTimeoutException(String msg, Throwable[] nested,
         Object failed, boolean fatal) {
         super(msg);
         _nested = nested;

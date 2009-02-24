@@ -449,8 +449,11 @@ public abstract class PersistenceTestCase
         try {
             super.runBare();
         } catch (Throwable t) {
-            if (allowFailure()) {
-                System.err.println("*** FAILED (but ignored):" + this);
+            String allowFailureMsg = getAllowFailureMsg(); 
+            if ( allowFailureMsg != null ) {
+                System.err.println("*** FAILED (but ignored): " + this);
+                System.err.println("***              Reason : " 
+                    + allowFailureMsg);
                 System.err.println("Stacktrace of failure");
                 t.printStackTrace();
             } else {
@@ -464,12 +467,12 @@ public abstract class PersistenceTestCase
      * @AllowFailure. Method level annotation has higher precedence than Class
      * level annotation.
      */
-    protected boolean allowFailure() {
+    protected String getAllowFailureMsg() {
 		try {
             Method runMethod = getClass().getMethod(getName(), (Class[])null);
             AllowFailure anno = runMethod.getAnnotation(AllowFailure.class);
 	    	if (anno != null)
-	    		return anno.value();
+	    		return anno.value() ? anno.msg() : null;
 		} catch (SecurityException e) {
 			//ignore
 		} catch (NoSuchMethodException e) {
@@ -477,8 +480,8 @@ public abstract class PersistenceTestCase
 		}
 		AllowFailure anno = getClass().getAnnotation(AllowFailure.class);
     	if (anno != null) 
-            return anno.value();
-    	return false;
+            return anno.value() ? anno.msg() : null;
+    	return null;
     }
     
     private static class FixedMap extends LinkedHashMap<EMFKey, OpenJPAEntityManagerFactorySPI> {
