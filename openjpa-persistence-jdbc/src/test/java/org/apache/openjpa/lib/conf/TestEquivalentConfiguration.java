@@ -31,6 +31,7 @@ import org.apache.openjpa.persistence.OpenJPAEntityManagerFactorySPI;
 import org.apache.openjpa.persistence.OpenJPAPersistence;
 import org.apache.openjpa.persistence.common.utils.AbstractTestCase;
 import org.apache.openjpa.persistence.test.AllowFailure;
+import org.apache.openjpa.persistence.test.DatabasePlatform;
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
 
 import junit.framework.TestCase;
@@ -47,6 +48,11 @@ import junit.framework.TestCase;
  * @author Pinaki Poddar
  * 
  */
+
+// Specifies that the test runs only if the driver is available in the 
+// execution classpath
+@DatabasePlatform("org.apache.derby.jdbc.EmbeddedDriver")
+
 public class TestEquivalentConfiguration extends SingleEMFTestCase {
     private EntityManagerFactory emf;
 

@@ -27,6 +27,7 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
@@ -446,6 +447,8 @@ public abstract class PersistenceTestCase
      */
     @Override
     public void runBare() throws Throwable {
+        if (!isRunsOnCurrentPlatform())
+            return;
         try {
             super.runBare();
         } catch (Throwable t) {
@@ -482,6 +485,37 @@ public abstract class PersistenceTestCase
     	if (anno != null) 
             return anno.value() ? anno.msg() : null;
     	return null;
+    }
+    
+    /**
+     * Affirms if either this test has been annotated with @DatabasePlatform and 
+     * at least one of the specified driver is available in the classpath,
+     * or no such annotation is used.
+     *   
+     */
+    protected boolean isRunsOnCurrentPlatform() {
+        DatabasePlatform anno = getClass().getAnnotation(DatabasePlatform.class);
+        if (anno == null)
+            return true;
+        if (anno != null) {
+            String value = anno.value();
+            if (value == null || value.trim().length() == 0)
+                return true;
+            String[] drivers = value.split("\\,");
+            for (String driver : drivers) {
+                try {
+                    Class.forName(driver.trim(), false, 
+                        Thread.currentThread().getContextClassLoader());
+                    return true;
+                } catch (Throwable t) {
+                    // swallow;
+                }
+            }
+            System.err.println("WARN: " + getClass().getName() + " not run " +
+                "in the current platform because none of the specified " + 
+                " driver(s) " + Arrays.toString(drivers) + " can be loaded");
+        }
+        return false;
     }
     
     private static class FixedMap extends LinkedHashMap<EMFKey, OpenJPAEntityManagerFactorySPI> {
