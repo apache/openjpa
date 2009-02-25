@@ -300,7 +300,7 @@ public class QueryDefinitionImpl extends ExpressionImpl
 	}
 
 	public QueryDefinition selectDistinct(List<SelectItem> items) {
-		return select(items, false);
+		return select(items, true);
 	}
 	
 	private QueryDefinition select(List<SelectItem> items, boolean isDistinct) {
