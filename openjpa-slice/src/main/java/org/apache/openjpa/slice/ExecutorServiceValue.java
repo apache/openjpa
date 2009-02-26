@@ -62,6 +62,8 @@ public class ExecutorServiceValue extends PluginValue {
 
     /**
      * Configures a cached or fixed thread pool.
+     * The factory always produces SliceThread which uses special locking.
+     * 
      */
     @Override
     public Object instantiate(Class type, Configuration conf, boolean fatal) {
@@ -73,21 +75,7 @@ public class ExecutorServiceValue extends PluginValue {
 
         Options opts = Configurations.parseProperties(getProperties());
 
-        ThreadFactory factory = null;
-        if (opts.containsKey("ThreadFactory")) {
-            String fName = opts.getProperty("ThreadFactory");
-            try {
-                factory = (ThreadFactory) Class.forName(fName).newInstance();
-                Configurations.configureInstance(factory, conf, opts,
-                        getProperty());
-            } catch (Throwable t) {
-                throw new UserException(_loc.get("bad-thread-factory", fName), t);
-            } finally {
-                opts.removeProperty("ThreadFactory");
-            }
-        } else {
-            factory = Executors.defaultThreadFactory();
-        }
+        ThreadFactory factory = new SliceThreadFactory();
         if ("cached".equals(cls)) {
             obj = Executors.newCachedThreadPool(factory);
         } else if ("fixed".equals(cls)) {
@@ -104,5 +92,11 @@ public class ExecutorServiceValue extends PluginValue {
         }
         set(obj, true);
         return obj;
+    }
+    
+    private static class SliceThreadFactory implements ThreadFactory {
+        public Thread newThread(Runnable r) {
+            return new SliceThread(Thread.currentThread(), r);
+        }
     }
 }

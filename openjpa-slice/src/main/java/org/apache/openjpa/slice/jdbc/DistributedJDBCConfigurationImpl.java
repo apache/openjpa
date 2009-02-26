@@ -477,19 +477,4 @@ public class DistributedJDBCConfigurationImpl extends JDBCConfigurationImpl
             _master = activeSlices.get(0);
         }
     }
-    
-    public String getExecutorService() {
-        return executorServicePlugin.getString();
-    }
-
-    public void setExecutorService(ExecutorService txnManager) {
-        executorServicePlugin.set(txnManager);
-    }
-
-    public ExecutorService getExecutorServiceInstance() {
-        if (executorServicePlugin.get() == null) {
-            executorServicePlugin.instantiate(ExecutorService.class, this);
-        }
-        return (ExecutorService) executorServicePlugin.get();
-    }    
 }

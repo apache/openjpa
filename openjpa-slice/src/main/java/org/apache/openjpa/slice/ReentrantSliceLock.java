@@ -16,24 +16,42 @@
  * specific language governing permissions and limitations
  * under the License.    
  */
-package org.apache.openjpa.slice.jdbc;
+package org.apache.openjpa.slice;
 
-import org.apache.openjpa.jdbc.conf.JDBCConfiguration;
-import org.apache.openjpa.slice.DistributedConfiguration;
-import org.apache.openjpa.slice.Slice;
+import java.util.concurrent.locks.ReentrantLock;
 
 /**
- * A distributed configuration that is a ordered collection of
- * JDBCConfigurations.
+ * A reentrant lock that lets a child to work with the parent's lock.
  * 
  * @author Pinaki Poddar
- * 
+ *
  */
-public interface DistributedJDBCConfiguration extends JDBCConfiguration,
-    DistributedConfiguration {
-    /**
-     * Gets the master slice.
-     */
-    Slice getMaster();
+public class ReentrantSliceLock extends ReentrantLock {
 
+    public ReentrantSliceLock() {
+    }
+
+    public ReentrantSliceLock(boolean fair) {
+        super(fair);
+    }
+    
+    /**
+     * Locks only for parent thread and let the child use parent's lock. 
+     */
+    @Override
+    public void lock() {
+        if (Thread.currentThread() instanceof SliceThread) 
+            return;
+        super.lock();
+    }
+
+    /**
+     * Unlocks only if parent thread. 
+     */
+    @Override
+    public void unlock() {
+        if (Thread.currentThread() instanceof SliceThread) 
+            return;
+        super.unlock();
+    }
 }

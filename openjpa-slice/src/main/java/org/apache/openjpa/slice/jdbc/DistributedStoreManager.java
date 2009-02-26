@@ -59,6 +59,7 @@ import org.apache.openjpa.meta.FieldMetaData;
 import org.apache.openjpa.slice.ProductDerivation;
 import org.apache.openjpa.slice.SliceImplHelper;
 import org.apache.openjpa.slice.SliceInfo;
+import org.apache.openjpa.slice.SliceThread;
 import org.apache.openjpa.util.InternalException;
 import org.apache.openjpa.util.StoreException;
 
@@ -78,7 +79,6 @@ class DistributedStoreManager extends JDBCStoreManager {
     private final DistributedJDBCConfiguration _conf;
     private static final Localizer _loc =
             Localizer.forPackage(DistributedStoreManager.class);
-    private static ExecutorService threadPool = Executors.newCachedThreadPool();
 
     /**
      * Constructs a set of child StoreManagers each connected to a physical
@@ -249,7 +249,7 @@ class DistributedStoreManager extends JDBCStoreManager {
         Map<String, StateManagerSet> subsets = bin(sms, null);
         Collection<StateManagerSet> remaining = 
             new ArrayList<StateManagerSet>(subsets.values());
-        boolean parallel = !getConfiguration().getMultithreaded();
+        ExecutorService threadPool = SliceThread.newPool(_slices.size());
         for (int i = 0; i < _slices.size(); i++) {
             SliceStoreManager slice = _slices.get(i);
             StateManagerSet subset = subsets.get(slice.getName());
@@ -262,24 +262,19 @@ class DistributedStoreManager extends JDBCStoreManager {
                 remaining.remove(subset);
             	rollbackVersion(subset.getReplicated(), oldVersions, remaining);
             } else {
-            	if (parallel) {
-            		futures.add(threadPool.submit(new Flusher(slice, subset)));
-            	} else {
-                	collectException(slice.flush(subset), exceptions);
-            	}
+            	futures.add(threadPool.submit(new Flusher(slice, subset)));
             }
         }
-        if (parallel) {
-	        for (Future<Collection> future : futures) {
-	            try {
-	            	collectException(future.get(), exceptions);
-	            } catch (InterruptedException e) {
-	                throw new StoreException(e);
-	            } catch (ExecutionException e) {
-	                throw new StoreException(e.getCause());
-	            }
-	        }
+        for (Future<Collection> future : futures) {
+            try {
+            	collectException(future.get(), exceptions);
+            } catch (InterruptedException e) {
+                throw new StoreException(e);
+            } catch (ExecutionException e) {
+                throw new StoreException(e.getCause());
+            }
         }
+        
 	    return exceptions;
     }
     
@@ -498,12 +493,7 @@ class DistributedStoreManager extends JDBCStoreManager {
         }
 
         public Collection call() throws Exception {
-        	((BrokerImpl)store.getContext()).startLocking();
-        	try {
-        		return store.flush(toFlush);
-        	} finally {
-            	((BrokerImpl)store.getContext()).stopLocking();
-        	}
+        	return store.flush(toFlush);
         }
     }
     

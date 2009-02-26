@@ -128,18 +128,17 @@ public class TestBasic extends SliceTestCase {
 
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
-        PObject pc2 = em.getReference(PObject.class, pc.getId());
-        assertNotNull(pc2);
-        assertNotEquals(pc, pc2);
-        assertEquals(pc.getId(), pc2.getId());
-        assertEquals(value, pc2.getValue());
-        pc2.setValue(value+1);
-        em.merge(pc2);
+        PObject ref = em.getReference(PObject.class, pc.getId());
+        assertNotNull(ref);
+        assertNotEquals(pc, ref);
+        assertEquals(ref.getId(), pc.getId());
+        pc.setValue(value+1);
+        em.merge(pc);
         em.getTransaction().commit();
         em.clear();
         
         em.getTransaction().begin();
-        PObject pc3 = em.getReference(PObject.class, pc.getId());
+        PObject pc3 = em.find(PObject.class, pc.getId());
         assertEquals(value+1, pc3.getValue());
         em.getTransaction().commit();
         

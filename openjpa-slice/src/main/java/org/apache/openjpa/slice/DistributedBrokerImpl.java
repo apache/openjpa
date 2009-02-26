@@ -21,6 +21,8 @@ package org.apache.openjpa.slice;
 import org.apache.openjpa.kernel.FinalizingBrokerImpl;
 import org.apache.openjpa.kernel.OpCallbacks;
 import org.apache.openjpa.kernel.OpenJPAStateManager;
+import org.apache.openjpa.kernel.QueryImpl;
+import org.apache.openjpa.kernel.StoreQuery;
 import org.apache.openjpa.lib.util.Localizer;
 
 /**
@@ -37,9 +39,16 @@ import org.apache.openjpa.lib.util.Localizer;
 public class DistributedBrokerImpl extends FinalizingBrokerImpl {
 	private transient String _rootSlice;
 	private transient DistributedConfiguration _conf;
+	private final ReentrantSliceLock _lock;
+	
 	private static final Localizer _loc =
 			Localizer.forPackage(DistributedBrokerImpl.class);
 
+	public DistributedBrokerImpl() {
+	    super();
+	    _lock = new ReentrantSliceLock();
+	}
+	
     public DistributedConfiguration getConfiguration() {
     	if (_conf == null) {
     		_conf = (DistributedConfiguration)super.getConfiguration();
@@ -88,6 +97,26 @@ public class DistributedBrokerImpl extends FinalizingBrokerImpl {
 	    }
 	    return true;
 	}
+	
+    /**
+     * Create a new query.
+     */
+    protected QueryImpl newQueryImpl(String lang, StoreQuery sq) {
+        return new DistributedQueryImpl(this, lang, sq);
+    }
+    
+	/**
+	 * Always uses lock irrespective of super's multi-threaded settings.
+	 */
+    @Override
+    public void lock() {
+        _lock.lock();
+    }
+    
+    @Override
+    public void unlock() {
+        _lock.unlock();
+    }
 	
 	/**
 	 * A virtual datastore need not be opened.

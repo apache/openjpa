@@ -16,24 +16,35 @@
  * specific language governing permissions and limitations
  * under the License.    
  */
-package org.apache.openjpa.slice.jdbc;
+package org.apache.openjpa.slice;
 
-import org.apache.openjpa.jdbc.conf.JDBCConfiguration;
-import org.apache.openjpa.slice.DistributedConfiguration;
-import org.apache.openjpa.slice.Slice;
+import org.apache.openjpa.kernel.Broker;
+import org.apache.openjpa.kernel.QueryImpl;
+import org.apache.openjpa.kernel.StoreQuery;
 
 /**
- * A distributed configuration that is a ordered collection of
- * JDBCConfigurations.
+ * Extension with slice locking policy.
  * 
  * @author Pinaki Poddar
- * 
+ *
  */
-public interface DistributedJDBCConfiguration extends JDBCConfiguration,
-    DistributedConfiguration {
+public class DistributedQueryImpl extends QueryImpl {
+    private final ReentrantSliceLock _lock;
+    public DistributedQueryImpl(Broker broker, String language, StoreQuery storeQuery) {
+        super(broker, language, storeQuery);
+        _lock = new ReentrantSliceLock();
+    }
+    
     /**
-     * Gets the master slice.
+     * Always uses lock irrespective of super's multi-threaded settings.
      */
-    Slice getMaster();
-
+    @Override
+    public void lock() {
+        _lock.lock();
+    }
+    
+    @Override
+    public void unlock() {
+        _lock.unlock();
+    }
 }

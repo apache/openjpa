@@ -25,6 +25,10 @@ import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Future;
+import java.util.concurrent.SynchronousQueue;
+import java.util.concurrent.ThreadFactory;
+import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
 
 import org.apache.openjpa.jdbc.kernel.JDBCStore;
 import org.apache.openjpa.jdbc.kernel.JDBCStoreQuery;
@@ -41,6 +45,7 @@ import org.apache.openjpa.lib.rop.MergedResultObjectProvider;
 import org.apache.openjpa.lib.rop.RangeResultObjectProvider;
 import org.apache.openjpa.lib.rop.ResultObjectProvider;
 import org.apache.openjpa.meta.ClassMetaData;
+import org.apache.openjpa.slice.SliceThread;
 import org.apache.openjpa.util.StoreException;
 
 /**
@@ -84,12 +89,6 @@ class DistributedStoreQuery extends JDBCStoreQuery {
 			q.setContext(ctx);
 	}
 
-	public ExecutorService getExecutorServiceInstance() {
-		DistributedJDBCConfiguration conf = ((DistributedJDBCConfiguration) 
-			getStore().getConfiguration());
-		return conf.getExecutorServiceInstance();
-	}
-
 	/**
 	 * Executes queries on multiple databases.
 	 * 
@@ -100,16 +99,12 @@ class DistributedStoreQuery extends JDBCStoreQuery {
 			ExpressionStoreQuery.DataStoreExecutor {
 		private List<Executor> executors = new ArrayList<Executor>();
 		private DistributedStoreQuery owner = null;
-		private ExecutorService threadPool = null;
-		private final boolean parallel;
 
 		public ParallelExecutor(DistributedStoreQuery dsq, ClassMetaData meta,
 				boolean subclasses, ExpressionParser parser, Object parsed, 
 				boolean parallel) {
 			super(dsq, meta, subclasses, parser, parsed);
 			owner = dsq;
-			threadPool = dsq.getExecutorServiceInstance();
-			this.parallel = parallel;
 		}
 
 		public void addExecutor(Executor ex) {
@@ -130,6 +125,7 @@ class DistributedStoreQuery extends JDBCStoreQuery {
 			List<SliceStoreManager> targets = findTargets();
 			QueryContext ctx = q.getContext();
 			boolean isReplicated = containsReplicated(ctx);
+			ExecutorService threadPool = SliceThread.newPool(owner._queries.size());
 			for (int i = 0; i < owner._queries.size(); i++) {
 				// if replicated, then execute only on single slice
 				if (isReplicated && !usedExecutors.isEmpty()) {
@@ -143,28 +139,23 @@ class DistributedStoreQuery extends JDBCStoreQuery {
 				if (!targets.contains(sm))
 					continue;
 				usedExecutors.add(executor);
-				if (!parallel) {
-					rops.add(executor.executeQuery(query, params, range));
-				} else {
 					QueryExecutor call = new QueryExecutor();
 					call.executor = executor;
 					call.query = query;
 					call.params = params;
 					call.range = range;
 					futures.add(threadPool.submit(call));
+			}
+			for (Future<ResultObjectProvider> future : futures) {
+				try {
+					rops.add(future.get());
+				} catch (InterruptedException e) {
+					throw new RuntimeException(e);
+				} catch (ExecutionException e) {
+					throw new StoreException(e.getCause());
 				}
 			}
-			if (parallel) {
-				for (Future<ResultObjectProvider> future : futures) {
-					try {
-						rops.add(future.get());
-					} catch (InterruptedException e) {
-						throw new RuntimeException(e);
-					} catch (ExecutionException e) {
-						throw new StoreException(e.getCause());
-					}
-				}
-			}
+			
 			ResultObjectProvider[] tmp = rops
 					.toArray(new ResultObjectProvider[rops.size()]);
 			ResultObjectProvider result = null;
@@ -214,6 +205,7 @@ class DistributedStoreQuery extends JDBCStoreQuery {
 			Iterator<StoreQuery> qs = owner._queries.iterator();
 			List<Future<Number>> futures = null;
 			int result = 0;
+			ExecutorService threadPool = SliceThread.newPool(executors.size());
 			for (Executor ex : executors) {
 				if (futures == null)
 					futures = new ArrayList<Future<Number>>();
@@ -241,6 +233,7 @@ class DistributedStoreQuery extends JDBCStoreQuery {
 			Iterator<StoreQuery> qs = owner._queries.iterator();
 			List<Future<Number>> futures = null;
 			int result = 0;
+            ExecutorService threadPool = SliceThread.newPool(executors.size());
 			for (Executor ex : executors) {
 				if (futures == null)
 					futures = new ArrayList<Future<Number>>();
@@ -268,6 +261,7 @@ class DistributedStoreQuery extends JDBCStoreQuery {
 					.getFetchConfiguration();
 			return owner.getDistributedStore().getTargets(fetch);
 		}
+		
 	}
 
 	static class QueryExecutor implements Callable<ResultObjectProvider> {
@@ -277,18 +271,7 @@ class DistributedStoreQuery extends JDBCStoreQuery {
 		Range range;
 
 		public ResultObjectProvider call() throws Exception {
-			((QueryImpl)query.getContext()).startLocking();
-			((BrokerImpl)query.getContext().getStoreContext()).startLocking();
-			((QueryImpl)query.getContext()).lock();
-			((BrokerImpl)query.getContext().getStoreContext()).lock();
-			try { 
-				return executor.executeQuery(query, params, range);
-			} finally {
-				((QueryImpl)query.getContext()).unlock();
-				((BrokerImpl)query.getContext().getStoreContext()).unlock();
-				((QueryImpl)query.getContext()).stopLocking();
-				((BrokerImpl)query.getContext().getStoreContext()).stopLocking();
-			}
+			return executor.executeQuery(query, params, range);
 		}
 	}
 
@@ -298,18 +281,7 @@ class DistributedStoreQuery extends JDBCStoreQuery {
 		Object[] params;
 
 		public Number call() throws Exception {
-			((QueryImpl)query.getContext()).startLocking();
-			((BrokerImpl)query.getContext().getStoreContext()).startLocking();
-			((QueryImpl)query.getContext()).lock();
-			((BrokerImpl)query.getContext().getStoreContext()).lock();
-			try { 
-				return executor.executeDelete(query, params);
-			} finally {
-				((QueryImpl)query.getContext()).unlock();
-				((BrokerImpl)query.getContext().getStoreContext()).unlock();
-				((QueryImpl)query.getContext()).stopLocking();
-				((BrokerImpl)query.getContext().getStoreContext()).stopLocking();
-			}
+			return executor.executeDelete(query, params);
 		}
 	}
 
@@ -319,18 +291,7 @@ class DistributedStoreQuery extends JDBCStoreQuery {
 		Object[] params;
 
 		public Number call() throws Exception {
-			((QueryImpl)query.getContext()).startLocking();
-			((BrokerImpl)query.getContext().getStoreContext()).startLocking();
-			((QueryImpl)query.getContext()).lock();
-			((BrokerImpl)query.getContext().getStoreContext()).lock();
-			try { 
-				return executor.executeUpdate(query, params);
-			} finally {
-				((QueryImpl)query.getContext()).unlock();
-				((BrokerImpl)query.getContext().getStoreContext()).unlock();
-				((QueryImpl)query.getContext()).stopLocking();
-				((BrokerImpl)query.getContext().getStoreContext()).stopLocking();
-			}
+		    return executor.executeUpdate(query, params);
 		}
 	}
 }
