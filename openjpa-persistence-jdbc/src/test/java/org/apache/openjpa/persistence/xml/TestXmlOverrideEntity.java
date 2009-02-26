@@ -57,10 +57,10 @@ public class TestXmlOverrideEntity extends SingleEMFTestCase {
     }
 
     public void testOverriddenEntityName() {
+        emf.createEntityManager().close();
         ClassMetaData meta = JPAFacadeHelper.getMetaData(emf,
             XmlOverrideEntity.class);
         assertEquals("XmlOverride", meta.getTypeAlias());
-        emf.createEntityManager().close();
         MetaDataRepository repo = emf.getConfiguration()
             .getMetaDataRepositoryInstance();
         assertEquals(meta, repo.getMetaData("XmlOverride",
