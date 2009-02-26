@@ -25,7 +25,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
-import java.util.concurrent.ExecutorService;
 
 import javax.sql.DataSource;
 import javax.sql.XADataSource;
@@ -47,7 +46,6 @@ import org.apache.openjpa.lib.log.LogFactoryImpl;
 import org.apache.openjpa.lib.util.Localizer;
 import org.apache.openjpa.slice.DistributedBrokerImpl;
 import org.apache.openjpa.slice.DistributionPolicy;
-import org.apache.openjpa.slice.ExecutorServiceValue;
 import org.apache.openjpa.slice.ProductDerivation;
 import org.apache.openjpa.slice.ReplicationPolicy;
 import org.apache.openjpa.slice.Slice;
@@ -73,7 +71,6 @@ public class DistributedJDBCConfigurationImpl extends JDBCConfigurationImpl
     protected BooleanValue lenientPlugin;
     protected StringValue masterPlugin;
     protected StringListValue namesPlugin;
-    protected ExecutorServiceValue executorServicePlugin;
     public PluginValue distributionPolicyPlugin;
     public PluginValue replicationPolicyPlugin;
 
@@ -115,9 +112,6 @@ public class DistributedJDBCConfigurationImpl extends JDBCConfigurationImpl
         masterPlugin = addString("Master");
         
         namesPlugin = addStringList("Names");
-        
-        executorServicePlugin = new ExecutorServiceValue();
-        addValue(executorServicePlugin);
         
         setSlices(p);
     }
