@@ -34,5 +34,5 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
 @Retention(RUNTIME)
 public @interface AllowFailure {
     boolean value() default true;
-    String msg() default "";
+    String message() default "";
 }

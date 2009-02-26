@@ -452,11 +452,11 @@ public abstract class PersistenceTestCase
         try {
             super.runBare();
         } catch (Throwable t) {
-            String allowFailureMsg = getAllowFailureMsg(); 
-            if ( allowFailureMsg != null ) {
+            AllowFailure allowFailure = getAllowFailure();
+            if ( allowFailure != null && allowFailure.value()==true) {
                 System.err.println("*** FAILED (but ignored): " + this);
                 System.err.println("***              Reason : " 
-                    + allowFailureMsg);
+                    + allowFailure.message());
                 System.err.println("Stacktrace of failure");
                 t.printStackTrace();
             } else {
@@ -470,21 +470,18 @@ public abstract class PersistenceTestCase
      * @AllowFailure. Method level annotation has higher precedence than Class
      * level annotation.
      */
-    protected String getAllowFailureMsg() {
+    protected AllowFailure getAllowFailure() {
 		try {
             Method runMethod = getClass().getMethod(getName(), (Class[])null);
             AllowFailure anno = runMethod.getAnnotation(AllowFailure.class);
 	    	if (anno != null)
-	    		return anno.value() ? anno.msg() : null;
+	    		return anno;
 		} catch (SecurityException e) {
 			//ignore
 		} catch (NoSuchMethodException e) {
 			//ignore
 		}
-		AllowFailure anno = getClass().getAnnotation(AllowFailure.class);
-    	if (anno != null) 
-            return anno.value() ? anno.msg() : null;
-    	return null;
+		return getClass().getAnnotation(AllowFailure.class);
     }
     
     /**

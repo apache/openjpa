@@ -825,7 +825,7 @@ public class TestJPA2LockManager extends LockManagerTestBase {
     }
         
     // TODO:
-    @AllowFailure(msg="OPENJPA-924 is preventing RR behavior: pessimistic lock "
+    @AllowFailure(message="OPENJPA-924 is preventing RR behavior: pessimistic lock "
         + "blocked read on thread 2, once thread-1 commit, thread-2 returns "
         + "with pre-thread 1 committed data. hence causing an "
         + "OptimisticLockException. Disable FinderCache to workaround the " 
@@ -1192,7 +1192,7 @@ public class TestJPA2LockManager extends LockManagerTestBase {
     }
 
     // TODO:
-    @AllowFailure(msg="OPENJPA-924 is preventing RR behavior: pessimistic lock "
+    @AllowFailure(message="OPENJPA-924 is preventing RR behavior: pessimistic lock "
         + "blocked read on thread 2, once thread-1 commit, thread-2 returns "
         + "with pre-thread 1 committed data. hence causing an "
         + "OptimisticLockException. Disable FinderCache to workaround the " 
