@@ -20,8 +20,6 @@ package org.apache.openjpa.persistence.lockmgr;
 
 import javax.persistence.LockModeType;
 
-import org.apache.openjpa.persistence.test.AllowFailure;
-
 /**
  * Test JPA 2.0 LockMode type behaviors with "jpa2" lock manager.
  */
@@ -824,12 +822,11 @@ public class TestJPA2LockManager extends LockManagerTestBase {
         );
     }
         
-    // TODO:
-    @AllowFailure(message="OPENJPA-924 is preventing RR behavior: pessimistic lock "
-        + "blocked read on thread 2, once thread-1 commit, thread-2 returns "
-        + "with pre-thread 1 committed data. hence causing an "
-        + "OptimisticLockException. Disable FinderCache to workaround the " 
-        + "problem.")
+//    @AllowFailure(message="OPENJPA-924 is preventing RR behavior: pessimistic lock "
+//        + "blocked read on thread 2, once thread-1 commit, thread-2 returns "
+//        + "with pre-thread 1 committed data. hence causing an "
+//        + "OptimisticLockException. Disable FinderCache to workaround the " 
+//        + "problem.")
     public void testConcurrentThread1PessimisticReadTest() {
         getLog().info("---> testConcurrentThread1PessimisticReadTest()");
         String baseFirstName;
@@ -1191,12 +1188,11 @@ public class TestJPA2LockManager extends LockManagerTestBase {
         );
     }
 
-    // TODO:
-    @AllowFailure(message="OPENJPA-924 is preventing RR behavior: pessimistic lock "
-        + "blocked read on thread 2, once thread-1 commit, thread-2 returns "
-        + "with pre-thread 1 committed data. hence causing an "
-        + "OptimisticLockException. Disable FinderCache to workaround the " 
-        + "problem.")
+//    @AllowFailure(message="OPENJPA-924 is preventing RR behavior: pessimistic lock "
+//        + "blocked read on thread 2, once thread-1 commit, thread-2 returns "
+//        + "with pre-thread 1 committed data. hence causing an "
+//        + "OptimisticLockException. Disable FinderCache to workaround the " 
+//        + "problem.")
     public void testConcurrentThread1PessimisticForceIncTest() {
         getLog().info("---> testConcurrentThread1PessimisticForceIncTest()");
         String baseFirstName;
