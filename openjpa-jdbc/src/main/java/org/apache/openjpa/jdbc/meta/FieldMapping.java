@@ -656,8 +656,10 @@ public class FieldMapping
                 //The name of the attribute within the composite key to which 
                 //the relationship attribute corresponds.
                 Object target = ((ObjectId)sm.getObjectId()).getId();
+                if (target == null)
+                    return;
                 setMappedByIdValue(target, pkVal, mappedByIdFieldName);
-                    pkVal = target;
+                pkVal = target;
             }
             sm.storeObjectField(fmds[0].getIndex(), pkVal);
         }

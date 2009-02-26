@@ -504,6 +504,8 @@ public class ApplicationIds {
             key = ((ObjectId)id).getId();
         Object val = null;
         if (mappedByIdFieldName.length() != 0) {
+            if (((ObjectId)id).getId() == null)
+                return false;        	
             Class idClass = ((ObjectId)id).getId().getClass();
             val = Reflection.get(key, 
                     Reflection.findField(idClass, mappedByIdFieldName, true)); 

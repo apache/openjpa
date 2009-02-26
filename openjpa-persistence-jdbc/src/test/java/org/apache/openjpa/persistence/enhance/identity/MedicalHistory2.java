@@ -21,6 +21,7 @@ package org.apache.openjpa.persistence.enhance.identity;
 import javax.persistence.*;
 
 @Entity
+@Table(name="MED2_MBI")
 public class MedicalHistory2 {
     @Id
     long id;

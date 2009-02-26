@@ -194,6 +194,7 @@ public class ClassMetaData
     private FetchGroup[] _fgs = null;
     private FetchGroup[] _customFGs = null;
     private boolean _intercepting = false;
+    private Boolean _useIdClassFromParent = null;
 
     /**
      * Constructor. Supply described type and repository.
@@ -439,8 +440,17 @@ public class ClassMetaData
      * The metadata-specified class to use for the object ID.
      */
     public Class getObjectIdType() {
-        if (_objectId != null)
-            return _objectId;
+        // if this entity does not use IdClass from the parent entity,
+        // just return the _objectId set during annotation parsing time.
+        if (!useIdClassFromParent()) {
+            if (_objectId != null)
+                return _objectId;
+        } 
+        
+        // if this entity uses IdClass from the parent entity,
+        // the _objectId set during the parsing time should be
+        // ignored, and let Openjpa determine the objectId type
+        // of this entity.
         if (getIdentityType() != ID_APPLICATION)
             return null;
         ClassMetaData sup = getPCSuperclassMetaData();
@@ -504,6 +514,13 @@ public class ClassMetaData
 
     /**
      * The metadata-specified class to use for the object ID.
+     * When there is IdClass annotation, AnnotationMetaDataParser
+     * will call this method to set ObjectId type. However, if 
+     * this is a derived identity in the child entity where a 
+     * relation field (parent entity) is used as an id, and this 
+     * relation field has an IdClass, the IdClass annotation in 
+     * the child entity can be ignored as Openjpa will automatically   
+     * wrap parent's IdClass as child's IdClass. 
      */
     public void setObjectIdType(Class cls, boolean shared) {
         _objectId = null;
@@ -1903,6 +1920,45 @@ public class ClassMetaData
             // make sure the app id class has all pk fields
             validateAppIdClassPKs(this, pks, _objectId);
         }
+    }
+    /**
+     * Return true if this class uses IdClass derived from idClass of the 
+     * parent entity which annotated as id in the child class. 
+     * In this case, there are no key fields in the child entity corresponding 
+     * to the fields in the IdClass.
+     */
+    public boolean useIdClassFromParent() {
+        if (_useIdClassFromParent == null) {
+            if (_objectId == null)
+                _useIdClassFromParent = false;
+            else {
+                FieldMetaData[] pks = getPrimaryKeyFields();
+                if (pks.length != 1) 
+                    _useIdClassFromParent = false;
+                else {
+                    ClassMetaData pkMeta = pks[0].getTypeMetaData();
+                    if (pkMeta == null)
+                        _useIdClassFromParent = false;
+                    else {
+                        Class pkType = pkMeta.getObjectIdType();
+                        if (pkType == ObjectId.class) //parent id is EmbeddedId
+                            pkType = pkMeta.getPrimaryKeyFields()[0].getType();
+                        if (pkType == _objectId)
+                            _useIdClassFromParent = true;
+                        else {
+                            Field f = Reflection.findField(_objectId, 
+                                pks[0].getName(), false);
+                            if (f != null) 
+                                _useIdClassFromParent = false;
+                            else 
+                                throw new MetaDataException(_loc.get("invalid-id",
+                                    _type, pks[0].getName()));
+                        }
+                    }
+                }
+            }
+        }
+        return _useIdClassFromParent.booleanValue();
     }
 
     /**

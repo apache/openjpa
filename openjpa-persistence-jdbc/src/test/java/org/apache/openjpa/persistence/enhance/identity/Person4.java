@@ -18,64 +18,54 @@
  */
 package org.apache.openjpa.persistence.enhance.identity;
 
-import javax.persistence.*;
+import javax.persistence.EmbeddedId;
+import javax.persistence.Entity;
+import javax.persistence.OneToOne;
+import javax.persistence.Table;
 
 @Entity
-@Table(name="PER2_MBI")
-public class Person2 {
-    @Id
-    @GeneratedValue(strategy=GenerationType.IDENTITY)
-    long ssn;
+@Table(name="PER4_MBI")
+public class Person4 {
+    @EmbeddedId
+    PersonId4 id;
     
     @OneToOne(mappedBy="patient")
-    MedicalHistory2 medical;
+    MedicalHistory4 medical;
     
-    String name;
-    
-    public long getSsn() {
-        return ssn;
+    public PersonId4 getId() {
+        return id;
     }
     
-    public void setSsn(long ssn) {
-        this.ssn = ssn;
+    public void setId(PersonId4 id) {
+        this.id = id;
     }
     
-    public String getName() {
-        return name;
-    }
-    
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public MedicalHistory2 getMedical() {
+    public MedicalHistory4 getMedical() {
         return medical;
     }
     
-    public void setMedical(MedicalHistory2 medical) {
+    public void setMedical(MedicalHistory4 medical) {
         this.medical = medical;
     }
     
     public boolean equals(Object o) {
         if (o == null) return false;
-        if (!(o instanceof Person2)) return false;
-        Person2 p0 = (Person2)o;
-        long ssn0 = p0.getSsn();
-        String name0 = p0.getName();
-        MedicalHistory2 medical0 = p0.getMedical();
-        if (ssn != ssn0) return false;
-        if (name != name0) return false;
-        if (medical != null && medical0 != null && medical.id != medical0.id) return false; 
+        if (!(o instanceof Person4)) return false;
+        Person4 p0 = (Person4)o;
+        PersonId4 id0 = p0.getId();
+        if (!id.equals(id0)) return false;
+        MedicalHistory4 medical0 = p0.getMedical();
+        if (medical != null && 
+            !medical.patient.getId().equals(medical0.patient.getId())) return false; 
         if (medical == null && medical0 != null) return false;
-        if (medical != null && medical0 == null) return false;
         return true;
     }
     
     public int hashCode() {
         int ret = 0;
-        ret = ret * 31 + (int) ssn;
+        ret = ret * 31 + id.hashCode();
         if (medical != null)
-            ret = ret * 31 + medical.hashCode();
+        	ret = ret * 31 + medical.hashCode();
         return ret;
     }
 }
