@@ -110,6 +110,8 @@ public class FinderCacheImpl
      */
     public FinderQuery<ClassMapping,SelectExecutor,Result> 
         get(ClassMapping mapping, FetchConfiguration fetch) {
+        if (fetch.getReadLockLevel() != 0)
+            return null;
         boolean ignore = isHinted(fetch, QueryHints.HINT_IGNORE_FINDER);
         boolean invalidate = isHinted(fetch, QueryHints.HINT_INVALIDATE_FINDER);
         if (invalidate)
@@ -143,6 +145,8 @@ public class FinderCacheImpl
        (ClassMapping mapping, SelectExecutor select, FetchConfiguration fetch) {
         lock();
         try {
+            if (fetch.getReadLockLevel() != 0)
+                return null;
             boolean recache = isHinted(fetch, QueryHints.HINT_RECACHE_FINDER);
             if (isExcluded(mapping)) {
                 return recache ? put(mapping, select) : null;
