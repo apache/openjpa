@@ -275,7 +275,7 @@ public class NativeJDBCSeq
     /**
      * Return the next sequence value.
      */
-    private long getSequence(Connection conn)
+    private synchronized long getSequence(Connection conn)
         throws SQLException {
         PreparedStatement stmnt = null;
         ResultSet rs = null;
