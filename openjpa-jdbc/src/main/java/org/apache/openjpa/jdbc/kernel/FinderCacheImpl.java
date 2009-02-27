@@ -174,7 +174,8 @@ public class FinderCacheImpl
         if (finder != null) {
             _delegate.put(mapping, finder);
             if (_log != null && _log.isTraceEnabled())
-                _log.trace(_loc.get("finder-cached", finder)); 
+                _log.trace(_loc.get("finder-cached", mapping, 
+                    finder.getQueryString())); 
         } else {
             if (_log != null && _log.isWarnEnabled())
                 _log.warn(_loc.get("finder-not-cachable", mapping));
