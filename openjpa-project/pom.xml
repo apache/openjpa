@@ -91,10 +91,12 @@
               -Dversion=1.1.3 -Dpackaging=jar
 
             Alternatively if you have installed the JAI artifacts to an 
-            internal repository you can specify it with the 
-            -Djai.maven.repos=REPOS_URL command line argument.
+            internal repository you can specify it on the command line:
+              -Djai.maven.repo=REPOS_URL
+              -Djai.groupId=javax.media
             -->
-        <jai.maven.repo>http://not.a.real.repository</jai.maven.repo>
+        <jai.maven.repo>https://m2proxy.atlassian.com/repository/public</jai.maven.repo>
+        <jai.groupId>com.sun</jai.groupId>
         <jai.version>1.1.3</jai.version>
 
         <!-- authentication for nightly uploads -->
@@ -324,13 +326,13 @@
                             <scope>runtime</scope>
                         </dependency>
                         <dependency>
-                            <groupId>javax.media</groupId>
+                            <groupId>${jai.groupId}</groupId>
                             <artifactId>jai_core</artifactId>
                             <version>${jai.version}</version>
                             <scope>runtime</scope>
                         </dependency>
                         <dependency>
-                            <groupId>javax.media</groupId>
+                            <groupId>${jai.groupId}</groupId>
                             <artifactId>jai_codec</artifactId>
                             <version>${jai.version}</version>
                             <scope>runtime</scope>
