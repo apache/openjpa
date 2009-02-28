@@ -275,13 +275,15 @@ public class NativeJDBCSeq
     /**
      * Return the next sequence value.
      */
-    private synchronized long getSequence(Connection conn)
+    private long getSequence(Connection conn)
         throws SQLException {
         PreparedStatement stmnt = null;
         ResultSet rs = null;
         try {
             stmnt = conn.prepareStatement(_select);
-            rs = stmnt.executeQuery();
+            synchronized(this) {
+                rs = stmnt.executeQuery();
+            }
             if (rs.next())
                 return rs.getLong(1);
 
