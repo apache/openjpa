@@ -234,8 +234,8 @@ public class DB2Dictionary
         conn = super.decorate(conn);
 
         if (conf.getTransactionIsolationConstant() == -1
-            && conn.getTransactionIsolation() < conn.TRANSACTION_READ_COMMITTED)
-            conn.setTransactionIsolation(conn.TRANSACTION_READ_COMMITTED);
+            && conn.getTransactionIsolation() < Connection.TRANSACTION_READ_COMMITTED)
+            conn.setTransactionIsolation(Connection.TRANSACTION_READ_COMMITTED);
 
         return conn;
     }
@@ -275,7 +275,7 @@ public class DB2Dictionary
     	        db2ServerType = db2UDBV82OrLater;
         }
 
-        // verify that databae product is supported
+        // verify that database product is supported
         if (db2ServerType == 0 || maj == 0)
             throw new UnsupportedException(_loc.get("db-not-supported",
                 new Object[] {databaseProductName, databaseProductVersion }));                    
@@ -340,56 +340,50 @@ public class DB2Dictionary
         int isolationLevel;
         // For db2UDBV81OrEarlier and db2ISeriesV5R3OrEarlier:
         // "optimize for" clause appears before "for update" clause.
-        StringBuffer forUpdateString = new StringBuffer(
-            getOptimizeClause(sel));
-        try {
-            // Determine the isolationLevel; the fetch
-            // configuration data overrides the persistence.xml value
-            if (fetch != null && fetch.getIsolation() != -1)
-                isolationLevel = fetch.getIsolation();
-            else
-                isolationLevel = conf.getTransactionIsolationConstant();
+        StringBuffer forUpdateString = new StringBuffer(getOptimizeClause(sel));
+        // Determine the isolationLevel; the fetch
+        // configuration data overrides the persistence.xml value
+        if (fetch != null && fetch.getIsolation() != -1)
+            isolationLevel = fetch.getIsolation();
+        else
+            isolationLevel = conf.getTransactionIsolationConstant();
 
-            if (isForUpdate) {
-                switch(db2ServerType) {
-                case db2ISeriesV5R3OrEarlier:
-                case db2UDBV81OrEarlier:
-                    if (isolationLevel == Connection.TRANSACTION_SERIALIZABLE)
-                        forUpdateString.append(" ").append(forUpdateClause);
-                    else 
-                        forUpdateString.append(" ").append(forUpdate)
-                            .append(" ").append(withRSClause);
-                    break;
-                case db2ZOSV8xOrLater:
-                case db2UDBV82OrLater:
-                    if (isolationLevel == Connection.TRANSACTION_SERIALIZABLE) {
-                        forUpdateString.append(" ").append(forReadOnlyClause)
-                            .append(" ").append(withRRClause)
-                            .append(" ").append(useKeepUpdateLockClause);   
-                    } else {
-                        forUpdateString.append(" ").append(forReadOnlyClause)
-                            .append(" ").append(withRSClause)
-                            .append(" ").append(useKeepUpdateLockClause);                            
-                    }
-                    break;
-                case db2ISeriesV5R4OrLater:
-                    if (isolationLevel == Connection.TRANSACTION_SERIALIZABLE) {
-                        forUpdateString.append(" ").append(forReadOnlyClause)
-                            .append(" ").append(withRRClause)
-                            .append(" ").append(useKeepExclusiveLockClause);       
-                    } else {
-                        forUpdateString.append(" ").append(forReadOnlyClause)
-                            .append(" ").append(withRSClause)
-                            .append(" ").append(useKeepExclusiveLockClause);
-                    }
-                    break;
+        if (isForUpdate) {
+            switch (db2ServerType) {
+            case db2ISeriesV5R3OrEarlier:
+            case db2UDBV81OrEarlier:
+                if (isolationLevel == Connection.TRANSACTION_SERIALIZABLE)
+                    forUpdateString.append(" ").append(forUpdateClause);
+                else
+                    forUpdateString.append(" ").append(forUpdate).append(" ")
+                        .append(withRSClause);
+                break;
+            case db2ZOSV8xOrLater:
+            case db2UDBV82OrLater:
+                if (isolationLevel == Connection.TRANSACTION_SERIALIZABLE) {
+                    forUpdateString.append(" ").append(forReadOnlyClause)
+                        .append(" ").append(withRRClause).append(" ").append(
+                            useKeepUpdateLockClause);
+                } else {
+                    forUpdateString.append(" ").append(forReadOnlyClause)
+                        .append(" ").append(withRSClause).append(" ").append(
+                            useKeepUpdateLockClause);
                 }
+                break;
+            case db2ISeriesV5R4OrLater:
+                if (isolationLevel == Connection.TRANSACTION_SERIALIZABLE) {
+                    forUpdateString.append(" ").append(forReadOnlyClause)
+                        .append(" ").append(withRRClause).append(" ").append(
+                            useKeepExclusiveLockClause);
+                } else {
+                    forUpdateString.append(" ").append(forReadOnlyClause)
+                        .append(" ").append(withRSClause).append(" ").append(
+                            useKeepExclusiveLockClause);
+                }
+                break;
             }
         }
-        catch (Exception e) {
-            if (log.isTraceEnabled())
-                log.error(e.toString(),e);
-        }
+   
         return forUpdateString.toString();
     }
 
@@ -467,7 +461,7 @@ public class DB2Dictionary
     }
     
     private void getProductVersionMajorMinor() {
-        // Incase JDBC driver version is lower than 3
+        // In case JDBC driver version is lower than 3
         // use following info to determine Major and Minor 
         //                        CLI    vs      JCC
         // ZDBV8 DBProdName       DB2            DB2
@@ -514,8 +508,8 @@ public class DB2Dictionary
     }
 
     /**
-     *  Append exception information from SQLCA to the exsisting
-     *  exception meassage
+     *  Append exception information from SQLCA to the existing
+     *  exception message
      */
     private String appendExtendedExceptionMsg(String msg, SQLException sqle){
        final String GETSQLCA ="getSqlca";
@@ -827,7 +821,7 @@ public class DB2Dictionary
             Column pkColumn) {
         if (isDB2ZOSV8xOrLater()) {
             // build the index for the sequence tables
-            // the index name will the fully qualified table name + _IDX
+            // the index name will be the fully qualified table name + _IDX
             Table tab = schema.getTable(table);
             Index idx = tab.addIndex(tab.getFullName() + "_IDX");
             idx.setUnique(true);
