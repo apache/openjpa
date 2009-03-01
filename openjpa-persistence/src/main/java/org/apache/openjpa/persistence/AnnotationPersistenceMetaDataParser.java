@@ -1651,6 +1651,9 @@ public class AnnotationPersistenceMetaDataParser
             if (!StringUtils.isEmpty(query.resultSetMapping()))
                 meta.setResultSetMappingName(query.resultSetMapping());
 
+            for (QueryHint hint : query.hints())
+                meta.addHint(hint.name(), hint.value());
+
             meta.setSource(getSourceFile(), (el instanceof Class) ? el : null,
                 meta.SRC_ANNOTATIONS);
             if (isMetaDataMode())
