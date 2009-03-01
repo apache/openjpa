@@ -654,8 +654,18 @@ public abstract class MappingInfo
         // user-given specifics to override it
         int type = tmplate.getType();
         int size = tmplate.getSize();
-        if (type == Types.OTHER)
-            type = dict.getJDBCType(tmplate.getJavaType(), size == -1);
+        if (type == Types.OTHER) {
+            int precis = 0;
+            int scale = 0;
+            if(given != null) {
+                precis = given.getSize();
+                scale = given.getDecimalDigits();
+            }
+            type =
+                dict.getJDBCType(tmplate.getJavaType(), size == -1, precis,
+                    scale);
+        }
+            
         boolean ttype = true;
         int otype = type;
         String typeName = tmplate.getTypeName();
