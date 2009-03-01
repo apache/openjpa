@@ -40,18 +40,18 @@ public class TestPrecisionMapping extends SingleEMFTestCase {
         testBigDecimalMapping("", Types.NUMERIC, 0, 0);
     }
     
-    public void testPrecisionOnly() { 
-        // testDoubleMapping("Precis", Types.NUMERIC, 10, 0);
+    public void testPrecisionOnly() {
+        testDoubleMapping("Precis", Types.NUMERIC, 10, 0);
         testBigDecimalMapping("Precis", Types.NUMERIC, 10, 0);
     }
-    
-    public void testScaleOnly() { 
-        // testDoubleMapping("Scale", Types.NUMERIC, 0 , 10);
+
+    public void testScaleOnly() {
+        testDoubleMapping("Scale", Types.NUMERIC, 0, 10);
         testBigDecimalMapping("Scale", Types.NUMERIC, 0, 10);
     }
     
     public void testPrecisionAndScale() { 
-//        testDoubleMapping("PrecisScale", Types.NUMERIC,10,10);
+        testDoubleMapping("PrecisScale", Types.NUMERIC,10,10);
         testBigDecimalMapping("PrecisScale", Types.NUMERIC, 10, 10);
     }
     
@@ -83,5 +83,4 @@ public class TestPrecisionMapping extends SingleEMFTestCase {
             assertEquals(expectedScale, cols[0].getDecimalDigits());
         }
     }
-    
 }

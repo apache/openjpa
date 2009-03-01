@@ -1477,12 +1477,21 @@ public class DBDictionary
     /////////
     // Types
     /////////
-
+    
     /**
      * Return the preferred {@link Types} constant for the given
      * {@link JavaTypes} or {@link JavaSQLTypes} constant.
      */
     public int getJDBCType(int metaTypeCode, boolean lob) {
+        return getJDBCType(metaTypeCode, lob, 0, 0);
+    }
+
+    /**
+     * Return the preferred {@link Types} constant for the given
+     * {@link JavaTypes} or {@link JavaSQLTypes} constant.
+     */
+    public int getJDBCType(int metaTypeCode, boolean lob, int precis, 
+        int scale) {
         if (lob) {
             switch (metaTypeCode) {
                 case JavaTypes.STRING:
@@ -1508,10 +1517,20 @@ public class DBDictionary
                 return getPreferredType(Types.CHAR);
             case JavaTypes.DOUBLE:
             case JavaTypes.DOUBLE_OBJ:
-                return getPreferredType(Types.DOUBLE);
+                if(precis > 0 || scale > 0) {
+                    return getPreferredType(Types.NUMERIC);
+                }
+                else {
+                    return getPreferredType(Types.DOUBLE);
+                }
             case JavaTypes.FLOAT:
             case JavaTypes.FLOAT_OBJ:
-                return getPreferredType(Types.REAL);
+                if(precis > 0 || scale > 0) {
+                    return getPreferredType(Types.NUMERIC);
+                }
+                else {
+                    return getPreferredType(Types.REAL);
+                }
             case JavaTypes.INT:
             case JavaTypes.INT_OBJ:
                 return getPreferredType(Types.INTEGER);
