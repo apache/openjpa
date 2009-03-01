@@ -392,6 +392,13 @@ public abstract class LockManagerTestBase extends SQLListenerTestCase {
         }
     }
     
+    private void notifyParent() {
+        getLog().trace("notifyParent:");
+        synchronized(this) {
+            notify();
+        }
+    }
+    
     public void concurrentLockingTest(
         int id, 
         int expectedVersionIncrement,
@@ -486,7 +493,10 @@ public abstract class LockManagerTestBase extends SQLListenerTestCase {
             } else {
                 t2.start();
             }
-            Thread.sleep(500);
+            log.trace("wait on thread 1");
+            synchronized (this){
+                wait();
+            }
             if (thread2Run == ThreadToRunFirst.RunThread2) {
                 t1.start();
             } else {
@@ -710,7 +720,8 @@ public abstract class LockManagerTestBase extends SQLListenerTestCase {
                     log.trace(beforeWaitMethod + ": duration 1="
                         + (System.currentTimeMillis() - startTimeStamp));
                     log.trace(beforeWaitMethod + ": returns=" + e1);
-                    log.trace("wait()");
+                    notifyParent();
+                    log.trace("childWait()");
                     wait();
                     switch (beforeWaitMethod) {
                     case NoOp:
