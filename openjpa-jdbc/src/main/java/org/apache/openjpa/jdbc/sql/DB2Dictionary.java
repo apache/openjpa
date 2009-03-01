@@ -327,7 +327,7 @@ public class DB2Dictionary
         }
     }
 
-    public boolean supportIsolationForUpdate() {
+    public boolean supportsIsolationForUpdate() {
         return true;
     }
 

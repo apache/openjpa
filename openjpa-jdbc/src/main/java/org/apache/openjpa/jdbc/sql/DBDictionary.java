@@ -2403,7 +2403,7 @@ public class DBDictionary
      * Return true if the dictionary uses isolation level to compute the 
      * returned getForUpdateClause() SQL clause.  
      */
-    public boolean supportIsolationForUpdate() {
+    public boolean supportsIsolationForUpdate() {
         return false;
     }
     

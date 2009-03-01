@@ -1642,7 +1642,7 @@ public class EntityManagerImpl
             }
             // Set overriden isolation level for pessimistic-read/write
             if (((JDBCConfiguration) _broker.getConfiguration())
-                .getDBDictionaryInstance().supportIsolationForUpdate()) {
+                .getDBDictionaryInstance().supportsIsolationForUpdate()) {
                 switch (setReadLevel) {
                 case JPA2LockLevels.LOCK_PESSIMISTIC_READ:
                     fcPushed = setIsolationForPessimisticLock(fCfg, fcPushed,
