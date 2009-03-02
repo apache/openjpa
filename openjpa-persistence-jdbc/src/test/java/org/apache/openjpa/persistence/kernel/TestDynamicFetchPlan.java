@@ -59,6 +59,7 @@ public class TestDynamicFetchPlan extends SingleEMFTestCase {
 	public void testFetchBySubClassFieldB() {
 		OpenJPAEntityManager em = emf.createEntityManager();
 		FetchPlan fp = em.getFetchPlan();
+		fp.setExtendedPathLookup(true);
 		fp.clearFetchGroups();
 		fp.clearFields();
 		fp.addField(FetchA.class, "b");
@@ -76,6 +77,7 @@ public class TestDynamicFetchPlan extends SingleEMFTestCase {
 	public void testFetchBySubClassFieldA() {
 		OpenJPAEntityManager em = emf.createEntityManager();
 		FetchPlan fp = em.getFetchPlan();
+        fp.setExtendedPathLookup(true);
 		fp.clearFetchGroups();
 		fp.clearFields();
 		fp.addField(FetchA.class, "b");
@@ -93,6 +95,7 @@ public class TestDynamicFetchPlan extends SingleEMFTestCase {
 	public void testFetchBySuperClassField() {
 		OpenJPAEntityManager em = emf.createEntityManager();
 		FetchPlan fp = em.getFetchPlan();
+        fp.setExtendedPathLookup(true);
 		fp.clearFetchGroups();
 		fp.clearFields();
 		fp.addField(FetchA.class, "b");
@@ -110,6 +113,7 @@ public class TestDynamicFetchPlan extends SingleEMFTestCase {
 	public void testFetchBySubClassFieldNameB() {
 		OpenJPAEntityManager em = emf.createEntityManager();
 		FetchPlan fp = em.getFetchPlan();
+        fp.setExtendedPathLookup(true);
 		fp.clearFetchGroups();
 		fp.clearFields();
 		fp.addField(FetchA.class.getName() + ".b");
@@ -127,6 +131,7 @@ public class TestDynamicFetchPlan extends SingleEMFTestCase {
 	public void testFetchBySubClassFieldNameA() {
 		OpenJPAEntityManager em = emf.createEntityManager();
 		FetchPlan fp = em.getFetchPlan();
+        fp.setExtendedPathLookup(true);
 		fp.clearFetchGroups();
 		fp.clearFields();
 		fp.addField(FetchA.class.getName() + ".b");
@@ -144,6 +149,7 @@ public class TestDynamicFetchPlan extends SingleEMFTestCase {
 	public void testFetchBySuperClassFieldName() {
 		OpenJPAEntityManager em = emf.createEntityManager();
 		FetchPlan fp = em.getFetchPlan();
+        fp.setExtendedPathLookup(true);
 		fp.clearFetchGroups();
 		fp.clearFields();
 		fp.addField(FetchA.class.getName() + ".b");

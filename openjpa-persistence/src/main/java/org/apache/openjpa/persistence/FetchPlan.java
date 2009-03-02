@@ -298,4 +298,19 @@ public interface FetchPlan {
      */
     @Reflectable(false)
     public org.apache.openjpa.kernel.FetchConfiguration getDelegate();
+    
+    /**
+     * Affirms if extended path lookup feature is active.
+     * 
+     * @since 2.0.0
+     */
+    public boolean getExtendedPathLookup();
+    
+    /**
+     * Sets extended path lookup feature.
+     *
+     * @since 2.0.0
+     */
+    public FetchPlan setExtendedPathLookup(boolean flag);
+
 }

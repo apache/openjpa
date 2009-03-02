@@ -217,6 +217,24 @@ public class DelegatingFetchConfiguration
             throw translate(re);
         }
     }
+    
+    public boolean getExtendedPathLookup() {
+        try {
+            return _fetch.getExtendedPathLookup();
+        } catch (RuntimeException re) {
+            throw translate(re);
+        }
+    }
+
+    public FetchConfiguration setExtendedPathLookup(boolean flag) {
+        try {
+            _fetch.setExtendedPathLookup(flag);
+            return this;
+        } catch (RuntimeException re) {
+            throw translate(re);
+        }
+    }
+    
 
     public Set getFetchGroups() {
         try {

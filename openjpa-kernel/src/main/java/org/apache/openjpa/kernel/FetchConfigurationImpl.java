@@ -85,6 +85,7 @@ public class FetchConfigurationImpl
         public Map hints = null;
         public boolean fetchGroupContainsDefault = false;
         public boolean fetchGroupContainsAll = false;
+        public boolean extendedPathLookup = false;
     }
 
     private final ConfigurationState _state;
@@ -156,6 +157,7 @@ public class FetchConfigurationImpl
         setMaxFetchDepth(fetch.getMaxFetchDepth());
         setQueryCacheEnabled(fetch.getQueryCacheEnabled());
         setFlushBeforeQueries(fetch.getFlushBeforeQueries());
+        setExtendedPathLookup(fetch.getExtendedPathLookup());
         setLockTimeout(fetch.getLockTimeout());
         clearFetchGroups();
         addFetchGroups(fetch.getFetchGroups());
@@ -221,6 +223,15 @@ public class FetchConfigurationImpl
 
     public int getFlushBeforeQueries() {
         return _state.flushQuery;
+    }
+    
+    public boolean getExtendedPathLookup() {
+        return _state.extendedPathLookup;
+    }
+    
+    public FetchConfiguration setExtendedPathLookup(boolean flag) {
+        _state.extendedPathLookup = flag;
+        return this;
     }
 
     public FetchConfiguration setFlushBeforeQueries(int flush) {
@@ -613,17 +624,23 @@ public class FetchConfigurationImpl
      * Whether our configuration state includes the given field.
      */
     private boolean includes(FieldMetaData fmd) {
-        if (hasFetchGroupAll() 
-        || (hasFetchGroupDefault() && fmd.isInDefaultFetchGroup())
+        if ((hasFetchGroupDefault() && fmd.isInDefaultFetchGroup()) 
+        || hasFetchGroupAll()
         || hasField(fmd.getFullName(false))
-        || hasField(fmd.getRealName())
-        || (_fromField != null && hasField(_fromField + "." + fmd.getName())))
+        || hasExtendedLookupPath(fmd))
             return true;
         String[] fgs = fmd.getCustomFetchGroups();
         for (int i = 0; i < fgs.length; i++)
             if (hasFetchGroup(fgs[i]))
                 return true;
         return false; 
+    }
+    
+    private boolean hasExtendedLookupPath(FieldMetaData fmd) {
+        return getExtendedPathLookup()
+            && (hasField(fmd.getRealName())
+                || (_fromField != null 
+                && hasField(_fromField + "." + fmd.getName())));
     }
 
     /**

@@ -148,6 +148,20 @@ public interface FetchConfiguration
      * The query automatic flush configuration.
      */
     public FetchConfiguration setFlushBeforeQueries(int flush);
+    
+    /**
+     * Affirms if extended path lookup feature is active.
+     * 
+     * @since 2.0.0
+     */
+    public boolean getExtendedPathLookup();
+    
+    /**
+     * Sets extended path lookup feature.
+     *
+     * @since 2.0.0
+     */
+    public FetchConfiguration setExtendedPathLookup(boolean flag);
 
     /**
      * Returns immutable set of names of the fetch groups that this component

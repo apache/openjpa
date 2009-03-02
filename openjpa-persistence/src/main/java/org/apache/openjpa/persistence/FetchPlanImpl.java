@@ -249,6 +249,15 @@ public class FetchPlanImpl
         _fetch.setWriteLockLevel(EntityManagerImpl.toLockLevel(mode));
         return this;
     }
+    
+    public boolean getExtendedPathLookup() {
+        return _fetch.getExtendedPathLookup();
+    }
+    
+    public FetchPlan setExtendedPathLookup(boolean flag) {
+        _fetch.setExtendedPathLookup(flag);
+        return this;
+    }
 
     public int hashCode() {
         return _fetch.hashCode();

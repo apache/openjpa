@@ -2150,13 +2150,24 @@ field-masking algorithms, which would allow the latter method behavior if
 <literal>Magazine</literal> did not also define a field called <literal>
 publisher</literal>.
             </para>
+            
+            <para>
+            <title>Extended Path Lookup</title>
+To include the fields defined in a super class by the subclass or to distinguish
+between fields that are defined in <emphasis>both</emphasis> super- and subclass,
+set <literal>setExtendedPathLookup(boolean)</literal> on <literal>FetchPlan
+</literal> to <literal>true</literal>. By default, this option is set to
+<literal>false</literal>, to reduce more extensive lookups for predominant use 
+cases.           
+            </para>
+            
             <para>
 In order to avoid the cost of reflection, OpenJPA does not perform any
 validation of the field name / class name pairs that you put into the fetch
 configuration. If you specify non-existent class / field pairs, nothing adverse
 will happen, but you will receive no notification of the fact that the specified
 configuration is not being used.
-            </para>
+            </para>         
             <example id="ref_guide_fetch-conf_per_field">
                 <title>
                     Adding an Eager Field
@@ -2193,7 +2204,11 @@ joined into the select, OpenJPA avoids the extra join just to select the foreign
 key values.
                     </para>
                 </listitem>
+                
+                
             </itemizedlist>
+            
+            
         </section>
     </section>
     <section id="ref_guide_perfpack_eager">
