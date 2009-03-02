@@ -29,6 +29,7 @@ import javax.persistence.OptimisticLockException;
 import javax.persistence.Query;
 import javax.persistence.TransactionRequiredException;
 
+import org.apache.openjpa.jdbc.conf.JDBCConfiguration;
 import org.apache.openjpa.jdbc.sql.DBDictionary;
 import org.apache.openjpa.jdbc.sql.SQLErrorCodeReader;
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
@@ -54,6 +55,10 @@ public class TestException extends SingleEMFTestCase {
 	 * exception thrown is an instance of javax.persistence.OptimisticException.
 	 */
 	public void testThrowsOptimisticException() {
+    
+        boolean supportsQueryTimeout = ((JDBCConfiguration) emf
+            .getConfiguration()).getDBDictionaryInstance().supportsQueryTimeout;
+    
 		EntityManager em1 = emf.createEntityManager();
 		EntityManager em2 = emf.createEntityManager();
 		assertNotEquals(em1, em2);
@@ -75,14 +80,18 @@ public class TestException extends SingleEMFTestCase {
 		assertTrue(pc1 != pc2);
 		
 		pc1.setName("Modified in TXN1");
-		em1.flush();
-		try {
-			pc2.setName("Modified in TXN2");
-			em2.flush();
-			fail("Expected " + OptimisticLockException.class);
-		} catch (Throwable t) {
-			assertException(t, OptimisticLockException.class);
-		}
+        if (supportsQueryTimeout) {
+            em1.flush();
+            try {
+                pc2.setName("Modified in TXN2");
+                em2.flush();
+                fail("Expected " + OptimisticLockException.class);
+            } catch (Throwable t) {
+                assertException(t, OptimisticLockException.class);
+            }
+        } else {
+            pc2.setName("Modified in TXN2");
+        }
 		
 		em1.getTransaction().commit();
 		try {

@@ -144,6 +144,7 @@ public class PostgresDictionary
         }));
 
         supportsLockingWithDistinctClause = false;
+        supportsQueryTimeout = false;
         supportsLockingWithOuterJoin = false;
         supportsNullTableForGetImportedKeys = true;
 
