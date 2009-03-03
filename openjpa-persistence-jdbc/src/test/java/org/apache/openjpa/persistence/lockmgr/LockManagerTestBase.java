@@ -81,6 +81,8 @@ public abstract class LockManagerTestBase extends SQLListenerTestCase {
     protected static final String TxtThread1                 = "T1: ";
     protected static final String TxtThread2                 = "T2: ";
     
+    protected static final int MinThreadWaitInMs             = 30000;
+    
     protected enum CommitAction {
         Commit, Rollback
     };
@@ -154,7 +156,7 @@ public abstract class LockManagerTestBase extends SQLListenerTestCase {
         if (waitInMsec == -1) {
             speedCnt = platformSpeedTest();
             try {
-                waitInMsec = 500000 / (speedCnt / 1000000);
+                waitInMsec = MinThreadWaitInMs + 500000 / (speedCnt / 1000000);
             } catch (Throwable t) {
             }
         }
@@ -507,16 +509,13 @@ public abstract class LockManagerTestBase extends SQLListenerTestCase {
             if (thread2Resume == ThreadToResumeFirst.ResumeThread1) {
                 Thread.sleep(computeSleepFromTimeout(t1Timeout));
                 t1.resumeEmAction();
+                Thread.sleep(computeSleepFromTimeout(t2Timeout));
+                t2.resumeEmAction();
             } else {
                 Thread.sleep(computeSleepFromTimeout(t2Timeout));
                 t2.resumeEmAction();
-            }
-            if (thread2Resume == ThreadToResumeFirst.ResumeThread2) {
                 Thread.sleep(computeSleepFromTimeout(t1Timeout));
                 t1.resumeEmAction();
-            } else {
-                Thread.sleep(computeSleepFromTimeout(t2Timeout));
-                t2.resumeEmAction();
             }
 
             log.trace("started children threads");
