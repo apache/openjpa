@@ -92,6 +92,7 @@ public class TestPropertiesMethods extends SingleEMFTestCase {
         boolean openjpaPasswordExists =
             emProperties.containsKey("openjpa.ConnectionPassword");
         assertFalse(openjpaPasswordExists);
+        assertFalse(emProperties.containsKey("openjpa.Connection2Password"));
         
         // Add a dummy javax.persistence... equivalent key to one of the
         // values that can be changed to force the code down a specific path.
@@ -156,6 +157,8 @@ public class TestPropertiesMethods extends SingleEMFTestCase {
         // key, is returned.
         assertTrue(emSupportedProperties.contains(
             "javax.persistence.query.timeout"));
+        assertFalse(emSupportedProperties.contains(
+            "openjpa.javax.persistence.query.timeout"));
     }
 
 }
