@@ -42,7 +42,7 @@ public class TestAttrOverrides  extends SQLListenerTestCase {
     /**
      * This is spec 10.1.4 Example 2
      */
-    public void testMappedById1() {
+    public void testAttrOverride1() {
         sql.clear();
         createObj1();
         findObj1();
@@ -53,7 +53,7 @@ public class TestAttrOverrides  extends SQLListenerTestCase {
     /**
      * This is spec 10.1.4. Example 3
      */
-    public void testMappedById2() {
+    public void testAttrOverride2() {
         sql.clear();
         createObj2();
         findObj2();

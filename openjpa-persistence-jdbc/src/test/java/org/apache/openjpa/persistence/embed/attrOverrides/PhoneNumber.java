@@ -18,50 +18,33 @@
  */
 package org.apache.openjpa.persistence.embed.attrOverrides;
 
-public class AddressXml {
-	protected int id;
-    protected String street;
-    protected String city;
-    protected String state;
-    protected ZipcodeXml zipcode;
+import javax.persistence.*;
+import java.util.*;
 
-    public ZipcodeXml getZipcode() {
-    	return zipcode;
+@Entity
+public class PhoneNumber {
+    @Id 
+    int number;
+    
+    @ManyToMany(mappedBy="contactInfo.phoneNumbers")
+    Collection<Employee> employees = new ArrayList<Employee>();
+    
+    public int getNumber() {
+        return number;
     }
     
-    public void setZipcode(ZipcodeXml zipcode) {
-    	this.zipcode = zipcode;
+    public void setNumber(int number) {
+        this.number = number;
     }
     
-    public int getId() {
-    	return id;
+    public Collection<Employee> getEmployees() {
+        return employees;
     }
     
-    public void setId(int id) {
-    	this.id = id;
+    public void addEmployees(Employee employee) {
+        employees.add(employee);
     }
     
-    public String getStreet() {
-        return street;
-    }
     
-    public void setStreet(String street) {
-        this.street = street;
-    }
     
-    public String getCity() {
-        return city;
-    }
-    
-    public void setCity(String city) {
-        this.city = city;
-    }
-    
-    public String getState() {
-        return state;
-    }
-    
-    public void setState(String state) {
-        this.state = state;
-    }
 }

@@ -18,50 +18,41 @@
  */
 package org.apache.openjpa.persistence.embed.attrOverrides;
 
-public class AddressXml {
-	protected int id;
-    protected String street;
-    protected String city;
-    protected String state;
-    protected ZipcodeXml zipcode;
+import javax.persistence.*;
+import java.util.*;
 
-    public ZipcodeXml getZipcode() {
-    	return zipcode;
+@Embeddable
+public class ContactInfo {
+	@ManyToOne
+	Address address; 
+
+	@ManyToMany
+    List<PhoneNumber> phoneNumbers = new ArrayList<PhoneNumber>(); // Bidirectional
+    
+    @Embedded
+    EmergencyContactInfo ecInfo;
+    
+    public List<PhoneNumber> getPhoneNumbers() {
+        return phoneNumbers;
     }
     
-    public void setZipcode(ZipcodeXml zipcode) {
-    	this.zipcode = zipcode;
+    public void addPhoneNumber(PhoneNumber phoneNumber) {
+        phoneNumbers.add(phoneNumber);
     }
     
-    public int getId() {
-    	return id;
+    public Address getAddress() {
+    	return address;
     }
-    
-    public void setId(int id) {
-    	this.id = id;
+  
+    public void setAddress(Address address) {
+    	this.address = address;
     }
-    
-    public String getStreet() {
-        return street;
+
+    public EmergencyContactInfo getEmergencyContactInfo() {
+    	return ecInfo;
     }
-    
-    public void setStreet(String street) {
-        this.street = street;
-    }
-    
-    public String getCity() {
-        return city;
-    }
-    
-    public void setCity(String city) {
-        this.city = city;
-    }
-    
-    public String getState() {
-        return state;
-    }
-    
-    public void setState(String state) {
-        this.state = state;
+  
+    public void setEmergencyContactInfo(EmergencyContactInfo ecInfo) {
+    	this.ecInfo = ecInfo;
     }
 }

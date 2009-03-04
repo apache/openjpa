@@ -25,7 +25,6 @@ import java.security.AccessController;
 import java.sql.Types;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -72,7 +71,6 @@ import org.apache.openjpa.jdbc.meta.MappingRepository;
 import org.apache.openjpa.jdbc.meta.QueryResultMapping;
 import org.apache.openjpa.jdbc.meta.SequenceMapping;
 import org.apache.openjpa.jdbc.meta.ValueMapping;
-import org.apache.openjpa.jdbc.meta.ValueMappingImpl;
 import org.apache.openjpa.jdbc.meta.ValueMappingInfo;
 import org.apache.openjpa.jdbc.meta.strats.EnumValueHandler;
 import org.apache.openjpa.jdbc.meta.strats.FlatClassStrategy;
@@ -89,7 +87,6 @@ import org.apache.openjpa.meta.ClassMetaData;
 import org.apache.openjpa.meta.FieldMetaData;
 import org.apache.openjpa.meta.JavaTypes;
 import org.apache.openjpa.meta.MetaDataContext;
-import org.apache.openjpa.meta.ValueMetaData;
 import org.apache.openjpa.persistence.AnnotationPersistenceMetaDataParser;
 import static org.apache.openjpa.persistence.jdbc.MappingTag.*;
 import org.apache.openjpa.util.InternalException;
@@ -1219,30 +1216,33 @@ public class AnnotationPersistenceMappingParser
      */
     private void parseAssociationOverrides(FieldMapping fm,
         AssociationOverride... assocs) {
-        ClassMapping embed = fm.getEmbeddedMapping();
-        if (embed == null)
-            throw new MetaDataException(_loc.get("not-embedded", fm));
 
         FieldMapping efm;
         JoinColumn[] ecols;
         int unique;
         List<Column> jcols;
+        JoinTable joinTbl;
         for (AssociationOverride assoc : assocs) {
-            efm = embed.getFieldMapping(assoc.name());
+            efm = getEmbeddedFieldMapping(fm, assoc.name());
             if (efm == null)
                 throw new MetaDataException(_loc.get("embed-override-name",
                     fm, assoc.name()));
             ecols = assoc.joinColumns();
-            if (ecols == null || ecols.length == 0)
-                continue;
-
-            unique = 0;
-            jcols = new ArrayList<Column>(ecols.length);
-            for (JoinColumn ecol : ecols) {
-                unique |= (ecol.unique()) ? TRUE : FALSE;
-                jcols.add(newColumn(ecol));
+            joinTbl = assoc.joinTable();
+            if ((ecols == null || ecols.length == 0) && joinTbl == null)
+                throw new MetaDataException(_loc.get("embed-override-name",
+                    fm, assoc.name()));
+            if (ecols != null && ecols.length > 0) {
+                unique = 0;
+                jcols = new ArrayList<Column>(ecols.length);
+                for (JoinColumn ecol : ecols) {
+                    unique |= (ecol.unique()) ? TRUE : FALSE;
+                    jcols.add(newColumn(ecol));
+                }
+                setColumns(efm, efm.getValueInfo(), jcols, unique);
+            } else if (joinTbl != null) {
+                parseJoinTable(efm, joinTbl);
             }
-            setColumns(efm, efm.getValueInfo(), jcols, unique);
         }
     }
 
@@ -1496,7 +1496,7 @@ public class AnnotationPersistenceMappingParser
         parseJoinColumns(fm, fm.getElementMapping().getValueInfo(), false,
             join.inverseJoinColumns());
         addUniqueConstraints(info.getTableName(), fm, info,  
-        		join.uniqueConstraints());
+            join.uniqueConstraints());
     }
 
     /**

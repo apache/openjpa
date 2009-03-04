@@ -688,17 +688,24 @@ public class XMLPersistenceMappingParser
         throws SAXException {
         String table = toTableName(attrs.getValue("schema"),
             attrs.getValue("name"));
-        if (table != null)
-            ((FieldMapping) currentElement()).getMappingInfo().setTableName
-                (table);
+        if (table != null) {
+            FieldMapping fm = (FieldMapping) currentElement();
+            if (_override != null) 
+                fm = getAttributeOverride(fm);
+            
+            fm.getMappingInfo().setTableName(table);
+        }
         return true;
     }
 
     /**
      * Set the join table information back.
      */
-    private void endJoinTable() {
+    private void endJoinTable() throws SAXException {
         FieldMapping fm = (FieldMapping) currentElement();
+        if (_override != null)
+            fm = getAttributeOverride(fm);
+
         if (_joinCols != null)
             fm.getMappingInfo().setColumns(_joinCols);
         if (_cols != null)

@@ -18,50 +18,29 @@
  */
 package org.apache.openjpa.persistence.embed.attrOverrides;
 
-public class AddressXml {
-	protected int id;
-    protected String street;
-    protected String city;
-    protected String state;
-    protected ZipcodeXml zipcode;
+import javax.persistence.*;
 
-    public ZipcodeXml getZipcode() {
-    	return zipcode;
+@Embeddable
+public class JobInfo {
+    
+    String jobDescription;
+    
+    @ManyToOne 
+    ProgramManager pm; 
+    
+    public void setJobDescription(String jobDescription) {
+        this.jobDescription = jobDescription;
     }
     
-    public void setZipcode(ZipcodeXml zipcode) {
-    	this.zipcode = zipcode;
+    public String getJobDescription() {
+        return jobDescription;
+    }
+ 
+    public void setProgramManager(ProgramManager pm) {
+        this.pm = pm;
     }
     
-    public int getId() {
-    	return id;
-    }
-    
-    public void setId(int id) {
-    	this.id = id;
-    }
-    
-    public String getStreet() {
-        return street;
-    }
-    
-    public void setStreet(String street) {
-        this.street = street;
-    }
-    
-    public String getCity() {
-        return city;
-    }
-    
-    public void setCity(String city) {
-        this.city = city;
-    }
-    
-    public String getState() {
-        return state;
-    }
-    
-    public void setState(String state) {
-        this.state = state;
+    public ProgramManager getProgramManager() {
+        return pm;
     }
 }
