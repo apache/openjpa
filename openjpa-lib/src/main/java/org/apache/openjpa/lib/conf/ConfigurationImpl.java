@@ -53,6 +53,7 @@ import java.util.Map;
 import java.util.MissingResourceException;
 import java.util.Properties;
 import java.util.Set;
+import java.util.TreeMap;
 import java.util.TreeSet;
 
 import org.apache.commons.lang.StringUtils;
@@ -125,6 +126,8 @@ public class ConfigurationImpl
     // cache descriptors
     private PropertyDescriptor[] _pds = null;
     private MethodDescriptor[] _mds = null;
+    
+    private boolean getVisibleOnly = false;
 
     /**
      * Default constructor. Attempts to load default properties through
@@ -589,11 +592,11 @@ public class ConfigurationImpl
         // hashcode contracts
         Map<String, String> clone;
         if (_props == null)
-            clone = new HashMap<String, String>();
+            clone = new TreeMap<String, String>();
         else if (_props instanceof Properties)
             clone = (Map) ((Properties) _props).clone();
         else
-            clone = new HashMap<String, String>(_props);
+            clone = new TreeMap<String, String>(_props);
 
         // if no existing properties or the properties should contain entries
         // with default values, add values to properties
@@ -613,13 +616,17 @@ public class ConfigurationImpl
                     setValue(clone, val, str);
             }
             if (_props == null)
-                _props = new HashMap(clone);
+                _props = new TreeMap(clone);
         }
         return clone;
     }
     
     public Map<String, String> getAllProperties() {
-        return toProperties(true, true);
+        boolean saveGetVisibleOnly = getVisibleOnly;
+        getVisibleOnly = true;
+        Map<String, String> properties = toProperties(true, true);
+        getVisibleOnly = saveGetVisibleOnly;
+        return properties;
     }
 
     public Map<String, String> toProperties(boolean storeDefaults) {
@@ -724,6 +731,9 @@ public class ConfigurationImpl
                     key = "openjpa." + val.getProperty();
                 }
             }
+        }
+        if (getVisibleOnly && !val.isVisible()) {
+            return;
         }
         map.put(key, o);
     }

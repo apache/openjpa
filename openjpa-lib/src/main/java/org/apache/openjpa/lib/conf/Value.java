@@ -52,6 +52,7 @@ public abstract class Value implements Cloneable {
     private boolean isDynamic = false;
     private String originalValue = null;
     private Set<String> otherNames = null;
+    private boolean visible = true;
 
     /**
      * Default constructor.
@@ -549,5 +550,13 @@ public abstract class Value implements Cloneable {
         } catch (CloneNotSupportedException cnse) {
             return null;
         }
+    }
+
+    public boolean isVisible() {
+        return visible;
+    }
+
+    public void setVisible(boolean visible) {
+        this.visible = visible;
     }
 }
