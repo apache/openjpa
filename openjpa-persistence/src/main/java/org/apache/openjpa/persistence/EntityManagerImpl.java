@@ -1513,10 +1513,6 @@ public class EntityManagerImpl
         Map<String, Object> finalMap =
             new HashMap<String, Object>(currentProperties);
         
-        // Remove the password property
-        finalMap.remove("javax.persistence.jdbc.password");
-        finalMap.remove("openjpa.ConnectionPassword");
-        
         return finalMap;
     }
 
