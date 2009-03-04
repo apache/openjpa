@@ -20,10 +20,8 @@ package org.apache.openjpa.persistence.embed.attrOverrides;
 
 import javax.persistence.*;
 
-@Entity
-@Table(name="ADDR_ATTROVER")
+@Embeddable 
 public class Address {
-	@Id int id;
     @Column(length = 20)
     protected String street;
     @Column(length = 20)
@@ -32,14 +30,6 @@ public class Address {
     protected String state;
     @Embedded protected Zipcode zipcode;
     
-    public int getId() {
-    	return id;
-    }
-    
-    public void setId(int id) {
-    	this.id = id;
-    }
-
     public String getStreet() {
         return street;
     }

@@ -19,27 +19,10 @@
 package org.apache.openjpa.persistence.embed.attrOverrides;
 
 public class AddressXml {
-	protected int id;
     protected String street;
     protected String city;
     protected String state;
     protected ZipcodeXml zipcode;
-
-    public ZipcodeXml getZipcode() {
-    	return zipcode;
-    }
-    
-    public void setZipcode(ZipcodeXml zipcode) {
-    	this.zipcode = zipcode;
-    }
-    
-    public int getId() {
-    	return id;
-    }
-    
-    public void setId(int id) {
-    	this.id = id;
-    }
     
     public String getStreet() {
         return street;
