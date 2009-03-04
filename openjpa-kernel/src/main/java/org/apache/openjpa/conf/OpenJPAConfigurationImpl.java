@@ -340,6 +340,7 @@ public class OpenJPAConfigurationImpl
         
         connectionPassword = addString("ConnectionPassword");
         connectionPassword.addEquivalentKey("javax.persistence.jdbc.password");
+        connectionPassword.setVisible(false);
 
         connectionURL = addString("ConnectionURL");
         connectionURL.addEquivalentKey("javax.persistence.jdbc.url");
@@ -352,6 +353,7 @@ public class OpenJPAConfigurationImpl
         connectionFactoryProperties = addString("ConnectionFactoryProperties");
         connection2UserName = addString("Connection2UserName");
         connection2Password = addString("Connection2Password");
+        connection2Password.setVisible(false);
         connection2URL = addString("Connection2URL");
         connection2DriverName = addString("Connection2DriverName");
         connection2Properties = addString("Connection2Properties");
@@ -446,7 +448,6 @@ public class OpenJPAConfigurationImpl
         lockTimeout = addInt("LockTimeout");
         lockTimeout.addEquivalentKey("javax.persistence.lock.timeout");
         lockTimeout.setDefault("-1");
-        lockTimeout.set(-1);
         lockTimeout.setDynamic(true);
         
         readLockLevel = addInt("ReadLockLevel");
@@ -549,9 +550,8 @@ public class OpenJPAConfigurationImpl
         specification.setInstantiatingGetter("getSpecificationInstance");
         
         queryTimeout = addInt("javax.persistence.query.timeout");
-        queryTimeout.setLoadKey("javax.persistence.query.timeout");
+        queryTimeout.addEquivalentKey("javax.persistence.query.timeout");
         queryTimeout.setDefault("-1");
-        queryTimeout.set(-1);
         queryTimeout.setDynamic(true);
         
         // initialize supported options that some runtimes may not support
