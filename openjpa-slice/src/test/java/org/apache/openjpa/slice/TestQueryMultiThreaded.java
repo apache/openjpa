@@ -35,8 +35,6 @@ import java.util.concurrent.TimeoutException;
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
 
-import org.apache.openjpa.persistence.test.AllowFailure;
-
 /**
  * Tests when multiple user threads enter the same EntityManager and executes 
  * query. 
@@ -44,7 +42,6 @@ import org.apache.openjpa.persistence.test.AllowFailure;
  * @author Pinaki Poddar
  * 
  */
-@AllowFailure(true)
 public class TestQueryMultiThreaded extends SliceTestCase {
 
 	private int POBJECT_COUNT = 25;
