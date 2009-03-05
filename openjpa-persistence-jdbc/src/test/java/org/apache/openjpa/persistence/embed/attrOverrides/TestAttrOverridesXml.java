@@ -27,16 +27,16 @@ import javax.persistence.Query;
 
 import junit.framework.Assert;
 
-import org.apache.openjpa.persistence.test.SingleEMFTestCase;
+import org.apache.openjpa.persistence.test.SQLListenerTestCase;
 
-public class TestAttrOverridesXml extends SingleEMFTestCase {
+public class TestAttrOverridesXml extends SQLListenerTestCase {
    
     public int numPersons = 4;
     public List<String> namedQueries = new ArrayList<String>();
     public int eId = 1;
     
     public void setUp() {
-        setUp(CLEAR_TABLES);
+        setUp(DROP_TABLES);
     }
     
     @Override
@@ -45,9 +45,11 @@ public class TestAttrOverridesXml extends SingleEMFTestCase {
     }
     
     public void testAttrOverride1() {
+        sql.clear();
     	createObj1();
     	findObj1();
     	queryObj1();
+        assertAttrOverrides("CustomerXml1");
     }
     
     public void createObj1() {
@@ -94,5 +96,21 @@ public class TestAttrOverridesXml extends SingleEMFTestCase {
         Assert.assertEquals(ps.size(), numPersons);
         tran.commit();
         em.close();
+    }
+
+    public void assertAttrOverrides(String tableName) {
+        boolean found = false;
+        for (String sqlStr : sql) {
+            if (sqlStr.indexOf("CREATE TABLE " + tableName) != -1) {
+                if (tableName.equals("CustomerXml1")) {
+                    found = true;
+                    if (sqlStr.indexOf("ADDR_STATE") == -1 ||
+                        sqlStr.indexOf("ADDR_ZIP") == -1)
+                        fail();
+                } 
+            }
+        }
+        if (!found)
+            fail();
     }
 }

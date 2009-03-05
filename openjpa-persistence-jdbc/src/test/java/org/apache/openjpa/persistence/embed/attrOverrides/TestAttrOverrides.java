@@ -41,6 +41,7 @@ public class TestAttrOverrides  extends SQLListenerTestCase {
 
     /**
      * This is spec 10.1.4 Example 2
+     * Test AttributeOverride on embeddable fields
      */
     public void testAttrOverride1() {
         sql.clear();
@@ -52,13 +53,14 @@ public class TestAttrOverrides  extends SQLListenerTestCase {
 
     /**
      * This is spec 10.1.4. Example 3
+     * Test AttributeOverrides on embeddable Map field
      */
     public void testAttrOverride2() {
         sql.clear();
         createObj2();
         findObj2();
         queryObj2();
-        assertAttrOverrides("PROPREC_ATTROVER_PARCELS");
+        assertAttrOverrides("PROPREC_ATTROVER_parcels");
     }
     
     public void createObj1() {
@@ -188,21 +190,26 @@ public class TestAttrOverrides  extends SQLListenerTestCase {
     }
     
     public void assertAttrOverrides(String tableName) {
+        boolean found = false;
         for (String sqlStr : sql) {
-            if (sqlStr.toUpperCase().indexOf("CREATE TABLE " + tableName) != -1) {
+            if (sqlStr.indexOf("CREATE TABLE " + tableName + " ") != -1) {
                 if (tableName.equals("CUS_ATTROVER")) {
+                    found = true;
                     if (sqlStr.indexOf("ADDR_STATE") == -1 ||
                         sqlStr.indexOf("ADDR_ZIP") == -1 ||
                         sqlStr.indexOf("ADDR_PLUSFOUR") == -1 )
                         fail();
-                } else if (tableName.equals("PROPREC_ATTROVER")) {
+                } else if (tableName.equals("PROPREC_ATTROVER_parcels")) {
+                    found = true;
                     if (sqlStr.indexOf("STREET_NAME") == -1 ||
                         sqlStr.indexOf("SQUARE_FEET") == -1 ||
                         sqlStr.indexOf("ASSESSMENT") == -1 )
                         fail();
                 }
+                break;
             }
         }
+        if (!found)
+            fail();
     }
-
 }

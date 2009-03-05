@@ -18,34 +18,48 @@
  */
 package org.apache.openjpa.persistence.embed.attrOverrides;
 
-import javax.persistence.*;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
 
-@Entity
-@Table(name="PHONE_ATTROVER")
-public class PhoneNumber {
-    @Id 
-    int number;
+
+import javax.persistence.Id;
+import javax.persistence.ManyToMany;
+import javax.persistence.ManyToOne;
+import javax.persistence.MappedSuperclass;
+import javax.persistence.Version;
+
+@MappedSuperclass
+public abstract class AbstractEmployee {
+    @Id protected Integer id;
     
-    @ManyToMany(mappedBy="contactInfo.phoneNumbers")
-    Collection<Employee> employees = new ArrayList<Employee>();
+    @Version protected Integer version;
     
-    public int getNumber() {
-        return number;
+    @ManyToOne protected Address address;
+
+    @ManyToMany protected Collection<Project> projects = 
+    	new ArrayList<Project>();
+    
+    public Integer getId() {
+        return id;
     }
     
-    public void setNumber(int number) {
-        this.number = number;
+    public void setId(Integer id) {
+        this.id = id;
     }
     
-    public Collection<Employee> getEmployees() {
-        return employees;
+    public Address getAddress() {
+        return address;
     }
     
-    public void addEmployees(Employee employee) {
-        employees.add(employee);
+    public void setAddress(Address address) {
+        this.address = address;
     }
     
+    public Collection<Project> getProjects() {
+    	return projects;
+    }
     
-    
+    public void addProject(Project project) {
+    	projects.add(project);
+    }
 }

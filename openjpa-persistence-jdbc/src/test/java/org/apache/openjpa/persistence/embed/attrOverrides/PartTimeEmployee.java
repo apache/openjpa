@@ -18,34 +18,40 @@
  */
 package org.apache.openjpa.persistence.embed.attrOverrides;
 
-import javax.persistence.*;
-import java.util.*;
+import javax.persistence.AssociationOverride;
+import javax.persistence.AssociationOverrides;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
+import javax.persistence.Table;
 
 @Entity
-@Table(name="PHONE_ATTROVER")
-public class PhoneNumber {
-    @Id 
-    int number;
-    
-    @ManyToMany(mappedBy="contactInfo.phoneNumbers")
-    Collection<Employee> employees = new ArrayList<Employee>();
-    
-    public int getNumber() {
-        return number;
+@AssociationOverrides({
+	@AssociationOverride(
+		name="address",
+		joinColumns=@JoinColumn(name="ADDR_ID")),
+	
+	@AssociationOverride(
+		name="projects",
+		joinColumns={},
+    	joinTable=@JoinTable(
+       		name="PART_EMP_PROJECTS",
+       		joinColumns=@JoinColumn(name="PART_EMP"),
+       		inverseJoinColumns=@JoinColumn(name="PROJECT_ID")))
+})
+
+@Table(name="PART_EMP_ASSOC")
+public class PartTimeEmployee extends AbstractEmployee {
+
+	@Column(name="WAGE")
+	protected Float wage;
+
+    public Float getHourlyWage() {
+        return wage;
     }
     
-    public void setNumber(int number) {
-        this.number = number;
+    public void setHourlyWage(Float wage) {
+        this.wage = wage;
     }
-    
-    public Collection<Employee> getEmployees() {
-        return employees;
-    }
-    
-    public void addEmployees(Employee employee) {
-        employees.add(employee);
-    }
-    
-    
-    
 }

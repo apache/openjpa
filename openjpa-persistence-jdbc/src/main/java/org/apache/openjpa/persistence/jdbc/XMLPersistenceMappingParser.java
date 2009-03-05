@@ -288,6 +288,7 @@ public class XMLPersistenceMappingParser
             case DISCRIM_VAL:
                 endDiscriminatorValue();
                 break;
+            case ASSOC_OVERRIDE:                
             case ATTR_OVERRIDE:
                 endAttributeOverride();
                 break;
@@ -632,11 +633,11 @@ public class XMLPersistenceMappingParser
     private void endAttributeOverride()
         throws SAXException {
         Object elem = currentElement();
-        FieldMapping fm;
+        FieldMapping fm = null;
         if (elem instanceof ClassMapping)
             fm = getAttributeOverride((ClassMapping) elem);
         else
-            fm = getAttributeOverride((FieldMapping) elem);
+            fm = getAttributeOverrideForEmbeddable((FieldMapping) elem);
         if (_cols != null) {
             fm.getValueInfo().setColumns(_cols);
             if (_colTable != null)
@@ -662,7 +663,7 @@ public class XMLPersistenceMappingParser
     /**
      * Return the proper override.
      */
-    private FieldMapping getAttributeOverride(FieldMapping fm) 
+    private FieldMapping getAttributeOverrideForEmbeddable(FieldMapping fm) 
     throws SAXException {
         return AnnotationPersistenceMappingParser.getEmbeddedFieldMapping(fm, 
             _override);
@@ -689,10 +690,16 @@ public class XMLPersistenceMappingParser
         String table = toTableName(attrs.getValue("schema"),
             attrs.getValue("name"));
         if (table != null) {
-            FieldMapping fm = (FieldMapping) currentElement();
-            if (_override != null) 
-                fm = getAttributeOverride(fm);
-            
+            Object elem = currentElement();
+            FieldMapping fm = null;
+            if (elem instanceof FieldMapping) {
+                fm = (FieldMapping) elem;
+                if (_override != null) 
+                    fm = getAttributeOverrideForEmbeddable(fm);
+            } else if (elem instanceof ClassMapping) {
+                ClassMapping cm = (ClassMapping) elem;
+                fm = getAttributeOverride(cm);
+            }
             fm.getMappingInfo().setTableName(table);
         }
         return true;
@@ -702,9 +709,16 @@ public class XMLPersistenceMappingParser
      * Set the join table information back.
      */
     private void endJoinTable() throws SAXException {
-        FieldMapping fm = (FieldMapping) currentElement();
-        if (_override != null)
-            fm = getAttributeOverride(fm);
+        Object elem = currentElement();
+        FieldMapping fm = null;
+        if (elem instanceof FieldMapping) {
+            fm = (FieldMapping) elem;
+            if (_override != null)
+                fm = getAttributeOverrideForEmbeddable(fm);
+        } else if (elem instanceof ClassMapping){
+            ClassMapping cm = (ClassMapping) elem;
+            fm = getAttributeOverride(cm);
+        }
 
         if (_joinCols != null)
             fm.getMappingInfo().setColumns(_joinCols);

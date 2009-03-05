@@ -18,34 +18,29 @@
  */
 package org.apache.openjpa.persistence.embed.attrOverrides;
 
-import javax.persistence.*;
-import java.util.*;
+import javax.persistence.Entity;
+import javax.persistence.Id;
+import javax.persistence.Table;
 
 @Entity
-@Table(name="PHONE_ATTROVER")
-public class PhoneNumber {
-    @Id 
-    int number;
-    
-    @ManyToMany(mappedBy="contactInfo.phoneNumbers")
-    Collection<Employee> employees = new ArrayList<Employee>();
-    
-    public int getNumber() {
-        return number;
-    }
-    
-    public void setNumber(int number) {
-        this.number = number;
-    }
-    
-    public Collection<Employee> getEmployees() {
-        return employees;
-    }
-    
-    public void addEmployees(Employee employee) {
-        employees.add(employee);
-    }
-    
-    
-    
+@Table(name="PROJ_ATTROVER")
+public class Project {
+	@Id int id;
+	String description;
+	
+	public int getId() {
+		return id;
+	}
+	
+	public void setId(int id) {
+		this.id = id;
+	}
+	
+	public String getDescription() {
+		return description;
+	}
+	
+	public void setDescription(String description) {
+		this.description = description;
+	}
 }

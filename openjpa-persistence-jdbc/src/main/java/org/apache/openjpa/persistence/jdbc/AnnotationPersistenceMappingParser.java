@@ -408,6 +408,7 @@ public class AnnotationPersistenceMappingParser
         JoinColumn[] scols;
         int unique;
         List<Column> jcols;
+        JoinTable joinTbl;
         for (AssociationOverride assoc : assocs) {
             if (StringUtils.isEmpty(assoc.name()))
                 throw new MetaDataException(_loc.get("no-override-name", cm));
@@ -416,16 +417,23 @@ public class AnnotationPersistenceMappingParser
                 sup = (FieldMapping) cm.addDefinedSuperclassField
                     (assoc.name(), Object.class, Object.class);
             scols = assoc.joinColumns();
-            if (scols == null || scols.length == 0)
-                continue;
+            joinTbl = assoc.joinTable();
+            if ((scols == null || scols.length == 0) && joinTbl == null)
+                //continue;
+                throw new MetaDataException(_loc.get("embed-override-name",
+                        sup, assoc.name()));
 
-            jcols = new ArrayList<Column>(scols.length);
-            unique = 0;
-            for (JoinColumn scol : scols) {
-                unique |= (scol.unique()) ? TRUE : FALSE;
-                jcols.add(newColumn(scol));
+            if (scols != null && scols.length > 0) {
+                jcols = new ArrayList<Column>(scols.length);
+                unique = 0;
+                for (JoinColumn scol : scols) {
+                    unique |= (scol.unique()) ? TRUE : FALSE;
+                    jcols.add(newColumn(scol));
+                }
+                setColumns(sup, sup.getValueInfo(), jcols, unique);
+            } else if (joinTbl != null) {
+                parseJoinTable(sup, joinTbl);
             }
-            setColumns(sup, sup.getValueInfo(), jcols, unique);
         }
     }
 
