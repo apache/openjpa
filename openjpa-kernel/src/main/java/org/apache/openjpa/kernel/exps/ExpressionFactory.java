@@ -416,6 +416,18 @@ public interface ExpressionFactory {
     public Value type(Value target);
 
     /**
+     * Return the map entry of the given value.
+     *
+     * @since 2.0.0
+     */
+    public Value mapEntry(Value key, Value val);
+
+    /**
+     * Return the map key of the given value
+     */
+    public Value mapKey(Value key, Value val);
+
+    /**
      * Return distinct values of the given value. This is typically used
      * within aggregates, for example: max(distinct(path))
 	 *

@@ -35,6 +35,7 @@ import org.apache.openjpa.kernel.StoreContext;
 import org.apache.openjpa.lib.util.Localizer;
 import org.apache.openjpa.meta.ClassMetaData;
 import org.apache.openjpa.util.ImplHelper;
+import org.apache.openjpa.util.UnsupportedException;
 import org.apache.openjpa.util.UserException;
 
 /**
@@ -645,6 +646,14 @@ public class InMemoryExpressionFactory
 
     public Value type(Value val) {
         return new Type((Val) val);
+    }
+
+    public Value mapEntry(Value key, Value val) {
+        throw new UnsupportedException("not implemented yet");
+    }
+
+    public Value mapKey(Value key, Value val) {
+        throw new UnsupportedException("not implemented yet");
     }
 
     public Value getObjectId(Value val) {

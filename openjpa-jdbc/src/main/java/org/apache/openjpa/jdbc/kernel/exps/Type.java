@@ -40,7 +40,8 @@ class Type
     public Type(Val val) {
         super(val);
         setMetaData(val.getMetaData());
-        _disc = ((ClassMapping) getMetaData()).getDiscriminator();
+        if (getMetaData() != null)
+            _disc = ((ClassMapping) getMetaData()).getDiscriminator();
     }
 
     public ExpState initialize(Select sel, ExpContext ctx, int flags) {

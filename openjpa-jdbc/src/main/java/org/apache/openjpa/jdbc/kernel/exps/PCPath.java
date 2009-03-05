@@ -25,11 +25,14 @@ import java.util.LinkedList;
 import java.util.ListIterator;
 
 import org.apache.commons.lang.ObjectUtils;
+import org.apache.openjpa.enhance.PersistenceCapable;
 import org.apache.openjpa.jdbc.kernel.JDBCFetchConfiguration;
 import org.apache.openjpa.jdbc.meta.ClassMapping;
 import org.apache.openjpa.jdbc.meta.Discriminator;
 import org.apache.openjpa.jdbc.meta.FieldMapping;
+import org.apache.openjpa.jdbc.meta.JavaSQLTypes;
 import org.apache.openjpa.jdbc.meta.ValueMapping;
+import org.apache.openjpa.jdbc.meta.strats.HandlerRelationMapTableFieldStrategy;
 import org.apache.openjpa.jdbc.schema.Column;
 import org.apache.openjpa.jdbc.schema.ForeignKey;
 import org.apache.openjpa.jdbc.schema.Schemas;
@@ -40,6 +43,7 @@ import org.apache.openjpa.jdbc.sql.Select;
 import org.apache.openjpa.kernel.Broker;
 import org.apache.openjpa.kernel.Filters;
 import org.apache.openjpa.kernel.OpenJPAStateManager;
+import org.apache.openjpa.kernel.StateManagerImpl;
 import org.apache.openjpa.kernel.StoreContext;
 import org.apache.openjpa.kernel.exps.CandidatePath;
 import org.apache.openjpa.lib.util.Localizer;
@@ -240,6 +244,8 @@ public class PCPath
         if (pstate.field == null)
             return _class;
         if (_key) {
+            if (pstate.field.getKey().getValueMappedBy() != null)
+                return _class;
             if (pstate.field.getKey().getTypeCode() == JavaTypes.PC)
                 return pstate.field.getKeyMapping().getTypeMapping();
             return null;
@@ -363,8 +369,8 @@ public class PCPath
 
     public FieldMetaData last() {
         Action act = lastFieldAction();
-        return (act == null) ? null : isXPath() ? _xmlfield :
-            (FieldMetaData) act.data;
+        return (act == null || act.op == Action.GET_KEY) ? null : isXPath() ?
+            _xmlfield : (FieldMetaData) act.data;
     }
 
     /**
@@ -395,7 +401,8 @@ public class PCPath
         if (act != null && act.op == Action.GET_XPATH)
             return ((XMLMetaData) act.data).getType();
         
-        FieldMetaData fld = (act == null) ? null : (FieldMetaData) act.data;
+        FieldMetaData fld = (act == null || act.op == Action.GET_KEY) ? null : 
+            (FieldMetaData) act.data;
         boolean key = act != null && act.op == Action.GET_KEY;
         if (fld != null) {
             switch (fld.getDeclaredTypeCode()) {
@@ -437,7 +444,7 @@ public class PCPath
         Action action;
         Variable var;
         Iterator itr = (_actions == null) ? null : _actions.iterator();
-        FieldMapping field;
+        FieldMapping field = null;
         while (itr != null && itr.hasNext()) {
             action = (Action) itr.next();
 
@@ -459,7 +466,13 @@ public class PCPath
             } else {
                 // move past the previous field, if any
                 field = (action.op == Action.GET_XPATH) ? (FieldMapping) _xmlfield :
-                    (FieldMapping) action.data;
+                    (action.op == Action.GET_KEY) ? field : (FieldMapping) action.data;
+
+                // mark if the next traversal should go through
+                // the key rather than value
+                key = action.op == Action.GET_KEY;
+                forceOuter |= action.op == Action.GET_OUTER;
+
                 if (pstate.field != null) {
                     // if this is the second-to-last field and the last is
                     // the related field this field joins to, no need to
@@ -471,11 +484,6 @@ public class PCPath
                     }
                     rel = traverseField(pstate, key, forceOuter, false);
                 }
-
-                // mark if the next traversal should go through
-                // the key rather than value
-                key = action.op == Action.GET_KEY;
-                forceOuter |= action.op == Action.GET_OUTER;
 
                 // get mapping for the current field
                 pstate.field = field;
@@ -514,6 +522,11 @@ public class PCPath
         }
         if (_varName != null)
             pstate.joins = pstate.joins.setVariable(_varName);
+
+        // if last action is key action, avoid redundant joins
+        if (key) {
+            return pstate;
+        }
 
         // if we're not comparing to null or doing an isEmpty, then
         // join into the data on the final field; obviously we can't do these
@@ -740,19 +753,52 @@ public class PCPath
             if (pks)
                 return mapping.getObjectId(ctx.store, res, null, true, 
                     pstate.joins);
+            if (_key) {
+                if (pstate.field.getKey().getValueMappedBy() != null) {
+                    Object obj =  res.load(mapping, ctx.store, ctx.fetch,
+                        pstate.joins);
+                    StateManagerImpl sm = (StateManagerImpl) 
+                        ((PersistenceCapable) obj).pcGetStateManager();
+                    obj = sm.fetch(_class.getField(pstate.field.getKey().
+                        getValueMappedBy()).getIndex());
+                    return obj;
+                }
+                else if (pstate.field.getKey().isEmbedded())
+                    return loadEmbeddedMapKey(ctx, state, res);
+            }
+
             return res.load(mapping, ctx.store, ctx.fetch, pstate.joins);
         }
 
         Object ret;
         if (_key)
-            ret = pstate.field.loadKeyProjection(ctx.store, ctx.fetch, res, 
-                pstate.joins);
+            // Map key is a java primitive type
+            //    example: Map<Integer, Employee> emps
+            ret = res.getObject(pstate.cols[0],
+                JavaSQLTypes.JDBC_DEFAULT, pstate.joins);
         else
             ret = pstate.field.loadProjection(ctx.store, ctx.fetch, res, 
                 pstate.joins);
         if (_cast != null)
             ret = Filters.convert(ret, _cast);
         return ret;
+    }
+
+    private Object loadEmbeddedMapKey(ExpContext ctx, ExpState state,
+        Result res) throws SQLException {
+        PathExpState pstate = (PathExpState) state;
+        // consume keyProjection
+        PersistenceCapable pc = (PersistenceCapable) res.load(_candidate,
+            ctx.store, ctx.fetch, pstate.joins);
+        if (pstate.field.getStrategy() == null ||
+            !(pstate.field.getStrategy() instanceof
+                HandlerRelationMapTableFieldStrategy))
+            throw new RuntimeException("Invalid map field strategy");
+        HandlerRelationMapTableFieldStrategy strategy =
+            (HandlerRelationMapTableFieldStrategy) pstate.field.getStrategy();
+        return strategy
+            .loadKey((OpenJPAStateManager) pc.pcGetStateManager(),
+                ctx.store, ctx.fetch, res, pstate.joins);
     }
 
     public void calculateValue(Select sel, ExpContext ctx, ExpState state, 

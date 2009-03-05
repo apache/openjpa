@@ -408,6 +408,14 @@ public class JDBCExpressionFactory
         return new Type((Val) val);
     }
 
+    public Value mapEntry(Value key, Value val) {
+        return new MapEntry((Val) key, (Val) val);
+    }
+
+    public Value mapKey(Value key, Value val) {
+        return new MapKey((Val) key, (Val) val);
+    }
+
     public Value getObjectId(Value val) {
         if (val instanceof Const)
             return new ConstGetObjectId((Const) val);

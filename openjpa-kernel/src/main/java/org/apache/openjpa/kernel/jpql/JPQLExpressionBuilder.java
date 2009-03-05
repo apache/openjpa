@@ -49,6 +49,7 @@ import org.apache.openjpa.lib.util.Localizer;
 import org.apache.openjpa.lib.log.Log;
 import org.apache.openjpa.meta.ClassMetaData;
 import org.apache.openjpa.meta.FieldMetaData;
+import org.apache.openjpa.meta.JavaTypes;
 import org.apache.openjpa.meta.MetaDataRepository;
 import org.apache.openjpa.meta.ValueMetaData;
 import org.apache.openjpa.util.InternalException;
@@ -958,6 +959,17 @@ public class JPQLExpressionBuilder
             case JJTIDENTIFICATIONVARIABLE:
                 return getIdentifier(node);
 
+            case JJTQUALIFIEDPATH:
+                // TODO: to be implemented.
+
+            case JJTQUALIFIEDIDENTIFIER:
+                // KEY(e), VALUE(e), ENTRY(e)
+                return getQualifiedIdentifier(onlyChild(node));
+
+            case JJTGENERALIDENTIFIER:
+                // KEY(e), VALUE(e)
+                return getQualifiedIdentifier(onlyChild(node));
+
             case JJTNOT:
                 return factory.not(getExpression(onlyChild(node)));
 
@@ -1412,6 +1424,35 @@ public class JPQLExpressionBuilder
             new Object[]{ name }, null);
     }
 
+    private Value getQualifiedIdentifier(JPQLNode node) {
+        JPQLNode id = onlyChild(node);               
+        Path path = (Path) getValue(id);
+        
+        FieldMetaData fld = path.last();
+        
+        if (fld != null) {            
+            // validate the field is of type java.util.Map
+            if (fld.getDeclaredTypeCode() != JavaTypes.MAP) {
+                String oper = "VALUE";
+                if (node.id == JJTENTRY)
+                    oper = "ENTRY";        
+                else if (node.id == JJTKEY)
+                    oper = "KEY";
+                throw parseException(EX_USER, "bad-qualified-identifier",
+                    new Object[]{ id.text, oper}, null);
+            }
+        }        
+
+        if (node.id == JJTVALUE)
+            return path;
+
+        Value value = getValue(id);
+        if (node.id == JJTKEY)
+            return factory.mapKey(path, value);
+        else            
+            return factory.mapEntry(path, value);
+    }
+
     private Value getTypeLiteral(JPQLNode node) {
         JPQLNode type = onlyChild(node);
         final String name = type.text;
@@ -1460,7 +1501,7 @@ public class JPQLExpressionBuilder
     /**
      * Process type_discriminator
      *     type_discriminator ::=
-     *         TYPE(identification_variable |
+     *         TYPE(general_identification_variable |
      *         single_valued_object_path_expression |
      *         input_parameter )
      */
@@ -1474,6 +1515,9 @@ public class JPQLExpressionBuilder
 
         case JJTPOSITIONALINPUTPARAMETER:
             return factory.type(getParameter(node.text, true, false));
+
+        case JJTGENERALIDENTIFIER:
+            return factory.type(getQualifiedIdentifier(onlyChild(node)));
 
         default:
             // TODO: enforce jpa2.0 spec rules.
