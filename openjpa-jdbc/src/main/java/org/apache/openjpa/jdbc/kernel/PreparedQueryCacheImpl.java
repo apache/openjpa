@@ -72,6 +72,7 @@ public class PreparedQueryCacheImpl implements PreparedQueryCache {
         if (id == null 
             || query == null 
             || QueryLanguages.LANG_SQL.equals(query.getLanguage()) 
+            || QueryLanguages.LANG_METHODQL.equals(query.getLanguage())
             || isHinted(hints, QueryHints.HINT_IGNORE_PREPARED_QUERY)
             || isHinted(hints, QueryHints.HINT_INVALIDATE_PREPARED_QUERY))
             return Boolean.FALSE;

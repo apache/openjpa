@@ -18,20 +18,29 @@
  */
 package org.apache.openjpa.persistence.query;
 
+import java.util.Collections;
 import java.util.Map;
-import java.util.ArrayList;
 
-import org.apache.openjpa.persistence.test.SingleEMTestCase;
-import org.apache.openjpa.persistence.OpenJPAQuery;
-import org.apache.openjpa.persistence.QueryImpl;
-import org.apache.openjpa.persistence.ArgumentException;
+import org.apache.openjpa.kernel.FetchConfiguration;
+import org.apache.openjpa.kernel.Query;
 import org.apache.openjpa.kernel.QueryLanguages;
 import org.apache.openjpa.kernel.StoreContext;
-import org.apache.openjpa.kernel.FetchConfiguration;
-import org.apache.openjpa.meta.ClassMetaData;
-import org.apache.openjpa.lib.rop.ResultObjectProvider;
 import org.apache.openjpa.lib.rop.ListResultObjectProvider;
+import org.apache.openjpa.lib.rop.ResultObjectProvider;
+import org.apache.openjpa.meta.ClassMetaData;
+import org.apache.openjpa.persistence.ArgumentException;
+import org.apache.openjpa.persistence.OpenJPAQuery;
+import org.apache.openjpa.persistence.QueryImpl;
+import org.apache.openjpa.persistence.test.SingleEMTestCase;
 
+/**
+ * Tests MethodQL.
+ * 
+ * The 'user method' is simply echos the parameters set on the query.
+ *  
+ * @author Pinaki Poddar
+ *
+ */
 public class TestMethodQLQuery
     extends SingleEMTestCase {
 
@@ -40,21 +49,32 @@ public class TestMethodQLQuery
         setUp(SimpleEntity.class);
     }
 
+    OpenJPAQuery createMethodQuery(String method) {
+        String methodName = getClass().getName()+ "." + method;
+        return em.createQuery(QueryLanguages.LANG_METHODQL, methodName);
+    }
+    
+    public void testMethodQLWithParameters() {
+        OpenJPAQuery q = createMethodQuery("echo");
+        Query kernelQ = q.unwrap(Query.class);
+        kernelQ.declareParameters("String firstName, String lastName");
+        q.setParameter("firstName", "Fred").setParameter("lastName", "Lucas");
+        Object result = q.getResultList().get(0);
+        assertTrue(result instanceof Map);
+        Map params = (Map)result;
+        assertEquals("Fred", params.get("firstName"));
+        assertEquals("Lucas", params.get("lastName"));
+    }
+
     public void testMethodQLWithoutParametersDeclared() {
-        OpenJPAQuery q = em.createQuery(QueryLanguages.LANG_METHODQL,
-            getClass().getName() + ".echo");
-        ((QueryImpl) q).getDelegate().setCandidateType(
-            SimpleEntity.class, true);
-        q.setParameter("param", 5);
-        ((QueryImpl) q).getDelegate().declareParameters("Integer param");
-        assertEquals(5, q.getResultList().get(0));
+        OpenJPAQuery q = createMethodQuery("echo");
+        Object result = q.getResultList().get(0);
+        assertTrue(result instanceof Map);
+        assertTrue(((Map)result).isEmpty());
     }
 
     public void testInvalidMethodReturnType() {
-        OpenJPAQuery q = em.createQuery(QueryLanguages.LANG_METHODQL,
-            getClass().getName() + ".invalidReturnMeth");
-        ((QueryImpl) q).getDelegate().setCandidateType(
-            SimpleEntity.class, true);
+        OpenJPAQuery q = createMethodQuery("invalidReturnMeth");
         try {
             q.getResultList().get(0);
             fail("should have gotten an exception since method is invalid");
@@ -64,10 +84,7 @@ public class TestMethodQLQuery
     }
 
     public void testVoidMethodReturnType() {
-        OpenJPAQuery q = em.createQuery(QueryLanguages.LANG_METHODQL,
-            getClass().getName() + ".voidMeth");
-        ((QueryImpl) q).getDelegate().setCandidateType(
-            SimpleEntity.class, true);
+        OpenJPAQuery q = createMethodQuery("voidMeth");
         try {
             q.getResultList().get(0);
             fail("should have gotten an exception since method is invalid");
@@ -75,10 +92,14 @@ public class TestMethodQLQuery
             // expected
         }
     }
-
+    
+    /**
+     * Returns the list whose element is the Map of input parameters.
+     * @return
+     */
     public static ResultObjectProvider echo(StoreContext ctx,
         ClassMetaData meta, boolean subs, Map params, FetchConfiguration conf) {
-        return new ListResultObjectProvider(new ArrayList(params.values()));
+        return new ListResultObjectProvider(Collections.singletonList(params));
     }
 
     public static void voidMeth(StoreContext ctx,

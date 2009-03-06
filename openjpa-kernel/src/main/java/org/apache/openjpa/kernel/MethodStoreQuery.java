@@ -88,6 +88,10 @@ public class MethodStoreQuery
         return true;
     }
 
+    public boolean requiresCandidateType() {
+        return false;
+    }
+    
     /**
      * Parse the parameter declarations.
      */

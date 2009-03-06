@@ -1372,21 +1372,32 @@ import org.apache.openjpa.persistence.*;
 ...
 
 // the method query language is 'openjpa.MethodQL'.
-// set the query string to the method to execute, including full class name; if
-// the class is in the candidate class' package or in the query imports, you
-// can omit the package; if the method is in the candidate class, you can omit
-// the class name and just specify the method name
-OpenJPAEntityManager oem = OpenJPAPersistence.cast(emf);
-OpenJPAQuery q = oem.createQuery("openjpa.MethodQL", "com.xyz.Finder.getByName");
+// set the query string to the target method to execute, prefixed by fullly-
+// qualified class name.
+// If a candidate class has been specified for the query, then if the class is 
+// in the candidate class' package or in the query imports, you can omit the 
+// package. If the method is in the candidate class, you can omit the class name 
+// and just specify the method name.
 
-// set the type of objects that the method returns
-q.setResultClass(Person.class);
+  OpenJPAEntityManager oem = OpenJPAPersistence.cast(emf);
+  OpenJPAQuery q = oem.createQuery("openjpa.MethodQL", "com.xyz.Finder.getByName");
 
 // parameters are passed the same way as in standard queries
-q.setParameter("firstName", "Fred").setParameter("lastName", "Lucas");
+// but you have to declare the parameters with their types on the implementation
 
-// this executes your method to get the results
-List results = q.getResultList();
+// Unwrap the implementation and declare parameters with types in a 
+// comma-separated list
+  q.unwrap(org.apache.openjpa.kernel.Query.class)
+   .declareParameters("String firstName, String lastName");
+
+  q.setParameter("firstName", "Fred").setParameter("lastName", "Lucas");
+
+// this executes the target method to get the results
+  List results = q.getResultList();
+
+// The result is returned as a list but the element(s) in the list is determined 
+// by the returned value of the target method
+ 
 </programlisting>
             <para>
 For datastore queries, the method must have the following signature:
