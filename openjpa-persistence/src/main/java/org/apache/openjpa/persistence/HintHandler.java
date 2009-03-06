@@ -114,7 +114,7 @@ public class HintHandler {
     private static final Localizer _loc = Localizer.forPackage(
         HintHandler.class);
     
-    public HintHandler(QueryImpl impl) {
+    HintHandler(QueryImpl impl) {
         owner = impl;
     }
     
@@ -134,7 +134,7 @@ public class HintHandler {
      *         null (i.e. MAY BE) if the key is recognized, but not supported.
      *         TRUE if the key is supported.
      */
-    public Boolean record(String hint, Object value) {
+    private Boolean record(String hint, Object value) {
         if (hint == null)
             return Boolean.FALSE;
         if (isSupported(hint)) {
@@ -205,7 +205,7 @@ public class HintHandler {
     /**
      * Affirms the given key matches one of the supported keys.
      */
-    public boolean isSupported(String key) {
+    private boolean isSupported(String key) {
         return getSupportedHints().contains(key);
     }
     
@@ -213,7 +213,7 @@ public class HintHandler {
      * Affirms the given key has a prefix that matches with any of the 
      * supported prefixes.
      */
-    public boolean isSupportedPrefix(String key) {
+    private boolean isSupportedPrefix(String key) {
         return getKnownPrefixes().contains(getPrefixOf(key));
     }
     
@@ -230,7 +230,7 @@ public class HintHandler {
         return prefix + join + original;
     }
     
-    public static String removePrefix(String key, String prefix) {
+    private static String removePrefix(String key, String prefix) {
         if (prefix == null)
             return key;
         if (!prefix.endsWith(DOT))
@@ -245,7 +245,7 @@ public class HintHandler {
         return (index != -1) ? key.substring(0,index) : key;
     }
     
-    boolean isKnownHintPrefix(String key) {
+    private boolean isKnownHintPrefix(String key) {
         String prefix = getPrefixOf(key);
         return getKnownPrefixes().contains(prefix);
     }
@@ -259,6 +259,15 @@ public class HintHandler {
     }
     
     public void setHint(String key, Object value) {
+        owner.lock();
+        try {
+            setHintInternal(key, value);
+        } finally {
+            owner.unlock();
+        }
+    }
+    
+    private void setHintInternal(String key, Object value) {
         Boolean record = record(key, value);
         FetchConfiguration fetch = owner.getDelegate().getFetchConfiguration();
         ClassLoader loader = owner.getDelegate().getBroker().getClassLoader();
