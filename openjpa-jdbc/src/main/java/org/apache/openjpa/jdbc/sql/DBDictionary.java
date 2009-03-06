@@ -4280,7 +4280,7 @@ public class DBDictionary
             storeEx = new StoreException(msg);
         }
         if (recoverable != null) {
-            storeEx.setRecoverable(recoverable);
+            storeEx.setFatal(!recoverable);
         }
         return storeEx;
     }

@@ -165,7 +165,7 @@ public class PersistenceExceptions
                 (ke instanceof LockException ? ke : cause);
             if (lockEx != null && lockEx.getLockLevel() >= 
                 JPA2LockLevels.LOCK_PESSIMISTIC_READ) {
-                if (lockEx.isRecoverable()) {
+                if (!lockEx.isFatal()) {
                     e = new org.apache.openjpa.persistence
                         .LockTimeoutException(
                         ke.getMessage(), getNestedThrowables(ke),

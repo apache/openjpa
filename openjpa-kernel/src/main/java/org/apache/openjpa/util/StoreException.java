@@ -35,8 +35,6 @@ public class StoreException
     public static final int REFERENTIAL_INTEGRITY = 4;
     public static final int OBJECT_EXISTS = 5;
 
-    private boolean recoverable = false;
-
     public StoreException(String msg) {
         super(msg);
     }
@@ -59,13 +57,5 @@ public class StoreException
     
     public int getType() {
         return STORE;
-    }
-    
-    public void setRecoverable(boolean recoverable) {
-        this.recoverable = recoverable;
-    }
-
-    public boolean isRecoverable() {
-        return recoverable;
     }
 }
