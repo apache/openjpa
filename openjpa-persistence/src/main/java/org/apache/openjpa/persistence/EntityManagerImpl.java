@@ -1525,8 +1525,14 @@ public class EntityManagerImpl
     }
 
     public <T> T unwrap(Class<T> cls) {
-        throw new UnsupportedOperationException(
-            "JPA 2.0 - Method not yet implemented");
+        Object[] delegates = new Object[]{_broker.getInnermostDelegate(),
+            _broker.getDelegate(), _broker, this};
+        for (Object o : delegates) {
+            if (cls.isInstance(o))
+                return (T)o;
+        }
+        throw new PersistenceException(_loc.get("unwrap-em-invalid", cls)
+            .toString(), null, this, false);
     }
     
     

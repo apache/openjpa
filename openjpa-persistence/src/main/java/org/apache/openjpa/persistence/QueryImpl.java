@@ -562,9 +562,24 @@ public class QueryImpl implements OpenJPAQuerySPI, Serializable {
             "JPA 2.0 - Method not yet implemented");
     }
 
+    /**
+     * Returns the innermost implementation that is an instance of the given 
+     * class. 
+     * 
+     * @throws PersistenceException if none in the delegate chain is an 
+     * instance of the given class.
+     * 
+     * @since 2.0.0
+     */
     public <T> T unwrap(Class<T> cls) {
-        throw new UnsupportedOperationException(
-            "JPA 2.0 - Method not yet implemented");
+        Object[] delegates = new Object[]{_query.getInnermostDelegate(), 
+            _query.getDelegate(), _query, this};
+        for (Object o : delegates) {
+            if (cls.isInstance(o))
+                return (T)o;
+        }
+        throw new PersistenceException(_loc.get("unwrap-query-invalid", cls)
+            .toString(), null, this, false);
     }
     
     //
