@@ -43,6 +43,7 @@ import org.apache.commons.collections.iterators.EmptyIterator;
 import org.apache.commons.lang.StringUtils;
 import org.apache.openjpa.jdbc.conf.JDBCConfiguration;
 import org.apache.openjpa.jdbc.kernel.EagerFetchModes;
+import org.apache.openjpa.jdbc.kernel.FinderQueryImpl;
 import org.apache.openjpa.jdbc.kernel.JDBCFetchConfiguration;
 import org.apache.openjpa.jdbc.kernel.JDBCLockManager;
 import org.apache.openjpa.jdbc.kernel.JDBCStore;
@@ -441,6 +442,15 @@ public class SelectImpl
     
     /**
      * This method is to provide override for non-JDBC or JDBC-like 
+     * implementation of preparing statement.
+     */
+    public PreparedStatement prepareStatement(Connection conn, 
+        String sql) throws SQLException {
+        return conn.prepareStatement(sql);
+    }    
+    
+    /**
+     * This method is to provide override for non-JDBC or JDBC-like 
      * implementation of setting query timeout.
      */
     protected void setTimeout(PreparedStatement stmnt, boolean forUpdate,
@@ -469,6 +479,16 @@ public class SelectImpl
         return stmnt.executeQuery();
     }
     
+    /**
+     * This method is to provide override for non-JDBC or JDBC-like 
+     * implementation of executing query.
+     */
+    public ResultSet executeQuery(Connection conn, PreparedStatement stmnt, 
+        FinderQueryImpl finder, JDBCStore store, Object[] params) 
+        throws SQLException {
+        return stmnt.executeQuery();
+    }
+
     /**
      * This method is to provide override for non-JDBC or JDBC-like 
      * implementation of getting count from the result set.

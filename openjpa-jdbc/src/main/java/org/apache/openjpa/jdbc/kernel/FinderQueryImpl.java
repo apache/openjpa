@@ -109,6 +109,10 @@ public class FinderQueryImpl
         return _sql;
     }
     
+    public Column[] getPKColumns() {
+        return _pkCols;
+    }
+    
     private Object[] getPKValues(OpenJPAStateManager sm, JDBCStore store) {
         Object[] pks = null;
         Object oid = sm.getObjectId();
@@ -138,12 +142,15 @@ public class FinderQueryImpl
         PreparedStatement stmnt = null;
         ResultSet rs = null;
         try {
-            stmnt = conn.prepareStatement(_sql);
+            stmnt = _select.prepareStatement(conn, _sql);
             Object[] params = getPKValues(sm, jstore);
-            for (int i = 0; i <params.length; i++) {
-                dict.setUnknown(stmnt, i+1, params[i], _pkCols[i]);
+            if (stmnt != null) {
+                for (int i = 0; i <params.length; i++) {
+                    dict.setUnknown(stmnt, i+1, params[i], _pkCols[i]);
+                }
             }
-            rs = stmnt.executeQuery();
+
+            rs = _select.executeQuery(conn, stmnt, this, jstore, params);
             return _select.getEagerResult(conn, stmnt, rs, jstore, 
                 (JDBCFetchConfiguration)fetch, forUpdate, _buffer);
         } catch (SQLException se) {
