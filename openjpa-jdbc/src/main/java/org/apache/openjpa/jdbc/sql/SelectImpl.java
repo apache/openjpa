@@ -43,7 +43,6 @@ import org.apache.commons.collections.iterators.EmptyIterator;
 import org.apache.commons.lang.StringUtils;
 import org.apache.openjpa.jdbc.conf.JDBCConfiguration;
 import org.apache.openjpa.jdbc.kernel.EagerFetchModes;
-import org.apache.openjpa.jdbc.kernel.FinderQueryImpl;
 import org.apache.openjpa.jdbc.kernel.JDBCFetchConfiguration;
 import org.apache.openjpa.jdbc.kernel.JDBCLockManager;
 import org.apache.openjpa.jdbc.kernel.JDBCStore;
