@@ -45,6 +45,10 @@ public class LockException
     }
 
     public LockException(Object failed, int timeout) {
+        this(failed, timeout, -1);
+    }
+    
+    public LockException(Object failed, int timeout, int lockLevel) {
         super(_loc.get("lock-timeout", Exceptions.toString(failed),
             String.valueOf(timeout)));
         setFailedObject(failed);
