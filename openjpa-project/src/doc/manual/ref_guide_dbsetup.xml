@@ -3216,8 +3216,39 @@ more info about <literal>deleteTableContents</literal>.) Defaults to
 <literal>false</literal>, since the statement may fail if using InnoDB
 tables and delete constraints.
                     </para>
+                    
                 </listitem>
             </itemizedlist>
+            
+                    <para>
+Starting with Connector/J 3.1.7, MySQL supports a variant of the driver 
+<literal>com.mysql.jdbc.ReplicationDriver</literal> that automatically sends 
+queries to a read/write master, or a failover or round-robin load balanced set 
+of slaves based on the state of read-only status of the connection. 
+See  <ulink url="http://dev.mysql.com/doc/refman/5.1/en/connector-j-reference-replication-connection.html">
+MySQL Reference</ulink> for more details. 
+                    </para>
+                    <para>
+This replication feature can be used transparently with OpenJPA application by
+following configuration:
+                    </para>
+        <itemizedlist>
+           <listitem>
+             <para>
+<literal>openjpa.ConnectionDriverName: com.mysql.jdbc.ReplicationDriver</literal>
+             </para>
+           </listitem>
+           <listitem>
+             <para>
+<literal>openjpa.ConnectionFactoryProperties: autoReconnect=true,roundRobinLoadBalance=true</literal>
+             </para>
+             <para>
+OpenJPA will use a read-only connection with replicated database configuration
+and will automatically switch the connection to a non-readonly mode if the
+transaction is writing to the database.             
+             </para>
+           </listitem>
+         </itemizedlist>
         </section>
         <section id="ref_guide_dbsetup_dbsupport_oracle">
             <title>

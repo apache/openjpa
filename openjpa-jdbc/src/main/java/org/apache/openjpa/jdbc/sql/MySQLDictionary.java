@@ -146,6 +146,13 @@ public class MySQLDictionary
         }
     }
 
+    public Connection decorate(Connection conn)  throws SQLException {
+        String driver = conf.getConnectionDriverName();
+        if ("com.mysql.jdbc.ReplicationDriver".equals(driver))
+            conn.setReadOnly(true);
+        return conn;
+    }
+    
     private static int[] getMajorMinorVersions(String versionStr)
         throws IllegalArgumentException {
         int beginIndex = 0;

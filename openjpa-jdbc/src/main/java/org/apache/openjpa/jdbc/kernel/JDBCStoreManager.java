@@ -641,6 +641,11 @@ public class JDBCStoreManager
     }
 
     public Collection flush(Collection sms) {
+        try {
+            if (_conn != null && _conn.getInnermostDelegate().isReadOnly())
+                _conn.setReadOnly(false);
+        } catch (SQLException e) {
+        }
         return _conf.getUpdateManagerInstance().flush(sms, this);
     }
 
