@@ -215,6 +215,25 @@ public interface ValueMetaData
      * @see #getCascadeAttach
      */
     public void setCascadeAttach(int cascade);
+    
+    /**
+     * Cascade behavior for detach operation. Only applies to
+     * persistence-capable values. Options are:<br />
+     * <ul>
+     * <li><code>CASCADE_NONE</code>: No cascades of detach. Relation
+     * remains attached.</li>
+     * <li><code>CASCADE_IMMEDIATE</code>: Value is detached immediately.</li>
+     * </ul>
+     */
+    public int getCascadeDetach();
+
+    /**
+     * Cascade behavior for detach operation.
+     *
+     * @see #getCascadeDetach
+     */
+    public void setCascadeDetach(int cascade);
+
 
     /**
      * Cascade behavior for refresh operation. Only applies to

@@ -1335,6 +1335,10 @@ public class EntityManagerImpl
                     throw new UserException(_loc.get("not-managed",
                         Exceptions.toString(obj))).setFailedObject(obj);
                 break;
+            case OP_DETACH:
+                if (sm == null || !sm.isPersistent() || sm.isDetached())
+                    return ACT_NONE;
+                break;
         }
         return ACT_RUN | ACT_CASCADE;
     }
@@ -1492,8 +1496,7 @@ public class EntityManagerImpl
     }
 
     public void clear(Object entity) {
-        throw new UnsupportedOperationException(
-            "JPA 2.0 - Method not yet implemented");
+        _broker.detach(entity, this);
     }
 
     public Query createQuery(QueryDefinition qdef) {

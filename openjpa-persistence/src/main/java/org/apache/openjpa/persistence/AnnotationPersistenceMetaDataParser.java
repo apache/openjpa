@@ -1577,10 +1577,13 @@ public class AnnotationPersistenceMetaDataParser
                 vmd.setCascadePersist(ValueMetaData.CASCADE_IMMEDIATE);
             if (cascade == CascadeType.ALL || cascade == CascadeType.MERGE)
                 vmd.setCascadeAttach(ValueMetaData.CASCADE_IMMEDIATE);
+            if (cascade == CascadeType.ALL || cascade == CascadeType.CLEAR)
+                vmd.setCascadeDetach(ValueMetaData.CASCADE_IMMEDIATE);
             if (cascade == CascadeType.ALL || cascade == CascadeType.REFRESH)
                 vmd.setCascadeRefresh(ValueMetaData.CASCADE_IMMEDIATE);
         }
     }
+    
     private void setOrphanRemoval(ValueMetaData vmd, boolean orphanRemoval) {
         if (orphanRemoval) 
             vmd.setCascadeDelete(ValueMetaData.CASCADE_AUTO);

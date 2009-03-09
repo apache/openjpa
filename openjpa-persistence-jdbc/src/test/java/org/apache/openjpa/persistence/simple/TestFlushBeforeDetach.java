@@ -36,7 +36,7 @@ public class TestFlushBeforeDetach extends SQLListenerTestCase {
     
     public void setUp() {
       setUp(Item.class,"openjpa.Compatibility", 
-                "default(flushBeforeDetach=false)");
+                "default(flushBeforeDetach=false,copyOnDetach=true)");
         persistSampleEntity();
     }
     

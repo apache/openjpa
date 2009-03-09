@@ -55,9 +55,10 @@ public class Compatibility {
     private boolean _nonOptimisticVersionCheck = false;
     private int _jpql = JPQL_WARN;
     private boolean _storeMapCollectionInEntityAsBlob = false;
-    private boolean _flushBeforeDetach = true; 
+    private boolean _flushBeforeDetach = false; 
     private boolean _useJPA2DefaultOrderColumnName = true;
-
+    private boolean _copyOnDetach = false;
+    
     /**
      * Whether to require exact identity value types when creating object
      * ids from a class and value. Defaults to false.
@@ -268,6 +269,39 @@ public class Compatibility {
      */
     public void setFlushBeforeDetach(boolean beforeDetach) {
         _flushBeforeDetach = beforeDetach;
+    }
+    
+    /**
+     * Affirms if detached entities are copy of the managed instances.
+     * Before this option is introduced, detached entities were by default 
+     * copies of the managed entities unless the entire cache is detached, only 
+     * then the detachment was in-place.
+     * This option changes the default behavior such that detachment is now
+     * in-place by default. To emulate the previous copy-on-detach behavior
+     * set this option to true.  
+     * 
+     * If the entire cache is being detached (when the persistence context is
+     * closed, for example), the detachement 
+     * 
+     * @since 2.0.0
+     */
+    public boolean getCopyOnDetach() {
+        return _copyOnDetach;
+    }
+    
+    /**
+     * Sets if detached entities are copy of the managed instances.
+     * Before this option is introduced, detached entities were by default 
+     * copies of the managed entities unless the entire cache is detached, only 
+     * then the detachment was in-place.
+     * This option changes the default behavior such that detachment is now
+     * in-place by default. To emulate the previous copy-on-detach behavior
+     * set this option to true.   
+     * 
+     * @since 2.0.0
+     */
+    public void setCopyOnDetach(boolean copyOnDetach) {
+        _copyOnDetach = copyOnDetach;
     }
 
     /**

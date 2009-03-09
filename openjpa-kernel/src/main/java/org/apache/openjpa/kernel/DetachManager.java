@@ -34,7 +34,9 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.collections.map.IdentityMap;
+import org.apache.openjpa.conf.Compatibility;
 import org.apache.openjpa.conf.DetachOptions;
+import org.apache.openjpa.conf.OpenJPAConfiguration;
 import org.apache.openjpa.enhance.PersistenceCapable;
 import org.apache.openjpa.event.CallbackModes;
 import org.apache.openjpa.event.LifecycleEvent;
@@ -42,6 +44,8 @@ import org.apache.openjpa.lib.util.Localizer;
 import org.apache.openjpa.meta.ClassMetaData;
 import org.apache.openjpa.meta.FieldMetaData;
 import org.apache.openjpa.meta.JavaTypes;
+import org.apache.openjpa.meta.MetaDataRepository;
+import org.apache.openjpa.meta.ValueMetaData;
 import org.apache.openjpa.util.CallbackException;
 import org.apache.openjpa.util.ObjectNotFoundException;
 import org.apache.openjpa.util.Proxy;
@@ -173,7 +177,7 @@ public class DetachManager
 
             // clear lrs fields
             FieldMetaData[] fmds = sm.getMetaData().getFields();
-            for (int i = 0; i < fmds.length; i++)
+            for (int i = 0; i < fmds.length; i++) 
                 if (fmds[i].isLRS())
                     idxs.clear(i);
         }
@@ -244,6 +248,7 @@ public class DetachManager
                 idxs.set(i);
         }
     }
+    
 
     /**
      * Constructor.
@@ -255,16 +260,20 @@ public class DetachManager
      */
     public DetachManager(BrokerImpl broker, boolean full, OpCallbacks call) {
         _broker = broker;
-        _proxy = broker.getConfiguration().getProxyManagerInstance();
-        _opts = broker.getConfiguration().getDetachStateInstance();
-        _copy = !full;
-        _flushed = full;
         _call = call;
-        _failFast = (broker.getConfiguration().getMetaDataRepositoryInstance().
-            getMetaDataFactory().getDefaults().getCallbackMode()
-            & CallbackModes.CALLBACK_FAIL_FAST) != 0;
+        OpenJPAConfiguration conf = broker.getConfiguration();
+        _proxy = conf.getProxyManagerInstance();
+        _opts = conf.getDetachStateInstance();
+        
+        Compatibility compat = conf.getCompatibilityInstance();
+        MetaDataRepository repos  = conf.getMetaDataRepositoryInstance();
+        _copy = full ? false : compat.getCopyOnDetach();
+        _flushed = full;
+        _flushBeforeDetach = compat.getFlushBeforeDetach();
+        _failFast = (repos.getMetaDataFactory().getDefaults().getCallbackMode()
+                   & CallbackModes.CALLBACK_FAIL_FAST) != 0;
 
-        // we can only rely on our "all" shortcuts if we know we won't be
+        // we can only rely on our "full" shortcuts if we know we won't be
         // loading any more data
         _full = full && broker.getDetachState() == DetachState.DETACH_LOADED;
         if (_full) {
@@ -274,9 +283,6 @@ public class DetachManager
             _detached = new IdentityMap();
             _fullFM = null;
         }
-        _flushBeforeDetach =
-                broker.getConfiguration().getCompatibilityInstance()
-                        .getFlushBeforeDetach();
     }
 
     /**
@@ -465,7 +471,7 @@ public class DetachManager
         if (!Boolean.FALSE.equals(sm.getMetaData().usesDetachedState()))
             detachedPC.pcSetDetachedState(getDetachedState(sm, fields));
         if (!_copy)
-            sm.release(false, !_copy);
+            sm.release(false, true);
         if (detSM != null)
             detachedPC.pcReplaceStateManager(detSM);
         return detachedPC;

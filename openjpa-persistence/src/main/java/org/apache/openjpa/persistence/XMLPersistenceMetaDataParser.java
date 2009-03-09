@@ -1156,6 +1156,9 @@ public class XMLPersistenceMetaDataParser
                 case MERGE:
                     vmd.setCascadeAttach(ValueMetaData.CASCADE_IMMEDIATE);
                     break;
+                case CLEAR:
+                    vmd.setCascadeDetach(ValueMetaData.CASCADE_IMMEDIATE);
+                    break;
                 case REMOVE:
                     vmd.setCascadeDelete(ValueMetaData.CASCADE_IMMEDIATE);
                     break;

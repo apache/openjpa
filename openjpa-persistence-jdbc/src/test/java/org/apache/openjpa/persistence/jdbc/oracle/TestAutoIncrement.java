@@ -20,6 +20,7 @@ package org.apache.openjpa.persistence.jdbc.oracle;
 
 import javax.persistence.EntityManager;
 
+import org.apache.openjpa.persistence.test.DatabasePlatform;
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
 
 /**
@@ -37,14 +38,12 @@ import org.apache.openjpa.persistence.test.SingleEMFTestCase;
  * @author Pinaki Poddar
  * 
  */
+
+@DatabasePlatform("oracle.jdbc.driver.OracleDriver")
 public class TestAutoIncrement extends SingleEMFTestCase {
 	private static String PLATFORM = "oracle";
 
 	public void setUp() throws Exception {
-	    // run with -Dplatform= ${PLATFORM} to activate
-		if (!isTargetPlatform(PLATFORM)) {
-			return;
-		}
 		if ("testAutoIncrementIdentityWithNamedSequence".equals(getName())) {
 			super.setUp(CLEAR_TABLES, PObject.class,
 			    "openjpa.jdbc.DBDictionary",

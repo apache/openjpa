@@ -50,6 +50,7 @@ public class ValueMetaDataImpl
     private int _delete = CASCADE_NONE;
     private int _persist = CASCADE_AUTO;
     private int _attach = CASCADE_IMMEDIATE;
+    private int _detach = CASCADE_AUTO;
     private int _refresh = CASCADE_AUTO;
     private boolean _serialized = false;
     private Boolean _embedded = null;
@@ -257,6 +258,16 @@ public class ValueMetaDataImpl
         _attach = attach;
     }
 
+    public int getCascadeDetach() {
+        if (isEmbedded())
+            return CASCADE_IMMEDIATE;
+        return _detach;
+    }
+
+    public void setCascadeDetach(int detach) {
+        _detach = detach;
+    }
+
     public int getCascadeRefresh() {
         if (_owner.getManagement() != FieldMetaData.MANAGE_PERSISTENT
             || !isDeclaredTypePC()) // refresh acts on declared type
@@ -451,6 +462,7 @@ public class ValueMetaDataImpl
         _delete = vmd.getCascadeDelete();
         _persist = vmd.getCascadePersist();
         _attach = vmd.getCascadeAttach();
+        _detach = vmd.getCascadeDetach();
         _refresh = vmd.getCascadeRefresh();
         _typeOverride = vmd.getTypeOverride();
         _serialized = vmd.isSerialized();

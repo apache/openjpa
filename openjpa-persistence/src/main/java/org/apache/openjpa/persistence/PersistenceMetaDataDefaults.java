@@ -221,12 +221,13 @@ public class PersistenceMetaDataDefaults
     }
 
     /**
-     * Turns off auto cascading of persist, refresh, attach.
+     * Turns off auto cascading of persist, refresh, attach, detach.
      */
     static void setCascadeNone(ValueMetaData vmd) {
         vmd.setCascadePersist(ValueMetaData.CASCADE_NONE);
         vmd.setCascadeRefresh(ValueMetaData.CASCADE_NONE);
         vmd.setCascadeAttach(ValueMetaData.CASCADE_NONE);
+        vmd.setCascadeDetach(ValueMetaData.CASCADE_NONE);
     }
 
     @Override

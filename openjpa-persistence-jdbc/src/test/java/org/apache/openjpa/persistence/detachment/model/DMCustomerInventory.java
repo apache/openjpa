@@ -18,7 +18,7 @@
  */
 package org.apache.openjpa.persistence.detachment.model;
 
-import javax.persistence.CascadeType;
+import static javax.persistence.CascadeType.*;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
@@ -29,12 +29,12 @@ public class DMCustomerInventory  {
     private static long idCounter = System.currentTimeMillis();
     @Id private long id = idCounter++;
 
-    @ManyToOne(cascade=CascadeType.ALL)
+    @ManyToOne(cascade={PERSIST, MERGE, REFRESH})
     @JoinColumn(name = "CI_ITEMID")
     private DMItem  item;    
     private int quantity;
 
-    @ManyToOne(cascade=CascadeType.MERGE)
+    @ManyToOne(cascade=MERGE)
     @JoinColumn(name="CI_CUSTOMERID")
     private DMCustomer customer;
 

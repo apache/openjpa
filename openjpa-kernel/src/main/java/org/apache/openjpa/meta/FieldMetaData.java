@@ -2015,6 +2015,14 @@ public class FieldMetaData
     public void setCascadeAttach(int attach) {
         _val.setCascadeAttach(attach);
     }
+    
+    public int getCascadeDetach() {
+        return _val.getCascadeDetach();
+    }
+
+    public void setCascadeDetach(int detach) {
+        _val.setCascadeDetach(detach);
+    }
 
     public int getCascadeRefresh() {
         return _val.getCascadeRefresh();
