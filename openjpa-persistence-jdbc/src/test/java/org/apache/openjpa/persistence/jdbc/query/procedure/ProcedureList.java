@@ -34,7 +34,8 @@ public abstract class ProcedureList {
     // This method should also be overriden, but it needs to be static so 
     // that it can be called as a stored procedure
     public static void addXToCharlie () throws Exception {
-        Exception e = new Exception ("Method not implemented by inheriting class");
+        Exception e = new Exception ("Method not implemented by inheriting " +
+        		"class");
         throw e;
     }
 }

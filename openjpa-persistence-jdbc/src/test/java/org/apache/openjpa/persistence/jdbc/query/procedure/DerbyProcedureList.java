@@ -34,7 +34,8 @@ public class DerbyProcedureList extends ProcedureList {
 
         retList.add ("create procedure ADD_X_TO_CHARLIE () " +
                      "PARAMETER STYLE JAVA LANGUAGE JAVA MODIFIES SQL DATA " +
-                     "EXTERNAL NAME 'org.apache.openjpa.persistence.jdbc.query.procedure.DerbyProcedureList.addXToCharlie'");
+                     "EXTERNAL NAME 'org.apache.openjpa.persistence.jdbc." +
+                     "query.procedure.DerbyProcedureList.addXToCharlie'");
 
         return retList;
     }
@@ -52,8 +53,10 @@ public class DerbyProcedureList extends ProcedureList {
     }
 
     public static void addXToCharlie () throws Exception {
-        Connection conn = DriverManager.getConnection("jdbc:default:connection");
-        PreparedStatement ps1 = conn.prepareStatement("update APPLICANT set name = 'Charliex' where name = 'Charlie'");
+        Connection conn = DriverManager.getConnection("jdbc:default:" +
+        		"connection");
+        PreparedStatement ps1 = conn.prepareStatement("update APPLICANT set" +
+        		" name = 'Charliex' where name = 'Charlie'");
         ps1.executeUpdate();
 
         conn.close();
