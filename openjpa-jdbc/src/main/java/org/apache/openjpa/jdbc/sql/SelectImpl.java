@@ -483,7 +483,7 @@ public class SelectImpl
      * implementation of executing query.
      */
     public ResultSet executeQuery(Connection conn, PreparedStatement stmnt, 
-        String sql, JDBCStore store, Object[] params) 
+        String sql, JDBCStore store, Object[] params, Column[] cols) 
         throws SQLException {
         return stmnt.executeQuery();
     }

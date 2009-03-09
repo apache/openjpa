@@ -151,7 +151,7 @@ public class FinderQueryImpl
             }
 
             rs = _select.executeQuery(conn, stmnt, getQueryString(), jstore,
-                params);
+                params, _pkCols);
             return _select.getEagerResult(conn, stmnt, rs, jstore, 
                 (JDBCFetchConfiguration)fetch, forUpdate, _buffer);
         } catch (SQLException se) {
