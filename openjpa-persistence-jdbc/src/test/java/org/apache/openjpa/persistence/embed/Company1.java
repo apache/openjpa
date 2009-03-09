@@ -24,6 +24,7 @@ import java.util.Map;
 import javax.persistence.*;
 
 @Entity
+@Table(schema="embed", name="Comp1")
 public class Company1 {
     @Id
     int id;

@@ -21,6 +21,7 @@ package org.apache.openjpa.persistence.embed;
 import javax.persistence.*;
 
 @Entity
+@Table(schema="embed", name="VP")
 public class VicePresident {
     @Id
     int id;

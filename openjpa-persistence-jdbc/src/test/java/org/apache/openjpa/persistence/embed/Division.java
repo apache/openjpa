@@ -20,8 +20,10 @@ package org.apache.openjpa.persistence.embed;
 
 import javax.persistence.Entity;
 import javax.persistence.Id;
+import javax.persistence.Table;
 
 @Entity
+@Table(schema="embed", name="Division")
 public class Division {
     @Id
     int id;

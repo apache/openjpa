@@ -124,7 +124,7 @@ public class HandlerRelationMapTableFieldStrategy
         ValueMapping vm = field.getElementMapping();
         ForeignKey fk = vm.getForeignKey(val);
         if (fk == null)
-            return null;
+            return joins;
         return joins.joinRelation(field.getName(), fk, val,
             vm.getSelectSubclasses(), false, false);
     }
@@ -322,12 +322,15 @@ public class HandlerRelationMapTableFieldStrategy
                 throw RelationStrategies.unjoinable(val);
             return joins;
         }
+        ForeignKey fk = val.getForeignKey(clss[0]);
+        if (fk == null)
+            return joins;
         if (forceOuter)
             return joins.outerJoinRelation(field.getName(),
-                val.getForeignKey(clss[0]), clss[0], val.getSelectSubclasses(),
+                fk, clss[0], val.getSelectSubclasses(),
                 false, false);
         return joins.joinRelation(field.getName(),
-            val.getForeignKey(clss[0]), clss[0], val.getSelectSubclasses(), 
+                fk, clss[0], val.getSelectSubclasses(), 
             false, false);
     }
 
