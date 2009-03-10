@@ -221,7 +221,7 @@ public class DBDictionaryFactory {
             return dbdictionaryPlugin.unalias("sybase");
         if (prod.indexOf("adaptive server") != -1)
             return dbdictionaryPlugin.unalias("sybase");
-        if (prod.indexOf("informix") != -1)
+        if (prod.indexOf("informix") != -1 || prod.indexOf("ids") != -1)
             return dbdictionaryPlugin.unalias("informix");
         if (prod.indexOf("hsql") != -1)
             return dbdictionaryPlugin.unalias("hsql");
