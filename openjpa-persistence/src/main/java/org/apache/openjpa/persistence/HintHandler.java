@@ -271,12 +271,12 @@ public class HintHandler {
     
     private void setHintInternal(String key, Object value) {
         Boolean record = record(key, value);
-        FetchConfiguration fetch = owner.getDelegate().getFetchConfiguration();
+        FetchPlan plan = owner.getFetchPlan();
         ClassLoader loader = owner.getDelegate().getBroker().getClassLoader();
         if (record == Boolean.FALSE)
             return;
         if (record == null) {
-            fetch.setHint(key, value);
+            plan.setHint(key, value);
             return;
         }
         try {
@@ -302,25 +302,23 @@ public class HintHandler {
                     owner.addAggregateListener(arr[i]);
             } else if (isFetchPlanHint(key)) {
                 if (requiresTransaction(key))
-                    ((FetchPlanImpl)owner.getFetchPlan()).getDelegate()
-                        .setHint(key, value);
+                    plan.setHint(key, value);
                 else 
-                    hintToSetter(owner.getFetchPlan(), 
-                        getFetchPlanProperty(key), value);
+                    hintToSetter(plan, getFetchPlanProperty(key), value);
             } else if (HINT_RESULT_COUNT.equals(key)) {
                 int v = (Integer)Filters.convert(value, Integer.class);
                 if (v < 0)
                     throw new ArgumentException(_loc.get("bad-query-hint-value", 
                         key, value), null,  null, false);
-                    fetch.setHint(key, v);
+                    plan.setHint(key, v);
             }  else if (HINT_INVALIDATE_PREPARED_QUERY.equals(key)) {
-                fetch.setHint(key, Filters.convert(value, Boolean.class));
+                plan.setHint(key, Filters.convert(value, Boolean.class));
                 owner.invalidatePreparedQuery();
             } else if (HINT_IGNORE_PREPARED_QUERY.equals(key)) {
-                fetch.setHint(key, Filters.convert(value, Boolean.class));
+                plan.setHint(key, Filters.convert(value, Boolean.class));
                 owner.ignorePreparedQuery();
             } else { // default 
-                fetch.setHint(key, value);
+                plan.setHint(key, value);
             }
             return;
         } catch (IllegalArgumentException iae) {

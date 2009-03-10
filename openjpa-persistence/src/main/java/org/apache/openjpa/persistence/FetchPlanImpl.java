@@ -22,6 +22,9 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Iterator;
+import java.util.Map;
+import java.util.Set;
+
 import javax.persistence.LockModeType;
 
 import org.apache.openjpa.kernel.DelegatingFetchConfiguration;
@@ -268,6 +271,18 @@ public class FetchPlanImpl
         return this;
     }
 
+    public Object getHint(String key) {
+        return _fetch.getHint(key);
+    }
+    
+    public void setHint(String key, Object value) {
+        _fetch.setHint(key, value);
+    }
+    
+    public Map<String, Object> getHints() {
+        return _fetch.getHints();
+    }
+    
     public int hashCode() {
         return _fetch.hashCode();
     }

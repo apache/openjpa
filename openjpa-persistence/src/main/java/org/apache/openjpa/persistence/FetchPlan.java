@@ -19,6 +19,9 @@
 package org.apache.openjpa.persistence;
 
 import java.util.Collection;
+import java.util.Map;
+import java.util.Set;
+
 import javax.persistence.LockModeType;
 
 import org.apache.openjpa.kernel.FetchConfiguration;
@@ -111,6 +114,27 @@ public interface FetchPlan {
      * @deprecated use {@link #setQueryResultCacheEnabled} instead.
      */
     public FetchPlan setQueryResultCache(boolean cache);
+    
+    /**
+     * Gets the hint for the given key.
+     * 
+     * @since 2.0.0
+     */
+    public Object getHint(String key);
+    
+    /**
+     * Sets the hint for the given key to the given value.
+     * 
+     * @since 2.0.0
+     */
+    public void setHint(String key, Object value);
+    
+    /**
+     * Gets the hint keys and values currently set of this receiver.
+     * 
+     * @since 2.0.0
+     */
+    public Map<String, Object> getHints();
 
     /**
      * Returns the names of the fetch groups that this component will use
