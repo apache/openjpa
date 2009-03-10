@@ -48,7 +48,6 @@ import org.apache.openjpa.conf.OpenJPAConfiguration;
 import org.apache.openjpa.ee.ManagedRuntime;
 import org.apache.openjpa.enhance.PCEnhancer;
 import org.apache.openjpa.enhance.PCRegistry;
-import org.apache.openjpa.jdbc.conf.JDBCConfiguration;
 import org.apache.openjpa.jdbc.kernel.JDBCFetchConfiguration;
 import org.apache.openjpa.kernel.AbstractBrokerFactory;
 import org.apache.openjpa.kernel.Broker;
@@ -716,6 +715,7 @@ public class EntityManagerImpl
 
     public void refresh(Object entity) {
         assertNotCloseInvoked();
+        assertValidAttchedEntity(entity);
         _broker.assertWriteOperation();
         _broker.refresh(entity, this);
     }
@@ -727,6 +727,8 @@ public class EntityManagerImpl
     public void refresh(Object entity, LockModeType mode,
         Map<String, Object> properties) {
         assertNotCloseInvoked();
+        assertValidAttchedEntity(entity);
+        _broker.assertActiveTransaction();
         _broker.assertWriteOperation();
 
         boolean fcPushed = pushLockProperties(mode, properties);
@@ -1078,22 +1080,26 @@ public class EntityManagerImpl
 
     public void lock(Object entity, LockModeType mode) {
         assertNotCloseInvoked();
+        assertValidAttchedEntity(entity);
         _broker.lock(entity, JPA2LockLevels.toLockLevel(mode), -1, this);
     }
 
     public void lock(Object entity) {
         assertNotCloseInvoked();
+        assertValidAttchedEntity(entity);
         _broker.lock(entity, this);
     }
 
     public void lock(Object entity, LockModeType mode, int timeout) {
         assertNotCloseInvoked();
+        assertValidAttchedEntity(entity);
         _broker.lock(entity, JPA2LockLevels.toLockLevel(mode), timeout, this);
     }
 
     public void lock(Object entity, LockModeType mode,
         Map<String, Object> properties) {
         assertNotCloseInvoked();
+        assertValidAttchedEntity(entity);
         _broker.assertActiveTransaction();
 
         boolean fcPushed = pushLockProperties(mode, properties);
@@ -1251,6 +1257,18 @@ public class EntityManagerImpl
         if (!_broker.isClosed() && _broker.isCloseInvoked())
             throw new InvalidStateException(_loc.get("close-invoked"), null,
                 null, true);
+    }
+
+    /**
+     * Throw IllegalArgumentExceptionif if entity is not a valid entity or
+     * if it is detached.
+     */
+    void assertValidAttchedEntity(Object entity) {
+        OpenJPAStateManager sm = _broker.getStateManager(entity);
+        if (sm == null || !sm.isPersistent() || sm.isDetached()) {
+            throw new IllegalArgumentException(_loc.get(
+                "invalid_entity_argument").getMessage());
+        }
     }
 
     ////////////////////////////////
@@ -1607,22 +1625,19 @@ public class EntityManagerImpl
                 fCfg.setReadLockLevel(setReadLevel);
             }
             // Set overriden isolation level for pessimistic-read/write
-            if (((JDBCConfiguration) _broker.getConfiguration())
-                .getDBDictionaryInstance().supportsIsolationForUpdate()) {
-                switch (setReadLevel) {
-                case JPA2LockLevels.LOCK_PESSIMISTIC_READ:
-                    fcPushed = setIsolationForPessimisticLock(fCfg, fcPushed,
-                        Connection.TRANSACTION_REPEATABLE_READ);
-                    break;
+            switch (setReadLevel) {
+            case JPA2LockLevels.LOCK_PESSIMISTIC_READ:
+                fcPushed = setIsolationForPessimisticLock(fCfg, fcPushed,
+                    Connection.TRANSACTION_REPEATABLE_READ);
+                break;
 
-                case JPA2LockLevels.LOCK_PESSIMISTIC_WRITE:
-                case JPA2LockLevels.LOCK_PESSIMISTIC_FORCE_INCREMENT:
-                    fcPushed = setIsolationForPessimisticLock(fCfg, fcPushed,
-                        Connection.TRANSACTION_SERIALIZABLE);
-                    break;
+            case JPA2LockLevels.LOCK_PESSIMISTIC_WRITE:
+            case JPA2LockLevels.LOCK_PESSIMISTIC_FORCE_INCREMENT:
+                fcPushed = setIsolationForPessimisticLock(fCfg, fcPushed,
+                    Connection.TRANSACTION_SERIALIZABLE);
+                break;
 
-                default:
-                }
+            default:
             }
         }
         return fcPushed;

@@ -2116,12 +2116,12 @@ for managing bidirectional relations upon a flush. See
 LockManager</literal>
             </para>
             <para>
-<emphasis role="bold">Default: </emphasis><literal>jpa2</literal>
+<emphasis role="bold">Default: </emphasis><literal>mixed</literal>
             </para>
             <para>
 <emphasis role="bold">Possible values: </emphasis><literal>none</literal>,
 <literal>sjvm</literal>, <literal>version</literal>,
-<literal>pessimistic</literal>, <literal>jpa2</literal>
+<literal>pessimistic</literal>, <literal>mixed</literal>
             </para>
             <para>
 <emphasis role="bold">Description:</emphasis> A plugin string (see
@@ -2737,7 +2737,10 @@ lock-manager specific lock levels
 <emphasis role="bold">Description:</emphasis> The default level at which to lock
 objects retrieved during a non-optimistic transaction. Note that for the default
 JDBC lock manager, <literal> read</literal> and <literal>write</literal> lock
-levels are equivalent.
+levels are equivalent. Lock levels <literal>pessimistic-read</literal>,
+<literal>pessimistic-write</literal> and
+<literal>pessimistic-force-increment</literal> are in effect only when the
+<literal>mixed</literal> lock manager is used.
             </para>
         </section>
         <section id="openjpa.RemoteCommitProvider">
@@ -3097,13 +3100,16 @@ WriteLockLevel</literal>
 <literal>optimistic</literal>, <literal>optimistic-force-increment</literal>,
 <literal>pessimistic-read</literal>, <literal>pessimistic-write</literal>,
 <literal>pessimistic-force-increment</literal>, numeric values for
-lock-manager specific lock levels
+lock-manager specific lock levels.
             </para>
             <para>
 <emphasis role="bold">Description:</emphasis> The default level at which to lock
 objects changed during a non-optimistic transaction. Note that for the default
 JDBC lock manager, <literal> read</literal> and <literal>write</literal> lock
-levels are equivalent.
+levels are equivalent. Lock levels <literal>pessimistic-read</literal>,
+<literal>pessimistic-write</literal> and
+<literal>pessimistic-force-increment</literal> are in effect only when the
+<literal>mixed</literal> lock manager is used.
             </para>
         </section>
     </section>

@@ -71,6 +71,13 @@ public interface LockManager
         Object sdata);
 
     /**
+     * Perform the same function as previous lock method and has the option
+     * to perform a version check after the lock function has completed. 
+     */
+    public void lock(OpenJPAStateManager sm, int level, int timeout,
+        Object sdata, boolean postLockVersionCheck);
+    
+    /**
      * Obtain locks on the specified objects.
      *
      * @see #lock

@@ -728,11 +728,32 @@ own lock manager, or use one of the bundled options:
             <itemizedlist>
                 <listitem>
                     <para>
+<literal>mixed</literal>: This is an alias for the
+<ulink url="../javadoc/org/apache/openjpa/persistence/JPA2LockManager.html">
+<classname>org.apache.openjpa.persistence.JPA2LockManager</classname>
+</ulink>, which implements the JPA 2.0 specification entity locking behaviors.
+It combines both the optimistic and pessimistic semantics controlled by
+lock modes argument in methods define in the entity manager
+and query interfaces or OpenJPA lock level properties.
+                    </para>
+                    <para>
+The <literal>mixed</literal> LockManager inherits all the properties available
+from <literal>version</literal> and <literal>pessimistic</literal> LockManagers.
+For example: <literal>VersionCheckOnReadLock</literal> and
+<literal>VersionUpdateOnWriteLock</literal> properties.
+                    </para>
+                    <para>
+This is the default <literal>openjpa.LockManager</literal> setting in JPA.
+                    </para>
+                </listitem>
+                <listitem>
+                    <para>
 <literal>pessimistic</literal>: This is an alias for the
-<ulink url="../javadoc/org/apache/openjpa/jdbc/kernel/PessimisticLockManager.html">
-<classname>o
-rg.apache.openjpa.jdbc.kernel.PessimisticLockManager</classname></ulink>, which
-uses SELECT FOR UPDATE statements (or the database's equivalent) to lock the 
+<ulink
+url="../javadoc/org/apache/openjpa/jdbc/kernel/PessimisticLockManager.html">
+<classname>org.apache.openjpa.jdbc.kernel.PessimisticLockManager</classname>
+</ulink>, which
+uses SELECT FOR UPDATE statements (or the database's equivalent) to lock the
 database rows corresponding to locked objects. This lock
 manager does not distinguish between read locks and write locks; all locks are
 write locks.
@@ -750,15 +771,7 @@ properties:
                 </listitem>
                 <listitem>
                     <para>
-<literal>none</literal>: An alias for the
-<ulink url="../javadoc/org/apache/openjpa/kernel/NoneLockManager.html">
-<classname>org.apache.openjpa.kernel.NoneLockManager</classname></ulink>, which
-does not perform any locking at all.
-                    </para>
-                </listitem>
-                <listitem>
-                    <para>
-<literal>version</literal>: An alias for the
+<literal>version</literal>: This is an alias for the
 <ulink url="../javadoc/org/apache/openjpa/kernel/VersionLockManager.html">
 <classname>org.apache.openjpa.kernel.VersionLockManager</classname></ulink>.
 This lock manager does not perform any exclusive locking, but instead ensures
@@ -768,14 +781,20 @@ increment to the version at the end of the transaction, even if the object is
 not otherwise modified. This ensures read consistency with non-blocking
 behavior.
                     </para>
+                </listitem>
+                <listitem>
                     <para>
-This is the default <literal>openjpa.LockManager</literal> setting in JPA.
+<literal>none</literal>: This is an alias for the
+<ulink url="../javadoc/org/apache/openjpa/kernel/NoneLockManager.html">
+<classname>org.apache.openjpa.kernel.NoneLockManager</classname></ulink>, which
+does not perform any locking at all.
                     </para>
                 </listitem>
             </itemizedlist>
             <note>
                 <para>
-In order for the <literal>version</literal> lock manager to prevent the dirty
+In order for the <literal>version</literal> or <literal>mixed</literal> lock
+managers to prevent the dirty
 read phenomenon, the underlying data store's transaction isolation level must be
 set to the equivalent of "read committed" or higher.
                 </para>

@@ -68,6 +68,11 @@ public class VersionLockManager
      */
     public void lock(OpenJPAStateManager sm, int level, int timeout,
         Object sdata) {
+        lock(sm, level, timeout, sdata, true);
+    }
+    
+    public void lock(OpenJPAStateManager sm, int level, int timeout,
+            Object sdata, boolean postLockVersionCheck) {
         if (level == LOCK_NONE)
             return;
         while (sm.getOwner() != null)
@@ -77,7 +82,7 @@ public class VersionLockManager
             return;
 
         try {
-            lockInternal(sm, level, timeout, sdata);
+            lockInternal(sm, level, timeout, sdata, postLockVersionCheck);
         } catch (RuntimeException re) {
             // revert lock
             setLockLevel(sm, oldLevel);
@@ -94,12 +99,12 @@ public class VersionLockManager
      * @see StoreContext#transactional
      */
     protected void lockInternal(OpenJPAStateManager sm, int level, int timeout,
-        Object sdata) {
-        optimisticLockInternal(sm, level, timeout, sdata);
+        Object sdata, boolean postLockVersionCheck) {
+        optimisticLockInternal(sm, level, timeout, sdata, postLockVersionCheck);
     }
 
     protected void optimisticLockInternal(OpenJPAStateManager sm, int level,
-        int timeout, Object sdata) {
+        int timeout, Object sdata, boolean postLockVersionCheck) {
         // Set lock level first to prevent infinite recursion with
         // transactional(..) call
         setLockLevel(sm, level);

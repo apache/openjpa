@@ -130,7 +130,7 @@ public class PersistenceProductDerivation
         conf.writeLockLevel.setAlias("pessimistic-force-increment", String
             .valueOf(JPA2LockLevels.LOCK_PESSIMISTIC_FORCE_INCREMENT));
 
-        conf.lockManagerPlugin.setAlias("jpa2",
+        conf.lockManagerPlugin.setAlias("mixed",
             JPA2LockManager.class.getName());
 
         return true;
@@ -145,8 +145,8 @@ public class PersistenceProductDerivation
         OpenJPAConfigurationImpl conf = (OpenJPAConfigurationImpl) c;
         conf.metaFactoryPlugin.setDefault(SPEC_JPA.getName());
         conf.metaFactoryPlugin.setString(SPEC_JPA.getName());
-        conf.lockManagerPlugin.setDefault("jpa2");
-        conf.lockManagerPlugin.setString("jpa2");
+        conf.lockManagerPlugin.setDefault("mixed");
+        conf.lockManagerPlugin.setString("mixed");
         conf.nontransactionalWrite.setDefault("true");
         conf.nontransactionalWrite.set(true);
         return true;

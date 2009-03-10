@@ -2933,6 +2933,10 @@ public class BrokerImpl
                         		load = new ArrayList(objs.size());
                             load.add(sm);
                         }
+                        int level = _fc.getReadLockLevel();
+                        int timeout = _fc.getLockTimeout();
+                        _lm.lock(sm, level, timeout, null, false);
+                        sm.readLocked(level, level);
                     } else if (assertPersistenceCapable(obj).pcIsDetached()
                         == Boolean.TRUE)
                         throw newDetachedException(obj, "refresh");
@@ -3001,6 +3005,10 @@ public class BrokerImpl
                     sm.load(_fc, StateManagerImpl.LOAD_FGS, null, null, false);
                     sm.afterRefresh();
                 }
+                int level = _fc.getReadLockLevel();
+                int timeout = _fc.getLockTimeout();
+                _lm.lock(sm, level, timeout, null, false);
+                sm.readLocked(level, level);
                 fireLifecycleEvent(sm.getManagedInstance(), null,
                     sm.getMetaData(), LifecycleEvent.AFTER_REFRESH);
             } else if (assertPersistenceCapable(obj).pcIsDetached()

@@ -18,16 +18,19 @@
  */
 package org.apache.openjpa.persistence.lockmgr;
 
-import java.util.Collection;
+import java.io.Externalizable;
+import java.io.IOException;
+import java.io.ObjectInput;
+import java.io.ObjectOutput;
 
-import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.Id;
-import javax.persistence.OneToMany;
 import javax.persistence.Version;
 
 @Entity
-public class LockEmployee {
+public class LockEmployee implements Externalizable {
+
+    private static final long serialVersionUID = 1200290394382760086L;
 
     @Id
     private int id;
@@ -37,11 +40,6 @@ public class LockEmployee {
 
     private String firstName;
     private String lastName;
-
-    @OneToMany(mappedBy = "employee"
-        , cascade = { CascadeType.ALL }
-        )     
-    private Collection<LockTask> tasks;
 
     public int getId() {
         return id;
@@ -67,21 +65,29 @@ public class LockEmployee {
         this.lastName = lastName;
     }
 
-    public Collection<LockTask> getTasks() {
-        return tasks;
-    }
-
-    public void setTasks(Collection<LockTask> tasks) {
-        this.tasks = tasks;
-    }
-
     public int getVersion() {
         return version;
     }
-    
+
     public String toString() {
-        return this.getClass().getName() + "[id=" + getId() + ", ver="
-            + getVersion() + "] first=" + getFirstName() + ", last="
-            + getLastName() + ", tasks={" + getTasks() + "}";
+        return this.getClass().getName() + '@'
+            + Integer.toHexString(System.identityHashCode(this)) + "[id="
+            + getId() + ", ver=" + getVersion() + "] first=" + getFirstName()
+            + ", last=" + getLastName();
+    }
+
+    public void readExternal(ObjectInput in) throws IOException,
+        ClassNotFoundException {
+        id = in.readInt();
+        version = in.readInt();
+        firstName = (String) in.readObject();
+        lastName = (String) in.readObject();
+    }
+
+    public void writeExternal(ObjectOutput out) throws IOException {
+        out.writeInt(id);
+        out.writeInt(version);
+        out.writeObject(firstName);
+        out.writeObject(lastName);
     }
 }

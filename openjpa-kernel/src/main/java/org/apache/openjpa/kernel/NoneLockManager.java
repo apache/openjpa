@@ -28,6 +28,13 @@ public class NoneLockManager
 
     public void lock(OpenJPAStateManager sm, int level, int timeout,
         Object context) {
+        // Duplicate code in the 2 lock methods to enforce proper action
+        // and avoid unexpected behavior due to method override.
+        sm.setLock(Boolean.TRUE);
+    }
+
+    public void lock(OpenJPAStateManager sm, int level, int timeout,
+        Object context, boolean postLockVersionCheck) {
         sm.setLock(Boolean.TRUE);
     }
 

@@ -90,7 +90,7 @@ public class PessimisticLockManager
     }
 
     protected void lockInternal(OpenJPAStateManager sm, int level, int timeout,
-        Object sdata) {
+        Object sdata, boolean postVersionCheck) {
         // we can skip any already-locked instance regardless of level because
         // we treat all locks the same (though super doesn't)
         if (getLockLevel(sm) == LOCK_NONE) {
@@ -99,7 +99,7 @@ public class PessimisticLockManager
             if (info == null || info.result == null || !info.result.isLocking())
                 lockRow(sm, timeout, level);
         }
-        optimisticLockInternal(sm, level, timeout, sdata);
+        optimisticLockInternal(sm, level, timeout, sdata, postVersionCheck);
     }
 
     /**
