@@ -127,7 +127,6 @@ public class SQLExceptions {
         OpenJPAConfiguration config, SQLException se, DBDictionary dict,
         int level) {
         OpenJPAException storeEx = SQLExceptions.getStore(se, dict);
-        String lm = config.getLockManager();
         if (storeEx.getSubtype() == StoreException.LOCK) {
             LockException lockEx = (LockException) storeEx;
             lockEx.setLockLevel(level);
