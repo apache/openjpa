@@ -1073,12 +1073,12 @@ public class EntityManagerImpl
 
     public LockModeType getLockMode(Object entity) {
         assertNotCloseInvoked();
-        return fromLockLevel(_broker.getLockLevel(entity));
+        return JPA2LockLevels.fromLockLevel(_broker.getLockLevel(entity));
     }
 
     public void lock(Object entity, LockModeType mode) {
         assertNotCloseInvoked();
-        _broker.lock(entity, toLockLevel(mode), -1, this);
+        _broker.lock(entity, JPA2LockLevels.toLockLevel(mode), -1, this);
     }
 
     public void lock(Object entity) {
@@ -1088,7 +1088,7 @@ public class EntityManagerImpl
 
     public void lock(Object entity, LockModeType mode, int timeout) {
         assertNotCloseInvoked();
-        _broker.lock(entity, toLockLevel(mode), timeout, this);
+        _broker.lock(entity, JPA2LockLevels.toLockLevel(mode), timeout, this);
     }
 
     public void lock(Object entity, LockModeType mode,
@@ -1098,7 +1098,7 @@ public class EntityManagerImpl
 
         boolean fcPushed = pushLockProperties(mode, properties);
         try {
-            _broker.lock(entity, toLockLevel(mode), _broker
+            _broker.lock(entity, JPA2LockLevels.toLockLevel(mode), _broker
                 .getFetchConfiguration().getLockTimeout(), this);
         } finally {
             popLockProperties(fcPushed);
@@ -1112,7 +1112,7 @@ public class EntityManagerImpl
 
     public void lockAll(Collection entities, LockModeType mode, int timeout) {
         assertNotCloseInvoked();
-        _broker.lockAll(entities, toLockLevel(mode), timeout, this);
+        _broker.lockAll(entities, JPA2LockLevels.toLockLevel(mode), timeout, this);
     }
 
     public void lockAll(Object... entities) {
@@ -1121,45 +1121,6 @@ public class EntityManagerImpl
 
     public void lockAll(Object[] entities, LockModeType mode, int timeout) {
         lockAll(Arrays.asList(entities), mode, timeout);
-    }
-
-    /**
-     * Translate our internal lock level to a javax.persistence enum value.
-     */
-    static LockModeType fromLockLevel(int level) {
-        if (level < JPA2LockLevels.LOCK_OPTIMISTIC)
-            return null;
-        if (level < JPA2LockLevels.LOCK_OPTIMISTIC_FORCE_INCREMENT)
-            return LockModeType.READ;
-        if (level < JPA2LockLevels.LOCK_PESSIMISTIC_READ)
-            return LockModeType.WRITE;
-        if (level < JPA2LockLevels.LOCK_PESSIMISTIC_WRITE)
-            return LockModeType.PESSIMISTIC;
-// TODO:         return LockModeType.PESSIMISTIC_READ;
-        if (level < JPA2LockLevels.LOCK_PESSIMISTIC_FORCE_INCREMENT)
-            return LockModeType.PESSIMISTIC;
-// TODO:         return LockModeType.PESSIMISTIC_WRITE;
-        return LockModeType.PESSIMISTIC_FORCE_INCREMENT;
-    }
-
-    /**
-     * Translate the javax.persistence enum value to our internal lock level.
-     */
-    static int toLockLevel(LockModeType mode) {
-        if (mode == null || mode == LockModeType.NONE)
-            return LockLevels.LOCK_NONE;
-        if (mode == LockModeType.READ || mode == LockModeType.OPTIMISTIC)
-            return LockLevels.LOCK_READ;
-        if (mode == LockModeType.WRITE
-            || mode == LockModeType.OPTIMISTIC_FORCE_INCREMENT)
-            return LockLevels.LOCK_WRITE;
-// TODO:      if (mode == LockModeType.PESSIMISTIC_READ)
-// TODO:         return LockLevels.LOCK_PESSIMISTIC_READ;
-        if (mode == LockModeType.PESSIMISTIC)
-            return JPA2LockLevels.LOCK_PESSIMISTIC_WRITE;
-        if (mode == LockModeType.PESSIMISTIC_FORCE_INCREMENT)
-            return JPA2LockLevels.LOCK_PESSIMISTIC_FORCE_INCREMENT;
-        throw new ArgumentException(mode.toString(), null, null, true);
     }
 
     public boolean cancelAll() {
@@ -1633,7 +1594,7 @@ public class EntityManagerImpl
                 FetchConfigProperty.WriteLockLevel }, properties);
         }
         // override with the specific lockMode, if needed.
-        int setReadLevel = toLockLevel(mode);
+        int setReadLevel = JPA2LockLevels.toLockLevel(mode);
         if (setReadLevel != JPA2LockLevels.LOCK_NONE) {
             // Set overriden read lock level
             FetchConfiguration fCfg = _broker.getFetchConfiguration();

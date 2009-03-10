@@ -1200,6 +1200,22 @@ public interface OpenJPAConfiguration
     public void setLockTimeout(Integer timeout);
 
     /**
+     * The time to wait for a query to execute in milliseconds, or -1 for no
+     * timeout.
+     *
+     * @since 2.0.0
+     */
+    public int getQueryTimeout();
+
+    /**
+     * The time to wait for a query to execute in milliseconds, or -1 for no
+     * timeout.
+     *
+     * @since 0.3.1
+     */
+    public void setQueryTimeout(int timeout);
+
+    /**
      * The default read lock level to use during non-optimistic transactions.
      * Defaults to <code>read</code>.
      *

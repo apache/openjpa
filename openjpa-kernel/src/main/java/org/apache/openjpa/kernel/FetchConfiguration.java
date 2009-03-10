@@ -268,6 +268,22 @@ public interface FetchConfiguration
      * @since 0.3.1
      */
     public FetchConfiguration setLockTimeout(int timeout);
+    
+    /**
+     * The number of milliseconds to wait for a query, or -1 for no
+     * limit.
+     *
+     * @since 2.0.0
+     */
+    public int getQueryTimeout();
+
+    /**
+     * The number of milliseconds to wait for a query, or -1 for no
+     * limit.
+     *
+     * @since 2.0.0
+     */
+    public FetchConfiguration setQueryTimeout(int timeout);
 
     /**
      * The lock level to use for locking loaded objects.

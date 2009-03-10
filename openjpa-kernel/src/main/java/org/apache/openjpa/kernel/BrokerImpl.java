@@ -714,7 +714,6 @@ public class BrokerImpl
             _supportedPropertyNames.add("NontransactionalRead");
             _supportedPropertyNames.add("NontransactionalWrite");
             _supportedPropertyNames.add("Optimistic");
-            _supportedPropertyNames.add("javax.persistence.query.timeout");
             _supportedPropertyNames.add("RestoreState");
             _supportedPropertyNames.add("RetainState");
         }
@@ -722,6 +721,8 @@ public class BrokerImpl
         for (String propertyName : _supportedPropertyNames) {
             supportedProperties.addAll(_conf.getPropertyKeys(propertyName));
         }
+        supportedProperties.add("javax.persistence.query.timeout");
+        supportedProperties.add("javax.persistence.lock.timeout");
         
         return supportedProperties;
     }

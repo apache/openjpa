@@ -35,6 +35,8 @@ import java.util.Set;
 import java.util.Stack;
 import javax.persistence.CascadeType;
 import javax.persistence.GenerationType;
+import javax.persistence.LockModeType;
+
 import static javax.persistence.CascadeType.*;
 
 import org.apache.commons.lang.StringUtils;
@@ -1565,6 +1567,11 @@ public class XMLPersistenceMetaDataParser
         meta.setDefiningType(_cls);
         meta.setQueryString(attrs.getValue("query"));
         meta.setLanguage(JPQLParser.LANG_JPQL);
+        /** TODO: Uncomment when orm.xsd defines lockmode 
+        LockModeType lockMode = LockModeType.valueOf(attrs.getValue("lockMode"));
+        meta.addHint("openjpa.FetchPlan.ReadLockMode", 
+            JPA2LockLevels.toLockLevel(lockMode));
+        **/
         Locator locator = getLocation().getLocator();
         if (locator != null) {
             meta.setLineNumber(Numbers.valueOf(locator.getLineNumber()));

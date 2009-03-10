@@ -267,11 +267,23 @@ public interface FetchPlan {
     public int getLockTimeout();
 
     /**
+     * The number of milliseconds to wait for a query, or -1 for no
+     * limit.
+     */
+    public FetchPlan setQueryTimeout(int timeout);
+
+    /**
+     * The number of milliseconds to wait for a query, or -1 for no
+     * limit.
+     */
+    public int getQueryTimeout();
+
+    /**
      * The number of milliseconds to wait for an object lock, or -1 for no
      * limit.
      */
-    public FetchPlan setLockTimeout(int timeout);
 
+    public FetchPlan setLockTimeout(int timeout);
     /**
      * The lock level to use for locking loaded objects.
      */
@@ -291,6 +303,7 @@ public interface FetchPlan {
      * The lock level to use for locking dirtied objects.
      */
     public FetchPlan setWriteLockMode(LockModeType mode);
+    
 
     /**
      * @deprecated cast to {@link FetchPlanImpl} instead. This

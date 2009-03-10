@@ -76,6 +76,8 @@ public class FetchConfigurationImpl
         public boolean queryCache = true;
         public int flushQuery = 0;
         public int lockTimeout = -1;
+        public int queryTimeout = -1;
+        public int lockMode = 0;
         public int readLockLevel = LOCK_NONE;
         public int writeLockLevel = LOCK_NONE;
         public Set fetchGroups = null;
@@ -159,6 +161,7 @@ public class FetchConfigurationImpl
         setFlushBeforeQueries(fetch.getFlushBeforeQueries());
         setExtendedPathLookup(fetch.getExtendedPathLookup());
         setLockTimeout(fetch.getLockTimeout());
+        setQueryTimeout(fetch.getQueryTimeout());
         clearFetchGroups();
         addFetchGroups(fetch.getFetchGroups());
         clearFields();
@@ -423,8 +426,29 @@ public class FetchConfigurationImpl
             _state.lockTimeout = timeout;
         return this;
     }
+    
+    public int getQueryTimeout() {
+        return _state.queryTimeout;
+    }
+
+    public FetchConfiguration setQueryTimeout(int timeout) {
+        if (timeout == DEFAULT && _state.ctx != null)
+            _state.queryTimeout = _state.ctx.getConfiguration().getQueryTimeout();
+        else if (timeout != DEFAULT)
+            _state.queryTimeout = timeout;
+        return this;
+    }
+
 
     public int getReadLockLevel() {
+        String hintKey = "openjpa.FetchPlan.ReadLockLevel";
+        if (getHint(hintKey) != null) {
+            if (isActiveTransaction()) {
+                setReadLockLevel((Integer)removeHint(hintKey));
+            } else {
+                return (Integer)getHint(hintKey);
+            }
+        }
         return _state.readLockLevel;
     }
 
@@ -447,6 +471,14 @@ public class FetchConfigurationImpl
     }
 
     public int getWriteLockLevel() {
+        String hintKey = "openjpa.FetchPlan.WriteLockLevel";
+        if (getHint(hintKey) != null) {
+            if (isActiveTransaction()) {
+                setReadLockLevel((Integer)removeHint(hintKey));
+            } else {
+                return (Integer)getHint(hintKey);
+            }
+        }
         return _state.writeLockLevel;
     }
 
@@ -482,8 +514,12 @@ public class FetchConfigurationImpl
      * Throw an exception if no transaction is active.
      */
     private void assertActiveTransaction() {
-        if (_state.ctx != null && !_state.ctx.isActive())
+        if (!isActiveTransaction())
             throw new NoTransactionException(_loc.get("not-active"));
+    }
+    
+    private boolean isActiveTransaction() {
+        return (_state.ctx != null && _state.ctx.isActive());
     }
 
     public void setHint(String name, Object value) {
@@ -499,6 +535,10 @@ public class FetchConfigurationImpl
 
     public Object getHint(String name) {
         return (_state.hints == null) ? null : _state.hints.get(name);
+    }
+    
+    public Object removeHint(String name) {
+        return (_state.hints == null) ? null : _state.hints.remove(name);
     }
     
     public Map<String, Object> getHints() {

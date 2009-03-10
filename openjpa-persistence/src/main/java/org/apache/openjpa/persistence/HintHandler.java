@@ -106,6 +106,8 @@ public class HintHandler {
     public static Map<String,String> _jpaKeys = new TreeMap<String, String>();
     static {
         _jpaKeys.put(addPrefix(PREFIX_JPA, "query.timeout"), 
+            addPrefix(PREFIX_FETCHPLAN, "QueryTimeout"));
+        _jpaKeys.put(addPrefix(PREFIX_JPA, "lock.timeout"), 
             addPrefix(PREFIX_FETCHPLAN, "LockTimeout"));
     }
     
@@ -299,8 +301,12 @@ public class HintHandler {
                 for (int i = 0; i < arr.length; i++)
                     owner.addAggregateListener(arr[i]);
             } else if (isFetchPlanHint(key)) {
-                hintToSetter(owner.getFetchPlan(), 
-                    getFetchPlanProperty(key), value);
+                if (requiresTransaction(key))
+                    ((FetchPlanImpl)owner.getFetchPlan()).getDelegate()
+                        .setHint(key, value);
+                else 
+                    hintToSetter(owner.getFetchPlan(), 
+                        getFetchPlanProperty(key), value);
             } else if (HINT_RESULT_COUNT.equals(key)) {
                 int v = (Integer)Filters.convert(value, Integer.class);
                 if (v < 0)
@@ -331,6 +337,10 @@ public class HintHandler {
     private boolean isFetchPlanHint(String key) {
         return key.startsWith(PREFIX_FETCHPLAN) 
            || (_jpaKeys.containsKey(key) && isFetchPlanHint(_jpaKeys.get(key)));
+    }
+    
+    private boolean requiresTransaction(String key) {
+        return key.endsWith("LockMode");
     }
     
     private String getFetchPlanProperty(String key) {

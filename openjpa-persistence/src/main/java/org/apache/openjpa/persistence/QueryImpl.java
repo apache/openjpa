@@ -72,7 +72,7 @@ import org.apache.openjpa.util.UserException;
 public class QueryImpl implements OpenJPAQuerySPI, Serializable {
 
     private static final List EMPTY_LIST = new ArrayList(0);
-
+    private static final String SELECT = "SELECT ";
 	private static final Localizer _loc = Localizer.forPackage(QueryImpl.class);
 
 	private DelegatingQuery _query;
@@ -354,12 +354,6 @@ public class QueryImpl implements OpenJPAQuerySPI, Serializable {
 		return this;
 	}
 
-	public OpenJPAQuery setHint(String key, Object value) {
-		_em.assertNotCloseInvoked();
-		_hintHandler.setHint(key, value);
-		return this;
-	}
-
 	public OpenJPAQuery setParameter(int position, Calendar value,
 			TemporalType t) {
 		return setParameter(position, convertTemporalType(value, t));
@@ -527,6 +521,20 @@ public class QueryImpl implements OpenJPAQuerySPI, Serializable {
 		return _query.getDataStoreActions(params);
 	}
 
+    public LockModeType getLockMode() {
+        assertQueryLanguage(JPQLParser.LANG_JPQL, 
+            QueryLanguages.LANG_PREPARED_SQL);
+        return _fetch.getReadLockMode();
+    }
+
+    public Query setLockMode(LockModeType lockMode) {
+        assertQueryLanguage(JPQLParser.LANG_JPQL, 
+            QueryLanguages.LANG_PREPARED_SQL);
+    
+       _fetch.setReadLockMode(lockMode);
+       return this;
+    }
+
 	public int hashCode() {
 		return _query.hashCode();
 	}
@@ -548,18 +556,14 @@ public class QueryImpl implements OpenJPAQuerySPI, Serializable {
         return _hintHandler.getHints();
     }
 
-    public LockModeType getLockMode() {
-        throw new UnsupportedOperationException(
-            "JPA 2.0 - Method not yet implemented");
+    public OpenJPAQuery setHint(String key, Object value) {
+        _em.assertNotCloseInvoked();
+        _hintHandler.setHint(key, value);
+        return this;
     }
 
     public Set<String> getSupportedHints() {
         return _hintHandler.getSupportedHints();
-    }
-
-    public Query setLockMode(LockModeType lockMode) {
-        throw new UnsupportedOperationException(
-            "JPA 2.0 - Method not yet implemented");
     }
 
     /**
@@ -684,14 +688,26 @@ public class QueryImpl implements OpenJPAQuerySPI, Serializable {
         return this;
     }
     
-    public void lock() {
+    void lock() {
         if (_lock != null) 
             _lock.lock();
     }
 
-    public void unlock() {
+    void unlock() {
         if (_lock != null)
             _lock.unlock();
     }
 
+    void assertQueryLanguage(String... langs) {
+        for (String lang : langs) {
+            if (lang.equals(getLanguage())) {
+                String q = _query.getQueryString();
+                if (q != null && q.length() > SELECT.length() 
+                 && SELECT.equalsIgnoreCase(q.substring(SELECT.length())))
+                 return;
+            }
+        }
+        throw new IllegalStateException(_loc.get("assert-query-language",
+            getLanguage()).toString());
+    }
 }

@@ -366,7 +366,7 @@ public class DelegatingFetchConfiguration
             throw translate(re);
         }
     }
-
+    
     public int getLockTimeout() {
         try {
             return _fetch.getLockTimeout();
@@ -378,6 +378,23 @@ public class DelegatingFetchConfiguration
     public FetchConfiguration setLockTimeout(int timeout) {
         try {
             _fetch.setLockTimeout(timeout);
+            return this;
+        } catch (RuntimeException re) {
+            throw translate(re);
+        }
+    }
+
+    public int getQueryTimeout() {
+        try {
+            return _fetch.getQueryTimeout();
+        } catch (RuntimeException re) {
+            throw translate(re);
+        }
+    }
+
+    public FetchConfiguration setQueryTimeout(int timeout) {
+        try {
+            _fetch.setQueryTimeout(timeout);
             return this;
         } catch (RuntimeException re) {
             throw translate(re);

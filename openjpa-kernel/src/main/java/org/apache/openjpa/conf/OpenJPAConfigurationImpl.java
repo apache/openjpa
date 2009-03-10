@@ -101,6 +101,7 @@ public class OpenJPAConfigurationImpl
     public StringListValue fetchGroups;
     public IntValue flushBeforeQueries;
     public IntValue lockTimeout;
+    public IntValue queryTimeout;
     public IntValue readLockLevel;
     public IntValue writeLockLevel;
     public ObjectValue seqPlugin;
@@ -151,7 +152,6 @@ public class OpenJPAConfigurationImpl
     public PluginValue preparedQueryCachePlugin;
     public PluginValue finderCachePlugin;
     public ObjectValue specification;
-    public IntValue queryTimeout;
     
     // custom values
     public BrokerFactoryValue brokerFactoryPlugin;
@@ -550,7 +550,6 @@ public class OpenJPAConfigurationImpl
         specification.setInstantiatingGetter("getSpecificationInstance");
         
         queryTimeout = addInt("javax.persistence.query.timeout");
-        queryTimeout.addEquivalentKey("javax.persistence.query.timeout");
         queryTimeout.setDefault("-1");
         queryTimeout.setDynamic(true);
         
@@ -1309,6 +1308,14 @@ public class OpenJPAConfigurationImpl
 
     public int getLockTimeout() {
         return lockTimeout.get();
+    }
+
+    public int getQueryTimeout() {
+        return queryTimeout.get();
+    }
+    
+    public void setQueryTimeout(int timeout) {
+         queryTimeout.set(timeout);
     }
 
     public void setReadLockLevel(String level) {
