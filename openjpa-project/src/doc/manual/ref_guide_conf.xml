@@ -3017,6 +3017,43 @@ system sequence. See <xref linkend="ref_guide_sequence"/> for more
 information.
             </para>
         </section>
+        <section id="openjpa.Specification">
+            <title>
+                openjpa.Specification
+            </title>
+            <indexterm zone="openjpa.Specification">
+                <primary>
+                    Specification
+                </primary>
+            </indexterm>
+            <para>
+<emphasis role="bold">Property name: </emphasis><literal>openjpa.Specification
+</literal>
+            </para>
+            <para>
+<emphasis role="bold">Configuration API:</emphasis>
+<ulink url="../javadoc/org/apache/openjpa/conf/OpenJPAConfiguration.html#getSpecificationInstance()">
+<methodname>org.apache.openjpa.conf.OpenJPAConfiguration.getSpecificationInstance
+</methodname></ulink>
+            </para>
+            <para>
+<emphasis role="bold">Resource adaptor config-property: </emphasis><literal>
+Specification</literal>
+            </para>
+            <para>
+<emphasis role="bold">Default: </emphasis><literal>table</literal>
+            </para>
+            <para>
+<emphasis role="bold">Description:</emphasis> A formatted string describing the Specification
+to use for the default configuration options. The format of the Specifcation string is 
+<literal>name [major.[minor]]</literal> where <literal>name</literal> denotes the name of the
+Specification such as <literal>JPA</literal> or <literal>JDO</literal>, <literal>major</literal>
+denotes the major integral version number of the Specification and <literal>minor</literal>
+denotes a minor version which can be an arbitrary string.  
+See <xref linkend="ref_guide_spec_compatibility"/> for more information.
+            </para>
+        </section>
+        
         <section id="openjpa.TransactionMode">
             <title>
                 openjpa.TransactionMode
@@ -3971,5 +4008,41 @@ implementation is
             </para>
         </section>
         
+        <section id="ref_guide_spec_compatibility">
+        <title>Compatibility with Specification</title>
+        <para>
+The default behavior of certain OpenJPA API methods can evolve to align with the behaviors
+defined in JPA specification. To maintain backward compatibility, OpenJPA allows configuration
+options such that while the default behavior changes to align with current JPA Specification, the
+previous behaviors can always be emulated. 
+		</para>
+		<para>
+For example, JPA 2.0 specification
+introduces a new API <literal>void EntityManager.detach(Object entity)</literal> that detaches
+the given entity from the current persistence context. OpenJPA has provided similar
+feature via <literal>&lt;T&gt; T OpenJPAEntityManager.detach(T entity)</literal> prior to JPA 2.0. 
+OpenJPA <literal>detach()</literal>, however, has different default behavior than what JPA 2.0
+specification mandates. Firstly, OpenJPA creates a copy of the given entity as a detached instance
+and returns it, whereas JPA 2.0 behavior requires the same given entity instance be detached.
+Secondly, the given instance is removed from the persistence context for JPA 2.0, whereas
+OpenJPA <literal>detach()</literal> method, prior to JPA 2.0, does not remove the instance
+from the persistence context as a copy is returned. Thirdly, OpenJPA will flush before
+detaching a dirty instance so that the detached instance can later be merged, whereas
+JPA 2.0 <literal>detach()</literal> semantics does not require a dirty instance be flushed
+before detach.        
+		</para>
+		<para>
+A user application running with OpenJPA that is compliant to a specific version of JPA of specification,
+the older behavior can be emulated by configuring OpenJPA Compatibility options.
+For example, <literal>openjpa.Compatibility=FlushBeforeDetach=false,CopyOnDetach=true</literal>
+will emulate the older behavior of detach even when running with OpenJPA that are
+compliant to JPA 2.0 Specification.  The configuration can also be set to a different version of the specification.
+For example, <literal>openjpa.Specification="JPA 1.0"</literal> configuration setting will emulate
+default OpenJPA behavior as it were for JPA Specification version 1.0. Setting via
+<literal>openjpa.Specification</literal> is a shorthand for more fine-grained control available via
+<literal>openjpa.Compatibility</literal>.    
+  
+		</para>
+        </section>
     </section>
 </chapter>

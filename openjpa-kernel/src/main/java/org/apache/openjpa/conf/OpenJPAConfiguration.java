@@ -228,33 +228,36 @@ public interface OpenJPAConfiguration
     public Specification getSpecificationInstance();
     
     /**
-     * Set the Specification that this configuration should use for the
-     * various properties that need to have different defaults for different
-     * specification environments..
-     * 
+     * Set the Specification for this configuration.
+     * Specification determines various default properties and behavior.
+     * For example, {@link Compatibility compatibility} options during runtime.
+     *   
+     * This change will trigger all registered Product Derivations to mutate 
+     * other configuration properties.
+     *
      * @param fullname of the specification that possibly encodes major and
      * minor version information. For encoding format
-     * @see Specification#create(String)
+     * @see Specification
+     * 
+     * @since 1.1.0
      */
-    public boolean setSpecification(String spec);
+    public void setSpecification(String spec);
     
     /**
-     * Set the specification that this configuration should use for the
-     * various properties that need to have different defaults for different
-     * specification environments. The given specification also carry version
-     * information which can help for setting, for example, various
-     * {@link Compatibility compatibility} options during runtime.
+     * Set the Specification for this configuration.
+     * Specification determines various default properties and behavior.
+     * For example, {@link Compatibility compatibility} options during runtime.
      *   
-     * This should be invoked before any configuration options are set, as it 
-     * will mutate various values.
-     * You can only assign the specification once, though it is not fatal
-     * to attempt to do so multiple times. Attempts to set to null will
-     * be ignored.
+     * This change will trigger all registered Product Derivations to mutate 
+     * other configuration properties.
+     *
+     * @param fullname of the specification that possibly encodes major and
+     * minor version information. For encoding format
+     * @see Specification
      * 
      * @since 2.0.0
-     * 
      */
-    public boolean setSpecification(Specification spec);
+    public void setSpecification(Specification spec);
 
     /**
      * The plugin string for the {@link ClassResolver} to use for custom

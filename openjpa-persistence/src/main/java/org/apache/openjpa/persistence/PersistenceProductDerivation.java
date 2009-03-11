@@ -35,6 +35,7 @@ import javax.persistence.spi.PersistenceUnitInfo;
 import javax.persistence.spi.PersistenceUnitTransactionType;
 
 import org.apache.commons.lang.StringUtils;
+import org.apache.openjpa.conf.Compatibility;
 import org.apache.openjpa.conf.OpenJPAConfiguration;
 import org.apache.openjpa.conf.OpenJPAConfigurationImpl;
 import org.apache.openjpa.conf.OpenJPAProductDerivation;
@@ -72,8 +73,8 @@ public class PersistenceProductDerivation
     extends AbstractProductDerivation
     implements OpenJPAProductDerivation {
 
-    public static final Specification SPEC_JPA = Specification.create("jpa", 2);
-    public static final Specification ALIAS_EJB = Specification.create("ejb", 3);
+    public static final Specification SPEC_JPA = new Specification("jpa 2");
+    public static final Specification ALIAS_EJB = new Specification("ejb 3");
     public static final String RSRC_GLOBAL = "META-INF/openjpa.xml";
     public static final String RSRC_DEFAULT = "META-INF/persistence.xml";
 
@@ -138,9 +139,9 @@ public class PersistenceProductDerivation
 
     @Override
     public boolean afterSpecificationSet(Configuration c) {
-      if (!(c instanceof OpenJPAConfigurationImpl)
-         || !SPEC_JPA.equals(((OpenJPAConfiguration) c).getSpecification()))
-          return false;
+        if (!OpenJPAConfigurationImpl.class.isInstance(c)
+         && !SPEC_JPA.isSame(((OpenJPAConfiguration) c).getSpecification()))
+            return false;
  
         OpenJPAConfigurationImpl conf = (OpenJPAConfigurationImpl) c;
         conf.metaFactoryPlugin.setDefault(SPEC_JPA.getName());
@@ -149,6 +150,13 @@ public class PersistenceProductDerivation
         conf.lockManagerPlugin.setString("mixed");
         conf.nontransactionalWrite.setDefault("true");
         conf.nontransactionalWrite.set(true);
+        int specVersion = ((OpenJPAConfiguration) c).getSpecificationInstance()
+            .getVersion();
+        if (specVersion < 2) {
+            Compatibility compatibility = conf.getCompatibilityInstance();
+            compatibility.setFlushBeforeDetach(true);
+            compatibility.setCopyOnDetach(true);
+        }
         return true;
     }
 

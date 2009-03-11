@@ -544,8 +544,7 @@ public class OpenJPAConfigurationImpl
         
         eagerInitialization = addBoolean("InitializeEagerly");
         
-        specification = new SpecificationPlugin("Specification", 
-            getConfigurationLog());
+        specification = new SpecificationPlugin(this, "Specification"); 
         addValue(specification);
         specification.setInstantiatingGetter("getSpecificationInstance");
         
@@ -598,22 +597,14 @@ public class OpenJPAConfigurationImpl
      * Sets Specification from the given String.
      * 
      * @param spec should be encoded in the format specified in {@link 
-     * Specification#create(String)}.
+     * Specification}.
      */
-    public boolean setSpecification(String spec) {
-        if (spec == null)
-            return false;
+    public void setSpecification(String spec) {
         specification.setString(spec);
-        ProductDerivations.afterSpecificationSet(this);
-        return true;
     }
     
-    public boolean setSpecification(Specification newSpec) {
-        if (newSpec == null)
-            return false;
+    public void setSpecification(Specification newSpec) {
         specification.set(newSpec);
-        ProductDerivations.afterSpecificationSet(this);
-        return true;
     }
 
     public void setClassResolver(String classResolver) {

@@ -38,24 +38,24 @@ public class TestSpecificationConfiguration extends SingleEMFTestCase {
     
     public void testSpecificationIsJPA() {
         Specification spec = getSpecifcation();
-        assertTrue(spec.equals("JPA"));
-        assertTrue(spec.equals("jpa"));
+        assertTrue(spec.isSame("JPA"));
+        assertTrue(spec.isSame("jpa"));
     }
     
     public void testSpecificationVersionIsJPA2() {
         Specification spec = getSpecifcation();
-        int major = spec.getMajorVersion();
+        int major = spec.getVersion();
         assertEquals(2, major);
-        assertTrue(spec.equals("JPA"));
+        assertTrue(spec.isSame("JPA"));
     }
     
     public void testLowerVersionCanBeSet() {
-        super.setUp("openjpa.Specification", "jpa 1.0", 
+        super.setUp("openjpa.Specification", "JPA 1.0", 
             "openjpa.Log", "DefaultLevel=WARN");
         Specification spec = getSpecifcation();
         
         assertNotNull(spec);
-        assertEquals(1, spec.getMajorVersion());
+        assertEquals(1, spec.getVersion());
     }
     
     public void testHigherVersionCanNotBeSet() {
@@ -66,6 +66,25 @@ public class TestSpecificationConfiguration extends SingleEMFTestCase {
         } catch (PersistenceException ex) {
             // good
         }
+    }
+    
+    public void testDifferentSpecCanBeSet() {
+        super.setUp("openjpa.Specification", "jdo 3.0", 
+            "openjpa.Log", "DefaultLevel=WARN");
+    }
+    
+    public void testSpecCanBeSetToNullString() {
+        Specification spec = getSpecifcation();
+        assertNotNull(spec);
+        emf.getConfiguration().setSpecification((String)null);
+        assertNull(getSpecifcation());
+    }
+    
+    public void testSpecCanBeSetToNullSpecification() {
+        Specification spec = getSpecifcation();
+        assertNotNull(spec);
+        emf.getConfiguration().setSpecification((Specification)null);
+        assertNull(getSpecifcation());
     }
     
     public Specification getSpecifcation() {

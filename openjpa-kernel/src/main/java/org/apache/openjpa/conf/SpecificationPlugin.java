@@ -18,7 +18,11 @@
  */
 package org.apache.openjpa.conf;
 
+import org.apache.openjpa.lib.conf.Configuration;
 import org.apache.openjpa.lib.conf.ObjectValue;
+import org.apache.openjpa.lib.conf.ProductDerivations;
+import org.apache.openjpa.lib.conf.Value;
+import org.apache.openjpa.lib.conf.ValueListener;
 import org.apache.openjpa.lib.log.Log;
 import org.apache.openjpa.lib.util.Localizer;
 import org.apache.openjpa.util.UserException;
@@ -29,15 +33,15 @@ import org.apache.openjpa.util.UserException;
  * @author Pinaki Poddar
  *
  */
-public class SpecificationPlugin extends ObjectValue {
-    private Log _log;
-    
+public class SpecificationPlugin extends ObjectValue implements ValueListener {
+    private Configuration _conf;
     protected static final Localizer _loc = Localizer.forPackage
         (SpecificationPlugin.class);
     
-    public SpecificationPlugin(String prop, Log log) {
+    public SpecificationPlugin(Configuration conf, String prop) {
         super(prop);
-        _log = log; 
+        _conf = conf;
+        addListener(this);
     }
     
     @Override
@@ -54,11 +58,7 @@ public class SpecificationPlugin extends ObjectValue {
      */
     @Override
     public void setString(String str) {
-        if (str == null)
-            set(null);
-        else {
-            this.set(Specification.create(str));
-        }
+        this.set(str == null ? null : new Specification(str));
     }
     
     /**
@@ -81,29 +81,37 @@ public class SpecificationPlugin extends ObjectValue {
     }
     
     /**
-     * Validates if the currently Specification is set.
-     * Given newSpec must be equal to the current Specification and must have
-     * a major version number equal or less than the current one.
+     * Validates if the given Specification can overwrite the current 
+     * Specification. If the given Specification is not same as the
+     * current one, then it is valid to overwrite.
+     * If the given Specification is same as the current Specification then
+     * it must have a major version number equal or less than the current one.
      * 
-     * @exception fatal UserException if newSpec is not equal to the current
-     * Specification or has a higher major version.
+     * @exception fatal UserException if the given Specification is same as
+     * the current Specification but has a higher major version.
      * 
      * @see Specification#equals(Object)
      */
     protected void validateOverwrite(Specification newSpec) {
         Specification current = (Specification)get();
         if (current != null) {
-            if (!current.equals(newSpec)) {
-                throw new UserException(_loc.get("spec-different", newSpec, 
-                    current)).setFatal(true);
+            Log log = _conf.getConfigurationLog(); 
+            if (!current.isSame(newSpec)) {
+                log.warn(_loc.get("spec-different", newSpec, current));
+                return;
             }
             if (current.compareVersion(newSpec) < 0) {
                 throw new UserException(_loc.get("spec-version-higher", 
                     newSpec, current)).setFatal(true);
             }
             if (current.compareVersion(newSpec) > 0) {
-                _log.warn(_loc.get("spec-version-lower", newSpec, current));
+                log.warn(_loc.get("spec-version-lower", newSpec, current));
             }
         }
+    }
+    
+    public void valueChanged(Value value) {
+        if (this.getClass().isInstance(value))
+            ProductDerivations.afterSpecificationSet(_conf);
     }
 }

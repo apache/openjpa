@@ -20,6 +20,9 @@ package org.apache.openjpa.conf;
 
 import java.text.MessageFormat;
 
+import org.apache.commons.lang.StringUtils;
+import org.apache.openjpa.lib.conf.Configurable;
+import org.apache.openjpa.lib.conf.Configuration;
 import org.apache.openjpa.lib.util.Localizer;
 import org.apache.openjpa.util.UserException;
 
@@ -33,22 +36,12 @@ import org.apache.openjpa.util.UserException;
  *
  */
 public class Specification {
-    private String _name;
-    private int    _major;
-    private String _minor;
-    private String _description;
-    
-    static final MessageFormat _format = new MessageFormat("{0} {1}.{2}");
-    static final String _printableFormat = "<name> [<major>[.<minor>]]";
-    static final MessageFormat _vformat = new MessageFormat("{0}.{1}");
-    static final String _printableVersionFormat = "<major>[.<minor>]";
+    private String _name = "";
+    private int    _major = 1;
+    private String _minor = "0";
+    private String _description = "";
+
     private static Localizer _loc = Localizer.forPackage(Specification.class);
-    
-    private Specification(String name, int major, String minor) {
-        this._name = name == null ? "" : name.trim();
-        this._major = major;
-        this._minor = minor == null ? "" : minor.trim();
-    }
     
     /**
      * Construct from a String that encodes name and version fields.
@@ -59,134 +52,67 @@ public class Specification {
      * 'major' version defaults to 1 and must be an integer. 
      * 'minor' version defaults to 0 and can be a String. 
      */
-    public static Specification create(String fullName) {
+    public Specification(String fullName) {
         try {
-            Object[] tokens = _format.parse(fullName);
-            return new Specification(tokens[0].toString(),
-                tokens.length > 1 ? Integer.parseInt(tokens[1].toString()) : 1,
-                tokens.length > 2 ? tokens[2].toString() : "0");
+            Object[] tokens = parse(fullName);
+            _name = tokens[0].toString();
+            _major = tokens.length > 1 ? 
+                Integer.parseInt(tokens[1].toString()) : 1;
+            _minor = tokens.length > 2 ? tokens[2].toString() : "0";
         } catch (Exception e) {
-            throw new UserException(_loc.get("spec-wrong-format", 
-                fullName, _printableFormat));
+            throw new UserException(_loc.get("spec-wrong-format", fullName));
         }
-    }
-    
-    /**
-     * Construct from a String and version.
-     * 
-     * @param name is the name of the Specification.
-     * @param version a encoded string in the following prescribed format.
-     * <code>major.minor</code> e.g. <code>2.0-draft</code>
-     * 'major' version defaults to 1 and must be an integer. 
-     * 'minor' version defaults to 0 and can be a String. 
-     */
-    public static Specification create(String name, String version) {
-        try {
-            Object[] tokens = _vformat.parse(version);
-            return new Specification(name,
-                tokens.length > 0 ? Integer.parseInt(tokens[0].toString()) : 1,
-                tokens.length > 1 ? tokens[1].toString() : "0");
-        } catch (Exception e) {
-            throw new UserException(_loc.get("spec-wrong-version-format", 
-                version, _printableVersionFormat));
-        }
-    }
-    
-    /**
-     * Construct from a String and major and minor version.
-     * 
-     * @param name is the name of the Specification.
-     * @param version a encoded string in the following prescribed format.
-     * <code>major.minor</code> e.g. <code>2.0-draft</code>
-     * 'major' version defaults to 1 and must be an integer. 
-     * 'minor' version defaults to 0 and can be a String. 
-     */
-    public static Specification create(String name, int major, String minor) {
-        return new Specification(name, major, minor);
-    }
-    
-    /**
-     * Construct from a String and major and minor version.
-     * 
-     * @param name is the name of the Specification.
-     * @param version a encoded string in the following prescribed format.
-     * <code>major.minor</code> e.g. <code>2.0-draft</code>
-     * 'major' version defaults to 1 and must be an integer. 
-     * 'minor' version defaults to 0 and can be a String. 
-     */
-    public static Specification create(String name, int major) {
-        return new Specification(name, major, "0");
-    }
-
-    /**
-     * Construct from a String and major and minor version.
-     * 
-     * @param name is the name of the Specification.
-     * @param version a encoded string in the following prescribed format.
-     * <code>major.minor</code> e.g. <code>2.0-draft</code>
-     * 'major' version defaults to 1 and must be an integer. 
-     * 'minor' version defaults to 0 and can be a String. 
-     */
-    public static Specification create(String name, int major, int minor) {
-        return new Specification(name, major, ""+minor);
-    }
-    
-    public Specification setDescription(String desc) {
-        _description = desc;
-        return this;
     }
     
     public String getName() {
         return _name;
     }
-
-    public int getMajorVersion() {
+    
+    public int getVersion() {
         return _major;
     }
-
+    
     public String getMinorVersion() {
         return _minor;
     }
-
+    
     public String getDescription() {
         return _description;
     }
-
-    /**
-     * Get the Specification encoding format in {@link MessageFormat} syntax.   
-     */
-    public static String getFormat() {
-        return _printableFormat;
-    }
     
-    /**
-     * Get the Specification version encoding format in {@link MessageFormat} 
-     * syntax.   
-     */
-    public static String getVersionFormat() {
-        return _printableVersionFormat;
+    public Specification setDescription(String description) {
+        this._description = description;
+        return this;
     }
     
     /**
      * Affirms if the given argument is equal to this receiver.
-     * They are equal if
-     *    other is a String that equals this receiver's name ignoring case and
-     *    any leading or trailing blank spaces.
-     *    other is a Specification whose name equals this receiver's name 
-     *    ignoring case and any leading or trailing blank spaces.
-     *    or if they are same reference (of course)
      */
     public boolean equals(Object other) {
         if (this == other)
             return true;
-        if (other == null)
+        if (other == null || !this.getClass().isInstance(other))
             return false;
-        if (other instanceof String)
-            return _name.equalsIgnoreCase(((String)other).trim());
-        if (other instanceof Specification)
-            return _name.equalsIgnoreCase((((Specification)other)._name)
-                .trim());
-        return false;
+        Specification that = (Specification)other;
+        return StringUtils.equals(_name, this._name) && _major == that._major 
+            && StringUtils.equals(_minor, this._minor);
+    }    
+    
+    /**
+     * Affirms if the given specification has the same name of this receiver,
+     * ignoring the case.
+     */
+    public boolean isSame(Specification other) {
+        return this == other 
+            || (other != null && _name.equalsIgnoreCase(other._name));
+    }
+    
+    /**
+     * Affirms if the given string equals name of this receiver, ignoring the 
+     * case.
+     */
+    public boolean isSame(String other) {
+        return _name.equalsIgnoreCase(other);
     }
     
     /**
@@ -199,10 +125,23 @@ public class Specification {
      */
     public int compareVersion(Specification other) {
         return _major > other._major ? 1 : _major == other._major ? 0 : -1;
-        
     }
     
     public String toString() {
-        return MessageFormat.format(_format.toPattern(), _name, _major, _minor);
+        return _name.toUpperCase() + " " + _major + "." + _minor;
+    }
+    
+    private Object[] parse(String str) {
+        int space = str.indexOf(' ');
+        
+        if (space == -1)
+            return new Object[]{str};
+        String name = str.substring(0,space);
+        String version = str.substring(space+1);
+        int dot = version.indexOf('.');
+        if (dot == -1)
+            return new Object[] {name, version};
+        return new Object[] {name, 
+            version.substring(0,dot), version.substring(dot+1)};
     }
 }
