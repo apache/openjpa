@@ -89,7 +89,6 @@ public class ClassMapping
 
     // maps columns to joinables
     private final Map _joinables = Collections.synchronizedMap(new HashMap());
-    private boolean redoPrimaryKeyColumns = false;
 
     /**
      * Constructor. Supply described type and owning repository.
@@ -403,18 +402,15 @@ public class ClassMapping
      */
     public Column[] getPrimaryKeyColumns() {
         if (getIdentityType() == ID_APPLICATION && isMapped()) {
-            if (_cols.length == 0 || redoPrimaryKeyColumns) {            
+            if (_cols.length == 0) {            
                 FieldMapping[] pks = getPrimaryKeyFieldMappings();
                 Collection cols = new ArrayList(pks.length);
                 Column[] fieldCols;
                 for (int i = 0; i < pks.length; i++) {
                     fieldCols = pks[i].getColumns();
                     if (fieldCols.length == 0) {
-                        // some pk columns depends on fk. At this moment, 
-                        // the fk may not contain complete information.
-                        // need to redo the primary key again later on
-                        redoPrimaryKeyColumns = true;
-                        continue;
+                        _cols = new Column[0];
+                        return _cols;
                     }
                     for (int j = 0; j < fieldCols.length; j++)
                         cols.add(fieldCols[j]);
@@ -820,8 +816,12 @@ public class ClassMapping
         FieldMapping[] fms = getFieldMappings();
         for (int i = 0; i < fms.length; i++) {
             if (fms[i].getDefiningMetaData() == this) {
-                if (fms[i].getForeignKey() != null &&
-                    fms[i].getStrategy() instanceof RelationFieldStrategy) {
+                boolean fill =
+                    getMappingRepository().getMappingDefaults()
+                        .defaultMissingInfo();
+                ForeignKey fk = fms[i].getForeignKey();
+                if (fill && fk != null && 
+                    fk.getPrimaryKeyColumns().length == 0) { 
                     // set resolve mode to force this field mapping to be 
                     // resolved again. The need to resolve again occurs when 
                     // a primary key is a relation field with the foreign key
@@ -831,10 +831,9 @@ public class ClassMapping
                     // field, the foreign key will be constructed. However, 
                     // the primary key of the parent entity may not have been 
                     // resolved yet, resulting in missing informaiton in the fk
-                    fms[i].setResolve(MODE_META); 
-
-                    // set strategy to null to force fk to be re-constructed
-                    fms[i].setStrategy(null, false); 
+                    fms[i].setResolve(MODE_META);
+                    fms[i].getStrategy().map(false);
+                 
                 }                
                 fms[i].resolve(MODE_MAPPING);
             }
