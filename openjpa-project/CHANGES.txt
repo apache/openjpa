@@ -1,4 +1,4 @@
-                           Release Notes for OpenJPA
+                           Release Notes for OpenJPA 1.2.1
 
         * Overview
         * License
@@ -120,6 +120,7 @@ Bug
                       -1 (unlimited batch size)
     * [OPENJPA-777] - Exception is thrown during retrieval of an entity which 
                       contains a persistent collection of embeddable
+    * [OPENJPA-811] - With Oracle, OpenJPA allows setting non-nullable field to null 
     * [OPENJPA-835] - Loading nested toMany EAGER relation resuled in 
                       PersistenceException
     * [OPENJPA-838] - fix parameter setting problem when QuerySQLCache is on
