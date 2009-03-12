@@ -1,0 +1,525 @@
+/*
+ * Licensed to the Apache Software Foundation (ASF) under one
+ * or more contributor license agreements.  See the NOTICE file
+ * distributed with this work for additional information
+ * regarding copyright ownership.  The ASF licenses this file
+ * to you under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied.  See the License for the
+ * specific language governing permissions and limitations
+ * under the License.    
+ */
+package org.apache.openjpa.persistence;
+
+import java.io.File;
+import java.io.IOException;
+import java.net.URL;
+import java.security.AccessController;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
+import javax.persistence.Embeddable;
+import javax.persistence.Entity;
+import javax.persistence.MappedSuperclass;
+import javax.persistence.NamedNativeQueries;
+import javax.persistence.NamedNativeQuery;
+import javax.persistence.NamedQueries;
+import javax.persistence.NamedQuery;
+import javax.persistence.SqlResultSetMapping;
+import javax.persistence.SqlResultSetMappings;
+
+import org.apache.openjpa.lib.conf.Configurable;
+import org.apache.openjpa.lib.conf.Configuration;
+import org.apache.openjpa.lib.conf.GenericConfigurable;
+import org.apache.openjpa.lib.meta.ClassAnnotationMetaDataFilter;
+import org.apache.openjpa.lib.meta.ClassArgParser;
+import org.apache.openjpa.lib.meta.MetaDataFilter;
+import org.apache.openjpa.lib.meta.MetaDataParser;
+import org.apache.openjpa.lib.util.J2DoPriv5Helper;
+import org.apache.openjpa.lib.util.Localizer;
+import org.apache.openjpa.lib.util.Options;
+import org.apache.openjpa.meta.AbstractCFMetaDataFactory;
+import org.apache.openjpa.meta.ClassMetaData;
+import org.apache.openjpa.meta.FieldMetaData;
+import org.apache.openjpa.meta.MetaDataDefaults;
+import org.apache.openjpa.meta.MetaDataFactory;
+import org.apache.openjpa.meta.QueryMetaData;
+import org.apache.openjpa.meta.SequenceMetaData;
+import org.apache.openjpa.util.GeneralException;
+import org.apache.openjpa.util.MetaDataException;
+
+/**
+ * {@link MetaDataFactory} for JPA metadata.
+ *
+ * @author Steve Kim
+ * @since 0.4.0
+ * @nojavadoc
+ */
+public class PersistenceMetaDataFactory
+    extends AbstractCFMetaDataFactory
+    implements Configurable, GenericConfigurable {
+
+    private static final Localizer _loc = Localizer.forPackage
+        (PersistenceMetaDataFactory.class);
+
+    private final PersistenceMetaDataDefaults _def = 
+        new PersistenceMetaDataDefaults();
+    private AnnotationPersistenceMetaDataParser _annoParser = null;
+    private AnnotationPersistenceXMLMetaDataParser _annoXMLParser = null;
+    private XMLPersistenceMetaDataParser _xmlParser = null;
+    private Map<URL, Set> _xml = null; // xml rsrc -> class names
+    private Set<URL> _unparsed = null; // xml rsrc
+    private boolean _fieldOverride = true;
+
+    /**
+     * Whether to use field-level override or class-level override.
+     * Defaults to true.
+     */
+    public void setFieldOverride(boolean field) {
+        _fieldOverride = field;
+    }
+
+    /**
+     * Whether to use field-level override or class-level override.
+     * Defaults to true.
+     */
+    public boolean getFieldOverride() {
+        return _fieldOverride;
+    }
+
+    /**
+     * Return metadata parser, creating it if it does not already exist.
+     */
+    public AnnotationPersistenceMetaDataParser getAnnotationParser() {
+        if (_annoParser == null) {
+            _annoParser = newAnnotationParser();
+            _annoParser.setRepository(repos);
+        }
+        return _annoParser;
+    }
+
+    /**
+     * Set the metadata parser.
+     */
+    public void setAnnotationParser(
+        AnnotationPersistenceMetaDataParser parser) {
+        if (_annoParser != null)
+            _annoParser.setRepository(null);
+        if (parser != null)
+            parser.setRepository(repos);
+        _annoParser = parser;
+    }
+
+    /**
+     * Create a new metadata parser.
+     */
+    protected AnnotationPersistenceMetaDataParser newAnnotationParser() {
+        return new AnnotationPersistenceMetaDataParser
+            (repos.getConfiguration());
+    }
+
+    /**
+     * Create a new annotation serializer.
+     */
+    protected AnnotationPersistenceMetaDataSerializer
+        newAnnotationSerializer() {
+        return new AnnotationPersistenceMetaDataSerializer
+            (repos.getConfiguration());
+    }
+
+    /**
+     * Return XML metadata parser, creating it if it does not already exist.
+     */
+    public XMLPersistenceMetaDataParser getXMLParser() {
+        if (_xmlParser == null) {
+            _xmlParser = newXMLParser(true);
+            _xmlParser.setRepository(repos);
+            if (_fieldOverride)
+                _xmlParser.setAnnotationParser(getAnnotationParser());
+        }
+        return _xmlParser;
+    }
+
+    /**
+     * Set the metadata parser.
+     */
+    public void setXMLParser(XMLPersistenceMetaDataParser parser) {
+        if (_xmlParser != null)
+            _xmlParser.setRepository(null);
+        if (parser != null)
+            parser.setRepository(repos);
+        _xmlParser = parser;
+    }
+
+    /**
+     * Create a new metadata parser.
+     */
+    protected XMLPersistenceMetaDataParser newXMLParser(boolean loading) {
+        return new XMLPersistenceMetaDataParser(repos.getConfiguration());
+    }
+
+    /**
+     * Create a new serializer
+     */
+    protected XMLPersistenceMetaDataSerializer newXMLSerializer() {
+        return new XMLPersistenceMetaDataSerializer(repos.getConfiguration());
+    }
+
+    public void load(Class cls, int mode, ClassLoader envLoader) {
+        if (mode == MODE_NONE)
+            return;
+        if (!strict && (mode & MODE_META) != 0)
+            mode |= MODE_MAPPING;
+
+        // getting the list of persistent types runs callbacks to
+        // mapPersistentTypeNames if it hasn't been called already, which
+        // caches XML resources
+        getPersistentTypeNames(false, envLoader);
+        URL xml = findXML(cls);
+
+        // we have to parse metadata up-front to register persistence unit
+        // defaults and system callbacks
+        ClassMetaData meta;
+        boolean parsedXML = false;
+        if (_unparsed != null && !_unparsed.isEmpty()
+            && (mode & MODE_META) != 0) {
+            for (URL url : _unparsed)
+                parseXML(url, cls, mode, envLoader);
+            parsedXML = _unparsed.contains(xml);
+            _unparsed.clear();
+
+            // XML process check
+            meta = repos.getCachedMetaData(cls);
+            if (meta != null && (meta.getSourceMode() & mode) == mode) {
+                validateStrategies(meta);
+                return;
+            }
+        }
+
+        // might have been looking for system-level query
+        if (cls == null)
+            return;
+
+        // we may still need to parse XML if this is a redeploy of a class, or
+        // if we're in strict query-only mode
+        if (!parsedXML && xml != null) {
+            parseXML(xml, cls, mode, envLoader);
+            // XML process check
+            meta = repos.getCachedMetaData(cls);
+            if (meta != null && (meta.getSourceMode() & mode) == mode) {
+                validateStrategies(meta);
+                return;
+            }
+        }
+
+        AnnotationPersistenceMetaDataParser parser = getAnnotationParser();
+        parser.setEnvClassLoader(envLoader);
+        parser.setMode(mode);
+        parser.parse(cls);
+
+        meta = repos.getCachedMetaData(cls);
+        if (meta != null && (meta.getSourceMode() & mode) == mode)
+            validateStrategies(meta);
+    }
+
+    /**
+     * Parse the given XML resource.
+     */
+    private void parseXML(URL xml, Class cls, int mode, ClassLoader envLoader) {
+        ClassLoader loader = repos.getConfiguration().
+            getClassResolverInstance().getClassLoader(cls, envLoader);
+        XMLPersistenceMetaDataParser xmlParser = getXMLParser();
+        xmlParser.setClassLoader(envLoader != null ? envLoader : loader);
+        xmlParser.setEnvClassLoader(envLoader);
+        xmlParser.setMode(mode);
+        try {
+            xmlParser.parse(xml);
+        } catch (IOException ioe) {
+            throw new GeneralException(ioe);
+        }
+    }
+
+    /**
+     * Locate the XML resource for the given class.
+     */
+    private URL findXML(Class cls) {
+        if (_xml != null && cls != null)
+            for (Map.Entry<URL, Set> entry : _xml.entrySet())
+                if (entry.getValue().contains(cls.getName()))
+                    return entry.getKey();
+        return null;
+    }
+
+    @Override
+    protected void mapPersistentTypeNames(Object rsrc, String[] names) {
+        if (rsrc.toString().endsWith(".class")) {
+            if (log.isTraceEnabled())
+                log.trace(
+                    _loc.get("map-persistent-types-skipping-class", rsrc));
+            return;
+        } else if (!(rsrc instanceof URL)) {
+            if (log.isTraceEnabled())
+                log.trace(
+                    _loc.get("map-persistent-types-skipping-non-url", rsrc));
+            return;
+        }
+
+        if (log.isTraceEnabled())
+            log.trace(_loc.get(
+                "map-persistent-type-names", rsrc, Arrays.asList(names)));
+        
+        if (_xml == null)
+            _xml = new HashMap<URL, Set>();
+        _xml.put((URL) rsrc, new HashSet(Arrays.asList(names)));
+        if (_unparsed == null)
+            _unparsed = new HashSet<URL>();
+        _unparsed.add((URL) rsrc);
+    }
+
+    @Override
+    public Class getQueryScope(String queryName, ClassLoader loader) {
+        if (queryName == null)
+            return null;
+        Collection classes = repos.loadPersistentTypes(false, loader);
+        for (Class cls : (Collection<Class>) classes) {
+            if (((Boolean) AccessController.doPrivileged(J2DoPriv5Helper
+                .isAnnotationPresentAction(cls, NamedQuery.class)))
+                .booleanValue() && hasNamedQuery
+                (queryName, (NamedQuery) cls.getAnnotation(NamedQuery.class)))
+                return cls;
+            if (((Boolean) AccessController.doPrivileged(J2DoPriv5Helper
+                .isAnnotationPresentAction(cls, NamedQueries.class)))
+                .booleanValue() &&
+                hasNamedQuery(queryName, ((NamedQueries) cls.
+                    getAnnotation(NamedQueries.class)).value()))
+                return cls;
+            if (((Boolean) AccessController.doPrivileged(J2DoPriv5Helper
+                .isAnnotationPresentAction(cls, NamedNativeQuery.class)))
+                .booleanValue() &&
+                hasNamedNativeQuery(queryName, (NamedNativeQuery) cls.
+                    getAnnotation(NamedNativeQuery.class)))
+                return cls;
+            if (((Boolean) AccessController.doPrivileged(J2DoPriv5Helper
+                .isAnnotationPresentAction(cls, NamedNativeQueries.class)))
+                .booleanValue() &&
+                hasNamedNativeQuery(queryName, ((NamedNativeQueries) cls.
+                    getAnnotation(NamedNativeQueries.class)).value()))
+                return cls;
+        }
+        return null;
+    }
+
+    @Override
+    public Class getResultSetMappingScope(String rsMappingName,
+        ClassLoader loader) {
+        if (rsMappingName == null)
+            return null;
+        
+        Collection classes = repos.loadPersistentTypes(false, loader);
+        for (Class cls : (Collection<Class>) classes) {
+
+            if (((Boolean) AccessController.doPrivileged(J2DoPriv5Helper
+                .isAnnotationPresentAction(cls, SqlResultSetMapping.class)))
+                .booleanValue() &&
+                hasRSMapping(rsMappingName, (SqlResultSetMapping) cls.
+                getAnnotation(SqlResultSetMapping.class)))
+                return cls;
+
+            if (((Boolean) AccessController.doPrivileged(J2DoPriv5Helper
+                .isAnnotationPresentAction(cls, SqlResultSetMappings.class)))
+                .booleanValue() &&
+                hasRSMapping(rsMappingName, ((SqlResultSetMappings) cls.
+                getAnnotation(SqlResultSetMappings.class)).value()))
+                return cls;
+        }
+        return null;
+    }
+
+    private boolean hasNamedQuery(String query, NamedQuery... queries) {
+        for (NamedQuery q : queries) {
+            if (query.equals(q.name()))
+                return true;
+        }
+        return false;
+    }
+
+    private boolean hasRSMapping(String rsMapping,
+        SqlResultSetMapping... mappings) {
+        for (SqlResultSetMapping m : mappings) {
+            if (rsMapping.equals(m.name()))
+                return true;
+        }
+        return false;
+    }
+
+    private boolean hasNamedNativeQuery(String query,
+        NamedNativeQuery... queries) {
+        for (NamedNativeQuery q : queries) {
+            if (query.equals(q.name()))
+                return true;
+        }
+        return false;
+    }
+
+    @Override
+    protected MetaDataFilter newMetaDataFilter() {
+        ClassAnnotationMetaDataFilter camdf = new ClassAnnotationMetaDataFilter(
+                new Class[] { Entity.class, Embeddable.class,
+                        MappedSuperclass.class });
+        camdf.setLog(log);
+        return camdf;
+    }
+
+    /**
+     * Ensure all fields have declared a strategy.
+     */
+    private void validateStrategies(ClassMetaData meta) {
+        StringBuffer buf = null;
+        for (FieldMetaData fmd : meta.getDeclaredFields()) {
+            if (!fmd.isExplicit()) {
+                if (buf == null)
+                    buf = new StringBuffer();
+                else
+                    buf.append(", ");
+                buf.append(fmd);
+            }
+        }
+        if (buf != null)
+            throw new MetaDataException(_loc.get("no-pers-strat", buf));
+    }
+
+    public MetaDataDefaults getDefaults() {
+        return _def;
+    }
+
+    @Override
+    public ClassArgParser newClassArgParser() {
+        ClassArgParser parser = new ClassArgParser();
+        parser.setMetaDataStructure("package", null, new String[]{
+            "entity", "embeddable", "mapped-superclass" }, "class");
+        return parser;
+    }
+
+    @Override
+    public void clear() {
+        super.clear();
+        if (_annoParser != null)
+            _annoParser.clear();
+        if (_xmlParser != null)
+            _xmlParser.clear();
+        if (_xml != null)
+            _xml.clear();
+    }
+
+    protected Parser newParser(boolean loading) {
+        return newXMLParser(loading);
+    }
+
+    protected Serializer newSerializer() {
+        return newXMLSerializer();
+    }
+
+    @Override
+    protected void parse(MetaDataParser parser, Class[] cls) {
+        parse(parser, Collections.singleton(defaultXMLFile()));
+    }
+
+    protected File defaultSourceFile(ClassMetaData meta) {
+        return defaultXMLFile();
+    }
+
+    protected File defaultSourceFile(QueryMetaData query, Map clsNames) {
+        ClassMetaData meta = getDefiningMetaData(query, clsNames);
+        File file = (meta == null) ? null : meta.getSourceFile();
+        if (file != null)
+            return file;
+        return defaultXMLFile();
+    }
+
+    protected File defaultSourceFile(SequenceMetaData seq, Map clsNames) {
+        return defaultXMLFile();
+    }
+
+    /**
+     * Look for META-INF/orm.xml, and if it doesn't exist, choose a default.
+     */
+    private File defaultXMLFile() {
+        ClassLoader loader = repos.getConfiguration().
+            getClassResolverInstance().getClassLoader(getClass(), null);
+        URL rsrc = (URL) AccessController.doPrivileged(
+            J2DoPriv5Helper.getResourceAction(loader, "META-INF/orm.xml"));
+        if (rsrc != null) {
+            File file = new File(rsrc.getFile());
+            if (((Boolean) AccessController.doPrivileged(
+                J2DoPriv5Helper.existsAction(file))).booleanValue())
+                return file;
+        }
+        return new File("orm.xml");
+    }
+
+    public void setConfiguration(Configuration conf) {
+    }
+
+    public void startConfiguration() {
+    }
+
+    public void endConfiguration() {
+        if (rsrcs == null)
+            rsrcs = Collections.singleton("META-INF/orm.xml");
+        else
+			rsrcs.add("META-INF/orm.xml");
+	}
+
+    public void setInto(Options opts) {
+        opts.keySet().retainAll(opts.setInto(_def).keySet());
+    }
+
+    /**
+     * Return JAXB XML annotation parser, 
+     * creating it if it does not already exist.
+     */
+    public AnnotationPersistenceXMLMetaDataParser getXMLAnnotationParser() {
+        if (_annoXMLParser == null) {
+            _annoXMLParser = newXMLAnnotationParser();
+            _annoXMLParser.setRepository(repos);
+        }
+        return _annoXMLParser;
+    }
+
+    /**
+     * Set the JAXB XML annotation parser.
+     */
+    public void setXMLAnnotationParser(
+        AnnotationPersistenceXMLMetaDataParser parser) {
+        if (_annoXMLParser != null)
+            _annoXMLParser.setRepository(null);
+        if (parser != null)
+            parser.setRepository(repos);
+        _annoXMLParser = parser;
+    }
+
+    /**
+     * Create a new JAXB XML annotation parser.
+     */
+    protected AnnotationPersistenceXMLMetaDataParser newXMLAnnotationParser() {
+        return new AnnotationPersistenceXMLMetaDataParser
+            (repos.getConfiguration());
+    }
+
+    public void loadXMLMetaData(FieldMetaData fmd) {
+        AnnotationPersistenceXMLMetaDataParser parser
+            = getXMLAnnotationParser();
+        parser.parse(fmd);
+    }
+}
