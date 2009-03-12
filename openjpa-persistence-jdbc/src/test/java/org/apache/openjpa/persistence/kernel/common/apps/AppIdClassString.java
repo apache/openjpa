@@ -33,6 +33,10 @@ public class AppIdClassString {
     @Id
     private int pk;
 
+    protected AppIdClassString() {
+        this(1);
+    }
+    
     public AppIdClassString(int pk) {
         this.pk = pk;
     }

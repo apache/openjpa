@@ -27,6 +27,10 @@ public class SequenceAssigned2 extends SequenceAssigned {
 
     private int foo;
 
+    public SequenceAssigned2() {
+        this(1);
+    }
+    
     public SequenceAssigned2(long pk) {
         super(pk);
     }

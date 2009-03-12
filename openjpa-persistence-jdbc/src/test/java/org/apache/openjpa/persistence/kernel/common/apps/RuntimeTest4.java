@@ -32,6 +32,10 @@ public class RuntimeTest4 {
     @OneToMany(cascade = { CascadeType.PERSIST, CascadeType.REMOVE })
     private Collection<RuntimeTest5> runtimeTest5s = new ArrayList();
 
+    protected RuntimeTest4() {
+        this("?");
+    }
+    
     public RuntimeTest4(String str) {
         name = str;
     }

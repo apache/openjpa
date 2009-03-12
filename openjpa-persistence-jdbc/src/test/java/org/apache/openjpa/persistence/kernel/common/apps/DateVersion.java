@@ -33,6 +33,10 @@ public class DateVersion {
     @Id
     private int id;
 
+    protected DateVersion() {
+        this("?", 1);
+    }
+    
     public DateVersion(String s, int id) {
         string = s;
         this.id = id;

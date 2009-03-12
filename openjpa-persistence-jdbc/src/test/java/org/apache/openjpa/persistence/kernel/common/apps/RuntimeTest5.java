@@ -26,6 +26,10 @@ public class RuntimeTest5 {
     private String name;
     private RuntimeTest4 runtimeTest4;
 
+    protected RuntimeTest5() {
+        this("?");
+    }
+    
     public RuntimeTest5(String str) {
         name = str;
     }
