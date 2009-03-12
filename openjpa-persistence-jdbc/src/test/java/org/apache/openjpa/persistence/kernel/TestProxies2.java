@@ -452,9 +452,9 @@ public class TestProxies2 extends BaseKernelTest {
         assertEquals(5, list.size());
         assertEquals("val1", list.get(0));
         assertEquals("val1", list.get(1));
-        assertEquals("val3", list.get(2));
+        assertEquals("val2", list.get(2));
         assertEquals("val3", list.get(3));
-        assertEquals("val2", list.get(4));
+        assertEquals("val3", list.get(4));
         endEm(pm);
     }
 
