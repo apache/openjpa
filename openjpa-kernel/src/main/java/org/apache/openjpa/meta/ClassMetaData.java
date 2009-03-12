@@ -195,7 +195,8 @@ public class ClassMetaData
     private FetchGroup[] _customFGs = null;
     private boolean _intercepting = false;
     private Boolean _useIdClassFromParent = null;
-
+    private boolean _abstract = false;
+    
     /**
      * Constructor. Supply described type and repository.
      */
@@ -2492,5 +2493,13 @@ public class ClassMetaData
      */
     public void setReplicated(boolean flag) {
     	_replicated = flag;
+    }
+
+    public boolean isAbstract() {
+        return _abstract;
+    }
+
+    public void setAbstract(boolean flag) {
+        _abstract = flag;
     }
 }

@@ -534,6 +534,7 @@ public class AnnotationPersistenceMetaDataParser
 
         Entity entity = (Entity) _cls.getAnnotation(Entity.class);
         if (isMetaDataMode()) {
+            meta.setAbstract(_cls.getAnnotation(MappedSuperclass.class) != null);
             // while the spec only provides for embedded exclusive, it doesn't
             // seem hard to support otherwise
             if (entity == null)

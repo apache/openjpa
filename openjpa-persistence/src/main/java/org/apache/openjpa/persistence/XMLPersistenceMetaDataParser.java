@@ -858,6 +858,7 @@ public class XMLPersistenceMetaDataParser
         }
 
         boolean mappedSuper = "mapped-superclass".equals(elem);
+        meta.setAbstract(mappedSuper);
         if (isMetaDataMode()) {
             meta.setSource(getSourceFile(), meta.SRC_XML);
             meta.setSourceMode(MODE_META, true);
