@@ -92,7 +92,7 @@ public abstract class ContainerFieldStrategy
     }
 
     public void appendIndex(SQLBuffer sql, Select sel, Joins joins) {
-        sql.append(sel.getOrderedColumnAlias(field.getOrderColumn(),
+        sql.append(sel.getColumnAlias(field.getOrderColumn(),
             field.getName()));
     }
 

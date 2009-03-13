@@ -33,6 +33,7 @@ import junit.framework.Assert;
 import org.apache.openjpa.lib.jdbc.AbstractJDBCListener;
 import org.apache.openjpa.lib.jdbc.JDBCEvent;
 import org.apache.openjpa.lib.jdbc.JDBCListener;
+import org.apache.openjpa.persistence.ArgumentException;
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
 
 
@@ -64,9 +65,22 @@ public class TestMany2ManyMap extends SingleEMFTestCase {
     public void testQueryQualifiedId() throws Exception {
         EntityManager em = emf.createEntityManager();
 
-        String query = "select KEY(e) from PhoneNumber p, " +
+        // test navigation thru VALUE
+        String query = "select VALUE(e).empId from PhoneNumber p, " +
             " in (p.emps) e order by e.empId";
         List rs = em.createQuery(query).getResultList();
+
+        // test navigation thru KEY
+        query = "select KEY(e), KEY(e).name from PhoneNumber p, " +
+            " in (p.emps) e order by e.empId";
+        rs = em.createQuery(query).getResultList();
+        Division d0 = (Division) ((Object[]) rs.get(0))[0];
+        String name = (String)((Object[]) rs.get(0))[1];
+        assertEquals(d0.getName(), name);
+
+        query = "select KEY(e) from PhoneNumber p, " +
+            " in (p.emps) e order by e.empId";
+        rs = em.createQuery(query).getResultList();
         Division d = (Division) rs.get(0);
 
         String query2 = "select KEY(p) from Employee e, " +
@@ -92,6 +106,23 @@ public class TestMany2ManyMap extends SingleEMFTestCase {
             " in (e.phones) p";
         List rs5 = em.createQuery(query5).getResultList();
         assertEquals(Division.class, rs5.get(0));
+
+        // expects parser error:
+        // JPA2 has no support for predicate comparison using
+        // Key(e) or Value(e)
+        String query1 = "select KEY(p) from Employee e, " +
+            " in (e.phones) p where KEY(p) = ?1";
+        try {
+             List rs1 = em.createQuery(query1).setParameter(1, d2).
+                 getResultList();
+        } catch (Exception ex) {
+            assertException(ex, ArgumentException.class);
+        }
+
+        // test VALUE(e) IS NULL predicate
+        query2 = "select KEY(p) from Employee e, " +
+            " in (e.phones) p WHERE VALUE(p) IS NULL";
+        rs2 = em.createQuery(query2).getResultList();
 
         em.close();
     }

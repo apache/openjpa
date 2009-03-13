@@ -89,6 +89,23 @@ public class TestMany2ManyMapEx10 extends SingleEMFTestCase {
 
         assertTrue(d.equals(me.getKey()));
 
+        // test navigation thru KEY
+        em.clear();
+        query = "select KEY(e), KEY(e).name from PhoneNumber p, " +
+            " in (p.emps) e";
+        rs = em.createQuery(query).getResultList();
+        EmployeePK d0 = (EmployeePK) ((Object[]) rs.get(0))[0];
+        String name = (String)((Object[]) rs.get(0))[1];
+        assertEquals(d0.getName(), name);
+
+        em.clear();
+        query2 = "select KEY(p), KEY(p).phoneNum from Employee e, " +
+            " in (e.phones) p";
+        rs2 = em.createQuery(query2).getResultList();
+        k = (PhonePK) ((Object[]) rs2.get(0))[0];
+        String phoneNum = (String) ((Object[]) rs2.get(0))[1];
+        assertEquals(k.getPhoneNum(), phoneNum);
+
         em.close();
     }
 

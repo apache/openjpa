@@ -413,7 +413,12 @@ public class JDBCExpressionFactory
     }
 
     public Value mapKey(Value key, Value val) {
-        return new MapKey((Val) key, (Val) val);
+        return new MapKey((Val) key);
+    }
+
+    public Value getKey(Value val) {
+        ((PCPath) val).getKey();
+        return val;
     }
 
     public Value getObjectId(Value val) {

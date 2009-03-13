@@ -656,6 +656,10 @@ public class InMemoryExpressionFactory
         throw new UnsupportedException("not implemented yet");
     }
 
+    public Value getKey(Value val) {
+        throw new UnsupportedException("not implemented yet");
+    }
+    
     public Value getObjectId(Value val) {
         return new GetObjectId((Val) val);
     }

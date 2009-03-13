@@ -399,9 +399,11 @@ public class JPQLExpressionBuilder
             exps.ascending = new boolean[ordercount];
             for (int i = 0; i < ordercount; i++) {
                 JPQLNode node = orderby.getChild(i);
-                exps.ordering[i] = getValue(firstChild(node));
-                exps.orderingClauses[i] = assemble(firstChild(node));
-                exps.orderingAliases[i] = firstChild(node).text;
+                JPQLNode firstChild = firstChild(node);
+                exps.ordering[i] = getValue(firstChild);
+                exps.orderingClauses[i] = assemble(firstChild);
+                exps.orderingAliases[i] = firstChild.text;
+
                 // ommission of ASC/DESC token implies ascending
                 exps.ascending[i] = node.getChildCount() <= 1 ||
                     lastChild(node).id == JJTASCENDING ? true : false;
@@ -960,11 +962,11 @@ public class JPQLExpressionBuilder
                 return getIdentifier(node);
 
             case JJTQUALIFIEDPATH:
-                // TODO: to be implemented.
+                return getQualifiedPath(node);
 
             case JJTQUALIFIEDIDENTIFIER:
                 // KEY(e), VALUE(e), ENTRY(e)
-                return getQualifiedIdentifier(onlyChild(node));
+                return getQualifiedIdentifier(node);
 
             case JJTGENERALIDENTIFIER:
                 // KEY(e), VALUE(e)
@@ -1424,10 +1426,8 @@ public class JPQLExpressionBuilder
             new Object[]{ name }, null);
     }
 
-    private Value getQualifiedIdentifier(JPQLNode node) {
-        JPQLNode id = onlyChild(node);               
+    private Value validateMapPath(JPQLNode node, JPQLNode id) {
         Path path = (Path) getValue(id);
-        
         FieldMetaData fld = path.last();
         
         if (fld != null) {            
@@ -1441,7 +1441,13 @@ public class JPQLExpressionBuilder
                 throw parseException(EX_USER, "bad-qualified-identifier",
                     new Object[]{ id.text, oper}, null);
             }
-        }        
+        }         
+        return path;
+    }
+
+    private Value getQualifiedIdentifier(JPQLNode node) {
+        JPQLNode id = onlyChild(node);               
+        Path path = (Path) validateMapPath(node, id);
 
         if (node.id == JJTVALUE)
             return path;
@@ -1451,6 +1457,42 @@ public class JPQLExpressionBuilder
             return factory.mapKey(path, value);
         else            
             return factory.mapEntry(path, value);
+    }
+
+    private Value getQualifiedPath(JPQLNode node) {
+        return getQualifiedPath(node, false, true);
+    }
+
+    private Value getQualifiedPath(JPQLNode node, boolean pcOnly, boolean inner) {
+        int nChild = node.getChildCount();
+        JPQLNode firstChild = firstChild(node);
+        JPQLNode id = firstChild.id == JJTKEY ? onlyChild(firstChild) :
+               firstChild;               
+        Path path = (Path) validateMapPath(firstChild, id);
+
+        if (firstChild.id == JJTIDENTIFIER)
+            return getPath(node);
+
+        FieldMetaData fld = path.last();
+        path = (Path) factory.getKey(path);
+        ClassMetaData meta = fld.getKey().getTypeMetaData();
+
+        if (meta == null)
+            throw parseException(EX_USER, "bad-qualified-path",
+                new Object[]{ id.text }, null);
+        
+        path.setMetaData(meta);
+
+        // walk through the children and assemble the path
+        boolean allowNull = !inner;
+        for (int i = 1; i < nChild; i++) {
+            path = (Path) traversePath(path, node.children[i].text, pcOnly,
+                allowNull);
+
+            // all traversals but the first one will always be inner joins
+            allowNull = false;
+        }
+        return path;
     }
 
     private Value getTypeLiteral(JPQLNode node) {
@@ -1666,6 +1708,8 @@ public class JPQLExpressionBuilder
     }
 
     private Value getValue(JPQLNode node) {
+        if (node.id == JJTQUALIFIEDIDENTIFIER)
+            return getQualifiedIdentifier(onlyChild(node));
         return getValue(node, VAR_PATH);
     }
 

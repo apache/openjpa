@@ -697,7 +697,7 @@ public interface Select
     public String toString();
 
     /**
-     * Return the alias for the given ordered column.
+     * Return the alias for the given column, without creating new table alias
      */
-    public String getOrderedColumnAlias(Column col, Object path);
+    public String getColumnAlias(Column col, Object path);
 }

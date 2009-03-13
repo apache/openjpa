@@ -61,10 +61,12 @@ public class TestSpec10_1_26_Ex2 extends SingleEMFTestCase {
 
     public void testQualifiedId() throws Exception {
         EntityManager em = emf.createEntityManager();
-        String query = "select KEY(e) from Department d, " +
+        String query = "select KEY(e), KEY(e).name from Department d, " +
             " in (d.empMap) e where d.deptId = 1";
         List rs = em.createQuery(query).getResultList(); 
-        EmployeePK d = (EmployeePK) rs.get(0);
+        EmployeePK d = (EmployeePK) ((Object[]) rs.get(0))[0];
+        String name = (String) ((Object[]) rs.get(0))[1];
+        assertEquals(d.getName(), name);
 
         em.clear();
         String query4 = "select ENTRY(e) from Department d, " +

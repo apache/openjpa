@@ -92,7 +92,8 @@ public class MapEntry
         EntryExpState estate = (EntryExpState) state;
         Object key = _key.load(ctx, estate.key, res);
         Object val = _val.load(ctx, estate.val, res);
-
+        if (key == null || val == null)
+            return null;
         return new Entry(key, val);
     }
 
@@ -100,13 +101,14 @@ public class MapEntry
     }
 
     public void select(Select sel, ExpContext ctx, ExpState state, boolean pks) {
-        EntryExpState estate = (EntryExpState) state;
-        _key.selectColumns(sel, ctx, estate.key, pks);
-        _val.selectColumns(sel, ctx, estate.val, pks);
+        selectColumns(sel, ctx, state, pks);
     }
 
     public void selectColumns(Select sel, ExpContext ctx, ExpState state,
         boolean pks) {
+        EntryExpState estate = (EntryExpState) state;
+        _key.selectColumns(sel, ctx, estate.key, pks);
+        _val.selectColumns(sel, ctx, estate.val, pks);
     }
 
     public ClassMetaData getMetaData() {

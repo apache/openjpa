@@ -763,7 +763,7 @@ public class SelectImpl
         return getColumnAlias(col, table, getJoins(joins, false));
     }
 
-    public String getOrderedColumnAlias(Column col, Object path) {
+    public String getColumnAlias(Column col, Object path) {
         String columnName = col.getName();
         String tableName = col.getTable().getFullName();
         Set<Map.Entry> entries = _aliases.entrySet();

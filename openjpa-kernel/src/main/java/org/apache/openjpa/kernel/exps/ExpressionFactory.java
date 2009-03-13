@@ -428,6 +428,11 @@ public interface ExpressionFactory {
     public Value mapKey(Value key, Value val);
 
     /**
+     * Path navigation thru map key
+     */
+    public Value getKey(Value val);
+
+    /**
      * Return distinct values of the given value. This is typically used
      * within aggregates, for example: max(distinct(path))
 	 *

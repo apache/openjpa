@@ -77,6 +77,7 @@ public class PCPath
     private final ClassMapping _candidate;
     private ClassMapping _class = null;
     private boolean _key = false;
+    private boolean _keyPath = false;
     private int _type = PATH;
     private String _varName = null;
     private Class _cast = null;
@@ -465,13 +466,22 @@ public class PCPath
                     rel.getTable());
             } else {
                 // move past the previous field, if any
-                field = (action.op == Action.GET_XPATH) ? (FieldMapping) _xmlfield :
-                    (action.op == Action.GET_KEY) ? field : (FieldMapping) action.data;
+                field = (action.op == Action.GET_XPATH) ?
+                    (FieldMapping) _xmlfield :
+                    (action.op == Action.GET_KEY) ? null :
+                    (FieldMapping) action.data;
 
                 // mark if the next traversal should go through
                 // the key rather than value
                 key = action.op == Action.GET_KEY;
                 forceOuter |= action.op == Action.GET_OUTER;
+
+                // if last action is get map key, use the previous field mapping
+                if (key && !itr.hasNext())
+                    field = pstate.field;
+
+                if (_keyPath)
+                    pstate.field = field;
 
                 if (pstate.field != null) {
                     // if this is the second-to-last field and the last is
@@ -487,6 +497,13 @@ public class PCPath
 
                 // get mapping for the current field
                 pstate.field = field;
+
+                if (key && itr.hasNext()) {
+                    // path navigation thru KEY
+                    _keyPath = true;
+                    continue;
+                }
+
                 owner = pstate.field.getDefiningMapping();
                 if (pstate.field.getManagement() 
                     != FieldMapping.MANAGE_PERSISTENT)
@@ -704,8 +721,20 @@ public class PCPath
         boolean pks) {
         ClassMapping mapping = getClassMapping(state);
         PathExpState pstate = (PathExpState) state;
-        if (mapping == null || !pstate.joinedRel)
-            sel.select(getColumns(state), pstate.joins);
+        if (mapping == null || !pstate.joinedRel) {
+            getColumns(state);
+            if (_keyPath) {
+                SQLBuffer buf = new SQLBuffer(ctx.store.getDBDictionary());
+                for (int i = 0; i < pstate.cols.length; i++) {
+                    buf.append(sel.getColumnAlias(pstate.cols[i], this));
+                    if (i > 0)
+                        buf.append(",");
+                }
+                sel.select(buf, this);
+            }
+            else
+                sel.select(pstate.cols, pstate.joins);
+        }
         else if (pks)
             sel.select(mapping.getPrimaryKeyColumns(), pstate.joins);
         else {
@@ -776,6 +805,8 @@ public class PCPath
             //    example: Map<Integer, Employee> emps
             ret = res.getObject(pstate.cols[0],
                 JavaSQLTypes.JDBC_DEFAULT, pstate.joins);
+        else if (_keyPath)
+            ret = res.getObject(this, JavaSQLTypes.JDBC_DEFAULT, pstate.joins);
         else
             ret = pstate.field.loadProjection(ctx.store, ctx.fetch, res, 
                 pstate.joins);

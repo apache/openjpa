@@ -33,6 +33,14 @@ public class PhonePK implements Serializable {
         this.phoneNum = phoneNum;
     }
 
+    public String getAreaCode() {
+        return areaCode;
+    }
+
+    public String getPhoneNum() {
+        return phoneNum;
+    }
+
     public boolean equals(Object o) {
         if (this == o)
             return true;

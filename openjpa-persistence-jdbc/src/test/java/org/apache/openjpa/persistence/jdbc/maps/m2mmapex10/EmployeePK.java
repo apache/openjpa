@@ -34,6 +34,14 @@ public class EmployeePK implements Serializable {
         this.bDay = bDay;
     }
 
+    public String getName() {
+        return name;
+    }
+
+    public Date getBDay() {
+        return bDay;
+    }
+
     public boolean equals(Object o) {
         if (this == o)
             return true;

@@ -35,7 +35,6 @@ public class MapKey
     extends AbstractVal {
 
     private final Val _key;
-    private final Val _val;
     private ClassMetaData _meta = null;
     private Class _cast = null;
     private Class _type = null;
@@ -43,10 +42,9 @@ public class MapKey
     /**
      * Constructor. Provide the map value to operate on.
      */
-    public MapKey(Val key, Val val) {
+    public MapKey(Val key) {
         ((PCPath) key).getKey();
         _key = key;
-        _val = val;
     }
 
     /**
@@ -57,9 +55,8 @@ public class MapKey
         public ExpState key;
         public ExpState val;
     
-        KeyExpState(ExpState key, ExpState val) {
+        KeyExpState(ExpState key) {
             this.key = key;
-            this.val = val;
         }
     }
 
@@ -69,17 +66,19 @@ public class MapKey
 
     public void calculateValue(Select sel, ExpContext ctx, ExpState state,
         Val other, ExpState otherState) {
-        _val.calculateValue(sel, ctx, state, other, otherState);
         _key.calculateValue(sel, ctx, state, other, otherState);
     }
 
     public void groupBy(Select sel, ExpContext ctx, ExpState state) {
     }
 
+    public void orderBy(Select sel, ExpContext ctx, ExpState state,
+        boolean asc) {
+    }
+
     public ExpState initialize(Select sel, ExpContext ctx, int flags) {
-        ExpState val = _val.initialize(sel, ctx, flags);
         ExpState key = _key.initialize(sel, ctx, flags);
-        return new KeyExpState(key, val);
+        return new KeyExpState(key);
     }
 
     public int length(Select sel, ExpContext ctx, ExpState state) {
@@ -93,16 +92,14 @@ public class MapKey
         return key;
     }
 
-    public void orderBy(Select sel, ExpContext ctx, ExpState state, boolean asc) {
-    }
-
     public void select(Select sel, ExpContext ctx, ExpState state, boolean pks) {
-        KeyExpState estate = (KeyExpState) state;
-        _key.selectColumns(sel, ctx, estate.key, pks);
+        selectColumns(sel, ctx, state, pks);
     }
 
     public void selectColumns(Select sel, ExpContext ctx, ExpState state,
         boolean pks) {
+        KeyExpState estate = (KeyExpState) state;
+        _key.selectColumns(sel, ctx, estate.key, pks);
     }
 
     public ClassMetaData getMetaData() {
@@ -110,7 +107,7 @@ public class MapKey
     }
 
     public Class getType() {
-        return _key.getType();
+        return Object.class;
     }
 
     public void setImplicitType(Class type) {
