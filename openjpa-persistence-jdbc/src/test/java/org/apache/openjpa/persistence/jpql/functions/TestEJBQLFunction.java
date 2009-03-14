@@ -94,6 +94,19 @@ public class TestEJBQLFunction extends AbstractTestCase {
         assertEquals("the users name is not AblahumSeet", "Ablahumeeth",
             user.getName());
 
+        query = "UPDATE CompUser e SET e.name = " +
+            "CONCAT('XYZ', SUBSTRING(e.name, LOCATE('e', e.name))) " +
+            "WHERE e.name='Ablahumeeth'";
+        result = em.createQuery(query).executeUpdate();
+
+        assertEquals("the result is not 1", 1, result);
+
+        user = em.find(CompUser.class, userid1);
+        em.refresh(user);
+
+        assertNotNull("the user is null", user);
+        assertEquals("the users name is not Ablahumeeth", "XYZeeth",
+            user.getName());
         endTx(em);
         endEm(em);
     }
