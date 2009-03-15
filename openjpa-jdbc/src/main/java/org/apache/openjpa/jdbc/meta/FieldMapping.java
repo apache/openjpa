@@ -25,7 +25,6 @@ import org.apache.openjpa.enhance.PersistenceCapable;
 import org.apache.openjpa.enhance.Reflection;
 import org.apache.openjpa.jdbc.kernel.JDBCFetchConfiguration;
 import org.apache.openjpa.jdbc.kernel.JDBCStore;
-import org.apache.openjpa.jdbc.meta.strats.HandlerFieldStrategy;
 import org.apache.openjpa.jdbc.meta.strats.NoneFieldStrategy;
 import org.apache.openjpa.jdbc.meta.strats.PrimitiveFieldStrategy;
 import org.apache.openjpa.jdbc.schema.Column;
@@ -53,7 +52,6 @@ import org.apache.openjpa.util.ApplicationIds;
 import org.apache.openjpa.util.InternalException;
 import org.apache.openjpa.util.MetaDataException;
 import org.apache.openjpa.util.ObjectId;
-import org.apache.openjpa.util.OpenJPAId;
 
 /**
  * Specialization of metadata for relational databases.
@@ -160,6 +158,14 @@ public class FieldMapping
             if (meta != null)
                 return meta.getTable();
         }
+        
+        ValueMappingImpl vm = (ValueMappingImpl)getDefiningMapping().
+            getEmbeddingMetaData();
+        if (vm != null && vm.getValueMappedBy() != null) {
+            return vm.getFieldMapping().getElementMapping().
+                getDeclaredTypeMapping().getTable();
+        }
+        
         return getDefiningMapping().getTable();
     }
 
