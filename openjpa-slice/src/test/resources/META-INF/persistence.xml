@@ -151,4 +151,29 @@
       </properties>
    </persistence-unit>
    
+   <persistence-unit name="replication">
+   	  <class>org.apache.openjpa.slice.ReplicatedParent</class>
+   	  <class>org.apache.openjpa.slice.ReplicatedChild</class>
+   	  
+      <properties>
+         <property name="openjpa.BrokerFactory" value="slice"/>
+         <property name="openjpa.ConnectionDriverName" value="org.apache.derby.jdbc.EmbeddedDriver"/>
+
+         <property name="openjpa.slice.Names" value="One,Two"/>
+         <property name="openjpa.slice.DistributionPolicy" value="org.apache.openjpa.slice.policy.UserDistributionPolicy"/>
+         
+         <property name="openjpa.ConnectionUserName" value=""/>
+         <property name="openjpa.ConnectionPassword" value=""/>
+         
+         <property name="openjpa.slice.One.ConnectionURL" value="jdbc:derby:target/database/openjpa-slice1;create=true"/>
+         <property name="openjpa.slice.Two.ConnectionURL" value="jdbc:derby:target/database/openjpa-slice2;create=true"/>
+         
+         <property name="openjpa.Multithreaded" value="false"/>
+         <property name="openjpa.Log" value="DefaultLevel=INFO, Enhance=TRACE, SQL=TRACE"/>
+         <property name="openjpa.jdbc.SynchronizeMappings" value="refresh"/>
+         <property name="openjpa.jdbc.MappingDefaults" value="DefaultMissingInfo=true"/>
+         <property name="openjpa.RuntimeUnenhancedClasses" value="supported"/>
+      </properties>
+   </persistence-unit>
+   
 </persistence>

@@ -69,7 +69,7 @@ public class DistributedBrokerImpl extends FinalizingBrokerImpl {
 			OpCallbacks call) {
 		OpenJPAStateManager sm = getStateManager(pc);
 		SliceInfo info = null;
-		boolean replicated = SliceImplHelper.isReplicated(sm);
+		boolean replicated = SliceImplHelper.isReplicated(pc, getConfiguration());
 		if (getOperatingSet().isEmpty()	&& !SliceImplHelper.isSliceAssigned(sm)) {
 			info = SliceImplHelper.getSlicesByPolicy(pc, getConfiguration(), 
 				this);
