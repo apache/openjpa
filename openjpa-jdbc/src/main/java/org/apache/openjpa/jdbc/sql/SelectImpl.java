@@ -766,16 +766,16 @@ public class SelectImpl
     public String getColumnAlias(Column col, Object path) {
         String columnName = col.getName();
         String tableName = col.getTable().getFullName();
-        Set<Map.Entry> entries = _aliases.entrySet();
+        Object[] entries = _aliases.entrySet().toArray();
         Integer tableAlias = null;
-        for (Map.Entry entry : entries) {
-            Object obj = entry.getKey();
+        for (int i = entries.length-1; i >= 0; i--) {
+            Object obj = ((Map.Entry) entries[i]).getKey();
             Key key = null;
             if (obj instanceof Key)
                 key = (Key) obj;
             String str = key != null ? key.getKey().toString() : obj.toString();
             if (str.equals(tableName)) {
-                tableAlias = (Integer) entry.getValue();
+                tableAlias = (Integer) ((Map.Entry) entries[i]).getValue();
                 break;
             }
         }

@@ -717,23 +717,26 @@ public class PCPath
         selectColumns(sel, ctx, state, pks);
     }
 
+    private SQLBuffer getColumns(Select sel, ExpContext ctx, ExpState state) {
+        Column[] cols = getColumns(state);
+        SQLBuffer buf = new SQLBuffer(ctx.store.getDBDictionary());
+        for (int i = 0; i < cols.length; i++) {
+            buf.append(sel.getColumnAlias(cols[i], this));
+            if (i > 0)
+                buf.append(",");
+        }
+        return buf;
+    }
+
     public void selectColumns(Select sel, ExpContext ctx, ExpState state, 
         boolean pks) {
         ClassMapping mapping = getClassMapping(state);
         PathExpState pstate = (PathExpState) state;
         if (mapping == null || !pstate.joinedRel) {
-            getColumns(state);
-            if (_keyPath) {
-                SQLBuffer buf = new SQLBuffer(ctx.store.getDBDictionary());
-                for (int i = 0; i < pstate.cols.length; i++) {
-                    buf.append(sel.getColumnAlias(pstate.cols[i], this));
-                    if (i > 0)
-                        buf.append(",");
-                }
-                sel.select(buf, this);
-            }
+            if (_keyPath)
+                sel.select(getColumns(sel, ctx, state), this);
             else
-                sel.select(pstate.cols, pstate.joins);
+                sel.select(getColumns(state), pstate.joins);
         }
         else if (pks)
             sel.select(mapping.getPrimaryKeyColumns(), pstate.joins);
@@ -754,7 +757,10 @@ public class PCPath
         ClassMapping mapping = getClassMapping(state);
         PathExpState pstate = (PathExpState) state;
         if (mapping == null || !pstate.joinedRel)
-            sel.groupBy(getColumns(state), sel.outer(pstate.joins));
+            if (_keyPath)
+                sel.groupBy(getColumns(sel, ctx, state));
+            else
+                sel.groupBy(getColumns(state), sel.outer(pstate.joins));
         else {
             int subs = (_type == UNBOUND_VAR) ? Select.SUBS_JOINABLE
                 : Select.SUBS_ANY_JOINABLE;
@@ -765,7 +771,11 @@ public class PCPath
 
     public void orderBy(Select sel, ExpContext ctx, ExpState state, 
         boolean asc) {
-        sel.orderBy(getColumns(state), asc, sel.outer(state.joins), false);
+        if (_keyPath)
+            sel.orderBy(getColumns(sel, ctx, state), asc,
+                sel.outer(state.joins), false, this.getSelectAs());
+        else
+            sel.orderBy(getColumns(state), asc, sel.outer(state.joins), false);
     }
 
     public Object load(ExpContext ctx, ExpState state, Result res)

@@ -106,6 +106,19 @@ public class TestMany2ManyMapEx10 extends SingleEMFTestCase {
         String phoneNum = (String) ((Object[]) rs2.get(0))[1];
         assertEquals(k.getPhoneNum(), phoneNum);
 
+        // test ORDER BY qualified path
+        query2 = "select KEY(p), KEY(p).phoneNum as pno from Employee e " +
+            " left join e.phones p ORDER BY pno ";
+        rs2 = em.createQuery(query2).getResultList();
+
+        // test GROUP BY qualified path
+        sql.clear();
+        query2 = "select COUNT(KEY(p).phoneNum) from Employee e " +
+            " left join e.phones p GROUP BY KEY(p).phoneNum";
+        rs2 = em.createQuery(query2).getResultList();
+
+        assertTrue(sql.get(0).toUpperCase().indexOf(" GROUP BY ") != -1);
+
         em.close();
     }
 

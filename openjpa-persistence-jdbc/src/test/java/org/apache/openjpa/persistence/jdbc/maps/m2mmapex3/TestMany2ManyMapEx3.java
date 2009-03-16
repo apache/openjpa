@@ -100,6 +100,13 @@ public class TestMany2ManyMapEx3 extends SingleEMFTestCase {
         d2 = (Department) ((Object[]) rs2.get(0))[0];
         String dname = (String) ((Object[]) rs2.get(0))[1];
 
+        // test GROUP BY qualified path
+        sql.clear();
+        query2 = "select COUNT(KEY(p).id) from Employee e " +
+            " left join e.phones p GROUP BY KEY(p).id";
+        rs2 = em.createQuery(query2).getResultList();
+        assertTrue(sql.get(0).toUpperCase().indexOf(" GROUP BY ") != -1);
+
         em.close();
     }
 

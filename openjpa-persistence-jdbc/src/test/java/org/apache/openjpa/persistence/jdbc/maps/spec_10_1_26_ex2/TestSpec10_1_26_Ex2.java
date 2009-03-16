@@ -75,7 +75,14 @@ public class TestSpec10_1_26_Ex2 extends SingleEMFTestCase {
         Map.Entry me = (Map.Entry) rs4.get(0);
 
         assertTrue(d.equals(me.getKey()));
-        
+
+        // test GROUP BY qualified path
+        sql.clear();
+        String query5 = "select count(KEY(e).bDay) from Department d " +
+            " left join d.empMap e GROUP BY KEY(e).bDay";
+        List rs5 = em.createQuery(query5).getResultList();
+        assertTrue(sql.get(0).toUpperCase().indexOf(" GROUP BY ") != -1);
+
         em.close();
     }
 

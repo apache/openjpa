@@ -74,6 +74,22 @@ public class TestSpec10_1_26_Ex3 extends SingleEMFTestCase {
 
         assertTrue(d.equals(me.getKey()));
         
+        // test ORDER BY qualified path
+        query = "select KEY(e), KEY(e).fName from Department d, " +
+            " in (d.emps) e order by KEY(e).fName";
+        rs = em.createQuery(query).getResultList(); 
+        d = (EmployeeName) ((Object[]) rs.get(0))[0];
+        String fname = (String) ((Object[]) rs.get(0))[1];
+
+        assertEquals(d.getFName(), fname);
+
+        // test GROUP BY qualified path
+        sql.clear();
+        query = "select COUNT(KEY(e).fName) from Department d " +
+            " left join d.emps e GROUP BY KEY(e).fName";
+        rs = em.createQuery(query).getResultList(); 
+        assertTrue(sql.get(0).toUpperCase().indexOf(" GROUP BY ") != -1);
+
         em.close();
     }
 

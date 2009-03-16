@@ -62,7 +62,6 @@ public class TestSpec10_1_26_Ex1 extends SingleEMFTestCase {
         EntityManager em = emf.createEntityManager();
         String query = "select KEY(e) from Department d, " +
             " in (d.empMap) e order by d.deptId, e.empId";
-        System.err.println(query);
         List rs = em.createQuery(query).getResultList();
         Integer d = (Integer) rs.get(0);
 
