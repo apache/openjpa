@@ -970,6 +970,8 @@ public class JPQLExpressionBuilder
 
             case JJTGENERALIDENTIFIER:
                 // KEY(e), VALUE(e)
+                if (node.parent.parent.id == JJTWHERE)
+                    return getGeneralIdentifier(onlyChild(node), true);
                 return getQualifiedIdentifier(onlyChild(node));
 
             case JJTNOT:
@@ -1455,6 +1457,24 @@ public class JPQLExpressionBuilder
                     new Object[]{ id.text, oper}, null);
             }
         }         
+        return path;
+    }
+
+    private Value getGeneralIdentifier(JPQLNode node, boolean inWhereClause) {
+        JPQLNode id = onlyChild(node);
+        if (inWhereClause && node.id == JJTVALUE)
+            throw parseException(EX_USER, "bad-general-identifier",
+                new Object[]{ id.text, "VALUE" }, null);
+
+        Path path = (Path) validateMapPath(node, id);
+        FieldMetaData fld = path.last();
+        path = (Path) factory.getKey(path);
+        ClassMetaData meta = fld.getKey().getTypeMetaData();
+        if (inWhereClause && meta != null)
+            // check basic type
+            throw parseException(EX_USER, "bad-general-identifier",
+                new Object[]{ id.text, "KEY" }, null);
+
         return path;
     }
 

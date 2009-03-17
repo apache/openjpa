@@ -83,6 +83,7 @@ public class PCPath
     private Class _cast = null;
     private boolean _cid = false;
     private FieldMetaData _xmlfield = null;
+    private FieldMetaData _mapfield = null;
 
     /**
      * Return a path starting with the 'this' ptr.
@@ -361,6 +362,7 @@ public class PCPath
         if (_cid)
             return;
 
+        _mapfield = last();
         // change the last action to a get key
         Action action = (Action) _actions.getLast();
         action.op = Action.GET_KEY;
@@ -402,7 +404,8 @@ public class PCPath
         if (act != null && act.op == Action.GET_XPATH)
             return ((XMLMetaData) act.data).getType();
         
-        FieldMetaData fld = (act == null || act.op == Action.GET_KEY) ? null : 
+        FieldMetaData fld = act == null ? null :
+            act.op == Action.GET_KEY ? _mapfield :
             (FieldMetaData) act.data;
         boolean key = act != null && act.op == Action.GET_KEY;
         if (fld != null) {

@@ -73,6 +73,13 @@ public class TestSpec10_1_26_Ex1 extends SingleEMFTestCase {
 
         assertTrue(d.equals(me.getKey()));
 
+        // test KEY(e) of basic type in conditional expression
+        sql.clear();
+        query = "select KEY(e) from Department d, " +
+            " in (d.empMap) e where KEY(e) > 1";
+        rs = em.createQuery(query).getResultList();
+        assertTrue(sql.get(0).toUpperCase().indexOf(">") > 0);
+
         em.close();
     }
 

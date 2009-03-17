@@ -944,6 +944,7 @@ void arithmetic_factor() : { }
 	input_parameter() | 
 	LOOKAHEAD(path()) path() |
 	LOOKAHEAD(qualified_path()) qualified_path() |
+	LOOKAHEAD(general_identification_variable()) general_identification_variable() |
 	LOOKAHEAD(2) "(" arithmetic_expression() ")" | 
 	functions_returning_numerics() | 
 	aggregate_select_expression() |	
@@ -1078,7 +1079,9 @@ void string_expression() : { }
 
 void string_primary() : { }
 {
-	string_literal() | path() | LOOKAHEAD(2) "(" string_expression() ")" | 
+	string_literal() | path() |
+	LOOKAHEAD(general_identification_variable()) general_identification_variable() |	
+	LOOKAHEAD(2) "(" string_expression() ")" | 
 	functions_returning_strings() | LOOKAHEAD(2)  "(" subquery() ")"
 	| case_expression()
 }
@@ -1093,6 +1096,7 @@ void datetime_expression() : { }
 void datetime_primary() : { }
 {
 	path() | functions_returning_datetime() | input_parameter() | aggregate_select_expression()
+	| LOOKAHEAD(general_identification_variable()) general_identification_variable()
 	| case_expression()
 }
 

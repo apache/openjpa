@@ -88,6 +88,13 @@ public class TestMany2ManyMapEx8 extends SingleEMFTestCase {
 
         assertTrue(d.equals(me.getKey()));
 
+        // test KEY(e) of basic type in conditional expression
+        sql.clear();
+        query = "select KEY(e) from PhoneNumber p, " +
+            " in (p.emps) e where KEY(e) like '%1'";
+        rs = em.createQuery(query).getResultList();
+        assertTrue(sql.get(0).toUpperCase().indexOf("LIKE") > 0);
+
         em.close();
     }
 
