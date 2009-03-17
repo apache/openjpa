@@ -34,6 +34,7 @@ public class StoreException
     public static final int OPTIMISTIC = 3;
     public static final int REFERENTIAL_INTEGRITY = 4;
     public static final int OBJECT_EXISTS = 5;
+    public static final int QUERY = 6;
 
     public StoreException(String msg) {
         super(msg);

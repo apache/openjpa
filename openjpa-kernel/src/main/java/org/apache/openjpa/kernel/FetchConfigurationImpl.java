@@ -125,6 +125,7 @@ public class FetchConfigurationImpl
         setFetchBatchSize(conf.getFetchBatchSize());
         setFlushBeforeQueries(conf.getFlushBeforeQueriesConstant());
         setLockTimeout(conf.getLockTimeout());
+        setQueryTimeout(conf.getQueryTimeout());
         clearFetchGroups();
         addFetchGroups(Arrays.asList(conf.getFetchGroupsList()));
         setMaxFetchDepth(conf.getMaxFetchDepth());
