@@ -30,7 +30,7 @@ import org.apache.openjpa.util.Exceptions;
 import org.apache.openjpa.util.StoreException;
 
 /**
- * Query lock timeout violation.
+ * Query timeout violation.
  *
  * @since 2.0.0
  * @nojavadoc
@@ -39,6 +39,8 @@ public class QueryTimeoutException
     extends javax.persistence.QueryTimeoutException
     implements Serializable, ExceptionInfo {
 
+    private static final long serialVersionUID = -2154020315916482766L;
+    
     private transient boolean _fatal = false;
     private transient Object _failed = null;
     private transient Throwable[] _nested = null;
@@ -56,7 +58,7 @@ public class QueryTimeoutException
     }
 
     public int getSubtype() {
-        return StoreException.LOCK;
+        return StoreException.QUERY;
     }
 
     public boolean isFatal() {

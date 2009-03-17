@@ -28,6 +28,7 @@ import org.apache.openjpa.util.ObjectExistsException;
 import org.apache.openjpa.util.ObjectNotFoundException;
 import org.apache.openjpa.util.OpenJPAException;
 import org.apache.openjpa.util.OptimisticException;
+import org.apache.openjpa.util.QueryException;
 import org.apache.openjpa.util.RuntimeExceptionTranslator;
 import org.apache.openjpa.util.StoreException;
 import org.apache.openjpa.util.UserException;
@@ -186,6 +187,19 @@ public class PersistenceExceptions
                 e = new org.apache.openjpa.persistence.EntityExistsException
                     (ke.getMessage(), getNestedThrowables(ke),
                         getFailedObject(ke), ke.isFatal());
+        } else if (ke.getSubtype() == StoreException.QUERY
+                || cause instanceof QueryException) {
+            QueryException queryEx = (QueryException)
+                (ke instanceof QueryException ? ke : cause);
+            if (!queryEx.isFatal()) {
+                e = new org.apache.openjpa.persistence.QueryTimeoutException(
+                    ke.getMessage(), getNestedThrowables(ke),
+                    getFailedObject(ke), ke.isFatal());
+            } else {
+                e = new org.apache.openjpa.persistence.PersistenceException(
+                    ke.getMessage(), getNestedThrowables(ke),
+                    getFailedObject(ke), ke.isFatal());
+            }
         } else {
                 e = new org.apache.openjpa.persistence.PersistenceException
                     (ke.getMessage(), getNestedThrowables(ke),
