@@ -843,6 +843,10 @@ public class DB2Dictionary
             if (subtype == StoreException.LOCK && errorState.equals("57033")
                 && ex.getMessage().indexOf("80") != -1) {
                 recoverable = Boolean.TRUE;
+            } else if (subtype == StoreException.QUERY && errorState.equals("57014")
+                && ex.getMessage().indexOf("40001") == -1) {
+                // FIXME drwoods - OPENJPA-964 - Need to determine expected DB2 behavior for query timeouts
+                recoverable = Boolean.TRUE;
             }
         }
         return recoverable;

@@ -32,6 +32,7 @@ import java.text.SimpleDateFormat;
 import java.util.Arrays;
 import java.util.Date;
 
+import org.apache.openjpa.jdbc.kernel.JDBCFetchConfiguration;
 import org.apache.openjpa.jdbc.kernel.JDBCStore;
 import org.apache.openjpa.jdbc.kernel.exps.FilterValue;
 import org.apache.openjpa.jdbc.schema.Column;
@@ -382,14 +383,16 @@ public class PostgresDictionary
     
     private void updatePostgresBlob(Row row, Column col, JDBCStore store,
         Object ob, Select sel) throws SQLException {
-        SQLBuffer sql = sel.toSelect(true, store.getFetchConfiguration());
+        JDBCFetchConfiguration fetch = store.getFetchConfiguration();
+        SQLBuffer sql = sel.toSelect(true, fetch);
         ResultSet res = null;
         DelegatingConnection conn = 
             (DelegatingConnection) store.getConnection();
         PreparedStatement stmnt = null;
         try {
-            stmnt = sql.prepareStatement(conn, store.getFetchConfiguration(),
+            stmnt = sql.prepareStatement(conn, fetch,
                 ResultSet.TYPE_SCROLL_SENSITIVE, ResultSet.CONCUR_UPDATABLE);
+            setTimeouts(stmnt, fetch, true);
             res = stmnt.executeQuery();
             if (!res.next()) {
                 throw new InternalException(_loc.get("stream-exception"));
@@ -443,14 +446,16 @@ public class PostgresDictionary
     }
 
     public void deleteStream(JDBCStore store, Select sel) throws SQLException {
-        SQLBuffer sql = sel.toSelect(true, store.getFetchConfiguration());
+        JDBCFetchConfiguration fetch = store.getFetchConfiguration();
+        SQLBuffer sql = sel.toSelect(true, fetch);
         ResultSet res = null;
         DelegatingConnection conn = 
             (DelegatingConnection) store.getConnection();
         PreparedStatement stmnt = null;
         try {
-            stmnt = sql.prepareStatement(conn, store.getFetchConfiguration(),
+            stmnt = sql.prepareStatement(conn, fetch,
                 ResultSet.TYPE_SCROLL_SENSITIVE, ResultSet.CONCUR_UPDATABLE);
+            setTimeouts(stmnt, fetch, true);
             res = stmnt.executeQuery();
             if (!res.next()) {
                 throw new InternalException(_loc.get("stream-exception"));

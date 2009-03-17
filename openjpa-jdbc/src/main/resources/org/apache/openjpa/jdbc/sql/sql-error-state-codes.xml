@@ -29,11 +29,12 @@
 <sql-state-codes>
 
 	<dictionary class="org.apache.openjpa.jdbc.sql.DB2Dictionary">
-		<lock>40001,57033,57014</lock>
+		<lock>40001,57033</lock>
 		<referential-integrity>23502,42912,23001,23504,23511,23512,23513,23515,23520,23505</referential-integrity>
 		<object-exists></object-exists>
 		<object-not-found></object-not-found>
 		<optimistic></optimistic>
+        <query>57014</query>
 	</dictionary>
 	
 	<dictionary class="org.apache.openjpa.jdbc.sql.DerbyDictionary">
@@ -42,6 +43,7 @@
 		<object-exists>23505</object-exists>
 		<object-not-found></object-not-found>
 		<optimistic></optimistic>
+        <query>XCL52</query>
 	</dictionary>
 	
 	<dictionary class="org.apache.openjpa.jdbc.sql.SQLServerDictionary">
@@ -50,6 +52,7 @@
 		<object-exists></object-exists>
 		<object-not-found></object-not-found>
 		<optimistic>1205</optimistic>
+        <query></query>
 	</dictionary>
 	
 	<dictionary class="org.apache.openjpa.jdbc.sql.SybaseDictionary">
@@ -58,6 +61,7 @@
 		<object-exists></object-exists>
 		<object-not-found></object-not-found>
 		<optimistic>1205</optimistic>
+        <query></query>
 	</dictionary>
 	
 	<dictionary class="org.apache.openjpa.jdbc.sql.AccessDictionary">
@@ -66,6 +70,7 @@
 		<object-exists>23505,456c</object-exists>
 		<object-not-found></object-not-found>
 		<optimistic>40XL1,40001</optimistic>
+        <query></query>
 	</dictionary>
 	
 	<dictionary class="org.apache.openjpa.jdbc.sql.CacheDictionary">
@@ -74,6 +79,7 @@
 		<object-exists>23505,456c</object-exists>
 		<object-not-found></object-not-found>
 		<optimistic>40XL1,40001</optimistic>
+        <query></query>
 	</dictionary>
 	
 	<dictionary class="org.apache.openjpa.jdbc.sql.EmpressDictionary">
@@ -82,6 +88,7 @@
 		<object-exists>23505,456c</object-exists>
 		<object-not-found></object-not-found>
 		<optimistic>40XL1,40001</optimistic>
+        <query></query>
 	</dictionary>
 	
 	<dictionary class="org.apache.openjpa.jdbc.sql.FoxProDictionary">
@@ -90,6 +97,7 @@
 		<object-exists>23505,456c</object-exists>
 		<object-not-found></object-not-found>
 		<optimistic>40XL1,40001</optimistic>
+        <query></query>
 	</dictionary>
 	
 	<dictionary class="org.apache.openjpa.jdbc.sql.H2Dictionary">
@@ -98,6 +106,7 @@
 		<object-exists></object-exists>
 		<object-not-found></object-not-found>
 		<optimistic></optimistic>
+        <query></query>
 	</dictionary>
 	
 	<dictionary class="org.apache.openjpa.jdbc.sql.HSQLDictionary">
@@ -106,6 +115,7 @@
 		<object-exists></object-exists>
 		<object-not-found></object-not-found>
 		<optimistic></optimistic>
+        <query></query>
 	</dictionary>
 	
 	<dictionary class="org.apache.openjpa.jdbc.sql.InformixDictionary">
@@ -114,6 +124,7 @@
 		<object-exists></object-exists>
 		<object-not-found></object-not-found>
 		<optimistic></optimistic>
+        <query></query>
 	</dictionary>
 	
 	<dictionary class="org.apache.openjpa.jdbc.sql.InterbaseDictionary">
@@ -122,6 +133,7 @@
 		<object-exists></object-exists>
 		<object-not-found></object-not-found>
 		<optimistic></optimistic>
+        <query></query>
 	</dictionary>
 	
 	<dictionary class="org.apache.openjpa.jdbc.sql.FirebirdDictionary">
@@ -130,6 +142,7 @@
 		<object-exists></object-exists>
 		<object-not-found></object-not-found>
 		<optimistic></optimistic>
+        <query></query>
 	</dictionary>
 	
 	<dictionary class="org.apache.openjpa.jdbc.sql.JDataStoreDictionary">
@@ -138,6 +151,7 @@
 		<object-exists></object-exists>
 		<object-not-found></object-not-found>
 		<optimistic></optimistic>
+        <query></query>
 	</dictionary>
 	
 	<dictionary class="org.apache.openjpa.jdbc.sql.MySQLDictionary">
@@ -146,6 +160,7 @@
 		<object-exists>23000</object-exists>
 		<object-not-found></object-not-found>
 		<optimistic>41000,1205,1213</optimistic>
+        <query></query>
 	</dictionary>
 	
 	<dictionary class="org.apache.openjpa.jdbc.sql.OracleDictionary">
@@ -154,6 +169,7 @@
 		<object-exists></object-exists>
 		<object-not-found></object-not-found>
 		<optimistic></optimistic>
+        <query></query>
 	</dictionary>
 	
 	<dictionary class="org.apache.openjpa.jdbc.sql.PointbaseDictionary">
@@ -162,6 +178,7 @@
 		<object-exists></object-exists>
 		<object-not-found></object-not-found>
 		<optimistic></optimistic>
+        <query></query>
 	</dictionary>
 	
 	<dictionary class="org.apache.openjpa.jdbc.sql.PostgresDictionary">
@@ -170,6 +187,7 @@
 		<object-exists></object-exists>
 		<object-not-found></object-not-found>
 		<optimistic>55P03</optimistic>
+        <query></query>
 	</dictionary>
 	
 </sql-state-codes>

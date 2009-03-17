@@ -23,6 +23,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
+import org.apache.openjpa.jdbc.conf.JDBCConfiguration;
 import org.apache.openjpa.jdbc.kernel.JDBCFetchConfiguration;
 import org.apache.openjpa.jdbc.kernel.JDBCStore;
 import org.apache.openjpa.jdbc.meta.JavaSQLTypes;
@@ -142,20 +143,23 @@ abstract class MaxEmbeddedLobFieldStrategy
 
     public void customUpdate(OpenJPAStateManager sm, JDBCStore store)
         throws SQLException {
+        JDBCFetchConfiguration fetch = store.getFetchConfiguration();
         // select existing value for update
         Column col = field.getColumns()[0];
         Select sel = store.getSQLFactory().newSelect();
         sel.select(col);
         field.wherePrimaryKey(sel, sm, store);
-        SQLBuffer sql = sel.toSelect(true, store.getFetchConfiguration());
+        SQLBuffer sql = sel.toSelect(true, fetch);
 
         Connection conn = store.getConnection();
+        DBDictionary dict = store.getDBDictionary();
         PreparedStatement stmnt = null;
         ResultSet rs = null;
         try {
             stmnt = sql.prepareStatement(conn,
                 ResultSet.TYPE_SCROLL_INSENSITIVE,
                 ResultSet.CONCUR_UPDATABLE);
+            dict.setTimeouts(stmnt, fetch, true);
             rs = stmnt.executeQuery();
             rs.next();
 

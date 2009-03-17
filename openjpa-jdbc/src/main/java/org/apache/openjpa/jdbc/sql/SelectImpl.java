@@ -322,6 +322,7 @@ public class SelectImpl
             stmnt = prepareStatement(conn, sql, null, 
                 ResultSet.TYPE_FORWARD_ONLY, 
                 ResultSet.CONCUR_READ_ONLY, false);
+            _dict.setQueryTimeout(stmnt, store.getFetchConfiguration().getQueryTimeout());
             rs = executeQuery(conn, stmnt, sql, false, store);
             return getCount(rs);
         } finally {
@@ -377,7 +378,7 @@ public class SelectImpl
             else
                 stmnt = prepareStatement(conn, sql, null, rsType, -1, false);
             
-            setTimeout(stmnt, forUpdate, fetch);
+            _dict.setTimeouts(stmnt, fetch, forUpdate);
             
             rs = executeQuery(conn, stmnt, sql, isLRS, store);
         } catch (SQLException se) {
@@ -448,27 +449,6 @@ public class SelectImpl
         return conn.prepareStatement(sql);
     }    
     
-    /**
-     * This method is to provide override for non-JDBC or JDBC-like 
-     * implementation of setting query timeout.
-     */
-    protected void setTimeout(PreparedStatement stmnt, boolean forUpdate,
-        JDBCFetchConfiguration fetch) throws SQLException {
-        // if this is a locking select and the lock timeout is greater than
-        // the configured query timeout, use the lock timeout
-        if (forUpdate && _dict.supportsQueryTimeout && fetch != null 
-            && fetch.getLockTimeout() > stmnt.getQueryTimeout() * 1000) {
-            int timeout = fetch.getLockTimeout();
-            if (timeout < 1000) {
-                timeout = 1000; 
-                Log log = _conf.getLog(JDBCConfiguration.LOG_JDBC);
-                if (log.isWarnEnabled())
-                    log.warn(_loc.get("millis-query-timeout"));
-            }
-            stmnt.setQueryTimeout(timeout / 1000);
-        }
-    }
-
     /**
      * This method is to provide override for non-JDBC or JDBC-like 
      * implementation of executing query.

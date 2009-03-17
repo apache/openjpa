@@ -60,7 +60,7 @@ public class SQLErrorCodeReader {
 		storeErrorTypes.put("optimistic", StoreException.OPTIMISTIC);
 		storeErrorTypes.put("referential-integrity",
 				StoreException.REFERENTIAL_INTEGRITY);
-
+		storeErrorTypes.put("query", StoreException.QUERY);
 	}
 	
 	private static final Localizer _loc = 

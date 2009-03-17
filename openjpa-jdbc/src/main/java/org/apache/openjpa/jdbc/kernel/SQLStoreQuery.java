@@ -34,6 +34,7 @@ import java.util.Map;
 import java.util.Set;
 
 import org.apache.commons.lang.StringUtils;
+import org.apache.openjpa.jdbc.conf.JDBCConfiguration;
 import org.apache.openjpa.jdbc.meta.ClassMapping;
 import org.apache.openjpa.jdbc.meta.MappingRepository;
 import org.apache.openjpa.jdbc.meta.QueryResultMapping;
@@ -166,6 +167,8 @@ public class SQLStoreQuery
                 if (stmnt != null)
                     buf.setParameters(stmnt);
 
+                dict.setTimeouts(stmnt, fetch, true);
+                
                 int count = executeUpdate(store, conn, stmnt, buf);  
               
                 return Numbers.valueOf(count);
@@ -218,6 +221,7 @@ public class SQLStoreQuery
                     stmnt != null;)
                     dict.setUnknown(stmnt, ++index, i.next(), null);
 
+                dict.setTimeouts(stmnt, fetch, false);
                 ResultSet rs = executeQuery(store, conn, stmnt, buf, paramList);
                 ResultSetResult res = stmnt != null ? 
                     new ResultSetResult(conn, stmnt, rs, store) :

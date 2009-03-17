@@ -30,6 +30,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.openjpa.event.LifecycleEventManager;
+import org.apache.openjpa.jdbc.conf.JDBCConfiguration;
 import org.apache.openjpa.jdbc.kernel.exps.ExpContext;
 import org.apache.openjpa.jdbc.kernel.exps.GetColumn;
 import org.apache.openjpa.jdbc.kernel.exps.JDBCExpressionFactory;
@@ -512,6 +513,7 @@ public class JDBCStoreQuery
                 stmnt = null;
                 try {
                     stmnt = prepareStatement(conn, sql[i]);
+                    dict.setTimeouts(stmnt, fetch, true);
                     count += executeUpdate(conn, stmnt, sql[i], isUpdate);                    
                 } catch (SQLException se) {
                     throw SQLExceptions.getStore(se, sql[i].getSQL(), 

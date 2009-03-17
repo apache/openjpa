@@ -111,6 +111,7 @@ public class PessimisticLockManager
         // construct; if not, and we the assertion does not throw an
         // exception, then just return without locking
         DBDictionary dict = _store.getDBDictionary();
+        JDBCFetchConfiguration fetch = _store.getFetchConfiguration();
         if (dict.simulateLocking)
             return;
         dict.assertSupport(dict.supportsSelectForUpdate,
@@ -125,7 +126,7 @@ public class PessimisticLockManager
         Select select = _store.getSQLFactory().newSelect();
         select.select(mapping.getPrimaryKeyColumns());
         select.wherePrimaryKey(id, mapping, _store);
-        SQLBuffer sql = select.toSelect(true, _store.getFetchConfiguration());
+        SQLBuffer sql = select.toSelect(true, fetch);
 
         ensureStoreManagerTransaction();
         Connection conn = _store.getConnection();
@@ -133,7 +134,7 @@ public class PessimisticLockManager
         ResultSet rs = null;
         try {
             stmnt = prepareStatement(conn, sql);
-            setTimeout(stmnt, timeout);
+            dict.setTimeouts(stmnt, fetch, true);
             rs = executeQuery(conn, stmnt, sql);
             checkLock(rs, sm, timeout);
         } catch (SQLException se) {
@@ -173,23 +174,6 @@ public class PessimisticLockManager
     protected PreparedStatement prepareStatement(Connection conn, SQLBuffer sql)
         throws SQLException {
         return sql.prepareStatement(conn);
-    }
-    
-    /**
-     * This method is to provide override for non-JDBC or JDBC-like 
-     * implementation of setting query timeout.
-     */
-    protected void setTimeout(PreparedStatement stmnt, int timeout)
-        throws SQLException {
-        DBDictionary dict = _store.getDBDictionary();
-        if (timeout >= 0 && dict.supportsQueryTimeout) {
-            if (timeout < 1000) {
-                timeout = 1000;
-                if (log.isWarnEnabled())
-                    log.warn(_loc.get("millis-query-timeout"));
-            }
-            stmnt.setQueryTimeout(timeout / 1000);
-        }
     }
     
     /**

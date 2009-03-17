@@ -655,7 +655,7 @@ public class OracleDictionary
                 setString(stmnt, idx++, schemaName.toUpperCase(), null);
             if (tableName != null)
                 setString(stmnt, idx++, tableName.toUpperCase(), null);
-
+            setTimeouts(stmnt, conf, false);
             rs = stmnt.executeQuery();
             List pkList = new ArrayList();
             while (rs != null && rs.next())
@@ -703,6 +703,7 @@ public class OracleDictionary
             if (tableName != null)
                 setString(stmnt, idx++, tableName.toUpperCase(), null);
 
+            setTimeouts(stmnt, conf, false);
             rs = stmnt.executeQuery();
             List idxList = new ArrayList();
             while (rs != null && rs.next())
@@ -769,7 +770,7 @@ public class OracleDictionary
                 setString(stmnt, idx++, schemaName.toUpperCase(), null);
             if (tableName != null)
                 setString(stmnt, idx++, tableName.toUpperCase(), null);
-
+            setTimeouts(stmnt, conf, false);
             rs = stmnt.executeQuery();
             List fkList = new ArrayList();
             while (rs != null && rs.next())
@@ -888,6 +889,7 @@ public class OracleDictionary
             + ".currval FROM DUAL");
         ResultSet rs = null;
         try {
+            setTimeouts(stmnt, conf, false);
             rs = stmnt.executeQuery();
             rs.next();
             return Numbers.valueOf(rs.getLong(1));

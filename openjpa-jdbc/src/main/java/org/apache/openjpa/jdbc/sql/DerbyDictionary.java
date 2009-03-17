@@ -113,7 +113,7 @@ public class DerbyDictionary
         int errorCode = ex.getErrorCode();
         if (errorStates.contains(errorState)) {
             recoverable = Boolean.FALSE;
-            if (subtype == StoreException.LOCK && errorCode < 30000) {
+            if ((subtype == StoreException.LOCK || subtype == StoreException.QUERY) && errorCode < 30000) {
                 recoverable = Boolean.TRUE;
             }
         }

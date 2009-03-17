@@ -149,7 +149,7 @@ public class FinderQueryImpl
                     dict.setUnknown(stmnt, i+1, params[i], _pkCols[i]);
                 }
             }
-
+            dict.setTimeouts(stmnt, (JDBCFetchConfiguration)fetch, forUpdate);
             rs = _select.executeQuery(conn, stmnt, getQueryString(), jstore,
                 params, _pkCols);
             return _select.getEagerResult(conn, stmnt, rs, jstore, 

@@ -28,6 +28,7 @@ import org.apache.openjpa.kernel.OpenJPAStateManager;
 import org.apache.openjpa.lib.util.Localizer.Message;
 import org.apache.openjpa.util.LockException;
 import org.apache.openjpa.util.OpenJPAException;
+import org.apache.openjpa.util.QueryException;
 import org.apache.openjpa.util.StoreException;
 
 /**
@@ -130,6 +131,8 @@ public class SQLExceptions {
         if (storeEx.getSubtype() == StoreException.LOCK) {
             LockException lockEx = (LockException) storeEx;
             lockEx.setLockLevel(level);
+        } else if (storeEx.getSubtype() == StoreException.QUERY) {
+            QueryException QueryEx = (QueryException) storeEx;
         }
         return storeEx;
     }

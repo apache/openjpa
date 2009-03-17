@@ -109,6 +109,7 @@ import org.apache.openjpa.util.ObjectExistsException;
 import org.apache.openjpa.util.ObjectNotFoundException;
 import org.apache.openjpa.util.OpenJPAException;
 import org.apache.openjpa.util.OptimisticException;
+import org.apache.openjpa.util.QueryException;
 import org.apache.openjpa.util.ReferentialIntegrityException;
 import org.apache.openjpa.util.Serialization;
 import org.apache.openjpa.util.StoreException;
@@ -3649,7 +3650,7 @@ public class DBDictionary
                 stmnt.setString(idx++, schemaName.toUpperCase());
             if (sequenceName != null)
                 stmnt.setString(idx++, sequenceName);
-
+            setQueryTimeout(stmnt, conf.getQueryTimeout());
             rs = executeQuery(conn, stmnt, str);
             return getSequence(rs);            
          } finally {
@@ -4046,6 +4047,7 @@ public class DBDictionary
         PreparedStatement stmnt = prepareStatement(conn, query);
         ResultSet rs = null;
         try {
+            setQueryTimeout(stmnt, conf.getQueryTimeout());
             rs = executeQuery(conn, stmnt, query);
             return getKey(rs, col);
         } finally {
@@ -4174,6 +4176,76 @@ public class DBDictionary
     	}
     }
     
+    /**
+     * FIXME - OPENJPA-957 - lockTimeout is a server-side function and
+     * shouldn't be using client-side setQueryTimeout for lock timeouts.
+     * 
+     * This method is to provide override for non-JDBC or JDBC-like 
+     * implementation of setting query and lock timeouts.
+     * 
+     * @param stmnt
+     * @param fetch
+     * @param forUpdate - true if we should also try setting a lock timeout
+     * @throws SQLException
+     */
+    public void setTimeouts(PreparedStatement stmnt, 
+        JDBCFetchConfiguration fetch, boolean forUpdate) throws SQLException {
+        if (this.supportsQueryTimeout) {
+            int timeout = fetch.getQueryTimeout();
+            if (forUpdate) {
+                // if this is a locking select and the lock timeout is greater 
+                // than the configured query timeout, use the lock timeout
+                timeout = Math.max(fetch.getQueryTimeout(), 
+                    fetch.getLockTimeout());
+            }
+            setQueryTimeout(stmnt, timeout);
+        }
+    }
+
+    /**
+     * FIXME - OPENJPA-957 - lockTimeout is a server-side function and
+     * shouldn't be using client-side setQueryTimeout for lock timeouts.
+     * 
+     * This method is to provide override for non-JDBC or JDBC-like 
+     * implementation of setting query and lock timeouts.
+     * 
+     * @param stmnt
+     * @param fetch
+     * @param forUpdate - true if we should also try setting a lock timeout
+     * @throws SQLException
+     */
+    public void setTimeouts(PreparedStatement stmnt, JDBCConfiguration conf,
+        boolean forUpdate) throws SQLException {
+        if (this.supportsQueryTimeout) {
+            int timeout = conf.getQueryTimeout();
+            if (forUpdate) {
+                // if this is a locking select and the lock timeout is greater
+                // than the configured query timeout, use the lock timeout
+                timeout = Math.max(conf.getQueryTimeout(), 
+                    conf.getLockTimeout());
+            }
+            setQueryTimeout(stmnt, timeout);
+        }
+    }
+
+    /**
+     * This method is to provide override for non-JDBC or JDBC-like 
+     * implementation of setting query timeout.
+     */
+    public void setQueryTimeout(PreparedStatement stmnt, int timeout)
+        throws SQLException {
+        if (this.supportsQueryTimeout && timeout >= 0) {
+            if (timeout > 0 && timeout < 1000) {
+                timeout = 1000; 
+                Log log = conf.getLog(JDBCConfiguration.LOG_JDBC);
+                if (log.isWarnEnabled())
+                    log.warn(_loc.get("millis-query-timeout"));
+            }
+            stmnt.setQueryTimeout(timeout / 1000);
+        }
+    }
+
+
     //////////////////////////////////////
     // ConnectionDecorator implementation
     //////////////////////////////////////
@@ -4276,6 +4348,9 @@ public class DBDictionary
         case StoreException.REFERENTIAL_INTEGRITY:
             storeEx = new ReferentialIntegrityException(msg);
             break;
+        case StoreException.QUERY:
+            storeEx = new QueryException(msg);
+            break;
         default:
             storeEx = new StoreException(msg);
         }
@@ -4362,6 +4437,7 @@ public class DBDictionary
             stmnt = sql.prepareStatement(conn, store.getFetchConfiguration(),
                 ResultSet.TYPE_SCROLL_SENSITIVE,
                 ResultSet.CONCUR_UPDATABLE);
+            setTimeouts(stmnt, store.getFetchConfiguration(), true);
             res = stmnt.executeQuery();
             if (!res.next()) {
                 throw new InternalException(_loc.get("stream-exception"));
@@ -4395,6 +4471,7 @@ public class DBDictionary
             stmnt = sql.prepareStatement(conn, store.getFetchConfiguration(),
                 ResultSet.TYPE_SCROLL_SENSITIVE,
                 ResultSet.CONCUR_UPDATABLE);
+            setTimeouts(stmnt, store.getFetchConfiguration(), true);
             res = stmnt.executeQuery();
             if (!res.next()) {
                 throw new InternalException(_loc.get("stream-exception"));

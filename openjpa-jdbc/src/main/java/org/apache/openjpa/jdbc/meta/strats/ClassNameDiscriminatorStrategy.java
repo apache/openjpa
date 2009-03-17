@@ -24,6 +24,8 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 
 import org.apache.commons.lang.StringUtils;
+import org.apache.openjpa.jdbc.conf.JDBCConfiguration;
+import org.apache.openjpa.jdbc.kernel.JDBCFetchConfiguration;
 import org.apache.openjpa.jdbc.kernel.JDBCStore;
 import org.apache.openjpa.jdbc.meta.ClassMapping;
 import org.apache.openjpa.jdbc.schema.Column;
@@ -73,9 +75,9 @@ public class ClassNameDiscriminatorStrategy
 
         Column col = disc.getColumns()[0];
         DBDictionary dict = store.getDBDictionary();
+        JDBCFetchConfiguration fetch = store.getFetchConfiguration();
         SQLBuffer select = dict.toSelect(new SQLBuffer(dict).append(col),
-            store.getFetchConfiguration(),
-            new SQLBuffer(dict).append(col.getTable()), null, null,
+            fetch, new SQLBuffer(dict).append(col.getTable()), null, null,
             null, null, true, false, 0, Long.MAX_VALUE);
 
         Log log = disc.getMappingRepository().getLog();
@@ -88,6 +90,7 @@ public class ClassNameDiscriminatorStrategy
         ResultSet rs = null;
         try {
             stmnt = select.prepareStatement(conn);
+            dict.setTimeouts(stmnt, fetch, false);
             rs = stmnt.executeQuery();
             String className;
             while (rs.next()) {

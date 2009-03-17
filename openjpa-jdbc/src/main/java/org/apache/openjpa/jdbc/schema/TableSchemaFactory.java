@@ -235,7 +235,7 @@ public class TableSchemaFactory
                 + " (" + _pkColumn + ", " + _schemaColumn + ") VALUES (?, ?)");
             dict.setInt(stmnt, 1, 1, _pkColumn);
             dict.setNull(stmnt, 2, _schemaColumn.getType(), _schemaColumn);
-
+            dict.setTimeouts(stmnt, _conf, true);
             stmnt.executeUpdate();
         } finally {
             if (stmnt != null)
@@ -290,6 +290,7 @@ public class TableSchemaFactory
                 conn.setAutoCommit(true);
 
             stmnt = select.prepareStatement(conn);
+            dict.setQueryTimeout(stmnt, _conf.getQueryTimeout());
             rs = stmnt.executeQuery();
             rs.next();
             String schema = (_schemaColumn.getType() == Types.CLOB) ?
@@ -353,12 +354,14 @@ public class TableSchemaFactory
                 else
                     dict.setString(stmnt, 1, schema, _schemaColumn);
                 dict.setInt(stmnt, 2, 1, _pkColumn);
+                dict.setTimeouts(stmnt, _conf, true);
                 stmnt.executeUpdate();
             } else {
                 stmnt = conn.prepareStatement(update,
                     ResultSet.TYPE_SCROLL_INSENSITIVE,
                     ResultSet.CONCUR_UPDATABLE);
                 dict.setInt(stmnt, 1, 1, _pkColumn);
+                dict.setTimeouts(stmnt, _conf, true);
                 rs = stmnt.executeQuery();
                 rs.next();
                 dict.putString(rs.getClob(1), schema);

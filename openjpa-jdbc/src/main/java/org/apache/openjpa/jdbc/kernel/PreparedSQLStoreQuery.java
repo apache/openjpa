@@ -24,6 +24,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Map;
 
+import org.apache.openjpa.jdbc.conf.JDBCConfiguration;
 import org.apache.openjpa.jdbc.meta.ClassMapping;
 import org.apache.openjpa.jdbc.sql.DBDictionary;
 import org.apache.openjpa.jdbc.sql.Result;
@@ -100,6 +101,8 @@ public class PreparedSQLStoreQuery extends SQLStoreQuery {
                 int index = 0;
                 for (int i = 0; i < params.length; i++)
                     dict.setUnknown(stmnt, ++index, params[i], null);
+
+                dict.setTimeouts(stmnt, fetch, false);
 
                 ResultSet rs = stmnt.executeQuery();
                 

@@ -290,10 +290,12 @@ public class NativeJDBCSeq
      */
     private long getSequence(Connection conn)
         throws SQLException {
+        DBDictionary dict = _conf.getDBDictionaryInstance();
         PreparedStatement stmnt = null;
         ResultSet rs = null;
         try {
             stmnt = conn.prepareStatement(_select);
+            dict.setTimeouts(stmnt, _conf, false);
             synchronized(this) {
                 rs = stmnt.executeQuery();
             }
