@@ -738,6 +738,28 @@ force update version field at the end of transaction
                     </tgroup>
                 </table>
             </section>
+            <section id="jpa_hints_locktimeout">
+                <title>
+                    Lock Timeout Hint
+                </title>
+                <para>
+To specify a lock timeout hint in milliseconds to those databases that support
+it, specify a hint name of &quot;openjpa.LockTimeout&quot; or
+&quot;javax.persistence.lock.timeout&quot; with an integer value greater than
+zero, or zero for no timeout which is the default behavior.
+                </para>
+            </section>
+            <section id="jpa_hints_querytimeout">
+                <title>
+                    Query Timeout Hint
+                </title>
+                <para>
+To specify a query timeout hint in milliseconds to those database drivers that
+support it, specify a hint name of &quot;javax.persistence.query.timeout&quot;
+with an integer value greater than zero, or zero for no timeout which is the
+default behavior.
+                </para>
+            </section>
             <section id="jpa_hints_resultset">
                 <title>
                     Result Set Size Hint
