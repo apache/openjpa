@@ -69,6 +69,13 @@ public class SchemaToolTask
     }
 
     /**
+     * Set whether the SchemaTool should drop tables.
+     */
+    public void setDropTables(boolean dropTables) {
+        flags.dropTables = dropTables;
+    }
+
+    /**
      * Set whether to drop or reflect on OpenJPA tables.
      */
     public void setOpenJPATables(boolean openjpaTables) {
