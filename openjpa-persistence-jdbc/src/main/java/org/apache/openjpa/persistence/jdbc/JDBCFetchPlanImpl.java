@@ -287,4 +287,9 @@ public class JDBCFetchPlanImpl
     public JDBCFetchPlan setWriteLockMode(LockModeType mode) {
         return (JDBCFetchPlan) super.setWriteLockMode(mode);
     }
+
+    @Override
+    public JDBCFetchPlan setQueryTimeout(int timeout) {
+        return (JDBCFetchPlan) super.setQueryTimeout(timeout);
+    }
 }

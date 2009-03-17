@@ -145,6 +145,7 @@ public interface JDBCFetchPlan
     public JDBCFetchPlan setMaxFetchDepth(int depth);
     public JDBCFetchPlan setReadLockMode(LockModeType mode);
     public JDBCFetchPlan setWriteLockMode(LockModeType mode);
+    public JDBCFetchPlan setQueryTimeout(int timeout);
 
     /**
      * @deprecated use the {@link FetchMode} enum instead.

@@ -137,9 +137,10 @@ public class TestQueryHints extends SingleEMFTestCase {
     }
     
     public void testJPAHintSetsFetchPlan() {
-        String jpaKey = "javax.persistence.query.timeout";
-        query.setHint(jpaKey, 5671);
-        assertEquals(5671, query.getFetchPlan().getQueryTimeout());
+        query.setHint("javax.persistence.lock.timeout", 5671);
+        query.setHint("javax.persistence.query.timeout", 7500);
+        assertEquals(5671, query.getFetchPlan().getLockTimeout());
+        assertEquals(7500, query.getFetchPlan().getQueryTimeout());
     }
     
     public void testParts() {

@@ -45,5 +45,6 @@
 		<class>org.apache.openjpa.persistence.query.common.apps.CircularFKPC2</class>
 		<class>org.apache.openjpa.persistence.query.common.apps.ModRuntimeTest1</class>
 		<class>org.apache.openjpa.persistence.query.common.apps.ModRuntimeTest2</class>
+        <class>org.apache.openjpa.persistence.query.common.apps.QTimeout</class>
 	</persistence-unit>
 </persistence>
