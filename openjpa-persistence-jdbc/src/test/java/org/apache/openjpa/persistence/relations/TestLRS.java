@@ -37,7 +37,9 @@ public class TestLRS
     private long id;
 
     public void setUp() {
-        setUp(LRSEntity.class, BasicEntity.class, CLEAR_TABLES);
+        setUp(LRSEntity.class, BasicEntity.class, CLEAR_TABLES,
+            "openjpa.Compatibility", "default(copyOnDetach=true," +
+            		"cascadeWithDetach=true)");
         
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();

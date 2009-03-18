@@ -46,7 +46,7 @@ public class TestDetach extends SingleEMFTestCase {
         MetaDataRepository repos = emf.getConfiguration()
                                       .getMetaDataRepositoryInstance();
         ClassMetaData meta = repos.getCachedMetaData(DMCustomer.class);
-        assertEquals(ValueMetaData.CASCADE_IMMEDIATE, meta.getField("firstName").getCascadeDetach());
+        assertEquals(ValueMetaData.CASCADE_NONE, meta.getField("firstName").getCascadeDetach());
         assertEquals(ValueMetaData.CASCADE_IMMEDIATE, meta.getField("customerInventories").getElement().getCascadeDetach());
         
         meta = repos.getCachedMetaData(DMCustomerInventory.class);

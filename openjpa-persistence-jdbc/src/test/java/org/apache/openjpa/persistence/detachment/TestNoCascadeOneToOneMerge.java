@@ -41,7 +41,8 @@ public class TestNoCascadeOneToOneMerge
 
     public void setUp() {
         setUp(SimpleA.class, SimpleRef.class, SimpleB.class, SimpleC.class, 
-            "openjpa.Compatibility", "FlushBeforeDetach=true,CopyOnDetach=true",
+            "openjpa.Compatibility", "FlushBeforeDetach=true," +
+            "CopyOnDetach=true",
             CLEAR_TABLES);
         createEntities();
     }
