@@ -633,6 +633,8 @@ public class PersistenceProductDerivation
                 return;
 
             switch (name.charAt(0)) {
+                // cases 'name' and 'transaction-type' are handled in startPersistenceUnit()
+                // case 'property' for 'properties' is handled in startElement()
                 case 'c': // class
                     _info.addManagedClassName(currentText());
                 case 'e': // exclude-unlisted-classes
