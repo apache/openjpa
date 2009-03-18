@@ -58,7 +58,6 @@ public class TestStatistics extends SingleEMFTestCase {
 	 */
 	@SuppressWarnings("unchecked")
     public void testPerfectCache() {
-		print(stats);
 		// populate a bunch of customer and order
 		int nCustomer = 20;
 		int nOrder    = 10;
@@ -102,12 +101,7 @@ public class TestStatistics extends SingleEMFTestCase {
 	}
 	
 	void print(CacheStatistics stats) {
-		System.err
-				.print("r:" + stats.getTotalReadCount() + " w:"
-						+ stats.getTotalWriteCount() + " h:"
-						+ stats.getTotalHitCount());
-		System.err.println(" since last reset r:" + stats.getReadCount()
-				+ " w:" + stats.getWriteCount() + " h:" + stats.getHitCount());
+		// TODO log instead of printing to stderr.
 	}
 
 }

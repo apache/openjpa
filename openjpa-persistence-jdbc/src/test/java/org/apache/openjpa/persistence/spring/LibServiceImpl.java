@@ -35,14 +35,12 @@ public class LibServiceImpl implements LibService {
 
     private void closeEM(EntityManager em) {
         if (em != null && em.isOpen()) {
-            System.out.println("Closing EM: " + em);
             em.close();
         }
     }
 
     private EntityManager openEM() {
         EntityManager em = txEMF.getTransactionalEntityManager();
-        System.out.println("Opening EM: " + em);
         return em;
     }
 

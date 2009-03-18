@@ -159,7 +159,6 @@ public class TestBadJdbcUrl extends TestCase {
 		assertNotNull(actual);
 		Class actualType = actual.getClass();
 		if (!targetType.isAssignableFrom(actualType)) {
-			actual.printStackTrace();
 			fail(targetType.getName() + " is not assignable from "
 					+ actualType.getName());
 		}
@@ -178,7 +177,6 @@ public class TestBadJdbcUrl extends TestCase {
 					nested     = next;
 				}
 			}
-			actual.printStackTrace();
 			fail("No nested type " + nestedTargetType + " in " + actual);
 		}
 	}

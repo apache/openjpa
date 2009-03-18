@@ -54,8 +54,7 @@ public class TestAutoIncrement extends SingleEMFTestCase {
 		} else {
 			super.setUp(CLEAR_TABLES, PObjectNative.class,
 					"openjpa.jdbc.DBDictionary",
-					"oracle(UseTriggersForAutoAssign=true)",
-					"openjpa.Log", "SQL=TRACE");
+					"oracle(UseTriggersForAutoAssign=true)");
 		}
 	}
 

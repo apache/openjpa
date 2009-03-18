@@ -38,8 +38,6 @@ public class TestPojoWithoutAnnotationsCannotBePersisted
     }
 
     public void setUp() {
-        System.out.println("Running test " + this.getName() + " of " +
-            this.getClass().getSimpleName());
         pojo = new UnAnnotPojo();
         pojo.setName("failure");
         pojo.setNum(0);

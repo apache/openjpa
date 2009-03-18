@@ -125,10 +125,6 @@ public class RemoteEventBase extends AbstractTestCase {
         for (Iterator iter = listener2.added.iterator(); iter.hasNext();) {
             Id roid = Id.newInstance(RuntimeTest1.class, oid);
             Id it = (Id) iter.next();
-            System.out.println("===ROID: " + roid.getId() + " +++== ITER: " +
-                it.getId() + " Content: " + listener2.added + "ROID Cont: " +
-                roid);
-            System.out.println("Result of COMP " + it.equals(roid));
             //FixMe --det. why it.equals(roid) fails when the are actually equal
             if (it.toString().equals(roid.toString())) {
                 pass = true;
@@ -162,10 +158,6 @@ public class RemoteEventBase extends AbstractTestCase {
         pass = false;
         for (Iterator iter = listener2.updated.iterator(); iter.hasNext();) {
             Id it = (Id) iter.next();
-            System.out.println("===ROID: " + roid.getId() + "+++== ITER: " +
-                it.getId() + "Content: " + listener2.added);
-            System.out.println("Result of COMP " + it.equals(roid));
-
             if (it.toString().equals(roid.toString())) {
                 pass = true;
                 break;
@@ -198,10 +190,6 @@ public class RemoteEventBase extends AbstractTestCase {
         pass = false;
         for (Iterator iter = listener2.deleted.iterator(); iter.hasNext();) {
             Id it = (Id) iter.next();
-            System.out.println("===ROID: " + roid.getId() + "+++== ITER: " +
-                it.getId() + "Content: " + listener2.added);
-            System.out.println("Result of COMP " + it.equals(roid));
-
             if (it.toString().equals(roid.toString())) {
                 pass = true;
                 break;
