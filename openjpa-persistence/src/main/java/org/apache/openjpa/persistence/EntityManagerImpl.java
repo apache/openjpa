@@ -1475,6 +1475,7 @@ public class EntityManagerImpl
     }
 
     public void clear(Object entity) {
+        assertNotCloseInvoked();
         _broker.detach(entity, this);
     }
 

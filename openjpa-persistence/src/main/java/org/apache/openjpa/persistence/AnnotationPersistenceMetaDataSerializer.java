@@ -1012,7 +1012,10 @@ public class AnnotationPersistenceMetaDataSerializer
         if (vmd.getCascadeRefresh() == ValueMetaData.CASCADE_IMMEDIATE) {
             cascades.add(CascadeType.REFRESH);
         }
-        if (cascades.size() == 4) // ALL
+        if (vmd.getCascadeDetach() == ValueMetaData.CASCADE_IMMEDIATE) {
+            cascades.add(CascadeType.CLEAR);
+        }
+        if (cascades.size() == 5) // ALL
         {
             cascades.clear();
             cascades.add(CascadeType.ALL);
