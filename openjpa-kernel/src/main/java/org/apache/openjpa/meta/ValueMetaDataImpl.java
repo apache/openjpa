@@ -259,6 +259,9 @@ public class ValueMetaDataImpl
     }
 
     public int getCascadeDetach() {
+        if (_owner.getManagement() != FieldMetaData.MANAGE_PERSISTENT
+                || !isDeclaredTypePC()) // detach acts on declared type
+                return CASCADE_NONE;
         if (isEmbedded())
             return CASCADE_IMMEDIATE;
         return _detach;

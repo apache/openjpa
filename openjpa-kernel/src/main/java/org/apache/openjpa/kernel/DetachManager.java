@@ -36,7 +36,6 @@ import java.util.Map;
 import org.apache.commons.collections.map.IdentityMap;
 import org.apache.openjpa.conf.Compatibility;
 import org.apache.openjpa.conf.DetachOptions;
-import org.apache.openjpa.conf.OpenJPAConfiguration;
 import org.apache.openjpa.enhance.PersistenceCapable;
 import org.apache.openjpa.event.CallbackModes;
 import org.apache.openjpa.event.LifecycleEvent;
@@ -44,7 +43,6 @@ import org.apache.openjpa.lib.util.Localizer;
 import org.apache.openjpa.meta.ClassMetaData;
 import org.apache.openjpa.meta.FieldMetaData;
 import org.apache.openjpa.meta.JavaTypes;
-import org.apache.openjpa.meta.MetaDataRepository;
 import org.apache.openjpa.meta.ValueMetaData;
 import org.apache.openjpa.util.CallbackException;
 import org.apache.openjpa.util.ObjectNotFoundException;
@@ -72,6 +70,7 @@ public class DetachManager
     private final boolean _failFast;
     private boolean _flushed = false;
     private boolean _flushBeforeDetach;
+    private boolean _cascadeWithDetach;    
 
     // if we're not detaching full, we need to track all detached objects;
     // if we are, then we use a special field manager for more efficient
@@ -260,18 +259,13 @@ public class DetachManager
      */
     public DetachManager(BrokerImpl broker, boolean full, OpCallbacks call) {
         _broker = broker;
-        _call = call;
-        OpenJPAConfiguration conf = broker.getConfiguration();
-        _proxy = conf.getProxyManagerInstance();
-        _opts = conf.getDetachStateInstance();
-        
-        Compatibility compat = conf.getCompatibilityInstance();
-        MetaDataRepository repos  = conf.getMetaDataRepositoryInstance();
-        _copy = full ? false : compat.getCopyOnDetach();
+        _proxy = broker.getConfiguration().getProxyManagerInstance();
+        _opts = broker.getConfiguration().getDetachStateInstance();
         _flushed = full;
-        _flushBeforeDetach = compat.getFlushBeforeDetach();
-        _failFast = (repos.getMetaDataFactory().getDefaults().getCallbackMode()
-                   & CallbackModes.CALLBACK_FAIL_FAST) != 0;
+        _call = call;
+        _failFast = (broker.getConfiguration().getMetaDataRepositoryInstance().
+            getMetaDataFactory().getDefaults().getCallbackMode()
+            & CallbackModes.CALLBACK_FAIL_FAST) != 0;
 
         // we can only rely on our "full" shortcuts if we know we won't be
         // loading any more data
@@ -282,6 +276,16 @@ public class DetachManager
         } else {
             _detached = new IdentityMap();
             _fullFM = null;
+        }
+        Compatibility compatibility = 
+            broker.getConfiguration().getCompatibilityInstance();
+        _flushBeforeDetach = compatibility.getFlushBeforeDetach();
+        _cascadeWithDetach = compatibility.getCascadeWithDetach();
+        if (full) {
+            _copy = false;
+        }
+        else {
+            _copy = compatibility.getCopyOnDetach();;
         }
     }
 
@@ -710,6 +714,18 @@ public class DetachManager
                 return null;
 
             FieldMetaData fmd = sm.getMetaData().getField(field);
+            
+            boolean cascade = false;
+            if(_cascadeWithDetach
+                || fmd.getCascadeDetach() == 
+                    ValueMetaData.CASCADE_IMMEDIATE
+                || fmd.getKey().getCascadeDetach() == 
+                    ValueMetaData.CASCADE_IMMEDIATE 
+                || fmd.getElement().getCascadeDetach() == 
+                    ValueMetaData.CASCADE_IMMEDIATE) {
+                cascade = true;
+            }
+            
             Object newVal = null;
             switch (fmd.getDeclaredTypeCode()) {
             case JavaTypes.ARRAY:
@@ -717,7 +733,9 @@ public class DetachManager
                     newVal = _proxy.copyArray(curVal);
                 else
                     newVal = curVal;
-                detachArray(newVal, fmd);
+                if (cascade) {
+                    detachArray(newVal, fmd);
+                }
                 return newVal;
             case JavaTypes.COLLECTION:
                 if (_copy) {
@@ -731,7 +749,10 @@ public class DetachManager
                         newVal = _proxy.copyCollection((Collection) curVal);
                 } else
                     newVal = curVal;
-                detachCollection((Collection) newVal, (Collection) curVal, fmd);
+                if (cascade) {
+                    detachCollection((Collection) newVal, (Collection) curVal,
+                        fmd);
+                }
                 return reproxy(newVal, field);
             case JavaTypes.MAP:
                 if (_copy) {
@@ -746,7 +767,9 @@ public class DetachManager
                         newVal = _proxy.copyMap((Map) curVal);
                 } else
                     newVal = curVal;
-                detachMap((Map) newVal, (Map) curVal, fmd);
+                if (cascade) {
+                    detachMap((Map) newVal, (Map) curVal, fmd);
+                }
                 return reproxy(newVal, field);
             case JavaTypes.CALENDAR:
                 newVal = (_copy) ? _proxy.copyCalendar((Calendar) curVal) :
@@ -761,7 +784,10 @@ public class DetachManager
                 return reproxy((newVal == null) ? curVal : newVal, field);
             case JavaTypes.PC:
             case JavaTypes.PC_UNTYPED:
-                return detachInternal(curVal);
+                if (cascade) {
+                    return detachInternal(curVal);
+                }
+                return curVal;
             default:
                 return curVal;
             }

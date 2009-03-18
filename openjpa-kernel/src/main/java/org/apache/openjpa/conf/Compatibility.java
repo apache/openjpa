@@ -56,6 +56,7 @@ public class Compatibility {
     private int _jpql = JPQL_WARN;
     private boolean _storeMapCollectionInEntityAsBlob = false;
     private boolean _flushBeforeDetach = false; 
+    private boolean _cascadeWithDetach = false;
     private boolean _useJPA2DefaultOrderColumnName = true;
     private boolean _copyOnDetach = false;
     
@@ -304,6 +305,32 @@ public class Compatibility {
         _copyOnDetach = copyOnDetach;
     }
 
+    /**
+     * Whether openjpa will always cascade on detach, regardless of the
+     * cascade setting.
+     * 
+     * @return true if cascade will always occur, false if cascade will only
+     * occur if it is specified in metadata
+     * 
+     * @since 2.0.0
+     */
+    public boolean getCascadeWithDetach() {
+        return _cascadeWithDetach;
+    }
+
+    /**
+     * Whether openjpa should always cascade on detach, regardless of the
+     * cascade setting.
+     * 
+     * @param cascadeWithDetach true if cascade should always occur, false if
+     * it should only occur if specified in metadata
+     * 
+     * @since 2.0.0
+     */
+    public void setCascadeWithDetach(boolean cascadeWithDetach) {
+        _cascadeWithDetach = cascadeWithDetach;
+    }
+    
     /**
      * Whether OpenJPA should use the new default order column name defined
      * by JPA 2.0: name; "_"; "ORDER" or the pre-JPA 2.0 default name "ordr".
