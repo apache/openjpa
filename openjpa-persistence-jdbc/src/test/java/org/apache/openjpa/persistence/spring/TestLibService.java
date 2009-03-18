@@ -81,7 +81,6 @@ public class TestLibService extends SingleEMFTestCase
                     "unexpected number of subjects for the book " + qTitle, 2,
                     subjects.size());
         } catch (Exception e) {
-            e.printStackTrace();
             fail("Unable to findBookByTitle");
         }
     }
@@ -98,7 +97,6 @@ public class TestLibService extends SingleEMFTestCase
             assertEquals("the borrower found is not " + bName, bName, 
                     harry.getName());
         } catch (Exception e) {
-            e.printStackTrace();
             fail("Unable to find borrower by name");
         }
     }

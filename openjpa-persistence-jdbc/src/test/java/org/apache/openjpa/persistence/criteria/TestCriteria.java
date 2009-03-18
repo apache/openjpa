@@ -572,11 +572,6 @@ public class TestCriteria extends SingleEMFTestCase {
 					+ "JPQL [" + jpql + "]\r\n"
 					+ "error : " + jpqlError.getMessage());
 		} else {
-			System.err.println("WARN: Both JPQL and QueryDefinition are invalid"
-					  + "\r\nJPQL " + jpql + "\r\n"
-					  + "error :" + jpqlError.getMessage() + "\r\n"
-					  + "Criteria " + qb.toJPQL(q) + "\r\n"
-					  + "error : " + criteriaError.getMessage());
 			compareLiterally(jpql, q);
 		}
 	}

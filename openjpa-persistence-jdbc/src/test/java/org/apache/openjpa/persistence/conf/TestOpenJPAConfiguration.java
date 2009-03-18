@@ -225,7 +225,6 @@ public class TestOpenJPAConfiguration
             config.setConnectionFactoryMode("aoeu");
             fail("setting the ConnectionFactoryMode to aoeu should fail");
         } catch (RuntimeException re) {
-            re.printStackTrace();
             // as expected ... make sure the exception suggests the
             // valid names in the message.
             assertTrue(-1 != re.getMessage().indexOf("managed"));

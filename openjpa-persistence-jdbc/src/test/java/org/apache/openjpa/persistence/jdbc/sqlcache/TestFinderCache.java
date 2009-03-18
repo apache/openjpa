@@ -67,25 +67,13 @@ public class TestFinderCache extends SQLListenerTestCase {
     }
     
     public void testFinder() {
-        int N = 200;
-        
         emf = createEMF("openjpa.jdbc.FinderCache", "false");
         run(1, Book.class, BOOK_IDS); // for warmup
         
         assertNull(getCache());
-        long without = run(N, Book.class, BOOK_IDS);
 
         emf = createEMF("openjpa.jdbc.FinderCache", "true");
         assertNotNull(getCache());
-        long with = run(N, Book.class, BOOK_IDS);
-        
-        getCache().getStatistics().dump(System.out);
-        
-        long pct = (without-with)*100/without;
-        System.err.println(BOOK_IDS.length*N + " find");
-        System.err.println("with    " + with);
-        System.err.println("without " + without);
-        System.err.println("delta   " + (pct > 0 ? "+" : "") + pct + "%");
     }
     
     public void testSQLEventListener() {

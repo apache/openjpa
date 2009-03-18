@@ -34,11 +34,11 @@
 		<version>2.0.0-SNAPSHOT</version>
 	</parent>
 	<properties>
+        <test.jvm.arguments>-Xmx500m</test.jvm.arguments>
 		<openjpa.loglevel>INFO</openjpa.loglevel>
 		<!-- to set debug arguments, you might set the following at the command line:
-			-Dsurefire.jvm.args="-Xmx500m -agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=8000"
+			-Dtest.jvm.args="-Xmx500m -agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=8000"
 		-->
-        <surefire.jvm.args>-Xmx500m</surefire.jvm.args>
 	</properties>
 	<dependencies>
 		<dependency>
@@ -147,6 +147,24 @@
 					</execution>
 				</executions>
 			</plugin>
+            
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <configuration>
+                    <argLine>${test.jvm.arguments}</argLine>
+                    <systemProperties>
+                        <property>
+                            <name>openjpa.Log</name>
+                            <value>DefaultLevel=${openjpa.loglevel}</value>
+                        </property>
+                        <property>
+                            <name>derby.stream.error.file</name>
+                            <value>target/derby.log</value>
+                        </property>
+                    </systemProperties>
+                </configuration>
+            </plugin>
 		</plugins>
 	</build>
 </project>

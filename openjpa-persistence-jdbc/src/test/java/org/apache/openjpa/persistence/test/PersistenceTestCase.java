@@ -47,6 +47,8 @@ import org.apache.openjpa.meta.ClassMetaData;
 import org.apache.openjpa.persistence.JPAFacadeHelper;
 import org.apache.openjpa.persistence.OpenJPAEntityManagerFactorySPI;
 
+import sun.security.action.GetLongAction;
+
 /**
  * Base test class providing persistence utilities.
  * 
@@ -508,9 +510,6 @@ public abstract class PersistenceTestCase
                     // swallow;
                 }
             }
-            System.err.println("WARN: " + getClass().getName() + " not run " +
-                "in the current platform because none of the specified " + 
-                " driver(s) " + Arrays.toString(drivers) + " can be loaded");
         }
         return false;
     }

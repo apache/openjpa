@@ -43,8 +43,7 @@ public class TestEJBNullValues extends AbstractTestCase {
             fail("Null value allowed");
         }
         catch (Exception jfe) {
-            System.out
-                .println("Exception expected...Null value not allowed...");
+            // Exception expected...Null value not allowed...
         }
         endEm(pm);
     }

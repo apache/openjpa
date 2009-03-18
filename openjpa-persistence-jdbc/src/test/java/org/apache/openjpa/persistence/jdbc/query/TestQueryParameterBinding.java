@@ -41,6 +41,7 @@ public class TestQueryParameterBinding extends SingleEMFTestCase {
 	private static double DBL_VALUE = 3.0;
 	
 	private EntityManager em;
+	
 	@Override
 	public void setUp() throws Exception {
 		super.setUp(CLEAR_TABLES, Binder.class);

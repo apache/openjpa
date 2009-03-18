@@ -50,8 +50,7 @@ public class TestSpecificationConfiguration extends SingleEMFTestCase {
     }
     
     public void testLowerVersionCanBeSet() {
-        super.setUp("openjpa.Specification", "JPA 1.0", 
-            "openjpa.Log", "DefaultLevel=WARN");
+        super.setUp("openjpa.Specification", "JPA 1.0");
         Specification spec = getSpecifcation();
         
         assertNotNull(spec);
@@ -69,8 +68,7 @@ public class TestSpecificationConfiguration extends SingleEMFTestCase {
     }
     
     public void testDifferentSpecCanBeSet() {
-        super.setUp("openjpa.Specification", "jdo 3.0", 
-            "openjpa.Log", "DefaultLevel=WARN");
+        super.setUp("openjpa.Specification", "jdo 3.0");
     }
     
     public void testSpecCanBeSetToNullString() {

@@ -1148,7 +1148,6 @@ public class TestEmbeddable extends SingleEMFTestCase {
     }
 
     public void createItem3(EntityManager em, int id) {
-        System.out.println("In CreateItem3, id = " + id);
         Item3 item = new Item3();
         item.setId(id);
         for (int i = 0; i < numImagesPerItem; i++) {

@@ -600,6 +600,9 @@
                         <exclude>org/apache/openjpa/persistence/meta/TestSequenceAssigned.java</exclude>
                         <exclude>org/apache/openjpa/persistence/meta/TestValueStrategies.java</exclude>
                         <exclude>org/apache/openjpa/persistence/meta/TestXMLPersistenceMetaDataSerializer.java</exclude>
+                        
+                        <!-- TestPMMemory creates heapdumps etc and there's no real asserts within the test.  -->
+                        <exclude>org/apache/openjpa/persistence/kernel/TestPMMemory.java</exclude>
                   
                     </excludes>
                     <systemProperties>

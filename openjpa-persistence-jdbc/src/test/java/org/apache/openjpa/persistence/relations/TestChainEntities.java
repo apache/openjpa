@@ -44,7 +44,6 @@ public class TestChainEntities extends SingleEMFTestCase {
 		aid = a.getId ();
 		em.getTransaction ().commit ();
 		em.close ();
-		System.out.println ("ChainEntityA id = " + aid);
 	}
 
 	public void testChainEntities () {

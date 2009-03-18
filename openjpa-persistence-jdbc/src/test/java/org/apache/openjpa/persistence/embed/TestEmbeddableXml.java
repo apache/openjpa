@@ -696,8 +696,6 @@ public class TestEmbeddableXml extends SingleEMFTestCase {
         createOrphanRemoval();
         EntityManager em = emf.createEntityManager();
         CustomerXml c = em.find(CustomerXml.class, 1);
-        System.err.println("C name = " + c.getName());
-        System.err.println("size before = " + c.getOrders().size());
         c.setOrders(null);
         em.getTransaction().begin();
         em.persist(c);

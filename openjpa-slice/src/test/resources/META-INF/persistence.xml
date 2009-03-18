@@ -23,9 +23,6 @@
         <class>org.apache.openjpa.slice.Person</class>
         <class>org.apache.openjpa.slice.Address</class>
         <class>org.apache.openjpa.slice.Country</class>
-        <properties>
-         <property name="openjpa.Log" value="DefaultLevel=WARN, Enhance=TRACE"/>
-        </properties>
     </persistence-unit>
     
     
@@ -42,7 +39,6 @@
          <property name="openjpa.slice.DistributionPolicy"  value="org.apache.openjpa.slice.policy.UserDistributionPolicy"/>
          <property name="openjpa.slice.ThreadingPolicy"     value="fixed"/>
 
-         <property name="openjpa.Log"                       value="DefaultLevel=INFO, Enhance=TRACE, SQL=TRACE"/>
          <property name="openjpa.ConnectionDriverName"      value="org.apache.derby.jdbc.EmbeddedDriver"/>
          <property name="openjpa.ConnectionUserName"        value=""/>
          <property name="openjpa.ConnectionPassword"        value=""/>
@@ -70,7 +66,6 @@
          <property name="openjpa.slice.Two.ConnectionURL" value="jdbc:derby:target/database/openjpa-slice2;create=true"/>
          
          <property name="openjpa.Multithreaded" value="false"/>
-         <property name="openjpa.Log" value="DefaultLevel=INFO, Enhance=TRACE, SQL=TRACE"/>
          <property name="openjpa.jdbc.SynchronizeMappings" value="refresh"/>
          <property name="openjpa.jdbc.MappingDefaults" value="DefaultMissingInfo=true"/>
          <property name="openjpa.RuntimeUnenhancedClasses" value="supported"/>
@@ -100,7 +95,6 @@
             <property name="openjpa.Connection2URL" value="jdbc:derby:target/database/openjpa-slice1;create=true"/>
 	        <property name="openjpa.jdbc.SynchronizeMappings" value="buildSchema"/>
             <property name="openjpa.QueryCompilationCache" value="false"/>
-   	        <property name="openjpa.Log" value="DefaultLevel=WARN, Enhance=TRACE, SQL=TRACE"/>
             <property name="openjpa.jdbc.MappingDefaults" value="DefaultMissingInfo=true"/>
             <property name="openjpa.RuntimeUnenhancedClasses" value="supported"/>
       	</properties>
@@ -123,7 +117,6 @@
             
             <property name="openjpa.Connection2URL" value="jdbc:derby:target/database/openjpa-slice1;create=true"/>
             <property name="openjpa.jdbc.SynchronizeMappings" value="buildSchema"/>
-            <property name="openjpa.Log" value="DefaultLevel=WARN, Enhance=TRACE, SQL=TRACE"/>
             <property name="openjpa.jdbc.MappingDefaults" value="DefaultMissingInfo=true"/>
         </properties>
    </persistence-unit>
@@ -144,7 +137,6 @@
          <property name="openjpa.slice.Two.ConnectionURL" value="jdbc:mysql://localhost/slice2"/>
          
          <property name="openjpa.Multithreaded" value="false"/>
-         <property name="openjpa.Log" value="DefaultLevel=INFO, Enhance=TRACE, SQL=TRACE"/>
          <property name="openjpa.jdbc.SynchronizeMappings" value="refresh"/>
          <property name="openjpa.jdbc.MappingDefaults" value="DefaultMissingInfo=true"/>
          <property name="openjpa.RuntimeUnenhancedClasses" value="supported"/>

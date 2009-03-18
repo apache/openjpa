@@ -43,8 +43,7 @@ public abstract class AbstractNullityTestCase extends SingleEMFTestCase {
             fail();
         } catch (Exception e) {
             if (!expected.isAssignableFrom(e.getClass())) {
-                e.printStackTrace();
-                fail("Expected " + expected.getName());
+                fail("Expected " + expected.getName() + " receieved " + e);
             } 
         }
     }
@@ -56,11 +55,7 @@ public abstract class AbstractNullityTestCase extends SingleEMFTestCase {
             em.persist(pc);
         else 
             em.merge(pc);
-        try {
-            em.getTransaction().commit();
-        } catch (RuntimeException e) {
-            e.printStackTrace();
-            fail();
-        }
+        
+        em.getTransaction().commit();
     }
 }

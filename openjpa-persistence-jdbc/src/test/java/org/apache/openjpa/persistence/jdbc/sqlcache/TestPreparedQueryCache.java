@@ -292,7 +292,6 @@ public class TestPreparedQueryCache extends SQLListenerTestCase {
 		}
 		
 		QueryStatistics stats = getCache().getStatistics();
-		stats.dump(System.out);
 
 		assertEquals(N1,      stats.getExecutionCount(jpql1));
 		assertEquals(N2,      stats.getExecutionCount(jpql2));
@@ -339,8 +338,6 @@ public class TestPreparedQueryCache extends SQLListenerTestCase {
 			q2.getResultList();
 		}
 
-		stats.dump(System.out);
-		
 		assertEquals(N11,     stats.getExecutionCount(jpql1));
 		assertEquals(N21,     stats.getExecutionCount(jpql2));
 		assertEquals(N11+N21, stats.getExecutionCount());
@@ -464,21 +461,10 @@ public class TestPreparedQueryCache extends SQLListenerTestCase {
 		
 		long delta = (without == 0) ? 0 : (without - with) * 100 / without;
 		
-		String sql = getSQL(realJPQL);
-		log("Execution time in nanos for " + SAMPLE_SIZE
-				+ " query execution with and without SQL cache:" + with + " "
-				+ without + " (" + delta + "%)");
-		log("JPQL: " + realJPQL);
-		log("SQL : " + sql);
 		if (delta < 0) {
 			if (FAIL_ON_PERF_DEGRADE)
 				assertFalse("change in execution time = " + delta + "%", 
 						delta < 0);
-			else 
-				log("*** WARN: Perforamce regression with cache." + 
-					" Execution time degrades by " + delta + "%");
-		} else {
-		    log("change in execution time = +" + delta + "%");
 		}
 	}
 
@@ -495,7 +481,6 @@ public class TestPreparedQueryCache extends SQLListenerTestCase {
 	 */
 	long run(String jpql, Object[] params, boolean useCache, int N, 
 			boolean isNamedQuery, int expectedCount, boolean checkHits) {
-	    trace("Executing " + N + " times " + (useCache ? " with " : "without") + " cache");
 		List<Long> stats = new ArrayList<Long>();
 		sql.clear();
 		for (int i = 0; i < N; i++) {
@@ -558,15 +543,6 @@ public class TestPreparedQueryCache extends SQLListenerTestCase {
 	String literal(String s) {
 	    return "'"+s+"'";
 	}
-	
-    void log(String s) {
-        System.err.println(s);
-    }
-    
-    void trace(String s) {
-        if (Boolean.getBoolean("trace"))
-            System.err.println(s);
-    }
 	
 	void walk(List list) {
 	    Iterator i = list.iterator();
