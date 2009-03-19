@@ -63,17 +63,19 @@ public class DistributedJDBCConfigurationImpl extends JDBCConfigurationImpl
         implements DistributedJDBCConfiguration {
 
     private final List<Slice> _slices = new ArrayList<Slice>();
-    private List<String> _activeSliceNames = new ArrayList<String>();
     private Slice _master;
     
-    private DecoratingDataSource virtualDataSource;
+    private DistributedDataSource virtualDataSource;
     
     protected BooleanValue lenientPlugin;
     protected StringValue masterPlugin;
     protected StringListValue namesPlugin;
     public PluginValue distributionPolicyPlugin;
     public PluginValue replicationPolicyPlugin;
-
+    
+    protected Log log;
+    protected String unit;
+    
     public static final String DOT = ".";
     public static final String REGEX_DOT = "\\.";
     public static final String PREFIX_SLICE = ProductDerivation.PREFIX_SLICE + 
@@ -89,40 +91,42 @@ public class DistributedJDBCConfigurationImpl extends JDBCConfigurationImpl
     public DistributedJDBCConfigurationImpl(ConfigurationProvider cp) {
         super(true, false);
         Map p = cp.getProperties();
-        String pUnit = getPersistenceUnitName(p);
-        setDiagnosticContext(pUnit);
+        log = getConfigurationLog();
+        unit = getPersistenceUnitName(p);
+        setDiagnosticContext(this, unit);
         
         brokerPlugin.setString(DistributedBrokerImpl.class.getName());
         
-        distributionPolicyPlugin = addPlugin("DistributionPolicy", true);
+        distributionPolicyPlugin = addPlugin(
+            PREFIX_SLICE + "DistributionPolicy", true);
         distributionPolicyPlugin.setAlias("random", 
         	DistributionPolicy.Default.class.getName());
         distributionPolicyPlugin.setDefault("random");
         distributionPolicyPlugin.setDynamic(true);
         
-        replicationPolicyPlugin = addPlugin
-        	("ReplicatedDistributionPolicy", true);
+        replicationPolicyPlugin = addPlugin(
+            PREFIX_SLICE + "ReplicationPolicy", true);
         replicationPolicyPlugin.setAlias("all", 
-        	ReplicationPolicy.Default.class.getName());
+            ReplicationPolicy.Default.class.getName());
         replicationPolicyPlugin.setDefault("all");
         replicationPolicyPlugin.setDynamic(true);
         
-        lenientPlugin = addBoolean("Lenient");
+        lenientPlugin = addBoolean(PREFIX_SLICE + "Lenient");
         
-        masterPlugin = addString("Master");
+        masterPlugin = addString(PREFIX_SLICE + "Master");
         
-        namesPlugin = addStringList("Names");
+        namesPlugin = addStringList(PREFIX_SLICE + "Names");
         
         setSlices(p);
     }
     
     private String getPersistenceUnitName(Map p) {
-        Object unit = p.get(PREFIX_OPENJPA+id.getProperty());
+        Object unit = p.get(PREFIX_OPENJPA + id.getProperty());
         return (unit == null) ? "?" : unit.toString();
     }
     
-    private void setDiagnosticContext(String unit) {
-        LogFactory logFactory = getLogFactory();
+    private void setDiagnosticContext(OpenJPAConfiguration conf, String unit) {
+        LogFactory logFactory = conf.getLogFactory();
         if (logFactory instanceof LogFactoryImpl) {
             ((LogFactoryImpl)logFactory).setDiagnosticContext(unit);
         }
@@ -132,12 +136,12 @@ public class DistributedJDBCConfigurationImpl extends JDBCConfigurationImpl
      * Gets the name of the active slices.
      */
     public List<String> getActiveSliceNames() {
-        if (_activeSliceNames.isEmpty()) {
-            for (Slice slice:_slices)
-                if (slice.isActive())
-                    _activeSliceNames.add(slice.getName());
+        List<String> result = new ArrayList<String>();
+        for (Slice slice : _slices) {
+           if (slice.isActive() && !result.contains(slice.getName()))
+              result.add(slice.getName());
         }
-        return _activeSliceNames;
+        return result;
     }
     
     /**
@@ -172,15 +176,25 @@ public class DistributedJDBCConfigurationImpl extends JDBCConfigurationImpl
         return _master;
     }
 
+    public Slice getSlice(String name) {
+        return getSlice(name, false);
+    }
+    
     /**
      * Get the configuration for given slice.
+     * 
+     * @param mustExist if true an exception if raised if the given slice name
+     * is not an active slice.
      */
-    public Slice getSlice(String name) {
+    public Slice getSlice(String name, boolean mustExist) {
         for (Slice slice:_slices)
             if (slice.getName().equals(name))
                 return slice;
-        throw new UserException(_loc.get("slice-not-found", name,
+        if (mustExist) {
+            throw new UserException(_loc.get("slice-not-found", name,
                     getActiveSliceNames()));
+        }
+        return null;
     }
 
     public DistributionPolicy getDistributionPolicyInstance() {
@@ -190,31 +204,58 @@ public class DistributedJDBCConfigurationImpl extends JDBCConfigurationImpl
         }
         return (DistributionPolicy) distributionPolicyPlugin.get();
     }
+    
+    public String getDistributionPolicy() {
+        if (distributionPolicyPlugin.get() == null) {
+            distributionPolicyPlugin.instantiate(DistributionPolicy.class,
+                    this, true);
+        }
+        return distributionPolicyPlugin.getString();
+    }
 
-    public void setDistributionPolicyInstance(String val) {
-    	replicationPolicyPlugin.set(val);
+    public void setDistributionPolicyInstance(DistributionPolicy policy) {
+        distributionPolicyPlugin.set(policy);
+    }
+    
+    public void setDistributionPolicy(String policy) {
+        distributionPolicyPlugin.setString(policy);
     }
 
     public ReplicationPolicy getReplicationPolicyInstance() {
         if (replicationPolicyPlugin.get() == null) {
-        	replicationPolicyPlugin.instantiate(ReplicationPolicy.class,
+            replicationPolicyPlugin.instantiate(ReplicationPolicy.class,
                     this, true);
         }
         return (ReplicationPolicy) replicationPolicyPlugin.get();
     }
-
-    public void setReplicatedDistributionPolicyInstance(String val) {
-        distributionPolicyPlugin.set(val);
+    
+    public String getReplicationPolicy() {
+        if (replicationPolicyPlugin.get() == null) {
+            replicationPolicyPlugin.instantiate(ReplicationPolicy.class,
+                    this, true);
+        }
+        return replicationPolicyPlugin.getString();
     }
 
-    public Object getConnectionFactory() {
+    public void setReplicationPolicyInstance(ReplicationPolicy policy) {
+        replicationPolicyPlugin.set(policy);
+    }
+    
+    public void setReplicationPolicy(String policy) {
+        replicationPolicyPlugin.setString(policy);
+    }
+
+    public DistributedDataSource getConnectionFactory() {
         if (virtualDataSource == null) {
-            DistributedDataSource ds = createDistributedDataStore();
-            virtualDataSource =
-                    DataSourceFactory.installDBDictionary(
-                            getDBDictionaryInstance(), ds, this, false);
+            virtualDataSource = createDistributedDataStore();
+            DataSourceFactory.installDBDictionary(
+                getDBDictionaryInstance(), virtualDataSource, this, false);
         }
         return virtualDataSource;
+    }
+    
+    public boolean isLenient() {
+        return lenientPlugin.get();
     }
 
     /**
@@ -224,31 +265,35 @@ public class DistributedJDBCConfigurationImpl extends JDBCConfigurationImpl
      */
     private DistributedDataSource createDistributedDataStore() {
         List<DataSource> dataSources = new ArrayList<DataSource>();
-        boolean isLenient = lenientPlugin.get();
         boolean isXA = true;
         for (Slice slice : _slices) {
-            JDBCConfiguration conf = (JDBCConfiguration)slice.getConfiguration();
-            Log log = conf.getConfigurationLog();
-            String url = getConnectionInfo(conf);
-            if (log.isInfoEnabled())
-                log.info(_loc.get("slice-connect", slice, url));
             try {
-                DataSource ds = DataSourceFactory.newDataSource(conf, false);
-                DecoratingDataSource dds = new DecoratingDataSource(ds);
-                ds = DataSourceFactory.installDBDictionary(
-                        conf.getDBDictionaryInstance(), dds, conf, false);
-                if (verifyDataSource(slice, ds, conf)) {
-                    dataSources.add(ds);
-                    isXA &= isXACompliant(ds);
-                }
+                DataSource ds = createDataSource(slice);
+                dataSources.add(ds);
+                isXA &= isXACompliant(ds);
             } catch (Throwable ex) {
-                handleBadConnection(isLenient, slice, ex);
+                handleBadConnection(isLenient(), slice, ex);
             }
         }
         if (dataSources.isEmpty())
             throw new UserException(_loc.get("no-slice"));
         DistributedDataSource result = new DistributedDataSource(dataSources);
         return result;
+    }
+    
+    DataSource createDataSource(Slice slice) throws Exception {
+        JDBCConfiguration conf = (JDBCConfiguration)slice.getConfiguration();
+        Log log = conf.getConfigurationLog();
+        String url = getConnectionInfo(conf);
+        if (log.isInfoEnabled())
+            log.info(_loc.get("slice-connect", slice, url));
+        DataSource ds = DataSourceFactory.newDataSource(conf, false);
+        DecoratingDataSource dds = new DecoratingDataSource(ds);
+        ds = DataSourceFactory.installDBDictionary(
+                conf.getDBDictionaryInstance(), dds, conf, false);
+        verifyDataSource(slice, ds, conf);
+        
+        return ds;
     }
 
     String getConnectionInfo(OpenJPAConfiguration conf) {
@@ -327,22 +372,26 @@ public class DistributedJDBCConfigurationImpl extends JDBCConfigurationImpl
      */
     void setSlices(Map original) {
         List<String> sliceNames = findSlices(original);
-        Log log = getConfigurationLog();
         if (sliceNames.isEmpty()) {
             throw new UserException(_loc.get("slice-none-configured"));
         } 
-        String unit = getPersistenceUnitName(original);
         for (String key : sliceNames) {
-            JDBCConfiguration child = new JDBCConfigurationImpl();
-            child.fromProperties(createSliceProperties(original, key));
-            child.setId(unit+DOT+key);
-            Slice slice = new Slice(key, child);
+            Slice slice = newSlice(key, original);
             _slices.add(slice);
-            if (log.isTraceEnabled())
-                log.trace(_loc.get("slice-configuration", key, child
-                        .toProperties(false)));
         }
         setMaster(original);
+    }
+    
+    protected Slice newSlice(String key, Map original) {
+        JDBCConfiguration child = new JDBCConfigurationImpl();
+        child.fromProperties(createSliceProperties(original, key));
+        child.setId(unit+DOT+key);
+        setDiagnosticContext(child, unit+DOT+key);
+        Slice slice = new Slice(key, child);
+        if (log.isTraceEnabled())
+            log.trace(_loc.get("slice-configuration", key, child
+                    .toProperties(false)));
+        return slice;
     }
 
     /**
@@ -357,7 +406,7 @@ public class DistributedJDBCConfigurationImpl extends JDBCConfigurationImpl
         List<String> sliceNames = new ArrayList<String>();
         
         Log log = getConfigurationLog();
-        String key = PREFIX_SLICE + namesPlugin.getProperty();
+        String key = namesPlugin.getProperty();
         boolean explicit = p.containsKey(key);
         if (explicit) {
             String[] values = p.get(key).toString().split("\\,");
@@ -454,7 +503,7 @@ public class DistributedJDBCConfigurationImpl extends JDBCConfigurationImpl
      * Determine the master slice.
      */
     private void setMaster(Map original) {
-        String key = PREFIX_SLICE + masterPlugin.getProperty();
+        String key = masterPlugin.getProperty();
         Object masterSlice = original.get(key);
         Log log = getConfigurationLog();
         List<Slice> activeSlices = getSlices(null);
@@ -470,5 +519,28 @@ public class DistributedJDBCConfigurationImpl extends JDBCConfigurationImpl
         if (_master == null) {
             _master = activeSlices.get(0);
         }
+    }
+    
+    public Slice addSlice(String name, Map newProps) {
+        String prefix = PREFIX_SLICE + DOT + name + DOT;
+        for (Object key : newProps.keySet()) {
+            if (!String.class.isInstance(key) 
+             && key.toString().startsWith(prefix))
+                throw new UserException(_loc.get("slice-add-wrong-key", key));
+        }
+        Slice slice = getSlice(name);
+        if (slice != null)
+            throw new UserException(_loc.get("slice-exists", name));
+        Map<String,String> original = super.toProperties(true);
+        original.putAll(newProps);
+         slice = newSlice(name, original);
+        _slices.add(slice);
+        try {
+            virtualDataSource.addDataSource(createDataSource(slice));
+        } catch (Exception ex) {
+            handleBadConnection(false, slice, ex);
+            return null;
+        }
+        return slice;
     }
 }

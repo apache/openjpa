@@ -19,10 +19,14 @@
 package org.apache.openjpa.slice;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
+
+import org.apache.openjpa.persistence.OpenJPAEntityManager;
 
 /**
  * Tests basic create, read, update and delete operations.
@@ -303,6 +307,42 @@ public class TestBasic extends SliceTestCase {
         assertNotEquals(pc, pc2);
         assertEquals(pc.getId(), pc2.getId());
         assertEquals(value, pc2.getValue());
+    }
+    
+    public void testDynamicSlice() {
+        DistributedConfiguration conf = (DistributedConfiguration)emf.getConfiguration();
+        conf.setDistributionPolicyInstance(new DistributionPolicy() {
+            public String distribute(Object pc, List<String> slices, Object context) {
+                if (PObject.class.isInstance(pc)) {
+                    PObject o = (PObject)pc;
+                    if (o.getValue() > 50) {
+                        DistributedBroker broker = (DistributedBroker)context;
+                        Map newProps = new HashMap();
+                        newProps.put("openjpa.slice.newslice.ConnectionURL", "jdbc:derby:target/database/newslice;create=true");
+                        newProps.put("openjpa.slice.newslice.ConnectionDriverName", "org.apache.derby.jdbc.EmbeddedDriver");
+                        broker.addSlice("newslice", newProps);
+                        return "newslice";
+                    } else {
+                        return slices.get(o.getValue()%slices.size());
+                    }
+                }
+                return null;
+            }
+        
+        });
+        OpenJPAEntityManager em = emf.createEntityManager();
+        em.getTransaction().begin();
+        PObject pc1 = new PObject(); pc1.setValue(25);
+        PObject pc2 = new PObject(); pc2.setValue(55);
+        em.persist(pc1);
+        em.persist(pc2);
+        em.getTransaction().commit();
+        Object newId = em.getObjectId(pc2);
+        em.clear();
+        
+        PObject newP = em.find(PObject.class, newId);
+        assertNotNull(newP);
+        assertEquals("newslice", SlicePersistence.getSlice(newP));
     }
 
 }

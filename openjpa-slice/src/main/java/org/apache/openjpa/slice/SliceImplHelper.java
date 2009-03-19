@@ -56,7 +56,7 @@ public class SliceImplHelper {
 			targets = new String[]{((DistributionPolicy)policy).distribute 
 				(pc, actives, ctx)};
 		}
-		assertSlices(targets, pc, actives, policy);
+		assertSlices(targets, pc, conf.getActiveSliceNames(), policy);
 		return new SliceInfo(replicated, targets);
 	}
 	

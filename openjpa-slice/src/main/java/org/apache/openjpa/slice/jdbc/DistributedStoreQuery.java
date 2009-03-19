@@ -68,8 +68,8 @@ class DistributedStoreQuery extends JDBCStoreQuery {
 		_queries.add(q);
 	}
 
-	public DistributedStoreManager getDistributedStore() {
-		return (DistributedStoreManager) getStore();
+	public DistributedJDBCStoreManager getDistributedStore() {
+		return (DistributedJDBCStoreManager) getStore();
 	}
 
 	public Executor newDataStoreExecutor(ClassMetaData meta, boolean subs) {

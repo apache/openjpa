@@ -56,7 +56,9 @@ import org.apache.openjpa.lib.rop.ResultObjectProvider;
 import org.apache.openjpa.lib.util.Localizer;
 import org.apache.openjpa.meta.ClassMetaData;
 import org.apache.openjpa.meta.FieldMetaData;
+import org.apache.openjpa.slice.DistributedStoreManager;
 import org.apache.openjpa.slice.ProductDerivation;
+import org.apache.openjpa.slice.Slice;
 import org.apache.openjpa.slice.SliceImplHelper;
 import org.apache.openjpa.slice.SliceInfo;
 import org.apache.openjpa.slice.SliceThread;
@@ -73,12 +75,13 @@ import org.apache.openjpa.util.StoreException;
  * @author Pinaki Poddar
  * 
  */
-class DistributedStoreManager extends JDBCStoreManager {
+class DistributedJDBCStoreManager extends JDBCStoreManager 
+    implements DistributedStoreManager {
     private final List<SliceStoreManager> _slices;
     private JDBCStoreManager _master;
     private final DistributedJDBCConfiguration _conf;
     private static final Localizer _loc =
-            Localizer.forPackage(DistributedStoreManager.class);
+            Localizer.forPackage(DistributedJDBCStoreManager.class);
 
     /**
      * Constructs a set of child StoreManagers each connected to a physical
@@ -88,16 +91,15 @@ class DistributedStoreManager extends JDBCStoreManager {
      * slices. The first slice is referred as <em>master</em> and is used to
      * get Sequence based entity identifiers.
      */
-    public DistributedStoreManager(DistributedJDBCConfiguration conf) {
+    public DistributedJDBCStoreManager(DistributedJDBCConfiguration conf) {
         super();
         _conf = conf;
         _slices = new ArrayList<SliceStoreManager>();
         List<String> sliceNames = conf.getActiveSliceNames();
         for (String name : sliceNames) {
-            SliceStoreManager slice = new SliceStoreManager
-                (conf.getSlice(name));
+            SliceStoreManager slice = new SliceStoreManager(conf.getSlice(name));
             _slices.add(slice);
-            if (name.equals(conf.getMaster().getName()))
+            if (slice.getName().equals(_conf.getMaster().getName()))
                 _master = slice;
         }
     }
@@ -108,6 +110,13 @@ class DistributedStoreManager extends JDBCStoreManager {
     
     public SliceStoreManager getSlice(int i) {
     	return _slices.get(i);
+    }
+    
+    public SliceStoreManager addSlice(Slice slice) {
+        SliceStoreManager result = new SliceStoreManager(slice);
+        result.setContext(getContext(), (JDBCConfiguration)slice.getConfiguration());
+        _slices.add(result);
+        return result;
     }
 
     /**

@@ -84,21 +84,20 @@ public class ProductDerivation extends AbstractProductDerivation implements
         boolean modified = false;
         Log log = conf.getConfigurationLog();
         if (conf.getDistributionPolicyInstance() == null) {
-        	forceSet(PREFIX_SLICE, conf.distributionPolicyPlugin,"random", log);
+        	forceSet(conf.distributionPolicyPlugin,"random", log);
         	modified = true;
         }
         if (conf.getReplicationPolicyInstance() == null) {
-        	forceSet(PREFIX_SLICE, conf.replicationPolicyPlugin, "all", log);
+        	forceSet(conf.replicationPolicyPlugin, "all", log);
         	modified = true;
         }
         return modified;
     }
     
-    void forceSet(String prefix, Value v, String forced, Log log) {
+    void forceSet(Value v, String forced, Log log) {
     	v.setString(forced);
     	if (log.isWarnEnabled())
-        	log.warn(_loc.get("forced-set-config", 
-        		prefix+"."+v.getProperty(), forced));
+        	log.warn(_loc.get("forced-set-config", v.getProperty(), forced));
     }
     
     public Set<String> getSupportedQueryHints() {

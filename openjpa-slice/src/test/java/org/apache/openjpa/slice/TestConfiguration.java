@@ -18,7 +18,9 @@
  */
 package org.apache.openjpa.slice;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.openjpa.kernel.Broker;
 import org.apache.openjpa.kernel.BrokerFactory;
@@ -59,5 +61,24 @@ public class TestConfiguration extends SliceTestCase {
         assertTrue(slices.contains("One"));
         assertTrue(slices.contains("Two"));
         assertFalse(slices.contains("Three"));
+    }
+    
+    public void testDynamicConfiguration() {
+        DistributedJDBCConfiguration conf =
+            (DistributedJDBCConfiguration) emf.getConfiguration();
+        List<String> slices = conf.getAvailableSliceNames();
+        assertTrue(slices.contains("One"));
+        assertTrue(slices.contains("Two"));
+        assertTrue(slices.contains("Three"));
+        BrokerFactory bf = ((EntityManagerFactoryImpl) emf).getBrokerFactory();
+        DistributedBroker broker = (DistributedBroker)bf.newBroker();
+        Map newProps = new HashMap();
+        newProps.put("openjpa.slice.newslice.ConnectionURL", "jdbc:derby:target/database/newslice;create=true");
+        newProps.put("openjpa.slice.newslice.ConnectionDriverName", "org.apache.derby.jdbc.EmbeddedDriver");
+        broker.addSlice("newslice", newProps);
+        
+        assertTrue(conf.getActiveSliceNames().contains("newslice"));
+        
+        
     }
 }

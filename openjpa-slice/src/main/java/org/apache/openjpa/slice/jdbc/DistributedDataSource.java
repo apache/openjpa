@@ -47,6 +47,10 @@ class DistributedDataSource extends DecoratingDataSource implements
 		master = dataSources.get(0);
 	}
 	
+	public void addDataSource(DataSource ds) {
+	    real.add(ds);
+	}
+	
 	Connection getConnection(DataSource ds) throws SQLException {
 		if (ds instanceof DecoratingDataSource)
 			return getConnection(((DecoratingDataSource)ds).getInnermostDelegate());

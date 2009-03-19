@@ -18,6 +18,8 @@
  */
 package org.apache.openjpa.slice;
 
+import java.util.Map;
+
 import org.apache.openjpa.kernel.FinalizingBrokerImpl;
 import org.apache.openjpa.kernel.OpCallbacks;
 import org.apache.openjpa.kernel.OpenJPAStateManager;
@@ -36,7 +38,8 @@ import org.apache.openjpa.lib.util.Localizer;
  * 
  */
 @SuppressWarnings("serial")
-public class DistributedBrokerImpl extends FinalizingBrokerImpl {
+public class DistributedBrokerImpl extends FinalizingBrokerImpl 
+    implements DistributedBroker {
 	private transient String _rootSlice;
 	private transient DistributedConfiguration _conf;
 	private final ReentrantSliceLock _lock;
@@ -55,6 +58,18 @@ public class DistributedBrokerImpl extends FinalizingBrokerImpl {
     	}
         return _conf;
     }
+    
+    public DistributedStoreManager getDistributedStoreManager() {
+        return (DistributedStoreManager)getStoreManager().getInnermostDelegate();
+    }
+    
+    public Slice addSlice(String name, Map properties) {
+        Slice slice = ((DistributedBrokerFactory)getBrokerFactory()).addSlice(
+            name, properties);
+        getDistributedStoreManager().addSlice(slice);
+        return slice;
+    }
+    
 	/**
 	 * Assigns slice identifier to the resultant StateManager as initialized by
 	 * the super class implementation. The slice identifier is decided by
