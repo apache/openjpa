@@ -29,6 +29,17 @@ public class PhoneNumber {
 
     @ManyToMany(mappedBy="phones")
     Map<Division, Employee> emps = new HashMap<Division, Employee>();
+    
+    @OneToOne(mappedBy="phone")
+    Division division;
+
+    public Division getDivision() {
+        return division;
+    }
+
+    public void setDivision(Division division) {
+        this.division = division;
+    }
 
     public int getNumber() {
         return number;

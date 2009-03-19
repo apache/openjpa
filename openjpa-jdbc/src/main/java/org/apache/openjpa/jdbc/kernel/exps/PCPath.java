@@ -251,7 +251,8 @@ public class PCPath
             if (pstate.field.getKey().getTypeCode() == JavaTypes.PC)
                 return pstate.field.getKeyMapping().getTypeMapping();
             return null;
-        }
+        } else if (_keyPath)
+            return pstate.field.getDefiningMapping();
         if (pstate.field.getElement().getTypeCode() == JavaTypes.PC)
             return pstate.field.getElementMapping().getTypeMapping();
         if (pstate.field.getTypeCode() == JavaTypes.PC)
@@ -482,9 +483,6 @@ public class PCPath
                 // if last action is get map key, use the previous field mapping
                 if (key && !itr.hasNext())
                     field = pstate.field;
-
-                if (_keyPath)
-                    pstate.field = field;
 
                 if (pstate.field != null) {
                     // if this is the second-to-last field and the last is
@@ -720,27 +718,12 @@ public class PCPath
         selectColumns(sel, ctx, state, pks);
     }
 
-    private SQLBuffer getColumns(Select sel, ExpContext ctx, ExpState state) {
-        Column[] cols = getColumns(state);
-        SQLBuffer buf = new SQLBuffer(ctx.store.getDBDictionary());
-        for (int i = 0; i < cols.length; i++) {
-            buf.append(sel.getColumnAlias(cols[i], this));
-            if (i > 0)
-                buf.append(",");
-        }
-        return buf;
-    }
-
     public void selectColumns(Select sel, ExpContext ctx, ExpState state, 
         boolean pks) {
         ClassMapping mapping = getClassMapping(state);
         PathExpState pstate = (PathExpState) state;
-        if (mapping == null || !pstate.joinedRel) {
-            if (_keyPath)
-                sel.select(getColumns(sel, ctx, state), this);
-            else
-                sel.select(getColumns(state), pstate.joins);
-        }
+        if (mapping == null || !pstate.joinedRel || _keyPath)            
+            sel.select(getColumns(state), pstate.joins);
         else if (pks)
             sel.select(mapping.getPrimaryKeyColumns(), pstate.joins);
         else {
@@ -759,11 +742,8 @@ public class PCPath
     public void groupBy(Select sel, ExpContext ctx, ExpState state) {
         ClassMapping mapping = getClassMapping(state);
         PathExpState pstate = (PathExpState) state;
-        if (mapping == null || !pstate.joinedRel)
-            if (_keyPath)
-                sel.groupBy(getColumns(sel, ctx, state));
-            else
-                sel.groupBy(getColumns(state), sel.outer(pstate.joins));
+        if (mapping == null || !pstate.joinedRel || _keyPath)
+            sel.groupBy(getColumns(state), sel.outer(pstate.joins));
         else {
             int subs = (_type == UNBOUND_VAR) ? Select.SUBS_JOINABLE
                 : Select.SUBS_ANY_JOINABLE;
@@ -774,11 +754,7 @@ public class PCPath
 
     public void orderBy(Select sel, ExpContext ctx, ExpState state, 
         boolean asc) {
-        if (_keyPath)
-            sel.orderBy(getColumns(sel, ctx, state), asc,
-                sel.outer(state.joins), false, this.getSelectAs());
-        else
-            sel.orderBy(getColumns(state), asc, sel.outer(state.joins), false);
+        sel.orderBy(getColumns(state), asc, sel.outer(state.joins), false);
     }
 
     public Object load(ExpContext ctx, ExpState state, Result res)
@@ -818,8 +794,6 @@ public class PCPath
             //    example: Map<Integer, Employee> emps
             ret = res.getObject(pstate.cols[0],
                 JavaSQLTypes.JDBC_DEFAULT, pstate.joins);
-        else if (_keyPath)
-            ret = res.getObject(this, JavaSQLTypes.JDBC_DEFAULT, pstate.joins);
         else
             ret = pstate.field.loadProjection(ctx.store, ctx.fetch, res, 
                 pstate.joins);
@@ -902,7 +876,7 @@ public class PCPath
         if (pstate.field == null)
             sql.append("1");
         else
-            pstate.field.appendIndex(sql, sel, pstate.joins);;
+            pstate.field.appendIndex(sql, sel, pstate.joins);
     }
 
     public void appendType(Select sel, ExpContext ctx, ExpState state, 

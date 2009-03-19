@@ -743,27 +743,29 @@ public class SelectImpl
         return getColumnAlias(col, table, getJoins(joins, false));
     }
 
+    /**
+     * Return the alias for the give column
+     */
     public String getColumnAlias(Column col, Object path) {
         String columnName = col.getName();
-        String tableName = col.getTable().getFullName();
-        Object[] entries = _aliases.entrySet().toArray();
-        Integer tableAlias = null;
-        for (int i = entries.length-1; i >= 0; i--) {
-            Object obj = ((Map.Entry) entries[i]).getKey();
-            Key key = null;
-            if (obj instanceof Key)
-                key = (Key) obj;
-            String str = key != null ? key.getKey().toString() : obj.toString();
-            if (str.equals(tableName)) {
-                tableAlias = (Integer) ((Map.Entry) entries[i]).getValue();
-                break;
+        Table table = col.getTable();
+        String tableAlias = null;
+        Iterator itr = getJoinIterator();
+        while (itr.hasNext()) {
+            Join join = (Join) itr.next();
+            if (join != null) {
+                if (join.getTable1() == table)
+                    tableAlias = join.getAlias1();
+                else if (join.getTable2() == table)
+                    tableAlias = join.getAlias2();
+                if (tableAlias != null)
+                    return new StringBuffer(tableAlias).append(".").
+                        append(columnName).toString();
             }
         }
-        if (tableAlias != null)
-            return new StringBuffer("t").append(tableAlias.toString()).append(".").
-                append(columnName).toString();
-        else
-            throw new InternalException(path.toString());
+        throw new InternalException("Can not resolve alias for field: " +
+            path.toString() + " mapped to column: " + columnName +
+            " table: "+table.getName());
     }
 
     /**

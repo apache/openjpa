@@ -129,6 +129,38 @@ public class TestMany2ManyMapEx1 extends SingleEMFTestCase {
             " in (e.phones) p GROUP BY KEY(p).name";
         List rs5 = em.createQuery(query5).getResultList();
 
+        em.clear();
+        query2 = "select p.division, KEY(p), KEY(p).name from Employee e, " +
+            " in (e.phones) p ORDER BY KEY(p).name DESC";
+        rs2 = em.createQuery(query2).getResultList();        
+
+        query2 = "select KEY(e) from PhoneNumber p, " +
+            " in (p.emps) e";
+        rs2 = em.createQuery(query2).getResultList();        
+
+        query2 = "select KEY(e) from PhoneNumber p " +
+            " left join p.emps e";
+        rs2 = em.createQuery(query2).getResultList();        
+
+        query = "select p.division, KEY(e), KEY(e).name as nm" +
+            " from PhoneNumber p, " +
+            " in (p.emps) e order by nm";
+        rs = em.createQuery(query).getResultList();
+        String n1 = ((Division) ((Object[]) rs.get(0))[1]).getName();
+        String n2 = (String) ((Object[]) rs.get(0))[2];
+        assertEquals(n1, n2);
+
+        query = "select d.name, KEY(e), KEY(e).name from PhoneNumber p, " +
+            " in (p.emps) e, Division d";
+        rs = em.createQuery(query).getResultList();
+        query = "select d.name, KEY(e), KEY(e).name from " +
+            "Division d join d.phone p, " +
+            " in (p.emps) e order by d.name";
+        rs = em.createQuery(query).getResultList();
+        n1 = ((Division) ((Object[]) rs.get(0))[1]).getName();
+        n2 = (String) ((Object[]) rs.get(0))[2];
+        assertEquals(n1, n2);
+
         em.close();
     }
 
@@ -169,6 +201,8 @@ public class TestMany2ManyMapEx1 extends SingleEMFTestCase {
             phoneNumber.addEmployees(div, e);
             e.addPhoneNumber(dept, phoneNumber);
             phoneMap.put(phoneNumber.getNumber(), phoneNumber);
+            div.setPhone(phoneNumber);
+            phoneNumber.setDivision(div);
             em.persist(phoneNumber);
             em.persist(dept);
             em.persist(div);

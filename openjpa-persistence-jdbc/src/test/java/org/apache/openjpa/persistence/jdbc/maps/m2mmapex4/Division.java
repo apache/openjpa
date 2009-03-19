@@ -18,8 +18,12 @@
  */
 package org.apache.openjpa.persistence.jdbc.maps.m2mmapex4;
 
+import java.util.ArrayList;
+import java.util.Collection;
+
 import javax.persistence.Entity;
 import javax.persistence.Id;
+import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
 @Entity
@@ -29,6 +33,21 @@ public class Division {
     int id;
 
     String name;
+    
+    @OneToMany(mappedBy="division")
+    Collection<Office> offices = new ArrayList();
+    
+    public Collection<Office> getOffices() {
+        return offices;
+    }
+
+    public void setOffices(Collection<Office> offices) {
+        this.offices = offices;
+    }
+
+    public void addOffice(Office office) {
+        offices.add(office);
+    }
 
     public int getId() {
         return id;

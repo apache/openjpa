@@ -2012,7 +2012,7 @@ public class DBDictionary
                     buf.append(" AND ");
 
                 // add in "t0.PK = MYTABLE.PK"
-                buf.append(sel.getColumnAlias(cols[i], null)).append(" = ").
+                buf.append(sel.getColumnAlias(cols[i])).append(" = ").
                     append(table).append(catalogSeparator).append(cols[i]);
             }
             buf.append(")");

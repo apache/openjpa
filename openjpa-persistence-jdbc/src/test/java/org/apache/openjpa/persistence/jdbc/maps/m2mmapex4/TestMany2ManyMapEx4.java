@@ -53,12 +53,16 @@ public class TestMany2ManyMapEx4 extends SingleEMFTestCase {
     public int phoneId = 1;
     public int divId = 1;
     public int deptId = 1;
+    public int officeId = 1;
+    public int numOfficesPerDivision = 2;
 
     public void setUp() {
         super.setUp(CLEAR_TABLES,
             Division.class,
             Employee.class,
             PhoneNumber.class,
+            Office.class,
+            Address.class,
             "openjpa.jdbc.JDBCListeners", 
             new JDBCListener[] {  this.new Listener() }
         );
@@ -67,7 +71,11 @@ public class TestMany2ManyMapEx4 extends SingleEMFTestCase {
 
     public void testQueryQualifiedId() throws Exception {
         EntityManager em = emf.createEntityManager();
-        String query = "select KEY(e) from PhoneNumber p, " +
+        String query1 = "select o.address.city from PhoneNumber p, " +
+        " in (p.emps) e, in(KEY(e).offices) o";
+    List rs1 = em.createQuery(query1).getResultList();
+
+    String query = "select KEY(e) from PhoneNumber p, " +
             " in (p.emps) e order by e.empId";
         List rs = em.createQuery(query).getResultList();
         Division d = (Division) rs.get(0);
@@ -138,6 +146,16 @@ public class TestMany2ManyMapEx4 extends SingleEMFTestCase {
         Division d = new Division();
         d.setId(id);
         d.setName("d" + id);
+        for (int i = 0; i < numOfficesPerDivision; i++) {
+            Office office = new Office(officeId++);
+            Address address = new Address("street"+i,
+                    "city"+i,
+                    "state"+i,
+                    "zip"+i);
+            office.setAddress(address);
+            em.persist(office);
+            d.addOffice(office);
+        }
         return d;
     }
 

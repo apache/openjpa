@@ -572,7 +572,12 @@ public class JPQLExpressionBuilder
      */
     private Expression addJoin(JPQLNode node, boolean inner, Expression exp) {
         // the type will be the declared type for the field
-        Path path = getPath(firstChild(node), false, inner);
+        JPQLNode firstChild = firstChild(node);
+        Path path = null;
+        if (firstChild.id == JJTQUALIFIEDPATH)
+            path = (Path) getQualifiedPath(firstChild);
+        else
+            path = getPath(firstChild, false, inner);
 
         JPQLNode alias = node.getChildCount() >= 2 ? right(node) : null;
         // OPENJPA-15 support subquery's from clause do not start with 

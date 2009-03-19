@@ -20,6 +20,7 @@ package org.apache.openjpa.persistence.jdbc.maps.m2mmapex1;
 
 import javax.persistence.Entity;
 import javax.persistence.Id;
+import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
 @Entity
@@ -29,6 +30,17 @@ public class Division {
     int id;
 
     String name;
+    
+    @OneToOne
+    PhoneNumber phone;
+
+    public PhoneNumber getPhone() {
+        return phone;
+    }
+
+    public void setPhone(PhoneNumber phone) {
+        this.phone = phone;
+    }
 
     public int getId() {
         return id;
