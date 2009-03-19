@@ -71,11 +71,23 @@ public class TestMany2ManyMapEx4 extends SingleEMFTestCase {
 
     public void testQueryQualifiedId() throws Exception {
         EntityManager em = emf.createEntityManager();
+        // a collection valued path thru KEY in FROM clause
         String query1 = "select o.address.city from PhoneNumber p, " +
-        " in (p.emps) e, in(KEY(e).offices) o";
-    List rs1 = em.createQuery(query1).getResultList();
+            " in (p.emps) e, in(KEY(e).offices) o";
+        List rs1 = em.createQuery(query1).getResultList();
 
-    String query = "select KEY(e) from PhoneNumber p, " +
+        // a path thru KEY nagivation apprear in ORDER BY
+        query1 = "select o.address.city as city from PhoneNumber p, " +
+            " in (p.emps) e, in(KEY(e).offices) o order by city";
+        rs1 = em.createQuery(query1).getResultList();
+
+        // a path thru KEY nagivation apprear in WHERE clause
+        query1 = "select o.address.city as city from PhoneNumber p, " +
+            " in (p.emps) e, in(KEY(e).offices) o " +
+            " where o.address.city like '%1'";
+        rs1 = em.createQuery(query1).getResultList();
+
+        String query = "select KEY(e) from PhoneNumber p, " +
             " in (p.emps) e order by e.empId";
         List rs = em.createQuery(query).getResultList();
         Division d = (Division) rs.get(0);
