@@ -142,8 +142,6 @@ public class TestQueryTimeout extends SQLListenerTestCase {
      * Expected Results: The DELAY function is being called and the query takes
      * 6000+ msecs to complete.
      */
-    @AllowFailure(value=true, message="FIXME - The runtime >= 6K assertion " +
-            "in this test fails intermittently and needs to be corrected.")
     public void testQueryTimeout1a() {
         if (skipTests) {
             return;
@@ -165,9 +163,10 @@ public class TestQueryTimeout extends SQLListenerTestCase {
                 long runTime = endTime - startTime;
                 getLog().trace("testQueryTimeout1a() - NoHintList runTime" + 
                     " msecs=" + runTime);
-                assertTrue("Should have taken 6000+ msecs", runTime >= 6000);
-                assertEquals("Verify we found the expected number of results.",
-                    2, results.size());
+                // Hack - Windows sometimes returns 5999 instead of 6000+
+                assertTrue("Should have taken 6+ secs, but was msecs=" +
+                    runTime, runTime > 5900);
+                assertEquals("Verify we found 2 results.", 2, results.size());
             } catch (Exception e) {
                 fail("Unexpected testQueryTimeout1a() exception = " + e);
             }
@@ -203,7 +202,9 @@ public class TestQueryTimeout extends SQLListenerTestCase {
                 long runTime = endTime - startTime;
                 getLog().trace("testQueryTimeout1c() - EM find/update runTime" +
                     " msecs=" + runTime);
-                assertTrue("Should have taken 2000+ msecs", runTime >= 2000);
+                // Hack - Windows sometimes returns 1999 instead of 2000+
+                assertTrue("Should have taken 2+ secs, but was msecs=" +
+                    runTime, runTime > 1900);
                 em.clear();
                 qt = em.find(QTimeout.class, new Integer(1));
                 assertEquals("Verify the entity was updated.",
@@ -224,8 +225,6 @@ public class TestQueryTimeout extends SQLListenerTestCase {
      * Expected Results: The DELAY function is being called and the query
      * takes 6000+ msecs to complete.
      */
-    @AllowFailure(value=true, message="FIXME - The runtime >= 6K assertion " +
-        "in this test fails intermittently and needs to be corrected.")
     public void testQueryTimeout2a() {
         if (skipTests) {
             return;
@@ -253,9 +252,10 @@ public class TestQueryTimeout extends SQLListenerTestCase {
                 long runTime = endTime - startTime;
                 getLog().trace("testQueryTimeout2a() - Hint0msec runTime msecs="
                     + runTime);
-                assertTrue("Should have taken 6000+ msecs", runTime >= 6000);
-                assertEquals("Verify we found the expected number of results.",
-                    2, results.size());
+                // Hack - Windows sometimes returns 5999 instead of 6000+
+                assertTrue("Should have taken 6+ secs, but was msecs=" +
+                    runTime, runTime > 5900);
+                assertEquals("Verify we found 2 results.", 2, results.size());
             } catch (Exception e) {
                 fail("Unexpected testQueryTimeout2a() exception = " + e);
             }
@@ -307,7 +307,9 @@ public class TestQueryTimeout extends SQLListenerTestCase {
                 long runTime = endTime - startTime;
                 getLog().trace("testQueryTimeout2b() - NoHintSingle runTime " + 
                     "msecs=" + runTime);
-                assertTrue("Should have taken 2000+ msecs", runTime >= 2000);
+                // Hack - Windows sometimes returns 1999 instead of 2000+
+                assertTrue("Should have taken 2+ secs, but was msecs=" +
+                    runTime, runTime > 1900);
                 assertNotNull("Verify we received a result.", result);
             } catch (Exception e) {
                 fail("Unexpected testQueryTimeout2b() exception = " + e);
@@ -359,8 +361,8 @@ public class TestQueryTimeout extends SQLListenerTestCase {
                 //assertEquals("Should never get valid results due to the " + 
                 // "timeout.", 2, results.size());
                 fail("QueryTimeout annotation failed to cause an Exception " +
-                    "in testQueryTimeout3a("
-                    + setTime + " msecs), runTime msecs=" + runTime);
+                    "in testQueryTimeout3a(" + setTime +
+                    " msecs), runTime msecs=" + runTime);
             } catch (Exception e) {
                 // expected
                 checkException("testQueryTimeout3a()", e);
@@ -414,8 +416,8 @@ public class TestQueryTimeout extends SQLListenerTestCase {
                     + runTime);
                 //assertNull("Should never get valid result due to the timeout.", result);
                 fail("QueryTimeout annotation failed to cause an Exception " + 
-                    "in testQueryTimeout3b("
-                    + setTime + " mscs), runTime msecs=" + runTime);
+                    "in testQueryTimeout3b(" + setTime +
+                    " mscs), runTime msecs=" + runTime);
             } catch (Exception e) {
                 // expected
                 checkException("testQueryTimeout3b()", e);
@@ -471,7 +473,9 @@ public class TestQueryTimeout extends SQLListenerTestCase {
                 getLog().trace(
                     "testQueryTimeout4() - NoHintSingle runTime msecs="
                     + runTime);
-                assertTrue("Should have taken 2000+ msecs", runTime >= 2000);
+                // Hack - Windows sometimes returns 1999 instead of 2000+
+                assertTrue("Should have taken 2+ secs, but was msecs=" +
+                    runTime, runTime > 1900);
                 assertNotNull("Verify we received a result.", result);
             } catch (Exception e) {
                 fail("Unexpected testQueryTimeout4() exception = " + e);
