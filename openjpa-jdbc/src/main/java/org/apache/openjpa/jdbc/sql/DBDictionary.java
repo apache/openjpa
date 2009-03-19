@@ -4190,7 +4190,7 @@ public class DBDictionary
      */
     public void setTimeouts(PreparedStatement stmnt, 
         JDBCFetchConfiguration fetch, boolean forUpdate) throws SQLException {
-        if (this.supportsQueryTimeout) {
+        if (supportsQueryTimeout) {
             int timeout = fetch.getQueryTimeout();
             if (forUpdate) {
                 // if this is a locking select and the lock timeout is greater 
@@ -4216,7 +4216,7 @@ public class DBDictionary
      */
     public void setTimeouts(PreparedStatement stmnt, JDBCConfiguration conf,
         boolean forUpdate) throws SQLException {
-        if (this.supportsQueryTimeout) {
+        if (supportsQueryTimeout) {
             int timeout = conf.getQueryTimeout();
             if (forUpdate) {
                 // if this is a locking select and the lock timeout is greater
@@ -4234,7 +4234,7 @@ public class DBDictionary
      */
     public void setQueryTimeout(PreparedStatement stmnt, int timeout)
         throws SQLException {
-        if (this.supportsQueryTimeout && timeout >= 0) {
+        if (supportsQueryTimeout && timeout >= 0) {
             if (timeout > 0 && timeout < 1000) {
                 timeout = 1000; 
                 Log log = conf.getLog(JDBCConfiguration.LOG_JDBC);
