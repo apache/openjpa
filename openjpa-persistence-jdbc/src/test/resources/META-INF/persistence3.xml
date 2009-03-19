@@ -21,11 +21,11 @@
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     version="1.0">
     
-    <!-- Following 2 PUs are used by TestQueryProperties -->
+    <!-- Following PUs are used by TestQueryProperties and TestQueryTimeout -->
     <persistence-unit name="qtimeout-no-properties">
     	<class>org.apache.openjpa.persistence.query.common.apps.QTimeout</class>
     </persistence-unit>
-    
+
     <persistence-unit name="qtimeout-with-properties">
     	<class>org.apache.openjpa.persistence.query.common.apps.QTimeout</class>
         <properties>
@@ -34,7 +34,13 @@
         </properties>
     </persistence-unit>
     
-    <!-- Following PU is used by TestQueryTimeout -->
+    <persistence-unit name="qtimeout-0msecs">
+    	<class>org.apache.openjpa.persistence.query.common.apps.QTimeout</class>
+        <properties>
+            <property name="javax.persistence.query.timeout" value="0"/>
+        </properties>
+    </persistence-unit>
+
     <persistence-unit name="qtimeout-1000msecs">
     	<class>org.apache.openjpa.persistence.query.common.apps.QTimeout</class>
         <properties>

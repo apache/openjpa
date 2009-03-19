@@ -4184,7 +4184,7 @@ public class DBDictionary
      * implementation of setting query and lock timeouts.
      * 
      * @param stmnt
-     * @param fetch
+     * @param fetch - optional lock and query timeouts in milliseconds
      * @param forUpdate - true if we should also try setting a lock timeout
      * @throws SQLException
      */
@@ -4210,7 +4210,7 @@ public class DBDictionary
      * implementation of setting query and lock timeouts.
      * 
      * @param stmnt
-     * @param fetch
+     * @param conf - optional lock and query timeouts in milliseconds
      * @param forUpdate - true if we should also try setting a lock timeout
      * @throws SQLException
      */
@@ -4229,22 +4229,44 @@ public class DBDictionary
     }
 
     /**
-     * This method is to provide override for non-JDBC or JDBC-like 
-     * implementation of setting query timeout.
+     * Provides the default validation handling of setting a query timeout.
+     * @param stmnt
+     * @param timeout in milliseconds
+     * @throws SQLException
      */
     public void setQueryTimeout(PreparedStatement stmnt, int timeout)
         throws SQLException {
-        if (supportsQueryTimeout && timeout >= 0) {
-            if (timeout > 0 && timeout < 1000) {
+        if (supportsQueryTimeout) {
+            if (timeout == -1) {
+                // special OpenJPA allowed case denoting no timeout
+                timeout = 0;
+            } else if (timeout < 0) {
+                if (log.isWarnEnabled())
+                    log.warn(_loc.get("invalid-timeout", new Integer(timeout)));
+                return;
+            } else if (timeout > 0 && timeout < 1000) {
+                // round up to 1 sec
                 timeout = 1000; 
-                Log log = conf.getLog(JDBCConfiguration.LOG_JDBC);
                 if (log.isWarnEnabled())
                     log.warn(_loc.get("millis-query-timeout"));
             }
-            stmnt.setQueryTimeout(timeout / 1000);
+            setStatementQueryTimeout(stmnt, timeout);
         }
     }
 
+    /**
+     * Allow subclasses to provide DB unique override implementations of
+     * setting query timeouts, while preserving the default timeout logic
+     * in the public setQueryTimeout method.
+     * @param stmnt
+     * @param timeout in milliseconds
+     * @throws SQLException
+     */
+    protected void setStatementQueryTimeout(PreparedStatement stmnt, 
+        int timeout) throws SQLException {
+        // JDBC uses seconds, so we'll do a simple round-down conversion here
+        stmnt.setQueryTimeout(timeout / 1000);
+    }
 
     //////////////////////////////////////
     // ConnectionDecorator implementation
