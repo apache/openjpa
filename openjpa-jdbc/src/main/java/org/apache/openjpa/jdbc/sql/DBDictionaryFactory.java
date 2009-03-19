@@ -73,9 +73,9 @@ public class DBDictionaryFactory {
      */
     public static DBDictionary calculateDBDictionary(JDBCConfiguration conf,
         String url, String driver, String props) {
-        String dclass = dictionaryClassForString(driver, conf);
+        String dclass = dictionaryClassForString(getProtocol(url), conf);
         if (dclass == null)
-            dclass = dictionaryClassForString(getProtocol(url), conf);
+            dclass = dictionaryClassForString(driver, conf);
         if (dclass == null)
             return null;
         return newDBDictionary(conf, dclass, props);
