@@ -131,8 +131,6 @@ public class SQLExceptions {
         if (storeEx.getSubtype() == StoreException.LOCK) {
             LockException lockEx = (LockException) storeEx;
             lockEx.setLockLevel(level);
-        } else if (storeEx.getSubtype() == StoreException.QUERY) {
-            QueryException QueryEx = (QueryException) storeEx;
         }
         return storeEx;
     }
