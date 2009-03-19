@@ -30,8 +30,8 @@
 
 	<dictionary class="org.apache.openjpa.jdbc.sql.DB2Dictionary">
 		<lock>40001,57033</lock>
-		<referential-integrity>23502,42912,23001,23504,23511,23512,23513,23515,23520,23505</referential-integrity>
-		<object-exists></object-exists>
+		<referential-integrity>23502,42912,23001,23504,23511,23512,23513,23515,23520</referential-integrity>
+		<object-exists>23505</object-exists>
 		<object-not-found></object-not-found>
 		<optimistic></optimistic>
         <query>57014</query>
