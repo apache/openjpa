@@ -40,6 +40,7 @@ import org.apache.openjpa.conf.OpenJPAConfiguration;
 import org.apache.openjpa.conf.OpenJPAConfigurationImpl;
 import org.apache.openjpa.conf.OpenJPAProductDerivation;
 import org.apache.openjpa.conf.Specification;
+import org.apache.openjpa.kernel.MixedLockLevels;
 import org.apache.openjpa.lib.conf.AbstractProductDerivation;
 import org.apache.openjpa.lib.conf.Configuration;
 import org.apache.openjpa.lib.conf.ConfigurationProvider;
@@ -110,29 +111,29 @@ public class PersistenceProductDerivation
         conf.addValue(new EntityManagerFactoryValue());
         
         conf.readLockLevel.setAlias("optimistic", String
-            .valueOf(JPA2LockLevels.LOCK_OPTIMISTIC));
+            .valueOf(MixedLockLevels.LOCK_OPTIMISTIC));
         conf.readLockLevel.setAlias("optimistic-force-increment", String
-            .valueOf(JPA2LockLevels.LOCK_OPTIMISTIC_FORCE_INCREMENT));
+            .valueOf(MixedLockLevels.LOCK_OPTIMISTIC_FORCE_INCREMENT));
         conf.readLockLevel.setAlias("pessimistic-read", String
-            .valueOf(JPA2LockLevels.LOCK_PESSIMISTIC_READ));
+            .valueOf(MixedLockLevels.LOCK_PESSIMISTIC_READ));
         conf.readLockLevel.setAlias("pessimistic-write", String
-            .valueOf(JPA2LockLevels.LOCK_PESSIMISTIC_WRITE));
+            .valueOf(MixedLockLevels.LOCK_PESSIMISTIC_WRITE));
         conf.readLockLevel.setAlias("pessimistic-force-increment", String
-            .valueOf(JPA2LockLevels.LOCK_PESSIMISTIC_FORCE_INCREMENT));
+            .valueOf(MixedLockLevels.LOCK_PESSIMISTIC_FORCE_INCREMENT));
 
         conf.writeLockLevel.setAlias("optimistic", String
-            .valueOf(JPA2LockLevels.LOCK_OPTIMISTIC));
+            .valueOf(MixedLockLevels.LOCK_OPTIMISTIC));
         conf.writeLockLevel.setAlias("optimistic-force-increment", String
-            .valueOf(JPA2LockLevels.LOCK_OPTIMISTIC_FORCE_INCREMENT));
+            .valueOf(MixedLockLevels.LOCK_OPTIMISTIC_FORCE_INCREMENT));
         conf.writeLockLevel.setAlias("pessimistic-read", String
-            .valueOf(JPA2LockLevels.LOCK_PESSIMISTIC_READ));
+            .valueOf(MixedLockLevels.LOCK_PESSIMISTIC_READ));
         conf.writeLockLevel.setAlias("pessimistic-write", String
-            .valueOf(JPA2LockLevels.LOCK_PESSIMISTIC_WRITE));
+            .valueOf(MixedLockLevels.LOCK_PESSIMISTIC_WRITE));
         conf.writeLockLevel.setAlias("pessimistic-force-increment", String
-            .valueOf(JPA2LockLevels.LOCK_PESSIMISTIC_FORCE_INCREMENT));
+            .valueOf(MixedLockLevels.LOCK_PESSIMISTIC_FORCE_INCREMENT));
 
         conf.lockManagerPlugin.setAlias("mixed",
-            JPA2LockManager.class.getName());
+            "org.apache.openjpa.jdbc.kernel.MixedLockManager");
 
         return true;
     }
@@ -633,7 +634,8 @@ public class PersistenceProductDerivation
                 return;
 
             switch (name.charAt(0)) {
-                // cases 'name' and 'transaction-type' are handled in startPersistenceUnit()
+                // cases 'name' and 'transaction-type' are handled in
+                //      startPersistenceUnit()
                 // case 'property' for 'properties' is handled in startElement()
                 case 'c': // class
                     _info.addManagedClassName(currentText());

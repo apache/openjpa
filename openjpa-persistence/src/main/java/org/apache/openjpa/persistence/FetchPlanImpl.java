@@ -23,12 +23,12 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.Map;
-import java.util.Set;
 
 import javax.persistence.LockModeType;
 
 import org.apache.openjpa.kernel.DelegatingFetchConfiguration;
 import org.apache.openjpa.kernel.FetchConfiguration;
+import org.apache.openjpa.kernel.MixedLockLevels;
 
 /**
  * Implements FetchPlan via delegation to FetchConfiguration.
@@ -245,20 +245,20 @@ public class FetchPlanImpl
     }
 
     public LockModeType getReadLockMode() {
-        return JPA2LockLevels.fromLockLevel(_fetch.getReadLockLevel());
+        return MixedLockLevelsHelper.fromLockLevel(_fetch.getReadLockLevel());
     }
 
     public FetchPlan setReadLockMode(LockModeType mode) {
-        _fetch.setReadLockLevel(JPA2LockLevels.toLockLevel(mode));
+        _fetch.setReadLockLevel(MixedLockLevelsHelper.toLockLevel(mode));
         return this;
     }
 
     public LockModeType getWriteLockMode() {
-        return JPA2LockLevels.fromLockLevel(_fetch.getWriteLockLevel());
+        return MixedLockLevelsHelper.fromLockLevel(_fetch.getWriteLockLevel());
     }
 
     public FetchPlan setWriteLockMode(LockModeType mode) {
-        _fetch.setWriteLockLevel(JPA2LockLevels.toLockLevel(mode));
+        _fetch.setWriteLockLevel(MixedLockLevelsHelper.toLockLevel(mode));
         return this;
     }
     

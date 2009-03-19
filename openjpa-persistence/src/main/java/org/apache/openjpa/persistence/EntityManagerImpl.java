@@ -48,13 +48,12 @@ import org.apache.openjpa.conf.OpenJPAConfiguration;
 import org.apache.openjpa.ee.ManagedRuntime;
 import org.apache.openjpa.enhance.PCEnhancer;
 import org.apache.openjpa.enhance.PCRegistry;
-import org.apache.openjpa.jdbc.kernel.JDBCFetchConfiguration;
 import org.apache.openjpa.kernel.AbstractBrokerFactory;
 import org.apache.openjpa.kernel.Broker;
 import org.apache.openjpa.kernel.DelegatingBroker;
 import org.apache.openjpa.kernel.FetchConfiguration;
 import org.apache.openjpa.kernel.FindCallbacks;
-import org.apache.openjpa.kernel.LockLevels;
+import org.apache.openjpa.kernel.MixedLockLevels;
 import org.apache.openjpa.kernel.OpCallbacks;
 import org.apache.openjpa.kernel.OpenJPAStateManager;
 import org.apache.openjpa.kernel.PreparedQuery;
@@ -1075,13 +1074,14 @@ public class EntityManagerImpl
 
     public LockModeType getLockMode(Object entity) {
         assertNotCloseInvoked();
-        return JPA2LockLevels.fromLockLevel(_broker.getLockLevel(entity));
+        return MixedLockLevelsHelper.fromLockLevel(
+            _broker.getLockLevel(entity));
     }
 
     public void lock(Object entity, LockModeType mode) {
         assertNotCloseInvoked();
         assertValidAttchedEntity(entity);
-        _broker.lock(entity, JPA2LockLevels.toLockLevel(mode), -1, this);
+        _broker.lock(entity, MixedLockLevelsHelper.toLockLevel(mode), -1, this);
     }
 
     public void lock(Object entity) {
@@ -1093,7 +1093,8 @@ public class EntityManagerImpl
     public void lock(Object entity, LockModeType mode, int timeout) {
         assertNotCloseInvoked();
         assertValidAttchedEntity(entity);
-        _broker.lock(entity, JPA2LockLevels.toLockLevel(mode), timeout, this);
+        _broker.lock(entity, MixedLockLevelsHelper.toLockLevel(mode), timeout,
+             this);
     }
 
     public void lock(Object entity, LockModeType mode,
@@ -1104,8 +1105,8 @@ public class EntityManagerImpl
 
         boolean fcPushed = pushLockProperties(mode, properties);
         try {
-            _broker.lock(entity, JPA2LockLevels.toLockLevel(mode), _broker
-                .getFetchConfiguration().getLockTimeout(), this);
+            _broker.lock(entity, MixedLockLevelsHelper.toLockLevel(mode),
+                _broker.getFetchConfiguration().getLockTimeout(), this);
         } finally {
             popLockProperties(fcPushed);
         }
@@ -1118,7 +1119,8 @@ public class EntityManagerImpl
 
     public void lockAll(Collection entities, LockModeType mode, int timeout) {
         assertNotCloseInvoked();
-        _broker.lockAll(entities, JPA2LockLevels.toLockLevel(mode), timeout, this);
+        _broker.lockAll(entities, MixedLockLevelsHelper.toLockLevel(mode),
+            timeout, this);
     }
 
     public void lockAll(Object... entities) {
@@ -1571,7 +1573,7 @@ public class EntityManagerImpl
                                 fCfg.setLockTimeout(value);
                                 break;
                             case ReadLockLevel:
-                                if (value != LockLevels.LOCK_NONE
+                                if (value != MixedLockLevels.LOCK_NONE
                                     && value != fCfg.getReadLockLevel()) {
                                     if (!fcPushed) {
                                         fCfg = _broker.pushFetchConfiguration();
@@ -1581,7 +1583,7 @@ public class EntityManagerImpl
                                 }
                                 break;
                             case WriteLockLevel:
-                                if (value != LockLevels.LOCK_NONE
+                                if (value != MixedLockLevels.LOCK_NONE
                                     && value != fCfg.getWriteLockLevel()) {
                                     if (!fcPushed) {
                                         fCfg = _broker.pushFetchConfiguration();
@@ -1613,8 +1615,8 @@ public class EntityManagerImpl
                 FetchConfigProperty.WriteLockLevel }, properties);
         }
         // override with the specific lockMode, if needed.
-        int setReadLevel = JPA2LockLevels.toLockLevel(mode);
-        if (setReadLevel != JPA2LockLevels.LOCK_NONE) {
+        int setReadLevel = MixedLockLevelsHelper.toLockLevel(mode);
+        if (setReadLevel != MixedLockLevels.LOCK_NONE) {
             // Set overriden read lock level
             FetchConfiguration fCfg = _broker.getFetchConfiguration();
             int curReadLevel = fCfg.getReadLockLevel();
@@ -1627,13 +1629,13 @@ public class EntityManagerImpl
             }
             // Set overriden isolation level for pessimistic-read/write
             switch (setReadLevel) {
-            case JPA2LockLevels.LOCK_PESSIMISTIC_READ:
+            case MixedLockLevels.LOCK_PESSIMISTIC_READ:
                 fcPushed = setIsolationForPessimisticLock(fCfg, fcPushed,
                     Connection.TRANSACTION_REPEATABLE_READ);
                 break;
 
-            case JPA2LockLevels.LOCK_PESSIMISTIC_WRITE:
-            case JPA2LockLevels.LOCK_PESSIMISTIC_FORCE_INCREMENT:
+            case MixedLockLevels.LOCK_PESSIMISTIC_WRITE:
+            case MixedLockLevels.LOCK_PESSIMISTIC_FORCE_INCREMENT:
                 fcPushed = setIsolationForPessimisticLock(fCfg, fcPushed,
                     Connection.TRANSACTION_SERIALIZABLE);
                 break;
@@ -1650,7 +1652,8 @@ public class EntityManagerImpl
             fCfg = _broker.pushFetchConfiguration();
             fcPushed = true;
         }
-        ((JDBCFetchConfiguration) fCfg).setIsolation(level);
+        // TODO: refactoring under OPENJPA-957
+//        ((JDBCFetchConfiguration) fCfg).setIsolation(level);
         return fcPushed;
     }
 

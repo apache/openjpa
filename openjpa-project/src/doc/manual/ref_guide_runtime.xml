@@ -526,7 +526,10 @@ through the <link linkend="openjpa.ReadLockLevel"><literal>
 openjpa.ReadLockLevel</literal></link> and
 <link linkend="openjpa.WriteLockLevel"><literal>openjpa.WriteLockLevel</literal>
 </link> configuration properties. Each property accepts a value of <literal>
-none</literal>, <literal>read</literal>, <literal>write</literal>, or a number
+none</literal>, <literal>read</literal>, <literal>write</literal>, 
+<literal>optimistic</literal>, <literal>optimistic-force-increment</literal>,
+<literal>pessimistic-read</literal>, <literal>pessimistic-write</literal>,
+<literal>pessimistic-force-increment</literal>, or a number
 corresponding to a lock level defined by the
 <link linkend="ref_guide_locking_lockmgr">lock manager</link> in use. These
 properties apply only to non-optimistic transactions; during optimistic
@@ -729,12 +732,12 @@ own lock manager, or use one of the bundled options:
                 <listitem>
                     <para>
 <literal>mixed</literal>: This is an alias for the
-<ulink url="../javadoc/org/apache/openjpa/persistence/JPA2LockManager.html">
-<classname>org.apache.openjpa.persistence.JPA2LockManager</classname>
+<ulink url="../javadoc/org/apache/openjpa/jdbc/kernel/MixedLockManager.html">
+<classname>org.apache.openjpa.jdbc.kernel.MixedLockManager</classname>
 </ulink>, which implements the JPA 2.0 specification entity locking behaviors.
 It combines both the optimistic and pessimistic semantics controlled by
-lock modes argument in methods define in the entity manager
-and query interfaces or OpenJPA lock level properties.
+lock mode argument in methods define in the EntityManager
+and Query interfaces or OpenJPA lock level properties.
                     </para>
                     <para>
 The <literal>mixed</literal> LockManager inherits all the properties available
@@ -743,7 +746,7 @@ For example: <literal>VersionCheckOnReadLock</literal> and
 <literal>VersionUpdateOnWriteLock</literal> properties.
                     </para>
                     <para>
-This is the default <literal>openjpa.LockManager</literal> setting in JPA.
+This is the default <literal>openjpa.LockManager</literal> setting in OpenJPA.
                     </para>
                 </listitem>
                 <listitem>

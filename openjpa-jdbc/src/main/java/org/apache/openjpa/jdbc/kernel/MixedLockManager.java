@@ -16,29 +16,29 @@
  * specific language governing permissions and limitations
  * under the License.    
  */
-package org.apache.openjpa.persistence;
+package org.apache.openjpa.jdbc.kernel;
 
 import java.sql.SQLException;
 
-import org.apache.openjpa.jdbc.conf.JDBCConfiguration;
-import org.apache.openjpa.jdbc.kernel.PessimisticLockManager;
 import org.apache.openjpa.jdbc.meta.ClassMapping;
 import org.apache.openjpa.jdbc.sql.SQLExceptions;
 import org.apache.openjpa.jdbc.sql.Select;
+import org.apache.openjpa.kernel.MixedLockLevels;
 import org.apache.openjpa.kernel.OpenJPAStateManager;
 import org.apache.openjpa.lib.util.Localizer;
+import org.apache.openjpa.util.OptimisticException;
 
 /**
- * Test JPA 2.0 LockTypeMode semantics using JPA 2.0 "mixed"
- * lock manager.
+ * Mixed lock manager implements both optimistic and pessimistic locking
+ * semantics in parallel to the JPA 2.0 specification.
  *
  * @author Albert Lee
  * @since 2.0.0
  */
-public class JPA2LockManager extends PessimisticLockManager {
+public class MixedLockManager extends PessimisticLockManager {
 
     private static final Localizer _loc = Localizer
-        .forPackage(JPA2LockManager.class);
+        .forPackage(MixedLockManager.class);
 
     /*
      * (non-Javadoc)
@@ -46,7 +46,7 @@ public class JPA2LockManager extends PessimisticLockManager {
      *  #selectForUpdate(org.apache.openjpa.jdbc.sql.Select,int)
      */
     public boolean selectForUpdate(Select sel, int lockLevel) {
-        return (lockLevel >= JPA2LockLevels.LOCK_PESSIMISTIC_READ) 
+        return (lockLevel >= MixedLockLevels.LOCK_PESSIMISTIC_READ) 
             ? super.selectForUpdate(sel, lockLevel) : false;
     }
 
@@ -58,15 +58,15 @@ public class JPA2LockManager extends PessimisticLockManager {
      */
     protected void lockInternal(OpenJPAStateManager sm, int level, int timeout,
         Object sdata, boolean postLockVersionCheck) {
-        if (level >= JPA2LockLevels.LOCK_PESSIMISTIC_FORCE_INCREMENT) {
+        if (level >= MixedLockLevels.LOCK_PESSIMISTIC_FORCE_INCREMENT) {
             setVersionCheckOnReadLock(true);
             setVersionUpdateOnWriteLock(true);
             super.lockInternal(sm, level, timeout, sdata, postLockVersionCheck);
-        } else if (level >= JPA2LockLevels.LOCK_PESSIMISTIC_READ) {
+        } else if (level >= MixedLockLevels.LOCK_PESSIMISTIC_READ) {
             setVersionCheckOnReadLock(true);
             setVersionUpdateOnWriteLock(false);
             super.lockInternal(sm, level, timeout, sdata, postLockVersionCheck);
-        } else if (level >= JPA2LockLevels.LOCK_OPTIMISTIC) {
+        } else if (level >= MixedLockLevels.LOCK_OPTIMISTIC) {
             setVersionCheckOnReadLock(true);
             setVersionUpdateOnWriteLock(true);
             optimisticLockInternal(sm, level, timeout, sdata,
@@ -79,19 +79,18 @@ public class JPA2LockManager extends PessimisticLockManager {
         super.optimisticLockInternal(sm, level, timeout, sdata,
             postLockVersionCheck);
         if (postLockVersionCheck) {
-            if (level >= JPA2LockLevels.LOCK_PESSIMISTIC_READ) {
+            if (level >= MixedLockLevels.LOCK_PESSIMISTIC_READ) {
                 ClassMapping mapping = (ClassMapping) sm.getMetaData();
                 try {
                     if (!mapping.getVersion().checkVersion(sm, this.getStore(),
                         true)) {
-                        throw new OptimisticLockException(_loc.get(
-                            "optimistic-violation-lock").getMessage(), null, sm
-                            .getManagedInstance(), true);
+                        throw (new OptimisticException(_loc.get(
+                            "optimistic-violation-lock").getMessage()))
+                            .setFailedObject(sm.getObjectId());
                     }
                 } catch (SQLException se) {
-                    throw SQLExceptions.getStore(se,
-                        ((JDBCConfiguration) getContext().getConfiguration())
-                            .getDBDictionaryInstance());
+                    throw SQLExceptions.getStore(se, sm.getObjectId(),
+                        getStore().getDBDictionary());
                 }
             }
         }
