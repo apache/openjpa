@@ -31,6 +31,7 @@ import org.apache.openjpa.kernel.AutoDetach;
 import org.apache.openjpa.kernel.ConnectionRetainModes;
 import org.apache.openjpa.kernel.DetachState;
 import org.apache.openjpa.kernel.RestoreState;
+import org.apache.openjpa.persistence.query.QueryDefinition;
 
 /**
  * Interface implemented by OpenJPA entity managers.
@@ -660,6 +661,13 @@ public interface OpenJPAEntityManager
      * Create a new query in the given language.
      */
     public OpenJPAQuery createQuery(String language, String query);
+    
+    /**
+     * Create an executable query from a dynamically defined query.
+     * 
+     * @since 2.0.0
+     */
+    public OpenJPAQuery createDynamicQuery(QueryDefinition dynamic);
 
     ///////////
     // Locking

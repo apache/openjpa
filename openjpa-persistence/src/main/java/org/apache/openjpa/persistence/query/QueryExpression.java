@@ -18,8 +18,6 @@
  */
 package org.apache.openjpa.persistence.query;
 
-import javax.persistence.Subquery;
-
 /**
  * An expression resulting from operation on a query itself. Can be used as a 
  * subquery clause in a parent query.

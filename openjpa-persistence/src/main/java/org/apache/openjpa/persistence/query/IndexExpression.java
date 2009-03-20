@@ -18,8 +18,6 @@
  */
 package org.apache.openjpa.persistence.query;
 
-import javax.persistence.Expression;
-
 /**
  * Denotes INDEX(e) Expression.
  * 

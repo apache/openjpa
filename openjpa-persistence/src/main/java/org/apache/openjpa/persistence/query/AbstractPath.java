@@ -20,11 +20,6 @@ package org.apache.openjpa.persistence.query;
 
 import java.util.LinkedList;
 
-import javax.persistence.Aggregate;
-import javax.persistence.Expression;
-import javax.persistence.PathExpression;
-import javax.persistence.Predicate;
-
 /**
  * An abstract path is formed by two parts : the first part is a parent path.
  * The second part can be an attribute or an operation (e.g. KEY() or VALUE())
@@ -49,7 +44,8 @@ abstract class AbstractPath extends ExpressionImpl implements
 	protected final PathOperator  _operator;
 	protected final QueryDefinitionImpl _owner;
 	
-	protected AbstractPath(QueryDefinitionImpl owner, AbstractPath parent, PathOperator op, Object part2) {
+	protected AbstractPath(QueryDefinitionImpl owner, AbstractPath parent, 
+	    PathOperator op, Object part2) {
 		_owner = owner;
 		_parent = parent;
 		_part2  = part2;

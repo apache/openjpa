@@ -20,8 +20,6 @@ package org.apache.openjpa.persistence.query;
 
 import static org.apache.openjpa.persistence.query.PathOperator.NAVIGATION;
 
-import javax.persistence.FetchJoinObject;
-
 /**
  * Denotes a path used in fetch join. Simply wraps a Navigation Path.
  * 

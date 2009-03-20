@@ -18,10 +18,6 @@
  */
 package org.apache.openjpa.persistence.query;
 
-import java.util.Arrays;
-
-import javax.persistence.Expression;
-
 /**
  * A expression that holds an array of Expressions. Used as operand for 
  * CONCAT(e1,e2,e3,...), for example. Different than {@link ArrayExpression} 

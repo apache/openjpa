@@ -18,8 +18,6 @@
  */
 package org.apache.openjpa.persistence.query;
 
-import javax.persistence.Expression;
-
 /**
  * Denotes e1 >= e2 Expression.
  * 
@@ -28,7 +26,10 @@ import javax.persistence.Expression;
  */
 public class GreaterEqualExpression extends BinaryExpressionPredicate {
 	public GreaterEqualExpression(Expression op1, Expression op2) {
-		super(op1, BinaryConditionalOperator.GREATEREQUAL, BinaryConditionalOperator.LESS, op2);
+		super(op1, 
+		    BinaryConditionalOperator.GREATEREQUAL, 
+		    BinaryConditionalOperator.LESS, 
+		    op2);
 	}
 
 }

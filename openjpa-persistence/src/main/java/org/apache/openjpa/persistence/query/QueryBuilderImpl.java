@@ -18,11 +18,7 @@
  */
 package org.apache.openjpa.persistence.query;
 
-import javax.persistence.DomainObject;
-import javax.persistence.PathExpression;
-import javax.persistence.Query;
-import javax.persistence.QueryDefinition;
-
+import org.apache.openjpa.kernel.Query;
 import org.apache.openjpa.meta.MetaDataRepository;
 import org.apache.openjpa.persistence.OpenJPAEntityManagerFactorySPI;
 

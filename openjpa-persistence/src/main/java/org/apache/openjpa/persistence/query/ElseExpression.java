@@ -18,8 +18,6 @@
  */
 package org.apache.openjpa.persistence.query;
 
-import javax.persistence.Expression;
-
 /**
  * Else clause in a Case Statement.
  * 

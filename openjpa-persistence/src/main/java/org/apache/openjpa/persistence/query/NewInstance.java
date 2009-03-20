@@ -21,9 +21,6 @@ package org.apache.openjpa.persistence.query;
 import java.util.Arrays;
 import java.util.List;
 
-import javax.persistence.OrderByItem;
-import javax.persistence.SelectItem;
-
 /**
  * Denotes NEW fully.qualified.class.name(arg1, arg2,...) 
  * 

@@ -18,8 +18,6 @@
  */
 package org.apache.openjpa.persistence.query;
 
-import javax.persistence.Predicate;
-
 /**
  * Logical Predicate combines two predicates with a logical operator.
  * 

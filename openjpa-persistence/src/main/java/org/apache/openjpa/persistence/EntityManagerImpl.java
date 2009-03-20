@@ -41,6 +41,7 @@ import javax.persistence.EntityManager;
 import javax.persistence.FlushModeType;
 import javax.persistence.LockModeType;
 import javax.persistence.Query;
+import javax.persistence.QueryBuilder;
 import javax.persistence.QueryDefinition;
 
 import org.apache.commons.lang.StringUtils;
@@ -1482,7 +1483,12 @@ public class EntityManagerImpl
     }
 
     public Query createQuery(QueryDefinition qdef) {
-        String jpql = getQueryBuilder().toJPQL(qdef);
+        return null;
+    }
+    
+    public OpenJPAQuery createDynamicQuery(
+        org.apache.openjpa.persistence.query.QueryDefinition qdef) {
+        String jpql = _emf.getDynamicQueryBuilder().toJPQL(qdef);
         return createQuery(jpql);
     }
 
@@ -1501,8 +1507,8 @@ public class EntityManagerImpl
         return finalMap;
     }
 
-    public OpenJPAQueryBuilder getQueryBuilder() {
-        return new QueryBuilderImpl(_emf);
+    public QueryBuilder getQueryBuilder() {
+        return null;
     }
 
     public Set<String> getSupportedProperties() {

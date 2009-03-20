@@ -18,9 +18,6 @@
  */
 package org.apache.openjpa.persistence.query;
 
-import javax.persistence.Expression;
-import javax.persistence.TrimSpec;
-
 /**
  * Denotes TRIM(e1,x) Expression.
  * 

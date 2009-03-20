@@ -18,8 +18,6 @@
  */
 package org.apache.openjpa.persistence.query;
 
-import javax.persistence.OrderByItem;
-
 /**
  * Denotes an item of ORDER BY clause.
  * 

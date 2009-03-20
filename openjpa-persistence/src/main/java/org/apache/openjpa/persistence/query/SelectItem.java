@@ -7,7 +7,7 @@
  * "License"); you may not use this file except in compliance
  * with the License.  You may obtain a copy of the License at
  *
- * http://www.apache.org/licenses/LICENSE-2.0
+ *  http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing,
  * software distributed under the License is distributed on an
@@ -16,18 +16,30 @@
  * specific language governing permissions and limitations
  * under the License.
  */
+
 package org.apache.openjpa.persistence.query;
 
 /**
- * Denotes DISTINCT(e) Expression.
- * 
- * @author Pinaki Poddar
- *
+ * SelectItem instances are used in specifying the query's select list.
+ * <p/>
+ * The methods of this interface are used to define arguments that can be passed
+ * to the orderBy method for use in ordering selected items of the query result.
  */
-public class DistinctExpression extends UnaryOperatorExpression {
+public interface SelectItem extends OrderByItem {
+    /**
+     * Return an OrderByItem referencing the SelectItem and specifying ascending
+     * ordering. The SelectItem must correspond to an orderable value.
+     *
+     * @return order-by item
+     */
+    OrderByItem asc();
 
-	public DistinctExpression(Expression expr) {
-		super(expr, UnaryFunctionalOperator.DISTINCT);
-	}
-
+    /**
+     * Return an OrderByItem referencing the SelectItem and specifying
+     * descending ordering. The SelectItem must correspond to an orderable
+     * value.
+     *
+     * @return order-by item
+     */
+    OrderByItem desc();
 }

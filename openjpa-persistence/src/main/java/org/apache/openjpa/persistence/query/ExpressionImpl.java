@@ -22,14 +22,6 @@ import java.io.Serializable;
 import java.util.Calendar;
 import java.util.Date;
 
-import javax.persistence.Expression;
-import javax.persistence.OrderByItem;
-import javax.persistence.PathExpression;
-import javax.persistence.Predicate;
-import javax.persistence.PredicateOperand;
-import javax.persistence.Subquery;
-import javax.persistence.TrimSpec;
-
 /**
  * An abstract expression acts as a factory for concrete unary or binary 
  * expressions such as ABS() or PLUS().

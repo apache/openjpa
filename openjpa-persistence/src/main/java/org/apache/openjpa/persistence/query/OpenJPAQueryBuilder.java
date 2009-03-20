@@ -18,18 +18,16 @@
  */
 package org.apache.openjpa.persistence.query;
 
-import javax.persistence.Query;
-import javax.persistence.QueryBuilder;
-import javax.persistence.QueryDefinition;
+import org.apache.openjpa.kernel.Query;
 
 /**
- * An extension of standard JPA Specification interface to add equivalence of 
- * QueryDefinition and Query and JPQL String.
+ * Builds dynamic query  
  *  
  * @author Pinaki Poddar
  *
  */
 public interface OpenJPAQueryBuilder extends QueryBuilder {
+
 	/**
 	 * Create a QueryDefinition from the given JPQL String.
 	 */

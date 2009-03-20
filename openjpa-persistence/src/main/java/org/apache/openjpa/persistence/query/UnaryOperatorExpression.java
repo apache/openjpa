@@ -18,9 +18,6 @@
  */
 package org.apache.openjpa.persistence.query;
 
-import javax.persistence.Aggregate;
-import javax.persistence.Expression;
-
 class UnaryOperatorExpression extends ExpressionImpl implements Aggregate {
 	protected final Expression _e;
 	protected final UnaryFunctionalOperator   _op;

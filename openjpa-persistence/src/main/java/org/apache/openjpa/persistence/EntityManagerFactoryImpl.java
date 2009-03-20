@@ -30,6 +30,8 @@ import java.util.Set;
 
 import javax.persistence.Cache;
 import javax.persistence.EntityManagerFactory;
+import javax.persistence.QueryBuilder;
+
 import org.apache.openjpa.conf.OpenJPAConfiguration;
 import org.apache.openjpa.enhance.Reflection;
 import org.apache.openjpa.kernel.AutoDetach;
@@ -350,8 +352,12 @@ public class EntityManagerFactoryImpl
         return getStoreCache();
     }
 
-    public OpenJPAQueryBuilder getQueryBuilder() {
-    	return new QueryBuilderImpl(this);
+    public QueryBuilder getQueryBuilder() {
+    	return null;
+    }
+    
+    public OpenJPAQueryBuilder getDynamicQueryBuilder() {
+        return new QueryBuilderImpl(this);
     }
 
     public Set<String> getSupportedProperties() {

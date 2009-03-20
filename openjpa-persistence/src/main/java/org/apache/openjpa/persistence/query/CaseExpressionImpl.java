@@ -22,10 +22,6 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.LinkedList;
 
-import javax.persistence.CaseExpression;
-import javax.persistence.Expression;
-import javax.persistence.Predicate;
-
 public class CaseExpressionImpl implements CaseExpression, Visitable {
 	private LinkedList<WhenClause> _whens = new LinkedList<WhenClause>();
 	private final Object _caseOperand;

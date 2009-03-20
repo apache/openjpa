@@ -18,9 +18,6 @@
  */
 package org.apache.openjpa.persistence.query;
 
-import javax.persistence.Expression;
-
-
 /**
  * Denotes e1 BETWEEN(e2 AND e3) Expression.
  * 

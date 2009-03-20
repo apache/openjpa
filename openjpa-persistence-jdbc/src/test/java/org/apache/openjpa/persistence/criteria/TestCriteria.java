@@ -21,16 +21,16 @@ package org.apache.openjpa.persistence.criteria;
 
 import java.util.List;
 
-import javax.persistence.DomainObject;
-import javax.persistence.EntityManager;
-import javax.persistence.EntityManagerFactory;
-import javax.persistence.Expression;
 import javax.persistence.Query;
-import javax.persistence.QueryDefinition;
-import javax.persistence.SelectItem;
 
+import org.apache.openjpa.persistence.OpenJPAEntityManager;
+import org.apache.openjpa.persistence.OpenJPAEntityManagerFactory;
+import org.apache.openjpa.persistence.query.DomainObject;
+import org.apache.openjpa.persistence.query.Expression;
 import org.apache.openjpa.persistence.query.OpenJPAQueryBuilder;
 import org.apache.openjpa.persistence.query.QueryBuilderImpl;
+import org.apache.openjpa.persistence.query.QueryDefinition;
+import org.apache.openjpa.persistence.query.SelectItem;
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
 
 
@@ -53,7 +53,7 @@ import org.apache.openjpa.persistence.test.SingleEMFTestCase;
  */
 public class TestCriteria extends SingleEMFTestCase {
 	protected OpenJPAQueryBuilder qb; 
-	private static EntityManagerFactory emf = null;
+	private static OpenJPAEntityManagerFactory emf = null;
 	protected StringComparison comparator = new StringComparison();
 	
 	public void setUp() {
@@ -82,7 +82,7 @@ public class TestCriteria extends SingleEMFTestCase {
 				VideoStore.class);
 			emf = super.emf;
 		} 
-		qb = (QueryBuilderImpl)emf.getQueryBuilder();
+		qb = (QueryBuilderImpl)emf.getDynamicQueryBuilder();
 		emf.createEntityManager();
 	}
 	
@@ -540,14 +540,14 @@ public class TestCriteria extends SingleEMFTestCase {
 	 * their results.
 	 */
 	private void executeActually(String jpql, QueryDefinition q, Object...p) {
-		EntityManager em = emf.createEntityManager();
+		OpenJPAEntityManager em = emf.createEntityManager();
 		List<?> criteriaResult = null;
 		List<?> jpqlResult = null;
 		Throwable criteriaError = null;
 		Throwable jpqlError = null;
 		
 		try {
-			Query cq = em.createQuery(q);
+			Query cq = em.createDynamicQuery(q);
 			setParameters(cq, p);
 			criteriaResult = cq.getResultList();
 		} catch (Exception e) {

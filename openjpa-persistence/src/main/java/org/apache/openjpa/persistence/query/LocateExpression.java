@@ -18,8 +18,6 @@
  */
 package org.apache.openjpa.persistence.query;
 
-import javax.persistence.Expression;
-
 /**
  * Denotes LOCATE(e1, e2, n) Expression.
  * e1 : string to be located

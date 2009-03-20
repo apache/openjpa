@@ -22,8 +22,6 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Stack;
 
-import javax.persistence.Expression;
-
 import org.apache.openjpa.meta.MetaDataRepository;
 
 class AliasContext {

@@ -18,8 +18,6 @@
  */
 package org.apache.openjpa.persistence.query;
 
-import javax.persistence.Expression;
-
 /**
  * Denotes e1 = e2 Expression.
  * 
@@ -28,7 +26,10 @@ import javax.persistence.Expression;
  */
 public class EqualExpression extends BinaryExpressionPredicate {
 	public EqualExpression(Expression op1, Expression op2) {
-		super(op1, BinaryConditionalOperator.EQUAL, BinaryConditionalOperator.EQUAL_NOT, op2);
+		super(op1, 
+		    BinaryConditionalOperator.EQUAL, 
+		    BinaryConditionalOperator.EQUAL_NOT, 
+		    op2);
 	}
 
 }

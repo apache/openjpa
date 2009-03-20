@@ -22,17 +22,6 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
-import javax.persistence.CaseExpression;
-import javax.persistence.DomainObject;
-import javax.persistence.Expression;
-import javax.persistence.FetchJoinObject;
-import javax.persistence.OrderByItem;
-import javax.persistence.PathExpression;
-import javax.persistence.Predicate;
-import javax.persistence.QueryDefinition;
-import javax.persistence.SelectItem;
-import javax.persistence.Subquery;
-
 /**
  * Domain Object is a path expression over which query is evaluated.
  * Domain object acts as a proxy for a QueryDefinition via delegation.

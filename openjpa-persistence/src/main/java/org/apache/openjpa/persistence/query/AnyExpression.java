@@ -18,9 +18,6 @@
  */
 package org.apache.openjpa.persistence.query;
 
-import javax.persistence.QueryDefinition;
-import javax.persistence.Subquery;
-
 /**
  * Denotes ANY(SUbquery) Expression.
  * 

@@ -18,9 +18,6 @@
  */
 package org.apache.openjpa.persistence.query;
 
-import javax.persistence.Expression;
-import javax.persistence.Predicate;
-
 /**
  * Unary Predicate results from an operator on an Expression.
  * 

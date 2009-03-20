@@ -18,7 +18,6 @@
  */
 package org.apache.openjpa.persistence.query;
 
-import javax.persistence.DomainObject;
 import static org.apache.openjpa.persistence.query.PathOperator.NAVIGATION;
 
 /**

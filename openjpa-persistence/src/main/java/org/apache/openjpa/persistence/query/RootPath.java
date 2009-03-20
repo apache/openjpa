@@ -1,7 +1,5 @@
 package org.apache.openjpa.persistence.query;
 
-import javax.persistence.DomainObject;
-
 /**
  * Denotes root domain instance representing a persistent type.
  * 

@@ -18,9 +18,6 @@
  */
 package org.apache.openjpa.persistence.query;
 
-import javax.persistence.Expression;
-import javax.persistence.Predicate;
-
 /**
  * Binary predicate combines two expressions with an operator. 
  * 

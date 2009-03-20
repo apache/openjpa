@@ -29,16 +29,6 @@ import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
 
-import javax.persistence.CaseExpression;
-import javax.persistence.DomainObject;
-import javax.persistence.Expression;
-import javax.persistence.OrderByItem;
-import javax.persistence.PathExpression;
-import javax.persistence.Predicate;
-import javax.persistence.QueryDefinition;
-import javax.persistence.SelectItem;
-import javax.persistence.Subquery;
-
 import org.apache.openjpa.lib.util.Localizer;
 
 /**
