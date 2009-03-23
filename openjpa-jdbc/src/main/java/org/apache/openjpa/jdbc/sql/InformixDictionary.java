@@ -73,6 +73,7 @@ public class InformixDictionary
      */
     public boolean swapSchemaAndCatalog = true;
 
+    protected boolean useJCC = false;
     // weak set of connections we've already executed lock mode sql on
     private final Collection _seenConnections = new ReferenceHashSet
         (ReferenceHashSet.WEAK);
@@ -155,10 +156,19 @@ public class InformixDictionary
         super.connectedConfiguration(conn);
         if (driverVendor == null) {
             DatabaseMetaData meta = conn.getMetaData();
-            if ("Informix".equalsIgnoreCase(meta.getDriverName()))
+            String driverName = meta.getDriverName();
+            if ("Informix".equalsIgnoreCase(driverName))
                 driverVendor = VENDOR_DATADIRECT;
             else
                 driverVendor = VENDOR_OTHER;
+            
+            if (driverName.equals("IBM DB2 JDBC Universal Driver Architecture")) { 
+                useJCC = true;
+                try {
+                    if (meta.storesLowerCaseIdentifiers()) 
+                        schemaCase = SCHEMA_CASE_LOWER;
+                } catch (SQLException e) {}
+            }
         }
         if (isJDBC3) {
             conn.setHoldability(ResultSet.HOLD_CURSORS_OVER_COMMIT);
@@ -301,4 +311,17 @@ public class InformixDictionary
            return false;
        return true;
     }
+    
+    public boolean useJCC() {
+        return useJCC;
+    }
+    
+    /**
+     * Return DB specific schemaCase 
+     */
+    public String getSchemaCase(){
+        return schemaCase;
+    }
+        
+    
 }
