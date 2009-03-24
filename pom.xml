@@ -112,6 +112,37 @@
             </modules>
             <build>
                 <plugins>
+                <plugin>
+                    <!--
+                        javadoc plugin doesn't copy resources like the normal jar plugin.
+                        Unzip license,etc from normal jar and add to javadoc jar.
+                     -->
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-antrun-plugin</artifactId>
+                        <executions>
+                            <execution>
+                                <id>javadoc.resources</id>
+                                <phase>package</phase>
+                                <goals>
+                                    <goal>run</goal>
+                                </goals>
+                                <configuration>
+                                    <tasks>
+                                        <!-- create output dir for nested parent poms -->
+                                        <mkdir dir="${project.build.directory}" />
+                                        <unzip dest="${project.build.directory}/apidocs">
+                                            <patternset>
+                                                <include name="META-INF/*.txt" />
+                                            </patternset>
+                                            <fileset dir="${project.build.directory}">
+                                                <include name="${artifactId}-${pom.version}.jar" />
+                                            </fileset>
+                                        </unzip>
+                                    </tasks>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
                     <plugin>
                         <groupId>org.apache.maven.plugins</groupId>
                         <artifactId>maven-source-plugin</artifactId>
