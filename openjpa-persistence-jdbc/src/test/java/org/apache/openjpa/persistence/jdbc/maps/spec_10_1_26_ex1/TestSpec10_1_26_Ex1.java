@@ -30,12 +30,11 @@ import javax.persistence.Query;
 
 import junit.framework.Assert;
 
-import org.apache.openjpa.lib.jdbc.AbstractJDBCListener;
-import org.apache.openjpa.lib.jdbc.JDBCEvent;
-import org.apache.openjpa.lib.jdbc.JDBCListener;
-import org.apache.openjpa.persistence.test.SingleEMFTestCase;
+import org.apache.openjpa.kernel.QueryImpl;
+import org.apache.openjpa.persistence.test.AllowFailure;
+import org.apache.openjpa.persistence.test.SQLListenerTestCase;
 
-public class TestSpec10_1_26_Ex1 extends SingleEMFTestCase {
+public class TestSpec10_1_26_Ex1 extends SQLListenerTestCase {
 
     public int numDepartments = 2;
     public int numEmployeesPerDept = 2;
@@ -43,33 +42,53 @@ public class TestSpec10_1_26_Ex1 extends SingleEMFTestCase {
 
     public int deptId = 1;
     public int empId = 1;
-
-    protected List<String> sql = new ArrayList<String>();
-    protected int sqlCount;
+    public List rsAllDepartments = null;
 
     public void setUp() {
         super.setUp(CLEAR_TABLES,
             Department.class,
-            Employee.class,
-            "openjpa.jdbc.JDBCListeners", 
-            new JDBCListener[] { 
-            this.new Listener() 
-        });
+            Employee.class);
         createObj();
+        rsAllDepartments = getAll(Department.class);
     }
 
-    public void testQualifiedId() throws Exception {
+    @AllowFailure
+    public void testQueryInMemoryQualifiedId() throws Exception {
+        queryQualifiedId(true);
+    }
+    
+    public void testQueryQualifiedId() throws Exception {
+        queryQualifiedId(false);
+    }
+
+    public void setCandidate(Query q, Class clz) 
+        throws Exception {
+        org.apache.openjpa.persistence.QueryImpl q1 = 
+            (org.apache.openjpa.persistence.QueryImpl) q;
+        org.apache.openjpa.kernel.Query q2 = q1.getDelegate();
+        org.apache.openjpa.kernel.QueryImpl qi = (QueryImpl) q2;
+        if (clz == Department.class)
+            qi.setCandidateCollection(rsAllDepartments);
+    }
+
+    public void queryQualifiedId(boolean inMemory) throws Exception {
         EntityManager em = emf.createEntityManager();
         String query = "select KEY(e) from Department d, " +
             " in (d.empMap) e order by d.deptId, e.empId";
-        List rs = em.createQuery(query).getResultList();
+        Query q = em.createQuery(query);
+        if (inMemory) 
+            setCandidate(q, Department.class);
+        List rs = q.getResultList();
         Integer d = (Integer) rs.get(0);
 
         em.clear();
-        String query4 = "select ENTRY(e) from Department d, " +
+        query = "select ENTRY(e) from Department d, " +
             " in (d.empMap) e order by d.deptId, e.empId";
-        List rs4 = em.createQuery(query4).getResultList();
-        Map.Entry me = (Map.Entry) rs4.get(0);
+        q = em.createQuery(query);
+        if (inMemory) 
+            setCandidate(q, Department.class);
+        rs = q.getResultList();
+        Map.Entry me = (Map.Entry) rs.get(0);
 
         assertTrue(d.equals(me.getKey()));
 
@@ -77,7 +96,10 @@ public class TestSpec10_1_26_Ex1 extends SingleEMFTestCase {
         sql.clear();
         query = "select KEY(e) from Department d, " +
             " in (d.empMap) e where KEY(e) > 1";
-        rs = em.createQuery(query).getResultList();
+        q = em.createQuery(query);
+        if (inMemory) 
+            setCandidate(q, Department.class);
+        rs = q.getResultList();
         assertTrue(sql.get(0).toUpperCase().indexOf(">") > 0);
 
         em.close();
@@ -88,14 +110,6 @@ public class TestSpec10_1_26_Ex1 extends SingleEMFTestCase {
         findObj();
     }
                 
-    public List<String> getSql() {
-        return sql;
-    }
-
-    public int getSqlCount() {
-        return sqlCount;
-    }
-
     public void createObj() {
         EntityManager em = emf.createEntityManager();
         EntityTransaction tran = em.getTransaction();
@@ -221,15 +235,5 @@ public class TestSpec10_1_26_Ex1 extends SingleEMFTestCase {
         int id = e.getEmpId();
         Department d = e.getDepartment();
         assertDepartment(d);
-    }
-
-    public class Listener extends AbstractJDBCListener {
-        @Override
-        public void beforeExecuteStatement(JDBCEvent event) {
-            if (event.getSQL() != null && sql != null) {
-                sql.add(event.getSQL());
-                sqlCount++;
-            }
-        }
     }
 }

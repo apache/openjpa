@@ -30,12 +30,11 @@ import javax.persistence.Query;
 
 import junit.framework.Assert;
 
-import org.apache.openjpa.lib.jdbc.AbstractJDBCListener;
-import org.apache.openjpa.lib.jdbc.JDBCEvent;
-import org.apache.openjpa.lib.jdbc.JDBCListener;
-import org.apache.openjpa.persistence.test.SingleEMFTestCase;
+import org.apache.openjpa.kernel.QueryImpl;
+import org.apache.openjpa.persistence.test.AllowFailure;
+import org.apache.openjpa.persistence.test.SQLListenerTestCase;
 
-public class TestSpec10_1_27_Ex5 extends SingleEMFTestCase {
+public class TestSpec10_1_27_Ex5 extends SQLListenerTestCase {
     public int numCompany = 2;
     public int numDivisionsPerCo = 2;
     public List<String> namedQueries = new ArrayList<String>();
@@ -45,65 +44,84 @@ public class TestSpec10_1_27_Ex5 extends SingleEMFTestCase {
     public int vpId = 1;
     public int newDivId = 100;
     public int newVpId = 100;
-    
-    protected List<String> sql = new ArrayList<String>();
-    protected int sqlCount;
+    public List rsAllCompany = null;
 
     public void setUp() {
         super.setUp(CLEAR_TABLES,
             Company.class,
             Division.class,
-            VicePresident.class,
-            "openjpa.jdbc.JDBCListeners", 
-            new JDBCListener[] { this.new Listener() });
+            VicePresident.class);
         createObj(emf);
+        rsAllCompany = getAll(Company.class);
     }
 
     public void testQueryObj() throws Exception {
         queryObj(emf);
     }
 
+    @AllowFailure
+    public void testQueryInMemoryQualifiedId() throws Exception {
+        queryQualifiedId(true);
+    }
+    
     public void testQueryQualifiedId() throws Exception {
+        queryQualifiedId(false);
+    }
+
+    public void setCandidate(Query q, Class clz) 
+        throws Exception {
+        org.apache.openjpa.persistence.QueryImpl q1 = 
+            (org.apache.openjpa.persistence.QueryImpl) q;
+        org.apache.openjpa.kernel.Query q2 = q1.getDelegate();
+        org.apache.openjpa.kernel.QueryImpl qi = (QueryImpl) q2;
+        if (clz == Company.class)
+            qi.setCandidateCollection(rsAllCompany);
+    }
+
+    public void queryQualifiedId(boolean inMemory) throws Exception {
         EntityManager em = emf.createEntityManager();
 
         String query = "select KEY(e) from Company c, " +
             " in (c.orgs) e order by c.id";
-        List rs = em.createQuery(query).getResultList();
+        Query q = em.createQuery(query);
+        if (inMemory) 
+            setCandidate(q, Company.class);
+        List rs = q.getResultList();
         Division d = (Division) rs.get(0);
 
         em.clear();
-        String query4 = "select ENTRY(e) from Company c, " +
+        query = "select ENTRY(e) from Company c, " +
             " in (c.orgs) e order by c.id";
-        List rs4 = em.createQuery(query4).getResultList();
-        Map.Entry me = (Map.Entry) rs4.get(0);
+        q = em.createQuery(query);
+        if (inMemory) 
+            setCandidate(q, Company.class);
+        rs = q.getResultList();
+        Map.Entry me = (Map.Entry) rs.get(0);
 
         assertTrue(d.equals(me.getKey()));
 
         em.clear();
         query = "select KEY(e) from Company c " +
             " left join c.orgs e order by c.id";
-        rs = em.createQuery(query).getResultList();
+        q = em.createQuery(query);
+        if (inMemory) 
+            setCandidate(q, Company.class);
+        rs = q.getResultList();
         d = (Division) rs.get(0);
 
         em.clear();
-        query4 = "select ENTRY(e) from Company c " +
+        query = "select ENTRY(e) from Company c " +
             " left join c.orgs e order by c.id";
-        rs4 = em.createQuery(query4).getResultList();
-        me = (Map.Entry) rs4.get(0);
-
+        q = em.createQuery(query);
+        if (inMemory) 
+            setCandidate(q, Company.class);
+        rs = q.getResultList();
+        me = (Map.Entry) rs.get(0);
         assertTrue(d.equals(me.getKey()));
 
         em.close();
     }
     
-	public List<String> getSql() {
-	    return sql;
-	}
-	
-	public int getSqlCount() {
-	    return sqlCount;
-	}
-	
 	public void createObj(EntityManagerFactory emf) {
 		EntityManager em = emf.createEntityManager();
 		EntityTransaction tran = em.getTransaction();
@@ -313,15 +331,5 @@ public class TestSpec10_1_27_Ex5 extends SingleEMFTestCase {
         tran.commit();
         em.close();
     }
-	
-	public class Listener extends AbstractJDBCListener {
-	    @Override
-	    public void beforeExecuteStatement(JDBCEvent event) {
-	        if (event.getSQL() != null && sql != null) {
-	            sql.add(event.getSQL());
-	            sqlCount++;
-	        }
-	    }
-	}
 }
 

@@ -18,7 +18,6 @@
  */
 package org.apache.openjpa.persistence.jdbc.maps.spec_10_1_27_ex0;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -29,12 +28,11 @@ import javax.persistence.Query;
 
 import junit.framework.Assert;
 
-import org.apache.openjpa.lib.jdbc.AbstractJDBCListener;
-import org.apache.openjpa.lib.jdbc.JDBCEvent;
-import org.apache.openjpa.lib.jdbc.JDBCListener;
-import org.apache.openjpa.persistence.test.SingleEMFTestCase;
+import org.apache.openjpa.kernel.QueryImpl;
+import org.apache.openjpa.persistence.test.AllowFailure;
+import org.apache.openjpa.persistence.test.SQLListenerTestCase;
 
-public class TestSpec10_1_27 extends SingleEMFTestCase {
+public class TestSpec10_1_27 extends SQLListenerTestCase {
     public int numItems = 2;
     public int numImagesPerItem = 3;
     public int numCompany = 2;
@@ -43,47 +41,78 @@ public class TestSpec10_1_27 extends SingleEMFTestCase {
     public int compId = 1;
     public int divId = 1;
     public int vpId = 1;
-
-    public List<String> namedQueries = new ArrayList<String>();
-    protected List<String> sql = new ArrayList<String>();
-    protected int sqlCount;
+    public List rsAllCompny1 = null;
+    public List rsAllCompny2 = null;
 
     public void setUp() {
         super.setUp(CLEAR_TABLES,
                 Compny1.class, Compny2.class,
                 Item1.class, Item2.class,
-                Division.class, VicePresident.class,
-                "openjpa.jdbc.JDBCListeners", 
-                new JDBCListener[] { this.new Listener() });
+                Division.class, VicePresident.class);
         createObj(emf);
+        rsAllCompny1 = getAll(Compny1.class);
+        rsAllCompny2 = getAll(Compny2.class);
     }
 
+    @AllowFailure
+    public void testQueryInMemoryQualifiedId() throws Exception {
+        queryQualifiedId(true);
+    }
+    
     public void testQueryQualifiedId() throws Exception {
+        queryQualifiedId(false);
+    }
+
+    public void setCandidate(Query q, Class clz) 
+        throws Exception {
+        org.apache.openjpa.persistence.QueryImpl q1 = 
+            (org.apache.openjpa.persistence.QueryImpl) q;
+        org.apache.openjpa.kernel.Query q2 = q1.getDelegate();
+        org.apache.openjpa.kernel.QueryImpl qi = (QueryImpl) q2;
+        if (clz == Compny1.class)
+            qi.setCandidateCollection(rsAllCompny1);
+        else if (clz == Compny2.class)
+            qi.setCandidateCollection(rsAllCompny2);
+    }
+
+    public void queryQualifiedId(boolean inMemory) throws Exception {
         EntityManager em = emf.createEntityManager();
 
         String query = "select KEY(e) from Compny1 c, " +
             " in (c.orgs) e order by c.id";
-        List rs = em.createQuery(query).getResultList();
+        Query q = em.createQuery(query);
+        if (inMemory) 
+            setCandidate(q, Compny1.class);
+        List rs = q.getResultList();
         Division d = (Division) rs.get(0);
 
         em.clear();
-        String query4 = "select ENTRY(e) from Compny1 c, " +
+        query = "select ENTRY(e) from Compny1 c, " +
         " in (c.orgs) e order by c.id";
-        List rs4 = em.createQuery(query4).getResultList();
-        Map.Entry me = (Map.Entry) rs4.get(0);
+        q = em.createQuery(query);
+        if (inMemory) 
+            setCandidate(q, Compny1.class);
+        rs = q.getResultList();
+        Map.Entry me = (Map.Entry) rs.get(0);
 
         assertTrue(d.equals(me.getKey()));
 
         query = "select KEY(e) from Compny2 c, " +
             " in (c.orgs) e order by c.id";
-        rs = em.createQuery(query).getResultList();
+        q = em.createQuery(query);
+        if (inMemory) 
+            setCandidate(q, Compny2.class);
+        rs = q.getResultList();
         d = (Division) rs.get(0);
 
         em.clear();
-        query4 = "select ENTRY(e) from Compny2 c, " +
+        query = "select ENTRY(e) from Compny2 c, " +
             " in (c.orgs) e order by c.id";
-        rs4 = em.createQuery(query4).getResultList();
-        me = (Map.Entry) rs4.get(0);
+        q = em.createQuery(query);
+        if (inMemory) 
+            setCandidate(q, Compny2.class);
+        rs = q.getResultList();
+        me = (Map.Entry) rs.get(0);
 
         assertTrue(d.equals(me.getKey()));
 
@@ -92,14 +121,6 @@ public class TestSpec10_1_27 extends SingleEMFTestCase {
 
     public void testQueryObj() throws Exception {
         queryObj(emf);
-    }
-
-    public List<String> getSql() {
-        return sql;
-    }
-
-    public int getSqlCount() {
-        return sqlCount;
     }
 
     public void createObj(EntityManagerFactory emf) {
@@ -302,14 +323,4 @@ public class TestSpec10_1_27 extends SingleEMFTestCase {
         tran.commit();
         em.close();
     }    
-
-    public class Listener extends AbstractJDBCListener {
-        @Override
-        public void beforeExecuteStatement(JDBCEvent event) {
-            if (event.getSQL() != null && sql != null) {
-                sql.add(event.getSQL());
-                sqlCount++;
-            }
-        }
-    }
 }

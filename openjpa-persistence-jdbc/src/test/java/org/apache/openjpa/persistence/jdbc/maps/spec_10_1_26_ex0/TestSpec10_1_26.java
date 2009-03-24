@@ -24,19 +24,19 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import junit.framework.*;
 
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.EntityTransaction;
 import javax.persistence.Query;
 
-import org.apache.openjpa.lib.jdbc.AbstractJDBCListener;
-import org.apache.openjpa.lib.jdbc.JDBCEvent;
-import org.apache.openjpa.lib.jdbc.JDBCListener;
-import org.apache.openjpa.persistence.test.SingleEMFTestCase;
+import junit.framework.Assert;
 
-public class TestSpec10_1_26 extends SingleEMFTestCase {
+import org.apache.openjpa.kernel.QueryImpl;
+import org.apache.openjpa.persistence.test.AllowFailure;
+import org.apache.openjpa.persistence.test.SQLListenerTestCase;
+
+public class TestSpec10_1_26 extends SQLListenerTestCase {
 
     public int numDepartments = 2;
     public int numEmployeesPerDept = 2;
@@ -45,8 +45,9 @@ public class TestSpec10_1_26 extends SingleEMFTestCase {
     public int deptId = 1;
     public int empId = 1;
 
-    protected List<String> sql = new ArrayList<String>();
-    protected int sqlCount;
+    public List rsAllDepartment1 = null;
+    public List rsAllDepartment2 = null;
+    public List rsAllDepartment3 = null;
 
     public void setUp() {
         super.setUp(DROP_TABLES,
@@ -57,43 +58,67 @@ public class TestSpec10_1_26 extends SingleEMFTestCase {
             Employee2.class,
             Employee3.class,
             EmployeeName3.class,
-            EmployeePK2.class,
-            "openjpa.jdbc.JDBCListeners", 
-            new JDBCListener[] { 
-            this.new Listener() 
-        });
+            EmployeePK2.class);
         createObj();
+        rsAllDepartment1 = getAll(Department1.class);
+        rsAllDepartment2 = getAll(Department2.class);
+        rsAllDepartment3 = getAll(Department3.class);
     }
 
+    @AllowFailure
+    public void testQueryInMemoryQualifiedId() throws Exception {
+        queryQualifiedId(true);
+    }
+    
     public void testQueryQualifiedId() throws Exception {
+        queryQualifiedId(false);
+    }
+
+    public void setCandidate(Query q, Class clz) 
+        throws Exception {
+        org.apache.openjpa.persistence.QueryImpl q1 = 
+            (org.apache.openjpa.persistence.QueryImpl) q;
+        org.apache.openjpa.kernel.Query q2 = q1.getDelegate();
+        org.apache.openjpa.kernel.QueryImpl qi = (QueryImpl) q2;
+        if (clz == Department1.class)
+            qi.setCandidateCollection(rsAllDepartment1);
+        else if (clz == Department2.class)
+            qi.setCandidateCollection(rsAllDepartment2);
+        else if (clz == Department3.class)
+            qi.setCandidateCollection(rsAllDepartment3);
+    }
+
+    public void queryQualifiedId(boolean inMemory) throws Exception {
         EntityManager em = emf.createEntityManager();
         String query = "select KEY(e) from Department1 d, " +
             " in (d.empMap) e";
-        List rs = em.createQuery(query).getResultList();
+        Query q = em.createQuery(query);
+        if (inMemory) 
+            setCandidate(q, Department1.class);
+        List rs = q.getResultList();
         Integer d = (Integer) rs.get(0);
-        String query2 = "select KEY(e) from Department2 d, " +
+        
+        query = "select KEY(e) from Department2 d, " +
             " in (d.empMap) e";
-        List rs2 = em.createQuery(query2).getResultList();
-        EmployeePK2 d2 = (EmployeePK2) rs2.get(0);
-        String query3 = "select KEY(e) from Department3 d, " +
+        q = em.createQuery(query);
+        if (inMemory) 
+            setCandidate(q, Department2.class);
+        rs = q.getResultList();
+        EmployeePK2 d2 = (EmployeePK2) rs.get(0);
+        
+        query = "select KEY(e) from Department3 d, " +
             " in (d.emps) e";
-        List rs3 = em.createQuery(query3).getResultList();
-        EmployeeName3 d3 = (EmployeeName3) rs3.get(0);
+        q = em.createQuery(query);
+        if (inMemory) 
+            setCandidate(q, Department3.class);
+        rs = q.getResultList();
+        EmployeeName3 d3 = (EmployeeName3) rs.get(0);
         em.close();
     }
 
     public void testQueryObject() {
         queryObj();
     }
-
-    public List<String> getSql() {
-        return sql;
-    }
-
-    public int getSqlCount() {
-        return sqlCount;
-    }
-
 
     public void createObj() {
         EntityManager em = emf.createEntityManager();
@@ -335,15 +360,5 @@ public class TestSpec10_1_26 extends SingleEMFTestCase {
 
         tran.commit();
         em.close();
-    }
-
-    public class Listener extends AbstractJDBCListener {
-        @Override
-        public void beforeExecuteStatement(JDBCEvent event) {
-            if (event.getSQL() != null && sql != null) {
-                sql.add(event.getSQL());
-                sqlCount++;
-            }
-        }
     }
 }

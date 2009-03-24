@@ -18,7 +18,6 @@
  */
 package org.apache.openjpa.persistence.jdbc.maps.spec_10_1_26_ex2;
 
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -31,71 +30,84 @@ import javax.persistence.Query;
 
 import junit.framework.Assert;
 
-import org.apache.openjpa.lib.jdbc.AbstractJDBCListener;
-import org.apache.openjpa.lib.jdbc.JDBCEvent;
-import org.apache.openjpa.lib.jdbc.JDBCListener;
-import org.apache.openjpa.persistence.test.SingleEMFTestCase;
+import org.apache.openjpa.kernel.QueryImpl;
+import org.apache.openjpa.persistence.test.AllowFailure;
+import org.apache.openjpa.persistence.test.SQLListenerTestCase;
 
-public class TestSpec10_1_26_Ex2 extends SingleEMFTestCase {
+public class TestSpec10_1_26_Ex2 extends SQLListenerTestCase {
     public int numDepartments = 2;
     public int numEmployeesPerDept = 2;
-    public List<String> namedQueries = new ArrayList<String>();
-
     public int deptId = 1;
     public int empId = 1;
-
-    protected List<String> sql = new ArrayList<String>();
-    protected int sqlCount;
+    public List rsAllDepartments = null;
 
     public void setUp() {
         super.setUp(CLEAR_TABLES,
             Department.class,
             Employee.class,
-            EmployeePK.class,
-            "openjpa.jdbc.JDBCListeners", 
-            new JDBCListener[] { 
-            this.new Listener() 
-        });
+            EmployeePK.class);
         createObj(emf);
+        rsAllDepartments = getAll(Department.class);
     }
 
-    public void testQualifiedId() throws Exception {
+    @AllowFailure
+    public void testQueryInMemoryQualifiedId() throws Exception {
+        queryQualifiedId(true);
+    }
+    
+    public void testQueryQualifiedId() throws Exception {
+        queryQualifiedId(false);
+    }
+
+    public void setCandidate(Query q, Class clz) 
+        throws Exception {
+        org.apache.openjpa.persistence.QueryImpl q1 = 
+            (org.apache.openjpa.persistence.QueryImpl) q;
+        org.apache.openjpa.kernel.Query q2 = q1.getDelegate();
+        org.apache.openjpa.kernel.QueryImpl qi = (QueryImpl) q2;
+        if (clz == Department.class)
+            qi.setCandidateCollection(rsAllDepartments);
+    }
+
+    public void queryQualifiedId(boolean inMemory) throws Exception {
         EntityManager em = emf.createEntityManager();
         String query = "select KEY(e), KEY(e).name from Department d, " +
             " in (d.empMap) e where d.deptId = 1";
-        List rs = em.createQuery(query).getResultList(); 
+        Query q = em.createQuery(query);
+        if (inMemory) 
+            setCandidate(q, Department.class);
+        List rs = q.getResultList();
         EmployeePK d = (EmployeePK) ((Object[]) rs.get(0))[0];
         String name = (String) ((Object[]) rs.get(0))[1];
         assertEquals(d.getName(), name);
 
         em.clear();
-        String query4 = "select ENTRY(e) from Department d, " +
+        query = "select ENTRY(e) from Department d, " +
             " in (d.empMap) e  where d.deptId = 1";
-        List rs4 = em.createQuery(query4).getResultList();
-        Map.Entry me = (Map.Entry) rs4.get(0);
+        q = em.createQuery(query);
+        if (inMemory) 
+            setCandidate(q, Department.class);
+        rs = q.getResultList();
+        Map.Entry me = (Map.Entry) rs.get(0);
 
         assertTrue(d.equals(me.getKey()));
 
         // test GROUP BY qualified path
         sql.clear();
-        String query5 = "select count(KEY(e).bDay) from Department d " +
+        query = "select count(KEY(e).bDay) from Department d " +
             " left join d.empMap e GROUP BY KEY(e).bDay";
-        List rs5 = em.createQuery(query5).getResultList();
-        assertTrue(sql.get(0).toUpperCase().indexOf(" GROUP BY ") != -1);
+        q = em.createQuery(query);
+        if (inMemory) 
+            setCandidate(q, Department.class);
+        rs = q.getResultList();
+        if (!inMemory)
+            assertTrue(sql.get(0).toUpperCase().indexOf(" GROUP BY ") != -1);
 
         em.close();
     }
 
     public void testQueryObject() {
         queryObj(emf);
-    }
-
-    public List<String> getSql() {
-        return sql;
-    }
-
-    public int getSqlCount() {
-        return sqlCount;
     }
 
     public void createObj(EntityManagerFactory emf) {
@@ -221,15 +233,5 @@ public class TestSpec10_1_26_Ex2 extends SingleEMFTestCase {
     public void assertEmployee(Employee e) {
         EmployeePK pk = e.getEmpPK();
         Department d = e.getDepartment();
-    }
-
-    public class Listener extends AbstractJDBCListener {
-        @Override
-        public void beforeExecuteStatement(JDBCEvent event) {
-            if (event.getSQL() != null && sql != null) {
-                sql.add(event.getSQL());
-                sqlCount++;
-            }
-        }
     }
 }

@@ -18,7 +18,6 @@
  */
 package org.apache.openjpa.persistence.jdbc.maps.m2mmapex0;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
@@ -30,14 +29,12 @@ import javax.persistence.Query;
 
 import junit.framework.Assert;
 
-import org.apache.openjpa.lib.jdbc.AbstractJDBCListener;
-import org.apache.openjpa.lib.jdbc.JDBCEvent;
-import org.apache.openjpa.lib.jdbc.JDBCListener;
+import org.apache.openjpa.kernel.QueryImpl;
 import org.apache.openjpa.persistence.ArgumentException;
-import org.apache.openjpa.persistence.test.SingleEMFTestCase;
+import org.apache.openjpa.persistence.test.AllowFailure;
+import org.apache.openjpa.persistence.test.SQLListenerTestCase;
 
-
-public class TestMany2ManyMap extends SingleEMFTestCase {
+public class TestMany2ManyMap extends SQLListenerTestCase {
 
     public int numEmployees = 2;
     public int numPhoneNumbersPerEmployee = 2;
@@ -45,67 +42,102 @@ public class TestMany2ManyMap extends SingleEMFTestCase {
     public Map<Integer, PhoneNumber> phoneMap =
         new HashMap<Integer, PhoneNumber>();
 
-    public List<String> namedQueries = new ArrayList<String>();
 
     public int empId = 1;
     public int phoneId = 1;
     public int divId = 1;
-
-    protected List<String> sql = new ArrayList<String>();
-    protected int sqlCount;
+    public List rsAllPhones = null;
+    public List rsAllEmps = null;
 
     public void setUp() {
         super.setUp(CLEAR_TABLES, Division.class,
-            Employee.class, PhoneNumber.class,
-            "openjpa.jdbc.JDBCListeners", 
-            new JDBCListener[] { this.new Listener() });
+            Employee.class, PhoneNumber.class);
         createObj();
+       	rsAllPhones = getAll(PhoneNumber.class);
+       	rsAllEmps = getAll(Employee.class);
     }
-
+    @AllowFailure
+    public void testQueryInMemoryQualifiedId() throws Exception {
+        queryQualifiedId(true);
+    }    
     public void testQueryQualifiedId() throws Exception {
+        queryQualifiedId(false);
+    }    
+    public void setCandidate(Query q, Class clz) 
+        throws Exception {
+        org.apache.openjpa.persistence.QueryImpl q1 = 
+            (org.apache.openjpa.persistence.QueryImpl) q;
+        org.apache.openjpa.kernel.Query q2 = q1.getDelegate();
+        org.apache.openjpa.kernel.QueryImpl qi = (QueryImpl) q2;
+        if (clz == PhoneNumber.class)
+            qi.setCandidateCollection(rsAllPhones);
+        else if (clz == Employee.class)
+            qi.setCandidateCollection(rsAllEmps);
+    }
+    
+    public void queryQualifiedId(boolean inMemory) throws Exception {
         EntityManager em = emf.createEntityManager();
 
         // test navigation thru VALUE
         String query = "select VALUE(e).empId from PhoneNumber p, " +
             " in (p.emps) e order by e.empId";
-        List rs = em.createQuery(query).getResultList();
+        Query q = em.createQuery(query);
+        if (inMemory) 
+            setCandidate(q, PhoneNumber.class);
+        List rs = q.getResultList();
 
         // test navigation thru KEY
         query = "select KEY(e), KEY(e).name from PhoneNumber p, " +
             " in (p.emps) e order by e.empId";
-        rs = em.createQuery(query).getResultList();
+        q = em.createQuery(query);
+        if (inMemory) 
+            setCandidate(q, PhoneNumber.class);
+        rs = q.getResultList();
         Division d0 = (Division) ((Object[]) rs.get(0))[0];
         String name = (String)((Object[]) rs.get(0))[1];
         assertEquals(d0.getName(), name);
 
         query = "select KEY(e) from PhoneNumber p, " +
             " in (p.emps) e order by e.empId";
-        rs = em.createQuery(query).getResultList();
+        q = em.createQuery(query);
+        if (inMemory) 
+            setCandidate(q, PhoneNumber.class);
+        rs = q.getResultList();
         Division d = (Division) rs.get(0);
 
-        String query2 = "select KEY(p) from Employee e, " +
+        query = "select KEY(p) from Employee e, " +
             " in (e.phones) p";
-        List rs2 = em.createQuery(query2).getResultList();
-        Division d2 = (Division) rs2.get(0);
+        q = em.createQuery(query);
+        if (inMemory) 
+            setCandidate(q, Employee.class);
+        rs = q.getResultList();
+        Division d2 = (Division) rs.get(0);
 
-        String query3 = "select VALUE(e) from PhoneNumber p, " +
+        query = "select VALUE(e) from PhoneNumber p, " +
             " in (p.emps) e";
-
-        List rs3 = em.createQuery(query3).getResultList();
-        Employee e = (Employee) rs3.get(0);
-
+        q = em.createQuery(query);
+        if (inMemory) 
+            setCandidate(q, PhoneNumber.class);
+        rs = q.getResultList();
+        Employee e = (Employee) rs.get(0);
         em.clear();
-        String query4 = "select ENTRY(e) from PhoneNumber p, " +
+        query = "select ENTRY(e) from PhoneNumber p, " +
             " in (p.emps) e order by e.empId";
-        List rs4 = em.createQuery(query4).getResultList();
-        Map.Entry me = (Map.Entry) rs4.get(0);
+        q = em.createQuery(query);
+        if (inMemory) 
+            setCandidate(q, PhoneNumber.class);
+        rs = q.getResultList();
+        Map.Entry me = (Map.Entry) rs.get(0);
 
         assertTrue(d.equals(me.getKey()));
 
-        String query5 = "select TYPE(KEY(p)) from Employee e, " +
+        query = "select TYPE(KEY(p)) from Employee e, " +
             " in (e.phones) p";
-        List rs5 = em.createQuery(query5).getResultList();
-        assertEquals(Division.class, rs5.get(0));
+        q = em.createQuery(query);
+        if (inMemory) 
+            setCandidate(q, Employee.class);
+        rs = q.getResultList();
+        assertEquals(Division.class, rs.get(0));
 
         // expects parser error:
         // JPA2 has no support for predicate comparison using
@@ -113,31 +145,27 @@ public class TestMany2ManyMap extends SingleEMFTestCase {
         String query1 = "select KEY(p) from Employee e, " +
             " in (e.phones) p where KEY(p) = ?1";
         try {
-             List rs1 = em.createQuery(query1).setParameter(1, d2).
-                 getResultList();
+            q = em.createQuery(query).setParameter(1, d2);
+            if (inMemory) 
+                setCandidate(q, Employee.class);
+            rs = q.getResultList();
         } catch (Exception ex) {
             assertException(ex, ArgumentException.class);
         }
 
         // test VALUE(e) IS NULL predicate
-        query2 = "select KEY(p) from Employee e, " +
+        query = "select KEY(p) from Employee e, " +
             " in (e.phones) p WHERE VALUE(p) IS NULL";
-        rs2 = em.createQuery(query2).getResultList();
-
+        q = em.createQuery(query);
+        if (inMemory) 
+            setCandidate(q, Employee.class);
+        rs = q.getResultList();
         em.close();
     }
 
     public void testQueryObject() throws Exception {
         queryObj();
         findObj();
-    }
-
-    public List<String> getSql() {
-        return sql;
-    }
-
-    public int getSqlCount() {
-        return sqlCount;
     }
 
     public void createObj() {
@@ -177,19 +205,6 @@ public class TestMany2ManyMap extends SingleEMFTestCase {
         d.setId(id);
         d.setName("d" + id);
         return d;
-    }
-
-    public void removeAll() {
-        EntityManager em = emf.createEntityManager();
-        EntityTransaction tran = em.getTransaction();
-        tran.begin();
-        Query q = em.createNativeQuery("delete from department");
-        q.executeUpdate();
-        q = em.createNativeQuery("delete from employee");
-        q.executeUpdate();
-        System.out.println("committing removes");
-        tran.commit();
-        em.close();
     }
 
     public void findObj() throws Exception {
@@ -277,13 +292,4 @@ public class TestMany2ManyMap extends SingleEMFTestCase {
         }
     }    
 
-    public class Listener extends AbstractJDBCListener {
-        @Override
-        public void beforeExecuteStatement(JDBCEvent event) {
-            if (event.getSQL() != null && sql != null) {
-                sql.add(event.getSQL());
-                sqlCount++;
-            }
-        }
-    }
 }

@@ -31,12 +31,11 @@ import javax.persistence.Query;
 
 import junit.framework.Assert;
 
-import org.apache.openjpa.lib.jdbc.AbstractJDBCListener;
-import org.apache.openjpa.lib.jdbc.JDBCEvent;
-import org.apache.openjpa.lib.jdbc.JDBCListener;
-import org.apache.openjpa.persistence.test.SingleEMFTestCase;
+import org.apache.openjpa.kernel.QueryImpl;
+import org.apache.openjpa.persistence.test.AllowFailure;
+import org.apache.openjpa.persistence.test.SQLListenerTestCase;
 
-public class TestMany2ManyMapEx10 extends SingleEMFTestCase {
+public class TestMany2ManyMapEx10 extends SQLListenerTestCase {
 
     public int numEmployees = 2;
     public int numPhoneNumbers = numEmployees + 1;
@@ -54,38 +53,64 @@ public class TestMany2ManyMapEx10 extends SingleEMFTestCase {
     public int empId = 1;
     public int phoneId = 1;
     public int divId = 1;
-
-    protected List<String> sql = new ArrayList<String>();
-    protected int sqlCount;
+    public List rsAllPhones = null;
+    public List rsAllEmps = null;
 
     public void setUp() {
         super.setUp(DROP_TABLES,EmployeePK.class, PhonePK.class,
-            Employee.class, PhoneNumber.class,
-            "openjpa.jdbc.JDBCListeners", 
-            new JDBCListener[] { 
-            this.new Listener() 
-        });
+            Employee.class, PhoneNumber.class);
         createObj();
+        rsAllPhones = getAll(PhoneNumber.class);
+        rsAllEmps = getAll(Employee.class);
     }
-
+    
+    @AllowFailure
+    public void testQueryInMemoryQualifiedId() throws Exception {
+        queryQualifiedId(true);
+    }
+    
     public void testQueryQualifiedId() throws Exception {
+        queryQualifiedId(false);
+    }
+    
+    public void setCandidate(Query q, Class clz) 
+        throws Exception {
+        org.apache.openjpa.persistence.QueryImpl q1 = 
+            (org.apache.openjpa.persistence.QueryImpl) q;
+        org.apache.openjpa.kernel.Query q2 = q1.getDelegate();
+        org.apache.openjpa.kernel.QueryImpl qi = (QueryImpl) q2;
+        if (clz == PhoneNumber.class)
+            qi.setCandidateCollection(rsAllPhones);
+        else if (clz == Employee.class)
+            qi.setCandidateCollection(rsAllEmps);
+    }
+    
+    public void queryQualifiedId(boolean inMemory) throws Exception {
         EntityManager em = emf.createEntityManager();
         String query = "select KEY(e) from PhoneNumber p, " +
             " in (p.emps) e where e.empPK = ?1";
-        List rs = em.createQuery(query).setParameter(1, empPKs.get(0)).
-            getResultList();
+        Query q = em.createQuery(query).setParameter(1, empPKs.get(0));
+        if (inMemory) 
+            setCandidate(q, PhoneNumber.class);
+        List rs = q.getResultList();
         EmployeePK d = (EmployeePK) rs.get(0);
-        String query2 = "select KEY(p) from Employee e, " +
+        
+        query = "select KEY(p) from Employee e, " +
             " in (e.phones) p";
-        List rs2 = em.createQuery(query2).getResultList();
-        PhonePK k = (PhonePK) rs2.get(0);
+        q = em.createQuery(query);
+        if (inMemory) 
+            setCandidate(q, Employee.class);
+        rs = q.getResultList();
+        PhonePK k = (PhonePK) rs.get(0);
 
         em.clear();
-        String query4 = "select ENTRY(e) from PhoneNumber p, " +
+        query = "select ENTRY(e) from PhoneNumber p, " +
             " in (p.emps) e  where e.empPK = ?1";
-        List rs4 = em.createQuery(query4).setParameter(1, empPKs.get(0)).
-            getResultList();
-        Map.Entry me = (Map.Entry) rs4.get(0);
+        q = em.createQuery(query).setParameter(1, empPKs.get(0));
+        if (inMemory) 
+            setCandidate(q, PhoneNumber.class);
+        rs = q.getResultList();
+        Map.Entry me = (Map.Entry) rs.get(0);
 
         assertTrue(d.equals(me.getKey()));
 
@@ -93,30 +118,42 @@ public class TestMany2ManyMapEx10 extends SingleEMFTestCase {
         em.clear();
         query = "select KEY(e), KEY(e).name from PhoneNumber p, " +
             " in (p.emps) e";
-        rs = em.createQuery(query).getResultList();
+        q = em.createQuery(query);
+        if (inMemory) 
+            setCandidate(q, PhoneNumber.class);
+        rs = q.getResultList();
         EmployeePK d0 = (EmployeePK) ((Object[]) rs.get(0))[0];
         String name = (String)((Object[]) rs.get(0))[1];
         assertEquals(d0.getName(), name);
 
         em.clear();
-        query2 = "select KEY(p), KEY(p).phoneNum from Employee e, " +
+        query = "select KEY(p), KEY(p).phoneNum from Employee e, " +
             " in (e.phones) p";
-        rs2 = em.createQuery(query2).getResultList();
-        k = (PhonePK) ((Object[]) rs2.get(0))[0];
-        String phoneNum = (String) ((Object[]) rs2.get(0))[1];
+        q = em.createQuery(query);
+        if (inMemory) 
+            setCandidate(q, Employee.class);
+        rs = q.getResultList();
+        k = (PhonePK) ((Object[]) rs.get(0))[0];
+        String phoneNum = (String) ((Object[]) rs.get(0))[1];
         assertEquals(k.getPhoneNum(), phoneNum);
 
         // test ORDER BY qualified path
-        query2 = "select KEY(p), KEY(p).phoneNum as pno from Employee e " +
+        query = "select KEY(p), KEY(p).phoneNum as pno from Employee e " +
             " left join e.phones p ORDER BY pno ";
-        rs2 = em.createQuery(query2).getResultList();
+        q = em.createQuery(query);
+        if (inMemory) 
+            setCandidate(q, Employee.class);
+        rs = q.getResultList();
 
         // test GROUP BY qualified path
         sql.clear();
-        query2 = "select COUNT(KEY(p).phoneNum) from Employee e " +
+        query = "select COUNT(KEY(p).phoneNum) from Employee e " +
             " left join e.phones p GROUP BY KEY(p).phoneNum";
-        rs2 = em.createQuery(query2).getResultList();
-
+        q = em.createQuery(query);
+        if (inMemory) 
+            setCandidate(q, Employee.class);
+        rs = q.getResultList();
+        if (!inMemory)
         assertTrue(sql.get(0).toUpperCase().indexOf(" GROUP BY ") != -1);
 
         em.close();
@@ -125,14 +162,6 @@ public class TestMany2ManyMapEx10 extends SingleEMFTestCase {
     public void testQueryObject() throws Exception {
         queryObj();
         findObj();
-    }
-
-    public List<String> getSql() {
-        return sql;
-    }
-
-    public int getSqlCount() {
-        return sqlCount;
     }
 
     public void createObj() {
@@ -255,14 +284,4 @@ public class TestMany2ManyMapEx10 extends SingleEMFTestCase {
                 throw new Exception("Assertion failure");
         }
     } 
-
-    public class Listener extends AbstractJDBCListener {
-        @Override
-        public void beforeExecuteStatement(JDBCEvent event) {
-            if (event.getSQL() != null && sql != null) {
-                sql.add(event.getSQL());
-                sqlCount++;
-            }
-        }
-    }
 }

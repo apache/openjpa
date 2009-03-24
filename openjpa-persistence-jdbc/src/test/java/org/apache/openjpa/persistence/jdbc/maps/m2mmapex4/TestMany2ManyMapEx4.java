@@ -30,12 +30,11 @@ import javax.persistence.Query;
 
 import junit.framework.Assert;
 
-import org.apache.openjpa.lib.jdbc.AbstractJDBCListener;
-import org.apache.openjpa.lib.jdbc.JDBCEvent;
-import org.apache.openjpa.lib.jdbc.JDBCListener;
-import org.apache.openjpa.persistence.test.SingleEMFTestCase;
+import org.apache.openjpa.kernel.QueryImpl;
+import org.apache.openjpa.persistence.test.AllowFailure;
+import org.apache.openjpa.persistence.test.SQLListenerTestCase;
 
-public class TestMany2ManyMapEx4 extends SingleEMFTestCase {
+public class TestMany2ManyMapEx4 extends SQLListenerTestCase {
 
     public int numEmployees = 2;
     public int numPhoneNumbers = numEmployees + 1;
@@ -55,6 +54,8 @@ public class TestMany2ManyMapEx4 extends SingleEMFTestCase {
     public int deptId = 1;
     public int officeId = 1;
     public int numOfficesPerDivision = 2;
+    public List rsAllPhones = null;
+    public List rsAllEmps = null;
 
     public void setUp() {
         super.setUp(CLEAR_TABLES,
@@ -62,46 +63,85 @@ public class TestMany2ManyMapEx4 extends SingleEMFTestCase {
             Employee.class,
             PhoneNumber.class,
             Office.class,
-            Address.class,
-            "openjpa.jdbc.JDBCListeners", 
-            new JDBCListener[] {  this.new Listener() }
+            Address.class
         );
         createObj();
+        rsAllPhones = getAll(PhoneNumber.class);
+        rsAllEmps = getAll(Employee.class);
     }
 
+    @AllowFailure
+    public void testQueryInMemoryQualifiedId() throws Exception {
+        queryQualifiedId(true);
+    }
+    
     public void testQueryQualifiedId() throws Exception {
+        queryQualifiedId(false);
+    }
+
+    public void setCandidate(Query q, Class clz) 
+        throws Exception {
+        org.apache.openjpa.persistence.QueryImpl q1 = 
+            (org.apache.openjpa.persistence.QueryImpl) q;
+        org.apache.openjpa.kernel.Query q2 = q1.getDelegate();
+        org.apache.openjpa.kernel.QueryImpl qi = (QueryImpl) q2;
+        if (clz == PhoneNumber.class)
+            qi.setCandidateCollection(rsAllPhones);
+        else if (clz == Employee.class)
+            qi.setCandidateCollection(rsAllEmps);
+    }
+
+    public void queryQualifiedId(boolean inMemory) throws Exception {
         EntityManager em = emf.createEntityManager();
         // a collection valued path thru KEY in FROM clause
-        String query1 = "select o.address.city from PhoneNumber p, " +
+        String query = "select o.address.city from PhoneNumber p, " +
             " in (p.emps) e, in(KEY(e).offices) o";
-        List rs1 = em.createQuery(query1).getResultList();
+        Query q = em.createQuery(query);
+        if (inMemory) 
+            setCandidate(q, PhoneNumber.class);
+        List rs = q.getResultList();
 
         // a path thru KEY nagivation apprear in ORDER BY
-        query1 = "select o.address.city as city from PhoneNumber p, " +
+        query = "select o.address.city as city from PhoneNumber p, " +
             " in (p.emps) e, in(KEY(e).offices) o order by city";
-        rs1 = em.createQuery(query1).getResultList();
+        q = em.createQuery(query);
+        if (inMemory) 
+            setCandidate(q, PhoneNumber.class);
+        rs = q.getResultList();
 
         // a path thru KEY nagivation apprear in WHERE clause
-        query1 = "select o.address.city as city from PhoneNumber p, " +
+        query = "select o.address.city as city from PhoneNumber p, " +
             " in (p.emps) e, in(KEY(e).offices) o " +
             " where o.address.city like '%1'";
-        rs1 = em.createQuery(query1).getResultList();
+        q = em.createQuery(query);
+        if (inMemory) 
+            setCandidate(q, PhoneNumber.class);
+        rs = q.getResultList();
 
-        String query = "select KEY(e) from PhoneNumber p, " +
+        query = "select KEY(e) from PhoneNumber p, " +
             " in (p.emps) e order by e.empId";
-        List rs = em.createQuery(query).getResultList();
+        q = em.createQuery(query);
+        if (inMemory) 
+            setCandidate(q, PhoneNumber.class);
+        rs = q.getResultList();
         Division d = (Division) rs.get(0);
 
-        String query2 = "select KEY(p) from Employee e, " +
+        query = "select KEY(p) from Employee e, " +
             " in (e.phones) p";
-        List rs2 = em.createQuery(query2).getResultList();
-        String k = (String) rs2.get(0);
+        q = em.createQuery(query);
+        if (inMemory) 
+            setCandidate(q, Employee.class);
+        rs = q.getResultList();
+        String k = (String) rs.get(0);
 
         em.clear();
-        String query4 = "select ENTRY(e) from PhoneNumber p, " +
+        query = "select ENTRY(e) from PhoneNumber p, " +
             " in (p.emps) e order by e.empId";
-        List rs4 = em.createQuery(query4).getResultList();
-        Map.Entry me = (Map.Entry) rs4.get(0);
+        q = em.createQuery(query);
+        if (inMemory) 
+            setCandidate(q, PhoneNumber.class);
+        rs = q.getResultList();
+        Map.Entry me = (Map.Entry) rs.get(0);
 
         assertTrue(d.equals(me.getKey()));
 
@@ -254,14 +294,4 @@ public class TestMany2ManyMapEx4 extends SingleEMFTestCase {
                 throw new Exception("Assertion failure");
         }
     }    
-
-    public class Listener extends AbstractJDBCListener {
-        @Override
-        public void beforeExecuteStatement(JDBCEvent event) {
-            if (event.getSQL() != null && sql != null) {
-                sql.add(event.getSQL());
-                sqlCount++;
-            }
-        }
-    }
 }
