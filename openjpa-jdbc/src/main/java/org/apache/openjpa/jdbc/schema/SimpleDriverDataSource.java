@@ -30,15 +30,15 @@ import java.util.Properties;
 
 import org.apache.openjpa.jdbc.sql.DBDictionary;
 import org.apache.openjpa.lib.jdbc.DelegatingDataSource;
+import org.apache.openjpa.lib.util.ConcreteClassGenerator;
 import org.apache.openjpa.lib.util.J2DoPrivHelper;
 import org.apache.openjpa.lib.util.Localizer;
 import org.apache.openjpa.util.StoreException;
-import org.apache.openjpa.util.UserException;
 
 /**
  * Non-pooling driver data source.
  */
-public class SimpleDriverDataSource
+public abstract class SimpleDriverDataSource
     implements DriverDataSource {
 
     private String _connectionDriverName;
@@ -54,6 +54,21 @@ public class SimpleDriverDataSource
     	Localizer.forPackage(SimpleDriverDataSource.class);
     protected static Localizer _eloc = 
     	Localizer.forPackage(DelegatingDataSource.class);
+
+    private static final Class<SimpleDriverDataSource> implClass;
+
+    static {
+        try {
+            implClass = ConcreteClassGenerator.
+                makeConcrete(SimpleDriverDataSource.class);
+        } catch (Exception e) {
+            throw new ExceptionInInitializerError(e);
+        }
+    }
+
+    public static SimpleDriverDataSource newInstance() {
+        return ConcreteClassGenerator.newInstance(implClass);
+    }
 
     public Connection getConnection()
         throws SQLException {
@@ -195,5 +210,19 @@ public class SimpleDriverDataSource
             throw new StoreException(e);
         }
     }
+    
+
+    // java.sql.Wrapper implementation (JDBC 4)
+    public boolean isWrapperFor(Class iface) {
+        return iface.isAssignableFrom(SimpleDriverDataSource.class);
+    }
+
+    public Object unwrap(Class iface) {
+        if (isWrapperFor(iface))
+            return this;
+        else
+            return null;
+    }
+
 }
 

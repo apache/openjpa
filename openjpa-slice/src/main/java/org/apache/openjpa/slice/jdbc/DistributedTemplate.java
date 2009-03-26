@@ -27,15 +27,28 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
+import org.apache.openjpa.lib.util.ConcreteClassGenerator;
+
 /**
  * A template for multiple Statements being executed by multiple connections.
  * 
  * @author Pinaki Poddar 
  *
  */
-class DistributedTemplate<T extends Statement> 
+public abstract class DistributedTemplate<T extends Statement> 
 	implements Statement, Iterable<T> {
-	protected List<T> stmts = new ArrayList<T>();
+    static final Class<DistributedTemplate> concreteImpl;
+
+    static {
+        try {
+            concreteImpl = ConcreteClassGenerator.
+                makeConcrete(DistributedTemplate.class);
+        } catch (Exception e) {
+            throw new ExceptionInInitializerError(e);
+        }
+    }
+
+    protected List<T> stmts = new ArrayList<T>();
 	protected final DistributedConnection con;
 	protected T master;
 	
@@ -123,14 +136,14 @@ class DistributedTemplate<T extends Statement>
 	}
 
 	public ResultSet executeQuery() throws SQLException {
-		DistributedResultSet rs = new DistributedResultSet();
+		DistributedResultSet rs = DistributedResultSet.newInstance();
 		for (T s:this)
 			rs.add(s.executeQuery(null));
 		return rs;
 	}
 
 	public ResultSet executeQuery(String arg0) throws SQLException {
-		DistributedResultSet rs = new DistributedResultSet();
+		DistributedResultSet rs = DistributedResultSet.newInstance();
 		for (T s:this)
 			rs.add(s.executeQuery(arg0));
 		return rs;
@@ -177,7 +190,7 @@ class DistributedTemplate<T extends Statement>
 	}
 
 	public ResultSet getGeneratedKeys() throws SQLException {
-		DistributedResultSet mrs = new DistributedResultSet();
+		DistributedResultSet mrs = DistributedResultSet.newInstance();
 		for (T s:this)
 			mrs.add(s.getGeneratedKeys());
 		return mrs;
@@ -210,7 +223,7 @@ class DistributedTemplate<T extends Statement>
 	}
 
 	public ResultSet getResultSet() throws SQLException {
-		DistributedResultSet rs = new DistributedResultSet();
+		DistributedResultSet rs = DistributedResultSet.newInstance();
 		for (T s:this)
 			rs.add(s.getResultSet());
 		return rs;

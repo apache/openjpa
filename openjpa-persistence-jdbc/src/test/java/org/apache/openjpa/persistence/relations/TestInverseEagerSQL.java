@@ -44,7 +44,7 @@ public class TestInverseEagerSQL
         setUp(Customer.class, Customer.CustomerKey.class, Order.class, 
         	EntityAInverseEager.class, EntityA1InverseEager.class, EntityA2InverseEager.class, 
         	EntityBInverseEager.class, EntityCInverseEager.class, EntityDInverseEager.class,
-            Publisher.class, Magazine.class);
+            Publisher.class, Magazine.class, DROP_TABLES);
         
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();

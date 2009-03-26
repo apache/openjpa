@@ -20,14 +20,33 @@ package org.apache.openjpa.slice.jdbc;
 
 import java.sql.Statement;
 
+import org.apache.openjpa.lib.util.ConcreteClassGenerator;
+
 /**
  * A virtual Statement that delegates to many actual Statements.
  * 
- * @author Pinaki Poddar 
- *
+ * @author Pinaki Poddar
+ * 
  */
-class DistributedStatement extends DistributedTemplate<Statement>  {
-	public DistributedStatement(DistributedConnection c) {
-		super(c);
-	}
+public abstract class DistributedStatement extends
+    DistributedTemplate<Statement> {
+    static final Class<DistributedStatement> concreteImpl;
+
+    static {
+        try {
+            concreteImpl = ConcreteClassGenerator.makeConcrete(
+                DistributedStatement.class);
+        } catch (Exception e) {
+            throw new ExceptionInInitializerError(e);
+        }
+    }
+
+    public DistributedStatement(DistributedConnection c) {
+        super(c);
+    }
+
+    public static DistributedStatement newInstance(DistributedConnection conn) {
+        return ConcreteClassGenerator.newInstance(concreteImpl, 
+            DistributedConnection.class, conn);
+    }
 }

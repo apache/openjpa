@@ -38,6 +38,8 @@ import java.util.Calendar;
 import java.util.LinkedList;
 import java.util.Map;
 
+import org.apache.openjpa.lib.util.ConcreteClassGenerator;
+
 /**
  * A chain of ResultSet.
  * Assumes added ResultSet are identical in structure and fetches forward.
@@ -46,11 +48,25 @@ import java.util.Map;
  * @author Pinaki Poddar 
  *
  */
-class DistributedResultSet implements ResultSet {
+public abstract class DistributedResultSet implements ResultSet {
+    static final Class<DistributedResultSet> concreteImpl;
+
+    static {
+        try {
+            concreteImpl = ConcreteClassGenerator.
+                makeConcrete(DistributedResultSet.class);
+        } catch (Exception e) {
+            throw new ExceptionInInitializerError(e);
+        }
+    }
+    
 	private LinkedList<ResultSet> comps = new LinkedList<ResultSet>();
 	private ResultSet current;
 	private int cursor = -1;
 	
+    public static DistributedResultSet newInstance()  {
+        return ConcreteClassGenerator.newInstance(concreteImpl);
+    }
 	/**
 	 * Adds the ResultSet only if it has rows.
 	 */

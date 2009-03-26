@@ -20,8 +20,10 @@ package org.apache.openjpa.persistence.simple;
 
 import javax.persistence.Entity;
 import javax.persistence.Id;
+import javax.persistence.Table;
 
 @Entity
+@Table(name="PERSON_SIMPLE")
 public class Person {
     private int id;
     private String forename;

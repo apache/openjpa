@@ -36,7 +36,7 @@ import org.apache.openjpa.lib.jdbc.DecoratingDataSource;
  * @author Pinaki Poddar 
  *
  */
-class DistributedDataSource extends DecoratingDataSource implements
+public class DistributedDataSource extends DecoratingDataSource implements
 		Iterable<DataSource> {
 	private List<DataSource> real = new ArrayList<DataSource>();
 	private DataSource master;
@@ -53,17 +53,21 @@ class DistributedDataSource extends DecoratingDataSource implements
 	
 	Connection getConnection(DataSource ds) throws SQLException {
 		if (ds instanceof DecoratingDataSource)
-			return getConnection(((DecoratingDataSource)ds).getInnermostDelegate());
+			return getConnection(((DecoratingDataSource)ds)
+			    .getInnermostDelegate());
 		if (ds instanceof XADataSource)
 			return ((XADataSource)ds).getXAConnection().getConnection();
 		return ds.getConnection();
 	}
 	
-	Connection getConnection(DataSource ds, String user, String pwd) throws SQLException {
+	Connection getConnection(DataSource ds, String user, String pwd) 
+	    throws SQLException {
 		if (ds instanceof DecoratingDataSource)
-			return getConnection(((DecoratingDataSource)ds).getInnermostDelegate(), user, pwd);
+			return getConnection(((DecoratingDataSource)ds)
+			    .getInnermostDelegate(), user, pwd);
 		if (ds instanceof XADataSource)
-			return ((XADataSource)ds).getXAConnection(user, pwd).getConnection();
+			return ((XADataSource)ds).getXAConnection(user, pwd)
+			.getConnection();
 		return ds.getConnection(user, pwd);
 	}
 
@@ -75,7 +79,7 @@ class DistributedDataSource extends DecoratingDataSource implements
 		List<Connection> c = new ArrayList<Connection>();
 		for (DataSource ds : real)
 			c.add(ds.getConnection());
-		return new DistributedConnection(c);
+		return DistributedConnection.newInstance(c);
 	}
 
 	public Connection getConnection(String username, String password)
@@ -83,7 +87,7 @@ class DistributedDataSource extends DecoratingDataSource implements
 		List<Connection> c = new ArrayList<Connection>();
 		for (DataSource ds : real)
 			c.add(ds.getConnection(username, password));
-		return new DistributedConnection(c);
+		return DistributedConnection.newInstance(c);
 	}
 
 	public PrintWriter getLogWriter() throws SQLException {
@@ -103,4 +107,9 @@ class DistributedDataSource extends DecoratingDataSource implements
 		for (DataSource ds:real)
 			ds.setLoginTimeout(seconds);
 	}
+	
+    protected void enforceAbstract() {
+        
+    }
+
 }

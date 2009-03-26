@@ -52,9 +52,9 @@ public class TestSetParameter extends SingleEMFTestCase {
         CompUser user = createUser(ORIGINAL_NAME, "PC", ORIGINAL_AGE, false);
 
         em.persist(user);
-        userid = user.getUserid();
 
         em.getTransaction().commit();
+        userid = user.getUserid();
         em.close();
     }
 
@@ -114,12 +114,17 @@ public class TestSetParameter extends SingleEMFTestCase {
     public void testNativeSQL() {
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
-        String randomName = "Student"+"-"+System.currentTimeMillis();
-        int count = em.createNativeQuery("INSERT INTO Student (name) VALUES (?)")
-          .setParameter(1, randomName)
+        int count = em.createNativeQuery("INSERT INTO Address (id, city, country, streetAd, zipcode) VALUES (?,?,?,?,?)")
+          .setParameter(1, System.currentTimeMillis()%10000)
+          .setParameter(2, "Some City")
+          .setParameter(3, "Some Country")
+          .setParameter(4, "Some Street")
+          .setParameter(5, System.currentTimeMillis()%10000)
           .executeUpdate();
         em.getTransaction().commit();
         assertEquals(1, count);
+        
+        
     }
 
     public CompUser createUser(String name, String cName, int age,

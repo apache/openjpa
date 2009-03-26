@@ -4277,24 +4277,6 @@ public class BrokerImpl
             _lock.unlock();
     }
     
-    /**
-     * Creates a locks irrespective of multithreaded support. Used only by 
-     * internal implementation to guard access when it spawns its own threads 
-     * and user configured the broker for single-threaded access. 
-     */
-    public synchronized void startLocking() {
-    	if (_lock == null)
-    		_lock = new ReentrantLock();
-    }
-    
-    /**
-     * Destroys the lock if not multithreaded support. 
-     */
-    public synchronized void stopLocking() {
-    	if (_lock != null && !getMultithreaded())
-    		_lock = null;
-    }
-
     ////////////////////
     // State management
     ////////////////////

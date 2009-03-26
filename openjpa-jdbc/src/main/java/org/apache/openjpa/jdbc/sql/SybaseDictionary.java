@@ -33,6 +33,7 @@ import org.apache.openjpa.jdbc.schema.PrimaryKey;
 import org.apache.openjpa.jdbc.schema.Table;
 import org.apache.openjpa.jdbc.schema.Unique;
 import org.apache.openjpa.lib.jdbc.DelegatingConnection;
+import org.apache.openjpa.lib.util.ConcreteClassGenerator;
 import org.apache.openjpa.lib.util.Localizer;
 import org.apache.openjpa.meta.JavaTypes;
 
@@ -59,6 +60,17 @@ public class SybaseDictionary
 
     private static Localizer _loc = Localizer.forPackage
         (SybaseDictionary.class);
+
+    private static Class<SybaseConnection> sybaseConnectionImpl;
+
+    static {
+        try {
+            sybaseConnectionImpl = ConcreteClassGenerator.
+                makeConcrete(SybaseConnection.class);
+        } catch (Exception e) {
+            throw new ExceptionInInitializerError(e);
+        }
+    }
 
     /**
      * If true, then whenever the <code>schematool</code> creates a
@@ -296,7 +308,8 @@ public class SybaseDictionary
             stmnt.close();            
         }        
         
-        return new SybaseConnection(conn);
+        return ConcreteClassGenerator.newInstance(sybaseConnectionImpl, 
+            Connection.class, conn);
     }
 
     /**
@@ -304,7 +317,7 @@ public class SybaseDictionary
      * which takes a very long time with the Sybase Connection (and
      * which we frequently invoke).
      */
-    private static class SybaseConnection
+    protected abstract static class SybaseConnection
         extends DelegatingConnection {
 
         private String _catalog = null;

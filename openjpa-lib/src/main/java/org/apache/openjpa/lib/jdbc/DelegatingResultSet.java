@@ -38,6 +38,7 @@ import java.util.Calendar;
 import java.util.Map;
 
 import org.apache.openjpa.lib.util.Closeable;
+import org.apache.openjpa.lib.util.ConcreteClassGenerator;
 
 /**
  * Wrapper around an existing result set. Subclasses can override the
@@ -47,7 +48,18 @@ import org.apache.openjpa.lib.util.Closeable;
  *
  * @author Marc Prud'hommeaux
  */
-public class DelegatingResultSet implements ResultSet, Closeable {
+public abstract class DelegatingResultSet implements ResultSet, Closeable {
+
+    static final Class<DelegatingResultSet> concreteImpl;
+
+    static {
+        try {
+            concreteImpl = ConcreteClassGenerator.
+                makeConcrete(DelegatingResultSet.class);
+        } catch (Exception e) {
+            throw new ExceptionInInitializerError(e);
+        }
+    }
 
     private final ResultSet _rs;
     private final DelegatingResultSet _del;
@@ -64,6 +76,17 @@ public class DelegatingResultSet implements ResultSet, Closeable {
         else
             _del = null;
     }
+
+    public static DelegatingResultSet newInstance
+        (ResultSet rs, Statement stmnt)  {
+        return ConcreteClassGenerator.newInstance(concreteImpl,
+                ResultSet.class, rs, Statement.class, stmnt);
+    }
+
+    /** 
+     *  Marker to enforce that subclasses of this class are abstract.
+     */
+    protected abstract void enforceAbstract();
 
     /**
      * Return the wrapped result set.
@@ -670,6 +693,19 @@ public class DelegatingResultSet implements ResultSet, Closeable {
     public void updateArray(String columnName, Array array)
         throws SQLException {
         throw new UnsupportedOperationException();
+    }
+    
+
+    // java.sql.Wrapper implementation (JDBC 4)
+    public boolean isWrapperFor(Class iface) {
+        return iface.isAssignableFrom(getDelegate().getClass());
+    }
+
+    public Object unwrap(Class iface) {
+        if (isWrapperFor(iface))
+            return getDelegate();
+        else
+            return null;
     }
 }
 

@@ -29,9 +29,11 @@ import javax.persistence.NamedNativeQuery;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.OneToOne;
+import javax.persistence.Table;
 
 
 @Entity
+@Table(name="PERSON_SQLCACHE")
 @Inheritance(strategy=InheritanceType.SINGLE_TABLE)
 @DiscriminatorValue("PERSON")
 @NamedQueries({

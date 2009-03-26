@@ -525,7 +525,7 @@ public class FieldMapping
     private void initializeMapping() {
         _val.resolve(MODE_MAPPING_INIT);
         _key.resolve(MODE_MAPPING_INIT);
-        _val.resolve(MODE_MAPPING_INIT);
+        _elem.resolve(MODE_MAPPING_INIT);
         if (_strategy != null)
             _strategy.initialize();
     }

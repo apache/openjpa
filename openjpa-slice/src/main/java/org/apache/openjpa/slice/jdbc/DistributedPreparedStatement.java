@@ -36,18 +36,37 @@ import java.sql.Time;
 import java.sql.Timestamp;
 import java.util.Calendar;
 
+import org.apache.openjpa.lib.util.ConcreteClassGenerator;
+
 /**
  * A virtual PreparedStaement that delegates to a set of actual PreparedStatements.
  * 
  * @author Pinaki Poddar 
  *
  */
-class DistributedPreparedStatement extends DistributedTemplate<PreparedStatement>
-		implements PreparedStatement {
+public abstract class DistributedPreparedStatement 
+    extends DistributedTemplate<PreparedStatement> 
+    implements PreparedStatement {
 
-	DistributedPreparedStatement(DistributedConnection c) {
+    static final Class<DistributedPreparedStatement> concreteImpl;
+    static {
+        try {
+            concreteImpl = ConcreteClassGenerator.
+                makeConcrete(DistributedPreparedStatement.class);
+        } catch (Exception e) {
+            throw new ExceptionInInitializerError(e);
+        }
+    }
+    
+	public DistributedPreparedStatement(DistributedConnection c) {
 		super(c);
 	}
+	
+    public static DistributedPreparedStatement newInstance(
+        DistributedConnection conn) {
+    return ConcreteClassGenerator.newInstance(concreteImpl, 
+        DistributedConnection.class, conn);
+}
 
 	public void clearParameters() throws SQLException {
 		for (PreparedStatement s : this)
@@ -62,7 +81,7 @@ class DistributedPreparedStatement extends DistributedTemplate<PreparedStatement
 	}
 
 	public ResultSet executeQuery() throws SQLException {
-		DistributedResultSet mrs = new DistributedResultSet();
+		DistributedResultSet mrs = DistributedResultSet.newInstance();
 		for (PreparedStatement t : this)
 			mrs.add(t.executeQuery());
 		return mrs;

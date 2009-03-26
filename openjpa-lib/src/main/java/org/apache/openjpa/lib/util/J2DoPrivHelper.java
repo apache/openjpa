@@ -29,6 +29,7 @@ import java.lang.reflect.AccessibleObject;
 import java.lang.reflect.AnnotatedElement;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
 import java.net.InetAddress;
 import java.net.MalformedURLException;
 import java.net.ServerSocket;
@@ -353,7 +354,16 @@ public abstract class J2DoPrivHelper {
         return new PrivilegedExceptionAction<T>() {
             public T run() throws IllegalAccessException,
                     InstantiationException {
-                return clazz.newInstance();
+                if (!Modifier.isAbstract(clazz.getModifiers())) {
+                    return clazz.newInstance();
+                } else {
+                    try {
+                        return (T)clazz.getMethod("newInstance", 
+                            new Class[]{}).invoke(null, new Object[]{});
+                    } catch (Throwable t) {
+                        throw new InstantiationException(t.toString());
+                    }
+                }
             }
         };
     }

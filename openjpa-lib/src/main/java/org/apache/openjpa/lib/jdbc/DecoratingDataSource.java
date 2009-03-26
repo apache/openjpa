@@ -25,6 +25,8 @@ import java.util.Collections;
 import java.util.List;
 import javax.sql.DataSource;
 
+import org.apache.openjpa.lib.util.ConcreteClassGenerator;
+
 import java.util.concurrent.CopyOnWriteArrayList;
 
 /**
@@ -33,7 +35,19 @@ import java.util.concurrent.CopyOnWriteArrayList;
  * @author Abe White
  * @nojavadoc
  */
-public class DecoratingDataSource extends DelegatingDataSource {
+public abstract class DecoratingDataSource extends DelegatingDataSource {
+    
+    private static final Class<DecoratingDataSource> implClass;
+
+    static {
+        try {
+            implClass = ConcreteClassGenerator.
+                makeConcrete(DecoratingDataSource.class);
+        } catch (Exception e) {
+            throw new ExceptionInInitializerError(e);
+        }
+    }
+
 
     private List<ConnectionDecorator> _decorators =
         new CopyOnWriteArrayList<ConnectionDecorator>();
@@ -44,6 +58,12 @@ public class DecoratingDataSource extends DelegatingDataSource {
     public DecoratingDataSource(DataSource ds) {
         super(ds);
     }
+    
+    public static DecoratingDataSource newDecoratingDataSource(DataSource ds) {
+        return ConcreteClassGenerator.newInstance(implClass, 
+            DataSource.class, ds);
+    }
+
 
     /**
      * Return a read-only list of connection decorators in the order they were

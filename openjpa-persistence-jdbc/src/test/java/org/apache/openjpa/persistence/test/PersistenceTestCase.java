@@ -351,7 +351,7 @@ public abstract class PersistenceTestCase
     /**
      * Round-trip a serializable object to bytes.
      */
-    public static Object roundtrip(Object o) 
+    public static <T> T roundtrip(T o) 
         throws ClassNotFoundException, IOException {
         ByteArrayOutputStream bytes = new ByteArrayOutputStream();
         ObjectOutputStream out = new ObjectOutputStream(bytes);
@@ -359,7 +359,7 @@ public abstract class PersistenceTestCase
         out.flush();
         ObjectInputStream in = new ObjectInputStream(
             new ByteArrayInputStream(bytes.toByteArray()));
-        return in.readObject();
+        return (T)in.readObject();
     }
     
     // ================================================ 

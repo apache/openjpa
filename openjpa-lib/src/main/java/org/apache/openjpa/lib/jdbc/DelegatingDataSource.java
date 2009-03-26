@@ -24,6 +24,7 @@ import java.sql.SQLException;
 import javax.sql.DataSource;
 
 import org.apache.openjpa.lib.util.Closeable;
+import org.apache.openjpa.lib.util.ConcreteClassGenerator;
 
 /**
  * Wrapper around an existing data source. Subclasses can override the
@@ -32,7 +33,18 @@ import org.apache.openjpa.lib.util.Closeable;
  *
  * @author Abe White
  */
-public class DelegatingDataSource implements DataSource, Closeable {
+public abstract class DelegatingDataSource implements DataSource, Closeable {
+
+    static final Class<DelegatingDataSource> concreteImpl;
+
+    static {
+        try {
+            concreteImpl = ConcreteClassGenerator.
+                makeConcrete(DelegatingDataSource.class);
+        } catch (Exception e) {
+            throw new ExceptionInInitializerError(e);
+        }
+    }
 
     private final DataSource _ds;
     private final DelegatingDataSource _del;
@@ -48,6 +60,19 @@ public class DelegatingDataSource implements DataSource, Closeable {
         else
             _del = null;
     }
+
+    /** 
+     *  Constructor for the concrete implementation of this abstract class.
+     */
+    public static DelegatingDataSource newInstance(DataSource ds) {
+        return ConcreteClassGenerator.newInstance(concreteImpl, 
+            DataSource.class, ds);
+    }
+
+    /** 
+     *  Marker to enforce that subclasses of this class are abstract.
+     */
+    protected abstract void enforceAbstract();
 
     /**
      * Return the wrapped data source.
@@ -116,5 +141,17 @@ public class DelegatingDataSource implements DataSource, Closeable {
     public void close() throws Exception {
         if (_ds instanceof Closeable)
             ((Closeable) _ds).close();
+    }
+
+    // java.sql.Wrapper implementation (JDBC 4)
+    public boolean isWrapperFor(Class iface) {
+        return iface.isAssignableFrom(getDelegate().getClass());
+    }
+
+    public Object unwrap(Class iface) {
+        if (isWrapperFor(iface))
+            return getDelegate();
+        else
+            return null;
     }
 }

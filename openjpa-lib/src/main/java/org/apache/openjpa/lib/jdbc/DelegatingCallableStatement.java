@@ -40,14 +40,26 @@ import java.util.Calendar;
 import java.util.Map;
 
 import org.apache.openjpa.lib.util.Closeable;
+import org.apache.openjpa.lib.util.ConcreteClassGenerator;
 
 /**
  * {@link CallableStatement} that delegates to an internal statement.
  *
  * @author Abe White
  */
-public class DelegatingCallableStatement
+public abstract class DelegatingCallableStatement
     implements CallableStatement, Closeable {
+
+    static final Class<DelegatingCallableStatement> concreteImpl;
+
+    static {
+        try {
+            concreteImpl = ConcreteClassGenerator.
+                makeConcrete(DelegatingCallableStatement.class);
+        } catch (Exception e) {
+            throw new ExceptionInInitializerError(e);
+        }
+    }
 
     private final CallableStatement _stmnt;
     private final DelegatingCallableStatement _del;
@@ -63,6 +75,15 @@ public class DelegatingCallableStatement
             _del = null;
     }
 
+    /** 
+     *  Constructor for the concrete implementation of this abstract class.
+     */
+    public static DelegatingCallableStatement newInstance
+        (CallableStatement stmnt, Connection conn) {
+        return ConcreteClassGenerator.newInstance(concreteImpl,
+                CallableStatement.class, stmnt, Connection.class, conn);
+    }
+
     protected ResultSet wrapResult(boolean wrap, ResultSet rs) {
         if (!wrap)
             return rs;
@@ -71,7 +92,7 @@ public class DelegatingCallableStatement
         if (rs == null)
             return null;
 
-        return new DelegatingResultSet(rs, this);
+        return DelegatingResultSet.newInstance(rs, this);
     }
 
     /**
@@ -797,5 +818,17 @@ public class DelegatingCallableStatement
 
     public Timestamp getTimestamp(String a, Calendar b) throws SQLException {
         throw new UnsupportedOperationException();
+    }
+
+    // java.sql.Wrapper implementation (JDBC 4)
+    public boolean isWrapperFor(Class iface) {
+        return iface.isAssignableFrom(getDelegate().getClass());
+    }
+
+    public Object unwrap(Class iface) {
+        if (isWrapperFor(iface))
+            return getDelegate();
+        else
+            return null;
     }
 }

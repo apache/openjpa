@@ -40,6 +40,7 @@ import org.apache.openjpa.jdbc.schema.Sequence;
 import org.apache.openjpa.jdbc.schema.Table;
 import org.apache.openjpa.lib.jdbc.DelegatingConnection;
 import org.apache.openjpa.lib.jdbc.DelegatingPreparedStatement;
+import org.apache.openjpa.lib.util.ConcreteClassGenerator;
 import org.apache.openjpa.lib.util.Localizer;
 import org.apache.openjpa.util.InternalException;
 import org.apache.openjpa.util.StoreException;
@@ -55,6 +56,20 @@ public class PostgresDictionary
 
     private static final Localizer _loc = Localizer.forPackage
         (PostgresDictionary.class);
+
+    private static Class<PostgresConnection> postgresConnectionImpl;
+    private static Class<PostgresPreparedStatement> postgresPreparedStatementImpl;
+
+    static {
+        try {
+            postgresConnectionImpl = ConcreteClassGenerator.
+                makeConcrete(PostgresConnection.class);
+            postgresPreparedStatementImpl = ConcreteClassGenerator.
+                makeConcrete(PostgresPreparedStatement.class);
+        } catch (Exception e) {
+            throw new ExceptionInInitializerError(e);
+        }
+    }
 
     /**
      * SQL statement to load all sequence schema,name pairs from all schemas.
@@ -326,7 +341,9 @@ public class PostgresDictionary
 
     public Connection decorate(Connection conn)
         throws SQLException {
-        return new PostgresConnection(super.decorate(conn), this);
+        return ConcreteClassGenerator.
+            newInstance(postgresConnectionImpl, Connection.class, 
+                super.decorate(conn), PostgresDictionary.class, this);
     }
 
     public InputStream getLOBStream(JDBCStore store, ResultSet rs,
@@ -481,7 +498,7 @@ public class PostgresDictionary
     /**
      * Connection wrapper to work around the postgres empty result set bug.
      */
-    private static class PostgresConnection
+    protected abstract static class PostgresConnection
         extends DelegatingConnection {
 
         private final PostgresDictionary _dict;
@@ -493,22 +510,29 @@ public class PostgresDictionary
 
         protected PreparedStatement prepareStatement(String sql, boolean wrap)
             throws SQLException {
-            return new PostgresPreparedStatement(super.prepareStatement
-                (sql, false), this, _dict);
+           return ConcreteClassGenerator.
+                newInstance(postgresPreparedStatementImpl,
+                    PreparedStatement.class, super.prepareStatement(sql, false),
+                    Connection.class, PostgresConnection.this,
+                    PostgresDictionary.class, _dict);
         }
 
         protected PreparedStatement prepareStatement(String sql, int rsType,
             int rsConcur, boolean wrap)
             throws SQLException {
-            return new PostgresPreparedStatement(super.prepareStatement
-                (sql, rsType, rsConcur, false), this, _dict);
+            return ConcreteClassGenerator.
+                newInstance(postgresPreparedStatementImpl,
+                    PreparedStatement.class,
+                        super.prepareStatement(sql, rsType, rsConcur, false),
+                    Connection.class, PostgresConnection.this,
+                    PostgresDictionary.class, _dict);
         }
     }
 
     /**
      * Statement wrapper to work around the postgres empty result set bug.
      */
-    private static class PostgresPreparedStatement
+    protected abstract static class PostgresPreparedStatement
         extends DelegatingPreparedStatement {
 
         private final PostgresDictionary _dict;

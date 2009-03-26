@@ -30,7 +30,7 @@ import org.apache.openjpa.persistence.test.SingleEMFTestCase;
 public class TestSerialization extends SingleEMFTestCase {
 
     public void setUp() {
-        setUp(Person.class, Employee.class, "openjpa.DetachState",
+        setUp(Person.class, Employee.class, DROP_TABLES, "openjpa.DetachState",
                 "fgs(DetachedStateField=true)");
     }
 

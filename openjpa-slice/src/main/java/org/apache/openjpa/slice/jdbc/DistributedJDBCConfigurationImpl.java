@@ -288,7 +288,7 @@ public class DistributedJDBCConfigurationImpl extends JDBCConfigurationImpl
         if (log.isInfoEnabled())
             log.info(_loc.get("slice-connect", slice, url));
         DataSource ds = DataSourceFactory.newDataSource(conf, false);
-        DecoratingDataSource dds = new DecoratingDataSource(ds);
+        DecoratingDataSource dds = DecoratingDataSource.newDecoratingDataSource(ds);
         ds = DataSourceFactory.installDBDictionary(
                 conf.getDBDictionaryInstance(), dds, conf, false);
         verifyDataSource(slice, ds, conf);

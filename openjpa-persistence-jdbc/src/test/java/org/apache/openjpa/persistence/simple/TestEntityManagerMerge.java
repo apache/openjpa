@@ -32,7 +32,7 @@ public class TestEntityManagerMerge
     extends SingleEMTestCase {
 
     public void setUp() {
-        setUp(AllFieldTypes.class, Person.class);
+        setUp(AllFieldTypes.class, Person.class, DROP_TABLES);
     }
 
     public void testMerge() {

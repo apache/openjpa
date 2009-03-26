@@ -31,6 +31,7 @@ import javax.persistence.*;
  *
  */
 @Entity
+@Table(name="MAG_DOMAIN")
 public class Magazine {
 	@Id
 	@GeneratedValue

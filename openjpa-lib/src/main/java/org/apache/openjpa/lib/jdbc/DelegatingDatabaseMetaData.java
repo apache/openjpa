@@ -23,12 +23,25 @@ import java.sql.DatabaseMetaData;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
+import org.apache.openjpa.lib.util.ConcreteClassGenerator;
+
 /**
  * Wrapper around a DatabaseMetadata instance.
  *
  * @author Marc Prud'hommeaux
  */
-public class DelegatingDatabaseMetaData implements DatabaseMetaData {
+public abstract class DelegatingDatabaseMetaData implements DatabaseMetaData {
+
+    static final Class<DelegatingDatabaseMetaData> concreteImpl;
+
+    static {
+        try {
+            concreteImpl = ConcreteClassGenerator.
+                makeConcrete(DelegatingDatabaseMetaData.class);
+        } catch (Exception e) {
+            throw new ExceptionInInitializerError(e);
+        }
+    }
 
     private final DatabaseMetaData _metaData;
     private final Connection _conn;
@@ -38,6 +51,17 @@ public class DelegatingDatabaseMetaData implements DatabaseMetaData {
         _conn = conn;
         _metaData = metaData;
     }
+
+    public static DelegatingDatabaseMetaData newInstance
+        (DatabaseMetaData metaData, Connection conn) {
+        return ConcreteClassGenerator.newInstance(concreteImpl,
+                DatabaseMetaData.class, metaData, Connection.class, conn);
+    }
+
+    /** 
+     *  Marker to enforce that subclasses of this class are abstract.
+     */
+    protected abstract void enforceAbstract();
 
     /**
      * Return the base underlying database metadata.
@@ -769,5 +793,23 @@ public class DelegatingDatabaseMetaData implements DatabaseMetaData {
     public boolean supportsStatementPooling() throws SQLException {
         throw new UnsupportedOperationException();
     }
-}
 
+    /**
+     * Return the wrapped database metadata.
+     */
+    public DatabaseMetaData getDelegate() {
+        return _metaData;
+    }
+
+    // java.sql.Wrapper implementation (JDBC 4)
+    public boolean isWrapperFor(Class iface) {
+        return iface.isAssignableFrom(getDelegate().getClass());
+    }
+
+    public Object unwrap(Class iface) {
+        if (isWrapperFor(iface))
+            return getDelegate();
+        else
+            return null;
+    }
+}

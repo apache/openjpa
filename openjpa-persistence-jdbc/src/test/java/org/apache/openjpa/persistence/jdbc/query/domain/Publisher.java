@@ -28,6 +28,7 @@ import javax.persistence.*;
  *
  */
 @Entity
+@Table(name="PUB_DOMAIN")
 public class Publisher {
 	@Id
 	@GeneratedValue

@@ -66,6 +66,7 @@ import org.apache.openjpa.lib.jdbc.DelegatingPreparedStatement;
 import org.apache.openjpa.lib.jdbc.DelegatingStatement;
 import org.apache.openjpa.lib.rop.MergedResultObjectProvider;
 import org.apache.openjpa.lib.rop.ResultObjectProvider;
+import org.apache.openjpa.lib.util.ConcreteClassGenerator;
 import org.apache.openjpa.lib.util.Localizer;
 import org.apache.openjpa.meta.ClassMetaData;
 import org.apache.openjpa.meta.FieldMetaData;
@@ -103,6 +104,26 @@ public class JDBCStoreManager
 
     // track the pending statements so we can cancel them
     private Set _stmnts = Collections.synchronizedSet(new HashSet());
+
+    private static final Class<ClientConnection> clientConnectionImpl;
+    private static final Class<RefCountConnection> refCountConnectionImpl;
+    private static final Class<CancelStatement> cancelStatementImpl;
+    private static final Class<CancelPreparedStatement> cancelPreparedStatementImpl;
+
+    static {
+        try {
+            clientConnectionImpl = ConcreteClassGenerator.
+                makeConcrete(ClientConnection.class);
+            refCountConnectionImpl = ConcreteClassGenerator.
+                makeConcrete(RefCountConnection.class);
+            cancelStatementImpl = ConcreteClassGenerator.
+                makeConcrete(CancelStatement.class);
+            cancelPreparedStatementImpl = ConcreteClassGenerator.
+                makeConcrete(CancelPreparedStatement.class);
+        } catch (Exception e) {
+            throw new ExceptionInInitializerError(e);
+        }
+    }
 
     public StoreContext getContext() {
         return _ctx;
@@ -212,7 +233,8 @@ public class JDBCStoreManager
     }
 
     public Object getClientConnection() {
-        return new ClientConnection(getConnection());
+        return ConcreteClassGenerator.newInstance
+            (clientConnectionImpl, Connection.class, getConnection());
     }
 
     public Connection getConnection() {
@@ -872,7 +894,9 @@ public class JDBCStoreManager
      * can be overridden.
      */
     protected RefCountConnection connectInternal() throws SQLException {
-        return new RefCountConnection(_ds.getConnection());
+        return ConcreteClassGenerator.newInstance
+            (refCountConnectionImpl, JDBCStoreManager.class, 
+                JDBCStoreManager.this, Connection.class, _ds.getConnection());
     }
 
     /**
@@ -1391,7 +1415,7 @@ public class JDBCStoreManager
      * Connection returned to client code. Makes sure its wrapped connection
      * ref count is decremented on finalize.
      */
-    private static class ClientConnection extends DelegatingConnection {
+    protected abstract static class ClientConnection extends DelegatingConnection {
 
         private boolean _closed = false;
 
@@ -1414,7 +1438,7 @@ public class JDBCStoreManager
      * Connection wrapper that keeps an internal ref count so that it knows
      * when to really close.
      */
-    protected class RefCountConnection extends DelegatingConnection {
+    protected abstract class RefCountConnection extends DelegatingConnection {
 
         private boolean _retain = false;
         private int _refs = 0;
@@ -1468,26 +1492,40 @@ public class JDBCStoreManager
         }
 
         protected Statement createStatement(boolean wrap) throws SQLException {
-            return new CancelStatement(super.createStatement(false),
-                RefCountConnection.this);
+            return ConcreteClassGenerator.newInstance
+                (cancelStatementImpl,
+                    JDBCStoreManager.class, JDBCStoreManager.this,
+                    Statement.class, super.createStatement(false),
+                    Connection.class, RefCountConnection.this);
         }
 
         protected Statement createStatement(int rsType, int rsConcur,
             boolean wrap) throws SQLException {
-            return new CancelStatement(super.createStatement(rsType, rsConcur,
-                false), RefCountConnection.this);
+            return ConcreteClassGenerator.newInstance
+                (cancelStatementImpl,
+                    JDBCStoreManager.class, JDBCStoreManager.this,
+                    Statement.class,
+                        super.createStatement(rsType, rsConcur, false),
+                    Connection.class, RefCountConnection.this);
         }
 
         protected PreparedStatement prepareStatement(String sql, boolean wrap)
             throws SQLException {
-            return new CancelPreparedStatement(super.prepareStatement(sql,
-                false), RefCountConnection.this);
+            return ConcreteClassGenerator.newInstance
+                (cancelPreparedStatementImpl,
+                    JDBCStoreManager.class, JDBCStoreManager.this,
+                    PreparedStatement.class, super.prepareStatement(sql, false),
+                    Connection.class, RefCountConnection.this);
         }
 
         protected PreparedStatement prepareStatement(String sql, int rsType,
             int rsConcur, boolean wrap) throws SQLException {
-            return new CancelPreparedStatement(super.prepareStatement(sql,
-                rsType, rsConcur, false), RefCountConnection.this);
+            return ConcreteClassGenerator.newInstance
+                (cancelPreparedStatementImpl,
+                    JDBCStoreManager.class, JDBCStoreManager.this,
+                    PreparedStatement.class,
+                        super.prepareStatement(sql, rsType, rsConcur, false),
+                    Connection.class, RefCountConnection.this);
         }
     }
 
@@ -1495,7 +1533,7 @@ public class JDBCStoreManager
      * Statement type that adds and removes itself from the set of active
      * statements so that it can be canceled.
      */
-    private class CancelStatement extends DelegatingStatement {
+    protected abstract class CancelStatement extends DelegatingStatement {
 
         public CancelStatement(Statement stmnt, Connection conn) {
             super(stmnt, conn);
@@ -1525,7 +1563,7 @@ public class JDBCStoreManager
      * Statement type that adds and removes itself from the set of active
      * statements so that it can be canceled.
      */
-    private class CancelPreparedStatement extends DelegatingPreparedStatement {
+    protected abstract class CancelPreparedStatement extends DelegatingPreparedStatement {
 
         public CancelPreparedStatement(PreparedStatement stmnt, 
             Connection conn) {

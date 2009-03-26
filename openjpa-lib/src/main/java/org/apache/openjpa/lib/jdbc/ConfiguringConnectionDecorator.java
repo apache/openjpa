@@ -23,6 +23,8 @@ import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.sql.Statement;
 
+import org.apache.openjpa.lib.util.ConcreteClassGenerator;
+
 /**
  * Connection decorator that can configure some properties of the
  * underlying connection. Understands the following properties:
@@ -36,6 +38,17 @@ import java.sql.Statement;
  * @nojavadoc
  */
 public class ConfiguringConnectionDecorator implements ConnectionDecorator {
+
+   static final Class<ConfiguringConnection> configuringConnectionImpl;
+
+    static {
+        try {
+            configuringConnectionImpl = ConcreteClassGenerator.
+                makeConcrete(ConfiguringConnection.class);
+        } catch (Exception e) {
+            throw new ExceptionInInitializerError(e);
+        }
+    }
 
     private int _isolation = -1;
     private int _queryTimeout = -1;
@@ -90,7 +103,10 @@ public class ConfiguringConnectionDecorator implements ConnectionDecorator {
     public Connection decorate(Connection conn) throws SQLException {
         if (_isolation == Connection.TRANSACTION_NONE || _queryTimeout != -1
             || _autoCommit != null)
-            conn = new ConfiguringConnection(conn);
+            conn = ConcreteClassGenerator.
+                newInstance(configuringConnectionImpl,
+                    ConfiguringConnectionDecorator.class, this,
+                    Connection.class, conn);
         if (_isolation != -1 && _isolation != Connection.TRANSACTION_NONE)
             conn.setTransactionIsolation(_isolation);
         return conn;
@@ -99,7 +115,7 @@ public class ConfiguringConnectionDecorator implements ConnectionDecorator {
     /**
      * Decorator to configure connection components correctly.
      */
-    private class ConfiguringConnection extends DelegatingConnection {
+    public abstract class ConfiguringConnection extends DelegatingConnection {
 
         private boolean _curAutoCommit = false;
 

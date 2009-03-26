@@ -61,6 +61,7 @@ public class ProductDerivations {
         _derivationErrors = new Throwable[_derivationNames.length];
         List<ProductDerivation> derivations =
             new ArrayList<ProductDerivation>(_derivationNames.length);
+        boolean errors = false; 
         for (int i = 0; i < _derivationNames.length; i++) {
             try {
                 ProductDerivation d = (ProductDerivation)
@@ -73,6 +74,7 @@ public class ProductDerivations {
                 if (t instanceof PrivilegedActionException)
                     t = ((PrivilegedActionException) t).getException();
                 _derivationErrors[i] = t;
+                errors = true;
             }
         }
 
@@ -86,11 +88,13 @@ public class ProductDerivations {
         }
 
         // if some derivations weren't instantiable, warn
+        if (errors)
+            System.err.println(_loc.get("bad-product-derivations",
+                ProductDerivations.class.getName()));
         for (int i = 0; i < _derivationErrors.length; i++) {
             if (_derivationErrors[i] == null)
                 continue;
-            System.err.println(_loc.get("bad-product-derivations",
-                ProductDerivations.class.getName()));
+            System.err.println(_derivationNames[i] + ":" + _derivationErrors[i]);
             break;
         }
 

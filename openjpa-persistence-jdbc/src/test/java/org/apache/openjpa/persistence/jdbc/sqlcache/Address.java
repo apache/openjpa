@@ -21,8 +21,10 @@ package org.apache.openjpa.persistence.jdbc.sqlcache;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.Table;
 
 @Entity
+@Table(name="ADDR_SQLCACHE")
 public class Address {
 	@Id
 	@GeneratedValue

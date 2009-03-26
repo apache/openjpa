@@ -53,6 +53,7 @@ import org.apache.openjpa.kernel.StoreQuery;
 import org.apache.openjpa.kernel.exps.ExpressionParser;
 import org.apache.openjpa.lib.rop.MergedResultObjectProvider;
 import org.apache.openjpa.lib.rop.ResultObjectProvider;
+import org.apache.openjpa.lib.util.ConcreteClassGenerator;
 import org.apache.openjpa.lib.util.Localizer;
 import org.apache.openjpa.meta.ClassMetaData;
 import org.apache.openjpa.meta.FieldMetaData;
@@ -83,6 +84,16 @@ class DistributedJDBCStoreManager extends JDBCStoreManager
     private static final Localizer _loc =
             Localizer.forPackage(DistributedJDBCStoreManager.class);
 
+    private static final Class<RefCountConnection> refCountConnectionImpl;
+    static {
+        try {
+            refCountConnectionImpl = ConcreteClassGenerator.
+                makeConcrete(RefCountConnection.class);
+        } catch (Exception e) {
+            throw new ExceptionInInitializerError(e);
+        }
+    }
+    
     /**
      * Constructs a set of child StoreManagers each connected to a physical
      * DataSource.
@@ -463,8 +474,10 @@ class DistributedJDBCStoreManager extends JDBCStoreManager
         List<Connection> list = new ArrayList<Connection>();
         for (SliceStoreManager slice : _slices)
             list.add(slice.getConnection());
-        DistributedConnection con = new DistributedConnection(list);
-        return new RefCountConnection(con);
+        DistributedConnection con = DistributedConnection.newInstance(list);
+        return ConcreteClassGenerator.newInstance(refCountConnectionImpl, 
+            JDBCStoreManager.class, DistributedJDBCStoreManager.this, 
+            Connection.class, con);
     }
     
     /**

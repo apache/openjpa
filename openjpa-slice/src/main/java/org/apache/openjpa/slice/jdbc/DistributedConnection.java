@@ -29,13 +29,24 @@ import java.sql.Statement;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.openjpa.lib.util.ConcreteClassGenerator;
+
 /**
  * A virtual connection that contains multiple physical connections.
  * 
  * @author Pinaki Poddar
  * 
  */
-class DistributedConnection implements Connection {
+public abstract class DistributedConnection implements Connection {
+    static final Class<DistributedConnection> concreteImpl;
+    static {
+        try {
+            concreteImpl = ConcreteClassGenerator.
+                makeConcrete(DistributedConnection.class);
+        } catch (Exception e) {
+            throw new ExceptionInInitializerError(e);
+        }
+    }
 	private final List<Connection> real;
 	private final Connection master;
 
@@ -46,6 +57,19 @@ class DistributedConnection implements Connection {
 		master = connections.get(0);
 	}
 	
+    /** 
+     *  Constructor for the concrete implementation of this abstract class.
+     */
+    public static DistributedConnection newInstance(List<Connection> conns) {
+        return ConcreteClassGenerator.newInstance(concreteImpl, 
+            List.class, conns);
+    }
+
+    /** 
+     *  Marker to enforce that subclasses of this class are abstract.
+     */
+    protected abstract void enforceAbstract();
+    
 	public boolean contains(Connection c) {
 		return real.contains(c);
 	}
@@ -66,7 +90,7 @@ class DistributedConnection implements Connection {
 	}
 
 	public Statement createStatement() throws SQLException {
-		DistributedStatement ret = new DistributedStatement(this);
+		DistributedStatement ret = DistributedStatement.newInstance(this);
 		for (Connection c : real) {
 			ret.add(c.createStatement());
 		}
@@ -74,7 +98,7 @@ class DistributedConnection implements Connection {
 	}
 
 	public Statement createStatement(int arg0, int arg1) throws SQLException {
-		DistributedStatement ret = new DistributedStatement(this);
+		DistributedStatement ret = DistributedStatement.newInstance(this);
 		for (Connection c : real) {
 			ret.add(c.createStatement(arg0, arg1));
 		}
@@ -83,7 +107,7 @@ class DistributedConnection implements Connection {
 
 	public Statement createStatement(int arg0, int arg1, int arg2)
 			throws SQLException {
-		DistributedStatement ret = new DistributedStatement(this);
+		DistributedStatement ret = DistributedStatement.newInstance(this);
 		for (Connection c : real) {
 			ret.add(c.createStatement(arg0, arg1, arg2));
 		}
@@ -156,7 +180,7 @@ class DistributedConnection implements Connection {
 		// TODO: Big hack
 		if (arg0.startsWith("SELECT SEQUENCE_VALUE FROM OPENJPA_SEQUENCE_TABLE"))
 			return master.prepareStatement(arg0);
-		DistributedPreparedStatement ret = new DistributedPreparedStatement(this);
+		DistributedPreparedStatement ret = DistributedPreparedStatement.newInstance(this);
 		for (Connection c : real) {
 			ret.add(c.prepareStatement(arg0));
 		}
@@ -165,7 +189,7 @@ class DistributedConnection implements Connection {
 
 	public PreparedStatement prepareStatement(String arg0, int arg1)
 			throws SQLException {
-		DistributedPreparedStatement ret = new DistributedPreparedStatement(this);
+		DistributedPreparedStatement ret = DistributedPreparedStatement.newInstance(this);
 		for (Connection c : real) {
 			ret.add(c.prepareStatement(arg0, arg1));
 		}
@@ -174,7 +198,7 @@ class DistributedConnection implements Connection {
 
 	public PreparedStatement prepareStatement(String arg0, int[] arg1)
 			throws SQLException {
-		DistributedPreparedStatement ret = new DistributedPreparedStatement(this);
+		DistributedPreparedStatement ret = DistributedPreparedStatement.newInstance(this);
 		for (Connection c : real) {
 			ret.add(c.prepareStatement(arg0, arg1));
 		}
@@ -183,7 +207,7 @@ class DistributedConnection implements Connection {
 
 	public PreparedStatement prepareStatement(String arg0, String[] arg1)
 			throws SQLException {
-		DistributedPreparedStatement ret = new DistributedPreparedStatement(this);
+		DistributedPreparedStatement ret = DistributedPreparedStatement.newInstance(this);
 		for (Connection c : real) {
 			ret.add(c.prepareStatement(arg0, arg1));
 		}
@@ -192,7 +216,7 @@ class DistributedConnection implements Connection {
 
 	public PreparedStatement prepareStatement(String arg0, int arg1, int arg2)
 			throws SQLException {
-		DistributedPreparedStatement ret = new DistributedPreparedStatement(this);
+		DistributedPreparedStatement ret = DistributedPreparedStatement.newInstance(this);
 		for (Connection c : real) {
 			ret.add(c.prepareStatement(arg0, arg1, arg2));
 		}
@@ -201,7 +225,7 @@ class DistributedConnection implements Connection {
 
 	public PreparedStatement prepareStatement(String arg0, int arg1, int arg2,
 			int arg3) throws SQLException {
-		DistributedPreparedStatement ret = new DistributedPreparedStatement(this);
+		DistributedPreparedStatement ret = DistributedPreparedStatement.newInstance(this);
 		for (Connection c : real) {
 			ret.add(c.prepareStatement(arg0, arg1, arg2));
 		}
