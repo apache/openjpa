@@ -427,7 +427,8 @@ public class StateManagerImpl
     }
 
     public boolean isEmbedded() {
-        return _owner != null;
+        // _owner may not be set if embed object is from query result
+        return _owner != null || _state instanceof ENonTransState;
     }
 
     public boolean isFlushed() {

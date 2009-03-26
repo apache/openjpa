@@ -110,10 +110,6 @@ public class ElementEmbedValueHandler
     public Object toObjectValue(ValueMapping vm, Object val,
         OpenJPAStateManager sm, JDBCStore store, JDBCFetchConfiguration fetch)
         throws SQLException {
-        if (sm == null)
-            throw new InvalidStateException(_loc.get("cant-project-owned",
-                vm));
-
         // check null indicator first
         if (_nullIdx != -1) {
             Object nval;

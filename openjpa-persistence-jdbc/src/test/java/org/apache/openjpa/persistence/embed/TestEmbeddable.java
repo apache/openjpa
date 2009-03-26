@@ -1084,6 +1084,27 @@ public class TestEmbeddable extends SingleEMFTestCase {
      */
     public void queryEntityA_Embed_Coll_Embed() {
         EntityManager em = emf.createEntityManager();
+        // test select embed object from element collection
+        String[] query = {
+            "select e, e.intVal1, e.embed.intVal2 from " +
+                " EntityA_Coll_Embed_Embed a " +
+                " , in (a.embeds) e order by e.intVal3",
+            "select e, a.id from EntityA_Coll_Embed_Embed a " +
+                " , in (a.embeds) e order by a.id",
+            "select e, e.intVal1, e.embed.intVal2 from " +
+                " EntityA_Coll_Embed_Embed a " +
+                " , in (a.embeds) e order by e.intVal3",
+        };
+        List<Object[]> rs = null;
+        for (int i = 0; i < query.length; i++) {
+            rs = em.createQuery(query[i]).getResultList();
+            if (rs.size() > 0) {
+                Object obj = ((Object[]) rs.get(0))[0];
+                assertTrue(obj instanceof Embed_Embed);
+            }
+        }
+
+        em.clear();
         EntityTransaction tran = em.getTransaction();
         tran.begin();
         Query q = em.createQuery("select a from EntityA_Embed_Coll_Embed a");

@@ -32,6 +32,7 @@ import org.apache.openjpa.jdbc.meta.Discriminator;
 import org.apache.openjpa.jdbc.meta.FieldMapping;
 import org.apache.openjpa.jdbc.meta.JavaSQLTypes;
 import org.apache.openjpa.jdbc.meta.ValueMapping;
+import org.apache.openjpa.jdbc.meta.strats.HandlerCollectionTableFieldStrategy;
 import org.apache.openjpa.jdbc.meta.strats.HandlerRelationMapTableFieldStrategy;
 import org.apache.openjpa.jdbc.schema.Column;
 import org.apache.openjpa.jdbc.schema.ForeignKey;
@@ -253,8 +254,12 @@ public class PCPath
             return null;
         } else if (_keyPath)
             return pstate.field.getDefiningMapping();
-        if (pstate.field.getElement().getTypeCode() == JavaTypes.PC)
+        if (pstate.field.getElement().getTypeCode() == JavaTypes.PC) {
+            if (pstate.field.isElementCollection() &&
+                pstate.field.getElement().isEmbedded())
+                pstate.isEmbedElementColl = true;
             return pstate.field.getElementMapping().getTypeMapping();
+        }
         if (pstate.field.getTypeCode() == JavaTypes.PC)
             return pstate.field.getTypeMapping();
         return null;
@@ -291,8 +296,14 @@ public class PCPath
                 case JavaTypes.ARRAY:
                 case JavaTypes.COLLECTION:
                     ValueMapping elem = pstate.field.getElementMapping();
-                    if (pstate.joinedRel && elem.getTypeCode() == JavaTypes.PC)
+                    if (pstate.joinedRel && elem.getTypeCode() == JavaTypes.PC) {
+                        if (pstate.field.isElementCollection() &&
+                            pstate.field.getElement().isEmbedded())
+                            return ((HandlerCollectionTableFieldStrategy)
+                                pstate.field.getStrategy()).getElementColumns(
+                                elem.getTypeMapping());
                         return elem.getTypeMapping().getPrimaryKeyColumns();
+                    }
                     if (elem.getColumns().length > 0)
                         return elem.getColumns();
                     return pstate.field.getColumns();
@@ -642,6 +653,7 @@ public class PCPath
         public FieldMapping cmpfield = null;
         public Column[] cols = null;
         public boolean joinedRel = false;
+        public boolean isEmbedElementColl = false;
 
         public PathExpState(Joins joins) {
             super(joins);
@@ -722,7 +734,8 @@ public class PCPath
         boolean pks) {
         ClassMapping mapping = getClassMapping(state);
         PathExpState pstate = (PathExpState) state;
-        if (mapping == null || !pstate.joinedRel || _keyPath)            
+        if (mapping == null || !pstate.joinedRel || _keyPath ||
+            pstate.isEmbedElementColl)            
             sel.select(getColumns(state), pstate.joins);
         else if (pks)
             sel.select(mapping.getPrimaryKeyColumns(), pstate.joins);
@@ -784,7 +797,9 @@ public class PCPath
                 else if (pstate.field.getKey().isEmbedded())
                     return loadEmbeddedMapKey(ctx, state, res);
             }
-
+            if (pstate.isEmbedElementColl)
+                return pstate.field.loadProjection(ctx.store, ctx.fetch, res,
+                    pstate.joins);
             return res.load(mapping, ctx.store, ctx.fetch, pstate.joins);
         }
 
@@ -808,6 +823,8 @@ public class PCPath
         // consume keyProjection
         PersistenceCapable pc = (PersistenceCapable) res.load(_candidate,
             ctx.store, ctx.fetch, pstate.joins);
+        if (pc == null)
+            return null;
         if (pstate.field.getStrategy() == null ||
             !(pstate.field.getStrategy() instanceof
                 HandlerRelationMapTableFieldStrategy))
