@@ -956,6 +956,20 @@ public class TestEmbeddable extends SingleEMFTestCase {
      */
     public void queryEntityA_Coll_String() {
         EntityManager em = emf.createEntityManager();
+        String[] query = {
+                "select e from " +
+                    " EntityA_Coll_String a " +
+                    " , in (a.nickNames) e order by a.id",
+            };
+        List rs = null;
+        for (int i = 0; i < query.length; i++) {
+            rs = em.createQuery(query[i]).getResultList();
+            if (rs.size() > 0) {
+                Object obj = rs.get(0);
+                assertTrue(obj instanceof String);
+            }
+            em.clear();
+        }
         EntityTransaction tran = em.getTransaction();
         tran.begin();
         Query q = em.createQuery("select a from EntityA_Coll_String a");
@@ -988,6 +1002,33 @@ public class TestEmbeddable extends SingleEMFTestCase {
      */
     public void queryEntityA_Coll_Embed_ToOne() {
         EntityManager em = emf.createEntityManager();
+        // test select embed object from element collection
+        String[] query = {
+            "select e, e.b from " +
+                " EntityA_Coll_Embed_ToOne a " +
+                " , in (a.embed1s) e order by e.name1",
+            "select e, a.id from EntityA_Coll_Embed_ToOne a " +
+                " , in (a.embed1s) e where e.b.id > 0 order by a.id",
+            "select e, e.b.id  from " +
+                " EntityA_Coll_Embed_ToOne a " +
+                " , in (a.embed1s) e where e.name1 like '%1'" +
+                " order by e.name3",
+        };
+        List<Object[]> rs = null;
+        for (int i = 0; i < query.length; i++) {
+            rs = em.createQuery(query[i]).getResultList();
+            if (rs.size() > 0) {
+                Object obj = ((Object[]) rs.get(0))[0];
+                assertTrue(obj instanceof Embed_ToOne);
+                switch (i) {
+                case 0:
+                    Object b = ((Object[]) rs.get(0))[1];
+                    assertTrue(b instanceof EntityB1);
+                    break;
+                }
+            }
+            em.clear();
+        }
         EntityTransaction tran = em.getTransaction();
         tran.begin();
         Query q = em.createQuery("select a from EntityA_Coll_Embed_ToOne a");
@@ -1068,6 +1109,24 @@ public class TestEmbeddable extends SingleEMFTestCase {
      */
     public void queryEntityA_Coll_Embed_Embed() {
         EntityManager em = emf.createEntityManager();
+        // test select embed object from element collection
+        String[] query = {
+            "select e, e.intVal1, e.embed.intVal2 from " +
+                " EntityA_Coll_Embed_Embed a " +
+                " , in (a.embeds) e order by e.intVal3",
+            "select e, a.id from EntityA_Coll_Embed_Embed a " +
+                " , in (a.embeds) e order by a.id",
+        };
+        List rs = null;
+        for (int i = 0; i < query.length; i++) {
+            rs = em.createQuery(query[i]).getResultList();
+            if (rs != null && rs.size() > 0) {
+                Object obj = ((Object[]) rs.get(0))[0];
+                assertTrue(obj instanceof Embed_Embed);
+            }
+        }
+        em.clear();
+
         EntityTransaction tran = em.getTransaction();
         tran.begin();
         Query q = em.createQuery("select a from EntityA_Coll_Embed_Embed a");
@@ -1084,27 +1143,6 @@ public class TestEmbeddable extends SingleEMFTestCase {
      */
     public void queryEntityA_Embed_Coll_Embed() {
         EntityManager em = emf.createEntityManager();
-        // test select embed object from element collection
-        String[] query = {
-            "select e, e.intVal1, e.embed.intVal2 from " +
-                " EntityA_Coll_Embed_Embed a " +
-                " , in (a.embeds) e order by e.intVal3",
-            "select e, a.id from EntityA_Coll_Embed_Embed a " +
-                " , in (a.embeds) e order by a.id",
-            "select e, e.intVal1, e.embed.intVal2 from " +
-                " EntityA_Coll_Embed_Embed a " +
-                " , in (a.embeds) e order by e.intVal3",
-        };
-        List<Object[]> rs = null;
-        for (int i = 0; i < query.length; i++) {
-            rs = em.createQuery(query[i]).getResultList();
-            if (rs.size() > 0) {
-                Object obj = ((Object[]) rs.get(0))[0];
-                assertTrue(obj instanceof Embed_Embed);
-            }
-        }
-
-        em.clear();
         EntityTransaction tran = em.getTransaction();
         tran.begin();
         Query q = em.createQuery("select a from EntityA_Embed_Coll_Embed a");
