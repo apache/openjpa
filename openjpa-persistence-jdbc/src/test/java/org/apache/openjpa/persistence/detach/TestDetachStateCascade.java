@@ -104,17 +104,17 @@ public class TestDetachStateCascade extends SingleEMFTestCase {
         assertTrue(em.contains(eD));
         EntityE eE = em.find(EntityE.class, id); // Load independently
         assertTrue(em.contains(eE));
-        EntityA entityADet = em.detach(eA);
-        assertEquals(id, entityADet.getId());
-        assertEquals("entityA", entityADet.getName());
-        assertNull(entityADet.getDescription()); // should not be loaded
-        assertNotNull(entityADet.getEntityB());
-        assertNotNull(entityADet.getEntityC());
-        assertNull(entityADet.getEntityD());
-        assertNull(entityADet.getEntityE());
+        em.detach(eA);
+        assertEquals(id, eA.getId());
+        assertEquals("entityA", eA.getName());
+        assertNull(eA.getDescription()); // should not be loaded
+        assertNotNull(eA.getEntityB());
+        assertNotNull(eA.getEntityC());
+        assertNull(eA.getEntityD());
+        assertNull(eA.getEntityE());
         assertTrue(em.isDetached(eA));
-        assertTrue(em.isDetached(entityADet.getEntityB()));
-        assertFalse(em.isDetached(entityADet.getEntityC()));
+        assertTrue(em.isDetached(eA.getEntityB()));
+        assertFalse(em.isDetached(eA.getEntityC()));
         assertFalse(em.isDetached(eD));
         assertFalse(em.isDetached(eE));
         em.getTransaction().commit();
@@ -135,19 +135,19 @@ public class TestDetachStateCascade extends SingleEMFTestCase {
         em.clear();
         EntityA eA = em.find(EntityA.class, id);
         assertTrue(em.contains(eA));
-        EntityA entityADet = em.detach(eA);
-        assertEquals(id, entityADet.getId());
-        assertEquals("entityA", entityADet.getName());
-        assertNotNull(entityADet.getDescription());
-        assertNotNull(entityADet.getEntityB());
-        assertNotNull(entityADet.getEntityC());
-        assertNotNull(entityADet.getEntityD());
-        assertNotNull(entityADet.getEntityE());
+        em.detach(eA);
+        assertEquals(id, eA.getId());
+        assertEquals("entityA", eA.getName());
+        assertNotNull(eA.getDescription());
+        assertNotNull(eA.getEntityB());
+        assertNotNull(eA.getEntityC());
+        assertNotNull(eA.getEntityD());
+        assertNotNull(eA.getEntityE());
         assertTrue(em.isDetached(eA));
-        assertTrue(em.isDetached(entityADet.getEntityB()));
-        assertFalse(em.isDetached(entityADet.getEntityC()));
-        assertTrue(em.isDetached(entityADet.getEntityD()));
-        assertFalse(em.isDetached(entityADet.getEntityE()));
+        assertTrue(em.isDetached(eA.getEntityB()));
+        assertFalse(em.isDetached(eA.getEntityC()));
+        assertTrue(em.isDetached(eA.getEntityD()));
+        assertFalse(em.isDetached(eA.getEntityE()));
         em.getTransaction().commit();
     }
     
@@ -170,18 +170,18 @@ public class TestDetachStateCascade extends SingleEMFTestCase {
         assertTrue(em.contains(eA));
         EntityE eE = em.find(EntityE.class, id); // Load independently
         assertTrue(em.contains(eE));
-        EntityA entityADet = em.detach(eA);
-        assertEquals(id, entityADet.getId());
-        assertEquals("entityA", entityADet.getName());
-        assertNull(entityADet.getDescription());
-        assertNotNull(entityADet.getEntityB());
-        assertNotNull(entityADet.getEntityC());
-        assertNotNull(entityADet.getEntityD());
-        assertNull(entityADet.getEntityE());
+        em.detach(eA);
+        assertEquals(id, eA.getId());
+        assertEquals("entityA", eA.getName());
+        assertNull(eA.getDescription());
+        assertNotNull(eA.getEntityB());
+        assertNotNull(eA.getEntityC());
+        assertNotNull(eA.getEntityD());
+        assertNull(eA.getEntityE());
         assertTrue(em.isDetached(eA));
-        assertTrue(em.isDetached(entityADet.getEntityB()));
-        assertFalse(em.isDetached(entityADet.getEntityC()));
-        assertTrue(em.isDetached(entityADet.getEntityD()));
+        assertTrue(em.isDetached(eA.getEntityB()));
+        assertFalse(em.isDetached(eA.getEntityC()));
+        assertTrue(em.isDetached(eA.getEntityD()));
         assertFalse(em.isDetached(eE));
         em.getTransaction().commit();
     }

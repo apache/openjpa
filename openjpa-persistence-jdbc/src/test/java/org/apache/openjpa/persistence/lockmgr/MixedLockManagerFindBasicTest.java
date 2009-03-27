@@ -53,12 +53,12 @@ public class MixedLockManagerFindBasicTest extends SequencedActionsTest {
 
     public void testFindPessimisticRead() {
         testCommon("testFindPessimisticRead",
-            LockModeType.PESSIMISTIC/* _READ */, 0, 1);
+            LockModeType.PESSIMISTIC_READ, 0, 1);
     }
 
     public void testFindPessimisticWrite() {
         testCommon("testFindPessimisticWrite",
-            LockModeType.PESSIMISTIC/* _WRITE */, 0, 1);
+            LockModeType.PESSIMISTIC_WRITE, 0, 1);
     }
 
     public void testFindPessimisticForceInc() {

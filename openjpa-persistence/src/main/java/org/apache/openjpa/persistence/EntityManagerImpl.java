@@ -41,10 +41,12 @@ import javax.persistence.EntityManager;
 import javax.persistence.FlushModeType;
 import javax.persistence.LockModeType;
 import javax.persistence.Query;
-import javax.persistence.QueryBuilder;
-import javax.persistence.QueryDefinition;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.QueryBuilder;
+import javax.persistence.metamodel.Metamodel;
 
 import org.apache.commons.lang.StringUtils;
+import org.apache.openjpa.conf.Compatibility;
 import org.apache.openjpa.conf.OpenJPAConfiguration;
 import org.apache.openjpa.ee.ManagedRuntime;
 import org.apache.openjpa.enhance.PCEnhancer;
@@ -799,9 +801,23 @@ public class EntityManagerImpl
     }
 
     @SuppressWarnings("unchecked")
-    public <T> T detach(T entity) {
+    public <T> T detachCopy(T entity) {
         assertNotCloseInvoked();
-        return (T) _broker.detach(entity, this);
+        Compatibility compat = this.getConfiguration().
+            getCompatibilityInstance();
+        boolean copyOnDetach = compat.getCopyOnDetach();
+        boolean cascadeWithDetach = compat.getCascadeWithDetach();
+        // Set compatibility options to get 1.x detach behavior
+        compat.setCopyOnDetach(true);
+        compat.setCascadeWithDetach(true);
+        try {
+            T t = (T)_broker.detach(entity, this);
+            return t;
+        } finally {
+            // Reset compatibility options
+            compat.setCopyOnDetach(copyOnDetach);
+            compat.setCascadeWithDetach(cascadeWithDetach);
+        }        
     }
 
     public Object[] detachAll(Object... entities) {
@@ -1477,13 +1493,14 @@ public class EntityManagerImpl
         }
     }
 
-    public void clear(Object entity) {
+    public void detach(Object entity) {
         assertNotCloseInvoked();
         _broker.detach(entity, this);
     }
 
-    public Query createQuery(QueryDefinition qdef) {
-        return null;
+    public Query createQuery(CriteriaQuery criteriaQuery) {
+        throw new UnsupportedOperationException(
+        "JPA 2.0 - Method not yet implemented");
     }
     
     public OpenJPAQuery createDynamicQuery(
@@ -1667,5 +1684,26 @@ public class EntityManagerImpl
         if (fcPushed) {
             _broker.popFetchConfiguration();
         }
+    }
+
+
+    public Metamodel getMetamodel() {
+        throw new UnsupportedOperationException(
+        "JPA 2.0 - Method not yet implemented");
+    }
+
+    public void refresh(Object arg0, Map<String, Object> arg1) {
+        throw new UnsupportedOperationException(
+        "JPA 2.0 - Method not yet implemented");
+    }
+
+    public void setProperty(String arg0, Object arg1) {
+        throw new UnsupportedOperationException(
+        "JPA 2.0 - Method not yet implemented");
+    }
+
+    public <T> T find(Class<T> arg0, Object arg1, Map<String, Object> arg2) {
+        throw new UnsupportedOperationException(
+        "JPA 2.0 - Method not yet implemented");
     }
 }

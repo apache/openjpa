@@ -106,7 +106,7 @@ public class TestDetachNoCascade extends SingleEMFTestCase {
         create(id);
         em.persistAll(allEntities);
         assertTrue(em.contains(e1));
-        em.clear(e1);
+        em.detach(e1);
         assertFalse(em.contains(e1)); 
         assertTrue(em.contains(e14));
         assertTrue(em.contains(e7));
@@ -120,7 +120,7 @@ public class TestDetachNoCascade extends SingleEMFTestCase {
         em.getTransaction().begin();
         create(id);
         assertFalse(em.contains(e1));
-        em.clear(e1);
+        em.detach(e1);
         em.persistAll(allEntities);
         assertTrue(em.contains(e1));
         em.getTransaction().commit();
@@ -138,7 +138,7 @@ public class TestDetachNoCascade extends SingleEMFTestCase {
         e1 = em.find(Entity1.class, id);
         assertEquals("entity1",e1.getName());
         e1.setName("new name");
-        em.clear(e1);
+        em.detach(e1);
         em.getTransaction().commit();
         
         em.getTransaction().begin();
@@ -161,7 +161,7 @@ public class TestDetachNoCascade extends SingleEMFTestCase {
         em.getTransaction().begin();
         e1 = em.find(Entity1.class, id);
         em.remove(e1);
-        em.clear(e1);
+        em.detach(e1);
         em.getTransaction().commit();
         
         em.getTransaction().begin();
@@ -178,8 +178,8 @@ public class TestDetachNoCascade extends SingleEMFTestCase {
         em.getTransaction().begin();
         create(id);
         em.persist(e1);
-        em.clear(e1);
-        em.clear(e1);
+        em.detach(e1);
+        em.detach(e1);
         assertFalse(em.contains(e1));
         em.getTransaction().commit();
     }
@@ -190,12 +190,20 @@ public class TestDetachNoCascade extends SingleEMFTestCase {
         em.getTransaction().begin();
         create(id);
         em.persist(e1);
-        Entity1 e1Det = em.detach(e1);
-        assertEquals(e1, e1Det);
+        Entity14 e14PreDetach = e1.getE14();
+        
+        // Flip on cascade to detach e14
+        compat.setCascadeWithDetach(true);
+        
+        em.detach(e1);
+        // Assert that e14 was not copied on detachment
+        assertEquals(e14, e14PreDetach);
         assertFalse(em.contains(e1));
-        assertTrue(em.contains(e14));
+        assertFalse(em.contains(e14));
         em.getTransaction().commit();
-    }
+
+        compat.setCascadeWithDetach(false);
+}
     
     // Change copy option and validate
     public void testCopy() {
@@ -204,9 +212,7 @@ public class TestDetachNoCascade extends SingleEMFTestCase {
         create(id);
         em.persist(e1);
         
-        compat.setCopyOnDetach(true);
-        
-        Entity1 e1Det = em.detach(e1);
+        Entity1 e1Det = em.detachCopy(e1);
         assertNotEquals(e1, e1Det);
         assertTrue(em.contains(e1));
         em.getTransaction().commit();
@@ -228,7 +234,7 @@ public class TestDetachNoCascade extends SingleEMFTestCase {
         e1 = em.find(Entity1.class, id);
         assertEquals("entity1",e1.getName());
         e1.setName("new name");
-        em.clear(e1);
+        em.detach(e1);
         em.getTransaction().commit();
         
         em.getTransaction().begin();
@@ -246,7 +252,7 @@ public class TestDetachNoCascade extends SingleEMFTestCase {
         em.getTransaction().begin();
         create(id);
         em.persistAll(allEntities);
-        em.clear(e1);
+        em.detach(e1);
         em.merge(e1);
         em.getTransaction().commit();
         

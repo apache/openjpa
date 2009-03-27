@@ -30,7 +30,8 @@ import java.util.Set;
 
 import javax.persistence.Cache;
 import javax.persistence.EntityManagerFactory;
-import javax.persistence.QueryBuilder;
+import javax.persistence.criteria.QueryBuilder;
+import javax.persistence.metamodel.Metamodel;
 
 import org.apache.openjpa.conf.OpenJPAConfiguration;
 import org.apache.openjpa.enhance.Reflection;
@@ -353,7 +354,8 @@ public class EntityManagerFactoryImpl
     }
 
     public QueryBuilder getQueryBuilder() {
-    	return null;
+        throw new UnsupportedOperationException(
+        "JPA 2.0 - Method not yet implemented");
     }
     
     public OpenJPAQueryBuilder getDynamicQueryBuilder() {
@@ -362,5 +364,10 @@ public class EntityManagerFactoryImpl
 
     public Set<String> getSupportedProperties() {
         return _factory.getSupportedProperties();
+    }
+
+    public Metamodel getMetamodel() {
+        throw new UnsupportedOperationException(
+        "JPA 2.0 - Method not yet implemented");
     }
 }

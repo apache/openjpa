@@ -58,10 +58,10 @@ public class MixedLockManagerRefreshExceptionTest extends SequencedActionsTest {
             {Act.Refresh, 1, LockModeType.OPTIMISTIC_FORCE_INCREMENT },
             {Act.TestException, 0, TransactionRequiredException.class },
             
-            {Act.Refresh, 1, LockModeType.PESSIMISTIC/*_READ*/},
+            {Act.Refresh, 1, LockModeType.PESSIMISTIC_READ},
             {Act.TestException, 0, TransactionRequiredException.class },
             
-            {Act.Refresh, 1, LockModeType.PESSIMISTIC/*_WRITE*/},
+            {Act.Refresh, 1, LockModeType.PESSIMISTIC_WRITE},
             {Act.TestException, 0, TransactionRequiredException.class },
             
             {Act.Refresh, 1, LockModeType.PESSIMISTIC_FORCE_INCREMENT },
@@ -111,14 +111,14 @@ public class MixedLockManagerRefreshExceptionTest extends SequencedActionsTest {
                 LockModeType.OPTIMISTIC_FORCE_INCREMENT },
             {Act.TestException, 0, IllegalArgumentException.class },
 
-            {Act.RefreshObject, null, LockModeType.PESSIMISTIC/*_READ*/ },
+            {Act.RefreshObject, null, LockModeType.PESSIMISTIC_READ },
             {Act.TestException, 0, IllegalArgumentException.class },
-            {Act.RefreshObject, "null", LockModeType.PESSIMISTIC/*_READ*/ },
+            {Act.RefreshObject, "null", LockModeType.PESSIMISTIC_READ },
             {Act.TestException, 0, IllegalArgumentException.class },
 
-            {Act.RefreshObject, null, LockModeType.PESSIMISTIC/*_WRITE*/ },
+            {Act.RefreshObject, null, LockModeType.PESSIMISTIC_WRITE },
             {Act.TestException, 0, IllegalArgumentException.class },
-            {Act.RefreshObject, "null", LockModeType.PESSIMISTIC/*_WRITE*/ },
+            {Act.RefreshObject, "null", LockModeType.PESSIMISTIC_WRITE },
             {Act.TestException, 0, IllegalArgumentException.class },
 
             {Act.RefreshObject, null, 
@@ -158,10 +158,10 @@ public class MixedLockManagerRefreshExceptionTest extends SequencedActionsTest {
             {Act.Refresh, 2, LockModeType.OPTIMISTIC_FORCE_INCREMENT },
             {Act.TestException, 0, IllegalArgumentException.class },
 
-            {Act.Refresh, 2, LockModeType.PESSIMISTIC/*_READ*/ },
+            {Act.Refresh, 2, LockModeType.PESSIMISTIC_READ },
             {Act.TestException, 0, IllegalArgumentException.class },
 
-            {Act.Refresh, 2, LockModeType.PESSIMISTIC/*_WRITE*/ },
+            {Act.Refresh, 2, LockModeType.PESSIMISTIC_WRITE },
             {Act.TestException, 0, IllegalArgumentException.class },
 
             {Act.Refresh, 2, LockModeType.PESSIMISTIC_FORCE_INCREMENT },
@@ -195,10 +195,10 @@ public class MixedLockManagerRefreshExceptionTest extends SequencedActionsTest {
             {Act.Refresh, 2, LockModeType.OPTIMISTIC_FORCE_INCREMENT },
             {Act.TestException, 0, IllegalArgumentException.class },
 
-            {Act.Refresh, 2, LockModeType.PESSIMISTIC/*_READ*/ },
+            {Act.Refresh, 2, LockModeType.PESSIMISTIC_READ },
             {Act.TestException, 0, IllegalArgumentException.class },
 
-            {Act.Refresh, 2, LockModeType.PESSIMISTIC/*_WRITE*/ },
+            {Act.Refresh, 2, LockModeType.PESSIMISTIC_WRITE },
             {Act.TestException, 0, IllegalArgumentException.class },
 
             {Act.Refresh, 2, LockModeType.PESSIMISTIC_FORCE_INCREMENT },
@@ -231,10 +231,10 @@ public class MixedLockManagerRefreshExceptionTest extends SequencedActionsTest {
             {Act.Refresh, 1, LockModeType.OPTIMISTIC_FORCE_INCREMENT },
             {Act.TestException},
 
-            {Act.Refresh, 1, LockModeType.PESSIMISTIC/*_READ*/ },
+            {Act.Refresh, 1, LockModeType.PESSIMISTIC_READ },
             {Act.TestException},
 
-            {Act.Refresh, 1, LockModeType.PESSIMISTIC/*_WRITE*/ },
+            {Act.Refresh, 1, LockModeType.PESSIMISTIC_WRITE },
             {Act.TestException},
 
             {Act.Refresh, 1, LockModeType.PESSIMISTIC_FORCE_INCREMENT },

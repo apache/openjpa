@@ -1013,7 +1013,7 @@ public class AnnotationPersistenceMetaDataSerializer
             cascades.add(CascadeType.REFRESH);
         }
         if (vmd.getCascadeDetach() == ValueMetaData.CASCADE_IMMEDIATE) {
-            cascades.add(CascadeType.CLEAR);
+            cascades.add(CascadeType.DETACH);
         }
         if (cascades.size() == 5) // ALL
         {

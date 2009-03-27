@@ -82,10 +82,10 @@ version="2.0">
 		<attributes>
 			<id name="id"></id>
 			<element-collection name="images"
-				target-entity="java.lang.String">
-				<column name="IMAGE_FILENAME" />
+				target-class="java.lang.String">
 				<map-key-class class="java.lang.String" />
 				<map-key-column name="IMAGE_NAME" />
+                <column name="IMAGE_FILENAME" />
 				<collection-table name="IMAGE_XML" />
 			</element-collection>
 		</attributes>

@@ -28,7 +28,7 @@ public class Entity6 {
     @Id
     private long id;
     private String name;
-    @OneToOne(cascade=(CascadeType.CLEAR))
+    @OneToOne(cascade=(CascadeType.DETACH))
     private Entity7 e7;
     
     public Entity6() {

@@ -151,7 +151,7 @@ public class TestDetachCascade extends SingleEMFTestCase {
         em.persistAll(allEntities);
         assertTrue(em.contains(e1));
         assertTrue(em.contains(e14));
-        em.clear(e1);
+        em.detach(e1);
         assertFalse(em.contains(e1));
         assertTrue(em.contains(e14));
         em.getTransaction().commit();
@@ -168,7 +168,7 @@ public class TestDetachCascade extends SingleEMFTestCase {
         
         compat.setCascadeWithDetach(true);
         
-        em.clear(e1);
+        em.detach(e1);
         assertFalse(em.contains(e1));
         assertFalse(em.contains(e14));
         em.getTransaction().commit();
@@ -185,7 +185,7 @@ public class TestDetachCascade extends SingleEMFTestCase {
         em.persistAll(allEntities);
         assertTrue(em.contains(e3));
         assertTrue(em.contains(e4));
-        em.clear(e3);
+        em.detach(e3);
         assertTrue(em.contains(e1));
         assertFalse(em.contains(e3));
         assertFalse(em.contains(e4));
@@ -204,7 +204,7 @@ public class TestDetachCascade extends SingleEMFTestCase {
         assertTrue(em.contains(e3));
         assertTrue(em.contains(e4));
         compat.setCascadeWithDetach(true);
-        em.clear(e3);
+        em.detach(e3);
         assertTrue(em.contains(e1));
         assertFalse(em.contains(e3));
         assertFalse(em.contains(e4));
@@ -234,7 +234,7 @@ public class TestDetachCascade extends SingleEMFTestCase {
         assertTrue(em.contains(e3));
         assertFalse(em.contains(e4));
         em.getTransaction().commit();
-        em.clear(e3);
+        em.detach(e3);
         assertFalse(em.contains(e3));
         assertFalse(em.contains(e4));
     }
@@ -249,7 +249,7 @@ public class TestDetachCascade extends SingleEMFTestCase {
         assertTrue(em.contains(e8));
         assertTrue(em.contains(e9));
         assertTrue(em.contains(e8a));
-        em.clear(e10);
+        em.detach(e10);
         assertFalse(em.contains(e10));
         assertFalse(em.contains(e8));
         assertFalse(em.contains(e9));
@@ -265,7 +265,7 @@ public class TestDetachCascade extends SingleEMFTestCase {
         em.persistAll(allEntities);
         assertTrue(em.contains(e11));
         assertTrue(em.contains(e13));
-        em.clear(e13);
+        em.detach(e13);
         assertFalse(em.contains(e13));
         assertFalse(em.contains(e11));
         em.getTransaction().commit();
@@ -274,14 +274,12 @@ public class TestDetachCascade extends SingleEMFTestCase {
     // Test old detach behavior - flush, copy, and cascade
     public void testOldDetachBehavior() {
         id++;
-        compat.setCascadeWithDetach(true);
-        compat.setCopyOnDetach(true);
         
         compat.setFlushBeforeDetach(true);
         em.getTransaction().begin();
         create(id);
         em.persistAll(allEntities);
-        Entity1 e1Det = em.detach(e1);
+        Entity1 e1Det = em.detachCopy(e1);
         assertNotEquals(e1, e1Det); // check for copy
         Entity14 e14Det = e1.getE14();
         assertEquals(e14, e14Det);
@@ -293,8 +291,6 @@ public class TestDetachCascade extends SingleEMFTestCase {
         Entity14 e14Saved = e1Saved.getE14();
         assertNotNull(e14Saved);
         
-        compat.setCascadeWithDetach(false);
-        compat.setCopyOnDetach(false);
         compat.setFlushBeforeDetach(false);
     }
     

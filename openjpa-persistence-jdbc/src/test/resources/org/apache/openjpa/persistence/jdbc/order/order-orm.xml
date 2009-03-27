@@ -38,23 +38,21 @@
                 <generated-value/>
             </id>
             <one-to-many name="one2Melems">                
-                <order-column name="one2MOrder" base="10000" 
-                    contiguous="false" />
+                <order-column name="one2MOrder" />
                 <cascade>
                     <cascade-all/>
                 </cascade>
             </one-to-many>
 
             <many-to-many name="m2melems">
-                <order-column name="m2morder" base="-50" 
-                    contiguous="false" />
+                <order-column name="m2morder" /> 
                 <cascade>
                     <cascade-all/>
                 </cascade>
             </many-to-many>
             
             <element-collection name="collelems">
-                <order-column base="10" contiguous="false" />
+                <order-column />
             </element-collection>
             
         </attributes>    

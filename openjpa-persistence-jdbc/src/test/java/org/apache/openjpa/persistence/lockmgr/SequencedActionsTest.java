@@ -485,7 +485,7 @@ public abstract class SequencedActionsTest extends SQLListenerTestCase {
                         employee = employees.get(id);
                         log.trace("Employee (before) :" + employee);
                         LockEmployee detEmployee = ((OpenJPAEntityManager) em
-                            .getDelegate()).detach(employee);
+                            .getDelegate()).detachCopy(employee);
                         employees.put((Integer)args[2], detEmployee);
                         log.trace("Employee (after)  :" + detEmployee);
                         break;

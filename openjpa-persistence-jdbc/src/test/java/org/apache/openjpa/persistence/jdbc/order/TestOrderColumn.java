@@ -521,71 +521,7 @@ public class TestOrderColumn extends SingleEMFTestCase {
     }
 
     /*
-     * Validates the use of the contiguous attribute on OrderColumn with
-     * value true.
-     * For now only the order column metadata is validated.  Since most tests
-     * assume the default of true no additional testing is necessary. If
-     * contiguous gets removed from the spec, this test will need to be removed.
-     */
-    public void testOrderColumnContiguousTrue() {
-
-        OpenJPAEntityManagerFactorySPI emf1 = 
-            (OpenJPAEntityManagerFactorySPI)OpenJPAPersistence.
-            createEntityManagerFactory("BaseTest",
-            "org/apache/openjpa/persistence/jdbc/order/" +
-            "order-persistence.xml");
-
-        validateOrderColumnContiguous(emf1, BaseTestEntity.class, 
-            "one2Melems", true);
-
-        validateOrderColumnContiguous(emf1, BaseTestEntity.class, 
-                "collelems", true);
-
-        validateOrderColumnContiguous(emf1, BaseTestEntity.class, 
-                "m2melems", true);
-        
-        try {
-            if (emf1 != null)
-                cleanupEMF(emf1);
-        } catch (Exception e) {
-            fail(e.getMessage());
-        }
-    }
-
-    /*
-     * Validates the use of the contiguous attribute on OrderColumn with
-     * value false.
-     * For now only the order column metadata is validated.  If/when this
-     * solidifies in the spec several new tests will need to be added. If
-     * contiguous gets removed this test needs to be removed.
-     */
-    public void testOrderColumnContiguousFalse() {
-        
-        OpenJPAEntityManagerFactorySPI emf1 = 
-            (OpenJPAEntityManagerFactorySPI)OpenJPAPersistence.
-            createEntityManagerFactory("ColDefTest",
-            "org/apache/openjpa/persistence/jdbc/order/" +
-            "order-persistence-2.xml");
-
-        validateOrderColumnContiguous(emf1, ColDefTestEntity.class, 
-            "one2Mcoldef", true);
-
-        validateOrderColumnContiguous(emf1, ColDefTestEntity.class, 
-            "collcoldef", true);
-
-        validateOrderColumnContiguous(emf1, ColDefTestEntity.class, 
-            "m2mcoldef", true);
-        
-        try {
-            if (emf1 != null)
-                cleanupEMF(emf1);
-        } catch (Exception e) {
-            fail(e.getMessage());
-        }
-    }
-
-    /*
-     * Validates the use of the base attribute on OrderColumn
+     * Validates the default base value on OrderColumn
      */
     public void testOrderColumnBase() {
         
@@ -615,19 +551,19 @@ public class TestOrderColumn extends SingleEMFTestCase {
             elems[i] = new BaseTestElement("Element " + elemnum); 
         }
 
-        // Add to element collection with base value 10
+        // Add to element collection with base value 0
         Set<BaseTestElement> elemset = new LinkedHashSet<BaseTestElement>();
         for (int i = 0; i < 3; i++)
             elemset.add(elems[i]);
         bte.setCollelems(elemset);
 
-        // Add to OneToMany with base value 10000
+        // Add to OneToMany with base value 0
         List<BaseTestElement> elemList = new ArrayList<BaseTestElement>();
         for (int i = 0; i < 3; i++)
             elemList.add(elems[i + 3]);
         bte.setOne2Melems(elemList);
         
-        // Add to ManyToMany, base value -50
+        // Add to ManyToMany, base value 0
         List<BaseTestElement> elemList2 = new ArrayList<BaseTestElement>();
         for (int i = 0; i < 3; i++)
             elemList2.add(elems[i + 6]);
@@ -639,17 +575,17 @@ public class TestOrderColumn extends SingleEMFTestCase {
         
         // Do a projection query to verify the base values
 
-        validateIndexAndValues(em, "BaseTestEntity", "one2Melems", 10000, 
+        validateIndexAndValues(em, "BaseTestEntity", "one2Melems", 0, 
                 new Object[] { elems[3], elems[4], elems[5]}, "id", 
                 bte.getId());
 
-        validateIndexAndValues(em, "BaseTestEntity", "m2melems", -50, 
+        validateIndexAndValues(em, "BaseTestEntity", "m2melems", 0, 
                 new Object[] { elems[6], elems[7], elems[8]}, "id",
                 bte.getId());
 
 // This validator is disabled until INDEX projection supports element 
 // collections
-//        validateIndexAndValues(em, "BaseTestEntity", "collelems", 10, 
+//        validateIndexAndValues(em, "BaseTestEntity", "collelems", 0, 
 //                new Object[] { elems[0], elems[1], elems[2]} "id",
 //                bte.getId());
 
@@ -921,19 +857,19 @@ public class TestOrderColumn extends SingleEMFTestCase {
         Column oc = fm.getOrderColumn();
         assertNotNull(oc);
         assertEquals(oc.getName(),"one2MOrder");
-        assertEquals(oc.getBase(), 10000);
+        assertEquals(oc.getBase(), 0);
 
         fm = (FieldMapping)_entityMeta2.getField("m2melems");
         oc = fm.getOrderColumn();
         assertNotNull(oc);
         assertEquals(oc.getName(),"m2morder");
-        assertEquals(oc.getBase(), -50);
+        assertEquals(oc.getBase(), 0);
 
         fm = (FieldMapping)_entityMeta2.getField("collelems");
         oc = fm.getOrderColumn();
         assertNotNull(oc);
         assertEquals(oc.getName(),"collelems_ORDER");
-        assertEquals(oc.getBase(), 10);    
+        assertEquals(oc.getBase(), 0);    
 
         try {
             if (emf1 != null)

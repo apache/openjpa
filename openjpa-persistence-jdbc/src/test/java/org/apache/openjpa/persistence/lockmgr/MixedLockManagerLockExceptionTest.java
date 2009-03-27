@@ -58,10 +58,10 @@ public class MixedLockManagerLockExceptionTest extends SequencedActionsTest {
             {Act.Lock, 1, LockModeType.OPTIMISTIC_FORCE_INCREMENT },
             {Act.TestException, 0, TransactionRequiredException.class },
             
-            {Act.Lock, 1, LockModeType.PESSIMISTIC/*_READ*/},
+            {Act.Lock, 1, LockModeType.PESSIMISTIC_READ},
             {Act.TestException, 0, TransactionRequiredException.class },
             
-            {Act.Lock, 1, LockModeType.PESSIMISTIC/*_WRITE*/},
+            {Act.Lock, 1, LockModeType.PESSIMISTIC_WRITE},
             {Act.TestException, 0, TransactionRequiredException.class },
             
             {Act.Lock, 1, LockModeType.PESSIMISTIC_FORCE_INCREMENT },
@@ -110,14 +110,14 @@ public class MixedLockManagerLockExceptionTest extends SequencedActionsTest {
             {Act.LockObject, "null", LockModeType.OPTIMISTIC_FORCE_INCREMENT },
             {Act.TestException, 0, IllegalArgumentException.class },
 
-            {Act.LockObject, null, LockModeType.PESSIMISTIC/*_READ*/ },
+            {Act.LockObject, null, LockModeType.PESSIMISTIC_READ },
             {Act.TestException, 0, IllegalArgumentException.class },
-            {Act.LockObject, "null", LockModeType.PESSIMISTIC/*_READ*/ },
+            {Act.LockObject, "null", LockModeType.PESSIMISTIC_READ },
             {Act.TestException, 0, IllegalArgumentException.class },
 
-            {Act.LockObject, null, LockModeType.PESSIMISTIC/*_WRITE*/ },
+            {Act.LockObject, null, LockModeType.PESSIMISTIC_WRITE },
             {Act.TestException, 0, IllegalArgumentException.class },
-            {Act.LockObject, "null", LockModeType.PESSIMISTIC/*_WRITE*/ },
+            {Act.LockObject, "null", LockModeType.PESSIMISTIC_WRITE },
             {Act.TestException, 0, IllegalArgumentException.class },
 
             {Act.LockObject, null, LockModeType.PESSIMISTIC_FORCE_INCREMENT },
@@ -155,10 +155,10 @@ public class MixedLockManagerLockExceptionTest extends SequencedActionsTest {
             {Act.Lock, 2, LockModeType.OPTIMISTIC_FORCE_INCREMENT },
             {Act.TestException, 0, IllegalArgumentException.class },
 
-            {Act.Lock, 2, LockModeType.PESSIMISTIC/*_READ*/ },
+            {Act.Lock, 2, LockModeType.PESSIMISTIC_READ },
             {Act.TestException, 0, IllegalArgumentException.class },
 
-            {Act.Lock, 2, LockModeType.PESSIMISTIC/*_WRITE*/ },
+            {Act.Lock, 2, LockModeType.PESSIMISTIC_WRITE },
             {Act.TestException, 0, IllegalArgumentException.class },
 
             {Act.Lock, 2, LockModeType.PESSIMISTIC_FORCE_INCREMENT },
@@ -192,10 +192,10 @@ public class MixedLockManagerLockExceptionTest extends SequencedActionsTest {
             {Act.Lock, 2, LockModeType.OPTIMISTIC_FORCE_INCREMENT },
             {Act.TestException, 0, IllegalArgumentException.class },
 
-            {Act.Lock, 2, LockModeType.PESSIMISTIC/*_READ*/ },
+            {Act.Lock, 2, LockModeType.PESSIMISTIC_READ },
             {Act.TestException, 0, IllegalArgumentException.class },
 
-            {Act.Lock, 2, LockModeType.PESSIMISTIC/*_WRITE*/ },
+            {Act.Lock, 2, LockModeType.PESSIMISTIC_WRITE },
             {Act.TestException, 0, IllegalArgumentException.class },
 
             {Act.Lock, 2, LockModeType.PESSIMISTIC_FORCE_INCREMENT },
@@ -228,10 +228,10 @@ public class MixedLockManagerLockExceptionTest extends SequencedActionsTest {
             {Act.Lock, 1, LockModeType.OPTIMISTIC_FORCE_INCREMENT },
             {Act.TestException},
 
-            {Act.Lock, 1, LockModeType.PESSIMISTIC/*_READ*/ },
+            {Act.Lock, 1, LockModeType.PESSIMISTIC_READ },
             {Act.TestException},
 
-            {Act.Lock, 1, LockModeType.PESSIMISTIC/*_WRITE*/ },
+            {Act.Lock, 1, LockModeType.PESSIMISTIC_WRITE },
             {Act.TestException},
 
             {Act.Lock, 1, LockModeType.PESSIMISTIC_FORCE_INCREMENT },
@@ -265,9 +265,9 @@ public class MixedLockManagerLockExceptionTest extends SequencedActionsTest {
         commonLockOptimisticLockExceptions(
             LockModeType.OPTIMISTIC_FORCE_INCREMENT, false);
         commonLockOptimisticLockExceptions(
-            LockModeType.PESSIMISTIC/*_READ*/, true);
+            LockModeType.PESSIMISTIC_READ, true);
         commonLockOptimisticLockExceptions(
-            LockModeType.PESSIMISTIC/*_WRITE*/, true);
+            LockModeType.PESSIMISTIC_WRITE, true);
         commonLockOptimisticLockExceptions(
             LockModeType.PESSIMISTIC_FORCE_INCREMENT, true);
     }

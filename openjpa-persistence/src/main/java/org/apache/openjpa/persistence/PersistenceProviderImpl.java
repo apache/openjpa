@@ -24,6 +24,7 @@ import java.security.ProtectionDomain;
 import java.util.Map;
 import javax.persistence.EntityManager;
 import javax.persistence.spi.ClassTransformer;
+import javax.persistence.spi.LoadState;
 import javax.persistence.spi.PersistenceProvider;
 import javax.persistence.spi.PersistenceUnitInfo;
 
@@ -210,4 +211,19 @@ public class PersistenceProviderImpl
             return _trans.transform(cl, name, previousVersion, pd, bytes);
         }
 	}
+
+    public LoadState isLoaded(Object arg0) {
+        throw new UnsupportedOperationException(
+            "JPA 2.0 - Method not yet implemented");
+    }
+
+    public LoadState isLoadedWithReference(Object arg0, String arg1) {
+        throw new UnsupportedOperationException(
+        "JPA 2.0 - Method not yet implemented");
+    }
+
+    public LoadState isLoadedWithoutReference(Object arg0, String arg1) {
+        throw new UnsupportedOperationException(
+        "JPA 2.0 - Method not yet implemented");
+    }
 }

@@ -534,12 +534,22 @@ public interface OpenJPAEntityManager
     public void evictAll(Extent extent);
 
     /**
-     * Detach the specified object from the entity manager.
+     * Detach the specified object from the entity manager, detaching based on
+     * the AutoDetach value specified and returning a copy of the detached
+     * entity.
      *
      * @param pc the instance to detach
      * @return the detached instance
+     * 
+     * @since 2.0.0
+     * 
+     * Note: This method provides the same contract as the detach method with 
+     * signature: public <T> T detach(T pc) available in the 1.x release of 
+     * OpenJPA. The JPA 2.0 specification defined a method with an incompatible
+     * signature and different semantics.  The specification defined method 
+     * trumped the existing method.
      */
-    public <T> T detach(T pc);
+    public <T> T detachCopy(T pc);
 
     /**
      * Detach the specified objects from the entity manager.

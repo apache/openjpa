@@ -39,7 +39,10 @@ import javax.persistence.FlushModeType;
 import javax.persistence.LockModeType;
 import javax.persistence.NoResultException;
 import javax.persistence.NonUniqueResultException;
+import javax.persistence.Parameter;
 import javax.persistence.Query;
+import javax.persistence.Result;
+import javax.persistence.ResultItem;
 import javax.persistence.TemporalType;
 
 import org.apache.openjpa.conf.OpenJPAConfiguration;
@@ -709,5 +712,55 @@ public class QueryImpl implements OpenJPAQuerySPI, Serializable {
         }
         throw new IllegalStateException(_loc.get("assert-query-language",
             getLanguage()).toString());
+    }
+
+    public <T> Parameter<T> getParameter(String arg0, Class<T> arg1) {
+        throw new UnsupportedOperationException(
+            "JPA 2.0 - Method not yet implemented");
+    }
+
+    public <T> Parameter<T> getParameter(int arg0, Class<T> arg1) {
+        throw new UnsupportedOperationException(
+            "JPA 2.0 - Method not yet implemented");
+    }
+
+    public <T> T getParameterValue(Parameter<T> arg0) {
+        throw new UnsupportedOperationException(
+            "JPA 2.0 - Method not yet implemented");
+    }
+
+    public Set<Parameter<?>> getParameters() {
+        throw new UnsupportedOperationException(
+            "JPA 2.0 - Method not yet implemented");
+    }
+
+    public <T> ResultItem<T> getResultItem(String arg0, Class<T> arg1) {
+        throw new UnsupportedOperationException(
+            "JPA 2.0 - Method not yet implemented");
+    }
+
+    public <T> ResultItem<T> getResultItem(int arg0, Class<T> arg1) {
+        throw new UnsupportedOperationException(
+            "JPA 2.0 - Method not yet implemented");
+    }
+
+    public List<ResultItem<?>> getResultItems() {
+        throw new UnsupportedOperationException(
+            "JPA 2.0 - Method not yet implemented");
+    }
+
+    public List<Result> getTypedResultList() {
+        throw new UnsupportedOperationException(
+            "JPA 2.0 - Method not yet implemented");
+    }
+
+    public Result getTypedSingleResult() {
+        throw new UnsupportedOperationException(
+            "JPA 2.0 - Method not yet implemented");
+    }
+
+    public <T> Query setParameter(Parameter<T> arg0, T arg1) {
+        throw new UnsupportedOperationException(
+            "JPA 2.0 - Method not yet implemented");
     }
 }

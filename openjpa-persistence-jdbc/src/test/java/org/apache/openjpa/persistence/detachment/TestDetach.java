@@ -66,7 +66,7 @@ public class TestDetach extends SingleEMFTestCase {
         for (DMCustomerInventory i : inventories) assertNotDetached(i);
         assertNotDetached(item);   
         
-        em.clear(pc);
+        em.detach(pc);
         
         assertDetached(pc);
         for (DMCustomerInventory i : inventories) assertDetached(i);
@@ -82,7 +82,7 @@ public class TestDetach extends SingleEMFTestCase {
         String original = pc.getLastName();
         pc.setLastName("Changed That Should not be Saved");
  
-        em.clear(pc);
+        em.detach(pc);
         em.getTransaction().commit();
         
         DMCustomer pc2 = em.find(DMCustomer.class, root.getId());
@@ -100,7 +100,7 @@ public class TestDetach extends SingleEMFTestCase {
         for (DMCustomerInventory inventory : inventories)
             inventory.setCustomer(newPC);
         
-        em.clear(newPC);
+        em.detach(newPC);
         for (DMCustomerInventory inventory : inventories) {
             assertNotDetached(inventory);
         }
@@ -112,7 +112,7 @@ public class TestDetach extends SingleEMFTestCase {
         DMCustomer pc = em.find(DMCustomer.class, root.getId());
         List<DMCustomerInventory> inventories = pc.getCustomerInventories();
         
-        em.clear(pc);
+        em.detach(pc);
         DMCustomer detached = pc;
         assertDetached(detached);
         for (DMCustomerInventory inventory : inventories) {
@@ -128,7 +128,7 @@ public class TestDetach extends SingleEMFTestCase {
         em.persist(newInventory);
         assertNotDetached(newInventory);
         
-        em.clear(detached);
+        em.detach(detached);
         assertDetached(detached);
         assertEquals(inventories.size()+1, newInventories.size());
         for (DMCustomerInventory inventory : newInventories) {
@@ -152,7 +152,7 @@ public class TestDetach extends SingleEMFTestCase {
         List<DMCustomerInventory> inventories = pc.getCustomerInventories();
         DMItem item = inventories.get(1).getItem();
         
-        em.clear(inventories.get(0));
+        em.detach(inventories.get(0));
         
         DMCustomerInventory attached0 = inventories.get(0);
         DMCustomerInventory attached1 = inventories.get(1);

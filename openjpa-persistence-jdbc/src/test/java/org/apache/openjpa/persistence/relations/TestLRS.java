@@ -81,7 +81,7 @@ public class TestLRS
         OpenJPAEntityManager em = emf.createEntityManager();
         LRSEntity lrs = em.find(LRSEntity.class, id);
         assertLRS(lrs, "lrs");
-        lrs = em.detach(lrs); 
+        lrs = em.detachCopy(lrs); 
         assertEquals("lrs", lrs.getName());
         assertNull(lrs.getLRSList());
         em.close();

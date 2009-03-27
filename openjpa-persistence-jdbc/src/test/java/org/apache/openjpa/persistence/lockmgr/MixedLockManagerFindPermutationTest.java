@@ -61,22 +61,22 @@ public class MixedLockManagerFindPermutationTest extends SequencedActionsTest {
         commonFindTest(
             "testFind(Read,Commit/PessimisticRead,Commit)",
             LockModeType.READ, Act.CommitTx, 1, null, 
-            LockModeType.PESSIMISTIC/*_READ*/, Act.CommitTx, 0, null);
+            LockModeType.PESSIMISTIC_READ, Act.CommitTx, 0, null);
         commonFindTest(
             "testFind(Read,Commit/PessimisticRead,Rollback)",
             LockModeType.READ, Act.CommitTx, 1, null,
-            LockModeType.PESSIMISTIC/*_READ*/, Act.RollbackTx, 1, null);
+            LockModeType.PESSIMISTIC_READ, Act.RollbackTx, 1, null);
     }
     
     public void testFindReadPessimisticWrite() {
         commonFindTest(
             "testFind(Read,Commit/PessimisticWrite,Commit)",
             LockModeType.READ, Act.CommitTx, 1, null, 
-            LockModeType.PESSIMISTIC/*_WRITE*/, Act.CommitTx, 0, null);
+            LockModeType.PESSIMISTIC_WRITE, Act.CommitTx, 0, null);
         commonFindTest(
             "testFind(Read,Commit/PessimisticWrite,Rollback)",
             LockModeType.READ, Act.CommitTx, 1, null,
-            LockModeType.PESSIMISTIC/*_WRITE*/, Act.RollbackTx, 1, null);
+            LockModeType.PESSIMISTIC_WRITE, Act.RollbackTx, 1, null);
     }
     
     public void testFindReadPessimisticForceInc() {
@@ -118,22 +118,22 @@ public class MixedLockManagerFindPermutationTest extends SequencedActionsTest {
         commonFindTest(
             "testFind(Write,Commit/PessimisticRead,Commit)",
             LockModeType.WRITE, Act.CommitTx, 1, null, 
-            LockModeType.PESSIMISTIC/*_READ*/, Act.CommitTx, 0, null);
+            LockModeType.PESSIMISTIC_READ, Act.CommitTx, 0, null);
         commonFindTest(
             "testFind(Write,Commit/PessimisticRead,Rollback)",
             LockModeType.WRITE, Act.CommitTx, 1, null,
-            LockModeType.PESSIMISTIC/*_READ*/, Act.RollbackTx, 1, null);
+            LockModeType.PESSIMISTIC_READ, Act.RollbackTx, 1, null);
     }
     
     public void testFindWritePessimisticWrite() {
         commonFindTest(
             "testFind(Write,Commit/PessimisticWrite,Commit)",
             LockModeType.WRITE, Act.CommitTx, 1, null, 
-            LockModeType.PESSIMISTIC/*_WRITE*/, Act.CommitTx, 0, null);
+            LockModeType.PESSIMISTIC_WRITE, Act.CommitTx, 0, null);
         commonFindTest(
             "testFind(Write,Commit/PessimisticWrite,Rollback)",
             LockModeType.WRITE, Act.CommitTx, 1, null,
-            LockModeType.PESSIMISTIC/*_WRITE*/, Act.RollbackTx, 1, null);
+            LockModeType.PESSIMISTIC_WRITE, Act.RollbackTx, 1, null);
     }
     
     public void testFindWritePessimisticForceInc() {
@@ -151,58 +151,58 @@ public class MixedLockManagerFindPermutationTest extends SequencedActionsTest {
     public void testFindPessimisticReadRead() {
         commonFindTest(
             "testFind(PessimisticRead,Commit/Read,Commit)",
-            LockModeType.PESSIMISTIC/*_READ*/, Act.CommitTx, 1, null, 
+            LockModeType.PESSIMISTIC_READ, Act.CommitTx, 1, null, 
             LockModeType.READ, Act.CommitTx, 0, ExpectingOptimisticLockExClass);
         commonFindTest(
             "testFind(PessimisticRead,Commit/Read,Rollback)",
-            LockModeType.PESSIMISTIC/*_READ*/, Act.CommitTx, 1, null,
+            LockModeType.PESSIMISTIC_READ, Act.CommitTx, 1, null,
             LockModeType.READ, Act.RollbackTx, 1, null);
     }
     
     public void testFindPessimisticReadWrite() {
         commonFindTest(
             "testFind(PessimisticRead,Commit/Write,Commit)",
-            LockModeType.PESSIMISTIC/*_READ*/, Act.CommitTx, 1, null,
+            LockModeType.PESSIMISTIC_READ, Act.CommitTx, 1, null,
             LockModeType.WRITE, Act.CommitTx, 0, 
                 ExpectingOptimisticLockExClass);
         commonFindTest(
             "testFind(PessimisticRead,Commit/Write,Rollback)",
-            LockModeType.PESSIMISTIC/*_READ*/, Act.CommitTx, 1, null,
+            LockModeType.PESSIMISTIC_READ, Act.CommitTx, 1, null,
             LockModeType.WRITE, Act.RollbackTx, 1, null);
     }
     
     public void testFindPessimisticReadPessimisticRead() {
         commonFindTest(
             "testFind(PessimisticRead,Commit/PessimisticRead,Commit)",
-            LockModeType.PESSIMISTIC/*_READ*/, Act.CommitTx, 1, null, 
-            LockModeType.PESSIMISTIC/*_READ*/, Act.CommitTx, 0, null);
+            LockModeType.PESSIMISTIC_READ, Act.CommitTx, 1, null, 
+            LockModeType.PESSIMISTIC_READ, Act.CommitTx, 0, null);
 //                ExpectingOptimisticLockExClass);
         commonFindTest(
             "testFind(PessimisticRead,Commit/PessimisticRead,Rollback)",
-            LockModeType.PESSIMISTIC/*_READ*/, Act.CommitTx, 1, null,
-            LockModeType.PESSIMISTIC/*_READ*/, Act.RollbackTx, 0, null); 
+            LockModeType.PESSIMISTIC_READ, Act.CommitTx, 1, null,
+            LockModeType.PESSIMISTIC_READ, Act.RollbackTx, 0, null); 
 //                ExpectingOptimisticLockExClass);
     }
     
     public void testFindPessimisticReadPessimisticWrite() {
         commonFindTest(
             "testFind(PessimisticRead,Commit/PessimisticWrite,Commit)",
-            LockModeType.PESSIMISTIC/*_READ*/, Act.CommitTx, 1, null, 
-            LockModeType.PESSIMISTIC/*_WRITE*/, Act.CommitTx, 0, null); 
+            LockModeType.PESSIMISTIC_READ, Act.CommitTx, 1, null, 
+            LockModeType.PESSIMISTIC_WRITE, Act.CommitTx, 0, null); 
         commonFindTest(
             "testFind(PessimisticRead,Commit/PessimisticWrite,Rollback)",
-            LockModeType.PESSIMISTIC/*_READ*/, Act.CommitTx, 1, null,
-            LockModeType.PESSIMISTIC/*_WRITE*/, Act.RollbackTx, 0, null);
+            LockModeType.PESSIMISTIC_READ, Act.CommitTx, 1, null,
+            LockModeType.PESSIMISTIC_WRITE, Act.RollbackTx, 0, null);
     }
     
     public void testFindPessimisticReadPessimisticForceInc() {
         commonFindTest(
             "testFind(PessimisticRead,Commit/PessimisticForceInc,Commit)",
-            LockModeType.PESSIMISTIC/*_READ*/, Act.CommitTx, 1, null, 
+            LockModeType.PESSIMISTIC_READ, Act.CommitTx, 1, null, 
             LockModeType.PESSIMISTIC_FORCE_INCREMENT, Act.CommitTx, 1, null);
         commonFindTest(
             "testFind(PessimisticRead,Commit/PessimisticForceInc,Rollback)",
-            LockModeType.PESSIMISTIC/*_READ*/, Act.CommitTx, 1, null,
+            LockModeType.PESSIMISTIC_READ, Act.CommitTx, 1, null,
             LockModeType.PESSIMISTIC_FORCE_INCREMENT, Act.RollbackTx, 0, null);
     }
     
@@ -210,56 +210,56 @@ public class MixedLockManagerFindPermutationTest extends SequencedActionsTest {
     public void testFindPessimsiticWriteRead() {
         commonFindTest(
             "testFind(PessimsiticWrite,Commit/Read,Commit)",
-            LockModeType.PESSIMISTIC/*_WRITE*/, Act.CommitTx, 1, null, 
+            LockModeType.PESSIMISTIC_WRITE, Act.CommitTx, 1, null, 
             LockModeType.READ, Act.CommitTx, 0, ExpectingOptimisticLockExClass);
         commonFindTest(
             "testFind(PessimsiticWrite,Commit/Read,Rollback)",
-            LockModeType.PESSIMISTIC/*_WRITE*/, Act.CommitTx, 1, null,
+            LockModeType.PESSIMISTIC_WRITE, Act.CommitTx, 1, null,
             LockModeType.READ, Act.RollbackTx, 1, null);
     }
     
     public void testFindPessimsiticWriteWrite() {
         commonFindTest(
             "testFind(PessimsiticWrite,Commit/Write,Commit)",
-            LockModeType.PESSIMISTIC/*_WRITE*/, Act.CommitTx, 1, null,
+            LockModeType.PESSIMISTIC_WRITE, Act.CommitTx, 1, null,
             LockModeType.WRITE, Act.CommitTx, 0, 
                 ExpectingOptimisticLockExClass);
         commonFindTest(
             "testFind(PessimsiticWrite,Commit/Write,Rollback)",
-            LockModeType.PESSIMISTIC/*_WRITE*/, Act.CommitTx, 1, null,
+            LockModeType.PESSIMISTIC_WRITE, Act.CommitTx, 1, null,
             LockModeType.WRITE, Act.RollbackTx, 1, null);
     }
     
     public void testFindPessimsiticWritePessimisticRead() {
         commonFindTest(
             "testFind(PessimsiticWrite,Commit/PessimisticRead,Commit)",
-            LockModeType.PESSIMISTIC/*_WRITE*/, Act.CommitTx, 1, null, 
-            LockModeType.PESSIMISTIC/*_READ*/, Act.CommitTx, 0, null); 
+            LockModeType.PESSIMISTIC_WRITE, Act.CommitTx, 1, null, 
+            LockModeType.PESSIMISTIC_READ, Act.CommitTx, 0, null); 
         commonFindTest(
             "testFind(PessimsiticWrite,Commit/PessimisticRead,Rollback)",
-            LockModeType.PESSIMISTIC/*_WRITE*/, Act.CommitTx, 1, null,
-            LockModeType.PESSIMISTIC/*_READ*/, Act.RollbackTx, 0, null); 
+            LockModeType.PESSIMISTIC_WRITE, Act.CommitTx, 1, null,
+            LockModeType.PESSIMISTIC_READ, Act.RollbackTx, 0, null); 
     }
     
     public void testFindPessimsiticWritePessimisticWrite() {
         commonFindTest(
             "testFind(PessimsiticWrite,Commit/PessimisticWrite,Commit)",
-            LockModeType.PESSIMISTIC/*_WRITE*/, Act.CommitTx, 1, null, 
-            LockModeType.PESSIMISTIC/*_WRITE*/, Act.CommitTx, 0, null); 
+            LockModeType.PESSIMISTIC_WRITE, Act.CommitTx, 1, null, 
+            LockModeType.PESSIMISTIC_WRITE, Act.CommitTx, 0, null); 
         commonFindTest(
             "testFind(PessimsiticWrite,Commit/PessimisticWrite,Rollback)",
-            LockModeType.PESSIMISTIC/*_WRITE*/, Act.CommitTx, 1, null,
-            LockModeType.PESSIMISTIC/*_WRITE*/, Act.RollbackTx, 0, null); 
+            LockModeType.PESSIMISTIC_WRITE, Act.CommitTx, 1, null,
+            LockModeType.PESSIMISTIC_WRITE, Act.RollbackTx, 0, null); 
     }
     
     public void testFindPessimsiticWritePessimisticForceInc() {
         commonFindTest(
             "testFind(PessimsiticWrite,Commit/PessimisticForceInc,Commit)",
-            LockModeType.PESSIMISTIC/*_WRITE*/, Act.CommitTx, 1, null, 
+            LockModeType.PESSIMISTIC_WRITE, Act.CommitTx, 1, null, 
             LockModeType.PESSIMISTIC_FORCE_INCREMENT, Act.CommitTx, 1, null); 
         commonFindTest(
             "testFind(PessimsiticWrite,Commit/PessimisticForceInc,Rollback)",
-            LockModeType.PESSIMISTIC/*_WRITE*/, Act.CommitTx, 1, null,
+            LockModeType.PESSIMISTIC_WRITE, Act.CommitTx, 1, null,
             LockModeType.PESSIMISTIC_FORCE_INCREMENT, Act.RollbackTx, 0, null);
     }
     
@@ -291,22 +291,22 @@ public class MixedLockManagerFindPermutationTest extends SequencedActionsTest {
         commonFindTest(
             "testFind(PessimsiticForceInc,Commit/PessimisticRead,Commit)",
             LockModeType.PESSIMISTIC_FORCE_INCREMENT, Act.CommitTx, 1, null, 
-            LockModeType.PESSIMISTIC/*_READ*/, Act.CommitTx, 0, null); 
+            LockModeType.PESSIMISTIC_READ, Act.CommitTx, 0, null); 
         commonFindTest(
             "testFind(PessimsiticForceInc,Commit/PessimisticRead,Rollback)",
             LockModeType.PESSIMISTIC_FORCE_INCREMENT, Act.CommitTx, 1, null,
-            LockModeType.PESSIMISTIC/*_READ*/, Act.RollbackTx, 0, null); 
+            LockModeType.PESSIMISTIC_READ, Act.RollbackTx, 0, null); 
     }
     
     public void testFindPessimsiticForceIncPessimisticWrite() {
         commonFindTest(
             "testFind(PessimsiticForceInc,Commit/PessimisticWrite,Commit)",
             LockModeType.PESSIMISTIC_FORCE_INCREMENT, Act.CommitTx, 1, null, 
-            LockModeType.PESSIMISTIC/*_WRITE*/, Act.CommitTx, 0, null);
+            LockModeType.PESSIMISTIC_WRITE, Act.CommitTx, 0, null);
         commonFindTest(
             "testFind(PessimsiticForceInc,Commit/PessimisticWrite,Rollback)",
             LockModeType.PESSIMISTIC_FORCE_INCREMENT, Act.CommitTx, 1, null,
-            LockModeType.PESSIMISTIC/*_WRITE*/, Act.RollbackTx, 0, null); 
+            LockModeType.PESSIMISTIC_WRITE, Act.RollbackTx, 0, null); 
     }
     
     public void testFindPessimsiticForceIncPessimisticForceInc() {

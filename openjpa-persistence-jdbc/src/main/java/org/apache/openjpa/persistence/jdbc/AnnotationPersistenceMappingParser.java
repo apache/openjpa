@@ -1782,8 +1782,6 @@ public class AnnotationPersistenceMappingParser
         col.setFlag(Column.FLAG_UNUPDATABLE, !order.updatable());
         if (!StringUtils.isEmpty(order.table()))
             col.setTableName(order.table());
-        col.setBase(order.base());
-        col.setContiguous(order.contiguous());
         
         fm.getMappingInfo().setOrderColumn(col);        
     }

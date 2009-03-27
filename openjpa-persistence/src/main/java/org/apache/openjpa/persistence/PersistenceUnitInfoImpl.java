@@ -33,6 +33,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
+
+import javax.persistence.Caching;
+import javax.persistence.ValidationMode;
 import javax.persistence.spi.ClassTransformer;
 import javax.persistence.spi.PersistenceUnitInfo;
 import javax.persistence.spi.PersistenceUnitTransactionType;
@@ -500,4 +503,19 @@ public class PersistenceUnitInfoImpl
             return _loader;
         }
 	}
+
+    public String PersistenceXMLSchemaVersion() {
+        throw new UnsupportedOperationException(
+            "JPA 2.0 - Method not yet implemented");
+    }
+
+    public Caching getCaching() {
+        throw new UnsupportedOperationException(
+            "JPA 2.0 - Method not yet implemented");
+    }
+
+    public ValidationMode getValidationMode() {
+        throw new UnsupportedOperationException(
+            "JPA 2.0 - Method not yet implemented");
+    }
 }

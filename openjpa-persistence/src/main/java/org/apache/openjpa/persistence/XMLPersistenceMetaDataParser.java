@@ -1159,7 +1159,7 @@ public class XMLPersistenceMetaDataParser
                 case MERGE:
                     vmd.setCascadeAttach(ValueMetaData.CASCADE_IMMEDIATE);
                     break;
-                case CLEAR:
+                case DETACH:
                     vmd.setCascadeDetach(ValueMetaData.CASCADE_IMMEDIATE);
                     break;
                 case REMOVE:
@@ -1469,7 +1469,7 @@ public class XMLPersistenceMetaDataParser
     
     protected void parseElementCollection(FieldMetaData fmd, Attributes attrs)
         throws SAXException {
-        String val = attrs.getValue("target-entity");
+        String val = attrs.getValue("target-class");
         if (val != null)
             fmd.getElement().setDeclaredType(classForName(val));
 
