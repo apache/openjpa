@@ -1854,6 +1854,8 @@ public class FieldMetaData
         _lobField = field._lobField;
         _serializableField = field._serializableField;
         _generated = field._generated;
+        _mappedByIdValue = field._mappedByIdValue;
+        _isElementCollection = field._isElementCollection;
 
         // embedded fields can't be versions
         if (_owner.getEmbeddingMetaData() == null && _version == null)
