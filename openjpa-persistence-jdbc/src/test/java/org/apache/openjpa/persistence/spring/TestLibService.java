@@ -70,7 +70,7 @@ public class TestLibService extends SingleEMFTestCase
             Volunteer volunteer = borrower.getVolunteer();
             assertNotNull("could not find " + bName + "'s volunteer status",
                     volunteer);
-            assertNotNull("could not find the reference from " + bName
+            assertTrue("could not find the reference from " + bName
                     + "'s volunteer status back to " + bName, 
                     volunteer.getBorrower() == borrower);
 
