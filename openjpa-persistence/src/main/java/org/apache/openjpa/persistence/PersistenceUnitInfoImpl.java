@@ -79,6 +79,7 @@ public class PersistenceUnitInfoImpl
     private DataSource _nonJtaDataSource;
     private boolean _excludeUnlisted;
     private URL _persistenceXmlFile;
+    private String _schemaVersion = "1.0";
 
     // A persistence unit is defined by a persistence.xml file. The jar
     // file or directory whose META-INF directory contains the
@@ -505,8 +506,11 @@ public class PersistenceUnitInfoImpl
 	}
 
     public String PersistenceXMLSchemaVersion() {
-        throw new UnsupportedOperationException(
-            "JPA 2.0 - Method not yet implemented");
+        return _schemaVersion;
+    }
+
+    public void setPersistenceXMLSchemaVersion(String version) {
+        _schemaVersion = version;
     }
 
     public Caching getCaching() {

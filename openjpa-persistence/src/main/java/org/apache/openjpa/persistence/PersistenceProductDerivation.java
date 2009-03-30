@@ -675,7 +675,8 @@ public class PersistenceProductDerivation
             throws SAXException {
             _info = new PersistenceUnitInfoImpl();
             _info.setPersistenceUnitName(attrs.getValue("name"));
-
+            _info.setPersistenceXMLSchemaVersion(_persistenceVersion);
+            
             // we only parse this ourselves outside a container, so default
             // transaction type to local
             String val = attrs.getValue("transaction-type");
