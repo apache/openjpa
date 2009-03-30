@@ -423,8 +423,14 @@ public class FetchConfigurationImpl
     public FetchConfiguration setLockTimeout(int timeout) {
         if (timeout == DEFAULT && _state.ctx != null)
             _state.lockTimeout = _state.ctx.getConfiguration().getLockTimeout();
-        else if (timeout != DEFAULT)
-            _state.lockTimeout = timeout;
+        else if (timeout != DEFAULT) {
+            if (timeout < -1) {
+                throw new IllegalArgumentException(_loc.get("invalid-timeout", 
+                    timeout).getMessage());
+            } else {
+                _state.lockTimeout = timeout;
+            }
+        }
         return this;
     }
     
@@ -434,9 +440,16 @@ public class FetchConfigurationImpl
 
     public FetchConfiguration setQueryTimeout(int timeout) {
         if (timeout == DEFAULT && _state.ctx != null)
-            _state.queryTimeout = _state.ctx.getConfiguration().getQueryTimeout();
-        else if (timeout != DEFAULT)
-            _state.queryTimeout = timeout;
+            _state.queryTimeout = _state.ctx.getConfiguration().
+                getQueryTimeout();
+        else if (timeout != DEFAULT) {
+            if (timeout < -1) {
+                throw new IllegalArgumentException(_loc.get("invalid-timeout", 
+                    timeout).getMessage());
+            } else {
+                _state.queryTimeout = timeout;
+            }
+        }
         return this;
     }
 

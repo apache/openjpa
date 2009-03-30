@@ -59,8 +59,9 @@ import org.apache.openjpa.persistence.test.SQLListenerTestCase;
  *   b) getSingleResult()
  *   c) executeUpdate()
  * Other behaviors to test for:
- *   4) Setting timeout to < 0 should be treated as no timeout supplied
- *   5) Updates after EM.find()/findAll() are not affected by query timeout
+ *   4) Setting timeout to -1 should be treated as no timeout supplied
+ *   5) Setting timeout to < -1 should throw an IllegalArgumentExpection
+ *   6) Updates after EM.find()/findAll() are not affected by query timeout
  * Exception generation to test for:
  *   If the DB query timeout does not cause a transaction rollback, then a 
  *   QueryTimeoutException should be thrown.
@@ -222,7 +223,8 @@ public class TestQueryTimeout extends SQLListenerTestCase {
         try {
             em = emf.createEntityManager();
             assertNotNull(em);
-            Query q = em.createQuery("UPDATE QTimeout q SET q.stringField = :strVal WHERE q.id = 1");
+            Query q = em.createQuery("UPDATE QTimeout q SET q.stringField = " +
+                ":strVal WHERE q.id = 1");
             q.setParameter("strVal", new String("updated"));
             // verify no default javax.persistence.query.timeout is supplied
             Map<String, Object> hints = q.getHints();
@@ -341,8 +343,8 @@ public class TestQueryTimeout extends SQLListenerTestCase {
                 List results = q.getResultList();
                 long endTime = System.currentTimeMillis();
                 long runTime = endTime - startTime;
-                getLog().trace("testQueryTimeout22a() - Hint0msec runTime msecs="
-                    + runTime);
+                getLog().trace("testQueryTimeout22a() - Hint0msec runTime " +
+                    "msecs=" + runTime);
                 // Hack - Windows sometimes returns 5999 instead of 6000+
                 assertTrue("Should have taken 6+ secs, but was msecs=" +
                     runTime, runTime > 5900);
@@ -422,7 +424,8 @@ public class TestQueryTimeout extends SQLListenerTestCase {
         if (skipTests) {
             return;
         }
-        getLog().trace("testQueryTimeout31c() - PU(timeout=1000), executeUpdate timeout");
+        getLog().trace("testQueryTimeout31c() - PU(timeout=1000), " +
+            "executeUpdate timeout");
         OpenJPAEntityManagerFactory emf = null;
         OpenJPAEntityManager em = null;
         Integer setTime = new Integer(1000);
@@ -440,7 +443,8 @@ public class TestQueryTimeout extends SQLListenerTestCase {
             // create EM and Query
             em = emf.createEntityManager();
             assertNotNull(em);
-            OpenJPAQuery q = em.createNativeQuery("UPDATE QTimeout SET stringField = ? WHERE mod(DELAY(2,id),2)=0");
+            OpenJPAQuery q = em.createNativeQuery("UPDATE QTimeout SET " +
+                "stringField = ? WHERE mod(DELAY(2,id),2)=0");
             q.setParameter(1, new String("updated"));
             // verify no default javax.persistence.query.timeout is supplied
             Map<String, Object> hints = q.getHints();
@@ -457,8 +461,8 @@ public class TestQueryTimeout extends SQLListenerTestCase {
                 em.getTransaction().commit();
                 long endTime = System.currentTimeMillis();
                 long runTime = endTime - startTime;
-                getLog().trace("testQueryTimeout31c() - executeUpdate runTime " + 
-                    "msecs=" + runTime);
+                getLog().trace("testQueryTimeout31c() - executeUpdate " + 
+                    "runTime msecs=" + runTime);
                 fail("QueryTimeout for executeUpdate failed to cause an " + 
                     "Exception in testQueryTimeout31c(" + setTime +
                     " mscs), runTime msecs=" + runTime);
@@ -485,7 +489,8 @@ public class TestQueryTimeout extends SQLListenerTestCase {
         if (skipTests) {
             return;
         }
-        getLog().trace("testQueryTimeout32a() - PU(1000), Map(0), QueryHint(1000)");
+        getLog().trace("testQueryTimeout32a() - PU(1000), Map(0), " +
+            "QueryHint(1000)");
         OpenJPAEntityManagerFactory emf = null;
         OpenJPAEntityManager em = null;
         Integer setTime = new Integer(0);
@@ -587,7 +592,8 @@ public class TestQueryTimeout extends SQLListenerTestCase {
                 getLog().trace(
                     "testQueryTimeout33b() - NoHintSingle runTime msecs="
                     + runTime);
-                //assertNull("Should never get valid result due to the timeout.", result);
+                //assertNull("Should never get valid result due to the timeout."
+                //    , result);
                 fail("QueryTimeout annotation failed to cause an Exception " + 
                     "in testQueryTimeout33b(" + setTime +
                     " mscs), runTime msecs=" + runTime);
@@ -612,7 +618,8 @@ public class TestQueryTimeout extends SQLListenerTestCase {
         if (skipTests) {
             return;
         }
-        getLog().trace("testQueryTimeout33c() - PU(timeout=0), setHint(1000), executeUpdate timeout");
+        getLog().trace("testQueryTimeout33c() - PU(timeout=0), setHint(1000)," +
+            " executeUpdate timeout");
         OpenJPAEntityManagerFactory emf = null;
         OpenJPAEntityManager em = null;
         Integer setTime = new Integer(0);        
@@ -631,13 +638,16 @@ public class TestQueryTimeout extends SQLListenerTestCase {
             em = emf.createEntityManager();
             assertNotNull(em);
             // Following fails to cause a SQLException, but takes 2+ secs
-            // Query q = em.createQuery("UPDATE QTimeout q SET q.stringField = :strVal WHERE q.id > 0");
+            // Query q = em.createQuery("UPDATE QTimeout q SET q.stringField = 
+            //     + ":strVal WHERE q.id > 0");
             // q.setParameter("strVal", new String("updated"));
             // Following fails to cause a SQLException, but takes 2+ secs
-            // Query q = em.createNativeQuery("INSERT INTO QTimeout (id, stringField) VALUES (?,?)");
+            // Query q = em.createNativeQuery("INSERT INTO QTimeout (id, " +
+            //    "stringField) VALUES (?,?)");
             // q.setParameter(1, 99);
             // q.setParameter(2, new String("inserted"));
-            OpenJPAQuery q = em.createNativeQuery("UPDATE QTimeout SET stringField = ? WHERE mod(DELAY(2,id),2)=0");
+            OpenJPAQuery q = em.createNativeQuery("UPDATE QTimeout SET " +
+                "stringField = ? WHERE mod(DELAY(2,id),2)=0");
             q.setParameter(1, new String("updated"));
             // verify no default javax.persistence.query.timeout is supplied
             Map<String, Object> hints = q.getHints();
@@ -663,8 +673,8 @@ public class TestQueryTimeout extends SQLListenerTestCase {
                 em.getTransaction().commit();
                 long endTime = System.currentTimeMillis();
                 long runTime = endTime - startTime;
-                getLog().trace("testQueryTimeout33c() - executeUpdate runTime " + 
-                    "msecs=" + runTime);
+                getLog().trace("testQueryTimeout33c() - executeUpdate " + 
+                    "runTime msecs=" + runTime);
                 fail("QueryTimeout for executeUpdate failed to cause an " + 
                     "Exception in testQueryTimeout33c(" + setTime +
                     " mscs), runTime msecs=" + runTime);
@@ -682,8 +692,8 @@ public class TestQueryTimeout extends SQLListenerTestCase {
     }
 
     /**
-     * Scenario being tested: 4) Timeouts < 0 are ignored and treated as the
-     * default no timeout scenario.
+     * Scenario being tested: 4) Timeout of -1 should be treated the same
+     * as the default no timeout scenario.
      * Expected Results: The DELAY function is being called and the query
      * takes 2000+ msecs to complete.
      */
@@ -691,7 +701,7 @@ public class TestQueryTimeout extends SQLListenerTestCase {
         if (skipTests) {
             return;
         }
-        Integer setTime = new Integer(-2000);
+        Integer setTime = new Integer(-1);
         getLog().trace("testQueryTimeout4() - setHint(" + setTime + ")");
         EntityManager em = null;
         try {
@@ -703,7 +713,7 @@ public class TestQueryTimeout extends SQLListenerTestCase {
             Map<String, Object> hints = q.getHints();
             assertFalse(hints.containsKey("javax.persistence.query.timeout"));
 
-            // update the timeout value to -2000 and verify it was set
+            // update the timeout value to -1 and verify it was set
             getLog().trace("testQueryTimeout4() - Setting hint " +
                 "javax.persistence.query.timeout="
                 + setTime);
@@ -740,16 +750,55 @@ public class TestQueryTimeout extends SQLListenerTestCase {
     }
 
     /**
-     * Scenario being tested: 5) PU Query timeout hints do not affect EM
-     * operations like updating Entities returned by EM.find()/findAll()
-     * Expected Results: The DELAY function is being called and the update
-     * takes 2000+ msecs to complete.
+     * Scenario being tested: 5) Setting timeout to < -1 should throw an
+     * IllegalArgumentExpection
+     * Expected Results: IllegalArgumentException
      */
     public void testQueryTimeout5() {
         if (skipTests) {
             return;
         }
-        getLog().trace("testQueryTimeout5() - No EM.find() update timeout");
+        Integer setTime = new Integer(-2000);
+        getLog().trace("testQueryTimeout5() - setHint(" + setTime + ")");
+        EntityManager em = null;
+        try {
+            em = emf.createEntityManager();
+            assertNotNull(em);
+            Query q = em.createNamedQuery("NoHintSingle");
+
+            // verify no default javax.persistence.query.timeout is supplied
+            Map<String, Object> hints = q.getHints();
+            assertFalse(hints.containsKey("javax.persistence.query.timeout"));
+
+            // update the timeout value to -2000 and verify it was set
+            getLog().trace("testQueryTimeout5() - Setting hint " +
+                "javax.persistence.query.timeout="
+                + setTime);
+            q.setHint("javax.persistence.query.timeout", setTime);
+            fail("Expected testQueryTimeout5() to throw a " + 
+                "IllegalArgumentException");
+        } catch (Exception e) {
+            // expected - setHint(-2000) should cause an IllegalArgumentException
+            checkException("testQueryTimeout5()", e, 
+                IllegalArgumentException.class, "Invalid value" );
+        } finally {
+            if ((em != null) && em.isOpen()) {
+                em.close();
+            }
+        }
+    }
+
+    /**
+     * Scenario being tested: 6) PU Query timeout hints do not affect EM
+     * operations like updating Entities returned by EM.find()/findAll()
+     * Expected Results: The DELAY function is being called and the update
+     * takes 2000+ msecs to complete.
+     */
+    public void testQueryTimeout6() {
+        if (skipTests) {
+            return;
+        }
+        getLog().trace("testQueryTimeout6() - No EM.find() update timeout");
         OpenJPAEntityManagerFactory emf = null;
         OpenJPAEntityManager em = null;
         Integer setTime = new Integer(1000);
@@ -777,7 +826,7 @@ public class TestQueryTimeout extends SQLListenerTestCase {
                 em.getTransaction().commit();
                 long endTime = System.currentTimeMillis();
                 long runTime = endTime - startTime;
-                getLog().trace("testQueryTimeout1d() - EM find/update runTime" +
+                getLog().trace("testQueryTimeout6() - EM find/update runTime" +
                     " msecs=" + runTime);
                 // Hack - Windows sometimes returns 1999 instead of 2000+
                 assertTrue("Should have taken 2+ secs, but was msecs=" +
@@ -789,7 +838,7 @@ public class TestQueryTimeout extends SQLListenerTestCase {
             } catch (Exception e) {
                 // setting a timeout property via PU or Map shouldn't cause a
                 // timeout exception
-                fail("Unexpected testQueryTimeout5() exception = " + e);
+                fail("Unexpected testQueryTimeout6() exception = " + e);
             }
         } finally {
             if ((em != null) && em.isOpen()) {
@@ -857,11 +906,28 @@ public class TestQueryTimeout extends SQLListenerTestCase {
      * @param e
      */
     private void checkException(String test, Exception e) {
+        String eStr = new String("query statement timeout");
         // no easy way to determine exact Exception type for all DBs
         assertTrue(test + " - UNEXPECTED Exception = " + e,
-            matchesExpectedException(QueryTimeoutException.class, e) ||
-            matchesExpectedException(PersistenceException.class, e));
+            matchesExpectedException(QueryTimeoutException.class, e, eStr) ||
+            matchesExpectedException(PersistenceException.class, e, eStr));
         getLog().trace(test + " - Caught expected Exception = " + e);
+    }
+
+    /**
+     * Internal convenience method for checking that the given Exception matches
+     * the expected type.
+     * 
+     * @param test case name
+     * @param tested exception type
+     * @param expected exception type
+     * @param eStr an optional substring to match in the exception text
+     */
+    private void checkException(String test, Exception tested, Class expected, 
+        String eStr) {
+        assertTrue(test + " - UNEXPECTED Exception = " + tested,
+            matchesExpectedException(expected, tested, eStr));
+        getLog().trace(test + " - Caught expected Exception = " + tested);
     }
 
     /**
@@ -870,19 +936,20 @@ public class TestQueryTimeout extends SQLListenerTestCase {
      * 
      * @param expected
      * @param tested
-     * @return
+     * @param eStr an optional substring to match in the exception text
+     * @return true if the exception matched, false otherwise
      */
     private boolean matchesExpectedException(Class<?> expected, 
-        Exception tested) {
+        Exception tested, String eStr) {
         assertNotNull(expected);
         boolean exMatched = false;
         if (tested != null) {
             Class<?> testExClass = tested.getClass();
             exMatched = expected.isAssignableFrom(testExClass);
-            if (exMatched) {
+            if (exMatched && eStr != null) {
                 // make sure it is our expected exception text from
                 // localizer.properties
-                exMatched = (tested.getMessage().indexOf("query statement timeout") != -1);
+                exMatched = (tested.getMessage().indexOf(eStr) != -1);
             }
         }
         return exMatched;

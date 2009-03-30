@@ -142,6 +142,24 @@ public class TestQueryHints extends SingleEMFTestCase {
         assertEquals(5671, query.getFetchPlan().getLockTimeout());
         assertEquals(7500, query.getFetchPlan().getQueryTimeout());
     }
+
+    public void testInvalidLockTimeoutHint() {
+        try {
+            query.setHint("javax.persistence.lock.timeout", -5671);
+            fail("Expected setHint to fail with an IllegalArgumentException");
+        } catch (IllegalArgumentException e) {
+            // expected
+        }
+    }
+    
+    public void testInvalidQueryTimeoutHint() {
+        try {
+            query.setHint("javax.persistence.query.timeout", -7500);
+            fail("Expected setHint to fail with an IllegalArgumentException");
+        } catch (IllegalArgumentException e) {
+            // expected
+        }
+    }
     
     public void testParts() {
         HintHandler.HintKeyComparator test = new HintHandler.HintKeyComparator();
