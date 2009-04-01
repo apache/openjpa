@@ -964,10 +964,9 @@ public class TestEmbeddable extends SingleEMFTestCase {
         List rs = null;
         for (int i = 0; i < query.length; i++) {
             rs = em.createQuery(query[i]).getResultList();
-            if (rs.size() > 0) {
-                Object obj = rs.get(0);
-                assertTrue(obj instanceof String);
-            }
+            assertTrue(rs.size() > 0);
+            Object obj = rs.get(0);
+            assertTrue(obj instanceof String);
             em.clear();
         }
         EntityTransaction tran = em.getTransaction();
@@ -986,6 +985,22 @@ public class TestEmbeddable extends SingleEMFTestCase {
      */
     public void queryEntityA_Embed_ToOne() {
         EntityManager em = emf.createEntityManager();
+        // test select embed object
+        String[] query = {
+            "select a.embed from " +
+                " EntityA_Embed_ToOne a ",
+            "select e from EntityA_Embed_ToOne a " +
+                " join a.embed e join e.b b where e.b.id > 0 order by a.id",
+        };
+        for (int i = 0; i < query.length; i++) {
+            List<Object[]> rs = null;
+            rs = em.createQuery(query[i]).getResultList();
+            assertTrue(rs.size() > 0);
+            Object obj = rs.get(0);
+            assertTrue(obj instanceof Embed_ToOne);
+            assertTrue(((Embed_ToOne) obj).getEntityB() != null);
+            em.clear();
+        }
         EntityTransaction tran = em.getTransaction();
         tran.begin();
         Query q = em.createQuery("select a from EntityA_Embed_ToOne a");
@@ -1017,15 +1032,17 @@ public class TestEmbeddable extends SingleEMFTestCase {
         List<Object[]> rs = null;
         for (int i = 0; i < query.length; i++) {
             rs = em.createQuery(query[i]).getResultList();
-            if (rs.size() > 0) {
-                Object obj = ((Object[]) rs.get(0))[0];
-                assertTrue(obj instanceof Embed_ToOne);
-                switch (i) {
-                case 0:
-                    Object b = ((Object[]) rs.get(0))[1];
-                    assertTrue(b instanceof EntityB1);
-                    break;
-                }
+            assertTrue(rs.size() > 0);
+            Object obj = ((Object[]) rs.get(0))[0];
+            assertTrue(obj instanceof Embed_ToOne);
+            assertTrue(((Embed_ToOne) obj).getEntityB() != null);
+            switch (i) {
+            case 0:
+                Object b = ((Object[]) rs.get(0))[1];
+                assertTrue(b instanceof EntityB1);
+                assertEquals(((EntityB1) b).getId(),
+                    ((Embed_ToOne) obj).getEntityB().getId());
+                break;
             }
             em.clear();
         }
@@ -1045,6 +1062,32 @@ public class TestEmbeddable extends SingleEMFTestCase {
      */
     public void queryEntityA_Embed_ToMany() {
         EntityManager em = emf.createEntityManager();
+        // test select embeddable
+        String query[] = {
+            "select a.embed from EntityA_Embed_ToMany a",
+            "select e from EntityA_Embed_ToMany a join a.embed e",
+            "select b from EntityA_Embed_ToMany a join a.embed.bs" +
+                " b",
+            "select e from EntityA_Embed_ToMany a join a.embed e " +
+                " where e.name1 like '%1'",
+        };
+        List rs = null;
+        for (int i = 0; i < query.length; i++) {
+            rs = em.createQuery(query[i]).getResultList();
+            assertTrue(rs.size() > 0);
+            Object obj = rs.get(0);
+            switch (i) {
+            case 0:
+            case 1:
+                assertTrue(obj instanceof Embed_ToMany);
+                assertTrue(((Embed_ToMany) obj).getEntityBs().size() > 0);
+                break;
+            case 2:
+                assertTrue(obj instanceof EntityB1);
+                break;
+            }
+            em.clear();
+        }
         EntityTransaction tran = em.getTransaction();
         tran.begin();
         Query q = em.createQuery("select a from EntityA_Embed_ToMany a");
@@ -1061,6 +1104,46 @@ public class TestEmbeddable extends SingleEMFTestCase {
      */
     public void queryEntityA_Embed_Embed_ToMany() {
         EntityManager em = emf.createEntityManager();
+        // test select embeddable
+        String query[] = {
+            "select a.embed from EntityA_Embed_Embed_ToMany a",
+            "select a.embed from EntityA_Embed_Embed_ToMany a" +
+                " where a.embed.embed.name1 like '%1' ",
+            "select a.embed.embed from EntityA_Embed_Embed_ToMany a",
+            "select b from EntityA_Embed_Embed_ToMany a join a.embed.embed.bs" +
+                " b",
+            "select a.embed.embed from EntityA_Embed_Embed_ToMany a " +
+                " where a.embed.embed.name1 like '%1'",
+            "select e2 from EntityA_Embed_Embed_ToMany a " +
+                " left join a.embed e1 left join e1.embed e2",
+            "select e2 from EntityA_Embed_Embed_ToMany a " +
+                " join a.embed e1 join e1.embed e2",
+        };
+        List rs = null;
+        for (int i = 0; i < query.length; i++) {
+            rs = em.createQuery(query[i]).getResultList();
+            assertTrue(rs.size() > 0);
+            Object obj = rs.get(0);
+            switch (i) {
+            case 0:
+            case 1:
+                assertTrue(obj instanceof Embed_Embed_ToMany);
+                assertTrue(((Embed_Embed_ToMany) obj).getEmbed().getEntityBs().
+                    size() > 0);
+                break;
+            case 2:
+            case 4:
+            case 5:
+            case 6:
+                assertTrue(obj instanceof Embed_ToMany);
+                assertTrue(((Embed_ToMany) obj).getEntityBs().size() > 0);
+                break;
+            case 3:
+                assertTrue(obj instanceof EntityB1);
+                break;
+            }        
+            em.clear();
+        }
         EntityTransaction tran = em.getTransaction();
         tran.begin();
         Query q = em.createQuery("select a from EntityA_Embed_Embed_ToMany a");
@@ -1091,10 +1174,9 @@ public class TestEmbeddable extends SingleEMFTestCase {
         List<Object[]> rs = null;
         for (int i = 0; i < query.length; i++) {
             rs = em.createQuery(query[i]).getResultList();
-            if (rs.size() > 0) {
-                Object obj = ((Object[]) rs.get(0))[0];
-                assertTrue(obj instanceof Integer);
-            }
+            assertTrue(rs.size() > 0);
+            Object obj = ((Object[]) rs.get(0))[0];
+            assertTrue(obj instanceof Integer);
             em.clear();
         }
 
@@ -1114,6 +1196,24 @@ public class TestEmbeddable extends SingleEMFTestCase {
      */
     public void queryEntityA_Embed_Embed() {
         EntityManager em = emf.createEntityManager();
+        // test select embeddable
+        String query[] = {
+            "select a.embed from EntityA_Embed_Embed a",
+            "select a.embed.embed from EntityA_Embed_Embed a"
+        };
+        List rs = null;
+        for (int i = 0; i < query.length; i++) {
+            rs = em.createQuery(query[i]).getResultList();
+            assertTrue(rs.size() > 0);
+            switch (i) {
+            case 0:
+                assertTrue(rs.get(0) instanceof Embed_Embed);
+                break;
+            case 1:
+                assertTrue(rs.get(0) instanceof Embed);
+            }
+            em.clear();
+        }
         EntityTransaction tran = em.getTransaction();
         tran.begin();
         Query q = em.createQuery("select a from EntityA_Embed_Embed a");
@@ -1141,10 +1241,9 @@ public class TestEmbeddable extends SingleEMFTestCase {
         List rs = null;
         for (int i = 0; i < query.length; i++) {
             rs = em.createQuery(query[i]).getResultList();
-            if (rs != null && rs.size() > 0) {
-                Object obj = ((Object[]) rs.get(0))[0];
-                assertTrue(obj instanceof Embed_Embed);
-            }
+            assertTrue(rs.size() > 0);
+            Object obj = ((Object[]) rs.get(0))[0];
+            assertTrue(obj instanceof Embed_Embed);
         }
         em.clear();
 
@@ -1178,10 +1277,9 @@ public class TestEmbeddable extends SingleEMFTestCase {
         List<Object[]> rs = null;
         for (int i = 0; i < query.length; i++) {
             rs = em.createQuery(query[i]).getResultList();
-            if (rs.size() > 0) {
-                Object obj = ((Object[]) rs.get(0))[0];
-                assertTrue(obj instanceof Embed);
-            }
+            assertTrue(rs.size() > 0);
+            Object obj = ((Object[]) rs.get(0))[0];
+            assertTrue(obj instanceof Embed);
             em.clear();
         }
 

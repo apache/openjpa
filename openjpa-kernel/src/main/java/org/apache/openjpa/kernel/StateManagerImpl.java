@@ -148,6 +148,8 @@ public class StateManagerImpl
 
     // information about the owner of this instance, if it is embedded
     private StateManagerImpl _owner = null;
+    // for embeddable object from query result
+    private Object _ownerId = null;
     private int _ownerIndex = -1;
     private List _mappedByIdFields = null;
     
@@ -426,6 +428,10 @@ public class StateManagerImpl
         return _ownerIndex;
     }
 
+    public void setOwner(Object oid) {
+        _ownerId = oid;
+    }
+
     public boolean isEmbedded() {
         // _owner may not be set if embed object is from query result
         return _owner != null || _state instanceof ENonTransState;
@@ -514,6 +520,8 @@ public class StateManagerImpl
         StateManagerImpl sm = this;
         while (sm.getOwner() != null)
             sm = (StateManagerImpl) sm.getOwner();
+        if (sm.isEmbedded() && sm.getOwner() == null)
+            return sm._ownerId;
         return sm._oid;
     }
 
@@ -594,8 +602,10 @@ public class StateManagerImpl
      */
     private boolean assignField(int field, boolean preFlushing) {
         OpenJPAStateManager sm = this;
-        while (sm.isEmbedded())
+        while (sm != null && sm.isEmbedded())
             sm = sm.getOwner();
+        if (sm == null)
+            return false;
         if (!sm.isNew() || sm.isFlushed() || sm.isDeleted())
             return false;
 

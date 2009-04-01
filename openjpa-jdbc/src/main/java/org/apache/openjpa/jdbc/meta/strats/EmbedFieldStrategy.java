@@ -44,7 +44,6 @@ import org.apache.openjpa.jdbc.meta.Embeddable;
 import org.apache.openjpa.jdbc.meta.FieldMapping;
 import org.apache.openjpa.jdbc.meta.JavaSQLTypes;
 import org.apache.openjpa.jdbc.meta.RelationId;
-import org.apache.openjpa.jdbc.meta.ValueMapping;
 import org.apache.openjpa.jdbc.meta.ValueMappingInfo;
 import org.apache.openjpa.jdbc.schema.Column;
 import org.apache.openjpa.jdbc.schema.ColumnIO;
@@ -59,17 +58,14 @@ import org.apache.openjpa.jdbc.sql.Select;
 import org.apache.openjpa.kernel.FetchConfiguration;
 import org.apache.openjpa.kernel.OpenJPAStateManager;
 import org.apache.openjpa.kernel.PCState;
+import org.apache.openjpa.kernel.StateManagerImpl;
 import org.apache.openjpa.kernel.StoreContext;
 import org.apache.openjpa.lib.util.Localizer;
 import org.apache.openjpa.meta.ClassMetaData;
 import org.apache.openjpa.meta.FieldMetaData;
-import org.apache.openjpa.meta.JavaTypes;
 import org.apache.openjpa.meta.ValueMetaData;
-import org.apache.openjpa.util.ApplicationIds;
 import org.apache.openjpa.util.InternalException;
 import org.apache.openjpa.util.MetaDataException;
-import org.apache.openjpa.util.OpenJPAId;
-import org.apache.openjpa.util.UserException;
 
 /**
  * Mapping for an embedded persistent object.
@@ -419,7 +415,20 @@ public class EmbedFieldStrategy
         StoreContext ctx = store.getContext();
         OpenJPAStateManager em = ctx.embed(null, null, sm, field);
         sm.storeObject(field.getIndex(), em.getManagedInstance());
+        boolean needsLoad = loadFields(em, store, fetch, res);
 
+        // After loading everything from result, load the rest of the
+        // configured fields if anything is missing.
+        if (needsLoad && 
+            fetch.requiresFetch(field.getFieldMetaData()) == 
+                JDBCFetchConfiguration.FETCH_LOAD) {
+          em.load(fetch);
+        }
+    }
+
+    private boolean loadFields(OpenJPAStateManager em, JDBCStore store,
+        JDBCFetchConfiguration fetch, Result res)
+        throws SQLException {
         FieldMapping[] fields = field.getEmbeddedMapping().getFieldMappings();
         Object eres, processed;
         boolean needsLoad = false;
@@ -444,14 +453,7 @@ public class EmbedFieldStrategy
                 res.endDataRequest();
             }
         }
-
-        // After loading everything from result, load the rest of the
-        // configured fields if anything is missing.
-        if (needsLoad && 
-            fetch.requiresFetch(field.getFieldMetaData()) == 
-                JDBCFetchConfiguration.FETCH_LOAD) {
-          em.load(fetch);
-        }
+        return needsLoad;
     }
 
     /**
@@ -530,10 +532,34 @@ public class EmbedFieldStrategy
         return field.join(joins, forceOuter, false);
     }
 
+    /**
+     * Loading embed object without instantiating owner entity
+     */
     public Object loadProjection(JDBCStore store, JDBCFetchConfiguration fetch,
         Result res, Joins joins)
         throws SQLException {
-        throw new UserException(_loc.get("cant-project-owned", field));
+        Boolean isNull = indicatesNull(res);
+        if (isNull == null)
+            return null;
+
+        StoreContext ctx = store.getContext();
+        // load primary key of owner entity
+        Object owner = field.getDefiningMapping().getObjectId(store, res, 
+            null, true, joins);
+        OpenJPAStateManager em = ctx.embed(null, null, null, field);
+        // set owner id
+        ((StateManagerImpl) em).setOwner(owner);
+        boolean needsLoad = loadFields(em, store, fetch, res);
+
+        // After loading everything from result, load the rest of the
+        // configured fields if anything is missing.
+        if (needsLoad && 
+            fetch.requiresFetch(field.getFieldMetaData()) == 
+                JDBCFetchConfiguration.FETCH_LOAD) {
+          em.load(fetch);
+        }
+        
+        return em.getManagedInstance();
     }
     
     /////////////////////////////
