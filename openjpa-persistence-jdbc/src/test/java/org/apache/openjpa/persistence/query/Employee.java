@@ -20,8 +20,16 @@ package org.apache.openjpa.persistence.query;
 
 import javax.persistence.Entity;
 import javax.persistence.Id;
+import javax.persistence.NamedQueries;
+import javax.persistence.NamedQuery;
 import javax.persistence.Table;
 
+@NamedQueries( { 
+    @NamedQuery(name = "Employee.findByName", 
+        query = "Select e from Employee e where e.name LIKE :name") ,
+    @NamedQuery(name = "Employee.findByNameEscaped", 
+        query = "Select e from Employee e where e.name LIKE :name ESCAPE '\\'")
+    })
 @Entity
 @Table(name="SUBQ_EMPLOYEE")
 public class Employee {
