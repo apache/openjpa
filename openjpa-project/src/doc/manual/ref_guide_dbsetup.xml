@@ -3389,6 +3389,44 @@ which may not be possible when using some third-party datasources. If OpenJPA
 detects that this is the case, a warning will be logged.
                     </para>
                 </listitem>
+                <listitem id="DBDictionary.RequiresSearchStringEscapeForLike">
+                    <para>
+                    <indexterm>
+                        <primary>
+                            SQL
+                        </primary>
+                        <secondary>
+                            RequiresSearchStringEscapeForLike
+                        </secondary>
+                    </indexterm>
+<literal>RequiresSearchStringEscapeForLike</literal>:
+When true, the database requires an escape string for queries that use
+<literal>LIKE</literal>.  The escape string can be specified using
+<literal>searchStringEscape</literal>.  Defaults to <literal>true</literal>.
+                    </para>
+                </listitem>
+                <listitem id="DBDictionary.SearchStringEscape">
+                    <para>
+                    <indexterm>
+                        <primary>
+                            SQL
+                        </primary>
+                        <secondary>
+                            SearchStringEscape
+                        </secondary>
+                    </indexterm>
+<literal>SearchStringEscape</literal>: 
+The default escape character used when generating SQL <literal>LIKE</literal>
+clauses.  The escape character is used to escape the wildcard meaning of the 
+<literal>_</literal> and <literal>%</literal> characters.
+Note: since JPQL provides the ability to define the escape character in
+the query, this setting is primarily used when translating other query
+languages, such as JDOQL.  To not use any escape character, set the
+<literal>RequiresSearchStringEscapeForLike</literal> property to
+<literal>false</literal>.  Defaults to <literal>"\\"</literal> (a single backslash
+in Java speak).
+                    </para>
+                </listitem>                
             </itemizedlist>
         </section>
         <section id="ref_guide_dbsetup_dbsupport_sybase">
