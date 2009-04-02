@@ -1472,6 +1472,9 @@ public class StateManagerImpl
 
     public Object fetchObjectId() {
         try {
+            if (hasGeneratedKey() && _state instanceof PNewState && 
+                _oid == null) 
+                return _oid;
             assignObjectId(true);
             if (_oid == null || !_broker.getConfiguration().
                 getCompatibilityInstance().getCopyObjectIds())
@@ -1483,6 +1486,15 @@ public class StateManagerImpl
         } catch (RuntimeException re) {
             throw translate(re);
         }
+    }
+    
+    private boolean hasGeneratedKey() {
+        FieldMetaData[] pkFields = _meta.getPrimaryKeyFields();
+        for (int i = 0; i < pkFields.length; i++) {
+            if (pkFields[i].getValueStrategy() == ValueStrategies.AUTOASSIGN)
+                return true;
+        }
+        return false;
     }
 
     public Object getPCPrimaryKey(Object oid, int field) {

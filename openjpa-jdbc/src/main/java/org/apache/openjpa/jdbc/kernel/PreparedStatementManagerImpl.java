@@ -30,14 +30,17 @@ import java.util.List;
 
 import org.apache.openjpa.jdbc.conf.JDBCConfiguration;
 import org.apache.openjpa.jdbc.meta.ClassMapping;
+import org.apache.openjpa.jdbc.meta.FieldMapping;
 import org.apache.openjpa.jdbc.schema.Column;
 import org.apache.openjpa.jdbc.sql.DBDictionary;
 import org.apache.openjpa.jdbc.sql.Row;
 import org.apache.openjpa.jdbc.sql.RowImpl;
 import org.apache.openjpa.jdbc.sql.SQLExceptions;
 import org.apache.openjpa.kernel.OpenJPAStateManager;
+import org.apache.openjpa.kernel.StateManagerImpl;
 import org.apache.openjpa.lib.log.Log;
 import org.apache.openjpa.lib.util.Localizer;
+import org.apache.openjpa.meta.ValueStrategies;
 import org.apache.openjpa.util.ApplicationIds;
 import org.apache.openjpa.util.OpenJPAException;
 import org.apache.openjpa.util.OptimisticException;
@@ -123,7 +126,16 @@ public class PreparedStatementManagerImpl
             }
             if (autoAssignColNames != null)
                 populateAutoAssignCols(stmnt, autoAssign, autoAssignColNames, row);
-
+            else {
+                StateManagerImpl sm = (StateManagerImpl)row.getPrimaryKey();
+                if (sm != null) {
+                    ClassMapping meta = (ClassMapping)sm.getMetaData();
+                    if (hasGeneratedKey(meta)) {
+                        sm.setObjectId(ApplicationIds.create(
+                            sm.getPersistenceCapable(), meta));
+                    }
+                }
+            }
         } catch (SQLException se) {
             throw SQLExceptions.getStore(se, row.getFailedObject(), _dict);
         } finally {
@@ -134,6 +146,18 @@ public class PreparedStatementManagerImpl
                 }
             }
         }
+    }
+    
+    private boolean hasGeneratedKey(ClassMapping meta) {
+        FieldMapping[] pks = meta.getPrimaryKeyFieldMappings();
+        for (int i = 0; i < pks.length; i++) {
+            ClassMapping pkMeta = pks[i].getTypeMapping(); 
+            if (pkMeta != null) {
+                return hasGeneratedKey(pkMeta);
+            } else if (pks[i].getValueStrategy() == ValueStrategies.AUTOASSIGN)
+                return true;
+        }
+        return false;
     }
 
     /** 

@@ -27,8 +27,6 @@ import javax.persistence.EntityManager;
 import javax.persistence.EntityTransaction;
 import javax.persistence.Query;
 
-import junit.framework.Assert;
-
 import org.apache.openjpa.enhance.PersistenceCapable;
 import org.apache.openjpa.kernel.StateManagerImpl;
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
@@ -66,6 +64,8 @@ public class TestMappedById extends SingleEMFTestCase {
     public int eId2 = 1;
     public int dId2 = 1;
     public int eId3 = 1;
+    public int eId4 = 1;
+    public int dId4 = 1;
     public int dId3 = 1;
     public int pId1 = 1;
     public int mId1 = 1;
@@ -84,7 +84,7 @@ public class TestMappedById extends SingleEMFTestCase {
             Person2.class, Person3.class, MedicalHistory3.class, 
             Person4.class, PersonId4.class, MedicalHistory4.class,
             Dependent3.class, Employee3.class, DependentId3.class, 
-            Parent3.class);
+            Parent3.class, Dependent4.class, Employee4.class);
     }
 
     /**
@@ -640,5 +640,67 @@ public class TestMappedById extends SingleEMFTestCase {
         MedicalHistory4 m0 = medicals4.get(firstName);
         MedicalHistory4 m1 = m.getPatient().getMedical();
         assertEquals(m1, m);
+    }
+    
+    /**
+     * Derived Identity with IdClass and generatedKey
+     */
+    public void testPersistDerivedIdentityUsingIdClassAndGeneratedKey() {
+        EntityManager em = emf.createEntityManager();
+        EntityTransaction tran = em.getTransaction();
+        for (int i = 0; i < numEmployees; i++)
+            persistEmployee4(em, eId4++);
+        tran.begin();
+        em.flush();
+        tran.commit();
+        em.close();
+    }
+
+    /**
+     * Derived Identity with IdClass and generatedKey
+     */
+    public void testMergeDerivedIdentityUsingIdClassAndGeneratedKey() {
+        EntityManager em = emf.createEntityManager();
+        EntityTransaction tran = em.getTransaction();
+        for (int i = 0; i < numEmployees; i++)
+            mergeEmployee4(em, eId4++);
+        tran.begin();
+        em.flush();
+        tran.commit();
+        em.close();
+    }
+
+    public Employee4 persistEmployee4(EntityManager em, int id) {
+        Employee4 p = new Employee4();
+        p.setAge(id);
+        for (int i = 0; i < numDependentsPerEmployee; i++) {
+            Dependent4 c = persistDependent4(em, dId4++, p);
+            p.addChild(c);
+        }
+        em.persist(p);
+        return p;
+    }
+    
+    public Dependent4 persistDependent4(EntityManager em, int id, Employee4 p) {
+        Dependent4 c = new Dependent4();
+        c.setId(id);
+        c.setParent(p);
+        em.persist(c);
+        return c;
+    }
+    
+    public Employee4 mergeEmployee4(EntityManager em, int id) {
+        Employee4 e = new Employee4();
+        e.setAge(id);
+        e = em.merge(e);
+        for (int i = 0; i < numDependentsPerEmployee; i++) {
+            Dependent4 d = new Dependent4();
+            d.setId(dId4++);
+            d.setParent(e);
+            // do not need to merge d, as Employee is cascade.All
+            d = em.merge(d);
+            e.addChild(d);
+        }
+        return e;
     }
 }

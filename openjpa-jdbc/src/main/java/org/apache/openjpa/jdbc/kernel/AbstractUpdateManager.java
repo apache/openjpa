@@ -79,7 +79,7 @@ public abstract class AbstractUpdateManager
         }
     }
 
-    private Collection flush(Collection states, JDBCStore store,
+    protected Collection flush(Collection states, JDBCStore store,
         PreparedStatementManager psMgr) {
         // run through all the states and update them as necessary
         RowManager rowMgr = newRowManager();
