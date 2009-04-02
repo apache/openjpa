@@ -2270,8 +2270,13 @@ public class PCEnhancer {
             type = fmds[i].getObjectIdFieldType();
             if (!fieldManager 
                 && fmds[i].getDeclaredTypeCode() == JavaTypes.PC) {
-                // sm.getPCPrimaryKey(oid, i + pcInheritedFieldCount); 
+                // if (sm == null) return;
                 loadManagedInstance(code, false);
+                code.getfield().setField(SM, SMTYPE);
+                JumpInstruction ifins = code.ifnonnull();
+                code.vreturn();
+                // sm.getPCPrimaryKey(oid, i + pcInheritedFieldCount); 
+                ifins.setTarget(loadManagedInstance(code, false));
                 code.dup(); // leave orig on stack to set value into
                 code.getfield().setField(SM, SMTYPE);
                 code.aload().setLocal(id);
