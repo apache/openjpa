@@ -3159,12 +3159,14 @@ properties:
                             DriverDeserializesBlobs
                         </secondary>
                     </indexterm>
-<literal>DriverDeserializesBlobs</literal>: Many MySQL drivers automatically
-deserialize BLOBs on calls to <methodname>ResultSet.getObject</methodname>. The
+<literal>DriverDeserializesBlobs</literal>: Many older MySQL drivers
+automatically deserialize BLOBs on calls to
+<methodname>ResultSet.getObject</methodname>. The
 <classname>MySQLDictionary</classname> overrides the standard <methodname>
-DBDictionary.getBlobObject</methodname> method to take this into account. If
-your driver does not deserialize automatically, set this property to 
-<literal>false</literal>.
+DBDictionary.getBlobObject</methodname> method to take this into account.
+Defaults to <literal>true</literal> if driver version is less than 5.0,
+<literal>false</literal> otherwise. If your driver deserializes
+automatically, you may want to set this property to <literal>true</literal>.
                     </para>
                 </listitem>
                 <listitem id="MySQLDictionary.TableType">
@@ -3191,9 +3193,9 @@ Defaults to <literal>"innodb"</literal>.
                             UseClobs
                         </secondary>
                     </indexterm>
-<literal>UseClobs</literal>: Some older versions of MySQL do not handle clobs
-correctly. To enable clob functionality, set this to <literal>true</literal>. 
-Defaults to <literal>false</literal>.
+<literal>UseClobs</literal>: Some older versions of MySQL do not handle CLOBs
+correctly. To disable CLOB functionality, set this to <literal>false</literal>. 
+Defaults to <literal>true</literal>.
                     </para>
                 </listitem>
                 <listitem id="MySQLDictionary.OptimizeMultiTableDeletes">

@@ -46,8 +46,8 @@ public class MySQLDictionary
     public String tableType = "innodb";
 
     /**
-     * Whether to use clobs. Some older versions of MySQL do not handle
-     * clobs properly so we default to false here.
+     * Whether to use clobs; defaults to true. Set this to false if you have an
+     * old version of MySQL which does not handle clobs properly.
      */
     public boolean useClobs = true;
 
