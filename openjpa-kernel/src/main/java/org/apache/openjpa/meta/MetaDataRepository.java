@@ -1279,7 +1279,7 @@ public class MetaDataRepository
         	if (!mustExist)
         		return Collections.EMPTY_LIST;
         	else
-        		throw new MetaDataException(_loc.get("eager-no-class-found"));
+                throw new MetaDataException(_loc.get("eager-no-class-found"));
         }
 
         // attempt to load classes so that they get processed
@@ -1298,7 +1298,7 @@ public class MetaDataRepository
                 if (cls.isInterface())
                     getMetaData(cls, clsLoader, false);
             } else if (cls == null && mustExist) {
-        		throw new MetaDataException(_loc.get("eager-class-not-found", 
+                throw new MetaDataException(_loc.get("eager-class-not-found", 
         				className));
             }
         }

@@ -350,9 +350,9 @@ public interface Result
      * Return the value stored in the given column or id.
      *
      * @param obj the column or id whose data to fetch
-     * @param metaType the type code from {@link org.apache.openjpa.meta.JavaTypes} or
-     * {@link JavaSQLTypes} for the type of the data; if
-     * <code>obj</code> is a column, you may specify -1
+     * @param metaType the type code from
+     * {@link org.apache.openjpa.meta.JavaTypes} or {@link JavaSQLTypes} for the
+     * type of the data; if <code>obj</code> is a column, you may specify -1
      * to use the column's recorded java type
      * @param arg some JDBC data access methods use an argument, such
      * as a {@link Calendar} or {@link Map}

@@ -54,9 +54,9 @@ public class SQLErrorCodeReader {
 		new HashMap<String, Integer>();
 	static {
 		storeErrorTypes.put("lock", StoreException.LOCK);
-		storeErrorTypes.put("object-exists", StoreException.OBJECT_EXISTS);
-		storeErrorTypes
-				.put("object-not-found", StoreException.OBJECT_NOT_FOUND);
+        storeErrorTypes.put("object-exists", StoreException.OBJECT_EXISTS);
+        storeErrorTypes.put("object-not-found",
+                StoreException.OBJECT_NOT_FOUND);
 		storeErrorTypes.put("optimistic", StoreException.OPTIMISTIC);
 		storeErrorTypes.put("referential-integrity",
 				StoreException.REFERENTIAL_INTEGRITY);
@@ -72,7 +72,7 @@ public class SQLErrorCodeReader {
 		try {
 			Document doc = builder.parse(in);
 			Element root = doc.getDocumentElement();
-			NodeList nodes = root.getElementsByTagName("dictionary");
+            NodeList nodes = root.getElementsByTagName("dictionary");
 			for (int i = 0; i < nodes.getLength(); i++) {
 				Node node = nodes.item(i);
 				NamedNodeMap attrs = node.getAttributes();
@@ -96,8 +96,8 @@ public class SQLErrorCodeReader {
 	}
 
 	/**
-	 * Parses given stream of XML content for error codes of the given database
-	 * dictionary name. Populates the given dictionary with the error codes.
+     * Parses given stream of XML content for error codes of the given database
+     * dictionary name. Populates the given dictionary with the error codes.
 	 * 
 	 */
 	public void parse(InputStream in, String dictName, DBDictionary dict) {
@@ -108,13 +108,13 @@ public class SQLErrorCodeReader {
 		try {
 			Document doc = builder.parse(in);
 			Element root = doc.getDocumentElement();
-			NodeList nodes = root.getElementsByTagName("dictionary");
+            NodeList nodes = root.getElementsByTagName("dictionary");
 			for (int i = 0; i < nodes.getLength(); i++) {
 				Node node = nodes.item(i);
 				NamedNodeMap attrs = node.getAttributes();
 				Node dictionary = attrs.getNamedItem("class");
 				if (dictionary != null 
-				 && dictionary.getNodeValue().equals(dictName)) {
+                        && dictionary.getNodeValue().equals(dictName)) {
 					readErrorCodes(node, dict);
 				}
 			}
@@ -139,13 +139,13 @@ public class SQLErrorCodeReader {
 			if (nodeType == Node.ELEMENT_NODE) {
 				String errorType = child.getNodeName();
 				Node textNode = child.getFirstChild();
-				if (storeErrorTypes.containsKey(errorType) && textNode != null){
-					String errorCodes = textNode.getNodeValue();
-					if (!StringUtils.isEmpty(errorCodes)) {
-						String[] codes = errorCodes.split(ERROR_CODE_DELIMITER);
-						for (String code : codes) {
-							dict.addErrorCode(storeErrorTypes.get(errorType),
-									code.trim());
+                if (storeErrorTypes.containsKey(errorType) && textNode != null){
+                    String errorCodes = textNode.getNodeValue();
+                    if (!StringUtils.isEmpty(errorCodes)) {
+                        String[] codes = errorCodes.split(ERROR_CODE_DELIMITER);
+                        for (String code : codes) {
+                            dict.addErrorCode(storeErrorTypes.get(errorType),
+                                    code.trim());
 						}
 					}
 				}

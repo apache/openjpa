@@ -81,12 +81,12 @@ public class QueryDefinitionImpl extends ExpressionImpl
 		
 		AbstractPath next = paths.get(i);
 		DomainObject newRoot = new NavigationPath(this, 
-				next.getParent(), next.getLastSegment().toString());
+                next.getParent(), next.getLastSegment().toString());
 		addDomain((AbstractDomainObject)newRoot);
 		i++;
 		for (; i < paths.size(); i++) {
 			next = paths.get(i);
-			newRoot = newRoot.join(next.getLastSegment().toString());
+            newRoot = newRoot.join(next.getLastSegment().toString());
 		}
 		return newRoot;
 	}
@@ -250,7 +250,7 @@ public class QueryDefinitionImpl extends ExpressionImpl
 			if (i instanceof OrderableItem)
 				_orderBys.add((OrderableItem)i);
 			else
-				_orderBys.add(new OrderableItem((ExpressionImpl)i));
+                _orderBys.add(new OrderableItem((ExpressionImpl)i));
 		}
 		return this;
 	}
@@ -264,7 +264,7 @@ public class QueryDefinitionImpl extends ExpressionImpl
 			if (i instanceof OrderableItem)
 				_orderBys.add((OrderableItem)i);
 			else
-				_orderBys.add(new OrderableItem((ExpressionImpl)i, null));
+                _orderBys.add(new OrderableItem((ExpressionImpl)i, null));
 		}
 		return this;
 	}
@@ -278,7 +278,7 @@ public class QueryDefinitionImpl extends ExpressionImpl
 	}
 
 	public QueryDefinition select(SelectItem... items) {
-		return select(items == null ? null : Arrays.asList(items), false);
+        return select(items == null ? null : Arrays.asList(items), false);
 	}
 
 	public QueryDefinition select(List<SelectItem> items) {
@@ -286,14 +286,14 @@ public class QueryDefinitionImpl extends ExpressionImpl
 	}
 
 	public QueryDefinition selectDistinct(SelectItem... items) {
-		return select(items == null ? null : Arrays.asList(items), true);
+        return select(items == null ? null : Arrays.asList(items), true);
 	}
 
 	public QueryDefinition selectDistinct(List<SelectItem> items) {
 		return select(items, true);
 	}
 	
-	private QueryDefinition select(List<SelectItem> items, boolean isDistinct) {
+    private QueryDefinition select(List<SelectItem> items, boolean isDistinct) {
 		if (_projections == null) {
 			_projections = new ArrayList<SelectItem>();
 		} else {
@@ -344,7 +344,7 @@ public class QueryDefinitionImpl extends ExpressionImpl
 	
 	private List<SelectItem> getProjections() {
 		if (_projections == null) {
-			List<SelectItem> defaultProjection = new ArrayList<SelectItem>();
+            List<SelectItem> defaultProjection = new ArrayList<SelectItem>();
 			defaultProjection.add(_domains.get(0));
 			return defaultProjection;
 		}
@@ -357,12 +357,12 @@ public class QueryDefinitionImpl extends ExpressionImpl
 		StringBuffer buffer = new StringBuffer();
 		registerDomains(ctx);
 		String select = _distinct ? "SELECT DISTINCT " : "SELECT ";
-		fillBuffer(select, buffer, ctx, getProjections(), Visit.PROJECTION);
+        fillBuffer(select, buffer, ctx, getProjections(), Visit.PROJECTION);
 		fillBuffer(" FROM ", buffer, ctx, _domains, Visit.JOINABLE);
 		fillBuffer(" WHERE ", buffer, ctx, _where);
-		fillBuffer(" GROUP BY ", buffer, ctx, _groupBys, Visit.EXPRESSION);
+        fillBuffer(" GROUP BY ", buffer, ctx, _groupBys, Visit.EXPRESSION);
 		fillBuffer(" HAVING ", buffer, ctx, _having);
-		fillBuffer(" ORDER BY ", buffer, ctx, _orderBys, Visit.EXPRESSION);
+        fillBuffer(" ORDER BY ", buffer, ctx, _orderBys, Visit.EXPRESSION);
 		
 		return buffer.toString();
 	}
@@ -371,7 +371,7 @@ public class QueryDefinitionImpl extends ExpressionImpl
 		return asExpression(ctx);
 	}
 	
-	public void fillBuffer(String header, StringBuffer buffer, AliasContext ctx, 
+    public void fillBuffer(String header, StringBuffer buffer, AliasContext ctx,
 		List list, Visit visit) {
 		if (list == null || list.isEmpty())
 			return;
@@ -380,19 +380,19 @@ public class QueryDefinitionImpl extends ExpressionImpl
 			Visitable v = (Visitable)list.get(i);
 			switch(visit) {
 			case PROJECTION : buffer.append(v.asProjection(ctx))
-				                    .append(i != list.size()-1 ? ", " : " ");
+                       .append(i != list.size()-1 ? ", " : " ");
 				break;
 			case EXPRESSION : buffer.append(v.asExpression(ctx))
-				                    .append(i != list.size()-1 ? ", " : " ");
+                        .append(i != list.size()-1 ? ", " : " ");
 				break;
-			case JOINABLE   : buffer.append(i > 0 && v instanceof RootPath ? 
-								", " : " ").append(v.asJoinable(ctx));
+            case JOINABLE   : buffer.append(i > 0 && v instanceof RootPath ? 
+                        ", " : " ").append(v.asJoinable(ctx));
 				break;
 			}
 		}
 	}
 	
-	public void fillBuffer(String header, StringBuffer buffer, AliasContext ctx,
+    public void fillBuffer(String header, StringBuffer buffer, AliasContext ctx,
 			Predicate p) {
 		if (p == null)
 			return;
@@ -402,7 +402,7 @@ public class QueryDefinitionImpl extends ExpressionImpl
 	}
 	
 	/**
-	 * Registers each domain with an alias. Also set alias for order by items
+     * Registers each domain with an alias. Also set alias for order by items
 	 * that are projected.
 	 */
 	private void registerDomains(AliasContext ctx) {
@@ -415,7 +415,7 @@ public class QueryDefinitionImpl extends ExpressionImpl
 		if (_orderBys != null) {
 			for (OrderableItem o : _orderBys) {
 				ExpressionImpl e = o.getExpression();
-				if (_projections != null && _projections.contains(e))
+                if (_projections != null && _projections.contains(e))
 					ctx.setAlias(e);
 			}
 		}
@@ -423,11 +423,11 @@ public class QueryDefinitionImpl extends ExpressionImpl
 	
 	static class DomainSorter implements Comparator<AbstractDomainObject> {
 		static List<Class> _order = Arrays.asList(new Class[] {
-				RootPath.class, NavigationPath.class, OperatorPath.class, 
+                RootPath.class, NavigationPath.class, OperatorPath.class, 
 				JoinPath.class, FetchPath.class, } );
 		
-		public int compare(AbstractDomainObject a, AbstractDomainObject b) {
-			return _order.indexOf(a.getClass()) - _order.indexOf(b.getClass());
+        public int compare(AbstractDomainObject a, AbstractDomainObject b) {
+            return _order.indexOf(a.getClass()) - _order.indexOf(b.getClass());
 		}
 	}
 }

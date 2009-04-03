@@ -1430,7 +1430,8 @@ public class JPQLExpressionBuilder
                 if (c != null) {
                     Value lit = factory.newTypeLiteral(c, Literal.TYPE_CLASS);
                     Class<?> candidate = getCandidateType();
-                    ClassMetaData can = getClassMetaData(candidate.getName(), false);
+                    ClassMetaData can = getClassMetaData(candidate.getName(),
+                            false);
                     ClassMetaData meta = getClassMetaData(name, false);
                     if (candidate.isAssignableFrom(c))
                         lit.setMetaData(meta);
@@ -1501,7 +1502,8 @@ public class JPQLExpressionBuilder
         return getQualifiedPath(node, false, true);
     }
 
-    private Value getQualifiedPath(JPQLNode node, boolean pcOnly, boolean inner) {
+    private Value getQualifiedPath(JPQLNode node, boolean pcOnly, boolean inner)
+    {
         int nChild = node.getChildCount();
         JPQLNode firstChild = firstChild(node);
         JPQLNode id = firstChild.id == JJTKEY ? onlyChild(firstChild) :

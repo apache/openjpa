@@ -27,8 +27,10 @@ import static org.apache.openjpa.persistence.MetaDataTag.ELEM_DEPENDENT;
 import static org.apache.openjpa.persistence.MetaDataTag.ELEM_TYPE;
 import static org.apache.openjpa.persistence.MetaDataTag.EMBEDDED_ID;
 import static org.apache.openjpa.persistence.MetaDataTag.ENTITY_LISTENERS;
-import static org.apache.openjpa.persistence.MetaDataTag.EXCLUDE_DEFAULT_LISTENERS;
-import static org.apache.openjpa.persistence.MetaDataTag.EXCLUDE_SUPERCLASS_LISTENERS;
+import static org.apache.openjpa.persistence.MetaDataTag.
+        EXCLUDE_DEFAULT_LISTENERS;
+import static org.apache.openjpa.persistence.MetaDataTag.
+        EXCLUDE_SUPERCLASS_LISTENERS;
 import static org.apache.openjpa.persistence.MetaDataTag.EXTERNALIZER;
 import static org.apache.openjpa.persistence.MetaDataTag.EXTERNAL_VALS;
 import static org.apache.openjpa.persistence.MetaDataTag.FACTORY;
@@ -534,7 +536,7 @@ public class AnnotationPersistenceMetaDataParser
 
         Entity entity = (Entity) _cls.getAnnotation(Entity.class);
         if (isMetaDataMode()) {
-            meta.setAbstract(_cls.getAnnotation(MappedSuperclass.class) != null);
+            meta.setAbstract(_cls.getAnnotation(MappedSuperclass.class) !=null);
             // while the spec only provides for embedded exclusive, it doesn't
             // seem hard to support otherwise
             if (entity == null)
@@ -586,20 +588,20 @@ public class AnnotationPersistenceMetaDataParser
                         meta.setObjectIdType(((IdClass) anno).value(), true);
                     break;
                 case NATIVE_QUERIES:
-                    if (isQueryMode() && (meta.getSourceMode() & MODE_QUERY) == 0)
+                    if (isQueryMode() && (meta.getSourceMode() & MODE_QUERY)==0)
                         parseNamedNativeQueries(_cls,
                             ((NamedNativeQueries) anno).value());
                     break;
                 case NATIVE_QUERY:
-                    if (isQueryMode() && (meta.getSourceMode() & MODE_QUERY) == 0)
+                    if (isQueryMode() && (meta.getSourceMode() & MODE_QUERY)==0)
                         parseNamedNativeQueries(_cls, (NamedNativeQuery) anno);
                     break;
                 case QUERIES:
-                    if (isQueryMode() && (meta.getSourceMode() & MODE_QUERY) == 0)
+                    if (isQueryMode() && (meta.getSourceMode() & MODE_QUERY)==0)
                         parseNamedQueries(_cls, ((NamedQueries) anno).value());
                     break;
                 case QUERY:
-                    if (isQueryMode() && (meta.getSourceMode() & MODE_QUERY) == 0)
+                    if (isQueryMode() && (meta.getSourceMode() & MODE_QUERY)==0)
                         parseNamedQueries(_cls, (NamedQuery) anno);
                     break;
                 case SEQ_GENERATOR:
@@ -987,9 +989,9 @@ public class AnnotationPersistenceMetaDataParser
         		org.apache.openjpa.meta.FetchGroup child =
         	    meta.getFetchGroup(includedFectchGroupName);
         		if (child == null) 
-        			throw new UserException(_loc.get("missing-included-fg", 
-        				meta.getDescribedType().getName(), fg.getName(),
-        				includedFectchGroupName));
+                    throw new UserException(_loc.get("missing-included-fg", 
+                            meta.getDescribedType().getName(), fg.getName(),
+                            includedFectchGroupName));
         		child.addContainedBy(fg);
         	}
         }
@@ -1175,7 +1177,7 @@ public class AnnotationPersistenceMetaDataParser
                     break;
                 case LOAD_FETCH_GROUP:
                 	if (isMetaDataMode())
-                		fmd.setLoadFetchGroup(((LoadFetchGroup) anno).value());
+                        fmd.setLoadFetchGroup(((LoadFetchGroup) anno).value());
                 	break;
                 case LRS:
                     if (isMetaDataMode())

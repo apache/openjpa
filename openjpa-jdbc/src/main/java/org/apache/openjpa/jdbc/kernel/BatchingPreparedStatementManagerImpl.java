@@ -256,7 +256,7 @@ public class BatchingPreparedStatementManagerImpl extends
                         row.getSQL(_dict)).getMessage());
                 break;
             case Statement.SUCCESS_NO_INFO: // -2
-                if (_dict.reportsSuccessNoInfoOnBatchUpdates &&                    
+                if (_dict.reportsSuccessNoInfoOnBatchUpdates &&
                     updateSuccessCnt != count.length) {
                     // Oracle batching specifics:
                     // treat update/delete of SUCCESS_NO_INFO as failed case

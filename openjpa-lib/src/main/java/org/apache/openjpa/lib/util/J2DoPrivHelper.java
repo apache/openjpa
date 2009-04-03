@@ -482,7 +482,8 @@ public abstract class J2DoPrivHelper {
      * 
      * @return File
      */
-    public static final PrivilegedAction<File> getAbsoluteFileAction(final File f) {
+    public static final PrivilegedAction<File> getAbsoluteFileAction(
+            final File f) {
         return new PrivilegedAction<File>() {
             public File run() {
                 return f.getAbsoluteFile();
@@ -746,7 +747,8 @@ public abstract class J2DoPrivHelper {
      * @return ServerSocket
      * @throws IOException
      */
-    public static final PrivilegedExceptionAction<ServerSocket> newServerSocketAction(
+    public static final PrivilegedExceptionAction<ServerSocket>
+            newServerSocketAction(
         final int port) throws IOException {
         return new PrivilegedExceptionAction<ServerSocket>() {
             public ServerSocket run() throws IOException {
@@ -1020,7 +1022,8 @@ public abstract class J2DoPrivHelper {
      *   
      * @return BCField
      */
-    public static final PrivilegedAction<BCField> getFieldInstructionFieldAction(
+    public static final PrivilegedAction<BCField> getFieldInstructionFieldAction
+    (
         final FieldInstruction instruction) {
         return new PrivilegedAction<BCField>() {
             public BCField run() {

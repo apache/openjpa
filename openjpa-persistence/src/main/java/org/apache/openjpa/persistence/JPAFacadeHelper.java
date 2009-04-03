@@ -151,8 +151,8 @@ public class JPAFacadeHelper {
     }
 
     /**
-     * Returns the {@link org.apache.openjpa.meta.ClassMetaData} associated with the
-     * persistent object <code>o</code>.
+     * Returns the {@link org.apache.openjpa.meta.ClassMetaData} associated with
+     * the persistent object <code>o</code>.
      */
     public static ClassMetaData getMetaData(Object o) {
         if (o == null)

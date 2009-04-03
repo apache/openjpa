@@ -113,7 +113,8 @@ public interface ProductDerivation {
      *
      * @since 1.1.0
      */
-    public List<String> getAnchorsInFile(File file) throws IOException, Exception;
+    public List<String> getAnchorsInFile(File file) throws IOException,
+            Exception;
 
     /**
      * Return a List<String> of all the anchors defined in

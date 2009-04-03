@@ -92,7 +92,8 @@ public class MapKey
         return key;
     }
 
-    public void select(Select sel, ExpContext ctx, ExpState state, boolean pks) {
+    public void select(Select sel, ExpContext ctx, ExpState state, boolean pks)
+    {
         selectColumns(sel, ctx, state, pks);
     }
 

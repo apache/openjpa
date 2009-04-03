@@ -163,7 +163,8 @@ public class OpenJPAPersistence {
     public static OpenJPAEntityManager getEntityManager(Object o) {
         try {
             if (ImplHelper.isManageable(o)) {
-                PersistenceCapable pc = ImplHelper.toPersistenceCapable(o, null);
+                PersistenceCapable pc = ImplHelper.toPersistenceCapable(o,
+                        null);
                 if (pc != null)
                     return JPAFacadeHelper.toEntityManager(
                         (Broker) pc.pcGetGenericContext());

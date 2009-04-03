@@ -53,7 +53,7 @@ class AliasContext {
 	public String setAlias(ExpressionImpl path) {
 		if (_aliases.containsKey(path))
 			return _aliases.get(path);
-		String alias = path.getAliasHint(this).substring(0,1).toLowerCase();
+        String alias = path.getAliasHint(this).substring(0,1).toLowerCase();
 		int i = 2;
 		while (_aliases.containsValue(alias)) {
 			alias = alias.substring(0,1) + i;
@@ -73,7 +73,7 @@ class AliasContext {
 	
 	public AliasContext push(Object e) {
 		if (_operating.contains(e))
-			throw new RuntimeException(e + " is already in this ctx");
+            throw new RuntimeException(e + " is already in this ctx");
 		_operating.add(e);
 		return this;
 	}

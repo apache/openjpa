@@ -511,8 +511,9 @@ public class ConstraintUpdateManager
 
                 if (!breakableLink.isRemovedFromGraph()) {
 
-                    // use a primary row update to prevent setting pk and fk values
-                    // until after flush, to get latest auto-increment values
+                    // use a primary row update to prevent setting pk and fk
+                    // values until after flush, to get latest auto-increment
+                    // values
                     PrimaryRow row = (PrimaryRow) breakableLink.getFrom();
                     if (row.getAction() == Row.ACTION_DELETE) {
                         addDeleteUpdate(breakableLink, deleteUpdates);

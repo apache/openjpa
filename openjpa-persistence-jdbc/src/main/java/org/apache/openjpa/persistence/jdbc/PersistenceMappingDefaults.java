@@ -153,7 +153,8 @@ public class PersistenceMappingDefaults
     private Table getTable(ClassMapping clm) {
         Table table = clm.getTable();
         if (table == null) {
-            ValueMappingImpl value = (ValueMappingImpl)clm.getEmbeddingMetaData();
+            ValueMappingImpl value =
+                    (ValueMappingImpl)clm.getEmbeddingMetaData();
             if (value == null)
                 return table;
             FieldMetaData field = value.getFieldMetaData();

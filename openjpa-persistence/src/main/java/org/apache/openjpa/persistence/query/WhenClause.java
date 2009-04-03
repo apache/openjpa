@@ -38,7 +38,7 @@ public class WhenClause {
 	
 	void setThen(Object then) {
 		if (hasThen())
-			throw new IllegalStateException("then() is already set");
+            throw new IllegalStateException("then() is already set");
 		this.then = then;
 	}
 	

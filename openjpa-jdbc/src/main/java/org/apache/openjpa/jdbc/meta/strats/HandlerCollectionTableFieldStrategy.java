@@ -148,7 +148,7 @@ public class HandlerCollectionTableFieldStrategy
 
         ValueMapping elem = field.getElementMapping();
         Column order = field.getOrderColumn();
-        boolean setOrder = field.getOrderColumnIO().isInsertable(order, false);        
+        boolean setOrder = field.getOrderColumnIO().isInsertable(order, false);
         int idx = (setOrder && order != null) ? order.getBase() : 0;
         for (Iterator itr = coll.iterator(); itr.hasNext(); idx++) {
             HandlerStrategies.set(elem, itr.next(), store, row, _cols,

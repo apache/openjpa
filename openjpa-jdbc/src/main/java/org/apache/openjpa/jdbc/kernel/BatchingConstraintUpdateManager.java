@@ -36,7 +36,7 @@ import org.apache.openjpa.util.OpenJPAException;
  * the following property: 
  * <PRE>
  *   < property name="openjpa.jdbc.UpdateManager" 
- *     value="org.apache.openjpa.jdbc.kernel.YourOperationOrderUpdateManager" />   
+ *     value="org.apache.openjpa.jdbc.kernel.YourOperationOrderUpdateManager" />
  * </PRE></P>
  * @author Teresa Kan
  */

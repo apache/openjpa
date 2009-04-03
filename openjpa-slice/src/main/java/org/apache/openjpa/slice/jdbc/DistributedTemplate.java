@@ -65,7 +65,8 @@ public abstract class DistributedTemplate<T extends Statement>
 			master = s;
 		try {
 			if (!con.contains(s.getConnection()))
-				throw new IllegalArgumentException(s + " has different connection");
+                throw new IllegalArgumentException(s +
+                        " has different connection");
 			stmts.add(s);
 		} catch (SQLException e) {
 			e.printStackTrace();
@@ -130,7 +131,7 @@ public abstract class DistributedTemplate<T extends Statement>
 		for (Statement s:this) {
 			int[] tmp = s.executeBatch();
 			ret = new int[ret.length + tmp.length];
-			System.arraycopy(tmp, 0, ret, ret.length-tmp.length, tmp.length);
+            System.arraycopy(tmp, 0, ret, ret.length-tmp.length, tmp.length);
 		}
 		return ret;
 	}
@@ -170,7 +171,7 @@ public abstract class DistributedTemplate<T extends Statement>
 		return ret;
 	}
 
-	public int executeUpdate(String arg0, String[] arg1) throws SQLException {
+    public int executeUpdate(String arg0, String[] arg1) throws SQLException {
 		int ret = 0;
 		for (T s:this)
 			ret += s.executeUpdate(arg0, arg1);

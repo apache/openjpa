@@ -116,7 +116,8 @@ public class JDBCFetchPlanImpl
         return LRSSizeAlgorithm.fromKernelConstant(_fetch.getLRSSize());
     }
 
-    public JDBCFetchPlanImpl setLRSSizeAlgorithm(LRSSizeAlgorithm lrsSizeAlgorithm) {
+    public JDBCFetchPlanImpl setLRSSizeAlgorithm(
+            LRSSizeAlgorithm lrsSizeAlgorithm) {
         _fetch.setLRSSize(lrsSizeAlgorithm.toKernelConstant());
         return this;
     }

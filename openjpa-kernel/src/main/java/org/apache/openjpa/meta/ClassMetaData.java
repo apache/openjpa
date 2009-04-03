@@ -1952,8 +1952,8 @@ public class ClassMetaData
                             if (f != null) 
                                 _useIdClassFromParent = false;
                             else 
-                                throw new MetaDataException(_loc.get("invalid-id",
-                                    _type, pks[0].getName()));
+                                throw new MetaDataException(_loc.get(
+                                        "invalid-id", _type, pks[0].getName()));
                         }
                     }
                 }

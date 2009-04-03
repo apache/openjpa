@@ -332,7 +332,7 @@ public interface StoreQuery
 
         /**
          * Return a map of {@link FieldMetaData} to update
-		 * {@link Constant}s, in cases where this query is for a bulk update.
+         * {@link Constant}s, in cases where this query is for a bulk update.
 	 	 */
 		public Map getUpdates (StoreQuery q);
 	}

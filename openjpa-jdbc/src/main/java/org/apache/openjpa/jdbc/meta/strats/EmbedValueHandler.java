@@ -152,9 +152,11 @@ public abstract class EmbedValueHandler
                 if (cval instanceof PersistenceCapable) {
                     OpenJPAStateManager embedSm = (OpenJPAStateManager)
                         ((PersistenceCapable)cval).pcGetStateManager();
-                    idx = toDataStoreValue1(embedSm, val, store, cols, rvals, idx);
+                    idx = toDataStoreValue1(embedSm, val, store, cols, rvals,
+                            idx);
                 } else if (cval instanceof ObjectIdStateManager) {
-                    idx = toDataStoreValue1((ObjectIdStateManager)cval, val, store, cols, rvals, idx);
+                    idx = toDataStoreValue1((ObjectIdStateManager)cval, val,
+                            store, cols, rvals, idx);
                 } else if (cval == null) {
                     idx = toDataStoreValue1(null, val, store, cols, rvals, idx);
                 }
@@ -222,7 +224,8 @@ public abstract class EmbedValueHandler
                 idx = toObjectValue1(em1, vm1, val, store, fetch, cols, idx);
                 } else if (em instanceof ObjectIdStateManager) {
                     em1 = new ObjectIdStateManager(null, null, vm1);
-                    idx = toObjectValue1(em1, vm1, val, store, null, getColumns(fms[i]), idx);
+                    idx = toObjectValue1(em1, vm1, val, store, null,
+                            getColumns(fms[i]), idx);
                 }
                 cval = em1.getManagedInstance();
             } else {

@@ -287,7 +287,8 @@ public class ProxyCollections
     public static Object afterRemove(ProxyCollection coll, int index, 
         Object removed) {
         if (coll.getChangeTracker() != null)
-            ((CollectionChangeTracker) coll.getChangeTracker()).removed(removed);
+            ((CollectionChangeTracker) coll.getChangeTracker()).
+                    removed(removed);
         removed(coll, removed, false);
         return removed;
     }

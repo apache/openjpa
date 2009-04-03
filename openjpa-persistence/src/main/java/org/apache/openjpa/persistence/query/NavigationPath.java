@@ -26,7 +26,7 @@ import static org.apache.openjpa.persistence.query.PathOperator.NAVIGATION;
  *
  */
 class NavigationPath extends AbstractDomainObject implements PathExpression {
-	protected NavigationPath(QueryDefinitionImpl owner, AbstractPath parent, 
+    protected NavigationPath(QueryDefinitionImpl owner, AbstractPath parent, 
 		String attr) {
 		super(owner, parent, NAVIGATION, attr);
 	}
@@ -45,13 +45,13 @@ class NavigationPath extends AbstractDomainObject implements PathExpression {
 	public String asProjection(AliasContext ctx) {
 		AbstractPath parent = getParent();
 		if (ctx.hasAlias(parent))
-			return ctx.getAlias(parent) + NAVIGATION + getLastSegment();
-		return getParent().asProjection(ctx) + NAVIGATION + getLastSegment();
+            return ctx.getAlias(parent) + NAVIGATION + getLastSegment();
+        return getParent().asProjection(ctx) + NAVIGATION + getLastSegment();
 	}
 		
 	@Override
 	public String asExpression(AliasContext ctx) {
-		return getParent().asExpression(ctx) + NAVIGATION + getLastSegment();
+        return getParent().asExpression(ctx) + NAVIGATION + getLastSegment();
 	}
 	
 	/**

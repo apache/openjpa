@@ -141,7 +141,8 @@ public class ManagedClassSubclasser {
             // reconfiguration at the end of this method.
             ClassMetaData meta = enhancer.getMetaData();
             if (meta == null) {
-                throw new MetaDataException(_loc.get("no-meta", cls)).setFatal(true);
+                throw new MetaDataException(_loc.get("no-meta", cls)).
+                        setFatal(true);
             }
             configureMetaData(meta, conf, redefine, false);
 

@@ -52,15 +52,15 @@ abstract class AbstractPath extends ExpressionImpl implements
 		_operator = op;
 	}
 	
-	// ------------------------------------------------------------------------
-	// Path related functions.
-	// ------------------------------------------------------------------------
+    // ------------------------------------------------------------------------
+    // Path related functions.
+    // ------------------------------------------------------------------------
 	
 	final QueryDefinitionImpl getOwner() {
 		return _owner;
 	}
 	/**
-	 * Gets the parent from which this receiver has been derived. Can be null
+     * Gets the parent from which this receiver has been derived. Can be null
 	 * for a root path.
 	 */
 	public AbstractPath getParent() {
@@ -82,9 +82,9 @@ abstract class AbstractPath extends ExpressionImpl implements
 		return _part2;
 	}
 
-	// -----------------------------------------------------------------------
-	// Implementation of PathExpression
-	// -----------------------------------------------------------------------
+    // -----------------------------------------------------------------------
+    // Implementation of PathExpression
+    // -----------------------------------------------------------------------
 	public Aggregate avg() {
 		return new AverageExpression(this);
 	}

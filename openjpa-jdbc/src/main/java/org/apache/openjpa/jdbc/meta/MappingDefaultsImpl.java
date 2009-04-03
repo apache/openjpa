@@ -470,7 +470,7 @@ public class MappingDefaultsImpl
      * Provides a default value for the given Discriminator. 
      * 
      * <P>
-     * The type of the object returned relies on the javaType field being set on 
+     * The type of the object returned relies on the javaType field being set on
      * the Discriminator which is provided.
      * <TABLE border="2"> 
      * <TH>JavaType

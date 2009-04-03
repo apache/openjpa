@@ -95,8 +95,8 @@ public abstract class SimpleDriverDataSource
         throws SQLException {
     	Connection con = getDriver().connect(_connectionURL, props);
     	if (con == null) {
-        	throw new SQLException(_eloc.get("poolds-null",
-        			_connectionDriverName, _connectionURL).getMessage());
+            throw new SQLException(_eloc.get("poolds-null",
+                    _connectionDriverName, _connectionURL).getMessage());
         }
         return con;
     }

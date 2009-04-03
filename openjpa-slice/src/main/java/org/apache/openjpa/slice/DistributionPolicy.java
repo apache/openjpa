@@ -43,7 +43,8 @@ public interface DistributionPolicy {
 	 * the list is either explicit <code>openjpa.slice.Names</code> property
 	 * or implicit i.e. alphabetic order of available identifiers if 
 	 * <code>openjpa.slice.Names</code> is unspecified.  
-	 * @param context the generic persistence context managing the given instance.
+     * @param context the generic persistence context managing the given
+     * instance.
 	 * 
 	 * @return identifier of the slice. This name must match one of the
 	 * given slice names. 
@@ -58,7 +59,7 @@ public interface DistributionPolicy {
 	 */
 	public static class Default implements DistributionPolicy {
 		private static Random RNG = new Random();
-		public String distribute(Object pc, List<String> slices, Object ctx) {
+        public String distribute(Object pc, List<String> slices, Object ctx) {
 			return slices.get(RNG.nextInt(slices.size()));
 		}
 	}

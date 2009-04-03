@@ -180,11 +180,13 @@ public class CollectionParam
                 sql.appendValue(((Object[]) pstate.sqlValue[i])[index], 
                         pstate.getColumn(index), this);
             else if (pstate.cols != null)
-                sql.appendValue(pstate.sqlValue[i], pstate.getColumn(index), this);
+                sql.appendValue(pstate.sqlValue[i], pstate.getColumn(index),
+                        this);
             else if (pstate.discValue[i] != null)
                 sql.appendValue(pstate.discValue[i]);
             else
-                sql.appendValue(pstate.sqlValue[i], pstate.getColumn(index), this);
+                sql.appendValue(pstate.sqlValue[i], pstate.getColumn(index),
+                        this);
         }
     }
 }

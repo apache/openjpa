@@ -51,7 +51,8 @@ import org.apache.openjpa.jdbc.meta.strats.MaxEmbeddedByteArrayFieldStrategy;
 import org.apache.openjpa.jdbc.meta.strats.MaxEmbeddedCharArrayFieldStrategy;
 import org.apache.openjpa.jdbc.meta.strats.MaxEmbeddedClobFieldStrategy;
 import org.apache.openjpa.jdbc.meta.strats.MultiColumnVersionStrategy;
-import org.apache.openjpa.jdbc.meta.strats.NanoPrecisionTimestampVersionStrategy;
+import org.apache.openjpa.jdbc.meta.strats.
+        NanoPrecisionTimestampVersionStrategy;
 import org.apache.openjpa.jdbc.meta.strats.NoneClassStrategy;
 import org.apache.openjpa.jdbc.meta.strats.NoneDiscriminatorStrategy;
 import org.apache.openjpa.jdbc.meta.strats.NoneFieldStrategy;
@@ -60,13 +61,15 @@ import org.apache.openjpa.jdbc.meta.strats.NumberVersionStrategy;
 import org.apache.openjpa.jdbc.meta.strats.ObjectIdClassStrategy;
 import org.apache.openjpa.jdbc.meta.strats.ObjectIdValueHandler;
 import org.apache.openjpa.jdbc.meta.strats.PrimitiveFieldStrategy;
-import org.apache.openjpa.jdbc.meta.strats.RelationCollectionInverseKeyFieldStrategy;
+import org.apache.openjpa.jdbc.meta.strats.
+        RelationCollectionInverseKeyFieldStrategy;
 import org.apache.openjpa.jdbc.meta.strats.RelationCollectionTableFieldStrategy;
 import org.apache.openjpa.jdbc.meta.strats.RelationFieldStrategy;
 import org.apache.openjpa.jdbc.meta.strats.RelationHandlerMapTableFieldStrategy;
 import org.apache.openjpa.jdbc.meta.strats.RelationMapInverseKeyFieldStrategy;
 import org.apache.openjpa.jdbc.meta.strats.RelationMapTableFieldStrategy;
-import org.apache.openjpa.jdbc.meta.strats.RelationRelationMapTableFieldStrategy;
+import org.apache.openjpa.jdbc.meta.strats.
+        RelationRelationMapTableFieldStrategy;
 import org.apache.openjpa.jdbc.meta.strats.StateComparisonVersionStrategy;
 import org.apache.openjpa.jdbc.meta.strats.StringFieldStrategy;
 import org.apache.openjpa.jdbc.meta.strats.SubclassJoinDiscriminatorStrategy;

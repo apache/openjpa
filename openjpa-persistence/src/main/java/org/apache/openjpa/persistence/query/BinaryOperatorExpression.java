@@ -29,7 +29,7 @@ public class BinaryOperatorExpression extends ExpressionImpl {
 	protected final Expression _e2;
 	protected final BinaryFunctionalOperator   _op;
 	
-	public BinaryOperatorExpression(Expression e1, BinaryFunctionalOperator op, 
+    public BinaryOperatorExpression(Expression e1, BinaryFunctionalOperator op,
 		Expression e2) {
 		_e1 = e1;
 		_e2 = e2;

@@ -62,7 +62,7 @@ class BinaryExpressionPredicate extends AbstractVisitable
 	
 	public Predicate not() {
 		if (  _nop == null)
-			throw new UnsupportedOperationException(this.toString());
+            throw new UnsupportedOperationException(this.toString());
 		return new BinaryExpressionPredicate(_e1, _nop, _op, _e2);
 	}
 

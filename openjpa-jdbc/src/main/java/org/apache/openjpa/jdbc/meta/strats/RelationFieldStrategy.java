@@ -213,15 +213,18 @@ public class RelationFieldStrategy
                 if ((fmds[i].getName().equals(mappedByIdValue)) ||
                     mappedByIdValue.length() == 0) {
                     if (fmds[i].getValue().getEmbeddedMetaData() != null) {
-                        EmbedValueHandler.getEmbeddedIdCols((FieldMapping)fmds[i], cols);
+                        EmbedValueHandler.getEmbeddedIdCols(
+                                (FieldMapping)fmds[i], cols);
                     } else 
-                        EmbedValueHandler.getIdColumns((FieldMapping)fmds[i], cols);
+                        EmbedValueHandler.getIdColumns(
+                                (FieldMapping)fmds[i], cols);
                 }
             }
             return cols;
         } else { // primary key is single-value
             Class pkType = pk.getDeclaredType();
-            FieldMetaData[] pks = field.getValue().getDeclaredTypeMetaData().getPrimaryKeyFields();
+            FieldMetaData[] pks = field.getValue().getDeclaredTypeMetaData().
+                    getPrimaryKeyFields();
             if (pks.length != 1 || pks[0].getDeclaredType() != pkType)
                 return Collections.EMPTY_LIST;
             pkCols = pk.getColumns();
@@ -346,9 +349,9 @@ public class RelationFieldStrategy
             nullInverse(sm, rm);
             updateInverse(sm, rel, store, rm);
         } else {
-        	int action = (rel == null 
-        			&& field.isBidirectionalJoinTableMappingNonOwner()) ?
-        					Row.ACTION_DELETE : Row.ACTION_UPDATE;
+            int action = (rel == null && 
+                    field.isBidirectionalJoinTableMappingNonOwner()) ?
+                    Row.ACTION_DELETE : Row.ACTION_UPDATE;
             Row row = field.getRow(sm, store, rm, action);
             if (row != null) {
                 field.setForeignKey(row, rel);
@@ -385,7 +388,7 @@ public class RelationFieldStrategy
                     fk.getDeleteAction() == ForeignKey.ACTION_CASCADE) {
                     Row row = field.getRow(sm, store, rm, Row.ACTION_DELETE);
                     row.setForeignKey(fk, null, rel);
-                    // this is for bi-directional maps, the key and value of the 
+                    // this is for bi-directional maps, the key and value of the
                     // map are stored in the table of the mapped-by entity  
                     setMapKey(sm, rel, store, row);
                 }
@@ -692,7 +695,7 @@ public class RelationFieldStrategy
         Object oid = null;
         if (relMapping.isMapped()) {
             oid = relMapping.getObjectId(store, res, field.getForeignKey(),
-            		field.getPolymorphic() != ValueMapping.POLY_FALSE, null);
+                    field.getPolymorphic() != ValueMapping.POLY_FALSE, null);
         } else {
             Column[] cols = field.getColumns();
             if (relMapping.getIdentityType() == ClassMapping.ID_DATASTORE) {

@@ -390,8 +390,9 @@ public class TableJDBCSeq
     		Unique u = table.addUnique(uniqueName);
     		for (String columnName : _uniqueColumnNames) {
     			if (!table.containsColumn(columnName))
-    				throw new UserException(_loc.get("unique-missing-column",
-    					columnName, table.getName(), table.getColumnNames()));
+                    throw new UserException(_loc.get("unique-missing-column",
+                            columnName, table.getName(),
+                            table.getColumnNames()));
     			Column col = table.getColumn(columnName);
     			u.addColumn(col);
     		}
@@ -416,7 +417,8 @@ public class TableJDBCSeq
                         runnable);
                 }
                 catch(NotSupportedException nse) { 
-                    SQLException sqlEx = new SQLException(nse.getLocalizedMessage());
+                    SQLException sqlEx = new SQLException(
+                            nse.getLocalizedMessage());
                     sqlEx.initCause(nse);
                     throw sqlEx;
                 }
@@ -560,7 +562,8 @@ public class TableJDBCSeq
 
                 // update the value
                 upd = new SQLBuffer(dict);
-                String tableName = resolveTableName(mapping, _seqColumn.getTable());
+                String tableName = resolveTableName(mapping,
+                        _seqColumn.getTable());
                 upd.append("UPDATE ").append(tableName).
                     append(" SET ").append(_seqColumn).append(" = ").
                     appendValue(Numbers.valueOf(cur + inc), _seqColumn).
@@ -570,7 +573,8 @@ public class TableJDBCSeq
 
                 stmnt = prepareStatement(conn, upd);
                 dict.setTimeouts(stmnt, _conf, true);
-                updates = executeUpdate(_conf, conn, stmnt, upd, RowImpl.ACTION_UPDATE);
+                updates = executeUpdate(_conf, conn, stmnt, upd,
+                        RowImpl.ACTION_UPDATE);
             } finally {
                 if (rs != null) 
                     try { rs.close(); } catch (SQLException se) {}
@@ -765,7 +769,8 @@ public class TableJDBCSeq
      * implementation of executing update.
      */
     protected int executeUpdate(JDBCConfiguration conf, Connection conn,  
-        PreparedStatement stmnt, SQLBuffer buf, int opcode) throws SQLException {
+        PreparedStatement stmnt, SQLBuffer buf, int opcode) throws SQLException
+    {
         return stmnt.executeUpdate();
     }
     
@@ -782,7 +787,8 @@ public class TableJDBCSeq
      * This method is to provide override for non-JDBC or JDBC-like 
      * implementation of getting sequence from the result set.
      */
-    protected long getSequence(ResultSet rs, DBDictionary dict) throws SQLException {
+    protected long getSequence(ResultSet rs, DBDictionary dict)
+            throws SQLException {
         if (rs == null || !rs.next())
             return -1;
         return dict.getLong(rs, 1);

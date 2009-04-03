@@ -279,7 +279,7 @@ public class AnnotationPersistenceXMLMetaDataParser {
                         xmlname = member.getName();
                     field.setXmlname("@"+xmlname);
                     field.setXmlnamespace((String) xmlAttributeNamespace.invoke(
-                        el.getAnnotation(xmlAttributeClass), new Object[]{}));               
+                        el.getAnnotation(xmlAttributeClass), new Object[]{}));
                 }
                 if (field != null)
                     meta.addField(member.getName(), field);

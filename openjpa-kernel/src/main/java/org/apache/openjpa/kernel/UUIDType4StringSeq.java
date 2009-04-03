@@ -29,7 +29,8 @@ import org.apache.openjpa.meta.ClassMetaData;
 public class UUIDType4StringSeq
     implements Seq {
 
-    private static final UUIDType4StringSeq _instance = new UUIDType4StringSeq();
+    private static final UUIDType4StringSeq _instance =
+        new UUIDType4StringSeq();
 
     private String _last = null;
 

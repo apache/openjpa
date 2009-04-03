@@ -1475,7 +1475,7 @@ public class ApplicationIdTool {
     public static interface ObjectIdLoader
 	{
 		/**
-		 * Turn on the loading of all identity classes, even if they don't 
+         * Turn on the loading of all identity classes, even if they don't
          * exist.
 	 	 */
 		public void setLoadObjectIds ();

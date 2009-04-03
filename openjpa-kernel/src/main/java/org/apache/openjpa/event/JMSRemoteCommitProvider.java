@@ -226,7 +226,7 @@ public class JMSRemoteCommitProvider
                     } else {
                     	if (log.isWarnEnabled())
                     		log.warn(s_loc.get("jms-receive-error-2",
-                    				o.getClass().getName(), _topicName));
+                                    o.getClass().getName(), _topicName));
                     }
                 } catch (JMSException jmse) {
                     if (log.isWarnEnabled())

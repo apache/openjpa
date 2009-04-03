@@ -115,7 +115,8 @@ public class HandlerHandlerMapTableFieldStrategy
         } else {
             DBDictionary dict = field.getMappingRepository().getDBDictionary();
             _kcols = HandlerStrategies.map(key, 
-                    dict.getValidColumnName("key", field.getTable()), _kio, adapt);
+                    dict.getValidColumnName("key", field.getTable()), _kio,
+                    adapt);
         }
         _vio = new ColumnIO();
         _vcols = HandlerStrategies.map(val, "value", _vio, adapt);

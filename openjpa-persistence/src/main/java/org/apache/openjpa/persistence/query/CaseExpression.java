@@ -44,8 +44,8 @@ public interface CaseExpression {
      * the result of the specific case. Clauses are evaluated in the order added
      *
      * @param when -
-     *             corresponds to the value against which the case operand of the
-     *             simple case is tested
+     *             corresponds to the value against which the case operand of
+     *             the simple case is tested
      * @return CaseExpression corresponding to the case with the added clause
      */
     CaseExpression when(Expression when);
@@ -56,8 +56,8 @@ public interface CaseExpression {
      * the result of the specific case. Clauses are evaluated in the order added
      *
      * @param when -
-     *             corresponds to the value against which the case operand of the
-     *             simple case is tested
+     *             corresponds to the value against which the case operand of
+     *             the simple case is tested
      * @return CaseExpression corresponding to the case with the added clause
      */
     CaseExpression when(Number when);
@@ -80,8 +80,8 @@ public interface CaseExpression {
      * the result of the specific case. Clauses are evaluated in the order added
      *
      * @param when -
-     *             corresponds to the value against which the case operand of the
-     *             simple case is tested
+     *             corresponds to the value against which the case operand of
+     *             the simple case is tested
      * @return CaseExpression corresponding to the case with the added clause
      */
     CaseExpression when(Date when);
@@ -92,8 +92,8 @@ public interface CaseExpression {
      * the result of the specific case. Clauses are evaluated in the order added
      *
      * @param when -
-     *             corresponds to the value against which the case operand of the
-     *             simple case is tested
+     *             corresponds to the value against which the case operand of
+     *             the simple case is tested
      * @return CaseExpression corresponding to the case with the added clause
      */
     CaseExpression when(Calendar when);
@@ -104,8 +104,8 @@ public interface CaseExpression {
      * the result of the specific case. Clauses are evaluated in the order added
      *
      * @param when -
-     *             corresponds to the value against which the case operand of the
-     *             simple case is tested
+     *             corresponds to the value against which the case operand of
+     *             the simple case is tested
      * @return CaseExpression corresponding to the case with the added clause
      */
     CaseExpression when(Class when);
@@ -116,8 +116,8 @@ public interface CaseExpression {
      * the result of the specific case. Clauses are evaluated in the order added
      *
      * @param when -
-     *             corresponds to the value against which the case operand of the
-     *             simple case is tested
+     *             corresponds to the value against which the case operand of
+     *             the simple case is tested
      * @return CaseExpression corresponding to the case with the added clause
      */
     CaseExpression when(Enum<?> when);
@@ -266,9 +266,9 @@ public interface CaseExpression {
      * clause.
 	 *
 	 * @param arg -
-	 *            corresponds to the result of the case expression if the when
-	 *            condition is not satisfied
-	 * @return Expression corresponding to the case expression with the added
+     *            corresponds to the result of the case expression if the when
+     *            condition is not satisfied
+     * @return Expression corresponding to the case expression with the added
 	 *         clause
 	 */
 	Expression elseCase(Calendar arg);
@@ -278,9 +278,9 @@ public interface CaseExpression {
 	 * clause.
 	 *
 	 * @param arg -
-	 *            corresponds to the result of the case expression if the when
+     *            corresponds to the result of the case expression if the when
 	 *            condition is not satisfied
-	 * @return Expression corresponding to the case expression with the added
+     * @return Expression corresponding to the case expression with the added
 	 *         clause
 	 */
 	Expression elseCase(Class arg);
@@ -290,9 +290,9 @@ public interface CaseExpression {
 	 * clause.
 	 *
 	 * @param arg -
-	 *            corresponds to the result of the case expression if the when
+     *            corresponds to the result of the case expression if the when
 	 *            condition is not satisfied
-	 * @return Expression corresponding to the case expression with the added
+     * @return Expression corresponding to the case expression with the added
 	 *         clause
 	 */
 	Expression elseCase(Enum<?> arg);

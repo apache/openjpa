@@ -768,8 +768,8 @@ public class Column
     }
     
     /** 
-	 *  Affirms if this instance represents an implicit relation. For example, a 
-	 *  relation expressed as the value of primary key of the related class and 
+     *  Affirms if this instance represents an implicit relation. For example, a
+     *  relation expressed as the value of primary key of the related class and
 	 *  not as object reference.
      *
      * @since 1.3.0

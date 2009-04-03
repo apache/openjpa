@@ -219,7 +219,7 @@ public class DepthFirstAnalysis {
         if (path != null && !edge.getFrom().equals(edge.getTo())) {
             // Not a single edge loop
             pos = findNodeInPath(edge.getTo(), path);
-            assert (pos >= 0): _loc.get("node-not-on-path", edge, edge.getTo()); 
+            assert (pos >= 0): _loc.get("node-not-on-path", edge, edge.getTo());
         } else {
             assert (edge.getFrom().equals(edge.getTo())): 
                 _loc.get("edge-no-loop", edge).getMessage();

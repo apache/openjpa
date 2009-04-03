@@ -92,9 +92,11 @@ public abstract class AbstractUpdateManager
                 StateManagerImpl sm = (StateManagerImpl) obj;
                 if (sm.getMappedByIdFields() != null)
                     mappedByIdStates.add(sm);
-                else exceps = populateRowManager(sm, rowMgr, store, exceps, customs);
+                else exceps = populateRowManager(sm, rowMgr, store, exceps,
+                        customs);
             } else 
-                exceps = populateRowManager(obj, rowMgr, store, exceps, customs);
+                exceps = populateRowManager(obj, rowMgr, store, exceps,
+                        customs);
         }
 
         // flush rows
@@ -364,8 +366,9 @@ public abstract class AbstractUpdateManager
     /**
      * Update version and discriminator indicators.
      */
-    protected void updateIndicators(OpenJPAStateManager sm, ClassMapping mapping,
-        RowManager rowMgr, JDBCStore store, Collection customs,
+    protected void updateIndicators(OpenJPAStateManager sm,
+            ClassMapping mapping, RowManager rowMgr, JDBCStore store,
+            Collection customs,
         boolean versionUpdateOnly) throws SQLException {
         while (mapping.getJoinablePCSuperclassMapping() != null)
             mapping = mapping.getJoinablePCSuperclassMapping();
@@ -410,7 +413,8 @@ public abstract class AbstractUpdateManager
         private final OpenJPAStateManager _sm;
         private final Strategy _strat;
 
-        public CustomMapping(int action, OpenJPAStateManager sm, Strategy strat) {
+        public CustomMapping(int action, OpenJPAStateManager sm, Strategy strat)
+        {
             _action = action;
             _sm = sm;
             _strat = strat;

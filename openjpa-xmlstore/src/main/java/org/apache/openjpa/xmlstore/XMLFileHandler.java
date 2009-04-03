@@ -430,7 +430,8 @@ public class XMLFileHandler {
                             // field value already constructed
                             break;
                         default:
-                            // construct the field value from text within the element
+                            // construct the field value from text within the
+                            // element
                             _fieldVal = fromXMLString(_fmd.getTypeCode(),
                                 _fmd.getTypeMetaData(), _buf.toString());
                     }

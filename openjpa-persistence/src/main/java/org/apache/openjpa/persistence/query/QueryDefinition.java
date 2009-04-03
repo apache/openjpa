@@ -126,7 +126,8 @@ public interface QueryDefinition extends Subquery {
      * results. Replaces the previous order-by list, if any.
      *
      * @param orderByItemList -
-     *                        a list containing one or more OrderByItem instances
+     *                        a list containing one or more OrderByItem
+     *                        instances
      * @return the modified QueryDefinition instance
      */
     QueryDefinition orderBy(List<OrderByItem> orderByItemList);
@@ -167,8 +168,8 @@ public interface QueryDefinition extends Subquery {
      * @param cls  -
      *             a class with the correponding constructor
      * @param args -
-     *             select items that correspond to result types that are valid as
-     *             arguments to the constructor
+     *             select items that correspond to result types that are valid
+     *             as arguments to the constructor
      * @result SelectItem instance representing the constructor
      */
     SelectItem newInstance(Class cls, SelectItem... args);
@@ -252,7 +253,8 @@ public interface QueryDefinition extends Subquery {
      * .elseCase(scalar-expression)
      *
      * @param caseOperand -
-     *                    value used for testing against the when scalar expressions
+     *                    value used for testing against the when scalar
+     *                    expressions
      * @return case expression with the given case operand
      */
     CaseExpression simpleCase(String caseOperand);
@@ -266,7 +268,8 @@ public interface QueryDefinition extends Subquery {
      * .elseCase(scalar-expression)
      *
      * @param caseOperand -
-     *                    value used for testing against the when scalar expressions
+     *                    value used for testing against the when scalar
+     *                    expressions
      * @return case expression with the given case operand
      */
     CaseExpression simpleCase(Date caseOperand);
@@ -280,7 +283,8 @@ public interface QueryDefinition extends Subquery {
      * .elseCase(scalar-expression)
      *
      * @param caseOperand -
-     *                    value used for testing against the when scalar expressions
+     *                    value used for testing against the when scalar
+     *                    expressions
      * @return case expression with the given case operand
      */
     CaseExpression simpleCase(Calendar caseOperand);
@@ -294,7 +298,8 @@ public interface QueryDefinition extends Subquery {
      * .elseCase(scalar-expression)
      *
      * @param caseOperand -
-     *                    value used for testing against the when scalar expressions
+     *                    value used for testing against the when scalar
+     *                    expressions
      * @return case expression with the given case operand
      */
     CaseExpression simpleCase(Class caseOperand);
@@ -308,7 +313,8 @@ public interface QueryDefinition extends Subquery {
      * .elseCase(scalar-expression)
      *
      * @param caseOperand -
-     *                    value used for testing against the when scalar expressions
+     *                    value used for testing against the when scalar
+     *                    expressions
      * @return case expression with the given case operand
      */
     CaseExpression simpleCase(Enum<?> caseOperand);

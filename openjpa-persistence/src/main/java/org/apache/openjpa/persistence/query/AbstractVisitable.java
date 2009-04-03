@@ -33,19 +33,19 @@ abstract class AbstractVisitable implements Visitable {
 	public static final String EMPTY = "";
 	
 	public String asExpression(AliasContext ctx) {
-		throw new UnsupportedOperationException(this.getClass().getName());
+        throw new UnsupportedOperationException(this.getClass().getName());
 	}
 
 	public String asProjection(AliasContext ctx) {
-		throw new UnsupportedOperationException(this.getClass().getName());
+        throw new UnsupportedOperationException(this.getClass().getName());
 	}
 
 	public String getAliasHint(AliasContext ctx) {
-		throw new UnsupportedOperationException(this.getClass().getName());
+        throw new UnsupportedOperationException(this.getClass().getName());
 	}
 
 	public String asJoinable(AliasContext ctx) {
-		throw new UnsupportedOperationException(this.getClass().getName());
+        throw new UnsupportedOperationException(this.getClass().getName());
 	}
 
 }

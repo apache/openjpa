@@ -220,7 +220,7 @@ public interface OpenJPAConfiguration
     public String getSpecification();
     
     /**
-     * Get the Specification. Specification determines various important default 
+     * Get the Specification. Specification determines various important default
      * behaviors.
      * 
      * @since 2.0.0

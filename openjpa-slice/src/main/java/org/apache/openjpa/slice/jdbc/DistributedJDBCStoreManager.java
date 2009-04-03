@@ -108,7 +108,8 @@ class DistributedJDBCStoreManager extends JDBCStoreManager
         _slices = new ArrayList<SliceStoreManager>();
         List<String> sliceNames = conf.getActiveSliceNames();
         for (String name : sliceNames) {
-            SliceStoreManager slice = new SliceStoreManager(conf.getSlice(name));
+            SliceStoreManager slice =
+                    new SliceStoreManager(conf.getSlice(name));
             _slices.add(slice);
             if (slice.getName().equals(_conf.getMaster().getName()))
                 _master = slice;
@@ -125,7 +126,8 @@ class DistributedJDBCStoreManager extends JDBCStoreManager
     
     public SliceStoreManager addSlice(Slice slice) {
         SliceStoreManager result = new SliceStoreManager(slice);
-        result.setContext(getContext(), (JDBCConfiguration)slice.getConfiguration());
+        result.setContext(getContext(),
+                (JDBCConfiguration)slice.getConfiguration());
         _slices.add(result);
         return result;
     }
@@ -194,7 +196,8 @@ class DistributedJDBCStoreManager extends JDBCStoreManager
         for (String target : targets) {
         	SliceStoreManager slice = lookup(target);
         	if (slice == null)
-        		throw new InternalException(_loc.get("wrong-slice", target, sm));
+        	    throw new InternalException(_loc.get("wrong-slice", target,
+        	            sm));
         	return slice;
         }
         return null;
@@ -341,7 +344,7 @@ class DistributedJDBCStoreManager extends JDBCStoreManager
     }
     
     /**
-     * Separate the given list of StateManagers in separate lists for each slice 
+     * Separate the given list of StateManagers in separate lists for each slice
      * by the associated slice identifier of each StateManager.
      */
     private Map<String, StateManagerSet> bin(Collection sms, Object edata) {

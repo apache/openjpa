@@ -45,11 +45,16 @@ import java.util.Calendar;
 import java.util.Iterator;
 import java.util.List;
 
-import org.apache.openjpa.lib.jdbc.LoggingConnectionDecorator.LoggingConnection.LoggingCallableStatement;
-import org.apache.openjpa.lib.jdbc.LoggingConnectionDecorator.LoggingConnection.LoggingDatabaseMetaData;
-import org.apache.openjpa.lib.jdbc.LoggingConnectionDecorator.LoggingConnection.LoggingPreparedStatement;
-import org.apache.openjpa.lib.jdbc.LoggingConnectionDecorator.LoggingConnection.LoggingResultSet;
-import org.apache.openjpa.lib.jdbc.LoggingConnectionDecorator.LoggingConnection.LoggingStatement;
+import org.apache.openjpa.lib.jdbc.LoggingConnectionDecorator.LoggingConnection.
+        LoggingCallableStatement;
+import org.apache.openjpa.lib.jdbc.LoggingConnectionDecorator.LoggingConnection.
+        LoggingDatabaseMetaData;
+import org.apache.openjpa.lib.jdbc.LoggingConnectionDecorator.LoggingConnection.
+        LoggingPreparedStatement;
+import org.apache.openjpa.lib.jdbc.LoggingConnectionDecorator.LoggingConnection.
+        LoggingResultSet;
+import org.apache.openjpa.lib.jdbc.LoggingConnectionDecorator.LoggingConnection.
+        LoggingStatement;
 import org.apache.openjpa.lib.log.Log;
 import org.apache.openjpa.lib.util.ConcreteClassGenerator;
 import org.apache.openjpa.lib.util.J2DoPrivHelper;
@@ -1277,7 +1282,8 @@ public class LoggingConnectionDecorator implements ConnectionDecorator {
                             _paramBatch = new ArrayList<List<String>>();
                         // copy parameters since they will be re-used
                         if (_params != null) {
-                            List<String> copyParms = new ArrayList<String>(_params);
+                            List<String> copyParms =
+                                    new ArrayList<String>(_params);
                             _paramBatch.add(copyParms);
                         }
                         else

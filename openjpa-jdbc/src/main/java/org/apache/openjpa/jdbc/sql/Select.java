@@ -487,7 +487,8 @@ public interface Select
      * Add an ORDER BY clause.
      * Optionally selects ordering data if not already selected.
      */
-    public boolean orderBy(SQLBuffer sql, boolean asc, boolean sel, Value selAs);
+    public boolean orderBy(SQLBuffer sql, boolean asc, boolean sel,
+            Value selAs);
 
     /**
      * Add an ORDER BY clause.

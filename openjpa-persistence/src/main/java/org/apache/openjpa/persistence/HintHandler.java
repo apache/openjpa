@@ -1,7 +1,8 @@
 package org.apache.openjpa.persistence;
 
 import static org.apache.openjpa.kernel.QueryHints.HINT_IGNORE_PREPARED_QUERY;
-import static org.apache.openjpa.kernel.QueryHints.HINT_INVALIDATE_PREPARED_QUERY;
+import static org.apache.openjpa.kernel.QueryHints.
+        HINT_INVALIDATE_PREPARED_QUERY;
 import static org.apache.openjpa.kernel.QueryHints.HINT_RESULT_COUNT;
 
 import java.lang.reflect.Method;
@@ -182,7 +183,7 @@ public class HintHandler {
                 Modifier.PUBLIC | Modifier.STATIC | Modifier.FINAL, 
                 String.class));
 
-            _supportedKeys.addAll(ProductDerivations.getSupportedQueryHints());    
+            _supportedKeys.addAll(ProductDerivations.getSupportedQueryHints());
             
             for (String key : _supportedKeys) {
                 _supportedPrefixes.add(getPrefixOf(key));
@@ -308,7 +309,7 @@ public class HintHandler {
             } else if (HINT_RESULT_COUNT.equals(key)) {
                 int v = (Integer)Filters.convert(value, Integer.class);
                 if (v < 0)
-                    throw new ArgumentException(_loc.get("bad-query-hint-value", 
+                    throw new ArgumentException(_loc.get("bad-query-hint-value",
                         key, value), null,  null, false);
                     plan.setHint(key, v);
             }  else if (HINT_INVALIDATE_PREPARED_QUERY.equals(key)) {

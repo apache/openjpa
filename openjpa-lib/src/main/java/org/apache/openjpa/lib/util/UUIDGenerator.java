@@ -27,7 +27,7 @@ import java.util.UUID;
 import org.apache.commons.lang.exception.NestableRuntimeException;
 
 /**
- * UUID value generator.  Type 1 generator is based on the time-based generator  
+ * UUID value generator.  Type 1 generator is based on the time-based generator
  * in the Apache Commons Id project:  http://jakarta.apache.org/commons/sandbox
  * /id/uuid.html  The type 4 generator uses the standard Java UUID generator.
  *

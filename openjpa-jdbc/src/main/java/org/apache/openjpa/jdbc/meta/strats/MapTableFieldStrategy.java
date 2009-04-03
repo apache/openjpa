@@ -204,7 +204,8 @@ public abstract class MapTableFieldStrategy
                     throw new MetaDataException(_loc.get
                         ("mapped-inverse-unjoined", field.getName(),
                             field.getDefiningMapping(), mapped));
-                ForeignKey fk = mapped.getForeignKey(field.getDefiningMapping());
+                ForeignKey fk = mapped.getForeignKey(
+                        field.getDefiningMapping());
                 field.setForeignKey(fk);
                 field.setJoinForeignKey(fk);
             } else if (mapped.getElement().getTypeCode() == JavaTypes.PC) {
@@ -220,7 +221,8 @@ public abstract class MapTableFieldStrategy
                 ValueMapping elem = mapped.getElementMapping();
                 ForeignKey fk = elem.getForeignKey();
                 field.setJoinForeignKey(fk);
-                field.getElementMapping().setForeignKey(mapped.getJoinForeignKey());
+                field.getElementMapping().setForeignKey(
+                        mapped.getJoinForeignKey());
             } else
                 throw new MetaDataException(_loc.get("not-inv-relation",
                     field, mapped));
@@ -256,8 +258,9 @@ public abstract class MapTableFieldStrategy
         return true;
     }
 
-    protected boolean populateKey(Row row, OpenJPAStateManager valsm, Object obj,
-            StoreContext ctx, RowManager rm, JDBCStore store) throws SQLException {
+    protected boolean populateKey(Row row, OpenJPAStateManager valsm,
+            Object obj, StoreContext ctx, RowManager rm, JDBCStore store)
+            throws SQLException {
         ClassMapping meta = (ClassMapping)valsm.getMetaData();
         FieldMapping fm = getFieldMapping(meta);
         if (fm == null) 

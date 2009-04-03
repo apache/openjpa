@@ -486,7 +486,8 @@ public class JDBCExpressionFactory
         for (int i = 0; i < vals.length; i++) {
             if (vals[i] instanceof Lit) {
                 Lit val = (Lit) vals[i];
-                StringBuffer value = new StringBuffer(val.getValue().toString());
+                StringBuffer value =
+                        new StringBuffer(val.getValue().toString());
                 if (val.getParseType() == Literal.TYPE_SQ_STRING)
                     value.insert(0, "'").append("'");
                 val.setValue(new Raw(value.toString()));

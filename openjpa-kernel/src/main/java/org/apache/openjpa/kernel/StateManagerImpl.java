@@ -1016,7 +1016,7 @@ public class StateManagerImpl
             boolean wasFlushed = isFlushed();
             boolean wasDeleted = isDeleted();
             boolean needPostUpdate = !(wasNew && !wasFlushed)
-					&& (ImplHelper.getUpdateFields(this) != null);
+                    && (ImplHelper.getUpdateFields(this) != null);
 
             // all dirty fields were flushed
             _flush.or(_dirty);

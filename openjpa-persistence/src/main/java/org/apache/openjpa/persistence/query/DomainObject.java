@@ -35,7 +35,8 @@ public interface DomainObject extends PathExpression, QueryDefinition {
      * object.
      *
      * @param attribute -
-     *                  name of the attribute that references the target of the join
+     *                  name of the attribute that references the target of the
+     *                  join
      * @return the new DomainObject that is added for the target of the join
      */
     DomainObject join(String attribute);
@@ -51,7 +52,8 @@ public interface DomainObject extends PathExpression, QueryDefinition {
      * newly joined domain object.
      *
      * @param attribute -
-     *                  name of the attribute that references the target of the join
+     *                  name of the attribute that references the target of the
+     *                  join
      * @return the new DomainObject that is added for the target of the join
      */
     DomainObject leftJoin(String attribute);
@@ -63,7 +65,8 @@ public interface DomainObject extends PathExpression, QueryDefinition {
      * The query is modified to include the joined domain object.
      *
      * @param attribute -
-     *                  name of the attribute that references the target of the join
+     *                  name of the attribute that references the target of the
+     *                  join
      * @return the FetchJoinObject that is added for the target of the join
      */
     FetchJoinObject joinFetch(String attribute);
@@ -75,7 +78,8 @@ public interface DomainObject extends PathExpression, QueryDefinition {
      * attribute. The query is modified to include the joined domain object.
      *
      * @param attribute -
-     *                  name of the attribute that references the target of the join
+     *                  name of the attribute that references the target of the
+     *                  join
      * @return the FetchJoinObject that is added for the target of the join
      */
     FetchJoinObject leftJoinFetch(String attribute);
@@ -114,7 +118,7 @@ public interface DomainObject extends PathExpression, QueryDefinition {
      * Return an expression that corresponds to the index. of the domain object
      * in the referenced association or element collection. This method is only
 	 * permitted to be invoked upon a domain object that corresponds to a
-	 * multi-valued association or element collection for which an order column
+     * multi-valued association or element collection for which an order column
 	 * has been defined.
 	 *
 	 * @return Expression denoting the index

@@ -29,7 +29,7 @@ public class RootPath extends AbstractDomainObject implements DomainObject {
 	
 	@Override
 	public String asJoinable(AliasContext ctx) {
-		return ctx.getEntityName(getLastSegment()) + " " + ctx.getAlias(this);
+        return ctx.getEntityName(getLastSegment()) + " " + ctx.getAlias(this);
 	}
 	
 	@Override

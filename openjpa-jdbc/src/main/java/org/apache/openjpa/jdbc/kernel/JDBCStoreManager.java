@@ -108,7 +108,8 @@ public class JDBCStoreManager
     private static final Class<ClientConnection> clientConnectionImpl;
     private static final Class<RefCountConnection> refCountConnectionImpl;
     private static final Class<CancelStatement> cancelStatementImpl;
-    private static final Class<CancelPreparedStatement> cancelPreparedStatementImpl;
+    private static final Class<CancelPreparedStatement>
+            cancelPreparedStatementImpl;
 
     static {
         try {
@@ -1415,7 +1416,8 @@ public class JDBCStoreManager
      * Connection returned to client code. Makes sure its wrapped connection
      * ref count is decremented on finalize.
      */
-    protected abstract static class ClientConnection extends DelegatingConnection {
+    protected abstract static class ClientConnection extends
+            DelegatingConnection {
 
         private boolean _closed = false;
 
@@ -1563,7 +1565,8 @@ public class JDBCStoreManager
      * Statement type that adds and removes itself from the set of active
      * statements so that it can be canceled.
      */
-    protected abstract class CancelPreparedStatement extends DelegatingPreparedStatement {
+    protected abstract class CancelPreparedStatement extends
+            DelegatingPreparedStatement {
 
         public CancelPreparedStatement(PreparedStatement stmnt, 
             Connection conn) {

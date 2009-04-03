@@ -211,7 +211,7 @@ public class PCPath
         // we build the remaining xpath that follows the root element.
         while (itr.hasNext()) {
             action = (Action) itr.next();
-            if (((XMLMetaData) action.data).getXmlname() != null)                 
+            if (((XMLMetaData) action.data).getXmlname() != null)
                 xpath.append(((XMLMetaData) action.data).getXmlname());
             else
                 xpath.append("*");
@@ -296,7 +296,8 @@ public class PCPath
                 case JavaTypes.ARRAY:
                 case JavaTypes.COLLECTION:
                     ValueMapping elem = pstate.field.getElementMapping();
-                    if (pstate.joinedRel && elem.getTypeCode() == JavaTypes.PC) {
+                    if (pstate.joinedRel && elem.getTypeCode() == JavaTypes.PC)
+                    {
                         if (pstate.field.isElementCollection() &&
                             pstate.field.getElement().isEmbedded())
                             return ((HandlerCollectionTableFieldStrategy)
@@ -544,7 +545,8 @@ public class PCPath
                         pstate.joins = from.joinSuperclass(pstate.joins, false);
                     }
                 }
-                // nothing more to do from here on as we encountered an xpath action
+                // nothing more to do from here on as we encountered an xpath
+                // action
                 if (action.op == Action.GET_XPATH)
                     break;
             }
@@ -628,8 +630,8 @@ public class PCPath
             if (action.op != Action.GET && action.op != Action.GET_OUTER)
                 continue;
             try {
-                candidate = sm.fetchField(((FieldMapping)action.data).getIndex(), 
-                    true);
+                candidate = sm.fetchField(
+                        ((FieldMapping)action.data).getIndex(), true);
             } catch (ClassCastException cce) {
                 throw new RuntimeException(action.data + " not a field path");
             } finally {

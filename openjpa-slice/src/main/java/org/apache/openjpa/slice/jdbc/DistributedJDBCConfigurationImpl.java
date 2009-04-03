@@ -288,7 +288,8 @@ public class DistributedJDBCConfigurationImpl extends JDBCConfigurationImpl
         if (log.isInfoEnabled())
             log.info(_loc.get("slice-connect", slice, url));
         DataSource ds = DataSourceFactory.newDataSource(conf, false);
-        DecoratingDataSource dds = DecoratingDataSource.newDecoratingDataSource(ds);
+        DecoratingDataSource dds = DecoratingDataSource.
+                newDecoratingDataSource(ds);
         ds = DataSourceFactory.installDBDictionary(
                 conf.getDBDictionaryInstance(), dds, conf, false);
         verifyDataSource(slice, ds, conf);
@@ -363,7 +364,8 @@ public class DistributedJDBCConfigurationImpl extends JDBCConfigurationImpl
             throw new UserException(_loc.get("slice-connect-known-error",
                     slice, url, ex), ex.getCause());
         } else {
-            throw new UserException(_loc.get("slice-connect-error", slice, url));
+            throw new UserException(_loc.get("slice-connect-error", slice,
+                    url));
         }
     }
 

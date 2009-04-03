@@ -595,7 +595,8 @@ public abstract class DelegatingResultSet implements ResultSet, Closeable {
         return _stmnt;
     }
 
-    public Object getObject(int a, Map<String, Class<?>> b) throws SQLException {
+    public Object getObject(int a, Map<String, Class<?>> b) throws
+            SQLException {
         return _rs.getObject(a, b);
     }
 
@@ -615,7 +616,8 @@ public abstract class DelegatingResultSet implements ResultSet, Closeable {
         return _rs.getArray(a);
     }
 
-    public Object getObject(String a, Map<String, Class<?>> b) throws SQLException {
+    public Object getObject(String a, Map<String, Class<?>> b) throws
+            SQLException {
         return _rs.getObject(a, b);
     }
 

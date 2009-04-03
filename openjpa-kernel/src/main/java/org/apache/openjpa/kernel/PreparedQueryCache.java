@@ -46,7 +46,7 @@ import org.apache.openjpa.lib.conf.Configurable;
  * execution context changes in a way that will modify the resultant database 
  * language query PQ.
  * 
- * One of the built-in mechanism (available in JPA facade) is to set query hints 
+ * One of the built-in mechanism (available in JPA facade) is to set query hints
  * to either invalidate the query entirely or ignore the cached version for the 
  * current execution. 
  * 
@@ -55,7 +55,8 @@ import org.apache.openjpa.lib.conf.Configurable;
  * 
  * This cache allows customization of whether a query can be cached or not
  * via either explicit marking of certain keys as non-cachable (which is 
- * irreversible) or addition/removal of exclusion patterns (which is reversible).
+ * irreversible) or addition/removal of exclusion patterns (which is
+ * reversible).
  * 
  * @see #markUncachable(String)
  * @see #addExclusionPattern(String)
@@ -108,7 +109,7 @@ public interface PreparedQueryCache extends Configurable {
 	 * The query must not be cached if either the key matches any exclusion
 	 * pattern or the key has been marked non-cachable.
 	 * 
-	 * @return true if the given query is cached. false if it can not be cached
+     * @return true if the given query is cached. false if it can not be cached
 	 * due to exclusion.
 	 * 
 	 * @see #markUncachable(String)
@@ -131,10 +132,10 @@ public interface PreparedQueryCache extends Configurable {
 	/**
 	 * Affirms if a PreparedQuery can be cached against the given key.
 	 * 
-	 * @return Boolean.FALSE if the given key is explicitly marked before as not
+     * @return Boolean.FALSE if the given key is explicitly marked before as not
 	 * be cached or matches any of the exclusion patterns. 
 	 * Boolean.TRUE if the given key currently exists in the cache. 
-	 * Otherwise, return null implying this receiver can not determine whether
+     * Otherwise, return null implying this receiver can not determine whether
 	 * this key can be cached on not. 
 	 * 
 	 */
@@ -145,9 +146,9 @@ public interface PreparedQueryCache extends Configurable {
 	 * Explicit marking helps to avoid repeated computational cost of 
 	 * determining whether a query can be cached or not.
 	 * 
-	 * Explicit marking can not be reversed by removal of exclusion patterns.
+     * Explicit marking can not be reversed by removal of exclusion patterns.
 	 * 
-	 * @return The value for the given key if it had been cached before. null
+     * @return The value for the given key if it had been cached before. null
 	 * otherwise.
 	 */
 	public PreparedQuery markUncachable(String id);
@@ -164,13 +165,13 @@ public interface PreparedQueryCache extends Configurable {
 	
 	/**
 	 * Sets one or more exclusion regular expression patterns separated by 
-	 * semicolon. Any existing cache entry whose key matches any of the given
+     * semicolon. Any existing cache entry whose key matches any of the given
 	 * pattern will be marked non-cachable in a reversible manner. 
 	 */
 	public void setExcludes(String excludes);
 
 	/**
-	 * Adds the given pattern to the list of excluded patterns. Any existing 
+     * Adds the given pattern to the list of excluded patterns. Any existing
 	 * cache entry whose key matches the given pattern will be marked 
 	 * non-cachable in a reversible manner. 
 	 */

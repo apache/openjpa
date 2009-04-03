@@ -317,7 +317,8 @@ public class JDBCConfigurationImpl
         preparedQueryCachePlugin.setDefault(aliases[0]);
         preparedQueryCachePlugin.setClassName(aliases[1]);
         preparedQueryCachePlugin.setDynamic(true);
-        preparedQueryCachePlugin.setInstantiatingGetter("getQuerySQLCacheInstance");
+        preparedQueryCachePlugin.setInstantiatingGetter(
+                "getQuerySQLCacheInstance");
 
         finderCachePlugin = addPlugin("jdbc.FinderCache", true);
         aliases = new String[] {

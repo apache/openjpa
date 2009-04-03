@@ -351,7 +351,8 @@ public abstract class XMLMetaDataSerializer implements MetaDataSerializer {
     /**
      * Serialize the given set of objects.
      */
-    protected abstract void serialize(Collection<Object> objs) throws SAXException;
+    protected abstract void serialize(Collection<Object> objs) throws
+            SAXException;
 
     /**
      * Return the current set of objects for serialization.

@@ -122,7 +122,8 @@ public class DataCachePCDataImpl
 
     /**
      * Store field-level information from the given state manager.
-     * Special process of checking if the cached collection data is out of order.
+     * Special process of checking if the cached collection data is out of
+     * order.
      */
     protected void storeField(OpenJPAStateManager sm, FieldMetaData fmd) {
         if (fmd.getManagement() != fmd.MANAGE_PERSISTENT)

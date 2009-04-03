@@ -47,28 +47,28 @@ import serp.bytecode.BCMethod;
  * 		<li>must not extend an enhanced class</li>
  *		<li>all persistent data represented by accessible setter/getter
  * 			methods (persistent properties)</li>
- * 		<li>if versioning is to be used, exactly one persistent property for
- * 			the numeric version data</li> <!-- ##### is this true? -->
+ * 	    <li>if versioning is to be used, exactly one persistent property for
+ *          the numeric version data</li> <!-- ##### is this true? -->
  *
- * 		<li>When using property access, the backing field for a persistent
+ *      <li>When using property access, the backing field for a persistent
  *          property must be:
  * 			<ul>
- * 				<!-- ##### JPA validation of these needs to be tested -->
+ *              <!-- ##### JPA validation of these needs to be tested -->
  * 				<li>private</li>
  * 				<li>set only in the designated setter,
- * 					in the constructor, or in {@link Object#clone()},
- * 					<code>readObject(ObjectInputStream)</code>, or
- * 					{@link Externalizable#readExternal(ObjectInput)}.</li>
+ * 	                in the constructor, or in {@link Object#clone()},
+ *                  <code>readObject(ObjectInputStream)</code>, or
+ * 	                {@link Externalizable#readExternal(ObjectInput)}.</li>
  * 				<li>read only in the designated getter and the
  * 					constructor.</li>
  *			</ul>
  * 		</li>
  * 	</ul>
  *
- * 	<p>If you use this technique and use the <code>new</code> keyword instead of
- * 	a OpenJPA-supplied construction routine, OpenJPA will need to do extra work
- *  with persistent-new-flushed instances, since OpenJPA cannot in this case
- *  track what happens to such an instance.</p>
+ *  <p>If you use this technique and use the <code>new</code> keyword instead
+ *  of a OpenJPA-supplied construction routine, OpenJPA will need to do extra
+ *  work with persistent-new-flushed instances, since OpenJPA cannot in this
+ *  case track what happens to such an instance.</p>
  *
  * 	@since 1.0.0
  */

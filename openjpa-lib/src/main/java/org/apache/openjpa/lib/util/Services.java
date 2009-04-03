@@ -94,7 +94,8 @@ public class Services {
         try {
             Set resourceList = new TreeSet();
             Enumeration resources = AccessController.doPrivileged(
-                J2DoPrivHelper.getResourcesAction(loader, PREFIX + serviceName)); 
+                J2DoPrivHelper.getResourcesAction(loader,
+                        PREFIX + serviceName));
             while (resources.hasMoreElements())
                 addResources((URL) resources.nextElement(), resourceList);
 

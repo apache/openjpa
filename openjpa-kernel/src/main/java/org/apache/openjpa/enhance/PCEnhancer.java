@@ -2493,7 +2493,8 @@ public class PCEnhancer {
             code.dup();
             if(_meta.isEmbeddedOnly()) {
                 code.aload().setThis();
-                code.invokevirtual().setMethod(Object.class, "getClass", Class.class, null);
+                code.invokevirtual().setMethod(Object.class, "getClass",
+                        Class.class, null);
             }else
                 code.classconstant().setClass(getType(_meta));
         }
@@ -2501,10 +2502,12 @@ public class PCEnhancer {
         // new <oid class> ();
         code.anew().setType(oidType);
         code.dup();
-        if (_meta.isOpenJPAIdentity() || (obj && usesClsString == Boolean.TRUE)) {
+        if (_meta.isOpenJPAIdentity() || (obj && usesClsString ==
+                    Boolean.TRUE)) {
             if(_meta.isEmbeddedOnly()) {
                 code.aload().setThis();
-                code.invokevirtual().setMethod(Object.class, "getClass", Class.class, null);
+                code.invokevirtual().setMethod(Object.class, "getClass",
+                        Class.class, null);
             }else
                 code.classconstant().setClass(getType(_meta));
         }
@@ -3069,7 +3072,7 @@ public class PCEnhancer {
         }
 
         // if (sm != null)
-        //		return (sm.isDetached ()) ? Boolean.TRUE : Boolean.FALSE;
+        //     return (sm.isDetached ()) ? Boolean.TRUE : Boolean.FALSE;
         loadManagedInstance(code, false);
         code.getfield().setField(SM, SMTYPE);
         JumpInstruction ifins = code.ifnull();

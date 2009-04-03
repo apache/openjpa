@@ -44,7 +44,7 @@ public class OrderableItem extends AbstractVisitable
 	}
 	
 	public String asExpression(AliasContext ctx) {
-		return (ctx.hasAlias(_e) ? ctx.getAlias(_e) : _e.asExpression(ctx)) 
+        return (ctx.hasAlias(_e) ? ctx.getAlias(_e) : _e.asExpression(ctx))
 		    + (_asc == null ? "" : (_asc ? " ASC " : " DESC"));
 	}
 }

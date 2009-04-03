@@ -58,9 +58,10 @@ public interface CacheMarshaller {
     /**
      * The {@link ValidationPolicy} that this marshaller should use.
      * A value for this parameter is required. The class will be instantiated
-     * via the {@link org.apache.openjpa.lib.conf.Configurations} mechanism, ensuring that if the class
-     * implements {@link Configurable} or {@link org.apache.openjpa.lib.conf.GenericConfigurable}, it will
-     * be taken through the appropriate lifecycle.
+     * via the {@link org.apache.openjpa.lib.conf.Configurations} mechanism,
+     * ensuring that if the class implements {@link Configurable} or
+     * {@link org.apache.openjpa.lib.conf.GenericConfigurable}, it will be taken
+     * through the appropriate lifecycle.
      */
     public void setValidationPolicy(String policy)
         throws InstantiationException, IllegalAccessException;

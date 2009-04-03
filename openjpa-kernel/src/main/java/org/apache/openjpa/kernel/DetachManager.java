@@ -860,7 +860,7 @@ public class DetachManager
             } else {
                 for (Iterator itr = map.entrySet().iterator(); itr.hasNext();) {
                     entry = (Map.Entry) itr.next ();
-					entry.setValue (detachInternal (entry.getValue ()));
+                    entry.setValue (detachInternal (entry.getValue ()));
 				}
 			}
 		}

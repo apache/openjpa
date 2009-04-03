@@ -44,7 +44,7 @@ public class DistributedJDBCBrokerFactory extends JDBCBrokerFactory
 	private static final Localizer _loc = 
 	    Localizer.forPackage(DistributedJDBCBrokerFactory.class);
 	/**
-	 * Factory method for constructing a factory from properties. Invoked from
+     * Factory method for constructing a factory from properties. Invoked from
 	 * {@link Bootstrap#newBrokerFactory}.
 	 */
 	public static DistributedJDBCBrokerFactory newInstance(
@@ -56,14 +56,14 @@ public class DistributedJDBCBrokerFactory extends JDBCBrokerFactory
 	}
 
 	/**
-	 * Factory method for obtaining a possibly-pooled factory from properties.
+     * Factory method for obtaining a possibly-pooled factory from properties.
 	 * Invoked from {@link Bootstrap#getBrokerFactory}.
 	 */
 	public static JDBCBrokerFactory getInstance(ConfigurationProvider cp) {
 	    Map properties = cp.getProperties();
 	    Object key = toPoolKey(properties);
 		DistributedJDBCBrokerFactory factory =
-				(DistributedJDBCBrokerFactory) getPooledFactoryForKey(key);
+                (DistributedJDBCBrokerFactory) getPooledFactoryForKey(key);
 		if (factory != null)
 			return factory;
 
@@ -80,7 +80,7 @@ public class DistributedJDBCBrokerFactory extends JDBCBrokerFactory
 	    Map properties = conf.toProperties(false);
 	    Object key = toPoolKey(properties);
 		DistributedJDBCBrokerFactory factory =
-				(DistributedJDBCBrokerFactory) getPooledFactoryForKey(key);
+                (DistributedJDBCBrokerFactory) getPooledFactoryForKey(key);
 		if (factory != null)
 			return factory;
 
@@ -103,7 +103,8 @@ public class DistributedJDBCBrokerFactory extends JDBCBrokerFactory
 	    Slice slice = getConfiguration().addSlice(name, properties);
         ClassLoader loader = AccessController.doPrivileged(
             J2DoPrivHelper.getContextClassLoaderAction());
-	    synchronizeMappings(loader, (JDBCConfiguration)slice.getConfiguration());
+        synchronizeMappings(loader, (JDBCConfiguration)slice.
+                getConfiguration());
 	    return slice;
 	}
 

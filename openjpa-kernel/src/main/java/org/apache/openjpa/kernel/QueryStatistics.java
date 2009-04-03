@@ -66,7 +66,7 @@ public interface QueryStatistics<T> extends Serializable {
 	public long getTotalExecutionCount(T query);
 
 	/**
-	 * Gets number of total query execution that are cached since last reset.
+     * Gets number of total query execution that are cached since last reset.
 	 */
 	public long getHitCount();
 
@@ -197,27 +197,27 @@ public interface QueryStatistics<T> extends Serializable {
 		}
 		
 		public void dump(PrintStream out) {
-			String header = "Query Statistics starting from " + start;
+            String header = "Query Statistics starting from " + start;
 			out.print(header);
 			if (since == start) {
 				out.println();
-				out.println("Total Query Execution: " + toString(astat)); 
+                out.println("Total Query Execution: " + toString(astat)); 
 				out.println("\tTotal \t\tQuery");
 			} else {
 				out.println(" last reset on " + since);
-				out.println("Total Query Execution since start " 
-					+ toString(astat)  + " since reset " +  toString(stat));
-				out.println("\tSince Start \tSince Reset \t\tQuery");
+                out.println("Total Query Execution since start " + 
+                        toString(astat)  + " since reset " + toString(stat));
+                out.println("\tSince Start \tSince Reset \t\tQuery");
 			}
 			int i = 0;
 			for (T key : stats.keySet()) {
 				i++;
 				long[] arow = astats.get(key);
 				if (since == start) {
-					out.println(i + ". \t" + toString(arow) + " \t"	+ key);
+                    out.println(i + ". \t" + toString(arow) + " \t" + key);
 				} else {
 					long[] row  = stats.get(key);
-					out.println(i + ". \t" + toString(arow) + " \t"  
+                    out.println(i + ". \t" + toString(arow) + " \t"  
 					    + toString(row) + " \t\t" + key);
 				}
 			}
@@ -230,7 +230,7 @@ public interface QueryStatistics<T> extends Serializable {
 		}
 		
 		String toString(long[] row) {
-			return row[READ] + ":" + row[HIT] + "(" + pct(row[HIT], row[READ]) 
+            return row[READ] + ":" + row[HIT] + "(" + pct(row[HIT], row[READ])
 			+ "%)";
 		}
 	}

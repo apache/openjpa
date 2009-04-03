@@ -450,7 +450,8 @@ public class SchemaTool {
             for (int i = 0; i < schemas.length; i++) {
                 seqs = schemas[i].getSequences();
                 for (int j = 0; j < seqs.length; j++) {
-                    if (db.findSequence(schemas[i], seqs[j].getFullName()) != null)
+                    if (db.findSequence(schemas[i], seqs[j].getFullName()) !=
+                            null)
                         continue;
 
                     if (createSequence(seqs[j])) {

@@ -27,7 +27,7 @@ package org.apache.openjpa.persistence.query;
  */
 abstract class QueryExpression extends UnaryOperatorExpression 
     implements Subquery {
-	public QueryExpression(QueryDefinitionImpl q, UnaryFunctionalOperator op) {
+    public QueryExpression(QueryDefinitionImpl q, UnaryFunctionalOperator op) {
 		super(q, op);
 	}
 }

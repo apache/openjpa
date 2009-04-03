@@ -524,12 +524,12 @@ public class AnnotationPersistenceMappingParser
     Unique createUniqueConstraint(MetaDataContext ctx, UniqueConstraint anno) {
 		String[] columnNames = anno.columnNames();
 		if (columnNames == null || columnNames.length == 0)
-			throw new UserException(_loc.get("unique-no-column", ctx));
+            throw new UserException(_loc.get("unique-no-column", ctx));
 		Unique uniqueConstraint = new Unique();
 		for (int i=0; i<columnNames.length; i++) {
 			if (StringUtils.isEmpty(columnNames[i]))
-				throw new UserException(_loc.get("unique-empty-column", 
-						Arrays.toString(columnNames), ctx));
+                throw new UserException(_loc.get("unique-empty-column",
+                        Arrays.toString(columnNames), ctx));
 			Column column = new Column();
 			column.setName(columnNames[i]);
 			uniqueConstraint.addColumn(column);
@@ -739,7 +739,7 @@ public class AnnotationPersistenceMappingParser
     		&& fk.columnNames().length == 0
     		&& fk.specified();
     	if (!isDefault)
-    		throw new UserException(_loc.get("implicit-non-default-fk", _cls, 
+            throw new UserException(_loc.get("implicit-non-default-fk", _cls,
     				getSourceFile()).getMessage());
     }
     
@@ -750,7 +750,8 @@ public class AnnotationPersistenceMappingParser
     private int toForeignKeyAction(ForeignKeyAction action) {
         switch (action) {
             case RESTRICT:
-                return org.apache.openjpa.jdbc.schema.ForeignKey.ACTION_RESTRICT;
+                return org.apache.openjpa.jdbc.schema.ForeignKey.
+                        ACTION_RESTRICT;
             case CASCADE:
                 return org.apache.openjpa.jdbc.schema.ForeignKey.ACTION_CASCADE;
             case NULL:
@@ -1267,7 +1268,8 @@ public class AnnotationPersistenceMappingParser
         }
     }
     
-    public static FieldMapping getEmbeddedFieldMapping(FieldMapping fm, String attrName) {
+    public static FieldMapping getEmbeddedFieldMapping(FieldMapping fm,
+            String attrName) {
         ClassMapping embed = null;
         boolean isKey = false;
         boolean isValue = false;
@@ -1318,7 +1320,8 @@ public class AnnotationPersistenceMappingParser
 
     }
     
-    public static FieldMapping getAttributeOverrideField(String attrName, FieldMapping fm, ClassMapping embed) {
+    public static FieldMapping getAttributeOverrideField(String attrName,
+            FieldMapping fm, ClassMapping embed) {
         FieldMapping efm;
         int idxOfDot = attrName.indexOf("."); 
         if (idxOfDot == -1) {
@@ -1420,7 +1423,7 @@ public class AnnotationPersistenceMappingParser
             }
 
             unique |= (pcols[i].unique()) ? TRUE : FALSE;
-        	secondary = trackSecondaryTable(fm, secondary,	pcols[i].table(), i);
+            secondary = trackSecondaryTable(fm, secondary, pcols[i].table(), i);
         }
 
         if (fm.isElementCollection())
@@ -1872,7 +1875,8 @@ public class AnnotationPersistenceMappingParser
     /**
      * Parse @MapKeyJoinColumn(s).
      */
-    private void parseMapKeyJoinColumns(FieldMapping fm, MapKeyJoinColumn... joins) {
+    private void parseMapKeyJoinColumns(FieldMapping fm,
+            MapKeyJoinColumn... joins) {
         if (joins.length == 0)
             return;
 

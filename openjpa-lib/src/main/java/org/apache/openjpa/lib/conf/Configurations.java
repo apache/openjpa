@@ -481,18 +481,18 @@ public class Configurations {
 
 		if (!invalidEntries.isEmpty() && configurationName != null) {
 			Localizer.Message msg = null;
-			String first = (String) invalidEntries.keySet().iterator().next();
+            String first = (String) invalidEntries.keySet().iterator().next();
 			if (invalidEntries.keySet().size() == 1 &&
 				first.indexOf('.') == -1) {
-				// if there's just one misspelling and this is not a
+                // if there's just one misspelling and this is not a
 				// path traversal, check for near misses.
-				Collection<String> options = findOptionsFor(obj.getClass());
-				String close = StringDistance.getClosestLevenshteinDistance
+                Collection<String> options = findOptionsFor(obj.getClass());
+                String close = StringDistance.getClosestLevenshteinDistance
 					(first, options, 0.75f);
 				if (close != null)
-					msg = _loc.get("invalid-config-param-hint", new Object[]{
-						configurationName, obj.getClass(), first, close,
-						options, });
+                    msg = _loc.get("invalid-config-param-hint", new Object[]{
+                            configurationName, obj.getClass(), first, close,
+						    options, });
 			}
 
             if (msg == null) {

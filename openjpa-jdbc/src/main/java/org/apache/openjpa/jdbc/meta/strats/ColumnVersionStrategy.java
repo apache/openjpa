@@ -65,8 +65,8 @@ public abstract class ColumnVersionStrategy
      * one column. 
      */
     protected int getJavaType(int i) {
-    	throw new AbstractMethodError(
-    		_loc.get("multi-column-version-unsupported",getAlias()).toString());
+        throw new AbstractMethodError(_loc.get(
+                "multi-column-version-unsupported",getAlias()).toString());
     }
     
     /**
@@ -107,13 +107,13 @@ public abstract class ColumnVersionStrategy
 
 	/**
 	 * Compare each element of the given arrays that must be of equal size. 
-	 * The given array values represent version values and the result designate
+     * The given array values represent version values and the result designate
 	 * whether first version is earlier, same or later than the second one.
 	 * 
 	 * @return If any element of a1 is later than corresponding element of
-	 * a2 then returns 1 i.e. the first version is later than the second version.
-	 * If each element of a1 is equal to corresponding element of a2 then return
-	 * 0 i.e. the first version is same as the second version.
+     * a2 then returns 1 i.e. the first version is later than the second
+     * version. If each element of a1 is equal to corresponding element of a2
+     * then return 0 i.e. the first version is same as the second version.
 	 * else return a negative number i.e. the first version is earlier than 
 	 * the second version.
 	 */
@@ -148,7 +148,7 @@ public abstract class ColumnVersionStrategy
         		templates[i].setTableName(infoColumn.getTableName());
         		templates[i].setType(infoColumn.getType());
         		templates[i].setSize(infoColumn.getSize());
-        		templates[i].setDecimalDigits(infoColumn.getDecimalDigits());
+                templates[i].setDecimalDigits(infoColumn.getDecimalDigits());
         		templates[i].setJavaType(getJavaType(i));
         		templates[i].setName(infoColumn.getName());
         	}
@@ -162,7 +162,8 @@ public abstract class ColumnVersionStrategy
            tmplate.setJavaType(getJavaType());
            tmplate.setName("versn");
 
-           Column[] cols = info.getColumns(vers, new Column[]{ tmplate }, adapt);
+           Column[] cols = info.getColumns(vers, new Column[]{ tmplate },
+                   adapt);
            cols[0].setVersionStrategy(this);
            vers.setColumns(cols);
            vers.setColumnIO(info.getColumnIO());
@@ -178,7 +179,8 @@ public abstract class ColumnVersionStrategy
         ColumnIO io = vers.getColumnIO();
         Object initial = nextVersion(null);
         for (int i = 0; i < cols.length; i++) {
-            Row row = rm.getRow(cols[i].getTable(), Row.ACTION_INSERT, sm, true);
+            Row row = rm.getRow(cols[i].getTable(), Row.ACTION_INSERT, sm,
+                    true);
             if (io.isInsertable(i, initial == null))
                 row.setObject(cols[i], getColumnValue(initial, i));
         }
@@ -201,7 +203,8 @@ public abstract class ColumnVersionStrategy
 
         // set where and update conditions on row
         for (int i = 0; i < cols.length; i++) {
-            Row row = rm.getRow(cols[i].getTable(), Row.ACTION_UPDATE, sm, true);
+            Row row = rm.getRow(cols[i].getTable(), Row.ACTION_UPDATE, sm,
+                    true);
             row.setFailedObject(sm.getManagedInstance());
             if (curVersion != null && sm.isVersionCheckRequired()) {
                 row.whereObject(cols[i], getColumnValue(curVersion, i));

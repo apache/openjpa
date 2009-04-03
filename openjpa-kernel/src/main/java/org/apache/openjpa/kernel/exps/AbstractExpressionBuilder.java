@@ -287,7 +287,7 @@ public abstract class AbstractExpressionBuilder {
             	Class cls = meta.getDescribedType();
                 throw parseException(EX_USER, "no-field",
                     new Object[] {field, cls.getSimpleName(), 
-                	StringDistance.getClosestLevenshteinDistance(field, all), 
+                    StringDistance.getClosestLevenshteinDistance(field, all), 
                 	cls.getName(), Arrays.toString(all)}, null);
             }
 

@@ -31,7 +31,8 @@ public class LocateExpression extends BinaryOperatorExpression  {
 	private final Expression _start;
 
 	public LocateExpression(Expression key, String str, int start) {
-		super(key, BinaryFunctionalOperator.LOCATE, new ConstantExpression(str));
+        super(key, BinaryFunctionalOperator.LOCATE,
+                new ConstantExpression(str));
 		_start = new ConstantExpression(start);
 	}
 	
@@ -41,17 +42,19 @@ public class LocateExpression extends BinaryOperatorExpression  {
 	}
 	
 	public LocateExpression(Expression key, String str, Expression start) {
-		super(key, BinaryFunctionalOperator.LOCATE, new ConstantExpression(str));
+        super(key, BinaryFunctionalOperator.LOCATE,
+                new ConstantExpression(str));
 		_start = start;
 	}
 	
-	public LocateExpression(Expression key, Expression str, Expression start) {
-		super(key, BinaryFunctionalOperator.LOCATE, str);
+    public LocateExpression(Expression key, Expression str, Expression start) {
+        super(key, BinaryFunctionalOperator.LOCATE, str);
 		_start = start;
 	}
 	
 	public String asExpression(AliasContext ctx) {
-		String start = _start == null ? EMPTY : COMMA + ((Visitable)_start).asExpression(ctx);
+        String start = _start == null ? EMPTY : COMMA +
+                ((Visitable)_start).asExpression(ctx);
 		return new StringBuffer(_op.toString())
 		    .append(OPEN_BRACE)
 		    .append(((Visitable)_e1).asExpression(ctx))

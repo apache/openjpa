@@ -125,7 +125,8 @@ public class PreparedStatementManagerImpl
                         sql).getMessage());
             }
             if (autoAssignColNames != null)
-                populateAutoAssignCols(stmnt, autoAssign, autoAssignColNames, row);
+                populateAutoAssignCols(stmnt, autoAssign, autoAssignColNames, 
+                    row);
             else {
                 StateManagerImpl sm = (StateManagerImpl)row.getPrimaryKey();
                 if (sm != null) {

@@ -34,7 +34,8 @@ public class Log4JLogFactory extends LogFactoryAdapter {
     }
 
     /**
-     * Adapts a Log4J logger to the {@link org.apache.openjpa.lib.log.Log} interface.
+     * Adapts a Log4J logger to the {@link org.apache.openjpa.lib.log.Log}
+     * interface.
      */
     public static class LogAdapter implements Log {
 

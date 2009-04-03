@@ -70,8 +70,9 @@ public class VersionMappingInfo
             boolean adapt) {
     	Table primaryTable = vers.getClassMapping().getTable();
     	List<String> secondaryTableNames = Arrays.asList(vers
-    		.getClassMapping().getMappingInfo().getSecondaryTableNames());
-    	Map<Table, List<Column>> assign = new LinkedHashMap<Table, List<Column>>();
+                .getClassMapping().getMappingInfo().getSecondaryTableNames());
+        Map<Table, List<Column>> assign = new LinkedHashMap<Table,
+                List<Column>>();
     	for (Column col : templates) {
     	    String tableName = col.getTableName();
     	    Table table;
@@ -81,7 +82,7 @@ public class VersionMappingInfo
     		} else if (secondaryTableNames.contains(tableName)) {
     			table = primaryTable.getSchema().getTable(tableName);
     		} else {
-    			throw new UserException(_loc.get("bad-version-column-table", 
+                throw new UserException(_loc.get("bad-version-column-table",
     					col.getName(), tableName));
     		}
     		if (!assign.containsKey(table))
@@ -94,7 +95,7 @@ public class VersionMappingInfo
     		List<Column> cols = assign.get(table);
     		Column[] partTemplates = cols.toArray(new Column[cols.size()]);
     		def.populateColumns(vers, table, partTemplates);
-    		result.addAll(Arrays.asList(createColumns(vers, null, partTemplates, 
+            result.addAll(Arrays.asList(createColumns(vers, null, partTemplates,
     				table, adapt)));
     	}
     	return result.toArray(new Column[result.size()]);

@@ -60,7 +60,7 @@ public class PreparedQueryCacheImpl implements PreparedQueryCache {
 	private final QueryStatistics<String> _stats;
 	private ReentrantLock _lock = new ReentrantLock();
 	private Log _log;
-	private Localizer _loc = Localizer.forPackage(PreparedQueryCacheImpl.class);
+    private Localizer _loc = Localizer.forPackage(PreparedQueryCacheImpl.class);
 
 	public PreparedQueryCacheImpl() {
 		_delegate = new HashMap<String, PreparedQuery>();
@@ -68,7 +68,7 @@ public class PreparedQueryCacheImpl implements PreparedQueryCache {
 		_stats = new QueryStatistics.Default<String>();
 	}
 	
-	public Boolean register(String id, Query query, FetchConfiguration hints) {
+    public Boolean register(String id, Query query, FetchConfiguration hints) {
         if (id == null 
             || query == null 
             || QueryLanguages.LANG_SQL.equals(query.getLanguage()) 
@@ -89,9 +89,9 @@ public class PreparedQueryCacheImpl implements PreparedQueryCache {
 	public Map<String,String> getMapView() {
 		lock();
 		try {
-			Map<String, String> view = new TreeMap<String, String>();
-			for (Map.Entry<String, PreparedQuery> entry : _delegate.entrySet())
-				view.put(entry.getKey(), entry.getValue().getTargetQuery());
+            Map<String, String> view = new TreeMap<String, String>();
+            for (Map.Entry<String, PreparedQuery> entry : _delegate.entrySet())
+                view.put(entry.getKey(), entry.getValue().getTargetQuery());
 			return view;
 		} finally {
 			unlock();
@@ -110,7 +110,7 @@ public class PreparedQueryCacheImpl implements PreparedQueryCache {
 			String id = q.getIdentifier();
 			if (isCachable(id) == Boolean.FALSE) {
 				if (_log != null && _log.isWarnEnabled())
-					_log.warn(_loc.get("prepared-query-not-cachable", id));
+                    _log.warn(_loc.get("prepared-query-not-cachable", id));
 				return false;
 			}
 			String pattern = getMatchedExclusionPattern(id);
@@ -145,7 +145,7 @@ public class PreparedQueryCacheImpl implements PreparedQueryCache {
 		lock();
 		try {
 			if (_log.isTraceEnabled())
-				_log.trace(_loc.get("prepared-query-invalidate", id));
+                _log.trace(_loc.get("prepared-query-invalidate", id));
 			return _delegate.remove(id) != null;
 		} finally {
 			unlock();
@@ -181,14 +181,14 @@ public class PreparedQueryCacheImpl implements PreparedQueryCache {
 	private PreparedQuery markUncachable(String id, String reason) {
 		lock();
 		try {
-			boolean excludedByUser = _uncachables.get(id) == EXLUDED_BY_USER;
+            boolean excludedByUser = _uncachables.get(id) == EXLUDED_BY_USER;
 			if (!excludedByUser)
 				_uncachables.put(id, reason);
 			if (_log != null && _log.isInfoEnabled()) {
 				if (excludedByUser) 
-					_log.info(_loc.get("prepared-query-uncache-strong", id));
-				else 
-					_log.info(_loc.get("prepared-query-uncache-weak", id, 
+                    _log.info(_loc.get("prepared-query-uncache-strong", id));
+                else
+                    _log.info(_loc.get("prepared-query-uncache-weak", id,
 						reason));
 			}
 			return _delegate.remove(id);
@@ -222,8 +222,8 @@ public class PreparedQueryCacheImpl implements PreparedQueryCache {
 	}
 	
 	/**
-	 * Adds a pattern for exclusion. Any query cached currently whose identifier
-	 * matches the given pattern will be marked invalidated as a side-effect.
+     * Adds a pattern for exclusion. Any query cached currently whose identifier
+     * matches the given pattern will be marked invalidated as a side-effect.
 	 */
 	public void addExclusionPattern(String pattern) {
 		lock();
@@ -231,10 +231,10 @@ public class PreparedQueryCacheImpl implements PreparedQueryCache {
 			if (_exclusionPatterns == null)
 				_exclusionPatterns = new ArrayList<String>();
 			_exclusionPatterns.add(pattern);
-			Collection<String> invalidKeys = getMatchedKeys(pattern, 
-					_delegate.keySet());
-			if (!invalidKeys.isEmpty() && _log != null && _log.isInfoEnabled())
-				_log.info(_loc.get("prepared-query-add-pattern", pattern, 
+            Collection<String> invalidKeys = getMatchedKeys(pattern,
+                    _delegate.keySet());
+            if (!invalidKeys.isEmpty() && _log != null && _log.isInfoEnabled())
+                _log.info(_loc.get("prepared-query-add-pattern", pattern,
 					invalidKeys.size(), invalidKeys));
 			for (String invalidKey : invalidKeys)
 				markUncachable(invalidKey, pattern);
@@ -245,7 +245,7 @@ public class PreparedQueryCacheImpl implements PreparedQueryCache {
 	
 	/**
 	 * Removes a pattern for exclusion. Any query identifier marked as not 
-	 * cachable due to the given pattern will now be removed from the list of
+     * cachable due to the given pattern will now be removed from the list of
 	 * uncachables as a side-effect.
 	 */
 	public void removeExclusionPattern(String pattern) {
@@ -254,9 +254,9 @@ public class PreparedQueryCacheImpl implements PreparedQueryCache {
 			if (_exclusionPatterns == null)
 				return;
 			_exclusionPatterns.remove(pattern);
-			Collection<String> reborns = getMatchedKeys(pattern, _uncachables);
-			if (!reborns.isEmpty() && _log != null && _log.isInfoEnabled())
-				_log.info(_loc.get("prepared-query-remove-pattern", pattern, 
+            Collection<String> reborns = getMatchedKeys(pattern, _uncachables);
+            if (!reborns.isEmpty() && _log != null && _log.isInfoEnabled())
+                _log.info(_loc.get("prepared-query-remove-pattern", pattern,
 					reborns.size(), reborns));
 			for (String rebornKey : reborns)
 				_uncachables.remove(rebornKey);

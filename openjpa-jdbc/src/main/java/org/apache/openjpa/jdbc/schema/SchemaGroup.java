@@ -213,8 +213,8 @@ public class SchemaGroup
                 // We can't handle the case that one entity has schema name
                 // and other entity does not have schema name but both entities
                 // map to the same table.
-                if (tab != null
-                        && (schemas[i] == inSchema || inSchema.getName() == null))
+                if (tab != null &&
+                        (schemas[i] == inSchema || inSchema.getName() == null))
                     return tab;
 
             }
@@ -297,8 +297,8 @@ public class SchemaGroup
             Sequence seq;
             for (int i = 0; i < schemas.length; i++) {
                 seq = schemas[i].getSequence(name);
-                if ((seq != null)
-                        && (schemas[i] == inSchema || inSchema.getName() == null))
+                if ((seq != null) &&
+                        (schemas[i] == inSchema || inSchema.getName() == null))
                     return seq;
             }
 

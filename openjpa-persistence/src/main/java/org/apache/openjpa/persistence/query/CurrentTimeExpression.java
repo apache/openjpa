@@ -45,7 +45,7 @@ public class CurrentTimeExpression extends ExpressionImpl {
 		Now now = (_type == Date.class 
 				? Now.CURRENT_DATE
 				: (_type == Time.class
-						? Now.CURRENT_TIME : Now.CURRENT_TIMESTAMP));
+                        ? Now.CURRENT_TIME : Now.CURRENT_TIMESTAMP));
 		return now.toString();
 	}
 	

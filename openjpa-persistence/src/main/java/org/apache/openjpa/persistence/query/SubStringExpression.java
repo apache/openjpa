@@ -45,7 +45,7 @@ public class SubStringExpression extends UnaryOperatorExpression {
 		_length = new ConstantExpression(len);
 	}
 	
-	public SubStringExpression(Expression op, Expression start, Expression l) {
+    public SubStringExpression(Expression op, Expression start, Expression l) {
 		super(op, UnaryFunctionalOperator.SUBSTR);
 		_start  = start;
 		_length = new ConstantExpression(l);
@@ -54,7 +54,7 @@ public class SubStringExpression extends UnaryOperatorExpression {
 	public String asExpression(AliasContext ctx) {
 		return _op + "(" + ((Visitable)_e).asExpression(ctx)  
 			 + "," + ((Visitable)_start).asExpression(ctx)
-			 + (_length == null ? "" : "," + ((Visitable)_length).asExpression(ctx))
-			 + ")";
+             + (_length == null ? "" : ","
+             + ((Visitable)_length).asExpression(ctx)) + ")";
 	}
 }

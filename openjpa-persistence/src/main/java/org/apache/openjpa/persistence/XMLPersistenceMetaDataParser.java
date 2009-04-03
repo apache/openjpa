@@ -1475,7 +1475,8 @@ public class XMLPersistenceMetaDataParser
 
         if (fmd.getDeclaredTypeCode() != JavaTypes.COLLECTION &&
             fmd.getDeclaredTypeCode() != JavaTypes.MAP)
-            throw getException(_loc.get("bad-meta-anno", fmd, "ElementCollection"));
+            throw getException(_loc.get("bad-meta-anno", fmd,
+                    "ElementCollection"));
 
         val = attrs.getValue("fetch");
         if (val != null)
@@ -1558,7 +1559,8 @@ public class XMLPersistenceMetaDataParser
         if (meta != null) {
         	Class defType = meta.getDefiningType();
             if ((defType != _cls) && log.isWarnEnabled()) {
-            	log.warn(_loc.get("dup-query", name, currentLocation(), defType));
+                log.warn(_loc.get("dup-query", name, currentLocation(),
+            	        defType));
             }
             pushElement(meta);
             return true;
@@ -1569,7 +1571,8 @@ public class XMLPersistenceMetaDataParser
         meta.setQueryString(attrs.getValue("query"));
         meta.setLanguage(JPQLParser.LANG_JPQL);
         /** TODO: Uncomment when orm.xsd defines lockmode 
-        LockModeType lockMode = LockModeType.valueOf(attrs.getValue("lockMode"));
+        LockModeType lockMode =
+                 LockModeType.valueOf(attrs.getValue("lockMode"));
         meta.addHint("openjpa.FetchPlan.ReadLockMode", 
             JPA2LockLevels.toLockLevel(lockMode));
         **/

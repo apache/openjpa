@@ -149,11 +149,11 @@ public abstract class DistributedResultSet implements ResultSet {
 		return current.getBigDecimal(arg0);
 	}
 
-	public BigDecimal getBigDecimal(int arg0, int arg1) throws SQLException {
+    public BigDecimal getBigDecimal(int arg0, int arg1) throws SQLException {
 		return current.getBigDecimal(arg0, arg1);
 	}
 
-	public BigDecimal getBigDecimal(String arg0, int arg1) throws SQLException {
+    public BigDecimal getBigDecimal(String arg0, int arg1) throws SQLException {
 		return current.getBigDecimal(arg0, arg1);
 	}
 
@@ -355,7 +355,7 @@ public abstract class DistributedResultSet implements ResultSet {
 		return current.getTimestamp(arg0);
 	}
 
-	public Timestamp getTimestamp(int arg0, Calendar arg1) throws SQLException {
+    public Timestamp getTimestamp(int arg0, Calendar arg1) throws SQLException {
 		return current.getTimestamp(arg0, arg1);
 	}
 
@@ -405,7 +405,7 @@ public abstract class DistributedResultSet implements ResultSet {
 	}
 
 	public boolean isLast() throws SQLException {
-		return current != null && current.isLast() && cursor == comps.size()-1;
+        return current != null && current.isLast() && cursor == comps.size()-1;
 	}
 
 	public boolean last() throws SQLException {
@@ -515,7 +515,8 @@ public abstract class DistributedResultSet implements ResultSet {
 		throw new UnsupportedOperationException();
 	}
 
-	public void updateBigDecimal(int arg0, BigDecimal arg1) throws SQLException {
+    public void updateBigDecimal(int arg0, BigDecimal arg1) throws SQLException
+    {
 		throw new UnsupportedOperationException();
 	}
 
@@ -546,7 +547,7 @@ public abstract class DistributedResultSet implements ResultSet {
 		throw new UnsupportedOperationException();
 	}
 
-	public void updateBoolean(String arg0, boolean arg1) throws SQLException {
+    public void updateBoolean(String arg0, boolean arg1) throws SQLException {
 		throw new UnsupportedOperationException();
 	}
 
@@ -686,7 +687,7 @@ public abstract class DistributedResultSet implements ResultSet {
 		throw new UnsupportedOperationException();
 	}
 
-	public void updateTimestamp(int arg0, Timestamp arg1) throws SQLException {
+    public void updateTimestamp(int arg0, Timestamp arg1) throws SQLException {
 		throw new UnsupportedOperationException();
 	}
 

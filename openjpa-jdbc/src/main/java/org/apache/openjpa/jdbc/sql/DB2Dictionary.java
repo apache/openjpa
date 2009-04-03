@@ -233,8 +233,9 @@ public class DB2Dictionary
         // TRANSACTION_READ_COMMITTED
         conn = super.decorate(conn);
 
-        if (conf.getTransactionIsolationConstant() == -1
-            && conn.getTransactionIsolation() < Connection.TRANSACTION_READ_COMMITTED)
+        if (conf.getTransactionIsolationConstant() == -1 &&
+                conn.getTransactionIsolation() <
+                Connection.TRANSACTION_READ_COMMITTED)
             conn.setTransactionIsolation(Connection.TRANSACTION_READ_COMMITTED);
 
         return conn;
@@ -278,7 +279,7 @@ public class DB2Dictionary
         // verify that database product is supported
         if (db2ServerType == 0 || maj == 0)
             throw new UnsupportedException(_loc.get("db-not-supported",
-                new Object[] {databaseProductName, databaseProductVersion }));                    
+                new Object[] {databaseProductName, databaseProductVersion }));
 
     	if (maj >= 9 || (maj == 8 && min >= 2)) {
     	    supportsLockingWithMultipleTables = true;
@@ -843,9 +844,11 @@ public class DB2Dictionary
             if (subtype == StoreException.LOCK && errorState.equals("57033")
                 && ex.getMessage().indexOf("80") != -1) {
                 recoverable = Boolean.TRUE;
-            } else if (subtype == StoreException.QUERY && errorState.equals("57014")
-                && ex.getMessage().indexOf("40001") == -1) {
-                // FIXME drwoods - OPENJPA-964 - Need to determine expected DB2 behavior for query timeouts
+            } else if (subtype == StoreException.QUERY &&
+                    errorState.equals("57014") &&
+                    ex.getMessage().indexOf("40001") == -1) {
+                // FIXME drwoods - OPENJPA-964 - Need to determine expected DB2
+                // behavior for query timeouts
                 recoverable = Boolean.TRUE;
             }
         }

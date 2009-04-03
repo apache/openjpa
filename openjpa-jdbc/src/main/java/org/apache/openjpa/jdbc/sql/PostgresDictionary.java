@@ -58,7 +58,8 @@ public class PostgresDictionary
         (PostgresDictionary.class);
 
     private static Class<PostgresConnection> postgresConnectionImpl;
-    private static Class<PostgresPreparedStatement> postgresPreparedStatementImpl;
+    private static Class<PostgresPreparedStatement>
+            postgresPreparedStatementImpl;
 
     static {
         try {
@@ -378,7 +379,7 @@ public class PostgresDictionary
             .getConnection();
             try {
                 conn.setAutoCommit(false);
-                PGConnection pgconn = (PGConnection) conn.getInnermostDelegate();
+                PGConnection pgconn = (PGConnection)conn.getInnermostDelegate();
                 LargeObjectManager lom = pgconn.getLargeObjectAPI();
                 // The create method is valid in versions previous 8.3
                 // in 8.3 this methos is deprecated, use createLO

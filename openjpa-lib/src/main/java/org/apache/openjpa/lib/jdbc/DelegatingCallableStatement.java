@@ -788,7 +788,8 @@ public abstract class DelegatingCallableStatement
         throw new UnsupportedOperationException();
     }
 
-    public Object getObject(String a, Map<String, Class<?>>b) throws SQLException {
+    public Object getObject(String a, Map<String, Class<?>>b) throws
+            SQLException {
         throw new UnsupportedOperationException();
     }
 

@@ -175,7 +175,8 @@ public class AnnotationBuilder {
             if (value instanceof List) {
                 sb.append("{");
                 List<AnnotationBuilder> l = (List<AnnotationBuilder>) value;
-                for (Iterator<AnnotationBuilder> i = l.iterator(); i.hasNext();) {
+                for (Iterator<AnnotationBuilder> i = l.iterator(); i.hasNext();)
+                {
                     AnnotationBuilder ab =  i.next();
                     sb.append(ab.toString());
                     if (i.hasNext())

@@ -22,7 +22,7 @@ class UnaryOperatorExpression extends ExpressionImpl implements Aggregate {
 	protected final Expression _e;
 	protected final UnaryFunctionalOperator   _op;
 	
-	public UnaryOperatorExpression(Expression e, UnaryFunctionalOperator op) {
+    public UnaryOperatorExpression(Expression e, UnaryFunctionalOperator op) {
 		_e = e;
 		_op = op;
 	}

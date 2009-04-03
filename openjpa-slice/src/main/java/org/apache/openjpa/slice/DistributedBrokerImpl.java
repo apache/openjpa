@@ -60,7 +60,8 @@ public class DistributedBrokerImpl extends FinalizingBrokerImpl
     }
     
     public DistributedStoreManager getDistributedStoreManager() {
-        return (DistributedStoreManager)getStoreManager().getInnermostDelegate();
+        return (DistributedStoreManager)getStoreManager().
+                getInnermostDelegate();
     }
     
     public Slice addSlice(String name, Map properties) {
@@ -71,22 +72,24 @@ public class DistributedBrokerImpl extends FinalizingBrokerImpl
     }
     
 	/**
-	 * Assigns slice identifier to the resultant StateManager as initialized by
+     * Assigns slice identifier to the resultant StateManager as initialized by
 	 * the super class implementation. The slice identifier is decided by
 	 * {@link DistributionPolicy} for given <code>pc</code> if it is a root
-	 * instance i.e. the argument of the user application's persist() call. The
+     * instance i.e. the argument of the user application's persist() call. The
 	 * cascaded instances are detected by non-empty status of the current
 	 * operating set. The slice is assigned only if a StateManager has never
 	 * been assigned before.
 	 */
 	@Override
-	public OpenJPAStateManager persist(Object pc, Object id, boolean explicit,
+    public OpenJPAStateManager persist(Object pc, Object id, boolean explicit,
 			OpCallbacks call) {
 		OpenJPAStateManager sm = getStateManager(pc);
 		SliceInfo info = null;
-		boolean replicated = SliceImplHelper.isReplicated(pc, getConfiguration());
-		if (getOperatingSet().isEmpty()	&& !SliceImplHelper.isSliceAssigned(sm)) {
-			info = SliceImplHelper.getSlicesByPolicy(pc, getConfiguration(), 
+        boolean replicated = SliceImplHelper.isReplicated(pc,
+                getConfiguration());
+        if (getOperatingSet().isEmpty()	&& !SliceImplHelper.isSliceAssigned(sm))
+        {
+            info = SliceImplHelper.getSlicesByPolicy(pc, getConfiguration(),
 				this);
 			_rootSlice = info.getSlices()[0]; 
 		}
@@ -94,7 +97,7 @@ public class DistributedBrokerImpl extends FinalizingBrokerImpl
 		if (!SliceImplHelper.isSliceAssigned(sm)) {
 			if (info == null) {
 			   info = replicated 
-			   ? SliceImplHelper.getSlicesByPolicy(pc, getConfiguration(), this) 
+               ? SliceImplHelper.getSlicesByPolicy(pc, getConfiguration(), this)
 			   : new SliceInfo(_rootSlice); 
 			}
 			info.setInto(sm);

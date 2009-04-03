@@ -31,7 +31,8 @@ import org.apache.openjpa.lib.util.Closeable;
  * <code><pre> import org.apache.openjpa.event.*;
  * import org.apache.openjpa.conf.*;
  * 
- * {@link org.apache.openjpa.conf.OpenJPAConfiguration} conf = factory.getConfiguraiton ();
+ * {@link org.apache.openjpa.conf.OpenJPAConfiguration} conf =
+ *         factory.getConfiguraiton ();
  *  RemoteCommitListener l = new RemoteCommitListener () {
  * public void afterCommit ({@link RemoteCommitEvent} e) {
  * // update a Swing widget when remote brokers make

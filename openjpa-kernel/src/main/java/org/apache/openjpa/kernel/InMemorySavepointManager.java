@@ -59,7 +59,7 @@ public class InMemorySavepointManager
     }
 
     public boolean supportsIncrementalFlush() {
-        //	cannot incrementally flush as saved fields may become out of synch.
+        // cannot incrementally flush as saved fields may become out of synch.
         return false;
 	}
 }

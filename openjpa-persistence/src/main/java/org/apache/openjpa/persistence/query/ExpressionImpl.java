@@ -48,7 +48,7 @@ abstract class ExpressionImpl extends AbstractVisitable
 	}
 
 	public Expression dividedBy(Number num) {
-		return new DividedByExpression(this, new ConstantExpression(num));
+        return new DividedByExpression(this, new ConstantExpression(num));
 	}
 
 	public Expression dividedBy(Expression expr) {
@@ -164,11 +164,13 @@ abstract class ExpressionImpl extends AbstractVisitable
 	}
 
 	public Expression substring(int start, Expression len) {
-		return new SubStringExpression(this, new ConstantExpression(start), len);
+        return new SubStringExpression(this, new ConstantExpression(start),
+                len);
 	}
 
 	public Expression substring(Expression start, int len) {
-		return new SubStringExpression(this, start, new ConstantExpression(len));
+        return new SubStringExpression(this, start,
+                new ConstantExpression(len));
 	}
 
 	public Expression substring(Expression start, Expression len) {
@@ -236,11 +238,11 @@ abstract class ExpressionImpl extends AbstractVisitable
 
 	public Predicate between(Number arg1, Number arg2) {
 		return new BetweenExpression(this, new RangeExpression(
-			new ConstantExpression(arg1), new ConstantExpression(arg2)));
+            new ConstantExpression(arg1), new ConstantExpression(arg2)));
 	}
 
 	public Predicate between(PredicateOperand arg1, String arg2) {
-		return new BetweenExpression(this, new RangeExpression((Expression)arg1, 
+        return new BetweenExpression(this, new RangeExpression((Expression)arg1,
 			new ConstantExpression(arg2)));
 	}
 
@@ -251,22 +253,22 @@ abstract class ExpressionImpl extends AbstractVisitable
 
 	public Predicate between(String arg1, String arg2) {
 		return new BetweenExpression(this, new RangeExpression(
-			new ConstantExpression(arg1), new ConstantExpression(arg2)));
+            new ConstantExpression(arg1), new ConstantExpression(arg2)));
 	}
 
 	public Predicate between(PredicateOperand arg1, Date arg2) {
 		return new BetweenExpression(this, new RangeExpression(
-			(Expression)arg1, new ConstantExpression(arg2)));
+            (Expression)arg1, new ConstantExpression(arg2)));
 	}
 
 	public Predicate between(Date arg1, PredicateOperand arg2) {
 		return new BetweenExpression(this, new RangeExpression(
-			new ConstantExpression(arg1), (Expression)arg2));
+            new ConstantExpression(arg1), (Expression)arg2));
 	}
 
 	public Predicate between(Date arg1, Date arg2) {
 		return new BetweenExpression(this, new RangeExpression(
-			new ConstantExpression(arg1), new ConstantExpression(arg2)));
+            new ConstantExpression(arg1), new ConstantExpression(arg2)));
 	}
 
 	public Predicate between(PredicateOperand arg1, Calendar arg2) {
@@ -281,7 +283,7 @@ abstract class ExpressionImpl extends AbstractVisitable
 
 	public Predicate between(Calendar arg1, Calendar arg2) {
 		return new BetweenExpression(this, new RangeExpression(
-			new ConstantExpression(arg1), new ConstantExpression(arg2)));
+            new ConstantExpression(arg1), new ConstantExpression(arg2)));
 	}
 
 	public Predicate equal(PredicateOperand arg) {
@@ -317,108 +319,108 @@ abstract class ExpressionImpl extends AbstractVisitable
 	}
 
 	public Predicate greaterEqual(PredicateOperand arg) {
-		return new GreaterEqualExpression(this, new ConstantExpression(arg));
+        return new GreaterEqualExpression(this, new ConstantExpression(arg));
 	}
 
 	public Predicate greaterEqual(Number arg) {
-		return new GreaterEqualExpression(this, new ConstantExpression(arg));
+        return new GreaterEqualExpression(this, new ConstantExpression(arg));
 	}
 
 	public Predicate greaterEqual(String arg) {
-		return new GreaterEqualExpression(this, new ConstantExpression(arg));
+        return new GreaterEqualExpression(this, new ConstantExpression(arg));
 	}
 
 	public Predicate greaterEqual(Date arg) {
-		return new GreaterEqualExpression(this, new ConstantExpression(arg));
+        return new GreaterEqualExpression(this, new ConstantExpression(arg));
 	}
 
 	public Predicate greaterEqual(Calendar arg) {
-		return new GreaterEqualExpression(this, new ConstantExpression(arg));
+        return new GreaterEqualExpression(this, new ConstantExpression(arg));
 	}
 
 	public Predicate greaterThan(PredicateOperand arg) {
-		return new GreaterThanExpression(this, (Expression)arg);
+        return new GreaterThanExpression(this, (Expression)arg);
 	}
 
 	public Predicate greaterThan(Number arg) {
-		return new GreaterThanExpression(this, new ConstantExpression(arg));
+        return new GreaterThanExpression(this, new ConstantExpression(arg));
 	}
 
 	public Predicate greaterThan(String arg) {
-		return new GreaterThanExpression(this, new ConstantExpression(arg));
+        return new GreaterThanExpression(this, new ConstantExpression(arg));
 	}
 
 	public Predicate greaterThan(Date arg) {
-		return new GreaterThanExpression(this, new ConstantExpression(arg));
+        return new GreaterThanExpression(this, new ConstantExpression(arg));
 	}
 
 	public Predicate greaterThan(Calendar arg) {
-		return new GreaterThanExpression(this, new ConstantExpression(arg));
+        return new GreaterThanExpression(this, new ConstantExpression(arg));
 	}
 
 	public Predicate lessEqual(PredicateOperand arg) {
-		return new LessEqualExpression(this, new ConstantExpression(arg));
+        return new LessEqualExpression(this, new ConstantExpression(arg));
 	}
 
 	public Predicate lessEqual(Number arg) {
-		return new LessEqualExpression(this, new ConstantExpression(arg));
+        return new LessEqualExpression(this, new ConstantExpression(arg));
 	}
 
 	public Predicate lessEqual(String arg) {
-		return new LessEqualExpression(this, new ConstantExpression(arg));
+        return new LessEqualExpression(this, new ConstantExpression(arg));
 	}
 
 	public Predicate lessEqual(Date arg) {
-		return new LessEqualExpression(this, new ConstantExpression(arg));
+        return new LessEqualExpression(this, new ConstantExpression(arg));
 	}
 
 	public Predicate lessEqual(Calendar arg) {
-		return new LessEqualExpression(this, new ConstantExpression(arg));
+        return new LessEqualExpression(this, new ConstantExpression(arg));
 	}
 
 	public Predicate lessThan(PredicateOperand arg) {
-		return new LessThanExpression(this, (Expression)arg);
+        return new LessThanExpression(this, (Expression)arg);
 	}
 
 	public Predicate lessThan(Number arg) {
-		return new LessThanExpression(this, new ConstantExpression(arg));
+        return new LessThanExpression(this, new ConstantExpression(arg));
 	}
 
 	public Predicate lessThan(String arg) {
-		return new LessThanExpression(this, new ConstantExpression(arg));
+        return new LessThanExpression(this, new ConstantExpression(arg));
 	}
 
 	public Predicate lessThan(Date arg) {
-		return new LessThanExpression(this, new ConstantExpression(arg));
+        return new LessThanExpression(this, new ConstantExpression(arg));
 	}
 
 	public Predicate lessThan(Calendar arg) {
-		return new LessThanExpression(this, new ConstantExpression(arg));
+        return new LessThanExpression(this, new ConstantExpression(arg));
 	}
 
 	public Predicate like(PredicateOperand pattern) {
 		return new LikeExpression(this, (Expression)pattern);
 	}
 
-	public Predicate like(PredicateOperand pattern, PredicateOperand escChar) {
+    public Predicate like(PredicateOperand pattern, PredicateOperand escChar) {
 		return new LikeExpression(this, (Expression)pattern, escChar);
 	}
 
 	public Predicate like(PredicateOperand pattern, char escapeChar) {
-		return new LikeExpression(this, (Expression)pattern, escapeChar);
+        return new LikeExpression(this, (Expression)pattern, escapeChar);
 	}
 
 	public Predicate like(String pattern) {
-		return new LikeExpression(this, new ConstantExpression(pattern));
+        return new LikeExpression(this, new ConstantExpression(pattern));
 	}
 
 	public Predicate like(String pattern, PredicateOperand escapeChar) {
-		return new LikeExpression(this, new ConstantExpression(pattern), 
+        return new LikeExpression(this, new ConstantExpression(pattern), 
 			escapeChar);
 	}
 
 	public Predicate like(String pattern, char escChar) {
-		return new LikeExpression(this, new ConstantExpression(pattern), 
+        return new LikeExpression(this, new ConstantExpression(pattern), 
 			escChar);
 	}
 
@@ -427,27 +429,27 @@ abstract class ExpressionImpl extends AbstractVisitable
 	}
 
 	public Predicate notEqual(Class cls) {
-		return new NotEqualExpression(this, new ConstantExpression(cls));
+        return new NotEqualExpression(this, new ConstantExpression(cls));
 	}
 
 	public Predicate notEqual(Number arg) {
-		return new NotEqualExpression(this, new ConstantExpression(arg));
+        return new NotEqualExpression(this, new ConstantExpression(arg));
 	}
 
 	public Predicate notEqual(String arg) {
-		return new NotEqualExpression(this, new ConstantExpression(arg));
+        return new NotEqualExpression(this, new ConstantExpression(arg));
 	}
 
 	public Predicate notEqual(boolean arg) {
-		return new NotEqualExpression(this, new ConstantExpression(arg));
+        return new NotEqualExpression(this, new ConstantExpression(arg));
 	}
 
 	public Predicate notEqual(Date arg) {
-		return new NotEqualExpression(this, new ConstantExpression(arg));
+        return new NotEqualExpression(this, new ConstantExpression(arg));
 	}
 
 	public Predicate notEqual(Calendar arg) {
-		return new NotEqualExpression(this,	new ConstantExpression(arg));
+        return new NotEqualExpression(this, new ConstantExpression(arg));
 	}
 
 	public Predicate notEqual(Enum<?> e) {

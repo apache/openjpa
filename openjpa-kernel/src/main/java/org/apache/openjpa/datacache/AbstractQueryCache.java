@@ -378,7 +378,8 @@ public abstract class AbstractQueryCache
 
     /**
      * Updates the entity timestamp map with the current time in milliseconds
-     * @param timestampMap -- a map that contains entityname and its last updated timestamp
+     * @param timestampMap -- a map that contains entityname and its last
+     * updated timestamp
      */
     protected void updateEntityTimestamp(Map<String,Long> timestampMap) {
         if (entityTimestampMap != null)

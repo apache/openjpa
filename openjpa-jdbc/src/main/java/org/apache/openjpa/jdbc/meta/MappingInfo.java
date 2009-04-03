@@ -147,8 +147,8 @@ public abstract class MappingInfo
     }
 
     /** 
-	 *  Affirms if this instance represents an implicit relation. For example, a 
-	 *  relation expressed as the value of primary key of the related class and 
+     *  Affirms if this instance represents an implicit relation. For example, a
+     *  relation expressed as the value of primary key of the related class and
 	 *  not as object reference.
      *
      * @since 1.3.0
@@ -553,10 +553,10 @@ public abstract class MappingInfo
         	if ((!adapt && !fill) && given.size() != tmplates.length) {
         		// try default table
         		given = getColumns("");
-            	if ((!adapt && !fill) && given.size() != tmplates.length) {
-            		throw new MetaDataException(_loc.get(prefix + "-num-cols",
-            			context, String.valueOf(tmplates.length),
-            			String.valueOf(given.size())));
+                if ((!adapt && !fill) && given.size() != tmplates.length) {
+                    throw new MetaDataException(_loc.get(prefix + "-num-cols",
+                            context, String.valueOf(tmplates.length),
+                            String.valueOf(given.size())));
             	}
         	}
         }
@@ -573,7 +573,8 @@ public abstract class MappingInfo
         return cols;
     }
     
-    boolean canMerge(List given, Column[] templates, boolean adapt, boolean fill) {
+    boolean canMerge(List given, Column[] templates, boolean adapt,
+            boolean fill) {
     	return !((!given.isEmpty() || (!adapt && !fill)) 
     			&& given.size() != templates.length);
     }

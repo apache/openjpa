@@ -151,7 +151,7 @@ public abstract class AbstractJDBCSeq
      * <code>TYPE_CONTIGUOUS</code> the connection from the {@link StoreManager}
      * will be returned. 
      * 
-     * <P>Otherwise a new connection will be obtained using DataSource2 from the 
+     * <P>Otherwise a new connection will be obtained using DataSource2 from the
      * current configuration. In this case autocommit is set to false prior to 
      * returning the connection.</P>
      */

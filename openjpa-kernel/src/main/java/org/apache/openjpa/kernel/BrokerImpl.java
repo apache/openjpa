@@ -410,7 +410,8 @@ public class BrokerImpl
 
     public void popFetchConfiguration() {
         if (_fcs == null || _fcs.isEmpty())
-            throw new UserException(_loc.get("fetch-configuration-stack-empty"));
+            throw new UserException(
+                    _loc.get("fetch-configuration-stack-empty"));
         _fc = (FetchConfiguration) _fcs.removeLast();
     }
 
@@ -4359,7 +4360,8 @@ public class BrokerImpl
     public boolean isPersistent(Object obj) {
         assertOpen();
         if (ImplHelper.isManageable(obj))
-            return (ImplHelper.toPersistenceCapable(obj, _conf)).pcIsPersistent();
+            return (ImplHelper.toPersistenceCapable(obj, _conf)).
+                    pcIsPersistent();
         return false;
     }
 

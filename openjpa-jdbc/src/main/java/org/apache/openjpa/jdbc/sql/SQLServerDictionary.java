@@ -141,7 +141,8 @@ public class SQLServerDictionary
     
     protected void appendLength(SQLBuffer buf, int type) {
         if (type == Types.VARCHAR)
-            buf.append("(").append(Integer.toString(characterColumnSize)).append(")");
+            buf.append("(").append(Integer.toString(characterColumnSize)).
+                    append(")");
     }
 
     /**

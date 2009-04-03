@@ -41,7 +41,7 @@ public class SlicePersistence {
 	/**
 	 * Get the slice identifier for the given instance if it is a managed
 	 * instance and has been assigned to a slice.
-	 * If the given instance is replicated across multiple slices then returns
+     * If the given instance is replicated across multiple slices then returns
 	 * comma-separated list of slice names.
 	 * 
 	 * @return name of the slice, if any. null otherwise.
@@ -49,10 +49,10 @@ public class SlicePersistence {
 	public static String getSlice(Object obj) {
 		if (obj == null)
 			return null;
-		PersistenceCapable pc = ImplHelper.toPersistenceCapable(obj, null);
+        PersistenceCapable pc = ImplHelper.toPersistenceCapable(obj, null);
 		if (pc == null)
 			return null;
-		OpenJPAStateManager sm = (OpenJPAStateManager)pc.pcGetStateManager();
+        OpenJPAStateManager sm = (OpenJPAStateManager)pc.pcGetStateManager();
         SliceInfo info = SliceImplHelper.getSliceInfo(sm);
 		if (info == null)
 			return null;
@@ -61,7 +61,7 @@ public class SlicePersistence {
 	}
 	
 	/**
-	 * Affirms if the given instance is replicated, provided the given instance 
+     * Affirms if the given instance is replicated, provided the given instance
 	 * is managed.
      */
     public static boolean isReplicated(Object obj) {

@@ -130,10 +130,11 @@ public class PreparedSQLStoreQuery extends SQLStoreQuery {
         /**
          * Convert given userParams to an array whose ordering matches as 
          * per expected during executeXXX() methods.
-         * The given userParams is already re-parameterized, so this method have 
+         * The given userParams is already re-parameterized, so this method have
          * to merely copy the given Map values.
          * 
-         * @see PreparedQueryImpl#reparametrize(Map, org.apache.openjpa.kernel.Broker)
+         * @see PreparedQueryImpl#reparametrize(Map,
+         * org.apache.openjpa.kernel.Broker)
          */
         public Object[] toParameterArray(StoreQuery q, Map userParams) {
             Object[] array = new Object[userParams.size()];

@@ -338,7 +338,7 @@ public interface FetchConfiguration
 	public Object getHint (String name);
 	
 	/**
-	 * Returns an immutable view of the currently active hints and their values. 
+     * Returns an immutable view of the currently active hints and their values.
 	 * 
 	 * @since 2.0.0
 	 */

@@ -48,7 +48,7 @@ public class DerbyDictionary
         substringFunctionName = "SUBSTR";
 
         // Derby name length restriction has been relaxed 
-        // http://www.archivum.info/derby-dev@db.apache.org/2004-12/msg00270.html
+        //http://www.archivum.info/derby-dev@db.apache.org/2004-12/msg00270.html
         maxConstraintNameLength = 128;
         maxIndexNameLength = 128;
         maxColumnNameLength = 128;
@@ -113,7 +113,8 @@ public class DerbyDictionary
         int errorCode = ex.getErrorCode();
         if (errorStates.contains(errorState)) {
             recoverable = Boolean.FALSE;
-            if ((subtype == StoreException.LOCK || subtype == StoreException.QUERY) && errorCode < 30000) {
+            if ((subtype == StoreException.LOCK ||
+                    subtype == StoreException.QUERY) && errorCode < 30000) {
                 recoverable = Boolean.TRUE;
             }
         }

@@ -32,9 +32,9 @@ import org.apache.openjpa.lib.conf.Configurable;
  * 
  * A cached query by an identifier of parameterized type K. 
  * 
- * A query can be cached by an identifier and value represented by parameterized 
- * type V. Caching results in creating a new instance of FinderQuery FQ from the 
- * value V such that FQ can be executed to return a result of parameterized type 
+ * A query can be cached by an identifier and value represented by parameterized
+ * type V. Caching results in creating a new instance of FinderQuery FQ from the
+ * value V such that FQ can be executed to return a result of parameterized type
  * R. A request to cache may not be successful if this cache determines the 
  * value V to be not cachable.
  * 
@@ -51,8 +51,8 @@ import org.apache.openjpa.lib.conf.Configurable;
  * execution context changes in a way that will modify the resultant database 
  * language query FQ.
  * 
- * One of the built-in mechanism (available in JPA facade) is to set query hints 
- * to either invalidate the query entirely or ignore the cached version for the 
+ * One of the built-in mechanism (available in JPA facade) is to set query hints
+ * to either invalidate the query entirely or ignore the cached version for the
  * current execution. 
  * 
  * @see QueryHints#HINT_IGNORE_FINDER
@@ -124,7 +124,7 @@ public interface FinderCache<K,V,R> extends Configurable {
 	public List<String> getExcludes();
 	
 	/**
-	 * Adds the given pattern to the list of excluded patterns. Any existing 
+     * Adds the given pattern to the list of excluded patterns. Any existing
 	 * cache entry whose key matches the given pattern will be marked 
 	 * non-cachable in a reversible manner. 
 	 */

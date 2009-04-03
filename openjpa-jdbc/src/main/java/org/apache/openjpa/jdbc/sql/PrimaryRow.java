@@ -343,8 +343,8 @@ public class PrimaryRow
             	} else if (!isDefaultValue(val)) {
             		throw new InvalidStateException(_loc.get("diff-values",
             				new Object[]{ col.getFullName(),
-            				(prev == null) ? null : prev.getClass(), prev,
-            				(val == null) ? null : val.getClass(), val })).
+                            (prev == null) ? null : prev.getClass(), prev,
+                            (val == null) ? null : val.getClass(), val })).
             				setFatal(true);
             	} else {
             	    // since not allow to update and the new value is 0 or null,

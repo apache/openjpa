@@ -167,9 +167,11 @@ public class AnnotationPersistenceMappingSerializer
      * Add an annotation builder to list of builders for the specified
      * class metadata.
      */
-    protected void addAnnotation(AnnotationBuilder ab, QueryResultMapping meta) {
+    protected void addAnnotation(AnnotationBuilder ab, QueryResultMapping meta)
+    {
         if (_rsmAnnos == null)
-            _rsmAnnos = new HashMap<QueryResultMapping, List<AnnotationBuilder>>();
+            _rsmAnnos = new HashMap<QueryResultMapping,
+                    List<AnnotationBuilder>>();
         List<AnnotationBuilder> list = _rsmAnnos.get(meta);
         if (list == null) {
             list = new ArrayList<AnnotationBuilder>();
@@ -226,7 +228,8 @@ public class AnnotationPersistenceMappingSerializer
         for (String second : info.getSecondaryTableNames()) {
             AnnotationBuilder abSecTable =
                 addAnnotation(SecondaryTable.class, mapping);
-            serializeTable(second, null, info, info.getUniques(second), abSecTable);
+            serializeTable(second, null, info, info.getUniques(second),
+                    abSecTable);
         }
     }
 

@@ -162,7 +162,8 @@ public class InformixDictionary
             else
                 driverVendor = VENDOR_OTHER;
             
-            if (driverName.equals("IBM DB2 JDBC Universal Driver Architecture")) { 
+            if (driverName.equals("IBM DB2 JDBC Universal Driver Architecture"))
+            { 
                 useJCC = true;
                 try {
                     if (meta.storesLowerCaseIdentifiers()) 

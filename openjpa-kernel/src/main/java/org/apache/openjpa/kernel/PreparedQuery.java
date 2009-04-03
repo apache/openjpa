@@ -83,7 +83,7 @@ public interface PreparedQuery  {
 	/**
 	 * Initialize from the given argument.  
 	 * 
-	 * @param o an opaque instance supposed to carry post-execution data such
+     * @param o an opaque instance supposed to carry post-execution data such
 	 * as target database query, parameters of the query etc.
 	 * 
 	 * @return true if this receiver can initialize itself from the given
@@ -97,7 +97,7 @@ public interface PreparedQuery  {
 	public boolean isInitialized();
 	
 	/**
-	 * Get the list of parameters in a map where an entry represents a parameter
+     * Get the list of parameters in a map where an entry represents a parameter
 	 * key and value after replacing with the given user parameters. 
 	 * 
 	 * Must be invoked after initialize().  

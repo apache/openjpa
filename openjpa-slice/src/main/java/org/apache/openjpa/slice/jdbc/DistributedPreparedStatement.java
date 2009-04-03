@@ -39,7 +39,8 @@ import java.util.Calendar;
 import org.apache.openjpa.lib.util.ConcreteClassGenerator;
 
 /**
- * A virtual PreparedStaement that delegates to a set of actual PreparedStatements.
+ * A virtual PreparedStaement that delegates to a set of actual
+ * PreparedStatements.
  * 
  * @author Pinaki Poddar 
  *
@@ -113,7 +114,7 @@ public abstract class DistributedPreparedStatement
 			t.setAsciiStream(arg0, arg1, arg2);
 	}
 
-	public void setBigDecimal(int arg0, BigDecimal arg1) throws SQLException {
+    public void setBigDecimal(int arg0, BigDecimal arg1) throws SQLException {
 		for (PreparedStatement t : this)
 			t.setBigDecimal(arg0, arg1);
 	}
@@ -160,7 +161,8 @@ public abstract class DistributedPreparedStatement
 			t.setDate(arg0, arg1);
 	}
 
-	public void setDate(int arg0, Date arg1, Calendar arg2) throws SQLException {
+    public void setDate(int arg0, Date arg1, Calendar arg2) throws SQLException
+    {
 		for (PreparedStatement t : this)
 			t.setDate(arg0, arg1, arg2);
 	}
@@ -190,7 +192,7 @@ public abstract class DistributedPreparedStatement
 			t.setNull(arg0, arg1);
 	}
 
-	public void setNull(int arg0, int arg1, String arg2) throws SQLException {
+    public void setNull(int arg0, int arg1, String arg2) throws SQLException {
 		for (PreparedStatement t : this)
 			t.setNull(arg0, arg1, arg2);
 	}
@@ -200,7 +202,7 @@ public abstract class DistributedPreparedStatement
 			t.setObject(arg0, arg1);
 	}
 
-	public void setObject(int arg0, Object arg1, int arg2) throws SQLException {
+    public void setObject(int arg0, Object arg1, int arg2) throws SQLException {
 		for (PreparedStatement t : this)
 			t.setObject(arg0, arg1, arg2);
 	}
@@ -237,7 +239,7 @@ public abstract class DistributedPreparedStatement
 				t.setTime(arg0, arg1, arg2);
 	 }
 	
-	 public void setTimestamp(int arg0, Timestamp arg1) throws SQLException {
+     public void setTimestamp(int arg0, Timestamp arg1) throws SQLException {
 			for (PreparedStatement t : this)
 				t.setTimestamp(arg0, arg1);
 	 }

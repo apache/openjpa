@@ -151,8 +151,8 @@ public class SybaseDictionary
             "USER_OPTION", "WAITFOR", "WHILE", "WRITETEXT",
         }));
 
-        // Sybase does not support foreign key delete/update action NULL, DEFAULT,
-        // CASCADE
+        // Sybase does not support foreign key delete/update action NULL,
+        // DEFAULT, CASCADE
         supportsNullDeleteAction = false;
         supportsDefaultDeleteAction = false;
         supportsCascadeDeleteAction = false;

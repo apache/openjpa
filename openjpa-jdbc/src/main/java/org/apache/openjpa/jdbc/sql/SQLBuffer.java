@@ -258,7 +258,7 @@ public final class SQLBuffer
      * Append a user parameter value for a specific column. User parameters
      * are marked as opposed to the parameters inserted by the internal runtime
      * system. This helps to reuse the buffer by reparmeterizing it with new
-     * set of user parameters while the 'internal' parameters remain unchanged.  
+     * set of user parameters while the 'internal' parameters remain unchanged.
      * 
      * @param userParam if non-null, designates a 'user' parameter.
      */

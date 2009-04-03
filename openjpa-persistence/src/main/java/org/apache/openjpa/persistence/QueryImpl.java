@@ -76,7 +76,7 @@ public class QueryImpl implements OpenJPAQuerySPI, Serializable {
 
     private static final List EMPTY_LIST = new ArrayList(0);
     private static final String SELECT = "SELECT ";
-	private static final Localizer _loc = Localizer.forPackage(QueryImpl.class);
+    private static final Localizer _loc = Localizer.forPackage(QueryImpl.class);
 
 	private DelegatingQuery _query;
 	private transient EntityManagerImpl _em;
@@ -108,7 +108,8 @@ public class QueryImpl implements OpenJPAQuerySPI, Serializable {
 	 * 
 	 * @deprecated
 	 */
-	public QueryImpl(EntityManagerImpl em, org.apache.openjpa.kernel.Query query) {
+	public QueryImpl(EntityManagerImpl em,
+	        org.apache.openjpa.kernel.Query query) {
 		this(em, null, query);
 	}
 
@@ -128,7 +129,7 @@ public class QueryImpl implements OpenJPAQuerySPI, Serializable {
 	}
 
 	public QueryOperationType getOperation() {
-		return QueryOperationType.fromKernelConstant(_query.getOperation());
+        return QueryOperationType.fromKernelConstant(_query.getOperation());
 	}
 
 	public FetchPlan getFetchPlan() {
@@ -137,9 +138,9 @@ public class QueryImpl implements OpenJPAQuerySPI, Serializable {
 		_query.lock();
 		try {
 			if (_fetch == null)
-				_fetch = ((EntityManagerFactoryImpl) _em
-						.getEntityManagerFactory()).toFetchPlan(_query
-						.getBroker(), _query.getFetchConfiguration());
+                _fetch = ((EntityManagerFactoryImpl) _em
+                        .getEntityManagerFactory()).toFetchPlan(_query
+                        .getBroker(), _query.getFetchConfiguration());
 			return _fetch;
 		} finally {
 			_query.unlock();
@@ -178,7 +179,7 @@ public class QueryImpl implements OpenJPAQuerySPI, Serializable {
 		return this;
 	}
 
-	public OpenJPAQuery removeAggregateListener(AggregateListener listener) {
+    public OpenJPAQuery removeAggregateListener(AggregateListener listener) {
 		_em.assertNotCloseInvoked();
 		_query.removeAggregateListener(listener);
 		return this;
@@ -217,7 +218,7 @@ public class QueryImpl implements OpenJPAQuerySPI, Serializable {
 	public OpenJPAQuery setSubclasses(boolean subs) {
 		_em.assertNotCloseInvoked();
 		Class cls = _query.getCandidateType();
-		_query.setCandidateExtent(_query.getBroker().newExtent(cls, subs));
+        _query.setCandidateExtent(_query.getBroker().newExtent(cls, subs));
 		return this;
 	}
 
@@ -232,7 +233,7 @@ public class QueryImpl implements OpenJPAQuerySPI, Serializable {
 			end = Long.MAX_VALUE;
 		else
 			end = startPosition
-					+ (_query.getEndRange() - _query.getStartRange());
+                    + (_query.getEndRange() - _query.getStartRange());
 		_query.setRange(startPosition, end);
 		return this;
 	}
@@ -258,9 +259,9 @@ public class QueryImpl implements OpenJPAQuerySPI, Serializable {
 	}
 	
 	private Object execute() {
-		if (!isNative() && _query.getOperation() != QueryOperations.OP_SELECT)
-			throw new InvalidStateException(_loc.get("not-select-query", _query
-					.getQueryString()), null, null, false);
+        if (!isNative() && _query.getOperation() != QueryOperations.OP_SELECT)
+            throw new InvalidStateException(_loc.get("not-select-query", _query
+                    .getQueryString()), null, null, false);
 		try {
 		    lock();
             Map params = _positional != null ? _positional 
@@ -282,8 +283,8 @@ public class QueryImpl implements OpenJPAQuerySPI, Serializable {
 		if (ob instanceof List) {
 			List ret = (List) ob;
 			if (ret instanceof ResultList)
-				return new DelegatingResultList((ResultList) ret,
-						PersistenceExceptions.getRollbackTranslator(_em));
+                return new DelegatingResultList((ResultList) ret,
+                        PersistenceExceptions.getRollbackTranslator(_em));
 			else
 				return ret;
 		}
@@ -296,14 +297,14 @@ public class QueryImpl implements OpenJPAQuerySPI, Serializable {
 	 */
 	public Object getSingleResult() {
 		_em.assertNotCloseInvoked();
-		setHint("openjpa.hint.OptimizeResultCount", 1); // for DB2 optimization
+        setHint("openjpa.hint.OptimizeResultCount", 1); // for DB2 optimization
 		List result = getResultList();
 		if (result == null || result.isEmpty())
-			throw new NoResultException(_loc.get("no-result", getQueryString())
-				.getMessage());
+            throw new NoResultException(_loc.get("no-result", getQueryString())
+                    .getMessage());
 		if (result.size() > 1)
-			throw new NonUniqueResultException(_loc.get("non-unique-result",
-				getQueryString(), result.size()).getMessage());
+            throw new NonUniqueResultException(_loc.get("non-unique-result",
+                    getQueryString(), result.size()).getMessage());
 		try {
 		    return result.get(0);
 		} catch (Exception e) {
@@ -330,8 +331,8 @@ public class QueryImpl implements OpenJPAQuerySPI, Serializable {
 				return asInt(_query.updateAll(_named));
 			return asInt(_query.updateAll());
 		}
-		throw new InvalidStateException(_loc.get("not-update-delete-query",
-				_query.getQueryString()), null, null, false);
+        throw new InvalidStateException(_loc.get("not-update-delete-query",
+                _query.getQueryString()), null, null, false);
 	}
 
 	/**
@@ -340,20 +341,20 @@ public class QueryImpl implements OpenJPAQuerySPI, Serializable {
 	private static int asInt(long l) {
 		if (l > Integer.MAX_VALUE)
 			return Integer.MAX_VALUE;
-		if (l < Integer.MIN_VALUE) // unlikely, but we might as well check
+        if (l < Integer.MIN_VALUE) // unlikely, but we might as well check
 			return Integer.MIN_VALUE;
 		return (int) l;
 	}
 
 	public FlushModeType getFlushMode() {
 		return EntityManagerImpl.fromFlushBeforeQueries(_query
-				.getFetchConfiguration().getFlushBeforeQueries());
+                .getFetchConfiguration().getFlushBeforeQueries());
 	}
 
 	public OpenJPAQuery setFlushMode(FlushModeType flushMode) {
 		_em.assertNotCloseInvoked();
 		_query.getFetchConfiguration().setFlushBeforeQueries(
-				EntityManagerImpl.toFlushBeforeQueries(flushMode));
+                EntityManagerImpl.toFlushBeforeQueries(flushMode));
 		return this;
 	}
 
@@ -362,12 +363,13 @@ public class QueryImpl implements OpenJPAQuerySPI, Serializable {
 		return setParameter(position, convertTemporalType(value, t));
 	}
 
-	public OpenJPAQuery setParameter(int position, Date value, TemporalType type) {
+    public OpenJPAQuery setParameter(int position, Date value,
+            TemporalType type) {
 		return setParameter(position, convertTemporalType(value, type));
 	}
 
 	/**
-	 * Converts the given Date to a value corresponding to given temporal type.
+     * Converts the given Date to a value corresponding to given temporal type.
 	 */
 
 	Object convertTemporalType(Date value, TemporalType type) {
@@ -393,18 +395,18 @@ public class QueryImpl implements OpenJPAQuerySPI, Serializable {
 		_query.lock();
 		try {
 			if (isNative() && position < 1) {
-				throw new IllegalArgumentException(_loc.get("bad-pos-params",
-						position, _query.getQueryString()).toString());
+                throw new IllegalArgumentException(_loc.get("bad-pos-params",
+                        position, _query.getQueryString()).toString());
 			}
-			// not allowed to mix positional and named parameters (EDR2 3.6.4)
+            // not allowed to mix positional and named parameters (EDR2 3.6.4)
 			if (_named != null)
 				throw new InvalidStateException(_loc.get(
-						"no-pos-named-params-mix", _query.getQueryString()),
-						null, null, false);
+                       "no-pos-named-params-mix", _query.getQueryString()),
+                       null, null, false);
 
 			if (position < 1)
-				throw new InvalidStateException(_loc.get("illegal-index",
-						position), null, null, false);
+                throw new InvalidStateException(_loc.get("illegal-index",
+                        position), null, null, false);
 
 			if (_positional == null)
 				_positional = new TreeMap<Integer, Object>();
@@ -421,7 +423,8 @@ public class QueryImpl implements OpenJPAQuerySPI, Serializable {
 		return setParameter(name, convertTemporalType(value, type));
 	}
 
-	public OpenJPAQuery setParameter(String name, Date value, TemporalType type) {
+    public OpenJPAQuery setParameter(String name, Date value, TemporalType type)
+    {
 		return setParameter(name, convertTemporalType(value, type));
 	}
 
@@ -431,14 +434,14 @@ public class QueryImpl implements OpenJPAQuerySPI, Serializable {
 		_query.lock();
 		try {
 			if (isNative()) {
-				throw new IllegalArgumentException(_loc.get("no-named-params",
-						name, _query.getQueryString()).toString());
+                throw new IllegalArgumentException(_loc.get("no-named-params",
+                        name, _query.getQueryString()).toString());
 			}
-			// not allowed to mix positional and named parameters (EDR2 3.6.4)
+            // not allowed to mix positional and named parameters (EDR2 3.6.4)
 			if (_positional != null)
 				throw new InvalidStateException(_loc.get(
-						"no-pos-named-params-mix", _query.getQueryString()),
-						null, null, false);
+                        "no-pos-named-params-mix", _query.getQueryString()),
+                        null, null, false);
 
 			if (_named == null)
 				_named = new HashMap();
@@ -492,7 +495,7 @@ public class QueryImpl implements OpenJPAQuerySPI, Serializable {
 	public Map<String, Object> getNamedParameters() {
 		_query.lock();
 		try {
-			return (_named == null) ? Collections.EMPTY_MAP : Collections
+            return (_named == null) ? Collections.EMPTY_MAP : Collections
 					.unmodifiableMap(_named);
 		} finally {
 			_query.unlock();
@@ -507,8 +510,8 @@ public class QueryImpl implements OpenJPAQuerySPI, Serializable {
 			_positional = null;
 			_named = null;
 			if (params != null)
-				for (Map.Entry e : (Set<Map.Entry>) params.entrySet())
-					setParameter((String) e.getKey(), e.getValue());
+                for (Map.Entry e : (Set<Map.Entry>) params.entrySet())
+                    setParameter((String) e.getKey(), e.getValue());
 			return this;
 		} finally {
 			_query.unlock();

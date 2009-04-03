@@ -72,18 +72,18 @@ public interface CacheStatistics extends Serializable {
 	public long getTotalWriteCount();
 
 	/**
-	 * Gets number of total read requests for the given class since last reset.
+     * Gets number of total read requests for the given class since last reset.
 	 */
 	public long getReadCount(Class c);
 
 	/**
-	 * Gets number of total read requests that has been found in cache for the
+     * Gets number of total read requests that has been found in cache for the
 	 * given class since last reset.
 	 */
 	public long getHitCount(Class c);
 
 	/**
-	 * Gets number of total write requests for the given class since last reset.
+     * Gets number of total write requests for the given class since last reset.
 	 */
 	public long getWriteCount(Class c);
 
@@ -93,7 +93,7 @@ public interface CacheStatistics extends Serializable {
 	public long getTotalReadCount(Class c);
 
 	/**
-	 * Gets number of total read requests that has been found in cache for the
+     * Gets number of total read requests that has been found in cache for the
 	 * given class since start.
 	 */
 	public long getTotalHitCount(Class c);
@@ -125,8 +125,8 @@ public interface CacheStatistics extends Serializable {
 	public static class Default implements CacheStatistics {
 		private long[] astat = new long[3];
 		private long[] stat  = new long[3];
-		private Map<Class, long[]> stats  = new HashMap<Class, long[]>();
-		private Map<Class, long[]> astats = new HashMap<Class, long[]>();
+        private Map<Class, long[]> stats  = new HashMap<Class, long[]>();
+        private Map<Class, long[]> astats = new HashMap<Class, long[]>();
 		private Date start = new Date();
 		private Date since = new Date();
 
@@ -182,7 +182,7 @@ public interface CacheStatistics extends Serializable {
 			return getCount(astats, c, WRITE);
 		}
 		
-		private long getCount(Map<Class, long[]> target, Class c, int index) {
+        private long getCount(Map<Class, long[]> target, Class c, int index) {
 			long[] row = target.get(c);
 			return (row == null) ? 0 : row[index];
 		}
@@ -221,7 +221,7 @@ public interface CacheStatistics extends Serializable {
 			addSample(astats, c, index);
 		}
 		
-		private void addSample(Map<Class, long[]> target, Class c, int index) {
+        private void addSample(Map<Class, long[]> target, Class c, int index) {
 			long[] row = target.get(c);
 			if (row == null) {
 				row = new long[3];

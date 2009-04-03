@@ -27,7 +27,7 @@ import org.apache.openjpa.util.InternalException;
  *
  */
 public class OperatorPath extends AbstractDomainObject {
-	public OperatorPath(AbstractDomainObject operand, PathOperator operator) {
+    public OperatorPath(AbstractDomainObject operand, PathOperator operator) {
 		super(operand.getOwner(), operand, operator, null);
 	}
 		
@@ -43,12 +43,12 @@ public class OperatorPath extends AbstractDomainObject {
 	
 	@Override
 	public String asProjection(AliasContext ctx) {
-		return getOperator() + "(" + getParent().asProjection(ctx) + ")";
+        return getOperator() + "(" + getParent().asProjection(ctx) + ")";
 	}
 	
 	@Override
 	public String asExpression(AliasContext ctx) {
-		return getOperator() + "(" + getParent().asExpression(ctx) + ")";
+        return getOperator() + "(" + getParent().asExpression(ctx) + ")";
 	}
 		
 	@Override

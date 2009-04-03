@@ -341,8 +341,8 @@ public interface Expression extends SelectItem, PredicateOperand {
      * @param str      -
      *                 string to be located
      * @param position -
-     *                 expression corresponding to position at which to start the
-     *                 search
+     *                 expression corresponding to position at which to start
+     *                 the search
      * @return expression denoting the first position at which the string was
      *         found or expression denoting 0 if the string was not found
      */
@@ -372,8 +372,8 @@ public interface Expression extends SelectItem, PredicateOperand {
      * @param str      -
      *                 expression corresponding to the string to be located
      * @param position -
-     *                 expression corresponding to position at which to start the
-     *                 search
+     *                 expression corresponding to position at which to start
+     *                 the search
      * @return expression denoting the first position at which the string was
      *         found or expression denoting 0 if the string was not found
      */
@@ -491,7 +491,7 @@ public interface Expression extends SelectItem, PredicateOperand {
 	Expression abs();
 
 	/**
-	 * Square root. This method must be invoked on an expression corresponding
+     * Square root. This method must be invoked on an expression corresponding
 	 * to a number.
 	 *
 	 * @return expression corresponding to the square root
@@ -499,26 +499,26 @@ public interface Expression extends SelectItem, PredicateOperand {
 	Expression sqrt();
 
 	/**
-	 * Modulo operation. This must be invoked on an expression corresponding to
+     * Modulo operation. This must be invoked on an expression corresponding to
 	 * an integer value
 	 *
 	 * @param num -
 	 *            integer divisor
-	 * @return expression corresponding to the integer remainder of the division
+     * @return expression corresponding to the integer remainder of the division
 	 *         of the integer corresponding to the expression on which the
 	 *         method was invoked by the argument.
 	 */
 	Expression mod(int num);
 
 	/**
-         * Modulo operation. This must be invoked on an expression corresponding to
-         * an integer value
-         *
-         * @param expr -
-         *             expression corresponding to integer divisor
-         * @return expression corresponding to the integer remainder of the division
-         *         of the integer corresponding to the expression on which the
-         *         method was invoked by the argument.
-         */
+     * Modulo operation. This must be invoked on an expression corresponding to
+     * an integer value
+     *
+     * @param expr -
+     *             expression corresponding to integer divisor
+     * @return expression corresponding to the integer remainder of the division
+     *         of the integer corresponding to the expression on which the
+     *         method was invoked by the argument.
+     */
 	Expression mod(Expression expr);
 }

@@ -58,7 +58,7 @@ public class FieldMappingInfo
     private Column _orderCol = null;
     private boolean _canOrderCol = true;
     private String[] _comments = null;
-    private List<Unique> _joinTableUniques; // Unique constraints on the JoinTable
+    private List<Unique> _joinTableUniques; // Unique constraints on JoinTable
 
     /**
      * The user-supplied name of the table for this field.
@@ -158,8 +158,8 @@ public class FieldMappingInfo
         if (cols.isEmpty()) {
         	ClassMapping mapping;
         	if (field.isEmbedded() && 
-        		field.getDeclaringMapping().getEmbeddingMapping() != null) {
-        		mapping = field.getDeclaringMapping().getEmbeddingMapping()
+                    field.getDeclaringMapping().getEmbeddingMapping() != null) {
+                mapping = field.getDeclaringMapping().getEmbeddingMapping()
         			.getFieldMapping().getDeclaringMapping();
         	} else {
         		mapping = field.getDefiningMapping();
@@ -368,7 +368,8 @@ public class FieldMappingInfo
     /**
      * Sets internal constraint information to match given mapped constraint.
      */
-    protected void syncJoinTableUniques(MetaDataContext context, Unique[] unqs) {
+    protected void syncJoinTableUniques(MetaDataContext context, Unique[] unqs)
+    {
         if (unqs == null) {
             _joinTableUniques = null;
             return;

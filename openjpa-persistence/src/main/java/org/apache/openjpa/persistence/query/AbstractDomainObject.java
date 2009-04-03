@@ -63,7 +63,7 @@ public abstract class AbstractDomainObject extends AbstractPath
 	 * Also the joined path becomes a domain of the owning query.
 	 */
 	public DomainObject join(String attr) {
-		return _owner.addDomain(new JoinPath(this, PathOperator.INNER, attr));
+        return _owner.addDomain(new JoinPath(this, PathOperator.INNER, attr));
 	}
 	
 	/**
@@ -71,14 +71,14 @@ public abstract class AbstractDomainObject extends AbstractPath
 	 * Also the joined path becomes a domain of the owning query.
 	 */
 	public DomainObject leftJoin(String attr) {
-		return _owner.addDomain(new JoinPath(this, PathOperator.OUTER, attr));
+        return _owner.addDomain(new JoinPath(this, PathOperator.OUTER, attr));
 	}
 	
 	/**
 	 * Derives a path from this path by fetch joining the given field.
 	 */
 	public FetchJoinObject joinFetch(String attr) {
-		return _owner.addDomain(new FetchPath(this, PathOperator.FETCH_INNER, 
+        return _owner.addDomain(new FetchPath(this, PathOperator.FETCH_INNER, 
 			attr));
 	}
 
@@ -86,7 +86,7 @@ public abstract class AbstractDomainObject extends AbstractPath
 	 * Derives a path from this path by fetch joining the given field.
 	 */
 	public FetchJoinObject leftJoinFetch(String attr) {
-		return _owner.addDomain(new FetchPath(this, PathOperator.FETCH_OUTER, 
+        return _owner.addDomain(new FetchPath(this, PathOperator.FETCH_OUTER,
 			attr));
 	}
 

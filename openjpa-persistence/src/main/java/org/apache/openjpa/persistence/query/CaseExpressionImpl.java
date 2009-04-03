@@ -163,13 +163,13 @@ public class CaseExpressionImpl implements CaseExpression, Visitable {
 	void assertWhenState() {
 		boolean ok = _whens.isEmpty() || _whens.getLast().hasThen();
 		if (!ok)
-			throw new IllegalStateException("when() can not be called now");
+            throw new IllegalStateException("when() can not be called now");
 	}
 	
 	void assertThenState() {
 		boolean ok = !_whens.isEmpty() && !_whens.getLast().hasThen();
 		if (!ok)
-			throw new IllegalStateException("then() can not be called now");
+            throw new IllegalStateException("then() can not be called now");
 	}
 	
 	public String asExpression(AliasContext ctx) {

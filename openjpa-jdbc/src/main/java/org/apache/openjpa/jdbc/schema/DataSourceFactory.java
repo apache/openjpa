@@ -222,7 +222,7 @@ public class DataSourceFactory {
                 // add trace info for autoCommit setting
                 if (log.isTraceEnabled())
                     log.trace(_loc.get("set-auto-commit", new Object[] {
-                    dict.supportsMultipleNontransactionalResultSets}));                
+                    dict.supportsMultipleNontransactionalResultSets}));
             }
             Options opts = Configurations.parseProperties((factory2)
                 ? conf.getConnectionFactory2Properties()

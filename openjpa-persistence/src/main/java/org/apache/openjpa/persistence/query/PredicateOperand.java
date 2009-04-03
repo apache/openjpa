@@ -558,8 +558,8 @@ public interface PredicateOperand {
 	Predicate like(PredicateOperand pattern, char escapeChar);
 
 	/**
-	 * Create a predicate for testing whether the PredicateOperand satisfies the
-	 * given pattern.
+     * Create a predicate for testing whether the PredicateOperand satisfies
+     * the given pattern.
 	 *
 	 * @param pattern
 	 * @return conditional predicate
@@ -567,8 +567,8 @@ public interface PredicateOperand {
 	Predicate like(String pattern);
 
 	/**
-	 * Create a predicate for testing whether the PredicateOperand satisfies the
-	 * given pattern.
+     * Create a predicate for testing whether the PredicateOperand satisfies
+     * the given pattern.
 	 *
 	 * @param pattern
 	 * @param escapeChar
@@ -577,8 +577,8 @@ public interface PredicateOperand {
 	Predicate like(String pattern, PredicateOperand escapeChar);
 
 	/**
-	 * Create a predicate for testing whether the PredicateOperand satisfies the
-	 * given pattern.
+     * Create a predicate for testing whether the PredicateOperand satisfies
+     * the given pattern.
 	 *
 	 * @param pattern
 	 * @param escapeChar

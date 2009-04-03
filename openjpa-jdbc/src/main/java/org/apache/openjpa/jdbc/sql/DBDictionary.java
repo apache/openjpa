@@ -399,7 +399,8 @@ public class DBDictionary
                     // JDBC3-only method, so it might throw a 
                     // AbstractMethodError
                     isJDBC3 = metaData.getJDBCMajorVersion() >= 3;
-                    supportsGetGeneratedKeys = metaData.supportsGetGeneratedKeys();
+                    supportsGetGeneratedKeys =
+                            metaData.supportsGetGeneratedKeys();
                 } catch (Throwable t) {
                     // ignore if not JDBC3
                 }
@@ -1720,7 +1721,7 @@ public class DBDictionary
      * 
      * @param typeName  The SQL type ie INT
      * @param size      The size clause ie (10)
-     * @return          The typeName + size clause. Usually the size clause will 
+     * @return          The typeName + size clause. Usually the size clause will
      *                  be appended to typeName. If the typeName contains a 
      *                  marker : {0} or if typeName contains a modifier the 
      *                  size clause will be inserted appropriately.   
@@ -2386,8 +2387,9 @@ public class DBDictionary
             boolean distinct, boolean forUpdate, long start, long end,
             boolean subselect, boolean checkTableForUpdate) {
             return toOperation(getSelectOperation(fetch), selects, from, where,
-                group, having, order, distinct, start, end,
-                getForUpdateClause(fetch, forUpdate, null), subselect, checkTableForUpdate);
+                    group, having, order, distinct, start, end,
+                    getForUpdateClause(fetch, forUpdate, null), subselect,
+                    checkTableForUpdate);
         }
 
     /**
@@ -2460,10 +2462,10 @@ public class DBDictionary
     /**
      * Return the SQL for the given selecting operation.
      */
-    private SQLBuffer toOperation(String op, SQLBuffer selects,
-        SQLBuffer from, SQLBuffer where, SQLBuffer group, SQLBuffer having,
-        SQLBuffer order, boolean distinct, long start, long end,
-        String forUpdateClause, boolean subselect, boolean checkTableForUpdate) {
+    private SQLBuffer toOperation(String op, SQLBuffer selects, SQLBuffer from,
+            SQLBuffer where, SQLBuffer group, SQLBuffer having, SQLBuffer order,
+            boolean distinct, long start, long end, String forUpdateClause,
+            boolean subselect, boolean checkTableForUpdate) {
         SQLBuffer buf = new SQLBuffer(this);
         buf.append(op);
 
@@ -4093,7 +4095,8 @@ public class DBDictionary
     }
 
     private boolean isSupported() {
-        // if this is a custom dict, traverse to whatever openjpa dict it extends
+        // if this is a custom dict, traverse to whatever openjpa dict it
+        // extends
         Class c = getClass();
         while (!c.getName().startsWith("org.apache.openjpa."))
             c = c.getSuperclass();
@@ -4158,7 +4161,8 @@ public class DBDictionary
         InputStream stream = getClass().getResourceAsStream(rsrc);
         String dictionaryClassName = getClass().getName();
         if (stream == null) { // User supplied dictionary but no error codes xml
-        	stream = DBDictionary.class.getResourceAsStream(rsrc); // use default
+            // use default
+            stream = DBDictionary.class.getResourceAsStream(rsrc);
         	dictionaryClassName = getClass().getSuperclass().getName();
         }
         codeReader.parse(stream, dictionaryClassName, this);
@@ -4614,7 +4618,8 @@ public class DBDictionary
      * This method is to provide override for non-JDBC or JDBC-like 
      * implementation of executing query.
      */
-    protected ResultSet executeQuery(Connection conn, PreparedStatement stmnt, String sql 
+    protected ResultSet executeQuery(Connection conn, PreparedStatement stmnt,
+            String sql 
         ) throws SQLException {
         return stmnt.executeQuery();
     }

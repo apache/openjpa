@@ -1470,12 +1470,12 @@ public class XMLPersistenceMetaDataSerializer
             if (fmd1.isVersion()) {
                 if (fmd2.isVersion())
                     return compareListingOrder(fmd1, fmd2);
-				return getStrategy(fmd2) == PersistenceStrategy.BASIC ? 1 : -1;
+                return getStrategy(fmd2) == PersistenceStrategy.BASIC ? 1 : -1;
 			}
 			if (fmd2.isVersion())
-				return getStrategy(fmd1) == PersistenceStrategy.BASIC ? -1 : 1;
+                return getStrategy(fmd1) == PersistenceStrategy.BASIC ? -1 : 1;
 
-			int stcmp = getStrategy(fmd1).compareTo(getStrategy(fmd2));
+            int stcmp = getStrategy(fmd1).compareTo(getStrategy(fmd2));
             if (stcmp != 0)
                 return stcmp;
             return compareListingOrder(fmd1, fmd2);

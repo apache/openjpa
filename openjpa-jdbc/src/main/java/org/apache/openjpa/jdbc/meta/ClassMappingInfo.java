@@ -366,7 +366,7 @@ public class ClassMappingInfo
         if (cinfo._uniques != null) {
         	if (_uniques == null)
         		_uniques = new HashMap<String, List<Unique>>();
-        	for (Entry<String, List<Unique>> entry : cinfo._uniques.entrySet())
+        for (Entry<String, List<Unique>> entry : cinfo._uniques.entrySet())
         		if (!_uniques.containsKey(entry.getKey()))
         			_uniques.put(entry.getKey(), entry.getValue());
         }
@@ -382,9 +382,9 @@ public class ClassMappingInfo
     public void addUnique(String table, Unique unique) {
     	if (!StringUtils.equals(_tableName, table) &&
     	   (_seconds == null || !_seconds.containsKey(table))) {
-    	   		throw new UserException(_loc.get("unique-no-table", 
-    	   			new Object[]{table, _className, _tableName, 
-    	   				((_seconds == null) ? "" : _seconds.keySet())}));
+            throw new UserException(_loc.get("unique-no-table", 
+                    new Object[]{table, _className, _tableName, 
+                    ((_seconds == null) ? "" : _seconds.keySet())}));
     	}
     	if (unique == null)
     		return;
@@ -425,16 +425,17 @@ public class ClassMappingInfo
         	List<Unique> uniqueConstraints = _uniques.get(tableName);
         	for (Unique template : uniqueConstraints) {
         		Column[] templateColumns = template.getColumns();
-        		Column[] uniqueColumns = new Column[templateColumns.length];
-        		Table table = getTable((ClassMapping)cm, tableName, adapt);
+                Column[] uniqueColumns = new Column[templateColumns.length];
+                Table table = getTable((ClassMapping)cm, tableName, adapt);
         		for (int i=0; i<uniqueColumns.length; i++) {
-        			String columnName = templateColumns[i].getName();
+                    String columnName = templateColumns[i].getName();
         			if (!table.containsColumn(columnName)) {
-        				throw new UserException(_loc.get("unique-missing-column", 
-                           new Object[]{cm, columnName, tableName, 
-        						Arrays.toString(table.getColumnNames())}));
+                        throw new UserException(_loc.get(
+                                "unique-missing-column", 
+                                new Object[]{cm, columnName, tableName, 
+                                Arrays.toString(table.getColumnNames())}));
         			}
-        			Column uniqueColumn = table.getColumn(columnName);
+                    Column uniqueColumn = table.getColumn(columnName);
         			uniqueColumns[i] = uniqueColumn;
         		}
         		Unique unique = createUnique(cm, "unique", template,  

@@ -900,7 +900,8 @@ public class QueryImpl
      * key and index. The index set on the Parameter by the parser is the
      * same index used to access the Object[] elements returned by this method.
      * 
-     * {@link JPQLExpressionBuilder} creates and populates parameters as follows:
+     * {@link JPQLExpressionBuilder} creates and populates parameters as
+     * follows: 
      * The parameter key is not the token encountered by the parser, but 
      * converted to Integer or String based on the context in which the token 
      * appeared. 
@@ -914,12 +915,14 @@ public class QueryImpl
      * This LinkedMap contains the parameter key and their expected 
      * (if determinable) value types. That it is a LinkedMap points to the 
      * fact that an ordering is implicit. The ordering of the keys in this Map 
-     * is the same as the order in which parser encountered the parameter tokens.
+     * is the same as the order in which parser encountered the parameter
+     * tokens.
      * 
      * For example, parsing result of the following two JPQL queries
      *   a) UPDATE CompUser e SET e.name= ?1, e.age = ?2 WHERE e.userid = ?3
-     *   b) UPDATE CompUser e SET e.name= :name, e.age = :age WHERE e.userid = :id
-     * The parameter keys will appear in the order (3,2,1) or (:id, :name, :age) 
+     *   b) UPDATE CompUser e SET e.name= :name, e.age = :age WHERE e.userid =
+     *          :id
+     * The parameter keys will appear in the order (3,2,1) or (:id, :name, :age)
      * in the given LinkedMap because WHERE clause is parsed before SET clause.
      * The corresponding Parameter Expressions created by the parser will have
      * following key and index:
@@ -1083,7 +1086,8 @@ public class QueryImpl
                 try {
                     val = q.evaluate(value, ob, params, sm);
                 } catch (UnsupportedException e1) {
-                    throw new UserException(_loc.get("fail-to-get-update-value"));
+                    throw new UserException(
+                            _loc.get("fail-to-get-update-value"));
                 }
             }
 

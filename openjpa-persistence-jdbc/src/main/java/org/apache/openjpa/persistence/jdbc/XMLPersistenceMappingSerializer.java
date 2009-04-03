@@ -189,7 +189,8 @@ public class XMLPersistenceMappingSerializer
             .getClassName(mapping.getDescribedType()), null, 
             info.getUniques(info.getTableName()));
         for (String second : info.getSecondaryTableNames())
-            serializeTable(second, "secondary-table", null, info, info.getUniques(second));
+            serializeTable(second, "secondary-table", null, info,
+                    info.getUniques(second));
         serializeColumns(info, ColType.PK_JOIN, null);
     }
 
@@ -408,7 +409,8 @@ public class XMLPersistenceMappingSerializer
                         }
                     }
                     startElement("collection-table");
-                    ValueMappingImpl elem = (ValueMappingImpl) field.getElement();
+                    ValueMappingImpl elem =
+                            (ValueMappingImpl) field.getElement();
                     serializeColumns(elem.getValueInfo(), ColType.COL,
                             null);
                     endElement("collection-table");

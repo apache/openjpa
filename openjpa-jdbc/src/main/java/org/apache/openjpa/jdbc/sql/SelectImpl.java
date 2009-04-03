@@ -322,7 +322,8 @@ public class SelectImpl
             stmnt = prepareStatement(conn, sql, null, 
                 ResultSet.TYPE_FORWARD_ONLY, 
                 ResultSet.CONCUR_READ_ONLY, false);
-            _dict.setQueryTimeout(stmnt, store.getFetchConfiguration().getQueryTimeout());
+            _dict.setQueryTimeout(stmnt,
+                    store.getFetchConfiguration().getQueryTimeout());
             rs = executeQuery(conn, stmnt, sql, false, store);
             return getCount(rs);
         } finally {
@@ -1220,7 +1221,8 @@ public class SelectImpl
         return seld;
     }
 
-    public boolean orderBy(SQLBuffer sql, boolean asc, boolean sel, Value selAs) {
+    public boolean orderBy(SQLBuffer sql, boolean asc, boolean sel, Value selAs)
+    {
         return orderBy(sql, asc, (Joins) null, sel, selAs);
     }
 
@@ -1407,7 +1409,8 @@ public class SelectImpl
         int count = 0;
         for (int i = 0; i < toCols.length; i++, count++) {
             if (pks == null)
-                val = (oid == null) ? null : Numbers.valueOf(((Id) oid).getId());
+                val = (oid == null) ? null :
+                        Numbers.valueOf(((Id) oid).getId());
             else {
                 // must be app identity; use pk index to get correct pk value
                 join = mapping.assertJoinable(toCols[i]);

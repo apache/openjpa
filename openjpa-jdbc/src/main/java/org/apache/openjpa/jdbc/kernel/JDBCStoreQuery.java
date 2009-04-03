@@ -514,7 +514,7 @@ public class JDBCStoreQuery
                 try {
                     stmnt = prepareStatement(conn, sql[i]);
                     dict.setTimeouts(stmnt, fetch, true);
-                    count += executeUpdate(conn, stmnt, sql[i], isUpdate);                    
+                    count += executeUpdate(conn, stmnt, sql[i], isUpdate);
                 } catch (SQLException se) {
                     throw SQLExceptions.getStore(se, sql[i].getSQL(), 
                         _store.getDBDictionary());

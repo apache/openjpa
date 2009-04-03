@@ -40,7 +40,7 @@ public class SliceImplHelper {
 	/**
 	 * Gets the target slices by calling user-specified 
 	 * {@link DistributionPolicy} or {@link ReplicationPolicy} 
-	 * depending on whether the given instance is {@link Replicated replicated}.
+     * depending on whether the given instance is {@link Replicated replicated}.
 	 */
 	public static SliceInfo getSlicesByPolicy(Object pc, 
 			DistributedConfiguration conf, Object ctx) {
@@ -50,10 +50,10 @@ public class SliceImplHelper {
 		boolean replicated = isReplicated(pc, conf);
 		if (replicated) {
 			policy = conf.getReplicationPolicyInstance();
-			targets = ((ReplicationPolicy)policy).replicate(pc, actives, ctx);
+            targets = ((ReplicationPolicy)policy).replicate(pc, actives, ctx);
 		} else {
 			policy = conf.getDistributionPolicyInstance();
-			targets = new String[]{((DistributionPolicy)policy).distribute 
+            targets = new String[]{((DistributionPolicy)policy).distribute
 				(pc, actives, ctx)};
 		}
 		assertSlices(targets, pc, conf.getActiveSliceNames(), policy);
@@ -84,7 +84,7 @@ public class SliceImplHelper {
 	/**
 	 * Affirms if the given instance be replicated to multiple slices.
 	 */
-	public static boolean isReplicated(Object pc, OpenJPAConfiguration conf) {
+    public static boolean isReplicated(Object pc, OpenJPAConfiguration conf) {
 		if (pc == null)
 			return false;
 		ClassMetaData meta = conf.getMetaDataRepositoryInstance()

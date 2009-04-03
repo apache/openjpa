@@ -405,8 +405,8 @@ public class DetachedStateManager
 
     public void accessingField(int idx) {
         if (!_access && !_loaded.get(idx))
-        	// do not access the pc fields by implictly invoking _pc.toString()
-        	// may cause infinite loop if again tries to access unloaded field 
+            // do not access the pc fields by implictly invoking _pc.toString()
+            // may cause infinite loop if again tries to access unloaded field 
             throw new IllegalStateException(_loc.get("unloaded-detached",
                Exceptions.toString(_pc)).getMessage());
     }

@@ -180,14 +180,16 @@ public class Edge {
     }
 
     /**
-     * List of edges forming a cycle. Only set for TYPE_BACK and TYPE_FORWARD edges.
+     * List of edges forming a cycle. Only set for TYPE_BACK and TYPE_FORWARD
+     * edges.
      */
     public List getCycle() {
         return _cycle;
     }
     
     /**
-     * List of edges forming a cycle. Only set for TYPE_BACK and TYPE_FORWARD edges.
+     * List of edges forming a cycle. Only set for TYPE_BACK and TYPE_FORWARD
+     * edges.
      */
     public void setCycle(List cycle) {
         _cycle = cycle;

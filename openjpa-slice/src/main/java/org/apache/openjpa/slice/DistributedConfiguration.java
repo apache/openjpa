@@ -46,7 +46,7 @@ public interface DistributedConfiguration extends OpenJPAConfiguration {
 	 * specified explicitly in <code>openjpa.slice.Names</code> property or 
 	 * ordered alphabetically when found by scanning the properties.
 	 * <br>
-	 * This list always returns the identifiers that are <em>active</em>, slices
+     * This list always returns the identifiers that are <em>active</em>, slices
 	 * that can not be connected to are not included in this list.
 	 */
 	List<String> getActiveSliceNames();

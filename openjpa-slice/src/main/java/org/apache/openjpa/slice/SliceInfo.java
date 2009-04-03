@@ -65,14 +65,14 @@ public class SliceInfo implements Serializable {
     }
 	
 	/**
-	 * Constructor for non-replicated instance that is stored in a single slice. 
+     * Constructor for non-replicated instance that is stored in a single slice.
 	 */
     public SliceInfo(String slice) {
 		this(false, new String[]{slice});
 	}
 	
     /**
-     * Constructor for replicated instance that is stored in one or more slices. 
+     * Constructor for replicated instance that is stored in one or more slices.
      */
     public SliceInfo(String[] slices) {
         this(true, slices);
@@ -98,8 +98,8 @@ public class SliceInfo implements Serializable {
 	}
 	
 	/**
-	 * Sets this receiver as the given StateManager's internal instance-level 
-	 * data. If the given StateManager had existing instance-level data that is
+     * Sets this receiver as the given StateManager's internal instance-level 
+     * data. If the given StateManager had existing instance-level data that is
 	 * not a SliceInfo then raise an exception.
 	 */
 	public SliceInfo setInto(OpenJPAStateManager sm) {
@@ -110,7 +110,7 @@ public class SliceInfo implements Serializable {
 		Object previous = sm.setImplData(this, true);
 		if (previous == null || previous instanceof SliceInfo)
 			return (SliceInfo)previous;
-		throw new InternalException(_loc.get("unknown-impl-data", previous, 
+        throw new InternalException(_loc.get("unknown-impl-data", previous,
 		    previous.getClass().getName(), sm.getPersistenceCapable())
 		    .getMessage());
 	}

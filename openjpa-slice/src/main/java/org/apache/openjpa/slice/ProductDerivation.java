@@ -97,7 +97,7 @@ public class ProductDerivation extends AbstractProductDerivation implements
     void forceSet(Value v, String forced, Log log) {
     	v.setString(forced);
     	if (log.isWarnEnabled())
-        	log.warn(_loc.get("forced-set-config", v.getProperty(), forced));
+            log.warn(_loc.get("forced-set-config", v.getProperty(), forced));
     }
     
     public Set<String> getSupportedQueryHints() {

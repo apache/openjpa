@@ -149,13 +149,13 @@ public final class ObjectData
                 // the stored value must be a collection
                 c = (Collection) val;
 
-                // the state manager will create a proxy collection of the needed
-                // type depending on the declared type of the user's field; the
-                // proxy will perform dirty tracking, etc
+                // the state manager will create a proxy collection of the
+                // needed type depending on the declared type of the user's
+                // field; the proxy will perform dirty tracking, etc
                 Collection c2 = (Collection) sm.newFieldProxy(fmd.getIndex());
 
-                // populate the proxy collection with our stored data, converting
-                // it to the right type from its stored form
+                // populate the proxy collection with our stored data,
+                // converting it to the right type from its stored form
                 for (Iterator itr = c.iterator(); itr.hasNext();)
                     c2.add(toNestedLoadable(sm, fmd.getElement(), itr.next(),
                         fetch));
@@ -221,8 +221,9 @@ public final class ObjectData
 
             case JavaTypes.PC:
             case JavaTypes.PC_UNTYPED:
-                // for relations to other persistent objects, we store the related
-                // object's oid -- convert it back into a persistent instance
+                // for relations to other persistent objects, we store the
+                // related object's oid -- convert it back into a persistent
+                // instance
                 StoreContext ctx = sm.getContext();
                 Object pc = ctx.find(val, fetch, null, null, 0);
                 if (pc != null)
@@ -269,16 +270,16 @@ public final class ObjectData
             case JavaTypes.COLLECTION:
                 c = (Collection) val;
 
-                // create a collection to copy the elements into for storage, and
-                // populate it with converted element values
+                // create a collection to copy the elements into for storage,
+                // and populate it with converted element values
                 Collection c2 = new ArrayList();
                 for (Iterator itr = c.iterator(); itr.hasNext();)
                     c2.add(toNestedStorable(fmd.getElement(), itr.next(), ctx));
                 return c2;
 
             case JavaTypes.ARRAY:
-                // create a collection to copy the elements into for storage, and
-                // populate it with converted element values
+                // create a collection to copy the elements into for storage,
+                // and populate it with converted element values
                 c = new ArrayList();
                 for (int i = 0, len = Array.getLength(val); i < len; i++)
                     c.add(toNestedStorable(fmd.getElement(), Array.get(val, i),

@@ -63,8 +63,8 @@ public class ClassMetaDataIterator implements MetaDataIterator {
      * Constructor; supply the class whose metadata to find, the suffix
      * of metadata files, and whether to parse top-down or bottom-up.
      */
-    public ClassMetaDataIterator(Class<?> cls, String suffix, ClassLoader loader,
-        boolean topDown) {
+    public ClassMetaDataIterator(Class<?> cls, String suffix,
+            ClassLoader loader, boolean topDown) {
         // skip classes that can't have metadata
         if (cls != null && (cls.isPrimitive()
             || cls.getName().startsWith("java.")

@@ -204,55 +204,55 @@ class ProxySetupStateManager
 
     public void providedBooleanField(PersistenceCapable pc, int i, boolean b) {
         throw new InternalException(_loc.get(
-				"unexpected_proxy_sm_attribute_type", pc.getClass().getName(),
+                "unexpected_proxy_sm_attribute_type", pc.getClass().getName(),
 				"boolean"));
     }
 
     public void providedCharField(PersistenceCapable pc, int i, char c) {
         throw new InternalException(_loc.get(
-				"unexpected_proxy_sm_attribute_type", pc.getClass().getName(),
+                "unexpected_proxy_sm_attribute_type", pc.getClass().getName(),
 				"char"));
     }
 
     public void providedByteField(PersistenceCapable pc, int i, byte b) {
         throw new InternalException(_loc.get(
-				"unexpected_proxy_sm_attribute_type", pc.getClass().getName(),
+                "unexpected_proxy_sm_attribute_type", pc.getClass().getName(),
 				"byte"));
     }
 
     public void providedShortField(PersistenceCapable pc, int i, short s) {
         throw new InternalException(_loc.get(
-				"unexpected_proxy_sm_attribute_type", pc.getClass().getName(),
+                "unexpected_proxy_sm_attribute_type", pc.getClass().getName(),
 				"short"));
     }
 
     public void providedIntField(PersistenceCapable pc, int i, int i2) {
         throw new InternalException(_loc.get(
-				"unexpected_proxy_sm_attribute_type", pc.getClass().getName(),
+                "unexpected_proxy_sm_attribute_type", pc.getClass().getName(),
 				"int"));
     }
 
     public void providedLongField(PersistenceCapable pc, int i, long l) {
         throw new InternalException(_loc.get(
-				"unexpected_proxy_sm_attribute_type", pc.getClass().getName(),
+                "unexpected_proxy_sm_attribute_type", pc.getClass().getName(),
 				"long"));
     }
 
     public void providedFloatField(PersistenceCapable pc, int i, float f) {
         throw new InternalException(_loc.get(
-				"unexpected_proxy_sm_attribute_type", pc.getClass().getName(),
+                "unexpected_proxy_sm_attribute_type", pc.getClass().getName(),
 				"float"));
     }
 
     public void providedDoubleField(PersistenceCapable pc, int i, double d) {
         throw new InternalException(_loc.get(
-				"unexpected_proxy_sm_attribute_type", pc.getClass().getName(),
+                "unexpected_proxy_sm_attribute_type", pc.getClass().getName(),
 				"double"));
     }
 
     public void providedStringField(PersistenceCapable pc, int i, String s) {
         throw new InternalException(_loc.get(
-				"unexpected_proxy_sm_attribute_type", pc.getClass().getName(),
+                "unexpected_proxy_sm_attribute_type", pc.getClass().getName(),
 				"String"));
     }
 

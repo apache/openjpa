@@ -41,8 +41,8 @@ import org.apache.openjpa.kernel.OpenJPAStateManager;
 
 /**
  * Logical representation of a table row for insert/update/delete. The
- * {@link org.apache.openjpa.jdbc.kernel.UpdateManager} is responsible for implementing
- * rows to do something useful when the values are set.
+ * {@link org.apache.openjpa.jdbc.kernel.UpdateManager} is responsible for
+ * implementing rows to do something useful when the values are set.
  *
  * @author Abe White
  */

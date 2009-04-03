@@ -41,14 +41,16 @@ public class LogOrphanedKeyAction
     private short _level = Log.WARN;
 
     /**
-     * The channel to log to. Defaults to <code>org.apache.openjpa.Runtime</code>.
+     * The channel to log to. Defaults to
+     * <code>org.apache.openjpa.Runtime</code>.
      */
     public String getChannel() {
         return _channel;
     }
 
     /**
-     * The channel to log to. Defaults to <code>org.apache.openjpa.Runtime</code>.
+     * The channel to log to. Defaults to
+     * <code>org.apache.openjpa.Runtime</code>.
      */
     public void setChannel(String channel) {
         _channel = channel;

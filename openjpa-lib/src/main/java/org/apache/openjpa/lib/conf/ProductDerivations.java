@@ -94,7 +94,8 @@ public class ProductDerivations {
         for (int i = 0; i < _derivationErrors.length; i++) {
             if (_derivationErrors[i] == null)
                 continue;
-            System.err.println(_derivationNames[i] + ":" + _derivationErrors[i]);
+            System.err.println(_derivationNames[i] + ":" +
+                    _derivationErrors[i]);
             break;
         }
 

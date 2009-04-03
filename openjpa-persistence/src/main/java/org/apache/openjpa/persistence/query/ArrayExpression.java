@@ -20,7 +20,7 @@ package org.apache.openjpa.persistence.query;
 
 
 /**
- * A single expression that holds an array of values. Used as the second operand 
+ * A single expression that holds an array of values. Used as the second operand
  * in e1 IN(e2) expression, for example. Different than 
  * {@link VarArgsExpression} which represents multiple expressions.  
  * 
@@ -40,8 +40,8 @@ public class ArrayExpression extends ExpressionImpl {
 		for (int i = 0; i < _values.length; i++) {
 			Object v = _values[i];
 			tmp.append((v instanceof Visitable ? 
-				((Visitable)v).asExpression(ctx) : JPQLHelper.toJPQL(ctx, v)))
-			   .append(i == _values.length-1 ? EMPTY : COMMA + SPACE);
+                ((Visitable)v).asExpression(ctx) : JPQLHelper.toJPQL(ctx, v)))
+                .append(i == _values.length-1 ? EMPTY : COMMA + SPACE);
 		}
 		tmp.append(CLOSE_BRACE);
 		return tmp.toString();

@@ -34,14 +34,14 @@ import java.util.List;
  */
 public interface ReplicationPolicy {
 	/**
-	 * Gets the name of the slices where a given instance will be replicated.
+     * Gets the name of the slices where a given instance will be replicated.
 	 *  
 	 * @param pc The newly persistent or to-be-merged object. 
 	 * @param slices list of names of the active slices. The ordering of 
 	 * the list is either explicit <code>openjpa.slice.Names</code> property
 	 * or implicit i.e. alphabetic order of available identifiers if 
 	 * <code>openjpa.slice.Names</code> is unspecified.  
-	 * @param context generic persistence context managing the given instance.
+     * @param context generic persistence context managing the given instance.
 	 * 
 	 * @return identifier of the slices. This names must match one of the
 	 * given slice names. 

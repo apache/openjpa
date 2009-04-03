@@ -97,10 +97,12 @@ public class MapEntry
         return new Entry(key, val);
     }
 
-    public void orderBy(Select sel, ExpContext ctx, ExpState state, boolean asc) {
+    public void orderBy(Select sel, ExpContext ctx, ExpState state, boolean asc)
+    {
     }
 
-    public void select(Select sel, ExpContext ctx, ExpState state, boolean pks) {
+    public void select(Select sel, ExpContext ctx, ExpState state, boolean pks)
+    {
         selectColumns(sel, ctx, state, pks);
     }
 

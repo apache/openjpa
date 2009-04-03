@@ -63,7 +63,7 @@ public class QueryBuilderImpl implements OpenJPAQueryBuilder {
 			.getMetaDataRepositoryInstance();
 		AliasContext ctx = new AliasContext(repos);
 		if (query instanceof AbstractDomainObject)
-			return ((AbstractDomainObject)query).getOwner().asExpression(ctx);
+            return ((AbstractDomainObject)query).getOwner().asExpression(ctx);
 		return ((QueryDefinitionImpl)query).asExpression(ctx);
 	}
 	

@@ -56,7 +56,7 @@ public class DistributedDataSource extends DecoratingDataSource implements
 			return getConnection(((DecoratingDataSource)ds)
 			    .getInnermostDelegate());
 		if (ds instanceof XADataSource)
-			return ((XADataSource)ds).getXAConnection().getConnection();
+            return ((XADataSource)ds).getXAConnection().getConnection();
 		return ds.getConnection();
 	}
 	

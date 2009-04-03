@@ -1187,9 +1187,9 @@ public class FieldMapping
         		ForeignKey rjfk = rfm.getJoinForeignKey();
         		if (rjfk == null) 
         		    continue;
-        		if (rjfk.getTable() == jfk.getTable()
-        		 && jfk.getTable().getColumns().length 
-        		 == jfk.getColumns().length + rjfk.getColumns().length) {
+                if (rjfk.getTable() == jfk.getTable() &&
+                        jfk.getTable().getColumns().length ==
+                        jfk.getColumns().length + rjfk.getColumns().length) {
         			_bidirectionalJoinTableOwner = true;
         			break;
         		}
@@ -1227,13 +1227,14 @@ public class FieldMapping
         for (int i=0; i<relFmds.length;i++) {
             FieldMapping rfm = relFmds[i];
             ValueMapping relem = rfm.getElementMapping();
-            if (relem != null && relem.getDeclaredTypeMapping() == getDeclaringMapping()) {
+            if (relem != null && relem.getDeclaredTypeMapping() ==
+                    getDeclaringMapping()) {
         		ForeignKey rjfk = rfm.getJoinForeignKey();
         		if (rjfk == null) 
         		    continue;
-        		if (rjfk.getTable() == jfk.getTable()
-        		 && jfk.getTable().getColumns().length 
-        		 == jfk.getColumns().length + rjfk.getColumns().length) {
+        		if (rjfk.getTable() == jfk.getTable() && 
+        		        jfk.getTable().getColumns().length ==
+                        jfk.getColumns().length + rjfk.getColumns().length) {
         			_bidirectionalJoinTableNonOwner = true;
         			break;
         		}

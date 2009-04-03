@@ -30,7 +30,7 @@ class UnaryExpressionPredicate extends AbstractVisitable
 	protected final UnaryConditionalOperator _op;
 	private final UnaryConditionalOperator _nop;
 
-	public UnaryExpressionPredicate(Expression e, UnaryConditionalOperator op, 
+    public UnaryExpressionPredicate(Expression e, UnaryConditionalOperator op,
 		UnaryConditionalOperator nop) {
 		this._e   = e;
 		this._op  = op;
@@ -55,7 +55,7 @@ class UnaryExpressionPredicate extends AbstractVisitable
 	
 	public Predicate not() {
 		if (_nop == null)
-			throw new UnsupportedOperationException(this.toString());
+            throw new UnsupportedOperationException(this.toString());
 		return new UnaryExpressionPredicate(_e, _nop, _op);
 	}
 

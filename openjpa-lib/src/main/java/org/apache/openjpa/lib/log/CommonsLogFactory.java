@@ -37,8 +37,8 @@ public class CommonsLogFactory extends LogFactoryAdapter {
     }
 
     /**
-     * Adapts a commons logging log to the {@link org.apache.openjpa.lib.log.Log}
-     * interface.
+     * Adapts a commons logging log to the
+     * {@link org.apache.openjpa.lib.log.Log} interface.
      */
     public static class LogAdapter implements org.apache.openjpa.lib.log.Log {
 

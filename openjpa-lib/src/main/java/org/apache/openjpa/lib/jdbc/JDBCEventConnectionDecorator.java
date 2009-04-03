@@ -39,7 +39,8 @@ public class JDBCEventConnectionDecorator extends AbstractConcurrentEventManager
 
     private static final Class<EventConnection> eventConnectionImpl;
     private static final Class<EventStatement> eventStatementImpl;
-    private static final Class<EventPreparedStatement> eventPreparedStatementImpl;
+    private static final Class<EventPreparedStatement>
+            eventPreparedStatementImpl;
 
     static {
         try {
@@ -250,7 +251,8 @@ public class JDBCEventConnectionDecorator extends AbstractConcurrentEventManager
     /**
      * Fires events as appropriate.
      */
-    protected abstract class EventPreparedStatement extends DelegatingPreparedStatement {
+    protected abstract class EventPreparedStatement extends
+            DelegatingPreparedStatement {
 
         private final EventConnection _conn;
         private final String _sql;
