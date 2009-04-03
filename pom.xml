@@ -39,6 +39,7 @@
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <openjpa.version>${pom.version}</openjpa.version>
+        <checkstyle.config.location>../openjpa-project/checkstyle.xml</checkstyle.config.location>
     </properties>
 
     <!--
@@ -675,7 +676,7 @@
                             <goal>checkstyle</goal>
                         </goals>
                         <configuration>
-                            <configLocation>checkstyle.xml</configLocation>
+                            <configLocation>${checkstyle.config.location}</configLocation>
                             <failsOnError>true</failsOnError>
                             <consoleOutput>true</consoleOutput>
                         </configuration>
@@ -715,7 +716,7 @@
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-checkstyle-plugin</artifactId>
                 <configuration>
-                    <configLocation>checkstyle.xml</configLocation>
+                    <configLocation>${checkstyle.config.location}</configLocation>
                 </configuration>
             </plugin>
         </plugins>
