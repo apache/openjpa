@@ -677,6 +677,7 @@
                         <configuration>
                             <configLocation>checkstyle.xml</configLocation>
                             <failsOnError>true</failsOnError>
+                            <consoleOutput>true</consoleOutput>
                         </configuration>
                     </execution>
                 </executions>
