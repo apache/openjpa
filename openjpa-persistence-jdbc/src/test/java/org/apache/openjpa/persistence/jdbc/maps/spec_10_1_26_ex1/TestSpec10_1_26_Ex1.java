@@ -73,6 +73,11 @@ public class TestSpec10_1_26_Ex1 extends SQLListenerTestCase {
 
     public void queryQualifiedId(boolean inMemory) throws Exception {
         EntityManager em = emf.createEntityManager();
+        String query1 = "select d.deptId, KEY(e), VALUE(e).empId " +
+        "from Department d, in (d.empMap) e";
+List rs1 = em.createQuery(query1).getResultList();
+System.out.println("rs size="+rs1.size());
+
         String query = "select KEY(e) from Department d, " +
             " in (d.empMap) e order by d.deptId, e.empId";
         Query q = em.createQuery(query);

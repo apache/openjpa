@@ -95,7 +95,7 @@ public class TestSpec10_1_26_Ex3 extends SQLListenerTestCase {
         
         // test ORDER BY qualified path
         query = "select KEY(e), KEY(e).fName from Department d, " +
-            " in (d.emps) e order by KEY(e).fName";
+            " in (d.emps) e order by d.deptId";
         q = em.createQuery(query);
         if (inMemory) 
             setCandidate(q, Department.class);

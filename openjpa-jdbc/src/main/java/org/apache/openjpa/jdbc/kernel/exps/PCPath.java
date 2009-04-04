@@ -25,15 +25,15 @@ import java.util.LinkedList;
 import java.util.ListIterator;
 
 import org.apache.commons.lang.ObjectUtils;
-import org.apache.openjpa.enhance.PersistenceCapable;
 import org.apache.openjpa.jdbc.kernel.JDBCFetchConfiguration;
 import org.apache.openjpa.jdbc.meta.ClassMapping;
 import org.apache.openjpa.jdbc.meta.Discriminator;
 import org.apache.openjpa.jdbc.meta.FieldMapping;
-import org.apache.openjpa.jdbc.meta.JavaSQLTypes;
+import org.apache.openjpa.jdbc.meta.Strategy;
 import org.apache.openjpa.jdbc.meta.ValueMapping;
 import org.apache.openjpa.jdbc.meta.strats.HandlerCollectionTableFieldStrategy;
 import org.apache.openjpa.jdbc.meta.strats.HandlerRelationMapTableFieldStrategy;
+import org.apache.openjpa.jdbc.meta.strats.LRSMapFieldStrategy;
 import org.apache.openjpa.jdbc.schema.Column;
 import org.apache.openjpa.jdbc.schema.ForeignKey;
 import org.apache.openjpa.jdbc.schema.Schemas;
@@ -44,7 +44,6 @@ import org.apache.openjpa.jdbc.sql.Select;
 import org.apache.openjpa.kernel.Broker;
 import org.apache.openjpa.kernel.Filters;
 import org.apache.openjpa.kernel.OpenJPAStateManager;
-import org.apache.openjpa.kernel.StateManagerImpl;
 import org.apache.openjpa.kernel.StoreContext;
 import org.apache.openjpa.kernel.exps.CandidatePath;
 import org.apache.openjpa.lib.util.Localizer;
@@ -247,8 +246,6 @@ public class PCPath
         if (pstate.field == null)
             return _class;
         if (_key) {
-            if (pstate.field.getKey().getValueMappedBy() != null)
-                return _class;
             if (pstate.field.getKey().getTypeCode() == JavaTypes.PC)
                 return pstate.field.getKeyMapping().getTypeMapping();
             return null;
@@ -381,6 +378,7 @@ public class PCPath
         action.op = Action.GET_KEY;
         _cast = null;
         _key = true;
+        _type = PATH;
     }
 
     public FieldMetaData last() {
@@ -493,8 +491,11 @@ public class PCPath
                 forceOuter |= action.op == Action.GET_OUTER;
 
                 // if last action is get map key, use the previous field mapping
-                if (key && !itr.hasNext())
+                if (key && !itr.hasNext()) {
                     field = pstate.field;
+                    pstate.joins = pstate.joins.setVariable((String)
+                        action.data);
+                }
 
                 if (pstate.field != null) {
                     // if this is the second-to-last field and the last is
@@ -739,6 +740,8 @@ public class PCPath
         if (mapping == null || !pstate.joinedRel || _keyPath ||
             pstate.isEmbedElementColl)            
             sel.select(getColumns(state), pstate.joins);
+        else if (_key && pstate.field.getKey().isEmbedded())
+            selectEmbeddedMapKey(sel, ctx, state);
         else if (pks)
             sel.select(mapping.getPrimaryKeyColumns(), pstate.joins);
         else {
@@ -786,19 +789,8 @@ public class PCPath
             if (pks)
                 return mapping.getObjectId(ctx.store, res, null, true, 
                     pstate.joins);
-            if (_key) {
-                if (pstate.field.getKey().getValueMappedBy() != null) {
-                    Object obj =  res.load(mapping, ctx.store, ctx.fetch,
-                        pstate.joins);
-                    StateManagerImpl sm = (StateManagerImpl) 
-                        ((PersistenceCapable) obj).pcGetStateManager();
-                    obj = sm.fetch(_class.getField(pstate.field.getKey().
-                        getValueMappedBy()).getIndex());
-                    return obj;
-                }
-                else if (pstate.field.getKey().isEmbedded())
-                    return loadEmbeddedMapKey(ctx, state, res);
-            }
+            if (_key && pstate.field.getKey().isEmbedded())
+                return loadEmbeddedMapKey(ctx, state, res);
             if (pstate.isEmbedElementColl)
                 return pstate.field.loadProjection(ctx.store, ctx.fetch, res,
                     pstate.joins);
@@ -807,10 +799,15 @@ public class PCPath
 
         Object ret;
         if (_key)
-            // Map key is a java primitive type
-            //    example: Map<Integer, Employee> emps
-            ret = res.getObject(pstate.cols[0],
-                JavaSQLTypes.JDBC_DEFAULT, pstate.joins);
+            if (pstate.field.getKey().getValueMappedBy() != null)
+                ret = ((FieldMapping) pstate.field.getKey().
+                    getValueMappedByMetaData()).
+                    loadProjection(ctx.store, ctx.fetch, res, pstate.joins);
+            else
+                // Map key is a java primitive type
+                //    example: Map<Integer, Employee> emps
+                ret = res.getObject(pstate.cols[0],
+                    null, pstate.joins);
         else
             ret = pstate.field.loadProjection(ctx.store, ctx.fetch, res, 
                 pstate.joins);
@@ -819,23 +816,44 @@ public class PCPath
         return ret;
     }
 
+    private void validateMapStrategy(Strategy strategy) {
+        if (strategy == null ||
+            !(strategy instanceof LRSMapFieldStrategy))
+            throw new RuntimeException("Invalid map field strategy:"+strategy);
+    }
+
+    private void selectEmbeddedMapKey(Select sel, ExpContext ctx,
+        ExpState state) {
+        PathExpState pstate = (PathExpState) state;
+        validateMapStrategy(pstate.field.getStrategy());
+        LRSMapFieldStrategy strategy = (LRSMapFieldStrategy)
+            pstate.field.getStrategy();
+        ClassMapping mapping = pstate.field.getKeyMapping().getTypeMapping();
+        if (strategy instanceof HandlerRelationMapTableFieldStrategy)
+            strategy.selectKey(sel, mapping, null, ctx.store, ctx.fetch,
+                pstate.joins);
+        else {
+            sel.select(_class.getPrimaryKeyColumns(), pstate.joins);
+            FieldMapping[] fms = mapping.getDefinedFieldMappings();
+            for (int i = 0; i < fms.length; i++)
+                sel.select(fms[i].getColumns(), pstate.joins);
+        }
+    }
+
     private Object loadEmbeddedMapKey(ExpContext ctx, ExpState state,
         Result res) throws SQLException {
         PathExpState pstate = (PathExpState) state;
-        // consume keyProjection
-        PersistenceCapable pc = (PersistenceCapable) res.load(_candidate,
-            ctx.store, ctx.fetch, pstate.joins);
-        if (pc == null)
-            return null;
-        if (pstate.field.getStrategy() == null ||
-            !(pstate.field.getStrategy() instanceof
-                HandlerRelationMapTableFieldStrategy))
-            throw new RuntimeException("Invalid map field strategy");
-        HandlerRelationMapTableFieldStrategy strategy =
-            (HandlerRelationMapTableFieldStrategy) pstate.field.getStrategy();
-        return strategy
-            .loadKey((OpenJPAStateManager) pc.pcGetStateManager(),
-                ctx.store, ctx.fetch, res, pstate.joins);
+        validateMapStrategy(pstate.field.getStrategy());
+        FieldMapping fmd = (FieldMapping) pstate.field.getKey().
+            getValueMappedByMetaData();
+        LRSMapFieldStrategy strategy =
+            (LRSMapFieldStrategy) pstate.field.getStrategy();
+        if (strategy instanceof HandlerRelationMapTableFieldStrategy)
+            return strategy.loadKey(null, ctx.store, ctx.fetch, res,
+                pstate.joins);
+        else
+            return fmd.getStrategy().
+                loadProjection(ctx.store, ctx.fetch, res, pstate.joins);
     }
 
     public void calculateValue(Select sel, ExpContext ctx, ExpState state, 
