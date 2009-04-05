@@ -30,7 +30,6 @@ import org.apache.openjpa.jdbc.conf.JDBCConfiguration;
 import org.apache.openjpa.jdbc.sql.DBDictionary;
 import org.apache.openjpa.persistence.OpenJPAEntityManagerFactorySPI;
 import org.apache.openjpa.persistence.OpenJPAEntityManagerSPI;
-import org.apache.openjpa.persistence.test.AllowFailure;
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
 import org.apache.openjpa.persistence.xmlmapping.entities.Customer;
 import org.apache.openjpa.persistence.xmlmapping.entities.EAddress;
@@ -103,7 +102,6 @@ public class TestXMLCustomerOrder
         em.close();
     }
 
-    @AllowFailure
     public void testXMLFieldInEntity() {
         if (!enabled)
             return;
