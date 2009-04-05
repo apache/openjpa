@@ -350,7 +350,8 @@ public class DB2Dictionary
         else
             isolationLevel = conf.getTransactionIsolationConstant();
 
-        if (fetch.getReadLockLevel() >= MixedLockLevels.LOCK_PESSIMISTIC_WRITE)
+        if (fetch != null
+            && fetch.getReadLockLevel() >= MixedLockLevels.LOCK_PESSIMISTIC_WRITE)
             isolationLevel = Connection.TRANSACTION_SERIALIZABLE;
 
         if (isForUpdate) {
