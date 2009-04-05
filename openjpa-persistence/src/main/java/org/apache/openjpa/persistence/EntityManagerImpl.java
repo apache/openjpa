@@ -56,7 +56,6 @@ import org.apache.openjpa.kernel.Broker;
 import org.apache.openjpa.kernel.DelegatingBroker;
 import org.apache.openjpa.kernel.FetchConfiguration;
 import org.apache.openjpa.kernel.FindCallbacks;
-import org.apache.openjpa.kernel.MixedLockLevels;
 import org.apache.openjpa.kernel.OpCallbacks;
 import org.apache.openjpa.kernel.OpenJPAStateManager;
 import org.apache.openjpa.kernel.PreparedQuery;
@@ -65,16 +64,12 @@ import org.apache.openjpa.kernel.QueryFlushModes;
 import org.apache.openjpa.kernel.QueryLanguages;
 import org.apache.openjpa.kernel.Seq;
 import org.apache.openjpa.kernel.jpql.JPQLParser;
-import org.apache.openjpa.lib.conf.Configuration;
-import org.apache.openjpa.lib.conf.IntValue;
 import org.apache.openjpa.lib.util.Closeable;
 import org.apache.openjpa.lib.util.Localizer;
 import org.apache.openjpa.meta.ClassMetaData;
 import org.apache.openjpa.meta.FieldMetaData;
 import org.apache.openjpa.meta.QueryMetaData;
 import org.apache.openjpa.meta.SequenceMetaData;
-import org.apache.openjpa.persistence.query.OpenJPAQueryBuilder;
-import org.apache.openjpa.persistence.query.QueryBuilderImpl;
 import org.apache.openjpa.util.Exceptions;
 import org.apache.openjpa.util.ImplHelper;
 import org.apache.openjpa.util.RuntimeExceptionTranslator;
@@ -469,19 +464,24 @@ public class EntityManagerImpl
         return find(cls, oid, mode, null);
     }
 
+    public <T> T find(Class<T> cls, Object oid, 
+        Map<String, Object> properties){
+        return find(cls, oid, null, properties);
+    }
+
     @SuppressWarnings("unchecked")
     public <T> T find(Class<T> cls, Object oid, LockModeType mode,
         Map<String, Object> properties) {
         assertNotCloseInvoked();
-        if (mode != LockModeType.NONE)
+        if (mode != null && mode != LockModeType.NONE)
             _broker.assertActiveTransaction();
 
-        boolean fcPushed = pushLockProperties(mode, properties);
+        processLockProperties(pushFetchPlan(), mode, properties);
         try {
             oid = _broker.newObjectId(cls, oid);
             return (T) _broker.find(oid, true, this);
         } finally {
-            popLockProperties(fcPushed);
+            popFetchPlan();
         }
     }
 
@@ -726,6 +726,10 @@ public class EntityManagerImpl
         refresh(entity, mode, null);
     }
 
+    public void refresh(Object entity, Map<String, Object> properties) {
+        refresh(entity, null, properties);
+    }
+
     public void refresh(Object entity, LockModeType mode,
         Map<String, Object> properties) {
         assertNotCloseInvoked();
@@ -733,11 +737,11 @@ public class EntityManagerImpl
         _broker.assertActiveTransaction();
         _broker.assertWriteOperation();
 
-        boolean fcPushed = pushLockProperties(mode, properties);
+        processLockProperties(pushFetchPlan(), mode, properties);
         try {
             _broker.refresh(entity, this);
         } finally {
-            popLockProperties(fcPushed);
+            popFetchPlan();
         }
     }
 
@@ -1096,9 +1100,7 @@ public class EntityManagerImpl
     }
 
     public void lock(Object entity, LockModeType mode) {
-        assertNotCloseInvoked();
-        assertValidAttchedEntity(entity);
-        _broker.lock(entity, MixedLockLevelsHelper.toLockLevel(mode), -1, this);
+        lock(entity, mode, -1);
     }
 
     public void lock(Object entity) {
@@ -1110,8 +1112,14 @@ public class EntityManagerImpl
     public void lock(Object entity, LockModeType mode, int timeout) {
         assertNotCloseInvoked();
         assertValidAttchedEntity(entity);
-        _broker.lock(entity, MixedLockLevelsHelper.toLockLevel(mode), timeout,
-             this);
+
+        processLockProperties(pushFetchPlan(), mode, null);
+        try {
+            _broker.lock(entity, MixedLockLevelsHelper.toLockLevel(mode),
+                timeout, this);
+        } finally {
+            popFetchPlan();
+        }
     }
 
     public void lock(Object entity, LockModeType mode,
@@ -1120,12 +1128,12 @@ public class EntityManagerImpl
         assertValidAttchedEntity(entity);
         _broker.assertActiveTransaction();
 
-        boolean fcPushed = pushLockProperties(mode, properties);
+        processLockProperties(pushFetchPlan(), mode, properties);
         try {
             _broker.lock(entity, MixedLockLevelsHelper.toLockLevel(mode),
                 _broker.getFetchConfiguration().getLockTimeout(), this);
         } finally {
-            popLockProperties(fcPushed);
+            popFetchPlan();
         }
     }
 
@@ -1542,8 +1550,7 @@ public class EntityManagerImpl
         throw new PersistenceException(_loc.get("unwrap-em-invalid", cls)
             .toString(), null, this, false);
     }
-    
-    
+
     public void setQuerySQLCache(boolean flag) {
         _broker.setCachePreparedQuery(flag);
     }
@@ -1556,153 +1563,25 @@ public class EntityManagerImpl
         return _ret;
     }
 
-    private enum FetchConfigProperty {
-        LockTimeout, ReadLockLevel, WriteLockLevel
-    };
-
-    private boolean setFetchConfigProperty(FetchConfigProperty[] validProps,
+    private void processLockProperties(FetchPlan fPlan, LockModeType mode,
         Map<String, Object> properties) {
-        boolean fcPushed = false;
-        if (properties != null && properties.size() > 0) {
-            Configuration conf = _broker.getConfiguration();
-            Set<String> inKeys = properties.keySet();
-            for (String inKey : inKeys) {
-                for (FetchConfigProperty validProp : validProps) {
-                    String validPropStr = validProp.toString();
-                    Set<String> validPropKeys = conf
-                        .getPropertyKeys(validPropStr);
-
-                    if (validPropKeys.contains(inKey)) {
-                        FetchConfiguration fCfg = _broker
-                            .getFetchConfiguration();
-                        IntValue intVal = new IntValue(inKey);
-                        try {
-                            Object setValue = properties.get(inKey);
-                            if (setValue instanceof String) {
-                                intVal.setString((String) setValue);
-                            } else if (Number.class.isAssignableFrom(setValue
-                                .getClass())) {
-                                intVal.setObject(setValue);
-                            } else {
-                                intVal.setString(setValue.toString());
-                            }
-                            int value = intVal.get();
-                            switch (validProp) {
-                            case LockTimeout:
-                                if (!fcPushed) {
-                                    fCfg = _broker.pushFetchConfiguration();
-                                    fcPushed = true;
-                                }
-                                fCfg.setLockTimeout(value);
-                                break;
-                            case ReadLockLevel:
-                                if (value != MixedLockLevels.LOCK_NONE
-                                    && value != fCfg.getReadLockLevel()) {
-                                    if (!fcPushed) {
-                                        fCfg = _broker.pushFetchConfiguration();
-                                        fcPushed = true;
-                                    }
-                                    fCfg.setReadLockLevel(value);
-                                }
-                                break;
-                            case WriteLockLevel:
-                                if (value != MixedLockLevels.LOCK_NONE
-                                    && value != fCfg.getWriteLockLevel()) {
-                                    if (!fcPushed) {
-                                        fCfg = _broker.pushFetchConfiguration();
-                                        fcPushed = true;
-                                    }
-                                    fCfg.setWriteLockLevel(value);
-                                }
-                                break;
-                            }
-                        } catch (Exception e) {
-                            // silently ignore the property
-                        }
-                        break; // for(String inKey : inKeys)
-                    }
-                }
-            }
-        }
-        return fcPushed;
-    }
-
-    private boolean pushLockProperties(LockModeType mode,
-        Map<String, Object> properties) {
-        boolean fcPushed = false;
         // handle properties in map first
-        if (properties != null) {
-            fcPushed = setFetchConfigProperty(new FetchConfigProperty[] {
-                FetchConfigProperty.LockTimeout,
-                FetchConfigProperty.ReadLockLevel,
-                FetchConfigProperty.WriteLockLevel }, properties);
-        }
+        fPlan.addHints(properties);
         // override with the specific lockMode, if needed.
-        int setReadLevel = MixedLockLevelsHelper.toLockLevel(mode);
-        if (setReadLevel != MixedLockLevels.LOCK_NONE) {
+        if (mode != null && mode != LockModeType.NONE) {
             // Set overriden read lock level
-            FetchConfiguration fCfg = _broker.getFetchConfiguration();
-            int curReadLevel = fCfg.getReadLockLevel();
-            if (setReadLevel != curReadLevel) {
-                if (!fcPushed) {
-                    fCfg = _broker.pushFetchConfiguration();
-                    fcPushed = true;
-                }
-                fCfg.setReadLockLevel(setReadLevel);
-            }
-            // Set overriden isolation level for pessimistic-read/write
-            switch (setReadLevel) {
-            case MixedLockLevels.LOCK_PESSIMISTIC_READ:
-                fcPushed = setIsolationForPessimisticLock(fCfg, fcPushed,
-                    Connection.TRANSACTION_REPEATABLE_READ);
-                break;
-
-            case MixedLockLevels.LOCK_PESSIMISTIC_WRITE:
-            case MixedLockLevels.LOCK_PESSIMISTIC_FORCE_INCREMENT:
-                fcPushed = setIsolationForPessimisticLock(fCfg, fcPushed,
-                    Connection.TRANSACTION_SERIALIZABLE);
-                break;
-
-            default:
-            }
-        }
-        return fcPushed;
-    }
-
-    private boolean setIsolationForPessimisticLock(FetchConfiguration fCfg,
-        boolean fcPushed, int level) {
-        if (!fcPushed) {
-            fCfg = _broker.pushFetchConfiguration();
-            fcPushed = true;
-        }
-        // TODO: refactoring under OPENJPA-957
-//        ((JDBCFetchConfiguration) fCfg).setIsolation(level);
-        return fcPushed;
-    }
-
-    private void popLockProperties(boolean fcPushed) {
-        if (fcPushed) {
-            _broker.popFetchConfiguration();
+            LockModeType curReadLockMode = fPlan.getReadLockMode();
+            if (mode != curReadLockMode)
+                fPlan.setReadLockMode(mode);
         }
     }
-
 
     public Metamodel getMetamodel() {
         throw new UnsupportedOperationException(
         "JPA 2.0 - Method not yet implemented");
     }
 
-    public void refresh(Object arg0, Map<String, Object> arg1) {
-        throw new UnsupportedOperationException(
-        "JPA 2.0 - Method not yet implemented");
-    }
-
     public void setProperty(String arg0, Object arg1) {
-        throw new UnsupportedOperationException(
-        "JPA 2.0 - Method not yet implemented");
-    }
-
-    public <T> T find(Class<T> arg0, Object arg1, Map<String, Object> arg2) {
         throw new UnsupportedOperationException(
         "JPA 2.0 - Method not yet implemented");
     }

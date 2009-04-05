@@ -21,9 +21,9 @@ package org.apache.openjpa.persistence.lockmgr;
 import javax.persistence.LockModeType;
 
 /**
- * Test JPA 2.0 em.lock(LockMode) basic behaviors with "mixed" lock manager.
+ * Test JPA 2.0 em.find(LockMode) behaviors with "mixed" lock manager.
  */
-public class MixedLockManagerLockBasicTest extends SequencedActionsTest {
+public class TestMixedLockManagerFindBasic extends SequencedActionsTest {
     public void setUp() {
         setUp(LockEmployee.class
             , "openjpa.LockManager", "mixed"
@@ -31,65 +31,68 @@ public class MixedLockManagerLockBasicTest extends SequencedActionsTest {
         commonSetUp();
     }
 
-    public void testLockRead() {
-        testCommon("testLockRead",
+    public void testFindRead() {
+        testCommon("testFindRead",
             LockModeType.READ, 0, 1);
     }
 
-    public void testLockWrite() {
-        testCommon("testLockWrite",
+    public void testFindWrite() {
+        testCommon("testFindWrite",
             LockModeType.WRITE, 1, 1);
     }
 
-    public void testLockOptimistic() {
-        testCommon("testLockOptimistic",
+    public void testFindOptimistic() {
+        testCommon("testFindOptimistic",
             LockModeType.OPTIMISTIC, 0, 1);
     }
 
-    public void testLockOptimisticForceInc() {
-        testCommon("testLockOptimisticForceInc",
+    public void testFindOptimisticForceInc() {
+        testCommon("testFindOptimisticForceInc",
             LockModeType.OPTIMISTIC_FORCE_INCREMENT, 1, 1);
     }
 
-    public void testLockPessimisticRead() {
-        testCommon("testLockPessimisticRead",
+    public void testFindPessimisticRead() {
+        testCommon("testFindPessimisticRead",
             LockModeType.PESSIMISTIC_READ, 0, 1);
     }
 
-    public void testLockPessimisticWrite() {
-        testCommon("testLockPessimisticWrite",
+    public void testFindPessimisticWrite() {
+        testCommon("testFindPessimisticWrite",
             LockModeType.PESSIMISTIC_WRITE, 0, 1);
     }
 
-    public void testLockPessimisticForceInc() {
-        testCommon("testLockPessimisticForceInc",
+    public void testFindPessimisticForceInc() {
+        testCommon("testFindPessimisticForceInc",
             LockModeType.PESSIMISTIC_FORCE_INCREMENT, 1, 1);
     }
 
     public void testCommon(String testName, LockModeType lockMode,
         int commitVersionIncrement, int updateCommitVersionIncrement) {
         Object[][] threadMain = {
-            // Find entity, lock, no update and commit.
+            // Find entity, no transaction, no update.
             { Act.CreateEm },
-            { Act.StartTx },
             { Act.Clear },
             { Act.Find, 1 },
             { Act.TestEmployee, 1, Default_FirstName},
+
+            // Find entity with lLock, no update and commit.
+            { Act.StartTx },
+            { Act.Clear },
+            { Act.FindWithLock, 1, lockMode },
+            { Act.TestEmployee, 1, Default_FirstName},
             { Act.SaveVersion },
-            { Act.Lock, 1, lockMode },
             { Act.CommitTx },
             { Act.Clear },
             { Act.Find, 1 },
             { Act.TestEmployee, 1, Default_FirstName,
                 commitVersionIncrement },
 
-            // Find entity, lock, update and commit.
+            // Find entity with lock, update and commit.
             { Act.StartTx },
             { Act.Clear },
-            { Act.Find, 1 },
-            { Act.TestEmployee, 1, Default_FirstName},
+            { Act.FindWithLock, 1, lockMode },
             { Act.SaveVersion },
-            { Act.Lock, 1, lockMode },
+            { Act.TestEmployee, 1, Default_FirstName},
             { Act.UpdateEmployee, 1, lockMode.toString() },
             { Act.CommitTx },
             { Act.Clear },
@@ -97,19 +100,19 @@ public class MixedLockManagerLockBasicTest extends SequencedActionsTest {
             { Act.TestEmployee, 1, lockMode.toString(),
                 updateCommitVersionIncrement },
 
-            // Find entity, lock, update but rollback.
+            // Find entity with lock, update but rollback.
             { Act.StartTx },
             { Act.Clear },
-            { Act.Find, 1 },
-            { Act.TestEmployee, 1, lockMode.toString()},
+            { Act.FindWithLock, 1, lockMode },
             { Act.SaveVersion },
-            { Act.Lock, 1, lockMode },
+            { Act.TestEmployee, 1, lockMode.toString()},
             { Act.UpdateEmployee, 1, lockMode.toString() + " Again" },
             { Act.RollbackTx },
             { Act.Clear },
             { Act.Find, 1 },
             { Act.TestEmployee, 1, lockMode.toString(), 0 },
         };
+
         launchActionSequence(testName, "LockMode=" + lockMode, threadMain);
     }
 }

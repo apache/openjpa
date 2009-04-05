@@ -28,7 +28,6 @@ import javax.persistence.LockModeType;
 
 import org.apache.openjpa.kernel.DelegatingFetchConfiguration;
 import org.apache.openjpa.kernel.FetchConfiguration;
-import org.apache.openjpa.kernel.MixedLockLevels;
 
 /**
  * Implements FetchPlan via delegation to FetchConfiguration.
@@ -42,13 +41,14 @@ public class FetchPlanImpl
 	implements FetchPlan {
 
     private final DelegatingFetchConfiguration _fetch;
-
+    private FetchPlanHintHandler _hintHandler;
     
     /**
      * Constructor; supply delegate.
      */
     public FetchPlanImpl(FetchConfiguration fetch) {
         _fetch = newDelegatingFetchConfiguration(fetch);
+        _hintHandler = new FetchPlanHintHandler(this);
     }
 
     /**
@@ -275,8 +275,24 @@ public class FetchPlanImpl
         return _fetch.getHint(key);
     }
     
+    public void addHint(String key, Object value) {
+        _fetch.addHint(key, value);
+    }
+
     public void setHint(String key, Object value) {
-        _fetch.setHint(key, value);
+        setHint(key, value, true);
+    }
+
+    public void setHint(String key, Object value, boolean validThrowException) {
+        if( _hintHandler.setHint(key, value, validThrowException) )
+            _fetch.addHint(key, value);
+    }
+
+    public void addHints(Map<String, Object> hints) {
+        if (hints != null && hints.size() > 0) {
+            for (String name : hints.keySet())
+                setHint(name, hints.get(name), false);
+        }
     }
     
     public Map<String, Object> getHints() {

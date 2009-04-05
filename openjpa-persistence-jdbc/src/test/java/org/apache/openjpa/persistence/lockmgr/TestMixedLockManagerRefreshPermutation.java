@@ -25,7 +25,7 @@ import javax.persistence.LockModeType;
 /**
  * Test JPA 2.0 LockMode type permutation behaviors with "mixed" lock manager.
  */
-public class MixedLockManagerRefreshPermutationTest 
+public class TestMixedLockManagerRefreshPermutation 
     extends SequencedActionsTest {
     public void setUp() {
         setUp(LockEmployee.class

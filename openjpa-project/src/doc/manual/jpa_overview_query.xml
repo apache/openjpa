@@ -814,6 +814,40 @@ hints={ @QueryHint  (name="openjpa.hint.OptimizeResultCount", value="2"),
 </programlisting>
                 </example>
             </section>
+            <section id="multi-hints-handling">
+                <title>
+                    Handling of Multiple Similar Query Hints 
+                </title>
+                <para>
+When similar hints in different prefix scopes are specified in a query,
+the following prefix precedence order is used to select the effective hint:
+            	<itemizedlist>
+                	<listitem>
+javax.persistence.*                
+                	</listitem>
+                	<listitem>
+openjpa.FetchPlan.*                
+                	</listitem>
+                	<listitem>
+openjpa.jdbc.*                
+                	</listitem>
+                	<listitem>
+openjpa.*                
+                	</listitem>
+            	</itemizedlist>
+                <example id="multi-hints-example">
+<programlisting>
+...
+Query q = em.createQuery(.....);
+q.setHint("openjpa.FetchPlan.LockTimeout", 1000);
+q.setHint("javax.persistence.lock.timeout", 2000);
+q.setHint("openjpa.LockTimeout", 3000);
+// Lock time out of 2000 ms is in effect for query q
+...
+</programlisting>
+                </example>
+                </para>
+            </section>
         </section>
         <section id="jpa_overview_query_ordering">
             <title>

@@ -475,6 +475,14 @@ public class DelegatingFetchConfiguration
         }
     }
     
+    public void addHint(String name, Object value) {
+        try {
+            _fetch.addHint(name, value);
+        } catch (RuntimeException re) {
+            throw translate(re);
+        }
+    }
+
     public Map<String, Object> getHints() {
         try {
             return _fetch.getHints();

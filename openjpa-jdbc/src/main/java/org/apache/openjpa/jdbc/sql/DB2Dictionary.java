@@ -38,6 +38,7 @@ import org.apache.openjpa.jdbc.schema.Schema;
 import org.apache.openjpa.jdbc.schema.Sequence;
 import org.apache.openjpa.jdbc.schema.Table;
 import org.apache.openjpa.kernel.Filters;
+import org.apache.openjpa.kernel.MixedLockLevels;
 import org.apache.openjpa.lib.util.Localizer;
 import org.apache.openjpa.meta.JavaTypes;
 import org.apache.openjpa.util.OpenJPAException;
@@ -348,6 +349,9 @@ public class DB2Dictionary
             isolationLevel = fetch.getIsolation();
         else
             isolationLevel = conf.getTransactionIsolationConstant();
+
+        if (fetch.getReadLockLevel() >= MixedLockLevels.LOCK_PESSIMISTIC_WRITE)
+            isolationLevel = Connection.TRANSACTION_SERIALIZABLE;
 
         if (isForUpdate) {
             switch (db2ServerType) {

@@ -25,7 +25,7 @@ import javax.persistence.TransactionRequiredException;
 /**
  * Test JPA 2.0 em.lock(LockMode) exception behaviors with "mixed" lock manager.
  */
-public class MixedLockManagerLockExceptionTest extends SequencedActionsTest {
+public class TestMixedLockManagerLockException extends SequencedActionsTest {
     public void setUp() {
         setUp(LockEmployee.class
             , "openjpa.LockManager", "mixed"

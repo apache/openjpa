@@ -25,12 +25,50 @@ import javax.persistence.TransactionRequiredException;
  * Test JPA 2.0 em.refresh(LockMode) exception behaviors with "mixed"
  * lock manager.
  */
-public class MixedLockManagerRefreshExceptionTest extends SequencedActionsTest {
+public class TestMixedLockManagerRefreshException extends SequencedActionsTest {
     public void setUp() {
         setUp(LockEmployee.class
             , "openjpa.LockManager", "mixed"
         );
         commonSetUp();
+    }
+
+    /**
+     * TransactionRequiredException if there is no transaction
+     */
+    public void testRefreshNoTxReqExceptions() {
+        Object[][] threadMainTxReqTest = {
+            {Act.CreateEm},
+            {Act.Find},
+            {Act.SaveVersion},
+            {Act.TestEmployee, 1, Default_FirstName},
+            
+            {Act.Refresh, 1, LockModeType.NONE },
+            {Act.TestException, 0, null },
+            
+            {Act.Refresh, 1, LockModeType.READ },
+            {Act.TestException, 0, null },
+            
+            {Act.Refresh, 1, LockModeType.WRITE },
+            {Act.TestException, 0, null },
+            
+            {Act.Refresh, 1, LockModeType.OPTIMISTIC },
+            {Act.TestException, 0, null },
+            
+            {Act.Refresh, 1, LockModeType.OPTIMISTIC_FORCE_INCREMENT },
+            {Act.TestException, 0, null },
+            
+            {Act.Refresh, 1, LockModeType.PESSIMISTIC_READ},
+            {Act.TestException, 0, null },
+            
+            {Act.Refresh, 1, LockModeType.PESSIMISTIC_WRITE},
+            {Act.TestException, 0, null },
+            
+            {Act.Refresh, 1, LockModeType.PESSIMISTIC_FORCE_INCREMENT },
+            {Act.TestException, 0, null },
+        };
+        launchActionSequence("testLockTxReqExceptions()",
+            null, threadMainTxReqTest);
     }
 
     /**
@@ -43,28 +81,28 @@ public class MixedLockManagerRefreshExceptionTest extends SequencedActionsTest {
             {Act.SaveVersion},
             {Act.TestEmployee, 1, Default_FirstName},
             
-            {Act.Refresh, 1, LockModeType.NONE },
+            {Act.RefreshWithLock, 1, LockModeType.NONE },
             {Act.TestException, 0, TransactionRequiredException.class },
             
-            {Act.Refresh, 1, LockModeType.READ },
+            {Act.RefreshWithLock, 1, LockModeType.READ },
             {Act.TestException, 0, TransactionRequiredException.class },
             
-            {Act.Refresh, 1, LockModeType.WRITE },
+            {Act.RefreshWithLock, 1, LockModeType.WRITE },
             {Act.TestException, 0, TransactionRequiredException.class },
             
-            {Act.Refresh, 1, LockModeType.OPTIMISTIC },
+            {Act.RefreshWithLock, 1, LockModeType.OPTIMISTIC },
             {Act.TestException, 0, TransactionRequiredException.class },
             
-            {Act.Refresh, 1, LockModeType.OPTIMISTIC_FORCE_INCREMENT },
+            {Act.RefreshWithLock, 1, LockModeType.OPTIMISTIC_FORCE_INCREMENT },
             {Act.TestException, 0, TransactionRequiredException.class },
             
-            {Act.Refresh, 1, LockModeType.PESSIMISTIC_READ},
+            {Act.RefreshWithLock, 1, LockModeType.PESSIMISTIC_READ},
             {Act.TestException, 0, TransactionRequiredException.class },
             
-            {Act.Refresh, 1, LockModeType.PESSIMISTIC_WRITE},
+            {Act.RefreshWithLock, 1, LockModeType.PESSIMISTIC_WRITE},
             {Act.TestException, 0, TransactionRequiredException.class },
             
-            {Act.Refresh, 1, LockModeType.PESSIMISTIC_FORCE_INCREMENT },
+            {Act.RefreshWithLock, 1, LockModeType.PESSIMISTIC_FORCE_INCREMENT },
             {Act.TestException, 0, TransactionRequiredException.class },
         };
         launchActionSequence("testLockTxReqExceptions()",

@@ -23,7 +23,7 @@ import javax.persistence.LockModeType;
 /**
  * Test JPA 2.0 em.refresh(LockMode) basic behaviors with "mixed" lock manager.
  */
-public class MixedLockManagerRefreshBasicTest extends SequencedActionsTest {
+public class TestMixedLockManagerRefreshBasic extends SequencedActionsTest {
     public void setUp() {
         setUp(LockEmployee.class
             , "openjpa.LockManager", "mixed"

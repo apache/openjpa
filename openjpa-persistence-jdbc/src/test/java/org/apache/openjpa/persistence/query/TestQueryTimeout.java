@@ -780,7 +780,7 @@ public class TestQueryTimeout extends SQLListenerTestCase {
         } catch (Exception e) {
             // expected - setHint(-2000) should cause an IllegalArgumentException
             checkException("testQueryTimeout5()", e, 
-                IllegalArgumentException.class, "Invalid value" );
+                IllegalArgumentException.class, "invalid timeout of -2,000");
         } finally {
             if ((em != null) && em.isOpen()) {
                 em.close();

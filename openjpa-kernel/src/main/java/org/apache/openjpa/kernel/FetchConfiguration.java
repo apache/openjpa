@@ -337,6 +337,15 @@ public interface FetchConfiguration
 	 */
 	public Object getHint (String name);
 	
+    /**
+     * Adds the hint and the associated value to the list.
+     *
+     * @param name the name of the hint
+     * @param value the value of the hint
+     * @since 2.0.0
+     */
+    public void addHint(String name, Object value);
+
 	/**
      * Returns an immutable view of the currently active hints and their values.
 	 * 

@@ -98,6 +98,7 @@ public class FetchConfigurationImpl
     private boolean _load = true;
     private int _availableRecursion;
     private int _availableDepth;
+    private FetchConfigurationHintHandler _hintHandler;
 
     public FetchConfigurationImpl() {
         this(null);
@@ -106,6 +107,7 @@ public class FetchConfigurationImpl
     protected FetchConfigurationImpl(ConfigurationState state) {
         _state = (state == null) ? new ConfigurationState() : state;
         _availableDepth = _state.maxFetchDepth;
+        _hintHandler = new FetchConfigurationHintHandler(this);
     } 
 
     public StoreContext getContext() {
@@ -239,6 +241,13 @@ public class FetchConfigurationImpl
     }
 
     public FetchConfiguration setFlushBeforeQueries(int flush) {
+        if (flush != DEFAULT
+            && flush != QueryFlushModes.FLUSH_TRUE
+            && flush != QueryFlushModes.FLUSH_FALSE
+            && flush != QueryFlushModes.FLUSH_WITH_CONNECTION)
+            throw new IllegalArgumentException(_loc.get(
+                "bad-flush-before-queries", new Integer(flush)).getMessage());
+
         if (flush == DEFAULT && _state.ctx != null)
             _state.flushQuery = _state.ctx.getConfiguration().
                 getFlushBeforeQueriesConstant();
@@ -455,13 +464,15 @@ public class FetchConfigurationImpl
 
 
     public int getReadLockLevel() {
-        String hintKey = "openjpa.FetchPlan.ReadLockLevel";
-        if (getHint(hintKey) != null) {
+        String lockModeKey = "openjpa.FetchPlan.ReadLockMode";
+        String deferLockModeKey = lockModeKey + ".Defer";
+        Integer value = (Integer)getHint(deferLockModeKey);
+        if (value != null) {
             if (isActiveTransaction()) {
-                setReadLockLevel((Integer)removeHint(hintKey));
-            } else {
-                return (Integer)getHint(hintKey);
-            }
+                removeHint(deferLockModeKey);
+                setReadLockLevel(value);
+            } else
+                return value;
         }
         return _state.readLockLevel;
     }
@@ -469,6 +480,16 @@ public class FetchConfigurationImpl
     public FetchConfiguration setReadLockLevel(int level) {
         if (_state.ctx == null)
             return this;
+
+        if (level != DEFAULT
+            && level != MixedLockLevels.LOCK_NONE
+            && level != MixedLockLevels.LOCK_OPTIMISTIC
+            && level != MixedLockLevels.LOCK_OPTIMISTIC_FORCE_INCREMENT
+            && level != MixedLockLevels.LOCK_PESSIMISTIC_READ
+            && level != MixedLockLevels.LOCK_PESSIMISTIC_WRITE
+            && level != MixedLockLevels.LOCK_PESSIMISTIC_FORCE_INCREMENT)
+            throw new IllegalArgumentException(_loc.get(
+                "bad-lock-level", new Integer(level)).getMessage());
 
         lock();
         try {
@@ -485,13 +506,15 @@ public class FetchConfigurationImpl
     }
 
     public int getWriteLockLevel() {
-        String hintKey = "openjpa.FetchPlan.WriteLockLevel";
-        if (getHint(hintKey) != null) {
+        String lockModeKey = "openjpa.FetchPlan.WriteLockMode";
+        String deferLockModeKey = lockModeKey + ".Defer";
+        Integer value = (Integer)getHint(deferLockModeKey);
+        if (value != null) {
             if (isActiveTransaction()) {
-                setReadLockLevel((Integer)removeHint(hintKey));
-            } else {
-                return (Integer)getHint(hintKey);
-            }
+                removeHint(deferLockModeKey);
+                setWriteLockLevel(value);
+            } else
+                return value;
         }
         return _state.writeLockLevel;
     }
@@ -499,6 +522,16 @@ public class FetchConfigurationImpl
     public FetchConfiguration setWriteLockLevel(int level) {
         if (_state.ctx == null)
             return this;
+
+        if (level != DEFAULT
+            && level != MixedLockLevels.LOCK_NONE
+            && level != MixedLockLevels.LOCK_OPTIMISTIC
+            && level != MixedLockLevels.LOCK_OPTIMISTIC_FORCE_INCREMENT
+            && level != MixedLockLevels.LOCK_PESSIMISTIC_READ
+            && level != MixedLockLevels.LOCK_PESSIMISTIC_WRITE
+            && level != MixedLockLevels.LOCK_PESSIMISTIC_FORCE_INCREMENT)
+            throw new IllegalArgumentException(_loc.get(
+                "bad-lock-level", new Integer(level)).getMessage());
 
         lock();
         try {
@@ -537,6 +570,16 @@ public class FetchConfigurationImpl
     }
 
     public void setHint(String name, Object value) {
+        setHint(name, value, false);
+    }
+
+    public void setHint(String name, Object value,
+        boolean validThrowException) {
+        if(_hintHandler.setHint(name, value, validThrowException))
+            addHint(name, value);
+    }
+
+    public void addHint(String name, Object value) {
         lock();
         try {
             if (_state.hints == null)
@@ -550,7 +593,7 @@ public class FetchConfigurationImpl
     public Object getHint(String name) {
         return (_state.hints == null) ? null : _state.hints.get(name);
     }
-    
+
     public Object removeHint(String name) {
         return (_state.hints == null) ? null : _state.hints.remove(name);
     }

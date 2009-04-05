@@ -19,8 +19,8 @@
 package org.apache.openjpa.jdbc.kernel;
 
 import java.io.Serializable;
-import java.sql.ResultSet;
 import java.sql.Connection;
+import java.sql.ResultSet;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
@@ -31,6 +31,7 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.openjpa.conf.OpenJPAConfiguration;
 import org.apache.openjpa.jdbc.conf.JDBCConfiguration;
 import org.apache.openjpa.jdbc.meta.ClassMapping;
+import org.apache.openjpa.jdbc.sql.JoinSyntaxes;
 import org.apache.openjpa.kernel.FetchConfiguration;
 import org.apache.openjpa.kernel.FetchConfigurationImpl;
 import org.apache.openjpa.kernel.StoreContext;
@@ -121,6 +122,13 @@ public class JDBCFetchConfigurationImpl
     }
 
     public JDBCFetchConfiguration setEagerFetchMode(int mode) {
+        if (mode != DEFAULT
+            && mode != EagerFetchModes.EAGER_NONE
+            && mode != EagerFetchModes.EAGER_JOIN
+            && mode != EagerFetchModes.EAGER_PARALLEL)
+            throw new IllegalArgumentException(
+                _loc.get("bad-fetch-mode", new Integer(mode)).getMessage());
+
         if (mode == DEFAULT) {
             JDBCConfiguration conf = getJDBCConfiguration();
             if (conf != null)
@@ -145,6 +153,13 @@ public class JDBCFetchConfigurationImpl
     }
 
     public JDBCFetchConfiguration setSubclassFetchMode(int mode) {
+        if (mode != DEFAULT
+            && mode != EagerFetchModes.EAGER_NONE
+            && mode != EagerFetchModes.EAGER_JOIN
+            && mode != EagerFetchModes.EAGER_PARALLEL)
+            throw new IllegalArgumentException(
+                _loc.get("bad-fetch-mode", new Integer(mode)).getMessage());
+
         if (mode == DEFAULT) {
             JDBCConfiguration conf = getJDBCConfiguration();
             if (conf != null)
@@ -160,6 +175,13 @@ public class JDBCFetchConfigurationImpl
     }
 
     public JDBCFetchConfiguration setResultSetType(int type) {
+        if (type != DEFAULT
+            && type != ResultSet.TYPE_FORWARD_ONLY
+            && type != ResultSet.TYPE_SCROLL_INSENSITIVE
+            && type != ResultSet.TYPE_SCROLL_SENSITIVE)
+            throw new IllegalArgumentException(_loc.get("bad-resultset-type",
+                new Integer(type)).getMessage());
+
         if (type == DEFAULT) {
             JDBCConfiguration conf = getJDBCConfiguration();
             if (conf != null)
@@ -174,6 +196,13 @@ public class JDBCFetchConfigurationImpl
     }
 
     public JDBCFetchConfiguration setFetchDirection(int direction) {
+        if (direction != DEFAULT
+            && direction != ResultSet.FETCH_FORWARD
+            && direction != ResultSet.FETCH_REVERSE
+            && direction != ResultSet.FETCH_UNKNOWN)
+            throw new IllegalArgumentException(_loc.get("bad-fetch-direction",
+                new Integer(direction)).getMessage());
+
         if (direction == DEFAULT) {
             JDBCConfiguration conf = getJDBCConfiguration();
             if (conf != null)
@@ -188,6 +217,13 @@ public class JDBCFetchConfigurationImpl
     }
 
     public JDBCFetchConfiguration setLRSSize(int size) {
+        if (size != DEFAULT
+            && size != LRSSizes.SIZE_QUERY
+            && size != LRSSizes.SIZE_LAST
+            && size != LRSSizes.SIZE_UNKNOWN)
+            throw new IllegalArgumentException(
+                _loc.get("bad-lrs-size", new Integer(size)).getMessage());
+
         if (size == DEFAULT) {
             JDBCConfiguration conf = getJDBCConfiguration();
             if (conf != null)
@@ -202,6 +238,13 @@ public class JDBCFetchConfigurationImpl
     }
 
     public JDBCFetchConfiguration setJoinSyntax(int syntax) {
+        if (syntax != DEFAULT
+            && syntax != JoinSyntaxes.SYNTAX_SQL92
+            && syntax != JoinSyntaxes.SYNTAX_TRADITIONAL
+            && syntax != JoinSyntaxes.SYNTAX_DATABASE)
+            throw new IllegalArgumentException(
+                _loc.get("bad-join-syntax", new Integer(syntax)).getMessage());
+
         if (syntax == DEFAULT) {
             JDBCConfiguration conf = getJDBCConfiguration();
             if (conf != null)

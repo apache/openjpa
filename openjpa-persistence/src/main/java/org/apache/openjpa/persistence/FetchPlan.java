@@ -130,6 +130,29 @@ public interface FetchPlan {
     public void setHint(String key, Object value);
     
     /**
+     * Sets the hint for the given key to the given value.
+     * 
+     * @since 2.0.0
+     */
+    public void setHint(String key, Object value, boolean validThrowException);
+
+    /**
+     * Adds the hint and the associated value to the list.
+     *
+     * @param name the name of the hint
+     * @param value the value of the hint
+     * @since 2.0.0
+     */
+    public void addHint(String name, Object value);
+
+    /**
+     * Sets the hint keys and values currently set of this receiver.
+     * 
+     * @since 2.0.0
+     */
+    public void addHints(Map<String, Object> hints);
+
+    /**
      * Gets the hint keys and values currently set of this receiver.
      * 
      * @since 2.0.0
@@ -291,10 +314,10 @@ public interface FetchPlan {
     public int getLockTimeout();
 
     /**
-     * The number of milliseconds to wait for a query, or -1 for no
+     * The number of milliseconds to wait for an object lock, or -1 for no
      * limit.
      */
-    public FetchPlan setQueryTimeout(int timeout);
+    public FetchPlan setLockTimeout(int timeout);
 
     /**
      * The number of milliseconds to wait for a query, or -1 for no
@@ -303,11 +326,11 @@ public interface FetchPlan {
     public int getQueryTimeout();
 
     /**
-     * The number of milliseconds to wait for an object lock, or -1 for no
+     * The number of milliseconds to wait for a query, or -1 for no
      * limit.
      */
+    public FetchPlan setQueryTimeout(int timeout);
 
-    public FetchPlan setLockTimeout(int timeout);
     /**
      * The lock level to use for locking loaded objects.
      */
@@ -327,7 +350,6 @@ public interface FetchPlan {
      * The lock level to use for locking dirtied objects.
      */
     public FetchPlan setWriteLockMode(LockModeType mode);
-    
 
     /**
      * @deprecated cast to {@link FetchPlanImpl} instead. This

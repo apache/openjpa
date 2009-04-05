@@ -37,10 +37,10 @@ public class MixedLockLevelsHelper {
         if (mode == null || mode == LockModeType.NONE)
             return MixedLockLevels.LOCK_NONE;
         if (mode == LockModeType.READ || mode == LockModeType.OPTIMISTIC)
-            return MixedLockLevels.LOCK_READ;
+            return MixedLockLevels.LOCK_OPTIMISTIC;
         if (mode == LockModeType.WRITE
             || mode == LockModeType.OPTIMISTIC_FORCE_INCREMENT)
-            return MixedLockLevels.LOCK_WRITE;
+            return MixedLockLevels.LOCK_OPTIMISTIC_FORCE_INCREMENT;
         if (mode == LockModeType.PESSIMISTIC_READ)
             return MixedLockLevels.LOCK_PESSIMISTIC_READ;
         if (mode == LockModeType.PESSIMISTIC_WRITE)
@@ -53,11 +53,11 @@ public class MixedLockLevelsHelper {
      */
     public static LockModeType fromLockLevel(int level) {
         if (level < MixedLockLevels.LOCK_OPTIMISTIC)
-            return null;
+            return LockModeType.NONE;
         if (level < MixedLockLevels.LOCK_OPTIMISTIC_FORCE_INCREMENT)
-            return LockModeType.READ;
+            return LockModeType.OPTIMISTIC;
         if (level < MixedLockLevels.LOCK_PESSIMISTIC_READ)
-            return LockModeType.WRITE;
+            return LockModeType.OPTIMISTIC_FORCE_INCREMENT;
         if (level < MixedLockLevels.LOCK_PESSIMISTIC_WRITE)
             return LockModeType.PESSIMISTIC_READ;
         if (level < MixedLockLevels.LOCK_PESSIMISTIC_FORCE_INCREMENT)

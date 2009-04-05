@@ -104,8 +104,6 @@ public abstract class SequencedActionsTest extends SQLListenerTestCase {
             }
         }
         assertAllSQLInOrder(
-            "INSERT INTO " + empTableName + " .*",
-            "INSERT INTO " + empTableName + " .*",
             "INSERT INTO " + empTableName + " .*");
 
         // dynamic runtime test to determine wait time.
@@ -150,6 +148,8 @@ public abstract class SequencedActionsTest extends SQLListenerTestCase {
             em.createQuery("delete from " + empTableName).executeUpdate();
 
             em.getTransaction().commit();
+        } catch(Exception e) {
+            e.printStackTrace();
         } finally {
             if (em != null && em.isOpen()) {
                 em.close();
@@ -607,9 +607,10 @@ public abstract class SequencedActionsTest extends SQLListenerTestCase {
                         LockModeType expectedlockMode = (LockModeType)args[2];
                         LockModeType testinglockMode = em.getLockMode(employee);
                         log.trace("test version: expected=" + expectedlockMode
-                            + ", testing=" + em.getLockMode(employee));
+                            + ", testing=" + testinglockMode);
 
-                        assertEquals("", expectedlockMode, testinglockMode);
+                        assertEquals("", getCanonical(expectedlockMode),
+                            getCanonical(testinglockMode));
                         break;
                     case ResetException:
                         thisThread.throwable = null;
@@ -823,6 +824,14 @@ public abstract class SequencedActionsTest extends SQLListenerTestCase {
             log.trace("<<<< Sequenced Test: Threads=" + threadToRun + '/'
                 + numThreads);
         }
+    }
+
+    private LockModeType getCanonical(LockModeType lockMode) {
+        if( lockMode == LockModeType.READ )
+            return LockModeType.OPTIMISTIC;
+        if( lockMode == LockModeType.WRITE )
+            return LockModeType.OPTIMISTIC_FORCE_INCREMENT;
+        return lockMode;
     }
 
     private String processException(Act curAction, Throwable t) {

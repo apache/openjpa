@@ -106,6 +106,15 @@ persistence.xml</filename>.
             </listitem>
             <listitem>
                 <para>
+In JPA, The <classname>Map</classname> passed to the methods defined in the
+<classname>Query</classname> and <classname>EntityManager</classname> interfaces
+at runtime also overrides previous settings, including properties defined in
+<filename>persistence.xml</filename>. The <classname>Map</classname> is in
+effect only during the method invocation.
+                </para>
+            </listitem>
+            <listitem>
+                <para>
 When using JCA deployment the <literal>config-property</literal> values in your
 <filename>ra.xml</filename> file override other settings.
                 </para>
