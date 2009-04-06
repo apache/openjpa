@@ -483,7 +483,9 @@ public class FetchConfigurationImpl
 
         if (level != DEFAULT
             && level != MixedLockLevels.LOCK_NONE
+            && level != MixedLockLevels.LOCK_READ
             && level != MixedLockLevels.LOCK_OPTIMISTIC
+            && level != MixedLockLevels.LOCK_WRITE
             && level != MixedLockLevels.LOCK_OPTIMISTIC_FORCE_INCREMENT
             && level != MixedLockLevels.LOCK_PESSIMISTIC_READ
             && level != MixedLockLevels.LOCK_PESSIMISTIC_WRITE
@@ -525,7 +527,9 @@ public class FetchConfigurationImpl
 
         if (level != DEFAULT
             && level != MixedLockLevels.LOCK_NONE
+            && level != MixedLockLevels.LOCK_READ
             && level != MixedLockLevels.LOCK_OPTIMISTIC
+            && level != MixedLockLevels.LOCK_WRITE
             && level != MixedLockLevels.LOCK_OPTIMISTIC_FORCE_INCREMENT
             && level != MixedLockLevels.LOCK_PESSIMISTIC_READ
             && level != MixedLockLevels.LOCK_PESSIMISTIC_WRITE

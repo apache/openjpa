@@ -36,10 +36,13 @@ public class MixedLockLevelsHelper {
     public static int toLockLevel(LockModeType mode) {
         if (mode == null || mode == LockModeType.NONE)
             return MixedLockLevels.LOCK_NONE;
-        if (mode == LockModeType.READ || mode == LockModeType.OPTIMISTIC)
+        if (mode == LockModeType.READ)
+            return MixedLockLevels.LOCK_READ;
+        if (mode == LockModeType.OPTIMISTIC)
             return MixedLockLevels.LOCK_OPTIMISTIC;
-        if (mode == LockModeType.WRITE
-            || mode == LockModeType.OPTIMISTIC_FORCE_INCREMENT)
+        if (mode == LockModeType.WRITE)
+            return MixedLockLevels.LOCK_WRITE;
+        if (mode == LockModeType.OPTIMISTIC_FORCE_INCREMENT)
             return MixedLockLevels.LOCK_OPTIMISTIC_FORCE_INCREMENT;
         if (mode == LockModeType.PESSIMISTIC_READ)
             return MixedLockLevels.LOCK_PESSIMISTIC_READ;
@@ -52,10 +55,14 @@ public class MixedLockLevelsHelper {
      * Translates internal lock level to javax.persistence LockModeType.
      */
     public static LockModeType fromLockLevel(int level) {
-        if (level < MixedLockLevels.LOCK_OPTIMISTIC)
+        if (level < MixedLockLevels.LOCK_READ)
             return LockModeType.NONE;
-        if (level < MixedLockLevels.LOCK_OPTIMISTIC_FORCE_INCREMENT)
+        if (level < MixedLockLevels.LOCK_OPTIMISTIC)
+            return LockModeType.READ;
+        if (level < MixedLockLevels.LOCK_WRITE)
             return LockModeType.OPTIMISTIC;
+        if (level < MixedLockLevels.LOCK_OPTIMISTIC_FORCE_INCREMENT)
+            return LockModeType.WRITE;
         if (level < MixedLockLevels.LOCK_PESSIMISTIC_READ)
             return LockModeType.OPTIMISTIC_FORCE_INCREMENT;
         if (level < MixedLockLevels.LOCK_PESSIMISTIC_WRITE)

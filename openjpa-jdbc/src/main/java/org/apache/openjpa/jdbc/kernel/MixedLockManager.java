@@ -66,7 +66,7 @@ public class MixedLockManager extends PessimisticLockManager {
             setVersionCheckOnReadLock(true);
             setVersionUpdateOnWriteLock(false);
             super.lockInternal(sm, level, timeout, sdata, postLockVersionCheck);
-        } else if (level >= MixedLockLevels.LOCK_OPTIMISTIC) {
+        } else if (level >= MixedLockLevels.LOCK_READ) {
             setVersionCheckOnReadLock(true);
             setVersionUpdateOnWriteLock(true);
             optimisticLockInternal(sm, level, timeout, sdata,

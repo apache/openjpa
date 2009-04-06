@@ -27,16 +27,16 @@ package org.apache.openjpa.kernel;
 public interface MixedLockLevels extends LockLevels {
 
     /**
-     * Generic optimistic read lock level. Value of 10.
+     * Generic optimistic read lock level. Value of 15.
      *
      */
-    public static final int LOCK_OPTIMISTIC = LOCK_READ;
+    public static final int LOCK_OPTIMISTIC = LOCK_READ + 5;
 
     /**
-     * Generic optimistic write lock level. Value of 20.
+     * Generic optimistic write lock level. Value of 25.
      */
     public static final int LOCK_OPTIMISTIC_FORCE_INCREMENT =
-        LockLevels.LOCK_WRITE;
+        LockLevels.LOCK_WRITE + 5;
 
     /**
      * Generic pessimistic read lock level. Value of 30.

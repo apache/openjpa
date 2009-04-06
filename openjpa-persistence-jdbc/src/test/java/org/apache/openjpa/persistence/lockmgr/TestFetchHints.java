@@ -1764,26 +1764,25 @@ public class TestFetchHints extends SequencedActionsTest {
             MixedLockLevels.LOCK_NONE);
 
         readLockLevelHintTest(fPlan, fConfig, hintName, String
-            .valueOf(MixedLockLevels.LOCK_READ), LockModeType.OPTIMISTIC,
+            .valueOf(MixedLockLevels.LOCK_READ), LockModeType.READ,
             MixedLockLevels.LOCK_READ);
         readLockLevelHintTest(fPlan, fConfig, hintName,
-            MixedLockLevels.LOCK_READ, LockModeType.OPTIMISTIC,
+            MixedLockLevels.LOCK_READ, LockModeType.READ,
             MixedLockLevels.LOCK_READ);
 
         readLockLevelHintTest(fPlan, fConfig, hintName, String
-            .valueOf(MixedLockLevels.LOCK_WRITE),
-            LockModeType.OPTIMISTIC_FORCE_INCREMENT,
+            .valueOf(MixedLockLevels.LOCK_WRITE), LockModeType.WRITE,
             MixedLockLevels.LOCK_WRITE);
         readLockLevelHintTest(fPlan, fConfig, hintName,
-            MixedLockLevels.LOCK_WRITE,
-            LockModeType.OPTIMISTIC_FORCE_INCREMENT,
+            MixedLockLevels.LOCK_WRITE, LockModeType.WRITE,
             MixedLockLevels.LOCK_WRITE);
 
         readLockLevelHintTest(fPlan, fConfig, hintName, String
             .valueOf(MixedLockLevels.LOCK_OPTIMISTIC), LockModeType.OPTIMISTIC,
             MixedLockLevels.LOCK_OPTIMISTIC);
-        readLockLevelHintTest(fPlan, fConfig, hintName, 10,
-            LockModeType.OPTIMISTIC, MixedLockLevels.LOCK_OPTIMISTIC);
+        readLockLevelHintTest(fPlan, fConfig, hintName,
+            MixedLockLevels.LOCK_OPTIMISTIC, LockModeType.OPTIMISTIC,
+            MixedLockLevels.LOCK_OPTIMISTIC);
 
         readLockLevelHintTest(fPlan, fConfig, hintName, String
             .valueOf(MixedLockLevels.LOCK_OPTIMISTIC_FORCE_INCREMENT),
@@ -1887,19 +1886,17 @@ public class TestFetchHints extends SequencedActionsTest {
             MixedLockLevels.LOCK_NONE);
 
         writeLockLevelHintTest(fPlan, fConfig, hintName, String
-            .valueOf(MixedLockLevels.LOCK_READ), LockModeType.OPTIMISTIC,
+            .valueOf(MixedLockLevels.LOCK_READ), LockModeType.READ,
             MixedLockLevels.LOCK_READ);
         writeLockLevelHintTest(fPlan, fConfig, hintName,
-            MixedLockLevels.LOCK_READ, LockModeType.OPTIMISTIC,
+            MixedLockLevels.LOCK_READ, LockModeType.READ,
             MixedLockLevels.LOCK_READ);
 
         writeLockLevelHintTest(fPlan, fConfig, hintName, String
-            .valueOf(MixedLockLevels.LOCK_WRITE),
-            LockModeType.OPTIMISTIC_FORCE_INCREMENT,
+            .valueOf(MixedLockLevels.LOCK_WRITE), LockModeType.WRITE,
             MixedLockLevels.LOCK_WRITE);
         writeLockLevelHintTest(fPlan, fConfig, hintName,
-            MixedLockLevels.LOCK_WRITE,
-            LockModeType.OPTIMISTIC_FORCE_INCREMENT,
+            MixedLockLevels.LOCK_WRITE, LockModeType.WRITE,
             MixedLockLevels.LOCK_WRITE);
 
         writeLockLevelHintTest(fPlan, fConfig, hintName, String
@@ -2022,22 +2019,19 @@ public class TestFetchHints extends SequencedActionsTest {
             MixedLockLevels.LOCK_NONE);
 
         readLockModeHintTest(fPlan, fConfig, hintName, "read",
-            LockModeType.OPTIMISTIC, MixedLockLevels.LOCK_OPTIMISTIC);
+            LockModeType.READ, MixedLockLevels.LOCK_READ);
         readLockModeHintTest(fPlan, fConfig, hintName, LockModeType.READ,
-            LockModeType.OPTIMISTIC, MixedLockLevels.LOCK_OPTIMISTIC);
+            LockModeType.READ, MixedLockLevels.LOCK_READ);
         readLockModeHintTest(fPlan, fConfig, hintName,
-            LockModeType.READ.name(), LockModeType.OPTIMISTIC,
-            MixedLockLevels.LOCK_OPTIMISTIC);
+            LockModeType.READ.name(), LockModeType.READ,
+            MixedLockLevels.LOCK_READ);
 
         readLockModeHintTest(fPlan, fConfig, hintName, "write",
-            LockModeType.OPTIMISTIC_FORCE_INCREMENT,
-            MixedLockLevels.LOCK_OPTIMISTIC_FORCE_INCREMENT);
+            LockModeType.WRITE, MixedLockLevels.LOCK_WRITE);
         readLockModeHintTest(fPlan, fConfig, hintName, LockModeType.WRITE,
-            LockModeType.OPTIMISTIC_FORCE_INCREMENT,
-            MixedLockLevels.LOCK_OPTIMISTIC_FORCE_INCREMENT);
+            LockModeType.WRITE, MixedLockLevels.LOCK_WRITE);
         readLockModeHintTest(fPlan, fConfig, hintName, LockModeType.WRITE
-            .name(), LockModeType.OPTIMISTIC_FORCE_INCREMENT,
-            MixedLockLevels.LOCK_OPTIMISTIC_FORCE_INCREMENT);
+            .name(), LockModeType.WRITE, MixedLockLevels.LOCK_WRITE);
 
         readLockModeHintTest(fPlan, fConfig, hintName, "optimistic",
             LockModeType.OPTIMISTIC, MixedLockLevels.LOCK_OPTIMISTIC);
@@ -2164,21 +2158,18 @@ public class TestFetchHints extends SequencedActionsTest {
             .name(), LockModeType.NONE, MixedLockLevels.LOCK_NONE);
 
         writeLockModeHintTest(fPlan, fConfig, hintName, "read",
-            LockModeType.OPTIMISTIC, MixedLockLevels.LOCK_READ);
+            LockModeType.READ, MixedLockLevels.LOCK_READ);
         writeLockModeHintTest(fPlan, fConfig, hintName, LockModeType.READ,
-            LockModeType.OPTIMISTIC, MixedLockLevels.LOCK_READ);
+            LockModeType.READ, MixedLockLevels.LOCK_READ);
         writeLockModeHintTest(fPlan, fConfig, hintName, LockModeType.READ
-            .name(), LockModeType.OPTIMISTIC, MixedLockLevels.LOCK_READ);
+            .name(), LockModeType.READ, MixedLockLevels.LOCK_READ);
 
         writeLockModeHintTest(fPlan, fConfig, hintName, "write",
-            LockModeType.OPTIMISTIC_FORCE_INCREMENT,
-            MixedLockLevels.LOCK_WRITE);
+            LockModeType.WRITE, MixedLockLevels.LOCK_WRITE);
         writeLockModeHintTest(fPlan, fConfig, hintName, LockModeType.WRITE,
-            LockModeType.OPTIMISTIC_FORCE_INCREMENT,
-            MixedLockLevels.LOCK_WRITE);
+            LockModeType.WRITE, MixedLockLevels.LOCK_WRITE);
         writeLockModeHintTest(fPlan, fConfig, hintName, LockModeType.WRITE
-            .name(), LockModeType.OPTIMISTIC_FORCE_INCREMENT,
-            MixedLockLevels.LOCK_WRITE);
+            .name(), LockModeType.WRITE, MixedLockLevels.LOCK_WRITE);
 
         writeLockModeHintTest(fPlan, fConfig, hintName,
             "optimistic", LockModeType.OPTIMISTIC,

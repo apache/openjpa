@@ -201,7 +201,9 @@ public class FetchPlanHintHandler extends AbstractHintHandler {
             intValue = (Integer) value;
         if (intValue == null
             || (intValue != MixedLockLevels.LOCK_NONE
+                && intValue != MixedLockLevels.LOCK_READ
                 && intValue != MixedLockLevels.LOCK_OPTIMISTIC
+                && intValue != MixedLockLevels.LOCK_WRITE
                 && intValue != MixedLockLevels.LOCK_OPTIMISTIC_FORCE_INCREMENT
                 && intValue != MixedLockLevels.LOCK_PESSIMISTIC_READ
                 && intValue != MixedLockLevels.LOCK_PESSIMISTIC_WRITE
