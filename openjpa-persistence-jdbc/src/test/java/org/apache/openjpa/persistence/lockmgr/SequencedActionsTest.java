@@ -294,7 +294,7 @@ public abstract class SequencedActionsTest extends SQLListenerTestCase {
             }
         }
         int numThreads = actions.length;
-        threads = new ArrayList<TestThread>(numThreads - 1);
+        threads = new ArrayList<TestThread>(numThreads);
         TestThread mainThread = new TestThread(0, actions);
         threads.add(mainThread);
         launchCommonSequence(mainThread);
@@ -508,6 +508,10 @@ public abstract class SequencedActionsTest extends SQLListenerTestCase {
                     threads.get((Integer) args[1]).start();
                     break;
                 case Notify:
+                	// sleep and let other threads has a chance to wait,
+                	// otherwise this notify may trigger before the other 
+                	// thread has a chance to wait.
+                	Thread.sleep(500);
                     int notifyThreadid = 0;
                     if (args.length > 1 && args[1] != null) {
                         notifyThreadid = (Integer) args[1];
@@ -526,10 +530,12 @@ public abstract class SequencedActionsTest extends SQLListenerTestCase {
                     if (args.length > 1 && args[1] != null) {
                         waitThreadid = (Integer) args[1];
                     }
-                    int waitTime = 5000; //15000;
+                    int waitTime = (int)(waitInMsec / 5);
                     if (args.length > 2 && args[2] != null) {
                         waitTime = (Integer) args[2];
                     }
+                    if( waitTime < 15000)
+                        waitTime = 15000;                    
                     if( waitThreadid != 0) {
                         thisThread.wait(waitTime);
                     } else {
@@ -898,6 +904,13 @@ public abstract class SequencedActionsTest extends SQLListenerTestCase {
         }
 
         public synchronized void run() {
+        	// sleep and let other threads has a chance to do stuffs,
+        	// otherwise this new thread may perform a notify before
+        	// the other thread has a chance to wait.
+        	try {
+				Thread.sleep(500);
+			} catch (InterruptedException e) {
+			}
             getLog().trace("Thread " + threadToRun + ": run()");
             launchCommonSequence(this);
         }
