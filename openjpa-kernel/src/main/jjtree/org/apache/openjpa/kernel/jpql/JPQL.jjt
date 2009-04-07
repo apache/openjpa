@@ -949,7 +949,7 @@ void arithmetic_factor() : { }
 	functions_returning_numerics() | 
 	aggregate_select_expression() |	
 	LOOKAHEAD(case_expression()) case_expression() |
-	subquery()
+	"(" subquery() ")"
 }
 
 
@@ -1006,6 +1006,7 @@ void scalar_expression() #SCALAREXPRESSION : { }
     LOOKAHEAD(string_primary()) string_primary() |
     LOOKAHEAD(datetime_primary()) datetime_primary() |
     LOOKAHEAD(enum_primary()) enum_primary() |
+    LOOKAHEAD(boolean_primary()) boolean_primary() |
     LOOKAHEAD(entity_type_expression()) entity_type_expression()
 }
 

@@ -435,18 +435,32 @@ public class JDBCExpressionFactory
             "gmv" + _getMapValueAlias++);
     }
 
+    private Value getLiteralRawString(Value val) {
+        if (val instanceof Lit) {
+            Lit lit = (Lit) val;
+            StringBuffer value = new StringBuffer();
+            if (lit.getParseType() == Literal.TYPE_SQ_STRING)
+                value.append("'").append(lit.getValue().toString()).append("'");
+            else if (lit.getParseType() == Literal.TYPE_BOOLEAN) {
+                if ((Boolean) lit.getValue())
+                    value.append("1");
+                else
+                    value.append("0");
+            }
+            else
+                value.append(lit.getValue().toString());
+            lit.setValue(new Raw(value.toString()));
+            return lit;
+        }
+        return val;
+    }
+
     public Value simpleCaseExpression(Value caseOperand, Expression[] exp,
             Value val1) {
         Exp[] exps = new Exp[exp.length];
         for (int i = 0; i < exp.length; i++)
             exps[i] = (Exp) exp[i];
-        if (val1 instanceof Lit) {
-            Lit val = (Lit) val1;
-            StringBuffer value = new StringBuffer(val.getValue().toString());
-            if (val.getParseType() == Literal.TYPE_SQ_STRING)
-                value.insert(0, "'").append("'");
-            val.setValue(new Raw(value.toString()));
-        }
+        val1 = getLiteralRawString(val1);
         return new SimpleCaseExpression((Val) caseOperand, exps,
             (Val) val1);
     }
@@ -460,58 +474,27 @@ public class JDBCExpressionFactory
     }
 
     public Expression whenCondition(Expression exp, Value val) {
+        val = getLiteralRawString(val);
         return new WhenCondition((Exp) exp, (Val) val);
     }
 
     public Expression whenScalar(Value val1, Value val2) {
-        if (val1 instanceof Lit) {
-            Lit val = (Lit) val1;
-            StringBuffer value = new StringBuffer(val.getValue().toString());
-            if (val.getParseType() == Literal.TYPE_SQ_STRING)
-                value.insert(0, "'").append("'");
-            val.setValue(new Raw(value.toString()));
-        }
-        if (val2 instanceof Lit) {
-            Lit val = (Lit) val2;
-            StringBuffer value = new StringBuffer(val.getValue().toString());
-            if (val.getParseType() == Literal.TYPE_SQ_STRING)
-                value.insert(0, "'").append("'");
-            val.setValue(new Raw(value.toString()));
-        }
+        val1 = getLiteralRawString(val1);
+        val2 = getLiteralRawString(val2);
         return new WhenScalar((Val) val1, (Val) val2);
     }
 
     public Value coalesceExpression(Value[] vals) {;
         Object[] values = new Val[vals.length];
         for (int i = 0; i < vals.length; i++) {
-            if (vals[i] instanceof Lit) {
-                Lit val = (Lit) vals[i];
-                StringBuffer value =
-                        new StringBuffer(val.getValue().toString());
-                if (val.getParseType() == Literal.TYPE_SQ_STRING)
-                    value.insert(0, "'").append("'");
-                val.setValue(new Raw(value.toString()));
-            }
-            values[i] = vals[i];
+            values[i] = getLiteralRawString(vals[i]);
         }
         return new CoalesceExpression((Val[]) values);
     }
 
     public Value nullIfExpression(Value val1, Value val2) {
-        if (val1 instanceof Lit) {
-            Lit val = (Lit) val1;
-            StringBuffer value = new StringBuffer(val.getValue().toString());
-            if (val.getParseType() == Literal.TYPE_SQ_STRING)
-                value.insert(0, "'").append("'");
-            val.setValue(new Raw(value.toString()));
-        }
-        if (val2 instanceof Lit) {
-            Lit val = (Lit) val2;
-            StringBuffer value = new StringBuffer(val.getValue().toString());
-            if (val.getParseType() == Literal.TYPE_SQ_STRING)
-                value.insert(0, "'").append("'");
-            val.setValue(new Raw(value.toString()));
-        }
+        val1 = getLiteralRawString(val1);
+        val2 = getLiteralRawString(val2);
         return new NullIfExpression((Val) val1, (Val) val2);
     }
 }

@@ -145,6 +145,18 @@ public class TestJPQLScalarExpressions extends AbstractTestCase {
         assertEquals("the result is not male", "Male", result3[1]);
         assertEquals("the name is not seetha", "Seetha", result3[0]);
 
+        // boolean literal in case expression
+        query = "SELECT e.name, " +
+            "CASE e.address.country WHEN 'USA'" +
+            " THEN true " +
+            " ELSE false  END as b," +
+            " e.address.country " +
+            " FROM CompUser e order by b";
+        rs = em.createQuery(query).getResultList();
+
+        result = (Object[]) rs.get(rs.size()-1);
+        assertEquals(result[1], 1);
+
         endEm(em);
     }
 
