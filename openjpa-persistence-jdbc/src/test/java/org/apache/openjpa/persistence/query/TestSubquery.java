@@ -88,6 +88,34 @@ public class TestSubquery
     //   + " (select o2 from c.orders o2 where o2 = o",
     };
 
+    static String[]  querys_jpa20 = new String[] {        
+        "select o.oid from Order o where o.delivered =" +
+            " (select " +
+            "   CASE WHEN o2.amount > 10 THEN true" + 
+            "     WHEN o2.amount = 10 THEN false " +
+            "     ELSE false " +
+            "     END " +
+            " from Order o2" +
+            " where o.customer.cid.id = o2.customer.cid.id)",
+ 
+        "select o1.oid from Order o1 where o1.amount > " +
+            " (select o.amount*0.8 from OrderItem i, Order o" +
+            " where i.quantity > 10 and o.amount > 1000 and i.lid = o.oid)",
+            
+        "select o.oid from Order o where o.customer.name =" +
+            " (select substring(o2.customer.name, 3) from Order o2" +
+            " where o.customer.cid.id = o2.customer.cid.id)",
+            
+        "select o.oid from Order o where o.orderTs >" +
+            " (select CURRENT_TIMESTAMP from o.lineitems i)",
+            
+        "select o.oid from Order o where o.amount >" +
+            " (select SQRT(o.amount) from Order o where o.delivered = true)",
+            
+        "select o.oid from Order o where o.customer.name in" +
+            " (select CONCAT(o.customer.name, 'XX') from Order o" +
+            " where o.amount > 10)",            
+    };
 
     static String[] updates = new String[] {
         "update Order o set o.amount = 1000 where o.customer.name = " +
@@ -98,8 +126,15 @@ public class TestSubquery
 
     public void testSubquery() {
         EntityManager em = emf.createEntityManager();
+        for (int i = 0; i < querys_jpa20.length; i++) {
+            String q = querys_jpa20[i];
+            System.err.println(">>> JPQL JPA2 :[ " + i + "]" +q);
+            List rs = em.createQuery(q).getResultList();
+            assertEquals(0, rs.size());
+        }
         for (int i = 0; i < querys.length; i++) {
             String q = querys[i];
+            System.err.println(">>> JPQL: [ " + i + "]"+q);
             List rs = em.createQuery(q).getResultList();
             assertEquals(0, rs.size());
         }

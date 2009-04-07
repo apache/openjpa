@@ -20,6 +20,7 @@ package org.apache.openjpa.persistence.query;
 
 import javax.persistence.*;
 
+import java.sql.Timestamp;
 import java.util.Collection;
 import java.util.ArrayList;
 
@@ -41,7 +42,9 @@ public class Order {
 	@Version
 	long version;
 	
-	public Order(){}
+    Timestamp orderTs;
+
+    public Order(){}
 	
 	public Order(  double amt, boolean delivered, Customer c){
 		amount=amt;
@@ -84,4 +87,12 @@ public class Order {
 	public void setLineitems(Collection<OrderItem> lineitems) {
 		this.lineitems = lineitems;
 	}
+    
+    public Timestamp getOrderTs() {
+        return orderTs;
+    }
+    
+    public void setOrderTs(Timestamp orderTs) {
+        this.orderTs = orderTs;
+    }
 }
