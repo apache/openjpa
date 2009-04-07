@@ -880,7 +880,7 @@ public class MappingRepository
                 boolean vrel = vhandler == null 
                     && val.getTypeCode() == JavaTypes.PC
                     && !val.isSerialized() && !val.isEmbeddedPC();
-                if (!krel && vrel && key.getValueMappedBy() != null) {
+                if (vrel && key.getValueMappedBy() != null) {
                     if (useInverseKeyMapping(field))
                         return new RelationMapInverseKeyFieldStrategy();
                     return new RelationMapTableFieldStrategy();
