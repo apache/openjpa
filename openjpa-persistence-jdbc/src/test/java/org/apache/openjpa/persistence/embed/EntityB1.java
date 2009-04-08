@@ -22,6 +22,7 @@ import java.io.Serializable;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
+import javax.persistence.OneToOne;
 
 @Entity
 public class EntityB1 implements Serializable {
@@ -31,6 +32,9 @@ public class EntityB1 implements Serializable {
 
     @Column(length=30)
     String name;
+    
+    @OneToOne
+    EntityA_Embed_MappedToOne entityA;
 
     public int getId() {
         return id;
@@ -46,6 +50,14 @@ public class EntityB1 implements Serializable {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public EntityA_Embed_MappedToOne getEntityA() {
+        return entityA;
+    }
+
+    public void setEntityA(EntityA_Embed_MappedToOne entityA) {
+        this.entityA = entityA;
     }
 }
 

@@ -78,8 +78,8 @@ public class TestEmbeddable extends SingleEMFTestCase {
             Employee2.class, EmployeePK2.class, Department3.class,
             Employee3.class, EmployeeName3.class, Item1.class, Item2.class,
             Item3.class, Company1.class, Company2.class, Division.class, 
-            VicePresident.class,
-            DROP_TABLES);
+            VicePresident.class, EntityA_Embed_MappedToOne.class,
+            Embed_MappedToOne.class, DROP_TABLES);
     }
     
     public void testEntityA_Coll_String() {
@@ -92,6 +92,12 @@ public class TestEmbeddable extends SingleEMFTestCase {
         createEntityA_Embed_ToOne();
         queryEntityA_Embed_ToOne();
         findEntityA_Embed_ToOne();
+    }
+
+    public void testEntityA_Embed_MappedToOne() {
+        createEntityA_Embed_MappedToOne();
+        queryEntityA_Embed_MappedToOne();
+        findEntityA_Embed_MappedToOne();
     }
 
     public void testEntityA_Coll_Embed_ToOne() {
@@ -209,6 +215,44 @@ public class TestEmbeddable extends SingleEMFTestCase {
         b.setId(id);
         b.setName("b" + id);
         embed.setEntityB(b);
+        em.persist(b);
+        return embed;
+    }
+
+    /*
+     * Create EntityA_Embed_MappedToOne
+     */
+    public void createEntityA_Embed_MappedToOne() {
+        EntityManager em = emf.createEntityManager();
+        EntityTransaction tran = em.getTransaction();
+        createEntityA_Embed_MappedToOne(em, ID);
+        tran.begin();
+        em.flush();
+        tran.commit();
+        em.close();
+    }
+
+    public void createEntityA_Embed_MappedToOne(EntityManager em, int id) {
+        EntityA_Embed_MappedToOne a = new EntityA_Embed_MappedToOne();
+        a.setId(id);
+        a.setName("a" + id);
+        a.setAge(id);
+        Embed_MappedToOne embed = createEmbed_MappedToOne(em, id, a);
+        a.setEmbed(embed);
+        em.persist(a);
+    }
+
+    public Embed_MappedToOne createEmbed_MappedToOne(EntityManager em, int id, 
+        EntityA_Embed_MappedToOne a) {
+        Embed_MappedToOne embed = new Embed_MappedToOne();
+        embed.setName1("name1");
+        embed.setName2("name2");
+        embed.setName3("name3");
+        EntityB1 b = new EntityB1();
+        b.setId(id);
+        b.setName("bm" + id);
+        b.setEntityA(a);
+        embed.setMappedEntityB(b);
         em.persist(b);
         return embed;
     }
@@ -671,6 +715,16 @@ public class TestEmbeddable extends SingleEMFTestCase {
     }
 
     /*
+     * Find EntityA_Embed_MappedToOne
+     */
+    public void findEntityA_Embed_MappedToOne() {
+        EntityManager em = emf.createEntityManager();
+        EntityA_Embed_MappedToOne a = em.find(EntityA_Embed_MappedToOne.class, ID);
+        checkEntityA_Embed_MappedToOne(a);
+        em.close();
+    }
+
+    /*
      * Find EntityA_Coll_Embed_ToOne
      */
     public void findEntityA_Coll_Embed_ToOne() {
@@ -770,6 +824,20 @@ public class TestEmbeddable extends SingleEMFTestCase {
     }
 
     /*
+     * check EntityA_Embed_MappedToOne
+     */
+    public void checkEntityA_Embed_MappedToOne(EntityA_Embed_MappedToOne a) {
+        int id = a.getId();
+        String name = a.getName();
+        int age = a.getAge();
+        assertEquals(1, id);
+        assertEquals("a" + id ,name);
+        assertEquals(1, age);
+        Embed_MappedToOne embed = a.getEmbed();
+        checkEmbed_MappedToOne(embed);
+    }
+
+    /*
      * check EntityA_Coll_Embed_ToOne
      */
     public void checkEntityA_Coll_Embed_ToOne(EntityA_Coll_Embed_ToOne a) {
@@ -794,6 +862,18 @@ public class TestEmbeddable extends SingleEMFTestCase {
         EntityB1 b = embed.getEntityB();
         assertEquals(1, b.getId());
         assertEquals("b" + b.getId(), b.getName());
+    }
+
+    public void checkEmbed_MappedToOne(Embed_MappedToOne embed) {
+        String name1 = embed.getName1();
+        String name2 = embed.getName2();
+        String name3 = embed.getName3();
+        assertEquals("name1", name1);
+        assertEquals("name2", name2);
+        assertEquals("name3", name3);
+        EntityB1 b = embed.getMappedEntityB();
+        assertEquals(1, b.getId());
+        assertEquals("bm" + b.getId(), b.getName());
     }
 
     /*
@@ -1007,6 +1087,38 @@ public class TestEmbeddable extends SingleEMFTestCase {
         List<EntityA_Embed_ToOne> as = q.getResultList();
         for (EntityA_Embed_ToOne a : as) {
             checkEntityA_Embed_ToOne(a);
+        }
+        tran.commit();
+        em.close();
+    }
+
+    /*
+     * Query EntityA_Embed_MappedToOne
+     */
+    public void queryEntityA_Embed_MappedToOne() {
+        EntityManager em = emf.createEntityManager();
+        // test select embed object
+        String[] query = {
+            "select a.embed from " +
+                " EntityA_Embed_MappedToOne a ",
+            "select e from EntityA_Embed_MappedToOne a " +
+                " join a.embed e join e.bm bm where e.bm.id > 0 order by a.id",
+        };
+        for (int i = 0; i < query.length; i++) {
+            List<Object[]> rs = null;
+            rs = em.createQuery(query[i]).getResultList();
+            assertTrue(rs.size() > 0);
+            Object obj = rs.get(0);
+            assertTrue(obj instanceof Embed_MappedToOne);
+            assertTrue(((Embed_MappedToOne) obj).getMappedEntityB() != null);
+            em.clear();
+        }
+        EntityTransaction tran = em.getTransaction();
+        tran.begin();
+        Query q = em.createQuery("select a from EntityA_Embed_MappedToOne a");
+        List<EntityA_Embed_MappedToOne> as = q.getResultList();
+        for (EntityA_Embed_MappedToOne a : as) {
+            checkEntityA_Embed_MappedToOne(a);
         }
         tran.commit();
         em.close();

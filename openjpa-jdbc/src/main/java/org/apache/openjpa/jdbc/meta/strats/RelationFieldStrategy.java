@@ -54,7 +54,6 @@ import org.apache.openjpa.jdbc.sql.Select;
 import org.apache.openjpa.jdbc.sql.SelectExecutor;
 import org.apache.openjpa.jdbc.sql.Union;
 import org.apache.openjpa.kernel.OpenJPAStateManager;
-import org.apache.openjpa.kernel.StateManagerImpl;
 import org.apache.openjpa.lib.log.Log;
 import org.apache.openjpa.lib.util.Localizer;
 import org.apache.openjpa.meta.ClassMetaData;
@@ -660,7 +659,7 @@ public class RelationFieldStrategy
             // By saving the mapped-by info in 'res' is to
             // avoid unneeded SQL pushdown that would otherwise gets
             // generated.
-            if (decMeta != null) {
+            if (decMeta != null && !sm.isEmbedded()) {
         	    mappedByValue = sm.getPersistenceCapable();
         	    res.setMappedByFieldMapping(mappedByFieldMapping);
         	    res.setMappedByValue(mappedByValue);
