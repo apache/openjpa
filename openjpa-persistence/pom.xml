@@ -44,18 +44,26 @@
             <artifactId>geronimo-jpa_2.0_spec</artifactId>
         </dependency>
     </dependencies>
-    <build>
-        <plugins>
-            <plugin>
-        		<groupId>org.apache.maven.plugins</groupId>
-        		<artifactId>maven-compiler-plugin</artifactId>
-                <configuration>
-                	<excludes>
-                	   <exclude>**/AnnotationProcessor6.java</exclude>
-                	</excludes>
-                </configuration>
-            </plugin>
-        </plugins>
-    </build>
     
+    <profiles>
+  		<profile>
+  		    <id>jdk5-compiler</id>
+            <build>
+              <plugins>
+		        <plugin>
+		    		<groupId>org.apache.maven.plugins</groupId>
+		    		<artifactId>maven-compiler-plugin</artifactId>
+		            <configuration>
+		            	<excludes>
+		            	   <exclude>**/AnnotationProcessor6.java</exclude>
+		            	</excludes>
+		            </configuration>
+		        </plugin>
+		      </plugins>
+		   </build>
+		   <activation>
+		      <jdk>1.5</jdk>
+		   </activation>
+  		</profile>
+	</profiles>
 </project>
