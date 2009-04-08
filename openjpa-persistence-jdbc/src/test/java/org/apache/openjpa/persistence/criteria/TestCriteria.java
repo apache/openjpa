@@ -31,7 +31,6 @@ import org.apache.openjpa.persistence.query.OpenJPAQueryBuilder;
 import org.apache.openjpa.persistence.query.QueryBuilderImpl;
 import org.apache.openjpa.persistence.query.QueryDefinition;
 import org.apache.openjpa.persistence.query.SelectItem;
-import org.apache.openjpa.persistence.test.AllowFailure;
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
 
 
@@ -270,7 +269,6 @@ public class TestCriteria extends SingleEMFTestCase {
 		compare(jpql, o);
 	}
 
-	@AllowFailure
 	public void testNonCorrelatedSubQuery() {
 		QueryDefinition q1 = qb.createQueryDefinition();
 		DomainObject goodCustomer = q1.addRoot(Customer.class);
@@ -416,7 +414,6 @@ public class TestCriteria extends SingleEMFTestCase {
 		compare(jpql, q1);
 	}
 	
-	@AllowFailure
 	public void testCreateSubquery() {
 		DomainObject customer = qb.createQueryDefinition(Customer.class);
 		DomainObject order = qb.createSubqueryDefinition(customer.get("orders"));
