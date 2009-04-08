@@ -76,6 +76,7 @@ public class TestSpec10_1_27_Ex6 extends SQLListenerTestCase {
             qi.setCandidateCollection(rsAllCompany);
     }
 
+    @AllowFailure
     public void queryQualifiedId(boolean inMemory) throws Exception {
         EntityManager em = emf.createEntityManager();
 
