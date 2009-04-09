@@ -22,6 +22,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.sql.Connection;
+import java.sql.DatabaseMetaData;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -37,9 +38,11 @@ import org.apache.openjpa.jdbc.kernel.exps.FilterValue;
 import org.apache.openjpa.jdbc.schema.Column;
 import org.apache.openjpa.jdbc.schema.Sequence;
 import org.apache.openjpa.jdbc.schema.Table;
+import org.apache.openjpa.kernel.Filters;
 import org.apache.openjpa.lib.jdbc.DelegatingConnection;
 import org.apache.openjpa.lib.jdbc.DelegatingPreparedStatement;
 import org.apache.openjpa.lib.util.Localizer;
+import org.apache.openjpa.meta.JavaTypes;
 import org.apache.openjpa.util.InternalException;
 import org.apache.openjpa.util.StoreException;
 import org.postgresql.PGConnection;
@@ -134,7 +137,6 @@ public class PostgresDictionary
         clobTypeName = "TEXT";
         longVarcharTypeName = "TEXT";
         doubleTypeName = "DOUBLE PRECISION";
-        varcharTypeName = "VARCHAR{0}";
         timestampTypeName = "ABSTIME";
         fixedSizeTypeNameSet.addAll(Arrays.asList(new String[]{
             "BOOL", "BYTEA", "NAME", "INT8", "INT2", "INT2VECTOR", "INT4",
@@ -240,10 +242,18 @@ public class PostgresDictionary
         stmnt.setBoolean(idx, val);
     }
 
+    /**
+     * Handle XML and bytea/oid columns in a PostgreSQL way.
+     */
     public void setNull(PreparedStatement stmnt, int idx, int colType,
         Column col)
         throws SQLException {
-        // OPENJPA-
+        if (col != null && col.isXML()) {
+            stmnt.setNull(idx, Types.OTHER);
+            return;
+        }
+
+        // OPENJPA-308
         if (colType == Types.BLOB)
             colType = Types.BINARY;
         stmnt.setNull(idx, colType);
@@ -472,6 +482,95 @@ public class PostgresDictionary
         }
     }
     
+    /**
+     * Determine whether XML column is supported.
+     */
+    public void connectedConfiguration(Connection conn) throws SQLException {
+        super.connectedConfiguration(conn);
+        
+        DatabaseMetaData metaData = conn.getMetaData();
+        int maj = 0;
+        int min = 0;
+        if (isJDBC3) {
+            maj = metaData.getDatabaseMajorVersion();
+            min = metaData.getDatabaseMinorVersion();
+        } else {
+            try {
+                // The product version looks like "8.3.5".
+                String productVersion = metaData.getDatabaseProductVersion();
+                String majMin[] = productVersion.split("\\.");
+                maj = Integer.parseInt(majMin[0]);
+                min = Integer.parseInt(majMin[1]);
+            } catch (Exception e) {
+                // We don't understand the version format.
+                if (log.isWarnEnabled())
+                    log.warn(e.toString(),e);
+            }
+        }
+        
+        if ((maj >= 9 || (maj == 8 && min >= 3))) {
+            supportsXMLColumn = true;
+        }
+    }
+ 
+    /**
+     * If column is an XML column, PostgreSQL requires that its value is set
+     * by using {@link PreparedStatement#setObject(int, Object, int)}
+     * with {@link Types#OTHER} as the third argument.
+     */
+    public void setClobString(PreparedStatement stmnt, int idx, String val, Column col) throws SQLException {
+        if (col != null && col.isXML())
+            stmnt.setObject(idx, val, Types.OTHER);
+        else
+            super.setClobString(stmnt, idx, val, col);
+    }
+
+    /**
+     * Append XML comparison.
+     * 
+     * @param buf the SQL buffer to write the comparison
+     * @param op the comparison operation to perform
+     * @param lhs the left hand side of the comparison
+     * @param rhs the right hand side of the comparison
+     * @param lhsxml indicates whether the left operand maps to XML
+     * @param rhsxml indicates whether the right operand maps to XML
+     */
+    public void appendXmlComparison(SQLBuffer buf, String op, FilterValue lhs,
+        FilterValue rhs, boolean lhsxml, boolean rhsxml) {
+        super.appendXmlComparison(buf, op, lhs, rhs, lhsxml, rhsxml);
+        if (lhsxml)
+            appendXmlValue(buf, lhs);
+        else
+            lhs.appendTo(buf);
+        buf.append(" ").append(op).append(" ");
+        if (rhsxml)
+            appendXmlValue(buf, rhs);
+        else
+            rhs.appendTo(buf);
+    }
+    
+    /**
+     * Append XML column value so that it can be used in comparisons.
+     * 
+     * @param buf the SQL buffer to write the value
+     * @param val the value to be written
+     */
+    private void appendXmlValue(SQLBuffer buf, FilterValue val) {
+        Class rc = Filters.wrap(val.getType());
+        int type = getJDBCType(JavaTypes.getTypeCode(rc), false);
+        boolean isXmlAttribute = (val.getXmlMapping() == null) ? false
+                : val.getXmlMapping().isXmlAttribute();
+        SQLBuffer newBufer = new SQLBuffer(this);
+        newBufer.append("(xpath('/*/");
+        val.appendTo(newBufer);
+        if (!isXmlAttribute)
+            newBufer.append("/text()");
+        newBufer.append("',").
+            append(val.getColumnAlias(val.getFieldMapping().getColumns()[0])).
+            append("))[1]");
+        appendCast(buf, newBufer, type);
+    }
+
     /**
      * Connection wrapper to work around the postgres empty result set bug.
      */

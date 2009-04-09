@@ -2484,6 +2484,12 @@ Oracle 9
                   </listitem>
                   <listitem>
                       <para>
+PostgreSQL 8.3 (XML support must be compiled in, the minimum JDBC driver
+version is 8.3-603)
+                      </para>
+                  </listitem>
+                  <listitem>
+                      <para>
 SQLServer 2005
                       </para>
                   </listitem>
