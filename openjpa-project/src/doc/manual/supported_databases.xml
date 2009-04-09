@@ -780,12 +780,9 @@ prevent OpenJPA from being able to roll back transactions. Use the
                 </listitem>
                 <listitem>
                     <para>
-MySQL does not support sub-selects in versions prior to 4.1, and are disabled by
-default. Some operations (such as the <function>isEmpty()</function> method in a
-query) will fail due to this. If you are using MySQL 4.1 or later, you can lift
-this restriction by setting the <literal>SupportsSubselect=true</literal>
-parameter of the <link linkend="openjpa.jdbc.DBDictionary">
-openjpa.jdbc.DBDictionary</link> property.
+MySQL does not support sub-selects in versions prior to 4.1, so
+some operations (such as the <function>isEmpty()</function> method in a
+query) will fail due to this.
                     </para>
                 </listitem>
                 <listitem>
