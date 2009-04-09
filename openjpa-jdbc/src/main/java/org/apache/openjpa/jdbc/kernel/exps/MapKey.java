@@ -108,7 +108,7 @@ public class MapKey
     }
 
     public Class getType() {
-        return Object.class;
+        return _key.getType();
     }
 
     public void setImplicitType(Class type) {

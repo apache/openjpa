@@ -77,13 +77,11 @@ public class PCPath
     private final ClassMapping _candidate;
     private ClassMapping _class = null;
     private boolean _key = false;
-    private boolean _keyPath = false;
     private int _type = PATH;
     private String _varName = null;
     private Class _cast = null;
     private boolean _cid = false;
     private FieldMetaData _xmlfield = null;
-    private FieldMetaData _mapfield = null;
 
     /**
      * Return a path starting with the 'this' ptr.
@@ -249,8 +247,7 @@ public class PCPath
             if (pstate.field.getKey().getTypeCode() == JavaTypes.PC)
                 return pstate.field.getKeyMapping().getTypeMapping();
             return null;
-        } else if (_keyPath)
-            return pstate.field.getDefiningMapping();
+        }
         if (pstate.field.getElement().getTypeCode() == JavaTypes.PC) {
             if (pstate.field.isElementCollection() &&
                 pstate.field.getElement().isEmbedded())
@@ -372,10 +369,14 @@ public class PCPath
         if (_cid)
             return;
 
-        _mapfield = last();
-        // change the last action to a get key
-        Action action = (Action) _actions.getLast();
-        action.op = Action.GET_KEY;
+        // replace the last field action to a get key
+        Action action = lastFieldAction();
+        Action key = new Action();
+        key.op = Action.GET_KEY;
+        key.data = action.data;
+        int pos = _actions.indexOf(action);
+        _actions.remove(action);
+        _actions.add(pos, key);
         _cast = null;
         _key = true;
         _type = PATH;
@@ -383,7 +384,7 @@ public class PCPath
 
     public FieldMetaData last() {
         Action act = lastFieldAction();
-        return (act == null || act.op == Action.GET_KEY) ? null : isXPath() ?
+        return (act == null) ? null : isXPath() ?
             _xmlfield : (FieldMetaData) act.data;
     }
 
@@ -416,7 +417,6 @@ public class PCPath
             return ((XMLMetaData) act.data).getType();
         
         FieldMetaData fld = act == null ? null :
-            act.op == Action.GET_KEY ? _mapfield :
             (FieldMetaData) act.data;
         boolean key = act != null && act.op == Action.GET_KEY;
         if (fld != null) {
@@ -480,22 +480,8 @@ public class PCPath
                     rel.getTable());
             } else {
                 // move past the previous field, if any
-                field = (action.op == Action.GET_XPATH) ?
-                    (FieldMapping) _xmlfield :
-                    (action.op == Action.GET_KEY) ? null :
-                    (FieldMapping) action.data;
-
-                // mark if the next traversal should go through
-                // the key rather than value
-                key = action.op == Action.GET_KEY;
-                forceOuter |= action.op == Action.GET_OUTER;
-
-                // if last action is get map key, use the previous field mapping
-                if (key && !itr.hasNext()) {
-                    field = pstate.field;
-                    pstate.joins = pstate.joins.setVariable((String)
-                        action.data);
-                }
+                field = (FieldMapping) ((action.op == Action.GET_XPATH) ?
+                    _xmlfield : action.data);
 
                 if (pstate.field != null) {
                     // if this is the second-to-last field and the last is
@@ -509,14 +495,13 @@ public class PCPath
                     rel = traverseField(pstate, key, forceOuter, false);
                 }
 
+                // mark if the next traversal should go through
+                // the key rather than value
+                key = action.op == Action.GET_KEY;
+                forceOuter |= action.op == Action.GET_OUTER;
+
                 // get mapping for the current field
                 pstate.field = field;
-
-                if (key && itr.hasNext()) {
-                    // path navigation thru KEY
-                    _keyPath = true;
-                    continue;
-                }
 
                 owner = pstate.field.getDefiningMapping();
                 if (pstate.field.getManagement() 
@@ -554,11 +539,6 @@ public class PCPath
         }
         if (_varName != null)
             pstate.joins = pstate.joins.setVariable(_varName);
-
-        // if last action is key action, avoid redundant joins
-        if (key) {
-            return pstate;
-        }
 
         // if we're not comparing to null or doing an isEmpty, then
         // join into the data on the final field; obviously we can't do these
@@ -737,7 +717,7 @@ public class PCPath
         boolean pks) {
         ClassMapping mapping = getClassMapping(state);
         PathExpState pstate = (PathExpState) state;
-        if (mapping == null || !pstate.joinedRel || _keyPath ||
+        if (mapping == null || !pstate.joinedRel ||
             pstate.isEmbedElementColl)            
             sel.select(getColumns(state), pstate.joins);
         else if (_key && pstate.field.getKey().isEmbedded())
@@ -760,7 +740,7 @@ public class PCPath
     public void groupBy(Select sel, ExpContext ctx, ExpState state) {
         ClassMapping mapping = getClassMapping(state);
         PathExpState pstate = (PathExpState) state;
-        if (mapping == null || !pstate.joinedRel || _keyPath)
+        if (mapping == null || !pstate.joinedRel)
             sel.groupBy(getColumns(state), sel.outer(pstate.joins));
         else {
             int subs = (_type == UNBOUND_VAR) ? Select.SUBS_JOINABLE

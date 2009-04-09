@@ -31,6 +31,7 @@ import org.apache.openjpa.util.InternalException;
  * Entity Type expression.
  *
  * @author Catalina Wei
+ * @since 2.0.0
  */
 class Type
     extends UnaryOp {
@@ -45,26 +46,37 @@ class Type
     }
 
     public ExpState initialize(Select sel, ExpContext ctx, int flags) {
-        // initialize the value with a null test
-        return initializeValue(sel, ctx, NULL_CMP);
+        return initializeValue(sel, ctx, flags);
     }
 
     public Object load(ExpContext ctx, ExpState state, Result res)
         throws SQLException {
-        Object type = getValue().load(ctx, state, res);
+        Object type = null;
+        if (_disc != null && _disc.getColumns().length > 0) {
+            type = res.getObject(_disc.getColumns()[0], null, state.joins);
+            ClassMapping sup = (ClassMapping) getMetaData();
+            ClassMapping[] subs = sup.getMappedPCSubclassMappings();
+            for (ClassMapping sub : subs) {
+                if (sub.getDiscriminator().getValue().equals(type))
+                    return sub.getDescribedType();
+            }
+        }
+        else
+            type = getValue().load(ctx, state, res);
         return type.getClass();
     }
 
     public void calculateValue(Select sel, ExpContext ctx, ExpState state, 
         Val other, ExpState otherState) {
         super.calculateValue(sel, ctx, state, null, null);
-        if (_disc != null)
-            _disc.select(sel, (ClassMapping) getMetaData()); 
     }
 
     public void select(Select sel, ExpContext ctx, ExpState state, 
         boolean pks) {
-        getValue().select(sel, ctx, state, pks);
+        if (_disc != null && _disc.getColumns().length > 0)
+            sel.select(_disc.getColumns(), state.joins);
+        else
+            getValue().select(sel, ctx, state, pks);
     }
 
     public void appendTo(Select sel, ExpContext ctx, ExpState state, 
