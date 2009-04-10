@@ -447,8 +447,8 @@ public class JDBCExpressionFactory
                 else
                     value.append("0");
             } else if (lit.getParseType() == Literal.TYPE_ENUM) {
-                value.append("'").append(((Enum) lit.getValue()).name()).
-                    append("'");
+                lit.setRaw(true);
+                return val;
             } else
                 value.append(lit.getValue().toString());
             lit.setValue(new Raw(value.toString()));

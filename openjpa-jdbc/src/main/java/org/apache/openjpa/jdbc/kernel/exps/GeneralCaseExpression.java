@@ -143,9 +143,10 @@ public class GeneralCaseExpression
         for (int i = 0; i < _exp.length; i++) {   
             BinaryOpExpState bstate = (BinaryOpExpState) gstate.states[i];
             ((WhenCondition) _exp[i]).getVal().calculateValue(sel, ctx,
-                bstate.state2, null, null);
+                bstate.state2, other, otherState);
         }
-        _val.calculateValue(sel, ctx, gstate.states[_exp.length], null, null);
+        _val.calculateValue(sel, ctx, gstate.states[_exp.length], other, 
+            otherState);
     }
 
     public void groupBy(Select sel, ExpContext ctx, ExpState state) {

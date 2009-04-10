@@ -18,6 +18,7 @@
  */
 package org.apache.openjpa.jdbc.kernel.exps;
 
+import org.apache.openjpa.jdbc.sql.Raw;
 import org.apache.openjpa.jdbc.sql.SQLBuffer;
 import org.apache.openjpa.jdbc.sql.Select;
 import org.apache.openjpa.kernel.Filters;
@@ -34,6 +35,7 @@ public class Lit
 
     private Object _val;
     private int _ptype;
+    private boolean _isRaw;
 
     /**
      * Constructor. Supply literal value.
@@ -65,6 +67,14 @@ public class Lit
 
     public Object getValue(Object[] params) {
         return getValue();
+    }
+    
+    public boolean isRaw() {
+        return _isRaw;
+    }
+    
+    public void setRaw(boolean isRaw) {
+        _isRaw = isRaw;
     }
 
     public ExpState initialize(Select sel, ExpContext ctx, int flags) {
@@ -98,7 +108,21 @@ public class Lit
         if (lstate.otherLength > 1)
             sql.appendValue(((Object[]) lstate.sqlValue)[index], 
                 lstate.getColumn(index));
-        else
+        else {
+            if (getParseType() == Literal.TYPE_ENUM && _isRaw) { 
+                StringBuilder value = new StringBuilder();
+                boolean isOrdinal = false;
+                if (lstate.sqlValue instanceof Integer)
+                    isOrdinal = true;
+                if (!isOrdinal)
+                    value.append("'");
+                value.append(lstate.sqlValue);
+                if (!isOrdinal)
+                    value.append("'");
+                lstate.sqlValue = new Raw(value.toString());
+                setValue(lstate.sqlValue);
+            }
             sql.appendValue(lstate.sqlValue, lstate.getColumn(index));
+        }
     }
 }

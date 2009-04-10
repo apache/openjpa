@@ -177,7 +177,7 @@ public class SimpleCaseExpression
             ((WhenScalar) _exp[i]).getVal1().calculateValue(sel, ctx,
                 bstate.state1, null, null);
             ((WhenScalar) _exp[i]).getVal2().calculateValue(sel, ctx,
-                bstate.state2, null, null);
+                bstate.state2, other, otherState);
         }
         _val.calculateValue(sel, ctx, cstate.states[_exp.length+1], other,
             otherState);
