@@ -74,7 +74,7 @@ import org.apache.openjpa.util.UserException;
  */
 public class QueryImpl implements OpenJPAQuerySPI, Serializable {
 
-    private static final List EMPTY_LIST = new ArrayList(0);
+    private static final Object[] EMPTY_ARRAY = new Object[0];
     private static final String SELECT = "SELECT ";
     private static final Localizer _loc = Localizer.forPackage(QueryImpl.class);
 
@@ -461,16 +461,16 @@ public class QueryImpl implements OpenJPAQuerySPI, Serializable {
 	}
 
     /**
-     * Gets the list of positional parameter values. A value of
+     * Gets the array of positional parameter values. A value of
      * <code>GAP_FILLER</code> indicates that user has not set the
      * corresponding positional parameter. A value of null implies that user has
      * set the value as null.
      */
-    public List getPositionalParameters() {
+    public Object[] getPositionalParameters() {
         _query.lock();
         try {
-            return (_positional == null) ? EMPTY_LIST : 
-                    new ArrayList<Object>(_positional.values());
+            return (_positional == null) ? EMPTY_ARRAY : 
+                _positional.values().toArray();
         } finally {
             _query.unlock();
         }

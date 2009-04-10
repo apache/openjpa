@@ -134,12 +134,10 @@ public interface OpenJPAQuery
     public boolean hasPositionalParameters();
 
     /**
-     * The positional parameters for the query; empty list if none or
+     * The positional parameters for the query; empty array if none or
      * if query uses named parameters.
-     * Note: This method signature was changed in 2.0 to return a List
-     * instead of Object[] to match the JPA 2.0 spec.
      */
-    public List getPositionalParameters();
+    public Object[] getPositionalParameters();
 
     /**
      * The named parameters for the query; empty map if none or
