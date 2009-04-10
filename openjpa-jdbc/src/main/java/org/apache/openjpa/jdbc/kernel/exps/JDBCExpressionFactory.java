@@ -446,8 +446,10 @@ public class JDBCExpressionFactory
                     value.append("1");
                 else
                     value.append("0");
-            }
-            else
+            } else if (lit.getParseType() == Literal.TYPE_ENUM) {
+                value.append("'").append(((Enum) lit.getValue()).name()).
+                    append("'");
+            } else
                 value.append(lit.getValue().toString());
             lit.setValue(new Raw(value.toString()));
             return lit;
@@ -470,6 +472,7 @@ public class JDBCExpressionFactory
         Exp[] exps = new Exp[exp.length];
         for (int i = 0; i < exp.length; i++)
             exps[i] = (Exp) exp[i];
+        val = getLiteralRawString(val);
         return new GeneralCaseExpression(exps, (Val) val);
     }
 

@@ -48,7 +48,11 @@ public class CompUser
 	@Id
 	@GeneratedValue(strategy=GenerationType.AUTO)
 	public int userid;
-
+	
+    @Enumerated
+    @Basic
+    private CreditRating creditRating;
+	
 	public CompUser(){}
 
 	public CompUser(String name, String cName, Address address, int age)
@@ -95,4 +99,13 @@ public class CompUser
 		this.age = age;
 	}
 
+    public CreditRating getRating() {
+        return creditRating;
+    }
+    
+    public void setRating(CreditRating rating) {
+        this.creditRating = rating;
+    }
+	
+    public enum CreditRating { POOR, GOOD, EXCELLENT };
 }

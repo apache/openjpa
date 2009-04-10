@@ -1560,11 +1560,11 @@ public class JPQLExpressionBuilder
         Class c = resolver.classForName(className, null);
         if (c != null) {
             String fieldName = lastChild(node).text;
-
+            int type = (c.isEnum() ? Literal.TYPE_ENUM : Literal.TYPE_UNKNOWN);
             try {
                 Field field = c.getField(fieldName);
                 Object value = field.get(null);
-                return factory.newLiteral(value, Literal.TYPE_UNKNOWN);
+                return factory.newLiteral(value, type);
             } catch (NoSuchFieldException nsfe) {
                 if (node.inEnumPath)
                     throw parseException(EX_USER, "no-field",

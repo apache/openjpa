@@ -187,6 +187,33 @@ public class TestJPQLScalarExpressions extends AbstractTestCase {
         int result = em.createQuery(update).executeUpdate();
 
         assertEquals("the result is not 6", 6, result);
+        
+        String query2 = "SELECT e.name, e.age+1 as cage, " +
+            "CASE WHEN e.address.country = 'USA' " +
+            " THEN 'United-States' " +
+            " ELSE 'Non United-States'  END as d2," +
+            " e.address.country " +
+            " FROM CompUser e ORDER BY cage, d2 DESC";
+        List rs2 = em.createQuery(query2).getResultList();
+        Object[] result2 = (Object[]) rs2.get(rs2.size()-1);
+        assertEquals("the name is not seetha", "Seetha", result2[0]);
+        assertEquals("the country is not 'Non United-States'", 
+            "Non United-States", result2[2]);
+        
+        String query3 = " select e.name, " +
+            "CASE WHEN e.age = 11 THEN " +
+            "org.apache.openjpa.persistence.common.apps.CompUser$CreditRating.POOR" + 
+            " WHEN e.age = 35 THEN " + 
+            "org.apache.openjpa.persistence.common.apps.CompUser$CreditRating.GOOD" +
+            " ELSE " + 
+            "org.apache.openjpa.persistence.common.apps.CompUser$CreditRating.EXCELLENT" +
+            " END FROM CompUser e ORDER BY e.age";
+
+        List rs3 = em.createQuery(query3).getResultList();
+        Object[] result3 = (Object[]) rs3.get(0);
+        assertEquals("the name is not Jacob", "Jacob", result3[0]);
+        assertEquals("the credit rating is not 'POOR'", "POOR", result3[1]);
+
         endTx(em);
         endEm(em);
     }

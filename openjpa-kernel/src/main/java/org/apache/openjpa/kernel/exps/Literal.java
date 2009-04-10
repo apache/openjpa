@@ -33,6 +33,7 @@ public interface Literal
     public static final int TYPE_STRING = 3;
     public static final int TYPE_SQ_STRING = 4; // single-quoted string
     public static final int TYPE_CLASS = 5;
+    public static final int TYPE_ENUM = 6;
 
     /**
      * The value of this literal.
