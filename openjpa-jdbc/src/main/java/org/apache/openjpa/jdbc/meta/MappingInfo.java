@@ -679,8 +679,6 @@ public abstract class MappingInfo
         boolean relationId = tmplate.isRelationId();
         boolean implicitRelation = tmplate.isImplicitRelation();
         String targetField = tmplate.getTargetField();
-        int base = tmplate.getBase();
-        boolean contiguous = tmplate.isContiguous();
         if (given != null) {
             // use given type if provided, but warn if it isn't compatible with
             // the expected column type
@@ -699,8 +697,6 @@ public abstract class MappingInfo
             typeName = given.getTypeName();
             size = given.getSize();
             decimals = given.getDecimalDigits();
-            base = given.getBase();
-            contiguous = given.isContiguous();
 
             // leave this info as the template defaults unless the user
             // explicitly turns it on in the given column
@@ -760,8 +756,6 @@ public abstract class MappingInfo
         col.setRelationId(relationId);
         col.setImplicitRelation(implicitRelation);
         col.setTargetField(targetField);
-        col.setContiguous(contiguous);
-        col.setBase(base);
 
         // we need this for runtime, and the dynamic schema factory might
         // not know it, so set it even if not adapting

@@ -75,9 +75,6 @@ public class Column
     private VersionStrategy _versionStrategy = null;
     private String _comment = null;
     private boolean _XML = false;
-
-    private boolean _contiguous = true;
-    private int _base = 0;
     
     /**
      * Default constructor.
@@ -727,10 +724,6 @@ public class Column
             _flags = from._flags;
         if (!isXML())
             setXML(from.isXML());
-        if (getBase() == 0)
-            setBase(from.getBase());
-        if (isContiguous())
-            setContiguous(from.isContiguous());
     }
     
     /**
@@ -790,40 +783,4 @@ public class Column
     public void setImplicitRelation(boolean flag) {
     	_implicitRelation |= flag;
     }
-    
-    /**
-     * Sets whether the column values should be contiguous for a column
-     * purposed as an order column
-     * 
-     * @param contiguous
-     */
-    public void setContiguous(boolean contiguous) {
-        _contiguous = contiguous;
-    }
-
-    /**
-     * Gets whether the column values should be contiguous for a column
-     * purposed as an order column
-     * 
-     * @param contiguous
-     */
-    public boolean isContiguous() {
-        return _contiguous;
-    }
-    
-    /**
-     * Sets the base value for a column purposed as an order column
-     * @param base integral base value to begin ordering
-     */
-    public void setBase(int base) {
-        _base = base;
-    }
-    
-    /**
-     * Gets the base value for a column purposed as an order column
-     * @param base
-     */
-    public int getBase() {
-        return _base;
-    }  
 }

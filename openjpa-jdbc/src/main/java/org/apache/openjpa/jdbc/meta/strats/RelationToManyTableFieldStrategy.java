@@ -162,7 +162,7 @@ public abstract class RelationToManyTableFieldStrategy
         StoreContext ctx = sm.getContext();
         Column order = field.getOrderColumn();
         boolean setOrder = field.getOrderColumnIO().isInsertable(order, false);
-        int idx = (setOrder && order != null) ? order.getBase() : 0;
+        int idx = 0;
         OpenJPAStateManager esm;
         for (Iterator itr = coll.iterator(); itr.hasNext(); idx++) {
             esm = RelationStrategies.getStateManager(itr.next(), ctx);

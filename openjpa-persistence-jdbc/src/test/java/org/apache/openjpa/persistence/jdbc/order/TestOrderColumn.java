@@ -521,84 +521,6 @@ public class TestOrderColumn extends SingleEMFTestCase {
     }
 
     /*
-     * Validates the default base value on OrderColumn
-     */
-    public void testOrderColumnBase() {
-        
-        OpenJPAEntityManagerFactorySPI emf1 = 
-            (OpenJPAEntityManagerFactorySPI)OpenJPAPersistence.
-            createEntityManagerFactory("BaseTest", 
-            "org/apache/openjpa/persistence/jdbc/order/" +
-            "order-persistence.xml");
-        
-        // Verify order column names are as expected
-        validateOrderColumnName(emf1, BaseTestEntity.class, "collelems", 
-            "collelems_ORDER"); 
-
-        validateOrderColumnName(emf1, BaseTestEntity.class, "one2Melems", 
-             "one2MOrder"); 
-
-        validateOrderColumnName(emf1, BaseTestEntity.class, "m2melems", 
-             "m2morder"); 
-
-        OpenJPAEntityManagerSPI em = emf1.createEntityManager();
-        
-        // Create a collection with a non-default base value
-        BaseTestEntity bte = new BaseTestEntity();
-        BaseTestElement[] elems = new BaseTestElement[9];
-        for (int i = 0; i < 9; i++) {
-            int elemnum =  (i % 3 ) + 1; 
-            elems[i] = new BaseTestElement("Element " + elemnum); 
-        }
-
-        // Add to element collection with base value 0
-        Set<BaseTestElement> elemset = new LinkedHashSet<BaseTestElement>();
-        for (int i = 0; i < 3; i++)
-            elemset.add(elems[i]);
-        bte.setCollelems(elemset);
-
-        // Add to OneToMany with base value 0
-        List<BaseTestElement> elemList = new ArrayList<BaseTestElement>();
-        for (int i = 0; i < 3; i++)
-            elemList.add(elems[i + 3]);
-        bte.setOne2Melems(elemList);
-        
-        // Add to ManyToMany, base value 0
-        List<BaseTestElement> elemList2 = new ArrayList<BaseTestElement>();
-        for (int i = 0; i < 3; i++)
-            elemList2.add(elems[i + 6]);
-        bte.setM2melems(elemList2);
-        
-        em.getTransaction().begin();
-        em.persist(bte);
-        em.getTransaction().commit();
-        
-        // Do a projection query to verify the base values
-
-        validateIndexAndValues(em, "BaseTestEntity", "one2Melems", 0, 
-                new Object[] { elems[3], elems[4], elems[5]}, "id", 
-                bte.getId());
-
-        validateIndexAndValues(em, "BaseTestEntity", "m2melems", 0, 
-                new Object[] { elems[6], elems[7], elems[8]}, "id",
-                bte.getId());
-
-// This validator is disabled until INDEX projection supports element 
-// collections
-//        validateIndexAndValues(em, "BaseTestEntity", "collelems", 0, 
-//                new Object[] { elems[0], elems[1], elems[2]} "id",
-//                bte.getId());
-
-        em.close();
-        try {
-            if (emf1 != null)
-                cleanupEMF(emf1);
-        } catch (Exception e) {
-            fail(e.getMessage());
-        }
-    }
-
-    /*
      * Validates the use of the table attribute on OrderColumn with
      * o2o, o2m, m2m, and collection table - with and without join
      * tables.
@@ -671,11 +593,9 @@ public class TestOrderColumn extends SingleEMFTestCase {
                 widgetArr, "id", 
                 oid);
 
-//      This validator is disabled until INDEX projection supports element 
-//      collections
-//        validateIndexAndValues(em, "Owner", "bikeColl", 0, 
-//                bikeArr, "id", 
-//                oid);
+        validateIndexAndValues(em, "Owner", "bikeColl", 0, 
+                bikeArr, "id", 
+                oid);
         
         em.close();
     }    
@@ -857,19 +777,16 @@ public class TestOrderColumn extends SingleEMFTestCase {
         Column oc = fm.getOrderColumn();
         assertNotNull(oc);
         assertEquals(oc.getName(),"one2MOrder");
-        assertEquals(oc.getBase(), 0);
 
         fm = (FieldMapping)_entityMeta2.getField("m2melems");
         oc = fm.getOrderColumn();
         assertNotNull(oc);
         assertEquals(oc.getName(),"m2morder");
-        assertEquals(oc.getBase(), 0);
 
         fm = (FieldMapping)_entityMeta2.getField("collelems");
         oc = fm.getOrderColumn();
         assertNotNull(oc);
         assertEquals(oc.getName(),"collelems_ORDER");
-        assertEquals(oc.getBase(), 0);    
 
         try {
             if (emf1 != null)
@@ -977,13 +894,6 @@ public class TestOrderColumn extends SingleEMFTestCase {
             // Verify the table exists in the db
             assertTrue(tableAndColumnExists(emf1, null, tableName, null, 
                 columnName));
-        }
-
-    private void validateOrderColumnContiguous(
-        OpenJPAEntityManagerFactorySPI emf1, Class clazz, String fieldName, 
-        boolean contiguous) {        
-        Column oc = getOrderColumn(emf1, clazz, fieldName);
-        assertTrue(oc.isContiguous() == contiguous);
     }
 
     private void validateOrderColumnDef(

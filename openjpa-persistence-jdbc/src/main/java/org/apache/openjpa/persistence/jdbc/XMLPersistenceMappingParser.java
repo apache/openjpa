@@ -1147,14 +1147,6 @@ public class XMLPersistenceMappingParser
         val = attrs.getValue("updatable");
         if (val != null)
             col.setFlag(Column.FLAG_UNUPDATABLE, "false".equals(val));
-
-        val = attrs.getValue("base");
-        if (val != null)
-            col.setBase(Integer.parseInt(val));
-        
-        val = attrs.getValue("contiguous");
-        if (val != null)
-            col.setContiguous("false".equals(val));
         
         val = attrs.getValue("table");
         if (val != null) {

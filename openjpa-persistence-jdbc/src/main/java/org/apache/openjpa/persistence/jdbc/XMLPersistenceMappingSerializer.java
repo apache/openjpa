@@ -457,10 +457,6 @@ public class XMLPersistenceMappingSerializer
                 addAttribute("updatable", "false");
             if (orderCol.getTypeName() != null)
                 addAttribute("column-definition", orderCol.getTypeName());
-            if (orderCol.isContiguous() != true)
-                addAttribute("contiguous", "false");
-            if (orderCol.getBase() != 0)
-                addAttribute("base", orderCol.getBase() + "");
             if (orderCol.getTableName() != null)
                 addAttribute("table", orderCol.getTableName());
             startElement("order-column");
