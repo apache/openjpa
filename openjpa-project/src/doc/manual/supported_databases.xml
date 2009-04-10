@@ -126,13 +126,13 @@ by OpenJPA.
                         Firebird
                     </entry>
                     <entry colname="dbversion">
-                        1.5
+                        1.5, 2.0, 2.1
                     </entry>
                     <entry colname="drivname">
                         JayBird JCA/JDBC driver
                     </entry>
                     <entry colname="drivversion">
-                        1.0.1
+                        2.1.6
                     </entry>
                 </row>
                 <row>
@@ -553,7 +553,7 @@ will fail unless the <literal>SimulateLocking</literal> property is set for the
             </title>
 <programlisting>
 openjpa.ConnectionDriverName: org.firebirdsql.jdbc.FBDriver
-openjpa.ConnectionURL: jdbc:firebirdsql://SERVER_NAME:SERVER_PORT/DB_PATH
+openjpa.ConnectionURL: jdbc:firebirdsql:SERVER_NAME/3050:DB_PATH_OR_ALIAS
 </programlisting>
         </example>
         <section id="dbsupport_firebird_issues">
@@ -568,8 +568,13 @@ Firebird does not support auto-increment columns.
                 </listitem>
                 <listitem>
                     <para>
-Firebird does not support the <literal>LOWER</literal>, <literal>SUBSTRING
-</literal>, or <literal>INSTR</literal> SQL functions.
+In order to use many of JPQL functions with Firebird 1.5, Interbase UDFs 
+have to be available in the database.
+                    </para>
+                </listitem>
+                <listitem>
+                    <para>
+<literal>LOCATE</literal> JPQL function is not supported.
                     </para>
                 </listitem>
             </itemizedlist>

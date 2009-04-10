@@ -3148,6 +3148,86 @@ overridden.  It is used only when the schema is generated using the
                  in alphabetical order -->
             </itemizedlist>
         </section>
+        <section id="ref_guide_dbsetup_dbsupport_firebird">
+            <title>
+                FirebirdDictionary Properties
+            </title>
+            <indexterm zone="ref_guide_dbsetup_dbsupport_firebird">
+                <primary>
+                    Firebird
+                </primary>
+                <seealso>
+                    DBDictionary
+                </seealso>
+            </indexterm>
+            <para>
+The <literal>firebird</literal> dictionary understands the following additional
+properties:
+            </para>
+            <itemizedlist>
+                <listitem id="FirebirdDictionary.FirebirdVersion">
+                    <para>
+                    <indexterm>
+                        <primary>
+                            Firebird
+                        </primary>
+                        <secondary>
+                            FirebirdVersion
+                        </secondary>
+                    </indexterm>
+<literal>FirebirdVersion</literal>: The database version OpenJPA connects to.
+This property affects the SQL statements executed by OpenJPA.
+Available values are: 15, 20 and 21
+- they indicate Firebird versions 1.5, 2.0 and 2.1 respectively.
+If not set, the value will be auto-detected.
+                    </para>
+                </listitem>
+                <listitem id="FirebirdDictionary.IndexedVarcharMaxSizeFB15">
+                    <para>
+                    <indexterm>
+                        <primary>
+                            Firebird
+                        </primary>
+                        <secondary>
+                            IndexedVarcharMaxSizeFB15
+                        </secondary>
+                    </indexterm>
+<literal>IndexedVarcharMaxSizeFB15</literal>: Firebird 1.5 imposes
+tight limits on index size. In particular, an indexed
+<literal>VARCHAR</literal> column size cannot exceed 252.
+When <link linkend="ref_guide_mapping_mappingtool">schema is created</link>,
+OpenJPA will use this property to reduce the size
+of indexed <literal>VARCHAR</literal> columns.
+Defaults to 252 but you might want to decrease this value if multi-column
+indexes are used. If the Firebird version is 2.0 or later or
+schema creation is not used, this property does not matter.
+                    </para>
+                </listitem>
+                <listitem id="FirebirdDictionary.RangeSyntax">
+                    <para>
+                    <indexterm>
+                        <primary>
+                            Firebird
+                        </primary>
+                        <secondary>
+                            RangeSyntax
+                        </secondary>
+                    </indexterm>
+<literal>RangeSyntax</literal>: Firebird 2.0 and later support two
+ways of handling queries that select a range of data:
+<literal>"FIRST &lt;p&gt; SKIP &lt;q&gt;"</literal> and
+<literal>"ROWS &lt;m&gt; TO &lt;n&gt;"</literal>. Earlier versions support only
+<literal>"FIRST &lt;p&gt; SKIP &lt;q&gt;"</literal> syntax.
+This property determines the syntax to be used.
+Available values are:
+<literal>"firstskip"</literal> and <literal>"rows"</literal>.
+Defaults to using <literal>"ROWS &lt;m&gt; TO &lt;n&gt;"</literal> if the
+Firebird version is 2.0 or later, and
+<literal>"FIRST &lt;p&gt; SKIP &lt;q&gt;"</literal> otherwise.
+                    </para>
+                </listitem>
+            </itemizedlist>
+        </section>
         <section id="ref_guide_dbsetup_dbsupport_mysql">
             <title>
                 MySQLDictionary Properties

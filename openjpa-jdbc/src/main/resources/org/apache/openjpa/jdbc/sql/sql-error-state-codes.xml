@@ -137,9 +137,9 @@
 	</dictionary>
 	
 	<dictionary class="org.apache.openjpa.jdbc.sql.FirebirdDictionary">
-		<lock></lock>
+		<lock>335544336</lock>
 		<referential-integrity></referential-integrity>
-		<object-exists></object-exists>
+		<object-exists>335544665</object-exists>
 		<object-not-found></object-not-found>
 		<optimistic></optimistic>
         <query></query>
