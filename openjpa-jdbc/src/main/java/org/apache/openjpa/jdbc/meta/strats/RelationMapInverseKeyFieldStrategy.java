@@ -139,6 +139,27 @@ public class RelationMapInverseKeyFieldStrategy
         return joins;
     }
 
+    public Joins joinKeyRelation(Joins joins, boolean forceOuter,
+        boolean traverse) {
+        ValueMapping key = field.getKeyMapping();
+        if (key.isEmbedded())
+            return joins;
+
+        ClassMapping[] clss = key.getIndependentTypeMappings();
+        if (clss.length != 1) {
+            if (traverse)
+                throw RelationStrategies.unjoinable(key);
+            return joins;
+        }
+        if (forceOuter)
+            return joins.outerJoinRelation(field.getName(),
+                key.getForeignKey(clss[0]), clss[0], key.getSelectSubclasses(),
+                false, false);
+        return joins.joinRelation(field.getName(),
+            key.getForeignKey(clss[0]), clss[0], key.getSelectSubclasses(), 
+            false, false);
+    }
+
     public Joins joinValueRelation(Joins joins, ClassMapping val) {
         return joinElementRelation(joins, val);
     }

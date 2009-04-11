@@ -64,7 +64,6 @@ public class TestSpec10_1_27_Ex7 extends SQLListenerTestCase {
         queryQualifiedId(true);
     }
     
-    @AllowFailure
     public void testQueryQualifiedId() throws Exception {
         queryQualifiedId(false);
     }

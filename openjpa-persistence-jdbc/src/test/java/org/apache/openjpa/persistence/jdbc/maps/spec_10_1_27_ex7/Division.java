@@ -20,6 +20,7 @@ package org.apache.openjpa.persistence.jdbc.maps.spec_10_1_27_ex7;
 
 import javax.persistence.Entity;
 import javax.persistence.Id;
+import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
 @Entity
@@ -29,6 +30,9 @@ public class Division {
     int id;
 
     String name;
+    
+    @OneToOne(mappedBy="div")
+    VicePresident vp;
 
     public int getId() {
         return id;
@@ -44,6 +48,14 @@ public class Division {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public VicePresident getVp() {
+        return vp;
+    }
+
+    public void setVp(VicePresident vp) {
+        this.vp = vp;
     }
 
     public boolean equals(Object o) {

@@ -61,8 +61,7 @@ public class TestSpec10_1_27_Ex6 extends SQLListenerTestCase {
     public void testQueryInMemoryQualifiedId() throws Exception {
         queryQualifiedId(true);
     }
-    
-    @AllowFailure
+
     public void testQueryQualifiedId() throws Exception {
         queryQualifiedId(false);
     }
