@@ -809,31 +809,18 @@ public class PCPath
         LRSMapFieldStrategy strategy = (LRSMapFieldStrategy)
             pstate.field.getStrategy();
         ClassMapping mapping = pstate.field.getKeyMapping().getTypeMapping();
-        if (strategy instanceof HandlerRelationMapTableFieldStrategy)
-            strategy.selectKey(sel, mapping, null, ctx.store, ctx.fetch,
-                pstate.joins);
-        else {
-            sel.select(_class.getPrimaryKeyColumns(), pstate.joins);
-            FieldMapping[] fms = mapping.getDefinedFieldMappings();
-            for (int i = 0; i < fms.length; i++)
-                sel.select(fms[i].getColumns(), pstate.joins);
-        }
+        strategy.selectKey(sel, mapping, null, ctx.store, ctx.fetch,
+            pstate.joins);
     }
 
     private Object loadEmbeddedMapKey(ExpContext ctx, ExpState state,
         Result res) throws SQLException {
         PathExpState pstate = (PathExpState) state;
         validateMapStrategy(pstate.field.getStrategy());
-        FieldMapping fmd = (FieldMapping) pstate.field.getKey().
-            getValueMappedByMetaData();
         LRSMapFieldStrategy strategy =
             (LRSMapFieldStrategy) pstate.field.getStrategy();
-        if (strategy instanceof HandlerRelationMapTableFieldStrategy)
-            return strategy.loadKey(null, ctx.store, ctx.fetch, res,
-                pstate.joins);
-        else
-            return fmd.getStrategy().
-                loadProjection(ctx.store, ctx.fetch, res, pstate.joins);
+        return strategy.loadKey(null, ctx.store, ctx.fetch, res,
+            pstate.joins);
     }
 
     public void calculateValue(Select sel, ExpContext ctx, ExpState state, 

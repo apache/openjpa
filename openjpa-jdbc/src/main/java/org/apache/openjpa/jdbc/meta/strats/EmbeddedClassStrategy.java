@@ -47,7 +47,11 @@ public class EmbeddedClassStrategy
         ClassMappingInfo info = cls.getMappingInfo();
         info.assertNoSchemaComponents(cls, true);
 
-        ClassMapping owner = vm.getFieldMapping().getDefiningMapping();
+        ClassMapping owner = null;
+        if (vm.getValueMappedByMapping() != null)
+            owner = vm.getValueMappedByMapping().getDefiningMapping();
+        else
+            owner = vm.getFieldMapping().getDefiningMapping();
         cls.setIdentityType(owner.getIdentityType());
         cls.setObjectIdType(owner.getObjectIdType(),
             owner.isObjectIdTypeShared());

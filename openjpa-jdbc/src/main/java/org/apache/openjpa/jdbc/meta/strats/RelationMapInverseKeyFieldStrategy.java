@@ -81,13 +81,23 @@ public class RelationMapInverseKeyFieldStrategy
 
     public void selectKey(Select sel, ClassMapping key, OpenJPAStateManager sm,
         JDBCStore store, JDBCFetchConfiguration fetch, Joins joins) {
-        throw new InternalException();
+        ValueMapping vm = field.getKeyMapping();
+        if (vm.isEmbedded())
+            sel.select(key, field.getKeyMapping().getSelectSubclasses(),
+                store, fetch, JDBCFetchConfiguration.EAGER_NONE, joins);
+        else
+            throw new InternalException();
     }
 
     public Object loadKey(OpenJPAStateManager sm, JDBCStore store,
         JDBCFetchConfiguration fetch, Result res, Joins joins)
         throws SQLException {
-        throw new InternalException();
+        ValueMapping vm = field.getKeyMapping();
+        if (vm.isEmbedded())
+            return vm.getValueMappedByMapping().
+                loadProjection(store, fetch, res, joins);
+        else
+            throw new InternalException();
     }
 
     public Object deriveKey(JDBCStore store, Object value) {
