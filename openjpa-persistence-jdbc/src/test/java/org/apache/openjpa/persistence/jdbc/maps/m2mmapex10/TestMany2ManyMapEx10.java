@@ -155,6 +155,14 @@ public class TestMany2ManyMapEx10 extends SQLListenerTestCase {
         rs = q.getResultList();
         if (!inMemory)
         assertTrue(sql.get(0).toUpperCase().indexOf(" GROUP BY ") != -1);
+        
+        query = "select LENGTH(KEY(e).name) from PhoneNumber p, " +
+            " in (p.emps) e where KEY(e).bDay = CURRENT_TIMESTAMP";
+        q = em.createQuery(query);
+        if (inMemory) 
+            setCandidate(q, Employee.class);
+        rs = q.getResultList();
+        assertEquals(rs.size(), 0);
 
         em.close();
     }

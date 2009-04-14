@@ -945,11 +945,11 @@ void arithmetic_factor() : { }
 	LOOKAHEAD(path()) path() |
 	LOOKAHEAD(qualified_path()) qualified_path() |
 	LOOKAHEAD(general_identification_variable()) general_identification_variable() |
-	LOOKAHEAD(2) "(" arithmetic_expression() ")" | 
-	functions_returning_numerics() | 
-	aggregate_select_expression() |	
+	LOOKAHEAD("("  arithmetic_expression()) "("  arithmetic_expression() ")" | 
+	LOOKAHEAD(functions_returning_numerics()) functions_returning_numerics() | 
+	LOOKAHEAD(aggregate_select_expression()) aggregate_select_expression() |	
 	LOOKAHEAD(case_expression()) case_expression() |
-	"(" subquery() ")"
+	LOOKAHEAD("(" subquery()) "(" subquery() ")"
 }
 
 
@@ -1081,9 +1081,10 @@ void string_expression() : { }
 void string_primary() : { }
 {
 	string_literal() | path() |
-	LOOKAHEAD(general_identification_variable()) general_identification_variable() |	
-	LOOKAHEAD(2) "(" string_expression() ")" | 
-	functions_returning_strings() | LOOKAHEAD(2)  "(" subquery() ")"
+	LOOKAHEAD(qualified_path()) qualified_path() |	
+	LOOKAHEAD(general_identification_variable()) general_identification_variable() |
+	LOOKAHEAD("(" string_expression()) "(" string_expression() ")" | 
+	functions_returning_strings() | LOOKAHEAD("(" subquery()) "(" subquery() ")"
 	| case_expression()
 }
 
@@ -1097,6 +1098,7 @@ void datetime_expression() : { }
 void datetime_primary() : { }
 {
 	path() | functions_returning_datetime() | input_parameter() | aggregate_select_expression()
+	| LOOKAHEAD(qualified_path()) qualified_path()
 	| LOOKAHEAD(general_identification_variable()) general_identification_variable()
 	| case_expression()
 }
@@ -1117,6 +1119,8 @@ void boolean_expression() : { }
 void boolean_primary() : { }
 {
 	LOOKAHEAD(2) path() | boolean_literal() | input_parameter()
+	| LOOKAHEAD(qualified_path()) qualified_path()
+	| LOOKAHEAD(general_identification_variable()) general_identification_variable()
 	| case_expression()
 }
 
@@ -1132,6 +1136,8 @@ void enum_primary() : { }
 	LOOKAHEAD(2) path()
 	| LOOKAHEAD(enum_literal()) enum_literal()
 	| LOOKAHEAD(input_parameter()) input_parameter()
+	| LOOKAHEAD(qualified_path()) qualified_path()
+	| LOOKAHEAD(general_identification_variable()) general_identification_variable()
 	| case_expression()
 }
 

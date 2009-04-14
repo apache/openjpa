@@ -142,7 +142,7 @@ public class TestMany2ManyMap extends SQLListenerTestCase {
         // expects parser error:
         // JPA2 has no support for predicate comparison using
         // Key(e) or Value(e)
-        String query1 = "select KEY(p) from Employee e, " +
+        query = "select KEY(p) from Employee e, " +
             " in (e.phones) p where KEY(p) = ?1";
         try {
             q = em.createQuery(query).setParameter(1, d2);
@@ -160,6 +160,18 @@ public class TestMany2ManyMap extends SQLListenerTestCase {
         if (inMemory) 
             setCandidate(q, Employee.class);
         rs = q.getResultList();
+        assertEquals(0, rs.size());
+
+        // test qualified path in scalar functions
+        query = "select CONCAT(KEY(p).name, 'xyz') from Employee e, " +
+            " in (e.phones) p WHERE SUBSTRING(KEY(p).name, 1)" +
+            " like '%2'";
+        q = em.createQuery(query);
+        if (inMemory) 
+            setCandidate(q, Employee.class);
+        rs = q.getResultList();
+        assertEquals(((String) rs.get(0)), "d2xyz");
+
         em.close();
     }
 
