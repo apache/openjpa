@@ -115,6 +115,17 @@ public class TestSubquery
         "select o.oid from Order o where o.customer.name in" +
             " (select CONCAT(o.customer.name, 'XX') from Order o" +
             " where o.amount > 10)",            
+        "select c from Customer c where c.creditRating =" +
+            " (select " +
+            "   CASE WHEN o2.amount > 10 THEN " + 
+            "org.apache.openjpa.persistence.query.Customer$CreditRating.POOR" + 
+            "     WHEN o2.amount = 10 THEN " + 
+            "org.apache.openjpa.persistence.query.Customer$CreditRating.GOOD " +
+            "     ELSE " + 
+            "org.apache.openjpa.persistence.query.Customer$CreditRating.EXCELLENT " +
+            "     END " +
+            " from Order o2" +
+            " where c.cid.id = o2.customer.cid.id)",
     };
 
     static String[] updates = new String[] {

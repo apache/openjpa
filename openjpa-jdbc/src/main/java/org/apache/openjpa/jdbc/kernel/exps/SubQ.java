@@ -30,6 +30,7 @@ import org.apache.openjpa.kernel.Filters;
 import org.apache.openjpa.kernel.exps.ExpressionVisitor;
 import org.apache.openjpa.kernel.exps.QueryExpressions;
 import org.apache.openjpa.kernel.exps.Subquery;
+import org.apache.openjpa.kernel.exps.Value;
 import org.apache.openjpa.meta.ClassMetaData;
 
 /**
@@ -149,6 +150,16 @@ class SubQ
 
     public void calculateValue(Select sel, ExpContext ctx, ExpState state, 
         Val other, ExpState otherState) {
+        Value[] projs = _exps.projections;
+        for (int i = 0; i < projs.length; i++) {
+            if (projs[i] instanceof GeneralCaseExpression) {
+                ((GeneralCaseExpression)projs[i]).setOtherPath(other);
+                ((GeneralCaseExpression)projs[i]).setOtherState(otherState);
+            } else if (projs[i] instanceof SimpleCaseExpression) {
+                ((SimpleCaseExpression)projs[i]).setOtherPath(other);
+                ((SimpleCaseExpression)projs[i]).setOtherState(otherState);
+            }
+        }
     }
 
     public int length(Select sel, ExpContext ctx, ExpState state) {

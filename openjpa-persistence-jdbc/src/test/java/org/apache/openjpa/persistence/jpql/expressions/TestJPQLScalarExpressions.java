@@ -157,6 +157,35 @@ public class TestJPQLScalarExpressions extends AbstractTestCase {
         result = (Object[]) rs.get(rs.size()-1);
         assertEquals(result[1], 1);
 
+        startTx(em);
+        String update = "update CompUser c set c.creditRating = " +
+            " CASE c.age WHEN 35 THEN " +
+            "org.apache.openjpa.persistence.common.apps.CompUser$CreditRating.POOR" + 
+            " WHEN 11 THEN " + 
+            "org.apache.openjpa.persistence.common.apps.CompUser$CreditRating.GOOD" +
+            " ELSE " + 
+            "org.apache.openjpa.persistence.common.apps.CompUser$CreditRating.EXCELLENT" +
+            " END ";
+        int updateCount = em.createQuery(update).executeUpdate();
+        assertEquals("the result is not 6", 6, updateCount);
+
+        /*
+        //Derby fails but DB2 worksh 
+        String update2 = "update CompUser c set c.creditRating = " +
+            " (select " +
+            " CASE c1.age WHEN 10 THEN " + 
+            "org.apache.openjpa.persistence.common.apps.CompUser$CreditRating.POOR" + 
+            " WHEN 19 THEN " + 
+            "org.apache.openjpa.persistence.common.apps.CompUser$CreditRating.GOOD " +
+            " ELSE " + 
+            "org.apache.openjpa.persistence.common.apps.CompUser$CreditRating.EXCELLENT " +
+            " END " +
+            " from CompUser c1" +
+            " where c.userid = c1.userid)";
+        updateCount = em.createQuery(update2).executeUpdate();
+        assertEquals("the result is not 6", 6, updateCount);
+        */
+        endTx(em);
         endEm(em);
     }
 
@@ -231,9 +260,28 @@ public class TestJPQLScalarExpressions extends AbstractTestCase {
             " ELSE " + 
             "org.apache.openjpa.persistence.common.apps.CompUser$CreditRating.EXCELLENT " +
             " END "; 
-        result = em.createQuery(update2).executeUpdate();
-        assertEquals("the result is not 6", 6, result);
-
+        int updateCount = em.createQuery(update2).executeUpdate();
+        assertEquals("the result is not 6", 6, updateCount);
+        
+        String query4 = "select e.name, e.creditRating from CompUser e " + 
+            "where e.creditRating = " +
+            "(select " +
+            "CASE WHEN e1.age = 11 THEN " + 
+            "org.apache.openjpa.persistence.common.apps.CompUser$CreditRating.POOR" + 
+            " WHEN e1.age = 35 THEN " + 
+            "org.apache.openjpa.persistence.common.apps.CompUser$CreditRating.GOOD" +
+            " ELSE " + 
+            "org.apache.openjpa.persistence.common.apps.CompUser$CreditRating.EXCELLENT" +
+            " END " +
+            "from CompUser e1" +
+            " where e.userid = e1.userid) ORDER BY e.age";
+        List rs4 = em.createQuery(query4).getResultList();
+        Object[] result4 = (Object[]) rs4.get(0);
+        assertEquals("the name is not Ugo", "Ugo", result4[0]);
+        assertEquals("the credit rating is not 'EXCELLENT'", "EXCELLENT",
+            ((org.apache.openjpa.persistence.common.apps.CompUser.CreditRating)
+            result4[1]).name());
+        
         String update3 = "update CompUser c set c.creditRating = " +
             " CASE c.age WHEN 35 THEN " +
             "org.apache.openjpa.persistence.common.apps.CompUser$CreditRating.POOR" + 
@@ -245,7 +293,23 @@ public class TestJPQLScalarExpressions extends AbstractTestCase {
         result = em.createQuery(update3).executeUpdate();
         assertEquals("the result is not 6", 6, result);
 
-    endTx(em);
+        // Derby fails but DB2 works 
+        /*
+        String update4 = "update CompUser c set c.creditRating = " +
+            " (select " +
+            " CASE c1.age WHEN 10 THEN " + 
+            "org.apache.openjpa.persistence.common.apps.CompUser$CreditRating.POOR" + 
+            " WHEN 19 THEN " + 
+            "org.apache.openjpa.persistence.common.apps.CompUser$CreditRating.GOOD" +
+            " ELSE " + 
+            "org.apache.openjpa.persistence.common.apps.CompUser$CreditRating.EXCELLENT" +
+            " END " +
+            " from CompUser c1" +
+            " where c.userid = c1.userid)";
+        updateCount = em.createQuery(update4).executeUpdate();
+        assertEquals("the result is not 6", 6, updateCount);
+        */
+        endTx(em);
         endEm(em);
     }
 
