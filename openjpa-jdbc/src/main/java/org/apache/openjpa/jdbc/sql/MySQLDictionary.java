@@ -147,6 +147,7 @@ public class MySQLDictionary
     }
 
     public Connection decorate(Connection conn)  throws SQLException {
+        conn = super.decorate(conn);
         String driver = conf.getConnectionDriverName();
         if ("com.mysql.jdbc.ReplicationDriver".equals(driver))
             conn.setReadOnly(true);
