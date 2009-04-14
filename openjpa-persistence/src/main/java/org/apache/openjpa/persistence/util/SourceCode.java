@@ -24,6 +24,7 @@ import java.util.*;
 
 import org.apache.openjpa.lib.util.Localizer;
 
+
 /**
  * A utility to help writing Java Source code dynamically.
  * 
@@ -338,13 +339,13 @@ public class SourceCode {
         public Field addField(String f, ClassName type) {
 	        if (!isValidToken(f)) {
 	            throw new IllegalArgumentException(
-	                _loc.get("invalid-field-name",f).toString());
+	                _loc.get("src-invalid-field",f).toString());
 	        }
 	        Field field = new Field(this, f, type);
 	        
 	        if (!fields.add(field))
 	            throw new IllegalArgumentException(_loc.get(
-	                "duplicate-field", field, this).toString());
+	                "src-duplicate-field", field, this).toString());
 	        return field;
 	    }
 
@@ -355,12 +356,12 @@ public class SourceCode {
 	    protected Method addMethod(String m, ClassName retType) {
 	        if (isEmpty(m) || !isValidToken(m)) {
 	            throw new IllegalArgumentException(_loc.get(
-	                "invalid-method",m).toString());
+	                "src-invalid-method",m).toString());
 	        }
 	        Method method = new Method(this, m, retType);
 	        if (!methods.add(method)) 
 	            throw new IllegalArgumentException(_loc.get(
-	                "duplicate-method", method, this).toString());
+	                "src-duplicate-method", method, this).toString());
 	        return method;
 	    }
 
@@ -381,6 +382,10 @@ public class SourceCode {
 	            method.write(out, 1);
 	        out.println(BRACKET_BLOCK[1]);
 		}
+	    
+	    public String toString() {
+	    	return getType().fullName;
+	    }
 	}
 
 	/**
@@ -691,15 +696,20 @@ public class SourceCode {
         public final String fullName;
         public final String simpleName;
         public final String pkgName;
+        private String  arrayMarker = BLANK;
         
 	    ClassName(String name) {
+	    	while (isArray(name)) {
+	    		arrayMarker = arrayMarker + "[]"; 
+	    		name = getComponentName(name);
+	    	}
 	        this.fullName = name;
 	        int dot = fullName.lastIndexOf(DOT);
 	        simpleName = (dot == -1) ? fullName : fullName.substring(dot+1);
 	        pkgName = (dot == -1) ? BLANK : fullName.substring(0,dot);
             if (!isValidTypeName(name)) {
-                throw new IllegalArgumentException("invalid-type [" 
-                    + name + "]");
+                throw new IllegalArgumentException(_loc.get("src-invalid-type", 
+                    name).toString());
             }
             addImport(this);
 	    }
@@ -708,14 +718,14 @@ public class SourceCode {
 	     * Gets fully qualified name of this receiver.
 	     */
 	    public String getName() {
-	        return fullName;
+	        return fullName + arrayMarker;
 	    }
 	    
         /**
          * Gets simple name of this receiver.
          */
 	    public String getSimpleName() {
-	        return simpleName;
+	        return simpleName + arrayMarker;
 	    }
 	    
 	    /**
@@ -730,7 +740,7 @@ public class SourceCode {
 	     * Gets the simple name of this receiver.
 	     */
 	    public String toString() {
-	        return simpleName;
+	        return getSimpleName();
 	    }
 	    
 	    /**
@@ -742,7 +752,7 @@ public class SourceCode {
 	    
 	    public boolean isValidTypeName(String s) {
 	        return isValidPackageName(pkgName) 
-	            && (isValidToken(simpleName));
+	            && (isKnownType(s) || isValidToken(simpleName));
 	    }
 	    
 	    boolean isValidPackageName(String s) {
@@ -753,6 +763,15 @@ public class SourceCode {
 	                return false;
 	        }
 	        return !s.endsWith(DOT);
+	    }
+	    
+	    boolean isArray(String name) {
+	    	return name.endsWith("[]");
+	    }
+	    
+	    String getComponentName(String name) {
+	    	return (!isArray(name)) ? name : 
+	    		name.substring(0, name.length()-"[]".length());
 	    }
 	    
 	}

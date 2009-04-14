@@ -31,11 +31,13 @@ import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.Modifier;
 import javax.lang.model.element.TypeElement;
 import javax.lang.model.element.VariableElement;
+import javax.lang.model.type.ArrayType;
 import javax.lang.model.type.DeclaredType;
 import javax.lang.model.type.PrimitiveType;
 import javax.lang.model.type.TypeKind;
 import javax.lang.model.type.TypeMirror;
 import javax.lang.model.util.Elements;
+import javax.lang.model.util.Types;
 import javax.persistence.Access;
 import javax.persistence.AccessType;
 import javax.persistence.Transient;
@@ -45,6 +47,7 @@ import javax.tools.JavaFileObject;
 
 import org.apache.openjpa.lib.util.Localizer;
 import org.apache.openjpa.persistence.util.SourceCode;
+import org.apache.openjpa.util.OpenJPAException;
 import org.apache.openjpa.util.UserException;
 
 /**
@@ -88,19 +91,21 @@ public class AnnotationProcessor6 extends AbstractProcessor {
      * annotations. Used to determine the subset of available field/method that 
      * are persistent.   
      */
-    static InclusiveFilter propertyAccessFilter =
+    static AccessFilter propertyAccessFilter =
         new AccessFilter(AccessType.PROPERTY);
-    static InclusiveFilter fieldAccessFilter = 
+    static AccessFilter fieldAccessFilter = 
         new AccessFilter(AccessType.FIELD);
     
-    static InclusiveFilter fieldFilter = new KindFilter(ElementKind.FIELD);
-    static InclusiveFilter methodFilter = new KindFilter(ElementKind.METHOD);
+    static KindFilter fieldFilter = new KindFilter(ElementKind.FIELD);
+    static KindFilter methodFilter = new KindFilter(ElementKind.METHOD);
     
-    static InclusiveFilter getterFilter = new GetterFilter();
-    static InclusiveFilter setterFilter = new SetterFilter();
+    static GetterFilter getterFilter = new GetterFilter();
+    static SetterFilter setterFilter = new SetterFilter();
     
-    static InclusiveFilter nonTransientFilter = new NonTransientMemberFilter();
-
+    static NonTransientMemberFilter nonTransientFilter = 
+    	new NonTransientMemberFilter();
+    static AnnotatedMemberFilter annotatedFilter = new AnnotatedMemberFilter();
+    
     private static Localizer _loc =
         Localizer.forPackage(AnnotationProcessor6.class);
 
@@ -179,7 +184,6 @@ public class AnnotationProcessor6 extends AbstractProcessor {
         super.init(processingEnv);
         processingEnv.getMessager().printMessage(Diagnostic.Kind.NOTE, 
             _loc.get("mmg-tool-banner").getMessage());
-        System.err.println(processingEnv.getOptions());
     }
     
     /**
@@ -226,9 +230,9 @@ public class AnnotationProcessor6 extends AbstractProcessor {
             List<? extends Element> members = getPersistentMembers(e);
             
             for (Element m : members) {
-                DeclaredType decl = getDeclaredType(m);
-                String fieldName = m.getSimpleName().toString();
-                String fieldType = getDeclaredTypeName(decl);
+                TypeMirror decl = getDeclaredType(m);
+                String fieldName = getPersistentMemberName(m);
+                String fieldType = getDeclaredTypeName(decl, true);
                 TypeCategory typeCategory = toMetaModelTypeCategory(fieldType);
                 String metaModelType = typeCategory.getMetaModelType();
                 SourceCode.Field modelField = null;
@@ -242,7 +246,7 @@ public class AnnotationProcessor6 extends AbstractProcessor {
                 case LIST:
                 case SET:
                     TypeMirror param = getTypeParameter(decl, 0);
-                    String elementType = getDeclaredTypeName(param);
+                    String elementType = getDeclaredTypeName(param, true);
                     modelField = modelClass.addField(fieldName, metaModelType);
                     modelField.addParameter(originalSimpleClass)
                               .addParameter(elementType);
@@ -250,8 +254,8 @@ public class AnnotationProcessor6 extends AbstractProcessor {
                 case MAP:
                     TypeMirror key = getTypeParameter(decl, 0);
                     TypeMirror value = getTypeParameter(decl, 1);
-                    String keyType = getDeclaredTypeName(key);
-                    String valueType = getDeclaredTypeName(value);
+                    String keyType = getDeclaredTypeName(key, true);
+                    String valueType = getDeclaredTypeName(value, true);
                     modelField = modelClass.addField(fieldName, metaModelType);
                     modelField.addParameter(originalSimpleClass)
                               .addParameter(keyType)
@@ -309,6 +313,18 @@ public class AnnotationProcessor6 extends AbstractProcessor {
         return null;
     }
     
+    String getPersistentMemberName(Element e) {
+    	return isMethod(e) ? extractFieldName((ExecutableElement)e) 
+    			: e.getSimpleName().toString();
+    }
+    
+    String extractFieldName(ExecutableElement method) {
+    	String name = method.getSimpleName().toString();
+		String head = isNormalGetter(method) ? "get" : "is";
+		name = name.substring(head.length());
+        return Character.toLowerCase(name.charAt(0)) + name.substring(1);
+    }
+    
     /**
      * Gets the list of persistent fields and/or methods for the given type.
      * 
@@ -319,62 +335,118 @@ public class AnnotationProcessor6 extends AbstractProcessor {
         AccessType access = getExplicitAccessType(type);
         boolean isExplicit = access != null;
         
-        List<Element> result = new ArrayList<Element>();
+        return isExplicit ? access == AccessType.FIELD 
+        		? getFieldAccessPersistentMembers(type) 
+        		: getPropertyAccessPersistentMembers(type)
+        		: getDefaultAccessPersistentMembers(type);
+    }
+    
+    /**
+     * Collect members for the given type which uses explicit field access.
+     */
+    private List<Element> getFieldAccessPersistentMembers(TypeElement type) {   
+        List<? extends Element> allMembers = type.getEnclosedElements();       
+        Set<VariableElement> allFields = (Set<VariableElement>) 
+           filter(allMembers, fieldFilter, nonTransientFilter);
+        Set<ExecutableElement> allMethods = (Set<ExecutableElement>) 
+            filter(allMembers, methodFilter, nonTransientFilter);
+        Set<ExecutableElement> getters = filter(allMethods, getterFilter, 
+        		propertyAccessFilter, annotatedFilter);
+        Set<ExecutableElement> setters = filter(allMethods, setterFilter);
+        getters = matchGetterAndSetter(getters, setters);
+        
+        return merge(getters, allFields);
+    }
+    
+    /**
+     * Collect members for the given type which uses explicit field access.
+     */
+     private List<Element> getPropertyAccessPersistentMembers(TypeElement type) {   
         List<? extends Element> allMembers = type.getEnclosedElements();
-        Set<VariableElement> allFields =
-            (Set<VariableElement>) filter(allMembers, fieldFilter,
-                nonTransientFilter);
-        Set<ExecutableElement> allMethods =
-            (Set<ExecutableElement>) filter(allMembers, methodFilter,
-                nonTransientFilter);
-        Set<VariableElement> propertyAnnotatedFields =
-            filter(allFields, propertyAccessFilter);
-
-        Set<ExecutableElement> fieldAnnotatedMethods =
-            filter(allMethods, fieldAccessFilter);
-
-        if (!propertyAnnotatedFields.isEmpty())
-            throw new UserException(_loc.get("access-prop-on-field", type,
-                toString(propertyAnnotatedFields)));
-        if (!fieldAnnotatedMethods.isEmpty())
-            throw new UserException(_loc.get("access-field-on-prop", type,
-                toString(fieldAnnotatedMethods)));
+        Set<ExecutableElement> allMethods = (Set<ExecutableElement>) 
+            filter(allMembers, methodFilter, nonTransientFilter);
 
         Set<ExecutableElement> getters = filter(allMethods, getterFilter);
         Set<ExecutableElement> setters = filter(allMethods, setterFilter);
         getters = matchGetterAndSetter(getters, setters);
         
-        boolean isFieldAccess = isExplicit 
-            ? AccessType.FIELD.equals(access) : !allFields.isEmpty();
-        boolean isPropertyAccess = isExplicit 
-            ? AccessType.PROPERTY.equals(access) : !getters.isEmpty();
+        return merge(filter(allMembers, fieldFilter, nonTransientFilter, 
+        	fieldAccessFilter), getters);
+    }
 
-        if (isExplicit) {
-            if (isFieldAccess) {
-                result.addAll(allFields);
-                result.addAll(filter(getters, propertyAccessFilter));
-            } else {
-                result.addAll(getters);
-                result.addAll(filter(allFields, fieldAccessFilter));
-            }
-        } else { // implicit access type
-            if (isFieldAccess && isPropertyAccess)
-                throw new UserException(_loc.get("access-mixed", type,
-                    toString(allFields), toString(getters)));
-            if (isFieldAccess) {
-                result.addAll(allFields);
-            } else if (isPropertyAccess) {
-                result.addAll(getters);
-            } else {
-                warn(_loc.get("access-none", type).toString());
-            }
+    
+    private List<Element> getDefaultAccessPersistentMembers(TypeElement type) {   
+        List<Element> result = new ArrayList<Element>();
+        List<? extends Element> allMembers = type.getEnclosedElements();
+        Set<VariableElement> allFields = (Set<VariableElement>) 
+           filter(allMembers, fieldFilter, nonTransientFilter);
+        Set<ExecutableElement> allMethods = (Set<ExecutableElement>) 
+          filter(allMembers, methodFilter, nonTransientFilter);
+
+        Set<VariableElement> annotatedFields = filter(allFields, 
+        	annotatedFilter);
+        Set<ExecutableElement> getters = filter(allMethods, getterFilter, 
+        	annotatedFilter);
+        Set<ExecutableElement> setters = filter(allMethods, setterFilter);
+        getters = matchGetterAndSetter(getters, setters);
+        
+        boolean isFieldAccess = !annotatedFields.isEmpty();
+        boolean isPropertyAccess = !getters.isEmpty();
+
+        if (isFieldAccess && isPropertyAccess) {
+            throw new UserException(_loc.get("access-mixed", type,
+                    toString(annotatedFields), toString(getters)));
+    	}    
+        if (isFieldAccess) {
+            result.addAll(annotatedFields);
+        } else if (isPropertyAccess) {
+            result.addAll(getters);
+        } else {
+            warn(_loc.get("access-none", type).toString());
         }
         return result;
     }
+    
+    List<Element> merge(Set<? extends Element> a, Set<? extends Element> b) {
+    	List<Element> result = new ArrayList<Element>();
+    	result.addAll(a);
+    	for (Element e1 : b) {
+    		boolean hide = false;
+    		String key = getPersistentMemberName(e1);
+    		for (Element e2 : a) {
+    			if (getPersistentMemberName(e2).equals(key)) {
+    				hide = true;
+    				break;
+    			}
+    		}
+    		if (!hide) {
+    			result.add(e1);
+    		}
+    	}
+    	return result;
+    }
+
 
     // =========================================================================
     // Annotation processing utilities
     // =========================================================================
+    
+    /**
+     * Affirms if the given element is annotated with <em>any</em> 
+     * <code>javax.persistence.*</code> or <code>org.apache.openjpa.*</code>
+     * annotation.
+     */
+    private static boolean isAnnotated(Element e) {
+    	return isAnnotatedWith(e, (Set<String>)null);
+    }
+    
+    /**
+     * Affirms if the given declaration has the given annotation.
+     */
+    private static boolean isAnnotatedWith(Element e,
+        Class<? extends Annotation> anno) {
+        return e != null && e.getAnnotation(anno) != null;
+    }
     
     /**
      * Affirms if the given element is annotated with any of the given 
@@ -384,7 +456,7 @@ public class AnnotationProcessor6 extends AbstractProcessor {
      *            'javax.persistence.' or 'openjpa.*'.
      * 
      */
-    private boolean isAnnotatedWith(Element e, Set<String> annos) {
+    private static boolean isAnnotatedWith(Element e, Set<String> annos) {
         if (e == null)
             return false;
         List<? extends AnnotationMirror> mirrors = e.getAnnotationMirrors();
@@ -422,8 +494,15 @@ public class AnnotationProcessor6 extends AbstractProcessor {
      * <code>java.util.Set&lt;java.lang.String&gt;</code> this method will 
      * return <code>java.util.Set</code>.
      */
-    private String getDeclaredTypeName(TypeMirror mirror) {
-        return processingEnv.getTypeUtils().asElement(box(mirror)).toString();
+    private String getDeclaredTypeName(TypeMirror mirror, boolean box) {
+    	if (mirror.getKind() == TypeKind.ARRAY) {
+    		TypeMirror comp = ((ArrayType)mirror).getComponentType();
+    		return getDeclaredTypeName(comp, false)+"[]";
+    	}
+    	mirror = box? box(mirror) : mirror;
+    	if (isPrimitive(mirror))
+    		return ((PrimitiveType)mirror).toString();
+        return processingEnv.getTypeUtils().asElement(mirror).toString();
     }
 
     /**
@@ -433,7 +512,7 @@ public class AnnotationProcessor6 extends AbstractProcessor {
      * @param e a field or method.
      * @exception if given member is neither a field nor a method.
      */
-    private DeclaredType getDeclaredType(Element e) {
+    private TypeMirror getDeclaredType(Element e) {
         TypeMirror result = null;
         switch (e.getKind()) {
         case FIELD:
@@ -445,10 +524,7 @@ public class AnnotationProcessor6 extends AbstractProcessor {
         default:
             throw new IllegalArgumentException(toDetails(e));
         }
-        result = box(result);
-        if (result.getKind() == TypeKind.DECLARED)
-            return (DeclaredType)result;
-        throw new IllegalArgumentException(toDetails(e));
+        return result;
     }
     
     /**
@@ -479,8 +555,11 @@ public class AnnotationProcessor6 extends AbstractProcessor {
      * @return if the given type represents a parameterized type, then the
      *         indexed parameter type argument. Otherwise null.
      */
-    private TypeMirror getTypeParameter(DeclaredType mirror, int index) {
-        List<? extends TypeMirror> params = mirror.getTypeArguments();
+    private TypeMirror getTypeParameter(TypeMirror mirror, int index) {
+    	if (mirror.getKind() != TypeKind.DECLARED)
+    		return null;
+        List<? extends TypeMirror> params = ((DeclaredType)mirror)
+        	.getTypeArguments();
         return (params == null || params.size() < index+1) 
             ? null : params.get(index);
     }
@@ -502,14 +581,6 @@ public class AnnotationProcessor6 extends AbstractProcessor {
     }
 
 
-    /**
-     * Affirms if the given declaration has the given annotation.
-     */
-    private static boolean hasAnnotation(Element e,
-        Class<? extends Annotation> anno) {
-        return e != null && e.getAnnotation(anno) != null;
-    }
-    
     /**
      * Gets the value of the given annotation, if present, in the given
      * declaration. Otherwise, null.
@@ -533,7 +604,7 @@ public class AnnotationProcessor6 extends AbstractProcessor {
                 Map<? extends ExecutableElement, ? extends AnnotationValue> 
                 values = mirror.getElementValues();
                 for (ExecutableElement ex : values.keySet()) {
-                    if (ex.getSimpleName().equals(attr))
+                    if (ex.getSimpleName().toString().equals(attr))
                         return values.get(ex).getValue();
                 }
             }
@@ -549,31 +620,22 @@ public class AnnotationProcessor6 extends AbstractProcessor {
         Set<ExecutableElement> getters,  Set<ExecutableElement> setters) {
         Collection<ExecutableElement> unmatched =
             new ArrayList<ExecutableElement>();
+        Types typeUtils = processingEnv.getTypeUtils();
+        
         for (ExecutableElement getter : getters) {
-            String name = getter.getSimpleName().toString();
-            TypeMirror returns = getter.getReturnType();
-            String setterName = "set" + name.substring("get".length());
+            String getterName = getter.getSimpleName().toString();
+            TypeMirror getterReturnType = getter.getReturnType();
+            String expectedSetterName = "set" + getterName.substring(
+                (isBooleanGetter(getter) ? "is" : "get").length());
             boolean matched = false;
             for (ExecutableElement setter : setters) {
-                TypeMirror argType =
-                    setter.getParameters().iterator().next().asType();
-                matched =
-                    setter.getSimpleName().equals(setterName)
-                        && argType.equals(returns);
+                TypeMirror setterArgType = setter.getParameters()
+                                     .iterator().next().asType();
+                String actualSetterName = setter.getSimpleName().toString();
+                matched = actualSetterName.equals(expectedSetterName)
+                    && typeUtils.isSameType(setterArgType, getterReturnType);          
                 if (matched)
                     break;
-            }
-            if (!matched && isBoolean(returns)) {
-                setterName = "set" + name.substring("is".length());
-                for (ExecutableElement setter : setters) {
-                    TypeMirror argType =
-                        setter.getParameters().iterator().next().asType();
-                    matched =
-                        setter.getSimpleName().equals(setterName)
-                            && isBoolean(argType);
-                    if (matched)
-                        break;
-                }
             }
             if (!matched) {
                 warn(_loc.get("getter-unmatched", getter, 
@@ -594,11 +656,11 @@ public class AnnotationProcessor6 extends AbstractProcessor {
      * Inclusive element filtering predicate.
      *
      */
-    private static interface InclusiveFilter {
+    private static interface InclusiveFilter<T extends Element> {
         /**
          * Return true to include the given element.
          */
-        boolean includes(Element e);
+        boolean includes(T e);
     }
 
     /**
@@ -628,17 +690,9 @@ public class AnnotationProcessor6 extends AbstractProcessor {
      * and has no argument.
      * 
      */
-    static class GetterFilter implements InclusiveFilter {
-        public boolean includes(Element obj) {
-            if (!isMethod(obj))
-                return false;
-
-            ExecutableElement m = (ExecutableElement) obj;
-            String name = m.getSimpleName().toString();
-            TypeMirror returnType = m.getReturnType();
-            return m.getParameters().isEmpty()
-                 && ((startsWith(name, "get") && !isVoid(returnType))
-                 || (startsWith(name, "is") && isBoolean(returnType)));
+    static class GetterFilter implements InclusiveFilter<ExecutableElement> {
+        public boolean includes(ExecutableElement method) {
+            return isGetter(method);
         }
     }
 
@@ -647,16 +701,9 @@ public class AnnotationProcessor6 extends AbstractProcessor {
      * void and has single argument.
      * 
      */
-    static class SetterFilter implements InclusiveFilter {
-        public boolean includes(Element obj) {
-            if (!isMethod(obj))
-                return false;
-
-            ExecutableElement m = (ExecutableElement) obj;
-            String name = m.getSimpleName().toString();
-            TypeMirror returnType = m.getReturnType();
-            return startsWith(name, "set") && isVoid(returnType) 
-                && m.getParameters().size() == 1;
+    static class SetterFilter implements InclusiveFilter<ExecutableElement> {
+        public boolean includes(ExecutableElement method) {
+            return isSetter(method);
         }
     }
 
@@ -665,7 +712,7 @@ public class AnnotationProcessor6 extends AbstractProcessor {
      * annotation has the given AccessType value.
      * 
      */
-    static class AccessFilter implements InclusiveFilter {
+    static class AccessFilter implements InclusiveFilter<Element> {
         final AccessType target;
 
         public AccessFilter(AccessType target) {
@@ -682,7 +729,7 @@ public class AnnotationProcessor6 extends AbstractProcessor {
      * Selects elements of given kind.
      * 
      */
-    static class KindFilter implements InclusiveFilter {
+    static class KindFilter implements InclusiveFilter<Element> {
         final ElementKind target;
 
         public KindFilter(ElementKind target) {
@@ -696,15 +743,24 @@ public class AnnotationProcessor6 extends AbstractProcessor {
 
     /**
      * Selects all non-transient element.
-     * 
      */
-    static class NonTransientMemberFilter implements InclusiveFilter {
+    static class NonTransientMemberFilter implements InclusiveFilter<Element> {
         public boolean includes(Element obj) {
-            boolean isTransient = hasAnnotation(obj, Transient.class)
+            boolean isTransient = isAnnotatedWith(obj, Transient.class)
                             || obj.getModifiers().contains(Modifier.TRANSIENT);
             return !isTransient;
         }
     }
+    
+    /**
+     * Selects all annotated element.
+     */
+    static class AnnotatedMemberFilter implements InclusiveFilter<Element> {
+        public boolean includes(Element obj) {
+            return isAnnotated(obj);
+        }
+    }
+
     
     
     // ========================================================================
@@ -732,9 +788,51 @@ public class AnnotationProcessor6 extends AbstractProcessor {
      */
     private static boolean isMethod(Element e) {
         return e != null && ExecutableElement.class.isInstance(e)
-            && ((Element) e).getKind() == ElementKind.METHOD;
+            && e.getKind() == ElementKind.METHOD;
+    }
+    
+    /**
+     * Affirms if the given method matches the following signature
+     * <code> public T getXXX() </code>
+     * where T is any non-void type.
+     */
+    private static boolean isNormalGetter(ExecutableElement method) {
+    	String methodName = method.getSimpleName().toString();
+    	return method.getKind() == ElementKind.METHOD
+    	    && startsWith(methodName, "get") 
+    	    && method.getParameters().isEmpty()
+    	    && !isVoid(method.getReturnType());
+    }
+    
+    /**
+     * Affirms if the given method matches the following signature
+     * <code> public boolean isXXX() </code>
+     * <code> public Boolean isXXX() </code>
+     */
+    private static boolean isBooleanGetter(ExecutableElement method) {
+    	String methodName = method.getSimpleName().toString();
+    	return method.getKind() == ElementKind.METHOD
+    	    && startsWith(methodName, "is") 
+    	    && method.getParameters().isEmpty()
+    	    && isBoolean(method.getReturnType());
     }
 
+    private static boolean isGetter(ExecutableElement method) {
+    	return isNormalGetter(method) || isBooleanGetter(method);
+    }
+    
+    /**
+     * Affirms if the given method matches the following signature
+     * <code> public void setXXX(T t) </code>
+     */
+    private static boolean isSetter(ExecutableElement method) {
+    	String methodName = method.getSimpleName().toString();
+    	return method.getKind() == ElementKind.METHOD
+    	    && startsWith(methodName, "set") 
+    	    && method.getParameters().size() == 1
+    	    && isVoid(method.getReturnType());
+    }
+    
     /**
      * Affirms if the given mirror represents root java.lang.Object.
      */
@@ -758,6 +856,10 @@ public class AnnotationProcessor6 extends AbstractProcessor {
             return false;
         return e.toString().equals(v.toString());
     }
+    
+    // =========================================================================
+    // Access rules
+    // =========================================================================
     
     
     // =========================================================================

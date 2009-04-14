@@ -47,6 +47,10 @@
     
     <profiles>
   		<profile>
+  		<!-- =============================================================== -->
+  		<!-- Compiling with JDK5 compiler excludes classes that explicitly   -->
+  		<!-- import and use JDK6 classes/packages for annotation processing  -->
+  		<!-- =============================================================== -->
   		    <id>jdk5-compiler</id>
             <build>
               <plugins>
@@ -56,6 +60,7 @@
 		            <configuration>
 		            	<excludes>
 		            	   <exclude>**/AnnotationProcessor6.java</exclude>
+		            	   <exclude>**/TestCanonicalMetamodelGeneration.java</exclude>
 		            	</excludes>
 		            </configuration>
 		        </plugin>
@@ -65,5 +70,38 @@
 		      <jdk>1.5</jdk>
 		   </activation>
   		</profile>
+  		<profile>
+  			<!-- =========================================================== -->
+  			<!-- Compiling with JDK6 compiler packages a META-INF/services   -->
+  			<!-- file for our annotation processor                           -->
+  			<!-- =========================================================== -->
+  		    <id>jdk6-compiler</id>
+            <build>
+              <plugins>
+		        <plugin>
+		    		<groupId>org.apache.maven.plugins</groupId>
+		    		<artifactId>maven-antrun-plugin</artifactId>
+		            <executions>
+		            <execution>
+		            <phase>process-classes</phase>
+		            <configuration>
+		            <tasks>
+		            <echo file="${basedir}/target/classes/META-INF/services/javax.annotation.processing.Processor"
+		                  message="org.apache.openjpa.persistence.meta.AnnotationProcessor6"/>
+		            </tasks>
+		            </configuration>
+                        <goals>
+                            <goal>run</goal>
+                        </goals>
+		            </execution>
+		            </executions>
+		        </plugin>
+		      </plugins>
+		   </build>
+		   <activation>
+		      <jdk>1.6</jdk>
+		   </activation>
+  		</profile>
+  		
 	</profiles>
 </project>

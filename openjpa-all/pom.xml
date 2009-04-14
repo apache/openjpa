@@ -76,13 +76,6 @@
                                 <aggregate-file servicename="org.apache.openjpa.lib.conf.ProductDerivation" />
                                 <aggregate-file servicename="javax.persistence.spi.PersistenceProvider" />
                                 <aggregate-file servicename="org.apache.openjpa.kernel.exps.ExpressionParser" />
-                                
-                                <!-- this services file is hidden because otherwise source compilation -->
-                                <!-- sees it and tries to invoke our AnnotationProcessor which itself  -->
-                                <!-- is yet to be compiled!                                            -->
-                                <copy file="${basedir}/../openjpa-persistence/src/main/resources/META-INF/services/javax.annotation.processing.Processor.hidden" 
-                                      tofile="${basedir}/target/classes/META-INF/services/javax.annotation.processing.Processor"/>
-                                
                             </tasks>
                         </configuration>
                         <goals>

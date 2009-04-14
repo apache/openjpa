@@ -682,7 +682,7 @@
                         </goals>
                         <configuration>
                             <configLocation>${checkstyle.config.location}</configLocation>
-                            <failsOnError>true</failsOnError>
+                            <failsOnError>false</failsOnError>
                             <consoleOutput>true</consoleOutput>
                         </configuration>
                     </execution>
