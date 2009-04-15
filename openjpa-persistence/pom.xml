@@ -86,8 +86,8 @@
 		            <phase>process-classes</phase>
 		            <configuration>
 		            <tasks>
-		            <echo file="${basedir}/target/classes/META-INF/services/javax.annotation.processing.Processor"
-		                  message="org.apache.openjpa.persistence.meta.AnnotationProcessor6"/>
+		            <!-- echo file="${basedir}/src/main/resources/META-INF/services/javax.annotation.processing.Processor"
+		                  message="org.apache.openjpa.persistence.meta.AnnotationProcessor6"/ -->
 		            </tasks>
 		            </configuration>
                         <goals>

@@ -47,8 +47,6 @@ import org.apache.openjpa.meta.ClassMetaData;
 import org.apache.openjpa.persistence.JPAFacadeHelper;
 import org.apache.openjpa.persistence.OpenJPAEntityManagerFactorySPI;
 
-import sun.security.action.GetLongAction;
-
 /**
  * Base test class providing persistence utilities.
  * 

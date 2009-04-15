@@ -216,8 +216,6 @@ public class AnnotationProcessor6 extends AbstractProcessor {
         String originalSimpleClass = e.getSimpleName().toString();
         String metaClass = originalClass + UNDERSCORE;
 
-        log(_loc.get("mmg-process", originalClass).getMessage());
-
         SourceCode source = new SourceCode(metaClass);
         comment(source);
         annotate(source, originalClass);
@@ -292,6 +290,7 @@ public class AnnotationProcessor6 extends AbstractProcessor {
         throws IOException {
         Filer filer = processingEnv.getFiler();
         JavaFileObject javaFile = filer.createSourceFile(metaClass, e);
+        log(_loc.get("mmg-process", metaClass, javaFile.toUri()).getMessage());
         OutputStream out = javaFile.openOutputStream();
         PrintWriter writer = new PrintWriter(out);
         return writer;
