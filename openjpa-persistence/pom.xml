@@ -58,10 +58,12 @@
 		    		<groupId>org.apache.maven.plugins</groupId>
 		    		<artifactId>maven-compiler-plugin</artifactId>
 		            <configuration>
-		            	<excludes>
-		            	   <exclude>**/AnnotationProcessor6.java</exclude>
-		            	   <exclude>**/TestCanonicalMetamodelGeneration.java</exclude>
-		            	</excludes>
+                    <excludes>
+                        <exclude>**/AnnotationProcessor6.java</exclude>
+                    </excludes>
+                    <testExcludes>
+                        <testExclude>**/TestCanonicalMetamodelGeneration.java</testExclude>
+                    </testExcludes>
 		            </configuration>
 		        </plugin>
 		      </plugins>
