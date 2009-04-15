@@ -116,6 +116,46 @@ public class TestSpec10_1_26_Ex3 extends SQLListenerTestCase {
         if (!inMemory)
             assertTrue(sql.get(0).toUpperCase().indexOf(" GROUP BY ") != -1);
 
+        query = "select KEY(e) from Department d, " +
+            " in (d.emps) e where VALUE(e).department.deptId = 1" +
+            " ORDER BY KEY(e).fName";
+        q = em.createQuery(query);
+        if (inMemory) 
+            setCandidate(q, Department.class);
+        rs = q.getResultList();
+        if (!inMemory)
+            assertEquals(((EmployeeName) rs.get(0)).getFName(), "f1");
+
+        query = "select KEY(e) from Department d, " +
+            " in (d.emps) e where VALUE(e).name.fName = 'f1'" +
+            " ORDER BY KEY(e).fName";
+        q = em.createQuery(query);
+        if (inMemory) 
+            setCandidate(q, Department.class);
+        rs = q.getResultList();
+        if (!inMemory)
+            assertEquals(((EmployeeName) rs.get(0)).getFName(), "f1");
+
+        query = "select KEY(e) from Department d, " +
+            " in (d.emps) e where SUBSTRING(VALUE(e).name.fName, 1) = 'f1'" +
+            " ORDER BY KEY(e).fName";
+        q = em.createQuery(query);
+        if (inMemory) 
+            setCandidate(q, Department.class);
+        rs = q.getResultList();
+        if (!inMemory)
+            assertEquals(((EmployeeName) rs.get(0)).getFName(), "f1");
+
+        query = "select KEY(e) from Department d, " +
+            " in (d.emps) e where LOCATE(VALUE(e).name.fName, 'f1') <> 0" +
+            " ORDER BY KEY(e).fName";
+        q = em.createQuery(query);
+        if (inMemory) 
+            setCandidate(q, Department.class);
+        rs = q.getResultList();
+        if (!inMemory)
+            assertEquals(((EmployeeName) rs.get(0)).getFName(), "f1");
+
         em.close();
     }
 

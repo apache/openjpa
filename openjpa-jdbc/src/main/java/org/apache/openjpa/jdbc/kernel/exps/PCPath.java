@@ -779,15 +779,10 @@ public class PCPath
 
         Object ret;
         if (_key)
-            if (pstate.field.getKey().getValueMappedBy() != null)
-                ret = ((FieldMapping) pstate.field.getKey().
-                    getValueMappedByMetaData()).
-                    loadProjection(ctx.store, ctx.fetch, res, pstate.joins);
-            else
-                // Map key is a java primitive type
-                //    example: Map<Integer, Employee> emps
-                ret = res.getObject(pstate.cols[0],
-                    null, pstate.joins);
+            // Map key is a java primitive type
+            //    example: Map<Integer, Employee> emps
+            ret = res.getObject(pstate.cols[0],
+                null, pstate.joins);
         else
             ret = pstate.field.loadProjection(ctx.store, ctx.fetch, res, 
                 pstate.joins);
