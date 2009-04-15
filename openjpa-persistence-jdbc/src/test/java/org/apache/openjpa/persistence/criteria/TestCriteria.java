@@ -28,6 +28,7 @@ import org.apache.openjpa.persistence.OpenJPAEntityManagerFactory;
 import org.apache.openjpa.persistence.query.DomainObject;
 import org.apache.openjpa.persistence.query.Expression;
 import org.apache.openjpa.persistence.query.OpenJPAQueryBuilder;
+import org.apache.openjpa.persistence.query.Predicate;
 import org.apache.openjpa.persistence.query.QueryBuilderImpl;
 import org.apache.openjpa.persistence.query.QueryDefinition;
 import org.apache.openjpa.persistence.query.SelectItem;
@@ -88,6 +89,25 @@ public class TestCriteria extends SingleEMFTestCase {
 	
 	public void tearDown() {
 		// do nothing as we may not have a database connection
+	}
+	
+	public void testLogicalPredicateAssociativity() {
+		DomainObject e = qb.createQueryDefinition(Employee.class);
+		Predicate p1 = e.get("salary").greaterThan(100);
+		Predicate p2 = e.get("rating").equal(5);
+		Predicate p3 = e.get("name").like("John");
+		Predicate w1 = p1.and(p2.or(p3));
+		Predicate w2 = (p1.and(p2)).or(p3);
+		QueryDefinition q1 = e.select(e).where(w1);
+		String jpql1 = qb.toJPQL(q1);
+		emf.createEntityManager().createDynamicQuery(q1).getResultList();
+		
+		QueryDefinition q2 = e.select(e).where(w2);
+		String jpql2 = qb.toJPQL(q2);
+		System.err.println(jpql1);
+		System.err.println(jpql2);
+		assertNotEquals(jpql1, jpql2);
+		emf.createEntityManager().createDynamicQuery(q2).getResultList();
 	}
 	
 	public void testMultipleDomainOfSameClass() {

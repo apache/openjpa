@@ -52,7 +52,7 @@ public class LogicalPredicate extends AbstractVisitable
 	}
 
 	public String asExpression(AliasContext ctx) {
-		return ((Visitable)_p1).asExpression(ctx) + " " + _op + " " 
-		     + ((Visitable)_p2).asExpression(ctx);
+		return OPEN_BRACE + ((Visitable)_p1).asExpression(ctx) + SPACE + _op + 
+			   SPACE + ((Visitable)_p2).asExpression(ctx) + CLOSE_BRACE;
 	}
 }
