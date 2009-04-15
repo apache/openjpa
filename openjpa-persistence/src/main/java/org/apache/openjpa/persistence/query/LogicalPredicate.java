@@ -26,33 +26,33 @@ package org.apache.openjpa.persistence.query;
  */
 public class LogicalPredicate extends AbstractVisitable 
     implements Predicate, Visitable {
-	private final Predicate _p1;
-	private final Predicate _p2;
-	private final ConditionalOperator _op;
-	private final ConditionalOperator _nop;
-	
-	public LogicalPredicate(Predicate p1, ConditionalOperator op, 
-			ConditionalOperator nop, Predicate p2) {
-		_p1  = p1;
-		_p2  = p2;
-		_op  = op;
-		_nop = nop;
-	}
-	
-	public Predicate and(Predicate predicate) {
-		return new AndPredicate(this, predicate);
-	}
+    private final Predicate _p1;
+    private final Predicate _p2;
+    private final ConditionalOperator _op;
+    private final ConditionalOperator _nop;
+    
+    public LogicalPredicate(Predicate p1, ConditionalOperator op, 
+            ConditionalOperator nop, Predicate p2) {
+        _p1  = p1;
+        _p2  = p2;
+        _op  = op;
+        _nop = nop;
+    }
+    
+    public Predicate and(Predicate predicate) {
+        return new AndPredicate(this, predicate);
+    }
 
-	public Predicate or(Predicate predicate) {
-		return new OrPredicate(this, predicate);
-	}
-	
-	public Predicate not() {
-		return new LogicalPredicate(_p1.not(), _nop, _op, _p2.not());
-	}
+    public Predicate or(Predicate predicate) {
+        return new OrPredicate(this, predicate);
+    }
+    
+    public Predicate not() {
+        return new LogicalPredicate(_p1.not(), _nop, _op, _p2.not());
+    }
 
-	public String asExpression(AliasContext ctx) {
-		return OPEN_BRACE + ((Visitable)_p1).asExpression(ctx) + SPACE + _op + 
-			   SPACE + ((Visitable)_p2).asExpression(ctx) + CLOSE_BRACE;
-	}
+    public String asExpression(AliasContext ctx) {
+        return OPEN_BRACE + ((Visitable)_p1).asExpression(ctx) + SPACE + _op +
+               SPACE + ((Visitable)_p2).asExpression(ctx) + CLOSE_BRACE;
+    }
 }

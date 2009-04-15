@@ -360,7 +360,8 @@ public class AnnotationProcessor6 extends AbstractProcessor {
     /**
      * Collect members for the given type which uses explicit field access.
      */
-     private List<Element> getPropertyAccessPersistentMembers(TypeElement type) {   
+     private List<Element> getPropertyAccessPersistentMembers(TypeElement type)
+     {
         List<? extends Element> allMembers = type.getEnclosedElements();
         Set<ExecutableElement> allMethods = (Set<ExecutableElement>) 
             filter(allMembers, methodFilter, nonTransientFilter);
@@ -374,7 +375,7 @@ public class AnnotationProcessor6 extends AbstractProcessor {
     }
 
     
-    private List<Element> getDefaultAccessPersistentMembers(TypeElement type) {   
+    private List<Element> getDefaultAccessPersistentMembers(TypeElement type) {
         List<Element> result = new ArrayList<Element>();
         List<? extends Element> allMembers = type.getEnclosedElements();
         Set<VariableElement> allFields = (Set<VariableElement>) 
@@ -632,7 +633,7 @@ public class AnnotationProcessor6 extends AbstractProcessor {
                                      .iterator().next().asType();
                 String actualSetterName = setter.getSimpleName().toString();
                 matched = actualSetterName.equals(expectedSetterName)
-                    && typeUtils.isSameType(setterArgType, getterReturnType);          
+                    && typeUtils.isSameType(setterArgType, getterReturnType);
                 if (matched)
                     break;
             }
