@@ -23,7 +23,7 @@ import javax.persistence.*;
 import java.util.*;
 
 @Entity
-@Table(name="MEx10Emp")
+@Table(name="M10Emp")
 public class Employee {
     @EmbeddedId
     EmployeePK empPK;

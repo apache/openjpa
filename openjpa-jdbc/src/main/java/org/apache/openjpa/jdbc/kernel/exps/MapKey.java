@@ -62,18 +62,25 @@ public class MapKey
 
     public void appendTo(Select sel, ExpContext ctx, ExpState state,
         SQLBuffer sql, int index) {
+        KeyExpState estate = (KeyExpState) state;
+        _key.appendTo(sel, ctx, estate.key, sql, index);
     }
 
     public void calculateValue(Select sel, ExpContext ctx, ExpState state,
         Val other, ExpState otherState) {
-        _key.calculateValue(sel, ctx, state, other, otherState);
+        KeyExpState estate = (KeyExpState) state;
+        _key.calculateValue(sel, ctx, estate.key, other, otherState);
     }
 
     public void groupBy(Select sel, ExpContext ctx, ExpState state) {
+        KeyExpState estate = (KeyExpState) state;
+        _key.groupBy(sel, ctx, estate.key);
     }
 
     public void orderBy(Select sel, ExpContext ctx, ExpState state,
         boolean asc) {
+        KeyExpState estate = (KeyExpState) state;
+        _key.orderBy(sel, ctx, estate.key, asc);
     }
 
     public ExpState initialize(Select sel, ExpContext ctx, int flags) {

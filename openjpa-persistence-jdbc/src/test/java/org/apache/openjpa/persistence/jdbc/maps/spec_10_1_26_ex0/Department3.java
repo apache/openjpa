@@ -29,7 +29,7 @@ import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
 @Entity
-@Table(name="S26Dept3")
+@Table(name="T6D3")
 public class Department3 {
 
     @Id

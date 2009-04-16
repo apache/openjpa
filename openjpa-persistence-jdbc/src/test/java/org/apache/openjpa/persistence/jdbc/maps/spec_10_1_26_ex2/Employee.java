@@ -23,7 +23,7 @@ import java.util.Date;
 import javax.persistence.*;
 
 @Entity
-@Table(name="S26Ex2Emp")
+@Table(name="S6E2Emp")
 public class Employee {
     EmployeePK empPK;
 

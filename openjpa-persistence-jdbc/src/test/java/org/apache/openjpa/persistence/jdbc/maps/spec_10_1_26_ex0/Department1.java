@@ -24,7 +24,7 @@ import java.util.Map;
 import javax.persistence.*;
 
 @Entity
-@Table(name="S26Dept1")
+@Table(name="T6D1")
 //@Access(AccessType.PROPERTY)
 public class Department1 {
 

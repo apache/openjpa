@@ -21,7 +21,7 @@ package org.apache.openjpa.persistence.jdbc.maps.spec_10_1_26_ex0;
 import javax.persistence.*;
 
 @Entity
-@Table(name="S26Emp1")
+@Table(name="T6E1")
 public class Employee1 {
     @Id
     int empId;

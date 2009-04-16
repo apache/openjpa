@@ -24,7 +24,7 @@ import java.util.Map;
 import javax.persistence.*;
 
 @Entity
-@Table(name="S27x3Comp")
+@Table(name="S273Comp")
 public class Company {
     @Id
     int id;

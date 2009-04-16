@@ -119,6 +119,14 @@ public class TestSpec10_1_29_Ex3 extends SQLListenerTestCase {
         assertTrue(c.equals(me.getKey()));
         assertEquals(s.getId(), ((Semester) me.getValue()).getId());
 
+        query = "select KEY(e) from Student s " +
+            " join s.enrollment e WHERE KEY(e).id = 1 order by s.id";
+        q = em.createQuery(query);
+        if (inMemory) 
+            setCandidate(q, Student.class);
+        rs = q.getResultList();
+        assertEquals(((Course) rs.get(0)).getId(), 1);
+
         em.close();
     }
 

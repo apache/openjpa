@@ -23,7 +23,7 @@ import javax.persistence.*;
 import java.util.*;
 
 @Entity
-@Table(name="MEx10Phone")
+@Table(name="M10Phone")
 public class PhoneNumber {
     @EmbeddedId
     PhonePK phonePK;

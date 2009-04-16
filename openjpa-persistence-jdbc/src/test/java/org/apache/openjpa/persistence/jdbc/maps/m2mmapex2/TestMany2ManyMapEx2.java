@@ -109,6 +109,14 @@ public class TestMany2ManyMapEx2 extends SQLListenerTestCase {
 
         assertTrue(d.equals(me.getKey()));
 
+        query = "select KEY(e) from PhoneNumber p, " +
+            " in (p.emps) e WHERE value(e).empId = 1 and KEY(e) = 'String1'";
+        q = em.createQuery(query);
+        if (inMemory) 
+            setCandidate(q, PhoneNumber.class);
+        rs = q.getResultList();
+        assertEquals((String) rs.get(0), "String1");
+
         em.close();
     }
 

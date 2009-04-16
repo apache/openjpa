@@ -82,6 +82,7 @@ public class PCPath
     private Class _cast = null;
     private boolean _cid = false;
     private FieldMetaData _xmlfield = null;
+    private boolean _keyPath = false;
 
     /**
      * Return a path starting with the 'this' ptr.
@@ -274,7 +275,9 @@ public class PCPath
      * The columns used by this path.
      */
     private Column[] calculateColumns(PathExpState pstate) {
-        if (_key) {
+        if (_key ||
+            (_keyPath && pstate.field.getKey() != null &&
+                !pstate.field.getKey().isEmbedded())) {
             if (!pstate.joinedRel 
                 && pstate.field.getKey().getValueMappedBy() != null)
                 joinRelation(pstate, _key, false, false);
@@ -499,6 +502,9 @@ public class PCPath
                 // the key rather than value
                 key = action.op == Action.GET_KEY;
                 forceOuter |= action.op == Action.GET_OUTER;
+                
+                if (key && itr.hasNext())
+                    _keyPath = true;
 
                 // get mapping for the current field
                 pstate.field = field;
