@@ -28,7 +28,7 @@ import org.apache.openjpa.persistence.jdbc.ForeignKey;
 
 
 @Entity
-@Table(name="D4")
+@Table(name="D4", schema="relations")
 @IdClass(D.CId.class)
 public class D {
 

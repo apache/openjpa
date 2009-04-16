@@ -31,7 +31,8 @@ public class TestRelationFieldAsPrimaryKeyAndForeignKey
     extends SingleEMFTestCase {
 
 	public void setUp() {
-	    setUp(C.class, CM.class, D.class, E.class, VC.class, VCS.class);
+	    setUp(C.class, CM.class, D.class, E.class, VC.class, 
+	        VCS.class, CLEAR_TABLES);
 	    
         EntityManager em = emf.createEntityManager();
         try {

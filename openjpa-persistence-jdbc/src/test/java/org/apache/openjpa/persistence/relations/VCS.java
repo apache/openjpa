@@ -34,7 +34,7 @@ import javax.persistence.Table;
 import org.apache.openjpa.persistence.jdbc.ForeignKey;
 
 @Entity
-@Table(name="VCS4")
+@Table(name="VCS4", schema="relations")
 @IdClass(VCS.VCSId.class)
 public class VCS {
 
