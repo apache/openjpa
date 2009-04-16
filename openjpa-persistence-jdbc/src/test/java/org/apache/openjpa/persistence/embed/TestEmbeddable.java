@@ -277,9 +277,6 @@ public class TestEmbeddable extends SingleEMFTestCase {
         a.setAge(id);
         for (int i = 0; i < numEmbeddables; i++) {
             Embed_ToOne embed = createEmbed_ToOne(em, i+id);
-            EntityB1 b = new EntityB1();
-            b.setId(id + i);
-            b.setName("b" + id + i);
             a.addEmbed1ToOne(embed);
         }
         em.persist(a);

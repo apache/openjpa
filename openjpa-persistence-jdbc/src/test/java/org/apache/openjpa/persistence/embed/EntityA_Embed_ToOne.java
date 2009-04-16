@@ -25,8 +25,10 @@ import javax.persistence.Embedded;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.Id;
+import javax.persistence.Table;
 
 @Entity
+@Table(name="TB10A")
 public class EntityA_Embed_ToOne implements Serializable {
     @Id
     Integer id;

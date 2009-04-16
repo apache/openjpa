@@ -30,8 +30,10 @@ import javax.persistence.Id;
 
 import javax.persistence.ElementCollection;
 import javax.persistence.CollectionTable;
+import javax.persistence.Table;
 
 @Entity
+@Table(name="TBL3A")
 public class EntityA_Coll_String implements Serializable {
     @Id
     Integer id;

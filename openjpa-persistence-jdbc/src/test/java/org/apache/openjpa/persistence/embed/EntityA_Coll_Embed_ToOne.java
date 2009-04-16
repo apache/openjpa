@@ -29,11 +29,13 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.Id;
+import javax.persistence.Table;
 
 import javax.persistence.ElementCollection;
 import javax.persistence.CollectionTable;
 
 @Entity
+@Table(name="TBL2A")
 public class EntityA_Coll_Embed_ToOne implements Serializable {
     // contains a collection of Embed1ToOne
     // Embed1ToOne does not have an element collection or to-Many relationships

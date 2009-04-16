@@ -27,10 +27,12 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.Id;
+import javax.persistence.Table;
 
 import javax.persistence.ElementCollection;
 
 @Entity
+@Table(name="TBL1A")
 public class EntityA_Coll_Embed_Embed implements Serializable {
     @Id
     Integer id;
