@@ -36,7 +36,7 @@ public class TestAttrOverrides  extends SQLListenerTestCase {
     public void setUp() throws Exception {
         super.setUp(DROP_TABLES, Address.class, Customer.class, 
             PropertyInfo.class, PropertyOwner.class, PropertyRecord.class,
-            Zipcode.class);
+            Zipcode.class, Person.class);
     }
 
     /**
@@ -63,6 +63,16 @@ public class TestAttrOverrides  extends SQLListenerTestCase {
         assertAttrOverrides("PROPREC_ATTROVER_parcels");
     }
     
+    /**
+     * This is spec 10.1.35. Example 3
+     * Test OrderBy on embeddable field
+     */
+    public void testEmbeddableOrderBy() {
+        sql.clear();
+        createObj3();
+        findObj3();
+    }
+
     public void createObj1() {
         EntityManager em = emf.createEntityManager();
         EntityTransaction tran = em.getTransaction();
@@ -212,4 +222,54 @@ public class TestAttrOverrides  extends SQLListenerTestCase {
         if (!found)
             fail();
     }
+    
+    public void createObj3() {
+        EntityManager em = emf.createEntityManager();
+        EntityTransaction tran = em.getTransaction();
+        for (int i = 0; i < numPersons; i++)
+            createPerson(em, eId++);
+        tran.begin();
+        em.flush();
+        tran.commit();
+        em.close();
+    }
+
+    public Person createPerson(EntityManager em, int id) {
+        Person p = new Person();
+        p.setSsn("ssn" + id);
+        p.setName("name_" + id);
+    
+        for (int i = 4; i > 0; i--) {
+            Address addr = new Address();
+            addr.setCity("city_" + id + "_" + i );
+            addr.setState("state_" + id + "_"  + i);
+            addr.setStreet("street_" + id + "_"  + i);
+            Zipcode zipCode = new Zipcode();
+            zipCode.setZip("zip_" + id + "_" + i);
+            zipCode.setPlusFour("plusFour_" + id + "_" + i);
+            addr.setZipcode(zipCode);
+            p.addResidence(addr);
+        }
+        em.persist(p);
+        return p;
+    }
+
+    public void findObj3() {
+        EntityManager em = emf.createEntityManager();
+        Person p = em.find(Person.class, "ssn1");
+        List<Address> residences = p.getResidences();
+        assertEquals(4, residences.size());
+        int i = 1;
+        for (Address a : residences) {
+            String zip = a.getZipcode().getZip();
+            String plusFour = a.getZipcode().getPlusFour();
+            String expZip = "zip_1_";
+            String expPlusFour = "plusFour_1_";
+            expZip = expZip + i;
+            expPlusFour = expPlusFour + i;
+            assertEquals(expZip, zip);
+            assertEquals(expPlusFour, plusFour);
+            i++;
+        }
+   }
 }

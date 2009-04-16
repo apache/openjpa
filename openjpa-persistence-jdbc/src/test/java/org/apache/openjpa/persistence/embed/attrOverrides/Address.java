@@ -21,7 +21,7 @@ package org.apache.openjpa.persistence.embed.attrOverrides;
 import javax.persistence.*;
 
 @Entity
-@Table(name="ADDR_ATTROVER")
+@Table(name="ADR_AO")
 public class Address {
     @Id int id;
     @Column(length = 20)

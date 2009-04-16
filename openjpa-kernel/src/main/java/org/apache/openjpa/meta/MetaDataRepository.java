@@ -874,13 +874,32 @@ public class MetaDataRepository
         if (meta == null)
             throw new MetaDataException(_loc.get("nonpc-field-orderable",
                 owner, name));
-        FieldMetaData rel = meta.getField(name);
+        FieldMetaData rel = getOrderByField(meta, name);
         if (rel == null)
             throw new MetaDataException(_loc.get("bad-field-orderable",
                 owner, name));
         return newRelatedFieldOrder(owner, rel, asc);
     }
 
+    
+    public FieldMetaData getOrderByField(ClassMetaData meta, String orderBy) {
+        FieldMetaData field = meta.getField(orderBy);
+        if (field != null)
+            return field;
+        int dotIdx = orderBy.indexOf("."); 
+        if ( dotIdx == -1)
+            return null;
+        String fieldName = orderBy.substring(0, dotIdx);
+        FieldMetaData field1 = meta.getField(fieldName);
+        if (field1 == null)
+            return null;
+        ClassMetaData meta1 = field1.getEmbeddedMetaData();
+        if (meta1 == null)
+            return null;
+        String mappedBy1 = orderBy.substring(dotIdx + 1);
+        return getOrderByField(meta1, mappedBy1);
+    }  
+    
     /**
      * Order by the field value.
      */

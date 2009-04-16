@@ -66,7 +66,9 @@ class JDBCRelatedFieldOrder
     }
 
     public void order(Select sel, ClassMapping elem, Joins joins) {
-        FieldMapping fm = elem.getFieldMapping(_fm.getIndex());
+        FieldMapping fm = _fm;
+        if (elem != null)
+            fm = elem.getFieldMapping(_fm.getIndex());
         sel.orderBy(fm.getColumns(), _asc, joins, false);
     }
 }

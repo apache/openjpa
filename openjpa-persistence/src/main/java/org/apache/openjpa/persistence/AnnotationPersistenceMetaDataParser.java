@@ -1574,10 +1574,12 @@ public class AnnotationPersistenceMetaDataParser
             fmd.getElement().setDeclaredType(anno.targetClass());
         fmd.setInDefaultFetchGroup(anno.fetch() == FetchType.EAGER);
         fmd.setElementCollection(true);
-        if (JavaTypes.maybePC(fmd.getElement())) {
-            fmd.getElement().setEmbedded(true);
-            if (fmd.getElement().getEmbeddedMetaData() == null)
-                fmd.getElement().addEmbeddedMetaData();
+        ValueMetaData elem = fmd.getElement();
+        boolean isEnum = elem.getDeclaredType().isEnum();
+        if (!isEnum && JavaTypes.maybePC(elem)) {
+            elem.setEmbedded(true);
+            if (elem.getEmbeddedMetaData() == null)
+                elem.addEmbeddedMetaData();
         }
     }
     

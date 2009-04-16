@@ -23,9 +23,9 @@ import javax.persistence.*;
 
 @Embeddable
 public class Zipcode {
-    @Column(length = 5)
+    @Column(length = 20)
 	protected String zip;
-    @Column(length = 4)
+    @Column(length = 20)
 	protected String plusFour;
 	
 	public String getZip() {
