@@ -1673,8 +1673,7 @@ public class ClassMetaData
 
         // are we the target of an embedded value?
         if (embed) {
-            if (_owner.getFieldMetaData().getDefiningMetaData().
-                getDescribedType().isAssignableFrom(_type))
+            if (recursiveEmbed(_owner))
                 throw new MetaDataException(_loc.get("recurse-embed", _owner));
 
             // copy info from the "real" metadata for this type
@@ -1765,6 +1764,17 @@ public class ClassMetaData
         }
     }
 
+    private boolean recursiveEmbed(ValueMetaData owner) {
+        ClassMetaData cm = owner.getFieldMetaData().getDefiningMetaData(); 
+        if (cm.getDescribedType().isAssignableFrom(_type))
+            return true;
+        ValueMetaData owner1 = cm.getEmbeddingMetaData();
+        if (owner1 == null)
+            return false;
+        else 
+            return recursiveEmbed(owner1);
+    }
+    
     /**
      * Validate resolved metadata.
      */
