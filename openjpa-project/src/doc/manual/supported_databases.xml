@@ -21,6 +21,10 @@
     <title>
         Supported Databases
     </title>
+    <section id="dbsupport">
+    <title>
+        Supported Database Matrix
+    </title>
     <para>
 Following is a table of the database and JDBC driver versions that are supported
 by OpenJPA.
@@ -53,7 +57,7 @@ by OpenJPA.
             <tbody>
                 <row>
                     <entry colname="dbname">
-                        Apache Derby
+                        <link linkend="dbsupport_derby">Apache Derby</link>
                     </entry>
                     <entry colname="dbversion">
                         10.1.2.1
@@ -67,7 +71,7 @@ by OpenJPA.
                 </row>
                 <row>
                     <entry colname="dbname">
-                        Borland Interbase
+                        <link linkend="dbsupport_interbase">Borland Interbase</link>
                     </entry>
                     <entry colname="dbversion">
                         7.1.0.202
@@ -81,7 +85,7 @@ by OpenJPA.
                 </row>
                 <row>
                     <entry colname="dbname">
-                        Borland JDataStore
+                        <link linkend="dbsupport_jdatastore">Borland JDataStore</link>
                     </entry>
                     <entry colname="dbversion">
                         6.0
@@ -95,7 +99,7 @@ by OpenJPA.
                 </row>
                 <row>
                     <entry colname="dbname">
-                        DB2
+                        <link linkend="dbsupport_db2">DB2</link>
                     </entry>
                     <entry colname="dbversion">
                         8.1
@@ -109,7 +113,7 @@ by OpenJPA.
                 </row>
                 <row>
                     <entry colname="dbname">
-                        Empress
+                        <link linkend="dbsupport_empress">Empress</link>
                     </entry>
                     <entry colname="dbversion">
                         8.62
@@ -123,7 +127,7 @@ by OpenJPA.
                 </row>
                 <row>
                     <entry colname="dbname">
-                        Firebird
+                        <link linkend="dbsupport_firebird">Firebird</link>
                     </entry>
                     <entry colname="dbversion">
                         1.5, 2.0, 2.1
@@ -137,7 +141,7 @@ by OpenJPA.
                 </row>
                 <row>
                     <entry colname="dbname">
-                        H2 Database Engine
+                        <link linkend="dbsupport_h2">H2 Database Engine</link>
                     </entry>
                     <entry colname="dbversion">
                         1.0
@@ -151,7 +155,7 @@ by OpenJPA.
                 </row>
                 <row>
                     <entry colname="dbname">
-                        Hypersonic Database Engine
+                        <link linkend="dbsupport_hypersonic">Hypersonic Database Engine</link>
                     </entry>
                     <entry colname="dbversion">
                         1.8.0
@@ -165,7 +169,7 @@ by OpenJPA.
                 </row>
                 <row>
                     <entry colname="dbname">
-                        Informix Dynamic Server
+                        <link linkend="dbsupport_informix">Informix Dynamic Server</link>
                     </entry>
                     <entry colname="dbversion">
                         9.30.UC10
@@ -179,7 +183,7 @@ by OpenJPA.
                 </row>
                 <row>
                     <entry colname="dbname">
-                        InterSystems Cache
+                        <link linkend="dbsupport_intersystems_cache">InterSystems Cache</link>
                     </entry>
                     <entry colname="dbversion">
                         5.0
@@ -193,7 +197,7 @@ by OpenJPA.
                 </row>
                 <row>
                     <entry colname="dbname">
-                        Microsoft Access
+                        <link linkend="dbsupport_access">Microsoft Access</link>
                     </entry>
                     <entry colname="dbversion">
                         9.0 (a.k.a. "2000")
@@ -207,21 +211,21 @@ by OpenJPA.
                 </row>
                 <row>
                     <entry colname="dbname">
-                        Microsoft SQL Server
+                        <link linkend="dbsupport_sqlserver">Microsoft SQL Server</link>
                     </entry>
                     <entry colname="dbversion">
-                        9.00.1399 (SQL Server 2005)
+                        2005 (9.00), 2008 (10.00)
                     </entry>
                     <entry colname="drivname">
-                        SQLServer
+                        Microsoft SQL Server JDBC Driver
                     </entry>
                     <entry colname="drivversion">
-                        1.0.809.102
+                        1.2 or 2.0
                     </entry>
                 </row>
                 <row>
                     <entry colname="dbname">
-                        Microsoft Visual FoxPro
+                        <link linkend="dbsupport_foxpro">Microsoft Visual FoxPro</link>
                     </entry>
                     <entry colname="dbversion">
                         7.0
@@ -235,7 +239,7 @@ by OpenJPA.
                 </row>
                 <row>
                     <entry colname="dbname">
-                        MySQL
+                        <link linkend="dbsupport_mysql">MySQL</link>
                     </entry>
                     <entry colname="dbversion">
                         3.23.43-log
@@ -249,7 +253,7 @@ by OpenJPA.
                 </row>
                 <row>
                     <entry colname="dbname">
-                        MySQL
+                        <link linkend="dbsupport_mysql">MySQL</link>
                     </entry>
                     <entry colname="dbversion">
                         5.0.26
@@ -263,7 +267,7 @@ by OpenJPA.
                 </row>
                 <row>
                     <entry colname="dbname">
-                        Oracle
+                        <link linkend="dbsupport_oracle">Oracle</link>
                     </entry>
                     <entry colname="dbversion">
                         8.1,9.2,10.1
@@ -277,7 +281,7 @@ by OpenJPA.
                 </row>
                 <row>
                     <entry colname="dbname">
-                        Pointbase
+                        <link linkend="dbsupport_pointbase">Pointbase</link>
                     </entry>
                     <entry colname="dbversion">
                         4.4
@@ -291,10 +295,10 @@ by OpenJPA.
                 </row>
                 <row>
                     <entry colname="dbname">
-                        PostgreSQL
+                        <link linkend="dbsupport_postgresql">PostgreSQL</link>
                     </entry>
                     <entry colname="dbversion">
-                        7.2.1
+                        7.2.1,8.1.5
                     </entry>
                     <entry colname="drivname">
                         PostgreSQL Native Driver
@@ -305,21 +309,7 @@ by OpenJPA.
                 </row>
                 <row>
                     <entry colname="dbname">
-                        PostgreSQL
-                    </entry>
-                    <entry colname="dbversion">
-                        8.1.5
-                    </entry>
-                    <entry colname="drivname">
-                        PostgreSQL Native Driver
-                    </entry>
-                    <entry colname="drivversion">
-                        8.1
-                    </entry>
-                </row>
-                <row>
-                    <entry colname="dbname">
-                        Sybase Adaptive Server Enterprise
+                        <link linkend="dbsupport_sybase">Sybase Adaptive Server Enterprise</link>
                     </entry>
                     <entry colname="dbversion">
                         12.5
@@ -334,6 +324,7 @@ by OpenJPA.
             </tbody>
         </tgroup>
     </table>
+    </section>
     <section id="dbsupport_derby">
         <title>
             Apache Derby
@@ -681,14 +672,25 @@ openjpa.ConnectionURL: \
             <itemizedlist>
                 <listitem>
                     <para>
-SQL Server date fields are accurate only to the nearest 3 milliseconds, 
-possibly resulting in precision loss in stored dates.
+When using a Microsoft SQL Server JDBC Driver v1.2 or earlier, the 
+ConnectionURL must always contain the <literal>selectMethod=cursor
+</literal> string, which is necessary for the driver to properly 
+support large result sets.
                     </para>
                 </listitem>
                 <listitem>
                     <para>
-The ConnectionURL must always contain the " <literal>selectMethod=cursor
-</literal> " string.
+When using a Microsoft SQL Server JDBC Driver v1.2 or earlier, the 
+JDBC driver has bugs that manifest themselves when prepared statements 
+are pooled.  Please disable prepared statement pooling by including the 
+<literal>MaxCachedStatements=0</literal> configuration property 
+in your org.apache.openjpa.ConnectionFactoryProperties.
+                    </para>
+                </listitem>
+                <listitem>
+                    <para>
+SQL Server date fields are accurate only to the nearest 3 milliseconds, 
+possibly resulting in precision loss in stored dates.
                     </para>
                 </listitem>
                 <listitem>
