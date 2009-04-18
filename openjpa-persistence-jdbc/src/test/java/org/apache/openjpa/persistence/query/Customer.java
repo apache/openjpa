@@ -67,7 +67,7 @@ public class Customer {
 	@Column(length=30)
     @Basic
 	 String name;
-	@Enumerated
+	@Enumerated(EnumType.STRING)
     @Basic
 	 CreditRating creditRating;
 	@Version

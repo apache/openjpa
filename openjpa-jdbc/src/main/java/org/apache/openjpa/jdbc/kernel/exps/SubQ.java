@@ -158,6 +158,12 @@ class SubQ
             } else if (projs[i] instanceof SimpleCaseExpression) {
                 ((SimpleCaseExpression)projs[i]).setOtherPath(other);
                 ((SimpleCaseExpression)projs[i]).setOtherState(otherState);
+            } else if (projs[i] instanceof NullIfExpression) {
+                ((NullIfExpression)projs[i]).setOtherPath(other);
+                ((NullIfExpression)projs[i]).setOtherState(otherState);
+            } else if (projs[i] instanceof CoalesceExpression) {
+                ((CoalesceExpression)projs[i]).setOtherPath(other);
+                ((CoalesceExpression)projs[i]).setOtherState(otherState);
             }
         }
     }

@@ -114,7 +114,8 @@ public class TestSubquery
             
         "select o.oid from Order o where o.customer.name in" +
             " (select CONCAT(o.customer.name, 'XX') from Order o" +
-            " where o.amount > 10)",            
+            " where o.amount > 10)",  
+            
         "select c from Customer c where c.creditRating =" +
             " (select " +
             "   CASE WHEN o2.amount > 10 THEN " + 
@@ -126,6 +127,16 @@ public class TestSubquery
             "     END " +
             " from Order o2" +
             " where c.cid.id = o2.customer.cid.id)",
+
+        "select c from Customer c " + 
+            "where c.creditRating = (select COALESCE (c1.creditRating, " + 
+            "org.apache.openjpa.persistence.query.Customer$CreditRating.POOR) " +
+            "from Customer c1 where c1.name = 'Famzy') order by c.name DESC", 
+            
+        "select c from Customer c " + 
+            "where c.creditRating = (select NULLIF (c1.creditRating, " + 
+            "org.apache.openjpa.persistence.query.Customer$CreditRating.POOR) " +
+            "from Customer c1 where c1.name = 'Famzy') order by c.name DESC",            
     };
 
     static String[] updates = new String[] {
