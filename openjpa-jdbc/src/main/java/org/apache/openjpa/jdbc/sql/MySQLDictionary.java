@@ -119,37 +119,39 @@ public class MySQLDictionary
         super.connectedConfiguration(conn);
 
         DatabaseMetaData metaData = conn.getMetaData();
-        // The product version looks like 4.1.3-nt
-        String productVersion = metaData.getDatabaseProductVersion();
-        // The driver version looks like mysql-connector-java-3.1.11 (...)
-        String driverVersion = metaData.getDriverVersion();
-
-        try {
-            int[] versions = getMajorMinorVersions(productVersion);
-            int maj = versions[0];
-            int min = versions[1];
-            if (maj < 4 || (maj == 4 && min < 1)) {
-                supportsSubselect = false;
-                allowsAliasInBulkClause = false;
+        int maj = 0;
+        int min = 0;
+        if (isJDBC3) {
+            maj = metaData.getDatabaseMajorVersion();
+            min = metaData.getDatabaseMinorVersion();
+        } else {
+            try {
+                // The product version looks like 4.1.3-nt or 5.1.30
+                String productVersion = metaData.getDatabaseProductVersion();
+                int[] versions = getMajorMinorVersions(productVersion);
+                maj = versions[0];
+                min = versions[1];
+            } catch (IllegalArgumentException e) {
+                // we don't understand the version format.
+                // That is ok. We just take the default values.
+                if (log.isWarnEnabled())
+                    log.warn(e.toString(), e);
             }
-            if (maj > 5 || (maj == 5 && min >= 1))
-                supportsXMLColumn = true;
-
-            versions = getMajorMinorVersions(driverVersion);
-            maj = versions[0];
-            if (maj < 5) {
-                driverDeserializesBlobs = true;
-            }
-        } catch (IllegalArgumentException e) {
-            // we don't understand the version format.
-            // That is ok. We just take the default values.
         }
+        if (maj < 4 || (maj == 4 && min < 1)) {
+            supportsSubselect = false;
+            allowsAliasInBulkClause = false;
+        }
+        if (maj > 5 || (maj == 5 && min >= 1))
+            supportsXMLColumn = true;
+
+        if (metaData.getDriverMajorVersion() < 5)
+            driverDeserializesBlobs = true;
     }
 
     private static int[] getMajorMinorVersions(String versionStr)
         throws IllegalArgumentException {
         int beginIndex = 0;
-        int endIndex = 0;
 
         versionStr = versionStr.trim();
         char[] charArr = versionStr.toCharArray();
@@ -160,15 +162,13 @@ public class MySQLDictionary
             }
         }
 
+        int endIndex = charArr.length;
         for (int i = beginIndex+1; i < charArr.length; i++) {
             if (charArr[i] != '.' && !Character.isDigit(charArr[i])) {
                 endIndex = i;
                 break;
             }
         }
-
-        if (endIndex < beginIndex)
-            throw new IllegalArgumentException();
 
         String[] arr = versionStr.substring(beginIndex, endIndex).split("\\.");
         if (arr.length < 2)
