@@ -35,7 +35,7 @@ public class TestSubquery
     public void setUp() {
         setUp(Customer.class, Customer.CustomerKey.class, Order.class,
             OrderItem.class, Magazine.class, Publisher.class, Employee.class,
-            Dependent.class, DependentId.class, CLEAR_TABLES);
+            Dependent.class, DependentId.class, DROP_TABLES);
     }
 
     static String[]  querys = new String[] {
