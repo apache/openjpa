@@ -1273,7 +1273,7 @@ public class JPQLExpressionBuilder
         if (fmd == null)
             return;
 
-        Class type = path.isXPath() ? path.getType() : fmd.getDeclaredType();
+        Class type = path.getType();
         if (type == null)
             return;
 

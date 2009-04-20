@@ -32,7 +32,6 @@ import org.apache.openjpa.jdbc.meta.FieldMapping;
 import org.apache.openjpa.jdbc.meta.Strategy;
 import org.apache.openjpa.jdbc.meta.ValueMapping;
 import org.apache.openjpa.jdbc.meta.strats.HandlerCollectionTableFieldStrategy;
-import org.apache.openjpa.jdbc.meta.strats.HandlerRelationMapTableFieldStrategy;
 import org.apache.openjpa.jdbc.meta.strats.LRSMapFieldStrategy;
 import org.apache.openjpa.jdbc.schema.Column;
 import org.apache.openjpa.jdbc.schema.ForeignKey;
