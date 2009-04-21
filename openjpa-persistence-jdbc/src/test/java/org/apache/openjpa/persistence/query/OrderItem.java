@@ -19,7 +19,7 @@
 package org.apache.openjpa.persistence.query;
 import javax.persistence.*;
 @Entity
-@Table(name="TORDERITEM")
+@Table(name="TODREITM")
 public class OrderItem {
 	@Id 
 	@GeneratedValue(strategy=GenerationType.IDENTITY)

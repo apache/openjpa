@@ -25,7 +25,7 @@ import java.util.Collection;
 import java.util.ArrayList;
 
 @Entity
-@Table(name="TORDER")
+@Table(name="TODR")
 public class Order {
 	@Id 
 	@GeneratedValue(strategy=GenerationType.IDENTITY)

@@ -25,7 +25,7 @@ import java.util.Collection;
 import java.util.ArrayList;
 
 @Entity
-@Table(name="TCUSTOMER")
+@Table(name="TCTMR")
 public class Customer {
 
     @Embeddable
