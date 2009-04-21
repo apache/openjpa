@@ -292,15 +292,13 @@ public class PCPath
                 case JavaTypes.ARRAY:
                 case JavaTypes.COLLECTION:
                     ValueMapping elem = pstate.field.getElementMapping();
+                    if (pstate.field.isElementCollection() &&
+                        pstate.field.getElement().isEmbedded())
+                        return ((HandlerCollectionTableFieldStrategy)
+                            pstate.field.getStrategy()).getElementColumns(
+                            elem.getTypeMapping());
                     if (pstate.joinedRel && elem.getTypeCode() == JavaTypes.PC)
-                    {
-                        if (pstate.field.isElementCollection() &&
-                            pstate.field.getElement().isEmbedded())
-                            return ((HandlerCollectionTableFieldStrategy)
-                                pstate.field.getStrategy()).getElementColumns(
-                                elem.getTypeMapping());
                         return elem.getTypeMapping().getPrimaryKeyColumns();
-                    }
                     if (elem.getColumns().length > 0)
                         return elem.getColumns();
                     return pstate.field.getColumns();

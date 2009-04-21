@@ -1277,7 +1277,9 @@ void orderby_clause() #ORDERBY : { }
 
 void orderby_item() #ORDERBYITEM : { }
 {
-	(LOOKAHEAD(path()) path() | qualified_path() | orderby_extension() | identification_variable()
+	(LOOKAHEAD(path()) path() | LOOKAHEAD(qualified_path()) qualified_path()
+	 | LOOKAHEAD(general_identification_variable()) general_identification_variable()
+	 | orderby_extension() | identification_variable()
 	 )
 	    [ <ASC> #ASCENDING | <DESC> #DESCENDING ]
 }

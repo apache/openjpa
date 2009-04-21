@@ -89,7 +89,7 @@ public class TestMany2ManyMapEx2 extends SQLListenerTestCase {
             setCandidate(q, PhoneNumber.class);
         List rs = q.getResultList();
         String d = (String) rs.get(0);
-
+   
         query = "select KEY(p) from Employee e, " +
                 " in (e.phones) p";
         q = em.createQuery(query);
@@ -112,6 +112,15 @@ public class TestMany2ManyMapEx2 extends SQLListenerTestCase {
         query = "select KEY(e) from PhoneNumber p, " +
             " in (p.emps) e WHERE value(e).empId = 1 and KEY(e) = 'String1'";
         q = em.createQuery(query);
+        if (inMemory) 
+            setCandidate(q, PhoneNumber.class);
+        rs = q.getResultList();
+        assertEquals((String) rs.get(0), "String1");
+
+        query = "select KEY(e) from PhoneNumber p, " +
+            " in (p.emps) e WHERE KEY(e) = ?1";
+        q = em.createQuery(query);
+        q.setParameter(1, "String1");
         if (inMemory) 
             setCandidate(q, PhoneNumber.class);
         rs = q.getResultList();

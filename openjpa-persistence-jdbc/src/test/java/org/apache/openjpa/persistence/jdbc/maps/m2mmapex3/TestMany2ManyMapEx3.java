@@ -135,6 +135,7 @@ public class TestMany2ManyMapEx3 extends SQLListenerTestCase {
         rs = q.getResultList();
         d2 = (Department) ((Object[]) rs.get(0))[0];
         String dname = (String) ((Object[]) rs.get(0))[1];
+        assertEquals(d2.getName(), dname);
 
         // test GROUP BY qualified path
         sql.clear();
@@ -146,6 +147,35 @@ public class TestMany2ManyMapEx3 extends SQLListenerTestCase {
         rs = q.getResultList();
         if (!inMemory)
             assertTrue(sql.get(0).toUpperCase().indexOf(" GROUP BY ") != -1);
+
+        query = "select KEY(p) as k, KEY(p).name from Employee e, " +
+          " in (e.phones) p ORDER BY k";
+        q = em.createQuery(query);
+        if (inMemory) 
+            setCandidate(q, Employee.class);
+        rs = q.getResultList();
+        d2 = (Department) ((Object[]) rs.get(0))[0];
+        dname = (String) ((Object[]) rs.get(0))[1];
+        assertEquals(d2.getName(), dname);
+
+        query = "select KEY(p), KEY(p).name from Employee e, " +
+          " in (e.phones) p ORDER BY KEY(p)";
+        q = em.createQuery(query);
+        if (inMemory) 
+            setCandidate(q, Employee.class);
+        rs = q.getResultList();
+        d2 = (Department) ((Object[]) rs.get(0))[0];
+        dname = (String) ((Object[]) rs.get(0))[1];
+        assertEquals(d2.getName(), dname);
+
+        query = "select VALUE(p), KEY(p).name from Employee e, " +
+          " in (e.phones) p ORDER BY VALUE(p)";
+        q = em.createQuery(query);
+        if (inMemory) 
+            setCandidate(q, Employee.class);
+        rs = q.getResultList();
+        PhoneNumber ph = (PhoneNumber) ((Object[]) rs.get(0))[0];
+        assertEquals(ph.getNumber(), 1);
 
         em.close();
     }
