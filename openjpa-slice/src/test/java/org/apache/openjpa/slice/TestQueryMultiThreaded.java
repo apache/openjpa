@@ -270,7 +270,13 @@ public class TestQueryMultiThreaded extends SliceTestCase {
 		em.getTransaction().rollback();
 	}
 
-	public void testQueryParameterEntity() {
+	/**
+	 * This test is currently retired.
+	 * 
+	 * @see <A HREF="https://issues.apache.org/jira/browse/OPENJPA-1044">OPENJPA-1044</A>
+	 * for details.
+	 */
+	public void xtestQueryParameterEntity() {
 		final EntityManager em = emf.createEntityManager();
 		em.getTransaction().begin();
 		final Query addressQ = em.createQuery("select a from Address a where a.city = :city");
