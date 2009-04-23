@@ -49,6 +49,7 @@ import org.apache.openjpa.enhance.StateManager;
 import org.apache.openjpa.event.LifecycleEvent;
 import org.apache.openjpa.event.LifecycleEventManager;
 import org.apache.openjpa.lib.util.Localizer;
+import org.apache.openjpa.meta.AccessCode;
 import org.apache.openjpa.meta.ClassMetaData;
 import org.apache.openjpa.meta.FetchGroup;
 import org.apache.openjpa.meta.FieldMetaData;
@@ -357,10 +358,10 @@ public class StateManagerImpl
     public boolean isIntercepting() {
         if (getMetaData().isIntercepting())
             return true;
-        if (getMetaData().getAccessType() != ClassMetaData.ACCESS_FIELD
+        // TODO:JRB Intercepting 
+        if (AccessCode.isProperty(getMetaData().getAccessType())
             && _pc instanceof DynamicPersistenceCapable)
             return true;
-
         return false;
     }
 

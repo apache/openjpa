@@ -120,4 +120,8 @@ public class ListResultList extends AbstractResultList {
     public Object writeReplace() {
         return _list;
     }
+    
+    public String toString() {
+    	return _list.toString();
+    }
 }

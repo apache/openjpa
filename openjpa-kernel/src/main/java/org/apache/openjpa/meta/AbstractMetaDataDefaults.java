@@ -24,6 +24,7 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.security.AccessController;
 import java.security.PrivilegedActionException;
+import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.openjpa.enhance.PCRegistry;
@@ -36,9 +37,13 @@ import org.apache.openjpa.util.OpenJPAException;
 import org.apache.openjpa.util.UserException;
 
 /**
- * Abstract metadata defaults.
+ * Abstract implementation provides a set of generic utilities for detecting
+ * persistence meta-data of Field/Member. Also provides bean-style properties 
+ * such as access style or identity type to be used by default when such 
+ * information is not derivable from available meta-data.
  *
  * @author Abe White
+ * @author Pinaki Poddar
  */
 public abstract class AbstractMetaDataDefaults
     implements MetaDataDefaults {
@@ -148,24 +153,6 @@ public abstract class AbstractMetaDataDefaults
     public void populate(ClassMetaData meta, int access) {
         if (meta.getDescribedType() == Object.class)
             return;
-
-        if (access == ClassMetaData.ACCESS_UNKNOWN) {
-            // we do not allow using both field and method access at
-            // the same time
-            access = getAccessType(meta);
-            if ((access & ClassMetaData.ACCESS_FIELD) != 0
-                && (access & ClassMetaData.ACCESS_PROPERTY) != 0) {
-                List fields = getFieldAccessNames(meta);
-                List props = getPropertyAccessNames(meta);
-                if (fields != null || props != null)
-                    throw new UserException(_loc.get(
-                        "access-field-and-prop-hints",
-                        meta.getDescribedType().getName(), fields, props));
-                else
-                    throw new UserException(_loc.get("access-field-and-prop",
-                        meta.getDescribedType().getName()));
-            }
-        }
         meta.setAccessType(access);
 
         Log log = meta.getRepository().getLog();
@@ -179,32 +166,23 @@ public abstract class AbstractMetaDataDefaults
     }
 
     /**
-     * Populate initial field data. Does nothing by default.
-     */
-    protected void populate(FieldMetaData fmd) {
-    }
-
-    /**
      * Populate the given metadata using the {@link PCRegistry}.
      */
     private boolean populateFromPCRegistry(ClassMetaData meta) {
-        Class cls = meta.getDescribedType();
+        Class<?> cls = meta.getDescribedType();
         if (!PCRegistry.isRegistered(cls))
             return false;
         try {
             String[] fieldNames = PCRegistry.getFieldNames(cls);
-            Class[] fieldTypes = PCRegistry.getFieldTypes(cls);
+            Class<?>[] fieldTypes = PCRegistry.getFieldTypes(cls);
             Member member;
             FieldMetaData fmd;
             for (int i = 0; i < fieldNames.length; i ++) {
-                if (meta.getAccessType() == ClassMetaData.ACCESS_FIELD)
-                    member = AccessController.doPrivileged(
-                        J2DoPrivHelper.getDeclaredFieldAction(
-                            cls,fieldNames[i])); 
-                else
-                    member = Reflection.findGetter(meta.getDescribedType(),
-                        fieldNames[i], true);
-                fmd = meta.addDeclaredField(fieldNames[i], fieldTypes[i]);
+            	String property = fieldNames[i];
+                member = getMemberByProperty(meta, property);
+                if (member == null) // transient
+                	continue;
+                fmd = meta.addDeclaredField(property, fieldTypes[i]);
                 fmd.backingMember(member);
                 populate(fmd);
             }
@@ -218,35 +196,30 @@ public abstract class AbstractMetaDataDefaults
         }
     }
 
+    protected abstract List<Member> getPersistentMembers(ClassMetaData meta);
     /**
-     * Generate the given metadata using reflection.
+     * Generate the given meta-data using reflection.
+     * Adds FieldMetaData for each persistent state.
+     * Delegate to concrete implementation to determine the persistent
+     * members.
      */
     private void populateFromReflection(ClassMetaData meta) {
-        Member[] members;
+        List<Member> members = getPersistentMembers(meta);
         boolean iface = meta.getDescribedType().isInterface();
-        if (meta.getAccessType() == ClassMetaData.ACCESS_FIELD && !iface)
-            members = (Field[]) AccessController.doPrivileged(
-                J2DoPrivHelper.getDeclaredFieldsAction(
-                    meta.getDescribedType())); 
-        else
-            members = (Method[]) AccessController.doPrivileged(
-                J2DoPrivHelper.getDeclaredMethodsAction(
-                    meta.getDescribedType())); 
-
-        int mods;
+        // If access is mixed or if the default is currently unknown, 
+        // process all fields, otherwise only process members of the class  
+        // level default access type. 
+        
         String name;
         boolean def;
         FieldMetaData fmd;
-        for (int i = 0; i < members.length; i++) {
-            mods = members[i].getModifiers();
-            if (Modifier.isStatic(mods) || Modifier.isFinal(mods))
-                continue;
-
-            name = getFieldName(members[i]);
+        for (int i = 0; i < members.size(); i++) {
+            Member member = members.get(i);
+            name = getFieldName(member);
             if (name == null || isReservedFieldName(name))
                 continue;
 
-            def = isDefaultPersistent(meta, members[i], name);
+            def = isDefaultPersistent(meta, member, name);
             if (!def && _ignore)
                 continue;
 
@@ -254,7 +227,7 @@ public abstract class AbstractMetaDataDefaults
             // Object.class because setting backing member will set proper
             // type anyway
             fmd = meta.addDeclaredField(name, Object.class);
-            fmd.backingMember(members[i]);
+            fmd.backingMember(member);
             if (!def) {
                 fmd.setExplicit(true);
                 fmd.setManagement(FieldMetaData.MANAGE_NONE);
@@ -263,17 +236,16 @@ public abstract class AbstractMetaDataDefaults
         }
     }
 
-    /**
-     * Return the access type of the given metadata. May be a bitwise
-     * combination of field and property access constants, or ACCESS_UNKNOWN.
-     * Returns ACCESS_FIELD by default.
-     */
-    protected int getAccessType(ClassMetaData meta) {
-        if (meta.getDescribedType().isInterface())
-            return ClassMetaData.ACCESS_PROPERTY;
-        else
-            return ClassMetaData.ACCESS_FIELD;
+    protected void populate(FieldMetaData fmd) {
+    	
     }
+    
+    /**
+     * Called when populating from PCRegistry when only property names are
+     * available.
+     */
+    protected abstract Member getMemberByProperty(ClassMetaData meta, 
+    		String property); 
 
     /**
      * Return the list of fields in <code>meta</code> that use field access,
@@ -285,7 +257,7 @@ public abstract class AbstractMetaDataDefaults
      *
      * This implementation returns <code>null</code>.
      */
-    protected List getFieldAccessNames(ClassMetaData meta) {
+    protected List<String> getFieldAccessNames(ClassMetaData meta) {
         return null;
     }
 
@@ -299,7 +271,7 @@ public abstract class AbstractMetaDataDefaults
      *
      * This implementation returns <code>null</code>.
      */
-    protected List getPropertyAccessNames(ClassMetaData meta) {
+    protected List<String> getPropertyAccessNames(ClassMetaData meta) {
         return null;
     }
 
@@ -310,22 +282,17 @@ public abstract class AbstractMetaDataDefaults
      * field name. For getter methods, returns the minus "get" or "is" with
      * the next letter lower-cased. For other methods, returns null.
      */
-    protected String getFieldName(Member member) {
+    public static String getFieldName(Member member) {
         if (member instanceof Field)
             return member.getName();
-
-        Method meth = (Method) member;
-        if (meth.getReturnType() == void.class
-            || meth.getParameterTypes().length != 0)
-            return null;
-
-        String name = meth.getName();
-        if (name.startsWith("get") && name.length() > 3)
-            name = name.substring(3);
-        else if ((meth.getReturnType() == boolean.class
-            || meth.getReturnType() == Boolean.class)
-            && name.startsWith("is") && name.length() > 2)
-            name = name.substring(2);
+        if (member instanceof Method == false)
+        	return null;
+        Method method = (Method) member;
+        String name = method.getName();
+        if (isNormalGetter(method))
+        	name = name.substring("get".length());
+        else if (isBooleanGetter(method))
+        	name = name.substring("is".length());
         else
             return null;
 
@@ -352,6 +319,15 @@ public abstract class AbstractMetaDataDefaults
     protected abstract boolean isDefaultPersistent(ClassMetaData meta,
         Member member, String name);
 
+    /**
+     * Gets the backing member of the given field. If the field has not been
+     * assigned a backing member then get either the instance field or the
+     * getter method depending upon the access style of the defining class.
+     * <br>
+     * Defining class is used instead of declaring class because this method
+     * may be invoked during parsing phase when declaring metadata may not be
+     * available.  
+     */
     public Member getBackingMember(FieldMetaData fmd) {
         if (fmd == null)
             return null;
@@ -360,13 +336,17 @@ public abstract class AbstractMetaDataDefaults
             //### (this could be used during parse), so we have to settle for
             //### defining.  could cause problems if maps a superclass field
             //### where the superclass uses a different access type
-            if (fmd.getDefiningMetaData().getAccessType() ==
-                ClassMetaData.ACCESS_FIELD)
-                return AccessController.doPrivileged(
-                    J2DoPrivHelper.getDeclaredFieldAction(
-                        fmd.getDeclaringType(), fmd.getName())); 
-            return Reflection.findGetter(fmd.getDeclaringType(), fmd.getName(),
-                true);
+            if (fmd.getBackingMember() == null) {
+                if ((fmd.getDefiningMetaData().getAccessType() &
+                    ClassMetaData.ACCESS_FIELD) == ClassMetaData.ACCESS_FIELD)
+                    return AccessController.doPrivileged(
+                        J2DoPrivHelper.getDeclaredFieldAction(
+                            fmd.getDeclaringType(), fmd.getName())); 
+                return Reflection.findGetter(fmd.getDeclaringType(), 
+                    fmd.getName(), true);                
+            } else {
+                return fmd.getBackingMember();
+            }
         } catch (OpenJPAException ke) {
             throw ke;
         } catch (Exception e) {
@@ -375,8 +355,10 @@ public abstract class AbstractMetaDataDefaults
             throw new InternalException(e);
         }
     }
+    
 
-    public Class getUnimplementedExceptionType() {
+
+    public Class<?> getUnimplementedExceptionType() {
         return UnsupportedOperationException.class;
     }
 
@@ -384,8 +366,70 @@ public abstract class AbstractMetaDataDefaults
      * Helper method; returns true if the given class appears to be
      * user-defined.
      */
-    protected static boolean isUserDefined(Class cls) {
+    protected static boolean isUserDefined(Class<?> cls) {
         return cls != null && !cls.getName().startsWith("java.")
             && !cls.getName().startsWith ("javax.");
 	}
+    
+    /**
+     * Affirms if the given method matches the following signature
+     * <code> public T getXXX() </code>
+     * where T is any non-void type.
+     */
+    public static boolean isNormalGetter(Method method) {
+    	String methodName = method.getName();
+    	return startsWith(methodName, "get") 
+    	    && method.getParameterTypes().length == 0
+    	    && method.getReturnType() != void.class;
+    }
+    
+    /**
+     * Affirms if the given method matches the following signature
+     * <code> public boolean isXXX() </code>
+     * <code> public Boolean isXXX() </code>
+     */
+    public static boolean isBooleanGetter(Method method) {
+    	String methodName = method.getName();
+    	return startsWith(methodName, "is") 
+    	    && method.getParameterTypes().length == 0
+    	    && isBoolean(method.getReturnType());
+    }
+
+    /**
+     * Affirms if the given method signature matches bean-style getter method
+     * signature.<br>
+     * <code> public T getXXX()</code> where T is any non-void type.<br>
+     * or<br>
+     * <code> public T isXXX()</code> where T is boolean or Boolean.<br>
+     */
+    public static boolean isGetter(Method method) {
+    	if (method == null)
+    		return false;
+    	int mods = method.getModifiers();
+    	if (!Modifier.isPublic(mods) 
+    	 || Modifier.isNative(mods) 
+    	 || Modifier.isStatic(mods))
+    		return false;
+    	return isNormalGetter(method) || isBooleanGetter(method);
+    }
+    
+    /**
+     * Affirms if the given full string starts with the given head.
+     */
+    public static boolean startsWith(String full, String head) {
+        return full != null && head != null && full.startsWith(head) 
+            && full.length() > head.length();
+    }
+    
+    public static boolean isBoolean(Class<?> cls) {
+    	return cls == boolean.class || cls == Boolean.class;
+    }
+    
+    public static List<String> toNames(List<? extends Member> members) {
+    	List<String> result = new ArrayList<String>();
+    	for (Member m : members)
+    		result.add(m.getName());
+    	return result;
+    }
+
 }

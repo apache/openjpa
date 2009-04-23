@@ -35,7 +35,7 @@ public class AbstractThing {
         return id;
     }
 
-    protected void setId(final String id) {
+    public void setId(final String id) {
         this.id = id;
     }
 }

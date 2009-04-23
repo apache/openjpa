@@ -25,6 +25,7 @@ import java.lang.reflect.Modifier;
 import java.security.AccessController;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.BitSet;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
@@ -102,18 +103,25 @@ public class ClassMetaData
     /**
      * Unknown access type.
      */
-    public static final int ACCESS_UNKNOWN = 0;
+    public static final int ACCESS_UNKNOWN = AccessCode.UNKNOWN;
 
     /**
      * Persistent attributes are accessed via direct field access. Bit flag.
      */
-    public static final int ACCESS_FIELD = 2 << 0;
+    public static final int ACCESS_FIELD = AccessCode.FIELD;
 
     /**
      * Persistent attributes are accessed via setters and getters. Bit flag.
      */
-    public static final int ACCESS_PROPERTY = 2 << 1;
+    public static final int ACCESS_PROPERTY = AccessCode.PROPERTY;
 
+    /**
+     * Persistent class has explicitly defined an access type. 
+     * This will allow the attributes to use mixed access i.e. some field 
+     * may use ACCESS_FIELD while others ACCESS_PROPERTY. 
+     */
+    public static final int ACCESS_EXPLICIT = AccessCode.EXPLICIT;
+    
     /**
      * Value for using a synthetic detached state field, which is the default.
      */
@@ -655,30 +663,54 @@ public class ClassMetaData
     }
 
     /**
-     * The access type used by this class. Either {@link #ACCESS_FIELD}
-     * or {@link #ACCESS_PROPERTY}.
+     * The access type used by this class. 
+     * 
      */
     public int getAccessType() {
-        if (_accessType == ACCESS_UNKNOWN) {
-            ClassMetaData sup = getPCSuperclassMetaData();
-            if (sup != null)
-                return sup.getAccessType();
-            else {
-                return getRepository().getMetaDataFactory().
-                    getDefaults().getDefaultAccessType();
-            }
-        }
         return _accessType;
+    }
+    
+    /**
+     * Sets the access type. 
+     */
+    public void setAccessType(int type) {
+    	if (type == _accessType || type == ACCESS_UNKNOWN)
+    		return;
+    	if (!AccessCode.isValidClassCode(type)) {
+            throw new IllegalArgumentException(_loc.get("access-type-invalid", 
+    		    this, AccessCode.toString(type)).getMessage());
+    	}
+    	if (_accessType != ACCESS_UNKNOWN) { // changing access type
+    	    _repos.getLog().warn(_loc.get("access-type-change", 
+    		    this, AccessCode.toString(type), 
+    		    AccessCode.toString(_accessType)).getMessage());
+    	}
+        _accessType = type;
+    }
+    
+    /**
+     * Asserts the the given field (which must belong to this receiver)
+     * can be set to the given access code. If the field code is allowed,
+     * it may have the side-effect of changing the access code of this receiver.
+     */
+    void mergeFieldAccess(FieldMetaData fmd, int fCode) {
+    	setAccessType(AccessCode.mergeFieldCode(_accessType, fCode));
     }
 
     /**
-     * The access type used by this class. Must be either
-     * {@link #ACCESS_FIELD} or {@link #ACCESS_PROPERTY}.
-     */
-    public void setAccessType(int type) {
-        _accessType = type;
+     * Affirms if access style is explicitly defined.
+     */    
+    public boolean isExplicitAccess() {
+        return AccessCode.isExplicit(_accessType);
     }
 
+    /**
+     * Affirms if attributes of this class use mixed access types.
+     */    
+    public boolean isMixedAccess() {
+    	return AccessCode.isMixed(_accessType);
+    }
+    
     /**
      * Whether the type requires extent management.
      */
@@ -947,6 +979,23 @@ public class ClassMetaData
             }
         }
         return _allFields;
+    }
+
+    /**
+     * Return all field meta datas that use a specific field access type
+     * Access type must either be FieldMetaData.ACCESS_FIELD or 
+     * FieldMetaData.ACCESS_PROPERTY
+     * @return
+     */
+    public FieldMetaData[] getFields(int accessType) {
+        ArrayList<FieldMetaData> fmds = new ArrayList<FieldMetaData>();
+        FieldMetaData[] allFields = getFields();
+        for (FieldMetaData fmd : allFields) {
+            if (fmd.getAccessType() == accessType) {
+                fmds.add(fmd);
+            }
+        }
+        return fmds.toArray(new FieldMetaData[fmds.size()]);
     }
 
     /**
@@ -2051,12 +2100,12 @@ public class ClassMetaData
                     c = fmds[i].getObjectIdFieldType();
             }
 
-            if (meta.getAccessType() == ACCESS_FIELD) {
+            if (fmds[i].getAccessType() == ACCESS_FIELD) {
                 f = Reflection.findField(oid, fmds[i].getName(), false);
                 if (f == null || !f.getType().isAssignableFrom(c))
                     throw new MetaDataException(_loc.get("invalid-id",
                         _type, fmds[i].getName()));
-            } else if (meta.getAccessType() == ACCESS_PROPERTY) {
+            } else if (fmds[i].getAccessType() == ACCESS_PROPERTY) {
                 m = Reflection.findGetter(oid, fmds[i].getName(), false);
                 if (m == null || !m.getReturnType().isAssignableFrom(c))
                     throw new MetaDataException(_loc.get("invalid-id",
@@ -2082,16 +2131,23 @@ public class ClassMetaData
 
     /**
      * Assert that this class' access type is allowed.
+     * If no access style is set or an explicit style is set return.
+     * Otherwise check that the superclass access style, if defaulted, is the 
+     * same as that of this receiver. 
      */
     private void validateAccessType() {
-        if (_accessType == ACCESS_UNKNOWN)
+        if (!AccessCode.isSet(_accessType) 
+          || AccessCode.isExplicit(_accessType))
             return;
         ClassMetaData sup = getPCSuperclassMetaData();
-        if (sup != null && sup.getAccessType() != ACCESS_UNKNOWN
-            && sup.getAccessType() != _accessType &&
-            getPCSuperclassMetaData().getFields().length > 0) {
-            throw new MetaDataException(_loc.get("inconsistent-access",
-                this, sup));
+        while (sup != null && sup.isExplicitAccess())
+        	sup = sup.getPCSuperclassMetaData();
+        if (sup != null) {
+        	int supCode = sup.getAccessType();
+        	if (!AccessCode.isCompatibleSuper(_accessType, supCode))
+             throw new MetaDataException(_loc.get("access-inconsistent-inherit",
+             new Object[]{this, AccessCode.toString(_accessType), 
+                          sup, AccessCode.toString(supCode)}).toString());
         }
     }
 
@@ -2512,4 +2568,5 @@ public class ClassMetaData
     public void setAbstract(boolean flag) {
         _abstract = flag;
     }
+    
 }

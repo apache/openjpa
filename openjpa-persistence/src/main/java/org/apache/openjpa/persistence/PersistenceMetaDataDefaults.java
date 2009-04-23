@@ -26,12 +26,17 @@ import java.lang.reflect.Member;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.security.AccessController;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 import java.util.List;
 import java.util.ArrayList;
+
+import javax.persistence.Access;
+import javax.persistence.AccessType;
 import javax.persistence.Basic;
 import javax.persistence.ElementCollection;
 import javax.persistence.Embeddable;
@@ -55,19 +60,26 @@ import org.apache.openjpa.lib.util.J2DoPrivHelper;
 import org.apache.openjpa.lib.util.Localizer;
 import org.apache.openjpa.lib.log.Log;
 import org.apache.openjpa.meta.AbstractMetaDataDefaults;
+import org.apache.openjpa.meta.AccessCode;
 import org.apache.openjpa.meta.ClassMetaData;
 import org.apache.openjpa.meta.FieldMetaData;
 import org.apache.openjpa.meta.JavaTypes;
 import org.apache.openjpa.meta.ValueMetaData;
+
+import static javax.persistence.AccessType.FIELD;
+import static javax.persistence.AccessType.PROPERTY;
 import static org.apache.openjpa.persistence.PersistenceStrategy.*;
 import org.apache.openjpa.util.MetaDataException;
+import org.apache.openjpa.util.UserException;
 import org.apache.openjpa.conf.OpenJPAConfiguration;
+import org.apache.openjpa.enhance.Reflection;
 
 /**
  * JPA-based metadata defaults.
  *
  * @author Patrick Linskey
  * @author Abe White
+ * @author Pinaki Poddar
  * @nojavadoc
  */
 public class PersistenceMetaDataDefaults
@@ -76,8 +88,8 @@ public class PersistenceMetaDataDefaults
     private static final Localizer _loc = Localizer.forPackage
         (PersistenceMetaDataDefaults.class);
 
-    private static final Map<Class, PersistenceStrategy> _strats =
-        new HashMap<Class, PersistenceStrategy>();
+    private static final Map<Class<?>, PersistenceStrategy> _strats =
+        new HashMap<Class<?>, PersistenceStrategy>();
     private static final Set<String> _ignoredAnnos = new HashSet<String>();
 
     static {
@@ -102,6 +114,20 @@ public class PersistenceMetaDataDefaults
         _ignoredAnnos.add(PreRemove.class.getName());
         _ignoredAnnos.add(PreUpdate.class.getName());
     }
+
+	/**
+     * Set of Inclusion Filters based on member type, access type or transient
+     * annotations. Used to determine the persistent field/methods.
+     */
+    protected AccessFilter propertyAccessFilter = new AccessFilter(PROPERTY);
+    protected AccessFilter fieldAccessFilter = new AccessFilter(FIELD);
+
+    protected MemberFilter fieldFilter = new MemberFilter(Field.class);
+    protected MemberFilter methodFilter = new MemberFilter(Method.class);
+    protected TransientFilter nonTransientFilter = new TransientFilter();
+    protected AnnotatedFilter annotatedFilter = new AnnotatedFilter();
+    protected GetterFilter getterFilter = new GetterFilter();
+    protected SetterFilter setterFilter = new SetterFilter();
 
     public PersistenceMetaDataDefaults() {
         setCallbackMode(CALLBACK_RETHROW | CALLBACK_ROLLBACK |
@@ -198,16 +224,22 @@ public class PersistenceMetaDataDefaults
      * with ACCESS_UNKNOWN
      */
     public void setDefaultAccessType(String type) {
-        if (type == null)
-            return;
         if ("PROPERTY".equals(type.toUpperCase()))
             setDefaultAccessType(ClassMetaData.ACCESS_PROPERTY);
-        else
+        else if ("FIELD".equals(type.toUpperCase()))
             setDefaultAccessType(ClassMetaData.ACCESS_FIELD);
+        else
+        	throw new IllegalArgumentException(_loc.get("access-invalid", 
+        	    type).toString());
     }
 
     @Override
     public void populate(ClassMetaData meta, int access) {
+    	if (!AccessCode.isSet(access)) {
+    		meta.setAccessType(determineAccessType(meta));
+    	} else {
+    		meta.setAccessType(access);
+    	}
         super.populate(meta, access);
         meta.setDetachable(true);
         // do not call get*Fields as it will lock down the fields.
@@ -229,63 +261,194 @@ public class PersistenceMetaDataDefaults
         vmd.setCascadeAttach(ValueMetaData.CASCADE_NONE);
         vmd.setCascadeDetach(ValueMetaData.CASCADE_NONE);
     }
-
-    @Override
-    protected int getAccessType(ClassMetaData meta) {
-        return getAccessType(meta.getDescribedType());
+    
+    ClassMetaData getCachedSuperclassMetaData(ClassMetaData meta) {
+    	if (meta == null)
+    		return null;
+    	Class<?> sup = meta.getDescribedType().getSuperclass();
+    	if (sup == null)
+    		return null;
+    	return meta.getRepository().getCachedMetaData(sup);
     }
 
     /**
-     * Recursive helper to determine access type based on annotation placement.
+     * Recursive helper to determine access type based on annotation placement
+     * on members for the given class without an explicit access annotation.
      */
-    private int getAccessType(Class cls) {
-        // traversed entire hierarchy without finding annotations
-        if (cls == null || cls == Object.class)
-            return ClassMetaData.ACCESS_UNKNOWN;
-
-        int access = 0;
-        if (annotated((Field[]) AccessController.doPrivileged(
-            J2DoPrivHelper.getDeclaredFieldsAction(cls))).size() > 0)
-            access |= ClassMetaData.ACCESS_FIELD;
-        if (annotated((Method[]) AccessController.doPrivileged(
-            J2DoPrivHelper.getDeclaredMethodsAction(cls))).size() > 0
-            || cls.isInterface()) // OpenJPA managed ifaces must use prop access
-            access |= ClassMetaData.ACCESS_PROPERTY;
-        return getAccessType(cls.getSuperclass()) | access;
+    private int determineAccessType(ClassMetaData meta) {
+    	ClassMetaData sup = getCachedSuperclassMetaData(meta);
+    	while (sup != null && sup.isExplicitAccess())
+    		sup = sup.getPCSuperclassMetaData();
+    	if (sup != null && AccessCode.isSet(sup.getAccessType()))
+    		return sup.getAccessType();
+    	
+        // traversed entire hierarchy without finding access type
+        if (meta.getDescribedType().isInterface()) // managed interfaces 
+        	return ClassMetaData.ACCESS_PROPERTY;
+        Field[] allFields = AccessController.doPrivileged(J2DoPrivHelper.
+                getDeclaredFieldsAction(meta.getDescribedType()));
+        List<Field> fields = filter(allFields, nonTransientFilter, 
+        		annotatedFilter);
+		Method[] publicMethods = meta.getDescribedType().getMethods();
+        
+		List<Method> getters = filter(publicMethods, getterFilter, 
+    		nonTransientFilter, annotatedFilter);
+		List<Method> setters = filter(publicMethods, setterFilter);
+        getters =  matchGetterAndSetter(getters, setters);
+        if (!fields.isEmpty()) {
+        	if (!getters.isEmpty())
+        		throw new UserException(getters.toString());
+        	return ClassMetaData.ACCESS_FIELD;
+        } else if (!getters.isEmpty()) {
+        	return ClassMetaData.ACCESS_PROPERTY;
+        } 
+        return getDefaultAccessType();
     }
-
-    @Override
-    protected List getFieldAccessNames(ClassMetaData meta) {
-        return annotated((Field[]) AccessController.doPrivileged(
-            J2DoPrivHelper.getDeclaredFieldsAction(meta.getDescribedType())));
-    }
-
-    @Override
-    protected List getPropertyAccessNames(ClassMetaData meta) {
-        return annotated((Method[]) AccessController.doPrivileged(
-            J2DoPrivHelper.getDeclaredMethodsAction(meta.getDescribedType())));
-    }
-
+    
     /**
-     * Return the members of <code>members</code> that have persistence
-     * annotations.
+     * Matches the given getters with the given setters. Removes the getters
+     * that do not have a corresponding setter.
      */
-    private static List annotated(AnnotatedElement[] members) {
-        Annotation[] annos;
-        String name;
-        List annotated = new ArrayList(members.length);
-        for (int i = 0; i < members.length; i++) {
-            annos = (Annotation[]) AccessController.doPrivileged(J2DoPrivHelper
-                .getAnnotationsAction(members[i]));
-            for (int j = 0; j < annos.length; j++) {
-                name = annos[j].annotationType().getName();
-                if ((name.startsWith("javax.persistence.")
-                    || name.startsWith("org.apache.openjpa.persistence."))
-                    && !_ignoredAnnos.contains(name))
-                    annotated.add(members[i]);
+    private List<Method> matchGetterAndSetter(List<Method> getters,  
+    		List<Method> setters) {
+        Collection<Method> unmatched =  new ArrayList<Method>();
+       
+        for (Method getter : getters) {
+            String getterName = getter.getName();
+            Class<?> getterReturnType = getter.getReturnType();
+            String expectedSetterName = "set" + getterName.substring(
+                (isBooleanGetter(getter) ? "is" : "get").length());
+            boolean matched = false;
+            for (Method setter : setters) {
+                Class<?> setterArgType = setter.getParameterTypes()[0];
+                String actualSetterName = setter.getName();
+                matched = actualSetterName.equals(expectedSetterName)
+                    && setterArgType == getterReturnType;
+                if (matched)
+                    break;
             }
+            if (!matched) {
+                System.err.println(_loc.get("getter-unmatched", getter) 
+                    .toString());
+                unmatched.add(getter);
+            }
+
         }
-        return annotated;
+        getters.removeAll(unmatched);
+        return getters;
+    }
+
+    /**
+     * Gets the fields that are possible candidate for being persisted. The  
+     * result depends on the current access style of the given class. 
+     */
+    List<Field> getPersistentFields(ClassMetaData meta) {
+    	boolean explicit = meta.isExplicitAccess();
+    	boolean unknown  = !AccessCode.isSet(meta.getAccessType());
+    	boolean isField  = AccessCode.isField(meta.getAccessType());
+    	
+    	if (explicit || unknown || isField) {
+    		Field[] fields = AccessController.doPrivileged(J2DoPrivHelper.
+                getDeclaredFieldsAction(meta.getDescribedType()));
+    		
+        	return filter(fields, fieldFilter, nonTransientFilter, 
+        		unknown || isField  ? null : annotatedFilter, 
+        	    explicit ? (isField ? null : fieldAccessFilter) : null);
+    	} 
+    	return Collections.EMPTY_LIST;
+    }
+    
+    /**
+     * Gets the methods that are possible candidate for being persisted. The  
+     * result depends on the current access style of the given class. 
+     */
+    List<Method> getPersistentMethods(ClassMetaData meta) {
+    	boolean explicit = meta.isExplicitAccess();
+    	boolean unknown  = !AccessCode.isSet(meta.getAccessType());
+    	boolean isProperty  = AccessCode.isProperty(meta.getAccessType());
+    	
+    	if (explicit || unknown || isProperty) {
+    		Method[] publicMethods = meta.getDescribedType().getMethods();
+        
+    		List<Method> getters = filter(publicMethods, methodFilter, 
+                getterFilter, nonTransientFilter, 
+        		unknown || isProperty ? null : annotatedFilter, 
+                explicit ? (isProperty ? null : propertyAccessFilter) : null);
+    		List<Method> setters = filter(publicMethods, setterFilter);
+    		return getters = matchGetterAndSetter(getters, setters);
+    	}
+        
+    	return Collections.EMPTY_LIST;
+    }
+     
+    /**
+     * Gets the members that are backing members for attributes being persisted.
+     * Unlike {@linkplain #getPersistentFields(ClassMetaData)} and 
+     * {@linkplain #getPersistentMethods(ClassMetaData)} which returns 
+     * <em>possible</em> candidates, the result of this method is definite.
+     * 
+     * Side-effect of this method is if the given class metadata has 
+     * no access type set, this method will set it.
+     */
+    @Override
+    public List<Member> getPersistentMembers(ClassMetaData meta) {
+    	List<Member> members = new ArrayList<Member>();
+    	List<Field> fields   = getPersistentFields(meta);
+    	List<Method> getters = getPersistentMethods(meta);
+    	
+    	boolean isMixed = !fields.isEmpty() && !getters.isEmpty();
+    	boolean isEmpty = fields.isEmpty() && getters.isEmpty();
+
+    	boolean explicit    = meta.isExplicitAccess();
+    	boolean unknown     = !AccessCode.isSet(meta.getAccessType());
+    	
+    	if (isEmpty) {
+    		if (unknown)
+    			warn(_loc.get("access-unknown", meta));
+    		return Collections.EMPTY_LIST;
+    	}
+    	if (explicit) {
+    		if (isMixed) {
+    			assertNoDuplicate(fields, getters);
+                meta.setAccessType(AccessCode.MIXED | meta.getAccessType());
+    			members.addAll(fields);
+    			members.addAll(getters);
+    		} else {
+    			members.addAll(fields.isEmpty() ? getters : fields);
+    		}
+    	} else {
+    		if (isMixed)
+    			error(_loc.get("access-mixed", meta, fields, getters));
+    		if (fields.isEmpty()) {
+    			meta.setAccessType(ClassMetaData.ACCESS_PROPERTY);
+    			members.addAll(getters);
+    		} else {
+    			meta.setAccessType(ClassMetaData.ACCESS_FIELD);
+    			members.addAll(fields);
+    		}
+    	}
+    	return members;
+    }
+    
+    void assertNoDuplicate(List<Field> fields, List<Method> getters) {
+    	
+    }
+    
+    void error(Localizer.Message message) {
+    	System.err.println(message.toString());
+    }
+    void warn(Localizer.Message message) {
+    	System.err.println(message.toString());
+    }
+    
+    @Override
+    protected List<String> getFieldAccessNames(ClassMetaData meta) {
+    	return toNames(getPersistentFields(meta));
+    }
+
+    @Override
+    protected List<String> getPropertyAccessNames(ClassMetaData meta) {
+    	return toNames(getPersistentMethods(meta));
     }
 
     protected boolean isDefaultPersistent(ClassMetaData meta, Member member,
@@ -293,8 +456,23 @@ public class PersistenceMetaDataDefaults
         int mods = member.getModifiers();
         if (Modifier.isTransient(mods))
             return false;
-
-        if (member instanceof Method) {
+        int access = meta.getAccessType();        
+        
+        if (member instanceof Field) {
+            // If mixed or unknown, default property access, keep explicit 
+            // field members
+            if (AccessCode.isProperty(access)) {
+                if (!isAnnotatedAccess(member, AccessType.FIELD))
+                    return false;
+            }
+        }        
+        else if (member instanceof Method) {
+            // If mixed or unknown, field default access, keep explicit property
+            // members
+            if (AccessCode.isField(access)) {
+                if (!isAnnotatedAccess(member, AccessType.PROPERTY))
+                    return false;
+            }            
             try {
                 // check for setters for methods
                 Method setter = AccessController.doPrivileged(
@@ -327,6 +505,215 @@ public class PersistenceMetaDataDefaults
                     Transient.class))).booleanValue();
     }
 
+    /**
+     * May be used to determine if member is annotated with the specified 
+     * access type.
+     * @param member class member
+     * @param type expected access type
+     * @return true if access is specified on member and that access
+     *         type matches the expected type
+     */
+    private boolean isAnnotatedAccess(Member member, AccessType type) {
+    	if (member == null)
+    		return false;
+        Access anno = 
+            AccessController.doPrivileged(J2DoPrivHelper
+                .getAnnotationAction((AnnotatedElement)member, 
+                Access.class));
+        return anno != null && anno.value() == type;
+    }    
+
+    private boolean isAnnotated(Member member) {
+    	return member != null && member instanceof AnnotatedElement
+    	    && annotatedFilter.includes((AnnotatedElement)member);
+    }
+    
+    /**
+     * Gets either the instance field or the getter method depending upon the 
+     * access style of the given meta-data.
+     * <br>
+     * Defining class is used instead of declaring class because this method
+     * may be invoked during parsing phase when declaring meta-data may not be
+     * available.  
+     */
+    @Override
+    protected Member getMemberByProperty(ClassMetaData meta, String property) {
+    	Class<?> cls = meta.getDescribedType();
+    	int classAccessCode = meta.getAccessType();
+        Field field = Reflection.findField(cls, property, false);;
+        Method getter = Reflection.findGetter(cls, property, false);
+    	if (isAnnotated(field) && isAnnotated(getter))
+    		throw new IllegalStateException(_loc.get("access-duplicate", 
+    			field, getter).toString());
+    	
+        if (AccessCode.isField(classAccessCode)) {
+           if (isAnnotatedAccess(getter, AccessType.PROPERTY)) {
+        	   meta.setAccessType(AccessCode.MIXED | meta.getAccessType());
+               return getter;
+           }
+           return field; 
+        } else if (AccessCode.isProperty(classAccessCode)) {
+            if (isAnnotatedAccess(field, AccessType.FIELD)) {
+         	   meta.setAccessType(AccessCode.MIXED | meta.getAccessType());
+               return field;
+            }            
+            return getter;
+        } else if (!AccessCode.isSet(classAccessCode)) {
+        	if (isAnnotated(field)) {
+        		meta.setAccessType(AccessCode.FIELD);
+        		return field;
+        	}
+        	if (isAnnotated(getter)) {
+        		meta.setAccessType(AccessCode.PROPERTY);
+        		return getter;
+        	}
+        	throw new IllegalStateException("access-none " + property);
+        } else {
+        	throw new IllegalStateException(meta + " " + 
+        			AccessCode.toString(classAccessCode));
+        }
+    }
+    
+    // ========================================================================
+    //  Selection Filters select specific elements from a collection.
+    //  Used to determine the persistent members of a given class.
+    // ========================================================================
+    
+    /**
+     * Inclusive element filtering predicate.
+     *
+     */
+    private static interface InclusiveFilter<T extends AnnotatedElement> {
+        /**
+         * Return true to include the given element.
+         */
+        boolean includes(T e);
+    }
+
+    /**
+     * Filter the given collection with the conjunction of filters. The given
+     * collection itself is not modified.
+     */
+    <T extends AnnotatedElement> List<T> filter(T[] array, 
+    	InclusiveFilter... filters) {
+        List<T> result = new ArrayList<T>();
+        for (T e : array) {
+            boolean include = true;
+            for (InclusiveFilter f : filters) {
+                if (f != null && !f.includes(e)) {
+                    include = false;
+                    break;
+                }
+            }
+            if (include)
+                result.add(e);
+        }
+        return result;
+    }
+
+    /**
+     * Selects getter method. A getter method name starts with 'get', returns a
+     * non-void type and has no argument. Or starts with 'is', returns a boolean
+     * and has no argument.
+     * 
+     */
+    static class GetterFilter implements InclusiveFilter<Method> {
+        public boolean includes(Method method) {
+            return isGetter(method);
+        }
+    }
+
+    /**
+     * Selects setter method. A setter method name starts with 'set', returns a
+     * void and has single argument.
+     * 
+     */
+    static class SetterFilter implements InclusiveFilter<Method> {
+        public boolean includes(Method method) {
+            return isSetter(method);
+        }
+        /**
+         * Affirms if the given method matches the following signature
+         * <code> public void setXXX(T t) </code>
+         */
+        public static boolean isSetter(Method method) {
+        	String methodName = method.getName();
+        	return startsWith(methodName, "set") 
+        	    && method.getParameterTypes().length == 1
+        	    && method.getReturnType() == void.class;
+        }
+    }
+
+    /**
+     * Selects elements which is annotated with @Access annotation and that 
+     * annotation has the given AccessType value.
+     * 
+     */
+    static class AccessFilter implements InclusiveFilter<AnnotatedElement> {
+        final AccessType target;
+
+        public AccessFilter(AccessType target) {
+            this.target = target;
+        }
+
+        public boolean includes(AnnotatedElement obj) {
+        	Access access = obj.getAnnotation(Access.class);
+        	return access != null && access.equals(target);
+        }
+    }
+    
+    /**
+     * Selects elements which is annotated with @Access annotation and that 
+     * annotation has the given AccessType value.
+     * 
+     */
+    static class MemberFilter implements InclusiveFilter<AnnotatedElement> {
+        final Class<?> target;
+
+        public MemberFilter(Class<?> target) {
+            this.target = target;
+        }
+
+        public boolean includes(AnnotatedElement obj) {
+        	int mods = ((Member)obj).getModifiers();
+        	
+            return obj.getClass() == target && 
+                 !(Modifier.isStatic(mods) || Modifier.isFinal(mods) 
+                || Modifier.isTransient(mods) || Modifier.isNative(mods));
+                  
+        }
+    }
+
+    /**
+     * Selects all non-transient element.
+     */
+    static class TransientFilter implements InclusiveFilter<AnnotatedElement> {
+        public boolean includes(AnnotatedElement obj) {
+        	return !obj.isAnnotationPresent(Transient.class) && 
+        	       !Modifier.isTransient(((Member)obj).getModifiers());
+        }
+    }
+    
+    /**
+     * Selects all element annotated with <code>javax.persistence.*</code> or 
+     * <code>org.apache.openjpa.*</code> annotation except the annotations
+     * marked to be ignored.
+     */
+    static class AnnotatedFilter implements InclusiveFilter<AnnotatedElement> {
+        public boolean includes(AnnotatedElement obj) {
+            Annotation[] annos = AccessController.doPrivileged(J2DoPrivHelper
+                    .getAnnotationsAction(obj));
+        	for (Annotation anno : annos) {
+        		String name = anno.annotationType().getName();
+                if ((name.startsWith("javax.persistence.")
+                  || name.startsWith("org.apache.openjpa.persistence."))
+                  && !_ignoredAnnos.contains(name))
+                	return true;
+        	}
+        	return false;
+        }
+    }
+    
     private void logNoSetter(ClassMetaData meta, String name, Exception e) {
         Log log = meta.getRepository().getConfiguration()
             .getLog(OpenJPAConfiguration.LOG_METADATA);
@@ -337,5 +724,10 @@ public class PersistenceMetaDataDefaults
             // log the exception, if any, if we're in trace-level debugging
             log.warn(_loc.get("no-setter-for-getter", name,
                 meta.getDescribedType().getName()), e);
+    }
+    
+    private Log getLog(ClassMetaData meta) {
+        return meta.getRepository().getConfiguration()
+            .getLog(OpenJPAConfiguration.LOG_METADATA);
     }
 }

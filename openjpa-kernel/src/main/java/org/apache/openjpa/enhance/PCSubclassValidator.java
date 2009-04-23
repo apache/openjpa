@@ -18,6 +18,8 @@
  */
 package org.apache.openjpa.enhance;
 
+import java.lang.reflect.Field;
+import java.lang.reflect.Member;
 import java.lang.reflect.Modifier;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
@@ -138,7 +140,7 @@ public class PCSubclassValidator {
         // just considers accessor methods for now.
         FieldMetaData[] fmds = meta.getFields();
         for (int i = 0; i < fmds.length; i++) {
-            Method getter = (Method) fmds[i].getBackingMember();
+            Method getter = getBackingMember(fmds[i]);
             if (getter == null) {
                 addError(loc.get("subclasser-no-getter",
                     fmds[i].getName()), fmds[i]);
@@ -165,6 +167,18 @@ public class PCSubclassValidator {
             // ### scan through all the rest of the class to make sure it
             // ### doesn't use the field.
         }
+    }
+    
+    private Method getBackingMember(FieldMetaData fmd) {
+    	Member back = fmd.getBackingMember();
+    	if (Method.class.isInstance(back))
+    		return (Method)back;
+    	
+    	Method getter = Reflection.findGetter(meta.getDescribedType(), 
+    			fmd.getName(), false);
+    	if (getter != null)
+    		fmd.backingMember(getter);
+    	return getter;
     }
 
     private Method setterForField(FieldMetaData fmd) {

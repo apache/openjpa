@@ -143,6 +143,7 @@ public class FieldMetaData
     private String _embedFullName = null;
     private int _resMode = MODE_NONE;
     private String _mappedByIdValue = null;
+    private int _access = ClassMetaData.ACCESS_UNKNOWN;
 
     // load/store info
     private String[] _comments = null;
@@ -234,6 +235,8 @@ public class FieldMetaData
     /**
      * Supply the backing member object; this allows us to utilize
      * parameterized type information if available.
+     * Sets the access style of this receiver based on whether the given 
+     * member represents a field or getter method.
      */
     public void backingMember(Member member) {
         if (member == null)
@@ -249,10 +252,12 @@ public class FieldMetaData
             Field f = (Field) member;
             type = f.getType();
             types = JavaVersions.getParameterizedTypes(f);
+            setAccessType(ClassMetaData.ACCESS_FIELD);
         } else {
             Method meth = (Method) member;
             type = meth.getReturnType();
             types = JavaVersions.getParameterizedTypes(meth);
+            setAccessType(ClassMetaData.ACCESS_PROPERTY);
         }
 
         setDeclaredType(type);
@@ -1856,6 +1861,7 @@ public class FieldMetaData
         _generated = field._generated;
         _mappedByIdValue = field._mappedByIdValue;
         _isElementCollection = field._isElementCollection;
+        _access = field._access;
 
         // embedded fields can't be versions
         if (_owner.getEmbeddingMetaData() == null && _version == null)
@@ -2178,4 +2184,28 @@ public class FieldMetaData
     public boolean isMappedById() {
     	return (_mappedByIdValue != null);
     }
+    
+    /**
+     * Gets the access type used by this field. If no access type is set for
+     * this field then return the default access type used by the declaring 
+     * class.
+     */
+    public int getAccessType() {
+        if (!AccessCode.isSet(_access)) {
+        	int fCode = AccessCode.toFieldCode(getDeclaringMetaData()
+        			.getAccessType());
+        	return fCode;
+        }
+        return _access;
+    }
+    
+    /**
+     * Sets access type of this field. The access code is verified for validity
+     * as well as against the access style used by the declaring class.
+     */
+    public void setAccessType(int fCode) {
+    	ClassMetaData owner = getDeclaringMetaData();
+    	owner.mergeFieldAccess(this, fCode);
+        _access = fCode;
+    }    
 }

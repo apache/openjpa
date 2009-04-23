@@ -62,6 +62,7 @@ import org.apache.openjpa.meta.DelegatingMetaDataFactory;
 import org.apache.openjpa.meta.FieldMetaData;
 import org.apache.openjpa.meta.JavaTypes;
 import org.apache.openjpa.meta.LifecycleMetaData;
+import org.apache.openjpa.meta.MetaDataContext;
 import org.apache.openjpa.meta.MetaDataDefaults;
 import org.apache.openjpa.meta.MetaDataFactory;
 import static org.apache.openjpa.meta.MetaDataModes.*;
@@ -104,6 +105,11 @@ public class XMLPersistenceMetaDataParser
 
     private static final Map<String, Object> _elems =
         new HashMap<String, Object>();
+
+    // Map for storing deferred metadata which needs to be populated
+    // after embeddedables are loaded.
+    private static final Map<Class, ArrayList<MetaDataContext>> _embeddables = 
+        new HashMap<Class, ArrayList<MetaDataContext>>();
 
     static {
         _elems.put(ELEM_PKG, ELEM_PKG);
@@ -836,8 +842,8 @@ public class XMLPersistenceMetaDataParser
             return false;
         }
 
-        // if we don't know the access type, check to see if a superclass
-        // has already defined the access type
+        // if we don't know the default access type, check to see if a 
+        // superclass has already defined the access type
         int defaultAccess = _access;
         if (defaultAccess == ClassMetaData.ACCESS_UNKNOWN) {
             ClassMetaData sup = repos.getCachedMetaData(_cls.getSuperclass());
@@ -845,10 +851,11 @@ public class XMLPersistenceMetaDataParser
                 defaultAccess = sup.getAccessType();
         }
 
+        int access = ClassMetaData.ACCESS_UNKNOWN;
         if (meta == null) {
             // add metadata for this type
-            int access = toAccessType(attrs.getValue("access"), defaultAccess);
-            meta = repos.addMetaData(_cls, access);
+            access = toAccessType(attrs.getValue("access"), defaultAccess);
+            meta = repos.addMetaData(_cls);
             meta.setEnvClassLoader(_envLoader);
             meta.setSourceMode(MODE_NONE);
 
@@ -856,9 +863,10 @@ public class XMLPersistenceMetaDataParser
             if (_parser != null)
                 _parser.parse(_cls);
         }
-
+        access = meta.getAccessType();
+        
         boolean mappedSuper = "mapped-superclass".equals(elem);
-        meta.setAbstract(mappedSuper);
+        boolean embeddable = "embeddable".equals(elem);
         if (isMetaDataMode()) {
             meta.setSource(getSourceFile(), meta.SRC_XML);
             meta.setSourceMode(MODE_META, true);
@@ -871,9 +879,14 @@ public class XMLPersistenceMetaDataParser
             String name = attrs.getValue("name");
             if (!StringUtils.isEmpty(name))
                 meta.setTypeAlias(name);
-            meta.setEmbeddedOnly(mappedSuper || "embeddable".equals(elem));
-            if (mappedSuper)
-                meta.setIdentityType(meta.ID_UNKNOWN);
+            meta.setAbstract(mappedSuper);
+            meta.setEmbeddedOnly(mappedSuper || embeddable);
+//            if (mappedSuper)
+//                meta.setIdentityType(meta.ID_UNKNOWN);
+            
+            if (embeddable) {
+                addDeferredEmbeddableMetaData(_cls);
+            }
         }
         if (isMappingMode())
             meta.setSourceMode(MODE_MAPPING, true);
@@ -1030,7 +1043,8 @@ public class XMLPersistenceMetaDataParser
         fmd.setPrimaryKey(true);
         fmd.setEmbedded(true);
         if (fmd.getEmbeddedMetaData() == null)
-            fmd.addEmbeddedMetaData();
+//            fmd.addEmbeddedMetaData();
+            deferEmbeddable(fmd.getDeclaredType(), fmd);
         return true;
     }
 
@@ -1181,16 +1195,19 @@ public class XMLPersistenceMetaDataParser
         ClassMetaData meta = (ClassMetaData) currentElement();
         String name = attrs.getValue("name");
         FieldMetaData field = meta.getDeclaredField(name);
-        if ((field == null || field.getDeclaredType() == Object.class)
+        int fldAccess = getFieldAccess(field, attrs);
+        // If the access defined in XML is not the same as what was defined
+        // by default or annotation, find the appropriate backing member and 
+        // replace what is currently defined in metadata.
+        if ((field == null || field.getDeclaredType() == Object.class ||
+             field.getAccessType() != fldAccess)
             && meta.getDescribedType() != Object.class) {
             Member member = null;
             Class type = null;
-            int def = _repos.getMetaDataFactory().getDefaults().
-                getDefaultAccessType();
             try {
-                if (meta.getAccessType() == ClassMetaData.ACCESS_PROPERTY
-                    || (meta.getAccessType() == ClassMetaData.ACCESS_UNKNOWN
-                    && def == ClassMetaData.ACCESS_PROPERTY)) {
+                if ((field != null && 
+                    field.getAccessType() == ClassMetaData.ACCESS_PROPERTY) ||
+                    (fldAccess == ClassMetaData.ACCESS_PROPERTY)) {
                     String cap = StringUtils.capitalize(name);
                     type = meta.getDescribedType();
                     try {
@@ -1258,6 +1275,34 @@ public class XMLPersistenceMetaDataParser
         _strategy = null;
     }
 
+    /**
+     * Determines access for field based upon existing metadata and XML 
+     * attributes.
+     * 
+     * @param field FieldMetaData current metadata for field
+     * @param attrs XML Attributes defined on this field
+     * @return
+     */
+    private int getFieldAccess(FieldMetaData field, Attributes attrs) {
+        if (attrs != null) {
+            String access = attrs.getValue("access");
+            if ("PROPERTY".equals(access))
+                return ClassMetaData.ACCESS_PROPERTY;
+            if ("FIELD".equals(access))
+                return ClassMetaData.ACCESS_FIELD;
+        }
+        // Check access defined on field, if provided
+        if (field != null) {
+            return field.getAccessType();
+        }
+        // Otherwise, get the default access type of the declaring class
+        ClassMetaData meta = (ClassMetaData) currentElement();
+        if (meta != null) {
+            return (meta.getAccessType() & ~ClassMetaData.ACCESS_EXPLICIT);
+        }
+        return ClassMetaData.ACCESS_UNKNOWN;
+    }
+    
     /**
      * Implement to add field mapping data. Does nothing by default.
      */
@@ -1372,8 +1417,10 @@ public class XMLPersistenceMetaDataParser
         assertPC(fmd, "Embedded");
         fmd.setEmbedded(true);
         fmd.setSerialized(false); // override any Lob annotation
+        
         if (fmd.getEmbeddedMetaData() == null)
-            fmd.addEmbeddedMetaData();
+//            fmd.addEmbeddedMetaData();
+            deferEmbeddable(fmd.getDeclaredType(), fmd);
     }
 
     /**
@@ -1485,7 +1532,9 @@ public class XMLPersistenceMetaDataParser
         if (JavaTypes.maybePC(fmd.getElement())) {
             fmd.getElement().setEmbedded(true);
             if (fmd.getElement().getEmbeddedMetaData() == null)
-                fmd.getElement().addEmbeddedMetaData();
+//                fmd.getElement().addEmbeddedMetaData();
+                deferEmbeddable(fmd.getElement().getDeclaredType(), 
+                    fmd.getElement());
         }
     }
     
@@ -1869,4 +1918,41 @@ public class XMLPersistenceMetaDataParser
 			return PersistenceCapable.class;
 		return super.classForName(name, isRuntime());
 	}
+    
+    /**
+     * Process all deferred embeddables for a given class.  This should only
+     * happen after the access type of the embeddable is known.
+     * 
+     * @param embedType  embeddable class 
+     * @param access class level access for embeddable
+     */
+    protected void addDeferredEmbeddableMetaData(Class embedType) {
+        ArrayList<MetaDataContext> fmds = _embeddables.get(embedType);
+        if (fmds != null && fmds.size() > 0) {
+            for (int i = fmds.size() -1 ; i >= 0; i--) {
+                MetaDataContext md = fmds.get(i);
+                if (md instanceof FieldMetaData) {
+                    ((FieldMetaData)md).addEmbeddedMetaData();            
+                }
+                else if (md instanceof ValueMetaData) {
+                    ((ValueMetaData)md).addEmbeddedMetaData();
+                }
+                fmds.remove(i);
+            }
+            // If all mds in the list were processed, remove the item
+            // from the map.
+            if (fmds.size() == 0) {
+                _embeddables.remove(embedType);
+            }
+        }
+    }
+    
+    protected void deferEmbeddable(Class embedType, MetaDataContext fmd) {
+        ArrayList<MetaDataContext> fmds = _embeddables.get(embedType);
+        if (fmds == null) {
+            fmds = new ArrayList<MetaDataContext>();
+            _embeddables.put(embedType, fmds);
+        }
+        fmds.add(fmd);
+    }
 }

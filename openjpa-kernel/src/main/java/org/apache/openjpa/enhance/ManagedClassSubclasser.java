@@ -37,6 +37,7 @@ import org.apache.openjpa.lib.util.JavaVersions;
 import org.apache.openjpa.lib.util.Localizer;
 import org.apache.openjpa.lib.util.Files;
 import org.apache.openjpa.lib.util.Localizer.Message;
+import org.apache.openjpa.meta.AccessCode;
 import org.apache.openjpa.meta.ClassMetaData;
 import org.apache.openjpa.meta.FieldMetaData;
 import org.apache.openjpa.meta.JavaTypes;
@@ -225,11 +226,15 @@ public class ManagedClassSubclasser {
 
         setDetachedState(meta);
 
-        if (warn && meta.getAccessType() == ClassMetaData.ACCESS_FIELD
+        // If warn & (implicit field access | mixed access) & noredef
+        if (warn && ((AccessCode.isField(meta.getAccessType())
+            && !meta.isMixedAccess()) ||  meta.isMixedAccess())
             && !redefineAvailable) {
             // only warn about declared fields; superclass fields will be
             // warned about when the superclass is handled
             for (FieldMetaData fmd : meta.getDeclaredFields()) {
+                if (fmd.getAccessType() == ClassMetaData.ACCESS_PROPERTY)
+                    continue;
                 switch (fmd.getTypeCode()) {
                     case JavaTypes.COLLECTION:
                     case JavaTypes.MAP:

@@ -19,6 +19,7 @@
 package org.apache.openjpa.persistence;
 
 import static javax.persistence.GenerationType.AUTO;
+import static org.apache.openjpa.persistence.MetaDataTag.ACCESS;
 import static org.apache.openjpa.persistence.MetaDataTag.DATASTORE_ID;
 import static org.apache.openjpa.persistence.MetaDataTag.DATA_CACHE;
 import static org.apache.openjpa.persistence.MetaDataTag.DEPENDENT;
@@ -102,6 +103,9 @@ import javax.persistence.FetchType;
 import javax.persistence.FlushModeType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
+
+import javax.persistence.Access;
+import javax.persistence.AccessType;
 import javax.persistence.Id;
 import javax.persistence.IdClass;
 import javax.persistence.Lob;
@@ -139,6 +143,7 @@ import org.apache.openjpa.kernel.QueryLanguages;
 import org.apache.openjpa.kernel.jpql.JPQLParser;
 import org.apache.openjpa.lib.conf.Configurations;
 import org.apache.openjpa.lib.log.Log;
+import org.apache.openjpa.lib.meta.SourceTracker;
 import org.apache.openjpa.lib.util.J2DoPrivHelper;
 import org.apache.openjpa.lib.util.Localizer;
 import org.apache.openjpa.meta.ClassMetaData;
@@ -182,6 +187,7 @@ public class AnnotationPersistenceMetaDataParser
         new HashMap<Class, MetaDataTag>();
 
     static {
+        _tags.put(Access.class, ACCESS);
         _tags.put(EmbeddedId.class, EMBEDDED_ID);
         _tags.put(EntityListeners.class, ENTITY_LISTENERS);
         _tags.put(ExcludeDefaultListeners.class, EXCLUDE_DEFAULT_LISTENERS);
@@ -634,6 +640,10 @@ public class AnnotationPersistenceMetaDataParser
                 case REPLICATED:
                 	meta.setReplicated(true);
                 	break;
+                case ACCESS:
+                    if (isMetaDataMode())
+                        parseAccess(meta, (Access)anno);
+                    break;
                 default:
                     throw new UnsupportedException(_loc.get("unsupported", _cls,
                         anno.toString()));
@@ -682,6 +692,17 @@ public class AnnotationPersistenceMetaDataParser
     }
 
     /**
+     * Set the explicit access type, if specified.
+     */    
+    private void parseAccess(ClassMetaData meta, Access access) {
+    	if (access != null) {
+    		meta.setAccessType(ClassMetaData.ACCESS_EXPLICIT 
+            | (access.value() == AccessType.FIELD ? 
+            	ClassMetaData.ACCESS_FIELD : ClassMetaData.ACCESS_PROPERTY));
+    	}
+    }
+
+    /**
      * Parse class mapping annotations.
      */
     protected void parseClassMappingAnnotations(ClassMetaData meta) {
@@ -711,12 +732,29 @@ public class AnnotationPersistenceMetaDataParser
         }
 
         if (meta == null) {
-            meta = getRepository().addMetaData(_cls);
+            meta = getRepository().addMetaData(_cls, getAccessCode(_cls));
             meta.setEnvClassLoader(_envLoader);
             meta.setSourceMode(MODE_NONE);
-            meta.setSource(getSourceFile(), meta.SRC_ANNOTATIONS);
+            meta.setSource(getSourceFile(), SourceTracker.SRC_ANNOTATIONS);
         }
         return meta;
+    }
+
+    /**
+     * Gets the explicit access for the class, if any.
+     * Explicit access type specification does not affect the access type of 
+     * other entity classes or mapped super classes in the entity hierarchy.
+     */
+    private int getAccessCode(Class<?> cls) {
+        int accessCode = ClassMetaData.ACCESS_UNKNOWN;
+        Access access = AccessController.doPrivileged(
+            J2DoPrivHelper.getAnnotationAction(cls, Access.class));
+        if (access != null) {
+            accessCode |=  ClassMetaData.ACCESS_EXPLICIT | 
+                (access.value() == AccessType.FIELD ? 
+                ClassMetaData.ACCESS_FIELD : ClassMetaData.ACCESS_PROPERTY);
+        }
+        return accessCode;
     }
 
     /**
@@ -1100,6 +1138,9 @@ public class AnnotationPersistenceMetaDataParser
             }
 
             switch (tag) {
+                case ACCESS:
+                    parseAccess(fmd, (Access)anno);
+                    break;
                 case FLUSH_MODE:
                     if (isMetaDataMode())
                         warnFlushMode(fmd);
@@ -1396,6 +1437,7 @@ public class AnnotationPersistenceMetaDataParser
 
         fmd.setInDefaultFetchGroup(true);
         fmd.setEmbedded(true);
+        
         if (fmd.getEmbeddedMetaData() == null)
             fmd.addEmbeddedMetaData();
     }
@@ -1527,8 +1569,9 @@ public class AnnotationPersistenceMetaDataParser
                 throw new MetaDataException(_loc.get("bad-meta-anno", fmd,
                     "Persistent(embedded=true)"));
             fmd.setEmbedded(true);
-            if (fmd.getEmbeddedMetaData() == null)
+            if (fmd.getEmbeddedMetaData() == null) {
                 fmd.addEmbeddedMetaData();
+            }
         }
     }
 
@@ -1553,8 +1596,9 @@ public class AnnotationPersistenceMetaDataParser
                 throw new MetaDataException(_loc.get("bad-meta-anno", fmd,
                     "PersistentCollection(embeddedElement=true)"));
             fmd.getElement().setEmbedded(true);
-            if (fmd.getElement().getEmbeddedMetaData() == null)
+            if (fmd.getElement().getEmbeddedMetaData() == null) {
                 fmd.getElement().addEmbeddedMetaData();
+            }
         }
     }
 
@@ -1603,8 +1647,9 @@ public class AnnotationPersistenceMetaDataParser
                 throw new MetaDataException(_loc.get("bad-meta-anno", fmd,
                     "PersistentMap(embeddedKey=true)"));
             fmd.getKey().setEmbedded(true);
-            if (fmd.getKey().getEmbeddedMetaData() == null)
+            if (fmd.getKey().getEmbeddedMetaData() == null) {
                 fmd.getKey().addEmbeddedMetaData();
+            }
         }
         if (anno.elementEmbedded()) {
             if (!JavaTypes.maybePC(fmd.getElement()))
@@ -1787,6 +1832,17 @@ public class AnnotationPersistenceMetaDataParser
             else
                 meta.setSourceMode(MODE_QUERY);
         }
+    }
+    
+    /**
+     * Set the explicit access type, if specified.
+     */    
+    private void parseAccess(FieldMetaData meta, Access access) {
+    	if (access != null) {
+    		meta.setAccessType(ClassMetaData.ACCESS_EXPLICIT 
+            | (access.value() == AccessType.FIELD ? 
+            	ClassMetaData.ACCESS_FIELD : ClassMetaData.ACCESS_PROPERTY));
+    	}
     }
 
     private static class MethodKey {

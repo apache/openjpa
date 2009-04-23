@@ -326,6 +326,14 @@ public class DelegatingResultList
             throw translate(re);
         }
     }
+    
+    public String toString() {
+        try {
+            return _del.toString();
+        } catch (RuntimeException re) {
+            throw translate(re);
+        }
+    }
 
     /**
      * Delegating iterator that also performs exception translation.

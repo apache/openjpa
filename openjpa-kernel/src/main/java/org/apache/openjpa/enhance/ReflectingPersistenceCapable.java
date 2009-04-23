@@ -337,7 +337,8 @@ public class ReflectingPersistenceCapable
     }
 
     private Object getValue(int i, Object o) {
-        if (meta.getAccessType() == ClassMetaData.ACCESS_PROPERTY) {
+        FieldMetaData fmd = meta.getField(i);
+        if (fmd.getAccessType() == ClassMetaData.ACCESS_PROPERTY) {
             Field field = Reflection.findField(meta.getDescribedType(),
                 toFieldName(i), true);
             return Reflection.get(o, field);
@@ -356,7 +357,8 @@ public class ReflectingPersistenceCapable
     }
 
     private void setValue(int i, Object o, Object val) {
-        if (meta.getAccessType() == ClassMetaData.ACCESS_PROPERTY) {
+        FieldMetaData fmd = meta.getField(i);
+        if (fmd.getAccessType() == ClassMetaData.ACCESS_PROPERTY) {
             if (!meta.isIntercepting()) {
                 Method meth = Reflection.findSetter(meta.getDescribedType(),
                     meta.getField(i).getName(), true);

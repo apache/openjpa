@@ -1121,4 +1121,24 @@ public abstract class J2DoPrivHelper {
             }
         };
     }
+    
+    /**
+     * Return a PrivilegedAction object for
+     *   AnnotatedElement.getAnnotation().
+     *
+     * Requires security policy:
+     *   'permission java.lang.RuntimePermission "accessDeclaredMembers";'
+     *
+     * @return Annotation
+     */
+    public static final <T extends Annotation> PrivilegedAction<T> 
+        getAnnotationAction(
+        final AnnotatedElement element, 
+        final Class<T> annotationClazz) {
+        return new PrivilegedAction<T>() {
+            public T run() {
+                return (T) element.getAnnotation(annotationClazz);
+            }
+        };
+    }
 }

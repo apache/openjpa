@@ -146,12 +146,12 @@ public class TestDefaultInheritanceStrategy
         // Add two entities, each extending the same mapped interface
         em.getTransaction().begin();
         SubclassC sc = new SubclassC();
-        sc.setId(0);
+        sc.setId(1010);
         sc.setName("SubclassCMappedSuperName");
         sc.setClassCName("SubclassCName");
 
         SubclassD sd = new SubclassD();
-        sd.setId(1);
+        sd.setId(2020);
         sd.setName("SubclassDMappedSuperName");
         sd.setClassDName("SubclassDName");
         
@@ -160,6 +160,9 @@ public class TestDefaultInheritanceStrategy
         em.getTransaction().commit();
         
         em.clear();
+        
+        SubclassD sd2 =em.find(SubclassD.class, 2020);
+        assertEquals(2020, sd2.getId());
                 
         // The subclasses should not contain a discriminator column
         verifyNoDypeColumn(em, "SubclassC");
@@ -168,10 +171,10 @@ public class TestDefaultInheritanceStrategy
         // Query the subclass entities.  Make sure the counts are correct and
         // the result is castable to the mapped sc.
         verifyInheritanceQueryResult(em, "SubclassC", 
-                classArray(SubclassC.class, MappedSuper.class), 0);
+                classArray(SubclassC.class, MappedSuper.class), 1010);
 
         verifyInheritanceQueryResult(em, "SubclassD", 
-                classArray(SubclassD.class, MappedSuper.class), 1);
+                classArray(SubclassD.class, MappedSuper.class), 2020);
                 
         em.close();
     }
@@ -648,7 +651,8 @@ public class TestDefaultInheritanceStrategy
      */
     private void verifyInheritanceQueryResult(EntityManager em, String entity,
         Class[] types, int... expectedValues) {
-        Query qry = em.createQuery("SELECT e FROM " + entity + " e");
+    	String jpql = "SELECT e FROM " + entity + " e";
+        Query qry = em.createQuery(jpql);
         List col = qry.getResultList();
         assertTrue("Query should return " + expectedValues.length + " entities",
             col.size() == expectedValues.length);
@@ -673,7 +677,7 @@ public class TestDefaultInheritanceStrategy
                 if (expectedValues[j] == id)                   
                     count++;
         }
-        assertTrue("Returned expected entities", 
+        assertTrue("Returned unexpected entities " + col + " for " + jpql, 
                 count == expectedValues.length);
     }    
     

@@ -2532,9 +2532,10 @@ public class BrokerImpl
 
             // create id for instance
             if (id == null) {
-                if (meta.getIdentityType() == ClassMetaData.ID_APPLICATION)
+            	int idType = meta.getIdentityType();
+                if (idType == ClassMetaData.ID_APPLICATION)
                     id = ApplicationIds.create(pc, meta);
-                else if (meta.getIdentityType() == ClassMetaData.ID_UNKNOWN)
+                else if (idType == ClassMetaData.ID_UNKNOWN)
                     throw new UserException(_loc.get("meta-unknownid", meta));
                 else
                     id = StateManagerId.newInstance(this);
