@@ -27,6 +27,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 
 import org.apache.commons.lang.StringUtils;
+import org.apache.openjpa.meta.AccessCode;
 import org.apache.openjpa.meta.ClassMetaData;
 import org.apache.openjpa.meta.FieldMetaData;
 import org.apache.openjpa.util.UserException;
@@ -126,7 +127,7 @@ public class PCSubclassValidator {
             throw new InternalException(
                 loc.get("subclasser-class-already-pc", name));
 
-        if (meta.getAccessType() == ClassMetaData.ACCESS_PROPERTY)
+        if (AccessCode.isProperty(meta.getAccessType()))
             checkPropertiesAreInterceptable();
 
         if (errors != null && !errors.isEmpty())

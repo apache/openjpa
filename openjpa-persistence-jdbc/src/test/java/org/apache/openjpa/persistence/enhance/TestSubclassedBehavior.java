@@ -38,6 +38,7 @@ import org.apache.openjpa.persistence.common.utils.AbstractTestCase;
 import junit.framework.AssertionFailedError;
 import org.apache.openjpa.kernel.Broker;
 import org.apache.openjpa.kernel.OpenJPAStateManager;
+import org.apache.openjpa.meta.AccessCode;
 import org.apache.openjpa.meta.ClassMetaData;
 import org.apache.openjpa.meta.FieldMetaData;
 import org.apache.openjpa.persistence.JPAFacadeHelper;
@@ -539,7 +540,7 @@ public class TestSubclassedBehavior extends AbstractTestCase {
             .getMetaDataRepositoryInstance().
             getMetaData(DerivedEntity.class, null, false);
         assertTrue("meta's access should be ACCESS_PROPERTY",
-            meta.getAccessType() == ClassMetaData.ACCESS_PROPERTY);
+        		AccessCode.isProperty(meta.getAccessType()));
         FieldMetaData[] fmds = meta.getFields();
         for (int i = 0; i < fmds.length; i++) {
             assertEquals(Method.class, fmds[i].getBackingMember().getClass());

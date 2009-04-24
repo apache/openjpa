@@ -488,9 +488,6 @@ public class PCEnhancer {
      * @return <code>ENHANCE_*</code> constant
      */
     public int run() {
-        if (_log.isTraceEnabled())
-            _log.trace(_loc.get("enhance-start", _managedType.getType()));
-
         try {
             // if managed interface, skip
             if (_pc.isInterface())
@@ -500,11 +497,14 @@ public class PCEnhancer {
             Class[] interfaces = _managedType.getDeclaredInterfaceTypes();
             for (int i = 0; i < interfaces.length; i++) {
                 if (interfaces[i].getName().equals(PCTYPE.getName())) {
-                    if (_log.isTraceEnabled())
-                        _log.trace(_loc.get("pc-type", _managedType.getType()));
+                    if (_log.isInfoEnabled())
+                        _log.info(_loc.get("pc-type", _managedType.getType()));
                     return ENHANCE_NONE;
                 }
             }
+            if (_log.isInfoEnabled())
+                _log.info(_loc.get("enhance-start", _managedType.getType()));
+
 
             configureBCs();
 

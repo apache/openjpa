@@ -225,7 +225,7 @@ public class PersistenceMetaDataDefaults
      */
     public void setDefaultAccessType(String type) {
         if ("PROPERTY".equals(type.toUpperCase()))
-            setDefaultAccessType(ClassMetaData.ACCESS_PROPERTY);
+            setDefaultAccessType(AccessCode.PROPERTY);
         else if ("FIELD".equals(type.toUpperCase()))
             setDefaultAccessType(ClassMetaData.ACCESS_FIELD);
         else
@@ -236,9 +236,7 @@ public class PersistenceMetaDataDefaults
     @Override
     public void populate(ClassMetaData meta, int access) {
     	if (!AccessCode.isSet(access)) {
-    		meta.setAccessType(determineAccessType(meta));
-    	} else {
-    		meta.setAccessType(access);
+    		access = determineAccessType(meta);
     	}
         super.populate(meta, access);
         meta.setDetachable(true);
@@ -276,20 +274,36 @@ public class PersistenceMetaDataDefaults
      * on members for the given class without an explicit access annotation.
      */
     private int determineAccessType(ClassMetaData meta) {
+    	if (meta == null)
+    		return AccessCode.UNKNOWN;
+        if (meta.getDescribedType().isInterface()) // managed interfaces 
+        	return AccessCode.PROPERTY;
+    	if (AccessCode.isSet(meta.getAccessType()))
+    		return meta.getAccessType();
+    	int access = determineImplicitAccessType(meta.getDescribedType());
+    	if (AccessCode.isSet(access))
+    		return access;
+    	
     	ClassMetaData sup = getCachedSuperclassMetaData(meta);
     	while (sup != null && sup.isExplicitAccess())
-    		sup = sup.getPCSuperclassMetaData();
+    		sup = getCachedSuperclassMetaData(sup);
     	if (sup != null && AccessCode.isSet(sup.getAccessType()))
     		return sup.getAccessType();
     	
-        // traversed entire hierarchy without finding access type
-        if (meta.getDescribedType().isInterface()) // managed interfaces 
-        	return ClassMetaData.ACCESS_PROPERTY;
+        return AccessCode.UNKNOWN;
+    }
+    
+    /**
+     * Determines the access type for the given class by placement of 
+     * annotations on field or getter method.
+     */
+    private int determineImplicitAccessType(Class cls) {
         Field[] allFields = AccessController.doPrivileged(J2DoPrivHelper.
-                getDeclaredFieldsAction(meta.getDescribedType()));
+                getDeclaredFieldsAction(cls));
         List<Field> fields = filter(allFields, nonTransientFilter, 
         		annotatedFilter);
-		Method[] publicMethods = meta.getDescribedType().getMethods();
+		Method[] publicMethods = AccessController.doPrivileged(
+				J2DoPrivHelper.getDeclaredMethodsAction(cls));
         
 		List<Method> getters = filter(publicMethods, getterFilter, 
     		nonTransientFilter, annotatedFilter);
@@ -300,9 +314,9 @@ public class PersistenceMetaDataDefaults
         		throw new UserException(getters.toString());
         	return ClassMetaData.ACCESS_FIELD;
         } else if (!getters.isEmpty()) {
-        	return ClassMetaData.ACCESS_PROPERTY;
+        	return AccessCode.PROPERTY;
         } 
-        return getDefaultAccessType();
+        return AccessCode.UNKNOWN;
     }
     
     /**
@@ -328,8 +342,6 @@ public class PersistenceMetaDataDefaults
                     break;
             }
             if (!matched) {
-                System.err.println(_loc.get("getter-unmatched", getter) 
-                    .toString());
                 unmatched.add(getter);
             }
 
@@ -368,7 +380,8 @@ public class PersistenceMetaDataDefaults
     	boolean isProperty  = AccessCode.isProperty(meta.getAccessType());
     	
     	if (explicit || unknown || isProperty) {
-    		Method[] publicMethods = meta.getDescribedType().getMethods();
+    		Method[] publicMethods = AccessController.doPrivileged(
+              J2DoPrivHelper.getDeclaredMethodsAction(meta.getDescribedType()));
         
     		List<Method> getters = filter(publicMethods, methodFilter, 
                 getterFilter, nonTransientFilter, 
@@ -403,8 +416,7 @@ public class PersistenceMetaDataDefaults
     	boolean unknown     = !AccessCode.isSet(meta.getAccessType());
     	
     	if (isEmpty) {
-    		if (unknown)
-    			warn(_loc.get("access-unknown", meta));
+    		warn(meta, _loc.get("access-empty", meta));
     		return Collections.EMPTY_LIST;
     	}
     	if (explicit) {
@@ -418,9 +430,9 @@ public class PersistenceMetaDataDefaults
     		}
     	} else {
     		if (isMixed)
-    			error(_loc.get("access-mixed", meta, fields, getters));
+                error(meta, _loc.get("access-mixed", meta, fields, getters));
     		if (fields.isEmpty()) {
-    			meta.setAccessType(ClassMetaData.ACCESS_PROPERTY);
+    			meta.setAccessType(AccessCode.PROPERTY);
     			members.addAll(getters);
     		} else {
     			meta.setAccessType(ClassMetaData.ACCESS_FIELD);
@@ -434,11 +446,16 @@ public class PersistenceMetaDataDefaults
     	
     }
     
-    void error(Localizer.Message message) {
-    	System.err.println(message.toString());
+    void error(ClassMetaData meta, Localizer.Message message) {
+    	Log log = meta.getRepository().getConfiguration()
+    		.getLog(OpenJPAConfiguration.LOG_RUNTIME);
+    	log.error(message.toString());
     }
-    void warn(Localizer.Message message) {
-    	System.err.println(message.toString());
+    
+    void warn(ClassMetaData meta, Localizer.Message message) {
+    	Log log = meta.getRepository().getConfiguration()
+		.getLog(OpenJPAConfiguration.LOG_RUNTIME);
+    	log.warn(message.toString());
     }
     
     @Override
@@ -475,11 +492,9 @@ public class PersistenceMetaDataDefaults
             }            
             try {
                 // check for setters for methods
-                Method setter = AccessController.doPrivileged(
-                    J2DoPrivHelper.getDeclaredMethodAction(
-                        meta.getDescribedType(), "set" +
-                        StringUtils.capitalize(name), new Class[] { 
-                            ((Method) member).getReturnType() }));
+                Method setter = meta.getDescribedType().getMethod(
+                		"set" + StringUtils.capitalize(name), 
+                        new Class[] {((Method) member).getReturnType()});
                 if (setter == null && !isAnnotatedTransient(member)) {
                     logNoSetter(meta, name, null);
                     return false;

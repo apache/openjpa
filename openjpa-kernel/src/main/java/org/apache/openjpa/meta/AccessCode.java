@@ -120,6 +120,8 @@ public class AccessCode {
 	 * access style.
 	 */
 	public static boolean isCompatibleSuper(int subCode, int superCode) {
+		if (!isSet(superCode))
+			return true;
 		if (isValidClassCode(subCode) && isValidClassCode(superCode)) {
 			if (isExplicit(subCode))
 				return true;

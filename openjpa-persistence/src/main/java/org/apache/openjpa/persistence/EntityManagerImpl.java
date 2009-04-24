@@ -456,6 +456,8 @@ public class EntityManagerImpl
     @SuppressWarnings("unchecked")
     public <T> T find(Class<T> cls, Object oid) {
         assertNotCloseInvoked();
+        if (oid == null)
+        	return null;
         oid = _broker.newObjectId(cls, oid);
         return (T) _broker.find(oid, true, this);
     }
@@ -476,6 +478,8 @@ public class EntityManagerImpl
         if (mode != null && mode != LockModeType.NONE)
             _broker.assertActiveTransaction();
 
+        if (oid == null)
+        	return null;
         processLockProperties(pushFetchPlan(), mode, properties);
         try {
             oid = _broker.newObjectId(cls, oid);

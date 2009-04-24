@@ -233,7 +233,7 @@ public class ManagedClassSubclasser {
             // only warn about declared fields; superclass fields will be
             // warned about when the superclass is handled
             for (FieldMetaData fmd : meta.getDeclaredFields()) {
-                if (fmd.getAccessType() == ClassMetaData.ACCESS_PROPERTY)
+                if (AccessCode.isProperty(fmd.getAccessType()))
                     continue;
                 switch (fmd.getTypeCode()) {
                     case JavaTypes.COLLECTION:

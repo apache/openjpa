@@ -49,6 +49,7 @@ import org.apache.openjpa.lib.util.J2DoPrivHelper;
 import org.apache.openjpa.lib.util.JavaVersions;
 import org.apache.openjpa.lib.util.Localizer;
 import org.apache.openjpa.lib.util.Options;
+import org.apache.openjpa.meta.AccessCode;
 import org.apache.openjpa.meta.ClassMetaData;
 import org.apache.openjpa.meta.DelegatingMetaDataFactory;
 import org.apache.openjpa.meta.FieldMetaData;
@@ -549,7 +550,8 @@ public class ApplicationIdTool {
      * Return the getters and setters for all primary key fields.
      */
     private String getProperties() {
-        if (_meta.getAccessType() == ClassMetaData.ACCESS_FIELD)
+        if (AccessCode.isExplicit(_meta.getAccessType()) 
+         && AccessCode.isField(_meta.getAccessType()))
             return "";
 
         CodeFormat code = newCodeFormat();
