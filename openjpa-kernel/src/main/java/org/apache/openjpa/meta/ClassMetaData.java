@@ -25,7 +25,6 @@ import java.lang.reflect.Modifier;
 import java.security.AccessController;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.BitSet;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
@@ -80,13 +79,14 @@ import serp.util.Strings;
  *
  * @author Abe White
  */
+@SuppressWarnings("serial")
 public class ClassMetaData
     extends Extensions
-    implements Comparable, SourceTracker, MetaDataContext, MetaDataModes,
-    Commentable, ValueListener {
+    implements Comparable<ClassMetaData>, SourceTracker, MetaDataContext, 
+    MetaDataModes, Commentable, ValueListener {
 
     /**
-     * Unkonwn identity type.
+     * Unknown identity type.
      */
     public static final int ID_UNKNOWN = 0;
 
@@ -150,27 +150,29 @@ public class ClassMetaData
     private int _srcMode = MODE_META | MODE_MAPPING;
     private int _resMode = MODE_NONE;
 
-    private Class _type = Object.class;
-    private final Map _fieldMap = new TreeMap();
-    private Map _supFieldMap = null;
+    private Class<?> _type = Object.class;
+    private final Map<String,FieldMetaData> _fieldMap = 
+    	new TreeMap<String,FieldMetaData>();
+    private Map<String,FieldMetaData> _supFieldMap = null;
     private boolean _defSupFields = false;
-    private Collection _staticFields = null;
+    private Collection<String> _staticFields = null;
     private int[] _fieldDataTable = null;
-    private Map _fgMap = null;
+    private Map<String,FetchGroup> _fgMap = null;
 
     ////////////////////////////////////////////////////////////////////
     // Note: if you add additional state, make sure to add it to copy()
     ////////////////////////////////////////////////////////////////////
 
-    private Class _objectId = null;
+    private Class<?> _objectId = null;
     private Boolean _objectIdShared = null;
     private Boolean _openjpaId = null;
     private Boolean _extent = null;
     private Boolean _embedded = null;
     private Boolean _interface = null;
-    private Class _impl = null;
-    private List _interfaces = null;
-    private final Map _ifaceMap = new HashMap();
+    private Class<?> _impl = null;
+    private List<Class<?>> _interfaces = null;
+    private final Map<Class<?>,Map<String,String>> _ifaceMap = 
+    	new HashMap<Class<?>,Map<String,String>>();
     private int _identity = ID_UNKNOWN;
     private int _idStrategy = ValueStrategies.NONE;
     private int _accessType = ACCESS_UNKNOWN;
@@ -185,9 +187,9 @@ public class ClassMetaData
     private String _alias = null;
     private int _versionIdx = Integer.MIN_VALUE;
 
-    private Class _super = null;
+    private Class<?> _super = null;
     private ClassMetaData _superMeta = null;
-    private Class[] _subs = null;
+    private Class<?>[] _subs = null;
     private ClassMetaData[] _subMetas = null;
     private ClassMetaData[] _mapSubMetas = null;
 
@@ -208,7 +210,7 @@ public class ClassMetaData
     /**
      * Constructor. Supply described type and repository.
      */
-    protected ClassMetaData(Class type, MetaDataRepository repos) {
+    protected ClassMetaData(Class<?> type, MetaDataRepository repos) {
         _repos = repos;
         _owner = null;
         setDescribedType(type);
@@ -243,15 +245,15 @@ public class ClassMetaData
     /**
      * The persistence capable class described by this metadata.
      */
-    public Class getDescribedType() {
+    public Class<?> getDescribedType() {
         return _type;
     }
 
     /**
-     * Set the class descibed by this metadata. The type may be reset when
+     * Set the class described by this metadata. The type may be reset when
      * an embedded value changes its declared type.
      */
-    protected void setDescribedType(Class type) {
+    protected void setDescribedType(Class<?> type) {
         if (type.getSuperclass() != null && "java.lang.Enum".equals
             (type.getSuperclass().getName()))
             throw new MetaDataException(_loc.get("enum", type));
@@ -281,14 +283,14 @@ public class ClassMetaData
     /**
      * The persistence capable superclass of the described type.
      */
-    public Class getPCSuperclass() {
+    public Class<?> getPCSuperclass() {
         return _super;
     }
 
     /**
      * The persistence capable superclass of the described type.
      */
-    public void setPCSuperclass(Class pc) {
+    public void setPCSuperclass(Class<?> pc) {
         clearAllFieldCache();
         _super = pc;
     }
@@ -340,13 +342,13 @@ public class ClassMetaData
      * Return the known persistence capable subclasses of the described type,
      * or empty array if none or if this is embedded metadata.
      */
-    public Class[] getPCSubclasses() {
+    public Class<?>[] getPCSubclasses() {
         if (_owner != null)
-            return _repos.EMPTY_CLASSES;
+            return MetaDataRepository.EMPTY_CLASSES;
 
         _repos.processRegisteredClasses(_loader);
         if (_subs == null) {
-            Collection subs = _repos.getPCSubclasses(_type);
+            Collection<Class<?>> subs = _repos.getPCSubclasses(_type);
             _subs = (Class[]) subs.toArray(new Class[subs.size()]);
         }
         return _subs;
@@ -361,7 +363,7 @@ public class ClassMetaData
         if (_owner != null)
             return _repos.EMPTY_METAS;
 
-        Class[] subs = getPCSubclasses(); // checks for new
+        Class<?>[] subs = getPCSubclasses(); // checks for new
         if (_subMetas == null) {
             if (subs.length == 0)
                 _subMetas = _repos.EMPTY_METAS;
@@ -388,7 +390,8 @@ public class ClassMetaData
             if (subs.length == 0)
                 _mapSubMetas = subs;
             else {
-                List mapped = new ArrayList(subs.length);
+                List<ClassMetaData> mapped = 
+                	new ArrayList<ClassMetaData>(subs.length);
                 for (int i = 0; i < subs.length; i++)
                     if (subs[i].isMapped())
                         mapped.add(subs[i]);
@@ -448,7 +451,7 @@ public class ClassMetaData
     /**
      * The metadata-specified class to use for the object ID.
      */
-    public Class getObjectIdType() {
+    public Class<?> getObjectIdType() {
         // if this entity does not use IdClass from the parent entity,
         // just return the _objectId set during annotation parsing time.
         if (!useIdClassFromParent()) {
@@ -458,7 +461,7 @@ public class ClassMetaData
         
         // if this entity uses IdClass from the parent entity,
         // the _objectId set during the parsing time should be
-        // ignored, and let Openjpa determine the objectId type
+        // ignored, and let the system determine the objectId type
         // of this entity.
         if (getIdentityType() != ID_APPLICATION)
             return null;
@@ -468,7 +471,7 @@ public class ClassMetaData
             return _objectId;
         }
 
-        // figure out openjpa identity type based on primary key field
+        // figure out OpenJPA identity type based on primary key field
         FieldMetaData[] pks = getPrimaryKeyFields();
         if (pks.length != 1)
             return null;
@@ -531,7 +534,7 @@ public class ClassMetaData
      * the child entity can be ignored as Openjpa will automatically   
      * wrap parent's IdClass as child's IdClass. 
      */
-    public void setObjectIdType(Class cls, boolean shared) {
+    public void setObjectIdType(Class<?> cls, boolean shared) {
         _objectId = null;
         _openjpaId = null;
         _objectIdShared = null;
@@ -563,7 +566,7 @@ public class ClassMetaData
      */
     public boolean isOpenJPAIdentity() {
         if (_openjpaId == null) {
-            Class cls = getObjectIdType();
+            Class<?> cls = getObjectIdType();
             if (cls == null)
                 return false;
             _openjpaId = (OpenJPAId.class.isAssignableFrom(cls)) ? Boolean.TRUE
@@ -797,27 +800,27 @@ public class ClassMetaData
             setIntercepting(true);
 
         // managed interfaces always use property access.
-        setAccessType(ACCESS_PROPERTY);
+        setAccessType(AccessCode.PROPERTY);
     }
 
     /**
      * Return the managed interface implementor if any.
      */
-    public Class getInterfaceImpl() {
+    public Class<?> getInterfaceImpl() {
         return _impl;
     }
 
     /**
      * Set the managed interface implementor class.
      */
-    public void setInterfaceImpl(Class impl) {
+    public void setInterfaceImpl(Class<?> impl) {
         _impl = impl;
     }
 
     /**
      * Return all explicitly declared interfaces this class implements.
      */
-    public Class[] getDeclaredInterfaces() {
+    public Class<?>[] getDeclaredInterfaces() {
         if (_interfaces == null)
             return MetaDataRepository.EMPTY_CLASSES;
         return (Class[]) _interfaces.toArray(new Class[_interfaces.size()]);
@@ -827,19 +830,19 @@ public class ClassMetaData
      * Explicitly declare the given interface among the ones this
      * class implements.
      */
-    public void addDeclaredInterface(Class iface) {
+    public void addDeclaredInterface(Class<?> iface) {
         if (iface == null || !iface.isInterface())
             throw new MetaDataException(_loc.get("declare-non-interface",
                 this, iface));
         if (_interfaces == null)
-            _interfaces = new ArrayList();
+            _interfaces = new ArrayList<Class<?>>();
         _interfaces.add(iface);
     }
 
     /**
      * Remove the given interface from the declared list.
      */
-    public boolean removeDeclaredInterface(Class iface) {
+    public boolean removeDeclaredInterface(Class<?> iface) {
         if (_interfaces == null)
             return false;
         return _interfaces.remove(iface);
@@ -849,12 +852,12 @@ public class ClassMetaData
      * Alias properties from the given interface during  queries to
      * the local field.
      */
-    public void setInterfacePropertyAlias(Class iface, String orig, 
+    public void setInterfacePropertyAlias(Class<?> iface, String orig, 
         String local) {
         synchronized (_ifaceMap) {
-            Map fields = (Map) _ifaceMap.get(iface);
+            Map<String,String> fields = _ifaceMap.get(iface);
             if (fields == null) {
-                fields = new HashMap();
+                fields = new HashMap<String,String>();
                 _ifaceMap.put(iface, fields);
             }
             if (fields.containsKey(orig))
@@ -867,25 +870,24 @@ public class ClassMetaData
     /**
      * Get local field alias for the given interface property.
      */
-    public String getInterfacePropertyAlias(Class iface, String orig) {
+    public String getInterfacePropertyAlias(Class<?> iface, String orig) {
         synchronized (_ifaceMap) {
-            Map fields = (Map) _ifaceMap.get(iface);
+            Map<String,String> fields = _ifaceMap.get(iface);
             if (fields == null)
                 return null;
-            return (String) fields.get(orig);
+            return fields.get(orig);
         }
     }
     
     /**
      * Return all aliases property named for the given interface.
      */
-    public String[] getInterfaceAliasedProperties(Class iface) {
+    public String[] getInterfaceAliasedProperties(Class<?> iface) {
         synchronized (_ifaceMap) {
-            Map fields = (Map) _ifaceMap.get(iface);
+            Map<String,String> fields = _ifaceMap.get(iface);
             if (fields == null)
                 return EMPTY_STRING_ARRAY;
-            return (String[]) fields.keySet().toArray(
-                new String[fields.size()]);
+            return fields.keySet().toArray(new String[fields.size()]);
         }
     }
     
@@ -902,7 +904,7 @@ public class ClassMetaData
     }
 
     /**
-     * Return the impl / intermediate field data index of the given field
+     * Return the intermediate field data index of the given field
      * in the compacted array, or -1 if the field does not use extra data.
      *
      * @see #getExtraFieldDataLength
@@ -941,7 +943,7 @@ public class ClassMetaData
         if (_staticFields == null) {
             Field[] fields = (Field[]) AccessController.doPrivileged(
                 J2DoPrivHelper.getDeclaredFieldsAction(_type)); 
-            Set names = new HashSet((int) (fields.length * 1.33 + 1));
+            Set<String> names = new HashSet<String>();
             for (int i = 0; i < fields.length; i++)
                 if (Modifier.isStatic(fields[i].getModifiers()))
                     names.add(fields[i].getName());
@@ -955,7 +957,7 @@ public class ClassMetaData
     }
 
     /**
-     * Return all field metadatas, including superclass fields.
+     * Return all field metadata, including superclass fields.
      */
     public FieldMetaData[] getFields() {
         if (_allFields == null) {
@@ -979,23 +981,6 @@ public class ClassMetaData
             }
         }
         return _allFields;
-    }
-
-    /**
-     * Return all field meta datas that use a specific field access type
-     * Access type must either be FieldMetaData.ACCESS_FIELD or 
-     * FieldMetaData.ACCESS_PROPERTY
-     * @return
-     */
-    public FieldMetaData[] getFields(int accessType) {
-        ArrayList<FieldMetaData> fmds = new ArrayList<FieldMetaData>();
-        FieldMetaData[] allFields = getFields();
-        for (FieldMetaData fmd : allFields) {
-            if (fmd.getAccessType() == accessType) {
-                fmds.add(fmd);
-            }
-        }
-        return fmds.toArray(new FieldMetaData[fmds.size()]);
     }
 
     /**
@@ -1024,7 +1009,8 @@ public class ClassMetaData
     protected FieldMetaData getSuperclassField(FieldMetaData supField) {
         ClassMetaData sm = getPCSuperclassMetaData();
         FieldMetaData fmd = sm == null ? null : sm.getField(supField.getName());
-        if (fmd == null || fmd.getManagement() != fmd.MANAGE_PERSISTENT)
+        if (fmd == null 
+        || fmd.getManagement() != FieldMetaData.MANAGE_PERSISTENT)
             throw new MetaDataException(_loc.get("unmanaged-sup-field",
                 supField, this));
         return fmd;
@@ -1035,18 +1021,18 @@ public class ClassMetaData
      */
     public FieldMetaData[] getDeclaredFields() {
         if (_fields == null) {
-            List fields = new ArrayList(_fieldMap.size());
-            FieldMetaData fmd;
-            for (Iterator itr = _fieldMap.values().iterator(); itr.hasNext();) {
-                fmd = (FieldMetaData) itr.next();
+            List<FieldMetaData> fields = 
+            	new ArrayList<FieldMetaData>(_fieldMap.size());
+            ;
+            for (FieldMetaData fmd : _fieldMap.values()) {
                 if (fmd.getManagement() != FieldMetaData.MANAGE_NONE) {
                     fmd.setDeclaredIndex(fields.size());
                     fmd.setIndex(fmd.getDeclaredIndex());
                     fields.add(fmd);
                 }
             }
-            _fields = (FieldMetaData[]) fields.toArray
-                (_repos.newFieldMetaDataArray(fields.size()));
+            _fields = fields.toArray
+            	(_repos.newFieldMetaDataArray(fields.size()));
         }
         return _fields;
     }
@@ -1058,8 +1044,9 @@ public class ClassMetaData
      * and ending with the primary key fields of the most-derived subclass.
      */
     public FieldMetaData[] getPrimaryKeyFields() {
-        // check for pk fields even if not set to ID_APPLICATION so that
-        // app id tool sees them even when user doesn't declare app id
+        // check for primary key fields even if not set to ID_APPLICATION so 
+        // that Application Id tool sees them even when user doesn't declare 
+    	// Application identity
         if (_allPKFields == null) {
             FieldMetaData[] fields = getFields();
             int num = 0;
@@ -1183,7 +1170,7 @@ public class ClassMetaData
      */
     public FieldMetaData getDeclaredField(String name) {
         FieldMetaData field = (FieldMetaData) _fieldMap.get(name);
-        if (field == null || field.getManagement() == field.MANAGE_NONE)
+        if (field == null || field.getManagement() == FieldMetaData.MANAGE_NONE)
             return null;
         return field;
     }
@@ -1194,14 +1181,13 @@ public class ClassMetaData
      */
     public FieldMetaData[] getDeclaredUnmanagedFields() {
         if (_unmgdFields == null) {
-            Collection unmanaged = new ArrayList(3);
-            FieldMetaData field;
-            for (Iterator itr = _fieldMap.values().iterator(); itr.hasNext();) {
-                field = (FieldMetaData) itr.next();
+            List<FieldMetaData> unmanaged = new ArrayList<FieldMetaData>(3);
+            ;
+            for (FieldMetaData field : _fieldMap.values()) {
                 if (field.getManagement() == FieldMetaData.MANAGE_NONE)
                     unmanaged.add(field);
             }
-            _unmgdFields = (FieldMetaData[]) unmanaged.toArray
+            _unmgdFields = unmanaged.toArray
                 (_repos.newFieldMetaDataArray(unmanaged.size()));
         }
         return _unmgdFields;
@@ -1210,7 +1196,7 @@ public class ClassMetaData
     /**
      * Add a new field metadata to this class.
      */
-    public FieldMetaData addDeclaredField(String name, Class type) {
+    public FieldMetaData addDeclaredField(String name, Class<?> type) {
         FieldMetaData fmd = _repos.newFieldMetaData(name, type, this);
         clearFieldCache();
         _fieldMap.put(name, fmd);
@@ -1242,14 +1228,14 @@ public class ClassMetaData
     /**
      * Add a new defined superclass field metadata to this class.
      */
-    public FieldMetaData addDefinedSuperclassField(String name, Class type,
-        Class sup) {
+    public FieldMetaData addDefinedSuperclassField(String name, Class<?> type,
+        Class<?> sup) {
         FieldMetaData fmd = _repos.newFieldMetaData(name, type, this);
         fmd.setDeclaringType(sup);
         clearAllFieldCache();
         _defSupFields = false;
         if (_supFieldMap == null)
-            _supFieldMap = new HashMap();
+            _supFieldMap = new HashMap<String,FieldMetaData>();
         _supFieldMap.put(name, fmd);
         return fmd;
     }
@@ -1312,13 +1298,11 @@ public class ClassMetaData
         if (_supFieldMap == null)
             return;
 
-        FieldMetaData fmd;
         FieldMetaData sup;
-        for (Iterator itr = _supFieldMap.values().iterator(); itr.hasNext();) {
-            fmd = (FieldMetaData) itr.next();
+        for (FieldMetaData fmd : _supFieldMap.values()) {
             sup = getSuperclassField(fmd);
 
-            // jpa metadata doesn't qualify superclass field names, so we
+            // JPA metadata doesn't qualify superclass field names, so we
             // might not know the declaring type until now
             if (fmd.getDeclaringType() == Object.class) {
                 fmd.setDeclaringType(sup.getDeclaringType());
@@ -1338,11 +1322,12 @@ public class ClassMetaData
     public FieldMetaData[] getDefinedFields() {
         if (_definedFields == null) {
             FieldMetaData[] fields = getFields();
-            List defined = new ArrayList(fields.length);
-            for (int i = 0; i < fields.length; i++) {
-                if (fields[i].isMapped()
-                    && fields[i].getDefiningMetaData() == this)
-                    defined.add(fields[i]);
+            List<FieldMetaData> defined = 
+            	new ArrayList<FieldMetaData>(fields.length);
+            for (FieldMetaData fmd : fields) {
+                if (fmd.isMapped()
+                    && fmd.getDefiningMetaData() == this)
+                    defined.add(fmd);
             }
             _definedFields = (FieldMetaData[]) defined.toArray
                 (_repos.newFieldMetaDataArray(defined.size()));
@@ -1392,10 +1377,11 @@ public class ClassMetaData
     public FieldMetaData[] getDefinedFieldsInListingOrder() {
         if (_listingFields == null) {
             FieldMetaData[] fields = getFields();
-            List defined = new ArrayList(fields.length);
-            for (int i = 0; i < fields.length; i++)
-                if (fields[i].getDefiningMetaData() == this)
-                    defined.add(fields[i]);
+            List<FieldMetaData> defined = 
+            	new ArrayList<FieldMetaData>(fields.length);
+            for (FieldMetaData fmd : fields)
+                if (fmd.getDefiningMetaData() == this)
+                    defined.add(fmd);
             FieldMetaData[] unmgd = getDeclaredUnmanagedFields();
             FieldMetaData[] listing = _repos.newFieldMetaDataArray
                 (defined.size() + unmgd.length);
@@ -1634,7 +1620,7 @@ public class ClassMetaData
         return _type == ((ClassMetaData) other).getDescribedType();
     }
 
-    public int compareTo(Object other) {
+    public int compareTo(ClassMetaData other) {
         if (other == this)
             return 0;
         return _type.getName().compareTo(((ClassMetaData) other).
@@ -1685,7 +1671,7 @@ public class ClassMetaData
         _resMode |= mode;
 
         int val = _repos.getValidate();
-        boolean runtime = (val & _repos.VALIDATE_RUNTIME) != 0;
+        boolean runtime = (val & MetaDataRepository.VALIDATE_RUNTIME) != 0;
         boolean validate =
             !ImplHelper.isManagedType(getRepository().getConfiguration(), _type)
             || (val & MetaDataRepository.VALIDATE_UNENHANCED) == 0;
@@ -1693,12 +1679,12 @@ public class ClassMetaData
         // we only do any actions for metadata mode
         if ((mode & MODE_META) != 0 && (cur & MODE_META) == 0) {
             resolveMeta(runtime);
-            if (validate && (val & _repos.VALIDATE_META) != 0)
+            if (validate && (val & MetaDataRepository.VALIDATE_META) != 0)
                 validateMeta(runtime);
         }
         if ((mode & MODE_MAPPING) != 0 && (cur & MODE_MAPPING) == 0) {
             resolveMapping(runtime);
-            if (validate && (val & _repos.VALIDATE_MAPPING) != 0)
+            if (validate && (val & MetaDataRepository.VALIDATE_MAPPING) != 0)
                 validateMapping(runtime);
         }
         if ((mode & MODE_MAPPING_INIT) != 0 && (cur & MODE_MAPPING_INIT) == 0)
@@ -1752,10 +1738,11 @@ public class ClassMetaData
 
         // resolve fields and remove invalids
         FieldMetaData fmd;
-        for (Iterator itr = _fieldMap.values().iterator(); itr.hasNext();) {
+        for (Iterator<FieldMetaData> itr = _fieldMap.values().iterator(); 
+        	itr.hasNext();) {
             // only pass on metadata resolve mode so that metadata is always
             // resolved before any other resolve modes our subclasses pass along
-            fmd = (FieldMetaData) itr.next();
+            fmd = itr.next();
             fmd.resolve(MODE_META);
 
             if (!fmd.isExplicit()
@@ -1766,7 +1753,7 @@ public class ClassMetaData
                 == JavaTypes.OBJECT))) {
                 _repos.getLog().warn(_loc.get("rm-field", fmd));
                 if (fmd.getListingIndex() != -1)
-                    fmd.setManagement(fmd.MANAGE_NONE);
+                    fmd.setManagement(FieldMetaData.MANAGE_NONE);
                 else
                     itr.remove();
                 clearFieldCache();
@@ -1787,14 +1774,14 @@ public class ClassMetaData
 
         // record implements in the repository
         if (_interfaces != null) {
-            for (Iterator it = _interfaces.iterator(); it.hasNext();)
-                _repos.addDeclaredInterfaceImpl(this, (Class) it.next());
+            for (Class<?> iface : _interfaces)
+                _repos.addDeclaredInterfaceImpl(this, iface);
         }
 
         // resolve fetch groups
         if (_fgMap != null)
-            for (Iterator itr = _fgMap.values().iterator(); itr.hasNext();)
-                ((FetchGroup) itr.next()).resolve();
+            for (FetchGroup fg : _fgMap.values())
+                fg.resolve();
 
         if (!embed && _type.isInterface()) {
             if (_interface != Boolean.TRUE)
@@ -1899,7 +1886,7 @@ public class ClassMetaData
             throw new MetaDataException(_loc.get("id-types", _type));
 
         // check for things the data store doesn't support
-        Collection opts = _repos.getConfiguration().supportedOptions();
+        Collection<String> opts = _repos.getConfiguration().supportedOptions();
         if (id == ID_APPLICATION
             && !opts.contains(OpenJPAConfiguration.OPTION_ID_APPLICATION)) {
             throw new UnsupportedException(_loc.get("appid-not-supported",
@@ -1955,9 +1942,9 @@ public class ClassMetaData
         }
 
         if (_super != null) {
-            // concrete superclass oids must match or be parent of ours
+            // concrete superclass oid must match or be parent of ours
             ClassMetaData sup = getPCSuperclassMetaData();
-            Class objectIdType = sup.getObjectIdType();
+            Class<?> objectIdType = sup.getObjectIdType();
             if (objectIdType != null && 
                 !objectIdType.isAssignableFrom(_objectId))
                 throw new MetaDataException(_loc.get("id-classes",
@@ -1977,7 +1964,7 @@ public class ClassMetaData
             if (!Modifier.isAbstract(_objectId.getModifiers()))
                 validateAppIdClassMethods(_objectId);
 
-            // make sure the app id class has all pk fields
+            // make sure the application id class has all primary key fields
             validateAppIdClassPKs(this, pks, _objectId);
         }
     }
@@ -2000,7 +1987,7 @@ public class ClassMetaData
                     if (pkMeta == null)
                         _useIdClassFromParent = false;
                     else {
-                        Class pkType = pkMeta.getObjectIdType();
+                        Class<?> pkType = pkMeta.getObjectIdType();
                         if (pkType == ObjectId.class) //parent id is EmbeddedId
                             pkType = pkMeta.getPrimaryKeyFields()[0].getType();
                         if (pkType == _objectId)
@@ -2036,7 +2023,7 @@ public class ClassMetaData
      * Ensure that the user has overridden the equals and hashCode methods,
      * and has the proper constructors.
      */
-    private void validateAppIdClassMethods(Class oid) {
+    private void validateAppIdClassMethods(Class<?> oid) {
         try {
             oid.getConstructor((Class[]) null);
         } catch (Exception e) {
@@ -2045,7 +2032,7 @@ public class ClassMetaData
         }
 
         // check for equals and hashcode overrides; don't enforce it
-        // for abstract app id classes, since they may not necessarily
+        // for abstract application id classes, since they may not necessarily
         // declare primary key fields
         Method method;
         try {
@@ -2071,7 +2058,7 @@ public class ClassMetaData
      * Validate that the primary key class has all pk fields.
      */
     private void validateAppIdClassPKs(ClassMetaData meta,
-        FieldMetaData[] fmds, Class oid) {
+        FieldMetaData[] fmds, Class<?> oid) {
         if (fmds.length == 0 && !Modifier.isAbstract(meta.getDescribedType().
             getModifiers()))
             throw new MetaDataException(_loc.get("no-pk", _type));
@@ -2079,7 +2066,7 @@ public class ClassMetaData
         // check that the oid type contains all pk fields
         Field f;
         Method m;
-        Class c;
+        Class<?> c;
         for (int i = 0; i < fmds.length; i++) {
             switch (fmds[i].getDeclaredTypeCode()) {
                 case JavaTypes.ARRAY:
@@ -2105,7 +2092,7 @@ public class ClassMetaData
                 if (f == null || !f.getType().isAssignableFrom(c))
                     throw new MetaDataException(_loc.get("invalid-id",
                         _type, fmds[i].getName()));
-            } else if (fmds[i].getAccessType() == ACCESS_PROPERTY) {
+            } else if (AccessCode.isProperty(fmds[i].getAccessType())) {
                 m = Reflection.findGetter(oid, fmds[i].getName(), false);
                 if (m == null || !m.getReturnType().isAssignableFrom(c))
                     throw new MetaDataException(_loc.get("invalid-id",
@@ -2196,8 +2183,8 @@ public class ClassMetaData
      */
     public FetchGroup[] getCustomFetchGroups() {
         if (_customFGs == null) {
-            // map fgs to names, allowing our fgs to override supers
-            Map fgs = new HashMap();
+            // map fetch groups to names, allowing our groups to override super
+            Map<String,FetchGroup> fgs = new HashMap<String,FetchGroup>();
             ClassMetaData sup = getPCSuperclassMetaData();
             if (sup != null)
             {
@@ -2209,7 +2196,7 @@ public class ClassMetaData
             for (int i = 0; i < decs.length; i++)
                 fgs.put(decs[i].getName(), decs[i]);
             
-            // remove std groups
+            // remove standard groups
             fgs.remove(FetchGroup.NAME_DEFAULT);
             fgs.remove(FetchGroup.NAME_ALL);
 
@@ -2220,11 +2207,11 @@ public class ClassMetaData
     }
 
     /**
-     * Gets a named fecth group. If not available in this receiver then looks
-     * up the inheritence hierarchy. 
+     * Gets a named fetch group. If not available in this receiver then looks
+     * up the inheritance hierarchy. 
      *
      * @param name name of a fetch group.
-     * @return an existing fecth group of the given name if known to this 
+     * @return an existing fetch group of the given name if known to this 
      * receiver or any of its superclasses. Otherwise null.
      */
     public FetchGroup getFetchGroup(String name) {
@@ -2252,7 +2239,7 @@ public class ClassMetaData
     	if (StringUtils.isEmpty(name))
     		throw new MetaDataException(_loc.get("empty-fg-name", this));
         if (_fgMap == null)
-            _fgMap = new HashMap();
+            _fgMap = new HashMap<String,FetchGroup>();
         FetchGroup fg = (FetchGroup) _fgMap.get(name);
         if (fg == null) {
         	fg = new FetchGroup(this, name);
@@ -2438,7 +2425,7 @@ public class ClassMetaData
             fg.copy(fgs[i]); 
         }
 
-        // copy iface re-mapping
+        // copy interface re-mapping
         _ifaceMap.clear();
         _ifaceMap.putAll(meta._ifaceMap);
     }
@@ -2460,10 +2447,10 @@ public class ClassMetaData
     }
 
     /**
-     * Comparator used to put field metadatas into listing order.
+     * Comparator used to put field metadata into listing order.
      */
     private static class ListingOrderComparator
-        implements Comparator {
+        implements Comparator<FieldMetaData> {
 
         private static final ListingOrderComparator _instance
             = new ListingOrderComparator();
@@ -2475,16 +2462,14 @@ public class ClassMetaData
             return _instance;
         }
 
-        public int compare(Object o1, Object o2) {
-            if (o1 == o2)
+        public int compare(FieldMetaData f1, FieldMetaData f2) {
+            if (f1 == f2)
                 return 0;
-            if (o1 == null)
+            if (f1 == null)
                 return 1;
-            if (o2 == null)
+            if (f2 == null)
                 return -1;
 
-            FieldMetaData f1 = (FieldMetaData) o1;
-            FieldMetaData f2 = (FieldMetaData) o2;
             if (f1.getListingIndex() == f2.getListingIndex()) {
                 if (f1.getIndex() == f2.getIndex())
                     return f1.getFullName(false).compareTo
@@ -2568,5 +2553,4 @@ public class ClassMetaData
     public void setAbstract(boolean flag) {
         _abstract = flag;
     }
-    
 }
