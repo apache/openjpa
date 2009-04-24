@@ -146,6 +146,18 @@ public class TestPreparedQueryCache extends SQLListenerTestCase {
         assertEquals(jpql, pq.getOriginalQuery());
 	}
 	
+	public void testOriginalJPQLQueryStringIsSetOnPreparedQuery() {
+        String jpql = "select p from Company p";
+        OpenJPAEntityManager em = emf.createEntityManager();
+        OpenJPAQuery q1 = em.createQuery(jpql);
+        q1.getResultList();
+        PreparedQuery pq = getCache().get(jpql);
+        assertNotNull(pq);
+        OpenJPAQuery q2 = em.createQuery(jpql);
+        assertEquals(jpql,q2.getQueryString());
+	}
+
+	
 	public void testExclusionPattern() {
 		OpenJPAEntityManager em = emf.createEntityManager();
 		OpenJPAQuery q1 = em.createQuery(EXCLUDED_QUERY_1);

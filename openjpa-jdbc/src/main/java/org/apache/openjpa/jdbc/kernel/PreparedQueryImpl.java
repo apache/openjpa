@@ -130,6 +130,7 @@ public class PreparedQueryImpl implements PreparedQuery {
      * query.
      */
     public void setInto(Query q) {
+    	q.setQuery(_id);
         if (!_isProjection)
             q.setCandidateType(_candidate, _subclasses);
     }
