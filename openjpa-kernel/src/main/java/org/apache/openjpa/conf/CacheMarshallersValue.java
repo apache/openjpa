@@ -42,7 +42,7 @@ public class CacheMarshallersValue
         Localizer.forPackage(CacheMarshallersValue.class);
 
     private Configuration _conf;
-    private Map _marshallers;
+    private Map<String,CacheMarshaller> _marshallers;
     private boolean _initialized;
 
     public CacheMarshallersValue(Configuration conf) {
@@ -55,12 +55,12 @@ public class CacheMarshallersValue
         setScope(getClass());
     }
 
-    public Object instantiate(Class elemType, Configuration conf,
+    public Object instantiate(Class<?> elemType, Configuration conf,
         boolean fatal) {
         CacheMarshaller[] ms = (CacheMarshaller[])
             super.instantiate(elemType, conf, fatal);
         if (ms != null) {
-            _marshallers = new HashMap();
+            _marshallers = new HashMap<String,CacheMarshaller>();
             for (int i = 0; i < ms.length; i++) {
                 String mid = ms[i].getId();
                 if (mid != null)
@@ -108,7 +108,7 @@ public class CacheMarshallersValue
         return v.getMarshallerById(id);
     }
 
-    public Map getInstancesAsMap() {
+    public Map<String,CacheMarshaller> getInstancesAsMap() {
         return _marshallers;
     }
 

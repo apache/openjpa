@@ -158,8 +158,7 @@ public class OpenJPAConfigurationImpl
     public RemoteCommitProviderValue remoteProviderPlugin;
     public AutoDetachValue autoDetach;
 
-    private Collection supportedOptions = new HashSet(33);
-    private String spec = null;
+    private Collection<String> supportedOptions = new HashSet<String>(33);
     private final StoreFacadeTypeRegistry _storeFacadeRegistry =
         new StoreFacadeTypeRegistry();
     private BrokerFactoryEventManager _brokerFactoryEventManager =
@@ -575,7 +574,7 @@ public class OpenJPAConfigurationImpl
             loadGlobals();
     }
 
-    public Collection supportedOptions() {
+    public Collection<String> supportedOptions() {
         return supportedOptions;
     }
 

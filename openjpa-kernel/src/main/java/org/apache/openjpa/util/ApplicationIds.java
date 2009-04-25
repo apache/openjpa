@@ -36,6 +36,7 @@ import org.apache.openjpa.kernel.StateManagerImpl;
 import org.apache.openjpa.kernel.StoreManager;
 import org.apache.openjpa.lib.util.J2DoPrivHelper;
 import org.apache.openjpa.lib.util.Localizer;
+import org.apache.openjpa.meta.AccessCode;
 import org.apache.openjpa.meta.ClassMetaData;
 import org.apache.openjpa.meta.FieldMetaData;
 import org.apache.openjpa.meta.JavaTypes;
@@ -100,7 +101,7 @@ public class ApplicationIds {
             oid = ((ObjectId) oid).getId();
         Class oidType = oid.getClass();
         for (int i = 0; i < fmds.length; i++) {
-            if (meta.getAccessType() == ClassMetaData.ACCESS_FIELD)
+            if (AccessCode.isField(meta.getAccessType()))
                 pks[i] = Reflection.get(oid, Reflection.findField(oidType, 
                     fmds[i].getName(), true));
             else
@@ -239,7 +240,7 @@ public class ApplicationIds {
         for (int i = 0; i < fmds.length; i++) {
             val = (convert) ? JavaTypes.convert(pks[i],
                 fmds[i].getObjectIdFieldTypeCode()) : pks[i];
-            if (meta.getAccessType() == ClassMetaData.ACCESS_FIELD)
+            if (AccessCode.isField(meta.getAccessType()))
                 Reflection.set(copy, Reflection.findField(oidType, 
                     fmds[i].getName(), true), val); 
             else
@@ -378,7 +379,7 @@ public class ApplicationIds {
             if (fmds[i].getManagement() != FieldMetaData.MANAGE_PERSISTENT)
                 continue;
 
-            if (meta.getAccessType() == ClassMetaData.ACCESS_FIELD) {
+            if (AccessCode.isField(meta.getAccessType())) {
                     field = Reflection.findField(oidType, fmds[i].getName(),
                         true);
                     Reflection.set(copy, field, Reflection.get(oid, field));
@@ -403,7 +404,7 @@ public class ApplicationIds {
 
         ClassMetaData meta = fmd.getDefiningMetaData();
         Class oidType = oid.getClass();
-        if (meta.getAccessType() == ClassMetaData.ACCESS_FIELD)
+        if (AccessCode.isField(meta.getAccessType()))
             return Reflection.get(oid, Reflection.findField(oidType, 
                 fmd.getName(), true));
         return Reflection.get(oid, Reflection.findGetter(oidType, fmd.getName(),

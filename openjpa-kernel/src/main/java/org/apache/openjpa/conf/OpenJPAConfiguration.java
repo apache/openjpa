@@ -211,7 +211,7 @@ public interface OpenJPAConfiguration
      * Return the set of option strings supported by this runtime. This set
      * is mutable.
      */
-    public Collection supportedOptions();
+    public Collection<String> supportedOptions();
 
     /**
      * Get a name of the Specification. Specification determines various 
@@ -1567,7 +1567,7 @@ public interface OpenJPAConfiguration
     public String getCacheMarshallers();
 
     /**
-     * A comma-separted list of the plugin strings specifying the
+     * A comma-separated list of the plugin strings specifying the
      * {@link CacheMarshaller}s to use.
      *
      * @since 1.1.0
@@ -1579,7 +1579,7 @@ public interface OpenJPAConfiguration
      *
      * @since 1.1.0 
      */
-    public Map getCacheMarshallerInstances();
+    public Map<String,CacheMarshaller> getCacheMarshallerInstances();
     
     /**
      * Affirms if all configured elements are initialized eagerly as opposed

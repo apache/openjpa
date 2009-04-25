@@ -98,7 +98,7 @@ public class NoneMetaDataFactory
     }
 
     public int getDefaultAccessType() {
-        return ClassMetaData.ACCESS_UNKNOWN;
+        return AccessCode.UNKNOWN;
     }
 
     public int getDefaultIdentityType() {

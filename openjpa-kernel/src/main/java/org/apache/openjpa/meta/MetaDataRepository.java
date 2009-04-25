@@ -90,7 +90,7 @@ public class MetaDataRepository
      */
     public static final int VALIDATE_RUNTIME = 8;
 
-    protected static final Class[] EMPTY_CLASSES = new Class[0];
+    protected static final Class<?>[] EMPTY_CLASSES = new Class[0];
     protected static final NonPersistentMetaData[] EMPTY_NON_PERSISTENT = 
     	new NonPersistentMetaData[0];
     protected final ClassMetaData[] EMPTY_METAS;
@@ -777,7 +777,7 @@ public class MetaDataRepository
      * the repository, and return it. Use the default access type.
      */
     public ClassMetaData addMetaData(Class cls) {
-        return addMetaData(cls, ClassMetaData.ACCESS_UNKNOWN);
+        return addMetaData(cls, AccessCode.UNKNOWN);
     }
 
     /**
@@ -1272,8 +1272,8 @@ public class MetaDataRepository
         return _factory.getPersistentTypeNames(devpath, envLoader);
     }
     
-    public synchronized Collection loadPersistentTypes(boolean devpath,
-            ClassLoader envLoader) {
+    public synchronized Collection<Class<?>> loadPersistentTypes(
+    		boolean devpath, ClassLoader envLoader) {
     	return loadPersistentTypes(devpath, envLoader, false);
     }
 
@@ -1361,7 +1361,7 @@ public class MetaDataRepository
      * that this method only works during runtime when the repository is
      * registered as a {@link RegisterClassListener}.
      */
-    Collection getPCSubclasses(Class cls) {
+    Collection<Class<?>> getPCSubclasses(Class cls) {
         Collection subs = (Collection) _subs.get(cls);
         if (subs == null)
             return Collections.EMPTY_LIST;

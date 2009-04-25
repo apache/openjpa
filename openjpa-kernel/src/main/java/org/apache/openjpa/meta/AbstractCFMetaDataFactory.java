@@ -70,17 +70,17 @@ public abstract class AbstractCFMetaDataFactory
     private static final Localizer _loc = Localizer.forPackage
         (AbstractMetaDataFactory.class);
 
-    protected Collection files = null;
-    protected Collection urls = null;
-    protected Collection rsrcs = null;
-    protected Collection cpath = null;
+    protected Collection<File> files = null;
+    protected Collection<URL> urls = null;
+    protected Collection<String> rsrcs = null;
+    protected Collection<String> cpath = null;
 
-    private Set _typeNames = null;
+    private Set<String> _typeNames = null;
 
     /**
      * Set of {@link File}s of metadata files or directories supplied by user.
      */
-    public void setFiles(Collection files) {
+    public void setFiles(Collection<File> files) {
         this.files = files;
     }
 
@@ -93,7 +93,7 @@ public abstract class AbstractCFMetaDataFactory
             this.files = null;
         else {
             String[] strs = Strings.split(files, ";", 0);
-            this.files = new HashSet((int) (strs.length * 1.33 + 1));
+            this.files = new HashSet<File>((int) (strs.length * 1.33 + 1));
 
             File file;
             for (int i = 0; i < strs.length; i++) {
@@ -108,7 +108,7 @@ public abstract class AbstractCFMetaDataFactory
     /**
      * Set of {@link URL}s of metadata files or jars supplied by user.
      */
-    public void setURLs(Collection urls) {
+    public void setURLs(Collection<URL> urls) {
         this.urls = urls;
     }
 
@@ -121,7 +121,7 @@ public abstract class AbstractCFMetaDataFactory
             this.urls = null;
         else {
             String[] strs = Strings.split(urls, ";", 0);
-            this.urls = new HashSet((int) (strs.length * 1.33 + 1));
+            this.urls = new HashSet<URL>((int) (strs.length * 1.33 + 1));
             try {
                 for (int i = 0; i < strs.length; i++)
                     this.urls.add(new URL(strs[i]));
@@ -134,7 +134,7 @@ public abstract class AbstractCFMetaDataFactory
     /**
      * Set of resource paths of metadata files or jars supplied by user.
      */
-    public void setResources(Collection rsrcs) {
+    public void setResources(Collection<String> rsrcs) {
         this.rsrcs = rsrcs;
     }
 
@@ -145,14 +145,14 @@ public abstract class AbstractCFMetaDataFactory
     public void setResources(String rsrcs) {
         // keep list mutable so subclasses can add implicit locations
         this.rsrcs = (StringUtils.isEmpty(rsrcs)) ? null
-            : new ArrayList(Arrays.asList(Strings.split(rsrcs, ";", 0)));
+          : new ArrayList<String>(Arrays.asList(Strings.split(rsrcs, ";", 0)));
     }
 
     /**
      * Set of classpath directories or jars to scan for metadata supplied
      * by user.
      */
-    public void setClasspathScan(Collection cpath) {
+    public void setClasspathScan(Collection<String> cpath) {
         this.cpath = cpath;
     }
 
@@ -163,7 +163,7 @@ public abstract class AbstractCFMetaDataFactory
     public void setClasspathScan(String cpath) {
         // keep list mutable so subclasses can add implicit locations
         this.cpath = (StringUtils.isEmpty(cpath)) ? null
-            : new ArrayList(Arrays.asList(Strings.split(cpath, ";", 0)));
+          : new ArrayList<String>(Arrays.asList(Strings.split(cpath, ";", 0)));
     }
 
     public boolean store(ClassMetaData[] metas, QueryMetaData[] queries,
@@ -175,10 +175,11 @@ public abstract class AbstractCFMetaDataFactory
 
         if (!strict && (mode & MODE_META) != 0)
             mode |= MODE_MAPPING;
-        Class cls = (metas.length == 0) ? null : metas[0].getDescribedType();
+        Class<?> cls = (metas.length == 0) ? null : metas[0].getDescribedType();
         ClassLoader loader = repos.getConfiguration().
             getClassResolverInstance().getClassLoader(cls, null);
-        Map clsNames = new HashMap((int) (metas.length * 1.33 + 1));
+        Map<String,ClassMetaData> clsNames = new HashMap<String,ClassMetaData>
+        	((int) (metas.length * 1.33 + 1));
         for (int i = 0; i < metas.length; i++)
             clsNames.put(metas[i].getDescribedType().getName(), metas[i]);
 
@@ -591,7 +592,8 @@ public abstract class AbstractCFMetaDataFactory
         return null;
     }
 
-    public Set getPersistentTypeNames(boolean devpath, ClassLoader envLoader) {
+    public Set<String> getPersistentTypeNames(boolean devpath, 
+    	ClassLoader envLoader) {
         // some configured locations might be implicit in spec, so return
         // null if we don't find any classes, rather than if we don't have
         // any locations
