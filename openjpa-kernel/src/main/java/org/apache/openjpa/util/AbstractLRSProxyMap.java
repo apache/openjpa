@@ -33,7 +33,6 @@ import java.util.Set;
 import org.apache.commons.collections.Predicate;
 import org.apache.commons.collections.iterators.FilterIterator;
 import org.apache.commons.collections.iterators.IteratorChain;
-import org.apache.openjpa.conf.OpenJPAConfiguration;
 import org.apache.openjpa.kernel.OpenJPAStateManager;
 import org.apache.openjpa.lib.util.Closeable;
 import org.apache.openjpa.lib.util.Localizer;
@@ -50,8 +49,8 @@ import org.apache.openjpa.lib.util.Localizer;
  *
  * @author Abe White
  */
-public abstract class AbstractLRSProxyMap
-    implements Map, LRSProxy, MapChangeTracker, Predicate {
+public abstract class AbstractLRSProxyMap<K,V>
+    implements Map<K,V>, LRSProxy, MapChangeTracker, Predicate {
 
     private static final int MODE_KEY = 0;
     private static final int MODE_VALUE = 1;
@@ -60,18 +59,18 @@ public abstract class AbstractLRSProxyMap
     private static final Localizer _loc = Localizer.forPackage
         (AbstractLRSProxyMap.class);
 
-    private Class _keyType = null;
-    private Class _valueType = null;
+    private Class<K> _keyType = null;
+    private Class<V> _valueType = null;
     private MapChangeTrackerImpl _ct = null;
     private OpenJPAStateManager _sm = null;
     private int _field = -1;
     private OpenJPAStateManager _origOwner = null;
     private int _origField = -1;
-    private Map _map = null;
+    private Map<K,V> _map = null;
     private int _count = -1;
     private boolean _iterated = false;
 
-    public AbstractLRSProxyMap(Class keyType, Class valueType) {
+    public AbstractLRSProxyMap(Class<K> keyType, Class<V> valueType) {
         _keyType = keyType;
         _valueType = valueType;
         _ct = new MapChangeTrackerImpl(this);
@@ -173,7 +172,7 @@ public abstract class AbstractLRSProxyMap
         }
 
         // key tracking
-        Collection keys = keys(val);
+        Collection<K> keys = keys(val);
         if (keys == null || keys.isEmpty())
             return false;
         keys.removeAll(_ct.getRemoved());
@@ -181,27 +180,27 @@ public abstract class AbstractLRSProxyMap
         return keys.size() > 0;
     }
 
-    public Object get(Object key) {
+    public V get(Object key) {
         if (_keyType != null && !_keyType.isInstance(key))
             return null;
-        Object ret = (_map == null) ? null : _map.get(key);
+        V ret = (_map == null) ? null : _map.get(key);
         if (ret != null)
             return ret;
         if (_ct.getTrackKeys() && _ct.getRemoved().contains(key))
             return null;
-        Object val = value(key);
+        V val = value(key);
         if (!_ct.getTrackKeys() && _ct.getRemoved().contains(val))
             return null;
         return val;
     }
 
-    public Object put(Object key, Object value) {
+    public V put(K key, V value) {
         Proxies.assertAllowedType(key, _keyType);
         Proxies.assertAllowedType(value, _valueType);
         Proxies.dirty(this, false);
         if (_map == null)
-            _map = new HashMap();
-        Object old = _map.put(key, value);
+            _map = new HashMap<K,V>();
+        V old = _map.put(key, value);
         if (old == null && (!_ct.getTrackKeys()
             || !_ct.getRemoved().contains(key)))
             old = value(key);
@@ -213,17 +212,15 @@ public abstract class AbstractLRSProxyMap
         return old;
     }
 
-    public void putAll(Map m) {
-        Map.Entry entry;
-        for (Iterator itr = m.entrySet().iterator(); itr.hasNext();) {
-            entry = (Map.Entry) itr.next();
+    public void putAll(Map<? extends K,? extends V> m) {
+        for (Map.Entry<? extends K, ? extends V> entry : m.entrySet()) {
             put(entry.getKey(), entry.getValue());
         }
     }
 
-    public Object remove(Object key) {
+    public V remove(Object key) {
         Proxies.dirty(this, false);
-        Object old = (_map == null) ? null : _map.remove(key);
+        V old = (_map == null) ? null : _map.remove(key);
         if (old == null && (!_ct.getTrackKeys()
             || !_ct.getRemoved().contains(key)))
             old = value(key);
@@ -239,9 +236,9 @@ public abstract class AbstractLRSProxyMap
         Proxies.dirty(this, false);
         Itr itr = iterator(MODE_ENTRY);
         try {
-            Map.Entry entry;
+            Map.Entry<K,V> entry;
             while (itr.hasNext()) {
-                entry = (Map.Entry) itr.next();
+                entry = (Map.Entry<K,V>) itr.next();
                 Proxies.removed(this, entry.getKey(), true);
                 Proxies.removed(this, entry.getValue(), false);
                 _ct.removed(entry.getKey(), entry.getValue());
@@ -252,8 +249,8 @@ public abstract class AbstractLRSProxyMap
         }
     }
 
-    public Set keySet() {
-        return new AbstractSet() {
+    public Set<K> keySet() {
+        return new AbstractSet<K>() {
             public int size() {
                 return AbstractLRSProxyMap.this.size();
             }
@@ -262,31 +259,31 @@ public abstract class AbstractLRSProxyMap
                 return AbstractLRSProxyMap.this.remove(o) != null;
             }
 
-            public Iterator iterator() {
+            public Iterator<K> iterator() {
                 return AbstractLRSProxyMap.this.iterator(MODE_KEY);
             }
         };
     }
 
-    public Collection values() {
-        return new AbstractCollection() {
+    public Collection<V> values() {
+        return new AbstractCollection<V>() {
             public int size() {
                 return AbstractLRSProxyMap.this.size();
             }
 
-            public Iterator iterator() {
+            public Iterator<V> iterator() {
                 return AbstractLRSProxyMap.this.iterator(MODE_VALUE);
             }
         };
     }
 
-    public Set entrySet() {
-        return new AbstractSet() {
+    public Set<Map.Entry<K, V>> entrySet() {
+        return new AbstractSet<Map.Entry<K, V>>() {
             public int size() {
                 return AbstractLRSProxyMap.this.size();
             }
 
-            public Iterator iterator() {
+            public Iterator<Map.Entry<K, V>> iterator() {
                 return AbstractLRSProxyMap.this.iterator(MODE_ENTRY);
             }
         };
@@ -296,10 +293,10 @@ public abstract class AbstractLRSProxyMap
         throws ObjectStreamException {
         Itr itr = iterator(MODE_ENTRY);
         try {
-            Map map = new HashMap();
-            Map.Entry entry;
+            Map<K,V> map = new HashMap<K,V>();
+            Map.Entry<K,V> entry;
             while (itr.hasNext()) {
-                entry = (Map.Entry) itr.next();
+                entry = (Map.Entry<K,V>) itr.next();
                 map.put(entry.getKey(), entry.getValue());
             }
             return map;
@@ -321,12 +318,12 @@ public abstract class AbstractLRSProxyMap
     /**
      * Return all keys for the given value.
      */
-    protected abstract Collection keys(Object value);
+    protected abstract Collection<K> keys(Object value);
 
     /**
      * Return the value of the given key.
      */
-    protected abstract Object value(Object key);
+    protected abstract V value(Object key);
 
     /**
      * Implement this method to return an iterator over the entries
@@ -336,7 +333,7 @@ public abstract class AbstractLRSProxyMap
      * {@link Iterator#remove} method, and may implement
      * {@link org.apache.openjpa.lib.util.Closeable}.
      */
-    protected abstract Iterator itr();
+    protected abstract Iterator<?> itr();
 
     /**
      * Return the number of entries in the map, or {@link Integer#MAX_VALUE}.

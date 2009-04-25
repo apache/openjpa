@@ -23,7 +23,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.LinkedList;
@@ -71,6 +70,7 @@ import org.apache.openjpa.util.UserException;
  *
  * @author Abe White
  */
+@SuppressWarnings("serial")
 public abstract class AbstractBrokerFactory
     implements BrokerFactory {
 
@@ -78,33 +78,34 @@ public abstract class AbstractBrokerFactory
         (AbstractBrokerFactory.class);
 
     // static mapping of configurations to pooled broker factories
-    private static final Map _pool = Collections.synchronizedMap(new HashMap());
+    private static final Map<Object,AbstractBrokerFactory> _pool = 
+       Collections.synchronizedMap(new HashMap<Object,AbstractBrokerFactory>());
 
     // configuration
     private final OpenJPAConfiguration _conf;
     private transient boolean _readOnly = false;
     private transient boolean _closed = false;
     private transient RuntimeException _closedException = null;
-    private Map _userObjects = null;
+    private Map<Object,Object> _userObjects = null;
 
     // internal lock: spec forbids synchronization on this object
     private final ReentrantLock _lock = new ReentrantLock();
 
     // maps global transactions to associated brokers
-    private transient ConcurrentHashMap _transactional
-        = new ConcurrentHashMap();
+    private transient ConcurrentHashMap<Object,Collection<Broker>> 
+        _transactional = new ConcurrentHashMap<Object,Collection<Broker>>();
 
     // weak-ref tracking of open brokers
-    private transient Set _brokers;
+    private transient Set<Broker> _brokers;
 
     // cache the class names loaded from the persistent classes property so
     // that we can re-load them for each new broker
-    private transient Collection _pcClassNames = null;
-    private transient Collection _pcClassLoaders = null;
+    private transient Collection<String> _pcClassNames = null;
+    private transient Collection<ClassLoader> _pcClassLoaders = null;
     private transient boolean _persistentTypesLoaded = false;
 
     // lifecycle listeners to pass to each broker
-    private transient Map _lifecycleListeners = null;
+    private transient Map<Object, Class<?>[]> _lifecycleListeners = null;
 
     // transaction listeners to pass to each broker
     private transient List _transactionListeners = null;
@@ -285,16 +286,16 @@ public abstract class AbstractBrokerFactory
         // cache persistent type names if not already
         ClassLoader loader = _conf.getClassResolverInstance().
             getClassLoader(getClass(), envLoader);
-        Collection toRedefine = new ArrayList();
+        Collection<Class<?>> toRedefine = new ArrayList<Class<?>>();
         if (!_persistentTypesLoaded) {
-            Collection clss = _conf.getMetaDataRepositoryInstance().
+            Collection<Class<?>> clss = _conf.getMetaDataRepositoryInstance().
                 loadPersistentTypes(false, loader, _conf.isInitializeEagerly());
             if (clss.isEmpty())
                 _pcClassNames = Collections.EMPTY_SET;
             else {
-                Collection c = new ArrayList(clss.size());
-                for (Iterator itr = clss.iterator(); itr.hasNext();) {
-                    Class cls = (Class) itr.next();
+                Collection<String> c = new ArrayList<String>(clss.size());
+                for (Iterator<Class<?>> itr = clss.iterator(); itr.hasNext();) {
+                    Class<?> cls = itr.next();
                     c.add(cls.getName());
                     if (needsSub(cls))
                         toRedefine.add(cls);
@@ -335,7 +336,7 @@ public abstract class AbstractBrokerFactory
         try {
             assertOpen();
             if (_lifecycleListeners == null)
-                _lifecycleListeners = new HashMap(7);
+                _lifecycleListeners = new HashMap<Object, Class<?>[]>(7);
             _lifecycleListeners.put(listener, classes);
         } finally {
             unlock();
@@ -491,7 +492,7 @@ public abstract class AbstractBrokerFactory
                 return (_userObjects == null) ? null : _userObjects.remove(key);
 
             if (_userObjects == null)
-                _userObjects = new HashMap();
+                _userObjects = new HashMap<Object,Object>();
             return _userObjects.put(key, val);
         } finally {
             unlock();

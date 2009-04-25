@@ -185,8 +185,8 @@ public class AnnotationPersistenceMetaDataParser
     private static final Localizer _loc = Localizer.forPackage
         (AnnotationPersistenceMetaDataParser.class);
 
-    private static final Map<Class, MetaDataTag> _tags =
-        new HashMap<Class, MetaDataTag>();
+    private static final Map<Class<?>, MetaDataTag> _tags =
+        new HashMap<Class<?>, MetaDataTag>();
 
     static {
         _tags.put(Access.class, ACCESS);
@@ -405,7 +405,7 @@ public class AnnotationPersistenceMetaDataParser
     /**
      * Parse persistence metadata for the given class.
      */
-    public void parse(Class cls) {
+    public void parse(Class<?> cls) {
         if (_log.isTraceEnabled())
             _log.trace(_loc.get("parse-class", cls.getName()));
 
@@ -548,7 +548,6 @@ public class AnnotationPersistenceMetaDataParser
 
         Entity entity = _cls.getAnnotation(Entity.class);
         MappedSuperclass mapped = _cls.getAnnotation(MappedSuperclass.class);
-        Embeddable embeddable = _cls.getAnnotation(Embeddable.class);
         if (isMetaDataMode()) {
             meta.setAbstract(mapped != null);
             // while the spec only provides for embedded exclusive, it doesn't
@@ -772,7 +771,7 @@ public class AnnotationPersistenceMetaDataParser
         if (_file != null)
             return _file;
 
-        Class cls = _cls;
+        Class<?> cls = _cls;
         while (cls.getEnclosingClass() != null)
             cls = cls.getEnclosingClass();
 
@@ -893,9 +892,9 @@ public class AnnotationPersistenceMetaDataParser
      */
     private Collection<LifecycleCallbacks>[] parseEntityListeners
         (ClassMetaData meta, EntityListeners listeners) {
-        Class[] classes = listeners.value();
+        Class<?>[] classes = listeners.value();
         Collection<LifecycleCallbacks>[] parsed = null;
-        for (Class cls : classes)
+        for (Class<?> cls : classes)
             parsed = parseCallbackMethods(cls, parsed, true, true, 
                 getRepository());
         return parsed;
@@ -910,7 +909,7 @@ public class AnnotationPersistenceMetaDataParser
      * @param listener whether this is a listener or not
      */
     public static Collection<LifecycleCallbacks>[] parseCallbackMethods
-        (Class cls, Collection<LifecycleCallbacks>[] callbacks, boolean sups,
+        (Class<?> cls, Collection<LifecycleCallbacks>[] callbacks, boolean sups,
         boolean listener, MetaDataRepository repos) {
 
         if (cls == null)
@@ -921,7 +920,7 @@ public class AnnotationPersistenceMetaDataParser
             getInstance());
 
         int mods;
-        Class sup = cls;
+        Class<?> sup = cls;
         MethodKey key;
         Set<MethodKey> seen = new HashSet<MethodKey>();
         do {
@@ -960,7 +959,7 @@ public class AnnotationPersistenceMetaDataParser
                 for (int i = 0; i < events.length; i++) {
                     int e = events[i];
                     if (callbacks[e] == null)
-                        callbacks[e] = new ArrayList(3);
+                        callbacks[e] = new ArrayList<LifecycleCallbacks>(3);
                     MetaDataParsers.validateMethodsForSameCallback(cls, 
                         callbacks[e], m, tag, conf, repos.getLog());
                     if (listener) {
@@ -1062,8 +1061,8 @@ public class AnnotationPersistenceMetaDataParser
                 meta, attr.name()));
 
         field.setInFetchGroup(fg.getName(), true);
-        Set parentFetchGroups = fg.getContainedBy();
-        for (Object parentFetchGroup:parentFetchGroups)
+        Set<String> parentFetchGroups = fg.getContainedBy();
+        for (Object parentFetchGroup : parentFetchGroups)
         	field.setInFetchGroup(parentFetchGroup.toString(), true);
         if (attr.recursionDepth() != Integer.MIN_VALUE)
             fg.setRecursionDepth(field, attr.recursionDepth());
@@ -1265,7 +1264,7 @@ public class AnnotationPersistenceMetaDataParser
     /**
      * Convert the given class to its OpenJPA type override equivalent.
      */
-    private static Class toOverrideType(Class cls) {
+    private static Class<?> toOverrideType(Class<?> cls) {
         return (cls == Entity.class)
             ? org.apache.openjpa.enhance.PersistenceCapable.class : cls;
     }
@@ -1349,7 +1348,7 @@ public class AnnotationPersistenceMetaDataParser
      * Parse @Basic. Given annotation may be null.
      */
     private void parseBasic(FieldMetaData fmd, Basic anno, boolean lob) {
-        Class type = fmd.getDeclaredType();
+        Class<?> type = fmd.getDeclaredType();
         if (lob && type != String.class
             && type != char[].class && type != Character[].class
             && type != byte[].class && type != Byte[].class)
@@ -1745,7 +1744,7 @@ public class AnnotationPersistenceMetaDataParser
         meta.setSchema(schema);
         meta.setCatalog(catalog);
         meta.setSource(getSourceFile(), (el instanceof Class) ? el : null,
-            meta.SRC_ANNOTATIONS);
+            SourceTracker.SRC_ANNOTATIONS);
     }
 
     /**
@@ -1765,7 +1764,7 @@ public class AnnotationPersistenceMetaDataParser
 
             meta = getRepository().searchQueryMetaDataByName(query.name());
             if (meta != null) {
-            	Class definingType = meta.getDefiningType();
+            	Class<?> definingType = meta.getDefiningType();
                 if ((definingType == null || definingType != _cls) 
                   && _log.isWarnEnabled()) {
                     _log.warn(_loc.get("dup-query", query.name(), el, 
@@ -1781,7 +1780,7 @@ public class AnnotationPersistenceMetaDataParser
                 meta.addHint(hint.name(), hint.value());
 
             meta.setSource(getSourceFile(), (el instanceof Class) ? el : null,
-                meta.SRC_ANNOTATIONS);
+                SourceTracker.SRC_ANNOTATIONS);
             if (isMetaDataMode())
                 meta.setSourceMode(MODE_META);
             else if (isMappingMode())
@@ -1810,7 +1809,7 @@ public class AnnotationPersistenceMetaDataParser
 
             meta = getRepository().searchQueryMetaDataByName(query.name());
             if (meta != null) {
-            	Class defType = meta.getDefiningType();
+            	Class<?> defType = meta.getDefiningType();
                 if ((defType != _cls) && _log.isWarnEnabled()) {
                     _log.warn(_loc.get("dup-query", query.name(), el, defType));
                 }
@@ -1820,7 +1819,7 @@ public class AnnotationPersistenceMetaDataParser
             meta = getRepository().addQueryMetaData(null, query.name());
             meta.setQueryString(query.query());
             meta.setLanguage(QueryLanguages.LANG_SQL);
-            Class res = query.resultClass();
+            Class<?> res = query.resultClass();
             if (ImplHelper.isManagedType(getConfiguration(), res))
                 meta.setCandidateType(res);
             else if (!void.class.equals(res))
@@ -1832,7 +1831,7 @@ public class AnnotationPersistenceMetaDataParser
                 meta.addHint(hint.name(), hint.value());
 
             meta.setSource(getSourceFile(), (el instanceof Class) ? el : null,
-                meta.SRC_ANNOTATIONS);
+                SourceTracker.SRC_ANNOTATIONS);
             if (isMetaDataMode())
                 meta.setSourceMode(MODE_META);
             else if (isMappingMode())
@@ -1863,7 +1862,7 @@ public class AnnotationPersistenceMetaDataParser
 
         public int hashCode() {
             int code = 46 * 12 + _method.getName().hashCode();
-            for (Class param : _method.getParameterTypes())
+            for (Class<?> param : _method.getParameterTypes())
                 code = 46 * code + param.hashCode();
             return code;
         }
@@ -1879,7 +1878,7 @@ public class AnnotationPersistenceMetaDataParser
         }
     }
 
-    private static class MethodComparator implements Comparator {
+    private static class MethodComparator implements Comparator<Method> {
 
         private static MethodComparator INSTANCE = null;
 
@@ -1889,12 +1888,9 @@ public class AnnotationPersistenceMetaDataParser
             return INSTANCE;
         }
 
-        public int compare(Object o1, Object o2) {
-            Method m1 = (Method) o1;
-            Method m2 = (Method) o2;
-
-            Class c1 = m1.getDeclaringClass();
-            Class c2 = m2.getDeclaringClass();
+        public int compare(Method m1, Method m2) {
+            Class<?> c1 = m1.getDeclaringClass();
+            Class<?> c2 = m2.getDeclaringClass();
             if (!c1.equals(c2)) {
                 if (c1.isAssignableFrom(c2))
                     return -1;

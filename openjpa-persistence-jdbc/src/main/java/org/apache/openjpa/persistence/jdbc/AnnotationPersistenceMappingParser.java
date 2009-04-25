@@ -1865,7 +1865,7 @@ public class AnnotationPersistenceMappingParser
      */
     protected void setMapKeyColumn(FieldMapping fm, MappingInfo info,
         Column col, int unique) {
-        List cols = new ArrayList();
+        List<Column> cols = new ArrayList<Column>();
         cols.add(col);
         info.setColumns(cols);
         if (unique == TRUE)
