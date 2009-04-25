@@ -51,7 +51,7 @@ public abstract class AbstractMetaDataDefaults
     private static final Localizer _loc = Localizer.forPackage
         (AbstractMetaDataDefaults.class);
 
-    private int _access = ClassMetaData.ACCESS_FIELD;
+    private int _access = AccessCode.FIELD;
     private int _identity = ClassMetaData.ID_UNKNOWN;
     private boolean _ignore = true;
     private boolean _interface = true;
@@ -180,7 +180,7 @@ public abstract class AbstractMetaDataDefaults
             for (int i = 0; i < fieldNames.length; i ++) {
             	String property = fieldNames[i];
                 member = getMemberByProperty(meta, property);
-                if (member == null) // transient
+                if (member == null) // transient or indeterminable access
                 	continue;
                 fmd = meta.addDeclaredField(property, fieldTypes[i]);
                 fmd.backingMember(member);
@@ -331,29 +331,32 @@ public abstract class AbstractMetaDataDefaults
     public Member getBackingMember(FieldMetaData fmd) {
         if (fmd == null)
             return null;
-        try {
-            //### note that we might not have access to declaring metadata yet
-            //### (this could be used during parse), so we have to settle for
-            //### defining.  could cause problems if maps a superclass field
-            //### where the superclass uses a different access type
-            if (fmd.getBackingMember() == null) {
-                if ((fmd.getDefiningMetaData().getAccessType() &
-                    ClassMetaData.ACCESS_FIELD) == ClassMetaData.ACCESS_FIELD)
-                    return AccessController.doPrivileged(
-                        J2DoPrivHelper.getDeclaredFieldAction(
-                            fmd.getDeclaringType(), fmd.getName())); 
-                return Reflection.findGetter(fmd.getDeclaringType(), 
-                    fmd.getName(), true);                
-            } else {
-                return fmd.getBackingMember();
-            }
-        } catch (OpenJPAException ke) {
-            throw ke;
-        } catch (Exception e) {
-            if (e instanceof PrivilegedActionException)
-                e = ((PrivilegedActionException) e).getException();
-            throw new InternalException(e);
-        }
+        if (fmd.getBackingMember() != null)
+        	return fmd.getBackingMember();
+        return getMemberByProperty(fmd.getDeclaringMetaData(), fmd.getName());
+//        try {
+//            //### note that we might not have access to declaring metadata yet
+//            //### (this could be used during parse), so we have to settle for
+//            //### defining.  could cause problems if maps a superclass field
+//            //### where the superclass uses a different access type
+//            if (fmd.getBackingMember() == null) {
+//                if ((fmd.getDefiningMetaData().getAccessType() &
+//                    ClassMetaData.ACCESS_FIELD) == ClassMetaData.ACCESS_FIELD)
+//                    return AccessController.doPrivileged(
+//                        J2DoPrivHelper.getDeclaredFieldAction(
+//                            fmd.getDeclaringType(), fmd.getName())); 
+//                return Reflection.findGetter(fmd.getDeclaringType(), 
+//                    fmd.getName(), true);                
+//            } else {
+//                return fmd.getBackingMember();
+//            }
+//        } catch (OpenJPAException ke) {
+//            throw ke;
+//        } catch (Exception e) {
+//            if (e instanceof PrivilegedActionException)
+//                e = ((PrivilegedActionException) e).getException();
+//            throw new InternalException(e);
+//        }
     }
     
 

@@ -175,7 +175,7 @@ public class ClassMetaData
     	new HashMap<Class<?>,Map<String,String>>();
     private int _identity = ID_UNKNOWN;
     private int _idStrategy = ValueStrategies.NONE;
-    private int _accessType = ACCESS_UNKNOWN;
+    private int _accessType = AccessCode.UNKNOWN;
     private boolean _replicated = false;
     
     private String _seqName = DEFAULT_STRING;
@@ -677,13 +677,13 @@ public class ClassMetaData
      * Sets the access type. 
      */
     public void setAccessType(int type) {
-    	if (type == _accessType || type == ACCESS_UNKNOWN)
+    	if (type == _accessType || type == AccessCode.UNKNOWN)
     		return;
     	if (!AccessCode.isValidClassCode(type)) {
             throw new IllegalArgumentException(_loc.get("access-type-invalid", 
     		    this, AccessCode.toString(type)).getMessage());
     	}
-    	if (_accessType != ACCESS_UNKNOWN) { // changing access type
+    	if (_accessType != AccessCode.UNKNOWN) { // changing access type
     	    _repos.getLog().warn(_loc.get("access-type-change", 
     		    this, AccessCode.toString(type), 
     		    AccessCode.toString(_accessType)).getMessage());
@@ -2087,7 +2087,7 @@ public class ClassMetaData
                     c = fmds[i].getObjectIdFieldType();
             }
 
-            if (fmds[i].getAccessType() == ACCESS_FIELD) {
+            if (AccessCode.isField(fmds[i].getAccessType())) {
                 f = Reflection.findField(oid, fmds[i].getName(), false);
                 if (f == null || !f.getType().isAssignableFrom(c))
                     throw new MetaDataException(_loc.get("invalid-id",
@@ -2123,8 +2123,8 @@ public class ClassMetaData
      * same as that of this receiver. 
      */
     private void validateAccessType() {
-        if (!AccessCode.isSet(_accessType) 
-          || AccessCode.isExplicit(_accessType))
+        if (AccessCode.isEmpty(_accessType) 
+           || AccessCode.isExplicit(_accessType))
             return;
         ClassMetaData sup = getPCSuperclassMetaData();
         while (sup != null && sup.isExplicitAccess())

@@ -18,9 +18,12 @@
  */
 package org.apache.openjpa.persistence.jdbc.maps.m2mmapex6;
 
+import javax.persistence.Access;
+import javax.persistence.AccessType;
 import javax.persistence.Embeddable;
 
 @Embeddable
+@Access(AccessType.FIELD)
 public class FullName {
 
     String fName;

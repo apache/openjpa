@@ -87,6 +87,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
+import java.util.Stack;
 import java.util.TreeSet;
 
 import javax.persistence.Basic;
@@ -146,6 +147,7 @@ import org.apache.openjpa.lib.log.Log;
 import org.apache.openjpa.lib.meta.SourceTracker;
 import org.apache.openjpa.lib.util.J2DoPrivHelper;
 import org.apache.openjpa.lib.util.Localizer;
+import org.apache.openjpa.meta.AccessCode;
 import org.apache.openjpa.meta.ClassMetaData;
 import org.apache.openjpa.meta.DelegatingMetaDataFactory;
 import org.apache.openjpa.meta.FieldMetaData;
@@ -247,7 +249,8 @@ public class AnnotationPersistenceMetaDataParser
     private final Map<Package, Integer> _pkgs = new HashMap<Package, Integer>();
 
     // the class we were invoked to parse
-    protected Class _cls = null;
+    protected Class<?> _cls = null;
+    protected Stack<Class<?>> _stack = new Stack<Class<?>>();
     private File _file = null;
 
     /**
@@ -393,6 +396,7 @@ public class AnnotationPersistenceMetaDataParser
      * Clear caches.
      */
     public void clear() {
+    	_stack.clear();
         _cls = null;
         _file = null;
         _pkgs.clear();
@@ -406,12 +410,14 @@ public class AnnotationPersistenceMetaDataParser
             _log.trace(_loc.get("parse-class", cls.getName()));
 
         _cls = cls;
+        _stack.push(cls);
         try {
             parsePackageAnnotations();
             ClassMetaData meta = parseClassAnnotations();
             updateSourceMode(meta);
         } finally {
-            _cls = null;
+        	_stack.pop();
+            _cls = _stack.isEmpty() ? null : _stack.peek();
             _file = null;
         }
     }
@@ -540,9 +546,11 @@ public class AnnotationPersistenceMetaDataParser
         if (meta == null)
             return null;
 
-        Entity entity = (Entity) _cls.getAnnotation(Entity.class);
+        Entity entity = _cls.getAnnotation(Entity.class);
+        MappedSuperclass mapped = _cls.getAnnotation(MappedSuperclass.class);
+        Embeddable embeddable = _cls.getAnnotation(Embeddable.class);
         if (isMetaDataMode()) {
-            meta.setAbstract(_cls.getAnnotation(MappedSuperclass.class) !=null);
+            meta.setAbstract(mapped != null);
             // while the spec only provides for embedded exclusive, it doesn't
             // seem hard to support otherwise
             if (entity == null)
@@ -696,9 +704,9 @@ public class AnnotationPersistenceMetaDataParser
      */    
     private void parseAccess(ClassMetaData meta, Access access) {
     	if (access != null) {
-    		meta.setAccessType(ClassMetaData.ACCESS_EXPLICIT 
+    		meta.setAccessType(AccessCode.EXPLICIT 
             | (access.value() == AccessType.FIELD ? 
-            	ClassMetaData.ACCESS_FIELD : ClassMetaData.ACCESS_PROPERTY));
+            	AccessCode.FIELD : AccessCode.PROPERTY));
     	}
     }
 
@@ -746,13 +754,13 @@ public class AnnotationPersistenceMetaDataParser
      * other entity classes or mapped super classes in the entity hierarchy.
      */
     private int getAccessCode(Class<?> cls) {
-        int accessCode = ClassMetaData.ACCESS_UNKNOWN;
+        int accessCode = AccessCode.UNKNOWN;
         Access access = AccessController.doPrivileged(
             J2DoPrivHelper.getAnnotationAction(cls, Access.class));
         if (access != null) {
-            accessCode |=  ClassMetaData.ACCESS_EXPLICIT | 
+            accessCode |=  AccessCode.EXPLICIT | 
                 (access.value() == AccessType.FIELD ? 
-                ClassMetaData.ACCESS_FIELD : ClassMetaData.ACCESS_PROPERTY);
+                AccessCode.FIELD : AccessCode.PROPERTY);
         }
         return accessCode;
     }
@@ -1839,9 +1847,9 @@ public class AnnotationPersistenceMetaDataParser
      */    
     private void parseAccess(FieldMetaData meta, Access access) {
     	if (access != null) {
-    		meta.setAccessType(ClassMetaData.ACCESS_EXPLICIT 
+    		meta.setAccessType(AccessCode.EXPLICIT 
             | (access.value() == AccessType.FIELD ? 
-            	ClassMetaData.ACCESS_FIELD : ClassMetaData.ACCESS_PROPERTY));
+            		AccessCode.FIELD : AccessCode.PROPERTY));
     	}
     }
 

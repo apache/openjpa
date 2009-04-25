@@ -31,6 +31,7 @@ import org.apache.openjpa.persistence.test.SingleEMFTestCase;
 import org.apache.openjpa.persistence.OpenJPAEntityManager;
 import org.apache.openjpa.persistence.JPAFacadeHelper;
 import org.apache.openjpa.kernel.OpenJPAStateManager;
+import org.apache.openjpa.meta.AccessCode;
 import org.apache.openjpa.meta.ClassMetaData;
 import org.apache.openjpa.util.ImplHelper;
 import org.apache.openjpa.event.AbstractLifecycleListener;
@@ -307,8 +308,8 @@ public abstract class AbstractUnenhancedClassTest
         // we only expect lazy loading to work when we can redefine classes
         // or when accessing a property-access record that OpenJPA created.
         if (ClassRedefiner.canRedefineClasses()
-            || (!userDefined && sm.getMetaData().getAccessType()
-                != ClassMetaData.ACCESS_FIELD)) {
+            || (!userDefined 
+            	&& AccessCode.isProperty(sm.getMetaData().getAccessType()))) {
 
             assertFalse(sm.getLoaded()
                 .get(sm.getMetaData().getField("stringField").getIndex()));
@@ -359,8 +360,7 @@ public abstract class AbstractUnenhancedClassTest
         // we only expect lazy loading to work when we can redefine classes
         // or when accessing a property-access record that OpenJPA created.
         if (ClassRedefiner.canRedefineClasses()
-            || (sm.getMetaData().getAccessType() != ClassMetaData.ACCESS_FIELD))
-        {
+            || AccessCode.isProperty(sm.getMetaData().getAccessType())) {
             assertFalse(sm.getLoaded()
                 .get(sm.getMetaData().getField("lazyField").getIndex()));
 

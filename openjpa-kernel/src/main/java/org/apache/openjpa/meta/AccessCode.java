@@ -26,8 +26,10 @@ package org.apache.openjpa.meta;
  * The bits designate following aspects of access style being used at class
  * level:<br>
  * 
- * <LI>Bit position 0 (UNKNOWN): always 0. All bits as zero represent    
- *              that no access style has been set. 
+ * <LI>Bit position 0 (UNKNOWN): generally 0. All bits as zero represent    
+ *              that no access style has been set. 1 denotes that the 
+ *              class has no property at all and its access can not be
+ *              determined.
  * <LI>Bit position 1 (FIELD): Field based access is default
  * <LI>Bit position 2 (PROPERTY): Property based access is default 
  * <LI>Bit position 3 (EXPLICIT): whether explicit or implicit 
@@ -66,6 +68,7 @@ package org.apache.openjpa.meta;
  */
 public class AccessCode {
 	public static int UNKNOWN   = 0;
+	public static int EMPTY     = 1;
 	public static int FIELD     = 2 << 0;
 	public static int PROPERTY  = 2 << 1;
 	public static int EXPLICIT  = 2 << 2;
@@ -75,11 +78,13 @@ public class AccessCode {
 	 * Affirms if the given code is valid. 
 	 */
 	public static boolean isValidClassCode(int code) {
-		return code%2 == 0 // code must be even
+		if (code == EMPTY)
+			return true;
+		return (code%2 == 0 || code == EMPTY) 
 		 && code >= UNKNOWN 
 		 && code <= (MIXED|EXPLICIT|PROPERTY)
          && !(isProperty(code) && isField(code)) // both 1 & 2 can not be set 
-		 && (isProperty(code) || isField(code) || !isSet(code))
+		 && (isProperty(code) || isField(code) || isUnknown(code))
 		 && ((isMixed(code) && isExplicit(code)) || !isMixed(code));
 	}
 	
@@ -88,7 +93,7 @@ public class AccessCode {
 		    && code >= UNKNOWN 
 		    && code <= (EXPLICIT|PROPERTY)
             && !(isProperty(code) && isField(code))
-            && (isProperty(code) || isField(code) || !isSet(code));
+            && (isProperty(code) || isField(code) || isUnknown(code));
 	}
 	
 	/**
@@ -111,8 +116,40 @@ public class AccessCode {
 		return (code & FIELD) != 0;
 	}
 	
-	public static boolean isSet(int code) {
-		return code != UNKNOWN;
+	public static boolean isUnknown(int code) {
+		return code == UNKNOWN;
+	}
+	
+	public static boolean isEmpty(int code) {
+		return code == EMPTY;
+	}
+	
+	public static boolean isField(ClassMetaData meta) {
+		return isField(meta.getAccessType());
+	}
+	
+	public static boolean isProperty(ClassMetaData meta) {
+		return isProperty(meta.getAccessType());
+	}
+	
+	public static boolean isUnknown(ClassMetaData meta) {
+		return isUnknown(meta.getAccessType());
+	}
+	
+	public static boolean isEmpty(ClassMetaData meta) {
+		return isEmpty(meta.getAccessType());
+	}
+	
+	public static boolean isField(FieldMetaData meta) {
+		return isField(meta.getAccessType());
+	}
+	
+	public static boolean isProperty(FieldMetaData meta) {
+		return isProperty(meta.getAccessType());
+	}
+	
+	public static boolean isUnknown(FieldMetaData meta) {
+		return isUnknown(meta.getAccessType());
 	}
 	
 	/**
@@ -120,7 +157,7 @@ public class AccessCode {
 	 * access style.
 	 */
 	public static boolean isCompatibleSuper(int subCode, int superCode) {
-		if (!isSet(superCode))
+		if (isEmpty(superCode))
 			return true;
 		if (isValidClassCode(subCode) && isValidClassCode(superCode)) {
 			if (isExplicit(subCode))
@@ -139,8 +176,8 @@ public class AccessCode {
 	 */
 	public static int mergeFieldCode(int cCode, int fCode) {
 		if (isValidClassCode(cCode) && isValidFieldCode(fCode)) {
-			if (!isSet(cCode)) {
-				if (!isSet(fCode))
+			if (isUnknown(cCode)) {
+				if (isUnknown(fCode))
 					return UNKNOWN;
 				return isProperty(fCode) ? PROPERTY : FIELD;
 			}
@@ -181,6 +218,8 @@ public class AccessCode {
 			return "invalid code " + code;
 		if (code == UNKNOWN)
 			return "unknown access";
+		if (code == EMPTY)
+			return "empty access";
 		return (isMixed(code) ? "mixed " : "") 
 		    + (isExplicit(code) ? "explicit " : "implicit ") 
 		    + (isField(code) ? "field" : "property")

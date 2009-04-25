@@ -110,6 +110,8 @@
         <class>org.apache.openjpa.persistence.embed.EmbedXml</class>
         <class>org.apache.openjpa.persistence.embed.CustomerXml</class>
         <class>org.apache.openjpa.persistence.embed.OrderXml</class>
+        <class>org.apache.openjpa.persistence.embed.attrOverrides.AddressXml</class>
+        <class>org.apache.openjpa.persistence.embed.attrOverrides.ZipcodeXml</class>
         <properties>
             <property name="openjpa.jdbc.SynchronizeMappings"
                   value="buildSchema(ForeignKeys=true)"/>

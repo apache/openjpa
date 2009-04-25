@@ -478,8 +478,6 @@ public class EntityManagerImpl
         if (mode != null && mode != LockModeType.NONE)
             _broker.assertActiveTransaction();
 
-        if (oid == null)
-        	return null;
         processLockProperties(pushFetchPlan(), mode, properties);
         try {
             oid = _broker.newObjectId(cls, oid);

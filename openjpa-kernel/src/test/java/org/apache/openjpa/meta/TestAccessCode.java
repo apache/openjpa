@@ -38,8 +38,8 @@ public class TestAccessCode extends TestCase {
 		isValidClassCode(true,  28, MIXED | EXPLICIT | PROPERTY);
 		isValidClassCode(false, 30, MIXED | EXPLICIT | FIELD | PROPERTY);
 		
-		// All odd codes are invalid
-		for (int i = 1; i < 32; i += 2)
+		// All odd codes other than 1 are invalid
+		for (int i = 3; i < 32; i += 2)
 			assertFalse("Not a valid Class Code: " + AccessCode.toString(i), 
 				AccessCode.isValidClassCode(i));
 	}

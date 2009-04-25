@@ -30,6 +30,7 @@ import org.apache.openjpa.enhance.PersistenceCapable;
 import org.apache.openjpa.enhance.StateManager;
 import org.apache.openjpa.enhance.Reflection;
 import org.apache.openjpa.lib.util.J2DoPrivHelper;
+import org.apache.openjpa.meta.AccessCode;
 import org.apache.openjpa.meta.ClassMetaData;
 import org.apache.openjpa.meta.FieldMetaData;
 import org.apache.openjpa.meta.JavaTypes;
@@ -698,8 +699,7 @@ public class ObjectIdStateManager
             val = Reflection.get(_oid, (Field) fmd.getBackingMember());
         else if (fmd.getBackingMember() instanceof Method) 
             val = Reflection.get(_oid, (Method) fmd.getBackingMember());
-        else if (fmd.getDefiningMetaData().getAccessType()
-            == ClassMetaData.ACCESS_FIELD)
+        else if (AccessCode.isField(fmd.getDefiningMetaData().getAccessType()))
             val = Reflection.get(_oid, Reflection.findField(_oid.getClass(), 
                 fmd.getName(), true));
         else 
@@ -733,11 +733,10 @@ public class ObjectIdStateManager
         FieldMetaData fmd = getMetaData().getField(field);
         if (fmd.getBackingMember() instanceof Field)
             Reflection.set(_oid, (Field) fmd.getBackingMember(), val);
-        else if (fmd.getDefiningMetaData().getAccessType()
-            == ClassMetaData.ACCESS_FIELD) {
+        else if (AccessCode.isField(fmd.getDefiningMetaData().getAccessType()))
             Reflection.set(_oid, Reflection.findField(_oid.getClass(), 
                 fmd.getName(), true), val);
-        } else
+        else
             Reflection.set(_oid, Reflection.findSetter(_oid.getClass(),
                 fmd.getName(), fmd.getDeclaredType(), true), val);
 	}

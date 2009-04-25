@@ -191,7 +191,7 @@ public class ValueMetaDataImpl
         _embeddedMeta = repos.newEmbeddedClassMetaData(this);
         _embeddedMeta.setDescribedType(_decType);
         repos.getMetaDataFactory().getDefaults().populate(_embeddedMeta,
-            ClassMetaData.ACCESS_UNKNOWN);
+            AccessCode.UNKNOWN);
 
         setEmbedded(true);
         return _embeddedMeta;

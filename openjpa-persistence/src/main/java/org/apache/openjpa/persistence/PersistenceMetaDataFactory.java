@@ -79,7 +79,7 @@ public class PersistenceMetaDataFactory
     private AnnotationPersistenceMetaDataParser _annoParser = null;
     private AnnotationPersistenceXMLMetaDataParser _annoXMLParser = null;
     private XMLPersistenceMetaDataParser _xmlParser = null;
-    private Map<URL, Set> _xml = null; // xml rsrc -> class names
+    private Map<URL, Set<String>> _xml = null; // xml rsrc -> class names
     private Set<URL> _unparsed = null; // xml rsrc
     private boolean _fieldOverride = true;
 
@@ -176,8 +176,8 @@ public class PersistenceMetaDataFactory
     protected XMLPersistenceMetaDataSerializer newXMLSerializer() {
         return new XMLPersistenceMetaDataSerializer(repos.getConfiguration());
     }
-
-    public void load(Class cls, int mode, ClassLoader envLoader) {
+    
+    public void load(Class<?> cls, int mode, ClassLoader envLoader) {
         if (mode == MODE_NONE)
             return;
         if (!strict && (mode & MODE_META) != 0)
@@ -237,7 +237,8 @@ public class PersistenceMetaDataFactory
     /**
      * Parse the given XML resource.
      */
-    private void parseXML(URL xml, Class cls, int mode, ClassLoader envLoader) {
+    private void parseXML(URL xml, Class<?> cls, int mode, 
+    	ClassLoader envLoader) {
         // spring needs to use the envLoader first for all class resolution,
         // but we must still fall back on application loader
         ClassLoader loader = repos.getConfiguration().
@@ -268,9 +269,9 @@ public class PersistenceMetaDataFactory
     /**
      * Locate the XML resource for the given class.
      */
-    private URL findXML(Class cls) {
+    private URL findXML(Class<?> cls) {
         if (_xml != null && cls != null)
-            for (Map.Entry<URL, Set> entry : _xml.entrySet())
+            for (Map.Entry<URL, Set<String>> entry : _xml.entrySet())
                 if (entry.getValue().contains(cls.getName()))
                     return entry.getKey();
         return null;
@@ -295,19 +296,19 @@ public class PersistenceMetaDataFactory
                 "map-persistent-type-names", rsrc, Arrays.asList(names)));
         
         if (_xml == null)
-            _xml = new HashMap<URL, Set>();
-        _xml.put((URL) rsrc, new HashSet(Arrays.asList(names)));
+            _xml = new HashMap<URL, Set<String>>();
+        _xml.put((URL) rsrc, new HashSet<String>(Arrays.asList(names)));
         if (_unparsed == null)
             _unparsed = new HashSet<URL>();
         _unparsed.add((URL) rsrc);
     }
 
     @Override
-    public Class getQueryScope(String queryName, ClassLoader loader) {
+    public Class<?> getQueryScope(String queryName, ClassLoader loader) {
         if (queryName == null)
             return null;
-        Collection classes = repos.loadPersistentTypes(false, loader);
-        for (Class cls : (Collection<Class>) classes) {
+        Collection<Class<?>> classes = repos.loadPersistentTypes(false, loader);
+        for (Class<?> cls :  classes) {
             if ((AccessController.doPrivileged(J2DoPrivHelper
                 .isAnnotationPresentAction(cls, NamedQuery.class)))
                 .booleanValue() && hasNamedQuery
@@ -336,13 +337,13 @@ public class PersistenceMetaDataFactory
     }
 
     @Override
-    public Class getResultSetMappingScope(String rsMappingName,
+    public Class<?> getResultSetMappingScope(String rsMappingName,
         ClassLoader loader) {
         if (rsMappingName == null)
             return null;
         
-        Collection classes = repos.loadPersistentTypes(false, loader);
-        for (Class cls : (Collection<Class>) classes) {
+        Collection<Class<?>> classes = repos.loadPersistentTypes(false, loader);
+        for (Class<?> cls : classes) {
 
             if ((AccessController.doPrivileged(J2DoPrivHelper
                 .isAnnotationPresentAction(cls, SqlResultSetMapping.class)))

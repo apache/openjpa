@@ -57,6 +57,7 @@ import org.apache.openjpa.lib.meta.CFMetaDataParser;
 import org.apache.openjpa.lib.meta.XMLVersionParser;
 import org.apache.openjpa.lib.util.J2DoPrivHelper;
 import org.apache.openjpa.lib.util.Localizer;
+import org.apache.openjpa.meta.AccessCode;
 import org.apache.openjpa.meta.ClassMetaData;
 import org.apache.openjpa.meta.DelegatingMetaDataFactory;
 import org.apache.openjpa.meta.FieldMetaData;
@@ -183,7 +184,7 @@ public class XMLPersistenceMetaDataParser
     private Class _cls = null;
     private int _fieldPos = 0;
     private int _clsPos = 0;
-    private int _access = ClassMetaData.ACCESS_UNKNOWN;
+    private int _access = AccessCode.UNKNOWN;
     private PersistenceStrategy _strategy = null;
     private Set<CascadeType> _cascades = null;
     private Set<CascadeType> _pkgCascades = null;
@@ -494,7 +495,7 @@ public class XMLPersistenceMetaDataParser
         _fieldPos = 0;
         _clsPos = 0;
 
-        _access = ClassMetaData.ACCESS_UNKNOWN;
+        _access = AccessCode.UNKNOWN;
         _strategy = null;
         _listener = null;
         _callbacks = null;
@@ -845,13 +846,13 @@ public class XMLPersistenceMetaDataParser
         // if we don't know the default access type, check to see if a 
         // superclass has already defined the access type
         int defaultAccess = _access;
-        if (defaultAccess == ClassMetaData.ACCESS_UNKNOWN) {
+        if (defaultAccess == AccessCode.UNKNOWN) {
             ClassMetaData sup = repos.getCachedMetaData(_cls.getSuperclass());
             if (sup != null)
                 defaultAccess = sup.getAccessType();
         }
 
-        int access = ClassMetaData.ACCESS_UNKNOWN;
+        int access = AccessCode.UNKNOWN;
         if (meta == null) {
             // add metadata for this type
             access = toAccessType(attrs.getValue("access"), defaultAccess);
@@ -934,7 +935,7 @@ public class XMLPersistenceMetaDataParser
      * Default access element.
      */
     private void endAccess() {
-        _access = toAccessType(currentText(), ClassMetaData.ACCESS_UNKNOWN);
+        _access = toAccessType(currentText(), AccessCode.UNKNOWN);
     }
 
     /**
@@ -945,8 +946,8 @@ public class XMLPersistenceMetaDataParser
         if (StringUtils.isEmpty(str))
             return def;
         if ("PROPERTY".equals(str))
-            return ClassMetaData.ACCESS_PROPERTY;
-        return ClassMetaData.ACCESS_FIELD;
+            return AccessCode.PROPERTY;
+        return AccessCode.FIELD;
     }
 
     /**
@@ -1206,8 +1207,8 @@ public class XMLPersistenceMetaDataParser
             Class type = null;
             try {
                 if ((field != null && 
-                    field.getAccessType() == ClassMetaData.ACCESS_PROPERTY) ||
-                    (fldAccess == ClassMetaData.ACCESS_PROPERTY)) {
+                    field.getAccessType() == AccessCode.PROPERTY) ||
+                    (fldAccess == AccessCode.PROPERTY)) {
                     String cap = StringUtils.capitalize(name);
                     type = meta.getDescribedType();
                     try {
@@ -1287,9 +1288,9 @@ public class XMLPersistenceMetaDataParser
         if (attrs != null) {
             String access = attrs.getValue("access");
             if ("PROPERTY".equals(access))
-                return ClassMetaData.ACCESS_PROPERTY;
+                return AccessCode.PROPERTY;
             if ("FIELD".equals(access))
-                return ClassMetaData.ACCESS_FIELD;
+                return AccessCode.FIELD;
         }
         // Check access defined on field, if provided
         if (field != null) {
@@ -1298,9 +1299,9 @@ public class XMLPersistenceMetaDataParser
         // Otherwise, get the default access type of the declaring class
         ClassMetaData meta = (ClassMetaData) currentElement();
         if (meta != null) {
-            return (meta.getAccessType() & ~ClassMetaData.ACCESS_EXPLICIT);
+            return AccessCode.toFieldCode(meta.getAccessType());
         }
-        return ClassMetaData.ACCESS_UNKNOWN;
+        return AccessCode.UNKNOWN;
     }
     
     /**
