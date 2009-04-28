@@ -48,10 +48,10 @@ public class MetamodelImpl implements Metamodel {
 
     public MetamodelImpl(MetaDataRepository repos) {
         this.repos = repos;
-        ClassMetaData[] metas = repos.getMetaDatas();
-        for (ClassMetaData meta : metas) {
+        Collection<Class<?>> classes = repos.loadPersistentTypes(true, null);
+        for (Class<?> cls : classes) {
+        	ClassMetaData meta = repos.getMetaData(cls, null, true);
             PersistenceType type = getPersistenceType(meta);
-            Class<?> cls = meta.getDescribedType();
             switch (type) {
             case ENTITY:
                 find(cls, _entities, ENTITY);

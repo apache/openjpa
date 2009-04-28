@@ -22,25 +22,26 @@ package org.apache.openjpa.persistence.meta;
 import javax.persistence.Access;
 import javax.persistence.AccessType;
 import javax.persistence.Entity;
+import javax.persistence.OneToOne;
 import javax.persistence.Transient;
 
 /**
  * Domain class used by meta-model testing.
  * 
- * Uses explicit, non-mixed field based access.
+ * Uses explicit field based access mixed with property access.
  *  
  * @author Pinaki Poddar
  *
  */
 @Entity
 @Access(AccessType.FIELD)
-public class ExplicitFieldAccess {
+public class ExplicitFieldAccessMixed {
 	private long f1;
 	private int  f2;
 	@Transient private short f3;
-	private DefaultFieldAccessBase f4;
-	private DefaultFieldAccessBase f5;
-	private transient DefaultFieldAccessBase f6;
+	private ImplicitFieldAccessBase f4;
+    private ImplicitFieldAccessBase f5;
+	private transient ImplicitFieldAccessBase f6;
 	
 	public long getF1() {
 		return f1;
@@ -60,24 +61,26 @@ public class ExplicitFieldAccess {
 	public void setF3(short f3) {
 		this.f3 = f3;
 	}
-	public DefaultFieldAccessBase getF4() {
+	public ImplicitFieldAccessBase getF4() {
 		return f4;
 	}
-	public void setF4(DefaultFieldAccessBase f4) {
+	public void setF4(ImplicitFieldAccessBase f4) {
 		this.f4 = f4;
 	}
 	
-	public DefaultFieldAccessBase getF5() {
+	@Access(AccessType.PROPERTY)
+	@OneToOne
+	public ImplicitFieldAccessBase getF5() {
 		return f5;
 	}
-	public void setF5(DefaultFieldAccessBase f5) {
+	public void setF5(ImplicitFieldAccessBase f5) {
 		this.f5 = f5;
 	}
 	
-	public DefaultFieldAccessBase getF6() {
+	public ImplicitFieldAccessBase getF6() {
 		return f6;
 	}
-	public void setF6(DefaultFieldAccessBase f6) {
+	public void setF6(ImplicitFieldAccessBase f6) {
 		this.f6 = f6;
 	}
 }

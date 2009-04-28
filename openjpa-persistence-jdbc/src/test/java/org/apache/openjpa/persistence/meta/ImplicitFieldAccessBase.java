@@ -28,18 +28,22 @@ import javax.persistence.Entity;
 import javax.persistence.ManyToMany;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
+import javax.persistence.Transient;
 
 /**
  * Domain classes used by meta-model testing.
  * 
- * Uses default, field based access type.
+ * Uses implicit, field based access type.
+ * 
+ * Implicit access is determined by placement of annotations of field or 
+ * getters.
  * 
  * @author Pinaki Poddar
  *
  */
 @Entity
-public class DefaultFieldAccessBase extends DefaultFieldAccessMappedSuperclass {
-    private String   string;
+public class ImplicitFieldAccessBase extends ImplicitFieldAccessMappedSuperclass {
+    private String   f0;
     private int      primitiveInt;
     private Integer  boxedInt;
     
@@ -57,11 +61,11 @@ public class DefaultFieldAccessBase extends DefaultFieldAccessMappedSuperclass {
     @ManyToMany
     private Map<Integer, ExplicitFieldAccess> mapRelationKeyBasic;
     
-	public String getString() {
-		return string;
+	public String getF0() {
+		return f0;
 	}
-	public void setString(String string) {
-		this.string = string;
+	public void setF0(String string) {
+		this.f0 = string;
 	}
 	public int getPrimitiveInt() {
 		return primitiveInt;
@@ -116,5 +120,17 @@ public class DefaultFieldAccessBase extends DefaultFieldAccessMappedSuperclass {
 	public void setMapRelationKeyBasic(Map<Integer, 
 			ExplicitFieldAccess> map) {
 		this.mapRelationKeyBasic = map;
+	}
+	
+	// This method is annotated but transient to verify that placement of
+	// annotation does not confuse the determination of implicit access
+	// style of this class.
+	@Transient
+	public int getTransient() {
+		return 42;
+	}
+	
+	public void setTransient(int x) {
+		
 	}
 }

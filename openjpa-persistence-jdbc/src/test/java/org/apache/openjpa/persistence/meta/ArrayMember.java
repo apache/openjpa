@@ -16,43 +16,18 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-
 package org.apache.openjpa.persistence.meta;
 
-import java.util.Map;
-
+import javax.persistence.Basic;
+import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
-import javax.persistence.ManyToMany;
-import javax.persistence.OneToOne;
 
-/**
- * Domain class used y meta-model testing.
- * 
- * Uses default field based access.
- *  
- * @author Pinaki Poddar
- *
- */
+import org.apache.openjpa.persistence.PersistentCollection;
+
 @Entity
-public class DefaultFieldAccessSubclass extends DefaultFieldAccessBase {
-    private DefaultFieldAccessBase base;
-    private Map<Embed0, ExplicitPropertyAccess> mapRelationKeyEmbedded;
-    
-    @OneToOne
-	public DefaultFieldAccessBase getBase() {
-		return base;
-	}
-	
-	public void setBase(DefaultFieldAccessBase base) {
-		this.base = base;
-	}
-	
-	@ManyToMany
-	public Map<Embed0, ExplicitPropertyAccess> getMapRelationKeyEmbedded() {
-		return mapRelationKeyEmbedded;
-	}
-	
-	public void setMapRelationKeyEmbedded(Map<Embed0, ExplicitPropertyAccess> map) {
-		this.mapRelationKeyEmbedded = map;
-	}
+public class ArrayMember {
+	@Basic
+	private Byte[] Array;
+	@Basic
+	private byte[] array;
 }

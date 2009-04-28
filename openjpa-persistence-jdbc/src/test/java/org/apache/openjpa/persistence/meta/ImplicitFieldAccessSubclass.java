@@ -19,39 +19,40 @@
 
 package org.apache.openjpa.persistence.meta;
 
-import javax.persistence.Access;
-import javax.persistence.AccessType;
-import javax.persistence.Embeddable;
+import java.util.Map;
+
+import javax.persistence.Entity;
+import javax.persistence.ManyToMany;
 import javax.persistence.OneToOne;
 
 /**
- * Domain class used by meta-model testing.
+ * Domain class used y meta-model testing.
  * 
- * Uses explicit field based access.
- *
+ * Uses implicit field based access.
+ *  
  * @author Pinaki Poddar
  *
  */
-@Embeddable
-@Access(AccessType.PROPERTY)
-public class Embed1 {
-	private String f1;
-	private DefaultFieldAccessBase entity0;
-	
-	
-	public String getF1() {
-		return f1;
-	}
-	public void setF1(String f1) {
-		this.f1 = f1;
+@Entity
+public class ImplicitFieldAccessSubclass extends ImplicitFieldAccessBase {
+    @OneToOne
+    private ImplicitFieldAccessBase base;
+	@ManyToMany
+    private Map<Embed0, ExplicitPropertyAccess> mapRelationKeyEmbedded;
+    
+	public ImplicitFieldAccessBase getBase() {
+		return base;
 	}
 	
-	@OneToOne
-	public DefaultFieldAccessBase getEntity0() {
-		return entity0;
+	public void setBase(ImplicitFieldAccessBase base) {
+		this.base = base;
 	}
 	
-	public void setEntity0(DefaultFieldAccessBase entity0) {
-		this.entity0 = entity0;
+	public Map<Embed0, ExplicitPropertyAccess> getMapRelationKeyEmbedded() {
+		return mapRelationKeyEmbedded;
+	}
+	
+	public void setMapRelationKeyEmbedded(Map<Embed0, ExplicitPropertyAccess> map) {
+		this.mapRelationKeyEmbedded = map;
 	}
 }

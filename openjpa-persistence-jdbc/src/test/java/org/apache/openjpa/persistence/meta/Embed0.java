@@ -19,37 +19,36 @@
 
 package org.apache.openjpa.persistence.meta;
 
-import javax.persistence.Id;
-import javax.persistence.MappedSuperclass;
+import javax.persistence.Access;
+import javax.persistence.AccessType;
+import javax.persistence.Embeddable;
+import javax.persistence.OneToOne;
 
 /**
  * Domain class used by meta-model testing.
  * 
- * Uses default field based access.
+ * Uses explicit field based access.
  * 
  * @author Pinaki Poddar
  *
  */
-@MappedSuperclass
-public class DefaultFieldAccessMappedSuperclass {
-    @Id
-    private long id;
-    
-    private java.util.Date createTime;
-
-	public long getId() {
-		return id;
+@Embeddable
+@Access(AccessType.FIELD)
+public class Embed0 {
+	private long f1;
+	@OneToOne
+	private ImplicitFieldAccessSubclass entity1;
+	
+	public long getF1() {
+		return f1;
 	}
-
-	public void setId(long id) {
-		this.id = id;
+	public void setF1(long f1) {
+		this.f1 = f1;
 	}
-
-	public java.util.Date getCreateTime() {
-		return createTime;
+	public ImplicitFieldAccessSubclass getEntity1() {
+		return entity1;
 	}
-
-	public void setCreateTime(java.util.Date createTime) {
-		this.createTime = createTime;
+	public void setEntity1(ImplicitFieldAccessSubclass entity1) {
+		this.entity1 = entity1;
 	}
 }

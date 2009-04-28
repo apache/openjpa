@@ -16,15 +16,42 @@
  * specific language governing permissions and limitations
  * under the License.
  */
+
 package org.apache.openjpa.persistence.meta;
 
-import javax.persistence.Basic;
-import javax.persistence.Entity;
+import javax.persistence.Access;
+import javax.persistence.AccessType;
+import javax.persistence.Embeddable;
+import javax.persistence.OneToOne;
 
-@Entity
-public class ArrayMember {
-	@Basic
-	private Integer[] Array;
-	@Basic
-	private int[] array;
+/**
+ * Domain class used by meta-model testing.
+ * 
+ * Uses explicit field based access.
+ *
+ * @author Pinaki Poddar
+ *
+ */
+@Embeddable
+@Access(AccessType.PROPERTY)
+public class Embed1 {
+	private String f1;
+	private ImplicitFieldAccessBase entity0;
+	
+	
+	public String getF1() {
+		return f1;
+	}
+	public void setF1(String f1) {
+		this.f1 = f1;
+	}
+	
+	@OneToOne
+	public ImplicitFieldAccessBase getEntity0() {
+		return entity0;
+	}
+	
+	public void setEntity0(ImplicitFieldAccessBase entity0) {
+		this.entity0 = entity0;
+	}
 }

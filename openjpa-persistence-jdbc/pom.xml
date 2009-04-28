@@ -375,30 +375,6 @@
                 </repository>
             </repositories>
         </profile>
-  		<profile>
-  		<!-- =============================================================== -->
-  		<!-- Compiling with JDK5 compiler excludes classes that explicitly   -->
-  		<!-- import and use JDK6 classes/packages for annotation processing  -->
-  		<!-- =============================================================== -->
-  		    <id>jdk5-compiler</id>
-            <build>
-              <plugins>
-		        <plugin>
-		    		<groupId>org.apache.maven.plugins</groupId>
-		    		<artifactId>maven-compiler-plugin</artifactId>
-		    		
-		            <configuration>
-		    		<testExcludes>
-		    		   <testExclude>**/TestCanonicalMetamodelGeneration.java</testExclude>
-		    		</testExcludes>
-		            </configuration>
-		        </plugin>
-		      </plugins>
-		   </build>
-		   <activation>
-		      <jdk>1.5</jdk>
-		   </activation>
-  		</profile>
           
     </profiles>
 

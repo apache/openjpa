@@ -41,10 +41,10 @@ public class ExplicitPropertyAccessMixed {
 	
 	@Access(AccessType.FIELD)
 	@OneToOne
-	private DefaultFieldAccessBase f3;
+	private ImplicitFieldAccessBase f3;
 	private int f4;
 	private short f5;
-	private DefaultFieldAccessBase f6;
+	private ImplicitFieldAccessBase f6;
 	
 	public String getF1() {
 		return f1;
@@ -60,10 +60,10 @@ public class ExplicitPropertyAccessMixed {
 		this.f2 = f2;
 	}
 	
-	public DefaultFieldAccessBase getF3() {
+	public ImplicitFieldAccessBase getF3() {
 		return f3;
 	}
-	public void setF3(DefaultFieldAccessBase f3) {
+	public void setF3(ImplicitFieldAccessBase f3) {
 		this.f3 = f3;
 	}
 	
@@ -82,10 +82,10 @@ public class ExplicitPropertyAccessMixed {
 	}
 	
 	@OneToOne
-	public DefaultFieldAccessBase getF6() {
+	public ImplicitFieldAccessBase getF6() {
 		return f6;
 	}
-	public void setF6(DefaultFieldAccessBase f6) {
+	public void setF6(ImplicitFieldAccessBase f6) {
 		this.f6 = f6;
 	}
 }
