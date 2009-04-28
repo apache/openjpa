@@ -179,7 +179,8 @@ public abstract class AbstractMetaDataDefaults
             FieldMetaData fmd;
             for (int i = 0; i < fieldNames.length; i ++) {
             	String property = fieldNames[i];
-                member = getMemberByProperty(meta, property);
+                member = getMemberByProperty(meta, property,
+                	AccessCode.UNKNOWN, true);
                 if (member == null) // transient or indeterminable access
                 	continue;
                 fmd = meta.addDeclaredField(property, fieldTypes[i]);
@@ -240,13 +241,6 @@ public abstract class AbstractMetaDataDefaults
     	
     }
     
-    /**
-     * Called when populating from PCRegistry when only property names are
-     * available.
-     */
-    protected abstract Member getMemberByProperty(ClassMetaData meta, 
-    		String property); 
-
     /**
      * Return the list of fields in <code>meta</code> that use field access,
      * or <code>null</code> if a list of fields is unobtainable. An empty list
@@ -333,34 +327,10 @@ public abstract class AbstractMetaDataDefaults
             return null;
         if (fmd.getBackingMember() != null)
         	return fmd.getBackingMember();
-        return getMemberByProperty(fmd.getDeclaringMetaData(), fmd.getName());
-//        try {
-//            //### note that we might not have access to declaring metadata yet
-//            //### (this could be used during parse), so we have to settle for
-//            //### defining.  could cause problems if maps a superclass field
-//            //### where the superclass uses a different access type
-//            if (fmd.getBackingMember() == null) {
-//                if ((fmd.getDefiningMetaData().getAccessType() &
-//                    ClassMetaData.ACCESS_FIELD) == ClassMetaData.ACCESS_FIELD)
-//                    return AccessController.doPrivileged(
-//                        J2DoPrivHelper.getDeclaredFieldAction(
-//                            fmd.getDeclaringType(), fmd.getName())); 
-//                return Reflection.findGetter(fmd.getDeclaringType(), 
-//                    fmd.getName(), true);                
-//            } else {
-//                return fmd.getBackingMember();
-//            }
-//        } catch (OpenJPAException ke) {
-//            throw ke;
-//        } catch (Exception e) {
-//            if (e instanceof PrivilegedActionException)
-//                e = ((PrivilegedActionException) e).getException();
-//            throw new InternalException(e);
-//        }
+        return getMemberByProperty(fmd.getDeclaringMetaData(), fmd.getName(),
+            fmd.getAccessType(), true);
     }
     
-
-
     public Class<?> getUnimplementedExceptionType() {
         return UnsupportedOperationException.class;
     }

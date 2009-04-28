@@ -83,6 +83,22 @@ public interface MetaDataDefaults
      * Return the backing member for the given field metadata.
      */
     public Member getBackingMember(FieldMetaData field);
+    
+    /**
+     * Get the field or getter for the given attribute of the given class.
+     * 
+     * @param meta is the declaring class 
+     * @param attribute name of the logical attribute
+     * @param access whether to look for the field of getter method. 
+     * If unknown, then field or property is chosen based on the access type 
+     * used by the given class.
+     * @param scanAnnotation if true and access is unknown then scans the
+     * annotation on the member to determine access.
+     * 
+     * @since 2.0.0
+     */
+    public Member getMemberByProperty(ClassMetaData meta, String attribute, 
+    	int access, boolean scanAnnotation);
 
     /**
      * Return a runtime exception class to throw for un-implemented

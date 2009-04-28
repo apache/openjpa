@@ -314,7 +314,7 @@ public class PersistenceMetaDataDefaults
     	if (sup != null && !AccessCode.isUnknown(sup))
     		return sup.getAccessType();
     	
-        return AccessCode.FIELD;
+        return getDefaultAccessType();
     }
     
     /**
@@ -598,33 +598,34 @@ public class PersistenceMetaDataDefaults
     /**
      * Gets either the instance field or the getter method depending upon the 
      * access style of the given meta-data.
-     * <br>
-     * Defining class is used instead of declaring class because this method
-     * may be invoked during parsing phase when declaring meta-data may not be
-     * available.  
      */
-    @Override
-    protected Member getMemberByProperty(ClassMetaData meta, String property) {
+    public Member getMemberByProperty(ClassMetaData meta, String property, 
+    	int access, boolean applyDefaultRule) {
     	Class<?> cls = meta.getDescribedType();
         Field field = Reflection.findField(cls, property, false);;
         Method getter = Reflection.findGetter(cls, property, false);
+        Method setter = Reflection.findSetter(cls, property, false);
+        int accessCode = AccessCode.isUnknown(access) ? meta.getAccessType() :
+        	access;
+        if (field == null && getter == null)
+        	error(meta, _loc.get("access-no-property", cls, property));
     	if (isAnnotated(field) && isAnnotated(getter))
     		throw new IllegalStateException(_loc.get("access-duplicate", 
     			field, getter).toString());
     	
-        if (AccessCode.isField(meta)) {
+        if (AccessCode.isField(accessCode)) {
            if (isAnnotatedAccess(getter, AccessType.PROPERTY)) {
         	   meta.setAccessType(AccessCode.MIXED | meta.getAccessType());
                return getter;
            }
-           return field; 
-        } else if (AccessCode.isProperty(meta)) {
+           return field == null ? getter : field; 
+        } else if (AccessCode.isProperty(accessCode)) {
             if (isAnnotatedAccess(field, AccessType.FIELD)) {
          	   meta.setAccessType(AccessCode.MIXED | meta.getAccessType());
                return field;
             }            
-            return getter;
-        } else if (AccessCode.isUnknown(meta)) {
+            return getter == null ? field : getter;
+        } else if (AccessCode.isUnknown(accessCode)) {
         	if (isAnnotated(field)) {
         		meta.setAccessType(AccessCode.FIELD);
         		return field;

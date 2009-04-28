@@ -697,7 +697,7 @@ public class ClassMetaData
      * it may have the side-effect of changing the access code of this receiver.
      */
     void mergeFieldAccess(FieldMetaData fmd, int fCode) {
-    	setAccessType(AccessCode.mergeFieldCode(_accessType, fCode));
+    	setAccessType(AccessCode.mergeFieldCode(this, fmd, fCode));
     }
 
     /**

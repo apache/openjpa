@@ -131,7 +131,12 @@ public class NoneMetaDataFactory
         return null;
     }
 
-    public Class getUnimplementedExceptionType() {
+    public Member getMemberByProperty(ClassMetaData meta, String property,
+    		int access, boolean scan) {
+    	return null;
+    }
+    
+    public Class<? extends Exception> getUnimplementedExceptionType() {
         return null;
     }
     

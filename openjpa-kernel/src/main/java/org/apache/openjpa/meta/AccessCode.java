@@ -18,6 +18,9 @@
  */
 package org.apache.openjpa.meta;
 
+import org.apache.openjpa.lib.util.Localizer;
+import org.apache.openjpa.util.UserException;
+
 /**
  * Represents access styles for members of a class and field through a 
  * 5-bit integer.
@@ -73,6 +76,8 @@ public class AccessCode {
 	public static int PROPERTY  = 2 << 1;
 	public static int EXPLICIT  = 2 << 2;
 	public static int MIXED     = 2 << 3;
+	
+	private static Localizer _loc = Localizer.forPackage(AccessCode.class);
 	
 	/**
 	 * Affirms if the given code is valid. 
@@ -167,6 +172,17 @@ public class AccessCode {
 		return false;
 	}
 	
+	public static int mergeFieldCode(ClassMetaData meta, FieldMetaData fmd, 
+			int fCode) {
+		int cCode = meta.getAccessType();
+		try {
+			return mergeFieldCode(cCode, fCode);
+		} catch (IllegalStateException e) {
+            throw new UserException(_loc.get("access-illegal-merge",
+                fmd.getFullName(false), toString(fCode), toString(cCode)));
+		}
+	}
+	
 	/**
      * Merges the field access type with the class access type provided such
      * merge is valid.
@@ -192,8 +208,8 @@ public class AccessCode {
 				if (fCode == cCode)
 					return cCode;
 				else
-                    throw new IllegalStateException(toString(cCode) + 
-                        " not compatible to " + toString(fCode));
+                    throw new IllegalStateException("Can not merge field " +
+                    toString(fCode) + " to class " + toString(cCode));
 			}
 		}
 		return cCode;
