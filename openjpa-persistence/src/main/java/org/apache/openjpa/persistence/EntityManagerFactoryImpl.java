@@ -46,6 +46,8 @@ import org.apache.openjpa.lib.conf.ProductDerivations;
 import org.apache.openjpa.lib.conf.Value;
 import org.apache.openjpa.lib.util.Localizer;
 import org.apache.openjpa.lib.util.Closeable;
+import org.apache.openjpa.meta.MetaDataRepository;
+import org.apache.openjpa.persistence.meta.MetamodelImpl;
 import org.apache.openjpa.persistence.query.OpenJPAQueryBuilder;
 import org.apache.openjpa.persistence.query.QueryBuilderImpl;
 import org.apache.openjpa.util.OpenJPAException;
@@ -69,7 +71,8 @@ public class EntityManagerFactoryImpl
     private transient Constructor<FetchPlan> _plan = null;
     private transient StoreCache _cache = null;
     private transient QueryResultCache _queryCache = null;
-
+    private transient MetamodelImpl _metaModel;
+    
     /**
      * Default constructor provided for auto-instantiation.
      */
@@ -354,8 +357,7 @@ public class EntityManagerFactoryImpl
     }
 
     public QueryBuilder getQueryBuilder() {
-        throw new UnsupportedOperationException(
-        "JPA 2.0 - Method not yet implemented");
+        throw new UnsupportedOperationException();
     }
     
     public OpenJPAQueryBuilder getDynamicQueryBuilder() {
@@ -366,8 +368,11 @@ public class EntityManagerFactoryImpl
         return _factory.getSupportedProperties();
     }
 
-    public Metamodel getMetamodel() {
-        throw new UnsupportedOperationException(
-        "JPA 2.0 - Method not yet implemented");
+    public MetamodelImpl getMetamodel() {
+        if (_metaModel == null) {
+            _metaModel = new MetamodelImpl(getConfiguration()
+                .getMetaDataRepositoryInstance());
+        }
+        return _metaModel;
     }
 }

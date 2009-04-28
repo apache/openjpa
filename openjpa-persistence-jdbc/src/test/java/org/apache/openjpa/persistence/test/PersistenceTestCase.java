@@ -46,6 +46,7 @@ import org.apache.openjpa.kernel.Broker;
 import org.apache.openjpa.meta.ClassMetaData;
 import org.apache.openjpa.persistence.JPAFacadeHelper;
 import org.apache.openjpa.persistence.OpenJPAEntityManagerFactorySPI;
+import org.apache.openjpa.persistence.OpenJPAPersistence;
 
 /**
  * Base test class providing persistence utilities.
@@ -527,12 +528,13 @@ public abstract class PersistenceTestCase
         }
         
         public int hashCode() {
-            return unit.hashCode() + config.hashCode();
+            return (unit != null ? unit.hashCode() : 0) + config.hashCode();
         }
         
         public boolean equals(Object other) {
             EMFKey that = (EMFKey)other;
-            return unit.equals(that.unit) && config.equals(that.config);
+            return (unit != null ? unit.equals(that.unit) : that.unit == null) 
+                && config.equals(that.config);
         }
     }
 }
