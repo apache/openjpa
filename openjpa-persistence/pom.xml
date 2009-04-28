@@ -60,10 +60,8 @@
 		            <configuration>
                     <excludes>
                         <exclude>**/AnnotationProcessor6.java</exclude>
+                        <exclude>**/SourceAnnotationHandler.java</exclude>
                     </excludes>
-                    <testExcludes>
-                        <testExclude>**/TestCanonicalMetamodelGeneration.java</testExclude>
-                    </testExcludes>
 		            </configuration>
 		        </plugin>
 		      </plugins>
