@@ -39,5 +39,6 @@
 		<class>org.apache.openjpa.persistence.jdbc.common.apps.HelperPC4</class>
 		<class>org.apache.openjpa.persistence.jdbc.common.apps.InvertA</class>
         <class>org.apache.openjpa.persistence.jdbc.common.apps.InvertB</class>
+        <class>org.apache.openjpa.persistence.jdbc.common.apps.EagerOuterJoinPC</class>
 	</persistence-unit>
 </persistence>

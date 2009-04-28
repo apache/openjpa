@@ -370,7 +370,7 @@ public class DBDictionary
     public int batchLimit = NO_BATCH;
     
     public final Map<Integer,Set<String>> sqlStateCodes = 
-    	new HashMap<Integer, Set<String>>();
+        new HashMap<Integer, Set<String>>();
                                               
     public DBDictionary() {
         fixedSizeTypeNameSet.addAll(Arrays.asList(new String[]{
@@ -1727,14 +1727,14 @@ public class DBDictionary
      *                  size clause will be inserted appropriately.   
      */
     protected String insertSize(String typeName, String size) {
-    	if (StringUtils.isEmpty(size)) {
+        if (StringUtils.isEmpty(size)) {
             int idx = typeName.indexOf("{0}");
             if (idx != -1) {
                 return typeName.substring(0, idx);
             }
             return typeName;
         }
-    	
+        
         int idx = typeName.indexOf("{0}");
         if (idx != -1) {
             // replace '{0}' with size
@@ -1883,7 +1883,7 @@ public class DBDictionary
         from.append("(");
         from.append(toSelect(subSelect, null, subFrom, where,
             sel.getGrouping(), sel.getHaving(), null, sel.isDistinct(),
-            false, sel.getStartIndex(), sel.getEndIndex(), true));
+            false, sel.getStartIndex(), sel.getEndIndex(), true, sel));
         from.append(")");
         if (requiresAliasForSubselect)
             from.append(" ").append(Select.FROM_SELECT_ALIAS);
@@ -2076,7 +2076,7 @@ public class DBDictionary
 
             Val val = (Val) next.getValue();
             if (val == null)
-            	val = new Null();
+                val = new Null();
             Column col = fmd.getColumns()[0];
             if (allowAlias) {
               sql.append(sel.getColumnAlias(col));
@@ -2371,11 +2371,12 @@ public class DBDictionary
     /**
      * Combine the given components into a SELECT statement.
      */
-    public SQLBuffer toSelect(SQLBuffer selects, JDBCFetchConfiguration fetch,
+    protected SQLBuffer toSelect(SQLBuffer selects,
+        JDBCFetchConfiguration fetch,
         SQLBuffer from, SQLBuffer where, SQLBuffer group,
         SQLBuffer having, SQLBuffer order,
         boolean distinct, boolean forUpdate, long start, long end,
-        boolean subselect) {
+        boolean subselect, Select sel) {
         return toOperation(getSelectOperation(fetch), selects, from, where,
             group, having, order, distinct, start, end,
             getForUpdateClause(fetch, forUpdate, null), subselect);
@@ -2395,7 +2396,8 @@ public class DBDictionary
     /**
      * Combine the given components into a SELECT statement.
      */
-    public SQLBuffer toSelect(SQLBuffer selects, JDBCFetchConfiguration fetch,
+    protected SQLBuffer toSelect(SQLBuffer selects, 
+        JDBCFetchConfiguration fetch,
         SQLBuffer from, SQLBuffer where, SQLBuffer group,
         SQLBuffer having, SQLBuffer order,
         boolean distinct, boolean forUpdate, long start, long end,
@@ -3103,7 +3105,7 @@ public class DBDictionary
     public String[] getCreateTableSQL(Table table) {
         StringBuffer buf = new StringBuffer();
         String tableName = checkNameLength(getFullName(table, false), 
-        		maxTableNameLength, "long-table-name");
+                maxTableNameLength, "long-table-name");
         buf.append("CREATE TABLE ").append(tableName);
         if (supportsComments && table.hasComment()) {
             buf.append(" ");
@@ -3178,7 +3180,7 @@ public class DBDictionary
         StringBuffer buf = new StringBuffer();
         buf.append("CREATE SEQUENCE ");
         String seqName = checkNameLength(getFullName(seq), maxTableNameLength, 
-        		"long-seq-name");
+                "long-seq-name");
         buf.append(seqName);
         if (seq.getInitialValue() != 0)
             buf.append(" START WITH ").append(seq.getInitialValue());
@@ -3318,7 +3320,7 @@ public class DBDictionary
     protected String getDeclareColumnSQL(Column col, boolean alter) {
         StringBuffer buf = new StringBuffer();
         String columnName = checkNameLength(col.getName(), maxColumnNameLength, 
-        		"long-column-name");
+                "long-column-name");
         buf.append(columnName).append(" ");
         buf.append(getTypeName(col));
 
@@ -3499,7 +3501,7 @@ public class DBDictionary
     /**
      * Return the declaration SQL for the given unique constraint. This
      * method is used from within {@link #getCreateTableSQL}.
-     * Returns	<code>CONSTRAINT &lt;name&gt; UNIQUE (&lt;col list&gt;)</code>
+     * Returns <code>CONSTRAINT &lt;name&gt; UNIQUE (&lt;col list&gt;)</code>
      * by default.
      */
     protected String getUniqueConstraintSQL(Unique unq) {
@@ -3510,7 +3512,7 @@ public class DBDictionary
         if (unq.getName() != null
             && CONS_NAME_BEFORE.equals(constraintNameMode))
             buf.append("CONSTRAINT ").append(checkNameLength(unq.getName(), 
-            	maxConstraintNameLength, "long-constraint-name")).append(" ");
+                maxConstraintNameLength, "long-constraint-name")).append(" ");
         buf.append("UNIQUE ");
         if (unq.getName() != null && CONS_NAME_MID.equals(constraintNameMode))
             buf.append(unq.getName()).append(" ");
@@ -4163,22 +4165,22 @@ public class DBDictionary
         if (stream == null) { // User supplied dictionary but no error codes xml
             // use default
             stream = DBDictionary.class.getResourceAsStream(rsrc);
-        	dictionaryClassName = getClass().getSuperclass().getName();
+            dictionaryClassName = getClass().getSuperclass().getName();
         }
         codeReader.parse(stream, dictionaryClassName, this);
     }
     
     public void addErrorCode(int errorType, String errorCode) {
-    	if (errorCode == null || errorCode.trim().length() == 0)
-    		return;
-		Set<String> codes = sqlStateCodes.get(errorType);
-    	if (codes == null) {
-    		codes = new HashSet<String>();
-    		codes.add(errorCode.trim());
-    		sqlStateCodes.put(errorType, codes);
-    	} else {
-    		codes.add(errorCode.trim());
-    	}
+        if (errorCode == null || errorCode.trim().length() == 0)
+            return;
+        Set<String> codes = sqlStateCodes.get(errorType);
+        if (codes == null) {
+            codes = new HashSet<String>();
+            codes.add(errorCode.trim());
+            sqlStateCodes.put(errorType, codes);
+        } else {
+            codes.add(errorCode.trim());
+        }
     }
     
     /**
@@ -4331,11 +4333,11 @@ public class DBDictionary
      */
     public OpenJPAException newStoreException(String msg, SQLException[] causes,
         Object failed) {
-    	if (causes != null && causes.length > 0) {
-    		OpenJPAException ret = narrow(msg, causes[0]);
-    		ret.setFailedObject(failed).setNestedThrowables(causes);
-    		return ret;
-    	}
+        if (causes != null && causes.length > 0) {
+            OpenJPAException ret = narrow(msg, causes[0]);
+            ret.setFailedObject(failed).setNestedThrowables(causes);
+            return ret;
+        }
         return new StoreException(msg).setFailedObject(failed).
             setNestedThrowables(causes);
     }
@@ -4718,9 +4720,9 @@ public class DBDictionary
      * given message key otherwise returns the same name.
      */
     final String checkNameLength(String name, int length, String msgKey) {
-    	if (name.length() > length)
-    		throw new UserException(_loc.get(msgKey, name, name.length(), 
-    				length));
-    	return name;
+        if (name.length() > length)
+            throw new UserException(_loc.get(msgKey, name, name.length(), 
+                    length));
+        return name;
     }
 }
