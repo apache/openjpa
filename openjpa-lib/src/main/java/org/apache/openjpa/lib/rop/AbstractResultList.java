@@ -80,10 +80,6 @@ public abstract class AbstractResultList implements ResultList {
         throw readOnly();
     }
 
-    public List subList(int from, int to) {
-        throw new UnsupportedOperationException();
-    }
-
     protected void assertOpen() {
         if (isClosed())
             throw new NoSuchElementException(_loc.get("closed").getMessage());

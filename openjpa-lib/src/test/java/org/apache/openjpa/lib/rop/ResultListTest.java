@@ -37,8 +37,15 @@ public abstract class ResultListTest extends AbstractTestCase {
 
     private ResultList[] _lists = null;
 
+    protected boolean subListSupported = false;
+    
     public ResultListTest(String test) {
         super(test);
+    }
+    
+    public ResultListTest(String test, boolean supportSubList) {
+        super(test);
+        subListSupported = supportSubList;
     }
 
     /**
@@ -267,6 +274,22 @@ public abstract class ResultListTest extends AbstractTestCase {
             ResultList list = getResultList(rops[i]);
             assertEquals(0, list.size());
             assertTrue(list.isEmpty());
+        }
+    }
+
+    public void testSubList() {
+        ResultObjectProvider[] rops = getResultObjectProviders
+            (Collections.EMPTY_LIST);
+        for (int i = 0; i < rops.length; i++) {
+            ResultList list = getResultList(rops[i]);
+            try {
+                List subList = list.subList(0, 0);
+                if (subListSupported == false)
+                    fail("Should not support subList.");
+            } catch (UnsupportedOperationException e) {
+                if (subListSupported == true)
+                    fail("Should support subList.");
+            }
         }
     }
 }
