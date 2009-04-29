@@ -2658,8 +2658,11 @@ public class BrokerImpl
 
         // ACT_CASCADE
         if ((action & OpCallbacks.ACT_RUN) == 0) {
-            if (sm != null)
-                sm.cascadeDelete(call);
+            if (sm != null) {
+                if (!sm.isEmbedded() || !sm.getDereferencedEmbedDependent()) {
+                    sm.cascadeDelete(call);
+                }
+            }
             else
                 cascadeTransient(OpCallbacks.OP_DELETE, obj, call, "delete");
             return;
@@ -2669,8 +2672,11 @@ public class BrokerImpl
         if (sm != null) {
             if (sm.isDetached())
                 throw newDetachedException(obj, "delete");
-            if ((action & OpCallbacks.ACT_CASCADE) != 0)
-                sm.cascadeDelete(call);
+            if ((action & OpCallbacks.ACT_CASCADE) != 0) {
+                if (!sm.isEmbedded() || !sm.getDereferencedEmbedDependent()) {
+                    sm.cascadeDelete(call);
+                }
+            }
             sm.delete();
         } else if (assertPersistenceCapable(obj).pcIsDetached() == Boolean.TRUE)
             throw newDetachedException(obj, "delete");

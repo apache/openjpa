@@ -79,7 +79,9 @@ public class TestEmbeddable extends SingleEMFTestCase {
             Employee3.class, EmployeeName3.class, Item1.class, Item2.class,
             Item3.class, Company1.class, Company2.class, Division.class, 
             VicePresident.class, EntityA_Embed_MappedToOne.class,
-            Embed_MappedToOne.class, DROP_TABLES);
+            Embed_MappedToOne.class, Embed_MappedToOneCascadeDelete.class, 
+            EntityA_Embed_MappedToOneCascadeDelete.class, EntityB2.class, 
+            DROP_TABLES);
     }
     
     public void testEntityA_Coll_String() {
@@ -160,6 +162,11 @@ public class TestEmbeddable extends SingleEMFTestCase {
         findObjMapKeyClass();
     }
 
+    public void testEntityA_Embed_MappedToOneCascadeDelete() {
+        createEntityA_Embed_MappedToOneCascadeDelete();
+        updateEntityA_Embed_MappedToOneCascadeDelete();
+    }
+    
     /*
      * Create EntityA_Coll_String
      */
@@ -257,6 +264,80 @@ public class TestEmbeddable extends SingleEMFTestCase {
         return embed;
     }
 
+    /*
+     * Create EntityA_Embed_MappedToOneCascadeDelete
+     */
+    public void createEntityA_Embed_MappedToOneCascadeDelete() {
+        EntityManager em = emf.createEntityManager();
+        EntityTransaction tran = em.getTransaction();
+        createEntityA_Embed_MappedToOneCascadeDelete(em, ID);
+        tran.begin();
+        em.flush();
+        tran.commit();
+        em.close();
+    }
+
+    public void createEntityA_Embed_MappedToOneCascadeDelete(EntityManager em, 
+        int id) {
+        EntityA_Embed_MappedToOneCascadeDelete a = 
+            new EntityA_Embed_MappedToOneCascadeDelete();
+        a.setId(id);
+        a.setName("a" + id);
+        a.setAge(id);
+        Embed_MappedToOneCascadeDelete embed = 
+            createEmbed_MappedToOneDeleteCascade(em, id, a);
+        a.setEmbed(embed);
+        em.persist(a);
+    }
+
+    public Embed_MappedToOneCascadeDelete createEmbed_MappedToOneDeleteCascade(
+        EntityManager em, int id, EntityA_Embed_MappedToOneCascadeDelete a) {
+        Embed_MappedToOneCascadeDelete embed = new Embed_MappedToOneCascadeDelete();
+        embed.setName1("name1");
+        embed.setName2("name2");
+        embed.setName3("name3");
+        EntityB2 b = new EntityB2();
+        b.setId(id);
+        b.setName("bm" + id);
+        b.setEntityA(a);
+        embed.setMappedEntityB(b);
+        em.persist(b);
+        return embed;
+    }
+    
+    /*
+     * Update EntityA_Embed_MappedToOneCascadeDelete
+     */
+    public void updateEntityA_Embed_MappedToOneCascadeDelete() {
+        EntityManager em = emf.createEntityManager();
+        EntityTransaction tran = em.getTransaction();
+        updateEntityA_Embed_MappedToOneCascadeDelete(em, ID);
+        tran.begin();
+        em.flush();
+        tran.commit();
+        em.clear();
+        
+        EntityA_Embed_MappedToOneCascadeDelete a = 
+            em.find(EntityA_Embed_MappedToOneCascadeDelete.class, ID);
+        assertNotNull(a);
+        
+        EntityB2 b2 = em.find(EntityB2.class, ID);
+        assertNotNull(b2);
+        
+        em.close();
+    }
+
+    public void updateEntityA_Embed_MappedToOneCascadeDelete(EntityManager em, 
+        int id) {
+        EntityA_Embed_MappedToOneCascadeDelete a = 
+            em.find(EntityA_Embed_MappedToOneCascadeDelete.class, id);
+        a.setName("newa" + id);
+        a.setAge(id + 1);
+        Embed_MappedToOneCascadeDelete embed = 
+            createEmbed_MappedToOneDeleteCascade(em, id+1, a);
+        a.setEmbed(embed);
+    }
+    
     /*
      * Create EntityA_Coll_Embed_ToOne
      */

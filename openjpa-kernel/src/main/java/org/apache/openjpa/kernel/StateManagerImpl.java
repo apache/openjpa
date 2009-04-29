@@ -107,6 +107,7 @@ public class StateManagerImpl
     private static final int FLAG_VERSION_CHECK = 2 << 14;
     private static final int FLAG_VERSION_UPDATE = 2 << 15;
     private static final int FLAG_DETACHING = 2 << 16;
+    private static final int FLAG_EMBED_DEREF = 2 << 17;
 
     private static final Localizer _loc = Localizer.forPackage
         (StateManagerImpl.class);
@@ -1299,6 +1300,18 @@ public class StateManagerImpl
             if (notify)
                 _broker.addDereferencedDependent(this);
         }
+    }
+    
+    void setDereferencedEmbedDependent(boolean deref) {
+        if (!deref && (_flags & FLAG_EMBED_DEREF) > 0) {
+            _flags &= ~FLAG_EMBED_DEREF;
+        } else if (deref && (_flags & FLAG_EMBED_DEREF) == 0) {
+            _flags |= FLAG_EMBED_DEREF;
+        }
+    }
+    
+    public boolean getDereferencedEmbedDependent() {
+        return ((_flags |= FLAG_EMBED_DEREF) == 0 ? false : true);
     }
 
     ///////////

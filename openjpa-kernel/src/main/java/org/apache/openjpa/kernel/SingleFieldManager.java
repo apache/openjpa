@@ -302,8 +302,11 @@ class SingleFieldManager
             // immediate cascade works on field value; dependent deref
             // works on external value
             if ((immediate || fmd.isEmbeddedPC())
-                && fmd.getCascadeDelete() == ValueMetaData.CASCADE_IMMEDIATE)
+                && fmd.getCascadeDelete() == ValueMetaData.CASCADE_IMMEDIATE) {
+                if (fmd.isEmbeddedPC())
+                    dereferenceEmbedDependent(_sm);
                 delete(fmd, objval, call);
+            }
             else if (fmd.getCascadeDelete() == ValueMetaData.CASCADE_AUTO)
                 dereferenceDependent(fmd.getExternalValue(objval, _broker));
             return;
@@ -413,7 +416,11 @@ class SingleFieldManager
         if (sm != null)
             sm.setDereferencedDependent(true, true);
     }
-
+    
+    void dereferenceEmbedDependent(StateManagerImpl sm) {
+    	sm.setDereferencedEmbedDependent(true);
+    }
+    
     /**
      * Recursively invoke the broker to gather cascade-refresh objects in
      * the current field into the given set. This method is only called
