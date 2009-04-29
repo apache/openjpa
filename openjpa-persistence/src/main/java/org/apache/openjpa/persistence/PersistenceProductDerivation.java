@@ -27,9 +27,12 @@ import java.security.PrivilegedActionException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Enumeration;
+import java.util.HashMap;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.MissingResourceException;
+import java.util.Set;
 
 import javax.persistence.spi.PersistenceUnitInfo;
 import javax.persistence.spi.PersistenceUnitTransactionType;
@@ -82,6 +85,8 @@ public class PersistenceProductDerivation
     private static final Localizer _loc = Localizer.forPackage
         (PersistenceProductDerivation.class);
 
+    private HashMap<String, PUNameCollision> _puNameCollisions
+        = new HashMap<String,PUNameCollision>();
     public void putBrokerFactoryAliases(Map m) {
     }
 
@@ -266,15 +271,17 @@ public class PersistenceProductDerivation
     public List getAnchorsInResource(String resource) throws Exception {
         ConfigurationParser parser = new ConfigurationParser(null);
         try {
+        	List results = new ArrayList();
             ClassLoader loader = AccessController.doPrivileged(
                 J2DoPrivHelper.getContextClassLoaderAction());
             List<URL> urls = getResourceURLs(resource, loader);
             if (urls != null) {
                 for (URL url : urls) {
                     parser.parse(url);
+                    results.addAll(getUnitNames(parser));
                 }
             }
-            return getUnitNames(parser);
+            return results;
         } catch (IOException e) {
             // not all configuration files are XML; return null if unparsable
             return null;
@@ -317,6 +324,21 @@ public class PersistenceProductDerivation
             return cp;
         return null;
     }
+
+      /**
+      * This method checks to see if the provided <code>puName</code> was
+      * detected in multiple resources. If a collision is detected, a warning
+      * will be logged and this method will return <code>true</code>.
+      * <p>
+      */
+     public boolean checkPuNameCollisions(Log logger,String puName){
+         PUNameCollision p = _puNameCollisions.get(puName);
+         if(p!=null){
+             p.logCollision(logger);
+             return true;
+         }
+         return false;
+     }
 
     private static List<URL> getResourceURLs(String rsrc, ClassLoader loader)
         throws IOException {
@@ -407,11 +429,24 @@ public class PersistenceProductDerivation
     private PersistenceUnitInfoImpl findUnit(List<PersistenceUnitInfoImpl> 
         pinfos, String name, ClassLoader loader) {
         PersistenceUnitInfoImpl ojpa = null;
+        PersistenceUnitInfoImpl result = null;
         for (PersistenceUnitInfoImpl pinfo : pinfos) {
             // found named unit?
             if (name != null) {
-                if (name.equals(pinfo.getPersistenceUnitName()))
-                    return pinfo;
+                if (name.equals(pinfo.getPersistenceUnitName())){
+
+                    if(result!=null){
+                        this.addPuNameCollision(name,
+                            result.getPersistenceXmlFileUrl().toString(),
+                                pinfo.getPersistenceXmlFileUrl().toString());
+
+                    }else{
+                        // Grab a ref to the pinfo that matches the name we're
+                        // looking for. Keep going to look for duplicate pu
+                        // names.
+                        result = pinfo;
+                    }
+                }
                 continue;
             }
 
@@ -424,6 +459,9 @@ public class PersistenceProductDerivation
                 if (ojpa == null)
                     ojpa = pinfo;
             }
+        }
+        if(result!=null){
+            return result;
         }
         return ojpa;
     }
@@ -469,6 +507,16 @@ public class PersistenceProductDerivation
         System.err.println(msg);
     }
 
+    private void addPuNameCollision(String puName, String file1, String file2){
+        PUNameCollision pun = _puNameCollisions.get(puName);
+        if(pun!=null){
+            pun.addCollision(file1, file2);
+        }else{
+            _puNameCollisions.put(puName,
+            	new PUNameCollision(puName, file1, file2));
+        }
+
+    }
     /**
      * Custom configuration provider.   
      */
@@ -691,4 +739,32 @@ public class PersistenceProductDerivation
                 _info.setPersistenceXmlFileUrl(_source);
 		}
 	}
+    /**
+     * This private class is used to hold onto information regarding
+     * PersistentUnit name collisions.
+     */
+    private static class PUNameCollision{
+        private String _puName;
+        private Set<String> _resources;
+
+        PUNameCollision(String puName, String file1, String file2) {
+            _resources = new LinkedHashSet<String>();
+            _resources.add(file1);
+            _resources.add(file2);
+
+            _puName=puName;
+        }
+        void logCollision(Log logger){
+            if(logger.isWarnEnabled()){
+                logger.warn(_loc.getFatal("dup-pu",
+                    new Object[]{_puName,_resources.toString(),
+                    	_resources.iterator().next()}));
+            }
+        }
+        void addCollision(String file1, String file2){
+            _resources.add(file1);
+            _resources.add(file2);
+        }
+
+    }
 }
