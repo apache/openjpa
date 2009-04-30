@@ -128,6 +128,69 @@
             </properties>
         </profile>
 
+        <!-- Profile for testing with SQLServer DB using MS JDBC driver -->
+        <profile>
+            <!--
+                Example MS SQL profile. You can use this profile if you:
+                1) have the MS SQL artifacts installed in a local repo and
+                supply the URL:
+                    -Dmssql.maven.repo=http://my.local.repo
+                2) have a copy of the MS SQL JDBC driver from:
+                    http://msdn.microsoft.com/en-us/data/aa937724.aspx
+                and run the following commands :
+                    mvn install:install-file -Dfile=${path to sqljdbc.jar} \
+                                             -DgroupId=com.microsoft.sqlserver \
+                                             -DartifactId=sqljdbc \
+                                             -Dversion=2.0 \
+                                             -Dpackaging=jar
+
+                You must also set the following properties:
+                    -Dopenjpa.mssql.url=jdbc:sqlserver://<HOST>:<PORT>;\
+                    	DataBaseName=<DBNAME>
+                    -Dopenjpa.mssql.username=<mssql_uid>
+                    -Dopenjpa.mssql.password=<mssql_pwd>
+
+                Optionally, you can override the default groupId and version
+                by also supplying the following properties:
+                    -Dmssql.groupid=com.microsoft.sqlserver
+                    -Dmssql.version=2.0
+            -->
+            <id>test-mssql</id>
+            <dependencies>
+                <dependency>
+                    <groupId>${mssql.groupid}</groupId>
+                    <artifactId>${mssql.artifactid}</artifactId>
+                    <version>${mssql.version}</version>
+                    <scope>test</scope>
+                </dependency>
+            </dependencies>
+            <properties>
+                <mssql.maven.repo>http://not.real.repository</mssql.maven.repo>
+                <mssql.groupid>com.microsoft.sqlserver</mssql.groupid>
+                <mssql.artifactid>sqljdbc</mssql.artifactid>
+                <mssql.version>2.0</mssql.version>
+                <connection.driver.name>com.microsoft.sqlserver.jdbc.SQLServerDriver</connection.driver.name>
+                <connection.url>${openjpa.mssql.url}</connection.url>
+                <connection.username>${openjpa.mssql.username}</connection.username>
+                <connection.password>${openjpa.mssql.password}</connection.password>
+            </properties>
+            <repositories>
+                <repository>
+                    <id>mssql.repository</id>
+                    <name>MSSQL Repository</name>
+                    <url>${mssql.maven.repo}</url>
+                    <layout>default</layout>
+                    <snapshots>
+                        <enabled>false</enabled>
+                    </snapshots>
+                    <releases>
+                        <enabled>true</enabled>
+                        <checksumPolicy>ignore</checksumPolicy>
+                    </releases>
+                </repository>
+            </repositories>
+        </profile>
+
         <!-- Profile for testing with SQLServer DB using the jTDS driver -->
         <profile>
             <id>test-sqlserver</id>
