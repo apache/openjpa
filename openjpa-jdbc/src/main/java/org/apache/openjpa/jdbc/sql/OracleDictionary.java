@@ -37,6 +37,7 @@ import java.util.Calendar;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.apache.openjpa.jdbc.kernel.JDBCFetchConfiguration;
 import org.apache.openjpa.jdbc.kernel.exps.FilterValue;
@@ -1134,5 +1135,27 @@ public class OracleDictionary
                     updateSuccessCnt));
         }
         return updateSuccessCnt;
+    }
+    
+    @Override
+    protected Boolean matchErrorState(int subtype, Set<String> errorStates,
+        SQLException ex) {
+        Boolean recoverable = null;
+        String errorState = ex.getSQLState();
+        int errorCode = ex.getErrorCode();
+        if (errorStates.contains(errorState)) {
+            recoverable = Boolean.FALSE;
+            if ((subtype == StoreException.LOCK)
+                && ((errorState.equals("61000") && (errorCode == 54 ||
+                     errorCode == 60 || errorCode == 4020 ||
+                     errorCode == 4021 || errorCode == 4022))
+                    || (errorState.equals("42000") && errorCode == 2049))) {
+                recoverable = Boolean.TRUE;
+            } else if (subtype == StoreException.QUERY &&
+                errorState.equals("72000") && errorCode == 1013) {
+                recoverable = Boolean.TRUE;
+            }
+        }
+        return recoverable;
     }
 }
