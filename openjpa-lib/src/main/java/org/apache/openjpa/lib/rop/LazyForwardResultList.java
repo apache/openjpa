@@ -152,6 +152,11 @@ public class LazyForwardResultList extends AbstractSequentialResultList
         return other == this;
     }
 
+    public List subList(int fromIndex, int toIndex) {
+        assertOpen();
+        return _list.subList(fromIndex, toIndex);
+    }
+
     private class Itr extends AbstractListIterator {
 
         private int _idx = 0;
