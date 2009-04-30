@@ -18,6 +18,7 @@
  */
 package org.apache.openjpa.persistence.embed;
 
+import java.sql.Timestamp;
 import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
@@ -77,7 +78,8 @@ public class TestEmbeddable extends SingleEMFTestCase {
             Department1.class, Employee1.class, Department2.class,
             Employee2.class, EmployeePK2.class, Department3.class,
             Employee3.class, EmployeeName3.class, Item1.class, Item2.class,
-            Item3.class, Company1.class, Company2.class, Division.class, 
+            Item3.class, Item4.class, Item5.class, FileName4.class, 
+            Company1.class, Company2.class, Division.class,   
             VicePresident.class, EntityA_Embed_MappedToOne.class,
             Embed_MappedToOne.class, Embed_MappedToOneCascadeDelete.class, 
             EntityA_Embed_MappedToOneCascadeDelete.class, EntityB2.class, 
@@ -160,6 +162,16 @@ public class TestEmbeddable extends SingleEMFTestCase {
         createObjMapKeyClass();
         queryObjMapKeyClass();
         findObjMapKeyClass();
+    }
+
+    public void testMapKeyEnumerated() {
+        createObjMapKeyEnumerated();
+        findObjMapKeyEnumerated();
+    }
+
+    public void testMapKeyTemporal() {
+        createObjMapKeyTemporal();
+        findObjMapKeyTemporal();
     }
 
     public void testEntityA_Embed_MappedToOneCascadeDelete() {
@@ -1576,7 +1588,54 @@ public class TestEmbeddable extends SingleEMFTestCase {
         tran.commit();
         em.close();
     }
+
+    public void createObjMapKeyEnumerated() {
+        EntityManager em = emf.createEntityManager();
+        EntityTransaction tran = em.getTransaction();
+        Item4 item = new Item4();
+        item.setId(1);
+        FileName4 fileName1 = new FileName4("file" + 1, "file" + 1);
+        item.addImage(Item4.Catagory.A1, fileName1);
+
+        FileName4 fileName2 = new FileName4("file" + 2, "file" + 2);
+        item.addImage(Item4.Catagory.A2, fileName2);
+
+        FileName4 fileName3 = new FileName4("file" + 3, "file" + 3);
+        item.addImage(Item4.Catagory.A3, fileName3);
+
+        em.persist(item);
+        tran.begin();
+        em.flush();
+        tran.commit();
+        em.close();
+    }
     
+    public void createObjMapKeyTemporal() {
+        EntityManager em = emf.createEntityManager();
+        EntityTransaction tran = em.getTransaction();
+        Item5 item = new Item5();
+        item.setId(1);
+        long ts = System.currentTimeMillis();
+        Timestamp ts1 = new Timestamp(ts);
+        Timestamp ts2 = new Timestamp(ts+1000000);
+        Timestamp ts3 = new Timestamp(ts+2000000);
+        
+        FileName4 fileName1 = new FileName4("file" + 1, "file" + 1);
+        item.addImage(ts1, fileName1);
+
+        FileName4 fileName2 = new FileName4("file" + 2, "file" + 2);
+        item.addImage(ts2, fileName2);
+
+        FileName4 fileName3 = new FileName4("file" + 3, "file" + 3);
+        item.addImage(ts3, fileName3);
+
+        em.persist(item);
+        tran.begin();
+        em.flush();
+        tran.commit();
+        em.close();
+    }
+
     public void createObjMapKeyClass() {
         EntityManager em = emf.createEntityManager();
         EntityTransaction tran = em.getTransaction();
@@ -1920,12 +1979,34 @@ public class TestEmbeddable extends SingleEMFTestCase {
         int id = vp.getId();
         String name = vp.getName();
     }
-    
+
     public void queryObjMapKeyClass() {
         queryItem(emf);
         queryCompany(emf);
         queryDivision(emf);
         queryVicePresident(emf);
+    }
+    
+    public void findObjMapKeyEnumerated() {
+        EntityManager em = emf.createEntityManager();
+        Item4 item = em.find(Item4.class, 1);
+        FileName4 fileName1 = item.getImage(Item4.Catagory.A1);
+        assertEquals("file1", fileName1.getFName());       
+        assertEquals("file1", fileName1.getLName());       
+        
+        FileName4 fileName2 = item.getImage(Item4.Catagory.A2);
+        assertEquals("file2", fileName2.getFName());       
+        assertEquals("file2", fileName2.getLName());       
+        
+        FileName4 fileName3 = item.getImage(Item4.Catagory.A3);
+        assertEquals("file3", fileName3.getFName());       
+        assertEquals("file3", fileName3.getLName());       
+    }
+
+    public void findObjMapKeyTemporal() {
+        EntityManager em = emf.createEntityManager();
+        Item5 item = em.find(Item5.class, 1);
+        assertEquals(3, item.getImages().size());
     }
     
     public void queryItem(EntityManagerFactory emf) {

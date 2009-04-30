@@ -45,8 +45,10 @@ import javax.persistence.JoinColumn;
 import javax.persistence.JoinColumns;
 import javax.persistence.JoinTable;
 import javax.persistence.MapKeyColumn;
+import javax.persistence.MapKeyEnumerated;
 import javax.persistence.MapKeyJoinColumn;
 import javax.persistence.MapKeyJoinColumns;
+import javax.persistence.MapKeyTemporal;
 import javax.persistence.PrimaryKeyJoinColumn;
 import javax.persistence.PrimaryKeyJoinColumns;
 import javax.persistence.SecondaryTable;
@@ -145,8 +147,10 @@ public class AnnotationPersistenceMappingParser
         _tags.put(KeyNonpolymorphic.class, KEY_NONPOLY);
         _tags.put(KeyStrategy.class, KEY_STRAT);
         _tags.put(MapKeyColumn.class, MAP_KEY_COL);
+        _tags.put(MapKeyEnumerated.class, MAP_KEY_ENUMERATED);
         _tags.put(MapKeyJoinColumn.class, MAP_KEY_JOIN_COL);
         _tags.put(MapKeyJoinColumns.class, MAP_KEY_JOIN_COLS);
+        _tags.put(MapKeyTemporal.class, MAP_KEY_TEMPORAL);
         _tags.put(PrimaryKeyJoinColumn.class, PK_JOIN_COL);
         _tags.put(PrimaryKeyJoinColumns.class, PK_JOIN_COLS);
         _tags.put(SecondaryTable.class, SECONDARY_TABLE);
@@ -1070,6 +1074,9 @@ public class AnnotationPersistenceMappingParser
                 case MAP_KEY_COL:
                     parseMapKeyColumn(fm, (MapKeyColumn) anno);
                     break;
+                case MAP_KEY_ENUMERATED:
+                    parseMapKeyEnumerated(fm, (MapKeyEnumerated) anno);
+                    break;
                 case MAP_KEY_JOIN_COL:
                     parseMapKeyJoinColumns(fm, (MapKeyJoinColumn) anno);
                     break;
@@ -1090,6 +1097,9 @@ public class AnnotationPersistenceMappingParser
                     break;
                 case TEMPORAL:
                     parseTemporal(fm, (Temporal) anno);
+                    break;
+                case MAP_KEY_TEMPORAL:
+                    parseMapKeyTemporal(fm, (MapKeyTemporal) anno);
                     break;
                 case CLASS_CRIT:
                     fm.getValueInfo().setUseClassCriteria
@@ -1351,6 +1361,15 @@ public class AnnotationPersistenceMappingParser
     }
 
     /**
+     * Parse @MapKeyEnumerated.
+     */
+    private void parseMapKeyEnumerated(FieldMapping fm, MapKeyEnumerated anno) {
+        String strat = EnumValueHandler.class.getName() + "(StoreOrdinal="
+            + String.valueOf(anno.value() == EnumType.ORDINAL) + ")";
+        fm.getKeyMapping().getValueInfo().setStrategy(strat);
+    }
+
+    /**
      * Parse @Temporal.
      */
     private void parseTemporal(FieldMapping fm, Temporal anno) {
@@ -1361,6 +1380,33 @@ public class AnnotationPersistenceMappingParser
         if (cols.isEmpty()) {
             cols = Arrays.asList(new Column[]{ new Column() });
             fm.getValueInfo().setColumns(cols);
+        }
+
+        Column col = (Column) cols.get(0);
+        switch (anno.value()) {
+            case DATE:
+                col.setType(Types.DATE);
+                break;
+            case TIME:
+                col.setType(Types.TIME);
+                break;
+            case TIMESTAMP:
+                col.setType(Types.TIMESTAMP);
+                break;
+        }
+    }
+
+    /**
+     * Parse @Temporal.
+     */
+    private void parseMapKeyTemporal(FieldMapping fm, MapKeyTemporal anno) {
+        List cols = fm.getKeyMapping().getValueInfo().getColumns();
+        if (!cols.isEmpty() && cols.size() != 1)
+            throw new MetaDataException(_loc.get("num-cols-mismatch", fm,
+                String.valueOf(cols.size()), "1"));
+        if (cols.isEmpty()) {
+            cols = Arrays.asList(new Column[]{ new Column() });
+            fm.getKeyMapping().getValueInfo().setColumns(cols);
         }
 
         Column col = (Column) cols.get(0);

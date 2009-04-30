@@ -92,8 +92,10 @@ public class XMLPersistenceMappingParser
         _elems.put("join-column", JOIN_COL);
         _elems.put("inverse-join-column", COL);
         _elems.put("join-table", JOIN_TABLE);
+        _elems.put("map-key-enumerated", MAP_KEY_ENUMERATED);
         _elems.put("map-key-column", MAP_KEY_COL);
         _elems.put("map-key-join-column", MAP_KEY_JOIN_COL);
+        _elems.put("map-key-temporal", MAP_KEY_TEMPORAL);
         _elems.put("order-column", ORDER_COLUMN);
         _elems.put("primary-key-join-column", PK_JOIN_COL);
         _elems.put("secondary-table", SECONDARY_TABLE);
@@ -242,6 +244,8 @@ public class XMLPersistenceMappingParser
                 break;
             case TEMPORAL:
             case ENUMERATED:
+            case MAP_KEY_ENUMERATED:
+            case MAP_KEY_TEMPORAL:
                 ret = true;
                 break;
             case SQL_RESULT_SET_MAPPING:
@@ -298,8 +302,14 @@ public class XMLPersistenceMappingParser
             case TEMPORAL:
                 endTemporal();
                 break;
+            case MAP_KEY_TEMPORAL:
+                endMapKeyTemporal();
+                break;
             case ENUMERATED:
                 endEnumerated();
+                break;
+            case MAP_KEY_ENUMERATED:
+                endMapKeyEnumerated();
                 break;
             case SQL_RESULT_SET_MAPPING:
                 endSQLResultSetMapping();
@@ -496,6 +506,35 @@ public class XMLPersistenceMappingParser
     }
 
     /**
+     * Parse temporal.
+     */
+    private void endMapKeyTemporal() {
+        String temp = currentText();
+        TemporalType _mapKeyTemporal = null;
+        if (!StringUtils.isEmpty(temp))
+            _mapKeyTemporal = Enum.valueOf(TemporalType.class, temp);
+        FieldMapping fm = (FieldMapping) currentElement();
+        List cols = fm.getKeyMapping().getValueInfo().getColumns();
+        if (cols.isEmpty()) {
+            cols = Arrays.asList(new Column[]{ new Column() });
+            fm.getKeyMapping().getValueInfo().setColumns(cols);
+        }
+
+        Column col = (Column) cols.get(0);
+        switch (_mapKeyTemporal) {
+            case DATE:
+                col.setType(Types.DATE);
+                break;
+            case TIME:
+                col.setType(Types.TIME);
+                break;
+            case TIMESTAMP:
+                col.setType(Types.TIMESTAMP);
+                break;
+        }
+    }
+
+    /**
      * Parse enumerated.
      */
     private void endEnumerated() {
@@ -508,6 +547,21 @@ public class XMLPersistenceMappingParser
         String strat = EnumValueHandler.class.getName() + "(StoreOrdinal="
             + String.valueOf(type == EnumType.ORDINAL) + ")";
         fm.getValueInfo().setStrategy(strat);
+    }
+
+    /**
+     * Parse map-key-enumerated.
+     */
+    private void endMapKeyEnumerated() {
+        String text = currentText();
+        if (StringUtils.isEmpty(text))
+            return;
+        EnumType type = Enum.valueOf(EnumType.class, text);
+
+        FieldMapping fm = (FieldMapping) currentElement();
+        String strat = EnumValueHandler.class.getName() + "(StoreOrdinal="
+            + String.valueOf(type == EnumType.ORDINAL) + ")";
+        fm.getKeyMapping().getValueInfo().setStrategy(strat);
     }
 
     @Override
