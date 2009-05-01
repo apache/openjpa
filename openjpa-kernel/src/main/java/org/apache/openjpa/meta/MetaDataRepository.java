@@ -60,6 +60,7 @@ import serp.util.Strings;
  * @author Abe White
  * @author Steve Kim (query metadata)
  */
+@SuppressWarnings("serial")
 public class MetaDataRepository
     implements PCRegistry.RegisterClassListener, Configurable, Closeable, 
     MetaDataModes, Serializable {
@@ -105,22 +106,33 @@ public class MetaDataRepository
 
     // cache of parsed metadata, oid class to class, and interface class
     // to metadatas
-    private final Map _metas = new HashMap();
-    private final Map _oids = Collections.synchronizedMap(new HashMap());
-    private final Map _impls = Collections.synchronizedMap(new HashMap());
-    private final Map _ifaces = Collections.synchronizedMap(new HashMap());
-    private final Map _queries = new HashMap();
-    private final Map _seqs = new HashMap();
-    private final Map _aliases = Collections.synchronizedMap(new HashMap());
-    private final Map _pawares = Collections.synchronizedMap(new HashMap());
-    private final Map _nonMapped = Collections.synchronizedMap(new HashMap());
+    private final Map<Class<?>,ClassMetaData> _metas = 
+       new HashMap<Class<?>,ClassMetaData>();
+    private final Map<Class<?>,Class<?>> _oids = 
+       Collections.synchronizedMap(new HashMap<Class<?>,Class<?>>());
+    private final Map<Class<?>,Collection<Class<?>>> _impls = Collections
+        .synchronizedMap(new HashMap<Class<?>,Collection<Class<?>>>());
+    private final Map<Class<?>,Class<?>> _ifaces = 
+        Collections.synchronizedMap(new HashMap<Class<?>,Class<?>>());
+    private final Map<Object,QueryMetaData> _queries = 
+        new HashMap<Object,QueryMetaData>();
+    private final Map<String,SequenceMetaData> _seqs = 
+        new HashMap<String,SequenceMetaData>();
+    private final Map<String,List<Class<?>>> _aliases = 
+        Collections.synchronizedMap(new HashMap<String,List<Class<?>>>());
+    private final Map<Class<?>,NonPersistentMetaData> _pawares = Collections
+        .synchronizedMap(new HashMap<Class<?>,NonPersistentMetaData>());
+    private final Map<Class<?>,NonPersistentMetaData> _nonMapped = Collections
+        .synchronizedMap(new HashMap<Class<?>,NonPersistentMetaData>());
     
     // map of classes to lists of their subclasses
-    private final Map _subs = Collections.synchronizedMap(new HashMap());
+    private final Map<Class<?>,List<Class<?>>> _subs = 
+        Collections.synchronizedMap(new HashMap<Class<?>,List<Class<?>>>());
 
     // xml mapping
     protected final XMLMetaData[] EMPTY_XMLMETAS;
-    private final Map _xmlmetas = new HashMap();
+    private final Map<Class<?>,XMLMetaData> _xmlmetas = 
+        new HashMap<Class<?>,XMLMetaData>();
 
     private transient OpenJPAConfiguration _conf = null;
     private transient Log _log = null;
@@ -133,14 +145,15 @@ public class MetaDataRepository
 
     // we buffer up any classes that register themselves to prevent
     // reentrancy errors if classes register during a current parse (common)
-    private final Collection _registered = new HashSet();
+    private final Collection<Class<?>> _registered = new HashSet<Class<?>>();
 
     // set of metadatas we're in the process of resolving
     private final InheritanceOrderedMetaDataList _resolving =
         new InheritanceOrderedMetaDataList();
     private final InheritanceOrderedMetaDataList _mapping =
         new InheritanceOrderedMetaDataList();
-    private final List _errs = new LinkedList();
+    private final List<RuntimeException> _errs = 
+    	new LinkedList<RuntimeException>();
 
     // system listeners
     private LifecycleEventManager.ListenerList _listeners =
@@ -280,7 +293,7 @@ public class MetaDataRepository
      * @param mustExist if true, throws a {@link MetaDataException}
      * if no metadata is found
      */
-    public synchronized ClassMetaData getMetaData(Class cls,
+    public synchronized ClassMetaData getMetaData(Class<?> cls,
         ClassLoader envLoader, boolean mustExist) {
         if (cls != null &&
             DynamicPersistenceCapable.class.isAssignableFrom(cls))
@@ -298,7 +311,7 @@ public class MetaDataRepository
                 throw new MetaDataException(_loc.get("no-meta-notpc", cls)).
                     setFatal(false);
 
-            Set pcNames = getPersistentTypeNames(false, envLoader);
+            Set<String> pcNames = getPersistentTypeNames(false, envLoader);
             if (pcNames != null && pcNames.size() > 0)
                 throw new MetaDataException(_loc.get("no-meta-types",
                     cls, pcNames));
@@ -328,20 +341,20 @@ public class MetaDataRepository
 
         // check cache
         processRegisteredClasses(envLoader);
-        List classList = (List) _aliases.get(alias);
+        List<Class<?>> classList = _aliases.get(alias);
 
         // multiple classes may have been defined with the same alias: we
         // will filter by checking against the current list of the
         // persistent types and filter based on which classes are loadable
         // via the current environment's ClassLoader
-        Set pcNames = getPersistentTypeNames(false, envLoader);
-        Class cls = null;
+        Set<String> pcNames = getPersistentTypeNames(false, envLoader);
+        Class<?> cls = null;
         for (int i = 0; classList != null && i < classList.size(); i++) {
-            Class c = (Class) classList.get(i);
+            Class<?> c = classList.get(i);
             try {
                 // re-load the class in the current environment loader so
                 // that we can handle redeployment of the same class name
-                Class nc = Class.forName(c.getName(), false, envLoader);
+                Class<?> nc = Class.forName(c.getName(), false, envLoader);
 
                 // if we have specified a list of persistent clases,
                 // also check to ensure that the class is in that list
@@ -392,7 +405,7 @@ public class MetaDataRepository
      * @since 1.1.0
      */
     public String getClosestAliasName(String alias) {
-        Collection aliases = getAliasNames();
+        Collection<String> aliases = getAliasNames();
         return StringDistance.getClosestLevenshteinDistance(alias, aliases);
     }
 
@@ -400,12 +413,12 @@ public class MetaDataRepository
      * @return the registered alias names
      * @since 1.1.0
      */
-    public Collection getAliasNames() {
-        Collection aliases = new HashSet();
+    public Collection<String> getAliasNames() {
+        Collection<String> aliases = new HashSet<String>();
         synchronized (_aliases) {
-            for (Iterator iter = _aliases.entrySet().iterator();
-                iter.hasNext(); ) {
-                Map.Entry e = (Map.Entry) iter.next();
+            for (Iterator<Map.Entry<String, List<Class<?>>>> iter = 
+            	_aliases.entrySet().iterator(); iter.hasNext(); ) {
+                Map.Entry<String, List<Class<?>>> e = iter.next();
                 if (e.getValue() != null)
                     aliases.add(e.getKey());
             }
@@ -417,7 +430,7 @@ public class MetaDataRepository
      * Internal method to get the metadata for the given class, without
      * resolving it.
      */
-    private ClassMetaData getMetaDataInternal(Class cls,
+    private ClassMetaData getMetaDataInternal(Class<?> cls,
         ClassLoader envLoader) {
         if (cls == null)
             return null;
@@ -433,7 +446,7 @@ public class MetaDataRepository
         // dev time so that user can manipulate persistent classes he's writing
         // before adding them to the list
         if ((_validate & VALIDATE_RUNTIME) != 0) {
-            Set pcNames = getPersistentTypeNames(false, envLoader);
+            Set<String> pcNames = getPersistentTypeNames(false, envLoader);
             if (pcNames != null && !pcNames.contains(cls.getName()))
                 return meta;
         }
@@ -538,27 +551,27 @@ public class MetaDataRepository
             return;
 
         // resolve metadata
-        List resolved = resolveMeta(meta);
+        List<ClassMetaData> resolved = resolveMeta(meta);
         if (resolved == null)
             return;
 
         // load mapping data
         for (int i = 0; i < resolved.size(); i++)
-            loadMapping((ClassMetaData) resolved.get(i));
+            loadMapping(resolved.get(i));
         for (int i = 0; i < resolved.size(); i++)
-            preMapping((ClassMetaData) resolved.get(i));
+            preMapping(resolved.get(i));
 
         // resolve mappings
         boolean err = true;
         if ((_resMode & MODE_MAPPING) != 0)
             for (int i = 0; i < resolved.size(); i++)
-                err &= resolveMapping((ClassMetaData) resolved.get(i));
+                err &= resolveMapping(resolved.get(i));
 
         // throw errors encountered
         if (err && !_errs.isEmpty()) {
             RuntimeException re;
             if (_errs.size() == 1)
-                re = (RuntimeException) _errs.get(0);
+                re = _errs.get(0);
             else
                 re = new MetaDataException(_loc.get("resolve-errs")).
                     setNestedThrowables((Throwable[]) _errs.toArray
@@ -572,10 +585,10 @@ public class MetaDataRepository
      * Resolve metadata mode, returning list of processed metadadatas, or null
      * if we're still in the process of resolving other metadatas.
      */
-    private List resolveMeta(ClassMetaData meta) {
+    private List<ClassMetaData> resolveMeta(ClassMetaData meta) {
         if (meta.getPCSuperclass() == null) {
             // set superclass
-            Class sup = meta.getDescribedType().getSuperclass();
+            Class<?> sup = meta.getDescribedType().getSuperclass();
             ClassMetaData supMeta;
             while (sup != null && sup != Object.class) {
                 supMeta = getMetaData(sup, meta.getEnvClassLoader(), false);
@@ -587,7 +600,7 @@ public class MetaDataRepository
                     sup = sup.getSuperclass();
             }
             if (meta.getDescribedType().isInterface()) {
-                Class[] sups = meta.getDescribedType().getInterfaces();
+                Class<?>[] sups = meta.getDescribedType().getInterfaces();
                 for (int i = 0; i < sups.length; i++) {
                     supMeta = getMetaData(sups[i], meta.getEnvClassLoader(), 
                         false);
@@ -674,7 +687,8 @@ public class MetaDataRepository
      * @return false if we're still in the process of resolving mappings
      */
     private boolean resolveMapping(ClassMetaData meta) {
-        List mapped = processBuffer(meta, _mapping, MODE_MAPPING);
+        List<ClassMetaData> mapped = processBuffer(meta, _mapping, 
+        	MODE_MAPPING);
         if (mapped == null)
             return false;
 
@@ -696,7 +710,7 @@ public class MetaDataRepository
     /**
      * Process the given metadata and the associated buffer.
      */
-    private List processBuffer(ClassMetaData meta,
+    private List<ClassMetaData> processBuffer(ClassMetaData meta,
         InheritanceOrderedMetaDataList buffer, int mode) {
         // if we're already processing a metadata, just buffer this one; when
         // the initial metadata finishes processing, we traverse the buffer
@@ -710,7 +724,7 @@ public class MetaDataRepository
         // one class tries to access metadata for another; also note that the
         // buffer orders itself from least to most derived
         ClassMetaData buffered;
-        List processed = new ArrayList(5);
+        List<ClassMetaData> processed = new ArrayList<ClassMetaData>(5);
         while (!buffer.isEmpty()) {
             buffered = buffer.peek();
             try {
@@ -724,8 +738,9 @@ public class MetaDataRepository
                 // resolve any of the related types, so clear buffer.  this also
                 // ensures that if two types relate to each other and one
                 // dies, we don't get into infinite cycles
-                for (Iterator itr = buffer.iterator(); itr.hasNext();) {
-                    meta = (ClassMetaData) itr.next();
+                for (Iterator<ClassMetaData> itr = buffer.iterator(); 
+                   itr.hasNext();) {
+                    meta = itr.next();
                     removeMetaData(meta);
                     if (meta != buffered) {
                         _errs.add(new MetaDataException(_loc.get
@@ -751,15 +766,13 @@ public class MetaDataRepository
                 getMetaData(metas[i].getDescribedType(),
                     metas[i].getEnvClassLoader(), true);
 
-        List resolved = new ArrayList(_metas.size());
-        ClassMetaData meta;
-        for (Iterator itr = _metas.values().iterator(); itr.hasNext();) {
-            meta = (ClassMetaData) itr.next();
+        List<ClassMetaData> resolved = new ArrayList<ClassMetaData>
+            (_metas.size());
+        for (ClassMetaData meta : _metas.values()) {
             if (meta != null)
                 resolved.add(meta);
         }
-        metas = (ClassMetaData[]) resolved.toArray
-            (newClassMetaDataArray(resolved.size()));
+        metas = resolved.toArray(newClassMetaDataArray(resolved.size()));
         Arrays.sort(metas);
         return metas;
     }
@@ -768,7 +781,7 @@ public class MetaDataRepository
      * Return the cached metadata for the given class, without any resolution.
      * Return null if none.
      */
-    public ClassMetaData getCachedMetaData(Class cls) {
+    public ClassMetaData getCachedMetaData(Class<?> cls) {
         return (ClassMetaData) _metas.get(cls);
     }
     
@@ -776,7 +789,7 @@ public class MetaDataRepository
      * Create a new metadata, populate it with default information, add it to
      * the repository, and return it. Use the default access type.
      */
-    public ClassMetaData addMetaData(Class cls) {
+    public ClassMetaData addMetaData(Class<?> cls) {
         return addMetaData(cls, AccessCode.UNKNOWN);
     }
 
@@ -786,7 +799,7 @@ public class MetaDataRepository
      *
      * @param access the access type to use in populating metadata
      */
-    public ClassMetaData addMetaData(Class cls, int access) {
+    public ClassMetaData addMetaData(Class<?> cls, int access) {
         if (cls == null || cls.isPrimitive())
             return null;
 
@@ -806,7 +819,7 @@ public class MetaDataRepository
     /**
      * Create a new class metadata instance.
      */
-    protected ClassMetaData newClassMetaData(Class type) {
+    protected ClassMetaData newClassMetaData(Class<?> type) {
         return new ClassMetaData(type, this);
     }
 
@@ -820,7 +833,7 @@ public class MetaDataRepository
     /**
      * Create a new field metadata instance.
      */
-    protected FieldMetaData newFieldMetaData(String name, Class type,
+    protected FieldMetaData newFieldMetaData(String name, Class<?> type,
         ClassMetaData owner) {
         return new FieldMetaData(name, type, owner);
     }
@@ -938,11 +951,11 @@ public class MetaDataRepository
      *
      * @return true if removed, false if not in this repository
      */
-    public synchronized boolean removeMetaData(Class cls) {
+    public synchronized boolean removeMetaData(Class<?> cls) {
         if (cls == null)
             return false;
         if (_metas.remove(cls) != null) {
-            Class impl = (Class) _ifaces.remove(cls);
+            Class<?> impl = _ifaces.remove(cls);
             if (impl != null)
                 _metas.remove(impl);
             return true;
@@ -953,9 +966,9 @@ public class MetaDataRepository
     /**
      * Add the given metadata as declared interface implementation.
      */
-    void addDeclaredInterfaceImpl(ClassMetaData meta, Class iface) {
+    void addDeclaredInterfaceImpl(ClassMetaData meta, Class<?> iface) {
         synchronized (_impls) {
-            Collection vals = (Collection) _impls.get(iface);
+            Collection<Class<?>> vals = _impls.get(iface);
             
             // check to see if the superclass already declares to avoid dups
             if (vals != null) {
@@ -971,7 +984,7 @@ public class MetaDataRepository
     /**
      * Set the implementation for the given managed interface.
      */
-    synchronized void setInterfaceImpl(ClassMetaData meta, Class impl) {
+    synchronized void setInterfaceImpl(ClassMetaData meta, Class<?> impl) {
         if (!meta.isManagedInterface())
             throw new MetaDataException(_loc.get("not-managed-interface", 
                 meta, impl));
@@ -1009,13 +1022,13 @@ public class MetaDataRepository
             return null;
 
         if (oid instanceof OpenJPAId) {
-            Class cls = ((OpenJPAId) oid).getType();
+            Class<?> cls = ((OpenJPAId) oid).getType();
             return getMetaData(cls, envLoader, mustExist);
         }
 
         // check cache
         processRegisteredClasses(envLoader);
-        Class cls = (Class) _oids.get(oid.getClass());
+        Class<?> cls = _oids.get(oid.getClass());
         if (cls != null)
             return getMetaData(cls, envLoader, mustExist);
 
@@ -1031,7 +1044,7 @@ public class MetaDataRepository
         // oid class and check again
         resolveIdentityClass(oid);
         if (processRegisteredClasses(envLoader).length > 0) {
-            cls = (Class) _oids.get(oid.getClass());
+            cls = _oids.get(oid.getClass());
             if (cls != null)
                 return getMetaData(cls, envLoader, mustExist);
         }
@@ -1053,7 +1066,7 @@ public class MetaDataRepository
         if (oid == null)
             return;
 
-        Class oidClass = oid.getClass();
+        Class<?> oidClass = oid.getClass();
         if (_log.isTraceEnabled())
             _log.trace(_loc.get("resolve-identity", oidClass));
 
@@ -1097,7 +1110,7 @@ public class MetaDataRepository
      * @param mustExist if true, throws a {@link MetaDataException}
      * if no metadata is found
      */
-    public ClassMetaData[] getImplementorMetaDatas(Class cls,
+    public ClassMetaData[] getImplementorMetaDatas(Class<?> cls,
         ClassLoader envLoader, boolean mustExist) {
         if (cls == null && mustExist)
             throw new MetaDataException(_loc.get("no-meta", cls));
@@ -1106,17 +1119,17 @@ public class MetaDataRepository
 
         // get impls of given interface / abstract class
         loadRegisteredClassMetaData(envLoader);
-        Collection vals = (Collection) _impls.get(cls);
+        Collection<Class<?>> vals = _impls.get(cls);
         ClassMetaData meta;
-        Collection mapped = null;
+        Collection<ClassMetaData> mapped = null;
         if (vals != null) {
             synchronized (vals) {
-                for (Iterator itr = vals.iterator(); itr.hasNext();) {
-                    meta = getMetaData((Class) itr.next(), envLoader, true);
+                for (Iterator<Class<?>> itr = vals.iterator(); itr.hasNext();) {
+                    meta = getMetaData(itr.next(), envLoader, true);
                     if (meta.isMapped()
                         || meta.getMappedPCSubclassMetaDatas().length > 0) {
                         if (mapped == null)
-                            mapped = new ArrayList(vals.size());
+                            mapped = new ArrayList<ClassMetaData>(vals.size());
                         mapped.add(meta);
                     }
                 }
@@ -1127,7 +1140,7 @@ public class MetaDataRepository
             throw new MetaDataException(_loc.get("no-meta", cls));
         if (mapped == null)
             return EMPTY_METAS;
-        return (ClassMetaData[]) mapped.toArray(newClassMetaDataArray
+        return mapped.toArray(newClassMetaDataArray
             (mapped.size()));
     }
      
@@ -1136,7 +1149,7 @@ public class MetaDataRepository
      * Returns null, if the given class is not registered as 
      * persistence-aware.
      */
-    public NonPersistentMetaData getPersistenceAware(Class cls) {
+    public NonPersistentMetaData getPersistenceAware(Class<?> cls) {
     	return (NonPersistentMetaData)_pawares.get(cls);
     }
     
@@ -1159,7 +1172,7 @@ public class MetaDataRepository
      * 
      * @param cls non-null and must not alreaddy be added as persitence-capable
      */
-    public NonPersistentMetaData addPersistenceAware(Class cls) {
+    public NonPersistentMetaData addPersistenceAware(Class<?> cls) {
     	if (cls == null)
     		return null;
         synchronized(this) {
@@ -1179,7 +1192,7 @@ public class MetaDataRepository
      * 
      * @return true if removed
      */
-    public boolean removePersistenceAware(Class cls) {
+    public boolean removePersistenceAware(Class<?> cls) {
     	return _pawares.remove(cls) != null;
     }
 
@@ -1188,7 +1201,7 @@ public class MetaDataRepository
      * Returns null, if the given interface is not registered as 
      * persistence-aware.
      */
-    public NonPersistentMetaData getNonMappedInterface(Class iface) {
+    public NonPersistentMetaData getNonMappedInterface(Class<?> iface) {
     	return (NonPersistentMetaData)_nonMapped.get(iface);
     }
     
@@ -1212,7 +1225,7 @@ public class MetaDataRepository
      * 
      * @param iface the non-mapped interface
      */
-    public NonPersistentMetaData addNonMappedInterface(Class iface) {
+    public NonPersistentMetaData addNonMappedInterface(Class<?> iface) {
     	if (iface == null)
     		return null;
         if (!iface.isInterface())
@@ -1234,7 +1247,7 @@ public class MetaDataRepository
      * 
      * @return true if removed
      */
-    public boolean removeNonMappedInterface(Class iface) {
+    public boolean removeNonMappedInterface(Class<?> iface) {
     	return _nonMapped.remove(iface) != null;
     }
 
@@ -1267,7 +1280,7 @@ public class MetaDataRepository
      * in the classpath if no classes are configured explicitly
      * @param envLoader the class loader to use, or null for default
      */
-    public synchronized Set getPersistentTypeNames(boolean devpath,
+    public synchronized Set<String> getPersistentTypeNames(boolean devpath,
         ClassLoader envLoader) {
         return _factory.getPersistentTypeNames(devpath, envLoader);
     }
@@ -1291,9 +1304,9 @@ public class MetaDataRepository
      * but specified class will raise an exception. 
      * @return the loaded classes, or empty collection if none
      */
-    public synchronized Collection loadPersistentTypes(boolean devpath,
-        ClassLoader envLoader, boolean mustExist) {
-        Set names = getPersistentTypeNames(devpath, envLoader);
+    public synchronized Collection<Class<?>> loadPersistentTypes(
+    	boolean devpath, ClassLoader envLoader, boolean mustExist) {
+        Set<String> names = getPersistentTypeNames(devpath, envLoader);
         if (names == null || names.isEmpty()) {
         	if (!mustExist)
         		return Collections.EMPTY_LIST;
@@ -1304,10 +1317,9 @@ public class MetaDataRepository
         // attempt to load classes so that they get processed
         ClassLoader clsLoader = _conf.getClassResolverInstance().
             getClassLoader(getClass(), envLoader);
-        List classes = new ArrayList(names.size());
-        Class cls;
-        for (Iterator itr = names.iterator(); itr.hasNext();) {
-        	String className = (String) itr.next();
+        List<Class<?>> classes = new ArrayList<Class<?>> (names.size());
+        Class<?> cls;
+        for (String  className : names) {
             cls = classForName(className, clsLoader);
             if (cls != null) {
                 classes.add(cls);
@@ -1327,7 +1339,7 @@ public class MetaDataRepository
     /**
      * Return the class for the given name, or null if not loadable.
      */
-    private Class classForName(String name, ClassLoader loader) {
+    private Class<?> classForName(String name, ClassLoader loader) {
         try {
             return Class.forName(name, true, loader);
         } catch (Exception e) {
@@ -1361,8 +1373,8 @@ public class MetaDataRepository
      * that this method only works during runtime when the repository is
      * registered as a {@link RegisterClassListener}.
      */
-    Collection<Class<?>> getPCSubclasses(Class cls) {
-        Collection subs = (Collection) _subs.get(cls);
+    Collection<Class<?>> getPCSubclasses(Class<?> cls) {
+        Collection<Class<?>> subs = _subs.get(cls);
         if (subs == null)
             return Collections.EMPTY_LIST;
         return subs;
@@ -1384,7 +1396,7 @@ public class MetaDataRepository
      * Parses the metadata for all registered classes.
      */
     private void loadRegisteredClassMetaData(ClassLoader envLoader) {
-        Class[] reg = processRegisteredClasses(envLoader);
+        Class<?>[] reg = processRegisteredClasses(envLoader);
         for (int i = 0; i < reg.length; i++) {
             try {
                 getMetaData(reg[i], envLoader, false);
@@ -1398,20 +1410,20 @@ public class MetaDataRepository
     /**
      * Updates our datastructures with the latest registered classes.
      */
-    Class[] processRegisteredClasses(ClassLoader envLoader) {
+    Class<?>[] processRegisteredClasses(ClassLoader envLoader) {
         if (_registered.isEmpty())
             return EMPTY_CLASSES;
 
         // copy into new collection to avoid concurrent mod errors on reentrant
         // registrations
-        Class[] reg;
+        Class<?>[] reg;
         synchronized (_registered) {
-            reg = (Class[]) _registered.toArray(new Class[_registered.size()]);
+            reg = _registered.toArray(new Class[_registered.size()]);
             _registered.clear();
         }
 
-        Collection pcNames = getPersistentTypeNames(false, envLoader);
-        Collection failed = null;
+        Collection<String> pcNames = getPersistentTypeNames(false, envLoader);
+        Collection<Class<?>> failed = null;
         for (int i = 0; i < reg.length; i++) {
             // don't process types that aren't listed by the user; may belong
             // to a different persistence unit
@@ -1429,7 +1441,7 @@ public class MetaDataRepository
                 if (_log.isWarnEnabled())
                     _log.warn(_loc.get("failed-registered", reg[i]), t);
                 if (failed == null)
-                    failed = new ArrayList();
+                    failed = new ArrayList<Class<?>>();
                 failed.add(reg[i]);
             }
         }
@@ -1447,16 +1459,16 @@ public class MetaDataRepository
      * also registering its parent class by specifying its persistence
      * capable superclass in the registration event.
      */
-    private void processRegisteredClass(Class cls) {
+    private void processRegisteredClass(Class<?> cls) {
         if (_log.isTraceEnabled())
             _log.trace(_loc.get("process-registered", cls));
 
         // update subclass lists; synchronize on this because accessing _metas
         // requires it
-        Class leastDerived = cls;
+        Class<?> leastDerived = cls;
         synchronized (this) {
             ClassMetaData meta;
-            for (Class anc = cls;
+            for (Class<?> anc = cls;
                 (anc = PCRegistry.getPersistentSuperclass(anc)) != null;) {
                 addToCollection(_subs, anc, cls, true);
                 meta = (ClassMetaData) _metas.get(anc);
@@ -1474,7 +1486,7 @@ public class MetaDataRepository
             // thrown for single field identity with null pk field value
         }
         if (oid != null) {
-            Class existing = (Class) _oids.get(oid.getClass());
+            Class<?> existing = _oids.get(oid.getClass());
             if (existing != null) {
                 // if there is already a class for this OID, then we know
                 // that multiple classes are using the same OID: therefore,
@@ -1482,7 +1494,7 @@ public class MetaDataRepository
                 // gets around the problem of an abstract PC superclass
                 // using application identity (since newObjectId
                 // will return null for abstract classes).
-                Class sup = cls;
+                Class<?> sup = cls;
                 while (PCRegistry.getPersistentSuperclass(sup) != null)
                     sup = PCRegistry.getPersistentSuperclass(sup);
 
@@ -1501,9 +1513,9 @@ public class MetaDataRepository
         String alias = PCRegistry.getTypeAlias(cls);
         if (alias != null) {
             synchronized (_aliases) {
-                List classList = (List) _aliases.get(alias);
+                List<Class<?>> classList = _aliases.get(alias);
                 if (classList == null) {
-                    classList = new ArrayList(3);
+                    classList = new ArrayList<Class<?>>(3);
                     _aliases.put(alias, classList);
                 }
                 if (!classList.contains(cls))
@@ -1515,9 +1527,10 @@ public class MetaDataRepository
     /**
      * Update the list of implementations of base classes and interfaces.
      */
-    private void updateImpls(Class cls, Class leastDerived, Class check) {
+    private void updateImpls(Class<?> cls, Class<?> leastDerived, 
+    	Class<?> check) {
         // allow users to query on common non-pc superclasses
-        Class sup = check.getSuperclass();
+        Class<?> sup = check.getSuperclass();
         if (leastDerived == cls && sup != null && sup != Object.class) {
             addToCollection(_impls, sup, cls, false);
             updateImpls(cls, leastDerived, sup);
@@ -1527,7 +1540,7 @@ public class MetaDataRepository
         // say the user must implement persistent interfaces explicitly in meta
         if (!_factory.getDefaults().isDeclaredInterfacePersistent())
             return;
-        Class[] ints = check.getInterfaces();
+        Class<?>[] ints = check.getInterfaces();
         for (int i = 0; i < ints.length; i++) {
             // don't map java-standard interfaces
             if (ints[i].getName().startsWith("java."))
@@ -1545,8 +1558,8 @@ public class MetaDataRepository
      * Return true if the given class is the least-derived persistent
      * implementor of the given interface, false otherwise.
      */
-    private boolean isLeastDerivedImpl(Class inter, Class cls) {
-        Class parent = PCRegistry.getPersistentSuperclass(cls);
+    private boolean isLeastDerivedImpl(Class<?> inter, Class<?> cls) {
+        Class<?> parent = PCRegistry.getPersistentSuperclass(cls);
         while (parent != null) {
             if (Arrays.asList(parent.getInterfaces()).contains(inter))
                 return false;
@@ -1559,17 +1572,17 @@ public class MetaDataRepository
      * Add the given value to the collection cached in the given map under
      * the given key.
      */
-    private void addToCollection(Map map, Class key, Class value,
-        boolean inheritance) {
+    private void addToCollection(Map map, 
+    	Class<?> key, Class<?> value, boolean inheritance) {
         synchronized (map) {
             Collection coll = (Collection) map.get(key);
             if (coll == null) {
                 if (inheritance) {
                     InheritanceComparator comp = new InheritanceComparator();
                     comp.setBase(key);
-                    coll = new TreeSet(comp);
+                    coll = new TreeSet<Class<?>>(comp);
                 } else
-                    coll = new LinkedList();
+                    coll = new LinkedList<Class<?>>();
                 map.put(key, coll);
             }
             coll.add(value);
@@ -1610,8 +1623,8 @@ public class MetaDataRepository
     /**
      * Return query metadata for the given class, name, and classloader.
      */
-    public synchronized QueryMetaData getQueryMetaData(Class cls, String name,
-        ClassLoader envLoader, boolean mustExist) {
+    public synchronized QueryMetaData getQueryMetaData(Class<?> cls, 
+    	String name, ClassLoader envLoader, boolean mustExist) {
         QueryMetaData meta = getQueryMetaDataInternal(cls, name, envLoader);
         if (meta == null) {
             // load all the metadatas for all the known classes so that
@@ -1638,9 +1651,8 @@ public class MetaDataRepository
      * Resolve all known metadata classes. 
      */
     private void resolveAll(ClassLoader envLoader) {
-        Collection types = loadPersistentTypes(false, envLoader);
-        for (Iterator i = types.iterator(); i.hasNext(); ) {
-            Class c = (Class) i.next();
+        Collection<Class<?>> types = loadPersistentTypes(false, envLoader);
+        for (Class<?> c : types) {
             getMetaData(c, envLoader, false);
         }
     }
@@ -1648,7 +1660,7 @@ public class MetaDataRepository
     /**
      * Return query metadata for the given class, name, and classloader.
      */
-    private QueryMetaData getQueryMetaDataInternal(Class cls, String name,
+    private QueryMetaData getQueryMetaDataInternal(Class<?> cls, String name,
         ClassLoader envLoader) {
         if (name == null)
             return null;
@@ -1666,7 +1678,7 @@ public class MetaDataRepository
 
         // get metadata for class, which will find queries in metadata file
         if (cls != null && getMetaData(cls, envLoader, false) != null) {
-            qm = (QueryMetaData) _queries.get(key);
+            qm = _queries.get(key);
             if (qm != null)
                 return qm;
         }
@@ -1679,29 +1691,29 @@ public class MetaDataRepository
 
         // not in cache; load
         _factory.load(cls, MODE_QUERY, envLoader);
-        return (QueryMetaData) _queries.get(key);
+        return _queries.get(key);
     }
 
     /**
      * Return the cached query metadata.
      */
     public synchronized QueryMetaData[] getQueryMetaDatas() {
-        return (QueryMetaData[]) _queries.values().toArray
-            (new QueryMetaData[_queries.size()]);
+        return _queries.values().toArray(new QueryMetaData[_queries.size()]);
     }
 
     /**
      * Return the cached query metadata for the given name.
      */
-    public synchronized QueryMetaData getCachedQueryMetaData(Class cls,
+    public synchronized QueryMetaData getCachedQueryMetaData(Class<?> cls,
         String name) {
-        return (QueryMetaData) _queries.get(getQueryKey(cls, name));
+        return _queries.get(getQueryKey(cls, name));
     }
 
     /**
      * Add a new query metadata to the repository and return it.
      */
-    public synchronized QueryMetaData addQueryMetaData(Class cls, String name) {
+    public synchronized QueryMetaData addQueryMetaData(Class<?> cls, 
+    	String name) {
         QueryMetaData meta = newQueryMetaData(cls, name);
         _queries.put(getQueryKey(meta), meta);
         return meta;
@@ -1710,7 +1722,7 @@ public class MetaDataRepository
     /**
      * Create a new query metadata instance.
      */
-    protected QueryMetaData newQueryMetaData(Class cls, String name) {
+    protected QueryMetaData newQueryMetaData(Class<?> cls, String name) {
         QueryMetaData meta = new QueryMetaData(name);
         meta.setDefiningType(cls);
         return meta;
@@ -1728,7 +1740,7 @@ public class MetaDataRepository
     /**
      * Remove query metadata for the given class name if in the repository.
      */
-    public synchronized boolean removeQueryMetaData(Class cls, String name) {
+    public synchronized boolean removeQueryMetaData(Class<?> cls, String name) {
         if (name == null)
             return false;
         return _queries.remove(getQueryKey(cls, name)) != null;
@@ -1759,7 +1771,7 @@ public class MetaDataRepository
      * Return a unique key for a given class / name. The class
      * argument can be null.
      */
-    protected static Object getQueryKey(Class cls, String name) {
+    protected static Object getQueryKey(Class<?> cls, String name) {
         if (cls == null)
             return name;
         QueryKey key = new QueryKey();
@@ -1835,12 +1847,12 @@ public class MetaDataRepository
             return null;
 
         // check cache
-        SequenceMetaData meta = (SequenceMetaData) _seqs.get(name);
+        SequenceMetaData meta = _seqs.get(name);
         if (meta == null) {
             // load metadata for registered classes to hopefully find sequence
             // definition
             loadRegisteredClassMetaData(envLoader);
-            meta = (SequenceMetaData) _seqs.get(name);
+            meta = _seqs.get(name);
         }
         return meta;
     }
@@ -1849,7 +1861,7 @@ public class MetaDataRepository
      * Return the cached sequence metadata.
      */
     public synchronized SequenceMetaData[] getSequenceMetaDatas() {
-        return (SequenceMetaData[]) _seqs.values().toArray
+        return _seqs.values().toArray
             (new SequenceMetaData[_seqs.size()]);
     }
 
@@ -1858,7 +1870,7 @@ public class MetaDataRepository
      */
     public synchronized SequenceMetaData getCachedSequenceMetaData(
         String name) {
-        return (SequenceMetaData) _seqs.get(name);
+        return _seqs.get(name);
     }
 
     /**
@@ -1974,9 +1986,9 @@ public class MetaDataRepository
      * @return XML metadata
      */
     public synchronized XMLMetaData getXMLMetaData(FieldMetaData fmd) {
-        Class cls = fmd.getDeclaredType();
+        Class<?> cls = fmd.getDeclaredType();
         // check if cached before
-        XMLMetaData xmlmeta = (XMLClassMetaData) _xmlmetas.get(cls);
+        XMLMetaData xmlmeta = _xmlmetas.get(cls);
         if (xmlmeta != null)
             return xmlmeta;
         
@@ -1994,7 +2006,7 @@ public class MetaDataRepository
      *
      * @param access the access type to use in populating metadata
      */
-    public XMLClassMetaData addXMLMetaData(Class type, String name) {
+    public XMLClassMetaData addXMLMetaData(Class<?> type, String name) {
         XMLClassMetaData meta = newXMLClassMetaData(type, name);
         
         // synchronize on this rather than the map, because all other methods
@@ -2009,8 +2021,8 @@ public class MetaDataRepository
      * Return the cached XMLClassMetaData for the given class
      * Return null if none.
      */
-    public XMLMetaData getCachedXMLMetaData(Class cls) {
-        return (XMLMetaData) _xmlmetas.get(cls);
+    public XMLMetaData getCachedXMLMetaData(Class<?> cls) {
+        return _xmlmetas.get(cls);
     }
     
     /**
@@ -2019,7 +2031,7 @@ public class MetaDataRepository
      * @param name
      * @return a XMLClassMetaData
      */
-    protected XMLClassMetaData newXMLClassMetaData(Class type, String name) {
+    protected XMLClassMetaData newXMLClassMetaData(Class<?> type, String name) {
         return new XMLClassMetaData(type, name);
     }
     
@@ -2031,7 +2043,7 @@ public class MetaDataRepository
      * @param meta
      * @return a XMLFieldMetaData
      */
-    public XMLFieldMetaData newXMLFieldMetaData(Class type, String name) {
+    public XMLFieldMetaData newXMLFieldMetaData(Class<?> type, String name) {
         return new XMLFieldMetaData(type, name);
     }
 }
