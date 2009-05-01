@@ -37,6 +37,7 @@ import java.util.TreeMap;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.openjpa.conf.OpenJPAConfiguration;
+import org.apache.openjpa.datacache.AbstractDataCache;
 import org.apache.openjpa.datacache.DataCache;
 import org.apache.openjpa.enhance.PCRegistry;
 import org.apache.openjpa.enhance.Reflection;
@@ -1340,14 +1341,23 @@ public class ClassMetaData
     }
 
     /**
-     * The name of the datacache to use for this class, or null if none.
+     * The name of the datacache to use for this class. If this class is not
+     * eligible for caching based its annotation or the cache configuration
+     * null will be returned.
+     * 
+     * @return The cache name, or null if this type should not be cached.
      */
     public String getDataCacheName() {
         if (DEFAULT_STRING.equals(_cacheName)) {
-            if (_super != null)
+            if (_super != null) {
                 _cacheName = getPCSuperclassMetaData().getDataCacheName();
-            else
+            }
+            else {
                 _cacheName = DataCache.NAME_DEFAULT;
+            }
+            if(!isCacheable(_cacheName)) { 
+               _cacheName = null; 
+            }
         }
         return _cacheName;
     }
@@ -2392,5 +2402,24 @@ public class ClassMetaData
     	if ("DataCacheTimeout".equals(key)) {
     		_cacheTimeout = Integer.MIN_VALUE;
     	}
+    }
+
+    /**
+     * Determine whether this Type should be included in the DataCache (if one
+     * is provided) based on the DataCache's configuration.
+     * 
+     * @return true if the DataCache will accept this type, otherwise false.
+     */
+    private boolean isCacheable(String candidateCacheName) {
+        boolean rval = true;
+        DataCache cache =
+            getRepository().getConfiguration().getDataCacheManagerInstance()
+                .getDataCache(candidateCacheName);
+        if (cache != null && (cache instanceof AbstractDataCache)) {
+            AbstractDataCache adc = (AbstractDataCache) cache;
+            if (!adc.isCacheableType(getDescribedType().getName()))
+                rval = false;
+        }
+        return rval;
     }
 }
