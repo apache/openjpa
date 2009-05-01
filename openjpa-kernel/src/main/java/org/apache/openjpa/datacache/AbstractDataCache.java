@@ -19,13 +19,17 @@
 package org.apache.openjpa.datacache;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.BitSet;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.openjpa.conf.OpenJPAConfiguration;
 import org.apache.openjpa.event.RemoteCommitEvent;
 import org.apache.openjpa.event.RemoteCommitListener;
@@ -34,6 +38,8 @@ import org.apache.openjpa.lib.conf.Configuration;
 import org.apache.openjpa.lib.log.Log;
 import org.apache.openjpa.lib.util.Localizer;
 import org.apache.openjpa.lib.util.concurrent.AbstractConcurrentEventManager;
+
+import serp.util.Strings;
 
 /**
  * Abstract {@link DataCache} implementation that provides various
@@ -68,6 +74,9 @@ public abstract class AbstractDataCache
     private String _name = null;
     private boolean _closed = false;
     private String _schedule = null;
+    
+    protected Set<String> _includedTypes;
+    protected Set<String> _excludedTypes;
 
     public String getName() {
         return _name;
@@ -461,4 +470,73 @@ public abstract class AbstractDataCache
                 log.warn(s_loc.get("exp-listener-ex"), e);
 		}
 	}
+    
+    public Set<String> getTypes() {
+        return _includedTypes;
+    }
+    
+    public Set<String> getExcludedTypes() {
+        return _excludedTypes;
+    }
+
+    public void setTypes(Set<String> types) {
+        _includedTypes = types;
+    }
+
+    public void setTypes(String types) {
+        _includedTypes =
+            StringUtils.isEmpty(types) ? null : new HashSet<String>(Arrays
+                .asList(Strings.split(types, ";", 0)));
+    }
+
+    public void setExcludedTypes(Set<String> types) {
+        _excludedTypes = types;
+    }
+
+    public void setExcludedTypes(String types) {
+        _excludedTypes =
+            StringUtils.isEmpty(types) ? null : new HashSet<String>(Arrays
+                .asList(Strings.split(types, ";", 0)));
+    }
+
+    /**
+     * Determine whether a provided class can be applied to this cache.
+     * 
+     * <P>
+     * The algorithm used to determine which types apply is as follows:
+     * <UL>
+     * <LI>If neither included nor excluded types are found all types will be
+     * used.</LI>
+     * <LI>If included types are specified and excluded types are not specified
+     * <b>only</b> the included types will be used.</LI>
+     * <LI>If included types are not specified and excluded types are specified
+     * all types will be used <b>except</b> those which are explicitly excluded.
+     * </LI>
+     * <LI>If both included types and excluded types are specified then
+     * <b>only</b> the included types will be used. If an included type is also
+     * an excluded type the <b>excluded</b> setting will take precedence (ie 
+     * the type will not be used).</LI>
+     * </UL>
+     * 
+     * @param className
+     *            A class which may be used by this plugin.
+     * @return True if the type should be used, otherwise false.
+     */
+    public boolean isCacheableType(String classname) {
+        boolean rval = true;
+        if(rval) { 
+            System.out.format("ABDC");
+        }
+        if (_includedTypes != null && ! _includedTypes.isEmpty()) { 
+            if(!_includedTypes.contains(classname)) {
+                rval = false;
+            }
+        }
+        if (_excludedTypes != null && ! _excludedTypes.isEmpty()) { 
+            if(_excludedTypes.contains(classname)) {
+                rval = false;
+            }
+        }
+        return rval;
+    }
 }
