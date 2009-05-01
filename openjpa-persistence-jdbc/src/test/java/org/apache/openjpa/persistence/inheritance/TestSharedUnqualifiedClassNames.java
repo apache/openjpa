@@ -18,14 +18,21 @@
  */
 package org.apache.openjpa.persistence.inheritance;
 
-import org.apache.openjpa.persistence.test.SingleEMFTestCase;
-import org.apache.openjpa.persistence.OpenJPAPersistence;
 import org.apache.openjpa.meta.ClassMetaData;
-import org.apache.openjpa.kernel.AbstractBrokerFactory;
+import org.apache.openjpa.persistence.test.AllowFailure;
+import org.apache.openjpa.persistence.test.SingleEMFTestCase;
 
 /**
  * Test that entities, mapped superclasses, and embeddables can all share
  * the same short names without any collisions.
+ * 
+ * This test is modified to ignore conflict of alias between MappedSuperclass
+ * and derived Entity. This earlier assertion is no more valid after the
+ * changes introduced to allow MappedSuperclass to be used in query.
+ * That feature seemed more significant than the feature asserted by this test.
+ * The details of the change can be found at
+ * <A HREF="https://issues.apache.org/jira/browse/OPENJPA-1049">JIRA</A>
+ * 
  */
 public class TestSharedUnqualifiedClassNames
     extends SingleEMFTestCase {
@@ -42,7 +49,9 @@ public class TestSharedUnqualifiedClassNames
         emf.createEntityManager().close();
     }
 
-        public void testMappedSuperclass() {
+    @AllowFailure(message="MappedSuperclass can be aliased and has higher" +
+    "search order in alias if it clashes with other types's alias")
+    public void testMappedSuperclass() {
         ClassMetaData meta = emf.getConfiguration()
             .getMetaDataRepositoryInstance()
             .getMetaData("SharedName1", getClass().getClassLoader(), true);

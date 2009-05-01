@@ -2802,7 +2802,7 @@ public class PCEnhancer {
         code.getstatic().setField(PRE + "FieldFlags", byte[].class);
         code.getstatic().setField(SUPER, Class.class);
         
-        if (_meta.isMapped())
+        if (_meta.isMapped() || _meta.isAbstract())
             code.constant().setValue(_meta.getTypeAlias());
         else
             code.constant().setNull();
