@@ -515,9 +515,6 @@ public abstract class AbstractDataCache
      */
     public boolean isCacheableType(String classname) {
         boolean rval = true;
-        if(rval) { 
-            System.out.format("ABDC");
-        }
         if (_includedTypes != null && ! _includedTypes.isEmpty()) { 
             if(!_includedTypes.contains(classname)) {
                 rval = false;
