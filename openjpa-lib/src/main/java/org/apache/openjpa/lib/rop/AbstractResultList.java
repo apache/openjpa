@@ -32,7 +32,7 @@ import org.apache.openjpa.lib.util.Localizer;
  */
 @SuppressWarnings("serial")
 public abstract class AbstractResultList<E> implements ResultList<E> {
-    private Object _userObject;
+    private transient Object _userObject;
     
     private static final Localizer _loc = Localizer.forPackage
         (AbstractResultList.class);
