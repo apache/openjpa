@@ -33,6 +33,7 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Random;
 import java.util.Set;
+import java.util.TreeMap;
 
 import javax.persistence.Query;
 
@@ -843,22 +844,25 @@ public class TestOrderColumn extends SingleEMFTestCase {
             String entity, String indexedCol, int base, Object[] objs, String
             idField, Object idValue) {
         String queryString = "SELECT INDEX(b), b FROM " + entity + " a JOIN a." +
-            indexedCol + " b WHERE a." + idField + " = :idVal " +
-            " ORDER BY a." + idField;
+            indexedCol + " b WHERE a." + idField + " = :idVal";
         em.clear();
         Query qry = em.createQuery(queryString);
         qry.setParameter("idVal", idValue);
         List rlist = qry.getResultList();  
         
         assertNotNull(rlist);
-        assertEquals(rlist.size(), objs.length);        
+        assertEquals(rlist.size(), objs.length); 
+        TreeMap<Long, Object> objMap = new TreeMap<Long, Object>();
         for (int i = 0; i < objs.length; i++)
         {
             Object[] rvals = (Object[])rlist.get(i);
             Long idx = (Long)rvals[0];
             Object objVal = rvals[1];
-            assertEquals(idx, new Long(base + i));
-            assertEquals(objVal, objs[i]);
+            objMap.put(idx, objVal);
+        }
+        for (int i = 0; i < objs.length; i++) {
+            Object val = objMap.get((new Long(base + i)));
+            assertEquals(val, objs[i]);
         }
     }
     
