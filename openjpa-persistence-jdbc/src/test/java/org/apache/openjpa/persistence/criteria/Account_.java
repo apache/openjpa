@@ -18,26 +18,20 @@
  */
 package org.apache.openjpa.persistence.criteria;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-import javax.persistence.Table;
+import javax.persistence.metamodel.Attribute;
 
 /**
- * Persistent class used in testing QueryDefinition API.
+ * This source is supposed to be automatically generated from Account.java
+ * during compilation.
+ * Hand coded to avoid runtime compiler invocation. Used for testing.
  * 
  * @author Pinaki Poddar
  *
  */
-@Entity
-@Table(name="CR_ACCOUNT")
-public class Account {
-	@Id
-	@GeneratedValue
-	private long id;
-	
-	private int balance;
-	private Integer loan;
-	private String owner;
-	private String name;
+public class Account_ {
+	public static volatile Attribute<Account, Long> id;
+	public static volatile Attribute<Account, Integer> balance;
+	public static volatile Attribute<Account, Integer> loan;
+	public static volatile Attribute<Account, String> owner;
+	public static volatile Attribute<Account, String> name;
 }

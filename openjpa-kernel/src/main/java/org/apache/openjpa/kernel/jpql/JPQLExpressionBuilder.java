@@ -1091,43 +1091,7 @@ public class JPQLExpressionBuilder
                 if (node.children.length == 3)
                     setImplicitType(val3, Integer.TYPE);
 
-                // the semantics of the JPQL substring() function
-                // are that arg2 is the 1-based start index, and arg3 is
-                // the length of the string to be return; this is different
-                // than the semantics of the ExpressionFactory's substring,
-                // which matches the Java language (0-based start index,
-                // arg2 is the end index): we perform the translation by
-                // adding one to the first argument, and then adding the
-                // first argument to the second argument to get the endIndex
-                Value start = null;
-                Value end = null;
-                if (val2 instanceof Literal && 
-                    (val3 == null || val3 instanceof Literal)) {
-                    // optimize SQL for the common case of two literals
-                    long jpqlStart = ((Number) ((Literal) val2).getValue())
-                        .longValue();
-                    start = factory.newLiteral(new Long(jpqlStart - 1),
-                        Literal.TYPE_NUMBER);
-                    if (val3 != null) {
-                    	long length = ((Number) ((Literal) val3).getValue())
-                            .longValue();
-                    long endIndex = length + (jpqlStart - 1);
-                    end = factory.newLiteral(new Long(endIndex),
-                        Literal.TYPE_NUMBER);
-                    }
-                } else {
-                    start = factory.subtract(val2, factory.newLiteral
-                        (Numbers.valueOf(1), Literal.TYPE_NUMBER));
-                    if (val3 != null)
-                    end = factory.add(val3,
-                        (factory.subtract(val2, factory.newLiteral
-                            (Numbers.valueOf(1), Literal.TYPE_NUMBER))));
-                }
-                if (val3 != null)
-                return factory.substring(val1, factory.newArgumentList(
-                    start, end));
-                else
-                    return factory.substring(val1, start);
+                return convertSubstringArguments(factory, val1, val2, val3);
 
             case JJTLOCATE:
                 // as with SUBSTRING (above), the semantics for LOCATE differ
@@ -1220,7 +1184,56 @@ public class JPQLExpressionBuilder
                     new Object[]{ node }, null);
         }
     }
-
+    
+    /**
+     * Converts JPQL substring() function to OpenJPA ExpressionFactory 
+     * substring() arguments.
+     * 
+     * The semantics of the JPQL substring() function are that arg2 is the 
+     * 1-based start index, and arg3 is the length of the string to be return.
+     * This is different than the semantics of the ExpressionFactory's 
+     * substring(), which matches the Java language (0-based start index,
+     * arg2 is the end index): we perform the translation by adding one to the 
+     * first argument, and then adding the first argument to the second  
+     * argument to get the endIndex.
+     * 
+     * @param val1 the original String
+     * @param val2 the 1-based start index as per JPQL substring() semantics
+     * @param val3 the length of the returned string as per JPQL semantics
+     * 
+     */
+    public static Value convertSubstringArguments(ExpressionFactory factory, 
+    		Value val1, Value val2, Value val3) {
+        Value start = null;
+        Value end = null;
+        if (val2 instanceof Literal && 
+            (val3 == null || val3 instanceof Literal)) {
+            // optimize SQL for the common case of two literals
+            long jpqlStart = ((Number) ((Literal) val2).getValue())
+                .longValue();
+            start = factory.newLiteral(new Long(jpqlStart - 1),
+                Literal.TYPE_NUMBER);
+            if (val3 != null) {
+            	long length = ((Number) ((Literal) val3).getValue())
+                    .longValue();
+            long endIndex = length + (jpqlStart - 1);
+            end = factory.newLiteral(new Long(endIndex),
+                Literal.TYPE_NUMBER);
+            }
+        } else {
+            start = factory.subtract(val2, factory.newLiteral
+                (Numbers.valueOf(1), Literal.TYPE_NUMBER));
+            if (val3 != null)
+            end = factory.add(val3,
+                (factory.subtract(val2, factory.newLiteral
+                    (Numbers.valueOf(1), Literal.TYPE_NUMBER))));
+        }
+        if (val3 != null)
+            return factory.substring(val1, factory.newArgumentList(start, end));
+        else
+            return factory.substring(val1, start);
+    	
+    }
     private void assertQueryExtensions(String clause) {
         OpenJPAConfiguration conf = resolver.getConfiguration();
         switch(conf.getCompatibilityInstance().getJPQL()) {

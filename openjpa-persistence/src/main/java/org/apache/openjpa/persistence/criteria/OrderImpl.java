@@ -18,26 +18,37 @@
  */
 package org.apache.openjpa.persistence.criteria;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-import javax.persistence.Table;
+import javax.persistence.criteria.Expression;
+import javax.persistence.criteria.Order;
 
 /**
- * Persistent class used in testing QueryDefinition API.
+ * Ordering clause of a criteria query.
  * 
  * @author Pinaki Poddar
  *
  */
-@Entity
-@Table(name="CR_ACCOUNT")
-public class Account {
-	@Id
-	@GeneratedValue
-	private long id;
+public class OrderImpl implements Order {
+	private boolean _ascending;
+	private final Expression<?> e;
 	
-	private int balance;
-	private Integer loan;
-	private String owner;
-	private String name;
+	public OrderImpl(Expression<?> e, boolean asc) {
+		this.e = e;
+		_ascending = asc;
+	}
+	
+	public OrderImpl(Expression<?> e) {
+		this(e, true);
+	}
+	
+	public <T extends Comparable<T>> Expression<T> getExpression() {
+		return (Expression<T>)e;
+	}
+
+	public boolean isAscending() {
+		return _ascending;
+	}
+
+	public void reverse() {
+		_ascending = !_ascending;
+	}
 }

@@ -47,6 +47,7 @@ import org.apache.openjpa.lib.conf.Value;
 import org.apache.openjpa.lib.util.Localizer;
 import org.apache.openjpa.lib.util.Closeable;
 import org.apache.openjpa.meta.MetaDataRepository;
+import org.apache.openjpa.persistence.criteria.CriteriaBuilder;
 import org.apache.openjpa.persistence.meta.MetamodelImpl;
 import org.apache.openjpa.persistence.query.OpenJPAQueryBuilder;
 import org.apache.openjpa.persistence.query.QueryBuilderImpl;
@@ -357,7 +358,7 @@ public class EntityManagerFactoryImpl
     }
 
     public QueryBuilder getQueryBuilder() {
-        throw new UnsupportedOperationException();
+        return new CriteriaBuilder().setMetaModel(getMetamodel());
     }
     
     public OpenJPAQueryBuilder getDynamicQueryBuilder() {

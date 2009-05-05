@@ -18,26 +18,34 @@
  */
 package org.apache.openjpa.persistence.criteria;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-import javax.persistence.Table;
+import javax.persistence.Parameter;
 
 /**
- * Persistent class used in testing QueryDefinition API.
+ * Parameter of a criteria query.
  * 
  * @author Pinaki Poddar
  *
+ * @param <T> the type of value held by this parameter.
  */
-@Entity
-@Table(name="CR_ACCOUNT")
-public class Account {
-	@Id
-	@GeneratedValue
-	private long id;
-	
-	private int balance;
-	private Integer loan;
-	private String owner;
+public class ParameterImpl<T> extends ExpressionImpl<T> implements Parameter<T>{
 	private String name;
+	private int position;
+	
+    public ParameterImpl(Class<T> cls) {
+        super(cls);
+    }
+
+	public final String getName() {
+		return name;
+	}
+	
+	public final ParameterImpl<T> setName(String name) {
+		this.name = name;
+		return this;
+	}
+
+	public final Integer getPosition() {
+		return position;
+	}
+
 }

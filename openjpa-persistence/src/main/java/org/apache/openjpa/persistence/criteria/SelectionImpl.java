@@ -18,26 +18,21 @@
  */
 package org.apache.openjpa.persistence.criteria;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-import javax.persistence.Table;
+import javax.persistence.criteria.Selection;
+
+import org.apache.openjpa.persistence.ResultItemImpl;
 
 /**
- * Persistent class used in testing QueryDefinition API.
+ * An item selected in the projection clause of  Criteria query.
  * 
  * @author Pinaki Poddar
  *
+ * @param <X>
  */
-@Entity
-@Table(name="CR_ACCOUNT")
-public class Account {
-	@Id
-	@GeneratedValue
-	private long id;
-	
-	private int balance;
-	private Integer loan;
-	private String owner;
-	private String name;
+public class SelectionImpl<X> extends ResultItemImpl<X> 
+    implements Selection<X> {
+
+    public SelectionImpl(Class<X> cls) {
+        super(cls);
+    }
 }

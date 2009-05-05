@@ -14,30 +14,32 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
+
 package org.apache.openjpa.persistence.criteria;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-import javax.persistence.Table;
+import javax.persistence.criteria.Root;
+import javax.persistence.metamodel.Entity;
+
+import org.apache.openjpa.persistence.criteria.FromImpl;
 
 /**
- * Persistent class used in testing QueryDefinition API.
+ * A path from itself.
  * 
  * @author Pinaki Poddar
  *
+ * @param <X>
  */
-@Entity
-@Table(name="CR_ACCOUNT")
-public class Account {
-	@Id
-	@GeneratedValue
-	private long id;
+public class RootImpl<X> extends FromImpl<X,X> implements Root<X> {
+	private final Entity<X> _entity;
 	
-	private int balance;
-	private Integer loan;
-	private String owner;
-	private String name;
+    public RootImpl(Entity<X> type) {
+        super(type);
+        _entity = type;
+    }
+    
+    public  Entity<X> getModel() {
+        return _entity;
+    }
 }

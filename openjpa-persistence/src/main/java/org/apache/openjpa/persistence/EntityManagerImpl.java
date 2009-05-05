@@ -70,6 +70,7 @@ import org.apache.openjpa.meta.ClassMetaData;
 import org.apache.openjpa.meta.FieldMetaData;
 import org.apache.openjpa.meta.QueryMetaData;
 import org.apache.openjpa.meta.SequenceMetaData;
+import org.apache.openjpa.persistence.criteria.CriteriaBuilder;
 import org.apache.openjpa.util.Exceptions;
 import org.apache.openjpa.util.ImplHelper;
 import org.apache.openjpa.util.RuntimeExceptionTranslator;
@@ -1509,8 +1510,8 @@ public class EntityManagerImpl
     }
 
     public Query createQuery(CriteriaQuery criteriaQuery) {
-        throw new UnsupportedOperationException(
-        "JPA 2.0 - Method not yet implemented");
+        return new QueryImpl(this, _ret, 
+            _broker.newQuery(CriteriaBuilder.LANG_CRITERIA, criteriaQuery));
     }
     
     public OpenJPAQuery createDynamicQuery(

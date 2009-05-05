@@ -14,30 +14,36 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
-package org.apache.openjpa.persistence.criteria;
+package org.apache.openjpa.persistence;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-import javax.persistence.Table;
+import javax.persistence.ResultItem;
 
 /**
- * Persistent class used in testing QueryDefinition API.
+ * A single dimension of projection in query result.
  * 
  * @author Pinaki Poddar
  *
+ * @param <X> type of the result
  */
-@Entity
-@Table(name="CR_ACCOUNT")
-public class Account {
-	@Id
-	@GeneratedValue
-	private long id;
-	
-	private int balance;
-	private Integer loan;
-	private String owner;
-	private String name;
+public class ResultItemImpl<X> implements ResultItem<X> {
+    protected String _alias;
+    protected Class<X> _cls;
+    
+    protected ResultItemImpl(Class<X> cls) {
+        _cls = cls;
+    }
+    
+    public String getAlias() {
+        return _alias;
+    }
+
+    public void setAlias(String alias) {
+        _alias = alias;
+    }
+
+    public Class<X> getJavaType() {
+        return _cls;
+    }
 }
