@@ -23,9 +23,9 @@
 -->
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <modelVersion>4.0.0</modelVersion>
-    <artifactId>openjpa</artifactId>
+    <artifactId>openjpa-all</artifactId>
     <packaging>jar</packaging>
-    <name>OpenJPA Aggregate Jar</name>
+    <name>OpenJPA with Dependencies Aggregate Jar</name>
     <parent>
         <groupId>org.apache.openjpa</groupId>
         <artifactId>openjpa-parent</artifactId>
@@ -36,46 +36,23 @@
         <plugins>
             <plugin>
                 <!--
-                    Manually build an aggregate jar of all the other
-                    openjpa-* jars using ant. We cannot use the assembly
-                    plugin, since it doesn't provide support for appending
-                    multiple same-named files to each other (which is
-                    required for correctly aggregating services files).
+                    Manually extract the OpenJPA aggregate jar as the
+                    maven-shade-plugin requires an existing jar to work
+                    against....
                 -->
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-antrun-plugin</artifactId>
                 <executions>
                     <execution>
                         <id>build-single-jar</id>
-                        <phase>process-classes</phase>
+                        <phase>compile</phase>
                         <configuration>
                             <tasks>
                                 <unjar overwrite="false" dest="${basedir}/target/classes">
-                                    <fileset dir="${basedir}/..">
-                                        <include name="*/target/openjpa-*.jar" />
-                                        <exclude name="*/target/openjpa-examples-*.jar" />
-                                        <exclude name="**/*-sources.jar" />
-                                        <exclude name="**/*-javadoc.jar" />
+                                    <fileset dir="${basedir}/../openjpa">
+                                        <include name="target/openjpa-${project.version}.jar" />
                                     </fileset>
                                 </unjar>
-
-                                <!--
-                                    need to manually concatinate the services 
-                                    resources so they are aggregated
-                                -->
-                                <macrodef name="aggregate-file">
-                                   <attribute name="servicename" />
-                                    <sequential>
-                                        <echo>Building service: @{servicename}</echo>
-                                        <concat destfile="${basedir}/target/classes/META-INF/services/@{servicename}">
-                                            <fileset dir="${basedir}/.." includes="*/src/main/resources/META-INF/services/@{servicename}" />
-                                        </concat>
-                                    </sequential>
-                                </macrodef>
-
-                                <aggregate-file servicename="org.apache.openjpa.lib.conf.ProductDerivation" />
-                                <aggregate-file servicename="javax.persistence.spi.PersistenceProvider" />
-                                <aggregate-file servicename="org.apache.openjpa.kernel.exps.ExpressionParser" />
                             </tasks>
                         </configuration>
                         <goals>
@@ -85,65 +62,41 @@
                 </executions>
             </plugin>
 
-            <!--
-                create enhancer pre-main attribute
-            -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-jar-plugin</artifactId>
                 <configuration>
                     <archive>
-                        <manifest>
-                           <mainClass>org.apache.openjpa.conf.OpenJPAVersion</mainClass>
-                        </manifest>
-                        <manifestEntries>
-                            <Premain-Class>
-                                org.apache.openjpa.enhance.PCEnhancerAgent
-                            </Premain-Class>
-                            <Can-Redefine-Classes>true</Can-Redefine-Classes>
-                        </manifestEntries>
+                        <manifestFile>${project.build.outputDirectory}/META-INF/MANIFEST.MF</manifestFile>
                     </archive>
                 </configuration>
+            </plugin>
+
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-shade-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>shade</goal>
+                        </goals>
+                    </execution>
+                </executions>
             </plugin>
         </plugins>
     </build>
     <dependencies>
         <dependency>
             <groupId>org.apache.openjpa</groupId>
-            <artifactId>openjpa-lib</artifactId>
+            <artifactId>openjpa</artifactId>
             <version>${pom.version}</version>
             <scope>provided</scope>
         </dependency>
-        <dependency>
-            <groupId>org.apache.openjpa</groupId>
-            <artifactId>openjpa-kernel</artifactId>
-            <version>${pom.version}</version>
-            <scope>provided</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.openjpa</groupId>
-            <artifactId>openjpa-jdbc</artifactId>
-            <version>${pom.version}</version>
-            <scope>provided</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.openjpa</groupId>
-            <artifactId>openjpa-persistence</artifactId>
-            <version>${pom.version}</version>
-            <scope>provided</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.openjpa</groupId>
-            <artifactId>openjpa-persistence-jdbc</artifactId>
-            <version>${pom.version}</version>
-            <scope>provided</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.openjpa</groupId>
-            <artifactId>openjpa-xmlstore</artifactId>
-            <version>${pom.version}</version>
-            <scope>provided</scope>
-        </dependency>
+        <!-- 
+            Only include the openjpa.jar required dependencies here, which
+            will be used by maven-shade-plugin to determine the inclusions.
+        -->
         <dependency>
             <groupId>net.sourceforge.serp</groupId>
             <artifactId>serp</artifactId>

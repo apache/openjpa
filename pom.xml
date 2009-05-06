@@ -94,10 +94,11 @@
         <module>openjpa-persistence-jdbc</module>
         <module>openjpa-xmlstore</module>
         <module>openjpa-slice</module>
-        <module>openjpa-all</module>
+        <module>openjpa</module>
         <module>openjpa-project</module>
         <module>openjpa-examples</module>
         <module>openjpa-integration</module>
+        <module>openjpa-all</module>
     </modules>
     <profiles>
         <profile>
@@ -672,6 +673,11 @@
                     <groupId>org.codehaus.mojo</groupId>
                     <artifactId>ianal-maven-plugin</artifactId>
                     <version>1.0-alpha-1</version>
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-shade-plugin</artifactId>
+                    <version>1.2.1</version>
                 </plugin>
             </plugins>
         </pluginManagement>
