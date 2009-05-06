@@ -61,7 +61,8 @@ public class PreparedQueryImpl implements PreparedQuery {
     private boolean _initialized;
     
     // Post-compilation state of an executable query, populated on construction
-    private Class _candidate;
+    private Class<?> _candidate;
+    private Class<?> _resultClass;
     private boolean _subclasses;
     private boolean _isProjection;
     
@@ -94,6 +95,7 @@ public class PreparedQueryImpl implements PreparedQuery {
             _candidate    = compiled.getCandidateType();
             _subclasses   = compiled.hasSubclasses();
             _isProjection = compiled.getProjectionAliases().length > 0;
+            _resultClass  = compiled.getResultType(); 
         }
     }
     
@@ -133,6 +135,7 @@ public class PreparedQueryImpl implements PreparedQuery {
     	q.setQuery(_id);
         if (!_isProjection)
             q.setCandidateType(_candidate, _subclasses);
+        q.setResultType(_resultClass);
     }
 
     /**
