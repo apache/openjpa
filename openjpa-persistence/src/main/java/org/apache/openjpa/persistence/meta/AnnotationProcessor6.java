@@ -250,7 +250,7 @@ public class AnnotationProcessor6 extends AbstractProcessor {
         throws IOException {
         Filer filer = processingEnv.getFiler();
         JavaFileObject javaFile = filer.createSourceFile(metaClass, e);
-        log(_loc.get("mmg-process", metaClass, javaFile.toUri()).getMessage());
+        log(_loc.get("mmg-process", javaFile.toUri()).getMessage());
         OutputStream out = javaFile.openOutputStream();
         PrintWriter writer = new PrintWriter(out);
         return writer;

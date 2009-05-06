@@ -93,17 +93,14 @@ public class SourceAnnotationHandler
 		this.processingEnv = processingEnv;
 	}
 
-	@Override
 	public int determineTypeAccess(TypeElement t) {
 		return 0;
 	}
-
-	@Override
+	
 	public int determineMemberAccess(Element m) {
 		return 0;
 	}
 
-	@Override
 	public List<Exception> validateAccess(TypeElement t) {
 		return null;
 	}
@@ -117,7 +114,7 @@ public class SourceAnnotationHandler
      * Scans relevant @AccessType annotation and field/method as per JPA
      * specification to determine the candidate set of field/methods.
      */
-	@Override
+	
     public Set<Element> getPersistentMembers(TypeElement type) {
         AccessType access = getExplicitAccessType(type);
         boolean isExplicit = access != null;
@@ -161,7 +158,6 @@ public class SourceAnnotationHandler
         return merge(filter(allMembers, fieldFilter, nonTransientFilter, 
         	fieldAccessFilter), getters);
     }
-
     
     private Set<Element> getDefaultAccessPersistentMembers(TypeElement type) {
         Set<Element> result = new HashSet<Element>();
@@ -497,7 +493,7 @@ public class SourceAnnotationHandler
             for (AnnotationMirror mirror : mirrors) {
                 String name = mirror.getAnnotationType().toString();
                 if (startsWith(name, "javax.persistence.")
-                 || startsWith(name, "openjpa."))
+                 || startsWith(name, "org.apache.openjpa."))
                     return true;
             }
             return false;
@@ -593,7 +589,6 @@ public class SourceAnnotationHandler
             ? null : params.get(index);
     }
 
-    @Override
     public TypeElement getPersistentSupertype(TypeElement cls) {
         TypeMirror sup = cls.getSuperclass();
         if (sup == null || isRootObject(sup))
@@ -649,8 +644,8 @@ public class SourceAnnotationHandler
     
     /**
      * Affirms if the given method matches the following signature
-     * <code> public boolean isXXX() </code>
-     * <code> public Boolean isXXX() </code>
+     * <code> public boolean isXyz() </code>
+     * <code> public Boolean isXyz() </code>
      */
     public static boolean isBooleanGetter(ExecutableElement method) {
     	String methodName = method.getSimpleName().toString();
