@@ -25,6 +25,7 @@ import org.apache.openjpa.persistence.test.SQLListenerTestCase;
  */
 public class TestTypesafeCriteria extends SQLListenerTestCase {
     CriteriaBuilder cb;
+    CriteriaQuery c;
     EntityManager em;
     
     public void setUp() {
@@ -32,6 +33,8 @@ public class TestTypesafeCriteria extends SQLListenerTestCase {
         setDictionary();
         cb = (CriteriaBuilder)emf.getQueryBuilder();
         em = emf.createEntityManager();
+        
+        c = cb.create();
     }
     
     void setDictionary() {
@@ -46,6 +49,14 @@ public class TestTypesafeCriteria extends SQLListenerTestCase {
         CriteriaQuery c = cb.create();
         Root<Account> account = c.from(Account.class);
         c.select(account);
+        
+        assertEquivalence(c, jpql);
+    }
+    
+    public void testImplicitRoot() {
+    	String jpql = "select a from Account a";
+        CriteriaQuery c = cb.create();
+        c.from(Account.class);
         
         assertEquivalence(c, jpql);
     }
@@ -98,6 +109,13 @@ public class TestTypesafeCriteria extends SQLListenerTestCase {
         assertEquivalence(c, jpql);
     }
 
+    public void testInPredicate() {
+    	String jpql = "select a from Account a where a.owner in ('X','Y','Z')";
+        CriteriaQuery c = cb.create();
+        Root<Account> account = c.from(Account.class);
+        c.where(cb.in(account.get(Account_.owner)).value("X").value("Y").value("Z"));
+        assertEquivalence(c, jpql);
+    }
     
     public void testBinaryPredicate() {
     	String jpql = "select a from Account a where a.balance>100 and a.balance<200";

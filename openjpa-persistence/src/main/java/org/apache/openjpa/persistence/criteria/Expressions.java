@@ -24,6 +24,7 @@ import java.util.Collection;
 import java.util.List;
 
 import javax.persistence.criteria.Expression;
+import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.QueryBuilder;
 import javax.persistence.criteria.QueryBuilder.Trimspec;
 
@@ -700,12 +701,45 @@ public class Expressions {
         }
     }
     
-    public static class In<T> extends PredicateImpl 
+    public static class IsNull extends PredicateImpl {
+    	ExpressionImpl<?> e;
+    	public IsNull(ExpressionImpl<?> e) {
+    		super();
+    		this.e = e;
+    	}
+    	
+    	@Override
+        org.apache.openjpa.kernel.exps.Expression toKernelExpression(
+            ExpressionFactory factory, MetamodelImpl model) {
+    		return factory.equal(
+    			Expressions.toValue(e, factory, model), 
+    			factory.getNull());
+    	}
+    }
+    
+    public static class IsNotNull extends PredicateImpl {
+    	ExpressionImpl<?> e;
+    	public IsNotNull(ExpressionImpl<?> e) {
+    		super();
+    		this.e = e;
+    	}
+    	
+    	@Override
+        org.apache.openjpa.kernel.exps.Expression toKernelExpression(
+            ExpressionFactory factory, MetamodelImpl model) {
+    		return factory.notEqual(
+    			Expressions.toValue(e, factory, model), 
+    			factory.getNull());
+    	}
+    }
+    
+    
+    public static class In<T> extends PredicateImpl.Or 
     	implements QueryBuilder.In<T> {
-    	private List<Expression<? extends T>> values = 
-    		new ArrayList<Expression<? extends T>>();
+    	ExpressionImpl<?> e;
     	public In(Expression<?> e) {
-    		super(null);
+    		super((Predicate[])null);
+    		this.e = (ExpressionImpl<?>)e;
     	}
     	
     	public Expression<T> getExpression() {
@@ -713,12 +747,22 @@ public class Expressions {
     	}
 
     	public In<T> value(T value) {
-        	return value(new Constant<T>(value));
+    		add(new Expressions.Equal(e,value));
+        	return this;
     	}
 
     	public In<T> value(Expression<? extends T> value) {
-        	values.add(value); 
+    		add(new Expressions.Equal(e,value));
         	return this;
+    	}
+    
+    	@Override
+        org.apache.openjpa.kernel.exps.Expression toKernelExpression(
+            ExpressionFactory factory, MetamodelImpl model) {
+    		IsNotNull notNull = new Expressions.IsNotNull(e);
+    		return factory.and(
+     		    super.toKernelExpression(factory, model),
+    		    notNull.toKernelExpression(factory, model));
     	}
     }
 }

@@ -44,8 +44,10 @@ public class PredicateImpl extends ExpressionImpl<Boolean>
     
     protected PredicateImpl(BooleanOperator op, Predicate...restrictions) {
 		this(op);
-		for (Predicate p : restrictions)
-			add((PredicateImpl)p);
+		if (restrictions != null) {
+			for (Predicate p : restrictions)
+				add((PredicateImpl)p);
+		}
 	}
 
     public PredicateImpl add(Expression<Boolean> s) {
@@ -70,7 +72,8 @@ public class PredicateImpl extends ExpressionImpl<Boolean>
     public PredicateImpl negate() {
         PredicateImpl not = new PredicateImpl(_op);
         not._negated = true;
-        not._exps = new ArrayList<Expression<Boolean>>(this._exps);
+        if (_exps != null)
+        	not._exps = new ArrayList<Expression<Boolean>>(this._exps);
         not._op = this._op;
         return not;
     }
@@ -90,13 +93,14 @@ public class PredicateImpl extends ExpressionImpl<Boolean>
     		org.apache.openjpa.kernel.exps.Expression ke2 = 
     			e2.toKernelExpression(factory, model);
     		org.apache.openjpa.kernel.exps.Expression result = 
-    			_op == BooleanOperator.AND ?
-    			factory.and(ke1,ke2) : factory.or(ke1, ke2);
+    			_op == BooleanOperator.AND 
+    			? factory.and(ke1,ke2) : factory.or(ke1, ke2);
 
     		for (int i = 2; i < _exps.size(); i++) {
     			ExpressionImpl<?> e = (ExpressionImpl<?>)_exps.get(i);
-    			result = factory.and(result, 
-    				e.toKernelExpression(factory, model));
+    			result = _op == BooleanOperator.AND 
+                ? factory.and(result, e.toKernelExpression(factory, model))
+    		    : factory.or(result, e.toKernelExpression(factory, model));
     		}
     		return _negated ? factory.not(result) : result;
     }
@@ -119,7 +123,7 @@ public class PredicateImpl extends ExpressionImpl<Boolean>
     	}
     	
     	public Or(Predicate...restrictions) {
-    		super(BooleanOperator.AND, restrictions);
+    		super(BooleanOperator.OR, restrictions);
     	}
     }
 }

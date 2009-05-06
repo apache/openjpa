@@ -23,6 +23,7 @@ import java.util.Collection;
 
 import javax.persistence.criteria.Expression;
 import javax.persistence.criteria.Predicate;
+import javax.persistence.criteria.QueryBuilder.In;
 
 import org.apache.openjpa.kernel.exps.ExpressionFactory;
 import org.apache.openjpa.kernel.exps.Value;
@@ -60,32 +61,37 @@ public abstract class ExpressionImpl<X> extends SelectionImpl<X>
     }
 
     public Predicate in(Object... values) {
-        // TODO Auto-generated method stub
-        throw new AbstractMethodError();
+        In<X> result = new Expressions.In<X>(this);
+        for (Object v : values)
+        	result.value((X)v);
+        return result;
     }
 
     public Predicate in(Expression<?>... values) {
-        // TODO Auto-generated method stub
-        throw new AbstractMethodError();
+        In<X> result = new Expressions.In<X>(this);
+        for (Expression<?> e : values)
+        	result.value((Expression<? extends X>)e);
+        return result;
     }
 
     public Predicate in(Collection<?> values) {
-        // TODO Auto-generated method stub
-        throw new AbstractMethodError();
+        In<X> result = new Expressions.In<X>(this);
+        for (Object e : values)
+        	result.value((X)e);
+        return result;
     }
 
     public Predicate in(Expression<?> values) {
-        // TODO Auto-generated method stub
-        throw new AbstractMethodError();
+        In<X> result = new Expressions.In<X>(this);
+        result.value((Expression<? extends X>)values);
+        return result;
     }
 
     public Predicate isNotNull() {
-        // TODO Auto-generated method stub
-        throw new AbstractMethodError();
+    	return new Expressions.IsNotNull(this);
     }
 
     public Predicate isNull() {
-        // TODO Auto-generated method stub
-        throw new AbstractMethodError();
+    	return new Expressions.IsNull(this);
     }
 }
