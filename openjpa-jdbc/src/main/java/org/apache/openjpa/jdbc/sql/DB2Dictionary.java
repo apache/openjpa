@@ -291,6 +291,7 @@ public class DB2Dictionary
         switch (db2ServerType) {
         case  db2ZOSV8xOrLater:
             // DB2 Z/OS 
+            supportsQueryTimeout = false;  // can only be set to 0 on z/OS
             characterColumnSize = 255;
             lastGeneratedKeyQuery = "SELECT IDENTITY_VAL_LOCAL() FROM "
                 + "SYSIBM.SYSDUMMY1";
@@ -393,7 +394,6 @@ public class DB2Dictionary
        return (databaseProductVersion.indexOf("DSN") != -1
             || databaseProductName.indexOf("DB2/") == -1)
             && maj >= 8;
-           
     }
 
     public boolean isDB2ISeriesV5R3OrEarlier() {
