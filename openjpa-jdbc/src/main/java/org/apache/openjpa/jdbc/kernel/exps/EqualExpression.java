@@ -62,7 +62,7 @@ class EqualExpression
                     new FilterValueImpl(sel, ctx, bstate.state1, val1),
                     new FilterValueImpl(sel, ctx, bstate.state2, val2));
             } else {
-                int len = java.lang.Math.max(val1.length(sel, ctx, 
+                int len = java.lang.Math.min(val1.length(sel, ctx, 
                     bstate.state1), val2.length(sel, ctx, bstate.state2));
                 for (int i = 0; i < len; i++) {
                     if (i > 0)

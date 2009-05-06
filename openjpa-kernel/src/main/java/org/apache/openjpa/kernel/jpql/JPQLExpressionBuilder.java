@@ -460,15 +460,17 @@ public class JPQLExpressionBuilder
             // schema's alias, then do not treat it as a projection
             if (selectCount == 1 && selectChild != null &&
                 selectChild.getChildCount() == 1 &&
-                onlyChild(selectChild) != null &&
-                assertSchemaAlias().
-                    equalsIgnoreCase(onlyChild(selectChild).text)) {
-                return null;
-            } else {
-                // JPQL does not filter relational joins for projections
-                exps.distinct &= ~exps.DISTINCT_AUTO;
-                return assignProjections(expNode, exps);
-            }
+                onlyChild(selectChild) != null) {
+                JPQLNode child = onlyChild(selectChild);
+                if (child.id == JJTSCALAREXPRESSION)
+                    child = onlyChild(child);
+                if (assertSchemaAlias().
+                    equalsIgnoreCase(child.text)) 
+                    return null;
+            } 
+            // JPQL does not filter relational joins for projections
+            exps.distinct &= ~exps.DISTINCT_AUTO;
+            return assignProjections(expNode, exps);
         }
     }
 
