@@ -1580,8 +1580,7 @@ public class EntityManagerImpl
     }
 
     public Metamodel getMetamodel() {
-        throw new UnsupportedOperationException(
-        "JPA 2.0 - Method not yet implemented");
+        return _emf.getMetamodel();
     }
 
     public void setProperty(String arg0, Object arg1) {
