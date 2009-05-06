@@ -30,21 +30,83 @@
     			Incompatibilities
     		</title>
     		<para>
-    		The following list indicates changes that are incompatible between
+    		The following sections indicate changes that are incompatible between
     		OpenJPA 1.x.x releases and the 2.0 release. Some of these may
     		require application changes.
-    			<orderedlist>
-    				<listitem>
-    					<para>
+    		</para>
+    		<section id="getProperties">
+    			<title>
+    				getProperties()
+    			</title>
+    			<para>
     					The OpenJPAEntityManagerFactory interface getProperties()
     					method was changed to return a Map instead of a
     					Properties object. This change was made in order to
     					support the getProperties() method defined in the 2.0
     					JPA specification.
     					</para>
-    				</listitem>
-    			</orderedlist>
-    		</para>
+    		</section>
+    		<section id="migration_detach_behavior">
+    			<title>
+    				Detach Behavior
+    			</title>
+    			<para>
+    			The detach behavior has changed in several ways:
+					<itemizedlist>
+						<listitem>
+							<para>
+							In the 1.x.x release, managed entities
+							were flushed to the database as part of the
+							detach operation. This is no longer done in
+							2.0.
+							</para>
+						</listitem>
+						<listitem>
+							<para>
+							In the 1.x.x release, entities were copied
+							and returned. In 2.0, for those methods
+							that have return values, the original
+							entities are returned.
+							</para>
+						</listitem>
+						<listitem>
+							<para>
+							In the 1.x.x release, managed entities still
+							exist in the persistent context. In 2.0,
+							they are removed.
+							</para>
+						</listitem>
+						<listitem>
+							<para>
+							In the 1.x.x release, the detach operation
+							is recursively cascaded to all referenced
+							entities. In 2.0, the detach operation is
+							only cascade to those entities for which
+							Cascade=detach has been specified.
+							</para>
+						</listitem>
+					</itemizedlist>
+    			</para>
+    			<para>
+    				It is possible to revert back to the 1.x.x behavior for
+    				some of these items by setting the openjpa.Compatibility
+    				property as follows:
+    				<simplelist>
+    					<member>CopyOnDetach=true</member>
+    					<member>FlushBeforeDetach=true</member>
+    					<member>CascadeWithDetach=true</member>
+    				</simplelist>
+    			</para>
+    			<para>
+    				In addition, a new method has been provided on the
+    				<ulink url="../javadoc/org/apache/openjpa/persistence/OpenJPAEntityManager.html">
+					<classname>OpenJPAEntityManager</classname></ulink>
+    				interface to return a copy of the entity:
+    				<programlisting>
+					public &lt;T&gt; T detachCopy(T pc):
+					</programlisting>
+				</para>
+    		</section>
     	</section>
     </section>
 </appendix>

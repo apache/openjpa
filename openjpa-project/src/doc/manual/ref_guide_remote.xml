@@ -35,7 +35,8 @@
         </see>
     </indexterm>
     <para>
-The standard JPA runtime environment is <emphasis>local</emphasis> and
+The standard JPA runtime environment was originally just 
+<emphasis>local</emphasis> and 
 <emphasis>online</emphasis>. It is <emphasis>local</emphasis> in that components
 such as <classname>EntityManager</classname>s and queries connect directly to
 the datastore and execute their actions in the same JVM as the code using them.
@@ -43,13 +44,16 @@ It is <emphasis>online</emphasis> in that all changes to managed objects must be
 made in the context of an active <classname> EntityManager</classname>. These
 two properties, combined with the fact that <classname>
 EntityManager</classname>s cannot be serialized for storage or network transfer,
-make the standard JPA runtime difficult to incorporate into some enterprise and
+made the standard JPA runtime difficult to incorporate into some enterprise and
 client/server program designs.
     </para>
     <para>
-OpenJPA extends the standard runtime to add <emphasis>remote</emphasis> and
-<emphasis>offline</emphasis> capabilities in the form of enhanced
-<link linkend="ref_guide_detach">Detach and Attach APIs</link> and
+JPA has now provided <emphasis>offline</emphasis> capability through the 
+detach() and merge() methods on the EntityManager interface. OpenJPA has
+extended this to include additional detach...() and merge...() methods. All of
+these are documented in 
+<link linkend="ref_guide_detach">Detach and Attach APIs</link>. In addition,
+OpenJPA has added <emphasis>remote</emphasis> capability in the form of
 <link linkend="ref_guide_event">Remote Commit Events</link>. The following
 sections explain these capabilities in detail.
     </para>
@@ -87,80 +91,51 @@ OpenJPA's enhancements to the standard behavior.
                     behavior
                 </secondary>
             </indexterm>
+<note>
+<para>
+In version 2.0, the detach behavior has changed from the previous
+version. See the migration section
+<link linkend="migration_detach_behavior">Detach Behavior</link> for details.
+</para>
+</note>
             <para>
 In JPA, objects detach automatically when they are serialized or when a
 <link linkend="jpa_overview_emfactory_perscontext">persistence context</link>
-ends. The specification does not define any way to explicitly detach objects.
-The extended
+ends. The specification also allows objects to be explicitly detached using
+the following javax.persistence.EntityManager method:
+</para>
+<programlisting>
+public void detach(Object)
+</programlisting>
+			<para>
 <ulink url="../javadoc/org/apache/openjpa/persistence/OpenJPAEntityManager.html">
-<classname>OpenJPAEntityManager</classname></ulink>, however, allows you to
-explicitly detach objects at any time.
+<classname>OpenJPAEntityManager</classname></ulink>, however, provides
+additional detach methods.
             </para>
 <programlisting>
-public Object detach(Object pc):
+public &lt;T&gt; T detachCopy(T pc):
 public Object[] detachAll(Object... pcs):
 public Collection detachAll(Collection pcs):
 </programlisting>
-            <para>
-Each detach method returns detached copies of the given instances. The copy
-mechanism is similar to serialization, except that only certain fields are
-traversed. We will see how to control which fields are detached in a later
-section.
-            </para>
-            <para>
-            <indexterm>
-                <primary>
-                    detachment
-                </primary>
-                <secondary>
-                    of dirty objects
-                </secondary>
-            </indexterm>
-When detaching an instance that has been modified in the current transaction
-(and thus made dirty), the current transaction is flushed. This means that when
-subsequently re-attaching the detached instances, OpenJPA assumes that the
-transaction from which they were originally detached was committed; if it has
-been rolled back, then the re-attachment process will throw an optimistic
-concurrency exception.
-            </para>
-            <para>
-You can stop OpenJPA from assuming the transaction will commit in the following
-ways :
-    <itemizedlist>
-        <listitem>
-            <para>
-                Invoke <methodname>EntityTransaction.setRollbackOnly
-                </methodname> prior to detaching your objects. Setting the 
-                <literal>RollbackOnly</literal> flag prevents OpenJPA from 
-                flushing when detaching dirty objects; instead OpenJPA just 
-                runs its pre-flush actions (see the 
-                <methodname>OpenJPAEntityManager.preFlush</methodname>
-<ulink url="../javadoc/org/apache/openjpa/persistence/OpenJPAEntityManager.html">
-Javadoc</ulink> for details).
-            </para>
-            <para>
-This allows you to use the same instances in multiple
-attach/modify/detach/rollback cycles. 
-            </para>
-        </listitem>
-        <listitem>
-            <para>
-                Make your modifications outside of a transaction (with <literal>
-NontransactionalWrite</literal> enabled) before detaching.
-            </para>
-        </listitem>
-        <listitem>
-            <para>
-            Set <literal>flushBeforeDetach</literal> 
-            to false (see <methodname>Compatibility.setFlushBeforeDetach
-            </methodname>
-            <ulink url="../javadoc/org/apache/openjpa/conf/Compatibility.html">
-Javadoc</ulink> ). This option is similar to the first option, but does not
-            affect the current transaction.
-            </para>
-        </listitem>
-    </itemizedlist>
-    </para>
+<para>
+The behavior of the detach operation is as follows:
+<itemizedlist>
+	<listitem>
+		The detached objects are removed from the persistent context.
+	</listitem>
+	<listitem>
+		The objects are <emphasis>not</emphasis> flushed to the database.
+	</listitem>
+	<listitem>
+		If Cascade=detach is specified for a referenced entity, the detach
+		operation is cascaded. Otherwise, it is not.
+	</listitem>
+	<listitem>
+		For the detachCopy method only, the entity is copied for the return
+		value.
+	</listitem>
+</itemizedlist>
+</para>
         </section>
         <section id="ref_guide_attach_behavior">
             <title>
