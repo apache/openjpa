@@ -1,0 +1,1 @@
+svn status | grep -v ?
