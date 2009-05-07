@@ -87,6 +87,7 @@
                       <excludes>
                         <exclude>**/AnnotationProcessor6.java</exclude>
                         <exclude>**/SourceAnnotationHandler.java</exclude>
+                        <exclude>**/CompileTimeLogger.java</exclude>
                       </excludes>
 		            </configuration>
 		        </plugin>
