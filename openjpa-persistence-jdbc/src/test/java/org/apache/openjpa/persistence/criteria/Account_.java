@@ -7,7 +7,6 @@ package org.apache.openjpa.persistence.criteria;
 import javax.persistence.metamodel.Attribute;
 
 @javax.persistence.metamodel.TypesafeMetamodel(value=org.apache.openjpa.persistence.criteria.Account.class)
-@javax.annotation.Generated(value="org.apache.openjpa.persistence.meta.AnnotationProcessor6",date="Wed May 06 19:05:08 CDT 2009")
 public class Account_ {
     public static volatile Attribute<Account,Integer> balance;
     public static volatile Attribute<Account,Long> id;
