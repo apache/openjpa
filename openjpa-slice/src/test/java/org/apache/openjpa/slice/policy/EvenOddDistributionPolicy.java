@@ -20,7 +20,9 @@ package org.apache.openjpa.slice.policy;
 
 import java.util.List;
 
+import org.apache.openjpa.slice.Car;
 import org.apache.openjpa.slice.DistributionPolicy;
+import org.apache.openjpa.slice.Manufacturer;
 
 import org.apache.openjpa.slice.*;
 
@@ -35,7 +37,20 @@ public class EvenOddDistributionPolicy implements DistributionPolicy {
         	char firstChar = Character.toLowerCase(name.charAt(0));
         	return (firstChar >= 'a' && firstChar <='m') ? "Even" : "Odd";
         }
+        if (pc instanceof Car)
+            return distribute((Car)pc);
+        if (pc instanceof Manufacturer)
+            return distribute((Manufacturer)pc);
+        
         return null;
+    }
+    
+    String distribute(Car car) {
+        return "Even";
+    }
+    
+    String distribute(Manufacturer maker) {
+        return "Odd";
     }
 
 }

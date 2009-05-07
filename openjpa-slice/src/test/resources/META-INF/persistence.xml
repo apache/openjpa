@@ -105,6 +105,8 @@
         <class>org.apache.openjpa.slice.Person</class>
         <class>org.apache.openjpa.slice.Address</class>
         <class>org.apache.openjpa.slice.Country</class>
+        <class>org.apache.openjpa.slice.Car</class>
+        <class>org.apache.openjpa.slice.Manufacturer</class>
         <properties>
             <property name="openjpa.BrokerFactory" value="slice"/>
             <property name="openjpa.ConnectionDriverName" value="org.apache.derby.jdbc.EmbeddedDriver"/>

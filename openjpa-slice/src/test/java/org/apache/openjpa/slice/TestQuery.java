@@ -41,7 +41,8 @@ public class TestQuery extends SliceTestCase {
     }
 
     public void setUp() throws Exception {
-        super.setUp(PObject.class, Person.class, Address.class, Country.class, 
+        super.setUp(PObject.class, Person.class, Address.class, Country.class,
+                Car.class, Manufacturer.class,
         		CLEAR_TABLES);
         int count = count(PObject.class);
         if (count == 0) {
@@ -223,6 +224,59 @@ public class TestQuery extends SliceTestCase {
         assertEquals("Odd", SlicePersistence.getSlice(p));
         assertEquals("Rome", p.getAddress().getCity());
         em.getTransaction().rollback();
+    }
+    
+    /**
+     * Verifies that a lazy relation can be stored across different slices i.e.
+     * collocation constraint can be violated under some restrictions.
+     * 
+     * Car refers to Manufacturer. The relationship is uni-directional, no
+     * cascade and most importantly lazy. 
+     * The distribution policy is designed to store Car and Manufacturer 
+     * *always* in different slices. 
+     * 
+     */
+    public void testCollocationConstraintViolation() {
+        // This transaction will store Manufacturer only
+        EntityManager em = emf.createEntityManager();
+        em.getTransaction().begin();
+        Manufacturer bmw = new Manufacturer();
+        bmw.setName("BMW");
+        em.persist(bmw);
+        em.getTransaction().commit();
+        
+        // This transaction will store a Car in a slice but the Car is related 
+        // to a Manufacturer that *always* reside in a different slice. 
+        em.getTransaction().begin();
+        Car z4 = new Car(); 
+        z4.setVin("1234V56789");
+        z4.setMaker(bmw);
+        z4.setModel("Z4");
+        em.persist(z4);
+        em.getTransaction().commit();
+        em.clear();
+        
+        // Verify that all cars are stored in "Even" slice
+        List cars = em.createQuery("select c from Car c").getResultList();
+        assertFalse(cars.isEmpty());
+        for (Object c : cars)
+            assertEquals("Even", SlicePersistence.getSlice(c));
+        
+        // While all Manufacturers are stored in "Odd" slice.
+        List makers = em.createQuery("select m from Manufacturer m").getResultList();
+        assertFalse(makers.isEmpty());
+        for (Object m : makers)
+            assertEquals("Odd", SlicePersistence.getSlice(m));
+        em.clear();
+        
+        // Now query for cars. The related manufacturer will be fetched
+        // correctly, though it resides in a different slice because the
+        // relationship is lazy and hence two separate SQLs are issued for
+        // Car and Manufacturer rather than a single SQL with JOIN.
+        cars = em.createQuery("select c from Car c").getResultList();
+        assertFalse(cars.isEmpty());
+        for (Object c : cars)
+            assertNotNull(((Car)c).getMaker());
     }
     
     void assertValidResult(List result) {
