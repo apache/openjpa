@@ -19,11 +19,15 @@
 package org.apache.openjpa.persistence.criteria;
 
 import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
 import javax.persistence.Table;
 
 @Entity
 @Table(name="CR_STUDENT")
 
 public class Student {
+    @Id
+    private String name;
 
 }

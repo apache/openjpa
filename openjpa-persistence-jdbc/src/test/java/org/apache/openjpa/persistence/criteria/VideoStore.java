@@ -19,6 +19,8 @@
 package org.apache.openjpa.persistence.criteria;
 
 import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
 import javax.persistence.Table;
 
 /**
@@ -29,5 +31,7 @@ import javax.persistence.Table;
 @Entity
 @Table(name="CR_VIDEOSTORE")
 public class VideoStore {
+    @Id
+    private String name;
 
 }

@@ -149,6 +149,10 @@ public class TestTypesafeCriteria extends SQLListenerTestCase {
         assertEquivalence(c, jpql);
     }
 
+    public void testSimpleJoin() {
+        CriteriaQuery c = cb.create();
+//        c.from(Account.class).join(Account_.history)
+    }
     
     
     void assertEquivalence(CriteriaQuery c, String jpql) {

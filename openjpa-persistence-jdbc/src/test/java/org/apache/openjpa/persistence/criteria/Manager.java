@@ -24,6 +24,6 @@ import javax.persistence.Table;
 @Entity
 @Table(name="CR_MANAGER")
 
-public class Manager {
-
+public class Manager extends Employee {
+    private String cabin;
 }
