@@ -65,7 +65,7 @@ import org.apache.openjpa.persistence.util.SourceCode;
     "javax.persistence.Entity",
     "javax.persistence.Embeddable", 
     "javax.persistence.MappedSuperclass" })
-@SupportedOptions( { "log", "out" })
+@SupportedOptions( { "log", "out", "source" })
 @SupportedSourceVersion(RELEASE_6)
 
 public class AnnotationProcessor6 extends AbstractProcessor {
@@ -244,13 +244,32 @@ public class AnnotationProcessor6 extends AbstractProcessor {
         SourceCode.Class cls = source.getTopLevelClass();
         cls.addAnnotation(TypesafeMetamodel.class.getName())
             .addArgument("value", originalClass + ".class", false);
-        cls.addAnnotation(Generated.class.getName())
-           .addArgument("value", this.getClass().getName())
-           .addArgument("date", new Date().toString());
+        if (getSourceVersion() >= 6) {
+            cls.addAnnotation(Generated.class.getName())
+            .addArgument("value", this.getClass().getName())
+            .addArgument("date", new Date().toString());
+        }
     }
     
     private void comment(SourceCode source) {
         source.addComment(false, _loc.get("mmg-tool-sign").getMessage());
+    }
+    
+    /**
+     * Parse annotation processor option <code>-Asource=n</code> to detect
+     * the source version for the generated classes. 
+     * n must be a integer. Default or wrong specification returns 6.
+     */
+    private int getSourceVersion() {
+        String version = processingEnv.getOptions().get("source");
+        if (version != null) {
+            try {
+                return Integer.parseInt(version);
+            } catch (NumberFormatException e) {
+            
+            }
+        }
+        return 6;
     }
     
     private PrintWriter createSourceFile(String metaClass, TypeElement e) 
