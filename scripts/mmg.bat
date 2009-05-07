@@ -19,10 +19,10 @@ set VERSION=1.0-EA2-SNAPSHOT
 set JPA_LIB=%M_REPO%\org\apache\geronimo\specs\%SPEC%\%VERSION%\%SPEC%-%VERSION%.jar
 
 set CLASSPATH=%JPA_LIB%
-set CLASSPATH=%CLASSPATH%;.\openjpa-lib\target\classes
-set CLASSPATH=%CLASSPATH%;.\openjpa-persistence\src\main\resources
-set CLASSPATH=%CLASSPATH%;.\openjpa-persistence\target\classes
-set CLASSPATH=%CLASSPATH%;.\openjpa-kernel\target\classes
+set CLASSPATH=%CLASSPATH%;..\openjpa-lib\target\classes
+set CLASSPATH=%CLASSPATH%;..\openjpa-persistence\src\main\resources
+set CLASSPATH=%CLASSPATH%;..\openjpa-persistence\target\classes
+set CLASSPATH=%CLASSPATH%;..\openjpa-kernel\target\classes
 
 %JAVAC% -cp %CLASSPATH% @mmg.options @domain-class.list 
 
