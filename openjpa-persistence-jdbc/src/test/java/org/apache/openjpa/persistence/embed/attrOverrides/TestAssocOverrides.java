@@ -111,6 +111,9 @@ public class TestAssocOverrides  extends SQLListenerTestCase {
         EmergencyContactInfo ecInfo = new EmergencyContactInfo();
         ecInfo.setFName("fName_" + id);
         ecInfo.setLName("lName_" + id);
+        for (int i = 5; i > 0; i--) {
+            ecInfo.addNickName("nickName" + i);
+        }
         Address eaddr = new Address();
         eaddr.setId(addrId++);
         eaddr.setCity("city_" + eaddr.getId());
@@ -173,6 +176,13 @@ public class TestAssocOverrides  extends SQLListenerTestCase {
         List<PhoneNumber> phones = c.getPhoneNumbers();
         for (PhoneNumber p : phones) {
             assertPhoneNumber(p, e.getEmpId());
+        }
+        Collection<String> nickNames = c.getEmergencyContactInfo().
+            getNickNames();
+        int i = 1;
+        for (String nickName : nickNames) {
+            assertEquals("nickName" + i, nickName);
+            i++;
         }
     }
 	

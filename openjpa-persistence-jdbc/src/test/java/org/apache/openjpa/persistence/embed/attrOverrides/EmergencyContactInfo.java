@@ -18,6 +18,9 @@
  */
 package org.apache.openjpa.persistence.embed.attrOverrides;
 
+import java.util.ArrayList;
+import java.util.Collection;
+
 import javax.persistence.*;
 
 
@@ -30,6 +33,10 @@ public class EmergencyContactInfo {
 	
 	@OneToOne
     PhoneNumber phoneNumber; 
+	
+	@ElementCollection
+	@OrderBy
+	Collection<String> nickNames = new ArrayList<String>();
     
     public PhoneNumber getPhoneNumber() {
         return phoneNumber;
@@ -61,5 +68,17 @@ public class EmergencyContactInfo {
     
     public void setLName(String lName) {
     	this.lName = lName;
+    }
+    
+    public Collection<String> getNickNames() {
+        return nickNames;
+    }
+    
+    public void setNickNames(Collection<String> nickNames) {
+        this.nickNames = nickNames;
+    }
+    
+    public void addNickName(String nickName) {
+        nickNames.add(nickName);
     }
 }

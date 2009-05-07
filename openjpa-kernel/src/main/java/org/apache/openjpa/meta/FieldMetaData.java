@@ -1861,6 +1861,7 @@ public class FieldMetaData
         _mappedByIdValue = field._mappedByIdValue;
         _isElementCollection = field._isElementCollection;
         _access = field._access;
+        _orderDec = field._orderDec;
 
         // embedded fields can't be versions
         if (_owner.getEmbeddingMetaData() == null && _version == null)
