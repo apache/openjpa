@@ -2,10 +2,12 @@ package org.apache.openjpa.persistence.meta;
 
 import static javax.lang.model.SourceVersion.RELEASE_6;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Set;
@@ -24,7 +26,11 @@ import javax.lang.model.type.TypeMirror;
 import javax.lang.model.util.Elements;
 import javax.persistence.metamodel.TypesafeMetamodel;
 import javax.tools.Diagnostic;
+import javax.tools.JavaCompiler;
 import javax.tools.JavaFileObject;
+import javax.tools.StandardJavaFileManager;
+import javax.tools.StandardLocation;
+import javax.tools.ToolProvider;
 
 import org.apache.openjpa.lib.util.Localizer;
 import org.apache.openjpa.persistence.util.SourceCode;
@@ -59,12 +65,12 @@ import org.apache.openjpa.persistence.util.SourceCode;
     "javax.persistence.Entity",
     "javax.persistence.Embeddable", 
     "javax.persistence.MappedSuperclass" })
-@SupportedOptions( { "log" })
+@SupportedOptions( { "log", "out" })
 @SupportedSourceVersion(RELEASE_6)
 
 public class AnnotationProcessor6 extends AbstractProcessor {
     private SourceAnnotationHandler handler;
-
+    private CompileTimeLogger logger;
     private static Localizer _loc =
         Localizer.forPackage(AnnotationProcessor6.class);
     private static final String UNDERSCORE = "_";
@@ -143,6 +149,7 @@ public class AnnotationProcessor6 extends AbstractProcessor {
         super.init(processingEnv);
         processingEnv.getMessager().printMessage(Diagnostic.Kind.NOTE, 
             _loc.get("mmg-tool-banner").getMessage());
+        logger = new CompileTimeLogger(processingEnv);
         handler = new SourceAnnotationHandler(processingEnv);
     }
     
@@ -248,17 +255,21 @@ public class AnnotationProcessor6 extends AbstractProcessor {
     
     private PrintWriter createSourceFile(String metaClass, TypeElement e) 
         throws IOException {
-        Filer filer = processingEnv.getFiler();
-        JavaFileObject javaFile = filer.createSourceFile(metaClass, e);
-        log(_loc.get("mmg-process", javaFile.toUri()).getMessage());
+        JavaCompiler compiler = ToolProvider.getSystemJavaCompiler();
+        StandardJavaFileManager mgr = compiler.getStandardFileManager(null, 
+            null, null);
+        String srcOutput = processingEnv.getOptions().get("out");
+        if (srcOutput != null) {
+            mgr.setLocation(StandardLocation.SOURCE_OUTPUT, 
+                    Collections.singletonList(new File(srcOutput)));
+        }
+        
+        JavaFileObject javaFile = mgr.getJavaFileForOutput(
+            StandardLocation.SOURCE_OUTPUT, 
+            metaClass, JavaFileObject.Kind.SOURCE, null);
+        logger.info(_loc.get("mmg-process", javaFile.toUri()).getMessage());
         OutputStream out = javaFile.openOutputStream();
         PrintWriter writer = new PrintWriter(out);
         return writer;
-    }
-
-    private void log(String msg) {
-        if (!processingEnv.getOptions().containsKey("log"))
-            return;
-        processingEnv.getMessager().printMessage(Diagnostic.Kind.NOTE, msg);
     }
 }

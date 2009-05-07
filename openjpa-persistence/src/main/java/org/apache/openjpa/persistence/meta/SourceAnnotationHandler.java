@@ -49,8 +49,8 @@ import javax.persistence.Embeddable;
 import javax.persistence.Entity;
 import javax.persistence.MappedSuperclass;
 import javax.persistence.Transient;
-import javax.tools.Diagnostic;
 import org.apache.openjpa.lib.util.Localizer;
+import org.apache.openjpa.meta.AccessCode;
 import org.apache.openjpa.util.UserException;
 
 /**
@@ -65,7 +65,7 @@ public class SourceAnnotationHandler
     implements MetadataProcessor<TypeElement, Element> {
 	
 	private final ProcessingEnvironment processingEnv;
-	
+	private final CompileTimeLogger logger;
 	/**
      * Set of Inclusion Filters based on member type, access type or transient
      * annotations. Used to determine the subset of available field/method that 
@@ -91,10 +91,16 @@ public class SourceAnnotationHandler
     public SourceAnnotationHandler(ProcessingEnvironment processingEnv) {
 		super();
 		this.processingEnv = processingEnv;
+		this.logger = new CompileTimeLogger(processingEnv);
 	}
 
-	public int determineTypeAccess(TypeElement t) {
-		return 0;
+	public int determineTypeAccess(TypeElement type) {
+        AccessType access = getExplicitAccessType(type);
+        boolean isExplicit = access != null;
+        return isExplicit ? access == AccessType.FIELD 
+                ? AccessCode.EXPLICIT | AccessCode.FIELD
+                : AccessCode.EXPLICIT | AccessCode.PROPERTY
+                : getImplicitAccessType(type);
 	}
 	
 	public int determineMemberAccess(Element m) {
@@ -116,13 +122,13 @@ public class SourceAnnotationHandler
      */
 	
     public Set<Element> getPersistentMembers(TypeElement type) {
-        AccessType access = getExplicitAccessType(type);
-        boolean isExplicit = access != null;
-        
-        return isExplicit ? access == AccessType.FIELD 
-        		? getFieldAccessPersistentMembers(type) 
-        		: getPropertyAccessPersistentMembers(type)
-        		: getDefaultAccessPersistentMembers(type);
+        int access = determineTypeAccess(type);
+        if (AccessCode.isExplicit(access)) {
+            return AccessCode.isField(access) 
+                ? getFieldAccessPersistentMembers(type) 
+        		: getPropertyAccessPersistentMembers(type);
+        }
+        return getDefaultAccessPersistentMembers(type, access);
     }
     
     /**
@@ -159,8 +165,26 @@ public class SourceAnnotationHandler
         	fieldAccessFilter), getters);
     }
     
-    private Set<Element> getDefaultAccessPersistentMembers(TypeElement type) {
+    private Set<Element> getDefaultAccessPersistentMembers(TypeElement type,
+        int access) {
         Set<Element> result = new HashSet<Element>();
+        List<? extends Element> allMembers = type.getEnclosedElements();
+        if (AccessCode.isField(access)) {
+            Set<VariableElement> allFields = (Set<VariableElement>) 
+                filter(allMembers, fieldFilter, nonTransientFilter);
+            result.addAll(allFields);
+        } else {
+            Set<ExecutableElement> allMethods = (Set<ExecutableElement>) 
+               filter(allMembers, methodFilter, nonTransientFilter);
+            Set<ExecutableElement> getters = filter(allMethods, getterFilter); 
+            Set<ExecutableElement> setters = filter(allMethods, setterFilter);
+            getters = matchGetterAndSetter(getters, setters);
+            result.addAll(getters);
+        }
+        return result;
+    }
+    
+    private int getImplicitAccessType(TypeElement type) {
         List<? extends Element> allMembers = type.getEnclosedElements();
         Set<VariableElement> allFields = (Set<VariableElement>) 
            filter(allMembers, fieldFilter, nonTransientFilter);
@@ -168,9 +192,9 @@ public class SourceAnnotationHandler
           filter(allMembers, methodFilter, nonTransientFilter);
 
         Set<VariableElement> annotatedFields = filter(allFields, 
-        	annotatedFilter);
+            annotatedFilter);
         Set<ExecutableElement> getters = filter(allMethods, getterFilter, 
-        	annotatedFilter);
+            annotatedFilter);
         Set<ExecutableElement> setters = filter(allMethods, setterFilter);
         getters = matchGetterAndSetter(getters, setters);
         
@@ -180,15 +204,16 @@ public class SourceAnnotationHandler
         if (isFieldAccess && isPropertyAccess) {
             throw new UserException(_loc.get("access-mixed", type,
                     toString(annotatedFields), toString(getters)));
-    	}    
+        }    
         if (isFieldAccess) {
-            result.addAll(annotatedFields);
+            return AccessCode.FIELD;
         } else if (isPropertyAccess) {
-            result.addAll(getters);
+            return AccessCode.PROPERTY;
         } else {
-            warn(_loc.get("access-none", type).toString());
+            TypeElement superType = getPersistentSupertype(type);
+            return (superType == null)
+                ? AccessCode.FIELD : determineTypeAccess(superType);
         }
-        return result;
     }
     
     Set<Element> merge(Set<? extends Element> a, Set<? extends Element> b) {
@@ -236,7 +261,7 @@ public class SourceAnnotationHandler
                     break;
             }
             if (!matched) {
-                warn(_loc.get("getter-unmatched", getter, 
+                logger.warn(_loc.get("getter-unmatched", getter, 
                     getter.getEnclosingElement()).toString());
                 unmatched.add(getter);
             }
@@ -422,16 +447,6 @@ public class SourceAnnotationHandler
                            .append("Mirror ")
                            .append(mirror.getKind().toString())
                            .append(mirror.toString()).toString();
-    }
-
-    private void log(String msg) {
-        if (!processingEnv.getOptions().containsKey("log"))
-            return;
-        processingEnv.getMessager().printMessage(Diagnostic.Kind.NOTE, msg);
-    }
-
-    private void warn(String msg) {
-        processingEnv.getMessager().printMessage(Diagnostic.Kind.WARNING, msg);
     }
 
     String getPersistentMemberName(Element e) {
