@@ -929,7 +929,7 @@ import org.apache.openjpa.persistence.*;
 ...
 
 OpenJPAEntityManager oem = OpenJPAPersistence.cast(em);
-Extent extent = oem.getExtent(Magazine.class, false);
+Extent extent = oem.createExtent(Magazine.class, false);
 
 // This iterator does not benefit from caching...
 Iterator uncachedIterator = extent.iterator();

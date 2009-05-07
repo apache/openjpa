@@ -345,7 +345,7 @@ import org.apache.openjpa.persistence.*;
 ...
 
 OpenJPAEntityManager kem = OpenJPAPersistence.cast(em);
-Extent&lt;Magazine&gt; mags = kem.getExtent(Magazine.class, false);
+Extent&lt;Magazine&gt; mags = kem.createExtent(Magazine.class, false);
 for (Magazine m : mags)
     processMagazine (m);
 </programlisting>
