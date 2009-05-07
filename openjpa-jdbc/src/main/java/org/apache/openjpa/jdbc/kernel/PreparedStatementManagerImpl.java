@@ -125,8 +125,7 @@ public class PreparedStatementManagerImpl
                         sql).getMessage());
             }
             if (autoAssignColNames != null)
-                populateAutoAssignCols(stmnt, autoAssign, autoAssignColNames, 
-                    row);
+                populateAutoAssignCols(stmnt, autoAssign, row);
             else {
                 StateManagerImpl sm = (StateManagerImpl)row.getPrimaryKey();
                 if (sm != null) {
@@ -168,19 +167,18 @@ public class PreparedStatementManagerImpl
      * sql to select the key will be issued from DBDictionary. 
      */
     protected List populateAutoAssignCols(PreparedStatement stmnt, 
-        Column[] autoAssign, String[] autoAssignColNames, RowImpl row) 
+        Column[] autoAssign, RowImpl row) 
         throws SQLException {
         List vals = null;
         if (_dict.supportsGetGeneratedKeys) {
             // set auto assign values to id col
-            vals = getGeneratedKeys(stmnt, autoAssignColNames);
+            vals = getGeneratedKeys(stmnt, autoAssign);
         }
-        setObjectId(vals, autoAssign, autoAssignColNames, row);
+        setObjectId(vals, autoAssign, row);
         return vals;
     }
 
-    protected void setObjectId(List vals, Column[] autoAssign, 
-        String[] autoAssignColNames, RowImpl row) 
+    protected void setObjectId(List vals, Column[] autoAssign, RowImpl row) 
         throws SQLException{
         OpenJPAStateManager sm = row.getPrimaryKey();
         ClassMapping mapping = (ClassMapping) sm.getMetaData();
@@ -203,13 +201,13 @@ public class PreparedStatementManagerImpl
      * getGeneratedKeys.
      */
     protected List getGeneratedKeys(PreparedStatement stmnt, 
-        String[] autoAssignColNames) 
+        Column[] autoAssign) 
         throws SQLException {
         ResultSet rs = stmnt.getGeneratedKeys();
-        List vals = new ArrayList();
+        List<Object> vals = new ArrayList<Object>();
         while (rs.next()) {
-            for (int i = 0; i < autoAssignColNames.length; i++)
-                vals.add(rs.getObject(autoAssignColNames[i]));
+            for (int i = 0; i < autoAssign.length; i++)
+                vals.add(rs.getObject(i + 1));
         }
         rs.close();
         return vals;
@@ -228,7 +226,8 @@ public class PreparedStatementManagerImpl
             && row.getPrimaryKey() != null) {
             autoAssignColNames = new String[autoAssign.length];
             for (int i = 0; i < autoAssign.length; i++)
-                autoAssignColNames[i] = autoAssign[i].getName();
+                autoAssignColNames[i] =
+                    _dict.convertSchemaCase(autoAssign[i].getName());
         }
         return autoAssignColNames;
     }

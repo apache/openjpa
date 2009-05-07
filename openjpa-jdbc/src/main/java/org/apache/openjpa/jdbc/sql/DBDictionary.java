@@ -3990,7 +3990,7 @@ public class DBDictionary
      * Convert the specified schema name to a name that the database will
      * be able to understand.
      */
-    protected String convertSchemaCase(String objectName) {
+    public String convertSchemaCase(String objectName) {
         if (objectName == null)
             return null;
 
