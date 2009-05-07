@@ -2037,7 +2037,7 @@ public class ClassMetaData
         try {
             oid.getConstructor((Class[]) null);
         } catch (Exception e) {
-            throw new MetaDataException(_loc.get("null-cons", _type)).
+            throw new MetaDataException(_loc.get("null-cons", oid, _type)).
                 setCause(e);
         }
 

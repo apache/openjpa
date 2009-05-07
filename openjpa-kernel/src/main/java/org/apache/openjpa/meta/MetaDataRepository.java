@@ -124,6 +124,8 @@ public class MetaDataRepository
         .synchronizedMap(new HashMap<Class<?>,NonPersistentMetaData>());
     private final Map<Class<?>,NonPersistentMetaData> _nonMapped = Collections
         .synchronizedMap(new HashMap<Class<?>,NonPersistentMetaData>());
+    private final Map<Class<?>, Class<?>> _metamodel = Collections
+        .synchronizedMap(new HashMap<Class<?>, Class<?>>());
     
     // map of classes to lists of their subclasses
     private final Map<Class<?>,List<Class<?>>> _subs = 
@@ -1321,6 +1323,10 @@ public class MetaDataRepository
         Class<?> cls;
         for (String  className : names) {
             cls = classForName(className, clsLoader);
+            if (_factory.isMetaClass(cls)) {
+                setMetaModel(cls);
+                continue;
+            }
             if (cls != null) {
                 classes.add(cls);
 
@@ -1587,6 +1593,53 @@ public class MetaDataRepository
             }
             coll.add(value);
         }
+    }
+    
+    /**
+     * Puts the meta class corresponding to the given entity class.
+     */
+    public void setMetaModel(Class<?> m2) {
+        Class<?> cls = _factory.getManagedClass(m2);
+        if (cls != null)
+            _metamodel.put(cls, m2);
+    }
+    
+    /**
+     * Puts the meta class corresponding to the given persistent class.
+     */
+    public void setMetaModel(ClassMetaData meta, Class<?> m2) {
+        _metamodel.put(meta.getDescribedType(), m2);
+    }
+    
+    /**
+     * Gets the meta class corresponding to the given persistent class.
+     */
+    public Class<?> getMetaModel(ClassMetaData meta, boolean load) {
+        return getMetaModel(meta.getDescribedType(), load);
+    }
+    
+    /**
+     * Gets the meta class corresponding to the given class.
+     * If load is false, returns the meta class if has been set for the given 
+     * persistent class earlier. 
+     * If the load is true then also attempts to apply the current
+     * naming policy to derive meta class name and attempts to load the meta
+     * class.  
+     */
+    public Class<?> getMetaModel(Class<?> entity, boolean load) {
+        if (_metamodel.containsKey(entity))
+            return _metamodel.get(entity);
+        String m2 = _factory.getMetaModelClassName(entity.getName());
+        try {
+            Class<?> m2cls = J2DoPrivHelper.getForNameAction(m2, true, 
+                entity.getClassLoader()).run();
+            _metamodel.put(entity, m2cls);
+            return m2cls;
+        } catch (Throwable t) {
+            if (_log.isWarnEnabled())
+                _log.warn(_loc.get("meta-no-model", m2, entity, t));
+        }
+        return null;
     }
 
     ///////////////////////////////

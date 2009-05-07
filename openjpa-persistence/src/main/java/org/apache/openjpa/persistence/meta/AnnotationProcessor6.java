@@ -1,3 +1,21 @@
+/*
+ * Licensed to the Apache Software Foundation (ASF) under one
+ * or more contributor license agreements.  See the NOTICE file
+ * distributed with this work for additional information
+ * regarding copyright ownership.  The ASF licenses this file
+ * to you under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied.  See the License for the
+ * specific language governing permissions and limitations
+ * under the License.    
+ */
 package org.apache.openjpa.persistence.meta;
 
 import static javax.lang.model.SourceVersion.RELEASE_6;
@@ -14,7 +32,6 @@ import java.util.Set;
 
 import javax.annotation.Generated;
 import javax.annotation.processing.AbstractProcessor;
-import javax.annotation.processing.Filer;
 import javax.annotation.processing.ProcessingEnvironment;
 import javax.annotation.processing.RoundEnvironment;
 import javax.annotation.processing.SupportedAnnotationTypes;
@@ -25,7 +42,6 @@ import javax.lang.model.element.TypeElement;
 import javax.lang.model.type.TypeMirror;
 import javax.lang.model.util.Elements;
 import javax.persistence.metamodel.TypesafeMetamodel;
-import javax.tools.Diagnostic;
 import javax.tools.JavaCompiler;
 import javax.tools.JavaFileObject;
 import javax.tools.StandardJavaFileManager;
@@ -33,6 +49,8 @@ import javax.tools.StandardLocation;
 import javax.tools.ToolProvider;
 
 import org.apache.openjpa.lib.util.Localizer;
+import org.apache.openjpa.meta.MetaDataFactory;
+import org.apache.openjpa.persistence.PersistenceMetaDataFactory;
 import org.apache.openjpa.persistence.util.SourceCode;
 
 /**
@@ -42,6 +60,8 @@ import org.apache.openjpa.persistence.util.SourceCode;
  * This tool is invoked during compilation for JDK6 compiler if OpenJPA and JPA 
  * libraries are specified in the compiler <code>-processorpath</code> option.
  * <br>
+ * Supported options
+ * <LI>
  * For example,<br>
  * <center><code>$ javac -processorpath path/to/openjpa;/path/to/jpa 
  * -s src -Alog mypackage/MyClass.java</code></center>
@@ -65,15 +85,17 @@ import org.apache.openjpa.persistence.util.SourceCode;
     "javax.persistence.Entity",
     "javax.persistence.Embeddable", 
     "javax.persistence.MappedSuperclass" })
-@SupportedOptions( { "log", "out", "source" })
+@SupportedOptions( { "log", "out", "source", "naming" })
 @SupportedSourceVersion(RELEASE_6)
 
 public class AnnotationProcessor6 extends AbstractProcessor {
     private SourceAnnotationHandler handler;
+    private StandardJavaFileManager fileManager;
+    private MetaDataFactory factory;
+    private int generatedSourceVersion = 6;
     private CompileTimeLogger logger;
     private static Localizer _loc =
         Localizer.forPackage(AnnotationProcessor6.class);
-    private static final String UNDERSCORE = "_";
 
     /**
      * Category of members as per JPA 2.0 type system.
@@ -147,10 +169,12 @@ public class AnnotationProcessor6 extends AbstractProcessor {
     @Override
     public synchronized void init(ProcessingEnvironment processingEnv) {
         super.init(processingEnv);
-        processingEnv.getMessager().printMessage(Diagnostic.Kind.NOTE, 
-            _loc.get("mmg-tool-banner").getMessage());
         logger = new CompileTimeLogger(processingEnv);
-        handler = new SourceAnnotationHandler(processingEnv);
+        logger.info(_loc.get("mmg-tool-banner"));
+        setSourceVersion();
+        setFileManager();
+        setNamingPolicy();
+        handler = new SourceAnnotationHandler(processingEnv, logger);
     }
     
     /**
@@ -181,14 +205,17 @@ public class AnnotationProcessor6 extends AbstractProcessor {
         Elements eUtils = processingEnv.getElementUtils();
         String originalClass = eUtils.getBinaryName((TypeElement) e).toString();
         String originalSimpleClass = e.getSimpleName().toString();
-        String metaClass = originalClass + UNDERSCORE;
+        String metaClass = factory.getMetaModelClassName(originalClass);
 
         SourceCode source = new SourceCode(metaClass);
         comment(source);
         annotate(source, originalClass);
         TypeElement supCls = handler.getPersistentSupertype(e);
-        if (supCls != null)
-            source.getTopLevelClass().setSuper(supCls.toString() + UNDERSCORE);
+        if (supCls != null) {
+            String superName = factory.getMetaModelClassName(
+                    supCls.toString());
+            source.getTopLevelClass().setSuper(superName);
+        }
         try {
             PrintWriter writer = createSourceFile(metaClass, e);
             SourceCode.Class modelClass = source.getTopLevelClass();
@@ -244,7 +271,7 @@ public class AnnotationProcessor6 extends AbstractProcessor {
         SourceCode.Class cls = source.getTopLevelClass();
         cls.addAnnotation(TypesafeMetamodel.class.getName())
             .addArgument("value", originalClass + ".class", false);
-        if (getSourceVersion() >= 6) {
+        if (generatedSourceVersion >= 6) {
             cls.addAnnotation(Generated.class.getName())
             .addArgument("value", this.getClass().getName())
             .addArgument("date", new Date().toString());
@@ -260,33 +287,57 @@ public class AnnotationProcessor6 extends AbstractProcessor {
      * the source version for the generated classes. 
      * n must be a integer. Default or wrong specification returns 6.
      */
-    private int getSourceVersion() {
+    private void setSourceVersion() {
         String version = processingEnv.getOptions().get("source");
         if (version != null) {
             try {
-                return Integer.parseInt(version);
+                generatedSourceVersion = Integer.parseInt(version);
             } catch (NumberFormatException e) {
-            
+                logger.warn(_loc.get("mmg-bad-source", version, 6));
+                generatedSourceVersion = 6;
             }
+        } else {
+            generatedSourceVersion = 6;
         }
-        return 6;
     }
     
-    private PrintWriter createSourceFile(String metaClass, TypeElement e) 
-        throws IOException {
+    private void setNamingPolicy() {
+        String policy = processingEnv.getOptions().get("naming");
+        if (policy != null) {
+            try {
+                factory = (MetaDataFactory)Class.forName(policy).newInstance();
+            } catch (Throwable e) {
+                logger.warn(_loc.get("mmg-bad-naming", policy, e));
+                factory = new PersistenceMetaDataFactory();
+            }
+        } else {
+            factory = new PersistenceMetaDataFactory();
+        }
+    }
+    
+    private void setFileManager() {
         JavaCompiler compiler = ToolProvider.getSystemJavaCompiler();
-        StandardJavaFileManager mgr = compiler.getStandardFileManager(null, 
+        fileManager = compiler.getStandardFileManager(null, 
             null, null);
         String srcOutput = processingEnv.getOptions().get("out");
         if (srcOutput != null) {
-            mgr.setLocation(StandardLocation.SOURCE_OUTPUT, 
+            try {
+                fileManager.setLocation(StandardLocation.SOURCE_OUTPUT, 
                     Collections.singletonList(new File(srcOutput)));
+            } catch (Throwable t) {
+                logger.warn(_loc.get("mmg-bad-out", srcOutput, 
+                    StandardLocation.SOURCE_OUTPUT));
+            }
         }
+    }
+
+    private PrintWriter createSourceFile(String metaClass, TypeElement e) 
+        throws IOException {
         
-        JavaFileObject javaFile = mgr.getJavaFileForOutput(
+        JavaFileObject javaFile = fileManager.getJavaFileForOutput(
             StandardLocation.SOURCE_OUTPUT, 
             metaClass, JavaFileObject.Kind.SOURCE, null);
-        logger.info(_loc.get("mmg-process", javaFile.toUri()).getMessage());
+        logger.info(_loc.get("mmg-process", javaFile.toUri()));
         OutputStream out = javaFile.openOutputStream();
         PrintWriter writer = new PrintWriter(out);
         return writer;

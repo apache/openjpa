@@ -126,4 +126,19 @@ public class DelegatingMetaDataFactory
     public void loadXMLMetaData(FieldMetaData fmd) {
         _delegate.loadXMLMetaData(fmd);
     }
+    
+    public String getMetaModelClassName(String managedClassName) {
+        return _delegate.getMetaModelClassName(managedClassName);
+    }
+    public String getManagedClassName(String metamodelClassName) {
+        return _delegate.getManagedClassName(metamodelClassName);
+    }
+    
+    public boolean isMetaClass(Class<?> c) {
+        return _delegate.isMetaClass(c);
+    }
+
+    public Class<?> getManagedClass(Class<?> c) {
+        return _delegate.getManagedClass(c);
+    }
 }

@@ -38,6 +38,7 @@ import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.SqlResultSetMapping;
 import javax.persistence.SqlResultSetMappings;
+import javax.persistence.metamodel.TypesafeMetamodel;
 
 import org.apache.openjpa.lib.conf.Configurable;
 import org.apache.openjpa.lib.conf.Configuration;
@@ -537,5 +538,32 @@ public class PersistenceMetaDataFactory
         AnnotationPersistenceXMLMetaDataParser parser
             = getXMLAnnotationParser();
         parser.parse(fmd);
+    }
+    
+    private static String UNDERSCORE = "_";
+    
+    public String getManagedClassName(String mmClassName) {
+        if (mmClassName == null || mmClassName.length() == 0)
+            return null;
+        if (mmClassName.endsWith(UNDERSCORE))
+            return mmClassName.substring(0, mmClassName.length()-1);
+        return mmClassName;
+    }
+
+    public String getMetaModelClassName(String managedClassName) {
+        if (managedClassName == null || managedClassName.length() == 0)
+            return null;
+        return managedClassName + UNDERSCORE;
+    }
+
+    public boolean isMetaClass(Class<?> c) {
+        return c != null && c.getAnnotation(TypesafeMetamodel.class) != null;
+    }
+    
+    public Class<?> getManagedClass(Class<?> c) {
+        if (isMetaClass(c)) {
+            return c.getAnnotation(TypesafeMetamodel.class).value();
+        }
+        return null;
     }
 }

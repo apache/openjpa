@@ -187,8 +187,7 @@ public class MetamodelImpl implements Metamodel {
     public <X> void populate(Types.Managed<X> type) {
     	try {
     		Class<X> cls = type.getJavaType();
-            Class<?> mcls = J2DoPrivHelper.getForNameAction(cls.getName()+"_", 
-	    	    true, cls.getClassLoader()).run();
+    		Class<?> mcls = repos.getMetaModel(cls, true);
 	    	Field[] fields = mcls.getFields();
 	    	for (Field f : fields) {
 	    		f.set(null, type.getMember(f.getName()));

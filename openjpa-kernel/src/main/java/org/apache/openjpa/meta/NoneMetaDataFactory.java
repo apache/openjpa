@@ -142,4 +142,19 @@ public class NoneMetaDataFactory
     
     public void loadXMLMetaData(FieldMetaData fmd) {
     }
+
+    public String getMetaModelClassName(String managedClassName) {
+        return null;
+    }
+    public String getManagedClassName(String metamodelClassName) {
+        return null;
+    }
+    
+    public boolean isMetaClass(Class<?> c) {
+        return false;
+    }
+
+    public Class<?> getManagedClass(Class<?> c) {
+        return null;
+    }
 }

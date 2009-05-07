@@ -22,6 +22,8 @@ import javax.annotation.processing.Messager;
 import javax.annotation.processing.ProcessingEnvironment;
 import javax.tools.Diagnostic;
 
+import org.apache.openjpa.lib.util.Localizer;
+
 /**
  * Simple logger sets log level from javac compilers annotation processing 
  * options <code>-Alog=TRACE|INFO|WARN|ERROR</code> and uses the processing
@@ -32,10 +34,20 @@ import javax.tools.Diagnostic;
  */
 public class CompileTimeLogger {
     private static enum Level {TRACE, INFO, WARN, ERROR};
+    private static Localizer _loc = Localizer.forPackage(
+            CompileTimeLogger.class);
+    private static Level DEFAULT_LEVEL = Level.WARN;
     private int logLevel;
     private Messager messager;
+    
     public CompileTimeLogger(ProcessingEnvironment env) {
+        messager = env.getMessager();
+        
         String level = env.getOptions().get("log");
+        if (level == null) {
+            logLevel = DEFAULT_LEVEL.ordinal();
+            return;
+        }
         if ("trace".equalsIgnoreCase(level))
             logLevel = Level.TRACE.ordinal();
         else if ("info".equalsIgnoreCase(level))
@@ -45,32 +57,31 @@ public class CompileTimeLogger {
         else if ("error".equalsIgnoreCase(level))
             logLevel = Level.ERROR.ordinal();
         else {
-            logLevel = Level.INFO.ordinal();
-            warn("mmg-bad-log");
+            logLevel = DEFAULT_LEVEL.ordinal();
+            warn(_loc.get("mmg-bad-log", level, DEFAULT_LEVEL));
         }
-        messager = env.getMessager();
-        
     }
     
-    public void info(String message) {
+    public void info(Localizer.Message message) {
         log(Level.INFO, message, Diagnostic.Kind.NOTE);
     }
     
-    public void trace(String message) {
+    public void trace(Localizer.Message message) {
         log(Level.TRACE, message, Diagnostic.Kind.NOTE);
     }
     
-    public void warn(String message) {
+    public void warn(Localizer.Message message) {
         log(Level.WARN, message, Diagnostic.Kind.MANDATORY_WARNING);
     }
     
-    public void error(String message) {
+    public void error(Localizer.Message message) {
         log(Level.ERROR, message, Diagnostic.Kind.ERROR);
     }
     
-    private void log(Level level, String message, Diagnostic.Kind kind) {
+    private void log(Level level, Localizer.Message message, 
+        Diagnostic.Kind kind) {
         if (logLevel <= level.ordinal()) {
-            messager.printMessage(kind, message);
+            messager.printMessage(kind, message.toString());
         }
     }
 }

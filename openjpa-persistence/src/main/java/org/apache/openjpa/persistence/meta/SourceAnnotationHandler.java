@@ -88,10 +88,11 @@ public class SourceAnnotationHandler
 	 * Construct with JDK6 annotation processing environment.
 	 * 
 	 */
-    public SourceAnnotationHandler(ProcessingEnvironment processingEnv) {
+    public SourceAnnotationHandler(ProcessingEnvironment processingEnv, 
+        CompileTimeLogger logger) {
 		super();
 		this.processingEnv = processingEnv;
-		this.logger = new CompileTimeLogger(processingEnv);
+		this.logger = logger;
 	}
 
 	public int determineTypeAccess(TypeElement type) {
@@ -262,7 +263,7 @@ public class SourceAnnotationHandler
             }
             if (!matched) {
                 logger.warn(_loc.get("getter-unmatched", getter, 
-                    getter.getEnclosingElement()).toString());
+                    getter.getEnclosingElement()));
                 unmatched.add(getter);
             }
 

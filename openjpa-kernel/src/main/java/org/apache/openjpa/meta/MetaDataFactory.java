@@ -31,6 +31,7 @@ import org.apache.openjpa.lib.meta.ClassArgParser;
  *
  * @author Patrick Linskey
  * @author Abe White
+ * @author Pinaki Poddar
  */
 public interface MetaDataFactory
     extends MetaDataModes {
@@ -151,4 +152,37 @@ public interface MetaDataFactory
      * metadata should be added directly to the repository.
      */
     public void loadXMLMetaData(FieldMetaData fmd);
+    
+    /**
+     * Gets the name of the meta-model class for the given fully-qualified
+     * managed class name.
+     * 
+     * @since 2.0.0
+     */
+    public String getMetaModelClassName(String managedClassName);
+    
+    /**
+     * Gets the name of the managed class for the given fully-qualified
+     * meta-model class name.
+     * 
+     * @since 2.0.0
+     */
+    public String getManagedClassName(String metamodelClassName);
+    
+    /**
+     * Affirms if the given class is a meta-class.
+     * 
+     * @since 2.0.0
+     */
+    public boolean isMetaClass(Class<?> c);
+    
+    /**
+     * Gets the managed class corresponding to the given meta-class.
+     * 
+     * @return null if the given input is not a meta-class.
+     * 
+     * @since 2.0.0
+     */
+    public Class<?> getManagedClass(Class<?> c);
+
 }

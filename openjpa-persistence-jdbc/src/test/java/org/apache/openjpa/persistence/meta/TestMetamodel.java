@@ -19,8 +19,12 @@
 
 package org.apache.openjpa.persistence.meta;
 
+import java.lang.reflect.Field;
+import java.lang.reflect.Modifier;
+
 import javax.persistence.metamodel.Attribute;
 import javax.persistence.metamodel.Collection;
+import javax.persistence.metamodel.Entity;
 import javax.persistence.metamodel.List;
 import javax.persistence.metamodel.ManagedType;
 import javax.persistence.metamodel.Set;
@@ -30,6 +34,9 @@ import javax.persistence.metamodel.Bindable.BindableType;
 import javax.persistence.metamodel.Type.PersistenceType;
 
 import org.apache.openjpa.meta.ClassMetaData;
+import org.apache.openjpa.meta.MetaDataRepository;
+import org.apache.openjpa.persistence.criteria.Account;
+import org.apache.openjpa.persistence.criteria.Account_;
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
 
 /**
@@ -40,9 +47,11 @@ import org.apache.openjpa.persistence.test.SingleEMFTestCase;
  */
 public class TestMetamodel extends SingleEMFTestCase {
     MetamodelImpl model;
+    MetaDataRepository repos;
     
     public void setUp() {
     	super.setUp(
+    	        Account.class,
     			ImplicitFieldAccessMappedSuperclass.class,
     	        ImplicitFieldAccessBase.class, 
     	        ImplicitFieldAccessSubclass.class,
@@ -51,13 +60,29 @@ public class TestMetamodel extends SingleEMFTestCase {
     	        Embed0.class, 
     	        Embed1.class);
     	emf.createEntityManager();
+    	repos = emf.getConfiguration().getMetaDataRepositoryInstance();
         model = (MetamodelImpl)emf.getMetamodel();
     }
     
-    public void testModelIsPopulated() {
+    public void testModelIsInstantiated() {
         assertFalse(model.getEntities().isEmpty());
         assertFalse(model.getEmbeddables().isEmpty());
         assertFalse(model.getManagedTypes().isEmpty());
+    }
+    
+    public void testModelIsPopulated() {
+        Entity<Account> m = model.entity(Account.class);
+        Class<?> mCls = m.getJavaType();
+        assertNotNull(m);
+        Class<?> m2Cls = repos.getMetaModel(mCls, true);
+        assertNotNull(m2Cls);
+        try {
+            Field f2 = getStaticField(m2Cls, "balance");
+            assertNotNull(f2);
+        } catch (Throwable t) {
+            t.printStackTrace();
+            fail();
+        }
     }
     
     public void testPersistentCategory() {
@@ -198,5 +223,20 @@ public class TestMetamodel extends SingleEMFTestCase {
     
     void assertCategory(PersistenceType category, Class<?> cls) {
     	assertEquals(category, categorize(cls));
+    }
+    
+    Field getStaticField(Class<?> cls, String name) {
+        try {
+            System.err.println("Fields of " + cls);
+            Field[] fds = cls.getDeclaredFields();
+            for (Field f : fds) {
+                System.err.println(f);
+                int mods = f.getModifiers();
+                if (f.getName().equals(name) && Modifier.isStatic(mods))
+                    return f;
+            }
+        } catch (Exception e) {
+        }
+        return null;
     }
 }
