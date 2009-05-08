@@ -141,6 +141,7 @@ public class MySQLDictionary
         if (maj < 4 || (maj == 4 && min < 1)) {
             supportsSubselect = false;
             allowsAliasInBulkClause = false;
+            supportsForeignKeysComposite = false;
         }
         if (maj > 5 || (maj == 5 && min >= 1))
             supportsXMLColumn = true;
@@ -215,13 +216,6 @@ public class MySQLDictionary
 
         System.arraycopy(sql, 0, ret, cols.length, sql.length);
         return ret;
-    }
-
-    protected String getForeignKeyConstraintSQL(ForeignKey fk) {
-        // mysql does not support composite foreign keys
-        if (fk.getColumns().length > 1)
-            return null;
-        return super.getForeignKeyConstraintSQL(fk);
     }
     
     public String[] getDeleteTableContentsSQL(Table[] tables) {

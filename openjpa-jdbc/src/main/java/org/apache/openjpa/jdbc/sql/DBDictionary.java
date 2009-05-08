@@ -181,6 +181,7 @@ public class DBDictionary
     public int maxIndexNameLength = 128;
     public int maxIndexesPerTable = Integer.MAX_VALUE;
     public boolean supportsForeignKeys = true;
+    public boolean supportsForeignKeysComposite = true;
     public boolean supportsUniqueConstraints = true;
     public boolean supportsDeferredConstraints = true;
     public boolean supportsRestrictDeleteAction = true;
@@ -3380,6 +3381,8 @@ public class DBDictionary
      */
     protected String getForeignKeyConstraintSQL(ForeignKey fk) {
         if (!supportsForeignKeys)
+            return null;
+        if (fk.getColumns().length > 0 && !supportsForeignKeysComposite)
             return null;
         if (fk.getDeleteAction() == ForeignKey.ACTION_NONE)
             return null;
