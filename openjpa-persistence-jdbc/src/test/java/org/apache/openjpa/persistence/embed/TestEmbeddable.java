@@ -31,7 +31,7 @@ import javax.persistence.EntityManagerFactory;
 import javax.persistence.EntityTransaction;
 import javax.persistence.Query;
 
-import junit.framework.Assert;
+
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
 
 public class TestEmbeddable extends SingleEMFTestCase {
@@ -83,7 +83,7 @@ public class TestEmbeddable extends SingleEMFTestCase {
             VicePresident.class, EntityA_Embed_MappedToOne.class,
             Embed_MappedToOne.class, Embed_MappedToOneCascadeDelete.class, 
             EntityA_Embed_MappedToOneCascadeDelete.class, EntityB2.class, 
-            DROP_TABLES);
+            Book.class, Listing.class, Seller.class, DROP_TABLES);
     }
     
     public void testEntityA_Coll_String() {
@@ -179,6 +179,9 @@ public class TestEmbeddable extends SingleEMFTestCase {
         updateEntityA_Embed_MappedToOneCascadeDelete();
     }
     
+    public void testEmbeddableContainingRelationWithGeneratedKey() {
+        createEmbeddableContainingRelationWithGeneratedKey();
+    }
     /*
      * Create EntityA_Coll_String
      */
@@ -1877,34 +1880,34 @@ public class TestEmbeddable extends SingleEMFTestCase {
     public void assertDepartment1(Department1 d) {
         int id = d.getDeptId();
         Map<Integer, Employee1> es = d.getEmpMap();
-        Assert.assertEquals(2,es.size());
+        assertEquals(2,es.size());
         Set keys = es.keySet();
         for (Object obj : keys) {
             Integer empId = (Integer) obj;
             Employee1 e = es.get(empId);
-            Assert.assertEquals(empId.intValue(), e.getEmpId());
+            assertEquals(empId.intValue(), e.getEmpId());
         }
     }
     
     public void assertDepartment2(Department2 d) {
         int id = d.getDeptId();
         Map<EmployeePK2, Employee2> es = d.getEmpMap();
-        Assert.assertEquals(2,es.size());
+        assertEquals(2,es.size());
         Set<EmployeePK2> keys = es.keySet();
         for (EmployeePK2 pk : keys) {
             Employee2 e = es.get(pk);
-            Assert.assertEquals(pk, e.getEmpPK());
+            assertEquals(pk, e.getEmpPK());
         }
     }   
 
     public void assertDepartment3(Department3 d) {
         int id = d.getDeptId();
         Map<EmployeeName3, Employee3> es = d.getEmployees();
-        Assert.assertEquals(2,es.size());
+        assertEquals(2,es.size());
         Set<EmployeeName3> keys = es.keySet();
         for (EmployeeName3 key : keys) {
             Employee3 e = es.get(key);
-            Assert.assertEquals(key, e.getName());
+            assertEquals(key, e.getName());
         }
     }
     
@@ -2010,31 +2013,31 @@ public class TestEmbeddable extends SingleEMFTestCase {
     public void assertItem1(Item1 item) {
         int id = item.getId();
         Map images = item.getImages();
-        Assert.assertEquals(numImagesPerItem, images.size());
+        assertEquals(numImagesPerItem, images.size());
     }
     
     public void assertItem2(Item2 item) {
         int id = item.getId();
         Map images = item.getImages();
-        Assert.assertEquals(numImagesPerItem, images.size());
+        assertEquals(numImagesPerItem, images.size());
     }
 
     public void assertItem3(Item3 item) {
         int id = item.getId();
         Map images = item.getImages();
-        Assert.assertEquals(numImagesPerItem, images.size());
+        assertEquals(numImagesPerItem, images.size());
     }
 
     public void assertCompany1(Company1 c) {
         int id = c.getId();
         Map organization = c.getOrganization();
-        Assert.assertEquals(2,organization.size());
+        assertEquals(2,organization.size());
     }
     
     public void assertCompany2(Company2 c) {
         int id = c.getId();
         Map organization = c.getOrganization();
-        Assert.assertEquals(2,organization.size());
+        assertEquals(2,organization.size());
     }    
     
     public void assertDivision(Division d) {
@@ -2145,4 +2148,29 @@ public class TestEmbeddable extends SingleEMFTestCase {
         tran.commit();
         em.close();
     }        
+    public void createEmbeddableContainingRelationWithGeneratedKey() {
+        EntityManager em = emf.createEntityManager();
+        EntityTransaction tran = em.getTransaction();
+        
+        Book b = new Book(1590596455);
+        Seller bob = new Seller("Bob's books!");
+        Seller jim = new Seller("Jim's books!");
+        Seller mike = new Seller("Mikes's books!");
+        b.addListing(new Listing(bob , 44.15));
+        b.addListing(new Listing(jim , 34.15));
+        b.addListing(new Listing(mike , 14.15));
+        em.getTransaction().begin();
+        em.persist(b);
+        em.getTransaction().commit();
+        int id = b.getId();
+        em.clear();
+        Book b2 = em.find(Book.class, id);
+        Set<Listing> listings = b2.getListings();
+        for (Listing listing : listings) {
+            Seller seller = listing.getSeller();
+            assertNotNull(seller);
+            assertTrue(seller.getId() != 0);
+        }
+        
+    }
 }

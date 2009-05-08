@@ -146,18 +146,46 @@ public class HandlerCollectionTableFieldStrategy
         row.setForeignKey(field.getJoinForeignKey(), field.getJoinColumnIO(),
             sm);
 
+        StoreContext ctx = sm.getContext();
         ValueMapping elem = field.getElementMapping();
         Column order = field.getOrderColumn();
         boolean setOrder = field.getOrderColumnIO().isInsertable(order, false);
         int idx = 0;
         for (Iterator itr = coll.iterator(); itr.hasNext(); idx++) {
-            HandlerStrategies.set(elem, itr.next(), store, row, _cols,
+            Object val = itr.next();
+            HandlerStrategies.set(elem, val, store, row, _cols,
                 _io, true);
+            StateManagerImpl esm = (StateManagerImpl)ctx.getStateManager(val);
+            if (esm != null) {
+                boolean isEmbedded = esm.isEmbedded();
+                Collection rels = new ArrayList();
+                if (isEmbedded) {
+                    getRelations(esm, rels, ctx);
+                    for (Object rel : rels) {
+                        elem.setForeignKey(row, (StateManagerImpl)rel);
+                    }
+                }
+            }
             if (setOrder)
                 row.setInt(order, idx);
             rm.flushSecondaryRow(row);
         }
     }
+    
+    private void getRelations(StateManagerImpl sm, Collection rels, 
+        StoreContext ctx) {
+        FieldMetaData[] fields = sm.getMetaData().getFields();
+        for (int i = 0; i < fields.length; i++) {
+            Object obj = sm.fetch(i);
+            StateManagerImpl esm = (StateManagerImpl)ctx.getStateManager(obj);
+            if (esm != null) {
+                if (!esm.isEmbedded())
+                    rels.add(esm);
+                else
+                    getRelations(esm, rels, ctx);
+            }    
+        }
+    }    
 
     public void update(OpenJPAStateManager sm, JDBCStore store, RowManager rm)
         throws SQLException {

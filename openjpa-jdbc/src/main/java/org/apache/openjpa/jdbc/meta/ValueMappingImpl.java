@@ -161,6 +161,15 @@ public class ValueMappingImpl
             return getValueMappedByMapping().getForeignKey(target);
         if (target == null)
             return _fk;
+        ClassMapping embeddedMeta = (ClassMapping)getEmbeddedMetaData(); 
+        if (embeddedMeta != null) {
+            FieldMapping[] fields = embeddedMeta.getFieldMappings();
+            for (int i = 0; i < fields.length; i++) {
+                ValueMapping val = fields[i].getValueMapping(); 
+                if (val.getDeclaredTypeMapping() == target)
+                    return val.getForeignKey();
+            }
+        }
         if (_fk == null && _cols.length == 0)
             return null;
 
