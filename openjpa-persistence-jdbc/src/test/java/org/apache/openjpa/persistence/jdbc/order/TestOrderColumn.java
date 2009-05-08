@@ -75,6 +75,266 @@ public class TestOrderColumn extends SingleEMFTestCase {
     }
 
     /*
+     * Verifies that a collection remains contiguous and element
+     * indexes are reordered if an element is removed for a
+     * OneToMany relationship 
+     */
+    public void testOneToManyElementRemoval() {
+        OpenJPAEntityManagerSPI em = emf.createEntityManager();
+
+        // Verify field name is the default via fm
+        validateOrderColumnName(BattingOrder.class, "batters", 
+            "batters_ORDER");// "batters_ORDER");
+
+        // Create some data
+        Player[] players = new Player[10];
+        ArrayList<Player> playersArr = new ArrayList<Player>();
+        em.getTransaction().begin();
+        for (int i = 0; i < 10 ; i++) {
+            players[i] = new Player("Player" + i, i+100);
+            em.persist(players[i]);
+            playersArr.add(players[i]);
+        }
+        em.getTransaction().commitAndResume();
+                      
+        // Persist the related entities
+        BattingOrder order = new BattingOrder();
+        order.setBatters(playersArr);
+        em.persist(order);
+        em.getTransaction().commit();
+        em.refresh(order);
+        em.clear();
+        
+        // Verify order is correct.
+        BattingOrder newOrder = em.find(BattingOrder.class, order.id);
+        assertNotNull(newOrder);
+        for (int i = 0; i < 10 ; i++) {
+            assertEquals(newOrder.getBatters().get(i), (players[i]));
+        }
+        
+        // Remove some items
+        em.getTransaction().begin();
+        newOrder.getBatters().remove(1);
+        playersArr.remove(1);
+        newOrder.getBatters().remove(5);
+        playersArr.remove(5);        
+        em.getTransaction().commit();
+        em.clear();
+
+        // Simple assertion via find
+        newOrder = em.find(BattingOrder.class, order.id);
+        assertNotNull(newOrder);
+        assertNotNull(newOrder.getBatters());
+        assertEquals(playersArr.size(), newOrder.getBatters().size());
+        for (int i = 0; i < playersArr.size() ; i++) {
+              assertEquals(newOrder.getBatters().get(i), (playersArr.get(i)));
+        }
+
+        // Stronger assertion via INDEX value
+        validateIndexAndValues(em, "BattingOrder", "batters", 0, 
+            playersArr.toArray(), "id", 
+            order.id);
+        
+        em.close();        
+    }
+
+    /*
+     * Verifies that a collection remains contiguous and element
+     * indexes are reordered if an element is removed for an
+     * ElementCollection 
+     */
+    public void testElementCollectionElementRemoval() {
+        OpenJPAEntityManagerSPI em = emf.createEntityManager();
+        Game game = new Game();
+        
+        // Verify field name is the default via fm
+        validateOrderColumnName(Game.class, "rainDates", 
+            "dateOrder"); 
+        
+        // Create a list of basic types
+        java.sql.Date dates[] = new java.sql.Date[10];
+        ArrayList<java.sql.Date> rainDates = new ArrayList<java.sql.Date>(10);
+        Calendar today = Calendar.getInstance();
+        for (int i = 0; i < 10; i++) {
+            today.set(2009, 1, i+1);
+            dates[i] = new java.sql.Date(today.getTimeInMillis());
+        }
+        // Add in reverse order
+        for (int i = 9; i >= 0; i--) {
+            rainDates.add(dates[i]);
+        }
+        game.setRainDates(rainDates);
+        
+        em.getTransaction().begin();
+        em.persist(game);
+        em.getTransaction().commit();
+               
+        em.clear();
+        
+        Game newGame = em.find(Game.class, game.getId());
+        assertNotNull(newGame);
+        // Verify the order
+        for (int i = 0; i < 10; i++) {
+            assertEquals(game.getRainDates().get(i),
+                rainDates.get(i));
+        }
+        
+        // Remove some dates
+        em.getTransaction().begin();
+        game.getRainDates().remove(4);
+        rainDates.remove(4);
+        game.getRainDates().remove(2);
+        rainDates.remove(2);
+        em.getTransaction().commit();
+        em.clear();
+
+        newGame = em.find(Game.class, game.getId());
+        assertNotNull(newGame);
+        assertNotNull(game.getRainDates());
+        assertEquals(8, game.getRainDates().size());
+        // Verify the order
+        for (int i = 0; i < game.getRainDates().size(); i++) {
+            assertEquals(game.getRainDates().get(i),
+                rainDates.get(i));
+        }
+        
+        em.close();
+    }
+    /*
+     * Verifies that a collection remains contiguous and element
+     * indexes are reordered if an element is inserted into the collection. 
+     */
+    public void testOneToManyElementInsert() {
+        OpenJPAEntityManagerSPI em = emf.createEntityManager();
+
+        // Verify field name is the default via fm
+        validateOrderColumnName(BattingOrder.class, "batters", 
+            "batters_ORDER");// "batters_ORDER");
+
+        // Create some data
+        Player[] players = new Player[10];
+        ArrayList<Player> playersArr = new ArrayList<Player>();
+        em.getTransaction().begin();
+        for (int i = 0; i < 10 ; i++) {
+            players[i] = new Player("Player" + i, i+100);
+            em.persist(players[i]);
+            playersArr.add(players[i]);
+        }
+        em.getTransaction().commitAndResume();
+                      
+        // Persist the related entities
+        BattingOrder order = new BattingOrder();
+        order.setBatters(playersArr);
+        em.persist(order);
+        em.getTransaction().commitAndResume();
+        em.refresh(order);
+        
+        em.getTransaction().commit();
+        em.clear();
+        
+        // Verify order is correct.
+        BattingOrder newOrder = em.find(BattingOrder.class, order.id);
+        assertNotNull(newOrder);
+        for (int i = 0; i < 10 ; i++) {
+            assertEquals(newOrder.getBatters().get(i), (players[i]));
+        }
+                
+        Player p = new Player("PlayerNew", 150);
+        playersArr.add(2, p);
+
+        Player p2 = new Player("PlayerNew2", 151);
+        playersArr.add(p2);
+        // Add an item at index 2 and at the end of the list 
+        em.getTransaction().begin();
+        newOrder.getBatters().add(2, p);
+        newOrder.getBatters().add(p2);
+        em.getTransaction().commit();
+        em.clear();
+
+        // Simple assertion via find
+        newOrder = em.find(BattingOrder.class, order.id);
+        assertNotNull(newOrder);
+        assertNotNull(newOrder.getBatters());
+        assertEquals(playersArr.size(), newOrder.getBatters().size());
+        for (int i = 0; i < playersArr.size() ; i++) {
+              assertEquals(newOrder.getBatters().get(i), (playersArr.get(i)));
+        }
+
+        // Stronger assertion via INDEX value
+        validateIndexAndValues(em, "BattingOrder", "batters", 0, 
+            playersArr.toArray(), "id", 
+            order.id);
+        
+        em.close();        
+    }
+    /*
+     * Verifies that a collection remains contiguous and element
+     * indexes are reordered if an element is inserted into an
+     * ElementCollection 
+     */
+    public void testElementCollectionElementInsert() {
+        OpenJPAEntityManagerSPI em = emf.createEntityManager();
+        Game game = new Game();
+        
+        // Verify field name is the default via fm
+        validateOrderColumnName(Game.class, "rainDates", 
+            "dateOrder"); 
+        
+        // Create a list of basic types
+        java.sql.Date dates[] = new java.sql.Date[10];
+        ArrayList<java.sql.Date> rainDates = new ArrayList<java.sql.Date>(10);
+        Calendar today = Calendar.getInstance();
+        for (int i = 0; i < 10; i++) {
+            today.set(2009, 1, i+1);
+            dates[i] = new java.sql.Date(today.getTimeInMillis());
+        }
+        // Add in reverse order
+        for (int i = 9; i >= 0; i--) {
+            rainDates.add(dates[i]);
+        }
+        game.setRainDates(rainDates);
+        
+        em.getTransaction().begin();
+        em.persist(game);
+        em.getTransaction().commit();
+               
+        em.clear();
+        
+        Game newGame = em.find(Game.class, game.getId());
+        assertNotNull(newGame);
+        // Verify the order
+        for (int i = 0; i < 10; i++) {
+            assertEquals(game.getRainDates().get(i),
+                rainDates.get(i));
+        }
+        
+        // Add some dates
+        today.set(2009, 1, 15);
+        rainDates.add(1, new java.sql.Date(today.getTimeInMillis()));
+        today.set(2009, 1, 20);
+        rainDates.add(6, new java.sql.Date(today.getTimeInMillis()));
+        
+        em.getTransaction().begin();
+        game.getRainDates().add(1, rainDates.get(1));
+        game.getRainDates().add(6, rainDates.get(6));
+        em.getTransaction().commit();
+        em.clear();
+
+        newGame = em.find(Game.class, game.getId());
+        assertNotNull(newGame);
+        assertNotNull(game.getRainDates());
+        assertEquals(12, game.getRainDates().size());
+        // Verify the order
+        for (int i = 0; i < game.getRainDates().size(); i++) {
+            assertEquals(game.getRainDates().get(i),
+                rainDates.get(i));
+        }
+        
+        em.close();
+    }
+
+    
+    /*
      * Validates use of OrderColumn with OneToMany using the default
      * order column name
      */
@@ -851,7 +1111,7 @@ public class TestOrderColumn extends SingleEMFTestCase {
         List rlist = qry.getResultList();  
         
         assertNotNull(rlist);
-        assertEquals(rlist.size(), objs.length); 
+        assertEquals(objs.length, rlist.size()); 
         TreeMap<Long, Object> objMap = new TreeMap<Long, Object>();
         for (int i = 0; i < objs.length; i++)
         {

@@ -197,8 +197,12 @@ public class HandlerCollectionTableFieldStrategy
                 ct = proxy.getChangeTracker();
         }
 
-        // if no fine-grained change tracking then just delete and reinsert
-        if (ct == null || !ct.isTracking()) {
+        Column order = field.getOrderColumn();
+
+        // if no fine-grained change tracking or if an item was removed
+        // from an ordered collection, delete and reinsert
+        if (ct == null || !ct.isTracking() ||
+            (order != null && !ct.getRemoved().isEmpty())) {
             delete(sm, store, rm);
             insert(sm, store, rm, obj);
             return;
@@ -227,7 +231,6 @@ public class HandlerCollectionTableFieldStrategy
                 field.getJoinColumnIO(), sm);
 
             int seq = ct.getNextSequence();
-            Column order = field.getOrderColumn();
             boolean setOrder = field.getOrderColumnIO().isInsertable(order,
                 false);
             for (Iterator itr = add.iterator(); itr.hasNext(); seq++) {
