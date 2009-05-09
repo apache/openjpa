@@ -18,6 +18,7 @@
  */
 package org.apache.openjpa.slice;
 
+import java.sql.Connection;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -307,6 +308,12 @@ public class TestBasic extends SliceTestCase {
         assertNotEquals(pc, pc2);
         assertEquals(pc.getId(), pc2.getId());
         assertEquals(value, pc2.getValue());
+    }
+    
+    public void testGetConnection() {
+        OpenJPAEntityManager em = emf.createEntityManager();
+        Object con = em.getConnection();
+        assertTrue(con instanceof Connection);
     }
     
     public void testDynamicSlice() {

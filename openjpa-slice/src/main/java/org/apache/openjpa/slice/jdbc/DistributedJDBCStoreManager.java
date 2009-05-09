@@ -31,7 +31,6 @@ import java.util.Map;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 
 import org.apache.openjpa.enhance.PersistenceCapable;
@@ -41,7 +40,6 @@ import org.apache.openjpa.jdbc.kernel.JDBCStore;
 import org.apache.openjpa.jdbc.kernel.JDBCStoreManager;
 import org.apache.openjpa.jdbc.sql.Result;
 import org.apache.openjpa.jdbc.sql.ResultSetResult;
-import org.apache.openjpa.kernel.BrokerImpl;
 import org.apache.openjpa.kernel.FetchConfiguration;
 import org.apache.openjpa.kernel.OpenJPAStateManager;
 import org.apache.openjpa.kernel.PCState;
@@ -84,9 +82,12 @@ class DistributedJDBCStoreManager extends JDBCStoreManager
     private static final Localizer _loc =
             Localizer.forPackage(DistributedJDBCStoreManager.class);
 
+    private static final Class<ClientConnection> clientConnectionImpl;
     private static final Class<RefCountConnection> refCountConnectionImpl;
     static {
         try {
+            clientConnectionImpl = ConcreteClassGenerator.
+                makeConcrete(ClientConnection.class);
             refCountConnectionImpl = ConcreteClassGenerator.
                 makeConcrete(RefCountConnection.class);
         } catch (Exception e) {
@@ -363,18 +364,19 @@ class DistributedJDBCStoreManager extends JDBCStoreManager
     }
 
     public Object getClientConnection() {
-        throw new UnsupportedOperationException();
+        return ConcreteClassGenerator.newInstance
+            (clientConnectionImpl, Connection.class, getConnection());
     }
 
     public Seq getDataStoreIdSequence(ClassMetaData forClass) {
         return _master.getDataStoreIdSequence(forClass);
     }
 
-    public Class getDataStoreIdType(ClassMetaData meta) {
+    public Class<?> getDataStoreIdType(ClassMetaData meta) {
         return _master.getDataStoreIdType(meta);
     }
 
-    public Class getManagedType(Object oid) {
+    public Class<?> getManagedType(Object oid) {
         return _master.getManagedType(oid);
     }
 
