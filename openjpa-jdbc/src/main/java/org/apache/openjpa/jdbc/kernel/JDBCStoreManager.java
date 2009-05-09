@@ -1416,7 +1416,7 @@ public class JDBCStoreManager
      * Connection returned to client code. Makes sure its wrapped connection
      * ref count is decremented on finalize.
      */
-    protected abstract static class ClientConnection extends
+    public abstract static class ClientConnection extends
             DelegatingConnection {
 
         private boolean _closed = false;
