@@ -77,7 +77,7 @@ public class JPQLExpressionBuilder
     private static final Localizer _loc = Localizer.forPackage
         (JPQLExpressionBuilder.class);
 
-    private final Stack contexts = new Stack();
+    private final Stack<Context> contexts = new Stack<Context>();
     private LinkedMap parameterTypes;
     private int aliasCount = 0;
 
@@ -166,7 +166,7 @@ public class JPQLExpressionBuilder
         // by the JPA spec, but is required in order to be able to execute
         // JPQL queries from other facades (like JDO) that do not have
         // the concept of entity names or aliases
-        Class c = resolver.classForName(alias, null);
+        Class<?> c = resolver.classForName(alias, null);
         if (c != null)
             cmd = repos.getMetaData(c, loader, assertValid);
         else if (assertValid)
@@ -185,7 +185,7 @@ public class JPQLExpressionBuilder
         return cmd;
     }
 
-    private Class getCandidateType() {
+    private Class<?> getCandidateType() {
         return getCandidateMetaData().getDescribedType();
     }
 
@@ -433,9 +433,10 @@ public class JPQLExpressionBuilder
         JPQLNode selectClause = selectNode.
             findChildByID(JJTSELECTCLAUSE, false);
         if (selectClause != null && selectClause.hasChildID(JJTDISTINCT))
-            exps.distinct = exps.DISTINCT_TRUE | exps.DISTINCT_AUTO;
+            exps.distinct = QueryExpressions.DISTINCT_TRUE 
+                          | QueryExpressions.DISTINCT_AUTO;
         else
-            exps.distinct = exps.DISTINCT_FALSE;
+            exps.distinct = QueryExpressions.DISTINCT_FALSE;
 
         JPQLNode constructor = selectNode.findChildByID(JJTCONSTRUCTOR, true);
         if (constructor != null) {
@@ -469,7 +470,7 @@ public class JPQLExpressionBuilder
                     return null;
             } 
             // JPQL does not filter relational joins for projections
-            exps.distinct &= ~exps.DISTINCT_AUTO;
+            exps.distinct &= ~QueryExpressions.DISTINCT_AUTO;
             return assignProjections(expNode, exps);
         }
     }
@@ -488,21 +489,22 @@ public class JPQLExpressionBuilder
         Expression filter = null;
 
         // handle JOIN FETCH
-        Set joins = null;
-        Set innerJoins = null;
+        Set<String> joins = null;
+        Set<String> innerJoins = null;
 
         JPQLNode[] outers = root().findChildrenByID(JJTOUTERFETCHJOIN);
         for (int i = 0; outers != null && i < outers.length; i++)
-            (joins == null ? joins = new TreeSet() : joins).
+            (joins == null ? joins = new TreeSet<String>() : joins).
                 add(getPath(onlyChild(outers[i])).last().getFullName(false));
 
         JPQLNode[] inners = root().findChildrenByID(JJTINNERFETCHJOIN);
         for (int i = 0; inners != null && i < inners.length; i++) {
             String path = getPath(onlyChild(inners[i])).last()
                 .getFullName(false);
-            (joins == null ? joins = new TreeSet() : joins).add(path);
-            (innerJoins == null ? innerJoins = new TreeSet() : innerJoins).
-                add(path);
+            (joins == null ? joins = new TreeSet<String>() : joins).add(path);
+            (innerJoins == null 
+                    ? innerJoins = new TreeSet<String>() 
+                    : innerJoins).add(path);
         }
 
         if (joins != null)
@@ -921,13 +923,13 @@ public class JPQLExpressionBuilder
             case JJTIN: // x.field [NOT] IN ('a', 'b', 'c')
                         // TYPE(x...) [NOT] IN (entityTypeLiteral1,...)
                 Expression inExp = null;
-                Iterator inIterator = node.iterator();
+                Iterator<JPQLNode> inIterator = node.iterator();
                 // the first child is the path
-                JPQLNode first = (JPQLNode) inIterator.next();
+                JPQLNode first = inIterator.next();
                 val1 = getValue(first);
 
                 while (inIterator.hasNext()) {
-                    JPQLNode next = (JPQLNode) inIterator.next();
+                    JPQLNode next = inIterator.next();
                     if (first.id == JJTTYPE && next.id == JJTTYPELITERAL)
                         val2 = getTypeLiteral(next);
                     else
@@ -1269,7 +1271,7 @@ public class JPQLExpressionBuilder
         }
     }
 
-    protected void setImplicitTypes(Value val1, Value val2, Class expected) {
+    protected void setImplicitTypes(Value val1, Value val2, Class<?> expected) {
         super.setImplicitTypes(val1, val2, expected);
 
         // as well as setting the types for conversions, we also need to
@@ -1288,7 +1290,7 @@ public class JPQLExpressionBuilder
         if (fmd == null)
             return;
 
-        Class type = path.getType();
+        Class<?> type = path.getType();
         if (type == null)
             return;
 
@@ -1309,7 +1311,7 @@ public class JPQLExpressionBuilder
         return getTypeValue(node, TYPE_NUMBER);
     }
 
-    private Value getTypeValue(JPQLNode node, Class implicitType) {
+    private Value getTypeValue(JPQLNode node, Class<?> implicitType) {
         Value val = getValue(node);
         setImplicitType(val, implicitType);
         return val;
@@ -1441,7 +1443,7 @@ public class JPQLExpressionBuilder
         } else if (val instanceof Value) {
             if (val.isVariable()) {
                 // can be an entity type literal
-                Class c = resolver.classForName(name, null);
+                Class<?> c = resolver.classForName(name, null);
                 if (c != null) {
                     Value lit = factory.newTypeLiteral(c, Literal.TYPE_CLASS);
                     Class<?> candidate = getCandidateType();
@@ -1556,7 +1558,7 @@ public class JPQLExpressionBuilder
         final Value val = getVariable(name, false);
 
         if (val instanceof Value && val.isVariable()) {
-            Class c = resolver.classForName(name, null);
+            Class<?> c = resolver.classForName(name, null);
             if (c != null) {
                 Value typeLit = factory.newTypeLiteral(c, Literal.TYPE_CLASS);
                 typeLit.setMetaData(getClassMetaData(name, false));
@@ -1572,7 +1574,7 @@ public class JPQLExpressionBuilder
         // first check to see if the path is an enum or static field, and
         // if so, load it
         String className = assemble(node, ".", 1);
-        Class c = resolver.classForName(className, null);
+        Class<?> c = resolver.classForName(className, null);
         if (c != null) {
             String fieldName = lastChild(node).text;
             int type = (c.isEnum() ? Literal.TYPE_ENUM : Literal.TYPE_UNKNOWN);
@@ -1679,7 +1681,7 @@ public class JPQLExpressionBuilder
         return path;
     }
 
-    protected Class getDeclaredVariableType(String name) {
+    protected Class<?> getDeclaredVariableType(String name) {
         ClassMetaData cmd = getMetaDataForAlias(name);
         if (cmd != null)
             return cmd.getDescribedType();
@@ -1798,7 +1800,7 @@ public class JPQLExpressionBuilder
     ////////////////////////////
 
     private Context ctx() {
-        return (Context) contexts.peek();
+        return  contexts.peek();
     }
 
     private JPQLNode root() {
@@ -1807,7 +1809,7 @@ public class JPQLExpressionBuilder
 
     private ClassMetaData getMetaDataForAlias(String alias) {
         for (int i = contexts.size() - 1; i >= 0; i--) {
-            Context context = (Context) contexts.get(i);
+            Context context =  contexts.get(i);
             if (alias.equalsIgnoreCase(context.schemaAlias))
                 return context.meta;
         }
@@ -1903,6 +1905,7 @@ public class JPQLExpressionBuilder
      * @see Node
      * @see SimpleNode
      */
+    @SuppressWarnings("serial")
     protected abstract static class JPQLNode
         implements Node, Serializable {
 
@@ -1995,7 +1998,7 @@ public class JPQLExpressionBuilder
             return (JPQLNode) jjtGetChild(index);
         }
 
-        public Iterator iterator() {
+        public Iterator<JPQLNode> iterator() {
             return Arrays.asList(children).iterator();
         }
 
@@ -2060,6 +2063,7 @@ public class JPQLExpressionBuilder
      * Public for unit testing purposes.
      * @nojavadoc
      */
+    @SuppressWarnings("serial")
     public static class ParsedJPQL
         implements Serializable {
 
@@ -2072,7 +2076,7 @@ public class JPQLExpressionBuilder
         // cache of candidate type data. This is stored here in case this  
         // parse tree is reused in a context that does not know what the 
         // candidate type is already. 
-        private Class _candidateType;
+        private Class<?> _candidateType;
 
         ParsedJPQL(String jpql) {
             this(jpql, parse(jpql));
@@ -2113,7 +2117,7 @@ public class JPQLExpressionBuilder
         /**
          * Public for unit testing purposes.
          */
-        public Class getCandidateType() {
+        public Class<?> getCandidateType() {
             return _candidateType;
         }
 
