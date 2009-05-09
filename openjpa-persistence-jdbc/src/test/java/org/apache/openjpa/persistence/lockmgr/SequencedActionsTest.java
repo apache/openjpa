@@ -72,7 +72,7 @@ public abstract class SequencedActionsTest extends SQLListenerTestCase {
             javax.persistence.PessimisticLockException.class,
             javax.persistence.LockTimeoutException.class };
 
-    protected static final int MinThreadWaitInMs = 45000;
+    protected static final int MinThreadWaitInMs = 10000;
 
     private long waitInMsec = -1;
     private String empTableName;
@@ -110,7 +110,7 @@ public abstract class SequencedActionsTest extends SQLListenerTestCase {
         if (waitInMsec == -1) {
             speedCnt = platformSpeedTest();
             try {
-                waitInMsec = MinThreadWaitInMs + 500000 / (speedCnt / 1000000);
+                waitInMsec = MinThreadWaitInMs + 250000 / (speedCnt / 1000000);
             } catch (Throwable t) {
             }
         }
@@ -534,8 +534,8 @@ public abstract class SequencedActionsTest extends SQLListenerTestCase {
                     if (args.length > 2 && args[2] != null) {
                         waitTime = (Integer) args[2];
                     }
-                    if( waitTime < 15000)
-                        waitTime = 15000;                    
+                    if (waitTime < MinThreadWaitInMs / 2)
+                        waitTime = MinThreadWaitInMs / 2;                    
                     if( waitThreadid != 0) {
                         thisThread.wait(waitTime);
                     } else {
