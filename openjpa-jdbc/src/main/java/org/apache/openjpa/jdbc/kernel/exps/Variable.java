@@ -41,7 +41,7 @@ class Variable
     extends AbstractVal {
 
     private final String _name;
-    private final Class _type;
+    private Class _type;
     private ClassMetaData _meta;
     private PCPath _path = null;
     private Class _cast = null;
@@ -88,6 +88,8 @@ class Variable
 
     public void setMetaData(ClassMetaData meta) {
         _meta = meta;
+        if (meta != null)
+            _type = meta.getDescribedType();
     }
 
     public boolean isVariable() {

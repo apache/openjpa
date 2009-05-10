@@ -31,7 +31,6 @@ import org.apache.openjpa.jdbc.meta.MappingRepository;
 import org.apache.openjpa.jdbc.schema.Column;
 import org.apache.openjpa.jdbc.sql.LogicalUnion;
 import org.apache.openjpa.jdbc.sql.SQLBuffer;
-import org.apache.openjpa.jdbc.sql.Select;
 import org.apache.openjpa.jdbc.sql.SelectExecutor;
 import org.apache.openjpa.jdbc.sql.SelectImpl;
 import org.apache.openjpa.jdbc.sql.Union;
@@ -62,7 +61,8 @@ public class PreparedQueryImpl implements PreparedQuery {
     
     // Post-compilation state of an executable query, populated on construction
     private Class<?> _candidate;
-    private Class<?> _resultClass;
+    private Class<?>[] _resultClass;
+    private ClassMapping _resultMapping;
     private boolean _subclasses;
     private boolean _isProjection;
     
@@ -95,7 +95,8 @@ public class PreparedQueryImpl implements PreparedQuery {
             _candidate    = compiled.getCandidateType();
             _subclasses   = compiled.hasSubclasses();
             _isProjection = compiled.getProjectionAliases().length > 0;
-            _resultClass  = compiled.getResultType(); 
+            if (_isProjection)
+                _resultClass  = compiled.getProjectionTypes();
         }
     }
     
@@ -135,7 +136,9 @@ public class PreparedQueryImpl implements PreparedQuery {
     	q.setQuery(_id);
         if (!_isProjection)
             q.setCandidateType(_candidate, _subclasses);
-        q.setResultType(_resultClass);
+        if (_resultMapping == null &&
+            _resultClass != null && _resultClass.length == 1)
+            q.setResultType(_resultClass[0]);
     }
 
     /**
@@ -149,12 +152,31 @@ public class PreparedQueryImpl implements PreparedQuery {
             return true;
         SelectExecutor selector = extractSelectExecutor(result);
         if (selector == null || selector.hasMultipleSelects()
-          || ((selector instanceof Union) 
-          && (((Union)selector).getSelects().length != 1)))
+            || ((selector instanceof Union) 
+            && (((Union)selector).getSelects().length != 1)))
             return false;
         select = extractImplementation(selector);
         if (select == null)
             return false;
+        if (_resultClass != null) {
+            // uncachable queries:
+            //   query not returning the candidate entity class type
+            //   query returing embeddable class type
+            //   query returning more than one entity class types
+            for (int i = 0; i < _resultClass.length; i++) {
+                _resultMapping = (ClassMapping) select.getConfiguration().
+                    getMetaDataRepositoryInstance().getMetaData(_resultClass[i],
+                    getClass().getClassLoader(), false);
+                if (_resultMapping != null && 
+                    (_resultClass[i] != _candidate ||
+                    _resultMapping.isEmbeddedOnly() || _resultClass.length > 1))
+                    return false;
+            }
+            if (_id.toUpperCase().contains("ORDER BY") ||
+                (_resultMapping == null &&
+                 select.getSelects().size() != _resultClass.length))
+                return false;
+        }
         SQLBuffer buffer = selector.getSQL();
         if (buffer == null)
             return false;
