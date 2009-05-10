@@ -21,17 +21,47 @@ package org.apache.openjpa.persistence.criteria;
 import java.util.List;
 
 import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
 import javax.persistence.OneToMany;
 import javax.persistence.OrderBy;
 import javax.persistence.Table;
 
 @Entity
-@Table(name="CR_COURSE")
+@Table(name="CR_CRSE")
 
 public class Course {
-	private String name;
-	
-	@OneToMany
-	@OrderBy
-	private List<Student> studentWaitList;
+    @Id
+    @GeneratedValue
+    private long id;
+
+    private String name;
+
+    @OneToMany
+    @OrderBy
+    private List<Student> studentWaitList;
+
+    public long getId() {
+        return id;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }    
+
+    public List<Student> getStudentWaitList() {
+        return studentWaitList;
+    }
+
+    public void setStudentWaitList(List<Student> studentWaitList) {
+        this.studentWaitList = studentWaitList;
+    }    
+
+    public void addStudentToWaitList(Student student) {
+        studentWaitList.add(student);
+    }
 }

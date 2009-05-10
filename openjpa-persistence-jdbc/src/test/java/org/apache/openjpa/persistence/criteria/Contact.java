@@ -31,4 +31,20 @@ public class Contact {
 	
 	@OneToMany
 	private List<Phone> phones;
+	
+    public List<Phone> getPhones() {
+        return phones;
+    }
+    
+    public void addPhone(Phone phone) {
+        phones.add(phone);
+    }
+    
+    public Address getAddress() {
+        return address;
+    }
+  
+    public void setAddress(Address address) {
+        this.address = address;
+    }
 }

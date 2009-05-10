@@ -21,15 +21,50 @@ package org.apache.openjpa.persistence.criteria;
 import java.util.Map;
 
 import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
 import javax.persistence.OneToMany;
-import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
 @Entity
 @Table(name="CR_ITEM")
-
 public class Item {
+    @Id
+    @GeneratedValue
+    private int id;
+    
 	private String name;
-	@OneToMany
+	
+    @OneToMany
 	private Map<String, Photo> photos;
+	
+    public long getId() {
+        return id;
+    }
+
+    public Map<String, Photo> getPhotos() {
+        return photos;
+    }
+
+    public void addPhoto(String name, Photo photo) {
+        photos.put(name, photo);
+    }
+
+    public void removePhoto(String name) {
+        photos.remove(name);
+    }
+
+    public Photo getPhoto(String name) {
+        return photos.get(name);
+    }
+	
+    public String getName() {
+        return name;
+    }
+    
+    public void setName(String name) {
+        this.name = name;
+    }
+
+	
 }

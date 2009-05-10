@@ -20,6 +20,7 @@ package org.apache.openjpa.persistence.criteria;
 
 import javax.persistence.Entity;
 
+
 @Entity
 public class Contractor extends Person {
 }

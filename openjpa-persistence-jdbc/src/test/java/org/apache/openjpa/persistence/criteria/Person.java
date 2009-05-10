@@ -18,22 +18,48 @@
  */
 package org.apache.openjpa.persistence.criteria;
 
-import java.util.List;
+import java.util.Set;
 
+import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
-import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
-import org.apache.openjpa.persistence.PersistentCollection;
-
 @Entity
-@Table(name="CR_PERSON")
+@Table(name="CR_PSN")
 
 public class Person {
     @Id
-    private long ssn;
+    @GeneratedValue
+    private int id;
+
+    private String name;
     
-	@PersistentCollection
-	private List<String> nicknames;
+	@ElementCollection
+	private Set<String> nickNames;
+
+    public int getId() {
+        return id;
+    }
+
+    public String getName() {
+        return name;
+    }
+    
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public Set<String> getNickNames() {
+        return nickNames;
+    }
+    
+    public void setNickNames(Set<String> nickNames) {
+        this.nickNames = nickNames;
+    }
+    
+    public void addNickName(String nickName) {
+        nickNames.add(nickName);
+    }
 }

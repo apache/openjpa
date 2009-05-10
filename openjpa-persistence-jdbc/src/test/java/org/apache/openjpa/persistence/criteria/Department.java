@@ -21,15 +21,44 @@ package org.apache.openjpa.persistence.criteria;
 import java.util.Set;
 
 import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
+
 @Entity
-@Table(name="CR_DEPARTMENT")
+@Table(name="CR_DEPT")
 
 public class Department {
+    @Id
+    @GeneratedValue
 	private int deptNo;
 	private String name;
 	@OneToMany
 	private Set<Employee> employees;
+	
+    public int getDeptno() {
+        return deptNo;
+    }
+    
+    public void setDeptno(int deptNo) {
+        this.deptNo = deptNo;
+    }
+
+    public String getName() {
+        return name;
+    }
+    
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public Set<Employee> getEmployees() {
+        return employees;
+    }
+    
+    public void setEmployees(Set<Employee> employees){
+        this.employees = employees;
+    }
 }

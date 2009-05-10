@@ -19,14 +19,74 @@
 package org.apache.openjpa.persistence.criteria;
 
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
 @Entity
-@Table(name="CR_LINEITEM")
+@Table(name="CR_LI")
 
 public class LineItem {
-	private int price;
+    @Id
+    @GeneratedValue
+    private int id;
+
+    private double price;
+
 	@ManyToOne
 	private Order order;
+
+    private int quantity;
+    
+    private double cost;
+    
+    @ManyToOne (fetch=FetchType.EAGER)
+    Product product;
+     
+    public long getId() {
+        return id;
+    }
+	
+    public Order getOrder() {
+        return order;
+    }
+
+    public void setOrder(Order order) {
+        this.order = order;
+    }
+
+    public double getPrice() {
+        return price;
+    }
+
+    public void setPrice(double price) {
+        this.price = price;
+    }
+
+    public double getCost() {
+        return cost;
+    }
+
+    public void setCost(double cost) {
+        this.cost = cost;
+    }
+
+    public Product getProduct() {
+        return product;
+    }
+
+    public void setProduct(Product product) {
+        this.product = product;
+    }
+
+    public int getQuantity() {
+        return quantity;
+    }
+
+    public void setQuantity(int quantity) {
+        this.quantity = quantity;
+    }
+	
 }

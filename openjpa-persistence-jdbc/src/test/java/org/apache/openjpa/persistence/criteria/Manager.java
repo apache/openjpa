@@ -18,11 +18,54 @@
  */
 package org.apache.openjpa.persistence.criteria;
 
+import java.math.BigDecimal;
+
 import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
 @Entity
+@Table(name="CR_MGR")
+public class Manager {
+    @Id
+    @GeneratedValue
+    private int id;
 
-public class Manager extends Employee {
-    private String cabin;
+    private String name;
+    
+    private BigDecimal salary;
+
+    @ManyToOne
+    private Department department;
+    
+    public int getId() {
+        return id;
+    }
+    
+    public String getName() {
+        return name;
+    }
+    
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public void setDepartment(Department department) {
+        this.department = department;
+    }
+    
+    public Department getDepartment() {
+        return department;
+    }
+
+    public BigDecimal getSalary() {
+        return salary;
+    }
+    
+    public void setSalary(BigDecimal salary) {
+        this.salary = salary;
+    }
+
 }

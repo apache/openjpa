@@ -30,14 +30,50 @@ import javax.persistence.Table;
  *
  */
 @Entity
-@Table(name="CR_ACCOUNT")
+@Table(name="CR_ACCT")
 public class Account {
-	@Id
-	@GeneratedValue
-	private long id;
-	
-	private int balance;
-	private Integer loan;
-	private String owner;
-	private String name;
+    @Id
+    @GeneratedValue
+    private long id;
+
+    private int balance;
+    private Integer loan;
+    private String owner;
+    private String name;
+
+    public long getId() {
+        return id;
+    }
+
+    public String getOwner() {
+        return owner;
+    }
+
+    public void setOwner(String owner) {
+        this.owner = owner;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public int getBalance() {
+        return balance;
+    }
+
+    public void setBalancey(int balance) {
+        this.balance = balance;
+    }
+
+    public Integer getLoan() {
+        return loan;
+    }
+
+    public void setLoan(Integer loan) {
+        this.loan = loan;
+    }
 }

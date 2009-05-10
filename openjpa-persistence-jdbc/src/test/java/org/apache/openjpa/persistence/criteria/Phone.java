@@ -18,12 +18,44 @@
  */
 package org.apache.openjpa.persistence.criteria;
 
+import java.util.ArrayList;
+import java.util.Collection;
+
 import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.ManyToMany;
 import javax.persistence.Table;
 
 @Entity
-@Table(name="CR_PHONE")
-
+@Table(name="CR_PHN")
 public class Phone {
+    @Id 
+    @GeneratedValue
+    private int id;
+    
+    @ManyToMany
+    private Collection<Employee> employees = new ArrayList<Employee>();
+    
 	private String vendor;
+	
+    public int getId() {
+        return id;
+    }
+
+    public Collection<Employee> getEmployees() {
+        return employees;
+    }
+    
+    public void addEmployees(Employee employee) {
+        employees.add(employee);
+    }
+    
+    public String getVendor() {
+        return vendor;
+    }
+    
+    public void setVendor(String vendor) {
+        this.vendor = vendor;
+    }
 }

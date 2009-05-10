@@ -18,17 +18,22 @@
  */
 package org.apache.openjpa.persistence.criteria;
 
+import java.util.Date;
+
+import javax.persistence.Basic;
 import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-import javax.persistence.Table;
 
 @Entity
-@Table(name="CR_EXEMPT")
-
-public class Exempt {
-    @Id
-    @GeneratedValue
-    private String id;
-
+public class Exempt extends Employee {
+    @Basic
+    private Date hireDate;
+    
+    public void setHireDate(Date hireDate) {
+        this.hireDate = hireDate;
+    }
+    
+    public Date getHireDate() {
+        return hireDate;
+    }
+    
 }

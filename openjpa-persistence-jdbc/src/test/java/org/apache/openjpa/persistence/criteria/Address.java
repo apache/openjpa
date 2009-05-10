@@ -33,14 +33,69 @@ import javax.persistence.Table;
  *
  */
 @Entity
-@Table(name="CR_ADDRESS")
+@Table(name="CR_ADDR")
 @Embeddable
 public class Address {
 	@Id
 	@GeneratedValue
 	private long id;
-
+	
+	private String street;
+	private String city;
 	private String state;
 	private String county;
+    private String country;
 	private String zipCode;
+	
+    public long getId() {
+        return id;
+    }
+    
+    public String getStreet() {
+        return street;
+    }
+    
+    public void setStreet(String street) {
+        this.street = street;
+    }
+    
+    public String getCity() {
+        return city;
+    }
+    
+    public void setCity(String city) {
+        this.city = city;
+    }
+    
+    public String getCounty() {
+        return county;
+    }
+    
+    public void setCounty(String county) {
+        this.county = county;
+    }
+
+    public String getState() {
+        return state;
+    }
+    
+    public void setState(String state) {
+        this.state = state;
+    }
+    
+    public String getZipcode() {
+        return zipCode;
+    }
+    
+    public String getCountry() {
+        return country;
+    }
+    
+    public void setCountry(String country) {
+        this.country = country;
+    }
+
+    public void setZipcode(String zipCode) {
+        this.zipCode = zipCode;
+    }
 }

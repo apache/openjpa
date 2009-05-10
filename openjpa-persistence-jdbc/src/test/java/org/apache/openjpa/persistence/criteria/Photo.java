@@ -19,11 +19,29 @@
 package org.apache.openjpa.persistence.criteria;
 
 import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
 import javax.persistence.Table;
 
 @Entity
-@Table(name="CR_PHOTO")
+@Table(name="CR_PHT")
 
 public class Photo {
+    @Id 
+    @GeneratedValue
+    private int id;
+    
 	private String label;
+
+    public int getId() {
+        return id;
+    }
+    
+    public String getLabel() {
+        return label;
+    }
+    
+    public void setLabel(String label) {
+        this.label = label;
+    }
 }

@@ -18,38 +18,131 @@
  */
 package org.apache.openjpa.persistence.criteria;
 
+import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
 import javax.persistence.Entity;
-import javax.persistence.ManyToOne;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
 @Entity
-@Table(name="CR_CUSTOMER")
-
+@Table(name="CR_CUST")
 public class Customer {
+    @Id
+    @GeneratedValue
 	private long id;
+    
 	private String firstName;
 	private String lastName;
+	private String name;
+	
 	@OneToMany
-	private Set<Order> orders;
+	private Set<Order> orders = new HashSet<Order>(); 
+	
 	private int status;
-	private int balanceOwned;
+	private int balanceOwed;
+	
 	@OneToOne
 	private Address address;
 	
 	private int filledOrderCount;
-	private String country;
+	
+    private long accountNum;
 	
 	@OneToMany
-	private List<Account> accounts;
+	private List<Account> accounts = new ArrayList<Account>();
 	
-	public Customer() {
-		
-	}
+    public String getName() {
+        return name;
+    }
+    
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public String getFirstName() {
+        return firstName;
+    }
+    
+    public void setFirstName(String firstName) {
+        this.firstName = firstName;
+    }
+    
+    public String getLastName() {
+        return lastName;
+    }
+    
+    public void setLastName(String lastName) {
+        this.lastName = lastName;
+    }
+
+    public Set<Order> getOrders() {
+        return orders;
+    }
+    
+    public void setOrders(Set<Order> orders) {
+        this.orders = orders;
+    }
+
+    public long getId() {
+        return id;
+    }
+
+    public Address getAddress() {
+        return address;
+    }
+
+    public void setAddress(Address address) {
+        this.address = address;
+    }
+
+    public int getStatus() {
+        return status;
+    }
+    
+    public void setStatus(int status) {
+        this.status = status;
+    }
+    
+    public long getAccountNum() {
+        return accountNum;
+    }
+    
+    public void setAccountNum(long accountNum) {
+        this.accountNum = accountNum;
+    }
+
+    public int getBalanceOwed() {
+        return balanceOwed;
+    }
+    
+    public void setBalanceOwed(int balanceOwed) {
+        this.balanceOwed = balanceOwed;
+    }
+	
+    public int getFilledOrderCount() {
+        return filledOrderCount;
+    }
+    
+    public void setFilledOrderCount(int filledOrderCount) {
+        this.filledOrderCount = filledOrderCount;
+    }
+    
+    public List<Account> getAccounts() {
+        return accounts;
+    }
+    
+    public void setAccounts(List<Account> accounts) {
+        this.accounts = accounts;
+    }
+
+    
+    
 	
 	public Customer(long id, int status, int count) {
 		

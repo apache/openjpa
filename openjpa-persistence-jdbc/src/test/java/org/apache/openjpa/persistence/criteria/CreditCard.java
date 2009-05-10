@@ -21,19 +21,48 @@ package org.apache.openjpa.persistence.criteria;
 import java.util.List;
 
 import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.OrderBy;
 import javax.persistence.Table;
 
 @Entity
-@Table(name="CR_CREDITCARD")
-
+@Table(name="CR_CRDTC")
 public class CreditCard {
-	@OneToOne
-	private Employee holder;
+    @Id
+    @GeneratedValue
+    private long id;
+
+    @OneToOne
+	private Customer customer;
 	
 	@OneToMany
 	@OrderBy
-	private List<Transaction> transactionHistory;
+	private List<TransactionHistory> transactionHistory;
+	
+    public long getId() {
+        return id;
+    }
+
+    public List<TransactionHistory> getTransactionHistory() {
+        return transactionHistory;
+    }
+    
+    public void setTransactionHistory(List<TransactionHistory> transactionHistory) {
+        this.transactionHistory = transactionHistory;
+    }
+    
+    public void addTransactionHistory(TransactionHistory transaction) {
+        transactionHistory.add(transaction);
+    }
+	
+    public Customer getCustomer() {
+        return customer;
+    }
+    
+    public void setCustomerr(Customer customer) {
+        this.customer = customer;
+    }
 }

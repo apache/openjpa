@@ -18,16 +18,54 @@
  */
 package org.apache.openjpa.persistence.criteria;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
+import javax.persistence.ManyToMany;
+import javax.persistence.MapKeyJoinColumn;
 import javax.persistence.Table;
 
 @Entity
-@Table(name="CR_STUDENT")
+@Table(name="CR_STU")
 
 public class Student {
     @Id
+    @GeneratedValue
+    private int id;
+    
     private String name;
+    
+    @ManyToMany
+    @JoinTable(name="ENROLLMENTS",
+        joinColumns=@JoinColumn(name="STUDENT"),
+        inverseJoinColumns=@JoinColumn(name="SEMESTER"))
+    @MapKeyJoinColumn(name="COURSE")    
+    private Map<Course, Semester> enrollment = 
+        new HashMap<Course, Semester>();
+    
+    public int getId() {
+        return id;
+    }
+    
+    public String getName() {
+        return name;
+    }
+    
+    public void setName(String name) {
+        this.name = name;
+    }
+    
+    public Map getEnrollment() {
+        return enrollment;
+    }
+    
+    public void addToEnrollment(Course course, Semester semester) {
+        enrollment.put(course, semester);
+    }
 
 }
