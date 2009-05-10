@@ -8,7 +8,6 @@ import javax.persistence.metamodel.Attribute;
 import javax.persistence.metamodel.List;
 
 @javax.persistence.metamodel.TypesafeMetamodel(value=org.apache.openjpa.persistence.criteria.Contact.class)
-@javax.annotation.Generated(value="org.apache.openjpa.persistence.meta.AnnotationProcessor6",date="Sat May 09 23:22:02 PDT 2009")
 public class Contact_ {
     public static volatile Attribute<Contact,Address> address;
     public static volatile List<Contact,Phone> phones;

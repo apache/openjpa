@@ -8,7 +8,6 @@ import javax.persistence.metamodel.Attribute;
 import javax.persistence.metamodel.Set;
 
 @javax.persistence.metamodel.TypesafeMetamodel(value=org.apache.openjpa.persistence.criteria.Person.class)
-@javax.annotation.Generated(value="org.apache.openjpa.persistence.meta.AnnotationProcessor6",date="Sat May 09 23:22:02 PDT 2009")
 public class Person_ {
     public static volatile Attribute<Person,Integer> id;
     public static volatile Attribute<Person,String> name;

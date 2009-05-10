@@ -6,6 +6,5 @@ package org.apache.openjpa.persistence.criteria;
 
 
 @javax.persistence.metamodel.TypesafeMetamodel(value=org.apache.openjpa.persistence.criteria.Contractor.class)
-@javax.annotation.Generated(value="org.apache.openjpa.persistence.meta.AnnotationProcessor6",date="Sat May 09 23:22:02 PDT 2009")
 public class Contractor_ extends Person_  {
 }

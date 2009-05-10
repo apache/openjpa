@@ -8,7 +8,6 @@ import java.util.Date;
 import javax.persistence.metamodel.Attribute;
 
 @javax.persistence.metamodel.TypesafeMetamodel(value=org.apache.openjpa.persistence.criteria.Exempt.class)
-@javax.annotation.Generated(value="org.apache.openjpa.persistence.meta.AnnotationProcessor6",date="Sat May 09 23:22:02 PDT 2009")
 public class Exempt_ extends Employee_  {
     public static volatile Attribute<Exempt,Date> hireDate;
 }
