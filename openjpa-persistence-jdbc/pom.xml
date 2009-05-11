@@ -757,6 +757,16 @@
                             <value>target/derby.log</value>
                         </property>
                         <property>
+                            <name>derby.locks.deadlockTimeout</name>
+                            <value>5</value>
+                        </property>
+                        <!-- following causes lockmgr test failures
+                        <property>
+                            <name>derby.locks.deadlockTimeout</name>
+                            <value>6</value>
+                        </property>
+                        -->
+                        <property>
                             <name>openjpa.ConnectionProperties</name>
                             <value>DriverClassName=${connection.driver.name},Url=${connection.url},Username=${connection.username},Password=${connection.password},${dbcp.args}</value>
                         </property>
