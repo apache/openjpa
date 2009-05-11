@@ -437,6 +437,11 @@
             <artifactId>openjpa</artifactId>
             <version>${pom.version}</version>
         </dependency>
+        <dependency>
+            <groupId>org.apache.openjpa</groupId>
+            <artifactId>openjpa-all</artifactId>
+            <version>${pom.version}</version>
+        </dependency>
 
         <!-- included so we can include it in the distribution -->
         <dependency>

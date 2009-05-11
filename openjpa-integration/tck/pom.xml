@@ -175,7 +175,7 @@ databaseName=${db.name}
                         </concat>
 
                         <path id="agent.path">
-                            <fileset dir="../../openjpa-all/target">
+                            <fileset dir="../../openjpa/target">
                                 <include name="*.jar" />
                             </fileset>
                         </path>
