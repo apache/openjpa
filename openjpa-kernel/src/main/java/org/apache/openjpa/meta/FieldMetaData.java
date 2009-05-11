@@ -1996,6 +1996,9 @@ public class FieldMetaData
         return _val.getEmbeddedMetaData();
     }
 
+    public ClassMetaData addEmbeddedMetaData(int access) {
+        return _val.addEmbeddedMetaData(access);
+    }
     public ClassMetaData addEmbeddedMetaData() {
         return _val.addEmbeddedMetaData();
     }

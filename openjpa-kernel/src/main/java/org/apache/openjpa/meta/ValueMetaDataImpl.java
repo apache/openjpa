@@ -185,16 +185,20 @@ public class ValueMetaDataImpl
             addEmbeddedMetaData();
         return _embeddedMeta;
     }
-
-    public ClassMetaData addEmbeddedMetaData() {
+   
+    public ClassMetaData addEmbeddedMetaData(int access) {
         MetaDataRepository repos = _owner.getRepository();
         _embeddedMeta = repos.newEmbeddedClassMetaData(this);
         _embeddedMeta.setDescribedType(_decType);
         repos.getMetaDataFactory().getDefaults().populate(_embeddedMeta,
-            AccessCode.UNKNOWN);
+                access);
 
         setEmbedded(true);
         return _embeddedMeta;
+    }
+
+    public ClassMetaData addEmbeddedMetaData() {
+        return addEmbeddedMetaData(AccessCode.UNKNOWN);
     }
 
     public int getCascadeDelete() {

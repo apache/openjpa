@@ -157,6 +157,11 @@ public interface ValueMetaData
     public ClassMetaData addEmbeddedMetaData();
 
     /**
+     * Add embedded metadata for this value with the given access type
+     */
+    public ClassMetaData addEmbeddedMetaData(int access);
+    
+    /**
      * Cascade behavior for delete operation. Only applies to
      * persistence-capable values. Options are:<br />
      * <ul>

@@ -413,6 +413,17 @@ public abstract class PersistenceTestCase
 		}
 	}
 
+    /**
+     * Asserts that the given targetType is assignable from given actual 
+     * Throwable and that the exception message contains the specified message 
+     * or message fragments.
+     */
+    protected void assertExceptionMessage(final Throwable actual, 
+        Class targetType, String...messages) {
+        assertException(actual, targetType, null);
+        assertMessage(actual, messages);
+    }
+    
 	/**
 	 * Assert that each of given keys are present in the message of the given
 	 * Throwable.

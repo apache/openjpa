@@ -615,6 +615,18 @@ public class PCEnhancer {
         BCField returned, assigned = null;
         for (int i = 0; i < fmds.length; i++) {
 
+            if (!(fmds[i].getBackingMember() instanceof Method) ) {
+                // If not mixed access is not defined, flag the field members, 
+                // otherwise do not process them because they are valid
+                // persistent attributes.
+                if (!_meta.isMixedAccess()) {
+                    addViolation("property-bad-member",
+                        new Object[]{ fmds[i], fmds[i].getBackingMember() },
+                        true);
+                }
+                continue;
+            }
+            
             meth = (Method) fmds[i].getBackingMember();
             // ##### this will fail if we override and don't call super.
             BCClass declaringType = _managedType.getProject()

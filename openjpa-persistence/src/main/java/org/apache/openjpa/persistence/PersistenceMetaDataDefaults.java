@@ -744,7 +744,7 @@ public class PersistenceMetaDataDefaults
 
         public boolean includes(AnnotatedElement obj) {
         	Access access = obj.getAnnotation(Access.class);
-        	return access != null && access.equals(target);
+        	return access != null && access.value().equals(target);
         }
     }
     

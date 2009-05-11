@@ -843,8 +843,14 @@ public class XMLPersistenceMetaDataParser
             return false;
         }
 
+        int access = AccessCode.UNKNOWN;
         if (meta == null) {
             int accessCode = toAccessType(attrs.getValue("access"));
+            // if access not specified and access was specified at
+            // the system level, use the system default (which may 
+            // be UNKNOWN)
+            if (accessCode == AccessCode.UNKNOWN)
+                accessCode = _access;
             meta = repos.addMetaData(_cls, accessCode);
             meta.setEnvClassLoader(_envLoader);
             meta.setSourceMode(MODE_NONE);
@@ -853,7 +859,8 @@ public class XMLPersistenceMetaDataParser
             if (_parser != null)
                 _parser.parse(_cls);
         }
-        
+        access = meta.getAccessType();
+
         boolean mappedSuper = "mapped-superclass".equals(elem);
         boolean embeddable = "embeddable".equals(elem);
         if (isMetaDataMode()) {
@@ -872,7 +879,7 @@ public class XMLPersistenceMetaDataParser
             meta.setEmbeddedOnly(mappedSuper || embeddable);
             
             if (embeddable) {
-                addDeferredEmbeddableMetaData(_cls);
+                addDeferredEmbeddableMetaData(_cls, access);
             }
         }
         if (isMappingMode())
@@ -935,7 +942,6 @@ public class XMLPersistenceMetaDataParser
             return AccessCode.EXPLICIT | AccessCode.PROPERTY;
         return AccessCode.EXPLICIT | AccessCode.FIELD;
     }
-
     /**
      * Parse flush-mode element.
      */
@@ -1882,16 +1888,17 @@ public class XMLPersistenceMetaDataParser
      * @param embedType  embeddable class 
      * @param access class level access for embeddable
      */
-    protected void addDeferredEmbeddableMetaData(Class<?> embedType) {
+    protected void addDeferredEmbeddableMetaData(Class<?> embedType, 
+        int access) {
         ArrayList<MetaDataContext> fmds = _embeddables.get(embedType);
         if (fmds != null && fmds.size() > 0) {
             for (int i = fmds.size() -1 ; i >= 0; i--) {
                 MetaDataContext md = fmds.get(i);
                 if (md instanceof FieldMetaData) {
-                    ((FieldMetaData)md).addEmbeddedMetaData();            
+                    ((FieldMetaData)md).addEmbeddedMetaData(access);            
                 }
                 else if (md instanceof ValueMetaData) {
-                    ((ValueMetaData)md).addEmbeddedMetaData();
+                    ((ValueMetaData)md).addEmbeddedMetaData(access);
                 }
                 fmds.remove(i);
             }
