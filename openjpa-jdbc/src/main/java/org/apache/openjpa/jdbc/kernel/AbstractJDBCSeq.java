@@ -57,8 +57,9 @@ public abstract class AbstractJDBCSeq
     public Object next(StoreContext ctx, ClassMetaData meta) {
         JDBCStore store = getStore(ctx);
         try {
-            current = nextInternal(store, (ClassMapping) meta);
-            return current;
+            Object currentLocal = nextInternal(store, (ClassMapping) meta);
+            current = currentLocal;
+            return currentLocal;
         } catch (OpenJPAException ke) {
             throw ke;
         } catch (SQLException se) {
