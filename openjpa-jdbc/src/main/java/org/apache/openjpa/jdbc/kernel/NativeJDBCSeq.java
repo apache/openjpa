@@ -281,9 +281,7 @@ public class NativeJDBCSeq
         ResultSet rs = null;
         try {
             stmnt = conn.prepareStatement(_select);
-            synchronized(this) {
-                rs = stmnt.executeQuery();
-            }
+            rs = stmnt.executeQuery();
             if (rs.next())
                 return rs.getLong(1);
 
