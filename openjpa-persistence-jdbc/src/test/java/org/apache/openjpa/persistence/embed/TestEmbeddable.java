@@ -1595,13 +1595,115 @@ public class TestEmbeddable extends SingleEMFTestCase {
                 " order by e.intVal3",
             */
         };
+        String[] query2 = {
+            "select e, e.intVal1, e.embed.intVal2 from " +
+                " EntityA_Coll_Embed_Embed a " +
+                " , in (a.embeds) e WHERE e.intVal1 < ANY (select e2.intVal2 " +
+                " from EntityA_Coll_Embed_Embed a1, in (a1.embeds) e2) " +
+                " order by e.intVal3",
+            "select e, e.intVal1, e.embed.intVal2 from " +
+                " EntityA_Coll_Embed_Embed a " +
+                " , in (a.embeds) e WHERE e.intVal1 < ALL (select e2.intVal2 " +
+                " from EntityA_Coll_Embed_Embed a1, in (a1.embeds) e2) " +
+                " order by e.intVal3",
+            "select e, e.intVal1, e.embed.intVal2 from " +
+                " EntityA_Coll_Embed_Embed a " +
+                " , in (a.embeds) e WHERE e.intVal1 <= SOME (select e2.intVal2 " +
+                " from EntityA_Coll_Embed_Embed a1, in (a1.embeds) e2) " +
+                " order by e.intVal3",
+            "select e, e.intVal1, e.embed.intVal2 from " +
+                " EntityA_Coll_Embed_Embed a " +
+                " , in (a.embeds) e WHERE e.intVal1 > ALL (select e2.intVal2 " +
+                " from EntityA_Coll_Embed_Embed a1, in (a1.embeds) e2) " +
+                " order by e.intVal3",
+            // non-corelated subquery:
+            // TODO: known problem in table alias resolution for subquery
+            //       the genarated SQL subquery should be non-corelated,
+            //       but generated corelated subquery.
+            "select e, e.intVal1, e.embed.intVal2 from " +
+                " EntityA_Coll_Embed_Embed a " +
+                " , in (a.embeds) e WHERE e.intVal1 < ANY (select e.intVal2 " +
+                " from EntityA_Coll_Embed_Embed a, in (a.embeds) e) " +
+                " order by e.intVal3",
+            "select e, e.intVal1, e.embed.intVal2 from " +
+                " EntityA_Coll_Embed_Embed a " +
+                " , in (a.embeds) e WHERE e.intVal1 < ALL (select e.intVal2 " +
+                " from EntityA_Coll_Embed_Embed a, in (a.embeds) e) " +
+                " order by e.intVal3",
+            "select e, e.intVal1, e.embed.intVal2 from " +
+                " EntityA_Coll_Embed_Embed a " +
+                " , in (a.embeds) e WHERE e.intVal1 <= SOME (select e.intVal2 " +
+                " from EntityA_Coll_Embed_Embed a, in (a.embeds) e) " +
+                " order by e.intVal3",
+            "select e, e.intVal1, e.embed.intVal2 from " +
+                " EntityA_Coll_Embed_Embed a " +
+                " , in (a.embeds) e WHERE e.intVal1 > ALL (select e.intVal2 " +
+                " from EntityA_Coll_Embed_Embed a, in (a.embeds) e) " +
+                " order by e.intVal3",
+            // corelated subquery:
+            // TODO: known problem in table alias resolution for subquery
+            //       the genarated SQL subquery should be corelated,
+            //       but generated non-corelated subquery.
+            "select e, e.intVal1, e.embed.intVal2 from " +
+                " EntityA_Coll_Embed_Embed a " +
+                " , in (a.embeds) e WHERE e.intVal1 < ANY (select e2.intVal2 " +
+                " from in(a.embeds) e2) " +
+                " order by e.intVal3",
+            "select e, e.intVal1, e.embed.intVal2 from " +
+                " EntityA_Coll_Embed_Embed a " +
+                " , in (a.embeds) e WHERE e.intVal1 < ALL (select e2.intVal2 " +
+                " from a.embeds e2) " +
+                " order by e.intVal3",
+            "select e, e.intVal1, e.embed.intVal2 from " +
+                " EntityA_Coll_Embed_Embed a " +
+                " , in (a.embeds) e WHERE e.intVal1 <= SOME (select e2.intVal2 " +
+                " from in(a.embeds) e2) " +
+                " order by e.intVal3",
+            "select e, e.intVal1, e.embed.intVal2 from " +
+                " EntityA_Coll_Embed_Embed a " +
+                " , in (a.embeds) e WHERE e.intVal1 > ALL (select e2.intVal2 " +
+                " from a.embeds e2) " +
+                " order by e.intVal3",
+        };
+        String[] query3 = {
+            // query with parameter of embeddable object
+            "select e, e.intVal1, e.embed.intVal2 from " +
+                " EntityA_Coll_Embed_Embed a " +
+                " , in (a.embeds) e WHERE ?1 MEMBER OF a.embeds " +
+                " order by e.intVal3",
+            "select e, e.intVal1, e.embed.intVal2 from " +
+                " EntityA_Coll_Embed_Embed a " +
+                " left join a.embeds e WHERE ?1 MEMBER OF a.embeds " +
+                " order by e.intVal3",
+            "select e, e.intVal1, e.embed.intVal2 from " +
+                " EntityA_Coll_Embed_Embed a " +
+                " , in (a.embeds) e WHERE ?1 = e " +
+                " order by e.intVal3",
+        };
+
         List rs = null;
+        Object obj = null;
         for (int i = 0; i < query.length; i++) {
             rs = em.createQuery(query[i]).getResultList();
             assertTrue(rs.size() > 0);
-            Object obj = ((Object[]) rs.get(0))[0];
+            obj = ((Object[]) rs.get(0))[0];
             assertTrue(obj instanceof Embed_Embed);
         }
+        for (int i = 0; i < query2.length; i++) {
+            rs = em.createQuery(query2[i]).getResultList();
+            if (rs.size() > 0) {
+                obj = ((Object[]) rs.get(0))[0];
+                assertTrue(obj instanceof Embed_Embed);
+            }
+        }
+        for (int i = 0; i < query3.length; i++) {
+            rs = em.createQuery(query3[i]).setParameter(1, obj).getResultList();
+            if (rs.size() > 0) {
+                obj = ((Object[]) rs.get(0))[0];
+                assertTrue(obj instanceof Embed_Embed);
+            }
+        }
+
         em.clear();
 
         EntityTransaction tran = em.getTransaction();

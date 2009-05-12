@@ -146,4 +146,11 @@ public class Param
         else
             sql.appendValue(pstate.sqlValue, pstate.getColumn(index), this);
     }
+
+    public int length(Select sel, ExpContext ctx, ExpState state) {
+        ParamExpState pstate = (ParamExpState) state;
+        if (getMetaData() == null || pstate.cols == null)
+            return 1;
+        return pstate.cols.length;
+    }
 }
