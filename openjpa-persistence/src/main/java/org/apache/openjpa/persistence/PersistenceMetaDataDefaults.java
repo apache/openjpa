@@ -594,7 +594,12 @@ public class PersistenceMetaDataDefaults
     	return member != null && member instanceof AnnotatedElement
     	    && annotatedFilter.includes((AnnotatedElement)member);
     }
-    
+
+    private boolean isNotTransient(Member member) {
+        return member != null && member instanceof AnnotatedElement
+            && nonTransientFilter.includes((AnnotatedElement)member);
+    }
+
     /**
      * Gets either the instance field or the getter method depending upon the 
      * access style of the given meta-data.
@@ -609,7 +614,8 @@ public class PersistenceMetaDataDefaults
         	access;
         if (field == null && getter == null)
         	error(meta, _loc.get("access-no-property", cls, property));
-    	if (isAnnotated(field) && isAnnotated(getter))
+    	if ((isNotTransient(getter) && isAnnotated(getter)) && 
+    	     isNotTransient(field) && isAnnotated(field))
     		throw new IllegalStateException(_loc.get("access-duplicate", 
     			field, getter).toString());
     	

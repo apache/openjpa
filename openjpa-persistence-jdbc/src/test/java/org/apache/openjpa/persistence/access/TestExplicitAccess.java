@@ -26,14 +26,11 @@ import java.util.Random;
 
 import javax.persistence.Query;
 
-import org.apache.openjpa.jdbc.ant.ReverseMappingToolTask.AccessType;
 import org.apache.openjpa.meta.AccessCode;
 import org.apache.openjpa.meta.ClassMetaData;
-import org.apache.openjpa.meta.FieldMetaData;
 import org.apache.openjpa.meta.MetaDataRepository;
 import org.apache.openjpa.persistence.ArgumentException;
 import org.apache.openjpa.persistence.OpenJPAEntityManagerSPI;
-import org.apache.openjpa.persistence.test.AllowFailure;
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
 
 public class TestExplicitAccess extends SingleEMFTestCase {
@@ -48,17 +45,15 @@ public class TestExplicitAccess extends SingleEMFTestCase {
             AbstractMappedSuperProperty.class, FieldSub.class,
             MappedSuperProperty.class, FieldSub2.class,
             SuperPropertyEntity.class, FieldSub3.class,
-            MixedMappedSuper.class, MixedFieldSub.class //,
-            // These persistent types are commented out until
-            // support for embeddable access types is complete
-//            FieldEmbedEntity.class, EmbedFieldAccess.class,
-//            PropEmbedEntity.class, EmbedPropAccess.class,
-//            PropMixedEntity.class, EmbedMixedAccess.class,
-//            MixedNestedEmbedEntity.class, EmbedInnerProp.class,
-//            EmbedOuterField.class, MixedMultEmbedEntity.class,
-//            FieldAccessPropStratsEntity.class, 
-//            PropAccessFieldStratsEntity.class,
-          /*  EmbedId.class */);
+            MixedMappedSuper.class, MixedFieldSub.class,
+            FieldEmbedEntity.class, EmbedFieldAccess.class,
+            PropEmbedEntity.class, EmbedPropAccess.class,
+            PropMixedEntity.class, EmbedMixedAccess.class,
+            MixedNestedEmbedEntity.class, EmbedInnerProp.class,
+            EmbedOuterField.class, MixedMultEmbedEntity.class,
+            FieldAccessPropStratsEntity.class, 
+            PropAccessFieldStratsEntity.class,
+            EmbedId.class);
     }
 
     
@@ -626,8 +621,6 @@ public class TestExplicitAccess extends SingleEMFTestCase {
      * Validates an embeddable with field access can be used within an
      * entity with property access
      */
-    @AllowFailure(value=true, 
-        message="Support for explicit Access on embeddables is not complete.")
     public void testEmbeddablesField() {
         OpenJPAEntityManagerSPI em = emf.createEntityManager();
         
@@ -675,8 +668,6 @@ public class TestExplicitAccess extends SingleEMFTestCase {
      * Validates an embeddable with property access can be used within an
      * entity with field access
      */
-    @AllowFailure(value=true, 
-        message="Support for explicit Access on embeddables is not complete.")
     public void testEmbeddablesProperty() {
         OpenJPAEntityManagerSPI em = emf.createEntityManager();
         
@@ -724,8 +715,6 @@ public class TestExplicitAccess extends SingleEMFTestCase {
      * Validates an embeddable with mixed access can be used within an
      * entity with mixed access
      */
-    @AllowFailure(value=true, 
-        message="Support for explicit Access on embeddables is not complete.")
     public void testMixedEmbeddables() {
         OpenJPAEntityManagerSPI em = emf.createEntityManager();
         
@@ -776,8 +765,6 @@ public class TestExplicitAccess extends SingleEMFTestCase {
      * Validates that a mix of access types can be used within
      * an embeddable stack.
      */
-    @AllowFailure(value=true, 
-        message="Support for explicit Access on embeddables is not complete.")
     public void testNestedEmbeddables() {
         OpenJPAEntityManagerSPI em = emf.createEntityManager();
         
@@ -828,8 +815,6 @@ public class TestExplicitAccess extends SingleEMFTestCase {
      * Validates that a mix of access types can be used by an
      * an entity with mulitple embeddables.
      */
-    @AllowFailure(value=true, 
-        message="Support for explicit Access on embeddables is not complete.")
     public void testMultipleEmbeddables() {
         OpenJPAEntityManagerSPI em = emf.createEntityManager();
         
@@ -901,8 +886,6 @@ public class TestExplicitAccess extends SingleEMFTestCase {
      * strategies from within an entity with explicit field access (except for
      * the id field, which is field default)
      */
-    @AllowFailure(value=true, 
-        message="Support for explicit Access on embeddables is not complete.")
     public void testPropertyAccessStrategies() {
         OpenJPAEntityManagerSPI em = emf.createEntityManager();
 
@@ -995,8 +978,6 @@ public class TestExplicitAccess extends SingleEMFTestCase {
      * strategies from within an entity with explicit property access (except
      * for the id field, which is property default)
      */
-    @AllowFailure(value=true, 
-        message="Support for explicit Access on embeddables is not complete.")
     public void testFieldAccessStrategies() {
         OpenJPAEntityManagerSPI em = emf.createEntityManager();
 

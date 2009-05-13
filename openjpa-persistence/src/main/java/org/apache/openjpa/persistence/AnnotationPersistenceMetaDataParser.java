@@ -1446,7 +1446,7 @@ public class AnnotationPersistenceMetaDataParser
         fmd.setEmbedded(true);
         
         if (fmd.getEmbeddedMetaData() == null)
-            fmd.addEmbeddedMetaData();
+            fmd.addEmbeddedMetaData(getAccessCode(fmd.getDeclaredType()));
     }
 
     /**
@@ -1577,7 +1577,7 @@ public class AnnotationPersistenceMetaDataParser
                     "Persistent(embedded=true)"));
             fmd.setEmbedded(true);
             if (fmd.getEmbeddedMetaData() == null) {
-                fmd.addEmbeddedMetaData();
+                fmd.addEmbeddedMetaData(getAccessCode(fmd.getDeclaredType()));
             }
         }
     }
@@ -1604,7 +1604,8 @@ public class AnnotationPersistenceMetaDataParser
                     "PersistentCollection(embeddedElement=true)"));
             fmd.getElement().setEmbedded(true);
             if (fmd.getElement().getEmbeddedMetaData() == null) {
-                fmd.getElement().addEmbeddedMetaData();
+                fmd.getElement().addEmbeddedMetaData(
+                    getAccessCode(fmd.getElement().getDeclaredType()));
             }
         }
     }
@@ -1630,7 +1631,7 @@ public class AnnotationPersistenceMetaDataParser
         if (!isEnum && JavaTypes.maybePC(elem)) {
             elem.setEmbedded(true);
             if (elem.getEmbeddedMetaData() == null)
-                elem.addEmbeddedMetaData();
+                elem.addEmbeddedMetaData(getAccessCode(elem.getDeclaredType()));
         }
     }
     
@@ -1655,7 +1656,8 @@ public class AnnotationPersistenceMetaDataParser
                     "PersistentMap(embeddedKey=true)"));
             fmd.getKey().setEmbedded(true);
             if (fmd.getKey().getEmbeddedMetaData() == null) {
-                fmd.getKey().addEmbeddedMetaData();
+                fmd.getKey().addEmbeddedMetaData(
+                    getAccessCode(fmd.getKey().getDeclaredType()));
             }
         }
         if (anno.elementEmbedded()) {
@@ -1664,7 +1666,8 @@ public class AnnotationPersistenceMetaDataParser
                     "PersistentMap(embeddedValue=true)"));
             fmd.getElement().setEmbedded(true);
             if (fmd.getElement().getEmbeddedMetaData() == null)
-                fmd.getElement().addEmbeddedMetaData();
+                fmd.getElement().addEmbeddedMetaData(
+                    getAccessCode(fmd.getElement().getDeclaredType()));
         }
     }
 
