@@ -255,8 +255,8 @@ public class Table
     }
 
     public String[] getColumnNames() {
-    	return _colMap == null ? new String[0] : 
-    		(String[])_colMap.keySet().toArray(new String[_colMap.size()]);
+        return _colMap == null ? new String[0] : 
+            (String[])_colMap.keySet().toArray(new String[_colMap.size()]);
     }
     
     /**
@@ -275,8 +275,8 @@ public class Table
      * for dynamic table implementation.
      */
     public boolean containsColumn(String name) {
-    	return name != null && _colMap != null 
-    		&& _colMap.containsKey(name.toUpperCase());
+        return name != null && _colMap != null 
+            && _colMap.containsKey(name.toUpperCase());
     }
 
     /**
@@ -755,5 +755,16 @@ public class Table
 
     public void setColNumber(int colNum) {
         _colNum = colNum;
+    }
+
+    /**
+    * Add a column to the subNames set to avoid naming conflict.
+    */
+    public void addSubColumn(String name) {
+        addSubName(name);
+    }
+
+    public void resetSubColumns() {
+        resetSubNames();
     }
 }
