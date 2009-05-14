@@ -329,11 +329,14 @@ public class TestTypesafeCriteria extends SQLListenerTestCase {
         q.select(cb.size(d.get(Department_.employees)));
         
         assertEquivalence(q, jpql);
-        
-        jpql = "SELECT e.name, CASE WHEN e.rating = 1 THEN e.salary * 1.1 " +
+    } 
+    
+    public void testGeneralCaseExpression() {
+        String jpql = "SELECT e.name, CASE " + 
+            "WHEN e.rating = 1 THEN e.salary * 1.1 " +
             "WHEN e.rating = 2 THEN e.salary * 1.2 ELSE e.salary * 1.01 END " +
             "FROM Employee e WHERE e.department.name = 'Engineering'";
-        q = cb.create();
+        CriteriaQuery q = cb.create();
         Root<Employee> e = q.from(Employee.class);
         q.where(cb.equal(e.get(Employee_.department).get(Department_.name), 
             "Engineering"));
@@ -344,7 +347,41 @@ public class TestTypesafeCriteria extends SQLListenerTestCase {
                 .when(cb.equal(e.get(Employee_.rating), 2), 
                     cb.prod(e.get(Employee_.salary), 1.2))
                 .otherwise(cb.prod(e.get(Employee_.salary), 1.01)));    
- 
+
+        assertEquivalence(q, jpql);
+    }    
+    
+    public void testSimpleCaseExpression1() {
+        String jpql = "SELECT e.name, CASE e.rating " + 
+            "WHEN 1 THEN e.salary * 1.1 " +
+            "WHEN 2 THEN e.salary * 1.2 ELSE e.salary * 1.01 END " +
+            "FROM Employee e WHERE e.department.name = 'Engineering'";
+        CriteriaQuery q = cb.create();
+        Root<Employee> e = q.from(Employee.class);
+        q.where(cb.equal(e.get(Employee_.department).get(Department_.name), 
+            "Engineering"));
+        q.select(e.get(Employee_.name), 
+            cb.selectCase(e.get(Employee_.rating))
+                .when(1, cb.prod(e.get(Employee_.salary), 1.1))
+                .when(2, cb.prod(e.get(Employee_.salary), 1.2))
+                .otherwise(cb.prod(e.get(Employee_.salary), 1.01)));    
+
+        assertEquivalence(q, jpql);
+    }
+    
+    public void testSimpleCaseExpression2() {
+        String jpql = "SELECT e.name, CASE e.rating WHEN 1 THEN 10 " +
+            "WHEN 2 THEN 20 ELSE 30 END " +
+            "FROM Employee e WHERE e.department.name = 'Engineering'";
+        CriteriaQuery q = cb.create();
+        Root<Employee> e = q.from(Employee.class);
+        q.where(cb.equal(e.get(Employee_.department).get(Department_.name), 
+            "Engineering"));
+        q.select(e.get(Employee_.name), 
+            cb.selectCase(e.get(Employee_.rating))
+                .when(1, 10)
+                .when(2, 20)
+                .otherwise(30));    
         assertEquivalence(q, jpql);
     }    
     
@@ -551,7 +588,6 @@ public class TestTypesafeCriteria extends SQLListenerTestCase {
         assertEquivalence(q, jpql);
     }
 
-    @AllowFailure
     void assertEquivalence(CriteriaQuery c, String jpql, 
         String[] paramNames, Object[] params) {
         sql.clear();
