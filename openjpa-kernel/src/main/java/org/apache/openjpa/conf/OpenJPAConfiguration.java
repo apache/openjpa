@@ -1645,4 +1645,20 @@ public interface OpenJPAConfiguration
      * @since 2.0.0
      */
     public void setFinderCache(String cache);
+    
+    /**
+     * The bean validation mode to use for managed classes.
+     * Defaults to <code>AUTO</code>.
+     *
+     * @since 2.0.0
+     */
+    public String getValidationMode();
+
+    /**
+     * Set the bean validation mode to use for managed classes.
+     * If not set, defaults to <code>AUTO</code>.
+     *
+     * @since 2.0.0
+     */
+    public void setValidationMode(String mode);
 }

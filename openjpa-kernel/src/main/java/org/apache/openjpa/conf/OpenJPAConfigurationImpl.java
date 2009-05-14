@@ -152,6 +152,7 @@ public class OpenJPAConfigurationImpl
     public PluginValue preparedQueryCachePlugin;
     public PluginValue finderCachePlugin;
     public ObjectValue specification;
+    public StringValue validationMode;
     
     // custom values
     public BrokerFactoryValue brokerFactoryPlugin;
@@ -550,7 +551,21 @@ public class OpenJPAConfigurationImpl
         queryTimeout = addInt("javax.persistence.query.timeout");
         queryTimeout.setDefault("-1");
         queryTimeout.setDynamic(true);
-        
+
+        // kernel can't access javax.persistence.ValidationMode enums here
+        validationMode = addString("javax.persistence.validation.mode");
+        aliases =
+            new String[] {
+                "AUTO", "auto",
+                "CALLBACK", "callback",
+                "NONE", "none"
+            };
+        validationMode.setAliases(aliases);
+        validationMode.setAliasListComprehensive(true);
+        validationMode.setDefault(aliases[0]);
+        validationMode.set(aliases[0]);
+        validationMode.setDynamic(true);
+
         // initialize supported options that some runtimes may not support
         supportedOptions.add(OPTION_NONTRANS_READ);
         supportedOptions.add(OPTION_OPTIMISTIC);
@@ -1507,6 +1522,14 @@ public class OpenJPAConfigurationImpl
     
     public void setInitializeEagerly(boolean retry) {
     	eagerInitialization.set(retry);
+    }
+
+    public void setValidationMode(String mode) {
+        validationMode.setString(mode);
+    }
+
+    public String getValidationMode() {
+        return validationMode.getString();
     }
 
     public void instantiateAll() {

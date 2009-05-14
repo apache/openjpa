@@ -1,0 +1,226 @@
+/*
+ * Licensed to the Apache Software Foundation (ASF) under one or more
+ * contributor license agreements. See the NOTICE file distributed with this
+ * work for additional information regarding copyright ownership. The ASF
+ * licenses this file to you under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ * http://www.apache.org/licenses/LICENSE-2.0 Unless required by applicable law
+ * or agreed to in writing, software distributed under the License is
+ * distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied. See the License for the specific language
+ * governing permissions and limitations under the License.
+ */
+package org.apache.openjpa.persistence.validation;
+
+import java.util.HashMap;
+import java.util.Map;
+
+import javax.persistence.ValidationMode;
+
+import org.apache.openjpa.conf.OpenJPAConfiguration;
+import org.apache.openjpa.lib.log.Log;
+import org.apache.openjpa.persistence.OpenJPAEntityManagerFactory;
+import org.apache.openjpa.persistence.OpenJPAPersistence;
+import org.apache.openjpa.persistence.query.SimpleEntity;
+import org.apache.openjpa.persistence.test.SingleEMFTestCase;
+
+/**
+ * Tests the new Bean Validation Mode support in the JPA 2.0 spec.
+ * Basic (no provider) Validation scenarios being tested:
+ *   1) By default, validation mode is AUTO
+ *   2) Validation mode of AUTO in persistence.xml is the same as default
+ *   3) Validation mode of NONE in persistence.xml overrides default AUTO
+ *   4) Validation mode of CALLBACK in persistence.xml overrides default AUTO
+ *   5) Validation mode in createEMF(Map props) overrides no persistence.xml
+ *   6) Validation mode in createEMF(Map props) overrides persistence.xml
+ *   7) Validation mode in createEMF(Map props) can be a ValidationMode enum
+ * 
+ * @version $Rev$ $Date$
+ */
+public class TestValidationMode extends SingleEMFTestCase {
+
+    @Override
+    public void setUp() {
+        super.setUp(CLEAR_TABLES, SimpleEntity.class);
+    }
+
+    /**
+     * Scenario being tested:
+     *   1) By default, validation mode == AUTO
+     */
+    public void testValidationMode1() {
+        getLog().trace("testValidationMode1() - Default mode is AUTO");
+        OpenJPAEntityManagerFactory emf = null;
+
+        // create our EMF
+        emf = OpenJPAPersistence.createEntityManagerFactory(
+            "simple",
+            "org/apache/openjpa/persistence/validation/persistence.xml");
+        assertNotNull(emf);
+        // verify default validation mode
+        OpenJPAConfiguration conf = emf.getConfiguration();
+        assertNotNull(conf);
+        assertEquals("Default validation mode", 
+            String.valueOf(ValidationMode.AUTO),
+            conf.getValidationMode());
+    }
+
+    /**
+     * Scenario being tested:
+     *   2) Validation mode of AUTO in persistence.xml is the same as default
+     */
+    public void testValidationMode2() {
+        getLog().trace("testValidationMode1() - AUTO in persistence.xml");
+        OpenJPAEntityManagerFactory emf = null;
+
+        // create our EMF
+        emf = OpenJPAPersistence.createEntityManagerFactory(
+            "simple-auto-mode",
+            "org/apache/openjpa/persistence/validation/persistence.xml");
+        assertNotNull(emf);
+        // verify expected validation mode
+        OpenJPAConfiguration conf = emf.getConfiguration();
+        assertNotNull(conf);
+        assertEquals("Validation mode", 
+            String.valueOf(ValidationMode.AUTO),
+            conf.getValidationMode());
+    }
+
+    /**
+     * Scenario being tested:
+     *   3) Validation mode of NONE in persistence.xml overrides default
+     */
+    public void testValidationMode3() {
+        getLog().trace("testValidationMode3() - persistence.xml overrides " +
+            "Default");
+        OpenJPAEntityManagerFactory emf = null;
+
+        // create our EMF
+        emf = OpenJPAPersistence.createEntityManagerFactory(
+            "simple-none-mode",
+            "org/apache/openjpa/persistence/validation/persistence.xml");
+        assertNotNull(emf);
+        // verify validation mode
+        OpenJPAConfiguration conf = emf.getConfiguration();
+        assertNotNull(conf);
+        assertEquals("Validation mode", 
+            String.valueOf(ValidationMode.NONE),
+            conf.getValidationMode());
+    }
+
+    /**
+     * Scenario being tested:
+     *   4) Validation mode of CALLBACK in persistence.xml overrides default
+     */
+    public void testValidationMode4() {
+        getLog().trace("testValidationMode4() - persistence.xml overrides " +
+            "Default");
+        OpenJPAEntityManagerFactory emf = null;
+
+        // create our EMF
+        emf = OpenJPAPersistence.createEntityManagerFactory(
+            "simple-callback-mode",
+            "org/apache/openjpa/persistence/validation/persistence.xml");
+        assertNotNull(emf);
+        // verify validation mode
+        OpenJPAConfiguration conf = emf.getConfiguration();
+        assertNotNull(conf);
+        assertEquals("Validation mode", 
+            String.valueOf(ValidationMode.CALLBACK),
+            conf.getValidationMode());
+    }
+
+    /**
+     * Scenario being tested:
+     *   5) Validation mode in createEMF(Map props) overrides no persistence.xml
+     */
+    public void testValidationMode5() {
+        getLog().trace("testValidationMode5() - Map(NONE) overrides default");
+        OpenJPAEntityManagerFactory emf = null;
+
+        // create the Map to test overrides
+        Map<String,String> props = new HashMap<String,String>();
+        props.put("javax.persistence.validation.mode",
+            String.valueOf(ValidationMode.NONE));
+
+        // create our EMF
+        emf = OpenJPAPersistence.createEntityManagerFactory(
+            "simple",
+            "org/apache/openjpa/persistence/validation/persistence.xml",
+            props);
+        assertNotNull(emf);
+        // verify validation mode
+        OpenJPAConfiguration conf = emf.getConfiguration();
+        assertNotNull(conf);
+        assertEquals("Validation mode", 
+            String.valueOf(ValidationMode.NONE),
+            conf.getValidationMode());
+    }
+
+    /**
+     * Scenario being tested:
+     *   6) Validation mode in createEMF(Map props) overrides persistence.xml
+     */
+    public void testValidationMode6() {
+        getLog().trace("testValidationMode6() - Map(NONE) overrides PU " +
+            "provided mode=callback");
+        OpenJPAEntityManagerFactory emf = null;
+
+        // create the Map to test overrides
+        Map<String,String> props = new HashMap<String,String>();
+        props.put("javax.persistence.validation.mode",
+            String.valueOf(ValidationMode.NONE));
+
+        // create our EMF
+        emf = OpenJPAPersistence.createEntityManagerFactory(
+            "simple-callback-mode",
+            "org/apache/openjpa/persistence/validation/persistence.xml",
+            props);
+        assertNotNull(emf);
+        // verify validation mode
+        OpenJPAConfiguration conf = emf.getConfiguration();
+        assertNotNull(conf);
+        assertEquals("Validation mode", 
+            String.valueOf(ValidationMode.NONE),
+            conf.getValidationMode());
+    }
+
+    /**
+     * Scenario being tested:
+     *   7) Validation mode in createEMF(Map props) can be a ValidationMode enum
+     */
+    public void testValidationMode7() {
+        getLog().trace("testValidationMode7() - Map(ValidationMode.NONE) " +
+            "overrides PU provided mode=callback");
+        OpenJPAEntityManagerFactory emf = null;
+
+        // create the Map to test overrides
+        Map<String,Object> props = new HashMap<String,Object>();
+        props.put("javax.persistence.validation.mode",
+            ValidationMode.NONE);
+
+        // create our EMF
+        emf = OpenJPAPersistence.createEntityManagerFactory(
+            "simple-callback-mode",
+            "org/apache/openjpa/persistence/validation/persistence.xml",
+            props);
+        assertNotNull(emf);
+        // verify validation mode
+        OpenJPAConfiguration conf = emf.getConfiguration();
+        assertNotNull(conf);
+        assertEquals("Validation mode", 
+            String.valueOf(ValidationMode.NONE),
+            conf.getValidationMode());
+    }
+
+
+    /**
+     * Internal convenience method for getting the OpenJPA logger
+     * 
+     * @return
+     */
+    private Log getLog() {
+        return emf.getConfiguration().getLog("Tests");
+    }
+}

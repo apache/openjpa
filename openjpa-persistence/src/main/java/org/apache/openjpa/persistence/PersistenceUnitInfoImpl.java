@@ -60,6 +60,8 @@ public class PersistenceUnitInfoImpl
     implements PersistenceUnitInfo, SourceTracker {
 
     public static final String KEY_PROVIDER = "javax.persistence.provider";
+    public static final String VALIDATION_MODE =
+        "javax.persistence.validation.mode";
 
     private static final Localizer s_loc = Localizer.forPackage
         (PersistenceUnitInfoImpl.class);
@@ -80,6 +82,7 @@ public class PersistenceUnitInfoImpl
     private boolean _excludeUnlisted;
     private URL _persistenceXmlFile;
     private String _schemaVersion = "1.0";
+    private ValidationMode _validationMode;
 
     // A persistence unit is defined by a persistence.xml file. The jar
     // file or directory whose META-INF directory contains the
@@ -311,6 +314,11 @@ public class PersistenceUnitInfoImpl
                     setNonJtaDataSourceName((String) val);
                 else
                     setNonJtaDataSource((DataSource) val);
+            } else if (VALIDATION_MODE.equals(key)) {
+                if (val instanceof String)
+                    setValidationMode((String) val);
+                else
+                    setValidationMode((ValidationMode) val);
             } else
                 _props.put(key, val);
         }
@@ -447,6 +455,11 @@ public class PersistenceUnitInfoImpl
         // always record provider name for product derivations to access
         if (info.getPersistenceProviderClassName() != null)
             map.put(KEY_PROVIDER, info.getPersistenceProviderClassName());
+        
+        // convert validation-mode enum to a StringValue
+        if (info.getValidationMode() != null)
+            map.put(VALIDATION_MODE, String.valueOf(info.getValidationMode()));
+
         return map;
     }
 
@@ -517,9 +530,21 @@ public class PersistenceUnitInfoImpl
         throw new UnsupportedOperationException(
             "JPA 2.0 - Method not yet implemented");
     }
+    
+    public void setCaching(Caching cache) {
+        throw new UnsupportedOperationException(
+        "JPA 2.0 - Method not yet implemented");
+    }
 
     public ValidationMode getValidationMode() {
-        throw new UnsupportedOperationException(
-            "JPA 2.0 - Method not yet implemented");
+        return _validationMode;
+    }
+    
+    protected void setValidationMode(String mode) {
+        setValidationMode(Enum.valueOf(ValidationMode.class, mode));
+    }
+
+    public void setValidationMode(ValidationMode mode) {
+        _validationMode = mode;
     }
 }

@@ -34,6 +34,7 @@ import java.util.Map;
 import java.util.MissingResourceException;
 import java.util.Set;
 
+import javax.persistence.ValidationMode;
 import javax.persistence.spi.PersistenceUnitInfo;
 import javax.persistence.spi.PersistenceUnitTransactionType;
 
@@ -43,6 +44,7 @@ import org.apache.openjpa.conf.OpenJPAConfiguration;
 import org.apache.openjpa.conf.OpenJPAConfigurationImpl;
 import org.apache.openjpa.conf.OpenJPAProductDerivation;
 import org.apache.openjpa.conf.Specification;
+import org.apache.openjpa.kernel.LockLevels;
 import org.apache.openjpa.kernel.MixedLockLevels;
 import org.apache.openjpa.lib.conf.AbstractProductDerivation;
 import org.apache.openjpa.lib.conf.Configuration;
@@ -686,7 +688,12 @@ public class PersistenceProductDerivation
                 //      startPersistenceUnit()
                 // case 'property' for 'properties' is handled in startElement()
                 case 'c': // class
-                    _info.addManagedClassName(currentText());
+                    if ("class".equals(name))
+                        _info.addManagedClassName(currentText());
+                    else // FIXME - caching
+                        throw new javax.persistence.PersistenceException(
+                            "Not implemented yet");
+                    break;
                 case 'e': // exclude-unlisted-classes
                     _info.setExcludeUnlistedClasses("true".equalsIgnoreCase
                         (currentText()));
@@ -712,6 +719,10 @@ public class PersistenceProductDerivation
                 case 'p':
                     if ("provider".equals(name))
                         _info.setPersistenceProviderClassName(currentText());
+                    break;
+                case 'v': // validation-mode
+                    _info.setValidationMode(Enum.valueOf(ValidationMode.class,
+                        currentText()));
                     break;
             }
         }
