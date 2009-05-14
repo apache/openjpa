@@ -186,14 +186,13 @@ public class CriteriaQueryImpl implements CriteriaQuery {
 	    exps.filter = _where == null ? factory.emptyExpression() 
 	    		: _where.toKernelExpression(factory, _model);
 	    
-	//    exps.grouping = null; // Value[]
-	//    exps.groupingClauses = null; // String[]
+	    evalGrouping(exps, factory);
 	    exps.having = _having == null ? factory.emptyExpression() 
 	    		: _having.toKernelExpression(factory, _model);
+	    
+	    evalOrdering(exps, factory);
 	//    exps.operation = QueryOperations.OP_SELECT;
-	//    exps.ordering = null; //Value[]
-	//    exps.orderingAliases = null; // String[]
-	//    exps.orderingClauses = null; // String[]
+	    
 	//    exps.parameterTypes = null; // LinkedMap<>
 	//    exps.projectionAliases = null; // String[]
 	//    exps.projectionClauses = null; // String[]
@@ -203,6 +202,41 @@ public class CriteriaQueryImpl implements CriteriaQuery {
 	    return exps;
     }
 
+    void evalOrdering(QueryExpressions exps, ExpressionFactory factory) {
+        if (_orders == null) 
+            return;
+        int ordercount = _orders.size();
+        exps.ordering = new Value[ordercount];
+        exps.orderingClauses = new String[ordercount];
+        exps.orderingAliases = new String[ordercount];
+        exps.ascending = new boolean[ordercount];
+        for (int i = 0; i < ordercount; i++) {
+            OrderImpl order = (OrderImpl)_orders.get(i);
+            //Expression<? extends Comparable> expr = order.getExpression();
+            //exps.ordering[i] = Expressions.toValue(
+            //    (ExpressionImpl<?>)expr, factory, _model);
+            
+            //exps.orderingClauses[i] = assemble(firstChild);
+            //exps.orderingAliases[i] = firstChild.text;
+            exps.ascending[i] = order.isAscending();
+        }
+    }
+    
+    void evalGrouping(QueryExpressions exps, ExpressionFactory factory) {
+        if (_groups == null) 
+            return;
+        int groupByCount = _groups.size();
+        exps.grouping = new Value[groupByCount];
+
+        for (int i = 0; i < groupByCount; i++) {
+             Expression<?> groupBy = _groups.get(i);    
+             exps.grouping[i] = Expressions.toValue(
+                 (ExpressionImpl<?>)groupBy, factory, _model);;
+        }
+    }
+    
+    
+    
 
     Value[] toValues(ExpressionFactory factory, List<Selection<?>> sels) {
     	if (sels == null || (sels.size() == 1 && sels.get(0) == getRoot()))

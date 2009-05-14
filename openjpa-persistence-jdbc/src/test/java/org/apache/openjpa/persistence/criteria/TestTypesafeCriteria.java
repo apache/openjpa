@@ -189,7 +189,7 @@ public class TestTypesafeCriteria extends SQLListenerTestCase {
     }
     
     @AllowFailure
-    public void testJoins() {
+    public void testJoins1() {
         String jpql = "SELECT c.name FROM Customer c JOIN c.orders o " + 
             "JOIN o.lineItems i WHERE i.product.productType = 'printer'";
         CriteriaQuery c = cb.create();
@@ -201,14 +201,17 @@ public class TestTypesafeCriteria extends SQLListenerTestCase {
             get(Product_.productType), "printer"));
         
         assertEquivalence(c, jpql);
-        
-        jpql = "SELECT c FROM Customer c LEFT JOIN c.orders o " + 
+    }
+    
+    @AllowFailure
+    public void testJoins2() {
+        String jpql = "SELECT c FROM Customer c LEFT JOIN c.orders o " + 
             "WHERE c.status = 1";
         c = cb.create();
-        Root<Customer> cust1 = c.from(Customer.class);
-        Join<Customer, Order> order1 = cust1.join(Customer_.orders, 
+        Root<Customer> cust = c.from(Customer.class);
+        Join<Customer, Order> order = cust.join(Customer_.orders, 
             JoinType.LEFT);
-        c.where(cb.equal(cust1.get(Customer_.status), 1)).select(cust1);
+        c.where(cb.equal(cust.get(Customer_.status), 1)).select(cust);
         
         assertEquivalence(c, jpql);
     }
@@ -226,7 +229,7 @@ public class TestTypesafeCriteria extends SQLListenerTestCase {
     }
     
     @AllowFailure
-    public void testPathNavigation() {
+    public void testPathNavigation1() {
         String jpql = "SELECT p.vendor FROM Employee e JOIN " + 
             "e.contactInfo.phones p " + 
             "WHERE e.contactInfo.address.zipCode = '95054'";
@@ -239,11 +242,13 @@ public class TestTypesafeCriteria extends SQLListenerTestCase {
         q.select(phone.get(Phone_.vendor));        
         
         assertEquivalence(q, jpql);
-        
-        jpql = "SELECT i.name, p FROM Item i JOIN i.photos p WHERE KEY(p) " + 
+    }
+    
+    @AllowFailure
+    public void testPathNavigation2() {
+        String jpql = "SELECT i.name, p FROM Item i JOIN i.photos p WHERE KEY(p) " + 
             "LIKE '%egret%'";
-        
-        q = cb.create();
+        CriteriaQuery q = cb.create();
         Root<Item> item = q.from(Item.class);
         MapJoin<Item, String, Photo> photo = item.join(Item_.photos);
         q.select(item.get(Item_.name), photo).
@@ -253,7 +258,7 @@ public class TestTypesafeCriteria extends SQLListenerTestCase {
     }
     
     @AllowFailure
-    public void testRestrictQueryResult() {
+    public void testRestrictQueryResult1() {
         String jpql = "SELECT t FROM CreditCard c JOIN c.transactionHistory t " 
             + "WHERE c.customer.accountNum = 321987 AND INDEX(t) BETWEEN 0 " 
             + "AND 9";
@@ -266,9 +271,12 @@ public class TestTypesafeCriteria extends SQLListenerTestCase {
             cb.between(t.index(), 0, 9));
         
         assertEquivalence(q, jpql);
-        
-        jpql = "SELECT o FROM Order o WHERE o.lineItems IS EMPTY";
-        q = cb.create();
+    }
+    
+    @AllowFailure
+    public void testRestrictQueryResult2() {
+        String jpql = "SELECT o FROM Order o WHERE o.lineItems IS EMPTY";
+        CriteriaQuery q = cb.create();
         Root<Order> order = q.from(Order.class);
         q.where(cb.isEmpty(order.get(Order_.lineItems))).select(order);
         
@@ -276,7 +284,7 @@ public class TestTypesafeCriteria extends SQLListenerTestCase {
     }
 
     @AllowFailure
-    public void testExpressions() {
+    public void testExpression1() {
         String jpql = "SELECT o.quantity, o.totalCost*1.08 AS taxedCost, "  
             + "a.zipCode FROM Customer c JOIN c.orders o JOIN c.address a " 
             + "WHERE a.state = 'CA' AND a.county = 'Santa Clara";
@@ -291,27 +299,36 @@ public class TestTypesafeCriteria extends SQLListenerTestCase {
             address.get(Address_.zipCode));
         
         assertEquivalence(q, jpql);
-        
-        jpql = "SELECT TYPE(e) FROM Employee e WHERE TYPE(e) <> Exempt";
-        q = cb.create();
+    }
+    
+    @AllowFailure
+    public void testExpression2() {
+        String jpql = "SELECT TYPE(e) FROM Employee e WHERE TYPE(e) <> Exempt";
+        CriteriaQuery q = cb.create();
         Root<Employee> emp = q.from(Employee.class);
         q.select(emp.type()).where(cb.notEqual(emp.type(), Exempt.class));
         
         assertEquivalence(q, jpql);
-        
-        jpql = "SELECT w.name FROM Course c JOIN c.studentWaitList w " + 
+    }
+    
+    @AllowFailure
+    public void testExpression3() {
+        String jpql = "SELECT w.name FROM Course c JOIN c.studentWaitList w " + 
             "WHERE c.name = 'Calculus' AND INDEX(w) = 0";
-        q = cb.create();
+        CriteriaQuery q = cb.create();
         Root<Course> course = q.from(Course.class);
         ListJoin<Course, Student> w = course.join(Course_.studentWaitList);
         q.where(cb.equal(course.get(Course_.name), "Calculus"), 
                 cb.equal(w.index(), 0)).select(w.get(Student_.name));
         
         assertEquivalence(q, jpql);
-        
-        jpql = "SELECT SUM(i.price) FROM Order o JOIN o.lineItems i JOIN " +
+    }
+    
+    @AllowFailure
+    public void testExpression4() {
+        String jpql = "SELECT SUM(i.price) FROM Order o JOIN o.lineItems i JOIN " +
             "o.customer c WHERE c.lastName = 'Smith' AND c.firstName = 'John'";
-        q = cb.create();
+        CriteriaQuery q = cb.create();
         Root<Order> o = q.from(Order.class);
         Join<Order, LineItem> i = o.join(Order_.lineItems);
         Join<Order, Customer> c = o.join(Order_.customer);
@@ -320,10 +337,13 @@ public class TestTypesafeCriteria extends SQLListenerTestCase {
         q.select(cb.sum(i.get(LineItem_.price)));
         
         assertEquivalence(q, jpql);
-        
-        jpql = "SELECT SIZE(d.employees) FROM Department d " + 
+    }
+    
+    @AllowFailure
+    public void testExpression5() {
+        String jpql = "SELECT SIZE(d.employees) FROM Department d " + 
             "WHERE d.name = 'Sales'";
-        q = cb.create();
+        CriteriaQuery q = cb.create();
         Root<Department> d = q.from(Department.class);
         q.where(cb.equal(d.get(Department_.name), "Sales"));
         q.select(cb.size(d.get(Department_.employees)));
@@ -523,7 +543,6 @@ public class TestTypesafeCriteria extends SQLListenerTestCase {
         assertEquivalence(q, jpql);
     }
     
-    @AllowFailure
     public void testGroupByAndHaving() {
         String jpql = "SELECT c.status, AVG(c.filledOrderCount), COUNT(c) FROM "
             + "Customer c GROUP BY c.status HAVING c.status IN (1, 2)";
@@ -539,7 +558,7 @@ public class TestTypesafeCriteria extends SQLListenerTestCase {
     }
     
     @AllowFailure
-    public void testOrdering() {
+    public void testOrdering1() {
         String jpql = "SELECT o FROM Customer c JOIN c.orders o " + 
             "JOIN c.address a WHERE a.state = 'CA' ORDER BY o.quantity DESC, " +
             "o.totalCost";
@@ -553,38 +572,71 @@ public class TestTypesafeCriteria extends SQLListenerTestCase {
         q.select(o);
         
         assertEquivalence(q, jpql);
-        
-        jpql = "SELECT o.quantity, a.zipCode FROM Customer c JOIN c.orders " + 
-            "JOIN c.address a WHERE a.state = 'CA' ORDER BY o.quantity, " + 
-            "a.zipCode";
-        q = cb.create();
-        Root<Customer> c1 = q.from(Customer.class); 
-        Join<Customer,Order> o1 = c1.join(Customer_.orders);
-        Join<Customer,Address> a1 = c1.join(Customer_.address);
-        q.where(cb.equal(a1.get(Address_.state), "CA"));
-        q.orderBy(cb.asc(o1.get(Order_.quantity)), cb.asc(a1.get(
+    }
+    
+    @AllowFailure
+    public void testOrdering2() {
+        String jpql = "SELECT o.quantity, a.zipCode FROM Customer c " + 
+            "JOIN c.orders JOIN c.address a WHERE a.state = 'CA' " + 
+            "ORDER BY o.quantity, a.zipCode";
+        CriteriaQuery q = cb.create();
+        Root<Customer> c = q.from(Customer.class); 
+        Join<Customer,Order> o = c.join(Customer_.orders);
+        Join<Customer,Address> a = c.join(Customer_.address);
+        q.where(cb.equal(a.get(Address_.state), "CA"));
+        q.orderBy(cb.asc(o.get(Order_.quantity)), cb.asc(a.get(
             Address_.zipCode)));
-        q.select(o1.get(Order_.quantity), a1.get(Address_.zipCode));
+        q.select(o.get(Order_.quantity), a.get(Address_.zipCode));
         
         assertEquivalence(q, jpql);
-        
-        jpql = "SELECT o.quantity, o.cost * 1.08 AS taxedCost, a.zipCode " +
-            "FROM Customer c JOIN c.orders o JOIN c.address a " + 
+    }
+    
+    @AllowFailure
+    public void testOrdering3() {
+        String jpql = "SELECT o.quantity, o.cost * 1.08 AS taxedCost, " + 
+            "a.zipCode FROM Customer c JOIN c.orders o JOIN c.address a " + 
             "WHERE a.state = 'CA' AND a.county = 'Santa Clara' " + 
             "ORDER BY o.quantity, taxedCost, a.zipCode";
-        q = cb.create();
-        Root<Customer> c2 = q.from(Customer.class);
-        Join<Customer,Order> o2 = c2.join(Customer_.orders);
-        Join<Customer,Address> a2 = c2.join(Customer_.address);
+        CriteriaQuery q = cb.create();
+        Root<Customer> c = q.from(Customer.class);
+        Join<Customer,Order> o = c.join(Customer_.orders);
+        Join<Customer,Address> a = c.join(Customer_.address);
         q.where(cb.equal(a.get(Address_.state), "CA"),
-            cb.equal(a.get(Address_.county), "Santa Clara"));
+                cb.equal(a.get(Address_.county), "Santa Clara"));
         q.orderBy(cb.asc(o.get(Order_.quantity)),
-            cb.asc(cb.prod(o.get(Order_.totalCost), 1.08)),
-            cb.asc(a.get(Address_.zipCode)));
+                cb.asc(cb.prod(o.get(Order_.totalCost), 1.08)),
+                cb.asc(a.get(Address_.zipCode)));
         q.select(o.get(Order_.quantity), 
-            cb.prod(o.get(Order_.totalCost), 1.08),
-            a.get(Address_.zipCode));
-        
+                cb.prod(o.get(Order_.totalCost), 1.08),
+                a.get(Address_.zipCode));
+
+        assertEquivalence(q, jpql);
+    }
+    
+    @AllowFailure
+    public void testOrdering4() {
+        String jpql = "SELECT c FROM Customer c "
+                + "ORDER BY c.name DESC, c.status";
+        CriteriaQuery q = cb.create();
+        Root<Customer> c = q.from(Customer.class);
+        q.orderBy(cb.desc(c.get(Customer_.name)), cb.asc(c
+                .get(Customer_.status)));
+        q.select(c);
+
+        assertEquivalence(q, jpql);
+    }
+
+    @AllowFailure
+    public void testOrdering5() {
+        String jpql = "SELECT c.firstName, c.lastName, c.balanceOwed " + 
+            "FROM Customer c ORDER BY c.name DESC, c.status";
+        CriteriaQuery q = cb.create();
+        Root<Customer> c = q.from(Customer.class);
+        q.orderBy(cb.desc(c.get(Customer_.name)), cb.asc(c
+            .get(Customer_.status)));
+        q.select(c.get(Customer_.firstName), c.get(Customer_.lastName),
+            c.get(Customer_.balanceOwed));
+
         assertEquivalence(q, jpql);
     }
 
