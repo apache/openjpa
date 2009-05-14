@@ -25,7 +25,7 @@
     <modelVersion>4.0.0</modelVersion>
     <artifactId>openjpa-all</artifactId>
     <packaging>jar</packaging>
-    <name>OpenJPA with Dependencies Aggregate Jar</name>
+    <name>OpenJPA Aggregate Jar with Dependencies</name>
     <parent>
         <groupId>org.apache.openjpa</groupId>
         <artifactId>openjpa-parent</artifactId>
