@@ -273,7 +273,6 @@ public class TestTypesafeCriteria extends SQLListenerTestCase {
         assertEquivalence(q, jpql);
     }
     
-    @AllowFailure
     public void testRestrictQueryResult2() {
         String jpql = "SELECT o FROM Order o WHERE o.lineItems IS EMPTY";
         CriteriaQuery q = cb.create();
@@ -339,7 +338,6 @@ public class TestTypesafeCriteria extends SQLListenerTestCase {
         assertEquivalence(q, jpql);
     }
     
-    @AllowFailure
     public void testExpression5() {
         String jpql = "SELECT SIZE(d.employees) FROM Department d " + 
             "WHERE d.name = 'Sales'";

@@ -83,8 +83,7 @@ public class PathImpl<X> extends ExpressionImpl<X> implements Path<X> {
     }
 
     public Expression get(AbstractCollection collection) {
-        // TODO Auto-generated method stub
-        throw new AbstractMethodError();
+        return new PathImpl(this, (Members.BaseCollection) collection);
     }
 
     public Expression get(Map collection) {
