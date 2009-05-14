@@ -53,6 +53,7 @@ import java.util.Calendar;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
+import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -348,6 +349,36 @@ public class DBDictionary
     protected final Set systemTableSet = new HashSet();
     protected final Set fixedSizeTypeNameSet = new HashSet();
     protected final Set typeModifierSet = new HashSet();
+    
+    private boolean delimitIds = false;
+    protected boolean supportsDelimitedIds = false;
+    protected String delimiter = "\"";
+    // Assume mixed case by default.
+    protected String delimitedCase = SCHEMA_CASE_PRESERVE;
+    
+    // TODO: complete the list
+    public static enum DBIdentifiers {
+        TABLE_NAME,
+        TABLE_SCHEMA,
+        TABLE_CATALOG,
+        SECONDARY_TABLE_NAME,
+        SECONDARY_TABLE_SCHEMA,
+        SECONDARY_TABLE_CATALOG,
+        TABLE_GEN_TABLE,
+        TABLE_GEN_SCHEMA,
+        TABLE_GEN_PK_COLUMN,
+        TABLE_GEN_VALUE_COLUMN,
+        COLUMN_NAME,
+        COLUMN_COLUMN_DEFINITION,
+        COLUMN_TABLE
+    }
+    
+    // TODO: describe; maybe make private
+    protected EnumSet<DBIdentifiers> unsupportedDelimitedIds =
+        EnumSet.noneOf(DBIdentifiers.class);
+    // TODO
+    // Should this be EnumSet.<DBIdentifiers>noneOf(....)
+    // or EnumSet<DBIdentifiers>.noneOf....?
 
     /**
      * If a native query begins with any of the values found here then it will
@@ -418,6 +449,10 @@ public class DBDictionary
                         conn.getAutoCommit(), conn.getHoldability(),
                         conn.getTransactionIsolation()}));
             }
+            
+            // While we have the metaData, set some values from it
+            setSupportsDelimitedIds(metaData);
+            setDelimitedCase(metaData);
         }
         connected = true;
     }
@@ -2972,7 +3007,18 @@ public class DBDictionary
             name = name.substring(1);
         String tableName = table.getName();
         int len = Math.min(tableName.length(), 7);
-        name = "I_" + shorten(tableName, len) + "_" + name;
+        String shortTableName = shorten(tableName, len);
+        String delim = getDelimiter();
+        if (shortTableName.startsWith(delim) 
+            && shortTableName.endsWith(delim)) {
+            name = delim + "I_" 
+                + shortTableName.substring(1, shortTableName.length() - 1) 
+                + "_" + name + delim;
+        }
+        else {
+            name = "I_" + shortTableName + "_" + name;
+        }
+        
         return makeNameValid(name, table.getSchema().getSchemaGroup(),
             maxIndexNameLength, NAME_ANY);
     }
@@ -3052,17 +3098,26 @@ public class DBDictionary
      * '1', etc. 
      * Note that the given max len may be 0 if the database metadata is 
      * incomplete.
+     * 
+     * Note: If the name is delimited, make sure the ending delimiter is
+     * not stripped off.
      */
     protected String makeNameValid(String name, NameSet set, int maxLen,
         int nameType, boolean checkForUniqueness) {
+        boolean delimited = false;
+        String delimiter = getDelimiter();
+        if (name.startsWith(delimiter) && name.endsWith(delimiter)) {
+            delimited = true;
+        }
         if (maxLen < 1)
             maxLen = 255;
         if (name.length() > maxLen)
-            name = name.substring(0, maxLen);
+            name = removeEndingChars(name, name.length() - maxLen, 
+                delimited, delimiter);
         if (reservedWordSet.contains(name.toUpperCase())) {
             if (name.length() == maxLen)
-                name = name.substring(0, name.length() - 1);
-            name += "0";
+                name = removeEndingChars(name, 1, delimited, delimiter);
+            name = addCharsToEnd(name, "0", delimited, delimiter);
         }
 
         // now make sure the name is unique
@@ -3088,15 +3143,64 @@ public class DBDictionary
                 // a single char for the version is probably enough, but might
                 // as well be general about it...
                 if (version > 1)
-                    name = name.substring(0, name.length() - chars);
+                    name = removeEndingChars(name, chars, delimited, delimiter);
                 if (version >= Math.pow(10, chars))
                     chars++;
                 if (name.length() + chars > maxLen)
-                    name = name.substring(0, maxLen - chars);
-                name = name + version;
+                    name = removeEndingChars(name, 
+                        name.length() + chars - maxLen, 
+                        delimited, delimiter);
+                name = addCharsToEnd(name, new Integer(version).toString(), 
+                    delimited, delimiter);
             }
         }
+        
+        if (delimited) {
+            String delimCase = getDelimitedCase();
+            if (delimCase.equals(SCHEMA_CASE_LOWER)) {
+                return name.toLowerCase();
+            }
+            else if (delimCase.equals(SCHEMA_CASE_UPPER)) {
+                return name.toUpperCase();
+            }
+            else {
+                return name;
+            }
+        }
+        // TODO: This is the original. Should the db supported case be checked?
         return name.toUpperCase();
+    }
+    
+    private String removeEndingChars(String name, 
+        int charsToRemove,
+        boolean delimited, 
+        String delimiter) {
+        if (delimited) {
+            name = name.substring(0, name.length() - delimiter.length());
+            name = name.substring(0, name.length() - charsToRemove);
+            name = name + delimiter;
+        }
+        else {
+            name = name.substring(0, name.length() - charsToRemove);
+        }
+        
+        return name;
+    }
+    
+    private String addCharsToEnd(String name,
+        String charsToAdd,
+        boolean delimited,
+        String delimiter) {
+        if (delimited) {
+            name = name.substring(0, name.length() - delimiter.length());
+            name = name + charsToAdd;
+            name = name + delimiter;
+        }
+        else {
+            name = name + charsToAdd;
+        }
+        
+        return name;
     }
 
     /**
@@ -3997,6 +4101,25 @@ public class DBDictionary
         if (objectName == null)
             return null;
 
+        // Handle delimited string differently. Return unquoted name.
+        if (delimitIds || 
+                objectName.startsWith(getDelimiter()) &&
+                objectName.endsWith(getDelimiter())) {
+            String delimCase = getDelimitedCase();
+            if (SCHEMA_CASE_UPPER.equals(delimCase)) {
+                objectName.toUpperCase();
+            }
+            else if (SCHEMA_CASE_LOWER.equals(delimCase)) {
+                objectName.toLowerCase();
+            }
+            
+            // TODO: maybe have a different method to remove quotes and
+            // call it from the calling methods
+            int delimLen = getDelimiter().length();
+            return objectName.substring(delimLen, 
+                objectName.length() - delimLen);
+        }
+        
         String scase = getSchemaCase();
         if (SCHEMA_CASE_LOWER.equals(scase))
             return objectName.toLowerCase();
@@ -4727,5 +4850,102 @@ public class DBDictionary
             throw new UserException(_loc.get(msgKey, name, name.length(), 
                     length));
         return name;
+    }
+    
+    public String delimitString(String name, DBIdentifiers type) {
+        if (StringUtils.isEmpty(name)) {
+            return null;
+        }
+        
+        if (!getSupportsDelimitedIds()) {
+            // TODO: log (or maybe log in the method itself; so maybe
+            // merge with next if stmt
+            return name;
+        }
+        
+        if (!delimitIds) {
+            return name;
+        }
+        // TODO: merge with if stmt above (maybe not, may want to log this)
+        if (!supportsDelimitedId(type)) {
+            // TODO: log
+            return name;
+        }
+        String delimitedString = delimiter + name + delimiter;
+        return delimitedString;
+    }
+
+    /**
+     * @return the unsupportedDelimitedIds
+     */
+    protected EnumSet<DBIdentifiers> getUnsupportedDelimitedIds() {
+        return unsupportedDelimitedIds;
+    }
+    
+    protected boolean supportsDelimitedId(DBIdentifiers type) {
+        if (getUnsupportedDelimitedIds().contains(type)) {
+            return false;
+        }
+        return true;
+    }
+
+    /**
+     * @return the delimiter
+     */
+    public String getDelimiter() {
+        return delimiter;
+    }
+    
+    protected String getDelimitedCase() {
+        return delimitedCase;
+    }
+
+    protected void setDelimitedCase(DatabaseMetaData metaData) {
+        try {
+            if (metaData.storesMixedCaseQuotedIdentifiers()) {
+                delimitedCase = SCHEMA_CASE_PRESERVE;
+            }
+            else if (metaData.storesUpperCaseQuotedIdentifiers()) {
+                delimitedCase = SCHEMA_CASE_UPPER;
+            }
+            else if (metaData.storesLowerCaseQuotedIdentifiers()) {
+                delimitedCase = SCHEMA_CASE_LOWER;
+            }
+        } catch (SQLException e) {
+            // TODO log this
+        }
+    }
+    
+    /**
+     * @return the supportsDelimitedIds
+     */
+    public boolean getSupportsDelimitedIds() {
+        return supportsDelimitedIds;
+    }
+
+    /**
+     * @param supportsDelimitedIds the supportsDelimitedIds to set
+     */
+    public void setSupportsDelimitedIds(DatabaseMetaData metaData) {
+        try {
+            supportsDelimitedIds = 
+                metaData.supportsMixedCaseQuotedIdentifiers();
+        } catch (SQLException e) {
+            // TODO log this, or should we throw an exception?
+        }
+    }
+
+    /**
+     * @return the delimitIds
+     */
+    public boolean isDelimitIds() {
+        return delimitIds;
+    }
+
+    /**
+     * @param delimitIds the delimitIds to set
+     */
+    public void setDelimitIds(boolean delimitIds) {
+        this.delimitIds = delimitIds;
     }
 }

@@ -24,6 +24,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import org.apache.commons.lang.StringUtils;
+import org.apache.openjpa.conf.OpenJPAConfiguration;
 import org.apache.openjpa.jdbc.conf.JDBCSeqValue;
 import org.apache.openjpa.jdbc.kernel.ClassTableJDBCSeq;
 import org.apache.openjpa.jdbc.kernel.TableJDBCSeq;
@@ -159,10 +160,37 @@ public class SequenceMapping
 
     protected void addStandardProperties(StringBuffer props) {
         super.addStandardProperties(props);
-        appendProperty(props, PROP_TABLE, _table);
-        appendProperty(props, PROP_SEQUENCE_COL, _sequenceColumn);
-        appendProperty(props, PROP_PK_COL, _primaryKeyColumn);
-        appendProperty(props, PROP_PK_VALUE, _primaryKeyValue);
+        // Quotes are conditionally added to the following because the props
+        // are eventually passed to the Configurations.parseProperties()
+        // method, which strips off quotes. This is a problem when these
+        // properties are intentionally delimited with quotes. So, an extra
+        // set preserves the intended ones. While this is an ugly solution,
+        // it's less ugly than other ones.
+        String table = _table;
+        if (table != null && table.startsWith("\"")
+                && table.endsWith("\"")) {
+            table = "\"" + table + "\"";
+        }
+        String sequenceColumn = _sequenceColumn;
+        if (sequenceColumn != null && sequenceColumn.startsWith("\"")
+                && sequenceColumn.endsWith("\"")) {
+            sequenceColumn = "\"" + sequenceColumn + "\"";
+        }
+        String primaryKeyColumn = _primaryKeyColumn;
+        if (primaryKeyColumn !=null && primaryKeyColumn.startsWith("\"")
+                && primaryKeyColumn.endsWith("\"")) {
+            primaryKeyColumn = "\"" + primaryKeyColumn + "\"";
+        }
+        String primaryKeyValue = _primaryKeyValue;
+        if (primaryKeyValue != null && primaryKeyValue.startsWith("\"")
+                && primaryKeyValue.endsWith("\"")) {
+            primaryKeyValue = "\"" + primaryKeyValue + "\"";
+        }
+        
+        appendProperty(props, PROP_TABLE, table);
+        appendProperty(props, PROP_SEQUENCE_COL, sequenceColumn);
+        appendProperty(props, PROP_PK_COL, primaryKeyColumn);
+        appendProperty(props, PROP_PK_VALUE, primaryKeyValue);
         // Array of unique column names are passed to configuration
         // as a single string "x|y|z". The configurable (TableJDBCSeq) must
         // parse it back.

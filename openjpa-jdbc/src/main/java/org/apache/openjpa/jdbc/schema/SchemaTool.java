@@ -470,6 +470,7 @@ public class SchemaTool {
         Table dbTable;
         Column[] cols;
         Column col;
+        String delim = _dict.getDelimiter();
         for (int i = 0; i < schemas.length; i++) {
             tabs = schemas[i].getTables();
             for (int j = 0; j < tabs.length; j++) {
@@ -477,14 +478,22 @@ public class SchemaTool {
                 dbTable = db.findTable(schemas[i], tabs[j].getFullName());
                 for (int k = 0; k < cols.length; k++) {
                     if (dbTable != null) {
-                        col = dbTable.getColumn(cols[k].getName());
+                        String colName = cols[k].getName();
+                        boolean delimCol = false;
+                        if (colName.startsWith(delim) 
+                                && colName.endsWith(delim)) {
+                            colName = colName.substring(1, colName.length()-1);
+                            delimCol = true;
+                        }
+                        col = dbTable.getColumn(colName);
                         if (col == null) {
                             if (addColumn(cols[k]))
                                 dbTable.importColumn(cols[k]);
                             else
                                 _log.warn(_loc.get("add-col", cols[k],
                                     tabs[j]));
-                        } else if (!cols[k].equalsColumn(col)) {
+                        // TODO: Find a way to compare these with delimCol
+                        } else if (!delimCol && !cols[k].equalsColumn(col)) {
                             _log.warn(_loc.get("bad-col", new Object[]{
                                 col, dbTable, col.getDescription(),
                                 cols[k].getDescription() }));

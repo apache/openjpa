@@ -89,9 +89,9 @@ public class PersistenceMappingDefaults
 
         int nColumn = vers.getMappingInfo().getColumns().size();
         switch (nColumn) {
-	        case 0 : return NoneVersionStrategy.getInstance();
-	        case 1 : return new NumberVersionStrategy();
-	        default: return new MultiColumnVersionStrategy();
+            case 0 : return NoneVersionStrategy.getInstance();
+            case 1 : return new NumberVersionStrategy();
+            default: return new MultiColumnVersionStrategy();
         }
     }
 
@@ -135,7 +135,17 @@ public class PersistenceMappingDefaults
         ClassMapping clm = fm.getDefiningMapping();
         Table table = getTable(clm);
         
-        String name = table.getName() + "_";
+        String name = table.getName();
+        String delim = dict.getDelimiter();
+        boolean isDelimited = false;
+        if (name.startsWith(delim) && name.endsWith(delim)) {
+            isDelimited = true;
+            name = name.substring(0,name.length()-1) + "_";
+        }
+        else {
+            name = name + "_";
+        }
+        
 
         // if this is an assocation table, spec says to suffix with table of
         // the related type. spec doesn't cover other cases; we're going to
@@ -147,6 +157,11 @@ public class PersistenceMappingDefaults
             name += rel.getTable().getName();
         else
             name += fm.getName();
+        
+        if (isDelimited) {
+            name += "\"";
+        }
+        
         return name.replace('$', '_');
     }
     

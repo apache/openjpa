@@ -366,8 +366,18 @@ public class TableJDBCSeq
      * Creates the object-level representation of the sequence table.
      */
     private void buildTable() {
-        String tableName = Strings.getClassName(_table);
-        String schemaName = Strings.getPackageName(_table);
+        String tableName = null;
+        String schemaName = "";
+        if (StringUtils.contains(_table,'.')) {
+            String[] tableParts = StringUtils.split(_table, '.');
+            // TODO: do we need to check for length? Could we have xxx. or .xxx?
+            schemaName = tableParts[0];
+            tableName = tableParts[1];
+        }
+        else {
+            tableName = _table;
+        }
+        
         if (schemaName.length() == 0)
             schemaName = Schemas.getNewTableSchema(_conf);
 

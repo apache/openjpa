@@ -20,9 +20,8 @@ package org.apache.openjpa.jdbc.sql;
 
 import java.sql.DriverManager;
 import java.sql.SQLException;
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.List;
+import java.util.EnumSet;
 import java.util.Set;
 
 import javax.sql.DataSource;
@@ -40,6 +39,9 @@ public class DerbyDictionary
      * the DataSource.
      */
     public boolean shutdownOnClose = true;
+    
+    private EnumSet<DBIdentifiers> unsupportedDelimitedIds =
+        EnumSet.of(DBIdentifiers.COLUMN_COLUMN_DEFINITION); 
 
     public DerbyDictionary() {
         platform = "Apache Derby";
@@ -120,4 +122,13 @@ public class DerbyDictionary
         }
         return recoverable;
     }
+
+    /**
+     * @return the unsupportedDelimitedIds
+     */
+    @Override
+    protected EnumSet<DBIdentifiers> getUnsupportedDelimitedIds() {
+        return unsupportedDelimitedIds;
+    }
+
 }

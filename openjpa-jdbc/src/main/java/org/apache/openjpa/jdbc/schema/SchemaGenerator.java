@@ -488,9 +488,17 @@ public class SchemaGenerator {
         Table table;
         String tableSchema;
         for (int i = 0; cols != null && i < cols.length; i++) {
-            tableName = cols[i].getTableName();
-            tableSchema = StringUtils.trimToNull(cols[i].getSchemaName());
-
+            // TODO: Is this where we should handle this?
+            if (tableName == null || tableName.equals("%")) {
+                tableName = cols[i].getTableName();
+            }
+            if (schemaName == null) {
+                tableSchema = StringUtils.trimToNull(cols[i].getSchemaName());
+            }
+            else {
+                tableSchema = schemaName;
+            }
+            
             // ignore special tables
             if (!_openjpaTables &&
                 (tableName.toUpperCase().startsWith("OPENJPA_")

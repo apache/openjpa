@@ -24,6 +24,7 @@ import java.sql.DatabaseMetaData;
 import java.sql.SQLException;
 import java.sql.Types;
 import java.util.Arrays;
+import java.util.EnumSet;
 import java.util.Set;
 import java.util.StringTokenizer;
 
@@ -64,7 +65,7 @@ public class DB2Dictionary
     public static final int db2ZOSV8xOrLater = 3;
     public static final int db2UDBV82OrLater = 4;
     public static final int db2ISeriesV5R4OrLater = 5;
-	protected static final String forUpdate = "FOR UPDATE";
+    protected static final String forUpdate = "FOR UPDATE";
     protected static final String withURClause = "WITH UR";
     protected static final String withCSClause = "WITH CS";
     protected static final String withRSClause = "WITH RS";
@@ -82,6 +83,9 @@ public class DB2Dictionary
     protected int min = 0;
     
     private int defaultBatchLimit = 100;
+    
+    private EnumSet<DBIdentifiers> unsupportedDelimitedIds =
+        EnumSet.of(DBIdentifiers.COLUMN_COLUMN_DEFINITION); 
 
     public DB2Dictionary() {
         platform = "DB2";
@@ -244,9 +248,9 @@ public class DB2Dictionary
     }
 
     public void connectedConfiguration(Connection conn) throws SQLException {
-    	super.connectedConfiguration(conn);
+        super.connectedConfiguration(conn);
 
-    	DatabaseMetaData metaData = conn.getMetaData();
+        DatabaseMetaData metaData = conn.getMetaData();
         String driverName = metaData.getDriverName();
         if (driverName != null && driverName.startsWith("IBM DB2"))
             driverVendor = VENDOR_IBM;
@@ -267,21 +271,21 @@ public class DB2Dictionary
                 db2ServerType = db2ISeriesV5R4OrLater;
         }
         
-    	if (db2ServerType == 0) {
-    	    if (isJDBC3) {
-    	        maj = metaData.getDatabaseMajorVersion();
-    	        min = metaData.getDatabaseMinorVersion();
-    	    }
-    	    else
-    	        getProductVersionMajorMinor();
+        if (db2ServerType == 0) {
+            if (isJDBC3) {
+                maj = metaData.getDatabaseMajorVersion();
+                min = metaData.getDatabaseMinorVersion();
+            }
+            else
+                getProductVersionMajorMinor();
 
-    	    // Determine the type of DB2 database for ZOS & UDB
-    	    if (isDB2UDBV81OrEarlier())
-    	        db2ServerType = db2UDBV81OrEarlier;
-    	    else if (isDB2ZOSV8xOrLater())
-    	        db2ServerType = db2ZOSV8xOrLater;
-    	    else if (isDB2UDBV82OrLater())
-    	        db2ServerType = db2UDBV82OrLater;
+            // Determine the type of DB2 database for ZOS & UDB
+            if (isDB2UDBV81OrEarlier())
+                db2ServerType = db2UDBV81OrEarlier;
+            else if (isDB2ZOSV8xOrLater())
+                db2ServerType = db2ZOSV8xOrLater;
+            else if (isDB2UDBV82OrLater())
+                db2ServerType = db2UDBV82OrLater;
         }
 
         // verify that database product is supported
@@ -289,14 +293,14 @@ public class DB2Dictionary
             throw new UnsupportedException(_loc.get("db-not-supported",
                 new Object[] {databaseProductName, databaseProductVersion }));
 
-    	if (maj >= 9 || (maj == 8 && min >= 2)) {
-    	    supportsLockingWithMultipleTables = true;
-    	    supportsLockingWithInnerJoin = true;
-    	    supportsLockingWithOuterJoin = true;
-    	    forUpdateClause = "WITH RR USE AND KEEP UPDATE LOCKS";
-    	    if (maj >=9)
-    	        supportsXMLColumn = true;
-    	}
+        if (maj >= 9 || (maj == 8 && min >= 2)) {
+            supportsLockingWithMultipleTables = true;
+            supportsLockingWithInnerJoin = true;
+            supportsLockingWithOuterJoin = true;
+            forUpdateClause = "WITH RR USE AND KEEP UPDATE LOCKS";
+            if (maj >=9)
+                supportsXMLColumn = true;
+        }
 
         // platform specific settings
         switch (db2ServerType) {
@@ -843,10 +847,10 @@ public class DB2Dictionary
     }
     
     String nullSafe(String s) {
-    	return s == null ? "" : s;
+        return s == null ? "" : s;
     }
 
-	@Override
+    @Override
     protected Boolean matchErrorState(int subtype, Set<String> errorStates,
         SQLException ex) {
         Boolean recoverable = null;
@@ -863,5 +867,18 @@ public class DB2Dictionary
             }
         }
         return recoverable;
+    }
+    
+    /**
+     * @return the unsupportedDelimitedIds
+     */
+    @Override
+    protected EnumSet<DBIdentifiers> getUnsupportedDelimitedIds() {
+        return unsupportedDelimitedIds;
+    }
+    
+    @Override
+    protected void setDelimitedCase(DatabaseMetaData metaData) {
+        delimitedCase = SCHEMA_CASE_PRESERVE;
     }
 }
