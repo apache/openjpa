@@ -820,14 +820,13 @@ public class Expressions {
                 org.apache.openjpa.kernel.exps.Expression expr = 
                     ((Expressions.BinaryLogicalExpression)whens.get(i)).
                     toKernelExpression(factory, model);
-                Value action = ((ExpressionImpl<?>)thens.get(i)).
-                    toValue(factory, model);
+                Value action = Expressions.toValue(
+                        (ExpressionImpl<?>)thens.get(i), factory, model);
                 exps[i] = factory.whenCondition(expr, action);
             }
 
-            Value other = ((ExpressionImpl<?>)otherwise).
-                toValue(factory, model);
-
+            Value other = Expressions.toValue(
+                    (ExpressionImpl<?>)otherwise, factory, model);
             return factory.generalCaseExpression(exps, other);
         }
     }
@@ -895,13 +894,13 @@ public class Expressions {
                 org.apache.openjpa.kernel.exps.Literal val = null;
                 //TODO: Boolean literal, String literal    
                 val = factory.newLiteral(whens.get(i), Literal.TYPE_NUMBER);
-                Value action = ((ExpressionImpl<?>)thens.get(i)).
-                    toValue(factory, model);                
+                Value action = Expressions.toValue(
+                        (ExpressionImpl<?>)thens.get(i), factory, model);
                 exps[i] = factory.whenScalar(val, action);
             }
 
-            Value other = ((ExpressionImpl<?>)otherwise).
-                toValue(factory, model);
+            Value other = Expressions.toValue(
+                    (ExpressionImpl<?>)otherwise, factory, model);
             return factory.simpleCaseExpression(caseOperandExpr, exps, other);
         }
     }
