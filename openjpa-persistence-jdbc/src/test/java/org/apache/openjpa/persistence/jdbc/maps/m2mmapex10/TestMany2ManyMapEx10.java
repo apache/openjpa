@@ -32,6 +32,7 @@ import javax.persistence.Query;
 import junit.framework.Assert;
 
 import org.apache.openjpa.kernel.QueryImpl;
+import org.apache.openjpa.persistence.ArgumentException;
 import org.apache.openjpa.persistence.test.AllowFailure;
 import org.apache.openjpa.persistence.test.SQLListenerTestCase;
 
@@ -87,13 +88,24 @@ public class TestMany2ManyMapEx10 extends SQLListenerTestCase {
     
     public void queryQualifiedId(boolean inMemory) throws Exception {
         EntityManager em = emf.createEntityManager();
+        EmployeePK ekey = empPKs.get(0);
         String query = "select KEY(e) from PhoneNumber p, " +
-            " in (p.emps) e where e.empPK = ?1";
-        Query q = em.createQuery(query).setParameter(1, empPKs.get(0));
+            " in (p.emps) e where e.empPK.name = ?1 and e.empPK.bDay = ?2";
+        Query q = em.createQuery(query).setParameter(1, ekey.getName()).
+            setParameter(2, ekey.getBDay());
         if (inMemory) 
             setCandidate(q, PhoneNumber.class);
         List rs = q.getResultList();
         EmployeePK d = (EmployeePK) rs.get(0);
+
+        query = "select KEY(e) from PhoneNumber p, " +
+            " in (p.emps) e where e.empPK = ?1";
+        try {
+            rs = em.createQuery(query).setParameter(1, ekey).getResultList();
+        } catch (Exception e) {
+            // as excepted: conditional expressional expression over embeddable
+            assertException(e, ArgumentException.class);
+        }        
         
         query = "select KEY(p) from Employee e, " +
             " in (e.phones) p";
@@ -105,8 +117,9 @@ public class TestMany2ManyMapEx10 extends SQLListenerTestCase {
 
         em.clear();
         query = "select ENTRY(e) from PhoneNumber p, " +
-            " in (p.emps) e  where e.empPK = ?1";
-        q = em.createQuery(query).setParameter(1, empPKs.get(0));
+            " in (p.emps) e  where e.empPK.name = ?1 and e.empPK.bDay = ?2";
+        q = em.createQuery(query).setParameter(1, ekey.getName()).
+            setParameter(2, ekey.getBDay());
         if (inMemory) 
             setCandidate(q, PhoneNumber.class);
         rs = q.getResultList();

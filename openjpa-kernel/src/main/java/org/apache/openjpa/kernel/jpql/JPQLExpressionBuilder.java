@@ -752,6 +752,22 @@ public class JPQLExpressionBuilder
         return assemble(node);
     }
 
+    private void checkEmbeddable(Value val) {
+        Path path = val instanceof Path ? (Path) val : null;
+        if (path == null)
+            return;
+
+        FieldMetaData fmd = path.last();
+        if (fmd == null)
+            return;
+
+        ValueMetaData vm = fmd.isElementCollection() ? fmd.getElement()
+            : fmd.getValue();
+        if (vm.getEmbeddedMetaData() != null)
+            throw parseException(EX_USER, "bad-predicate",
+                new Object[]{ currentQuery() }, null);
+    }
+
     /**
      * Recursive helper method to evaluate the given node.
      */
@@ -956,12 +972,14 @@ public class JPQLExpressionBuilder
                     factory.notEqual(val1, factory.getNull()));
 
             case JJTISNULL: // x.field IS [NOT] NULL
+                val1 = getValue(onlyChild(node));
+                checkEmbeddable(val1);
                 if (not)
                     return factory.notEqual
-                        (getValue(onlyChild(node)), factory.getNull());
+                        (val1, factory.getNull());
                 else
                     return factory.equal
-                        (getValue(onlyChild(node)), factory.getNull());
+                        (val1, factory.getNull());
 
             case JJTPATH:
                 return getPathOrConstant(node);
@@ -1159,6 +1177,7 @@ public class JPQLExpressionBuilder
             case JJTMEMBEROF:
                 val1 = getValue(left(node), VAR_PATH);
                 val2 = getValue(right(node), VAR_PATH);
+                checkEmbeddable(val2);
                 setImplicitContainsTypes(val2, val1, CONTAINS_TYPE_ELEMENT);
                 return evalNot(not, factory.contains(val2, val1));
 
@@ -1290,6 +1309,9 @@ public class JPQLExpressionBuilder
         if (fmd == null)
             return;
 
+        if (expected == null)
+            checkEmbeddable(path);
+
         Class<?> type = path.getType();
         if (type == null)
             return;
@@ -1333,6 +1355,8 @@ public class JPQLExpressionBuilder
         try {
             QueryExpressions subexp = getQueryExpressions();
             subq.setQueryExpressions(subexp);
+            if (subexp.projections.length > 0)
+                checkEmbeddable(subexp.projections[0]);
             return subq;
         } finally {
             // remove the subquery parse context

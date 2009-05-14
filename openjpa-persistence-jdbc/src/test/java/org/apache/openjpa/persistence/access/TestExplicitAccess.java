@@ -873,9 +873,8 @@ public class TestExplicitAccess extends SingleEMFTestCase {
             qry.getSingleResult();
             fail("Query execution should have failed.");
         } catch (Exception e) {
-            assertExceptionMessage(e, ArgumentException.class,
-                "No field named \"firstName\" in \"EmbedFieldAccess\"",
-                "[fName, lName]");
+            // no support: conditional expressional expression over embeddable
+            assertException(e, ArgumentException.class);
         }
 
         em.close();

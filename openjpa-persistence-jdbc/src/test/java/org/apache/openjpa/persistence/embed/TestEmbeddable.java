@@ -32,6 +32,7 @@ import javax.persistence.EntityTransaction;
 import javax.persistence.Query;
 
 
+import org.apache.openjpa.persistence.ArgumentException;
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
 
 public class TestEmbeddable extends SingleEMFTestCase {
@@ -1198,7 +1199,7 @@ public class TestEmbeddable extends SingleEMFTestCase {
                 " ORDER BY a.embed",
             "select a.embed from " +
                 " EntityA_Embed_ToOne a WHERE exists " +
-                " (select a from EntityA_Embed_ToOne a" +
+                " (select a from EntityA_Embed_ToOne a " +
                 " where a.embed.b IS NOT NULL) " +
                 " ORDER BY a.embed",
         };
@@ -1236,8 +1237,6 @@ public class TestEmbeddable extends SingleEMFTestCase {
             "select a.embed as e from " +
                 " EntityA_Embed_MappedToOne a ORDER BY e",
             "select a.embed from " +
-                " EntityA_Embed_MappedToOne a WHERE a.embed IS NOT NULL",
-            "select a.embed from " +
                 " EntityA_Embed_MappedToOne a WHERE a.embed.bm IS NOT NULL",
             "select a.embed from " +
                 " EntityA_Embed_MappedToOne a " +
@@ -1254,6 +1253,29 @@ public class TestEmbeddable extends SingleEMFTestCase {
             assertTrue(((Embed_MappedToOne) obj).getMappedEntityB() != null);
             em.clear();
         }
+        String[] query2 = {
+            // embeddable in conditional expression should fail
+            "select a.embed from " +
+                " EntityA_Embed_MappedToOne a " +
+                " WHERE exists " +
+                " (select e from EntityA_Embed_MappedToOne a" +
+                " join a.embed e " +
+                " where e.bm IS NOT NULL)",
+            "select a.embed from " +
+                " EntityA_Embed_MappedToOne a " +
+                " WHERE exists " +
+                " (select a.embed from EntityA_Embed_MappedToOne a " +
+                " where a.embed.bm IS NOT NULL)",
+        };
+        for (int i = 0; i < query2.length; i++) {
+            List<Object[]> rs = null;
+            try {
+                rs = em.createQuery(query2[i]).getResultList();
+            } catch (ArgumentException e) {
+                // as expected
+            }
+        }
+
         EntityTransaction tran = em.getTransaction();
         tran.begin();
         Query q = em.createQuery("select a from EntityA_Embed_MappedToOne a");
@@ -1352,10 +1374,10 @@ public class TestEmbeddable extends SingleEMFTestCase {
             "select e from EntityA_Embed_ToMany a join a.embed e " +
                 " WHERE e.bs IS NOT EMPTY ORDER BY e",
             "select a from EntityA_Embed_ToMany a " +
-                " WHERE exists (select a.embed from EntityA_Embed_ToMany a" +
+                " WHERE exists (select a from EntityA_Embed_ToMany a" +
                 " where a.embed.bs IS NOT EMPTY) ORDER BY a",
             "select a from EntityA_Embed_ToMany a " +
-                " WHERE exists (select a.embed from EntityA_Embed_ToMany a" +
+                " WHERE exists (select a from EntityA_Embed_ToMany a" +
                 " where a.embed.bs IS NOT EMPTY) ORDER BY a",
             };
         List rs = null;
@@ -1401,26 +1423,26 @@ public class TestEmbeddable extends SingleEMFTestCase {
         EntityManager em = emf.createEntityManager();
         // test select embeddable
         String query[] = {
-//            "select a.embed from EntityA_Embed_Embed_ToMany a",
-//            "select a.embed from EntityA_Embed_Embed_ToMany a" +
-//                " where a.embed.embed.name1 like '%1' ",
-//            "select a.embed.embed from EntityA_Embed_Embed_ToMany a",
+            "select a.embed from EntityA_Embed_Embed_ToMany a",
+            "select a.embed from EntityA_Embed_Embed_ToMany a" +
+                " where a.embed.embed.name1 like '%1' ",
+            "select a.embed.embed from EntityA_Embed_Embed_ToMany a",
             "select b from EntityA_Embed_Embed_ToMany a join a.embed.embed.bs" +
                 " b",
-//            "select a.embed.embed from EntityA_Embed_Embed_ToMany a " +
-//                " where a.embed.embed.name1 like '%1'",
-//            "select e2 from EntityA_Embed_Embed_ToMany a " +
-//                " left join a.embed e1 left join e1.embed e2",
-//            "select e2 from EntityA_Embed_Embed_ToMany a " +
-//                " join a.embed e1 join e1.embed e2",
-//            "select a.embed as e from EntityA_Embed_Embed_ToMany a ORDER BY e",
-//            "select a.embed.embed as e from EntityA_Embed_Embed_ToMany a " +
-//                " where a.embed.embed.name1 like '%1' ORDER BY e",
-//            "select a.embed from EntityA_Embed_Embed_ToMany a " +
-//                " where a.embed.embed.bs IS NOT EMPTY",
-//            "select a.embed from EntityA_Embed_Embed_ToMany a " +
-//                " where exists (select a.embed.embed.bs from " +
-//                " EntityA_Embed_Embed_ToMany a)",
+            "select a.embed.embed from EntityA_Embed_Embed_ToMany a " +
+                " where a.embed.embed.name1 like '%1'",
+            "select e2 from EntityA_Embed_Embed_ToMany a " +
+                " left join a.embed e1 left join e1.embed e2",
+            "select e2 from EntityA_Embed_Embed_ToMany a " +
+                " join a.embed e1 join e1.embed e2",
+            "select a.embed as e from EntityA_Embed_Embed_ToMany a ORDER BY e",
+            "select a.embed.embed as e from EntityA_Embed_Embed_ToMany a " +
+                " where a.embed.embed.name1 like '%1' ORDER BY e",
+            "select a.embed from EntityA_Embed_Embed_ToMany a " +
+                " where a.embed.embed.bs IS NOT EMPTY",
+            "select a.embed from EntityA_Embed_Embed_ToMany a " +
+                " where exists (select a.embed.embed.bs from " +
+                " EntityA_Embed_Embed_ToMany a)",
             "select b from EntityA_Embed_Embed_ToMany a join a.embed.embed.bs" +
                 " b",
         };
@@ -1432,23 +1454,23 @@ public class TestEmbeddable extends SingleEMFTestCase {
             switch (i) {
             case 0:
             case 1:
-//            case 7:
-//            case 9:
-//            case 10:
-//                assertTrue(obj instanceof Embed_Embed_ToMany);
-//                assertTrue(((Embed_Embed_ToMany) obj).getEmbed().getEntityBs().
-//                    size() > 0);
-//                break;
-//            case 2:
-//            case 4:
-//            case 5:
-//            case 6:
-//            case 8:
-//                assertTrue(obj instanceof Embed_ToMany);
-//                assertTrue(((Embed_ToMany) obj).getEntityBs().size() > 0);
-//                break;
-//            case 3:
-//            case 11:
+            case 7:
+            case 9:
+            case 10:
+                assertTrue(obj instanceof Embed_Embed_ToMany);
+                assertTrue(((Embed_Embed_ToMany) obj).getEmbed().getEntityBs().
+                    size() > 0);
+                break;
+            case 2:
+            case 4:
+            case 5:
+            case 6:
+            case 8:
+                assertTrue(obj instanceof Embed_ToMany);
+                assertTrue(((Embed_ToMany) obj).getEntityBs().size() > 0);
+                break;
+            case 3:
+            case 11:
                 assertTrue(obj instanceof EntityB1);
                 break;
             }        
@@ -1528,13 +1550,15 @@ public class TestEmbeddable extends SingleEMFTestCase {
             "select a.embed from EntityA_Embed_Embed a",
             "select a.embed.embed from EntityA_Embed_Embed a",
             "select a.embed as e from EntityA_Embed_Embed a ORDER BY e",
-            "select a.embed from EntityA_Embed_Embed a WHERE a.embed.embed " +
-                " IS NOT NULL",
-            "select a.embed from EntityA_Embed_Embed a " +
-                " WHERE exists " +
-                " (select a.embed.embed from EntityA_Embed_Embed a" +
-                " where a.embed IS NOT NULL) ",
         };
+        String query2[] = {
+                "select a.embed from EntityA_Embed_Embed a WHERE a.embed.embed " +
+                    " IS NOT NULL",
+                "select a.embed from EntityA_Embed_Embed a " +
+                    " WHERE exists " +
+                    " (select a.embed.embed from EntityA_Embed_Embed a" +
+                    " where a.embed IS NOT NULL) ",
+            };
         List rs = null;
         for (int i = 0; i < query.length; i++) {
             rs = em.createQuery(query[i]).getResultList();
@@ -1542,8 +1566,6 @@ public class TestEmbeddable extends SingleEMFTestCase {
             switch (i) {
             case 0:
             case 2:
-            case 3:
-            case 4:
                 assertTrue(rs.get(0) instanceof Embed_Embed);
                 break;
             case 1:
@@ -1551,6 +1573,13 @@ public class TestEmbeddable extends SingleEMFTestCase {
                 break;
             }
             em.clear();
+        }
+        for (int i = 0; i < query2.length; i++) {
+            try {
+            rs = em.createQuery(query2[i]).getResultList();
+            } catch(ArgumentException e) {
+                // as expected
+            }
         }
         EntityTransaction tran = em.getTransaction();
         tran.begin();
@@ -1697,10 +1726,10 @@ public class TestEmbeddable extends SingleEMFTestCase {
             }
         }
         for (int i = 0; i < query3.length; i++) {
+            try {
             rs = em.createQuery(query3[i]).setParameter(1, obj).getResultList();
-            if (rs.size() > 0) {
-                obj = ((Object[]) rs.get(0))[0];
-                assertTrue(obj instanceof Embed_Embed);
+            } catch(ArgumentException e) {
+                // as expected
             }
         }
 
@@ -1745,15 +1774,52 @@ public class TestEmbeddable extends SingleEMFTestCase {
                 " from EntityA_Embed_Coll_Embed a, in (a.embed.embeds) e " +
                 " where e.intVal2 = 105) " +
                 " order by e",
+            "select e, a from " +
+                " EntityA_Embed_Coll_Embed a " +
+                " , in (a.embed.embeds) e " +
+                " where e.intVal1 = SOME " +
+                " (select e2.intVal1 from " +
+                " EntityA_Embed_Coll_Embed a2 " +
+                " , in (a2.embed.embeds) e2) " +
+                " order by e",
+        };
+        String[] query2 = {
+            "select e, a from " +
+                " EntityA_Embed_Coll_Embed a " +
+                " , in (a.embed.embeds) e " +
+                " where e = ?1 order by e",
         };
         List<Object[]> rs = null;
+        EntityA_Embed_Coll_Embed ea = null;
+        Object obj = null;
         for (int i = 0; i < query.length; i++) {
             rs = em.createQuery(query[i]).getResultList();
             assertTrue(rs.size() > 0);
-            Object obj = ((Object[]) rs.get(0))[0];
+            obj = ((Object[]) rs.get(0))[0];
             assertTrue(obj instanceof Embed);
-            em.clear();
+            if (i == query.length-1)
+                ea = (EntityA_Embed_Coll_Embed) ((Object[]) rs.get(0))[1];
         }
+
+        for (int i = 0; i < query2.length; i++) {
+            try {
+            rs = em.createQuery(query2[i]).
+                setParameter(1, (Embed) obj).
+                getResultList();
+            } catch (ArgumentException e) {
+                // expected exception
+            }
+        }
+        try {
+            rs = em.createQuery("select a from " +
+                " EntityA_Embed_Coll_Embed a " +
+                " where a.embed = ?1 order by e").
+                setParameter(1, ea.getEmbed()).
+                getResultList();
+        } catch (ArgumentException e) {
+            // expected exception
+        }
+        em.clear();
 
         EntityTransaction tran = em.getTransaction();
         tran.begin();
