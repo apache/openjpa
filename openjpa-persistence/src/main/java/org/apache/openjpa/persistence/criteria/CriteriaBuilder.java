@@ -544,13 +544,12 @@ public class CriteriaBuilder implements QueryBuilder, ExpressionParser {
     }
 
     public <R> Case<R> selectCase() {
-        throw new AbstractMethodError();
-
+        return new Expressions.Case();
     }
 
     public <C, R> SimpleCase<C, R> selectCase(
         Expression<? extends C> expression) {
-        throw new AbstractMethodError();
+        return new Expressions.SimpleCase(expression);
     }
 
     public <C extends Collection<?>> Expression<Integer> size(C collection) {

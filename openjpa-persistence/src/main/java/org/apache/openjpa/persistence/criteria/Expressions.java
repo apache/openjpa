@@ -29,6 +29,7 @@ import javax.persistence.criteria.QueryBuilder;
 import javax.persistence.criteria.QueryBuilder.Trimspec;
 
 import org.apache.openjpa.kernel.exps.ExpressionFactory;
+import org.apache.openjpa.kernel.exps.Literal;
 import org.apache.openjpa.kernel.exps.Value;
 import org.apache.openjpa.kernel.jpql.JPQLExpressionBuilder;
 import org.apache.openjpa.persistence.meta.MetamodelImpl;
@@ -764,5 +765,144 @@ public class Expressions {
      		    super.toKernelExpression(factory, model),
     		    notNull.toKernelExpression(factory, model));
     	}
+    }
+    
+    public static class Case<T> extends ExpressionImpl<T> 
+    implements QueryBuilder.Case<T> {
+        private List<Expression<? extends T>> thens = 
+            new ArrayList<Expression<? extends T>>();
+
+        private List<Expression<Boolean>> whens = 
+            new ArrayList<Expression<Boolean>>();
+
+        private Expression<? extends T> otherwise;
+
+        public Case() {
+            super(null);
+        }
+
+        public Case(Class<T> cls) {
+            super(cls);
+        }
+
+        public Case<T> when(Expression<Boolean> when, 
+            Expression<? extends T> then) {
+            whens.add(when);
+            thens.add(then);
+            return this;
+        }
+
+        public Case<T> when(Expression<Boolean> when, T then) {
+            whens.add(when);
+            Expression<? extends T> thenExpr = 
+                new Expressions.Constant<T>(then);
+            thens.add(thenExpr);
+            return this;
+        }
+
+        public Case<T> otherwise(Expression<? extends T> otherwise) {
+            this.otherwise = otherwise;
+            return this;
+        }
+
+        public Case<T> otherwise(T otherwise) {
+            this.otherwise = new Expressions.Constant<T>(otherwise);
+            return this;
+        }
+
+        @Override
+        public org.apache.openjpa.kernel.exps.Value toValue(
+                ExpressionFactory factory, MetamodelImpl model) {
+            int size = whens.size();
+            org.apache.openjpa.kernel.exps.Expression[] exps = 
+                new org.apache.openjpa.kernel.exps.Expression[size];
+            for (int i = 0; i < size; i++) {
+                org.apache.openjpa.kernel.exps.Expression expr = 
+                    ((Expressions.BinaryLogicalExpression)whens.get(i)).
+                    toKernelExpression(factory, model);
+                Value action = ((ExpressionImpl<?>)thens.get(i)).
+                    toValue(factory, model);
+                exps[i] = factory.whenCondition(expr, action);
+            }
+
+            Value other = ((ExpressionImpl<?>)otherwise).
+                toValue(factory, model);
+
+            return factory.generalCaseExpression(exps, other);
+        }
+    }
+
+    public static class SimpleCase<C,R> extends ExpressionImpl<R> 
+    implements QueryBuilder.SimpleCase<C,R> {
+        private List<Expression<? extends R>> thens = 
+            new ArrayList<Expression<? extends R>>();
+
+        private List<C> whens = new ArrayList<C>();
+
+        private Expression<? extends R> otherwise;
+
+        private Expression<? extends R> caseOperand;
+
+        public SimpleCase() {
+            super(null);
+        }
+
+        public SimpleCase(Class<R> cls) {
+            super(cls);
+        }
+        
+        public SimpleCase(Expression<? extends R> expr) {
+            super(null);
+            this.caseOperand = expr;
+        }
+        public Expression getExpression() {
+            return caseOperand;
+        }
+
+        public SimpleCase<C,R> when(C when, Expression<? extends R> then) {
+            whens.add(when);
+            thens.add(then);
+            return this;
+        }
+
+        public SimpleCase<C,R> when(C when, R then) {
+            whens.add(when);
+            Expression<? extends R> thenExpr = 
+                new Expressions.Constant<R>(then);
+            thens.add(thenExpr);
+            return this;
+        }
+
+        public SimpleCase<C,R> otherwise(Expression<? extends R> otherwise) {
+            this.otherwise = otherwise;
+            return this;
+        }
+
+        public SimpleCase<C,R> otherwise(R otherwise) {
+            this.otherwise = new Expressions.Constant<R>(otherwise);
+            return this;
+        }
+
+        @Override
+        public org.apache.openjpa.kernel.exps.Value toValue(
+                ExpressionFactory factory, MetamodelImpl model) {
+            Value caseOperandExpr = Expressions.toValue(
+                (ExpressionImpl<?>)caseOperand, factory, model);
+            int size = whens.size();
+            org.apache.openjpa.kernel.exps.Expression[] exps = 
+                new org.apache.openjpa.kernel.exps.Expression[size];
+            for (int i = 0; i < size; i++) {
+                org.apache.openjpa.kernel.exps.Literal val = null;
+                //TODO: Boolean literal, String literal    
+                val = factory.newLiteral(whens.get(i), Literal.TYPE_NUMBER);
+                Value action = ((ExpressionImpl<?>)thens.get(i)).
+                    toValue(factory, model);                
+                exps[i] = factory.whenScalar(val, action);
+            }
+
+            Value other = ((ExpressionImpl<?>)otherwise).
+                toValue(factory, model);
+            return factory.simpleCaseExpression(caseOperandExpr, exps, other);
+        }
     }
 }
