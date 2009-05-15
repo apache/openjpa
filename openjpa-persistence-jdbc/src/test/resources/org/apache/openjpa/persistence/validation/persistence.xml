@@ -27,18 +27,18 @@
     </persistence-unit>
 
     <persistence-unit name="simple-auto-mode">
-        <validation-mode>AUTO</validation-mode>
     	<class>org.apache.openjpa.persistence.query.SimpleEntity</class>
+        <validation-mode>AUTO</validation-mode>
     </persistence-unit>
 
     <persistence-unit name="simple-callback-mode" validation-mode="CALLBACK">
-        <validation-mode>CALLBACK</validation-mode>
     	<class>org.apache.openjpa.persistence.query.SimpleEntity</class>
+        <validation-mode>CALLBACK</validation-mode>
     </persistence-unit>
 
     <persistence-unit name="simple-none-mode" validation-mode="NONE">
-        <validation-mode>NONE</validation-mode>
     	<class>org.apache.openjpa.persistence.query.SimpleEntity</class>
+        <validation-mode>NONE</validation-mode>
     </persistence-unit>
     
 </persistence>
