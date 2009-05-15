@@ -1,6 +1,7 @@
 package org.apache.openjpa.persistence.criteria;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.persistence.EntityManager;
@@ -413,7 +414,7 @@ public class TestTypesafeCriteria extends SQLListenerTestCase {
     }
     
     @AllowFailure
-    public void testParameters() {
+    public void testParameters1() {
         String jpql = "SELECT c FROM Customer c Where c.status = :stat";
         CriteriaQuery q = cb.create();
         Root<Customer> c = q.from(Customer.class);
@@ -421,6 +422,56 @@ public class TestTypesafeCriteria extends SQLListenerTestCase {
         q.select(c).where(cb.equal(c.get(Customer_.status), param));
         
         assertEquivalence(q, jpql, new String[]{"stat"}, new Object[] {1});
+    }
+
+    @AllowFailure
+    public void testParameters2() {
+        String jpql = "SELECT c FROM Customer c Where c.status = :stat AND c.name = :name";
+        CriteriaQuery q = cb.create();
+        Root<Customer> c = q.from(Customer.class);
+        Parameter<Integer> param1 = cb.parameter(Integer.class, "stat");
+        Parameter<String> param2 = cb.parameter(String.class, "name");
+        q.select(c).where(cb.equal(c.get(Customer_.status), param1),
+            cb.equal(c.get(Customer_.name), param2));
+
+        assertEquivalence(q, jpql, new String[] { "stat", "name" }, new Object[] { 1, "test" });
+    }
+
+    @AllowFailure
+    public void testParameters3() {
+        String jpql = "SELECT c FROM Customer c Where c.status = :1";
+        CriteriaQuery q = cb.create();
+        Root<Customer> c = q.from(Customer.class);
+        Parameter<Integer> param = cb.parameter(Integer.class);
+        q.select(c).where(cb.equal(c.get(Customer_.status), param));
+        assertEquivalence(q, jpql, new Object[] { 1 });
+    }
+
+    @AllowFailure
+    public void testParameters4() {
+        String jpql = "SELECT c FROM Customer c Where c.status = :1 AND c.name = :2";
+        CriteriaQuery q = cb.create();
+        Root<Customer> c = q.from(Customer.class);
+        Parameter<Integer> param1 = cb.parameter(Integer.class);
+        Parameter<Integer> param2 = cb.parameter(Integer.class);
+        q.select(c).where(cb.equal(c.get(Customer_.status), param1),
+            cb.equal(c.get(Customer_.name), param2));    
+        assertEquivalence(q, jpql, new Object[] { 1, "test" });
+    }
+    
+    // collection-valued input parameter
+    @AllowFailure
+    public void testParameters5() {
+        String jpql = "SELECT c FROM Customer c Where c.status IN (:coll)";
+        CriteriaQuery q = cb.create();
+        Root<Customer> c = q.from(Customer.class);
+        Parameter<List> param1 = cb.parameter(List.class);
+        q.select(c).where(cb.equal(c.get(Customer_.status), param1));    
+        List vals = new ArrayList();
+        vals.add(1);
+        vals.add(2);
+        
+        assertEquivalence(q, jpql,  new String[] {"coll"}, new Object[] {vals});
     }
     
     @AllowFailure
@@ -439,7 +490,8 @@ public class TestTypesafeCriteria extends SQLListenerTestCase {
             inv.key().get(Movie_.title), inv.value());
         
         assertEquivalence(q, jpql);
-    }        
+    }
+    
     @AllowFailure
     public void testSelectList2() {
         String jpql = "SELECT NEW CustomerDetails(c.id, c.status, o.quantity) FROM " + 
@@ -676,6 +728,28 @@ public class TestTypesafeCriteria extends SQLListenerTestCase {
         assertEquals(jSQL, cSQL);
     }
 
+    void assertEquivalence(CriteriaQuery c, String jpql, 
+        Object[] params) {
+        sql.clear();
+        Query q = em.createQuery(c);
+        for (int i = 0; i < params.length; i++) {
+            q.setParameter(i+1, params[i]);
+        }
+        List cList = q.getResultList();
+        assertEquals(1, sql.size());
+        String cSQL = sql.get(0);
+
+        sql.clear();
+        q = em.createQuery(jpql);
+        for (int i = 0; i < params.length; i++) {
+            q.setParameter(i+1, params[i]);
+        }
+        List jList = q.getResultList();
+        assertEquals(1, sql.size());
+        String jSQL = sql.get(0);
+
+        assertEquals(jSQL, cSQL);
+    }
     
     void assertEquivalence(CriteriaQuery c, String jpql) {
     	sql.clear();
