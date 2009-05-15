@@ -33,8 +33,6 @@ public class TestMappingDefaultsImpl extends TestCase {
     /**
      * For databases that accept only short column names, test avoidance of 
      * duplicate column names when populating the table with long column names.
-     *
-     * @author Hiroki Tateno
      */
     public void testPopulateWithLongColumnNames() {
         MappingDefaultsImpl mapping = new MappingDefaultsImpl();
