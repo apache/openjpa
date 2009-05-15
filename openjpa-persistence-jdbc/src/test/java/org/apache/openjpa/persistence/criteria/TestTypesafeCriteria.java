@@ -300,7 +300,6 @@ public class TestTypesafeCriteria extends SQLListenerTestCase {
         assertEquivalence(q, jpql);
     }
     
-    @AllowFailure
     public void testExpression2() {
         String jpql = "SELECT TYPE(e) FROM Employee e WHERE TYPE(e) <> Exempt";
         CriteriaQuery q = cb.create();
@@ -425,7 +424,7 @@ public class TestTypesafeCriteria extends SQLListenerTestCase {
     }
     
     @AllowFailure
-    public void testSelectList() {
+    public void testSelectList1() {
         String jpql = "SELECT v.location.street, KEY(i).title, VALUE(i) FROM " + 
             "VideoStore v JOIN v.videoInventory i WHERE v.location.zipCode = " + 
             "'94301' AND VALUE(i) > 0";
@@ -440,10 +439,12 @@ public class TestTypesafeCriteria extends SQLListenerTestCase {
             inv.key().get(Movie_.title), inv.value());
         
         assertEquivalence(q, jpql);
-        
-        jpql = "SELECT NEW CustomerDetails(c.id, c.status, o.quantity) FROM " + 
-            "Customer c JOIN c.orders o WHERE o.quantity > 100";
-        q = cb.create();
+    }        
+    @AllowFailure
+    public void testSelectList2() {
+        String jpql = "SELECT NEW CustomerDetails(c.id, c.status, o.quantity) FROM " + 
+        "Customer c JOIN c.orders o WHERE o.quantity > 100";
+        CriteriaQuery q = cb.create();
         Root<Customer> c = q.from(Customer.class);
         Join<Customer, Order> o = c.join(Customer_.orders);
         q.where(cb.gt(o.get(Order_.quantity), 100));
@@ -456,7 +457,7 @@ public class TestTypesafeCriteria extends SQLListenerTestCase {
     }
 
     @AllowFailure
-    public void testSubqueries() {
+    public void testSubqueries1() {
         String jpql = "SELECT goodCustomer FROM Customer goodCustomer WHERE " + 
             "goodCustomer.balanceOwed < (SELECT AVG(c.balanceOwed) FROM " + 
             "Customer c)";
@@ -469,39 +470,48 @@ public class TestTypesafeCriteria extends SQLListenerTestCase {
         q.select(goodCustomer);
         
         assertEquivalence(q, jpql);
-        
-        jpql = "SELECT DISTINCT emp FROM Employee emp WHERE EXISTS (" + 
+    }
+    
+    @AllowFailure
+    public void testSubqueries2() {
+        String jpql = "SELECT DISTINCT emp FROM Employee emp WHERE EXISTS (" + 
             "SELECT spouseEmp FROM Employee spouseEmp WHERE spouseEmp = " + 
             "emp.spouse)";
-        q = cb.create();
+        CriteriaQuery q = cb.create();
         Root<Employee> emp = q.from(Employee.class);
-        Subquery<Employee> sq1 = q.subquery(Employee.class);
-        Root<Employee> spouseEmp = sq1.from(Employee.class);
-        sq1.select(spouseEmp);
-        sq1.where(cb.equal(spouseEmp, emp.get(Employee_.spouse)));
+        Subquery<Employee> sq = q.subquery(Employee.class);
+        Root<Employee> spouseEmp = sq.from(Employee.class);
+        sq.select(spouseEmp);
+        sq.where(cb.equal(spouseEmp, emp.get(Employee_.spouse)));
         q.where(cb.exists(sq));
         q.select(emp).distinct(true);
         
         assertEquivalence(q, jpql);
-        
-        jpql = "SELECT emp FROM Employee emp WHERE emp.salary > ALL (" + 
+    }
+    
+    @AllowFailure
+    public void testSubqueries3() {
+        String jpql = "SELECT emp FROM Employee emp WHERE emp.salary > ALL (" + 
             "SELECT m.salary FROM Manager m WHERE m.department = " + 
             "emp.department)";
-        q = cb.create();
-        Root<Employee> emp1 = q.from(Employee.class);
-        q.select(emp1);
-        Subquery<BigDecimal> sq2 = q.subquery(BigDecimal.class);
-        Root<Manager> m = sq2.from(Manager.class);
-        sq2.select(m.get(Manager_.salary));
-        sq2.where(cb.equal(m.get(Manager_.department), emp1.get(
+        CriteriaQuery q = cb.create();
+        Root<Employee> emp = q.from(Employee.class);
+        q.select(emp);
+        Subquery<BigDecimal> sq = q.subquery(BigDecimal.class);
+        Root<Manager> m = sq.from(Manager.class);
+        sq.select(m.get(Manager_.salary));
+        sq.where(cb.equal(m.get(Manager_.department), emp.get(
             Employee_.department)));
         q.where(cb.gt(emp.get(Employee_.salary), cb.all(sq)));
-        
+    
         assertEquivalence(q, jpql);
-        
-        jpql = "SELECT c FROM Customer c WHERE " + 
+    }
+    
+    @AllowFailure
+    public void testSubqueries4() {
+        String jpql = "SELECT c FROM Customer c WHERE " + 
             "(SELECT COUNT(o) FROM c.orders o) > 10";
-        q = cb.create();
+        CriteriaQuery q = cb.create();
         Root<Customer> c1 = q.from(Customer.class);
         q.select(c1);
         Subquery<Long> sq3 = q.subquery(Long.class);
@@ -510,32 +520,38 @@ public class TestTypesafeCriteria extends SQLListenerTestCase {
         q.where(cb.gt(sq3.select(cb.count(o)), 10));
         
         assertEquivalence(q, jpql);
-        
-        jpql = "SELECT o FROM Order o WHERE 10000 < ALL (" + 
+    }
+    
+    @AllowFailure
+    public void testSubqueries5() {
+        String jpql = "SELECT o FROM Order o WHERE 10000 < ALL (" + 
             "SELECT a.balance FROM o.customer c JOIN c.accounts a)";
-        q = cb.create();
-        Root<Order> o1 = q.from(Order.class);
-        q.select(o1);
-        Subquery<Integer> sq4 = q.subquery(Integer.class);
-        Root<Order> o2 = sq4.correlate(o1);
-        Join<Order,Customer> c3 = o2.join(Order_.customer);
-        Join<Customer,Account> a = c3.join(Customer_.accounts);
-        sq4.select(a.get(Account_.balance));
-        q.where(cb.lt(cb.literal(10000), cb.all(sq4)));
+        CriteriaQuery q = cb.create();
+        Root<Order> o = q.from(Order.class);
+        q.select(o);
+        Subquery<Integer> sq = q.subquery(Integer.class);
+        Root<Order> osq = sq.correlate(o);
+        Join<Order,Customer> c = osq.join(Order_.customer);
+        Join<Customer,Account> a = c.join(Customer_.accounts);
+        sq.select(a.get(Account_.balance));
+        q.where(cb.lt(cb.literal(10000), cb.all(sq)));
         
         assertEquivalence(q, jpql);
-
-        jpql = "SELECT o FROM Order o JOIN o.customer c WHERE 10000 < " +
+    }
+    
+    @AllowFailure
+    public void testSubqueries6() {
+        String jpql = "SELECT o FROM Order o JOIN o.customer c WHERE 10000 < " +
             "ALL (SELECT a.balance FROM c.accounts a)";
-        q = cb.create();
-        Root<Order> o3 = q.from(Order.class);
-        q.select(o3);
-        Join<Order,Customer> c4 = o3.join(Order_.customer);
-        Subquery<Integer> sq5 = q.subquery(Integer.class);
-        Join<Order,Customer> c5 = sq5.correlate(c4);
-        Join<Customer,Account> a2 = c5.join(Customer_.accounts);
-        sq5.select(a.get(Account_.balance));
-        q.where(cb.lt(cb.literal(10000), cb.all(sq5)));
+        CriteriaQuery q = cb.create();
+        Root<Order> o = q.from(Order.class);
+        q.select(o);
+        Join<Order,Customer> c = o.join(Order_.customer);
+        Subquery<Integer> sq = q.subquery(Integer.class);
+        Join<Order,Customer> csq = sq.correlate(c);
+        Join<Customer,Account> a = csq.join(Customer_.accounts);
+        sq.select(a.get(Account_.balance));
+        q.where(cb.lt(cb.literal(10000), cb.all(sq)));
         
         assertEquivalence(q, jpql);
     }

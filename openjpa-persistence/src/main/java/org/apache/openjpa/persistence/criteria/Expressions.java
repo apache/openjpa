@@ -28,6 +28,7 @@ import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.QueryBuilder;
 import javax.persistence.criteria.QueryBuilder.Trimspec;
 
+import org.apache.openjpa.persistence.meta.Types;
 import org.apache.openjpa.kernel.exps.ExpressionFactory;
 import org.apache.openjpa.kernel.exps.Literal;
 import org.apache.openjpa.kernel.exps.Value;
@@ -458,6 +459,7 @@ public class Expressions {
     }
 
     public static class Equal extends BinaryLogicalExpression {
+        boolean negate;
         public <X,Y> Equal(Expression<X> x, Expression<Y> y) {
             super(x,y);
         }
@@ -466,12 +468,32 @@ public class Expressions {
             this(x, new Constant<Object>(Object.class, y));
         }
         
+        public Equal negate() {
+            negate = true;
+            return this;
+        }
+        
         @Override
         org.apache.openjpa.kernel.exps.Expression toKernelExpression(
             ExpressionFactory factory, MetamodelImpl model) {
-                return factory.equal(
-                	Expressions.toValue(e1, factory, model), 
-                	Expressions.toValue(e2, factory, model));
+            boolean isTypeExpr = false;
+            Value val1 = Expressions.toValue(e1, factory, model);
+            Value val2 = Expressions.toValue(e2, factory, model);
+            if (e1 instanceof PathImpl) {
+                PathImpl path = (PathImpl)e1;
+                isTypeExpr = path.isTypeExpr();
+                if (isTypeExpr) {
+                    ((Constant)e2).setTypeLit(isTypeExpr);
+                    val2 = Expressions.toValue(e2, factory, model);
+                    Class clzz = (Class)((Literal)val2).getValue();
+                    val2.setMetaData(((Types.Managed)model.type(clzz)).meta);
+                }
+            }
+            
+            if (!negate)
+                return factory.equal(val1, val2);
+            else
+                return factory.notEqual(val1, val2);
         }
     }
     
@@ -564,6 +586,7 @@ public class Expressions {
     
     public static class Constant<X> extends ExpressionImpl<X> {
         public final Object arg;
+        private boolean typeLit;
         public Constant(Class<X> t, X x) {
             super(t);
             this.arg = x;
@@ -573,31 +596,49 @@ public class Expressions {
         	this((Class<X>)x.getClass(),x);
         }
         
+        public void setTypeLit(boolean typeLit) {
+            this.typeLit = typeLit;
+        }
+        
         @Override
         public Value toValue(ExpressionFactory factory, MetamodelImpl model) {
-            return factory.newLiteral(arg, 1);
+            if (!typeLit)
+                return factory.newLiteral(arg, 1);
+            else
+                return factory.newTypeLiteral(arg, Literal.TYPE_CLASS);
         }
         
     }
     
     public static class IsEmpty extends PredicateImpl {
     	ExpressionImpl<?> collection;
+    	boolean negate;
     	public IsEmpty(Expression<?> collection) {
     		super();
     		this.collection = (ExpressionImpl<?>)collection;
     	}
     	
+    	public IsEmpty negate() {
+    	    negate = true;
+    	    return this;
+    	}
+    	
         @Override
         public org.apache.openjpa.kernel.exps.Expression toKernelExpression(
         	ExpressionFactory factory, MetamodelImpl model) {
-            return factory.isEmpty(
-            	Expressions.toValue(collection, factory, model));
+            if (!negate)
+                return factory.isEmpty(
+                    Expressions.toValue(collection, factory, model));
+            else
+                return factory.isNotEmpty(
+                    Expressions.toValue(collection, factory, model));
         }
     }
     
     public static class IsMember<E> extends PredicateImpl {
     	ExpressionImpl<E> element;
     	ExpressionImpl<?> collection;
+    	boolean negate;
     	
     	public IsMember(Class<E> t, Expression<E> element, 
     		Expression<?> collection) {
@@ -611,6 +652,11 @@ public class Expressions {
     	
     	public IsMember(E element, Expression<?> collection) {
     		this((Class<E>)element.getClass(), element, collection);
+    	}
+    	
+    	public IsMember<E> negate() {
+    	    negate = true;
+    	    return this;
     	}
     	
         @Override

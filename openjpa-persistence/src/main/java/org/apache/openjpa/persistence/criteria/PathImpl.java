@@ -42,6 +42,7 @@ import org.apache.openjpa.persistence.meta.MetamodelImpl;
 public class PathImpl<X> extends ExpressionImpl<X> implements Path<X> {
     private PathImpl<?> _parent;
     private Members.Member<?,X> member;
+    private boolean _isTypeExpr;
     
     /**
      * 
@@ -82,7 +83,8 @@ public class PathImpl<X> extends ExpressionImpl<X> implements Path<X> {
                 var.setImplicitType(getJavaType());
         }
         var.setAlias(getAlias());
-        
+        if (_isTypeExpr) 
+            var = factory.type(var);
         return var;
     }
 
@@ -114,8 +116,16 @@ public class PathImpl<X> extends ExpressionImpl<X> implements Path<X> {
     }
 
     public Expression<Class<? extends X>> type() {
-        // TODO Auto-generated method stub
-        throw new AbstractMethodError();
+        PathImpl<X> path = new PathImpl(getJavaType());
+        path.setTypeExpr(true);
+        return (Expression<Class<? extends X>>) path;
     }
 
+    public void setTypeExpr(boolean isTypeExpr) {
+        _isTypeExpr = isTypeExpr;
+    }
+    
+    public boolean isTypeExpr() {
+        return _isTypeExpr;
+    }
 }
