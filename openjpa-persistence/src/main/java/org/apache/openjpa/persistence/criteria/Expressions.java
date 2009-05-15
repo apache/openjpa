@@ -39,8 +39,6 @@ public class Expressions {
 	static Value toValue(ExpressionImpl<?> e, ExpressionFactory factory, 
 		MetamodelImpl model) {
 		Value v = e.toValue(factory, model);
-		v.setImplicitType(e.getJavaType());
-		v.setAlias(e.getAlias());
 		return v;
 	}
 	
@@ -618,8 +616,9 @@ public class Expressions {
         @Override
         public org.apache.openjpa.kernel.exps.Expression toKernelExpression(
         	ExpressionFactory factory, MetamodelImpl model) {
-            return factory.contains(factory.getThis(),
-            	Expressions.toValue(collection, factory, model));
+            return factory.contains(
+                Expressions.toValue(collection, factory, model), 
+                Expressions.toValue(element, factory, model));
         }
     }
     

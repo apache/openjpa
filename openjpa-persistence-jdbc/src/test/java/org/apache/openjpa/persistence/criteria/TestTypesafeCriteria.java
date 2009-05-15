@@ -403,7 +403,6 @@ public class TestTypesafeCriteria extends SQLListenerTestCase {
         assertEquivalence(q, jpql);
     }    
     
-    @AllowFailure
     public void testLiterals() {
         String jpql = "SELECT p FROM Person p where 'Joe' MEMBER OF p.nickNames";
         CriteriaQuery q = cb.create();

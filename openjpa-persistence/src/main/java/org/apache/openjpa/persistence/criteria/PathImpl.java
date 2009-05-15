@@ -28,6 +28,7 @@ import javax.persistence.metamodel.Map;
 
 import org.apache.openjpa.kernel.exps.ExpressionFactory;
 import org.apache.openjpa.kernel.exps.Value;
+import org.apache.openjpa.meta.JavaTypes;
 import org.apache.openjpa.persistence.meta.Members;
 import org.apache.openjpa.persistence.meta.MetamodelImpl;
 
@@ -75,6 +76,13 @@ public class PathImpl<X> extends ExpressionImpl<X> implements Path<X> {
             var = factory.newPath();//getJavaType());
             var.setMetaData(model.repos.getMetaData(getJavaType(), null, true));
         }
+        if (member != null) {
+            int typeCode = member.fmd.getDeclaredTypeCode();
+            if (typeCode != JavaTypes.COLLECTION && typeCode != JavaTypes.MAP)
+                var.setImplicitType(getJavaType());
+        }
+        var.setAlias(getAlias());
+        
         return var;
     }
 

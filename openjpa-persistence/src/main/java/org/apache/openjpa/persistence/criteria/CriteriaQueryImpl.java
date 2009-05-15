@@ -177,11 +177,11 @@ public class CriteriaQueryImpl implements CriteriaQuery {
 	    	   exps.accessPath[i++] = ((Types.Managed<?>)r.getModel()).meta;
 	    }
 	//    exps.alias = null;      // String   
-	    exps.ascending = new boolean[]{false};
-	    exps.distinct = _distinct == null ? QueryExpressions.DISTINCT_AUTO :
-	    	_distinct ? QueryExpressions.DISTINCT_TRUE 
-	    			  : QueryExpressions.DISTINCT_FALSE;
-	//    exps.fetchInnerPaths = null; // String[]
+        exps.distinct = _distinct == null ? QueryExpressions.DISTINCT_FALSE :
+            _distinct ?
+            QueryExpressions.DISTINCT_TRUE | QueryExpressions.DISTINCT_AUTO : 
+            QueryExpressions.DISTINCT_FALSE;
+    //    exps.fetchInnerPaths = null; // String[]
 	//    exps.fetchPaths = null;      // String[]
 	    exps.filter = _where == null ? factory.emptyExpression() 
 	    		: _where.toKernelExpression(factory, _model);
