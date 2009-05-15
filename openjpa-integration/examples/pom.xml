@@ -58,13 +58,14 @@
                         <echo>Running OpenJPA Examples</echo>
 
                         <property name="examples.base" value="${basedir}/target/examples" />
+                        <delete dir="${examples.base}" quiet="true"/>
                         <mkdir dir="${examples.base}" />
 
-                        <unzip overwrite="false" dest="${examples.base}" src="../../target/site/downloads/apache-openjpa-${pom.version}-binary.zip" />
+                        <unzip overwrite="false" dest="${examples.base}" src="../../openjpa-project/target/site/downloads/apache-openjpa-${pom.version}-binary.zip" />
 
                         <path id="assembly.classpath"> 
                             <fileset dir="${examples.base}">
-                                <include name="**/*.jar" />
+                                <include name="**/openjpa-all-${pom.version}.jar" />
                             </fileset>
                         </path>
                         <available classname="org.apache.openjpa.conf.OpenJPAVersion" classpathref="assembly.classpath" property="unzip.success" />
@@ -92,7 +93,7 @@
     <dependencies>
         <dependency>
             <groupId>org.apache.openjpa</groupId>
-            <artifactId>openjpa</artifactId>
+            <artifactId>openjpa-all</artifactId>
             <version>${pom.version}</version>
         </dependency>
     </dependencies>

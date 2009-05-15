@@ -32,21 +32,36 @@
 
     <target name="usagewarning">
         <fail>
-Please traverse to a sub-directory and run "ant" from there.
+Please traverse to a sub-directory, like hellojpa, and run "ant" from there.
         </fail>
+    </target>
+
+    <target name="all">
+        <exec dir="${basedir}/hellojpa" executable="ant" />
+        <exec dir="${basedir}/relations" executable="ant" />
+        <exec dir="${basedir}/reversemapping" executable="ant" />
     </target>
 
     <path id="classpath"
         description="The classpath to use for compiling and running">
         <pathelement path="${parent}"/>
+        <!-- we could include the individual jars as below, but lets use the
+             openjpa-all.jar with Derby instead
         <fileset dir="${root}">
             <include name="**/*.jar"/>
+            <exclude name="openjpa-all-*.jar"/>
+        </fileset>
+        -->
+        <fileset dir="${root}">
+            <include name="openjpa-all-*.jar"/>
+            <include name="lib/derby*.jar"/>
         </fileset>
     </path>
 
     <path id="javaagent">
         <fileset dir="${root}">
             <include name="openjpa-*.jar"/>
+            <exclude name="openjpa-all-*.jar"/>
         </fileset>
     </path>
     <pathconvert property="javaagent" refid="javaagent"/>
