@@ -34,7 +34,7 @@ public class TestPersistence
     extends SingleEMFTestCase {
 
     public void setUp() {
-        setUp(AllFieldTypes.class);
+        setUp(AllFieldTypes.class, Place.class);
     }
 
     public void testCreateEntityManager() {
@@ -84,6 +84,45 @@ public class TestPersistence
             ("select x from AllFieldTypes x where x.intField >= 10").
             getResultList().size());
         em.getTransaction().rollback();
+        em.close();
+    }
+
+    public void testNewDeleteNew() {
+        EntityManager em = emf.createEntityManager();
+
+        // create new
+        Place place = new Place();
+        place.setLocation("Lexington");
+        assertFalse(em.contains(place));
+        em.getTransaction().begin();
+        em.persist(place);
+        em.getTransaction().commit();
+        assertTrue(em.contains(place));
+
+        // find and verify
+        place = em.find(Place.class, "Lexington");
+        assertNotNull(place);
+        assertEquals("Lexington", place.getLocation());
+
+        // delete
+        em.getTransaction().begin();
+        em.remove(place);
+        em.getTransaction().commit();
+        assertFalse(em.contains(place));
+
+        // recreate
+        place = new Place();
+        place.setLocation("Lexington");
+        assertFalse(em.contains(place));
+        em.getTransaction().begin();
+        em.persist(place);
+        em.getTransaction().commit();
+        assertTrue(em.contains(place));
+
+        // find and verify
+        place = em.find(Place.class, "Lexington");
+        assertNotNull(place);
+        assertEquals("Lexington", place.getLocation());
         em.close();
     }
 
