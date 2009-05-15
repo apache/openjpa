@@ -36,10 +36,24 @@ Please traverse to a sub-directory, like hellojpa, and run "ant" from there.
         </fail>
     </target>
 
-    <target name="all">
-        <exec dir="${basedir}/hellojpa" executable="ant" />
-        <exec dir="${basedir}/relations" executable="ant" />
-        <exec dir="${basedir}/reversemapping" executable="ant" />
+    <target name="init" depends="init:discover, init:windows, init:unix">
+    </target>
+    <target name="init:discover">
+        <condition property="isWindows">
+            <os family="windows"/>
+        </condition>
+    </target>
+    <target name="init:windows" if="isWindows">
+        <property name="platform.script.ext" value=".bat"/>
+    </target>
+    <target name="init:unix" unless="isWindows">
+        <property name="platform.script.ext" value=""/>
+    </target>
+
+    <target name="all" depends="init">
+        <exec dir="${basedir}/hellojpa" executable="ant${platform.script.ext}"/>
+        <exec dir="${basedir}/relations" executable="ant${platform.script.ext}"/>
+        <exec dir="${basedir}/reversemapping" executable="ant${platform.script.ext}"/>
     </target>
 
     <path id="classpath"
