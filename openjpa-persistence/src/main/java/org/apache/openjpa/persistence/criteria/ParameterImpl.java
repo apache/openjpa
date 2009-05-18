@@ -18,7 +18,14 @@
  */
 package org.apache.openjpa.persistence.criteria;
 
+import java.util.Collection;
 import javax.persistence.Parameter;
+import javax.persistence.criteria.CriteriaQuery;
+import org.apache.commons.collections.map.LinkedMap;
+import org.apache.openjpa.kernel.exps.ExpressionFactory;
+import org.apache.openjpa.kernel.exps.Value;
+import org.apache.openjpa.meta.ClassMetaData;
+import org.apache.openjpa.persistence.meta.MetamodelImpl;
 
 /**
  * Parameter of a criteria query.
@@ -48,4 +55,40 @@ public class ParameterImpl<T> extends ExpressionImpl<T> implements Parameter<T>{
 		return position;
 	}
 
+    @Override
+    public Value toValue(ExpressionFactory factory, MetamodelImpl model,
+        CriteriaQuery q) {
+        boolean positional = false;
+        LinkedMap parameterTypes = ((CriteriaQueryImpl)q).getParameterTypes();
+        if (parameterTypes == null) {
+            parameterTypes = new LinkedMap(6);
+            ((CriteriaQueryImpl)q).setParameterTypes(parameterTypes);
+        } 
+        if (name == null) {
+            position = parameterTypes.size() + 1;
+            positional = true;
+        }
+        
+        Object paramKey = name == null ? Integer.valueOf(position) : name;
+        if (!parameterTypes.containsKey(paramKey))
+            parameterTypes.put(paramKey, Object.class);
+
+        ClassMetaData meta = null;
+        Class clzz = getJavaType();
+        int index;
+        if (positional) 
+            index = position - 1;
+        else 
+            // otherwise the index is just the current size of the params
+            index = parameterTypes.indexOf(paramKey);
+        
+        boolean isCollectionValued  = Collection.class.isAssignableFrom(clzz);
+        org.apache.openjpa.kernel.exps.Parameter param = isCollectionValued 
+            ? factory.newCollectionValuedParameter(paramKey, Object.class) 
+            : factory.newParameter(paramKey, Object.class);
+        param.setMetaData(meta);
+        param.setIndex(index);
+        
+        return param;
+    }	
 }

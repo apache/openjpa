@@ -23,6 +23,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
+import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Expression;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.QueryBuilder;
@@ -38,8 +39,8 @@ import org.apache.openjpa.persistence.meta.MetamodelImpl;
 public class Expressions {
 	
 	static Value toValue(ExpressionImpl<?> e, ExpressionFactory factory, 
-		MetamodelImpl model) {
-		Value v = e.toValue(factory, model);
+		MetamodelImpl model, CriteriaQuery q) {
+		Value v = e.toValue(factory, model, q);
 		return v;
 	}
 	
@@ -107,8 +108,9 @@ public class Expressions {
     	}
 
     	@Override
-        public Value toValue(ExpressionFactory factory, MetamodelImpl model) {
-            return factory.abs(Expressions.toValue(e, factory, model));
+        public Value toValue(ExpressionFactory factory, MetamodelImpl model,
+            CriteriaQuery q) {
+            return factory.abs(Expressions.toValue(e, factory, model, q));
         }
     }
     
@@ -125,8 +127,9 @@ public class Expressions {
     	}
 
     	@Override
-        public Value toValue(ExpressionFactory factory, MetamodelImpl model) {
-            Value v = factory.count(Expressions.toValue(e, factory, model));
+        public Value toValue(ExpressionFactory factory, MetamodelImpl model,
+            CriteriaQuery q) {
+            Value v = factory.count(Expressions.toValue(e, factory, model, q));
             return _distinct ? factory.distinct(v) : v;
         }
     }
@@ -137,8 +140,9 @@ public class Expressions {
     	}
 
     	@Override
-        public Value toValue(ExpressionFactory factory, MetamodelImpl model) {
-            return factory.avg(Expressions.toValue(e, factory, model));
+        public Value toValue(ExpressionFactory factory, MetamodelImpl model,
+            CriteriaQuery q) {
+            return factory.avg(Expressions.toValue(e, factory, model, q));
         }
     }
     
@@ -148,8 +152,9 @@ public class Expressions {
     	}
 
     	@Override
-        public Value toValue(ExpressionFactory factory, MetamodelImpl model) {
-            return factory.sqrt(Expressions.toValue(e, factory, model));
+        public Value toValue(ExpressionFactory factory, MetamodelImpl model,
+            CriteriaQuery q) {
+            return factory.sqrt(Expressions.toValue(e, factory, model, q));
         }
     }
     
@@ -159,8 +164,9 @@ public class Expressions {
     	}
 
     	@Override
-        public Value toValue(ExpressionFactory factory, MetamodelImpl model) {
-            return factory.max(Expressions.toValue(e, factory, model));
+        public Value toValue(ExpressionFactory factory, MetamodelImpl model,
+            CriteriaQuery q) {
+            return factory.max(Expressions.toValue(e, factory, model, q));
         }
     }
 
@@ -170,8 +176,9 @@ public class Expressions {
     	}
 
     	@Override
-        public Value toValue(ExpressionFactory factory, MetamodelImpl model) {
-            return factory.min(Expressions.toValue(e, factory, model));
+        public Value toValue(ExpressionFactory factory, MetamodelImpl model,
+            CriteriaQuery q) {
+            return factory.min(Expressions.toValue(e, factory, model, q));
         }
     }
     
@@ -185,8 +192,9 @@ public class Expressions {
     	}
 
     	@Override
-        public Value toValue(ExpressionFactory factory, MetamodelImpl model) {
-            return factory.size(Expressions.toValue(e, factory, model));
+        public Value toValue(ExpressionFactory factory, MetamodelImpl model,
+            CriteriaQuery q) {
+            return factory.size(Expressions.toValue(e, factory, model, q));
         }
     }
 
@@ -197,8 +205,9 @@ public class Expressions {
     	}
 
     	@Override
-        public Value toValue(ExpressionFactory factory, MetamodelImpl model) {
-            return factory.cast(Expressions.toValue(e, factory, model), b);
+        public Value toValue(ExpressionFactory factory, MetamodelImpl model,
+            CriteriaQuery q) {
+            return factory.cast(Expressions.toValue(e, factory, model, q), b);
         }
     }
     public static class Concat extends BinarayFunctionalExpression<String> {
@@ -215,10 +224,11 @@ public class Expressions {
     	}
     	
     	@Override
-        public Value toValue(ExpressionFactory factory, MetamodelImpl model) {
+        public Value toValue(ExpressionFactory factory, MetamodelImpl model,
+            CriteriaQuery q) {
             return factory.concat(
-            	Expressions.toValue(e1, factory, model), 
-            	Expressions.toValue(e2, factory, model));
+            	Expressions.toValue(e1, factory, model, q), 
+            	Expressions.toValue(e2, factory, model, q));
         }
     }
     
@@ -246,11 +256,12 @@ public class Expressions {
     	}
     	
     	@Override
-        public Value toValue(ExpressionFactory factory, MetamodelImpl model) {
+        public Value toValue(ExpressionFactory factory, MetamodelImpl model,
+            CriteriaQuery q) {
             return JPQLExpressionBuilder.convertSubstringArguments(factory, 
-            	Expressions.toValue(e, factory, model), 
-            	from == null ? null : from.toValue(factory, model), 
-            	len == null ? null : len.toValue(factory, model));
+            	Expressions.toValue(e, factory, model, q), 
+            	from == null ? null : from.toValue(factory, model, q), 
+            	len == null ? null : len.toValue(factory, model, q));
         }
     }
     
@@ -286,7 +297,8 @@ public class Expressions {
     	}
 
     	@Override
-        public Value toValue(ExpressionFactory factory, MetamodelImpl model) {
+        public Value toValue(ExpressionFactory factory, MetamodelImpl model,
+            CriteriaQuery q) {
     		Boolean spec = null;
     		if (ts != null) {
     			switch (ts) {
@@ -296,8 +308,8 @@ public class Expressions {
     			}
     		}
             return factory.trim(
-            	Expressions.toValue(e1, factory, model), 
-            	Expressions.toValue(e2, factory, model), spec);
+            	Expressions.toValue(e1, factory, model, q), 
+            	Expressions.toValue(e2, factory, model, q), spec);
         }
     }
 
@@ -324,12 +336,13 @@ public class Expressions {
     	}
     	
     	@Override
-        public Value toValue(ExpressionFactory factory, MetamodelImpl model) {
+        public Value toValue(ExpressionFactory factory, MetamodelImpl model,
+            CriteriaQuery q) {
     		return (e2 == null) 
-            ?   factory.sum(Expressions.toValue(e1, factory, model))
+            ?   factory.sum(Expressions.toValue(e1, factory, model, q))
     		:   factory.add(
-    			   Expressions.toValue(e1, factory, model), 
-    			   Expressions.toValue(e2, factory, model));
+    			   Expressions.toValue(e1, factory, model, q), 
+    			   Expressions.toValue(e2, factory, model, q));
         }
     }
     
@@ -349,10 +362,11 @@ public class Expressions {
     	}
     	
     	@Override
-        public Value toValue(ExpressionFactory factory, MetamodelImpl model) {
+        public Value toValue(ExpressionFactory factory, MetamodelImpl model,
+            CriteriaQuery q) {
             return factory.multiply(
-            	Expressions.toValue(e1, factory, model), 
-            	Expressions.toValue(e2, factory, model));
+            	Expressions.toValue(e1, factory, model, q), 
+            	Expressions.toValue(e2, factory, model, q));
         }
     }
     
@@ -372,10 +386,11 @@ public class Expressions {
     	}
     	
     	@Override
-        public Value toValue(ExpressionFactory factory, MetamodelImpl model) {
+        public Value toValue(ExpressionFactory factory, MetamodelImpl model,
+            CriteriaQuery q) {
             return factory.subtract(
-            	Expressions.toValue(e1, factory, model), 
-            	Expressions.toValue(e2, factory, model));
+            	Expressions.toValue(e1, factory, model, q), 
+            	Expressions.toValue(e2, factory, model, q));
         }
     }
 
@@ -396,10 +411,11 @@ public class Expressions {
     	}
     	
     	@Override
-        public Value toValue(ExpressionFactory factory, MetamodelImpl model) {
+        public Value toValue(ExpressionFactory factory, MetamodelImpl model,
+            CriteriaQuery q) {
             return factory.divide(
-            	Expressions.toValue(e1, factory, model), 
-            	Expressions.toValue(e2, factory, model));
+            	Expressions.toValue(e1, factory, model, q), 
+            	Expressions.toValue(e2, factory, model, q));
         }
     }
 
@@ -417,10 +433,11 @@ public class Expressions {
     	}
 
     	@Override
-        public Value toValue(ExpressionFactory factory, MetamodelImpl model) {
+        public Value toValue(ExpressionFactory factory, MetamodelImpl model,
+            CriteriaQuery q) {
             return factory.mod(
-            	Expressions.toValue(e1, factory, model), 
-            	Expressions.toValue(e2, factory, model));
+            	Expressions.toValue(e1, factory, model, q), 
+            	Expressions.toValue(e2, factory, model, q));
         }
     }
 
@@ -430,7 +447,8 @@ public class Expressions {
     	}
 
     	@Override
-        public Value toValue(ExpressionFactory factory, MetamodelImpl model) {
+        public Value toValue(ExpressionFactory factory, MetamodelImpl model,
+            CriteriaQuery q) {
             return factory.getCurrentDate();
         }
     }
@@ -441,7 +459,8 @@ public class Expressions {
     	}
 
     	@Override
-        public Value toValue(ExpressionFactory factory, MetamodelImpl model) {
+        public Value toValue(ExpressionFactory factory, MetamodelImpl model,
+            CriteriaQuery q) {
             return factory.getCurrentTime();
         }
     }
@@ -453,7 +472,8 @@ public class Expressions {
     	}
 
     	@Override
-        public Value toValue(ExpressionFactory factory, MetamodelImpl model) {
+        public Value toValue(ExpressionFactory factory, MetamodelImpl model,
+            CriteriaQuery q) {
             return factory.getCurrentTimestamp();
         }
     }
@@ -475,21 +495,21 @@ public class Expressions {
         
         @Override
         org.apache.openjpa.kernel.exps.Expression toKernelExpression(
-            ExpressionFactory factory, MetamodelImpl model) {
+            ExpressionFactory factory, MetamodelImpl model, CriteriaQuery q) {
             boolean isTypeExpr = false;
-            Value val1 = Expressions.toValue(e1, factory, model);
-            Value val2 = Expressions.toValue(e2, factory, model);
+            Value val1 = Expressions.toValue(e1, factory, model, q);
+            Value val2 = Expressions.toValue(e2, factory, model, q);
             if (e1 instanceof PathImpl) {
                 PathImpl path = (PathImpl)e1;
                 isTypeExpr = path.isTypeExpr();
                 if (isTypeExpr) {
                     ((Constant)e2).setTypeLit(isTypeExpr);
-                    val2 = Expressions.toValue(e2, factory, model);
+                    val2 = Expressions.toValue(e2, factory, model, q);
                     Class clzz = (Class)((Literal)val2).getValue();
                     val2.setMetaData(((Types.Managed)model.type(clzz)).meta);
                 }
             }
-            
+            ((CriteriaQueryImpl)q).setImplicitTypes(val1, val2, null);
             if (!negate)
                 return factory.equal(val1, val2);
             else
@@ -508,10 +528,10 @@ public class Expressions {
         
         @Override
         org.apache.openjpa.kernel.exps.Expression toKernelExpression(
-            ExpressionFactory factory, MetamodelImpl model) {
+            ExpressionFactory factory, MetamodelImpl model, CriteriaQuery q) {
                 return factory.greaterThan(
-                	Expressions.toValue(e1, factory, model), 
-                	Expressions.toValue(e2, factory, model));
+                	Expressions.toValue(e1, factory, model, q), 
+                	Expressions.toValue(e2, factory, model, q));
         }
     }
     
@@ -526,10 +546,10 @@ public class Expressions {
         
         @Override
         org.apache.openjpa.kernel.exps.Expression toKernelExpression(
-            ExpressionFactory factory, MetamodelImpl model) {
+            ExpressionFactory factory, MetamodelImpl model, CriteriaQuery q) {
                 return factory.greaterThanEqual(
-                    Expressions.toValue(e1, factory, model), 
-                    Expressions.toValue(e2, factory, model));
+                    Expressions.toValue(e1, factory, model, q), 
+                    Expressions.toValue(e2, factory, model, q));
         }
     }
 
@@ -545,10 +565,10 @@ public class Expressions {
         
         @Override
         org.apache.openjpa.kernel.exps.Expression toKernelExpression(
-            ExpressionFactory factory, MetamodelImpl model) {
+            ExpressionFactory factory, MetamodelImpl model, CriteriaQuery q) {
                 return factory.lessThan(
-                    Expressions.toValue(e1, factory, model), 
-                    Expressions.toValue(e2, factory, model));
+                    Expressions.toValue(e1, factory, model, q), 
+                    Expressions.toValue(e2, factory, model, q));
         }
     }
     
@@ -563,10 +583,10 @@ public class Expressions {
         
         @Override
         org.apache.openjpa.kernel.exps.Expression toKernelExpression(
-            ExpressionFactory factory, MetamodelImpl model) {
+            ExpressionFactory factory, MetamodelImpl model, CriteriaQuery q) {
                 return factory.lessThanEqual(
-                	Expressions.toValue(e1, factory, model), 
-                    Expressions.toValue(e2, factory, model));
+                	Expressions.toValue(e1, factory, model, q), 
+                    Expressions.toValue(e2, factory, model, q));
 
         }
     }
@@ -601,7 +621,8 @@ public class Expressions {
         }
         
         @Override
-        public Value toValue(ExpressionFactory factory, MetamodelImpl model) {
+        public Value toValue(ExpressionFactory factory, MetamodelImpl model,
+            CriteriaQuery q) {
             if (!typeLit)
                 return factory.newLiteral(arg, 1);
             else
@@ -625,13 +646,14 @@ public class Expressions {
     	
         @Override
         public org.apache.openjpa.kernel.exps.Expression toKernelExpression(
-        	ExpressionFactory factory, MetamodelImpl model) {
+        	ExpressionFactory factory, MetamodelImpl model, 
+        	CriteriaQuery q) {
             if (!negate)
                 return factory.isEmpty(
-                    Expressions.toValue(collection, factory, model));
+                    Expressions.toValue(collection, factory, model, q));
             else
                 return factory.isNotEmpty(
-                    Expressions.toValue(collection, factory, model));
+                    Expressions.toValue(collection, factory, model, q));
         }
     }
     
@@ -661,10 +683,11 @@ public class Expressions {
     	
         @Override
         public org.apache.openjpa.kernel.exps.Expression toKernelExpression(
-        	ExpressionFactory factory, MetamodelImpl model) {
+        	ExpressionFactory factory, MetamodelImpl model, 
+        	CriteriaQuery q) {
             return factory.contains(
-                Expressions.toValue(collection, factory, model), 
-                Expressions.toValue(element, factory, model));
+                Expressions.toValue(collection, factory, model, q), 
+                Expressions.toValue(element, factory, model, q));
         }
     }
     
@@ -704,11 +727,12 @@ public class Expressions {
 
     	@Override
         public org.apache.openjpa.kernel.exps.Expression toKernelExpression(
-        	ExpressionFactory factory, MetamodelImpl model) {
+        	ExpressionFactory factory, MetamodelImpl model, 
+        	CriteriaQuery q) {
             return factory.matches(
-            	Expressions.toValue(str, factory, model), 
-            	Expressions.toValue(pattern, factory, model), "_", "%", 
-            	Expressions.toValue(escapeChar, factory, model).toString());
+            	Expressions.toValue(str, factory, model, q), 
+            	Expressions.toValue(pattern, factory, model, q), "_", "%", 
+            	Expressions.toValue(escapeChar, factory, model, q).toString());
         }
     }
     
@@ -737,12 +761,13 @@ public class Expressions {
     	
     	@Override
         public org.apache.openjpa.kernel.exps.Value toValue(
-        	ExpressionFactory factory, MetamodelImpl model) {
+        	ExpressionFactory factory, MetamodelImpl model, 
+        	CriteriaQuery q) {
     		Value[] vs = new Value[values.size()];
     		int i = 0;
     		for (Expression<?> e : values)
     	        vs[i++] = Expressions.toValue((ExpressionImpl<?>)e, 
-    	           factory, model);
+    	           factory, model, q);
             return factory.coalesceExpression(vs);
         }
     }
@@ -756,9 +781,9 @@ public class Expressions {
     	
     	@Override
         org.apache.openjpa.kernel.exps.Expression toKernelExpression(
-            ExpressionFactory factory, MetamodelImpl model) {
+            ExpressionFactory factory, MetamodelImpl model, CriteriaQuery q) {
     		return factory.equal(
-    			Expressions.toValue(e, factory, model), 
+    			Expressions.toValue(e, factory, model, q), 
     			factory.getNull());
     	}
     }
@@ -772,9 +797,9 @@ public class Expressions {
     	
     	@Override
         org.apache.openjpa.kernel.exps.Expression toKernelExpression(
-            ExpressionFactory factory, MetamodelImpl model) {
+            ExpressionFactory factory, MetamodelImpl model, CriteriaQuery q) {
     		return factory.notEqual(
-    			Expressions.toValue(e, factory, model), 
+    			Expressions.toValue(e, factory, model, q), 
     			factory.getNull());
     	}
     }
@@ -804,11 +829,11 @@ public class Expressions {
     
     	@Override
         org.apache.openjpa.kernel.exps.Expression toKernelExpression(
-            ExpressionFactory factory, MetamodelImpl model) {
+            ExpressionFactory factory, MetamodelImpl model, CriteriaQuery q) {
     		IsNotNull notNull = new Expressions.IsNotNull(e);
     		return factory.and(
-     		    super.toKernelExpression(factory, model),
-    		    notNull.toKernelExpression(factory, model));
+     		    super.toKernelExpression(factory, model, q),
+    		    notNull.toKernelExpression(factory, model, q));
     	}
     }
     
@@ -857,21 +882,22 @@ public class Expressions {
 
         @Override
         public org.apache.openjpa.kernel.exps.Value toValue(
-                ExpressionFactory factory, MetamodelImpl model) {
+                ExpressionFactory factory, MetamodelImpl model, 
+                CriteriaQuery q) {
             int size = whens.size();
             org.apache.openjpa.kernel.exps.Expression[] exps = 
                 new org.apache.openjpa.kernel.exps.Expression[size];
             for (int i = 0; i < size; i++) {
                 org.apache.openjpa.kernel.exps.Expression expr = 
                     ((Expressions.BinaryLogicalExpression)whens.get(i)).
-                    toKernelExpression(factory, model);
+                    toKernelExpression(factory, model, q);
                 Value action = Expressions.toValue(
-                        (ExpressionImpl<?>)thens.get(i), factory, model);
+                        (ExpressionImpl<?>)thens.get(i), factory, model, q);
                 exps[i] = factory.whenCondition(expr, action);
             }
 
             Value other = Expressions.toValue(
-                    (ExpressionImpl<?>)otherwise, factory, model);
+                    (ExpressionImpl<?>)otherwise, factory, model, q);
             return factory.generalCaseExpression(exps, other);
         }
     }
@@ -929,9 +955,10 @@ public class Expressions {
 
         @Override
         public org.apache.openjpa.kernel.exps.Value toValue(
-                ExpressionFactory factory, MetamodelImpl model) {
+                ExpressionFactory factory, MetamodelImpl model, 
+                CriteriaQuery q) {
             Value caseOperandExpr = Expressions.toValue(
-                (ExpressionImpl<?>)caseOperand, factory, model);
+                (ExpressionImpl<?>)caseOperand, factory, model, q);
             int size = whens.size();
             org.apache.openjpa.kernel.exps.Expression[] exps = 
                 new org.apache.openjpa.kernel.exps.Expression[size];
@@ -940,12 +967,12 @@ public class Expressions {
                 //TODO: Boolean literal, String literal    
                 val = factory.newLiteral(whens.get(i), Literal.TYPE_NUMBER);
                 Value action = Expressions.toValue(
-                        (ExpressionImpl<?>)thens.get(i), factory, model);
+                        (ExpressionImpl<?>)thens.get(i), factory, model, q);
                 exps[i] = factory.whenScalar(val, action);
             }
 
             Value other = Expressions.toValue(
-                    (ExpressionImpl<?>)otherwise, factory, model);
+                    (ExpressionImpl<?>)otherwise, factory, model, q);
             return factory.simpleCaseExpression(caseOperandExpr, exps, other);
         }
     }

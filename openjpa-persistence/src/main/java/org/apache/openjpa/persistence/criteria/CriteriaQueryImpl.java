@@ -34,10 +34,14 @@ import javax.persistence.criteria.Selection;
 import javax.persistence.criteria.Subquery;
 import javax.persistence.metamodel.Entity;
 
+import org.apache.commons.collections.map.LinkedMap;
+import org.apache.openjpa.kernel.exps.AbstractExpressionBuilder;
 import org.apache.openjpa.kernel.exps.ExpressionFactory;
+import org.apache.openjpa.kernel.exps.Path;
 import org.apache.openjpa.kernel.exps.QueryExpressions;
 import org.apache.openjpa.kernel.exps.Value;
 import org.apache.openjpa.meta.ClassMetaData;
+import org.apache.openjpa.meta.FieldMetaData;
 import org.apache.openjpa.persistence.meta.MetamodelImpl;
 import org.apache.openjpa.persistence.meta.Types;
 
@@ -57,6 +61,7 @@ public class CriteriaQueryImpl implements CriteriaQuery {
     private List<Expression<?>> _groups;
     private PredicateImpl       _having;
     private Boolean             _distinct;
+    private LinkedMap           _parameterTypes;
     
     public CriteriaQueryImpl(MetamodelImpl model) {
         this._model = model;
@@ -164,6 +169,14 @@ public class CriteriaQueryImpl implements CriteriaQuery {
         return null;
     }
     
+    public LinkedMap getParameterTypes() {
+        return _parameterTypes;
+    }
+    
+    public void setParameterTypes(LinkedMap parameterTypes) {
+        _parameterTypes = parameterTypes;
+    }
+    
     /**
      * Populate kernel expressions.
      */
@@ -184,11 +197,11 @@ public class CriteriaQueryImpl implements CriteriaQuery {
     //    exps.fetchInnerPaths = null; // String[]
 	//    exps.fetchPaths = null;      // String[]
 	    exps.filter = _where == null ? factory.emptyExpression() 
-	    		: _where.toKernelExpression(factory, _model);
+	    		: _where.toKernelExpression(factory, _model, this);
 	    
 	    evalGrouping(exps, factory);
 	    exps.having = _having == null ? factory.emptyExpression() 
-	    		: _having.toKernelExpression(factory, _model);
+	    		: _having.toKernelExpression(factory, _model, this);
 	    
 	    evalOrdering(exps, factory);
 	//    exps.operation = QueryOperations.OP_SELECT;
@@ -199,6 +212,8 @@ public class CriteriaQueryImpl implements CriteriaQuery {
 	      exps.projections = toValues(factory, getSelectionList());
 	//    exps.range = null; // Value[]
 	//    exps.resultClass = null; // Class
+	      if (_parameterTypes != null)
+	          exps.parameterTypes = _parameterTypes;
 	    return exps;
     }
 
@@ -214,7 +229,7 @@ public class CriteriaQueryImpl implements CriteriaQuery {
             OrderImpl order = (OrderImpl)_orders.get(i);
             //Expression<? extends Comparable> expr = order.getExpression();
             //exps.ordering[i] = Expressions.toValue(
-            //    (ExpressionImpl<?>)expr, factory, _model);
+            //    (ExpressionImpl<?>)expr, factory, _model, this);
             
             //exps.orderingClauses[i] = assemble(firstChild);
             //exps.orderingAliases[i] = firstChild.text;
@@ -231,7 +246,7 @@ public class CriteriaQueryImpl implements CriteriaQuery {
         for (int i = 0; i < groupByCount; i++) {
              Expression<?> groupBy = _groups.get(i);    
              exps.grouping[i] = Expressions.toValue(
-                 (ExpressionImpl<?>)groupBy, factory, _model);;
+                 (ExpressionImpl<?>)groupBy, factory, _model, this);;
         }
     }
     
@@ -244,9 +259,68 @@ public class CriteriaQueryImpl implements CriteriaQuery {
     	Value[] result = new Value[sels.size()];
     	int i = 0;
     	for (Selection<?> s : sels) {
-    		result[i++] = ((ExpressionImpl<?>)s).toValue(factory, _model);
+    		result[i++] = ((ExpressionImpl<?>)s).toValue(factory, _model, 
+    		    this);
     	}
     	return result;
     }
 
+    void setImplicitTypes(Value val1, Value val2, Class<?> expected) {
+        Class<?> c1 = val1.getType();
+        Class<?> c2 = val2.getType();
+        boolean o1 = c1 == AbstractExpressionBuilder.TYPE_OBJECT;
+        boolean o2 = c2 == AbstractExpressionBuilder.TYPE_OBJECT;
+
+        if (o1 && !o2) {
+            val1.setImplicitType(c2);
+            if (val1.getMetaData() == null && !val1.isXPath())
+                val1.setMetaData(val2.getMetaData());
+        } else if (!o1 && o2) {
+            val2.setImplicitType(c1);
+            if (val2.getMetaData() == null && !val1.isXPath())
+                val2.setMetaData(val1.getMetaData());
+        } else if (o1 && o2 && expected != null) {
+            // we never expect a pc type, so don't bother with metadata
+            val1.setImplicitType(expected);
+            val2.setImplicitType(expected);
+        } else if (AbstractExpressionBuilder.isNumeric(val1.getType()) 
+            != AbstractExpressionBuilder.isNumeric(val2.getType())) {
+            AbstractExpressionBuilder.convertTypes(val1, val2);
+        }
+
+        // as well as setting the types for conversions, we also need to
+        // ensure that any parameters are declared with the correct type,
+        // since the JPA spec expects that these will be validated
+        org.apache.openjpa.kernel.exps.Parameter param =
+            val1 instanceof org.apache.openjpa.kernel.exps.Parameter ? 
+            (org.apache.openjpa.kernel.exps.Parameter) val1
+            : val2 instanceof org.apache.openjpa.kernel.exps.Parameter ? 
+            (org.apache.openjpa.kernel.exps.Parameter) val2 : null;
+        Path path = val1 instanceof Path ? (Path) val1
+            : val2 instanceof Path ? (Path) val2 : null;
+
+        // we only check for parameter-to-path comparisons
+        if (param == null || path == null || _parameterTypes == null)
+            return;
+
+        FieldMetaData fmd = path.last();
+        if (fmd == null)
+            return;
+
+        //TODO:
+        //if (expected == null)
+        //    checkEmbeddable(path);
+
+        Class<?> type = path.getType();
+        if (type == null)
+            return;
+
+        Object paramKey = param.getParameterKey();
+        if (paramKey == null)
+            return;
+
+        // make sure we have already declared the parameter
+        if (_parameterTypes.containsKey(paramKey))
+            _parameterTypes.put(paramKey, type);
+    }
 }

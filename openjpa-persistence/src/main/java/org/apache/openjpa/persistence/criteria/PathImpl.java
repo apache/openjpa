@@ -19,6 +19,7 @@
 
 package org.apache.openjpa.persistence.criteria;
 
+import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Expression;
 import javax.persistence.criteria.Path;
 import javax.persistence.metamodel.AbstractCollection;
@@ -65,12 +66,13 @@ public class PathImpl<X> extends ExpressionImpl<X> implements Path<X> {
     }
     
     @Override
-    public Value toValue(ExpressionFactory factory, MetamodelImpl model) {
+    public Value toValue(ExpressionFactory factory, MetamodelImpl model,
+        CriteriaQuery q) {
         Value var = null;
         if (_parent != null) { 
             org.apache.openjpa.kernel.exps.Path path = 
                 (org.apache.openjpa.kernel.exps.Path)
-                _parent.toValue(factory, model);
+                _parent.toValue(factory, model, q);
             path.get(member.fmd, false);
             var = path;
         } else {

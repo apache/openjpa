@@ -21,6 +21,7 @@ package org.apache.openjpa.persistence.criteria;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Expression;
 import javax.persistence.criteria.Predicate;
 
@@ -80,18 +81,18 @@ public class PredicateImpl extends ExpressionImpl<Boolean>
     
     @Override
     org.apache.openjpa.kernel.exps.Expression toKernelExpression(
-        ExpressionFactory factory, MetamodelImpl model) {
+        ExpressionFactory factory, MetamodelImpl model, CriteriaQuery q) {
     		if (_exps == null || _exps.isEmpty())
     			return factory.emptyExpression();
     		if (_exps.size() == 1)
     			return ((ExpressionImpl<?>)_exps.get(0))
-    			   .toKernelExpression(factory, model);
+    			   .toKernelExpression(factory, model, q);
     		ExpressionImpl<?> e1 = (ExpressionImpl<?>)_exps.get(0);
     		ExpressionImpl<?> e2 = (ExpressionImpl<?>)_exps.get(1);
     		org.apache.openjpa.kernel.exps.Expression ke1 = 
-    			e1.toKernelExpression(factory, model);
+    			e1.toKernelExpression(factory, model, q);
     		org.apache.openjpa.kernel.exps.Expression ke2 = 
-    			e2.toKernelExpression(factory, model);
+    			e2.toKernelExpression(factory, model, q);
     		org.apache.openjpa.kernel.exps.Expression result = 
     			_op == BooleanOperator.AND 
     			? factory.and(ke1,ke2) : factory.or(ke1, ke2);
@@ -99,8 +100,8 @@ public class PredicateImpl extends ExpressionImpl<Boolean>
     		for (int i = 2; i < _exps.size(); i++) {
     			ExpressionImpl<?> e = (ExpressionImpl<?>)_exps.get(i);
     			result = _op == BooleanOperator.AND 
-                ? factory.and(result, e.toKernelExpression(factory, model))
-    		    : factory.or(result, e.toKernelExpression(factory, model));
+                ? factory.and(result, e.toKernelExpression(factory, model, q))
+    		    : factory.or(result, e.toKernelExpression(factory,model,q));
     		}
     		return _negated ? factory.not(result) : result;
     }

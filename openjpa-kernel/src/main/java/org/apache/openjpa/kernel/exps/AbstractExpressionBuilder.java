@@ -55,17 +55,17 @@ public abstract class AbstractExpressionBuilder {
     protected static final int EX_UNSUPPORTED = 2;
 
     // common implicit type settings
-    protected static final Class<Object> TYPE_OBJECT = Object.class;
-    protected static final Class<String> TYPE_STRING = String.class;
-    protected static final Class<Character> TYPE_CHAR_OBJ = Character.class;
-    protected static final Class<Number> TYPE_NUMBER = Number.class;
-    protected static final Class<Collection> TYPE_COLLECTION = Collection.class;
-    protected static final Class<Map> TYPE_MAP = Map.class;
+    public static final Class<Object> TYPE_OBJECT = Object.class;
+    public static final Class<String> TYPE_STRING = String.class;
+    public static final Class<Character> TYPE_CHAR_OBJ = Character.class;
+    public static final Class<Number> TYPE_NUMBER = Number.class;
+    public static final Class<Collection> TYPE_COLLECTION = Collection.class;
+    public static final Class<Map> TYPE_MAP = Map.class;
 
     // contains types for setImplicitTypes
-    protected static final int CONTAINS_TYPE_ELEMENT = 1;
-    protected static final int CONTAINS_TYPE_KEY = 2;
-    protected static final int CONTAINS_TYPE_VALUE = 3;
+    public static final int CONTAINS_TYPE_ELEMENT = 1;
+    public static final int CONTAINS_TYPE_KEY = 2;
+    public static final int CONTAINS_TYPE_VALUE = 3;
 
     private static final Localizer _loc = Localizer.forPackage
         (AbstractExpressionBuilder.class);
@@ -366,7 +366,7 @@ public abstract class AbstractExpressionBuilder {
     /**
      * Perform conversions to make values compatible.
      */
-    private void convertTypes(Value val1, Value val2) {
+    public static void convertTypes(Value val1, Value val2) {
         Class<?> t1 = val1.getType();
         Class<?> t2 = val2.getType();
 
@@ -415,7 +415,7 @@ public abstract class AbstractExpressionBuilder {
     /**
      * Perform conversions to make values compatible.
      */
-    private void convertTypesQuotedNumbers(Value val1, Value val2) {
+    public static void convertTypesQuotedNumbers(Value val1, Value val2) {
         Class<?> t1 = val1.getType();
         Class<?> t2 = val2.getType();
 
@@ -457,7 +457,7 @@ public abstract class AbstractExpressionBuilder {
     /**
      * Return true if given class can be used as a number.
      */
-    private static boolean isNumeric(Class<?> type) {
+    public static boolean isNumeric(Class<?> type) {
         type = Filters.wrap(type);
         return Number.class.isAssignableFrom(type)
             || type == Character.TYPE || type == TYPE_CHAR_OBJ;
