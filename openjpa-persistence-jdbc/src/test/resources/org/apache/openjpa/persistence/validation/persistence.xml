@@ -31,12 +31,12 @@
         <validation-mode>AUTO</validation-mode>
     </persistence-unit>
 
-    <persistence-unit name="simple-callback-mode" validation-mode="CALLBACK">
+    <persistence-unit name="simple-callback-mode">
     	<class>org.apache.openjpa.persistence.query.SimpleEntity</class>
         <validation-mode>CALLBACK</validation-mode>
     </persistence-unit>
 
-    <persistence-unit name="simple-none-mode" validation-mode="NONE">
+    <persistence-unit name="simple-none-mode">
     	<class>org.apache.openjpa.persistence.query.SimpleEntity</class>
         <validation-mode>NONE</validation-mode>
     </persistence-unit>
