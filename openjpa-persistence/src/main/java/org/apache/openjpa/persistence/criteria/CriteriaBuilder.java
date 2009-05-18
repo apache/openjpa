@@ -540,7 +540,7 @@ public class CriteriaBuilder implements QueryBuilder, ExpressionParser {
 
     public <Y> Selection<Y> select(Class<Y> result, 
         Selection<?>... selections) {
-        throw new AbstractMethodError();
+        return new SelectionImpl(result).setSelections(selections);
     }
 
     public <R> Case<R> selectCase() {

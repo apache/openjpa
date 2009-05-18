@@ -62,6 +62,9 @@ public class CriteriaQueryImpl implements CriteriaQuery {
     private PredicateImpl       _having;
     private Boolean             _distinct;
     private LinkedMap           _parameterTypes;
+    private Class               _resultClass;
+    private Value[]             _projections;
+    private int                 _aliasCount = 0;
     
     public CriteriaQueryImpl(MetamodelImpl model) {
         this._model = model;
@@ -177,6 +180,14 @@ public class CriteriaQueryImpl implements CriteriaQuery {
         _parameterTypes = parameterTypes;
     }
     
+    public void setResultClass(Class resultClass) {
+        _resultClass = resultClass;
+    }
+
+    public void setProjections(Value[] projections) {
+        _projections = projections;
+    }
+
     /**
      * Populate kernel expressions.
      */
@@ -206,14 +217,13 @@ public class CriteriaQueryImpl implements CriteriaQuery {
 	    evalOrdering(exps, factory);
 	//    exps.operation = QueryOperations.OP_SELECT;
 	    
-	//    exps.parameterTypes = null; // LinkedMap<>
-	//    exps.projectionAliases = null; // String[]
-	//    exps.projectionClauses = null; // String[]
-	      exps.projections = toValues(factory, getSelectionList());
+	    evalProjection(exps, factory);
+	    
 	//    exps.range = null; // Value[]
 	//    exps.resultClass = null; // Class
-	      if (_parameterTypes != null)
-	          exps.parameterTypes = _parameterTypes;
+	    if (_parameterTypes != null)
+	        exps.parameterTypes = _parameterTypes;
+	    exps.resultClass = _resultClass;
 	    return exps;
     }
 
@@ -249,19 +259,31 @@ public class CriteriaQueryImpl implements CriteriaQuery {
                  (ExpressionImpl<?>)groupBy, factory, _model, this);;
         }
     }
-    
-    
-    
 
-    Value[] toValues(ExpressionFactory factory, List<Selection<?>> sels) {
+    void evalProjection(QueryExpressions exps, ExpressionFactory factory) {
+        Value [] projs = toValues(exps, factory, getSelectionList());
+        if (projs.length == 1 && projs[0] == null)
+            exps.projections = _projections;
+        else 
+            exps.projections = projs;
+        //exps.projectionClauses = String[];
+    }    
+
+    Value[] toValues(QueryExpressions exps, ExpressionFactory factory, 
+        List<Selection<?>> sels) {
     	if (sels == null || (sels.size() == 1 && sels.get(0) == getRoot()))
     			return new Value[0];
     	Value[] result = new Value[sels.size()];
+    	String[] aliases = new String[sels.size()];
     	int i = 0;
     	for (Selection<?> s : sels) {
-    		result[i++] = ((ExpressionImpl<?>)s).toValue(factory, _model, 
+            result[i] = ((SelectionImpl<?>)s).toValue(factory, _model, 
     		    this);
-    	}
+            aliases[i] = nextAlias();
+            i++;
+        }
+        exps.projectionAliases = aliases;
+    	
     	return result;
     }
 
@@ -323,4 +345,9 @@ public class CriteriaQueryImpl implements CriteriaQuery {
         if (_parameterTypes.containsKey(paramKey))
             _parameterTypes.put(paramKey, type);
     }
+    
+    private String nextAlias() {
+        return "jpqlalias" + (++_aliasCount);
+    }
+    
 }
