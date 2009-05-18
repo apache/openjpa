@@ -172,10 +172,6 @@ public class PreparedQueryImpl implements PreparedQuery {
                     _resultMapping.isEmbeddedOnly() || _resultClass.length > 1))
                     return false;
             }
-            if (_id.toUpperCase().contains("ORDER BY") ||
-                (_resultMapping == null &&
-                 select.getSelects().size() != _resultClass.length))
-                return false;
         }
         SQLBuffer buffer = selector.getSQL();
         if (buffer == null)
