@@ -24,6 +24,7 @@ import org.apache.openjpa.jdbc.sql.Result;
 import org.apache.openjpa.jdbc.sql.SQLBuffer;
 import org.apache.openjpa.jdbc.sql.Select;
 import org.apache.openjpa.kernel.exps.ExpressionVisitor;
+import org.apache.openjpa.kernel.exps.Path;
 import org.apache.openjpa.meta.ClassMetaData;
 
 /**
@@ -72,6 +73,10 @@ class Variable
      * Return the path this variable is aliased to.
      */
     public PCPath getPCPath() {
+        return _path;
+    }
+
+    public Path getPath() {
         return _path;
     }
 

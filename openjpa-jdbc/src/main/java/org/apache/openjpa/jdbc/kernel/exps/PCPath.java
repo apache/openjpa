@@ -218,7 +218,7 @@ public class PCPath
         return xpath.toString();
     }
     
-    public String getPath() {
+    public String getPCPathString() {
         if (_actions == null)
             return (_varName == null) ? "" : _varName + ".";
 
@@ -293,10 +293,14 @@ public class PCPath
                 case JavaTypes.COLLECTION:
                     ValueMapping elem = pstate.field.getElementMapping();
                     if (pstate.field.isElementCollection() &&
-                        pstate.field.getElement().isEmbedded())
-                        return ((HandlerCollectionTableFieldStrategy)
-                            pstate.field.getStrategy()).getElementColumns(
-                            elem.getTypeMapping());
+                        pstate.field.getElement().isEmbedded()) {
+                        Strategy strategy = pstate.field.getStrategy();
+                        if (strategy instanceof
+                            HandlerCollectionTableFieldStrategy)
+                            return ((HandlerCollectionTableFieldStrategy)
+                                strategy).getElementColumns(
+                                elem.getTypeMapping());
+                    }
                     if (pstate.joinedRel && elem.getTypeCode() == JavaTypes.PC)
                         return elem.getTypeMapping().getPrimaryKeyColumns();
                     if (elem.getColumns().length > 0)

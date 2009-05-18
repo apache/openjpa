@@ -651,7 +651,13 @@ public class JPQLExpressionBuilder
             // clause, since we might be in a subquery against a collection
             if (isPath(left)) {
                 Path path = getPath(left);
-                setCandidate(getFieldType(path.last()), alias);
+                FieldMetaData fmd = path.last();
+                ClassMetaData candidate = getFieldType(fmd);
+
+                if (candidate == null && fmd.isElementCollection())
+                    candidate = fmd.getDefiningMetaData();
+
+                setCandidate(candidate, alias);
 
                 Path subpath = factory.newPath(ctx().subquery);
                 subpath.setMetaData(ctx().subquery.getMetaData());
@@ -1491,6 +1497,14 @@ public class JPQLExpressionBuilder
     private Value validateMapPath(JPQLNode node, JPQLNode id) {
         Path path = (Path) getValue(id);
         FieldMetaData fld = path.last();
+
+        if (fld == null && ctx().subquery != null) {
+            Value var = getVariable(id.text, false);
+            if (var != null) {
+                path = factory.newPath(var);
+                fld = path.last();
+            }
+        }
         
         if (fld != null) {            
             // validate the field is of type java.util.Map
@@ -1503,7 +1517,11 @@ public class JPQLExpressionBuilder
                 throw parseException(EX_USER, "bad-qualified-identifier",
                     new Object[]{ id.text, oper}, null);
             }
-        }         
+        }
+        else
+            throw parseException(EX_USER, "unknown-type",
+                new Object[]{ id.text}, null);
+            
         return path;
     }
 
@@ -1517,7 +1535,9 @@ public class JPQLExpressionBuilder
         FieldMetaData fld = path.last();
         path = (Path) factory.getKey(path);
         ClassMetaData meta = fld.getKey().getTypeMetaData();
-        if (inWhereClause && meta != null)
+        if (inWhereClause && meta != null &&
+            fld.isElementCollection() &&
+            fld.getElement().getEmbeddedMetaData() != null)
             // check basic type
             throw parseException(EX_USER, "bad-general-identifier",
                 new Object[]{ id.text, "KEY" }, null);

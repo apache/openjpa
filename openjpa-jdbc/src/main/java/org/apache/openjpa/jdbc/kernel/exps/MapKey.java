@@ -124,4 +124,11 @@ public class MapKey
     public void setMetaData(ClassMetaData meta) {
         _meta = meta;        
     }
+
+    public Object toDataStoreValue(Select sel, ExpContext ctx, ExpState state, 
+        Object val) {
+        KeyExpState estate = (KeyExpState) state;
+        return _key.toDataStoreValue(sel, ctx, 
+            estate.key, val);
+    }
 }

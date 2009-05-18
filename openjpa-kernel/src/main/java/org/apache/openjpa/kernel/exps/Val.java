@@ -131,4 +131,8 @@ public abstract class Val
     public Value getSelectAs() {
         return _alias != null ? this : null;
     }
+
+    public Path getPath() {
+        return null;
+    }
 }

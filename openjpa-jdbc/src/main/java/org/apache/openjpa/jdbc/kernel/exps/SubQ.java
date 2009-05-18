@@ -69,7 +69,7 @@ class SubQ
     }
 
     public Class getType() {
-        if (_exps != null) {
+        if (_exps != null && _type == null) {
             if (_exps.projections.length == 0)
                 return _candidate.getDescribedType();
             if (_exps.projections.length == 1)

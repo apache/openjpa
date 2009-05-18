@@ -746,6 +746,18 @@ public class TestEmbeddable extends SingleEMFTestCase {
             assertEmployee(e);
         }
         tran.commit();
+        em.clear();
+        // test range variable over element collection
+        String[] query = {
+            "select e from Employee e, in (e.nickNames) n " +
+            " where n like '%1'",  
+        };
+        for (int i = 0; i < query.length; i++) {
+            es = em.createQuery(query[i]).getResultList();
+            for (Employee e : es){
+                assertEmployee(e);
+            }
+        }
         em.close();
     }
 
@@ -2145,6 +2157,25 @@ public class TestEmbeddable extends SingleEMFTestCase {
         }
         
         tran.commit();
+
+        String query[] = {
+            "select d from Department1 d join d.empMap e " +
+                " where KEY(e) > 1 order by d",
+            "select d from Department1 d join d.empMap e" +
+                " where d.deptId = KEY(e) order by d",
+            "select d from Department1 d " +
+                " where d.deptId < ANY " +
+                " (select KEY(e) from in(d.empMap) e) " +
+                " order by d",
+            "select d from Department1 d " +
+                " where d.deptId < SOME " +
+                " (select KEY(e) from Department1 d1, in(d1.empMap) e) " +
+                " order by d",
+        };
+        for (int i = 0; i < query.length; i++) {
+            ds1 = em.createQuery(query[i]).getResultList();
+            assertDepartment1(ds1.get(0));
+        }
         em.close();
     }
 
@@ -2290,6 +2321,66 @@ public class TestEmbeddable extends SingleEMFTestCase {
         }
 
         tran.commit();
+
+        String imageKey1 = (String) is1.get(0).getImages().
+            keySet().toArray()[0];
+        String imageKey2 = (String) is2.get(0).getImages().
+            keySet().toArray()[0];
+        String imageKey3 = (String) is3.get(0).getImages().
+            keySet().toArray()[0];
+        String[] query = {
+            "select i from Item1 i" +
+                " where ?1 = any " +
+                " (select KEY(e) from Item1 i, in(i.images) e) " +
+                " order by i",
+            "select i from Item2 i" +
+                " where ?1 = any " +
+                " (select KEY(e) from Item2 i, in(i.images) e) " +
+                " order by i",
+            "select i from Item3 i" +
+                " where ?1 = any " +
+                " (select KEY(e) from Item3 i, in(i.images) e) " +
+                " order by i",
+            "select i from Item1 i" +
+                " where exists " +
+                " (select e from Item1 i, in(i.images) e" +
+                "   where ?1 = KEY(e)) " +
+                " order by i",
+            "select i from Item2 i" +
+                " where exists " +
+                " (select e from Item2 i, in(i.images) e" +
+                "   where ?1 = KEY(e)) " +
+                " order by i",
+            "select i from Item3 i" +
+                " where exists " +
+                " (select e from Item3 i, in(i.images) e" +
+                "   where ?1 = KEY(e)) " +
+                " order by i",
+        };
+
+        for (int i = 0; i < query.length; i++) {
+            Query q = em.createQuery(query[i]);
+            switch (i) {
+            case 0:
+            case 3:
+                q.setParameter(1, imageKey1);
+                is1 = q.getResultList();
+                assertItem1(is1.get(0));
+                break;
+            case 1:
+            case 4:
+                q.setParameter(1, imageKey2);
+                is2 = q.getResultList();
+                assertItem2(is2.get(0));
+                break;
+            case 2:
+            case 5:
+                q.setParameter(1, imageKey3);
+                is3 = q.getResultList();
+                assertItem3(is3.get(0));
+                break;
+            }
+        }
         em.close();
     }
 
@@ -2308,6 +2399,56 @@ public class TestEmbeddable extends SingleEMFTestCase {
             assertCompany2(c);
         }
         tran.commit();
+
+        em.clear();
+        // test KEY(e) appeared in subquery
+        Division d1 = (Division) ((Company1) cs1.get(0)).getOrganization().
+            keySet().toArray()[0];
+        Division d2 = (Division) ((Company2) cs2.get(0)).getOrganization().
+            keySet().toArray()[0];
+        String[] query = {
+            "select c from Company1 c, in(c.organization) d " +
+                " where KEY(d) = ?1",
+            "select c from Company1 c " +
+                " where ?1 = " +
+                " (select KEY(d) from Company1 c, in(c.organization) d" +
+                "   where d.id = 1)" +
+                " order by c ",  
+            "select c from Company2 c" +
+                " where ?1 = " +
+                " (select KEY(d) from Company2 c, in(c.organization) d" +
+                "   where d.id = 3)" +
+                " order by c ",  
+            "select c from Company1 c where exists" +
+                " (select d from in(c.organization) d" +
+                "  where KEY(d) = ?1)" +
+                " order by c ",  
+            "select c from Company2 c where exists" +
+                " (select d from in(c.organization) d" +
+                "  where KEY(d) = ?1)" +
+                " order by c ",  
+        };
+
+        for (int i = 0; i < query.length; i++) {
+            Query q = em.createQuery(query[i]);
+            switch (i) {
+            case 0:
+            case 1:
+            case 3:
+                q.setParameter(1, d1);
+                cs1 = q.getResultList();
+                if (cs1.size() > 0)
+                    assertCompany1(cs1.get(0));
+                break;
+            case 2:
+            case 4:
+                q.setParameter(1, d2);
+                cs2 = q.getResultList();
+                if (cs2.size() > 0)
+                    assertCompany2(cs2.get(0));
+                break;
+            }            
+        }
         em.close();
     }
 
