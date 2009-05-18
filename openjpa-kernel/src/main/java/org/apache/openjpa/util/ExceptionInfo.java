@@ -32,6 +32,8 @@ public interface ExceptionInfo {
     public static final int STORE = 2;
     public static final int UNSUPPORTED = 3;
     public static final int USER = 4;
+    public static final int WRAPPED = 5;
+
 
     /**
      * Exception message.
