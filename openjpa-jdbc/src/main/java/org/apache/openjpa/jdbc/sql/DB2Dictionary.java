@@ -295,7 +295,6 @@ public class DB2Dictionary
             break;
         case  db2ZOSV8xOrLater:
             // DB2 Z/OS 
-            supportsQueryTimeout = false;  // can only be set to 0 on z/OS
             characterColumnSize = 255;
             lastGeneratedKeyQuery = "SELECT IDENTITY_VAL_LOCAL() FROM "
                 + "SYSIBM.SYSDUMMY1";
