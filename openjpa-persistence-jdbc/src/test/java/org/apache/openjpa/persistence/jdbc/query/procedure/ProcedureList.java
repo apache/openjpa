@@ -20,22 +20,16 @@ package org.apache.openjpa.persistence.jdbc.query.procedure;
 
 import java.util.List;
 
-/*
- * holds the stored procedures that will be used by test cases
- */
-public abstract class ProcedureList {
+public interface ProcedureList {
+    public List<String> getCreateProcedureList();
 
-    abstract public List<String> getCreateProcedureList ();
+    public List<String> getDropProcedureList();
 
-    abstract public List<String> getDropProcedureList ();
+    public String callAddXToCharlie();
 
-    abstract public String callAddXToCharlie ();
+    public String callAddSuffixToName();
 
-    // This method should also be overriden, but it needs to be static so 
-    // that it can be called as a stored procedure
-    public static void addXToCharlie () throws Exception {
-        Exception e = new Exception ("Method not implemented by inheriting " +
-        		"class");
-        throw e;
-    }
+    public String callGetAllApplicants();
+
+    public String callGetTwoApplicants();
 }
