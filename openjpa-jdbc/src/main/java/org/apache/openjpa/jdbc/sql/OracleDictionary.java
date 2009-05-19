@@ -167,6 +167,7 @@ public class OracleDictionary
         super.setBatchLimit(defaultBatchLimit);
         selectWordSet.add("WITH");
         reportsSuccessNoInfoOnBatchUpdates = true;
+        requiresSearchStringEscapeForLike = false;
     }
 
     public void endConfiguration() {
