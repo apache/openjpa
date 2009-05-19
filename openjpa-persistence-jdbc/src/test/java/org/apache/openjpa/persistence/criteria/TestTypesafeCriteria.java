@@ -46,9 +46,6 @@ import org.apache.openjpa.persistence.test.SQLListenerTestCase;
  * asserting that the resultant SQL queries for these two alternative form
  * of executing a query are the same.
  * 
- * 
- *  
- * @author Pinaki Poddar
  *
  */
 public class TestTypesafeCriteria extends SQLListenerTestCase {

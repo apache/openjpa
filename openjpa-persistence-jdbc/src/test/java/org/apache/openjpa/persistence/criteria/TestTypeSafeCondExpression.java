@@ -54,8 +54,6 @@ import org.apache.openjpa.persistence.test.SQLListenerTestCase;
  * The test scenarios are from TestEJBQLCondExpression in 
  * org.apache.openjpa.persistence.jpql.expressions. 
  * 
- * @author Fay Wang
- *
  */
 public class TestTypeSafeCondExpression extends SQLListenerTestCase {
 
@@ -114,7 +112,7 @@ public class TestTypeSafeCondExpression extends SQLListenerTestCase {
         String query = "SELECT o FROM CompUser o";
         CriteriaQuery c = cb.create();
         c.from(CompUser.class);
-
+        assertEquivalence(c, query);
         List result = em.createQuery(c).getResultList();
 
         assertNotNull("the list is null", result);
@@ -132,7 +130,7 @@ public class TestTypeSafeCondExpression extends SQLListenerTestCase {
         q.where(cb.and(cb.between(c.get(CompUser_.age), 19, 40), 
                 cb.equal(c.get(CompUser_.computerName), "PC")));
         q.select(c.get(CompUser_.name));
-
+        assertEquivalence(q, query);
         List result = em.createQuery(q).getResultList();
 
         assertNotNull("the list is null", result);
@@ -153,6 +151,7 @@ public class TestTypeSafeCondExpression extends SQLListenerTestCase {
         q.where(cb.and(cb.between(c.get(CompUser_.age), 19, 40).negate(), 
                 cb.equal(c.get(CompUser_.computerName), "PC")));
         q.select(c.get(CompUser_.name));
+        assertEquivalence(q, query);
         List result = em.createQuery(q).getResultList();
 
         assertNotNull("the list is null", result);
@@ -168,7 +167,7 @@ public class TestTypeSafeCondExpression extends SQLListenerTestCase {
         Root<CompUser> c = q.from(CompUser.class);
         q.where(cb.in(c.get(CompUser_.age)).value(29).value(40).value(10));
         q.select(c.get(CompUser_.name));
-
+        assertEquivalence(q, query);
         List result = em.createQuery(q).getResultList();
 
         assertNotNull("the list is null", result);
@@ -188,6 +187,7 @@ public class TestTypeSafeCondExpression extends SQLListenerTestCase {
         Root<CompUser> c = q.from(CompUser.class);
         q.where(cb.in(c.get(CompUser_.age)).value(29).value(40).value(10).negate());
         q.select(c.get(CompUser_.name));
+        assertEquivalence(q, query);
         List result = em.createQuery(q).getResultList();
 
         assertNotNull(result);
@@ -198,7 +198,6 @@ public class TestTypeSafeCondExpression extends SQLListenerTestCase {
         em.clear();
     }
 
-    @AllowFailure
     public void testLikeExprUsingCriteria1() {
         String query =
             "SELECT o.computerName FROM CompUser o WHERE o.name LIKE 'Sha%' AND " + 
@@ -206,10 +205,13 @@ public class TestTypeSafeCondExpression extends SQLListenerTestCase {
 
         CriteriaQuery q = cb.create();
         Root<CompUser> c = q.from(CompUser.class);
-        q.where(cb.and(cb.like(c.get(CompUser_.name),"Sha%")), 
-                cb.in(c.get(CompUser_.computerName)).value("PC").negate());
-        q.select(c.get(CompUser_.computerName));
+        q.where(cb.and(
+                    cb.like(c.get(CompUser_.name),"Sha%"), 
+                    cb.in(c.get(CompUser_.computerName)).value("PC").negate()
+                ));
         
+        q.select(c.get(CompUser_.computerName));
+        assertEquivalence(q, query);
         List result = em.createQuery(q).getResultList();
 
         assertNotNull(result);
@@ -225,10 +227,12 @@ public class TestTypeSafeCondExpression extends SQLListenerTestCase {
 
         CriteriaQuery q = cb.create();
         Root<CompUser> c = q.from(CompUser.class);
-        q.where(cb.and(cb.like(c.get(CompUser_.name),"Sha%o_")), 
-                cb.in(c.get(CompUser_.computerName)).value("PC").negate());
+        q.where(cb.and(
+                    cb.like(c.get(CompUser_.name),"Sha%o_"), 
+                    cb.in(c.get(CompUser_.computerName)).value("PC").negate()
+                ));
         q.select(c.get(CompUser_.computerName));
-
+        assertEquivalence(q, query);
         List result = em.createQuery(q).getResultList();
 
         assertNotNull(result);
@@ -244,6 +248,7 @@ public class TestTypeSafeCondExpression extends SQLListenerTestCase {
         Root<CompUser> c = q.from(CompUser.class);
         q.where(cb.like(c.get(CompUser_.name),"_J%"));
         q.select(c.get(CompUser_.name));
+        assertEquivalence(q, query);
         List result = em.createQuery(q).getResultList();
 
         assertNotNull(result);
@@ -259,7 +264,7 @@ public class TestTypeSafeCondExpression extends SQLListenerTestCase {
         Parameter<String> param = cb.parameter(String.class);
         q.where(cb.like(c.get(CompUser_.name), param, '|'));
         q.select(c.get(CompUser_.name));
-
+        assertEquivalence(q, query);
         List result = em.createQuery(q).setParameter(1, "%|_%").getResultList();
 
         assertNotNull(result);
@@ -268,7 +273,6 @@ public class TestTypeSafeCondExpression extends SQLListenerTestCase {
         em.clear();
     }
 
-    @AllowFailure
     public void testNullExprUsingCriteria() {
         String query =
             "SELECT o.name FROM CompUser o WHERE o.age IS NOT NULL AND o.computerName = 'PC' ";
@@ -278,7 +282,7 @@ public class TestTypeSafeCondExpression extends SQLListenerTestCase {
         q.where(cb.and(cb.notEqual(c.get(CompUser_.age), null), 
                 cb.equal(c.get(CompUser_.computerName), "PC")));
         q.select(c.get(CompUser_.name));
-
+        assertEquivalence(q, query);
         List result = em.createQuery(q).getResultList();
 
         assertNotNull("the list is null", result);
@@ -290,7 +294,6 @@ public class TestTypeSafeCondExpression extends SQLListenerTestCase {
         em.clear();
     }
     
-    @AllowFailure
     public void testNullExpr2UsingCriteria() {
         String query =
             "SELECT o.name FROM CompUser o WHERE o.address.country IS NULL";
@@ -300,7 +303,7 @@ public class TestTypeSafeCondExpression extends SQLListenerTestCase {
         Parameter<String> param = cb.parameter(String.class);
         q.where(cb.equal(c.get(CompUser_.address).get(Address_.country), null));
         q.select(c.get(CompUser_.name));
-
+        assertEquivalence(q, query);
         List result = em.createQuery(q).getResultList();
 
         assertNotNull("the list is null", result);
@@ -319,7 +322,7 @@ public class TestTypeSafeCondExpression extends SQLListenerTestCase {
         Root<CompUser> c = q.from(CompUser.class);
         //q.where(cb.isNotEmpty(c.get(CompUser_.nicknames)));
         q.select(c);
-
+        assertEquivalence(q, query);
         List result = em.createQuery(q).getResultList();
 
         assertNotNull("the list is null", result);
@@ -342,7 +345,7 @@ public class TestTypeSafeCondExpression extends SQLListenerTestCase {
         sq.where(cb.equal(c, o.get(CompUser_.address)));
         q.where(cb.exists(sq));
         q.select(o.get(CompUser_.name)).distinct(true);
-                
+        assertEquivalence(q, query);
         List result = em.createQuery(q).getResultList();
 
         assertNotNull("the list is null", result);
@@ -371,7 +374,7 @@ public class TestTypeSafeCondExpression extends SQLListenerTestCase {
                 o.get(CompUser_.address).get(Address_.country)));
         q.where(cb.exists(sq).negate());
         q.select(o.get(CompUser_.name)).distinct(true);
-
+        assertEquivalence(q, query);
         List result = em.createQuery(q).getResultList();
 
         assertNotNull("list is null", result);
@@ -394,6 +397,7 @@ public class TestTypeSafeCondExpression extends SQLListenerTestCase {
         sq.select(s.get(CompUser_.computerName));
         sq.where(cb.notEqual(s.get(CompUser_.address).get(Address_.country), null));
         q.where(cb.equal(o.get(CompUser_.address).get(Address_.zipCode), cb.any(sq)));
+        assertEquivalence(q, query);
         List result = em.createQuery(q).getResultList();
 
         assertNotNull("list is null", result);
@@ -434,6 +438,21 @@ public class TestTypeSafeCondExpression extends SQLListenerTestCase {
         em.getTransaction().commit();
     }
     
+    void assertEquivalence(CriteriaQuery c, String jpql) {
+        
+        sql.clear(); 
+        List cList = em.createQuery(c).getResultList();
+        assertEquals(1, sql.size()); 
+        String cSQL = sql.get(0);
+        
+        sql.clear();
+        List jList = em.createQuery(jpql).getResultList();
+        assertEquals(1, sql.size());
+        String jSQL = sql.get(0);
+
+        assertEquals(jSQL, cSQL);
+    }
+
     public CompUser createUser(String name, String cName, Address add, int age,
         boolean isMale) {
         CompUser user = null;

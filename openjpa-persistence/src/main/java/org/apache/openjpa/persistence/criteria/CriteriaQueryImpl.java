@@ -288,8 +288,9 @@ public class CriteriaQueryImpl implements CriteriaQuery {
     }
 
     void setImplicitTypes(Value val1, Value val2, Class<?> expected) {
-        Class<?> c1 = val1.getType();
-        Class<?> c2 = val2.getType();
+        Class<?> c1 = (val1 == null ? null : val1.getType());
+        Class<?> c2 = (val2 == null ? null : val2.getType());
+        
         boolean o1 = c1 == AbstractExpressionBuilder.TYPE_OBJECT;
         boolean o2 = c2 == AbstractExpressionBuilder.TYPE_OBJECT;
 
@@ -305,8 +306,9 @@ public class CriteriaQueryImpl implements CriteriaQuery {
             // we never expect a pc type, so don't bother with metadata
             val1.setImplicitType(expected);
             val2.setImplicitType(expected);
-        } else if (AbstractExpressionBuilder.isNumeric(val1.getType()) 
-            != AbstractExpressionBuilder.isNumeric(val2.getType())) {
+        } else if (c1 != null && c2 != null && 
+            AbstractExpressionBuilder.isNumeric(c1) 
+            != AbstractExpressionBuilder.isNumeric(c2)) {
             AbstractExpressionBuilder.convertTypes(val1, val2);
         }
 

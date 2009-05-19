@@ -40,8 +40,8 @@ public class Expressions {
 	
 	static Value toValue(ExpressionImpl<?> e, ExpressionFactory factory, 
 		MetamodelImpl model, CriteriaQuery q) {
-		Value v = e.toValue(factory, model, q);
-		return v;
+		return (e == null ? factory.getNull() : 
+		    e.toValue(factory, model, q));
 	}
 	
 	/**
@@ -695,8 +695,6 @@ public class Expressions {
     	ExpressionImpl<String> str;
     	ExpressionImpl<String> pattern;
     	ExpressionImpl<Character> escapeChar;
-    	static ExpressionImpl<Character> defaultEscape = 
-    		new Constant<Character>(new Character(' '));
     	
     	public Like(Expression<String> x, Expression<String> pattern,
     	        Expression<Character> escapeChar) {
@@ -711,11 +709,11 @@ public class Expressions {
     	}
     	
     	public Like(Expression<String> x, Expression<String> pattern) {
-    		this(x, pattern, defaultEscape);
+    		this(x, pattern, null);
     	}
     	
     	public Like(Expression<String> x, String pattern) {
-    		this(x, new Constant<String>(pattern), defaultEscape);
+    		this(x, new Constant<String>(pattern), null);
     	}
     	public Like(Expression<String> x, String pat,  
     		Expression<Character> esc) {
@@ -729,10 +727,12 @@ public class Expressions {
         public org.apache.openjpa.kernel.exps.Expression toKernelExpression(
         	ExpressionFactory factory, MetamodelImpl model, 
         	CriteriaQuery q) {
+    	    String escapeStr = escapeChar == null ? null :
+    	        Expressions.toValue(escapeChar, factory, model, q).toString();
             return factory.matches(
             	Expressions.toValue(str, factory, model, q), 
             	Expressions.toValue(pattern, factory, model, q), "_", "%", 
-            	Expressions.toValue(escapeChar, factory, model, q).toString());
+            	escapeStr);
         }
     }
     
@@ -808,6 +808,7 @@ public class Expressions {
     public static class In<T> extends PredicateImpl.Or 
     	implements QueryBuilder.In<T> {
     	ExpressionImpl<?> e;
+    	boolean negate;
     	public In(Expression<?> e) {
     		super((Predicate[])null);
     		this.e = (ExpressionImpl<?>)e;
@@ -826,13 +827,23 @@ public class Expressions {
     		add(new Expressions.Equal(e,value));
         	return this;
     	}
+    	
+    	public In<T> negate() {
+    	    this.negate = true;
+    	    return this;
+    	}
     
     	@Override
         org.apache.openjpa.kernel.exps.Expression toKernelExpression(
             ExpressionFactory factory, MetamodelImpl model, CriteriaQuery q) {
+    	    org.apache.openjpa.kernel.exps.Expression inExpr = 
+    	        super.toKernelExpression(factory, model, q); 
     		IsNotNull notNull = new Expressions.IsNotNull(e);
+    		if (negate) 
+    		    inExpr = factory.not(inExpr);
+    		
     		return factory.and(
-     		    super.toKernelExpression(factory, model, q),
+    		    inExpr,
     		    notNull.toKernelExpression(factory, model, q));
     	}
     }
