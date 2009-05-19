@@ -728,7 +728,9 @@ public class Expressions {
         	ExpressionFactory factory, MetamodelImpl model, 
         	CriteriaQuery q) {
     	    String escapeStr = escapeChar == null ? null :
-    	        Expressions.toValue(escapeChar, factory, model, q).toString();
+    	        ((Character)((Literal)Expressions.toValue(
+    	            escapeChar, factory, model, q)).getValue()).toString();
+    	    
             return factory.matches(
             	Expressions.toValue(str, factory, model, q), 
             	Expressions.toValue(pattern, factory, model, q), "_", "%", 
