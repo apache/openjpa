@@ -445,97 +445,238 @@ public class TestTypeSafeCondExpression extends SQLListenerTestCase {
                     cb.literal(4)
                  )
              )
-         );
+        );
+        q.where(cb.equal(e.get(CompUser_.name), "Seetha"));
         assertEquivalence(q, query);
-    
         em.clear();
     }
-/*    
+    
+    @AllowFailure
     public void testConcatSubStringFunc2() {
-        String query = "select e.name From CompUser e where e.firstName = " +
+        String query = "select e.address From CompUser e where e.computerName = " +
             "CONCAT('Ablahum', SUBSTRING(e.name, LOCATE('e', e.name), 4)) ";
+        CriteriaQuery q = cb.create();
+        q = cb.create();
+        Root<CompUser> e = q.from(CompUser.class);
+        q.select(e.get(CompUser_.address));
+        q.where(cb.equal(
+            e.get(CompUser_.computerName),
+            cb.concat("Ablahum", 
+                cb.substring(
+                    e.get(CompUser_.name), 
+                    cb.locate(e.get(CompUser_.name), "e"), 
+                    cb.literal(4)
+                 )
+            ))
+         );
+        assertEquivalence(q, query);
         em.clear();
     }
 
+    @AllowFailure
     public void testConcatSubStringFunc3() {
         String query = "select " +
             "CONCAT('XYZ', SUBSTRING(e.name, LOCATE('e', e.name))) " +
             "From CompUser e WHERE e.name='Ablahumeeth'";
+        CriteriaQuery q = cb.create();
+        q = cb.create();
+        Root<CompUser> e = q.from(CompUser.class);
+        q.select(
+            cb.concat("XYZ", 
+                cb.substring(
+                    e.get(CompUser_.name), 
+                    cb.locate(e.get(CompUser_.name), "e") 
+                )
+            )
+        );
+        q.where(cb.equal(e.get(CompUser_.name), "Ablahumeeth"));
+        assertEquivalence(q, query);
         em.clear();
     }
 
+    @AllowFailure
     public void testConcatSubStringFunc4() {
-        String query = "select e.name from CompUser e where e.firstName = " +
+        String query = "select e.nicknames from CompUser e where e.name = " +
             "CONCAT('XYZ', SUBSTRING(e.name, LOCATE('e', e.name))) ";
+        CriteriaQuery q = cb.create();
+        q = cb.create();
+        Root<CompUser> e = q.from(CompUser.class);
+        q.select(e.get(CompUser_.nicknames));
+        q.where(cb.equal(
+            e.get(CompUser_.name),
+            cb.concat("XYZ", 
+                cb.substring(
+                    e.get(CompUser_.name), 
+                    cb.locate(e.get(CompUser_.name), "e") 
+                )
+            ))
+        );
+        assertEquivalence(q, query);
         em.clear();
     }
 
+    @AllowFailure
     public void testConcatFunc() {
         String query = "select " +
             "CONCAT('', '') From CompUser WHERE e.name='Seetha'";
+        CriteriaQuery q = cb.create();
+        q = cb.create();
+        Root<CompUser> e = q.from(CompUser.class);
+        q.select(cb.concat("", cb.literal("")));
+        q.where(cb.equal(e.get(CompUser_.name), "Seetha"));
+        assertEquivalence(q, query);
         em.clear();
     }
 
+    @AllowFailure
     public void testTrimFunc1() {
-        String query = "select Trim(e.name) From CompUser e WHERE e.name='Shannon '";
+        String query = "select Trim(e.computerName) From CompUser e WHERE e.name='Shannon '";
+        CriteriaQuery q = cb.create();
+        q = cb.create();
+        Root<CompUser> e = q.from(CompUser.class);
+        q.select(cb.trim(e.get(CompUser_.computerName)));
+        q.where(cb.equal(e.get(CompUser_.name), "Shannon "));
+        assertEquivalence(q, query);
         em.clear();
     }
 
+    @AllowFailure
     public void testTrimFunc2() {
         String query = "select e.name From CompUser e where Trim(e.name) ='Shannon'";
+        CriteriaQuery q = cb.create();
+        q = cb.create();
+        Root<CompUser> e = q.from(CompUser.class);
+        q.where(cb.equal(cb.trim(e.get(CompUser_.computerName)), "Shannon"));
+        q.select(e.get(CompUser_.name));
+        assertEquivalence(q, query);
         em.clear();
     }
 
+    @AllowFailure
     public void testLowerFunc1() {
-        String query = "select LOWER(e.name) From CompUser e WHERE e.name='Ugo'";
+        String query = "select LOWER(e.name) From CompUser e WHERE e.computerName='UNIX'";
+        CriteriaQuery q = cb.create();
+        q = cb.create();
+        Root<CompUser> e = q.from(CompUser.class);
+        q.select(cb.lower(e.get(CompUser_.name)));
+        q.where(cb.equal(e.get(CompUser_.computerName), "UNIX"));
+        assertEquivalence(q, query);
         em.clear();
     }
 
+    @AllowFailure
     public void testLowerFunc2() {
-        String query = "select e.name From CompUser e where LOWER(e.name) ='ugo'";
+        String query = "select e.age From CompUser e where LOWER(e.name) ='ugo'";
+        CriteriaQuery q = cb.create();
+        q = cb.create();
+        Root<CompUser> e = q.from(CompUser.class);
+        q.where(cb.equal(cb.lower(e.get(CompUser_.name)), "ugo"));
+        q.select(e.get(CompUser_.age));
+        assertEquivalence(q, query);
         em.clear();
     }
 
+    @AllowFailure
     public void testUpperFunc1() {
-        String query = "select UPPER(e.name) From CompUser e WHERE e.name='Ugo'";
+        String query = "select UPPER(e.name) From CompUser e WHERE e.computerName='PC'";
+        CriteriaQuery q = cb.create();
+        q = cb.create();
+        Root<CompUser> e = q.from(CompUser.class);
+        q.select(cb.upper(e.get(CompUser_.name)));
+        q.where(cb.equal(e.get(CompUser_.computerName), "PC"));
+        assertEquivalence(q, query);
         em.clear();
     }
 
+    @AllowFailure
     public void testUpperFunc2() {
-        String query = "select e.name from CompUser e where UPPER(e.name)='UGO'";
+        String query = "select e.nicknames from CompUser e where UPPER(e.name)='UGO'";
+        CriteriaQuery q = cb.create();
+        q = cb.create();
+        Root<CompUser> e = q.from(CompUser.class);
+        q.where(cb.equal(cb.upper(e.get(CompUser_.name)), "UGO"));
+        q.select(e.get(CompUser_.nicknames));
+        assertEquivalence(q, query);
         em.clear();
     }
 
+    @AllowFailure
     public void testLengthFunc() {
-        String query = "SELECT o.name FROM CompUser o " +
+        String query = "SELECT o.name FROM CompUser o " + 
             "WHERE LENGTH(o.address.country) = 3";
+        CriteriaQuery q = cb.create();
+        q = cb.create();
+        Root<CompUser> e = q.from(CompUser.class);
+        q.where(cb.equal(cb.length(e.get(CompUser_.name)), 3));
+        q.select(e.get(CompUser_.name));
+        assertEquivalence(q, query);
         em.clear();
     }
 
+    @AllowFailure
     public void testArithmFunc1() {
         String query =
             "select ABS(e.age) From CompUser e WHERE e.name='Seetha'";
+        CriteriaQuery q = cb.create();
+        q = cb.create();
+        Root<CompUser> e = q.from(CompUser.class);
+        q.select(cb.abs(e.get(CompUser_.age)));
+        q.where(cb.equal(e.get(CompUser_.name), "Seetha"));
+        assertEquivalence(q, query);
+        em.clear();
     }
     
+    @AllowFailure
     public void testArithmFunc2() {
         String query =
             "select SQRT(e.age) From CompUser e WHERE e.name='Seetha'";
+        CriteriaQuery q = cb.create();
+        q = cb.create();
+        Root<CompUser> e = q.from(CompUser.class);
+        q.select(cb.sqrt(e.get(CompUser_.age)));
+        q.where(cb.equal(e.get(CompUser_.name), "Seetha"));
+        assertEquivalence(q, query);
+        em.clear();
     }
     
+    @AllowFailure
     public void testArithmFunc3() {
         String query =
             "select MOD(e.age, 4) From CompUser e WHERE e.name='Seetha'";
+        CriteriaQuery q = cb.create();
+        q = cb.create();
+        Root<CompUser> e = q.from(CompUser.class);
+        q.select(cb.mod(e.get(CompUser_.age), 4));
+        q.where(cb.equal(e.get(CompUser_.name), "Seetha"));
+        assertEquivalence(q, query);
+        em.clear();
     }
     
+    // size method can not be applied to an array field
+    @AllowFailure
     public void testArithmFunc4() {
         String query = "SELECT e.name FROM CompUser e WHERE SIZE(e.nicknames) = 6";
+        CriteriaQuery q = cb.create();
+        q = cb.create();
+        Root<CompUser> e = q.from(CompUser.class);
+        //q.where(cb.equal(cb.size(e.get(CompUser_.nicknames)), 6));
+        q.select(e.get(CompUser_.name));
+        assertEquivalence(q, query);
         em.clear();
     }
 
+    @AllowFailure
     public void testGroupByHavingClause() {
         String query =
             "SELECT c.name FROM CompUser c GROUP BY c.name HAVING c.name LIKE 'S%'";
 
+        CriteriaQuery q = cb.create();
+        q = cb.create();
+        Root<CompUser> e = q.from(CompUser.class);
+        q.groupBy(e.get(CompUser_.name));
+        q.having(cb.like(e.get(CompUser_.name), "S%"));
+        q.select(e.get(CompUser_.name));
+        assertEquivalence(q, query);
         List result = em.createQuery(query).getResultList();
 
         assertNotNull(result);
@@ -547,10 +688,18 @@ public class TestTypeSafeCondExpression extends SQLListenerTestCase {
         em.clear();
     }
 
+    @AllowFailure
     public void testOrderByClause() {
         String query =
             "SELECT c.name FROM CompUser c WHERE c.name LIKE 'S%' ORDER BY c.name";
 
+        CriteriaQuery q = cb.create();
+        q = cb.create();
+        Root<CompUser> e = q.from(CompUser.class);
+        q.where(cb.like(e.get(CompUser_.name), "S%"));
+        q.select(e.get(CompUser_.name));
+        q.orderBy(cb.asc(e.get(CompUser_.name)));
+        assertEquivalence(q, query);
         List result = em.createQuery(query).getResultList();
 
         assertNotNull(result);
@@ -562,10 +711,15 @@ public class TestTypeSafeCondExpression extends SQLListenerTestCase {
         em.clear();
     }
 
+    @AllowFailure
     public void testAVGAggregFunc() {
         //To be Tested: AVG, COUNT, MAX, MIN, SUM
         String query = "SELECT AVG(e.age) FROM CompUser e";
-
+        CriteriaQuery q = cb.create();
+        q = cb.create();
+        Root<CompUser> e = q.from(CompUser.class);
+        q.select(cb.avg(e.get(CompUser_.age)));
+        assertEquivalence(q, query);
         List result = em.createQuery(query).getResultList();
 
         assertNotNull(result);
@@ -575,9 +729,15 @@ public class TestTypeSafeCondExpression extends SQLListenerTestCase {
         em.clear();
     }
 
+    @AllowFailure
     public void testCOUNTAggregFunc() {
         String query = "SELECT COUNT(c.name) FROM CompUser c";
 
+        CriteriaQuery q = cb.create();
+        q = cb.create();
+        Root<CompUser> e = q.from(CompUser.class);
+        q.select(cb.count(e.get(CompUser_.name)));
+        assertEquivalence(q, query);
         List result = em.createQuery(query).getResultList();
 
         assertNotNull(result);
@@ -587,9 +747,15 @@ public class TestTypeSafeCondExpression extends SQLListenerTestCase {
         em.clear();
     }
 
+    @AllowFailure
     public void testMAXAggregFunc() {
         String query = "SELECT DISTINCT MAX(c.age) FROM CompUser c";
 
+        CriteriaQuery q = cb.create();
+        q = cb.create();
+        Root<CompUser> e = q.from(CompUser.class);
+        q.select(cb.max(e.get(CompUser_.age))).distinct(true);
+        assertEquivalence(q, query);
         List result = em.createQuery(query).getResultList();
 
         assertNotNull(result);
@@ -599,9 +765,15 @@ public class TestTypeSafeCondExpression extends SQLListenerTestCase {
         em.clear();
     }
 
+    @AllowFailure
     public void testMINAggregFunc() {
         String query = "SELECT DISTINCT MIN(c.age) FROM CompUser c";
 
+        CriteriaQuery q = cb.create();
+        q = cb.create();
+        Root<CompUser> e = q.from(CompUser.class);
+        q.select(cb.min(e.get(CompUser_.age))).distinct(true);
+        assertEquivalence(q, query);
         List result = em.createQuery(query).getResultList();
 
         assertNotNull(result);
@@ -611,9 +783,15 @@ public class TestTypeSafeCondExpression extends SQLListenerTestCase {
         em.clear();
     }
 
+    @AllowFailure
     public void testSUMAggregFunc() {
         String query = "SELECT SUM(c.age) FROM CompUser c";
 
+        CriteriaQuery q = cb.create();
+        q = cb.create();
+        Root<CompUser> e = q.from(CompUser.class);
+        q.select(cb.sum(e.get(CompUser_.age)));
+        assertEquivalence(q, query);
         List result = em.createQuery(query).getResultList();
 
         assertNotNull(result);
@@ -622,7 +800,6 @@ public class TestTypeSafeCondExpression extends SQLListenerTestCase {
 
         em.clear();
     }
-*/
 
     void startTx(EntityManager em) {
         em.getTransaction().begin();

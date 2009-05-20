@@ -692,7 +692,6 @@ public class TestTypesafeCriteria extends SQLListenerTestCase {
         assertEquivalence(q, jpql);
     }
     
-    @AllowFailure
     public void testOrdering4() {
         String jpql = "SELECT c FROM Customer c "
                 + "ORDER BY c.name DESC, c.status";
@@ -705,7 +704,6 @@ public class TestTypesafeCriteria extends SQLListenerTestCase {
         assertEquivalence(q, jpql);
     }
 
-    @AllowFailure
     public void testOrdering5() {
         String jpql = "SELECT c.firstName, c.lastName, c.balanceOwed " + 
             "FROM Customer c ORDER BY c.name DESC, c.status";

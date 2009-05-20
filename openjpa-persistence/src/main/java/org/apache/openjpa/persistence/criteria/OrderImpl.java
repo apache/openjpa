@@ -43,6 +43,10 @@ public class OrderImpl implements Order {
 	public <T extends Comparable<T>> Expression<T> getExpression() {
 		return (Expression<T>)e;
 	}
+	
+	public Expression getExpression5() {
+	    return e;
+	}
 
 	public boolean isAscending() {
 		return _ascending;

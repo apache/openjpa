@@ -238,8 +238,9 @@ public class CriteriaQueryImpl implements CriteriaQuery {
         for (int i = 0; i < ordercount; i++) {
             OrderImpl order = (OrderImpl)_orders.get(i);
             //Expression<? extends Comparable> expr = order.getExpression();
-            //exps.ordering[i] = Expressions.toValue(
-            //    (ExpressionImpl<?>)expr, factory, _model, this);
+            Expression expr = order.getExpression5();
+            exps.ordering[i] = Expressions.toValue(
+                (ExpressionImpl<?>)expr, factory, _model, this);
             
             //exps.orderingClauses[i] = assemble(firstChild);
             //exps.orderingAliases[i] = firstChild.text;
