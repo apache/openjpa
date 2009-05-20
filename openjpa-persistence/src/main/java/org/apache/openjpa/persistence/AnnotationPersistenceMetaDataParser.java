@@ -1542,8 +1542,18 @@ public class AnnotationPersistenceMetaDataParser
      */
     private void parseOrderBy(FieldMetaData fmd, OrderBy anno) {
         String dec = anno.value();
-        if (dec.length() == 0)
+        if (fmd.isElementCollection() &&
+            fmd.getElement().getEmbeddedMetaData() != null) {
+                if (dec.length() == 0 || dec.equals("ASC") ||
+                    dec.equals("DESC"))
+                    throw new MetaDataException(_loc.get(
+                        "invalid-orderBy", fmd)); 
+        }
+        if (dec.length() == 0 || dec.equals("ASC"))
             dec = Order.ELEMENT + " asc";
+        else if (dec.equals("DESC"))
+            dec = Order.ELEMENT + " desc";
+            
         fmd.setOrderDeclaration(dec);
     }
 

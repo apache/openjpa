@@ -249,6 +249,7 @@ public class TestAttrOverrides  extends SQLListenerTestCase {
             zipCode.setPlusFour("plusFour_" + id + "_" + i);
             addr.setZipcode(zipCode);
             p.addResidence(addr);
+            p.addNickName("nickName_ + " + i);
         }
         em.persist(p);
         return p;
@@ -270,6 +271,15 @@ public class TestAttrOverrides  extends SQLListenerTestCase {
             assertEquals(expZip, zip);
             assertEquals(expPlusFour, plusFour);
             i++;
+        }
+        
+        List<String> nickNames = p.getNickNames();
+        assertEquals(4, nickNames.size());
+        i = 4;
+        for (String s : nickNames) {
+            String expNickName = "nickName_ + " + i;
+            assertEquals(expNickName, s);
+            i--;
         }
    }
 }

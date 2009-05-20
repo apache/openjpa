@@ -72,6 +72,8 @@ import org.apache.openjpa.meta.ValueMetaData;
 import static org.apache.openjpa.persistence.MetaDataTag.*;
 import static org.apache.openjpa.persistence.PersistenceStrategy.*;
 import org.apache.openjpa.util.ImplHelper;
+import org.apache.openjpa.util.MetaDataException;
+
 import serp.util.Numbers;
 
 /**
@@ -1549,8 +1551,18 @@ public class XMLPersistenceMetaDataParser
         throws SAXException {
         FieldMetaData fmd = (FieldMetaData) currentElement();
         String dec = currentText();
-        if (StringUtils.isEmpty(dec))
+        if (fmd.isElementCollection() &&
+            fmd.getElement().getEmbeddedMetaData() != null) {
+            if (dec.length() == 0 || dec.equals("ASC") ||
+                dec.equals("DESC"))
+                throw new MetaDataException(_loc.get(
+                    "invalid-orderBy", fmd)); 
+        }
+        if (StringUtils.isEmpty(dec) || dec.equals("ASC"))
             dec = Order.ELEMENT + " asc";
+        else if (dec.equals("DESC"))
+            dec = Order.ELEMENT + " desc";
+        
         fmd.setOrderDeclaration(dec);
     }
 
