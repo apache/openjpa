@@ -140,11 +140,4 @@ public class Customer {
     public void setAccounts(List<Account> accounts) {
         this.accounts = accounts;
     }
-
-    
-    
-	
-	public Customer(long id, int status, int count) {
-		
-	}
 }

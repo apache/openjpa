@@ -25,7 +25,10 @@ import javax.persistence.criteria.Path;
 import javax.persistence.metamodel.AbstractCollection;
 import javax.persistence.metamodel.Attribute;
 import javax.persistence.metamodel.Bindable;
+import javax.persistence.metamodel.ManagedType;
 import javax.persistence.metamodel.Map;
+import javax.persistence.metamodel.Member;
+import javax.persistence.metamodel.Type;
 
 import org.apache.openjpa.kernel.exps.ExpressionFactory;
 import org.apache.openjpa.kernel.exps.Value;
@@ -34,37 +37,50 @@ import org.apache.openjpa.persistence.meta.Members;
 import org.apache.openjpa.persistence.meta.MetamodelImpl;
 
 /**
- * Path from another (parent) path.
+ * Path is an expression often representing a persistent member traversed
+ * from another (parent) path.
  * 
- * @author ppoddar
+ * @author Pinaki Poddar
  *
- * @param <X>
+ * @param <Z> the type of the parent path 
+ * @param <X> the type of this path
  */
-public class PathImpl<X> extends ExpressionImpl<X> implements Path<X> {
-    private PathImpl<?> _parent;
-    private Members.Member<?,X> member;
-    private boolean _isTypeExpr;
+public class PathImpl<Z,X> extends ExpressionImpl<X> implements Path<X> {
+    protected final PathImpl<?,Z> _parent;
+    protected final Members.Member<? super Z,?> _member;
     
     /**
-     * 
-     * @param cls
+     * Protected. use by root path which neither represent a member nor has a
+     * parent. 
      */
     protected PathImpl(Class<X> cls) {
         super(cls);
+        _parent = null;
+        _member = null;
     }
     
-    public <Z> PathImpl(Members.Member<Z, X> member) {
-        super(member.getMemberJavaType());
-        this.member = member;
-    }
-    
-    public <Z> PathImpl(PathImpl<Z> parent, 
-        Members.Member<? super Z, X> member) {
-        super(member.getMemberJavaType());
+    /**
+     * Create a path from the given parent representing the the given member.
+     */
+    public PathImpl(PathImpl<?,Z> parent, Members.Member<? super Z, ?> member, 
+        Class<X> cls) {
+        super(cls);
         _parent = parent;
-        this.member = member;
+        _member = member;
+        if (parent == null)
+            throw new NullPointerException("Null parent for member " + member);
+        if (member == null)
+            throw new NullPointerException("Null member for parent " + parent);
+        
     }
     
+    public PathImpl<?,Z> getParentPath() {
+        return _parent;
+    }
+    
+    /**
+     * Convert this path to a kernel path value.
+     */
     @Override
     public Value toValue(ExpressionFactory factory, MetamodelImpl model,
         CriteriaQuery q) {
@@ -73,61 +89,66 @@ public class PathImpl<X> extends ExpressionImpl<X> implements Path<X> {
             org.apache.openjpa.kernel.exps.Path path = 
                 (org.apache.openjpa.kernel.exps.Path)
                 _parent.toValue(factory, model, q);
-            path.get(member.fmd, false);
+            boolean allowNull = false;
+            path.get(_member.fmd, allowNull);
             var = path;
         } else {
             var = factory.newPath();//getJavaType());
             var.setMetaData(model.repos.getMetaData(getJavaType(), null, true));
         }
-        if (member != null) {
-            int typeCode = member.fmd.getDeclaredTypeCode();
+        if (_member != null) {
+            int typeCode = _member.fmd.getDeclaredTypeCode();
             if (typeCode != JavaTypes.COLLECTION && typeCode != JavaTypes.MAP)
                 var.setImplicitType(getJavaType());
         }
         var.setAlias(getAlias());
-        if (_isTypeExpr) 
-            var = factory.type(var);
         return var;
     }
 
     public <Y> Path<Y> get(Attribute<? super X, Y> attr) {
-        return new PathImpl(this, (Members.Member<? super X, Y>)attr);
+        return new PathImpl<X,Y>(this, (Members.Attribute<? super X, Y>)attr, 
+            attr.getJavaType());
+    }
+    
+    public <E, C extends java.util.Collection<E>> Expression<C>
+        get(AbstractCollection<X, C, E> coll) {
+        return new PathImpl<X,C>(this, 
+            (Members.BaseCollection<? super X, C, E>)coll, 
+            coll.getMemberJavaType());
     }
 
-    public Expression get(AbstractCollection collection) {
-        return new PathImpl(this, (Members.BaseCollection) collection);
+    public <K, V, M extends java.util.Map<K, V>> Expression<M> 
+        get(Map<X, K, V> map) {
+        return new PathImpl<X,M>(this, (Members.Map<? super X,K,V>)map, 
+            (Class<M>) map.getMemberJavaType());
     }
-
-    public Expression get(Map collection) {
-        // TODO Auto-generated method stub
-        throw new AbstractMethodError();
+    
+    public <Y> Path<Y> get(String attName) {
+        Members.Member<? super X, Y> next = null;
+        Type<?> type = _member.getType();
+        switch (type.getPersistenceType()) {
+        case BASIC:
+            throw new RuntimeException(attName + " not navigable from " + this);
+            default: next = (Members.Member<? super X, Y>)
+                ((ManagedType<?>)type).getAttribute(attName);
+        }
+        return new PathImpl<X,Y>(this, next, (Class<Y>)type.getClass());
     }
-
-    public Path get(String attName) {
-        // TODO Auto-generated method stub
-        throw new AbstractMethodError();
-    }
+    
+    
+    
+    /**
+     * Gets the bindable object that corresponds to this path.
+     */
   //TODO: what does this return for a collection key, value? null?
     public Bindable<X> getModel() { 
-        // TODO Auto-generated method stub
-        throw new AbstractMethodError();
+        return (Bindable<X>)_member.getType();
     }
     
-    public Path<?> getParentPath() {
-        return _parent;
-    }
-
+    /**
+     * Get the type() expression corresponding to this path. 
+     */
     public Expression<Class<? extends X>> type() {
-        PathImpl<X> path = new PathImpl(getJavaType());
-        path.setTypeExpr(true);
-        return (Expression<Class<? extends X>>) path;
-    }
-
-    public void setTypeExpr(boolean isTypeExpr) {
-        _isTypeExpr = isTypeExpr;
-    }
-    
-    public boolean isTypeExpr() {
-        return _isTypeExpr;
+        return new Expressions.Type<X>(this);
     }
 }

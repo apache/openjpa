@@ -1536,7 +1536,7 @@ public class EntityManagerImpl
     }
 
     public QueryBuilder getQueryBuilder() {
-        return null;
+        return _emf.getQueryBuilder();
     }
 
     public Set<String> getSupportedProperties() {

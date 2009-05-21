@@ -24,7 +24,6 @@ import java.util.List;
 import javax.persistence.Query;
 
 import org.apache.openjpa.persistence.OpenJPAEntityManager;
-import org.apache.openjpa.persistence.OpenJPAEntityManagerFactory;
 import org.apache.openjpa.persistence.query.DomainObject;
 import org.apache.openjpa.persistence.query.Expression;
 import org.apache.openjpa.persistence.query.OpenJPAQueryBuilder;
@@ -54,12 +53,10 @@ import org.apache.openjpa.persistence.test.SingleEMFTestCase;
  */
 public class TestCriteria extends SingleEMFTestCase {
 	protected OpenJPAQueryBuilder qb; 
-	private static OpenJPAEntityManagerFactory emf = null;
 	protected StringComparison comparator = new StringComparison();
 	
 	public void setUp() {
-		if (emf == null) {
-		    super.setUp(DROP_TABLES,
+		    super.setUp(CLEAR_TABLES,
 		    	Account.class,
 				Address.class, 
 				Contact.class,
@@ -81,8 +78,6 @@ public class TestCriteria extends SingleEMFTestCase {
 				Student.class, 
 				Transaction.class,
 				VideoStore.class);
-			emf = super.emf;
-		} 
 		qb = (QueryBuilderImpl)emf.getDynamicQueryBuilder();
 		emf.createEntityManager();
 	}

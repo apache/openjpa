@@ -19,6 +19,8 @@
 
 package org.apache.openjpa.persistence.meta;
 
+import java.lang.reflect.Field;
+
 import javax.persistence.metamodel.AbstractCollection;
 import javax.persistence.metamodel.ManagedType;
 import javax.persistence.metamodel.Type;
@@ -56,14 +58,18 @@ public class Members {
         }
 
         public final ManagedType<X> getDeclaringType() {
-            return owner.model.type((Class<X>) fmd.getDeclaringType());
+            return (ManagedType<X>)owner.model.getType(fmd.getDeclaringType());
+        }
+        
+        public Type<?> getType() {
+            return owner.model.getType(fmd.getDeclaredType());
         }
 
         public final java.lang.reflect.Member getJavaMember() {
             return fmd.getBackingMember();
         }
 
-        public final Class<Y> getMemberJavaType() {
+        public Class<Y> getMemberJavaType() {
             return (Class<Y>) fmd.getDeclaredType();
         }
 
@@ -79,9 +85,9 @@ public class Members {
             return fmd.getDeclaredTypeCode() == JavaTypes.COLLECTION
                 || fmd.getDeclaredTypeCode() == JavaTypes.MAP;
         }
-
+        
         public String toString() {
-            return fmd.getName();
+            return fmd.getName() + ":" + getType();
         }
     }
 
@@ -126,6 +132,10 @@ public class Members {
         public Class<T> getJavaType() {
             return super.getMemberJavaType();
         }
+        
+        public void validateMeta(Field f) {
+            
+        }
     }
 
     /**
@@ -151,8 +161,8 @@ public class Members {
             return BindableType.COLLECTION;
         }
 
-        public final Class<E> getJavaType() {
-            return fmd.getElement().getDeclaredType();
+        public Class<E> getJavaType() {
+            return fmd.getDeclaredType();
         }
     }
 

@@ -39,7 +39,7 @@ import org.apache.openjpa.jdbc.sql.DBDictionary;
 import org.apache.openjpa.persistence.test.AllowFailure;
 import org.apache.openjpa.persistence.test.SQLListenerTestCase;
 
-public class TestMetaModelTypesafeCriteria extends SQLListenerTestCase {
+public class TestMetaModelTypesafeCriteria extends CriteriaTest {
     protected Entity<Account> account_ = null; 
     protected Embeddable<Address> address_ = null; 
     protected Embeddable<Contact> contact_ = null; 
@@ -66,34 +66,11 @@ public class TestMetaModelTypesafeCriteria extends SQLListenerTestCase {
     EntityManager em;
     
          
-        public void setUp() {
-             super.setUp(DROP_TABLES,
-                    Account.class,
-                    Address.class, 
-                    Contact.class,
-                    Contractor.class, 
-                    Course.class, 
-                    CreditCard.class, 
-                    Customer.class, 
-                    Department.class, 
-                    Employee.class, 
-                    Exempt.class,
-                    FrequentFlierPlan.class,
-                    Item.class,
-                    LineItem.class,
-                    Manager.class, 
-                    Movie.class,
-                    Person.class, 
-                    Product.class,
-                    Order.class, 
-                    Phone.class,
-                    Photo.class,
-                    Semester.class,
-                    Student.class, 
-                    TransactionHistory.class,
-                    VideoStore.class);
+    public void setUp() {
+             super.setUp((Object[])null); // super will initialize domain
             
             setDictionary();
+            
             cb = (CriteriaBuilder)emf.getQueryBuilder();
             em = emf.createEntityManager();
             Metamodel mm = em.getMetamodel();

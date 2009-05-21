@@ -86,6 +86,7 @@ public class CriteriaBuilder implements QueryBuilder, ExpressionParser {
 
     public void populate(Object parsed, ExpressionStoreQuery query) {
         CriteriaQueryImpl c = (CriteriaQueryImpl) parsed;
+        query.invalidateCompilation();
         query.getContext().setCandidateType(c.getRoot().getJavaType(), true);
         query.setQuery(parsed);
     }

@@ -19,27 +19,60 @@
 
 package org.apache.openjpa.persistence.criteria;
 
+import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Root;
 import javax.persistence.metamodel.Entity;
 
+import org.apache.openjpa.kernel.exps.ExpressionFactory;
+import org.apache.openjpa.kernel.exps.Value;
 import org.apache.openjpa.persistence.criteria.FromImpl;
+import org.apache.openjpa.persistence.meta.MetamodelImpl;
+import org.apache.openjpa.persistence.meta.Types;
 
 /**
- * A path from itself.
+ * A path without a parent.
  * 
  * @author Pinaki Poddar
  *
  * @param <X>
  */
 public class RootImpl<X> extends FromImpl<X,X> implements Root<X> {
-	private final Entity<X> _entity;
+	private final Types.Entity<X> _entity;
 	
-    public RootImpl(Entity<X> type) {
+    public RootImpl(Types.Entity<X> type) {
         super(type);
         _entity = type;
     }
     
     public  Entity<X> getModel() {
         return _entity;
+    }
+    
+    /**
+     * Convert this path to a kernel path value.
+     */
+    @Override
+    public Value toValue(ExpressionFactory factory, MetamodelImpl model, 
+        CriteriaQuery c) {
+        Value var = factory.newPath();
+        var.setMetaData(_entity.meta);
+        return var;
+    }
+    
+    /**
+     * Convert this path to a kernel expression.
+     * 
+     */
+    @Override
+    public org.apache.openjpa.kernel.exps.Expression toKernelExpression(
+        ExpressionFactory factory, MetamodelImpl model, CriteriaQuery c) {
+        org.apache.openjpa.kernel.exps.Value path = toValue(factory, model, c);
+        
+        Value var = factory.newBoundVariable(getAlias(), 
+            _entity.meta.getDescribedType());
+        org.apache.openjpa.kernel.exps.Expression exp = 
+            factory.bindVariable(var, path);
+        
+        return exp;
     }
 }

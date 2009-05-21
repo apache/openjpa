@@ -22,6 +22,7 @@ package org.apache.openjpa.persistence.meta;
 import javax.persistence.Access;
 import javax.persistence.AccessType;
 import javax.persistence.Entity;
+import javax.persistence.OneToOne;
 import javax.persistence.Transient;
 
 /**
@@ -38,7 +39,9 @@ public class ExplicitFieldAccess {
 	private long f1;
 	private int  f2;
 	@Transient private short f3;
+	@OneToOne
 	private ImplicitFieldAccessBase f4;
+	@OneToOne
 	private ImplicitFieldAccessBase f5;
 	private transient ImplicitFieldAccessBase f6;
 	

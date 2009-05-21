@@ -33,23 +33,27 @@ public class ReportingSQLException extends SQLException {
 
     private final transient Statement _stmnt;
     private final SQLException _sqle;
-
+    private final String       _sql;
+    
+    /**
+     * Supply original exception and non-null Statement and/or SQL string.
+     */
     public ReportingSQLException(SQLException sqle, Statement stmnt,
         String sql) {
         super(getExceptionMessage(sqle, stmnt, sql));
         this._sqle = sqle;
         this._stmnt = stmnt;
+        this._sql = sql;
         setNextException(sqle);
     }
 
-    public ReportingSQLException(SQLException sqle, String sql) {
-        this(sqle, null, sql);
+    /**
+     * Gets the SQL string if available.
+     */
+    public String getSQL() {
+        return _sql;
     }
-
-    public ReportingSQLException(SQLException sqle, Statement stmnt) {
-        this(sqle, stmnt, null);
-    }
-
+    
     /**
      * Returns the SQL state of the underlying {@link SQLException}.
      */

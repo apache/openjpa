@@ -35,8 +35,6 @@ import javax.persistence.metamodel.Type.PersistenceType;
 
 import org.apache.openjpa.meta.ClassMetaData;
 import org.apache.openjpa.meta.MetaDataRepository;
-import org.apache.openjpa.persistence.criteria.Account;
-import org.apache.openjpa.persistence.criteria.Account_;
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
 
 /**
@@ -46,12 +44,11 @@ import org.apache.openjpa.persistence.test.SingleEMFTestCase;
  *
  */
 public class TestMetamodel extends SingleEMFTestCase {
-    MetamodelImpl model;
-    MetaDataRepository repos;
+    private static MetamodelImpl model;
     
     public void setUp() {
+        if (model == null) {
     	super.setUp(
-    	        Account.class,
     			ImplicitFieldAccessMappedSuperclass.class,
     	        ImplicitFieldAccessBase.class, 
     	        ImplicitFieldAccessSubclass.class,
@@ -60,32 +57,38 @@ public class TestMetamodel extends SingleEMFTestCase {
     	        Embed0.class, 
     	        Embed1.class);
     	emf.createEntityManager();
-    	repos = emf.getConfiguration().getMetaDataRepositoryInstance();
         model = (MetamodelImpl)emf.getMetamodel();
+        }
     }
     
-    public void testModelIsInstantiated() {
+    public void testMetaModelForDomainClassesExist() {
         assertFalse(model.getEntities().isEmpty());
         assertFalse(model.getEmbeddables().isEmpty());
         assertFalse(model.getManagedTypes().isEmpty());
     }
     
-    public void testModelIsPopulated() {
-        Entity<Account> m = model.entity(Account.class);
+    public void testMetaClassFieldsArePopulated() {
+        Entity<ImplicitFieldAccessSubclass> m = 
+            model.entity(ImplicitFieldAccessSubclass.class);
         Class<?> mCls = m.getJavaType();
         assertNotNull(m);
-        Class<?> m2Cls = repos.getMetaModel(mCls, true);
+        assertSame(ImplicitFieldAccessSubclass.class, mCls);
+        
+        Class<?> m2Cls = model.repos.getMetaModel(mCls, true);
         assertNotNull(m2Cls);
         try {
-            Field f2 = getStaticField(m2Cls, "balance");
+            Field f2 = getStaticField(m2Cls, "base");
             assertNotNull(f2);
+            Object value = f2.get(null);
+            assertNotNull(value);
+            assertTrue(Attribute.class.isAssignableFrom(value.getClass()));
         } catch (Throwable t) {
             t.printStackTrace();
             fail();
         }
     }
     
-    public void testPersistentCategory() {
+    public void testDomainClassAreCategorizedInPersistentCategory() {
     	assertCategory(PersistenceType.MAPPED_SUPERCLASS, 
     			ImplicitFieldAccessMappedSuperclass.class);
     	assertCategory(PersistenceType.ENTITY, ImplicitFieldAccessBase.class);
@@ -106,7 +109,7 @@ public class TestMetamodel extends SingleEMFTestCase {
         		model.type(ImplicitFieldAccessMappedSuperclass.class)));
     }
     
-    public void testAttributeByNameAndType() {
+    public void testGetAttributeByNameAndTypeFromMetaClass() {
         ManagedType<ImplicitFieldAccessBase> e0 = model.entity(
         		ImplicitFieldAccessBase.class);
         assertNotNull(e0.getAttribute("f0"));
@@ -188,11 +191,10 @@ public class TestMetamodel extends SingleEMFTestCase {
     public void testDeclaredFields() {
         ManagedType<ImplicitFieldAccessSubclass> e1 = 
         	model.entity(ImplicitFieldAccessSubclass.class);
-        java.util.Set all = e1.getAttributes();
-        java.util.Set decl = e1.getDeclaredAttributes();
-        assertTrue(all.size() > decl.size());
-        all.removeAll(decl);
-        System.err.println(all);
+        java.util.Set<?> all = e1.getAttributes();
+        java.util.Set<?> decl = e1.getDeclaredAttributes();
+        assertTrue("All fields " + all + "\r\nDeclared fields " + decl + "\r\n"+
+         "expecetd not all fields as declared", all.size() > decl.size());
     }
     
     public void testNonExistentField() {
@@ -205,32 +207,31 @@ public class TestMetamodel extends SingleEMFTestCase {
         
     }
     
-    void assertFails(ManagedType type, String name, boolean dec) {
+    void assertFails(ManagedType<?> type, String name, boolean dec) {
         try {
-            Attribute a = dec ? type.getDeclaredAttribute(name) 
+            Attribute<?,?> a = dec ? type.getDeclaredAttribute(name) 
                 : type.getAttribute(name);
             fail("Expected to fail " + name + " on " + type);
         } catch (IllegalArgumentException e) {
-            System.err.println(e);
+            System.err.println("Expeceted:" + e);
         }
     }
     
     
     PersistenceType categorize(Class<?> c) {
-        ClassMetaData meta = model.repos.getCachedMetaData(c);
+        Types.Managed<?> type = (Types.Managed<?>)model.getType(c);
+        ClassMetaData meta = type.meta;
         return MetamodelImpl.getPersistenceType(meta);
     }
     
     void assertCategory(PersistenceType category, Class<?> cls) {
-    	assertEquals(category, categorize(cls));
+    	assertEquals(cls.toString(), category, categorize(cls));
     }
     
     Field getStaticField(Class<?> cls, String name) {
         try {
-            System.err.println("Fields of " + cls);
             Field[] fds = cls.getDeclaredFields();
             for (Field f : fds) {
-                System.err.println(f);
                 int mods = f.getModifiers();
                 if (f.getName().equals(name) && Modifier.isStatic(mods))
                     return f;

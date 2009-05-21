@@ -19,8 +19,10 @@
 
 package org.apache.openjpa.persistence.meta;
 
+import java.lang.reflect.Field;
 import java.math.BigDecimal;
 import java.math.BigInteger;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
@@ -167,6 +169,7 @@ public class Types {
                 case JavaTypes.OBJECT:
                     attrs.put(f, new Members.Attribute(this, f));
                     break;
+                case JavaTypes.ARRAY:
                 case JavaTypes.COLLECTION:
                     switch (model.getCollectionType(f.getDeclaredType())) {
                     case COLLECTION:
@@ -178,10 +181,15 @@ public class Types {
                     case SET:
                         colls.put(f, new Members.Set(this, f));
                         break;
-                    case MAP:
-                        colls.put(f, new Members.Map(this, f));
-                        break;
                     }
+                    break;
+                 case JavaTypes.MAP:
+                     colls.put(f, new Members.Map(this, f));
+                     break;
+                 default:
+                     throw new IllegalStateException(_loc.get(
+                     "field-unrecognized", f.getFullName(false), decCode)
+                     .getMessage());
                 }
                 // TODO: Account for the following codes
                 // case ARRAY = 11;
@@ -192,13 +200,24 @@ public class Types {
             }
         }
         
+        public Member<? super X,?> getMember(Field field) {
+            return getMember(field.getName());
+        }
+        
         public Member<? super X,?> getMember(String name) {
-        	FieldMetaData fmd = meta.getField(name);
-        	if (attrs.containsKey(fmd))
-        		return attrs.get(fmd);
-        	if (colls.containsKey(fmd))
-        		return colls.get(fmd);
-        	return null;
+            FieldMetaData fmd = meta.getField(name);
+            if (fmd == null) {
+                throw new IllegalArgumentException(_loc.get("field-missing", 
+                    name, meta.getDescribedType(), 
+                    Arrays.toString(meta.getFieldNames())).getMessage());
+            }
+            if (attrs.containsKey(fmd))
+                return attrs.get(fmd);
+            if (colls.containsKey(fmd))
+                return colls.get(fmd);
+            throw new IllegalArgumentException(_loc.get("field-missing", 
+            name, meta.getDescribedType(), 
+            Arrays.toString(meta.getFieldNames())).getMessage());        
         }
 
         public <Y> Attribute<? super X, Y> getAttribute(String name,
@@ -374,12 +393,12 @@ public class Types {
             if (fmd == null) {
                 if (decl && meta.getField(name) != null) {
                     throw new IllegalArgumentException(_loc.get(
-                        "field-not-decl", name, cls)
-                        .getMessage());
+                        "field-not-decl", name, cls,
+                        meta.getField(name).getDeclaringType()).getMessage());
                 } else {
                     throw new IllegalArgumentException(_loc.get(
-                        "field-missing", name, meta.getDescribedType())
-                        .getMessage());
+                        "field-missing", name, meta.getDescribedType(),
+                        Arrays.toString(meta.getFieldNames())).getMessage());
                 }
             }
             assertType("field-type-mismatch", fmd, fmd.getDeclaredType(), type);

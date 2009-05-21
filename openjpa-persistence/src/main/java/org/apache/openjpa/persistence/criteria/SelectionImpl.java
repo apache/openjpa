@@ -45,7 +45,7 @@ public class SelectionImpl<X> extends ResultItemImpl<X>
         super(cls);
     }
     
-    public SelectionImpl setSelections(Selection<?>... selections) {
+    public SelectionImpl<X> setSelections(Selection<?>... selections) {
         _sels = Arrays.asList(selections);
         return this;
     }

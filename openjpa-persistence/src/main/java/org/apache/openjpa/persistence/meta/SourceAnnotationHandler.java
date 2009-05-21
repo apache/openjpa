@@ -538,9 +538,9 @@ public class SourceAnnotationHandler
     String getDeclaredTypeName(TypeMirror mirror, boolean box) {
     	if (mirror.getKind() == TypeKind.ARRAY) {
     		TypeMirror comp = ((ArrayType)mirror).getComponentType();
-    		return getDeclaredTypeName(comp, false)+"[]";
+    		return getDeclaredTypeName(comp, false);
     	}
-    	mirror = box? box(mirror) : mirror;
+    	mirror = box ? box(mirror) : mirror;
     	if (isPrimitive(mirror))
     		return ((PrimitiveType)mirror).toString();
         return processingEnv.getTypeUtils().asElement(mirror).toString();
@@ -597,6 +597,8 @@ public class SourceAnnotationHandler
      *         indexed parameter type argument. Otherwise null.
      */
     TypeMirror getTypeParameter(TypeMirror mirror, int index) {
+        if (mirror.getKind() == TypeKind.ARRAY)
+            return ((ArrayType)mirror).getComponentType();
     	if (mirror.getKind() != TypeKind.DECLARED)
     		return null;
         List<? extends TypeMirror> params = ((DeclaredType)mirror)

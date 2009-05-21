@@ -233,7 +233,7 @@ public class LoggingConnectionDecorator implements ConnectionDecorator {
     private SQLException wrap(SQLException sqle, Statement stmnt) {
         if (sqle instanceof ReportingSQLException)
             return (ReportingSQLException) sqle;
-        return new ReportingSQLException(sqle, stmnt);
+        return new ReportingSQLException(sqle, stmnt, null);
     }
 
     /**
@@ -242,7 +242,13 @@ public class LoggingConnectionDecorator implements ConnectionDecorator {
     private SQLException wrap(SQLException sqle, String sql) {
         if (sqle instanceof ReportingSQLException)
             return (ReportingSQLException) sqle;
-        return new ReportingSQLException(sqle, sql);
+        return new ReportingSQLException(sqle, null, sql);
+    }
+    
+    private SQLException wrap(SQLException sqle, Statement stmnt, String sql) {
+        if (sqle instanceof ReportingSQLException)
+            return (ReportingSQLException) sqle;
+        return new ReportingSQLException(sqle, stmnt, sql);
     }
 
     /**
@@ -936,7 +942,7 @@ public class LoggingConnectionDecorator implements ConnectionDecorator {
                 try {
                     return super.executeQuery(sql, wrap);
                 } catch (SQLException se) {               	
-                    err = wrap(se, LoggingStatement.this);
+                    err = wrap(se, LoggingStatement.this, sql);
                     throw err;
                 } finally {
                     logTime(start);
@@ -952,7 +958,7 @@ public class LoggingConnectionDecorator implements ConnectionDecorator {
                 try {
                     return super.executeUpdate(sql);
                 } catch (SQLException se) {                	
-                    err = wrap(se, LoggingStatement.this);
+                    err = wrap(se, LoggingStatement.this, sql);
                     throw err;
                 } finally {
                     logTime(start);
@@ -968,7 +974,7 @@ public class LoggingConnectionDecorator implements ConnectionDecorator {
                 try {
                     return super.execute(sql);
                 } catch (SQLException se) {
-                    err = wrap(se, LoggingStatement.this);
+                    err = wrap(se, LoggingStatement.this, sql);
                     throw err;
                 } finally {
                     logTime(start);
@@ -1013,7 +1019,7 @@ public class LoggingConnectionDecorator implements ConnectionDecorator {
                 try {
                     return super.executeQuery(sql, wrap);
                 } catch (SQLException se) {
-                    err = wrap(se, LoggingPreparedStatement.this);
+                    err = wrap(se, LoggingPreparedStatement.this, sql);
                     throw err;
                 } finally {
                     logTime(start);
@@ -1029,7 +1035,7 @@ public class LoggingConnectionDecorator implements ConnectionDecorator {
                 try {
                     return super.executeUpdate(sql);
                 } catch (SQLException se) {
-                    err =  wrap(se, LoggingPreparedStatement.this);
+                    err =  wrap(se, LoggingPreparedStatement.this, sql);
                     throw err;
                 } finally {
                     logTime(start);
@@ -1045,7 +1051,7 @@ public class LoggingConnectionDecorator implements ConnectionDecorator {
                 try {
                     return super.execute(sql);
                 } catch (SQLException se) {
-                    err = wrap(se, LoggingPreparedStatement.this);
+                    err = wrap(se, LoggingPreparedStatement.this, sql);
                     throw err;
                 } finally {
                     logTime(start);
@@ -1061,7 +1067,7 @@ public class LoggingConnectionDecorator implements ConnectionDecorator {
                 try {
                     return super.executeQuery(wrap);
                 } catch (SQLException se) {
-                    err = wrap(se, LoggingPreparedStatement.this);
+                    err = wrap(se, LoggingPreparedStatement.this, _sql);
                     throw err;
                 } finally {
                     logTime(start);
@@ -1596,7 +1602,7 @@ public class LoggingConnectionDecorator implements ConnectionDecorator {
                 try {
                     return super.executeQuery(sql, wrap);
                 } catch (SQLException se) {
-                    err = wrap(se, LoggingCallableStatement.this);
+                    err = wrap(se, LoggingCallableStatement.this, sql);
                     throw err;
                 } finally {
                     logTime(start);
@@ -1612,7 +1618,7 @@ public class LoggingConnectionDecorator implements ConnectionDecorator {
                 try {
                     return super.executeUpdate(sql);
                 } catch (SQLException se) {
-                    err = wrap(se, LoggingCallableStatement.this);
+                    err = wrap(se, LoggingCallableStatement.this, sql);
                     throw err;
                 } finally {
                     logTime(start);
@@ -1628,7 +1634,7 @@ public class LoggingConnectionDecorator implements ConnectionDecorator {
                 try {
                     return super.execute(sql);
                 } catch (SQLException se) {
-                    err = wrap(se, LoggingCallableStatement.this);
+                    err = wrap(se, LoggingCallableStatement.this, sql);
                     throw err;
                 } finally {
                     logTime(start);

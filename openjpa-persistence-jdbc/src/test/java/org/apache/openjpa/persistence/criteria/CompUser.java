@@ -38,7 +38,7 @@ public class CompUser
 	@Column(name="compName", length=50)
 	private String computerName;
 
-	@PersistentCollection
+	@PersistentCollection(fetch=FetchType.EAGER)
 	private String[] nicknames = new String[0];
 
 	@OneToOne(cascade={CascadeType.PERSIST, CascadeType.REMOVE})

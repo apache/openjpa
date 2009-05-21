@@ -621,7 +621,7 @@ public class QueryImpl
     protected Compilation compilationFromCache() {
         Map compCache =
             _broker.getConfiguration().getQueryCompilationCacheInstance();
-        if (compCache == null) {
+        if (compCache == null || getQueryString() == null) {
             return newCompilation();
         } else {
             CompilationKey key = new CompilationKey();

@@ -20,6 +20,7 @@ package org.apache.openjpa.persistence.criteria;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
@@ -27,6 +28,7 @@ import java.util.Set;
 import javax.persistence.Parameter;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Expression;
+import javax.persistence.criteria.Join;
 import javax.persistence.criteria.Order;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
@@ -42,14 +44,21 @@ import org.apache.openjpa.kernel.exps.QueryExpressions;
 import org.apache.openjpa.kernel.exps.Value;
 import org.apache.openjpa.meta.ClassMetaData;
 import org.apache.openjpa.meta.FieldMetaData;
+import org.apache.openjpa.persistence.meta.Members;
 import org.apache.openjpa.persistence.meta.MetamodelImpl;
 import org.apache.openjpa.persistence.meta.Types;
 
 /**
  * Criteria query implementation.
  * 
+ * Collects clauses of criteria query (e.g. select projections, from/join, 
+ * where conditions, order by).
+ * Eventually translates these clauses to a similar form of Expression tree
+ * that can be interpreted and executed against a data store by OpenJPA kernel.
+ *   
  * @author Pinaki Poddar
  *
+ * @since 2.0.0
  */
 public class CriteriaQueryImpl implements CriteriaQuery {
     private final MetamodelImpl  _model;
@@ -129,7 +138,7 @@ public class CriteriaQueryImpl implements CriteriaQuery {
     }
 
     public <X> Root<X> from(Entity<X> entity) {
-        Root<X> root = new RootImpl<X>(entity);
+        Root<X> root = new RootImpl<X>((Types.Entity<X>)entity);
         if (_roots == null) {
             _roots = new LinkedHashSet<Root<?>>();
         }
@@ -158,8 +167,7 @@ public class CriteriaQueryImpl implements CriteriaQuery {
     }
     
     public Root<?> getRoot() {
-        if (_roots == null || _roots.isEmpty())
-            throw new IllegalStateException("no root is set");
+        assertRoot();
         return _roots.iterator().next();
     }
 
@@ -189,26 +197,19 @@ public class CriteriaQueryImpl implements CriteriaQuery {
     }
 
     /**
-     * Populate kernel expressions.
+     * Populate a kernel expression tree by translating the components of this
+     * receiver with the help of the given {@link ExpressionFactory}.
      */
     QueryExpressions getQueryExpressions(ExpressionFactory factory) {
 	    QueryExpressions exps = new QueryExpressions();
 	    
-	    if (_roots != null) {
-	    	exps.accessPath = new ClassMetaData[_roots.size()];
-	    	int i = 0;
-	    	for (Root<?> r : _roots)
-	    	   exps.accessPath[i++] = ((Types.Managed<?>)r.getModel()).meta;
-	    }
-	//    exps.alias = null;      // String   
-        exps.distinct = _distinct == null ? QueryExpressions.DISTINCT_FALSE :
-            _distinct ?
-            QueryExpressions.DISTINCT_TRUE | QueryExpressions.DISTINCT_AUTO : 
-            QueryExpressions.DISTINCT_FALSE;
-    //    exps.fetchInnerPaths = null; // String[]
-	//    exps.fetchPaths = null;      // String[]
-	    exps.filter = _where == null ? factory.emptyExpression() 
-	    		: _where.toKernelExpression(factory, _model, this);
+	    evalAccessPaths(exps, factory);
+//    exps.alias = null;      // String   
+	    exps.ascending = new boolean[]{false};
+	    evalDistinct(exps, factory);
+	    evalFetchJoin(exps, factory);
+	    
+	    evalFilter(exps, factory);
 	    
 	    evalGrouping(exps, factory);
 	    exps.having = _having == null ? factory.emptyExpression() 
@@ -217,8 +218,13 @@ public class CriteriaQueryImpl implements CriteriaQuery {
 	    evalOrdering(exps, factory);
 	//    exps.operation = QueryOperations.OP_SELECT;
 	    
+
+	//    exps.parameterTypes = null; // LinkedMap<>
+	      evalProjections(exps, factory);
+
 	    evalProjection(exps, factory);
 	    
+
 	//    exps.range = null; // Value[]
 	//    exps.resultClass = null; // Class
 	    if (_parameterTypes != null)
@@ -227,6 +233,15 @@ public class CriteriaQueryImpl implements CriteriaQuery {
 	    return exps;
     }
 
+    void evalAccessPaths(QueryExpressions exps, ExpressionFactory factory) {
+        if (_roots != null) {
+            exps.accessPath = new ClassMetaData[_roots.size()];
+            int i = 0;
+            for (Root<?> r : _roots)
+               exps.accessPath[i++] = ((Types.Managed<?>)r.getModel()).meta;
+        }
+    }
+    
     void evalOrdering(QueryExpressions exps, ExpressionFactory factory) {
         if (_orders == null) 
             return;
@@ -249,18 +264,71 @@ public class CriteriaQueryImpl implements CriteriaQuery {
     }
     
     void evalGrouping(QueryExpressions exps, ExpressionFactory factory) {
+        //    exps.grouping = null; // Value[]
+        //    exps.groupingClauses = null; // String[]
         if (_groups == null) 
             return;
         int groupByCount = _groups.size();
         exps.grouping = new Value[groupByCount];
-
         for (int i = 0; i < groupByCount; i++) {
              Expression<?> groupBy = _groups.get(i);    
              exps.grouping[i] = Expressions.toValue(
                  (ExpressionImpl<?>)groupBy, factory, _model, this);;
         }
     }
+    
+    void evalProjections(QueryExpressions exps, ExpressionFactory factory) {
+        // TODO: fill in projection aliases and clauses
+        //    exps.projectionAliases = null; // String[]
+        //    exps.projectionClauses = null; // String[]
+    	if (isDefaultProjection()) {
+    	    exps.projections = new Value[0];
+    	    return ;
+    	}
+    	exps.projections = new Value[_selections.size()];
+    	int i = 0;
+    	for (Selection<?> s : _selections) {
+    	    exps.projections[i++] = ((ExpressionImpl<?>)s)
+    	       .toValue(factory, _model, this);
+    	}
+    	return;
+    }
+    
+    boolean isDefaultProjection() {
+        return _selections == null 
+           || (_selections.size() == 1 && _selections.get(0) == getRoot());
+    }
+    
+    void evalDistinct(QueryExpressions exps, ExpressionFactory factory) {
+        if (_distinct == null) {
+            exps.distinct = QueryExpressions.DISTINCT_FALSE;
+        } else if (_distinct) {
+            exps.distinct = QueryExpressions.DISTINCT_TRUE 
+                          | QueryExpressions.DISTINCT_AUTO;
+        }
+        exps.distinct &= ~QueryExpressions.DISTINCT_AUTO;
+    }
 
+    void evalFilter(QueryExpressions exps, ExpressionFactory factory) {
+        assertRoot();
+        org.apache.openjpa.kernel.exps.Expression filter = null;
+        for (Root<?> root : _roots) {
+            if (root.getJoins() != null) {
+                for (Join<?, ?> join : root.getJoins()) {
+                    filter = and(factory, ((ExpressionImpl<?>)join)
+                        .toKernelExpression(factory, _model, this), filter);
+                }
+            }
+        }
+        if (_where != null) {
+            filter = and(factory, _where.toKernelExpression
+                         (factory, _model, this), filter);
+        }
+        if (filter == null) 
+            filter = factory.emptyExpression();
+        exps.filter = filter;
+    }
+    
     void evalProjection(QueryExpressions exps, ExpressionFactory factory) {
         Value [] projs = toValues(exps, factory, getSelectionList());
         if (projs.length == 1 && projs[0] == null)
@@ -286,6 +354,23 @@ public class CriteriaQueryImpl implements CriteriaQuery {
         exps.projectionAliases = aliases;
     	
     	return result;
+    }
+    
+    void evalFetchJoin(QueryExpressions exps, ExpressionFactory factory) {
+    //    exps.fetchInnerPaths = null; // String[]
+    //    exps.fetchPaths = null;      // String[]
+    }
+
+
+    org.apache.openjpa.kernel.exps.Expression and(ExpressionFactory factory,
+            org.apache.openjpa.kernel.exps.Expression e1, 
+            org.apache.openjpa.kernel.exps.Expression e2) {
+        return e1 == null ? e2 : e2 == null ? e1 : factory.and(e1, e2);
+    }
+    
+    void assertRoot() {
+        if (_roots == null || _roots.isEmpty())
+            throw new IllegalStateException("no root is set");
     }
 
     void setImplicitTypes(Value val1, Value val2, Class<?> expected) {
@@ -353,4 +438,5 @@ public class CriteriaQueryImpl implements CriteriaQuery {
         return "jpqlalias" + (++_aliasCount);
     }
     
+
 }

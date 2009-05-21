@@ -12,5 +12,5 @@ public class Account_ {
     public static volatile Attribute<Account,Long> id;
     public static volatile Attribute<Account,Integer> loan;
     public static volatile Attribute<Account,String> name;
-    public static volatile Attribute<Account,String> owner;
+    public static volatile Attribute<Account,Person> owner;
 }

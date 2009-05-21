@@ -21,6 +21,8 @@ package org.apache.openjpa.persistence.criteria;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.ManyToOne;
+import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
 /**
@@ -38,18 +40,21 @@ public class Account {
 
     private int balance;
     private Integer loan;
-    private String owner;
+    
+    @OneToOne
+    private Person owner;
+    
     private String name;
 
     public long getId() {
         return id;
     }
 
-    public String getOwner() {
+    public Person getOwner() {
         return owner;
     }
 
-    public void setOwner(String owner) {
+    public void setOwner(Person owner) {
         this.owner = owner;
     }
 

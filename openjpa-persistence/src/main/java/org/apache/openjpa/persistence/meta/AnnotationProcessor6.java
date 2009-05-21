@@ -25,9 +25,11 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import javax.annotation.Generated;
@@ -39,6 +41,7 @@ import javax.annotation.processing.SupportedOptions;
 import javax.annotation.processing.SupportedSourceVersion;
 import javax.lang.model.element.Element;
 import javax.lang.model.element.TypeElement;
+import javax.lang.model.type.TypeKind;
 import javax.lang.model.type.TypeMirror;
 import javax.lang.model.util.Elements;
 import javax.persistence.metamodel.TypesafeMetamodel;
@@ -151,7 +154,10 @@ public class AnnotationProcessor6 extends AbstractProcessor {
      * given the fully-qualified name of a Java class.
      *  
      */
-    private TypeCategory toMetaModelTypeCategory(String name) {
+    private TypeCategory toMetaModelTypeCategory(TypeMirror mirror, 
+        String name) {
+        if (mirror.getKind() == TypeKind.ARRAY)
+            return TypeCategory.LIST;
         if (CLASSNAMES_COLLECTION.contains(name))
             return TypeCategory.COLLECTION;
         if (CLASSNAMES_LIST.contains(name))
@@ -223,9 +229,11 @@ public class AnnotationProcessor6 extends AbstractProcessor {
             
             for (Element m : members) {
                 TypeMirror decl = handler.getDeclaredType(m);
+                decl.getKind();
                 String fieldName = handler.getPersistentMemberName(m);
                 String fieldType = handler.getDeclaredTypeName(decl);
-                TypeCategory typeCategory = toMetaModelTypeCategory(fieldType);
+                TypeCategory typeCategory = toMetaModelTypeCategory(decl, 
+                        fieldType);
                 String metaModelType = typeCategory.getMetaModelType();
                 SourceCode.Field modelField = null;
                 switch (typeCategory) {
