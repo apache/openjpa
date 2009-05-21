@@ -53,7 +53,8 @@ public class Page implements Serializable {
     @Column(nullable = false)
     @ManyToOne
     @JoinColumns({
-        @JoinColumn(name="BOOK_LIBRARY_LIBRARY_NAME", referencedColumnName="LIBRARY_LIBRARY_NAME"),
+        @JoinColumn(name="BOOK_LIBRARY_LIBRARY_NAME",
+                referencedColumnName="LIBRARY_LIBRARY_NAME"),
         @JoinColumn(name="BOOK_BOOK_NAME", referencedColumnName="BOOK_NAME")    
     })
     private Book book;

@@ -8,7 +8,8 @@ import javax.persistence.metamodel.Attribute;
 import javax.persistence.metamodel.List;
 import javax.persistence.metamodel.Set;
 
-@javax.persistence.metamodel.TypesafeMetamodel(value=org.apache.openjpa.persistence.criteria.Customer.class)
+@javax.persistence.metamodel.TypesafeMetamodel(
+    value=org.apache.openjpa.persistence.criteria.Customer.class)
 public class Customer_ {
     public static volatile Attribute<Customer,Long> accountNum;
     public static volatile List<Customer,Account> accounts;

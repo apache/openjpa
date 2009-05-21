@@ -16,7 +16,8 @@
  * specific language governing permissions and limitations
  * under the License.    
  */
-package org.apache.openjpa.persistence.annotations.common.apps.annotApp.annotype;
+package
+    org.apache.openjpa.persistence.annotations.common.apps.annotApp.annotype;
 
 
 public interface NamedEntity

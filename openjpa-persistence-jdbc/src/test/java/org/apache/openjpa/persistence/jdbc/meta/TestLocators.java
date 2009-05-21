@@ -46,7 +46,8 @@ import org.apache.openjpa.persistence.OpenJPAEntityManagerSPI;
 import org.apache.openjpa.persistence.OpenJPAPersistence;
 
 
-public class TestLocators extends org.apache.openjpa.persistence.jdbc.kernel.BaseJDBCTest{
+public class TestLocators
+        extends org.apache.openjpa.persistence.jdbc.kernel.BaseJDBCTest {
     
     private OpenJPAEntityManagerFactory pmf;
 
@@ -85,7 +86,8 @@ public class TestLocators extends org.apache.openjpa.persistence.jdbc.kernel.Bas
         doBlobTest(50);
 
         if (getCurrentPlatform() == AbstractTestCase.Platform.ORACLE) {
-            OpenJPAEntityManager pm =(OpenJPAEntityManager)currentEntityManager();
+            OpenJPAEntityManager pm =
+                (OpenJPAEntityManager)currentEntityManager();
             JDBCConfiguration conf = (JDBCConfiguration)
                 ((OpenJPAEntityManagerSPI) pm).getConfiguration();
             OracleDictionary dict = (OracleDictionary)
@@ -159,7 +161,8 @@ public class TestLocators extends org.apache.openjpa.persistence.jdbc.kernel.Bas
         doClobTest(50);
 
         if (getCurrentPlatform() == AbstractTestCase.Platform.ORACLE) {
-            OpenJPAEntityManager pm =(OpenJPAEntityManager)currentEntityManager();
+            OpenJPAEntityManager pm =
+                (OpenJPAEntityManager)currentEntityManager();
             JDBCConfiguration conf = (JDBCConfiguration)
                 ((OpenJPAEntityManagerSPI) pm).getConfiguration();
             OracleDictionary dict = (OracleDictionary)

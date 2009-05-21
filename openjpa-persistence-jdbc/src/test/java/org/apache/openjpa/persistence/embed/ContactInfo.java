@@ -30,7 +30,8 @@ public class ContactInfo {
             @JoinColumn(name="PHONE_ID", referencedColumnName="Number")
         
     )
-    List<PhoneNumber> phoneNumbers = new ArrayList<PhoneNumber>(); // Bidirectional
+    // Bidirectional
+    List<PhoneNumber> phoneNumbers = new ArrayList<PhoneNumber>();
     
     public List<PhoneNumber> getPhoneNumbers() {
         return phoneNumbers;

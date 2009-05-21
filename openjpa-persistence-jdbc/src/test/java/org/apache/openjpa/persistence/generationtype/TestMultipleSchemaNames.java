@@ -109,11 +109,11 @@ public class TestMultipleSchemaNames extends SingleEMFTestCase {
             em.remove(Obj);
         }
 
-        Query delschema1 = em
-                .createNativeQuery("delete from schema1.openjpa_sequence_table");
+        Query delschema1 = em.createNativeQuery(
+                "delete from schema1.openjpa_sequence_table");
         delschema1.executeUpdate();
-        Query delschema2 = em
-                .createNativeQuery("delete from schema2.openjpa_sequence_table");
+        Query delschema2 = em.createNativeQuery(
+                "delete from schema2.openjpa_sequence_table");
         delschema2.executeUpdate();
         Query delgentable = em.createNativeQuery("delete from schema1.id_gen1");
         delgentable.executeUpdate();

@@ -34,7 +34,8 @@ public class SimpleB {
     protected String name;
 
     @ManyToOne
-    @JoinColumn(name="A_ID", referencedColumnName="A_ID", nullable = false, updatable = false)
+    @JoinColumn(name="A_ID", referencedColumnName="A_ID", nullable = false,
+            updatable = false)
     protected SimpleA parent;
 
     @OneToMany(cascade=CascadeType.ALL, mappedBy="parent")

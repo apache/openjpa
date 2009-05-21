@@ -7,7 +7,8 @@ package org.apache.openjpa.persistence.criteria;
 import javax.persistence.metamodel.Attribute;
 import javax.persistence.metamodel.List;
 
-@javax.persistence.metamodel.TypesafeMetamodel(value=org.apache.openjpa.persistence.criteria.Course.class)
+@javax.persistence.metamodel.TypesafeMetamodel(
+    value=org.apache.openjpa.persistence.criteria.Course.class)
 public class Course_ {
     public static volatile Attribute<Course,Long> id;
     public static volatile Attribute<Course,String> name;

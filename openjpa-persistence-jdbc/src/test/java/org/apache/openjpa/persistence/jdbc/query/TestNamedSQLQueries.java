@@ -41,7 +41,8 @@ import org.apache.openjpa.persistence.OpenJPAEntityManagerFactory;
 import org.apache.openjpa.persistence.OpenJPAEntityManager;
 
 
-public class TestNamedSQLQueries extends org.apache.openjpa.persistence.jdbc.kernel.BaseJDBCTest{
+public class TestNamedSQLQueries
+        extends org.apache.openjpa.persistence.jdbc.kernel.BaseJDBCTest {
      
     
     /** Creates a new instance of TestNamedSQLQueries */

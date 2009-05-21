@@ -26,10 +26,10 @@ import javax.persistence.Entity;
 public class FemaleUser extends CompUser
 {
 
-	public FemaleUser(){}
+    public FemaleUser(){}
 
-	public FemaleUser(String name, String cname, Address add, int age, int id)
-	{
-		super(name, cname, add, age);
-	}
+    public FemaleUser(String name, String cname, Address add, int age, int id)
+    {
+        super(name, cname, add, age);
+    }
 }

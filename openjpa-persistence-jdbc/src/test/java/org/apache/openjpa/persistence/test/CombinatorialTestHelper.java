@@ -67,7 +67,7 @@ public class CombinatorialTestHelper {
 	 * The important side effect of this method is to set the current 
 	 * configuration options.
 	 * 
-	 * If no property is configured for combinatorial generation then returns
+     * If no property is configured for combinatorial generation then returns
 	 * the given list as it is.
 	 * 
 	 */
@@ -96,7 +96,7 @@ public class CombinatorialTestHelper {
 		
 		Object[] newProps = new Object[props.length + options.length];
 		System.arraycopy(props, 0, newProps, 0, props.length);
-		System.arraycopy(options, 0, newProps, props.length, options.length);
+        System.arraycopy(options, 0, newProps, props.length, options.length);
 		return newProps;
 	}
 	
@@ -118,7 +118,7 @@ public class CombinatorialTestHelper {
 	 * Adds options for the given property.
 	 * If runtime is true then this property is not added to configuration.
 	 */
-	public void addOption(String property, Object[] options, boolean runtime) {
+    public void addOption(String property, Object[] options, boolean runtime) {
 		addOption(property, Arrays.asList(options), runtime);
 	}
 
@@ -147,7 +147,7 @@ public class CombinatorialTestHelper {
 	public Object getOption(String key) {
 		int index = propertyKeys.indexOf(key);
 		if (index == -1)
-			throw new IllegalArgumentException("Unknown option " + key);
+            throw new IllegalArgumentException("Unknown option " + key);
 		return currentOption.get(index);
 	}
 	
@@ -174,12 +174,12 @@ public class CombinatorialTestHelper {
 		for (int i = 0; i <propertyKeys.size(); i++) {
 			String key = propertyKeys.get(i);
 			if (!runtimeKeys.get(i))
-				buf.append(key +  " : " + getOption(key)).append("\r\n");
+                buf.append(key +  " : " + getOption(key)).append("\r\n");
 		}
 		for (int i = 0; i <propertyKeys.size(); i++) {
 			String key = propertyKeys.get(i);
 			if (runtimeKeys.get(i))
-				buf.append("* " + key +  " : " + getOption(key)).append("\r\n");
+                buf.append("* " + key +  " : " + getOption(key)).append("\r\n");
 		}
 		return buf.toString();
 	}

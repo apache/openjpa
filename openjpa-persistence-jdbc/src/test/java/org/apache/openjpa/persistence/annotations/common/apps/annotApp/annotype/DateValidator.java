@@ -16,7 +16,8 @@
  * specific language governing permissions and limitations
  * under the License.    
  */
-package org.apache.openjpa.persistence.annotations.common.apps.annotApp.annotype;
+package
+    org.apache.openjpa.persistence.annotations.common.apps.annotApp.annotype;
 
 import javax.persistence.*;
 
@@ -35,6 +36,7 @@ public class DateValidator
 	@PostPersist
 	public void postPersist(Schedule sched)
 	{
-		System.out.println("Schedule "+sched+" is successfully persisted: DateValidator.class");
+        System.out.println("Schedule " + sched
+                + " is successfully persisted: DateValidator.class");
 	}
 }

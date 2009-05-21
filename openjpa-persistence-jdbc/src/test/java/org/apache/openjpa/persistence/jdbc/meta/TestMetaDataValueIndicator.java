@@ -46,8 +46,8 @@ import org.apache.openjpa.persistence.OpenJPAEntityManagerSPI;
 import org.apache.openjpa.persistence.OpenJPAPersistence;
 
 
-public class TestMetaDataValueIndicator extends org.apache.openjpa.persistence.jdbc.kernel.BaseJDBCTest
-{    
+public class TestMetaDataValueIndicator
+        extends org.apache.openjpa.persistence.jdbc.kernel.BaseJDBCTest {    
     private OpenJPAEntityManager pm;
     
     private ClassMapping eMapping;
@@ -68,12 +68,14 @@ public class TestMetaDataValueIndicator extends org.apache.openjpa.persistence.j
         
         pm = (OpenJPAEntityManager)currentEntityManager();
         
-        eMapping = (ClassMapping) ((OpenJPAEntityManagerSPI) pm).getConfiguration().
-                getMetaDataRepositoryInstance().getMetaData(MultiE.class,
-                pm.getClassLoader(), true);
-        fMapping = (ClassMapping) ((OpenJPAEntityManagerSPI) pm).getConfiguration().
-                getMetaDataRepositoryInstance().getMetaData(MultiF.class,
-                pm.getClassLoader(), true);
+        eMapping =
+            (ClassMapping) ((OpenJPAEntityManagerSPI) pm).getConfiguration().
+            getMetaDataRepositoryInstance().getMetaData(MultiE.class,
+            pm.getClassLoader(), true);
+        fMapping =
+            (ClassMapping) ((OpenJPAEntityManagerSPI) pm).getConfiguration().
+            getMetaDataRepositoryInstance().getMetaData(MultiF.class,
+            pm.getClassLoader(), true);
     }
     
     public void tearDown()

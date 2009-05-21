@@ -54,8 +54,8 @@ import org.apache.openjpa.persistence.OpenJPAEntityManager;
 import org.apache.openjpa.jdbc.meta.JavaSQLTypes;
 import org.apache.openjpa.jdbc.schema.Column;
 
-public class TestJDBCType extends org.apache.openjpa.persistence.jdbc.kernel.BaseJDBCTest
-{
+public class TestJDBCType
+        extends org.apache.openjpa.persistence.jdbc.kernel.BaseJDBCTest {
 	
     /** Creates a new instance of TestJDBCType */
     public TestJDBCType(String name) 

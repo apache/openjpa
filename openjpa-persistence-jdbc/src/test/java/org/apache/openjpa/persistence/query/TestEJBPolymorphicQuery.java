@@ -57,8 +57,9 @@ public class TestEJBPolymorphicQuery extends BaseQueryTest {
     }
 
     /**
-     * Ensures that when a select query is ran against an entity at the top of the hierarchy
-     * that the result is its instances and that of all its subclass.
+     * Ensures that when a select query is ran against an entity at the top of
+     * the hierarchy that the result is its instances and that of all its
+     * subclass.
      */
     public void testPolymorphicSelect() {
         EntityManager em = currentEntityManager();

@@ -49,7 +49,7 @@ public class VCS {
 	@Basic
 	private String name;
 
-	@OneToMany(cascade=CascadeType.ALL, fetch=FetchType.LAZY, mappedBy = "vcs")
+    @OneToMany(cascade=CascadeType.ALL, fetch=FetchType.LAZY, mappedBy = "vcs")
 	private Set<VC> vcs = new HashSet<VC>();
 
 	public VCS() {
@@ -129,14 +129,14 @@ public class VCS {
 			return (this.getVcsId() == id.getVcsId() || 
                 (this.getVcsId() != null && 
                 this.getVcsId().equals(id.getVcsId())))
-				&& (this.getE() == id.getE() || (this.getE() != null
+                && (this.getE() == id.getE() || (this.getE() != null
                 && this.getE().equals(id.getE())));
 		}
 		
 		@Override
 		public int hashCode() {
-			return (this.getVcsId() != null ?this.getVcsId().hashCode():0)
-				^ (this.getE() != null ? this.getE().hashCode():0);
+            return (this.getVcsId() != null ?this.getVcsId().hashCode():0)
+                    ^ (this.getE() != null ? this.getE().hashCode():0);
 		}
 	}
 

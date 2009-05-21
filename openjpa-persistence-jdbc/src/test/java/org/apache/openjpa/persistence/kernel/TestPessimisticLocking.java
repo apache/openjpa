@@ -127,8 +127,8 @@ public class TestPessimisticLocking extends BaseKernelTest {
      * Test that pessimistic locking is working by attempting to update the same
      * object in the data store.
      *
-     * @param useReentrantLock true if we want to synchronize on a lock instead of relying on
-     * the data store (used for validating the test case).
+     * @param useReentrantLock true if we want to synchronize on a lock instead
+     * of relying on the data store (used for validating the test case).
      */
     public void pessimisticLockingTest(boolean useReentrantLock)
         throws Throwable {

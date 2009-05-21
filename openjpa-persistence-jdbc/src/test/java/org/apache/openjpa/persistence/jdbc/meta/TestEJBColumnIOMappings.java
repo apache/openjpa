@@ -25,8 +25,8 @@ import org.apache.openjpa.persistence.common.utils.*;
 import org.apache.openjpa.persistence.kernel.common.apps.*;
 import junit.framework.*;
 
-public class TestEJBColumnIOMappings extends org.apache.openjpa.persistence.jdbc.kernel.BaseJDBCTest
-{
+public class TestEJBColumnIOMappings
+        extends org.apache.openjpa.persistence.jdbc.kernel.BaseJDBCTest {
 	public TestEJBColumnIOMappings(String name)
 	{
 		super(name);
@@ -116,7 +116,7 @@ public class TestEJBColumnIOMappings extends org.apache.openjpa.persistence.jdbc
 
 	public void testPrimitiveMappedToFieldOfForeignKey ()
 	{
-		// have to make rel persistent before setting ident field b/c not
+        // have to make rel persistent before setting ident field b/c not
 		// insertable
 		ColumnIOPC rel = new ColumnIOPC (1);
 		rel.setName ("rel");

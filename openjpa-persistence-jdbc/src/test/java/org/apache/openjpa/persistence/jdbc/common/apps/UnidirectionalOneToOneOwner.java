@@ -29,7 +29,8 @@ import javax.persistence.Version;
  * Persistent entity with unidirectional one-to-one relation.
  * 
  * Used in
- * @see org.apache.openjpa.persistence.query.TestProjectionQueryWithIdenticalResult
+ * @see
+ * org.apache.openjpa.persistence.query.TestProjectionQueryWithIdenticalResult
  *  
  * @author Pinaki Poddar
  *

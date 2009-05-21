@@ -130,7 +130,8 @@ public class TestEmbeddableXml extends SingleEMFTestCase {
         em.persist(a);
     }
 
-    public Embed_EmbedXml createEmbed_EmbedXml(EntityManager em, int id, int idx) {
+    public Embed_EmbedXml createEmbed_EmbedXml(EntityManager em, int id,
+            int idx) {
         Embed_EmbedXml embed = new Embed_EmbedXml();
         embed.setIntVal1(id * 100 + idx * 10 + 1);
         embed.setIntVal2(id * 100 + idx * 10 + 2);
@@ -163,7 +164,8 @@ public class TestEmbeddableXml extends SingleEMFTestCase {
      */
     public void findEntityA_Coll_Embed_EmbedXml() {
         EntityManager em = emf.createEntityManager();
-        EntityA_Coll_Embed_EmbedXml a = em.find(EntityA_Coll_Embed_EmbedXml.class, ID);
+        EntityA_Coll_Embed_EmbedXml a =
+            em.find(EntityA_Coll_Embed_EmbedXml.class, ID);
         checkEntityA_Coll_Embed_EmbedXml(a);
         em.close();
     }
@@ -186,7 +188,8 @@ public class TestEmbeddableXml extends SingleEMFTestCase {
     /*
      * check EntityA_Coll_Embed_EmbedXml
      */
-    public void checkEntityA_Coll_Embed_EmbedXml(EntityA_Coll_Embed_EmbedXml a) {
+    public void checkEntityA_Coll_Embed_EmbedXml(
+            EntityA_Coll_Embed_EmbedXml a) {
         int id = a.getId();
         String name = a.getName();
         int age = a.getAge();
@@ -485,7 +488,8 @@ public class TestEmbeddableXml extends SingleEMFTestCase {
 
         // add an element
         tran.begin();
-        EmployeeXml e = createEmployee(em, numDepartments * numEmployeesPerDept + 1);
+        EmployeeXml e =
+            createEmployee(em, numDepartments * numEmployeesPerDept + 1);
         d.addEmployee(e);
         e.setDepartment(d);
         em.persist(d);

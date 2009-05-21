@@ -37,7 +37,8 @@ import javax.persistence.Version;
 @Entity
 @Table(name="entity_1")
 @Inheritance(strategy=InheritanceType.JOINED)
-@SqlResultSetMapping(name="NativeTestResult", entities=@EntityResult(entityClass=Entity1.class))
+@SqlResultSetMapping(name="NativeTestResult",
+        entities=@EntityResult(entityClass=Entity1.class))
 public class Entity1 implements Serializable
 {
 	private static final long serialVersionUID = 2882935803066041165L;
@@ -112,6 +113,7 @@ public class Entity1 implements Serializable
 
 	public String toString()
 	{
-		return("PK: "+pk+" StringField: "+stringField+" IntField: "+intField);
+        return("PK: " + pk + " StringField: " + stringField
+                + " IntField: " + intField);
 	}
 }

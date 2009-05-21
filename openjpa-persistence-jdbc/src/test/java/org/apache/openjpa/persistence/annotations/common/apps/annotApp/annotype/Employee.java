@@ -16,7 +16,8 @@
  * specific language governing permissions and limitations
  * under the License.    
  */
-package org.apache.openjpa.persistence.annotations.common.apps.annotApp.annotype;
+package
+    org.apache.openjpa.persistence.annotations.common.apps.annotApp.annotype;
 
 import javax.persistence.*;
 
@@ -69,7 +70,8 @@ public class Employee implements NamedEntity
 	@PostPersist
 	private void resetSyncTime()
 	{
-		System.out.println("resetSyncTime is running on "+this+"GEN #: "+lifecheck);
+        System.out.println("resetSyncTime is running on " + this + "GEN #: "
+                + lifecheck);
 		syncTime = System.currentTimeMillis();
 
 		CallbackStorage store = CallbackStorage.getInstance();
@@ -93,7 +95,8 @@ public class Employee implements NamedEntity
 
 	public String toString()
 	{
-		return "Name: "+name+" of "+this.getClass().getName()+" Id: "+id+" Synctime: "+syncTime;
+        return "Name: " + name + " of " + this.getClass().getName()
+            + " Id: " + id + " Synctime: " + syncTime;
 	}
 
 	public int getCheck() {

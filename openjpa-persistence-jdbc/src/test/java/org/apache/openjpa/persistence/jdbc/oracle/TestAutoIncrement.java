@@ -44,7 +44,7 @@ public class TestAutoIncrement extends SingleEMFTestCase {
 	private static String PLATFORM = "oracle";
 
 	public void setUp() throws Exception {
-		if ("testAutoIncrementIdentityWithNamedSequence".equals(getName())) {
+        if ("testAutoIncrementIdentityWithNamedSequence".equals(getName())) {
 			super.setUp(CLEAR_TABLES, PObject.class,
 			    "openjpa.jdbc.DBDictionary",
 			    "oracle(UseTriggersForAutoAssign=true," + 
@@ -52,7 +52,7 @@ public class TestAutoIncrement extends SingleEMFTestCase {
 		} else {
 			super.setUp(CLEAR_TABLES, PObjectNative.class,
 					"openjpa.jdbc.DBDictionary",
-					"oracle(UseTriggersForAutoAssign=true)");
+                    "oracle(UseTriggersForAutoAssign=true)");
 		}
 	}
 

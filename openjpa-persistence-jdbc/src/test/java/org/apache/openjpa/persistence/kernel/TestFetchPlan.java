@@ -493,7 +493,8 @@ public class TestFetchPlan extends BaseKernelTest {
     }
 
     private void clearTestData() throws Exception {
-//        OpenJPAEntityManagerFactory pmf =(OpenJPAEntityManagerFactory) getEmf();
+//        OpenJPAEntityManagerFactory pmf =
+//            (OpenJPAEntityManagerFactory) getEmf();
 //        OpenJPAConfiguration conf=pmf.getConfiguration();
 //        
 //        Class.forName(pmf.getConfiguration().getConnection2DriverName());

@@ -54,7 +54,8 @@ import org.apache.openjpa.persistence.OpenJPAEntityManagerSPI;
 import org.apache.openjpa.persistence.OpenJPAPersistence;
 
 
-public class TestSchemaGenerator extends org.apache.openjpa.persistence.jdbc.kernel.BaseJDBCTest{
+public class TestSchemaGenerator
+        extends org.apache.openjpa.persistence.jdbc.kernel.BaseJDBCTest {
         
     /** Creates a new instance of TestSchemaGenerator */
     public TestSchemaGenerator(String name) 
@@ -94,7 +95,9 @@ public class TestSchemaGenerator extends org.apache.openjpa.persistence.jdbc.ker
         OpenJPAEntityManagerFactory pmf = (OpenJPAEntityManagerFactory)
         getEmf();
         OpenJPAEntityManager pm = pmf.createEntityManager();
-        JDBCConfiguration con = (JDBCConfiguration) ((OpenJPAEntityManagerSPI) pm).getConfiguration();
+        JDBCConfiguration con =
+            (JDBCConfiguration) ((OpenJPAEntityManagerSPI) pm)
+            .getConfiguration();
         DBDictionary dict = con.getDBDictionaryInstance();
         MappingRepository repos = con.getMappingRepositoryInstance();
         ClassMapping cm = repos.getMapping(RuntimeTest1.class,
@@ -109,7 +112,9 @@ public class TestSchemaGenerator extends org.apache.openjpa.persistence.jdbc.ker
         
         OpenJPAEntityManagerFactory kpmf =(OpenJPAEntityManagerFactory)
                 getEmf(props);
-        JDBCConfiguration conf = (JDBCConfiguration) ((OpenJPAEntityManagerFactorySPI) kpmf).getConfiguration();
+        JDBCConfiguration conf =
+            (JDBCConfiguration) ((OpenJPAEntityManagerFactorySPI) kpmf)
+            .getConfiguration();
         
         StringWriter sw = new StringWriter();
         

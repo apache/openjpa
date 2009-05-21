@@ -31,11 +31,11 @@ import javax.persistence.*;
 @Entity
 public class MappingTest2
 {
-	private int				pk1				= 0;
-	private int				pk2				= 0;
+    private int             pk1             = 0;
+    private int             pk2             = 0;
 	private MappingTest1	oneOneOwner		= null;
 	private MappingTest1	oneManyOwner	= null;
-	private Set				manyManyOwner	= new HashSet ();
+    private Set             manyManyOwner   = new HashSet ();
 
 
 	public int getPk1 ()

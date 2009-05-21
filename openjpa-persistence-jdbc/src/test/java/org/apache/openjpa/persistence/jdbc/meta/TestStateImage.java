@@ -42,7 +42,8 @@ import org.apache.openjpa.persistence.OpenJPAEntityManagerFactory;
 import org.apache.openjpa.persistence.OpenJPAEntityManager;
 
 
-public class TestStateImage extends org.apache.openjpa.persistence.jdbc.kernel.TestSQLListenerTestCase {
+public class TestStateImage
+    extends org.apache.openjpa.persistence.jdbc.kernel.TestSQLListenerTestCase {
     private Object _oid = null;
     
     /** Creates a new instance of TestStateImage */
@@ -168,15 +169,17 @@ public class TestStateImage extends org.apache.openjpa.persistence.jdbc.kernel.T
         OpenJPAQuery q1 = pm1.createNativeQuery("",StateImagePC2.class);
         //FIXME  jthomas
         //q1.setOrdering("intField ascending");
-        StateImagePC2 pc1 = (StateImagePC2) ((Collection) q1.getCandidateCollection()).
-                iterator().next();
+        StateImagePC2 pc1 =
+            (StateImagePC2) ((Collection) q1.getCandidateCollection()).
+            iterator().next();
         q1.closeAll();
         
         OpenJPAQuery q2 = pm2.createNativeQuery("",StateImagePC2.class);
         //FIXME jthomas
         //q2.setOrdering("intField ascending");
-        StateImagePC2 pc2 = (StateImagePC2) ((Collection) q2.getCandidateCollection()).
-                iterator().next();
+        StateImagePC2 pc2 =
+            (StateImagePC2) ((Collection) q2.getCandidateCollection()).
+            iterator().next();
         q2.closeAll();
         
         pm1.getTransaction().begin();

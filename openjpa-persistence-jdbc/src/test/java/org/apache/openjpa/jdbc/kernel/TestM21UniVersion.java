@@ -150,7 +150,8 @@ public class TestM21UniVersion extends SingleEMFTestCase {
         
         EntityManager em = emf.createEntityManager();
         M21UniDepartment sales = em.find(M21UniDepartment.class, SALESID);
-        M21UniDepartment marketing = em.find(M21UniDepartment.class, MARKETINGID);
+        M21UniDepartment marketing = em.find(M21UniDepartment.class,
+                MARKETINGID);
         M21UniEmployee e1 = em.find(M21UniEmployee.class, EMPLOYEE1ID);
         M21UniEmployee e2 = em.find(M21UniEmployee.class, EMPLOYEE2ID);
         

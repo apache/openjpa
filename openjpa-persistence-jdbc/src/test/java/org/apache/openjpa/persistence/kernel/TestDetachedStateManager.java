@@ -140,7 +140,8 @@ public class TestDetachedStateManager extends BaseKernelTest {
     public void testDetachWithGroups() {
         OpenJPAEntityManager pm = getPM();
         //FIXME jthomas
-//        pm.getFetchPlan().setDetachmentOptions(FetchPlanImpl.DETACH_LOAD_FIELDS | FetchPlanImpl.DETACH_UNLOAD_FIELDS);
+//      pm.getFetchPlan().setDetachmentOptions(
+//      FetchPlanImpl.DETACH_LOAD_FIELDS | FetchPlanImpl.DETACH_UNLOAD_FIELDS);
         pm.setDetachState(DetachStateType.FETCH_GROUPS);
         pm.getFetchPlan().addFetchGroup("all");
         AttachB b = pm.find(AttachB.class, oid);
@@ -528,7 +529,8 @@ public class TestDetachedStateManager extends BaseKernelTest {
         Options opts = new Options();
         opts.put("jdo", "true");
         PCEnhancer.run(conf, new String[]{
-            "org.apache.openjpa.persistence.kernel.noenhance.DetachSMPC" }, opts);
+            "org.apache.openjpa.persistence.kernel.noenhance.DetachSMPC" },
+            opts);
     }
 
     private void assertDetachedSM(Object obj) {

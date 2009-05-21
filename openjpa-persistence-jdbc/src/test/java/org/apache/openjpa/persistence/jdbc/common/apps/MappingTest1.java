@@ -30,23 +30,23 @@ import javax.persistence.Entity;
 @Entity
 public class MappingTest1
 {
-	private int				value					= 0;
-	private int				otherTableValue			= 0;
-	private Object 			blob					= null;
+    private int             value                   = 0;
+    private int             otherTableValue         = 0;
+    private Object          blob                    = null;
 	private MappingTest2 	oneOne					= null;
 	private MappingTest1 	selfOneOne				= null;
 	private MappingTest2 	otherTableOneOne		= null;
 	private MappingTest2	inverseOwnerOneOne		= null;
 	private MappingTest2	inverseOneOne			= null;
-	private Set				collection				= new HashSet ();
-	private Set				inverseOwnerOneMany		= new HashSet ();
-	private Set				oneMany					= new HashSet ();
-	private List			manyMany				= new LinkedList ();
-	private Set				inverseOwnerManyMany	= new HashSet ();
-	private Map				map						= new HashMap ();
-	private Map				nManyMap				= new HashMap ();
-	private Map				manyManyMap				= new HashMap ();
-	private int				transactionalValue		= 0;
+    private Set             collection              = new HashSet ();
+    private Set             inverseOwnerOneMany     = new HashSet ();
+    private Set             oneMany                 = new HashSet ();
+    private List            manyMany                = new LinkedList ();
+    private Set             inverseOwnerManyMany    = new HashSet ();
+    private Map             map                     = new HashMap ();
+    private Map             nManyMap                = new HashMap ();
+    private Map             manyManyMap             = new HashMap ();
+    private int             transactionalValue      = 0;
 
 
 	public int getValue ()

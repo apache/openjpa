@@ -167,7 +167,8 @@ public class TestM2MBiVersion extends SingleEMFTestCase {
         em.getTransaction().begin();
         // Remove sales from e1
         Collection<M2MBiDepartment> e1Departments = e1.getDepartments();
-        for (Iterator<M2MBiDepartment> dIterator = e1Departments.iterator(); dIterator.hasNext();) {
+        for (Iterator<M2MBiDepartment> dIterator = e1Departments.iterator();
+                dIterator.hasNext();) {
             M2MBiDepartment d = dIterator.next();
             if (SALESID.equals(d.getDeptid())) {
                 dIterator.remove();
@@ -176,7 +177,8 @@ public class TestM2MBiVersion extends SingleEMFTestCase {
         }
         // remove e1 from sales
         Collection<M2MBiEmployee> salesEmployees = sales.getEmployees();
-        for (Iterator<M2MBiEmployee> eIterator = salesEmployees.iterator(); eIterator.hasNext();) {
+        for (Iterator<M2MBiEmployee> eIterator = salesEmployees.iterator();
+                eIterator.hasNext();) {
             M2MBiEmployee e = eIterator.next();
             if (EMPLOYEE1ID.equals(e.getEmpid())) {
                 eIterator.remove();

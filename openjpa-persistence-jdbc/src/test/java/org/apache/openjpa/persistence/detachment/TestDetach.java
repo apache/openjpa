@@ -46,12 +46,16 @@ public class TestDetach extends SingleEMFTestCase {
         MetaDataRepository repos = emf.getConfiguration()
                                       .getMetaDataRepositoryInstance();
         ClassMetaData meta = repos.getCachedMetaData(DMCustomer.class);
-        assertEquals(ValueMetaData.CASCADE_NONE, meta.getField("firstName").getCascadeDetach());
-        assertEquals(ValueMetaData.CASCADE_IMMEDIATE, meta.getField("customerInventories").getElement().getCascadeDetach());
+        assertEquals(ValueMetaData.CASCADE_NONE,
+                meta.getField("firstName").getCascadeDetach());
+        assertEquals(ValueMetaData.CASCADE_IMMEDIATE, meta.getField(
+                "customerInventories").getElement().getCascadeDetach());
         
         meta = repos.getCachedMetaData(DMCustomerInventory.class);
-        assertEquals(ValueMetaData.CASCADE_NONE, meta.getField("customer").getCascadeDetach());
-        assertEquals(ValueMetaData.CASCADE_NONE, meta.getField("item").getCascadeDetach());
+        assertEquals(ValueMetaData.CASCADE_NONE,
+                meta.getField("customer").getCascadeDetach());
+        assertEquals(ValueMetaData.CASCADE_NONE,
+                meta.getField("item").getCascadeDetach());
         
     }
     
@@ -119,7 +123,8 @@ public class TestDetach extends SingleEMFTestCase {
             assertDetached(inventory);
         }
         
-        List<DMCustomerInventory> newInventories = new ArrayList<DMCustomerInventory>();
+        List<DMCustomerInventory> newInventories =
+            new ArrayList<DMCustomerInventory>();
         newInventories.addAll(inventories);
         DMCustomerInventory newInventory = new DMCustomerInventory();
         newInventory.setCustomer(detached);

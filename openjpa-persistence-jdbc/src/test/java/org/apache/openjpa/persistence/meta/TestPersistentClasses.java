@@ -72,7 +72,8 @@ public class TestPersistentClasses
 
     public void testJPAClasspathScanner() {
         Map map = new HashMap();
-        map.put("openjpa.MetaDataFactory", "jpa(ClasspathScan=src;jdk1.5-test)");
+        map.put("openjpa.MetaDataFactory",
+                "jpa(ClasspathScan=src;jdk1.5-test)");
         OpenJPAEntityManagerFactory pmf = getEmf(map);
 
         assertClass(RuntimeTest1.class,

@@ -68,13 +68,14 @@ public class TestPersistenceManagerFactoryImpl extends BaseKernelTest {
     /**
      * Test that configuration is frozen after retrieving a factory.
      *
-     * This test case is for kodo persistencemanagerfactories and not openjpaentitymanagers.
-     * therefore its been commented out. 
+     * This test case is for kodo persistencemanagerfactories and not
+     * openjpaentitymanagers. Therefore it's been commented out. 
      * FIX ME: aokeke
      */
 /*    public void testConfigurationFreeze() 
     {
-        OpenJPAEntityManagerFactory pmf = getOpenJPAEntityManagerFactory(_conf.toProperties(false));
+        OpenJPAEntityManagerFactory pmf =
+            getOpenJPAEntityManagerFactory(_conf.toProperties(false));
         assertEquals("user", pmf.getConfiguration().getConnection2UserName());
         assertEquals("url", pmf.getConfiguration().getConnection2URL());
         try 
@@ -90,22 +91,25 @@ public class TestPersistenceManagerFactoryImpl extends BaseKernelTest {
     /**
      * Test that persistence manager factories are being pooled.
      *
-     * This test case is for kodo persistencemanagerfactories. It doesnt apply to 
-     * openjpaentitymanagerfactories therefore it will be commented out.
+     * This test case is for kodo persistencemanagerfactories. It doesnt apply
+     * to openjpaentitymanagerfactories therefore it will be commented out.
      * FIX ME: aokeke
      */
     /*public void testFactoryPooling() {
         Properties props = new Properties();
         props.putAll(_conf.toProperties(false));
-        OpenJPAEntityManagerFactory pmf1 = getOpenJPAEntityManagerFactory(props);
+        OpenJPAEntityManagerFactory pmf1 =
+            getOpenJPAEntityManagerFactory(props);
         
         props = new Properties();
         props.putAll(_conf.toProperties(false));
-        OpenJPAEntityManagerFactory pmf2 = getOpenJPAEntityManagerFactory(props);
+        OpenJPAEntityManagerFactory pmf2 =
+            getOpenJPAEntityManagerFactory(props);
         
         props = new Properties();
         props.putAll(_conf.toProperties(false));
-        OpenJPAEntityManagerFactory pmf3 = getOpenJPAEntityManagerFactory(props);
+        OpenJPAEntityManagerFactory pmf3 =
+            getOpenJPAEntityManagerFactory(props);
         
         _conf.setConnectionURL("url2");
         props = new Properties();
@@ -115,12 +119,17 @@ public class TestPersistenceManagerFactoryImpl extends BaseKernelTest {
         
         props = new Properties();
         props.putAll(_conf.toProperties(false));
-        OpenJPAEntityManagerFactory pmf5 = getOpenJPAEntityManagerFactory(_conf.toProperties(false));
+        OpenJPAEntityManagerFactory pmf5 =
+            getOpenJPAEntityManagerFactory(_conf.toProperties(false));
         
-        assertTrue(JPAFacadeHelper.toBrokerFactory(pmf1) == JPAFacadeHelper.toBrokerFactory(pmf2));
-        assertTrue(JPAFacadeHelper.toBrokerFactory(pmf1) == JPAFacadeHelper.toBrokerFactory(pmf3));
-        assertTrue(JPAFacadeHelper.toBrokerFactory(pmf1) != JPAFacadeHelper.toBrokerFactory(pmf4));
-        assertTrue(JPAFacadeHelper.toBrokerFactory(pmf4) == JPAFacadeHelper.toBrokerFactory(pmf5));
+        assertTrue(JPAFacadeHelper.toBrokerFactory(pmf1) ==
+            JPAFacadeHelper.toBrokerFactory(pmf2));
+        assertTrue(JPAFacadeHelper.toBrokerFactory(pmf1) ==
+            JPAFacadeHelper.toBrokerFactory(pmf3));
+        assertTrue(JPAFacadeHelper.toBrokerFactory(pmf1) !=
+            JPAFacadeHelper.toBrokerFactory(pmf4));
+        assertTrue(JPAFacadeHelper.toBrokerFactory(pmf4) ==
+            JPAFacadeHelper.toBrokerFactory(pmf5));
     }*/
 
     /**
@@ -166,17 +175,18 @@ public class TestPersistenceManagerFactoryImpl extends BaseKernelTest {
 
     /**
      * Tests that pooling is maintained on deserialization.
-     * This test case is for kodo persistencemanagerfactories. It doesnt apply to 
-     * openjpaentitymanagerfactories therefore it will be commented out.
+     * This test case is for kodo persistencemanagerfactories. It doesnt apply
+     * to openjpaentitymanagerfactories therefore it will be commented out.
      */
     /*
     public void testFactorySerialization()
     throws Exception {
-        OpenJPAEntityManagerFactory pmf1 = getOpenJPAEntityManagerFactory(_conf.toProperties(false));
+        OpenJPAEntityManagerFactory pmf1 =
+            getOpenJPAEntityManagerFactory(_conf.toProperties(false));
         Object pmf2 = roundtrip(pmf1, true);
         assertEquals(pmf1, pmf2);
         assertTrue(JPAFacadeHelper.toBrokerFactory(pmf1) ==
-                JPAFacadeHelper.toBrokerFactory((OpenJPAEntityManagerFactory) pmf2));
+           JPAFacadeHelper.toBrokerFactory((OpenJPAEntityManagerFactory) pmf2));
     }
     */
 

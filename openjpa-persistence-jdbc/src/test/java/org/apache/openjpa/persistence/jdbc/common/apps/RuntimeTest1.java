@@ -65,7 +65,8 @@ import javax.persistence.Transient;
     
     // relations
     //@Transient
-    @OneToOne(fetch=FetchType.LAZY, cascade={CascadeType.PERSIST, CascadeType.REMOVE})
+    @OneToOne(fetch=FetchType.LAZY,
+            cascade={CascadeType.PERSIST, CascadeType.REMOVE})
     private RuntimeTest1	selfOneOne;
     
     @Transient

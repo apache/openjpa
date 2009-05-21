@@ -26,7 +26,8 @@ import org.apache.openjpa.persistence.OpenJPAEntityManagerFactorySPI;
 import org.apache.openjpa.persistence.OpenJPAPersistence;
 import org.apache.openjpa.persistence.StoreCacheImpl;
 import org.apache.openjpa.persistence.datacache.common.apps.EmbeddedEntity;
-import org.apache.openjpa.persistence.datacache.common.apps.EmbeddingOwnerEntity;
+import org.apache.openjpa.persistence.datacache.common.apps.
+        EmbeddingOwnerEntity;
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
 
 /**
@@ -47,10 +48,10 @@ public class TestEmbeddedCollection extends SingleEMFTestCase {
 	 */
 	public void setUp() throws Exception {
 		if (emf == null) {
-			super.setUp("openjpa.jdbc.SynchronizeMappings", "buildSchema",
-					"openjpa.RuntimeUnenhancedClasses", "unsupported",
-					"openjpa.DataCache", "true", "openjpa.RemoteCommitProvider",
-					"sjvm", "openjpa.jdbc.UpdateManager", "constraint",
+            super.setUp("openjpa.jdbc.SynchronizeMappings", "buildSchema",
+                    "openjpa.RuntimeUnenhancedClasses", "unsupported",
+                    "openjpa.DataCache", "true", "openjpa.RemoteCommitProvider",
+                    "sjvm", "openjpa.jdbc.UpdateManager", "constraint",
 					EmbeddingOwnerEntity.class, 
 					EmbeddedEntity.class,
 					CLEAR_TABLES);
@@ -64,8 +65,8 @@ public class TestEmbeddedCollection extends SingleEMFTestCase {
 	}
 
 	boolean isDataCacheActive(OpenJPAEntityManagerFactorySPI emf) {
-		return ((StoreCacheImpl) emf.getStoreCache()).getDelegate() != null
-				&& emf.getConfiguration().getDataCacheManagerInstance()
+        return ((StoreCacheImpl) emf.getStoreCache()).getDelegate() != null
+                && emf.getConfiguration().getDataCacheManagerInstance()
 						.getSystemDataCache() != null;
 	}
 	
@@ -88,7 +89,7 @@ public class TestEmbeddedCollection extends SingleEMFTestCase {
 		Object id = OpenJPAPersistence.cast(em).getObjectId(owner);
 		em.clear();
 
-		EmbeddingOwnerEntity test = em.find(EmbeddingOwnerEntity.class, id);
+        EmbeddingOwnerEntity test = em.find(EmbeddingOwnerEntity.class, id);
 		assertNotNull(test);
 		List<EmbeddedEntity> members = test.getMembers();
 		assertNotNull(members);
@@ -101,7 +102,7 @@ public class TestEmbeddedCollection extends SingleEMFTestCase {
 		EntityManager em = emf.createEntityManager();
 		em.getTransaction().begin();
 		List<EmbeddingOwnerEntity> result = em.createQuery(
-				"SELECT p FROM EmbeddingOwnerEntity p").getResultList();
+                "SELECT p FROM EmbeddingOwnerEntity p").getResultList();
 
 		assertNotNull(result);
 		assertFalse(result.isEmpty());
@@ -109,7 +110,8 @@ public class TestEmbeddedCollection extends SingleEMFTestCase {
 		EmbeddingOwnerEntity owner = result.get(0);
 		Object id = owner.getId();
 		
-		assertTrue(emf.getStoreCache().contains(EmbeddingOwnerEntity.class, id));
+        assertTrue(emf.getStoreCache().contains(EmbeddingOwnerEntity.class,
+                id));
 		
 		List<EmbeddedEntity> members = owner.getMembers();
 		members.remove(0);

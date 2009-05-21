@@ -29,7 +29,7 @@ public class TestPersistenceUnitWithoutXSD extends PersistenceTestCase {
     public void testPersistenceUnitWithoutXSD() {
         EntityManagerFactory emf = OpenJPAPersistence
             .createEntityManagerFactory("incorrect-ordering-and-no-xsd",
-                "org/apache/openjpa/persistence/xml/persistence-without-xsd.xml");
+            "org/apache/openjpa/persistence/xml/persistence-without-xsd.xml");
         emf.createEntityManager().close();
         emf.close();
     }

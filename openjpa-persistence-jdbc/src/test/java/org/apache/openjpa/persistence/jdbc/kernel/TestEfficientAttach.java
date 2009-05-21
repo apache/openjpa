@@ -66,7 +66,9 @@ public class TestEfficientAttach extends TestSQLListenerTestCase {
         // synthetic state managers
         EntityManager em= currentEntityManager();
         OpenJPAEntityManager kem = OpenJPAPersistence.cast (em);
-        JDBCConfiguration conf = (JDBCConfiguration) ((OpenJPAEntityManagerSPI) kem).getConfiguration();
+        JDBCConfiguration conf =
+            (JDBCConfiguration) ((OpenJPAEntityManagerSPI) kem)
+            .getConfiguration();
 
         MetaDataRepository repos = conf.getMappingRepositoryInstance();
         ClassMetaData meta;
@@ -95,7 +97,8 @@ public class TestEfficientAttach extends TestSQLListenerTestCase {
         e.setB(new AttachB());
         pm.persist(e);
         endTx(pm);;
-        //FIXME jthomas - could not find equivalent for detachCopy() attachCopy() etc
+        //FIXME jthomas - could not find equivalent for detachCopy()
+        //attachCopy() etc
 /*      
         e = (AttachE) pm.detachCopy(e);
         pm.close();

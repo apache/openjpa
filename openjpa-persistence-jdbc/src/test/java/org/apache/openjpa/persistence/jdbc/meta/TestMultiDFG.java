@@ -44,8 +44,8 @@ import org.apache.openjpa.persistence.OpenJPAEntityManagerFactory;
 import org.apache.openjpa.persistence.OpenJPAEntityManager;
 
 
-public class TestMultiDFG extends org.apache.openjpa.persistence.jdbc.kernel.BaseJDBCTest
-{    
+public class TestMultiDFG
+        extends org.apache.openjpa.persistence.jdbc.kernel.BaseJDBCTest {    
     private Object boid;
     
     public TestMultiDFG(String name) {

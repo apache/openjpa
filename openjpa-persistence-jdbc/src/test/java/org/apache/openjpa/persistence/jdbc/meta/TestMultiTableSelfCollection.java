@@ -40,8 +40,8 @@ import org.apache.openjpa.persistence.OpenJPAEntityManagerFactory;
 import org.apache.openjpa.persistence.OpenJPAEntityManager;
 
 
-public class TestMultiTableSelfCollection extends org.apache.openjpa.persistence.jdbc.kernel.BaseJDBCTest
-{    
+public class TestMultiTableSelfCollection
+        extends org.apache.openjpa.persistence.jdbc.kernel.BaseJDBCTest {    
     private Object a1oid;
     private Object a2oid;
     private Object a3oid;

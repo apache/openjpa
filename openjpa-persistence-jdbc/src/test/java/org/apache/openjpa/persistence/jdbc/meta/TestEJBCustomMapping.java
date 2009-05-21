@@ -26,8 +26,8 @@ import org.apache.openjpa.persistence.jdbc.common.apps.CustomMappingPC;
 import junit.framework.*;
 
 
-public class TestEJBCustomMapping extends org.apache.openjpa.persistence.jdbc.kernel.BaseJDBCTest
-{
+public class TestEJBCustomMapping
+        extends org.apache.openjpa.persistence.jdbc.kernel.BaseJDBCTest {
 	private int _oid;
 
 	public TestEJBCustomMapping(String name)

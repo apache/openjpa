@@ -45,8 +45,8 @@ import org.apache.openjpa.persistence.OpenJPAEntityManagerFactory;
 import org.apache.openjpa.persistence.OpenJPAEntityManager;
 
 
-public class TestUnionPlaceholderTypes extends org.apache.openjpa.persistence.jdbc.kernel.TestSQLListenerTestCase {
-    
+public class TestUnionPlaceholderTypes
+    extends org.apache.openjpa.persistence.jdbc.kernel.TestSQLListenerTestCase {
     
     /** Creates a new instance of TestUnionPlaceholderTypes */
     public TestUnionPlaceholderTypes(String name) 
@@ -59,7 +59,8 @@ public class TestUnionPlaceholderTypes extends org.apache.openjpa.persistence.jd
     public void setUpTestCase() {
         JDBCConfiguration conf = (JDBCConfiguration) getConfiguration();
         //FIXME jthomas
-        //_union = ((SQLFactory) conf.getSQLFactoryInstance()).getAdvancedSQL().getSupportsUnion();
+        //_union = ((SQLFactory) conf.getSQLFactoryInstance())
+        //.getAdvancedSQL().getSupportsUnion();
     }
 
     public void testUnion()

@@ -24,7 +24,8 @@ import javax.persistence.EntityManager;
 import javax.persistence.RollbackException;
 
 import org.apache.openjpa.persistence.OpenJPAPersistence;
-import org.apache.openjpa.persistence.callbacks.ExceptionsFromCallbacksEntity.CallbackTestException;
+import org.apache.openjpa.persistence.callbacks.ExceptionsFromCallbacksEntity.
+        CallbackTestException;
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
 import org.apache.openjpa.enhance.PersistenceCapable;
 

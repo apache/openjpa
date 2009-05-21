@@ -29,7 +29,8 @@ public class Embed_MappedToOneCascadeDelete {
     protected String name2;
     protected String name3;
     
-    @OneToOne(mappedBy="entityA", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+    @OneToOne(mappedBy="entityA", fetch = FetchType.EAGER, 
+        cascade = CascadeType.ALL)
     protected EntityB2 bm;
     
     

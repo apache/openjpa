@@ -23,13 +23,17 @@ import java.util.HashSet;
 import java.util.Set;
 
 /**
- * CREATE TABLE EntityA_Coll_String (id INTEGER NOT NULL, age INTEGER, name VARCHAR(30), PRIMARY KEY (id))
- * CREATE TABLE NickNames_Tbl (ENTITYA_COLL_STRING_ID INTEGER, nicknames1 VARCHAR(20))
+ * CREATE TABLE EntityA_Coll_String (id INTEGER NOT NULL, age INTEGER,
+ *     name VARCHAR(30), PRIMARY KEY (id))
+ * CREATE TABLE NickNames_Tbl (ENTITYA_COLL_STRING_ID INTEGER,
+ *     nicknames1 VARCHAR(20))
  * CREATE INDEX I_NCKNTBL_ENTITYA_ ON NickNames_Tbl (ENTITYA_COLL_STRING_ID)
  * INSERT INTO EntityA_Coll_String (id, age, name) VALUES (?, ?, ?)
  * INSERT INTO NickNames_Tbl (ENTITYA_COLL_STRING_ID, nicknames1) VALUES (?, ?)
- * SELECT t0.age, t0.name FROM EntityA_Coll_String t0 WHERE t0.id = ?  optimize for 1 row
- * SELECT t0.nicknames1 FROM NickNames_Tbl t0 WHERE t0.ENTITYA_COLL_STRING_ID = ? 
+ * SELECT t0.age, t0.name FROM EntityA_Coll_String t0 WHERE t0.id = ? 
+ *     optimize for 1 row
+ * SELECT t0.nicknames1 FROM NickNames_Tbl t0
+ *     WHERE t0.ENTITYA_COLL_STRING_ID = ?
  * @author faywang
  */
 

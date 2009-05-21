@@ -52,21 +52,23 @@ import org.apache.openjpa.persistence.models.library.*;
  * 
  * <pre>
  *    &lt;bean id=&quot;emf&quot; 
- *          class=&quot;org.springframework.orm.jpa.LocalEntityManagerFactoryBean&quot;&gt;
- *       &lt;property name=&quot;persistenceUnitName&quot; value=&quot;&quot; /&gt;
+ *   class=&quot;org.springframework.orm.jpa.LocalEntityManagerFactoryBean&quot;
+ *   &gt;
+ *    &lt;property name=&quot;persistenceUnitName&quot; value=&quot;&quot; /&gt;
  *    &lt;/bean&gt;
  *  
  *    &lt;!--  enable Spring's support for JPA injection --&gt;
- *    &lt;bean class=
- *          &quot;org.springframework.orm.jpa.support.PersistenceAnnotationBeanPostProcessor&quot;/&gt;
+ *    &lt;bean class=&quot;
+ *org.springframework.orm.jpa.support.PersistenceAnnotationBeanPostProcessor
+ *&quot;/&gt;
  *              
  *    &lt;bean id=&quot;transactionalService&quot; 
  *          class=&quot;sample.jpa.service.LibServiceImpl&quot; &gt;
  *    &lt;/bean&gt;
  *  
  *    &lt;bean id=&quot;transactionManager&quot; 
- *          class=&quot;org.springframework.orm.jpa.JpaTransactionManager&quot; &gt;
- *       &lt;property name=&quot;entityManagerFactory&quot; ref=&quot;emf&quot; /&gt;
+ *      class=&quot;org.springframework.orm.jpa.JpaTransactionManager&quot; &gt;
+ *  &lt;property name=&quot;entityManagerFactory&quot; ref=&quot;emf&quot; /&gt;
  *    &lt;/bean&gt;
  *  
  *    &lt;tx:annotation-driven/&gt;

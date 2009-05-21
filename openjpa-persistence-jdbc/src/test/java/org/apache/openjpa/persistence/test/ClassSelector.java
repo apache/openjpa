@@ -29,10 +29,10 @@ import serp.bytecode.BCMethod;
 import serp.bytecode.Project;
 
 /**
- * List class names that match specific selection criteria based on inheritance, 
+ * List class names that match specific selection criteria based on inheritance,
  * implemented interface or annotations. The classes are scanned starting from
- * a root directory or a single file. Uses serp bytecode library for reading the 
- * bytecode. The classes are not loaded in Java Virtual Machine and hence 
+ * a root directory or a single file. Uses serp bytecode library for reading the
+ * bytecode. The classes are not loaded in Java Virtual Machine and hence
  * dependent classes need not be in the classpath.
  * 
  * @author Pinaki Poddar
@@ -49,21 +49,22 @@ public class ClassSelector {
 	 *           junit.framework.TestCase
 	 *   and annotated with org.apache.openjpa.persistence.test.AllowFailure
 	 *   
-	 * @param args the root directory of the class files to be scanned. If no
+     * @param args the root directory of the class files to be scanned. If no
 	 * argument is given then assumes the current directory.
 	 * 
 	 */
 	public static void main(String[] args) throws Exception {
 		String dir = (args.length == 0) ? System.getProperty("user.dir")
 				: args[0];
-		ClassSelector reader = new ClassSelector()
-		.addSuper("org.apache.openjpa.persistence.test.SingleEMTestCase")
-			.addSuper("org.apache.openjpa.persistence.test.SingleEMFTestCase")
-			.addSuper("org.apache.openjpa.persistence.kernel.BaseKernelTest")
-			.addSuper("org.apache.openjpa.persistence.query.BaseQueryTest")
-		    .addSuper("org.apache.openjpa.persistence.jdbc.kernel.BaseJDBCTest")
-		    .addSuper("org.apache.openjpa.persistence.common.utils.AbstractTestCase")
-			.addAnnotation("org.apache.openjpa.persistence.test.AllowFailure");
+        ClassSelector reader = new ClassSelector()
+            .addSuper("org.apache.openjpa.persistence.test.SingleEMTestCase")
+            .addSuper("org.apache.openjpa.persistence.test.SingleEMFTestCase")
+            .addSuper("org.apache.openjpa.persistence.kernel.BaseKernelTest")
+            .addSuper("org.apache.openjpa.persistence.query.BaseQueryTest")
+            .addSuper("org.apache.openjpa.persistence.jdbc.kernel.BaseJDBCTest")
+            .addSuper(
+                "org.apache.openjpa.persistence.common.utils.AbstractTestCase")
+            .addAnnotation("org.apache.openjpa.persistence.test.AllowFailure");
 		List<String> names = reader.list(new File(dir), true);
 		String spec = reader.getSpecification();
 		System.err.println("Found " + names.size() + " classes under " 
@@ -89,20 +90,20 @@ public class ClassSelector {
 	private void list(File file, boolean recursive, List<String> names) {
 		if (file.isDirectory()) {
 			if (recursive) {
-				String[] children = file.list(new FilenameFilter() {
-					public boolean accept(File dir, String name) {
+                String[] children = file.list(new FilenameFilter() {
+                    public boolean accept(File dir, String name) {
 						return name.endsWith(".class");
 					}
 				});
 				for (String name : children)
-					list(new File(file, name), recursive, names);
+                    list(new File(file, name), recursive, names);
 				String[] dirs = file.list(new FilenameFilter() {
-					public boolean accept(File dir, String name) {
-						return new File(dir, name).isDirectory();
+                    public boolean accept(File dir, String name) {
+                        return new File(dir, name).isDirectory();
 					}
 				});
 				for (String name : dirs)
-					list(new File(file, name), recursive, names);
+                    list(new File(file, name), recursive, names);
 			}
 		} else if (file.getName().endsWith(".class")) {
 			String cls = select(file);
@@ -143,7 +144,7 @@ public class ClassSelector {
 			 && applyAnnotationFilter(bcls))
 				return bcls.getName();
 		} catch (Exception e) {
-			System.err.println("Error reading " + file.getAbsolutePath()
+            System.err.println("Error reading " + file.getAbsolutePath()
 					+ " : " + e);
 		}
 		return null;
@@ -183,7 +184,7 @@ public class ClassSelector {
 	}
 
 	/**
-	 * Affirms if annotations of the given class or its methods match any of the
+     * Affirms if annotations of the given class or its methods match any of the
 	 * selection filter names. If no annotation name has been set for
 	 * selection then return true.
 	 * 
@@ -223,21 +224,21 @@ public class ClassSelector {
 			tmp.append("\textends ");
 			and = "and ";
 			for (int i=0; i<_supers.size(); i++)
-				tmp.append(_supers.get(i))
-				   .append((i != _supers.size()-1 ? "\r\n\t     or " : "\r\n"));
+                tmp.append(_supers.get(i)).append(
+                    (i != _supers.size()-1 ? "\r\n\t     or " : "\r\n"));
 		}
 		if (!_interfaces.isEmpty()) {
 			tmp.append("\t" + and + "implements ");
 			and = "and ";
 			for (int i=0; i<_interfaces.size(); i++)
-				tmp.append(_interfaces.get(i))
-				   .append((i != _interfaces.size()-1 ? "\r\n\t        or " : "\r\n"));
+                tmp.append(_interfaces.get(i)).append(
+                    (i != _interfaces.size()-1 ? "\r\n\t        or " : "\r\n"));
 		}
 		if (!_annotations.isEmpty()) {
 			tmp.append("\t" + and + "annotatated with ");
 			for (int i=0; i<_annotations.size(); i++)
 				tmp.append(_annotations.get(i))
-				   .append((i != _annotations.size()-1 ? " or " : "\r\n"));
+                    .append((i != _annotations.size()-1 ? " or " : "\r\n"));
 		}
 		return tmp.toString();
 	}

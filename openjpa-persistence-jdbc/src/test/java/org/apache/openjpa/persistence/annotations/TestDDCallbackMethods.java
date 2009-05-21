@@ -44,7 +44,7 @@ public class TestDDCallbackMethods extends AnnotationTestCase
 
 	public void testDDPrpPop()
 	{
-		OpenJPAEntityManager em =(OpenJPAEntityManager) currentEntityManager();
+        OpenJPAEntityManager em =(OpenJPAEntityManager) currentEntityManager();
 		startTx(em);
 
 		LifeCycleDDEntity lcd = new LifeCycleDDEntity("afam", "okeke");
@@ -63,7 +63,7 @@ public class TestDDCallbackMethods extends AnnotationTestCase
 
 	public void testDDPrrPor()
 	{
-		OpenJPAEntityManager em =(OpenJPAEntityManager) currentEntityManager();
+        OpenJPAEntityManager em =(OpenJPAEntityManager) currentEntityManager();
 		startTx(em);
 
 		LifeCycleDDEntity lcd = new LifeCycleDDEntity("john", "rash");
@@ -90,7 +90,7 @@ public class TestDDCallbackMethods extends AnnotationTestCase
 
 	public void testDDPouPru()
 	{
-		OpenJPAEntityManager em =(OpenJPAEntityManager) currentEntityManager();
+        OpenJPAEntityManager em =(OpenJPAEntityManager) currentEntityManager();
 		startTx(em);
 
 		LifeCycleDDEntity lcd = new LifeCycleDDEntity("Don", "Shiddle");
@@ -100,7 +100,8 @@ public class TestDDCallbackMethods extends AnnotationTestCase
 
 		CallbackStorage.clearStore();
 
-		String query = "Update LifeCycleDDEntity e SET e.name = 'Joseph' WHERE e.id = :id";
+        String query = "Update LifeCycleDDEntity e SET e.name = 'Joseph' "
+            + "WHERE e.id = :id";
 
 		int result = em.createQuery(query)
 		               .setParameter("id", id)
@@ -121,7 +122,7 @@ public class TestDDCallbackMethods extends AnnotationTestCase
 
 	public void testDDPol()
 	{
-		OpenJPAEntityManager em =(OpenJPAEntityManager) currentEntityManager();
+        OpenJPAEntityManager em =(OpenJPAEntityManager) currentEntityManager();
 		startTx(em);
 
 		LifeCycleDDEntity lcd = new LifeCycleDDEntity("Julie", "Jolie");
@@ -143,9 +144,11 @@ public class TestDDCallbackMethods extends AnnotationTestCase
 
 		assertNotNull(lcd);
 		assertNotNull(CallbackStorage.getInstance().getClist());
-		assertEquals(2, CallbackStorage.getInstance().getClist().size());
-		assertEquals("def-postload", CallbackStorage.getInstance().getClist().get(0));
-		assertEquals("def-postload", CallbackStorage.getInstance().getClist().get(1));
+        assertEquals(2, CallbackStorage.getInstance().getClist().size());
+        assertEquals("def-postload",
+                CallbackStorage.getInstance().getClist().get(0));
+        assertEquals("def-postload",
+                CallbackStorage.getInstance().getClist().get(1));
 
 		endTx(em);
 		endEm(em);
@@ -156,10 +159,10 @@ public class TestDDCallbackMethods extends AnnotationTestCase
 
 	public void testDefaultPrePostPersistListener()
 	{
-		OpenJPAEntityManager em =(OpenJPAEntityManager) currentEntityManager();
+        OpenJPAEntityManager em =(OpenJPAEntityManager) currentEntityManager();
 		startTx(em);
 
-		LifeCycleDDEntity2 lc = new LifeCycleDDEntity2("Bill", "Clinton");
+        LifeCycleDDEntity2 lc = new LifeCycleDDEntity2("Bill", "Clinton");
 
 		CallbackStorage store = CallbackStorage.getInstance();
 		store.clearStore();
@@ -179,10 +182,10 @@ public class TestDDCallbackMethods extends AnnotationTestCase
     //FIX-ME Default-Entity-listener Impl. is over firing
 	public void testDefaultPrePostUpdateListener()
 	{
-		OpenJPAEntityManager em =(OpenJPAEntityManager) currentEntityManager();
+        OpenJPAEntityManager em =(OpenJPAEntityManager) currentEntityManager();
 		startTx(em);
 
-		LifeCycleDDEntity2 emp = new LifeCycleDDEntity2("lincoln", "Abraham");
+        LifeCycleDDEntity2 emp = new LifeCycleDDEntity2("lincoln", "Abraham");
 
 		em.persist(emp);
 
@@ -190,7 +193,8 @@ public class TestDDCallbackMethods extends AnnotationTestCase
 
 		CallbackStorage.clearStore();
 
-		String query = "Update LifeCycleDDEntity2 e SET e.name = 'Joseph' WHERE e.id = :id";
+        String query = "Update LifeCycleDDEntity2 e SET e.name = 'Joseph' "
+                + "WHERE e.id = :id";
 
 		int result = em.createQuery(query)
 		               .setParameter("id", id)
@@ -214,10 +218,10 @@ public class TestDDCallbackMethods extends AnnotationTestCase
 	//FIX-ME Default-Entity-listener Impl. is over firing
 	public void testDefaultPostLoadListener()
 	{
-		OpenJPAEntityManager em =(OpenJPAEntityManager) currentEntityManager();
+        OpenJPAEntityManager em =(OpenJPAEntityManager) currentEntityManager();
 		startTx(em);
 
-		LifeCycleDDEntity2 emp = new LifeCycleDDEntity2("Thomas", "Jefferson");
+        LifeCycleDDEntity2 emp = new LifeCycleDDEntity2("Thomas", "Jefferson");
 
 		em.persist(emp);
 		int id = emp.getId();
@@ -235,9 +239,11 @@ public class TestDDCallbackMethods extends AnnotationTestCase
 
 		assertNotNull(emp);
 		assertNotNull(CallbackStorage.getInstance().getClist());
-		assertEquals(2, CallbackStorage.getInstance().getClist().size());
-		assertEquals("def-postload", CallbackStorage.getInstance().getClist().get(0));
-		assertEquals("def-postload", CallbackStorage.getInstance().getClist().get(1));
+        assertEquals(2, CallbackStorage.getInstance().getClist().size());
+        assertEquals("def-postload",
+                CallbackStorage.getInstance().getClist().get(0));
+        assertEquals("def-postload",
+                CallbackStorage.getInstance().getClist().get(1));
 
 		endTx(em);
 		endEm(em);
@@ -245,20 +251,24 @@ public class TestDDCallbackMethods extends AnnotationTestCase
 
 	public void testSubClassOverrideSuperCallbacksInh()
 	{
-		OpenJPAEntityManager em =(OpenJPAEntityManager) currentEntityManager();
+       OpenJPAEntityManager em =(OpenJPAEntityManager) currentEntityManager();
 		startTx(em);
 
-		LifeCycleDDEntity2 emp = new LifeCycleDDEntity2("Thomas", "Jefferson");
+        LifeCycleDDEntity2 emp = new LifeCycleDDEntity2("Thomas", "Jefferson");
 
 		em.persist(emp);
 
 		assertNotNull(emp);
 		assertNotNull(CallbackStorage.getInstance().getClist());
-		assertEquals(4, CallbackStorage.getInstance().getClist().size());
-		assertEquals("def-prepersist", CallbackStorage.getInstance().getClist().get(0));
-		assertEquals("verifyprp", CallbackStorage.getInstance().getClist().get(1));
-		assertEquals("def-postpersist", CallbackStorage.getInstance().getClist().get(2));
-		assertEquals("verifypop", CallbackStorage.getInstance().getClist().get(3));
+        assertEquals(4, CallbackStorage.getInstance().getClist().size());
+        assertEquals("def-prepersist",
+                CallbackStorage.getInstance().getClist().get(0));
+        assertEquals("verifyprp",
+                CallbackStorage.getInstance().getClist().get(1));
+        assertEquals("def-postpersist",
+                CallbackStorage.getInstance().getClist().get(2));
+        assertEquals("verifypop",
+                CallbackStorage.getInstance().getClist().get(3));
 
 		endTx(em);
 		endEm(em);

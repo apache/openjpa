@@ -139,7 +139,8 @@ public class TestMixedLockManagerFindPermutation extends SequencedActionsTest {
     public void testFindWritePessimisticForceInc() {
         commonFindTest(
             "testFind(Write,Commit/PessimisticForceInc,Commit)",
-            LockModeType.WRITE, Act.CommitTx, 1, ExpectingOptimisticLockExClass, 
+            LockModeType.WRITE, Act.CommitTx, 1,
+            ExpectingOptimisticLockExClass, 
             LockModeType.PESSIMISTIC_FORCE_INCREMENT, Act.CommitTx, 1, null);
         commonFindTest(
             "testFind(Write,Commit/PessimisticForceInc,Rollback)",

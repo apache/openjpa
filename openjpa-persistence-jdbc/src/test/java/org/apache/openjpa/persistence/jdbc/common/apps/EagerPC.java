@@ -45,9 +45,9 @@ public class EagerPC
 	private HelperPC2	recurse;
 	@OneToOne(cascade={CascadeType.PERSIST, CascadeType.REMOVE})
 	private HelperPC 	helper;
-	@Transient private List		eagerCollection		= new LinkedList ();
-	@Transient private List		recurseCollection	= new LinkedList ();
-	@Transient private List	 	helperCollection	= new LinkedList ();
+    @Transient private List eagerCollection   = new LinkedList ();
+    @Transient private List recurseCollection = new LinkedList ();
+    @Transient private List helperCollection  = new LinkedList ();
 
 	public EagerPC()
 	{}

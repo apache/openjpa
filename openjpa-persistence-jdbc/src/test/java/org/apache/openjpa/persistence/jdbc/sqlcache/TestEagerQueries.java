@@ -81,7 +81,8 @@ public abstract class TestEagerQueries extends SingleEMFTestCase {
         EntityManager em = emf.createEntityManager();
         
         Query q1 = em.createQuery(jpql);
-        assertEquals(OpenJPAPersistence.cast(q1).getLanguage(), JPQLParser.LANG_JPQL);
+        assertEquals(OpenJPAPersistence.cast(q1).getLanguage(),
+                JPQLParser.LANG_JPQL);
         List<Author> authors1 = q1.getResultList();
         assertFalse(authors1.isEmpty());
         Author author1 = authors1.iterator().next();
@@ -92,7 +93,8 @@ public abstract class TestEagerQueries extends SingleEMFTestCase {
         // do the same thing again, this time query should be cached
         em = emf.createEntityManager();
         Query q2 = em.createQuery(jpql);
-        assertEquals(OpenJPAPersistence.cast(q2).getLanguage(), QueryLanguages.LANG_PREPARED_SQL);
+        assertEquals(OpenJPAPersistence.cast(q2).getLanguage(),
+                QueryLanguages.LANG_PREPARED_SQL);
         List<Author> authors2 = q2.getResultList();
         assertFalse(authors2.isEmpty());
         Author author2 = authors2.iterator().next();
@@ -107,7 +109,8 @@ public abstract class TestEagerQueries extends SingleEMFTestCase {
         EntityManager em = emf.createEntityManager();
         
         Query q1 = em.createQuery(jpql);
-        assertEquals(OpenJPAPersistence.cast(q1).getLanguage(), JPQLParser.LANG_JPQL);
+        assertEquals(OpenJPAPersistence.cast(q1).getLanguage(),
+                JPQLParser.LANG_JPQL);
         List<Book> books = q1.getResultList();
         assertFalse(books.isEmpty());
         Book book1 = books.iterator().next();
@@ -120,7 +123,8 @@ public abstract class TestEagerQueries extends SingleEMFTestCase {
         // because it requires multiple selects
         em = emf.createEntityManager();
         Query q2 = em.createQuery(jpql);
-        assertEquals(OpenJPAPersistence.cast(q2).getLanguage(), JPQLParser.LANG_JPQL);
+        assertEquals(OpenJPAPersistence.cast(q2).getLanguage(),
+                JPQLParser.LANG_JPQL);
         List<Book> books2 = q2.getResultList();
         assertFalse(books2.isEmpty());
         Book book2 = books2.iterator().next();

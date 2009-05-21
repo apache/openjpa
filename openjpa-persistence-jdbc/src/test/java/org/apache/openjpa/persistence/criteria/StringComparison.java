@@ -35,8 +35,8 @@ public class StringComparison {
 	private static List<String> _reserved = Arrays.asList(new String[] {
 			"ALL", "AND", "ANY", "AS", "ASC", "AVG",  
 			"BETWEEN", "BIT_LENGTH", "BY", 
-			"CASE", "CHAR_LENGTH", "CHARACTER_LENGTH", "CLASS", "COALESCE", 
-			"COUNT","CURRENT_DATE", "CURRENT_TIME", "CURRENT_TIMESTAMP",
+            "CASE", "CHAR_LENGTH", "CHARACTER_LENGTH", "CLASS", "COALESCE",
+            "COUNT","CURRENT_DATE", "CURRENT_TIME", "CURRENT_TIMESTAMP",
 			"DELETE", "DESC", "DISTINCT", 
 			"EMPTY", "ENTRY", "EXISTS",
 			"FALSE", "FETCH", "FROM", 
@@ -74,7 +74,7 @@ public class StringComparison {
 		tok.wordChars('<', '<');
 		tok.wordChars('!', '!');
 		tok.wordChars('.', '.');
-		for (int ttype; (ttype = tok.nextToken()) != StreamTokenizer.TT_EOF;) {
+        for (int ttype; (ttype = tok.nextToken()) != StreamTokenizer.TT_EOF;) {
 			if (ttype == StreamTokenizer.TT_WORD)
 				list.add(tok.sval);
 		}
@@ -86,15 +86,18 @@ public class StringComparison {
 			List<String> list1 = tokenize(s1);
 			List<String> list2 = tokenize(s2);
 			if (list1.size() != list2.size()) {
-				System.err.println("Unequal tokens " + list1.size() + "!=" +  list2.size());
+                System.err.println("Unequal tokens " + list1.size() + "!="
+                        + list2.size());
 				return false;
 			}
 			for (int i = 0; i < list1.size(); i++) {
 				String a = list1.get(i);
 				String b = list2.get(i);
-				boolean match = isReservedWord(a) ? a.equalsIgnoreCase(b) : a.equals(b);
+                boolean match =
+                    isReservedWord(a) ? a.equalsIgnoreCase(b) : a.equals(b);
 				if (!match) {
-					System.err.println("[" + a + "] does not match [" + b + "]");
+                    System.err.println("[" + a + "] does not match [" + b
+                            + "]");
 					return false;
 				}
 			}
@@ -107,8 +110,10 @@ public class StringComparison {
 	
 	public static void main(String[] args) throws Exception {
 		StringComparison c = new StringComparison();
-		String s1 = "SELECT DISTINCT o FROM Order AS o JOIN o.lineItems AS l WHERE l.shipped != FALSE and l.name like 'hello'";
-		String s2 = "select DISTINCT o FROM Order AS o  JOIN o.lineItems AS  l WHERE l.shipped !=  FALSE and l.name like 'hello'";
+        String s1 = "SELECT DISTINCT o FROM Order AS o JOIN o.lineItems AS l "
+            + "WHERE l.shipped != FALSE and l.name like 'hello'";
+        String s2 = "select DISTINCT o FROM Order AS o  JOIN o.lineItems AS  l "
+            + "WHERE l.shipped !=  FALSE and l.name like 'hello'";
 		boolean match = c.compare(s1, s2);
 		if (!match) {
 			System.err.println(s1);

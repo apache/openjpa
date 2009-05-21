@@ -143,7 +143,8 @@ public class TestSpec10_1_27_Ex8 extends SQLListenerTestCase {
         c.setId(id);
         for (int i = 0; i < numDivisionsPerCo; i++) {
             VicePresident vp = createVicePresident(em, vpId++);
-            FileName fileName = new FileName("f" + vp.getId(), "l" + vp.getId());
+            FileName fileName = new FileName(
+                    "f" + vp.getId(), "l" + vp.getId());
             c.addToOrganization(vp, fileName);
             vp.setCompany(c);
             em.persist(vp);

@@ -56,7 +56,8 @@ public class Person4 {
         if (!id.equals(id0)) return false;
         MedicalHistory4 medical0 = p0.getMedical();
         if (medical != null && 
-            !medical.patient.getId().equals(medical0.patient.getId())) return false; 
+            !medical.patient.getId().equals(medical0.patient.getId()))
+            return false; 
         if (medical == null && medical0 != null) return false;
         return true;
     }

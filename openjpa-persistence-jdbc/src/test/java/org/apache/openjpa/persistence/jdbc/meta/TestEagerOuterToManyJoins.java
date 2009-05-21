@@ -47,8 +47,9 @@ import org.apache.openjpa.persistence.OpenJPAEntityManager;
 import org.apache.openjpa.persistence.jdbc.common.apps.EagerOuterJoinPC;
 
 
-public class TestEagerOuterToManyJoins extends org.apache.openjpa.persistence.jdbc.kernel.BaseJDBCTest{
-    
+public class TestEagerOuterToManyJoins
+        extends org.apache.openjpa.persistence.jdbc.kernel.BaseJDBCTest {
+
     /** Creates a new instance of TestEagerOuterToManyJoins */
     public TestEagerOuterToManyJoins(String name) {
     	super(name);

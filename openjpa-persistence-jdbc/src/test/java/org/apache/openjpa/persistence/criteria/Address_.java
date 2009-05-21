@@ -6,7 +6,8 @@ package org.apache.openjpa.persistence.criteria;
 
 import javax.persistence.metamodel.Attribute;
 
-@javax.persistence.metamodel.TypesafeMetamodel(value=org.apache.openjpa.persistence.criteria.Address.class)
+@javax.persistence.metamodel.TypesafeMetamodel(
+    value=org.apache.openjpa.persistence.criteria.Address.class)
 public class Address_ {
     public static volatile Attribute<Address,String> city;
     public static volatile Attribute<Address,String> country;

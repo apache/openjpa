@@ -48,7 +48,8 @@ public abstract class XMLAbstractMappedSuperProperty {
     
     public boolean equals(Object obj) {
         if (obj instanceof XMLAbstractMappedSuperProperty) {
-            XMLAbstractMappedSuperProperty ps = (XMLAbstractMappedSuperProperty)obj;
+            XMLAbstractMappedSuperProperty ps =
+                (XMLAbstractMappedSuperProperty)obj;
             return getId() == ps.getId() &&
                    getName().equals(ps.getName());
         }

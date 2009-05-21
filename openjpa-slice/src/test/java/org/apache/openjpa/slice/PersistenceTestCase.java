@@ -147,7 +147,8 @@ public abstract class PersistenceTestCase
     }
 
     /**
-     * Closes all open entity managers after first rolling back any open transactions
+     * Closes all open entity managers after first rolling back any open
+     * transactions.
      */
     protected void closeAllOpenEMs(EntityManagerFactory emf) {
         if (emf == null || !emf.isOpen())
@@ -191,15 +192,16 @@ public abstract class PersistenceTestCase
     protected void clear(EntityManagerFactory emf) {
         if (emf == null)
             return;
-        clear(emf, true, ((OpenJPAEntityManagerFactorySPI) emf).getConfiguration().
-            getMetaDataRepositoryInstance().getMetaDatas());
+        clear(emf, true, ((OpenJPAEntityManagerFactorySPI) emf).
+            getConfiguration().getMetaDataRepositoryInstance().getMetaDatas());
     }
 
     /**
      * Delete all instances of the given types using bulk delete queries.
      * @param closeEMs TODO
      */
-    private void clear(EntityManagerFactory emf, boolean closeEMs, ClassMetaData... types) {
+    private void clear(EntityManagerFactory emf, boolean closeEMs,
+            ClassMetaData... types) {
         if (emf == null || types.length == 0)
             return;
         

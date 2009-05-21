@@ -36,8 +36,8 @@ public class FlightSchedule extends Schedule
 
 	public FlightSchedule(){}
 
-	public FlightSchedule(String name, Calendar cad, Date start, Date end, String pname)
-	{
+    public FlightSchedule(String name, Calendar cad, Date start, Date end,
+            String pname) {
 		super(name, cad, start, end);
 		this.planeName = pname;
 	}

@@ -82,7 +82,8 @@ public class TestQuery extends SliceTestCase {
     public void testOrderedQueryResultWhenOrderableItemSelected() {
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
-        Query query = em.createQuery("SELECT p.value,p FROM PObject p ORDER BY p.value ASC");
+        Query query = em.createQuery(
+                "SELECT p.value,p FROM PObject p ORDER BY p.value ASC");
         List result = query.getResultList();
         assertValidResult(result);
         Integer old = Integer.MIN_VALUE;
@@ -100,7 +101,8 @@ public class TestQuery extends SliceTestCase {
     public void testOrderedQueryResultWhenOrderableItemNotSelected() {
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
-        Query query = em.createQuery("SELECT p FROM PObject p ORDER BY p.value ASC");
+        Query query =
+            em.createQuery("SELECT p FROM PObject p ORDER BY p.value ASC");
         List<PObject> result = query.getResultList();
         assertValidResult(result);
         Integer old = Integer.MIN_VALUE;
@@ -115,7 +117,8 @@ public class TestQuery extends SliceTestCase {
     public void testOrderedQueryResultWhenNavigatedOrderableItemNotSelected() {
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
-        Query query = em.createQuery("SELECT p FROM Person p JOIN p.address a ORDER BY a.zip ASC, a.city DESC");
+        Query query = em.createQuery(
+     "SELECT p FROM Person p JOIN p.address a ORDER BY a.zip ASC, a.city DESC");
         List<Person> result = query.getResultList();
         assertValidResult(result);
         Integer oldZip = Integer.MIN_VALUE;
@@ -134,11 +137,17 @@ public class TestQuery extends SliceTestCase {
     public void testAggregateQuery() {
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
-        Object count = em.createQuery("SELECT COUNT(p) FROM PObject p").getSingleResult();
-        Object max   = em.createQuery("SELECT MAX(p.value) FROM PObject p").getSingleResult();
-        Object min   = em.createQuery("SELECT MIN(p.value) FROM PObject p").getSingleResult();
-        Object sum   = em.createQuery("SELECT SUM(p.value) FROM PObject p").getSingleResult();
-        Object minmax   = em.createQuery("SELECT MIN(p.value),MAX(p.value) FROM PObject p").getSingleResult();
+        Object count = em.createQuery("SELECT COUNT(p) FROM PObject p")
+                .getSingleResult();
+        Object max = em.createQuery("SELECT MAX(p.value) FROM PObject p")
+                .getSingleResult();
+        Object min = em.createQuery("SELECT MIN(p.value) FROM PObject p")
+                .getSingleResult();
+        Object sum = em.createQuery("SELECT SUM(p.value) FROM PObject p")
+                .getSingleResult();
+        Object minmax = em.createQuery(
+                "SELECT MIN(p.value),MAX(p.value) FROM PObject p")
+                .getSingleResult();
         Object min1 = ((Object[])minmax)[0];
         Object max1 = ((Object[])minmax)[1];
         em.getTransaction().rollback();
@@ -146,7 +155,8 @@ public class TestQuery extends SliceTestCase {
         assertEquals(POBJECT_COUNT, ((Number)count).intValue());
         assertEquals(VALUE_MAX, ((Number)max).intValue());
         assertEquals(VALUE_MIN, ((Number)min).intValue());
-        assertEquals((VALUE_MIN+VALUE_MAX)*POBJECT_COUNT, 2*((Number)sum).intValue());
+        assertEquals((VALUE_MIN + VALUE_MAX) * POBJECT_COUNT,
+                2 * ((Number)sum).intValue());
         assertEquals(min, min1);
         assertEquals(max, max1);
     }
@@ -154,7 +164,9 @@ public class TestQuery extends SliceTestCase {
     public void testAggregateQueryWithMissingValueFromSlice() {
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
-        Object max   = em.createQuery("SELECT MAX(p.value) FROM PObject p WHERE MOD(p.value,2)=0").getSingleResult();
+        Object max = em.createQuery(
+                "SELECT MAX(p.value) FROM PObject p WHERE MOD(p.value,2)=0")
+                .getSingleResult();
         em.getTransaction().rollback();
         
         assertEquals(VALUE_MAX, ((Number)max).intValue());
@@ -164,8 +176,9 @@ public class TestQuery extends SliceTestCase {
         EntityManager em = emf.createEntityManager();
         int limit = 3;
         em.getTransaction().begin();
-        List<PObject> result = em.createQuery("SELECT p FROM PObject p ORDER BY p.value ASC")
-            .setMaxResults(limit).getResultList();
+        List<PObject> result =
+            em.createQuery("SELECT p FROM PObject p ORDER BY p.value ASC")
+                .setMaxResults(limit).getResultList();
         assertValidResult(result);
         Integer old = Integer.MIN_VALUE;
         for (PObject pc : result) {
@@ -195,7 +208,8 @@ public class TestQuery extends SliceTestCase {
     public void testInMemoryOrderBy() {
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
-        Query query = em.createQuery("SELECT p FROM PObject p ORDER BY p.value");
+        Query query =
+            em.createQuery("SELECT p FROM PObject p ORDER BY p.value");
         List result = query.getResultList();
         em.getTransaction().rollback();
     }
@@ -203,8 +217,9 @@ public class TestQuery extends SliceTestCase {
     public void testQueryParameter() {
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
-        Query query = em.createQuery("SELECT p FROM PObject p WHERE p.value > :v")
-        	.setParameter("v", 200);
+        Query query = em.createQuery(
+                "SELECT p FROM PObject p WHERE p.value > :v")
+        	    .setParameter("v", 200);
         List result = query.getResultList();
         em.getTransaction().rollback();
     }
@@ -212,12 +227,14 @@ public class TestQuery extends SliceTestCase {
     public void testQueryParameterEntity() {
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
-        Address a = (Address)em.createQuery("select a from Address a where a.city = :city")
-        	.setParameter("city", "Rome").getSingleResult();
+        Address a = (Address)em.createQuery(
+                "select a from Address a where a.city = :city")
+        	    .setParameter("city", "Rome").getSingleResult();
         assertNotNull(a);
         assertEquals("Odd", SlicePersistence.getSlice(a));
-        Query query = em.createQuery("SELECT p FROM Person p WHERE p.address = :a")
-        	.setParameter("a", a);
+        Query query =
+            em.createQuery("SELECT p FROM Person p WHERE p.address = :a")
+            .setParameter("a", a);
         List<Person> result = query.getResultList();
         assertEquals(1, result.size());
         Person p = result.get(0);

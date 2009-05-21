@@ -45,7 +45,7 @@ import org.apache.openjpa.persistence.OpenJPAEntityManager;
 
 
 public class TestSubclassJoinExtent
-        extends org.apache.openjpa.persistence.jdbc.kernel.TestSQLListenerTestCase{
+    extends org.apache.openjpa.persistence.jdbc.kernel.TestSQLListenerTestCase {
    
     private String _outer = "OUTER";
     

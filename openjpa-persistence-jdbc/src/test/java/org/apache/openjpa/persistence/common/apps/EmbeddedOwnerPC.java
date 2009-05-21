@@ -126,8 +126,8 @@ public class EmbeddedOwnerPC
 			int index = str.indexOf (":");
 			if (index != -1)
 			{
-				id1 = Integer.parseInt (str.substring (0, index));
-				id2 = Integer.parseInt(str.substring (index + 1));
+                id1 = Integer.parseInt (str.substring (0, index));
+                id2 = Integer.parseInt(str.substring (index + 1));
 			}
 		}
 

@@ -527,7 +527,8 @@ public class TestSecondClassValues extends BaseKernelTest {
             {
                 assertEquals (collection.size retrievedCollection.size ());
             } catch (AssertionFailedError afe) {
-                bug (AbstractTestCase.Platform.SQLSERVER, 2, afe, "Second-class collections"
+                bug (AbstractTestCase.Platform.SQLSERVER, 2, afe,
+                    "Second-class collections"
                     + " are not being retrieved correctly");
             }
             */

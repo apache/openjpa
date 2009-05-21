@@ -73,8 +73,8 @@ public class LibServiceImpl implements LibService {
                         "the title cannot be null or empty");
 
             // set up the query
-            Query query = em
-                    .createQuery("select b from Book b join fetch b.subjects where b.title = :x");
+            Query query = em.createQuery(
+               "select b from Book b join fetch b.subjects where b.title = :x");
             query.setParameter("x", title);
 
             // execute the query and return the books

@@ -23,8 +23,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * CREATE TABLE EntityA_Coll_Embed_Embed (id INTEGER NOT NULL, age INTEGER, name VARCHAR(30), PRIMARY KEY (id))
- * CREATE TABLE EntityA_Coll_Embed_Embed_embeds (ENTITYA_COLL_EMBED_EMBED_ID INTEGER, intVal1 INTEGER, intVal2 INTEGER, intVal3 INTEGER, IntVal1x INTEGER, IntVal2x INTEGER, IntVal3x INTEGER)
+ * CREATE TABLE EntityA_Coll_Embed_Embed (id INTEGER NOT NULL, age INTEGER,
+ *     name VARCHAR(30), PRIMARY KEY (id))
+ * CREATE TABLE EntityA_Coll_Embed_Embed_embeds (
+ *     ENTITYA_COLL_EMBED_EMBED_ID INTEGER, intVal1 INTEGER, intVal2 INTEGER,
+ *     intVal3 INTEGER, IntVal1x INTEGER, IntVal2x INTEGER, IntVal3x INTEGER)
  * @author faywang
  *
  */

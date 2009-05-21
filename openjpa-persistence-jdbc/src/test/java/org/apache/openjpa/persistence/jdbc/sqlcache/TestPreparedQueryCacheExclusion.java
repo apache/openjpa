@@ -42,7 +42,7 @@ public class TestPreparedQueryCacheExclusion extends TestCase {
 		super.setUp();
 		cache = new PreparedQueryCacheImpl();
 		for (int i = 0; i < keys.length; i++) {
-			PreparedQuery p = new PreparedQueryImpl(keys[i], values[i], null);
+            PreparedQuery p = new PreparedQueryImpl(keys[i], values[i], null);
 			cache.cache(p);
 		}
 	}
@@ -69,8 +69,10 @@ public class TestPreparedQueryCacheExclusion extends TestCase {
 		int EXCLUDED = 1;
 		cache.addExclusionPattern(keys[EXCLUDED]);
 		
-		PreparedQuery p = new PreparedQueryImpl(keys[EXCLUDED], values[EXCLUDED], null);
-		assertFalse("Must not cache excluded key " + keys[EXCLUDED], cache.cache(p));
+        PreparedQuery p = new PreparedQueryImpl(keys[EXCLUDED],
+                values[EXCLUDED], null);
+        assertFalse("Must not cache excluded key " + keys[EXCLUDED],
+                cache.cache(p));
 	}
 
 	public void testAddExclusionPatternMakesExistingEntryInvalid() {
@@ -92,23 +94,27 @@ public class TestPreparedQueryCacheExclusion extends TestCase {
 		int EXCLUDED = 1;
 		cache.addExclusionPattern(keys[EXCLUDED]);
 		
-		PreparedQuery p = new PreparedQueryImpl(keys[EXCLUDED], values[EXCLUDED], null);
-		assertFalse("Must not cache excluded key " + keys[EXCLUDED], cache.cache(p));
+        PreparedQuery p = new PreparedQueryImpl(keys[EXCLUDED],
+                values[EXCLUDED], null);
+        assertFalse("Must not cache excluded key " + keys[EXCLUDED],
+                cache.cache(p));
 		
 		cache.removeExclusionPattern(keys[EXCLUDED]);
-		assertTrue("Must cache remove excluded key " + keys[EXCLUDED], cache.cache(p));
+        assertTrue("Must cache remove excluded key " + keys[EXCLUDED],
+                cache.cache(p));
 	}
 
 	public void testRemoveExclusionPatternDoesNotRemoveUserProhbitedKeys() {
 		String USER_MARKED_UNCACHABLE = "[user prohibited]";
 		cache.markUncachable(USER_MARKED_UNCACHABLE);
 		
-		PreparedQuery p = new PreparedQueryImpl(USER_MARKED_UNCACHABLE, "xyz", null);
+        PreparedQuery p = new PreparedQueryImpl(USER_MARKED_UNCACHABLE, "xyz",
+                null);
 		assertFalse("Must not cache user-prohibited key " + 
 				USER_MARKED_UNCACHABLE, cache.cache(p));
 		
 		cache.removeExclusionPattern(USER_MARKED_UNCACHABLE);
-		assertFalse("Must not cache user-prohibited key even when removed " + 
+        assertFalse("Must not cache user-prohibited key even when removed " +
 				USER_MARKED_UNCACHABLE, cache.cache(p));
 	}
 

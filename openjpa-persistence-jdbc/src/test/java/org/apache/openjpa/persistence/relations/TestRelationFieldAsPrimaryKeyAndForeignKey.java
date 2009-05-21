@@ -161,7 +161,7 @@ public class TestRelationFieldAsPrimaryKeyAndForeignKey
 	    Assert.assertEquals(1, e.getCms().size());
 	    Assert.assertEquals(1, e.getVcss().size());
 
-	    // Get virtual container set and check that it has a reference to the
+        // Get virtual container set and check that it has a reference to the
 	    // ensemble
 	    List<VCS> vcss = (List<VCS>) em.createQuery(
 	        "Select vcset from VCS vcset where vcset.vcsId='VCS1'")

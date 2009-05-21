@@ -32,7 +32,8 @@ import java.util.List;
 
 
 import org.apache.openjpa.persistence.kernel.common.apps.FetchGroupTestObject;
-import org.apache.openjpa.persistence.kernel.common.apps.FetchGroupTestObjectChild;
+import org.apache.openjpa.persistence.kernel.common.apps.
+        FetchGroupTestObjectChild;
 
 import org.apache.openjpa.persistence.Extent;
 import org.apache.openjpa.persistence.OpenJPAEntityManager;

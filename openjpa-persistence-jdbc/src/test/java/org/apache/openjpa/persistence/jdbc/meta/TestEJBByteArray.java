@@ -26,8 +26,8 @@ import org.apache.openjpa.persistence.kernel.common.apps.*;
 
 import junit.framework.*;
 
-public class TestEJBByteArray extends org.apache.openjpa.persistence.jdbc.kernel.BaseJDBCTest
-{
+public class TestEJBByteArray
+        extends org.apache.openjpa.persistence.jdbc.kernel.BaseJDBCTest {
 	private int _null;
 	private int _empty;
 	private int _small;

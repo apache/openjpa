@@ -26,7 +26,8 @@ import java.util.*;
 public class Employee4 {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id", insertable = false, updatable = false, nullable = false)
+    @Column(name = "id", insertable = false, updatable = false,
+            nullable = false)
 	private long id;
 	
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "parent")

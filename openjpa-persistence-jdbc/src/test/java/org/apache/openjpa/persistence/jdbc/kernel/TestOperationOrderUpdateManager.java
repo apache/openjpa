@@ -51,7 +51,9 @@ public class TestOperationOrderUpdateManager
 
 		emf = getEmf();
 
-		JDBCConfiguration conf = (JDBCConfiguration) ((OpenJPAEntityManagerFactorySPI) OpenJPAPersistence.cast(emf)).getConfiguration();
+        JDBCConfiguration conf =
+            (JDBCConfiguration) ((OpenJPAEntityManagerFactorySPI)
+            OpenJPAPersistence.cast(emf)).getConfiguration();
         DBDictionary dict = conf.getDBDictionaryInstance();
         return !dict.supportsAutoAssign;
     }

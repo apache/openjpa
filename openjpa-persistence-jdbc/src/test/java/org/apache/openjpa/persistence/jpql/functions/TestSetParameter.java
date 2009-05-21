@@ -61,7 +61,8 @@ public class TestSetParameter extends SingleEMFTestCase {
     public void testSetPositionalParameter() {
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
-        String query = "UPDATE CompUser e set e.name= ?1, e.age = ?2 WHERE e.userid = ?3";
+        String query = "UPDATE CompUser e set e.name= ?1, e.age = ?2 "
+            + "WHERE e.userid = ?3";
   
         int count = em.createQuery(query).
             setParameter(1, UPDATED_NAME).
@@ -78,7 +79,8 @@ public class TestSetParameter extends SingleEMFTestCase {
     public void testSetPositionalParameterInNonIntutiveOrder() {
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
-        String query = "UPDATE CompUser e set e.name= ?2, e.age = ?1 WHERE e.userid = ?3";
+        String query = "UPDATE CompUser e set e.name= ?2, e.age = ?1 "
+            + "WHERE e.userid = ?3";
   
         int count = em.createQuery(query).
             setParameter(2, UPDATED_NAME).
@@ -96,7 +98,8 @@ public class TestSetParameter extends SingleEMFTestCase {
     public void testSetNamedParameter() {
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
-        String query = "UPDATE CompUser e set e.name= :name, e.age = :age WHERE e.userid = :id";
+        String query = "UPDATE CompUser e set e.name= :name, e.age = :age "
+            + "WHERE e.userid = :id";
   
         int count = em.createQuery(query).
             setParameter("name", UPDATED_NAME).
@@ -114,7 +117,8 @@ public class TestSetParameter extends SingleEMFTestCase {
     public void testNativeSQL() {
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
-        int count = em.createNativeQuery("INSERT INTO Address (id, city, country, streetAd, zipcode) VALUES (?,?,?,?,?)")
+        int count = em.createNativeQuery("INSERT INTO Address (id, city,"
+          + " country, streetAd, zipcode) VALUES (?,?,?,?,?)")
           .setParameter(1, System.currentTimeMillis()%10000)
           .setParameter(2, "Some City")
           .setParameter(3, "Some Country")
@@ -130,7 +134,8 @@ public class TestSetParameter extends SingleEMFTestCase {
     public CompUser createUser(String name, String cName, int age,
         boolean isMale) {
         CompUser user = null;
-        Address addr = new Address("43 Sansome", "SF", "United-Kingdom", "94104");
+        Address addr = new Address("43 Sansome", "SF", "United-Kingdom",
+                "94104");
         if (isMale) {
             user = new MaleUser();
             user.setName(name);

@@ -81,7 +81,8 @@ public class TestComplexQueries extends BaseQueryTest {
 
         broker.begin();
         // test against database
-//        OpenJPAQuery q = pm.createQuery("SELECT o FROM "+c.getSimpleName()+"o WHERE o."+filter);
+        //OpenJPAQuery q = pm.createQuery("SELECT o FROM " + 
+        //c.getSimpleName() + "o WHERE o." + filter);
         String qstrng =
             "SELECT o FROM " + c.getSimpleName() + " o WHERE o." + filter;
         assertSize(size,

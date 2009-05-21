@@ -133,10 +133,12 @@ public class TestQueryProperties extends SingleEMFTestCase {
             hints = q.getHints();
             assertTrue(hints.containsKey("javax.persistence.lock.timeout"));
             assertTrue(hints.containsKey("javax.persistence.query.timeout"));
-            timeout = new Integer((String) hints.get("javax.persistence.lock.timeout"));
+            timeout = new Integer((String) hints.get(
+                "javax.persistence.lock.timeout"));
             assertEquals("Expected Map updated lockTimeout",
                 lTime.intValue(), timeout.intValue());
-            timeout = new Integer((String) hints.get("javax.persistence.query.timeout"));
+            timeout = new Integer((String) hints.get(
+                "javax.persistence.query.timeout"));
             assertEquals("Expected Map updated queryTimeout",
                 qTime.intValue(), timeout.intValue());
             */
@@ -159,10 +161,12 @@ public class TestQueryProperties extends SingleEMFTestCase {
             hints = q.getHints();
             // verify getHints values were updated
             timeout = (Integer) hints.get("javax.persistence.lock.timeout");
-            assertEquals("Expected setHint updated javax.persistence.lock.timeout",
+            assertEquals(
+                "Expected setHint updated javax.persistence.lock.timeout",
                 lTime.intValue(), timeout.intValue());
             timeout = (Integer) hints.get("javax.persistence.query.timeout");
-            assertEquals("Expected setHint updated javax.persistence.query.timeout",
+            assertEquals(
+                "Expected setHint updated javax.persistence.query.timeout",
                 qTime.intValue(), timeout.intValue());
             // verify internal config values were updated
             timeout = q.getFetchPlan().getLockTimeout();
@@ -262,7 +266,8 @@ public class TestQueryProperties extends SingleEMFTestCase {
             qTime = 1000;
             // verify getHints values were updated
             hints = q.getHints();
-            timeout = new Integer((String)hints.get("javax.persistence.query.timeout"));
+            timeout = new Integer((String)hints.get(
+                    "javax.persistence.query.timeout"));
             assertEquals("Expected QueryHints updated query timeout",
                 qTime.intValue(), timeout.intValue());
             // verify internal config value was updated

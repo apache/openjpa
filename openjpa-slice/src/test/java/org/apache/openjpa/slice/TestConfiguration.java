@@ -73,8 +73,10 @@ public class TestConfiguration extends SliceTestCase {
         BrokerFactory bf = ((EntityManagerFactoryImpl) emf).getBrokerFactory();
         DistributedBroker broker = (DistributedBroker)bf.newBroker();
         Map newProps = new HashMap();
-        newProps.put("openjpa.slice.newslice.ConnectionURL", "jdbc:derby:target/database/newslice;create=true");
-        newProps.put("openjpa.slice.newslice.ConnectionDriverName", "org.apache.derby.jdbc.EmbeddedDriver");
+        newProps.put("openjpa.slice.newslice.ConnectionURL",
+                "jdbc:derby:target/database/newslice;create=true");
+        newProps.put("openjpa.slice.newslice.ConnectionDriverName",
+                "org.apache.derby.jdbc.EmbeddedDriver");
         broker.addSlice("newslice", newProps);
         
         assertTrue(conf.getActiveSliceNames().contains("newslice"));

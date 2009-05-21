@@ -24,7 +24,8 @@ import java.util.Date;
 import java.util.List;
 import javax.persistence.*;
 
-import org.apache.openjpa.persistence.annotations.common.apps.annotApp.annotype.*;
+import
+    org.apache.openjpa.persistence.annotations.common.apps.annotApp.annotype.*;
 import org.apache.openjpa.persistence.common.utils.*;
 import org.apache.openjpa.persistence.OpenJPAEntityManager;
 
@@ -40,7 +41,7 @@ public class TestAdvAnnot extends AnnotationTestCase
 		deleteAll(Schedule.class);
 		deleteAll(FlightSchedule.class);
 
-		OpenJPAEntityManager em =(OpenJPAEntityManager) currentEntityManager();
+        OpenJPAEntityManager em =(OpenJPAEntityManager) currentEntityManager();
 		startTx(em);
 
 		for(int i = 0; i<5; i++)
@@ -50,7 +51,8 @@ public class TestAdvAnnot extends AnnotationTestCase
 			Date edate = new Date(10031980l);
 			String name = "AmericaWest"+i;
 			String schedname = "Schedule"+i;
-			FlightSchedule sched = new FlightSchedule(schedname, cal, date, edate, name);
+            FlightSchedule sched = new FlightSchedule(schedname, cal, date,
+                    edate, name);
 
 			em.persist(sched);
 
@@ -63,9 +65,10 @@ public class TestAdvAnnot extends AnnotationTestCase
 
 	public void testTimeTemporalAnnot()
 	{
-		OpenJPAEntityManager em =(OpenJPAEntityManager) currentEntityManager();
+        OpenJPAEntityManager em =(OpenJPAEntityManager) currentEntityManager();
 
-		String query = "SELECT d.startDate FROM FlightSchedule d WHERE d.name = :name";
+        String query = "SELECT d.startDate FROM FlightSchedule d "
+            + "WHERE d.name = :name";
 
 		Date obj = (Date) em.createQuery(query)
 		              .setParameter("name", "Schedule3")
@@ -79,14 +82,15 @@ public class TestAdvAnnot extends AnnotationTestCase
 
 	public void testCalendarTemporalAnnot()
 	{
-		OpenJPAEntityManager em =(OpenJPAEntityManager) currentEntityManager();
+        OpenJPAEntityManager em =(OpenJPAEntityManager) currentEntityManager();
 		String query = "SELECT d FROM FlightSchedule d";
 
 		List list = em.createQuery(query).getResultList();
 		assertNotNull(list);
 		assertEquals(5, list.size());
 		/*
-		String query = "SELECT d.dob FROM FlightSchedule d WHERE d.name = :name";
+        String query = "SELECT d.dob FROM FlightSchedule d "
+            + "WHERE d.name = :name";
 
 		List list = em.createQuery(query)
 		              .setParameter("name", "Schedule3")
@@ -100,10 +104,11 @@ public class TestAdvAnnot extends AnnotationTestCase
 
 	public void testUniqueConstraintAnnot()
 	{
-		OpenJPAEntityManager em =(OpenJPAEntityManager) currentEntityManager();
+        OpenJPAEntityManager em =(OpenJPAEntityManager) currentEntityManager();
 		startTx(em);
 
-		String query = "Update FlightSchedule f SET f.planeName = :plane WHERE f.name = :sname";
+        String query = "Update FlightSchedule f SET f.planeName = :plane "
+            + "WHERE f.name = :sname";
 		int upd = 0;
 
 		try
@@ -113,11 +118,12 @@ public class TestAdvAnnot extends AnnotationTestCase
             .setParameter("sname", "Schedule2")
             .executeUpdate();
 
-			fail("Violated unique constraint rule...@Unique Constraint annotation needs to be supported");
+            fail("Violated unique constraint rule...@Unique Constraint"
+                    + " annotation needs to be supported");
 		}
 		catch(Exception e)
 		{
-			//suppose to throw exception based on the unique constraint rule
+            //suppose to throw exception based on the unique constraint rule
 		}
 
 		assertNotNull(upd);

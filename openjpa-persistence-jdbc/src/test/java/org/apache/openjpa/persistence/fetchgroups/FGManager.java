@@ -34,8 +34,10 @@ import org.apache.openjpa.persistence.FetchGroups;
 @Entity
 @DiscriminatorValue("1")
 @FetchGroups( {
-        @FetchGroup(name = "MDataFetchGroup", attributes = { @FetchAttribute(name = "mData") }),
-        @FetchGroup(name = "EmployeesFetchGroup", attributes = { @FetchAttribute(name = "employees") }) })
+        @FetchGroup(name = "MDataFetchGroup",
+                attributes = { @FetchAttribute(name = "mData") }),
+        @FetchGroup(name = "EmployeesFetchGroup",
+                attributes = { @FetchAttribute(name = "employees") }) })
 public class FGManager extends FGEmployee {
     @OneToMany(mappedBy = "manager", fetch = FetchType.LAZY)
     Collection<FGEmployee> employees;

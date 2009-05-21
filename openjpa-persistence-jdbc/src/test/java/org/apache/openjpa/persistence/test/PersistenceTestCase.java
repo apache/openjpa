@@ -252,8 +252,8 @@ public abstract class PersistenceTestCase
         if (emf == null)
             return;
         clear(emf, true, ((OpenJPAEntityManagerFactorySPI) emf)
-        		.getConfiguration()
-        		.getMetaDataRepositoryInstance().getMetaDatas());
+                .getConfiguration()
+                .getMetaDataRepositoryInstance().getMetaDatas());
     }
 
     /**
@@ -261,7 +261,7 @@ public abstract class PersistenceTestCase
      * @param closeEMs TODO
      */
     private void clear(EntityManagerFactory emf, boolean closeEMs, 
-    		ClassMetaData... types) {
+            ClassMetaData... types) {
         if (emf == null || types.length == 0)
             return;
         
@@ -365,53 +365,54 @@ public abstract class PersistenceTestCase
     // Utility methods for exception handling
     // ================================================
     /**
-	 * Asserts that the given targetType is assignable from given actual 
-	 * Throwable.
-	 */
+     * Asserts that the given targetType is assignable from given actual 
+     * Throwable.
+     */
     protected void assertException(final Throwable actual, Class targetType) {
-		assertException(actual, targetType, null);
-	}
-	
-	/**
-	 * Asserts that the given targetType is assignable from given actual 
-	 * Throwable. Asserts that the nestedType is nested (possibly recursively) 
-	 * within the given actual Throwable.
-	 * 
-	 * @param actual is the actual throwable to be tested
-	 * @param targetType is expected type or super type of actual. If null, then
-	 * the check is omitted.
-	 * @param nestedTargetType is expected type of exception nested within
-	 * actual. If null this search is omitted. 
-	 * 
-	 */
+        assertException(actual, targetType, null);
+    }
+    
+    /**
+     * Asserts that the given targetType is assignable from given actual 
+     * Throwable. Asserts that the nestedType is nested (possibly recursively)
+     * within the given actual Throwable.
+     * 
+     * @param actual is the actual throwable to be tested
+     * @param targetType is expected type or super type of actual. If null, then
+     * the check is omitted.
+     * @param nestedTargetType is expected type of exception nested within
+     * actual. If null this search is omitted. 
+     * 
+     */
     protected void assertException(final Throwable actual, Class targetType,
-			Class nestedTargetType) {
-		assertNotNull(actual);
-		Class actualType = actual.getClass();
-		if (targetType != null && !targetType.isAssignableFrom(actualType)) {
-			actual.printStackTrace();
-			fail(targetType.getName() + " is not assignable from "
-					+ actualType.getName());
-		}
+            Class nestedTargetType) {
+        assertNotNull(actual);
+        Class actualType = actual.getClass();
+        if (targetType != null && !targetType.isAssignableFrom(actualType)) {
+            actual.printStackTrace();
+            fail(targetType.getName() + " is not assignable from "
+                    + actualType.getName());
+        }
 
-		if (nestedTargetType != null) {
-			Throwable nested = actual.getCause();
-			Class nestedActualType = (nested == null) ? null : nested.getClass();
-			while (nestedActualType != null) {
-				if (nestedTargetType.isAssignableFrom(nestedActualType)) {
-					return;
-				} else {
-					Throwable next = nested.getCause();
-					if (next == null || next == nested)
-						break;
-					nestedActualType = next.getClass();
-					nested     = next;
-				}
-			}
-			actual.printStackTrace();
-			fail("No nested type " + nestedTargetType + " in " + actual);
-		}
-	}
+        if (nestedTargetType != null) {
+            Throwable nested = actual.getCause();
+            Class nestedActualType =
+                (nested == null) ? null : nested.getClass();
+            while (nestedActualType != null) {
+                if (nestedTargetType.isAssignableFrom(nestedActualType)) {
+                    return;
+                } else {
+                    Throwable next = nested.getCause();
+                    if (next == null || next == nested)
+                        break;
+                    nestedActualType = next.getClass();
+                    nested     = next;
+                }
+            }
+            actual.printStackTrace();
+            fail("No nested type " + nestedTargetType + " in " + actual);
+        }
+    }
 
     /**
      * Asserts that the given targetType is assignable from given actual 
@@ -424,34 +425,34 @@ public abstract class PersistenceTestCase
         assertMessage(actual, messages);
     }
     
-	/**
-	 * Assert that each of given keys are present in the message of the given
-	 * Throwable.
-	 */
+    /**
+     * Assert that each of given keys are present in the message of the given
+     * Throwable.
+     */
     protected void assertMessage(Throwable actual, String... keys) {
-		if (actual == null || keys == null)
-			return;
-		String message = actual.getMessage();
-		for (String key : keys) {
-			assertTrue(key + " is not in " + message, message.contains(key));
-		}
-	}
+        if (actual == null || keys == null)
+            return;
+        String message = actual.getMessage();
+        for (String key : keys) {
+            assertTrue(key + " is not in " + message, message.contains(key));
+        }
+    }
     
     public void printException(Throwable t) {
-    	printException(t, 2);
+        printException(t, 2);
     }
     
     public void printException(Throwable t, int tab) {
-		if (t == null) return;
-		for (int i=0; i<tab*4;i++) System.out.print(" ");
-		String sqlState = (t instanceof SQLException) ? 
-			"(SQLState=" + ((SQLException)t).getSQLState() + ":" 
-				+ t.getMessage() + ")" : "";
-		System.out.println(t.getClass().getName() + sqlState);
-		if (t.getCause() == t) 
-			return;
-		printException(t.getCause(), tab+2);
-	}
+        if (t == null) return;
+        for (int i=0; i<tab*4;i++) System.out.print(" ");
+        String sqlState = (t instanceof SQLException) ? 
+            "(SQLState=" + ((SQLException)t).getSQLState() + ":" 
+                + t.getMessage() + ")" : "";
+        System.out.println(t.getClass().getName() + sqlState);
+        if (t.getCause() == t) 
+            return;
+        printException(t.getCause(), tab+2);
+    }
     
     /**
      * Overrides to allow tests annotated with @AllowFailure to fail. 
@@ -483,27 +484,28 @@ public abstract class PersistenceTestCase
      * level annotation.
      */
     protected AllowFailure getAllowFailure() {
-		try {
+        try {
             Method runMethod = getClass().getMethod(getName(), (Class[])null);
             AllowFailure anno = runMethod.getAnnotation(AllowFailure.class);
-	    	if (anno != null)
-	    		return anno;
-		} catch (SecurityException e) {
-			//ignore
-		} catch (NoSuchMethodException e) {
-			//ignore
-		}
-		return getClass().getAnnotation(AllowFailure.class);
+            if (anno != null)
+                return anno;
+        } catch (SecurityException e) {
+            //ignore
+        } catch (NoSuchMethodException e) {
+            //ignore
+        }
+        return getClass().getAnnotation(AllowFailure.class);
     }
     
     /**
-     * Affirms if either this test has been annotated with @DatabasePlatform and 
+     * Affirms if either this test has been annotated with @DatabasePlatform and
      * at least one of the specified driver is available in the classpath,
      * or no such annotation is used.
      *   
      */
     protected boolean isRunsOnCurrentPlatform() {
-        DatabasePlatform anno = getClass().getAnnotation(DatabasePlatform.class);
+        DatabasePlatform anno =
+            getClass().getAnnotation(DatabasePlatform.class);
         if (anno == null)
             return true;
         if (anno != null) {
@@ -524,8 +526,10 @@ public abstract class PersistenceTestCase
         return false;
     }
     
-    private static class FixedMap extends LinkedHashMap<EMFKey, OpenJPAEntityManagerFactorySPI> {
-        public boolean removeEldestEntry(Map.Entry<EMFKey, OpenJPAEntityManagerFactorySPI> entry) {
+    private static class FixedMap extends LinkedHashMap<EMFKey,
+            OpenJPAEntityManagerFactorySPI> {
+        public boolean removeEldestEntry(Map.Entry<EMFKey,
+                OpenJPAEntityManagerFactorySPI> entry) {
             return this.size() > 2;
         }
     }

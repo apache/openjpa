@@ -40,7 +40,7 @@ import org.apache.openjpa.persistence.test.SQLListenerTestCase;
 public class TestUniqueConstraint extends SQLListenerTestCase {
     @Override
     public void setUp(Object... props) {
-    	super.setUp(DROP_TABLES, UniqueA.class, UniqueB.class);    			    
+        super.setUp(DROP_TABLES, UniqueA.class, UniqueB.class);
     }
     
 	public void testMapping() {

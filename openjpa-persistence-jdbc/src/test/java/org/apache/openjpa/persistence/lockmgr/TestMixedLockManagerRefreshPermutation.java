@@ -140,7 +140,8 @@ public class TestMixedLockManagerRefreshPermutation
     public void testRefreshWritePessimisticForceInc() {
         commonRefreshTest(
             "testRefresh(Write,Commit/PessimisticForceInc,Commit)",
-            LockModeType.WRITE, Act.CommitTx, 2, ExpectingOptimisticLockExClass, 
+            LockModeType.WRITE, Act.CommitTx, 2,
+            ExpectingOptimisticLockExClass,
             LockModeType.PESSIMISTIC_FORCE_INCREMENT, Act.CommitTx, 2, null);
         commonRefreshTest(
             "testRefresh(Write,Commit/PessimisticForceInc,Rollback)",

@@ -36,7 +36,8 @@ import javax.persistence.Version;
 @Table(name = "entity_1")
 @Inheritance(strategy = InheritanceType.JOINED)
 @SqlResultSetMapping(name = "NativeTestResult", entities = @EntityResult(
-    entityClass = org.apache.openjpa.persistence.kernel.common.apps.Entity1.class))
+    entityClass =
+        org.apache.openjpa.persistence.kernel.common.apps.Entity1.class))
 public class Entity1 implements Serializable {
 
     private static final long serialVersionUID = 2882935803066041165L;

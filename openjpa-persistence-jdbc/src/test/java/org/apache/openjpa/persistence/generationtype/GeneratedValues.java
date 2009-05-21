@@ -40,7 +40,8 @@ public class GeneratedValues {
     @GeneratedValue(strategy= GenerationType.SEQUENCE,
         generator="GeneratedValues.SequenceGeneratorCustomSeq")
     @SequenceGenerator(name="GeneratedValues.SequenceGeneratorCustomSeq",
-        sequenceName="org.apache.openjpa.persistence.generationtype.CustomSeq()")
+        sequenceName=
+            "org.apache.openjpa.persistence.generationtype.CustomSeq()")
     private int customSeqWithIndirectionField;
 
     @GeneratedValue(generator="uuid-hex")

@@ -52,7 +52,8 @@ public class VC {
 	@Id
 	private VCS vcs;
 
-	@OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "vc")
+    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY,
+            mappedBy = "vc")
 	private Set<D> ds = new HashSet<D>();
 
 	public VC() {
@@ -120,8 +121,8 @@ public class VC {
 
 		@Override
 		public int hashCode() {
-			return (this.getVcId() != null ? this.getVcId().hashCode() : 0)
-					^ (this.getVcs() != null ? this.getVcs().hashCode() : 0);
+            return (this.getVcId() != null ? this.getVcId().hashCode() : 0)
+                    ^ (this.getVcs() != null ? this.getVcs().hashCode() : 0);
 		}
 	}
 }

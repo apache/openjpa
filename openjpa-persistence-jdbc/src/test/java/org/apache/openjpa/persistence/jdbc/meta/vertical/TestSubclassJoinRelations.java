@@ -43,8 +43,8 @@ import org.apache.openjpa.persistence.OpenJPAEntityManagerFactory;
 import org.apache.openjpa.persistence.OpenJPAEntityManager;
 
 
-public class TestSubclassJoinRelations extends org.apache.openjpa.persistence.jdbc.kernel.TestSQLListenerTestCase 
-{
+public class TestSubclassJoinRelations
+    extends org.apache.openjpa.persistence.jdbc.kernel.TestSQLListenerTestCase {
     private String _outer = "OUTER";
     private Object _oid = null;
     

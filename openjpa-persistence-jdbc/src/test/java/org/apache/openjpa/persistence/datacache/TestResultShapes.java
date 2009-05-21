@@ -164,7 +164,8 @@ public class TestResultShapes extends AbstractTestCase {
         // single result that
         // we're looking
         // for.	It just happens that the // single result format we
-        // expect is an	Object[]. rawHelper(true, Object[].class, "age, name", true);
+        // expect is an	Object[]. rawHelper(true, Object[].class, "age, name",
+        //     true);
     }
 
     public void testUncachedQueryHasCorrectShape() {

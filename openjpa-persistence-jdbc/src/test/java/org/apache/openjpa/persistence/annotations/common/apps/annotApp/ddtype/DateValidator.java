@@ -35,6 +35,7 @@ public class DateValidator
 	@PostPersist
 	public void postPersist(Schedule sched)
 	{
-		System.out.println("Schedule "+sched+" is successfully persisted: DateValidator.class");
+        System.out.println("Schedule " + sched
+                + " is successfully persisted: DateValidator.class");
 	}
 }

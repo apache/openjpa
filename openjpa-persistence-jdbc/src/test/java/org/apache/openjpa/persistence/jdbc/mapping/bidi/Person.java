@@ -50,8 +50,10 @@ public class Person {
 	
 	@OneToMany(cascade=CascadeType.ALL)
 	@JoinTable(name="J_PERSON_ADDRESSES",
-			joinColumns        = @JoinColumn(name="PERSON_SSN",    referencedColumnName="SSN"),
-			inverseJoinColumns = @JoinColumn(name="ADDRESS_PHONE", referencedColumnName="PHONE"))
+            joinColumns = @JoinColumn(name="PERSON_SSN",
+                    referencedColumnName="SSN"),
+            inverseJoinColumns = @JoinColumn(name="ADDRESS_PHONE",
+                    referencedColumnName="PHONE"))
     private Set<Address> addresses = new HashSet<Address>();
 
 	public long getSsn() {

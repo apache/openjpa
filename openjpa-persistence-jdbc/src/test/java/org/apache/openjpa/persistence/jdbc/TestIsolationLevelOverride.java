@@ -91,7 +91,7 @@ public class TestIsolationLevelOverride
                     else if (db2server == DB2Dictionary.db2ZOSV8xOrLater
                         || db2server == DB2Dictionary.db2UDBV82OrLater) {
                         assertEquals(1, sql.size());
-                        assertContainsSQL(" FOR READ ONLY WITH RR USE AND KEEP " 
+                        assertContainsSQL(" FOR READ ONLY WITH RR USE AND KEEP "
                             + "UPDATE LOCKS");
                     }
                     else if (db2server == DB2Dictionary.db2ISeriesV5R4OrLater) {
@@ -121,7 +121,7 @@ public class TestIsolationLevelOverride
                         || db2server == DB2Dictionary.db2UDBV82OrLater) {
                         assertEquals(1, sql.size());
                         assertContainsSQL(" optimize for 1 row"
-                            + " FOR READ ONLY WITH RR USE AND KEEP UPDATE LOCKS" 
+                            + " FOR READ ONLY WITH RR USE AND KEEP UPDATE LOCKS"
                             );
                     }
                     else if (db2server == DB2Dictionary.db2ISeriesV5R4OrLater) {

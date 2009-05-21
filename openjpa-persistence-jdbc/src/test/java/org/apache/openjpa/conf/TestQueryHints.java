@@ -81,7 +81,8 @@ public class TestQueryHints extends SingleEMFTestCase {
         String recognizedKey = "openjpa.some.derivation.hint";
         query.setHint(recognizedKey, "abc");
         assertFalse(query.getHints().containsKey(recognizedKey));
-        assertEquals("abc", query.getFetchPlan().getDelegate().getHint(recognizedKey));
+        assertEquals("abc", query.getFetchPlan().getDelegate().getHint(
+                recognizedKey));
     }
 
     public void testSupportedKeyIsRecordedAndAvailable() {
@@ -101,7 +102,8 @@ public class TestQueryHints extends SingleEMFTestCase {
         
         try {
             query.setHint(supportedKey, badValue);
-            fail("Expected to fail to set " + supportedKey + " hint to " + badValue);
+            fail("Expected to fail to set " + supportedKey + " hint to "
+                    + badValue);
         } catch (IllegalArgumentException e) {
             // good
         }
@@ -113,11 +115,13 @@ public class TestQueryHints extends SingleEMFTestCase {
         int badValue = -3;
         query.setHint(supportedKey, goodValue);
         assertTrue(query.getHints().containsKey(supportedKey));
-        assertEquals(57, query.getFetchPlan().getDelegate().getHint(supportedKey));
+        assertEquals(57, query.getFetchPlan().getDelegate().getHint(
+                supportedKey));
         
         try {
             query.setHint(supportedKey, badValue);
-            fail("Expected to fail to set " + supportedKey + " hint to " + badValue);
+            fail("Expected to fail to set " + supportedKey + " hint to "
+                    + badValue);
         } catch (IllegalArgumentException e) {
             // good
         }
@@ -128,12 +132,14 @@ public class TestQueryHints extends SingleEMFTestCase {
         String goodValue = "true";
         query.setHint(supportedKey, goodValue);
         assertTrue(query.getHints().containsKey(supportedKey));
-        assertEquals(true, query.getFetchPlan().getDelegate().getHint(supportedKey));
+        assertEquals(true, query.getFetchPlan().getDelegate().getHint(
+                supportedKey));
         
         goodValue = "false";
         query.setHint(supportedKey, goodValue);
         assertTrue(query.getHints().containsKey(supportedKey));
-        assertEquals(false, query.getFetchPlan().getDelegate().getHint(supportedKey));
+        assertEquals(false, query.getFetchPlan().getDelegate().getHint(
+                supportedKey));
     }
     
     public void testJPAHintSetsFetchPlan() {
@@ -162,7 +168,8 @@ public class TestQueryHints extends SingleEMFTestCase {
     }
     
     public void testParts() {
-        HintHandler.HintKeyComparator test = new HintHandler.HintKeyComparator();
+        HintHandler.HintKeyComparator test =
+            new HintHandler.HintKeyComparator();
         assertEquals(0, test.countDots("a"));
         assertEquals(1, test.countDots("a.b"));
         assertEquals(2, test.countDots("a.b.c"));

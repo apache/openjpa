@@ -107,16 +107,16 @@ public class D {
 			if (obj == null ||  ! (obj instanceof CId))
 				return false;
 			CId id = (CId) obj;
-			return (this.getId() == id.getId() || (this.getId() != null &&
+            return (this.getId() == id.getId() || (this.getId() != null &&
                 this.getId().equals(id.getId())))
-				&& (this.getVc() == id.getVc() || (this.getVc() != null &&
+                && (this.getVc() == id.getVc() || (this.getVc() != null &&
                 this.getVc().equals(id.getVc())));
 		}
 		
 		@Override
 		public int hashCode() {
-			return (this.getId() != null ? this.getId().hashCode():0)
-			     ^ (this.getVc() != null ? this.getVc().hashCode():0);
+            return (this.getId() != null ? this.getId().hashCode():0)
+                    ^ (this.getVc() != null ? this.getVc().hashCode():0);
 		}
 				
 	}

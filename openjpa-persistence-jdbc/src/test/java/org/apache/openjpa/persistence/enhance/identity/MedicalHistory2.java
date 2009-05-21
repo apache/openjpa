@@ -65,7 +65,8 @@ public class MedicalHistory2 {
         long id0 = m0.getId();
         if (id != id0) return false;
         Person2 p0 = m0.getPatient();
-        if (patient != null && p0 != null && patient.ssn != p0.ssn) return false;
+        if (patient != null && p0 != null && patient.ssn != p0.ssn)
+            return false;
         if (patient == null && p0 != null) return false;
         if (patient != null && p0 == null) return false;
         return true;

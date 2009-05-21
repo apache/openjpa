@@ -23,47 +23,47 @@ import javax.persistence.*;
 @SqlResultSetMappings(value={
 @SqlResultSetMapping(name="SQLSelectsBothEndOfTheRelation",
 		entities={
-			@EntityResult(entityClass=OwnerOfEntityWithCompositeId.class,
-				fields={
-				@FieldResult(name="name",          column="OWNER_NAME"),
-				@FieldResult(name="relation.id",   column="REL_ID"),
-				@FieldResult(name="relation.name", column="REL_NAME")
+            @EntityResult(entityClass=OwnerOfEntityWithCompositeId.class,
+                fields={
+                    @FieldResult(name="name",          column="OWNER_NAME"),
+                    @FieldResult(name="relation.id",   column="REL_ID"),
+                    @FieldResult(name="relation.name", column="REL_NAME")
 				}
 			),
 			@EntityResult(entityClass=EntityWithCompositeId.class,
 				fields={
 					@FieldResult(name="id",  column="C_ID"),
-					@FieldResult(name="name", column="C_NAME"),
-					@FieldResult(name="value", column="C_VALUE")
+                    @FieldResult(name="name", column="C_NAME"),
+                    @FieldResult(name="value", column="C_VALUE")
 				}
 			)
 		}
 ),
 @SqlResultSetMapping(name="SQLSelectsOnlyOneEndOfTheRelation",
 		entities={
-			@EntityResult(entityClass=OwnerOfEntityWithCompositeId.class,
-				fields={
-				@FieldResult(name="name",          column="OWNER_NAME"),
-				@FieldResult(name="relation.id",   column="REL_ID"),
-				@FieldResult(name="relation.name", column="REL_NAME")
+            @EntityResult(entityClass=OwnerOfEntityWithCompositeId.class,
+                fields={
+                    @FieldResult(name="name",          column="OWNER_NAME"),
+                    @FieldResult(name="relation.id",   column="REL_ID"),
+                    @FieldResult(name="relation.name", column="REL_NAME")
 				}
 			)
 		}
 ),
 @SqlResultSetMapping(name="SQLSelectsUnrelatedInstances",
 		entities={
-			@EntityResult(entityClass=OwnerOfEntityWithCompositeId.class,
-				fields={
-				@FieldResult(name="name",          column="OWNER_NAME"),
-				@FieldResult(name="relation.id",   column="REL_ID"),
-				@FieldResult(name="relation.name", column="REL_NAME")
+            @EntityResult(entityClass=OwnerOfEntityWithCompositeId.class,
+                fields={
+                    @FieldResult(name="name",          column="OWNER_NAME"),
+                    @FieldResult(name="relation.id",   column="REL_ID"),
+                    @FieldResult(name="relation.name", column="REL_NAME")
 				}
 			),
 			@EntityResult(entityClass=EntityWithCompositeId.class,
 				fields={
-					@FieldResult(name="id",    column="C_ID"),
-					@FieldResult(name="name",  column="C_NAME"),
-					@FieldResult(name="value", column="C_VALUE")
+                    @FieldResult(name="id",    column="C_ID"),
+                    @FieldResult(name="name",  column="C_NAME"),
+                    @FieldResult(name="value", column="C_VALUE")
 				}
 			)
 		}

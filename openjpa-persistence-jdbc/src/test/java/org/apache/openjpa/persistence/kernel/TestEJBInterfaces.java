@@ -114,7 +114,8 @@ public class TestEJBInterfaces extends AbstractTestCase {
 //		startTx(em);
 //		hold = (InterfaceHolder)em.find(InterfaceHolder.class, 1);
 //		assertEquals (1, hold.getIntfs ().size ());
-//		assertEquals ("intf-1-set", ((InterfaceTest) hold.getIntfs ().iterator ().next ()).getStringField ());
+//      assertEquals ("intf-1-set", ((InterfaceTest) hold.getIntfs().iterator().
+//              next()).getStringField());
 //		endTx(em);
 //		endEm(em);
     }

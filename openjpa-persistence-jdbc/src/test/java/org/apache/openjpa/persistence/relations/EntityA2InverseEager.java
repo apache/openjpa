@@ -31,7 +31,8 @@ public class EntityA2InverseEager extends EntityAInverseEager {
     private String name2;
 
 	@OneToMany(fetch=FetchType.EAGER, mappedBy="entityA")
-	private List<EntityBInverseEager> listB = new ArrayList<EntityBInverseEager>();
+    private List<EntityBInverseEager> listB =
+        new ArrayList<EntityBInverseEager>();
 	
 	public EntityA2InverseEager() {}
 	

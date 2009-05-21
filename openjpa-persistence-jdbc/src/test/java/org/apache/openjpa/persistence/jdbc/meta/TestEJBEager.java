@@ -25,8 +25,8 @@ import org.apache.openjpa.persistence.common.utils.*;
 import org.apache.openjpa.persistence.jdbc.common.apps.*;
 import junit.framework.*;
 
-public class TestEJBEager extends org.apache.openjpa.persistence.jdbc.kernel.BaseJDBCTest
-{
+public class TestEJBEager
+        extends org.apache.openjpa.persistence.jdbc.kernel.BaseJDBCTest {
 	private int _oid;
 
 	public TestEJBEager(String name)
@@ -145,7 +145,7 @@ public class TestEJBEager extends org.apache.openjpa.persistence.jdbc.kernel.Bas
 		pc = pm.find(EagerPCSub.class, _oid);
 		assertNull (pc.getEagerSub ());
 		assertNotNull (pc.getRecurse ());
-		assertEquals ("helper3", pc.getRecurse ().getHelper ().getStringField ());
+        assertEquals ("helper3", pc.getRecurse().getHelper().getStringField());
 		endTx(pm);
 		endEm(pm);
 	}

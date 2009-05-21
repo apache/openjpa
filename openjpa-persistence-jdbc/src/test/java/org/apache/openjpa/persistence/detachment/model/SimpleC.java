@@ -31,7 +31,8 @@ public class SimpleC {
     protected String name;
 
     @ManyToOne(cascade=CascadeType.PERSIST)
-    @JoinColumn(name="B_ID", referencedColumnName="B_ID", nullable = false, updatable = false)
+    @JoinColumn(name="B_ID", referencedColumnName="B_ID", nullable = false,
+            updatable = false)
     protected SimpleB parent;
 
     public int getId() {

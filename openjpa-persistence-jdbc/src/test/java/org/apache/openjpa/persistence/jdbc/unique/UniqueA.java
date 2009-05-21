@@ -91,8 +91,8 @@ public class UniqueA {
 	@JoinTable(name="UNIQUE_JOINTABLE",
 			joinColumns={@JoinColumn(name="FK_A", nullable=false, 
 					referencedColumnName="aid")},
-			inverseJoinColumns={@JoinColumn(name="FK_B", nullable=false, 
+            inverseJoinColumns={@JoinColumn(name="FK_B", nullable=false,
 					referencedColumnName="bid")},
-			uniqueConstraints=@UniqueConstraint(columnNames={"FK_A","FK_B"}))
+            uniqueConstraints=@UniqueConstraint(columnNames={"FK_A","FK_B"}))
 	private Collection<UniqueB> bs;
 }

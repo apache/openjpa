@@ -32,9 +32,9 @@ import org.apache.openjpa.persistence.test.SingleEMFTestCase;
  * and not by object reference c) Parent's identity is assigned by the database
  * d) PostPersist callback in Parent sets the children's reference to Parent
  * 
- * The use case was originally reported in <A
- * HREF="http://n2.nabble.com/OpenJPA---two-sided-relation-between-objects-Issue-tc687050.html">
- * OpenJPA User Forum</A>
+ * The use case was originally reported in <A HREF=
+ * "http://n2.nabble.com/OpenJPA---two-sided-relation-between-objects-Issue-
+ * tc687050.html"> OpenJPA User Forum</A>
  * 
  * @author Pinaki Poddar
  */
@@ -43,8 +43,8 @@ public class TestOneSidedParentChildWithImplicitForeignKey extends
 	private EntityManager em;
 	private static Class[] PARENT_ID_TYPES = { 
 		ParentWithAppIdentity.class,      // ValueStrategies.NONE = 0
-		ParentWithSequenceIdentity.class, // ValueStrategies.SEQUENCE = 2
-		ParentWithAutoIdentity.class,     // ValueStrategies.AUTOASSIGN = 3
+        ParentWithSequenceIdentity.class, // ValueStrategies.SEQUENCE = 2
+        ParentWithAutoIdentity.class,     // ValueStrategies.AUTOASSIGN = 3
 	};
 	private static int[] VALUE_STRATEGIES = { 
 		ValueStrategies.NONE,
@@ -59,7 +59,7 @@ public class TestOneSidedParentChildWithImplicitForeignKey extends
 
 	public void setUp() {
 		setUp(DROP_TABLES, ParentWithAppIdentity.class,
-				ParentWithSequenceIdentity.class, ParentWithAutoIdentity.class,
+                ParentWithSequenceIdentity.class, ParentWithAutoIdentity.class,
 				Child.class);
 		em = emf.createEntityManager();
 		createData(CHILD_COUNT);
@@ -69,11 +69,11 @@ public class TestOneSidedParentChildWithImplicitForeignKey extends
 		MetaDataRepository repos = emf.getConfiguration()
 				.getMetaDataRepositoryInstance();
 		for (int i = 0; i < VALUE_STRATEGIES.length; i++) {
-			ClassMetaData meta = repos.getMetaData(PARENT_ID_TYPES[i], null,
-					true);
+            ClassMetaData meta = repos.getMetaData(PARENT_ID_TYPES[i], null,
+                    true);
 			FieldMetaData fmd = meta.getPrimaryKeyFields()[0];
-			assertEquals(fmd + " strategy is " + fmd.getValueStrategy(),
-					VALUE_STRATEGIES[i], fmd.getValueStrategy());
+            assertEquals(fmd + " strategy is " + fmd.getValueStrategy(),
+                    VALUE_STRATEGIES[i], fmd.getValueStrategy());
 		}
 	}
 
@@ -112,8 +112,8 @@ public class TestOneSidedParentChildWithImplicitForeignKey extends
 			assertFalse(parent.getChildren().isEmpty());
 			assertEquals(CHILD_COUNT, parent.getChildren().size());
 			for (Child child : parent.getChildren()) {
-				assertFalse(child.getParentIdType(VALUE_STRATEGIES[i]) == 0);
-				assertTrue(child.getParentIdType(VALUE_STRATEGIES[i]) == parent
+                assertFalse(child.getParentIdType(VALUE_STRATEGIES[i]) == 0);
+                assertTrue(child.getParentIdType(VALUE_STRATEGIES[i]) == parent
 						.getId());
 			}
 		}
@@ -140,10 +140,10 @@ public class TestOneSidedParentChildWithImplicitForeignKey extends
 			IParent parent = findParent(i);
 			assertFalse(parent.getId() == 0);
 			assertFalse(parent.getChildren().isEmpty());
-			assertEquals(CHILD_COUNT + 1, parent.getChildren().size());
+            assertEquals(CHILD_COUNT + 1, parent.getChildren().size());
 			for (Child child : parent.getChildren()) {
-				assertFalse(child.getParentIdType(VALUE_STRATEGIES[i]) == 0);
-				assertTrue(child.getParentIdType(VALUE_STRATEGIES[i]) == parent
+                assertFalse(child.getParentIdType(VALUE_STRATEGIES[i]) == 0);
+                assertTrue(child.getParentIdType(VALUE_STRATEGIES[i]) == parent
 						.getId());
 			}
 		}
@@ -156,10 +156,10 @@ public class TestOneSidedParentChildWithImplicitForeignKey extends
 
 	public IParent newParent(int parentType) {
 		try {
-			IParent parent = (IParent)PARENT_ID_TYPES[parentType].newInstance();
-			if (VALUE_STRATEGIES[parentType] == ValueStrategies.NONE)
+            IParent parent = (IParent)PARENT_ID_TYPES[parentType].newInstance();
+            if (VALUE_STRATEGIES[parentType] == ValueStrategies.NONE)
 				parent.setId(++PARENT_ID_COUNTER);
-			parent.setName(PARENT_ID_TYPES[parentType].getSimpleName());
+            parent.setName(PARENT_ID_TYPES[parentType].getSimpleName());
 			return parent;
 		} catch (Exception e) {
 			fail(e.toString());

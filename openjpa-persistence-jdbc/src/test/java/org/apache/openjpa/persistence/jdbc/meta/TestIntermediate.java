@@ -46,8 +46,8 @@ import org.apache.openjpa.persistence.OpenJPAEntityManagerFactory;
 import org.apache.openjpa.persistence.OpenJPAEntityManager;
 
 
-public class TestIntermediate extends org.apache.openjpa.persistence.jdbc.kernel.BaseJDBCTest
-{
+public class TestIntermediate
+        extends org.apache.openjpa.persistence.jdbc.kernel.BaseJDBCTest {
     
     private Object _pc;
     private Object _rel;

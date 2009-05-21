@@ -37,7 +37,7 @@ public class AutoIncrementPC3
 {
 	@Id
 	private long				id			= 0;
-	private Set 				setField 	= new HashSet ();
+    private Set                 setField    = new HashSet ();
 
 	@Column(name="strngfld", length=50)
 	private String				stringField	= null;

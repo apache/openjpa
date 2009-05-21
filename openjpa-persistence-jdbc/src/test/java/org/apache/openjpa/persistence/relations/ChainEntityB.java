@@ -41,7 +41,8 @@ public class ChainEntityB {
 	private Integer optLock;
 
 	//cascade = CascadeType.ALL, 
-	@OneToMany(cascade=CascadeType.ALL, fetch = FetchType.EAGER, mappedBy = "chainEntityB")
+	@OneToMany(cascade=CascadeType.ALL, fetch = FetchType.EAGER,
+	        mappedBy = "chainEntityB")
 	protected Set<ChainEntityC> chainEntityCSet = null;
 
 	public void addChainEntityC (ChainEntityC bean) {

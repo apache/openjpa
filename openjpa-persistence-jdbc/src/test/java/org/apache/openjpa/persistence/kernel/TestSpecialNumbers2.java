@@ -238,7 +238,8 @@ public class TestSpecialNumbers2 extends BaseKernelTest {
         try {
             saveAndQuery(aftt, "testbyte =", new Byte(Byte.MIN_VALUE));
         } catch (Throwable t) {
-            //bug(AbstractTestCase.Platform.EMPRESS, 889, t, "Empress cannot store min values");
+            //bug(AbstractTestCase.Platform.EMPRESS, 889, t,
+            //    "Empress cannot store min values");
             Assert.fail(
                 "Exception was thrown while storing Byte.MIN_VALUE : \n" +
                     getStackTrace(t));

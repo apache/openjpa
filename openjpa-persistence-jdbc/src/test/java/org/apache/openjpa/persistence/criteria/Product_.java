@@ -6,7 +6,8 @@ package org.apache.openjpa.persistence.criteria;
 
 import javax.persistence.metamodel.Attribute;
 
-@javax.persistence.metamodel.TypesafeMetamodel(value=org.apache.openjpa.persistence.criteria.Product.class)
+@javax.persistence.metamodel.TypesafeMetamodel(
+    value=org.apache.openjpa.persistence.criteria.Product.class)
 public class Product_ {
     public static volatile Attribute<Product,Integer> pid;
     public static volatile Attribute<Product,String> productType;

@@ -38,5 +38,7 @@ public class RelationOwner {
 	@OneToMany(cascade=CascadeType.ALL, fetch=FetchType.EAGER)
 	@ElementJoinColumn(name="TEST", referencedColumnName="ID")
 	public Collection<Superclass> getSupers() {	return supers; }
-	public void setSupers(Collection<Superclass> supers) { this.supers = supers; }
+    public void setSupers(Collection<Superclass> supers) {
+        this.supers = supers;
+    }
 }

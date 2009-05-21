@@ -289,7 +289,7 @@ public class TestProxies2 extends BaseKernelTest {
         assertTrue("pc.getComp() is not instanceof Proxy",
             pc.getComp() instanceof Proxy);
         assertTrue(
-            "(TreeSet) is not pc.getComp()).comparator() instanceof ComparableComparator",
+  "(TreeSet) is not pc.getComp()).comparator() instanceof ComparableComparator",
             ((TreeSet) pc.getComp())
                 .comparator() instanceof ComparableComparator);
         pm.evict(pc);
@@ -302,7 +302,7 @@ public class TestProxies2 extends BaseKernelTest {
         Comparator compart = ((TreeSet) pc.getComp()).comparator();
         assertNotNull("compart is null", compart);
         assertTrue(
-            "((TreeSet) is not pc.getComp()).comparator()instanceof ComparableComparator",
+  "((TreeSet) is not pc.getComp()).comparator()instanceof ComparableComparator",
             ((TreeSet) pc.getComp())
                 .comparator() instanceof ComparableComparator);
 

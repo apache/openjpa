@@ -28,7 +28,8 @@ import org.apache.openjpa.persistence.JPAFacadeHelper;
 
 import org.apache.openjpa.persistence.common.utils.*;
 
-import org.apache.openjpa.persistence.annotations.common.apps.annotApp.annotype.*;
+import
+    org.apache.openjpa.persistence.annotations.common.apps.annotApp.annotype.*;
 
 public class TestAnnotationBasics extends AnnotationTestCase {
 

@@ -19,7 +19,8 @@
 package org.apache.openjpa.persistence.relations;
 
 import org.apache.openjpa.jdbc.meta.ClassMapping;
-import org.apache.openjpa.jdbc.meta.strats.RelationRelationMapTableFieldStrategy;
+import org.apache.openjpa.jdbc.meta.strats.
+        RelationRelationMapTableFieldStrategy;
 import org.apache.openjpa.persistence.JPAFacadeHelper;
 import org.apache.openjpa.persistence.simple.AllFieldTypes;
 import org.apache.openjpa.persistence.test.SingleEMTestCase;

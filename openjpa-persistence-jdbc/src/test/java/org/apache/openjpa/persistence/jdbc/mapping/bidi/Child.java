@@ -103,7 +103,7 @@ public class Child {
 		case ValueStrategies.AUTOASSIGN : return getAutoParentId();
 		case ValueStrategies.SEQUENCE : return getSeqParentId();
 		default :
-			throw new IllegalArgumentException("No parent with id strategy " + 
+            throw new IllegalArgumentException("No parent with id strategy " + 
 					idType);
 		}
 	}

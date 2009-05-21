@@ -79,9 +79,12 @@ public class TestDetachNoCascade extends SingleEMFTestCase {
             .getMetaDataRepositoryInstance();
         ClassMetaData meta = repos.getCachedMetaData(Entity1.class);
         assertNotNull(meta);
-        assertEquals(ValueMetaData.CASCADE_NONE, meta.getField("id").getCascadeDetach());
-        assertEquals(ValueMetaData.CASCADE_NONE, meta.getField("name").getCascadeDetach());
-        assertEquals(ValueMetaData.CASCADE_NONE, meta.getField("e14").getCascadeDetach());
+        assertEquals(ValueMetaData.CASCADE_NONE,
+                meta.getField("id").getCascadeDetach());
+        assertEquals(ValueMetaData.CASCADE_NONE,
+                meta.getField("name").getCascadeDetach());
+        assertEquals(ValueMetaData.CASCADE_NONE,
+                meta.getField("e14").getCascadeDetach());
     }
     
     // Test clear() to clear all entities.

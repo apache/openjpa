@@ -109,16 +109,20 @@ public class TestDepthFirstAnalysis
         Edge edge0 = (Edge) itr.next();
         Edge edge1 = (Edge) itr.next();
         if (edge0.getTo().equals(edge0.getFrom())) {
-            assertTrue(edge0.getCycle() != null && edge0.getCycle().size() == 1);
+            assertTrue(edge0.getCycle() != null &&
+                    edge0.getCycle().size() == 1);
             List cycle = edge1.getCycle();
             assertTrue(cycle != null && cycle.size() == 4);
-            assertTrue(((Edge)cycle.get(0)).getFrom().equals(((Edge)cycle.get(3)).getTo()));
+            assertTrue(((Edge)cycle.get(0)).getFrom().equals(
+                    ((Edge)cycle.get(3)).getTo()));
         } else if (edge1.getTo().equals(edge1.getFrom())) {
-            assertTrue(edge1.getCycle() != null && edge1.getCycle().size() == 1);            
+            assertTrue(edge1.getCycle() != null &&
+                    edge1.getCycle().size() == 1);
             assertTrue(edge1 == edge1.getCycle());
             List cycle = edge0.getCycle();
             assertTrue(cycle != null && cycle.size() == 4);
-            assertTrue(((Edge)cycle.get(0)).getFrom().equals(((Edge)cycle.get(3)).getTo()));
+            assertTrue(((Edge)cycle.get(0)).getFrom().equals(
+                    ((Edge)cycle.get(3)).getTo()));
         } else {
             // should not happen
             assertFalse(true);
@@ -135,11 +139,13 @@ public class TestDepthFirstAnalysis
         if (edge0.getCycle() == null) {
             List cycle = edge1.getCycle();
             assertTrue(cycle != null && cycle.size() == 3);
-            assertTrue(((Edge)cycle.get(0)).getFrom().equals(((Edge)cycle.get(2)).getTo()));
+            assertTrue(((Edge)cycle.get(0)).getFrom().equals(
+                    ((Edge)cycle.get(2)).getTo()));
         } else if (edge1.getCycle() == null) {
             List cycle = edge0.getCycle();
             assertTrue(cycle != null && cycle.size() == 3);
-            assertTrue(((Edge)cycle.get(0)).getFrom().equals(((Edge)cycle.get(2)).getTo()));
+            assertTrue(((Edge)cycle.get(0)).getFrom().equals(
+                    ((Edge)cycle.get(2)).getTo()));
         } else {
             // should not happen
             assertFalse(true);

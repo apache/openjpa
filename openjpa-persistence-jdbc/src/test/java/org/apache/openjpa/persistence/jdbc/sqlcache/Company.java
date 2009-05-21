@@ -28,11 +28,12 @@ import javax.persistence.*;
 	@NamedQuery(name="Company.PreparedQueryWithNoParameter", 
 	    query="select x from Company x"),
 	@NamedQuery(name="Company.PreparedQueryWithNamedParameter", 
-	    query="select x from Company x where x.name=:name and x.startYear=:startYear"),
+        query="select x from Company x "
+            + "where x.name=:name and x.startYear=:startYear"),
 	@NamedQuery(name="Company.PreparedQueryWithPositionalParameter", 
 	    query="select x from Company x where x.name=?1 and x.startYear=?2"),
 	@NamedQuery(name="Company.PreparedQueryWithLiteral", 
-	    query="select x from Company x where x.name='IBM' and x.startYear=1900")
+        query="select x from Company x where x.name='IBM' and x.startYear=1900")
 })
 public class Company {
 	@Id

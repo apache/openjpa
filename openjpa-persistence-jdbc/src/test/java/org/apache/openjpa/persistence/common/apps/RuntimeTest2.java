@@ -59,6 +59,7 @@ public class RuntimeTest2 extends RuntimeTest1
 
 	public String toString()
 	{
-		return "IntField: "+intField2+", StringField: "+super.getStringField()+" .";
+        return "IntField: " + intField2
+            + ", StringField: " + super.getStringField() + " .";
 	}
 }

@@ -59,7 +59,8 @@ public abstract class AbstractUnenhancedClassTest
 
     protected abstract UnenhancedType newUnenhancedInstance();
 
-    protected abstract Class<? extends UnenhancedSubtype> getUnenhancedSubclass();
+    protected abstract Class<? extends UnenhancedSubtype>
+            getUnenhancedSubclass();
 
     protected abstract UnenhancedSubtype newUnenhancedSubclassInstance();
 

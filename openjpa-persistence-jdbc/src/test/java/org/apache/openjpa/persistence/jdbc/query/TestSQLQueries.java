@@ -53,7 +53,8 @@ import org.apache.openjpa.persistence.OpenJPAEntityManagerFactorySPI;
 import org.apache.openjpa.persistence.OpenJPAPersistence;
 
 
-public class TestSQLQueries extends org.apache.openjpa.persistence.jdbc.kernel.BaseJDBCTest{
+public class TestSQLQueries
+        extends org.apache.openjpa.persistence.jdbc.kernel.BaseJDBCTest {
      
     
     /** Creates a new instance of TestSQLQueries */
@@ -84,7 +85,9 @@ public class TestSQLQueries extends org.apache.openjpa.persistence.jdbc.kernel.B
         pm.persist(pc1);
         endTx(pm);;
         
-        JDBCConfiguration conf = (JDBCConfiguration) ((OpenJPAEntityManagerFactorySPI) pm).getConfiguration();
+        JDBCConfiguration conf =
+            (JDBCConfiguration) ((OpenJPAEntityManagerFactorySPI) pm)
+            .getConfiguration();
         DBDictionary dict = conf.getDBDictionaryInstance();
         MappingRepository repos = conf.getMappingRepositoryInstance();
         ClassMapping mapping = repos.getMapping(RuntimeTest1.class,
@@ -160,8 +163,8 @@ public class TestSQLQueries extends org.apache.openjpa.persistence.jdbc.kernel.B
     public void testTableStarQuery() {
         OpenJPAEntityManager pm =(OpenJPAEntityManager)currentEntityManager();
         OpenJPAQuery q = pm.createQuery("javax.jdo.query.SQL",
-                "select " + _tableName + ".* from " + _fullTableName + " order by "
-                + _intColName);
+                "select " + _tableName + ".* from " + _fullTableName
+                + " order by " + _intColName);
         q.setResultClass(RuntimeTest1.class);
         Iterator itr = ((Collection) q.getCandidateCollection()).iterator();
         assertTrue(itr.hasNext());
@@ -176,8 +179,9 @@ public class TestSQLQueries extends org.apache.openjpa.persistence.jdbc.kernel.B
     public void testColumnQuery() {
         OpenJPAEntityManager pm =(OpenJPAEntityManager)currentEntityManager();
         OpenJPAQuery q = pm.createQuery("javax.jdo.query.SQL",
-                "select " + _pkColName + ", " + _intColName + ", " + _stringColName
-                + " from " + _fullTableName + " order by " + _intColName);
+                "select " + _pkColName + ", " + _intColName + ", "
+                + _stringColName + " from " + _fullTableName + " order by "
+                + _intColName);
         q.setResultClass(RuntimeTest1.class);
         Iterator itr = ((Collection) q.getCandidateCollection()).iterator();
         assertTrue(itr.hasNext());
@@ -235,8 +239,9 @@ public class TestSQLQueries extends org.apache.openjpa.persistence.jdbc.kernel.B
     public void testOnlySelectedFieldsLoaded() {
         OpenJPAEntityManager pm =(OpenJPAEntityManager)currentEntityManager();
         OpenJPAQuery q = pm.createQuery("javax.jdo.query.SQL",
-                "select " + _pkColName + ", " + _intColName + ", " + _stringColName
-                + " from " + _fullTableName + " order by " + _intColName);
+                "select " + _pkColName + ", " + _intColName + ", "
+                + _stringColName + " from " + _fullTableName + " order by "
+                + _intColName);
         q.setResultClass(RuntimeTest1.class);
         Iterator itr = ((Collection) q.getCandidateCollection()).iterator();
         assertTrue(itr.hasNext());
@@ -332,8 +337,8 @@ public class TestSQLQueries extends org.apache.openjpa.persistence.jdbc.kernel.B
     public void testClasslessProjection() {
         OpenJPAEntityManager pm =(OpenJPAEntityManager)currentEntityManager();
         OpenJPAQuery q = pm.createQuery("javax.jdo.query.SQL",
-                "select " + _intColName + " as I, " + _stringColName + " as S from "
-                + _fullTableName + " order by " + _intColName);
+                "select " + _intColName + " as I, " + _stringColName
+                + " as S from " + _fullTableName + " order by " + _intColName);
         q.setResultClass(Holder.class);
         Iterator itr = ((Collection) q.getCandidateCollection()).iterator();
         assertTrue(itr.hasNext());
@@ -371,7 +376,9 @@ public class TestSQLQueries extends org.apache.openjpa.persistence.jdbc.kernel.B
         pm.getTransaction().commit();
         pm.close();
         
-        JDBCConfiguration conf = (JDBCConfiguration) ((OpenJPAEntityManagerFactorySPI) pm).getConfiguration();
+        JDBCConfiguration conf =
+            (JDBCConfiguration) ((OpenJPAEntityManagerFactorySPI) pm)
+            .getConfiguration();
         DBDictionary dict = conf.getDBDictionaryInstance();
         MappingRepository repos = conf.getMappingRepositoryInstance();
         

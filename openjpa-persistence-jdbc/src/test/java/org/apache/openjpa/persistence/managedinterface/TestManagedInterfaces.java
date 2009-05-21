@@ -35,7 +35,8 @@ import org.apache.openjpa.persistence.query.SimpleEntity;
 import org.apache.openjpa.meta.ClassMetaData;
 import org.apache.openjpa.persistence.PersistenceException;
 
-@AllowFailure(message="On JDK6 Upgrade these tests are failing with wrong mapping. " +
+@AllowFailure(message=
+    "On JDK6 Upgrade these tests are failing with wrong mapping. " +
     "Column PC_ID in ManagedInterfaceSup Table is not created. getPC() is " +
     "defined as property in ManageIFace sub-interface")
 public class TestManagedInterfaces extends SingleEMFTestCase {

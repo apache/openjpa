@@ -1103,8 +1103,9 @@ public class TestOrderColumn extends SingleEMFTestCase {
     private void validateIndexAndValues(OpenJPAEntityManagerSPI em, 
             String entity, String indexedCol, int base, Object[] objs, String
             idField, Object idValue) {
-        String queryString = "SELECT INDEX(b), b FROM " + entity + " a JOIN a." +
-            indexedCol + " b WHERE a." + idField + " = :idVal";
+        String queryString =
+            "SELECT INDEX(b), b FROM " + entity + " a JOIN a." + indexedCol
+                + " b WHERE a." + idField + " = :idVal";
         em.clear();
         Query qry = em.createQuery(queryString);
         qry.setParameter("idVal", idValue);

@@ -42,7 +42,8 @@ import org.apache.openjpa.persistence.OpenJPAEntityManagerFactory;
 import org.apache.openjpa.persistence.OpenJPAEntityManager;
 
 
-public class TestNoClassColumn extends org.apache.openjpa.persistence.jdbc.kernel.BaseJDBCTest{
+public class TestNoClassColumn
+        extends org.apache.openjpa.persistence.jdbc.kernel.BaseJDBCTest {
         
     /** Creates a new instance of TestNoClassColumn */
     public TestNoClassColumn() {

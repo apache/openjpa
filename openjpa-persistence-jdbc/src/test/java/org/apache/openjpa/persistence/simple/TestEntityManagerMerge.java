@@ -73,7 +73,7 @@ public class TestEntityManagerMerge
     }
     
     /**
-     * This test verifies that persisting a new entity which matches an existing 
+     * This test verifies that persisting a new entity which matches an existing
      * row in the database succeeds. 
      */
     public void testMergeExistingEntity() {

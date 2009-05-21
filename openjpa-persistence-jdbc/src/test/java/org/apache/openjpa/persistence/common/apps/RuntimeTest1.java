@@ -66,7 +66,8 @@ public class RuntimeTest1 implements Serializable
 
 	// relations
 	//@Transient
-	@OneToOne(fetch=FetchType.LAZY, cascade={CascadeType.PERSIST, CascadeType.REMOVE})
+    @OneToOne(fetch=FetchType.LAZY, cascade={CascadeType.PERSIST,
+            CascadeType.REMOVE})
 	private RuntimeTest1	selfOneOne;
 
 	@Transient

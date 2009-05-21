@@ -63,8 +63,8 @@ public class TestDataCacheScheduler
         throws Exception {
         String sched = MINUTES + " * * * *";
         Map propsMap = new HashMap();
-        propsMap
-            .put("openjpa.DataCache", "true(EvictionSchedule=\"" + sched + "\")");
+        propsMap.put("openjpa.DataCache", "true(EvictionSchedule=\"" + sched
+                + "\")");
         propsMap.put("openjpa.RemoteCommitProvider", "sjvm");
         propsMap.put("openjpa.FlushBeforeQueries", "true");
         propsMap.put("openjpa.BrokerImpl", CacheTestBroker.class.getName());

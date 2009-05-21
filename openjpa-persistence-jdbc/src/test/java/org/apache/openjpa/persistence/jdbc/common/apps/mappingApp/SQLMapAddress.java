@@ -49,39 +49,39 @@ import javax.persistence.*;
 		 */		
 				@SqlResultSetMapping(name="SINGLE_CLASS",
 					entities={
-						@EntityResult(entityClass=SQLMapPerson.class)
+                        @EntityResult(entityClass=SQLMapPerson.class)
 					}
 				),
 				
 				/** Specifies one entity and one or more scalar.
 				 * 
 				 */				
-				@SqlResultSetMapping(name="SINGLE_CLASS_AND_SCALAR",
+                @SqlResultSetMapping(name="SINGLE_CLASS_AND_SCALAR",
 					entities={
-						@EntityResult(entityClass=SQLMapPerson.class)
+                        @EntityResult(entityClass=SQLMapPerson.class)
 					},
 					columns={
 						@ColumnResult(name="name")
 					}
 				),
 				
-				/** Specifies more than one entity and no scalar.
+                /** Specifies more than one entity and no scalar.
 				 * 
 				 */				
 				@SqlResultSetMapping(name="MULTI_CLASS",
 					entities={
-						@EntityResult(entityClass=SQLMapPerson.class),
-						@EntityResult(entityClass=SQLMapAddress.class)
+                        @EntityResult(entityClass=SQLMapPerson.class),
+                        @EntityResult(entityClass=SQLMapAddress.class)
 					}
 				),
 				
-				/** Specifies more than one entity and one or more scalar.
+                /** Specifies more than one entity and one or more scalar.
 				 * 
 				 */				
-				@SqlResultSetMapping(name="MULTI_CLASS_AND_SCALAR",
-					entities={
-						@EntityResult(entityClass=SQLMapPerson.class),
-						@EntityResult(entityClass=SQLMapAddress.class)
+                @SqlResultSetMapping(name="MULTI_CLASS_AND_SCALAR",
+                    entities={
+                        @EntityResult(entityClass=SQLMapPerson.class),
+                        @EntityResult(entityClass=SQLMapAddress.class)
 					},
 					columns={
 						@ColumnResult(name="name"),
@@ -89,21 +89,20 @@ import javax.persistence.*;
 					}
 				),
 
-				@SqlResultSetMapping(name="MappingWithTraversal",
+                @SqlResultSetMapping(name="MappingWithTraversal",
 					entities={
-						@EntityResult(entityClass=SQLMapAddress.class,
-					    fields={
-							@FieldResult(name="id",    column="ADDR_ID"),
-							@FieldResult(name="street",column="ADDR_STREET"),
-							@FieldResult(name="state", column="ADDR_STATE"),
-							@FieldResult(name="zip",   column="ADDR_ZIP")
-						}),
-						@EntityResult(entityClass=SQLMapPerson.class,
-						 fields={
-							@FieldResult(name="name",    column="MY_NAME"),
-							@FieldResult(name="address", column="MY_ADDRESS")
-						 }
-						)
+                        @EntityResult(entityClass=SQLMapAddress.class,
+                        fields={
+                            @FieldResult(name="id",    column="ADDR_ID"),
+                            @FieldResult(name="street",column="ADDR_STREET"),
+                            @FieldResult(name="state", column="ADDR_STATE"),
+                            @FieldResult(name="zip",   column="ADDR_ZIP")
+                        }),
+                        @EntityResult(entityClass=SQLMapPerson.class,
+                        fields={
+                            @FieldResult(name="name",    column="MY_NAME"),
+                            @FieldResult(name="address", column="MY_ADDRESS")
+                        })
 					}
 				)
 				

@@ -57,12 +57,12 @@ public class ParentWithSequenceIdentity  implements IParent {
 	private String name;
 	
 	/**
-	 * This field is <em>not</em> mapped by the child. The child's table will 
-	 * hold an <em>implicit</em> foreign key linking to the primary key of this 
+     * This field is <em>not</em> mapped by the child. The child's table will
+     * hold an <em>implicit</em> foreign key linking to the primary key of this
 	 * Parent's table. 
 	 */
 	@OneToMany(cascade = CascadeType.ALL, fetch=FetchType.LAZY)
-	@ElementJoinColumn(name="FK_PARENT_SEQ_ID", referencedAttributeName="id")
+    @ElementJoinColumn(name="FK_PARENT_SEQ_ID", referencedAttributeName="id")
 	private Set<Child> children;
 
 	public long getId() {
@@ -74,8 +74,8 @@ public class ParentWithSequenceIdentity  implements IParent {
 	}
 
 	public void setId(long id) {
-		throw new RuntimeException(getClass() + ".setId() is not to be " +
-			"invoked directly. This class is using SEQ Generation Starategy");
+        throw new RuntimeException(getClass() + ".setId() is not to be " +
+            "invoked directly. This class is using SEQ Generation Starategy");
 	}
 
 	public void setName(String name) {

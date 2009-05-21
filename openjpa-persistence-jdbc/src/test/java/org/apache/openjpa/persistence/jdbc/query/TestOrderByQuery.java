@@ -52,7 +52,7 @@ public class TestOrderByQuery extends SingleEMFTestCase {
 	void createData() throws Exception {
 		EntityManager em = emf.createEntityManager();
 		em.getTransaction().begin();
-		Class[] classes = { Game.class, IndoorGame.class, Scrabble.class,
+        Class[] classes = { Game.class, IndoorGame.class, Scrabble.class,
 				Chess.class };
 		for (Class cls : classes) {
 			for (int i = 1; i <= 4; i++) {

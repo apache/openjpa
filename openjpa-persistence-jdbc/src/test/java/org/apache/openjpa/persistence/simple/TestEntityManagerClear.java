@@ -159,9 +159,9 @@ public class TestEntityManagerClear
     }
 
     /**
-     * Test modify entity then clear context which cause unflushed modified entity detached.
-     * Do more modification on detached entity, merge back and commit.
-     * Expect both changes before clear and after clear are persisted.
+     * Test modify entity then clear context which cause unflushed modified
+     * entity detached. Do more modification on detached entity, merge back and
+     * commit. Expect both changes before clear and after clear are persisted.
      *
      */
     public void testUpdateClearUpdateMerge() {

@@ -23,17 +23,20 @@ import javax.persistence.*;
 @SqlResultSetMappings(value={
 	@SqlResultSetMapping(name="SQLSelectsChainedRelation",
 		entities={
-			@EntityResult(entityClass=RecursiveEntityWithCompositeId.class,
+            @EntityResult(entityClass=RecursiveEntityWithCompositeId.class,
 				fields={
 				
-				@FieldResult(name="id",                   column="T0_ID"),
-				@FieldResult(name="name",                 column="T0_NAME"),
-				@FieldResult(name="relation.id",          column="T0_REL_ID"),
-				@FieldResult(name="relation.name",        column="T0_REL_NAME"),
-				@FieldResult(name="relation.relation.id", column="T1_REL_ID"),
-				@FieldResult(name="relation.relation.name", column="T1_REL_NAME"),
-				@FieldResult(name="relation.relation.relation.id", column="T2_REL_ID"),
-				@FieldResult(name="relation.relation.relation.name", column="T2_REL_NAME")
+                @FieldResult(name="id",                   column="T0_ID"),
+                @FieldResult(name="name",                 column="T0_NAME"),
+                @FieldResult(name="relation.id",          column="T0_REL_ID"),
+                @FieldResult(name="relation.name",        column="T0_REL_NAME"),
+                @FieldResult(name="relation.relation.id", column="T1_REL_ID"),
+                @FieldResult(name="relation.relation.name",
+                        column="T1_REL_NAME"),
+                @FieldResult(name="relation.relation.relation.id",
+                        column="T2_REL_ID"),
+                @FieldResult(name="relation.relation.relation.name",
+                        column="T2_REL_NAME")
 				
 				}
 			)

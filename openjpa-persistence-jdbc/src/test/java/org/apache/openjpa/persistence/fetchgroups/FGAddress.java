@@ -43,7 +43,8 @@ public class FGAddress {
 
     }
 
-    public FGAddress(int id, String street, String city, String state, int zip) {
+    public FGAddress(int id, String street, String city, String state,
+            int zip) {
         this.id = id;
         this.street = street;
         this.city = city;

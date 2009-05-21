@@ -45,7 +45,8 @@ import org.apache.openjpa.persistence.OpenJPAEntityManagerFactory;
 import org.apache.openjpa.persistence.OpenJPAEntityManager;
 
 
-public class TestDBSequenceFactory extends org.apache.openjpa.persistence.jdbc.kernel.BaseJDBCTest{
+public class TestDBSequenceFactory
+        extends org.apache.openjpa.persistence.jdbc.kernel.BaseJDBCTest {
         
     private Broker _broker;
     

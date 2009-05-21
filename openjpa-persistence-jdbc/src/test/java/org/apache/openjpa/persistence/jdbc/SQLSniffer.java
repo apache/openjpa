@@ -35,7 +35,7 @@ public class SQLSniffer {
 	
 	private static Map<String, RE> cache = new HashMap<String, RE>();
 	/**
-	 * Checks that the given set of regular expressions occur in at least one of
+     * Checks that the given set of regular expressions occur in at least one of
 	 * the given input SQL.
 	 */
 	public static boolean matches(List<String> SQLs, String...regexes) {

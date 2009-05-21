@@ -44,7 +44,8 @@ public class TestEmbeddable extends SingleEMFTestCase {
     public int numEmployeesPerPhoneNumber = 1;
     public int numPhoneNumbersPerEmployee = 2;
     public int numEmployeesPerProgramManager = 2;
-    public int numEmployees = numProgramManagers * numEmployeesPerProgramManager;
+    public int numEmployees = numProgramManagers
+        * numEmployeesPerProgramManager;
     public int numPhoneNumbers = numEmployees * numPhoneNumbersPerEmployee;
     public int numDepartments = 2;
     public int numEmployeesPerDept = 2;
@@ -62,7 +63,8 @@ public class TestEmbeddable extends SingleEMFTestCase {
     public int phoneId = 1;
     public int pmId = 1;
     public int parkingSpotId = 1;
-    public Map<Integer, PhoneNumber> phones = new HashMap<Integer, PhoneNumber>();
+    public Map<Integer, PhoneNumber> phones =
+        new HashMap<Integer, PhoneNumber>();
     public Map<Integer, Employee> employees = new HashMap<Integer, Employee>();
 
     public void setUp() {
@@ -308,7 +310,8 @@ public class TestEmbeddable extends SingleEMFTestCase {
 
     public Embed_MappedToOneCascadeDelete createEmbed_MappedToOneDeleteCascade(
         EntityManager em, int id, EntityA_Embed_MappedToOneCascadeDelete a) {
-        Embed_MappedToOneCascadeDelete embed = new Embed_MappedToOneCascadeDelete();
+        Embed_MappedToOneCascadeDelete embed =
+            new Embed_MappedToOneCascadeDelete();
         embed.setName1("name1");
         embed.setName2("name2");
         embed.setName3("name3");
@@ -440,7 +443,8 @@ public class TestEmbeddable extends SingleEMFTestCase {
         em.persist(a);
     }
 
-    public Embed_Embed_ToMany createEmbed_Embed_ToMany(EntityManager em, int id) {
+    public Embed_Embed_ToMany createEmbed_Embed_ToMany(EntityManager em,
+            int id) {
         Embed_Embed_ToMany embed = new Embed_Embed_ToMany();
         embed.setIntVal1(1);
         embed.setIntVal2(2);
@@ -473,7 +477,8 @@ public class TestEmbeddable extends SingleEMFTestCase {
         em.persist(a);
     }
 
-    public Embed_Coll_Integer createEmbed_Coll_Integer(EntityManager em, int id) {
+    public Embed_Coll_Integer createEmbed_Coll_Integer(EntityManager em,
+            int id) {
         Embed_Coll_Integer embed = new Embed_Coll_Integer();
         embed.setIntVal1(id*10 + 1);
         embed.setIntVal2(id*10 + 2);
@@ -825,7 +830,8 @@ public class TestEmbeddable extends SingleEMFTestCase {
      */
     public void findEntityA_Embed_MappedToOne() {
         EntityManager em = emf.createEntityManager();
-        EntityA_Embed_MappedToOne a = em.find(EntityA_Embed_MappedToOne.class, ID);
+        EntityA_Embed_MappedToOne a =
+            em.find(EntityA_Embed_MappedToOne.class, ID);
         checkEntityA_Embed_MappedToOne(a);
         em.close();
     }
@@ -835,7 +841,8 @@ public class TestEmbeddable extends SingleEMFTestCase {
      */
     public void findEntityA_Coll_Embed_ToOne() {
         EntityManager em = emf.createEntityManager();
-        EntityA_Coll_Embed_ToOne a = em.find(EntityA_Coll_Embed_ToOne.class, ID);
+        EntityA_Coll_Embed_ToOne a =
+            em.find(EntityA_Coll_Embed_ToOne.class, ID);
         checkEntityA_Coll_Embed_ToOne(a);
         em.close();
     }
@@ -855,7 +862,8 @@ public class TestEmbeddable extends SingleEMFTestCase {
      */
     public void findEntityA_Embed_Embed_ToMany() {
         EntityManager em = emf.createEntityManager();
-        EntityA_Embed_Embed_ToMany a = em.find(EntityA_Embed_Embed_ToMany.class, ID);
+        EntityA_Embed_Embed_ToMany a =
+            em.find(EntityA_Embed_Embed_ToMany.class, ID);
         checkEntityA_Embed_Embed_ToMany(a);
         em.close();
     }
@@ -865,7 +873,8 @@ public class TestEmbeddable extends SingleEMFTestCase {
      */
     public void findEntityA_Embed_Coll_Integer() {
         EntityManager em = emf.createEntityManager();
-        EntityA_Embed_Coll_Integer a = em.find(EntityA_Embed_Coll_Integer.class, ID);
+        EntityA_Embed_Coll_Integer a =
+            em.find(EntityA_Embed_Coll_Integer.class, ID);
         checkEntityA_Embed_Coll_Integer(a);
         em.close();
     }
@@ -885,7 +894,8 @@ public class TestEmbeddable extends SingleEMFTestCase {
      */
     public void findEntityA_Coll_Embed_Embed() {
         EntityManager em = emf.createEntityManager();
-        EntityA_Coll_Embed_Embed a = em.find(EntityA_Coll_Embed_Embed.class, ID);
+        EntityA_Coll_Embed_Embed a =
+            em.find(EntityA_Coll_Embed_Embed.class, ID);
         checkEntityA_Coll_Embed_Embed(a);
         em.close();
     }
@@ -895,7 +905,8 @@ public class TestEmbeddable extends SingleEMFTestCase {
      */
     public void findEntityA_Embed_Coll_Embed() {
         EntityManager em = emf.createEntityManager();
-        EntityA_Embed_Coll_Embed a = em.find(EntityA_Embed_Coll_Embed.class, ID);
+        EntityA_Embed_Coll_Embed a =
+            em.find(EntityA_Embed_Coll_Embed.class, ID);
         checkEntityA_Embed_Coll_Embed(a);
         em.close();
     }
@@ -1563,13 +1574,13 @@ public class TestEmbeddable extends SingleEMFTestCase {
             "select a.embed.embed from EntityA_Embed_Embed a",
             "select a.embed as e from EntityA_Embed_Embed a ORDER BY e",
         };
-        String query2[] = {
-                "select a.embed from EntityA_Embed_Embed a WHERE a.embed.embed " +
-                    " IS NOT NULL",
-                "select a.embed from EntityA_Embed_Embed a " +
-                    " WHERE exists " +
-                    " (select a.embed.embed from EntityA_Embed_Embed a" +
-                    " where a.embed IS NOT NULL) ",
+        String query2[] =
+            {
+                "select a.embed from EntityA_Embed_Embed a WHERE a.embed.embed "
+                    + " IS NOT NULL",
+                "select a.embed from EntityA_Embed_Embed a " + " WHERE exists "
+                    + " (select a.embed.embed from EntityA_Embed_Embed a"
+                    + " where a.embed IS NOT NULL) ",
             };
         List rs = null;
         for (int i = 0; i < query.length; i++) {
@@ -1649,7 +1660,8 @@ public class TestEmbeddable extends SingleEMFTestCase {
                 " order by e.intVal3",
             "select e, e.intVal1, e.embed.intVal2 from " +
                 " EntityA_Coll_Embed_Embed a " +
-                " , in (a.embeds) e WHERE e.intVal1 <= SOME (select e2.intVal2 " +
+                " , in (a.embeds) e WHERE e.intVal1 <= SOME (select e2." +
+                "intVal2 " +
                 " from EntityA_Coll_Embed_Embed a1, in (a1.embeds) e2) " +
                 " order by e.intVal3",
             "select e, e.intVal1, e.embed.intVal2 from " +
@@ -1673,7 +1685,8 @@ public class TestEmbeddable extends SingleEMFTestCase {
                 " order by e.intVal3",
             "select e, e.intVal1, e.embed.intVal2 from " +
                 " EntityA_Coll_Embed_Embed a " +
-                " , in (a.embeds) e WHERE e.intVal1 <= SOME (select e.intVal2 " +
+                " , in (a.embeds) e WHERE e.intVal1 <= SOME (select e." +
+                "intVal2 " +
                 " from EntityA_Coll_Embed_Embed a, in (a.embeds) e) " +
                 " order by e.intVal3",
             "select e, e.intVal1, e.embed.intVal2 from " +
@@ -1697,7 +1710,8 @@ public class TestEmbeddable extends SingleEMFTestCase {
                 " order by e.intVal3",
             "select e, e.intVal1, e.embed.intVal2 from " +
                 " EntityA_Coll_Embed_Embed a " +
-                " , in (a.embeds) e WHERE e.intVal1 <= SOME (select e2.intVal2 " +
+                " , in (a.embeds) e WHERE e.intVal1 <= SOME (select e2." +
+                "intVal2 " +
                 " from in(a.embeds) e2) " +
                 " order by e.intVal3",
             "select e, e.intVal1, e.embed.intVal2 from " +

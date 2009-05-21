@@ -115,9 +115,9 @@ public abstract class SingleEMFTestCase
      * Get number of instances by an aggregate query with the given alias.
      */
     public int count(String alias) {
-    	return ((Number)emf.createEntityManager()
-    					   .createQuery("SELECT COUNT(p) FROM " + alias + " p")
-    					   .getSingleResult()).intValue();
+        return ((Number)emf.createEntityManager().createQuery(
+                "SELECT COUNT(p) FROM " + alias + " p")
+                .getSingleResult()).intValue();
     }
     
     /**
@@ -134,14 +134,13 @@ public abstract class SingleEMFTestCase
      */
     @SuppressWarnings("unchecked")
     public <T> List<T> getAll(Class<T> t) {
-    	return (List<T>)emf.createEntityManager()
-				   .createQuery("SELECT p FROM " + getAlias(t) + " p")
-				   .getResultList();
+        return (List<T>)emf.createEntityManager().createQuery(
+                "SELECT p FROM " + getAlias(t) + " p").getResultList();
     }
     
     /**
      * Get all the instances of given type.
-     * The returned instances are obtained within the given persistence context. 
+     * The returned instances are obtained within the given persistence context.
      */
     @SuppressWarnings("unchecked")
     public <T> List<T> getAll(EntityManager em, Class<T> t) {

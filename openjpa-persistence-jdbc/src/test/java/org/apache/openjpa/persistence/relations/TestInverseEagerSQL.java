@@ -42,8 +42,9 @@ public class TestInverseEagerSQL
 
     public void setUp() {
         setUp(Customer.class, Customer.CustomerKey.class, Order.class, 
-        	EntityAInverseEager.class, EntityA1InverseEager.class, EntityA2InverseEager.class, 
-        	EntityBInverseEager.class, EntityCInverseEager.class, EntityDInverseEager.class,
+            EntityAInverseEager.class, EntityA1InverseEager.class,
+            EntityA2InverseEager.class, EntityBInverseEager.class,
+            EntityCInverseEager.class, EntityDInverseEager.class,
             Publisher.class, Magazine.class, DROP_TABLES);
         
         EntityManager em = emf.createEntityManager();
@@ -95,7 +96,8 @@ public class TestInverseEagerSQL
             EntityCInverseEager c1 = new EntityCInverseEager("c"+i, i, i);
             em.persist(c1);
 
-            EntityDInverseEager d1 = new EntityDInverseEager("d"+i, "d"+i, i, i);
+            EntityDInverseEager d1 = new EntityDInverseEager("d" + i, "d" + i,
+                    i, i);
             em.persist(d1);
 
             c1.setD(d1);

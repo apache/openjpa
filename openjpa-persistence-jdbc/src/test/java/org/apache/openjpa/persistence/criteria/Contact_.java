@@ -7,7 +7,8 @@ package org.apache.openjpa.persistence.criteria;
 import javax.persistence.metamodel.Attribute;
 import javax.persistence.metamodel.List;
 
-@javax.persistence.metamodel.TypesafeMetamodel(value=org.apache.openjpa.persistence.criteria.Contact.class)
+@javax.persistence.metamodel.TypesafeMetamodel(
+    value=org.apache.openjpa.persistence.criteria.Contact.class)
 public class Contact_ {
     public static volatile Attribute<Contact,Address> address;
     public static volatile List<Contact,Phone> phones;

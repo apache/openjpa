@@ -26,12 +26,13 @@ public class StringValidator
 	public void prePersist(FlightSchedule sched)
 	{
 		if(sched.getName().length() == 0 || sched.getName().equals(""))
-			throw new IllegalArgumentException("Needs a valid name");
+            throw new IllegalArgumentException("Needs a valid name");
 	}
 
 	@PostPersist
 	public void postPersist(FlightSchedule sched)
 	{
-		System.out.println("Schedule "+sched+" is successfully persisted: StringValidator.class");
+        System.out.println("Schedule " + sched
+                + " is successfully persisted: StringValidator.class");
 	}
 }

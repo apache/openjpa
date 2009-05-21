@@ -26,8 +26,9 @@ public class ContactInfo {
 	@ManyToOne
 	Address address; 
 
+	// Bidirectional
 	@ManyToMany
-    List<PhoneNumber> phoneNumbers = new ArrayList<PhoneNumber>(); // Bidirectional
+    List<PhoneNumber> phoneNumbers = new ArrayList<PhoneNumber>();
     
     @Embedded
     EmergencyContactInfo ecInfo;

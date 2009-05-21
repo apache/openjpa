@@ -32,7 +32,8 @@ import java.util.List;
 
 
 import org.apache.openjpa.persistence.kernel.common.apps.FetchGroupTestObject;
-import org.apache.openjpa.persistence.kernel.common.apps.FetchGroupTestObjectChild;
+import org.apache.openjpa.persistence.kernel.common.apps.
+        FetchGroupTestObjectChild;
 
 import org.apache.openjpa.persistence.OpenJPAEntityManager;
 import org.apache.openjpa.persistence.OpenJPAQuery;
@@ -50,7 +51,8 @@ public class TestFetchGroupsQuery extends TestFetchGroups {
     }
 
     protected FetchGroupTestObject getO1(OpenJPAEntityManager pm) {
-//        OpenJPAQuery q = pm.createNativeQuery("a == 5",FetchGroupTestObject.class);
+//        OpenJPAQuery q = pm.createNativeQuery("a == 5",
+//                FetchGroupTestObject.class);
 //        return (FetchGroupTestObject)
 //        ((Collection) q.getResultList()).iterator().next();
 
@@ -62,7 +64,8 @@ public class TestFetchGroupsQuery extends TestFetchGroups {
     }
 
     protected FetchGroupTestObject getO2(OpenJPAEntityManager pm) {
-//        OpenJPAQuery q = pm.createNativeQuery("a == 3",FetchGroupTestObject.class);
+//        OpenJPAQuery q = pm.createNativeQuery("a == 3",
+//                FetchGroupTestObject.class);
 //        return (FetchGroupTestObject)
 //        ((Collection) q.getResultList()).iterator().next();
 
@@ -74,7 +77,8 @@ public class TestFetchGroupsQuery extends TestFetchGroups {
     }
 
     protected FetchGroupTestObjectChild getC1(OpenJPAEntityManager pm) {
-//        OpenJPAQuery q = pm.createNativeQuery("a == 4",FetchGroupTestObjectChild.class);
+//        OpenJPAQuery q = pm.createNativeQuery("a == 4",
+//                FetchGroupTestObjectChild.class);
 //        return (FetchGroupTestObjectChild)
 //        ((Collection) q.getResultList()).iterator().next();
 

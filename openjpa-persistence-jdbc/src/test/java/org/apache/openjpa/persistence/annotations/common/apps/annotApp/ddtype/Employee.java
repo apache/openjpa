@@ -69,7 +69,8 @@ public class Employee implements NamedEntity
 	@PostPersist
 	private void resetSyncTime()
 	{
-		System.out.println("resetSyncTime is running on "+this+"GEN #: "+lifecheck);
+        System.out.println("resetSyncTime is running on " + this + "GEN #: "
+		        + lifecheck);
 		syncTime = System.currentTimeMillis();
 
 		CallbackStorage store = CallbackStorage.getInstance();
@@ -93,7 +94,8 @@ public class Employee implements NamedEntity
 
 	public String toString()
 	{
-		return "Name: "+name+" of "+this.getClass().getName()+" Id: "+id+" Synctime: "+syncTime;
+        return "Name: " + name + " of " + this.getClass().getName()
+            + " Id: " + id + " Synctime: " + syncTime;
 	}
 
 	public int getCheck() {

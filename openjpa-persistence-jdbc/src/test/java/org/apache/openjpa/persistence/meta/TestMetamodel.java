@@ -92,7 +92,8 @@ public class TestMetamodel extends SingleEMFTestCase {
     	assertCategory(PersistenceType.MAPPED_SUPERCLASS, 
     			ImplicitFieldAccessMappedSuperclass.class);
     	assertCategory(PersistenceType.ENTITY, ImplicitFieldAccessBase.class);
-    	assertCategory(PersistenceType.ENTITY, ImplicitFieldAccessSubclass.class);
+    	assertCategory(PersistenceType.ENTITY, 
+    	    ImplicitFieldAccessSubclass.class);
     	assertCategory(PersistenceType.EMBEDDABLE, Embed0.class);
     	assertCategory(PersistenceType.EMBEDDABLE, Embed1.class);
     	
@@ -139,7 +140,8 @@ public class TestMetamodel extends SingleEMFTestCase {
         assertSame(e0.getAttribute("f0"), e0.getAttribute("f0", String.class));
         assertSame(e1.getAttribute("f0"), e1.getAttribute("f0", String.class));
         assertNotSame(e0.getAttribute("f0"), e1.getAttribute("f0"));
-        assertNotSame(e0.getAttribute("f0", String.class), e1.getAttribute("f0", String.class));
+        assertNotSame(e0.getAttribute("f0", String.class), e1.getAttribute("f0",
+            String.class));
         assertNotNull(e0.getDeclaredAttribute("f0"));
         try {
             e1.getDeclaredAttribute("f0");
@@ -150,10 +152,12 @@ public class TestMetamodel extends SingleEMFTestCase {
     }
     
     public void testPCCollection() {
-        ManagedType<ImplicitFieldAccessBase> e0 = model.entity(ImplicitFieldAccessBase.class);
-        ManagedType<ExplicitFieldAccess> r1 = model.entity(ExplicitFieldAccess.class);
-        Collection relColl 
-          = e0.getCollection("collectionRelation", ExplicitFieldAccess.class);
+        ManagedType<ImplicitFieldAccessBase> e0 =
+            model.entity(ImplicitFieldAccessBase.class);
+        ManagedType<ExplicitFieldAccess> r1 =
+            model.entity(ExplicitFieldAccess.class);
+        Collection relColl =
+            e0.getCollection("collectionRelation", ExplicitFieldAccess.class);
         assertEquals(CollectionType.COLLECTION, relColl.getCollectionType());
         assertEquals(e0, relColl.getDeclaringType());
         assertEquals(r1, relColl.getElementType());
@@ -163,8 +167,10 @@ public class TestMetamodel extends SingleEMFTestCase {
     }
     
     public void testPCList() {
-        ManagedType<ImplicitFieldAccessBase> e0 = model.entity(ImplicitFieldAccessBase.class);
-        ManagedType<ExplicitFieldAccess> r1 = model.entity(ExplicitFieldAccess.class);
+        ManagedType<ImplicitFieldAccessBase> e0 =
+            model.entity(ImplicitFieldAccessBase.class);
+        ManagedType<ExplicitFieldAccess> r1 =
+            model.entity(ExplicitFieldAccess.class);
         List relList = e0.getList("listRelation", ExplicitFieldAccess.class);
         assertEquals(CollectionType.LIST, relList.getCollectionType());
         assertEquals(e0, relList.getDeclaringType());

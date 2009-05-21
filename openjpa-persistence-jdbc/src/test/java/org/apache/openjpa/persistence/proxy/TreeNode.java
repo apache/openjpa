@@ -89,7 +89,7 @@ public class TreeNode implements Serializable {
 	}
 
 	/**
-	 * Insert a child node at the specified position in the list of children.
+     * Insert a child node at the specified position in the list of children.
 	 */
 	public void addNode(TreeNode node, int position) {
 		checkSequenceRange(position);
@@ -126,7 +126,7 @@ public class TreeNode implements Serializable {
 			throws IllegalArgumentException {
 		int size = childern.size();
 		if (sequence < 0 || sequence > size)
-			throw new IllegalArgumentException("Sequence number is beyond "
+            throw new IllegalArgumentException("Sequence number is beyond "
 					+ "range of 0 to " + size + ".");
 	}
 
@@ -135,8 +135,8 @@ public class TreeNode implements Serializable {
 	}
 
 	/**
-	 * Create a uniform subtree below the receiver. Uniform subtree implies that
-	 * each child at a level L has equal number of grand children at level L+1.
+     * Create a uniform subtree below the receiver. Uniform subtree implies that
+     * each child at a level L has equal number of grand children at level L+1.
 	 * 
 	 * @param fanOuts
 	 *            array of fan outs for children at every level.
@@ -145,7 +145,7 @@ public class TreeNode implements Serializable {
 		if (fanOuts.length == 0)
 			return;
 		int[] nextFanOuts = new int[fanOuts.length];
-		System.arraycopy(fanOuts, 1, nextFanOuts, 0, fanOuts.length - 1);
+        System.arraycopy(fanOuts, 1, nextFanOuts, 0, fanOuts.length - 1);
 		for (int j = 0; j < fanOuts[0]; j++) {
 			TreeNode child = new TreeNode();
 			child.setName(getName() + "." + j);
@@ -162,7 +162,7 @@ public class TreeNode implements Serializable {
 			return;
 		int n = fanOuts[0];
 		int[] nextFanOuts = new int[fanOuts.length];
-		System.arraycopy(fanOuts, 1, nextFanOuts, 0, fanOuts.length - 1);
+        System.arraycopy(fanOuts, 1, nextFanOuts, 0, fanOuts.length - 1);
 		List<TreeNode> children = getNodes();
 		int diff = children.size() - n;
 		if (diff < 0) {
@@ -203,7 +203,7 @@ public class TreeNode implements Serializable {
 		}
 		for (int j = 0; j < fanOuts.length - 1; j++)
 			if (fanOuts[j] != fanOuts[j + 1])
-				throw new RuntimeException("non-uniform fanouts for children "
+                throw new RuntimeException("non-uniform fanouts for children "
 						+ " of " + getName());
 
 		int[] newList = new int[list.length + 1];

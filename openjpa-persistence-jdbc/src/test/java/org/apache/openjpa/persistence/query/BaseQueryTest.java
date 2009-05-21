@@ -44,7 +44,8 @@ import org.apache.openjpa.lib.conf.Configurations;
 import org.apache.openjpa.persistence.JPAFacadeHelper;
 import org.apache.openjpa.persistence.OpenJPAEntityManager;
 
-public abstract class BaseQueryTest extends org.apache.openjpa.persistence.common.utils.AbstractTestCase {
+public abstract class BaseQueryTest
+    extends org.apache.openjpa.persistence.common.utils.AbstractTestCase {
 
     private static Map _sysprops = new HashMap();
 

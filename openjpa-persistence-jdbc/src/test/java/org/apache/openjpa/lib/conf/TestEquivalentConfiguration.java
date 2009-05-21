@@ -59,9 +59,12 @@ public class TestEquivalentConfiguration extends SingleEMFTestCase {
     private Properties _system;
 
     private static final String OLD_STYLE_URL_KEY    = "openjpa.ConnectionURL";
-    private static final String OLD_STYLE_DRIVER_KEY = "openjpa.ConnectionDriverName";
-    private static final String NEW_STYLE_DRIVER_KEY = "javax.persistence.jdbc.driver";
-    private static final String NEW_STYLE_URL_KEY    = "javax.persistence.jdbc.url";
+    private static final String OLD_STYLE_DRIVER_KEY =
+        "openjpa.ConnectionDriverName";
+    private static final String NEW_STYLE_DRIVER_KEY =
+        "javax.persistence.jdbc.driver";
+    private static final String NEW_STYLE_URL_KEY    =
+        "javax.persistence.jdbc.url";
 
     private static final String[] KEYS = { 
         OLD_STYLE_DRIVER_KEY, OLD_STYLE_URL_KEY, 
@@ -70,17 +73,21 @@ public class TestEquivalentConfiguration extends SingleEMFTestCase {
     // NOTE: Non-standard naming because another test in the harness scans all 
     // META-INF/persistence.xml and fails as this file contains conflicting
     // property keys for testing.
-    private static final String PERSISTENCE_UNIT = "org/apache/openjpa/lib/conf/META-INF/persistence-config.xml";
+    private static final String PERSISTENCE_UNIT =
+        "org/apache/openjpa/lib/conf/META-INF/persistence-config.xml";
     
     private static final String OLD_STYLE_UNIT_NAME = "old-style";
     private static final String NEW_STYLE_UNIT_NAME = "new-style";
     private static final String MIXED_STYLE_UNIT_NAME = "mixed-style";
     private static final String CONFLICT_STYLE_UNIT_NAME = "conflict-style";
 
-    private static final String SYSTEM_CONFIGURED_UNIT_NAME  = "system-configured";
-    private static final String RUNTIME_CONFIGURED_UNIT_NAME = "runtime-configured";
+    private static final String SYSTEM_CONFIGURED_UNIT_NAME  =
+        "system-configured";
+    private static final String RUNTIME_CONFIGURED_UNIT_NAME =
+        "runtime-configured";
     
-    private static final String URL    = "jdbc:derby:target/database/openjpa-test-database;create=true";
+    private static final String URL    =
+        "jdbc:derby:target/database/openjpa-test-database;create=true";
     private static final String DRIVER = "org.apache.derby.jdbc.EmbeddedDriver";
 
     /**
@@ -104,7 +111,7 @@ public class TestEquivalentConfiguration extends SingleEMFTestCase {
      * Tests that openjpa.* namespace can be used for persistence.xml.
      */
     public void testOldStylePersistenceUnitConfiguration() {
-        emf = OpenJPAPersistence.createEntityManagerFactory(OLD_STYLE_UNIT_NAME, 
+        emf = OpenJPAPersistence.createEntityManagerFactory(OLD_STYLE_UNIT_NAME,
             PERSISTENCE_UNIT);
 
         assertNotNull(emf);
@@ -335,7 +342,8 @@ public class TestEquivalentConfiguration extends SingleEMFTestCase {
     }
 
     void verifyDatabaseConnection() {
-        String driver = OpenJPAPersistence.cast(emf).getConfiguration().getConnectionDriverName();
+        String driver = OpenJPAPersistence.cast(emf).getConfiguration()
+                .getConnectionDriverName();
         
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();

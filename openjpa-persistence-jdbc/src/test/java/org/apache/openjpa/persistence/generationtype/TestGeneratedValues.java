@@ -172,7 +172,7 @@ public class TestGeneratedValues extends SingleEMFTestCase {
         // Unicode -> EBCDIC) upon persistence, the uuid string returned by the 
         // database may not be equal to the original value.  This is a common 
         // issue with string data, but even more likely for a uuids given that 
-        // uuid strings are produced from pseudo-random byte arrays, which yield 
+        // uuid strings are produced from pseudo-random byte arrays, which yield
         // all sorts of variant characters.
         assertTrue(gv.getId() == gv2.getId());
         assertTrue(gv.getField() == gv2.getField());

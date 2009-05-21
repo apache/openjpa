@@ -23,7 +23,8 @@ import org.apache.openjpa.jdbc.meta.*;
 import org.apache.openjpa.jdbc.meta.strats.*;
 import org.apache.openjpa.persistence.OpenJPAEntityManager;
 
-import org.apache.openjpa.persistence.annotations.common.apps.annotApp.annotype.*;
+import
+    org.apache.openjpa.persistence.annotations.common.apps.annotApp.annotype.*;
 import junit.framework.*;
 
 import org.apache.openjpa.persistence.common.utils.*;
@@ -68,7 +69,8 @@ public class TestTablePerClassInheritance extends AnnotationTestCase
             instanceof NoneDiscriminatorStrategy);
         assertEquals("TPC_BASIC", sup.getFieldMapping("basic").
             getColumns()[0].getName());
-        embed = sup.getFieldMapping("embed").currentEntityManager()beddedMapping();
+        embed = sup.getFieldMapping("embed")
+            .currentEntityManager()beddedMapping();
         assertEquals("TPC_EMB_BASIC", embed.getFieldMapping("basic").
             getColumns()[0].getName());
     }**/

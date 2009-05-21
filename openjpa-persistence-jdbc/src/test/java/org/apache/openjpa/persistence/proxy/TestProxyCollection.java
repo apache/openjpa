@@ -51,7 +51,7 @@ public class TestProxyCollection extends SingleEMFTestCase {
 	}
 	
 	/**
-	 * Tests that a uniform tree can be modified with different fan outs at each 
+     * Tests that a uniform tree can be modified with different fan outs at each
 	 * level. This is not a persistent operation, just in-memory. 
 	 */
 	public void testModifyTree() {
@@ -66,7 +66,7 @@ public class TestProxyCollection extends SingleEMFTestCase {
 	}
 	
 	/**
-	 * Tests that a uniform tree is persisted and later fetched back with same
+     * Tests that a uniform tree is persisted and later fetched back with same
 	 * number of children at every level.
 	 */
 	public void testPersistTree() {
@@ -88,7 +88,7 @@ public class TestProxyCollection extends SingleEMFTestCase {
 	
 	public void testAddAndRemove() {
 		int[] original = {2,3,4};
-		int[] modifier = {4,3,2}; // add 1 at Level 1 + remove 1 at Level 3
+        int[] modifier = {4,3,2}; // add 1 at Level 1 + remove 1 at Level 3
 		createModifyAndMerge(original, modifier);
 	}
 	
@@ -134,7 +134,7 @@ public class TestProxyCollection extends SingleEMFTestCase {
 	/**
 	 * Create a uniform tree with given fan out.
 	 * Persist.
-	 * Verify that the tree is stored by fetching it in a separate persistence
+     * Verify that the tree is stored by fetching it in a separate persistence
 	 * context.
 	 */
 	TreeNode create(int[] original) {
@@ -158,8 +158,9 @@ public class TestProxyCollection extends SingleEMFTestCase {
 		assertArrayEquals(fanOuts, test.getFanOuts());
 	}
 
-	/** Asserts the given arrays have exactly same elements at the same index.
-	*/
+    /** 
+     * Asserts the given arrays have exactly same elements at the same index.
+     */
 	void assertArrayEquals(int[] a, int[] b) {
 		assertEquals(a.length, b.length);
 		for (int i = 0; i<a.length; i++)
@@ -167,7 +168,7 @@ public class TestProxyCollection extends SingleEMFTestCase {
 	}
 
 	/**
-	 * Asserts that the given object is a proxy collection and whether it is 
+     * Asserts that the given object is a proxy collection and whether it is
 	 * tracking changes.
 	 */
 	void assertProxyCollection(Object o, boolean tracking) {

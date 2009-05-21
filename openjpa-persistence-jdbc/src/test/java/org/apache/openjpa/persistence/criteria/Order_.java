@@ -7,7 +7,8 @@ package org.apache.openjpa.persistence.criteria;
 import javax.persistence.metamodel.Attribute;
 import javax.persistence.metamodel.List;
 
-@javax.persistence.metamodel.TypesafeMetamodel(value=org.apache.openjpa.persistence.criteria.Order.class)
+@javax.persistence.metamodel.TypesafeMetamodel(
+    value=org.apache.openjpa.persistence.criteria.Order.class)
 public class Order_ {
     public static volatile Attribute<Order,Integer> count;
     public static volatile Attribute<Order,Customer> customer;

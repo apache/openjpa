@@ -16,7 +16,8 @@
  * specific language governing permissions and limitations
  * under the License.    
  */
-package org.apache.openjpa.persistence.annotations.common.apps.annotApp.annotype;
+package
+    org.apache.openjpa.persistence.annotations.common.apps.annotApp.annotype;
 
 import java.io.Serializable;
 
@@ -90,6 +91,7 @@ public class Entity2 implements Serializable
 
 	public String toString()
 	{
-		return("PK: "+pk+" StringField: "+stringField+" IntField: "+intField);
+        return("PK: " + pk + " StringField: " + stringField
+                + " IntField: " + intField);
 	}
 }

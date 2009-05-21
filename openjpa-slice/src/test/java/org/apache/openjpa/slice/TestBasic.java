@@ -317,16 +317,21 @@ public class TestBasic extends SliceTestCase {
     }
     
     public void testDynamicSlice() {
-        DistributedConfiguration conf = (DistributedConfiguration)emf.getConfiguration();
+        DistributedConfiguration conf =
+            (DistributedConfiguration)emf.getConfiguration();
         conf.setDistributionPolicyInstance(new DistributionPolicy() {
-            public String distribute(Object pc, List<String> slices, Object context) {
+            public String distribute(Object pc, List<String> slices,
+                    Object context) {
                 if (PObject.class.isInstance(pc)) {
                     PObject o = (PObject)pc;
                     if (o.getValue() > 50) {
                         DistributedBroker broker = (DistributedBroker)context;
                         Map newProps = new HashMap();
-                        newProps.put("openjpa.slice.newslice.ConnectionURL", "jdbc:derby:target/database/newslice;create=true");
-                        newProps.put("openjpa.slice.newslice.ConnectionDriverName", "org.apache.derby.jdbc.EmbeddedDriver");
+                        newProps.put("openjpa.slice.newslice.ConnectionURL",
+                            "jdbc:derby:target/database/newslice;create=true");
+                        newProps.put(
+                            "openjpa.slice.newslice.ConnectionDriverName",
+                            "org.apache.derby.jdbc.EmbeddedDriver");
                         broker.addSlice("newslice", newProps);
                         return "newslice";
                     } else {

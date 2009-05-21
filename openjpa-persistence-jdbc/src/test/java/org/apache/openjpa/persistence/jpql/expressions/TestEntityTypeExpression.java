@@ -99,14 +99,16 @@ public class TestEntityTypeExpression extends AbstractTestCase {
         user = rs.get(0);
         assertEquals("Shannon", user.getName());
 
-        query = "SELECT e FROM CompUser e where TYPE(e) in ?1 and e.age in ?2 ORDER By e.name";
+        query = "SELECT e FROM CompUser e where TYPE(e) in ?1 and e.age in ?2" +
+                " ORDER By e.name";
         rs = em.createQuery(query).
             setParameter(1, params).
             setParameter(2, params2).getResultList();
         user = rs.get(0);
         assertEquals("Famzy", user.getName());
 
-        query = "SELECT e FROM CompUser e where TYPE(e) in :params ORDER BY e.age";
+        query = "SELECT e FROM CompUser e where TYPE(e) in :params " +
+                "ORDER BY e.age";
         rs = em.createQuery(query).
             setParameter("params", params).getResultList();
         user = rs.get(0);

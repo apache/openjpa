@@ -284,8 +284,8 @@ public class TestEJBQLFunction extends AbstractTestCase {
     public void testGroupByHavingClause() {
         EntityManager em = currentEntityManager();
 
-        String query =
-            "SELECT c.name FROM CompUser c GROUP BY c.name HAVING c.name LIKE 'S%'";
+        String query = "SELECT c.name FROM CompUser c GROUP BY c.name "
+            + "HAVING c.name LIKE 'S%'";
 
         List result = em.createQuery(query).getResultList();
 
@@ -301,8 +301,8 @@ public class TestEJBQLFunction extends AbstractTestCase {
     public void testOrderByClause() {
         EntityManager em = currentEntityManager();
 
-        String query =
-            "SELECT c.name FROM CompUser c WHERE c.name LIKE 'S%' ORDER BY c.name";
+        String query = "SELECT c.name FROM CompUser c WHERE c.name LIKE 'S%' "
+            + "ORDER BY c.name";
 
         List result = em.createQuery(query).getResultList();
 

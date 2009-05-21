@@ -67,13 +67,13 @@ public class TestNonPrimaryKeyQueryParameters extends SQLListenerTestCase {
 		EntityManager em = emf.createEntityManager();
 
 		Query query = em
-				.createQuery("SELECT d from Department d where d.name=?1");
+                .createQuery("SELECT d from Department d where d.name=?1");
 		query.setParameter(1, DEPT_NAME);
 		Department dept = (Department) query.getSingleResult();
 
-		assertEquals(FULLTIME_EMPLOYEE_COUNT, dept.getFullTimeEmployees()
-				.size());
-		assertEquals(PARTTIME_EMPLOYEE_COUNT, dept.getPartTimeEmployees()
+        assertEquals(FULLTIME_EMPLOYEE_COUNT, dept.getFullTimeEmployees()
+                .size());
+        assertEquals(PARTTIME_EMPLOYEE_COUNT, dept.getPartTimeEmployees()
 				.size());
 		assertSQL(".* AND t0.TYPE = .*");
 		em.close();
@@ -86,9 +86,9 @@ public class TestNonPrimaryKeyQueryParameters extends SQLListenerTestCase {
 
 		Department dept = (Department) query.getSingleResult();
 
-		assertEquals(FULLTIME_EMPLOYEE_COUNT, dept.getFullTimeEmployees()
-				.size());
-		assertEquals(PARTTIME_EMPLOYEE_COUNT, dept.getPartTimeEmployees()
+        assertEquals(FULLTIME_EMPLOYEE_COUNT, dept.getFullTimeEmployees()
+                .size());
+        assertEquals(PARTTIME_EMPLOYEE_COUNT, dept.getPartTimeEmployees()
 				.size());
 
 		assertSQL(".* AND t0.TYPE = .*");
@@ -100,9 +100,9 @@ public class TestNonPrimaryKeyQueryParameters extends SQLListenerTestCase {
 
 		Department dept = em.find(Department.class, DEPT_NAME);
 
-		assertEquals(FULLTIME_EMPLOYEE_COUNT, dept.getFullTimeEmployees()
-				.size());
-		assertEquals(PARTTIME_EMPLOYEE_COUNT, dept.getPartTimeEmployees()
+        assertEquals(FULLTIME_EMPLOYEE_COUNT, dept.getFullTimeEmployees()
+                .size());
+        assertEquals(PARTTIME_EMPLOYEE_COUNT, dept.getPartTimeEmployees()
 				.size());
 
 		assertSQL(".* AND t0.TYPE = .*");
@@ -116,11 +116,13 @@ public class TestNonPrimaryKeyQueryParameters extends SQLListenerTestCase {
 	public void testSelectSubClass() {
 		EntityManager em = emf.createEntityManager();
 
-		Query query = em.createQuery("SELECT e from FullTimeEmployee e");
-		assertEquals(FULLTIME_EMPLOYEE_COUNT, query.getResultList().size());
+        Query query = em.createQuery("SELECT e from FullTimeEmployee e");
+        assertEquals(FULLTIME_EMPLOYEE_COUNT,
+                query.getResultList().size());
 
 		query = em.createQuery("SELECT e from PartTimeEmployee e");
-		assertEquals(PARTTIME_EMPLOYEE_COUNT, query.getResultList().size());
+        assertEquals(PARTTIME_EMPLOYEE_COUNT,
+                query.getResultList().size());
 
 		assertSQL(".* WHERE t0.TYPE = .*");
 	}
@@ -129,8 +131,8 @@ public class TestNonPrimaryKeyQueryParameters extends SQLListenerTestCase {
 		EntityManager em = emf.createEntityManager();
 
 		Query query = em.createQuery("SELECT e from Employee e");
-		assertEquals(FULLTIME_EMPLOYEE_COUNT + PARTTIME_EMPLOYEE_COUNT, query
-				.getResultList().size());
+        assertEquals(FULLTIME_EMPLOYEE_COUNT + PARTTIME_EMPLOYEE_COUNT,
+                query.getResultList().size());
 		assertNotSQL(".* WHERE t0.TYPE = .*");
 	}
 

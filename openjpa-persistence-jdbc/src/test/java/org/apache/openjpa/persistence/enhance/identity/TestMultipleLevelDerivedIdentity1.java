@@ -155,7 +155,8 @@ public class TestMultipleLevelDerivedIdentity1 extends SingleEMFTestCase {
 	public void testDeleteLeafObtainedByQuery() {
 		EntityManager em = emf.createEntityManager();
 		em.getTransaction().begin();
-		Page1 page = (Page1)em.createQuery("SELECT p FROM Page1 p WHERE p.pid.number=2")
+        Page1 page = (Page1)em.createQuery(
+                "SELECT p FROM Page1 p WHERE p.pid.number=2")
 			.getSingleResult();
 		assertNotNull(page);
 		em.remove(page);

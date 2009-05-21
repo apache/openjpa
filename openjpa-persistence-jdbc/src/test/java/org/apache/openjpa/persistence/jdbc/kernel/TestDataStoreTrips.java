@@ -73,7 +73,9 @@ public class TestDataStoreTrips extends BaseJDBCTest{
         // figure out what table to look for in SQL statements
         EntityManager em= currentEntityManager();
         OpenJPAEntityManager kem = OpenJPAPersistence.cast (em);
-        JDBCConfiguration conf = (JDBCConfiguration) ((OpenJPAEntityManagerSPI) kem).getConfiguration();        
+        JDBCConfiguration conf =
+            (JDBCConfiguration) ((OpenJPAEntityManagerSPI) kem)
+            .getConfiguration();        
 
         ClassMapping mapping = conf.getMappingRepositoryInstance().getMapping
             (DataStoreTripsPC.class, null, true);
@@ -109,7 +111,8 @@ public class TestDataStoreTrips extends BaseJDBCTest{
         pm.close();
 
         _counter = (SelectCounter) ((JDBCConfiguration)
-        		((OpenJPAEntityManagerFactorySPI) _factory).getConfiguration()).getJDBCListenerInstances()[0];
+            ((OpenJPAEntityManagerFactorySPI) _factory).getConfiguration())
+            .getJDBCListenerInstances()[0];
         _counter.selects = 0;
         _counter.counts = 0;
     }

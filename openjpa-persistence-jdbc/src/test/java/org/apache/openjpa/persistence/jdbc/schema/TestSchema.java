@@ -47,8 +47,9 @@ import org.apache.openjpa.persistence.OpenJPAEntityManagerFactory;
 import org.apache.openjpa.persistence.OpenJPAEntityManager;
 
 
-public class TestSchema extends org.apache.openjpa.persistence.jdbc.kernel.BaseJDBCTest{
-    
+public class TestSchema
+        extends org.apache.openjpa.persistence.jdbc.kernel.BaseJDBCTest {
+
     private Schema _schema = new SchemaGroup().addSchema("schema");
     
     /** Creates a new instance of TestSchema */

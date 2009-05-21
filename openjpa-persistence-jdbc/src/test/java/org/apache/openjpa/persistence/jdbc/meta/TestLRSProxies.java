@@ -42,7 +42,8 @@ import org.apache.openjpa.persistence.OpenJPAEntityManagerFactory;
 import org.apache.openjpa.persistence.OpenJPAEntityManager;
 
 
-public class TestLRSProxies extends org.apache.openjpa.persistence.jdbc.kernel.BaseJDBCTest{
+public class TestLRSProxies
+        extends org.apache.openjpa.persistence.jdbc.kernel.BaseJDBCTest {
    
     private Object _oid = null;
     private Object _coid = null;
@@ -579,7 +580,8 @@ public class TestLRSProxies extends org.apache.openjpa.persistence.jdbc.kernel.B
  */
     }
     
-    private OpenJPAEntityManager getEm(boolean optimistic,boolean retainValues) {
+    private OpenJPAEntityManager getEm(boolean optimistic,
+            boolean retainValues) {
         OpenJPAEntityManager em = (OpenJPAEntityManager)currentEntityManager();
         em.setNontransactionalRead(true);
         em.setRetainState(retainValues);
@@ -587,7 +589,8 @@ public class TestLRSProxies extends org.apache.openjpa.persistence.jdbc.kernel.B
         return em;
     }
     
-    //FIXME - could not find AbstractJDBCListener because of package imports in source file
+    //FIXME - could not find AbstractJDBCListener because of package imports in
+    //source file
 /*
     public static class Listener extends AbstractJDBCListener {
  

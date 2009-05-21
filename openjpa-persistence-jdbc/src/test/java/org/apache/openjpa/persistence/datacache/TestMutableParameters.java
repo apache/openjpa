@@ -120,7 +120,8 @@ public class TestMutableParameters
         Query q =
             broker.newQuery(JPQLParser.LANG_JPQL,
                     "select a from "+
-                    CacheObjectAChild1.class.getSimpleName()+ "a :p_ages.contains (age)");
+                    CacheObjectAChild1.class.getSimpleName() +
+                    "a :p_ages.contains (age)");
         Collection c_param;
         if (set)
             c_param = new HashSet();

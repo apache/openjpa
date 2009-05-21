@@ -50,7 +50,7 @@ public class TestException extends SingleEMFTestCase {
     
 	/**
 	 * Tests that when Optimistic transaction consistency is violated, the
-	 * exception thrown is an instance of javax.persistence.OptimisticException.
+     * exception thrown is an instance of javax.persistence.OptimisticException.
 	 */
 	// TODO: Re-enable this test once OPENJPA-991 issue is corrected.
 	public void disabledTestThrowsOptimisticException() {
@@ -158,10 +158,10 @@ public class TestException extends SingleEMFTestCase {
 		assertTrue(names.size()>=18);
 		for (String name:names) {
 			try {
-				Class.forName(name, false, Thread.currentThread()
-							.getContextClassLoader());
+                Class.forName(name, false, Thread.currentThread()
+                        .getContextClassLoader());
 			} catch (Throwable t) {
-				fail("DB dictionary " + name + " can not be loaded");
+                fail("DB dictionary " + name + " can not be loaded");
 				t.printStackTrace();
 			}
 		}
@@ -195,16 +195,16 @@ public class TestException extends SingleEMFTestCase {
       }
 	
 	/**
-	 * Asserts that the given expected type of the exception is equal to or a
+     * Asserts that the given expected type of the exception is equal to or a
 	 * subclass of the given throwable or any of its nested exception.
-	 * Otherwise fails assertion and prints the given throwable and its nested
+     * Otherwise fails assertion and prints the given throwable and its nested
 	 * exception on the console. 
 	 */
 	public void assertException(Throwable t, Class expectedType) {
 		if (!isExpectedException(t, expectedType)) {
 			t.printStackTrace();
 			print(t, 0);
-			fail(t + " or its cause is not instanceof " + expectedType);
+            fail(t + " or its cause is not instanceof " + expectedType);
 		}
 	}
 	

@@ -174,7 +174,8 @@ public class TestTypeSafeCondExpression extends CriteriaTest {
 
         CriteriaQuery q = cb.create();
         Root<CompUser> c = q.from(CompUser.class);
-        q.where(cb.in(c.get(CompUser_.age)).value(29).value(40).value(10).negate());
+        q.where(cb.in(c.get(CompUser_.age)).value(29).value(40).value(10)
+            .negate());
         q.select(c.get(CompUser_.name));
         assertEquivalence(q, query);
         List result = em.createQuery(q).getResultList();
@@ -189,7 +190,8 @@ public class TestTypeSafeCondExpression extends CriteriaTest {
 
     public void testLikeExprUsingCriteria1() {
         String query =
-            "SELECT o.computerName FROM CompUser o WHERE o.name LIKE 'Sha%' AND " + 
+            "SELECT o.computerName FROM CompUser o WHERE o.name LIKE 'Sha%'" +
+            " AND " + 
             "o.computerName NOT IN ('PC')";
 
         CriteriaQuery q = cb.create();
@@ -210,7 +212,8 @@ public class TestTypeSafeCondExpression extends CriteriaTest {
     
     public void testLikeExprUsingCriteria2() {
         String query =
-            "SELECT o.computerName FROM CompUser o WHERE o.name LIKE 'Sha%o_' AND " + 
+            "SELECT o.computerName FROM CompUser o WHERE o.name LIKE 'Sha%o_'" +
+            " AND " + 
             "o.computerName NOT IN ('UNIX')";
 
         CriteriaQuery q = cb.create();
@@ -245,7 +248,8 @@ public class TestTypeSafeCondExpression extends CriteriaTest {
     
     @AllowFailure(message="Parameter processing is broken")
     public void testLikeExprUsingCriteria4() {
-        String query = "SELECT o.name FROM CompUser o WHERE o.name LIKE ?1 ESCAPE '|'";
+        String query = "SELECT o.name FROM CompUser o WHERE o.name LIKE ?1 " +
+        		"ESCAPE '|'";
         CriteriaQuery q = cb.create();
         Root<CompUser> c = q.from(CompUser.class);
         Parameter<String> param = cb.parameter(String.class);
@@ -263,7 +267,8 @@ public class TestTypeSafeCondExpression extends CriteriaTest {
     @AllowFailure(message="JPQL generates two queries, Criteria only one")
     public void testNullExprUsingCriteria() {
         String query =
-            "SELECT o.name FROM CompUser o WHERE o.age IS NOT NULL AND o.computerName = 'PC' ";
+            "SELECT o.name FROM CompUser o WHERE o.age IS NOT NULL AND " +
+            "o.computerName = 'PC' ";
         CriteriaQuery q = cb.create();
         Root<CompUser> c = q.from(CompUser.class);
         Parameter<String> param = cb.parameter(String.class);
@@ -351,7 +356,8 @@ public class TestTypeSafeCondExpression extends CriteriaTest {
     public void testNotExistExprUsingCriteria() {
         String query =
             "SELECT DISTINCT o.name FROM CompUser o WHERE NOT EXISTS" +
-                " (SELECT s FROM CompUser s WHERE s.address.country = o.address.country)";
+                " (SELECT s FROM CompUser s WHERE s.address.country = " +
+                "o.address.country)";
 
         CriteriaQuery q = cb.create();
         Root<CompUser> o = q.from(CompUser.class);
@@ -376,7 +382,8 @@ public class TestTypeSafeCondExpression extends CriteriaTest {
     public void testAnyExprUsingCriteria() {
         String query =
             "SELECT o.name FROM CompUser o WHERE o.address.zipcode = ANY (" +
-                " SELECT s.computerName FROM CompUser s WHERE s.address.country IS NOT NULL )";
+                " SELECT s.computerName FROM CompUser s WHERE " +
+                "s.address.country IS NOT NULL )";
 
         CriteriaQuery q = cb.create();
         Root<CompUser> o = q.from(CompUser.class);
@@ -384,8 +391,10 @@ public class TestTypeSafeCondExpression extends CriteriaTest {
         Subquery<String> sq = q.subquery(String.class);
         Root<CompUser> s = sq.from(CompUser.class);
         sq.select(s.get(CompUser_.computerName));
-        sq.where(cb.notEqual(s.get(CompUser_.address).get(Address_.country), null));
-        q.where(cb.equal(o.get(CompUser_.address).get(Address_.zipCode), cb.any(sq)));
+        sq.where(cb.notEqual(s.get(CompUser_.address).get(Address_.country),
+            null));
+        q.where(cb.equal(o.get(CompUser_.address).get(Address_.zipCode), 
+            cb.any(sq)));
         assertEquivalence(q, query);
         List result = em.createQuery(q).getResultList();
 
@@ -398,7 +407,8 @@ public class TestTypeSafeCondExpression extends CriteriaTest {
     @AllowFailure(message="new() in projection is badly broken")
     public void testConstructorExprUsingCriteria() {
         String query =
-            "SELECT NEW org.apache.openjpa.persistence.common.apps.MaleUser(c.name, " + 
+            "SELECT NEW org.apache.openjpa.persistence.common.apps.MaleUser(" +
+            "c.name, " + 
             "c.computerName, c.address, c.age, c.userid)" +
             " FROM CompUser c WHERE c.name = 'Seetha'";
         CriteriaQuery q = cb.create();
@@ -444,7 +454,8 @@ public class TestTypeSafeCondExpression extends CriteriaTest {
     
     @AllowFailure
     public void testConcatSubStringFunc2() {
-        String query = "select e.address From CompUser e where e.computerName = " +
+        String query = "select e.address From CompUser e where " +
+        		"e.computerName = " +
             "CONCAT('Ablahum', SUBSTRING(e.name, LOCATE('e', e.name), 4)) ";
         CriteriaQuery q = cb.create();
         q = cb.create();
@@ -533,7 +544,8 @@ public class TestTypeSafeCondExpression extends CriteriaTest {
 
     @AllowFailure
     public void testTrimFunc2() {
-        String query = "select e.name From CompUser e where Trim(e.name) ='Shannon'";
+        String query = "select e.name From CompUser e where Trim(e.name) =" +
+        		"'Shannon'";
         CriteriaQuery q = cb.create();
         q = cb.create();
         Root<CompUser> e = q.from(CompUser.class);
@@ -545,7 +557,8 @@ public class TestTypeSafeCondExpression extends CriteriaTest {
 
     @AllowFailure
     public void testLowerFunc1() {
-        String query = "select LOWER(e.name) From CompUser e WHERE e.computerName='UNIX'";
+        String query = "select LOWER(e.name) From CompUser e WHERE " +
+        		"e.computerName='UNIX'";
         CriteriaQuery q = cb.create();
         q = cb.create();
         Root<CompUser> e = q.from(CompUser.class);
@@ -569,7 +582,8 @@ public class TestTypeSafeCondExpression extends CriteriaTest {
 
     @AllowFailure
     public void testUpperFunc1() {
-        String query = "select UPPER(e.name) From CompUser e WHERE e.computerName='PC'";
+        String query = "select UPPER(e.name) From CompUser e WHERE " +
+        		"e.computerName='PC'";
         CriteriaQuery q = cb.create();
         q = cb.create();
         Root<CompUser> e = q.from(CompUser.class);
@@ -581,7 +595,8 @@ public class TestTypeSafeCondExpression extends CriteriaTest {
 
     @AllowFailure
     public void testUpperFunc2() {
-        String query = "select e.nicknames from CompUser e where UPPER(e.name)='UGO'";
+        String query = "select e.nicknames from CompUser e where " +
+        		"UPPER(e.name)='UGO'";
         CriteriaQuery q = cb.create();
         q = cb.create();
         Root<CompUser> e = q.from(CompUser.class);
@@ -646,7 +661,8 @@ public class TestTypeSafeCondExpression extends CriteriaTest {
     // size method can not be applied to an array field
     @AllowFailure
     public void testArithmFunc4() {
-        String query = "SELECT e.name FROM CompUser e WHERE SIZE(e.nicknames) = 6";
+        String query = "SELECT e.name FROM CompUser e WHERE " +
+        		"SIZE(e.nicknames) = 6";
         CriteriaQuery q = cb.create();
         q = cb.create();
         Root<CompUser> e = q.from(CompUser.class);
@@ -659,7 +675,8 @@ public class TestTypeSafeCondExpression extends CriteriaTest {
     @AllowFailure
     public void testGroupByHavingClause() {
         String query =
-            "SELECT c.name FROM CompUser c GROUP BY c.name HAVING c.name LIKE 'S%'";
+            "SELECT c.name FROM CompUser c GROUP BY c.name HAVING c.name " +
+            "LIKE 'S%'";
 
         CriteriaQuery q = cb.create();
         q = cb.create();
@@ -682,7 +699,8 @@ public class TestTypeSafeCondExpression extends CriteriaTest {
     @AllowFailure
     public void testOrderByClause() {
         String query =
-            "SELECT c.name FROM CompUser c WHERE c.name LIKE 'S%' ORDER BY c.name";
+            "SELECT c.name FROM CompUser c WHERE c.name LIKE 'S%' " +
+            "ORDER BY c.name";
 
         CriteriaQuery q = cb.create();
         q = cb.create();

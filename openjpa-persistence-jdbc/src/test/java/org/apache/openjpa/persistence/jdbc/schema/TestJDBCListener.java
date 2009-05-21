@@ -42,7 +42,8 @@ import org.apache.openjpa.persistence.OpenJPAEntityManagerFactory;
 import org.apache.openjpa.persistence.OpenJPAEntityManager;
 
 
-public class TestJDBCListener extends org.apache.openjpa.persistence.jdbc.kernel.BaseJDBCTest{
+public class TestJDBCListener
+        extends org.apache.openjpa.persistence.jdbc.kernel.BaseJDBCTest {
     
     public static boolean commitOccurred;    
     

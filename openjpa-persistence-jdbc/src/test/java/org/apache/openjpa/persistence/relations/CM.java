@@ -106,14 +106,14 @@ public class CM {
 			CMId id = (CMId) obj;
 			return ( this.getCmId() == id.getCmId() ||
                 (this.getCmId() != null && this.getCmId().equals(id.getCmId())))
-				&& ( this.getE() == id.getE() || (this.getE() != null &&
+                && ( this.getE() == id.getE() || (this.getE() != null &&
                 this.getE().equals(id.getE())));
 		}
 		
 		@Override
 		public int hashCode() {
-			return (this.getCmId() != null? this.getCmId().hashCode():0) 
-				 ^ (this.getE()!= null ? this.getE().hashCode():0);
+            return (this.getCmId() != null? this.getCmId().hashCode():0)
+                    ^ (this.getE()!= null ? this.getE().hashCode():0);
 		}
 	}
 

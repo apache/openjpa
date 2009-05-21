@@ -52,7 +52,8 @@ public class ImplicitFieldAccessSubclass extends ImplicitFieldAccessBase {
 		return mapRelationKeyEmbedded;
 	}
 	
-	public void setMapRelationKeyEmbedded(Map<Embed0, ExplicitPropertyAccess> map) {
+	public void setMapRelationKeyEmbedded(
+        Map<Embed0, ExplicitPropertyAccess> map) {
 		this.mapRelationKeyEmbedded = map;
 	}
 }

@@ -46,7 +46,7 @@ import org.apache.openjpa.persistence.OpenJPAEntityManager;
 
 
 public class TestJoinSubclasses
-        extends org.apache.openjpa.persistence.jdbc.kernel.TestSQLListenerTestCase{
+    extends org.apache.openjpa.persistence.jdbc.kernel.TestSQLListenerTestCase {
      
     /** Creates a new instance of TestJoinSubclasses */
     public TestJoinSubclasses(String name) 

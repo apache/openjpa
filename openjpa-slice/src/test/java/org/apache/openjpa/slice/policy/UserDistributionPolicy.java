@@ -39,13 +39,13 @@ public class UserDistributionPolicy implements DistributionPolicy {
 	 * Distribute the given instance.
 	 * Assumes that two configured slices are named as <em>One</em> and 
 	 * <em>Two</em>.<br>
-	 * The policy is only implemented for PObject and Person i.e. two of three 
-	 * known classes. No policy is implemented for Address because Address is
-	 * persisted always by cascade and hence Slice should assign automatically
+     * The policy is only implemented for PObject and Person i.e. two of three
+     * known classes. No policy is implemented for Address because Address is
+     * persisted always by cascade and hence Slice should assign automatically
 	 * the same slice as its owner Person. 
 	 * 
 	 */
-	public String distribute(Object pc, List<String> slices, Object context) {
+    public String distribute(Object pc, List<String> slices, Object context) {
 		assertValidSlices(slices);
 		if (pc instanceof PObject)
 			return distribute((PObject)pc);
@@ -58,8 +58,8 @@ public class UserDistributionPolicy implements DistributionPolicy {
 	void assertValidSlices(List<String> slices) {
 		if (slices.contains("One") && slices.contains("Two"))
 			return;
-		throw new RuntimeException("This policy assumes two slices named " +
-				"One and Two. But configured slices are " + slices); 
+        throw new RuntimeException("This policy assumes two slices named " +
+                "One and Two. But configured slices are " + slices);
 	}
 	
 	/**

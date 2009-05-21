@@ -23,7 +23,8 @@ import javax.persistence.*;
 
 import org.apache.openjpa.persistence.OpenJPAEntityManager;
 
-import org.apache.openjpa.persistence.annotations.common.apps.annotApp.annotype.*;
+import
+    org.apache.openjpa.persistence.annotations.common.apps.annotApp.annotype.*;
 import junit.framework.*;
 
 import org.apache.openjpa.persistence.common.utils.*;
@@ -103,19 +104,19 @@ public class TestPropertyAccess extends AnnotationTestCase
 
     /*public void testJDOQL() {
         PersistenceManager pm = getPM();
-        pm.newQuery("select from persistence.annotations.common.apps.annotApp.annotype.PropertyAccess1 "
-            + "where name == 'foo'").execute();
-        pm.newQuery("select from persistence.annotations.common.apps.annotApp.annotype.PropertyAccess1 "
-            + "order by name ascending").execute();
+        pm.newQuery("select from persistence.annotations.common.apps.annotApp."
+            + "annotype.PropertyAccess1 where name == 'foo'").execute();
+        pm.newQuery("select from persistence.annotations.common.apps.annotApp."
+            + "annotype.PropertyAccess1 order by name ascending").execute();
         pm.close();
     }
 
     public void testJDOQLWithFieldNameMismatch() {
         PersistenceManager pm = getPM();
-        pm.newQuery("select from persistence.annotations.common.apps.annotApp.annotype.PropertyAccess1 "
-            + "where intValue == 0").execute();
-        pm.newQuery("select from persistence.annotations.common.apps.annotApp.annotype.PropertyAccess1 "
-            + "order by intValue asc").execute();
+        pm.newQuery("select from persistence.annotations.common.apps.annotApp."
+            + "annotype.PropertyAccess1 where intValue == 0").execute();
+        pm.newQuery("select from persistence.annotations.common.apps.annotApp."
+            + "annotype.PropertyAccess1 order by intValue asc").execute();
         pm.close();
     }*/
 }

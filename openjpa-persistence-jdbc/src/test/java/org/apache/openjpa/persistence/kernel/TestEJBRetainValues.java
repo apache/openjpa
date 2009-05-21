@@ -66,8 +66,9 @@ public class TestEJBRetainValues extends AbstractTestCase {
 
         //	do some searching in the first PM
         List l2 = buildSelectQuery(pm, "x");
-        assertEquals(0,
-            l2.size());  //should be zero if retainvalue is set to true but that is kodo specific.
+        //should be zero if retainvalue is set to true but that is kodo
+        //specific.
+        assertEquals(0, l2.size());
 
         List l3 = buildSelectQuery(pm, "y");
         assertEquals(1, l3.size());

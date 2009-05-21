@@ -211,7 +211,8 @@ public class TestSpec10_1_26_Ex3 extends SQLListenerTestCase {
         EntityTransaction tran = em.getTransaction();
         // add an element
         tran.begin();
-        Employee e = createEmployee(em, numDepartments * numEmployeesPerDept + 1);
+        Employee e = createEmployee(
+                em, numDepartments * numEmployeesPerDept + 1);
         d.addEmployee(e);
         e.setDepartment(d);
         em.persist(d);

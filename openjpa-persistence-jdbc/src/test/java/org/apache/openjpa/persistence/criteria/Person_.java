@@ -7,7 +7,8 @@ package org.apache.openjpa.persistence.criteria;
 import javax.persistence.metamodel.Attribute;
 import javax.persistence.metamodel.Set;
 
-@javax.persistence.metamodel.TypesafeMetamodel(value=org.apache.openjpa.persistence.criteria.Person.class)
+@javax.persistence.metamodel.TypesafeMetamodel(
+    value=org.apache.openjpa.persistence.criteria.Person.class)
 public class Person_ {
     public static volatile Attribute<Person,Integer> id;
     public static volatile Attribute<Person,String> name;

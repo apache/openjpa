@@ -79,8 +79,8 @@ public class TestUpdateSingleValuedAssociation extends SingleEMFTestCase {
 	void assertUserNullity(boolean shouldBeNull) {
 		EntityManager em = emf.createEntityManager();
 		em.getTransaction().begin();
-		List<Application> result = 
-			em.createQuery("SELECT a FROM Application a").getResultList();
+        List<Application> result = em.createQuery(
+                "SELECT a FROM Application a").getResultList();
 		assertFalse(result.isEmpty());
 		for (Application pc : result) {
 			Applicant user = pc.getUser();

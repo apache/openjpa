@@ -40,7 +40,7 @@ import javax.persistence.*;
 	}),
 
 	/**
-	 * This mapping is similar to the native query that takes a class argument
+     * This mapping is similar to the native query that takes a class argument
 	 * but the query specifies aliases for the projection columns.
 	 *  <code>SELECT id AS ITEM_ID,name AS ITEM_NAME FROM ITEM
 	 *  WHERE NAME='WINE'</code>
@@ -49,7 +49,7 @@ import javax.persistence.*;
 		entities = { @EntityResult(entityClass = SQLMapItem.class, 
 			fields = {
 				@FieldResult(name = "id",   column = "ITEM_ID"),
-				@FieldResult(name = "name", column = "ITEM_NAME") }) 
+                @FieldResult(name = "name", column = "ITEM_NAME") })
 			}),
 
 	/**

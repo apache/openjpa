@@ -27,8 +27,8 @@ import org.apache.openjpa.persistence.jdbc.common.apps.InvertA;
 import org.apache.openjpa.persistence.jdbc.common.apps.InvertB;
 import junit.framework.*;
 
-public class TestEJBInverseOneToOne extends org.apache.openjpa.persistence.jdbc.kernel.BaseJDBCTest
-{
+public class TestEJBInverseOneToOne
+        extends org.apache.openjpa.persistence.jdbc.kernel.BaseJDBCTest {
 	public TestEJBInverseOneToOne(String name)
 	{
 		super(name);

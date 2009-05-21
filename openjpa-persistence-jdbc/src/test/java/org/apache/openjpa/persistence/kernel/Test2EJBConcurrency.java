@@ -102,15 +102,19 @@ public class Test2EJBConcurrency extends AbstractTestCase {
 //		Entity1 b1 = (Entity1) em1.find (Entity1.class, 3);
 //		Entity1 b2 = (Entity1) em2.find (Entity1.class, 3);
 //
-//		assertEquals ("b1.getstringField is not STRING as exp.","STRING", b1.getStringField ());
-//		assertEquals ("b2.getstringField is not STRING as exp.","STRING", b2.getStringField ());
+//      assertEquals("b1.getstringField is not STRING as exp.", "STRING",
+//          b1.getStringField());
+//      assertEquals("b2.getstringField is not STRING as exp.", "STRING",
+//          b2.getStringField());
 //
-//		b1.setStringField ("STRING2");
+//		b1.setStringField("STRING2");
 //		endTx(em1);
-//		assertEquals ("b1.getstringField is not STRING as exp.","STRING2", b1.getStringField ());
+//      assertEquals("b1.getstringField is not STRING as exp.", "STRING2",
+//          b1.getStringField());
 //
-//		assertEquals ("b2.getstringField is not STRING as exp.","STRING", b2.getStringField ());
-//		b2.setStringField ("STRING3");
+//      assertEquals("b2.getstringField is not STRING as exp.", "STRING",
+//          b2.getStringField());
+//		b2.setStringField("STRING3");
 //
 //		try
 //		{
@@ -126,7 +130,8 @@ public class Test2EJBConcurrency extends AbstractTestCase {
 //		
 //
 //    	b2 = (Entity1) em2.find (Entity1.class, 3);
-//		assertEquals ("b2.getstringField is not STRING2 as exp.","STRING2", b2.getStringField ());
+//      assertEquals ("b2.getstringField is not STRING2 as exp.", "STRING2",
+//          b2.getStringField ());
 //    	
 //		endEm(em1);
 //		endEm(em2);

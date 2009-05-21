@@ -45,14 +45,18 @@ import org.apache.openjpa.util.UserException;
  * 
  */
 public class TestBadJdbcUrl extends TestCase {
-	public static final String GOOD_URL = "jdbc:derby:target/database/openjpa-derby-database;create=true";
-	public static final String GOOD_DRIVER = "org.apache.derby.jdbc.EmbeddedDriver";
-	public static final String GOOD_DATASOURCE = "org.apache.commons.dbcp.BasicDataSource";
+    public static final String GOOD_URL =
+        "jdbc:derby:target/database/openjpa-derby-database;create=true";
+    public static final String GOOD_DRIVER =
+        "org.apache.derby.jdbc.EmbeddedDriver";
+    public static final String GOOD_DATASOURCE =
+        "org.apache.commons.dbcp.BasicDataSource";
 
 	public static final String BAD_DRIVER = "bad.driver";
 	public static final String BAD_URL_PROTOCOL = "bad.url.protocol";
 	public static final String BAD_URL_SUBPROTOCOL = "bad.url.sub.protocol";
-	public static final String BAD_CONN_PROPS = "connectionUrl=bad,connectionDriver=bad";
+    public static final String BAD_CONN_PROPS =
+        "connectionUrl=bad,connectionDriver=bad";
 
 	/*
 	 * Test specifying URL with bad protocol but a valid Driver.
@@ -62,7 +66,7 @@ public class TestBadJdbcUrl extends TestCase {
 		p.put("openjpa.ConnectionDriverName", GOOD_DRIVER);
 		p.put("openjpa.ConnectionURL", BAD_URL_PROTOCOL);
 		verifyConnectException(p, PersistenceException.class,
-				UserException.class, GOOD_DRIVER, BAD_URL_PROTOCOL);
+                UserException.class, GOOD_DRIVER, BAD_URL_PROTOCOL);
 	}
 
 	/*
@@ -85,7 +89,7 @@ public class TestBadJdbcUrl extends TestCase {
 		p.put("openjpa.ConnectionDriverName", GOOD_DRIVER);
 		p.put("openjpa.ConnectionURL", BAD_URL_SUBPROTOCOL);
 		verifyConnectException(p, PersistenceException.class,
-				UserException.class, GOOD_DRIVER, BAD_URL_SUBPROTOCOL);
+                UserException.class, GOOD_DRIVER, BAD_URL_SUBPROTOCOL);
 	}
 
 	/*
@@ -96,7 +100,7 @@ public class TestBadJdbcUrl extends TestCase {
 		p.put("openjpa.ConnectionDriverName", GOOD_DRIVER);
 		p.put("openjpa.ConnectionURL", BAD_URL_SUBPROTOCOL);
 		verifyConnectException(p, PersistenceException.class,
-				UserException.class, GOOD_DRIVER, BAD_URL_SUBPROTOCOL);
+                UserException.class, GOOD_DRIVER, BAD_URL_SUBPROTOCOL);
 	}
 
 	/*
@@ -111,7 +115,7 @@ public class TestBadJdbcUrl extends TestCase {
 	}
 
 	/**
-	 * Attempts to connect with given properties and analyze exception for the
+     * Attempts to connect with given properties and analyze exception for the
 	 * existence of given target exception and error message strings.
 	 * 
 	 * @param props
@@ -119,7 +123,7 @@ public class TestBadJdbcUrl extends TestCase {
 	 * @param target
 	 *            the type expected exception to be raised.
 	 * @param nested
-	 *            the type expected nested exception. null implies not to look
+     *            the type expected nested exception. null implies not to look
 	 *            for any.
 	 * @param keys
 	 *            the strings that must occur in the exception message.
@@ -129,7 +133,7 @@ public class TestBadJdbcUrl extends TestCase {
 		EntityManagerFactory emf = null;
 		EntityManager em = null;
 		try {
-			emf = Persistence.createEntityManagerFactory("test", props);
+            emf = Persistence.createEntityManagerFactory("test", props);
 			em = emf.createEntityManager();
 			OpenJPAPersistence.cast(em).getConnection();
 			fail("Should have caught a " + targetType.getName());
@@ -145,7 +149,7 @@ public class TestBadJdbcUrl extends TestCase {
 	}
 
 	/**
-	 * Asserts that the given targetType is assignable from actual. Asserts that
+     * Asserts that the given targetType is assignable from actual. Asserts that
 	 * the nestedType is a nested within the given actual Throwable
 	 * 
 	 * @param actual
@@ -165,9 +169,9 @@ public class TestBadJdbcUrl extends TestCase {
 
 		if (nestedTargetType != null) {
 			Throwable nested = actual.getCause();
-			Class nestedType = (nested == null) ? null : nested.getClass();
+            Class nestedType = (nested == null) ? null : nested.getClass();
 			while (nestedType != null) {
-				if (nestedType.isAssignableFrom(nestedTargetType)) {
+                if (nestedType.isAssignableFrom(nestedTargetType)) {
 					return;
 				} else {
 					Throwable next = nested.getCause();
@@ -177,12 +181,12 @@ public class TestBadJdbcUrl extends TestCase {
 					nested     = next;
 				}
 			}
-			fail("No nested type " + nestedTargetType + " in " + actual);
+            fail("No nested type " + nestedTargetType + " in " + actual);
 		}
 	}
 
 	/**
-	 * Assert that each of given keys are present in the message of the given
+     * Assert that each of given keys are present in the message of the given
 	 * Throwable.
 	 */
 	void assertMessage(Throwable actual, String... keys) {
@@ -190,7 +194,7 @@ public class TestBadJdbcUrl extends TestCase {
 			return;
 		String message = actual.getMessage();
 		for (String key : keys) {
-			assertTrue(key + " is not in " + message, message.contains(key));
+            assertTrue(key + " is not in " + message, message.contains(key));
 		}
 	}
 }

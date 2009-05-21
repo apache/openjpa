@@ -39,7 +39,7 @@ public class TestDynamicFetchPlan extends SingleEMFTestCase {
 	private static final String JPQL = "select a from FetchA a";
 	
 	public void setUp() {
-		super.setUp(CLEAR_TABLES, FetchBase.class, FetchA.class, FetchB.class);
+        super.setUp(CLEAR_TABLES, FetchBase.class, FetchA.class, FetchB.class);
 		createData();
 	}
 

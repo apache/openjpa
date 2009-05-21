@@ -23,10 +23,11 @@ import javax.persistence.EntityManager;
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
 
 /**
- * Defined ordering is only applied when the collection is loaded from the datastore.
- * It is not maintained by Openjpa as you modify the collection in memory. 
- * Openjpa invalid data cache in case the persistence operation may result cache in wrong order.
- * This test suite tests various cases for the above problem.
+ * Defined ordering is only applied when the collection is loaded from the
+ * datastore. It is not maintained by Openjpa as you modify the collection in
+ * memory. Openjpa invalid data cache in case the persistence operation may
+ * result cache in wrong order. This test suite tests various cases for the
+ * above problem.
  */
 public class TestOrderbyInDataCache extends SingleEMFTestCase {
 	private long pid;

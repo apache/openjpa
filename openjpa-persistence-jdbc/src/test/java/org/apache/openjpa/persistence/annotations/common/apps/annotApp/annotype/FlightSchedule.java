@@ -16,7 +16,8 @@
  * specific language governing permissions and limitations
  * under the License.    
  */
-package org.apache.openjpa.persistence.annotations.common.apps.annotApp.annotype;
+package
+    org.apache.openjpa.persistence.annotations.common.apps.annotApp.annotype;
 
 import javax.persistence.*;
 
@@ -36,8 +37,8 @@ public class FlightSchedule extends Schedule
 
 	public FlightSchedule(){}
 
-	public FlightSchedule(String name, Calendar cad, Date start, Date end, String pname)
-	{
+    public FlightSchedule(String name, Calendar cad, Date start, Date end,
+            String pname) {
 		super(name, cad, start, end);
 		this.planeName = pname;
 	}

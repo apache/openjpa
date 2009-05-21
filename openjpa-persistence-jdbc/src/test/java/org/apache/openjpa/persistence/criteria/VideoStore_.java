@@ -7,7 +7,8 @@ package org.apache.openjpa.persistence.criteria;
 import javax.persistence.metamodel.Attribute;
 import javax.persistence.metamodel.Map;
 
-@javax.persistence.metamodel.TypesafeMetamodel(value=org.apache.openjpa.persistence.criteria.VideoStore.class)
+@javax.persistence.metamodel.TypesafeMetamodel(
+    value=org.apache.openjpa.persistence.criteria.VideoStore.class)
 public class VideoStore_ {
     public static volatile Attribute<VideoStore,Integer> id;
     public static volatile Attribute<VideoStore,Address> location;

@@ -28,7 +28,8 @@ package org.apache.openjpa.persistence.kernel;
 
 
 
-import org.apache.openjpa.persistence.kernel.common.apps.ModInstanceCallbackTests;
+import org.apache.openjpa.persistence.kernel.common.apps.
+        ModInstanceCallbackTests;
 import org.apache.openjpa.persistence.kernel.common.apps.ModRuntimeTest1;
 
 import org.apache.openjpa.event.AbstractTransactionListener;

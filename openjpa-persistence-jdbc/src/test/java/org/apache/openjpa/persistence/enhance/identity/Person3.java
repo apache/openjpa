@@ -66,7 +66,8 @@ public class Person3 {
         MedicalHistory3 medical0 = p0.getMedical();
         if (!firstName.equals(firstName0)) return false;
         if (!lastName.equals(lastName0)) return false;
-        if (medical != null && medical0 != null && !medical.name.equals(medical0.name)) return false; 
+        if (medical != null && medical0 != null &&
+            !medical.name.equals(medical0.name)) return false;
         if (medical == null && medical0 != null) return false;
         if (medical != null && medical0 == null) return false;
         return true;

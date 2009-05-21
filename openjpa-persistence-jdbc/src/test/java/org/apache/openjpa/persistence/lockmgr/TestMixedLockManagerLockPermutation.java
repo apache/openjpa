@@ -139,7 +139,8 @@ public class TestMixedLockManagerLockPermutation extends SequencedActionsTest {
     public void testLockWritePessimisticForceInc() {
         commonLockTest(
             "testLock(Write,Commit/PessimisticForceInc,Commit)",
-            LockModeType.WRITE, Act.CommitTx, 1, ExpectingOptimisticLockExClass, 
+            LockModeType.WRITE, Act.CommitTx, 1,
+            ExpectingOptimisticLockExClass, 
             LockModeType.PESSIMISTIC_FORCE_INCREMENT, Act.CommitTx, 1, null);
         commonLockTest(
             "testLock(Write,Commit/PessimisticForceInc,Rollback)",

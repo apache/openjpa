@@ -44,7 +44,8 @@ import org.apache.openjpa.persistence.OpenJPAEntityManager;
 
 
 
-public class TestDFG extends org.apache.openjpa.persistence.jdbc.kernel.BaseJDBCTest{
+public class TestDFG
+        extends org.apache.openjpa.persistence.jdbc.kernel.BaseJDBCTest {
     
     private Object oid;
     /** Creates a new instance of TestDFG */

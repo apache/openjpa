@@ -58,7 +58,7 @@ public class TestChainEntities extends SingleEMFTestCase {
 		b.setName ("Test_B_");
 		ChainEntityC c;
 		/*
-		 * Create and add C to B. Increasing the number of iterations (number of
+         * Create and add C to B. Increasing the number of iterations (number of
 		 * ChainEntityC) increases the probability to get the unique key
 		 * constraint violation error.
 		 */
@@ -74,8 +74,8 @@ public class TestChainEntities extends SingleEMFTestCase {
 		em.getTransaction ().begin ();
 		a = em.merge (a);
 		/*
-		 * workaround: Uncommenting following line is a workaround. If we
-		 * retrive Ids of ChainEntityC objects after merge but before commit we
+         * workaround: Uncommenting following line is a workaround. If we
+         * retrive Ids of ChainEntityC objects after merge but before commit we
 		 * don't get the error.
 		 */
 		//dump (a);
@@ -103,14 +103,14 @@ public class TestChainEntities extends SingleEMFTestCase {
 	 */
 	protected void dump (ChainEntityA testA) {
 		System.out.println ("-------");
-		System.out.println (testA.getName () + "[" + testA.getId () + "]");
-		for (ChainEntityB testB : testA.getChildren ()) {
-			System.out.println (testB.getName () + "[" + testB.getId () + "]");
-			for (ChainEntityC testC : testB.getChainEntityCSet ()) {
-				System.out.println (testC.getName () + "[" + testC.getId ()
-						+ "]");
-			}
-		}
+        System.out.println (testA.getName () + "[" + testA.getId () + "]");
+        for (ChainEntityB testB : testA.getChildren ()) {
+            System.out.println (testB.getName () + "[" + testB.getId () + "]");
+            for (ChainEntityC testC : testB.getChainEntityCSet ()) {
+                System.out.println (testC.getName () + "[" + testC.getId ()
+                        + "]");
+            }
+        }
 		System.out.println ("-------");
 	}
 

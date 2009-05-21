@@ -30,7 +30,8 @@ import org.apache.openjpa.persistence.OpenJPAEntityManager;
 
 //import kodo.persistence.test.*;
 
-import org.apache.openjpa.persistence.annotations.common.apps.annotApp.annotype.*;
+import
+    org.apache.openjpa.persistence.annotations.common.apps.annotApp.annotype.*;
 import org.apache.openjpa.persistence.common.utils.*;
 
 import junit.framework.*;
@@ -118,7 +119,8 @@ public class TestEJBEmbedded extends AnnotationTestCase
 //            (EmbedOwner.class, null, true);
 //        assertEquals("OWN_BASIC", cls.getFieldMapping("basic").
 //            getColumns()[0].getName());
-//        ClassMapping embed = cls.getFieldMapping("embed").currentEntityManager()beddedMapping();
+//        ClassMapping embed = cls.getFieldMapping("embed")
+//            .currentEntityManager()beddedMapping();
 //        assertEquals("EMB_BLOB", embed.getFieldMapping("blob").
 //            getColumns()[0].getName());
 //        assertEquals("OVER_BASIC", embed.getFieldMapping("basic").

@@ -7,7 +7,8 @@ package org.apache.openjpa.persistence.criteria;
 import java.math.BigDecimal;
 import javax.persistence.metamodel.Attribute;
 
-@javax.persistence.metamodel.TypesafeMetamodel(value=org.apache.openjpa.persistence.criteria.Manager.class)
+@javax.persistence.metamodel.TypesafeMetamodel(
+    value=org.apache.openjpa.persistence.criteria.Manager.class)
 public class Manager_ {
     public static volatile Attribute<Manager,Department> department;
     public static volatile Attribute<Manager,Integer> id;

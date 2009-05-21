@@ -59,7 +59,8 @@ public class TestSubquery
         "select c.name from Customer c where exists" +
             " (select o from c.orders o where o.oid = 1) or exists" +
             " (select o from c.orders o where o.oid = 2)",
-        "select c.name from Customer c, in(c.orders) o where o.amount between" +
+        "select c.name from Customer c, in(c.orders) o where o.amount " +
+        "between" +
             " (select max(o.amount) from Order o) and" +
             " (select avg(o.amount) from Order o) ",
         "select o.oid from Order o where o.amount >" +
@@ -82,8 +83,9 @@ public class TestSubquery
             "FROM Magazine m3 "+
             "WHERE m3.idPublisher.id = p.id)) ", 
     // outstanding problem subqueries:
-    //"select o from Order o where o.amount > (select count(o) from Order o)",
-    //"select o from Order o where o.amount > (select count(o2) from Order o2)",
+    // "select o from Order o where o.amount > (select count(o) from Order o)",
+    // "select o from Order o where o.amount > (select count(o2) from
+    // Order o2)",
     // "select c from Customer c left join c.orders p where not exists"
     //   + " (select o2 from c.orders o2 where o2 = o",
     };
@@ -119,24 +121,28 @@ public class TestSubquery
         "select c from Customer c where c.creditRating =" +
             " (select " +
             "   CASE WHEN o2.amount > 10 THEN " + 
-            "org.apache.openjpa.persistence.query.Customer$CreditRating.POOR" + 
+            "org.apache.openjpa.persistence.query.Customer$CreditRating.POOR" +
             "     WHEN o2.amount = 10 THEN " + 
-            "org.apache.openjpa.persistence.query.Customer$CreditRating.GOOD " +
+            "org.apache.openjpa.persistence.query.Customer$CreditRating." +
+            "GOOD " +
             "     ELSE " + 
-            "org.apache.openjpa.persistence.query.Customer$CreditRating.EXCELLENT " +
+            "org.apache.openjpa.persistence.query." +
+            "Customer$CreditRating.EXCELLENT " +
             "     END " +
             " from Order o2" +
             " where c.cid.id = o2.customer.cid.id)",
 
         "select c from Customer c " + 
             "where c.creditRating = (select COALESCE (c1.creditRating, " + 
-            "org.apache.openjpa.persistence.query.Customer$CreditRating.POOR) " +
+            "org.apache.openjpa.persistence.query." +
+            "Customer$CreditRating.POOR) " +
             "from Customer c1 where c1.name = 'Famzy') order by c.name DESC", 
             
         "select c from Customer c " + 
             "where c.creditRating = (select NULLIF (c1.creditRating, " + 
-            "org.apache.openjpa.persistence.query.Customer$CreditRating.POOR) " +
-            "from Customer c1 where c1.name = 'Famzy') order by c.name DESC",            
+            "org.apache.openjpa.persistence.query." +
+            "Customer$CreditRating.POOR) " +
+            "from Customer c1 where c1.name = 'Famzy') order by c.name DESC",
     };
 
     static String[] updates = new String[] {
@@ -174,7 +180,8 @@ public class TestSubquery
     /**
      * Verify a sub query can contain MAX and additional date comparisons 
      * without losing the correct alias information. This sort of query 
-     * originally caused problems for DBDictionaries which used DATABASE syntax. 
+     * originally caused problems for DBDictionaries which used DATABASE 
+     * syntax.
      */
     public void testSubSelectMaxDateRange() {        
         String query =

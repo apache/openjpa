@@ -24,7 +24,8 @@ import org.apache.openjpa.jdbc.conf.* ;
 import org.apache.openjpa.jdbc.meta.* ;
 import org.apache.openjpa.jdbc.meta.strats.* ;
 
-import org.apache.openjpa.persistence.annotations.common.apps.annotApp.annotype.* ;
+import
+    org.apache.openjpa.persistence.annotations.common.apps.annotApp.annotype.*;
 
 import org.apache.openjpa.persistence.OpenJPAEntityManager;
 import org.apache.openjpa.persistence.OpenJPAEntityManagerSPI;
@@ -84,7 +85,8 @@ public class TestVersion extends AnnotationTestCase
 	}
 
 /*
- * Fix Me aokeke -- Testcases causes deadlock during runtime CR307216 is used to track this issue.
+ * Fix Me aokeke -- Testcases causes deadlock during runtime CR307216 is used to
+ * track this issue.
  */
  public void testVersionNumeric()
 	{
@@ -220,21 +222,30 @@ public class TestVersion extends AnnotationTestCase
 
 	   public void testNoDefaultVersionWithoutFieldOrColumn()
 	   {
-			OpenJPAEntityManager pm = (OpenJPAEntityManager) currentEntityManager();
-		   ClassMapping cls =  ((JDBCConfigurationImpl)((OpenJPAEntityManagerSPI) OpenJPAPersistence.cast(pm)).getConfiguration()).getMappingRepositoryInstance().getMapping(EmbedOwner.class, null, true);
-		   assertEquals(NoneVersionStrategy.getInstance(),
-				   cls.getVersion().getStrategy()); assertEquals(0,
-						   cls.getVersion().getColumns().length);
+           OpenJPAEntityManager pm =
+               (OpenJPAEntityManager) currentEntityManager();
+           ClassMapping cls =
+                   ((JDBCConfigurationImpl) ((OpenJPAEntityManagerSPI)
+                   OpenJPAPersistence.cast(pm)).getConfiguration())
+                   .getMappingRepositoryInstance().getMapping(EmbedOwner.class,
+                           null, true);
+           assertEquals(NoneVersionStrategy.getInstance(),
+                   cls.getVersion().getStrategy()); assertEquals(0,
+                           cls.getVersion().getColumns().length);
 			endEm(pm);
 	   }
 
 	   public void testVersionWithField()
 	   {
-		   OpenJPAEntityManager pm = (OpenJPAEntityManager) currentEntityManager();
-		   ClassMapping cls = ((JDBCConfigurationImpl)((OpenJPAEntityManagerSPI) OpenJPAPersistence.cast(pm)).getConfiguration()).getMappingRepositoryInstance().getMapping(AnnoTest1.class, null, true);
+           OpenJPAEntityManager pm =
+               (OpenJPAEntityManager) currentEntityManager();
+           ClassMapping cls = ((JDBCConfigurationImpl)((OpenJPAEntityManagerSPI)
+                   OpenJPAPersistence.cast(pm)).getConfiguration())
+                   .getMappingRepositoryInstance().getMapping(AnnoTest1.class,
+                           null, true);
 		   assertTrue(NoneVersionStrategy.getInstance() !=
 			   cls.getVersion().getStrategy()); assertEquals(1,
-					   cls.getVersion().getColumns().length);
+                       cls.getVersion().getColumns().length);
 			endEm(pm);
 	   }
 }

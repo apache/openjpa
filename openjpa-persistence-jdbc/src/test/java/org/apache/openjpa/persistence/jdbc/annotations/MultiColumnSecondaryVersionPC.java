@@ -33,7 +33,7 @@ import org.apache.openjpa.persistence.jdbc.VersionStrategy;
 
 /**
  * Persistent entity for testing multiple column numeric version strategy as set
- * by <code>@VersionColumns</code> annotations and where the version columns are 
+ * by <code>@VersionColumns</code> annotations and where the version columns are
  * spread over primary and secondary table(s).
  * 
  * @author Pinaki Poddar
@@ -42,8 +42,10 @@ import org.apache.openjpa.persistence.jdbc.VersionStrategy;
 @Entity
 @Table(name="MCSV")
 @SecondaryTables({ 
-	@SecondaryTable(name = "MCSV1", pkJoinColumns=@PrimaryKeyJoinColumn(name="ID")),
-	@SecondaryTable(name = "MCSV2", pkJoinColumns=@PrimaryKeyJoinColumn(name="ID")) 
+    @SecondaryTable(name = "MCSV1",
+            pkJoinColumns=@PrimaryKeyJoinColumn(name="ID")),
+    @SecondaryTable(name = "MCSV2",
+            pkJoinColumns=@PrimaryKeyJoinColumn(name="ID")) 
 })
 @VersionStrategy("version-numbers")
 @VersionColumns({ 

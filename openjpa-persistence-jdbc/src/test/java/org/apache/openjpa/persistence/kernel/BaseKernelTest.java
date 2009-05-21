@@ -51,7 +51,8 @@ import org.apache.openjpa.persistence.OpenJPAEntityManagerFactory;
 import org.apache.openjpa.persistence.OpenJPAEntityManager;
 
 
-public abstract class BaseKernelTest extends org.apache.openjpa.persistence.common.utils.AbstractTestCase
+public abstract class BaseKernelTest
+        extends org.apache.openjpa.persistence.common.utils.AbstractTestCase
 {    
     private static Map _sysprops = new HashMap();    
     
@@ -67,7 +68,8 @@ public abstract class BaseKernelTest extends org.apache.openjpa.persistence.comm
         return currentEntityManager();
     }
     
-    protected OpenJPAEntityManager getPM(boolean optimistic,boolean retainValues) 
+    protected OpenJPAEntityManager getPM(boolean optimistic,
+            boolean retainValues) 
     {
         OpenJPAEntityManager em = currentEntityManager();
         em.setNontransactionalRead(true);
@@ -111,7 +113,9 @@ public abstract class BaseKernelTest extends org.apache.openjpa.persistence.comm
             Properties loaded = (Properties) _sysprops.get(str);
             if (loaded == null) {
                 loaded = new Properties();
-                ConfigurationProvider cp = (ConfigurationProvider) Configurations.getProperty(str, null);
+                ConfigurationProvider cp =
+                    (ConfigurationProvider) Configurations.getProperty(
+                            str, null);
 
                 if (cp != null)
                     loaded.putAll(cp.getProperties());

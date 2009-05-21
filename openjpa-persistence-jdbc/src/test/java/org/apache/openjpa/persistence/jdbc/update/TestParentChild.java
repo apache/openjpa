@@ -31,7 +31,7 @@ import org.apache.openjpa.persistence.test.CombinatorialPersistenceTestCase;
  * for a Parent-Child model against different physical database constraints.
  * 
  * SQL statement ordering is influenced by 
- * 1. In-memory schema model: The in-memory schema model can be aware of logical 
+ * 1. In-memory schema model: The in-memory schema model can be aware of logical
  *    or physical foreign keys. 
  *    a) This is configured by <code>jdbc.SchemaFactory</code> property setting 
  *       to <code>native(ForeignKeys=true|false)</code> which makes OpenJPA to 
@@ -39,9 +39,9 @@ import org.apache.openjpa.persistence.test.CombinatorialPersistenceTestCase;
  *    b) @ForeignKey annotation on the relation -- OpenJPA then considers 
  *       logical foreign key 
  *       
- *  2. Physical Schema: The database schema can be defined with physical foreign 
- *     keys. This is configured by <code>jdbc.MappingDefaults</code> property 
- *     setting to <code>ForeignKeyDeleteAction</code> 
+ *  2. Physical Schema: The database schema can be defined with physical
+ *     foreign keys. This is configured by <code>jdbc.MappingDefaults</code>
+ *     property setting to <code>ForeignKeyDeleteAction</code> 
  *     
  *  3. Update Strategy: the update manager is configured by 
  *     <code>jdbc.UpdateManager</code> 
@@ -66,12 +66,12 @@ public class TestParentChild extends CombinatorialPersistenceTestCase {
 	// Each of these property keys can take multiple possible values 
 	private static String Key_UpdateManager = "openjpa.jdbc.UpdateManager";
 	private static String Key_SchemaFactory = "openjpa.jdbc.SchemaFactory";
-	private static String Key_MappingDefaults = "openjpa.jdbc.MappingDefaults";
+    private static String Key_MappingDefaults = "openjpa.jdbc.MappingDefaults";
 	private static String Key_PersistOrder = "persist-order";
 
 	private static String[] Option_MappingDefaults = {
-		"ForeignKeyDeleteAction=restrict, JoinForeignKeyDeleteAction=restrict",
-		"ForeignKeyDeleteAction=none, JoinForeignKeyDeleteAction=none" };
+        "ForeignKeyDeleteAction=restrict, JoinForeignKeyDeleteAction=restrict",
+        "ForeignKeyDeleteAction=none, JoinForeignKeyDeleteAction=none" };
 	
 	private static String[] Option_SchemaFactory = {
 		"native(ForeignKeys=false)", 
@@ -91,39 +91,39 @@ public class TestParentChild extends CombinatorialPersistenceTestCase {
 	// The options are added in a static block, so that we can count on
 	// total number of combinations before the test is set up.
 	static {
-		getHelper().addOption(Key_MappingDefaults, Option_MappingDefaults);
+        getHelper().addOption(Key_MappingDefaults, Option_MappingDefaults);
 		getHelper().addOption(Key_SchemaFactory, Option_SchemaFactory);
 		getHelper().addOption(Key_UpdateManager, Option_UpdateManager);
 
 		// The last argument tells that this is a runtime option. So the
 		// values are included to generate combinations but are excluded
 		// from generating OpenJPA configuration.
-		getHelper().addOption(Key_PersistOrder, PersistOrder.values(), true);
+        getHelper().addOption(Key_PersistOrder, PersistOrder.values(), true);
 	}
 
 	public void setUp() {
-		// The options can also be added in setup() as well but then 
-		// coutTestCase() will only record test methods and not multiply them 
-		// with number of configuration combinations the same tests will run.
-		getHelper().addOption(Key_MappingDefaults, Option_MappingDefaults);
+        // The options can also be added in setup() as well but then 
+        // coutTestCase() will only record test methods and not multiply them
+        // with number of configuration combinations the same tests will run.
+        getHelper().addOption(Key_MappingDefaults, Option_MappingDefaults);
 		getHelper().addOption(Key_SchemaFactory, Option_SchemaFactory);
 		getHelper().addOption(Key_UpdateManager, Option_UpdateManager);
 
-		getHelper().addOption(Key_PersistOrder, PersistOrder.values(), true);
+        getHelper().addOption(Key_PersistOrder, PersistOrder.values(), true);
 		
 		sql.clear();
 		super.setUp(DROP_TABLES, Parent.class, Child.class);
 	}
 
 	/**
-	 * This test will run in 2*2*2*3 = 24 times with different configurations.
+     * This test will run in 2*2*2*3 = 24 times with different configurations.
 	 */
 	public void testInsert() {
 		Parent parent = createData(getPersistOrder(), 3);
 		validateData(parent.getId(), 3);
 
-		// verification can be challenging under multiple configuration options
-		// see the methods as exemplars how verification can vary based on
+        // verification can be challenging under multiple configuration options
+        // see the methods as exemplars how verification can vary based on
 		// configuration.
 		assertLogicalOrPhysicalForeignKey();
 		assertPhysicalForeignKeyCreation();
@@ -175,7 +175,7 @@ public class TestParentChild extends CombinatorialPersistenceTestCase {
 	 * for certain combinations of configurations.
 	 */
 	void assertPhysicalForeignKeyCreation() {
-		String regex = "ALTER TABLE .* ADD FOREIGN KEY \\(PARENT_ID\\) " 
+        String regex = "ALTER TABLE .* ADD FOREIGN KEY \\(PARENT_ID\\) "
 		             + "REFERENCES Parent \\(id\\)";
 		if (getMappingDefaults().contains("restrict")) {
 			assertSQL(regex);
@@ -201,8 +201,8 @@ public class TestParentChild extends CombinatorialPersistenceTestCase {
 	 */
 	void assertLogicalOrPhysicalForeignKey() {
 		ForeignKey fk = getChildParentForeignKey();
-		boolean physicalKeyExists = getMappingDefaults().contains("restrict");
-		boolean keyRead = getSchemaFactory().contains("ForeignKeys=true");
+        boolean physicalKeyExists = getMappingDefaults().contains("restrict");
+        boolean keyRead = getSchemaFactory().contains("ForeignKeys=true");
 		if (physicalKeyExists && keyRead)
 			assertFalse(fk.isLogical());
 		else if (keyRead)

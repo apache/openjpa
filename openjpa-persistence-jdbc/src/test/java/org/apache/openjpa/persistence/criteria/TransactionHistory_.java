@@ -7,7 +7,8 @@ package org.apache.openjpa.persistence.criteria;
 import java.sql.Timestamp;
 import javax.persistence.metamodel.Attribute;
 
-@javax.persistence.metamodel.TypesafeMetamodel(value=org.apache.openjpa.persistence.criteria.TransactionHistory.class)
+@javax.persistence.metamodel.TypesafeMetamodel(
+    value=org.apache.openjpa.persistence.criteria.TransactionHistory.class)
 public class TransactionHistory_ {
     public static volatile Attribute<TransactionHistory,String> details;
     public static volatile Attribute<TransactionHistory,Integer> id;

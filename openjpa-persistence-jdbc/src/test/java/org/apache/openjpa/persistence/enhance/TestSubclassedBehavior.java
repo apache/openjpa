@@ -26,13 +26,16 @@ import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 
 
-import org.apache.openjpa.persistence.enhance.common.apps.BackingFieldNameMismatchInstance;
+import org.apache.openjpa.persistence.enhance.common.apps.
+        BackingFieldNameMismatchInstance;
 import org.apache.openjpa.persistence.enhance.common.apps.BaseEntity;
 import org.apache.openjpa.persistence.enhance.common.apps.BasicSubclassInstance;
 import org.apache.openjpa.persistence.enhance.common.apps.DerivedEntity;
 import org.apache.openjpa.persistence.enhance.common.apps.Entity1;
-import org.apache.openjpa.persistence.enhance.common.apps.ManagedInverseTestInstance;
-import org.apache.openjpa.persistence.enhance.common.apps.ManagedInverseTestInstance2;
+import org.apache.openjpa.persistence.enhance.common.apps.
+        ManagedInverseTestInstance;
+import org.apache.openjpa.persistence.enhance.common.apps.
+        ManagedInverseTestInstance2;
 import org.apache.openjpa.persistence.enhance.common.apps.SubclassTestInstance;
 import org.apache.openjpa.persistence.common.utils.AbstractTestCase;
 import junit.framework.AssertionFailedError;

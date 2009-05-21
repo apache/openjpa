@@ -39,7 +39,7 @@ import org.apache.openjpa.persistence.test.SingleEMFTestCase;
  */
 public class TestGroupByQuery extends SingleEMFTestCase {
 	public void setUp() {
-		super.setUp(DROP_TABLES, Game.class, IndoorGame.class, Scrabble.class,
+        super.setUp(DROP_TABLES, Game.class, IndoorGame.class, Scrabble.class,
 				Chess.class);
 		try {
 			createData();
@@ -51,7 +51,7 @@ public class TestGroupByQuery extends SingleEMFTestCase {
 	void createData() throws Exception {
 		EntityManager em = emf.createEntityManager();
 		em.getTransaction().begin();
-		Class[] classes = { Game.class, IndoorGame.class, Scrabble.class,
+        Class[] classes = { Game.class, IndoorGame.class, Scrabble.class,
 				Chess.class };
 		for (Class cls : classes) {
 			for (int i = 1; i <= 4; i++) {
@@ -65,11 +65,11 @@ public class TestGroupByQuery extends SingleEMFTestCase {
 
 	public void testGroupBy() {
 		String jpql = "SELECT g.name, g.nTile FROM Scrabble g WHERE "
-				+ "(g.name = ANY(SELECT g1.name FROM Scrabble g1 "
+                + "(g.name = ANY(SELECT g1.name FROM Scrabble g1 "
 				+ "GROUP BY g1.name )) ORDER BY g.name";
 		EntityManager em = emf.createEntityManager();
 
-		List<IndoorGame> employees = em.createQuery(jpql).getResultList();
+        List<IndoorGame> employees = em.createQuery(jpql).getResultList();
 
 	}
 }

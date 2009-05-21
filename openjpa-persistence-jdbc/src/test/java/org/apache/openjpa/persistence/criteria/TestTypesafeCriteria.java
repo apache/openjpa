@@ -486,7 +486,8 @@ public class TestTypesafeCriteria extends CriteriaTest {
     }
 
     public void testLiterals() {
-        String jpql = "SELECT p FROM Person p where 'Joe' MEMBER OF p.nickNames";
+        String jpql = "SELECT p FROM Person p where 'Joe' MEMBER OF " +
+        		"p.nickNames";
         CriteriaQuery q = cb.create();
         Root<Person> p = q.from(Person.class);
         q.select(p).where(

@@ -74,7 +74,8 @@ public class TestSharedMappedSuperclassIdValue
         NoGenEntityL3 ent = em.getReference(NoGenEntityL3.class, 1L);
         assertNotNull(ent);
 
-        NoGenEntityL3Sibling sib = em.getReference(NoGenEntityL3Sibling.class, 1L);
+        NoGenEntityL3Sibling sib =
+            em.getReference(NoGenEntityL3Sibling.class, 1L);
         assertNotNull(sib);
 
         assertEquals(99, ent.getL2Data());

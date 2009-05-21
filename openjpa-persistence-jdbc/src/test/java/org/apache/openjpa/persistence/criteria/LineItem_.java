@@ -6,7 +6,8 @@ package org.apache.openjpa.persistence.criteria;
 
 import javax.persistence.metamodel.Attribute;
 
-@javax.persistence.metamodel.TypesafeMetamodel(value=org.apache.openjpa.persistence.criteria.LineItem.class)
+@javax.persistence.metamodel.TypesafeMetamodel(
+    value=org.apache.openjpa.persistence.criteria.LineItem.class)
 public class LineItem_ {
     public static volatile Attribute<LineItem,Double> cost;
     public static volatile Attribute<LineItem,Integer> id;

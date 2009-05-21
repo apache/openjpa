@@ -213,7 +213,7 @@ public class TestQueryTimeout extends SQLListenerTestCase {
                 em.getTransaction().commit();
                 long endTime = System.currentTimeMillis();
                 long runTime = endTime - startTime;
-                getLog().trace("testQueryTimeout1c() - executeUpdate runTime " + 
+                getLog().trace("testQueryTimeout1c() - executeUpdate runTime " +
                     "msecs=" + runTime);
                 assertTrue("Verify we received one result.", (count == 1));
                 // Hack - Windows sometimes returns 1999 instead of 2000+
@@ -275,7 +275,7 @@ public class TestQueryTimeout extends SQLListenerTestCase {
                 Object result = q.getSingleResult();
                 long endTime = System.currentTimeMillis();
                 long runTime = endTime - startTime;
-                getLog().trace("testQueryTimeout21b() - NoHintSingle runTime " + 
+                getLog().trace("testQueryTimeout21b() - NoHintSingle runTime " +
                     "msecs=" + runTime);
                 // Hack - Windows sometimes returns 1999 instead of 2000+
                 assertTrue("Should have taken 2+ secs, but was msecs=" +
@@ -381,7 +381,7 @@ public class TestQueryTimeout extends SQLListenerTestCase {
                 Object result = q.getSingleResult();
                 long endTime = System.currentTimeMillis();
                 long runTime = endTime - startTime;
-                getLog().trace("testQueryTimeout23b() - NoHintSingle runTime " + 
+                getLog().trace("testQueryTimeout23b() - NoHintSingle runTime " +
                     "msecs=" + runTime);
                 // Hack - Windows sometimes returns 1999 instead of 2000+
                 assertTrue("Should have taken 2+ secs, but was msecs=" +
@@ -657,7 +657,7 @@ public class TestQueryTimeout extends SQLListenerTestCase {
             q.setParameter(1, new String("updated"));
             // verify no default javax.persistence.query.timeout is supplied
             Map<String, Object> hints = q.getHints();
-            assertFalse(hints.containsKey("javax.persistence.query.timeout"));            
+            assertFalse(hints.containsKey("javax.persistence.query.timeout"));
             // update the query timeout value and verify it was set
             setTime = 1000;
             getLog().trace("testQueryTimeout33c() - Setting hint " +

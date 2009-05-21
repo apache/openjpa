@@ -67,7 +67,8 @@ public class Employee3 {
         if (name == null && e.getName() != null) return false;
         List<Dependent3> ds0 = e.getDependents();
         if (ds0 != null && ds0.size() != 0 && dependents == null) return false; 
-        if (ds0 == null && dependents != null && dependents.size() != 0) return false;
+        if (ds0 == null && dependents != null && dependents.size() != 0)
+            return false;
         if (ds0 == null && dependents == null) return true;
         if (ds0 != null && dependents != null) { 
             if (ds0.size() != dependents.size()) return false;

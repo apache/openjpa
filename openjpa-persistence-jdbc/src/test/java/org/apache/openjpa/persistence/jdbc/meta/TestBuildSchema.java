@@ -38,8 +38,9 @@ import org.apache.openjpa.jdbc.meta.MappingTool;
 import org.apache.openjpa.persistence.jdbc.common.apps.*;
 
 
-public class TestBuildSchema extends org.apache.openjpa.persistence.jdbc.kernel.BaseJDBCTest{
-       
+public class TestBuildSchema
+        extends org.apache.openjpa.persistence.jdbc.kernel.BaseJDBCTest {
+
     /** Creates a new instance of TestBuildSchema */
     public TestBuildSchema() {
     }

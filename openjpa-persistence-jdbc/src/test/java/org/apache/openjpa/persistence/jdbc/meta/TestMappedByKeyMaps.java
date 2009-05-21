@@ -47,8 +47,8 @@ import org.apache.openjpa.persistence.OpenJPAEntityManager;
 import org.apache.openjpa.persistence.OpenJPAQuery;
 
 
-public class TestMappedByKeyMaps extends org.apache.openjpa.persistence.jdbc.kernel.BaseJDBCTest
-{
+public class TestMappedByKeyMaps
+        extends org.apache.openjpa.persistence.jdbc.kernel.BaseJDBCTest {
     
     /** Creates a new instance of TestMappedByKeyMaps */
     public TestMappedByKeyMaps(String name) 
@@ -127,7 +127,8 @@ public class TestMappedByKeyMaps extends org.apache.openjpa.persistence.jdbc.ker
         
         setLRS(pc.getClass(), lrs);
         try {
-            OpenJPAEntityManager pm = (OpenJPAEntityManager)currentEntityManager();
+            OpenJPAEntityManager pm =
+                (OpenJPAEntityManager)currentEntityManager();
             startTx(pm);;
             pm.persist(pc);
             endTx(pm);;
@@ -232,7 +233,8 @@ public class TestMappedByKeyMaps extends org.apache.openjpa.persistence.jdbc.ker
         pm.close();
         
         pm = (OpenJPAEntityManager)currentEntityManager();;
-        OpenJPAQuery q = pm.createNativeQuery("stringField == 'h2'",HelperPC.class);
+        OpenJPAQuery q = pm.createNativeQuery("stringField == 'h2'",
+                HelperPC.class);
         //FIXME jthomas
         //q.setUnique(true);
         HelperPC h2 = (HelperPC) q.getSingleResult();

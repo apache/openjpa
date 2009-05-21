@@ -172,11 +172,12 @@ public class TestInitialValueFetching extends BaseKernelTest {
 
     private RuntimeTest1 getObject(OpenJPAEntityManager pm) {
 //        return (RuntimeTest1) ((Collection) 
-//        		pm.createNativeQuery( "stringField == \"TestInitialValueFetching\"",RuntimeTest1.class)
-//        .getResultList()).iterator().next();
+//        		pm.createNativeQuery( "stringField == "
+//              +"\"TestInitialValueFetching\"",RuntimeTest1.class)
+//              .getResultList()).iterator().next();
 
-        OpenJPAQuery q = pm.createQuery(
-            "SELECT o FROM RuntimeTest1 o WHERE o.stringField = \'TestInitialValueFetching\'");
+        OpenJPAQuery q = pm.createQuery("SELECT o FROM RuntimeTest1 o "
+                + "WHERE o.stringField = \'TestInitialValueFetching\'");
         List l = q.getResultList();
 
         return (RuntimeTest1) l.iterator().next();

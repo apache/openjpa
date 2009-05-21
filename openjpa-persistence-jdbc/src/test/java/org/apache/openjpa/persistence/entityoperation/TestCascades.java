@@ -19,7 +19,8 @@
 package org.apache.openjpa.persistence.entityoperation;
 
 
-import org.apache.openjpa.persistence.entityoperation.common.apps.CascadesEntity;
+import org.apache.openjpa.persistence.entityoperation.common.apps.
+        CascadesEntity;
 import org.apache.openjpa.persistence.common.utils.AbstractTestCase;
 import org.apache.openjpa.persistence.OpenJPAEntityManager;
 
@@ -379,7 +380,8 @@ public class TestCascades extends AbstractTestCase {
          assertEquals (relId, rel.getId ());
          assertEquals (dependId, depend.getId ());
          assertEquals (1, ent.getNoneCollection ().size ());
-         assertEquals (relId, ent.getNoneCollection ().iterator ().next ().getId ());
+         assertEquals (relId,
+                 ent.getNoneCollection().iterator().next().getId());
 
          startTx(em);
          em.remove (ent);
@@ -1062,7 +1064,7 @@ public class TestCascades extends AbstractTestCase {
 		rel2.setName ("rel2");
 		ent.getAllCollection ().add (rel2);
 
-		OpenJPAEntityManager em = (OpenJPAEntityManager)currentEntityManager();
+        OpenJPAEntityManager em = (OpenJPAEntityManager)currentEntityManager();
 		startTx(em);
 		em.persist (ent);
 		endTx(em);
@@ -1101,7 +1103,7 @@ public class TestCascades extends AbstractTestCase {
 		CascadesEntity none = new CascadesEntity ();
 		CascadesEntity manyAll = new CascadesEntity ();
 		CascadesEntity manyNone = new CascadesEntity ();
-		OpenJPAEntityManager em = (OpenJPAEntityManager)currentEntityManager();
+        OpenJPAEntityManager em = (OpenJPAEntityManager)currentEntityManager();
 		startTx(em);
 		em.persist (all);
 		em.persist (none);
@@ -1119,8 +1121,8 @@ public class TestCascades extends AbstractTestCase {
 		CascadesEntity ent = new CascadesEntity ();
 		ent.setAll (em.find (CascadesEntity.class, allId));
 		ent.setNone (em.find (CascadesEntity.class, noneId));
-		ent.getAllCollection ().add (em.find (CascadesEntity.class, manyAllId));
-		ent.getNoneCollection ().add (em.find (CascadesEntity.class, manyNoneId));
+        ent.getAllCollection().add(em.find(CascadesEntity.class, manyAllId));
+        ent.getNoneCollection().add(em.find(CascadesEntity.class, manyNoneId));
 		em.remove (ent);
 		assertTrue (em.isRemoved (ent.getAll ()));
 		assertFalse (em.isRemoved (ent.getNone ()));

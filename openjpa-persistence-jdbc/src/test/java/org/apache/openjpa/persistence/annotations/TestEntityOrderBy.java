@@ -24,7 +24,8 @@ import org.apache.openjpa.conf.*;
 import org.apache.openjpa.meta.*;
 import org.apache.openjpa.persistence.OpenJPAEntityManager;
 
-import org.apache.openjpa.persistence.annotations.common.apps.annotApp.annotype.*;
+import
+    org.apache.openjpa.persistence.annotations.common.apps.annotApp.annotype.*;
 import org.apache.openjpa.persistence.common.utils.*;
 
 import junit.framework.*;

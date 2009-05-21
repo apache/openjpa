@@ -44,7 +44,8 @@ import org.apache.openjpa.persistence.OpenJPAEntityManagerFactory;
 import org.apache.openjpa.persistence.OpenJPAEntityManager;
 
 
-public class TestMultiTableMappings extends org.apache.openjpa.persistence.jdbc.kernel.TestSQLListenerTestCase {
+public class TestMultiTableMappings
+    extends org.apache.openjpa.persistence.jdbc.kernel.TestSQLListenerTestCase {
     
 
     private Object aoid;

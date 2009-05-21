@@ -41,7 +41,8 @@ import org.apache.openjpa.persistence.test.SingleEMFTestCase;
  *  The test verifies basic persist, query and delete operations on the domain
  *  model.
  *  
- *  [1] <A HREF="https://issues.apache.org/jira/browse/OPENJPA-602"> OPENJPA-602</A>}
+ *  [1] <A HREF="https://issues.apache.org/jira/browse/OPENJPA-602">
+ *  OPENJPA-602</A>}
  *        
  * @author Pinaki Poddar
  *
@@ -67,7 +68,7 @@ public class TestTablePerClassInheritanceWithAbstractRoot extends
 		/**
 		 * Aggregate query operations can not be performed on unjoined 
 		 * subclasses. Hence all concrete subclasses of abstract base
-		 * class is counted separately to count all Translatable instances.
+         * class is counted separately to count all Translatable instances.
 		 */
 		int nTranslatableBefore = count(UNJOINED_SUBCLASSES);
 		int nTranslationBefore = count(Translation.class);
@@ -111,37 +112,37 @@ public class TestTablePerClassInheritanceWithAbstractRoot extends
 		assertEquals(nTranslationBefore+4, nTranslationAfter);
 		
 		/**
-		 * Verify that if A refers to B then A must be a member of the set 
+         * Verify that if A refers to B then A must be a member of the set
 		 * referred by B
 		 */
 		em.getTransaction().begin();
-		List<Translation> result = em.createQuery("SELECT p FROM Translation p")
+        List<Translation> result = em.createQuery("SELECT p FROM Translation p")
 			.getResultList();
 		assertTrue(!result.isEmpty());
 		for (Translation translation : result) {
 			assertTrue(translation.getTranslatable()
-					.getTranslations().contains(translation));
+                    .getTranslations().contains(translation));
 		}
 		em.getTransaction().rollback();
 	}
 	
 	
-	void linkConsistently(Translation translation, Translatable translatable) {
+    void linkConsistently(Translation translation, Translatable translatable) {
 		translatable.addTranslation(translation);
 		translation.setTranslatable(translatable);
 	}
 	
 	/**
-	 * Count the number of instances in the given class by aggregate JPQL query.
+     * Count the number of instances in the given class by aggregate JPQL query.
 	 */
 	public int count(Class c) {
 		OpenJPAEntityManager em = emf.createEntityManager();
 		return ((Number) em.createQuery("SELECT COUNT(p) FROM " + 
-				c.getSimpleName() + " p").getSingleResult()).intValue();
+                c.getSimpleName() + " p").getSingleResult()).intValue();
 	}
 	
 	/**
-	 * Count total number of instances of all the given classes by separate JPQL
+     * Count total number of instances of all the given classes by separate JPQL
 	 * aggregate query. Useful when a base class has unjoined subclasses.
 	 */
 	public int count(Class<?>... classes) {

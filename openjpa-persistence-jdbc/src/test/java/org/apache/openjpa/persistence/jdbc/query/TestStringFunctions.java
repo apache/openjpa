@@ -41,8 +41,8 @@ import org.apache.openjpa.persistence.OpenJPAEntityManagerFactory;
 import org.apache.openjpa.persistence.OpenJPAEntityManager;
 
 
-public class TestStringFunctions extends org.apache.openjpa.persistence.jdbc.kernel.BaseJDBCTest
-{
+public class TestStringFunctions
+        extends org.apache.openjpa.persistence.jdbc.kernel.BaseJDBCTest {
     private OpenJPAEntityManager _pm = null;
     private QueryTest1 _match = null;
     

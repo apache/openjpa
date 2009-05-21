@@ -57,15 +57,18 @@ public class TestAbstractMappedAppIdSuper extends BaseKernelTest {
 //        endEm(pm,());
 //        
 //        pm = getPM();
-//        String query = "SELECT DISTINCT o FROM ConcreteMappedAppIdSub o WHERE o.pk = :p ";
+//        String query = "SELECT DISTINCT o FROM ConcreteMappedAppIdSub o "
+//                + "WHERE o.pk = :p ";
 //        OpenJPAQuery q = pm.createQuery(query);
 //        
-////        OpenJPAQuery q = pm.createNativeQuery("pk == :p", ConcreteMappedAppIdSub.class);
+//        OpenJPAQuery q = pm.createNativeQuery(
+//                "pk == :p", ConcreteMappedAppIdSub.class);
 //        //FIXME jthomas
 //        
 //        try 
 //        {
-//            pc = (ConcreteMappedAppIdSub) q.setParameter("p", pkd).getSingleResult();
+//            pc = (ConcreteMappedAppIdSub) q.setParameter("p", pkd)
+//                    .getSingleResult();
 //        } 
 //        catch (RuntimeException re) 
 //        {

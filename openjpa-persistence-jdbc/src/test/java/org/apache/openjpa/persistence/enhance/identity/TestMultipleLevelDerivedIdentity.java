@@ -45,8 +45,8 @@ public class TestMultipleLevelDerivedIdentity extends SingleEMFTestCase {
 	private static int    NUM_PAGES    = 3;
 	
 	public void setUp() throws Exception {
-		super.setUp(CLEAR_TABLES, Library.class, Book.class, Page.class,
-				"openjpa.RuntimeUnenhancedClasses", "unsupported");
+        super.setUp(CLEAR_TABLES, Library.class, Book.class, Page.class,
+                "openjpa.RuntimeUnenhancedClasses", "unsupported");
 		create();
 	}
 	
@@ -76,7 +76,7 @@ public class TestMultipleLevelDerivedIdentity extends SingleEMFTestCase {
 			assertNotNull(page);
 			assertEquals(book, page.getBook());
 			assertEquals(lib, page.getBook().getLibrary());
-			assertEquals(page, page.getBook().getPage(page.getNumber()));
+            assertEquals(page, page.getBook().getPage(page.getNumber()));
 		}
 	}
 	
@@ -90,7 +90,7 @@ public class TestMultipleLevelDerivedIdentity extends SingleEMFTestCase {
 		for (Page page : list) {
 			assertEquals(book, page.getBook());
 			assertEquals(lib, page.getBook().getLibrary());
-			assertEquals(page, page.getBook().getPage(page.getNumber()));
+            assertEquals(page, page.getBook().getPage(page.getNumber()));
 		}
 	}
 
@@ -152,8 +152,8 @@ public class TestMultipleLevelDerivedIdentity extends SingleEMFTestCase {
 	public void testDeleteLeafObtainedByQuery() {
 		EntityManager em = emf.createEntityManager();
 		em.getTransaction().begin();
-		Page page = (Page)em.createQuery("SELECT p FROM Page p WHERE p.number=2")
-			.getSingleResult();
+        Page page = (Page)em.createQuery(
+                "SELECT p FROM Page p WHERE p.number=2").getSingleResult();
 		assertNotNull(page);
 		em.remove(page);
 		em.getTransaction().commit();

@@ -6,7 +6,8 @@ package org.apache.openjpa.persistence.criteria;
 
 import javax.persistence.metamodel.Attribute;
 
-@javax.persistence.metamodel.TypesafeMetamodel(value=org.apache.openjpa.persistence.criteria.Account.class)
+@javax.persistence.metamodel.TypesafeMetamodel(
+    value = org.apache.openjpa.persistence.criteria.Account.class)
 public class Account_ {
     public static volatile Attribute<Account,Integer> balance;
     public static volatile Attribute<Account,Long> id;

@@ -280,7 +280,8 @@ public abstract class AbstractTestCase extends PersistenceTestCase {
         bug(EnumSet.of(platform), id, t, s);
     }
 
-    protected void bug(EnumSet<Platform> platforms, int id, Throwable t, String s) {
+    protected void bug(EnumSet<Platform> platforms, int id, Throwable t,
+            String s) {
         if (platforms.contains(getCurrentPlatform()))
             bug(id, t, s);
         else

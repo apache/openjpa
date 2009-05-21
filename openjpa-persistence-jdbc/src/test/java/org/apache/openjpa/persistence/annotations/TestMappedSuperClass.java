@@ -23,11 +23,16 @@ import java.util.Date;
 import java.util.List;
 
 import org.apache.openjpa.persistence.OpenJPAEntityManager;
-import org.apache.openjpa.persistence.annotations.common.apps.annotApp.annotype.PartyId;
-import org.apache.openjpa.persistence.annotations.common.apps.annotApp.annotype.Site;
-import org.apache.openjpa.persistence.annotations.common.apps.annotApp.annotype.Site1;
-import org.apache.openjpa.persistence.annotations.common.apps.annotApp.annotype.Store;
-import org.apache.openjpa.persistence.annotations.common.apps.annotApp.annotype.Store1;
+import org.apache.openjpa.persistence.annotations.common.apps.annotApp.annotype.
+        PartyId;
+import org.apache.openjpa.persistence.annotations.common.apps.annotApp.annotype.
+        Site;
+import org.apache.openjpa.persistence.annotations.common.apps.annotApp.annotype.
+        Site1;
+import org.apache.openjpa.persistence.annotations.common.apps.annotApp.annotype.
+        Store;
+import org.apache.openjpa.persistence.annotations.common.apps.annotApp.annotype.
+        Store1;
 
 public class TestMappedSuperClass extends AnnotationTestCase {
 

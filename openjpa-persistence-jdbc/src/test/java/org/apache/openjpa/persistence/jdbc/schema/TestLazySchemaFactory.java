@@ -44,7 +44,8 @@ import org.apache.openjpa.persistence.OpenJPAEntityManagerFactory;
 import org.apache.openjpa.persistence.OpenJPAEntityManager;
 
 
-public class TestLazySchemaFactory extends org.apache.openjpa.persistence.jdbc.kernel.BaseJDBCTest{
+public class TestLazySchemaFactory
+        extends org.apache.openjpa.persistence.jdbc.kernel.BaseJDBCTest {
        
     private SchemaGroup _group = null;
     private boolean _fks = true;

@@ -53,7 +53,7 @@ public class TestDynamicConfiguration extends SingleEMFTestCase {
 		assertFalse(conf1==conf2);
 		assertEquals(conf1, conf2);
 		assertEquals(conf1.hashCode(), conf2.hashCode());
-		assertEquals(conf1.toProperties(false), conf2.toProperties(false));
+        assertEquals(conf1.toProperties(false), conf2.toProperties(false));
 	}
 	
 	public void testConfigurationIsReadOnlyAfterFirstConstruction() {

@@ -42,8 +42,9 @@ public class TestInsertOrder extends SQLListenerTestCase {
     }
 
     /**
-     * <P>Persist an Employee entity and allow the cascade to insert the children.
-     * The inserts should be executed in this order, Employee, Task, Story.
+     * <P>Persist an Employee entity and allow the cascade to insert the
+     * children. The inserts should be executed in this order, Employee, Task,
+     * Story.
      * </P>
      * 
      * <P> 

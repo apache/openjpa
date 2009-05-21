@@ -30,14 +30,15 @@ import javax.persistence.NamedQuery;
 /**
  * Used to test effect of metadata-complete tag. 
  * 
- * The annotations should be processed in conjunction with corresponding orm.xml 
+ * The annotations should be processed in conjunction with corresponding orm.xml
  * 
  * @author Pinaki Poddar
  *
  */
 @Entity
 @Inheritance(strategy=InheritanceType.SINGLE_TABLE)
-@NamedQuery(name="EntityB.SelectOne", query="SELECT b FROM DerivedB b WHERE name=?1")
+@NamedQuery(name="EntityB.SelectOne",
+        query="SELECT b FROM DerivedB b WHERE name=?1")
 public class EntityB {
 	@Id
 	@GeneratedValue(strategy=GenerationType.IDENTITY)

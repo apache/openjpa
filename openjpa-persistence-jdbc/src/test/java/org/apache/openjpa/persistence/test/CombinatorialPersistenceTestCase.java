@@ -42,20 +42,22 @@ public abstract class CombinatorialPersistenceTestCase
 	
 	@Override
 	public int countTestCases() {
-		return super.countTestCases() * getHelper().getCombinationSize();
+        return super.countTestCases() * getHelper().getCombinationSize();
 	}
 	   
     @Override
     public void runBare() throws Throwable {
     	Map<String, Throwable> errors = new HashMap<String, Throwable>();
-    	Map<String, AssertionFailedError> failures = new HashMap<String, AssertionFailedError>();
+        Map<String, AssertionFailedError> failures =
+            new HashMap<String, AssertionFailedError>();
     	do  {
     		try {
     			super.runBare();
     		} catch (Throwable t) {
     			if (t instanceof AssertionFailedError) {
-    				failures.put(getHelper().getOptionsAsString(), (AssertionFailedError)t);
-    				testResult.addFailure(this, (AssertionFailedError)t);
+                    failures.put(getHelper().getOptionsAsString(),
+                            (AssertionFailedError)t);
+                    testResult.addFailure(this, (AssertionFailedError)t);
     			} else {
     				errors.put(getHelper().getOptionsAsString(), t);
     				testResult.addError(this, t);
@@ -65,7 +67,7 @@ public abstract class CombinatorialPersistenceTestCase
     	
     	if (testResult.errorCount() + testResult.failureCount() > 0) {
     		if (!failures.isEmpty())
-    			System.err.println(failures.size() + " assertion failures");
+                System.err.println(failures.size() + " assertion failures");
     		for (String o : failures.keySet()) {
     			System.err.println("Combination:\r\n" + o);
     			failures.get(o).printStackTrace();
@@ -76,10 +78,11 @@ public abstract class CombinatorialPersistenceTestCase
     			System.err.println("Combination:\r\n" + o);
     			errors.get(o).printStackTrace();
     		}
-    		throw new Throwable(getName() + ": " 
-    		  +	getHelper().getCombinationSize() + " combinations, "  
-    		  +	errors.size() + " errors, " + failures.size() + " failures\r\n"
-    		  + "Stack trace for each error/failure is printed on console");
+            throw new Throwable(getName() + ": "
+                + getHelper().getCombinationSize() + " combinations, "
+                + errors.size() + " errors, " + failures.size()
+                + " failures\r\n"
+                + "Stack trace for each error/failure is printed on console");
     	}
     }
     
@@ -95,8 +98,9 @@ public abstract class CombinatorialPersistenceTestCase
     	try {
     		super.assertSQL(sqlExp);
     	} catch (AssertionFailedError e) {
-    		String newMessage = "Combination\r\n" + getHelper().getOptionsAsString()
-    		   + " failed \r\n " + e.getMessage();
+            String newMessage = "Combination\r\n"
+                + getHelper().getOptionsAsString()
+                + " failed \r\n " + e.getMessage();
     		fail(newMessage);
     	}
     }

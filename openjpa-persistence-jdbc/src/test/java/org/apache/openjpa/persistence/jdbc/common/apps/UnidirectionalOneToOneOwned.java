@@ -27,7 +27,8 @@ import javax.persistence.Version;
  * Entity which is traget of a unidirectional one-to-one relation.
  * 
  * Used in
- * @see org.apache.openjpa.persistence.query.TestProjectionQueryWithIdenticalResult
+ * @see
+ * org.apache.openjpa.persistence.query.TestProjectionQueryWithIdenticalResult
  * 
  * @author Pinaki Poddar
  *

@@ -51,7 +51,8 @@ public class TestMappedById extends SingleEMFTestCase {
     public Map<String, MedicalHistory3> medicals3 = new HashMap<String, 
         MedicalHistory3>();
     public Map<String, Person4> persons4 = new HashMap<String, Person4>();
-    public Map<String, MedicalHistory4> medicals4 = new HashMap<String, MedicalHistory4>();
+    public Map<String, MedicalHistory4> medicals4 =
+        new HashMap<String, MedicalHistory4>();
 
     public Map<Integer, Employee3> emps3 = new HashMap<Integer, Employee3>();
     public Map<Object, Dependent3> depMap3 = 
@@ -203,7 +204,8 @@ public class TestMappedById extends SingleEMFTestCase {
         EntityManager em = emf.createEntityManager();
         EntityTransaction tran = em.getTransaction();
         tran.begin();
-        String jpql = "select d from Dependent1 d where d.id.name = 'dep_1' AND d.emp.name = 'emp_1'";
+        String jpql = "select d from Dependent1 d where d.id.name = 'dep_1' "
+            + "AND d.emp.name = 'emp_1'";
         Query q = em.createQuery(jpql);
         List<Dependent1> ds = q.getResultList();
         for (Dependent1 d : ds) {
@@ -271,14 +273,16 @@ public class TestMappedById extends SingleEMFTestCase {
     public void queryDependent2() {
         EntityManager em = emf.createEntityManager();
         EntityTransaction tran = em.getTransaction();
-        String jpql = "select d from Dependent2 d where d.id.name = 'dep_1' AND d.id.empPK.firstName = 'f_1'";
+        String jpql = "select d from Dependent2 d where d.id.name = 'dep_1' "
+            + "AND d.id.empPK.firstName = 'f_1'";
         Query q = em.createQuery(jpql);
         List<Dependent2> ds = q.getResultList();
         for (Dependent2 d : ds) {
             assertDependent2(d);
         }
         
-        jpql = "select d from Dependent2 d where d.id.name = 'dep_1' AND d.emp.empId.firstName = 'f_1'";
+        jpql = "select d from Dependent2 d where d.id.name = 'dep_1' "
+            + "AND d.emp.empId.firstName = 'f_1'";
         q = em.createQuery(jpql);
         ds = q.getResultList();
         for (Dependent2 d : ds) {
@@ -347,14 +351,17 @@ public class TestMappedById extends SingleEMFTestCase {
         EntityTransaction tran = em.getTransaction();
         String firstName = "f_1";
         tran.begin();
-        String jpql = "select m from MedicalHistory1 m where m.patient.id.firstName = '" + firstName + "'";
+        String jpql =
+            "select m from MedicalHistory1 m where m.patient.id.firstName = '"
+            + firstName + "'";
         Query q = em.createQuery(jpql);
         List<MedicalHistory1> ms = q.getResultList();
         for (MedicalHistory1 m : ms) {
             assertMedicalHistory1(m, firstName);
         }
         
-        jpql = "select m from MedicalHistory1 m where m.id.firstName = '" + firstName + "'";
+        jpql = "select m from MedicalHistory1 m where m.id.firstName = '"
+            + firstName + "'";
         q = em.createQuery(jpql);
         ms = q.getResultList();
         for (MedicalHistory1 m : ms) {
@@ -459,7 +466,8 @@ public class TestMappedById extends SingleEMFTestCase {
         em.flush();
         tran.commit();
         for (Dependent3 d: deps3) {
-        	ObjectId did = (ObjectId)((StateManagerImpl)((PersistenceCapable)d).pcGetStateManager()).getObjectId();
+            ObjectId did = (ObjectId)((StateManagerImpl)((PersistenceCapable)d)
+        	        .pcGetStateManager()).getObjectId();
         	dids3.add(did.getId());
         	depMap3.put(did.getId(), d);
         }
@@ -506,7 +514,8 @@ public class TestMappedById extends SingleEMFTestCase {
         EntityManager em = emf.createEntityManager();
         EntityTransaction tran = em.getTransaction();
         tran.begin();
-        String jpql = "select d from Dependent3 d where d.id.name = 'dep_1' AND d.emp.name = 'emp_1'";
+        String jpql = "select d from Dependent3 d where d.id.name = 'dep_1' "
+            + "AND d.emp.name = 'emp_1'";
         Query q = em.createQuery(jpql);
         List<Dependent3> ds = q.getResultList();
         for (Dependent3 d : ds) {
@@ -568,7 +577,9 @@ public class TestMappedById extends SingleEMFTestCase {
         EntityTransaction tran = em.getTransaction();
         tran.begin();
         String firstName = "f_1";
-        String jpql = "select m from MedicalHistory3 m where m.patient.firstName = '" + firstName + "'";
+        String jpql =
+            "select m from MedicalHistory3 m where m.patient.firstName = '"
+            + firstName + "'";
         Query q = em.createQuery(jpql);
         List<MedicalHistory3> ms = q.getResultList();
         for (MedicalHistory3 m : ms) {
@@ -626,7 +637,9 @@ public class TestMappedById extends SingleEMFTestCase {
         EntityTransaction tran = em.getTransaction();
         tran.begin();
         String firstName = "f_1";
-        String jpql = "select m from MedicalHistory4 m where m.patient.id.firstName = '" + firstName + "'";
+        String jpql =
+            "select m from MedicalHistory4 m where m.patient.id.firstName = '"
+            + firstName + "'";
         Query q = em.createQuery(jpql);
         List<MedicalHistory4> ms = q.getResultList();
         for (MedicalHistory4 m : ms) {

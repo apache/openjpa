@@ -43,7 +43,8 @@ import org.apache.openjpa.persistence.kernel.common.apps.AttachD;
 import org.apache.openjpa.persistence.kernel.common.apps.AttachE;
 import org.apache.openjpa.persistence.kernel.common.apps.AttachF;
 import org.apache.openjpa.persistence.kernel.common.apps.FetchGroupTestObject;
-import org.apache.openjpa.persistence.kernel.common.apps.FetchGroupTestObjectChild;
+import org.apache.openjpa.persistence.kernel.common.apps.
+        FetchGroupTestObjectChild;
 
 import org.apache.openjpa.kernel.OpenJPAStateManager;
 import org.apache.openjpa.meta.FieldMetaData;

@@ -41,7 +41,8 @@ public class PartComposite extends  Part  {
 
     public PartComposite() {}
 
-    public PartComposite(int partno, String name, double asmCost, double massInc) {
+    public PartComposite(int partno, String name, double asmCost,
+            double massInc) {
         this.partno=partno;
         this.name=name;
         assemblyCost=asmCost;
@@ -49,7 +50,8 @@ public class PartComposite extends  Part  {
         inventory=0;
     }
 
-    public PartComposite addSubPart(EntityManager em,  int quantity, Part subpart) {
+    public PartComposite addSubPart(EntityManager em, int quantity,
+            Part subpart) {
         Usage use = new Usage( this, quantity, subpart);
         em.persist(use);
         return this;

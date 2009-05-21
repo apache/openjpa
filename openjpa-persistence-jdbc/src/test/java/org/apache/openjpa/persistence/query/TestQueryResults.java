@@ -175,8 +175,8 @@ public class TestQueryResults extends BaseQueryTest {
         em = (OpenJPAEntityManager) currentEntityManager();
         startTx(em);
 
-        String query =
-            "SELECT r FROM RuntimeTest2 r WHERE r.stringField = \'TestQueryResults1\'";
+        String query = "SELECT r FROM RuntimeTest2 r WHERE r.stringField = "
+            + "\'TestQueryResults1\'";
         List c = em.createQuery(query).getResultList();
 
         assertEquals(1, c.size());
@@ -249,18 +249,19 @@ public class TestQueryResults extends BaseQueryTest {
             (OpenJPAEntityManager) currentEntityManager();
         startTx(em);
 
-        String query =
-            "SELECT DISTINCT r FROM RuntimeTest1 r WHERE r.stringField = \'TestQueryResults1\'";
+        String query = "SELECT DISTINCT r FROM RuntimeTest1 r WHERE "
+            + "r.stringField = \'TestQueryResults1\'";
         Object obj = em.createQuery(query).getSingleResult();
 
         assertTrue(obj instanceof RuntimeTest1);
 
-        query =
-            "SELECT DISTINCT r FROM RuntimeTest1 r WHERE r.stringField = \'xxxx\'";
+        query = "SELECT DISTINCT r FROM RuntimeTest1 r WHERE r.stringField = "
+            + "\'xxxx\'";
         OpenJPAQuery q = em.createQuery(query);
         try {
             Object l = q.getSingleResult();
-            fail("Expected NoResultException since there is no RuntimeTest1 instance with stringfield=xxxx");
+            fail("Expected NoResultException since there is no RuntimeTest1 "
+                 + "instance with stringfield=xxxx");
         } catch (NoResultException e) {
             // good
         }
@@ -311,8 +312,8 @@ public class TestQueryResults extends BaseQueryTest {
             (OpenJPAEntityManager) currentEntityManager();
         startTx(em);
 
-        OpenJPAQuery q = em.createQuery(
-            "SELECT DISTINCT r FROM RuntimeTest1 r WHERE r.stringField = \'TestQueryResults1\'");
+        OpenJPAQuery q = em.createQuery("SELECT DISTINCT r FROM RuntimeTest1 r "
+            + "WHERE r.stringField = \'TestQueryResults1\'");
         q.setFirstResult(2);
         q.setMaxResults(0);
         assertTrue(
@@ -328,8 +329,8 @@ public class TestQueryResults extends BaseQueryTest {
             (OpenJPAEntityManager) currentEntityManager();
         startTx(em);
 
-        OpenJPAQuery q = em.createQuery(
-            "SELECT DISTINCT r FROM RuntimeTest1 r WHERE r.stringField = \'TestQueryResults1\'");
+        OpenJPAQuery q = em.createQuery("SELECT DISTINCT r FROM RuntimeTest1 r "
+            + "WHERE r.stringField = \'TestQueryResults1\'");
         q.setFirstResult(1);
         q.setMaxResults(1000000);
 
@@ -356,15 +357,18 @@ public class TestQueryResults extends BaseQueryTest {
         endEm(em);
     }
 
-    /* This test is being commented because it was supposed to be a converted test complementing the original JDO test
-      * which uses the setUnique() method available in JDO Query. OpenJPAQuery does not have such a method and hence this test
-      * does not make sense.
+    /* This test is being commented because it was supposed to be a converted
+     * test complementing the original JDO test which uses the setUnique()
+     * method available in JDO Query. OpenJPAQuery does not have such a method
+     * and hence this test does not make sense.
       public void testUniqueThrowsExceptionIfNonUniqueRange()
      {
-         OpenJPAEntityManager em = (OpenJPAEntityManager) currentEntityManager();
+         OpenJPAEntityManager em =
+             (OpenJPAEntityManager) currentEntityManager();
          startTx(em);
 
-         OpenJPAQuery q = em.createQuery("SELECT DISTINCT r FROM RuntimeTest1 r ORDER BY r.stringField ASC");
+         OpenJPAQuery q = em.createQuery(
+            "SELECT DISTINCT r FROM RuntimeTest1 r ORDER BY r.stringField ASC");
          q.setFirstResult(1);
          q.setMaxResults(3);
 
@@ -404,7 +408,8 @@ public class TestQueryResults extends BaseQueryTest {
             endEm(em);
         }
         catch (Exception uoe) {
-            //FIXME:AFAM -- Figure out JPA Equivalence of createExtent(class, false) ie how to restrict the query result to the base entity and
+            //FIXME:AFAM -- Figure out JPA Equivalence of createExtent(class,
+            //false) ie how to restrict the query result to the base entity and
             //not the subclasses
         }
     }

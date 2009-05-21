@@ -77,7 +77,9 @@ public class TestIncrementalJDBCFlushes
                 getMappingRepositoryInstance().getMapping(RuntimeTest1.class,
                 null, true);
         FieldMapping fm = mapping.getFieldMapping("stringField");
-        String tableName = store.getConfiguration().getDBDictionaryInstance().getFullName(fm.getTable(), false);
+        String tableName =
+            store.getConfiguration().getDBDictionaryInstance().getFullName(
+                    fm.getTable(), false);
         String colName = fm.getColumns()[0].getName();
         Statement st = conn.createStatement();
         ResultSet rs = st.executeQuery("SELECT " + colName + " FROM "
@@ -93,7 +95,8 @@ public class TestIncrementalJDBCFlushes
     }
     
     private StoreManager getStoreManager(EntityManager em, boolean innermost) {
-        DelegatingStoreManager mgr = JPAFacadeHelper.toBroker(em).getStoreManager();
+        DelegatingStoreManager mgr =
+            JPAFacadeHelper.toBroker(em).getStoreManager();
         if (innermost)
             return mgr.getInnermostDelegate();
         return mgr;
@@ -105,7 +108,8 @@ public class TestIncrementalJDBCFlushes
         props.put("openjpa.RemoteCommitProvider", "sjvm");
         props.put("openjpa.FlushBeforeQueries", "true");
         props.put("javax.jdo.option.IgnoreCache", "false");
-        //propsMap.put("openjpa.BrokerImpl", "kodo.datacache.CacheTestBroker");//CacheTestBroker.class.getName ());
+        //propsMap.put("openjpa.BrokerImpl", "kodo.datacache.CacheTestBroker");
+        //CacheTestBroker.class.getName());
         return props;
     }
     

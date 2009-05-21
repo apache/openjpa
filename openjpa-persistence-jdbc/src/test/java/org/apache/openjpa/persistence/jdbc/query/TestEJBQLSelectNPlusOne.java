@@ -27,8 +27,8 @@ import org.apache.openjpa.persistence.common.utils.*;
 import org.apache.openjpa.persistence.kernel.common.apps.RuntimeTest1;
 import junit.framework.*;
 
-public class TestEJBQLSelectNPlusOne extends org.apache.openjpa.persistence.jdbc.kernel.BaseJDBCTest
-{
+public class TestEJBQLSelectNPlusOne
+        extends org.apache.openjpa.persistence.jdbc.kernel.BaseJDBCTest {
 	public TestEJBQLSelectNPlusOne(String name)
 	{
 		super(name);
@@ -47,8 +47,9 @@ public class TestEJBQLSelectNPlusOne extends org.apache.openjpa.persistence.jdbc
 	public void testSimpleEJBQLQuery() throws Exception
 	{
 		EntityManager pm = currentEntityManager();
-		// run a JDOQL query first to take care of any class-loading issues
-		List l = pm.createQuery("select object(o) from " + RuntimeTest1.class.getSimpleName()+" o").getResultList();
+        // run a JDOQL query first to take care of any class-loading issues
+        List l = pm.createQuery("select object(o) from "
+                + RuntimeTest1.class.getSimpleName() + " o").getResultList();
 
 		// now run the actual test.
 		assertEquals(1, l.size());

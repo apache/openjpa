@@ -50,17 +50,17 @@ public class TestMetaDataComplete extends SingleEMFTestCase {
 
 	public void setUp() throws Exception {
 		if (oemf == null) {
-			super.setUp(EntityA.class, EntityB.class, DerivedA.class,
+            super.setUp(EntityA.class, EntityB.class, DerivedA.class,
 					DerivedB.class);
-			oemf = (OpenJPAEntityManagerFactorySPI) OpenJPAPersistence
+            oemf = (OpenJPAEntityManagerFactorySPI) OpenJPAPersistence
 					.cast(emf);
 			MetaDataRepository repos = oemf.getConfiguration()
 					.getMetaDataRepositoryInstance();
 
 			entityA = repos.getMetaData(EntityA.class, null, true);
 			entityB = repos.getMetaData(EntityB.class, null, true);
-			derivedA = repos.getMetaData(DerivedA.class, null, true);
-			derivedB = repos.getMetaData(DerivedB.class, null, true);
+            derivedA = repos.getMetaData(DerivedA.class, null, true);
+            derivedB = repos.getMetaData(DerivedB.class, null, true);
 		}
 	}
 
@@ -74,16 +74,16 @@ public class TestMetaDataComplete extends SingleEMFTestCase {
 
 	public void testIgnoresClassAnnotationIfMetaDataComplete() {
 		// inheritance strategy of EntityA by annotation is SINGLE_TABLE
-		// inheritance strategy of EntityA in xml descriptor is JOINED
+        // inheritance strategy of EntityA in xml descriptor is JOINED
 		assertEquals(FullClassStrategy.class, ((ClassMapping) entityA)
 				.getStrategy().getClass());
-		assertEquals(VerticalClassStrategy.class, ((ClassMapping) derivedA)
+        assertEquals(VerticalClassStrategy.class, ((ClassMapping) derivedA)
 				.getStrategy().getClass());
 	}
 
 	public void testProcessesClassAnnotationIfMetaDataIsNotComplete() {
 		// inheritance strategy of EntityB by annotation is SINGLE_TABLE
-		// inheritance strategy of EntityB in xml descriptor is not specified
+        // inheritance strategy of EntityB in xml descriptor is not specified
 		assertEquals(FullClassStrategy.class, ((ClassMapping) entityB)
 				.getStrategy().getClass());
 		assertEquals(FlatClassStrategy.class, ((ClassMapping) derivedB)
@@ -99,7 +99,7 @@ public class TestMetaDataComplete extends SingleEMFTestCase {
 
 	public void testProcessesFieldAnnotationIfMetaDataIsNotComplete() {
 		// generation strategy of EntityB.id by annotation is IDENTITY
-		// inheritance strategy of EntityA in xml descriptor is not specified
+        // inheritance strategy of EntityA in xml descriptor is not specified
 		int valueStrategyB = entityB.getField("id").getValueStrategy();
 		assertEquals(ValueStrategies.AUTOASSIGN, valueStrategyB);
 	}
@@ -109,7 +109,7 @@ public class TestMetaDataComplete extends SingleEMFTestCase {
 		String namedQuery = "DerivedA.SelectAll";
 		try {
 			oemf.createEntityManager().createNamedQuery(namedQuery);
-			fail("Expected not to find NamedQuery [" + namedQuery + "]");
+            fail("Expected not to find NamedQuery [" + namedQuery + "]");
 		} catch (ArgumentException e) {
 			assertTrue(e.getMessage().contains(namedQuery));
 		}
@@ -118,7 +118,7 @@ public class TestMetaDataComplete extends SingleEMFTestCase {
 	public void testProcessesNamedQueryIfMetaDataIsNotComplete() {
 		// EntityB has annotated NamedQuery
 		// EntityB has a Named Query in xml descriptor
-		oemf.createEntityManager().createNamedQuery("EntityB.SelectOne");
-		oemf.createEntityManager().createNamedQuery("EntityB.SelectAll");
+        oemf.createEntityManager().createNamedQuery("EntityB.SelectOne");
+        oemf.createEntityManager().createNamedQuery("EntityB.SelectAll");
 	}
 }

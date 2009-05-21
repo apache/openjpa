@@ -36,11 +36,11 @@ public class TestStatistics extends SingleEMFTestCase {
 
 	public void setUp() {
 		super.setUp(CLEAR_TABLES, Customer.class, Order.class,
-				"openjpa.DataCache", "true", "openjpa.RemoteCommitProvider",
+                "openjpa.DataCache", "true", "openjpa.RemoteCommitProvider",
 				"sjvm");
 		startCaching(Customer.class);
 		startCaching(Order.class);
-		assertTrue(((EntityManagerImpl) emf.createEntityManager()).getBroker()
+        assertTrue(((EntityManagerImpl) emf.createEntityManager()).getBroker()
 				.getPopulateDataCache());
 		stats = emf.getStoreCache().getStatistics();
 		assertNotNull(stats);
@@ -48,7 +48,7 @@ public class TestStatistics extends SingleEMFTestCase {
 
 	void startCaching(Class<?> cls) {
 		ClassMetaData meta = emf.getConfiguration()
-				.getMetaDataRepositoryInstance().getMetaData(cls, null, true);
+                .getMetaDataRepositoryInstance().getMetaData(cls, null, true);
 		meta.setDataCacheName(DataCache.NAME_DEFAULT);
 	}
 

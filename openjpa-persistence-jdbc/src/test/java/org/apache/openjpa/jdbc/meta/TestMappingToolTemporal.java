@@ -40,7 +40,7 @@ public class TestMappingToolTemporal extends SingleEMTestCase {
                         true);
 
         assertEquals(java.sql.Types.TIMESTAMP, mapping.getFieldMapping(
-                "dateDefaultField").getValueMapping().getColumns()[0].getType());
+               "dateDefaultField").getValueMapping().getColumns()[0].getType());
 
         assertEquals(java.sql.Types.DATE, mapping.getFieldMapping(
                 "dateDateField").getValueMapping().getColumns()[0].getType());

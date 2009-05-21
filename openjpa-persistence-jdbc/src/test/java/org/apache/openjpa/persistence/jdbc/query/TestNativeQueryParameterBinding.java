@@ -73,9 +73,9 @@ public class TestNativeQueryParameterBinding extends SingleEMFTestCase {
 					fail("Expected " + error.getName());
 			} catch (Exception e) {
 				if (!error.isAssignableFrom(e.getClass())) {
-				    // let the test harness handle the exception.
-				    throw new RuntimeException("An unexpected exception " + 
-				        "occurred see the initCause for details", e);
+                    // let the test harness handle the exception.
+                    throw new RuntimeException("An unexpected exception " +
+                            "occurred see the initCause for details", e);
 				} 
 			}		
 		}

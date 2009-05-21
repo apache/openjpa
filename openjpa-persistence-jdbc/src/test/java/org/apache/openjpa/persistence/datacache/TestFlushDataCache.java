@@ -25,7 +25,8 @@ import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 
 
-import org.apache.openjpa.persistence.datacache.common.apps.FlushDataCacheObject;
+import org.apache.openjpa.persistence.datacache.common.apps.
+        FlushDataCacheObject;
 import org.apache.openjpa.persistence.common.utils.AbstractTestCase;
 
 public class TestFlushDataCache
@@ -45,14 +46,20 @@ public class TestFlushDataCache
         propsMap.put("openjpa.RemoteCommitProvider", "sjvm");
         propsMap.put("openjpa.FlushBeforeQueries", "true");
         //propsMap.put("javax.jdo.option.IgnoreCache", "false");
-        //propsMap.put("openjpa.BrokerImpl", "kodo.datacache.CacheTestBroker");//CacheTestBroker.class.getName ());
+        //propsMap.put("openjpa.BrokerImpl", "kodo.datacache.CacheTestBroker");
+        //CacheTestBroker.class.getName ());
         EntityManagerFactory emf = getEmf(propsMap);
 
         try {
 
-            //assertEquals(Class.forName("openjpa.datacache.CacheTestBroker",true,emf.getClass().getClassLoader()).getClassLoader(),emf.getClass().getClassLoader());
-            //Thread.currentThread().setContextClassLoader(emf.getClass().getClassLoader());
-            Class.forName("org.apache.openjpa.persistence.datacache.CacheTestBroker", true,
+            //assertEquals(Class.forName("openjpa.datacache.CacheTestBroker",
+            //    true,emf.getClass().getClassLoader()).getClassLoader(),
+            //    emf.getClass().getClassLoader());
+            //Thread.currentThread().setContextClassLoader(
+            //    emf.getClass().getClassLoader());
+            Class.forName(
+                    "org.apache.openjpa.persistence.datacache.CacheTestBroker",
+                    true,
                 Thread.currentThread().getContextClassLoader());
         } catch (Exception e) {
 

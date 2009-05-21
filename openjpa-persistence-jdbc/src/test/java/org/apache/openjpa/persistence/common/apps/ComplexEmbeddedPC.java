@@ -38,7 +38,7 @@ public class ComplexEmbeddedPC
 	@OneToOne(cascade={CascadeType.PERSIST, CascadeType.REMOVE})
 	private EmbeddedOwnerPC		ownerField;
 
-	private Set					stringSet = new HashSet ();
+    private Set                 stringSet = new HashSet ();
 
 
 	public String getStringField ()

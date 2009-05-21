@@ -16,7 +16,8 @@
  * specific language governing permissions and limitations
  * under the License.    
  */
-package org.apache.openjpa.persistence.annotations.common.apps.annotApp.annotype;
+package
+    org.apache.openjpa.persistence.annotations.common.apps.annotApp.annotype;
 
 import java.util.ArrayList;
 
@@ -42,7 +43,7 @@ public class ContractEmployee extends Employee
 	@PrePersist
 	public void verifyTerm()
 	{
-		System.out.println("VerifyTerm of ContractEmployee running on"+this);
+        System.out.println("VerifyTerm of ContractEmployee running on" + this);
 
 		CallbackStorage store = CallbackStorage.getInstance();
 		store.getClist().add("contractemployee");

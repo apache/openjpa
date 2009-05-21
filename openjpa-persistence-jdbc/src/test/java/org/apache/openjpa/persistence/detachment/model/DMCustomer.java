@@ -38,7 +38,8 @@ public class DMCustomer {
     @OneToMany(mappedBy="customer", 
             fetch=FetchType.EAGER,
             cascade=CascadeType.ALL)
-            private List<DMCustomerInventory> customerInventories = new ArrayList<DMCustomerInventory>();
+            private List<DMCustomerInventory> customerInventories =
+                new ArrayList<DMCustomerInventory>();
 
     public DMCustomer() {
     }
@@ -71,7 +72,8 @@ public class DMCustomer {
         return customerInventories;
     }
 
-    public void setCustomerInventories(List<DMCustomerInventory> customerInventories) {
+    public void setCustomerInventories(
+            List<DMCustomerInventory> customerInventories) {
         this.customerInventories = customerInventories;
     }
 }

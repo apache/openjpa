@@ -23,7 +23,8 @@ import java.util.List;
 import javax.persistence.*;
 import junit.framework.*;
 import org.apache.openjpa.persistence.common.utils.*;
-import org.apache.openjpa.persistence.annotations.common.apps.annotApp.annotype.*;
+import
+    org.apache.openjpa.persistence.annotations.common.apps.annotApp.annotype.*;
 
 
 
@@ -71,12 +72,13 @@ public class TestEnumerated extends AnnotationTestCase
 
     public void testBehavior() 
     {
-        OpenJPAEntityManager em = (OpenJPAEntityManager) currentEntityManager();        
+        OpenJPAEntityManager em = (OpenJPAEntityManager) currentEntityManager();
         startTx(em);
         
         AnnoTest1 pc = new AnnoTest1(1);
         assertNotNull("pc is null", pc);
-        assertNotNull("InheritanceType.TABLE_PER_CLASS is null", InheritanceType.TABLE_PER_CLASS);
+        assertNotNull("InheritanceType.TABLE_PER_CLASS is null",
+                InheritanceType.TABLE_PER_CLASS);
         assertNotNull("InheritanceType.JOINED is null", InheritanceType.JOINED);
         pc.setEnumeration(InheritanceType.TABLE_PER_CLASS);
         pc.setOrdinalEnumeration(InheritanceType.TABLE_PER_CLASS);
@@ -93,7 +95,8 @@ public class TestEnumerated extends AnnotationTestCase
         AnnoTest1 pc2 = (AnnoTest1) q.getSingleResult();
         assertNotNull("pc2 is null", pc2);
         assertEquals(InheritanceType.TABLE_PER_CLASS, pc2.getEnumeration());
-        assertEquals(InheritanceType.TABLE_PER_CLASS, pc2.getOrdinalEnumeration());
+        assertEquals(InheritanceType.TABLE_PER_CLASS,
+                pc2.getOrdinalEnumeration());
         assertEquals(InheritanceType.JOINED,  pc2.getStringEnumeration());
         startTx(em);
         pc2.setEnumeration(InheritanceType.JOINED);
@@ -108,7 +111,8 @@ public class TestEnumerated extends AnnotationTestCase
         pc2 = (AnnoTest1) q.getSingleResult();
         assertEquals(InheritanceType.JOINED, pc2.getEnumeration());
         assertEquals(InheritanceType.JOINED, pc2.getOrdinalEnumeration());
-        assertEquals(InheritanceType.TABLE_PER_CLASS, pc2.getStringEnumeration());
+        assertEquals(InheritanceType.TABLE_PER_CLASS,
+                pc2.getStringEnumeration());
         endEm(em);
     }
     

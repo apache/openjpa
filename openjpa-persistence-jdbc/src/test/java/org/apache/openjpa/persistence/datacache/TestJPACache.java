@@ -157,7 +157,8 @@ public class TestJPACache extends SingleEMFTestCase {
      * <li>Any instance of CachedPerson from populate() is found in the cache
      * after calling evict(CachedPerson.class)</li>
      * <li>Any instance of CachedManager or CachedEmployee which previously
-     * existed in the cache was evicted after calling evict(CachedPerson.class)</li>
+     * existed in the cache was evicted after calling evict(CachedPerson.class)
+     * </li>
      * </ul>
      * 
      */

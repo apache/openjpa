@@ -120,8 +120,8 @@ public class TestEJBJoins extends AbstractTestCase {
 
         try {
             List ls = em.createQuery(query).getResultList();
-            fail(
-                "Not permitted to specify an id variable for entities ref. by the right side of fetch join");
+            fail("Not permitted to specify an id variable for entities ref." +
+                    " by the right side of fetch join");
         }
         catch (Exception e) {
             //suppose to throw an exception..should not pass
@@ -133,9 +133,8 @@ public class TestEJBJoins extends AbstractTestCase {
     public void testLeftOuterJoin() {
         EntityManager em = currentEntityManager();
 
-        String ljoin =
-            "SELECT DISTINCT s.name FROM Student s LEFT OUTER JOIN s.department d " +
-                "WHERE d.name = 'CompSci2'";
+        String ljoin = "SELECT DISTINCT s.name FROM Student s " +
+                "LEFT OUTER JOIN s.department d WHERE d.name = 'CompSci2'";
 
         List ls = em.createQuery(ljoin).getResultList();
 

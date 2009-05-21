@@ -77,7 +77,7 @@ public class TestIdentityWithSingleTableStrategy extends SingleEMFTestCase {
 		EntityManager em1 = emf.createEntityManager();
 		RegularUser regularUserFromFind = (RegularUser) em1.find(
 				RegularUser.class, user.getOid());
-		Admin adminFromGetReference = em1.getReference(Admin.class, admin
+        Admin adminFromGetReference = em1.getReference(Admin.class, admin
 				.getOid());
 		Admin adminFromMethodBean = regularUserFromFind.getAdmin();
 		assertTrue(adminFromGetReference == adminFromMethodBean);

@@ -156,9 +156,8 @@ public class TestDistributedKodoDataCache extends AbstractTestCase {
             rcpType = "classes";
         }
         System.out.println("-------------------");
-        System.out
-            .println(
-                "2 PMFs created, acting as a cluster using ports 5636 and 6636");
+        System.out.println(
+            "2 PMFs created, acting as a cluster using ports 5636 and 6636");
         System.out.println("Testing scenario:");
         System.out
             .println("  1 Seed datastore with instances of RuntimeTest1 AND "
@@ -316,8 +315,8 @@ public class TestDistributedKodoDataCache extends AbstractTestCase {
 
             propsMap = new HashMap();
             propsMap.put("openjpa.DataCache", "lru");
-            propsMap.put("openjpa.RemoteCommitProvider", Configurations.getPlugin(
-                providerClass.getName(), classProps1));
+            propsMap.put("openjpa.RemoteCommitProvider",
+                Configurations.getPlugin(providerClass.getName(), classProps1));
             propsMap.put("openjpa.FetchGroups", "differentiatingFetchGroup"
                 + _fetchGroupSerial);
         } else {

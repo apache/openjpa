@@ -73,7 +73,8 @@ public class TestEJBDeleteUpdateImpl extends BaseQueryTest {
         assertNotNull(ret.getSelfOneOne());
 
         String ejbqlUpdate =
-            "UPDATE RuntimeTest1 x SET x.stringField = :strngfld WHERE x.stringField = :stdfield";
+            "UPDATE RuntimeTest1 x SET x.stringField = :strngfld " +
+            "WHERE x.stringField = :stdfield";
         int updatedEntities = em.createQuery(ejbqlUpdate)
             .setParameter("strngfld", "runner13")
             .setParameter("stdfield", "runt1")

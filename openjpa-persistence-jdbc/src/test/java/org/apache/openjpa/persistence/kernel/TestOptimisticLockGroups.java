@@ -198,7 +198,8 @@ public class TestOptimisticLockGroups extends BaseKernelTest {
         endEm(pm1);
     }
 
-//        FIX ME: aokeke - test is taking so much resource and causing subsequent test to fail
+//        FIX ME: aokeke - test is taking so much resource and causing
+//        subsequent test to fail
 //        public void testNoLockGroupSuccess() {
 //        OpenJPAEntityManager pm1 = getPM(false, false);
 //        startTx(pm1,());

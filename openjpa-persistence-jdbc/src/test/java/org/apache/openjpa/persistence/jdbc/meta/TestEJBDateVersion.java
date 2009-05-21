@@ -25,8 +25,8 @@ import org.apache.openjpa.persistence.common.utils.*;
 import org.apache.openjpa.persistence.kernel.common.apps.DateVersion;
 import junit.framework.*;
 
-public class TestEJBDateVersion extends org.apache.openjpa.persistence.jdbc.kernel.BaseJDBCTest
-{
+public class TestEJBDateVersion
+        extends org.apache.openjpa.persistence.jdbc.kernel.BaseJDBCTest {
 	private int oid;
 
 	public TestEJBDateVersion(String name)

@@ -37,9 +37,12 @@ import org.apache.openjpa.persistence.xmlmapping.entities.EAddress;
 import org.apache.openjpa.persistence.xmlmapping.entities.Order;
 import org.apache.openjpa.persistence.xmlmapping.entities.Customer.CreditRating;
 import org.apache.openjpa.persistence.xmlmapping.xmlbindings.myaddress.Address;
-import org.apache.openjpa.persistence.xmlmapping.xmlbindings.myaddress.CANAddress;
-import org.apache.openjpa.persistence.xmlmapping.xmlbindings.myaddress.ObjectFactory;
-import org.apache.openjpa.persistence.xmlmapping.xmlbindings.myaddress.USAAddress;
+import org.apache.openjpa.persistence.xmlmapping.xmlbindings.myaddress.
+        CANAddress;
+import org.apache.openjpa.persistence.xmlmapping.xmlbindings.myaddress.
+        ObjectFactory;
+import org.apache.openjpa.persistence.xmlmapping.xmlbindings.myaddress.
+        USAAddress;
 
 /**
  * Test query with predicates on persistent field mapped to XML column.
@@ -345,15 +348,17 @@ public class TestXMLCustomerOrder
         c1.setCid( new Customer.CustomerKey("USA", 1) );
         c1.setName("Harry's Auto");
         c1.setRating( CreditRating.GOOD );
-        c1.setAddress( new EAddress("12500 Monterey", "San Jose", "CA"
-                , "95141"));
+        c1.setAddress( new EAddress("12500 Monterey", "San Jose", "CA",
+                "95141"));
         em.persist(c1);
 
-        Order o1 = new Order(ORDER_1_OID, ORDER_1_AMOUNT, ORDER_1_DELIVERED, c1);
+        Order o1 = new Order(ORDER_1_OID, ORDER_1_AMOUNT, ORDER_1_DELIVERED,
+                c1);
         o1.setShipAddress(createUSAAddress(c1.getName()));
         em.persist(o1);
 
-        Order o2 = new Order(ORDER_2_OID, ORDER_2_AMOUNT, ORDER_2_DELIVERED, c1);
+        Order o2 = new Order(ORDER_2_OID, ORDER_2_AMOUNT, ORDER_2_DELIVERED,
+                c1);
         o2.setShipAddress(createCANAddress(c2.getName()));
         em.persist(o2);
     }
@@ -362,7 +367,8 @@ public class TestXMLCustomerOrder
      * Check whether DBDictionary supports XML column.
      * This is done by forcing the execution of
      * {@link DBDictionary#connectedConfiguration(Connection)}.
-     * This is where some dictionaries actually determine whether XML column is supported.
+     * This is where some dictionaries actually determine whether XML column is
+     * supported.
      * @return true if {@link DBDictionary} supports XML column
      */
     private boolean dictionarySupportsXMLColumn() {

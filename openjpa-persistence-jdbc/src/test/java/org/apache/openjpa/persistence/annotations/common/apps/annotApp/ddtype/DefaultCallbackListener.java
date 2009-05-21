@@ -26,7 +26,8 @@ import javax.persistence.PostUpdate;
 import javax.persistence.PreUpdate;
 import javax.persistence.PostLoad;
 
-import org.apache.openjpa.persistence.annotations.common.apps.annotApp.ddtype.CallbackStorage;
+import org.apache.openjpa.persistence.annotations.common.apps.annotApp.ddtype.
+        CallbackStorage;
 
 public class DefaultCallbackListener 
 {

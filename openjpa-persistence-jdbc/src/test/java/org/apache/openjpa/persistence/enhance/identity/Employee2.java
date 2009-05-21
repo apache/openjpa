@@ -59,7 +59,8 @@ public class Employee2 {
         List<Dependent2> ds0 = e0.getDependents();
         if (!empId.equals(eid0)) return false;
         if (ds0 != null && ds0.size() != 0 && dependents == null) return false; 
-        if (ds0 == null && dependents != null && dependents.size() != 0) return false;
+        if (ds0 == null && dependents != null && dependents.size() != 0)
+            return false;
         if (ds0 == null && dependents == null) return true;
         if (ds0 != null && dependents != null) { 
             if (ds0.size() != dependents.size()) return false;

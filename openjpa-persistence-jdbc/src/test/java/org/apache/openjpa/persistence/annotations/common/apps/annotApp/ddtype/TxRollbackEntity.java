@@ -49,7 +49,7 @@ public class TxRollbackEntity
 	@PostLoad
 	public void rollBackException()
 	{
-		//should throw a null pointer exception causing the tx to be rolled back
+        //should throw a null pointer exception causing the tx to be rolled back
 		ArrayList<Integer> list = null;
 		list.add(1);
 	}

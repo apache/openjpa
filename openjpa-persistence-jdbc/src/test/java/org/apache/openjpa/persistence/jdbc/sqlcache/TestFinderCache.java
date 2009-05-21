@@ -38,9 +38,11 @@ import org.apache.openjpa.persistence.test.SingleEMFTestCase;
  */
 public class TestFinderCache extends SQLListenerTestCase {
     public static final long[] BOOK_IDS = {1000, 2000, 3000};
-    public static final String[] BOOK_NAMES = {"Argumentative Indian", "Tin Drum", "Blink"};
+    public static final String[] BOOK_NAMES =
+            {"Argumentative Indian", "Tin Drum", "Blink"};
     public static final long[] CD_IDS = {1001, 2001, 3001};
-    public static final String[] CD_LABELS = {"Beatles", "Sinatra", "Don't Rock My Boat"};
+    public static final String[] CD_LABELS =
+            {"Beatles", "Sinatra", "Don't Rock My Boat"};
     
     void createTestData() {
         EntityManager em = emf.createEntityManager();
@@ -113,7 +115,8 @@ public class TestFinderCache extends SQLListenerTestCase {
     }
     
     FinderCache getCache() {
-        return ((JDBCConfiguration)emf.getConfiguration()).getFinderCacheInstance();
+        return ((JDBCConfiguration) emf.getConfiguration()).
+                getFinderCacheInstance();
     }
 
 }

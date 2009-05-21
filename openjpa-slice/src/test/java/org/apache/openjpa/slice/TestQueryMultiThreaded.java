@@ -56,7 +56,7 @@ public class TestQueryMultiThreaded extends SliceTestCase {
 	}
 
 	public void setUp() throws Exception {
-		super.setUp(PObject.class, Person.class, Address.class, Country.class,
+        super.setUp(PObject.class, Person.class, Address.class, Country.class,
 				CLEAR_TABLES, "openjpa.Multithreaded", "true");
 		int count = count(PObject.class);
 		if (count == 0) {
@@ -85,7 +85,7 @@ public class TestQueryMultiThreaded extends SliceTestCase {
 			pc.setValue(VALUE_MIN + i);
 			em.persist(pc);
 			String slice = SlicePersistence.getSlice(pc);
-			String expected = (pc.getValue() % 2 == 0) ? "Even" : "Odd";
+            String expected = (pc.getValue() % 2 == 0) ? "Even" : "Odd";
 			assertEquals(expected, slice);
 		}
 		Person p1 = new Person();
@@ -109,8 +109,8 @@ public class TestQueryMultiThreaded extends SliceTestCase {
 	public void testQueryResultIsOrderedAcrossSlice() {
 		final EntityManager em = emf.createEntityManager();
 		em.getTransaction().begin();
-		final Query query = em
-			.createQuery("SELECT p.value,p FROM PObject p ORDER BY p.value ASC");
+        final Query query = em.createQuery(
+                "SELECT p.value,p FROM PObject p ORDER BY p.value ASC");
 		for (int i = 0; i < THREADS; i++) {
 			futures[i] = group.submit(new Callable<Object>() {
 				public Object call() {
@@ -118,11 +118,11 @@ public class TestQueryMultiThreaded extends SliceTestCase {
 					Integer old = Integer.MIN_VALUE;
 					for (Object row : result) {
 						Object[] line = (Object[]) row;
-						int value = ((Integer) line[0]).intValue();
+                        int value = ((Integer) line[0]).intValue();
 						PObject pc = (PObject) line[1];
 						assertTrue(value >= old);
 						old = value;
-						assertEquals(value, pc.getValue());
+                        assertEquals(value, pc.getValue());
 					}
 					return null;
 				}
@@ -136,11 +136,12 @@ public class TestQueryMultiThreaded extends SliceTestCase {
 	public void testAggregateQuery() {
 		final EntityManager em = emf.createEntityManager();
 		em.getTransaction().begin();
-		final Query countQ = em.createQuery("SELECT COUNT(p) FROM PObject p");
-		final Query maxQ = em.createQuery("SELECT MAX(p.value) FROM PObject p");
-		final Query minQ = em.createQuery("SELECT MIN(p.value) FROM PObject p");
-		final Query sumQ = em.createQuery("SELECT SUM(p.value) FROM PObject p");
-		final Query minmaxQ = em.createQuery("SELECT MIN(p.value),MAX(p.value) FROM PObject p");
+        final Query countQ = em.createQuery("SELECT COUNT(p) FROM PObject p");
+        final Query maxQ = em.createQuery("SELECT MAX(p.value) FROM PObject p");
+        final Query minQ = em.createQuery("SELECT MIN(p.value) FROM PObject p");
+        final Query sumQ = em.createQuery("SELECT SUM(p.value) FROM PObject p");
+        final Query minmaxQ = em.createQuery(
+                "SELECT MIN(p.value),MAX(p.value) FROM PObject p");
 		for (int i = 0; i < THREADS; i++) {
 			futures[i] = group.submit(new Callable<Object>() {
 				public Object call() {
@@ -148,20 +149,20 @@ public class TestQueryMultiThreaded extends SliceTestCase {
 					Object max = maxQ.getSingleResult();
 					Object min = minQ.getSingleResult();
 					Object sum = sumQ.getSingleResult();
-					Object minmax = minmaxQ.getSingleResult();
+                    Object minmax = minmaxQ.getSingleResult();
 					
 					Object min1 = ((Object[]) minmax)[0];
 					Object max1 = ((Object[]) minmax)[1];
 
 
-					assertEquals(POBJECT_COUNT, ((Number) count).intValue());
-					assertEquals(VALUE_MAX, ((Number) max).intValue());
-					assertEquals(VALUE_MIN, ((Number) min).intValue());
-					assertEquals((VALUE_MIN + VALUE_MAX) * POBJECT_COUNT,
-							2 * ((Number) sum).intValue());
-					assertEquals(min, min1);
-					assertEquals(max, max1);
-					return null;
+                    assertEquals(POBJECT_COUNT, ((Number) count).intValue());
+                    assertEquals(VALUE_MAX, ((Number) max).intValue());
+                    assertEquals(VALUE_MIN, ((Number) min).intValue());
+                    assertEquals((VALUE_MIN + VALUE_MAX) * POBJECT_COUNT,
+                            2 * ((Number) sum).intValue());
+                    assertEquals(min, min1);
+                    assertEquals(max, max1);
+                    return null;
 				}
 			});
 		}
@@ -172,12 +173,13 @@ public class TestQueryMultiThreaded extends SliceTestCase {
 	public void testAggregateQueryWithMissingValueFromSlice() {
 		final EntityManager em = emf.createEntityManager();
 		em.getTransaction().begin();
-		final Query maxQ = em.createQuery("SELECT MAX(p.value) FROM PObject p WHERE MOD(p.value,2)=0");
+        final Query maxQ = em.createQuery(
+                "SELECT MAX(p.value) FROM PObject p WHERE MOD(p.value,2)=0");
 		for (int i = 0; i < THREADS; i++) {
 			futures[i] = group.submit(new Callable<Object>() {
 				public Object call() {
 					Object max = maxQ.getSingleResult();
-					assertEquals(VALUE_MAX, ((Number) max).intValue());
+                    assertEquals(VALUE_MAX, ((Number) max).intValue());
 					return null;
 				}
 			});
@@ -190,15 +192,16 @@ public class TestQueryMultiThreaded extends SliceTestCase {
 		final EntityManager em = emf.createEntityManager();
 		final int limit = 3;
 		em.getTransaction().begin();
-		final Query q = em.createQuery("SELECT p.value,p FROM PObject p ORDER BY p.value ASC");
+        final Query q = em.createQuery(
+                "SELECT p.value,p FROM PObject p ORDER BY p.value ASC");
 		for (int i = 0; i < THREADS; i++) {
 			futures[i] = group.submit(new Callable<Object>() {
 				public Object call() {
-					List result = q.setMaxResults(limit).getResultList();
+                    List result = q.setMaxResults(limit).getResultList();
 					int i = 0;
 					for (Object row : result) {
 						Object[] line = (Object[]) row;
-						int value = ((Integer) line[0]).intValue();
+                        int value = ((Integer) line[0]).intValue();
 						PObject pc = (PObject) line[1];
 					}
 					assertEquals(limit, result.size());
@@ -221,11 +224,11 @@ public class TestQueryMultiThreaded extends SliceTestCase {
 			futures[i] = group.submit(new Callable<Object>() {
 
 				public Object call() {
-					query.setHint(ProductDerivation.HINT_TARGET, "Even");
+                    query.setHint(ProductDerivation.HINT_TARGET, "Even");
 					List result = query.getResultList();
 					for (Object pc : result) {
-						String slice = SlicePersistence.getSlice(pc);
-						assertTrue(targets.contains(slice));
+                        String slice = SlicePersistence.getSlice(pc);
+                        assertTrue(targets.contains(slice));
 					}
 					return null;
 				}
@@ -239,7 +242,8 @@ public class TestQueryMultiThreaded extends SliceTestCase {
 	public void testInMemoryOrderBy() {
 		final EntityManager em = emf.createEntityManager();
 		em.getTransaction().begin();
-		final Query query = em.createQuery("SELECT p FROM PObject p ORDER BY p.value");
+        final Query query =
+            em.createQuery("SELECT p FROM PObject p ORDER BY p.value");
 		for (int i = 0; i < THREADS; i++) {
 			futures[i] = group.submit(new Callable<Object>() {
 				public Object call() {
@@ -255,7 +259,8 @@ public class TestQueryMultiThreaded extends SliceTestCase {
 	public void testQueryParameter() {
 		final EntityManager em = emf.createEntityManager();
 		em.getTransaction().begin();
-		final Query query = em.createQuery("SELECT p FROM PObject p WHERE p.value > :v");
+        final Query query =
+            em.createQuery("SELECT p FROM PObject p WHERE p.value > :v");
 		for (int i = 0; i < THREADS; i++) {
 			futures[i] = group.submit(new Callable<Object>() {
 				public Object call() {
@@ -279,21 +284,24 @@ public class TestQueryMultiThreaded extends SliceTestCase {
 	public void xtestQueryParameterEntity() {
 		final EntityManager em = emf.createEntityManager();
 		em.getTransaction().begin();
-		final Query addressQ = em.createQuery("select a from Address a where a.city = :city");
-								 
-		final Query personQ = em.createQuery("SELECT p FROM Person p WHERE p.address = :a");
+        final Query addressQ =
+            em.createQuery("select a from Address a where a.city = :city");
+
+        final Query personQ =
+            em.createQuery("SELECT p FROM Person p WHERE p.address = :a");
 		for (int i = 0; i < THREADS; i++) {
 			futures[i] = group.submit(new Callable<Object>() {
 				public Object call() {
-					Address a = (Address) addressQ.setParameter("city", "Rome")
+                    Address a = (Address) addressQ.setParameter("city", "Rome")
 						.getSingleResult();
 					assertNotNull(a);
-					assertEquals("Odd", SlicePersistence.getSlice(a));
-					List<Person> result = personQ.setParameter("a", a).getResultList();
+                    assertEquals("Odd", SlicePersistence.getSlice(a));
+                    List<Person> result =
+                        personQ.setParameter("a", a).getResultList();
 					assertEquals(1, result.size());
 					Person p = result.get(0);
-					assertEquals("Odd", SlicePersistence.getSlice(p));
-					assertEquals("Rome", p.getAddress().getCity());
+                    assertEquals("Odd", SlicePersistence.getSlice(p));
+                    assertEquals("Rome", p.getAddress().getCity());
 					return null;
 				}
 
@@ -309,9 +317,9 @@ public class TestQueryMultiThreaded extends SliceTestCase {
 				try {
 					f.get(60, TimeUnit.SECONDS);
 				} catch (TimeoutException te) {
-				    fail("Failed " + te + "\r\n" + getStackDump(te));
+                    fail("Failed " + te + "\r\n" + getStackDump(te));
 				} catch (ExecutionException e) {
-					fail("Failed " + "\r\n" + getStackDump(e.getCause()));
+                    fail("Failed " + "\r\n" + getStackDump(e.getCause()));
 				}
 		} catch (InterruptedException e) {
 

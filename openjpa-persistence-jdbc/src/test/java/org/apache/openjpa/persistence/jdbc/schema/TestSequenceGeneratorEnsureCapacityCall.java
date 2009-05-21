@@ -39,7 +39,7 @@ import org.apache.openjpa.persistence.OpenJPAEntityManager;
 
 
 public class TestSequenceGeneratorEnsureCapacityCall 
-        extends org.apache.openjpa.persistence.jdbc.kernel.TestSQLListenerTestCase{
+    extends org.apache.openjpa.persistence.jdbc.kernel.TestSQLListenerTestCase {
    
     
     

@@ -117,6 +117,7 @@ public class Entity1 implements Serializable
 
 	public String toString()
 	{
-		return("PK: "+pk+" StringField: "+stringField+" IntField: "+intField);
+        return("PK: " + pk + " StringField: " + stringField
+                + " IntField: " + intField);
 	}
 }

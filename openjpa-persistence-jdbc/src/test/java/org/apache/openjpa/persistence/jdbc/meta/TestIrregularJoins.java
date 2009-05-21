@@ -42,8 +42,8 @@ import org.apache.openjpa.persistence.jdbc.common.apps.NonPKJoinPC2;
 
 
 
-public class TestIrregularJoins extends org.apache.openjpa.persistence.jdbc.kernel.BaseJDBCTest{
-    
+public class TestIrregularJoins
+        extends org.apache.openjpa.persistence.jdbc.kernel.BaseJDBCTest {
 
     private Object _nonpk = null;
     private Object _nonpk3 = null;
@@ -312,10 +312,12 @@ public class TestIrregularJoins extends org.apache.openjpa.persistence.jdbc.kern
     public void testVerticalConstant() {
         
         OpenJPAEntityManager pm = (OpenJPAEntityManager)currentEntityManager();
-        ConstantJoinPC2 constant2 = (ConstantJoinPC2) pm.getObjectId(_constant2);
+        ConstantJoinPC2 constant2 =
+            (ConstantJoinPC2) pm.getObjectId(_constant2);
         assertEquals(1, constant2.getPk1());
         assertEquals(2, constant2.getPk2());
-        ConstantJoinPC3 constant3 = (ConstantJoinPC3) pm.getObjectId(_constant3);
+        ConstantJoinPC3 constant3 =
+            (ConstantJoinPC3) pm.getObjectId(_constant3);
         assertEquals(1, constant3.getPk1());
         assertEquals(3, constant3.getPk2());
     }
@@ -331,7 +333,8 @@ public class TestIrregularJoins extends org.apache.openjpa.persistence.jdbc.kern
     }
 
     private void constantOneOne(OpenJPAEntityManager pm) {
-        ConstantJoinPC2 constant2 = (ConstantJoinPC2) pm.getObjectId(_constant2);
+        ConstantJoinPC2 constant2 =
+            (ConstantJoinPC2) pm.getObjectId(_constant2);
 
         assertEquals(_nonpk3, pm.getObjectId(constant2.getNonPK()));
         assertEquals(_nonpk3, pm.getObjectId(constant2.getNonPK2()));
@@ -349,7 +352,8 @@ public class TestIrregularJoins extends org.apache.openjpa.persistence.jdbc.kern
     }
 
     private void constantOneMany(OpenJPAEntityManager pm) {
-        ConstantJoinPC2 constant2 = (ConstantJoinPC2) pm.getObjectId(_constant2);
+        ConstantJoinPC2 constant2 =
+            (ConstantJoinPC2) pm.getObjectId(_constant2);
 
         Collection nonpks = constant2.getNonPKs();
         assertEquals(1, nonpks.size());

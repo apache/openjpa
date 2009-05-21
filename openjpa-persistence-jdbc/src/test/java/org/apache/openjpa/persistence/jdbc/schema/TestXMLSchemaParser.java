@@ -53,7 +53,8 @@ import org.apache.openjpa.persistence.OpenJPAEntityManagerFactory;
 import org.apache.openjpa.persistence.OpenJPAEntityManager;
 
 
-public class TestXMLSchemaParser extends org.apache.openjpa.persistence.jdbc.kernel.BaseJDBCTest{
+public class TestXMLSchemaParser
+        extends org.apache.openjpa.persistence.jdbc.kernel.BaseJDBCTest {
         
     protected JDBCConfiguration conf = null;
     private SchemaGroup _group = null;

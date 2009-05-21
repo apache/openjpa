@@ -195,7 +195,7 @@ public class TestManyEagerSQL
             assertEquals(id, p.getLazyChildren().get(0).getParent().getId());
             assertEquals(id, p.getLazyChildren().get(1).getParent().getId());
             assertEquals("lazychild0", p.getLazyChildren().get(0).getName());
-            assertEquals("lazychild1", p.getLazyChildren().get(1).getName());            
+            assertEquals("lazychild1", p.getLazyChildren().get(1).getName());
         }
 
         assertEquals(0, sql.size());

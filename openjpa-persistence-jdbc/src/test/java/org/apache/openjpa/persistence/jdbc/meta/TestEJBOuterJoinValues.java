@@ -25,8 +25,8 @@ import org.apache.openjpa.persistence.common.utils.*;
 import org.apache.openjpa.persistence.kernel.common.apps.OuterJoinValuePC;
 import junit.framework.*;
 
-public class TestEJBOuterJoinValues extends org.apache.openjpa.persistence.jdbc.kernel.BaseJDBCTest
-{
+public class TestEJBOuterJoinValues
+        extends org.apache.openjpa.persistence.jdbc.kernel.BaseJDBCTest {
 	public int oid = 0;
 
 	public TestEJBOuterJoinValues(String name)

@@ -110,8 +110,10 @@ public class TestNewEntityAsQueryParameter extends SingleEMFTestCase {
 	}
 	
 	@SuppressWarnings("unchecked")
-    void queryWithParameter(EntityManager em, Projekt projekt1, Projekt projekt2) {
-		String jpql = "SELECT DISTINCT o FROM Osoba o WHERE :projekt MEMBER OF o.projekty";
+    void queryWithParameter(EntityManager em, Projekt projekt1,
+            Projekt projekt2) {
+		String jpql =
+           "SELECT DISTINCT o FROM Osoba o WHERE :projekt MEMBER OF o.projekty";
 		em.getTransaction().begin();
 		Query query = em.createQuery(jpql);
 		

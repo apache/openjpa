@@ -63,8 +63,8 @@ public class TestEJBDeleteUpdateImpl extends AbstractTestCase {
         assertEquals("runt1", ret.getStringField());
         assertNotNull(ret.getSelfOneOne());
 
-        String ejbqlUpdate =
-            "UPDATE RuntimeTest1 x SET x.stringField = :strngfld WHERE x.stringField = :stdfield";
+        String ejbqlUpdate = "UPDATE RuntimeTest1 x " +
+            "SET x.stringField = :strngfld WHERE x.stringField = :stdfield";
         int updatedEntities = em.createQuery(ejbqlUpdate)
             .setParameter("strngfld", "runner13")
             .setParameter("stdfield", "runt1")

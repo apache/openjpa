@@ -44,7 +44,8 @@ import org.apache.openjpa.persistence.datacache.common.apps.CacheObjectE;
 import org.apache.openjpa.persistence.datacache.common.apps.CacheObjectF;
 import org.apache.openjpa.persistence.datacache.common.apps.CacheObjectG;
 import org.apache.openjpa.persistence.datacache.common.apps.CacheObjectH;
-import org.apache.openjpa.persistence.datacache.common.apps.CacheObjectInterface;
+import org.apache.openjpa.persistence.datacache.common.apps.
+        CacheObjectInterface;
 import org.apache.openjpa.persistence.datacache.common.apps.CacheObjectJ;
 import org.apache.openjpa.persistence.datacache.common.apps.RuntimeTest1;
 import org.apache.openjpa.persistence.common.utils.AbstractTestCase;
@@ -421,8 +422,9 @@ public abstract class CacheTest extends AbstractTestCase {
     /*
       * public void testExpiredCollections() { CacheObjectA parent =
       * (CacheObjectA) em.find(CacheObjectA.class,ORIG_PARENT_NAME);
-      * em.refresh(parent); Collection relatedOids = new HashSet(); for (Iterator
-      * iter = parent.getRelatedCollection().iterator(); iter.hasNext();) {
+      * em.refresh(parent); Collection relatedOids = new HashSet();
+      * for (Iterator iter = parent.getRelatedCollection().iterator();
+      *     iter.hasNext();) {
       * relatedOids.add(JDOHelper.getObjectId(iter.next())); }
       *
       * ClassMetaData meta = repos.getMetaData(CacheObjectA.class, null, true);
@@ -878,10 +880,11 @@ public abstract class CacheTest extends AbstractTestCase {
             CacheObjectA a2 = (CacheObjectA) em2.find(CacheObjectA.class, oid);
 
             // assert that the oid is in factory2's cache
-            //MetaDataRepository repos2 = factory2.getConfiguration().getMetaDataRepositoryInstance();
+            //MetaDataRepository repos2 = factory2.getConfiguration()
+            //    .getMetaDataRepositoryInstance();
             MetaDataRepository repos2 =
-                ((((OpenJPAEntityManagerFactorySPI) factory2)).getConfiguration())
-                    .getMetaDataRepositoryInstance();
+                ((((OpenJPAEntityManagerFactorySPI) factory2))
+                .getConfiguration()).getMetaDataRepositoryInstance();
             ClassMetaData meta = repos2
                 .getMetaData(CacheObjectA.class, em2.getClassLoader(), true);
             cache = meta.getDataCache();
@@ -1009,10 +1012,10 @@ public abstract class CacheTest extends AbstractTestCase {
 
             // if this run has a default timeout (set to 1 sec in the test
             // case), e should be timed out by this point.
-            //boolean eStatus = !(factory.getConfiguration().getDataCacheTimeout() > 0);
-            boolean eStatus =
-                !((((OpenJPAEntityManagerFactorySPI) factory).getConfiguration())
-                    .getDataCacheTimeout() > 0);
+            //boolean eStatus =
+            //    !(factory.getConfiguration().getDataCacheTimeout() > 0);
+            boolean eStatus = !((((OpenJPAEntityManagerFactorySPI) factory)
+                    .getConfiguration()).getDataCacheTimeout() > 0);
 
             // should cause f to be dropped.
             Thread.currentThread().sleep(550);
@@ -1073,7 +1076,8 @@ public abstract class CacheTest extends AbstractTestCase {
 
             // if this run has a default timeout (set to 1 sec in the test
             // case), e should be timed out by this point.
-            //boolean eTimedOut = factory.getConfiguration().getDataCacheTimeout() > 0;
+            //boolean eTimedOut =
+            //    factory.getConfiguration().getDataCacheTimeout() > 0;
             boolean eTimedOut =
                 ((((OpenJPAEntityManagerFactorySPI) factory).getConfiguration())
                     .getDataCacheTimeout() > 0);
@@ -1216,9 +1220,9 @@ public abstract class CacheTest extends AbstractTestCase {
       * endEm(em); }
       *
       * em = factory.createEntityManager(); Query q; Collection c; List l; try {
-      * q = em.createQuery(CacheObjectE.class); q.setOrdering("str ascending"); c =
-      * (Collection) q.execute(); l = new LinkedList(c); assertEquals(1,
-      * c.size()); } finally { endEm(em); }
+      * q = em.createQuery(CacheObjectE.class); q.setOrdering("str ascending");
+      * c = (Collection) q.execute(); l = new LinkedList(c);
+      * assertEquals(1, c.size()); } finally { endEm(em); }
       *
       * em = factory.createEntityManager(); try { q =
       * em.createQuery(CacheObjectE.class); q.setOrdering("str ascending"); c =
@@ -1425,7 +1429,7 @@ public abstract class CacheTest extends AbstractTestCase {
       * Broker broker2 = JPAFacadeHelper.toBroker(em2);
       * org.apache.openjpa.kernel.Query q2 = broker2.newQuery(q.getLanguage(),
       * q);
-      *  // make some modifications and look again. Should return // two results.
+      *  // make some modifications and look again. Should return //two results.
       * e = new CacheObjectE("e"); em.persist(e);
       *
       * q = broker.newQuery(JPQLParser.LANG_JPQL, CacheObjectE.class, "str ==
@@ -1437,9 +1441,9 @@ public abstract class CacheTest extends AbstractTestCase {
       * Collection c2 = (Collection) q2.execute(); assertEquals(1, c2.size());
       *  // new query should not make it into cache
       *
-      * q = broker .newQuery(JPQLParser.LANG_JPQL, CacheObjectE.class, null); c =
-      * (Collection) q.execute(); assertEquals(2, c.size()); for (Iterator iter =
-      * c.iterator(); iter.hasNext();) iter.next();
+      * q = broker .newQuery(JPQLParser.LANG_JPQL, CacheObjectE.class, null);
+      * c = (Collection) q.execute(); assertEquals(2, c.size());
+      * for (Iterator iter = c.iterator(); iter.hasNext();) iter.next();
       *
       * assertInCache(q, Boolean.FALSE); } finally {
       * rollbackTx(em);

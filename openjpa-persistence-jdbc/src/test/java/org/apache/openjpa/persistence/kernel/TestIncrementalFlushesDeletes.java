@@ -130,7 +130,7 @@ public class TestIncrementalFlushesDeletes extends BaseKernelTest {
 /*
 * 	### some remaining test deletes:
 *		PDirty => PDeleted => PDeletedFlushed
-*		PDirty => (change and flush) PDirty => PDeleted => PDeletedFlushed
+*       PDirty => (change and flush) PDirty => PDeleted => PDeletedFlushed
 *		PClean => PDeleted => PDeletedFlushed
 *		Hollow => PDeleted => PDeletedFlushed
 */

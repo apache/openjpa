@@ -56,7 +56,7 @@ public class TestDetachedEntityCascadePersist extends SingleEMFTestCase {
         DMItem itemDetached = em.find(DMItem.class, item.getId());
         em.close();        
         em = emf.createEntityManager();
-        DMCustomer customer2 = em.find(DMCustomer.class, customer.getId());       
+        DMCustomer customer2 = em.find(DMCustomer.class, customer.getId());
         DMCustomerInventory customerInventory = new DMCustomerInventory();
         customerInventory.setCustomer(customer2);
         customerInventory.setItem(itemDetached);

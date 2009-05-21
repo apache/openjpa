@@ -37,7 +37,8 @@ import org.apache.openjpa.persistence.test.SingleEMFTestCase;
  * joins.
  * 
  * Originally reported in 
- * <A HREF="http://n2.nabble.com/Selecting-multiple-objects---bug--tc732941.html">
+ * <A HREF=
+ * "http://n2.nabble.com/Selecting-multiple-objects---bug--tc732941.html">
  * OpenJPA mailing list</A>
  * 
  * @author Pinaki Poddar
@@ -78,13 +79,13 @@ public class TestMultipleEntityProjection extends SingleEMFTestCase {
 				pub.setName(pubName);
 				mag.setPublisher(pub);
 				try {
-					DateFormat df = new SimpleDateFormat ("yyyy-MM-dd");
+                    DateFormat df = new SimpleDateFormat ("yyyy-MM-dd");
 					Date date = df.parse("2001-01-01");
 					mag.setDatePublished(date);
 				} catch (ParseException e) {
 					mag.setDatePublished(null);
 				}
-				mag.setTsPublished(new Timestamp(System.currentTimeMillis()));
+                mag.setTsPublished(new Timestamp(System.currentTimeMillis()));
 				
 				em.persist(pub);
 			}
@@ -96,7 +97,7 @@ public class TestMultipleEntityProjection extends SingleEMFTestCase {
 	public void testMultipleEntitiesInProjectionUsingOuterJoin() {
 		String jpql = "select m, p " +
 		              "from Magazine m left outer join m.publisher p " +
-		              "where ((:useName = false) or (m.name like :name))";
+                      "where ((:useName = false) or (m.name like :name))";
 		EntityManager em = emf.createEntityManager();
 		Query query = em.createQuery(jpql);
 		
@@ -106,7 +107,7 @@ public class TestMultipleEntityProjection extends SingleEMFTestCase {
 		
 		List result = query.getResultList();
 		
-		int expecetedCount = getExpecetedResultCount(magKey, !INNER_JOIN);
+        int expecetedCount = getExpecetedResultCount(magKey, !INNER_JOIN);
 		assertFalse(result.isEmpty());
 		assertEquals(expecetedCount, result.size());
 		for (Object o : result) {
@@ -114,7 +115,7 @@ public class TestMultipleEntityProjection extends SingleEMFTestCase {
 			Object[] row = (Object[])o;
 			assertEquals(2, row.length);
 			assertTrue(row[0] instanceof Magazine);
-			assertTrue(row[1] == null || row[1] instanceof Publisher);
+            assertTrue(row[1] == null || row[1] instanceof Publisher);
 			assertNotNull(row[0]);
 			assertEquals(((Magazine)row[0]).getPublisher(), row[1]);
 		}
@@ -123,7 +124,7 @@ public class TestMultipleEntityProjection extends SingleEMFTestCase {
 	public void testMultipleEntitiesInProjectionUsingInnerJoin() {
 		String jpql = "select m, p " +
 		              "from Magazine m inner join m.publisher p " +
-		              "where ((:useName = false) or (m.name like :name))";
+                      "where ((:useName = false) or (m.name like :name))";
 		EntityManager em = emf.createEntityManager();
 		Query query = em.createQuery(jpql);
 		
@@ -133,7 +134,7 @@ public class TestMultipleEntityProjection extends SingleEMFTestCase {
 		
 		List result = query.getResultList();
 		
-		int expecetedCount = getExpecetedResultCount(magKey, INNER_JOIN);
+        int expecetedCount = getExpecetedResultCount(magKey, INNER_JOIN);
 		assertFalse(result.isEmpty());
 		assertEquals(expecetedCount, result.size());
 		for (Object o : result) {
@@ -150,7 +151,7 @@ public class TestMultipleEntityProjection extends SingleEMFTestCase {
 	
 	public void testAggregateExpressionInHavingExpression() {
         String jpql = "select m.publisher, max(m.datePublished) " + 
-					  "from Magazine m group by m.publisher " + 
+                      "from Magazine m group by m.publisher " +
 					  "having max(m.datePublished) is null";
 		
 		EntityManager em = emf.createEntityManager();
@@ -167,7 +168,7 @@ public class TestMultipleEntityProjection extends SingleEMFTestCase {
 	}
 	
 	/**
-	 * Count number of expected result based on inner/outer join condition and
+     * Count number of expected result based on inner/outer join condition and
 	 * the name of the Magazine.
 	 */
 	private int getExpecetedResultCount(String key, boolean innerJoin) {
@@ -176,7 +177,7 @@ public class TestMultipleEntityProjection extends SingleEMFTestCase {
 			String magName = MAGAZINE_PUBLISHER_NAME_PAIRS[i][0];
 			String pubName = MAGAZINE_PUBLISHER_NAME_PAIRS[i][1];
 			if (magName.indexOf(key) != -1)
-				if (!innerJoin || (innerJoin && pubName != null))
+                if (!innerJoin || (innerJoin && pubName != null))
 					count++;
 		}
 		return count;

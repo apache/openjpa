@@ -304,7 +304,8 @@ public class TestDefaultInheritanceStrategy
         // Verify that the iface table does not contain a discriminator column
         verifyNoDypeColumn(em, "ManagedIface2");
 
-        // Verify that the subclass table does not contain a discriminator column
+        // Verify that the subclass table does not contain a discriminator
+        // column
         verifyNoDypeColumn(em, "SubclassF");
 
         // Verify that the base class does contain a discriminator column
@@ -358,7 +359,8 @@ public class TestDefaultInheritanceStrategy
         verifyDtypeColumnEntriesAndMapping(em, "BASECLASS4", 2, 
             BaseClass4.class);
 
-        // Verify that the subclass table does not contain a discriminator column
+        // Verify that the subclass table does not contain a discriminator
+        // column
         verifyNoDypeColumn(em, "SubclassG");
         
         // Run queries for each type. They should return only those values
@@ -414,10 +416,12 @@ public class TestDefaultInheritanceStrategy
         verifyDtypeColumnEntriesAndMapping(em, "BASECLASS5", 3, 
                 BaseClass5.class);
 
-        // Verify that the midclass table does not contain a discriminator column
+        // Verify that the midclass table does not contain a discriminator
+        // column
         verifyNoDypeColumn(em, "MidClass2");
 
-        // Verify that the subclass table does not contain a discriminator column
+        // Verify that the subclass table does not contain a discriminator
+        // column
         verifyNoDypeColumn(em, "SubclassH");
         
         // Run queries for each type. They should return only those values
@@ -490,10 +494,12 @@ public class TestDefaultInheritanceStrategy
         verifyDtypeColumnEntriesAndMapping(em, "ABSTRACTCLASS", 2, 
                 AbstractClass.class);
 
-        // Verify that the midclass table does not contain a discriminator column
+        // Verify that the midclass table does not contain a discriminator
+        // column
         verifyNoDypeColumn(em, "SubclassI");
 
-        // Verify that the subclass table does not contain a discriminator column
+        // Verify that the subclass table does not contain a discriminator
+        // column
         verifyNoDypeColumn(em, "SubclassJ");        
         
         // Run queries for each type. They should return only those values
@@ -540,7 +546,8 @@ public class TestDefaultInheritanceStrategy
         verifyDtypeColumnEntriesAndMapping(em, "BASECLASS6", 2, 
                 BaseClass6.class);
 
-        // Verify that the subclass table does not contain a discriminator column
+        // Verify that the subclass table does not contain a discriminator
+        // column
         verifyNoDypeColumn(em, "SubclassK");           
 
         // Run queries for each type. They should return only those values

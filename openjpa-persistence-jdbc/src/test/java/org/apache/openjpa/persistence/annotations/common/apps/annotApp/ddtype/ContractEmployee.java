@@ -42,7 +42,7 @@ public class ContractEmployee extends Employee
 	@PrePersist
 	public void verifyTerm()
 	{
-		System.out.println("VerifyTerm of ContractEmployee running on"+this);
+        System.out.println("VerifyTerm of ContractEmployee running on" + this);
 
 		CallbackStorage store = CallbackStorage.getInstance();
 		store.getClist().add("contractemployee");

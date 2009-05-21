@@ -34,7 +34,8 @@ public class TestNoCascadeOneToManyMerge extends SingleEMFTestCase {
     private int a_id;
 
     public void setUp() {
-        setUp(SimpleA.class, SimpleRef.class, SimpleB.class, SimpleC.class, CLEAR_TABLES);
+        setUp(SimpleA.class, SimpleRef.class, SimpleB.class, SimpleC.class,
+                CLEAR_TABLES);
         createEntities();
     }
 
@@ -89,8 +90,8 @@ public class TestNoCascadeOneToManyMerge extends SingleEMFTestCase {
 
     /**
      * This is the case for openjpa-231.
-     * When "B" and "C" are both newly added to a detached "A" and then merge "A",
-     * it couldn't find "B" because previous code assume B was detached.
+     * When "B" and "C" are both newly added to a detached "A" and then merge
+     * "A", it couldn't find "B" because previous code assume B was detached.
      */
     public void testMergeDetached () {
         EntityManager em = emf.createEntityManager();

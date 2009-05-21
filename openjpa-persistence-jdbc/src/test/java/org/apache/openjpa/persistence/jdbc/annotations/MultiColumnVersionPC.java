@@ -42,7 +42,7 @@ import org.apache.openjpa.persistence.jdbc.VersionStrategy;
 @VersionColumns({
 	@VersionColumn(name="v1"), 
 	@VersionColumn(name="v2"),
-	@VersionColumn(name="v3", columnDefinition="FLOAT", scale=3, precision=10)
+    @VersionColumn(name="v3", columnDefinition="FLOAT", scale=3, precision=10)
 })
 public class MultiColumnVersionPC {
 	@Id

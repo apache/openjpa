@@ -87,7 +87,7 @@ public class CombinationGenerator {
 			List dimValueList = dimensions.get(dimIndex);
 			int valuListSize = dimValueList.size();
 			for (int j = 0; j < comboSize; j++) {
-				result[j].set(dimIndex, dimValueList.get((j / dimRepeatingStep)
+                result[j].set(dimIndex, dimValueList.get((j / dimRepeatingStep)
 					% valuListSize));
 			}
 			dimRepeatingStep *= valuListSize;

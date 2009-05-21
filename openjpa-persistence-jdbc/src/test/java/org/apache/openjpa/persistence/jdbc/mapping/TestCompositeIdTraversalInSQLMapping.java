@@ -27,8 +27,7 @@ import org.apache.openjpa.persistence.common.utils.*;
 import junit.framework.*;
 
 
-public class TestCompositeIdTraversalInSQLMapping extends AbstractTestCase 
-{
+public class TestCompositeIdTraversalInSQLMapping extends AbstractTestCase {
 	
 	
 	public TestCompositeIdTraversalInSQLMapping(String name)
@@ -42,9 +41,9 @@ public class TestCompositeIdTraversalInSQLMapping extends AbstractTestCase
 		deleteAll(OwnerOfEntityWithCompositeId.class);
 		deleteAll(EntityWithCompositeId.class);
 	}
-	private void persist(Integer uniqueId, String uniqueName, String relName)
-	{
-		OwnerOfEntityWithCompositeId owner = new OwnerOfEntityWithCompositeId();
+
+    private void persist(Integer uniqueId, String uniqueName, String relName) {
+        OwnerOfEntityWithCompositeId owner = new OwnerOfEntityWithCompositeId();
 		EntityWithCompositeId relative = new EntityWithCompositeId();
 		owner.setName(uniqueName);
 		relative.setId(uniqueId);
@@ -61,17 +60,17 @@ public class TestCompositeIdTraversalInSQLMapping extends AbstractTestCase
 	public void testTraversalWhenSQLSelectsBothEndOfTheRelation ()
 	{
 		EntityManager em = currentEntityManager();
-		Integer uid  = new Integer((int) (System.currentTimeMillis()%100000));
+        Integer uid  = new Integer((int) (System.currentTimeMillis()%100000));
 		String uName = "P"+uid;
 		String rName = "R"+uName;
 		
 		persist(uid, uName, rName);
 		
-		String sql = "SELECT a.NAME as OWNER_NAME, a.RELATION_ID as REL_ID," +
+        String sql = "SELECT a.NAME as OWNER_NAME, a.RELATION_ID as REL_ID," +
 		             "a.RELATION_NAME as REL_NAME, b.ID as C_ID," +
-					 "b.NAME as C_NAME, b.VALUE as C_VALUE " +
+                     "b.NAME as C_NAME, b.VALUE as C_VALUE " +
 		             "FROM OWNER_OF_COMPOSITE_ID a, COMPOSITE_ID b " +
-		             "WHERE a.RELATION_ID=b.ID AND a.RELATION_NAME=b.NAME " +
+                     "WHERE a.RELATION_ID=b.ID AND a.RELATION_NAME=b.NAME " +
 		             "AND a.NAME='" + uName + "'";
 		
 		Query query = em.createNativeQuery(sql, 
@@ -84,13 +83,13 @@ public class TestCompositeIdTraversalInSQLMapping extends AbstractTestCase
 		assertEquals(Object[].class, object.getClass());
 		Object[] array = (Object[])object;
 		assertEquals(2,array.length);
-		assertEquals(OwnerOfEntityWithCompositeId.class,array[0].getClass());
+        assertEquals(OwnerOfEntityWithCompositeId.class,array[0].getClass());
 		assertEquals(EntityWithCompositeId.class,array[1].getClass());
 		
-		OwnerOfEntityWithCompositeId owner = (OwnerOfEntityWithCompositeId)
+        OwnerOfEntityWithCompositeId owner = (OwnerOfEntityWithCompositeId)
 			array[0];
 		
-		EntityWithCompositeId relative = (EntityWithCompositeId)array[1];
+        EntityWithCompositeId relative = (EntityWithCompositeId)array[1];
 		
 		assertEquals(uName, owner.getName());
 		assertEquals(owner.getRelation(), relative);
@@ -103,12 +102,12 @@ public class TestCompositeIdTraversalInSQLMapping extends AbstractTestCase
 	public void testTraversalWhenSQLSelectsOnlyOneEndOfTheRelation ()
 	{
 		EntityManager em = currentEntityManager();
-		Integer uid  = new Integer((int) (System.currentTimeMillis()%100000));
+        Integer uid  = new Integer((int) (System.currentTimeMillis()%100000));
 		String uName = "P"+uid;
 		String rName = "R"+uName;
 		
 		persist (uid, uName, rName);
-		String sql = "SELECT a.NAME as OWNER_NAME, a.RELATION_ID as REL_ID," +
+        String sql = "SELECT a.NAME as OWNER_NAME, a.RELATION_ID as REL_ID," +
 		             "a.RELATION_NAME as REL_NAME "+
 		             "FROM OWNER_OF_COMPOSITE_ID a " +
 		             "WHERE  a.NAME='" + uName + "'";
@@ -120,9 +119,9 @@ public class TestCompositeIdTraversalInSQLMapping extends AbstractTestCase
 		
 		assertEquals(1,result.size());
 		Object object = result.get(0);
-		assertEquals(OwnerOfEntityWithCompositeId.class,object.getClass());
+        assertEquals(OwnerOfEntityWithCompositeId.class,object.getClass());
 		
-		OwnerOfEntityWithCompositeId owner = (OwnerOfEntityWithCompositeId)
+        OwnerOfEntityWithCompositeId owner = (OwnerOfEntityWithCompositeId)
 			object;
 		
 		EntityWithCompositeId relative = owner.getRelation();
@@ -136,7 +135,7 @@ public class TestCompositeIdTraversalInSQLMapping extends AbstractTestCase
 	public void testTraversalWhenSQLSelectsUnrelatedInstances ()
 	{
 		EntityManager em = currentEntityManager();
-		Integer uid1  = new Integer((int) (System.currentTimeMillis()%100000));
+        Integer uid1  = new Integer((int) (System.currentTimeMillis()%100000));
 		Integer uid2  = new Integer(uid1.intValue()+1);
 		String uName1 = "P"+uid1;
 		String rName1 = "R"+uName1;
@@ -146,7 +145,7 @@ public class TestCompositeIdTraversalInSQLMapping extends AbstractTestCase
 		persist(uid1, uName1, rName1);
 		persist(uid2, uName2, rName2);
 		
-		String sql = "SELECT a.NAME as OWNER_NAME, a.RELATION_ID AS REL_ID," +
+        String sql = "SELECT a.NAME as OWNER_NAME, a.RELATION_ID AS REL_ID," +
         "a.RELATION_NAME AS REL_NAME, " +
         "b.ID AS C_ID, b.NAME AS C_NAME, b.VALUE AS C_VALUE "+
         "FROM OWNER_OF_COMPOSITE_ID a, COMPOSITE_ID b " +
@@ -163,14 +162,14 @@ public class TestCompositeIdTraversalInSQLMapping extends AbstractTestCase
 		assertEquals(Object[].class, object.getClass());
 		Object[] array = (Object[])object;
 		assertEquals(2,array.length);
-		assertEquals(OwnerOfEntityWithCompositeId.class,array[0].getClass());
+        assertEquals(OwnerOfEntityWithCompositeId.class,array[0].getClass());
 		assertEquals(EntityWithCompositeId.class,array[1].getClass());
 		
-		OwnerOfEntityWithCompositeId owner1 = (OwnerOfEntityWithCompositeId)
+        OwnerOfEntityWithCompositeId owner1 = (OwnerOfEntityWithCompositeId)
 			array[0];
 		EntityWithCompositeId relative1 = owner1.getRelation();
 		
-		EntityWithCompositeId relative2 = (EntityWithCompositeId)array[1];
+        EntityWithCompositeId relative2 = (EntityWithCompositeId)array[1];
 		
 		assertEquals(uName1, owner1.getName());
 		assertEquals(uid1, relative1.getId());
@@ -182,7 +181,7 @@ public class TestCompositeIdTraversalInSQLMapping extends AbstractTestCase
 	
 	public void testRecursiveTraversal () 
 	{
-		Integer rootId  = new Integer((int)(System.currentTimeMillis()%100000));
+        Integer rootId  = new Integer((int)(System.currentTimeMillis()%100000));
 		
 		int depth = 3;
 		persistChainedRelative(rootId, depth);
@@ -191,7 +190,7 @@ public class TestCompositeIdTraversalInSQLMapping extends AbstractTestCase
 				depth,rootId);
 		
 		EntityManager em = currentEntityManager();
-		Query query = em.createNativeQuery(sql, "SQLSelectsChainedRelation");
+        Query query = em.createNativeQuery(sql, "SQLSelectsChainedRelation");
 
 		List result = query.getResultList();
 		
@@ -199,12 +198,12 @@ public class TestCompositeIdTraversalInSQLMapping extends AbstractTestCase
 		assertEquals(RecursiveEntityWithCompositeId.class,
 				result.get(0).getClass());
 		
-		RecursiveEntityWithCompositeId root = (RecursiveEntityWithCompositeId)
-												result.get(0);
+        RecursiveEntityWithCompositeId root = (RecursiveEntityWithCompositeId)
+                result.get(0);
 		assertEquals(rootId,root.getId());
 		assertEquals("P"+rootId,root.getName());
 		for (int i=1; i<depth;i++){
-			RecursiveEntityWithCompositeId relative = root.getRelation();
+            RecursiveEntityWithCompositeId relative = root.getRelation();
 			Integer expecetedId = root.getId()+1;
 			assertEquals (expecetedId,relative.getId());
 			assertEquals ("P"+expecetedId, relative.getName());
@@ -255,7 +254,7 @@ public class TestCompositeIdTraversalInSQLMapping extends AbstractTestCase
 		sql.append(" WHERE ");
 		for (int i=0; i<(depth-1); i++)
 			sql.append("t"+i+".RELATION_ID=t"+(i+1)+".ID AND ")
-			   .append("t"+i+".RELATION_NAME=t"+(i+1)+".NAME AND " );
+               .append("t"+i+".RELATION_NAME=t"+(i+1)+".NAME AND " );
 		
 		sql.append("t0.ID="+id);
 		

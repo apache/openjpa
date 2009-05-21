@@ -25,10 +25,10 @@ import javax.persistence.*;
 	   uniqueConstraints={@UniqueConstraint(columnNames={"f1","f2"})})
 public class UniqueB {
 	@Id
-	@GeneratedValue(strategy=GenerationType.TABLE, generator="testGenerator")
+    @GeneratedValue(strategy=GenerationType.TABLE, generator="testGenerator")
 	@TableGenerator(name="testGenerator", table="UNIQUE_GENERATOR", 
 			pkColumnName="GEN1", valueColumnName="GEN2",
-			uniqueConstraints={@UniqueConstraint(columnNames={"GEN1","GEN2"})})
+            uniqueConstraints={@UniqueConstraint(columnNames={"GEN1","GEN2"})})
 	private int bid;
 	
 	// Same named field in UniqueA also is defined as unique

@@ -69,7 +69,9 @@ public class TestUnknownSubclass  extends JDBCTestCase {
         OpenJPAEntityManager kem = OpenJPAPersistence.cast (em);
         
         
-        JDBCConfiguration conf = (JDBCConfiguration) ((OpenJPAEntityManagerSPI) kem).getConfiguration();
+        JDBCConfiguration conf =
+            (JDBCConfiguration) ((OpenJPAEntityManagerSPI) kem)
+            .getConfiguration();
         boolean flat = !isInheritanceStrategyVertical();
 
         DataSource ds = (DataSource) conf.getConnectionFactory();
@@ -126,7 +128,8 @@ public class TestUnknownSubclass  extends JDBCTestCase {
             kem.createExtent(UnknownSubclassParent.class, false), ""));
 
         assertSize(2, kem.createExtent(UnknownSubclassParent.class, true));
-        assertSize(2, kem.createQuery(kem.createExtent(UnknownSubclassParent.class, true), ""));
+        assertSize(2, kem.createQuery(kem.createExtent(
+            UnknownSubclassParent.class, true), ""));
         */
         endTx(em);
         

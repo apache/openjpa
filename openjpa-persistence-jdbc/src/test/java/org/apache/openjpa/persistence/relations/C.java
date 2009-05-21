@@ -99,16 +99,16 @@ public class C {
 			
 			CId id = (CId) obj;
 			
-			return (this.getCId() == id.getCId() || (this.getCId() != null &&
+            return (this.getCId() == id.getCId() || (this.getCId() != null &&
                 this.getCId().equals(id.getCId())))
-				&& (this.getCm() == id.getCm() || (this.getCm() != null &&
+                && (this.getCm() == id.getCm() || (this.getCm() != null &&
                 this.getCm().equals(id.getCm())));
 		}
 		
 		@Override
 		public int hashCode() {
-			return ((this.getCId() != null) ? this.getCId().hashCode():0)
-				 ^ ((this.getCm() != null)? this.getCm().hashCode():0);
+            return ((this.getCId() != null) ? this.getCId().hashCode():0)
+                    ^ ((this.getCm() != null)? this.getCm().hashCode():0);
 		}
     }
 }

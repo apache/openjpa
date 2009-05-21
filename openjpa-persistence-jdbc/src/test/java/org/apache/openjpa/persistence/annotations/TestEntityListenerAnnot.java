@@ -25,7 +25,8 @@ import junit.framework.*;
 
 import org.apache.openjpa.persistence.common.utils.*;
 
-import org.apache.openjpa.persistence.annotations.common.apps.annotApp.annotype.*;
+import
+    org.apache.openjpa.persistence.annotations.common.apps.annotApp.annotype.*;
 import org.apache.openjpa.persistence.OpenJPAEntityManager;
 
 public class TestEntityListenerAnnot extends AnnotationTestCase
@@ -45,7 +46,7 @@ public class TestEntityListenerAnnot extends AnnotationTestCase
 
 	public void testPrePersist()
 	{
-		OpenJPAEntityManager em =(OpenJPAEntityManager) currentEntityManager();
+        OpenJPAEntityManager em =(OpenJPAEntityManager) currentEntityManager();
 
 		ContractEmployee cemp = new ContractEmployee(21, "afam", 25, 5);
 
@@ -53,7 +54,8 @@ public class TestEntityListenerAnnot extends AnnotationTestCase
 		CallbackStorage store = CallbackStorage.getInstance();
 
 		assertNotNull(store.getClist());
-		assertEquals("@pre/post persist callback is over/under-firing", 2, store.getClist().size());
+        assertEquals("@pre/post persist callback is over/under-firing", 2,
+                store.getClist().size());
 		assertEquals("longnamevalidatorprr", store.getClist().get(0));
 		assertEquals("contractemployee", store.getClist().get(1));
 
@@ -73,11 +75,15 @@ public class TestEntityListenerAnnot extends AnnotationTestCase
 		CallbackStorage store = CallbackStorage.getInstance();
 
 		assertNotNull(store.getClist());
-		assertEquals("@pre/post persist callback is over/under-firing", 4, store.getClist().size());
+        assertEquals("@pre/post persist callback is over/under-firing", 4,
+                store.getClist().size());
 		assertEquals("namevalidator", store.getClist().get(0));
 		assertEquals("longnamevalidatorprr", store.getClist().get(1));
 		assertEquals("employeepop", store.getClist().get(2));
-		assertEquals("We expected 'gen#" +  emp.getCheck() + " : " + emp.getCheck() + "'. However, we got '" + store.getClist().get(3) + "'", "gen#"+emp.getCheck(), store.getClist().get(3));
+        assertEquals("We expected 'gen#" +  emp.getCheck() + " : " 
+                + emp.getCheck() + "'. However, we got '"
+                + store.getClist().get(3) + "'", "gen#" + emp.getCheck(),
+                store.getClist().get(3));
 	  }
       finally {
 		endTx(em);
@@ -87,7 +93,7 @@ public class TestEntityListenerAnnot extends AnnotationTestCase
 
 	public void testPre_PostRemove()
 	{
-		OpenJPAEntityManager em =(OpenJPAEntityManager) currentEntityManager();
+        OpenJPAEntityManager em =(OpenJPAEntityManager) currentEntityManager();
 		startTx(em);
 
 		Employee emp = new Employee(8, "Jonathan");
@@ -107,9 +113,12 @@ public class TestEntityListenerAnnot extends AnnotationTestCase
 		em.remove(emp);
 
 		assertTrue(!CallbackStorage.isEmpty());
-		assertEquals("callback is under/over-firing...", 2, CallbackStorage.size());
-		assertEquals("namevalidatorprr", CallbackStorage.getInstance().getClist().get(0));
-		assertEquals("namevalidatorpor", CallbackStorage.getInstance().getClist().get(1));
+        assertEquals("callback is under/over-firing...", 2,
+                CallbackStorage.size());
+        assertEquals("namevalidatorprr",
+                CallbackStorage.getInstance().getClist().get(0));
+        assertEquals("namevalidatorpor",
+                CallbackStorage.getInstance().getClist().get(1));
 
 		endTx(em);
 		endEm(em);
@@ -117,7 +126,7 @@ public class TestEntityListenerAnnot extends AnnotationTestCase
 
 	public void testPreUpdate()
 	{
-		OpenJPAEntityManager em =(OpenJPAEntityManager) currentEntityManager();
+        OpenJPAEntityManager em =(OpenJPAEntityManager) currentEntityManager();
 		startTx(em);
 
 		Employee emp = new Employee(5, "Abraham");
@@ -125,7 +134,8 @@ public class TestEntityListenerAnnot extends AnnotationTestCase
 
 		CallbackStorage.clearStore();
 
-		String query = "Update Employee e SET e.name = 'Joseph' WHERE e.id = :id";
+        String query =
+            "Update Employee e SET e.name = 'Joseph' WHERE e.id = :id";
 
 		int result = em.createQuery(query)
 		               .setParameter("id", 5)
@@ -147,7 +157,7 @@ public class TestEntityListenerAnnot extends AnnotationTestCase
 
 	public void testPreUpdate2()
 	{
-		OpenJPAEntityManager em =(OpenJPAEntityManager) currentEntityManager();
+        OpenJPAEntityManager em =(OpenJPAEntityManager) currentEntityManager();
 		startTx(em);
 
 		Employee emp = new Employee(5, "Abraham");
@@ -168,7 +178,8 @@ public class TestEntityListenerAnnot extends AnnotationTestCase
 		List store = CallbackStorage.getInstance().getClist();
 
 		assertNotNull(store);
-		assertEquals("update callback is either underfiring or overfiring...", 3, store.size());
+        assertEquals("update callback is either underfiring or overfiring...",
+                3, store.size());
 		assertEquals("namevalidatorpou", store.get(0));
 		assertEquals("longnamevalidatorpou", store.get(1));
 		assertEquals("employeepou", store.get(2));
@@ -179,7 +190,7 @@ public class TestEntityListenerAnnot extends AnnotationTestCase
 
 	public void testPostLoad()
 	{
-		OpenJPAEntityManager em =(OpenJPAEntityManager) currentEntityManager();
+        OpenJPAEntityManager em =(OpenJPAEntityManager) currentEntityManager();
 		startTx(em);
 
 		Employee emp = new Employee(6, "Jefferson");
@@ -199,9 +210,12 @@ public class TestEntityListenerAnnot extends AnnotationTestCase
 
 		assertNotNull(emp);
 		assertNotNull(CallbackStorage.getInstance().getClist());
-		assertEquals("PostLoad is overfiring...not accurate", 2, CallbackStorage.getInstance().getClist().size());
-		assertEquals("employeepol", CallbackStorage.getInstance().getClist().get(0));
-		assertEquals("employeepol", CallbackStorage.getInstance().getClist().get(1));
+        assertEquals("PostLoad is overfiring...not accurate", 2,
+                CallbackStorage.getInstance().getClist().size());
+        assertEquals("employeepol",
+                CallbackStorage.getInstance().getClist().get(0));
+        assertEquals("employeepol",
+                CallbackStorage.getInstance().getClist().get(1));
 
 		endTx(em);
 		endEm(em);
@@ -209,7 +223,7 @@ public class TestEntityListenerAnnot extends AnnotationTestCase
 
 	public void testGenPriKeyAvailInPostPersist()
 	{
-		OpenJPAEntityManager em =(OpenJPAEntityManager) currentEntityManager();
+        OpenJPAEntityManager em =(OpenJPAEntityManager) currentEntityManager();
 		startTx(em);
 
 		assertNotNull(em);
@@ -222,7 +236,8 @@ public class TestEntityListenerAnnot extends AnnotationTestCase
 		int check = emp.getCheck();
 
 		assertNotNull(check);
-		assertTrue(CallbackStorage.getInstance().getClist().contains("gen#"+check));
+        assertTrue(CallbackStorage.getInstance().getClist().contains(
+                "gen#" + check));
 
 		endTx(em);
 		endEm(em);
@@ -230,22 +245,23 @@ public class TestEntityListenerAnnot extends AnnotationTestCase
 	/*Fix Me: aokeke - should fail when persisting with invalid id*/
 //	public void testExceptionCauseTxRollback2()
 //	{
-//		OpenJPAEntityManager em =(OpenJPAEntityManager) currentEntityManager();
+//      OpenJPAEntityManager em =(OpenJPAEntityManager) currentEntityManager();
 //		startTx(em);
 //		
 //		Employee emp = new Employee(-1, "failure");
 //		
 //		try
 //		{
-//			//persisting an entity with an invalid id throws an exception
+//          //persisting an entity with an invalid id throws an exception
 //			em.persist(emp);
 //			endTx(em);
-//			fail("Should have failed..persisting an entity with invalid id");
+//          fail("Should have failed..persisting an entity with invalid id");
 //		}
 //		catch(RuntimeException e)
 //		{			
 //			assertFalse(em.isPersistent(emp));
-//			assertTrue("transaction was not marked for rollback", em.getRollbackOnly());
+//          assertTrue("transaction was not marked for rollback",
+//                  em.getRollbackOnly());
 //			e.printStackTrace();
 //			if(em.getRollbackOnly() == true)
 //				endEm(em);
@@ -253,7 +269,8 @@ public class TestEntityListenerAnnot extends AnnotationTestCase
 //		catch(Exception e)
 //		{
 //			assertFalse(em.isPersistent(emp));
-//			assertTrue("transaction was not marked for rollback", em.getRollbackOnly());
+//          assertTrue("transaction was not marked for rollback",
+//                  em.getRollbackOnly());
 //			e.printStackTrace();
 //			if(em.getRollbackOnly() == true)
 //				endEm(em);

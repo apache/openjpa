@@ -45,9 +45,10 @@ public class Parent {
 	private String name;
 	
 	/**
-	 * This field is mapped by the child. The child's table will hold a foreign
-	 * key linking to the primary key of this Parent's table. In JPA terminology, 
-	 * that makes the Child the owner of this bi-directional relationship.
+     * This field is mapped by the child. The child's table will hold a foreign
+     * key linking to the primary key of this Parent's table. In JPA
+     * terminology, that makes the Child the owner of this bi-directional
+     * relationship.
 	 */
 	@OneToMany(mappedBy="parent", cascade = CascadeType.ALL)
 	private Collection<Child> children;
@@ -69,8 +70,8 @@ public class Parent {
 	}
 
 	/**
-	 * Creates and adds a child to this receiver. Creating child via the parent
-	 * is the preferred pattern to ensure referential integrity of domain model.
+     * Creates and adds a child to this receiver. Creating child via the parent
+     * is the preferred pattern to ensure referential integrity of domain model.
 	 */
 	public Child newChild(String name) {
 		Child child = new Child();
@@ -87,8 +88,8 @@ public class Parent {
 	}
 	
 	/**
-	 * Unsafe way of adding a child. Does not warranty referential integrity.
-	 * The caller has to ensure bi-directionality of parent-child relation is 
+     * Unsafe way of adding a child. Does not warranty referential integrity.
+     * The caller has to ensure bi-directionality of parent-child relation is 
 	 * consistent.
 	 */
 	public void add(Child child) {

@@ -25,7 +25,8 @@ public class CompanyXml {
 
     int id;
 
-    Map<DivisionXml, VicePresidentXml> organization = new HashMap<DivisionXml, VicePresidentXml>();
+    Map<DivisionXml, VicePresidentXml> organization =
+        new HashMap<DivisionXml, VicePresidentXml>();
 
     public int getId() {
         return id;

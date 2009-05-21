@@ -68,9 +68,12 @@ public class TestEmbeddedPessimisticLocking
 
     public void setUpTestCase() {
 
-		JDBCConfiguration conf = (JDBCConfiguration) ((OpenJPAEntityManagerFactorySPI) OpenJPAPersistence.cast(emf)).getConfiguration();
+        JDBCConfiguration conf =
+            (JDBCConfiguration) ((OpenJPAEntityManagerFactorySPI)
+                    OpenJPAPersistence.cast(emf)).getConfiguration();
 
-        supportsLocking = conf.getDBDictionaryInstance().supportsSelectForUpdate;
+        supportsLocking =
+            conf.getDBDictionaryInstance().supportsSelectForUpdate;
 
        deleteAll(EmbeddedOwnerPC.class);
 
@@ -102,7 +105,8 @@ public class TestEmbeddedPessimisticLocking
         // do this to ensure that the SELECT DISTINCT gets performed here.
         OpenJPAEntityManager em = emf.createEntityManager();
 
-        //FIXME jthomas commenting this since setOptimistic is not available for userTx
+        //FIXME jthomas commenting this since setOptimistic is not available for
+        //userTx
         //em.getTransaction().setOptimistic(false);
         startTx(em);
 
@@ -117,7 +121,8 @@ public class TestEmbeddedPessimisticLocking
     public void testEmbeddedFieldsWithLockedParent() {
         OpenJPAEntityManager em =(OpenJPAEntityManager)currentEntityManager();
         prepareEMF(em.getEntityManagerFactory());
-        ((FetchPlan) em.getFetchPlan()).addField(EmbeddedOwnerPC.class, "embedded");
+        ((FetchPlan) em.getFetchPlan()).addField(EmbeddedOwnerPC.class,
+                "embedded");
 //FIXME jthomas commenting this since setOptimistic is not available for userTx
 //        pm.currentTransaction().setOptimistic(false);
         startTx(em);
@@ -138,9 +143,10 @@ public class TestEmbeddedPessimisticLocking
     }
 
     public void testEmbeddedFieldsWithUnlockedParent() {
-		OpenJPAEntityManager em =(OpenJPAEntityManager)currentEntityManager();
+        OpenJPAEntityManager em =(OpenJPAEntityManager)currentEntityManager();
 		prepareEMF(em.getEntityManagerFactory());
-		((FetchPlan) em.getFetchPlan()).addField(EmbeddedOwnerPC.class, "embedded");
+        ((FetchPlan) em.getFetchPlan()).addField(EmbeddedOwnerPC.class,
+                "embedded");
 
 
 //FIXME jthomas commenting this since setOptimistic is not available for userTx
@@ -150,7 +156,8 @@ public class TestEmbeddedPessimisticLocking
         try {
 
             //FIXME jthomas - no equivalent found for LockLevels.LOCK_NONE
-            //((FetchPlan) pm.getFetchPlan()).setReadLockMode(LockLevels.LOCK_NONE);
+            //((FetchPlan) pm.getFetchPlan()).setReadLockMode(
+            //    LockLevels.LOCK_NONE);
 
             sql.clear();
             EmbeddedOwnerPC pc = (EmbeddedOwnerPC) em.getObjectId(oid);
@@ -185,11 +192,13 @@ public class TestEmbeddedPessimisticLocking
 
     public void testComplexEmbeddedFieldsWithLockedParent() {
 
-		OpenJPAEntityManager em =(OpenJPAEntityManager)currentEntityManager();
+        OpenJPAEntityManager em =(OpenJPAEntityManager)currentEntityManager();
 		prepareEMF(em.getEntityManagerFactory());
 		em.getFetchPlan().setMaxFetchDepth(-1);
-		((FetchPlan) em.getFetchPlan()).addField(EmbeddedOwnerPC.class, "complexEmbedded");
-		((FetchPlan) em.getFetchPlan()).addField(RecursivelyEmbeddedPC.class, "embedded");
+        ((FetchPlan) em.getFetchPlan()).addField(EmbeddedOwnerPC.class,
+                "complexEmbedded");
+        ((FetchPlan) em.getFetchPlan()).addField(RecursivelyEmbeddedPC.class,
+                "embedded");
 
 //FIXME jthomas commenting this since setOptimistic is not available for userTx
 //        pm.currentTransaction().setOptimistic(false);
@@ -215,11 +224,13 @@ public class TestEmbeddedPessimisticLocking
         // does not seem to be disabling FOR UPDATE.
 
 
-		OpenJPAEntityManager em =(OpenJPAEntityManager)currentEntityManager();
+        OpenJPAEntityManager em =(OpenJPAEntityManager)currentEntityManager();
 		prepareEMF(em.getEntityManagerFactory());
 		em.getFetchPlan().setMaxFetchDepth(-1);
-		((FetchPlan) em.getFetchPlan()).addField(EmbeddedOwnerPC.class, "complexEmbedded");
-		((FetchPlan) em.getFetchPlan()).addField(RecursivelyEmbeddedPC.class, "embedded");
+        ((FetchPlan) em.getFetchPlan()).addField(EmbeddedOwnerPC.class,
+                "complexEmbedded");
+        ((FetchPlan) em.getFetchPlan()).addField(RecursivelyEmbeddedPC.class,
+                "embedded");
 
 
 
@@ -277,7 +288,8 @@ public class TestEmbeddedPessimisticLocking
 		props.put("openjpa.RemoteCommitProvider", "sjvm");
 		props.put("openjpa.FlushBeforeQueries", "true");
 		props.put("javax.jdo.option.IgnoreCache", "false");
-		//propsMap.put("openjpa.BrokerImpl", "kodo.datacache.CacheTestBroker");//CacheTestBroker.class.getName ());
+        //propsMap.put("openjpa.BrokerImpl", "kodo.datacache.CacheTestBroker");
+        //CacheTestBroker.class.getName());
 		return props;
 	}
 

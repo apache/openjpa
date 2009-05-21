@@ -7,7 +7,8 @@ package org.apache.openjpa.persistence.criteria;
 import java.util.Date;
 import javax.persistence.metamodel.Attribute;
 
-@javax.persistence.metamodel.TypesafeMetamodel(value=org.apache.openjpa.persistence.criteria.Exempt.class)
+@javax.persistence.metamodel.TypesafeMetamodel(
+    value=org.apache.openjpa.persistence.criteria.Exempt.class)
 public class Exempt_ extends Employee_  {
     public static volatile Attribute<Exempt,Date> hireDate;
 }

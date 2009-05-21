@@ -20,7 +20,8 @@ package org.apache.openjpa.persistence.annotations.common.apps.annotApp.ddtype;
 
 import javax.persistence.*;
 
-import org.apache.openjpa.persistence.annotations.common.apps.annotApp.ddtype.CallbackStorage;
+import org.apache.openjpa.persistence.annotations.common.apps.annotApp.ddtype.
+        CallbackStorage;
 
 @Entity
 @DiscriminatorValue("SUB")

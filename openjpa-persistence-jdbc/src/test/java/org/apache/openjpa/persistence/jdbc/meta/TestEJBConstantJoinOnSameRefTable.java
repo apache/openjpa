@@ -29,8 +29,8 @@ import org.apache.openjpa.persistence.jdbc.common.apps.ConstantJoinPC5;
 
 import junit.framework.*;
 
-public class TestEJBConstantJoinOnSameRefTable extends org.apache.openjpa.persistence.jdbc.kernel.BaseJDBCTest
-{
+public class TestEJBConstantJoinOnSameRefTable
+        extends org.apache.openjpa.persistence.jdbc.kernel.BaseJDBCTest {
 	private int oid;
 	
 	public TestEJBConstantJoinOnSameRefTable(String name)
@@ -47,9 +47,9 @@ public class TestEJBConstantJoinOnSameRefTable extends org.apache.openjpa.persis
 		ConstantJoinPC4 pc4 = new ConstantJoinPC4 ("pc4-1", 1);
 		pc4.setOneToOne1 (new ConstantJoinPC5 ("pc5-one-to-one-1"));
 		//### see note in testConstantOneToOne2
-		//### pc4.setOneToOne2 (new ConstantJoinPC5 ("pc5-one-to-one-2"));
-		pc4.getManyToMany ().add (new ConstantJoinPC5 ("pc5-many-to-many-1"));
-		pc4.getManyToMany ().add (new ConstantJoinPC5 ("pc5-many-to-many-2"));
+        //### pc4.setOneToOne2 (new ConstantJoinPC5 ("pc5-one-to-one-2"));
+        pc4.getManyToMany().add (new ConstantJoinPC5 ("pc5-many-to-many-1"));
+        pc4.getManyToMany().add (new ConstantJoinPC5 ("pc5-many-to-many-2"));
 
 		EntityManager pm = currentEntityManager();
 		startTx(pm);
@@ -87,7 +87,7 @@ public class TestEJBConstantJoinOnSameRefTable extends org.apache.openjpa.persis
 		startTx(pm);
 		ConstantJoinPC4 pc4 =  pm.find(ConstantJoinPC4.class, oid);
 		assertEquals (2, pc4.getManyToMany ().size ());
-		assertEquals ("pc5-one-to-one-1", pc4.getOneToOne1 ().getName ());
+        assertEquals ("pc5-one-to-one-1", pc4.getOneToOne1().getName());
 
 		endTx(pm);
 		endEm(pm);

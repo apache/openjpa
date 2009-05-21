@@ -29,7 +29,8 @@ import org.apache.openjpa.persistence.OpenJPAEntityManagerFactorySPI;
 import org.apache.openjpa.persistence.jdbc.query.domain.Applicant;
 import org.apache.openjpa.persistence.jdbc.query.domain.Game;
 import org.apache.openjpa.persistence.jdbc.query.procedure.DerbyProcedureList;
-import org.apache.openjpa.persistence.jdbc.query.procedure.AbstractProcedureList;
+import 
+    org.apache.openjpa.persistence.jdbc.query.procedure.AbstractProcedureList;
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
 
 /**

@@ -34,7 +34,7 @@ import javax.persistence.*;
 public class AutoIncrementPC1
 {
 
-	private Set 				setField 	= new HashSet ();
+    private Set setField = new HashSet ();
 
 	@Id
 	private int id;

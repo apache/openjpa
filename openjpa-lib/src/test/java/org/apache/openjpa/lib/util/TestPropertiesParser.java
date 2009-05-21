@@ -34,7 +34,8 @@ import java.util.List;
 import java.util.Properties;
 
 import junit.framework.TestCase;
-import org.apache.openjpa.lib.util.FormatPreservingProperties.DuplicateKeyException;
+import org.apache.openjpa.lib.util.FormatPreservingProperties.
+        DuplicateKeyException;
 
 // things to test:
 // - delimiters in keys

@@ -39,15 +39,15 @@ import org.apache.openjpa.persistence.test.SQLListenerTestCase;
  *    
  * Further details available at
  * <A HREF="https://issues.apache.org/jira/browse/OPENJPA-692">OPENJPA-692</A> 
- * and 
- * <A HREF="http://n2.nabble.com/bidirectional-one-to-many-relationship-with-join-table-tc678479.html">Nabble posts</A>
+ * and <A HREF="http://n2.nabble.com/bidirectional-one-to-many-relationship-with
+ * -join-table-tc678479.html">Nabble posts</A>
  * 
  * @author Pinaki Poddar
  *
  */
 public class TestBiDirectionalJoinTable extends SQLListenerTestCase {
 	private static long SSN          = 123456789;
-	private static String[] PHONES   = {"+1-23-456", "+2-34-567", "+3-45-678"};
+    private static String[] PHONES   = {"+1-23-456", "+2-34-567", "+3-45-678"};
 	private static int ADDRESS_COUNT = PHONES.length;
 	private static String[] CITIS    = {"Berlin", "Paris", "Rome"};
 	private static int[] ZIPS        = {123456, 234567, 345678};
@@ -68,7 +68,8 @@ public class TestBiDirectionalJoinTable extends SQLListenerTestCase {
 	
 	public void testQuery() {
 		EntityManager em = emf.createEntityManager();
-		String jpql = "select distinct a.city from Person as p, in(p.addresses) a";
+        String jpql =
+            "select distinct a.city from Person as p, in(p.addresses) a";
 		Query query = em.createQuery(jpql);
 		assertEquals(ADDRESS_COUNT, query.getResultList().size());
 	}

@@ -52,7 +52,8 @@ public class TestXMLCaseConversions extends TestCase {
     }
     
     public static void main(String[] args) throws IOException {
-        BufferedReader r = new BufferedReader (new FileReader(new File(args[0])));
+        BufferedReader r = new BufferedReader (new FileReader(new File(
+                args[0])));
         while (true) {
             String s = r.readLine();
             if (s == null)

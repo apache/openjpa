@@ -63,8 +63,8 @@ public class TestSimple extends BaseKernelTest {
         {
             OpenJPAEntityManager pm = getPM();
             startTx(pm);
-            String theQuery =
-                "SELECT r FROM RuntimeTest1 r WHERE r.stringField = \'testSimple\'";
+            String theQuery = "SELECT r FROM RuntimeTest1 r "
+                + "WHERE r.stringField = \'testSimple\'";
             OpenJPAQuery query = pm.createQuery(theQuery);
             List list = query.getResultList();
             assertSize(1, list);
@@ -76,8 +76,8 @@ public class TestSimple extends BaseKernelTest {
         {
             OpenJPAEntityManager pm = getPM();
             startTx(pm);
-            String theQuery =
-                "SELECT r FROM RuntimeTest1 r WHERE r.stringField = \'testSimple\'";
+            String theQuery = "SELECT r FROM RuntimeTest1 r "
+                + "WHERE r.stringField = \'testSimple\'";
             OpenJPAQuery query = pm.createQuery(theQuery);
             RuntimeTest1 toUpdate = (RuntimeTest1) query.getSingleResult();
             toUpdate.setStringField("testSimple2");
@@ -86,10 +86,10 @@ public class TestSimple extends BaseKernelTest {
 
             pm = getPM();
             startTx(pm);
-            String query1 =
-                "SELECT r FROM RuntimeTest1 r WHERE r.stringField = \'testSimple\'";
-            String query2 =
-                "SELECT r FROM RuntimeTest1 r WHERE r.stringField = \'testSimple2\'";
+            String query1 = "SELECT r FROM RuntimeTest1 r "
+                + "WHERE r.stringField = \'testSimple\'";
+            String query2 = "SELECT r FROM RuntimeTest1 r "
+                + "WHERE r.stringField = \'testSimple2\'";
             OpenJPAQuery q1 = pm.createQuery(query1);
             OpenJPAQuery q2 = pm.createQuery(query2);
             assertSize(0, q1.getResultList());
@@ -114,8 +114,8 @@ public class TestSimple extends BaseKernelTest {
         {
             OpenJPAEntityManager pm = getPM();
             startTx(pm);
-            String delete =
-                "DELETE FROM RuntimeTest1 r WHERE r.stringField = \'testSimple2\'";
+            String delete = "DELETE FROM RuntimeTest1 r "
+                + "WHERE r.stringField = \'testSimple2\'";
             OpenJPAQuery deleteQuery = pm.createQuery(delete);
             int deleted = deleteQuery.executeUpdate();
             endTx(pm);
@@ -123,8 +123,8 @@ public class TestSimple extends BaseKernelTest {
 
             pm = getPM();
             startTx(pm);
-            String select =
-                "SELECT r FROM RuntimeTest1 r WHERE r.stringField = \'testSimple2\'";
+            String select = "SELECT r FROM RuntimeTest1 r "
+                + "WHERE r.stringField = \'testSimple2\'";
             OpenJPAQuery selectQuery = pm.createQuery(select);
 
             assertSize(0, selectQuery.getResultList());

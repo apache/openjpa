@@ -182,7 +182,8 @@ public class TestAttrOverrides  extends SQLListenerTestCase {
         assertEquals(p.getOwner().getAddress().getStreet(), "street_1");
         assertEquals(p.getOwner().getAddress().getState(), "state_1");
         assertEquals(p.getOwner().getAddress().getZipcode().getZip(), "zip_1");
-        assertEquals(p.getOwner().getAddress().getZipcode().getPlusFour(), "+4_1");
+        assertEquals(p.getOwner().getAddress().getZipcode().getPlusFour(),
+                "+4_1");
 
         assertEquals(p.getParcels().size(), numPropertiesPerPersons);
     }

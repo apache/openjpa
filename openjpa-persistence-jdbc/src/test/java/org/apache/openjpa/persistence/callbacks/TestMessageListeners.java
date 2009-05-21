@@ -158,7 +158,7 @@ public class TestMessageListeners extends SingleEMFTestCase {
             // Complete the 2nd @postPersist
             assertStatus(2, 2, 0, 0, 0, 0, 0);
 
-			// Make an update to trigger the pre/postUpdater callbacks
+            // Make an update to trigger the pre/postUpdater callbacks
             em.getTransaction().begin();
             message = em.find(Message.class,message.getId());
             message.setMessage("Update field and trigger pre/postUpdate");

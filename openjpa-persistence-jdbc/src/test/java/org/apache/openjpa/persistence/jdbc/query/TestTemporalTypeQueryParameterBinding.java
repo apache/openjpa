@@ -189,8 +189,8 @@ public class TestTemporalTypeQueryParameterBinding extends SingleEMFTestCase {
 			} catch (Exception e) {
 				if (!error.isAssignableFrom(e.getClass())) {
 				    // let the test harness handle the exception
-				    throw new RuntimeException("An unexpected exception " + 
-				        "occurred see initCause for details", e);
+                    throw new RuntimeException("An unexpected exception " +
+                            "occurred see initCause for details", e);
 				}
 			} 
 		}

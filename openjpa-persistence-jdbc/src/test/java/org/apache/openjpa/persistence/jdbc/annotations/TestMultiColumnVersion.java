@@ -143,7 +143,8 @@ public class TestMultiColumnVersion extends SingleEMFTestCase {
         Object oid = em1.getObjectId(pc1);
         
         
-        MultiColumnSecondaryVersionPC pc2 = em2.find(MultiColumnSecondaryVersionPC.class, oid);
+        MultiColumnSecondaryVersionPC pc2 =
+            em2.find(MultiColumnSecondaryVersionPC.class, oid);
         assertVersionEquals(em1.getVersion(pc1), em2.getVersion(pc2));
         
         pc1.setName("Updated in em1");
@@ -172,7 +173,8 @@ public class TestMultiColumnVersion extends SingleEMFTestCase {
         Object oid = em1.getObjectId(pc1);
         
         
-    	MultiColumnSecondaryVersionPC pc2 = em2.find(MultiColumnSecondaryVersionPC.class, oid);
+    	MultiColumnSecondaryVersionPC pc2 =
+    	    em2.find(MultiColumnSecondaryVersionPC.class, oid);
         assertVersionEquals(em1.getVersion(pc1), em2.getVersion(pc2));
         
         em1.getTransaction().commit();
@@ -190,7 +192,8 @@ public class TestMultiColumnVersion extends SingleEMFTestCase {
     		// exact equality may fail on non-integral values
     		assertTrue("element " + i + " mismatch. Expeceted: " + 
        		    v1 + " actual: " + v2,
-       		    Math.abs(((Number)v1).doubleValue() - ((Number)v2).doubleValue()) 
+       		    Math.abs(((Number)v1).doubleValue()
+       		            - ((Number)v2).doubleValue()) 
        		    < 0.01);
     	}
     }
