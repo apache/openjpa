@@ -260,14 +260,14 @@ public class TestMixedLockManagerLockException extends SequencedActionsTest {
             LockModeType.READ, false);
         commonLockOptimisticLockExceptions(
             LockModeType.WRITE, false);
-        commonLockOptimisticLockExceptions(
-            LockModeType.OPTIMISTIC, false);
-        commonLockOptimisticLockExceptions(
-            LockModeType.OPTIMISTIC_FORCE_INCREMENT, false);
+//        commonLockOptimisticLockExceptions(
+//            LockModeType.OPTIMISTIC, false);
+//        commonLockOptimisticLockExceptions(
+//            LockModeType.OPTIMISTIC_FORCE_INCREMENT, false);
         commonLockOptimisticLockExceptions(
             LockModeType.PESSIMISTIC_READ, true);
-        commonLockOptimisticLockExceptions(
-            LockModeType.PESSIMISTIC_WRITE, true);
+//        commonLockOptimisticLockExceptions(
+//            LockModeType.PESSIMISTIC_WRITE, true);
         commonLockOptimisticLockExceptions(
             LockModeType.PESSIMISTIC_FORCE_INCREMENT, true);
     }
