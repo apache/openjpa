@@ -494,6 +494,11 @@
                 <artifactId>ant</artifactId>
                 <version>1.6.5</version>
             </dependency>
+            <dependency>
+                <groupId>org.apache.felix</groupId>
+                <artifactId>org.osgi.core</artifactId>
+                <version>1.2.0</version>
+            </dependency>
         </dependencies>
     </dependencyManagement>
     <dependencies>

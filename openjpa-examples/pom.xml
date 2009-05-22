@@ -55,6 +55,11 @@
             <artifactId>commons-collections</artifactId>
             <scope>test</scope>
         </dependency>
+        <dependency>
+            <groupId>org.apache.felix</groupId>
+            <artifactId>org.osgi.core</artifactId>
+            <scope>provided</scope>
+        </dependency>
     </dependencies>
     <build>
         <plugins>
@@ -72,6 +77,41 @@
                         <exclude>**/reversemapping/Main.java</exclude>
                     </excludes>
                 </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-jar-plugin</artifactId>
+                <configuration>
+                    <archive>
+                        <manifestFile>${project.build.outputDirectory}/META-INF/MANIFEST.MF</manifestFile>
+                    </archive>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.felix</groupId>
+                <artifactId>maven-bundle-plugin</artifactId>
+                <extensions>true</extensions>
+                <configuration>
+                    <instructions>
+                        <Bundle-Name>${artifactId}</Bundle-Name>
+                        <Bundle-SymbolicName>${groupId}.${artifactId};singleton=true</Bundle-SymbolicName>
+                        <Bundle-DocURL>http://openjpa.apache.org/documentation.html</Bundle-DocURL>
+                        <Bundle-Activator>hellojpa.Main</Bundle-Activator>
+                        <!-- Eclipse metadata -->
+                        <Eclipse-Autostart>false</Eclipse-Autostart>
+                        <Bundle-ClassPath>.</Bundle-ClassPath>
+                    </instructions>
+                    <unpackBundle>true</unpackBundle>
+                </configuration>
+                <executions>
+                    <execution>
+                        <id>bundle-manifest</id>
+                        <phase>process-classes</phase>
+                        <goals>
+                            <goal>manifest</goal>
+                        </goals>
+                    </execution>
+                </executions>
             </plugin>
         </plugins>
     </build>

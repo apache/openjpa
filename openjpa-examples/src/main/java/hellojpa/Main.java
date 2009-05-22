@@ -20,13 +20,15 @@ package hellojpa;
 
 import java.util.*;
 import javax.persistence.*;
+import org.osgi.framework.BundleActivator;
+import org.osgi.framework.BundleContext;
 
 
 /** 
  * A very simple, stand-alone program that stores a new entity in the
  * database and then performs a query to retrieve it.
  */
-public class Main {
+public class Main implements BundleActivator {
 
     @SuppressWarnings("unchecked")
     public static void main(String[] args) {
@@ -73,4 +75,14 @@ public class Main {
         em2.close();
         factory.close();
     }
+
+    public void start(BundleContext context) {
+        System.out.println("Bundle start");
+        main(null);
+    }
+
+    public void stop(BundleContext context) {
+        System.out.println("Bundle stop");
+    }
 }
+
