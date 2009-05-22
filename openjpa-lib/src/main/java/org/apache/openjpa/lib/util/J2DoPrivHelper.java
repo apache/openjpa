@@ -108,7 +108,7 @@ import serp.bytecode.Project;
  * 
  * If these methods are used, the following sample usage patterns should be
  * followed to ensure proper privilege is granted:
- * <xmp>
+ * <pre>
  * 1) No security risk method call. E.g.
  *  
  *    private static final String SEP = J2DoPrivHelper.getLineSeparator();
@@ -142,7 +142,7 @@ import serp.bytecode.Project;
  *    } catch (PrivilegedActionException pae) {
  *        throw (NoSuchMethodException) pae.getException()
  *    }                               
- * </xmp> 
+ * </pre> 
  * @author Albert Lee
  */
 

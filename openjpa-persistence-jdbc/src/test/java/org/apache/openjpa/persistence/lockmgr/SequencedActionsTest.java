@@ -41,11 +41,11 @@ import org.apache.openjpa.persistence.test.SQLListenerTestCase;
 /**
  * Base class to support pseudo programmable pre-define JPA related
  * actions which is driven by action table define by a test case. E.g.
- * <xmp>
+ * <pre>
  * Object[][] actions = {
  *   { Act.Actions [, action_specific_parameters]* }
  * };
- * </xmp>
+ * </pre>
  * See enum type <code>Act</code> for list of valid actions.
  * <p>The action objects are passed as argument to the launchActionSequence()
  * method. The actions in the sequence table are invoked in the order
