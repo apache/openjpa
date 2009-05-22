@@ -15,5 +15,6 @@ public class Address_ {
     public static volatile Attribute<Address,Long> id;
     public static volatile Attribute<Address,String> state;
     public static volatile Attribute<Address,String> street;
+    public static volatile Attribute<Address,CompUser> user;
     public static volatile Attribute<Address,String> zipCode;
 }

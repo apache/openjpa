@@ -22,6 +22,7 @@ import javax.persistence.Embeddable;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
 /**
@@ -46,6 +47,8 @@ public class Address {
 	private String county;
     private String country;
 	private String zipCode;
+    @OneToOne(mappedBy="address")
+    private CompUser user;
 	
     public Address(){}
 

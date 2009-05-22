@@ -22,10 +22,7 @@ import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.persistence.EntityManager;
 import javax.persistence.Parameter;
-import javax.persistence.PersistenceException;
-import javax.persistence.Query;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Join;
 import javax.persistence.criteria.JoinType;
@@ -34,15 +31,7 @@ import javax.persistence.criteria.MapJoin;
 import javax.persistence.criteria.Root;
 import javax.persistence.criteria.Subquery;
 
-import org.apache.openjpa.jdbc.conf.JDBCConfiguration;
-import org.apache.openjpa.jdbc.sql.DBDictionary;
-import org.apache.openjpa.lib.jdbc.AbstractJDBCListener;
-import org.apache.openjpa.lib.jdbc.JDBCEvent;
-import org.apache.openjpa.lib.jdbc.JDBCListener;
-import org.apache.openjpa.lib.jdbc.ReportingSQLException;
-import org.apache.openjpa.persistence.OpenJPAEntityManagerFactorySPI;
 import org.apache.openjpa.persistence.test.AllowFailure;
-import org.apache.openjpa.persistence.test.SingleEMFTestCase;
 
 /**
  * Tests type-strict version of Criteria API.
@@ -203,8 +192,10 @@ public class TestTypesafeCriteria extends CriteriaTest {
         Root<Customer> cust = c.from(Customer.class);
         Join<Customer, Order> order = cust.join(Customer_.orders);
         Join<Order, LineItem> item = order.join(Order_.lineItems);
-        c.where(cb.equal(item.get(LineItem_.product).get(Product_.productType),
-                "printer"));
+        c.select(cust.get(Customer_.name))
+            .where(cb.equal(item.get(LineItem_.product).
+            get(Product_.productType), "printer"));
+        
         assertEquivalence(c, jpql);
     }
 

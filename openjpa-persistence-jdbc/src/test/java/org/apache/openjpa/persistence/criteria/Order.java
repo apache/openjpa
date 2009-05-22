@@ -18,6 +18,7 @@
  */
 package org.apache.openjpa.persistence.criteria;
 
+import java.sql.Timestamp;
 import java.util.List;
 
 import javax.persistence.Entity;
@@ -44,6 +45,10 @@ public class Order {
 	@OneToMany(mappedBy="order")
 	private List<LineItem> lineItems;
 	
+    private boolean delivered;
+	
+    private Timestamp orderTs;
+
     public double getTotalCost() {
         return totalCost;
     }
@@ -80,5 +85,19 @@ public class Order {
         this.quantity = quantity;
     }
 	
+    public boolean isDelivered() {
+        return delivered;
+    }
+    
+    public void setDelivered(boolean delivered) {
+        this.delivered = delivered;
+    }
 
+    public Timestamp getOrderTs() {
+        return orderTs;
+    }
+    
+    public void setOrderTs(Timestamp orderTs) {
+        this.orderTs = orderTs;
+    }
 }

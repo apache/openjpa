@@ -6,14 +6,13 @@ package org.apache.openjpa.persistence.criteria;
 
 import javax.persistence.metamodel.Attribute;
 import javax.persistence.metamodel.List;
-import org.apache.openjpa.persistence.criteria.CompUser.CreditRating;
 
 @javax.persistence.metamodel.TypesafeMetamodel(value=org.apache.openjpa.persistence.criteria.CompUser.class)
 public class CompUser_ {
     public static volatile Attribute<CompUser,Address> address;
     public static volatile Attribute<CompUser,Integer> age;
     public static volatile Attribute<CompUser,String> computerName;
-    public static volatile Attribute<CompUser,CreditRating> creditRating;
+    public static volatile Attribute<CompUser,CompUser.CreditRating> creditRating;
     public static volatile Attribute<CompUser,String> name;
     public static volatile List<CompUser,String> nicknames;
     public static volatile Attribute<CompUser,Integer> userid;

@@ -59,6 +59,7 @@ public class TestCriteria extends SingleEMFTestCase {
 		    super.setUp(CLEAR_TABLES,
 		    	Account.class,
 				Address.class, 
+				CompUser.class,
 				Contact.class,
 				Contractor.class, 
 				Course.class, 

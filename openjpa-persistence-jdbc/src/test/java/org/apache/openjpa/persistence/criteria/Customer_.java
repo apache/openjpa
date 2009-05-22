@@ -22,4 +22,5 @@ public class Customer_ {
     public static volatile Attribute<Customer,String> name;
     public static volatile Set<Customer,Order> orders;
     public static volatile Attribute<Customer,Integer> status;
+    public static volatile Attribute<Customer,Customer.CreditRating> creditRating;
 }

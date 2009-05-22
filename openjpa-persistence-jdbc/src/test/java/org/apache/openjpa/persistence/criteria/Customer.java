@@ -23,7 +23,9 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import javax.persistence.Basic;
 import javax.persistence.Entity;
+import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
@@ -57,6 +59,10 @@ public class Customer {
 	@OneToMany
 	private List<Account> accounts = new ArrayList<Account>();
 	
+    @Enumerated
+    @Basic
+    private CreditRating creditRating;
+
     public String getName() {
         return name;
     }
@@ -140,4 +146,14 @@ public class Customer {
     public void setAccounts(List<Account> accounts) {
         this.accounts = accounts;
     }
+
+    public CreditRating getRating() {
+        return creditRating;
+    }
+    
+    public void setRating(CreditRating rating) {
+        this.creditRating = rating;
+    }
+    
+    public enum CreditRating { POOR, GOOD, EXCELLENT };
 }

@@ -4,6 +4,8 @@
 
 package org.apache.openjpa.persistence.criteria;
 
+import java.sql.Timestamp;
+
 import javax.persistence.metamodel.Attribute;
 import javax.persistence.metamodel.List;
 
@@ -16,4 +18,6 @@ public class Order_ {
     public static volatile List<Order,LineItem> lineItems;
     public static volatile Attribute<Order,Integer> quantity;
     public static volatile Attribute<Order,Double> totalCost;
+    public static volatile Attribute<Order,Boolean> delivered;
+    public static volatile Attribute<Order,Timestamp> orderTs;
 }
