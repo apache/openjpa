@@ -127,7 +127,8 @@ public class DynamicSchemaFactory
                 return col;
 
             // Ensure only valid column name(s) are added to the table
-            if (name.length() > _dict.maxColumnNameLength) {
+            if ((name.length() > _dict.maxColumnNameLength) ||
+                _dict.getInvalidColumnWordSet().contains(name.toUpperCase())) {
                 return addColumn(name, 
                     _dict.getValidColumnName(name, this));
             }

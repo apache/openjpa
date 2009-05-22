@@ -345,6 +345,10 @@ public class DBDictionary
     protected boolean connected = false;
     protected boolean isJDBC3 = false;
     protected final Set reservedWordSet = new HashSet();
+    // reservedWordSet subset that can be used as valid column names
+    protected Set<String> validColumnWordSet = new HashSet<String>();
+    // reservedWordSet subset that cannot be used as valid column names
+    protected Set<String> invalidColumnWordSet = new HashSet<String>();
     protected final Set systemSchemaSet = new HashSet();
     protected final Set systemTableSet = new HashSet();
     protected final Set fixedSizeTypeNameSet = new HashSet();
@@ -2929,8 +2933,20 @@ public class DBDictionary
     }
 
     /**
-     * Make any necessary changes to the given table name to make it valid
-     * for the current DB.
+     * Return the subset of the words in reservedWordSet that cannot be used as
+     * valid column names for the current DB. If the column name is invalid the
+     * getValidColumnName method of the DB dictionary should be invoked to make
+     * it valid.
+     * 
+     * @see getValidColumnName
+     */
+    public final Set<String> getInvalidColumnWordSet() {
+        return invalidColumnWordSet;
+    }
+
+    /**
+     * Make any necessary changes to the given table name to make it valid for
+     * the current DB.
      */
     public String getValidTableName(String name, Schema schema) {
         while (name.startsWith("_"))
@@ -4260,6 +4276,10 @@ public class DBDictionary
             reservedWordSet.addAll(Arrays.asList(Strings.split
                 (reservedWords.toUpperCase(), ",", 0)));
 
+        // reservedWordSet subset that cannot be used as valid column names
+        invalidColumnWordSet = new HashSet(reservedWordSet);
+        invalidColumnWordSet.removeAll(validColumnWordSet);
+        
         // add system schemas set by user
         if (systemSchemas != null)
             systemSchemaSet.addAll(Arrays.asList(Strings.split

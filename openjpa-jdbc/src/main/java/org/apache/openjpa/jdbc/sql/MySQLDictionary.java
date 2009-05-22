@@ -107,6 +107,11 @@ public class MySQLDictionary
             "LOAD", "MEDIUMINT", "OPTION", "OUTFILE", "REPLACE",
             "SET", "STARTING", "TEXT", "UNSIGNED", "ZEROFILL",
         }));
+        // reservedWordSet subset that can be used as valid column names
+        validColumnWordSet.addAll(Arrays.asList(new String[]{
+            "C", "COUNT", "DATE", "DATA", "NAME", "NULLABLE", "NUMBER", 
+            "TIMESTAMP", "TYPE", "VALUE", 
+        }));
 
         // MySQL requires double-escape for strings
         searchStringEscape = "\\\\";
