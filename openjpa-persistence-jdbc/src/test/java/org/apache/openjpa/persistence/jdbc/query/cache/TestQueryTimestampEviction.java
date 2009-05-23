@@ -22,6 +22,7 @@ import javax.persistence.EntityManager;
 import javax.persistence.Query;
 
 import org.apache.openjpa.datacache.ConcurrentQueryCache;
+import org.apache.openjpa.jdbc.conf.JDBCConfiguration;
 import org.apache.openjpa.persistence.OpenJPAEntityManagerFactory;
 import org.apache.openjpa.persistence.OpenJPAPersistence;
 import org.apache.openjpa.persistence.QueryResultCacheImpl;
@@ -29,6 +30,10 @@ import org.apache.openjpa.persistence.test.SingleEMFTestCase;
 import org.apache.openjpa.util.CacheMap;
 
 public class TestQueryTimestampEviction extends SingleEMFTestCase {
+
+    private boolean deleteData = false;
+    private boolean recreateData = true;
+
     public void setUp() throws Exception {
         super.setUp(Part.class, PartBase.class, PartComposite.class,
                 Supplier.class, Usage.class,
@@ -37,7 +42,9 @@ public class TestQueryTimestampEviction extends SingleEMFTestCase {
                 "CacheSize=1000, EvictPolicy='timestamp'",
                 "openjpa.RemoteCommitProvider", "sjvm");
 
-        if (recreateData) {
+        // Not all databases support GenerationType.IDENTITY column(s)
+        if (((JDBCConfiguration) emf.getConfiguration()).
+            getDBDictionaryInstance().supportsAutoAssign && recreateData) {
             // deletes any data leftover data in the database due to the failed
             // last run of this testcase
             deleteAllData(); 
@@ -45,11 +52,12 @@ public class TestQueryTimestampEviction extends SingleEMFTestCase {
         }
     }
 
-    private  boolean deleteData = false;
-    private  boolean recreateData = true;
-
     public void testLoadQueries() {
-
+        // Not all databases support GenerationType.IDENTITY column(s)
+        if (!((JDBCConfiguration) emf.getConfiguration()).
+            getDBDictionaryInstance().supportsAutoAssign) {
+        	return;
+        }                                 
         loadQueryCache();
         int cacheSizeBeforeUpdate = queryCacheGet();
         updateAnEntity();
@@ -63,6 +71,11 @@ public class TestQueryTimestampEviction extends SingleEMFTestCase {
     }
 
     public void testEviction() {
+        // Not all databases support GenerationType.IDENTITY column(s)
+        if (!((JDBCConfiguration) emf.getConfiguration()).
+            getDBDictionaryInstance().supportsAutoAssign) {
+            return;
+        }
         loadQueryCache();
         try {
             Thread.sleep(20);

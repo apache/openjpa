@@ -27,6 +27,8 @@ import javax.persistence.EntityManager;
 import javax.persistence.Query;
 
 import junit.textui.TestRunner;
+
+import org.apache.openjpa.jdbc.conf.JDBCConfiguration;
 import org.apache.openjpa.persistence.OpenJPAEntityManager;
 import org.apache.openjpa.persistence.OpenJPAQuery;
 import org.apache.openjpa.persistence.query.Magazine;
@@ -46,7 +48,12 @@ public class TestInverseEagerSQL
             EntityA2InverseEager.class, EntityBInverseEager.class,
             EntityCInverseEager.class, EntityDInverseEager.class,
             Publisher.class, Magazine.class, DROP_TABLES);
-        
+
+        // Not all databases support GenerationType.IDENTITY column(s)
+        if (!((JDBCConfiguration) emf.getConfiguration()).
+            getDBDictionaryInstance().supportsAutoAssign) {
+        	return;
+      	}
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
 
@@ -55,7 +62,7 @@ public class TestInverseEagerSQL
         c.setCid(ck);
         c.setName("customer1");
         em.persist(c);
-        
+
         for (int i = 0; i < numOrdersPerCustomer; i++) {
             Order order = new Order();
             order.setCustomer(c);
@@ -67,7 +74,7 @@ public class TestInverseEagerSQL
         
         EntityA1InverseEager a1 = new EntityA1InverseEager("a1");
         em.persist(a1);
-        
+
         EntityA2InverseEager a2 = new EntityA2InverseEager("a2");
         em.persist(a2);
 
@@ -77,7 +84,7 @@ public class TestInverseEagerSQL
             b.setA(a);
             em.persist(b);
         }
-        
+
         for (int i = 4; i < 8; i++) {
             EntityBInverseEager b = new EntityBInverseEager("b" + i);
             a1.addB(b);
@@ -91,7 +98,7 @@ public class TestInverseEagerSQL
             b.setA(a2);
             em.persist(b);
         }
-        
+
         for (int i = 0; i < 4; i++) {
             EntityCInverseEager c1 = new EntityCInverseEager("c"+i, i, i);
             em.persist(c1);
@@ -107,7 +114,7 @@ public class TestInverseEagerSQL
         Publisher p1 = new Publisher();
         p1.setName("publisher1");
         em.persist(p1);
-   
+
         for (int i = 0; i < 4; i++) {
             Magazine magazine = new Magazine();
             magazine.setIdPublisher(p1);
@@ -118,7 +125,7 @@ public class TestInverseEagerSQL
         Publisher p2 = new Publisher();
         p2.setName("publisher2");
         em.persist(p2);
-   
+
         for (int i = 0; i < 4; i++) {
             Magazine magazine = new Magazine();
             magazine.setIdPublisher(p2);
@@ -132,6 +139,11 @@ public class TestInverseEagerSQL
     }
 
     public void testOneToManyInverseEagerQuery() {
+        // Not all databases support GenerationType.IDENTITY column(s)
+        if (!((JDBCConfiguration) emf.getConfiguration()).
+            getDBDictionaryInstance().supportsAutoAssign) {
+        	return;
+      	}
         sql.clear();
 
         OpenJPAEntityManager em = emf.createEntityManager();
@@ -148,12 +160,17 @@ public class TestInverseEagerSQL
                 assertEquals(order.getCustomer(), c);
             }
         }
-        
+
         assertEquals(2, sql.size());
         em.close();
     }
 
     public void testOneToOneInverseEagerQuery() {
+        // Not all databases support GenerationType.IDENTITY column(s)
+        if (!((JDBCConfiguration) emf.getConfiguration()).
+            getDBDictionaryInstance().supportsAutoAssign) {
+			return;
+		}
         sql.clear();
 
         OpenJPAEntityManager em = emf.createEntityManager();
@@ -173,6 +190,11 @@ public class TestInverseEagerSQL
     }
 
     public void testOneToManyInheritanceQuery() {
+        // Not all databases support GenerationType.IDENTITY column(s)
+        if (!((JDBCConfiguration) emf.getConfiguration()).
+            getDBDictionaryInstance().supportsAutoAssign) {
+			return;
+		}
         sql.clear();
 
         OpenJPAEntityManager em = emf.createEntityManager();
@@ -209,7 +231,7 @@ public class TestInverseEagerSQL
         }
         assertEquals(3, sql.size());
         sql.clear();
-        
+
         query = "select a FROM EntityAInverseEager a";
         q = em.createQuery(query);
         list = q.getResultList();
@@ -224,12 +246,17 @@ public class TestInverseEagerSQL
                 assertEquals(a0, a);
             }
         }
-        
+
         assertEquals(2, sql.size());
         em.close();
     }
 
     public void testOneToManyEagerInverseLazyQuery() {
+        // Not all databases support GenerationType.IDENTITY column(s)
+        if (!((JDBCConfiguration) emf.getConfiguration()).
+            getDBDictionaryInstance().supportsAutoAssign) {
+			return;
+		}
         sql.clear();
 
         OpenJPAEntityManager em = emf.createEntityManager();
@@ -257,6 +284,11 @@ public class TestInverseEagerSQL
     }
 
     public void testTargetOrphanRemoval() {
+        // Not all databases support GenerationType.IDENTITY column(s)
+        if (!((JDBCConfiguration) emf.getConfiguration()).
+            getDBDictionaryInstance().supportsAutoAssign) {
+			return;
+		}
         OpenJPAEntityManager em = emf.createEntityManager();
         int count = count(Order.class);
         assertEquals(numOrdersPerCustomer * numCustomers, count);
@@ -301,8 +333,13 @@ public class TestInverseEagerSQL
             assertEquals(0, orders.size());
         em.close();
     }
-    
+
     public void testSourceOrphanRemoval() {
+        // Not all databases support GenerationType.IDENTITY column(s)
+        if (!((JDBCConfiguration) emf.getConfiguration()).
+            getDBDictionaryInstance().supportsAutoAssign) {
+			return;
+		}
         OpenJPAEntityManager em = emf.createEntityManager();
         // OrphanRemoval: remove source
         Customer.CustomerKey ck = new Customer.CustomerKey("USA", 1);
@@ -312,7 +349,7 @@ public class TestInverseEagerSQL
         em.flush();
         em.getTransaction().commit();
         em.clear();
-        
+
         int count = count(Order.class);
         assertEquals(numOrdersPerCustomer * (numCustomers - 1), count);
         em.close();

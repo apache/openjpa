@@ -21,6 +21,7 @@ package org.apache.openjpa.enhance;
 import java.util.List;
 import javax.persistence.EntityManager;
 
+import org.apache.openjpa.jdbc.conf.JDBCConfiguration;
 import org.apache.openjpa.persistence.OpenJPAEntityManager;
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
 
@@ -35,6 +36,11 @@ public class TestDataCachingAndUnenhancedPropertyAccess
     }
 
     public void testSimpleDataCacheOperation() {
+        // Not all databases support GenerationType.IDENTITY column(s)
+        if (!((JDBCConfiguration) emf.getConfiguration()).
+            getDBDictionaryInstance().supportsAutoAssign) {
+			return;
+		}
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
         em.persist(new UnenhancedIdentityIdPropertyAccess());
@@ -43,6 +49,12 @@ public class TestDataCachingAndUnenhancedPropertyAccess
     }
 
     public void testAccessIdBeforeCommit() {
+        // Not all databases support GenerationType.IDENTITY column(s)
+        if (!((JDBCConfiguration) emf.getConfiguration()).
+            getDBDictionaryInstance().supportsAutoAssign) {
+            return;
+        }
+
         OpenJPAEntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
         UnenhancedIdentityIdPropertyAccess o =

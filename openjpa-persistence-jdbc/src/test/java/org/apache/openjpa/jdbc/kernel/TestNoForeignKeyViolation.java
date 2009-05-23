@@ -22,6 +22,7 @@ import java.util.ArrayList;
 import java.util.List;
 import javax.persistence.EntityManager;
 
+import org.apache.openjpa.jdbc.conf.JDBCConfiguration;
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
 
 /**
@@ -41,11 +42,15 @@ public class TestNoForeignKeyViolation
     public void setUp() {
         setUp(EntityA.class, EntityB.class, EntityC.class, EntityD.class, 
               EntityE.class, EntityF.class, EntityG.class);
-
         createTestData();
     }
 
     private void createTestData() {
+        // Not all databases support GenerationType.IDENTITY column(s)
+        if (!((JDBCConfiguration) emf.getConfiguration()).
+            getDBDictionaryInstance().supportsAutoAssign) {
+            return;
+        }
         entityA = new EntityA();
         entityB = new EntityB();
         entityC = new EntityC();
@@ -60,6 +65,11 @@ public class TestNoForeignKeyViolation
     }
 
     public void testSqlOrder() {
+        // Not all databases support GenerationType.IDENTITY column(s)
+        if (!((JDBCConfiguration) emf.getConfiguration()).
+            getDBDictionaryInstance().supportsAutoAssign) {
+			return;
+		}
         EntityManager em = emf.createEntityManager();
         try {
             em.getTransaction().begin();
@@ -91,8 +101,13 @@ public class TestNoForeignKeyViolation
             em.close();
         }
     }
-    
+
     public void testSimpleCycle() {
+        // Not all databases support GenerationType.IDENTITY column(s)
+        if (!((JDBCConfiguration) emf.getConfiguration()).
+            getDBDictionaryInstance().supportsAutoAssign) {
+			return;
+		}
         EntityManager em = emf.createEntityManager();
         try {
             em.getTransaction().begin();
@@ -106,8 +121,13 @@ public class TestNoForeignKeyViolation
             em.close();
         }
     }
-    
+
     public void testComplexCycle() {
+        // Not all databases support GenerationType.IDENTITY column(s)
+        if (!((JDBCConfiguration) emf.getConfiguration()).
+            getDBDictionaryInstance().supportsAutoAssign) {
+			return;
+		}
         EntityManager em = emf.createEntityManager();
         try {
             EntityE entityE = new EntityE();
@@ -119,7 +139,7 @@ public class TestNoForeignKeyViolation
             entityD.setEntityA(entityA);
             em.persist(entityA);
             em.getTransaction().commit();
-            
+
             em.getTransaction().begin();
             em.remove(entityE);
             em.remove(entityA);
@@ -133,6 +153,11 @@ public class TestNoForeignKeyViolation
     }
 
     public void testComplexTwoCycles() {
+        // Not all databases support GenerationType.IDENTITY column(s)
+        if (!((JDBCConfiguration) emf.getConfiguration()).
+            getDBDictionaryInstance().supportsAutoAssign) {
+			return;
+		}
         EntityManager em = emf.createEntityManager();
         try {
             EntityE entityE = new EntityE();
@@ -145,7 +170,7 @@ public class TestNoForeignKeyViolation
             entityD.setEntityB(entityB);
             em.persist(entityA);
             em.getTransaction().commit();
-            
+
             em.getTransaction().begin();
             em.remove(entityE);
             em.remove(entityA);
@@ -157,8 +182,13 @@ public class TestNoForeignKeyViolation
             em.close();
         }
     }
-    
+
     public void testForeignKeyCascade() {
+        // Not all databases support GenerationType.IDENTITY column(s)
+        if (!((JDBCConfiguration) emf.getConfiguration()).
+            getDBDictionaryInstance().supportsAutoAssign) {
+			return;
+		}
         EntityManager em = emf.createEntityManager();
         try {
             EntityF f = new EntityF();
@@ -169,7 +199,7 @@ public class TestNoForeignKeyViolation
             g1.setId(1);
             listG.add(g1);
             g1.setEntityF(f);
-            
+
             EntityG g2 = new EntityG();
             g2.setId(2);
             listG.add(g2);
@@ -184,7 +214,7 @@ public class TestNoForeignKeyViolation
             g4.setId(4);
             listG.add(g4);
             g4.setEntityF(f);
-            
+
             f.setListG(listG);
             em.getTransaction().begin();
             em.persist(f);
@@ -207,5 +237,4 @@ public class TestNoForeignKeyViolation
             em.close();
         }
     }
-    
 }

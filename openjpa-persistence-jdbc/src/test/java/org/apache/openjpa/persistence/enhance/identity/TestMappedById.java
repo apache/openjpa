@@ -28,6 +28,7 @@ import javax.persistence.EntityTransaction;
 import javax.persistence.Query;
 
 import org.apache.openjpa.enhance.PersistenceCapable;
+import org.apache.openjpa.jdbc.conf.JDBCConfiguration;
 import org.apache.openjpa.kernel.StateManagerImpl;
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
 import org.apache.openjpa.util.ObjectId;
@@ -119,6 +120,11 @@ public class TestMappedById extends SingleEMFTestCase {
      * This is a variation of spec 2.4.1.2 Example 4, case(b) with generated key
      */
     public void testMappedById4() {
+        // Not all databases support GenerationType.IDENTITY column(s)
+        if (!((JDBCConfiguration) emf.getConfiguration()).
+            getDBDictionaryInstance().supportsAutoAssign) {
+            return;
+        }
         createObj4();
         queryObj4();
     }
@@ -129,6 +135,11 @@ public class TestMappedById extends SingleEMFTestCase {
      * classes use generated key 
      */
     public void testMappedById5() {
+        // Not all databases support GenerationType.IDENTITY column(s)
+        if (!((JDBCConfiguration) emf.getConfiguration()).
+            getDBDictionaryInstance().supportsAutoAssign) {
+			return;
+        }
         createObj5();
         findObj5();
         queryObj5();
@@ -659,6 +670,11 @@ public class TestMappedById extends SingleEMFTestCase {
      * Derived Identity with IdClass and generatedKey
      */
     public void testPersistDerivedIdentityUsingIdClassAndGeneratedKey() {
+        // Not all databases support GenerationType.IDENTITY column(s)
+        if (!((JDBCConfiguration) emf.getConfiguration()).
+            getDBDictionaryInstance().supportsAutoAssign) {
+			return;
+        }
         EntityManager em = emf.createEntityManager();
         EntityTransaction tran = em.getTransaction();
         for (int i = 0; i < numEmployees; i++)
@@ -673,6 +689,11 @@ public class TestMappedById extends SingleEMFTestCase {
      * Derived Identity with IdClass and generatedKey
      */
     public void testMergeDerivedIdentityUsingIdClassAndGeneratedKey() {
+        // Not all databases support GenerationType.IDENTITY column(s)
+        if (!((JDBCConfiguration) emf.getConfiguration()).
+            getDBDictionaryInstance().supportsAutoAssign) {
+			return;
+        }
         EntityManager em = emf.createEntityManager();
         EntityTransaction tran = em.getTransaction();
         for (int i = 0; i < numEmployees; i++)

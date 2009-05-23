@@ -20,6 +20,7 @@ package org.apache.openjpa.persistence.datacache;
 
 import javax.persistence.EntityManager;
 
+import org.apache.openjpa.jdbc.conf.JDBCConfiguration;
 import org.apache.openjpa.persistence.OpenJPAEntityManager;
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
 
@@ -34,6 +35,11 @@ public class TestAutoIncrementAndDataCaching
     }
 
     public void testSimpleDataCacheOperation() {
+        // Not all databases support GenerationType.IDENTITY column(s)
+        if (!((JDBCConfiguration) emf.getConfiguration()).
+            getDBDictionaryInstance().supportsAutoAssign) {
+            return;
+        }
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
         em.persist(new IdentityIdClass());
@@ -42,6 +48,11 @@ public class TestAutoIncrementAndDataCaching
     }
 
     public void testAccessIdBeforeCommit() {
+        // Not all databases support GenerationType.IDENTITY column(s)
+        if (!((JDBCConfiguration) emf.getConfiguration()).
+            getDBDictionaryInstance().supportsAutoAssign) {
+			return;
+        }
         OpenJPAEntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
         IdentityIdClass o = new IdentityIdClass();

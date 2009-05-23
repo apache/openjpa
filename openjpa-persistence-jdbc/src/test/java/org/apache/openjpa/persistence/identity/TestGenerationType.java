@@ -39,22 +39,14 @@ public class TestGenerationType
 
     public void setUp() {
         setUp(IdentityGenerationType.class);
-
-        /*
-         * If the DBDictionary doesn't support AutoAssign(ment) of column
-         * values, then null out the emf instance to prevent the rest of
-         * the tests from executing.
-         */
-        JDBCConfiguration conf = (JDBCConfiguration) emf.getConfiguration();
-        if (!conf.getDBDictionaryInstance().supportsAutoAssign) {
-            emf = null;
-        }
-
     }
 
     public void testCreateEntityManager() {
-        if (emf == null)
-            return;
+        // Not all databases support GenerationType.IDENTITY column(s)
+        if (!((JDBCConfiguration) emf.getConfiguration()).
+            getDBDictionaryInstance().supportsAutoAssign) {
+			return;
+        }
         EntityManager em = emf.createEntityManager();
 
         EntityTransaction t = em.getTransaction();
@@ -72,8 +64,11 @@ public class TestGenerationType
     }
 
     public void testPersist() {
-        if (emf == null)
-            return;
+        // Not all databases support GenerationType.IDENTITY column(s)
+        if (!((JDBCConfiguration) emf.getConfiguration()).
+            getDBDictionaryInstance().supportsAutoAssign) {
+			return;
+        }
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
         em.persist(new IdentityGenerationType());
@@ -82,8 +77,11 @@ public class TestGenerationType
     }
 
     public void testQuery() {
-        if (emf == null)
-            return;
+        // Not all databases support GenerationType.IDENTITY column(s)
+        if (!((JDBCConfiguration) emf.getConfiguration()).
+            getDBDictionaryInstance().supportsAutoAssign) {
+			return;
+        }
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
         IdentityGenerationType igt = new IdentityGenerationType();
