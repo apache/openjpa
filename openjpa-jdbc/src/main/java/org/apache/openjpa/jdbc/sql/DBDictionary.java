@@ -390,7 +390,7 @@ public class DBDictionary
      */
     protected final Set selectWordSet = new HashSet();
 
-    // when we store values that lose precion, track the types so that the
+    // when we store values that lose precision, track the types so that the
     // first time it happens we can warn the user
     private Set _precisionWarnedTypes = null;
 
@@ -505,7 +505,7 @@ public class DBDictionary
         // try from the most generic, and if errors occur, try
         // less generic types; this enables us to handle values
         // like Double.NaN without having to introspect on the
-        // ResultSetMetaData (bug #1053). note that we handle
+        // ResultSetMetaData (bug #1053). Note that we handle
         // generic exceptions, since some drivers may throw
         // NumberFormatExceptions, whereas others may throw SQLExceptions
         try {
@@ -1033,7 +1033,7 @@ public class DBDictionary
     public void setCalendar(PreparedStatement stmnt, int idx, Calendar val,
         Column col)
         throws SQLException {
-        // by default we merely delegate the the Date parameter
+        // by default we merely delegate to the Date parameter
         setDate(stmnt, idx, val.getTime(), col);
     }
 
@@ -1082,7 +1082,7 @@ public class DBDictionary
     }
 
     /**
-     * Set the given value as a parameters to the statement. The column
+     * Set null as a parameter to the statement. The column
      * type will come from {@link Types}.
      */
     public void setNull(PreparedStatement stmnt, int idx, int colType,
@@ -1108,7 +1108,7 @@ public class DBDictionary
     }
 
     /**
-     * Set the given value as a parameters to the statement. The column
+     * Set the given value as a parameter to the statement. The column
      * type will come from {@link Types}.
      */
     public void setObject(PreparedStatement stmnt, int idx, Object val,
@@ -1727,7 +1727,7 @@ public class DBDictionary
      * those types (or add the type names to the
      * <code>fixedSizeTypeNameSet</code>).
      * 
-     * <P>Some databases support "type modifiers" for example the unsigned
+     * <P>Some databases support "type modifiers", for example the unsigned
      * "modifier" in MySQL. In these cases the size should go between the type 
      * and the "modifier", instead of after the modifier. For example 
      * CREATE table FOO ( myint INT (10) UNSIGNED . . .) instead of 
@@ -1759,8 +1759,8 @@ public class DBDictionary
      * 
      * @see appendSize
      * 
-     * @param typeName  The SQL type ie INT
-     * @param size      The size clause ie (10)
+     * @param typeName  The SQL type e.g. INT
+     * @param size      The size clause e.g. (10)
      * @return          The typeName + size clause. Usually the size clause will
      *                  be appended to typeName. If the typeName contains a 
      *                  marker : {0} or if typeName contains a modifier the 
@@ -1813,7 +1813,7 @@ public class DBDictionary
     ///////////
 
     /**
-     * Set the name of the join syntax to use: sql92, traditional, database
+     * Set the name of the join syntax to use: sql92, traditional, database.
      */
     public void setJoinSyntax(String syntax) {
         if ("sql92".equals(syntax))
@@ -1952,7 +1952,7 @@ public class DBDictionary
     /**
      * Returns the SQL for a bulk operation, either a DELETE or an UPDATE.
      *
-     * @param mapping the mappng against which we are operating
+     * @param mapping the mapping against which we are operating
      * @param sel the Select that will constitute the WHERE clause
      * @param store the current store
      * @param updateParams the Map that holds the update parameters; a null
@@ -2018,7 +2018,7 @@ public class DBDictionary
 
         // we need to use a subselect if we are to bulk delete where
         // the select includes multiple tables; if the database
-        // doesn't support it, then we need to sigal this by returning null
+        // doesn't support it, then we need to signal this by returning null
         if (!supportsSubselect || !supportsCorrelatedSubselect)
             return null;
 
@@ -4535,7 +4535,7 @@ public class DBDictionary
         return storeEx;
     }
 
-    /*
+    /**
      * Determine if the SQLException argument matches any element in the
      * errorStates. Dictionary subclass can override this method and extract
      * SQLException data to figure out if the exception is recoverable.
