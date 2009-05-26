@@ -39,6 +39,14 @@ public class TestSubquery
     }
 
     static String[]  querys = new String[] {
+        "select c from Customer c where EXISTS" +
+            " (select o from  in(c.orders)  o)" , 
+        "select c from Customer c where EXISTS" +
+            " (select o from c.orders o)" , 
+        "select c from Customer c where NOT EXISTS" +
+            " (select o from in (c.orders) o)" , 
+        "select c from Customer c where NOT EXISTS" +
+            " (select o from  c.orders o)" , 
         "select o1.oid from Order o1 where o1.oid in " +
             " (select distinct o.oid from OrderItem i, Order o" +
             " where i.quantity > 10 and o.amount > 1000 and i.lid = o.oid)" ,
@@ -86,8 +94,8 @@ public class TestSubquery
     // "select o from Order o where o.amount > (select count(o) from Order o)",
     // "select o from Order o where o.amount > (select count(o2) from
     // Order o2)",
-    // "select c from Customer c left join c.orders p where not exists"
-    //   + " (select o2 from c.orders o2 where o2 = o",
+    // "select c from Customer c left join c.orders o where not exists"
+    //   + " (select o2 from c.orders o2 where o2 = o)",
     };
 
     static String[]  querys_jpa20 = new String[] {        

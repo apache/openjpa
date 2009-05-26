@@ -755,7 +755,7 @@ public class TestEmbeddable extends SingleEMFTestCase {
         // test range variable over element collection
         String[] query = {
             "select e from Employee e, in (e.nickNames) n " +
-            " where n like '%1'",  
+                " where n like '%1'",  
         };
         for (int i = 0; i < query.length; i++) {
             es = em.createQuery(query[i]).getResultList();
@@ -1154,24 +1154,24 @@ public class TestEmbeddable extends SingleEMFTestCase {
     public void queryEntityA_Coll_String() {
         EntityManager em = emf.createEntityManager();
         String[] query = {
-                "select e from " +
-                    " EntityA_Coll_String a " +
-                    " , in (a.nickNames) e order by a.id",
-                "select e from " +
-                    " EntityA_Coll_String a " +
-                    " , in (a.nickNames) e order by a.id",
-                "select e from " +
-                    " EntityA_Coll_String a " +
-                    " , in (a.nickNames) e order by e",
-                "select a from " +
-                    " EntityA_Coll_String a " +
-                    " WHERE a.nickNames IS EMPTY order by a",
-                "select a from " +
-                    " EntityA_Coll_String a " +
-                    " WHERE exists (select n from EntityA_Coll_String a, " +
-                    " in (a.nickNames) n where n like '%1') " +
-                    " order by a",
-            };
+            "select e from " +
+                " EntityA_Coll_String a " +
+                " , in (a.nickNames) e order by a.id",
+            "select e from " +
+                " EntityA_Coll_String a " +
+                " , in (a.nickNames) e order by a.id",
+            "select e from " +
+                " EntityA_Coll_String a " +
+                " , in (a.nickNames) e order by e",
+            "select a from " +
+                " EntityA_Coll_String a " +
+                " WHERE a.nickNames IS EMPTY order by a",
+            "select a from " +
+                " EntityA_Coll_String a " +
+                " WHERE exists (select n from EntityA_Coll_String a, " +
+                " in (a.nickNames) n where n like '%1') " +
+                " order by a",
+        };
         List rs = null;
         for (int i = 0; i < query.length; i++) {
             rs = em.createQuery(query[i]).getResultList();
@@ -1574,14 +1574,13 @@ public class TestEmbeddable extends SingleEMFTestCase {
             "select a.embed.embed from EntityA_Embed_Embed a",
             "select a.embed as e from EntityA_Embed_Embed a ORDER BY e",
         };
-        String query2[] =
-            {
-                "select a.embed from EntityA_Embed_Embed a WHERE a.embed.embed "
-                    + " IS NOT NULL",
-                "select a.embed from EntityA_Embed_Embed a " + " WHERE exists "
-                    + " (select a.embed.embed from EntityA_Embed_Embed a"
-                    + " where a.embed IS NOT NULL) ",
-            };
+        String query2[] = {
+            "select a.embed from EntityA_Embed_Embed a WHERE a.embed.embed " +
+                " IS NOT NULL",
+            "select a.embed from EntityA_Embed_Embed a " + " WHERE exists " +
+                " (select a.embed.embed from EntityA_Embed_Embed a" +
+                " where a.embed IS NOT NULL) ",
+        };
         List rs = null;
         for (int i = 0; i < query.length; i++) {
             rs = em.createQuery(query[i]).getResultList();
@@ -1660,8 +1659,8 @@ public class TestEmbeddable extends SingleEMFTestCase {
                 " order by e.intVal3",
             "select e, e.intVal1, e.embed.intVal2 from " +
                 " EntityA_Coll_Embed_Embed a " +
-                " , in (a.embeds) e WHERE e.intVal1 <= SOME (select e2." +
-                "intVal2 " +
+                " , in (a.embeds) e WHERE e.intVal1 <= SOME " +
+                " (select e2.intVal2 " +
                 " from EntityA_Coll_Embed_Embed a1, in (a1.embeds) e2) " +
                 " order by e.intVal3",
             "select e, e.intVal1, e.embed.intVal2 from " +
@@ -1685,8 +1684,8 @@ public class TestEmbeddable extends SingleEMFTestCase {
                 " order by e.intVal3",
             "select e, e.intVal1, e.embed.intVal2 from " +
                 " EntityA_Coll_Embed_Embed a " +
-                " , in (a.embeds) e WHERE e.intVal1 <= SOME (select e." +
-                "intVal2 " +
+                " , in (a.embeds) e WHERE e.intVal1 <= SOME " +
+                " (select e.intVal2 " +
                 " from EntityA_Coll_Embed_Embed a, in (a.embeds) e) " +
                 " order by e.intVal3",
             "select e, e.intVal1, e.embed.intVal2 from " +
@@ -1710,8 +1709,8 @@ public class TestEmbeddable extends SingleEMFTestCase {
                 " order by e.intVal3",
             "select e, e.intVal1, e.embed.intVal2 from " +
                 " EntityA_Coll_Embed_Embed a " +
-                " , in (a.embeds) e WHERE e.intVal1 <= SOME (select e2." +
-                "intVal2 " +
+                " , in (a.embeds) e WHERE e.intVal1 <= SOME " +
+                " (select e2.intVal2 " +
                 " from in(a.embeds) e2) " +
                 " order by e.intVal3",
             "select e, e.intVal1, e.embed.intVal2 from " +
@@ -2347,23 +2346,27 @@ public class TestEmbeddable extends SingleEMFTestCase {
                 " where ?1 = any " +
                 " (select KEY(e) from Item1 i, in(i.images) e) " +
                 " order by i",
-            "select i from Item2 i" +
-                " where ?1 = any " +
-                " (select KEY(e) from Item2 i, in(i.images) e) " +
-                " order by i",
-            "select i from Item3 i" +
-                " where ?1 = any " +
-                " (select KEY(e) from Item3 i, in(i.images) e) " +
-                " order by i",
             "select i from Item1 i" +
                 " where exists " +
                 " (select e from Item1 i, in(i.images) e" +
                 "   where ?1 = KEY(e)) " +
                 " order by i",
+        };
+        String[] query2 = {
+            "select i from Item2 i" +
+                " where ?1 = any " +
+                " (select KEY(e) from Item2 i, in(i.images) e) " +
+                " order by i",
             "select i from Item2 i" +
                 " where exists " +
                 " (select e from Item2 i, in(i.images) e" +
                 "   where ?1 = KEY(e)) " +
+                " order by i",
+        };
+        String[] query3 = {
+            "select i from Item3 i" +
+                " where ?1 = any " +
+                " (select KEY(e) from Item3 i, in(i.images) e) " +
                 " order by i",
             "select i from Item3 i" +
                 " where exists " +
@@ -2374,25 +2377,26 @@ public class TestEmbeddable extends SingleEMFTestCase {
 
         for (int i = 0; i < query.length; i++) {
             Query q = em.createQuery(query[i]);
-            switch (i) {
-            case 0:
-            case 3:
-                q.setParameter(1, imageKey1);
-                is1 = q.getResultList();
-                assertItem1(is1.get(0));
-                break;
-            case 1:
-            case 4:
-                q.setParameter(1, imageKey2);
-                is2 = q.getResultList();
-                assertItem2(is2.get(0));
-                break;
-            case 2:
-            case 5:
-                q.setParameter(1, imageKey3);
-                is3 = q.getResultList();
-                assertItem3(is3.get(0));
-                break;
+            q.setParameter(1, imageKey1);
+            is1 = q.getResultList();
+            for (Item1 item : is1){
+                assertItem1(item);
+            }
+        }
+        for (int i = 0; i < query2.length; i++) {
+            Query q = em.createQuery(query2[i]);
+            q.setParameter(1, imageKey2);
+            is2 = q.getResultList();
+            for (Item2 item : is2){
+                assertItem2(item);
+            }
+        }
+        for (int i = 0; i < query3.length; i++) {
+            Query q = em.createQuery(query3[i]);
+            q.setParameter(1, imageKey3);
+            is3 = q.getResultList();
+            for (Item3 item : is3){
+                assertItem3(item);
             }
         }
         em.close();
@@ -2415,7 +2419,7 @@ public class TestEmbeddable extends SingleEMFTestCase {
         tran.commit();
 
         em.clear();
-        // test KEY(e) appeared in subquery
+        // test KEY(e) in subquery
         Division d1 = (Division) ((Company1) cs1.get(0)).getOrganization().
             keySet().toArray()[0];
         Division d2 = (Division) ((Company2) cs2.get(0)).getOrganization().
@@ -2428,40 +2432,47 @@ public class TestEmbeddable extends SingleEMFTestCase {
                 " (select KEY(d) from Company1 c, in(c.organization) d" +
                 "   where d.id = 1)" +
                 " order by c ",  
+            "select c from Company1 c where exists" +
+                " (select d from in(c.organization) d" +
+                "  where KEY(d) = ?1)" +
+                " order by c ",  
+            "select c from Company1 c where exists" +
+                " (select d from c.organization d" +
+                "  where KEY(d) = ?1)" +
+                " order by c ",  
+        };
+        for (int i = 0; i < query.length; i++) {
+            Query q = em.createQuery(query[i]);
+            q.setParameter(1, d1);
+            cs1 = q.getResultList();
+            for (Company1 c : cs1){
+                assertCompany1(c);
+            }
+        }
+
+        String[] query2 = {
             "select c from Company2 c" +
                 " where ?1 = " +
                 " (select KEY(d) from Company2 c, in(c.organization) d" +
                 "   where d.id = 3)" +
                 " order by c ",  
-            "select c from Company1 c where exists" +
-                " (select d from in(c.organization) d" +
-                "  where KEY(d) = ?1)" +
-                " order by c ",  
             "select c from Company2 c where exists" +
                 " (select d from in(c.organization) d" +
                 "  where KEY(d) = ?1)" +
                 " order by c ",  
+            "select c from Company2 c where exists" +
+                " (select d from c.organization d" +
+                "  where KEY(d) = ?1)" +
+                " order by c ",  
         };
 
-        for (int i = 0; i < query.length; i++) {
-            Query q = em.createQuery(query[i]);
-            switch (i) {
-            case 0:
-            case 1:
-            case 3:
-                q.setParameter(1, d1);
-                cs1 = q.getResultList();
-                if (cs1.size() > 0)
-                    assertCompany1(cs1.get(0));
-                break;
-            case 2:
-            case 4:
-                q.setParameter(1, d2);
-                cs2 = q.getResultList();
-                if (cs2.size() > 0)
-                    assertCompany2(cs2.get(0));
-                break;
-            }            
+        for (int i = 0; i < query2.length; i++) {
+            Query q = em.createQuery(query2[i]);
+            q.setParameter(1, d2);
+            cs2 = q.getResultList();
+            for (Company2 c : cs2){
+                assertCompany2(c);
+            }
         }
         em.close();
     }

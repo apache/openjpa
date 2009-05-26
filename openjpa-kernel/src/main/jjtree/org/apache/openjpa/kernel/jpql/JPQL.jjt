@@ -402,10 +402,16 @@ void subquery_from_clause() #FROM : { }
 		( LOOKAHEAD(1) <COMMA> subquery_from_item() )*
 }
 
+
+void subselect_identification_variable_declaration(): { }
+{
+	from_item() (LOOKAHEAD(inner_join()) inner_join() | LOOKAHEAD(outer_join()) outer_join())*
+}
+
 void subquery_from_item() : { }
 {
     LOOKAHEAD(collection_member_declaration()) collection_member_declaration()
-	| LOOKAHEAD(identification_variable_declaration()) identification_variable_declaration()
+	| LOOKAHEAD(subselect_identification_variable_declaration()) subselect_identification_variable_declaration()
 }
 
 void inner_join() #INNERJOIN : { }

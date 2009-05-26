@@ -244,7 +244,10 @@ public class JPQLExpressionBuilder
                 }
                 if (n.id == JJTPATH) {
                     Path path = getPath(n);
-                    ClassMetaData cmd = getFieldType(path.last());
+                    FieldMetaData fmd = path.last();
+                    ClassMetaData cmd = getFieldType(fmd);
+                    if (cmd == null && fmd.isElementCollection())
+                        cmd = fmd.getDefiningMetaData();
                     if (cmd != null) {
                         return cmd;
                     }
@@ -591,7 +594,15 @@ public class JPQLExpressionBuilder
 
             Path subpath = factory.newPath(ctx().subquery);
             subpath.setMetaData(ctx().subquery.getMetaData());
+            // subquery may have KEY range over a variable 
+            // that is not defined.
+            JPQLNode key = root().findChildByID(JJTKEY, true);
+            if (key != null && firstChild(key).text.equals(alias.text)) {
+                Value var = getVariable(alias.text, false);
+                exp = and(exp, factory.bindVariable(var, path));
+            }
             exp =  and(exp, factory.equal(path, subpath));
+            return exp;
         }
 
         return addJoin(path, alias, exp);
@@ -661,6 +672,15 @@ public class JPQLExpressionBuilder
 
                 Path subpath = factory.newPath(ctx().subquery);
                 subpath.setMetaData(ctx().subquery.getMetaData());
+                if (alias != null && !isSeendVariable(alias)) {
+                    // subquery may have KEY range over a variable 
+                    // that is not defined.
+                    JPQLNode key = root().findChildByID(JJTKEY, true);
+                    if (key != null && firstChild(key).text.equals(alias)) {
+                        Value var = getVariable(alias, false);
+                        exp = and(exp, factory.bindVariable(var, path));
+                    }
+                }
                 return and(exp, factory.equal(path, subpath));
             } else {
                 // we have an alias: bind it as a variable
@@ -1682,7 +1702,7 @@ public class JPQLExpressionBuilder
         // resolve the first element against the aliases map ...
         // i.e., the path "SELECT x.id FROM SomeClass x where x.id > 10"
         // will need to have "x" in the alias map in order to resolve
-        Path path;
+        Path path = null;
 
         final String name = firstChild(node).text;
         final Value val = getVariable(name, false);
