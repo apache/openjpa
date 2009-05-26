@@ -682,12 +682,12 @@ public class ClassMetaData
     		return;
     	if (!AccessCode.isValidClassCode(type)) {
             throw new IllegalArgumentException(_loc.get("access-type-invalid", 
-    		    this, AccessCode.toString(type)).getMessage());
+    		    this, AccessCode.toClassString(type)).getMessage());
     	}
     	if (_accessType != AccessCode.UNKNOWN) { // changing access type
     	    _repos.getLog().warn(_loc.get("access-type-change", 
-    		    this, AccessCode.toString(type), 
-    		    AccessCode.toString(_accessType)).getMessage());
+    		    this, AccessCode.toClassString(type), 
+    		    AccessCode.toClassString(_accessType)).getMessage());
     	}
         _accessType = type;
     }
@@ -2143,8 +2143,8 @@ public class ClassMetaData
         	int supCode = sup.getAccessType();
         	if (!AccessCode.isCompatibleSuper(_accessType, supCode))
              throw new MetaDataException(_loc.get("access-inconsistent-inherit",
-             new Object[]{this, AccessCode.toString(_accessType), 
-                          sup, AccessCode.toString(supCode)}).toString());
+             new Object[]{this, AccessCode.toClassString(_accessType), 
+                          sup, AccessCode.toClassString(supCode)}).toString());
         }
     }
 

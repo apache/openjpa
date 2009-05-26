@@ -179,7 +179,8 @@ public class AccessCode {
 			return mergeFieldCode(cCode, fCode);
 		} catch (IllegalStateException e) {
             throw new UserException(_loc.get("access-illegal-merge",
-                fmd.getFullName(false), toString(fCode), toString(cCode)));
+                fmd.getFullName(false), toFieldString(fCode), 
+                toClassString(cCode)));
 		}
 	}
 	
@@ -209,7 +210,7 @@ public class AccessCode {
 					return cCode;
 				else
                     throw new IllegalStateException("Can not merge field " +
-                    toString(fCode) + " to class " + toString(cCode));
+                    toFieldString(fCode) + " to class " + toClassString(cCode));
 			}
 		}
 		return cCode;
@@ -228,9 +229,22 @@ public class AccessCode {
 			return FIELD;
 		return UNKNOWN;
 	}
-	
-	public static String toString(int code) {
-		if (!isValidClassCode(code) || !isValidFieldCode(code))
+
+    public static String toFieldString(int code) {
+        if (!isValidFieldCode(code))
+            return "invalid code " + code;
+        if (code == UNKNOWN)
+            return "unknown access";
+        if (code == EMPTY)
+            return "empty access";
+        return (isMixed(code) ? "mixed " : "") 
+            + (isExplicit(code) ? "explicit " : "implicit ") 
+            + (isField(code) ? "field" : "property")
+            + " access";
+    }
+
+	public static String toClassString(int code) {
+		if (!isValidClassCode(code))
 			return "invalid code " + code;
 		if (code == UNKNOWN)
 			return "unknown access";

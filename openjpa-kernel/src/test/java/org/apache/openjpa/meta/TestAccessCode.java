@@ -40,7 +40,8 @@ public class TestAccessCode extends TestCase {
         
         // All odd codes other than 1 are invalid
         for (int i = 3; i < 32; i += 2)
-            assertFalse("Not a valid Class Code: " + AccessCode.toString(i), 
+            assertFalse("Not a valid Class Code: " + 
+                AccessCode.toClassString(i), 
                 AccessCode.isValidClassCode(i));
     }
     
@@ -59,7 +60,8 @@ public class TestAccessCode extends TestCase {
         
         // any even code with MIXED bit set is invalid
         for (int i = MIXED; i < 32; i += 2) {
-            assertFalse("Not a valid field code: " + AccessCode.toString(i), 
+            assertFalse("Not a valid field code: " + 
+                AccessCode.toFieldString(i), 
                 AccessCode.isValidFieldCode(i));
         }
     }
@@ -145,27 +147,31 @@ public class TestAccessCode extends TestCase {
     }
     
     public void testToString() {
-        assertEquals("explicit property access", AccessCode.toString(12));
+        assertEquals("explicit property access", AccessCode.toClassString(12));
     }
     
     void isValidClassCode(boolean flag, int v, int valid) {
         assertEquals(v, valid);
         if (flag)
             assertTrue("Invalid Class Code: " + 
-            AccessCode.toString(valid), AccessCode.isValidClassCode(valid));
+            AccessCode.toClassString(valid), 
+            AccessCode.isValidClassCode(valid));
         else
             assertFalse("Wrong Valid Class Code: " + 
-            AccessCode.toString(valid), AccessCode.isValidClassCode(valid));
+            AccessCode.toClassString(valid), 
+            AccessCode.isValidClassCode(valid));
     }
     
     void isValidFieldCode(boolean flag, int v, int valid) {
         assertEquals(v, valid);
         if (flag)
             assertTrue("Invalid Field Code: " + 
-            AccessCode.toString(valid), AccessCode.isValidFieldCode(valid));
+            AccessCode.toFieldString(valid), 
+            AccessCode.isValidFieldCode(valid));
         else
             assertFalse("Wrong Field Class Code: " + 
-            AccessCode.toString(valid), AccessCode.isValidFieldCode(valid));
+            AccessCode.toFieldString(valid), 
+            AccessCode.isValidFieldCode(valid));
     }
     
     void isProperty(boolean flag, int v, int valid) {

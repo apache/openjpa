@@ -24,7 +24,7 @@
     <access>PROPERTY</access>
     <entity name="XMLDPMFA2"
         class=
-        "org.apache.openjpa.persistence.access.xml.XMLDefPropMixedFieldAccess">
+        "org.apache.openjpa.persistence.access.xml.XMLDefPropMixedFieldAccess2">
         <named-query name="XMLDPMFA2.query">
             <query>SELECT dp FROM XMLDPMFA2 dp WHERE 
             dp.id = :id AND dp.strField = :strVal
@@ -45,7 +45,7 @@
         </attributes>
     </entity>
     <entity name="XMLPropAccess2" 
-            class="org.apache.openjpa.persistence.access.xml.XMLPropAccess">
+            class="org.apache.openjpa.persistence.access.xml.XMLPropAccess2">
         <named-query name="XMLPropAccess2.query">
             <query>SELECT xpa FROM XMLPropAccess2 xpa WHERE 
             xpa.id = :id AND xpa.strProp = :strVal

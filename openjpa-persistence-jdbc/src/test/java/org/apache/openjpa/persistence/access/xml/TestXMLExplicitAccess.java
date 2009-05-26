@@ -26,29 +26,22 @@ import org.apache.openjpa.persistence.ArgumentException;
 import org.apache.openjpa.persistence.OpenJPAEntityManagerFactorySPI;
 import org.apache.openjpa.persistence.OpenJPAEntityManagerSPI;
 import org.apache.openjpa.persistence.OpenJPAPersistence;
-import org.apache.openjpa.persistence.access.EmbedMixedAccess;
-import org.apache.openjpa.persistence.access.PropMixedEntity;
 import org.apache.openjpa.persistence.test.AllowFailure;
-import org.apache.openjpa.persistence.test.PersistenceTestCase;
+import org.apache.openjpa.persistence.test.SingleEMFTestCase;
 
-public class TestXMLExplicitAccess extends PersistenceTestCase {
-    
-    private OpenJPAEntityManagerFactorySPI emf = null;
-    
+public class TestXMLExplicitAccess extends SingleEMFTestCase {
+        
     public void setUp() throws Exception {
         super.setUp();
-        emf = (OpenJPAEntityManagerFactorySPI)OpenJPAPersistence.
-            createEntityManagerFactory("Access-1",
-            "org/apache/openjpa/persistence/access/" +
-            "access-persistence.xml");
     }
     
     public void tearDown() throws Exception {
         super.tearDown();
-        if (emf != null) {
-            clear(emf);
-            emf.close();
-        }
+    }
+    
+    @Override
+    protected String getPersistenceUnitName() {
+        return "Access-1";
     }
     /**
      * Validates the use of field level access on an
@@ -212,7 +205,7 @@ public class TestXMLExplicitAccess extends PersistenceTestCase {
     public void testAbstractMappedSuperField() {
         OpenJPAEntityManagerFactorySPI emf = 
             (OpenJPAEntityManagerFactorySPI)OpenJPAPersistence.
-            createEntityManagerFactory("Access-1",
+            createEntityManagerFactory("Access-XML",
             "org/apache/openjpa/persistence/access/" +
             "access-persistence.xml");
 
@@ -268,7 +261,7 @@ public class TestXMLExplicitAccess extends PersistenceTestCase {
 
         OpenJPAEntityManagerFactorySPI emf = 
             (OpenJPAEntityManagerFactorySPI)OpenJPAPersistence.
-            createEntityManagerFactory("Access-1",
+            createEntityManagerFactory("Access-XML",
             "org/apache/openjpa/persistence/access/" +
             "access-persistence.xml");
 
@@ -325,7 +318,7 @@ public class TestXMLExplicitAccess extends PersistenceTestCase {
         
         OpenJPAEntityManagerFactorySPI emf = 
             (OpenJPAEntityManagerFactorySPI)OpenJPAPersistence.
-            createEntityManagerFactory("Access-1",
+            createEntityManagerFactory("Access-XML",
             "org/apache/openjpa/persistence/access/" +
             "access-persistence.xml");
 
@@ -785,5 +778,4 @@ public class TestXMLExplicitAccess extends PersistenceTestCase {
 
         em.close();
     }
-
 }

@@ -40,6 +40,11 @@
         </description>
         <mapping-file>org/apache/openjpa/persistence/xml/orm.xml</mapping-file>
         <mapping-file>org/apache/openjpa/persistence/embed/embed-orm.xml</mapping-file>
+        <mapping-file>org/apache/openjpa/persistence/access/access-orm.xml</mapping-file>
+        <mapping-file>org/apache/openjpa/persistence/access/access-def-field-orm.xml</mapping-file>
+        <mapping-file>org/apache/openjpa/persistence/access/access-def-prop-orm.xml</mapping-file>
+        <mapping-file>org/apache/openjpa/persistence/access/access-pudef-field-orm.xml</mapping-file>
+        <mapping-file>org/apache/openjpa/persistence/access/access-pudef-prop-orm.xml</mapping-file>
         <properties>
             <property name="openjpa.jdbc.SynchronizeMappings"
                 value="buildSchema(ForeignKeys=true)"/>
@@ -128,4 +133,38 @@
         </properties>
     </persistence-unit>
 
+    <persistence-unit name="Access-1" transaction-type="RESOURCE_LOCAL">
+        <description>PU for access testing</description>
+        <mapping-file>
+            org/apache/openjpa/persistence/access/access-orm.xml
+        </mapping-file>
+        <class>org.apache.openjpa.persistence.access.xml.XMLAbstractMappedSuperField</class>
+        <class>org.apache.openjpa.persistence.access.xml.XMLAbstractMappedSuperProperty</class>
+        <class>org.apache.openjpa.persistence.access.xml.XMLDefFieldMixedPropAccess</class>
+        <class>org.apache.openjpa.persistence.access.xml.XMLDefPropMixedFieldAccess</class>
+        <class>org.apache.openjpa.persistence.access.xml.XMLEmbedFieldAccess</class>
+        <class>org.apache.openjpa.persistence.access.xml.XMLEmbedMixedAccess</class>
+        <class>org.apache.openjpa.persistence.access.xml.XMLEmbedPropAccess</class>
+        <class>org.apache.openjpa.persistence.access.xml.XMLFieldAccess</class>
+        <class>org.apache.openjpa.persistence.access.xml.XMLFieldEmbedEntity</class>
+        <class>org.apache.openjpa.persistence.access.xml.XMLFieldSub</class>
+        <class>org.apache.openjpa.persistence.access.xml.XMLFieldSub2</class>
+        <class>org.apache.openjpa.persistence.access.xml.XMLFieldSub3</class>
+        <class>org.apache.openjpa.persistence.access.xml.XMLMappedSuperField</class>
+        <class>org.apache.openjpa.persistence.access.xml.XMLMappedSuperProperty</class>
+        <class>org.apache.openjpa.persistence.access.xml.XMLMixedFieldSub</class>
+        <class>org.apache.openjpa.persistence.access.xml.XMLMixedMappedSuper</class>
+        <class>org.apache.openjpa.persistence.access.xml.XMLPropAccess</class>
+        <class>org.apache.openjpa.persistence.access.xml.XMLPropEmbedEntity</class>
+        <class>org.apache.openjpa.persistence.access.xml.XMLPropertySub</class>
+        <class>org.apache.openjpa.persistence.access.xml.XMLPropertySub2</class>
+        <class>org.apache.openjpa.persistence.access.xml.XMLPropertySub3</class>
+        <class>org.apache.openjpa.persistence.access.xml.XMLPropMixedEntity</class>
+        <class>org.apache.openjpa.persistence.access.xml.XMLSuperFieldEntity</class>
+        <class>org.apache.openjpa.persistence.access.xml.XMLSuperPropertyEntity</class>
+        <properties>
+            <property name="openjpa.jdbc.SynchronizeMappings" 
+                value="buildSchema"/> 
+        </properties>
+    </persistence-unit>
 </persistence>

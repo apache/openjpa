@@ -645,7 +645,7 @@ public class PersistenceMetaDataDefaults
         	}
         } else {
         	throw new InternalException(meta + " " + 
-        		AccessCode.toString(meta.getAccessType()));
+        		AccessCode.toClassString(meta.getAccessType()));
         }
     }
     

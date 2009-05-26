@@ -31,9 +31,9 @@
         <mapping-file>
             org/apache/openjpa/persistence/access/access-pudef-prop-orm.xml
         </mapping-file>
-        <class>org.apache.openjpa.persistence.access.xml.XMLPropAccess</class>
+        <class>org.apache.openjpa.persistence.access.xml.XMLPropAccess2</class>
         <class>
-            org.apache.openjpa.persistence.access.xml.XMLDefPropMixedFieldAccess
+            org.apache.openjpa.persistence.access.xml.XMLDefPropMixedFieldAccess2
         </class>
         <properties>
             <property name="openjpa.jdbc.SynchronizeMappings" 
@@ -49,9 +49,9 @@
         <mapping-file>
             org/apache/openjpa/persistence/access/access-pudef-field-orm.xml
         </mapping-file>
-        <class>org.apache.openjpa.persistence.access.xml.XMLFieldAccess</class>
+        <class>org.apache.openjpa.persistence.access.xml.XMLFieldAccess2</class>
         <class>
-            org.apache.openjpa.persistence.access.xml.XMLDefFieldMixedPropAccess
+            org.apache.openjpa.persistence.access.xml.XMLDefFieldMixedPropAccess2
         </class>
         <properties>
             <property name="openjpa.jdbc.SynchronizeMappings" 

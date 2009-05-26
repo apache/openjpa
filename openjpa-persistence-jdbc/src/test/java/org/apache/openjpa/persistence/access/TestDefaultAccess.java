@@ -23,10 +23,10 @@ import javax.persistence.Query;
 import org.apache.openjpa.persistence.OpenJPAEntityManagerFactorySPI;
 import org.apache.openjpa.persistence.OpenJPAEntityManagerSPI;
 import org.apache.openjpa.persistence.OpenJPAPersistence;
-import org.apache.openjpa.persistence.access.xml.XMLDefFieldMixedPropAccess;
-import org.apache.openjpa.persistence.access.xml.XMLDefPropMixedFieldAccess;
-import org.apache.openjpa.persistence.access.xml.XMLFieldAccess;
-import org.apache.openjpa.persistence.access.xml.XMLPropAccess;
+import org.apache.openjpa.persistence.access.xml.XMLDefFieldMixedPropAccess2;
+import org.apache.openjpa.persistence.access.xml.XMLDefPropMixedFieldAccess2;
+import org.apache.openjpa.persistence.access.xml.XMLFieldAccess2;
+import org.apache.openjpa.persistence.access.xml.XMLPropAccess2;
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
 
 public class TestDefaultAccess extends SingleEMFTestCase {
@@ -101,7 +101,7 @@ public class TestDefaultAccess extends SingleEMFTestCase {
     }
     
     private void verifyDefaultFieldAccess(OpenJPAEntityManagerSPI em) {
-        XMLFieldAccess fa = new XMLFieldAccess();
+        XMLFieldAccess2 fa = new XMLFieldAccess2();
         // Set the persistent field through a misnamed setter         
         fa.setStringField("XMLFieldAccess2");
         
@@ -116,10 +116,10 @@ public class TestDefaultAccess extends SingleEMFTestCase {
         Query qry = em.createNamedQuery("XMLFieldAccess2.query");
         qry.setParameter("id", fa.getId());
         qry.setParameter("strVal", "XMLFieldAccess2");
-        XMLFieldAccess fa2 = (XMLFieldAccess)qry.getSingleResult();
+        XMLFieldAccess2 fa2 = (XMLFieldAccess2)qry.getSingleResult();
         assertEquals(fa.getId(), fa2.getId());
 
-        XMLDefFieldMixedPropAccess dfmpa = new XMLDefFieldMixedPropAccess();
+        XMLDefFieldMixedPropAccess2 dfmpa = new XMLDefFieldMixedPropAccess2();
         // Call non-PC setter
         dfmpa.setStrField("NonPCSetter");
         // Call setter with property access
@@ -136,8 +136,8 @@ public class TestDefaultAccess extends SingleEMFTestCase {
         qry = em.createNamedQuery("XMLDFMPA2.query");
         qry.setParameter("id", dfmpa.getId());
         qry.setParameter("strVal", "XMLDFMPA2");
-        XMLDefFieldMixedPropAccess dfmpa2 = 
-            (XMLDefFieldMixedPropAccess)qry.getSingleResult();
+        XMLDefFieldMixedPropAccess2 dfmpa2 = 
+            (XMLDefFieldMixedPropAccess2)qry.getSingleResult();
         assertEquals(dfmpa, dfmpa2);
         assertEquals(dfmpa2.getStringField(), "XMLDFMPA2");
 
@@ -154,7 +154,7 @@ public class TestDefaultAccess extends SingleEMFTestCase {
     }
 
     private void verifyDefaultPropertyAccess(OpenJPAEntityManagerSPI em) {
-        XMLPropAccess pa = new XMLPropAccess();
+        XMLPropAccess2 pa = new XMLPropAccess2();
         // Set the persistent field through a mis-named setter         
         pa.setStrProp("PropertyAccess");
         
@@ -169,10 +169,10 @@ public class TestDefaultAccess extends SingleEMFTestCase {
         Query qry = em.createNamedQuery("XMLPropAccess2.query");
         qry.setParameter("id", pa.getId());
         qry.setParameter("strVal", "PropertyAccess");
-        XMLPropAccess pa2 = (XMLPropAccess)qry.getSingleResult();
+        XMLPropAccess2 pa2 = (XMLPropAccess2)qry.getSingleResult();
         assertEquals(pa, pa2);
 
-        XMLDefPropMixedFieldAccess dpmfa = new XMLDefPropMixedFieldAccess();
+        XMLDefPropMixedFieldAccess2 dpmfa = new XMLDefPropMixedFieldAccess2();
         // Call setter with underlying field access
         dpmfa.setStrProp("XMLDPMFA2");
         
@@ -187,8 +187,8 @@ public class TestDefaultAccess extends SingleEMFTestCase {
         qry = em.createNamedQuery("XMLDPMFA2.query");
         qry.setParameter("id", dpmfa.getId());
         qry.setParameter("strVal", "XMLDPMFA2");
-        XMLDefPropMixedFieldAccess dpmfa2 = 
-            (XMLDefPropMixedFieldAccess)qry.getSingleResult();
+        XMLDefPropMixedFieldAccess2 dpmfa2 = 
+            (XMLDefPropMixedFieldAccess2)qry.getSingleResult();
         assertEquals(dpmfa, dpmfa2);
         assertEquals(dpmfa2.getStrProp(), "XMLDPMFA2");
 

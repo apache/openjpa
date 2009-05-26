@@ -27,7 +27,7 @@
         </persistence-unit-defaults>
     </persistence-unit-metadata>
     <entity name="XMLFieldAccess2" 
-            class="org.apache.openjpa.persistence.access.xml.XMLFieldAccess"> 
+            class="org.apache.openjpa.persistence.access.xml.XMLFieldAccess2"> 
         <named-query name="XMLFieldAccess2.query">
             <query>SELECT xfa FROM XMLFieldAccess2 xfa WHERE 
             xfa.id = :id AND xfa.strField = :strVal
@@ -43,7 +43,7 @@
     </entity>
     <entity name="XMLDFMPA2"
         class=
-        "org.apache.openjpa.persistence.access.xml.XMLDefFieldMixedPropAccess">
+        "org.apache.openjpa.persistence.access.xml.XMLDefFieldMixedPropAccess2">
         <named-query name="XMLDFMPA2.query">
             <query>SELECT df FROM XMLDFMPA2 df WHERE 
             df.id = :id AND df.stringField = :strVal
