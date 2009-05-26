@@ -1,0 +1,12 @@
+
+* OpenJPA includes software developed by the SERP project
+    Copyright (c) 2002-2006, A. Abram White. All rights reserved.
+
+* OpenJPA is bundled with the schemas from the JPA specification, by
+    Sun Microsystems and licensed under the CDDL 1.0. The source code is
+    available at: https://glassfish.dev.java.net/source/browse/glassfish/
+
+* OpenJPA includes software written by Miroslav Nachev
+
+* OpenJPA uses test code written by Charles Tillman.
+
