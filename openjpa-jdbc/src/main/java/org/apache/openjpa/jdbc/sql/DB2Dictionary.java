@@ -309,10 +309,12 @@ public class DB2Dictionary
                 + "NAME AS SEQUENCE_NAME FROM SYSIBM.SYSSEQUENCES";
             sequenceSchemaSQL = "SCHEMA = ?";
             sequenceNameSQL = "NAME = ?";
-            if (maj == 8)
+            if (maj == 8) {
                 // DB2 Z/OS Version 8: no bigint support, hence map Java
                 // long to decimal
                 bigintTypeName = "DECIMAL(31,0)";
+            }
+            ignoreSQLExceptionOnSetQueryTimeout = true; 
             break;
         case db2ISeriesV5R3OrEarlier:
         case db2ISeriesV5R4OrLater:
