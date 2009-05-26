@@ -162,6 +162,11 @@ public class OracleDictionary
             "LONG", "MAXEXTENTS", "MINUS", "MODE", "NOAUDIT", "NOCOMPRESS",
             "NOWAIT", "OFFLINE", "ONLINE", "PCTFREE", "ROW",
         }));
+        // reservedWordSet subset that can be used as valid column names
+        validColumnWordSet.addAll(Arrays.asList(new String[]{
+            "C", "COUNT", "DATA", "NAME", "NULLABLE", "STORE", "TIMESTAMP", 
+            "TYPE", "VALUE", "VERSION", 
+        }));
 
         substringFunctionName = "SUBSTR";
         super.setBatchLimit(defaultBatchLimit);

@@ -150,6 +150,11 @@ public class DB2Dictionary
             "TYPE", "UNDO", "UNTIL", "VALIDPROC", "VARIABLE", "VARIANT", "VCAT",
             "VOLUMES", "WHILE", "WLM", "YEARS",
         }));
+        // reservedWordSet subset that can be used as valid column names
+        validColumnWordSet.addAll(Arrays.asList(new String[]{
+            "C", "COUNT", "DATE", "DATA", "LABEL", "LOCALE", "NAME", "NUMBER", 
+            "TIMESTAMP", "VALUE", 
+        }));
         
         super.setBatchLimit(defaultBatchLimit);
         

@@ -90,6 +90,13 @@ public class DynamicSchemaFactory
         Schema schema = getSchema(schemaName);
         if (schema == null)
             schema = addSchema(schemaName);
+
+        // Ensure only valid table name(s) are added to the schema
+        if (tableName.length() > _dict.maxTableNameLength) {
+            return schema.addTable(tableName, 
+                _dict.getValidTableName(tableName, getSchema(schemaName)));
+        }
+
         return schema.addTable(tableName);
     }
 
@@ -104,7 +111,7 @@ public class DynamicSchemaFactory
     /**
      * Table type that adds columns when {@link #getColumn} is called.
      */
-    private static class DynamicTable
+    private class DynamicTable
         extends Table {
 
         public DynamicTable(String name, Schema schema) {
@@ -118,6 +125,14 @@ public class DynamicSchemaFactory
             Column col = super.getColumn(name);
             if (col != null)
                 return col;
+
+            // Ensure only valid column name(s) are added to the table
+            if ((name.length() > _dict.maxColumnNameLength) ||
+                _dict.getInvalidColumnWordSet().contains(name.toUpperCase())) {
+                return addColumn(name, 
+                    _dict.getValidColumnName(name, this));
+            }
+
             return addColumn(name);
         }
     }

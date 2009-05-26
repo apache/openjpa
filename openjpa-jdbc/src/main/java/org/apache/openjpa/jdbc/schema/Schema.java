@@ -134,6 +134,24 @@ public class Schema
     }
 
     /**
+     * Add a table with a shortened (i.e., validated) name to the schema
+     */
+    public Table addTable(String name, String validName) {
+        SchemaGroup group = getSchemaGroup();
+        Table tab;
+        if (group != null) {
+            group.addName(validName, true);
+            tab = group.newTable(validName, this);
+        } else
+            tab = new Table(validName, this);
+        if (_tableMap == null)
+            _tableMap = new TreeMap();
+        _tableMap.put(name.toUpperCase(), tab);
+        _tables = null;
+        return tab;
+    }
+
+    /**
      * Remove the given table from the schema.
      *
      * @return true if the table was removed, false if not in the schema

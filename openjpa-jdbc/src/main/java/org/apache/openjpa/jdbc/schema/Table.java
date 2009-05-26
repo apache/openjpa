@@ -297,6 +297,26 @@ public class Table
         return col;
     }
 
+
+    /**
+     * Add a colum with a shortened (i.e., validated) name to the table
+     */
+    public Column addColumn(String name, String validName) {
+        addName(name, true);
+        Schema schema = getSchema();
+        Column col;
+        if (schema != null && schema.getSchemaGroup() != null)
+            col = schema.getSchemaGroup().newColumn(validName, this);
+        else
+            col = new Column(validName, this);
+        if (_colMap == null)
+            _colMap = new LinkedHashMap();
+        _colMap.put(name.toUpperCase(), col);
+        _cols = null;
+        return col;
+    }
+
+
     /**
      * Remove the given column from the table.
      *
@@ -735,5 +755,16 @@ public class Table
 
     public void setColNumber(int colNum) {
         _colNum = colNum;
+    }
+
+    /**
+    * Add a column to the subNames set to avoid naming conflict.
+    */
+    public void addSubColumn(String name) {
+        addSubName(name);
+    }
+
+    public void resetSubColumns() {
+        resetSubNames();
     }
 }

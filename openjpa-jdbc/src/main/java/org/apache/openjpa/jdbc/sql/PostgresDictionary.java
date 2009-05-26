@@ -163,6 +163,11 @@ public class PostgresDictionary
             "RETRIEVE", "RETURNS", "RULE", "SETOF", "STDIN", "STDOUT",
             "STORE", "VACUUM", "VERBOSE", "VERSION",
         }));
+        // reservedWordSet subset that can be used as valid column names
+        validColumnWordSet.addAll(Arrays.asList(new String[]{
+            "C", "COUNT", "DATE", "DATA", "NAME", "NULLABLE", "NUMBER", "OID", 
+            "STORE", "TIMESTAMP", "TYPE", "VALUE", "VERSION", 
+        }));
     }
 
     public Date getDate(ResultSet rs, int column)

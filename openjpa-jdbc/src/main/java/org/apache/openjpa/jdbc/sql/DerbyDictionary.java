@@ -77,6 +77,11 @@ public class DerbyDictionary
             "RUNTIMESTATISTICS", "STATEMENT", "STATISTICS",
             "TIMING", "WAIT", "XML",
         }));
+        // reservedWordSet subset that can be used as valid column names
+        validColumnWordSet.addAll(Arrays.asList(new String[]{
+            "C", "COUNT", "DATE", "DATA", "NAME", "NUMBER", "NULLABLE", 
+            "TIMESTAMP", "TYPE", "VALUE", 
+        }));
     }
 
     public void closeDataSource(DataSource dataSource) {
