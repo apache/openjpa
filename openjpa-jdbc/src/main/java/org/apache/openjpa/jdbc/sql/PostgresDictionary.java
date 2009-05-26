@@ -21,17 +21,21 @@ package org.apache.openjpa.jdbc.sql;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.sql.Timestamp;
 import java.sql.Types;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Arrays;
 import java.util.Date;
+import java.util.Map;
 
 import org.apache.openjpa.jdbc.kernel.JDBCStore;
 import org.apache.openjpa.jdbc.kernel.exps.FilterValue;
@@ -646,4 +650,44 @@ public class PostgresDictionary
             }
         }
     }
+
+    /**
+     * Override the getOjbect() method to handle the case where the latest
+     * Postgres JDBC driver returns a org.postgresql.util.PGobject instead of a
+     * java.sql.Timestamp
+     * 
+     * @param rs 
+     * @param column
+     * @param map
+     * 
+     * @return 
+     * @exception SQLException
+     */
+    public Object getObject(ResultSet rs, int column, Map map) throws SQLException {
+        Object obj = super.getObject(rs, column, map);
+
+        if (obj == null) {
+            return null;
+        }
+
+        if (obj.getClass().getName().equals("org.postgresql.util.PGobject")) {
+            try {
+                Method m = obj.getClass().getMethod("getType", (Class[]) null);
+                Object type = m.invoke(obj, (Object[]) null);
+                if (((String)type).equalsIgnoreCase(timestampTypeName)) {
+                    return rs.getTimestamp(column);
+                }
+            }
+            catch (Throwable t) {
+                if (t instanceof InvocationTargetException)
+                    t = ((InvocationTargetException) t).getTargetException();
+                if (t instanceof SQLException)
+                    throw(SQLException) t;
+                throw new SQLException(t.getMessage());
+            }
+        }
+
+        return obj;
+    }   
+
 }
