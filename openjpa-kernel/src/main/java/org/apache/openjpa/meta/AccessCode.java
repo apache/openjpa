@@ -209,8 +209,10 @@ public class AccessCode {
 				if (fCode == cCode)
 					return cCode;
 				else
-                    throw new IllegalStateException("Can not merge field " +
-                    toFieldString(fCode) + " to class " + toClassString(cCode));
+                    throw new IllegalStateException(
+                        (_loc.get("access-cannot-merge",
+                        toFieldString(fCode), 
+                        toClassString(cCode)).toString()));
 			}
 		}
 		return cCode;
