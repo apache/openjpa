@@ -38,7 +38,6 @@
             <groupId>org.apache.openjpa</groupId>
             <artifactId>openjpa-kernel</artifactId>
             <version>${pom.version}</version>
-            <scope>compile</scope>
         </dependency>
     </dependencies>
 </project>

@@ -62,12 +62,30 @@
                 </executions>
             </plugin>
 
+            <!--
+                create enhancer pre-main attribute
+            -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-jar-plugin</artifactId>
                 <configuration>
                     <archive>
+                        <!-- only if we're using maven-bundle-plugin
                         <manifestFile>${project.build.outputDirectory}/META-INF/MANIFEST.MF</manifestFile>
+                        -->
+                        <!-- reset openjpa aggregate bundle metadata -->
+                        <manifest>
+                           <mainClass>org.apache.openjpa.conf.OpenJPAVersion</mainClass>
+                        </manifest>
+                        <manifestEntries>
+                            <Premain-Class>
+                                org.apache.openjpa.enhance.PCEnhancerAgent
+                            </Premain-Class>
+                            <Can-Redefine-Classes>true</Can-Redefine-Classes>
+                            <Specification-Title>JSR-317 Java Persistence</Specification-Title>
+                            <Specification-Vendor>Sun Microsystems, Inc.</Specification-Vendor>
+                            <Specification-Version>2.0</Specification-Version>
+                        </manifestEntries>
                     </archive>
                 </configuration>
             </plugin>
@@ -81,6 +99,10 @@
                         <goals>
                             <goal>shade</goal>
                         </goals>
+                        <configuration>
+                            <createDependencyReducedPom>true</createDependencyReducedPom>
+                            <keepDependenciesWithProvidedScope>true</keepDependenciesWithProvidedScope>
+                        </configuration>
                     </execution>
                 </executions>
             </plugin>
@@ -93,7 +115,7 @@
             <version>${pom.version}</version>
             <scope>provided</scope>
         </dependency>
-        <!-- 
+        <!--
             Only include the openjpa.jar required dependencies here, which
             will be used by maven-shade-plugin to determine the inclusions.
         -->

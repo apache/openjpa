@@ -47,7 +47,7 @@
                 <executions>
                     <execution>
                         <id>build-single-jar</id>
-                        <phase>process-classes</phase>
+                        <phase>compile</phase>
                         <configuration>
                             <tasks>
                                 <unjar overwrite="false" dest="${basedir}/target/classes">
@@ -94,6 +94,7 @@
                 <artifactId>maven-jar-plugin</artifactId>
                 <configuration>
                     <archive>
+                        <manifestFile>${project.build.outputDirectory}/META-INF/MANIFEST.MF</manifestFile>
                         <manifest>
                            <mainClass>org.apache.openjpa.conf.OpenJPAVersion</mainClass>
                         </manifest>
@@ -105,6 +106,41 @@
                         </manifestEntries>
                     </archive>
                 </configuration>
+            </plugin>
+
+            <plugin>
+                <groupId>org.apache.felix</groupId>
+                <artifactId>maven-bundle-plugin</artifactId>
+                <extensions>true</extensions>
+                <configuration>
+                    <instructions>
+                        <Bundle-Name>${artifactId}</Bundle-Name>
+                        <Bundle-SymbolicName>${groupId}.${artifactId};singleton=true</Bundle-SymbolicName>
+                        <Bundle-DocURL>http://openjpa.apache.org/documentation.html</Bundle-DocURL>
+                        <Implementation-Title>Apache OpenJPA</Implementation-Title>
+                        <Implementation-Version>${project.version}</Implementation-Version>
+                        <Specification-Title>JSR-220 Java Persistence</Specification-Title>
+                        <Specification-Vendor>Sun Microsystems, Inc.</Specification-Vendor>
+                        <Specification-Version>1.0</Specification-Version>
+                        <!-- OSGi Bundle Metadata -->
+                        <Private-Package>org.openjpa.lib.ant*,org.apache.jdbc.ant*,META-INF*</Private-Package>
+                        <Export-Package>!META-INF*,!org.openjpa.lib.ant*,!org.apache.jdbc.ant*,org.apache.openjpa*</Export-Package>
+                        <Import-Package>com.ibm.*;resolution:=optional,org.postgresql.*;resolution:=optional,org.apache.tools.ant.*;resolution:=optional,org.apache.log4j.*;resolution:=optional,javax.activation.xa*;resolution:=optional,javax.jms.*;resolution:=optional,javax.transaction.*;resolution:=optional,javax.xml.bind.*;resolution:=optional,serp.*;resolution:=optional,*</Import-Package>
+                        <!-- Eclipse metadata -->
+                        <Eclipse-Autostart>false</Eclipse-Autostart>
+                        <Bundle-ClassPath>.</Bundle-ClassPath>
+                    </instructions>
+                    <unpackBundle>true</unpackBundle>
+                </configuration>
+                <executions>
+                    <execution>
+                        <id>bundle-manifest</id>
+                        <phase>process-classes</phase>
+                        <goals>
+                            <goal>manifest</goal>
+                        </goals>
+                    </execution>
+                </executions>
             </plugin>
         </plugins>
     </build>
@@ -142,6 +178,12 @@
         <dependency>
             <groupId>org.apache.openjpa</groupId>
             <artifactId>openjpa-xmlstore</artifactId>
+            <version>${pom.version}</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.openjpa</groupId>
+            <artifactId>openjpa-slice</artifactId>
             <version>${pom.version}</version>
             <scope>provided</scope>
         </dependency>

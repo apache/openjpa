@@ -38,27 +38,28 @@
             <groupId>org.apache.openjpa</groupId>
             <artifactId>openjpa-lib</artifactId>
             <version>${pom.version}</version>
-            <scope>compile</scope>
         </dependency>
         <dependency>
             <groupId>org.apache.geronimo.specs</groupId>
             <artifactId>geronimo-jms_1.1_spec</artifactId>
-            <scope>compile</scope>
         </dependency>
         <dependency>
             <groupId>org.apache.geronimo.specs</groupId>
             <artifactId>geronimo-jta_1.1_spec</artifactId>
-            <scope>compile</scope>
         </dependency>
         <dependency>
             <groupId>commons-pool</groupId>
             <artifactId>commons-pool</artifactId>
-            <scope>compile</scope>
         </dependency>
         <dependency>
             <groupId>com.ibm.websphere</groupId>
             <artifactId>websphere_uow_api</artifactId>
             <version>0.0.1</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>ant</groupId>
+            <artifactId>ant</artifactId>
             <scope>provided</scope>
         </dependency>
     </dependencies>
