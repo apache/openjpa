@@ -21,6 +21,7 @@ package org.apache.openjpa.jdbc.sql;
 import java.lang.reflect.Method;
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
+import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.sql.Types;
 import java.util.Arrays;
@@ -86,7 +87,7 @@ public class DB2Dictionary
     
     private EnumSet<DBIdentifiers> unsupportedDelimitedIds =
         EnumSet.of(DBIdentifiers.COLUMN_COLUMN_DEFINITION); 
-
+    
     public DB2Dictionary() {
         platform = "DB2";
         validationSQL = "SELECT DISTINCT(CURRENT TIMESTAMP) FROM "
@@ -324,10 +325,11 @@ public class DB2Dictionary
                 + "NAME AS SEQUENCE_NAME FROM SYSIBM.SYSSEQUENCES";
             sequenceSchemaSQL = "SCHEMA = ?";
             sequenceNameSQL = "NAME = ?";
-            if (maj == 8)
+            if (maj == 8) {
                 // DB2 Z/OS Version 8: no bigint support, hence map Java
                 // long to decimal
                 bigintTypeName = "DECIMAL(31,0)";
+            }
             break;
         case db2ISeriesV5R3OrEarlier:
         case db2ISeriesV5R4OrLater:
@@ -884,5 +886,29 @@ public class DB2Dictionary
     @Override
     protected void setDelimitedCase(DatabaseMetaData metaData) {
         delimitedCase = SCHEMA_CASE_PRESERVE;
+    }
+    
+    /**
+     * The Type 2 JDBC Driver may throw an SQLException when provided a non-
+     * zero timeout if we're connected to Z/OS. The SQLException should be
+     * logged but not thrown.
+     */
+    @Override
+    public void setQueryTimeout(PreparedStatement stmnt, int timeout)
+        throws SQLException {
+        if(isDB2ZOSV8xOrLater()) { 
+            try { 
+                super.setQueryTimeout(stmnt, timeout);
+            }
+            catch (SQLException e) {
+                if (log.isTraceEnabled()) {
+                    log.trace(_loc.get("error-setting-query-timeout", timeout,
+                        e.getMessage()), e);
+                }
+            }
+        }
+        else { 
+            super.setQueryTimeout(stmnt, timeout);
+        }
     }
 }
