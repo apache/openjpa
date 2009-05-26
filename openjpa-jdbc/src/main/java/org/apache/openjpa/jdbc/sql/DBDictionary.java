@@ -342,6 +342,18 @@ public class DBDictionary
     protected final Set systemTableSet = new HashSet();
     protected final Set fixedSizeTypeNameSet = new HashSet();
     protected final Set typeModifierSet = new HashSet();
+    
+    /**
+     * Some JDBC drivers - ie DB2 type 2 on Z/OS throw exceptions on
+     * setQueryTimeout when provided specific input values.
+     * To remain consistent with earlier versions of the driver we should ignore
+     * the exception.
+     * 
+     * This variable will be removed in future releases when we can handle the
+     * exception properly.
+     */ 
+    @Deprecated
+    public boolean ignoreSQLExceptionOnSetQueryTimeout = false; 
 
     /**
      * If a native query begins with any of the values found here then it will
