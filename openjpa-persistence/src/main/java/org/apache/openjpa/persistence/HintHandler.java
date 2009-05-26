@@ -104,8 +104,8 @@ public class HintHandler extends FetchPlanHintHandler {
 
     private final QueryImpl owner;
     private Map<String, Object> _hints;
-    private Set<String> _supportedKeys;
-    private Set<String> _supportedPrefixes;
+    private static Set<String> _supportedKeys;
+    private static Set<String> _supportedPrefixes;
     
     // These keys are directly handled in {@link QueryImpl} class.
     // Declaring a public static final String variable in this class will 
@@ -176,8 +176,7 @@ public class HintHandler extends FetchPlanHintHandler {
                 String.class));
 
             _supportedKeys.addAll(addPrefix(PREFIX_FETCHPLAN, 
-                Reflection.getBeanStylePropertyNames(
-                    owner.getFetchPlan().getClass())));
+                Reflection.getBeanStylePropertyNames(_fConfig.getClass())));
 
             _supportedKeys.addAll(JavaxHintsMap.keySet());
 
