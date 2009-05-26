@@ -360,14 +360,27 @@ public class SelectImpl
             // the configured query timeout, use the lock timeout
             if (forUpdate && _dict.supportsQueryTimeout && fetch != null 
                 && fetch.getLockTimeout() > stmnt.getQueryTimeout() * 1000) {
+                Log log = _conf.getLog(JDBCConfiguration.LOG_JDBC);
                 int timeout = fetch.getLockTimeout();
                 if (timeout < 1000) {
                     timeout = 1000; 
-                    Log log = _conf.getLog(JDBCConfiguration.LOG_JDBC);
                     if (log.isWarnEnabled())
                         log.warn(_loc.get("millis-query-timeout"));
                 }
-                stmnt.setQueryTimeout(fetch.getLockTimeout() / 1000);
+                try { 
+                    stmnt.setQueryTimeout(fetch.getLockTimeout() / 1000);
+                }
+                catch(SQLException e) { 
+                    if(_dict.ignoreSQLExceptionOnSetQueryTimeout) { 
+                        if (log.isTraceEnabled()) {
+                            log.trace(_loc.get("error-setting-query-timeout",
+                                new Integer(timeout), e.getMessage()), e);
+                        }   
+                    }
+                    else { 
+                        throw e;
+                    }
+                }
             }
             rs = stmnt.executeQuery();
         } catch (SQLException se) {
