@@ -1,0 +1,22 @@
+   This is an implementation of an early-draft specification developed under the   Java Community Process (JCP) and is made available for testing and evaluation   purposes only. The code is not compatible with any specification of the JCP.
+
+
+   openjpa-all includes software developed by the:
+     Apache Commons Collections project
+     Apache Commons Lang project
+     Apache Commons Logging project
+     Apache Commons Pool project
+     Apache Geronimo project (JMS 1.1, JTA 1.1, JPA 2.0 and Bean Validation 1.0 spec apis)
+     SERP project
+
+   OpenJPA includes software developed by the SERP project
+     Copyright (c) 2002-2006, A. Abram White. All rights reserved.
+
+   OpenJPA is bundled with the schemas from the JPA specification, by
+     Sun Microsystems and licensed under the CDDL 1.0. The source code is
+     available at: https://glassfish.dev.java.net/source/browse/glassfish/
+
+   OpenJPA includes software written by Miroslav Nachev
+
+   OpenJPA uses test code written by Charles Tillman.
+
