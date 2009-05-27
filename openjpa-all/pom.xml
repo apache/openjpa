@@ -52,9 +52,9 @@
                                         <Main-Class>org.apache.openjpa.conf.OpenJPAVersion</Main-Class>
                                         <Premain-Class>org.apache.openjpa.enhance.PCEnhancerAgent</Premain-Class>
                                         <Can-Redefine-Classes>true</Can-Redefine-Classes>
-                                        <Specification-Title>JSR-317 Java Persistence</Specification-Title>
+                                        <Specification-Title>JSR-220 Java Persistence</Specification-Title>
                                         <Specification-Vendor>Sun Microsystems, Inc.</Specification-Vendor>
-                                        <Specification-Version>2.0</Specification-Version>
+                                        <Specification-Version>1.0</Specification-Version>
                                     </manifestEntries>
                                 </transformer>
                             </transformers>
