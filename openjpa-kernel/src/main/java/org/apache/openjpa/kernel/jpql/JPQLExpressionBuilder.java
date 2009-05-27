@@ -569,6 +569,19 @@ public class JPQLExpressionBuilder
         return exp;
     }
 
+    private Expression bindVariableForKeyPath(Path path, String alias,
+        Expression exp) {
+        if (alias != null && !isSeendVariable(alias)) {
+            // subquery may have KEY range over a variable 
+            // that is not defined.
+            JPQLNode key = root().findChildByID(JJTKEY, true);
+            if (key != null && firstChild(key).text.equalsIgnoreCase(alias)) {
+                Value var = getVariable(alias, true);
+                exp = and(exp, factory.bindVariable(var, path));
+            }
+        }
+        return exp;
+    }
     /**
      * Adds a join condition to the given expression.
      *
@@ -594,13 +607,7 @@ public class JPQLExpressionBuilder
 
             Path subpath = factory.newPath(ctx().subquery);
             subpath.setMetaData(ctx().subquery.getMetaData());
-            // subquery may have KEY range over a variable 
-            // that is not defined.
-            JPQLNode key = root().findChildByID(JJTKEY, true);
-            if (key != null && firstChild(key).text.equals(alias.text)) {
-                Value var = getVariable(alias.text, false);
-                exp = and(exp, factory.bindVariable(var, path));
-            }
+            exp = bindVariableForKeyPath(path, alias.text, exp);
             exp =  and(exp, factory.equal(path, subpath));
             return exp;
         }
@@ -672,15 +679,7 @@ public class JPQLExpressionBuilder
 
                 Path subpath = factory.newPath(ctx().subquery);
                 subpath.setMetaData(ctx().subquery.getMetaData());
-                if (alias != null && !isSeendVariable(alias)) {
-                    // subquery may have KEY range over a variable 
-                    // that is not defined.
-                    JPQLNode key = root().findChildByID(JJTKEY, true);
-                    if (key != null && firstChild(key).text.equals(alias)) {
-                        Value var = getVariable(alias, false);
-                        exp = and(exp, factory.bindVariable(var, path));
-                    }
-                }
+                exp = bindVariableForKeyPath(path, alias, exp);
                 return and(exp, factory.equal(path, subpath));
             } else {
                 // we have an alias: bind it as a variable
