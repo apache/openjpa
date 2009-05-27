@@ -42,9 +42,6 @@ import org.apache.openjpa.persistence.test.AllowFailure;
  * executing a query are the same.
  * 
  * 
- * 
- * @author Pinaki Poddar
- * 
  */
 public class TestTypesafeCriteria extends CriteriaTest {
 

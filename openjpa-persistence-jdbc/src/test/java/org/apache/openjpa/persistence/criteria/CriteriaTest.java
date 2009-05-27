@@ -13,9 +13,7 @@ import org.apache.openjpa.jdbc.conf.JDBCConfiguration;
 import org.apache.openjpa.jdbc.sql.DBDictionary;
 import org.apache.openjpa.lib.jdbc.AbstractJDBCListener;
 import org.apache.openjpa.lib.jdbc.JDBCEvent;
-import org.apache.openjpa.lib.jdbc.JDBCListener;
 import org.apache.openjpa.lib.jdbc.ReportingSQLException;
-import org.apache.openjpa.persistence.OpenJPAEntityManagerFactorySPI;
 import org.apache.openjpa.persistence.test.SQLListenerTestCase;
 
 
@@ -27,8 +25,6 @@ import org.apache.openjpa.persistence.test.SQLListenerTestCase;
  *  
  * Loads a domain model. 
  * 
- * @author Pinaki Poddar
- *
  */
 public abstract class CriteriaTest extends SQLListenerTestCase {
     QueryBuilder cb;

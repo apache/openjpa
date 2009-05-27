@@ -32,11 +32,7 @@ import javax.persistence.JoinColumn;
 import javax.persistence.MapKeyJoinColumn;
 import javax.persistence.Table;
 
-/**
- * 
- * @author Pinaki Poddar
- *
- */
+
 @Entity
 @Table(name="CR_VSTR")
 public class VideoStore {

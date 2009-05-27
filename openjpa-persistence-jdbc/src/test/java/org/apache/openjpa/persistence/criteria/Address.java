@@ -30,8 +30,6 @@ import javax.persistence.Table;
  * The fields are sometimes not declared as there is no validation yet during 
  * Query construction.
  * 
- * @author Pinaki Poddar
- *
  */
 @Entity
 @Table(name="CR_ADDR")

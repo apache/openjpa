@@ -48,7 +48,6 @@ import org.apache.openjpa.persistence.test.SingleEMFTestCase;
  * [1] <A href="http://jcp.org/aboutJava/communityprocess/pr/jsr317/index.html">
  * JPA API Specification Version 2.0</A>
  * 
- * @author Pinaki Poddar
  *
  */
 public class TestCriteria extends SingleEMFTestCase {

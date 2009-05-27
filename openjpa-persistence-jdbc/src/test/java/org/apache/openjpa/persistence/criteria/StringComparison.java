@@ -27,8 +27,6 @@ import java.util.List;
 
 /**
  * Compares a pair of String ignoring case-sensitivity of set of reserved words.
- * 
- * @author Pinaki Poddar
  *
  */
 public class StringComparison {

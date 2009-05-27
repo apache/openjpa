@@ -37,7 +37,6 @@ import javax.persistence.metamodel.Metamodel;
 import org.apache.openjpa.jdbc.conf.JDBCConfiguration;
 import org.apache.openjpa.jdbc.sql.DBDictionary;
 import org.apache.openjpa.persistence.test.AllowFailure;
-import org.apache.openjpa.persistence.test.SQLListenerTestCase;
 
 public class TestMetaModelTypesafeCriteria extends CriteriaTest {
     protected Entity<Account> account_ = null; 

@@ -21,8 +21,6 @@ package org.apache.openjpa.persistence.criteria;
 import javax.persistence.*;
 import org.apache.openjpa.persistence.*;
 
-import java.util.*;
-
 @Entity
 @Inheritance(strategy=InheritanceType.SINGLE_TABLE)
 public class CompUser
