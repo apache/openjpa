@@ -36,7 +36,8 @@
     <modelVersion>4.0.0</modelVersion>
     <artifactId>apache-openjpa</artifactId>
     <packaging>pom</packaging>
-    <name>OpenJPA Distribution</name>
+    <name>OpenJPA Project Docs and Assemblies</name>
+    <description>OpenJPA Project Docs and Assemblies</description>
     <parent>
         <groupId>org.apache.openjpa</groupId>
         <artifactId>openjpa-parent</artifactId>

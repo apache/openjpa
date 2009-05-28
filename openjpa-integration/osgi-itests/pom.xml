@@ -31,7 +31,8 @@
     <groupId>org.apache.openjpa.openjpa-integration</groupId>
     <artifactId>osgi-itests</artifactId>
     <version>2.0.0-SNAPSHOT</version>
-    <name>OpenJPA Integration osgi-itests</name>
+    <name>OpenJPA Integration Tests - OSGi</name>
+    <description>OpenJPA Integration Tests - OSGi</description>
 
     <dependencies>
         <!--

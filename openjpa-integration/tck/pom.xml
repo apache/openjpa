@@ -57,7 +57,8 @@
     <modelVersion>4.0.0</modelVersion>
     <artifactId>tck</artifactId>
     <packaging>pom</packaging>
-    <name>OpenJPA JPA TCK Integration Tests</name>
+    <name>OpenJPA Integration Tests - JPA TCK</name>
+    <description>OpenJPA Integration Tests - JPA TCK</description>
     <parent>
         <groupId>org.apache.openjpa</groupId>
         <artifactId>openjpa-integration</artifactId>

@@ -33,7 +33,7 @@
     <groupId>org.apache.openjpa</groupId>
     <artifactId>openjpa-parent</artifactId>
     <packaging>pom</packaging>
-    <name>OpenJPA</name>
+    <name>OpenJPA Parent POM</name>
     <description>OpenJPA</description>
 
     <properties>

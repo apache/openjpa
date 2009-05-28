@@ -25,8 +25,8 @@
     <groupId>org.apache.openjpa</groupId>
     <artifactId>openjpa-lib</artifactId>
     <packaging>jar</packaging>
-    <name>OpenJPA Utilities</name>
-    <description>OpenJPA Utilities</description>
+    <name>OpenJPA Utilities Library</name>
+    <description>OpenJPA Utilities Library</description>
     <url>http://openjpa.apache.org</url>
     <parent>
         <groupId>org.apache.openjpa</groupId>

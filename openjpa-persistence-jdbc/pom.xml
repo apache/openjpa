@@ -25,8 +25,8 @@
     <groupId>org.apache.openjpa</groupId>
     <artifactId>openjpa-persistence-jdbc</artifactId>
     <packaging>jar</packaging>
-    <name>OpenJPA JPA JDBC</name>
-    <description>OpenJPA JPA JDBC</description>
+    <name>OpenJPA Persistence JDBC</name>
+    <description>OpenJPA Persistence JDBC</description>
     <url>http://openjpa.apache.org</url>
     <parent>
         <groupId>org.apache.openjpa</groupId>
