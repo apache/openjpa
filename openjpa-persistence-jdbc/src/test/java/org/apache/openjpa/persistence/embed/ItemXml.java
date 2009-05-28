@@ -49,4 +49,4 @@ public class ItemXml {
     public String getImage(String imageName) {
         return (String) images.get(imageName);
     }
-} 
+}

@@ -285,4 +285,3 @@ public class TestSpec10_1_26_Ex3 extends SQLListenerTestCase {
         assertDepartment(d);
     }
 }
-

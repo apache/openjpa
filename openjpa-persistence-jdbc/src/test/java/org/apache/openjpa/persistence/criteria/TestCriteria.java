@@ -606,3 +606,4 @@ public class TestCriteria extends SingleEMFTestCase {
         }
     } 
 }
+

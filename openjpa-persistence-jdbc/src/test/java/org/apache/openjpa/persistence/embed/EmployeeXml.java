@@ -37,4 +37,4 @@ public class EmployeeXml {
     public void setDepartment(DepartmentXml department) {
         this.department = department;
     }
-} 
+}

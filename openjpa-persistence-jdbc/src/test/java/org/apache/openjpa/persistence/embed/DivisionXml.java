@@ -39,4 +39,4 @@ public class DivisionXml {
     public void setName(String name) {
         this.name = name;
     }
-} 
+}

@@ -51,4 +51,4 @@ public class CompanyXml {
     public VicePresidentXml getOrganization(DivisionXml d) {
         return organization.get(d);
     }
-} 
+}

@@ -266,4 +266,3 @@ public class TestSpec10_1_27_Ex8 extends SQLListenerTestCase {
         em.close();
     }
 }
-
