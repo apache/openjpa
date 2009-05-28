@@ -534,7 +534,8 @@ public final class SQLBuffer
             setParameters(stmnt);
             if (fetch != null) {
                 if (fetch.getFetchBatchSize() > 0)
-                    stmnt.setFetchSize(fetch.getFetchBatchSize());
+                    stmnt.setFetchSize(
+                        _dict.getBatchFetchSize(fetch.getFetchBatchSize()));
                 if (rsType != ResultSet.TYPE_FORWARD_ONLY
                     && fetch.getFetchDirection() != ResultSet.FETCH_FORWARD)
                     stmnt.setFetchDirection(fetch.getFetchDirection());

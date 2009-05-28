@@ -29,7 +29,6 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.openjpa.jdbc.kernel.JDBCStore;
 import org.apache.openjpa.jdbc.kernel.exps.FilterValue;
 import org.apache.openjpa.jdbc.schema.Column;
-import org.apache.openjpa.jdbc.schema.ForeignKey;
 import org.apache.openjpa.jdbc.schema.Index;
 import org.apache.openjpa.jdbc.schema.PrimaryKey;
 import org.apache.openjpa.jdbc.schema.Table;
@@ -311,4 +310,9 @@ public class MySQLDictionary
         val.appendTo(buf);
         buf.append("')");
     }
+    
+    public int getBatchFetchSize(int batchFetchSize) {
+        return Integer.MIN_VALUE;
+    }
+    
 }
