@@ -280,7 +280,8 @@ public class TestQuery extends SliceTestCase {
             assertEquals("Even", SlicePersistence.getSlice(c));
         
         // While all Manufacturers are stored in "Odd" slice.
-        List makers = em.createQuery("select m from Manufacturer m").getResultList();
+        List makers =
+            em.createQuery("select m from Manufacturer m").getResultList();
         assertFalse(makers.isEmpty());
         for (Object m : makers)
             assertEquals("Odd", SlicePersistence.getSlice(m));

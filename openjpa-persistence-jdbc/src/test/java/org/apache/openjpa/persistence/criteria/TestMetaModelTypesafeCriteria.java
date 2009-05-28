@@ -153,8 +153,9 @@ public class TestMetaModelTypesafeCriteria extends CriteriaTest {
     
     @AllowFailure
     public void testFetchJoins() {
-        String jpql = "SELECT d FROM Department LEFT JOIN FETCH d.employees " + 
-            "WHERE d.deptNo = 1";
+        String jpql =
+            "SELECT d FROM Department LEFT JOIN FETCH d.employees "
+                + "WHERE d.deptNo = 1";
         CriteriaQuery q = cb.create();
         Root<Department> d = q.from(Department.class);
         d.fetch(department_.getSet("employees", Employee.class), JoinType.LEFT);
@@ -174,11 +175,11 @@ public class TestMetaModelTypesafeCriteria extends CriteriaTest {
         Join<Contact, Phone> phone = emp.join(
             employee_.getAttribute("contactInfo", Contact.class)).
             join(contact_.getList("phones", Phone.class));
-        q.where(cb.equal(emp.get(employee_.getAttribute("contactInfo", 
-            Contact.class)).
-            get(contact_.getAttribute("address", Address.class)).
-            get(address_.getAttribute("zipCode", String.class)), "95054"));    
-        q.select(phone.get(phone_.getAttribute("vendor", String.class)));        
+        q.where(cb.equal(emp.get(
+            employee_.getAttribute("contactInfo", Contact.class)).get(
+            contact_.getAttribute("address", Address.class)).get(
+            address_.getAttribute("zipCode", String.class)), "95054"));
+        q.select(phone.get(phone_.getAttribute("vendor", String.class)));
         
         assertEquivalence(q, jpql);
         
@@ -217,7 +218,7 @@ public class TestMetaModelTypesafeCriteria extends CriteriaTest {
         jpql = "SELECT o FROM Order o WHERE o.lineItems IS EMPTY";
         q = cb.create();
         Root<Order> order = q.from(Order.class);
-        Join<Order,LineItem> lineItems = order.join(order_.getList("lineItems", 
+        Join<Order,LineItem> lineItems = order.join(order_.getList("lineItems",
             LineItem.class));
         q.where(cb.isEmpty(lineItems));
         q.select(order);
@@ -348,9 +349,10 @@ public class TestMetaModelTypesafeCriteria extends CriteriaTest {
     
     @AllowFailure
     public void testSelectList() {
-        String jpql = "SELECT v.location.street, KEY(i).title, VALUE(i) FROM " + 
-            "VideoStore v JOIN v.videoInventory i WHERE v.location.zipCode = " + 
-            "'94301' AND VALUE(i) > 0";
+        String jpql =
+            "SELECT v.location.street, KEY(i).title, VALUE(i) FROM "
+                + "VideoStore v JOIN v.videoInventory i "
+                + "WHERE v.location.zipCode = " + "'94301' AND VALUE(i) > 0";
         CriteriaQuery q = cb.create();
         Root<VideoStore> v = q.from(VideoStore.class);
         MapJoin<VideoStore, Movie, Integer> inv = v.join(videoStore_.getMap(
@@ -370,8 +372,9 @@ public class TestMetaModelTypesafeCriteria extends CriteriaTest {
             "Customer c JOIN c.orders o WHERE o.quantity > 100";
         q = cb.create();
         Root<Customer> c = q.from(Customer.class);
-        Join<Customer, Order> o = c.join(customer_.getSet("orders", Order.class));
-        q.where(cb.gt(o.get(order_.getAttribute("quantity", Integer.class)), 
+        Join<Customer, Order> o =
+            c.join(customer_.getSet("orders", Order.class));
+        q.where(cb.gt(o.get(order_.getAttribute("quantity", Integer.class)),
             100));
         q.select(cb.select(CustomerDetails.class, 
             c.get(customer_.getAttribute("id", Integer.class)),
@@ -413,8 +416,10 @@ public class TestMetaModelTypesafeCriteria extends CriteriaTest {
         
         assertEquivalence(q, jpql);
         
-        jpql = "SELECT emp FROM Employee emp WHERE emp.salary > ALL (" + 
-            "SELECT m.salary FROM Manager m WHERE m.department = emp.department)";
+        jpql =
+            "SELECT emp FROM Employee emp WHERE emp.salary > ALL ("
+                + "SELECT m.salary FROM Manager m WHERE m.department ="
+                + " emp.department)";
         q = cb.create();
         Root<Employee> emp1 = q.from(Employee.class);
         q.select(emp1);
@@ -495,7 +500,7 @@ public class TestMetaModelTypesafeCriteria extends CriteriaTest {
     @AllowFailure
     public void testOrdering() {
         String jpql = "SELECT o FROM Customer c JOIN c.orders o "  
-            + "JOIN c.address a WHERE a.state = 'CA' ORDER BY o.quantity DESC, " 
+            + "JOIN c.address a WHERE a.state = 'CA' ORDER BY o.quantity DESC, "
             + "o.totalCost";
         CriteriaQuery q = cb.create();
         Root<Customer> c = q.from(Customer.class);

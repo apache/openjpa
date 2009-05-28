@@ -706,6 +706,7 @@
                             <configLocation>${checkstyle.config.location}</configLocation>
                             <failsOnError>true</failsOnError>
                             <consoleOutput>true</consoleOutput>
+                            <includeTestSourceDirectory>true</includeTestSourceDirectory>
                         </configuration>
                     </execution>
                 </executions>
@@ -744,6 +745,7 @@
                 <artifactId>maven-checkstyle-plugin</artifactId>
                 <configuration>
                     <configLocation>${checkstyle.config.location}</configLocation>
+                    <includeTestSourceDirectory>true</includeTestSourceDirectory> 
                 </configuration>
             </plugin>
         </plugins>

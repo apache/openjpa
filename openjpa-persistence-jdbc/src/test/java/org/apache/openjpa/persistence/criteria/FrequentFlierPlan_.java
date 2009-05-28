@@ -6,7 +6,8 @@ package org.apache.openjpa.persistence.criteria;
 
 import javax.persistence.metamodel.Attribute;
 
-@javax.persistence.metamodel.TypesafeMetamodel(value=org.apache.openjpa.persistence.criteria.FrequentFlierPlan.class)
+@javax.persistence.metamodel.TypesafeMetamodel(
+    value=org.apache.openjpa.persistence.criteria.FrequentFlierPlan.class)
 public class FrequentFlierPlan_ {
     public static volatile Attribute<FrequentFlierPlan,Integer> annualMiles;
     public static volatile Attribute<FrequentFlierPlan,String> id;

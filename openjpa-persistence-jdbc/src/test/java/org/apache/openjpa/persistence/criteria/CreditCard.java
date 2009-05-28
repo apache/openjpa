@@ -50,7 +50,8 @@ public class CreditCard {
         return transactionHistory;
     }
     
-    public void setTransactionHistory(List<TransactionHistory> transactionHistory) {
+    public void setTransactionHistory(List<TransactionHistory> 
+        transactionHistory) {
         this.transactionHistory = transactionHistory;
     }
     

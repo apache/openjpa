@@ -6,11 +6,14 @@ package org.apache.openjpa.persistence.meta;
 
 import javax.persistence.metamodel.Attribute;
 
-@javax.persistence.metamodel.TypesafeMetamodel(value=org.apache.openjpa.persistence.meta.ExplicitPropertyAccess.class)
+@javax.persistence.metamodel.TypesafeMetamodel(
+    value = org.apache.openjpa.persistence.meta.ExplicitPropertyAccess.class)
 public class ExplicitPropertyAccess_ {
-    public static volatile Attribute<ExplicitPropertyAccess,String> f1;
-    public static volatile Attribute<ExplicitPropertyAccess,String> f3;
-    public static volatile Attribute<ExplicitPropertyAccess,String> f4;
-    public static volatile Attribute<ExplicitPropertyAccess,ImplicitFieldAccessBase> f5;
-    public static volatile Attribute<ExplicitPropertyAccess,ImplicitFieldAccessBase> f6;
+    public static volatile Attribute<ExplicitPropertyAccess, String> f1;
+    public static volatile Attribute<ExplicitPropertyAccess, String> f3;
+    public static volatile Attribute<ExplicitPropertyAccess, String> f4;
+    public static volatile Attribute<ExplicitPropertyAccess, 
+        ImplicitFieldAccessBase> f5;
+    public static volatile Attribute<ExplicitPropertyAccess, 
+        ImplicitFieldAccessBase> f6;
 }

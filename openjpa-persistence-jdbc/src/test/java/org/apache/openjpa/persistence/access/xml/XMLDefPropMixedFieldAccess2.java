@@ -52,9 +52,10 @@ public class XMLDefPropMixedFieldAccess2 {
     
     public boolean equals(Object obj) {
         if (obj instanceof XMLDefPropMixedFieldAccess2) {
-            XMLDefPropMixedFieldAccess2 dpmfa = (XMLDefPropMixedFieldAccess2)obj;
-            return getId() == dpmfa.getId() &&
-                getStrField().equals(dpmfa.getStrProp());
+            XMLDefPropMixedFieldAccess2 dpmfa =
+                (XMLDefPropMixedFieldAccess2) obj;
+            return getId() == dpmfa.getId()
+                && getStrField().equals(dpmfa.getStrProp());
         }
         return false;
     }

@@ -37,23 +37,23 @@ import javax.persistence.OneToOne;
 public class ImplicitFieldAccessSubclass extends ImplicitFieldAccessBase {
     @OneToOne
     private ImplicitFieldAccessBase base;
-	@ManyToMany
+    @ManyToMany
     private Map<Embed0, ExplicitPropertyAccess> mapRelationKeyEmbedded;
     
-	public ImplicitFieldAccessBase getBase() {
-		return base;
-	}
-	
-	public void setBase(ImplicitFieldAccessBase base) {
-		this.base = base;
-	}
-	
-	public Map<Embed0, ExplicitPropertyAccess> getMapRelationKeyEmbedded() {
-		return mapRelationKeyEmbedded;
-	}
-	
-	public void setMapRelationKeyEmbedded(
+    public ImplicitFieldAccessBase getBase() {
+        return base;
+    }
+    
+    public void setBase(ImplicitFieldAccessBase base) {
+        this.base = base;
+    }
+    
+    public Map<Embed0, ExplicitPropertyAccess> getMapRelationKeyEmbedded() {
+        return mapRelationKeyEmbedded;
+    }
+    
+    public void setMapRelationKeyEmbedded(
         Map<Embed0, ExplicitPropertyAccess> map) {
-		this.mapRelationKeyEmbedded = map;
-	}
+        this.mapRelationKeyEmbedded = map;
+    }
 }

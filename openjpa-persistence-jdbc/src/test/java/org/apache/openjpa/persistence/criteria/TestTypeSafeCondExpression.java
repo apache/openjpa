@@ -114,7 +114,7 @@ public class TestTypeSafeCondExpression extends CriteriaTest {
 
     public void testBetweenExprUsingCriteria() {
         String query =
-            "SELECT o.name FROM CompUser o WHERE o.age BETWEEN 19 AND 40 AND " + 
+            "SELECT o.name FROM CompUser o WHERE o.age BETWEEN 19 AND 40 AND " +
             "o.computerName = 'PC'";
         CriteriaQuery q = cb.create();
         Root<CompUser> c = q.from(CompUser.class);
@@ -134,7 +134,7 @@ public class TestTypeSafeCondExpression extends CriteriaTest {
 
     public void testNotBetweenExprUsingCriteria() {
         String query =
-            "SELECT o.name FROM CompUser o WHERE o.age NOT BETWEEN 19 AND 40 " + 
+            "SELECT o.name FROM CompUser o WHERE o.age NOT BETWEEN 19 AND 40 " +
             "AND o.computerName= 'PC'";
 
         CriteriaQuery q = cb.create();
@@ -297,7 +297,8 @@ public class TestTypeSafeCondExpression extends CriteriaTest {
         CriteriaQuery q = cb.create();
         Root<CompUser> c = q.from(CompUser.class);
         Parameter<String> param = cb.parameter(String.class);
-        q.where(cb.equal(c.get(CompUser_.address).get(Address_.country), null));
+        q.where(cb.equal(c.get(CompUser_.address).get(Address_.country),
+            null));
         q.select(c.get(CompUser_.name));
         assertEquivalence(q, query);
         List result = em.createQuery(q).getResultList();
@@ -534,7 +535,8 @@ public class TestTypeSafeCondExpression extends CriteriaTest {
 
     @AllowFailure
     public void testTrimFunc1() {
-        String query = "select Trim(e.computerName) From CompUser e WHERE e.name='Shannon '";
+        String query = "select Trim(e.computerName) From CompUser e " +
+        		"WHERE e.name='Shannon '";
         CriteriaQuery q = cb.create();
         q = cb.create();
         Root<CompUser> e = q.from(CompUser.class);
@@ -572,7 +574,8 @@ public class TestTypeSafeCondExpression extends CriteriaTest {
 
     @AllowFailure
     public void testLowerFunc2() {
-        String query = "select e.age From CompUser e where LOWER(e.name) ='ugo'";
+        String query = "select e.age From CompUser e where LOWER(e.name)" +
+        		" ='ugo'";
         CriteriaQuery q = cb.create();
         q = cb.create();
         Root<CompUser> e = q.from(CompUser.class);
@@ -815,7 +818,8 @@ public class TestTypeSafeCondExpression extends CriteriaTest {
     // can not do TYPE with parameter in the IN clause
     @AllowFailure
     public void testTypeExpression1() {
-        String query = "SELECT e FROM CompUser e where TYPE(e) in (?1, ?2) ORDER By e.name";
+        String query = "SELECT e FROM CompUser e where TYPE(e) in (?1, ?2) " +
+        		"ORDER By e.name";
         CriteriaQuery q = cb.create();
         q = cb.create();
         Root<CompUser> e = q.from(CompUser.class);
@@ -883,7 +887,8 @@ public class TestTypeSafeCondExpression extends CriteriaTest {
 
     @AllowFailure
     public void testTypeExpression6() {
-        String query = "SELECT e FROM CompUser e where TYPE(e) not in (MaleUser, FemaleUser)";
+        String query = "SELECT e FROM CompUser e where TYPE(e) not in " +
+        		"(MaleUser, FemaleUser)";
         CriteriaQuery q = cb.create();
         q = cb.create();
         Root<CompUser> e = q.from(CompUser.class);
@@ -1115,11 +1120,14 @@ public class TestTypeSafeCondExpression extends CriteriaTest {
     public void testGeneralCaseExpression3() {
         String query = " select e.name, "
                 + "CASE WHEN e.age = 11 THEN "
-                + "org.apache.openjpa.persistence.criteria.CompUser$CreditRating.POOR"
+                + "org.apache.openjpa.persistence.criteria.CompUser$" +
+                		"CreditRating.POOR"
                 + " WHEN e.age = 35 THEN "
-                + "org.apache.openjpa.persistence.criteria.CompUser$CreditRating.GOOD"
+                + "org.apache.openjpa.persistence.criteria.CompUser$" +
+                		"CreditRating.GOOD"
                 + " ELSE "
-                + "org.apache.openjpa.persistence.criteria.CompUser$CreditRating.EXCELLENT"
+                + "org.apache.openjpa.persistence.criteria.CompUser$" +
+                		"CreditRating.EXCELLENT"
                 + " END FROM CompUser e ORDER BY e.age";
         CriteriaQuery q = cb.create();
         Root<CompUser> e = q.from(CompUser.class);
@@ -1145,11 +1153,14 @@ public class TestTypeSafeCondExpression extends CriteriaTest {
                 + "where e.creditRating = "
                 + "(select "
                 + "CASE WHEN e1.age = 11 THEN "
-                + "org.apache.openjpa.persistence.criteria.CompUser$CreditRating.POOR"
+                + "org.apache.openjpa.persistence.criteria.CompUser$" +
+                		"CreditRating.POOR"
                 + " WHEN e1.age = 35 THEN "
-                + "org.apache.openjpa.persistence.criteria.CompUser$CreditRating.GOOD"
+                + "org.apache.openjpa.persistence.criteria.CompUser$" +
+                		"CreditRating.GOOD"
                 + " ELSE "
-                + "org.apache.openjpa.persistence.criteria.CompUser$CreditRating.EXCELLENT"
+                + "org.apache.openjpa.persistence.criteria.CompUser$" +
+                		"CreditRating.EXCELLENT"
                 + " END from CompUser e1"
                 + " where e.userid = e1.userid) ORDER BY e.age";
         CriteriaQuery q = cb.create();
@@ -1340,7 +1351,8 @@ public class TestTypeSafeCondExpression extends CriteriaTest {
     @AllowFailure
     public void testSubquery10() {
         String query = "select o.id from Order o where o.quantity >"
-                + " (select sum(o2.quantity) from Customer c, in(c.orders) o2) ";
+                + " (select sum(o2.quantity) from Customer c, " 
+                + "in(c.orders) o2) ";
         CriteriaQuery q = cb.create();
         Root<Order> o = q.from(Order.class);
         q.select(o.get(Order_.id));
@@ -1358,7 +1370,8 @@ public class TestTypeSafeCondExpression extends CriteriaTest {
     public void testSubquery11() {
         String query = "select o.id from Order o where o.quantity between"
                 + " (select avg(o2.quantity) from Customer c, in(c.orders) o2)"
-                + " and (select min(o2.quantity) from Customer c, in(c.orders) o2)";
+                + " and (select min(o2.quantity) from Customer c, in(c.orders)"
+                + " o2)";
         CriteriaQuery q = cb.create();
         Root<Order> o = q.from(Order.class);
         q.select(o.get(Order_.id));
@@ -1380,8 +1393,10 @@ public class TestTypeSafeCondExpression extends CriteriaTest {
 
     @AllowFailure
     public void testSubquery12() {
-        String query = "select o.id from Customer c, in(c.orders)o "
-                + "where o.quantity > (select sum(o2.quantity) from c.orders o2)";
+        String query =
+            "select o.id from Customer c, in(c.orders)o "
+                + "where o.quantity > (select sum(o2.quantity)"
+                + " from c.orders o2)";
         CriteriaQuery q = cb.create();
         Root<Customer> c = q.from(Customer.class);
         SetJoin<Customer, Order> o = c.join(Customer_.orders);
@@ -1431,7 +1446,8 @@ public class TestTypeSafeCondExpression extends CriteriaTest {
 
         Subquery<Integer> sq = q.subquery(Integer.class);
         Root<Magazine> m2 = sq.from(Magazine.class);
-        q.where(cb.equal(m.get(Magazine_.id), sq.select(cb.max(m2.get(Magazine_.id)))));
+        q.where(cb.equal(m.get(Magazine_.id), sq.select(cb.max(m2
+            .get(Magazine_.id)))));
 
         Subquery<Integer> sq2 = q.subquery(Integer.class);
         Root<Magazine> m3 = sq2.from(Magazine.class);
@@ -1439,18 +1455,17 @@ public class TestTypeSafeCondExpression extends CriteriaTest {
         sq2.where(cb.equal(m3.get(Magazine_.idPublisher).get(Publisher_.id), 
             p.get(Publisher_.id)));
         
-        sq.where(
-            cb.and(  
-                cb.equal(m2.get(Magazine_.idPublisher).get(Publisher_.id), p.get(Publisher_.id)),
-                cb.equal(m2.get(Magazine_.datePublished), sq2.select(cb.max(m3.get(Magazine_.id))))
-                )
-            );
+        sq.where(cb.and(cb.equal(m2.get(Magazine_.idPublisher).get(
+            Publisher_.id), p.get(Publisher_.id)), cb.equal(m2
+            .get(Magazine_.datePublished), sq2.select(cb.max(m3
+            .get(Magazine_.id))))));
         assertEquivalence(q, query);
     }
 
     // outstanding problem subqueries:
     // "select o from Order o where o.amount > (select count(o) from Order o)",
-    // "select o from Order o where o.amount > (select count(o2) from Order o2)",
+    // "select o from Order o where o.amount > (select count(o2) from Order o2)
+    //",
     // "select c from Customer c left join c.orders p where not exists"
     // + " (select o2 from c.orders o2 where o2 = o",
 
@@ -1486,7 +1501,8 @@ public class TestTypeSafeCondExpression extends CriteriaTest {
     public void testSubquery16() {
         String query = "select o1.oid from Order o1 where o1.quantity > "
                 + " (select o.quantity*2 from LineItem i, Order o"
-                + " where i.quantity > 10 and o.quantity > 1000 and i.id = o.id)";
+                + " where i.quantity > 10 and o.quantity > 1000 and i.id = " +
+                		"o.id)";
         CriteriaQuery q = cb.create();
         Root<Order> o1 = q.from(Order.class);
         q.select(o1.get(Order_.id));
@@ -1546,7 +1562,8 @@ public class TestTypeSafeCondExpression extends CriteriaTest {
     @AllowFailure
     public void testSubquery19() {
         String query = "select o.id from Order o where o.quantity >"
-                + " (select SQRT(o.quantity) from Order o where o.delivered = true)";
+                + " (select SQRT(o.quantity) from Order o where o.delivered" +
+                		" = true)";
         CriteriaQuery q = cb.create();
         Root<Order> o = q.from(Order.class);
         q.select(o.get(Order_.id));
@@ -1584,11 +1601,14 @@ public class TestTypeSafeCondExpression extends CriteriaTest {
         String query = "select c from Customer c where c.creditRating ="
                 + " (select "
                 + "   CASE WHEN o2.quantity > 10 THEN "
-                + "org.apache.openjpa.persistence.criteria.Customer$CreditRating.POOR"
+                + "org.apache.openjpa.persistence.criteria.Customer$" +
+                		"CreditRating.POOR"
                 + "     WHEN o2.quantity = 10 THEN "
-                + "org.apache.openjpa.persistence.criteria.Customer$CreditRating.GOOD "
+                + "org.apache.openjpa.persistence.criteria.Customer$" +
+                		"CreditRating.GOOD "
                 + "     ELSE "
-                + "org.apache.openjpa.persistence.criteria.Customer$CreditRating.EXCELLENT "
+                + "org.apache.openjpa.persistence.criteria.Customer$" +
+                		"CreditRating.EXCELLENT "
                 + "     END from Order o2"
                 + " where c.id = o2.customer.id)";
         CriteriaQuery q = cb.create();
@@ -1597,16 +1617,18 @@ public class TestTypeSafeCondExpression extends CriteriaTest {
 
         Subquery<String> sq = q.subquery(String.class);
         Root<Order> o2 = sq.from(Order.class);
-        sq.where(cb.equal(c.get(Customer_.id), o2.get(Order_.customer).get(Customer_.id)));
+        sq.where(cb.equal(c.get(Customer_.id), o2.get(Order_.customer).get(
+            Customer_.id)));
 
         q.where(cb.equal(c.get(Customer_.creditRating), 
             //sq.select(
-                cb.selectCase()
-                    .when(cb.gt(o2.get(Order_.quantity), 10), Customer.CreditRating.POOR)    
-                    .when(cb.equal(o2.get(Order_.quantity), 10), Customer.CreditRating.GOOD)    
-                    .otherwise(Customer.CreditRating.EXCELLENT)
-            //)
-        ));
+            cb.selectCase().when(cb.gt(o2.get(Order_.quantity), 10),
+                Customer.CreditRating.POOR).when(
+                cb.equal(o2.get(Order_.quantity), 10),
+                Customer.CreditRating.GOOD).otherwise(
+                Customer.CreditRating.EXCELLENT)
+        // )
+            ));
         assertEquivalence(q, query);
     }
 
@@ -1615,14 +1637,17 @@ public class TestTypeSafeCondExpression extends CriteriaTest {
     public void testSubquery22() {
         String query = "select c from Customer c "
                 + "where c.creditRating = (select COALESCE (c1.creditRating, "
-                + "org.apache.openjpa.persistence.criteria.Customer$CreditRating.POOR) "
-                + "from Customer c1 where c1.name = 'Famzy') order by c.name DESC";
+                + "org.apache.openjpa.persistence.criteria.Customer$" +
+                		"CreditRating.POOR) "
+                + "from Customer c1 where c1.name = 'Famzy') order by c.name " +
+                		"DESC";
         CriteriaQuery q = cb.create();
         Root<Customer> c = q.from(Customer.class);
         q.select(c);
         q.orderBy(cb.desc(c.get(Customer_.name)));        
 
-        Subquery<Customer.CreditRating> sq = q.subquery(Customer.CreditRating.class);
+        Subquery<Customer.CreditRating> sq =
+            q.subquery(Customer.CreditRating.class);
         Root<Customer> c1 = sq.from(Customer.class);
         sq.where(cb.equal(c1.get(Customer_.name), "Famzy"));
         
@@ -1634,16 +1659,20 @@ public class TestTypeSafeCondExpression extends CriteriaTest {
 
     @AllowFailure
     public void testSubquery23() {
-        String query = "select c from Customer c "
-            + "where c.creditRating = (select NULLIF (c1.creditRating, "
-            + "org.apache.openjpa.persistence.criteria.Customer$CreditRating.POOR) "
-            + "from Customer c1 where c1.name = 'Famzy') order by c.name DESC";
+        String query =
+            "select c from Customer c "
+                + "where c.creditRating = (select NULLIF (c1.creditRating, "
+                + "org.apache.openjpa.persistence.criteria."
+                + "Customer$CreditRating.POOR) "
+                + "from Customer c1 where c1.name = 'Famzy') "
+                + "order by c.name DESC";
         CriteriaQuery q = cb.create();
         Root<Customer> c = q.from(Customer.class);
         q.select(c);
         q.orderBy(cb.desc(c.get(Customer_.name)));        
 
-        Subquery<Customer.CreditRating> sq = q.subquery(Customer.CreditRating.class);
+        Subquery<Customer.CreditRating> sq =
+            q.subquery(Customer.CreditRating.class);
         Root<Customer> c1 = sq.from(Customer.class);
         sq.where(cb.equal(c1.get(Customer_.name), "Famzy"));
         

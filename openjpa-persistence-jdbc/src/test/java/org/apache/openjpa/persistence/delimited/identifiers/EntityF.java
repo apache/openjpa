@@ -60,9 +60,10 @@ public class EntityF {
     private Map<String, String> collectionMap = new HashMap<String, String>();
     
     @ElementCollection
-    @MapKeyColumn(name="\"mapKey\"")
-    private Map<String, String> delimCollectionMap = new HashMap<String, String>();
-    
+    @MapKeyColumn(name = "\"mapKey\"")
+    private Map<String, String> delimCollectionMap =
+        new HashMap<String, String>();
+
     public EntityF(String name) {
         this.name = name;
     }

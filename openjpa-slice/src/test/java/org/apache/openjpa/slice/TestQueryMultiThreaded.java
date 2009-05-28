@@ -44,115 +44,115 @@ import javax.persistence.Query;
  */
 public class TestQueryMultiThreaded extends SliceTestCase {
 
-	private int POBJECT_COUNT = 25;
-	private int VALUE_MIN = 100;
-	private int VALUE_MAX = VALUE_MIN + POBJECT_COUNT - 1;
-	private static int THREADS = 5;
-	private ExecutorService group; 
-	private Future[] futures;
+    private int POBJECT_COUNT = 25;
+    private int VALUE_MIN = 100;
+    private int VALUE_MAX = VALUE_MIN + POBJECT_COUNT - 1;
+    private static int THREADS = 5;
+    private ExecutorService group; 
+    private Future[] futures;
 
-	protected String getPersistenceUnitName() {
-		return "ordering";
-	}
+    protected String getPersistenceUnitName() {
+        return "ordering";
+    }
 
-	public void setUp() throws Exception {
+    public void setUp() throws Exception {
         super.setUp(PObject.class, Person.class, Address.class, Country.class,
-				CLEAR_TABLES, "openjpa.Multithreaded", "true");
-		int count = count(PObject.class);
-		if (count == 0) {
-			create(POBJECT_COUNT);
-		}
-		group = new ThreadPoolExecutor(THREADS, THREADS,
+                CLEAR_TABLES, "openjpa.Multithreaded", "true");
+        int count = count(PObject.class);
+        if (count == 0) {
+            create(POBJECT_COUNT);
+        }
+        group = new ThreadPoolExecutor(THREADS, THREADS,
                 60, TimeUnit.SECONDS,
                 new SynchronousQueue<Runnable>(), new ThreadFactory() {
-					public Thread newThread(Runnable r) {
-						return new Thread(r);
-					}
-				
-				});
-		futures = new Future[THREADS];
-	}
-	
-	public void tearDown()  throws Exception {
-		group.shutdown();
-	}
+                    public Thread newThread(Runnable r) {
+                        return new Thread(r);
+                    }
+                
+                });
+        futures = new Future[THREADS];
+    }
+    
+    public void tearDown()  throws Exception {
+        group.shutdown();
+    }
 
-	void create(int N) {
-		EntityManager em = emf.createEntityManager();
-		em.getTransaction().begin();
-		for (int i = 0; i < POBJECT_COUNT; i++) {
-			PObject pc = new PObject();
-			pc.setValue(VALUE_MIN + i);
-			em.persist(pc);
-			String slice = SlicePersistence.getSlice(pc);
+    void create(int N) {
+        EntityManager em = emf.createEntityManager();
+        em.getTransaction().begin();
+        for (int i = 0; i < POBJECT_COUNT; i++) {
+            PObject pc = new PObject();
+            pc.setValue(VALUE_MIN + i);
+            em.persist(pc);
+            String slice = SlicePersistence.getSlice(pc);
             String expected = (pc.getValue() % 2 == 0) ? "Even" : "Odd";
-			assertEquals(expected, slice);
-		}
-		Person p1 = new Person();
-		Person p2 = new Person();
-		Address a1 = new Address();
-		Address a2 = new Address();
-		p1.setName("Even");
-		p2.setName("Odd");
-		a1.setCity("San Francisco");
-		a2.setCity("Rome");
-		p1.setAddress(a1);
-		p2.setAddress(a2);
-		em.persist(p1);
-		em.persist(p2);
-		assertEquals("Even", SlicePersistence.getSlice(p1));
-		assertEquals("Odd", SlicePersistence.getSlice(p2));
+            assertEquals(expected, slice);
+        }
+        Person p1 = new Person();
+        Person p2 = new Person();
+        Address a1 = new Address();
+        Address a2 = new Address();
+        p1.setName("Even");
+        p2.setName("Odd");
+        a1.setCity("San Francisco");
+        a2.setCity("Rome");
+        p1.setAddress(a1);
+        p2.setAddress(a2);
+        em.persist(p1);
+        em.persist(p2);
+        assertEquals("Even", SlicePersistence.getSlice(p1));
+        assertEquals("Odd", SlicePersistence.getSlice(p2));
 
-		em.getTransaction().commit();
-	}
-	
-	public void testQueryResultIsOrderedAcrossSlice() {
-		final EntityManager em = emf.createEntityManager();
-		em.getTransaction().begin();
+        em.getTransaction().commit();
+    }
+    
+    public void testQueryResultIsOrderedAcrossSlice() {
+        final EntityManager em = emf.createEntityManager();
+        em.getTransaction().begin();
         final Query query = em.createQuery(
                 "SELECT p.value,p FROM PObject p ORDER BY p.value ASC");
-		for (int i = 0; i < THREADS; i++) {
-			futures[i] = group.submit(new Callable<Object>() {
-				public Object call() {
-					List result = query.getResultList();
-					Integer old = Integer.MIN_VALUE;
-					for (Object row : result) {
-						Object[] line = (Object[]) row;
+        for (int i = 0; i < THREADS; i++) {
+            futures[i] = group.submit(new Callable<Object>() {
+                public Object call() {
+                    List result = query.getResultList();
+                    Integer old = Integer.MIN_VALUE;
+                    for (Object row : result) {
+                        Object[] line = (Object[]) row;
                         int value = ((Integer) line[0]).intValue();
-						PObject pc = (PObject) line[1];
-						assertTrue(value >= old);
-						old = value;
+                        PObject pc = (PObject) line[1];
+                        assertTrue(value >= old);
+                        old = value;
                         assertEquals(value, pc.getValue());
-					}
-					return null;
-				}
-			});
-		}
-		
-		waitForTermination();
-		em.getTransaction().rollback();
-	}
+                    }
+                    return null;
+                }
+            });
+        }
+        
+        waitForTermination();
+        em.getTransaction().rollback();
+    }
 
-	public void testAggregateQuery() {
-		final EntityManager em = emf.createEntityManager();
-		em.getTransaction().begin();
+    public void testAggregateQuery() {
+        final EntityManager em = emf.createEntityManager();
+        em.getTransaction().begin();
         final Query countQ = em.createQuery("SELECT COUNT(p) FROM PObject p");
         final Query maxQ = em.createQuery("SELECT MAX(p.value) FROM PObject p");
         final Query minQ = em.createQuery("SELECT MIN(p.value) FROM PObject p");
         final Query sumQ = em.createQuery("SELECT SUM(p.value) FROM PObject p");
         final Query minmaxQ = em.createQuery(
                 "SELECT MIN(p.value),MAX(p.value) FROM PObject p");
-		for (int i = 0; i < THREADS; i++) {
-			futures[i] = group.submit(new Callable<Object>() {
-				public Object call() {
-					Object count = countQ.getSingleResult();
-					Object max = maxQ.getSingleResult();
-					Object min = minQ.getSingleResult();
-					Object sum = sumQ.getSingleResult();
+        for (int i = 0; i < THREADS; i++) {
+            futures[i] = group.submit(new Callable<Object>() {
+                public Object call() {
+                    Object count = countQ.getSingleResult();
+                    Object max = maxQ.getSingleResult();
+                    Object min = minQ.getSingleResult();
+                    Object sum = sumQ.getSingleResult();
                     Object minmax = minmaxQ.getSingleResult();
-					
-					Object min1 = ((Object[]) minmax)[0];
-					Object max1 = ((Object[]) minmax)[1];
+                    
+                    Object min1 = ((Object[]) minmax)[0];
+                    Object max1 = ((Object[]) minmax)[1];
 
 
                     assertEquals(POBJECT_COUNT, ((Number) count).intValue());
@@ -163,173 +163,174 @@ public class TestQueryMultiThreaded extends SliceTestCase {
                     assertEquals(min, min1);
                     assertEquals(max, max1);
                     return null;
-				}
-			});
-		}
-		waitForTermination();
-		em.getTransaction().rollback();
-	}
+                }
+            });
+        }
+        waitForTermination();
+        em.getTransaction().rollback();
+    }
 
-	public void testAggregateQueryWithMissingValueFromSlice() {
-		final EntityManager em = emf.createEntityManager();
-		em.getTransaction().begin();
+    public void testAggregateQueryWithMissingValueFromSlice() {
+        final EntityManager em = emf.createEntityManager();
+        em.getTransaction().begin();
         final Query maxQ = em.createQuery(
                 "SELECT MAX(p.value) FROM PObject p WHERE MOD(p.value,2)=0");
-		for (int i = 0; i < THREADS; i++) {
-			futures[i] = group.submit(new Callable<Object>() {
-				public Object call() {
-					Object max = maxQ.getSingleResult();
+        for (int i = 0; i < THREADS; i++) {
+            futures[i] = group.submit(new Callable<Object>() {
+                public Object call() {
+                    Object max = maxQ.getSingleResult();
                     assertEquals(VALUE_MAX, ((Number) max).intValue());
-					return null;
-				}
-			});
-		}
-		waitForTermination();
-		em.getTransaction().rollback();
-	}
+                    return null;
+                }
+            });
+        }
+        waitForTermination();
+        em.getTransaction().rollback();
+    }
 
-	public void testSetMaxResult() {
-		final EntityManager em = emf.createEntityManager();
-		final int limit = 3;
-		em.getTransaction().begin();
+    public void testSetMaxResult() {
+        final EntityManager em = emf.createEntityManager();
+        final int limit = 3;
+        em.getTransaction().begin();
         final Query q = em.createQuery(
                 "SELECT p.value,p FROM PObject p ORDER BY p.value ASC");
-		for (int i = 0; i < THREADS; i++) {
-			futures[i] = group.submit(new Callable<Object>() {
-				public Object call() {
+        for (int i = 0; i < THREADS; i++) {
+            futures[i] = group.submit(new Callable<Object>() {
+                public Object call() {
                     List result = q.setMaxResults(limit).getResultList();
-					int i = 0;
-					for (Object row : result) {
-						Object[] line = (Object[]) row;
+                    int i = 0;
+                    for (Object row : result) {
+                        Object[] line = (Object[]) row;
                         int value = ((Integer) line[0]).intValue();
-						PObject pc = (PObject) line[1];
-					}
-					assertEquals(limit, result.size());
-					return null;
-				}
+                        PObject pc = (PObject) line[1];
+                    }
+                    assertEquals(limit, result.size());
+                    return null;
+                }
 
-			});
-		}
-		waitForTermination();
-		em.getTransaction().rollback();
-	}
+            });
+        }
+        waitForTermination();
+        em.getTransaction().rollback();
+    }
 
-	public void testHint() {
-		final List<String> targets = new ArrayList<String>();
-		targets.add("Even");
-		final EntityManager em = emf.createEntityManager();
-		em.getTransaction().begin();
-		final Query query = em.createQuery("SELECT p FROM PObject p");
-		for (int i = 0; i < THREADS; i++) {
-			futures[i] = group.submit(new Callable<Object>() {
+    public void testHint() {
+        final List<String> targets = new ArrayList<String>();
+        targets.add("Even");
+        final EntityManager em = emf.createEntityManager();
+        em.getTransaction().begin();
+        final Query query = em.createQuery("SELECT p FROM PObject p");
+        for (int i = 0; i < THREADS; i++) {
+            futures[i] = group.submit(new Callable<Object>() {
 
-				public Object call() {
+                public Object call() {
                     query.setHint(ProductDerivation.HINT_TARGET, "Even");
-					List result = query.getResultList();
-					for (Object pc : result) {
+                    List result = query.getResultList();
+                    for (Object pc : result) {
                         String slice = SlicePersistence.getSlice(pc);
                         assertTrue(targets.contains(slice));
-					}
-					return null;
-				}
+                    }
+                    return null;
+                }
 
-			});
-		}
-		waitForTermination();
-		em.getTransaction().rollback();
-	}
+            });
+        }
+        waitForTermination();
+        em.getTransaction().rollback();
+    }
 
-	public void testInMemoryOrderBy() {
-		final EntityManager em = emf.createEntityManager();
-		em.getTransaction().begin();
+    public void testInMemoryOrderBy() {
+        final EntityManager em = emf.createEntityManager();
+        em.getTransaction().begin();
         final Query query =
             em.createQuery("SELECT p FROM PObject p ORDER BY p.value");
-		for (int i = 0; i < THREADS; i++) {
-			futures[i] = group.submit(new Callable<Object>() {
-				public Object call() {
-					List result = query.getResultList();
-					return null;
-				}
-			});
-		}
-		waitForTermination();
-		em.getTransaction().rollback();
-	}
+        for (int i = 0; i < THREADS; i++) {
+            futures[i] = group.submit(new Callable<Object>() {
+                public Object call() {
+                    List result = query.getResultList();
+                    return null;
+                }
+            });
+        }
+        waitForTermination();
+        em.getTransaction().rollback();
+    }
 
-	public void testQueryParameter() {
-		final EntityManager em = emf.createEntityManager();
-		em.getTransaction().begin();
+    public void testQueryParameter() {
+        final EntityManager em = emf.createEntityManager();
+        em.getTransaction().begin();
         final Query query =
             em.createQuery("SELECT p FROM PObject p WHERE p.value > :v");
-		for (int i = 0; i < THREADS; i++) {
-			futures[i] = group.submit(new Callable<Object>() {
-				public Object call() {
-					query.setParameter("v", 200);
-					List result = query.getResultList();
-					return null;
-				}
+        for (int i = 0; i < THREADS; i++) {
+            futures[i] = group.submit(new Callable<Object>() {
+                public Object call() {
+                    query.setParameter("v", 200);
+                    List result = query.getResultList();
+                    return null;
+                }
 
-			});
-		}
-		waitForTermination();
-		em.getTransaction().rollback();
-	}
+            });
+        }
+        waitForTermination();
+        em.getTransaction().rollback();
+    }
 
-	/**
-	 * This test is currently retired.
-	 * 
-	 * @see <A HREF="https://issues.apache.org/jira/browse/OPENJPA-1044">OPENJPA-1044</A>
-	 * for details.
-	 */
-	public void xtestQueryParameterEntity() {
-		final EntityManager em = emf.createEntityManager();
-		em.getTransaction().begin();
+    /**
+     * This test is currently retired.
+     * 
+     * @see <A HREF="https://issues.apache.org/jira/browse/OPENJPA-1044">
+     * OPENJPA-1044</A>
+     * for details.
+     */
+    public void xtestQueryParameterEntity() {
+        final EntityManager em = emf.createEntityManager();
+        em.getTransaction().begin();
         final Query addressQ =
             em.createQuery("select a from Address a where a.city = :city");
 
         final Query personQ =
             em.createQuery("SELECT p FROM Person p WHERE p.address = :a");
-		for (int i = 0; i < THREADS; i++) {
-			futures[i] = group.submit(new Callable<Object>() {
-				public Object call() {
+        for (int i = 0; i < THREADS; i++) {
+            futures[i] = group.submit(new Callable<Object>() {
+                public Object call() {
                     Address a = (Address) addressQ.setParameter("city", "Rome")
-						.getSingleResult();
-					assertNotNull(a);
+                        .getSingleResult();
+                    assertNotNull(a);
                     assertEquals("Odd", SlicePersistence.getSlice(a));
                     List<Person> result =
                         personQ.setParameter("a", a).getResultList();
-					assertEquals(1, result.size());
-					Person p = result.get(0);
+                    assertEquals(1, result.size());
+                    Person p = result.get(0);
                     assertEquals("Odd", SlicePersistence.getSlice(p));
                     assertEquals("Rome", p.getAddress().getCity());
-					return null;
-				}
+                    return null;
+                }
 
-			});
-		}
-		waitForTermination();
-		em.getTransaction().rollback();
-	}
+            });
+        }
+        waitForTermination();
+        em.getTransaction().rollback();
+    }
 
-	void waitForTermination() {
-		try {
-			for (Future f : futures)
-				try {
-					f.get(60, TimeUnit.SECONDS);
-				} catch (TimeoutException te) {
+    void waitForTermination() {
+        try {
+            for (Future f : futures)
+                try {
+                    f.get(60, TimeUnit.SECONDS);
+                } catch (TimeoutException te) {
                     fail("Failed " + te + "\r\n" + getStackDump(te));
-				} catch (ExecutionException e) {
+                } catch (ExecutionException e) {
                     fail("Failed " + "\r\n" + getStackDump(e.getCause()));
-				}
-		} catch (InterruptedException e) {
+                }
+        } catch (InterruptedException e) {
 
-		}
-	}
-	
-	String getStackDump(Throwable t) {
+        }
+    }
+    
+    String getStackDump(Throwable t) {
         StringWriter writer = new StringWriter();
         t.printStackTrace(new PrintWriter(writer));
         return writer.toString();
-	}
+    }
 
 }

@@ -6,7 +6,8 @@ package org.apache.openjpa.persistence.meta;
 
 import javax.persistence.metamodel.Attribute;
 
-@javax.persistence.metamodel.TypesafeMetamodel(value=org.apache.openjpa.persistence.meta.Embed1.class)
+@javax.persistence.metamodel.TypesafeMetamodel(
+    value = org.apache.openjpa.persistence.meta.Embed1.class)
 public class Embed1_ {
     public static volatile Attribute<Embed1,ImplicitFieldAccessBase> entity0;
     public static volatile Attribute<Embed1,String> f1;

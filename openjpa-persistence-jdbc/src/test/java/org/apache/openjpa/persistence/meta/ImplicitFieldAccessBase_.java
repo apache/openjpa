@@ -10,15 +10,24 @@ import javax.persistence.metamodel.List;
 import javax.persistence.metamodel.Map;
 import javax.persistence.metamodel.Set;
 
-@javax.persistence.metamodel.TypesafeMetamodel(value=org.apache.openjpa.persistence.meta.ImplicitFieldAccessBase.class)
-public class ImplicitFieldAccessBase_ extends ImplicitFieldAccessMappedSuperclass_  {
-    public static volatile Attribute<ImplicitFieldAccessBase,Integer> boxedInt;
-    public static volatile Collection<ImplicitFieldAccessBase,ExplicitFieldAccess> collectionRelation;
-    public static volatile Attribute<ImplicitFieldAccessBase,String> f0;
-    public static volatile List<ImplicitFieldAccessBase,ExplicitFieldAccess> listRelation;
-    public static volatile Map<ImplicitFieldAccessBase,Integer,ExplicitFieldAccess> mapRelationKeyBasic;
-    public static volatile Map<ImplicitFieldAccessBase,ExplicitPropertyAccess,ExplicitFieldAccess> mapRelationKeyPC;
-    public static volatile Attribute<ImplicitFieldAccessBase,ExplicitFieldAccess> one2oneRelation;
-    public static volatile Attribute<ImplicitFieldAccessBase,Integer> primitiveInt;
-    public static volatile Set<ImplicitFieldAccessBase,ExplicitFieldAccess> setRelation;
+@javax.persistence.metamodel.TypesafeMetamodel(
+    value=org.apache.openjpa.persistence.meta.ImplicitFieldAccessBase.class)
+public class ImplicitFieldAccessBase_ extends
+    ImplicitFieldAccessMappedSuperclass_ {
+    public static volatile Attribute<ImplicitFieldAccessBase, Integer> boxedInt;
+    public static volatile Collection<ImplicitFieldAccessBase, 
+        ExplicitFieldAccess> collectionRelation;
+    public static volatile Attribute<ImplicitFieldAccessBase, String> f0;
+    public static volatile List<ImplicitFieldAccessBase, ExplicitFieldAccess>
+        listRelation;
+    public static volatile Map<ImplicitFieldAccessBase, Integer,
+        ExplicitFieldAccess> mapRelationKeyBasic;
+    public static volatile Map<ImplicitFieldAccessBase, ExplicitPropertyAccess,
+        ExplicitFieldAccess> mapRelationKeyPC;
+    public static volatile Attribute<ImplicitFieldAccessBase,
+        ExplicitFieldAccess> one2oneRelation;
+    public static volatile Attribute<ImplicitFieldAccessBase,
+        Integer> primitiveInt;
+    public static volatile Set<ImplicitFieldAccessBase,
+        ExplicitFieldAccess> setRelation;
 }

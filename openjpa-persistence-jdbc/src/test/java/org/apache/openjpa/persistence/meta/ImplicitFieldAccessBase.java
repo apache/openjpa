@@ -42,7 +42,8 @@ import javax.persistence.Transient;
  *
  */
 @Entity
-public class ImplicitFieldAccessBase extends ImplicitFieldAccessMappedSuperclass {
+public class ImplicitFieldAccessBase extends
+    ImplicitFieldAccessMappedSuperclass {
     private String   f0;
     private int      primitiveInt;
     private Integer  boxedInt;

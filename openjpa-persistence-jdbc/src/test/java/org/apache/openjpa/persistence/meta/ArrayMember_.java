@@ -6,7 +6,8 @@ package org.apache.openjpa.persistence.meta;
 
 import javax.persistence.metamodel.Attribute;
 
-@javax.persistence.metamodel.TypesafeMetamodel(value=org.apache.openjpa.persistence.meta.ArrayMember.class)
+@javax.persistence.metamodel.TypesafeMetamodel(
+    value=org.apache.openjpa.persistence.meta.ArrayMember.class)
 public class ArrayMember_ {
     public static volatile Attribute<ArrayMember,Byte[]> Array;
     public static volatile Attribute<ArrayMember,byte[]> array;
