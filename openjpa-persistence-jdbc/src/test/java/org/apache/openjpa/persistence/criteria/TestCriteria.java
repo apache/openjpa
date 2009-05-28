@@ -598,7 +598,7 @@ public class TestCriteria extends SingleEMFTestCase {
             compareLiterally(jpql, q);
         }
     }
-        void setParameters(Query q, Object...p) {
+        void setParameters(Query q, Object...p) {
         if (p == null)
             return;
         for (int i = 0; i < p.length; i += 2) {
