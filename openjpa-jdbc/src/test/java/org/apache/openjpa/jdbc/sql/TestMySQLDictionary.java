@@ -18,6 +18,7 @@
  */
 package org.apache.openjpa.jdbc.sql;
 
+import java.sql.CallableStatement;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -33,10 +34,12 @@ public class TestMySQLDictionary extends MockObjectTestCase {
         assertEquals(Integer.MIN_VALUE, db.getBatchFetchSize(1));
     }
 
+    
+    
     /**
      * <P>
-     * Ensure thaqt a connection obtained from a MySQLDictionary sets the
-     * fetchBatchSize to Integer.MIN_VALUE
+     * Ensure that <code>SQLBuffer.prepareStatement</code> calls 
+     * <code>setFetchSize(Integer.MIN_VALUE)</code> when using MySQL. 
      * </P>
      * 
      * @throws Exception
@@ -66,5 +69,40 @@ public class TestMySQLDictionary extends MockObjectTestCase {
         fetch.setFetchBatchSize(1);
 
         sql.prepareStatement(mockConnection, fetch, -1, -1);
+    }
+    
+    /**
+     * <P>
+     * Ensure that <code>SQLBuffer.prepareCall()</code> calls 
+     * <code>setFetchSize(Integer.MIN_VALUE)</code> when using MySQL. 
+     * </P>
+     * 
+     * @throws Exception
+     *             If any of the expectations are not met or any unexpected
+     *             method calls are made
+     */
+    public void testPreparedCallGetFetchBatchSize() throws Exception {
+        DBDictionary db = new MySQLDictionary();
+        SQLBuffer sql = new SQLBuffer(db);
+        
+        final CallableStatement mockStatement = mock(CallableStatement.class);
+        final Connection mockConnection = mock(Connection.class);
+
+        // Expected method calls on the mock objects above. If any of these are 
+        // do not occur, or if any other methods are invoked on the mock objects
+        // an exception will be thrown and the test will fail. 
+        checking(new Expectations() {
+            {
+                oneOf(mockConnection).prepareCall(with(any(String.class)));
+                will(returnValue(mockStatement));
+                oneOf(mockStatement).setFetchSize(Integer.MIN_VALUE);
+            }
+        });
+        
+        JDBCFetchConfiguration fetch = new JDBCFetchConfigurationImpl();
+        fetch.setResultSetType(ResultSet.TYPE_FORWARD_ONLY);
+        fetch.setFetchBatchSize(1);
+
+        sql.prepareCall(mockConnection, fetch, -1, -1);
     }
 }
