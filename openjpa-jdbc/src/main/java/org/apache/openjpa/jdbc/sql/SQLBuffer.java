@@ -492,7 +492,7 @@ public final class SQLBuffer
     }
     
     /**
-     * Create and populate the parameters of a prepred statement using the
+     * Create and populate the parameters of a prepared statement using the
      * SQL in this buffer and the given fetch configuration.
      */
     public PreparedStatement prepareStatement(Connection conn,
@@ -515,7 +515,8 @@ public final class SQLBuffer
             setParameters(stmnt, parms);
             if (fetch != null) {
                 if (fetch.getFetchBatchSize() > 0)
-                    stmnt.setFetchSize(fetch.getFetchBatchSize());
+                    stmnt.setFetchSize(
+                        _dict.getBatchFetchSize(fetch.getFetchBatchSize()));
                 if (rsType != ResultSet.TYPE_FORWARD_ONLY
                     && fetch.getFetchDirection() != ResultSet.FETCH_FORWARD)
                     stmnt.setFetchDirection(fetch.getFetchDirection());
@@ -574,7 +575,8 @@ public final class SQLBuffer
             setParameters(stmnt);
             if (fetch != null) {
                 if (fetch.getFetchBatchSize() > 0)
-                    stmnt.setFetchSize(fetch.getFetchBatchSize());
+                    stmnt.setFetchSize(
+                        _dict.getBatchFetchSize(fetch.getFetchBatchSize()));
                 if (rsType != ResultSet.TYPE_FORWARD_ONLY
                     && fetch.getFetchDirection() != ResultSet.FETCH_FORWARD)
                     stmnt.setFetchDirection(fetch.getFetchDirection());

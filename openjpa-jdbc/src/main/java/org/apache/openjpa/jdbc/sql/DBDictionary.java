@@ -3165,6 +3165,10 @@ public class DBDictionary
         buf.append(")");
         return new String[]{ buf.toString() };
     }
+    
+    public int getBatchFetchSize(int batchFetchSize) {
+        return batchFetchSize;
+    }
 
     protected StringBuffer comment(StringBuffer buf, String comment) {
         return buf.append("-- ").append(comment);

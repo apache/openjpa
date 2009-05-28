@@ -309,4 +309,9 @@ public class MySQLDictionary
         val.appendTo(buf);
         buf.append("')");
     }
+    
+    public int getBatchFetchSize(int batchFetchSize) {
+        return Integer.MIN_VALUE;
+    }
+    
 }
