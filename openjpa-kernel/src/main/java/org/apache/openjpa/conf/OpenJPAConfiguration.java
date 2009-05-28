@@ -1661,4 +1661,20 @@ public interface OpenJPAConfiguration
      * @since 2.0.0
      */
     public void setValidationMode(String mode);
+    
+    /**
+     * The ValidatorFactory provided by the container or application.
+     * Defaults to <code>null</code>.
+     *
+     * @since 2.0.0
+     */
+    public Object getValidationFactory();
+
+    /**
+     * Set the container or application provided ValidatorFactory instance.
+     * If not set, defaults to <code>null</code>.
+     *
+     * @since 2.0.0
+     */
+    public void setValidationFactory(Object factory);
 }

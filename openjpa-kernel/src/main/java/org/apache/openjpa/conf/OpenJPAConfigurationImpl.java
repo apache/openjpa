@@ -153,6 +153,7 @@ public class OpenJPAConfigurationImpl
     public PluginValue finderCachePlugin;
     public ObjectValue specification;
     public StringValue validationMode;
+    public ObjectValue validationFactory;
     
     // custom values
     public BrokerFactoryValue brokerFactoryPlugin;
@@ -565,6 +566,11 @@ public class OpenJPAConfigurationImpl
         validationMode.setDefault(aliases[0]);
         validationMode.set(aliases[0]);
         validationMode.setDynamic(true);
+
+        validationFactory = addObject("javax.persistence.validation.factory");
+        validationFactory.setInstantiatingGetter(
+            "getValidationFactoryInstance");
+        validationFactory.setDynamic(true);
 
         // initialize supported options that some runtimes may not support
         supportedOptions.add(OPTION_NONTRANS_READ);
@@ -1586,5 +1592,17 @@ public class OpenJPAConfigurationImpl
             finderCachePlugin.instantiate(FinderCache.class, this);
         }
         return (FinderCache)finderCachePlugin.get();
+    }
+
+    public Object getValidationFactory() {
+        return validationFactory.get();
+    }
+
+    public Object getValidationFactoryInstance() {
+        return validationFactory.get();
+    }
+
+    public void setValidationFactory(Object factory) {
+        validationFactory.set(factory);                            
     }
 }
