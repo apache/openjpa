@@ -1513,7 +1513,7 @@ public class JPQLExpressionBuilder
             new Object[]{ name }, null);
     }
 
-    private Value validateMapPath(JPQLNode node, JPQLNode id) {
+    private Path validateMapPath(JPQLNode node, JPQLNode id) {
         Path path = (Path) getValue(id);
         FieldMetaData fld = path.last();
 
@@ -1550,7 +1550,7 @@ public class JPQLExpressionBuilder
             throw parseException(EX_USER, "bad-general-identifier",
                 new Object[]{ id.text, "VALUE" }, null);
 
-        Path path = (Path) validateMapPath(node, id);
+        Path path = validateMapPath(node, id);
         FieldMetaData fld = path.last();
         path = (Path) factory.getKey(path);
         ClassMetaData meta = fld.getKey().getTypeMetaData();
@@ -1566,7 +1566,7 @@ public class JPQLExpressionBuilder
 
     private Value getQualifiedIdentifier(JPQLNode node) {
         JPQLNode id = onlyChild(node);               
-        Path path = (Path) validateMapPath(node, id);
+        Path path = validateMapPath(node, id);
 
         if (node.id == JJTVALUE)
             return path;
@@ -1578,17 +1578,17 @@ public class JPQLExpressionBuilder
             return factory.mapEntry(path, value);
     }
 
-    private Value getQualifiedPath(JPQLNode node) {
+    private Path getQualifiedPath(JPQLNode node) {
         return getQualifiedPath(node, false, true);
     }
 
-    private Value getQualifiedPath(JPQLNode node, boolean pcOnly, boolean inner)
+    private Path getQualifiedPath(JPQLNode node, boolean pcOnly, boolean inner)
     {
         int nChild = node.getChildCount();
         JPQLNode firstChild = firstChild(node);
         JPQLNode id = firstChild.id == JJTKEY ? onlyChild(firstChild) :
                firstChild;               
-        Path path = (Path) validateMapPath(firstChild, id);
+        Path path = validateMapPath(firstChild, id);
 
         if (firstChild.id == JJTIDENTIFIER)
             return getPath(node);
