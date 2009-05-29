@@ -18,6 +18,12 @@
  */
 package org.apache.openjpa.persistence.jdbc.maps.spec_10_1_29_ex1;
 
+import java.util.HashSet;
+import java.util.Set;
+
+import javax.persistence.CollectionTable;
+import javax.persistence.Column;
+import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.Table;
@@ -29,6 +35,10 @@ public class Division {
     int id;
 
     String name;
+    @ElementCollection
+    @CollectionTable(name="branch")
+    @Column(name="branch", length=20)
+    protected Set<String> branches = new HashSet<String>();
 
     public int getId() {
         return id;
@@ -44,6 +54,14 @@ public class Division {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public Set<String> getBranches() {
+        return branches;
+    }
+
+    public void addBranch(String name) {
+        branches.add(name);
     }
 
     public boolean equals(Object o) {

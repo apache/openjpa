@@ -86,6 +86,15 @@ public class TestSpec10_1_29_Ex1 extends SQLListenerTestCase {
         Division d = (Division) ((Object[]) rs.get(0))[0];
         VicePresident v = (VicePresident) ((Object[]) rs.get(0))[1];
 
+        query = "select KEY(e), b from Company c, " +
+            " in (c.organization) e, in(KEY(e).branches) b order by b";
+        q = em.createQuery(query);
+        if (inMemory) 
+            setCandidate(q, Company.class);
+        rs = q.getResultList();
+        String branch = (String) ((Object[]) rs.get(0))[1];
+        assertEquals(branch, "branch0");
+
         em.clear();
         query = "select ENTRY(e) from Company c, " +
             " in (c.organization) e order by c.id";
@@ -160,6 +169,9 @@ public class TestSpec10_1_29_Ex1 extends SQLListenerTestCase {
         Division d = new Division();
         d.setId(id);
         d.setName("d" + id);
+        for (int i = 0; i < 2; i++) {
+            d.addBranch("branch"+i);
+        }
         return d;
     }
 
