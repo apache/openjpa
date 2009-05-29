@@ -136,16 +136,6 @@ public class PersistenceMappingDefaults
         Table table = getTable(clm);
         
         String name = table.getName();
-        String delim = dict.getDelimiter();
-        boolean isDelimited = false;
-        if (name.startsWith(delim) && name.endsWith(delim)) {
-            isDelimited = true;
-            name = name.substring(0,name.length()-1) + "_";
-        }
-        else {
-            name = name + "_";
-        }
-        
 
         // if this is an assocation table, spec says to suffix with table of
         // the related type. spec doesn't cover other cases; we're going to
@@ -153,14 +143,15 @@ public class PersistenceMappingDefaults
         ClassMapping rel = fm.getElementMapping().getTypeMapping();
         boolean assoc = rel != null && rel.getTable() != null
             && fm.getTypeCode() != JavaTypes.MAP;
-        if (assoc)
-            name += rel.getTable().getName();
-        else
-            name += fm.getName();
-        
-        if (isDelimited) {
-            name += "\"";
+        String name2 = null;
+        if (assoc) {
+            name2 = rel.getTable().getName();
         }
+        else {
+            name2 = fm.getName();
+        }
+        
+        name = dict.combineNames(name, name2);
         
         return name.replace('$', '_');
     }
@@ -202,7 +193,7 @@ public class PersistenceMappingDefaults
         // suffix with '_' + target column
         if (tempName == null)
             tempName = name;
-        name = tempName + "_" + targetName;
+        name = dict.combineNames(tempName, targetName);
         name = dict.getValidColumnName(name, foreign);
         col.setName(name);
     }
@@ -228,8 +219,9 @@ public class PersistenceMappingDefaults
 
             if (isRemoveHungarianNotation())
                 name = removeHungarianNotation(name);
-
-            name = name + "_" + ((Column) target).getName();
+            
+            name = dict.combineNames(name, ((Column)target).getName());
+            
             // No need to check for uniqueness.
             name = dict.getValidColumnName(name, local, false);
             col.setName(name);

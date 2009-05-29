@@ -27,19 +27,33 @@ import javax.persistence.CollectionTable;
 import javax.persistence.Column;
 import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.MapKeyColumn;
 import javax.persistence.SecondaryTable;
 import javax.persistence.Table;
+import javax.persistence.TableGenerator;
+import javax.persistence.UniqueConstraint;
 
 @Entity
-@Table(name="\"primary entityF\"", schema="\"delim id\"")
-@SecondaryTable(name="\"secondary entityF\"", schema="\"delim id\"")
-//@Table(name="primary_entityF", schema="delim_id")
+@Table(name="\"primary entityF\"", schema="\"delim id\"",
+    uniqueConstraints=
+        @UniqueConstraint(columnNames={"\"f name\"", "f_nonDelimName"}))
+@SecondaryTable(name="\"secondary entityF\"", schema="\"delim id\"",
+    uniqueConstraints=
+        @UniqueConstraint(name="\"sec_unq\"", 
+            columnNames={"\"secondary name\""}))         
 public class EntityF {
+    @TableGenerator(name = "f_id_gen", table = "\"f_id_gen\"", 
+        schema = "\"delim id\"",
+        pkColumnName = "\"gen_pk\"", valueColumnName = "\"gen_value\"")
+    @GeneratedValue(strategy = GenerationType.TABLE, generator = "f_id_gen")
     @Id
     private int id;
-    @Column(name="\"f name\"")
+    // Note: Delimited columnDefinition is not supported on some DBs
+    // TODO: copy into a separate entity and conditionally run a different test
+    @Column(name="\"f name\"", columnDefinition="char(15)")
     private String name;
     @Column(name="f_nonDelimName")
     private String nonDelimName;
@@ -56,20 +70,19 @@ public class EntityF {
     private Set<String> collectionDelimSet = new HashSet<String>();
     
     @ElementCollection
+    // MapKeyColumn with default name generation
     @MapKeyColumn
     private Map<String, String> collectionMap = new HashMap<String, String>();
     
     @ElementCollection
-    @MapKeyColumn(name = "\"mapKey\"")
-    private Map<String, String> delimCollectionMap =
+    // Note: Delimited column definition is not supported on some DBs, so
+    // it is not delimited here
+    // TODO: create a separate entity and conditionally run the test
+    @MapKeyColumn(name="\"mapKey\"", columnDefinition="varchar(20)")
+    private Map<String, String> delimCollectionMap = 
         new HashMap<String, String>();
-
-    public EntityF(String name) {
-        this.name = name;
-    }
     
-    public EntityF(int id, String name) {
-        this.id = id;
+    public EntityF(String name) {
         this.name = name;
     }
     

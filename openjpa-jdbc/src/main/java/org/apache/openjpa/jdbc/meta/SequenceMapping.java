@@ -158,6 +158,7 @@ public class SequenceMapping
         return new JDBCSeqValue(property);
     }
 
+    @Override
     protected void addStandardProperties(StringBuffer props) {
         super.addStandardProperties(props);
         // Quotes are conditionally added to the following because the props
@@ -166,36 +167,23 @@ public class SequenceMapping
         // properties are intentionally delimited with quotes. So, an extra
         // set preserves the intended ones. While this is an ugly solution,
         // it's less ugly than other ones.
-        String table = _table;
-        if (table != null && table.startsWith("\"")
-                && table.endsWith("\"")) {
-            table = "\"" + table + "\"";
-        }
-        String sequenceColumn = _sequenceColumn;
-        if (sequenceColumn != null && sequenceColumn.startsWith("\"")
-                && sequenceColumn.endsWith("\"")) {
-            sequenceColumn = "\"" + sequenceColumn + "\"";
-        }
-        String primaryKeyColumn = _primaryKeyColumn;
-        if (primaryKeyColumn !=null && primaryKeyColumn.startsWith("\"")
-                && primaryKeyColumn.endsWith("\"")) {
-            primaryKeyColumn = "\"" + primaryKeyColumn + "\"";
-        }
-        String primaryKeyValue = _primaryKeyValue;
-        if (primaryKeyValue != null && primaryKeyValue.startsWith("\"")
-                && primaryKeyValue.endsWith("\"")) {
-            primaryKeyValue = "\"" + primaryKeyValue + "\"";
-        }
         
-        appendProperty(props, PROP_TABLE, table);
-        appendProperty(props, PROP_SEQUENCE_COL, sequenceColumn);
-        appendProperty(props, PROP_PK_COL, primaryKeyColumn);
-        appendProperty(props, PROP_PK_VALUE, primaryKeyValue);
+        appendProperty(props, PROP_TABLE, addQuotes(_table));
+        appendProperty(props, PROP_SEQUENCE_COL, addQuotes(_sequenceColumn));
+        appendProperty(props, PROP_PK_COL, addQuotes(_primaryKeyColumn));
+        appendProperty(props, PROP_PK_VALUE, addQuotes(_primaryKeyValue));
         // Array of unique column names are passed to configuration
         // as a single string "x|y|z". The configurable (TableJDBCSeq) must
         // parse it back.
         if (_uniqueColumns != null && _uniqueColumns.length > 0)
         	appendProperty(props, PROP_UNIQUE, 
         			StringUtils.join(_uniqueColumns,'|'));
+    }
+    
+    private String addQuotes(String name) {
+        if (name != null && name.startsWith("\"") && name.endsWith("\"")) {
+            return "\"" + name + "\"";
+        }
+        return name;
     }
 }

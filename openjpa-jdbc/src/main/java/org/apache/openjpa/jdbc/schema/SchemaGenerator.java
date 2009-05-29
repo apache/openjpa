@@ -488,7 +488,6 @@ public class SchemaGenerator {
         Table table;
         String tableSchema;
         for (int i = 0; cols != null && i < cols.length; i++) {
-            // TODO: Is this where we should handle this?
             if (tableName == null || tableName.equals("%")) {
                 tableName = cols[i].getTableName();
             }
@@ -528,8 +527,14 @@ public class SchemaGenerator {
             if (_log.isTraceEnabled())
                 _log.trace(_loc.get("gen-column", cols[i].getName(), table));
 
-            if (table.getColumn(cols[i].getName()) == null)
-                table.importColumn(cols[i]);
+            if (table.getColumn(cols[i].getName()) == null) {
+                // It's possible that the original column name was delimited,
+                // so delimit it and try again
+                String delimCol = _dict.addDelimiters(cols[i].getName());
+                if (table.getColumn(delimCol) == null) {
+                    table.importColumn(cols[i]);
+                }
+            }
         }
     }
 

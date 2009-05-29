@@ -3024,16 +3024,7 @@ public class DBDictionary
         String tableName = table.getName();
         int len = Math.min(tableName.length(), 7);
         String shortTableName = shorten(tableName, len);
-        String delim = getDelimiter();
-        if (shortTableName.startsWith(delim) 
-            && shortTableName.endsWith(delim)) {
-            name = delim + "I_" 
-                + shortTableName.substring(1, shortTableName.length() - 1) 
-                + "_" + name + delim;
-        }
-        else {
-            name = "I_" + shortTableName + "_" + name;
-        }
+        name = combineNames("I", shortTableName, name);
         
         return makeNameValid(name, table.getSchema().getSchemaGroup(),
             maxIndexNameLength, NAME_ANY);
@@ -3048,9 +3039,28 @@ public class DBDictionary
             name = name.substring(1);
         String tableName = table.getName();
         int len = Math.min(tableName.length(), 7);
-        name = "U_" + shorten(tableName, len) + "_" + name;
+        name = combineNames("U", shorten(tableName, len), name);
         return makeNameValid(name, table.getSchema().getSchemaGroup(),
             maxConstraintNameLength, NAME_ANY);
+    }
+    
+    public boolean isDelimited(String name) {
+        return (name.startsWith(getDelimiter()) 
+                && name.endsWith(getDelimiter()));
+    }
+    
+    public String stripDelimiters(String name) {
+        String delimiter = getDelimiter();
+        int delimLen = delimiter.length();
+        if (isDelimited(name)) {
+            return name.substring(delimLen, name.length() - delimLen);
+        }
+        return name;
+    }
+    
+    public String addDelimiters(String name) {
+        String delimiter = getDelimiter();
+        return delimiter + name + delimiter;
     }
 
     /**
@@ -4122,9 +4132,7 @@ public class DBDictionary
             return null;
 
         // Handle delimited string differently. Return unquoted name.
-        if (delimitIds || 
-                objectName.startsWith(getDelimiter()) &&
-                objectName.endsWith(getDelimiter())) {
+        if (delimitIds || isDelimited(objectName)) {
             String delimCase = getDelimitedCase();
             if (SCHEMA_CASE_UPPER.equals(delimCase)) {
                 objectName.toUpperCase();
@@ -4133,11 +4141,7 @@ public class DBDictionary
                 objectName.toLowerCase();
             }
             
-            // TODO: maybe have a different method to remove quotes and
-            // call it from the calling methods
-            int delimLen = getDelimiter().length();
-            return objectName.substring(delimLen, 
-                objectName.length() - delimLen);
+            return stripDelimiters(objectName);
         }
         
         String scase = getSchemaCase();
@@ -4971,5 +4975,30 @@ public class DBDictionary
      */
     public void setDelimitIds(boolean delimitIds) {
         this.delimitIds = delimitIds;
+    }
+    
+    // TODO: Should we pass in combining char, or just assume '_'?
+    public String combineNames(String... names) {
+        boolean delimited = false;
+        String combined = null;
+        for (int i = 0; i < names.length; i++) {
+            String name = names[i];
+            if (isDelimited(name)) {
+                delimited = true;
+                name = stripDelimiters(name);
+            }
+            if (i == 0) {
+                combined = name;
+            }
+            else {
+                combined = combined + "_" + name;
+            }
+        }
+        
+        if (delimited) {
+            combined = addDelimiters(combined);
+        }
+        
+        return combined;
     }
 }
