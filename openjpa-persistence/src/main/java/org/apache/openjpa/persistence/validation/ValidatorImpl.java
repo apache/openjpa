@@ -101,9 +101,13 @@ public class ValidatorImpl extends AbstractValidator {
      */    
     public ValidatorImpl(Object validatorFactory,
         String mode) {        
-        if (validatorFactory != null && validatorFactory instanceof
-                ValidatorFactory) {
-            _validatorFactory = (ValidatorFactory)validatorFactory;
+        if (validatorFactory != null) {
+            if (validatorFactory instanceof ValidatorFactory) {
+                _validatorFactory = (ValidatorFactory)validatorFactory;
+            } else {
+                // TODO: Add a localized exception
+                throw new IllegalArgumentException();                
+            }
         } else {
             _validatorFactory = getDefaultValidatorFactory();
         }
@@ -161,7 +165,17 @@ public class ValidatorImpl extends AbstractValidator {
      * @return returns true if validating for this particular event
      */
     public boolean isValidating(Integer event) {
-        return _validationGroups.get(event) != null;
+        return (hasValidator() && (_validationGroups.get(event) != null));
+    }
+
+    /**
+     * Returns whether a Validator was created by the ValidatorFactory
+     * and validation can be used.
+     * 
+     * @return returns true if ValidatorFactory returned a Validator
+     */
+    public boolean hasValidator() {
+        return (_validator != null);
     }
 
     /**
@@ -275,8 +289,12 @@ public class ValidatorImpl extends AbstractValidator {
     
     // Get the default validator factory
     private ValidatorFactory getDefaultValidatorFactory() {
-        ValidatorFactory factory = 
-            Validation.buildDefaultValidatorFactory();
+        ValidatorFactory factory = null;
+        try {
+            factory = Validation.buildDefaultValidatorFactory();
+        } catch (javax.validation.ValidationException e) {
+            // no validation providers found
+        }
         return factory;
     }
     
