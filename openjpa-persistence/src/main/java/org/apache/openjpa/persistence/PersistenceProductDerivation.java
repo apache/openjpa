@@ -57,8 +57,6 @@ import org.apache.openjpa.lib.meta.XMLMetaDataParser;
 import org.apache.openjpa.lib.meta.XMLVersionParser;
 import org.apache.openjpa.lib.util.J2DoPrivHelper;
 import org.apache.openjpa.lib.util.Localizer;
-import org.apache.openjpa.persistence.validation.ValidatorImpl;
-import org.apache.openjpa.validation.Validator;
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
 
@@ -166,13 +164,6 @@ public class PersistenceProductDerivation
             Compatibility compatibility = conf.getCompatibilityInstance();
             compatibility.setFlushBeforeDetach(true);
             compatibility.setCopyOnDetach(true);
-        } else {
-            System.out.println("********* Creating ValidatorImpl **********");
-            if (!conf.getValidationMode().equalsIgnoreCase("NONE")) {
-                Validator val = new ValidatorImpl(
-                    conf.getValidationFactoryInstance(),
-                    conf.getValidationMode());
-            }
         }
         return true;
     }
