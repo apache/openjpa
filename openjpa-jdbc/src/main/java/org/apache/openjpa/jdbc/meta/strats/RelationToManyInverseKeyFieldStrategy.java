@@ -207,9 +207,13 @@ public abstract class RelationToManyInverseKeyFieldStrategy
             if (Proxies.isOwner(proxy, sm, field.getIndex()))
                 ct = proxy.getChangeTracker();
         }
+        Column order = field.getOrderColumn();
 
         // if no fine-grained change tracking then just delete and reinsert
-        if (ct == null || !ct.isTracking()) {
+        // if no fine-grained change tracking or if an item was removed
+        // from an ordered collection, delete and reinsert
+        if (ct == null || !ct.isTracking() ||
+            (order != null && !ct.getRemoved().isEmpty())) {
             delete(sm, store, rm);
             insert(sm, rm, obj);
             return;
@@ -229,7 +233,7 @@ public abstract class RelationToManyInverseKeyFieldStrategy
         int seq = ct.getNextSequence();
         for (Iterator itr = add.iterator(); itr.hasNext(); seq++)
             updateInverse(ctx, itr.next(), rel, rm, sm, seq);
-        if (field.getOrderColumn() != null)
+        if (order != null)
             ct.setNextSequence(seq);
     }
 

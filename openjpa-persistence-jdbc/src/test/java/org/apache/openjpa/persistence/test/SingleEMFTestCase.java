@@ -147,25 +147,6 @@ public abstract class SingleEMFTestCase
     	return (List<T>)em.createQuery("SELECT p FROM " + getAlias(t) + " p")
 				   .getResultList();
     }
-
-    /**
-     * Determines whether specified platform is the target database platform
-     * in use by the test framework.
-     * @param target platform name (derby, db2, oracle, etc.)
-     * @return true if the specified platform matches the platform in use
-     */
-    public boolean isTargetPlatform(String target) {
-        String url = getPlatform();
-        return url != null && url.indexOf(target) != -1;
-    }
-
-    /**
-     * Returns the platform in use by the test framework
-     * @return the database platform
-     */
-    public String getPlatform() {
-        return System.getProperty("platform", "derby");
-    }
     
     public String getAlias(Class<?> t) {
         return emf.getConfiguration().getMetaDataRepositoryInstance()

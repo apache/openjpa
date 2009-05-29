@@ -27,8 +27,8 @@
         <description>PU for order column testing</description>
         <provider>org.apache.openjpa.persistence.PersistenceProviderImpl</provider>
         <mapping-file>org/apache/openjpa/persistence/jdbc/order/order-orm-2.xml</mapping-file>
-        <class>org.apache.openjpa.persistence.jdbc.order.BaseTestEntity</class>
-        <class>org.apache.openjpa.persistence.jdbc.order.BaseTestElement</class>
+        <class>org.apache.openjpa.persistence.jdbc.order.BaseTestEntity2</class>
+        <class>org.apache.openjpa.persistence.jdbc.order.BaseTestElement2</class>
         <properties>
             <property name="openjpa.jdbc.SynchronizeMappings" value="buildSchema"/>    
         </properties>

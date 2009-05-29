@@ -526,6 +526,25 @@ public abstract class PersistenceTestCase
         return false;
     }
     
+    /**
+     * Determines whether specified platform is the target database platform
+     * in use by the test framework.
+     * @param target platform name (derby, db2, oracle, etc.)
+     * @return true if the specified platform matches the platform in use
+     */
+    public boolean isTargetPlatform(String target) {
+        String url = getPlatform();
+        return url != null && url.indexOf(target) != -1;
+    }
+
+    /**
+     * Returns the platform in use by the test framework
+     * @return the database platform
+     */
+    public String getPlatform() {
+        return System.getProperty("platform", "derby");
+    }
+    
     private static class FixedMap extends LinkedHashMap<EMFKey,
             OpenJPAEntityManagerFactorySPI> {
         public boolean removeEldestEntry(Map.Entry<EMFKey,

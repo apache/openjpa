@@ -24,7 +24,7 @@
     <package>
         org.apache.openjpa.persistence.jdbc.order
     </package>
-    <entity name="BaseTestTableElement" class="BaseTestElement" 
+    <entity name="BaseTestTableElement" class="BaseTestElement3" 
         access="PROPERTY">
         <table name="BTTEL"/>        
         <attributes>
@@ -34,7 +34,7 @@
             <basic name="name"/>
         </attributes>
     </entity>
-    <entity name="BaseTestTableEntity" class="BaseTestEntity" access="FIELD">
+    <entity name="BaseTestTableEntity" class="BaseTestEntity3" access="FIELD">
         <table name="BTNNEN"/>
         <attributes>
             <id name="id">
