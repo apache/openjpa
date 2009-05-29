@@ -47,6 +47,49 @@
     </properties>
     <profiles>
 
+        <!-- Profile for testing with test-dynamic-enhancer -->
+        <profile>
+            <id>test-dynamic-enhancer</id>
+
+            <activation>
+                <activeByDefault>false</activeByDefault>
+            </activation>
+            <properties>
+	            <build.enhance>false</build.enhance>
+                <test.jvm.arguments>-Dopenjpa.RuntimeUnenhancedClasses=unsupported -Xmx512m </test.jvm.arguments>
+            </properties>
+            <build>
+            <plugins>
+               <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <configuration>
+
+                    <argLine>${test.jvm.arguments}</argLine>
+					<includes><include>org/apache/openjpa/persistence/enhance/DynamicEnhancementSuite.java</include></includes>
+                    <systemProperties>
+                        <property>
+                            <name>openjpa.Log</name>
+                            <value>DefaultLevel=${openjpa.loglevel}</value>
+                        </property>
+                        <property>
+                            <name>openjpa.ConnectionDriverName</name>
+                            <value>org.apache.commons.dbcp.BasicDataSource</value>
+                        </property>
+                        <property>
+                            <name>derby.stream.error.file</name>
+                            <value>target/derby.log</value>
+                        </property>
+                        <property>
+                            <name>openjpa.ConnectionProperties</name>
+                            <value>DriverClassName=${connection.driver.name},Url=${connection.url},Username=${connection.username},Password=${connection.password},${dbcp.args}</value>
+                        </property>
+                    </systemProperties>
+                </configuration>
+            </plugin>
+        </plugins>
+        </build>
+        </profile>
         <!-- Profile for testing with Apache Derby -->
         <profile>
             <id>test-derby</id>
@@ -558,6 +601,7 @@
                                     <property name="outdir" value="${project.build.outputDirectory}" />
                                     <property name="project.build.testOutputDirectory" value="${project.build.testOutputDirectory}" />
                                     <property name="openjpa.loglevel" value="${openjpa.loglevel}" />
+                                    <property name="build.enhance" value="${build.enhance}" />
                                 </ant>
                             </tasks>
                         </configuration>

@@ -87,7 +87,7 @@
             </plugin>
 
             <!--
-                create enhancer pre-main attribute
+                create enhancer pre-main and agent-main attributes
             -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
@@ -103,6 +103,11 @@
                                 org.apache.openjpa.enhance.PCEnhancerAgent
                             </Premain-Class>
                             <Can-Redefine-Classes>true</Can-Redefine-Classes>
+                            <Agent-Class>
+                                org.apache.openjpa.enhance.InstrumentationFactory
+                            </Agent-Class>
+                            <Can-Redefine-Classes>true</Can-Redefine-Classes>                            
+                            <Can-Retransform-Classes>true</Can-Retransform-Classes>
                         </manifestEntries>
                     </archive>
                 </configuration>

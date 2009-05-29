@@ -32,12 +32,12 @@ import org.apache.openjpa.conf.BrokerValue;
 import org.apache.openjpa.conf.OpenJPAConfiguration;
 import org.apache.openjpa.conf.OpenJPAConfigurationImpl;
 import org.apache.openjpa.enhance.PCClassFileTransformer;
+import org.apache.openjpa.enhance.PCEnhancerAgent;
 import org.apache.openjpa.kernel.Bootstrap;
 import org.apache.openjpa.kernel.BrokerFactory;
 import org.apache.openjpa.lib.conf.Configuration;
 import org.apache.openjpa.lib.conf.ConfigurationProvider;
 import org.apache.openjpa.lib.conf.Configurations;
-import org.apache.openjpa.lib.conf.ProductDerivations;
 import org.apache.openjpa.lib.log.Log;
 import org.apache.openjpa.lib.util.Localizer;
 import org.apache.openjpa.meta.MetaDataModes;
@@ -61,6 +61,7 @@ public class PersistenceProviderImpl
     private static final Localizer _loc = Localizer.forPackage(
         PersistenceProviderImpl.class);
 
+    private static final String _name = PersistenceProviderImpl.class.getName();
     private Log _log;
     /**
      * Loads the entity manager specified by <code>name</code>, applying
@@ -82,11 +83,12 @@ public class PersistenceProviderImpl
                 return null;
 
             BrokerFactory factory = getBrokerFactory(cp, poolValue, null);
-            _log = factory.getConfiguration()
-                .getLog(OpenJPAConfiguration.LOG_RUNTIME);
+            OpenJPAConfiguration conf = factory.getConfiguration();
+            _log = conf.getLog(OpenJPAConfiguration.LOG_RUNTIME);
             if(pd.checkPuNameCollisions(_log,name)==true){
                 ;//return null;
             }
+            loadAgent(_log, conf);
             return JPAFacadeHelper.toEntityManagerFactory(factory);
         } catch (Exception e) {
             throw PersistenceExceptions.toPersistenceException(e);
@@ -232,5 +234,16 @@ public class PersistenceProviderImpl
     public LoadState isLoadedWithoutReference(Object arg0, String arg1) {
         throw new UnsupportedOperationException(
         "JPA 2.0 - Method not yet implemented");
+    }
+    /**
+     * This private worker method will attempt load the PCEnhancerAgent.
+     */
+    private void loadAgent(Log log, OpenJPAConfiguration conf) {
+        if (conf.getDynamicEnhancementAgent() == true) {
+            boolean res = PCEnhancerAgent.loadDynamicAgent(log);
+            if(_log.isInfoEnabled() && res == true ){
+                _log.info(_loc.get("dynamic-agent"));
+            }
+        }
     }
 }

@@ -95,6 +95,21 @@ public class ManagedClassSubclasser {
                 if (!PersistenceCapable.class.isAssignableFrom(cls))
                     unenhanced.add(cls);
             if (unenhanced.size() > 0) {
+                if (PCEnhancerAgent.getLoadSuccessful() == true) {
+                    // This means that the enhancer has been ran but we
+                    // have some unenhanced classes. This can happen if an
+                    // entity is loaded by the JVM before the EntityManger
+                    // was created. Warn the user.
+                    if (log.isWarnEnabled()) {
+                        log.warn(_loc.get("entities-loaded-before-em"));
+                    }
+                    if (log.isTraceEnabled()) {
+                        log.trace(ManagedClassSubclasser.class.getName()
+                            + ".prepareUnenhancedClasses()"
+                            + " - The following classes are unenhanced "
+                            + unenhanced.toString());
+                    }
+                }
                 Message msg = _loc.get("runtime-optimization-disabled",
                     unenhanced);
                 if (conf.getRuntimeUnenhancedClassesConstant()
@@ -106,7 +121,7 @@ public class ManagedClassSubclasser {
             return null;
         }
 
-        boolean redefine = ClassRedefiner.canRedefineClasses();
+        boolean redefine = ClassRedefiner.canRedefineClasses(log);
         if (redefine)
             log.info(_loc.get("enhance-and-subclass-and-redef-start",
                 classes));

@@ -26,11 +26,13 @@ import java.io.ByteArrayInputStream;
 import java.util.List;
 import java.util.Collections;
 import java.lang.reflect.Field;
+import org.apache.openjpa.conf.OpenJPAConfiguration;
 
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
 import org.apache.openjpa.persistence.OpenJPAEntityManager;
 import org.apache.openjpa.persistence.JPAFacadeHelper;
 import org.apache.openjpa.kernel.OpenJPAStateManager;
+import org.apache.openjpa.lib.log.Log;
 import org.apache.openjpa.meta.AccessCode;
 import org.apache.openjpa.meta.ClassMetaData;
 import org.apache.openjpa.util.ImplHelper;
@@ -40,6 +42,7 @@ import org.apache.openjpa.event.LifecycleEvent;
 public abstract class AbstractUnenhancedClassTest
     extends SingleEMFTestCase {
 
+    Log _log;
     // ##### To do:
     // - clearing in pnew property-access without redefinition
     // - figure out how to auto-test the redefinition code, either in Java 5
@@ -53,6 +56,7 @@ public abstract class AbstractUnenhancedClassTest
         setUp(getUnenhancedClass(), getUnenhancedSubclass(), CLEAR_TABLES);
         // trigger class redefinition
         emf.createEntityManager().close();
+        _log = emf.getConfiguration().getLog(OpenJPAConfiguration.LOG_ENHANCE);
     }
 
     protected abstract Class<? extends UnenhancedType> getUnenhancedClass();
@@ -72,8 +76,8 @@ public abstract class AbstractUnenhancedClassTest
     public void testMetaData() {
         ClassMetaData meta = JPAFacadeHelper.getMetaData(emf,
             getUnenhancedClass());
-        assertEquals(ClassRedefiner.canRedefineClasses(),
-            meta.isIntercepting());
+        assertEquals(ClassRedefiner.canRedefineClasses(_log), meta
+            .isIntercepting());
     }
 
     public void testImplHelperCalls() {
@@ -308,7 +312,7 @@ public abstract class AbstractUnenhancedClassTest
 
         // we only expect lazy loading to work when we can redefine classes
         // or when accessing a property-access record that OpenJPA created.
-        if (ClassRedefiner.canRedefineClasses()
+        if (ClassRedefiner.canRedefineClasses(_log)
             || (!userDefined 
             	&& AccessCode.isProperty(sm.getMetaData().getAccessType()))) {
 
@@ -360,7 +364,7 @@ public abstract class AbstractUnenhancedClassTest
 
         // we only expect lazy loading to work when we can redefine classes
         // or when accessing a property-access record that OpenJPA created.
-        if (ClassRedefiner.canRedefineClasses()
+        if (ClassRedefiner.canRedefineClasses(_log)
             || AccessCode.isProperty(sm.getMetaData().getAccessType())) {
             assertFalse(sm.getLoaded()
                 .get(sm.getMetaData().getField("lazyField").getIndex()));

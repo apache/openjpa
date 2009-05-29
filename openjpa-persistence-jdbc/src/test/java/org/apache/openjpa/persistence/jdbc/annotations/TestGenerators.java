@@ -21,8 +21,10 @@ package org.apache.openjpa.persistence.jdbc.annotations;
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
 
+import org.apache.openjpa.conf.OpenJPAConfiguration;
 import org.apache.openjpa.enhance.ClassRedefiner;
 import org.apache.openjpa.enhance.PersistenceCapable;
+import org.apache.openjpa.lib.log.Log;
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
 
 /**
@@ -31,15 +33,16 @@ import org.apache.openjpa.persistence.test.SingleEMFTestCase;
  * @author Steve Kim
  */
 public class TestGenerators extends SingleEMFTestCase {
-
+    Log _log;
     public void setUp()
         throws Exception {
         setUp(Generator.class, CLEAR_TABLES);
+        _log = emf.getConfiguration().getLog(OpenJPAConfiguration.LOG_RUNTIME);
     }
 
     public void testGet() {
         if (!PersistenceCapable.class.isAssignableFrom(Generator.class)
-            && !ClassRedefiner.canRedefineClasses())
+            && !ClassRedefiner.canRedefineClasses(_log))
             fail("This test requires a higher level of enhancement than"
                 + " is available in the current environment.");
 

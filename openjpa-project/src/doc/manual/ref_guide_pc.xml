@@ -380,6 +380,55 @@ java -javaagent:/home/dev/openjpa/lib/openjpa.jar=addDefaultConstructor=false co
 </programlisting>
             </example>
         </section>
+<section id="ref_guide_pc_enhance_dynamic">
+	<title>
+		Enhancing Dynamically at Runtime
+	</title>          
+	<para>
+		If a javaagent is not provided via the command line and 
+		OpenJPA is running on the Sun 1.6 SDK (not the JRE), OpenJPA
+		will attempt to dynamically load the Enhancer that was 
+		mentioned in the previous section. This support is 
+		provided as an ease of use feature and it is not recommended
+		for use in a production system. Using this method of 
+		enhancement has the following caveats:
+	</para>
+	<itemizedlist>
+		<listitem>
+			<para>
+				As stated previously, this is only supported on
+				the Sun 1.6 SDK.			
+			</para>
+		</listitem>
+		<listitem>
+			<para>
+				The dynamic runtime enhancer is plugged into 
+				the JVM during creation of the 
+				EntityManagerFactory. Any Entity classes that 
+				are loaded before the EntityManagerFactory is 
+				created will not be enhanced. 			
+			</para>
+		</listitem>
+		<listitem>
+			<para>
+				The command line javaagent settings are not
+				configurable when using this method of 
+				enhancement.			
+			</para>
+		</listitem>		
+	</itemizedlist>
+	<para>
+		When then dynamic enhancer is loaded, the following 
+		informational message is logged:
+<programlisting>
+[java] jpa.enhancement  INFO   [main] openjpa.Runtime - OpenJPA dynamically loaded the class enhancer. Any classes that were not enhanced at build time will be enhanced as they are loaded by the JVM.
+</programlisting>
+	</para>
+	<para>
+		Setting the property openjpa.DynamicEnhancementAgent to false 
+		will disable this function.
+	</para>
+</section>
         <section id="ref_guide_pc_enhance_unenhanced_types">
             <title>
                 Omitting the OpenJPA enhancer

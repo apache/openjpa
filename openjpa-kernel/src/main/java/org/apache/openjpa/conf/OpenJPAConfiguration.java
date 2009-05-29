@@ -1557,7 +1557,15 @@ public interface OpenJPAConfiguration
      * @since 1.0.0
      */
     public void setRuntimeUnenhancedClasses(int mode);
-
+    /**
+     * Whether OpenJPA will attempt to dynamically load the enhancement agent.
+     */
+    public boolean getDynamicEnhancementAgent();
+    /**
+     * Sets whether OpenJPA will attempt to dynamically load the enhancement
+     * agent.
+     */
+    public void setDynamicEnhancementAgent(boolean dynamic);
     /**
      * A comma-separted list of the plugin strings specifying the
      * {@link CacheMarshaller}s to use.

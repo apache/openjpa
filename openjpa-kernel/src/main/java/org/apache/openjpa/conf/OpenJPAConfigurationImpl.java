@@ -28,6 +28,7 @@ import org.apache.openjpa.datacache.ConcurrentQueryCache;
 import org.apache.openjpa.datacache.DataCacheManager;
 import org.apache.openjpa.datacache.DataCacheManagerImpl;
 import org.apache.openjpa.ee.ManagedRuntime;
+import org.apache.openjpa.enhance.PCEnhancerAgent;
 import org.apache.openjpa.enhance.RuntimeUnenhancedClasssesModes;
 import org.apache.openjpa.event.BrokerFactoryEventManager;
 import org.apache.openjpa.event.OrphanedKeyAction;
@@ -165,6 +166,8 @@ public class OpenJPAConfigurationImpl
         new StoreFacadeTypeRegistry();
     private BrokerFactoryEventManager _brokerFactoryEventManager =
         new BrokerFactoryEventManager(this);
+        
+    public BooleanValue dynamicEnhancementAgent;
 
     /**
      * Default constructor. Attempts to load global properties.
@@ -572,6 +575,10 @@ public class OpenJPAConfigurationImpl
             "getValidationFactoryInstance");
         validationFactory.setDynamic(true);
 
+        dynamicEnhancementAgent  = addBoolean("DynamicEnhancementAgent");
+        dynamicEnhancementAgent.setDefault("true");
+        dynamicEnhancementAgent.set(true);
+        
         // initialize supported options that some runtimes may not support
         supportedOptions.add(OPTION_NONTRANS_READ);
         supportedOptions.add(OPTION_OPTIMISTIC);
@@ -1605,4 +1612,10 @@ public class OpenJPAConfigurationImpl
     public void setValidationFactory(Object factory) {
         validationFactory.set(factory);                            
     }
+    public boolean getDynamicEnhancementAgent() {
+        return dynamicEnhancementAgent.get();
+    }
+    public void setDynamicEnhancementAgent(boolean dynamic) {
+        dynamicEnhancementAgent.set(dynamic);
+    }    
 }
