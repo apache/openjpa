@@ -337,6 +337,10 @@ public abstract class AbstractExpressionBuilder {
      */
     protected void setImplicitTypes(Value val1, Value val2,
         Class<?> expected) {
+        setImplicitTypes(val1, val2, expected, resolver);
+    }
+    protected static void setImplicitTypes(Value val1, Value val2,
+        Class<?> expected, Resolver resolver) {
         Class<?> c1 = val1.getType();
         Class<?> c2 = val2.getType();
         boolean o1 = c1 == TYPE_OBJECT;

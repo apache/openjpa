@@ -43,9 +43,11 @@ import org.apache.openjpa.kernel.exps.Literal;
 import org.apache.openjpa.kernel.exps.Parameter;
 import org.apache.openjpa.kernel.exps.Path;
 import org.apache.openjpa.kernel.exps.QueryExpressions;
+import org.apache.openjpa.kernel.exps.Resolver;
 import org.apache.openjpa.kernel.exps.Subquery;
 import org.apache.openjpa.kernel.exps.Value;
 import org.apache.openjpa.lib.util.Localizer;
+import org.apache.openjpa.lib.util.Localizer.Message;
 import org.apache.openjpa.lib.log.Log;
 import org.apache.openjpa.meta.ClassMetaData;
 import org.apache.openjpa.meta.FieldMetaData;
@@ -778,6 +780,10 @@ public class JPQLExpressionBuilder
     }
 
     private void checkEmbeddable(Value val) {
+        checkEmbeddable(val, currentQuery());
+    }
+    
+    public static void checkEmbeddable(Value val, String currentQuery) {
         Path path = val instanceof Path ? (Path) val : null;
         if (path == null)
             return;
@@ -788,9 +794,14 @@ public class JPQLExpressionBuilder
 
         ValueMetaData vm = fmd.isElementCollection() ? fmd.getElement()
             : fmd.getValue();
-        if (vm.getEmbeddedMetaData() != null)
-            throw parseException(EX_USER, "bad-predicate",
-                new Object[]{ currentQuery() }, null);
+        if (vm.getEmbeddedMetaData() != null) {
+            //throw parseException(EX_USER, "bad-predicate",
+            //    new Object[]{ currentQuery() }, null);
+            String argStr = _loc.get("bad-predicate", 
+                new Object[] {fmd.getName()}).getMessage();
+            Message msg = _loc.get("parse-error", argStr, currentQuery);
+            throw new UserException(msg, null);
+        }
     }
 
     /**
@@ -1315,8 +1326,19 @@ public class JPQLExpressionBuilder
         }
     }
 
-    protected void setImplicitTypes(Value val1, Value val2, Class<?> expected) {
-        super.setImplicitTypes(val1, val2, expected);
+    public void setImplicitTypes(Value val1, Value val2, 
+        Class<?> expected) {
+        String currQuery = currentQuery();
+        setImplicitTypes(val1, val2, expected, resolver, parameterTypes, 
+            currQuery);
+    }
+    
+    
+    public static void setImplicitTypes(Value val1, Value val2, 
+        Class<?> expected, Resolver resolver, LinkedMap parameterTypes,
+        String currentQuery) {
+        AbstractExpressionBuilder.setImplicitTypes(val1, val2, expected, 
+            resolver);
 
         // as well as setting the types for conversions, we also need to
         // ensure that any parameters are declared with the correct type,
@@ -1335,7 +1357,7 @@ public class JPQLExpressionBuilder
             return;
 
         if (expected == null)
-            checkEmbeddable(path);
+            checkEmbeddable(path, currentQuery);
 
         Class<?> type = path.getType();
         if (type == null)
