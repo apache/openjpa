@@ -19,18 +19,23 @@
 package org.apache.openjpa.persistence.identity;
 
 import java.util.List;
+
 import javax.persistence.EntityManager;
 import javax.persistence.EntityTransaction;
 import javax.persistence.Query;
 
-import junit.framework.TestCase;
 import junit.textui.TestRunner;
+
 import org.apache.openjpa.jdbc.conf.JDBCConfiguration;
 import org.apache.openjpa.persistence.OpenJPAEntityManager;
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
 
 /**
- * Simple test case to test the GenerationType for @Id...
+ * Simple test case to test the GenerationType for
+ * {@link javax.persistence.Id}.
+ * Tests both ways of generated keys retrieval: separate query
+ * and JDBC3 {@link java.sql.Statement#getGeneratedKeys}
+ * if the database supports them.
  *
  * @author Kevin Sutter
  */
@@ -38,14 +43,26 @@ public class TestGenerationType
     extends SingleEMFTestCase {
 
     public void setUp() {
-        setUp(IdentityGenerationType.class);
+        if (getName().endsWith("WithoutGetGeneratedKeys")) {
+            setUp(IdentityGenerationType.class,
+                "openjpa.jdbc.DBDictionary",
+                "supportsGetGeneratedKeys=false");
+        } else {
+            setUp(IdentityGenerationType.class);
+        }
     }
 
+    /**
+     * Not all databases support GenerationType.IDENTITY column(s).
+     */
+    private boolean supportsAutoAssign() {
+        return ((JDBCConfiguration) emf.getConfiguration())
+            .getDBDictionaryInstance().supportsAutoAssign;
+    }
+    
     public void testCreateEntityManager() {
-        // Not all databases support GenerationType.IDENTITY column(s)
-        if (!((JDBCConfiguration) emf.getConfiguration()).
-            getDBDictionaryInstance().supportsAutoAssign) {
-			return;
+        if (!supportsAutoAssign()) {
+            return;
         }
         EntityManager em = emf.createEntityManager();
 
@@ -64,10 +81,8 @@ public class TestGenerationType
     }
 
     public void testPersist() {
-        // Not all databases support GenerationType.IDENTITY column(s)
-        if (!((JDBCConfiguration) emf.getConfiguration()).
-            getDBDictionaryInstance().supportsAutoAssign) {
-			return;
+        if (!supportsAutoAssign()) {
+            return;
         }
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
@@ -77,10 +92,8 @@ public class TestGenerationType
     }
 
     public void testQuery() {
-        // Not all databases support GenerationType.IDENTITY column(s)
-        if (!((JDBCConfiguration) emf.getConfiguration()).
-            getDBDictionaryInstance().supportsAutoAssign) {
-			return;
+        if (!supportsAutoAssign()) {
+            return;
         }
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
@@ -96,6 +109,14 @@ public class TestGenerationType
         List l = q.getResultList();
         assertEquals(2, l.size());
         em.close();
+    }
+
+    public void testPersistWithoutGetGeneratedKeys() {
+        testPersist();
+    }
+
+    public void testQueryWithoutGetGeneratedKeys() {
+        testQuery();
     }
 
     public static void main(String[] args) {

@@ -196,7 +196,7 @@ public class DBDictionary
     public boolean supportsAlterTableWithAddColumn = true;
     public boolean supportsAlterTableWithDropColumn = true;
     public boolean supportsComments = false;
-    public boolean supportsGetGeneratedKeys = false;
+    public Boolean supportsGetGeneratedKeys = null;
     public String reservedWords = null;
     public String systemSchemas = null;
     public String systemTables = null;
@@ -435,8 +435,6 @@ public class DBDictionary
                     // JDBC3-only method, so it might throw a 
                     // AbstractMethodError
                     isJDBC3 = metaData.getJDBCMajorVersion() >= 3;
-                    supportsGetGeneratedKeys =
-                            metaData.supportsGetGeneratedKeys();
                 } catch (Throwable t) {
                     // ignore if not JDBC3
                 }
@@ -457,6 +455,17 @@ public class DBDictionary
             // While we have the metaData, set some values from it
             setSupportsDelimitedIds(metaData);
             setDelimitedCase(metaData);
+
+            // Auto-detect generated keys retrieval support
+            // unless user specified it.
+            if (supportsGetGeneratedKeys == null) {
+                if (isJDBC3) {
+                    supportsGetGeneratedKeys =
+                        metaData.supportsGetGeneratedKeys();
+                } else {
+                    supportsGetGeneratedKeys = false;
+                }
+            }
         }
         connected = true;
     }

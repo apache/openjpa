@@ -1467,6 +1467,9 @@ See <xref linkend="ref_guide_dbsetup_sql92"/>.
 automatically generated key for an auto-increment column. For example, 
 <literal>"SELECT LAST_INSERT_ID()"</literal> for MySQL. This property is set
 automatically in the dictionary, and should not need to be overridden.
+If <literal>SupportsGetGeneratedKeys</literal> is true, the query will not
+be issued but a more efficient JDBC 3.0 mechanism for obtaining generated
+keys will be used instead.
                     </para>
                 </listitem>
                 <listitem id="DBDictionary.LongVarbinaryTypeName">
@@ -2318,6 +2321,30 @@ transaction. Defaults to <literal>true</literal>.
                     </indexterm>
 <literal>SupportsForeignKeys</literal>: When true, the database supports foreign
 keys. Defaults to <literal>true</literal>.
+                    </para>
+                </listitem>
+                <listitem id="DBDictionary.SupportsGetGeneratedKeys">
+                    <para>
+                    <indexterm>
+                        <primary>
+                            persistent fields
+                        </primary>
+                        <secondary>
+                            automatic field values
+                        </secondary>
+                        <tertiary>
+                            SupportsGetGeneratedKeys
+                        </tertiary>
+                    </indexterm>
+<literal>SupportsGetGeneratedKeys</literal>: When true, OpenJPA will use
+<methodname>java.sql.Statement.getGeneratedKeys</methodname> method to obtain
+values of auto-increment columns. When false, a query specified by
+<literal>LastGeneratedKeyQuery</literal> will be used for that purpose.
+If not set, the value will be auto-detected by querying the JDBC driver.
+Setting the value to true requires that the JDBC
+driver supports version 3.0 or higher of the JDBC specification
+and supports the <methodname>java.sql.Statement.getGeneratedKeys</methodname>
+method.
                     </para>
                 </listitem>
                 <listitem id="DBDictionary.SupportsHaving">
