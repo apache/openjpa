@@ -193,7 +193,7 @@ public class DBDictionary
     public boolean supportsAlterTableWithAddColumn = true;
     public boolean supportsAlterTableWithDropColumn = true;
     public boolean supportsComments = false;
-    public boolean supportsGetGeneratedKeys = false;
+    public Boolean supportsGetGeneratedKeys = null;
     public String reservedWords = null;
     public String systemSchemas = null;
     public String systemTables = null;
@@ -412,7 +412,6 @@ public class DBDictionary
                     // JDBC3-only method, so it might throw a 
                     // AbstractMethodError
                     isJDBC3 = metaData.getJDBCMajorVersion() >= 3;
-                    supportsGetGeneratedKeys = metaData.supportsGetGeneratedKeys();
                 } catch (Throwable t) {
                     // ignore if not JDBC3
                 }
@@ -428,6 +427,17 @@ public class DBDictionary
                     log.trace(_loc.get("connection-defaults", new Object[]{
                         conn.getAutoCommit(), conn.getHoldability(),
                         conn.getTransactionIsolation()}));
+            }
+
+            // Auto-detect generated keys retrieval support
+            // unless user specified it.
+            if (supportsGetGeneratedKeys == null) {
+                if (isJDBC3) {
+                    supportsGetGeneratedKeys =
+                        metaData.supportsGetGeneratedKeys();
+                } else {
+                    supportsGetGeneratedKeys = false;
+                }
             }
         }
         connected = true;
@@ -4007,7 +4017,7 @@ public class DBDictionary
      * Convert the specified schema name to a name that the database will
      * be able to understand.
      */
-    protected String convertSchemaCase(String objectName) {
+    public String convertSchemaCase(String objectName) {
         if (objectName == null)
             return null;
 

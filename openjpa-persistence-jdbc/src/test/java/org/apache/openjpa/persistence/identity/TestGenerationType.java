@@ -19,18 +19,23 @@
 package org.apache.openjpa.persistence.identity;
 
 import java.util.List;
+
 import javax.persistence.EntityManager;
 import javax.persistence.EntityTransaction;
 import javax.persistence.Query;
 
-import junit.framework.TestCase;
 import junit.textui.TestRunner;
+
 import org.apache.openjpa.jdbc.conf.JDBCConfiguration;
 import org.apache.openjpa.persistence.OpenJPAEntityManager;
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
 
 /**
- * Simple test case to test the GenerationType for @Id...
+ * Simple test case to test the GenerationType for
+ * {@link javax.persistence.Id}.
+ * Tests both ways of generated keys retrieval: separate query
+ * and JDBC3 {@link java.sql.Statement#getGeneratedKeys}
+ * if the database supports them.
  *
  * @author Kevin Sutter
  */
@@ -38,7 +43,13 @@ public class TestGenerationType
     extends SingleEMFTestCase {
 
     public void setUp() {
-        setUp(IdentityGenerationType.class);
+        if (getName().endsWith("WithoutGetGeneratedKeys")) {
+            setUp(IdentityGenerationType.class,
+                "openjpa.jdbc.DBDictionary",
+                "supportsGetGeneratedKeys=false");
+        } else {
+            setUp(IdentityGenerationType.class);
+        }
 
         /*
          * If the DBDictionary doesn't support AutoAssign(ment) of column
@@ -98,6 +109,14 @@ public class TestGenerationType
         List l = q.getResultList();
         assertEquals(2, l.size());
         em.close();
+    }
+
+    public void testPersistWithoutGetGeneratedKeys() {
+        testPersist();
+    }
+
+    public void testQueryWithoutGetGeneratedKeys() {
+        testQuery();
     }
 
     public static void main(String[] args) {

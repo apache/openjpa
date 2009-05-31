@@ -180,10 +180,10 @@ public class PreparedStatementManagerImpl
         String[] autoAssignColNames) 
         throws SQLException {
         ResultSet rs = stmnt.getGeneratedKeys();
-        List vals = new ArrayList();
+        List<Object> vals = new ArrayList<Object>();
         while (rs.next()) {
             for (int i = 0; i < autoAssignColNames.length; i++)
-                vals.add(rs.getObject(autoAssignColNames[i]));
+                vals.add(rs.getObject(i + 1));
         }
         rs.close();
         return vals;
@@ -202,7 +202,8 @@ public class PreparedStatementManagerImpl
             && row.getPrimaryKey() != null) {
             autoAssignColNames = new String[autoAssign.length];
             for (int i = 0; i < autoAssign.length; i++)
-                autoAssignColNames[i] = autoAssign[i].getName();
+                autoAssignColNames[i] =
+                    _dict.convertSchemaCase(autoAssign[i].getName());
         }
         return autoAssignColNames;
     }
