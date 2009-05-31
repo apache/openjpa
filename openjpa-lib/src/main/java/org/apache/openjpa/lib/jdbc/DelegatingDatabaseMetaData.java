@@ -24,7 +24,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 
 /**
- * Wrapper around a DatabaseMetadata instance.
+ * Wrapper around a DatabaseMetaData instance.
  *
  * @author Marc Prud'hommeaux
  */
@@ -698,48 +698,49 @@ public class DelegatingDatabaseMetaData implements DatabaseMetaData {
         return _metaData.usesLocalFiles();
     }
 
-    // JDBC 3.0 methods(unsupported) follow; these are required to be able to
-    // compile against JDK 1.4
+    // JDBC 3.0 methods follow.
 
     public boolean supportsSavepoints() throws SQLException {
-        throw new UnsupportedOperationException();
+        return _metaData.supportsSavepoints();
     }
 
     public boolean supportsNamedParameters() throws SQLException {
-        throw new UnsupportedOperationException();
+        return _metaData.supportsNamedParameters();
     }
 
     public boolean supportsMultipleOpenResults() throws SQLException {
-        throw new UnsupportedOperationException();
+        return _metaData.supportsMultipleOpenResults();
     }
 
     public boolean supportsGetGeneratedKeys() throws SQLException {
-        throw new UnsupportedOperationException();
+        return _metaData.supportsGetGeneratedKeys();
     }
 
-    public ResultSet getSuperTypes(String catalog, String schemaPatter,
+    public ResultSet getSuperTypes(String catalog, String schemaPattern,
         String typeNamePattern) throws SQLException {
-        throw new UnsupportedOperationException();
+        return _metaData.getSuperTypes(catalog, schemaPattern, typeNamePattern);
     }
 
-    public ResultSet getSuperTables(String catalog, String schemaPatter,
+    public ResultSet getSuperTables(String catalog, String schemaPattern,
         String tableNamePattern) throws SQLException {
-        throw new UnsupportedOperationException();
+        return _metaData.getSuperTables(catalog, schemaPattern,
+            tableNamePattern);
     }
 
-    public ResultSet getAttributes(String catalog, String schemaPatter,
+    public ResultSet getAttributes(String catalog, String schemaPattern,
         String typeNamePattern, String attributeNamePattern)
         throws SQLException {
-        throw new UnsupportedOperationException();
+        return _metaData.getAttributes(catalog, schemaPattern, typeNamePattern,
+            attributeNamePattern);
     }
 
     public boolean supportsResultSetHoldability(int holdability)
         throws SQLException {
-        throw new UnsupportedOperationException();
+        return _metaData.supportsResultSetHoldability(holdability);
     }
 
     public int getResultSetHoldability() throws SQLException {
-        throw new UnsupportedOperationException();
+        return _metaData.getResultSetHoldability();
     }
 
     public int getDatabaseMajorVersion() throws SQLException {
@@ -755,19 +756,19 @@ public class DelegatingDatabaseMetaData implements DatabaseMetaData {
     }
 
     public int getJDBCMinorVersion() throws SQLException {
-        throw new UnsupportedOperationException();
+        return _metaData.getJDBCMinorVersion();
     }
 
     public int getSQLStateType() throws SQLException {
-        throw new UnsupportedOperationException();
+        return _metaData.getSQLStateType();
     }
 
     public boolean locatorsUpdateCopy() throws SQLException {
-        throw new UnsupportedOperationException();
+        return _metaData.locatorsUpdateCopy();
     }
 
     public boolean supportsStatementPooling() throws SQLException {
-        throw new UnsupportedOperationException();
+        return _metaData.supportsStatementPooling();
     }
 }
 
