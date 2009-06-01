@@ -201,9 +201,7 @@ public class PersistenceProductDerivation
                         // unexpected, but validation is optional,
                         // so just log it as a warning
                         conf.getConfigurationLog().warn(
-                            _loc.get("vlem-creation-warn"));
-                        // if tracing, log the exception details
-                        conf.getConfigurationLog().trace(e);
+                            _loc.get("vlem-creation-warn", e.getMessage()));
                     }
                 }
             } else {
