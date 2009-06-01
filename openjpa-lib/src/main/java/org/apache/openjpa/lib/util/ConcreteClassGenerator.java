@@ -17,6 +17,7 @@ package org.apache.openjpa.lib.util;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Modifier;
+import java.security.AccessController;
 
 import serp.bytecode.BCClass;
 import serp.bytecode.BCClassLoader;
@@ -51,11 +52,12 @@ public class ConcreteClassGenerator {
             return abstractClass;
 
         Project project = new Project();
-        BCClassLoader loader = new BCClassLoader(project,
-            abstractClass.getClassLoader());
+        BCClassLoader loader = AccessController.doPrivileged(J2DoPrivHelper
+            .newBCClassLoaderAction(project, abstractClass.getClassLoader()));
 
         String name = abstractClass.getName()+"_";
-        BCClass bc = project.loadClass(name);
+        BCClass bc = AccessController.doPrivileged(J2DoPrivHelper.
+            loadProjectClassAction(project, name));
         
         bc.setSuperclass(abstractClass);
 
