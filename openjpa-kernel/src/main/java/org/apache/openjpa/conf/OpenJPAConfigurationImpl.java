@@ -1536,7 +1536,6 @@ public class OpenJPAConfigurationImpl
     }
 
     public void setValidationMode(String mode) {
-        Thread.dumpStack();
         validationMode.setString(mode);
     }
 
