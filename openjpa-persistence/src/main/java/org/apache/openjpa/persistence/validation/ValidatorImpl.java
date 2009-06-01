@@ -65,54 +65,103 @@ public class ValidatorImpl extends AbstractValidator {
     }
 
     /**
+     * Is a Validator required based on the given validation mode?
+     * Keeping validation mode logic in a single class...
+     * @param mode
+     * @return true if a Validator is required
+     */
+    public static boolean validationRequired(String mode) {
+        return String.valueOf(ValidationMode.CALLBACK).equalsIgnoreCase(mode);
+    }
+    
+    /**
+     * Skip creating a Validator based on the given validation mode?
+     * Keeping validation mode logic in a single class...
+     * @param mode
+     * @return true if a Validator should not be created
+     */
+    public static boolean skipValidation(String mode) {
+        return String.valueOf(ValidationMode.NONE).equalsIgnoreCase(mode);
+    }
+    
+    /**
      * Default constructor.  Builds a default validator factory, if available
      * and creates the validator.
+     * Returns an Exception if a Validator could not be created.
      */
     public ValidatorImpl() {
-        // Add the default validation groups
-        _validatorFactory = getDefaultValidatorFactory();
-        if (_validatorFactory != null)
-            _validator = _validatorFactory.getValidator();
-        addDefaultValidationGroups();
+        initialize();
     }
     
     /**
      * Type-specific constructor
+     * Returns an Exception if a Validator could not be created.
      * @param validatorFactory Instance of validator factory to use.  Specify
      *        null to use the default factory.
      * @param mode ValdiationMode enum value
      */
     public ValidatorImpl(ValidatorFactory validatorFactory,
         ValidationMode mode) {
+        if (mode != null) {
+            _mode = mode;
+        }
         if (validatorFactory != null) {
             _validatorFactory = validatorFactory;
-        } else {
-            _validatorFactory = getDefaultValidatorFactory();
         }
-        if (_validatorFactory != null)
-            _validator = _validatorFactory.getValidator();
-        addDefaultValidationGroups();
+        initialize();
     }
 
     /**
      * Generic-type constructor 
+     * Returns an Exception if a Validator could not be created.
      * @param validatorFactory an instance to the validatorFactory
      * @param mode validation mode enum as string value
      */    
     public ValidatorImpl(Object validatorFactory,
         String mode) {        
-        if (validatorFactory != null && validatorFactory instanceof
-                ValidatorFactory) {
-            _validatorFactory = (ValidatorFactory)validatorFactory;
-        } else {
-            _validatorFactory = getDefaultValidatorFactory();
-        }
         _mode = Enum.valueOf(ValidationMode.class, mode);
-        if (_validatorFactory != null)
-            _validator = _validatorFactory.getValidator();
-        addDefaultValidationGroups();
+        if (validatorFactory != null) {
+            if (validatorFactory instanceof ValidatorFactory) {
+                _validatorFactory = (ValidatorFactory)validatorFactory;
+            } else {
+                // TODO: Add a localized exception
+                throw new IllegalArgumentException();                
+            }
+        }
+        initialize();
     }
 
+    /**
+     * Common setup code factored out of the constructors
+     */
+    private void initialize() {
+        // only try setting up a validator if mode is not NONE
+        if (_mode != ValidationMode.NONE) {
+            if (_validatorFactory == null) {
+                _validatorFactory = getDefaultValidatorFactory();
+            }
+            if (_validatorFactory != null) {
+                _validator = _validatorFactory.getValidator();
+            } else {
+                // TODO: Add a localized exception
+                throw new RuntimeException("No default ValidatorFactory");
+            }
+            
+            // throw an exception if we have no Validator
+            if (_validator == null) {
+                // TODO: Add a localized exception
+                throw new RuntimeException("No Validator provider");
+            }
+
+            // add in default validation groups, which can be over-ridden later
+            addDefaultValidationGroups();
+        } else {
+            // TODO: Add a localized exception
+            throw new RuntimeException("No Validator should be created based " +
+                "on the supplied Validation Mode.");
+        }
+    }
+    
     /**
      * Add a validation group for the specific property.  The properties map
      * to a specific lifecycle event.  To disable validation for a group, set
@@ -126,9 +175,11 @@ public class ValidatorImpl extends AbstractValidator {
         if (event != null) {
             _validationGroups.put(event, vgs);
             return;
+        } else {
+            // TODO: Add a localized exception
+            throw new IllegalArgumentException("There were no events found " +
+                "for the supplied group name.");
         }
-        // TODO: Add a localized exception
-        throw new IllegalArgumentException();
     }
             
     /**
@@ -161,7 +212,7 @@ public class ValidatorImpl extends AbstractValidator {
      * @return returns true if validating for this particular event
      */
     public boolean isValidating(Integer event) {
-        return _validationGroups.get(event) != null;
+        return (_validationGroups.get(event) != null);
     }
 
     /**
@@ -275,8 +326,12 @@ public class ValidatorImpl extends AbstractValidator {
     
     // Get the default validator factory
     private ValidatorFactory getDefaultValidatorFactory() {
-        ValidatorFactory factory = 
-            Validation.buildDefaultValidatorFactory();
+        ValidatorFactory factory = null;
+        try {
+            factory = Validation.buildDefaultValidatorFactory();
+        } catch (javax.validation.ValidationException e) {
+            // no validation providers found
+        }
         return factory;
     }
     

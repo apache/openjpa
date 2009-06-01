@@ -31,6 +31,7 @@ import org.apache.openjpa.ee.ManagedRuntime;
 import org.apache.openjpa.enhance.PCEnhancerAgent;
 import org.apache.openjpa.enhance.RuntimeUnenhancedClasssesModes;
 import org.apache.openjpa.event.BrokerFactoryEventManager;
+import org.apache.openjpa.event.LifecycleEventManager;
 import org.apache.openjpa.event.OrphanedKeyAction;
 import org.apache.openjpa.event.RemoteCommitEventManager;
 import org.apache.openjpa.event.RemoteCommitProvider;
@@ -155,6 +156,8 @@ public class OpenJPAConfigurationImpl
     public ObjectValue specification;
     public StringValue validationMode;
     public ObjectValue validationFactory;
+    public ObjectValue lifecycleEventManager;
+
     
     // custom values
     public BrokerFactoryValue brokerFactoryPlugin;
@@ -557,23 +560,18 @@ public class OpenJPAConfigurationImpl
         queryTimeout.setDynamic(true);
 
         // kernel can't access javax.persistence.ValidationMode enums here
+        // so the config will be done in PersistenceProductDerivation
         validationMode = addString("javax.persistence.validation.mode");
-        aliases =
-            new String[] {
-                "AUTO", "auto",
-                "CALLBACK", "callback",
-                "NONE", "none"
-            };
-        validationMode.setAliases(aliases);
-        validationMode.setAliasListComprehensive(true);
-        validationMode.setDefault(aliases[0]);
-        validationMode.set(aliases[0]);
         validationMode.setDynamic(true);
 
         validationFactory = addObject("javax.persistence.validation.factory");
         validationFactory.setInstantiatingGetter(
             "getValidationFactoryInstance");
         validationFactory.setDynamic(true);
+
+        lifecycleEventManager = addObject("LifecycleEventManager");
+        lifecycleEventManager.setInstantiatingGetter(
+                "getLifecycleEventManagerInstance");
 
         dynamicEnhancementAgent  = addBoolean("DynamicEnhancementAgent");
         dynamicEnhancementAgent.setDefault("true");
@@ -1538,11 +1536,15 @@ public class OpenJPAConfigurationImpl
     }
 
     public void setValidationMode(String mode) {
+        Thread.dumpStack();
         validationMode.setString(mode);
     }
 
     public String getValidationMode() {
-        return validationMode.getString();
+        String mode = validationMode.getString();
+        if (mode == null)
+            mode = validationMode.getDefault();
+        return mode;
     }
 
     public void instantiateAll() {
@@ -1601,10 +1603,6 @@ public class OpenJPAConfigurationImpl
         return (FinderCache)finderCachePlugin.get();
     }
 
-    public Object getValidationFactory() {
-        return validationFactory.get();
-    }
-
     public Object getValidationFactoryInstance() {
         return validationFactory.get();
     }
@@ -1612,10 +1610,24 @@ public class OpenJPAConfigurationImpl
     public void setValidationFactory(Object factory) {
         validationFactory.set(factory);                            
     }
+    
+    public LifecycleEventManager getLifecycleEventManagerInstance() {
+        if (lifecycleEventManager.get() == null) {
+            lifecycleEventManager.set(new LifecycleEventManager());
+        }
+        return (LifecycleEventManager)lifecycleEventManager.get();
+    }
+
+    public void setLifecycleEventManager(LifecycleEventManager eventMgr) {
+        lifecycleEventManager.set(eventMgr);
+    }
+
     public boolean getDynamicEnhancementAgent() {
         return dynamicEnhancementAgent.get();
     }
+
     public void setDynamicEnhancementAgent(boolean dynamic) {
         dynamicEnhancementAgent.set(dynamic);
     }    
 }
+

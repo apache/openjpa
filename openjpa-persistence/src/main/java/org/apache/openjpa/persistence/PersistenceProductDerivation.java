@@ -44,7 +44,6 @@ import org.apache.openjpa.conf.OpenJPAConfiguration;
 import org.apache.openjpa.conf.OpenJPAConfigurationImpl;
 import org.apache.openjpa.conf.OpenJPAProductDerivation;
 import org.apache.openjpa.conf.Specification;
-import org.apache.openjpa.kernel.LockLevels;
 import org.apache.openjpa.kernel.MixedLockLevels;
 import org.apache.openjpa.lib.conf.AbstractProductDerivation;
 import org.apache.openjpa.lib.conf.Configuration;
@@ -57,6 +56,10 @@ import org.apache.openjpa.lib.meta.XMLMetaDataParser;
 import org.apache.openjpa.lib.meta.XMLVersionParser;
 import org.apache.openjpa.lib.util.J2DoPrivHelper;
 import org.apache.openjpa.lib.util.Localizer;
+import org.apache.openjpa.persistence.validation.ValidatorImpl;
+import org.apache.openjpa.validation.Validator;
+import org.apache.openjpa.validation.ValidationException;
+import org.apache.openjpa.validation.ValidatingLifecycleEventManager;
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
 
@@ -142,6 +145,18 @@ public class PersistenceProductDerivation
         conf.lockManagerPlugin.setAlias("mixed",
             "org.apache.openjpa.jdbc.kernel.MixedLockManager");
 
+        String[] aliases = new String[] {
+            String.valueOf(ValidationMode.AUTO),
+            String.valueOf(ValidationMode.AUTO).toLowerCase(),
+            String.valueOf(ValidationMode.CALLBACK),
+            String.valueOf(ValidationMode.CALLBACK).toLowerCase(),
+            String.valueOf(ValidationMode.NONE),
+            String.valueOf(ValidationMode.NONE).toLowerCase()
+        };
+        conf.validationMode.setAliases(aliases);
+        conf.validationMode.setAliasListComprehensive(true);
+        conf.validationMode.setDefault(aliases[0]);
+
         return true;
     }
 
@@ -164,6 +179,39 @@ public class PersistenceProductDerivation
             Compatibility compatibility = conf.getCompatibilityInstance();
             compatibility.setFlushBeforeDetach(true);
             compatibility.setCopyOnDetach(true);
+        } else {
+            // only try creating a ValidatingLifecycleEventManager if needed
+            if (!ValidatorImpl.skipValidation(conf.getValidationMode())) {
+                try {
+                    Validator val = new ValidatorImpl(
+                        conf.getValidationFactoryInstance(),
+                        conf.getValidationMode());
+                    // we have a Validator, so try to create a VLEM
+                    conf.setLifecycleEventManager(
+                        new ValidatingLifecycleEventManager(val));
+                } catch (RuntimeException e) {
+                    if (ValidatorImpl.validationRequired(
+                        conf.getValidationMode())) {
+                        // fatal error - ValidationMode requires a Validator
+                        conf.getConfigurationLog().error(
+                            _loc.get("vlem-creation-error"), e);
+                        // rethrow as a WrappedException
+                        throw new ValidationException(e);
+                    } else {
+                        // unexpected, but validation is optional,
+                        // so just log it as a warning
+                        conf.getConfigurationLog().warn(
+                            _loc.get("vlem-creation-warn"));
+                        // if tracing, log the exception details
+                        conf.getConfigurationLog().trace(e);
+                    }
+                }
+            } else {
+                conf.getConfigurationLog().trace(
+                    "Validation has been disabled by supplied mode.");
+            }
+            // make sure we have at least a LifecycleEventManager created
+            conf.getLifecycleEventManagerInstance();
         }
         return true;
     }

@@ -89,6 +89,7 @@ import org.apache.openjpa.util.RuntimeExceptionTranslator;
 import org.apache.openjpa.util.StoreException;
 import org.apache.openjpa.util.UnsupportedException;
 import org.apache.openjpa.util.UserException;
+import org.apache.openjpa.util.WrappedException;
 
 /**
  * Concrete {@link Broker}. The broker handles object-level behavior,
@@ -301,7 +302,7 @@ public class BrokerImpl
             _runtime = new LocalManagedRuntime(this);
 
         if (!fromDeserialization) {
-            _lifeEventManager = new LifecycleEventManager();
+            _lifeEventManager = _conf.getLifecycleEventManagerInstance();
             _transEventManager = new TransactionEventManager();
             int cmode = _conf.getMetaDataRepositoryInstance().
                 getMetaDataFactory().getDefaults().getCallbackMode();
@@ -315,7 +316,7 @@ public class BrokerImpl
         // make sure to do this after configuring broker so that store manager
         // can look to broker configuration; we set both store and lock managers
         // before initializing them because they may each try to access the
-        // other in thier initialization
+        // other in their initialization
         _store = sm;
         _lm = _conf.newLockManagerInstance();
         _im = _conf.newInverseManagerInstance();
@@ -800,11 +801,17 @@ public class BrokerImpl
             return;
 
         OpenJPAException ce;
-        if (exceps.length == 1)
-            ce = new CallbackException(exceps[0]);
-        else 
+        if (exceps.length == 1) {
+            // If the exception is already a wrapped exception throw the 
+            // exception instead of wrapping it with a callback exception
+            if (exceps[0] instanceof WrappedException)
+                throw (WrappedException)exceps[0];
+            else
+                ce = new CallbackException(exceps[0]);
+        } else {
             ce = new CallbackException(_loc.get("callback-err")).
                 setNestedThrowables(exceps);
+        }
         if ((mode & CALLBACK_ROLLBACK) != 0 && (_flags & FLAG_ACTIVE) != 0) {
             ce.setFatal(true);
             setRollbackOnlyInternal(ce);

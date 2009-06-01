@@ -26,6 +26,7 @@ import org.apache.openjpa.datacache.DataCacheManager;
 import org.apache.openjpa.ee.ManagedRuntime;
 import org.apache.openjpa.enhance.RuntimeUnenhancedClasssesModes;
 import org.apache.openjpa.event.BrokerFactoryEventManager;
+import org.apache.openjpa.event.LifecycleEventManager;
 import org.apache.openjpa.event.OrphanedKeyAction;
 import org.apache.openjpa.event.RemoteCommitEventManager;
 import org.apache.openjpa.event.RemoteCommitProvider;
@@ -1676,7 +1677,7 @@ public interface OpenJPAConfiguration
      *
      * @since 2.0.0
      */
-    public Object getValidationFactory();
+    public Object getValidationFactoryInstance();
 
     /**
      * Set the container or application provided ValidatorFactory instance.
@@ -1685,4 +1686,18 @@ public interface OpenJPAConfiguration
      * @since 2.0.0
      */
     public void setValidationFactory(Object factory);
+    
+   /**
+     * Gets the lifecycle event manager instance
+     * 
+     * @since 2.0.0
+     */
+    public LifecycleEventManager getLifecycleEventManagerInstance();
+
+    /**
+     * Sets the lifecycle event manager instance.
+     * 
+     * @since 2.0.0
+     */
+    public void setLifecycleEventManager(LifecycleEventManager eventMgr);
 }
