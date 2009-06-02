@@ -176,7 +176,7 @@ public class TestParentChild extends CombinatorialPersistenceTestCase {
 	 */
 	void assertPhysicalForeignKeyCreation() {
 		String regex = "ALTER TABLE .* ADD FOREIGN KEY \\(PARENT_ID\\) " 
-		             + "REFERENCES Parent \\(id\\)";
+		             + "REFERENCES Parent \\(id\\)(\\sDEFERRABLE)?";
 		if (getMappingDefaults().contains("restrict")) {
 			assertSQL(regex);
 		} else {
