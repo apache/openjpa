@@ -65,26 +65,6 @@ public class ValidatorImpl extends AbstractValidator {
     }
 
     /**
-     * Is a Validator required based on the given validation mode?
-     * Keeping validation mode logic in a single class...
-     * @param mode
-     * @return true if a Validator is required
-     */
-    public static boolean validationRequired(String mode) {
-        return String.valueOf(ValidationMode.CALLBACK).equalsIgnoreCase(mode);
-    }
-    
-    /**
-     * Skip creating a Validator based on the given validation mode?
-     * Keeping validation mode logic in a single class...
-     * @param mode
-     * @return true if a Validator should not be created
-     */
-    public static boolean skipValidation(String mode) {
-        return String.valueOf(ValidationMode.NONE).equalsIgnoreCase(mode);
-    }
-    
-    /**
      * Default constructor.  Builds a default validator factory, if available
      * and creates the validator.
      * Returns an Exception if a Validator could not be created.

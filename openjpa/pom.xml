@@ -130,7 +130,7 @@
                         <!-- OSGi Bundle Metadata -->
                         <Private-Package>org.openjpa.lib.ant*,org.apache.jdbc.ant*,META-INF*</Private-Package>
                         <Export-Package>!META-INF*,!org.openjpa.lib.ant*,!org.apache.jdbc.ant*,org.apache.openjpa*</Export-Package>
-                        <Import-Package>com.ibm.*;resolution:=optional,org.postgresql.*;resolution:=optional,org.apache.tools.ant.*;resolution:=optional,org.apache.log4j.*;resolution:=optional,javax.activation.xa*;resolution:=optional,javax.jms.*;resolution:=optional,javax.transaction.*;resolution:=optional,javax.xml.bind.*;resolution:=optional,serp.*;resolution:=optional,*</Import-Package>
+                        <Import-Package>com.ibm.*;resolution:=optional,org.postgresql.*;resolution:=optional,org.apache.tools.ant.*;resolution:=optional,org.apache.log4j.*;resolution:=optional,javax.activation.xa*;resolution:=optional,javax.jms.*;resolution:=optional,javax.transaction.*;resolution:=optional,javax.validation.*;resolution:=optional,javax.xml.bind.*;resolution:=optional,serp.*;resolution:=optional,*</Import-Package>
                         <!-- Eclipse metadata -->
                         <Eclipse-Autostart>false</Eclipse-Autostart>
                         <Bundle-ClassPath>.</Bundle-ClassPath>

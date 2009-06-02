@@ -44,6 +44,7 @@ import org.apache.openjpa.conf.OpenJPAConfiguration;
 import org.apache.openjpa.conf.OpenJPAConfigurationImpl;
 import org.apache.openjpa.conf.OpenJPAProductDerivation;
 import org.apache.openjpa.conf.Specification;
+import org.apache.openjpa.event.LifecycleEventManager;
 import org.apache.openjpa.kernel.MixedLockLevels;
 import org.apache.openjpa.lib.conf.AbstractProductDerivation;
 import org.apache.openjpa.lib.conf.Configuration;
@@ -180,36 +181,10 @@ public class PersistenceProductDerivation
             compatibility.setFlushBeforeDetach(true);
             compatibility.setCopyOnDetach(true);
         } else {
-            // only try creating a ValidatingLifecycleEventManager if needed
-            if (!ValidatorImpl.skipValidation(conf.getValidationMode())) {
-                try {
-                    Validator val = new ValidatorImpl(
-                        conf.getValidationFactoryInstance(),
-                        conf.getValidationMode());
-                    // we have a Validator, so try to create a VLEM
-                    conf.setLifecycleEventManager(
-                        new ValidatingLifecycleEventManager(val));
-                } catch (RuntimeException e) {
-                    if (ValidatorImpl.validationRequired(
-                        conf.getValidationMode())) {
-                        // fatal error - ValidationMode requires a Validator
-                        conf.getConfigurationLog().error(
-                            _loc.get("vlem-creation-error"), e);
-                        // rethrow as a WrappedException
-                        throw new ValidationException(e);
-                    } else {
-                        // unexpected, but validation is optional,
-                        // so just log it as a warning
-                        conf.getConfigurationLog().warn(
-                            _loc.get("vlem-creation-warn", e.getMessage()));
-                    }
-                }
-            } else {
-                conf.getConfigurationLog().trace(
-                    "Validation has been disabled by supplied mode.");
-            }
-            // make sure we have at least a LifecycleEventManager created
-            conf.getLifecycleEventManagerInstance();
+            // see if we can/need to create a ValidatingLifecycleEventManager
+            // Note: BrokerImpl uses the instantiating getter, which will create
+            //   a normal LifecycleEventManager if a VLEM wasn't created.
+            conf.setLifecycleEventManager(createVLEM(conf));
         }
         return true;
     }
@@ -565,6 +540,76 @@ public class PersistenceProductDerivation
         }
 
     }
+    
+    /**
+     * Try creating a ValidatingLifecycleEventManager based on the configured
+     * validation mode. This allows the Bean Validation Spec API to be an
+     * optional runtime dependency.
+     * @param conf
+     * @return ValidatingLifecycleEventManager if appropriate
+     * @throws ValidationException - a WrappedException for fatal errors
+     */
+    /**
+     * @param conf
+     * @throws ValidationException
+     */
+    private LifecycleEventManager createVLEM(OpenJPAConfigurationImpl conf) 
+        throws ValidationException {
+        LifecycleEventManager lem = null;
+        // only try creating a ValidatingLifecycleEventManager if needed
+        if (!String.valueOf(ValidationMode.NONE).equalsIgnoreCase(
+            conf.getValidationMode())) {
+            // we'll use this in the exception handlers
+            boolean bValRequired = String.valueOf(ValidationMode.CALLBACK)
+                .equalsIgnoreCase(conf.getValidationMode());
+            // see if the javax.validation spec api is available
+            try {
+                @SuppressWarnings("unused")
+                Class<?> c = Class.forName(
+                    "javax.validation.ValidationException");
+            } catch (ClassNotFoundException e) {
+                if (bValRequired) {
+                    // fatal error - ValidationMode requires a validator
+                    conf.getConfigurationLog().error(
+                        _loc.get("vlem-creation-error"), e);
+                    // rethrow as a WrappedException
+                    throw new ValidationException(new RuntimeException(e));
+                } else {
+                    // no optional validation provider, so just trace output
+                    conf.getConfigurationLog().trace(
+                        _loc.get("vlem-creation-warn", e.getMessage()));
+                    return lem;
+                }
+            }
+            // we have the javax.validation APIs
+            try {
+                // try loading a validation provider
+                Validator val = new ValidatorImpl(
+                    conf.getValidationFactoryInstance(),
+                    conf.getValidationMode());
+                // we have a Validator, so try to create a VLEM
+                lem = new ValidatingLifecycleEventManager(val);
+            } catch (RuntimeException e) {
+                if (bValRequired) {
+                    // fatal error - ValidationMode requires a validator
+                    conf.getConfigurationLog().error(
+                        _loc.get("vlem-creation-error"), e);
+                    // rethrow as a WrappedException
+                    throw new ValidationException(e);
+                } else {
+                    // unexpected, but validation is optional,
+                    // so just log it as a warning
+                    conf.getConfigurationLog().warn(
+                        _loc.get("vlem-creation-warn", e.getMessage()));
+                }
+            }
+        } else {
+            conf.getConfigurationLog().trace(
+                "Validation has been disabled by supplied mode.");
+        }
+        return lem;
+    }
+
     /**
      * Custom configuration provider.   
      */
