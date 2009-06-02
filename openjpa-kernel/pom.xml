@@ -25,7 +25,7 @@
     <groupId>org.apache.openjpa</groupId>
     <artifactId>openjpa-kernel</artifactId>
     <packaging>jar</packaging>
-    <name>OpenJPA Kernel</name>
+    <name>OpenJPA Kernel - Early Access 2</name>
     <description>OpenJPA Kernel - Early Access 2</description>
     <url>http://openjpa.apache.org</url>
     <parent>

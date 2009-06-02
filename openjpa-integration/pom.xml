@@ -26,6 +26,7 @@
     <artifactId>openjpa-integration</artifactId>
     <packaging>pom</packaging>
     <name>OpenJPA Integration Tests - Early Access 2</name>
+    <description>OpenJPA Integration Tests - Early Access 2</description>
     <parent>
         <groupId>org.apache.openjpa</groupId>
         <artifactId>openjpa-parent</artifactId>

@@ -58,6 +58,7 @@
     <artifactId>tck</artifactId>
     <packaging>pom</packaging>
     <name>OpenJPA Integration Tests - JPA TCK - Early Access 2</name>
+    <description>OpenJPA Integration Tests - JPA TCK - Early Access 2</description>
     <parent>
         <groupId>org.apache.openjpa</groupId>
         <artifactId>openjpa-integration</artifactId>

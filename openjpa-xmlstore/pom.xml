@@ -25,7 +25,7 @@
     <groupId>org.apache.openjpa</groupId>
     <artifactId>openjpa-xmlstore</artifactId>
     <packaging>jar</packaging>
-    <name>OpenJPA XML Store</name>
+    <name>OpenJPA XML Store - Early Access 2</name>
     <description>OpenJPA XML Store - Early Access 2</description>
     <url>http://openjpa.apache.org</url>
     <parent>

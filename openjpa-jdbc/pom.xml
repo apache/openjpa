@@ -25,7 +25,7 @@
     <groupId>org.apache.openjpa</groupId>
     <artifactId>openjpa-jdbc</artifactId>
     <packaging>jar</packaging>
-    <name>OpenJPA JDBC</name>
+    <name>OpenJPA JDBC - Early Access 2</name>
     <description>OpenJPA JDBC - Early Access 2</description>
     <url>http://openjpa.apache.org</url>
     <parent>

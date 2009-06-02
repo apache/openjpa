@@ -35,6 +35,7 @@
     <artifactId>examples</artifactId>
     <packaging>pom</packaging>
     <name>OpenJPA Integration Tests - Examples - Early Access 2</name>
+    <description>OpenJPA Integration Tests - Examples - Early Access 2</description>
     <parent>
         <groupId>org.apache.openjpa</groupId>
         <artifactId>openjpa-integration</artifactId>

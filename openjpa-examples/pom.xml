@@ -26,7 +26,7 @@
     <groupId>org.apache.openjpa</groupId>
     <artifactId>openjpa-examples</artifactId>
     <packaging>jar</packaging>
-    <name>OpenJPA Examples</name>
+    <name>OpenJPA Examples - Early Access 2</name>
     <description>OpenJPA Examples - Early Access 2</description>
     <url>http://openjpa.apache.org</url>
     <parent>

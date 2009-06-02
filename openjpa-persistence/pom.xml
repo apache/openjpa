@@ -25,7 +25,7 @@
     <groupId>org.apache.openjpa</groupId>
     <artifactId>openjpa-persistence</artifactId>
     <packaging>jar</packaging>
-    <name>OpenJPA Persistence</name>
+    <name>OpenJPA Persistence - Early Access 2</name>
     <description>OpenJPA Persistence - Early Access 2</description>
     <url>http://openjpa.apache.org</url>
     <parent>

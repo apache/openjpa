@@ -26,6 +26,7 @@
     <artifactId>openjpa-all</artifactId>
     <packaging>jar</packaging>
     <name>OpenJPA Aggregate Jar with Dependencies - Early Access 2</name>
+    <description>OpenJPA Aggregate Jar with Dependencies - Early Access 2</description>
     <parent>
         <groupId>org.apache.openjpa</groupId>
         <artifactId>openjpa-parent</artifactId>
