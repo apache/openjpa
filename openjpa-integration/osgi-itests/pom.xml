@@ -24,15 +24,13 @@
     <parent>
         <groupId>org.apache.openjpa</groupId>
         <artifactId>openjpa-integration</artifactId>
-        <version>2.0.0-SNAPSHOT</version>
+        <version>2.0.0-EA2-SNAPSHOT</version>
     </parent>
 
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.apache.openjpa.openjpa-integration</groupId>
     <artifactId>osgi-itests</artifactId>
-    <version>2.0.0-SNAPSHOT</version>
-    <name>OpenJPA Integration Tests - OSGi</name>
-    <description>OpenJPA Integration Tests - OSGi</description>
+    <name>OpenJPA Integration Tests - OSGi - Early Access 2</name>
 
     <dependencies>
         <!--

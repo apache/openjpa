@@ -25,11 +25,11 @@
     <modelVersion>4.0.0</modelVersion>
     <artifactId>openjpa-integration</artifactId>
     <packaging>pom</packaging>
-    <name>OpenJPA Integration Tests</name>
+    <name>OpenJPA Integration Tests - Early Access 2</name>
     <parent>
         <groupId>org.apache.openjpa</groupId>
         <artifactId>openjpa-parent</artifactId>
-        <version>2.0.0-SNAPSHOT</version>
+        <version>2.0.0-EA2-SNAPSHOT</version>
     </parent>
     <modules>
         <module>examples</module>

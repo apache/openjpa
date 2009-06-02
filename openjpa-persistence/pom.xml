@@ -26,12 +26,12 @@
     <artifactId>openjpa-persistence</artifactId>
     <packaging>jar</packaging>
     <name>OpenJPA Persistence</name>
-    <description>OpenJPA Persistence</description>
+    <description>OpenJPA Persistence - Early Access 2</description>
     <url>http://openjpa.apache.org</url>
     <parent>
         <groupId>org.apache.openjpa</groupId>
         <artifactId>openjpa-parent</artifactId>
-        <version>2.0.0-SNAPSHOT</version>
+        <version>2.0.0-EA2-SNAPSHOT</version>
     </parent>
     <dependencies>
         <dependency>
