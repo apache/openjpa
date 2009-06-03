@@ -253,6 +253,7 @@
                                     <exclude>release.properties</exclude>
                                     <exclude>**/NOTICE.vm</exclude>
                                     <exclude>**/LICENSE.vm</exclude>
+                                    <exclude>**/dependency-reduced-pom.xml</exclude>
 
                                     <!--
                                         Exclude internal repository. These files are 
