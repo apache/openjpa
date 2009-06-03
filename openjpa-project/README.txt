@@ -54,12 +54,14 @@ Overview
 
    This early access distribution is based upon the contributions provided in
    development iterations 1 through 7, as defined in the JPA 2.0 Roadmap at:
+       http://openjpa.apache.org/jpa-20-roadmap.html
 
    The JPA 2.0 Roadmap contains a complete list of implemented features and
    feature summaries, including what is on deck for future iterations.
 
    Additional information on the OpenJPA project may be found at the project
-   web site: http://openjpa.apache.org
+   web site:
+       http://openjpa.apache.org
 
 
 License
