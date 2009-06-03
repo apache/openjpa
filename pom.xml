@@ -253,6 +253,7 @@
                                     <exclude>release.properties</exclude>
                                     <exclude>**/NOTICE.vm</exclude>
                                     <exclude>**/LICENSE.vm</exclude>
+                                    <exclude>**/dependency-reduced-pom.xml</exclude>
 
                                     <!--
                                         Exclude internal repository. These files are 
@@ -798,8 +799,8 @@
         <url>scp://people.apache.org/home/${user.name}/public_html/openjpa/${pom.version}/staging-repo</url>
       </repository>
       <snapshotRepository>
-        <id>local-repository</id>
-        <url>scp://people.apache.org/home/${user.name}/public_html/openjpa/${pom.version}/staging-repo</url>
+        <id>apache.snapshots</id>
+        <url>scp://people.apache.org/www/people.apache.org/repo/m2-snapshot-repository</url>
         <uniqueVersion>false</uniqueVersion>
       </snapshotRepository>
       <site>
