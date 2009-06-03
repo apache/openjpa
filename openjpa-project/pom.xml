@@ -24,7 +24,7 @@
     <!--
         To build the distribution files from project root:
 
-        mvn clean compile package -Dtest=false
+        mvn clean compile package -Dtest=false -DfailIfNoTests=false
 
         To build and deploy a full digned release with docs, run:
 
