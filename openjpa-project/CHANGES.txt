@@ -1,4 +1,4 @@
-                           OpenJPA 2.0.0 Early Access 2
+                           OpenJPA 2.0.0 Early Access 3
                            ----------------------------
 
 Content
@@ -27,39 +27,18 @@ Overview
    for testing and evaluation purposes only. 
 
    Some of the key features included in this distribution:
-     * JPA 2.0 API and persistence and orm schemas
-     * Support for nested embeddables and relationships within embeddables
-     * Support for collections of embeddables and basic types
-     * A programmatic query construction API based upon the 10/2008 revision of
-       the JSR-317 specification
-     * A standardized Level 2 cache interface
-     * Enhanced map collection support
-     * Support for standard javax.persistence configuration properties
-     * A new prepared query cache for the caching of the SQL underlying JPQL
-       and find queries
-     * Support for derived identities
-     * The ability to specify an order column on ordered collections
-     * Significant enhancements to JPQL
-     * Automatic orphan removal
-     * Support for individual entity detachment, including the ability to
-       cascade
-     * Methods to retrieve active and all supported properties on the entity
-       manager and entity manager factory
-     * New lock modes, including pessimistic locking on a per entity manager
-       and query method level
-     * Support for query and lock timeout hints on a per entity manager and 
-       query method level
-     * Specification of explicit persistent access type on persistent classes
-       and attributes
+     * TBD...
 
    This early access distribution is based upon the contributions provided in
-   development iterations 1 through 7, as defined in the JPA 2.0 Roadmap at:
+   development iterations 8 through [TBD], as defined in the JPA 2.0 Roadmap at:
+       http://openjpa.apache.org/jpa-20-roadmap.html
 
    The JPA 2.0 Roadmap contains a complete list of implemented features and
    feature summaries, including what is on deck for future iterations.
 
    Additional information on the OpenJPA project may be found at the project
-   web site: http://openjpa.apache.org
+   web site:
+       http://openjpa.apache.org
 
 
 License
@@ -106,12 +85,12 @@ Documentation
    If you have questions about OpenJPA, a good source of information is the
    online product manual. You can find the manual for the current release as
    well as older releases of OpenJPA at
-   http://openjpa.apache.org/documentation.html
+       http://openjpa.apache.org/documentation.html
 
    If you can't find what you're looking for in the manual or would like more
    clarification you please post to the OpenJPA development mailing list.
    Information on all of the OpenJPA mailing lists may be found here:
-   http://openjpa.apache.org/mailing-lists.html
+       http://openjpa.apache.org/mailing-lists.html
 
 
 Getting Involved
@@ -129,12 +108,18 @@ Getting Involved
    How do I Contribute?
         * To discuss Apache OpenJPA topics check out the mailing lists.
         * Informal discussion also occurs on the #openjpa IRC channel on
-       freenode.net.
+          freenode.net.
         * Bugs and other issues can be posted on the project JIRA.
 
 
 Included Changes
 ----------------
+
+    * TBD...
+
+
+Included Changes in prior Milestone 2
+-------------------------------------
 
 Sub-task
 --------
