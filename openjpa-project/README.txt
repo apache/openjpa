@@ -108,12 +108,12 @@ Documentation
    If you have questions about OpenJPA, a good source of information is the
    online product manual. You can find the manual for the current release as
    well as older releases of OpenJPA at
-   http://openjpa.apache.org/documentation.html
+       http://openjpa.apache.org/documentation.html
 
    If you can't find what you're looking for in the manual or would like more
    clarification you please post to the OpenJPA development mailing list.
    Information on all of the OpenJPA mailing lists may be found here:
-   http://openjpa.apache.org/mailing-lists.html
+       http://openjpa.apache.org/mailing-lists.html
 
 
 Getting Involved
@@ -131,7 +131,7 @@ Getting Involved
    How do I Contribute?
         * To discuss Apache OpenJPA topics check out the mailing lists.
         * Informal discussion also occurs on the #openjpa IRC channel on
-       freenode.net.
+          freenode.net.
         * Bugs and other issues can be posted on the project JIRA.
 
 
