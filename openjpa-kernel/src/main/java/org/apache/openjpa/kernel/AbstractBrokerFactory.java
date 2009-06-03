@@ -31,26 +31,23 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
 import java.util.TreeSet;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.locks.ReentrantLock;
 
 import javax.transaction.Status;
 import javax.transaction.Synchronization;
 import javax.transaction.Transaction;
 import javax.transaction.TransactionManager;
 
-import org.apache.commons.collections.set.MapBackedSet;
 import org.apache.commons.lang.StringUtils;
-import org.apache.openjpa.conf.BrokerValue;
+import org.apache.commons.collections.set.MapBackedSet;
 import org.apache.openjpa.conf.OpenJPAConfiguration;
-import org.apache.openjpa.conf.OpenJPAConfigurationImpl;
 import org.apache.openjpa.conf.OpenJPAVersion;
+import org.apache.openjpa.conf.BrokerValue;
+import org.apache.openjpa.conf.OpenJPAConfigurationImpl;
 import org.apache.openjpa.datacache.DataCacheStoreManager;
 import org.apache.openjpa.ee.ManagedRuntime;
-import org.apache.openjpa.enhance.ManagedClassSubclasser;
 import org.apache.openjpa.enhance.PCRegistry;
 import org.apache.openjpa.enhance.PersistenceCapable;
-import org.apache.openjpa.enhance.Reflection;
+import org.apache.openjpa.enhance.ManagedClassSubclasser;
 import org.apache.openjpa.event.BrokerFactoryEvent;
 import org.apache.openjpa.event.RemoteCommitEventManager;
 import org.apache.openjpa.lib.conf.Configuration;
@@ -58,7 +55,9 @@ import org.apache.openjpa.lib.conf.Configurations;
 import org.apache.openjpa.lib.log.Log;
 import org.apache.openjpa.lib.util.J2DoPrivHelper;
 import org.apache.openjpa.lib.util.Localizer;
+import java.util.concurrent.ConcurrentHashMap;
 import org.apache.openjpa.lib.util.concurrent.ConcurrentReferenceHashSet;
+import java.util.concurrent.locks.ReentrantLock;
 import org.apache.openjpa.meta.MetaDataRepository;
 import org.apache.openjpa.util.GeneralException;
 import org.apache.openjpa.util.InvalidStateException;
@@ -411,7 +410,7 @@ public abstract class AbstractBrokerFactory
                 PCRegistry.removeRegisterClassListener
                     (_conf.getMetaDataRepositoryInstance());
             }
-            Reflection.flushCaches();
+
             _conf.close();
             _closed = true;
             Log log = _conf.getLog(OpenJPAConfiguration.LOG_RUNTIME);
