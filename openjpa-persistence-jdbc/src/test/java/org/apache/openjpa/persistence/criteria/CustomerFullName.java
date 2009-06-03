@@ -18,49 +18,32 @@
  */
 package org.apache.openjpa.persistence.criteria;
 
-public class CustomerDetails {
-    long id;
+public class CustomerFullName {
+    public String firstName;
     
-    int status;
+    public String lastName;
     
-    int quantity;
-
-    public CustomerDetails() {}
+    public CustomerFullName() {}
     
-    public CustomerDetails(long id, int status) {
-        this.id = id;
-        this.status = status;
+    public CustomerFullName(String firstName, String lastName) {
+        this.firstName = firstName;
+        this.lastName = lastName;
     }
     
-    public CustomerDetails(long id, int status, int quantity) {
-        this.id = id;
-        this.status = status;
-        this.quantity = quantity;
+    public String getLastName() {
+        return lastName;
     }
     
-    public int getStatus() {
-        return status;
+    public void setLastName(String lastName) {
+        this.lastName = lastName;
     }
     
-    public void setStatus(int status) {
-        this.status = status;
+    public String getFirstName() {
+        return firstName;
     }
     
-    public long getId() {
-        return id;
+    public void setFirstName(String firstName) {
+        this.firstName = firstName;
     }
-    
-    public void setId(long id) {
-        this.id = id;
-    }
-    
-    public int getQuantity() {
-        return quantity;
-    }
-    
-    public void setQuantity(int quantity) {
-        this.quantity = quantity;
-    }
-    
 }
 

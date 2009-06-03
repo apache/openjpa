@@ -21,7 +21,6 @@ package org.apache.openjpa.persistence.criteria;
 
 import java.util.Collection;
 
-import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Expression;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.QueryBuilder.In;
@@ -41,13 +40,13 @@ public abstract class ExpressionImpl<X> extends SelectionImpl<X>
     implements Expression<X> {
 
     Value toValue(ExpressionFactory factory, MetamodelImpl model,
-        CriteriaQuery q) {
+        CriteriaQueryImpl q) {
         throw new AbstractMethodError(this.getClass().getName());
     }
     
     org.apache.openjpa.kernel.exps.Expression toKernelExpression(
         ExpressionFactory factory, MetamodelImpl model,
-        CriteriaQuery q) {
+        CriteriaQueryImpl q) {
         throw new AbstractMethodError(this.getClass().getName());
     }
     

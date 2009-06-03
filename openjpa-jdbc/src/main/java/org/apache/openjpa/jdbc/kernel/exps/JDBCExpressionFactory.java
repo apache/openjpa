@@ -439,14 +439,16 @@ public class JDBCExpressionFactory
         if (val instanceof Lit) {
             Lit lit = (Lit) val;
             StringBuffer value = new StringBuffer();
-            if (lit.getParseType() == Literal.TYPE_SQ_STRING)
+            int pType = lit.getParseType(); 
+            if (pType == Literal.TYPE_SQ_STRING ||
+                pType == Literal.TYPE_STRING)
                 value.append("'").append(lit.getValue().toString()).append("'");
-            else if (lit.getParseType() == Literal.TYPE_BOOLEAN) {
+            else if (pType == Literal.TYPE_BOOLEAN) {
                 if ((Boolean) lit.getValue())
                     value.append("1");
                 else
                     value.append("0");
-            } else if (lit.getParseType() == Literal.TYPE_ENUM) {
+            } else if (pType == Literal.TYPE_ENUM) {
                 lit.setRaw(true);
                 return val;
             } else

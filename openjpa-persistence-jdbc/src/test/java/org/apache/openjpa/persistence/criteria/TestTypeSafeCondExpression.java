@@ -266,7 +266,6 @@ public class TestTypeSafeCondExpression extends CriteriaTest {
         em.clear();
     }
 
-    @AllowFailure(message="JPQL generates two queries, Criteria only one")
     public void testNullExprUsingCriteria() {
         String query =
             "SELECT o.name FROM CompUser o WHERE o.age IS NOT NULL AND " +
@@ -289,7 +288,6 @@ public class TestTypeSafeCondExpression extends CriteriaTest {
         em.clear();
     }
     
-    @AllowFailure(message="Invalid SQL for Criteria")
     public void testNullExpr2UsingCriteria() {
         String query =
             "SELECT o.name FROM CompUser o WHERE o.address.country IS NULL";
@@ -407,12 +405,10 @@ public class TestTypeSafeCondExpression extends CriteriaTest {
         em.clear();
     }
     
-    @AllowFailure(message="new() in projection is badly broken")
     public void testConstructorExprUsingCriteria() {
         String query =
             "SELECT NEW org.apache.openjpa.persistence.common.apps.MaleUser(" +
-            "c.name, " + 
-            "c.computerName, c.address, c.age, c.userid)" +
+            "c.name, c.computerName, c.address, c.age, c.userid)" +
             " FROM CompUser c WHERE c.name = 'Seetha'";
         CriteriaQuery q = cb.create();
         q = cb.create();
@@ -433,11 +429,10 @@ public class TestTypeSafeCondExpression extends CriteriaTest {
         em.clear();
     }
 
-    @AllowFailure
     public void testConcatSubStringFunc1() {
         String query = "select " +
             "CONCAT('Ablahum', SUBSTRING(e.name, LOCATE('e', e.name), 4)) " +
-            "From CompUer e WHERE e.name='Seetha'";
+            "From CompUser e WHERE e.name='Seetha'";
         CriteriaQuery q = cb.create();
         q = cb.create();
         Root<CompUser> e = q.from(CompUser.class);
@@ -455,30 +450,29 @@ public class TestTypeSafeCondExpression extends CriteriaTest {
         em.clear();
     }
     
-    @AllowFailure
     public void testConcatSubStringFunc2() {
         String query = "select e.address From CompUser e where " +
-        		"e.computerName = " +
+            "e.name = 'Seetha' AND e.computerName = " +
             "CONCAT('Ablahum', SUBSTRING(e.name, LOCATE('e', e.name), 4)) ";
         CriteriaQuery q = cb.create();
         q = cb.create();
         Root<CompUser> e = q.from(CompUser.class);
         q.select(e.get(CompUser_.address));
-        q.where(cb.equal(
-            e.get(CompUser_.computerName),
-            cb.concat("Ablahum", 
-                cb.substring(
-                    e.get(CompUser_.name), 
-                    cb.locate(e.get(CompUser_.name), "e"), 
-                    cb.literal(4)
-                 )
-            ))
-         );
+        q.where(cb.and(cb.equal(e.get(CompUser_.name), "Seetha"),
+                cb.equal(
+                e.get(CompUser_.computerName),
+                cb.concat("Ablahum", 
+                    cb.substring(
+                        e.get(CompUser_.name), 
+                        cb.locate(e.get(CompUser_.name), "e"), 
+                        cb.literal(4)
+                     )
+                )))
+             );
         assertEquivalence(q, query);
         em.clear();
     }
 
-    @AllowFailure
     public void testConcatSubStringFunc3() {
         String query = "select " +
             "CONCAT('XYZ', SUBSTRING(e.name, LOCATE('e', e.name))) " +
@@ -499,31 +493,31 @@ public class TestTypeSafeCondExpression extends CriteriaTest {
         em.clear();
     }
 
-    @AllowFailure
     public void testConcatSubStringFunc4() {
-        String query = "select e.nicknames from CompUser e where e.name = " +
+        String query = "select e.age from CompUser e where " + 
+            "e.name = 'Seetha' AND e.computerName = " +
             "CONCAT('XYZ', SUBSTRING(e.name, LOCATE('e', e.name))) ";
         CriteriaQuery q = cb.create();
         q = cb.create();
         Root<CompUser> e = q.from(CompUser.class);
-        q.select(e.get(CompUser_.nicknames));
-        q.where(cb.equal(
-            e.get(CompUser_.name),
-            cb.concat("XYZ", 
-                cb.substring(
-                    e.get(CompUser_.name), 
-                    cb.locate(e.get(CompUser_.name), "e") 
-                )
-            ))
-        );
+        q.select(e.get(CompUser_.age));
+        q.where(cb.and(cb.equal(e.get(CompUser_.name), "Seetha"),
+                cb.equal(
+                e.get(CompUser_.computerName),
+                cb.concat("XYZ", 
+                    cb.substring(
+                        e.get(CompUser_.name), 
+                        cb.locate(e.get(CompUser_.name), "e") 
+                    )
+                )))
+            );
         assertEquivalence(q, query);
         em.clear();
     }
 
-    @AllowFailure
     public void testConcatFunc() {
         String query = "select " +
-            "CONCAT('', '') From CompUser WHERE e.name='Seetha'";
+            "CONCAT('', '') From CompUser e WHERE e.name='Seetha'";
         CriteriaQuery q = cb.create();
         q = cb.create();
         Root<CompUser> e = q.from(CompUser.class);
@@ -533,7 +527,6 @@ public class TestTypeSafeCondExpression extends CriteriaTest {
         em.clear();
     }
 
-    @AllowFailure
     public void testTrimFunc1() {
         String query = "select Trim(e.computerName) From CompUser e " +
         		"WHERE e.name='Shannon '";
@@ -546,20 +539,18 @@ public class TestTypeSafeCondExpression extends CriteriaTest {
         em.clear();
     }
 
-    @AllowFailure
     public void testTrimFunc2() {
-        String query = "select e.name From CompUser e where Trim(e.name) =" +
-        		"'Shannon'";
+        String query = "select e.computerName From CompUser e where " + 
+            "Trim(e.name) = 'Shannon '";
         CriteriaQuery q = cb.create();
         q = cb.create();
         Root<CompUser> e = q.from(CompUser.class);
-        q.where(cb.equal(cb.trim(e.get(CompUser_.computerName)), "Shannon"));
-        q.select(e.get(CompUser_.name));
+        q.where(cb.equal(cb.trim(e.get(CompUser_.name)), "Shannon"));
+        q.select(e.get(CompUser_.computerName));
         assertEquivalence(q, query);
         em.clear();
     }
 
-    @AllowFailure
     public void testLowerFunc1() {
         String query = "select LOWER(e.name) From CompUser e WHERE " +
         		"e.computerName='UNIX'";
@@ -572,7 +563,6 @@ public class TestTypeSafeCondExpression extends CriteriaTest {
         em.clear();
     }
 
-    @AllowFailure
     public void testLowerFunc2() {
         String query = "select e.age From CompUser e where LOWER(e.name)" +
         		" ='ugo'";
@@ -585,7 +575,6 @@ public class TestTypeSafeCondExpression extends CriteriaTest {
         em.clear();
     }
 
-    @AllowFailure
     public void testUpperFunc1() {
         String query = "select UPPER(e.name) From CompUser e WHERE " +
         		"e.computerName='PC'";
@@ -598,33 +587,31 @@ public class TestTypeSafeCondExpression extends CriteriaTest {
         em.clear();
     }
 
-    @AllowFailure
     public void testUpperFunc2() {
-        String query = "select e.nicknames from CompUser e where " +
-        		"UPPER(e.name)='UGO'";
+        String query = "select e.age from CompUser e where " +
+            "UPPER(e.name)='UGO'";
         CriteriaQuery q = cb.create();
         q = cb.create();
         Root<CompUser> e = q.from(CompUser.class);
         q.where(cb.equal(cb.upper(e.get(CompUser_.name)), "UGO"));
-        q.select(e.get(CompUser_.nicknames));
+        q.select(e.get(CompUser_.age));
         assertEquivalence(q, query);
         em.clear();
     }
 
-    @AllowFailure
     public void testLengthFunc() {
         String query = "SELECT o.name FROM CompUser o " + 
             "WHERE LENGTH(o.address.country) = 3";
         CriteriaQuery q = cb.create();
         q = cb.create();
         Root<CompUser> e = q.from(CompUser.class);
-        q.where(cb.equal(cb.length(e.get(CompUser_.name)), 3));
+        q.where(cb.equal(cb.length(e.get(CompUser_.address).
+            get(Address_.country)), 3));
         q.select(e.get(CompUser_.name));
         assertEquivalence(q, query);
         em.clear();
     }
 
-    @AllowFailure
     public void testArithmFunc1() {
         String query =
             "select ABS(e.age) From CompUser e WHERE e.name='Seetha'";
@@ -637,7 +624,6 @@ public class TestTypeSafeCondExpression extends CriteriaTest {
         em.clear();
     }
     
-    @AllowFailure
     public void testArithmFunc2() {
         String query =
             "select SQRT(e.age) From CompUser e WHERE e.name='Seetha'";
@@ -677,7 +663,6 @@ public class TestTypeSafeCondExpression extends CriteriaTest {
         em.clear();
     }
 
-    @AllowFailure
     public void testGroupByHavingClause() {
         String query =
             "SELECT c.name FROM CompUser c GROUP BY c.name HAVING c.name " +
@@ -690,18 +675,9 @@ public class TestTypeSafeCondExpression extends CriteriaTest {
         q.having(cb.like(e.get(CompUser_.name), "S%"));
         q.select(e.get(CompUser_.name));
         assertEquivalence(q, query);
-        List result = em.createQuery(q).getResultList();
-
-        assertNotNull(result);
-        assertEquals(3, result.size());
-        assertTrue(result.contains("Shannon "));
-        assertTrue(result.contains("Shade"));
-        assertTrue(result.contains("Seetha"));
-
         em.clear();
     }
 
-    @AllowFailure
     public void testOrderByClause() {
         String query =
             "SELECT c.name FROM CompUser c WHERE c.name LIKE 'S%' " +
@@ -714,18 +690,9 @@ public class TestTypeSafeCondExpression extends CriteriaTest {
         q.select(e.get(CompUser_.name));
         q.orderBy(cb.asc(e.get(CompUser_.name)));
         assertEquivalence(q, query);
-        List result = em.createQuery(q).getResultList();
-
-        assertNotNull(result);
-        assertEquals(3, result.size());
-        assertTrue(result.contains("Shannon "));
-        assertTrue(result.contains("Seetha"));
-        assertTrue(result.contains("Shade"));
-
         em.clear();
     }
 
-    @AllowFailure
     public void testAVGAggregFunc() {
         //To be Tested: AVG, COUNT, MAX, MIN, SUM
         String query = "SELECT AVG(e.age) FROM CompUser e";
@@ -734,16 +701,9 @@ public class TestTypeSafeCondExpression extends CriteriaTest {
         Root<CompUser> e = q.from(CompUser.class);
         q.select(cb.avg(e.get(CompUser_.age)));
         assertEquivalence(q, query);
-        List result = em.createQuery(q).getResultList();
-
-        assertNotNull(result);
-        assertEquals(1, result.size());
-        assertTrue(result.contains(25));
-
         em.clear();
     }
 
-    @AllowFailure
     public void testCOUNTAggregFunc() {
         String query = "SELECT COUNT(c.name) FROM CompUser c";
 
@@ -752,16 +712,9 @@ public class TestTypeSafeCondExpression extends CriteriaTest {
         Root<CompUser> e = q.from(CompUser.class);
         q.select(cb.count(e.get(CompUser_.name)));
         assertEquivalence(q, query);
-        List result = em.createQuery(q).getResultList();
-
-        assertNotNull(result);
-        assertEquals(1, result.size());
-        assertTrue(result.contains(6l));
-
         em.clear();
     }
 
-    @AllowFailure
     public void testMAXAggregFunc() {
         String query = "SELECT DISTINCT MAX(c.age) FROM CompUser c";
 
@@ -770,16 +723,10 @@ public class TestTypeSafeCondExpression extends CriteriaTest {
         Root<CompUser> e = q.from(CompUser.class);
         q.select(cb.max(e.get(CompUser_.age))).distinct(true);
         assertEquivalence(q, query);
-        List result = em.createQuery(q).getResultList();
-
-        assertNotNull(result);
-        assertEquals(1, result.size());
-        assertTrue(result.contains(36));
-
         em.clear();
     }
 
-    @AllowFailure
+    @AllowFailure(message="criteria does not generate Optimize for 1 row")
     public void testMINAggregFunc() {
         String query = "SELECT DISTINCT MIN(c.age) FROM CompUser c";
 
@@ -788,16 +735,9 @@ public class TestTypeSafeCondExpression extends CriteriaTest {
         Root<CompUser> e = q.from(CompUser.class);
         q.select(cb.min(e.get(CompUser_.age))).distinct(true);
         assertEquivalence(q, query);
-        List result = em.createQuery(q).getResultList();
-
-        assertNotNull(result);
-        assertEquals(1, result.size());
-        assertTrue(result.contains(10));
-
         em.clear();
     }
 
-    @AllowFailure
     public void testSUMAggregFunc() {
         String query = "SELECT SUM(c.age) FROM CompUser c";
 
@@ -806,12 +746,6 @@ public class TestTypeSafeCondExpression extends CriteriaTest {
         Root<CompUser> e = q.from(CompUser.class);
         q.select(cb.sum(e.get(CompUser_.age)));
         assertEquivalence(q, query);
-        List result = em.createQuery(q).getResultList();
-
-        assertNotNull(result);
-        assertEquals(1, result.size());
-        assertTrue(result.contains(153l));
-
         em.clear();
     }
 
@@ -819,7 +753,7 @@ public class TestTypeSafeCondExpression extends CriteriaTest {
     @AllowFailure
     public void testTypeExpression1() {
         String query = "SELECT e FROM CompUser e where TYPE(e) in (?1, ?2) " +
-        		"ORDER By e.name";
+            "ORDER By e.name";
         CriteriaQuery q = cb.create();
         q = cb.create();
         Root<CompUser> e = q.from(CompUser.class);
@@ -861,7 +795,6 @@ public class TestTypeSafeCondExpression extends CriteriaTest {
         em.clear();
     }
 
-    @AllowFailure
     public void testTypeExpression4() {
         String query = "SELECT e FROM CompUser e where TYPE(e) = MaleUser";
         CriteriaQuery q = cb.create();
@@ -873,7 +806,6 @@ public class TestTypeSafeCondExpression extends CriteriaTest {
         em.clear();
     }
 
-    @AllowFailure
     public void testTypeExpression5() {
         String query = "SELECT e FROM CompUser e where TYPE(e) in (MaleUser)";
         CriteriaQuery q = cb.create();
@@ -885,10 +817,9 @@ public class TestTypeSafeCondExpression extends CriteriaTest {
         em.clear();
     }
 
-    @AllowFailure
     public void testTypeExpression6() {
         String query = "SELECT e FROM CompUser e where TYPE(e) not in " +
-        		"(MaleUser, FemaleUser)";
+            "(MaleUser, FemaleUser)";
         CriteriaQuery q = cb.create();
         q = cb.create();
         Root<CompUser> e = q.from(CompUser.class);
@@ -910,7 +841,6 @@ public class TestTypeSafeCondExpression extends CriteriaTest {
         em.clear();
     }
 
-    @AllowFailure
     public void testTypeExpression8() {
         String query = "SELECT MaleUser FROM Address a";
         CriteriaQuery q = cb.create();
@@ -921,7 +851,6 @@ public class TestTypeSafeCondExpression extends CriteriaTest {
         em.clear();
     }
 
-    @AllowFailure
     public void testTypeExpression9() {
         String query = "SELECT "
                 + " CASE TYPE(e) WHEN FemaleUser THEN 'Female' "
@@ -935,10 +864,8 @@ public class TestTypeSafeCondExpression extends CriteriaTest {
         em.clear();
     }
 
-    @AllowFailure
     public void testCoalesceExpressions() {
-        startTx(em);
-        String query = "SELECT e.name, "
+         String query = "SELECT e.name, "
                 + "COALESCE (e.address.country, 'Unknown')"
                 + " FROM CompUser e ORDER BY e.name DESC";
 
@@ -949,18 +876,10 @@ public class TestTypeSafeCondExpression extends CriteriaTest {
                 .value("Unknown"));
         q.orderBy(cb.desc(e.get(CompUser_.name)));
         assertEquivalence(q, query);
-        List rs = em.createQuery(q).getResultList();
-        Object[] result = (Object[]) rs.get(rs.size() - 1);
-        assertEquals("the name is not famzy", "Famzy", result[0]);
-        assertEquals("Unknown", result[1]);
-
-        endTx(em);
         em.clear();
     }
 
-    @AllowFailure
     public void testNullIfExpressions() {
-        startTx(em);
         String query = "SELECT e.name, NULLIF (e.address.country, 'USA')"
                 + " FROM CompUser e ORDER BY e.name DESC";
         CriteriaQuery q = cb.create();
@@ -969,22 +888,14 @@ public class TestTypeSafeCondExpression extends CriteriaTest {
                 Address_.country), "USA"));
         q.orderBy(cb.desc(e.get(CompUser_.name)));
         assertEquivalence(q, query);
-
-        List rs = em.createQuery(q).getResultList();
-        Object[] result = (Object[]) rs.get(1);
-        assertEquals("the name is not shannon ", "Shannon ", result[0]);
-        assertNull("is not null", result[1]);
-
-        endTx(em);
         em.clear();
     }
 
-    @AllowFailure
     public void testSimpleCaseExpression1() {
-        String query = "SELECT e.name, e.age+1 as cage, "
+        String query = "SELECT e.name, e.age+1, "
                 + "CASE e.address.country WHEN 'USA' THEN 'us' "
-                + " ELSE 'non-us' END as d2, e.address.country "
-                + " FROM CompUser e ORDER BY cage, d2 DESC";
+                + " ELSE 'non-us' END, e.address.country "
+                + " FROM CompUser e";
         CriteriaQuery q = cb.create();
         Root<CompUser> e = q.from(CompUser.class);
         Expression<Integer> cage = cb.sum(e.get(CompUser_.age), 1);
@@ -993,21 +904,15 @@ public class TestTypeSafeCondExpression extends CriteriaTest {
                 "us").otherwise("non-us");
         q.select(e.get(CompUser_.name), cage, d2, e.get(CompUser_.address).get(
                 Address_.country));
-        q.orderBy(cb.asc(cage), cb.desc(d2));
         assertEquivalence(q, query);
-
-        List rs = em.createQuery(q).getResultList();
-        Object[] result = (Object[]) rs.get(rs.size() - 1);
-        assertEquals("the name is not seetha", "Seetha", result[0]);
     }
 
-    @AllowFailure
     public void testSimpleCaseExpression2() {
-        String query = "SELECT e.name, e.age+1 as cage, "
+        String query = "SELECT e.name, e.age+1, "
                 + "CASE e.address.country WHEN 'USA'"
                 + " THEN 'United-States' "
-                + " ELSE e.address.country  END as d2," + " e.address.country "
-                + " FROM CompUser e ORDER BY cage, d2 DESC";
+                + " ELSE e.address.country  END," + " e.address.country "
+                + " FROM CompUser e";
         CriteriaQuery q = cb.create();
         Root<CompUser> e = q.from(CompUser.class);
         Expression cage = cb.sum(e.get(CompUser_.age), 1);
@@ -1017,42 +922,29 @@ public class TestTypeSafeCondExpression extends CriteriaTest {
                 e.get(CompUser_.address).get(Address_.country));
         q.select(e.get(CompUser_.name), cage, d2, e.get(CompUser_.address).get(
                 Address_.country));
-        q.orderBy(cb.asc(cage), cb.desc(d2));
         assertEquivalence(q, query);
-        List rs = em.createQuery(q).getResultList();
-        Object[] result = (Object[]) rs.get(rs.size() - 1);
-        assertEquals("the name is not seetha", "Seetha", result[0]);
     }
 
-    @AllowFailure
     public void testSimpleCaseExpression3() {
         String query = "SELECT e.name, "
                 + " CASE TYPE(e) WHEN FemaleUser THEN 'Female' "
-                + " ELSE 'Male' END as result"
+                + " ELSE 'Male' END"
                 + " FROM CompUser e WHERE e.name like 'S%' "
                 + " ORDER BY e.name DESC";
         CriteriaQuery q = cb.create();
         Root<CompUser> e = q.from(CompUser.class);
-        q.select(cb.selectCase(e.type()).when(FemaleUser.class, "Female")
-                .otherwise("Male"));
+        q.select(e.get(CompUser_.name), 
+            cb.selectCase(e.type()).when(FemaleUser.class, "Female")
+            .otherwise("Male"));
         q.where(cb.like(e.get(CompUser_.name), "S%"));
-        q.orderBy(cb.asc(e.get(CompUser_.name)));
+        q.orderBy(cb.desc(e.get(CompUser_.name)));
         assertEquivalence(q, query);
-        List rs = em.createQuery(q).getResultList();
-        Object[] result = (Object[]) rs.get(0);
-        assertEquals("the result is not female", "Female", result[1]);
-        assertEquals("the name is not shannon", "Shannon ", result[0]);
-        result = (Object[]) rs.get(2);
-        assertEquals("the result is not male", "Male", result[1]);
-        assertEquals("the name is not seetha", "Seetha", result[0]);
     }
 
-    @AllowFailure
     public void testSimpleCaseExpression4() {
-        // boolean literal in case expression
         String query = "SELECT e.name, CASE e.address.country WHEN 'USA'"
-                + " THEN true ELSE false  END as b,"
-                + " e.address.country FROM CompUser e order by b";
+                + " THEN true ELSE false END,"
+                + " e.address.country FROM CompUser e";
         CriteriaQuery q = cb.create();
         Root<CompUser> e = q.from(CompUser.class);
         Expression b = cb.selectCase(
@@ -1060,21 +952,14 @@ public class TestTypeSafeCondExpression extends CriteriaTest {
                 true).otherwise(false);
         q.select(e.get(CompUser_.name), b, e.get(CompUser_.address).get(
                 Address_.country));
-        q.where(cb.like(e.get(CompUser_.name), "S%"));
-        q.orderBy(cb.asc(b));
         assertEquivalence(q, query);
-        List rs = em.createQuery(q).getResultList();
-
-        Object[] result = (Object[]) rs.get(rs.size() - 1);
-        assertEquals(result[1], 1);
     }
 
-    @AllowFailure
     public void testGeneralCaseExpression1() {
         String query = "SELECT e.name, e.age, "
                 + " CASE WHEN e.age > 30 THEN e.age - 1 "
                 + " WHEN e.age < 15 THEN e.age + 1 ELSE e.age + 0 "
-                + " END AS cage FROM CompUser e ORDER BY cage";
+                + " END FROM CompUser e";
         CriteriaQuery q = cb.create();
         Root<CompUser> e = q.from(CompUser.class);
         Expression cage = cb.selectCase().when(cb.gt(e.get(CompUser_.age), 30),
@@ -1083,18 +968,16 @@ public class TestTypeSafeCondExpression extends CriteriaTest {
                 cb.sum(e.get(CompUser_.age), 1)).otherwise(
                 cb.sum(e.get(CompUser_.age), 0));
         q.select(e.get(CompUser_.name), e.get(CompUser_.age), cage);
-        q.orderBy(cb.asc(cage));
         assertEquivalence(q, query);
     }
 
-    @AllowFailure
     public void testGeneralCaseExpression2() {
-        String query = "SELECT e.name, e.age+1 as cage, "
+        String query = "SELECT e.name, e.age+1, "
                 + "CASE WHEN e.address.country = 'USA' "
                 + " THEN 'United-States' "
-                + " ELSE 'Non United-States'  END as d2,"
+                + " ELSE 'Non United-States'  END,"
                 + " e.address.country "
-                + " FROM CompUser e ORDER BY cage, d2 DESC";
+                + " FROM CompUser e";
         CriteriaQuery q = cb.create();
         Root<CompUser> e = q.from(CompUser.class);
         Expression d2 = cb.selectCase()
@@ -1106,29 +989,21 @@ public class TestTypeSafeCondExpression extends CriteriaTest {
         Expression cage = cb.sum(e.get(CompUser_.age), 1);
         q.select(e.get(CompUser_.name), cage, d2, e.get(CompUser_.address).get(
                 Address_.country));
-        q.orderBy(cb.asc(cage), cb.desc(d2));
         assertEquivalence(q, query);
-
-        List rs = em.createQuery(q).getResultList();
-        Object[] result = (Object[]) rs.get(rs.size() - 1);
-        assertEquals("the name is not seetha", "Seetha", result[0]);
-        assertEquals("the country is not 'Non United-States'",
-                "Non United-States", result[2]);
     }
 
-    @AllowFailure
     public void testGeneralCaseExpression3() {
         String query = " select e.name, "
-                + "CASE WHEN e.age = 11 THEN "
-                + "org.apache.openjpa.persistence.criteria.CompUser$" +
-                		"CreditRating.POOR"
-                + " WHEN e.age = 35 THEN "
-                + "org.apache.openjpa.persistence.criteria.CompUser$" +
-                		"CreditRating.GOOD"
-                + " ELSE "
-                + "org.apache.openjpa.persistence.criteria.CompUser$" +
-                		"CreditRating.EXCELLENT"
-                + " END FROM CompUser e ORDER BY e.age";
+            + "CASE WHEN e.age = 11 THEN "
+            + "org.apache.openjpa.persistence.criteria.CompUser$" 
+            + "CreditRating.POOR"
+            + " WHEN e.age = 35 THEN "
+            + "org.apache.openjpa.persistence.criteria.CompUser$" 
+            + "CreditRating.GOOD"
+            + " ELSE "
+            + "org.apache.openjpa.persistence.criteria.CompUser$" 
+            + "CreditRating.EXCELLENT"
+            + " END FROM CompUser e ORDER BY e.age";
         CriteriaQuery q = cb.create();
         Root<CompUser> e = q.from(CompUser.class);
         q.select(e.get(CompUser_.name), cb.selectCase().when(
@@ -1139,10 +1014,6 @@ public class TestTypeSafeCondExpression extends CriteriaTest {
 
         q.orderBy(cb.asc(e.get(CompUser_.age)));
         assertEquivalence(q, query);
-        List rs = em.createQuery(q).getResultList();
-        Object[] result = (Object[]) rs.get(0);
-        assertEquals("the name is not Jacob", "Jacob", result[0]);
-        assertEquals("the credit rating is not 'POOR'", "POOR", result[1]);
     }
 
     // not sure how to write CriteriaQuery for
@@ -1150,19 +1021,19 @@ public class TestTypeSafeCondExpression extends CriteriaTest {
     @AllowFailure
     public void testGeneralCaseExpression4() {
         String query = "select e.name, e.creditRating from CompUser e "
-                + "where e.creditRating = "
-                + "(select "
-                + "CASE WHEN e1.age = 11 THEN "
-                + "org.apache.openjpa.persistence.criteria.CompUser$" +
-                		"CreditRating.POOR"
-                + " WHEN e1.age = 35 THEN "
-                + "org.apache.openjpa.persistence.criteria.CompUser$" +
-                		"CreditRating.GOOD"
-                + " ELSE "
-                + "org.apache.openjpa.persistence.criteria.CompUser$" +
-                		"CreditRating.EXCELLENT"
-                + " END from CompUser e1"
-                + " where e.userid = e1.userid) ORDER BY e.age";
+            + "where e.creditRating = "
+            + "(select "
+            + "CASE WHEN e1.age = 11 THEN "
+            + "org.apache.openjpa.persistence.criteria.CompUser$" 
+            + "CreditRating.POOR"
+            + " WHEN e1.age = 35 THEN "
+            + "org.apache.openjpa.persistence.criteria.CompUser$" 
+            + "CreditRating.GOOD"
+            + " ELSE "
+            + "org.apache.openjpa.persistence.criteria.CompUser$" 
+            + "CreditRating.EXCELLENT"
+            + " END from CompUser e1"
+            + " where e.userid = e1.userid) ORDER BY e.age";
         CriteriaQuery q = cb.create();
         Root<CompUser> e = q.from(CompUser.class);
         q.select(e.get(CompUser_.name), e.get(CompUser_.creditRating));

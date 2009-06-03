@@ -21,13 +21,9 @@ package org.apache.openjpa.persistence.criteria;
 import java.util.Arrays;
 import java.util.List;
 
-import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Selection;
 
-import org.apache.openjpa.kernel.exps.ExpressionFactory;
-import org.apache.openjpa.kernel.exps.Value;
 import org.apache.openjpa.persistence.ResultItemImpl;
-import org.apache.openjpa.persistence.meta.MetamodelImpl;
 
 /**
  * An item selected in the projection clause of  Criteria query.
@@ -52,18 +48,5 @@ public class SelectionImpl<X> extends ResultItemImpl<X>
     
     public List<Selection<?>> getSelections() {
         return _sels;
-    }
-    
-    Value toValue(ExpressionFactory factory, MetamodelImpl model,
-        CriteriaQuery q) {
-        ((CriteriaQueryImpl)q).setResultClass(getJavaType());
-        Value[] result = new Value[_sels.size()];
-        int i = 0;
-        for (Selection<?> s : _sels) {
-            result[i++] = ((ExpressionImpl<?>)s).toValue(factory, model, 
-                q);
-        }
-        ((CriteriaQueryImpl)q).setProjections(result);
-        return null;
     }
 }

@@ -25,6 +25,7 @@ import javax.persistence.Id;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
+
 /**
  * Used for testing Criteria API.
  * The fields are sometimes not declared as there is no validation yet during 

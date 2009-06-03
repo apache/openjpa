@@ -20,7 +20,6 @@ package org.apache.openjpa.persistence.criteria;
 
 import javax.persistence.criteria.AbstractCollectionJoin;
 import javax.persistence.criteria.CollectionJoin;
-import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Expression;
 import javax.persistence.criteria.Join;
 import javax.persistence.criteria.JoinType;
@@ -74,7 +73,7 @@ public abstract class Joins {
         
         @Override
         public Value toValue(ExpressionFactory factory, MetamodelImpl model, 
-            CriteriaQuery c) {
+            CriteriaQueryImpl c) {
             boolean allowNull = joinType != JoinType.INNER;
             org.apache.openjpa.kernel.exps.Path path = 
                 (org.apache.openjpa.kernel.exps.Path)
@@ -88,7 +87,8 @@ public abstract class Joins {
         
         @Override
         public org.apache.openjpa.kernel.exps.Expression toKernelExpression(
-            ExpressionFactory factory, MetamodelImpl model, CriteriaQuery c) {
+            ExpressionFactory factory, MetamodelImpl model, 
+            CriteriaQueryImpl c) {
             org.apache.openjpa.kernel.exps.Value path = this.toValue
                 (factory, model, c);
             ClassMetaData meta = _member.fmd.getDeclaredTypeMetaData();
@@ -150,7 +150,7 @@ public abstract class Joins {
          */
         @Override
         public Value toValue(ExpressionFactory factory, MetamodelImpl model,
-            CriteriaQuery c) {
+            CriteriaQueryImpl c) {
             boolean allowNull = joinType != JoinType.INNER;
             org.apache.openjpa.kernel.exps.Path path = 
                 (org.apache.openjpa.kernel.exps.Path)
@@ -169,7 +169,8 @@ public abstract class Joins {
          */
         @Override
         public org.apache.openjpa.kernel.exps.Expression toKernelExpression(
-            ExpressionFactory factory, MetamodelImpl model, CriteriaQuery c) {
+            ExpressionFactory factory, MetamodelImpl model, 
+            CriteriaQueryImpl c) {
             org.apache.openjpa.kernel.exps.Value path = toValue
                (factory, model, c);
             

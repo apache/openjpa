@@ -1,0 +1,180 @@
+package org.apache.openjpa.persistence.criteria;
+
+import java.util.LinkedHashSet;
+import java.util.List;
+import java.util.Set;
+
+import javax.persistence.criteria.AbstractQuery;
+import javax.persistence.criteria.CollectionJoin;
+import javax.persistence.criteria.Expression;
+import javax.persistence.criteria.Join;
+import javax.persistence.criteria.ListJoin;
+import javax.persistence.criteria.MapJoin;
+import javax.persistence.criteria.Predicate;
+import javax.persistence.criteria.Root;
+import javax.persistence.criteria.SetJoin;
+import javax.persistence.criteria.Subquery;
+import javax.persistence.metamodel.Entity;
+
+import org.apache.openjpa.kernel.exps.ExpressionFactory;
+import org.apache.openjpa.kernel.exps.Value;
+import org.apache.openjpa.meta.ClassMetaData;
+import org.apache.openjpa.persistence.meta.MetamodelImpl;
+import org.apache.openjpa.persistence.meta.Types;
+import org.apache.openjpa.kernel.exps.QueryExpressions;
+import org.apache.openjpa.kernel.jpql.JPQLExpressionBuilder;
+
+
+public class SubqueryImpl<T> extends ExpressionImpl<T> implements Subquery<T> {
+    private final CriteriaQueryImpl _parent;
+    private final CriteriaQueryImpl _delegate;
+    private java.util.Set<Join<?,?>> _joins;
+    private Expression<T> _select;
+    private org.apache.openjpa.kernel.exps.Subquery _subq;
+    
+    public SubqueryImpl(Class<T> cls, CriteriaQueryImpl parent) {
+        super(cls);
+        _parent = parent;
+        _delegate = new CriteriaQueryImpl(parent.getMetamodel());
+        _delegate.setContext(this);
+    }
+    
+    public AbstractQuery getParent() {
+        return _parent;
+    }
+    
+    public Subquery<T> select(Expression<T> expression) {
+        _select = expression;
+        _delegate.select(expression);
+        return this;
+    }
+    
+    public Expression<T> getSelection() {
+        return _select;
+    }
+    
+    public <X> Root<X> from(Entity<X> entity) {
+        return _delegate.from(entity);
+    }
+
+    public <X> Root<X> from(Class<X> entityClass) {
+        return _delegate.from(entityClass);
+    }
+
+    public Set<Root<?>> getRoots() {
+        return _delegate.getRoots();
+    }
+    
+    public Root<?> getRoot() {
+        return _delegate.getRoot();
+    }    
+
+    public Subquery<T> where(Expression<Boolean> restriction) {
+        _delegate.where(restriction);
+        return this;
+    }
+
+    public Subquery<T> where(Predicate... restrictions) {
+        _delegate.where(restrictions);
+        return this;
+    }
+
+    public Subquery<T> groupBy(Expression<?>... grouping) {
+        _delegate.groupBy(grouping);
+        return this;
+    }
+
+    public Subquery<T> having(Expression<Boolean> restriction) {
+        _delegate.having(restriction);
+        return this;
+    }
+
+    public Subquery<T> having(Predicate... restrictions) {
+        _delegate.having(restrictions);
+        return this;
+    }
+
+    public Subquery<T> distinct(boolean distinct) {
+        _delegate.distinct(distinct);
+        return this;
+    }
+
+    public List<Expression<?>> getGroupList() {
+        return _delegate.getGroupList();
+    }
+
+    public Predicate getRestriction() {
+        return _delegate.getRestriction();
+    }
+
+    public Predicate getGroupRestriction() {
+        return _delegate.getGroupRestriction();
+    }
+
+    public boolean isDistinct() {
+        return _delegate.isDistinct();
+    }
+
+    public <U> Subquery<U> subquery(Class<U> type) {
+        return new SubqueryImpl<U>(type, _delegate);
+    }
+    
+    public <Y> Root<Y> correlate(Root<Y> root) {
+        Types.Entity<Y> entity = 
+            (Types.Entity<Y>)((RootImpl<Y>)root).getModel();
+        RootImpl<Y> corrRoot = new RootImpl<Y>(entity);
+        corrRoot.setCorrelatedParent((RootImpl<Y>)root);
+        Set<Root<?>> roots = getRoots();
+        if (roots == null) {
+            roots = new LinkedHashSet<Root<?>>();
+            _delegate.setRoots(roots);
+        }
+        roots.add(corrRoot);
+        return corrRoot;
+    }
+    
+    public <X,Y> Join<X,Y> correlate(Join<X,Y> join) {
+        return join;
+    }
+    public <X,Y> CollectionJoin<X,Y> correlate(CollectionJoin<X,Y> join) {
+        return join;
+    }
+    public <X,Y> SetJoin<X,Y> correlate(SetJoin<X,Y> join) {
+        return join;
+    }
+    public <X,Y> ListJoin<X,Y> correlate(ListJoin<X,Y> join) {
+        return join;
+    }
+    public <X,K,V> MapJoin<X,K,V> correlate(MapJoin<X,K,V> join) {
+        return join;
+    }
+    
+    public java.util.Set<Join<?, ?>> getJoins() {
+        return _joins;
+    }
+    
+    public org.apache.openjpa.kernel.exps.Subquery getSubQ() {
+        return _subq;
+    }
+
+    /**
+     * Convert this path to a kernel path value.
+     */
+    @Override
+    public Value toValue(ExpressionFactory factory, MetamodelImpl model,
+        CriteriaQueryImpl q) {
+        final boolean subclasses = true;
+        CriteriaExpressionBuilder queryEval = q.getExprBuilder();
+        String alias = queryEval.nextAlias();
+        ClassMetaData candidate =  
+            ((Types.Managed<?>)getRoot().getModel()).meta;
+        _subq = factory.newSubquery(candidate, subclasses, alias);
+        _subq.setMetaData(candidate);
+        QueryExpressions subexp = q.getExprBuilder().
+            getQueryExpressions(factory, _delegate);
+        _subq.setQueryExpressions(subexp);
+        if (subexp.projections.length > 0)
+            JPQLExpressionBuilder.checkEmbeddable(subexp.projections[0], null);
+        return _subq;
+    }
+}

@@ -23,22 +23,21 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Expression;
-import javax.persistence.criteria.ListJoin;
-import javax.persistence.criteria.Path;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.QueryBuilder;
+import javax.persistence.criteria.Subquery;
 import javax.persistence.criteria.QueryBuilder.Trimspec;
 
-import org.apache.openjpa.persistence.meta.Types;
 import org.apache.openjpa.kernel.exps.ExpressionFactory;
 import org.apache.openjpa.kernel.exps.Literal;
 import org.apache.openjpa.kernel.exps.Value;
 import org.apache.openjpa.kernel.jpql.JPQLExpressionBuilder;
 import org.apache.openjpa.meta.ClassMetaData;
 import org.apache.openjpa.persistence.meta.MetamodelImpl;
+import org.apache.openjpa.persistence.meta.Types;
 
+import serp.util.Numbers;
 public class Expressions {
 	
     /**
@@ -46,21 +45,21 @@ public class Expressions {
      * using the given ExpressionFactory.
      * Also sets the alias of the resulting value.
      */
-	static Value toValue(ExpressionImpl<?> e, ExpressionFactory factory, 
-		MetamodelImpl model, CriteriaQuery q) {
+     static Value toValue(ExpressionImpl<?> e, ExpressionFactory factory, 
+        MetamodelImpl model, CriteriaQueryImpl q) {
         Value v = e == null ? factory.getNull() : e.toValue(factory, model, q);
-	    v.setImplicitType(e.getJavaType());
-	    v.setAlias(e.getAlias());
+        //v.setImplicitType(e.getJavaType());
+        //v.setAlias(e.getAlias());
 
-		return v;
-	}
-	
-	/**
-	 * Unary Functional Expression applies a unary function on a input
-	 * Expression.
-	 *
-	 * @param <X> the type of the resultant expression
-	 */
+        return v;
+    }
+    
+    /**
+     * Unary Functional Expression applies a unary function on a input
+     * Expression.
+     *
+     * @param <X> the type of the resultant expression
+     */
     public static class UnaryFunctionalExpression<X> 
         extends ExpressionImpl<X> {
         protected ExpressionImpl<?> e;
@@ -80,7 +79,7 @@ public class Expressions {
      * input Expression.
      * 
      *
-	 * @param <X> the type of the resultant expression
+     * @param <X> the type of the resultant expression
      */
     public static class BinarayFunctionalExpression<X> 
         extends ExpressionImpl<X>{
@@ -88,7 +87,7 @@ public class Expressions {
         protected ExpressionImpl<?> e2;
         
         public BinarayFunctionalExpression(Class<X> t, Expression<?> x, 
-        		Expression<?> y) {
+                Expression<?> y) {
             super(t);
             e1 = (ExpressionImpl<?>)x;
             e2 = (ExpressionImpl<?>)y;
@@ -110,101 +109,106 @@ public class Expressions {
             e1 = (ExpressionImpl<?>)x;
             e2 = (ExpressionImpl<?>)y;
         }
+        
+        @Override
+        public PredicateImpl clone() {
+            return new BinaryLogicalExpression(e1, e2);
+        }
     }
     
     
     public static class Abs<X> extends UnaryFunctionalExpression<X> {
-    	public  Abs(Expression<X> x) {
-    		super(x);
-    	}
+        public  Abs(Expression<X> x) {
+            super(x);
+        }
 
-    	@Override
+        @Override
         public Value toValue(ExpressionFactory factory, MetamodelImpl model,
-            CriteriaQuery q) {
+            CriteriaQueryImpl q) {
             return factory.abs(Expressions.toValue(e, factory, model, q));
         }
     }
     
     public static class Count extends UnaryFunctionalExpression<Long> {
-    	private boolean _distinct; 
-    	public  Count(Expression<?> x) {
-    		this(x, false);
-    	}
-    	
-    	public  Count(Expression<?> x, boolean distinct) {
-    		super(Long.class, x);
-    		_distinct = distinct;
-    		
-    	}
+        private boolean _distinct; 
+        public  Count(Expression<?> x) {
+            this(x, false);
+        }
+        
+        public  Count(Expression<?> x, boolean distinct) {
+            super(Long.class, x);
+            _distinct = distinct;
+            
+        }
 
-    	@Override
+        @Override
         public Value toValue(ExpressionFactory factory, MetamodelImpl model,
-            CriteriaQuery q) {
+            CriteriaQueryImpl q) {
             Value v = factory.count(Expressions.toValue(e, factory, model, q));
             return _distinct ? factory.distinct(v) : v;
         }
     }
 
     public static class Avg extends UnaryFunctionalExpression<Double> {
-    	public  Avg(Expression<?> x) {
-    		super(Double.class, x);
-    	}
+        public  Avg(Expression<?> x) {
+            super(Double.class, x);
+        }
 
-    	@Override
+        @Override
         public Value toValue(ExpressionFactory factory, MetamodelImpl model,
-            CriteriaQuery q) {
+            CriteriaQueryImpl q) {
             return factory.avg(Expressions.toValue(e, factory, model, q));
         }
     }
     
     public static class Sqrt extends UnaryFunctionalExpression<Double> {
-    	public  Sqrt(Expression<? extends Number> x) {
-    		super(Double.class, x);
-    	}
+        public  Sqrt(Expression<? extends Number> x) {
+            super(Double.class, x);
+        }
 
-    	@Override
+        @Override
         public Value toValue(ExpressionFactory factory, MetamodelImpl model,
-            CriteriaQuery q) {
+            CriteriaQueryImpl q) {
             return factory.sqrt(Expressions.toValue(e, factory, model, q));
         }
     }
     
     public static class Max<X> extends UnaryFunctionalExpression<X> {
-    	public  Max(Expression<X> x) {
-    		super(x);
-    	}
+        public  Max(Expression<X> x) {
+            super(x);
+        }
 
-    	@Override
+        @Override
         public Value toValue(ExpressionFactory factory, MetamodelImpl model,
-            CriteriaQuery q) {
+            CriteriaQueryImpl q) {
             return factory.max(Expressions.toValue(e, factory, model, q));
         }
     }
 
     public static class Min<X> extends UnaryFunctionalExpression<X> {
-    	public  Min(Expression<X> x) {
-    		super(x);
-    	}
+        public  Min(Expression<X> x) {
+            super(x);
+        }
 
-    	@Override
+        @Override
         public Value toValue(ExpressionFactory factory, MetamodelImpl model,
-            CriteriaQuery q) {
+            CriteriaQueryImpl q) {
             return factory.min(Expressions.toValue(e, factory, model, q));
         }
     }
     
     public static class Size extends UnaryFunctionalExpression<Integer> {
-    	public  Size(Expression<? extends Collection<?>> x) {
-    		super(Integer.class, x);
-    	}
-    	
-    	public  Size(Collection<?> x) {
-    		this(new Constant<Collection<?>>(x));
-    	}
+        public  Size(Expression<? extends Collection<?>> x) {
+            super(Integer.class, x);
+        }
+        
+        public  Size(Collection<?> x) {
+            this(new Constant<Collection<?>>(x));
+        }
 
-    	@Override
+        @Override
         public Value toValue(ExpressionFactory factory, MetamodelImpl model,
-            CriteriaQuery q) {
+            CriteriaQueryImpl q) {
             return factory.size(Expressions.toValue(e, factory, model, q));
         }
     }
@@ -218,293 +222,340 @@ public class Expressions {
         
         @Override
         public Value toValue(ExpressionFactory factory, MetamodelImpl model,
-            CriteriaQuery q) {
+            CriteriaQueryImpl q) {
             return factory.type(Expressions.toValue(e, factory, model, q));
         }
     }
 
     public static class Cast<B> extends UnaryFunctionalExpression<B> {
-    	Class<B> b;
-    	public Cast(Expression<?> x, Class<B> b) {
-    		super(b, x);
-    	}
+        Class<B> b;
+        public Cast(Expression<?> x, Class<B> b) {
+            super(b, x);
+        }
 
-    	@Override
+        @Override
         public Value toValue(ExpressionFactory factory, MetamodelImpl model,
-            CriteriaQuery q) {
+            CriteriaQueryImpl q) {
             return factory.cast(Expressions.toValue(e, factory, model, q), b);
         }
     }
     public static class Concat extends BinarayFunctionalExpression<String> {
-    	public Concat(Expression<String> x, Expression<String> y) {
-    		super(String.class, x, y);
-    	}
-    	
-    	public Concat(Expression<String> x, String y) {
-    		this(x, new Constant<String>(y));
-    	}
-    	
-    	public Concat(String x, Expression<String> y) {
-    		this(new Constant<String>(x), y);
-    	}
-    	
-    	@Override
+        public Concat(Expression<String> x, Expression<String> y) {
+            super(String.class, x, y);
+        }
+        
+        public Concat(Expression<String> x, String y) {
+            this(x, new Constant<String>(y));
+        }
+        
+        public Concat(String x, Expression<String> y) {
+            this(new Constant<String>(x), y);
+        }
+        
+        @Override
         public Value toValue(ExpressionFactory factory, MetamodelImpl model,
-            CriteriaQuery q) {
+            CriteriaQueryImpl q) {
             return factory.concat(
-            	Expressions.toValue(e1, factory, model, q), 
-            	Expressions.toValue(e2, factory, model, q));
+                Expressions.toValue(e1, factory, model, q), 
+                Expressions.toValue(e2, factory, model, q));
         }
     }
     
     public static class Substring extends UnaryFunctionalExpression<String> {
-    	private ExpressionImpl<Integer> from;
-    	private ExpressionImpl<Integer> len;
-    	
-    	public Substring(Expression<String> s, Expression<Integer> from, 
-    			Expression<Integer> len) {
-    		super(s);
-    		this.from = (ExpressionImpl<Integer>)from;
-    		this.len  = (ExpressionImpl<Integer>)len;
-    	}
-    	
-    	public Substring(Expression<String> s) {
-    		this(s, (Expression<Integer>)null, (Expression<Integer>)null);
-    	}
-    	
-    	public Substring(Expression<String> s, Integer from) {
-    		this(s, new Constant<Integer>(from), null);
-    	}
-    	
-    	public Substring(Expression<String> s, Integer from, Integer len) {
+        private ExpressionImpl<Integer> from;
+        private ExpressionImpl<Integer> len;
+        
+        public Substring(Expression<String> s, Expression<Integer> from, 
+                Expression<Integer> len) {
+            super(s);
+            this.from = (ExpressionImpl<Integer>)from;
+            this.len  = (ExpressionImpl<Integer>)len;
+        }
+        
+        public Substring(Expression<String> s, Expression<Integer> from) {
+            this(s, (ExpressionImpl<Integer>)from, null);
+        }
+
+        public Substring(Expression<String> s) {
+            this(s, (Expression<Integer>)null, (Expression<Integer>)null);
+        }
+        
+        public Substring(Expression<String> s, Integer from) {
+            this(s, new Constant<Integer>(from), null);
+        }
+        
+        public Substring(Expression<String> s, Integer from, Integer len) {
             this(s, new Constant<Integer>(from), new Constant<Integer>(len));
-    	}
-    	
-    	@Override
+        }
+        
+        @Override
         public Value toValue(ExpressionFactory factory, MetamodelImpl model,
-            CriteriaQuery q) {
+            CriteriaQueryImpl q) {
             return JPQLExpressionBuilder.convertSubstringArguments(factory, 
-            	Expressions.toValue(e, factory, model, q), 
-            	from == null ? null : from.toValue(factory, model, q), 
-            	len == null ? null : len.toValue(factory, model, q));
+                Expressions.toValue(e, factory, model, q), 
+                from == null ? null : from.toValue(factory, model, q), 
+                len == null ? null : len.toValue(factory, model, q));
+        }
+    }
+
+    public static class Locate extends ExpressionImpl<Integer> {
+        private ExpressionImpl<String> pattern;
+        private ExpressionImpl<Integer> from;
+        private ExpressionImpl<String> path;
+        
+        public Locate(Expression<String> x, Expression<String> y,
+            Expression<Integer> from) {
+            super(Integer.class);
+            path = (ExpressionImpl<String>)x;
+            pattern = (ExpressionImpl<String>)y;
+            this.from = (ExpressionImpl<Integer>)from;
+        }
+
+        public Locate(Expression<String> x, Expression<String> y) {
+            this(x, y, null);
+         }
+        
+        public Locate(Expression<String> x, String y) {
+            this(x, new Constant<String>(y), null);
+        }
+        
+        public Locate(String x, Expression<String> y) {
+            this(new Constant<String>(x), y, null);
+        }
+        
+        public Locate(Expression<String> x, String y,
+            int from) {
+            this(x, new Constant<String>(y), new Constant<Integer>(from));
+        }
+
+        @Override
+        public Value toValue(ExpressionFactory factory, MetamodelImpl model,
+            CriteriaQueryImpl q) {
+            Value locateSearch = path.toValue(factory, model, q);
+            Value locateFromIndex = (from == null ? 
+                null : Expressions.toValue(from, factory, model, q));
+            Value locatePath = Expressions.toValue(pattern, factory, model, q);
+            
+            return factory.add(factory.indexOf(locateSearch,
+                    locateFromIndex == null ? locatePath
+                        : factory.newArgumentList(locatePath,
+                        factory.subtract(locateFromIndex,
+                            factory.newLiteral(Numbers.valueOf(1),
+                                Literal.TYPE_NUMBER)))),
+                    factory.newLiteral(Numbers.valueOf(1),
+                        Literal.TYPE_NUMBER));
         }
     }
     
     public static class Trim extends BinarayFunctionalExpression<String> {
-    	static Expression<Character> defaultTrim = new Constant<Character>
-    	   (Character.class, new Character(' '));
-    	static Trimspec defaultSpec = Trimspec.BOTH;
-    	Trimspec ts;
-    	public Trim(Expression<String> x, Expression<Character> y, 
-    		Trimspec ts) {
-    		super(String.class, x, y);
-    		this.ts = ts;
-    	}
-    	
-    	public Trim(Expression<String> x, Expression<Character> y) {
-    		this(x, y, defaultSpec);
-    	}
-    	
-    	public Trim(Expression<String> x) {
-    		this(x, defaultTrim, defaultSpec);
-    	}
-    	
-    	public Trim(Expression<String> x, Character t) {
+        static Expression<Character> defaultTrim = new Constant<Character>
+           (Character.class, new Character(' '));
+        static Trimspec defaultSpec = Trimspec.BOTH;
+        Trimspec ts;
+        public Trim(Expression<String> x, Expression<Character> y, 
+            Trimspec ts) {
+            super(String.class, x, y);
+            this.ts = ts;
+        }
+        
+        public Trim(Expression<String> x, Expression<Character> y) {
+            this(x, y, defaultSpec);
+        }
+        
+        public Trim(Expression<String> x) {
+            this(x, defaultTrim, defaultSpec);
+        }
+        
+        public Trim(Expression<String> x, Character t) {
             this(x, new Constant<Character>(Character.class, t), defaultSpec);
-    	}
-    	
-    	public Trim(Expression<String> x, Character t, Trimspec ts) {
-    		this(x, new Constant<Character>(Character.class, t), ts);
-    	}
-    	
-    	public Trim(Expression<String> x, Trimspec ts) {
-    		this(x, defaultTrim, ts);
-    	}
+        }
+        
+        public Trim(Expression<String> x, Character t, Trimspec ts) {
+            this(x, new Constant<Character>(Character.class, t), ts);
+        }
+        
+        public Trim(Expression<String> x, Trimspec ts) {
+            this(x, defaultTrim, ts);
+        }
 
-    	@Override
+        @Override
         public Value toValue(ExpressionFactory factory, MetamodelImpl model,
-            CriteriaQuery q) {
-    		Boolean spec = null;
-    		if (ts != null) {
-    			switch (ts) {
-    			case LEADING : spec = true; break;
-    			case TRAILING : spec = false; break;
-    			case BOTH : spec = null; break;
-    			}
-    		}
+            CriteriaQueryImpl q) {
+            Boolean spec = null;
+            if (ts != null) {
+                switch (ts) {
+                case LEADING : spec = true; break;
+                case TRAILING : spec = false; break;
+                case BOTH : spec = null; break;
+                }
+            }
             return factory.trim(
-            	Expressions.toValue(e1, factory, model, q), 
-            	Expressions.toValue(e2, factory, model, q), spec);
+                Expressions.toValue(e1, factory, model, q), 
+                Expressions.toValue(e2, factory, model, q), spec);
         }
     }
-
-
     
     public static class Sum<N extends Number> 
         extends BinarayFunctionalExpression<N> {
-    	public Sum(Expression<? extends Number> x, 
-    		Expression<? extends Number> y) {
-    		super((Class<N>)x.getJavaType(), x, y);
-    	}
-    	
-    	public Sum(Expression<? extends Number> x) {
-    		this(x, (Expression<? extends Number>)null);
-    	}
-    	
+        public Sum(Expression<? extends Number> x, 
+            Expression<? extends Number> y) {
+            super((Class<N>)x.getJavaType(), x, y);
+        }
+        
+        public Sum(Expression<? extends Number> x) {
+            this(x, (Expression<? extends Number>)null);
+        }
 
-    	public Sum(Expression<? extends Number> x, Number y) {
-    		this(x, new Constant<Number>(Number.class, y));
-    	}
+        public Sum(Expression<? extends Number> x, Number y) {
+            this(x, new Constant<Number>(Number.class, y));
+        }
 
-    	public Sum(Number x, Expression<? extends Number> y) {
-    		this(new Constant<Number>(Number.class, x), y);
-    	}
-    	
-    	@Override
+        public Sum(Number x, Expression<? extends Number> y) {
+            this(new Constant<Number>(Number.class, x), y);
+        }
+        
+        @Override
         public Value toValue(ExpressionFactory factory, MetamodelImpl model,
-            CriteriaQuery q) {
-    		return (e2 == null) 
+            CriteriaQueryImpl q) {
+            return (e2 == null) 
             ?   factory.sum(Expressions.toValue(e1, factory, model, q))
-    		:   factory.add(
-    			   Expressions.toValue(e1, factory, model, q), 
-    			   Expressions.toValue(e2, factory, model, q));
+            :   factory.add(
+                   Expressions.toValue(e1, factory, model, q), 
+                   Expressions.toValue(e2, factory, model, q));
         }
     }
     
     public static class Product<N extends Number> 
         extends BinarayFunctionalExpression<N> {
-    	public Product(Expression<? extends Number> x, 
-    		Expression<? extends Number> y) {
-    		super((Class<N>)x.getJavaType(), x, y);
-    	}
+        public Product(Expression<? extends Number> x, 
+            Expression<? extends Number> y) {
+            super((Class<N>)x.getJavaType(), x, y);
+        }
 
-    	public Product(Expression<? extends Number> x, Number y) {
-    		this(x, new Constant<Number>(Number.class, y));
-    	}
+        public Product(Expression<? extends Number> x, Number y) {
+            this(x, new Constant<Number>(Number.class, y));
+        }
 
-    	public Product(Number x, Expression<? extends Number> y) {
-    		this(new Constant<Number>(Number.class, x), y);
-    	}
-    	
-    	@Override
+        public Product(Number x, Expression<? extends Number> y) {
+            this(new Constant<Number>(Number.class, x), y);
+        }
+        
+        @Override
         public Value toValue(ExpressionFactory factory, MetamodelImpl model,
-            CriteriaQuery q) {
+            CriteriaQueryImpl q) {
             return factory.multiply(
-            	Expressions.toValue(e1, factory, model, q), 
-            	Expressions.toValue(e2, factory, model, q));
+                Expressions.toValue(e1, factory, model, q), 
+                Expressions.toValue(e2, factory, model, q));
         }
     }
     
     public static class Diff<N extends Number> 
         extends BinarayFunctionalExpression<N> {
-    	public Diff(Expression<? extends Number> x, 
-    		Expression<? extends Number> y) {
-    		super((Class<N>)x.getJavaType(), x, y);
-    	}
+        public Diff(Expression<? extends Number> x, 
+            Expression<? extends Number> y) {
+            super((Class<N>)x.getJavaType(), x, y);
+        }
 
-    	public Diff(Expression<? extends Number> x, Number y) {
-    		this(x, new Constant<Number>(Number.class, y));
-    	}
+        public Diff(Expression<? extends Number> x, Number y) {
+            this(x, new Constant<Number>(Number.class, y));
+        }
 
-    	public Diff(Number x, Expression<? extends Number> y) {
-    		this(new Constant<Number>(Number.class, x), y);
-    	}
-    	
-    	@Override
+        public Diff(Number x, Expression<? extends Number> y) {
+            this(new Constant<Number>(Number.class, x), y);
+        }
+        
+        @Override
         public Value toValue(ExpressionFactory factory, MetamodelImpl model,
-            CriteriaQuery q) {
+            CriteriaQueryImpl q) {
             return factory.subtract(
-            	Expressions.toValue(e1, factory, model, q), 
-            	Expressions.toValue(e2, factory, model, q));
+                Expressions.toValue(e1, factory, model, q), 
+                Expressions.toValue(e2, factory, model, q));
         }
     }
 
     
     public static class Quotient<N extends Number> 
         extends BinarayFunctionalExpression<N> {
-    	public Quotient(Expression<? extends Number> x, 
-    		Expression<? extends Number> y) {
-    		super((Class<N>)x.getJavaType(), x, y);
-    	}
+        public Quotient(Expression<? extends Number> x, 
+            Expression<? extends Number> y) {
+            super((Class<N>)x.getJavaType(), x, y);
+        }
 
-    	public Quotient(Expression<? extends Number> x, Number y) {
-    		this(x, new Constant<Number>(y));
-    	}
+        public Quotient(Expression<? extends Number> x, Number y) {
+            this(x, new Constant<Number>(y));
+        }
 
-    	public Quotient(Number x, Expression<? extends Number> y) {
-    		this(new Constant<Number>(x), y);
-    	}
-    	
-    	@Override
+        public Quotient(Number x, Expression<? extends Number> y) {
+            this(new Constant<Number>(x), y);
+        }
+        
+        @Override
         public Value toValue(ExpressionFactory factory, MetamodelImpl model,
-            CriteriaQuery q) {
+            CriteriaQueryImpl q) {
             return factory.divide(
-            	Expressions.toValue(e1, factory, model, q), 
-            	Expressions.toValue(e2, factory, model, q));
+                Expressions.toValue(e1, factory, model, q), 
+                Expressions.toValue(e2, factory, model, q));
         }
     }
 
-
-
     public static class Mod extends BinarayFunctionalExpression<Integer> {
-    	public  Mod(Expression<Integer> x, Expression<Integer> y) {
-    		super(Integer.class, x,y);
-    	}
-    	public  Mod(Expression<Integer> x, Integer y) {
-    		this(x,new Constant<Integer>(Integer.class, y));
-    	}
-    	public  Mod(Integer x, Expression<Integer> y) {
-    		this(new Constant<Integer>(Integer.class, x),y);
-    	}
+        public  Mod(Expression<Integer> x, Expression<Integer> y) {
+            super(Integer.class, x,y);
+        }
+        public  Mod(Expression<Integer> x, Integer y) {
+            this(x,new Constant<Integer>(Integer.class, y));
+        }
+        public  Mod(Integer x, Expression<Integer> y) {
+            this(new Constant<Integer>(Integer.class, x),y);
+        }
 
-    	@Override
+        @Override
         public Value toValue(ExpressionFactory factory, MetamodelImpl model,
-            CriteriaQuery q) {
+            CriteriaQueryImpl q) {
             return factory.mod(
-            	Expressions.toValue(e1, factory, model, q), 
-            	Expressions.toValue(e2, factory, model, q));
+                Expressions.toValue(e1, factory, model, q), 
+                Expressions.toValue(e2, factory, model, q));
         }
     }
 
     public static class CurrentDate extends ExpressionImpl<java.sql.Date> {
-    	public  CurrentDate() {
-    		super(java.sql.Date.class);
-    	}
+        public  CurrentDate() {
+            super(java.sql.Date.class);
+        }
 
-    	@Override
+        @Override
         public Value toValue(ExpressionFactory factory, MetamodelImpl model,
-            CriteriaQuery q) {
+            CriteriaQueryImpl q) {
             return factory.getCurrentDate();
         }
     }
     
     public static class CurrentTime extends ExpressionImpl<java.sql.Time> {
-    	public  CurrentTime() {
-    		super(java.sql.Time.class);
-    	}
+        public  CurrentTime() {
+            super(java.sql.Time.class);
+        }
 
-    	@Override
+        @Override
         public Value toValue(ExpressionFactory factory, MetamodelImpl model,
-            CriteriaQuery q) {
+            CriteriaQueryImpl q) {
             return factory.getCurrentTime();
         }
     }
     
     public static class CurrentTimestamp 
         extends ExpressionImpl<java.sql.Timestamp> {
-    	public  CurrentTimestamp() {
-    		super(java.sql.Timestamp.class);
-    	}
+        public  CurrentTimestamp() {
+            super(java.sql.Timestamp.class);
+        }
 
-    	@Override
+        @Override
         public Value toValue(ExpressionFactory factory, MetamodelImpl model,
-            CriteriaQuery q) {
+            CriteriaQueryImpl q) {
             return factory.getCurrentTimestamp();
         }
     }
 
     public static class Equal extends BinaryLogicalExpression {
-        boolean negate;
         public <X,Y> Equal(Expression<X> x, Expression<Y> y) {
             super(x,y);
         }
@@ -514,22 +565,19 @@ public class Expressions {
         }
         
         @Override
+        public PredicateImpl clone() {
+            return new Equal(e1, e2);
+        }
+        
+        @Override
         org.apache.openjpa.kernel.exps.Expression toKernelExpression(
-            ExpressionFactory factory, MetamodelImpl model, CriteriaQuery q) {
+            ExpressionFactory factory, MetamodelImpl model, 
+            CriteriaQueryImpl q) {
             boolean isTypeExpr = false;
             Value val1 = Expressions.toValue(e1, factory, model, q);
             Value val2 = Expressions.toValue(e2, factory, model, q);
-//            if (e1 instanceof TypePathImpl) {
-//                PathImpl path = (PathImpl)e1;
-//                isTypeExpr = path.isTypeExpr();
-//                if (isTypeExpr) {
-//                    ((Constant)e2).setTypeLit(isTypeExpr);
-//                    val2 = Expressions.toValue(e2, factory, model, q);
-//                    Class clzz = (Class)((Literal)val2).getValue();
-//                    val2.setMetaData(((Types.Managed)model.type(clzz)).meta);
-//                }
-//            }
-            ((CriteriaQueryImpl)q).setImplicitTypes(val1, val2, null);
+            JPQLExpressionBuilder.setImplicitTypes(val1, val2, null, null, 
+                ((CriteriaQueryImpl)q).getParameterTypes(), null);
             return isNegated() ? factory.notEqual(val1, val2) 
                     : factory.equal(val1, val2);
         }
@@ -546,10 +594,13 @@ public class Expressions {
         
         @Override
         org.apache.openjpa.kernel.exps.Expression toKernelExpression(
-            ExpressionFactory factory, MetamodelImpl model, CriteriaQuery q) {
-                return factory.greaterThan(
-                	Expressions.toValue(e1, factory, model, q), 
-                	Expressions.toValue(e2, factory, model, q));
+            ExpressionFactory factory, MetamodelImpl model, 
+            CriteriaQueryImpl q) {
+            Value val1 = Expressions.toValue(e1, factory, model, q);
+            Value val2 = Expressions.toValue(e2, factory, model, q); 
+            JPQLExpressionBuilder.setImplicitTypes(val1, val2, null, null, 
+                ((CriteriaQueryImpl)q).getParameterTypes(), null);
+            return factory.greaterThan(val1, val2);
         }
     }
     
@@ -564,13 +615,15 @@ public class Expressions {
         
         @Override
         org.apache.openjpa.kernel.exps.Expression toKernelExpression(
-            ExpressionFactory factory, MetamodelImpl model, CriteriaQuery q) {
-                return factory.greaterThanEqual(
-                    Expressions.toValue(e1, factory, model, q), 
-                    Expressions.toValue(e2, factory, model, q));
+            ExpressionFactory factory, MetamodelImpl model, 
+            CriteriaQueryImpl q) {
+            Value val1 = Expressions.toValue(e1, factory, model, q);
+            Value val2 = Expressions.toValue(e2, factory, model, q); 
+            JPQLExpressionBuilder.setImplicitTypes(val1, val2, null, null, 
+                ((CriteriaQueryImpl)q).getParameterTypes(), null);
+            return factory.greaterThanEqual(val1, val2);
         }
     }
-
    
     public static class LessThan extends BinaryLogicalExpression {
         public <X,Y> LessThan(Expression<X> x, Expression<Y> y) {
@@ -583,10 +636,13 @@ public class Expressions {
         
         @Override
         org.apache.openjpa.kernel.exps.Expression toKernelExpression(
-            ExpressionFactory factory, MetamodelImpl model, CriteriaQuery q) {
-                return factory.lessThan(
-                    Expressions.toValue(e1, factory, model, q), 
-                    Expressions.toValue(e2, factory, model, q));
+            ExpressionFactory factory, MetamodelImpl model, 
+            CriteriaQueryImpl q) {
+            Value val1 = Expressions.toValue(e1, factory, model, q);
+            Value val2 = Expressions.toValue(e2, factory, model, q); 
+            JPQLExpressionBuilder.setImplicitTypes(val1, val2, null, null, 
+                ((CriteriaQueryImpl)q).getParameterTypes(), null);
+            return factory.lessThan(val1, val2);
         }
     }
     
@@ -601,11 +657,13 @@ public class Expressions {
         
         @Override
         org.apache.openjpa.kernel.exps.Expression toKernelExpression(
-            ExpressionFactory factory, MetamodelImpl model, CriteriaQuery q) {
-                return factory.lessThanEqual(
-                	Expressions.toValue(e1, factory, model, q), 
-                    Expressions.toValue(e2, factory, model, q));
-
+            ExpressionFactory factory, MetamodelImpl model, 
+            CriteriaQueryImpl q) {
+            Value val1 = Expressions.toValue(e1, factory, model, q);
+            Value val2 = Expressions.toValue(e2, factory, model, q); 
+            JPQLExpressionBuilder.setImplicitTypes(val1, val2, null, null, 
+                ((CriteriaQueryImpl)q).getParameterTypes(), null);
+            return factory.lessThanEqual(val1, val2);
         }
     }
 
@@ -629,12 +687,12 @@ public class Expressions {
         }
         
         public Constant(X x) {
-        	this((Class<X>)x.getClass(),x);
+            this((Class<X>)x.getClass(),x);
         }
         
         @Override
         public Value toValue(ExpressionFactory factory, MetamodelImpl model,
-            CriteriaQuery q) {
+            CriteriaQueryImpl q) {
             int literalType = Literal.TYPE_UNKNOWN;
             if (arg != null) {
                 Class<?> literalClass = arg.getClass();
@@ -649,12 +707,17 @@ public class Expressions {
                 else if (Class.class.isAssignableFrom(literalClass)) {
                     literalType = Literal.TYPE_CLASS;
                     Literal lit = factory.newTypeLiteral(arg, 
-                            Literal.TYPE_CLASS);
-                    lit.setMetaData(model.repos.getMetaData((Class<?>)arg, 
+                        Literal.TYPE_CLASS);
+                    ClassMetaData can = 
+                        ((Types.Entity<X>)q.getRoot().getModel()).meta;
+                    Class<?> candidate = can.getDescribedType();
+                    if (candidate.isAssignableFrom((Class)arg))
+                        lit.setMetaData(model.repos.getMetaData((Class<?>)arg, 
                             null, true));
+                    else
+                        lit.setMetaData(can);
                     return lit;
                 }
-                
             }
             return factory.newLiteral(arg, literalType);
         }
@@ -667,21 +730,27 @@ public class Expressions {
         
         @Override
         public Value toValue(ExpressionFactory factory, MetamodelImpl model,
-            CriteriaQuery q) {
+            CriteriaQueryImpl q) {
             return factory.newTypeLiteral(arg, Literal.TYPE_CLASS);
         }
     }
     
     public static class IsEmpty extends PredicateImpl {
-    	ExpressionImpl<?> collection;
-    	public IsEmpty(Expression<?> collection) {
-    		super();
-    		this.collection = (ExpressionImpl<?>)collection;
-    	}
-    	
+        ExpressionImpl<?> collection;
+        public IsEmpty(Expression<?> collection) {
+            super();
+            this.collection = (ExpressionImpl<?>)collection;
+        }
+        
+        @Override
+        public PredicateImpl clone() {
+            return new IsEmpty(collection);
+        }
+        
         @Override
         public org.apache.openjpa.kernel.exps.Expression toKernelExpression(
-            ExpressionFactory factory, MetamodelImpl model, CriteriaQuery q) {
+            ExpressionFactory factory, MetamodelImpl model, 
+            CriteriaQueryImpl q) {
             Value val = Expressions.toValue(collection, factory, model, q);
             return (isNegated()) 
                 ? factory.isNotEmpty(val) : factory.isEmpty(val);
@@ -695,7 +764,8 @@ public class Expressions {
         
         @Override
         public org.apache.openjpa.kernel.exps.Value toValue(
-            ExpressionFactory factory, MetamodelImpl model, CriteriaQuery q) {
+            ExpressionFactory factory, MetamodelImpl model, 
+            CriteriaQueryImpl q) {
             Value v = Expressions.toValue(e, factory, model, q);
             ClassMetaData meta = ((PathImpl)e)._member.fmd.getElement()
                .getTypeMetaData();
@@ -705,33 +775,32 @@ public class Expressions {
     }
     
     public static class IsMember<E> extends PredicateImpl {
-    	ExpressionImpl<E> element;
-    	ExpressionImpl<?> collection;
-    	boolean negate;
-    	
-    	public IsMember(Class<E> t, Expression<E> element, 
-    		Expression<?> collection) {
-    		this.element = (ExpressionImpl<E>)element;
-    		this.collection = (ExpressionImpl<?>)collection;
-    	}
-    	
-    	public IsMember(Class<E> t, E element, Expression<?> collection) {
-    		this(t, new Constant<E>(element), collection);
-    	}
-    	
-    	public IsMember(E element, Expression<?> collection) {
-    		this((Class<E>)element.getClass(), element, collection);
-    	}
-    	
-    	public IsMember<E> negate() {
-    	    negate = true;
-    	    return this;
-    	}
-    	
+        ExpressionImpl<E> element;
+        ExpressionImpl<?> collection;
+        
+        public IsMember(Class<E> t, Expression<E> element, 
+            Expression<?> collection) {
+            this.element = (ExpressionImpl<E>)element;
+            this.collection = (ExpressionImpl<?>)collection;
+        }
+        
+        public IsMember(Class<E> t, E element, Expression<?> collection) {
+            this(t, new Constant<E>(element), collection);
+        }
+        
+        public IsMember(E element, Expression<?> collection) {
+            this((Class<E>)element.getClass(), element, collection);
+        }
+        
+        @Override
+        public PredicateImpl clone() {
+            return new IsMember(element, collection);
+        }
+        
         @Override
         public org.apache.openjpa.kernel.exps.Expression toKernelExpression(
-        	ExpressionFactory factory, MetamodelImpl model, 
-        	CriteriaQuery q) {
+            ExpressionFactory factory, MetamodelImpl model, 
+            CriteriaQueryImpl q) {
             return factory.contains(
                 Expressions.toValue(collection, factory, model, q), 
                 Expressions.toValue(element, factory, model, q));
@@ -739,162 +808,210 @@ public class Expressions {
     }
     
     public static class Like extends PredicateImpl {
-    	ExpressionImpl<String> str;
-    	ExpressionImpl<String> pattern;
-    	ExpressionImpl<Character> escapeChar;
-    	
-    	public Like(Expression<String> x, Expression<String> pattern,
-    	        Expression<Character> escapeChar) {
-    		super();
-    		this.str = (ExpressionImpl<String>)x;
-    		this.pattern = (ExpressionImpl<String>)pattern;
-    		this.escapeChar = (ExpressionImpl<Character>)escapeChar;
-    	}
-    	
-    	public Like(Expression<String> x, Expression<String> pat, char esc) {
-    		this(x, pat, new Constant<Character>(Character.class, esc));
-    	}
-    	
-    	public Like(Expression<String> x, Expression<String> pattern) {
-    		this(x, pattern, null);
-    	}
-    	
-    	public Like(Expression<String> x, String pattern) {
-    		this(x, new Constant<String>(pattern), null);
-    	}
-    	public Like(Expression<String> x, String pat,  
-    		Expression<Character> esc) {
-    		this(x, new Constant<String>(pat), esc);
-    	}
-    	public Like(Expression<String> x, String pat,  Character esc) {
+        ExpressionImpl<String> str;
+        ExpressionImpl<String> pattern;
+        ExpressionImpl<Character> escapeChar;
+        
+        public Like(Expression<String> x, Expression<String> pattern,
+                Expression<Character> escapeChar) {
+            super();
+            this.str = (ExpressionImpl<String>)x;
+            this.pattern = (ExpressionImpl<String>)pattern;
+            this.escapeChar = (ExpressionImpl<Character>)escapeChar;
+        }
+        
+        public Like(Expression<String> x, Expression<String> pat, char esc) {
+            this(x, pat, new Constant<Character>(Character.class, esc));
+        }
+        
+        public Like(Expression<String> x, Expression<String> pattern) {
+            this(x, pattern, null);
+        }
+        
+        public Like(Expression<String> x, String pattern) {
+            this(x, new Constant<String>(pattern), null);
+        }
+        
+        public Like(Expression<String> x, String pat,  
+            Expression<Character> esc) {
+            this(x, new Constant<String>(pat), esc);
+        }
+        
+        public Like(Expression<String> x, String pat,  Character esc) {
             this(x, new Constant<String>(pat), new Constant<Character>(esc));
-    	}
+        }
 
-    	@Override
+        @Override
+        public PredicateImpl clone() {
+            return new Like(str, pattern, escapeChar);
+        }
+        
+        @Override
         public org.apache.openjpa.kernel.exps.Expression toKernelExpression(
-        	ExpressionFactory factory, MetamodelImpl model, 
-        	CriteriaQuery q) {
-    	    String escapeStr = escapeChar == null ? null :
-    	        ((Character)((Literal)Expressions.toValue(
-    	            escapeChar, factory, model, q)).getValue()).toString();
-    	    
+            ExpressionFactory factory, MetamodelImpl model, 
+            CriteriaQueryImpl q) {
+            String escapeStr = escapeChar == null ? null :
+                ((Character)((Literal)Expressions.toValue(
+                    escapeChar, factory, model, q)).getValue()).toString();
+            
             return factory.matches(
-            	Expressions.toValue(str, factory, model, q), 
-            	Expressions.toValue(pattern, factory, model, q), "_", "%", 
-            	escapeStr);
+                Expressions.toValue(str, factory, model, q), 
+                Expressions.toValue(pattern, factory, model, q), "_", "%", 
+                escapeStr);
         }
     }
     
     public static class Coalesce<T> extends ExpressionImpl<T> 
-    	implements QueryBuilder.Coalesce<T> {
-    	private List<Expression<? extends T>> values = 
-    		new ArrayList<Expression<? extends T>>();
-    	
-    	public Coalesce() {
-    		super(null);
-    	}
-    	
-    	public Coalesce(Class<T> cls) {
-    		super(cls);
-    	}
-    	
+        implements QueryBuilder.Coalesce<T> {
+        private List<Expression<? extends T>> values = 
+            new ArrayList<Expression<? extends T>>();
+        
+        public Coalesce() {
+            super(null);
+        }
+        
+        public Coalesce(Class<T> cls) {
+            super(cls);
+        }
+        
         public Coalesce<T> value(T value) {
-        	return value(new Constant<T>(value));
+            values.add(new Constant<T>(value));
+            return this;
         }
         
         public Coalesce<T> value(Expression<? extends T> value) {
-        	values.add(value); 
-        	return this;
+            values.add(value); 
+            return this;
         }
-
-    	
-    	@Override
+        
+        @Override
         public org.apache.openjpa.kernel.exps.Value toValue(
-        	ExpressionFactory factory, MetamodelImpl model, 
-        	CriteriaQuery q) {
-    		Value[] vs = new Value[values.size()];
-    		int i = 0;
-    		for (Expression<?> e : values)
-    	        vs[i++] = Expressions.toValue((ExpressionImpl<?>)e, 
-    	           factory, model, q);
+            ExpressionFactory factory, MetamodelImpl model, 
+            CriteriaQueryImpl q) {
+            Value[] vs = new Value[values.size()];
+            int i = 0;
+            for (Expression<?> e : values)
+                vs[i++] = Expressions.toValue((ExpressionImpl<?>)e, 
+                   factory, model, q);
             return factory.coalesceExpression(vs);
         }
     }
     
+    public static class Nullif<T> extends ExpressionImpl<T> {
+        private Expression<T> val1;
+        private Expression<?> val2;
+
+        public Nullif(Expression<T> x, Expression<?> y) {
+            super(x.getJavaType());
+            val1 = x;
+            val2 = y;
+        }
+
+        public Nullif(Expression<T> x, T y) {
+            super(x.getJavaType());
+            val1 = x;
+            val2 = new Constant<T>(y);
+        }
+
+        @Override
+        public org.apache.openjpa.kernel.exps.Value toValue(
+            ExpressionFactory factory, MetamodelImpl model, 
+            CriteriaQueryImpl q) {
+            Value value1 = Expressions.toValue((ExpressionImpl<?>)val1, 
+                factory, model, q); 
+            Value value2 = Expressions.toValue((ExpressionImpl<?>)val2, 
+                factory, model, q); 
+            return factory.nullIfExpression(value1, value2);
+        }
+    }
+
     public static class IsNull extends PredicateImpl {
-    	ExpressionImpl<?> e;
-    	public IsNull(ExpressionImpl<?> e) {
-    		super();
-    		this.e = e;
-    	}
-    	
-    	@Override
+        ExpressionImpl<?> e;
+        public IsNull(ExpressionImpl<?> e) {
+            super();
+            this.e = e;
+        }
+        
+        @Override
+        public PredicateImpl negate() {
+            return new Expressions.IsNotNull(e);
+        }        
+        
+        @Override
         org.apache.openjpa.kernel.exps.Expression toKernelExpression(
-            ExpressionFactory factory, MetamodelImpl model, CriteriaQuery q) {
-    		return factory.equal(
-    			Expressions.toValue(e, factory, model, q), 
-    			factory.getNull());
-    	}
+            ExpressionFactory factory, MetamodelImpl model, 
+            CriteriaQueryImpl q) {
+            return factory.equal(
+                Expressions.toValue(e, factory, model, q), 
+                factory.getNull());
+        }
     }
     
     public static class IsNotNull extends PredicateImpl {
-    	ExpressionImpl<?> e;
-    	public IsNotNull(ExpressionImpl<?> e) {
-    		super();
-    		this.e = e;
-    	}
-    	
-    	@Override
+        ExpressionImpl<?> e;
+        public IsNotNull(ExpressionImpl<?> e) {
+            super();
+            this.e = e;
+        }
+        
+        @Override
+        public PredicateImpl negate() {
+            return new Expressions.IsNull(e);
+        }       
+
+        @Override
         org.apache.openjpa.kernel.exps.Expression toKernelExpression(
-            ExpressionFactory factory, MetamodelImpl model, CriteriaQuery q) {
-    		return factory.notEqual(
-    			Expressions.toValue(e, factory, model, q), 
-    			factory.getNull());
-    	}
+            ExpressionFactory factory, MetamodelImpl model, 
+            CriteriaQueryImpl q) {
+            return factory.notEqual(
+                Expressions.toValue(e, factory, model, q), 
+                factory.getNull());
+        }
     }
     
     
     public static class In<T> extends PredicateImpl.Or 
-    	implements QueryBuilder.In<T> {
-    	ExpressionImpl<?> e;
-    	boolean negate;
-    	public In(Expression<?> e) {
-    		super((Predicate[])null);
-    		this.e = (ExpressionImpl<?>)e;
-    	}
-    	
-    	public Expression<T> getExpression() {
-    		return null;
-    	}
+        implements QueryBuilder.In<T> {
+        ExpressionImpl<?> e;
+        boolean negate;
+        public In(Expression<?> e) {
+            super((Predicate[])null);
+            this.e = (ExpressionImpl<?>)e;
+        }
+        
+        public Expression<T> getExpression() {
+            return null;
+        }
 
-    	public In<T> value(T value) {
-    		add(new Expressions.Equal(e,value));
-        	return this;
-    	}
+        public In<T> value(T value) {
+            add(new Expressions.Equal(e,value));
+            return this;
+        }
 
-    	public In<T> value(Expression<? extends T> value) {
-    		add(new Expressions.Equal(e,value));
-        	return this;
-    	}
-    	
-    	public In<T> negate() {
-    	    this.negate = true;
-    	    return this;
-    	}
+        public In<T> value(Expression<? extends T> value) {
+            add(new Expressions.Equal(e,value));
+            return this;
+        }
+        
+        public In<T> negate() {
+            this.negate = true;
+            return this;
+        }
     
-    	@Override
+        @Override
         org.apache.openjpa.kernel.exps.Expression toKernelExpression(
-            ExpressionFactory factory, MetamodelImpl model, CriteriaQuery q) {
-    	    org.apache.openjpa.kernel.exps.Expression inExpr = 
-    	        super.toKernelExpression(factory, model, q); 
-    		IsNotNull notNull = new Expressions.IsNotNull(e);
-    		if (negate) 
-    		    inExpr = factory.not(inExpr);
-    		
-    		return factory.and(
-    		    inExpr,
-    		    notNull.toKernelExpression(factory, model, q));
-    	}
+            ExpressionFactory factory, MetamodelImpl model, 
+            CriteriaQueryImpl q) {
+            org.apache.openjpa.kernel.exps.Expression inExpr = 
+                super.toKernelExpression(factory, model, q); 
+            IsNotNull notNull = new Expressions.IsNotNull(e);
+            if (negate) 
+                inExpr = factory.not(inExpr);
+            
+            return factory.and(
+                inExpr,
+                notNull.toKernelExpression(factory, model, q));
+        }
     }
     
     public static class Case<T> extends ExpressionImpl<T> 
@@ -943,7 +1060,7 @@ public class Expressions {
         @Override
         public org.apache.openjpa.kernel.exps.Value toValue(
                 ExpressionFactory factory, MetamodelImpl model, 
-                CriteriaQuery q) {
+                CriteriaQueryImpl q) {
             int size = whens.size();
             org.apache.openjpa.kernel.exps.Expression[] exps = 
                 new org.apache.openjpa.kernel.exps.Expression[size];
@@ -967,7 +1084,7 @@ public class Expressions {
         private List<Expression<? extends R>> thens = 
             new ArrayList<Expression<? extends R>>();
 
-        private List<C> whens = new ArrayList<C>();
+        private List<Expression<C>> whens = new ArrayList<Expression<C>>();
 
         private Expression<? extends R> otherwise;
 
@@ -991,13 +1108,13 @@ public class Expressions {
         }
 
         public SimpleCase<C,R> when(C when, Expression<? extends R> then) {
-            whens.add(when);
+            whens.add(new Constant<C>(when));
             thens.add(then);
             return this;
         }
 
         public SimpleCase<C,R> when(C when, R then) {
-            whens.add(when);
+            whens.add(new Constant<C>(when));
             Expression<? extends R> thenExpr = 
                 new Expressions.Constant<R>(then);
             thens.add(thenExpr);
@@ -1017,19 +1134,18 @@ public class Expressions {
         @Override
         public org.apache.openjpa.kernel.exps.Value toValue(
                 ExpressionFactory factory, MetamodelImpl model, 
-                CriteriaQuery q) {
+                CriteriaQueryImpl q) {
             Value caseOperandExpr = Expressions.toValue(
                 (ExpressionImpl<?>)caseOperand, factory, model, q);
             int size = whens.size();
             org.apache.openjpa.kernel.exps.Expression[] exps = 
                 new org.apache.openjpa.kernel.exps.Expression[size];
             for (int i = 0; i < size; i++) {
-                org.apache.openjpa.kernel.exps.Literal val = null;
-                //TODO: Boolean literal, String literal    
-                val = factory.newLiteral(whens.get(i), Literal.TYPE_NUMBER);
+                Value when = Expressions.toValue(
+                    (ExpressionImpl<C>)whens.get(i), factory, model, q);
                 Value action = Expressions.toValue(
-                        (ExpressionImpl<?>)thens.get(i), factory, model, q);
-                exps[i] = factory.whenScalar(val, action);
+                    (ExpressionImpl<?>)thens.get(i), factory, model, q);
+                exps[i] = factory.whenScalar(when, action);
             }
 
             Value other = Expressions.toValue(
@@ -1037,4 +1153,113 @@ public class Expressions {
             return factory.simpleCaseExpression(caseOperandExpr, exps, other);
         }
     }
+
+    public static class Lower extends UnaryFunctionalExpression<String> {
+        public Lower(Expression<String> x) {
+            super(String.class, x);
+        }
+        
+        @Override
+        public Value toValue(ExpressionFactory factory, MetamodelImpl model,
+            CriteriaQueryImpl q) {
+            return factory.toLowerCase(
+                Expressions.toValue(e, factory, model, q));
+        }
+    }
+
+    public static class Upper extends UnaryFunctionalExpression<String> {
+        public Upper(Expression<String> x) {
+            super(String.class, x);
+        }
+        
+        @Override
+        public Value toValue(ExpressionFactory factory, MetamodelImpl model,
+            CriteriaQueryImpl q) {
+            return factory.toUpperCase(
+                Expressions.toValue(e, factory, model, q));
+        }
+    }
+
+    public static class Length extends UnaryFunctionalExpression<Integer> {
+        public Length(Expression<String> x) {
+            super(Integer.class, x);
+        }
+        
+        @Override
+        public Value toValue(ExpressionFactory factory, MetamodelImpl model,
+            CriteriaQueryImpl q) {
+            return factory.stringLength(
+                Expressions.toValue(e, factory, model, q));
+        }
+    }
+    
+    public static class Exists extends PredicateImpl {
+        SubqueryImpl<?> e;
+        public Exists(Subquery<?> x) {
+            super();
+            e = (SubqueryImpl<?>)x;
+        }
+
+        @Override
+        public PredicateImpl clone() {
+            return new Exists(e);
+        }
+        
+        @Override
+        org.apache.openjpa.kernel.exps.Expression toKernelExpression(
+            ExpressionFactory factory, MetamodelImpl model, 
+            CriteriaQueryImpl q) {
+            org.apache.openjpa.kernel.exps.Expression notEmpty = 
+                factory.isNotEmpty(Expressions.toValue(e, factory, model, q));
+            if (isNegated())
+                return factory.not(notEmpty);
+            else
+                return notEmpty;
+                
+        }        
+    }
+    
+    public static class All<X> extends ExpressionImpl<X> {
+        SubqueryImpl<X> e;
+        public All(Subquery<X> x) {
+            super(x.getJavaType());
+            e = (SubqueryImpl<X>)x;
+        }
+        
+        @Override
+        public Value toValue(ExpressionFactory factory, MetamodelImpl model,
+            CriteriaQueryImpl q) {
+            return factory.all(Expressions.toValue(e, factory, model, q));
+        }        
+    }
+
+    public static class Any<X> extends ExpressionImpl<X> {
+        SubqueryImpl<X> e;
+        public Any(Subquery<X> x) {
+            super(x.getJavaType());
+            e = (SubqueryImpl<X>)x;
+        }
+        
+        @Override
+        public Value toValue(ExpressionFactory factory, MetamodelImpl model,
+            CriteriaQueryImpl q) {
+            return factory.any(Expressions.toValue(e, factory, model, q));
+        }        
+    }
+
+    public static class Some<X> extends ExpressionImpl<X> {
+        SubqueryImpl<X> e;
+        public Some(Subquery<X> x) {
+            super(x.getJavaType());
+            e = (SubqueryImpl<X>)x;
+        }
+        
+        @Override
+        public Value toValue(ExpressionFactory factory, MetamodelImpl model,
+            CriteriaQueryImpl q) {
+            //return factory.some(Expressions.toValue(e, factory, model, q));
+            return null;
+        }        
+    }
+
 }

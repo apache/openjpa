@@ -96,7 +96,7 @@ public class CriteriaBuilder implements QueryBuilder, ExpressionParser {
     }
 
     public <Y> Expression<Y> all(Subquery<Y> subquery) {
-        throw new AbstractMethodError();
+        return new Expressions.All<Y>(subquery);
     }
 
     public Predicate and(Predicate... restrictions) {
@@ -108,7 +108,7 @@ public class CriteriaBuilder implements QueryBuilder, ExpressionParser {
     }
 
     public <Y> Expression<Y> any(Subquery<Y> subquery) {
-        throw new AbstractMethodError();
+        return new Expressions.Any<Y>(subquery);
     }
 
     public Order asc(Expression<?> x) {
@@ -208,15 +208,19 @@ public class CriteriaBuilder implements QueryBuilder, ExpressionParser {
     }
 
     public Predicate equal(Expression<?> x, Expression<?> y) {
+        if (y == null)
+            return new Expressions.IsNull((ExpressionImpl<?> )x);
         return new Expressions.Equal(x, y);
     }
 
     public Predicate equal(Expression<?> x, Object y) {
+        if (y == null)
+            return new Expressions.IsNull((ExpressionImpl<?> )x);
         return new Expressions.Equal(x, y);
     }
 
     public Predicate exists(Subquery<?> subquery) {
-        throw new AbstractMethodError();
+        return new Expressions.Exists(subquery);
     }
 
     public <T> Expression<T> function(String name, Class<T> type,
@@ -326,7 +330,7 @@ public class CriteriaBuilder implements QueryBuilder, ExpressionParser {
     }
 
     public Expression<Integer> length(Expression<String> x) {
-        throw new AbstractMethodError();
+        return new Expressions.Length(x);
 
     }
 
@@ -385,29 +389,29 @@ public class CriteriaBuilder implements QueryBuilder, ExpressionParser {
 
     public Expression<Integer> locate(Expression<String> x,
         Expression<String> pattern) {
-        throw new AbstractMethodError();
+        return new Expressions.Locate(x, pattern);
 
     }
 
     public Expression<Integer> locate(Expression<String> x, String pattern) {
-        throw new AbstractMethodError();
+        return new Expressions.Locate(x, pattern);
 
     }
 
     public Expression<Integer> locate(Expression<String> x,
         Expression<String> pattern, Expression<Integer> from) {
-        throw new AbstractMethodError();
+        return new Expressions.Locate(x, pattern, from);
 
     }
 
     public Expression<Integer> locate(Expression<String> x, String pattern,
         int from) {
-        throw new AbstractMethodError();
+        return new Expressions.Locate(x, pattern, from);
 
     }
 
     public Expression<String> lower(Expression<String> x) {
-        throw new AbstractMethodError();
+        return new Expressions.Lower(x);
 
     }
 
@@ -486,12 +490,12 @@ public class CriteriaBuilder implements QueryBuilder, ExpressionParser {
     }
 
     public <Y> Expression<Y> nullif(Expression<Y> x, Expression<?> y) {
-        throw new AbstractMethodError();
+        return new Expressions.Nullif(x, y);
 
     }
 
     public <Y> Expression<Y> nullif(Expression<Y> x, Y y) {
-        throw new AbstractMethodError();
+        return new Expressions.Nullif(x, y);
 
     }
 
@@ -563,7 +567,7 @@ public class CriteriaBuilder implements QueryBuilder, ExpressionParser {
     }
 
     public <Y> Expression<Y> some(Subquery<Y> subquery) {
-        throw new AbstractMethodError();
+        return new Expressions.Some<Y>(subquery);
     }
 
     public Expression<Double> sqrt(Expression<? extends Number> x) {
@@ -572,7 +576,7 @@ public class CriteriaBuilder implements QueryBuilder, ExpressionParser {
 
     public Expression<String> substring(Expression<String> x,
         Expression<Integer> from) {
-    	return new Expressions.Substring(x);
+    	return new Expressions.Substring(x, from);
     }
 
     public Expression<String> substring(Expression<String> x, int from) {
@@ -665,7 +669,7 @@ public class CriteriaBuilder implements QueryBuilder, ExpressionParser {
     }
 
     public Expression<String> upper(Expression<String> x) {
-        throw new AbstractMethodError();
+        return new Expressions.Upper(x);
 
     }
 

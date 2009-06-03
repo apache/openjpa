@@ -19,13 +19,11 @@
 
 package org.apache.openjpa.persistence.criteria;
 
-import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Root;
 import javax.persistence.metamodel.Entity;
 
 import org.apache.openjpa.kernel.exps.ExpressionFactory;
 import org.apache.openjpa.kernel.exps.Value;
-import org.apache.openjpa.persistence.criteria.FromImpl;
 import org.apache.openjpa.persistence.meta.MetamodelImpl;
 import org.apache.openjpa.persistence.meta.Types;
 
@@ -37,8 +35,9 @@ import org.apache.openjpa.persistence.meta.Types;
  * @param <X>
  */
 public class RootImpl<X> extends FromImpl<X,X> implements Root<X> {
-	private final Types.Entity<X> _entity;
-	
+    private final Types.Entity<X> _entity;
+    private RootImpl<X> _correlatedParent;
+        
     public RootImpl(Types.Entity<X> type) {
         super(type);
         _entity = type;
@@ -48,13 +47,28 @@ public class RootImpl<X> extends FromImpl<X,X> implements Root<X> {
         return _entity;
     }
     
+    public void setCorrelatedParent(RootImpl<X> correlatedParent) {
+        _correlatedParent = correlatedParent;
+    }
+    
+    public RootImpl<X> getCorrelatedParent() {
+        return _correlatedParent;
+    }
+    
     /**
      * Convert this path to a kernel path value.
      */
     @Override
     public Value toValue(ExpressionFactory factory, MetamodelImpl model, 
-        CriteriaQuery c) {
-        Value var = factory.newPath();
+        CriteriaQueryImpl c) {
+        SubqueryImpl subquery = c.getContext();
+        Value var = null;
+        if (subquery != null && PathImpl.inSubquery(this, subquery)) {
+            org.apache.openjpa.kernel.exps.Subquery subQ = 
+                subquery.getSubQ();
+            var = factory.newPath(subQ);
+        } else 
+            var = factory.newPath();
         var.setMetaData(_entity.meta);
         return var;
     }
@@ -65,7 +79,7 @@ public class RootImpl<X> extends FromImpl<X,X> implements Root<X> {
      */
     @Override
     public org.apache.openjpa.kernel.exps.Expression toKernelExpression(
-        ExpressionFactory factory, MetamodelImpl model, CriteriaQuery c) {
+        ExpressionFactory factory, MetamodelImpl model, CriteriaQueryImpl c) {
         org.apache.openjpa.kernel.exps.Value path = toValue(factory, model, c);
         
         Value var = factory.newBoundVariable(getAlias(), 
@@ -73,6 +87,14 @@ public class RootImpl<X> extends FromImpl<X,X> implements Root<X> {
         org.apache.openjpa.kernel.exps.Expression exp = 
             factory.bindVariable(var, path);
         
-        return exp;
+        if (_correlatedParent == null) 
+            return exp;
+        org.apache.openjpa.kernel.exps.Value path1 = 
+            _correlatedParent.toValue(factory, model, c);
+        org.apache.openjpa.kernel.exps.Expression equal = 
+            factory.equal(path1, path);
+        //return factory.and(exp, equal);
+        return equal;
+        
     }
 }

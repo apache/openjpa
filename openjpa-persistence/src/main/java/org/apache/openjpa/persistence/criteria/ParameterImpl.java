@@ -19,8 +19,9 @@
 package org.apache.openjpa.persistence.criteria;
 
 import java.util.Collection;
+
 import javax.persistence.Parameter;
-import javax.persistence.criteria.CriteriaQuery;
+
 import org.apache.commons.collections.map.LinkedMap;
 import org.apache.openjpa.kernel.exps.ExpressionFactory;
 import org.apache.openjpa.kernel.exps.Value;
@@ -57,7 +58,7 @@ public class ParameterImpl<T> extends ExpressionImpl<T> implements Parameter<T>{
 
     @Override
     public Value toValue(ExpressionFactory factory, MetamodelImpl model,
-        CriteriaQuery q) {
+        CriteriaQueryImpl q) {
         boolean positional = false;
         LinkedMap parameterTypes = ((CriteriaQueryImpl)q).getParameterTypes();
         if (parameterTypes == null) {

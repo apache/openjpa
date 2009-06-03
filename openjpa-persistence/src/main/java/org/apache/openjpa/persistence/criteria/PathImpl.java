@@ -19,15 +19,16 @@
 
 package org.apache.openjpa.persistence.criteria;
 
-import javax.persistence.criteria.CriteriaQuery;
+import java.util.Set;
+
 import javax.persistence.criteria.Expression;
 import javax.persistence.criteria.Path;
+import javax.persistence.criteria.Root;
 import javax.persistence.metamodel.AbstractCollection;
 import javax.persistence.metamodel.Attribute;
 import javax.persistence.metamodel.Bindable;
 import javax.persistence.metamodel.ManagedType;
 import javax.persistence.metamodel.Map;
-import javax.persistence.metamodel.Member;
 import javax.persistence.metamodel.Type;
 
 import org.apache.openjpa.kernel.exps.ExpressionFactory;
@@ -78,14 +79,34 @@ public class PathImpl<Z,X> extends ExpressionImpl<X> implements Path<X> {
         return _parent;
     }
     
+    public PathImpl getInnermostParentPath() {
+        if (_parent == null)
+            return this;
+        PathImpl _p = _parent.getInnermostParentPath(); 
+        if (_p == null)
+            return _parent;
+        else
+            return _p.getInnermostParentPath();
+    }
+
     /**
      * Convert this path to a kernel path value.
      */
     @Override
     public Value toValue(ExpressionFactory factory, MetamodelImpl model,
-        CriteriaQuery q) {
+        CriteriaQueryImpl q) {
         Value var = null;
-        if (_parent != null) { 
+        SubqueryImpl subquery = q.getContext();
+        PathImpl parent = getInnermostParentPath();
+        if (subquery != null && inSubquery(parent, subquery)) {
+            org.apache.openjpa.kernel.exps.Subquery subQ = 
+                subquery.getSubQ();
+            org.apache.openjpa.kernel.exps.Path path = factory.newPath(subQ);
+            path.setMetaData(subQ.getMetaData());
+            boolean allowNull = false;
+            path.get(_member.fmd, allowNull);
+            var = path;
+        } else if (_parent != null) { 
             org.apache.openjpa.kernel.exps.Path path = 
                 (org.apache.openjpa.kernel.exps.Path)
                 _parent.toValue(factory, model, q);
@@ -104,6 +125,16 @@ public class PathImpl<Z,X> extends ExpressionImpl<X> implements Path<X> {
         var.setAlias(getAlias());
         return var;
     }
+    
+    public static boolean inSubquery(PathImpl parent, SubqueryImpl subquery) {
+        Set<Root<?>> roots = subquery.getRoots();
+        for (Root<?> r : roots) {
+            if (parent == r) 
+                return true;
+        }
+        return false;
+    }
+    
 
     public <Y> Path<Y> get(Attribute<? super X, Y> attr) {
         return new PathImpl<X,Y>(this, (Members.Attribute<? super X, Y>)attr, 
