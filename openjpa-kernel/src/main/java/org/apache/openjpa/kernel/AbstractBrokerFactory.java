@@ -411,7 +411,7 @@ public abstract class AbstractBrokerFactory
                 PCRegistry.removeRegisterClassListener
                     (_conf.getMetaDataRepositoryInstance());
             }
-            Reflection.flushCaches(_pcClassLoaders);
+            Reflection.flushCaches();
             _conf.close();
             _closed = true;
             Log log = _conf.getLog(OpenJPAConfiguration.LOG_RUNTIME);

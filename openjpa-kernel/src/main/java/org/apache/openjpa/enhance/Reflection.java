@@ -24,10 +24,8 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.security.AccessController;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
@@ -103,26 +101,6 @@ public class Reflection {
         beanPropertiesNameCache.clear();
     }
     
-    public static void flushCaches(Collection<ClassLoader> loaders) {
-        if (loaders.size() > 0) {
-            flushCache(loaders, getterMethodCache);
-            flushCache(loaders, setterMethodCache);
-            flushCache(loaders, beanPropertiesNameCache);
-        }
-    }
-
-    private static void flushCache(Collection<ClassLoader> loaders,
-        Map<Class<?>, ?> cache) {
-        for (Iterator<Class<?>> itr = cache.keySet().iterator(); 
-            itr.hasNext();) {
-            Class<?> cls = itr.next();
-            ClassLoader sLoader = cls.getClassLoader();
-            if (loaders.contains(sLoader)) {
-                itr.remove();
-            }
-        }
-    }
-
     /**
      * Return the getter method matching the given property name, optionally
      * throwing an exception if none.
@@ -132,19 +110,18 @@ public class Reflection {
         if (m != null) {
             return m;
         }
-        prop = StringUtils.capitalize(prop);
-        String name = "get" + prop;
+        String capProp = StringUtils.capitalize(prop);
         try {
             // this algorithm searches for a get<prop> or is<prop> method in
             // a breadth-first manner.
             for (Class c = cls; c != null && c != Object.class;
                 c = c.getSuperclass()) {
-                m = getDeclaredMethod(c, name, null);
+                m = getDeclaredMethod(c, "get" + capProp, null);
                 if (m != null) {
                     setGetterMethod(cls, prop, m);
                     return m;
                 } else {
-                    m = getDeclaredMethod(c, "is" + prop, null);
+                    m = getDeclaredMethod(c, "is" + capProp, null);
                     if (m != null && (m.getReturnType() == boolean.class
                         || m.getReturnType() == Boolean.class)) {
                         setGetterMethod(cls, prop, m);
