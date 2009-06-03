@@ -377,6 +377,9 @@
                                 <exclude>openjpa-project/*.txt</exclude>
                                 <exclude>README.txt</exclude>
                                 <exclude>BUILDRELEASE</exclude>
+                                <exclude>scripts/*.list</exclude>
+                                <exclude>scripts/*.options</exclude>
+                                <exclude>scripts/*.dict</exclude>
 
                                 <!-- generated content -->
                                 <exclude>**/*.log</exclude>
@@ -385,6 +388,9 @@
                                 <exclude>**/org.apache.openjpa.revision.properties</exclude>
                                 <exclude>**/target/**/*</exclude>
                                 <exclude>release.properties</exclude>
+                                <exclude>**/NOTICE.vm</exclude>
+                                <exclude>**/LICENSE.vm</exclude>
+                                <exclude>**/dependency-reduced-pom.xml</exclude>
 
                                 <!--
                                     Exclude internal repository. These files are 
