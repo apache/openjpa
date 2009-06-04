@@ -221,10 +221,10 @@ public class MySQLDictionary
         return super.getForeignKeyConstraintSQL(fk);
     }
     
-    public String[] getDeleteTableContentsSQL(Table[] tables) {
+    public String[] getDeleteTableContentsSQL(Table[] tables,Connection conn) {
         // mysql >= 4 supports more-optimal delete syntax
         if (!optimizeMultiTableDeletes)
-            return super.getDeleteTableContentsSQL(tables);
+            return super.getDeleteTableContentsSQL(tables,conn);
         else {
             StringBuffer buf = new StringBuffer(tables.length * 8);
             buf.append("DELETE FROM ");
