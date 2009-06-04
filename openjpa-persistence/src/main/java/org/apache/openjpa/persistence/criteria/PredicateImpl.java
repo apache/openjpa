@@ -84,7 +84,7 @@ implements Predicate {
 
     @Override
     org.apache.openjpa.kernel.exps.Expression toKernelExpression(
-            ExpressionFactory factory, MetamodelImpl model, CriteriaQueryImpl q) {
+        ExpressionFactory factory, MetamodelImpl model, CriteriaQueryImpl q) {
         if (_exps == null || _exps.isEmpty())
             return factory.emptyExpression();
         if (_exps.size() == 1)
@@ -104,7 +104,7 @@ implements Predicate {
                 ExpressionImpl<?> e = (ExpressionImpl<?>)_exps.get(i);
                 result = _op == BooleanOperator.AND 
                 ? factory.and(result, e.toKernelExpression(factory, model, q))
-                        : factory.or(result, e.toKernelExpression(factory,model,q));
+                    : factory.or(result, e.toKernelExpression(factory,model,q));
             }
             return _negated ? factory.not(result) : result;
     }
