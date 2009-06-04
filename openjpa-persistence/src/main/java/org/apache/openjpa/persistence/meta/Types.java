@@ -163,10 +163,9 @@ public class Types {
                 case JavaTypes.LOCALE:
                     attrs.put(f, new Members.Attribute<X, Locale>(this, f));
                     break;
-                case JavaTypes.PC:
-                    attrs.put(f, new Members.Attribute(this, f));
-                    break;
                 case JavaTypes.OBJECT:
+                case JavaTypes.OID:
+                case JavaTypes.PC:
                     attrs.put(f, new Members.Attribute(this, f));
                     break;
                 case JavaTypes.ARRAY:
