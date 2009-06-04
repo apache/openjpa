@@ -2173,33 +2173,36 @@ public class DBDictionary
      * Databases with more optimal ways of deleting the contents of several 
      * tables should override this method.
      */
-    public String[] getDeleteTableContentsSQL(Table[] tables) {
-        Collection sql = new ArrayList();
+    public String[] getDeleteTableContentsSQL(Table[] tables,Connection conn) {
+        Collection<String> sql = new ArrayList<String>();
         
         // collect and drop non-deferred physical restrict constraints, and
         // collect the DELETE FROM statements
-        Collection deleteSQL = new ArrayList(tables.length);
-        Collection restrictConstraints = new LinkedHashSet();
+        Collection<String> deleteSQL = new ArrayList<String>(tables.length);
+        Collection<ForeignKey> restrictConstraints =
+            new LinkedHashSet<ForeignKey>();
         for (int i = 0; i < tables.length; i++) {
             ForeignKey[] fks = tables[i].getForeignKeys();
             for (int j = 0; j < fks.length; j++) {
                 if (!fks[j].isLogical() && !fks[j].isDeferred() 
                     && fks[j].getDeleteAction() == ForeignKey.ACTION_RESTRICT)
                 restrictConstraints.add(fks[j]);
-                String[] constraintSQL = getDropForeignKeySQL(fks[j]);
-                sql.addAll(Arrays.asList(constraintSQL));
             }
             
             deleteSQL.add("DELETE FROM " + tables[i].getFullName());
+        }
+        
+        for(ForeignKey fk : restrictConstraints) {
+            String[] constraintSQL = getDropForeignKeySQL(fk,conn);
+            sql.addAll(Arrays.asList(constraintSQL));
         }
         
         // add the delete statements after all the constraint mutations
         sql.addAll(deleteSQL);
         
         // add the deleted constraints back to the schema
-        for (Iterator iter = restrictConstraints.iterator(); iter.hasNext(); ) {
-            String[] constraintSQL = 
-                getAddForeignKeySQL((ForeignKey) iter.next());
+        for (ForeignKey fk : restrictConstraints) {
+            String[] constraintSQL = getAddForeignKeySQL(fk);
             sql.addAll(Arrays.asList(constraintSQL));
         }
         
@@ -3448,9 +3451,16 @@ public class DBDictionary
      * Returns <code>ALTER TABLE &lt;table name&gt; DROP CONSTRAINT
      * &lt;fk name&gt;</code> by default.
      */
-    public String[] getDropForeignKeySQL(ForeignKey fk) {
-        if (fk.getName() == null)
-            return new String[0];
+    public String[] getDropForeignKeySQL(ForeignKey fk, Connection conn) {
+        if (fk.getName() == null) {
+            String[] retVal;
+            String fkName = fk.loadNameFromDB(this,conn);
+            retVal = (fkName == null) ?  new String[0] :
+                new String[]{ "ALTER TABLE "
+                + getFullName(fk.getTable(), false)
+                + " DROP CONSTRAINT " + fkName };
+            return retVal;   
+        }
         return new String[]{ "ALTER TABLE "
             + getFullName(fk.getTable(), false)
             + " DROP CONSTRAINT " + fk.getName() };

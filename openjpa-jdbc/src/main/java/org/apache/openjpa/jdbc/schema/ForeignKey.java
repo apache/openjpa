@@ -19,6 +19,7 @@
 package org.apache.openjpa.jdbc.schema;
 
 import java.sql.DatabaseMetaData;
+import java.sql.Connection;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -28,6 +29,7 @@ import org.apache.commons.lang.ObjectUtils;
 import org.apache.openjpa.lib.util.Localizer;
 import org.apache.openjpa.lib.util.StringDistance;
 import org.apache.openjpa.util.InvalidStateException;
+import org.apache.openjpa.jdbc.sql.DBDictionary;
 
 /**
  * Represents a database foreign key; may be a logical key with no
@@ -738,4 +740,51 @@ public class ForeignKey
                 return false;
         return true;
     }
+    
+    /**
+     * Return the name of the foreignkey constraint as defined in the database.
+     */
+    public String loadNameFromDB(DBDictionary dbdict, Connection conn) {
+        if( isLogical() || getTable() == null)
+            return null;
+        String retVal = null;
+        try{
+            Schema schema = getTable().getSchema();
+            ForeignKey[] fks = dbdict.getImportedKeys(conn.getMetaData(), 
+                conn.getCatalog(), schema.getName(), 
+                getTable().getName(), conn);
+            for ( int i=0; i< fks.length; i++) {
+                Table localtable = schema.getTable(fks[i].getTableName());
+                Table pkTable = schema.getTable(
+                    fks[i].getPrimaryKeyTableName());
+                boolean addFK = false;
+                ForeignKey fkTemp = localtable.getForeignKey(
+                    fks[i].getName());
+                if( fkTemp == null) {
+                    addFK=true;
+                    fkTemp = localtable.addForeignKey(
+                        fks[i].getName());
+                    fkTemp.setDeferred(fks[i].isDeferred());
+                    fkTemp.setDeleteAction(fks[i].getDeleteAction());
+                }
+                if( ! fkTemp.containsColumn(
+                    localtable.getColumn(fks[i].getColumnName())))
+                fkTemp.join(localtable.getColumn(fks[i].getColumnName()), 
+                    pkTable.getColumn(fks[i].getPrimaryKeyColumnName()));
+                if( equalsForeignKey(fkTemp))
+                {
+                    if(addFK)
+                        localtable.removeForeignKey(fkTemp);
+                    retVal = fks[i].getName();
+                    break;
+                }
+                if(addFK)
+                    localtable.removeForeignKey(fkTemp);
+            }
+        } catch(Exception ex){
+            // TO DO  -- It would be nice to log a warning here.
+        }
+        return retVal;
+    }
+    
 }

@@ -423,7 +423,7 @@ public class SchemaTool {
         }
         Table[] tableArray = (Table[]) tables.toArray(new Table[tables.size()]);
         String[] sql = _conf.getDBDictionaryInstance()
-            .getDeleteTableContentsSQL(tableArray);
+            .getDeleteTableContentsSQL(tableArray,_ds.getConnection());
         if (!executeSQL(sql))
             _log.warn(_loc.get("delete-table-contents"));
     }
@@ -1083,7 +1083,7 @@ public class SchemaTool {
      */
     public boolean dropForeignKey(ForeignKey fk)
         throws SQLException {
-        return executeSQL(_dict.getDropForeignKeySQL(fk));
+        return executeSQL(_dict.getDropForeignKeySQL(fk,_ds.getConnection()));
     }
 
     /**
