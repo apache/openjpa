@@ -84,7 +84,8 @@ implements Predicate {
 
     @Override
     org.apache.openjpa.kernel.exps.Expression toKernelExpression(
-        ExpressionFactory factory, MetamodelImpl model, CriteriaQueryImpl q) {
+        ExpressionFactory factory, MetamodelImpl model, 
+        CriteriaQueryImpl q) {
         if (_exps == null || _exps.isEmpty())
             return factory.emptyExpression();
         if (_exps.size() == 1)
