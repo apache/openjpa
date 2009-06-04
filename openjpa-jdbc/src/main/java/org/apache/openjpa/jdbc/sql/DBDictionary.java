@@ -4638,4 +4638,9 @@ public class DBDictionary
     				length));
     	return name;
     }
+
+    public Log getLog() { 
+        return log;
+    }
 }
+
