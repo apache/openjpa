@@ -18,18 +18,19 @@
  */
 package org.apache.openjpa.jdbc.schema;
 
-import java.sql.DatabaseMetaData;
 import java.sql.Connection;
+import java.sql.DatabaseMetaData;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.List;
 import java.util.LinkedHashMap;
+import java.util.List;
 
 import org.apache.commons.lang.ObjectUtils;
+import org.apache.openjpa.jdbc.sql.DBDictionary;
+import org.apache.openjpa.lib.log.Log;
 import org.apache.openjpa.lib.util.Localizer;
 import org.apache.openjpa.lib.util.StringDistance;
 import org.apache.openjpa.util.InvalidStateException;
-import org.apache.openjpa.jdbc.sql.DBDictionary;
 
 /**
  * Represents a database foreign key; may be a logical key with no
@@ -782,7 +783,10 @@ public class ForeignKey
                     localtable.removeForeignKey(fkTemp);
             }
         } catch(Exception ex){
-            // TO DO  -- It would be nice to log a warning here.
+            Log log = dbdict.getLog();
+            if (log.isTraceEnabled()) {
+                log.trace(_loc.get("except-read-fk-name"), ex);
+            }
         }
         return retVal;
     }

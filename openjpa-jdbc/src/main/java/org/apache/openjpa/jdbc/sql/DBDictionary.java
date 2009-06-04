@@ -5020,4 +5020,8 @@ public class DBDictionary
         
         return combined;
     }
+    
+    public Log getLog() { 
+        return log;
+    }
 }
