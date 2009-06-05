@@ -21,20 +21,22 @@ package org.apache.openjpa.enhance;
 import java.lang.reflect.AccessibleObject;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Member;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.security.AccessController;
 import java.util.Collections;
+import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.openjpa.lib.util.J2DoPrivHelper;
 import org.apache.openjpa.lib.util.Localizer;
+import org.apache.openjpa.lib.util.ReferenceMap;
 import org.apache.openjpa.lib.util.Reflectable;
-import org.apache.openjpa.util.GeneralException; 
-import org.apache.openjpa.util.UserException; 
+import org.apache.openjpa.lib.util.concurrent.ConcurrentReferenceHashMap;
+import org.apache.openjpa.util.GeneralException;
+import org.apache.openjpa.util.UserException;
 
 /**
  * Reflection utilities used to support and augment enhancement.  Used both
@@ -47,27 +49,80 @@ public class Reflection {
     private static final Localizer _loc = Localizer.forPackage
         (Reflection.class);
 
+    // Weak HashMap caches of getter/setter/beanProperty methods
+    private static Map<Class<?>, Map<String, Method>> getterMethodCache = 
+        new ConcurrentReferenceHashMap(ReferenceMap.WEAK, ReferenceMap.HARD);
+    private static Map<Class<?>, Map<String, Method>> setterMethodCache = 
+        new ConcurrentReferenceHashMap(ReferenceMap.WEAK, ReferenceMap.HARD);
+    private static Map<Class<?>, Set<String>> beanPropertiesNameCache = 
+        new ConcurrentReferenceHashMap(ReferenceMap.WEAK, ReferenceMap.HARD);
+    
+    private static Method getGetterMethod(Class<?> cls, String prop) {
+        Method rtnMethod = null;
+        Map<String, Method> clsMap = getterMethodCache.get(cls);
+        if (clsMap != null) {
+            rtnMethod = clsMap.get(prop);
+        }
+        return rtnMethod;
+    }
+
+    private static void setGetterMethod(Class<?> cls, String prop,
+        Method method) {
+        Map<String, Method> clsMap = getterMethodCache.get(cls);
+        if (clsMap == null) {
+            clsMap = new ConcurrentReferenceHashMap(ReferenceMap.HARD,
+                ReferenceMap.WEAK);
+            getterMethodCache.put(cls, clsMap);
+        }
+        clsMap.put(prop, method);
+    }
+
+    private static Method getSetterMethod(Class<?> cls, String prop) {
+        Method rtnMethod = null;
+        Map<String, Method> clsMap = setterMethodCache.get(cls);
+        if (clsMap != null) {
+            rtnMethod = clsMap.get(prop);
+        }
+        return rtnMethod;
+    }
+
+    private static void setSetterMethod(Class<?> cls, String prop,
+        Method method) {
+        Map<String, Method> clsMap = setterMethodCache.get(cls);
+        if (clsMap == null) {
+            clsMap = new ConcurrentReferenceHashMap(ReferenceMap.HARD,
+                ReferenceMap.WEAK);
+            setterMethodCache.put(cls, clsMap);
+        }
+        clsMap.put(prop, method);
+    }
+
     /**
      * Return the getter method matching the given property name, optionally
      * throwing an exception if none.
      */
     public static Method findGetter(Class cls, String prop, boolean mustExist) {
-        prop = StringUtils.capitalize(prop);
-        String name = "get" + prop;
-        Method m;
+        Method m = getGetterMethod(cls, prop);
+        if (m != null) {
+            return m;
+        }
+        String capProp = StringUtils.capitalize(prop);
         try {
             // this algorithm searches for a get<prop> or is<prop> method in
             // a breadth-first manner.
             for (Class c = cls; c != null && c != Object.class;
                 c = c.getSuperclass()) {
-                m = getDeclaredMethod(c, name, null);
+                m = getDeclaredMethod(c, "get" + capProp, null);
                 if (m != null) {
+                    setGetterMethod(cls, prop, m);
                     return m;
                 } else {
-                    m = getDeclaredMethod(c, "is" + prop, null);
+                    m = getDeclaredMethod(c, "is" + capProp, null);
                     if (m != null && (m.getReturnType() == boolean.class
-                        || m.getReturnType() == Boolean.class))
+                        || m.getReturnType() == Boolean.class)) {
+                        setGetterMethod(cls, prop, m);
                         return m;
+                    }
                 }
             }
         } catch (Exception e) {
@@ -95,14 +150,19 @@ public class Reflection {
      */
     public static Method findSetter(Class cls, String prop, Class param,
         boolean mustExist) {
+        Method m = getSetterMethod(cls, prop);
+        if (m != null) {
+            return m;
+        }
         String name = "set" + StringUtils.capitalize(prop);
-        Method m;
         try {
             for (Class c = cls; c != null && c != Object.class;
                 c = c.getSuperclass()) {
                 m = getDeclaredMethod(c, name, param);
-                if (m != null)
+                if (m != null) {
+                    setSetterMethod(cls, prop, m);
                     return m;
+                }
             }
         } catch (Exception e) {
             throw new GeneralException(e);
@@ -774,10 +834,14 @@ public class Reflection {
     public static Set<String> getBeanStylePropertyNames(Class c) {
         if (c == null)
             return Collections.EMPTY_SET;
+        Set<String> result = beanPropertiesNameCache.get(c);
+        if (result != null) {
+            return result;
+        }
         Method[] methods = c.getMethods();
         if (methods == null || methods.length < 2)
             return Collections.EMPTY_SET;
-        Set<String> result = new TreeSet<String>();
+        result = new TreeSet<String>();
         for (Method m : methods) {
             if (m.getName().startsWith("get")) {
                 if (!canReflect(m))
@@ -795,6 +859,7 @@ public class Reflection {
                 }
             }
         }
+        beanPropertiesNameCache.put(c, result);
         return result;
     }
     
