@@ -577,7 +577,8 @@ public class PersistenceProductDerivation
                 } else {
                     // no optional validation provider, so just trace output
                     conf.getConfigurationLog().trace(
-                        _loc.get("vlem-creation-warn", e.getMessage()));
+                        _loc.get("vlem-creation-warn", "No available Bean " +
+                        "Validation APIs"));
                     return lem;
                 }
             }
@@ -605,7 +606,7 @@ public class PersistenceProductDerivation
             }
         } else {
             conf.getConfigurationLog().trace(
-                "Validation has been disabled by supplied mode.");
+                _loc.get("vlem-creation-warn", "Disabled by ValidationMode"));
         }
         return lem;
     }
