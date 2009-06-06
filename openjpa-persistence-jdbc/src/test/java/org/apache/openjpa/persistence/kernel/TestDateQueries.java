@@ -32,6 +32,7 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Locale;
 
 
 
@@ -61,7 +62,8 @@ public class TestDateQueries extends BaseKernelTest {
         throws Exception {
         super.setUp();
 
-        SimpleDateFormat sdf = new SimpleDateFormat("MMMMM dd, yyyy");
+        SimpleDateFormat sdf = new SimpleDateFormat("MMMMM dd, yyyy",
+            Locale.US);
         _date = sdf.parse("April 26, 1978");
         _before = sdf.parse("April 25, 1978");
         _after = sdf.parse("April 27, 1978");

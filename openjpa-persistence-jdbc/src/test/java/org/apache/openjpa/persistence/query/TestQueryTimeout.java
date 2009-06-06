@@ -16,6 +16,7 @@ package org.apache.openjpa.persistence.query;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.text.NumberFormat;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -796,7 +797,8 @@ public class TestQueryTimeout extends SQLListenerTestCase {
         } catch (Exception e) {
             // expected - setHint(-2000) should cause IllegalArgumentException
             checkException("testQueryTimeout5()", e, 
-                IllegalArgumentException.class, "invalid timeout of -2,000");
+                IllegalArgumentException.class, "invalid timeout of "
+                + NumberFormat.getIntegerInstance().format(setTime));
         } finally {
             if ((em != null) && em.isOpen()) {
                 em.close();
