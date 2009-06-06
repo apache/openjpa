@@ -646,7 +646,7 @@ This code substitutes <literal>JDJ</literal> for the <literal> :titleParam
             </title>
             <para>
 JPQL provides support for hints which are name/value pairs used to control locking and optimization keywords in sql. 
-The following example shows how to use the JPA hint api to set the <classname>ReadLockMode</classname>  and <classname>ResultCount</classname>  in the OpenJPA fetch plan.  This will result in the sql keywords OPTIMIZE FOR 2 ROWS  and UPDATE to be emitted into the sql provided that a pessimistic LockManager is being used.
+The following example shows how to use the JPA hint api to set the <classname>ReadLockMode</classname>  and <classname>ResultCount</classname>  in the OpenJPA fetch plan.  This will result in the sql keywords OPTIMIZE FOR 2 ROWS  and FOR UPDATE to be emitted into the sql provided that a pessimistic LockManager is being used.
             </para>
             <example id="jpa_query_hint1">
                 <title>
@@ -2519,10 +2519,10 @@ of the functional expression is unknown.
                     </title>
                     <para>
 <itemizedlist><listitem><para>functions_returning_strings ::=
-CONCAT(string_primar y, string_primary) | SUBSTRING(string_primar y,
+CONCAT(string_primary, string_primary) | SUBSTRING(string_primary,
 simple_arithmetic_expression, simple_arithmetic_expression) |
 TRIM([[trim_specification] [trim_character] FROM] string_primary) |
-LOWER(string_primar y) | UPPER(string_primar y)
+LOWER(string_primary) | UPPER(string_primary)
                                 </para>
                             </listitem>
                             <listitem>
@@ -2532,8 +2532,8 @@ trim_specification ::= LEADING | TRAILING | BOTH
                             </listitem>
                             <listitem>
                                 <para>
-functions_returning_numerics ::= LENGTH(string_primar y) | LOCATE(string_primar
-y, string_primar y[, simple_arithmetic_expression])
+functions_returning_numerics ::= LENGTH(string_primary) |
+LOCATE(string_primary, string_primary[, simple_arithmetic_expression])
                                 </para>
                             </listitem>
                         </itemizedlist>

@@ -421,7 +421,7 @@ java -javaagent:/home/dev/openjpa/lib/openjpa.jar=addDefaultConstructor=false co
 		When then dynamic enhancer is loaded, the following 
 		informational message is logged:
 <programlisting>
-[java] jpa.enhancement  INFO   [main] openjpa.Runtime - OpenJPA dynamically loaded the class enhancer. Any classes that were not enhanced at build time will be enhanced as they are loaded by the JVM.
+[java] jpa.enhancement  INFO   [main] openjpa.Runtime - OpenJPA dynamically loaded the class enhancer. Any classes that were not enhanced at build time will be enhanced when they are loaded by the JVM.
 </programlisting>
 	</para>
 	<para>
@@ -730,7 +730,7 @@ public class Order {
 
 	/**
 	 * LineItem uses a compound primary key. Part of the compound key 
-	 * LineItemId is relation or refernce to Order instance.
+	 * LineItemId is relation or reference to Order instance.
 	**/   
 @Entity
 @IdClass(LineItemId.class)
