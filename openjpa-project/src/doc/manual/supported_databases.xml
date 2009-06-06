@@ -374,8 +374,8 @@ datastore transactions cannot use the pessimistic lock manager.
                 </listitem>
                 <listitem>
                     <para>
-Interbase does not support the <literal>LOWER</literal>, <literal>SUBSTRING
-</literal>, or <literal>INSTR</literal> SQL functions>
+Interbase does not support the <literal>LOWER</literal>,
+<literal>SUBSTRING</literal>, or <literal>INSTR</literal> SQL functions.
                     </para>
                 </listitem>
             </itemizedlist>
@@ -821,7 +821,7 @@ higher) of the MySQL driver is required in order to get around this bug.
                     <para>
 When using large result sets with MySQL there are a number of documented limitations.
 Please read the section titled "ResultSet" in the "MySQL JDBC API Implementation Notes".
-The net of these limitations is that you will have to read all of the rows of a
+The net effect of these limitations is that you will have to read all of the rows of a
 result set (or close the connection) before you can issue any other queries on
 the connection, or an exception will be thrown. Setting openjpa.FetchBatchSize 
 to any value greater than zero will enable streaming result sets. 

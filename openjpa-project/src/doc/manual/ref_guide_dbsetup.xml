@@ -2098,7 +2098,7 @@ a warning.
                     </indexterm>
 <literal>StoreLargeNumbersAsStrings</literal>: When true, the dictionary 
 prefers to store Java fields of 
-type <classname>BigInteger</classname> and <classname>BigDecimal</classname>) 
+type <classname>BigInteger</classname> and <classname>BigDecimal</classname>
 as string values in the database.  Likewise, the dictionary will instruct
 the mapping tool to map these Java types to character columns.   
 Because some databases have limitations on the number of digits that can 

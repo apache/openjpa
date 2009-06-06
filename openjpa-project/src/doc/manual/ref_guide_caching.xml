@@ -117,7 +117,7 @@ is stored in the cache when objects are committed and when persistent objects
 are loaded from the datastore.
         </para>
         <para>
-OpenJPA's data cache can in both single-JVM and multi-JVM environments.
+OpenJPA's data cache can operate in both single-JVM and multi-JVM environments.
 Multi-JVM caching is achieved through the use of the distributed event
 notification framework described in <xref linkend="ref_guide_event"/>, or
 through custom integrations with a third-party distributed cache.
