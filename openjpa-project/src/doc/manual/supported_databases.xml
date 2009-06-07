@@ -771,6 +771,29 @@ openjpa.ConnectionDriverName: com.mysql.jdbc.Driver
 openjpa.ConnectionURL: jdbc:mysql://SERVER_NAME/DB_NAME
 </programlisting>
         </example>
+        <section id="dbsupport_mysql_query_hints">
+            <title>
+                Using Query Hints with MySQL
+            </title>
+            <para>
+MySQL has support for "query hints", which are keywords embedded in
+SQL that provide some hint for how the query should be executed. These hints are
+usually designed to provide suggestions to the MySQL query optimizer for how to
+efficiently perform a certain query, and aren't typically needed for any but
+the most intensive queries.
+OpenJPA supports hints to be placed between SELECT keyword and column list.
+            </para>
+            <example id="dbsupport_mysql_query_hints_ex">
+                <title>
+                    Using MySQL Hints
+                </title>
+<programlisting>
+Query query = em.createQuery(...);
+query.setHint("openjpa.hint.MySQLSelectHint", "SQL_NO_CACHE");
+List results = query.getResultList();
+</programlisting>
+            </example>
+        </section>
         <section id="dbsupport_mysql_issues">
             <title>
                 Known issues with MySQL

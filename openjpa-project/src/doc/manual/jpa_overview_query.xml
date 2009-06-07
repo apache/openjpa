@@ -765,10 +765,14 @@ Any property of  an OpenJPA FetchPlan can be changed using a hint by using a nam
             </section>
             <section>
                 <title>
-                    Oracle Query Hints
+                    Database-Specific Hints
                 </title>
                 <para>
-The hint name &quot;openjpa.hint.OracleSelectHint&quot; can be used to specify a string value of an Oracle query hint that will inserted into sql for an Oracle database.See <xref linkend="dbsupport_oracle_query_hints"/>    for an example.  
+The hint names &quot;openjpa.hint.MySQLSelectHint&quot; and
+&quot;openjpa.hint.OracleSelectHint&quot; can be used to specify a string value
+of a query hint that will be inserted into sql for MySQL and Oracle databases.
+See <xref linkend="dbsupport_mysql_query_hints"/> and
+<xref linkend="dbsupport_oracle_query_hints"/> for examples.  
                 </para>
             </section>
             <section id="jpa_hints_named">
