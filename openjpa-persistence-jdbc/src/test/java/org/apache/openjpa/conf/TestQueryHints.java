@@ -21,6 +21,7 @@ package org.apache.openjpa.conf;
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
 
+import org.apache.openjpa.jdbc.sql.MySQLDictionary;
 import org.apache.openjpa.jdbc.sql.OracleDictionary;
 import org.apache.openjpa.kernel.QueryHints;
 import org.apache.openjpa.persistence.HintHandler;
@@ -48,6 +49,7 @@ public class TestQueryHints extends SingleEMFTestCase {
     
     public void testSupportedHintsContainProductDerivationHints() {
         assertSupportedHint(OracleDictionary.SELECT_HINT, true);
+        assertSupportedHint(MySQLDictionary.SELECT_HINT, true);
     }
     
     public void testSupportedHintsContainFetchPlanHints() {
@@ -182,10 +184,10 @@ public class TestQueryHints extends SingleEMFTestCase {
     
     void assertSupportedHint(String hint, boolean contains) {
         if (contains)
-            assertTrue("Expeceted suppoerted hint [" + hint + "]",
+            assertTrue("Expected supported hint [" + hint + "]",
                 query.getSupportedHints().contains(hint));
         else
-            assertFalse("Unexpeceted suppoerted hint [" + hint + "]",
+            assertFalse("Unexpected supported hint [" + hint + "]",
                 query.getSupportedHints().contains(hint));
     }
     

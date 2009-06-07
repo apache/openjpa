@@ -26,6 +26,7 @@ import java.sql.Types;
 import java.util.Arrays;
 
 import org.apache.commons.lang.StringUtils;
+import org.apache.openjpa.jdbc.kernel.JDBCFetchConfiguration;
 import org.apache.openjpa.jdbc.kernel.JDBCStore;
 import org.apache.openjpa.jdbc.kernel.exps.FilterValue;
 import org.apache.openjpa.jdbc.schema.Column;
@@ -38,6 +39,8 @@ import org.apache.openjpa.jdbc.schema.Table;
  */
 public class MySQLDictionary
     extends DBDictionary {
+
+    public static final String SELECT_HINT = "openjpa.hint.MySQLSelectHint";
 
     /**
      * The MySQL table type to use when creating tables; defaults to innodb.
@@ -314,5 +317,18 @@ public class MySQLDictionary
     public int getBatchFetchSize(int batchFetchSize) {
         return Integer.MIN_VALUE;
     }
-    
+
+    /**
+     * Check to see if we have set the {@link #SELECT_HINT} in the
+     * fetch configuration, and if so, append the MySQL hint after the
+     * "SELECT" part of the query.
+     */
+    @Override
+    public String getSelectOperation(JDBCFetchConfiguration fetch) {
+        Object hint = fetch == null ? null : fetch.getHint(SELECT_HINT);
+        String select = "SELECT";
+        if (hint != null)
+            select += " " + hint;
+        return select;
+    }
 }
