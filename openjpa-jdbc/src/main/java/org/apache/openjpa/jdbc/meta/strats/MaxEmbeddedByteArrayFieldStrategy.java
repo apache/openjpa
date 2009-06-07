@@ -19,6 +19,7 @@
 package org.apache.openjpa.jdbc.meta.strats;
 
 import java.lang.reflect.Array;
+import java.sql.Blob;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
@@ -72,7 +73,7 @@ public class MaxEmbeddedByteArrayFieldStrategy
     protected void putData(OpenJPAStateManager sm, ResultSet rs,
         DBDictionary dict)
         throws SQLException {
-        Object blob = rs.getBlob(1);
+        Blob blob = rs.getBlob(1);
         dict.putBytes(blob, PrimitiveWrapperArrays.toByteArray(sm.fetchObject
             (field.getIndex())));
     }
@@ -80,7 +81,7 @@ public class MaxEmbeddedByteArrayFieldStrategy
     protected Object load(Column col, Result res, Joins joins)
         throws SQLException {
         return PrimitiveWrapperArrays.toObjectValue(field,
-            (byte[]) res.getBytes(col, joins));
+            res.getBytes(col, joins));
     }
 
     public void map(boolean adapt) {
