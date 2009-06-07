@@ -18,6 +18,7 @@
  */
 package org.apache.openjpa.jdbc.meta.strats;
 
+import java.sql.Blob;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
@@ -89,7 +90,7 @@ public class MaxEmbeddedBlobFieldStrategy
         DBDictionary dict)
         throws SQLException {
         byte[] b = (byte[]) sm.setImplData(field.getIndex(), null);
-        Object blob = rs.getBlob(1);
+        Blob blob = rs.getBlob(1);
         dict.putBytes(blob, b);
     }
 

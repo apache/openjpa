@@ -18,6 +18,7 @@
  */
 package org.apache.openjpa.jdbc.meta.strats;
 
+import java.sql.Clob;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
@@ -66,7 +67,7 @@ public class MaxEmbeddedClobFieldStrategy
     protected void putData(OpenJPAStateManager sm, ResultSet rs,
         DBDictionary dict)
         throws SQLException {
-        Object clob = rs.getClob(1);
+        Clob clob = rs.getClob(1);
         dict.putString(clob, sm.fetchString(field.getIndex()));
     }
 

@@ -23,6 +23,7 @@ import java.io.CharArrayWriter;
 import java.io.IOException;
 import java.io.Reader;
 import java.lang.reflect.Array;
+import java.sql.Clob;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
@@ -77,7 +78,7 @@ public class MaxEmbeddedCharArrayFieldStrategy
     protected void putData(OpenJPAStateManager sm, ResultSet rs,
         DBDictionary dict)
         throws SQLException {
-        Object clob = rs.getClob(1);
+        Clob clob = rs.getClob(1);
         dict.putChars(clob, PrimitiveWrapperArrays.
             toCharArray(sm.fetchObject(field.getIndex())));
     }

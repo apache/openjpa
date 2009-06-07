@@ -28,8 +28,6 @@ import java.io.OutputStream;
 import java.io.Reader;
 import java.io.StringReader;
 import java.io.Writer;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.sql.Array;
@@ -370,11 +368,6 @@ public class DBDictionary
     // when we store values that lose precion, track the types so that the
     // first time it happens we can warn the user
     private Set _precisionWarnedTypes = null;
-
-    // cache lob methods
-    private Method _setBytes = null;
-    private Method _setString = null;
-    private Method _setCharStream = null;
 
     // batchLimit value:
     // -1 = unlimited
@@ -1394,78 +1387,32 @@ public class DBDictionary
     /**
      * Invoke the JDK 1.4 <code>setBytes</code> method on the given BLOB object.
      */
-    public void putBytes(Object blob, byte[] data)
+    public void putBytes(Blob blob, byte[] data)
         throws SQLException {
-        if (_setBytes == null) {
-            try {
-                _setBytes = blob.getClass().getMethod("setBytes",
-                    new Class[]{ long.class, byte[].class });
-            } catch (Exception e) {
-                throw new StoreException(e);
-            }
-        }
-        invokePutLobMethod(_setBytes, blob,
-            new Object[]{ Numbers.valueOf(1L), data });
+        blob.setBytes(1L, data);
     }
 
     /**
      * Invoke the JDK 1.4 <code>setString</code> method on the given CLOB
      * object.
      */
-    public void putString(Object clob, String data)
+    public void putString(Clob clob, String data)
         throws SQLException {
-        if (_setString == null) {
-            try {
-                _setString = clob.getClass().getMethod("setString",
-                    new Class[]{ long.class, String.class });
-            } catch (Exception e) {
-                throw new StoreException(e);
-            }
-        }
-        invokePutLobMethod(_setString, clob,
-            new Object[]{ Numbers.valueOf(1L), data });
+        clob.setString(1L, data);
     }
 
     /**
      * Invoke the JDK 1.4 <code>setCharacterStream</code> method on the given
      * CLOB object.
      */
-    public void putChars(Object clob, char[] data)
+    public void putChars(Clob clob, char[] data)
         throws SQLException {
-        if (_setCharStream == null) {
-            try {
-                _setCharStream = clob.getClass().getMethod
-                    ("setCharacterStream", new Class[]{ long.class });
-            } catch (Exception e) {
-                throw new StoreException(e);
-            }
-        }
-
-        Writer writer = (Writer) invokePutLobMethod(_setCharStream, clob,
-            new Object[]{ Numbers.valueOf(1L) });
+        Writer writer = clob.setCharacterStream(1L);
         try {
             writer.write(data);
             writer.flush();
         } catch (IOException ioe) {
             throw new SQLException(ioe.toString());
-        }
-    }
-
-    /**
-     * Invoke the given LOB method on the given target with the given data.
-     */
-    private static Object invokePutLobMethod(Method method, Object target,
-        Object[] args)
-        throws SQLException {
-        try {
-            return method.invoke(target, args);
-        } catch (InvocationTargetException ite) {
-            Throwable t = ite.getTargetException();
-            if (t instanceof SQLException)
-                throw(SQLException) t;
-            throw new StoreException(t);
-        } catch (Exception e) {
-            throw new StoreException(e);
         }
     }
 

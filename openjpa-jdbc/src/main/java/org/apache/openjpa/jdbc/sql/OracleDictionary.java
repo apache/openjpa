@@ -937,7 +937,7 @@ public class OracleDictionary
      * vendor-specific class; for example Weblogic wraps oracle thin driver
      * lobs in its own interfaces with the same methods.
      */
-    public void putBytes(Object blob, byte[] data)
+    public void putBytes(Blob blob, byte[] data)
         throws SQLException {
         if (blob == null)
             return;
@@ -958,7 +958,7 @@ public class OracleDictionary
      * vendor-specific class; for example Weblogic wraps oracle thin driver
      * lobs in its own interfaces with the same methods.
      */
-    public void putString(Object clob, String data)
+    public void putString(Clob clob, String data)
         throws SQLException {
         if (_putString == null) {
             try {
@@ -977,7 +977,7 @@ public class OracleDictionary
      * vendor-specific class; for example Weblogic wraps oracle thin driver
      * lobs in its own interfaces with the same methods.
      */
-    public void putChars(Object clob, char[] data)
+    public void putChars(Clob clob, char[] data)
         throws SQLException {
         if (_putChars == null) {
             try {
