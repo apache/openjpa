@@ -167,7 +167,7 @@ public class HintHandler extends FetchPlanHintHandler {
      */
     public Set<String> getSupportedHints() {
         if (_supportedKeys == null) {
-            _supportedKeys = new TreeSet<String>(new HintKeyComparator());
+            _supportedKeys = new TreeSet<String>();
             _supportedPrefixes = new TreeSet<String>();
             
             _supportedKeys.addAll(Reflection.getFieldValues(
@@ -176,7 +176,8 @@ public class HintHandler extends FetchPlanHintHandler {
                 String.class));
 
             _supportedKeys.addAll(addPrefix(PREFIX_FETCHPLAN, 
-                Reflection.getBeanStylePropertyNames(_fConfig.getClass())));
+                Reflection.getBeanStylePropertyNames(
+                      owner.getFetchPlan().getClass())));
 
             _supportedKeys.addAll(JavaxHintsMap.keySet());
 
@@ -284,24 +285,6 @@ public class HintHandler extends FetchPlanHintHandler {
         return objectSet;
     }
 
-    public static class HintKeyComparator implements Comparator<String> {
-        public int compare(String s1, String s2) {
-            if (getPrefixOf(s1).equals(getPrefixOf(s2))) {
-                int n1 = countDots(s1);
-                int n2 = countDots(s2);
-                return (n1 == n2) ? s1.compareTo(s2) : (n1 - n2);
-            } else
-                return s1.compareTo(s2);
-        }
-
-        public int countDots(String s) {
-            if (s == null || s.length() == 0)
-                return 0;
-            int index = s.indexOf(DOT);
-            return (index == -1) ? 0 : countDots(s.substring(index + 1)) + 1;
-        }
-    }
-
     protected String hintToKey(String key) {
         // Let superclass performs key transformation when fPlan.setHint() 
         // is called.
@@ -316,3 +299,4 @@ public class HintHandler extends FetchPlanHintHandler {
         return result;
     }
 }
+
