@@ -169,19 +169,6 @@ public class TestQueryHints extends SingleEMFTestCase {
         }
     }
     
-    public void testParts() {
-        HintHandler.HintKeyComparator test =
-            new HintHandler.HintKeyComparator();
-        assertEquals(0, test.countDots("a"));
-        assertEquals(1, test.countDots("a.b"));
-        assertEquals(2, test.countDots("a.b.c"));
-        assertEquals(3, test.countDots("a.b.c.d"));
-        assertEquals(4, test.countDots("a.b.c.d."));
-        assertEquals(1, test.countDots("."));
-        assertEquals(0, test.countDots(""));
-        assertEquals(0, test.countDots(null));
-    }
-    
     void assertSupportedHint(String hint, boolean contains) {
         if (contains)
             assertTrue("Expected supported hint [" + hint + "]",
