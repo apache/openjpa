@@ -755,7 +755,6 @@
                             <failsOnError>true</failsOnError>
                             <consoleOutput>true</consoleOutput>
                             <includeTestSourceDirectory>true</includeTestSourceDirectory>
-                            <excludes>**/*_.java</excludes>
                         </configuration>
                     </execution>
                 </executions>
@@ -795,7 +794,6 @@
                 <configuration>
                     <configLocation>${checkstyle.config.location}</configLocation>
                     <includeTestSourceDirectory>true</includeTestSourceDirectory> 
-                    <excludes>**/*_.java</excludes>
                 </configuration>
             </plugin>
         </plugins>
