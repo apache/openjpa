@@ -1788,7 +1788,6 @@ public class AnnotationPersistenceMetaDataParser
             meta = getRepository().addQueryMetaData(_cls, query.name());
             meta.setQueryString(query.query());
             meta.setLanguage(JPQLParser.LANG_JPQL);
-            meta.addHint("openjpa.FetchPlan.ReadLockMode", query.lockMode());
             for (QueryHint hint : query.hints())
                 meta.addHint(hint.name(), hint.value());
 
@@ -1917,3 +1916,4 @@ public class AnnotationPersistenceMetaDataParser
 		}
 	}
 }
+
