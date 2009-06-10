@@ -105,7 +105,7 @@ implements Predicate {
                 ExpressionImpl<?> e = (ExpressionImpl<?>)_exps.get(i);
                 result = _op == BooleanOperator.AND 
                 ? factory.and(result, e.toKernelExpression(factory, model, q))
-                    : factory.or(result, e.toKernelExpression(factory,model,q));
+                : factory.or(result, e.toKernelExpression(factory,model,q));
             }
             return _negated ? factory.not(result) : result;
     }

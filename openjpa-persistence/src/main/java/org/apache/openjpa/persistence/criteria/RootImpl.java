@@ -22,17 +22,20 @@ package org.apache.openjpa.persistence.criteria;
 import javax.persistence.criteria.Root;
 import javax.persistence.metamodel.Entity;
 
+import org.apache.openjpa.kernel.exps.Expression;
 import org.apache.openjpa.kernel.exps.ExpressionFactory;
+import org.apache.openjpa.kernel.exps.Path;
+import org.apache.openjpa.kernel.exps.Subquery;
 import org.apache.openjpa.kernel.exps.Value;
 import org.apache.openjpa.persistence.meta.MetamodelImpl;
 import org.apache.openjpa.persistence.meta.Types;
 
 /**
- * A path without a parent.
+ * A root path without a parent.
  * 
  * @author Pinaki Poddar
  *
- * @param <X>
+ * @param <X> the type of the entity
  */
 public class RootImpl<X> extends FromImpl<X,X> implements Root<X> {
     private final Types.Entity<X> _entity;
@@ -61,14 +64,14 @@ public class RootImpl<X> extends FromImpl<X,X> implements Root<X> {
     @Override
     public Value toValue(ExpressionFactory factory, MetamodelImpl model, 
         CriteriaQueryImpl c) {
-        SubqueryImpl subquery = c.getContext();
-        Value var = null;
-        if (subquery != null && PathImpl.inSubquery(this, subquery)) {
-            org.apache.openjpa.kernel.exps.Subquery subQ = 
-                subquery.getSubQ();
+        SubqueryImpl<?> subquery = c.getContext();
+        Path var = null;
+        if (inSubquery(subquery)) {
+            Subquery subQ = subquery.getSubQ();
             var = factory.newPath(subQ);
-        } else 
+        } else {
             var = factory.newPath();
+        }
         var.setMetaData(_entity.meta);
         return var;
     }
@@ -80,21 +83,18 @@ public class RootImpl<X> extends FromImpl<X,X> implements Root<X> {
     @Override
     public org.apache.openjpa.kernel.exps.Expression toKernelExpression(
         ExpressionFactory factory, MetamodelImpl model, CriteriaQueryImpl c) {
-        org.apache.openjpa.kernel.exps.Value path = toValue(factory, model, c);
-        
-        Value var = factory.newBoundVariable(getAlias(), 
+        Value path = toValue(factory, model, c);
+        Value var = factory.newBoundVariable(c.getAlias(this), 
             _entity.meta.getDescribedType());
-        org.apache.openjpa.kernel.exps.Expression exp = 
-            factory.bindVariable(var, path);
+        Expression exp = factory.bindVariable(var, path);
         
         if (_correlatedParent == null) 
             return exp;
-        org.apache.openjpa.kernel.exps.Value path1 = 
-            _correlatedParent.toValue(factory, model, c);
-        org.apache.openjpa.kernel.exps.Expression equal = 
-            factory.equal(path1, path);
-        //return factory.and(exp, equal);
-        return equal;
-        
+        Value path1 = _correlatedParent.toValue(factory, model, c);
+        return factory.equal(path1, path);
+    }
+    
+    public String toString() {
+        return _entity.toString();
     }
 }

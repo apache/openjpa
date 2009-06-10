@@ -1,3 +1,21 @@
+/*
+ * Licensed to the Apache Software Foundation (ASF) under one
+ * or more contributor license agreements.  See the NOTICE file
+ * distributed with this work for additional information
+ * regarding copyright ownership.  The ASF licenses this file
+ * to you under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied.  See the License for the
+ * specific language governing permissions and limitations
+ * under the License.    
+ */
 package org.apache.openjpa.persistence.criteria;
 
 import java.util.LinkedHashSet;
@@ -24,7 +42,15 @@ import org.apache.openjpa.persistence.meta.Types;
 import org.apache.openjpa.kernel.exps.QueryExpressions;
 import org.apache.openjpa.kernel.jpql.JPQLExpressionBuilder;
 
-
+/**
+ * Subquery is an expression which itself is a query and always appears in the
+ * context of a parent query.
+ * 
+ * @author Pinaki Poddar
+ * @author Fay Wang
+ * 
+ * @param <T> the type selected by this subquery.
+ */
 public class SubqueryImpl<T> extends ExpressionImpl<T> implements Subquery<T> {
     private final CriteriaQueryImpl _parent;
     private final CriteriaQueryImpl _delegate;
@@ -139,12 +165,15 @@ public class SubqueryImpl<T> extends ExpressionImpl<T> implements Subquery<T> {
     public <X,Y> CollectionJoin<X,Y> correlate(CollectionJoin<X,Y> join) {
         return join;
     }
+    
     public <X,Y> SetJoin<X,Y> correlate(SetJoin<X,Y> join) {
         return join;
     }
+    
     public <X,Y> ListJoin<X,Y> correlate(ListJoin<X,Y> join) {
         return join;
     }
+    
     public <X,K,V> MapJoin<X,K,V> correlate(MapJoin<X,K,V> join) {
         return join;
     }
@@ -164,14 +193,14 @@ public class SubqueryImpl<T> extends ExpressionImpl<T> implements Subquery<T> {
     public Value toValue(ExpressionFactory factory, MetamodelImpl model,
         CriteriaQueryImpl q) {
         final boolean subclasses = true;
-        CriteriaExpressionBuilder queryEval = q.getExprBuilder();
-        String alias = queryEval.nextAlias();
+        CriteriaExpressionBuilder queryEval = new CriteriaExpressionBuilder();
+        String alias = q.getAlias(this);
         ClassMetaData candidate =  
             ((Types.Managed<?>)getRoot().getModel()).meta;
         _subq = factory.newSubquery(candidate, subclasses, alias);
         _subq.setMetaData(candidate);
-        QueryExpressions subexp = q.getExprBuilder().
-            getQueryExpressions(factory, _delegate);
+        QueryExpressions subexp = queryEval.getQueryExpressions(factory, 
+                _delegate);
         _subq.setQueryExpressions(subexp);
         if (subexp.projections.length > 0)
             JPQLExpressionBuilder.checkEmbeddable(subexp.projections[0], null);

@@ -33,7 +33,7 @@ import org.apache.openjpa.meta.ClassMetaData;
  * only called if the variable is bound but otherwise unused in the filter,
  * in which case we must at least make the joins to the variable because the
  * act of binding a variable should at least guarantee that an instance
- * represting the variable could exist (i.e. the binding collection is not
+ * representing the variable could exist (i.e. the binding collection is not
  * empty).
  *
  * @author Abe White

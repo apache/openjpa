@@ -20,8 +20,10 @@ package org.apache.openjpa.persistence.criteria;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import javax.persistence.Parameter;
@@ -37,6 +39,7 @@ import javax.persistence.metamodel.Entity;
 import org.apache.commons.collections.map.LinkedMap;
 import org.apache.openjpa.kernel.exps.ExpressionFactory;
 import org.apache.openjpa.kernel.exps.QueryExpressions;
+import org.apache.openjpa.kernel.exps.Value;
 import org.apache.openjpa.persistence.meta.MetamodelImpl;
 import org.apache.openjpa.persistence.meta.Types;
 
@@ -49,10 +52,11 @@ import org.apache.openjpa.persistence.meta.Types;
  * that can be interpreted and executed against a data store by OpenJPA kernel.
  *   
  * @author Pinaki Poddar
+ * @author Fay Wang
  *
  * @since 2.0.0
  */
-public class CriteriaQueryImpl implements CriteriaQuery {
+public class CriteriaQueryImpl implements CriteriaQuery, AliasContext {
     private final MetamodelImpl  _model;
     private Set<Root<?>>        _roots;
     private PredicateImpl       _where;
@@ -64,18 +68,28 @@ public class CriteriaQueryImpl implements CriteriaQuery {
     private List<Subquery<?>>   _subqueries;
     private Boolean             _distinct;
     private LinkedMap           _parameterTypes;
-    private CriteriaExpressionBuilder _exprBuilder;
-    private SubqueryImpl        _context;
+    private SubqueryImpl<?>     _context;
+    
+    // AliasContext
+    private int aliasCount = 0;
+    private static String ALIAS_BASE = "autoAlias";
+    
+    private Map<Selection<?>,Value> _variables = 
+        new HashMap<Selection<?>, Value>();
+    private Map<Selection<?>,Value> _values = 
+        new HashMap<Selection<?>, Value>();
+    private Map<Selection<?>,String> _aliases = 
+        new HashMap<Selection<?>, String>();
     
     public CriteriaQueryImpl(MetamodelImpl model) {
         this._model = model;
     }
     
-    public void setContext(SubqueryImpl context) {
+    public void setContext(SubqueryImpl<?> context) {
         _context = context;
     }
     
-    public SubqueryImpl getContext() {
+    public SubqueryImpl<?> getContext() {
         return _context;
     }
     
@@ -150,8 +164,11 @@ public class CriteriaQueryImpl implements CriteriaQuery {
         return root;
     }
 
-    public <X> Root<X> from(Class<X> entityClass) {
-        return from(_model.entity(entityClass));
+    public <X> Root<X> from(Class<X> cls) {
+        Entity<X> entity = _model.entity(cls);
+        if (entity == null)
+            throw new IllegalArgumentException(cls + " is not an entity");
+        return from(entity);
     }
 
     public List<Expression<?>> getGroupList() {
@@ -190,7 +207,7 @@ public class CriteriaQueryImpl implements CriteriaQuery {
     public <U> Subquery<U> subquery(Class<U> type) {
         if (_subqueries == null)
             _subqueries = new ArrayList<Subquery<?>>();
-        Subquery<U> subquery = new SubqueryImpl(type, this);
+        Subquery<U> subquery = new SubqueryImpl<U>(type, this);
         _subqueries.add(subquery);
         return subquery;
     }
@@ -203,21 +220,85 @@ public class CriteriaQueryImpl implements CriteriaQuery {
         _parameterTypes = parameterTypes;
     }
     
-    public CriteriaExpressionBuilder getExprBuilder() {
-        return _exprBuilder;
-    }
-
     /**
      * Populate a kernel expression tree by translating the components of this
      * receiver with the help of the given {@link ExpressionFactory}.
      */
     QueryExpressions getQueryExpressions(ExpressionFactory factory) {
-        _exprBuilder = new CriteriaExpressionBuilder(this);
-        return _exprBuilder.getQueryExpressions(factory, this);
+        return new CriteriaExpressionBuilder()
+              .getQueryExpressions(factory, this);
     }    
     
     public void assertRoot() {
         if (_roots == null || _roots.isEmpty())
             throw new IllegalStateException("no root is set");
+    }
+    
+    //
+    // AliasContext management
+    //
+    
+    /**
+     * Gets the alias of the given node. Creates if necessary.
+     */
+    public String getAlias(Selection<?> selection) {
+        String alias = selection.getAlias();
+        if (alias != null) {
+            _aliases.put(selection, alias);
+            return alias;
+        }
+        alias = ALIAS_BASE + (++aliasCount);
+        while (_aliases.containsValue(alias))
+            alias = ALIAS_BASE + (++aliasCount);
+        selection.setAlias(alias);
+        _aliases.put(selection, alias);
+        return _aliases.get(selection);
+    }
+    
+    public Value getVariable(Selection<?> selection) {
+        return _variables.get(selection);
+    }
+    
+    public Value getValue(Selection<?> selection) {
+        return _values.get(selection);
+    }
+    
+    /**
+     * Register the given variable of given path value against the given node.
+     * If the given node has no alias then an alias is set to the given node.
+     * If the variable or the path has non-null alias, then that alias must
+     * be equal to the alias of the given node. Otherwise, the node alias is set
+     * on the variable and path.  
+     */
+    public void registerVariable(Selection<?> node, Value var, Value path) {
+        if (!var.isVariable())
+            throw new RuntimeException(var.getClass() + " is not a variable");
+        if (var.getPath() != path)
+            throw new RuntimeException(var + " and " + path);
+        String alias = getAlias(node);
+        
+        if (!alias.equals(var.getAlias())) {
+            if (var.getAlias() == null)
+                var.setAlias(alias);
+            else
+                throw new RuntimeException("Variable alias " + var.getAlias() + 
+                " does not match expected selection alias " + alias);
+        }
+        if (!alias.equals(path.getAlias())) {
+            if (path.getAlias() == null) 
+                path.setAlias(alias);
+            else
+                throw new RuntimeException("Path alias " + path.getAlias() + 
+                " does not match expected selection alias " + alias);
+        }
+        if (isRegistered(node))
+            throw new RuntimeException(node + " is already bound");
+        _variables.put(node, var);
+        _values.put(node, path);
+        _aliases.put(node, alias);
+    }
+    
+    public boolean isRegistered(Selection<?> selection) {
+        return _variables.containsKey(selection);
     }
 }

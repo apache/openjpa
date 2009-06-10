@@ -7,8 +7,8 @@ package org.apache.openjpa.persistence.criteria;
 import javax.persistence.metamodel.Attribute;
 
 @javax.persistence.metamodel.TypesafeMetamodel
-(value=org.apache.openjpa.persistence.criteria.Photo.class)
-public class Photo_ {
-    public static volatile Attribute<Photo,Integer> id;
-    public static volatile Attribute<Photo,String> label;
+(value=org.apache.openjpa.persistence.criteria.B.class)
+public class B_ {
+    public static volatile Attribute<B,Integer> age;
+    public static volatile Attribute<B,Long> id;
 }

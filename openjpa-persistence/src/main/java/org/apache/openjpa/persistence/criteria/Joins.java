@@ -74,6 +74,8 @@ public abstract class Joins {
         @Override
         public Value toValue(ExpressionFactory factory, MetamodelImpl model, 
             CriteriaQueryImpl c) {
+            if (c.isRegistered(this))
+                return c.getValue(this);
             boolean allowNull = joinType != JoinType.INNER;
             org.apache.openjpa.kernel.exps.Path path = 
                 (org.apache.openjpa.kernel.exps.Path)
@@ -92,10 +94,11 @@ public abstract class Joins {
             org.apache.openjpa.kernel.exps.Value path = this.toValue
                 (factory, model, c);
             ClassMetaData meta = _member.fmd.getDeclaredTypeMetaData();
-            Value var = factory.newBoundVariable(getAlias(), 
+            Value var = factory.newBoundVariable(c.getAlias(this), 
                 meta.getDescribedType());
             org.apache.openjpa.kernel.exps.Expression join = factory
                 .bindVariable(var, path);
+            c.registerVariable(this, var, path);
             return join;
         }
     }
@@ -105,15 +108,13 @@ public abstract class Joins {
      * 
      * @param Z type being joined from
      * @param C Java collection type of the container
-     * @param type of the element being joined to
+     * @param E type of the element being joined to
      * 
      */
     public static abstract class AbstractCollection<Z,C,E> 
         extends FromImpl<Z,E> 
         implements AbstractCollectionJoin<Z, C, E> {
         final JoinType joinType;
-//        final FromImpl<?, Z> _from;
-//        final Members.BaseCollection<? super Z, C, E> _member;
         
         public AbstractCollection(FromImpl<?,Z> from, 
             Members.BaseCollection<? super Z, C, E> member, JoinType jt) {
@@ -177,11 +178,10 @@ public abstract class Joins {
             ClassMetaData meta = _member.fmd.isElementCollection() 
                 ? _member.fmd.getEmbeddedMetaData()
                 : _member.fmd.getElement().getDeclaredTypeMetaData();
-            Value var = factory.newBoundVariable(getAlias(), 
+                
+            Value var = factory.newBoundVariable(c.getAlias(this), 
                 meta.getDescribedType());
-            org.apache.openjpa.kernel.exps.Expression join = factory
-                .bindVariable(var, path);
-            return join;
+            return factory.bindVariable(var, path);
         }
         
     }
@@ -290,6 +290,25 @@ public abstract class Joins {
         
         public Path<V> value() {
             throw new AbstractMethodError();
+        }
+        
+        @Override
+        public org.apache.openjpa.kernel.exps.Expression toKernelExpression(
+            ExpressionFactory factory, MetamodelImpl model, 
+            CriteriaQueryImpl c) {
+            org.apache.openjpa.kernel.exps.Value path = toValue
+               (factory, model, c);
+            
+            ClassMetaData meta = _member.fmd.isElementCollection() 
+                ? _member.fmd.getEmbeddedMetaData()
+                : _member.fmd.getElement().getDeclaredTypeMetaData();
+                
+            Value var = factory.newBoundVariable(c.getAlias(this), 
+                meta.getDescribedType());
+            org.apache.openjpa.kernel.exps.Expression join = factory
+                .bindValueVariable(var, path);
+            c.registerVariable(this, var, path);
+            return join;
         }
     }
 }

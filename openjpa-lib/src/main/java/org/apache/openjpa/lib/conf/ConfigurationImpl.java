@@ -806,12 +806,12 @@ public class ConfigurationImpl
         // openjpa.some.subpackage.SomeString, since it might be valid for some
         // specific implementation of OpenJPA
         String[] prefixes = ProductDerivations.getConfigurationPrefixes();
-        for (int i = 0; i < prefixes.length; i++) {
-            if (propName.toLowerCase().startsWith(prefixes[i])
-                && propName.length() > prefixes[i].length() + 1
-                && propName.indexOf('.', prefixes[i].length()) 
-                == prefixes[i].length()
-                && propName.indexOf('.', prefixes[i].length() + 1) == -1)
+        for (String prefix : prefixes) {
+            if (propName.toLowerCase().startsWith(prefix)
+                && propName.length() > prefix.length() + 1
+                && propName.indexOf('.', prefix.length()) == prefix.length()
+                && propName.indexOf('.', prefix.length() + 1) == -1
+                && "openjpa".equals(prefix))
                 return true;
         }
         return false;

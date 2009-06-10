@@ -33,12 +33,9 @@ import javax.persistence.metamodel.AbstractCollection;
 import javax.persistence.metamodel.Attribute;
 import javax.persistence.metamodel.Collection;
 import javax.persistence.metamodel.List;
-import javax.persistence.metamodel.ManagedType;
 import javax.persistence.metamodel.Map;
-import javax.persistence.metamodel.Member;
 import javax.persistence.metamodel.Set;
 
-import org.apache.openjpa.persistence.criteria.PathImpl;
 import org.apache.openjpa.persistence.meta.Members;
 import org.apache.openjpa.persistence.meta.Types;
 
@@ -71,14 +68,7 @@ public class FromImpl<Z,X> extends PathImpl<Z,X> implements From<Z,X> {
     }
     
     /**
-     * Create a path from the given parent ending at the given member.
-     */
-//    protected FromImpl(PathImpl<?,Z> parent, Members.Member<? super Z, X> m) {
-//        super(parent, m);
-//    }
-    
-    /**
-     *  Return the joins that have been made from this type.
+     *  Return the joins that have been made from this receiver.
      */
     public java.util.Set<Join<X, ?>> getJoins() {
         return _joins;
@@ -175,85 +165,82 @@ public class FromImpl<Z,X> extends PathImpl<Z,X> implements From<Z,X> {
     
     // String based counterparts
 
-    public Join join(String attributeName) {
-        return join(type.getAttribute(attributeName));
+    public <W,Y> Join<W,Y> join(String attr) {
+        return join(attr, JoinType.INNER);
     }
 
-    public Join join(String attributeName, JoinType jt) {
-        return join(type.getAttribute(attributeName), jt);
+    public <W,Y> Join<W,Y> join(String attr, JoinType jt) {
+        return (Join<W,Y>)join(type.getAttribute(attr), jt);
     }
 
 
-    public CollectionJoin joinCollection(String attributeName) {
-        return join(type.getCollection(attributeName));
+    public <W,Y> CollectionJoin<W, Y> joinCollection(String attr) {
+        return (CollectionJoin<W,Y>)join(attr, JoinType.INNER);
     }
 
-    public CollectionJoin joinCollection(String attributeName, JoinType jt) {
-        return join(type.getCollection(attributeName), jt);
+    public <W,Y> CollectionJoin<W, Y> joinCollection(String attr, JoinType jt) {
+        return (CollectionJoin<W,Y>)join(type.getCollection(attr), jt);
     }
 
-    public ListJoin joinList(String attributeName) {
-        return join(type.getList(attributeName));
+    public <W,Y> ListJoin<W, Y> joinList(String attr) {
+        return (ListJoin<W,Y>)join(attr, JoinType.INNER);
     }
 
-    public ListJoin joinList(String attributeName, JoinType jt) {
-        return join(type.getList(attributeName), jt);
+    public <W,Y> ListJoin<W,Y> joinList(String attr, JoinType jt) {
+        return (ListJoin<W,Y>)join(type.getList(attr), jt);
     }
 
-    public MapJoin joinMap(String attributeName) {
-        return join(type.getMap(attributeName));
+    public <W,K,V> MapJoin<W,K,V> joinMap(String attr) {
+        return (MapJoin<W,K,V>)join(type.getMap(attr));
     }
 
-    public MapJoin joinMap(String attributeName, JoinType jt) {
-        return join(type.getMap(attributeName));
+    public <W,K,V> MapJoin<W,K,V>  joinMap(String attr, JoinType jt) {
+        return (MapJoin<W,K,V>)join(type.getMap(attr));
     }
 
-    public SetJoin joinSet(String attributeName) {
-        return join(type.getSet(attributeName));
+    public <W,Y> SetJoin<W, Y>  joinSet(String attr) {
+        return (SetJoin<W, Y>)join(type.getSet(attr));
     }
 
-    public SetJoin joinSet(String attributeName, JoinType jt) {
-        return join(type.getSet(attributeName), jt);
+    public <W,Y> SetJoin<W, Y>  joinSet(String attr, JoinType jt) {
+        return (SetJoin<W, Y>)join(type.getSet(attr), jt);
     }
 
-    public Fetch fetch(Attribute assoc) {
-        // TODO Auto-generated method stub
-        throw new AbstractMethodError();
-    }
-
-    public Fetch fetch(AbstractCollection assoc) {
-        // TODO Auto-generated method stub
-        throw new AbstractMethodError();
-    }
-
-    public Fetch fetch(String assocName) {
-        // TODO Auto-generated method stub
-        throw new AbstractMethodError();
-    }
-
-    public Fetch fetch(Attribute assoc, JoinType jt) {
-        // TODO Auto-generated method stub
-        throw new AbstractMethodError();
-    }
-
-    public Fetch fetch(AbstractCollection assoc, JoinType jt) {
-        // TODO Auto-generated method stub
-        throw new AbstractMethodError();
-    }
-
-    public Fetch fetch(String assocName, JoinType jt) {
-        // TODO Auto-generated method stub
-        throw new AbstractMethodError();
-    }
-
-    public java.util.Set<Fetch<X, ?>> getFetches() {
-        // TODO Auto-generated method stub
-        throw new AbstractMethodError();
-    }
-    
     private void addJoin(Join<X,?> join) {
         if (_joins == null)
             _joins = new HashSet<Join<X,?>>();
          _joins.add(join);
+    }
+    
+    
+    public <Y> Fetch<X, Y> fetch(Attribute<? super X, Y> assoc, JoinType jt) {
+        throw new AbstractMethodError();
+    }
+
+    public <Y> Fetch<X,Y> fetch(Attribute<? super X, Y> assoc) {
+        throw new AbstractMethodError();
+    }
+
+    public <Y> Fetch<X, Y> fetch(AbstractCollection<? super X, ?, Y> assoc,
+        JoinType jt) {
+        throw new AbstractMethodError();
+    }
+    
+    public <Y> Fetch<X,Y> fetch(AbstractCollection<? super X, ?, Y> assoc) {
+        throw new AbstractMethodError();
+    }
+
+    //String-based:
+
+    public <Y> Fetch<X, Y> fetch(String assocName) {
+        return (Fetch<X, Y>)fetch(type.getAttribute(assocName));
+    }
+
+    public <Y> Fetch<X, Y> fetch(String assocName, JoinType jt) {
+        return (Fetch<X, Y>)fetch(type.getAttribute(assocName), JoinType.INNER);
+    }
+
+    public java.util.Set<Fetch<X, ?>> getFetches() {
+        throw new AbstractMethodError();
     }
 }

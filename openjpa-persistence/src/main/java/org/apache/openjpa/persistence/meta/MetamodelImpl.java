@@ -27,7 +27,6 @@ import static
 import java.lang.reflect.Field;
 import java.lang.reflect.GenericArrayType;
 import java.lang.reflect.ParameterizedType;
-import java.lang.reflect.TypeVariable;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -46,7 +45,6 @@ import javax.persistence.metamodel.TypesafeMetamodel;
 import javax.persistence.metamodel.AbstractCollection.CollectionType;
 import javax.persistence.metamodel.Type.PersistenceType;
 
-import org.apache.openjpa.lib.util.J2DoPrivHelper;
 import org.apache.openjpa.lib.util.Localizer;
 import org.apache.openjpa.meta.ClassMetaData;
 import org.apache.openjpa.meta.FieldMetaData;
@@ -61,12 +59,14 @@ import org.apache.openjpa.util.InternalException;
  */
 public class MetamodelImpl implements Metamodel {
     public final MetaDataRepository repos;
-    Map<Class<?>, Entity<?>> _entities = new HashMap<Class<?>, Entity<?>>();
-    Map<Class<?>, Embeddable<?>> _embeddables =
+    private Map<Class<?>, Entity<?>> _entities = 
+        new HashMap<Class<?>, Entity<?>>();
+    private Map<Class<?>, Embeddable<?>> _embeddables =
         new HashMap<Class<?>, Embeddable<?>>();
-    Map<Class<?>, MappedSuperclass<?>> _mappedsupers =
+    private Map<Class<?>, MappedSuperclass<?>> _mappedsupers =
         new HashMap<Class<?>, MappedSuperclass<?>>();
-    Map<Class<?>, Type<?>> _basics = new HashMap<Class<?>, Type<?>>();
+    private Map<Class<?>, Type<?>> _basics = 
+        new HashMap<Class<?>, Type<?>>();
 
     private static Localizer _loc = Localizer.forPackage(MetamodelImpl.class);
 
@@ -141,8 +141,10 @@ public class MetamodelImpl implements Metamodel {
     public static PersistenceType getPersistenceType(ClassMetaData meta) {
         if (meta == null)
             return BASIC;
-        if (meta.isEmbeddedOnly())
-            return meta.isAbstract() ? MAPPED_SUPERCLASS : EMBEDDABLE;
+        if (meta.isAbstract())
+            return MAPPED_SUPERCLASS;
+        if (meta.isEmbeddable())
+            return EMBEDDABLE;
         return ENTITY;
     }
 

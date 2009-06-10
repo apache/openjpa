@@ -411,11 +411,27 @@ public class Types {
         void assertType(String msg, FieldMetaData fmd, Class<?> actual,
             Class<?> expected) {
             if (expected != null && !expected.isAssignableFrom(actual)) {
+                if (wrap(expected) != wrap(actual)) {
                 throw new IllegalArgumentException(_loc.get(msg, fmd.getName(), 
                 	actual, expected).getMessage());
+                }
             }
         }
-
+        
+        Class<?> wrap(Class<?> c) {
+            if (c.isPrimitive()) {
+                if (c == int.class) return Integer.class;
+                if (c == long.class) return Long.class;
+                if (c == boolean.class) return Boolean.class;
+                if (c == byte.class) return Byte.class;
+                if (c == char.class) return Character.class;
+                if (c == double.class) return Double.class;
+                if (c == float.class) return Float.class;
+                if (c == short.class) return Short.class;
+            }
+            return c;
+        }
+        
         boolean isDeclared(Member<?,?> member) {
             return member.getDeclaringType() == this;
         }

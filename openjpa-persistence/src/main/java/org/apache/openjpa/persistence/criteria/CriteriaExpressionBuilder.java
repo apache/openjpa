@@ -20,6 +20,7 @@
 package org.apache.openjpa.persistence.criteria;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -28,6 +29,7 @@ import javax.persistence.criteria.Join;
 import javax.persistence.criteria.Order;
 import javax.persistence.criteria.Root;
 import javax.persistence.criteria.Selection;
+import javax.persistence.metamodel.Entity;
 
 import org.apache.openjpa.kernel.exps.ExpressionFactory;
 import org.apache.openjpa.kernel.exps.QueryExpressions;
@@ -37,18 +39,13 @@ import org.apache.openjpa.persistence.meta.MetamodelImpl;
 import org.apache.openjpa.persistence.meta.Types;
 
 /**
- * Subquery is an expression as its selection item.
+ * Converts expressions of a CriteriaQuery to kernel Expression.
+ * 
+ * @author Fay Wang
  * 
  */
 public class CriteriaExpressionBuilder {
-    
     private int aliasCount = 0;
-    
-    private CriteriaQueryImpl criteriaQuery = null;
-    
-    public CriteriaExpressionBuilder(CriteriaQueryImpl criteriaQuery) {
-        this.criteriaQuery = criteriaQuery;
-    }
     
     public QueryExpressions getQueryExpressions(ExpressionFactory factory, 
         CriteriaQueryImpl q) {
@@ -79,13 +76,22 @@ public class CriteriaExpressionBuilder {
 
     protected void evalAccessPaths(QueryExpressions exps, 
         ExpressionFactory factory, CriteriaQueryImpl q) {
+        Set<ClassMetaData> metas = new HashSet<ClassMetaData>();
         Set<Root<?>> roots = q.getRoots();
         if (roots != null) {
-            exps.accessPath = new ClassMetaData[roots.size()];
-            int i = 0;
-            for (Root<?> r : roots)
-                exps.accessPath[i++] = ((Types.Managed<?>)r.getModel()).meta;
+            for (Root<?> root : roots) {
+                
+                metas.add(((Types.Managed<?>)root.getModel()).meta);
+                if (root.getJoins() != null) {
+                    for (Join<?,?> join : root.getJoins()) {
+                        Class<?> cls = join.getMember().getMemberJavaType();
+                        Entity<?> entity = q.getMetamodel().entity(cls);
+                        metas.add(((Types.Managed<?>)entity).meta);
+                    }
+                }
+            }
         }
+        exps.accessPath = metas.toArray(new ClassMetaData[metas.size()]);
     }
 
     protected void evalOrdering(QueryExpressions exps, 
@@ -200,7 +206,7 @@ public class CriteriaExpressionBuilder {
             if (sels == null) {
                 projections.add(((ExpressionImpl<?>)s).
                     toValue(factory, model, q));
-                aliases.add(nextAlias());
+                aliases.add(q.getAlias(s));
             } else {
                 // this is for constructor expression in the selection
                 exps.resultClass = s.getJavaType();
@@ -228,8 +234,4 @@ public class CriteriaExpressionBuilder {
         org.apache.openjpa.kernel.exps.Expression e2) {
         return e1 == null ? e2 : e2 == null ? e1 : factory.and(e1, e2);
     }
-   
-    protected String nextAlias() {
-        return "jpqlalias" + (++aliasCount);
-    }   
 }

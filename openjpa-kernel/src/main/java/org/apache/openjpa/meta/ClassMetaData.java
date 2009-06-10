@@ -169,6 +169,7 @@ public class ClassMetaData
     private Boolean _openjpaId = null;
     private Boolean _extent = null;
     private Boolean _embedded = null;
+    private boolean _embeddable = false;
     private Boolean _interface = null;
     private Class<?> _impl = null;
     private List<Class<?>> _interfaces = null;
@@ -760,6 +761,14 @@ public class ClassMetaData
      */
     public void setEmbeddedOnly(boolean embed) {
         _embedded = (embed) ? Boolean.TRUE : Boolean.FALSE;
+    }
+    
+    public boolean isEmbeddable() {
+        return _embeddable;
+    }
+    
+    public void setEmbeddable() {
+        _embeddable = true;
     }
 
     /**
@@ -2389,6 +2398,7 @@ public class ClassMetaData
         _objectId = meta.getObjectIdType();
         _extent = (meta.getRequiresExtent()) ? Boolean.TRUE : Boolean.FALSE;
         _embedded = (meta.isEmbeddedOnly()) ? Boolean.TRUE : Boolean.FALSE;
+        _embeddable = meta._embeddable;
         _interface = (meta.isManagedInterface()) ? Boolean.TRUE : Boolean.FALSE;
         setIntercepting(meta.isIntercepting());
         _impl = meta.getInterfaceImpl();

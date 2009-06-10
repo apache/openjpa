@@ -881,6 +881,7 @@ public class XMLPersistenceMetaDataParser
             meta.setEmbeddedOnly(mappedSuper || embeddable);
             
             if (embeddable) {
+                meta.setEmbeddable();
                 addDeferredEmbeddableMetaData(_cls, access);
             }
         }

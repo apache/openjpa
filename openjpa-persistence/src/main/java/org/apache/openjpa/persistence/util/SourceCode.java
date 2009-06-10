@@ -625,7 +625,7 @@ public class SourceCode {
 		
 		public void write(PrintWriter out, int tab) {
 			tab(out, tab);
-			out.print("@"+name);
+			out.println("@"+name);
 			writeList(out, BLANK, args, BRACKET_ARGS, false);
 			out.println();
 		}

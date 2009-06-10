@@ -161,7 +161,7 @@ public class TestMetamodel extends SingleEMFTestCase {
         assertEquals(CollectionType.COLLECTION, relColl.getCollectionType());
         assertEquals(e0, relColl.getDeclaringType());
         assertEquals(r1, relColl.getElementType());
-        assertEquals(java.util.Collection.class, relColl.getMemberJavaType());
+        assertEquals(ExplicitFieldAccess.class, relColl.getMemberJavaType());
         assertEquals(BindableType.COLLECTION, relColl.getBindableType());
         assertEquals(Multiplicity.ONE_TO_MANY, relColl.getMultiplicity());
     }
@@ -175,7 +175,7 @@ public class TestMetamodel extends SingleEMFTestCase {
         assertEquals(CollectionType.LIST, relList.getCollectionType());
         assertEquals(e0, relList.getDeclaringType());
         assertEquals(r1, relList.getElementType());
-        assertEquals(java.util.List.class, relList.getMemberJavaType());
+        assertEquals(ExplicitFieldAccess.class, relList.getMemberJavaType());
         assertEquals(BindableType.COLLECTION, relList.getBindableType());
         assertEquals(Multiplicity.ONE_TO_MANY, relList.getMultiplicity());
     }
@@ -189,7 +189,7 @@ public class TestMetamodel extends SingleEMFTestCase {
         assertEquals(CollectionType.SET, relSet.getCollectionType());
         assertEquals(e0, relSet.getDeclaringType());
         assertEquals(r1, relSet.getElementType());
-        assertEquals(java.util.Set.class, relSet.getMemberJavaType());
+        assertEquals(ExplicitFieldAccess.class, relSet.getMemberJavaType());
         assertEquals(BindableType.COLLECTION, relSet.getBindableType());
         assertEquals(Multiplicity.ONE_TO_MANY, relSet.getMultiplicity());
     }

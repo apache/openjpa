@@ -119,8 +119,9 @@ public class SchemaTool {
      * Construct a tool to perform the given action.
      */
     public SchemaTool(JDBCConfiguration conf, String action) {
-        if (action != null && !Arrays.asList(ACTIONS).contains(action))
-            throw new IllegalArgumentException("action == " + action);
+        if (action != null && !Arrays.asList(ACTIONS).contains(action)) {
+            Configurations.configureInstance(this, conf, action, action);
+        }
 
         _conf = conf;
         _action = action;

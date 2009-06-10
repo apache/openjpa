@@ -164,6 +164,10 @@ public class Members {
         public Class<E> getJavaType() {
             return fmd.getDeclaredType();
         }
+        
+        public Class getMemberJavaType() {
+            return fmd.getElement().getDeclaredType();
+        }
     }
 
     /**

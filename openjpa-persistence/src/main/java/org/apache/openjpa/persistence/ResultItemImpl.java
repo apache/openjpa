@@ -30,14 +30,12 @@ import javax.persistence.ResultItem;
 public class ResultItemImpl<X> implements ResultItem<X> {
     protected String _alias;
     protected Class<X> _cls;
-    static int i = 0;
+
     protected ResultItemImpl(Class<X> cls) {
         _cls = cls;
     }
     
     public String getAlias() {
-        if (_alias == null)
-            _alias = "c"+ i++;
         return _alias;
     }
 

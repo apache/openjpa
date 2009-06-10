@@ -19,11 +19,8 @@
 
 package org.apache.openjpa.persistence.criteria;
 
-import java.util.Set;
-
 import javax.persistence.criteria.Expression;
 import javax.persistence.criteria.Path;
-import javax.persistence.criteria.Root;
 import javax.persistence.metamodel.AbstractCollection;
 import javax.persistence.metamodel.Attribute;
 import javax.persistence.metamodel.Bindable;
@@ -42,7 +39,8 @@ import org.apache.openjpa.persistence.meta.MetamodelImpl;
  * from another (parent) path.
  * 
  * @author Pinaki Poddar
- *
+ * @author Fay Wang
+ * 
  * @param <Z> the type of the parent path 
  * @param <X> the type of this path
  */
@@ -61,7 +59,9 @@ public class PathImpl<Z,X> extends ExpressionImpl<X> implements Path<X> {
     }
     
     /**
-     * Create a path from the given parent representing the the given member.
+     * Create a path from the given non-null parent representing the the given 
+     * non-null member. The given class denotes the type expressed by this
+     * path.
      */
     public PathImpl(PathImpl<?,Z> parent, Members.Member<? super Z, ?> member, 
         Class<X> cls) {
@@ -72,70 +72,65 @@ public class PathImpl<Z,X> extends ExpressionImpl<X> implements Path<X> {
             throw new NullPointerException("Null parent for member " + member);
         if (member == null)
             throw new NullPointerException("Null member for parent " + parent);
-        
     }
     
     public PathImpl<?,Z> getParentPath() {
         return _parent;
     }
     
-    public PathImpl getInnermostParentPath() {
-        if (_parent == null)
-            return this;
-        PathImpl _p = _parent.getInnermostParentPath(); 
-        if (_p == null)
-            return _parent;
-        else
-            return _p.getInnermostParentPath();
+    public PathImpl<?,?> getInnermostParentPath() {
+        return (_parent == null) ? this : _parent.getInnermostParentPath();
     }
 
     /**
-     * Convert this path to a kernel path value.
+     * Convert this path to a kernel path.
      */
     @Override
-    public Value toValue(ExpressionFactory factory, MetamodelImpl model,
-        CriteriaQueryImpl q) {
-        Value var = null;
-        SubqueryImpl subquery = q.getContext();
-        PathImpl parent = getInnermostParentPath();
-        if (subquery != null && inSubquery(parent, subquery)) {
-            org.apache.openjpa.kernel.exps.Subquery subQ = 
-                subquery.getSubQ();
-            org.apache.openjpa.kernel.exps.Path path = factory.newPath(subQ);
+    public Value toValue(
+        ExpressionFactory factory, MetamodelImpl model,  CriteriaQueryImpl q) {
+        if (q.isRegistered(this))
+            return q.getValue(this);
+        org.apache.openjpa.kernel.exps.Path path = null;
+        SubqueryImpl<?> subquery = q.getContext();
+        PathImpl<?,?> parent = getInnermostParentPath();
+        if (parent.inSubquery(subquery)) {
+            org.apache.openjpa.kernel.exps.Subquery subQ = subquery.getSubQ();
+            path = factory.newPath(subQ);
             path.setMetaData(subQ.getMetaData());
             boolean allowNull = false;
             path.get(_member.fmd, allowNull);
-            var = path;
         } else if (_parent != null) { 
-            org.apache.openjpa.kernel.exps.Path path = 
-                (org.apache.openjpa.kernel.exps.Path)
-                _parent.toValue(factory, model, q);
+            if (q.isRegistered(_parent)) {
+                path = factory.newPath(q.getVariable(_parent));
+            } else {
+                path = (org.apache.openjpa.kernel.exps.Path)
+                     _parent.toValue(factory, model, q);
+            }
             boolean allowNull = false;
             path.get(_member.fmd, allowNull);
-            var = path;
         } else {
-            var = factory.newPath();//getJavaType());
-            var.setMetaData(model.repos.getMetaData(getJavaType(), null, true));
+            path = factory.newPath();
+            path.setMetaData(model.repos.getCachedMetaData(getJavaType()));
         }
         if (_member != null) {
             int typeCode = _member.fmd.getDeclaredTypeCode();
             if (typeCode != JavaTypes.COLLECTION && typeCode != JavaTypes.MAP)
-                var.setImplicitType(getJavaType());
+                path.setImplicitType(getJavaType());
         }
-        var.setAlias(getAlias());
-        return var;
+        path.setAlias(q.getAlias(this));
+        return path;
     }
     
-    public static boolean inSubquery(PathImpl parent, SubqueryImpl subquery) {
-        Set<Root<?>> roots = subquery.getRoots();
-        for (Root<?> r : roots) {
-            if (parent == r) 
-                return true;
-        }
-        return false;
+    /**
+     * Affirms if this receiver occurs in the roots of the given subquery.
+     */
+    public boolean inSubquery(SubqueryImpl<?> subquery) {
+        return subquery != null && subquery.getRoots().contains(this);
     }
     
-
+    /**
+     * Create a new path with this path as parent.
+     */
     public <Y> Path<Y> get(Attribute<? super X, Y> attr) {
         return new PathImpl<X,Y>(this, (Members.Attribute<? super X, Y>)attr, 
             attr.getJavaType());
@@ -181,5 +176,5 @@ public class PathImpl<Z,X> extends ExpressionImpl<X> implements Path<X> {
      */
     public Expression<Class<? extends X>> type() {
         return new Expressions.Type<X>(this);
-    }
+    }   
 }

@@ -43,15 +43,11 @@ public class Expressions {
     /**
      * Convert the given Criteria expression to a corresponding kernel value 
      * using the given ExpressionFactory.
-     * Also sets the alias of the resulting value.
+     * Handles null expression.
      */
      static Value toValue(ExpressionImpl<?> e, ExpressionFactory factory, 
         MetamodelImpl model, CriteriaQueryImpl q) {
-        Value v = e == null ? factory.getNull() : e.toValue(factory, model, q);
-        //v.setImplicitType(e.getJavaType());
-        //v.setAlias(e.getAlias());
-
-        return v;
+        return (e == null) ? factory.getNull() : e.toValue(factory, model, q);
     }
     
     /**
@@ -577,7 +573,7 @@ public class Expressions {
             Value val1 = Expressions.toValue(e1, factory, model, q);
             Value val2 = Expressions.toValue(e2, factory, model, q);
             JPQLExpressionBuilder.setImplicitTypes(val1, val2, null, null, 
-                ((CriteriaQueryImpl)q).getParameterTypes(), null);
+                q.getParameterTypes(), null);
             return isNegated() ? factory.notEqual(val1, val2) 
                     : factory.equal(val1, val2);
         }
@@ -599,7 +595,7 @@ public class Expressions {
             Value val1 = Expressions.toValue(e1, factory, model, q);
             Value val2 = Expressions.toValue(e2, factory, model, q); 
             JPQLExpressionBuilder.setImplicitTypes(val1, val2, null, null, 
-                ((CriteriaQueryImpl)q).getParameterTypes(), null);
+                q.getParameterTypes(), null);
             return factory.greaterThan(val1, val2);
         }
     }
@@ -620,7 +616,7 @@ public class Expressions {
             Value val1 = Expressions.toValue(e1, factory, model, q);
             Value val2 = Expressions.toValue(e2, factory, model, q); 
             JPQLExpressionBuilder.setImplicitTypes(val1, val2, null, null, 
-                ((CriteriaQueryImpl)q).getParameterTypes(), null);
+                q.getParameterTypes(), null);
             return factory.greaterThanEqual(val1, val2);
         }
     }
@@ -662,7 +658,7 @@ public class Expressions {
             Value val1 = Expressions.toValue(e1, factory, model, q);
             Value val2 = Expressions.toValue(e2, factory, model, q); 
             JPQLExpressionBuilder.setImplicitTypes(val1, val2, null, null, 
-                ((CriteriaQueryImpl)q).getParameterTypes(), null);
+                q.getParameterTypes(), null);
             return factory.lessThanEqual(val1, val2);
         }
     }
@@ -1192,35 +1188,31 @@ public class Expressions {
                 Expressions.toValue(e, factory, model, q));
         }
     }
-    
-    public static class Exists extends PredicateImpl {
-        SubqueryImpl<?> e;
-        public Exists(Subquery<?> x) {
+     
+    public static class Exists<X> extends PredicateImpl {
+        final SubqueryImpl<X> e;
+        public Exists(Subquery<X> x) {
             super();
-            e = (SubqueryImpl<?>)x;
+            e = (SubqueryImpl<X>)x;
         }
 
         @Override
         public PredicateImpl clone() {
-            return new Exists(e);
+            return new Exists<X>(e);
         }
         
         @Override
         org.apache.openjpa.kernel.exps.Expression toKernelExpression(
             ExpressionFactory factory, MetamodelImpl model, 
             CriteriaQueryImpl q) {
-            org.apache.openjpa.kernel.exps.Expression notEmpty = 
+            org.apache.openjpa.kernel.exps.Expression exists = 
                 factory.isNotEmpty(Expressions.toValue(e, factory, model, q));
-            if (isNegated())
-                return factory.not(notEmpty);
-            else
-                return notEmpty;
-                
+            return isNegated() ? factory.not(exists) : exists;
         }        
     }
     
     public static class All<X> extends ExpressionImpl<X> {
-        SubqueryImpl<X> e;
+        final SubqueryImpl<X> e;
         public All(Subquery<X> x) {
             super(x.getJavaType());
             e = (SubqueryImpl<X>)x;
@@ -1234,7 +1226,7 @@ public class Expressions {
     }
 
     public static class Any<X> extends ExpressionImpl<X> {
-        SubqueryImpl<X> e;
+        final SubqueryImpl<X> e;
         public Any(Subquery<X> x) {
             super(x.getJavaType());
             e = (SubqueryImpl<X>)x;
@@ -1248,7 +1240,7 @@ public class Expressions {
     }
 
     public static class Some<X> extends ExpressionImpl<X> {
-        SubqueryImpl<X> e;
+        final SubqueryImpl<X> e;
         public Some(Subquery<X> x) {
             super(x.getJavaType());
             e = (SubqueryImpl<X>)x;

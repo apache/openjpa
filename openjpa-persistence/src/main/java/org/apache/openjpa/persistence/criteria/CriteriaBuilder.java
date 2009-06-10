@@ -390,7 +390,6 @@ public class CriteriaBuilder implements QueryBuilder, ExpressionParser {
     public Expression<Integer> locate(Expression<String> x,
         Expression<String> pattern) {
         return new Expressions.Locate(x, pattern);
-
     }
 
     public Expression<Integer> locate(Expression<String> x, String pattern) {

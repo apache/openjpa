@@ -170,7 +170,7 @@ public abstract class AbstractExpressionBuilder {
         else
             meta = getMetaData(type, false);
         if (meta != null)
-            _accessPath.add(meta);
+            addAccessPath(meta);
 
         Value var;
         if (bind)

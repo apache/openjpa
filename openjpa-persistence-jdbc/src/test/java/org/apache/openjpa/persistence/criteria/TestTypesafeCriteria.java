@@ -44,7 +44,7 @@ import org.apache.openjpa.persistence.test.AllowFailure;
  * 
  */
 public class TestTypesafeCriteria extends CriteriaTest {
-
+    
     public void testExplictRoot() {
         String jpql = "select a from Account a";
         CriteriaQuery c = cb.create();
@@ -183,20 +183,30 @@ public class TestTypesafeCriteria extends CriteriaTest {
         assertEquivalence(c, jpql);
     }
 
+    public void testMultipartNavigation() {
+        String jpql = "select a from A a where a.b.age=22";
+        
+        CriteriaQuery cq = cb.create();
+        Root<A> a = cq.from(A.class);
+        cq.where(cb.equal(a.get(A_.b).get(B_.age), 22));
+        
+        assertEquivalence(cq, jpql);
+    }
+    
     @AllowFailure(message = "Extra joins created in Criteria")
     public void testMultiLevelJoins() {
         String jpql = "SELECT c FROM Customer c JOIN c.orders o "
             + "JOIN o.lineItems i WHERE i.product.productType = 'printer'";
 
-        CriteriaQuery c = cb.create();
-        Root<Customer> cust = c.from(Customer.class);
-        Join<Customer, Order> order = cust.join(Customer_.orders);
-        Join<Order, LineItem> item = order.join(Order_.lineItems);
-        c.select(cust.get(Customer_.name))
-            .where(cb.equal(item.get(LineItem_.product)
+        CriteriaQuery cq = cb.create();
+        Root<Customer> c = cq.from(Customer.class);
+        Join<Customer, Order> o = c.join(Customer_.orders);
+        Join<Order, LineItem> i = o.join(Order_.lineItems);
+        cq.select(c)
+            .where(cb.equal(i.get(LineItem_.product)
             .get(Product_.productType), "printer"));
 
-        assertEquivalence(c, jpql);
+        assertEquivalence(cq, jpql);
     }
 
     public void testJoinsNotPresentInWhereClause() {
@@ -228,15 +238,16 @@ public class TestTypesafeCriteria extends CriteriaTest {
         String jpql = "SELECT p.vendor FROM Employee e JOIN "
             + "e.contactInfo.phones p "
             + "WHERE e.contactInfo.address.zipCode = '95054'";
-        CriteriaQuery q = cb.create();
-        Root<Employee> emp = q.from(Employee.class);
-        Join<Contact, Phone> phone = emp.join(Employee_.contactInfo).join(
+        
+        CriteriaQuery cq = cb.create();
+        Root<Employee> e = cq.from(Employee.class);
+        Join<Contact, Phone> p = e.join(Employee_.contactInfo).join(
                 Contact_.phones);
-        q.where(cb.equal(emp.get(Employee_.contactInfo).get(Contact_.address)
+        cq.where(cb.equal(e.get(Employee_.contactInfo).get(Contact_.address)
                 .get(Address_.zipCode), "95054"));
-        q.select(phone.get(Phone_.vendor));
+        cq.select(p.get(Phone_.vendor));
 
-        assertEquivalence(q, jpql);
+        assertEquivalence(cq, jpql);
     }
 
     @AllowFailure(message = "Key expression not implemented")
@@ -281,18 +292,19 @@ public class TestTypesafeCriteria extends CriteriaTest {
     @AllowFailure(message = "broken")
     public void testExpressionInProjection() {
         String jpql = "SELECT o.quantity, o.totalCost*1.08 AS taxedCost, "
-            + "a.zipCode FROM Customer c JOIN c.orders o JOIN c.address a"
+            + "a.zipCode FROM Customer c JOIN c.orders o JOIN c.address a "
             + "WHERE a.state = 'CA' AND a.county = 'Santa Clara'";
-        CriteriaQuery q = cb.create();
-        Root<Customer> cust = q.from(Customer.class);
-        Join<Customer, Order> order = cust.join(Customer_.orders);
-        Join<Customer, Address> address = cust.join(Customer_.address);
-        q.where(cb.equal(address.get(Address_.state), "CA"), cb.equal(address
-                .get(Address_.county), "Santa Clara"));
-        q.select(order.get(Order_.quantity), cb.prod(order
-                .get(Order_.totalCost), 1.08), address.get(Address_.zipCode));
+        
+        CriteriaQuery cq = cb.create();
+        Root<Customer> c = cq.from(Customer.class);
+        Join<Customer, Order> o = c.join(Customer_.orders);
+        Join<Customer, Address> a = c.join(Customer_.address);
+        cq.where(cb.equal(a.get(Address_.state), "CA"), 
+                 cb.equal(a.get(Address_.county), "Santa Clara"));
+        cq.select(o.get(Order_.quantity), cb.prod(o
+                .get(Order_.totalCost), 1.08), a.get(Address_.zipCode));
 
-        assertEquivalence(q, jpql);
+        assertEquivalence(cq, jpql);
     }
 
     public void testTypeExpression() {
