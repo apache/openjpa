@@ -630,6 +630,8 @@
                                      to enhance their own entities.
                                 -->
                                 <include>**/org/apache/openjpa/persistence/test/*.class</include>
+                                <include>j2*.policy</include>
+                                <include>META-INF/persistence.xml</include>
                                 <include>META-INF/LICENSE*</include>
                                 <include>META-INF/NOTICE*</include>
                                 <include>META-INF/DISCLAIM*</include>
