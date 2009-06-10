@@ -25,10 +25,13 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.net.URL;
 import java.net.URLClassLoader;
+import java.security.AccessController;
 import java.util.Arrays;
 import java.util.List;
 import java.util.jar.JarEntry;
 import java.util.jar.JarOutputStream;
+
+import org.apache.openjpa.lib.util.J2DoPrivHelper;
 
 import junit.framework.TestCase;
 
@@ -57,7 +60,8 @@ public class TestPersistenceProductDerivation extends TestCase {
             "TestPersistenceProductDerivation_generated_" +
             System.currentTimeMillis() + ".jar");
         
-        targetFile.deleteOnExit();        
+        AccessController.doPrivileged(J2DoPrivHelper
+            .deleteOnExitAction(targetFile));
         buildJar(sourceFile,targetFile);
         
         // Hold a reference to the current classloader so we can cleanup
@@ -65,8 +69,8 @@ public class TestPersistenceProductDerivation extends TestCase {
         originalLoader = Thread.currentThread().getContextClassLoader();
         tempLoader = new TempUrlLoader(new URL[]{targetFile.toURI().toURL()}
             ,originalLoader);        
-        Thread.currentThread().setContextClassLoader(tempLoader);
-            
+        AccessController.doPrivileged(J2DoPrivHelper
+            .setContextClassLoaderAction(tempLoader));
     }
     
     protected void tearDown() throws Exception {
@@ -77,8 +81,10 @@ public class TestPersistenceProductDerivation extends TestCase {
         // For whatever reason, this file won't ever delete. I searched around
         // and found numerous documented problems with deleting files. Perhaps
         // sometime in the future this problem will be fixed. For now it doesn't
-        // really matter since we generate a new file every time.       
-        if(targetFile.delete()==false){
+        // really matter since we generate a new file every time.
+        boolean deleted = AccessController.doPrivileged(J2DoPrivHelper
+            .deleteAction(targetFile));
+        if(deleted==false){
             System.out.println("The file " + targetFile + " wasn't deleted.");
         }
     }
