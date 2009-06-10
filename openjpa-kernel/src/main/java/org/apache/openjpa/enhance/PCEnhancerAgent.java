@@ -96,16 +96,17 @@ public class PCEnhancerAgent {
                 InstrumentationFactory.getInstrumentation(log);
             if (inst != null) {
                 premain("", inst);
-            } else {
-                // This needs to be set in this method AND in premain because
-                // there are two different paths that we can attempt to load the
-                // agent. One is when the user specifies a javaagent and the
-                // other is when we try to dynamically enhance.
-                loadAttempted = true;
-            }
+                return true;
+            } 
+            // If we successfully get the Instrumentation, we will call premain
+            // where loadAttempted will be set to true. This case is the path 
+            // where we were unable to get Instrumentation so we need to set the
+            // loadAttempted flag to true. We do this so we will only run
+            // through this code one time.
+            loadAttempted = true;
         }
 
-        return getLoadSuccessful();
+        return false;
     }
 
     public static void premain(String args, Instrumentation inst) {
