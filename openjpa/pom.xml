@@ -55,8 +55,10 @@
                                         <include name="*/target/openjpa-*.jar" />
                                         <exclude name="*/target/openjpa-examples-*.jar" />
                                         <exclude name="*/target/openjpa-all-*.jar" />
+                                        <exclude name="**/*-tests.jar" />
                                         <exclude name="**/*-sources.jar" />
                                         <exclude name="**/*-javadoc.jar" />
+                                        <exclude name="openjpa-integration/**/target/openjpa-all-*.jar" />
                                     </fileset>
                                 </unjar>
 

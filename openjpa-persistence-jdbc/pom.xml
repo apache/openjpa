@@ -611,6 +611,33 @@
                     </execution>
                 </executions>
             </plugin>
+            <!-- 
+                 Create a o-p-j-tests.jar so we can reuse some of the base
+                 TestCase classes in other modules, like openjpa-integration.
+            -->
+            <plugin> 
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-jar-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>test-jar</goal>
+                        </goals>
+                        <configuration>
+                            <includes>
+                                <!-- Note: Including entities in this jar will
+                                     cause problems for any modules that need
+                                     to enhance their own entities.
+                                -->
+                                <include>**/org/apache/openjpa/persistence/test/*.class</include>
+                                <include>META-INF/LICENSE*</include>
+                                <include>META-INF/NOTICE*</include>
+                                <include>META-INF/DISCLAIM*</include>
+                            </includes>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-plugin</artifactId>
@@ -779,10 +806,11 @@
                         <exclude>org/apache/openjpa/persistence/meta/TestSequenceAssigned.java</exclude>
                         <exclude>org/apache/openjpa/persistence/meta/TestValueStrategies.java</exclude>
                         <exclude>org/apache/openjpa/persistence/meta/TestXMLPersistenceMetaDataSerializer.java</exclude>
-                        
                         <!-- TestPMMemory creates heapdumps etc and there's no real asserts within the test.  -->
                         <exclude>org/apache/openjpa/persistence/kernel/TestPMMemory.java</exclude>
-                  
+                        <!-- You can exclude the lockmgr test to save ~15 mins.
+                        <exclude>org/apache/openjpa/persistence/lockmgr/*.java</exclude>
+                        -->
                     </excludes>
                     <systemProperties>
                         <property>
@@ -803,7 +831,7 @@
                         </property>
                         <!-- following causes lockmgr test failures
                         <property>
-                            <name>derby.locks.deadlockTimeout</name>
+                            <name>derby.locks.waitTimeout</name>
                             <value>6</value>
                         </property>
                         -->
