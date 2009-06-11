@@ -83,7 +83,7 @@ public class MixedLockManager extends PessimisticLockManager {
                 ClassMapping mapping = (ClassMapping) sm.getMetaData();
                 try {
                     if (!mapping.getVersion().checkVersion(sm, this.getStore(),
-                        true)) {
+                        false)) {
                         throw (new OptimisticException(_loc.get(
                             "optimistic-violation-lock").getMessage()))
                             .setFailedObject(sm.getObjectId());
