@@ -18,8 +18,11 @@
  */
 package org.apache.openjpa.persistence.embed.attrOverrides;
 
+import java.sql.Connection;
+import java.sql.DatabaseMetaData;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 
 import javax.persistence.EntityManager;
 import javax.persistence.EntityTransaction;
@@ -27,15 +30,14 @@ import javax.persistence.Query;
 
 import junit.framework.Assert;
 
+import org.apache.openjpa.jdbc.conf.JDBCConfiguration;
+import org.apache.openjpa.jdbc.schema.Column;
+import org.apache.openjpa.jdbc.sql.DBDictionary;
+import org.apache.openjpa.persistence.OpenJPAEntityManagerFactorySPI;
+import org.apache.openjpa.persistence.OpenJPAEntityManagerSPI;
 import org.apache.openjpa.persistence.test.AllowFailure;
 import org.apache.openjpa.persistence.test.SQLListenerTestCase;
 
-@AllowFailure(message=
-	"Multi-level embedding" + 
-	"JPA 2.0 Access Style " + 
-    "XML Metadata "         + 
-    "Attribute Override "   +  
-    " is not yet supported")
 public class TestAttrOverridesXml extends SQLListenerTestCase {
    
     public int numPersons = 4;
@@ -51,12 +53,43 @@ public class TestAttrOverridesXml extends SQLListenerTestCase {
         return "embed-pu";
     }
     
+    @AllowFailure(message=
+        "Multi-level embedding" + 
+        "JPA 2.0 Access Style " + 
+        "XML Metadata "         + 
+        "Attribute Override "   +  
+        " is not yet supported")
     public void testAttrOverride1() {
         sql.clear();
     	createObj1();
     	findObj1();
     	queryObj1();
         assertAttrOverrides("CustomerXml1");
+    }
+    
+    /**
+     * This test verifies that an embeddable column attribute override defined 
+     * in XML overrides the base column definition.
+     */
+    public void testBasicEmbedAttrOverride() {       
+        OpenJPAEntityManagerSPI em = emf.createEntityManager();
+        
+        BasicEntityXML be = new BasicEntityXML();
+        be.setId(new Random().nextInt());
+        
+        BasicEmbedXML bem = new BasicEmbedXML();
+        bem.setNotIntegerValue(new Random().nextInt());
+        ArrayList<BasicEmbedXML> al = new ArrayList<BasicEmbedXML>();
+        al.add(bem);
+        be.setListIntAttrOverEmbed(al);
+        
+        em.getTransaction().begin();
+        em.persist(be);
+        em.getTransaction().commit();
+        
+        assertTrue(verifyColumnOverride(em, "listIntAttrOverEmbedColTable", 
+            "intValueAttributeOverride"));
+        em.close();
     }
     
     public void createObj1() {
@@ -120,4 +153,33 @@ public class TestAttrOverridesXml extends SQLListenerTestCase {
         if (!found)
             fail();
     }
+
+    private boolean verifyColumnOverride( 
+        OpenJPAEntityManagerSPI em, String tableName,
+        String columnName) {
+
+        JDBCConfiguration conf = (JDBCConfiguration) 
+            em.getEntityManagerFactory().getConfiguration();
+        DBDictionary dict = conf.getDBDictionaryInstance();
+
+        Connection conn = (Connection)em.getConnection();
+        try {
+            DatabaseMetaData dbmd = conn.getMetaData();
+            // (meta, catalog, schemaName, tableName, conn)
+            Column[] cols = dict.getColumns(dbmd, null, null, 
+                    tableName, columnName, conn);
+            if (cols != null && cols.length == 1) {
+                Column col = cols[0];
+                String colName = col.getName();
+                if (col.getTableName().equalsIgnoreCase(tableName) &&
+                    colName.equalsIgnoreCase(columnName))
+                    return true;
+            }
+        } catch (Throwable e) {
+            fail("Unable to get column information.");
+        }
+        return false;
+    }
+
+
 }

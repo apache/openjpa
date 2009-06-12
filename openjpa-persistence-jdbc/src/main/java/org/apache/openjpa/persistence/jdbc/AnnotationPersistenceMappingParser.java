@@ -1297,9 +1297,14 @@ public class AnnotationPersistenceMappingParser
                 parseColumns(efm, attr.column());
         }
     }
-    
+
     public static FieldMapping getEmbeddedFieldMapping(FieldMapping fm,
-            String attrName) {
+        String attrName) {
+        return getEmbeddedFieldMapping(fm, attrName, true);
+    }
+
+    public static FieldMapping getEmbeddedFieldMapping(FieldMapping fm,
+            String attrName, boolean mustExist) {
         ClassMapping embed = null;
         boolean isKey = false;
         boolean isValue = false;
@@ -1323,31 +1328,83 @@ public class AnnotationPersistenceMappingParser
                     throw new MetaDataException(_loc.get("embed-override-name",
                         fm, attrName));
                 if (isKey) 
-                    embed = getEmbeddedMapping(fm.getKeyMapping());
+                    embed = getEmbeddedMapping(fm.getKeyMapping(), mustExist);
                 else if (isValue)     
-                    embed = getEmbeddedMapping(fm.getElementMapping());
+                    embed = getEmbeddedMapping(fm.getElementMapping(), 
+                        mustExist);
                 break;
             default: // an embeddable
                 if (isKey || isValue)
                     throw new MetaDataException(_loc.get("embed-override-name",
                         fm, attrName));
-                embed = getEmbeddedMapping(fm.getValueMapping());
+                embed = getEmbeddedMapping(fm.getValueMapping(), mustExist);
                 break;
         }
         
-        if (embed == null) 
-            throw new MetaDataException(_loc.get("not-embedded", fm));
+        if (embed == null) {
+            if (mustExist)
+                throw new MetaDataException(_loc.get("not-embedded", fm));
+            return null;
+        }
         return getAttributeOverrideField(attrName, fm, embed);
     }
-    
-    public static ClassMapping getEmbeddedMapping(ValueMapping val) {
-        ClassMapping embed = val.getEmbeddedMapping();
-        if (embed != null) 
-            return embed;
+
+    public static Class<?> getEmbeddedClassType(FieldMapping fm,
+        String attrName) {
+        ValueMapping embed = null;
+        boolean isKey = false;
+        boolean isValue = false;
+        if (attrName != null && attrName.startsWith("key."))
+            isKey = true;
+        else if (attrName != null && attrName.startsWith("value."))
+            isValue = true;
+        if (isKey || isValue)
+            attrName = attrName.substring(attrName.indexOf(".")+1);
+            
+        int typeCode = fm.getValue().getDeclaredTypeCode();
+        switch (typeCode) {
+            case JavaTypes.COLLECTION : // a collection of embeddables
+                if (isKey || isValue)
+                    throw new MetaDataException(_loc.get("embed-override-name",
+                        fm, attrName));
+                embed = fm.getElementMapping();
+                break;
+            case JavaTypes.MAP: // a map
+                if (!isKey && !isValue)
+                    throw new MetaDataException(_loc.get("embed-override-name",
+                        fm, attrName));
+                if (isKey) 
+                    embed = fm.getKeyMapping();
+                else if (isValue)     
+                    embed = fm.getElementMapping();
+                break;
+            default: // an embeddable
+                if (isKey || isValue)
+                    throw new MetaDataException(_loc.get("embed-override-name",
+                        fm, attrName));
+                embed = fm.getValueMapping();
+                break;
+        }
         
+        if (embed == null) {
+            throw new MetaDataException(_loc.get("not-embedded", fm));
+        }
+        return embed.getDeclaredType();
+    }
+
+    public static ClassMapping getEmbeddedMapping(ValueMapping val, boolean 
+        createNew) {
+        ClassMapping embed = val.getEmbeddedMapping();
+        if (embed != null || !createNew) 
+            return embed;
+
         val.addEmbeddedMetaData();
         return val.getEmbeddedMapping();
+    }
 
+    
+    public static ClassMapping getEmbeddedMapping(ValueMapping val) {
+        return getEmbeddedMapping(val, true);
     }
     
     public static FieldMapping getAttributeOverrideField(String attrName,

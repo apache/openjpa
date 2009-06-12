@@ -56,8 +56,11 @@ import org.apache.openjpa.lib.util.Localizer;
 import org.apache.openjpa.meta.ClassMetaData;
 import org.apache.openjpa.meta.FieldMetaData;
 import org.apache.openjpa.meta.JavaTypes;
+import org.apache.openjpa.meta.MetaDataContext;
+import org.apache.openjpa.meta.ValueMetaData;
 import org.apache.openjpa.persistence.XMLPersistenceMetaDataParser;
 import org.apache.openjpa.util.InternalException;
+import org.apache.openjpa.util.MetaDataException;
 import org.xml.sax.Attributes;
 import org.xml.sax.Locator;
 import org.xml.sax.SAXException;
@@ -122,6 +125,10 @@ public class XMLPersistenceMappingParser
     private DiscriminatorType _discType;
     private Column _discCol;
     private int _resultIdx = 0;
+
+    private final Map<Class<?>, ArrayList<DeferredEmbeddableOverrides>> 
+        _deferredMappings = new HashMap<Class<?>, 
+             ArrayList<DeferredEmbeddableOverrides>>();
 
     /**
      * Constructor; supply configuration.
@@ -655,9 +662,13 @@ public class XMLPersistenceMappingParser
      * Set unique for field.
      */
     private void setUnique(FieldMapping fm) {
-        if (_unique.size() == 2) // i.e. TRUE & FALSE
+        setUnique(fm, _unique);
+    }
+
+    private void setUnique(FieldMapping fm, EnumSet<UniqueFlag> unique) {
+        if (unique.size() == 2) // i.e. TRUE & FALSE
             getLog().warn(_loc.get("inconsist-col-attrs", fm));
-        else if (_unique.contains(UniqueFlag.TRUE))
+        else if (unique.contains(UniqueFlag.TRUE))
             fm.getValueInfo().setUnique(new Unique());
     }
 
@@ -690,9 +701,23 @@ public class XMLPersistenceMappingParser
         FieldMapping fm = null;
         if (elem instanceof ClassMapping)
             fm = getAttributeOverride((ClassMapping) elem);
-        else
-            fm = getAttributeOverrideForEmbeddable((FieldMapping) elem);
-        if (_cols != null) {
+        else {
+            FieldMapping basefm = (FieldMapping) elem;
+            
+            fm = getAttributeOverrideForEmbeddable(basefm, _override, false);
+            if (fm == null) {
+                DeferredEmbeddableOverrides dfm = 
+                    getDeferredFieldMappingInfo(
+                        AnnotationPersistenceMappingParser.
+                        getEmbeddedClassType(basefm, _override),
+                        basefm, _override, true);
+                dfm._defCols = _cols;
+                dfm._defTable = _colTable;
+                dfm._attrName = _override;
+                dfm._unique = _unique;
+            }
+        }
+        if (fm != null && _cols != null) {
             fm.getValueInfo().setColumns(_cols);
             if (_colTable != null)
                 fm.getMappingInfo().setTableName(_colTable);
@@ -717,10 +742,11 @@ public class XMLPersistenceMappingParser
     /**
      * Return the proper override.
      */
-    private FieldMapping getAttributeOverrideForEmbeddable(FieldMapping fm) 
+    private FieldMapping getAttributeOverrideForEmbeddable(FieldMapping fm, 
+        String attrName, boolean mustExist) 
     throws SAXException {
         return AnnotationPersistenceMappingParser.getEmbeddedFieldMapping(fm, 
-            _override);
+            attrName, mustExist);
     }
 
     /**
@@ -747,14 +773,27 @@ public class XMLPersistenceMappingParser
             Object elem = currentElement();
             FieldMapping fm = null;
             if (elem instanceof FieldMapping) {
-                fm = (FieldMapping) elem;
-                if (_override != null) 
-                    fm = getAttributeOverrideForEmbeddable(fm);
+                fm = (FieldMapping) elem; 
+                if (_override != null) {
+                    FieldMapping basefm = (FieldMapping) elem;
+                    fm = getAttributeOverrideForEmbeddable(basefm, 
+                        _override, false);
+                    if (fm == null) {
+                        DeferredEmbeddableOverrides dfm = 
+                            getDeferredFieldMappingInfo(
+                                AnnotationPersistenceMappingParser.
+                                getEmbeddedClassType(basefm, _override),
+                                basefm, _override, true);
+                        dfm._defTable = table;
+                        dfm._attrName = _override;
+                    }
+                }
             } else if (elem instanceof ClassMapping) {
                 ClassMapping cm = (ClassMapping) elem;
                 fm = getAttributeOverride(cm);
             }
-            fm.getMappingInfo().setTableName(table);
+            if (fm != null)
+                fm.getMappingInfo().setTableName(table);
         }
         return true;
     }
@@ -767,17 +806,32 @@ public class XMLPersistenceMappingParser
         FieldMapping fm = null;
         if (elem instanceof FieldMapping) {
             fm = (FieldMapping) elem;
-            if (_override != null)
-                fm = getAttributeOverrideForEmbeddable(fm);
+            if (_override != null) {
+                FieldMapping basefm = (FieldMapping) elem;
+                fm = getAttributeOverrideForEmbeddable(basefm, _override, 
+                    false);
+                if (fm == null) {
+                    DeferredEmbeddableOverrides dfm = 
+                        getDeferredFieldMappingInfo(
+                            AnnotationPersistenceMappingParser.
+                            getEmbeddedClassType(basefm, _override),
+                            basefm, _override, true);
+                    dfm._defCols = _cols;
+                    dfm._defElemJoinCols = _joinCols;
+                    dfm._attrName = _override;
+                }
+            }
         } else if (elem instanceof ClassMapping){
             ClassMapping cm = (ClassMapping) elem;
             fm = getAttributeOverride(cm);
         }
 
-        if (_joinCols != null)
-            fm.getMappingInfo().setColumns(_joinCols);
-        if (_cols != null)
-            fm.getElementMapping().getValueInfo().setColumns(_cols);
+        if (fm != null) {
+            if (_joinCols != null)
+                fm.getMappingInfo().setColumns(_joinCols);
+            if (_cols != null)
+                fm.getElementMapping().getValueInfo().setColumns(_cols);
+        }
         clearColumnInfo();
     }
 
@@ -845,7 +899,7 @@ public class XMLPersistenceMappingParser
             // a collection of basic types
             // the column is in a separate table
             if (fm.isElementCollection() &&
-                fm.getElementMapping().getEmbeddedMapping() == null) {
+                !fm.getElementMapping().isEmbedded()) {
                 List list = fm.getElementMapping().getValueInfo().getColumns();
                 if (list.size() == 0) {
                     list = new ArrayList();
@@ -1208,4 +1262,125 @@ public class XMLPersistenceMappingParser
         }
         return col;
     }
+    
+    /**
+     * Process all deferred embeddable overrides for a given class.  
+     * This should only occur after the embeddable is mapped.
+     * 
+     * @param embedType  embeddable class 
+     * @param access class level access for embeddable
+     * @throws SAXException 
+     */
+    @Override
+    protected void applyDeferredEmbeddableOverrides(Class<?> cls) 
+        throws SAXException {
+        ArrayList<DeferredEmbeddableOverrides> defMappings = 
+            _deferredMappings.get(cls);
+        if (defMappings == null)
+            return;
+        
+        for (DeferredEmbeddableOverrides defMap : defMappings) {
+            FieldMapping fm = (FieldMapping)defMap._fm;
+            if (defMap == null)
+                return;
+            fm = getAttributeOverrideForEmbeddable(fm, defMap._attrName, true);
+            // Apply column, table, and unique overrides
+            if (defMap._defCols != null) {
+                fm.getValueInfo().setColumns(defMap._defCols);
+                if (defMap._defTable != null)
+                    fm.getMappingInfo().setTableName(defMap._defTable);
+                setUnique(fm, defMap._unique);
+            }
+            // Apply Join column and element join columns overrides overrides
+            if (defMap._defJoinCols != null)
+                fm.getMappingInfo().setColumns(defMap._defJoinCols);
+            if (defMap._defElemJoinCols != null)
+                fm.getElementMapping().getValueInfo().setColumns(
+                    defMap._defElemJoinCols);
+        }
+        // Clean up after applying mappings
+        defMappings.clear();
+        _deferredMappings.remove(cls);
+    }
+
+    /*
+     * Defer overrides for the specified field mapping
+     */
+    private void deferEmbeddableOverrides(
+        Class cls, DeferredEmbeddableOverrides defMap) {
+        ArrayList<DeferredEmbeddableOverrides> defMappings = 
+            _deferredMappings.get(cls);
+        if (defMappings == null) {
+            defMappings = new ArrayList<DeferredEmbeddableOverrides>();
+            _deferredMappings.put(cls, defMappings);
+        }
+        defMappings.add(defMap);
+    }
+    
+    /*
+     * Clean up any deferred mappings
+     */
+    @Override
+    protected void clearDeferredMetaData() {
+        super.clearDeferredMetaData();
+        _deferredMappings.clear();
+    }
+    
+    /*
+     * Get embeddable overrides for the specified field mapping.  If create
+     * is true, create a new override if one does not exist.
+     */
+    private DeferredEmbeddableOverrides 
+        getDeferredFieldMappingInfo(Class<?> cls, FieldMapping fm, 
+            String attrName, boolean create) {
+
+        ArrayList<DeferredEmbeddableOverrides> defMappings = 
+            _deferredMappings.get(cls);
+        
+        if (defMappings == null && create) {
+            defMappings = new ArrayList<DeferredEmbeddableOverrides>();
+            _deferredMappings.put(cls, defMappings);
+        }
+        DeferredEmbeddableOverrides dfm = 
+            findDeferredMapping(cls, fm, attrName);
+
+        if (dfm == null & create) {
+            dfm = new DeferredEmbeddableOverrides(fm, attrName);
+            deferEmbeddableOverrides(cls, dfm);
+        }
+        return dfm;            
+    }
+
+    /*
+     * Find deferred mappings for the given class, fm, and attr name
+     */
+    private DeferredEmbeddableOverrides findDeferredMapping(Class<?> cls, 
+        FieldMapping fm, String attrName) {
+        ArrayList<DeferredEmbeddableOverrides> defMappings = 
+            _deferredMappings.get(cls);
+        if (defMappings == null)
+            return null;
+        
+        for (DeferredEmbeddableOverrides dfm : defMappings) {
+            if (dfm != null && dfm._fm == fm && 
+                attrName.equals(dfm._attrName))
+                return dfm;
+        }
+        return null;
+    }
+    
+    // Inner class for storing override information
+    class DeferredEmbeddableOverrides {
+        DeferredEmbeddableOverrides(FieldMapping fm, String attrName) {
+            _fm = fm;
+            _attrName = attrName;
+        }
+        private FieldMapping _fm;
+        private List<Column> _defCols;
+        private List<Column> _defElemJoinCols;
+        private List<Column> _defJoinCols;
+        private String _defTable;
+        private String _attrName;
+        private EnumSet<UniqueFlag> _unique;
+    }    
 }

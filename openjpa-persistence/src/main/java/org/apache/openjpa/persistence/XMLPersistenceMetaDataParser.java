@@ -1553,7 +1553,9 @@ public class XMLPersistenceMetaDataParser
         FieldMetaData fmd = (FieldMetaData) currentElement();
         String dec = currentText();
         if (fmd.isElementCollection() &&
-            fmd.getElement().getEmbeddedMetaData() != null) {
+            fmd.getElement().getEmbeddedMetaData() != null ||
+            isDeferredEmbeddable(fmd.getElement().getDeclaredType(), 
+                fmd.getElement())) {
             if (dec.length() == 0 || dec.equals("ASC") ||
                 dec.equals("DESC"))
                 throw new MetaDataException(_loc.get(
@@ -1895,34 +1897,58 @@ public class XMLPersistenceMetaDataParser
 	}
     
     /**
-     * Process all deferred embeddables for a given class.  This should only
-     * happen after the access type of the embeddable is known.
+     * Process all deferred embeddables and embeddable mapping overrides
+     * for a given class.  This should only happen after the access type 
+     * of the embeddable is known.
      * 
-     * @param embedType  embeddable class 
+     * @param embedType embeddable class 
      * @param access class level access for embeddable
+     * @throws SAXException 
      */
     protected void addDeferredEmbeddableMetaData(Class<?> embedType, 
-        int access) {
+        int access) throws SAXException {
         ArrayList<MetaDataContext> fmds = _embeddables.get(embedType);
         if (fmds != null && fmds.size() > 0) {
-            for (int i = fmds.size() -1 ; i >= 0; i--) {
-                MetaDataContext md = fmds.get(i);
+            for (MetaDataContext md : fmds) {
                 if (md instanceof FieldMetaData) {
-                    ((FieldMetaData)md).addEmbeddedMetaData(access);            
+                    FieldMetaData fmd = (FieldMetaData)md;
+                    fmd.addEmbeddedMetaData(access);
                 }
                 else if (md instanceof ValueMetaData) {
-                    ((ValueMetaData)md).addEmbeddedMetaData(access);
+                    ValueMetaData vmd = (ValueMetaData)md;
+                    vmd.addEmbeddedMetaData(access);
                 }
-                fmds.remove(i);
             }
-            // If all mds in the list were processed, remove the item
-            // from the map.
-            if (fmds.size() == 0) {
-                _embeddables.remove(embedType);
-            }
+            applyDeferredEmbeddableOverrides(embedType);
+            // Clean up deferrals after they have been processed
+            fmds.clear();
+            _embeddables.remove(embedType);
         }
     }
+
+    /*
+     * Clear any deferred metadata
+     */
+    @Override
+    protected void clearDeferredMetaData() {
+        _embeddables.clear();
+    }
+
+    /*
+     * Determines whether the embeddable type is deferred.
+     */
+    protected boolean isDeferredEmbeddable(Class<?> embedType, 
+        MetaDataContext fmd) {
+        ArrayList<MetaDataContext> fmds = _embeddables.get(embedType);
+        if (fmds != null) {
+            return fmds.contains(fmd);
+        }
+        return false;
+    }
     
+    /*
+     * Add the fmd to the defer list for for the given embeddable type
+     */
     protected void deferEmbeddable(Class<?> embedType, MetaDataContext fmd) {
         ArrayList<MetaDataContext> fmds = _embeddables.get(embedType);
         if (fmds == null) {
@@ -1930,5 +1956,12 @@ public class XMLPersistenceMetaDataParser
             _embeddables.put(embedType, fmds);
         }
         fmds.add(fmd);
+    }
+    
+    /*
+     * Apply any deferred overrides.
+     */
+    protected void applyDeferredEmbeddableOverrides(Class<?> cls)
+        throws SAXException {
     }
 }

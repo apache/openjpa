@@ -525,6 +525,7 @@ public abstract class XMLMetaDataParser extends DefaultHandler
         if (_log != null && _log.isTraceEnabled())
             _log.trace(_loc.get("end-parse", getSourceName()));
         _results = new ArrayList(_curResults);
+        clearDeferredMetaData();
     }
 
     /**
@@ -678,5 +679,8 @@ public abstract class XMLMetaDataParser extends DefaultHandler
             ": " + msg + " [" + cause + "]");
         e.initCause(cause);
         return e;
+    }
+
+    protected void clearDeferredMetaData() {
     }
 }

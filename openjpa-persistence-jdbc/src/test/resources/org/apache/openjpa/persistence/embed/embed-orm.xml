@@ -184,6 +184,22 @@ version="2.0">
         </attributes>
     </entity>
 
+    <entity name="BasicEntityXML"
+        class="org.apache.openjpa.persistence.embed.attrOverrides.BasicEntityXML">
+        <attributes>
+            <id name="id" />
+            <element-collection name="listIntAttrOverEmbed" fetch="EAGER">
+                <order-column name="valueOrderColumn" />
+                <attribute-override name="intValue">
+                    <column name="intValueAttributeOverride" />
+                </attribute-override>
+                <collection-table name="listIntAttrOverEmbedColTable">
+                    <join-column name="parent_id" />
+                </collection-table>
+            </element-collection>
+        </attributes>
+    </entity>
+
     <embeddable 
         class="org.apache.openjpa.persistence.embed.attrOverrides.AddressXml" 
         access="FIELD">
@@ -235,4 +251,11 @@ version="2.0">
 		</attributes>
 	</embeddable>
 
+    <embeddable class="org.apache.openjpa.persistence.embed.attrOverrides.BasicEmbedXML">
+        <attributes>
+            <basic name="intValue">
+                <column name="shouldNotExist" />
+            </basic>
+        </attributes>
+    </embeddable>
 </entity-mappings>
