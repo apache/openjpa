@@ -562,6 +562,10 @@ public class PersistenceProductDerivation
             // we'll use this in the exception handlers
             boolean bValRequired = String.valueOf(ValidationMode.CALLBACK)
                 .equalsIgnoreCase(conf.getValidationMode());
+            // a little trace message
+            conf.getConfigurationLog().trace("Will try to create a " +
+                "ValidatingLifecycleEventManager based on the ValidationMode=" +
+                conf.getValidationMode());
             // see if the javax.validation spec api is available
             try {
                 @SuppressWarnings("unused")
@@ -605,8 +609,10 @@ public class PersistenceProductDerivation
                 }
             }
         } else {
-            conf.getConfigurationLog().trace(
-                _loc.get("vlem-creation-warn", "Disabled by ValidationMode"));
+            // a little trace message
+            conf.getConfigurationLog().trace("Not creating a " +
+                "ValidatingLifecycleEventManager based on the ValidationMode=" +
+                conf.getValidationMode());
         }
         return lem;
     }
