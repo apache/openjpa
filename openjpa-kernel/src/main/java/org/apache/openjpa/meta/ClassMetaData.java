@@ -2138,8 +2138,9 @@ public class ClassMetaData
     /**
      * Assert that this class' access type is allowed.
      * If no access style is set or an explicit style is set return.
-     * Otherwise check that the superclass access style, if defaulted, is the 
-     * same as that of this receiver. 
+     * Otherwise, if the superclass has persistent attributes,  check that 
+     * the superclass access style, if defaulted, is the same as that of this 
+     * receiver. 
      */
     private void validateAccessType() {
         if (AccessCode.isEmpty(_accessType) 
@@ -2148,7 +2149,7 @@ public class ClassMetaData
         ClassMetaData sup = getPCSuperclassMetaData();
         while (sup != null && sup.isExplicitAccess())
         	sup = sup.getPCSuperclassMetaData();
-        if (sup != null) {
+        if (sup != null && sup.getDeclaredFields().length > 0) {
         	int supCode = sup.getAccessType();
         	if (!AccessCode.isCompatibleSuper(_accessType, supCode))
              throw new MetaDataException(_loc.get("access-inconsistent-inherit",

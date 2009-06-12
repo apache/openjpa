@@ -18,6 +18,9 @@
  */
 package org.apache.openjpa.persistence.access;
 
+import java.util.Random;
+
+import javax.persistence.EntityManager;
 import javax.persistence.Query;
 
 import org.apache.openjpa.persistence.OpenJPAEntityManagerFactorySPI;
@@ -31,55 +34,81 @@ import org.apache.openjpa.persistence.test.SingleEMFTestCase;
 
 public class TestDefaultAccess extends SingleEMFTestCase {
 
+    public void setUp() {
+        setUp(CLEAR_TABLES, 
+            PropEntity.class, MappedCallbackSup.class);
+    }
+
+
+    /**
+     * Validates that an property access entity extending a mapped superclass 
+     * containing no persistent fields (only a callback) does not cause access 
+     * validation failures.
+     */
+    public void testDefaultMappedSuperclassAccess() {
+        
+        EntityManager em = emf.createEntityManager();
+                
+        PropEntity pe = new PropEntity();
+        
+        pe.setId(new Random().nextInt());
+        pe.setName("Name");
+        
+        em.getTransaction().begin();
+        em.persist(pe);
+        em.getTransaction().commit();
+        em.close();
+    }
+    
     /**
      * Validates use of access specifier of FIELD in entity-mappings.
      */
     public void testEMDefaultFieldAccess() {
-        OpenJPAEntityManagerFactorySPI emf = 
+        OpenJPAEntityManagerFactorySPI emf1 = 
             (OpenJPAEntityManagerFactorySPI)OpenJPAPersistence.
             createEntityManagerFactory("Access-EMFldDef",
             "org/apache/openjpa/persistence/access/" +
             "access-def-persistence.xml");
         
-        OpenJPAEntityManagerSPI em = emf.createEntityManager();
+        OpenJPAEntityManagerSPI em = emf1.createEntityManager();
         verifyDefaultFieldAccess(em);
                         
         em.close();
-        emf.close();
+        emf1.close();
     }
 
     /**
      * Validates use of access specifier of PROPERTY in entity-mappings.
      */
     public void testEMDefaultPropertyAccess() {
-        OpenJPAEntityManagerFactorySPI emf = 
+        OpenJPAEntityManagerFactorySPI emf1 = 
             (OpenJPAEntityManagerFactorySPI)OpenJPAPersistence.
             createEntityManagerFactory("Access-EMPropDef",
             "org/apache/openjpa/persistence/access/" +
             "access-def-persistence.xml");
         
-        OpenJPAEntityManagerSPI em = emf.createEntityManager();
+        OpenJPAEntityManagerSPI em = emf1.createEntityManager();
         verifyDefaultPropertyAccess(em);
 
         em.close();
-        emf.close();
+        emf1.close();
     }
 
     /**
      * Validates use of access specifier of FIELD in persistence unit defaults.
      */
     public void testPUDefaultFieldAccess() {
-        OpenJPAEntityManagerFactorySPI emf = 
+        OpenJPAEntityManagerFactorySPI emf1 = 
             (OpenJPAEntityManagerFactorySPI)OpenJPAPersistence.
             createEntityManagerFactory("Access-PUFldDef",
             "org/apache/openjpa/persistence/access/" +
             "access-pudef-persistence.xml");
         
-        OpenJPAEntityManagerSPI em = emf.createEntityManager();
+        OpenJPAEntityManagerSPI em = emf1.createEntityManager();
         verifyDefaultFieldAccess(em);
                         
         em.close();
-        emf.close();
+        emf1.close();
     }
 
     /**
@@ -87,17 +116,17 @@ public class TestDefaultAccess extends SingleEMFTestCase {
      * defaults.
      */
     public void testPUDefaultPropertyAccess() {
-        OpenJPAEntityManagerFactorySPI emf = 
+        OpenJPAEntityManagerFactorySPI emf1 = 
             (OpenJPAEntityManagerFactorySPI)OpenJPAPersistence.
             createEntityManagerFactory("Access-PUPropDef",
             "org/apache/openjpa/persistence/access/" +
             "access-pudef-persistence.xml");
         
-        OpenJPAEntityManagerSPI em = emf.createEntityManager();
+        OpenJPAEntityManagerSPI em = emf1.createEntityManager();
         verifyDefaultPropertyAccess(em);
 
         em.close();
-        emf.close();
+        emf1.close();
     }
     
     private void verifyDefaultFieldAccess(OpenJPAEntityManagerSPI em) {
