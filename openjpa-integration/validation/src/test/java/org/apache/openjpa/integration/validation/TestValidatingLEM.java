@@ -14,41 +14,64 @@
 package org.apache.openjpa.integration.validation;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
+import javax.persistence.EntityManager;
+import javax.persistence.Query;
 import javax.persistence.ValidationMode;
 
 import org.apache.openjpa.conf.OpenJPAConfiguration;
+import org.apache.openjpa.event.LifecycleEventManager;
 import org.apache.openjpa.lib.log.Log;
-import org.apache.openjpa.integration.validation.SimpleEntity;
+import org.apache.openjpa.persistence.OpenJPAEntityManager;
 import org.apache.openjpa.persistence.OpenJPAEntityManagerFactory;
 import org.apache.openjpa.persistence.OpenJPAPersistence;
 import org.apache.openjpa.persistence.test.AllowFailure;
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
+import org.apache.openjpa.validation.ValidatingLifecycleEventManager;
 
 /**
- * Tests the new Bean Validation Factory support in the JPA 2.0 spec.
- * Basic (no provider) Validation scenarios being tested:
+ * Tests the new Bean Validation Factory support in the JPA 2.0 spec by
+ * focusing on the following Validation Provider scenarios:
  *   1) Mode of NONE will create a LifecycleEventManager
  *   2) Mode of AUTO will create a ValidatingLifecycleEventManager
  *   3) Mode of CALLBACK will create a ValidatingLifecycleEventManager
- *   4) Verify passed in ValidatorFactory is used
+ *   4) Verify a passed in ValidatorFactory is used
  * 
  * @version $Rev$ $Date$
  */
-public class TestValidationFactory extends SingleEMFTestCase {
+public class TestValidatingLEM extends SingleEMFTestCase {
 
     @Override
     public void setUp() {
         super.setUp(CLEAR_TABLES, SimpleEntity.class);
+
+        EntityManager em = null;
+        // create some initial entities
+        try {
+            em = emf.createEntityManager();
+            assertNotNull(em);
+            getLog().trace("setup() - creating 1 SimpleEntity");
+            em.getTransaction().begin();
+            SimpleEntity se = new SimpleEntity("entity","1");
+            em.persist(se);
+            em.getTransaction().commit();
+        } catch (Exception e) {
+            fail("setup() - Unexpected Exception - " + e);
+        } finally {
+            if ((em != null) && em.isOpen()) {
+                em.close();
+            }
+        }
     }
 
     /**
      * Scenario being tested:
-     *   1) By default, ValidationFactory is null
+     *   1) Mode of NONE will create a LifecycleEventManager
      */
-    public void testValidationFactory1() {
-        getLog().trace("testValidationFactory1() - Default is null");
+    public void testValidatingLEM1() {
+        getLog().trace("testValidatingLEM1() - NONE");
         OpenJPAEntityManagerFactory emf = null;
 
         // create our EMF
@@ -56,12 +79,35 @@ public class TestValidationFactory extends SingleEMFTestCase {
             "simple-none-mode",
             "org/apache/openjpa/integration/validation/persistence.xml");
         assertNotNull(emf);
-        // verify default validation mode
-        OpenJPAConfiguration conf = emf.getConfiguration();
-        assertNotNull(conf);
-        assertEquals("Default ValidationFactory", 
-            null,
-            conf.getValidationFactoryInstance());
+        // create EM
+        OpenJPAEntityManager em = emf.createEntityManager();
+        assertNotNull(em);
+        try {
+            Query q = em.createNamedQuery("FindAll");
+            @SuppressWarnings("unchecked")
+            List results = q.getResultList();
+
+            // verify created LifecycleEventManager type
+            OpenJPAConfiguration conf = em.getConfiguration();
+            assertNotNull(conf);
+            assertTrue("ValidationMode",
+                conf.getValidationMode().equalsIgnoreCase("NONE"));
+//            Class<?> lem = conf.getLifecycleEventManagerInstance().getClass();
+            LifecycleEventManager lem = conf.getLifecycleEventManagerInstance();
+            assertNotNull(lem);
+            System.out.println("**** LEM=" + lem.toString());
+//            assertFalse("Expected a LifecycleEventManager instance", 
+//                ValidatingLifecycleEventManager.class.isAssignableFrom(lem));
+            ValidatingLifecycleEventManager vlem =
+                (ValidatingLifecycleEventManager)lem;
+            System.out.println("**** VLEM=" + vlem.toString());
+        } catch (Exception e) {
+            fail("Unexpected testValidatingLEM1() exception = " + e);
+        } finally {
+            if ((em != null) && em.isOpen()) {
+                em.close();
+            }
+        }
     }
 
     /**
@@ -69,8 +115,8 @@ public class TestValidationFactory extends SingleEMFTestCase {
      *   2) An invalid ValidationFactory with a mode of NONE will not
      *      cause an exception
      */
-    public void testValidationFactory2() {
-        getLog().trace("testValidationFactory2() - ignored invalid factory");
+    public void XXXtestValidatingLEM2() {
+        getLog().trace("testValidatingLEM2() - ignored invalid factory");
         OpenJPAEntityManagerFactory emf = null;
 
         // create the Map to test overrides
@@ -98,8 +144,8 @@ public class TestValidationFactory extends SingleEMFTestCase {
      *   3) An invalid ValidationFactory with a mode of AUTO will not
      *      cause an exception
      */
-    public void testValidationFactory3() {
-        getLog().trace("testValidationFactory3() - optional invalid factory");
+    public void XXXtestValidatingLEM3() {
+        getLog().trace("testValidatingLEM3() - optional invalid factory");
         OpenJPAEntityManagerFactory emf = null;
 
         // create the Map to test overrides
@@ -127,9 +173,9 @@ public class TestValidationFactory extends SingleEMFTestCase {
      *   4) An invalid ValidationFactory with a mode of CALLBACK will
      *      cause an exception
      */
-    @AllowFailure(message="This will fail until OPENJPA-1111 is resolved.")
-    public void testValidationFactory4() {
-        getLog().trace("testValidationFactory4() - required invalid factory");
+    //@AllowFailure(message="This will fail until OPENJPA-1111 is resolved.")
+    public void XXXtestValidatingLEM4() {
+        getLog().trace("testValidatingLEM4() - required invalid factory");
         OpenJPAEntityManagerFactory emf = null;
 
         // create the Map to test overrides
@@ -157,7 +203,7 @@ public class TestValidationFactory extends SingleEMFTestCase {
                 "an invalid ValidatorFactory is provided.");
         } catch (Exception e) {
             // expected
-            getLog().trace("testValidationFactory4() - caught expected " +
+            getLog().trace("testValidatingLEM4() - caught expected " +
                 "exception", e);
         }
     }
