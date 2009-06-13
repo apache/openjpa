@@ -199,6 +199,37 @@ public class MySQLDictionary
             + getFullName(index.getTable(), false) };
     }
 
+    /**
+     * Return <code>ALTER TABLE &lt;table name&gt; DROP PRIMARY KEY</code>.
+     */
+    @Override
+    public String[] getDropPrimaryKeySQL(PrimaryKey pk) {
+        if (pk.getName() == null)
+            return new String[0];
+        return new String[]{ "ALTER TABLE "
+            + getFullName(pk.getTable(), false)
+            + " DROP PRIMARY KEY" };
+    }
+
+    /**
+     * Return <code>ALTER TABLE &lt;table name&gt; DROP FOREIGN KEY
+     * &lt;fk name&gt;</code>.
+     */
+    @Override
+    public String[] getDropForeignKeySQL(ForeignKey fk, Connection conn) {
+        if (fk.getName() == null) {
+            String fkName = fk.loadNameFromDB(this,conn);
+            String[] retVal = (fkName == null) ?  new String[0] :
+                new String[]{ "ALTER TABLE "
+                + getFullName(fk.getTable(), false)
+                + " DROP FOREIGN KEY " + fkName };
+            return retVal;   
+        }
+        return new String[]{ "ALTER TABLE "
+            + getFullName(fk.getTable(), false)
+            + " DROP FOREIGN KEY " + fk.getName() };
+    }
+
     public String[] getAddPrimaryKeySQL(PrimaryKey pk) {
         String[] sql = super.getAddPrimaryKeySQL(pk);
 
