@@ -214,6 +214,7 @@ public class AnnotationProcessor6 extends AbstractProcessor {
         String metaClass = factory.getMetaModelClassName(originalClass);
 
         SourceCode source = new SourceCode(metaClass);
+        header(source);
         comment(source);
         annotate(source, originalClass);
         TypeElement supCls = handler.getPersistentSupertype(e);
@@ -284,6 +285,26 @@ public class AnnotationProcessor6 extends AbstractProcessor {
             .addArgument("value", this.getClass().getName())
             .addArgument("date", new Date().toString());
         }
+    }
+    
+    // Hack to add ASL header for now, so maven-rat-plugin tests will pass
+    private void header(SourceCode source) {
+        source.addComment(false, _loc.get("mmg-tool-asl2-01").getMessage(),
+                                 _loc.get("mmg-tool-asl2-02").getMessage(),
+                                 _loc.get("mmg-tool-asl2-03").getMessage(),
+                                 _loc.get("mmg-tool-asl2-04").getMessage(),
+                                 _loc.get("mmg-tool-asl2-05").getMessage(),
+                                 _loc.get("mmg-tool-asl2-06").getMessage(),
+                                 _loc.get("mmg-tool-asl2-07").getMessage(),
+                                 _loc.get("mmg-tool-asl2-08").getMessage(),
+                                 _loc.get("mmg-tool-asl2-09").getMessage(),
+                                 _loc.get("mmg-tool-asl2-10").getMessage(),
+                                 _loc.get("mmg-tool-asl2-11").getMessage(),
+                                 _loc.get("mmg-tool-asl2-12").getMessage(),
+                                 _loc.get("mmg-tool-asl2-13").getMessage(),
+                                 _loc.get("mmg-tool-asl2-14").getMessage(),
+                                 _loc.get("mmg-tool-asl2-15").getMessage(),
+                                 _loc.get("mmg-tool-asl2-16").getMessage());
     }
     
     private void comment(SourceCode source) {
