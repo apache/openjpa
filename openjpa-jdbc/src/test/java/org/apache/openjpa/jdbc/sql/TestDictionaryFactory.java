@@ -169,6 +169,10 @@ public class TestDictionaryFactory extends TestCase {
         {"file://c:/",
           null},
           
+        // Traps for not smart enough code
+        {"jdbc:db2://localhost.oracle.com:5000/db2",
+         "jdbc:db2:" },
+        
     };
     
     private static Method getProtocol;
