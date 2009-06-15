@@ -73,9 +73,9 @@ public class DBDictionaryFactory {
      */
     public static DBDictionary calculateDBDictionary(JDBCConfiguration conf,
         String url, String driver, String props) {
-        String dclass = dictionaryClassForString(url, conf);
+        String dclass = dictionaryClassForString(driver, conf);
         if (dclass == null)
-            dclass = dictionaryClassForString(driver, conf);
+            dclass = dictionaryClassForString(getProtocol(url), conf);
         if (dclass == null)
             return null;
         return newDBDictionary(conf, dclass, props);
@@ -90,10 +90,11 @@ public class DBDictionaryFactory {
         try {
             conn = ds.getConnection();
             DatabaseMetaData meta = conn.getMetaData();
-            String dclass = dictionaryClassForString(meta.getURL(), conf);
+            String dclass = dictionaryClassForString(meta
+                .getDatabaseProductName(), conf);
             if (dclass == null)
-                dclass = dictionaryClassForString
-                    (meta.getDatabaseProductName(), conf);
+                dclass = dictionaryClassForString(getProtocol(meta.getURL()),
+                    conf);
             if (dclass == null)
                 dclass = DBDictionary.class.getName();
             return newDBDictionary(conf, dclass, props, conn);
@@ -106,6 +107,37 @@ public class DBDictionaryFactory {
                 } catch (SQLException se) {
                 }
         }
+    }
+
+    /*
+     * Returns the "jdbc:" protocol of the url parameter. Looks for the prefix
+     * string up to the 3rd ':' or the 1st '@', '/' or '\', whichever comes
+     * first.
+     * 
+     * This method is package qualified so that TestDictionaryFactory class can
+     * access and test this method behavior.
+     */
+    static String getProtocol(String url) {
+        String protocol = null;
+        if (!StringUtils.isEmpty(url)) {
+            if (url.startsWith("jdbc:")) {
+                int colonCount = 1;
+                int next = "jdbc:".length();
+                int protoEnd = next;
+                while (colonCount < 3 && next < url.length()) {
+                    char c = url.charAt(next++);
+                    if (c == ':') {
+                        ++colonCount;
+                        protoEnd = next;
+                    } else if (c == '@' || c == '/' || c == '\\') {
+                        --next;
+                        break;
+                    }
+                }
+                protocol = url.substring(0, protoEnd);
+            }
+        }
+        return protocol;
     }
 
     /**
