@@ -55,6 +55,7 @@ public class SourceCode {
     public static final String  DOT           = ".";
     public static final String  EQUAL         = "=";
     public static final String  QUOTE         = "\"";
+//    public static final String NEWLINE        = "\r\n";
 	private static final String[] BRACKET_BLOCK  = {"{", "}"};
 	private static final String[] BRACKET_ARGS   = {"(", ")"};
     private static final String[] BRACKET_PARAMS = {"<", ">"};
@@ -103,6 +104,10 @@ public class SourceCode {
 	
 	
 	public SourceCode addComment(boolean inline, String... lines) {
+	    if (lines == null)
+	        return this;
+	    if (lines.length == 1 && lines[0].length() > 80)
+	        return addComment(inline, wrap(lines[0], 80-4));
 		if (comment == null) comment = new Comment();
 		comment.makeInline(inline);
 		for (String line:lines) comment.append(line);
@@ -138,6 +143,28 @@ public class SourceCode {
 			out.print(SPACE);
 		}
 	}
+	
+    /**
+     * Wraps the given string into lines of max length width at word boundaries
+     */
+    public static String[] wrap(String longLine, int width) {
+        String[] words = longLine.split("\\ ");
+        List<String> lines = new ArrayList<String>();
+        StringBuffer line = new StringBuffer();
+        for (int i = 0; i < words.length; i++) {
+            String w = words[i];
+            if (line.length() + w.length() < width) {
+                if (line.length() > 0) line.append(" ");
+                line.append(w);
+            } else {
+                lines.add(line.toString());
+                line.setLength(0);
+                line.append(w);
+            }
+        }
+        lines.add(line.toString());
+        return lines.toArray(new String[lines.size()]);
+    }
 	
     static void writeList(PrintWriter out, String header, List<?> list) { 
         writeList(out, header, list, new String[]{BLANK, BLANK}, false);

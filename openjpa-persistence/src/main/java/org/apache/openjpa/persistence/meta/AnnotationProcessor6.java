@@ -88,7 +88,7 @@ import org.apache.openjpa.persistence.util.SourceCode;
     "javax.persistence.Entity",
     "javax.persistence.Embeddable", 
     "javax.persistence.MappedSuperclass" })
-@SupportedOptions( { "log", "out", "source", "naming" })
+@SupportedOptions( { "log", "out", "source", "naming", "header" })
 @SupportedSourceVersion(RELEASE_6)
 
 public class AnnotationProcessor6 extends AbstractProcessor {
@@ -97,6 +97,7 @@ public class AnnotationProcessor6 extends AbstractProcessor {
     private MetaDataFactory factory;
     private int generatedSourceVersion = 6;
     private CompileTimeLogger logger;
+    private boolean addHeader = false;
     private static Localizer _loc =
         Localizer.forPackage(AnnotationProcessor6.class);
 
@@ -180,6 +181,8 @@ public class AnnotationProcessor6 extends AbstractProcessor {
         setSourceVersion();
         setFileManager();
         setNamingPolicy();
+        addHeader = "true".equalsIgnoreCase(processingEnv.getOptions()
+                .get("header"));
         handler = new SourceAnnotationHandler(processingEnv, logger);
     }
     
@@ -214,7 +217,6 @@ public class AnnotationProcessor6 extends AbstractProcessor {
         String metaClass = factory.getMetaModelClassName(originalClass);
 
         SourceCode source = new SourceCode(metaClass);
-        header(source);
         comment(source);
         annotate(source, originalClass);
         TypeElement supCls = handler.getPersistentSupertype(e);
@@ -287,28 +289,12 @@ public class AnnotationProcessor6 extends AbstractProcessor {
         }
     }
     
-    // Hack to add ASL header for now, so maven-rat-plugin tests will pass
-    private void header(SourceCode source) {
-        source.addComment(false, _loc.get("mmg-tool-asl2-01").getMessage(),
-                                 _loc.get("mmg-tool-asl2-02").getMessage(),
-                                 _loc.get("mmg-tool-asl2-03").getMessage(),
-                                 _loc.get("mmg-tool-asl2-04").getMessage(),
-                                 _loc.get("mmg-tool-asl2-05").getMessage(),
-                                 _loc.get("mmg-tool-asl2-06").getMessage(),
-                                 _loc.get("mmg-tool-asl2-07").getMessage(),
-                                 _loc.get("mmg-tool-asl2-08").getMessage(),
-                                 _loc.get("mmg-tool-asl2-09").getMessage(),
-                                 _loc.get("mmg-tool-asl2-10").getMessage(),
-                                 _loc.get("mmg-tool-asl2-11").getMessage(),
-                                 _loc.get("mmg-tool-asl2-12").getMessage(),
-                                 _loc.get("mmg-tool-asl2-13").getMessage(),
-                                 _loc.get("mmg-tool-asl2-14").getMessage(),
-                                 _loc.get("mmg-tool-asl2-15").getMessage(),
-                                 _loc.get("mmg-tool-asl2-16").getMessage());
-    }
-    
     private void comment(SourceCode source) {
-        source.addComment(false, _loc.get("mmg-tool-sign").getMessage());
+        if (addHeader) {
+           source.addComment(false, _loc.get("mmg-asl-header").getMessage());
+        } else {
+            source.addComment(false, _loc.get("mmg-tool-sign").getMessage());
+        }
     }
     
     /**
