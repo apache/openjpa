@@ -25,16 +25,20 @@ import java.util.List;
 import java.util.Set;
 
 import javax.persistence.criteria.Expression;
+import javax.persistence.criteria.Fetch;
 import javax.persistence.criteria.Join;
+import javax.persistence.criteria.JoinType;
 import javax.persistence.criteria.Order;
 import javax.persistence.criteria.Root;
 import javax.persistence.criteria.Selection;
+import javax.persistence.metamodel.Member;
 import javax.persistence.metamodel.Type.PersistenceType;
 
 import org.apache.openjpa.kernel.exps.ExpressionFactory;
 import org.apache.openjpa.kernel.exps.QueryExpressions;
 import org.apache.openjpa.kernel.exps.Value;
 import org.apache.openjpa.meta.ClassMetaData;
+import org.apache.openjpa.persistence.meta.Members;
 import org.apache.openjpa.persistence.meta.MetamodelImpl;
 import org.apache.openjpa.persistence.meta.Types;
 
@@ -93,12 +97,19 @@ public class CriteriaExpressionBuilder {
                                 metas.add(meta);
                         }
                     }
+                    if (root.getFetches() != null) {
+                        for (Fetch fetch : root.getFetches()) {
+                            metas.add(metamodel.repos.getMetaData(
+                            fetch.getMember().getMemberJavaType(), 
+                            null, false));
+                        }
+                    }
                 }
             }
         }
         exps.accessPath = metas.toArray(new ClassMetaData[metas.size()]);
     }
-
+    
     protected void evalOrdering(QueryExpressions exps, 
         ExpressionFactory factory, CriteriaQueryImpl q) {
         List<Order> orders = q.getOrderList();
@@ -229,8 +240,28 @@ public class CriteriaExpressionBuilder {
 
     protected void evalFetchJoin(QueryExpressions exps, 
         ExpressionFactory factory, CriteriaQueryImpl q) {
-        //exps.fetchInnerPaths = null; // String[]
-        //exps.fetchPaths = null;      // String[]
+        List<String> iPaths = new ArrayList<String>();
+        List<String> oPaths = new ArrayList<String>();
+        Set<Root<?>> roots = q.getRoots();
+        if (roots == null)
+            return;
+        for (Root root : roots) {
+            Set<Fetch> fetches = root.getFetches();
+            if (fetches == null)
+                continue;
+            for (Fetch<?,?> fetch : fetches) {
+                String fPath = ((Members.Member<?, ?>)fetch.getMember())
+                   .fmd.getFullName(false);
+                oPaths.add(fPath);
+                if (fetch.getJoinType() == JoinType.INNER) {
+                   iPaths.add(fPath);
+                } 
+            }
+        }
+        if (!iPaths.isEmpty())
+            exps.fetchInnerPaths = iPaths.toArray(new String[iPaths.size()]);
+        if (!oPaths.isEmpty())
+            exps.fetchPaths = oPaths.toArray(new String[oPaths.size()]);
     }
 
     protected static org.apache.openjpa.kernel.exps.Expression and (

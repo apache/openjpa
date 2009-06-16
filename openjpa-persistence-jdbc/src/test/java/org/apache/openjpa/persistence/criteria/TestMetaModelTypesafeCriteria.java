@@ -141,7 +141,7 @@ public class TestMetaModelTypesafeCriteria extends CriteriaTest {
 
     @AllowFailure(message="FetchJoin not implemented")
     public void testFetchJoins() {
-        String jpql = "SELECT d FROM Department LEFT JOIN FETCH d.employees "
+        String jpql = "SELECT d FROM Department d LEFT JOIN FETCH d.employees "
                 + "WHERE d.deptNo = 1";
         CriteriaQuery q = cb.create();
         Root<Department> d = q.from(Department.class);

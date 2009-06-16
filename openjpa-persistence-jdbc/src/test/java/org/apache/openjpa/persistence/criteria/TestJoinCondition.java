@@ -167,4 +167,24 @@ public class TestJoinCondition extends CriteriaTest {
         
         assertEquivalence(cq, jpql);
     }
+    
+    public void testFetchJoin() {
+        String jpql = "select a from A a JOIN FETCH a.b";
+        
+        CriteriaQuery cq = cb.create();
+        Root<A> a = cq.from(A.class);
+        a.fetch(A_.b);
+        
+        assertEquivalence(cq, jpql);
+    }
+    
+    public void testOuterFetchJoin() {
+        String jpql = "select a from A a LEFT JOIN FETCH a.b";
+        
+        CriteriaQuery cq = cb.create();
+        Root<A> a = cq.from(A.class);
+        a.fetch(A_.b, JoinType.LEFT);
+        
+        assertEquivalence(cq, jpql);
+    }
 }

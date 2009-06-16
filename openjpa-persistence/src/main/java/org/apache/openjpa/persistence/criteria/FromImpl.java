@@ -214,33 +214,43 @@ public class FromImpl<Z,X> extends PathImpl<Z,X> implements From<Z,X> {
     
     
     public <Y> Fetch<X, Y> fetch(Attribute<? super X, Y> assoc, JoinType jt) {
-        throw new AbstractMethodError();
+        return addFetch((Members.Member<? super X, Y>)assoc, jt);
     }
 
     public <Y> Fetch<X,Y> fetch(Attribute<? super X, Y> assoc) {
-        throw new AbstractMethodError();
+        return fetch(assoc, JoinType.INNER);
     }
 
     public <Y> Fetch<X, Y> fetch(AbstractCollection<? super X, ?, Y> assoc,
         JoinType jt) {
-        throw new AbstractMethodError();
+        return addFetch((Members.Member<? super X, Y>)assoc, jt);
     }
     
     public <Y> Fetch<X,Y> fetch(AbstractCollection<? super X, ?, Y> assoc) {
-        throw new AbstractMethodError();
+        return fetch(assoc, JoinType.INNER);
     }
 
     //String-based:
 
     public <Y> Fetch<X, Y> fetch(String assocName) {
-        return (Fetch<X, Y>)fetch(type.getAttribute(assocName));
+        return fetch(assocName, JoinType.INNER);
     }
 
     public <Y> Fetch<X, Y> fetch(String assocName, JoinType jt) {
-        return (Fetch<X, Y>)fetch(type.getAttribute(assocName), JoinType.INNER);
+        return (Fetch<X, Y>)fetch(type.getAttribute(assocName), jt);
     }
 
     public java.util.Set<Fetch<X, ?>> getFetches() {
-        throw new AbstractMethodError();
+        return _fetches;
     }
+    
+    private <Y> Fetch<X,Y> addFetch(Members.Member<? super X, Y> member, 
+            JoinType jt) {
+        Fetch<X,Y> fetch = new FetchPathImpl(this, member, jt);
+        if (_fetches == null)
+            _fetches = new HashSet<Fetch<X,?>>();
+        _fetches.add(fetch);
+        return fetch;
+    }
+
 }
