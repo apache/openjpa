@@ -82,8 +82,9 @@ public class TestPersistenceProductDerivation extends TestCase {
         // and found numerous documented problems with deleting files. Perhaps
         // sometime in the future this problem will be fixed. For now it doesn't
         // really matter since we generate a new file every time.
-        boolean deleted = AccessController.doPrivileged(J2DoPrivHelper
-            .deleteAction(targetFile));
+        boolean deleted = 
+            (Boolean) AccessController.doPrivileged(J2DoPrivHelper.
+                deleteAction(targetFile));
         if(deleted==false){
             System.out.println("The file " + targetFile + " wasn't deleted.");
         }
