@@ -29,7 +29,7 @@ import javax.persistence.criteria.Join;
 import javax.persistence.criteria.Order;
 import javax.persistence.criteria.Root;
 import javax.persistence.criteria.Selection;
-import javax.persistence.metamodel.Entity;
+import javax.persistence.metamodel.Type.PersistenceType;
 
 import org.apache.openjpa.kernel.exps.ExpressionFactory;
 import org.apache.openjpa.kernel.exps.QueryExpressions;
@@ -45,7 +45,6 @@ import org.apache.openjpa.persistence.meta.Types;
  * 
  */
 public class CriteriaExpressionBuilder {
-    private int aliasCount = 0;
     
     public QueryExpressions getQueryExpressions(ExpressionFactory factory, 
         CriteriaQueryImpl q) {
@@ -69,8 +68,7 @@ public class CriteriaExpressionBuilder {
 
         //exps.range = null; // Value[]
         //exps.resultClass = null; // Class
-        if (q.getParameterTypes() != null)
-            exps.parameterTypes = q.getParameterTypes();
+        exps.parameterTypes = q.getParameterTypes();
         return exps;
     }
 
@@ -79,14 +77,21 @@ public class CriteriaExpressionBuilder {
         Set<ClassMetaData> metas = new HashSet<ClassMetaData>();
         Set<Root<?>> roots = q.getRoots();
         if (roots != null) {
+            MetamodelImpl metamodel = q.getMetamodel();    
             for (Root<?> root : roots) {
-                
                 metas.add(((Types.Managed<?>)root.getModel()).meta);
                 if (root.getJoins() != null) {
                     for (Join<?,?> join : root.getJoins()) {
                         Class<?> cls = join.getMember().getMemberJavaType();
-                        Entity<?> entity = q.getMetamodel().entity(cls);
-                        metas.add(((Types.Managed<?>)entity).meta);
+                        if (join.getMember().isAssociation()) {
+                            ClassMetaData meta = metamodel.repos.
+                                getMetaData(cls, null, true);
+                            PersistenceType type = metamodel.
+                                getPersistenceType(meta);
+                            if (type == PersistenceType.ENTITY ||
+                                type == PersistenceType.EMBEDDABLE) 
+                                metas.add(meta);
+                        }
                     }
                 }
             }
@@ -228,7 +233,7 @@ public class CriteriaExpressionBuilder {
         //exps.fetchPaths = null;      // String[]
     }
 
-    protected org.apache.openjpa.kernel.exps.Expression and (
+    protected static org.apache.openjpa.kernel.exps.Expression and (
         ExpressionFactory factory,
         org.apache.openjpa.kernel.exps.Expression e1, 
         org.apache.openjpa.kernel.exps.Expression e2) {

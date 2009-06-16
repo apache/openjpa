@@ -45,6 +45,11 @@ import javax.persistence.metamodel.TypesafeMetamodel;
 import javax.persistence.metamodel.AbstractCollection.CollectionType;
 import javax.persistence.metamodel.Type.PersistenceType;
 
+import org.apache.openjpa.conf.OpenJPAConfiguration;
+import org.apache.openjpa.kernel.QueryContext;
+import org.apache.openjpa.kernel.exps.AggregateListener;
+import org.apache.openjpa.kernel.exps.FilterListener;
+import org.apache.openjpa.kernel.exps.Resolver;
 import org.apache.openjpa.lib.util.Localizer;
 import org.apache.openjpa.meta.ClassMetaData;
 import org.apache.openjpa.meta.FieldMetaData;
@@ -57,7 +62,7 @@ import org.apache.openjpa.util.InternalException;
  * @author Pinaki Poddar
  * 
  */
-public class MetamodelImpl implements Metamodel {
+public class MetamodelImpl implements Metamodel, Resolver {
     public final MetaDataRepository repos;
     private Map<Class<?>, Entity<?>> _entities = 
         new HashMap<Class<?>, Entity<?>>();
@@ -79,6 +84,8 @@ public class MetamodelImpl implements Metamodel {
             switch (type) {
             case ENTITY:
                 find(cls, _entities, ENTITY);
+                if (meta.isEmbeddable())
+                    find(cls, _embeddables, EMBEDDABLE);
                 break;
             case EMBEDDABLE:
                 find(cls, _embeddables, EMBEDDABLE);
@@ -115,6 +122,10 @@ public class MetamodelImpl implements Metamodel {
         return result;
     }
 
+    public ClassMetaData getMetaData(Types.Identifiable<?> managedType) {
+        return managedType.meta;
+    }
+    
     public <X> ManagedType<X> type(Class<X> clazz) {
         if (_entities.containsKey(clazz))
             return (Entity<X>) _entities.get(clazz);
@@ -163,16 +174,19 @@ public class MetamodelImpl implements Metamodel {
         Map<Class<?>,V> container, PersistenceType expected) {
         ClassMetaData meta = repos.getMetaData(cls, null, true);
         PersistenceType actual = getPersistenceType(meta);
-        if (actual != expected)
-            throw new IllegalArgumentException(_loc.get("type-wrong-category",
-                cls, actual, expected).getMessage());
-
+        if (actual != expected) {
+            if (!meta.isEmbeddable() || actual != PersistenceType.ENTITY ||
+                expected != PersistenceType.EMBEDDABLE) 
+                throw new IllegalArgumentException(
+                    _loc.get("type-wrong-category",
+                    cls, actual, expected).getMessage());
+        }
         switch (actual) {
         case EMBEDDABLE:
             Types.Embeddable<X> embedded = new Types.Embeddable<X>(meta, this);
             _embeddables.put(cls, embedded);
             populate(embedded);
-            break;
+//            break;
         case ENTITY:
         	Types.Entity<X> entity = new Types.Entity<X>(meta, this);
             _entities.put(cls, entity);
@@ -325,5 +339,25 @@ public class MetamodelImpl implements Metamodel {
         java.lang.reflect.Type elementType = args[1];
         if (fType.isPrimitive())
             return;
+    }
+
+    public Class classForName(String name, String[] imports) {
+        throw new UnsupportedOperationException();
+    }
+
+    public AggregateListener getAggregateListener(String tag) {
+        throw new UnsupportedOperationException();
+    }
+
+    public OpenJPAConfiguration getConfiguration() {
+        return repos.getConfiguration();
+    }
+
+    public FilterListener getFilterListener(String tag) {
+        throw new UnsupportedOperationException();
+    }
+
+    public QueryContext getQueryContext() {
+        throw new UnsupportedOperationException();
     }    
 }

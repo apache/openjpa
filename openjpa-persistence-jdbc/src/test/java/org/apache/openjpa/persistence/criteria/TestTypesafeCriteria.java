@@ -29,6 +29,7 @@ import javax.persistence.criteria.JoinType;
 import javax.persistence.criteria.ListJoin;
 import javax.persistence.criteria.MapJoin;
 import javax.persistence.criteria.Root;
+import javax.persistence.criteria.SetJoin;
 import javax.persistence.criteria.Subquery;
 
 import org.apache.openjpa.persistence.test.AllowFailure;
@@ -193,7 +194,6 @@ public class TestTypesafeCriteria extends CriteriaTest {
         assertEquivalence(cq, jpql);
     }
     
-    @AllowFailure(message = "Extra joins created in Criteria")
     public void testMultiLevelJoins() {
         String jpql = "SELECT c FROM Customer c JOIN c.orders o "
             + "JOIN o.lineItems i WHERE i.product.productType = 'printer'";
@@ -221,7 +221,7 @@ public class TestTypesafeCriteria extends CriteriaTest {
         assertEquivalence(c, jpql);
     }
 
-    @AllowFailure(message = "Fetch joins not implemented")
+    @AllowFailure(message="FetchJoin not implemented")
     public void testFetchJoins() {
         String jpql = "SELECT d FROM Department LEFT JOIN FETCH d.employees "
             + "WHERE d.deptNo = 1";
@@ -233,12 +233,15 @@ public class TestTypesafeCriteria extends CriteriaTest {
         assertEquivalence(q, jpql);
     }
 
-    @AllowFailure(message = "Invalid SQL is generated")
     public void testJoinedPathInProjection() {
-        String jpql = "SELECT p.vendor FROM Employee e JOIN "
+        String jpql1 = "SELECT p.vendor FROM Employee e JOIN "
             + "e.contactInfo.phones p "
             + "WHERE e.contactInfo.address.zipCode = '95054'";
-        
+
+        String jpql = "SELECT p.vendor FROM Employee e JOIN "
+            + "e.contactInfo c JOIN c.phones p "
+            + "WHERE c.address.zipCode = '95054'";
+
         CriteriaQuery cq = cb.create();
         Root<Employee> e = cq.from(Employee.class);
         Join<Contact, Phone> p = e.join(Employee_.contactInfo).join(
@@ -250,11 +253,14 @@ public class TestTypesafeCriteria extends CriteriaTest {
         assertEquivalence(cq, jpql);
     }
 
-    @AllowFailure(message = "Key expression not implemented")
     public void testKeyExpression() {
-        String jpql =
-            "SELECT i.name, p FROM Item i JOIN i.photos p WHERE KEY(p) "
-            + "LIKE '%egret%'";
+//        String jpql =
+//            "SELECT i.name, p FROM Item i JOIN i.photos p WHERE KEY(p) "
+//            + "LIKE '%egret%'";
+        String jpql = "select i.name, VALUE(p)"
+            + " from Item i join i.photos p"
+            + " where KEY(p) like 'egret'";
+
         CriteriaQuery q = cb.create();
         Root<Item> item = q.from(Item.class);
         MapJoin<Item, String, Photo> photo = item.join(Item_.photos);
@@ -264,7 +270,6 @@ public class TestTypesafeCriteria extends CriteriaTest {
         assertEquivalence(q, jpql);
     }
 
-    @AllowFailure(message = "Index expression not implemented")
     public void testIndexExpression() {
         String jpql = "SELECT t FROM CreditCard c JOIN c.transactionHistory t "
             + "WHERE c.customer.accountNum = 321987 AND INDEX(t) BETWEEN 0 "
@@ -273,9 +278,10 @@ public class TestTypesafeCriteria extends CriteriaTest {
         Root<CreditCard> c = q.from(CreditCard.class);
         ListJoin<CreditCard, TransactionHistory> t = c
         .join(CreditCard_.transactionHistory);
-        q.select(t).where(
-                cb.equal(c.get(CreditCard_.customer).get(Customer_.accountNum),
-                        321987), cb.between(t.index(), 0, 9));
+        q.select(t).where(cb.and(
+            cb.equal(c.get(CreditCard_.customer).get(Customer_.accountNum),
+                321987), 
+            cb.between(t.index(), 0, 9)));
 
         assertEquivalence(q, jpql);
     }
@@ -289,9 +295,8 @@ public class TestTypesafeCriteria extends CriteriaTest {
         assertEquivalence(q, jpql);
     }
 
-    @AllowFailure(message = "broken")
     public void testExpressionInProjection() {
-        String jpql = "SELECT o.quantity, o.totalCost*1.08 AS taxedCost, "
+        String jpql = "SELECT o.quantity, o.totalCost*1.08, "
             + "a.zipCode FROM Customer c JOIN c.orders o JOIN c.address a "
             + "WHERE a.state = 'CA' AND a.county = 'Santa Clara'";
         
@@ -299,8 +304,9 @@ public class TestTypesafeCriteria extends CriteriaTest {
         Root<Customer> c = cq.from(Customer.class);
         Join<Customer, Order> o = c.join(Customer_.orders);
         Join<Customer, Address> a = c.join(Customer_.address);
-        cq.where(cb.equal(a.get(Address_.state), "CA"), 
-                 cb.equal(a.get(Address_.county), "Santa Clara"));
+        cq.where(cb.and(
+            cb.equal(a.get(Address_.state), "CA"), 
+            cb.equal(a.get(Address_.county), "Santa Clara")));
         cq.select(o.get(Order_.quantity), cb.prod(o
                 .get(Order_.totalCost), 1.08), a.get(Address_.zipCode));
 
@@ -316,20 +322,19 @@ public class TestTypesafeCriteria extends CriteriaTest {
         assertEquivalence(q, jpql);
     }
 
-    @AllowFailure(message = "Index expression not implemented")
     public void testIndexExpressionAndLietral() {
         String jpql = "SELECT w.name FROM Course c JOIN c.studentWaitList w "
             + "WHERE c.name = 'Calculus' AND INDEX(w) = 0";
         CriteriaQuery q = cb.create();
         Root<Course> course = q.from(Course.class);
         ListJoin<Course, Student> w = course.join(Course_.studentWaitList);
-        q.where(cb.equal(course.get(Course_.name), "Calculus"),
-                cb.equal(w.index(), 0)).select(w.get(Student_.name));
+        q.where(cb.and(
+            cb.equal(course.get(Course_.name), "Calculus"),
+            cb.equal(w.index(), 0))).select(w.get(Student_.name));
 
         assertEquivalence(q, jpql);
     }
 
-    @AllowFailure(message = "SQL for Criteria has extra join")
     public void testAggregateInProjection() {
         String jpql = "SELECT SUM(i.price) FROM Order o JOIN o.lineItems i " + 
             "JOIN o.customer c WHERE c.lastName = 'Smith' AND " + 
@@ -338,8 +343,9 @@ public class TestTypesafeCriteria extends CriteriaTest {
         Root<Order> o = q.from(Order.class);
         Join<Order, LineItem> i = o.join(Order_.lineItems);
         Join<Order, Customer> c = o.join(Order_.customer);
-        q.where(cb.equal(c.get(Customer_.lastName), "Smith"), cb.equal(c
-                .get(Customer_.firstName), "John"));
+        q.where(cb.and(
+            cb.equal(c.get(Customer_.lastName), "Smith"), 
+            cb.equal(c.get(Customer_.firstName), "John")));
         q.select(cb.sum(i.get(LineItem_.price)));
 
         assertEquivalence(q, jpql);
@@ -376,48 +382,32 @@ public class TestTypesafeCriteria extends CriteriaTest {
         assertEquivalence(q, jpql);
     }
 
-    @AllowFailure(message = "Extra Joins created")
     public void testExpression1() {
-        String jpql = "SELECT o.quantity, o.totalCost*1.08 AS taxedCost, "
+        String jpql = "SELECT o.quantity, o.totalCost*1.08, "
             + "a.zipCode FROM Customer c JOIN c.orders o JOIN c.address a "
             + "WHERE a.state = 'CA' AND a.county = 'Santa Clara'";
         CriteriaQuery q = cb.create();
         Root<Customer> cust = q.from(Customer.class);
         Join<Customer, Order> order = cust.join(Customer_.orders);
         Join<Customer, Address> address = cust.join(Customer_.address);
-        q.where(cb.equal(address.get(Address_.state), "CA"), cb.equal(address
-                .get(Address_.county), "Santa Clara"));
+        q.where(cb.and(
+            cb.equal(address.get(Address_.state), "CA"), 
+            cb.equal(address.get(Address_.county), "Santa Clara")));
         q.select(order.get(Order_.quantity), cb.prod(order
                 .get(Order_.totalCost), 1.08), address.get(Address_.zipCode));
 
         assertEquivalence(q, jpql);
     }
 
-    @AllowFailure(message = "Index expression not implemented")
     public void testExpression3() {
         String jpql = "SELECT w.name FROM Course c JOIN c.studentWaitList w "
             + "WHERE c.name = 'Calculus' AND INDEX(w) = 0";
         CriteriaQuery q = cb.create();
         Root<Course> course = q.from(Course.class);
         ListJoin<Course, Student> w = course.join(Course_.studentWaitList);
-        q.where(cb.equal(course.get(Course_.name), "Calculus"),
-                cb.equal(w.index(), 0)).select(w.get(Student_.name));
-
-        assertEquivalence(q, jpql);
-    }
-
-    @AllowFailure(message = "Generates extra Join")
-    public void testExpression4() {
-        String jpql = "SELECT SUM(i.price) FROM Order o JOIN o.lineItems i " + 
-            "JOIN o.customer c WHERE c.lastName = 'Smith' AND " + 
-            "c.firstName = 'John'";
-        CriteriaQuery q = cb.create();
-        Root<Order> o = q.from(Order.class);
-        Join<Order, LineItem> i = o.join(Order_.lineItems);
-        Join<Order, Customer> c = o.join(Order_.customer);
-        q.where(cb.equal(c.get(Customer_.lastName), "Smith"), cb.equal(c
-                .get(Customer_.firstName), "John"));
-        q.select(cb.sum(i.get(LineItem_.price)));
+        q.where(cb.and(
+            cb.equal(course.get(Course_.name), "Calculus"),
+            cb.equal(w.index(), 0))).select(w.get(Student_.name));
 
         assertEquivalence(q, jpql);
     }
@@ -509,35 +499,34 @@ public class TestTypesafeCriteria extends CriteriaTest {
     }
 
     public void testParameters3() {
-        String jpql = "SELECT c FROM Customer c Where c.status = ?1";
+        String jpql = "SELECT c FROM Customer c Where c.status = :stat";
         CriteriaQuery q = cb.create();
         Root<Customer> c = q.from(Customer.class);
-        Parameter<Integer> param = cb.parameter(Integer.class);
+        Parameter<Integer> param = cb.parameter(Integer.class, "stat");
         q.select(c).where(cb.equal(c.get(Customer_.status), param));
-        assertEquivalence(q, jpql, new Object[] { 1 });
+        assertEquivalence(q, jpql, new String[]{"stat"}, new Object[] { 1 });
     }
 
-    @AllowFailure(message="add QuotedNumbersInQueries=true otherwise " + 
-    "AbstractExpressionBuilder.convertTypes() compliants")
     public void testParameters4() {
-        String jpql = "SELECT c FROM Customer c Where c.status = ?1 AND "
-            + "c.name = ?2";
+        String jpql = "SELECT c FROM Customer c Where c.status = :stat AND "
+            + "c.name = :name";
         CriteriaQuery q = cb.create();
         Root<Customer> c = q.from(Customer.class);
-        Parameter<Integer> param1 = cb.parameter(Integer.class);
-        Parameter<Integer> param2 = cb.parameter(Integer.class);
-        q.select(c).where(
-                cb.and(cb.equal(c.get(Customer_.status), param1), cb.equal(c
-                        .get(Customer_.name), param2)));
-        assertEquivalence(q, jpql, new Object[] { 1, "test" });
+        Parameter<Integer> param1 = cb.parameter(Integer.class, "stat");
+        Parameter<String> param2 = cb.parameter(String.class, "name");
+        q.select(c).where(cb.and(cb.equal(c.get(Customer_.status), param1), 
+                cb.equal(c.get(Customer_.name), param2)));
+        assertEquivalence(q, jpql, new String[]{"stat", "name"},
+                new Object[] { 1, "test" });
     }
     
-    @AllowFailure(message = "Criteria API does not allow collection parameter")
+    @AllowFailure(message="collection valued parameter does not work in in()")
     public void testParameters5() {
         String jpql = "SELECT c FROM Customer c Where c.status IN (:coll)";
         CriteriaQuery q = cb.create();
         Root<Customer> c = q.from(Customer.class);
-        Parameter<List> param1 = cb.parameter(List.class);
+        Parameter<List> param1 = cb.parameter(List.class, "coll");
+        q.where(c.get(Customer_.status).in(param1));
         // q.select(c).where(cb.in(c.get(Customer_.status)).value(params1));
         List vals = new ArrayList();
         vals.add(1);
@@ -546,7 +535,7 @@ public class TestTypesafeCriteria extends CriteriaTest {
             new Object[] {vals});
     }
     
-    @AllowFailure(message="Value() expression not implemented")
+    @AllowFailure(message="Generates invalid SQL")
     public void testSelectList1() {
         String jpql = "SELECT v.location.street, KEY(i).title, VALUE(i) FROM "
             + "VideoStore v JOIN v.videoInventory i WHERE v.location.zipCode = "
@@ -555,8 +544,9 @@ public class TestTypesafeCriteria extends CriteriaTest {
         Root<VideoStore> v = q.from(VideoStore.class);
         MapJoin<VideoStore, Movie, Integer> inv = v
         .join(VideoStore_.videoInventory);
-        q.where(cb.equal(v.get(VideoStore_.location).get(Address_.zipCode),
-        "94301"), cb.gt(inv.value(), 0));
+        q.where(cb.and(
+        cb.equal(v.get(VideoStore_.location).get(Address_.zipCode),
+        "94301"), cb.gt(inv.value(), 0)));
         q.select(v.get(VideoStore_.location).get(Address_.street), inv.key()
                 .get(Movie_.title), inv.value());
 
@@ -576,37 +566,39 @@ public class TestTypesafeCriteria extends CriteriaTest {
         assertEquivalence(q, jpql);
     }
     
-    @AllowFailure(message="new() in projection with join is broken")
-    public void testNewConstruct1() {
-        String jpql =
-            "SELECT NEW CustomerDetails(c.id, c.status, o.quantity) FROM "
-            + "Customer c JOIN c.orders o WHERE o.quantity > 100";
-        CriteriaQuery q = cb.create();
-        Root<Customer> c = q.from(Customer.class);
-        Join<Customer, Order> o = c.join(Customer_.orders);
-        q.where(cb.gt(o.get(Order_.quantity), 100));
-        q.select(cb.select(CustomerDetails.class, c.get(Customer_.id), c
-                .get(Customer_.status), o.get(Order_.quantity)));
-
-        assertEquivalence(q, jpql);
-    }
-
-    @AllowFailure(message="JPQL does not support multiple constructors")
-    public void testNewConstruct2() {
-        String jpql = "SELECT NEW CustomerDetails(c.id, c.status), " +
-                "NEW CustomerFullName(c.firstName, c.lastName) FROM "
-            + "Customer c";
+    public void testConstructorInProjection() {
+        String jpql = "SELECT NEW CustomerDetails(c.id, c.status, o.quantity) "
+                    + "FROM Customer c JOIN c.orders o WHERE o.quantity > 100";
         
         CriteriaQuery q = cb.create();
         Root<Customer> c = q.from(Customer.class);
-        q.select(cb.select(CustomerDetails.class, c.get(Customer_.id), 
-                c.get(Customer_.status)),
-                cb.select(CustomerFullName.class, c.get(Customer_.firstName), 
-                c.get(Customer_.lastName))
-        );
+        SetJoin<Customer, Order> o = c.join(Customer_.orders);
+        q.where(cb.gt(o.get(Order_.quantity), 100));
+        q.select(cb.select(CustomerDetails.class, 
+                            c.get(Customer_.id), 
+                            c.get(Customer_.status), 
+                            o.get(Order_.quantity)));
+
         assertEquivalence(q, jpql);
     }
 
+    @AllowFailure(message="Projections of multiple NEW does not work")
+    public void testMultipleConstructorInProjection() {
+        String jpql = "SELECT NEW CustomerDetails(c.id, c.status), " 
+                    + "NEW CustomerFullName(c.firstName, c.lastName) "
+                    + "FROM Customer c";
+        
+        CriteriaQuery q = cb.create();
+        Root<Customer> c = q.from(Customer.class);
+        q.select(cb.select(CustomerDetails.class, 
+                             c.get(Customer_.id), 
+                             c.get(Customer_.status)),
+                cb.select(CustomerFullName.class, 
+                             c.get(Customer_.firstName), 
+                             c.get(Customer_.lastName))
+        );
+        assertEquivalence(q, jpql);
+    }
     
     
     public void testSubqueries1() {
@@ -625,7 +617,6 @@ public class TestTypesafeCriteria extends CriteriaTest {
         assertEquivalence(q, jpql);
     }
 
-    @AllowFailure(message="SQL is incorrect for JPQL, correct for Criteria")
     public void testSubqueries2() {
         String jpql = "SELECT DISTINCT emp FROM Employee emp WHERE EXISTS ("
             + "SELECT spouseEmp FROM Employee spouseEmp WHERE spouseEmp ="
@@ -659,8 +650,6 @@ public class TestTypesafeCriteria extends CriteriaTest {
         assertEquivalence(q, jpql);
     }
 
-    @AllowFailure(message="SQL is incorrect for JPQL, correct for " + 
-        "Criteria is correct with redundant outer joins")
     public void testSubqueries4() {
         String jpql = "SELECT c FROM Customer c WHERE "
             + "(SELECT COUNT(o) FROM c.orders o) > 10";
@@ -675,7 +664,6 @@ public class TestTypesafeCriteria extends CriteriaTest {
         assertEquivalence(q, jpql);
     }
 
-    @AllowFailure(message="Subqueries not implemented")
     public void testSubqueries5() {
         String jpql = "SELECT o FROM Order o WHERE 10000 < ALL ("
             + "SELECT a.balance FROM o.customer c JOIN c.accounts a)";
@@ -692,7 +680,7 @@ public class TestTypesafeCriteria extends CriteriaTest {
         assertEquivalence(q, jpql);
     }
 
-    @AllowFailure(message="Subqueries not implemented")
+    @AllowFailure(message="Root of subquery.delgate is not set")
     public void testSubqueries6() {
         String jpql = "SELECT o FROM Order o JOIN o.customer c WHERE 10000 < "
             + "ALL (SELECT a.balance FROM c.accounts a)";
@@ -722,8 +710,6 @@ public class TestTypesafeCriteria extends CriteriaTest {
         assertEquivalence(q, jpql);
     }
 
-    @AllowFailure(message="AbstractExpressionExecutor.assertNotContainer()"+
-    "not happy")
     public void testOrdering1() {
         String jpql = "SELECT o FROM Customer c JOIN c.orders o "
             + "JOIN c.address a WHERE a.state = 'CA' ORDER BY o.quantity DESC, "
@@ -740,7 +726,6 @@ public class TestTypesafeCriteria extends CriteriaTest {
         assertEquivalence(q, jpql);
     }
 
-    @AllowFailure
     public void testOrdering2() {
         String jpql = "SELECT o.quantity, a.zipCode FROM Customer c "
             + "JOIN c.orders o JOIN c.address a WHERE a.state = 'CA' "
@@ -757,7 +742,6 @@ public class TestTypesafeCriteria extends CriteriaTest {
         assertEquivalence(q, jpql);
     }
 
-    @AllowFailure
     public void testOrdering3() {
         String jpql = "SELECT o.quantity, o.totalCost * 1.08 AS taxedCost, "
             + "a.zipCode FROM Customer c JOIN c.orders o JOIN c.address a "

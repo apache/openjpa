@@ -22,7 +22,6 @@ import java.util.Collection;
 
 import javax.persistence.Parameter;
 
-import org.apache.commons.collections.map.LinkedMap;
 import org.apache.openjpa.kernel.exps.ExpressionFactory;
 import org.apache.openjpa.kernel.exps.Value;
 import org.apache.openjpa.meta.ClassMetaData;
@@ -32,64 +31,60 @@ import org.apache.openjpa.persistence.meta.MetamodelImpl;
  * Parameter of a criteria query.
  * 
  * @author Pinaki Poddar
- *
+ * @author Fay wang
+ * 
  * @param <T> the type of value held by this parameter.
  */
 public class ParameterImpl<T> extends ExpressionImpl<T> implements Parameter<T>{
 	private String name;
-	private int position;
+	private Integer position;
 	
-    public ParameterImpl(Class<T> cls) {
+    public ParameterImpl(Class<T> cls, String name) {
         super(cls);
+        this.name = name;
     }
 
 	public final String getName() {
 		return name;
 	}
 	
-	public final ParameterImpl<T> setName(String name) {
-		this.name = name;
-		return this;
-	}
-
-	public final Integer getPosition() {
-		return position;
-	}
-
+    public Integer getPosition() {
+        return position;
+    }
+    
+    public void setPosition(int p) {
+        position = p;
+    }
+	
     @Override
     public Value toValue(ExpressionFactory factory, MetamodelImpl model,
         CriteriaQueryImpl q) {
-        boolean positional = false;
-        LinkedMap parameterTypes = ((CriteriaQueryImpl)q).getParameterTypes();
-        if (parameterTypes == null) {
-            parameterTypes = new LinkedMap(6);
-            ((CriteriaQueryImpl)q).setParameterTypes(parameterTypes);
-        } 
-        if (name == null) {
-            position = parameterTypes.size() + 1;
-            positional = true;
-        }
+        q.registerParameter(this);
         
-        Object paramKey = name == null ? Integer.valueOf(position) : name;
-        if (!parameterTypes.containsKey(paramKey))
-            parameterTypes.put(paramKey, Object.class);
 
         ClassMetaData meta = null;
-        Class clzz = getJavaType();
-        int index;
-        if (positional) 
-            index = position - 1;
-        else 
-            // otherwise the index is just the current size of the params
-            index = parameterTypes.indexOf(paramKey);
-        
+        Class<?> clzz = getJavaType();
+        Object paramKey = getKey();
+        int index = getIndex();
         boolean isCollectionValued  = Collection.class.isAssignableFrom(clzz);
         org.apache.openjpa.kernel.exps.Parameter param = isCollectionValued 
-            ? factory.newCollectionValuedParameter(paramKey, Object.class) 
-            : factory.newParameter(paramKey, Object.class);
+            ? factory.newCollectionValuedParameter(paramKey, clzz) 
+            : factory.newParameter(paramKey, clzz);
         param.setMetaData(meta);
         param.setIndex(index);
         
         return param;
     }	
+    
+    Object getKey() {
+        if (name == null && position == null)
+            throw new IllegalStateException(this + " key is not set");
+        return name != null ? name : position;
+    }
+    
+    int getIndex() {
+        if (position == null)
+            throw new IllegalStateException(this + " index is not set");
+        return position-1;
+    }
 }

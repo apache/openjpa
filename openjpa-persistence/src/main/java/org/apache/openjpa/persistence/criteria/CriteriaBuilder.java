@@ -50,6 +50,7 @@ import org.apache.openjpa.persistence.meta.MetamodelImpl;
  * Acts as an adapter to OpenJPA ExpressionFactory.
  * 
  * @author Pinaki Poddar
+ * @author Fay Wang
  * 
  * @since 2.0.0
  *
@@ -445,11 +446,11 @@ public class CriteriaBuilder implements QueryBuilder, ExpressionParser {
     }
 
     public <N extends Number> Expression<N> neg(Expression<N> x) {
-        throw new AbstractMethodError();
+        return new Expressions.Diff<N>(0, x);
     }
 
     public Predicate not(Expression<Boolean> restriction) {
-        throw new AbstractMethodError();
+        return new Expressions.Not(restriction);
     }
 
     public Predicate notEqual(Expression<?> x, Expression<?> y) {
@@ -507,11 +508,12 @@ public class CriteriaBuilder implements QueryBuilder, ExpressionParser {
     }
 
     public <T> Parameter<T> parameter(Class<T> paramClass) {
-        return new ParameterImpl<T>(paramClass);
+        throw new UnsupportedOperationException("Unnamed parameter " +
+                "not supported for CriteriaQuery");
     }
 
     public <T> Parameter<T> parameter(Class<T> paramClass, String name) {
-        return new ParameterImpl<T>(paramClass).setName(name);
+        return new ParameterImpl<T>(paramClass, name);
     }
 
     public <N extends Number> Expression<N> prod(Expression<? extends N> x,
@@ -566,7 +568,8 @@ public class CriteriaBuilder implements QueryBuilder, ExpressionParser {
     }
 
     public <Y> Expression<Y> some(Subquery<Y> subquery) {
-        return new Expressions.Some<Y>(subquery);
+        //some and any are synonymous
+        return new Expressions.Any<Y>(subquery);
     }
 
     public Expression<Double> sqrt(Expression<? extends Number> x) {

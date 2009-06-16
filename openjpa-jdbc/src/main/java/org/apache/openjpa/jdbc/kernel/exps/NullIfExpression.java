@@ -82,8 +82,7 @@ public class NullIfExpression
         SQLBuffer buf, int index) {
         BinaryOpExpState bstate = (BinaryOpExpState) state;
         
-        buf.append(" NULLIF ");
-        buf.append("(");
+        buf.append(" NULLIF("); // MySQL does not like space before bracket
 
         _val1.appendTo(sel, ctx, bstate.state1, buf, 0);
         buf.append(",");

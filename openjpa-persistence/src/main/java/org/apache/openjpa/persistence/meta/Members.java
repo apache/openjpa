@@ -119,6 +119,10 @@ public class Members {
         public boolean isOptional() {
             return fmd.getNullValue() != FieldMetaData.NULL_EXCEPTION;
         }
+        
+        public boolean isEmbedded() {
+            return fmd.isEmbedded();
+        }
 
         public Type<T> getAttributeType() {
             return owner.model.type(fmd.getDeclaredType());

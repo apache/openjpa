@@ -20,6 +20,8 @@
 package org.apache.openjpa.persistence.criteria;
 
 import javax.persistence.criteria.Expression;
+import javax.persistence.criteria.Join;
+import javax.persistence.criteria.JoinType;
 import javax.persistence.criteria.Path;
 import javax.persistence.metamodel.AbstractCollection;
 import javax.persistence.metamodel.Attribute;
@@ -30,6 +32,8 @@ import javax.persistence.metamodel.Type;
 
 import org.apache.openjpa.kernel.exps.ExpressionFactory;
 import org.apache.openjpa.kernel.exps.Value;
+import org.apache.openjpa.meta.ClassMetaData;
+import org.apache.openjpa.meta.FieldMetaData;
 import org.apache.openjpa.meta.JavaTypes;
 import org.apache.openjpa.persistence.meta.Members;
 import org.apache.openjpa.persistence.meta.MetamodelImpl;
@@ -47,6 +51,7 @@ import org.apache.openjpa.persistence.meta.MetamodelImpl;
 public class PathImpl<Z,X> extends ExpressionImpl<X> implements Path<X> {
     protected final PathImpl<?,Z> _parent;
     protected final Members.Member<? super Z,?> _member;
+    private boolean isEmbedded = false;
     
     /**
      * Protected. use by root path which neither represent a member nor has a
@@ -67,11 +72,17 @@ public class PathImpl<Z,X> extends ExpressionImpl<X> implements Path<X> {
         Class<X> cls) {
         super(cls);
         _parent = parent;
-        _member = member;
+        if (_parent.isEmbedded) {
+            FieldMetaData fmd = getEmbeddedFieldMetaData(member.fmd);
+            _member = new Members.Attribute(member.owner, fmd);
+        } else 
+            _member = member;
         if (parent == null)
             throw new NullPointerException("Null parent for member " + member);
         if (member == null)
             throw new NullPointerException("Null member for parent " + parent);
+        if (_member.fmd.isEmbedded())
+            isEmbedded = true;
     }
     
     public PathImpl<?,Z> getParentPath() {
@@ -82,6 +93,22 @@ public class PathImpl<Z,X> extends ExpressionImpl<X> implements Path<X> {
         return (_parent == null) ? this : _parent.getInnermostParentPath();
     }
 
+    protected FieldMetaData getEmbeddedFieldMetaData(FieldMetaData fmd) {
+        Members.Member member = getInnermostMember(_parent,_member);
+        ClassMetaData embeddedMeta = member.fmd.getEmbeddedMetaData();
+        if (embeddedMeta != null)
+            return embeddedMeta.getField(fmd.getName());
+        else
+            return fmd;
+    }
+    
+    protected Members.Member getInnermostMember(PathImpl parent, 
+        Members.Member member) {
+        return member != null ? member : getInnermostMember(parent._parent,
+            parent._member); 
+    }
+    
+    
     /**
      * Convert this path to a kernel path.
      */
@@ -102,11 +129,14 @@ public class PathImpl<Z,X> extends ExpressionImpl<X> implements Path<X> {
         } else if (_parent != null) { 
             if (q.isRegistered(_parent)) {
                 path = factory.newPath(q.getVariable(_parent));
+                ClassMetaData meta = _member.fmd.getDeclaredTypeMetaData();
+                path.setMetaData(meta);
             } else {
                 path = (org.apache.openjpa.kernel.exps.Path)
                      _parent.toValue(factory, model, q);
             }
-            boolean allowNull = false;
+            boolean allowNull = _parent instanceof Join 
+                    && ((Join<?,?>)_parent).getJoinType() != JoinType.INNER;
             path.get(_member.fmd, allowNull);
         } else {
             path = factory.newPath();

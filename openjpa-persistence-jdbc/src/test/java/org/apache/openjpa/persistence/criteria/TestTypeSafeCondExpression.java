@@ -36,21 +36,11 @@
  */
 package org.apache.openjpa.persistence.criteria;
 
-import java.sql.Timestamp;
-import java.util.List;
-
-import javax.persistence.EntityManager;
 import javax.persistence.Parameter;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Expression;
-import javax.persistence.criteria.Join;
-import javax.persistence.criteria.JoinType;
-import javax.persistence.criteria.ListJoin;
 import javax.persistence.criteria.Root;
-import javax.persistence.criteria.SetJoin;
 import javax.persistence.criteria.Subquery;
-
-import org.apache.openjpa.persistence.test.AllowFailure;
 
 /**
  * Tests type-strict version of Criteria API. The test scenarios are adapted
@@ -70,10 +60,9 @@ public class TestTypeSafeCondExpression extends CriteriaTest {
         assertEquivalence(c, query);
     }
 
-    public void testBetweenExprUsingCriteria() {
-        String query =
-            "SELECT o.name FROM CompUser o WHERE o.age BETWEEN 19 AND 40 AND " +
-            "o.computerName = 'PC'";
+    public void testBetween() {
+        String jpql = "SELECT o.name FROM CompUser o " 
+                    + "WHERE o.age BETWEEN 19 AND 40 AND o.computerName = 'PC'";
         
         CriteriaQuery cq = cb.create();
         Root<CompUser> o = cq.from(CompUser.class);
@@ -81,112 +70,108 @@ public class TestTypeSafeCondExpression extends CriteriaTest {
                 cb.equal(o.get(CompUser_.computerName), "PC")));
         cq.select(o.get(CompUser_.name));
         
-        assertEquivalence(cq, query);
+        assertEquivalence(cq, jpql);
     }
 
-    public void testNotBetweenExprUsingCriteria() {
-        String query =
-            "SELECT o.name FROM CompUser o WHERE o.age NOT BETWEEN 19 AND 40 " +
-            "AND o.computerName= 'PC'";
+    public void testNotBetween() {
+        String jpql = "SELECT o.name FROM CompUser o " 
+                 + "WHERE o.age NOT BETWEEN 19 AND 40 AND o.computerName= 'PC'";
 
-        CriteriaQuery q = cb.create();
-        Root<CompUser> c = q.from(CompUser.class);
-        q.where(cb.and(cb.between(c.get(CompUser_.age), 19, 40).negate(), 
-                cb.equal(c.get(CompUser_.computerName), "PC")));
-        q.select(c.get(CompUser_.name));
+        CriteriaQuery cq = cb.create();
+        Root<CompUser> o = cq.from(CompUser.class);
+        cq.where(cb.and(cb.between(o.get(CompUser_.age), 19, 40).negate(), 
+                cb.equal(o.get(CompUser_.computerName), "PC")));
+        cq.select(o.get(CompUser_.name));
         
-        assertEquivalence(q, query);
+        assertEquivalence(cq, jpql);
     }
 
-    public void testInExprUsingCriteria() {
-        String query =
-            "SELECT o.name FROM CompUser o WHERE o.age IN (29, 40, 10)";
-        CriteriaQuery q = cb.create();
-        Root<CompUser> c = q.from(CompUser.class);
-        q.where(cb.in(c.get(CompUser_.age)).value(29).value(40).value(10));
-        q.select(c.get(CompUser_.name));
+    public void testInExpr() {
+        String jpql = "SELECT o.name FROM CompUser o "
+                     + "WHERE o.age IN (29, 40, 10)";
         
-        assertEquivalence(q, query);
+        CriteriaQuery cq = cb.create();
+        Root<CompUser> o = cq.from(CompUser.class);
+        cq.where(cb.in(o.get(CompUser_.age)).value(29).value(40).value(10));
+        cq.select(o.get(CompUser_.name));
+        
+        assertEquivalence(cq, jpql);
     }
 
-    public void testNotInUsingCriteria() {
-        String query =
-            "SELECT o.name FROM CompUser o WHERE o.age NOT IN (29, 40, 10)";
+    public void testNotIn() {
+        String jpql = "SELECT o.name FROM CompUser o "
+                    + "WHERE o.age NOT IN (29, 40, 10)";
 
-        CriteriaQuery q = cb.create();
-        Root<CompUser> c = q.from(CompUser.class);
-        q.where(cb.in(c.get(CompUser_.age)).value(29).value(40).value(10)
+        CriteriaQuery cq = cb.create();
+        Root<CompUser> o = cq.from(CompUser.class);
+        cq.where(cb.in(o.get(CompUser_.age)).value(29).value(40).value(10)
             .negate());
-        q.select(c.get(CompUser_.name));
+        cq.select(o.get(CompUser_.name));
         
-        assertEquivalence(q, query);
+        assertEquivalence(cq, jpql);
     }
 
-    public void testLikeExprUsingCriteria1() {
-        String query =
-            "SELECT o.computerName FROM CompUser o WHERE o.name LIKE 'Sha%'" +
-            " AND o.computerName NOT IN ('PC')";
+    public void testLike1() {
+        String jpql = "SELECT o.computerName FROM CompUser o "
+                 + "WHERE o.name LIKE 'Sha%' AND o.computerName NOT IN ('PC')";
 
-        CriteriaQuery q = cb.create();
-        Root<CompUser> c = q.from(CompUser.class);
-        q.where(cb.and(
-                    cb.like(c.get(CompUser_.name),"Sha%"), 
-                    cb.in(c.get(CompUser_.computerName)).value("PC").negate()
+        CriteriaQuery cq = cb.create();
+        Root<CompUser> o = cq.from(CompUser.class);
+        cq.where(cb.and(
+                    cb.like(o.get(CompUser_.name),"Sha%"), 
+                    cb.in(o.get(CompUser_.computerName)).value("PC").negate()
                 ));
         
-        q.select(c.get(CompUser_.computerName));
+        cq.select(o.get(CompUser_.computerName));
 
-        assertEquivalence(q, query);
+        assertEquivalence(cq, jpql);
     }
     
-    public void testLikeExprUsingCriteria2() {
-        String query =
-            "SELECT o.computerName FROM CompUser o WHERE o.name LIKE 'Sha%o_'" +
-            " AND " + 
-            "o.computerName NOT IN ('UNIX')";
+    public void testLike2() {
+        String jpql = "SELECT o.computerName FROM CompUser o "
+            + "WHERE o.name LIKE 'Sha%o_' AND o.computerName NOT IN ('UNIX')";
 
-        CriteriaQuery q = cb.create();
-        Root<CompUser> c = q.from(CompUser.class);
-        q.where(cb.and(
-                    cb.like(c.get(CompUser_.name),"Sha%o_"), 
-                    cb.in(c.get(CompUser_.computerName)).value("UNIX").negate()
+        CriteriaQuery cq = cb.create();
+        Root<CompUser> o = cq.from(CompUser.class);
+        cq.where(cb.and(
+                    cb.like(o.get(CompUser_.name),"Sha%o_"), 
+                    cb.in(o.get(CompUser_.computerName)).value("UNIX").negate()
                 ));
-        q.select(c.get(CompUser_.computerName));
+        cq.select(o.get(CompUser_.computerName));
         
-        assertEquivalence(q, query);
+        assertEquivalence(cq, jpql);
     }
     
-    public void testLikeExprUsingCriteria3() {
-        String query = "SELECT o.name FROM CompUser o WHERE o.name LIKE '_J%'";
+    public void testLike3() {
+        String jpql = "SELECT o.name FROM CompUser o WHERE o.name LIKE '_J%'";
 
-        CriteriaQuery q = cb.create();
-        Root<CompUser> c = q.from(CompUser.class);
-        q.where(cb.like(c.get(CompUser_.name),"_J%"));
-        q.select(c.get(CompUser_.name));
+        CriteriaQuery cq = cb.create();
+        Root<CompUser> o = cq.from(CompUser.class);
+        cq.where(cb.like(o.get(CompUser_.name),"_J%"));
+        cq.select(o.get(CompUser_.name));
         
-        assertEquivalence(q, query);
+        assertEquivalence(cq, jpql);
     }
     
-    @AllowFailure(message="Parameter processing is broken")
-    public void testLikeExprUsingCriteria4() {
-        String query = "SELECT o.name FROM CompUser o WHERE o.name LIKE ?1 " +
-        		"ESCAPE '|'";
+    public void testLikeWithEscapeCharacter() {
+        String query = "SELECT o.name FROM CompUser o "
+            + "WHERE o.name LIKE :name ESCAPE '|'";
         CriteriaQuery q = cb.create();
         Root<CompUser> c = q.from(CompUser.class);
-        Parameter<String> param = cb.parameter(String.class);
+        Parameter<String> param = cb.parameter(String.class, "name");
         q.where(cb.like(c.get(CompUser_.name), param, '|'));
         q.select(c.get(CompUser_.name));
         
-        assertEquivalence(q, query, new Object[] {"%|_%"});
+        assertEquivalence(q, query, new String[]{"name"}, 
+                new Object[] {"%|_%"});
     }
 
-    public void testNullExprUsingCriteria() {
+    public void testNullExpression() {
         String query =
             "SELECT o.name FROM CompUser o WHERE o.age IS NOT NULL AND " +
             "o.computerName = 'PC' ";
         CriteriaQuery q = cb.create();
         Root<CompUser> c = q.from(CompUser.class);
-        Parameter<String> param = cb.parameter(String.class);
         q.where(cb.and(cb.notEqual(c.get(CompUser_.age), null), 
                 cb.equal(c.get(CompUser_.computerName), "PC")));
         q.select(c.get(CompUser_.name));
@@ -200,7 +185,6 @@ public class TestTypeSafeCondExpression extends CriteriaTest {
 
         CriteriaQuery q = cb.create();
         Root<CompUser> c = q.from(CompUser.class);
-        Parameter<String> param = cb.parameter(String.class);
         q.where(cb.equal(c.get(CompUser_.address).get(Address_.country),
             null));
         q.select(c.get(CompUser_.name));
@@ -209,7 +193,7 @@ public class TestTypeSafeCondExpression extends CriteriaTest {
     }
     
     // do not support isEmpty for array fields
-    @AllowFailure
+    
     public void testIsEmptyExprUsingCriteria() {
         String query =
             "SELECT o.name FROM CompUser o WHERE o.nicknames IS NOT EMPTY";
@@ -221,80 +205,11 @@ public class TestTypeSafeCondExpression extends CriteriaTest {
         assertEquivalence(cq, query);
     }
 
-    @AllowFailure(message="Address is embeddable. Can it be in " +
-    		"subquery/From Clause?")
-    public void testExistExprUsingCriteria() {
-        String query = "SELECT DISTINCT o.name FROM CompUser o WHERE EXISTS" +
-            " (SELECT c FROM Address c WHERE c = o.address )";
-
-        CriteriaQuery q = cb.create();
-        Root<CompUser> o = q.from(CompUser.class);
-        Subquery<Address> sq = q.subquery(Address.class);
-        sq.correlate(o);
-        Root<Address> c = sq.from(Address.class);
-        sq.select(c);
-        sq.where(cb.equal(c, o.get(CompUser_.address)));
-        q.where(cb.exists(sq));
-        q.select(o.get(CompUser_.name)).distinct(true);
-        assertEquivalence(q, query);
-        List result = em.createQuery(q).getResultList();
-
-        assertNotNull("the list is null", result);
-        assertEquals("they are not equal", 5, result.size());
-        assertTrue("Seetha is not list", result.contains("Seetha"));
-        assertTrue("Shannon is not list", result.contains("Shannon"));
-        assertTrue("jacob is not list", result.contains("Jacob"));
-        assertTrue("ugo is not list", result.contains("Ugo"));
-
-        em.clear();
-    }
     
-    @AllowFailure
-    public void testNotExistExprUsingCriteria() {
-        String query =
-            "SELECT DISTINCT o.name FROM CompUser o WHERE NOT EXISTS" +
-                " (SELECT s FROM CompUser s WHERE s.address.country = " +
-                "o.address.country)";
-
-        CriteriaQuery q = cb.create();
-        Root<CompUser> o = q.from(CompUser.class);
-        Subquery<CompUser> sq = q.subquery(CompUser.class);
-        sq.correlate(o);
-        Root<CompUser> s = sq.from(CompUser.class);
-        sq.select(s);
-        sq.where(cb.equal(s.get(CompUser_.address).get(Address_.country), 
-                o.get(CompUser_.address).get(Address_.country)));
-        q.where(cb.exists(sq).negate());
-        q.select(o.get(CompUser_.name)).distinct(true);
-        
-        assertEquivalence(q, query);
-    }
-
-    @AllowFailure
-    public void testAnyExprUsingCriteria() {
-        String query =
-            "SELECT o.name FROM CompUser o WHERE o.address.zipCode = ANY (" +
-                " SELECT s.computerName FROM CompUser s WHERE " +
-                "s.address.country IS NOT NULL )";
-
-        CriteriaQuery q = cb.create();
-        Root<CompUser> o = q.from(CompUser.class);
-        q.select(o.get(CompUser_.name));
-        Subquery<String> sq = q.subquery(String.class);
-        Root<CompUser> s = sq.from(CompUser.class);
-        sq.select(s.get(CompUser_.computerName));
-        sq.where(cb.notEqual(s.get(CompUser_.address).get(Address_.country),
-            null));
-        q.where(cb.equal(o.get(CompUser_.address).get(Address_.zipCode), 
-            cb.any(sq)));
-        
-        assertEquivalence(q, query);
-    }
     
-    @AllowFailure(message="ResultPacker is all confused")
     public void testConstructorExprUsingCriteria() {
         String query =
-            "SELECT NEW org.apache.openjpa.persistence.common.apps.MaleUser(" +
+            "SELECT NEW org.apache.openjpa.persistence.criteria.MaleUser(" +
             "c.name, c.computerName, c.address, c.age, c.userid)" +
             " FROM CompUser c WHERE c.name = 'Seetha'";
         
@@ -497,7 +412,7 @@ public class TestTypeSafeCondExpression extends CriteriaTest {
         assertEquivalence(q, query);
     }
     
-    @AllowFailure
+    
     public void testArithmFunc3() {
         String query =
             "select MOD(e.age, 4) From CompUser e WHERE e.name='Seetha'";
@@ -510,8 +425,6 @@ public class TestTypeSafeCondExpression extends CriteriaTest {
         assertEquivalence(q, query);
     }
     
-    // size method can not be applied to an array field
-    @AllowFailure(message="size method can not be applied to an array field?")
     public void testArithmFunc4() {
         String query = "SELECT e.name FROM CompUser e WHERE " +
         		"SIZE(e.nicknames) = 6";
@@ -588,7 +501,6 @@ public class TestTypeSafeCondExpression extends CriteriaTest {
         assertEquivalence(q, query);
     }
 
-    @AllowFailure(message="criteria does not generate Optimize for 1 row")
     public void testMINAggregFunc() {
         String query = "SELECT DISTINCT MIN(c.age) FROM CompUser c";
 
@@ -611,39 +523,39 @@ public class TestTypeSafeCondExpression extends CriteriaTest {
         assertEquivalence(q, query);
     }
 
-    // can not do TYPE with parameter in the IN clause
-    @AllowFailure
     public void testTypeExpression1() {
-        String query = "SELECT e FROM CompUser e where TYPE(e) in (?1, ?2) " +
+        String jpql = "SELECT e FROM CompUser e where TYPE(e) in (:a, :b) " +
             "ORDER By e.name";
-        CriteriaQuery q = cb.create();
-        q = cb.create();
-        Root<CompUser> e = q.from(CompUser.class);
-        q.select(e);
-        Parameter<Class> param1 = cb.parameter(Class.class);
-        Parameter<Class> param2 = cb.parameter(Class.class);
-        // q.where(cb.in(e.type()).value(param1).value(param2));
-        q.orderBy(cb.asc(e.get(CompUser_.name)));
         
-        assertEquivalence(q, query);
+        CriteriaQuery cq = cb.create();
+        Root<CompUser> e = cq.from(CompUser.class);
+        cq.select(e);
+        Parameter<Class> param1 = cb.parameter(Class.class, "a");
+        Parameter<Class> param2 = cb.parameter(Class.class, "b");
+        cq.where(e.type().in(param1, param2));
+        cq.orderBy(cb.asc(e.get(CompUser_.name)));
+        
+        assertEquivalence(cq, jpql, new String[]{"a","b"}, 
+             new Class[]{MaleUser.class,FemaleUser.class});
     }
 
-    @AllowFailure
+    
     public void testTypeExpression2() {
-        String query = "SELECT TYPE(e) FROM CompUser e where TYPE(e) <> ?1";
+        String query = "SELECT TYPE(e) FROM CompUser e where TYPE(e) <> :t";
         CriteriaQuery q = cb.create();
         q = cb.create();
         Root<CompUser> e = q.from(CompUser.class);
-        Parameter<Class> param1 = cb.parameter(Class.class);
+        Parameter<Class> param1 = cb.parameter(Class.class, "t");
         q.select(e.type());
         q.where(cb.equal(e.type(), param1).negate());
         
-        assertEquivalence(q, query);
+        assertEquivalence(q, query, new String[]{"t"}, 
+                new Class[]{MaleUser.class});
     }
 
     // Type literal
     // this Cartesian problem can not be rewritten to use JOIN
-    @AllowFailure
+    
     public void testTypeExpression3() {
         String query = "SELECT e, FemaleUser, a FROM Address a, FemaleUser e "
                 + " where e.address IS NOT NULL";
@@ -692,7 +604,7 @@ public class TestTypeSafeCondExpression extends CriteriaTest {
         assertEquivalence(cq, query);
     }
 
-    @AllowFailure
+    
     public void testTypeExpression7() {
         String query = "SELECT TYPE(a.b) FROM A a";
         CriteriaQuery q = cb.create();
@@ -885,7 +797,7 @@ public class TestTypeSafeCondExpression extends CriteriaTest {
 
     // not sure how to write CriteriaQuery for
     // Subquery.select(SimpleCase/GeneralCase)
-    @AllowFailure
+    
     public void testGeneralCaseExpression4() {
         String query = "select e.name, e.creditRating from CompUser e "
             + "where e.creditRating = "
@@ -920,531 +832,6 @@ public class TestTypeSafeCondExpression extends CriteriaTest {
         q.orderBy(cb.asc(e.get(CompUser_.age)));
         
         assertEquivalence(q, query);
-    }
-
-    @AllowFailure
-    public void testSubquery1() {
-        String query = "select o1.id from Order o1 where o1.id in "
-                + " (select distinct o.id from LineItem i, Order o"
-                + " where i.quantity > 10 and o.count > 1000 and i.id = o.id)";
-        
-        CriteriaQuery q = cb.create();
-        Root<Order> o1 = q.from(Order.class);
-        q.select(o1.get(Order_.id));
-
-        Subquery<Integer> sq = q.subquery(Integer.class);
-        Root<LineItem> i = sq.from(LineItem.class);
-        Join<LineItem, Order> o = i.join(LineItem_.order);
-        sq.where(cb.and(cb.and(cb.gt(i.get(LineItem_.quantity), 10), cb.gt(o
-                .get(Order_.count), 1000)), cb.equal(i.get(LineItem_.id), o
-                .get(Order_.id))));
-        sq.select(o.get(Order_.id)).distinct(true);
-        q.where(cb.in(o1.get(Order_.id)).value(
-                sq.select(o.get(Order_.id)).distinct(true)));
-        
-        assertEquivalence(q, query);
-    }
-
-    @AllowFailure
-    public void testSubquery2() {
-        String query = "select o.id from Order o where o.customer.balanceOwed ="
-                + " (select max(o2.customer.balanceOwed) from Order o2"
-                + " where o.customer.id = o2.customer.id)";
-        CriteriaQuery q = cb.create();
-        Root<Order> o = q.from(Order.class);
-        q.select(o.get(Order_.id));
-        Subquery<Integer> sq = q.subquery(Integer.class);
-        Root<Order> o2 = sq.from(Order.class);
-        sq.where(cb.equal(o.get(Order_.customer).get(Customer_.id), o2.get(
-                Order_.customer).get(Customer_.id)));
-        q.where(cb.equal(o.get(Order_.customer).get(Customer_.balanceOwed), sq
-                .select(cb.max(o2.get(Order_.customer).get(
-                        Customer_.balanceOwed)))));
-        
-        assertEquivalence(q, query);
-    }
-
-    @AllowFailure
-    public void testSubquery3() {
-        String query = "select o from Order o where o.customer.balanceOwed ="
-                + " (select max(o2.customer.balanceOwed) from Order o2"
-                + " where o.customer.id = o2.customer.id)";
-        CriteriaQuery q = cb.create();
-        Root<Order> o = q.from(Order.class);
-        q.select(o);
-        Subquery<Integer> sq = q.subquery(Integer.class);
-        Root<Order> o2 = sq.from(Order.class);
-        sq.where(cb.equal(o.get(Order_.customer).get(Customer_.id), o2.get(
-                Order_.customer).get(Customer_.id)));
-        q.where(cb.equal(o.get(Order_.customer).get(Customer_.balanceOwed), sq
-                .select(cb.max(o2.get(Order_.customer).get(
-                        Customer_.balanceOwed)))));
-        
-        assertEquivalence(q, query);
-    }
-
-    @AllowFailure
-    public void testSubquery4() {
-        String query = "select o.id from Order o where o.quantity >"
-                + " (select count(i) from o.lineItems i)";
-        CriteriaQuery q = cb.create();
-        Root<Order> o = q.from(Order.class);
-        q.select(o.get(Order_.id));
-        Subquery<Long> sq = q.subquery(Long.class);
-        Root<Order> osq = sq.correlate(o);
-        Join<Order, LineItem> i = osq.join(Order_.lineItems);
-        q.where(cb.gt(o.get(Order_.quantity), sq.select(cb.count(i))));
-        assertEquivalence(q, query);
-    }
-
-    @AllowFailure
-    public void testSubquery5() {
-        String query = "select o.id from Order o where o.quantity >"
-                + " (select count(o.quantity) from Order o)";
-        CriteriaQuery q = cb.create();
-        Root<Order> o = q.from(Order.class);
-        q.select(o.get(Order_.id));
-        Subquery<Long> sq = q.subquery(Long.class);
-        Root<Order> o2 = sq.from(Order.class);
-        q.where(cb.gt(o.get(Order_.quantity), sq.select(cb.count(o2
-                .get(Order_.quantity)))));
-        
-        assertEquivalence(q, query);
-    }
-
-    @AllowFailure
-    public void testSubquery6() {
-        String query = "select o.id from Order o where o.quantity >"
-                + " (select count(o.id) from Order o)";
-        CriteriaQuery q = cb.create();
-        Root<Order> o = q.from(Order.class);
-        q.select(o.get(Order_.id));
-        Subquery<Long> sq = q.subquery(Long.class);
-        Root<Order> o2 = sq.from(Order.class);
-        q.where(cb.gt(o.get(Order_.quantity), sq.select(cb.count(o2
-                .get(Order_.id)))));
-        
-        assertEquivalence(q, query);
-    }
-
-    @AllowFailure
-    public void testSubquery7() {
-        String query = "select o.id from Order o where o.quantity >"
-                + " (select avg(o.quantity) from Order o)";
-        CriteriaQuery q = cb.create();
-        Root<Order> o = q.from(Order.class);
-        q.select(o.get(Order_.id));
-        Subquery<Double> sq = q.subquery(Double.class);
-        Root<Order> o2 = sq.from(Order.class);
-        q.where(cb.gt(o.get(Order_.quantity), sq.select(cb.avg(o2
-                .get(Order_.quantity)))));
-        
-        assertEquivalence(q, query);
-    }
-
-    @AllowFailure
-    public void testSubquery8() {
-        String query = "select c.name from Customer c where exists"
-                + " (select o from c.orders o where o.id = 1) or exists"
-                + " (select o from c.orders o where o.id = 2)";
-        CriteriaQuery q = cb.create();
-        Root<Customer> c = q.from(Customer.class);
-        q.select(c.get(Customer_.name));
-        Subquery<Order> sq1 = q.subquery(Order.class);
-        Root<Customer> c1 = sq1.correlate(c);
-        SetJoin<Customer, Order> o1 = c1.join(Customer_.orders);
-        sq1.where(cb.equal(o1.get(Order_.id), 1)).select(o1);
-
-        Subquery<Order> sq2 = q.subquery(Order.class);
-        Root<Customer> c2 = sq2.correlate(c);
-        SetJoin<Customer, Order> o2 = c2.join(Customer_.orders);
-        sq2.where(cb.equal(o2.get(Order_.id), 2)).select(o2);
-
-        q.where(cb.or(cb.exists(sq1), cb.exists(sq2)));
-        
-        assertEquivalence(q, query);
-    }
-
-    @AllowFailure
-    public void testSubquery9() {
-        String query = "select c.name from Customer c, in(c.orders) o "
-                + "where o.quantity between "
-                + "(select max(o.quantity) from Order o) and "
-                + "(select avg(o.quantity) from Order o) ";
-        CriteriaQuery q = cb.create();
-        Root<Customer> c = q.from(Customer.class);
-        q.select(c.get(Customer_.name));
-
-        Subquery<Integer> sq1 = q.subquery(Integer.class);
-        Root<Order> o1 = sq1.from(Order.class);
-        sq1.select(cb.max(o1.get(Order_.quantity)));
-
-        Subquery<Double> sq2 = q.subquery(Double.class);
-        Root<Order> o2 = sq2.from(Order.class);
-        sq2.select(cb.avg(o2.get(Order_.quantity)));
-
-        SetJoin<Customer, Order> o = c.join(Customer_.orders);
-        // not sure how to do call between of integer(quantity)
-        // between integer (max quantity) and double (avg quantity)
-        // q.where(cb.between(o.get(Order_.quantity), sq1, sq2));
-        
-        assertEquivalence(q, query);
-    }
-
-    @AllowFailure
-    public void testSubquery10() {
-        String query = "select o.id from Order o where o.quantity >"
-                + " (select sum(o2.quantity) from Customer c, " 
-                + "in(c.orders) o2) ";
-        CriteriaQuery q = cb.create();
-        Root<Order> o = q.from(Order.class);
-        q.select(o.get(Order_.id));
-
-        Subquery<Integer> sq = q.subquery(Integer.class);
-        Root<Customer> c = sq.from(Customer.class);
-        SetJoin<Customer, Order> o2 = c.join(Customer_.orders);
-        sq.select(cb.sum(o2.get(Order_.quantity)));
-
-        q.where(cb.gt(o2.get(Order_.quantity), sq));
-        
-        assertEquivalence(q, query);
-    }
-
-    @AllowFailure
-    public void testSubquery11() {
-        String query = "select o.id from Order o where o.quantity between"
-                + " (select avg(o2.quantity) from Customer c, in(c.orders) o2)"
-                + " and (select min(o2.quantity) from Customer c, in(c.orders)"
-                + " o2)";
-        CriteriaQuery q = cb.create();
-        Root<Order> o = q.from(Order.class);
-        q.select(o.get(Order_.id));
-
-        Subquery<Double> sq1 = q.subquery(Double.class);
-        Root<Customer> c = sq1.from(Customer.class);
-        SetJoin<Customer, Order> o2 = c.join(Customer_.orders);
-        sq1.select(cb.avg(o2.get(Order_.quantity)));
-
-        Subquery<Integer> sq2 = q.subquery(Integer.class);
-        Root<Customer> c2 = sq2.from(Customer.class);
-        SetJoin<Customer, Order> o3 = c2.join(Customer_.orders);
-        sq2.select(cb.min(o3.get(Order_.quantity)));
-
-        // do not know how to call between for double and integer
-        // q.where(cb.between(o2.get(Order_.quantity), sq1, sq2));
-        assertEquivalence(q, query);
-    }
-
-    @AllowFailure
-    public void testSubquery12() {
-        String query =
-            "select o.id from Customer c, in(c.orders)o "
-                + "where o.quantity > (select sum(o2.quantity)"
-                + " from c.orders o2)";
-        CriteriaQuery q = cb.create();
-        Root<Customer> c = q.from(Customer.class);
-        SetJoin<Customer, Order> o = c.join(Customer_.orders);
-        q.select(o.get(Order_.id));
-
-        Subquery<Integer> sq = q.subquery(Integer.class);
-        Root<Customer> sqc = sq.correlate(c);
-        SetJoin<Customer, Order> o2 = sqc.join(Customer_.orders);
-        sq.select(cb.sum(o2.get(Order_.quantity)));
-        q.where(cb.gt(o.get(Order_.quantity), sq));
-        
-        assertEquivalence(q, query);
-    }
-
-    @AllowFailure
-    public void testSubquery13() {
-        String query = "select o1.id, c.name from Order o1, Customer c"
-                + " where o1.quantity = "
-                + " any(select o2.quantity from in(c.orders) o2)";
-        CriteriaQuery q = cb.create();
-        Root<Order> o1 = q.from(Order.class);
-        Join<Order, Customer> c = o1.join(Order_.customer);
-        q.select(o1.get(Order_.id), c.get(Customer_.name));
-
-        Subquery<Integer> sq = q.subquery(Integer.class);
-        Join<Order, Customer> sqc = sq.correlate(c);
-        SetJoin<Customer, Order> o2 = sqc.join(Customer_.orders);
-        sq.select(o2.get(Order_.quantity));
-
-        q.where(cb.equal(o1.get(Order_.quantity), cb.any(sq)));
-        
-        assertEquivalence(q, query);
-    }
-
-    @AllowFailure
-    public void testSubquery14() {
-        String query = "SELECT p, m FROM Publisher p "
-            + "LEFT OUTER JOIN p.magazineCollection m "
-            + "WHERE m.id = (SELECT MAX(m2.id) FROM Magazine m2 "
-            + "WHERE m2.idPublisher.id = p.id AND m2.datePublished = "
-            //+ "(SELECT MAX(m3.datePublished) FROM Magazine m3 "
-            + "(SELECT MAX(m3.id) FROM Magazine m3 "
-            + "WHERE m3.idPublisher.id = p.id)) ";
-        CriteriaQuery q = cb.create();
-        Root<Publisher> p = q.from(Publisher.class);
-        Join<Publisher, Magazine> m = p.join(Publisher_.magazineCollection,
-            JoinType.LEFT);
-        q.select(p, m);
-
-        Subquery<Integer> sq = q.subquery(Integer.class);
-        Root<Magazine> m2 = sq.from(Magazine.class);
-        q.where(cb.equal(m.get(Magazine_.id), sq.select(cb.max(m2
-            .get(Magazine_.id)))));
-
-        Subquery<Integer> sq2 = q.subquery(Integer.class);
-        Root<Magazine> m3 = sq2.from(Magazine.class);
-        
-        sq2.where(cb.equal(m3.get(Magazine_.idPublisher).get(Publisher_.id), 
-            p.get(Publisher_.id)));
-        
-        sq.where(cb.and(cb.equal(m2.get(Magazine_.idPublisher).get(
-            Publisher_.id), p.get(Publisher_.id)), cb.equal(m2
-            .get(Magazine_.datePublished), sq2.select(cb.max(m3
-            .get(Magazine_.id))))));
-        
-        assertEquivalence(q, query);
-    }
-
-    // outstanding problem subqueries:
-    // "select o from Order o where o.amount > (select count(o) from Order o)",
-    // "select o from Order o where o.amount > (select count(o2) from Order o2)
-    //",
-    // "select c from Customer c left join c.orders p where not exists"
-    // + " (select o2 from c.orders o2 where o2 = o",
-
-    // not sure how to write CriteriaQuery for
-    // Subquery.select(SimpleCase/GeneralCase)
-    @AllowFailure
-    public void testSubquery15() {
-        String query = "select o.id from Order o where o.delivered =(select "
-                + "   CASE WHEN o2.quantity > 10 THEN true"
-                + "     WHEN o2.quantity = 10 THEN false "
-                + "     ELSE false END from Order o2"
-                + " where o.customer.id = o2.customer.id)";
-        CriteriaQuery q = cb.create();
-        Root<Order> o = q.from(Order.class);
-        q.select(o.get(Order_.id));
-
-        Subquery<Boolean> sq = q.subquery(Boolean.class);
-        Root<Order> o2 = sq.from(Order.class);
-        sq.where(cb.equal(o.get(Order_.customer).get(Customer_.id), o2.get(
-                Order_.customer).get(Customer_.id)));
-
-        q.where(cb.equal(o.get(Order_.delivered),
-        // sq.select(
-                cb.selectCase().when(cb.gt(o2.get(Order_.quantity), 10), true)
-                        .when(cb.equal(o2.get(Order_.quantity), 10), false)
-                        .otherwise(false)
-        // )
-                ));
-        
-        assertEquivalence(q, query);
-    }
-
-    @AllowFailure
-    public void testSubquery16() {
-        String query = "select o1.id from Order o1 where o1.quantity > "
-                + " (select o.quantity*2 from LineItem i, Order o"
-                + " where i.quantity > 10 and o.quantity > 1000 and i.id = " +
-                		"o.id)";
-        CriteriaQuery q = cb.create();
-        Root<Order> o1 = q.from(Order.class);
-        q.select(o1.get(Order_.id));
-
-        Subquery<Integer> sq = q.subquery(Integer.class);
-        Root<LineItem> i = sq.from(LineItem.class);
-        Join<LineItem, Order> o = i.join(LineItem_.order);
-        sq.where(cb.and(cb.and(cb.gt(i.get(LineItem_.quantity), 10), cb.gt(o
-                .get(Order_.quantity), 1000)), cb.equal(i.get(LineItem_.id), o
-                .get(Order_.id))));
-
-        q.where(cb.gt(o1.get(Order_.quantity), sq.select(cb.prod(o
-                .get(Order_.quantity), 2))));
-
-        assertEquivalence(q, query);
-    }
-
-    @AllowFailure
-    public void testSubquery17() {
-        String query = "select o.id from Order o where o.customer.name ="
-                + " (select substring(o2.customer.name, 3) from Order o2"
-                + " where o.customer.id = o2.customer.id)";
-        CriteriaQuery q = cb.create();
-        Root<Order> o = q.from(Order.class);
-        q.select(o.get(Order_.customer).get(Customer_.name));
-
-        Subquery<String> sq = q.subquery(String.class);
-        Root<Order> o2 = sq.from(Order.class);
-        sq.where(cb.equal(o.get(Order_.customer).get(Customer_.id), o2.get(
-                Order_.customer).get(Customer_.id)));
-
-        q.where(cb.equal(o.get(Order_.customer).get(Customer_.name), sq
-                .select(cb.substring(o2.get(Order_.customer)
-                        .get(Customer_.name), 3))));
-
-        assertEquivalence(q, query);
-    }
-
-    @AllowFailure
-    public void testSubquery18() {
-        String query = "select o.id from Order o where o.orderTs >"
-                + " (select CURRENT_TIMESTAMP from o.lineItems i)";
-        CriteriaQuery q = cb.create();
-        Root<Order> o = q.from(Order.class);
-        q.select(o.get(Order_.id));
-
-        Subquery<Timestamp> sq = q.subquery(Timestamp.class);
-        Root<Order> o2 = sq.correlate(o);
-        ListJoin<Order, LineItem> i = o2.join(Order_.lineItems);
-
-        // q.where(cb.gt(
-        // o.get(Order_.orderTs),
-        // sq.select(cb.currentTimestamp())));
-        
-        assertEquivalence(q, query);
-    }
-
-    @AllowFailure
-    public void testSubquery19() {
-        String query = "select o.id from Order o where o.quantity >"
-                + " (select SQRT(o.quantity) from Order o where o.delivered" +
-                		" = true)";
-        CriteriaQuery q = cb.create();
-        Root<Order> o = q.from(Order.class);
-        q.select(o.get(Order_.id));
-
-        Subquery<Double> sq = q.subquery(Double.class);
-        Root<Order> o2 = sq.from(Order.class);
-        sq.where(cb.equal(o2.get(Order_.delivered), true));
-
-        q.where(cb.gt(o.get(Order_.quantity), sq.select(cb.sqrt(o2
-                .get(Order_.quantity)))));
-        assertEquivalence(q, query);
-    }
-
-    @AllowFailure
-    public void testSubquery20() {
-        String query = "select o.id from Order o where o.customer.name in"
-                + " (select CONCAT(o.customer.name, 'XX') from Order o"
-                + " where o.quantity > 10)";
-        CriteriaQuery q = cb.create();
-        Root<Order> o = q.from(Order.class);
-        q.select(o.get(Order_.id));
-
-        Subquery<String> sq = q.subquery(String.class);
-        Root<Order> o2 = sq.from(Order.class);
-        sq.where(cb.gt(o2.get(Order_.quantity), 10));
-
-        q.where(cb.in(o.get(Order_.customer).get(Customer_.name)).value(
-                sq.select(cb.concat(
-                        o2.get(Order_.customer).get(Customer_.name), "XX"))));
-        assertEquivalence(q, query);
-    }
-
-    @AllowFailure
-    public void testSubquery21() {
-        String query = "select c from Customer c where c.creditRating ="
-                + " (select "
-                + "   CASE WHEN o2.quantity > 10 THEN "
-                + "org.apache.openjpa.persistence.criteria.Customer$" +
-                		"CreditRating.POOR"
-                + "     WHEN o2.quantity = 10 THEN "
-                + "org.apache.openjpa.persistence.criteria.Customer$" +
-                		"CreditRating.GOOD "
-                + "     ELSE "
-                + "org.apache.openjpa.persistence.criteria.Customer$" +
-                		"CreditRating.EXCELLENT "
-                + "     END from Order o2"
-                + " where c.id = o2.customer.id)";
-        CriteriaQuery q = cb.create();
-        Root<Customer> c = q.from(Customer.class);
-        q.select(c);
-
-        Subquery<String> sq = q.subquery(String.class);
-        Root<Order> o2 = sq.from(Order.class);
-        sq.where(cb.equal(c.get(Customer_.id), o2.get(Order_.customer).get(
-            Customer_.id)));
-
-        q.where(cb.equal(c.get(Customer_.creditRating), 
-            //sq.select(
-            cb.selectCase().when(cb.gt(o2.get(Order_.quantity), 10),
-                Customer.CreditRating.POOR).when(
-                cb.equal(o2.get(Order_.quantity), 10),
-                Customer.CreditRating.GOOD).otherwise(
-                Customer.CreditRating.EXCELLENT)
-        // )
-            ));
-        assertEquivalence(q, query);
-    }
-
-    // Coalesce for Enum type
-    @AllowFailure
-    public void testSubquery22() {
-        String query = "select c from Customer c "
-                + "where c.creditRating = (select COALESCE (c1.creditRating, "
-                + "org.apache.openjpa.persistence.criteria.Customer$" +
-                		"CreditRating.POOR) "
-                + "from Customer c1 where c1.name = 'Famzy') order by c.name " +
-                		"DESC";
-        CriteriaQuery q = cb.create();
-        Root<Customer> c = q.from(Customer.class);
-        q.select(c);
-        q.orderBy(cb.desc(c.get(Customer_.name)));        
-
-        Subquery<Customer.CreditRating> sq =
-            q.subquery(Customer.CreditRating.class);
-        Root<Customer> c1 = sq.from(Customer.class);
-        sq.where(cb.equal(c1.get(Customer_.name), "Famzy"));
-        
-        //q.where(cb.equal(c.get(Customer_.creditRating),
-        //    sq.select(cb.coalesce().value(c1.get(Customer_.creditRating).
-        //        value(Customer.CreditRating.POOR)))));    
-        assertEquivalence(q, query);
-    }
-
-    @AllowFailure
-    public void testSubquery23() {
-        String query =
-            "select c from Customer c "
-                + "where c.creditRating = (select NULLIF (c1.creditRating, "
-                + "org.apache.openjpa.persistence.criteria."
-                + "Customer$CreditRating.POOR) "
-                + "from Customer c1 where c1.name = 'Famzy') "
-                + "order by c.name DESC";
-        CriteriaQuery q = cb.create();
-        Root<Customer> c = q.from(Customer.class);
-        q.select(c);
-        q.orderBy(cb.desc(c.get(Customer_.name)));        
-
-        Subquery<Customer.CreditRating> sq =
-            q.subquery(Customer.CreditRating.class);
-        Root<Customer> c1 = sq.from(Customer.class);
-        sq.where(cb.equal(c1.get(Customer_.name), "Famzy"));
-        
-        q.where(cb.equal(c.get(Customer_.creditRating),
-            sq.select(cb.nullif(c1.get(Customer_.creditRating),
-                Customer.CreditRating.POOR))));    
-        assertEquivalence(q, query);
-    }
-
-    /**
-     * Verify a sub query can contain MAX and additional date comparisons
-     * without losing the correct alias information. This sort of query
-     * originally caused problems for DBDictionaries which used DATABASE syntax.
-     */
-    // Not sure how to do Cartesian join when Employee can not 
-    // navigate to Dependent
-    @AllowFailure
-    public void testSubSelectMaxDateRange() {
-        String query = "SELECT e,d from Employee e, Dependent d "
-            + "WHERE e.empId = :empid "
-            + "AND d.id.empid = (SELECT MAX (e2.empId) FROM Employee e2) "
-            + "AND d.id.effDate > :minDate "
-            + "AND d.id.effDate < :maxDate ";
     }
 
 }

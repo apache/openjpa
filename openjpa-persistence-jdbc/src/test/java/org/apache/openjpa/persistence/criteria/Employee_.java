@@ -12,8 +12,7 @@ public class Employee_ {
     public static volatile Attribute<Employee,Contact> contactInfo;
     public static volatile Attribute<Employee,Department> department;
     public static volatile Attribute<Employee,Integer> empId;
-    public static volatile Attribute<Employee,FrequentFlierPlan> 
-    frequentFlierPlan;
+    public static volatile Attribute<Employee,FrequentFlierPlan> frequentFlierPlan;
     public static volatile Attribute<Employee,Manager> manager;
     public static volatile Attribute<Employee,String> name;
     public static volatile Attribute<Employee,Integer> rating;

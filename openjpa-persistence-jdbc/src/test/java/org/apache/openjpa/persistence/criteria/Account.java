@@ -66,7 +66,7 @@ public class Account {
         return balance;
     }
 
-    public void setBalancey(int balance) {
+    public void setBalance(int balance) {
         this.balance = balance;
     }
 

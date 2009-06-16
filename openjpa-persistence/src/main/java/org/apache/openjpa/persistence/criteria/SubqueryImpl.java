@@ -160,21 +160,26 @@ public class SubqueryImpl<T> extends ExpressionImpl<T> implements Subquery<T> {
     }
     
     public <X,Y> Join<X,Y> correlate(Join<X,Y> join) {
+        _delegate.from(join.getModel().getJavaType());
         return join;
     }
     public <X,Y> CollectionJoin<X,Y> correlate(CollectionJoin<X,Y> join) {
+        _delegate.from(join.getModel().getJavaType());
         return join;
     }
     
     public <X,Y> SetJoin<X,Y> correlate(SetJoin<X,Y> join) {
+        _delegate.from(join.getModel().getJavaType());
         return join;
     }
     
     public <X,Y> ListJoin<X,Y> correlate(ListJoin<X,Y> join) {
+        _delegate.from(join.getModel().getJavaType());
         return join;
     }
     
     public <X,K,V> MapJoin<X,K,V> correlate(MapJoin<X,K,V> join) {
+        _delegate.from(join.getModel().getJavaType());
         return join;
     }
     

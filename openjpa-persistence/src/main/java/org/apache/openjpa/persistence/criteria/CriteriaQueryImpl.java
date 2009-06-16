@@ -20,7 +20,10 @@ package org.apache.openjpa.persistence.criteria;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
@@ -37,9 +40,11 @@ import javax.persistence.criteria.Subquery;
 import javax.persistence.metamodel.Entity;
 
 import org.apache.commons.collections.map.LinkedMap;
+import org.apache.openjpa.kernel.StoreQuery;
 import org.apache.openjpa.kernel.exps.ExpressionFactory;
 import org.apache.openjpa.kernel.exps.QueryExpressions;
 import org.apache.openjpa.kernel.exps.Value;
+import org.apache.openjpa.persistence.QueryImpl;
 import org.apache.openjpa.persistence.meta.MetamodelImpl;
 import org.apache.openjpa.persistence.meta.Types;
 
@@ -61,13 +66,12 @@ public class CriteriaQueryImpl implements CriteriaQuery, AliasContext {
     private Set<Root<?>>        _roots;
     private PredicateImpl       _where;
     private List<Order>         _orders;
-    private Set<Parameter<?>>   _params;
+    private LinkedHashMap<Parameter<?>, Class<?>>           _paramTypes;
     private List<Selection<?>>  _selections;
     private List<Expression<?>> _groups;
     private PredicateImpl       _having;
     private List<Subquery<?>>   _subqueries;
     private Boolean             _distinct;
-    private LinkedMap           _parameterTypes;
     private SubqueryImpl<?>     _context;
     
     // AliasContext
@@ -106,8 +110,22 @@ public class CriteriaQueryImpl implements CriteriaQuery, AliasContext {
         return _orders;
     }
 
+    /**
+     * Registers the given parameter.
+     * 
+     * @param p
+     */
+    public void registerParameter(ParameterImpl<?> p) {
+        if (_paramTypes == null) {
+            _paramTypes = new LinkedHashMap<Parameter<?>, Class<?>>();
+        }
+        _paramTypes.put(p, p.getJavaType());
+        if (p.getPosition() == null)
+            p.setPosition(_paramTypes.size());
+    }
+    
     public Set<Parameter<?>> getParameters() {
-        return _params;
+        return _paramTypes.keySet();
     }
 
     public List<Selection<?>> getSelectionList() {
@@ -213,11 +231,17 @@ public class CriteriaQueryImpl implements CriteriaQuery, AliasContext {
     }
     
     public LinkedMap getParameterTypes() {
-        return _parameterTypes;
-    }
-    
-    public void setParameterTypes(LinkedMap parameterTypes) {
-        _parameterTypes = parameterTypes;
+        if (_paramTypes == null)
+            return StoreQuery.EMPTY_PARAMS;
+        LinkedMap  parameterTypes = new LinkedMap();
+        for (Parameter<?> p : _paramTypes.keySet()) {
+            if (p.getName() == null && p.getPosition() == null)
+                throw new RuntimeException(p + " is not set");
+            Object paramKey = p.getName() == null 
+               ? p.getPosition() : p.getName();
+            parameterTypes.put(paramKey, p.getJavaType());
+        }
+        return parameterTypes;
     }
     
     /**
@@ -271,6 +295,8 @@ public class CriteriaQueryImpl implements CriteriaQuery, AliasContext {
      * on the variable and path.  
      */
     public void registerVariable(Selection<?> node, Value var, Value path) {
+        if (isRegistered(node))
+            throw new RuntimeException(node + " is already bound");
         if (!var.isVariable())
             throw new RuntimeException(var.getClass() + " is not a variable");
         if (var.getPath() != path)
@@ -291,8 +317,6 @@ public class CriteriaQueryImpl implements CriteriaQuery, AliasContext {
                 throw new RuntimeException("Path alias " + path.getAlias() + 
                 " does not match expected selection alias " + alias);
         }
-        if (isRegistered(node))
-            throw new RuntimeException(node + " is already bound");
         _variables.put(node, var);
         _values.put(node, path);
         _aliases.put(node, alias);

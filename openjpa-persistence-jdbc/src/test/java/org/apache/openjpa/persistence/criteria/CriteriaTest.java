@@ -117,11 +117,14 @@ public abstract class CriteriaTest extends TestCase {
      * configuration values in the form key,value,key,value...
      */
     protected void createNamedEMF(Class<?>... types) {
-        Map map = new HashMap();
+        Map<Object,Object> map = new HashMap<Object,Object>();
         map.put("openjpa.jdbc.SynchronizeMappings",
                 "buildSchema(ForeignKeys=true," 
               + "SchemaAction='add,deleteTableContents')");
+        map.put("openjpa.jdbc.QuerySQLCache", "false");
         map.put("openjpa.DynamicEnhancementAgent", "false");
+        map.put("openjpa.RuntimeUnenhancedClasses", "unsupported");
+        map.put("openjpa.Compatibility", "QuotedNumbersInQueries=true");
         map.put("openjpa.jdbc.JDBCListeners", 
                 new JDBCListener[] { new Listener() });
         
@@ -223,10 +226,10 @@ public abstract class CriteriaTest extends TestCase {
             e.printStackTrace();
             sqls[0] = new ArrayList<String>();
             sqls[0].add(extractSQL(e));
-            fail("JPQL :" + jpql + "\r\nSQL  :" + sqls[0]);
+            fail("Wrong SQL for JPQL :" + jpql + "\r\nSQL  :" + sqls[0]);
         } catch (Exception e) {
             e.printStackTrace();
-            fail("JPQL :" + jpql);
+            fail("Wrong JPQL :" + jpql);
         }
         
         sqls[0] = new ArrayList<String>(sql);
@@ -243,6 +246,23 @@ public abstract class CriteriaTest extends TestCase {
         sqls[1] = new ArrayList<String>(sql);
 
         return true;
+    }
+    
+    List<String> executeJPQL(String jpql, Map<?,Object> params) {
+        sql.clear();
+        Query q  = em.createQuery(jpql);
+        if (params != null) {
+            for (Object key : params.keySet()) {
+                if (key instanceof String)
+                    q.setParameter(key.toString(), params.get(key));
+                else if (key instanceof String)
+                    q.setParameter(key.toString(), params.get(key));
+                else
+                    throw new RuntimeException("Bad Parameter key " + key);
+            }
+        }
+        
+        return sql;
     }
 
     String extractSQL(PersistenceException e) {
@@ -287,8 +307,12 @@ public abstract class CriteriaTest extends TestCase {
      * Affirms if the test case or the test method is annotated with 
      * @AllowFailure. Method level annotation has higher precedence than Class
      * level annotation.
+     * 
+     * Set -DIgnoreAllowFailure=true to ignore this directive altogether.
      */
     protected AllowFailure getAllowFailure() {
+        if (Boolean.getBoolean("IgnoreAllowFailure"))
+            return null;
         try {
             Method runMethod = getClass().getMethod(getName(), (Class[])null);
             AllowFailure anno = runMethod.getAnnotation(AllowFailure.class);

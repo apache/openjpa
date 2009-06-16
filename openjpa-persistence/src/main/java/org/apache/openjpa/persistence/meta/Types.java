@@ -76,7 +76,7 @@ public class Types {
         }
 
         public String toString() {
-            return "" + cls;
+            return cls.getName();
         }
     }
 
@@ -191,9 +191,7 @@ public class Types {
                      .getMessage());
                 }
                 // TODO: Account for the following codes
-                // case ARRAY = 11;
                 // case PC_UNTYPED = 27;
-                // case OID = 29;
                 // case INPUT_STREAM = 30;
                 // case INPUT_READER = 31;
             }

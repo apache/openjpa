@@ -24,7 +24,7 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
-import javax.persistence.OrderBy;
+import javax.persistence.OrderColumn;
 import javax.persistence.Table;
 
 @Entity
@@ -38,7 +38,7 @@ public class Course {
     private String name;
 
     @OneToMany
-    @OrderBy
+    @OrderColumn
     private List<Student> studentWaitList;
 
     public long getId() {

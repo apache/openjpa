@@ -95,8 +95,7 @@ public class CoalesceExpression
         SQLBuffer buf, int index) {
         CoalesceExpState cstate = (CoalesceExpState) state;
         
-        buf.append(" COALESCE ");
-        buf.append("(");
+        buf.append(" COALESCE("); // MySQL does not like space before bracket
 
         for (int i = 0; i < _vals.length; i++) {
             if (i > 0)

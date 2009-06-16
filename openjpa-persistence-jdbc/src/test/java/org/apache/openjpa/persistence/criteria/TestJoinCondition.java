@@ -9,10 +9,10 @@ import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Join;
 import javax.persistence.criteria.JoinType;
 import javax.persistence.criteria.ListJoin;
+import javax.persistence.criteria.MapJoin;
 import javax.persistence.criteria.Root;
 import javax.persistence.criteria.SetJoin;
-
-import org.apache.openjpa.persistence.test.AllowFailure;
+import javax.persistence.metamodel.Bindable;
 
 /**
  * Tests Criteria Queries that use Join.
@@ -21,13 +21,19 @@ import org.apache.openjpa.persistence.test.AllowFailure;
  *
  */
 public class TestJoinCondition extends CriteriaTest {
-    
+    protected Class[] getDomainClasses() {
+        return new Class[]{A.class,B.class,C.class,D.class};
+    }
+
     public void testSingleAttributeJoinModel() {
         CriteriaQuery cq = cb.create();
         Root<A> a = cq.from(A.class);
         Join<A,B> b = a.join(A_.b);
+        assertTrue(b.getModel() instanceof Bindable);
         assertSame(B.class, b.getJavaType());
         assertSame(B.class, b.getMember().getMemberJavaType());
+        assertEquals(Bindable.BindableType.MANAGED_TYPE,
+           b.getModel().getBindableType());
     }
     
     public void testCollectionJoinModel() {
@@ -71,7 +77,6 @@ public class TestJoinCondition extends CriteriaTest {
         assertEquivalence(cq, jpql);
     }
     
-    @AllowFailure(message="Missing where clause")
     public void testCrossJoin() {
         String jpql = "select a from A a, C c where a.name=c.name";
         CriteriaQuery cq = cb.create();
@@ -143,4 +148,23 @@ public class TestJoinCondition extends CriteriaTest {
         assertEquivalence(c, jpql);
     }
  
+    public void testKeyExpression() {
+        String jpql = "select c from C c JOIN c.map d where KEY(d)=33";
+        CriteriaQuery cq = cb.create();
+        Root<C> c = cq.from(C.class);
+        MapJoin<C,Integer,D> d = c.join(C_.map);
+        cq.where(cb.equal(d.key(),33));
+        
+        assertEquivalence(cq, jpql);
+    }
+    
+    public void testValueExpression() {
+        String jpql = "select c from C c JOIN c.map d where VALUE(d).name='xy'";
+        CriteriaQuery cq = cb.create();
+        Root<C> c = cq.from(C.class);
+        MapJoin<C,Integer,D> d = c.join(C_.map);
+        cq.where(cb.equal(d.value().get(D_.name),"xy"));
+        
+        assertEquivalence(cq, jpql);
+    }
 }

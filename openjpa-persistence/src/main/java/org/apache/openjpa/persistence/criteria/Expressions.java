@@ -49,6 +49,12 @@ public class Expressions {
         MetamodelImpl model, CriteriaQueryImpl q) {
         return (e == null) ? factory.getNull() : e.toValue(factory, model, q);
     }
+     
+     static void setImplicitTypes(Value v1, Value v2, Class<?> expected, 
+             CriteriaQueryImpl q) {
+         JPQLExpressionBuilder.setImplicitTypes(v1, v2, expected, 
+             q.getMetamodel(), q.getParameterTypes(), q.toString());
+     }
     
     /**
      * Unary Functional Expression applies a unary function on a input
@@ -569,11 +575,9 @@ public class Expressions {
         org.apache.openjpa.kernel.exps.Expression toKernelExpression(
             ExpressionFactory factory, MetamodelImpl model, 
             CriteriaQueryImpl q) {
-            boolean isTypeExpr = false;
             Value val1 = Expressions.toValue(e1, factory, model, q);
             Value val2 = Expressions.toValue(e2, factory, model, q);
-            JPQLExpressionBuilder.setImplicitTypes(val1, val2, null, null, 
-                q.getParameterTypes(), null);
+            Expressions.setImplicitTypes(val1, val2, e1.getJavaType(), q);
             return isNegated() ? factory.notEqual(val1, val2) 
                     : factory.equal(val1, val2);
         }
@@ -594,8 +598,7 @@ public class Expressions {
             CriteriaQueryImpl q) {
             Value val1 = Expressions.toValue(e1, factory, model, q);
             Value val2 = Expressions.toValue(e2, factory, model, q); 
-            JPQLExpressionBuilder.setImplicitTypes(val1, val2, null, null, 
-                q.getParameterTypes(), null);
+            Expressions.setImplicitTypes(val1, val2, e1.getJavaType(), q); 
             return factory.greaterThan(val1, val2);
         }
     }
@@ -615,8 +618,7 @@ public class Expressions {
             CriteriaQueryImpl q) {
             Value val1 = Expressions.toValue(e1, factory, model, q);
             Value val2 = Expressions.toValue(e2, factory, model, q); 
-            JPQLExpressionBuilder.setImplicitTypes(val1, val2, null, null, 
-                q.getParameterTypes(), null);
+            Expressions.setImplicitTypes(val1, val2, e1.getJavaType(), q); 
             return factory.greaterThanEqual(val1, val2);
         }
     }
@@ -636,8 +638,7 @@ public class Expressions {
             CriteriaQueryImpl q) {
             Value val1 = Expressions.toValue(e1, factory, model, q);
             Value val2 = Expressions.toValue(e2, factory, model, q); 
-            JPQLExpressionBuilder.setImplicitTypes(val1, val2, null, null, 
-                ((CriteriaQueryImpl)q).getParameterTypes(), null);
+            Expressions.setImplicitTypes(val1, val2, e1.getJavaType(), q); 
             return factory.lessThan(val1, val2);
         }
     }
@@ -657,8 +658,7 @@ public class Expressions {
             CriteriaQueryImpl q) {
             Value val1 = Expressions.toValue(e1, factory, model, q);
             Value val2 = Expressions.toValue(e2, factory, model, q); 
-            JPQLExpressionBuilder.setImplicitTypes(val1, val2, null, null, 
-                q.getParameterTypes(), null);
+            Expressions.setImplicitTypes(val1, val2, e1.getJavaType(), q); 
             return factory.lessThanEqual(val1, val2);
         }
     }
@@ -689,33 +689,38 @@ public class Expressions {
         @Override
         public Value toValue(ExpressionFactory factory, MetamodelImpl model,
             CriteriaQueryImpl q) {
+            Object value = arg;
+            if (arg instanceof ParameterImpl) {
+                return ((ParameterImpl)arg).toValue(factory, model, q);
+            }
             int literalType = Literal.TYPE_UNKNOWN;
             if (arg != null) {
-                Class<?> literalClass = arg.getClass();
-                if (Number.class.isAssignableFrom(literalClass))
+                Class<?> literalClass = value.getClass();
+                if (Number.class.isAssignableFrom(literalClass)) {
                     literalType = Literal.TYPE_NUMBER;
-                else if (Boolean.class.isAssignableFrom(literalClass))
+                } else if (Boolean.class.isAssignableFrom(literalClass)) {
                     literalType = Literal.TYPE_BOOLEAN;
-                else if (String.class.isAssignableFrom(literalClass))
+                } else if (String.class.isAssignableFrom(literalClass)) {
                     literalType = Literal.TYPE_STRING;
-                else if (Enum.class.isAssignableFrom(literalClass))
+                } else if (Enum.class.isAssignableFrom(literalClass)) {
                     literalType = Literal.TYPE_ENUM;
-                else if (Class.class.isAssignableFrom(literalClass)) {
+                } else if (Class.class.isAssignableFrom(literalClass)) {
                     literalType = Literal.TYPE_CLASS;
-                    Literal lit = factory.newTypeLiteral(arg, 
+                    Literal lit = factory.newTypeLiteral(value, 
                         Literal.TYPE_CLASS);
-                    ClassMetaData can = 
-                        ((Types.Entity<X>)q.getRoot().getModel()).meta;
+                    ClassMetaData can = ((Types.Entity<X>)q.getRoot()
+                            .getModel()).meta;
                     Class<?> candidate = can.getDescribedType();
-                    if (candidate.isAssignableFrom((Class)arg))
-                        lit.setMetaData(model.repos.getMetaData((Class<?>)arg, 
-                            null, true));
-                    else
+                    if (candidate.isAssignableFrom((Class)value)) {
+                       lit.setMetaData(model.repos.getMetaData(
+                           (Class<?>)value, null, true));
+                    } else {
                         lit.setMetaData(can);
+                    }
                     return lit;
                 }
             }
-            return factory.newLiteral(arg, literalType);
+            return factory.newLiteral(value, literalType);
         }
     }
     
@@ -1239,18 +1244,22 @@ public class Expressions {
         }        
     }
 
-    public static class Some<X> extends ExpressionImpl<X> {
-        final SubqueryImpl<X> e;
-        public Some(Subquery<X> x) {
-            super(x.getJavaType());
-            e = (SubqueryImpl<X>)x;
+    public static class Not<X> extends PredicateImpl {
+        protected ExpressionImpl<Boolean> e;
+        public Not(Expression<Boolean> ne) {
+            super();
+            e = (ExpressionImpl<Boolean>)ne;
         }
         
         @Override
-        public Value toValue(ExpressionFactory factory, MetamodelImpl model,
-            CriteriaQueryImpl q) {
-            //return factory.some(Expressions.toValue(e, factory, model, q));
-            return null;
+        public PredicateImpl clone() {
+            return new Not<X>(e);
+        }
+        
+        @Override
+        public org.apache.openjpa.kernel.exps.Expression toKernelExpression(
+          ExpressionFactory factory, MetamodelImpl model, CriteriaQueryImpl q) {
+            return factory.not(super.toKernelExpression(factory, model, q));
         }        
     }
 
