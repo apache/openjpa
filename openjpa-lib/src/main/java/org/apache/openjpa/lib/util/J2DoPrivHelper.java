@@ -60,6 +60,7 @@ import serp.bytecode.Project;
  * <li>ClassLoader.getResource
  * <li>ClassLoader.getResources
  * <li>ClassLoader.getSystemClassLoader
+ * <li>File.deleteOnExit
  * <li>File.delete
  * <li>File.exists
  * <li>File.getAbsoluteFile
@@ -81,6 +82,7 @@ import serp.bytecode.Project;
  * <li>Socket.accept
  * <li>System.getProperty
  * <li>Thread.getContextClassLoader
+ * <li>Thread.setContextClassLoader
  * <li>Thread new
  * <li>TemporaryClassLoader new
  * <li>URL.openStream
@@ -450,6 +452,22 @@ public abstract class J2DoPrivHelper {
     }
 
     /**
+     * Return a PrivilegeAction object for f.deleteOnExit().
+     * 
+     * Requires security policy:
+     *   'permission java.io.FilePermission "delete";'
+     */
+    public static final PrivilegedAction<Boolean> deleteOnExitAction(
+        final File f) {
+        return new PrivilegedAction<Boolean>() {
+            public Boolean run() {
+                f.deleteOnExit();
+                return Boolean.TRUE;
+            }
+        };
+    }
+
+    /**
      * Return a PrivilegeAction object for f.getAbsoluteFile().
      * 
      * Requires security policy:
@@ -786,6 +804,25 @@ public abstract class J2DoPrivHelper {
         return new PrivilegedAction<ClassLoader>() {
             public ClassLoader run() {
                 return Thread.currentThread().getContextClassLoader();
+            }
+        };
+    }
+
+    /**
+     * Return a PrivilegeAction object for Thread.currentThread
+     *   .setContextClassLoader().
+     * 
+     * Requires security policy:
+     *   'permission java.lang.RuntimePermission "setContextClassLoader";'
+     *   
+     * @return ClassLoader
+     */
+    public static final PrivilegedAction<Boolean> 
+            setContextClassLoaderAction(final ClassLoader loader) {
+        return new PrivilegedAction<Boolean>() {
+            public Boolean run() {
+                Thread.currentThread().setContextClassLoader(loader);
+                return Boolean.TRUE;
             }
         };
     }
