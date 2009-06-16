@@ -22,6 +22,7 @@ import org.apache.openjpa.conf.OpenJPAConfiguration;
 import org.apache.openjpa.lib.log.Log;
 import org.apache.openjpa.persistence.OpenJPAEntityManagerFactory;
 import org.apache.openjpa.persistence.OpenJPAPersistence;
+import org.apache.openjpa.persistence.PersistenceException;
 import org.apache.openjpa.persistence.query.SimpleEntity;
 import org.apache.openjpa.persistence.test.AllowFailure;
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
@@ -125,9 +126,8 @@ public class TestValidationFactory extends SingleEMFTestCase {
     /**
      * Scenario being tested:
      *   4) An invalid ValidationFactory with a mode of CALLBACK will
-     *      cause an exception
+     *      cause a fatal exception
      */
-    @AllowFailure(message="This will fail until OPENJPA-1111 is resolved.")
     public void testValidationFactory4() {
         getLog().trace("testValidationFactory4() - required invalid factory");
         OpenJPAEntityManagerFactory emf = null;
@@ -155,10 +155,10 @@ public class TestValidationFactory extends SingleEMFTestCase {
                 conf.getValidationMode());
             fail("Expected an exception when ValidationMode=CALLBACK and " +
                 "an invalid ValidatorFactory is provided.");
-        } catch (Exception e) {
+        } catch (PersistenceException e) {
             // expected
             getLog().trace("testValidationFactory4() - caught expected " +
-                "exception", e);
+                "PersistenceException", e);
         }
     }
 

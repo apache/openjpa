@@ -22,6 +22,7 @@ import org.apache.openjpa.conf.OpenJPAConfiguration;
 import org.apache.openjpa.lib.log.Log;
 import org.apache.openjpa.persistence.OpenJPAEntityManagerFactory;
 import org.apache.openjpa.persistence.OpenJPAPersistence;
+import org.apache.openjpa.persistence.PersistenceException;
 import org.apache.openjpa.persistence.query.SimpleEntity;
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
 
@@ -112,23 +113,31 @@ public class TestValidationMode extends SingleEMFTestCase {
     /**
      * Scenario being tested:
      *   4) Validation mode of CALLBACK in persistence.xml overrides default
+     *   and causes an exception when neither the Validation APIs nor
+     *   a provider are available
      */
     public void testValidationMode4() {
         getLog().trace("testValidationMode4() - persistence.xml overrides " +
             "Default");
         OpenJPAEntityManagerFactory emf = null;
 
-        // create our EMF
-        emf = OpenJPAPersistence.createEntityManagerFactory(
-            "simple-callback-mode",
-            "org/apache/openjpa/persistence/validation/persistence.xml");
-        assertNotNull(emf);
-        // verify validation mode
-        OpenJPAConfiguration conf = emf.getConfiguration();
-        assertNotNull(conf);
-        assertEquals("Validation mode", 
-            String.valueOf(ValidationMode.CALLBACK),
-            conf.getValidationMode());
+        try {
+            // create our EMF
+            emf = OpenJPAPersistence.createEntityManagerFactory(
+                "simple-callback-mode",
+                "org/apache/openjpa/persistence/validation/persistence.xml");
+            assertNotNull(emf);
+            // verify validation mode
+            OpenJPAConfiguration conf = emf.getConfiguration();
+            assertNotNull(conf);
+            assertEquals("Validation mode", 
+                String.valueOf(ValidationMode.CALLBACK),
+                conf.getValidationMode());
+        } catch (PersistenceException e) {
+            // expected when no Validation APIs or provider are available
+            getLog().trace("testValidationMode4() - caught expected " +
+                "exception", e);
+        }
     }
 
     /**

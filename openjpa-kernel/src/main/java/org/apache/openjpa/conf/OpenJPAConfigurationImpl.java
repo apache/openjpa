@@ -67,6 +67,7 @@ import org.apache.openjpa.util.ClassResolver;
 import org.apache.openjpa.util.ImplHelper;
 import org.apache.openjpa.util.ProxyManager;
 import org.apache.openjpa.util.StoreFacadeTypeRegistry;
+import org.apache.openjpa.validation.ValidatingLifecycleEventManager;
 
 /**
  * Implementation of the {@link OpenJPAConfiguration} interface.
@@ -156,6 +157,7 @@ public class OpenJPAConfigurationImpl
     public ObjectValue specification;
     public StringValue validationMode;
     public ObjectValue validationFactory;
+    public ObjectValue validator;
     public ObjectValue lifecycleEventManager;
 
     
@@ -569,7 +571,18 @@ public class OpenJPAConfigurationImpl
             "getValidationFactoryInstance");
         validationFactory.setDynamic(true);
 
-        lifecycleEventManager = addObject("LifecycleEventManager");
+        validator = addObject("Validator");
+        validator.setInstantiatingGetter("getValidatorInstance");
+        validator.setDynamic(true);
+
+        lifecycleEventManager = addPlugin("LifecycleEventManager", true);
+        aliases = new String[] {
+            "default", LifecycleEventManager.class.getName(),
+            "validating", ValidatingLifecycleEventManager.class.getName(),
+        };
+        lifecycleEventManager.setAliases(aliases);
+        lifecycleEventManager.setDefault(aliases[0]);
+        lifecycleEventManager.setString(aliases[0]);
         lifecycleEventManager.setInstantiatingGetter(
                 "getLifecycleEventManagerInstance");
 
@@ -1609,16 +1622,31 @@ public class OpenJPAConfigurationImpl
     public void setValidationFactory(Object factory) {
         validationFactory.set(factory);                            
     }
-    
-    public LifecycleEventManager getLifecycleEventManagerInstance() {
-        if (lifecycleEventManager.get() == null) {
-            lifecycleEventManager.set(new LifecycleEventManager());
-        }
-        return (LifecycleEventManager)lifecycleEventManager.get();
+
+    public Object getValidatorInstance() {
+        return validator.get();
     }
 
-    public void setLifecycleEventManager(LifecycleEventManager eventMgr) {
-        lifecycleEventManager.set(eventMgr);
+    public void setValidatorInstance(Object val) {
+        validator.set(val);                            
+    }
+
+    public String getLifecycleEventManager() {
+        return lifecycleEventManager.getString();
+    }
+
+    public LifecycleEventManager getLifecycleEventManagerInstance() {
+        LifecycleEventManager lem = (LifecycleEventManager)
+            lifecycleEventManager.get();
+        if (lem == null) {
+            lem = (LifecycleEventManager)lifecycleEventManager
+                .instantiate(LifecycleEventManager.class, this);
+        }
+        return lem;
+    }
+
+    public void setLifecycleEventManager(String lem) {
+        lifecycleEventManager.setString(lem);
     }
 
     public boolean getDynamicEnhancementAgent() {

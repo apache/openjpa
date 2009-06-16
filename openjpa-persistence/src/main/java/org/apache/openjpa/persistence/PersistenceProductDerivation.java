@@ -180,12 +180,7 @@ public class PersistenceProductDerivation
             Compatibility compatibility = conf.getCompatibilityInstance();
             compatibility.setFlushBeforeDetach(true);
             compatibility.setCopyOnDetach(true);
-        } else {
-            // see if we can/need to create a ValidatingLifecycleEventManager
-            // Note: BrokerImpl uses the instantiating getter, which will create
-            //   a normal LifecycleEventManager if a VLEM wasn't created.
-            conf.setLifecycleEventManager(createVLEM(conf));
-        }
+        } 
         return true;
     }
 
@@ -541,82 +536,6 @@ public class PersistenceProductDerivation
 
     }
     
-    /**
-     * Try creating a ValidatingLifecycleEventManager based on the configured
-     * validation mode. This allows the Bean Validation Spec API to be an
-     * optional runtime dependency.
-     * @param conf
-     * @return ValidatingLifecycleEventManager if appropriate
-     * @throws ValidationException - a WrappedException for fatal errors
-     */
-    /**
-     * @param conf
-     * @throws ValidationException
-     */
-    private LifecycleEventManager createVLEM(OpenJPAConfigurationImpl conf) 
-        throws ValidationException {
-        LifecycleEventManager lem = null;
-        // only try creating a ValidatingLifecycleEventManager if needed
-        if (!String.valueOf(ValidationMode.NONE).equalsIgnoreCase(
-            conf.getValidationMode())) {
-            // we'll use this in the exception handlers
-            boolean bValRequired = String.valueOf(ValidationMode.CALLBACK)
-                .equalsIgnoreCase(conf.getValidationMode());
-            // a little trace message
-            conf.getConfigurationLog().trace("Will try to create a " +
-                "ValidatingLifecycleEventManager based on the ValidationMode=" +
-                conf.getValidationMode());
-            // see if the javax.validation spec api is available
-            try {
-                @SuppressWarnings("unused")
-                Class<?> c = Class.forName(
-                    "javax.validation.ValidationException");
-            } catch (ClassNotFoundException e) {
-                if (bValRequired) {
-                    // fatal error - ValidationMode requires a validator
-                    conf.getConfigurationLog().error(
-                        _loc.get("vlem-creation-error"), e);
-                    // rethrow as a WrappedException
-                    throw new ValidationException(new RuntimeException(e));
-                } else {
-                    // no optional validation provider, so just trace output
-                    conf.getConfigurationLog().trace(
-                        _loc.get("vlem-creation-warn", "No available Bean " +
-                        "Validation APIs"));
-                    return lem;
-                }
-            }
-            // we have the javax.validation APIs
-            try {
-                // try loading a validation provider
-                Validator val = new ValidatorImpl(
-                    conf.getValidationFactoryInstance(),
-                    conf.getValidationMode());
-                // we have a Validator, so try to create a VLEM
-                lem = new ValidatingLifecycleEventManager(val);
-            } catch (RuntimeException e) {
-                if (bValRequired) {
-                    // fatal error - ValidationMode requires a validator
-                    conf.getConfigurationLog().error(
-                        _loc.get("vlem-creation-error"), e);
-                    // rethrow as a WrappedException
-                    throw new ValidationException(e);
-                } else {
-                    // unexpected, but validation is optional,
-                    // so just log it as a warning
-                    conf.getConfigurationLog().warn(
-                        _loc.get("vlem-creation-warn", e.getMessage()));
-                }
-            }
-        } else {
-            // a little trace message
-            conf.getConfigurationLog().trace("Not creating a " +
-                "ValidatingLifecycleEventManager based on the ValidationMode=" +
-                conf.getValidationMode());
-        }
-        return lem;
-    }
-
     /**
      * Custom configuration provider.   
      */

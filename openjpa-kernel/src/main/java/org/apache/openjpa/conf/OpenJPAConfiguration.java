@@ -1687,17 +1687,40 @@ public interface OpenJPAConfiguration
      */
     public void setValidationFactory(Object factory);
     
-   /**
-     * Gets the lifecycle event manager instance
+    /**
+     * The Validator provided by the container or created by the runtime.
+     * Defaults to <code>null</code>.
+     *
+     * @since 2.0.0
+     */
+    public Object getValidatorInstance();
+
+    /**
+     * Set the container or application provided Validator instance.
+     * If not set, defaults to <code>null</code>.
+     *
+     * @since 2.0.0
+     */
+    public void setValidatorInstance(Object val);
+    
+    /**
+     * Gets the lifecycle event manager instance classname.
+     * 
+     * @since 2.0.0
+     */
+    public String getLifecycleEventManager();
+
+    /**
+     * Gets the lifecycle event manager instance.
      * 
      * @since 2.0.0
      */
     public LifecycleEventManager getLifecycleEventManagerInstance();
 
     /**
-     * Sets the lifecycle event manager instance.
+     * Sets the lifecycle event manager instance classname.
      * 
      * @since 2.0.0
      */
-    public void setLifecycleEventManager(LifecycleEventManager eventMgr);
+    public void setLifecycleEventManager(String eventMgr);    
 }

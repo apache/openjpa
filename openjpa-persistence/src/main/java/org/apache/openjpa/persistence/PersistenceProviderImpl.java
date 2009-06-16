@@ -42,7 +42,9 @@ import org.apache.openjpa.lib.log.Log;
 import org.apache.openjpa.lib.util.Localizer;
 import org.apache.openjpa.meta.MetaDataModes;
 import org.apache.openjpa.meta.MetaDataRepository;
+import org.apache.openjpa.persistence.validation.ValidationUtils;
 import org.apache.openjpa.util.ClassResolver;
+import org.apache.openjpa.validation.ValidationException;
 
 
 /**
@@ -89,6 +91,8 @@ public class PersistenceProviderImpl
                 ;//return null;
             }
             loadAgent(_log, conf);
+            // Create appropriate LifecycleEventManager
+            loadValidator(_log, conf);
             return JPAFacadeHelper.toEntityManagerFactory(factory);
         } catch (Exception e) {
             throw PersistenceExceptions.toPersistenceException(e);
@@ -163,6 +167,12 @@ public class PersistenceProviderImpl
                         _loc.get("transformer-registration-error", pui));
                 }
             }
+            
+            // Create appropriate LifecycleEventManager
+            OpenJPAConfiguration conf = factory.getConfiguration();
+            _log = conf.getLog(OpenJPAConfiguration.LOG_RUNTIME);
+            loadValidator(_log, conf);
+
             return JPAFacadeHelper.toEntityManagerFactory(factory);
         } catch (Exception e) {
             throw PersistenceExceptions.toPersistenceException(e);
@@ -235,6 +245,7 @@ public class PersistenceProviderImpl
         throw new UnsupportedOperationException(
         "JPA 2.0 - Method not yet implemented");
     }
+    
     /**
      * This private worker method will attempt load the PCEnhancerAgent.
      */
@@ -244,6 +255,21 @@ public class PersistenceProviderImpl
             if(_log.isInfoEnabled() && res == true ){
                 _log.info(_loc.get("dynamic-agent"));
             }
+        }
+    }
+    
+    /**
+     * This private worker method will attempt to setup the proper
+     * LifecycleEventManager type based on if the javax.validation APIs are
+     * available and a ValidatorImpl is required by the configuration.
+     * @param log
+     * @param conf
+     * @throws if validation setup failed and was required by the config
+     */
+    private void loadValidator(Log log, OpenJPAConfiguration conf) {
+        if ((ValidationUtils.setupValidation(conf) == true) &&
+                _log.isInfoEnabled()) {
+            _log.info(_loc.get("vlem-creation-info"));
         }
     }
 }

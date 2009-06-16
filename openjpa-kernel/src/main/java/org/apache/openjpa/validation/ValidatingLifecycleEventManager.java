@@ -18,8 +18,11 @@
  */
 package org.apache.openjpa.validation;
 
+import org.apache.openjpa.conf.OpenJPAConfiguration;
 import org.apache.openjpa.event.LifecycleEvent;
 import org.apache.openjpa.event.LifecycleEventManager;
+import org.apache.openjpa.lib.conf.Configurable;
+import org.apache.openjpa.lib.conf.Configuration;
 import org.apache.openjpa.meta.ClassMetaData;
 
 /**
@@ -29,8 +32,10 @@ import org.apache.openjpa.meta.ClassMetaData;
  * 
  */
 @SuppressWarnings("serial")
-public class ValidatingLifecycleEventManager extends LifecycleEventManager {
+public class ValidatingLifecycleEventManager extends LifecycleEventManager
+    implements Configurable {
 
+    private OpenJPAConfiguration _conf = null;
     private Validator _validator = null;
 
     /**
@@ -38,11 +43,33 @@ public class ValidatingLifecycleEventManager extends LifecycleEventManager {
      * no validation will occur.
      * @param validator
      */
-    public ValidatingLifecycleEventManager(Validator validator) {
+    public ValidatingLifecycleEventManager() {
         super();
-        _validator = validator;        
     }
-        
+
+    /* (non-Javadoc)
+     * @see org.apache.openjpa.lib.conf.Configurable#endConfiguration()
+     */
+    public void endConfiguration() {
+        _validator = (Validator)_conf.getValidatorInstance();
+    }
+   
+    /* (non-Javadoc)
+     * @see org.apache.openjpa.lib.conf.Configurable#setConfiguration(
+     *      org.apache.openjpa.lib.conf.Configuration)
+     */
+    public void setConfiguration(Configuration conf) {
+        if (conf instanceof OpenJPAConfiguration) {
+            _conf = (OpenJPAConfiguration)conf;
+        }
+    }
+
+    /* (non-Javadoc)
+     * @see org.apache.openjpa.lib.conf.Configurable#startConfiguration()
+     */
+    public void startConfiguration() {
+    }
+
     @Override
     public boolean hasUpdateListeners(Object source, ClassMetaData meta) {
         if (_validator == null) {            

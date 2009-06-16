@@ -63,11 +63,17 @@
             </activation>
             <dependencies>
                 <!-- See http://code.google.com/p/agimatec-validation/wiki/GettingStarted -->
+                <!-- Validation API RI, which we'll test with the RI
                 <dependency>
                     <groupId>javax.validation</groupId>
                     <artifactId>validation-api</artifactId>
                     <version>1.0.Beta4</version>
-                    <!-- <version>1.0.CR2</version> -->
+                    <scope>test</scope>
+                </dependency>
+                -->
+                <dependency>
+                    <groupId>org.apache.geronimo.specs</groupId>
+                    <artifactId>geronimo-validation_1.0_spec</artifactId>
                     <scope>test</scope>
                 </dependency>
                 <dependency>
@@ -91,7 +97,8 @@
             </dependencies>
             <repositories>
                 <repository>
-                    <!-- have to use a commiters home dir until released -->
+                    <!-- have to use a commiters home dir for the Agimatec
+                         artifacts until released in a public repo -->
                     <id>dwoods.people.apache.org</id>
                     <name>dwoods Staging Repo</name>
                     <url>http://people.apache.org/~dwoods/staging-repo</url>
