@@ -19,9 +19,15 @@
 
 @rem ---------------------------------------------------------------------------
 @rem Example Batch script to generate canonical meta-model classes
+@rem
+@rem Usage
+@rem   $ mmg.bat <options.file> <class.list>
 @rem 
-@rem The canonical meta-model classes are generated during compilation of
-@rem domain classes.
+@rem The canonical meta-model classes can be generated during compilation of
+@rem domain classes. This batch file compiles a set of classes (X.java) listed 
+@rem in <class.list> file. The compiler is invoked with an annotation
+@rem processor which generates a meta-model class X_.java for each X.java. 
+@rem The options for annotation processor is specified in <options.file>.
 @rem 
 @rem See also 
 @rem    mmg.options       : The options to Javac compiler 
@@ -38,11 +44,11 @@ set VERSION=1.0-EA2-SNAPSHOT
 set JPA_LIB=%M_REPO%\org\apache\geronimo\specs\%SPEC%\%VERSION%\%SPEC%-%VERSION%.jar
 
 set CLASSPATH=%JPA_LIB%
-set CLASSPATH=%CLASSPATH%;..\openjpa-lib\target\classes
-set CLASSPATH=%CLASSPATH%;..\openjpa-persistence\src\main\resources
-set CLASSPATH=%CLASSPATH%;..\openjpa-persistence\target\classes
-set CLASSPATH=%CLASSPATH%;..\openjpa-kernel\target\classes
+set CLASSPATH=%CLASSPATH%;.\openjpa-lib\target\classes
+set CLASSPATH=%CLASSPATH%;.\openjpa-persistence\src\main\resources
+set CLASSPATH=%CLASSPATH%;.\openjpa-persistence\target\classes
+set CLASSPATH=%CLASSPATH%;.\openjpa-kernel\target\classes
 
-%JAVAC% -cp %CLASSPATH% @mmg.options @domain-class.list 
+%JAVAC% -cp %CLASSPATH% @%1 @%2
 
 endlocal
