@@ -54,32 +54,6 @@
   		    <id>jdk5-compiler</id>
             <build>
               <plugins>
-					<plugin>
-						<groupId>org.apache.maven.plugins</groupId>
-						<artifactId>maven-surefire-plugin</artifactId>
-						<configuration>
-							<additionalClasspathElements>
-								<additionalClasspathElement>${basedir}/target/test-classes/second-persistence.jar</additionalClasspathElement>
-							</additionalClasspathElements>
-						</configuration>
-					</plugin>
-					<plugin>
-						<artifactId>maven-antrun-plugin</artifactId>
-						<executions>
-							<execution>
-								<phase>test-compile</phase>
-								<configuration>
-									<tasks>
-										<jar destfile="${basedir}/target/test-classes/second-persistence.jar"
-											basedir="${basedir}/src/test/resources/second-persistence" />
-									</tasks>
-								</configuration>
-								<goals>
-									<goal>run</goal>
-								</goals>
-							</execution>
-						</executions>
-					</plugin>
 		        <plugin>
 		    		<groupId>org.apache.maven.plugins</groupId>
 		    		<artifactId>maven-compiler-plugin</artifactId>
@@ -105,32 +79,6 @@
             <build>
               <plugins>
 					<plugin>
-						<groupId>org.apache.maven.plugins</groupId>
-						<artifactId>maven-surefire-plugin</artifactId>
-						<configuration>
-							<additionalClasspathElements>
-								<additionalClasspathElement>${basedir}/target/test-classes/second-persistence.jar</additionalClasspathElement>
-							</additionalClasspathElements>
-						</configuration>
-					</plugin>
-					<plugin>
-						<artifactId>maven-antrun-plugin</artifactId>
-						<executions>
-							<execution>
-								<phase>test-compile</phase>
-								<configuration>
-									<tasks>
-										<jar destfile="${basedir}/target/test-classes/second-persistence.jar"
-											basedir="${basedir}/src/test/resources/second-persistence" />
-									</tasks>
-								</configuration>
-								<goals>
-									<goal>run</goal>
-								</goals>
-							</execution>
-						</executions>
-					</plugin>
-		        <plugin>
 		    		<groupId>org.apache.maven.plugins</groupId>
 		    		<artifactId>maven-antrun-plugin</artifactId>
 		            <executions>
