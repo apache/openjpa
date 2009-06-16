@@ -36,6 +36,7 @@ import org.apache.openjpa.kernel.BrokerFactory;
 import org.apache.openjpa.lib.conf.Configuration;
 import org.apache.openjpa.lib.conf.ConfigurationProvider;
 import org.apache.openjpa.lib.conf.Configurations;
+import org.apache.openjpa.lib.conf.ProductDerivations;
 import org.apache.openjpa.lib.log.Log;
 import org.apache.openjpa.lib.util.Localizer;
 import org.apache.openjpa.meta.MetaDataModes;
@@ -59,6 +60,7 @@ public class PersistenceProviderImpl
     private static final Localizer _loc = Localizer.forPackage(
         PersistenceProviderImpl.class);
 
+    private Log _log;
     /**
      * Loads the entity manager specified by <code>name</code>, applying
      * the properties in <code>m</code> as overrides to the properties defined
@@ -79,6 +81,11 @@ public class PersistenceProviderImpl
                 return null;
 
             BrokerFactory factory = getBrokerFactory(cp, poolValue, null);
+            _log = factory.getConfiguration()
+                .getLog(OpenJPAConfiguration.LOG_RUNTIME);
+            if(pd.checkPuNameCollisions(_log,name)==true){
+                ;//return null;
+            }
             return JPAFacadeHelper.toEntityManagerFactory(factory);
         } catch (Exception e) {
             throw PersistenceExceptions.toPersistenceException(e);
