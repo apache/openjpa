@@ -32,8 +32,6 @@ import org.apache.openjpa.lib.util.Localizer;
 public class QueryException
     extends StoreException {
 
-    private static final long serialVersionUID = 7375049808087780437L;
-
     private static final transient Localizer _loc =
             Localizer.forPackage(QueryException.class);
 
