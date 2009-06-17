@@ -528,15 +528,10 @@ public class QueryImpl implements OpenJPAQuerySPI, Serializable {
 	}
 
     public LockModeType getLockMode() {
-        assertQueryLanguage(JPQLParser.LANG_JPQL, 
-            QueryLanguages.LANG_PREPARED_SQL);
         return _fetch.getReadLockMode();
     }
 
     public Query setLockMode(LockModeType lockMode) {
-        assertQueryLanguage(JPQLParser.LANG_JPQL, 
-            QueryLanguages.LANG_PREPARED_SQL);
-    
        _fetch.setReadLockMode(lockMode);
        return this;
     }
@@ -702,19 +697,6 @@ public class QueryImpl implements OpenJPAQuerySPI, Serializable {
     void unlock() {
         if (_lock != null)
             _lock.unlock();
-    }
-
-    void assertQueryLanguage(String... langs) {
-        for (String lang : langs) {
-            if (lang.equals(getLanguage())) {
-                String q = _query.getQueryString();
-                if (q != null && q.length() > SELECT.length() 
-                 && SELECT.equalsIgnoreCase(q.substring(SELECT.length())))
-                 return;
-            }
-        }
-        throw new IllegalStateException(_loc.get("assert-query-language",
-            getLanguage()).toString());
     }
 
     public <T> Parameter<T> getParameter(String arg0, Class<T> arg1) {
