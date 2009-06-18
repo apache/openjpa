@@ -65,6 +65,7 @@ public abstract class PersistenceTestCase
     public static final String FRESH_EMF = "Creates new EntityManagerFactory";
     public static final String RETAIN_DATA = "Retain data after test run";
     private boolean retainDataOnTearDown; 
+    protected boolean _fresh = false;
     /**
      * Marker object you pass to {@link #setUp} to indicate that the
      * database table rows should be cleared.
@@ -113,13 +114,34 @@ public abstract class PersistenceTestCase
      */
     protected OpenJPAEntityManagerFactorySPI createNamedEMF(String pu,
         Object... props) {
-        Map map = new HashMap();//System.getProperties());
-        List<Class> types = new ArrayList<Class>();
+        Map<String, Object> map = getPropertiesMap(props);
+        EMFKey key = new EMFKey(pu, map);
+        OpenJPAEntityManagerFactorySPI oemf = _emfs.get(key);
+        if (_fresh || oemf == null || !oemf.isOpen()) {
+            Map config = new HashMap(System.getProperties());
+            config.putAll(map);
+            oemf = (OpenJPAEntityManagerFactorySPI) 
+                Persistence.createEntityManagerFactory(pu, config);
+            if (oemf == null) {
+                throw new NullPointerException(
+                    "Expected an entity manager factory " +
+                    "for the persistence unit named: \"" + pu + "\"");
+            } else if (!_fresh) {
+                _emfs.put(key, oemf);
+            }
+        }
+        _fresh = false;
+        return oemf;
+    }
+    
+    protected Map<String,Object> getPropertiesMap(Object ... props) { 
+        Map<String, Object> map = new HashMap<String, Object>();
+        List<Class<?>> types = new ArrayList<Class<?>>();
         boolean prop = false;
-        boolean fresh = false;
+        
         for (int i = 0; props != null && i < props.length; i++) {
             if (props[i] == FRESH_EMF) {
-                fresh = true;
+                _fresh = true;
                 continue;
             }
             if (props[i] == RETAIN_DATA) {
@@ -127,7 +149,7 @@ public abstract class PersistenceTestCase
                 continue;
             }
             if (prop) {
-                map.put(props[i - 1], props[i]);
+                map.put((String) props[i - 1], props[i]);
                 prop = false;
             } else if (props[i] == CLEAR_TABLES) {
                 map.put("openjpa.jdbc.SynchronizeMappings",
@@ -137,15 +159,17 @@ public abstract class PersistenceTestCase
                 map.put("openjpa.jdbc.SynchronizeMappings",
                     "buildSchema(ForeignKeys=true," 
                     + "SchemaAction='drop,add')");
-            } else if (props[i] instanceof Class)
-                types.add((Class) props[i]);
-            else if (props[i] != null)
+            } else if (props[i] instanceof Class) {
+                types.add((Class<?>) props[i]);
+            }
+            else if (props[i] != null) {
                 prop = true;
+            }
         }
 
         if (!types.isEmpty()) {
             StringBuffer buf = new StringBuffer();
-            for (Class c : types) {
+            for (Class<?> c : types) {
                 if (buf.length() > 0)
                     buf.append(";");
                 buf.append(c.getName());
@@ -157,22 +181,7 @@ public abstract class PersistenceTestCase
         } else {
             map.put("openjpa.MetaDataFactory", "jpa");
         }
-        EMFKey key = new EMFKey(pu, map);
-        OpenJPAEntityManagerFactorySPI oemf = _emfs.get(key);
-        if (fresh || oemf == null || !oemf.isOpen()) {
-            Map config = new HashMap(System.getProperties());
-            config.putAll(map);
-            oemf = (OpenJPAEntityManagerFactorySPI) 
-                Persistence.createEntityManagerFactory(pu, config);
-            if (oemf == null) {
-                throw new NullPointerException(
-                    "Expected an entity manager factory " +
-                    "for the persistence unit named: \"" + pu + "\"");
-            } else if (!fresh) {
-                _emfs.put(key, oemf);
-            }
-        }
-        return oemf;
+        return map;
     }
 
     @Override
