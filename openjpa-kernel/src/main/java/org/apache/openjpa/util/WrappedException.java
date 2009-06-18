@@ -18,20 +18,36 @@
  */
 package org.apache.openjpa.util;
 
+import org.apache.openjpa.lib.util.Localizer.Message;
+
 @SuppressWarnings("serial")
 /**
  * Identifiable exception type which wraps an internal runtime exception.
  */
 public class WrappedException extends OpenJPAException {
-        
-    private RuntimeException _wrappedException = null;
     
-    public WrappedException(RuntimeException e) {
-        _wrappedException = e;
+    /* 
+     * Methods extending OpenJPAException
+     * See StoreException for similar behavior
+     */
+    public WrappedException(String msg) {
+        super(msg);
     }
-    
-    public RuntimeException getWrapped() {
-        return _wrappedException;
+
+    public WrappedException(Message msg) {
+        super(msg.getMessage());
+    }
+
+    public WrappedException(Throwable cause) {
+        super(cause);
+    }
+
+    public WrappedException(String msg, Throwable cause) {
+        super(msg, cause);
+    }
+
+    public WrappedException(Message msg, Throwable cause) {
+        super(msg.getMessage(), cause);
     }
 
     @Override

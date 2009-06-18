@@ -79,7 +79,8 @@ public class ValidationUtils {
                     // fatal error - ValidationMode requires a validator
                     log.error(_loc.get("vlem-creation-error"), e);
                     // rethrow as a WrappedException
-                    throw new ValidationException(new RuntimeException(e));
+                    throw new ValidationException(
+                        new RuntimeException(e), true);
                 } else {
                     // no optional validation provider, so just trace output
                     if (log.isTraceEnabled()) {
@@ -106,7 +107,7 @@ public class ValidationUtils {
                     // fatal error - ValidationMode requires a validator
                     log.error(_loc.get("vlem-creation-error"), e);
                     // rethrow as a WrappedException
-                    throw new ValidationException(e);
+                    throw new ValidationException(e, true);
                 } else {
                     // unexpected, but validation is optional,
                     // so just log it as a warning

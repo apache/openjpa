@@ -26,4 +26,9 @@ public class ValidationException extends WrappedException {
     public ValidationException(RuntimeException e) {
         super(e);
     }
+
+    public ValidationException(RuntimeException e, boolean fatal) {
+        super(e);
+        setFatal(fatal);
+    }
 }
