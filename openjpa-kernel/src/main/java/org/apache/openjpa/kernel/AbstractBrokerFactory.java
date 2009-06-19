@@ -216,17 +216,8 @@ public abstract class AbstractBrokerFactory
         BrokerImpl broker, boolean fromDeserialization) {
         assertOpen();
         makeReadOnly();
-
-        // decorate the store manager for data caching and custom
-        // result object providers; always make sure it's a delegating
-        // store manager, because it's easier for users to deal with
-        // that way
-        StoreManager sm = newStoreManager();
-        DelegatingStoreManager dsm = null;
-        if (_conf.getDataCacheManagerInstance().getSystemDataCache()
-            != null)
-            dsm = new DataCacheStoreManager(sm);
-        dsm = new ROPStoreManager((dsm == null) ? sm : dsm);
+        
+        DelegatingStoreManager dsm = createDelegatingStoreManager();
 
         broker.initialize(this, dsm, managed, connRetainMode,
             fromDeserialization);
@@ -878,5 +869,27 @@ public abstract class AbstractBrokerFactory
              ConcurrentReferenceHashSet.WEAK);
           
        return _pcClassLoaders;
+    }
+
+    /**
+     * Create a DelegatingStoreManager for use with a Broker created by this
+     * factory.
+     * 
+     * @return A DataCacheStoreManager if a DataCache is in use otherwise an
+     *         ROPStoreManager
+     */
+    protected DelegatingStoreManager createDelegatingStoreManager() { 
+        // decorate the store manager for data caching and custom
+        // result object providers; always make sure it's a delegating
+        // store manager, because it's easier for users to deal with
+        // that way
+        StoreManager sm = newStoreManager();
+        DelegatingStoreManager dsm = null;
+        if (_conf.getDataCacheManagerInstance().getSystemDataCache()
+            != null)
+            dsm = new DataCacheStoreManager(sm);
+        dsm = new ROPStoreManager((dsm == null) ? sm : dsm);
+        
+        return dsm;
     }
 }
