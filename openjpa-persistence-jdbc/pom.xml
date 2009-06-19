@@ -35,10 +35,12 @@
     </parent>
     <properties>
         <openjpa.loglevel>INFO</openjpa.loglevel>
+        <test.jvm.maxpermsize>256m</test.jvm.maxpermsize>    
+        <test.jvm.maxheapsize>512m</test.jvm.maxheapsize>    
         <!-- to set debug arguments, you might set the following at the command line:
-            -Dtest.jvm.arguments="-Xmx500m -agentlib:jdwp=transport=dt_socket,server=y,address=8000"
+            -Dtest.jvm.arguments="-Xmx512m -agentlib:jdwp=transport=dt_socket,server=y,address=8000"
         -->
-        <test.jvm.arguments>-Xmx500m</test.jvm.arguments>
+        <test.jvm.arguments>-Xmx${test.jvm.maxheapsize} -XX:MaxPermSize=${test.jvm.maxpermsize}</test.jvm.arguments>
         <dbcp.maxActive>10</dbcp.maxActive>
         <dbcp.maxIdle>5</dbcp.maxIdle>
         <dbcp.minIdle>2</dbcp.minIdle>
