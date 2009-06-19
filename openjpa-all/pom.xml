@@ -51,6 +51,7 @@
                                     <manifestEntries>
                                         <Main-Class>org.apache.openjpa.conf.OpenJPAVersion</Main-Class>
                                         <Premain-Class>org.apache.openjpa.enhance.PCEnhancerAgent</Premain-Class>
+                                        <Agent-Class>org.apache.openjpa.enhance.InstrumentationFactory</Agent-Class>
                                         <Can-Redefine-Classes>true</Can-Redefine-Classes>
                                         <Specification-Title>JSR-220 Java Persistence</Specification-Title>
                                         <Specification-Vendor>Sun Microsystems, Inc.</Specification-Vendor>
