@@ -1187,16 +1187,6 @@ store only the <classname>Date</classname> part of the field, not the
 into the <classname>Calendar</classname> field, OpenJPA will use the <classname>
 TimeZone</classname> that was used to initialize the field.
             </para>
-            <note>
-                <para>
-OpenJPA will automatically track changes made via modification methods in fields
-of type <classname>Calendar</classname>, with one exception: when using Java
-version 1.3, the <methodname>set()</methodname> method cannot be overridden, so
-when altering the calendar using that method, the field must be explicitly
-marked as dirty. This limitation does not apply when running with Java version
-1.4 and higher.
-                </para>
-            </note>
         </section>
         <section id="ref_guide_pc_scos_proxy">
             <title>
