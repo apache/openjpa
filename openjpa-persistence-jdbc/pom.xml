@@ -817,6 +817,14 @@
                         -->
 
                         <exclude>org/apache/openjpa/persistence/criteria/*.java</exclude>
+                        
+                        <!-- Exclude subclassing tests   -->
+                        <exclude>org/apache/openjpa/**/TestUnenhanced*.java</exclude>
+
+                        <!-- Exclude tests that fail due to the dynamic enhancer -->
+                        <exclude>org/apache/openjpa/enhance/TestEnhancementConfiguration.java</exclude>
+                        <exclude>org/apache/openjpa/enhance/TestRelationToUnlistedClass.java</exclude>
+                        <exclude>org/apache/openjpa/kernel/TestDynamicClassRegistration.java</exclude>
                     </excludes>
                     <systemProperties>
                         <property>

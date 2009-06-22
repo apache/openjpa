@@ -29,7 +29,11 @@ import java.lang.management.RuntimeMXBean;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.security.AccessController;
+import java.security.CodeSource;
 import java.security.PrivilegedAction;
+import java.util.jar.Attributes;
+import java.util.jar.JarFile;
+import java.util.jar.Manifest;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
@@ -193,30 +197,37 @@ public class InstrumentationFactory {
      * point to the OpenJPA jar. If running in a development environment a
      * temporary jar file will be created.
      * 
-     * @return absolute path to the agent jar.
-     * @throws Exception
-     *             if this method is unable to detect where this class was
-     *             loaded from. It is unknown if this is actually possible.
+     * @return absolute path to the agent jar or null if anything unexpected
+     * happens.
      */
     private static String getAgentJar(Log log) {
-        // Find the name of the jar that this class was loaded from. That
+        File agentJarFile = null;
+        // Find the name of the File that this class was loaded from. That
         // jar *should* be the same location as our agent.
-        File agentJarFile =
-            new File(InstrumentationFactory.class.getProtectionDomain()
-                .getCodeSource().getLocation().getFile());
-        // We're deadmeat if we can't find a file that this class
-        // was loaded from. Just return if this file doesn't exist.
-        // Note: I'm not sure if this can really happen.
-        if (agentJarFile.exists() == false) {
-            if (log.isTraceEnabled() == true) {
-                log.trace(_name + ".getAgentJar() -- Couldn't find where this "
-                    + "class was loaded from!");
+        CodeSource cs =
+            InstrumentationFactory.class.getProtectionDomain().getCodeSource();
+        if (cs != null) {
+            URL loc = cs.getLocation();
+            if(loc!=null){
+                agentJarFile = new File(loc.getFile());
             }
         }
+        
+        // Determine whether the File that this class was loaded from has this
+        // class defined as the Agent-Class.
+        boolean createJar = false;
+        if (cs == null || agentJarFile == null
+            || agentJarFile.isDirectory() == true) {
+            createJar = true;
+        }else if(validateAgentJarManifest(agentJarFile, log, _name) == false){
+            // We have an agentJarFile, but this class isn't the Agent-Class.
+            createJar=true;           
+        }
+        
         String agentJar;
-        if (agentJarFile.isDirectory() == true) {
-            // This will happen when running in eclipse as an OpenJPA
-            // developer. No one else should ever go down this path. We
+        if (createJar == true) {
+            // This can happen when running in eclipse as an OpenJPA
+            // developer or for some reason the CodeSource is null. We
             // should log a warning here because this will create a jar
             // in your temp directory that doesn't always get cleaned up.
             try {
@@ -236,7 +247,7 @@ public class InstrumentationFactory {
         }
 
         return agentJar;
-    }
+    }//end getAgentJar
 
     /**
      * Attach and load an agent class. 
@@ -304,4 +315,40 @@ public class InstrumentationFactory {
         }
         return null;
     }
+
+    /**
+     * This private worker method will validate that the provided agentClassName
+     * is defined as the Agent-Class in the manifest file from the provided jar.
+     * 
+     * @param agentJarFile
+     *            non-null agent jar file.
+     * @param log
+     *            non-null logger.
+     * @param agentClassName
+     *            the non-null agent class name.
+     * @return True if the provided agentClassName is defined as the Agent-Class
+     *         in the manifest from the provided agentJarFile. False otherwise.
+     */
+    private static boolean validateAgentJarManifest(File agentJarFile, Log log,
+        String agentClassName) {
+        try {
+            JarFile jar = new JarFile(agentJarFile);
+            Manifest manifest = jar.getManifest();
+            if (manifest == null) {
+                return false;
+            }
+            Attributes attributes = manifest.getMainAttributes();
+            String ac = attributes.getValue("Agent-Class");
+            if (ac != null && ac.equals(agentClassName)) {
+                return true;
+            }
+        } catch (Exception e) {
+            if (log.isTraceEnabled() == true) {
+                log.trace(_name
+                    + ".validateAgentJarManifest() caught unexpected "
+                    + "exception " + e.getMessage());
+            }
+        }
+        return false;
+    }// end validateAgentJarManifest   
 }
