@@ -1887,11 +1887,15 @@ public class ClassMetaData
         if (_super != null) {
             // concrete superclass oids must match or be parent of ours
             ClassMetaData sup = getPCSuperclassMetaData();
-            if (!sup.getObjectIdType().isAssignableFrom(_objectId))
+
+            Class objectIdType = sup.getObjectIdType();
+            if (objectIdType != null &&
+                    !objectIdType.isAssignableFrom(_objectId)) {
                 throw new MetaDataException(_loc.get("id-classes",
                     new Object[]{ _type, _objectId, _super,
                         sup.getObjectIdType() }));
-
+            }
+            
             // validate that no other pks are declared if we have a
             // concrete PC superclass
             if (hasConcretePCSuperclass())
