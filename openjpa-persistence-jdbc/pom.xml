@@ -815,6 +815,8 @@
                         <!-- You can exclude the lockmgr test to save ~15 mins.
                         <exclude>org/apache/openjpa/persistence/lockmgr/*.java</exclude>
                         -->
+
+                        <exclude>org/apache/openjpa/persistence/criteria/*.java</exclude>
                     </excludes>
                     <systemProperties>
                         <property>
