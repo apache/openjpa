@@ -69,18 +69,48 @@ public class DerbyDictionary
             "BIGINT", "INTEGER",
         }));
         reservedWordSet.addAll(Arrays.asList(new String[]{
-            "ALIAS", "BIGINT", "BOOLEAN", "CALL", "CLASS",
-            "COPY", "DB2J_DEBUG", "EXECUTE", "EXPLAIN",
-            "FILE", "FILTER", "GETCURRENTCONNECTION", "INDEX",
-            "INSTANCEOF", "KEY", "METHOD", "NEW", "OFF", "OUT", "PROPERTIES",
-            "PUBLICATION", "RECOMPILE", "REFRESH", "RENAME",
-            "RUNTIMESTATISTICS", "STATEMENT", "STATISTICS",
-            "TIMING", "WAIT", "XML",
+            "BOOLEAN", "CALL", "ENDEXEC", "EXPLAIN", "FUNCTION",
+            "GET_CURRENT_CONNECTION", "INOUT", "LONGINT", "LTRIM", "NVARCHAR",
+            "OFF", "OUT", "RTRIM", "SUBSTR", "XML", "XMLEXISTS", "XMLPARSE",
+            "XMLSERIALIZE",
         }));
-        // reservedWordSet subset that can be used as valid column names
-        validColumnWordSet.addAll(Arrays.asList(new String[]{
-            "C", "COUNT", "DATE", "DATA", "NAME", "NUMBER", "NULLABLE", 
-            "TIMESTAMP", "TYPE", "VALUE", 
+
+        // reservedWordSet subset that CANNOT be used as valid column names
+        // (i.e., without surrounding them with double-quotes)
+        invalidColumnWordSet.addAll(Arrays.asList(new String[] {
+            "ADD", "ALL", "ALLOCATE", "ALTER", "AND", "ANY", "ARE", "AS", "ASC",
+            "ASSERTION", "AT", "AUTHORIZATION", "AVG", "BEGIN", "BETWEEN",
+            "BIT", "BOOLEAN", "BOTH", "BY", "CALL", "CASCADE", "CASCADED",
+            "CASE", "CAST", "CHAR", "CHARACTER", "CHARACTER_LENGTH", "CHECK",
+            "CLOSE", "COLLATE", "COLLATION", "COLUMN", "COMMIT", "CONNECT",
+            "CONNECTION", "CONSTRAINT", "CONSTRAINTS", "CONTINUE", "CONVERT",
+            "CORRESPONDING", "CREATE", "CURRENT", "CURRENT_DATE",
+            "CURRENT_TIME", "CURRENT_TIMESTAMP", "CURRENT_USER", "CURSOR",
+            "DEALLOCATE", "DEC", "DECIMAL", "DECLARE", "DEFAULT", "DEFERRABLE",
+            "DEFERRED", "DELETE", "DESC", "DESCRIBE", "DIAGNOSTICS",
+            "DISCONNECT", "DISTINCT", "DOUBLE", "DROP", "ELSE", "END",
+            "END-EXEC", "ESCAPE", "EXCEPT", "EXCEPTION", "EXEC", "EXECUTE",
+            "EXISTS", "EXPLAIN", "EXTERNAL", "FALSE", "FETCH", "FIRST", "FLOAT",
+            "FOR", "FOREIGN", "FOUND", "FROM", "FULL", "FUNCTION", "GET",
+            "GLOBAL", "GO", "GOTO", "GRANT", "GROUP", "HAVING", "HOUR",
+            "IDENTITY", "IMMEDIATE", "IN", "INDICATOR", "INITIALLY", "INNER",
+            "INOUT", "INPUT", "INSENSITIVE", "INSERT", "INT", "INTEGER",
+            "INTERSECT", "INTO", "IS", "ISOLATION", "JOIN", "KEY", "LAST",
+            "LEADING", "LEFT", "LIKE", "LOWER", "LTRIM", "MATCH", "MAX", "MIN",
+            "MINUTE", "NATIONAL", "NATURAL", "NCHAR", "NEXT", "NO", "NOT",
+            "NULL", "NULLIF", "NUMERIC", "NVARCHAR", "OF", "ON", "ONLY", "OPEN",
+            "OPTION", "OR", "ORDER", "OUT", "OUTER", "OUTPUT", "OVERLAPS",
+            "PAD", "PARTIAL", "PREPARE", "PRESERVE", "PRIMARY", "PRIOR",
+            "PRIVILEGES", "PROCEDURE", "PUBLIC", "READ", "REAL", "REFERENCES",
+            "RELATIVE", "RESTRICT", "REVOKE", "RIGHT", "ROLLBACK", "ROWS",
+            "RTRIM", "SCHEMA", "SCROLL", "SECOND", "SELECT", "SESSION_USER",
+            "SET", "SMALLINT", "SOME", "SPACE", "SQL", "SQLCODE", "SQLERROR",
+            "SQLSTATE", "SUBSTR", "SUBSTRING", "SUM", "SYSTEM_USER", "TABLE",
+            "TEMPORARY", "TIMEZONE_HOUR", "TIMEZONE_MINUTE", "TO", "TRAILING",
+            "TRANSACTION", "TRANSLATE", "TRANSLATION", "TRIM", "TRUE", "UNION",
+            "UNIQUE", "UNKNOWN", "UPDATE", "UPPER", "USER", "USING", "VALUES",
+            "VARCHAR", "VARYING", "VIEW", "WHENEVER", "WHERE", "WITH", "WORK",
+            "WRITE", "XML", "XMLEXISTS", "XMLPARSE", "XMLSERIALIZE", "YEAR",
         }));
     }
 

@@ -96,6 +96,9 @@ public class EntityReservedWords implements Serializable {
     private Integer years;
     private Date zerofill;
     private String zone; 
+    private Integer type;
+    private String alias;
+    private int Boolean;
 
     public EntityReservedWords() {
     }
@@ -484,4 +487,25 @@ public class EntityReservedWords implements Serializable {
     public void setZone(String zone) {
         this.zone = zone;
     } 
+
+    public Integer getType() {
+        return type;
+    }
+    public void setType(Integer type) {
+        this.type = type;
+    }
+
+    public String getAlias() {
+        return alias;
+    }
+    public void setAlias(String alias) {
+        this.alias = alias;
+    }
+
+    public int getBoolean() {
+        return Boolean;
+    }
+    public void setBoolean(int Boolean) {
+        this.Boolean = Boolean;
+    }
 }
