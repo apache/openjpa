@@ -133,7 +133,7 @@ public class DB2Dictionary
             "CLUSTER", "COLLECTION", "COLLID", "COMMENT", "CONCAT",
             "CONDITION", "CONTAINS", "COUNT_BIG", "CURRENT_LC_CTYPE",
             "CURRENT_PATH", "CURRENT_SERVER", "CURRENT_TIMEZONE", "CYCLE",
-            "DATA", "DATABASE", "DAYS", "DB2GENERAL", "DB2GENRL", "DB2SQL",
+            "DATABASE", "DAYS", "DB2GENERAL", "DB2GENRL", "DB2SQL",
             "DBINFO", "DEFAULTS", "DEFINITION", "DETERMINISTIC", "DISALLOW",
             "DO", "DSNHATTR", "DSSIZE", "DYNAMIC", "EACH", "EDITPROC", "ELSEIF",
             "ENCODING", "END-EXEC1", "ERASE", "EXCLUDING", "EXIT", "FENCED",
@@ -156,14 +156,16 @@ public class DB2Dictionary
             "SOURCE", "SPECIFIC", "SQLID", "STANDARD", "START", "STATIC",
             "STAY", "STOGROUP", "STORES", "STYLE", "SUBPAGES", "SYNONYM",
             "SYSFUN", "SYSIBM", "SYSPROC", "SYSTEM", "TABLESPACE", "TRIGGER",
-            "TYPE", "UNDO", "UNTIL", "VALIDPROC", "VARIABLE", "VARIANT", "VCAT",
+            "UNDO", "UNTIL", "VALIDPROC", "VARIABLE", "VARIANT", "VCAT",
             "VOLUMES", "WHILE", "WLM", "YEARS",
         }));
         
-        // reservedWordSet subset that can be used as valid column names
-        validColumnWordSet.addAll(Arrays.asList(new String[] {
-            "C", "COUNT", "DATE", "DATA", "LABEL", "LOCALE", "NAME", "NUMBER",
-            "TIMESTAMP", "VALUE", }));
+        // reservedWordSet subset that CANNOT be used as valid column names
+        // (i.e., without surrounding them with double-quotes)
+        invalidColumnWordSet.addAll(Arrays.asList(new String[] {
+            "CONSTRAINT", "END-EXEC", "END-EXEC1", 
+        }));
+
 
         super.setBatchLimit(defaultBatchLimit);
         

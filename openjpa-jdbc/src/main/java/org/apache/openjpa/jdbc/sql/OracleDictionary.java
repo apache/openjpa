@@ -163,10 +163,24 @@ public class OracleDictionary
             "LONG", "MAXEXTENTS", "MINUS", "MODE", "NOAUDIT", "NOCOMPRESS",
             "NOWAIT", "OFFLINE", "ONLINE", "PCTFREE", "ROW",
         }));
-        // reservedWordSet subset that can be used as valid column names
-        validColumnWordSet.addAll(Arrays.asList(new String[]{
-            "C", "COUNT", "DATA", "NAME", "NULLABLE", "STORE", "TIMESTAMP", 
-            "TYPE", "VALUE", "VERSION", 
+
+        // reservedWordSet subset that CANNOT be used as valid column names
+        // (i.e., without surrounding them with double-quotes)
+        invalidColumnWordSet.addAll(Arrays.asList(new String[]{
+            "ACCESS", "ADD", "ALL", "ALTER", "AND", "ANY", "AS", "ASC", "AUDIT",
+            "BETWEEN", "BY", "CHAR", "CHECK", "CLUSTER", "COLUMN", "COMMENT",
+            "COMPRESS", "CONNECT", "CREATE", "CURRENT", "DATE", "DECIMAL",
+            "DEFAULT", "DELETE", "DESC", "DISTINCT", "DROP", "ELSE", "END-EXEC",
+            "EXCLUSIVE", "EXISTS", "FILE", "FLOAT", "FOR", "FROM", "GRANT",
+            "GROUP", "HAVING", "IDENTIFIED", "IMMEDIATE", "IN", "INCREMENT",
+            "INDEX", "INITIAL", "INSERT", "INTEGER", "INTERSECT", "INTO",
+            "IS", "LEVEL", "LIKE", "LOCK", "LONG", "MAXEXTENTS", "MINUS",
+            "MODE", "NOAUDIT", "NOCOMPRESS", "NOT", "NOWAIT", "NULL", "NUMBER",
+            "OF", "OFFLINE", "ON", "ONLINE", "OPTION", "OR", "ORDER", "PCTFREE",
+            "PRIOR", "PRIVILEGES", "PUBLIC", "REVOKE", "ROW", "ROWS", "SELECT",
+            "SESSION", "SET", "SIZE", "SMALLINT", "TABLE", "THEN", "TO",
+            "UNION", "UNIQUE", "UPDATE", "USER", "VALUES", "VARCHAR", "VIEW",
+            "WHENEVER", "WHERE", "WITH",
         }));
 
         substringFunctionName = "SUBSTR";

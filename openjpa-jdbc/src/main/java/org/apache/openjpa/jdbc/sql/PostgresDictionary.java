@@ -180,10 +180,22 @@ public class PostgresDictionary
             "RETRIEVE", "RETURNS", "RULE", "SETOF", "STDIN", "STDOUT",
             "STORE", "VACUUM", "VERBOSE", "VERSION",
         }));
-        // reservedWordSet subset that can be used as valid column names
-        validColumnWordSet.addAll(Arrays.asList(new String[] {
-            "C", "COUNT", "DATE", "DATA", "NAME", "NULLABLE", "NUMBER", "OID",
-            "STORE", "TIMESTAMP", "TYPE", "VALUE", "VERSION",
+
+        // reservedWordSet subset that CANNOT be used as valid column names
+        // (i.e., without surrounding them with double-quotes)
+        invalidColumnWordSet.addAll(Arrays.asList(new String[] {
+            "ALL", "AND", "ANY", "AS", "ASC", "AUTHORIZATION", "BETWEEN", 
+            "BINARY", "BOTH", "CASE", "CAST", "CHECK", "COLLATE", "COLUMN",
+            "CONSTRAINT", "CREATE", "CROSS", "CURRENT_DATE", "CURRENT_TIME",
+            "CURRENT_TIMESTAMP", "CURRENT_USER", "DEFAULT", "DEFERRABLE", 
+            "DESC", "DISTINCT", "DO", "ELSE", "END", "END", "EXCEPT", "FALSE",
+            "FOR", "FOREIGN", "FROM", "FULL", "GRANT", "GROUP", "HAVING", "IN",
+            "INITIALLY", "INNER", "INTERSECT", "INTO", "IS", "ISNULL", "JOIN",
+            "LEADING", "LEFT", "LIKE", "NATURAL", "NOT", "NOTNULL", "NULL", 
+            "ON", "ONLY", "OR", "ORDER", "OUTER", "OVERLAPS", "PRIMARY",
+            "REFERENCES", "RIGHT", "SELECT", "SESSION_USER", "SOME", "TABLE",
+            "THEN", "TO", "TRAILING", "TRUE", "UNION", "UNIQUE", "USER", 
+            "USING", "VERBOSE", "WHEN", "WHERE",
         }));
     }
 

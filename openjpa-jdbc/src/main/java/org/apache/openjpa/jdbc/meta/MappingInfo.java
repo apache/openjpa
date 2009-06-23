@@ -647,9 +647,28 @@ public abstract class MappingInfo
 
         // find existing column
         Column col = table.getColumn(colName);
-        if (col == null && !adapt)
-            throw new MetaDataException(_loc.get(prefix + "-bad-col-name",
-                context, colName, table));
+        if (col == null && !adapt) {
+            // 
+            // See if column name has already been validated in a dynamic table.
+            // If so then want to use that validated column name instead. This
+            // should seldom if ever occur as long as the database dictionaries
+            // are kept up-to-date. 
+            // 
+            if ((colName.length() > dict.maxColumnNameLength) || 
+               dict.getInvalidColumnWordSet().contains(colName.toUpperCase()) &&
+              !(table.getClass().getName().contains("DynamicTable"))) {
+                colName=dict.getValidColumnName(colName, new Table());
+                col = table.getColumn(colName);
+                if (col == null && !adapt) {
+                    throw new MetaDataException(_loc.
+                        get(prefix + "-bad-col-name", context, colName, table));
+                }
+            }
+            else {
+                throw new MetaDataException(_loc.
+                    get(prefix + "-bad-col-name", context, colName, table));
+            }
+        }
 
         // use information from template column by default, allowing any
         // user-given specifics to override it

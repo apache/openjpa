@@ -105,15 +105,33 @@ public class MySQLDictionary
             "TINYTEXT", "DOUBLE PRECISION", "ENUM", "SET", "DATETIME",
         }));
         reservedWordSet.addAll(Arrays.asList(new String[]{
-            "INT1", "INT2", "INT4", "FLOAT1", "FLOAT2", "FLOAT4",
             "AUTO_INCREMENT", "BINARY", "BLOB", "CHANGE", "ENUM", "INFILE",
-            "LOAD", "MEDIUMINT", "OPTION", "OUTFILE", "REPLACE",
-            "SET", "STARTING", "TEXT", "UNSIGNED", "ZEROFILL",
+            "INT1", "INT2", "INT4", "FLOAT1", "FLOAT2", "FLOAT4", "LOAD",
+            "MEDIUMINT", "OUTFILE", "REPLACE", "STARTING", "TEXT", "UNSIGNED", 
+            "ZEROFILL",
         }));
-        // reservedWordSet subset that can be used as valid column names
-        validColumnWordSet.addAll(Arrays.asList(new String[]{
-            "C", "COUNT", "DATE", "DATA", "NAME", "NULLABLE", "NUMBER", 
-            "TIMESTAMP", "TYPE", "VALUE", 
+
+        // reservedWordSet subset that CANNOT be used as valid column names
+        // (i.e., without surrounding them with double-quotes)
+        invalidColumnWordSet.addAll(Arrays.asList(new String[]{
+            "ADD", "ALL", "ALTER", "AND", "AS", "ASC", "BETWEEN", "BINARY",
+            "BLOB", "BOTH", "BY", "CASCADE", "CASE", "CHANGE", "CHAR", 
+            "CHARACTER", "CHECK", "COLLATE", "COLUMN", "CONSTRAINT", "CONTINUE",
+            "CONVERT", "CREATE", "CROSS", "CURRENT_DATE", "CURRENT_TIME",
+            "CURRENT_TIMESTAMP", "CURRENT_USER", "CURSOR", "DEC", "DECIMAL",
+            "DECLARE", "DEFAULT", "DELETE", "DESC", "DESCRIBE", "DISTINCT",
+            "DOUBLE", "DROP", "ELSE", "END-EXEC", "EXISTS", "FALSE", "FETCH",
+            "FLOAT", "FLOAT4", "FOR", "FOREIGN", "FROM", "GRANT", "GROUP",
+            "HAVING", "IN", "INFILE", "INNER", "INSENSITIVE", "INSERT", "INT",
+            "INT1", "INT2", "INT4", "INTEGER", "INTERVAL", "INTO", "IS", "JOIN",
+            "KEY", "LEADING", "LEFT", "LIKE", "LOAD", "MATCH", "MEDIUMINT",
+            "NATURAL", "NOT", "NULL", "NUMERIC", "ON", "OPTION", "OR", "ORDER",
+            "OUTER", "OUTFILE", "PRECISION", "PRIMARY", "PROCEDURE", "READ",
+            "REAL", "REFERENCES", "REPLACE", "RESTRICT", "REVOKE", "RIGHT",
+            "SCHEMA", "SELECT", "SET", "SMALLINT", "SQL", "SQLSTATE",
+            "STARTING", "TABLE", "THEN", "TO", "TRAILING", "TRUE", "UNION",
+            "UNIQUE", "UNSIGNED", "UPDATE", "USAGE", "USING", "VALUES",
+            "VARCHAR", "VARYING", "WHEN", "WHERE", "WITH", "WRITE", "ZEROFILL",
         }));
 
         // MySQL requires double-escape for strings
