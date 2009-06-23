@@ -4,13 +4,13 @@
 
 package org.apache.openjpa.persistence.criteria;
 
-import javax.persistence.metamodel.Attribute;
-import javax.persistence.metamodel.List;
+import javax.persistence.metamodel.ListAttribute;
+import javax.persistence.metamodel.SingularAttribute;
 
-@javax.persistence.metamodel.TypesafeMetamodel
+@javax.persistence.metamodel.StaticMetamodel
 (value=org.apache.openjpa.persistence.criteria.CreditCard.class)
 public class CreditCard_ {
-    public static volatile Attribute<CreditCard,Customer> customer;
-    public static volatile Attribute<CreditCard,Long> id;
-    public static volatile List<CreditCard,TransactionHistory> transactionHistory;
+    public static volatile SingularAttribute<CreditCard,Customer> customer;
+    public static volatile SingularAttribute<CreditCard,Long> id;
+    public static volatile ListAttribute<CreditCard,TransactionHistory> transactionHistory;
 }

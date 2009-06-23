@@ -5,13 +5,13 @@
 package org.apache.openjpa.persistence.criteria;
 
 import java.math.BigDecimal;
-import javax.persistence.metamodel.Attribute;
+import javax.persistence.metamodel.SingularAttribute;
 
-@javax.persistence.metamodel.TypesafeMetamodel
+@javax.persistence.metamodel.StaticMetamodel
 (value=org.apache.openjpa.persistence.criteria.Manager.class)
 public class Manager_ {
-    public static volatile Attribute<Manager,Department> department;
-    public static volatile Attribute<Manager,Integer> id;
-    public static volatile Attribute<Manager,String> name;
-    public static volatile Attribute<Manager,BigDecimal> salary;
+    public static volatile SingularAttribute<Manager,Department> department;
+    public static volatile SingularAttribute<Manager,Integer> id;
+    public static volatile SingularAttribute<Manager,String> name;
+    public static volatile SingularAttribute<Manager,BigDecimal> salary;
 }

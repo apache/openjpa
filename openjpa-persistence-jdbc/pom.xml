@@ -815,8 +815,12 @@
                         <!-- You can exclude the lockmgr test to save ~15 mins.
                         <exclude>org/apache/openjpa/persistence/lockmgr/*.java</exclude>
                         -->
-
+						<!-- ================================================================== -->
+						<!--  Critera & MetaModel tests are *temporarily* excluded to wait for  -->
+						<!--  spec to stabilize on Result Processing API                        -->
+						<!-- ================================================================== --> 
                         <exclude>org/apache/openjpa/persistence/criteria/*.java</exclude>
+                        <exclude>org/apache/openjpa/persistence/meta/*.java</exclude>
                         
                         <!-- Exclude subclassing tests   -->
                         <exclude>org/apache/openjpa/**/TestUnenhanced*.java</exclude>

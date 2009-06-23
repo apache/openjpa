@@ -4,14 +4,14 @@
 
 package org.apache.openjpa.persistence.criteria;
 
-import javax.persistence.metamodel.Attribute;
+import javax.persistence.metamodel.SingularAttribute;
 
-@javax.persistence.metamodel.TypesafeMetamodel
+@javax.persistence.metamodel.StaticMetamodel
 (value=org.apache.openjpa.persistence.criteria.Account.class)
 public class Account_ {
-    public static volatile Attribute<Account,Integer> balance;
-    public static volatile Attribute<Account,Long> id;
-    public static volatile Attribute<Account,Integer> loan;
-    public static volatile Attribute<Account,String> name;
-    public static volatile Attribute<Account,Person> owner;
+    public static volatile SingularAttribute<Account,Integer> balance;
+    public static volatile SingularAttribute<Account,Long> id;
+    public static volatile SingularAttribute<Account,Integer> loan;
+    public static volatile SingularAttribute<Account,String> name;
+    public static volatile SingularAttribute<Account,Person> owner;
 }

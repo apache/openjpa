@@ -33,11 +33,12 @@ import javax.persistence.Parameter;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Expression;
 import javax.persistence.criteria.Order;
+import javax.persistence.criteria.ParameterExpression;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 import javax.persistence.criteria.Selection;
 import javax.persistence.criteria.Subquery;
-import javax.persistence.metamodel.Entity;
+import javax.persistence.metamodel.EntityType;
 
 import org.apache.commons.collections.map.LinkedMap;
 import org.apache.openjpa.kernel.StoreQuery;
@@ -61,12 +62,12 @@ import org.apache.openjpa.persistence.meta.Types;
  *
  * @since 2.0.0
  */
-public class CriteriaQueryImpl implements CriteriaQuery, AliasContext {
+public class CriteriaQueryImpl<T> implements CriteriaQuery<T>, AliasContext {
     private final MetamodelImpl  _model;
     private Set<Root<?>>        _roots;
     private PredicateImpl       _where;
     private List<Order>         _orders;
-    private LinkedHashMap<Parameter<?>, Class<?>>           _paramTypes;
+    private LinkedHashMap<ParameterExpression<?>, Class<?>>           _paramTypes;
     private List<Selection<?>>  _selections;
     private List<Expression<?>> _groups;
     private PredicateImpl       _having;
@@ -109,6 +110,59 @@ public class CriteriaQueryImpl implements CriteriaQuery, AliasContext {
     public List<Order> getOrderList() {
         return _orders;
     }
+    
+    /**
+     * Return the selection of the query
+     * @return the item to be returned in the query result
+     */
+    public Selection<T> getSelection() {
+        throw new AbstractMethodError();
+    }
+    /**
+     * Specify the items that are to be returned in the query result.
+     * Replaces the previously specified selection(s), if any.
+     *
+     * The type of the result of the query execution depends on
+     * the specification of the criteria query object as well as the
+     * arguments to the multiselect method as follows:
+     *
+     * If the type of the criteria query is CriteriaQuery<Tuple>,
+     * a Tuple object corresponding to the arguments of the 
+     * multiselect method will be instantiated and returned for 
+     * each row that results from the query execution.
+     *
+     * If the type of the criteria query is CriteriaQuery<X> for
+     * some user-defined class X, then the arguments to the 
+     * multiselect method will be passed to the X constructor and 
+     * an instance of type X will be returned for each row.  
+     * The IllegalStateException will be thrown if a constructor 
+     * for the given argument types does not exist.
+     *
+     * If the type of the criteria query is CriteriaQuery<X[]> for
+     * some class X, an instance of type X[] will be returned for 
+     * each row.  The elements of the array will correspond to the 
+     * arguments of the multiselect method.    The 
+     * IllegalStateException will be thrown if the arguments to the 
+     * multiselect method are not of type X.
+     *
+     * If the type of the criteria query is CriteriaQuery<Object>,
+     * and only a single argument is passed to the multiselect 
+     * method, an instance of type Object will be returned for 
+     * each row.
+     *
+     * If the type of the criteria query is CriteriaQuery<Object>,
+     * and more than one argument is passed to the multiselect 
+     * method, an instance of type Object[] will be instantiated 
+     * and returned for each row.  The elements of the array will
+     * correspond to the arguments to the multiselect method.
+     *
+     * @param selections  expressions specifying the items that
+     *        are returned in the query result
+     * @return the modified query
+     */
+    public CriteriaQuery<T> multiselect(Selection<?>... selections) {
+        throw new AbstractMethodError();
+    }
 
     /**
      * Registers the given parameter.
@@ -117,17 +171,21 @@ public class CriteriaQueryImpl implements CriteriaQuery, AliasContext {
      */
     public void registerParameter(ParameterImpl<?> p) {
         if (_paramTypes == null) {
-            _paramTypes = new LinkedHashMap<Parameter<?>, Class<?>>();
+            _paramTypes = new LinkedHashMap<ParameterExpression<?>, Class<?>>();
         }
         _paramTypes.put(p, p.getJavaType());
         if (p.getPosition() == null)
             p.setPosition(_paramTypes.size());
     }
     
-    public Set<Parameter<?>> getParameters() {
+    public Set<ParameterExpression<?>> getParameters() {
         return _paramTypes.keySet();
     }
 
+    /**
+     * Return the selection items of the query as a list
+     * @return the selection items of the query as a list
+     */
     public List<Selection<?>> getSelectionList() {
         return _selections;
     }
@@ -155,25 +213,36 @@ public class CriteriaQueryImpl implements CriteriaQuery, AliasContext {
         _orders = Arrays.asList(o);
         return this;
     }
+    
+    /**
+     * Specify the item that is to be returned in the query result.
+     * Replaces the previously specified selection(s), if any.
+     * @param selection  selection specifying the item that
+     *        is to be returned in the query result
+     * @return the modified query
+     */
+    public CriteriaQuery<T> select(Selection<T> selection) {
+        throw new AbstractMethodError();
+    }
 
-    public CriteriaQuery select(Selection<?>... selections) {
+    public CriteriaQuery<T> select(Selection<?>... selections) {
         _selections = Arrays.asList(selections);
         return this;
     }
 
-    public CriteriaQuery where(Expression<Boolean> restriction) {
+    public CriteriaQuery<T> where(Expression<Boolean> restriction) {
         _where = new PredicateImpl().add(restriction);
         return this;
     }
 
-    public CriteriaQuery where(Predicate... restrictions) {
+    public CriteriaQuery<T> where(Predicate... restrictions) {
         _where = new PredicateImpl();
         for (Predicate p : restrictions)
         	_where.add(p);
         return this;
     }
 
-    public <X> Root<X> from(Entity<X> entity) {
+    public <X> Root<X> from(EntityType<X> entity) {
         Root<X> root = new RootImpl<X>((Types.Entity<X>)entity);
         if (_roots == null) {
             _roots = new LinkedHashSet<Root<?>>();
@@ -182,8 +251,9 @@ public class CriteriaQueryImpl implements CriteriaQuery, AliasContext {
         return root;
     }
 
+    
     public <X> Root<X> from(Class<X> cls) {
-        Entity<X> entity = _model.entity(cls);
+        EntityType<X> entity = _model.entity(cls);
         if (entity == null)
             throw new IllegalArgumentException(cls + " is not an entity");
         return from(entity);
@@ -234,7 +304,7 @@ public class CriteriaQueryImpl implements CriteriaQuery, AliasContext {
         if (_paramTypes == null)
             return StoreQuery.EMPTY_PARAMS;
         LinkedMap  parameterTypes = new LinkedMap();
-        for (Parameter<?> p : _paramTypes.keySet()) {
+        for (ParameterExpression<?> p : _paramTypes.keySet()) {
             if (p.getName() == null && p.getPosition() == null)
                 throw new RuntimeException(p + " is not set");
             Object paramKey = p.getName() == null 

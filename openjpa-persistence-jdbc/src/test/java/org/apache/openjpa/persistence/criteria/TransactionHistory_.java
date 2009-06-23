@@ -5,12 +5,12 @@
 package org.apache.openjpa.persistence.criteria;
 
 import java.sql.Timestamp;
-import javax.persistence.metamodel.Attribute;
+import javax.persistence.metamodel.SingularAttribute;
 
-@javax.persistence.metamodel.TypesafeMetamodel
+@javax.persistence.metamodel.StaticMetamodel
 (value=org.apache.openjpa.persistence.criteria.TransactionHistory.class)
 public class TransactionHistory_ {
-    public static volatile Attribute<TransactionHistory,String> details;
-    public static volatile Attribute<TransactionHistory,Integer> id;
-    public static volatile Attribute<TransactionHistory,Timestamp> transDate;
+    public static volatile SingularAttribute<TransactionHistory,String> details;
+    public static volatile SingularAttribute<TransactionHistory,Integer> id;
+    public static volatile SingularAttribute<TransactionHistory,Timestamp> transDate;
 }

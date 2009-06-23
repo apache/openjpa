@@ -52,7 +52,8 @@ public class OrderImpl implements Order {
 		return _ascending;
 	}
 
-	public void reverse() {
+	public Order reverse() {
 		_ascending = !_ascending;
+		return this;
 	}
 }

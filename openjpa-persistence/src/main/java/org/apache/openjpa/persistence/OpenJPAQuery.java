@@ -26,6 +26,7 @@ import java.util.Map;
 import javax.persistence.FlushModeType;
 import javax.persistence.Query;
 import javax.persistence.TemporalType;
+import javax.persistence.TypedQuery;
 
 import org.apache.openjpa.kernel.QueryFlushModes;
 import org.apache.openjpa.kernel.QueryHints;
@@ -38,8 +39,7 @@ import org.apache.openjpa.kernel.QueryOperations;
  * @author Abe White
  * @published
  */
-public interface OpenJPAQuery
-    extends Query {
+public interface OpenJPAQuery<X> extends TypedQuery<X> {
 
     /**
      * Hint key for specifying the number of rows to optimize for.

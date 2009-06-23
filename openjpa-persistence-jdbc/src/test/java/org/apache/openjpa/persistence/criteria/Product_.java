@@ -4,12 +4,12 @@
 
 package org.apache.openjpa.persistence.criteria;
 
-import javax.persistence.metamodel.Attribute;
+import javax.persistence.metamodel.SingularAttribute;
 
-@javax.persistence.metamodel.TypesafeMetamodel
+@javax.persistence.metamodel.StaticMetamodel
 (value=org.apache.openjpa.persistence.criteria.Product.class)
 public class Product_ {
-    public static volatile Attribute<Product,Integer> pid;
-    public static volatile Attribute<Product,String> productType;
-    public static volatile Attribute<Product,Long> version;
+    public static volatile SingularAttribute<Product,Integer> pid;
+    public static volatile SingularAttribute<Product,String> productType;
+    public static volatile SingularAttribute<Product,Long> version;
 }

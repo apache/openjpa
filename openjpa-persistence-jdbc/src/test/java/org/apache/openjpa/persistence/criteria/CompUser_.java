@@ -4,18 +4,18 @@
 
 package org.apache.openjpa.persistence.criteria;
 
-import javax.persistence.metamodel.Attribute;
-import javax.persistence.metamodel.List;
+import javax.persistence.metamodel.ListAttribute;
+import javax.persistence.metamodel.SingularAttribute;
 import org.apache.openjpa.persistence.criteria.CompUser.CreditRating;
 
-@javax.persistence.metamodel.TypesafeMetamodel
+@javax.persistence.metamodel.StaticMetamodel
 (value=org.apache.openjpa.persistence.criteria.CompUser.class)
 public class CompUser_ {
-    public static volatile Attribute<CompUser,Address> address;
-    public static volatile Attribute<CompUser,Integer> age;
-    public static volatile Attribute<CompUser,String> computerName;
-    public static volatile Attribute<CompUser,CreditRating> creditRating;
-    public static volatile Attribute<CompUser,String> name;
-    public static volatile List<CompUser,String> nicknames;
-    public static volatile Attribute<CompUser,Integer> userid;
+    public static volatile SingularAttribute<CompUser,Address> address;
+    public static volatile SingularAttribute<CompUser,Integer> age;
+    public static volatile SingularAttribute<CompUser,String> computerName;
+    public static volatile SingularAttribute<CompUser,CreditRating> creditRating;
+    public static volatile SingularAttribute<CompUser,String> name;
+    public static volatile ListAttribute<CompUser,String> nicknames;
+    public static volatile SingularAttribute<CompUser,Integer> userid;
 }

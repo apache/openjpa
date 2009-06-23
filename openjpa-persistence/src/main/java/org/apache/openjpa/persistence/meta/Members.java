@@ -19,20 +19,23 @@
 
 package org.apache.openjpa.persistence.meta;
 
-import java.lang.reflect.Field;
-
-import javax.persistence.metamodel.AbstractCollection;
+import javax.persistence.metamodel.Attribute;
+import javax.persistence.metamodel.CollectionAttribute;
+import javax.persistence.metamodel.ListAttribute;
 import javax.persistence.metamodel.ManagedType;
+import javax.persistence.metamodel.MapAttribute;
+import javax.persistence.metamodel.PluralAttribute;
+import javax.persistence.metamodel.SetAttribute;
+import javax.persistence.metamodel.SingularAttribute;
 import javax.persistence.metamodel.Type;
 
 import org.apache.openjpa.meta.FieldMetaData;
 import org.apache.openjpa.meta.JavaTypes;
 
 /**
- * Member according to JPA 2.0 metamodel.
+ * Persistent attribute according to JPA 2.0 metamodel.
  * 
- * Implemented as a thin adapter to OpenJPA FieldMetadata.
- * Mostly immutable.
+ * Implemented as a thin adapter to OpenJPA FieldMetadata. Mostly immutable.
  * 
  * @author Pinaki Poddar
  * 
@@ -40,153 +43,214 @@ import org.apache.openjpa.meta.JavaTypes;
  *
  */
 public class Members {
-	/**
-	 * Root of implementation hierarchy.
+    /**
+     * An attribute of a Java type. A persistent attribute is realized as a field and getter/setter
+     * method of a Java class. This implementation adapts kernel's {@link FieldMetaData} construct 
+     * to meet the JPA API contract.
 	 *
-	 * @param <X> the class that owns this member
-	 * @param <Y> the class of the value held by this member
+	 *
+     * @param <X> The type that contains this attribute
+     * @param <Y> The type of this attribute
 	 */
-    public static abstract class Member<X, Y> 
-       implements javax.persistence.metamodel.Member<X, Y> {
-
-        public final Types.Managed<X> owner;
+    public static abstract class Member<X, Y> implements Attribute<X, Y> {
+        public final AbstractManagedType<X> owner;
         public final FieldMetaData fmd;
 
-        protected Member(Types.Managed<X> owner, FieldMetaData fmd) {
+        /**
+         * Supply immutable parts.
+         * 
+         * @param owner the persistent type that contains this attribute
+         * @param fmd the kernel's concrete representation of this attribute
+         */
+        protected Member(AbstractManagedType<X> owner, FieldMetaData fmd) {
             this.owner = owner;
             this.fmd = fmd;
         }
 
+        /**
+         *  Returns the managed type which declared this attribute.
+         */
         public final ManagedType<X> getDeclaringType() {
-            return (ManagedType<X>)owner.model.getType(fmd.getDeclaringType());
+            return owner.model.type(fmd.getDeclaringType());
         }
         
-        public Type<?> getType() {
-            return owner.model.getType(fmd.getDeclaredType());
-        }
-
+        /**
+         *  Returns the java.lang.reflect.Member for this attribute. 
+         */
         public final java.lang.reflect.Member getJavaMember() {
             return fmd.getBackingMember();
         }
-
-        public Class<Y> getMemberJavaType() {
-            return (Class<Y>) fmd.getDeclaredType();
+        
+        /**
+         *  Gets the Java type of this attribute.
+         */
+        public final Class<Y> getJavaType() {
+            return (Class<Y>)fmd.getDeclaredType();
         }
-
+        
+        /**
+         * Gets the name of this attribute.
+         */
         public final String getName() {
             return fmd.getName();
         }
 
+        /**
+         * Returns the type that represents the type of this attribute.
+         */
+        public final Type<Y> getType() {
+            return owner.model.getType(isCollection() ?
+                   fmd.getElement().getDeclaredType() : fmd.getDeclaredType());
+        }
+        
+        /**
+         * Affirms if this attribute is an association.
+         */
         public final boolean isAssociation() {
             return fmd.isDeclaredTypePC();
         }
 
+        /**
+         * Affirms if this attribute is a collection.
+         */
         public final boolean isCollection() {
-            return fmd.getDeclaredTypeCode() == JavaTypes.COLLECTION
-                || fmd.getDeclaredTypeCode() == JavaTypes.MAP;
+            int typeCode = fmd.getDeclaredTypeCode();
+            return  typeCode == JavaTypes.COLLECTION
+                 || typeCode == JavaTypes.MAP
+                 || typeCode == JavaTypes.ARRAY;
         }
         
-        public String toString() {
-            return fmd.getName() + ":" + getType();
+        /**
+         *  Returns the persistent category for the attribute.
+         */
+        public PersistentAttributeType getPersistentAttributeType() {
+            if (fmd.isEmbedded())
+                return PersistentAttributeType.EMBEDDED;
+            if (fmd.isElementCollection())
+                return PersistentAttributeType.ELEMENT_COLLECTION;
+            return PersistentAttributeType.BASIC;
         }
     }
-
+    
+    
     /**
-     * Attributes are non-collection members.
+     * Represents single-valued persistent attributes.
      *
-	 * @param <X> the class that owns this member
-	 * @param <T> the class of the value held by this member
+     * @param <X> The type containing the represented attribute
+     * @param <T> The type of the represented attribute
      */
-    public static final class Attribute<X, T> extends Member<X, T> implements
-        javax.persistence.metamodel.Attribute<X, T> {
+    public static final class SingularAttributeImpl<X, T> extends Member<X, T> 
+        implements SingularAttribute<X, T> {
 
-        public Attribute(Types.Managed<X> owner, FieldMetaData fmd) {
+        public SingularAttributeImpl(AbstractManagedType<X> owner, FieldMetaData fmd) {
             super(owner, fmd);
         }
 
-        public Multiplicity getMultiplicity() {
-            throw new AbstractMethodError();
-        }
-
+        /**
+         *  Affirms if this attribute is an id attribute.
+         */
         public boolean isId() {
             return fmd.isPrimaryKey();
         }
 
+        /**
+         *  Affirms if this attribute represents a version attribute.
+         */
         public boolean isVersion() {
             return fmd.isVersion();
         }
 
+        /** 
+         *  Affirms if this attribute can be null.
+         */
         public boolean isOptional() {
             return fmd.getNullValue() != FieldMetaData.NULL_EXCEPTION;
         }
-        
-        public boolean isEmbedded() {
-            return fmd.isEmbedded();
-        }
 
-        public Type<T> getAttributeType() {
-            return owner.model.type(fmd.getDeclaredType());
-        }
-
-        public BindableType getBindableType() {
-            return fmd.isDeclaredTypePC() ? BindableType.MANAGED_TYPE
-                : BindableType.ATTRIBUTE;
-        }
-
-        public Class<T> getJavaType() {
-            return super.getMemberJavaType();
-        }
-        
-        public void validateMeta(Field f) {
-            
-        }
-    }
-
-    /**
-     * Root of collection members.
-     *
-	 * @param <X> the class that owns this member
-	 * @param <C> the container class that holds this member 
-	 *            (e.g. java.util.Set)
-     * @param <E> the class of the element held by this member 
-     */
-    public static abstract class BaseCollection<X, C, E> extends Member<X, C>
-        implements AbstractCollection<X, C, E> {
-
-        public BaseCollection(Types.Managed<X> owner, FieldMetaData fmd) {
-            super(owner, fmd);
-        }
-
-        public final Type<E> getElementType() {
-            return owner.model.getType(fmd.getElement().getDeclaredType());
-        }
-
+        /**
+         *  Categorizes bindable type represented by this attribute.
+         */ 
         public final BindableType getBindableType() {
-            return BindableType.COLLECTION;
+            return fmd.isDeclaredTypePC() 
+                ? BindableType.ENTITY_TYPE
+                : BindableType.SINGULAR_ATTRIBUTE;
         }
-
-        public Class<E> getJavaType() {
-            return fmd.getDeclaredType();
-        }
-        
-        public Class getMemberJavaType() {
+       
+        /**
+         * Returns the bindable Java type of this attribute.
+         * 
+         * If the bindable category of this attribute is PLURAL_ATTRIBUTE, the Java element type 
+         * is returned. If the bindable type is SINGULAR_ATTRIBUTE or ENTITY_TYPE, the Java type 
+         * of the represented entity or attribute is returned.
+         */
+        public final Class<T> getBindableJavaType() {
             return fmd.getElement().getDeclaredType();
         }
+        
+        /**
+         * Categorizes the attribute.
+         */
+        public final PersistentAttributeType getPersistentAttributeType() {
+            if (!fmd.isDeclaredTypePC())
+                return super.getPersistentAttributeType();
+            return fmd.getMappedByMetaData() == null 
+                 ? PersistentAttributeType.ONE_TO_ONE
+                 : PersistentAttributeType.ONE_TO_MANY;
+        }
     }
 
     /**
-     * Members declared as java.util.Collection<E>.
+     * Root of multi-cardinality attribute.
+     *
+	 * @param <X> the type that owns this member
+	 * @param <C> the container type that holds this member (e.g. java.util.Set&lt;Employee&gt;)
+     * @param <E> the type of the element held by this member (e.g. Employee). 
      */
-    public static class Collection<X, E> extends
-        BaseCollection<X, java.util.Collection<E>, E> implements
-        javax.persistence.metamodel.Collection<X, E> {
-
-        public Collection(Types.Managed<X> owner, FieldMetaData fmd) {
+    public static abstract class PluralAttributeImpl<X, C, E> extends Member<X, C>
+        implements PluralAttribute<X, C, E> {
+        
+        public PluralAttributeImpl(AbstractManagedType<X> owner, FieldMetaData fmd) {
             super(owner, fmd);
         }
 
-        public Multiplicity getMultiplicity() {
-            return Multiplicity.ONE_TO_MANY;
+        /**
+         * Returns the type representing the element type of the collection.
+         */
+        public final Type<E> getElementType() {
+            return owner.model.getType(getBindableJavaType());
+        }
+
+        /**
+         *  Returns the bindable category of this attribute.
+         */ 
+        public final BindableType getBindableType() {
+            return BindableType.PLURAL_ATTRIBUTE;
+        }
+        
+        /**
+         * Returns the bindable Java type of this attribute.
+         * 
+         * For PLURAL_ATTRIBUTE, the Java element type is returned. 
+         */
+        public final Class<E> getBindableJavaType() {
+            return fmd.getElement().getDeclaredType();
+        }
+        
+        
+        public PersistentAttributeType getPersistentAttributeType() {
+            return PersistentAttributeType.ONE_TO_MANY;
+        }
+    }
+
+    /**
+     * Represents attributes declared as java.util.Collection&lt;E&gt;.
+     */
+    public static class CollectionAttributeImpl<X, E> 
+        extends PluralAttributeImpl<X, java.util.Collection<E>, E> 
+        implements CollectionAttribute<X, E> {
+
+        public CollectionAttributeImpl(AbstractManagedType<X> owner, FieldMetaData fmd) {
+            super(owner, fmd);
         }
 
         public CollectionType getCollectionType() {
@@ -195,18 +259,14 @@ public class Members {
     }
 
     /**
-     * Members declared as java.util.List<E>.
+     * Represents attributes declared as java.util.List&lt;E&gt;.
      */
-    public static class List<X, E> extends
-        BaseCollection<X, java.util.List<E>, E> implements
-        javax.persistence.metamodel.List<X, E> {
+    public static class ListAttributeImpl<X, E> 
+        extends PluralAttributeImpl<X, java.util.List<E>, E> 
+        implements ListAttribute<X, E> {
 
-        public List(Types.Managed<X> owner, FieldMetaData fmd) {
+        public ListAttributeImpl(AbstractManagedType<X> owner, FieldMetaData fmd) {
             super(owner, fmd);
-        }
-
-        public Multiplicity getMultiplicity() {
-            return Multiplicity.ONE_TO_MANY;
         }
 
         public CollectionType getCollectionType() {
@@ -215,18 +275,14 @@ public class Members {
     }
 
     /**
-     * Members declared as java.util.Set<E>.
+     * Represents attributes declared as java.util.Set&lt;E&gt;.
      */
-    public static class Set<X, E> extends
-        BaseCollection<X, java.util.Set<E>, E> implements
-        javax.persistence.metamodel.Set<X, E> {
+    public static class SetAttributeImpl<X, E> 
+        extends PluralAttributeImpl<X, java.util.Set<E>, E> 
+        implements SetAttribute<X, E> {
 
-        public Set(Types.Managed<X> owner, FieldMetaData fmd) {
+        public SetAttributeImpl(AbstractManagedType<X> owner, FieldMetaData fmd) {
             super(owner, fmd);
-        }
-
-        public Multiplicity getMultiplicity() {
-            return Multiplicity.ONE_TO_MANY;
         }
 
         public CollectionType getCollectionType() {
@@ -235,30 +291,30 @@ public class Members {
     }
 
     /**
-     * Members declared as java.util.Map<K,V>.
+     * Represents attributes declared as java.util.Map&lt;E&gt;.
      */
-    public static class Map<X, K, V> extends
-        BaseCollection<X, java.util.Map<K, V>, V> implements
-        javax.persistence.metamodel.Map<X, K, V> {
+    public static class MapAttributeImpl<X, K, V> 
+        extends PluralAttributeImpl<X, java.util.Map<K, V>, V> 
+        implements MapAttribute<X, K, V> {
 
-        public Map(Types.Managed<X> owner, FieldMetaData fmd) {
+        public MapAttributeImpl(AbstractManagedType<X> owner, FieldMetaData fmd) {
             super(owner, fmd);
         }
 
         public CollectionType getCollectionType() {
             return CollectionType.MAP;
         }
-
-        public Multiplicity getMultiplicity() {
-            return Multiplicity.MANY_TO_MANY;
-        }
-
+        
         public Class<K> getKeyJavaType() {
-            return (Class<K>) fmd.getKey().getDeclaredType();
+            return fmd.getKey().getDeclaredType();
         }
 
         public Type<K> getKeyType() {
             return owner.model.getType(getKeyJavaType());
+        }
+        
+        public PersistentAttributeType getPersistentAttributeType() {
+            return PersistentAttributeType.MANY_TO_MANY;
         }
     }
 }

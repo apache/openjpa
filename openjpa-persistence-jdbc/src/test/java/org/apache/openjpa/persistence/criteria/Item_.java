@@ -4,13 +4,13 @@
 
 package org.apache.openjpa.persistence.criteria;
 
-import javax.persistence.metamodel.Attribute;
-import javax.persistence.metamodel.Map;
+import javax.persistence.metamodel.MapAttribute;
+import javax.persistence.metamodel.SingularAttribute;
 
-@javax.persistence.metamodel.TypesafeMetamodel
+@javax.persistence.metamodel.StaticMetamodel
 (value=org.apache.openjpa.persistence.criteria.Item.class)
 public class Item_ {
-    public static volatile Attribute<Item,Integer> id;
-    public static volatile Attribute<Item,String> name;
-    public static volatile Map<Item,String,Photo> photos;
+    public static volatile SingularAttribute<Item,Integer> id;
+    public static volatile SingularAttribute<Item,String> name;
+    public static volatile MapAttribute<Item,String,Photo> photos;
 }

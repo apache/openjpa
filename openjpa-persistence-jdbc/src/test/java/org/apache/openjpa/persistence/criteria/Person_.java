@@ -4,13 +4,13 @@
 
 package org.apache.openjpa.persistence.criteria;
 
-import javax.persistence.metamodel.Attribute;
-import javax.persistence.metamodel.Set;
+import javax.persistence.metamodel.SetAttribute;
+import javax.persistence.metamodel.SingularAttribute;
 
-@javax.persistence.metamodel.TypesafeMetamodel
+@javax.persistence.metamodel.StaticMetamodel
 (value=org.apache.openjpa.persistence.criteria.Person.class)
 public class Person_ {
-    public static volatile Attribute<Person,Integer> id;
-    public static volatile Attribute<Person,String> name;
-    public static volatile Set<Person,String> nickNames;
+    public static volatile SingularAttribute<Person,Integer> id;
+    public static volatile SingularAttribute<Person,String> name;
+    public static volatile SetAttribute<Person,String> nickNames;
 }

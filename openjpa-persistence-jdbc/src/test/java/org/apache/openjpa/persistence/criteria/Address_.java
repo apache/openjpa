@@ -4,17 +4,17 @@
 
 package org.apache.openjpa.persistence.criteria;
 
-import javax.persistence.metamodel.Attribute;
+import javax.persistence.metamodel.SingularAttribute;
 
-@javax.persistence.metamodel.TypesafeMetamodel
+@javax.persistence.metamodel.StaticMetamodel
 (value=org.apache.openjpa.persistence.criteria.Address.class)
 public class Address_ {
-    public static volatile Attribute<Address,String> city;
-    public static volatile Attribute<Address,String> country;
-    public static volatile Attribute<Address,String> county;
-    public static volatile Attribute<Address,Long> id;
-    public static volatile Attribute<Address,String> state;
-    public static volatile Attribute<Address,String> street;
-    public static volatile Attribute<Address,CompUser> user;
-    public static volatile Attribute<Address,String> zipCode;
+    public static volatile SingularAttribute<Address,String> city;
+    public static volatile SingularAttribute<Address,String> country;
+    public static volatile SingularAttribute<Address,String> county;
+    public static volatile SingularAttribute<Address,Long> id;
+    public static volatile SingularAttribute<Address,String> state;
+    public static volatile SingularAttribute<Address,String> street;
+    public static volatile SingularAttribute<Address,CompUser> user;
+    public static volatile SingularAttribute<Address,String> zipCode;
 }

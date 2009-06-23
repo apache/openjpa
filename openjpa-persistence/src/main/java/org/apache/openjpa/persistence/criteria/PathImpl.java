@@ -23,11 +23,12 @@ import javax.persistence.criteria.Expression;
 import javax.persistence.criteria.Join;
 import javax.persistence.criteria.JoinType;
 import javax.persistence.criteria.Path;
-import javax.persistence.metamodel.AbstractCollection;
 import javax.persistence.metamodel.Attribute;
 import javax.persistence.metamodel.Bindable;
 import javax.persistence.metamodel.ManagedType;
-import javax.persistence.metamodel.Map;
+import javax.persistence.metamodel.MapAttribute;
+import javax.persistence.metamodel.PluralAttribute;
+import javax.persistence.metamodel.SingularAttribute;
 import javax.persistence.metamodel.Type;
 
 import org.apache.openjpa.kernel.exps.ExpressionFactory;
@@ -38,6 +39,11 @@ import org.apache.openjpa.meta.JavaTypes;
 import org.apache.openjpa.persistence.meta.Members;
 import org.apache.openjpa.persistence.meta.MetamodelImpl;
 
+/**
+ * Represents a simple or compound attribute path from a 
+ * bound type or collection, and is a "primitive" expression.
+ * @param <X>  Type referenced by the path
+ */
 /**
  * Path is an expression often representing a persistent member traversed
  * from another (parent) path.
@@ -74,18 +80,25 @@ public class PathImpl<Z,X> extends ExpressionImpl<X> implements Path<X> {
         _parent = parent;
         if (_parent.isEmbedded) {
             FieldMetaData fmd = getEmbeddedFieldMetaData(member.fmd);
-            _member = new Members.Attribute(member.owner, fmd);
-        } else 
+            _member = new Members.SingularAttributeImpl(member.owner, fmd);
+        } else {
             _member = member;
-        if (parent == null)
-            throw new NullPointerException("Null parent for member " + member);
-        if (member == null)
-            throw new NullPointerException("Null member for parent " + parent);
-        if (_member.fmd.isEmbedded())
-            isEmbedded = true;
+        }
+        isEmbedded = _member.fmd.isEmbedded();
+    }
+
+    /** 
+     * Returns the bindable object that corresponds to the path expression.
+     *  
+     */
+    public Bindable<X> getModel() { 
+        return (Bindable<X>)_member;
     }
     
-    public PathImpl<?,Z> getParentPath() {
+    /**
+     *  Return the parent "node" in the path or null if no parent.
+     */
+    public Path<Z> getParentPath() {
         return _parent;
     }
     
@@ -159,24 +172,43 @@ public class PathImpl<Z,X> extends ExpressionImpl<X> implements Path<X> {
     }
     
     /**
+     *  Return the path corresponding to the referenced 
+     *  single-valued attribute.
+     *  @param atttribute single-valued attribute
+     *  @return path corresponding to the referenced attribute
+     */
+    /**
      * Create a new path with this path as parent.
      */
-    public <Y> Path<Y> get(Attribute<? super X, Y> attr) {
-        return new PathImpl<X,Y>(this, (Members.Attribute<? super X, Y>)attr, 
+    public <Y> Path<Y> get(SingularAttribute<? super X, Y> attr) {
+        return new PathImpl<X,Y>(this, (Members.SingularAttributeImpl<? super X, Y>)attr, 
             attr.getJavaType());
     }
     
+    /**
+     *  Return the path corresponding to the referenced 
+     *  collection-valued attribute.
+     *  @param collection collection-valued attribute
+     *  @return expression corresponding to the referenced attribute
+//    <E, C extends java.util.Collection<E>> Expression<C> get(PluralAttribute<X, C, E> collection);
+     */
     public <E, C extends java.util.Collection<E>> Expression<C>
-        get(AbstractCollection<X, C, E> coll) {
-        return new PathImpl<X,C>(this, 
-            (Members.BaseCollection<? super X, C, E>)coll, 
-            coll.getMemberJavaType());
+        get(PluralAttribute<X, C, E> coll) {
+        return new PathImpl<X,C>(this, (Members.Member<? super X, C>)coll, 
+                coll.getJavaType());
     }
 
+    /**
+     *  Return the path corresponding to the referenced 
+     *  map-valued attribute.
+     *  @param map map-valued attribute
+     *  @return expression corresponding to the referenced attribute
+     */
+//    <K, V, M extends java.util.Map<K, V>> Expression<M> get(MapAttribute<X, K, V> map);
     public <K, V, M extends java.util.Map<K, V>> Expression<M> 
-        get(Map<X, K, V> map) {
-        return new PathImpl<X,M>(this, (Members.Map<? super X,K,V>)map, 
-            (Class<M>) map.getMemberJavaType());
+        get(MapAttribute<X, K, V> map) {
+        return new PathImpl<X,M>(this, (Members.MapAttributeImpl<? super X,K,V>)map, 
+                (Class<M>)map.getJavaType());
     }
     
     public <Y> Path<Y> get(String attName) {
@@ -189,16 +221,6 @@ public class PathImpl<Z,X> extends ExpressionImpl<X> implements Path<X> {
                 ((ManagedType<?>)type).getAttribute(attName);
         }
         return new PathImpl<X,Y>(this, next, (Class<Y>)type.getClass());
-    }
-    
-    
-    
-    /**
-     * Gets the bindable object that corresponds to this path.
-     */
-  //TODO: what does this return for a collection key, value? null?
-    public Bindable<X> getModel() { 
-        return (Bindable<X>)_member.getType();
     }
     
     /**

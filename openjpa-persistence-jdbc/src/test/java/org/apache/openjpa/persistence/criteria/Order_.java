@@ -5,18 +5,18 @@
 package org.apache.openjpa.persistence.criteria;
 
 import java.sql.Timestamp;
-import javax.persistence.metamodel.Attribute;
-import javax.persistence.metamodel.List;
+import javax.persistence.metamodel.ListAttribute;
+import javax.persistence.metamodel.SingularAttribute;
 
-@javax.persistence.metamodel.TypesafeMetamodel
+@javax.persistence.metamodel.StaticMetamodel
 (value=org.apache.openjpa.persistence.criteria.Order.class)
 public class Order_ {
-    public static volatile Attribute<Order,Integer> count;
-    public static volatile Attribute<Order,Customer> customer;
-    public static volatile Attribute<Order,Boolean> delivered;
-    public static volatile Attribute<Order,Integer> id;
-    public static volatile List<Order,LineItem> lineItems;
-    public static volatile Attribute<Order,Timestamp> orderTs;
-    public static volatile Attribute<Order,Integer> quantity;
-    public static volatile Attribute<Order,Double> totalCost;
+    public static volatile SingularAttribute<Order,Integer> count;
+    public static volatile SingularAttribute<Order,Customer> customer;
+    public static volatile SingularAttribute<Order,Boolean> delivered;
+    public static volatile SingularAttribute<Order,Integer> id;
+    public static volatile ListAttribute<Order,LineItem> lineItems;
+    public static volatile SingularAttribute<Order,Timestamp> orderTs;
+    public static volatile SingularAttribute<Order,Integer> quantity;
+    public static volatile SingularAttribute<Order,Double> totalCost;
 }

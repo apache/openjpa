@@ -28,9 +28,11 @@ import java.util.Map;
 import java.util.Set;
 
 import javax.persistence.Parameter;
+import javax.persistence.Tuple;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Expression;
 import javax.persistence.criteria.Order;
+import javax.persistence.criteria.ParameterExpression;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.QueryBuilder;
 import javax.persistence.criteria.Selection;
@@ -80,6 +82,24 @@ public class CriteriaBuilder implements QueryBuilder, ExpressionParser {
     public String getLanguage() {
         return LANG_CRITERIA;
     }
+    /**
+     *  Create a Criteria query object with the specified result 
+     *  type.
+     *  @param resultClass  type of the query result
+     *  @return query object
+     */
+    public <T> CriteriaQuery<T> createQuery(Class<T> resultClass) {
+        throw new UnsupportedOperationException();
+    }
+
+    /**
+     *  Create a Criteria query object that returns a tuple of 
+     *  objects as its result.
+     *  @return query object
+     */
+    public CriteriaQuery<Tuple> createTupleQuery() {
+        throw new UnsupportedOperationException();
+    }
 
     public Object parse(String ql, ExpressionStoreQuery query) {
         throw new AbstractMethodError();
@@ -92,6 +112,16 @@ public class CriteriaBuilder implements QueryBuilder, ExpressionParser {
         query.setQuery(parsed);
     }
 
+    /**
+     * Define a select list item corresponding to a constructor.
+     * @param result  class whose instance is to be constructed
+     * @param selections  arguments to the constructor
+     * @return selection item
+     */
+    public <Y> Selection<Y> construct(Class<Y> result, Selection<?>... selections) {
+        throw new UnsupportedOperationException();
+    }
+    
     public <N extends Number> Expression<N> abs(Expression<N> x) {
         return new Expressions.Abs<N>(x);
     }
@@ -169,7 +199,7 @@ public class CriteriaBuilder implements QueryBuilder, ExpressionParser {
         return new Expressions.Count(x, true);
     }
 
-    public CriteriaQuery create() {
+    public CriteriaQuery createQuery() {
         return new CriteriaQueryImpl(_model);
     }
 
@@ -507,12 +537,12 @@ public class CriteriaBuilder implements QueryBuilder, ExpressionParser {
     	return new PredicateImpl.Or(x,y);
     }
 
-    public <T> Parameter<T> parameter(Class<T> paramClass) {
+    public <T> ParameterExpression<T> parameter(Class<T> paramClass) {
         throw new UnsupportedOperationException("Unnamed parameter " +
                 "not supported for CriteriaQuery");
     }
 
-    public <T> Parameter<T> parameter(Class<T> paramClass, String name) {
+    public <T> ParameterExpression<T> parameter(Class<T> paramClass, String name) {
         return new ParameterImpl<T>(paramClass, name);
     }
 

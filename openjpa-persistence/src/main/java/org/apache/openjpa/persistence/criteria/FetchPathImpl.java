@@ -24,10 +24,10 @@ import java.util.Set;
 import javax.persistence.criteria.Fetch;
 import javax.persistence.criteria.FetchParent;
 import javax.persistence.criteria.JoinType;
-import javax.persistence.metamodel.AbstractCollection;
 import javax.persistence.metamodel.Attribute;
 import javax.persistence.metamodel.ManagedType;
-import javax.persistence.metamodel.Member;
+import javax.persistence.metamodel.PluralAttribute;
+import javax.persistence.metamodel.SingularAttribute;
 
 import org.apache.openjpa.persistence.meta.Members;
 
@@ -49,7 +49,7 @@ public class FetchPathImpl<Z,X> extends PathImpl<Z,X> implements Fetch<Z, X> {
     
     FetchPathImpl(FetchParent<?,Z> parent, Members.Member<? super Z,X> member, 
         JoinType type) {
-        super((PathImpl<?,Z>)parent, member, member.getMemberJavaType());
+        super((PathImpl<?,Z>)parent, member, member.getJavaType());
         this.joinType = type;
     }
     
@@ -57,19 +57,23 @@ public class FetchPathImpl<Z,X> extends PathImpl<Z,X> implements Fetch<Z, X> {
         return joinType;
     }
     
-    public Member<? extends Z, X> getMember() {
-        return (Member<? extends Z, X>)_member;
+    /**
+     * Return the metamodel attribute corresponding to the fetch join.
+     * @return metamodel attribute for the join
+     */
+    public Attribute<? extends Z, X> getAttribute() {
+        return (Attribute<? extends Z, X>)_member;
     }
     
     public FetchParent<?, Z> getParent() {
         return (FetchParent<?, Z>)_parent;
     }
     
-    public <Y> Fetch<X, Y> fetch(Attribute<? super X, Y> assoc) {
+    public <Y> Fetch<X, Y> fetch(SingularAttribute<? super X, Y> assoc) {
         return addFetch((Members.Member<? super X,Y>)assoc, JoinType.INNER);
     }
 
-    public <Y> Fetch<X, Y> fetch(AbstractCollection<? super X, ?, Y> assoc) {
+    public <Y> Fetch<X, Y> fetch(PluralAttribute<? super X, ?, Y> assoc) {
         return addFetch((Members.Member<? super X,Y>)assoc, JoinType.INNER);
     }
 
@@ -77,11 +81,11 @@ public class FetchPathImpl<Z,X> extends PathImpl<Z,X> implements Fetch<Z, X> {
         return fetch(assocName, JoinType.INNER);
     }
 
-    public <Y> Fetch<X, Y> fetch(Attribute<? super X, Y> assoc, JoinType jt) {
+    public <Y> Fetch<X, Y> fetch(SingularAttribute<? super X, Y> assoc, JoinType jt) {
         return addFetch((Members.Member<? super X,Y>)assoc, jt);
     }
 
-    public <Y> Fetch<X, Y> fetch(AbstractCollection<? super X, ?, Y> assoc,
+    public <Y> Fetch<X, Y> fetch(PluralAttribute<? super X, ?, Y> assoc,
             JoinType jt) {
         return addFetch((Members.Member<? super X,Y>)assoc, jt);
     }

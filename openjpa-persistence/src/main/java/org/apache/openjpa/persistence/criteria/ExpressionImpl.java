@@ -36,7 +36,7 @@ import org.apache.openjpa.persistence.meta.MetamodelImpl;
  *
  * @param <X> the type of the value this expression represents.
  */
-public abstract class ExpressionImpl<X> extends SelectionImpl<X> 
+public class ExpressionImpl<X> extends SelectionImpl<X> 
     implements Expression<X> {
 
     Value toValue(ExpressionFactory factory, MetamodelImpl model,
@@ -50,6 +50,7 @@ public abstract class ExpressionImpl<X> extends SelectionImpl<X>
         throw new AbstractMethodError(this.getClass().getName());
     }
     
+
     /**
      * @param cls the type of the evaluated result of the expression
      */
@@ -57,18 +58,35 @@ public abstract class ExpressionImpl<X> extends SelectionImpl<X>
         super(cls);
     }
 
+    /**
+     * Perform a typecast upon the expression.
+     * Warning: may result in a runtime failure.
+     * @param type 
+     * @return expression
+     */
     public <Y> Expression<Y> as(Class<Y> type) {
-        // TODO Auto-generated method stub
-        throw new AbstractMethodError();
+       throw new AbstractMethodError();
     }
 
-    public Predicate in(Object... values) {
+    /**
+     * Apply a predicate to test whether the expression is a member
+     * of the argument list.
+     * @param values
+     * @return predicate testing for membership in the list
+     */
+   public Predicate in(Object... values) {
         In<X> result = new Expressions.In<X>(this);
         for (Object v : values)
         	result.value((X)v);
         return result;
     }
 
+   /**
+    * Apply a predicate to test whether the expression is a member
+    * of the argument list.
+    * @param values
+    * @return predicate testing for membership
+    */
     public Predicate in(Expression<?>... values) {
         In<X> result = new Expressions.In<X>(this);
         for (Expression<?> e : values)
@@ -76,6 +94,12 @@ public abstract class ExpressionImpl<X> extends SelectionImpl<X>
         return result;
     }
 
+    /**
+     * Apply a predicate to test whether the expression is a member
+     * of the collection.
+     * @param values collection
+     * @return predicate testing for membership
+     */
     public Predicate in(Collection<?> values) {
         In<X> result = new Expressions.In<X>(this);
         for (Object e : values)
@@ -83,16 +107,30 @@ public abstract class ExpressionImpl<X> extends SelectionImpl<X>
         return result;
     }
 
-    public Predicate in(Expression<?> values) {
+    /**
+     * Apply a predicate to test whether the expression is a member
+     * of the collection.
+     * @param values expression corresponding to collection
+     * @return predicate testing for membership
+     */
+    public Predicate in(Expression<Collection<?>> values) {
         In<X> result = new Expressions.In<X>(this);
         result.value((Expression<? extends X>)values);
         return result;
     }
 
+    /**
+     *  Apply a predicate to test whether the expression is not null.
+     *  @return predicate testing whether the expression is not null.
+     */
     public Predicate isNotNull() {
     	return new Expressions.IsNotNull(this);
     }
 
+    /**
+     *  Apply a predicate to test whether the expression is null.
+     *  @return predicate testing whether the expression is null
+     */
     public Predicate isNull() {
     	return new Expressions.IsNull(this);
     }

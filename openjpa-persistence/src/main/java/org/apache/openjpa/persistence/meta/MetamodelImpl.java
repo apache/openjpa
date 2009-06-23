@@ -34,15 +34,16 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import javax.persistence.metamodel.Embeddable;
-import javax.persistence.metamodel.Entity;
+import javax.persistence.metamodel.EmbeddableType;
+import javax.persistence.metamodel.EntityType;
 import javax.persistence.metamodel.ManagedType;
-import javax.persistence.metamodel.MappedSuperclass;
-import javax.persistence.metamodel.Member;
+import javax.persistence.metamodel.MappedSuperclassType;
+import javax.persistence.metamodel.Attribute;
 import javax.persistence.metamodel.Metamodel;
+import javax.persistence.metamodel.PluralAttribute;
 import javax.persistence.metamodel.Type;
-import javax.persistence.metamodel.TypesafeMetamodel;
-import javax.persistence.metamodel.AbstractCollection.CollectionType;
+import javax.persistence.metamodel.StaticMetamodel;
+import javax.persistence.metamodel.PluralAttribute.CollectionType;
 import javax.persistence.metamodel.Type.PersistenceType;
 
 import org.apache.openjpa.conf.OpenJPAConfiguration;
@@ -54,6 +55,7 @@ import org.apache.openjpa.lib.util.Localizer;
 import org.apache.openjpa.meta.ClassMetaData;
 import org.apache.openjpa.meta.FieldMetaData;
 import org.apache.openjpa.meta.MetaDataRepository;
+import org.apache.openjpa.persistence.meta.Members.Member;
 import org.apache.openjpa.util.InternalException;
 
 /**
@@ -64,17 +66,19 @@ import org.apache.openjpa.util.InternalException;
  */
 public class MetamodelImpl implements Metamodel, Resolver {
     public final MetaDataRepository repos;
-    private Map<Class<?>, Entity<?>> _entities = 
-        new HashMap<Class<?>, Entity<?>>();
-    private Map<Class<?>, Embeddable<?>> _embeddables =
-        new HashMap<Class<?>, Embeddable<?>>();
-    private Map<Class<?>, MappedSuperclass<?>> _mappedsupers =
-        new HashMap<Class<?>, MappedSuperclass<?>>();
-    private Map<Class<?>, Type<?>> _basics = 
-        new HashMap<Class<?>, Type<?>>();
+    private Map<Class<?>, Type<?>> _basics = new HashMap<Class<?>, Type<?>>();
+    private Map<Class<?>, EntityType<?>> _entities = new HashMap<Class<?>, EntityType<?>>();
+    private Map<Class<?>, EmbeddableType<?>> _embeddables 
+        = new HashMap<Class<?>, EmbeddableType<?>>();
+    private Map<Class<?>, MappedSuperclassType<?>> _mappedsupers 
+        = new HashMap<Class<?>, MappedSuperclassType<?>>();
 
     private static Localizer _loc = Localizer.forPackage(MetamodelImpl.class);
 
+    /**
+     * Constructs a model with the current content of the supplied non-null repository.
+     * 
+     */
     public MetamodelImpl(MetaDataRepository repos) {
         this.repos = repos;
         Collection<Class<?>> classes = repos.loadPersistentTypes(true, null);
@@ -98,22 +102,47 @@ public class MetamodelImpl implements Metamodel, Resolver {
         }
     }
 
-    public <X> Embeddable<X> embeddable(Class<X> clazz) {
-        return (Embeddable<X>)find(clazz, _embeddables, EMBEDDABLE);
+    /**
+     *  Return the metamodel embeddable type representing the embeddable class.
+     *  
+     *  @param cls  the type of the represented embeddable class
+     *  @return the metamodel embeddable type
+     *  @throws IllegalArgumentException if not an embeddable class
+     */
+    public <X> EmbeddableType<X> embeddable(Class<X> clazz) {
+        return (EmbeddableType<X>)find(clazz, _embeddables, EMBEDDABLE);
     }
 
-    public <X> Entity<X> entity(Class<X> clazz) {
-        return (Entity<X>) find(clazz, _entities, ENTITY);
+    /**
+     *  Return the metamodel entity type representing the entity.
+     *  @param cls  the type of the represented entity
+     *  @return the metamodel entity type
+     *  @throws IllegalArgumentException if not an entity
+     */
+    public <X> EntityType<X> entity(Class<X> clazz) {
+        return (EntityType<X>) find(clazz, _entities, ENTITY);
     }
 
-    public Set<Embeddable<?>> getEmbeddables() {
+    /**
+     * Return the metamodel embeddable types.
+     * @return the metamodel embeddable types
+     */
+    public Set<EmbeddableType<?>> getEmbeddables() {
         return unmodifiableSet(_embeddables.values());
     }
 
-    public Set<Entity<?>> getEntities() {
+    /**
+     * Return the metamodel entity types.
+     * @return the metamodel entity types
+     */
+    public Set<EntityType<?>> getEntities() {
         return unmodifiableSet(_entities.values());
     }
 
+    /**
+     *  Return the metamodel managed types.
+     *  @return the metamodel managed types
+     */
     public Set<ManagedType<?>> getManagedTypes() {
         Set<ManagedType<?>> result = new HashSet<ManagedType<?>>();
         result.addAll(_entities.values());
@@ -121,22 +150,32 @@ public class MetamodelImpl implements Metamodel, Resolver {
         result.addAll(_mappedsupers.values());
         return result;
     }
-
-    public ClassMetaData getMetaData(Types.Identifiable<?> managedType) {
-        return managedType.meta;
-    }
     
+    /**
+     *  Return the metamodel managed type representing the 
+     *  entity, mapped superclass, or embeddable class.
+     *  @param cls  the type of the represented managed class
+     *  @return the metamodel managed type
+     *  @throws IllegalArgumentException if not a managed class
+     */
     public <X> ManagedType<X> type(Class<X> clazz) {
         if (_entities.containsKey(clazz))
-            return (Entity<X>) _entities.get(clazz);
+            return (EntityType<X>) _entities.get(clazz);
         if (_embeddables.containsKey(clazz))
-            return (Embeddable<X>) _embeddables.get(clazz);
+            return (EmbeddableType<X>) _embeddables.get(clazz);
         if (_mappedsupers.containsKey(clazz))
-            return (MappedSuperclass<X>) _mappedsupers.get(clazz);
+            return (MappedSuperclassType<X>) _mappedsupers.get(clazz);
         throw new IllegalArgumentException(_loc.get("type-not-managed", clazz)
             .getMessage());
     }
 
+    /**
+     *  Return the type representing the basic, 
+     *  entity, mapped superclass, or embeddable class.
+     *  @param cls  the type of the represented managed class
+     *  @return the metamodel managed type
+     *  @throws IllegalArgumentException if not a managed class
+     */
     public <X> Type<X> getType(Class<X> cls) {
         try {
             return type(cls);
@@ -159,26 +198,36 @@ public class MetamodelImpl implements Metamodel, Resolver {
         return ENTITY;
     }
 
-    private <V extends ManagedType<?>> V find(Class<?> cls, 
-        Map<Class<?>,V> container,  PersistenceType expected) {
+    /**
+     * Looks up the given container for the managed type representing the given Java class.
+     * The managed type may become instantiated as a side-effect.
+     */
+    private <V extends ManagedType<?>> V find(Class<?> cls, Map<Class<?>,V> container,  
+            PersistenceType expected) {
         if (container.containsKey(cls))
             return container.get(cls);
         ClassMetaData meta = repos.getMetaData(cls, null, false);
         if (meta != null) {
-            instantiate(cls, container, expected);
+            instantiate(cls, meta, container, expected);
         }
         return container.get(cls);
     }
 
-    private <X,V extends ManagedType<?>> void instantiate(Class<X> cls, 
-        Map<Class<?>,V> container, PersistenceType expected) {
-        ClassMetaData meta = repos.getMetaData(cls, null, true);
+    /**
+     * Instantiate
+     * @param <X>
+     * @param <V>
+     * @param cls
+     * @param container
+     * @param expected
+     */
+    private <X,V extends ManagedType<?>> void instantiate(Class<X> cls, ClassMetaData meta, 
+            Map<Class<?>,V> container, PersistenceType expected) {
         PersistenceType actual = getPersistenceType(meta);
         if (actual != expected) {
             if (!meta.isEmbeddable() || actual != PersistenceType.ENTITY ||
                 expected != PersistenceType.EMBEDDABLE) 
-                throw new IllegalArgumentException(
-                    _loc.get("type-wrong-category",
+                throw new IllegalArgumentException( _loc.get("type-wrong-category",
                     cls, actual, expected).getMessage());
         }
         switch (actual) {
@@ -186,7 +235,7 @@ public class MetamodelImpl implements Metamodel, Resolver {
             Types.Embeddable<X> embedded = new Types.Embeddable<X>(meta, this);
             _embeddables.put(cls, embedded);
             populate(embedded);
-//            break;
+            // no break : embeddables are stored as both entity and embeddable containers
         case ENTITY:
         	Types.Entity<X> entity = new Types.Entity<X>(meta, this);
             _entities.put(cls, entity);
@@ -209,7 +258,7 @@ public class MetamodelImpl implements Metamodel, Resolver {
         return result;
     }
 
-    public static CollectionType getCollectionType(Class<?> cls) {
+    public static CollectionType categorizeCollection(Class<?> cls) {
         if (Set.class.isAssignableFrom(cls))
             return CollectionType.SET;
         if (List.class.isAssignableFrom(cls))
@@ -218,24 +267,22 @@ public class MetamodelImpl implements Metamodel, Resolver {
             return CollectionType.COLLECTION;
         if (Map.class.isAssignableFrom(cls))
             return CollectionType.MAP;
-        if (cls.isArray())
-            return CollectionType.LIST;
-        return null;
+        
+        throw new InternalException(cls.getName() + " not a collection");
     }
     
     /**
      * Populate the static fields of the canonical type.
      */
-    public <X> void populate(Types.Managed<X> type) {
+    public <X> void populate(AbstractManagedType<X> type) {
 		Class<X> cls = type.getJavaType();
 		Class<?> mcls = repos.getMetaModel(cls, true);
 		if (mcls == null)
 		    return;
-        TypesafeMetamodel anno = mcls.getAnnotation(TypesafeMetamodel.class);
+        StaticMetamodel anno = mcls.getAnnotation(StaticMetamodel.class);
 		if (anno == null)
             throw new IllegalArgumentException(_loc.get("meta-class-no-anno", 
-               mcls.getName(), cls.getName(), TypesafeMetamodel.class.getName())
-		       .getMessage());
+               mcls.getName(), cls.getName(), StaticMetamodel.class.getName()).getMessage());
 		
         if (cls != anno.value()) {
             throw new IllegalStateException(_loc.get("meta-class-mismatch",
@@ -246,8 +293,8 @@ public class MetamodelImpl implements Metamodel, Resolver {
     	for (Field mf : mfields) {
             try {
                 ParameterizedType mfType = getParameterziedType(mf);
-    	        Member<? super X, ?> f = type.getMember(mf.getName());
-    	        Class<?> fClass = f.getMemberJavaType();
+    	        Attribute<? super X, ?> f = type.getAttribute(mf.getName());
+    	        Class<?> fClass = f.getJavaType();
     	       java.lang.reflect.Type[] args = mfType.getActualTypeArguments();
     	       if (args.length < 2)
     	           throw new IllegalStateException(
@@ -325,7 +372,7 @@ public class MetamodelImpl implements Metamodel, Resolver {
     }
     
     <X,Y> void validate(Field mField, Member<X, Y> member) {
-        Class<?> fType = member.getMemberJavaType();
+        Class<?> fType = member.getJavaType();
         if (!ParameterizedType.class.isInstance(mField.getGenericType())) {
             throw new IllegalArgumentException(_loc.get("meta-bad-field", 
                 mField).getMessage());

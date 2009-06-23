@@ -21,6 +21,7 @@ package org.apache.openjpa.persistence.criteria;
 import java.util.Collection;
 
 import javax.persistence.Parameter;
+import javax.persistence.criteria.ParameterExpression;
 
 import org.apache.openjpa.kernel.exps.ExpressionFactory;
 import org.apache.openjpa.kernel.exps.Value;
@@ -35,7 +36,7 @@ import org.apache.openjpa.persistence.meta.MetamodelImpl;
  * 
  * @param <T> the type of value held by this parameter.
  */
-public class ParameterImpl<T> extends ExpressionImpl<T> implements Parameter<T>{
+public class ParameterImpl<T> extends ExpressionImpl<T> implements ParameterExpression<T>{
 	private String name;
 	private Integer position;
 	

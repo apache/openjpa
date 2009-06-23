@@ -4,18 +4,18 @@
 
 package org.apache.openjpa.persistence.criteria;
 
-import javax.persistence.metamodel.Attribute;
+import javax.persistence.metamodel.SingularAttribute;
 
-@javax.persistence.metamodel.TypesafeMetamodel
+@javax.persistence.metamodel.StaticMetamodel
 (value=org.apache.openjpa.persistence.criteria.Employee.class)
 public class Employee_ {
-    public static volatile Attribute<Employee,Contact> contactInfo;
-    public static volatile Attribute<Employee,Department> department;
-    public static volatile Attribute<Employee,Integer> empId;
-    public static volatile Attribute<Employee,FrequentFlierPlan> frequentFlierPlan;
-    public static volatile Attribute<Employee,Manager> manager;
-    public static volatile Attribute<Employee,String> name;
-    public static volatile Attribute<Employee,Integer> rating;
-    public static volatile Attribute<Employee,Long> salary;
-    public static volatile Attribute<Employee,Employee> spouse;
+    public static volatile SingularAttribute<Employee,Contact> contactInfo;
+    public static volatile SingularAttribute<Employee,Department> department;
+    public static volatile SingularAttribute<Employee,Integer> empId;
+    public static volatile SingularAttribute<Employee,FrequentFlierPlan> frequentFlierPlan;
+    public static volatile SingularAttribute<Employee,Manager> manager;
+    public static volatile SingularAttribute<Employee,String> name;
+    public static volatile SingularAttribute<Employee,Integer> rating;
+    public static volatile SingularAttribute<Employee,Long> salary;
+    public static volatile SingularAttribute<Employee,Employee> spouse;
 }

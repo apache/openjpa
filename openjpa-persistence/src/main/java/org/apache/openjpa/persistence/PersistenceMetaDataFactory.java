@@ -38,7 +38,7 @@ import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.SqlResultSetMapping;
 import javax.persistence.SqlResultSetMappings;
-import javax.persistence.metamodel.TypesafeMetamodel;
+import javax.persistence.metamodel.StaticMetamodel;
 
 import org.apache.openjpa.lib.conf.Configurable;
 import org.apache.openjpa.lib.conf.Configuration;
@@ -557,12 +557,12 @@ public class PersistenceMetaDataFactory
     }
 
     public boolean isMetaClass(Class<?> c) {
-        return c != null && c.getAnnotation(TypesafeMetamodel.class) != null;
+        return c != null && c.getAnnotation(StaticMetamodel.class) != null;
     }
     
     public Class<?> getManagedClass(Class<?> c) {
         if (isMetaClass(c)) {
-            return c.getAnnotation(TypesafeMetamodel.class).value();
+            return c.getAnnotation(StaticMetamodel.class).value();
         }
         return null;
     }

@@ -4,13 +4,13 @@
 
 package org.apache.openjpa.persistence.criteria;
 
-import javax.persistence.metamodel.Attribute;
-import javax.persistence.metamodel.Set;
+import javax.persistence.metamodel.SetAttribute;
+import javax.persistence.metamodel.SingularAttribute;
 
-@javax.persistence.metamodel.TypesafeMetamodel
+@javax.persistence.metamodel.StaticMetamodel
 (value=org.apache.openjpa.persistence.criteria.Department.class)
 public class Department_ {
-    public static volatile Attribute<Department,Integer> deptNo;
-    public static volatile Set<Department,Employee> employees;
-    public static volatile Attribute<Department,String> name;
+    public static volatile SingularAttribute<Department,Integer> deptNo;
+    public static volatile SetAttribute<Department,Employee> employees;
+    public static volatile SingularAttribute<Department,String> name;
 }

@@ -44,7 +44,7 @@ import javax.lang.model.element.TypeElement;
 import javax.lang.model.type.TypeKind;
 import javax.lang.model.type.TypeMirror;
 import javax.lang.model.util.Elements;
-import javax.persistence.metamodel.TypesafeMetamodel;
+import javax.persistence.metamodel.StaticMetamodel;
 import javax.tools.JavaCompiler;
 import javax.tools.JavaFileObject;
 import javax.tools.StandardJavaFileManager;
@@ -106,11 +106,11 @@ public class AnnotationProcessor6 extends AbstractProcessor {
      * 
      */
     private static enum TypeCategory {
-        ATTRIBUTE("javax.persistence.metamodel.Attribute"), 
-        COLLECTION("javax.persistence.metamodel.Collection"), 
-        SET("javax.persistence.metamodel.Set"), 
-        LIST("javax.persistence.metamodel.List"), 
-        MAP("javax.persistence.metamodel.Map");
+        ATTRIBUTE("javax.persistence.metamodel.SingularAttribute"), 
+        COLLECTION("javax.persistence.metamodel.CollectionAttribute"), 
+        SET("javax.persistence.metamodel.SetAttribute"), 
+        LIST("javax.persistence.metamodel.ListAttribute"), 
+        MAP("javax.persistence.metamodel.MapAttribute");
 
         private String type;
 
@@ -280,7 +280,7 @@ public class AnnotationProcessor6 extends AbstractProcessor {
     
     private void annotate(SourceCode source, String originalClass) {
         SourceCode.Class cls = source.getTopLevelClass();
-        cls.addAnnotation(TypesafeMetamodel.class.getName())
+        cls.addAnnotation(StaticMetamodel.class.getName())
             .addArgument("value", originalClass + ".class", false);
         if (generatedSourceVersion >= 6) {
             cls.addAnnotation(Generated.class.getName())

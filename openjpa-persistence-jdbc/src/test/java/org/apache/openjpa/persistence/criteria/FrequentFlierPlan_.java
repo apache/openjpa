@@ -4,12 +4,12 @@
 
 package org.apache.openjpa.persistence.criteria;
 
-import javax.persistence.metamodel.Attribute;
+import javax.persistence.metamodel.SingularAttribute;
 
-@javax.persistence.metamodel.TypesafeMetamodel
+@javax.persistence.metamodel.StaticMetamodel
 (value=org.apache.openjpa.persistence.criteria.FrequentFlierPlan.class)
 public class FrequentFlierPlan_ {
-    public static volatile Attribute<FrequentFlierPlan,Integer> annualMiles;
-    public static volatile Attribute<FrequentFlierPlan,String> id;
-    public static volatile Attribute<FrequentFlierPlan,String> name;
+    public static volatile SingularAttribute<FrequentFlierPlan,Integer> annualMiles;
+    public static volatile SingularAttribute<FrequentFlierPlan,String> id;
+    public static volatile SingularAttribute<FrequentFlierPlan,String> name;
 }

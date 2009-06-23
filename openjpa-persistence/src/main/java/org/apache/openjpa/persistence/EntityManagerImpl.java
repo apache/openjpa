@@ -41,6 +41,7 @@ import javax.persistence.EntityManager;
 import javax.persistence.FlushModeType;
 import javax.persistence.LockModeType;
 import javax.persistence.Query;
+import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.QueryBuilder;
 import javax.persistence.metamodel.Metamodel;
@@ -935,6 +936,10 @@ public class EntityManagerImpl
         return new ExtentImpl<T>(this, _broker.newExtent(cls, subclasses));
     }
 
+    public <T> TypedQuery<T> createQuery(String query, Class<T> resultClass) {
+        throw new UnsupportedOperationException();
+    }
+    
     public OpenJPAQuery createQuery(String query) {
         return createQuery(JPQLParser.LANG_JPQL, query);
     }
@@ -967,6 +972,10 @@ public class EntityManagerImpl
         org.apache.openjpa.kernel.Query q = ((QueryImpl) query).getDelegate();
         return new QueryImpl(this, _ret, _broker.newQuery(q.getLanguage(),
             q));
+    }
+    
+    public <T> TypedQuery<T> createNamedQuery(String name, Class<T> resultClass) {
+        throw new UnsupportedOperationException();
     }
 
     public OpenJPAQuery createNamedQuery(String name) {
@@ -1509,7 +1518,7 @@ public class EntityManagerImpl
         _broker.detach(entity, this);
     }
 
-    public Query createQuery(CriteriaQuery criteriaQuery) {
+    public <T> TypedQuery<T> createQuery(CriteriaQuery<T> criteriaQuery) {
         return new QueryImpl(this, _ret, 
             _broker.newQuery(CriteriaBuilder.LANG_CRITERIA, criteriaQuery));
     }

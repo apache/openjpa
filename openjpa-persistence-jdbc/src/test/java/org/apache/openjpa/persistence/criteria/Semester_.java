@@ -4,11 +4,11 @@
 
 package org.apache.openjpa.persistence.criteria;
 
-import javax.persistence.metamodel.Attribute;
+import javax.persistence.metamodel.SingularAttribute;
 
-@javax.persistence.metamodel.TypesafeMetamodel
+@javax.persistence.metamodel.StaticMetamodel
 (value=org.apache.openjpa.persistence.criteria.Semester.class)
 public class Semester_ {
-    public static volatile Attribute<Semester,Integer> id;
-    public static volatile Attribute<Semester,String> name;
+    public static volatile SingularAttribute<Semester,Integer> id;
+    public static volatile SingularAttribute<Semester,String> name;
 }

@@ -20,7 +20,7 @@
 package org.apache.openjpa.persistence.criteria;
 
 import javax.persistence.criteria.Root;
-import javax.persistence.metamodel.Entity;
+import javax.persistence.metamodel.EntityType;
 
 import org.apache.openjpa.kernel.exps.Expression;
 import org.apache.openjpa.kernel.exps.ExpressionFactory;
@@ -46,7 +46,7 @@ public class RootImpl<X> extends FromImpl<X,X> implements Root<X> {
         _entity = type;
     }
     
-    public  Entity<X> getModel() {
+    public  EntityType<X> getModel() {
         return _entity;
     }
     

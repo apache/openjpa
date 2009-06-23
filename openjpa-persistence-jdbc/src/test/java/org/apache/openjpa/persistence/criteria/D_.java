@@ -4,12 +4,12 @@
 
 package org.apache.openjpa.persistence.criteria;
 
-import javax.persistence.metamodel.Attribute;
+import javax.persistence.metamodel.SingularAttribute;
 
-@javax.persistence.metamodel.TypesafeMetamodel
+@javax.persistence.metamodel.StaticMetamodel
 (value=org.apache.openjpa.persistence.criteria.D.class)
 public class D_ {
-    public static volatile Attribute<D,C> c;
-    public static volatile Attribute<D,Long> id;
-    public static volatile Attribute<D,String> name;
+    public static volatile SingularAttribute<D,C> c;
+    public static volatile SingularAttribute<D,Long> id;
+    public static volatile SingularAttribute<D,String> name;
 }

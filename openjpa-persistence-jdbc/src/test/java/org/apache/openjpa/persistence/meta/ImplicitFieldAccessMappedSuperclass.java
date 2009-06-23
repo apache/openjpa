@@ -21,6 +21,7 @@ package org.apache.openjpa.persistence.meta;
 
 import javax.persistence.Id;
 import javax.persistence.MappedSuperclass;
+import javax.persistence.Version;
 
 /**
  * Domain class used by meta-model testing.
@@ -37,6 +38,9 @@ public class ImplicitFieldAccessMappedSuperclass {
     private long id;
     
     private java.util.Date createTime;
+    
+    @Version
+    private int version;
 
 	public long getId() {
 		return id;

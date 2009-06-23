@@ -4,11 +4,11 @@
 
 package org.apache.openjpa.persistence.criteria;
 
-import javax.persistence.metamodel.Attribute;
+import javax.persistence.metamodel.SingularAttribute;
 
-@javax.persistence.metamodel.TypesafeMetamodel
+@javax.persistence.metamodel.StaticMetamodel
 (value=org.apache.openjpa.persistence.criteria.Photo.class)
 public class Photo_ {
-    public static volatile Attribute<Photo,Integer> id;
-    public static volatile Attribute<Photo,String> label;
+    public static volatile SingularAttribute<Photo,Integer> id;
+    public static volatile SingularAttribute<Photo,String> label;
 }

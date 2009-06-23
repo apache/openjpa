@@ -4,13 +4,13 @@
 
 package org.apache.openjpa.persistence.criteria;
 
-import javax.persistence.metamodel.Attribute;
-import javax.persistence.metamodel.List;
+import javax.persistence.metamodel.ListAttribute;
+import javax.persistence.metamodel.SingularAttribute;
 
-@javax.persistence.metamodel.TypesafeMetamodel
+@javax.persistence.metamodel.StaticMetamodel
 (value=org.apache.openjpa.persistence.criteria.Course.class)
 public class Course_ {
-    public static volatile Attribute<Course,Long> id;
-    public static volatile Attribute<Course,String> name;
-    public static volatile List<Course,Student> studentWaitList;
+    public static volatile SingularAttribute<Course,Long> id;
+    public static volatile SingularAttribute<Course,String> name;
+    public static volatile ListAttribute<Course,Student> studentWaitList;
 }

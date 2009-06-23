@@ -4,14 +4,14 @@
 
 package org.apache.openjpa.persistence.criteria;
 
-import javax.persistence.metamodel.Attribute;
-import javax.persistence.metamodel.Map;
+import javax.persistence.metamodel.MapAttribute;
+import javax.persistence.metamodel.SingularAttribute;
 
-@javax.persistence.metamodel.TypesafeMetamodel
+@javax.persistence.metamodel.StaticMetamodel
 (value=org.apache.openjpa.persistence.criteria.VideoStore.class)
 public class VideoStore_ {
-    public static volatile Attribute<VideoStore,Integer> id;
-    public static volatile Attribute<VideoStore,Address> location;
-    public static volatile Attribute<VideoStore,String> name;
-    public static volatile Map<VideoStore,Movie,Integer> videoInventory;
+    public static volatile SingularAttribute<VideoStore,Integer> id;
+    public static volatile SingularAttribute<VideoStore,Address> location;
+    public static volatile SingularAttribute<VideoStore,String> name;
+    public static volatile MapAttribute<VideoStore,Movie,Integer> videoInventory;
 }

@@ -44,6 +44,7 @@ import javax.persistence.Query;
 import javax.persistence.Result;
 import javax.persistence.ResultItem;
 import javax.persistence.TemporalType;
+import javax.persistence.TypedQuery;
 
 import org.apache.openjpa.conf.OpenJPAConfiguration;
 import org.apache.openjpa.kernel.Broker;
@@ -72,7 +73,7 @@ import org.apache.openjpa.util.UserException;
  * @author Abe White
  * @nojavadoc
  */
-public class QueryImpl implements OpenJPAQuerySPI, Serializable {
+public class QueryImpl<X> implements OpenJPAQuerySPI<X>, Serializable {
 
     private static final Object[] EMPTY_ARRAY = new Object[0];
     private static final String SELECT = "SELECT ";
@@ -295,7 +296,7 @@ public class QueryImpl implements OpenJPAQuerySPI, Serializable {
 	/**
 	 * Execute a query that returns a single result.
 	 */
-	public Object getSingleResult() {
+	public X getSingleResult() {
 		_em.assertNotCloseInvoked();
         setHint("openjpa.hint.OptimizeResultCount", 1); // for DB2 optimization
 		List result = getResultList();
@@ -306,7 +307,7 @@ public class QueryImpl implements OpenJPAQuerySPI, Serializable {
             throw new NonUniqueResultException(_loc.get("non-unique-result",
                     getQueryString(), result.size()).getMessage());
 		try {
-		    return result.get(0);
+		    return (X)result.get(0);
 		} catch (Exception e) {
             throw new NoResultException(_loc.get("no-result", getQueryString())
                 .getMessage());
@@ -351,23 +352,23 @@ public class QueryImpl implements OpenJPAQuerySPI, Serializable {
                 .getFetchConfiguration().getFlushBeforeQueries());
 	}
 
-	public OpenJPAQuery setFlushMode(FlushModeType flushMode) {
+	public OpenJPAQuery<X> setFlushMode(FlushModeType flushMode) {
 		_em.assertNotCloseInvoked();
 		_query.getFetchConfiguration().setFlushBeforeQueries(
                 EntityManagerImpl.toFlushBeforeQueries(flushMode));
 		return this;
 	}
 
-	public OpenJPAQuery setParameter(int position, Calendar value,
+	public OpenJPAQuery<X> setParameter(int position, Calendar value,
 			TemporalType t) {
 		return setParameter(position, convertTemporalType(value, t));
 	}
 
-    public OpenJPAQuery setParameter(int position, Date value,
+    public OpenJPAQuery<X> setParameter(int position, Date value,
             TemporalType type) {
 		return setParameter(position, convertTemporalType(value, type));
 	}
-
+    
 	/**
      * Converts the given Date to a value corresponding to given temporal type.
 	 */
@@ -531,7 +532,7 @@ public class QueryImpl implements OpenJPAQuerySPI, Serializable {
         return _fetch.getReadLockMode();
     }
 
-    public Query setLockMode(LockModeType lockMode) {
+    public TypedQuery<X> setLockMode(LockModeType lockMode) {
        _fetch.setReadLockMode(lockMode);
        return this;
     }
@@ -744,7 +745,7 @@ public class QueryImpl implements OpenJPAQuerySPI, Serializable {
             "JPA 2.0 - Method not yet implemented");
     }
 
-    public <T> Query setParameter(Parameter<T> arg0, T arg1) {
+    public <T> TypedQuery<X> setParameter(Parameter<T> param, T arg1) {
         throw new UnsupportedOperationException(
             "JPA 2.0 - Method not yet implemented");
     }

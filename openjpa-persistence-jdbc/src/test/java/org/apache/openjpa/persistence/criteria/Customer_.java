@@ -4,24 +4,24 @@
 
 package org.apache.openjpa.persistence.criteria;
 
-import javax.persistence.metamodel.Attribute;
-import javax.persistence.metamodel.List;
-import javax.persistence.metamodel.Set;
+import javax.persistence.metamodel.ListAttribute;
+import javax.persistence.metamodel.SetAttribute;
+import javax.persistence.metamodel.SingularAttribute;
 import org.apache.openjpa.persistence.criteria.Customer.CreditRating;
 
-@javax.persistence.metamodel.TypesafeMetamodel
+@javax.persistence.metamodel.StaticMetamodel
 (value=org.apache.openjpa.persistence.criteria.Customer.class)
 public class Customer_ {
-    public static volatile Attribute<Customer,Long> accountNum;
-    public static volatile List<Customer,Account> accounts;
-    public static volatile Attribute<Customer,Address> address;
-    public static volatile Attribute<Customer,Integer> balanceOwed;
-    public static volatile Attribute<Customer,CreditRating> creditRating;
-    public static volatile Attribute<Customer,Integer> filledOrderCount;
-    public static volatile Attribute<Customer,String> firstName;
-    public static volatile Attribute<Customer,Long> id;
-    public static volatile Attribute<Customer,String> lastName;
-    public static volatile Attribute<Customer,String> name;
-    public static volatile Set<Customer,Order> orders;
-    public static volatile Attribute<Customer,Integer> status;
+    public static volatile SingularAttribute<Customer,Long> accountNum;
+    public static volatile ListAttribute<Customer,Account> accounts;
+    public static volatile SingularAttribute<Customer,Address> address;
+    public static volatile SingularAttribute<Customer,Integer> balanceOwed;
+    public static volatile SingularAttribute<Customer,CreditRating> creditRating;
+    public static volatile SingularAttribute<Customer,Integer> filledOrderCount;
+    public static volatile SingularAttribute<Customer,String> firstName;
+    public static volatile SingularAttribute<Customer,Long> id;
+    public static volatile SingularAttribute<Customer,String> lastName;
+    public static volatile SingularAttribute<Customer,String> name;
+    public static volatile SetAttribute<Customer,Order> orders;
+    public static volatile SingularAttribute<Customer,Integer> status;
 }

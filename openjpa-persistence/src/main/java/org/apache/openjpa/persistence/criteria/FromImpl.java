@@ -29,13 +29,15 @@ import javax.persistence.criteria.JoinType;
 import javax.persistence.criteria.ListJoin;
 import javax.persistence.criteria.MapJoin;
 import javax.persistence.criteria.SetJoin;
-import javax.persistence.metamodel.AbstractCollection;
 import javax.persistence.metamodel.Attribute;
-import javax.persistence.metamodel.Collection;
-import javax.persistence.metamodel.List;
-import javax.persistence.metamodel.Map;
-import javax.persistence.metamodel.Set;
+import javax.persistence.metamodel.CollectionAttribute;
+import javax.persistence.metamodel.ListAttribute;
+import javax.persistence.metamodel.MapAttribute;
+import javax.persistence.metamodel.PluralAttribute;
+import javax.persistence.metamodel.SetAttribute;
+import javax.persistence.metamodel.SingularAttribute;
 
+import org.apache.openjpa.persistence.meta.AbstractManagedType;
 import org.apache.openjpa.persistence.meta.Members;
 import org.apache.openjpa.persistence.meta.Types;
 
@@ -52,18 +54,17 @@ import org.apache.openjpa.persistence.meta.Types;
 public class FromImpl<Z,X> extends PathImpl<Z,X> implements From<Z,X> {
     private java.util.Set<Join<X, ?>> _joins;
     private java.util.Set<Fetch<X, ?>> _fetches;
-    private Types.Managed<X> type;
+    private AbstractManagedType<X> type;
     
     /**
      * Supply the non-null managed type.
      */
-    protected FromImpl(Types.Managed<X> type) {
+    protected FromImpl(AbstractManagedType<X> type) {
         super(type.getJavaType());
         this.type = type;
     }
     
-    protected FromImpl(PathImpl<?,Z> parent, Members.Member<? super Z, ?> m, 
-            Class<X> x) {
+    protected FromImpl(PathImpl<?,Z> parent, Members.Member<? super Z, ?> m, Class<X> x) {
         super(parent, m, x);
     }
     
@@ -77,16 +78,16 @@ public class FromImpl<Z,X> extends PathImpl<Z,X> implements From<Z,X> {
     /**
      *  Join to the given attribute using an inner join.
      */
-    public <Y> Join<X, Y> join(Attribute<? super X, Y> attribute) {
+    public <Y> Join<X, Y> join(SingularAttribute<? super X, Y> attribute) {
         return join(attribute, JoinType.INNER);
     }
 
     /**
      *  Join to the given attribute using the given join type.
      */
-    public <Y> Join<X, Y> join(Attribute<? super X, Y> attribute, JoinType jt) {
-        Join<X, Y> join = new Joins.Attribute<X,Y>(this, 
-                (Members.Attribute<? super X, Y>) attribute, jt);
+    public <Y> Join<X, Y> join(SingularAttribute<? super X, Y> attribute, JoinType jt) {
+        Join<X, Y> join = new Joins.SingularJoin<X,Y>(this, 
+                (Members.SingularAttributeImpl<? super X, Y>) attribute, jt);
         addJoin(join);
         
         return join;
@@ -95,7 +96,7 @@ public class FromImpl<Z,X> extends PathImpl<Z,X> implements From<Z,X> {
     /**
      *  Join to the given Collection-valued attribute using an inner join.
      */
-    public <Y> CollectionJoin<X, Y> join(Collection<? super X, Y> collection) {
+    public <Y> CollectionJoin<X, Y> join(CollectionAttribute<? super X, Y> collection) {
         return join(collection, JoinType.INNER);
     }
 
@@ -103,10 +104,10 @@ public class FromImpl<Z,X> extends PathImpl<Z,X> implements From<Z,X> {
      *  Join to the given Collection-valued attribute using the given 
      *  join type.
      */
-    public <Y> CollectionJoin<X, Y> join(Collection<? super X, Y> collection, 
+    public <Y> CollectionJoin<X, Y> join(CollectionAttribute<? super X, Y> collection, 
         JoinType jt) {
         CollectionJoin<X, Y> join = new Joins.Collection<X, Y>(this, 
-             (Members.Collection<? super X, Y>)collection, jt);
+             (Members.CollectionAttributeImpl<? super X, Y>)collection, jt);
         addJoin(join);
          
          return join;
@@ -115,16 +116,15 @@ public class FromImpl<Z,X> extends PathImpl<Z,X> implements From<Z,X> {
     /**
      *  Join to the given Set-valued attribute using an inner join.
      */
-    public <Y> SetJoin<X,Y> join(Set<? super X, Y> set) {
+    public <Y> SetJoin<X,Y> join(SetAttribute<? super X, Y> set) {
         return join(set, JoinType.INNER);
     }
     
     /**
      *  Join to the given Set-valued attribute using the given join type.
      */
-    public <Y> SetJoin<X,Y> join(Set<? super X, Y> set, JoinType jt) {
-        SetJoin<X, Y> join = new Joins.Set<X, Y>(this, 
-                (Members.Set<? super X, Y>)set, jt);
+    public <Y> SetJoin<X,Y> join(SetAttribute<? super X, Y> set, JoinType jt) {
+        SetJoin<X, Y> join = new Joins.Set<X, Y>(this, (Members.SetAttributeImpl<? super X, Y>)set, jt);
         addJoin(join);    
         return join;
     }
@@ -132,16 +132,16 @@ public class FromImpl<Z,X> extends PathImpl<Z,X> implements From<Z,X> {
     /**
      *  Join to the given List-valued attribute using an inner join.
      */
-    public <Y> ListJoin<X,Y> join(List<? super X, Y> list) {
+    public <Y> ListJoin<X,Y> join(ListAttribute<? super X, Y> list) {
         return join(list, JoinType.INNER);
     }
 
     /**
      *  Join to the given List-valued attribute using the given join type.
      */
-    public <Y> ListJoin<X,Y> join(List<? super X, Y> list, JoinType jt) {
+    public <Y> ListJoin<X,Y> join(ListAttribute<? super X, Y> list, JoinType jt) {
         ListJoin<X, Y> join = new Joins.List<X, Y>(this, 
-                (Members.List<? super X, Y>)list, jt);
+                (Members.ListAttributeImpl<? super X, Y>)list, jt);
         addJoin(join);    
         return join;
     }
@@ -149,16 +149,15 @@ public class FromImpl<Z,X> extends PathImpl<Z,X> implements From<Z,X> {
     /**
      *  Join to the given Map-valued attribute using an inner join.
      */
-    public <K,V> MapJoin<X,K,V> join(Map<? super X,K,V> map) {
+    public <K,V> MapJoin<X,K,V> join(MapAttribute<? super X,K,V> map) {
         return join(map, JoinType.INNER);
     }
 
     /**
      *  Join to the given Map-valued attribute using the given join type.
      */
-    public <K,V> MapJoin<X,K,V> join(Map<? super X,K,V> map, JoinType jt) {
-        MapJoin<X,K,V> join = new Joins.Map<X,K,V>(this, 
-                (Members.Map<? super X,K,V>)map, jt);
+    public <K,V> MapJoin<X,K,V> join(MapAttribute<? super X,K,V> map, JoinType jt) {
+        MapJoin<X,K,V> join = new Joins.Map<X,K,V>(this, (Members.MapAttributeImpl<? super X,K,V>)map, jt);
         addJoin(join);    
         return join;
     }
@@ -170,7 +169,7 @@ public class FromImpl<Z,X> extends PathImpl<Z,X> implements From<Z,X> {
     }
 
     public <W,Y> Join<W,Y> join(String attr, JoinType jt) {
-        return (Join<W,Y>)join(type.getAttribute(attr), jt);
+        return (Join<W,Y>)join(type.getSingularAttribute(attr), jt);
     }
 
 
@@ -213,20 +212,20 @@ public class FromImpl<Z,X> extends PathImpl<Z,X> implements From<Z,X> {
     }
     
     
-    public <Y> Fetch<X, Y> fetch(Attribute<? super X, Y> assoc, JoinType jt) {
+    public <Y> Fetch<X, Y> fetch(SingularAttribute<? super X, Y> assoc, JoinType jt) {
         return addFetch((Members.Member<? super X, Y>)assoc, jt);
     }
 
-    public <Y> Fetch<X,Y> fetch(Attribute<? super X, Y> assoc) {
+    public <Y> Fetch<X,Y> fetch(SingularAttribute<? super X, Y> assoc) {
         return fetch(assoc, JoinType.INNER);
     }
 
-    public <Y> Fetch<X, Y> fetch(AbstractCollection<? super X, ?, Y> assoc,
+    public <Y> Fetch<X, Y> fetch(PluralAttribute<? super X, ?, Y> assoc,
         JoinType jt) {
         return addFetch((Members.Member<? super X, Y>)assoc, jt);
     }
     
-    public <Y> Fetch<X,Y> fetch(AbstractCollection<? super X, ?, Y> assoc) {
+    public <Y> Fetch<X,Y> fetch(PluralAttribute<? super X, ?, Y> assoc) {
         return fetch(assoc, JoinType.INNER);
     }
 
@@ -237,7 +236,7 @@ public class FromImpl<Z,X> extends PathImpl<Z,X> implements From<Z,X> {
     }
 
     public <Y> Fetch<X, Y> fetch(String assocName, JoinType jt) {
-        return (Fetch<X, Y>)fetch(type.getAttribute(assocName), jt);
+        return (Fetch<X, Y>)fetch(type.getSingularAttribute(assocName), jt);
     }
 
     public java.util.Set<Fetch<X, ?>> getFetches() {

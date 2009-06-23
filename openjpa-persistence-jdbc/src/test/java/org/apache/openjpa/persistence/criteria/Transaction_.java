@@ -5,7 +5,7 @@
 package org.apache.openjpa.persistence.criteria;
 
 
-@javax.persistence.metamodel.TypesafeMetamodel
+@javax.persistence.metamodel.StaticMetamodel
 (value=org.apache.openjpa.persistence.criteria.Transaction.class)
 public class Transaction_ {
 }

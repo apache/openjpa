@@ -4,19 +4,19 @@
 
 package org.apache.openjpa.persistence.criteria;
 
-import javax.persistence.metamodel.Attribute;
-import javax.persistence.metamodel.Collection;
-import javax.persistence.metamodel.List;
-import javax.persistence.metamodel.Map;
-import javax.persistence.metamodel.Set;
+import javax.persistence.metamodel.CollectionAttribute;
+import javax.persistence.metamodel.ListAttribute;
+import javax.persistence.metamodel.MapAttribute;
+import javax.persistence.metamodel.SetAttribute;
+import javax.persistence.metamodel.SingularAttribute;
 
-@javax.persistence.metamodel.TypesafeMetamodel
+@javax.persistence.metamodel.StaticMetamodel
 (value=org.apache.openjpa.persistence.criteria.C.class)
 public class C_ {
-    public static volatile Collection<C,D> coll;
-    public static volatile Attribute<C,Long> id;
-    public static volatile List<C,D> list;
-    public static volatile Map<C,Integer,D> map;
-    public static volatile Attribute<C,String> name;
-    public static volatile Set<C,D> set;
+    public static volatile CollectionAttribute<C,D> coll;
+    public static volatile SingularAttribute<C,Long> id;
+    public static volatile ListAttribute<C,D> list;
+    public static volatile MapAttribute<C,Integer,D> map;
+    public static volatile SingularAttribute<C,String> name;
+    public static volatile SetAttribute<C,D> set;
 }

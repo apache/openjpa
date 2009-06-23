@@ -18,7 +18,6 @@
  */
 package org.apache.openjpa.persistence.criteria;
 
-import javax.persistence.criteria.AbstractCollectionJoin;
 import javax.persistence.criteria.CollectionJoin;
 import javax.persistence.criteria.Expression;
 import javax.persistence.criteria.Join;
@@ -26,14 +25,21 @@ import javax.persistence.criteria.JoinType;
 import javax.persistence.criteria.ListJoin;
 import javax.persistence.criteria.MapJoin;
 import javax.persistence.criteria.Path;
+import javax.persistence.criteria.PluralJoin;
 import javax.persistence.criteria.SetJoin;
-import javax.persistence.metamodel.Member;
+import javax.persistence.metamodel.Attribute;
+import javax.persistence.metamodel.CollectionAttribute;
+import javax.persistence.metamodel.ListAttribute;
+import javax.persistence.metamodel.MapAttribute;
+import javax.persistence.metamodel.PluralAttribute;
+import javax.persistence.metamodel.SetAttribute;
 
 import org.apache.openjpa.kernel.exps.ExpressionFactory;
 import org.apache.openjpa.kernel.exps.Value;
 import org.apache.openjpa.meta.ClassMetaData;
 import org.apache.openjpa.persistence.meta.Members;
 import org.apache.openjpa.persistence.meta.MetamodelImpl;
+import org.apache.openjpa.persistence.meta.Members.Member;
 
 /**
  * 
@@ -49,12 +55,12 @@ public abstract class Joins {
      * @param <Z> type from which joining
      * @param <X> type of the attribute being joined
      */
-    public static class Attribute<Z,X> extends FromImpl<Z,X> 
+    public static class SingularJoin<Z,X> extends FromImpl<Z,X> 
         implements Join<Z,X>{
         private final JoinType joinType;
         
-        public Attribute(FromImpl<?,Z> from, 
-            Members.Attribute<? super Z, X> member, JoinType jt) {
+        public SingularJoin(FromImpl<?,Z> from, 
+            Members.SingularAttributeImpl<? super Z, X> member, JoinType jt) {
             super(from, member, member.getJavaType());
             joinType = jt;
         }
@@ -67,8 +73,13 @@ public abstract class Joins {
             return (FromImpl<?, Z>) _parent;
         }
         
-        public Member<? extends Z, X> getMember() {
-            return (Member<? extends Z, X>) _member;
+        /**
+         * Return the metamodel attribute corresponding to the join.
+         * @return metamodel attribute type corresponding to the join
+         */
+//        Attribute<? super Z, ?> getAttribute();
+        public Attribute<? super Z, ?> getAttribute() {
+            return  (Attribute<? super Z, ?> )_member;
         }
         
         @Override
@@ -126,14 +137,13 @@ public abstract class Joins {
      * @param E type of the element being joined to
      * 
      */
-    public static abstract class AbstractCollection<Z,C,E> 
-        extends FromImpl<Z,E> 
-        implements AbstractCollectionJoin<Z, C, E> {
+    public static abstract class AbstractCollection<Z,C,E> extends FromImpl<Z,E> 
+        implements PluralJoin<Z, C, E> {
         final JoinType joinType;
         
         public AbstractCollection(FromImpl<?,Z> from, 
-            Members.BaseCollection<? super Z, C, E> member, JoinType jt) {
-            super(from, member, member.getJavaType());
+            Members.PluralAttributeImpl<? super Z, C, E> member, JoinType jt) {
+            super(from, member, member.getBindableJavaType());
             joinType = jt;
         }
         
@@ -150,15 +160,12 @@ public abstract class Joins {
             return (FromImpl<?, Z>) _parent;
         }
         
-        public Member<? extends Z, E> getMember() {
-            return (Member<? extends Z, E>)_member;
+        public Attribute<? super Z, E> getAttribute() {
+            return (Member<? super Z, E>)_member;
         }
         
-        public javax.persistence.metamodel.AbstractCollection<? super Z, C, E> 
-            getModel() {
-            return (javax.persistence.metamodel.AbstractCollection
-                    <? super Z, C, E>)
-            _member.getType();
+        public PluralAttribute<? super Z, C, E> getModel() {
+            return (PluralAttribute<? super Z, C, E>) _member.getType();
         }
 
         /**
@@ -231,12 +238,12 @@ public abstract class Joins {
         extends AbstractCollection<Z,java.util.Collection<E>,E> 
         implements CollectionJoin<Z,E>{
         public Collection(FromImpl<?,Z> parent, 
-            Members.Collection<? super Z, E> member, JoinType jt) {
+            Members.CollectionAttributeImpl<? super Z, E> member, JoinType jt) {
             super(parent, member, jt);
         }
         
-        public javax.persistence.metamodel.Collection<? super Z, E> getModel() {
-            return (javax.persistence.metamodel.Collection<? super Z, E>)
+        public CollectionAttribute<? super Z, E> getModel() {
+            return (CollectionAttribute<? super Z, E>)
                _member.getType();
         }
     }
@@ -250,13 +257,12 @@ public abstract class Joins {
     public static class Set<Z,E> 
         extends AbstractCollection<Z,java.util.Set<E>,E> 
         implements SetJoin<Z,E>{
-        public Set(FromImpl<?,Z> parent, 
-            Members.Set<? super Z, E> member, JoinType jt) {
+        public Set(FromImpl<?,Z> parent, Members.SetAttributeImpl<? super Z, E> member, JoinType jt) {
             super(parent, member, jt);
         }
         
-        public javax.persistence.metamodel.Set<? super Z, E> getModel() {
-            return (javax.persistence.metamodel.Set<? super Z, E>)_member;
+        public SetAttribute<? super Z, E> getModel() {
+            return (SetAttribute<? super Z, E>)_member;
         }
     }
     
@@ -272,13 +278,12 @@ public abstract class Joins {
         implements ListJoin<Z,E> {
         
         public List(FromImpl<?,Z> parent, 
-            Members.List<? super Z, E> member, JoinType jt) {
+            Members.ListAttributeImpl<? super Z, E> member, JoinType jt) {
             super(parent, member, jt);
         }
         
-        public javax.persistence.metamodel.List<? super Z, E> getModel() {
-            return (javax.persistence.metamodel.List<? super Z, E>)
-                _member.getType();
+        public ListAttribute<? super Z, E> getModel() {
+            return (ListAttribute<? super Z, E>)_member.getType();
         }
         
         public Expression<Integer> index() {
@@ -297,14 +302,12 @@ public abstract class Joins {
         extends AbstractCollection<Z,java.util.Map<K,V>,V> 
         implements MapJoin<Z,K,V> {
         
-        public Map(FromImpl<?,Z> parent, 
-            Members.Map<? super Z, K,V> member, JoinType jt) {
+        public Map(FromImpl<?,Z> parent, Members.MapAttributeImpl<? super Z, K,V> member, JoinType jt) {
             super(parent, member, jt);
         }
         
-        public javax.persistence.metamodel.Map<? super Z, K,V> getModel() {
-            return (javax.persistence.metamodel.Map<? super Z, K,V>)
-                _member.getType();
+        public MapAttribute<? super Z, K,V> getModel() {
+            return (MapAttribute<? super Z, K,V>) _member.getType();
         }
         
         public Join<java.util.Map<K, V>, K> joinKey() {
@@ -351,7 +354,7 @@ public abstract class Joins {
    public static class MapKey<Z,K> extends PathImpl<Z,K> {
        Map<?,K,?> map;
        public MapKey(Map<Z,K,?> joinMap){
-           super(((javax.persistence.metamodel.Map<Z, K, ?>)joinMap.getMember())
+           super(((MapAttribute<Z, K, ?>)joinMap.getAttribute())
                    .getKeyJavaType());
            this.map = joinMap;
        }

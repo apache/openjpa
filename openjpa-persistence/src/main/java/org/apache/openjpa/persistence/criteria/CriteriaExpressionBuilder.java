@@ -31,13 +31,13 @@ import javax.persistence.criteria.JoinType;
 import javax.persistence.criteria.Order;
 import javax.persistence.criteria.Root;
 import javax.persistence.criteria.Selection;
-import javax.persistence.metamodel.Member;
 import javax.persistence.metamodel.Type.PersistenceType;
 
 import org.apache.openjpa.kernel.exps.ExpressionFactory;
 import org.apache.openjpa.kernel.exps.QueryExpressions;
 import org.apache.openjpa.kernel.exps.Value;
 import org.apache.openjpa.meta.ClassMetaData;
+import org.apache.openjpa.persistence.meta.AbstractManagedType;
 import org.apache.openjpa.persistence.meta.Members;
 import org.apache.openjpa.persistence.meta.MetamodelImpl;
 import org.apache.openjpa.persistence.meta.Types;
@@ -83,11 +83,11 @@ public class CriteriaExpressionBuilder {
         if (roots != null) {
             MetamodelImpl metamodel = q.getMetamodel();    
             for (Root<?> root : roots) {
-                metas.add(((Types.Managed<?>)root.getModel()).meta);
+                metas.add(((AbstractManagedType<?>)root.getModel()).meta);
                 if (root.getJoins() != null) {
                     for (Join<?,?> join : root.getJoins()) {
-                        Class<?> cls = join.getMember().getMemberJavaType();
-                        if (join.getMember().isAssociation()) {
+                        Class<?> cls = join.getAttribute().getJavaType();
+                        if (join.getAttribute().isAssociation()) {
                             ClassMetaData meta = metamodel.repos.
                                 getMetaData(cls, null, true);
                             PersistenceType type = metamodel.
@@ -100,7 +100,7 @@ public class CriteriaExpressionBuilder {
                     if (root.getFetches() != null) {
                         for (Fetch fetch : root.getFetches()) {
                             metas.add(metamodel.repos.getMetaData(
-                            fetch.getMember().getMemberJavaType(), 
+                            fetch.getAttribute().getJavaType(), 
                             null, false));
                         }
                     }
@@ -250,7 +250,7 @@ public class CriteriaExpressionBuilder {
             if (fetches == null)
                 continue;
             for (Fetch<?,?> fetch : fetches) {
-                String fPath = ((Members.Member<?, ?>)fetch.getMember())
+                String fPath = ((Members.Member<?, ?>)fetch.getAttribute())
                    .fmd.getFullName(false);
                 oPaths.add(fPath);
                 if (fetch.getJoinType() == JoinType.INNER) {

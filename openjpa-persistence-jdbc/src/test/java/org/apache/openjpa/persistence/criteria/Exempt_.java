@@ -5,10 +5,10 @@
 package org.apache.openjpa.persistence.criteria;
 
 import java.util.Date;
-import javax.persistence.metamodel.Attribute;
+import javax.persistence.metamodel.SingularAttribute;
 
-@javax.persistence.metamodel.TypesafeMetamodel
+@javax.persistence.metamodel.StaticMetamodel
 (value=org.apache.openjpa.persistence.criteria.Exempt.class)
 public class Exempt_ extends Employee_  {
-    public static volatile Attribute<Exempt,Date> hireDate;
+    public static volatile SingularAttribute<Exempt,Date> hireDate;
 }

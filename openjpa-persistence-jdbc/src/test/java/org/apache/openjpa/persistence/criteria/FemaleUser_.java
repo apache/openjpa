@@ -5,7 +5,7 @@
 package org.apache.openjpa.persistence.criteria;
 
 
-@javax.persistence.metamodel.TypesafeMetamodel
+@javax.persistence.metamodel.StaticMetamodel
 (value=org.apache.openjpa.persistence.criteria.FemaleUser.class)
 public class FemaleUser_ extends CompUser_  {
 }

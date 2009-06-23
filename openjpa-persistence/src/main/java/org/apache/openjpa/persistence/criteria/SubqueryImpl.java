@@ -32,15 +32,16 @@ import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 import javax.persistence.criteria.SetJoin;
 import javax.persistence.criteria.Subquery;
-import javax.persistence.metamodel.Entity;
+import javax.persistence.metamodel.EntityType;
 
 import org.apache.openjpa.kernel.exps.ExpressionFactory;
+import org.apache.openjpa.kernel.exps.QueryExpressions;
 import org.apache.openjpa.kernel.exps.Value;
+import org.apache.openjpa.kernel.jpql.JPQLExpressionBuilder;
 import org.apache.openjpa.meta.ClassMetaData;
+import org.apache.openjpa.persistence.meta.AbstractManagedType;
 import org.apache.openjpa.persistence.meta.MetamodelImpl;
 import org.apache.openjpa.persistence.meta.Types;
-import org.apache.openjpa.kernel.exps.QueryExpressions;
-import org.apache.openjpa.kernel.jpql.JPQLExpressionBuilder;
 
 /**
  * Subquery is an expression which itself is a query and always appears in the
@@ -79,7 +80,7 @@ public class SubqueryImpl<T> extends ExpressionImpl<T> implements Subquery<T> {
         return _select;
     }
     
-    public <X> Root<X> from(Entity<X> entity) {
+    public <X> Root<X> from(EntityType<X> entity) {
         return _delegate.from(entity);
     }
 
@@ -160,26 +161,26 @@ public class SubqueryImpl<T> extends ExpressionImpl<T> implements Subquery<T> {
     }
     
     public <X,Y> Join<X,Y> correlate(Join<X,Y> join) {
-        _delegate.from(join.getModel().getJavaType());
+        _delegate.from(join.getModel().getBindableJavaType());
         return join;
     }
     public <X,Y> CollectionJoin<X,Y> correlate(CollectionJoin<X,Y> join) {
-        _delegate.from(join.getModel().getJavaType());
+        _delegate.from(join.getModel().getBindableJavaType());
         return join;
     }
     
     public <X,Y> SetJoin<X,Y> correlate(SetJoin<X,Y> join) {
-        _delegate.from(join.getModel().getJavaType());
+        _delegate.from(join.getModel().getBindableJavaType());
         return join;
     }
     
     public <X,Y> ListJoin<X,Y> correlate(ListJoin<X,Y> join) {
-        _delegate.from(join.getModel().getJavaType());
+        _delegate.from(join.getModel().getBindableJavaType());
         return join;
     }
     
     public <X,K,V> MapJoin<X,K,V> correlate(MapJoin<X,K,V> join) {
-        _delegate.from(join.getModel().getJavaType());
+        _delegate.from(join.getModel().getBindableJavaType());
         return join;
     }
     
@@ -201,7 +202,7 @@ public class SubqueryImpl<T> extends ExpressionImpl<T> implements Subquery<T> {
         CriteriaExpressionBuilder queryEval = new CriteriaExpressionBuilder();
         String alias = q.getAlias(this);
         ClassMetaData candidate =  
-            ((Types.Managed<?>)getRoot().getModel()).meta;
+            ((AbstractManagedType<?>)getRoot().getModel()).meta;
         _subq = factory.newSubquery(candidate, subclasses, alias);
         _subq.setMetaData(candidate);
         QueryExpressions subexp = queryEval.getQueryExpressions(factory, 

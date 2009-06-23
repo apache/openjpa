@@ -4,13 +4,13 @@
 
 package org.apache.openjpa.persistence.criteria;
 
-import javax.persistence.metamodel.Attribute;
-import javax.persistence.metamodel.Collection;
+import javax.persistence.metamodel.CollectionAttribute;
+import javax.persistence.metamodel.SingularAttribute;
 
-@javax.persistence.metamodel.TypesafeMetamodel
+@javax.persistence.metamodel.StaticMetamodel
 (value=org.apache.openjpa.persistence.criteria.Phone.class)
 public class Phone_ {
-    public static volatile Collection<Phone,Employee> employees;
-    public static volatile Attribute<Phone,Integer> id;
-    public static volatile Attribute<Phone,String> vendor;
+    public static volatile CollectionAttribute<Phone,Employee> employees;
+    public static volatile SingularAttribute<Phone,Integer> id;
+    public static volatile SingularAttribute<Phone,String> vendor;
 }

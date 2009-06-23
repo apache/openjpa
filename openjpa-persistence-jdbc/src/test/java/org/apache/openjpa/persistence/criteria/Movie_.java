@@ -4,11 +4,11 @@
 
 package org.apache.openjpa.persistence.criteria;
 
-import javax.persistence.metamodel.Attribute;
+import javax.persistence.metamodel.SingularAttribute;
 
-@javax.persistence.metamodel.TypesafeMetamodel
+@javax.persistence.metamodel.StaticMetamodel
 (value=org.apache.openjpa.persistence.criteria.Movie.class)
 public class Movie_ {
-    public static volatile Attribute<Movie,Integer> id;
-    public static volatile Attribute<Movie,String> title;
+    public static volatile SingularAttribute<Movie,Integer> id;
+    public static volatile SingularAttribute<Movie,String> title;
 }

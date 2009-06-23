@@ -68,10 +68,8 @@ public class RuntimeStrategyInstaller
                     || field.getMappedBy() != null
                     || field.getMappingInfo().hasSchemaComponents()
                     || field.getValueInfo().hasSchemaComponents()
-                    || field.getElementMapping().getValueInfo().
-                    hasSchemaComponents()
-                    || field.getKeyMapping().getValueInfo().
-                    hasSchemaComponents())
+                    || field.getElementMapping().getValueInfo().hasSchemaComponents()
+                    || field.getKeyMapping().getValueInfo().hasSchemaComponents())
                     throw mde;
 
                 strategy = NoneFieldStrategy.getInstance();

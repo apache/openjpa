@@ -1270,8 +1270,7 @@ public class MappingRepository
         }
     }
     
-    public void endConfiguration()
-    {
+    public void endConfiguration() {
         super.endConfiguration();
 
         JDBCConfiguration conf = (JDBCConfiguration) getConfiguration();
