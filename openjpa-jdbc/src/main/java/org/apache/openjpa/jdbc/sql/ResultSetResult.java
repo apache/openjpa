@@ -465,7 +465,7 @@ public class ResultSetResult
     protected String getStringInternal(Object obj, Joins joins)
         throws SQLException {
         if (obj instanceof Column && ((Column) obj).getType() == Types.CLOB)
-            return _dict.getClobString(_rs, ((Column) obj).getIndex());
+            return _dict.getClobString(_rs, findObject(obj, joins));
         return _dict.getString(_rs, ((Number) obj).intValue());
     }
 
@@ -489,6 +489,9 @@ public class ResultSetResult
         throws SQLException {
         if (obj instanceof Number)
             return obj;
+        // getStringInternal will take care the translation
+        if (obj instanceof Column && ((Column) obj).getType() == Types.CLOB)
+        	return obj;
         return Numbers.valueOf(findObject(obj, joins));
     }
 
