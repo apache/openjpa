@@ -34,7 +34,6 @@ import org.apache.openjpa.kernel.exps.ExpressionFactory;
 import org.apache.openjpa.kernel.exps.Value;
 import org.apache.openjpa.meta.ClassMetaData;
 import org.apache.openjpa.meta.FieldMetaData;
-import org.apache.openjpa.meta.JavaTypes;
 import org.apache.openjpa.persistence.meta.Members;
 import org.apache.openjpa.persistence.meta.MetamodelImpl;
 
@@ -107,7 +106,7 @@ public class PathImpl<Z,X> extends ExpressionImpl<X> implements Path<X> {
     }
 
     protected FieldMetaData getEmbeddedFieldMetaData(FieldMetaData fmd) {
-        Members.Member member = getInnermostMember(_parent,_member);
+        Members.Member<?,?> member = getInnermostMember(_parent,_member);
         ClassMetaData embeddedMeta = member.fmd.getEmbeddedMetaData();
         if (embeddedMeta != null)
             return embeddedMeta.getField(fmd.getName());
@@ -115,8 +114,7 @@ public class PathImpl<Z,X> extends ExpressionImpl<X> implements Path<X> {
             return fmd;
     }
     
-    protected Members.Member getInnermostMember(PathImpl parent, 
-        Members.Member member) {
+    protected Members.Member<?,?> getInnermostMember(PathImpl<?,?> parent, Members.Member<?,?> member) {
         return member != null ? member : getInnermostMember(parent._parent,
             parent._member); 
     }
@@ -134,7 +132,7 @@ public class PathImpl<Z,X> extends ExpressionImpl<X> implements Path<X> {
      */
     @Override
     public Value toValue(
-        ExpressionFactory factory, MetamodelImpl model,  CriteriaQueryImpl q) {
+        ExpressionFactory factory, MetamodelImpl model,  CriteriaQueryImpl<?> q) {
         if (q.isRegistered(this))
             return q.getValue(this);
         org.apache.openjpa.kernel.exps.Path path = null;
@@ -161,10 +159,8 @@ public class PathImpl<Z,X> extends ExpressionImpl<X> implements Path<X> {
             path = factory.newPath();
             path.setMetaData(model.repos.getCachedMetaData(getJavaType()));
         }
-        if (_member != null) {
-            int typeCode = _member.fmd.getDeclaredTypeCode();
-            if (typeCode != JavaTypes.COLLECTION && typeCode != JavaTypes.MAP)
-                path.setImplicitType(getJavaType());
+        if (_member != null && !_member.isCollection()) {
+            path.setImplicitType(getJavaType());
         }
         path.setAlias(q.getAlias(this));
         return path;
@@ -177,8 +173,7 @@ public class PathImpl<Z,X> extends ExpressionImpl<X> implements Path<X> {
         return subquery != null && subquery.getRoots().contains(this);
     }
     
-    protected void traversePath(PathImpl<?,?> parent,
-            org.apache.openjpa.kernel.exps.Path path, FieldMetaData fmd) {
+    protected void traversePath(PathImpl<?,?> parent,  org.apache.openjpa.kernel.exps.Path path, FieldMetaData fmd) {
         boolean allowNull = parent == null ? false : parent instanceof Join 
             && ((Join<?,?>)parent).getJoinType() != JoinType.INNER;
         FieldMetaData fmd1 = parent._member == null ? null : parent._member.fmd;
@@ -212,12 +207,9 @@ public class PathImpl<Z,X> extends ExpressionImpl<X> implements Path<X> {
      *  collection-valued attribute.
      *  @param collection collection-valued attribute
      *  @return expression corresponding to the referenced attribute
-//    <E, C extends java.util.Collection<E>> Expression<C> get(PluralAttribute<X, C, E> collection);
      */
-    public <E, C extends java.util.Collection<E>> Expression<C>
-        get(PluralAttribute<X, C, E> coll) {
-        return new PathImpl<X,C>(this, (Members.Member<? super X, C>)coll, 
-                coll.getJavaType());
+    public <E, C extends java.util.Collection<E>> Expression<C>  get(PluralAttribute<X, C, E> coll) {
+        return new PathImpl<X,C>(this, (Members.Member<? super X, C>)coll, coll.getJavaType());
     }
 
     /**
@@ -226,11 +218,8 @@ public class PathImpl<Z,X> extends ExpressionImpl<X> implements Path<X> {
      *  @param map map-valued attribute
      *  @return expression corresponding to the referenced attribute
      */
-//    <K, V, M extends java.util.Map<K, V>> Expression<M> get(MapAttribute<X, K, V> map);
-    public <K, V, M extends java.util.Map<K, V>> Expression<M> 
-        get(MapAttribute<X, K, V> map) {
-        return new PathImpl<X,M>(this, (Members.MapAttributeImpl<? super X,K,V>)map, 
-                (Class<M>)map.getJavaType());
+    public <K, V, M extends java.util.Map<K, V>> Expression<M> get(MapAttribute<X, K, V> map) {
+        return new PathImpl<X,M>(this, (Members.MapAttributeImpl<? super X,K,V>)map, (Class<M>)map.getJavaType());
     }
     
     public <Y> Path<Y> get(String attName) {
@@ -239,8 +228,7 @@ public class PathImpl<Z,X> extends ExpressionImpl<X> implements Path<X> {
         switch (type.getPersistenceType()) {
         case BASIC:
             throw new RuntimeException(attName + " not navigable from " + this);
-            default: next = (Members.Member<? super X, Y>)
-                ((ManagedType<?>)type).getAttribute(attName);
+            default: next = (Members.Member<? super X, Y>) ((ManagedType<?>)type).getAttribute(attName);
         }
         return new PathImpl<X,Y>(this, next, (Class<Y>)type.getClass());
     }

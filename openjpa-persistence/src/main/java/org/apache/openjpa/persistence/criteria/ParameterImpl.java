@@ -59,7 +59,7 @@ public class ParameterImpl<T> extends ExpressionImpl<T> implements ParameterExpr
 	
     @Override
     public Value toValue(ExpressionFactory factory, MetamodelImpl model,
-        CriteriaQueryImpl q) {
+        CriteriaQueryImpl<?> q) {
         q.registerParameter(this);
         
 

@@ -40,13 +40,13 @@ public class ExpressionImpl<X> extends SelectionImpl<X>
     implements Expression<X> {
 
     Value toValue(ExpressionFactory factory, MetamodelImpl model,
-        CriteriaQueryImpl q) {
+        CriteriaQueryImpl<?> q) {
         throw new AbstractMethodError(this.getClass().getName());
     }
     
     org.apache.openjpa.kernel.exps.Expression toKernelExpression(
         ExpressionFactory factory, MetamodelImpl model,
-        CriteriaQueryImpl q) {
+        CriteriaQueryImpl<?> q) {
         throw new AbstractMethodError(this.getClass().getName());
     }
     

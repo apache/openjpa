@@ -39,8 +39,10 @@ import org.apache.openjpa.kernel.exps.QueryExpressions;
 import org.apache.openjpa.kernel.exps.Value;
 import org.apache.openjpa.kernel.jpql.JPQLExpressionBuilder;
 import org.apache.openjpa.meta.ClassMetaData;
+import org.apache.openjpa.meta.FieldMetaData;
 import org.apache.openjpa.meta.JavaTypes;
 import org.apache.openjpa.persistence.meta.AbstractManagedType;
+import org.apache.openjpa.persistence.meta.Members;
 import org.apache.openjpa.persistence.meta.MetamodelImpl;
 import org.apache.openjpa.persistence.meta.Types;
 
@@ -54,31 +56,31 @@ import org.apache.openjpa.persistence.meta.Types;
  * @param <T> the type selected by this subquery.
  */
 public class SubqueryImpl<T> extends ExpressionImpl<T> implements Subquery<T> {
-    private final AbstractQuery _parent;
-    private final CriteriaQueryImpl _delegate;
+    private final AbstractQuery<?> _parent;
+    private final CriteriaQueryImpl<T> _delegate;
     private final MetamodelImpl  _model;
     private java.util.Set<Join<?,?>> _joins;
     private Expression<T> _select;
     private org.apache.openjpa.kernel.exps.Subquery _subq;
     
-    public SubqueryImpl(Class<T> cls, AbstractQuery parent) {
+    public SubqueryImpl(Class<T> cls, AbstractQuery<?> parent) {
         super(cls);
         _parent = parent;
-        if (parent instanceof CriteriaQueryImpl) 
-            _model = ((CriteriaQueryImpl)parent).getMetamodel();
-        else if (parent instanceof SubqueryImpl) 
-            _model = ((SubqueryImpl)parent).getMetamodel();
-        else 
+        if (parent instanceof CriteriaQueryImpl) {
+            _model = ((CriteriaQueryImpl<?>)parent).getMetamodel();
+        } else if (parent instanceof SubqueryImpl) {
+            _model = ((SubqueryImpl<?>)parent).getMetamodel();
+        } else {
             _model = null;
-        
-        _delegate = new CriteriaQueryImpl(_model, this);
+        }
+        _delegate = new CriteriaQueryImpl<T>(_model, this);
     }
     
-    public AbstractQuery getParent() {
+    public AbstractQuery<?> getParent() {
         return _parent;
     }
     
-    public CriteriaQueryImpl getDelegate() {
+    public CriteriaQueryImpl<T> getDelegate() {
         return _delegate;
     }
     
@@ -90,9 +92,9 @@ public class SubqueryImpl<T> extends ExpressionImpl<T> implements Subquery<T> {
     //    return getInnermostParent().getContexts();
     //}
     
-    public CriteriaQueryImpl getInnermostParent() {
-        return (CriteriaQueryImpl)(((_parent instanceof CriteriaQueryImpl)) ? 
-            _parent : ((SubqueryImpl)_parent).getInnermostParent());
+    public CriteriaQueryImpl<?> getInnermostParent() {
+        return (CriteriaQueryImpl<?>)(((_parent instanceof CriteriaQueryImpl)) ? 
+            _parent : ((SubqueryImpl<?>)_parent).getInnermostParent());
     }
 
     public Subquery<T> select(Expression<T> expression) {
@@ -172,8 +174,7 @@ public class SubqueryImpl<T> extends ExpressionImpl<T> implements Subquery<T> {
     }
     
     public <Y> Root<Y> correlate(Root<Y> root) {
-        Types.Entity<Y> entity = 
-            (Types.Entity<Y>)((RootImpl<Y>)root).getModel();
+        Types.Entity<Y> entity = (Types.Entity<Y>)root.getModel();
         RootImpl<Y> corrRoot = new RootImpl<Y>(entity);
         corrRoot.setCorrelatedParent((RootImpl<Y>)root);
         Set<Root<?>> roots = getRoots();
@@ -222,7 +223,7 @@ public class SubqueryImpl<T> extends ExpressionImpl<T> implements Subquery<T> {
      */
     @Override
     public Value toValue(ExpressionFactory factory, MetamodelImpl model,
-        CriteriaQueryImpl q) {
+        CriteriaQueryImpl<?> q) {
         final boolean subclasses = true;
         CriteriaExpressionBuilder queryEval = new CriteriaExpressionBuilder();
         String alias = q.getAlias(this);
@@ -250,15 +251,13 @@ public class SubqueryImpl<T> extends ExpressionImpl<T> implements Subquery<T> {
         RootImpl<?> root = (RootImpl<?>)getRoot();
         RootImpl<?> correlatedRoot = (RootImpl<?>)root.getCorrelatedParent();
         if (correlatedRoot != null && root.getJoins() != null) {
-            FromImpl join = (FromImpl) root.getJoins().iterator().next();
-            if (join._member.fmd.getDeclaredTypeCode() == 
-                JavaTypes.COLLECTION || 
-                join._member.fmd.getDeclaredTypeCode() == 
-                JavaTypes.MAP)
-            return join._member.fmd.isElementCollection()
-                ? join._member.fmd.getEmbeddedMetaData()
-                : join._member.fmd.getElement().getDeclaredTypeMetaData();
-            return join._member.fmd.getDeclaredTypeMetaData();
+           Join<?,?> join = root.getJoins().iterator().next();
+           FieldMetaData fmd = ((Members.Member<?, ?>)join.getAttribute()).fmd;
+           if (join.getAttribute().isCollection()) {
+               return fmd.isElementCollection() ? fmd.getEmbeddedMetaData(): fmd.getElement().getDeclaredTypeMetaData();
+           } else {
+               return fmd.getDeclaredTypeMetaData();
+           }
         }
         return ((AbstractManagedType<?>)root.getModel()).meta;
     }

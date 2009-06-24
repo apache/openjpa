@@ -42,7 +42,7 @@ import org.apache.openjpa.persistence.meta.MetamodelImpl;
 import org.apache.openjpa.persistence.meta.Members.Member;
 
 /**
- * 
+ * @author Fay Wang
  * @author Pinaki Poddar
  * 
  */
@@ -55,13 +55,11 @@ public abstract class Joins {
      * @param <Z> type from which joining
      * @param <X> type of the attribute being joined
      */
-    public static class SingularJoin<Z,X> extends FromImpl<Z,X> 
-        implements Join<Z,X>{
+    public static class SingularJoin<Z,X> extends FromImpl<Z,X> implements Join<Z,X>{
         private final JoinType joinType;
         private boolean allowNull = false;
         
-        public SingularJoin(FromImpl<?,Z> from, 
-            Members.SingularAttributeImpl<? super Z, X> member, JoinType jt) {
+        public SingularJoin(FromImpl<?,Z> from, Members.SingularAttributeImpl<? super Z, X> member, JoinType jt) {
             super(from, member, member.getJavaType());
             joinType = jt;
             allowNull = joinType != JoinType.INNER;
@@ -79,14 +77,12 @@ public abstract class Joins {
          * Return the metamodel attribute corresponding to the join.
          * @return metamodel attribute type corresponding to the join
          */
-//        Attribute<? super Z, ?> getAttribute();
         public Attribute<? super Z, ?> getAttribute() {
             return  (Attribute<? super Z, ?> )_member;
         }
         
         @Override
-        public Value toValue(ExpressionFactory factory, MetamodelImpl model, 
-            CriteriaQueryImpl c) {
+        public Value toValue(ExpressionFactory factory, MetamodelImpl model, CriteriaQueryImpl<?> c) {
             ClassMetaData meta = _member.fmd.getDeclaredTypeMetaData();
             org.apache.openjpa.kernel.exps.Path path = null;
             SubqueryImpl<?> subquery = c.getDelegator();
@@ -94,15 +90,12 @@ public abstract class Joins {
             if (c.isRegistered(this))
                 return c.getValue(this);
             else if (parent.inSubquery(subquery)) {
-                org.apache.openjpa.kernel.exps.Subquery subQ = 
-                    subquery.getSubQ();
+                org.apache.openjpa.kernel.exps.Subquery subQ = subquery.getSubQ();
                 path = factory.newPath(subQ);
                 path.setMetaData(subQ.getMetaData());
                 //path.setSchemaAlias(c.getAlias(this));
             } else {
-                path = 
-                    (org.apache.openjpa.kernel.exps.Path)
-                    _parent.toValue(factory, model, c);
+                path = (org.apache.openjpa.kernel.exps.Path) _parent.toValue(factory, model, c);
                 path.get(_member.fmd, allowNull);
                 path.setMetaData(meta);
                 path.setImplicitType(meta.getDescribedType());
@@ -111,57 +104,52 @@ public abstract class Joins {
         }
         
         @Override
-        public org.apache.openjpa.kernel.exps.Expression toKernelExpression(
-            ExpressionFactory factory, MetamodelImpl model, 
-            CriteriaQueryImpl c) {
+        public org.apache.openjpa.kernel.exps.Expression toKernelExpression(ExpressionFactory factory, 
+            MetamodelImpl model, CriteriaQueryImpl<?> c) {
             ClassMetaData meta = _member.fmd.getDeclaredTypeMetaData();
             org.apache.openjpa.kernel.exps.Path path = null;
             SubqueryImpl<?> subquery = c.getDelegator();
             PathImpl<?,?> parent = getInnermostParentPath();
             org.apache.openjpa.kernel.exps.Expression filter = null;
-            PathImpl correlatedParent = null;
+            PathImpl<?,?> correlatedParent = null;
             boolean bind = true;
             if (parent.inSubquery(subquery)) {
-                org.apache.openjpa.kernel.exps.Subquery subQ = 
-                    subquery.getSubQ();
+                org.apache.openjpa.kernel.exps.Subquery subQ = subquery.getSubQ();
                 path = factory.newPath(subQ);
                 correlatedParent = _parent.getCorrelatedParent();
                 if (correlatedParent == null) {
                     path.setMetaData(subQ.getMetaData());
                     path.get(_member.fmd, allowNull);
                     //path.setSchemaAlias(c.getAlias(_parent));
-                } else 
+                } else {
                     bind = false;
+                }
             } else if (c.isRegistered(_parent)) {
                Value var = c.getVariable(_parent);
                path = factory.newPath(var);
                path.setMetaData(meta);
                path.get(_member.fmd, false);
-            } else
-               path = 
-                (org.apache.openjpa.kernel.exps.Path)toValue(factory, model, c);
+            } else {
+               path = (org.apache.openjpa.kernel.exps.Path)toValue(factory, model, c);
+            }
             org.apache.openjpa.kernel.exps.Expression join = null;
             if (bind) {
-                Value var = factory.newBoundVariable(c.getAlias(this), 
-                    meta.getDescribedType());
+                Value var = factory.newBoundVariable(c.getAlias(this), meta.getDescribedType());
                 join = factory.bindVariable(var, path);
                 c.registerVariable(this, var, path);
             }
             if (getJoins() != null) {
                 for (Join<?, ?> join1 : getJoins()) {
                     filter = CriteriaExpressionBuilder.and(factory, 
-                        ((FromImpl<?,?>)join1).
-                        toKernelExpression(factory, model, c), filter);
+                                 ((FromImpl<?,?>)join1).toKernelExpression(factory, model, c), filter);
                 }
             }
-            org.apache.openjpa.kernel.exps.Expression expr = 
-                CriteriaExpressionBuilder.and(factory, join, filter);
+            org.apache.openjpa.kernel.exps.Expression expr = CriteriaExpressionBuilder.and(factory, join, filter);
             
-            if (correlatedParent == null)
+            if (correlatedParent == null) {
                 return expr;
-            else {
-                org.apache.openjpa.kernel.exps.Path parentPath =
-                    (org.apache.openjpa.kernel.exps.Path)
+            } else {
+                org.apache.openjpa.kernel.exps.Path parentPath = (org.apache.openjpa.kernel.exps.Path)
                     correlatedParent.toValue(factory, model, c);
                 parentPath.get(_member.fmd, allowNull);
                 //parentPath.setSchemaAlias(c.getAlias(correlatedParent));
@@ -186,8 +174,8 @@ public abstract class Joins {
         final JoinType joinType;
         boolean allowNull = false;
         
-        public AbstractCollection(FromImpl<?,Z> from, 
-            Members.PluralAttributeImpl<? super Z, C, E> member, JoinType jt) {
+        public AbstractCollection(FromImpl<?,Z> from, Members.PluralAttributeImpl<? super Z, C, E> member, 
+            JoinType jt) {
             super(from, member, member.getBindableJavaType());
             joinType = jt;
             allowNull = joinType != JoinType.INNER;
@@ -225,7 +213,7 @@ public abstract class Joins {
          */
         @Override
         public Value toValue(ExpressionFactory factory, MetamodelImpl model,
-            CriteriaQueryImpl c) {
+            CriteriaQueryImpl<?> c) {
             ClassMetaData meta = getMemberClassMetaData(); 
             org.apache.openjpa.kernel.exps.Path path = null;
             SubqueryImpl<?> subquery = c.getDelegator();
@@ -235,14 +223,12 @@ public abstract class Joins {
                 Value var = c.getVariable(this);
                 path = factory.newPath(var);
             } else if (parent.inSubquery(subquery)) {
-                org.apache.openjpa.kernel.exps.Subquery subQ = 
-                    subquery.getSubQ();
+                org.apache.openjpa.kernel.exps.Subquery subQ = subquery.getSubQ();
                 path = factory.newPath(subQ);
                 path.setMetaData(subQ.getMetaData());
                 //path.setSchemaAlias(c.getAlias(this));
             } else {
-                path = (org.apache.openjpa.kernel.exps.Path)
-                    _parent.toValue(factory, model, c);
+                path = (org.apache.openjpa.kernel.exps.Path) _parent.toValue(factory, model, c);
                 path.get(_member.fmd, allowNull);
             }
             return path;
@@ -255,7 +241,7 @@ public abstract class Joins {
         @Override
         public org.apache.openjpa.kernel.exps.Expression toKernelExpression(
             ExpressionFactory factory, MetamodelImpl model, 
-            CriteriaQueryImpl c) {
+            CriteriaQueryImpl<?> c) {
             ClassMetaData meta = getMemberClassMetaData(); 
             org.apache.openjpa.kernel.exps.Path path = null;
             SubqueryImpl<?> subquery = c.getDelegator();
@@ -264,46 +250,41 @@ public abstract class Joins {
             PathImpl correlatedParent = null;
             boolean bind = true;
             if (parent.inSubquery(subquery)) {
-                org.apache.openjpa.kernel.exps.Subquery subQ = 
-                    subquery.getSubQ();
+                org.apache.openjpa.kernel.exps.Subquery subQ = subquery.getSubQ();
                 path = factory.newPath(subQ);
                 correlatedParent = _parent.getCorrelatedParent();
                 if (correlatedParent == null) {
                     path.setMetaData(subQ.getMetaData());
                     path.get(_member.fmd, allowNull);
                     //path.setSchemaAlias(c.getAlias(_parent));
-                } else
+                } else {
                     bind = false;
+                }
             } else if (c.isRegistered(_parent)) {
                 Value var = c.getVariable(_parent);
                 path = factory.newPath(var);
                 path.setMetaData(meta);
                 path.get(_member.fmd, false);
-            } else           
-                path = (org.apache.openjpa.kernel.exps.Path)
-                    toValue(factory, model, c);
-        
+            } else {           
+                path = (org.apache.openjpa.kernel.exps.Path)toValue(factory, model, c);
+            }
             org.apache.openjpa.kernel.exps.Expression join = null;
             if (bind) {
-                Value var = factory.newBoundVariable(c.getAlias(this), 
-                        meta.getDescribedType());
+                Value var = factory.newBoundVariable(c.getAlias(this), meta.getDescribedType());
                 join = factory.bindVariable(var, path);
                 c.registerVariable(this, var, path);
             }
             if (getJoins() != null) {
                 for (Join<?, ?> join1 : getJoins()) {
                     filter = CriteriaExpressionBuilder.and(factory, 
-                        ((FromImpl<?,?>)join1).
-                        toKernelExpression(factory, model, c), filter);
+                        ((FromImpl<?,?>)join1).toKernelExpression(factory, model, c), filter);
                 }
             }
-            org.apache.openjpa.kernel.exps.Expression expr = 
-                CriteriaExpressionBuilder.and(factory, join, filter);
-            if (correlatedParent == null)
+            org.apache.openjpa.kernel.exps.Expression expr = CriteriaExpressionBuilder.and(factory, join, filter);
+            if (correlatedParent == null) {
                 return expr;
-            else {
-                org.apache.openjpa.kernel.exps.Path parentPath =
-                    (org.apache.openjpa.kernel.exps.Path)
+            } else {
+                org.apache.openjpa.kernel.exps.Path parentPath = (org.apache.openjpa.kernel.exps.Path)
                     correlatedParent.toValue(factory, model, c);
                 parentPath.get(_member.fmd, allowNull);
                 //parentPath.setSchemaAlias(c.getAlias(correlatedParent));
@@ -321,8 +302,7 @@ public abstract class Joins {
      * @param <Z>
      * @param <E>
      */
-    public static class Collection<Z,E> 
-        extends AbstractCollection<Z,java.util.Collection<E>,E> 
+    public static class Collection<Z,E> extends AbstractCollection<Z,java.util.Collection<E>,E> 
         implements CollectionJoin<Z,E>{
         public Collection(FromImpl<?,Z> parent, 
             Members.CollectionAttributeImpl<? super Z, E> member, JoinType jt) {
@@ -341,8 +321,7 @@ public abstract class Joins {
      * @param <Z>
      * @param <E>
      */
-    public static class Set<Z,E> 
-        extends AbstractCollection<Z,java.util.Set<E>,E> 
+    public static class Set<Z,E> extends AbstractCollection<Z,java.util.Set<E>,E> 
         implements SetJoin<Z,E>{
         public Set(FromImpl<?,Z> parent, Members.SetAttributeImpl<? super Z, E> member, JoinType jt) {
             super(parent, member, jt);
@@ -360,8 +339,7 @@ public abstract class Joins {
      * @param <E>
      */
     
-    public static class List<Z,E> 
-        extends AbstractCollection<Z,java.util.List<E>,E> 
+    public static class List<Z,E> extends AbstractCollection<Z,java.util.List<E>,E> 
         implements ListJoin<Z,E> {
         
         public List(FromImpl<?,Z> parent, 
@@ -385,8 +363,7 @@ public abstract class Joins {
      * @param <E>
      */
     
-    public static class Map<Z,K,V> 
-        extends AbstractCollection<Z,java.util.Map<K,V>,V> 
+    public static class Map<Z,K,V> extends AbstractCollection<Z,java.util.Map<K,V>,V> 
         implements MapJoin<Z,K,V> {
         
         public Map(FromImpl<?,Z> parent, Members.MapAttributeImpl<? super Z, K,V> member, JoinType jt) {
@@ -418,20 +395,16 @@ public abstract class Joins {
         }
         
         @Override
-        public org.apache.openjpa.kernel.exps.Expression toKernelExpression(
-            ExpressionFactory factory, MetamodelImpl model, 
-            CriteriaQueryImpl c) {
-            org.apache.openjpa.kernel.exps.Value path = toValue
-               (factory, model, c);
+        public org.apache.openjpa.kernel.exps.Expression toKernelExpression(ExpressionFactory factory,  
+            MetamodelImpl model, CriteriaQueryImpl<?> c) {
+            org.apache.openjpa.kernel.exps.Value path = toValue(factory, model, c);
             
             ClassMetaData meta = _member.fmd.isElementCollection() 
                 ? _member.fmd.getEmbeddedMetaData()
                 : _member.fmd.getElement().getDeclaredTypeMetaData();
                 
-            Value var = factory.newBoundVariable(c.getAlias(this), 
-                meta.getDescribedType());
-            org.apache.openjpa.kernel.exps.Expression join = factory
-                .bindValueVariable(var, path);
+            Value var = factory.newBoundVariable(c.getAlias(this), meta.getDescribedType());
+            org.apache.openjpa.kernel.exps.Expression join = factory.bindValueVariable(var, path);
             c.registerVariable(this, var, path);
             return join;
         }
@@ -440,9 +413,9 @@ public abstract class Joins {
        
    public static class MapKey<Z,K> extends PathImpl<Z,K> {
        Map<?,K,?> map;
+       
        public MapKey(Map<Z,K,?> joinMap){
-           super(((MapAttribute<Z, K, ?>)joinMap.getAttribute())
-                   .getKeyJavaType());
+           super(((MapAttribute<Z, K, ?>)joinMap.getAttribute()).getKeyJavaType());
            this.map = joinMap;
        }
        
@@ -451,10 +424,8 @@ public abstract class Joins {
         * 
         */
        @Override
-       public Value toValue(ExpressionFactory factory, MetamodelImpl model, 
-           CriteriaQueryImpl c) {
-           org.apache.openjpa.kernel.exps.Path path = 
-               factory.newPath(c.getVariable(map));
+       public Value toValue(ExpressionFactory factory, MetamodelImpl model, CriteriaQueryImpl<?> c) {
+           org.apache.openjpa.kernel.exps.Path path = factory.newPath(c.getVariable(map));
            return factory.getKey(path);
        }
    }

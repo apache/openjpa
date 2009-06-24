@@ -68,7 +68,7 @@ public class RootImpl<X> extends FromImpl<X,X> implements Root<X> {
      */
     @Override
     public Value toValue(ExpressionFactory factory, MetamodelImpl model, 
-        CriteriaQueryImpl c) {
+        CriteriaQueryImpl<?> c) {
         SubqueryImpl<?> subquery = c.getDelegator();
         Path var = null;
         if (inSubquery(subquery)) {
@@ -87,7 +87,7 @@ public class RootImpl<X> extends FromImpl<X,X> implements Root<X> {
      */
     @Override
     public org.apache.openjpa.kernel.exps.Expression toKernelExpression(
-        ExpressionFactory factory, MetamodelImpl model, CriteriaQueryImpl c) {
+        ExpressionFactory factory, MetamodelImpl model, CriteriaQueryImpl<?> c) {
         Value path = toValue(factory, model, c);
         Value var = factory.newBoundVariable(c.getAlias(this), 
              _entity.meta.getDescribedType());
