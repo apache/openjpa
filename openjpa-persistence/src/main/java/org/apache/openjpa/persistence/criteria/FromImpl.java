@@ -29,7 +29,6 @@ import javax.persistence.criteria.JoinType;
 import javax.persistence.criteria.ListJoin;
 import javax.persistence.criteria.MapJoin;
 import javax.persistence.criteria.SetJoin;
-import javax.persistence.metamodel.Attribute;
 import javax.persistence.metamodel.CollectionAttribute;
 import javax.persistence.metamodel.ListAttribute;
 import javax.persistence.metamodel.MapAttribute;
@@ -39,7 +38,6 @@ import javax.persistence.metamodel.SingularAttribute;
 
 import org.apache.openjpa.persistence.meta.AbstractManagedType;
 import org.apache.openjpa.persistence.meta.Members;
-import org.apache.openjpa.persistence.meta.Types;
 
 /**
  * Represents a bound type, usually an entity that appears in the from clause, 
@@ -174,7 +172,7 @@ public class FromImpl<Z,X> extends PathImpl<Z,X> implements From<Z,X> {
 
 
     public <W,Y> CollectionJoin<W, Y> joinCollection(String attr) {
-        return (CollectionJoin<W,Y>)join(attr, JoinType.INNER);
+        return (CollectionJoin<W,Y>)join(type.getCollection(attr), JoinType.INNER);
     }
 
     public <W,Y> CollectionJoin<W, Y> joinCollection(String attr, JoinType jt) {
@@ -182,7 +180,7 @@ public class FromImpl<Z,X> extends PathImpl<Z,X> implements From<Z,X> {
     }
 
     public <W,Y> ListJoin<W, Y> joinList(String attr) {
-        return (ListJoin<W,Y>)join(attr, JoinType.INNER);
+        return (ListJoin<W,Y>)join(type.getList(attr), JoinType.INNER);
     }
 
     public <W,Y> ListJoin<W,Y> joinList(String attr, JoinType jt) {

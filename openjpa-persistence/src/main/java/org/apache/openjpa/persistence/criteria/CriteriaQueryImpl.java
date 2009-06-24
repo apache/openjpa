@@ -20,16 +20,14 @@ package org.apache.openjpa.persistence.criteria;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import javax.persistence.Parameter;
+import javax.persistence.criteria.AbstractQuery;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Expression;
 import javax.persistence.criteria.Order;
@@ -45,7 +43,6 @@ import org.apache.openjpa.kernel.StoreQuery;
 import org.apache.openjpa.kernel.exps.ExpressionFactory;
 import org.apache.openjpa.kernel.exps.QueryExpressions;
 import org.apache.openjpa.kernel.exps.Value;
-import org.apache.openjpa.persistence.QueryImpl;
 import org.apache.openjpa.persistence.meta.MetamodelImpl;
 import org.apache.openjpa.persistence.meta.Types;
 
@@ -73,7 +70,7 @@ public class CriteriaQueryImpl<T> implements CriteriaQuery<T>, AliasContext {
     private PredicateImpl       _having;
     private List<Subquery<?>>   _subqueries;
     private Boolean             _distinct;
-    private SubqueryImpl<?>     _context;
+    private SubqueryImpl<?>     _delegator;
     
     // AliasContext
     private int aliasCount = 0;
@@ -83,24 +80,37 @@ public class CriteriaQueryImpl<T> implements CriteriaQuery<T>, AliasContext {
         new HashMap<Selection<?>, Value>();
     private Map<Selection<?>,Value> _values = 
         new HashMap<Selection<?>, Value>();
-    private Map<Selection<?>,String> _aliases = 
-        new HashMap<Selection<?>, String>();
+    private Map<Selection<?>,String> _aliases = null;
+
+    // SubqueryContext
+    //private Stack<Context> _contexts = null;
     
     public CriteriaQueryImpl(MetamodelImpl model) {
         this._model = model;
+        _aliases = new HashMap<Selection<?>, String>(); 
     }
     
-    public void setContext(SubqueryImpl<?> context) {
-        _context = context;
+    public CriteriaQueryImpl(MetamodelImpl model, SubqueryImpl<?> delegator) {
+        this._model = model;
+        _delegator = delegator;
+        _aliases = getAliases();
+    }
+
+    public void setDelegator(SubqueryImpl<?> delegator) {
+        _delegator = delegator;
     }
     
-    public SubqueryImpl<?> getContext() {
-        return _context;
+    public SubqueryImpl<?> getDelegator() {
+        return _delegator;
     }
     
     public MetamodelImpl getMetamodel() {
         return _model;
     }
+    
+    //public Stack<Context> getContexts() {
+    //    return _contexts;
+    //}
     
     public CriteriaQuery distinct(boolean distinct) {
         _distinct = distinct;
@@ -319,13 +329,40 @@ public class CriteriaQueryImpl<T> implements CriteriaQuery<T>, AliasContext {
      * receiver with the help of the given {@link ExpressionFactory}.
      */
     QueryExpressions getQueryExpressions(ExpressionFactory factory) {
+        //_contexts = new Stack<Context>();
+        //Context context = new Context(null, null, null);
+        //    _contexts.push(context);
         return new CriteriaExpressionBuilder()
-              .getQueryExpressions(factory, this);
+             .getQueryExpressions(factory, this);
     }    
     
     public void assertRoot() {
         if (_roots == null || _roots.isEmpty())
             throw new IllegalStateException("no root is set");
+    }
+    
+    //
+    // SubqueryContext
+    //
+    //public void setContexts(Stack<Context> contexts) {
+    //    _contexts = contexts;
+    //}
+    
+    public CriteriaQueryImpl getInnermostParent() {
+        if (_delegator == null)
+            return this;
+        AbstractQuery parent = _delegator.getParent();
+        if (parent instanceof CriteriaQueryImpl) 
+            return (CriteriaQueryImpl)parent;
+        // parent is a SubqueryImpl    
+        return ((SubqueryImpl)parent).getDelegate().getInnermostParent();
+    }
+    
+    public Map<Selection<?>,String> getAliases() {
+        CriteriaQueryImpl c = getInnermostParent();
+        if (c._aliases == null)
+            c._aliases = new HashMap<Selection<?>, String>();
+        return c._aliases;
     }
     
     //
@@ -390,6 +427,8 @@ public class CriteriaQueryImpl<T> implements CriteriaQuery<T>, AliasContext {
         _variables.put(node, var);
         _values.put(node, path);
         _aliases.put(node, alias);
+        //_contexts.peek().addSchema(alias, var.getMetaData());
+        //_contexts.peek().addVariable(alias, var);
     }
     
     public boolean isRegistered(Selection<?> selection) {

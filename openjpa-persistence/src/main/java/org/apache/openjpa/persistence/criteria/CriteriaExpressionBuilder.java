@@ -40,7 +40,6 @@ import org.apache.openjpa.meta.ClassMetaData;
 import org.apache.openjpa.persistence.meta.AbstractManagedType;
 import org.apache.openjpa.persistence.meta.Members;
 import org.apache.openjpa.persistence.meta.MetamodelImpl;
-import org.apache.openjpa.persistence.meta.Types;
 
 /**
  * Converts expressions of a CriteriaQuery to kernel Expression.
@@ -53,6 +52,7 @@ public class CriteriaExpressionBuilder {
     public QueryExpressions getQueryExpressions(ExpressionFactory factory, 
         CriteriaQueryImpl q) {
         QueryExpressions exps = new QueryExpressions();
+        //exps.setContexts(q.getContexts());
 
         evalAccessPaths(exps, factory, q);
         //exps.alias = null;      // String   
@@ -181,10 +181,7 @@ public class CriteriaExpressionBuilder {
                         .toKernelExpression(factory, model, q), filter);
                 }
             }
-            if (((RootImpl<?>)root).getCorrelatedParent() != null) {
-                filter = and(factory, ((RootImpl<?>)root)
-                    .toKernelExpression(factory, model, q), filter);
-            }
+            ((RootImpl)root).addToContext(factory, model, q);
         }
         if (where != null) {
             filter = and(factory, where.toKernelExpression

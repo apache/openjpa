@@ -39,6 +39,7 @@ import org.apache.openjpa.kernel.exps.QueryExpressions;
 import org.apache.openjpa.kernel.exps.Value;
 import org.apache.openjpa.kernel.jpql.JPQLExpressionBuilder;
 import org.apache.openjpa.meta.ClassMetaData;
+import org.apache.openjpa.meta.JavaTypes;
 import org.apache.openjpa.persistence.meta.AbstractManagedType;
 import org.apache.openjpa.persistence.meta.MetamodelImpl;
 import org.apache.openjpa.persistence.meta.Types;
@@ -53,23 +54,47 @@ import org.apache.openjpa.persistence.meta.Types;
  * @param <T> the type selected by this subquery.
  */
 public class SubqueryImpl<T> extends ExpressionImpl<T> implements Subquery<T> {
-    private final CriteriaQueryImpl _parent;
+    private final AbstractQuery _parent;
     private final CriteriaQueryImpl _delegate;
+    private final MetamodelImpl  _model;
     private java.util.Set<Join<?,?>> _joins;
     private Expression<T> _select;
     private org.apache.openjpa.kernel.exps.Subquery _subq;
     
-    public SubqueryImpl(Class<T> cls, CriteriaQueryImpl parent) {
+    public SubqueryImpl(Class<T> cls, AbstractQuery parent) {
         super(cls);
         _parent = parent;
-        _delegate = new CriteriaQueryImpl(parent.getMetamodel());
-        _delegate.setContext(this);
+        if (parent instanceof CriteriaQueryImpl) 
+            _model = ((CriteriaQueryImpl)parent).getMetamodel();
+        else if (parent instanceof SubqueryImpl) 
+            _model = ((SubqueryImpl)parent).getMetamodel();
+        else 
+            _model = null;
+        
+        _delegate = new CriteriaQueryImpl(_model, this);
     }
     
     public AbstractQuery getParent() {
         return _parent;
     }
     
+    public CriteriaQueryImpl getDelegate() {
+        return _delegate;
+    }
+    
+    public MetamodelImpl getMetamodel() {
+        return _model;
+    }
+    
+    //public Stack<Context> getContexts() {
+    //    return getInnermostParent().getContexts();
+    //}
+    
+    public CriteriaQueryImpl getInnermostParent() {
+        return (CriteriaQueryImpl)(((_parent instanceof CriteriaQueryImpl)) ? 
+            _parent : ((SubqueryImpl)_parent).getInnermostParent());
+    }
+
     public Subquery<T> select(Expression<T> expression) {
         _select = expression;
         _delegate.select(expression);
@@ -201,15 +226,41 @@ public class SubqueryImpl<T> extends ExpressionImpl<T> implements Subquery<T> {
         final boolean subclasses = true;
         CriteriaExpressionBuilder queryEval = new CriteriaExpressionBuilder();
         String alias = q.getAlias(this);
-        ClassMetaData candidate =  
-            ((AbstractManagedType<?>)getRoot().getModel()).meta;
+        ClassMetaData candidate = getCandidate(); 
         _subq = factory.newSubquery(candidate, subclasses, alias);
         _subq.setMetaData(candidate);
+        //TODO:
+        //Stack<Context> contexts = getContexts();
+        //Context context = new Context(null, _subq, contexts.peek());
+        //contexts.push(context);
+        //_delegate.setContexts(contexts);
         QueryExpressions subexp = queryEval.getQueryExpressions(factory, 
                 _delegate);
         _subq.setQueryExpressions(subexp);
         if (subexp.projections.length > 0)
             JPQLExpressionBuilder.checkEmbeddable(subexp.projections[0], null);
+        //contexts.pop();
         return _subq;
     }
+    
+    // if we are in a subquery against a collection from a 
+    // correlated parent, the candidate of the subquery
+    // should be the class metadata of the collection element 
+    private ClassMetaData getCandidate() {
+        RootImpl<?> root = (RootImpl<?>)getRoot();
+        RootImpl<?> correlatedRoot = (RootImpl<?>)root.getCorrelatedParent();
+        if (correlatedRoot != null && root.getJoins() != null) {
+            FromImpl join = (FromImpl) root.getJoins().iterator().next();
+            if (join._member.fmd.getDeclaredTypeCode() == 
+                JavaTypes.COLLECTION || 
+                join._member.fmd.getDeclaredTypeCode() == 
+                JavaTypes.MAP)
+            return join._member.fmd.isElementCollection()
+                ? join._member.fmd.getEmbeddedMetaData()
+                : join._member.fmd.getElement().getDeclaredTypeMetaData();
+            return join._member.fmd.getDeclaredTypeMetaData();
+        }
+        return ((AbstractManagedType<?>)root.getModel()).meta;
+    }
+    
 }

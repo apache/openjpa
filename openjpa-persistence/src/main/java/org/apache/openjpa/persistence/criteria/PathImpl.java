@@ -23,7 +23,6 @@ import javax.persistence.criteria.Expression;
 import javax.persistence.criteria.Join;
 import javax.persistence.criteria.JoinType;
 import javax.persistence.criteria.Path;
-import javax.persistence.metamodel.Attribute;
 import javax.persistence.metamodel.Bindable;
 import javax.persistence.metamodel.ManagedType;
 import javax.persistence.metamodel.MapAttribute;
@@ -58,7 +57,8 @@ public class PathImpl<Z,X> extends ExpressionImpl<X> implements Path<X> {
     protected final PathImpl<?,Z> _parent;
     protected final Members.Member<? super Z,?> _member;
     private boolean isEmbedded = false;
-    
+    private PathImpl<?,?> _correlatedParent;
+
     /**
      * Protected. use by root path which neither represent a member nor has a
      * parent. 
@@ -121,6 +121,13 @@ public class PathImpl<Z,X> extends ExpressionImpl<X> implements Path<X> {
             parent._member); 
     }
     
+    public void setCorrelatedParent(PathImpl<?,?> correlatedParent) {
+        _correlatedParent = correlatedParent;
+    }
+    
+    public PathImpl<?,?> getCorrelatedParent() {
+        return _correlatedParent;
+    }
     
     /**
      * Convert this path to a kernel path.
@@ -131,27 +138,26 @@ public class PathImpl<Z,X> extends ExpressionImpl<X> implements Path<X> {
         if (q.isRegistered(this))
             return q.getValue(this);
         org.apache.openjpa.kernel.exps.Path path = null;
-        SubqueryImpl<?> subquery = q.getContext();
+        SubqueryImpl<?> subquery = q.getDelegator();
         PathImpl<?,?> parent = getInnermostParentPath();
-        if (parent.inSubquery(subquery)) {
+        boolean allowNull = _parent == null ? false : _parent instanceof Join 
+            && ((Join<?,?>)_parent).getJoinType() != JoinType.INNER;
+        
+        if (_parent != null && q.isRegistered(_parent)) {
+            path = factory.newPath(q.getVariable(_parent));
+            //path.setSchemaAlias(q.getAlias(_parent));
+            path.get(_member.fmd, allowNull);
+        } else if (parent.inSubquery(subquery)) {
             org.apache.openjpa.kernel.exps.Subquery subQ = subquery.getSubQ();
             path = factory.newPath(subQ);
             path.setMetaData(subQ.getMetaData());
-            boolean allowNull = false;
+            //path.setSchemaAlias(q.getAlias(_parent));
+            traversePath(_parent, path, _member.fmd);
+        } else if (_parent != null) {
+            path = (org.apache.openjpa.kernel.exps.Path)
+            _parent.toValue(factory, model, q);
             path.get(_member.fmd, allowNull);
-        } else if (_parent != null) { 
-            if (q.isRegistered(_parent)) {
-                path = factory.newPath(q.getVariable(_parent));
-                ClassMetaData meta = _member.fmd.getDeclaredTypeMetaData();
-                path.setMetaData(meta);
-            } else {
-                path = (org.apache.openjpa.kernel.exps.Path)
-                     _parent.toValue(factory, model, q);
-            }
-            boolean allowNull = _parent instanceof Join 
-                    && ((Join<?,?>)_parent).getJoinType() != JoinType.INNER;
-            path.get(_member.fmd, allowNull);
-        } else {
+        } else if (_parent == null) {
             path = factory.newPath();
             path.setMetaData(model.repos.getCachedMetaData(getJavaType()));
         }
@@ -169,6 +175,22 @@ public class PathImpl<Z,X> extends ExpressionImpl<X> implements Path<X> {
      */
     public boolean inSubquery(SubqueryImpl<?> subquery) {
         return subquery != null && subquery.getRoots().contains(this);
+    }
+    
+    protected void traversePath(PathImpl<?,?> parent,
+            org.apache.openjpa.kernel.exps.Path path, FieldMetaData fmd) {
+        boolean allowNull = parent == null ? false : parent instanceof Join 
+            && ((Join<?,?>)parent).getJoinType() != JoinType.INNER;
+        FieldMetaData fmd1 = parent._member == null ? null : parent._member.fmd;
+        PathImpl<?,?> parent1 = parent._parent;
+        if (parent1 == null || parent1.getCorrelatedParent() != null) {
+            if (fmd != null) 
+                path.get(fmd, allowNull);
+            return;
+        }
+        traversePath(parent1, path, fmd1);
+        if (fmd != null) 
+            path.get(fmd, allowNull);
     }
     
     /**

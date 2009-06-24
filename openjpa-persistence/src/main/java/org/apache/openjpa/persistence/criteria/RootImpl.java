@@ -22,7 +22,7 @@ package org.apache.openjpa.persistence.criteria;
 import javax.persistence.criteria.Root;
 import javax.persistence.metamodel.EntityType;
 
-import org.apache.openjpa.kernel.exps.Expression;
+import org.apache.openjpa.kernel.exps.AbstractExpressionBuilder;
 import org.apache.openjpa.kernel.exps.ExpressionFactory;
 import org.apache.openjpa.kernel.exps.Path;
 import org.apache.openjpa.kernel.exps.Subquery;
@@ -39,7 +39,6 @@ import org.apache.openjpa.persistence.meta.Types;
  */
 public class RootImpl<X> extends FromImpl<X,X> implements Root<X> {
     private final Types.Entity<X> _entity;
-    private RootImpl<X> _correlatedParent;
         
     public RootImpl(Types.Entity<X> type) {
         super(type);
@@ -50,12 +49,18 @@ public class RootImpl<X> extends FromImpl<X,X> implements Root<X> {
         return _entity;
     }
     
-    public void setCorrelatedParent(RootImpl<X> correlatedParent) {
-        _correlatedParent = correlatedParent;
-    }
-    
-    public RootImpl<X> getCorrelatedParent() {
-        return _correlatedParent;
+    public void  addToContext(ExpressionFactory factory, MetamodelImpl model, 
+        CriteriaQueryImpl q) {
+        String alias = q.getAlias(this);
+        Value var = factory.newBoundVariable(alias, 
+            AbstractExpressionBuilder.TYPE_OBJECT);
+        var.setMetaData(_entity.meta);
+        //TODO:
+        //Context currContext = (Context)q.getContexts().peek();
+        //currContext.addSchema(alias, _entity.meta); 
+        //currContext.addVariable(alias, var);
+        //if (currContext.schemaAlias == null)
+        //    currContext.schemaAlias = alias;
     }
     
     /**
@@ -64,7 +69,7 @@ public class RootImpl<X> extends FromImpl<X,X> implements Root<X> {
     @Override
     public Value toValue(ExpressionFactory factory, MetamodelImpl model, 
         CriteriaQueryImpl c) {
-        SubqueryImpl<?> subquery = c.getContext();
+        SubqueryImpl<?> subquery = c.getDelegator();
         Path var = null;
         if (inSubquery(subquery)) {
             Subquery subQ = subquery.getSubQ();
@@ -85,13 +90,8 @@ public class RootImpl<X> extends FromImpl<X,X> implements Root<X> {
         ExpressionFactory factory, MetamodelImpl model, CriteriaQueryImpl c) {
         Value path = toValue(factory, model, c);
         Value var = factory.newBoundVariable(c.getAlias(this), 
-            _entity.meta.getDescribedType());
-        Expression exp = factory.bindVariable(var, path);
-        
-        if (_correlatedParent == null) 
-            return exp;
-        Value path1 = _correlatedParent.toValue(factory, model, c);
-        return factory.equal(path1, path);
+             _entity.meta.getDescribedType());
+        return factory.bindVariable(var, path);
     }
     
     public String toString() {
