@@ -1255,11 +1255,11 @@ public class FieldMetaData
         switch (getTypeCode()) {
             case JavaTypes.ARRAY:
                 List l = JavaTypes.toList(val, _elem.getType(), true);
-                Collections.sort(l, comp);
+                Collections.sort(l, (Comparator<? super Order>) comp);
                 return JavaTypes.toArray(l, _elem.getType());
             case JavaTypes.COLLECTION:
                 if (val instanceof List)
-                    Collections.sort((List) val, comp);
+                    Collections.sort((List) val, (Comparator<? super Order>) comp);
                 return val;
             default:
                 throw new MetaDataException(_loc.get("cant-order", this));
