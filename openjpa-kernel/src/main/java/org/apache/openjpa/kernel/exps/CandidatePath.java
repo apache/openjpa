@@ -196,4 +196,14 @@ public class CandidatePath
     public XMLMetaData getXmlMapping() {
         return null;
     }
+
+    public void setSchemaAlias(String schemaAlias) {
+    }
+
+    public String getSchemaAlias() {
+        return null;
+    }
+    
+    public void setSubqueryContext(Context conext) {
+    }
 }

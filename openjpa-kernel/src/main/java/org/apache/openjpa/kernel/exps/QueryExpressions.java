@@ -22,10 +22,12 @@ import java.io.Serializable;
 import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.Stack;
 
 import org.apache.commons.collections.map.LinkedMap;
 import org.apache.openjpa.kernel.QueryOperations;
 import org.apache.openjpa.kernel.StoreQuery;
+import org.apache.openjpa.kernel.exps.Context;
 import org.apache.openjpa.meta.ClassMetaData;
 import org.apache.openjpa.meta.FieldMetaData;
 
@@ -69,6 +71,23 @@ public class QueryExpressions
     public String[] fetchInnerPaths = StoreQuery.EMPTY_STRINGS;
     public Value[] range = EMPTY_VALUES;
     private Boolean _aggregate = null;
+    private Stack<Context> _contexts = null;
+
+    /**
+     * Set reference to the JPQL query contexts.
+     * @param contexts
+     */
+    public void setContexts(Stack<Context> contexts) {
+        _contexts = contexts;
+    }
+
+    /**
+     * Returns the current JPQL query context.
+     * @return
+     */
+    public Context ctx() {
+        return _contexts.peek();
+    }
 
     /**
      * Whether this is an aggregate results.

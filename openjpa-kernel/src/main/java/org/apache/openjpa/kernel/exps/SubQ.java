@@ -41,6 +41,10 @@ class SubQ
         _alias = alias;
     }
 
+    public Object getSelect() {
+        return null;
+    }
+
     public String getCandidateAlias() {
         return _alias;
     }

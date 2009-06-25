@@ -67,4 +67,15 @@ public interface Path
      * @return Return xmlmapping
      */
     public XMLMetaData getXmlMapping();
+
+    /**
+     * Set the schema alias (the identification variable)
+     * this path is begin with.
+     * @param schemaAlias
+     */
+    public void setSchemaAlias(String schemaAlias);
+        
+    public String getSchemaAlias();
+    
+    public void setSubqueryContext(Context context);
 }

@@ -46,6 +46,7 @@ import org.apache.openjpa.jdbc.meta.JavaSQLTypes;
 import org.apache.openjpa.jdbc.schema.Column;
 import org.apache.openjpa.jdbc.schema.ForeignKey;
 import org.apache.openjpa.jdbc.schema.Table;
+import org.apache.openjpa.kernel.exps.Context;
 import org.apache.openjpa.lib.util.Closeable;
 import org.apache.openjpa.meta.JavaTypes;
 import org.apache.openjpa.util.UnsupportedException;
@@ -882,7 +883,17 @@ public abstract class AbstractResult
             return this;
         }
 
+        public void setContext(Context context) {
+        }
+
         public void appendTo(SQLBuffer buf) {
+        }
+
+        public Joins setCorrelatedVariable(String var) {
+            return this;
+        }
+
+        public void copyToParent() {
         }
     }
 }

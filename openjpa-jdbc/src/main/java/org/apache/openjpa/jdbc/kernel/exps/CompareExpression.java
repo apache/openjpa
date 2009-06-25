@@ -20,6 +20,7 @@ package org.apache.openjpa.jdbc.kernel.exps;
 
 import java.util.Map;
 
+import org.apache.openjpa.jdbc.sql.Joins;
 import org.apache.openjpa.jdbc.sql.SQLBuffer;
 import org.apache.openjpa.jdbc.sql.Select;
 import org.apache.openjpa.kernel.Filters;

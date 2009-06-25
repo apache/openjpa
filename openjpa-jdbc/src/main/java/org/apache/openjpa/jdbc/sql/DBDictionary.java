@@ -2197,14 +2197,59 @@ public class DBDictionary
             Iterator itr = sel.getJoinIterator();
             boolean first = true;
             while (itr.hasNext()) {
-                fromSQL.append(toSQL92Join((Join) itr.next(), forUpdate,
+                Join join = (Join) itr.next();
+                if (correlatedJoinCondition(join, sel))
+                    continue;
+                fromSQL.append(toSQL92Join(sel, join, forUpdate,
                     first));
                 first = false;
+                if (itr.hasNext() && join.isCorrelated()) {
+                    fromSQL.append(", ");
+                    first = true;
+                }
+            }
+
+            for (Iterator itr2 = aliases.iterator(); itr2.hasNext();) {
+                String tableAlias = itr2.next().toString();
+                if (fromSQL.getSQL().indexOf(tableAlias) == -1) {
+                    if (!first)
+                        fromSQL.append(", ");
+                    fromSQL.append(tableAlias);
+                    first = false;
+                }
             }
         }
         return fromSQL;
     }
 
+    //if table1 in join is in the main query, table2 is in
+    //subquery, and table2 participates in other joins
+    //in subquery, the join condition can only be placed in 
+    //the where clause in the subquery
+    private boolean correlatedJoinCondition(Join join, Select sel) {
+        if (!join.isCorrelated())
+            return false;
+        Iterator itr = sel.getJoinIterator();
+        boolean skip = false;
+        while (itr.hasNext()) {
+            Join join1 = (Join) itr.next();
+            if (join == join1)
+                continue;
+            if (join.getIndex2() == join1.getIndex1() ||
+                join.getIndex2() == join1.getIndex2()) {
+                skip = true;
+                if (join.getForeignKey() != null){
+                    SQLBuffer where = new SQLBuffer(this);
+                    where.append("(").append(toTraditionalJoin(join)).append(")");
+                    sel.where(where.getSQL());
+                }                
+                break;
+            }
+        }
+        return skip;
+    }
+    
+    
     /**
      * Return the FROM clause for a select that selects from a tmp table
      * created by an inner select.
@@ -2308,9 +2353,11 @@ public class DBDictionary
      * Use the given join instance to create SQL joining its tables in
      * the SQL92 style.
      */
-    public SQLBuffer toSQL92Join(Join join, boolean forUpdate, boolean first) {
+    public SQLBuffer toSQL92Join(Select sel, Join join, boolean forUpdate,
+        boolean first) {
         SQLBuffer buf = new SQLBuffer(this);
-        if (first) {
+        boolean corelated = join.isCorrelated();
+        if (first && !corelated) {
             buf.append(join.getTable1()).append(" ").
                 append(join.getAlias1());
             if (forUpdate && tableForUpdateClause != null)
@@ -2318,23 +2365,31 @@ public class DBDictionary
         }
 
         buf.append(" ");
-        if (join.getType() == Join.TYPE_OUTER)
-            buf.append(outerJoinClause);
-        else if (join.getType() == Join.TYPE_INNER)
-            buf.append(innerJoinClause);
-        else // cross
-            buf.append(crossJoinClause);
-        buf.append(" ");
+        if (!corelated) {
+            if (join.getType() == Join.TYPE_OUTER)
+                buf.append(outerJoinClause);
+            else if (join.getType() == Join.TYPE_INNER)
+                buf.append(innerJoinClause);
+            else // cross
+                buf.append(crossJoinClause);
+            buf.append(" ");
+        }
 
         buf.append(join.getTable2()).append(" ").append(join.getAlias2());
         if (forUpdate && tableForUpdateClause != null)
             buf.append(" ").append(tableForUpdateClause);
 
-        if (join.getForeignKey() != null)
-            buf.append(" ON ").append(toTraditionalJoin(join));
-        else if (requiresConditionForCrossJoin &&
-            join.getType() == Join.TYPE_CROSS)
-            buf.append(" ON (1 = 1)");
+        if (!corelated) {
+            if (join.getForeignKey() != null)
+                buf.append(" ON ").append(toTraditionalJoin(join));
+            else if (requiresConditionForCrossJoin &&
+                    join.getType() == Join.TYPE_CROSS)
+                buf.append(" ON (1 = 1)");
+        } else if (join.getForeignKey() != null){
+            SQLBuffer where = new SQLBuffer(this);
+            where.append("(").append(toTraditionalJoin(join)).append(")");
+            sel.where(where.getSQL());
+        }
 
         return buf;
     }

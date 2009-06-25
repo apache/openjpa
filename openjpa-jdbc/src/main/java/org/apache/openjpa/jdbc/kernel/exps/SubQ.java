@@ -20,6 +20,7 @@ package org.apache.openjpa.jdbc.kernel.exps;
 
 import java.sql.SQLException;
 
+import org.apache.openjpa.jdbc.conf.JDBCConfiguration;
 import org.apache.openjpa.jdbc.kernel.JDBCFetchConfiguration;
 import org.apache.openjpa.jdbc.meta.ClassMapping;
 import org.apache.openjpa.jdbc.meta.JavaSQLTypes;
@@ -50,6 +51,7 @@ class SubQ
     private Class _type = null;
     private ClassMetaData _meta = null;
     private QueryExpressions _exps = null;
+    private Select _select = null;
 
     /**
      * Constructor. Supply candidate, whether subclasses are included in
@@ -59,6 +61,13 @@ class SubQ
         _candidate = candidate;
         _subs = subs;
         _alias = alias;
+        _select = (((JDBCConfiguration) candidate.getMappingRepository().
+            getConfiguration()).getSQLFactoryInstance().newSelect());
+        _cons.setSubselect(_select);
+    }
+
+    public Object getSelect() {
+        return _select;
     }
 
     /**
@@ -98,11 +107,14 @@ class SubQ
 
     public void setQueryExpressions(QueryExpressions query) {
         _exps = query;
+        _select.setContext(query.ctx());
     }
 
     public ExpState initialize(Select sel, ExpContext ctx, int flags) {
-        if (_exps.projections.length == 1)
-            return ((Val) _exps.projections[0]).initialize(sel, ctx, flags);
+        _select.setParent(sel, null);
+        if (_exps.projections.length == 1) {
+            return ((Val) _exps.projections[0]).initialize(_select, ctx, flags);
+        }
         return ExpState.NULL;
     }
 

@@ -67,6 +67,10 @@ class NotContainsExpression
 
         Select sub = ctx.store.getSQLFactory().newSelect();
         sub.setParent(sel, null);
+        // this subselect has the same context as its parent
+        sub.setContext(sel.ctx());
+        // the context select should still belong to parent
+        sub.ctx().setSelect(sel);
         ExpState estate = _exp.initialize(sub, ctx, ((NotContainsExpState) 
             state).contains);
         sub.where(sub.and(null, estate.joins));
