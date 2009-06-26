@@ -33,7 +33,6 @@ import javax.persistence.Query;
 
 
 import org.apache.openjpa.persistence.ArgumentException;
-import org.apache.openjpa.persistence.test.AllowFailure;
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
 
 public class TestEmbeddable extends SingleEMFTestCase {
@@ -126,7 +125,6 @@ public class TestEmbeddable extends SingleEMFTestCase {
         findEntityA_Embed_Embed_ToMany();
     }
 
-    @AllowFailure
     public void testEntityA_Embed_Coll_Integer() {
         createEntityA_Embed_Coll_Integer();
         queryEntityA_Embed_Coll_Integer();
@@ -139,20 +137,12 @@ public class TestEmbeddable extends SingleEMFTestCase {
         findEntityA_Embed_Embed();
     }
 
-    @AllowFailure
-//    Caused by: java.lang.ArrayIndexOutOfBoundsException
-//    at java.util.ArrayList.get(ArrayList.java:349)
-//    at org.apache.openjpa.jdbc.sql.JoinSet.getNode(JoinSet.java:76)
-//    at org.apache.openjpa.jdbc.sql.JoinSet.add(JoinSet.java:171)
-//    at org.apache.openjpa.jdbc.sql.SelectImpl$SelectJoins.join(SelectImpl.ja
-//va:2847)
     public void testEntityA_Coll_Embed_Embed() {
         createEntityA_Coll_Embed_Embed();
         queryEntityA_Coll_Embed_Embed();
         findEntityA_Coll_Embed_Embed();
     }
 
-    @AllowFailure
     public void testEntityA_Embed_Coll_Embed() {
         createEntityA_Embed_Coll_Embed();
         queryEntityA_Embed_Coll_Embed();
