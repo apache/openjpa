@@ -35,10 +35,11 @@ public class Context {
     public ClassMetaData meta;
     public String schemaAlias;
     public Subquery subquery;
+    public Expression from = null;
     private Context parent = null;
     private Context subsel = null;
     private Object select = null;
-    private int aliasCount = -1;
+    private int aliasCount = -1; 
     private Map<String,Value> variables = new HashMap<String,Value>();
     private Map<String,ClassMetaData> schemas =
         new HashMap<String,ClassMetaData>();
@@ -126,6 +127,10 @@ public class Context {
 
     public Context getParent() {
         return parent;
+    }
+
+    public void setParent(Context parent) {
+        this.parent = parent;
     }
 
     public void addVariable(String id, Value var) {

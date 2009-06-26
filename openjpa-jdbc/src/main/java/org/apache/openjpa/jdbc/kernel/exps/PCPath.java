@@ -494,13 +494,12 @@ public class PCPath
                     prevaction != null && prevaction.data != null &&
                     sel.ctx().getVariable(action.var) == null) {
                     System.out.println("action var="+action.var);
-                    sel.setSchemaAlias(action.var);
-                    pstate.joins = pstate.joins.
-                        setCorrelatedVariable(action.var);
-                    isCorrelatedPath = true;
+                    isCorrelatedPath = 
+                        pstate.joins.isCorrelatedVariable(action.var);
                 }
-                else
-                pstate.joins = pstate.joins.setVariable((String) action.data);
+                if (!isCorrelatedPath)
+                    pstate.joins = pstate.joins.
+                        setVariable((String) action.data);
             }
             else if (action.op == Action.SUBQUERY) {
                 pstate.joins = pstate.joins.setSubselect((String) action.data);
@@ -596,7 +595,7 @@ public class PCPath
                 false);
         if (isCorrelatedPath) {
             // check if there are joins that belong to parent
-            pstate.joins.copyToParent();
+            pstate.joins.moveJoinsToParent();
         }
         return pstate;
     }

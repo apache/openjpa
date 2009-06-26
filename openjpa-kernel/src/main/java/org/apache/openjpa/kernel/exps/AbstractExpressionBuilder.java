@@ -156,11 +156,6 @@ public abstract class AbstractExpressionBuilder {
      * Returns a value for the given id.
      */
     protected Value getVariable(String id, boolean bind) {
-        // check for already constructed var
-        Value var = getSeenVariable(id);
-        if (var != null)
-            return var;
-
         // create and cache var
         Class<?> type = getDeclaredVariableType(id);
 
@@ -175,6 +170,7 @@ public abstract class AbstractExpressionBuilder {
             addSchemaToContext(id, meta);
         }
 
+        Value var = null;
         if (bind)
             var = factory.newBoundVariable(id, type);
         else

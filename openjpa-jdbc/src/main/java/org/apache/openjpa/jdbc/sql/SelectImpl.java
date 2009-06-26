@@ -2551,14 +2551,11 @@ public class SelectImpl
         public void setContext(Context context) {
         }
         
-        public Joins setCorrelatedVariable(String var) {
-            // TODO Auto-generated method stub
-            return null;
+        public boolean isCorrelatedVariable(String var) {
+            return false;
         }
 
-        public void copyToParent() {
-            // TODO Auto-generated method stub
-            
+        public void moveJoinsToParent() {
         }
     }
 
@@ -2609,10 +2606,13 @@ public class SelectImpl
             return this;
         }
 
-        public Joins setCorrelatedVariable(String var) {
-            setVariable(var);
-            this.correlatedVar = var;
-            return this;
+        public boolean isCorrelatedVariable(String var) {
+            boolean isCorrelated = getSelect().ctx().getVariable(var) == null;
+            if (isCorrelated) {
+                setVariable(var);
+                this.correlatedVar = var;
+            }
+            return isCorrelated;
         }
 
         public void setContext(Context context) {
@@ -2676,9 +2676,7 @@ public class SelectImpl
                 + String.valueOf(path);
         }
 
-        public void copyToParent() {
-            // TODO Auto-generated method stub
-            
+        public void moveJoinsToParent() {
         }
     }
 
@@ -2885,7 +2883,7 @@ public class SelectImpl
             }
         }
 
-        public void copyToParent() {
+        public void moveJoinsToParent() {
             if (_joins == null)   // add this line
                 return;           // add this line
            if (_sel._parent._joins == null) 
@@ -3122,12 +3120,15 @@ public class SelectImpl
         }
     }
 
-    public Joins setCorrelatedVariable(String var) {
-        _correlatedVar = var;
-        return this;
+    public boolean isCorrelatedVariable(String var) {
+        boolean isCorrelated = //_ctx.getVariable(_schemaAlias) == null &&
+            _ctx.getVariable(var) == null;
+        if (isCorrelated)
+            _correlatedVar = var;
+        return isCorrelated;
     }
 
-    public void copyToParent() {
+    public void moveJoinsToParent() {
     }
 }
 
