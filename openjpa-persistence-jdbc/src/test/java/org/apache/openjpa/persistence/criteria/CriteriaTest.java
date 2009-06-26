@@ -55,7 +55,7 @@ public abstract class CriteriaTest extends TestCase {
     protected static OpenJPAEntityManagerFactorySPI emf;
     QueryBuilder cb;
     EntityManager em;
-    protected List<String> sql = new ArrayList<String>();
+    protected static List<String> sql = new ArrayList<String>();
     protected static Class[] CLASSES = {
     Account.class,
     Address.class,
@@ -329,12 +329,11 @@ public abstract class CriteriaTest extends TestCase {
     
     public class Listener
     extends AbstractJDBCListener {
-
-    @Override
-    public void beforeExecuteStatement(JDBCEvent event) {
-        if (event.getSQL() != null && sql != null) {
-            sql.add(event.getSQL());
+        @Override
+        public void beforeExecuteStatement(JDBCEvent event) {
+            if (event.getSQL() != null && sql != null) {
+                sql.add(event.getSQL());
+            }
         }
     }
-}
 }
