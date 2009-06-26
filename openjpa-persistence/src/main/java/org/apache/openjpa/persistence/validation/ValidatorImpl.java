@@ -31,11 +31,15 @@ import javax.validation.Validator;
 import javax.validation.ValidatorFactory;
 
 import org.apache.openjpa.event.LifecycleEvent;
+import org.apache.openjpa.lib.util.Localizer;
 import org.apache.openjpa.validation.AbstractValidator;
 import org.apache.openjpa.validation.ValidationException;
 
 public class ValidatorImpl extends AbstractValidator {
     
+    private static final Localizer _loc = Localizer.forPackage(
+        ValidatorImpl.class);
+
     private ValidatorFactory _validatorFactory = null;
     private Validator _validator = null;
     private ValidationMode _mode = ValidationMode.AUTO;
@@ -104,8 +108,9 @@ public class ValidatorImpl extends AbstractValidator {
             if (validatorFactory instanceof ValidatorFactory) {
                 _validatorFactory = (ValidatorFactory)validatorFactory;
             } else {
-                // TODO: Add a localized exception
-                throw new IllegalArgumentException();                
+                // Supplied object was not an instance of a ValidatorFactory.
+                throw new IllegalArgumentException(
+                    _loc.get("invalid-factory").getMessage());                
             }
         }
         initialize();
@@ -123,22 +128,24 @@ public class ValidatorImpl extends AbstractValidator {
             if (_validatorFactory != null) {
                 _validator = _validatorFactory.getValidator();
             } else {
-                // TODO: Add a localized exception
-                throw new RuntimeException("No default ValidatorFactory");
+                // A default ValidatorFactory could not be created.
+                throw new RuntimeException(
+                    _loc.get("no-default-factory").getMessage());
             }
             
             // throw an exception if we have no Validator
             if (_validator == null) {
-                // TODO: Add a localized exception
-                throw new RuntimeException("No Validator provider");
+                // A Validator provider could not be created.
+                throw new RuntimeException(
+                    _loc.get("no-validator").getMessage());
             }
 
             // add in default validation groups, which can be over-ridden later
             addDefaultValidationGroups();
         } else {
-            // TODO: Add a localized exception
-            throw new RuntimeException("No Validator should be created based " +
-                "on the supplied Validation Mode.");
+            // A Validator should not be created based on the supplied ValidationMode.
+            throw new RuntimeException(
+                _loc.get("no-validation").getMessage());
         }
     }
     
@@ -156,9 +163,9 @@ public class ValidatorImpl extends AbstractValidator {
             _validationGroups.put(event, vgs);
             return;
         } else {
-            // TODO: Add a localized exception
-            throw new IllegalArgumentException("There were no events found " +
-                "for the supplied group name.");
+            // There were no events found for group "{0}".
+            throw new IllegalArgumentException(
+                _loc.get("no-group-events", validationGroupName).getMessage());
         }
     }
             
@@ -210,10 +217,8 @@ public class ValidatorImpl extends AbstractValidator {
      * 
      * @param <T> The instance to validate
      * @param arg0 The class, of type T to validate
-     * @param arg1 The property to validate
-     * @param arg2 The property value to validate
      * @param event The event id
-     * @return A Validation exception if the validator produces one or more
+     * @return ValidationException if the validator produces one or more
      *         constraint violations.
      */
     @Override
@@ -225,7 +230,11 @@ public class ValidatorImpl extends AbstractValidator {
         if (violations != null && violations.size() > 0) {
             return new ValidationException(
                 new ConstraintViolationException(
-                    (Set)violations));
+                    // A validation constraint failure occurred for class "{0}".
+                    _loc.get("validate-failed",
+                        arg0.getClass().getName()).getMessage(),
+                    (Set)violations),
+                true);
         }
         return null;
     }
@@ -234,11 +243,10 @@ public class ValidatorImpl extends AbstractValidator {
      * Validates a property of a given instance
      * 
      * @param <T> The instance to validate
-     * @param arg0 The class, of type T to validate
-     * @param arg1 The property to validate
-     * @param arg2 The property value to validate
+     * @param arg0 The property to validate
+     * @param property The property to validate
      * @param event The event id
-     * @return A Validation exception if the validator produces one or more
+     * @return ValidationException if the validator produces one or more
      *         constraint violations.
      */
     @Override
@@ -252,7 +260,12 @@ public class ValidatorImpl extends AbstractValidator {
         if (violations != null && violations.size() > 0) {
             return new ValidationException(
                 new ConstraintViolationException(
-                        (Set)violations));
+                    // A validation constraint failure occurred for 
+                    // property "{1}" in class "{0}".
+                    _loc.get("valdiate-property-failed",
+                        arg0.getClass().getName(),property).getMessage(),
+                    (Set)violations),
+                true);
         }
         return null;
     }
@@ -265,7 +278,7 @@ public class ValidatorImpl extends AbstractValidator {
      * @param arg1 The property to validate
      * @param arg2 The property value to validate
      * @param event The event id
-     * @return A Validation exception if the validator produces one or more
+     * @return ValidationException if the validator produces one or more
      *         constraint violations.
      */
     @Override
@@ -279,7 +292,12 @@ public class ValidatorImpl extends AbstractValidator {
         if (violations != null && violations.size() > 0) {
             return new ValidationException(
                 new ConstraintViolationException(
-                    (Set)violations));
+                    // A validation constraint failure occurred for 
+                    // value "{2}" of property "{1}" in class "{0}".
+                    _loc.get("validate-value-failed", arg0.getClass().getName(),
+                        arg1, arg2.toString()).getMessage(),                    
+                    (Set)violations),
+                true);
         }
         return null;
     }
