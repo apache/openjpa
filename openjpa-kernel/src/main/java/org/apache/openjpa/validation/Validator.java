@@ -29,10 +29,8 @@ public interface Validator {
      * 
      * @param <T> The instance to validate
      * @param arg0 The class, of type T to validate
-     * @param arg1 The property to validate
-     * @param arg2 The property value to validate
      * @param event The event id
-     * @return A Validation exception if the validator produces one or more
+     * @return ValidationException if the validator produces one or more
      *         constraint violations.
      */
     public <T> ValidationException validate(T arg0, int event);
@@ -42,10 +40,9 @@ public interface Validator {
      * 
      * @param <T> The instance to validate
      * @param arg0 The class, of type T to validate
-     * @param arg1 The property to validate
-     * @param arg2 The property value to validate
+     * @param property The property to validate
      * @param event The event id
-     * @return A Validation exception if the validator produces one or more
+     * @return ValidationException if the validator produces one or more
      *         constraint violations.
      */
     public <T> ValidationException validateProperty(T arg0, 
@@ -59,7 +56,7 @@ public interface Validator {
      * @param arg1 The property to validate
      * @param arg2 The property value to validate
      * @param event The event id
-     * @return A Validation exception if the validator produces one or more
+     * @return ValidationException if the validator produces one or more
      *         constraint violations.
      */
     public <T> ValidationException validateValue(Class<T> arg0, 
