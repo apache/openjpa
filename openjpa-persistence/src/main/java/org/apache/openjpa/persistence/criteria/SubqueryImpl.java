@@ -227,7 +227,7 @@ public class SubqueryImpl<T> extends ExpressionImpl<T> implements Subquery<T> {
             (Members.SingularAttributeImpl<?,?>)((Joins.SingularJoin<?,?>)join).getMember();
         JoinType jt = join.getJoinType();
         FromImpl<?,?> root = null;
-        if (parent instanceof RootImpl<?>) {
+        if (parent instanceof RootImpl) {
             members.add(member);
             jts.add(jt);
             return (FromImpl<?,?>)parent;
@@ -305,8 +305,7 @@ public class SubqueryImpl<T> extends ExpressionImpl<T> implements Subquery<T> {
         }
          
         RootImpl<?> root = (RootImpl<?>)getRoot();
-        RootImpl<?> corrRoot = (RootImpl<?>)root.getCorrelatedPath();
-        if (corrRoot != null && root.getJoins() != null) {
+        if (root.getCorrelatedPath() != null && root.getJoins() != null) {
             FromImpl<?,?> join = (FromImpl<?,?>) root.getJoins().iterator().next();
             return getInnermostCandidate(join);
         }
