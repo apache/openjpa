@@ -794,10 +794,7 @@ public class JPQLExpressionBuilder
         if (id == null)
             return null;
 
-        if (bind)
-            return super.getVariable(id.toLowerCase(), bind);
-        else
-            return ctx().findVariable(id);
+        return super.getVariable(id.toLowerCase(), bind);
     }
 
     protected Value getDefinedVariable(String id) {
@@ -1564,14 +1561,14 @@ public class JPQLExpressionBuilder
         if (cmd != null) {
             // handle the case where the class name is the alias
             // for the candidate (we don't use variables for this)
-            Value thiz = factory.getThis();
-//            Value thiz = null;
-//            if (ctx().subquery == null || 
-//                ctx().getSchema(name.toLowerCase()) == null) {
-//                thiz = factory.getThis();
-//            } else {
-//                thiz = factory.newPath(ctx().subquery);
-//            }
+            //Value thiz = factory.getThis();
+            Value thiz = null;
+            if (ctx().subquery == null || 
+                ctx().getSchema(name.toLowerCase()) == null) {
+                thiz = factory.getThis();
+            } else {
+                thiz = factory.newPath(ctx().subquery);
+            }
             ((Path)thiz).setSchemaAlias(name);
             thiz.setMetaData(cmd);
             return thiz;

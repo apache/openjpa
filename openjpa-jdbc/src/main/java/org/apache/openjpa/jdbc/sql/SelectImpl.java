@@ -2608,10 +2608,9 @@ public class SelectImpl
 
         public boolean isCorrelatedVariable(String var) {
             boolean isCorrelated = getSelect().ctx().getVariable(var) == null;
-            if (isCorrelated) {
-                setVariable(var);
+            if (isCorrelated)
                 this.correlatedVar = var;
-            }
+
             return isCorrelated;
         }
 

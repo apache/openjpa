@@ -156,6 +156,10 @@ public abstract class AbstractExpressionBuilder {
      * Returns a value for the given id.
      */
     protected Value getVariable(String id, boolean bind) {
+        // check for already constructed var
+        if (isSeenVariable(id))
+            return (Value) _seenVars.get(id);
+
         // create and cache var
         Class<?> type = getDeclaredVariableType(id);
 

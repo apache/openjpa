@@ -497,9 +497,8 @@ public class PCPath
                     isCorrelatedPath = 
                         pstate.joins.isCorrelatedVariable(action.var);
                 }
-                if (!isCorrelatedPath)
-                    pstate.joins = pstate.joins.
-                        setVariable((String) action.data);
+                pstate.joins = pstate.joins.
+                    setVariable((String) action.data);
             }
             else if (action.op == Action.SUBQUERY) {
                 pstate.joins = pstate.joins.setSubselect((String) action.data);

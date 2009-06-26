@@ -13,5 +13,4 @@ public class Publisher_ {
     public static volatile SingularAttribute<Publisher,Integer> id;
     public static volatile SetAttribute<Publisher,Magazine> magazineCollection;
     public static volatile SingularAttribute<Publisher,String> name;
-    public static volatile SingularAttribute<Publisher,Long> serialVersionUID;
 }
