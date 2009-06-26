@@ -249,7 +249,7 @@ public class SubqueryImpl<T> extends ExpressionImpl<T> implements Subquery<T> {
     // should be the class metadata of the collection element 
     private ClassMetaData getCandidate() {
         RootImpl<?> root = (RootImpl<?>)getRoot();
-        RootImpl<?> correlatedRoot = (RootImpl<?>)root.getCorrelatedParent();
+        PathImpl<?,?> correlatedRoot = (RootImpl<?>)root.getCorrelatedParent();
         if (correlatedRoot != null && root.getJoins() != null) {
            Join<?,?> join = root.getJoins().iterator().next();
            FieldMetaData fmd = ((Members.Member<?, ?>)join.getAttribute()).fmd;
