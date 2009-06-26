@@ -40,4 +40,9 @@
         <validation-mode>NONE</validation-mode>
     </persistence-unit>
     
+    <persistence-unit name="null-none-mode">
+    	<class>org.apache.openjpa.integration.validation.ConstraintNull</class>
+        <validation-mode>NONE</validation-mode>
+    </persistence-unit>
+    
 </persistence>
