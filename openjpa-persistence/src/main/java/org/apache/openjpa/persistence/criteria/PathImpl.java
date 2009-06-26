@@ -56,8 +56,8 @@ public class PathImpl<Z,X> extends ExpressionImpl<X> implements Path<X> {
     protected final PathImpl<?,Z> _parent;
     protected final Members.Member<? super Z,?> _member;
     private boolean isEmbedded = false;
-    private PathImpl<?,?> _correlatedParent;
-
+    protected PathImpl<?,?> _correlatedPath;
+    
     /**
      * Protected. use by root path which neither represent a member nor has a
      * parent. 
@@ -119,12 +119,11 @@ public class PathImpl<Z,X> extends ExpressionImpl<X> implements Path<X> {
             parent._member); 
     }
     
-    public void setCorrelatedParent(PathImpl<?,?> correlatedParent) {
-        _correlatedParent = correlatedParent;
+    public void setCorrelatedPath(PathImpl<?,?> correlatedPath) {
+        _correlatedPath = correlatedPath;
     }
-    
-    public PathImpl<?,?> getCorrelatedParent() {
-        return _correlatedParent;
+    public PathImpl<?,?> getCorrelatedPath() {
+        return _correlatedPath;
     }
     
     /**
@@ -137,15 +136,15 @@ public class PathImpl<Z,X> extends ExpressionImpl<X> implements Path<X> {
             return q.getValue(this);
         org.apache.openjpa.kernel.exps.Path path = null;
         SubqueryImpl<?> subquery = q.getDelegator();
-        PathImpl<?,?> parent = getInnermostParentPath();
         boolean allowNull = _parent == null ? false : _parent instanceof Join 
             && ((Join<?,?>)_parent).getJoinType() != JoinType.INNER;
-        
+        PathImpl<?,?> corrJoin = getCorrelatedJoin(this);
+        PathImpl<?,?> corrRoot = getCorrelatedRoot(subquery);
         if (_parent != null && q.isRegistered(_parent)) {
             path = factory.newPath(q.getVariable(_parent));
             //path.setSchemaAlias(q.getAlias(_parent));
             path.get(_member.fmd, allowNull);
-        } else if (parent.inSubquery(subquery)) {
+        } else if (corrJoin != null || corrRoot != null) {
             org.apache.openjpa.kernel.exps.Subquery subQ = subquery.getSubQ();
             path = factory.newPath(subQ);
             path.setMetaData(subQ.getMetaData());
@@ -166,11 +165,29 @@ public class PathImpl<Z,X> extends ExpressionImpl<X> implements Path<X> {
         return path;
     }
     
+    public PathImpl<?,?> getCorrelatedRoot(SubqueryImpl<?> subquery) {
+        if (subquery == null)
+            return null;
+        PathImpl<?,?> root = getInnermostParentPath();
+        if (subquery.getRoots() != null && subquery.getRoots().contains(this))
+            return root;
+        return null;
+    }
+    
+    
+    public PathImpl<?,?> getCorrelatedJoin(PathImpl<?,?> path) {
+        if (path._correlatedPath != null)
+            return path._correlatedPath;
+        if (path._parent == null)
+            return null;
+        return getCorrelatedJoin(path._parent);
+    }
+    
     /**
      * Affirms if this receiver occurs in the roots of the given subquery.
      */
     public boolean inSubquery(SubqueryImpl<?> subquery) {
-        return subquery != null && subquery.getRoots().contains(this);
+        return subquery != null && (subquery.getRoots() == null ? false : subquery.getRoots().contains(this));
     }
     
     protected void traversePath(PathImpl<?,?> parent,  org.apache.openjpa.kernel.exps.Path path, FieldMetaData fmd) {
@@ -178,7 +195,7 @@ public class PathImpl<Z,X> extends ExpressionImpl<X> implements Path<X> {
             && ((Join<?,?>)parent).getJoinType() != JoinType.INNER;
         FieldMetaData fmd1 = parent._member == null ? null : parent._member.fmd;
         PathImpl<?,?> parent1 = parent._parent;
-        if (parent1 == null || parent1.getCorrelatedParent() != null) {
+        if (parent1 == null || parent1.getCorrelatedPath() != null) {
             if (fmd != null) 
                 path.get(fmd, allowNull);
             return;

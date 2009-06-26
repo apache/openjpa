@@ -18,6 +18,7 @@
  */
 package org.apache.openjpa.persistence.criteria;
 
+import java.util.ArrayList;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
@@ -26,6 +27,7 @@ import javax.persistence.criteria.AbstractQuery;
 import javax.persistence.criteria.CollectionJoin;
 import javax.persistence.criteria.Expression;
 import javax.persistence.criteria.Join;
+import javax.persistence.criteria.JoinType;
 import javax.persistence.criteria.ListJoin;
 import javax.persistence.criteria.MapJoin;
 import javax.persistence.criteria.Predicate;
@@ -62,6 +64,7 @@ public class SubqueryImpl<T> extends ExpressionImpl<T> implements Subquery<T> {
     private java.util.Set<Join<?,?>> _joins;
     private Expression<T> _select;
     private org.apache.openjpa.kernel.exps.Subquery _subq;
+    private List<Join<?,?>> _corrJoins = null;
     
     public SubqueryImpl(Class<T> cls, AbstractQuery<?> parent) {
         super(cls);
@@ -176,7 +179,7 @@ public class SubqueryImpl<T> extends ExpressionImpl<T> implements Subquery<T> {
     public <Y> Root<Y> correlate(Root<Y> root) {
         Types.Entity<Y> entity = (Types.Entity<Y>)root.getModel();
         RootImpl<Y> corrRoot = new RootImpl<Y>(entity);
-        corrRoot.setCorrelatedParent((RootImpl<Y>)root);
+        corrRoot.setCorrelatedPath((RootImpl<Y>)root);
         Set<Root<?>> roots = getRoots();
         if (roots == null) {
             roots = new LinkedHashSet<Root<?>>();
@@ -186,9 +189,54 @@ public class SubqueryImpl<T> extends ExpressionImpl<T> implements Subquery<T> {
         return corrRoot;
     }
     
+    public List<Join<?,?>> getCorrelatedJoins() {
+        return _corrJoins;
+    }
+    
     public <X,Y> Join<X,Y> correlate(Join<X,Y> join) {
-        _delegate.from(join.getModel().getBindableJavaType());
-        return join;
+        Join corrJoin = clone(join);
+        ((PathImpl<?,?>)corrJoin).setCorrelatedPath((PathImpl<?,?>)join);
+        if (_corrJoins == null)
+            _corrJoins = new ArrayList<Join<?,?>>();
+        _corrJoins.add(corrJoin);
+        return corrJoin;
+    }
+    
+    private Join<?,?> clone(Join<?,?> join) {
+        List<Members.SingularAttributeImpl<?,?>> members = 
+            new ArrayList<Members.SingularAttributeImpl<?,?>>();
+        List<JoinType> jts = new ArrayList<JoinType>();
+        FromImpl<?,?> root = getMembers(join, members, jts);
+        Members.SingularAttributeImpl<?,?> member = members.get(0);
+        JoinType jt = jts.get(0);
+        Join<?,?> join1 = makeJoin(root, member, jt);
+        for (int i = 1; i < members.size(); i++) {
+            join1 = makeJoin((FromImpl<?,?>)join1, members.get(i), jts.get(i));
+        }
+        return join1;
+    }
+    
+    private Join<?,?> makeJoin(FromImpl<?,?> parent, Members.SingularAttributeImpl<?,?> member, JoinType jt) {
+        return new Joins.SingularJoin(parent, member, jt);
+    }
+    
+    private FromImpl<?,?> getMembers(Join<?,?> join, List<Members.SingularAttributeImpl<?,?>> members, 
+        List<JoinType> jts) {
+        PathImpl<?,?> parent = (PathImpl<?,?>)join.getParentPath();
+        Members.SingularAttributeImpl<?,?> member = 
+            (Members.SingularAttributeImpl<?,?>)((Joins.SingularJoin<?,?>)join).getMember();
+        JoinType jt = join.getJoinType();
+        FromImpl<?,?> root = null;
+        if (parent instanceof RootImpl<?>) {
+            members.add(member);
+            jts.add(jt);
+            return (FromImpl<?,?>)parent;
+        } else {
+            root = getMembers((Join<?,?>)parent, members, jts);
+        }
+        members.add(member);
+        jts.add(jt);
+        return root;
     }
     public <X,Y> CollectionJoin<X,Y> correlate(CollectionJoin<X,Y> join) {
         _delegate.from(join.getModel().getBindableJavaType());
@@ -225,7 +273,7 @@ public class SubqueryImpl<T> extends ExpressionImpl<T> implements Subquery<T> {
     public Value toValue(ExpressionFactory factory, MetamodelImpl model,
         CriteriaQueryImpl<?> q) {
         final boolean subclasses = true;
-        CriteriaExpressionBuilder queryEval = new CriteriaExpressionBuilder();
+        CriteriaExpressionBuilder exprBuilder = new CriteriaExpressionBuilder();
         String alias = q.getAlias(this);
         ClassMetaData candidate = getCandidate(); 
         _subq = factory.newSubquery(candidate, subclasses, alias);
@@ -235,7 +283,7 @@ public class SubqueryImpl<T> extends ExpressionImpl<T> implements Subquery<T> {
         //Context context = new Context(null, _subq, contexts.peek());
         //contexts.push(context);
         //_delegate.setContexts(contexts);
-        QueryExpressions subexp = queryEval.getQueryExpressions(factory, 
+        QueryExpressions subexp = exprBuilder.getQueryExpressions(factory, 
                 _delegate);
         _subq.setQueryExpressions(subexp);
         if (subexp.projections.length > 0)
@@ -248,18 +296,42 @@ public class SubqueryImpl<T> extends ExpressionImpl<T> implements Subquery<T> {
     // correlated parent, the candidate of the subquery
     // should be the class metadata of the collection element 
     private ClassMetaData getCandidate() {
-        RootImpl<?> root = (RootImpl<?>)getRoot();
-        PathImpl<?, ?> correlatedRoot = root.getCorrelatedParent();
-        if (correlatedRoot != null && root.getJoins() != null) {
-           Join<?,?> join = root.getJoins().iterator().next();
-           FieldMetaData fmd = ((Members.Member<?, ?>)join.getAttribute()).fmd;
-           if (join.getAttribute().isCollection()) {
-               return fmd.isElementCollection() ? fmd.getEmbeddedMetaData(): fmd.getElement().getDeclaredTypeMetaData();
-           } else {
-               return fmd.getDeclaredTypeMetaData();
-           }
+        if (_delegate.getRoots() == null && _corrJoins != null) {
+            FromImpl<?,?> corrJoin = (FromImpl<?,?>) _corrJoins.get(0);
+            if (corrJoin.getJoins() != null) {
+                FromImpl<?,?> join = (FromImpl<?,?>)corrJoin.getJoins().iterator().next();
+                return getInnermostCandidate(join);
+            }
         }
+         
+        RootImpl<?> root = (RootImpl<?>)getRoot();
+        RootImpl<?> corrRoot = (RootImpl<?>)root.getCorrelatedPath();
+        if (corrRoot != null && root.getJoins() != null) {
+            FromImpl<?,?> join = (FromImpl<?,?>) root.getJoins().iterator().next();
+            return getInnermostCandidate(join);
+        }
+
         return ((AbstractManagedType<?>)root.getModel()).meta;
     }
     
+    private ClassMetaData getInnermostCandidate(FromImpl<?,?> from) {
+        if (from.getJoins() != null) {
+            from = (FromImpl<?,?>) from.getJoins().iterator().next();
+            return getInnermostCandidate(from);
+        }
+        return getCandidate(from);
+    }
+    
+    
+    private ClassMetaData getCandidate(FromImpl<?,?> from) {
+        if (from._member.fmd.getDeclaredTypeCode() == 
+            JavaTypes.COLLECTION || 
+            from._member.fmd.getDeclaredTypeCode() == 
+            JavaTypes.MAP)
+            return from._member.fmd.isElementCollection()
+                ? from._member.fmd.getEmbeddedMetaData()
+                : from._member.fmd.getElement().getDeclaredTypeMetaData();
+        return from._member.fmd.getDeclaredTypeMetaData();
+        
+    }    
 }

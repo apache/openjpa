@@ -50,7 +50,7 @@ public class RootImpl<X> extends FromImpl<X,X> implements Root<X> {
     }
     
     public void  addToContext(ExpressionFactory factory, MetamodelImpl model, 
-        CriteriaQueryImpl q) {
+        CriteriaQueryImpl<?> q) {
         String alias = q.getAlias(this);
         Value var = factory.newBoundVariable(alias, 
             AbstractExpressionBuilder.TYPE_OBJECT);
@@ -71,11 +71,13 @@ public class RootImpl<X> extends FromImpl<X,X> implements Root<X> {
         CriteriaQueryImpl<?> c) {
         SubqueryImpl<?> subquery = c.getDelegator();
         Path var = null;
+        //String alias = c.getAlias(this);
         if (inSubquery(subquery)) {
             Subquery subQ = subquery.getSubQ();
             var = factory.newPath(subQ);
         } else {
             var = factory.newPath();
+            //var.setSchemaAlias(alias);
         }
         var.setMetaData(_entity.meta);
         return var;

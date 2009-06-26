@@ -49,8 +49,7 @@ import org.apache.openjpa.persistence.meta.MetamodelImpl;
  */
 public class CriteriaExpressionBuilder {
     
-    public QueryExpressions getQueryExpressions(ExpressionFactory factory, 
-        CriteriaQueryImpl q) {
+    public QueryExpressions getQueryExpressions(ExpressionFactory factory, CriteriaQueryImpl<?> q) {
         QueryExpressions exps = new QueryExpressions();
         //exps.setContexts(q.getContexts());
 
@@ -76,8 +75,7 @@ public class CriteriaExpressionBuilder {
         return exps;
     }
 
-    protected void evalAccessPaths(QueryExpressions exps, 
-        ExpressionFactory factory, CriteriaQueryImpl q) {
+    protected void evalAccessPaths(QueryExpressions exps, ExpressionFactory factory, CriteriaQueryImpl<?> q) {
         Set<ClassMetaData> metas = new HashSet<ClassMetaData>();
         Set<Root<?>> roots = q.getRoots();
         if (roots != null) {
@@ -88,17 +86,14 @@ public class CriteriaExpressionBuilder {
                     for (Join<?,?> join : root.getJoins()) {
                         Class<?> cls = join.getAttribute().getJavaType();
                         if (join.getAttribute().isAssociation()) {
-                            ClassMetaData meta = metamodel.repos.
-                                getMetaData(cls, null, true);
-                            PersistenceType type = metamodel.
-                                getPersistenceType(meta);
-                            if (type == PersistenceType.ENTITY ||
-                                type == PersistenceType.EMBEDDABLE) 
+                            ClassMetaData meta = metamodel.repos.getMetaData(cls, null, true);
+                            PersistenceType type = metamodel.getPersistenceType(meta);
+                            if (type == PersistenceType.ENTITY || type == PersistenceType.EMBEDDABLE) 
                                 metas.add(meta);
                         }
                     }
                     if (root.getFetches() != null) {
-                        for (Fetch fetch : root.getFetches()) {
+                        for (Fetch<?,?> fetch : root.getFetches()) {
                             metas.add(metamodel.repos.getMetaData(
                             fetch.getAttribute().getJavaType(), 
                             null, false));
@@ -110,8 +105,7 @@ public class CriteriaExpressionBuilder {
         exps.accessPath = metas.toArray(new ClassMetaData[metas.size()]);
     }
     
-    protected void evalOrdering(QueryExpressions exps, 
-        ExpressionFactory factory, CriteriaQueryImpl q) {
+    protected void evalOrdering(QueryExpressions exps, ExpressionFactory factory, CriteriaQueryImpl<?> q) {
         List<Order> orders = q.getOrderList();
         MetamodelImpl model = q.getMetamodel(); 
         if (orders == null) 
@@ -124,7 +118,7 @@ public class CriteriaExpressionBuilder {
         for (int i = 0; i < ordercount; i++) {
             OrderImpl order = (OrderImpl)orders.get(i);
             //Expression<? extends Comparable> expr = order.getExpression();
-            Expression expr = order.getExpression5();
+            Expression<?> expr = order.getExpression5();
             exps.ordering[i] = Expressions.toValue(
                     (ExpressionImpl<?>)expr, factory, model, q);
 
@@ -134,8 +128,7 @@ public class CriteriaExpressionBuilder {
         }
     }
 
-    protected void evalGrouping(QueryExpressions exps, 
-        ExpressionFactory factory, CriteriaQueryImpl q) {
+    protected void evalGrouping(QueryExpressions exps, ExpressionFactory factory, CriteriaQueryImpl<?> q) {
         //    exps.grouping = null; // Value[]
         //    exps.groupingClauses = null; // String[]
         List<Expression<?>> groups = q.getGroupList();
@@ -155,8 +148,7 @@ public class CriteriaExpressionBuilder {
                 : having.toKernelExpression(factory, model, q);
     }
 
-    protected void evalDistinct(QueryExpressions exps, 
-        ExpressionFactory factory, CriteriaQueryImpl q) {
+    protected void evalDistinct(QueryExpressions exps, ExpressionFactory factory, CriteriaQueryImpl<?> q) {
         Boolean distinct = q.getDistinct();
         if (distinct == null) {
             exps.distinct = QueryExpressions.DISTINCT_FALSE;
@@ -167,22 +159,33 @@ public class CriteriaExpressionBuilder {
         //exps.distinct &= ~QueryExpressions.DISTINCT_AUTO;
     }
 
-    protected void evalFilter(QueryExpressions exps, ExpressionFactory factory,
-        CriteriaQueryImpl q) {
+    protected void evalFilter(QueryExpressions exps, ExpressionFactory factory, CriteriaQueryImpl<?> q) {
         Set<Root<?>> roots = q.getRoots();
         MetamodelImpl model = q.getMetamodel();
         PredicateImpl where = q.getRestriction();
-        q.assertRoot();
+        SubqueryImpl<?> subQuery = q.getDelegator();
         org.apache.openjpa.kernel.exps.Expression filter = null;
-        for (Root<?> root : roots) {
-            if (root.getJoins() != null) {
-                for (Join<?, ?> join : root.getJoins()) {
-                    filter = and(factory, ((ExpressionImpl<?>)join)
-                        .toKernelExpression(factory, model, q), filter);
+        if (subQuery == null || subQuery.getCorrelatedJoins() == null) {
+            q.assertRoot();
+            for (Root<?> root : roots) {
+                if (root.getJoins() != null) {
+                    for (Join<?, ?> join : root.getJoins()) {
+                        filter = and(factory, ((ExpressionImpl<?>)join)
+                                .toKernelExpression(factory, model, q), filter);
+                    }
                 }
+                ((RootImpl<?>)root).addToContext(factory, model, q);
             }
-            ((RootImpl)root).addToContext(factory, model, q);
         }
+        if (subQuery != null) {
+            List<Join<?,?>> corrJoins = subQuery.getCorrelatedJoins();
+            if (corrJoins != null) {
+                for (int i = 0; i < corrJoins.size(); i++) 
+                    filter = and(factory, ((ExpressionImpl<?>)corrJoins.get(i))
+                            .toKernelExpression(factory, model, q), filter);
+            }
+        }
+        
         if (where != null) {
             filter = and(factory, where.toKernelExpression
                     (factory, model, q), filter);
@@ -192,8 +195,7 @@ public class CriteriaExpressionBuilder {
         exps.filter = filter;
     }
 
-    protected void evalProjections(QueryExpressions exps, 
-        ExpressionFactory factory, CriteriaQueryImpl q) {
+    protected void evalProjections(QueryExpressions exps, ExpressionFactory factory, CriteriaQueryImpl<?> q) {
         List<Selection<?>> selections = q.getSelectionList();
         MetamodelImpl model = q.getMetamodel();
         // TODO: fill in projection clauses
@@ -212,8 +214,8 @@ public class CriteriaExpressionBuilder {
     }
 
     private void getProjections(QueryExpressions exps, 
-        List<Selection<?>> selections, List projections, List aliases, 
-        ExpressionFactory factory, CriteriaQueryImpl q, MetamodelImpl model) {
+        List<Selection<?>> selections, List projections, List<String> aliases, 
+        ExpressionFactory factory, CriteriaQueryImpl<?> q, MetamodelImpl model) {
         for (Selection<?> s : selections) {
             List<Selection<?>> sels = ((SelectionImpl)s).getSelections();
             if (sels == null) {
@@ -229,14 +231,20 @@ public class CriteriaExpressionBuilder {
         }
     }
 
-    protected boolean isDefaultProjection(List<Selection<?>> selections, 
-        CriteriaQueryImpl q) {
-        return selections == null 
-        || (selections.size() == 1 && selections.get(0) == q.getRoot());
+    protected boolean isDefaultProjection(List<Selection<?>> selections, CriteriaQueryImpl<?> q) {
+        if (selections == null)
+            return true;
+        if (selections.size() != 1)
+            return false;
+        Selection<?> sel = selections.get(0);
+        if (q.getRoots() != null && sel == q.getRoot())
+            return true;
+        if ((sel instanceof PathImpl<?,?>) && ((PathImpl<?,?>)sel)._correlatedPath != null)
+            return true;
+        return false;
     }
 
-    protected void evalFetchJoin(QueryExpressions exps, 
-        ExpressionFactory factory, CriteriaQueryImpl q) {
+    protected void evalFetchJoin(QueryExpressions exps, ExpressionFactory factory, CriteriaQueryImpl<?> q) {
         List<String> iPaths = new ArrayList<String>();
         List<String> oPaths = new ArrayList<String>();
         Set<Root<?>> roots = q.getRoots();
