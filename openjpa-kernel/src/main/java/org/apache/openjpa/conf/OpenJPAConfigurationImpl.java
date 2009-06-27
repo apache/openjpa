@@ -28,8 +28,7 @@ import org.apache.openjpa.datacache.ConcurrentQueryCache;
 import org.apache.openjpa.datacache.DataCacheManager;
 import org.apache.openjpa.datacache.DataCacheManagerImpl;
 import org.apache.openjpa.ee.ManagedRuntime;
-import org.apache.openjpa.enhance.PCEnhancerAgent;
-import org.apache.openjpa.enhance.RuntimeUnenhancedClasssesModes;
+import org.apache.openjpa.enhance.RuntimeUnenhancedClassesModes;
 import org.apache.openjpa.event.BrokerFactoryEventManager;
 import org.apache.openjpa.event.LifecycleEventManager;
 import org.apache.openjpa.event.OrphanedKeyAction;
@@ -538,11 +537,11 @@ public class OpenJPAConfigurationImpl
         runtimeUnenhancedClasses = addInt("RuntimeUnenhancedClasses");
         runtimeUnenhancedClasses.setAliases(new String[] {
             "supported", String.valueOf(
-                RuntimeUnenhancedClasssesModes.SUPPORTED),
+                RuntimeUnenhancedClassesModes.SUPPORTED),
             "unsupported", String.valueOf(
-                RuntimeUnenhancedClasssesModes.UNSUPPORTED),
+                RuntimeUnenhancedClassesModes.UNSUPPORTED),
             "warn", String.valueOf(
-                RuntimeUnenhancedClasssesModes.WARN),
+                RuntimeUnenhancedClassesModes.WARN),
         });
         runtimeUnenhancedClasses.setDefault("supported");
         runtimeUnenhancedClasses.setString("supported");

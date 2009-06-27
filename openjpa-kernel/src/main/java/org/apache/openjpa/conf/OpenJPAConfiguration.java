@@ -24,7 +24,7 @@ import java.util.Map;
 import org.apache.openjpa.datacache.DataCache;
 import org.apache.openjpa.datacache.DataCacheManager;
 import org.apache.openjpa.ee.ManagedRuntime;
-import org.apache.openjpa.enhance.RuntimeUnenhancedClasssesModes;
+import org.apache.openjpa.enhance.RuntimeUnenhancedClassesModes;
 import org.apache.openjpa.event.BrokerFactoryEventManager;
 import org.apache.openjpa.event.LifecycleEventManager;
 import org.apache.openjpa.event.OrphanedKeyAction;
@@ -1537,9 +1537,9 @@ public interface OpenJPAConfiguration
      * Return the runtime class optimization setting as one of the
      * following symbolic constants:
      * <ul>
-     * <li>{@link RuntimeUnenhancedClasssesModes#SUPPORTED}</li>
-     * <li>{@link RuntimeUnenhancedClasssesModes#UNSUPPORTED}</li>
-     * <li>{@link RuntimeUnenhancedClasssesModes#WARN}</li>
+     * <li>{@link RuntimeUnenhancedClassesModes#SUPPORTED}</li>
+     * <li>{@link RuntimeUnenhancedClassesModes#UNSUPPORTED}</li>
+     * <li>{@link RuntimeUnenhancedClassesModes#WARN}</li>
      * </ul>
      *
      * @since 1.0.0
@@ -1550,9 +1550,9 @@ public interface OpenJPAConfiguration
      * Set the runtime class optimization setting as one of the
      * following symbolic constants:
      * <ul>
-     * <li>{@link RuntimeUnenhancedClasssesModes#SUPPORTED}</li>
-     * <li>{@link RuntimeUnenhancedClasssesModes#UNSUPPORTED}</li>
-     * <li>{@link RuntimeUnenhancedClasssesModes#WARN}</li>
+     * <li>{@link RuntimeUnenhancedClassesModes#SUPPORTED}</li>
+     * <li>{@link RuntimeUnenhancedClassesModes#UNSUPPORTED}</li>
+     * <li>{@link RuntimeUnenhancedClassesModes#WARN}</li>
      * </ul>
      *
      * @since 1.0.0

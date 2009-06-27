@@ -30,7 +30,7 @@ import org.apache.openjpa.enhance.PCRegistry;
 import org.apache.openjpa.enhance.StateManager;
 import org.apache.openjpa.enhance.ManagedInstanceProvider;
 import org.apache.openjpa.enhance.ReflectingPersistenceCapable;
-import org.apache.openjpa.enhance.RuntimeUnenhancedClasssesModes;
+import org.apache.openjpa.enhance.RuntimeUnenhancedClassesModes;
 import org.apache.openjpa.kernel.FetchConfiguration;
 import org.apache.openjpa.kernel.LockManager;
 import org.apache.openjpa.kernel.OpenJPAStateManager;
@@ -222,7 +222,7 @@ public class ImplHelper {
         return (PersistenceCapable.class.isAssignableFrom(type)
             || (type != null
                 && (conf == null || conf.getRuntimeUnenhancedClassesConstant()
-                    == RuntimeUnenhancedClasssesModes.SUPPORTED)
+                    == RuntimeUnenhancedClassesModes.SUPPORTED)
                 && PCRegistry.isRegistered(type)));
     }
 
