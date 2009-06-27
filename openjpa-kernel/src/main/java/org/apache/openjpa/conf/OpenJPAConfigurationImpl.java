@@ -28,10 +28,11 @@ import org.apache.openjpa.datacache.ConcurrentQueryCache;
 import org.apache.openjpa.datacache.DataCacheManager;
 import org.apache.openjpa.datacache.DataCacheManagerImpl;
 import org.apache.openjpa.ee.ManagedRuntime;
+import org.apache.openjpa.enhance.RuntimeUnenhancedClassesModes;
+import org.apache.openjpa.event.BrokerFactoryEventManager;
 import org.apache.openjpa.event.OrphanedKeyAction;
 import org.apache.openjpa.event.RemoteCommitEventManager;
 import org.apache.openjpa.event.RemoteCommitProvider;
-import org.apache.openjpa.event.BrokerFactoryEventManager;
 import org.apache.openjpa.kernel.AutoClear;
 import org.apache.openjpa.kernel.BrokerImpl;
 import org.apache.openjpa.kernel.ConnectionRetainModes;
@@ -44,7 +45,16 @@ import org.apache.openjpa.kernel.SavepointManager;
 import org.apache.openjpa.kernel.Seq;
 import org.apache.openjpa.kernel.exps.AggregateListener;
 import org.apache.openjpa.kernel.exps.FilterListener;
-import org.apache.openjpa.lib.conf.*;
+import org.apache.openjpa.lib.conf.BooleanValue;
+import org.apache.openjpa.lib.conf.ConfigurationImpl;
+import org.apache.openjpa.lib.conf.Configurations;
+import org.apache.openjpa.lib.conf.IntValue;
+import org.apache.openjpa.lib.conf.ObjectValue;
+import org.apache.openjpa.lib.conf.PluginListValue;
+import org.apache.openjpa.lib.conf.PluginValue;
+import org.apache.openjpa.lib.conf.ProductDerivations;
+import org.apache.openjpa.lib.conf.StringListValue;
+import org.apache.openjpa.lib.conf.StringValue;
 import org.apache.openjpa.lib.log.Log;
 import org.apache.openjpa.lib.util.Localizer;
 import org.apache.openjpa.meta.MetaDataFactory;
@@ -53,7 +63,6 @@ import org.apache.openjpa.util.ClassResolver;
 import org.apache.openjpa.util.ImplHelper;
 import org.apache.openjpa.util.ProxyManager;
 import org.apache.openjpa.util.StoreFacadeTypeRegistry;
-import org.apache.openjpa.enhance.RuntimeUnenhancedClasssesModes;
 
 /**
  * Implementation of the {@link OpenJPAConfiguration} interface.
@@ -496,11 +505,11 @@ public class OpenJPAConfigurationImpl
         runtimeUnenhancedClasses = addInt("RuntimeUnenhancedClasses");
         runtimeUnenhancedClasses.setAliases(new String[] {
             "supported", String.valueOf(
-                RuntimeUnenhancedClasssesModes.SUPPORTED),
+                RuntimeUnenhancedClassesModes.SUPPORTED),
             "unsupported", String.valueOf(
-                RuntimeUnenhancedClasssesModes.UNSUPPORTED),
+                RuntimeUnenhancedClassesModes.UNSUPPORTED),
             "warn", String.valueOf(
-                RuntimeUnenhancedClasssesModes.WARN),
+                RuntimeUnenhancedClassesModes.WARN),
         });
         runtimeUnenhancedClasses.setDefault("supported");
         runtimeUnenhancedClasses.setString("supported");

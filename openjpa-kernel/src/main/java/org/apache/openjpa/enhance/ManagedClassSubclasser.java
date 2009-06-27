@@ -87,7 +87,7 @@ public class ManagedClassSubclasser {
 
         Log log = conf.getLog(OpenJPAConfiguration.LOG_ENHANCE);
         if (conf.getRuntimeUnenhancedClassesConstant()
-            != RuntimeUnenhancedClasssesModes.SUPPORTED) {
+            != RuntimeUnenhancedClassesModes.SUPPORTED) {
             Collection unenhanced = new ArrayList();
             for (Class cls : classes)
                 if (!PersistenceCapable.class.isAssignableFrom(cls))
@@ -96,7 +96,7 @@ public class ManagedClassSubclasser {
                 Message msg = _loc.get("runtime-optimization-disabled",
                     unenhanced);
                 if (conf.getRuntimeUnenhancedClassesConstant()
-                    == RuntimeUnenhancedClasssesModes.WARN)
+                    == RuntimeUnenhancedClassesModes.WARN)
                     log.warn(msg);
                 else
                     throw new UserException(msg);

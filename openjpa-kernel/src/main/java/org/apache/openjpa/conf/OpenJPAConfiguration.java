@@ -24,12 +24,13 @@ import java.util.Map;
 import org.apache.openjpa.datacache.DataCache;
 import org.apache.openjpa.datacache.DataCacheManager;
 import org.apache.openjpa.ee.ManagedRuntime;
+import org.apache.openjpa.enhance.RuntimeUnenhancedClassesModes;
+import org.apache.openjpa.event.BrokerFactoryEventManager;
 import org.apache.openjpa.event.OrphanedKeyAction;
 import org.apache.openjpa.event.RemoteCommitEventManager;
 import org.apache.openjpa.event.RemoteCommitProvider;
 import org.apache.openjpa.kernel.AutoClear;
 import org.apache.openjpa.kernel.AutoDetach;
-import org.apache.openjpa.kernel.Broker;
 import org.apache.openjpa.kernel.BrokerFactory;
 import org.apache.openjpa.kernel.BrokerImpl;
 import org.apache.openjpa.kernel.ConnectionRetainModes;
@@ -40,7 +41,6 @@ import org.apache.openjpa.kernel.QueryFlushModes;
 import org.apache.openjpa.kernel.RestoreState;
 import org.apache.openjpa.kernel.SavepointManager;
 import org.apache.openjpa.kernel.Seq;
-import org.apache.openjpa.event.BrokerFactoryEventManager;
 import org.apache.openjpa.kernel.exps.AggregateListener;
 import org.apache.openjpa.kernel.exps.FilterListener;
 import org.apache.openjpa.lib.conf.Configuration;
@@ -1466,9 +1466,9 @@ public interface OpenJPAConfiguration
      * Return the runtime class optimization setting as one of the
      * following symbolic constants:
      * <ul>
-     * <li>{@link RuntimeUnenhancedClasssesModes#SUPPORTED}</li>
-     * <li>{@link RuntimeUnenhancedClasssesModes#UNSUPPORTED}</li>
-     * <li>{@link RuntimeUnenhancedClasssesModes#WARN}</li>
+     * <li>{@link RuntimeUnenhancedClassesModes#SUPPORTED}</li>
+     * <li>{@link RuntimeUnenhancedClassesModes#UNSUPPORTED}</li>
+     * <li>{@link RuntimeUnenhancedClassesModes#WARN}</li>
      * </ul>
      *
      * @since 1.0.0
@@ -1479,9 +1479,9 @@ public interface OpenJPAConfiguration
      * Set the runtime class optimization setting as one of the
      * following symbolic constants:
      * <ul>
-     * <li>{@link RuntimeUnenhancedClasssesModes#SUPPORTED}</li>
-     * <li>{@link RuntimeUnenhancedClasssesModes#UNSUPPORTED}</li>
-     * <li>{@link RuntimeUnenhancedClasssesModes#WARN}</li>
+     * <li>{@link RuntimeUnenhancedClassesModes#SUPPORTED}</li>
+     * <li>{@link RuntimeUnenhancedClassesModes#UNSUPPORTED}</li>
+     * <li>{@link RuntimeUnenhancedClassesModes#WARN}</li>
      * </ul>
      *
      * @since 1.0.0

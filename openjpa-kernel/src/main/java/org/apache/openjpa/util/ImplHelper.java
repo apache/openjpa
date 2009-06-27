@@ -25,12 +25,13 @@ import java.util.Collections;
 import java.util.Iterator;
 import java.util.Map;
 
-import org.apache.openjpa.enhance.PersistenceCapable;
-import org.apache.openjpa.enhance.PCRegistry;
-import org.apache.openjpa.enhance.StateManager;
+import org.apache.openjpa.conf.OpenJPAConfiguration;
 import org.apache.openjpa.enhance.ManagedInstanceProvider;
+import org.apache.openjpa.enhance.PCRegistry;
+import org.apache.openjpa.enhance.PersistenceCapable;
 import org.apache.openjpa.enhance.ReflectingPersistenceCapable;
-import org.apache.openjpa.enhance.RuntimeUnenhancedClasssesModes;
+import org.apache.openjpa.enhance.RuntimeUnenhancedClassesModes;
+import org.apache.openjpa.enhance.StateManager;
 import org.apache.openjpa.kernel.FetchConfiguration;
 import org.apache.openjpa.kernel.LockManager;
 import org.apache.openjpa.kernel.OpenJPAStateManager;
@@ -46,7 +47,6 @@ import org.apache.openjpa.meta.FieldMetaData;
 import org.apache.openjpa.meta.JavaTypes;
 import org.apache.openjpa.meta.SequenceMetaData;
 import org.apache.openjpa.meta.ValueStrategies;
-import org.apache.openjpa.conf.OpenJPAConfiguration;
 
 /**
  * Helper for OpenJPA back-ends.
@@ -222,7 +222,7 @@ public class ImplHelper {
         return (PersistenceCapable.class.isAssignableFrom(type)
             || (type != null
                 && (conf == null || conf.getRuntimeUnenhancedClassesConstant()
-                    == RuntimeUnenhancedClasssesModes.SUPPORTED)
+                    == RuntimeUnenhancedClassesModes.SUPPORTED)
                 && PCRegistry.isRegistered(type)));
     }
 
