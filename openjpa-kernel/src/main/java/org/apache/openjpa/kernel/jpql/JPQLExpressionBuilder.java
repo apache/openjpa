@@ -608,6 +608,7 @@ public class JPQLExpressionBuilder
         subContext.setSubquery(subquery);
         Path subpath = factory.newPath(subquery);
         subpath.setMetaData(candidate);
+        subquery.setMetaData(candidate);
         exp = bindVariableForKeyPath(path, alias, exp);
         exp =  and(exp, factory.equal(path, subpath));
         return exp;
@@ -1797,6 +1798,7 @@ public class JPQLExpressionBuilder
             if (ctx().subquery != null) {
                 path = factory.newPath(ctx().subquery);
                 path.setMetaData(ctx().subquery.getMetaData());
+                factory.bindVariable(val, path);
             } else {
                 path = factory.newPath();
                 path.setMetaData(ctx().meta);
