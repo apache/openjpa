@@ -494,10 +494,9 @@ public class PCPath
                     prevaction != null && prevaction.data != null &&
                     sel.ctx().getVariable(action.var) == null) {
                     System.out.println("action var="+action.var);
-                    isCorrelatedPath = 
-                        pstate.joins.isCorrelatedVariable(action.var);
-                }
-                if (!isCorrelatedPath)
+                    isCorrelatedPath = true;
+                    pstate.joins = pstate.joins.setCorrelatedVariable(action.var);
+                } else 
                     pstate.joins = pstate.joins.
                         setVariable((String) action.data);
             }

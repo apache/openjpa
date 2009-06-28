@@ -1442,10 +1442,6 @@ public class JPQLExpressionBuilder
         contexts.push(subContext);
         subContext.setParent(parent);
 
-        // evaluate from clause for resolving variables defined in subquery
-        JPQLNode from = node.getChild(1);
-        subContext.from = evalFromClause(from, true);
-
         ClassMetaData candidate = getCandidateMetaData(node);
         Subquery subq = subContext.getSubquery();
         if (subq == null) {
@@ -1454,6 +1450,10 @@ public class JPQLExpressionBuilder
         }
         subq.setMetaData(candidate);
         subq.setAlias(alias);
+        
+        // evaluate from clause for resolving variables defined in subquery
+        JPQLNode from = node.getChild(1);
+        subContext.from = evalFromClause(from, true);
 
         try {
             QueryExpressions subexp = getQueryExpressions();

@@ -2026,7 +2026,9 @@ public class SelectImpl
 
 //        System.out.println((_parent != null) ? "FindAliasForSUBQuery" :
 //            "FindAliasForQuery: " + key.toString());
-        String alias = (pj != null && pj.path() != null) ? null : _schemaAlias;
+        String alias = (pj != null && pj.path() != null && 
+            pj.getCorrelatedVariable() == null) 
+            ? null : _schemaAlias;
 
         if (table.isAssociation()) {
             // create alias in this select
@@ -2551,8 +2553,12 @@ public class SelectImpl
         public void setContext(Context context) {
         }
         
-        public boolean isCorrelatedVariable(String var) {
-            return false;
+        public Joins setCorrelatedVariable(String var) {
+            return this;
+        }
+
+        public String getCorrelatedVariable() {
+            return null;
         }
 
         public void moveJoinsToParent() {
@@ -2606,12 +2612,13 @@ public class SelectImpl
             return this;
         }
 
-        public boolean isCorrelatedVariable(String var) {
-            boolean isCorrelated = getSelect().ctx().getVariable(var) == null;
-            if (isCorrelated)
-                this.correlatedVar = var;
-
-            return isCorrelated;
+        public Joins setCorrelatedVariable(String var) {
+            this.correlatedVar = var;
+            return this;
+        }
+        
+        public String getCorrelatedVariable() {
+            return correlatedVar;
         }
 
         public void setContext(Context context) {
@@ -2693,7 +2700,6 @@ public class SelectImpl
 
         public SelectJoins(SelectImpl sel) {
             _sel = sel;
-            correlatedVar = sel._correlatedVar;
         }
 
         public Select getSelect() {
@@ -3119,12 +3125,14 @@ public class SelectImpl
         }
     }
 
-    public boolean isCorrelatedVariable(String var) {
-        boolean isCorrelated = //_ctx.getVariable(_schemaAlias) == null &&
-            _ctx.getVariable(var) == null;
-        if (isCorrelated)
-            _correlatedVar = var;
-        return isCorrelated;
+    public Joins setCorrelatedVariable(String var) {
+        if (var == null)
+            return this;
+        return new SelectJoins(this).setCorrelatedVariable(var);
+    }
+    
+    public String getCorrelatedVariable() {
+        return null;
     }
 
     public void moveJoinsToParent() {

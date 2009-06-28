@@ -889,10 +889,14 @@ public abstract class AbstractResult
         public void appendTo(SQLBuffer buf) {
         }
 
-        public boolean isCorrelatedVariable(String var) {
-            return false;
+        public Joins setCorrelatedVariable(String var) {
+            return this;
         }
 
+        public String getCorrelatedVariable() {
+            return null;
+        }
+        
         public void moveJoinsToParent() {
         }
     }

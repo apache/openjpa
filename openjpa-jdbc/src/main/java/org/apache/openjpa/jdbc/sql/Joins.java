@@ -90,7 +90,9 @@ public interface Joins {
      * Return true if the variable name being traversed into
      * with the next join is a correlated variable.
      */
-    public boolean isCorrelatedVariable(String var);
+    public Joins setCorrelatedVariable(String var);
+    
+    public String getCorrelatedVariable();
 
     public void moveJoinsToParent();
 
