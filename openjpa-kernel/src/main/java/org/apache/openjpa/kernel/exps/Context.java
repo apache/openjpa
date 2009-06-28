@@ -18,6 +18,7 @@
  */
 package org.apache.openjpa.kernel.exps;
 
+import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -29,7 +30,7 @@ import org.apache.openjpa.meta.ClassMetaData;
  * @since 2.0
  *
  */
-public class Context {
+public class Context implements Serializable {
 
     public final ParsedJPQL parsed;
     public ClassMetaData meta;
