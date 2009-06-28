@@ -78,9 +78,9 @@ public class TestJPQLSubquery extends CriteriaTest {
             + "emp.department)";
         String expectedSQL = "SELECT t0.empId, t0.EMP_TYPE, t2.id, t2.city, t2.country, t2.county, t2.state, " + 
         "t2.street, t3.userid, t3.DTYPE, t3.age, t3.compName, t3.creditRating, t3.name, t2.zipCode, t4.deptNo, " + 
-        "t4.name, t5.id, t5.annualMiles, t5.name, t6.id, t7.deptNo, t7.name, t6.name, t6.salary, t0.name, t0.rating, " + 
-        "t0.salary, t8.empId, t8.EMP_TYPE, t8.ADDRESS_ID, t8.DEPARTMENT_DEPTNO, t8.FREQUENTFLIERPLAN_ID, " + 
-        "t8.MANAGER_ID, t8.name, t8.rating, t8.salary, t8.hireDate, t0.hireDate " + 
+        "t4.name, t5.id, t5.annualMiles, t5.name, t6.id, t7.deptNo, t7.name, t6.name, t6.salary, t0.name, " + 
+        "t0.rating, t0.salary, t8.empId, t8.EMP_TYPE, t8.ADDRESS_ID, t8.DEPARTMENT_DEPTNO, " + 
+        "t8.FREQUENTFLIERPLAN_ID, t8.MANAGER_ID, t8.name, t8.rating, t8.salary, t8.hireDate, t0.hireDate " + 
         "FROM CR_EMP t0 LEFT OUTER JOIN CR_ADDR t2 ON t0.ADDRESS_ID = t2.id " + 
         "LEFT OUTER JOIN CR_DEPT t4 ON t0.DEPARTMENT_DEPTNO = t4.deptNo " + 
         "LEFT OUTER JOIN FrequentFlierPlan t5 ON t0.FREQUENTFLIERPLAN_ID = t5.id " + 
@@ -268,14 +268,6 @@ public class TestJPQLSubquery extends CriteriaTest {
     public void testSubqueries6e() {
         String jpql = "SELECT o FROM Order o JOIN o.customer c JOIN c.address a WHERE 10000 < "
             + "ALL (SELECT u.age FROM a.user u)";
-        String expectedSQL = "SELECT t0.id, t0.count, t5.id, t5.accountNum, t6.id, t6.city, t6.country, t6.county, " + 
-        "t6.state, t6.street, t7.userid, t7.DTYPE, t7.age, t7.compName, t7.creditRating, t7.name, t6.zipCode, " + 
-        "t5.balanceOwed, t5.creditRating, t5.filledOrderCount, t5.firstName, t5.lastName, t5.name, t5.status, " + 
-        "t0.delivered, t0.name, t0.orderTs, t0.quantity, t0.totalCost FROM CR_ODR t0 INNER JOIN CR_CUST t1 ON " + 
-        "t0.CUSTOMER_ID = t1.id LEFT OUTER JOIN CR_CUST t5 ON t0.CUSTOMER_ID = t5.id INNER JOIN CR_ADDR t2 ON " + 
-        "t1.ADDRESS_ID = t2.id LEFT OUTER JOIN CR_ADDR t6 ON t5.ADDRESS_ID = t6.id LEFT OUTER JOIN CompUser t7 ON " + 
-        "t6.id = t7.ADD_ID WHERE (? < ALL (SELECT t4.age FROM  CompUser t3, CompUser t4 WHERE (t3.userid = t4.userid) " + 
-        "AND (t2.id = t3.ADD_ID) ) AND 1 = 1)"; 
 
         String expectedSQL1 = "SELECT t0.id, t0.count, t5.id, t5.accountNum, t6.id, t6.city, t6.country, t6.county, " + 
         "t6.state, t6.street, t7.userid, t7.DTYPE, t7.age, t7.compName, t7.creditRating, t7.name, t6.zipCode, " + 
