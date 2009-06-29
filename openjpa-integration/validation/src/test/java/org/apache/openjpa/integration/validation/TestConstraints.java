@@ -28,7 +28,11 @@ import org.apache.openjpa.persistence.test.SingleEMFTestCase;
  * focusing on the following Validation scenarios:
  *   1) Test @Null constraint exception on variables in mode=AUTO
  *   2) Test @NotNull constraint exception on variables in mode=AUTO
- *   3) Test no constraint exception when mode=NONE
+ *   3) Test @NotNull and @Null constraints pass in mode=AUTO
+ *   4) Test no constraint exception when mode=NONE
+ *   5) Test @AssertTrue constraint exception on variables in mode=AUTO
+ *   6) Test @AssertFalse constraint exception on variables in mode=AUTO
+ *   7) Test @AssertFalse and @AssertTrue constraints pass in mode=AUTO
  *    
  * @version $Rev$ $Date$
  */
@@ -36,7 +40,8 @@ public class TestConstraints extends SingleEMFTestCase {
 
     @Override
     public void setUp() {
-        super.setUp(CLEAR_TABLES, ConstraintNull.class);
+        super.setUp(CLEAR_TABLES,
+            ConstraintNull.class, ConstraintBoolean.class);
     }
 
     /**
@@ -107,7 +112,38 @@ public class TestConstraints extends SingleEMFTestCase {
 
     /**
      * Scenario being tested:
-     *   3) Test no constraint exception when mode=NONE
+     *   3) Test @NotNull and @Null constraints pass in mode=AUTO
+     */
+    public void testNullNotNullConstraint() {
+        getLog().trace("testNullNotNullConstraint() started");
+        // create EM from default EMF
+        OpenJPAEntityManager em = emf.createEntityManager();
+        assertNotNull(em);
+        try {
+            // verify Validation Mode
+            OpenJPAConfiguration conf = em.getConfiguration();
+            assertNotNull(conf);
+            assertTrue("ValidationMode",
+                conf.getValidationMode().equalsIgnoreCase("AUTO"));
+            // create invalid ConstraintNull instance
+            em.getTransaction().begin();
+            ConstraintNull c = ConstraintNull.createValid();
+            em.persist(c);
+            em.getTransaction().commit();
+            getLog().trace("testNullNotNullConstraint() passed");
+        } catch (Exception e) {
+            // unexpected
+            fail("Caught unexpected exception = " + e);
+        } finally {
+            if ((em != null) && em.isOpen()) {
+                em.close();
+            }
+        }
+    }
+
+    /**
+     * Scenario being tested:
+     *   4) Test no constraint exception when mode=NONE
      */
     public void testNullConstraintIgnored() {
         getLog().trace("testNullConstraintIgnored() started");
@@ -143,7 +179,104 @@ public class TestConstraints extends SingleEMFTestCase {
         }
     }
 
-    
+    /**
+     * Scenario being tested:
+     *   5) Test @AssertTrue constraint exception on variables in mode=AUTO
+     */
+    public void testAssertTrueConstraint() {
+        getLog().trace("testAssertTrueConstraint() started");
+        // create EM from default EMF
+        OpenJPAEntityManager em = emf.createEntityManager();
+        assertNotNull(em);
+        try {
+            // verify Validation Mode
+            OpenJPAConfiguration conf = em.getConfiguration();
+            assertNotNull(conf);
+            assertTrue("ValidationMode",
+                conf.getValidationMode().equalsIgnoreCase("AUTO"));
+            // create invalid ConstraintNull instance
+            em.getTransaction().begin();
+            ConstraintBoolean c = ConstraintBoolean.createInvalidTrue();
+            em.persist(c);
+            em.getTransaction().commit();
+            getLog().trace("testAssertTrueConstraint() failed");
+            fail("Expected a Validation exception");
+        } catch (Exception e) {
+            // expected
+            getLog().trace("Caught expected exception = " + e);
+            getLog().trace("testAssertTrueConstraint() passed");
+        } finally {
+            if ((em != null) && em.isOpen()) {
+                em.close();
+            }
+        }
+    }
+
+    /**
+     * Scenario being tested:
+     *   6) Test @AssertFalse constraint exception on variables in mode=AUTO
+     */
+    public void testAssertFalseConstraint() {
+        getLog().trace("testAssertFalseConstraint() started");
+        // create EM from default EMF
+        OpenJPAEntityManager em = emf.createEntityManager();
+        assertNotNull(em);
+        try {
+            // verify Validation Mode
+            OpenJPAConfiguration conf = em.getConfiguration();
+            assertNotNull(conf);
+            assertTrue("ValidationMode",
+                conf.getValidationMode().equalsIgnoreCase("AUTO"));
+            // create invalid ConstraintNull instance
+            em.getTransaction().begin();
+            ConstraintBoolean c = ConstraintBoolean.createInvalidFalse();
+            em.persist(c);
+            em.getTransaction().commit();
+            getLog().trace("testAssertFalseConstraint() failed");
+            fail("Expected a Validation exception");
+        } catch (Exception e) {
+            // expected
+            getLog().trace("Caught expected exception = " + e);
+            getLog().trace("testAssertFalseConstraint() passed");
+        } finally {
+            if ((em != null) && em.isOpen()) {
+                em.close();
+            }
+        }
+    }
+
+    /**
+     * Scenario being tested:
+     *   7) Test @AssertFalse and @AssertTrue constraints pass in mode=AUTO
+     */
+    public void testAssertTrueFalseConstraint() {
+        getLog().trace("testAssertTrueFalseConstraint() started");
+        // create EM from default EMF
+        OpenJPAEntityManager em = emf.createEntityManager();
+        assertNotNull(em);
+        try {
+            // verify Validation Mode
+            OpenJPAConfiguration conf = em.getConfiguration();
+            assertNotNull(conf);
+            assertTrue("ValidationMode",
+                conf.getValidationMode().equalsIgnoreCase("AUTO"));
+            // create invalid ConstraintNull instance
+            em.getTransaction().begin();
+            ConstraintBoolean c = ConstraintBoolean.createValid();
+            em.persist(c);
+            em.getTransaction().commit();
+            getLog().trace("testAssertTrueFalseConstraint() passed");
+        } catch (Exception e) {
+            // unexpected
+            fail("Caught unexpected exception = " + e);
+        } finally {
+            if ((em != null) && em.isOpen()) {
+                em.close();
+            }
+        }
+    }
+
+
     /**
      * Internal convenience method for getting the OpenJPA logger
      * 
