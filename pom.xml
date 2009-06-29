@@ -37,8 +37,14 @@
     <description>OpenJPA</description>
 
     <properties>
-        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <openjpa.version>${pom.version}</openjpa.version>
+        <openjpa.loglevel>INFO</openjpa.loglevel>
+        <test.jvm.maxpermsize>512m</test.jvm.maxpermsize>
+        <test.jvm.maxheapsize>1024m</test.jvm.maxheapsize>
+        <test.jvm.arguments>-Xmx${test.jvm.maxheapsize} -XX:MaxPermSize=${test.jvm.maxpermsize}</test.jvm.arguments>
+        <!-- the sufire.jvm.args can be overridden my specific profiles -->
+        <surefire.jvm.args>${test.jvm.arguments}</surefire.jvm.args>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <checkstyle.config.location>../openjpa-project/checkstyle.xml</checkstyle.config.location>
     </properties>
 
@@ -413,9 +419,10 @@
             <properties>
                 <test.env>-Dtest.basedir=${basedir}/..</test.env>
                 <policy.file>${basedir}/../openjpa-persistence-jdbc/src/test/resources/j2.security.test.policy</policy.file>
-                <surefire.jvm.args>-Djava.security.manager -Djava.security.policy=${policy.file} ${test.env}</surefire.jvm.args>
+                <surefire.jvm.args>-Djava.security.manager -Djava.security.policy=${policy.file} ${test.env} ${test.jvm.arguments}</surefire.jvm.args>
             </properties>
         </profile>
+
         <profile>
             <id>test-dynamic-enhancer</id>
             <activation>
@@ -424,7 +431,7 @@
             <properties>
                 <test.env>-Dtest.basedir=${basedir}/..</test.env>
                 <policy.file>${basedir}/../openjpa-persistence-jdbc/src/test/resources/j2.security.test.policy</policy.file>
-                <surefire.jvm.args>-Djava.security.manager -Djava.security.policy=${policy.file} ${test.env}</surefire.jvm.args>
+                <surefire.jvm.args>-Djava.security.manager -Djava.security.policy=${policy.file} ${test.env} ${test.jvm.arguments}</surefire.jvm.args>
             </properties>
             <build>
                 <plugins>
@@ -432,7 +439,7 @@
                        <groupId>org.apache.maven.plugins</groupId>
                        <artifactId>maven-surefire-plugin</artifactId>
                        <configuration>
-                           <argLine>${test.jvm.arguments}</argLine>
+                           <argLine>${surefire.jvm.args}</argLine>
                            <includes>
                                <include></include>
                            </includes>
@@ -440,6 +447,16 @@
                    </plugin>
                 </plugins>
             </build>
+        </profile>
+
+        <profile>
+            <id>debug</id>
+            <activation>
+                <activeByDefault>false</activeByDefault>
+            </activation>
+            <properties>
+                <test.jvm.arguments>-Xmx${test.jvm.maxheapsize} -XX:MaxPermSize=${test.jvm.maxpermsize} -agentlib:jdwp=transport=dt_socket,server=y,address=8000</test.jvm.arguments>
+            </properties>
         </profile>
 
     </profiles>
