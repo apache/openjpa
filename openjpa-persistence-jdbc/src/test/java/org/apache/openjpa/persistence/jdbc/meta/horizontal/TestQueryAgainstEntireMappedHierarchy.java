@@ -40,8 +40,8 @@ import org.apache.openjpa.persistence.OpenJPAEntityManagerFactory;
 import org.apache.openjpa.persistence.OpenJPAEntityManager;
 
 
-public class TestQueryAgainstEntireMappedHierarchy extends org.apache.openjpa.persistence.jdbc.kernel.TestSQLListenerTestCase
-{
+public class TestQueryAgainstEntireMappedHierarchy
+    extends org.apache.openjpa.persistence.jdbc.kernel.TestSQLListenerTestCase {
 	
     /** Creates a new instance of TestQueryAgainstEntireMappedHierarchy */
     public TestQueryAgainstEntireMappedHierarchy(String name) 

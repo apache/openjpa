@@ -52,7 +52,9 @@ public class TestAccessPathsOfSubqueries extends BaseQueryTest {
     public void testSimpleSubqueryAccessPath() {
         Broker broker = getBrokerFactory().newBroker();
         Query q = broker.newQuery(JPQLParser.LANG_JPQL,
-            "SELECT o FROM RuntimeTest1 o WHERE EXISTS (SELECT rt5.name FROM RuntimeTest5 rt5 WHERE rt5.name IS NOT NULL)");
+            "SELECT o FROM RuntimeTest1 o WHERE EXISTS ("
+            + "SELECT rt5.name FROM RuntimeTest5 rt5 "
+            + "WHERE rt5.name IS NOT NULL)");
         ClassMetaData[] metas = q.getAccessPathMetaDatas();
         Collection c = Arrays.asList(metas);
         ClassMetaData rt1 = broker.getConfiguration().
@@ -69,7 +71,9 @@ public class TestAccessPathsOfSubqueries extends BaseQueryTest {
     public void testRelationTraversalSubqueryAccessPath() {
         Broker broker = getBrokerFactory().newBroker();
         Query q = broker.newQuery(JPQLParser.LANG_JPQL,
-            "SELECT o FROM RuntimeTest1 o WHERE EXISTS (SELECT rt5.runtimeTest4.name FROM RuntimeTest5 rt5 WHERE rt5.name IS NOT NULL)");
+            "SELECT o FROM RuntimeTest1 o WHERE EXISTS ("
+            + "SELECT rt5.runtimeTest4.name FROM RuntimeTest5 rt5 "
+            + "WHERE rt5.name IS NOT NULL)");
 
         ClassMetaData[] metas = q.getAccessPathMetaDatas();
         Collection c = Arrays.asList(metas);

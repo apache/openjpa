@@ -71,7 +71,8 @@ public class TestByteArrayAppId extends BaseJDBCTest {
         _pmf =(OpenJPAEntityManagerFactory) getEmf(getProps());
         
         if (!_init) {
-            initialize((JDBCConfiguration) ((OpenJPAEntityManagerFactorySPI) OpenJPAPersistence.cast(_pmf)).getConfiguration());
+            initialize((JDBCConfiguration) ((OpenJPAEntityManagerFactorySPI)
+                    OpenJPAPersistence.cast(_pmf)).getConfiguration());
             _init = true;
         }
         EntityManager pm = _pmf.createEntityManager();
@@ -105,10 +106,11 @@ public class TestByteArrayAppId extends BaseJDBCTest {
         
         EntityManager em= currentEntityManager();
         OpenJPAEntityManager kem = OpenJPAPersistence.cast (em);
-        //JDBCConfiguration conf = (JDBCConfiguration) kem.getConfiguration();        
+        //JDBCConfiguration conf = (JDBCConfiguration) kem.getConfiguration();
         
         MappingTool tool = new MappingTool((JDBCConfiguration)
-        		((OpenJPAEntityManagerSPI) kem).getConfiguration(), MappingTool.ACTION_REFRESH, false);
+                ((OpenJPAEntityManagerSPI) kem).getConfiguration(),
+                MappingTool.ACTION_REFRESH, false);
         tool.run(ByteArrayPKPC.class);
         tool.run(ByteArrayPKPC2.class);
         tool.record();
@@ -171,7 +173,8 @@ public class TestByteArrayAppId extends BaseJDBCTest {
         
         EntityManager em= currentEntityManager();
         OpenJPAEntityManager kem = OpenJPAPersistence.cast (em);
-        if (! ((OpenJPAEntityManagerSPI) kem).getConfiguration().getCompatibilityInstance().getCopyObjectIds())
+        if (! ((OpenJPAEntityManagerSPI) kem).getConfiguration()
+                .getCompatibilityInstance().getCopyObjectIds())
             return;
         
         ByteArrayPKPCId oid = new ByteArrayPKPCId();
@@ -266,7 +269,8 @@ public class TestByteArrayAppId extends BaseJDBCTest {
             ByteArrayPKPC bytes = new ByteArrayPKPC(new byte[]
             { (byte) (i + 5), (byte) (i + 6) }, String.valueOf(i));
             kem.persist(bytes);
-            assertEquals(bytes, getStateManager(bytes, kem).getManagedInstance());
+            assertEquals(bytes,
+                    getStateManager(bytes, kem).getManagedInstance());
             owner.getRels().add(bytes);
         }
         

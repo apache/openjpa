@@ -68,9 +68,12 @@ public class TestEmbeddedPessimisticLocking
 
     public void setUpTestCase() {
 
-		JDBCConfiguration conf = (JDBCConfiguration) ((OpenJPAEntityManagerFactorySPI) OpenJPAPersistence.cast(emf)).getConfiguration();
+        JDBCConfiguration conf =
+            (JDBCConfiguration) ((OpenJPAEntityManagerFactorySPI)
+                    OpenJPAPersistence.cast(emf)).getConfiguration();
 
-        supportsLocking = conf.getDBDictionaryInstance().supportsSelectForUpdate;
+        supportsLocking =
+            conf.getDBDictionaryInstance().supportsSelectForUpdate;
 
        deleteAll(EmbeddedOwnerPC.class);
 
@@ -102,7 +105,8 @@ public class TestEmbeddedPessimisticLocking
         // do this to ensure that the SELECT DISTINCT gets performed here.
         OpenJPAEntityManager em = emf.createEntityManager();
 
-        //FIXME jthomas commenting this since setOptimistic is not available for userTx
+        //FIXME jthomas commenting this since setOptimistic is not available for
+        //userTx
         //em.getTransaction().setOptimistic(false);
         startTx(em);
 
@@ -117,7 +121,8 @@ public class TestEmbeddedPessimisticLocking
     public void testEmbeddedFieldsWithLockedParent() {
         OpenJPAEntityManager em =(OpenJPAEntityManager)currentEntityManager();
         prepareEMF(em.getEntityManagerFactory());
-        ((FetchPlan) em.getFetchPlan()).addField(EmbeddedOwnerPC.class, "embedded");
+        ((FetchPlan) em.getFetchPlan()).addField(EmbeddedOwnerPC.class,
+                "embedded");
 //FIXME jthomas commenting this since setOptimistic is not available for userTx
 //        pm.currentTransaction().setOptimistic(false);
         startTx(em);
@@ -277,7 +282,8 @@ public class TestEmbeddedPessimisticLocking
 		props.put("openjpa.RemoteCommitProvider", "sjvm");
 		props.put("openjpa.FlushBeforeQueries", "true");
 		props.put("javax.jdo.option.IgnoreCache", "false");
-		//propsMap.put("openjpa.BrokerImpl", "kodo.datacache.CacheTestBroker");//CacheTestBroker.class.getName ());
+		//propsMap.put("openjpa.BrokerImpl", "kodo.datacache.CacheTestBroker");
+                //CacheTestBroker.class.getName ());
 		return props;
 	}
 

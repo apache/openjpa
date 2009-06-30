@@ -220,21 +220,30 @@ public class TestVersion extends AnnotationTestCase
 
 	   public void testNoDefaultVersionWithoutFieldOrColumn()
 	   {
-			OpenJPAEntityManager pm = (OpenJPAEntityManager) currentEntityManager();
-		   ClassMapping cls =  ((JDBCConfigurationImpl)((OpenJPAEntityManagerSPI) OpenJPAPersistence.cast(pm)).getConfiguration()).getMappingRepositoryInstance().getMapping(EmbedOwner.class, null, true);
-		   assertEquals(NoneVersionStrategy.getInstance(),
-				   cls.getVersion().getStrategy()); assertEquals(0,
-						   cls.getVersion().getColumns().length);
+           OpenJPAEntityManager pm =
+               (OpenJPAEntityManager) currentEntityManager();
+           ClassMapping cls =
+                   ((JDBCConfigurationImpl) ((OpenJPAEntityManagerSPI)
+                   OpenJPAPersistence.cast(pm)).getConfiguration())
+                   .getMappingRepositoryInstance().getMapping(EmbedOwner.class,
+                           null, true);
+           assertEquals(NoneVersionStrategy.getInstance(),
+                   cls.getVersion().getStrategy()); assertEquals(0,
+                           cls.getVersion().getColumns().length);
 			endEm(pm);
 	   }
 
 	   public void testVersionWithField()
 	   {
-		   OpenJPAEntityManager pm = (OpenJPAEntityManager) currentEntityManager();
-		   ClassMapping cls = ((JDBCConfigurationImpl)((OpenJPAEntityManagerSPI) OpenJPAPersistence.cast(pm)).getConfiguration()).getMappingRepositoryInstance().getMapping(AnnoTest1.class, null, true);
+           OpenJPAEntityManager pm =
+               (OpenJPAEntityManager) currentEntityManager();
+           ClassMapping cls = ((JDBCConfigurationImpl)((OpenJPAEntityManagerSPI)
+                   OpenJPAPersistence.cast(pm)).getConfiguration())
+                   .getMappingRepositoryInstance().getMapping(AnnoTest1.class,
+                           null, true);
 		   assertTrue(NoneVersionStrategy.getInstance() !=
 			   cls.getVersion().getStrategy()); assertEquals(1,
-					   cls.getVersion().getColumns().length);
+                       cls.getVersion().getColumns().length);
 			endEm(pm);
 	   }
 }

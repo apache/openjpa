@@ -96,8 +96,11 @@ public class TestStaticInnerClasses extends BaseKernelTest {
 //        */
 //        endEm(pm,());
         /*OpenJPAEntityManager pm = getPM();
-          OpenJPAQuery q = pm.createQuery("SELECT c FROM TestStaticInnerClasses.Inner c WHERE c.string = 'foo' ORDER BY c.string ASC");
-          q.setCandidateCollection((Collection)pm.createExtent(TestStaticInnerClasses.Inner.class, false));
+          OpenJPAQuery q = pm.createQuery(
+              "SELECT c FROM TestStaticInnerClasses.Inner c "
+              + "WHERE c.string = 'foo' ORDER BY c.string ASC");
+          q.setCandidateCollection((Collection)pm.createExtent(
+              TestStaticInnerClasses.Inner.class, false));
 
           try
           {

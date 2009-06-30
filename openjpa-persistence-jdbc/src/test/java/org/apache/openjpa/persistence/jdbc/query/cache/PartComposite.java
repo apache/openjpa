@@ -32,65 +32,67 @@ import org.apache.openjpa.persistence.DataCache;
 @DataCache
 public class PartComposite extends  Part  {
 
-	 double assemblyCost;
-	 double assemblyTime;
-	 double massIncrement;
-	 
-	 @OneToMany( mappedBy="parent")
-	 Collection<Usage> partsUsed = new ArrayList<Usage>();
-	
-	public PartComposite() {}
-	
-	public PartComposite(int partno, String name, double asmCost, double massInc) {
-		this.partno=partno;
-		this.name=name;
-		assemblyCost=asmCost;
-		massIncrement=massInc;
-		inventory=0;
-	}
-	
-	public PartComposite addSubPart(EntityManager em,  int quantity, Part subpart) {
-		Usage use = new Usage( this, quantity, subpart);
-		em.persist(use);
-		return this;
-	}
+    double assemblyCost;
+    double assemblyTime;
+    double massIncrement;
 
-	public double getAssemblyCost() {
-		return assemblyCost;
-	}
+    @OneToMany( mappedBy="parent")
+    Collection<Usage> partsUsed = new ArrayList<Usage>();
 
-	public void setAssemblyCost(double assemblyCost) {
-		this.assemblyCost = assemblyCost;
-	}
+    public PartComposite() {}
+
+    public PartComposite(int partno, String name, double asmCost,
+            double massInc) {
+        this.partno=partno;
+        this.name=name;
+        assemblyCost=asmCost;
+        massIncrement=massInc;
+        inventory=0;
+    }
+
+    public PartComposite addSubPart(EntityManager em, int quantity,
+            Part subpart) {
+        Usage use = new Usage( this, quantity, subpart);
+        em.persist(use);
+        return this;
+    }
+
+    public double getAssemblyCost() {
+        return assemblyCost;
+    }
+
+    public void setAssemblyCost(double assemblyCost) {
+        this.assemblyCost = assemblyCost;
+    }
 
 
-	public double getMassIncrement() {
-		return massIncrement;
-	}
+    public double getMassIncrement() {
+        return massIncrement;
+    }
 
-	public void setMassIncrement(double massIncrement) {
-		this.massIncrement = massIncrement;
-	}
-	
-	public String toString() {
-	
-		return "PartComposite:"+partno+" name:+"+name+" assemblyCost:"+assemblyCost+" massIncrement:"+massIncrement;
-	}
+    public void setMassIncrement(double massIncrement) {
+        this.massIncrement = massIncrement;
+    }
 
-	public Collection<Usage> getPartsUsed() {
-		return partsUsed;
-	}
+    public String toString() {
 
-	public void setPartsUsed(Collection<Usage> partsUsed) {
-		this.partsUsed = partsUsed;
-	}
+        return "PartComposite:"+partno+" name:+"+name+" assemblyCost:"+
+            assemblyCost+" massIncrement:"+massIncrement;
+    }
 
-	public double getAssemblyTime() {
-		return assemblyTime;
-	}
+    public Collection<Usage> getPartsUsed() {
+        return partsUsed;
+    }
 
-	public void setAssemblyTime(double assemblyTime) {
-		this.assemblyTime = assemblyTime;
-	}
+    public void setPartsUsed(Collection<Usage> partsUsed) {
+        this.partsUsed = partsUsed;
+    }
 
+    public double getAssemblyTime() {
+        return assemblyTime;
+    }
+
+    public void setAssemblyTime(double assemblyTime) {
+        this.assemblyTime = assemblyTime;
+    }
 }

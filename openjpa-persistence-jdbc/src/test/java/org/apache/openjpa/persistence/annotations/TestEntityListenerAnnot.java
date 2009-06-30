@@ -77,7 +77,10 @@ public class TestEntityListenerAnnot extends AnnotationTestCase
 		assertEquals("namevalidator", store.getClist().get(0));
 		assertEquals("longnamevalidatorprr", store.getClist().get(1));
 		assertEquals("employeepop", store.getClist().get(2));
-		assertEquals("We expected 'gen#" +  emp.getCheck() + " : " + emp.getCheck() + "'. However, we got '" + store.getClist().get(3) + "'", "gen#"+emp.getCheck(), store.getClist().get(3));
+                assertEquals("We expected 'gen#" +  emp.getCheck() + " : " 
+                    + emp.getCheck() + "'. However, we got '"
+                    + store.getClist().get(3) + "'", "gen#" + emp.getCheck(),
+                    store.getClist().get(3));
 	  }
       finally {
 		endTx(em);
@@ -199,7 +202,8 @@ public class TestEntityListenerAnnot extends AnnotationTestCase
 
 		assertNotNull(emp);
 		assertNotNull(CallbackStorage.getInstance().getClist());
-		assertEquals("PostLoad is overfiring...not accurate", 2, CallbackStorage.getInstance().getClist().size());
+		assertEquals("PostLoad is overfiring...not accurate", 2, 
+                    CallbackStorage.getInstance().getClist().size());
 		assertEquals("employeepol", CallbackStorage.getInstance().getClist().get(0));
 		assertEquals("employeepol", CallbackStorage.getInstance().getClist().get(1));
 

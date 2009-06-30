@@ -335,8 +335,10 @@ public class TestFieldRange extends BaseKernelTest {
 
         System.out.println("i1 : " + i1 + "\ni2 : " + i2);
 
-        //CR346162. In this CR, it was stated that @Temporal(DATE) fields will be equal for year, month, day but not for hours, 
-        //minutes, seconds. So, we removed the time check and checked only for the equality of day, month and year
+        // CR346162. In this CR, it was stated that @Temporal(DATE) fields will
+        // be equal for year, month, day but not for hours,
+        // minutes, seconds. So, we removed the time check and checked only for
+        // the equality of day, month and year
 
         /* assertEquals("Field type Date: "
      + testDate.getTime() + "!="
@@ -349,11 +351,12 @@ public class TestFieldRange extends BaseKernelTest {
         if ((testDateDay != retrievedObjectDay) ||
             (testDateMonth != retrievedObjectMonth) ||
             (testDateYear != retrievedObjectYear)) {
-            Assert.fail(
-                "Field type Date not stored properly. One or more of the components of the date (day, month or year) do not match. \n" +
-                    " Value that should be stored : " + testDate.toGMTString() +
-                    ". \nValue that is actually" +
-                    "stored : " + retrievedObject.getTestDate().toGMTString());
+            Assert
+                .fail("Field type Date not stored properly. One or more of "
+                + "the components of the date (day, month or year) "
+                + "do not match. \n" + " Value that should be stored : "
+                + testDate.toGMTString() + ". \nValue that is actually"
+                + "stored : " + retrievedObject.getTestDate().toGMTString());
         }
         //assertEquals ("Field type Object", testObject,
         //retrievedObject.getTestObject ());

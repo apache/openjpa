@@ -61,7 +61,9 @@ public class TestPagingResultObjectProvider
 
 
     public boolean skipTest() {
-        JDBCConfiguration conf = (JDBCConfiguration) ((OpenJPAEntityManagerFactorySPI) OpenJPAPersistence.cast(emf)).getConfiguration();
+        JDBCConfiguration conf =
+            (JDBCConfiguration) ((OpenJPAEntityManagerFactorySPI)
+            OpenJPAPersistence.cast(emf)).getConfiguration();
         DBDictionary dict = conf.getDBDictionaryInstance();
         if (dict.joinSyntax == Join.SYNTAX_TRADITIONAL)
             return true;
@@ -110,9 +112,11 @@ public class TestPagingResultObjectProvider
         EntityManager em =currentEntityManager();
         OpenJPAEntityManager kem = OpenJPAPersistence.cast(em);
 
-		String theQuery="select a FROM "+PagingPC.class.getSimpleName()+" a where a.intField >= 0";
+        String theQuery = "select a FROM " + PagingPC.class.getSimpleName()
+            + " a where a.intField >= 0";
 
-        //OpenJPAQuery q = kem.createQuery(PagingPC.class.getSimpleName(), "intField >= 0");
+        //OpenJPAQuery q = kem.createQuery(PagingPC.class.getSimpleName(),
+		//    "intField >= 0");
         OpenJPAQuery q = kem.createQuery(theQuery);
 
         q.getFetchPlan().setFetchBatchSize(0);
@@ -208,7 +212,8 @@ public class TestPagingResultObjectProvider
         EntityManager em =currentEntityManager();
         OpenJPAEntityManager kem = OpenJPAPersistence.cast (em);
 
-		String theQuery="select a FROM "+PagingPC.class.getSimpleName()+" a where a.intField >= 0";
+        String theQuery = "select a FROM " + PagingPC.class.getSimpleName()
+            + " a where a.intField >= 0";
         OpenJPAQuery q = kem.createQuery(theQuery);
         q.getFetchPlan().setFetchBatchSize(0);
         q.getFetchPlan().addFetchGroups("rel");
@@ -280,7 +285,8 @@ public class TestPagingResultObjectProvider
         EntityManager em =currentEntityManager();
         OpenJPAEntityManager kem = OpenJPAPersistence.cast(em);
 
-		String theQuery="select a FROM "+PagingAppIdPC.class.getSimpleName()+" a where a.intField >= 0";
+        String theQuery = "select a FROM " + PagingAppIdPC.class.getSimpleName()
+            + " a where a.intField >= 0";
         OpenJPAQuery q = kem.createQuery(theQuery);
 
 
@@ -379,7 +385,8 @@ public class TestPagingResultObjectProvider
         EntityManager em =currentEntityManager();
         OpenJPAEntityManager kem = OpenJPAPersistence.cast(em);
 
-		String theQuery="select a FROM "+PagingPC.class.getSimpleName()+" a where a.intField >= 0";
+        String theQuery = "select a FROM " + PagingPC.class.getSimpleName()
+            + " a where a.intField >= 0";
         OpenJPAQuery q = kem.createQuery(theQuery);
 
 
@@ -432,7 +439,8 @@ public class TestPagingResultObjectProvider
         EntityManager em =currentEntityManager();
         OpenJPAEntityManager kem = OpenJPAPersistence.cast(em);
 
-		String theQuery="select a FROM "+PagingPC.class.getSimpleName()+" a where a.intField >= 0";
+        String theQuery = "select a FROM " + PagingPC.class.getSimpleName()
+            + " a where a.intField >= 0";
         OpenJPAQuery q = kem.createQuery(theQuery);
 
 
@@ -648,7 +656,8 @@ public class TestPagingResultObjectProvider
 		props.put("openjpa.RemoteCommitProvider", "sjvm");
 		props.put("openjpa.FlushBeforeQueries", "true");
 		props.put("javax.jdo.option.IgnoreCache", "false");
-		//propsMap.put("openjpa.BrokerImpl", "kodo.datacache.CacheTestBroker");//CacheTestBroker.class.getName ());
+		//propsMap.put("openjpa.BrokerImpl", "kodo.datacache.CacheTestBroker");
+                //CacheTestBroker.class.getName ());
 		return props;
 	}
 

@@ -79,8 +79,8 @@ public class TestEJBQLCondExpression extends AbstractTestCase {
 
     public void testBetweenExpr() {
         EntityManager em = currentEntityManager();
-        String query =
-            "SELECT o.name FROM CompUser o WHERE o.age BETWEEN 19 AND 40 AND o.computerName = 'PC'";
+        String query = "SELECT o.name FROM CompUser o WHERE" +
+            " o.age BETWEEN 19 AND 40 AND o.computerName = 'PC'";
 
         List result = em.createQuery(query).getResultList();
 
@@ -94,8 +94,8 @@ public class TestEJBQLCondExpression extends AbstractTestCase {
 
     public void testNotBetweenExpr() {
         EntityManager em = currentEntityManager();
-        String query =
-            "SELECT o.name FROM CompUser o WHERE o.age NOT BETWEEN 19 AND 40 AND o.computerName= 'PC'";
+        String query = "SELECT o.name FROM CompUser o " +
+            "WHERE o.age NOT BETWEEN 19 AND 40 AND o.computerName= 'PC'";
 
         List result = em.createQuery(query).getResultList();
 
@@ -139,16 +139,16 @@ public class TestEJBQLCondExpression extends AbstractTestCase {
     public void testLikeExpr() {
         EntityManager em = currentEntityManager();
 
-        String query =
-            "SELECT o.computerName FROM CompUser o WHERE o.name LIKE 'Sha%' AND o.computerName NOT IN ('PC')";
+        String query = "SELECT o.computerName FROM CompUser o WHERE o.name " +
+            "LIKE 'Sha%' AND o.computerName NOT IN ('PC')";
 
         List result = em.createQuery(query).getResultList();
 
         assertNotNull(result);
         assertEquals(0, result.size());
 
-        query =
-            "SELECT o.computerName FROM CompUser o WHERE o.name LIKE 'Sha%o_' AND o.computerName NOT IN ('UNIX')";
+        query = "SELECT o.computerName FROM CompUser o WHERE o.name " +
+            "LIKE 'Sha%o_' AND o.computerName NOT IN ('UNIX')";
 
         result = em.createQuery(query).getResultList();
 
@@ -175,8 +175,8 @@ public class TestEJBQLCondExpression extends AbstractTestCase {
     public void testNullExpr() {
         EntityManager em = currentEntityManager();
 
-        String query =
-            "SELECT o.name FROM CompUser o WHERE o.age IS NOT NULL AND o.computerName = 'PC' ";
+        String query = "SELECT o.name FROM CompUser o WHERE o.age IS NOT NULL" +
+            " AND o.computerName = 'PC' ";
 
         List result = em.createQuery(query).getResultList();
 
@@ -259,7 +259,8 @@ public class TestEJBQLCondExpression extends AbstractTestCase {
 
         String query =
             "SELECT DISTINCT o.name FROM CompUser o WHERE NOT EXISTS" +
-                " (SELECT s FROM CompUser s WHERE s.address.country = o.address.country)";
+                " (SELECT s FROM CompUser s " +
+                "WHERE s.address.country = o.address.country)";
 
         List result = em.createQuery(query).getResultList();
 
@@ -274,7 +275,8 @@ public class TestEJBQLCondExpression extends AbstractTestCase {
 
         String query =
             "SELECT o.name FROM CompUser o WHERE o.address.zipcode = ANY (" +
-                " SELECT s.computerName FROM CompUser s WHERE s.address.country IS NOT NULL )";
+                " SELECT s.computerName FROM CompUser s " +
+                "WHERE s.address.country IS NOT NULL )";
 
         List result = em.createQuery(query).getResultList();
 
@@ -287,9 +289,9 @@ public class TestEJBQLCondExpression extends AbstractTestCase {
     public void testConstructorExpr() {
         EntityManager em = currentEntityManager();
 
-        String query =
-            "SELECT NEW org.apache.openjpa.persistence.common.apps.MaleUser(c.name, c.computerName, c.address, c.age, c.userid)" +
-                " FROM CompUser c WHERE c.name = 'Seetha'";
+        String query = "SELECT NEW org.apache.openjpa.persistence.common.apps" +
+               ".MaleUser(c.name, c.computerName, c.address, c.age, c.userid)" +
+               " FROM CompUser c WHERE c.name = 'Seetha'";
 
         MaleUser male = (MaleUser) em.createQuery(query).getSingleResult();
 

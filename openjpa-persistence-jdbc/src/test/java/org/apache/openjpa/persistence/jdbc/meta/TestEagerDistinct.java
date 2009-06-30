@@ -43,8 +43,8 @@ import org.apache.openjpa.persistence.OpenJPAEntityManagerFactory;
 import org.apache.openjpa.persistence.OpenJPAEntityManager;
 
 
-public class TestEagerDistinct extends org.apache.openjpa.persistence.jdbc.kernel.TestSQLListenerTestCase 
-{
+public class TestEagerDistinct
+    extends org.apache.openjpa.persistence.jdbc.kernel.TestSQLListenerTestCase {
         
     /** Creates a new instance of TestEagerDistinct */
     public TestEagerDistinct(String name) 
@@ -107,7 +107,8 @@ public class TestEagerDistinct extends org.apache.openjpa.persistence.jdbc.kerne
     private void eagerParallelWithNonDistinctQuery(int fetchSize)
     throws Exception {
         OpenJPAEntityManager pm = getPM();
-        OpenJPAQuery q = pm.createNativeQuery("stringField.startsWith ('pc')",HelperPC2.class);
+        OpenJPAQuery q = pm.createNativeQuery(
+                "stringField.startsWith ('pc')", HelperPC2.class);
         //FIXME jthomas
         //q.setOrdering("stringField ascending");
         q.getFetchPlan().setFetchBatchSize(fetchSize);
@@ -146,7 +147,9 @@ public class TestEagerDistinct extends org.apache.openjpa.persistence.jdbc.kerne
     private void eagerParallelWithDistinctQuery(int fetchSize)
     throws Exception {
         OpenJPAEntityManager pm = getPM();
-        OpenJPAQuery q =  pm.createNativeQuery("helperCollection.contains (h) && h.stringField == 'shared'",HelperPC2.class);
+        OpenJPAQuery q = pm.createNativeQuery(
+                "helperCollection.contains (h) && h.stringField == 'shared'",
+                HelperPC2.class);
         //FIXME  jthomas
         //q.setOrdering("stringField ascending");
         q.getFetchPlan().setFetchBatchSize(fetchSize);
@@ -206,7 +209,8 @@ public class TestEagerDistinct extends org.apache.openjpa.persistence.jdbc.kerne
         sql.clear();
         
         pm = getPM();
-        q = pm.createNativeQuery("stringField.startsWith ('eager')",EagerPC.class);
+        q = pm.createNativeQuery("stringField.startsWith ('eager')",
+                EagerPC.class);
         //FIXME jthomas
         //q.setOrdering("stringField ascending");
         q.getFetchPlan().setFetchBatchSize(fetchSize);

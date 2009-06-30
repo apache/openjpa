@@ -38,29 +38,42 @@ import org.apache.openjpa.persistence.LoadFetchGroup;
 @Entity
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
 // Default inheritance strategy
-@DiscriminatorColumn(name = "EMP_TYPE", discriminatorType = DiscriminatorType.INTEGER)
+@DiscriminatorColumn(name = "EMP_TYPE",
+        discriminatorType = DiscriminatorType.INTEGER)
 @DiscriminatorValue("0")
 @FetchGroups( {
-        @FetchGroup(name = "AddressFetchGroup", attributes = { @FetchAttribute(name = "address") }),
-        @FetchGroup(name = "RatingFetchGroup", attributes = { @FetchAttribute(name = "rating") }),
-        @FetchGroup(name = "ManagerFetchGroup1A", attributes = { @FetchAttribute(name = "manager", recursionDepth = 1) }),
-        @FetchGroup(name = "ManagerFetchGroup1B", attributes = { @FetchAttribute(name = "manager", recursionDepth = -1) }),
-        @FetchGroup(name = "ManagerFetchGroup2", attributes = { @FetchAttribute(name = "manager", recursionDepth = 2) }),
-        @FetchGroup(name = "DescFetchGroup", attributes = { @FetchAttribute(name = "description") }),
+        @FetchGroup(name = "AddressFetchGroup",
+                attributes = { @FetchAttribute(name = "address") }),
+        @FetchGroup(name = "RatingFetchGroup",
+                attributes = { @FetchAttribute(name = "rating") }),
+        @FetchGroup(name = "ManagerFetchGroup1A",
+                attributes = { @FetchAttribute(name = "manager",
+                recursionDepth = 1) }),
+        @FetchGroup(name = "ManagerFetchGroup1B",
+                attributes = { @FetchAttribute(name = "manager",
+                recursionDepth = -1) }),
+        @FetchGroup(name = "ManagerFetchGroup2",
+                attributes = { @FetchAttribute(name = "manager",
+                recursionDepth = 2) }),
+        @FetchGroup(name = "DescFetchGroup",
+                attributes = { @FetchAttribute(name = "description") }),
 
-        @FetchGroup(name = "DepartmentFetchGroup", attributes = { @FetchAttribute(name = "dept") }),
+        @FetchGroup(name = "DepartmentFetchGroup",
+                attributes = { @FetchAttribute(name = "dept") }),
 
         @FetchGroup(name = "AggregateEmployeeFetchGroup1", attributes = {
                 @FetchAttribute(name = "dept"),
                 @FetchAttribute(name = "address"),
                 @FetchAttribute(name = "manager", recursionDepth = 1) }),
-        @FetchGroup(name = "AggregateEmployeeFetchGroup2", fetchGroups = { "AggregateEmployeeFetchGroup1" }),
+        @FetchGroup(name = "AggregateEmployeeFetchGroup2",
+                fetchGroups = { "AggregateEmployeeFetchGroup1" }),
         @FetchGroup(name = "AggregateEmployeeFetchGroup3", fetchGroups = {
                 "DepartmentFetchGroup", "AddressFetchGroup",
                 "ManagerFetchGroup1A" }),
         @FetchGroup(name = "AggregateEmployeeFetchGroup4", attributes = {
                 @FetchAttribute(name = "dept"),
-                @FetchAttribute(name = "address") }, fetchGroups = { "ManagerFetchGroup1A" }) })
+                @FetchAttribute(name = "address") },
+                fetchGroups = { "ManagerFetchGroup1A" }) })
 public class FGEmployee {
     @Id
     private int id;

@@ -125,16 +125,27 @@ public class TestCalendarFields extends BaseKernelTest {
 
         assertEquals(1, size);
 
-//        assertSize(0, pm.newQuery(CalendarFields.class, "singapore < :date").execute(new Date(time - 100000)));
+//        assertSize(0, pm.newQuery(CalendarFields.class,
+//            "singapore < :date").execute(new Date(time - 100000)));
 //
-//        assertSize(0, pm.newQuery(CalendarFields.class, "singapore > :date").execute(new Date(time + 100000)));
-//        assertSize(1, pm.newQuery(CalendarFields.class, "singapore > :date").execute(new Date(time - 100000)));
+//        assertSize(0, pm.newQuery(CalendarFields.class,
+//            "singapore > :date").execute(new Date(time + 100000)));
+//        assertSize(1, pm.newQuery(CalendarFields.class,
+//            "singapore > :date").execute(new Date(time - 100000)));
 //
-//        assertSize(1, pm.newQuery(CalendarFields.class, "singapore < :date").execute(newCalendar(new Date(time + 100000), null)));
-//        assertSize(0, pm.newQuery(CalendarFields.class, "singapore < :date").execute(newCalendar(new Date(time - 100000), null)));
+//        assertSize(1, pm.newQuery(CalendarFields.class,
+//            "singapore < :date").execute(newCalendar(new Date(time + 100000),
+//            null)));
+//        assertSize(0, pm.newQuery(CalendarFields.class,
+//            "singapore < :date").execute(newCalendar(new Date(time - 100000),
+//             null)));
 //
-//        assertSize(0, pm.newQuery(CalendarFields.class, "singapore > :date").execute(newCalendar(new Date(time + 100000), null)));
-//        assertSize(1, pm.newQuery(CalendarFields.class, "singapore > :date").execute(newCalendar(new Date(time - 100000), null)));
+//        assertSize(0, pm.newQuery(CalendarFields.class,
+//            "singapore > :date").execute(newCalendar(new Date(time + 100000),
+//            null)));
+//        assertSize(1, pm.newQuery(CalendarFields.class,
+//            "singapore > :date").execute(newCalendar(new Date(time - 100000),
+//            null)));
 
         endEm(pm);
     }
