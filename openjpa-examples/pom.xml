@@ -26,8 +26,8 @@
     <groupId>org.apache.openjpa</groupId>
     <artifactId>openjpa-examples</artifactId>
     <packaging>jar</packaging>
-    <name>OpenJPA Persistence Examples</name>
-    <description>OpenJPA Persistence Examples</description>
+    <name>OpenJPA Examples</name>
+    <description>OpenJPA Examples</description>
     <url>http://openjpa.apache.org</url>
     <parent>
         <groupId>org.apache.openjpa</groupId>

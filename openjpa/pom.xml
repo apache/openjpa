@@ -55,8 +55,10 @@
                                         <include name="*/target/openjpa-*.jar" />
                                         <exclude name="*/target/openjpa-examples-*.jar" />
                                         <exclude name="*/target/openjpa-all-*.jar" />
+                                        <exclude name="**/*-tests.jar" />
                                         <exclude name="**/*-sources.jar" />
                                         <exclude name="**/*-javadoc.jar" />
+                                        <exclude name="openjpa-integration/**/target/openjpa-all-*.jar" />
                                     </fileset>
                                 </unjar>
 
@@ -87,7 +89,7 @@
             </plugin>
 
             <!--
-                create enhancer pre-main attribute
+                create enhancer pre-main and agent-main attributes
             -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
@@ -103,6 +105,11 @@
                                 org.apache.openjpa.enhance.PCEnhancerAgent
                             </Premain-Class>
                             <Can-Redefine-Classes>true</Can-Redefine-Classes>
+                            <Agent-Class>
+                                org.apache.openjpa.enhance.InstrumentationFactory
+                            </Agent-Class>
+                            <Can-Redefine-Classes>true</Can-Redefine-Classes>                            
+                            <Can-Retransform-Classes>true</Can-Retransform-Classes>
                         </manifestEntries>
                     </archive>
                 </configuration>
@@ -125,7 +132,7 @@
                         <!-- OSGi Bundle Metadata -->
                         <Private-Package>org.openjpa.lib.ant*,org.apache.jdbc.ant*,META-INF*</Private-Package>
                         <Export-Package>!META-INF*,!org.openjpa.lib.ant*,!org.apache.jdbc.ant*,org.apache.openjpa*</Export-Package>
-                        <Import-Package>com.ibm.*;resolution:=optional,org.postgresql.*;resolution:=optional,org.apache.tools.ant.*;resolution:=optional,org.apache.log4j.*;resolution:=optional,javax.activation.xa*;resolution:=optional,javax.jms.*;resolution:=optional,javax.transaction.*;resolution:=optional,javax.xml.bind.*;resolution:=optional,serp.*;resolution:=optional,*</Import-Package>
+                        <Import-Package>com.ibm.*;resolution:=optional,org.postgresql.*;resolution:=optional,org.apache.tools.ant.*;resolution:=optional,org.apache.log4j.*;resolution:=optional,javax.activation.xa*;resolution:=optional,javax.jms.*;resolution:=optional,javax.transaction.*;resolution:=optional,javax.validation.*;resolution:=optional,javax.xml.bind.*;resolution:=optional,serp.*;resolution:=optional,*</Import-Package>
                         <!-- Eclipse metadata -->
                         <Eclipse-Autostart>false</Eclipse-Autostart>
                         <Bundle-ClassPath>.</Bundle-ClassPath>

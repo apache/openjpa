@@ -34,7 +34,8 @@
     <modelVersion>4.0.0</modelVersion>
     <artifactId>examples</artifactId>
     <packaging>pom</packaging>
-    <name>OpenJPA Examples Integration Tests</name>
+    <name>OpenJPA Integration Tests - Examples</name>
+    <description>OpenJPA Integration Tests - Examples</description>
     <parent>
         <groupId>org.apache.openjpa</groupId>
         <artifactId>openjpa-integration</artifactId>
