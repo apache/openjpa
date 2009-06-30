@@ -151,12 +151,12 @@ public class PCEnhancer {
             try {
                 auxEnhancers.add(AccessController.doPrivileged(
                     J2DoPrivHelper.newInstanceAction(classes[i])));
-		    } catch (Throwable t) {
+            } catch (Throwable t) {
                 // aux enhancer may rely on non-existant spec classes, etc
-		    }
-		}
-    	_auxEnhancers = (AuxiliaryEnhancer[]) auxEnhancers.toArray
-            (new AuxiliaryEnhancer[auxEnhancers.size()]);
+            }
+        }
+        _auxEnhancers = (AuxiliaryEnhancer[]) auxEnhancers.toArray
+        (new AuxiliaryEnhancer[auxEnhancers.size()]);
     }
 
     private BCClass _pc;
@@ -1093,8 +1093,13 @@ public class PCEnhancer {
             addCopyKeyFieldsToObjectIdMethod(false);
             addCopyKeyFieldsFromObjectIdMethod(true);
             addCopyKeyFieldsFromObjectIdMethod(false);
+            if (_meta.hasAbstractPKField() == true) {
+                addGetIDOwningClass();
+            }
             addNewObjectIdInstanceMethod(true);
             addNewObjectIdInstanceMethod(false);
+        } else if (_meta.hasPKFieldsFromAbstractClass()) {
+            addGetIDOwningClass();
         }
     }
 
@@ -2486,22 +2491,27 @@ public class PCEnhancer {
             // new ObjectId (cls, oid)
             code.anew().setType(ObjectId.class);
             code.dup();
-            if(_meta.isEmbeddedOnly()) {
+            if(_meta.isEmbeddedOnly() || _meta.hasAbstractPKField()) {
                 code.aload().setThis();
-                code.invokevirtual().setMethod(Object.class, "getClass", Class.class, null);
-            }else
+                 code.invokevirtual().setMethod(
+                        PRE + "GetIDOwningClass", Class.class, null);
+            } else {
                 code.classconstant().setClass(getType(_meta));
+            }
         }
 
         // new <oid class> ();
         code.anew().setType(oidType);
         code.dup();
-        if (_meta.isOpenJPAIdentity() || (obj && usesClsString == Boolean.TRUE)) {
-            if(_meta.isEmbeddedOnly()) {
+        if (_meta.isOpenJPAIdentity() || (obj && usesClsString == Boolean.TRUE))
+        {
+            if (_meta.isEmbeddedOnly() || _meta.hasAbstractPKField()) {
                 code.aload().setThis();
-                code.invokevirtual().setMethod(Object.class, "getClass", Class.class, null);
-            }else
+                code.invokevirtual().setMethod(
+                    PRE + "GetIDOwningClass", Class.class, null);
+            } else  {
                 code.classconstant().setClass(getType(_meta));
+            }
         }
         if (obj) {
             code.aload().setParam(0);
@@ -2529,6 +2539,18 @@ public class PCEnhancer {
         if (!_meta.isOpenJPAIdentity() && _meta.isObjectIdTypeShared())
             code.invokespecial().setMethod(ObjectId.class, "<init>",
                 void.class, new Class[]{ Class.class, Object.class });
+        code.areturn();
+
+        code.calculateMaxStack();
+        code.calculateMaxLocals();
+    }
+
+    private void addGetIDOwningClass() throws NoSuchMethodException {
+        BCMethod method = _pc.declareMethod(PRE + "GetIDOwningClass",
+            Class.class, null);
+        Code code = method.getCode(true);
+
+        code.classconstant().setClass(getType(_meta));
         code.areturn();
 
         code.calculateMaxStack();
