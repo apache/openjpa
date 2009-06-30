@@ -608,3 +608,4 @@ public abstract class AbstractUnenhancedClassTest
         }
     }
 }
+

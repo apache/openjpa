@@ -164,3 +164,4 @@ public class TestJDBCEnumToKernelConstantMappings
         return cls.getDeclaredFields().length;
     }
 }
+

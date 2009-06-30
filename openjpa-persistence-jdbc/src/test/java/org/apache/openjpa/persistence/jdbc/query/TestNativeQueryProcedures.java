@@ -166,3 +166,4 @@ public class TestNativeQueryProcedures extends SingleEMFTestCase {
         }
     }
 }
+

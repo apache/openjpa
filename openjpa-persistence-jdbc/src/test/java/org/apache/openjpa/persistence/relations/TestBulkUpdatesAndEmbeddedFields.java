@@ -46,3 +46,4 @@ public class TestBulkUpdatesAndEmbeddedFields
         em.getTransaction().commit();
     }
 }
+

@@ -32,3 +32,4 @@ public class FieldOrderPC {
     private Double secondField;
     private FieldOrderPC oneToOneField;
 }
+

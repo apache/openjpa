@@ -64,3 +64,4 @@ public class UUIDType4StringSeq
     public void close() {
 	}
 }
+

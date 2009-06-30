@@ -30,3 +30,4 @@ public class FieldOrderPCSubclass
     private int unmanagedSubField;
     private int undeclaredSubField;
 }
+

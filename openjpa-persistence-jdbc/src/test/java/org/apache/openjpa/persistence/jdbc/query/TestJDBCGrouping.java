@@ -28,3 +28,4 @@ public class TestJDBCGrouping extends GroupingTestCase {
         // nothing to do for JDBC case
     }
 }
+

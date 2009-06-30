@@ -48,3 +48,4 @@ public class TestEJBNullValues extends AbstractTestCase {
         endEm(pm);
     }
 }
+

@@ -29,3 +29,4 @@ public interface RuntimeUnenhancedClassesModes {
     public final static int UNSUPPORTED = 1;
     public final static int WARN = 2;
 }
+

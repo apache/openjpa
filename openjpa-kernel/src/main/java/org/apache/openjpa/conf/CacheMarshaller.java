@@ -90,3 +90,4 @@ public interface CacheMarshaller {
         public Object getCacheableData(Object o);
     }
 }
+

@@ -123,3 +123,4 @@ public class XMLClassMetaData implements XMLMetaData
         _fieldMap.put(name, field);
     }
 }
+

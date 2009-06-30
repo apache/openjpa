@@ -50,3 +50,4 @@ public class TestEnhancedInstanceBrokerSerialization
         return e.getValue();
     }
 }
+

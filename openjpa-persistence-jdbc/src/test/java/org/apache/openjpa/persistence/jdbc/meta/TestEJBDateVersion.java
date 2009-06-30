@@ -117,3 +117,4 @@ public class TestEJBDateVersion extends org.apache.openjpa.persistence.jdbc.kern
 	endEm(pm);
   }
 }
+

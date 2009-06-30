@@ -264,3 +264,4 @@ public class TestDDCallbackMethods extends AnnotationTestCase
 		endEm(em);
 	}
 }
+

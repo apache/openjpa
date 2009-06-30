@@ -172,3 +172,4 @@ public class TestOneSidedParentChildWithImplicitForeignKey extends
 				PARENT_IDS[parentType]);
 	}
 }
+

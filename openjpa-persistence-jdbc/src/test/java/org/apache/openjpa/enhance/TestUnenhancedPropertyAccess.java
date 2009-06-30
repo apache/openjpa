@@ -41,3 +41,4 @@ public class TestUnenhancedPropertyAccess
         return false;
     }
 }
+

@@ -150,3 +150,4 @@ public class ClassRedefiner {
         return _canRedefine.booleanValue();
     }
 }
+

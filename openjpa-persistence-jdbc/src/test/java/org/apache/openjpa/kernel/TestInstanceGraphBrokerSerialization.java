@@ -49,3 +49,4 @@ public class TestInstanceGraphBrokerSerialization
         return 2;
     }
 }
+

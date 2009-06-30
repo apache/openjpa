@@ -90,3 +90,4 @@ public class TestSimpleManagedInterface
         em.close();
     }
 }
+

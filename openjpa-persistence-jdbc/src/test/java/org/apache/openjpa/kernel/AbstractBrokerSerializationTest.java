@@ -444,3 +444,4 @@ public abstract class AbstractBrokerSerializationTest<T>
         }
     }
 }
+

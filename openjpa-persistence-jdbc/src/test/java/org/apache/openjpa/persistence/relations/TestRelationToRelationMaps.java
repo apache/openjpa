@@ -48,3 +48,4 @@ public class TestRelationToRelationMaps
         em.close();
     }
 }
+

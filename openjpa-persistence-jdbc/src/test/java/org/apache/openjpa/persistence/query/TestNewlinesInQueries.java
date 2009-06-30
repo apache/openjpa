@@ -47,3 +47,4 @@ public class TestNewlinesInQueries
         em.close();
     }
 }
+

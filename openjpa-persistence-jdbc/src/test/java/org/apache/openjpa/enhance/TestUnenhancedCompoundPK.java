@@ -73,3 +73,4 @@ public class TestUnenhancedCompoundPK
         em.find(o.getClass(), oid);
     }
 }
+

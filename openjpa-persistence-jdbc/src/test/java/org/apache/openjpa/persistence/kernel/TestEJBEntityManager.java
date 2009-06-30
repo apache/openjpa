@@ -140,3 +140,4 @@ public class TestEJBEntityManager extends AbstractTestCase {
         endEm(em);
     }
 }
+

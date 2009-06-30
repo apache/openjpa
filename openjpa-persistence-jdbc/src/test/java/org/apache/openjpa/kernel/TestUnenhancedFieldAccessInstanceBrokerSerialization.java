@@ -41,3 +41,4 @@ public class TestUnenhancedFieldAccessInstanceBrokerSerialization
         return e.getStringField();
     }
 }
+

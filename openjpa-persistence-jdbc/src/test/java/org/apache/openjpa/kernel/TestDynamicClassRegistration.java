@@ -78,3 +78,4 @@ public class TestDynamicClassRegistration
         em.close();
     }
 }
+

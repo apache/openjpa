@@ -119,3 +119,4 @@ public class TestEJBInterfaces extends AbstractTestCase {
 //		endEm(em);
     }
 }
+

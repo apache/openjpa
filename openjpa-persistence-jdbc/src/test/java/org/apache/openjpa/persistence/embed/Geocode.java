@@ -46,3 +46,4 @@ public class Geocode extends BaseEntity {
         this.longtitude = longtitude;
     }
 }
+

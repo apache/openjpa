@@ -30,3 +30,4 @@ public class TestPCSubclassNameConversion
             PCEnhancer.toManagedTypeName(name));
     }
 }
+

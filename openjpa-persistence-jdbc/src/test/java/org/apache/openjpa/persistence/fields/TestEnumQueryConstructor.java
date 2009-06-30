@@ -48,3 +48,4 @@ public class TestEnumQueryConstructor
         assertEquals(SampleEnum.FOO, e.getEnumField());
     }
 }
+

@@ -51,3 +51,4 @@ public class TestAutoIncrementAndDataCaching
         em.close();
     }
 }
+

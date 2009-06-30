@@ -302,3 +302,4 @@ public class InformixDictionary
        return true;
     }
 }
+

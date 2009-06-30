@@ -55,3 +55,4 @@ public class TestUnenhancedFieldAccessWithRelationInstanceBrokerSerialization
         return 2;
     }
 }
+

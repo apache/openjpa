@@ -89,3 +89,4 @@ public class TestJPAQuerySubclassFunc extends BaseQueryTest {
         endEm(pm);
     }
 }
+

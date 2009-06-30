@@ -46,3 +46,4 @@ public class TestEnumSets
         assertEquals(EnumSet.allOf(SampleEnum.class), o.getEnumSet());
     }
 }
+

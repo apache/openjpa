@@ -48,3 +48,4 @@ public class GlobalListenerEntity implements ListenerTestEntity {
         this.value = value;
     }
 }
+

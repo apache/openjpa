@@ -51,3 +51,4 @@ public class TestEntityManagerFactoryPool
         assertNotSame(this.emf, emf);
     }
 }
+

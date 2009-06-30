@@ -30,3 +30,4 @@ public enum NonpolymorphicType {
     JOINABLE,
     FALSE
 }
+

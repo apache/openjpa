@@ -64,3 +64,4 @@ public class UUIDType4HexSeq
     public void close() {
 	}
 }
+

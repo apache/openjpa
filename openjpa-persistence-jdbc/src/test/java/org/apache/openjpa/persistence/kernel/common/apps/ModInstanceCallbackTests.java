@@ -185,3 +185,4 @@ public class ModInstanceCallbackTests {
         this.relId = relId;
     }
 }
+
