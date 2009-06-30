@@ -117,12 +117,13 @@ public abstract class AbstractQueryCache
         } else {
             Collection changedTypes = ev.getTypes();
             HashMap<String,Long> changedClasses = 
-                new HashMap<String,Long>(); 
+                new HashMap<String,Long>();
+            Long tstamp = new Long(System.currentTimeMillis());
             for (Object o: changedTypes) {
                 String name = ((Class) o).getName();
-                if(!changedClasses.containsKey(name))
-                    changedClasses.put(name, 
-                        new Long(System.currentTimeMillis()));
+                if(!changedClasses.containsKey(name)) {
+                    changedClasses.put(name, tstamp );
+                }
             }           
             // Now update entity timestamp map
             updateEntityTimestampMap(changedClasses);
