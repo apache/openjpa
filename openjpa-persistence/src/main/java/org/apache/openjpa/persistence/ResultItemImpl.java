@@ -18,7 +18,7 @@
  */
 package org.apache.openjpa.persistence;
 
-import javax.persistence.ResultItem;
+import javax.persistence.TupleElement;
 
 /**
  * A single dimension of projection in query result.
@@ -27,9 +27,9 @@ import javax.persistence.ResultItem;
  *
  * @param <X> type of the result
  */
-public class ResultItemImpl<X> implements ResultItem<X> {
+public class ResultItemImpl<X> implements TupleElement<X> {
     protected String _alias;
-    protected Class<X> _cls;
+    protected final Class<X> _cls;
 
     protected ResultItemImpl(Class<X> cls) {
         _cls = cls;

@@ -14,5 +14,4 @@ public class Magazine_ {
     public static volatile SingularAttribute<Magazine,Integer> id;
     public static volatile SingularAttribute<Magazine,Publisher> idPublisher;
     public static volatile SingularAttribute<Magazine,String> name;
-    public static volatile SingularAttribute<Magazine,Long> serialVersionUID;
 }

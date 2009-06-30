@@ -29,6 +29,7 @@ import javax.persistence.metamodel.MapAttribute;
 import javax.persistence.metamodel.PluralAttribute;
 import javax.persistence.metamodel.SingularAttribute;
 import javax.persistence.metamodel.Type;
+import javax.persistence.metamodel.Type.PersistenceType;
 
 import org.apache.openjpa.kernel.exps.ExpressionFactory;
 import org.apache.openjpa.kernel.exps.Value;
@@ -43,8 +44,9 @@ import org.apache.openjpa.persistence.meta.MetamodelImpl;
  * @param <X>  Type referenced by the path
  */
 /**
- * Path is an expression often representing a persistent member traversed
- * from another (parent) path.
+ * Path is an expression often representing a persistent attribute traversed from another (parent) path.
+ * The type of the path is the type of the persistent attribute.
+ * If the persistent attribute is bindable, then further path can be travesered from this path. 
  * 
  * @author Pinaki Poddar
  * @author Fay Wang
@@ -59,8 +61,7 @@ public class PathImpl<Z,X> extends ExpressionImpl<X> implements Path<X> {
     protected PathImpl<?,?> _correlatedPath;
     
     /**
-     * Protected. use by root path which neither represent a member nor has a
-     * parent. 
+     * Protected constructor use by root path which neither represent a member nor has a parent. 
      */
     protected PathImpl(Class<X> cls) {
         super(cls);
@@ -69,12 +70,10 @@ public class PathImpl<Z,X> extends ExpressionImpl<X> implements Path<X> {
     }
     
     /**
-     * Create a path from the given non-null parent representing the the given 
-     * non-null member. The given class denotes the type expressed by this
-     * path.
+     * Create a path from the given non-null parent representing the given non-null member. The given class denotes 
+     * the type expressed by this path.
      */
-    public PathImpl(PathImpl<?,Z> parent, Members.Member<? super Z, ?> member, 
-        Class<X> cls) {
+    public PathImpl(PathImpl<?,Z> parent, Members.Member<? super Z, ?> member, Class<X> cls) {
         super(cls);
         _parent = parent;
         if (_parent.isEmbedded) {
@@ -91,6 +90,9 @@ public class PathImpl<Z,X> extends ExpressionImpl<X> implements Path<X> {
      *  
      */
     public Bindable<X> getModel() { 
+        if (_member instanceof Bindable<?> == false) {
+            throw new IllegalArgumentException(this + " represents a basic path and not a bindable");
+        }
         return (Bindable<X>)_member;
     }
     
@@ -101,6 +103,9 @@ public class PathImpl<Z,X> extends ExpressionImpl<X> implements Path<X> {
         return _parent;
     }
     
+    /**
+     * Gets the path that originates this traversal. Can be itself if this itself is the origin.
+     */
     public PathImpl<?,?> getInnermostParentPath() {
         return (_parent == null) ? this : _parent.getInnermostParentPath();
     }
@@ -115,13 +120,13 @@ public class PathImpl<Z,X> extends ExpressionImpl<X> implements Path<X> {
     }
     
     protected Members.Member<?,?> getInnermostMember(PathImpl<?,?> parent, Members.Member<?,?> member) {
-        return member != null ? member : getInnermostMember(parent._parent,
-            parent._member); 
+        return member != null ? member : getInnermostMember(parent._parent,  parent._member); 
     }
     
     public void setCorrelatedPath(PathImpl<?,?> correlatedPath) {
         _correlatedPath = correlatedPath;
     }
+    
     public PathImpl<?,?> getCorrelatedPath() {
         return _correlatedPath;
     }
@@ -130,8 +135,7 @@ public class PathImpl<Z,X> extends ExpressionImpl<X> implements Path<X> {
      * Convert this path to a kernel path.
      */
     @Override
-    public Value toValue(
-        ExpressionFactory factory, MetamodelImpl model,  CriteriaQueryImpl<?> q) {
+    public Value toValue(ExpressionFactory factory, MetamodelImpl model,  CriteriaQueryImpl<?> q) {
         if (q.isRegistered(this))
             return q.getValue(this);
         org.apache.openjpa.kernel.exps.Path path = null;
@@ -151,8 +155,7 @@ public class PathImpl<Z,X> extends ExpressionImpl<X> implements Path<X> {
             //path.setSchemaAlias(q.getAlias(_parent));
             traversePath(_parent, path, _member.fmd);
         } else if (_parent != null) {
-            path = (org.apache.openjpa.kernel.exps.Path)
-            _parent.toValue(factory, model, q);
+            path = (org.apache.openjpa.kernel.exps.Path)_parent.toValue(factory, model, q);
             path.get(_member.fmd, allowNull);
         } else if (_parent == null) {
             path = factory.newPath();
@@ -206,48 +209,41 @@ public class PathImpl<Z,X> extends ExpressionImpl<X> implements Path<X> {
     }
     
     /**
-     *  Return the path corresponding to the referenced 
-     *  single-valued attribute.
-     *  @param atttribute single-valued attribute
-     *  @return path corresponding to the referenced attribute
-     */
-    /**
-     * Create a new path with this path as parent.
+     *  Gets a new path that represents the given single-valued attribute from this path.
      */
     public <Y> Path<Y> get(SingularAttribute<? super X, Y> attr) {
-        return new PathImpl<X,Y>(this, (Members.SingularAttributeImpl<? super X, Y>)attr, 
-            attr.getJavaType());
+        return new PathImpl<X,Y>(this, (Members.SingularAttributeImpl<? super X, Y>)attr, attr.getJavaType());
     }
     
     /**
-     *  Return the path corresponding to the referenced 
-     *  collection-valued attribute.
-     *  @param collection collection-valued attribute
-     *  @return expression corresponding to the referenced attribute
+     *  Gets a new path that represents the given multi-valued attribute from this path.
      */
     public <E, C extends java.util.Collection<E>> Expression<C>  get(PluralAttribute<X, C, E> coll) {
-        return new PathImpl<X,C>(this, (Members.Member<? super X, C>)coll, coll.getJavaType());
+        return new PathImpl<X,C>(this, (Members.PluralAttributeImpl<? super X, C, E>)coll, coll.getJavaType());
     }
 
     /**
-     *  Return the path corresponding to the referenced 
-     *  map-valued attribute.
-     *  @param map map-valued attribute
-     *  @return expression corresponding to the referenced attribute
+     *  Gets a new path that represents the given map-valued attribute from this path.
      */
     public <K, V, M extends java.util.Map<K, V>> Expression<M> get(MapAttribute<X, K, V> map) {
         return new PathImpl<X,M>(this, (Members.MapAttributeImpl<? super X,K,V>)map, (Class<M>)map.getJavaType());
     }
     
+    /**
+     * Gets a new path that represents the attribute of the given name from this path.
+     * 
+     * @exception IllegalArgumentException if this path represents a basic attribute that is can not be traversed 
+     * further.
+     */
     public <Y> Path<Y> get(String attName) {
-        Members.Member<? super X, Y> next = null;
         Type<?> type = _member.getType();
-        switch (type.getPersistenceType()) {
-        case BASIC:
-            throw new RuntimeException(attName + " not navigable from " + this);
-            default: next = (Members.Member<? super X, Y>) ((ManagedType<?>)type).getAttribute(attName);
+        if (type.getPersistenceType() == PersistenceType.BASIC) {
+            throw new IllegalArgumentException(this + " is a basic path and can not be navigated to " + attName);
         }
-        return new PathImpl<X,Y>(this, next, (Class<Y>)type.getClass());
+        
+        Members.Member<? super X, Y> next = (Members.Member<? super X, Y>) 
+           ((ManagedType<? super X>)type).getAttribute(attName);
+        return new PathImpl<X,Y>(this, next, next.getJavaType());
     }
     
     /**
@@ -255,5 +251,5 @@ public class PathImpl<Z,X> extends ExpressionImpl<X> implements Path<X> {
      */
     public Expression<Class<? extends X>> type() {
         return new Expressions.Type<X>(this);
-    }   
+}
 }

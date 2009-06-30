@@ -38,6 +38,7 @@ import javax.persistence.metamodel.SetAttribute;
 import javax.persistence.metamodel.SingularAttribute;
 import javax.persistence.metamodel.PluralAttribute.CollectionType;
 
+import org.apache.openjpa.kernel.Filters;
 import org.apache.openjpa.lib.util.Localizer;
 import org.apache.openjpa.meta.ClassMetaData;
 import org.apache.openjpa.meta.FieldMetaData;
@@ -850,8 +851,7 @@ public abstract class AbstractManagedType<X> extends Types.BaseType<X>
      * Selects if the attribute type matches the given Java class.
      * null matches any type.
      */
-    public static final class AttributeTypeFilter<X, Y> implements
-            Filter<Attribute<? super X, ?>> {
+    public static final class AttributeTypeFilter<X, Y> implements Filter<Attribute<? super X, ?>> {
         private final Class<Y> _type;
         private final boolean _invert;
 
@@ -865,13 +865,13 @@ public abstract class AbstractManagedType<X> extends Types.BaseType<X>
         }
 
         public boolean selects(Attribute<? super X, ?> attr) {
-            boolean result = _type == null || attr.getJavaType() == _type;
+            boolean result = _type == null || Filters.canConvert(attr.getJavaType(), _type, false);
             return _invert ? !result : result;
         }
 
         public AttributeTypeFilter<X, Y> inverse() {
             return new AttributeTypeFilter<X, Y>(_type, !_invert);
-        }
+        }        
     }
 
     public static final class AttributeNameFilter<X> implements

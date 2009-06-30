@@ -37,21 +37,21 @@ public class TestJoinCondition extends CriteriaTest {
         CriteriaQuery<?> cq = cb.createQuery();
         Root<C> c = cq.from(C.class);
         CollectionJoin<C,D> d = c.join(C_.coll);
-        assertSame(Collection.class, d.getJavaType());
+        assertSame(D.class, d.getJavaType());
     }
     
     public void testSetJoinModel() {
         CriteriaQuery<?> cq = cb.createQuery();
         Root<C> c = cq.from(C.class);
         SetJoin<C,D> d = c.join(C_.set);
-        assertSame(Set.class, d.getJavaType());
+        assertSame(D.class, d.getJavaType());
     }
     
     public void testListJoinModel() {
         CriteriaQuery<?> cq = cb.createQuery();
         Root<C> c = cq.from(C.class);
         ListJoin<C,D> d = c.join(C_.list);
-        assertSame(List.class, d.getJavaType());
+        assertSame(D.class, d.getJavaType());
     }
     
     public void testInnerJoinSingleAttributeWithoutCondition() {

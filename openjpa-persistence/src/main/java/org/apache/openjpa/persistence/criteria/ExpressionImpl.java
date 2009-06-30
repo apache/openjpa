@@ -27,6 +27,7 @@ import javax.persistence.criteria.QueryBuilder.In;
 
 import org.apache.openjpa.kernel.exps.ExpressionFactory;
 import org.apache.openjpa.kernel.exps.Value;
+import org.apache.openjpa.persistence.ResultItemImpl;
 import org.apache.openjpa.persistence.meta.MetamodelImpl;
 
 /**
@@ -36,13 +37,14 @@ import org.apache.openjpa.persistence.meta.MetamodelImpl;
  *
  * @param <X> the type of the value this expression represents.
  */
-public class ExpressionImpl<X> extends SelectionImpl<X> 
+public abstract class ExpressionImpl<X> extends ResultItemImpl<X> 
     implements Expression<X> {
 
-    Value toValue(ExpressionFactory factory, MetamodelImpl model,
-        CriteriaQueryImpl<?> q) {
-        throw new AbstractMethodError(this.getClass().getName());
-    }
+    abstract Value toValue(ExpressionFactory factory, MetamodelImpl model,
+        CriteriaQueryImpl<?> q);
+//    {
+//        throw new AbstractMethodError(this.getClass().getName());
+//    }
     
     org.apache.openjpa.kernel.exps.Expression toKernelExpression(
         ExpressionFactory factory, MetamodelImpl model,
@@ -65,7 +67,7 @@ public class ExpressionImpl<X> extends SelectionImpl<X>
      * @return expression
      */
     public <Y> Expression<Y> as(Class<Y> type) {
-       throw new AbstractMethodError();
+       return new Expressions.CastAs<Y>(type, this);
     }
 
     /**

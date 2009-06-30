@@ -62,7 +62,7 @@ public class Expressions {
      *
      * @param <X> the type of the resultant expression
      */
-    public static class UnaryFunctionalExpression<X> 
+    public abstract static class UnaryFunctionalExpression<X> 
         extends ExpressionImpl<X> {
         protected ExpressionImpl<?> e;
         
@@ -83,7 +83,7 @@ public class Expressions {
      *
      * @param <X> the type of the resultant expression
      */
-    public static class BinarayFunctionalExpression<X> 
+    public abstract static class BinarayFunctionalExpression<X> 
         extends ExpressionImpl<X>{
         protected ExpressionImpl<?> e1;
         protected ExpressionImpl<?> e2;
@@ -241,6 +241,7 @@ public class Expressions {
             return factory.cast(Expressions.toValue(e, factory, model, q), b);
         }
     }
+    
     public static class Concat extends BinarayFunctionalExpression<String> {
         public Concat(Expression<String> x, Expression<String> y) {
             super(String.class, x, y);
@@ -758,6 +759,29 @@ public class Expressions {
         }
     }
     
+    public static class IsNotEmpty extends PredicateImpl {
+        ExpressionImpl<?> collection;
+        public IsNotEmpty(Expression<?> collection) {
+            super();
+            this.collection = (ExpressionImpl<?>)collection;
+        }
+        
+        @Override
+        public PredicateImpl clone() {
+            return new IsNotEmpty(collection);
+        }
+        
+        @Override
+        public org.apache.openjpa.kernel.exps.Expression toKernelExpression(
+            ExpressionFactory factory, MetamodelImpl model, 
+            CriteriaQueryImpl<?> q) {
+            Value val = Expressions.toValue(collection, factory, model, q);
+            return (isNegated()) 
+                ? factory.isEmpty(val) : factory.isNotEmpty(val);
+        }
+    }
+
+    
     public static class Index extends UnaryFunctionalExpression<Integer> {
         public Index(Joins.List<?,?> e) {
             super(Integer.class, e);
@@ -1260,6 +1284,22 @@ public class Expressions {
         public org.apache.openjpa.kernel.exps.Expression toKernelExpression(
           ExpressionFactory factory, MetamodelImpl model, CriteriaQueryImpl<?> q) {
             return factory.not(super.toKernelExpression(factory, model, q));
+        }        
+    }
+    
+    public static class CastAs<Y> extends ExpressionImpl<Y> {
+        protected final ExpressionImpl<?> actual;
+        public CastAs(Class<Y> cast, ExpressionImpl<?> actual) {
+            super(cast);
+            this.actual = actual;
+        }
+        
+        @Override
+        public org.apache.openjpa.kernel.exps.Value toValue(
+          ExpressionFactory factory, MetamodelImpl model, CriteriaQueryImpl<?> q) {
+            org.apache.openjpa.kernel.exps.Value e = actual.toValue(factory, model, q);
+            e.setImplicitType(getJavaType());
+            return e;
         }        
     }
 

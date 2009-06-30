@@ -27,10 +27,9 @@ import javax.persistence.criteria.Predicate;
 import org.apache.openjpa.kernel.exps.ExpressionFactory;
 import org.apache.openjpa.persistence.meta.MetamodelImpl;
 
-public class PredicateImpl extends ExpressionImpl<Boolean> 
-implements Predicate {
+public class PredicateImpl extends ExpressionImpl<Boolean> implements Predicate {
     List<Expression<Boolean>> _exps;
-    BooleanOperator _op;
+    BooleanOperator _op = BooleanOperator.AND;
     boolean _negated = false;
 
     protected PredicateImpl() {
@@ -81,33 +80,36 @@ implements Predicate {
             clone._exps = new ArrayList<Expression<Boolean>>(this._exps);
         return clone;
     }
-
+    
     @Override
-    org.apache.openjpa.kernel.exps.Expression toKernelExpression(
-        ExpressionFactory factory, MetamodelImpl model, 
+    org.apache.openjpa.kernel.exps.Value toValue(ExpressionFactory factory, MetamodelImpl model, 
+        CriteriaQueryImpl<?> q) {
+        throw new AbstractMethodError();
+    }
+    
+    @Override
+    org.apache.openjpa.kernel.exps.Expression toKernelExpression(ExpressionFactory factory, MetamodelImpl model, 
         CriteriaQueryImpl<?> q) {
         if (_exps == null || _exps.isEmpty())
             return factory.emptyExpression();
+        
         if (_exps.size() == 1)
-            return ((ExpressionImpl<?>)_exps.get(0))
-            .toKernelExpression(factory, model, q);
+            return ((ExpressionImpl<?>)_exps.get(0)).toKernelExpression(factory, model, q);
+        
         ExpressionImpl<?> e1 = (ExpressionImpl<?>)_exps.get(0);
         ExpressionImpl<?> e2 = (ExpressionImpl<?>)_exps.get(1);
-        org.apache.openjpa.kernel.exps.Expression ke1 = 
-            e1.toKernelExpression(factory, model, q);
-        org.apache.openjpa.kernel.exps.Expression ke2 = 
-            e2.toKernelExpression(factory, model, q);
-        org.apache.openjpa.kernel.exps.Expression result = 
-            _op == BooleanOperator.AND 
+        org.apache.openjpa.kernel.exps.Expression ke1 = e1.toKernelExpression(factory, model, q);
+        org.apache.openjpa.kernel.exps.Expression ke2 = e2.toKernelExpression(factory, model, q);
+        org.apache.openjpa.kernel.exps.Expression result = _op == BooleanOperator.AND 
             ? factory.and(ke1,ke2) : factory.or(ke1, ke2);
 
-            for (int i = 2; i < _exps.size(); i++) {
-                ExpressionImpl<?> e = (ExpressionImpl<?>)_exps.get(i);
-                result = _op == BooleanOperator.AND 
-                ? factory.and(result, e.toKernelExpression(factory, model, q))
-                : factory.or(result, e.toKernelExpression(factory,model,q));
-            }
-            return _negated ? factory.not(result) : result;
+        for (int i = 2; i < _exps.size(); i++) {
+            ExpressionImpl<?> e = (ExpressionImpl<?>)_exps.get(i);
+            result = _op == BooleanOperator.AND 
+            ? factory.and(result, e.toKernelExpression(factory, model, q))
+            : factory.or(result, e.toKernelExpression(factory,model,q));
+        }
+        return _negated ? factory.not(result) : result;
     }
 
     public static class And extends PredicateImpl {

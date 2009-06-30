@@ -36,7 +36,7 @@ import org.apache.openjpa.persistence.meta.MetamodelImpl;
  * 
  * @param <T> the type of value held by this parameter.
  */
-public class ParameterImpl<T> extends ExpressionImpl<T> implements ParameterExpression<T>{
+public class ParameterImpl<T> extends ExpressionImpl<T> implements ParameterExpression<T> {
 	private String name;
 	private Integer position;
 	
@@ -58,11 +58,9 @@ public class ParameterImpl<T> extends ExpressionImpl<T> implements ParameterExpr
     }
 	
     @Override
-    public Value toValue(ExpressionFactory factory, MetamodelImpl model,
-        CriteriaQueryImpl<?> q) {
+    public Value toValue(ExpressionFactory factory, MetamodelImpl model,  CriteriaQueryImpl<?> q) {
         q.registerParameter(this);
         
-
         ClassMetaData meta = null;
         Class<?> clzz = getJavaType();
         Object paramKey = getKey();

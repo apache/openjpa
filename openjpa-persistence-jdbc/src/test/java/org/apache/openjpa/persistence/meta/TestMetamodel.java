@@ -35,7 +35,6 @@ import javax.persistence.metamodel.PluralAttribute.CollectionType;
 import javax.persistence.metamodel.Type.PersistenceType;
 
 import org.apache.openjpa.meta.ClassMetaData;
-import org.apache.openjpa.meta.MetaDataRepository;
 import org.apache.openjpa.persistence.enhance.identity.Book;
 import org.apache.openjpa.persistence.enhance.identity.BookId;
 import org.apache.openjpa.persistence.enhance.identity.Library;
@@ -82,10 +81,9 @@ public class TestMetamodel extends SingleEMFTestCase {
     }
     
     public void testMetaClassFieldsArePopulated() {
-        EntityType<ImplicitFieldAccessSubclass> m = 
-            model.entity(ImplicitFieldAccessSubclass.class);
-        Class<?> mCls = m.getJavaType();
+        EntityType<ImplicitFieldAccessSubclass> m =  model.entity(ImplicitFieldAccessSubclass.class);
         assertNotNull(m);
+        Class<?> mCls = m.getJavaType();
         assertSame(ImplicitFieldAccessSubclass.class, mCls);
         
         Class<?> m2Cls = model.repos.getMetaModel(mCls, true);
@@ -102,7 +100,7 @@ public class TestMetamodel extends SingleEMFTestCase {
         }
     }
     
-    public void testDomainClassAreCategorizedInPersistentCategory() {
+    public void testDomainClassCategorizedInPersistentCategory() {
     	assertCategory(PersistenceType.MAPPED_SUPERCLASS, ImplicitFieldAccessMappedSuperclass.class);
     	assertCategory(PersistenceType.ENTITY, ImplicitFieldAccessBase.class);
     	assertCategory(PersistenceType.ENTITY, ImplicitFieldAccessSubclass.class);
@@ -130,19 +128,15 @@ public class TestMetamodel extends SingleEMFTestCase {
             e0.getSingularAttribute("f0", ExplicitFieldAccess.class);
             fail("Expected IllegalArgumentException");
         } catch (IllegalArgumentException e) {
-            
+            // good
         }
-        ManagedType<ImplicitFieldAccessSubclass> e1 = model.entity(
-        		ImplicitFieldAccessSubclass.class);
+        ManagedType<ImplicitFieldAccessSubclass> e1 = model.entity(ImplicitFieldAccessSubclass.class);
         assertNotNull(e1.getAttribute("f0"));
-        
     }
     
     public void testAttributeByDeclaration() {
-        ManagedType<ImplicitFieldAccessBase> e0 = 
-        	model.entity(ImplicitFieldAccessBase.class);
-        ManagedType<ImplicitFieldAccessSubclass> e1 = 
-        	model.entity(ImplicitFieldAccessSubclass.class);
+        ManagedType<ImplicitFieldAccessBase> e0 = model.entity(ImplicitFieldAccessBase.class);
+        ManagedType<ImplicitFieldAccessSubclass> e1 = model.entity(ImplicitFieldAccessSubclass.class);
         assertNotNull(e0.getAttribute("f0"));
         assertNotNull(e1.getAttribute("f0"));
         System.err.println(e0.getAttribute("f0"));
@@ -151,14 +145,13 @@ public class TestMetamodel extends SingleEMFTestCase {
         assertSame(e0.getAttribute("f0"), e0.getSingularAttribute("f0", String.class));
         assertSame(e1.getAttribute("f0"), e1.getSingularAttribute("f0", String.class));
         assertNotSame(e0.getAttribute("f0"), e1.getAttribute("f0"));
-        assertNotSame(e0.getSingularAttribute("f0", String.class), e1.getSingularAttribute("f0",
-            String.class));
+        assertNotSame(e0.getSingularAttribute("f0", String.class), e1.getSingularAttribute("f0", String.class));
         assertNotNull(e0.getDeclaredAttribute("f0"));
         try {
             e1.getDeclaredAttribute("f0");
             fail("Expected IllegalArgumentException");
         } catch (IllegalArgumentException e) {
-            
+            // good
         }
     }
     
@@ -189,10 +182,8 @@ public class TestMetamodel extends SingleEMFTestCase {
     }
     
     public void testPCSet() {
-        ManagedType<ImplicitFieldAccessBase> e0 = 
-        	model.entity(ImplicitFieldAccessBase.class);
-        ManagedType<ExplicitFieldAccess> r1 = 
-        	model.entity(ExplicitFieldAccess.class);
+        ManagedType<ImplicitFieldAccessBase> e0 = model.entity(ImplicitFieldAccessBase.class);
+        ManagedType<ExplicitFieldAccess> r1 = model.entity(ExplicitFieldAccess.class);
         SetAttribute<?, ?> relSet = e0.getSet("setRelation", ExplicitFieldAccess.class);
         assertEquals(javax.persistence.metamodel.PluralAttribute.CollectionType.SET, relSet.getCollectionType());
         assertEquals(e0, relSet.getDeclaringType());

@@ -18,8 +18,11 @@
  */
 package org.apache.openjpa.persistence.criteria;
 
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -53,46 +56,48 @@ import org.apache.openjpa.persistence.test.AllowFailure;
  */
 public abstract class CriteriaTest extends TestCase {
     protected static OpenJPAEntityManagerFactorySPI emf;
+    protected static SQLAuditor auditor;
+    
     QueryBuilder cb;
     EntityManager em;
-    protected List<String> sql = new ArrayList<String>();
+    
     protected static Class[] CLASSES = {
-    Account.class,
-    Address.class,
-    A.class,
-    B.class,
-    CompUser.class,
-    Contact.class,
-    Contractor.class,
-    Course.class,
-    CreditCard.class,
-    Customer.class,
-    C.class,
-    Department.class,
-    DependentId.class,
-    Dependent.class,
-    D.class,
-    Employee.class,
-    Exempt.class,
-    FemaleUser.class,
-    FrequentFlierPlan.class,
-    Item.class,
-    LineItem.class,
-    Magazine.class,
-    MaleUser.class,
-    Manager.class,
-    Movie.class,
-    Order.class,
-    Person.class,
-    Phone.class,
-    Photo.class,
-    Product.class,
-    Publisher.class,
-    Semester.class,
-    Student.class,
-    TransactionHistory.class,
-    Transaction.class,
-    VideoStore.class};
+            Account.class,
+            Address.class,
+            A.class,
+            B.class,
+            CompUser.class,
+            Contact.class,
+            Contractor.class,
+            Course.class,
+            CreditCard.class,
+            Customer.class,
+            C.class,
+            Department.class,
+            DependentId.class,
+            Dependent.class,
+            D.class,
+            Employee.class,
+            Exempt.class,
+            FemaleUser.class,
+            FrequentFlierPlan.class,
+            Item.class,
+            LineItem.class,
+            Magazine.class,
+            MaleUser.class,
+            Manager.class,
+            Movie.class,
+            Order.class,
+            Person.class,
+            Phone.class,
+            Photo.class,
+            Product.class,
+            Publisher.class,
+            Semester.class,
+            Student.class,
+            TransactionHistory.class,
+            Transaction.class,
+            VideoStore.class};
     
     protected Class[] getDomainClasses() {
         return CLASSES;
@@ -100,6 +105,7 @@ public abstract class CriteriaTest extends TestCase {
     
     public void setUp() {
         if (emf == null) {
+            auditor = new SQLAuditor();
             createNamedEMF(getDomainClasses());
             assertNotNull(emf);
             setDictionary();
@@ -107,6 +113,7 @@ public abstract class CriteriaTest extends TestCase {
         em = emf.createEntityManager();
         cb = emf.getQueryBuilder();
     }
+    
     /**
      * Create an entity manager factory for persistence unit <code>pu</code>.
      * Put {@link #CLEAR_TABLES} in
@@ -120,13 +127,12 @@ public abstract class CriteriaTest extends TestCase {
         Map<Object,Object> map = new HashMap<Object,Object>();
         map.put("openjpa.jdbc.SynchronizeMappings",
                 "buildSchema(ForeignKeys=true," 
-              + "SchemaAction='add,deleteTableContents')");
+              + "SchemaAction='add')");
         map.put("openjpa.jdbc.QuerySQLCache", "false");
         map.put("openjpa.DynamicEnhancementAgent", "false");
         map.put("openjpa.RuntimeUnenhancedClasses", "unsupported");
         map.put("openjpa.Compatibility", "QuotedNumbersInQueries=true");
-        map.put("openjpa.jdbc.JDBCListeners", 
-                new JDBCListener[] { new Listener() });
+        map.put("openjpa.jdbc.JDBCListeners", new JDBCListener[] { auditor });
         
             StringBuffer buf = new StringBuffer();
             for (Class<?> c : types) {
@@ -135,17 +141,11 @@ public abstract class CriteriaTest extends TestCase {
                 buf.append(c.getName());
             }
            
-            map.put("openjpa.MetaDataFactory",
-                "jpa(Types=" + buf.toString() + ")");
+            map.put("openjpa.MetaDataFactory", "jpa(Types=" + buf.toString() + ")");
         
-            Map config = new HashMap(System.getProperties());
+            Map<Object,Object> config = new HashMap<Object,Object>(System.getProperties());
             config.putAll(map);
-            emf = (OpenJPAEntityManagerFactorySPI) 
-                Persistence.createEntityManagerFactory("test", config);
-    }
-
-    public final void tearDown() {
-        // important: do nothing
+            emf = (OpenJPAEntityManagerFactorySPI) Persistence.createEntityManagerFactory("test", config);
     }
 
     void setDictionary() {
@@ -156,57 +156,36 @@ public abstract class CriteriaTest extends TestCase {
     }
 
     /**
-     * Executes the given CriteriaQuery and JPQL string and compare their
-     * respective SQLs for equality.
+     * Executes the given CriteriaQuery and JPQL string and compare their respective SQLs for equality.
      */
-    void assertEquivalence(CriteriaQuery c, String jpql, String[] paramNames,
-            Object[] params) {
+    void assertEquivalence(CriteriaQuery<?> c, String jpql) {
+        assertEquivalence(c, jpql, null);
+    }
+    
+    /**
+     * Executes the given CriteriaQuery and JPQL string and compare their respective SQLs for equality.
+     * Sets the supplied parameters, if any.
+     */
+    void assertEquivalence(CriteriaQuery<?> c, String jpql, String[] paramNames,  Object[] params) {
         Query cQ = em.createQuery(c);
-        for (int i = 0; i < paramNames.length; i++) {
-            cQ.setParameter(paramNames[i], params[i]);
-        }
         Query jQ = em.createQuery(jpql);
-        for (int i = 0; i < paramNames.length; i++) {
-            jQ.setParameter(paramNames[i], params[i]);
-        }
-        executeAndAssert(cQ, jQ);
+        setParameters(cQ, paramNames, params);
+        setParameters(jQ, paramNames, params);
+        
+        executeAndCompareSQL(jpql, cQ, jQ);
     }
 
     /**
-     * Executes the given CriteriaQuery and JPQL string and compare their
-     * respective SQLs for equality.
+     * Executes the given CriteriaQuery and JPQL string and compare their respective SQLs for equality.
      */
 
-    void assertEquivalence(CriteriaQuery c, String jpql, Object[] params) {
+    void assertEquivalence(CriteriaQuery<?> c, String jpql, Object[] params) {
         Query cQ = em.createQuery(c);
-        for (int i = 0; i < params.length; i++) {
-            cQ.setParameter(i + 1, params[i]);
-        }
-        
         Query jQ = em.createQuery(jpql);
-        for (int i = 0; i < params.length; i++) {
-            jQ.setParameter(i + 1, params[i]);
-        }
+        setParameters(cQ, params);
+        setParameters(jQ, params);
         
-        executeAndAssert(cQ, jQ);
-    }
-
-    void assertEquivalence(CriteriaQuery c, String jpql) {
-        executeAndAssert(em.createQuery(c), em.createQuery(jpql));
-    }
-
-    void executeAndAssert(Query cQ, Query jQ) {
-        List<String>[] sqls = new ArrayList[2];
-        String jpql = OpenJPAPersistence.cast(jQ).getQueryString();
-        if (!execute(jpql, cQ, jQ, sqls)) {
-            fail(sqlReport("Invalid SQL for Criteria",jpql, sqls[0], sqls[1]));
-        }
-        assertEquals(sqlReport("Unequal number of SQL ",jpql, sqls[0], sqls[1]) 
-              , sqls[0].size(), sqls[1].size());
-        for (int i = 0; i < sqls[0].size(); i++)
-            //sqlReport("Wrong SQL at " + i,jpql, sqls[0], sqls[1]),
-           assertEquals(
-                sqls[0].get(i), sqls[1].get(i));
+        executeAndCompareSQL(jpql, cQ, jQ);
     }
 
     /**
@@ -218,71 +197,82 @@ public abstract class CriteriaTest extends TestCase {
      *            array.
      * @return true if both queries execute successfully.
      */
-    boolean execute(String jpql, Query cQ, Query jQ, List<String>[] sqls) {
-        sql.clear();
+    void executeAndCompareSQL(String jpql, Query cQ, Query jQ) {
+        List<String> jSQL = null;
+        List<String> cSQL = null;
         try {
-            List jList = jQ.getResultList();
-        } catch (PersistenceException e) {
-            e.printStackTrace();
-            sqls[0] = new ArrayList<String>();
-            sqls[0].add(extractSQL(e));
-            fail("Wrong SQL for JPQL :" + jpql + "\r\nSQL  :" + sqls[0]);
+            jSQL = executeQueryAndCollectSQL(jQ);
         } catch (Exception e) {
-            e.printStackTrace();
-            fail("Wrong JPQL :" + jpql);
+            StringWriter w = new StringWriter();
+            e.printStackTrace(new PrintWriter(w));
+            fail("JPQL " + jpql + " failed to execute\r\n" + w);
         }
         
-        sqls[0] = new ArrayList<String>(sql);
-
-        sql.clear();
         try {
-            List cList = cQ.getResultList();
-        } catch (PersistenceException e) {
-            e.printStackTrace();
-            sqls[1] = new ArrayList<String>();
-            sqls[1].add(extractSQL(e));
-            return false;
+            cSQL = executeQueryAndCollectSQL(cQ);
+        } catch (Exception e) {
+            StringWriter w = new StringWriter();
+            e.printStackTrace(new PrintWriter(w));
+            fail("CriteriaQuery corresponding to " + jpql + " failed to execute\r\n" + w);
         }
-        sqls[1] = new ArrayList<String>(sql);
-
-        return true;
-    }
-    
-    List<String> executeJPQL(String jpql, Map<?,Object> params) {
-        sql.clear();
-        Query q  = em.createQuery(jpql);
-        if (params != null) {
-            for (Object key : params.keySet()) {
-                if (key instanceof String)
-                    q.setParameter(key.toString(), params.get(key));
-                else if (key instanceof String)
-                    q.setParameter(key.toString(), params.get(key));
-                else
-                    throw new RuntimeException("Bad Parameter key " + key);
+        
+        printSQL("Target SQL for JPQL", jSQL);
+        printSQL("Target SQL for CriteriaQuery", cSQL);
+        if (jSQL.size() != cSQL.size()) {
+            printSQL("Target SQL for JPQL", jSQL);
+            printSQL("Target SQL for CriteriaQuery", cSQL);
+            assertEquals("No. of SQL generated for JPQL and CriteriaQuery for " + jpql + " is different", 
+                 jSQL.size(), cSQL.size());
+        }
+        
+        for (int i = 0; i < jSQL.size(); i++) {
+            if (!jSQL.get(i).equals(cSQL.get(i))) {
+                printSQL("Target SQL for JPQL", jSQL);
+                printSQL("Target SQL for CriteriaQuery", cSQL);
+                assertEquals(i + "-th SQL for JPQL and CriteriaQuery for " + jpql + " is different",
+                     jSQL.get(i), cSQL.get(i));
             }
         }
-        
-        return sql;
+    }
+    
+    void printSQL(String header, List<String> sqls) {
+        System.err.println(header);
+        for (int i = 0; sqls != null && i < sqls.size(); i++) {
+            System.err.println(i + ":" + sqls.get(i));
+        }
+    }
+    
+    void setParameters(Query q, String[] paramNames, Object[] params) {
+        for (int i = 0; paramNames != null && i < paramNames.length; i++)
+            q.setParameter(paramNames[i], params[i]);
+    }
+    
+    void setParameters(Query q, Object[] params) {
+        for (int i = 0; params != null && i < params.length; i++)
+            q.setParameter(i+1, params[i]);
+    }
+    
+    /**
+     * Execute the given query and return the generated SQL.
+     * If the query execution fail because the generated SQL is ill-formed, then raised exception should
+     * carry the ill-formed SQL for diagnosis.  
+     */
+    List<String> executeQueryAndCollectSQL(Query q) {
+        auditor.clear();
+        try {
+            List<?> result = q.getResultList();
+        } catch (Exception e) {
+            throw new RuntimeException(extractSQL(e), e);
+        }    
+        assertFalse(auditor.getSQLs().isEmpty());
+        return auditor.getSQLs();
     }
 
-    String extractSQL(PersistenceException e) {
+    String extractSQL(Exception e) {
         Throwable t = e.getCause();
         if (t instanceof ReportingSQLException)
             return ((ReportingSQLException) t).getSQL();
-        return null;
-    }
-    
-    private String sqlReport(String header, String jpql, List<String> jSQLs, 
-            List<String> cSQLs) {
-        StringBuffer tmp = new StringBuffer(header).append("\r\n")
-            .append("JPQL:["+jpql+"]").append("\r\n");
-        tmp.append(jSQLs.size() + " target SQL for JPQL").append("\r\n");
-        for (String s : jSQLs)
-            tmp.append(s).append("\r\n");
-        tmp.append(cSQLs.size() + " target SQL for Critera").append("\r\n");
-        for (String s : cSQLs)
-            tmp.append(s).append("\r\n");
-        return tmp.toString();
+        return "Can not extract SQL from exception " + e;
     }
     
     @Override
@@ -327,14 +317,23 @@ public abstract class CriteriaTest extends TestCase {
     }
 
     
-    public class Listener
-    extends AbstractJDBCListener {
-
-    @Override
-    public void beforeExecuteStatement(JDBCEvent event) {
-        if (event.getSQL() != null && sql != null) {
-            sql.add(event.getSQL());
+    public class SQLAuditor extends AbstractJDBCListener {
+        private List<String> sqls = new ArrayList<String>();
+    
+        @Override
+        public void beforeExecuteStatement(JDBCEvent event) {
+            if (event.getSQL() != null && sqls != null) {
+                System.err.println("Adding " + event.getSQL());
+               sqls.add(event.getSQL());
+            }
+        }
+        
+        void clear() {
+            sqls.clear();
+        }
+        
+        List<String> getSQLs() {
+            return new ArrayList<String>(sqls);
         }
     }
-}
 }

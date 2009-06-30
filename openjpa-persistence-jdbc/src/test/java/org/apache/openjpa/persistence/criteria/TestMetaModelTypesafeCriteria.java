@@ -22,11 +22,14 @@ import java.math.BigDecimal;
 import java.util.List;
 
 import javax.persistence.Parameter;
+import javax.persistence.Tuple;
 import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Expression;
 import javax.persistence.criteria.Join;
 import javax.persistence.criteria.JoinType;
 import javax.persistence.criteria.ListJoin;
 import javax.persistence.criteria.MapJoin;
+import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 import javax.persistence.criteria.SetJoin;
 import javax.persistence.criteria.Subquery;
@@ -139,7 +142,6 @@ public class TestMetaModelTypesafeCriteria extends CriteriaTest {
         assertEquivalence(q, jpql);
     }
 
-    @AllowFailure(message="FetchJoin not implemented")
     public void testFetchJoins() {
         String jpql = "SELECT d FROM Department d LEFT JOIN FETCH d.employees "
                 + "WHERE d.deptNo = 1";
@@ -158,30 +160,28 @@ public class TestMetaModelTypesafeCriteria extends CriteriaTest {
                     + "JOIN e.contactInfo.phones p  "
                     + "WHERE e.contactInfo.address.zipCode = '95054'";
         
-        CriteriaQuery q = cb.createQuery();
-        Root<Employee> emp = q.from(Employee.class);
-        Join<Contact, Phone> phone = emp.join(
-                employee_.getSingularAttribute("contactInfo", Contact.class)).join(
-                contact_.getList("phones", Phone.class));
-        q.where(cb.equal(emp.get(
-                employee_.getSingularAttribute("contactInfo", Contact.class)).get(
-                contact_.getSingularAttribute("address", Address.class)).get(
-                address_.getSingularAttribute("zipCode", String.class)), "95054"));
-        q.select(phone.get(phone_.getSingularAttribute("vendor", String.class)));
+        
+        CriteriaQuery<String> q = cb.createQuery(String.class);
+        Root<Employee> e = q.from(Employee.class);
+        Join<Contact, Phone> p = e.join(employee_.getSingularAttribute("contactInfo", Contact.class))
+                                  .join(contact_.getList("phones", Phone.class));
+        q.where(cb.equal(e.get(employee_.getSingularAttribute("contactInfo", Contact.class))
+                          .get(contact_.getSingularAttribute("address", Address.class))
+                          .get(address_.getSingularAttribute("zipCode", String.class)), 
+                         "95054"));
+        q.select(p.get(phone_.getSingularAttribute("vendor", String.class)));
 
         assertEquivalence(q, jpql);
     }
     
     public void testKeyPathNavigation() {
-        String jpql = "SELECT i.name, p FROM Item i JOIN i.photos p " 
-                    + "WHERE KEY(p) LIKE '%egret%'";
+        String jpql = "SELECT i.name, p FROM Item i JOIN i.photos p WHERE KEY(p) LIKE '%egret%'";
 
-        CriteriaQuery q = cb.createQuery();
-        Root<Item> item = q.from(Item.class);
-        MapJoin<Item, String, Photo> photo = item.join(
-                item_.getMap("photos", String.class, Photo.class));
-        q.multiselect(item.get(item_.getSingularAttribute("name", String.class)), photo)
-                .where(cb.like(photo.key(), "%egret%"));
+        CriteriaQuery<Tuple> q = cb.createTupleQuery();
+        Root<Item> i = q.from(Item.class);
+        MapJoin<Item, String, Photo> p = i.join(item_.getMap("photos", String.class, Photo.class));
+        q.multiselect(i.get(item_.getSingularAttribute("name", String.class)), p)
+                .where(cb.like(p.key(), "%egret%"));
 
         assertEquivalence(q, jpql);
     }
@@ -191,23 +191,22 @@ public class TestMetaModelTypesafeCriteria extends CriteriaTest {
                 + "WHERE c.customer.accountNum = 321987 AND INDEX(t) BETWEEN 0 "
                 + "AND 9";
         
-        CriteriaQuery cq = cb.createQuery();
+        CriteriaQuery<TransactionHistory> cq = cb.createQuery(TransactionHistory.class);
         Root<CreditCard> c = cq.from(CreditCard.class);
-        ListJoin<CreditCard, TransactionHistory> t = c.join(creditCard_
-                .getList("transactionHistory", TransactionHistory.class));
-        cq.select(t).where(
-                cb.equal(c.get(
-                        creditCard_.getSingularAttribute("customer", Customer.class))
-                        .get(customer_.getSingularAttribute("accountNum", Long.class)),
-                        321987), cb.between(t.index(), 0, 9));
+        ListJoin<CreditCard, TransactionHistory> t = c.join(creditCard_.getList("transactionHistory", 
+                TransactionHistory.class));
+        Predicate p1 = cb.equal(
+                c.get(creditCard_.getSingularAttribute("customer", Customer.class))
+                 .get(customer_.getSingularAttribute("accountNum", long.class)), 321987);
+        Predicate p2 = cb.between(t.index(), 0, 9);
+        cq.select(t).where(p1,p2);
 
         assertEquivalence(cq, jpql);
     }
     
-    @AllowFailure(message="as() not implemented")
     public void testIsEmptyExpressionOnJoin() {
         String jpql = "SELECT o FROM Order o WHERE o.lineItems IS EMPTY"; 
-        CriteriaQuery q = cb.createQuery(); 
+        CriteriaQuery<Order> q = cb.createQuery(Order.class); 
         Root<Order> o = q.from(Order.class);
         ListJoin<Order,LineItem> lineItems =
         o.join(order_.getList("lineItems", LineItem.class));
@@ -221,19 +220,17 @@ public class TestMetaModelTypesafeCriteria extends CriteriaTest {
                 + "a.zipCode FROM Customer c JOIN c.orders o JOIN c.address a "
                 + "WHERE a.state = 'CA' AND a.county = 'Santa Clara'";
         
-        CriteriaQuery q = cb.createQuery();
-        Root<Customer> cust = q.from(Customer.class);
-        Join<Customer, Order> order = cust.join(customer_.getSet("orders",
-                Order.class));
-        Join<Customer, Address> address = cust.join(customer_.getSingularAttribute(
-                "address", Address.class));
-        q.where(cb.equal(address.get(address_.getSingularAttribute("state",
-                String.class)), "CA"), cb.equal(address.get(address_
-                .getSingularAttribute("county", String.class)), "Santa Clara"));
-        q.multiselect(order.get(order_.getSingularAttribute("quantity", Integer.class)),
-                cb.prod(order.get(order_
-                        .getSingularAttribute("totalCost", Double.class)), 1.08),
-                address.get(address_.getSingularAttribute("zipCode", String.class)));
+        CriteriaQuery<Tuple> q = cb.createTupleQuery();
+        Root<Customer> c = q.from(Customer.class);
+        Join<Customer, Order> o = c.join(customer_.getSet("orders", Order.class));
+        Join<Customer, Address> a = c.join(customer_.getSingularAttribute("address", Address.class));
+        Expression<Double> taxedCost = cb.prod(o.get(order_.getSingularAttribute("totalCost", Double.class)), 1.08);
+        taxedCost.setAlias("taxedCost");
+        q.where(cb.equal(a.get(address_.getSingularAttribute("state", String.class)), "CA"), 
+                cb.equal(a.get(address_.getSingularAttribute("county", String.class)), "Santa Clara"));
+        q.multiselect(o.get(order_.getSingularAttribute("quantity", Integer.class)),
+                taxedCost,
+                a.get(address_.getSingularAttribute("zipCode", String.class)));
 
         assertEquivalence(q, jpql);
     }
@@ -251,15 +248,12 @@ public class TestMetaModelTypesafeCriteria extends CriteriaTest {
        String jpql = "SELECT w.name FROM Course c JOIN c.studentWaitList w "
                 + "WHERE c.name = 'Calculus' AND INDEX(w) = 0";
         
-       CriteriaQuery q = cb.createQuery();
+       CriteriaQuery<String> q = cb.createQuery(String.class);
         Root<Course> course = q.from(Course.class);
-        ListJoin<Course, Student> w = course.join(course_.getList(
-                "studentWaitList", Student.class));
-        q.where(
-                cb.equal(
-                        course.get(course_.getSingularAttribute("name", String.class)),
-                        "Calculus"), cb.equal(w.index(), 0)).select(
-                w.get(student_.getSingularAttribute("name", String.class)));
+        ListJoin<Course, Student> w = course.join(course_.getList("studentWaitList", Student.class));
+        q.where(cb.equal(course.get(course_.getSingularAttribute("name", String.class)), "Calculus"), 
+                cb.equal(w.index(), 0))
+          .select(w.get(student_.getSingularAttribute("name", String.class)));
 
         assertEquivalence(q, jpql);
     }
@@ -274,10 +268,8 @@ public class TestMetaModelTypesafeCriteria extends CriteriaTest {
                 LineItem.class));
         Join<Order, Customer> c = o.join(order_.getSingularAttribute("customer",
                 Customer.class));
-        q.where(cb
-                .equal(c.get(customer_.getSingularAttribute("lastName", String.class)),
-                        "Smith"), cb.equal(c.get(customer_.getSingularAttribute(
-                "firstName", String.class)), "John"));
+        q.where(cb.equal(c.get(customer_.getSingularAttribute("lastName", String.class)), "Smith"), 
+                cb.equal(c.get(customer_.getSingularAttribute("firstName", String.class)), "John"));
         q.select(cb.sum(i.get(lineItem_.getSingularAttribute("price", Double.class))));
 
         assertEquivalence(q, jpql);
@@ -312,18 +304,13 @@ public class TestMetaModelTypesafeCriteria extends CriteriaTest {
                         employee_.getSingularAttribute("department", Department.class))
                         .get(department_.getSingularAttribute("name", String.class)),
                         "Engineering"));
-        q.multiselect(e.get(employee_.getSingularAttribute("name", String.class)), cb
-                .selectCase().when(
-                        cb.equal(e.get(employee_.getSingularAttribute("rating",
-                                Integer.class)), 1),
-                        cb.prod(e.get(employee_.getSingularAttribute("salary",
-                                Long.class)), 1.1)).when(
-                        cb.equal(e.get(employee_.getSingularAttribute("rating",
-                                Integer.class)), 2),
-                        cb.prod(e.get(employee_.getSingularAttribute("salary",
-                                Long.class)), 1.2)).otherwise(
-                        cb.prod(e.get(employee_.getSingularAttribute("salary",
-                                Long.class)), 1.01)));
+        q.multiselect(e.get(employee_.getSingularAttribute("name", String.class)), 
+                cb.selectCase().when(
+                        cb.equal(e.get(employee_.getSingularAttribute("rating", Integer.class)), 1),
+                        cb.prod(e.get(employee_.getSingularAttribute("salary",  Long.class)), 1.1)).when(
+                        cb.equal(e.get(employee_.getSingularAttribute("rating", Integer.class)), 2),
+                        cb.prod(e.get(employee_.getSingularAttribute("salary",  Long.class)), 1.2)).otherwise(
+                        cb.prod(e.get(employee_.getSingularAttribute("salary",  Long.class)), 1.01)));
 
         assertEquivalence(q, jpql);
     }
@@ -350,22 +337,21 @@ public class TestMetaModelTypesafeCriteria extends CriteriaTest {
         assertEquivalence(q, jpql, new String[] { "stat" }, new Object[] { 1 });
     }
 
-    @AllowFailure(message="Generates invalid SQL")
     public void testKeyExpressionInSelectList() {
-        String jpql = "SELECT v.location.street, KEY(i).title, VALUE(i) FROM "
-                + "VideoStore v JOIN v.videoInventory i "
-                + "WHERE v.location.zipCode = " + "'94301' AND VALUE(i) > 0";
+        String jpql = "SELECT v.location.street, KEY(i).title, VALUE(i) "
+                + "FROM VideoStore v JOIN v.videoInventory i "
+                + "WHERE v.location.zipCode = '94301' AND VALUE(i) > 0";
+        
         CriteriaQuery<?> q = cb.createQuery();
         Root<VideoStore> v = q.from(VideoStore.class);
-        MapJoin<VideoStore, Movie, Integer> inv = v.join(videoStore_.getMap(
-                "videoInventory", Movie.class, Integer.class));
-        q.where(cb.equal(v.get(
-                videoStore_.getSingularAttribute("location", Address.class)).get(
-                address_.getSingularAttribute("zipCode", String.class)), "94301"), cb
-                .gt(inv.value(), 0));
+        MapJoin<VideoStore, Movie, Integer> i = v.join(videoStore_.getMap("videoInventory", Movie.class,Integer.class));
+        q.where(cb.equal(v.get(videoStore_.getSingularAttribute("location", Address.class))
+                          .get(address_.getSingularAttribute("zipCode", String.class)), "94301"), 
+                          cb.gt(i.value(), 0));
         q.multiselect(v.get(videoStore_.getSingularAttribute("location", Address.class))
-                .get(address_.getSingularAttribute("street", String.class)), inv.key()
-                .get(movie_.getSingularAttribute("title", String.class)), inv.value());
+                .get(address_.getSingularAttribute("street", String.class)), 
+                i.key().get(movie_.getSingularAttribute("title", String.class)), 
+                i.value());
 
         assertEquivalence(q, jpql);
     }
@@ -474,7 +460,6 @@ public class TestMetaModelTypesafeCriteria extends CriteriaTest {
         assertEquivalence(q, jpql);
     }
     
-    @AllowFailure(message="Root of the subquery._delegate not set")
     public void testCorrelatedSubqueryWithAllClause() {
         String jpql = "SELECT o FROM Order o JOIN o.customer c "
                     + "WHERE 10000 < ALL (SELECT a.balance FROM c.accounts a)";
@@ -557,30 +542,25 @@ public class TestMetaModelTypesafeCriteria extends CriteriaTest {
     }
     
     public void testOrderingWithNumericalExpressionInSelection() {
-        String jpql = "SELECT o.quantity, o.totalCost * 1.08 AS taxedCost, "
-                + "a.zipCode "
+        String jpql = "SELECT o.quantity, o.totalCost * 1.08 AS taxedCost, a.zipCode "
                 + "FROM Customer c JOIN c.orders o JOIN c.address a "
                 + "WHERE a.state = 'CA' AND a.county = 'Santa Clara' "
                 + "ORDER BY o.quantity, taxedCost, a.zipCode";
         
         CriteriaQuery<?> q = cb.createQuery();
         Root<Customer> c = q.from(Customer.class);
-        Join<Customer, Order> o = c.join(customer_.getSet("orders",
-                Order.class));
-        Join<Customer, Address> a = c.join(customer_.getSingularAttribute("address",
-                Address.class));
-        q.where(cb.equal(a.get(address_.getSingularAttribute("state", String.class)),
-                "CA"), cb.equal(a.get(address_.getSingularAttribute("county",
-                String.class)), "Santa Clara"));
-        q.orderBy(
-                cb.asc(o.get(order_.getSingularAttribute("quantity", Integer.class))),
-                cb.asc(cb.prod(o.get(order_.getSingularAttribute("totalCost",
-                        Double.class)), 1.08)), cb.asc(a.get(address_
-                        .getSingularAttribute("zipCode", String.class))));
-        q.multiselect(o.get(order_.getSingularAttribute("quantity", Integer.class)), cb
-                .prod(o.get(order_.getSingularAttribute("totalCost", Double.class)),
-                        1.08), a.get(address_.getSingularAttribute("zipCode",
-                String.class)));
+        Join<Customer, Order> o = c.join(customer_.getSet("orders",  Order.class));
+        Join<Customer, Address> a = c.join(customer_.getSingularAttribute("address", Address.class));
+        Expression<Double> taxedCost = cb.prod(o.get(order_.getSingularAttribute("totalCost", Double.class)), 1.08);
+        taxedCost.setAlias("taxedCost");
+        q.where(cb.equal(a.get(address_.getSingularAttribute("state", String.class)), "CA"), 
+                cb.equal(a.get(address_.getSingularAttribute("county", String.class)), "Santa Clara"));
+        q.orderBy(cb.asc(o.get(order_.getSingularAttribute("quantity", Integer.class))),
+                  cb.asc(taxedCost), 
+                  cb.asc(a.get(address_.getSingularAttribute("zipCode", String.class))));
+        q.multiselect(o.get(order_.getSingularAttribute("quantity", Integer.class)), 
+                      taxedCost, 
+                      a.get(address_.getSingularAttribute("zipCode", String.class)));
         assertEquivalence(q, jpql);
     }
 }

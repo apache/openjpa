@@ -26,27 +26,24 @@ import javax.persistence.criteria.Selection;
 import org.apache.openjpa.persistence.ResultItemImpl;
 
 /**
- * An item selected in the projection clause of  Criteria query.
+ * A selection item that constructs new instance of a user-defined class with arguments specified as other selected 
+ * items. 
  * 
  * @author Pinaki Poddar
  *
  * @param <X>
  */
-public class SelectionImpl<X> extends ResultItemImpl<X> 
+public class NewInstanceSelection<X> extends ResultItemImpl<X> 
     implements Selection<X> {
     
-    private List<Selection<?>>  _sels;
+    private List<Selection<?>>  _args;
     
-    public SelectionImpl(Class<X> cls) {
+    public NewInstanceSelection(Class<X> cls, Selection<?>... selections) {
         super(cls);
+        _args = Arrays.asList(selections);
     }
     
-//    public SelectionImpl<X> setSelections(Selection<?>... selections) {
-//        _sels = Arrays.asList(selections);
-//        return this;
-//    }
-//    
-//    public List<Selection<?>> getSelections() {
-//        return _sels;
-//    }
+    public List<Selection<?>> getConstructorArguments() {
+        return _args;
+    }
 }

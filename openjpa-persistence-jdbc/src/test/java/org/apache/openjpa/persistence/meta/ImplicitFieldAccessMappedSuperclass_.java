@@ -12,4 +12,5 @@ import javax.persistence.metamodel.SingularAttribute;
 public class ImplicitFieldAccessMappedSuperclass_ {
     public static volatile SingularAttribute<ImplicitFieldAccessMappedSuperclass,Date> createTime;
     public static volatile SingularAttribute<ImplicitFieldAccessMappedSuperclass,Long> id;
+    public static volatile SingularAttribute<ImplicitFieldAccessMappedSuperclass,Integer> version;
 }

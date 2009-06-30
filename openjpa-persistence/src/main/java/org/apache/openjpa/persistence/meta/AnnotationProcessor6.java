@@ -98,8 +98,7 @@ public class AnnotationProcessor6 extends AbstractProcessor {
     private int generatedSourceVersion = 6;
     private CompileTimeLogger logger;
     private boolean addHeader = false;
-    private static Localizer _loc =
-        Localizer.forPackage(AnnotationProcessor6.class);
+    private static Localizer _loc =  Localizer.forPackage(AnnotationProcessor6.class);
 
     /**
      * Category of members as per JPA 2.0 type system.
@@ -181,13 +180,12 @@ public class AnnotationProcessor6 extends AbstractProcessor {
         setSourceVersion();
         setFileManager();
         setNamingPolicy();
-        addHeader = "true".equalsIgnoreCase(processingEnv.getOptions()
-                .get("header"));
+        addHeader = "true".equalsIgnoreCase(processingEnv.getOptions().get("header"));
         handler = new SourceAnnotationHandler(processingEnv, logger);
     }
     
     /**
-     * The entry point for javac compiler.
+     * The entry point for java compiler.
      */
     @Override
     public boolean process(Set<? extends TypeElement> annos,

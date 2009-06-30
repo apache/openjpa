@@ -89,7 +89,7 @@ public class CriteriaBuilder implements QueryBuilder, ExpressionParser {
      *  @return query object
      */
     public <T> CriteriaQuery<T> createQuery(Class<T> resultClass) {
-        throw new UnsupportedOperationException();
+        return new CriteriaQueryImpl<T>(_model, resultClass);
     }
 
     /**
@@ -98,7 +98,7 @@ public class CriteriaBuilder implements QueryBuilder, ExpressionParser {
      *  @return query object
      */
     public CriteriaQuery<Tuple> createTupleQuery() {
-        throw new UnsupportedOperationException();
+        return new CriteriaQueryImpl<Tuple>(_model, Tuple.class);
     }
 
     public Object parse(String ql, ExpressionStoreQuery query) {
@@ -106,22 +106,12 @@ public class CriteriaBuilder implements QueryBuilder, ExpressionParser {
     }
 
     public void populate(Object parsed, ExpressionStoreQuery query) {
-        CriteriaQueryImpl c = (CriteriaQueryImpl) parsed;
+        CriteriaQueryImpl<?> c = (CriteriaQueryImpl<?>) parsed;
         query.invalidateCompilation();
         query.getContext().setCandidateType(c.getRoot().getJavaType(), true);
         query.setQuery(parsed);
     }
 
-    /**
-     * Define a select list item corresponding to a constructor.
-     * @param result  class whose instance is to be constructed
-     * @param selections  arguments to the constructor
-     * @return selection item
-     */
-    public <Y> Selection<Y> construct(Class<Y> result, Selection<?>... selections) {
-        throw new UnsupportedOperationException();
-    }
-    
     public <N extends Number> Expression<N> abs(Expression<N> x) {
         return new Expressions.Abs<N>(x);
     }
@@ -199,8 +189,8 @@ public class CriteriaBuilder implements QueryBuilder, ExpressionParser {
         return new Expressions.Count(x, true);
     }
 
-    public CriteriaQuery createQuery() {
-        return new CriteriaQueryImpl(_model);
+    public CriteriaQuery<Object> createQuery() {
+        return new CriteriaQueryImpl<Object>(_model, Object.class);
     }
 
     public Expression<Date> currentDate() {
@@ -305,8 +295,7 @@ public class CriteriaBuilder implements QueryBuilder, ExpressionParser {
         return new Expressions.In<T>(expression);
     }
 
-    public <C extends Collection<?>> Predicate isEmpty(
-        Expression<C> collection) {
+    public <C extends Collection<?>> Predicate isEmpty(Expression<C> collection) {
         return new Expressions.IsEmpty(collection);
     }
 
@@ -314,28 +303,23 @@ public class CriteriaBuilder implements QueryBuilder, ExpressionParser {
         return new Expressions.Equal(x, false);
     }
 
-    public <E, C extends Collection<E>> Predicate isMember(E e,
-        Expression<C> c) {
+    public <E, C extends Collection<E>> Predicate isMember(E e, Expression<C> c) {
         return new Expressions.IsMember<E>(e, c);
     }
 
-    public <E, C extends Collection<E>> Predicate isMember(Expression<E> e,
-        Expression<C> c) {
+    public <E, C extends Collection<E>> Predicate isMember(Expression<E> e, Expression<C> c) {
         return new Expressions.IsMember<E>(e.getJavaType(), e, c);
     }
 
-    public <C extends Collection<?>> Predicate isNotEmpty(
-        Expression<C> collection) {
-        return isEmpty(collection).negate();
+    public <C extends Collection<?>> Predicate isNotEmpty(Expression<C> collection) {
+        return new Expressions.IsNotEmpty(collection);
     }
 
-    public <E, C extends Collection<E>> Predicate isNotMember(E e,
-        Expression<C> c) {
+    public <E, C extends Collection<E>> Predicate isNotMember(E e, Expression<C> c) {
         return isMember(e, c).negate();
     }
 
-    public <E, C extends Collection<E>> Predicate isNotMember(
-        Expression<E> e, Expression<C> c) {
+    public <E, C extends Collection<E>> Predicate isNotMember(Expression<E> e, Expression<C> c) {
         return isMember(e, c).negate();
     }
 
@@ -347,8 +331,7 @@ public class CriteriaBuilder implements QueryBuilder, ExpressionParser {
         throw new AbstractMethodError();
     }
 
-    public Predicate le(Expression<? extends Number> x,
-        Expression<? extends Number> y) {
+    public Predicate le(Expression<? extends Number> x, Expression<? extends Number> y) {
         return new Expressions.LessThanEqual(x,y);
     }
 
@@ -365,24 +348,20 @@ public class CriteriaBuilder implements QueryBuilder, ExpressionParser {
 
     }
 
-    public <Y extends Comparable<Y>> Predicate lessThan(
-        Expression<? extends Y> x, Expression<? extends Y> y) {
+    public <Y extends Comparable<Y>> Predicate lessThan(Expression<? extends Y> x, Expression<? extends Y> y) {
         return new Expressions.LessThan(x,y);
     }
 
-    public <Y extends Comparable<Y>> Predicate lessThan(
-        Expression<? extends Y> x, Y y) {
+    public <Y extends Comparable<Y>> Predicate lessThan(Expression<? extends Y> x, Y y) {
         return new Expressions.LessThan(x,y);
 
     }
 
-    public <Y extends Comparable<Y>> Predicate lessThanOrEqualTo(
-        Expression<? extends Y> x, Expression<? extends Y> y) {
+    public <Y extends Comparable<Y>> Predicate lessThanOrEqualTo(Expression<? extends Y> x, Expression<? extends Y> y) {
         return new Expressions.LessThanEqual(x,y);
     }
 
-    public <Y extends Comparable<Y>> Predicate lessThanOrEqualTo(
-        Expression<? extends Y> x, Y y) {
+    public <Y extends Comparable<Y>> Predicate lessThanOrEqualTo(Expression<? extends Y> x, Y y) {
         return new Expressions.LessThanEqual(x,y);
     }
 
@@ -394,23 +373,19 @@ public class CriteriaBuilder implements QueryBuilder, ExpressionParser {
         return new Expressions.Like(x,pattern);
     }
 
-    public Predicate like(Expression<String> x, Expression<String> pattern,
-        Expression<Character> escapeChar) {
+    public Predicate like(Expression<String> x, Expression<String> pattern, Expression<Character> escapeChar) {
         return new Expressions.Like(x,pattern,escapeChar);
     }
 
-    public Predicate like(Expression<String> x, Expression<String> pattern,
-        char escapeChar) {
+    public Predicate like(Expression<String> x, Expression<String> pattern, char escapeChar) {
         return new Expressions.Like(x,pattern,escapeChar);
     }
 
-    public Predicate like(Expression<String> x, String pattern,
-        Expression<Character> escapeChar) {
+    public Predicate like(Expression<String> x, String pattern, Expression<Character> escapeChar) {
         return new Expressions.Like(x,pattern,escapeChar);
     }
 
-    public Predicate like(Expression<String> x, String pattern, 
-        char escapeChar) {
+    public Predicate like(Expression<String> x, String pattern, char escapeChar) {
         return new Expressions.Like(x,pattern,escapeChar);
     }
 
@@ -418,8 +393,7 @@ public class CriteriaBuilder implements QueryBuilder, ExpressionParser {
         return new Expressions.Constant<T>(value);
     }
 
-    public Expression<Integer> locate(Expression<String> x,
-        Expression<String> pattern) {
+    public Expression<Integer> locate(Expression<String> x, Expression<String> pattern) {
         return new Expressions.Locate(x, pattern);
     }
 
@@ -428,14 +402,12 @@ public class CriteriaBuilder implements QueryBuilder, ExpressionParser {
 
     }
 
-    public Expression<Integer> locate(Expression<String> x,
-        Expression<String> pattern, Expression<Integer> from) {
+    public Expression<Integer> locate(Expression<String> x, Expression<String> pattern, Expression<Integer> from) {
         return new Expressions.Locate(x, pattern, from);
 
     }
 
-    public Expression<Integer> locate(Expression<String> x, String pattern,
-        int from) {
+    public Expression<Integer> locate(Expression<String> x, String pattern, int from) {
         return new Expressions.Locate(x, pattern, from);
 
     }
@@ -445,8 +417,7 @@ public class CriteriaBuilder implements QueryBuilder, ExpressionParser {
 
     }
 
-    public Predicate lt(Expression<? extends Number> x,
-        Expression<? extends Number> y) {
+    public Predicate lt(Expression<? extends Number> x, Expression<? extends Number> y) {
         return new Expressions.LessThan(x,y);
     }
 
@@ -462,8 +433,7 @@ public class CriteriaBuilder implements QueryBuilder, ExpressionParser {
         return new Expressions.Min<N>(x);
     }
 
-    public Expression<Integer> mod(Expression<Integer> x, 
-        Expression<Integer> y) {
+    public Expression<Integer> mod(Expression<Integer> x, Expression<Integer> y) {
         return new Expressions.Mod(x,y);
     }
 
@@ -499,23 +469,19 @@ public class CriteriaBuilder implements QueryBuilder, ExpressionParser {
         return like(x, pattern).negate();
     }
 
-    public Predicate notLike(Expression<String> x, Expression<String> pattern,
-        Expression<Character> escapeChar) {
+    public Predicate notLike(Expression<String> x, Expression<String> pattern, Expression<Character> escapeChar) {
         return like(x, pattern, escapeChar).negate();
     }
 
-    public Predicate notLike(Expression<String> x, Expression<String> pattern,
-        char escapeChar) {
+    public Predicate notLike(Expression<String> x, Expression<String> pattern, char escapeChar) {
         return like(x, pattern, escapeChar).negate();
     }
 
-    public Predicate notLike(Expression<String> x, String pattern,
-        Expression<Character> escapeChar) {
+    public Predicate notLike(Expression<String> x, String pattern, Expression<Character> escapeChar) {
         return like(x, pattern, escapeChar).negate();
     }
 
-    public Predicate notLike(Expression<String> x, String pattern,
-        char escapeChar) {
+    public Predicate notLike(Expression<String> x, String pattern, char escapeChar) {
         return like(x, pattern, escapeChar).negate();
     }
 
@@ -546,23 +512,19 @@ public class CriteriaBuilder implements QueryBuilder, ExpressionParser {
         return new ParameterImpl<T>(paramClass, name);
     }
 
-    public <N extends Number> Expression<N> prod(Expression<? extends N> x,
-        Expression<? extends N> y) {
+    public <N extends Number> Expression<N> prod(Expression<? extends N> x, Expression<? extends N> y) {
         return new Expressions.Product<N>(x,y);
     }
 
-    public <N extends Number> Expression<N> prod(Expression<? extends N> x, 
-    	N y) {
+    public <N extends Number> Expression<N> prod(Expression<? extends N> x, N y) {
         return new Expressions.Product<N>(x,y);
     }
 
-    public <N extends Number> Expression<N> prod(N x, 
-        Expression<? extends N> y) {
+    public <N extends Number> Expression<N> prod(N x, Expression<? extends N> y) {
         return new Expressions.Product<N>(x,y);
     }
 
-    public Expression<Number> quot(Expression<? extends Number> x,
-        Expression<? extends Number> y) {
+    public Expression<Number> quot(Expression<? extends Number> x, Expression<? extends Number> y) {
         return new Expressions.Quotient<Number>(x,y);
     }
 
@@ -574,17 +536,21 @@ public class CriteriaBuilder implements QueryBuilder, ExpressionParser {
         return new Expressions.Quotient<Number>(x,y);
     }
 
-    public <Y> Selection<Y> select(Class<Y> result, 
-        Selection<?>... selections) {
-        return new SelectionImpl(result).setSelections(selections);
+    /**
+     * Define a select list item corresponding to a constructor.
+     * @param result  class whose instance is to be constructed
+     * @param selections  arguments to the constructor
+     * @return selection item
+     */
+    public <Y> Selection<Y> construct(Class<Y> result, Selection<?>... selections) {
+        return new NewInstanceSelection<Y>(result, selections);
     }
 
     public <R> Case<R> selectCase() {
         return new Expressions.Case();
     }
 
-    public <C, R> SimpleCase<C, R> selectCase(
-        Expression<? extends C> expression) {
+    public <C, R> SimpleCase<C, R> selectCase(Expression<? extends C> expression) {
         return new Expressions.SimpleCase(expression);
     }
 
@@ -592,8 +558,7 @@ public class CriteriaBuilder implements QueryBuilder, ExpressionParser {
         return new Expressions.Size(collection);
     }
 
-    public <C extends Collection<?>> Expression<Integer> size(
-        Expression<C> collection) {
+    public <C extends Collection<?>> Expression<Integer> size(Expression<C> collection) {
         return new Expressions.Size(collection);
     }
 
@@ -606,8 +571,7 @@ public class CriteriaBuilder implements QueryBuilder, ExpressionParser {
         return new Expressions.Sqrt(x);
     }
 
-    public Expression<String> substring(Expression<String> x,
-        Expression<Integer> from) {
+    public Expression<String> substring(Expression<String> x, Expression<Integer> from) {
     	return new Expressions.Substring(x, from);
     }
 
@@ -615,13 +579,11 @@ public class CriteriaBuilder implements QueryBuilder, ExpressionParser {
         return new Expressions.Substring(x, from);
     }
 
-    public Expression<String> substring(Expression<String> x,
-        Expression<Integer> from, Expression<Integer> len) {
+    public Expression<String> substring(Expression<String> x, Expression<Integer> from, Expression<Integer> len) {
         return new Expressions.Substring(x, from, len);
     }
 
-    public Expression<String> substring(Expression<String> x, int from, 
-        int len) {
+    public Expression<String> substring(Expression<String> x, int from, int len) {
         return new Expressions.Substring(x, from, len);
     }
 
@@ -629,28 +591,23 @@ public class CriteriaBuilder implements QueryBuilder, ExpressionParser {
         return new Expressions.Sum<N>(x);
     }
 
-    public <N extends Number> Expression<N> sum(Expression<? extends N> x,
-        Expression<? extends N> y) {
+    public <N extends Number> Expression<N> sum(Expression<? extends N> x, Expression<? extends N> y) {
         return new Expressions.Sum<N>(x,y);
     }
 
-    public <N extends Number> Expression<N> sum(Expression<? extends N> x, 
-        N y) {
+    public <N extends Number> Expression<N> sum(Expression<? extends N> x, N y) {
         return new Expressions.Sum<N>(x,y);
     }
 
-    public <N extends Number> Expression<N> sum(N x, 
-        Expression<? extends N> y) {
+    public <N extends Number> Expression<N> sum(N x, Expression<? extends N> y) {
         return new Expressions.Sum<N>(x,y);
     }
 
-    public Expression<BigDecimal> toBigDecimal(
-        Expression<? extends Number> number) {
+    public Expression<BigDecimal> toBigDecimal(Expression<? extends Number> number) {
         return new Expressions.Cast<BigDecimal>(number, BigDecimal.class);
     }
 
-    public Expression<BigInteger> toBigInteger(
-        Expression<? extends Number> number) {
+    public Expression<BigInteger> toBigInteger(Expression<? extends Number> number) {
         return new Expressions.Cast<BigInteger>(number, BigInteger.class);
     }
 
@@ -682,8 +639,7 @@ public class CriteriaBuilder implements QueryBuilder, ExpressionParser {
         return new Expressions.Trim(x, ts);
     }
 
-    public Expression<String> trim(Expression<Character> t, 
-        Expression<String> x) {
+    public Expression<String> trim(Expression<Character> t, Expression<String> x) {
         return new Expressions.Trim(x, t);
     }
 
@@ -691,8 +647,7 @@ public class CriteriaBuilder implements QueryBuilder, ExpressionParser {
         return new Expressions.Trim(x, t);
     }
 
-    public Expression<String> trim(Trimspec ts, Expression<Character> t,
-        Expression<String> x) {
+    public Expression<String> trim(Trimspec ts, Expression<Character> t, Expression<String> x) {
         return new Expressions.Trim(x, t, ts);
     }
 

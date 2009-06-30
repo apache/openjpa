@@ -38,6 +38,7 @@ import javax.persistence.metamodel.SetAttribute;
 import org.apache.openjpa.kernel.exps.ExpressionFactory;
 import org.apache.openjpa.kernel.exps.Value;
 import org.apache.openjpa.meta.ClassMetaData;
+import org.apache.openjpa.meta.FieldMetaData;
 import org.apache.openjpa.persistence.meta.Members;
 import org.apache.openjpa.persistence.meta.MetamodelImpl;
 import org.apache.openjpa.persistence.meta.Members.Member;
@@ -56,7 +57,7 @@ public abstract class Joins {
      * @param <Z> type from which joining
      * @param <X> type of the attribute being joined
      */
-    public static class SingularJoin<Z,X> extends FromImpl<Z,X> implements Join<Z,X>{
+    public static class SingularJoin<Z,X> extends FromImpl<Z,X> implements Join<Z,X> {
         private final JoinType joinType;
         private boolean allowNull = false;
         
@@ -448,11 +449,7 @@ public abstract class Joins {
             MetamodelImpl model, CriteriaQueryImpl<?> c) {
             org.apache.openjpa.kernel.exps.Value path = toValue(factory, model, c);
             
-            ClassMetaData meta = _member.fmd.isElementCollection() 
-                ? _member.fmd.getEmbeddedMetaData()
-                : _member.fmd.getElement().getDeclaredTypeMetaData();
-                
-            Value var = factory.newBoundVariable(c.getAlias(this), meta.getDescribedType());
+            Value var = factory.newBoundVariable(c.getAlias(this), _member.fmd.getElement().getDeclaredType());
             org.apache.openjpa.kernel.exps.Expression join = factory.bindValueVariable(var, path);
             c.registerVariable(this, var, path);
             return join;

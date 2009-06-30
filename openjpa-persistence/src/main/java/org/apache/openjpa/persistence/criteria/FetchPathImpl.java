@@ -47,8 +47,7 @@ public class FetchPathImpl<Z,X> extends PathImpl<Z,X> implements Fetch<Z, X> {
         this(parent, member, JoinType.INNER);
     }
     
-    FetchPathImpl(FetchParent<?,Z> parent, Members.Member<? super Z,X> member, 
-        JoinType type) {
+    FetchPathImpl(FetchParent<?,Z> parent, Members.Member<? super Z,X> member, JoinType type) {
         super((PathImpl<?,Z>)parent, member, member.getJavaType());
         this.joinType = type;
     }

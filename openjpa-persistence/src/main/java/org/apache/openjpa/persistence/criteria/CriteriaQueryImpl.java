@@ -71,6 +71,7 @@ public class CriteriaQueryImpl<T> implements CriteriaQuery<T>, AliasContext {
     private List<Subquery<?>>   _subqueries;
     private Boolean             _distinct;
     private SubqueryImpl<?>     _delegator;
+    private final Class<T>      _resultClass;
     
     // AliasContext
     private int aliasCount = 0;
@@ -85,13 +86,15 @@ public class CriteriaQueryImpl<T> implements CriteriaQuery<T>, AliasContext {
     // SubqueryContext
     //private Stack<Context> _contexts = null;
     
-    public CriteriaQueryImpl(MetamodelImpl model) {
+    public CriteriaQueryImpl(MetamodelImpl model, Class<T> resultClass) {
         this._model = model;
+        this._resultClass = resultClass;
         _aliases = new HashMap<Selection<?>, String>(); 
     }
     
-    public CriteriaQueryImpl(MetamodelImpl model, SubqueryImpl<?> delegator) {
+    public CriteriaQueryImpl(MetamodelImpl model, SubqueryImpl<T> delegator) {
         this._model = model;
+        this._resultClass = delegator.getJavaType();
         _delegator = delegator;
         _aliases = getAliases();
     }
@@ -112,7 +115,7 @@ public class CriteriaQueryImpl<T> implements CriteriaQuery<T>, AliasContext {
     //    return _contexts;
     //}
     
-    public CriteriaQuery distinct(boolean distinct) {
+    public CriteriaQuery<T> distinct(boolean distinct) {
         _distinct = distinct;
         return this;
     }
@@ -171,7 +174,7 @@ public class CriteriaQueryImpl<T> implements CriteriaQuery<T>, AliasContext {
      * @return the modified query
      */
     public CriteriaQuery<T> multiselect(Selection<?>... selections) {
-        throw new AbstractMethodError();
+        return select(selections);
     }
 
     /**
@@ -200,26 +203,26 @@ public class CriteriaQueryImpl<T> implements CriteriaQuery<T>, AliasContext {
         return _selections;
     }
 
-    public CriteriaQuery groupBy(Expression<?>... grouping) {
+    public CriteriaQuery<T> groupBy(Expression<?>... grouping) {
     	_groups = new ArrayList<Expression<?>>();
     	for (Expression<?> e : grouping)
     		_groups.add(e);
         return this;
     }
 
-    public CriteriaQuery having(Expression<Boolean> restriction) {
+    public CriteriaQuery<T> having(Expression<Boolean> restriction) {
         _having = new PredicateImpl().add(restriction);
         return this;
     }
 
-    public CriteriaQuery having(Predicate... restrictions) {
+    public CriteriaQuery<T> having(Predicate... restrictions) {
         _having = new PredicateImpl();
         for (Predicate p : restrictions)
         	_having.add(p);
         return this;
     }
 
-    public CriteriaQuery orderBy(Order... o) {
+    public CriteriaQuery<T> orderBy(Order... o) {
         _orders = Arrays.asList(o);
         return this;
     }
@@ -232,7 +235,7 @@ public class CriteriaQueryImpl<T> implements CriteriaQuery<T>, AliasContext {
      * @return the modified query
      */
     public CriteriaQuery<T> select(Selection<T> selection) {
-        throw new AbstractMethodError();
+        return select(new Selection<?>[]{selection});
     }
 
     public CriteriaQuery<T> select(Selection<?>... selections) {
@@ -348,18 +351,18 @@ public class CriteriaQueryImpl<T> implements CriteriaQuery<T>, AliasContext {
     //    _contexts = contexts;
     //}
     
-    public CriteriaQueryImpl getInnermostParent() {
+    public CriteriaQueryImpl<?> getInnermostParent() {
         if (_delegator == null)
             return this;
-        AbstractQuery parent = _delegator.getParent();
+        AbstractQuery<?> parent = _delegator.getParent();
         if (parent instanceof CriteriaQueryImpl) 
-            return (CriteriaQueryImpl)parent;
+            return (CriteriaQueryImpl<?>)parent;
         // parent is a SubqueryImpl    
-        return ((SubqueryImpl)parent).getDelegate().getInnermostParent();
+        return ((SubqueryImpl<?>)parent).getDelegate().getInnermostParent();
     }
     
     public Map<Selection<?>,String> getAliases() {
-        CriteriaQueryImpl c = getInnermostParent();
+        CriteriaQueryImpl<?> c = getInnermostParent();
         if (c._aliases == null)
             c._aliases = new HashMap<Selection<?>, String>();
         return c._aliases;

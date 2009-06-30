@@ -370,9 +370,10 @@ public class SourceAnnotationHandler
      */
     static class TransientFilter implements InclusiveFilter<Element> {
         public boolean includes(Element obj) {
+            Set<Modifier> modifiers = obj.getModifiers();
             boolean isTransient = isAnnotatedWith(obj, Transient.class)
-                            || obj.getModifiers().contains(Modifier.TRANSIENT);
-            return !isTransient;
+                            || modifiers.contains(Modifier.TRANSIENT);
+           return !isTransient && !modifiers.contains(Modifier.STATIC);
         }
     }
     
