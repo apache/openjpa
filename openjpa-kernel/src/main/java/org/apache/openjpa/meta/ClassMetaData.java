@@ -208,6 +208,8 @@ public class ClassMetaData
     private boolean _intercepting = false;
     private Boolean _useIdClassFromParent = null;
     private boolean _abstract = false;
+    private Boolean _hasAbstractPKField = null;
+    private Boolean _hasPKFieldsFromAbstractClass = null;
     
     /**
      * Constructor. Supply described type and repository.
@@ -2593,4 +2595,78 @@ public class ClassMetaData
         }
         return rval;
     }
+    
+    /**
+     * Convenience method to determine if the pcType modeled by
+     * this ClassMetaData object is both abstract and declares PKFields. This
+     * method is used by the PCEnhancer to determine if special handling is
+     * required.
+     *
+     * @return
+     */
+    public boolean hasAbstractPKField() {
+        if (_hasAbstractPKField != null) {
+            return _hasAbstractPKField.booleanValue();
+        }
+
+        // Default to false, set to true only if this type is abstract and
+        // declares a PKField.
+        _hasAbstractPKField = Boolean.FALSE;
+
+        if (isAbstract() == true) {
+            FieldMetaData[] declaredFields = getDeclaredFields();
+            if (declaredFields != null && declaredFields.length != 0) {
+                for (FieldMetaData fmd : declaredFields) {
+                    if (fmd.isPrimaryKey()) {
+                        _hasAbstractPKField = Boolean.TRUE;
+                        break;
+                    }
+                }
+            }
+        }
+
+        return _hasAbstractPKField.booleanValue();
+    }
+    
+    /**
+     * Convenience method to determine if this type is a direct
+     * decendent of an abstract type declaring PKFields. Returns true if there
+     * are no pcTypes mapped to a table between this type and an abstract pcType
+     * declaring PKFields. Returns false if there no such abstract pcTypes in
+     * the inheritance hierarchy or if there are any pcTypes mapped to tables in
+     * between the type represented by this ClassMetaData object and the
+     * abstract pcType declaring PKFields.
+     *
+     * @return
+     */
+    public boolean hasPKFieldsFromAbstractClass() {
+        if (_hasPKFieldsFromAbstractClass != null) {
+            return _hasPKFieldsFromAbstractClass.booleanValue();
+        }
+
+        // Default to FALSE, until proven true.
+        _hasPKFieldsFromAbstractClass = Boolean.FALSE;
+
+        FieldMetaData[] pkFields = getPrimaryKeyFields();
+        for (FieldMetaData fmd : pkFields) {
+            ClassMetaData fmdDMDA = fmd.getDeclaringMetaData();
+            if (fmdDMDA.isAbstract()) {
+                ClassMetaData cmd = getPCSuperclassMetaData();
+                while (cmd != fmdDMDA) {
+                    if (fmdDMDA.isAbstract()) {
+                        cmd = cmd.getPCSuperclassMetaData();
+                    } else {
+                        break;
+                    }
+                }
+                if (cmd == fmdDMDA) {
+                    _hasPKFieldsFromAbstractClass = Boolean.TRUE;
+                    break;
+                }
+            }
+        }
+
+        return _hasPKFieldsFromAbstractClass.booleanValue();
+    }
+
 }
