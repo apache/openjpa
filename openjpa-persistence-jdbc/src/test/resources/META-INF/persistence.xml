@@ -47,7 +47,8 @@
         <mapping-file>org/apache/openjpa/persistence/access/access-pudef-prop-orm.xml</mapping-file>
         <mapping-file>org/apache/openjpa/persistence/jdbc/order/order-orm.xml</mapping-file>
         <mapping-file>org/apache/openjpa/persistence/jdbc/order/order-orm-2.xml</mapping-file>
-        <mapping-file>org/apache/openjpa/persistence/jdbc/order/order-orm-3.xml</mapping-file>        
+        <mapping-file>org/apache/openjpa/persistence/jdbc/order/order-orm-3.xml</mapping-file>
+        <mapping-file>org/apache/openjpa/persistence/inheritance/orm.xml</mapping-file>
         <properties>
             <property name="openjpa.jdbc.SynchronizeMappings"
                 value="buildSchema(ForeignKeys=true)"/>
@@ -120,6 +121,8 @@
         <class>org.apache.openjpa.persistence.embed.OrderXml</class>
         <class>org.apache.openjpa.persistence.embed.attrOverrides.AddressXml</class>
         <class>org.apache.openjpa.persistence.embed.attrOverrides.ZipcodeXml</class>
+        <class>org.apache.openjpa.persistence.embed.attrOverrides.XMLOverEntity</class>
+        <class>org.apache.openjpa.persistence.embed.attrOverrides.AnnoOverEmbed</class>        
         <properties>
             <property name="openjpa.jdbc.SynchronizeMappings"
                   value="buildSchema(ForeignKeys=true)"/>
@@ -170,4 +173,16 @@
                 value="buildSchema"/> 
         </properties>
     </persistence-unit>
+    <persistence-unit name="AbstractCallbackPU" transaction-type="RESOURCE_LOCAL">
+        <description>PU for testing with an entity with no persistent attributes</description>
+        <provider>org.apache.openjpa.persistence.PersistenceProviderImpl</provider>
+        <mapping-file>org/apache/openjpa/persistence/inheritance/orm.xml</mapping-file>
+        <class>org.apache.openjpa.persistence.inheritance.entity.BaseCallback</class>
+        <class>org.apache.openjpa.persistence.inheritance.entity.XMLCallback</class>
+        <class>org.apache.openjpa.persistence.inheritance.entity.XMLSuperCallback</class>
+        <properties>
+            <property name="openjpa.jdbc.SynchronizeMappings" 
+                value="buildSchema"/> 
+        </properties>
+    </persistence-unit>    
 </persistence>

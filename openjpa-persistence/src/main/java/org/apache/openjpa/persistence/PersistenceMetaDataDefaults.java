@@ -279,7 +279,8 @@ public class PersistenceMetaDataDefaults
     		return null;
     	Class<?> cls = meta.getDescribedType();
     	Class<?> sup = cls.getSuperclass();
-    	if (sup == null)
+    	if (sup == null || "java.lang.Object".equals(
+    	    sup.getName()))
     		return null;
     	MetaDataRepository repos = meta.getRepository();
     	ClassMetaData supMeta = repos.getCachedMetaData(sup);
@@ -309,8 +310,13 @@ public class PersistenceMetaDataDefaults
     		return access;
     	
     	ClassMetaData sup = getCachedSuperclassMetaData(meta);
-    	while (sup != null && sup.isExplicitAccess())
-    		sup = getCachedSuperclassMetaData(sup);
+    	ClassMetaData tmpSup = sup;
+    	while (tmpSup != null && tmpSup.isExplicitAccess()) {
+            tmpSup = getCachedSuperclassMetaData(tmpSup);
+            if (tmpSup != null) {
+                sup = tmpSup;
+            }    	    
+    	}
     	if (sup != null && !AccessCode.isUnknown(sup))
     		return sup.getAccessType();
     	

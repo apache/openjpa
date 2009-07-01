@@ -34,7 +34,9 @@ import org.apache.openjpa.persistence.test.SingleEMFTestCase;
 public class TestXmlOverrideEntity extends SingleEMFTestCase {
 
     public void setUp() throws ClassNotFoundException {
-        setUp(CLEAR_TABLES);
+        setUp(
+        org.apache.openjpa.persistence.embed.attrOverrides.AnnoOverEmbed.class,
+        CLEAR_TABLES);
 
         // make sure that XmlOverrideEntity is registered for our metadata tests
         Class.forName(XmlOverrideEntity.class.getName(), true,

@@ -22,6 +22,7 @@ import java.io.File;
 import java.io.IOException;
 import java.net.URL;
 import java.security.AccessController;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
@@ -29,6 +30,8 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
+import java.util.Stack;
+
 import javax.persistence.Embeddable;
 import javax.persistence.Entity;
 import javax.persistence.MappedSuperclass;
@@ -83,6 +86,9 @@ public class PersistenceMetaDataFactory
     private Map<URL, Set<String>> _xml = null; // xml rsrc -> class names
     private Set<URL> _unparsed = null; // xml rsrc
     private boolean _fieldOverride = true;
+
+    protected Stack<XMLPersistenceMetaDataParser> _stack = 
+        new Stack<XMLPersistenceMetaDataParser>();
 
     /**
      * Whether to use field-level override or class-level override.
@@ -141,16 +147,37 @@ public class PersistenceMetaDataFactory
     }
 
     /**
-     * Return XML metadata parser, creating it if it does not already exist.
+     * Return XML metadata parser, creating it if it does not already exist or
+     * if the existing parser is parsing.
      */
     public XMLPersistenceMetaDataParser getXMLParser() {
-        if (_xmlParser == null) {
+        if (_xmlParser == null || _xmlParser.isParsing()) {
+            Class<?> parseCls = null;
+            ArrayList<Class<?>> parseList = null;
+            // If there is an existing parser and it is parsing, push it on
+            // the stack and return a new one.
+            if (_xmlParser != null) {
+                _stack.push(_xmlParser);
+                parseCls = _xmlParser.getParseClass();
+                parseList = _xmlParser.getParseList();
+            }
             _xmlParser = newXMLParser(true);
+            _xmlParser.addToParseList(parseList);
+            _xmlParser.addToParseList(parseCls);
             _xmlParser.setRepository(repos);
             if (_fieldOverride)
                 _xmlParser.setAnnotationParser(getAnnotationParser());
         }
         return _xmlParser;
+    }
+
+    public void resetXMLParser() {
+        // If a parser was pushed on the stack due to multi-level parsing, 
+        // clear the current parser and pop the inner parser off the stack.
+        if (!_stack.isEmpty()) {
+            _xmlParser.clear();
+            _xmlParser = _stack.pop();
+        }
     }
 
     /**
@@ -196,10 +223,12 @@ public class PersistenceMetaDataFactory
         boolean parsedXML = false;
         if (_unparsed != null && !_unparsed.isEmpty()
             && (mode & MODE_META) != 0) {
-            for (URL url : _unparsed)
+            Set<URL> unparsed = new HashSet<URL>(_unparsed);
+            for (URL url : unparsed) {
                 parseXML(url, cls, mode, envLoader);
-            parsedXML = _unparsed.contains(xml);
-            _unparsed.clear();
+            }
+            parsedXML = unparsed.contains(xml);
+             _unparsed.clear();
 
             // XML process check
             meta = repos.getCachedMetaData(cls);
@@ -264,6 +293,9 @@ public class PersistenceMetaDataFactory
             xmlParser.parse(xml);
         } catch (IOException ioe) {
             throw new GeneralException(ioe);
+        }
+        finally {
+            resetXMLParser();
         }
     }
 

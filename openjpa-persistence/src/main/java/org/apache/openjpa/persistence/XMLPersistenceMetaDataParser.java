@@ -184,6 +184,8 @@ public class XMLPersistenceMetaDataParser
     private final Stack<Object> _parents = new Stack<Object>();
 
     private Class<?> _cls = null;
+    // List of classes currently being parsed
+    private ArrayList<Class<?>> _parseList = new ArrayList<Class<?>>();
     private int _fieldPos = 0;
     private int _clsPos = 0;
     private int _access = AccessCode.UNKNOWN;
@@ -490,10 +492,14 @@ public class XMLPersistenceMetaDataParser
 
     @Override
     protected void reset() {
+    	// Add all remaining deferred embeddable metadata
+        addDeferredEmbeddableMetaData();
+
         super.reset();
         _elements.clear();
         _parents.clear();
         _cls = null;
+        _parseList.clear();
         _fieldPos = 0;
         _clsPos = 0;
 
@@ -823,6 +829,12 @@ public class XMLPersistenceMetaDataParser
 
         // query mode only?
         _cls = classForName(currentClassName());
+        
+        // Prevent a reentrant parse for the same class
+        if (parseListContains(_cls)) {
+            return false;
+        }
+        
         if (_mode == MODE_QUERY) {
             if (_parser != null)
                 _parser.parse(_cls);
@@ -1806,6 +1818,13 @@ public class XMLPersistenceMetaDataParser
             return false;
 
         boolean system = currentElement() == null;
+
+        // If in a multi-level parse, do not add system level listeners.
+        // Otherwise, they will get added multiple times.
+        if (system && _parseList != null && _parseList.size() > 0) {
+            return false;
+        }
+
         Class<?> type = currentElement() == null ? null :
             ((ClassMetaData) currentElement()).getDescribedType();
         if (type == null)
@@ -1895,7 +1914,30 @@ public class XMLPersistenceMetaDataParser
 			return PersistenceCapable.class;
 		return super.classForName(name, isRuntime());
 	}
-    
+
+	/**
+	 * Process all deferred embeddables using an unknown access type.
+	 */
+	protected void addDeferredEmbeddableMetaData() {
+	    if (_embeddables != null && _embeddables.size() > 0) {
+	        // Reverse iterate the array of remaining deferred embeddables 
+	        // since elements will be removed as they are processed.
+	        Class<?>[] classes = _embeddables.keySet().toArray(
+	            new Class<?>[_embeddables.size()]);
+	        for (int i = classes.length - 1 ; i >= 0; i--) {
+	            try {
+	                addDeferredEmbeddableMetaData(classes[i], 
+	                    AccessCode.UNKNOWN);
+	            }
+	            catch (Exception e) {
+	                throw new MetaDataException(
+	                    _loc.get("no-embeddable-metadata", 
+	                        classes[i].getName()), e); 
+	            }
+	        }
+	    }	    
+	}
+	
     /**
      * Process all deferred embeddables and embeddable mapping overrides
      * for a given class.  This should only happen after the access type 
@@ -1964,4 +2006,45 @@ public class XMLPersistenceMetaDataParser
     protected void applyDeferredEmbeddableOverrides(Class<?> cls)
         throws SAXException {
     }
+
+	/*
+	 * Add the array of classes to the active parse list.
+	 */
+    public void addToParseList(ArrayList<Class<?>> parseList) {
+        if (parseList == null)
+            return;
+        _parseList.addAll(parseList);
+    }
+    
+    /*
+     * Add the class to the active parse list.
+     */
+    public void addToParseList(Class<?> parentCls) {
+        if (parentCls == null)
+            return;
+        _parseList.add(parentCls);
+    }
+
+    /*
+     * Whether the active parse list contains the specified class.
+     */
+    public boolean parseListContains(Class<?> cls) {
+        if (_parseList.size() == 0)
+            return false;
+        return _parseList.contains(cls);
+    }
+
+    /*
+     * Returns the list of classes actively being parsed.
+     */
+    public ArrayList<Class<?>> getParseList() {
+        return _parseList;
+    }
+    
+    /*
+     * Returns class currently being parsed.
+     */
+    public Class<?> getParseClass() {
+        return _cls;
+    }    
 }

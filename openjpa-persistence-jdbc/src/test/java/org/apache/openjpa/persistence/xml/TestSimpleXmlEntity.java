@@ -25,7 +25,9 @@ public class TestSimpleXmlEntity
     extends SingleEMTestCase {
 
     public void setUp() {
-        setUp(CLEAR_TABLES);
+        setUp(
+        org.apache.openjpa.persistence.embed.attrOverrides.AnnoOverEmbed.class,
+        CLEAR_TABLES);
     }
 
     protected String getPersistenceUnitName() {

@@ -45,7 +45,9 @@ public class TestAttrOverridesXml extends SQLListenerTestCase {
     public int eId = 1;
     
     public void setUp() {
-        setUp(DROP_TABLES);
+        setUp(
+        org.apache.openjpa.persistence.embed.attrOverrides.AnnoOverEmbed.class,
+        DROP_TABLES);
     }
     
     @Override
@@ -90,6 +92,38 @@ public class TestAttrOverridesXml extends SQLListenerTestCase {
         assertTrue(verifyColumnOverride(em, "listIntAttrOverEmbedColTable", 
             "intValueAttributeOverride"));
         em.close();
+    }
+    
+    /**
+     * This test verifies that an XML defined entity with an annotated 
+     * only embeddable has attribute overrides applied correctly.  
+     */
+    public void testXMLEntityWithAnnotatedOverrideEmbed() {
+        OpenJPAEntityManagerSPI em = emf.createEntityManager();
+        
+        XMLOverEntity xoe = new XMLOverEntity();
+        xoe.setId(new Random().nextInt());
+        
+        AnnoOverEmbed aoe = new AnnoOverEmbed();
+        aoe.setIntEmbed(1);
+        aoe.setStrEmbed("StrVal");
+        xoe.setEmbed(aoe);
+        
+        em.getTransaction().begin();
+        em.persist(xoe);
+        em.getTransaction().commit();
+        
+        assertTrue(verifyColumnOverride(em, "XMLOverEntity", 
+            "intOverEmbed"));
+        assertFalse(verifyColumnOverride(em, "XMLOverEntity", 
+            "intEmbed"));
+
+        assertTrue(verifyColumnOverride(em, "XMLOverEntity", 
+            "strOverEmbed"));
+        assertFalse(verifyColumnOverride(em, "XMLOverEntity", 
+            "strEmbed"));
+
+        em.close();        
     }
     
     public void createObj1() {

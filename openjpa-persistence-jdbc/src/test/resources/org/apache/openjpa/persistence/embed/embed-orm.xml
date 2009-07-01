@@ -199,6 +199,22 @@ version="2.0">
             </element-collection>
         </attributes>
     </entity>
+    
+    <entity name="XMLOverEntity"
+        class="org.apache.openjpa.persistence.embed.attrOverrides.XMLOverEntity"
+        access="FIELD">
+        <attributes>
+            <id name="id"/>
+            <embedded name="embed">
+                <attribute-override name="intEmbed">
+                   <column name="intOverEmbed"/>
+                </attribute-override>
+                <attribute-override name="strEmbed">
+                   <column name="strOverEmbed"/>
+                </attribute-override>
+            </embedded>
+        </attributes>
+    </entity>    
 
     <embeddable 
         class="org.apache.openjpa.persistence.embed.attrOverrides.AddressXml" 
