@@ -106,6 +106,22 @@ public abstract class XMLMetaDataParser extends DefaultHandler
     private int _depth = -1;
     private int _ignore = Integer.MAX_VALUE;
 
+    private boolean _parsing = false;
+
+    /*
+     * Whether the parser is currently parsing.
+     */
+    public boolean isParsing() {
+        return _parsing;
+    }
+
+    /*
+     * Whether the parser is currently parsing.
+     */
+    public void setParsing(boolean parsing) {
+        this._parsing = parsing;
+    }
+
     /**
      * Whether to parse element text.
      */
@@ -348,6 +364,7 @@ public abstract class XMLMetaDataParser extends DefaultHandler
 
         // parse the metadata with a SAX parser
         try {
+            setParsing(true);
             _sourceName = sourceName;
             SAXParser parser = XMLFactory.getSAXParser(validating, true);
             Object schema = null;
@@ -525,7 +542,6 @@ public abstract class XMLMetaDataParser extends DefaultHandler
         if (_log != null && _log.isTraceEnabled())
             _log.trace(_loc.get("end-parse", getSourceName()));
         _results = new ArrayList(_curResults);
-        clearDeferredMetaData();
     }
 
     /**
@@ -542,6 +558,8 @@ public abstract class XMLMetaDataParser extends DefaultHandler
         _ignore = Integer.MAX_VALUE;
         if (_comments != null)
             _comments.clear();
+        clearDeferredMetaData();
+        setParsing(false);
     }
 
     /**
