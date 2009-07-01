@@ -883,7 +883,8 @@ public abstract class AbstractResult
             return this;
         }
 
-        public void setContext(Context context) {
+        public Joins setJoinContext(Context context) {
+            return this;
         }
 
         public void appendTo(SQLBuffer buf) {

@@ -79,7 +79,7 @@ public interface Joins {
      * in transition from parent context to subquery.
      * @param context
      */
-    public void setContext(Context context);
+    public Joins setJoinContext(Context context);
     
     /**
      * Set the subquery alias.

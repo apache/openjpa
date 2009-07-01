@@ -497,8 +497,7 @@ public class PCPath
                     isCorrelatedPath = true;
                     pstate.joins = pstate.joins.setCorrelatedVariable(action.var);
                 } else 
-                    pstate.joins = pstate.joins.
-                        setVariable((String) action.data);
+                    pstate.joins = pstate.joins.setVariable((String) action.data);
             }
             else if (action.op == Action.SUBQUERY) {
                 pstate.joins = pstate.joins.setSubselect((String) action.data);
@@ -576,7 +575,7 @@ public class PCPath
             }
             prevaction = action;
             if (prevaction != null && prevaction.context != null) 
-                pstate.joins.setContext(prevaction.context);
+                pstate.joins = pstate.joins.setJoinContext(prevaction.context);
         }
         if (_varName != null)
             pstate.joins = pstate.joins.setVariable(_varName);
@@ -596,6 +595,7 @@ public class PCPath
             // check if there are joins that belong to parent
             pstate.joins.moveJoinsToParent();
         }
+        pstate.joins.setJoinContext(null);
         return pstate;
     }
 

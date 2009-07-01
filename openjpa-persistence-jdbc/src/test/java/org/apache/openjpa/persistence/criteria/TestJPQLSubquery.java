@@ -39,12 +39,12 @@ public class TestJPQLSubquery extends CriteriaTest {
     
     public void testSubqueries1() {
         String jpql = "SELECT goodCustomer FROM Customer goodCustomer WHERE "
-            + "goodCustomer.balanceOwed < (SELECT AVG(c.balanceOwed) " 
+            + "goodCustomer.balanceOwed < (SELECT AVG(c.balanceOwed) "
             + " FROM Customer c)";
         String expectedSQL = "SELECT t0.id, t0.accountNum, t2.id, t2.city, t2.country, t2.county, t2.state, " + 
         "t2.street, t3.userid, t3.DTYPE, t3.age, t3.compName, t3.creditRating, t3.name, t2.zipCode, " + 
         "t0.balanceOwed, t0.creditRating, t0.filledOrderCount, t0.firstName, t0.lastName, t0.name, t0.status " + 
-        "FROM CR_CUST t0 LEFT OUTER JOIN CR_ADDR t2 ON t0.ADDRESS_ID = t2.id " + 
+        "FROM CR_CUST t0 LEFT OUTER JOIN CR_ADDR t2 ON t0.ADDRESS_ID = t2.id " +
         "LEFT OUTER JOIN CompUser t3 ON t2.id = t3.ADD_ID " + 
         "WHERE (t0.balanceOwed < (SELECT AVG(t1.balanceOwed) FROM CR_CUST t1 ))"; 
 
@@ -59,7 +59,7 @@ public class TestJPQLSubquery extends CriteriaTest {
         "t2.street, t3.userid, t3.DTYPE, t3.age, t3.compName, t3.creditRating, t3.name, t2.zipCode, t4.deptNo, " + 
         "t4.name, t5.id, t5.annualMiles, t5.name, t6.id, t7.deptNo, t7.name, t6.name, t6.salary, t1.name, " + 
         "t1.rating, t1.salary, t8.empId, t8.EMP_TYPE, t8.ADDRESS_ID, t8.DEPARTMENT_DEPTNO, t8.FREQUENTFLIERPLAN_ID, " +
-        "t8.MANAGER_ID, t8.name, t8.rating, t8.salary, t8.hireDate, t1.hireDate " + 
+        "t8.MANAGER_ID, t8.name, t8.rating, t8.salary, t8.hireDate, t1.hireDate " +
         "FROM CR_EMP t1 LEFT OUTER JOIN CR_ADDR t2 ON t1.ADDRESS_ID = t2.id " + 
         "LEFT OUTER JOIN CR_DEPT t4 ON t1.DEPARTMENT_DEPTNO = t4.deptNo " + 
         "LEFT OUTER JOIN FrequentFlierPlan t5 ON t1.FREQUENTFLIERPLAN_ID = t5.id " + 
@@ -131,7 +131,7 @@ public class TestJPQLSubquery extends CriteriaTest {
         "t2.creditRating, t2.filledOrderCount, t2.firstName, t2.lastName, t2.name, t2.status " + 
         "FROM CR_CUST t2 LEFT OUTER JOIN CR_ADDR t3 ON t2.ADDRESS_ID = t3.id " +
         "LEFT OUTER JOIN CompUser t4 ON t3.id = t4.ADD_ID " +
-        "WHERE ((SELECT COUNT(t1.id) " + 
+        "WHERE ((SELECT COUNT(t1.id) " +
         "FROM CR_CUST t0 INNER JOIN CR_ODR t1 ON t0.id = t1.CUSTOMER_ID WHERE (t2.id = t0.id) ) > ?)"; 
         execute(jpql, expectedSQL);
     }    
@@ -148,7 +148,28 @@ public class TestJPQLSubquery extends CriteriaTest {
 
         execute(jpql, expectedSQL);
     }
-    
+
+    public void testSubqueries4d() {
+        String jpql = "SELECT c FROM Customer c WHERE (SELECT COUNT(o) "
+            + "FROM Customer c1 JOIN c1.orders o WHERE c.address.county = c1.address.county) > 10";
+
+        String expectedSQL = "SELECT t2.id, t2.accountNum, t5.id, t5.city, t5.country, t5.county, " +
+        "t5.state, t5.street, t6.userid, t6.DTYPE, t6.age, t6.compName, t6.creditRating, t6.name, " +
+        "t5.zipCode, t2.balanceOwed, t2.creditRating, t2.filledOrderCount, t2.firstName, t2.lastName, " +
+        "t2.name, t2.status " +
+        "FROM CR_CUST t2 " +
+        "INNER JOIN CR_ADDR t3 ON t2.ADDRESS_ID = t3.id " +
+        "LEFT OUTER JOIN CR_ADDR t5 ON t2.ADDRESS_ID = t5.id " +
+        "LEFT OUTER JOIN CompUser t6 ON t5.id = t6.ADD_ID " +
+        "WHERE ((SELECT COUNT(t1.id) " +
+        "FROM CR_CUST t0 " +
+        "INNER JOIN CR_ODR t1 ON t0.id = t1.CUSTOMER_ID " +
+        "INNER JOIN CR_ADDR t4 ON t0.ADDRESS_ID = t4.id " +
+        "WHERE (t3.county = t4.county) ) > ?)";
+
+        execute(jpql, expectedSQL);
+    }
+
     public void testSubqueries5() {
         String jpql = "SELECT o FROM Order o WHERE 10000 < ALL ("
             + "SELECT a.balance FROM o.customer c JOIN c.accounts a)";
@@ -167,7 +188,7 @@ public class TestJPQLSubquery extends CriteriaTest {
         String jpql = "SELECT o FROM Order o WHERE o.name = SOME ("
             + "SELECT a.name FROM o.customer c JOIN c.accounts a)";
         String expectedSQL = "SELECT t3.id, t3.count, t4.id, t4.accountNum, t5.id, t5.city, t5.country, t5.county, " + 
-        "t5.state, t5.street, t6.userid, t6.DTYPE, t6.age, t6.compName, t6.creditRating, t6.name, t5.zipCode, " + 
+        "t5.state, t5.street, t6.userid, t6.DTYPE, t6.age, t6.compName, t6.creditRating, t6.name, t5.zipCode, " +
         "t4.balanceOwed, t4.creditRating, t4.filledOrderCount, t4.firstName, t4.lastName, t4.name, t4.status, " + 
         "t3.delivered, t3.name, t3.orderTs, t3.quantity, t3.totalCost " + 
         "FROM CR_ODR t3 LEFT OUTER JOIN CR_CUST t4 ON t3.CUSTOMER_ID = t4.id " + 
@@ -188,7 +209,7 @@ public class TestJPQLSubquery extends CriteriaTest {
         "t4.balanceOwed, t4.creditRating, t4.filledOrderCount, t4.firstName, t4.lastName, t4.name, t4.status, " + 
         "t0.delivered, t0.name, t0.orderTs, t0.quantity, t0.totalCost " + 
         "FROM CR_ODR t0 INNER JOIN CR_CUST t1 ON t0.CUSTOMER_ID = t1.id " + 
-        "LEFT OUTER JOIN CR_CUST t4 ON t0.CUSTOMER_ID = t4.id " + 
+        "LEFT OUTER JOIN CR_CUST t4 ON t0.CUSTOMER_ID = t4.id " +
         "LEFT OUTER JOIN CR_ADDR t5 ON t4.ADDRESS_ID = t5.id " + 
         "LEFT OUTER JOIN CompUser t6 ON t5.id = t6.ADD_ID WHERE (? < ALL (" + 
         "SELECT t3.balance FROM  CR_CUST_CR_ACCT t2, CR_ACCT t3 WHERE (t2.ACCOUNTS_ID = t3.id) AND " + 
@@ -255,7 +276,7 @@ public class TestJPQLSubquery extends CriteriaTest {
         "t5.balanceOwed, t5.creditRating, t5.filledOrderCount, t5.firstName, t5.lastName, t5.name, t5.status, " + 
         "t2.delivered, t2.name, t2.orderTs, t2.quantity, t2.totalCost " + 
         "FROM CR_ODR t2 INNER JOIN CR_CUST t3 ON t2.CUSTOMER_ID = t3.id " +
-        "LEFT OUTER JOIN CR_CUST t5 ON t2.CUSTOMER_ID = t5.id " + 
+        "LEFT OUTER JOIN CR_CUST t5 ON t2.CUSTOMER_ID = t5.id " +
         "INNER JOIN CR_ADDR t4 ON t3.ADDRESS_ID = t4.id " + 
         "LEFT OUTER JOIN CR_ADDR t6 ON t5.ADDRESS_ID = t6.id " + 
         "LEFT OUTER JOIN CompUser t7 ON t6.id = t7.ADD_ID WHERE (? < ALL (" + 
@@ -265,6 +286,7 @@ public class TestJPQLSubquery extends CriteriaTest {
         execute(jpql, expectedSQL);
     }
 
+    //mis-placed INNER JOIN
     public void testSubqueries6e() {
         String jpql = "SELECT o FROM Order o JOIN o.customer c JOIN c.address a WHERE 10000 < "
             + "ALL (SELECT u.age FROM a.user u)";
@@ -277,53 +299,46 @@ public class TestJPQLSubquery extends CriteriaTest {
         "LEFT OUTER JOIN CR_CUST t5 ON t0.CUSTOMER_ID = t5.id " + 
         "INNER JOIN CR_ADDR t2 ON t1.ADDRESS_ID = t2.id " + 
         "LEFT OUTER JOIN CR_ADDR t6 ON t5.ADDRESS_ID = t6.id " + 
-        "INNER JOIN CompUser t3 ON t2.id = t3.ADD_ID " + 
-        "LEFT OUTER JOIN CompUser t7 ON t6.id = t7.ADD_ID " + 
+        "INNER JOIN CompUser t3 ON t2.id = t3.ADD_ID " +  // <== mis-placed
+        "LEFT OUTER JOIN CompUser t7 ON t6.id = t7.ADD_ID " +  
         "WHERE (? < ALL (SELECT t4.age FROM CompUser t4 WHERE (t3.userid = t4.userid) ) AND 1 = 1)"; 
         
         execute(jpql, expectedSQL1);
     }
     
+    //mis-placed INNER JOIN
     public void testSubqueries6f() {
         String jpql = "SELECT o FROM Order o JOIN o.customer c WHERE 10000 < "
             + "ALL (SELECT u.age FROM c.address.user u)";
         
-        String expectedSQL = "SELECT t0.id, t0.count, t5.id, t5.accountNum, t6.id, t6.city, t6.country, t6.county, " + 
-        "t6.state, t6.street, t7.userid, t7.DTYPE, t7.age, t7.compName, t7.creditRating, t7.name, t6.zipCode, " + 
-        "t5.balanceOwed, t5.creditRating, t5.filledOrderCount, t5.firstName, t5.lastName, t5.name, t5.status, " + 
-        "t0.delivered, t0.name, t0.orderTs, t0.quantity, t0.totalCost FROM CR_ODR t0 INNER JOIN CR_CUST t1 ON " + 
-        "t0.CUSTOMER_ID = t1.id LEFT OUTER JOIN CR_CUST t5 ON t0.CUSTOMER_ID = t5.id LEFT OUTER JOIN CR_ADDR t6 ON " + 
-        "t5.ADDRESS_ID = t6.id LEFT OUTER JOIN CompUser t7 ON t6.id = t7.ADD_ID WHERE (? < ALL (SELECT t4.age FROM " + 
-        "CR_ADDR t2 INNER JOIN CompUser t3 ON t2.id = t3.ADD_ID, CompUser t4 WHERE (t3.userid = t4.userid) AND " + 
-        "(t1.ADDRESS_ID = t2.id) ))";
-
-        String expectedSQL1 = "SELECT t0.id, t0.count, t5.id, t5.accountNum, t6.id, t6.city, t6.country, t6.county, " + 
+        String expectedSQL = "SELECT t0.id, t0.count, t5.id, t5.accountNum, t6.id, t6.city, t6.country, t6.county, " +
         "t6.state, t6.street, t7.userid, t7.DTYPE, t7.age, t7.compName, t7.creditRating, t7.name, t6.zipCode, " + 
         "t5.balanceOwed, t5.creditRating, t5.filledOrderCount, t5.firstName, t5.lastName, t5.name, t5.status, " + 
         "t0.delivered, t0.name, t0.orderTs, t0.quantity, t0.totalCost " + 
         "FROM CR_ODR t0 INNER JOIN CR_CUST t1 ON t0.CUSTOMER_ID = t1.id " + 
         "LEFT OUTER JOIN CR_CUST t5 ON t0.CUSTOMER_ID = t5.id " + 
-        "INNER JOIN CR_ADDR t2 ON t1.ADDRESS_ID = t2.id " + 
+        "INNER JOIN CR_ADDR t2 ON t1.ADDRESS_ID = t2.id " + // <== mis-placed 
         "LEFT OUTER JOIN CR_ADDR t6 ON t5.ADDRESS_ID = t6.id " + 
-        "INNER JOIN CompUser t3 ON t2.id = t3.ADD_ID " + 
+        "INNER JOIN CompUser t3 ON t2.id = t3.ADD_ID " +   // <== misplaced
         "LEFT OUTER JOIN CompUser t7 ON t6.id = t7.ADD_ID " + 
         "WHERE (? < ALL (SELECT t4.age FROM CompUser t4 WHERE (t3.userid = t4.userid) ))"; 
 
         
-        execute(jpql, expectedSQL1);
+        execute(jpql, expectedSQL);
     }
     
+    // mis-placed INNER JOIN
     public void testSubqueries6g() {
         String jpql = "SELECT o FROM Order o JOIN o.customer.address a WHERE 10000 < "
             + "ALL (SELECT u.age FROM a.user u)";
         String expectedSQL = "SELECT t0.id, t0.count, t1.id, t1.accountNum, t6.id, t6.city, t6.country, t6.county, " + 
-        "t6.state, t6.street, t7.userid, t7.DTYPE, t7.age, t7.compName, t7.creditRating, t7.name, t6.zipCode, " + 
+        "t6.state, t6.street, t7.userid, t7.DTYPE, t7.age, t7.compName, t7.creditRating, t7.name, t6.zipCode, " +
         "t1.balanceOwed, t1.creditRating, t1.filledOrderCount, t1.firstName, t1.lastName, t1.name, t1.status, " + 
         "t0.delivered, t0.name, t0.orderTs, t0.quantity, t0.totalCost " + 
         "FROM CR_ODR t0 INNER JOIN CR_CUST t1 ON t0.CUSTOMER_ID = t1.id " + 
         "INNER JOIN CR_ADDR t2 ON t1.ADDRESS_ID = t2.id " + 
         "LEFT OUTER JOIN CR_ADDR t6 ON t1.ADDRESS_ID = t6.id " + 
-        "INNER JOIN CompUser t4 ON t2.id = t4.ADD_ID " + 
+        "INNER JOIN CompUser t4 ON t2.id = t4.ADD_ID " +  //<== misplaced
         "LEFT OUTER JOIN CompUser t7 ON t6.id = t7.ADD_ID WHERE (? < ALL (" + 
         "SELECT t5.age FROM  CR_CUST t3, CompUser t5 WHERE (t4.userid = t5.userid) AND (t0.CUSTOMER_ID = t3.id) ))";
         execute(jpql, expectedSQL);

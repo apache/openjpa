@@ -2024,16 +2024,21 @@ public class SelectImpl
         Integer i = null;
         SelectImpl sel = this;
 
-//        System.out.println((_parent != null) ? "FindAliasForSUBQuery" :
-//            "FindAliasForQuery: " + key.toString());
-        String alias = (pj != null && pj.path() != null && 
-            pj.getCorrelatedVariable() == null) 
-            ? null : _schemaAlias;
-
-        if (table.isAssociation()) {
-            // create alias in this select
-             alias = null;
-        }
+        //currCtx is set from Action, it is reset to null after the PCPath initialization
+        Context currCtx = pj == null ? null : ((PathJoinsImpl)pj).context;
+        
+        // lastCtx is set to currCtx after the SelectJoins.join. pj.lastCtx and pj.path string are 
+        // the last snapshot of pj. They will be used together for later table alias resolution in
+        // the getColumnAlias(). 
+        Context lastCtx = pj == null ? null : ((PathJoinsImpl)pj).lastContext;
+        Context thisCtx = currCtx == null ? lastCtx : currCtx;
+        String corrVar = pj == null ? null : pj.getCorrelatedVariable();
+        
+        String alias = _schemaAlias;
+        if ((pj != null && pj.path() != null && (corrVar == null || ctx() == thisCtx)) || 
+            table.isAssociation()) {
+            alias = null;
+        } 
 
         // find the context where this alias is defined
         Context ctx = (alias != null) ?
@@ -2042,14 +2047,16 @@ public class SelectImpl
             sel = (SelectImpl) ctx.getSelect();
 
         if (!create) 
-            i = sel.findAlias(table, key);  // find in parent
+            i = sel.findAlias(table, key);  // find in parent and in myself
         else
-            i = sel.getAlias(table, key);
+            i = sel.getAlias(table, key); // find in myself
         if (i != null)
             return i;
         
-        if (create) {
+        if (create) { // create here
             i = sel.createAlias(table, key);
+        } else if (ctx != null && ctx != ctx()) { // create in other select
+            i = ((SelectImpl)ctx.getSelect()).createAlias(table, key);
         }
 
         return i;
@@ -2550,10 +2557,11 @@ public class SelectImpl
             return new PathJoinsImpl().setSubselect(alias);
         }
 
-        public void setContext(Context context) {
-        }
-        
         public Joins setCorrelatedVariable(String var) {
+            return this;
+        }
+
+        public Joins setJoinContext(Context ctx) {
             return this;
         }
 
@@ -2575,6 +2583,7 @@ public class SelectImpl
         protected String var = null;
         protected String correlatedVar = null;
         protected Context context = null;
+        protected Context lastContext = null;
 
         public Select getSelect() {
             return null;
@@ -2607,6 +2616,10 @@ public class SelectImpl
         public void nullJoins() {
         }
 
+        public String getVariable() {
+            return var;
+        }
+        
         public Joins setVariable(String var) {
             this.var = var;
             return this;
@@ -2621,8 +2634,9 @@ public class SelectImpl
             return correlatedVar;
         }
 
-        public void setContext(Context context) {
+        public Joins setJoinContext(Context context) {
             this.context = context;
+            return this;
          }
 
         public Joins setSubselect(String alias) {
@@ -2805,6 +2819,8 @@ public class SelectImpl
             // until we get past the local table
             String var = this.var;
             this.var = null;
+            Context ctx = context; 
+            context = null; 
 
             // get first table alias before updating path; if there is a from
             // select then we shouldn't actually create a join object, since
@@ -2816,7 +2832,7 @@ public class SelectImpl
                 boolean createIndex = true;
                 table1 = (inverse) ? fk.getPrimaryKeyTable() : fk.getTable();
                 if (correlatedVar != null)
-                    createIndex = false;
+                    createIndex = false;  // not to create here
                 alias1 = _sel.getTableIndex(table1, this, createIndex);
             }
 
@@ -2824,7 +2840,8 @@ public class SelectImpl
             this.append(name);
             this.append(var);
             this.append(correlatedVar);
-
+            context = ctx; 
+            
             if (toMany) {
                 _sel._flags |= IMPLICIT_DISTINCT;
                 _sel._flags |= TO_MANY;
@@ -2835,11 +2852,11 @@ public class SelectImpl
                 boolean createIndex = true;
                 Table table2 = (inverse) ? fk.getTable() 
                     : fk.getPrimaryKeyTable();
-                if (context != null && context == _sel.ctx()) {
+                if (table2.isAssociation())
                     createIndex = true;
-                    context = null;
-                }
-                else if (correlatedVar != null && !table2.isAssociation())
+                else if (context == _sel.ctx()) 
+                   createIndex = true;
+                else if (correlatedVar != null)
                     createIndex = false;
                 int alias2 = _sel.getTableIndex(table2, this, createIndex);
                 Join j = new Join(table1, alias1, table2, alias2, fk, inverse);
@@ -2853,6 +2870,8 @@ public class SelectImpl
 
                 setCorrelated(j);
             }
+            lastContext = context;
+            context = null;
             return this;
         }
 
@@ -3131,6 +3150,12 @@ public class SelectImpl
         return new SelectJoins(this).setCorrelatedVariable(var);
     }
     
+    public Joins setJoinContext(Context ctx) {
+        if (ctx == null)
+            return this;
+        return new SelectJoins(this).setJoinContext(ctx);
+    }
+
     public String getCorrelatedVariable() {
         return null;
     }
