@@ -486,6 +486,8 @@ public class PCPath
         FieldMapping field = null;
         Action prevaction = null;
         boolean isCorrelatedPath = false;
+        boolean fromParentRootInSubselect = navigateFromParentRootInSubselect(sel);
+                
         while (itr != null && itr.hasNext()) {
             action = (Action) itr.next();
             // treat subqueries like variables for alias generation purposes
@@ -526,6 +528,13 @@ public class PCPath
                         pstate.cmpfield = field;
                         break;
                     }
+                    
+                    if (fromParentRootInSubselect) {
+                        isCorrelatedPath = true;
+                        pstate.joins = pstate.joins.setCorrelatedVariable(_schemaAlias);
+                        pstate.joins.setJoinContext(null);
+                    }
+                    
                     rel = traverseField(pstate, key, forceOuter, false);
                 }
 
@@ -599,6 +608,28 @@ public class PCPath
         return pstate;
     }
 
+    /**
+     * When a PCPath is in subselect, and it is simply a navigation
+     * from the parent root, the joins involved in this PCPath
+     * must happen in the main select.  
+     */
+    private boolean navigateFromParentRootInSubselect(Select sel) {
+        if (sel.getParent() == null)
+            return false;
+        Iterator itr = (_actions == null) ? null : _actions.iterator();
+        boolean navigateFromRoot = false;
+        boolean hasVar = false;
+        boolean startsWithSubquery = false;
+        while (itr != null && itr.hasNext()) {
+            Action action = (Action) itr.next();
+            if (action.op == Action.VAR) 
+                hasVar = true;
+            else if (action.op == Action.SUBQUERY)
+                startsWithSubquery = true;
+        }
+        return !hasVar && !startsWithSubquery && sel.ctx().getSchema(_schemaAlias) == null;
+    }
+    
     /**
      * Return whether the given source field joins to the given target field.
      */
