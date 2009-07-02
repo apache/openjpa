@@ -94,9 +94,8 @@ public class TestSubquery
             " (select count(o) from Order o)",
         "select o from Order o where o.amount > " +
             "(select count(o2) from Order o2)",
-    // outstanding problem subqueries:
-    //  "select c from Customer c left join c.orders o where not exists"
-    //    + " (select o2 from c.orders o2 where o2 = o)",
+        "select c from Customer c left join c.orders o where not exists"
+           + " (select o2 from c.orders o2 where o2 = o)",
     };
 
     static String[]  querys_jpa20 = new String[] {        

@@ -601,11 +601,12 @@ public class JPQLExpressionBuilder
 
         setCandidate(candidate, alias);
 
-        Subquery subquery =
-            factory.newSubquery(candidate, true, alias);
-        
         Context subContext = ctx();
-        subContext.setSubquery(subquery);
+        Subquery subquery = ctx().getSubquery();
+        if (subquery == null){
+            subquery = factory.newSubquery(candidate, true, alias);
+            subContext.setSubquery(subquery);
+        }
         Path subpath = factory.newPath(subquery);
         subpath.setMetaData(candidate);
         subquery.setMetaData(candidate);
@@ -635,14 +636,6 @@ public class JPQLExpressionBuilder
         // OPENJPA-15 support subquery's from clause do not start with 
         // identification_variable_declaration()
         if (inner && ctx().getParent() != null && ctx().schemaAlias == null) {
-//            ClassMetaData candidate = getFieldType(path.last());
-//            setCandidate(candidate, alias.text);
-//
-//            ctx().subquery = factory.newSubquery(candidate, true, alias.text);
-//            Path subpath = factory.newPath(ctx().subquery);
-//            subpath.setMetaData(candidate);
-//            exp = bindVariableForSubPath(path, alias.text, exp);
-//            exp =  and(exp, factory.equal(path, subpath));
             return getSubquery(alias.text, path, exp);
         }
 
@@ -704,18 +697,6 @@ public class JPQLExpressionBuilder
             // clause, since we might be in a subquery against a collection
             if (isPath(left)) {
                 Path path = getPath(left);
-//                FieldMetaData fmd = path.last();
-//                ClassMetaData candidate = getFieldType(fmd);
-//
-//                if (candidate == null && fmd.isElementCollection())
-//                    candidate = fmd.getDefiningMetaData();
-//
-//                setCandidate(candidate, alias);
-//                exp = bindVariableForSubPath(path, alias, exp);
-//
-//                Path subpath = factory.newPath(ctx().subquery);
-//                subpath.setMetaData(ctx().subquery.getMetaData());
-//                return and(exp, factory.equal(path, subpath));
                 return getSubquery(alias, path, exp);
             } else {
                 // we have an alias: bind it as a variable

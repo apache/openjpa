@@ -45,7 +45,7 @@ class SubQ
 
     private final ClassMapping _candidate;
     private final boolean _subs;
-    private final String _alias;
+    private final String _subqAlias;
     private final SelectConstructor _cons = new SelectConstructor();
 
     private Class _type = null;
@@ -60,7 +60,7 @@ class SubQ
     public SubQ(ClassMapping candidate, boolean subs, String alias) {
         _candidate = candidate;
         _subs = subs;
-        _alias = alias;
+        _subqAlias = alias;
         _select = (((JDBCConfiguration) candidate.getMappingRepository().
             getConfiguration()).getSQLFactoryInstance().newSelect());
         _cons.setSubselect(_select);
@@ -102,7 +102,7 @@ class SubQ
     }
 
     public String getCandidateAlias() {
-        return _alias;
+        return _subqAlias;
     }
 
     public void setQueryExpressions(QueryExpressions query) {
@@ -192,7 +192,7 @@ class SubQ
     private void appendTo(Select sel, ExpContext ctx, ExpState state, 
         SQLBuffer sql, int index, boolean size) {
         QueryExpressionsState substate = new QueryExpressionsState();
-        Select sub = _cons.evaluate(ctx, sel, _alias, _exps, substate);
+        Select sub = _cons.evaluate(ctx, sel, _subqAlias, _exps, substate);
         _cons.select(sub, ctx, _candidate, _subs, _exps, substate, 
             JDBCFetchConfiguration.EAGER_NONE);
 

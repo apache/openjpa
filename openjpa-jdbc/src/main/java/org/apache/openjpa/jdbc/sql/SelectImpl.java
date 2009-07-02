@@ -2023,22 +2023,9 @@ public class SelectImpl
         boolean create) {
         Integer i = null;
         SelectImpl sel = this;
-
-        //currCtx is set from Action, it is reset to null after the PCPath initialization
-        Context currCtx = pj == null ? null : ((PathJoinsImpl)pj).context;
-        
-        // lastCtx is set to currCtx after the SelectJoins.join. pj.lastCtx and pj.path string are 
-        // the last snapshot of pj. They will be used together for later table alias resolution in
-        // the getColumnAlias(). 
-        Context lastCtx = pj == null ? null : ((PathJoinsImpl)pj).lastContext;
-        Context thisCtx = currCtx == null ? lastCtx : currCtx;
-        String corrVar = pj == null ? null : pj.getCorrelatedVariable();
-        
         String alias = _schemaAlias;
-        if ((pj != null && pj.path() != null && (corrVar == null || ctx() == thisCtx)) || 
-            table.isAssociation()) {
+        if (isPathInThisContext(pj) || table.isAssociation())          
             alias = null;
-        } 
 
         // find the context where this alias is defined
         Context ctx = (alias != null) ?
@@ -2062,6 +2049,20 @@ public class SelectImpl
         return i;
     }
 
+    private boolean isPathInThisContext(PathJoins pj) {
+        // currCtx is set from Action, it is reset to null after the PCPath initialization
+        Context currCtx = pj == null ? null : ((PathJoinsImpl)pj).context;
+        
+        // lastCtx is set to currCtx after the SelectJoins.join. pj.lastCtx and pj.path string are 
+        // the last snapshot of pj. They will be used together for later table alias resolution in
+        // the getColumnAlias(). 
+        Context lastCtx = pj == null ? null : ((PathJoinsImpl)pj).lastContext;
+        Context thisCtx = currCtx == null ? lastCtx : currCtx;
+        String corrVar = pj == null ? null : pj.getCorrelatedVariable();
+        
+        return (pj != null && pj.path() != null && 
+            (corrVar == null || (thisCtx != null && ctx() == thisCtx)));
+    }
  
     private Integer getAlias(Table table, Object key) {
         Integer alias = null;
