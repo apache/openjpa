@@ -19,19 +19,23 @@
 package org.apache.openjpa.persistence.jdbc.oracle;
 
 import javax.persistence.EntityManager;
+import javax.persistence.PersistenceException;
+import javax.persistence.Query;
 
+import org.apache.openjpa.persistence.OpenJPAEntityManagerFactorySPI;
+import org.apache.openjpa.persistence.OpenJPAEntityManagerSPI;
 import org.apache.openjpa.persistence.test.DatabasePlatform;
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
 
 /**
  * Tests identity value assignment with IDENTITY strategy specifically for
- * Oracle database. IDENTITY strategy for most database platform is supported
+ * Oracle database. IDENTITY strategy for most database platforms is supported
  * with auto-increment capabilities. As Oracle does not natively support
  * auto-increment, the same effect is achieved by a combination of a database
  * sequence and a pre-insert database trigger [1].
  * 
- * This test verifies that a persistence entity using IDENTITY generation type
- * is allocated identities in monotonic sequence on Oracle platform.
+ * This test verifies that a persistent entity using IDENTITY generation type
+ * is allocating identities in monotonic sequence on Oracle platform.
  * 
  * [1] http://jen.fluxcapacitor.net/geek/autoincr.html
  * 
@@ -41,14 +45,14 @@ import org.apache.openjpa.persistence.test.SingleEMFTestCase;
 
 @DatabasePlatform("oracle.jdbc.driver.OracleDriver")
 public class TestAutoIncrement extends SingleEMFTestCase {
-	private static String PLATFORM = "oracle";
 
 	public void setUp() throws Exception {
         if ("testAutoIncrementIdentityWithNamedSequence".equals(getName())) {
+            String sequence = "autoIncrementSequence";
+            createSequence(sequence);
 			super.setUp(CLEAR_TABLES, PObject.class,
 			    "openjpa.jdbc.DBDictionary",
-			    "oracle(UseTriggersForAutoAssign=true," + 
-			    "autoAssignSequenceName=autoIncrementSequence)");
+			    "oracle(UseTriggersForAutoAssign=true,autoAssignSequenceName=" + sequence + ")");
 		} else {
 			super.setUp(CLEAR_TABLES, PObjectNative.class,
 					"openjpa.jdbc.DBDictionary",
@@ -56,10 +60,7 @@ public class TestAutoIncrement extends SingleEMFTestCase {
 		}
 	}
 
-	public void testAutoIncrementIdentityWithNamedSequence() {
-		if (!isTargetPlatform(PLATFORM))
-			return;
-
+    public void testAutoIncrementIdentityWithNamedSequence() {
 		EntityManager em = emf.createEntityManager();
 		em.getTransaction().begin();
 		PObject pc1 = new PObject();
@@ -72,9 +73,6 @@ public class TestAutoIncrement extends SingleEMFTestCase {
 	}
 
 	public void testAutoIncrementIdentityWithNativeSequence() {
-		if (!isTargetPlatform(PLATFORM))
-			return;
-
 		EntityManager em = emf.createEntityManager();
 		em.getTransaction().begin();
 		PObjectNative pc1 = new PObjectNative();
@@ -85,4 +83,23 @@ public class TestAutoIncrement extends SingleEMFTestCase {
 
 		assertEquals(1, Math.abs(pc1.getId() - pc2.getId()));
 	}
+
+    /**
+     * Create sequence so that the test does not require manual intervention in database.
+     */
+    private void createSequence(String sequence) {
+        OpenJPAEntityManagerFactorySPI factorySPI = createEMF();
+        OpenJPAEntityManagerSPI em = factorySPI.createEntityManager();
+
+        try {
+            em.getTransaction().begin();
+            Query q = em.createNativeQuery("CREATE SEQUENCE " + sequence + " START WITH 1");
+            q.executeUpdate();
+            em.getTransaction().commit();
+        } catch (PersistenceException e) {          
+            // Sequence probably exists.
+            em.getTransaction().rollback();
+        }
+        closeEMF(factorySPI);
+    }
 }
