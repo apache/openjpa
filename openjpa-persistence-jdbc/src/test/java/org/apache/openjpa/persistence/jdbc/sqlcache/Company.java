@@ -24,6 +24,8 @@ import java.util.HashSet;
 import javax.persistence.*;
 
 @Entity
+@Table(name="COMPANY_PQC")
+
 @NamedQueries({
 	@NamedQuery(name="Company.PreparedQueryWithNoParameter", 
 	    query="select x from Company x"),

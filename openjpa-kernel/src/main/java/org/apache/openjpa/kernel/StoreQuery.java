@@ -26,6 +26,7 @@ import org.apache.commons.collections.map.LinkedMap;
 import org.apache.openjpa.kernel.exps.AggregateListener;
 import org.apache.openjpa.kernel.exps.Constant;
 import org.apache.openjpa.kernel.exps.FilterListener;
+import org.apache.openjpa.kernel.exps.QueryExpressions;
 import org.apache.openjpa.lib.rop.ResultObjectProvider;
 import org.apache.openjpa.meta.ClassMetaData;
 import org.apache.openjpa.meta.FieldMetaData;
@@ -335,5 +336,13 @@ public interface StoreQuery
          * {@link Constant}s, in cases where this query is for a bulk update.
 	 	 */
 		public Map getUpdates (StoreQuery q);
+		
+        /**
+         * Return the parsed query expressions for our candidate types.
+         * The expressions are available only after query has been parsed.
+         * 
+         * @since 2.0.0
+         */
+		public QueryExpressions[] getQueryExpressions();
 	}
 }

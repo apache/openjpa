@@ -41,6 +41,7 @@ import org.apache.openjpa.kernel.exps.Constant;
 import org.apache.openjpa.kernel.exps.Literal;
 import org.apache.openjpa.kernel.exps.Parameter;
 import org.apache.openjpa.kernel.exps.Path;
+import org.apache.openjpa.kernel.exps.QueryExpressions;
 import org.apache.openjpa.kernel.exps.Val;
 import org.apache.openjpa.kernel.jpql.JPQLExpressionBuilder;
 import org.apache.openjpa.lib.log.Log;
@@ -1230,7 +1231,7 @@ public class QueryImpl
         boolean lrs = range.lrs && !ex.isAggregate(q) && !ex.hasGrouping(q);
         ResultList res = (!detach && lrs) ? _fc.newResultList(rop)
             : new EagerResultList(rop);
-        res.setUserObject(rop);
+        res.setUserObject(new Object[]{rop,ex});
         _resultLists.add(decorateResultList(res));
         return res;
     }
@@ -1824,6 +1825,10 @@ public class QueryImpl
 
         public MergedExecutor(StoreQuery.Executor[] executors) {
             _executors = executors;
+        }
+        
+        public QueryExpressions[] getQueryExpressions() {
+            return _executors[0].getQueryExpressions();
         }
 
         public ResultObjectProvider executeQuery(StoreQuery q,

@@ -39,6 +39,7 @@ public class Book extends Merchandise {
     }
     
     public Book(String title) {
+        super();
         setTitle(title);
     }
     

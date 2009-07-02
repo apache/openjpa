@@ -120,7 +120,7 @@ public class FinderCacheImpl
             return null;
         FinderQuery<ClassMapping, SelectExecutor, Result> result = 
             _delegate.get(mapping);
-        _stats.recordExecution(mapping, result != null);
+        _stats.recordExecution(mapping);
         return result;
     }
     

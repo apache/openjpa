@@ -173,6 +173,27 @@
                 value="buildSchema"/> 
         </properties>
     </persistence-unit>
+    
+    <persistence-unit name="PreparedQuery" transaction-type="RESOURCE_LOCAL">
+        <description>PU for PreparedQueryCache testing</description>
+        
+        <class>org.apache.openjpa.persistence.jdbc.sqlcache.Address</class>
+		<class>org.apache.openjpa.persistence.jdbc.sqlcache.Author</class>
+		<class>org.apache.openjpa.persistence.jdbc.sqlcache.Book</class>
+		<class>org.apache.openjpa.persistence.jdbc.sqlcache.CD</class>
+		<class>org.apache.openjpa.persistence.jdbc.sqlcache.Company</class>
+		<class>org.apache.openjpa.persistence.jdbc.sqlcache.Department</class>
+		<class>org.apache.openjpa.persistence.jdbc.sqlcache.Employee</class>
+		<class>org.apache.openjpa.persistence.jdbc.sqlcache.Merchandise</class>
+		<class>org.apache.openjpa.persistence.jdbc.sqlcache.Person</class>
+		<class>org.apache.openjpa.persistence.jdbc.sqlcache.Singer</class>
+		
+		<properties>
+		  <property name="openjpa.jdbc.QuerySQLCache"
+                    value="true(excludes='select count(p) from Company p;select count(p) from Department p')"/>
+        </properties>
+    </persistence-unit>
+
     <persistence-unit name="AbstractCallbackPU" transaction-type="RESOURCE_LOCAL">
         <description>PU for testing with an entity with no persistent attributes</description>
         <provider>org.apache.openjpa.persistence.PersistenceProviderImpl</provider>
@@ -185,4 +206,5 @@
                 value="buildSchema"/> 
         </properties>
     </persistence-unit>    
+
 </persistence>

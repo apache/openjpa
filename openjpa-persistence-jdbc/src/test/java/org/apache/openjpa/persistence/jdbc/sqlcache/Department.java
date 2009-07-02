@@ -24,6 +24,8 @@ import java.util.HashSet;
 import javax.persistence.*;
 
 @Entity
+@Table(name="DEPT_PQC")
+
 public class Department {
 	@Id
 	@GeneratedValue

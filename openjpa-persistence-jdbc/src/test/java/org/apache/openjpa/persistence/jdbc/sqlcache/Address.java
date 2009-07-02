@@ -24,7 +24,7 @@ import javax.persistence.Id;
 import javax.persistence.Table;
 
 @Entity
-@Table(name="ADDR_SQLCACHE")
+@Table(name="ADDR_PQC")
 public class Address {
 	@Id
 	@GeneratedValue

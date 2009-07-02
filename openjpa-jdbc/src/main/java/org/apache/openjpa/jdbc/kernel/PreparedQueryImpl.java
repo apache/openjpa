@@ -39,6 +39,8 @@ import org.apache.openjpa.kernel.PreparedQuery;
 import org.apache.openjpa.kernel.Query;
 import org.apache.openjpa.kernel.QueryImpl;
 import org.apache.openjpa.kernel.QueryLanguages;
+import org.apache.openjpa.kernel.StoreQuery;
+import org.apache.openjpa.kernel.exps.QueryExpressions;
 import org.apache.openjpa.lib.rop.ResultList;
 import org.apache.openjpa.lib.util.Localizer;
 import org.apache.openjpa.util.ImplHelper;
@@ -47,6 +49,9 @@ import org.apache.openjpa.util.UserException;
 
 /**
  * Implements {@link PreparedQuery} for SQL queries.
+ * PreparedQuery holds the post-compilation and post-execution state of a kernel Query.
+ * The post-execution internal state of a query is appended as a <em>user object</em>
+ * to the user-visible result to maintain the API contract. 
  * 
  * @author Pinaki Poddar
  *
@@ -61,11 +66,12 @@ public class PreparedQueryImpl implements PreparedQuery {
     
     // Post-compilation state of an executable query, populated on construction
     private Class<?> _candidate;
-    private Class<?>[] _resultClass;
-    private ClassMapping _resultMapping;
     private boolean _subclasses;
-    private boolean _isProjection;
     
+    // post-execution state of a query
+    private QueryExpressions[] _exps;
+    private Class<?>[] _projTypes;
+
     // Position of the user defined parameters in the _params list
     private Map<Object, int[]>    _userParamPositions;
     private Map<Integer, Object> _template;
@@ -94,9 +100,6 @@ public class PreparedQueryImpl implements PreparedQuery {
         if (compiled != null) {
             _candidate    = compiled.getCandidateType();
             _subclasses   = compiled.hasSubclasses();
-            _isProjection = compiled.getProjectionAliases().length > 0;
-            if (_isProjection)
-                _resultClass  = compiled.getProjectionTypes();
         }
     }
     
@@ -128,17 +131,21 @@ public class PreparedQueryImpl implements PreparedQuery {
         return _initialized;
     }
     
+    public QueryExpressions[] getQueryExpressions() {
+        return _exps;
+    }
+    
+    public Class[] getProjectionTypes() {
+        return _projTypes;
+    }
+    
     /**
      * Pours the post-compilation state held by this receiver to the given
      * query.
      */
     public void setInto(Query q) {
     	q.setQuery(_id);
-        if (!_isProjection)
-            q.setCandidateType(_candidate, _subclasses);
-        if (_resultMapping == null &&
-            _resultClass != null && _resultClass.length == 1)
-            q.setResultType(_resultClass[0]);
+        q.setCandidateType(_candidate, _subclasses);
     }
 
     /**
@@ -158,21 +165,6 @@ public class PreparedQueryImpl implements PreparedQuery {
         select = extractImplementation(selector);
         if (select == null)
             return false;
-        if (_resultClass != null) {
-            // uncachable queries:
-            //   query not returning the candidate entity class type
-            //   query returing embeddable class type
-            //   query returning more than one entity class types
-            for (int i = 0; i < _resultClass.length; i++) {
-                _resultMapping = (ClassMapping) select.getConfiguration().
-                    getMetaDataRepositoryInstance().getMetaData(_resultClass[i],
-                    getClass().getClassLoader(), false);
-                if (_resultMapping != null && 
-                    (_resultClass[i] != _candidate ||
-                    _resultMapping.isEmbeddedOnly() || _resultClass.length > 1))
-                    return false;
-            }
-        }
         SQLBuffer buffer = selector.getSQL();
         if (buffer == null)
             return false;
@@ -185,16 +177,29 @@ public class PreparedQueryImpl implements PreparedQuery {
     }
     
     /**
-     * Extract the underlying SelectExecutor from the given argument, if 
-     * possible.
+     * Extract the underlying SelectExecutor from the given argument, if possible.
      */
     private SelectExecutor extractSelectExecutor(Object result) {
         if (result instanceof ResultList == false)
             return null;
-        Object provider = ((ResultList)result).getUserObject();
+        Object userObject = ((ResultList<?>)result).getUserObject();
+        if (userObject == null || !userObject.getClass().isArray() || ((Object[])userObject).length != 2)
+            return null;
+        Object provider = ((Object[])userObject)[0];
+        Object executor = ((Object[])userObject)[1];
+        if (executor instanceof StoreQuery.Executor == false)
+            return null;
+        _exps = ((StoreQuery.Executor)executor).getQueryExpressions();
+        if (_exps[0].projections.length == 0) {
+            _projTypes = StoreQuery.EMPTY_CLASSES;
+        } else {
+            _projTypes = new Class[_exps[0].projections.length];
+            for (int i = 0; i < _exps[0].projections.length; i++) {
+                _projTypes[i] = _exps[0].projections[i].getType();
+            }
+        }
         if (provider instanceof QueryImpl.PackingResultObjectProvider) {
-            provider = ((QueryImpl.PackingResultObjectProvider)provider)
-                .getDelegate();
+            provider = ((QueryImpl.PackingResultObjectProvider)provider).getDelegate();
         }
         if (provider instanceof SelectResultObjectProvider) {
             return ((SelectResultObjectProvider)provider).getSelect();

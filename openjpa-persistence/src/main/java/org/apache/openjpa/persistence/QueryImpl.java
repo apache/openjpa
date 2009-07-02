@@ -624,16 +624,15 @@ public class QueryImpl<X> implements OpenJPAQuerySPI<X>, Serializable {
                     params.putAll(rep);
                 } catch (UserException ue) {
                     invalidatePreparedQuery();
-                    Log log = _em.getConfiguration().getLog(
-                        OpenJPAConfiguration.LOG_RUNTIME);
+                    Log log = _em.getConfiguration().getLog(OpenJPAConfiguration.LOG_RUNTIME);
                     if (log.isWarnEnabled())
                         log.warn(ue.getMessage());
                     return false;
                 }
             }
-            stats.recordExecution(pq.getOriginalQuery(), alreadyCached);
+            stats.recordExecution(pq.getOriginalQuery());
         } else {
-            stats.recordExecution(_query.getQueryString(), alreadyCached);
+            stats.recordExecution(_query.getQueryString());
         }
         return registered == Boolean.TRUE;
     }

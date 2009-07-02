@@ -26,9 +26,7 @@ import javax.persistence.EntityManager;
 
 import org.apache.openjpa.jdbc.conf.JDBCConfiguration;
 import org.apache.openjpa.kernel.FinderCache;
-import org.apache.openjpa.persistence.OpenJPAPersistence;
 import org.apache.openjpa.persistence.test.SQLListenerTestCase;
-import org.apache.openjpa.persistence.test.SingleEMFTestCase;
 
 /**
  * Basic test to check FinderQuery caches.
@@ -38,11 +36,9 @@ import org.apache.openjpa.persistence.test.SingleEMFTestCase;
  */
 public class TestFinderCache extends SQLListenerTestCase {
     public static final long[] BOOK_IDS = {1000, 2000, 3000};
-    public static final String[] BOOK_NAMES =
-            {"Argumentative Indian", "Tin Drum", "Blink"};
+    public static final String[] BOOK_NAMES = {"Argumentative Indian", "Tin Drum", "Blink"};
     public static final long[] CD_IDS = {1001, 2001, 3001};
-    public static final String[] CD_LABELS =
-            {"Beatles", "Sinatra", "Don't Rock My Boat"};
+    public static final String[] CD_LABELS =  {"Beatles", "Sinatra", "Don't Rock My Boat"};
     
     void createTestData() {
         EntityManager em = emf.createEntityManager();

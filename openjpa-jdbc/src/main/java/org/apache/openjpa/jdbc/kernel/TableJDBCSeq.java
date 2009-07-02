@@ -76,7 +76,8 @@ public class TableJDBCSeq
     public static final String ACTION_ADD = "add";
     public static final String ACTION_GET = "get";
     public static final String ACTION_SET = "set";
-
+    public static final String DEFAULT_TABLE = "OPENJPA_SEQUENCE_TABLE";
+    
     private static final Localizer _loc = Localizer.forPackage
         (TableJDBCSeq.class);
 
@@ -87,7 +88,7 @@ public class TableJDBCSeq
     private final HashMap<ClassMapping, Status> _stat =
         new HashMap<ClassMapping, Status>();
 
-    private String _table = "OPENJPA_SEQUENCE_TABLE";
+    private String _table = DEFAULT_TABLE;
     private String _seqColumnName = "SEQUENCE_VALUE";
     private String _pkColumnName = "ID";
     private String[] _uniqueColumnNames;

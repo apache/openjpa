@@ -18,9 +18,10 @@
  */
 package org.apache.openjpa.persistence.jdbc.sqlcache;
 
+import java.util.concurrent.atomic.AtomicLong;
+
 import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.Inheritance;
 import javax.persistence.InheritanceType;
@@ -33,7 +34,7 @@ import javax.persistence.Table;
 
 
 @Entity
-@Table(name="PERSON_SQLCACHE")
+@Table(name="PERSON_PQC")
 @Inheritance(strategy=InheritanceType.SINGLE_TABLE)
 @DiscriminatorValue("PERSON")
 @NamedQueries({
@@ -66,7 +67,6 @@ import javax.persistence.Table;
 })
 public class Person {
     @Id
-    @GeneratedValue
     private long id;
     
     private String firstName;
@@ -77,12 +77,15 @@ public class Person {
     @OneToOne
     private Address address;
     
+    private static AtomicLong idCounter = new AtomicLong(System.currentTimeMillis());
+    
     public Person() {
         this("?", "?", (short)0, 0);
     }
     
     public Person(String firstName, String lastName, short age, int yob) {
         super();
+        this.id = idCounter.getAndAdd(1);
         this.firstName = firstName;
         this.lastName = lastName;
         this.age = age;
@@ -130,5 +133,9 @@ public class Person {
 
     public long getId() {
         return id;
+    }
+    
+    public void setId(long id) {
+        this.id = id;
     }
 }

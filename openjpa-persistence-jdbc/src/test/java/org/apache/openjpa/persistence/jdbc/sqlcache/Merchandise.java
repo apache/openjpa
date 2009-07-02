@@ -18,12 +18,16 @@
  */
 package org.apache.openjpa.persistence.jdbc.sqlcache;
 
+import java.util.concurrent.atomic.AtomicLong;
+
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.Inheritance;
 import javax.persistence.InheritanceType;
+import javax.persistence.Table;
 
 @Entity
+@Table(name="MERCHANDISE_PQC")
 @Inheritance(strategy=InheritanceType.SINGLE_TABLE)
 public class Merchandise {
     @Id

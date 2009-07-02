@@ -40,10 +40,9 @@ import java.util.Map;
 public interface QueryStatistics<T> extends Serializable {
 	
 	/**
-	 * Record that the given query has been executed. The boolean parameter
-	 * designates whether the executed query is a cached version.  
+	 * Record that the given query has been executed. 
 	 */
-	void recordExecution(T query, boolean cached);
+	void recordExecution(T query);
 		
 	/**
 	 * Gets number of total query execution since last reset.
@@ -98,9 +97,14 @@ public interface QueryStatistics<T> extends Serializable {
 	public Date start();
 
 	/**
-	 * Clears all accumulated statistics.
+	 * Clears all  statistics accumulated since last reset.
 	 */
 	public void reset();
+	
+	/**
+	 * Clears all statistics accumulated since start.
+	 */
+	public void clear();
 	
 	/**
 	 * Dumps on the given output stream.
@@ -113,15 +117,15 @@ public interface QueryStatistics<T> extends Serializable {
 	 */
 	public static class Default<T> implements QueryStatistics<T> {
 		private static final int ARRAY_SIZE = 2;
+        private static final int READ  = 0;
+        private static final int HIT   = 1;
+        
 		private long[] astat = new long[ARRAY_SIZE];
 		private long[] stat  = new long[ARRAY_SIZE];
 		private Map<T, long[]> stats  = new HashMap<T, long[]>();
 		private Map<T, long[]> astats = new HashMap<T, long[]>();
 		private Date start = new Date();
 		private Date since = start;
-
-		private static final int READ  = 0;
-		private static final int HIT   = 1;
 
 		public long getExecutionCount() {
 			return stat[READ];
@@ -173,6 +177,16 @@ public interface QueryStatistics<T> extends Serializable {
 			stats.clear();
 			since = new Date();
 		}
+		
+	    public void clear() {
+	       astat = new long[ARRAY_SIZE];
+	       stat  = new long[ARRAY_SIZE];
+	       stats = new HashMap<T, long[]>();
+	       astats = new HashMap<T, long[]>();
+	       start  = new Date();
+	       since  = start;
+	    }
+
 
 		private void addSample(T query, int index) {
 			stat[index]++;
@@ -190,7 +204,8 @@ public interface QueryStatistics<T> extends Serializable {
 			target.put(query, row);
 		}
 		
-		public void recordExecution(T query, boolean cached) {
+		public void recordExecution(T query) {
+		    boolean cached = (astats.containsKey(query));
 			addSample(query, READ);
 			if (cached)
 				addSample(query, HIT);

@@ -36,6 +36,7 @@ public class CD extends Merchandise {
     }
     
     public CD(String label) {
+        super();
         setLabel(label);
     }
     public String getLabel() {

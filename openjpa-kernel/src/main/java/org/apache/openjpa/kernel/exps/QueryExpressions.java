@@ -69,7 +69,8 @@ public class QueryExpressions
     public String[] fetchInnerPaths = StoreQuery.EMPTY_STRINGS;
     public Value[] range = EMPTY_VALUES;
     private Boolean _aggregate = null;
-
+    public Object state;
+    
     /**
      * Whether this is an aggregate results.
      */

@@ -170,8 +170,10 @@ public class JDBCStoreQuery
         long end = (dict.supportsSelectEndIndex) ? range.end : Long.MAX_VALUE;
 
         QueryExpressionsState[] states = new QueryExpressionsState[exps.length];
-        for (int i = 0; i < states.length; i++)
+        for (int i = 0; i < states.length; i++) {
             states[i] = new QueryExpressionsState();
+            exps[i].state = states[i];
+        }
         ExpContext ctx = new ExpContext(_store, params, fetch);
 
         // add selects with populate WHERE conditions to list

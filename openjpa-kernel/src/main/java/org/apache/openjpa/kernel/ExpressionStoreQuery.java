@@ -287,11 +287,6 @@ public class ExpressionStoreQuery
         implements Executor {
 
         /**
-         * Return the parsed query expressions for our candidate types.
-         */
-        protected abstract QueryExpressions[] getQueryExpressions();
-
-        /**
          * Return the query expressions for one candidate type, or die if none.
          */
         private QueryExpressions assertQueryExpression() {
@@ -369,6 +364,10 @@ public class ExpressionStoreQuery
 
         public final String[] getProjectionAliases(StoreQuery q) {
             return assertQueryExpression().projectionAliases;
+        }
+        
+        public Class[] getProjectionTypes(StoreQuery q) {
+            return null;
         }
 
         public final int getOperation(StoreQuery q) {
@@ -574,7 +573,7 @@ public class ExpressionStoreQuery
             }
         }
 
-        protected QueryExpressions[] getQueryExpressions() {
+        public QueryExpressions[] getQueryExpressions() {
             return _exps;
         }
 
@@ -735,7 +734,7 @@ public class ExpressionStoreQuery
             }
         }
 
-        protected QueryExpressions[] getQueryExpressions() {
+        public QueryExpressions[] getQueryExpressions() {
             return _exps;
         }
 

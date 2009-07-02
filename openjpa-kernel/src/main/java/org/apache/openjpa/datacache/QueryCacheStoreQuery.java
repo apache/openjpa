@@ -41,6 +41,7 @@ import org.apache.openjpa.kernel.StoreContext;
 import org.apache.openjpa.kernel.StoreQuery;
 import org.apache.openjpa.kernel.exps.AggregateListener;
 import org.apache.openjpa.kernel.exps.FilterListener;
+import org.apache.openjpa.kernel.exps.QueryExpressions;
 import org.apache.openjpa.lib.rop.ListResultObjectProvider;
 import org.apache.openjpa.lib.rop.ResultObjectProvider;
 import org.apache.openjpa.meta.ClassMetaData;
@@ -349,6 +350,10 @@ public class QueryCacheStoreQuery
                 return cq.wrapResult(rop, key);
             else
                 return rop;
+        }
+        
+        public QueryExpressions[] getQueryExpressions() {
+            return _ex.getQueryExpressions();
         }
 
         /**

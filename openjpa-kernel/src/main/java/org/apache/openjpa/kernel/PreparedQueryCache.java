@@ -187,6 +187,11 @@ public interface PreparedQueryCache extends Configurable {
 	public void removeExclusionPattern(String pattern);
 	
 	/**
+	 * Clears all cached queries.
+	 */
+	public void clear();
+	
+	/**
 	 * Gets the simple statistics for executed queries.
 	 */
 	public QueryStatistics<String> getStatistics();

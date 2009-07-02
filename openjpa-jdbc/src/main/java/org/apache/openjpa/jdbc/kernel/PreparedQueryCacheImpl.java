@@ -330,6 +330,11 @@ public class PreparedQueryCacheImpl implements PreparedQueryCache {
         Object result = fetch.getHint(hint);
         return result != null && "true".equalsIgnoreCase(result.toString());
     }
+    
+    public void clear() {
+        _delegate.clear();
+        _stats.clear();
+    }
         
 	//-------------------------------------------------------
 	// Configurable contract

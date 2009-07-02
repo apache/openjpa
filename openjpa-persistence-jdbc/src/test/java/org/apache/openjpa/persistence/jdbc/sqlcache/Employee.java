@@ -21,6 +21,8 @@ package org.apache.openjpa.persistence.jdbc.sqlcache;
 import javax.persistence.*;
 
 @Entity
+@Table(name="EMPLOYEE_PQC")
+
 public class Employee {
 	@Id
 	@GeneratedValue
@@ -33,8 +35,18 @@ public class Employee {
 	
 	@OneToOne
 	private Address address;
+	
+	private boolean isManager;
 
-	public String getName() {
+	public boolean isManager() {
+        return isManager;
+    }
+
+    public void setManager(boolean isManager) {
+        this.isManager = isManager;
+    }
+
+    public String getName() {
 		return name;
 	}
 
