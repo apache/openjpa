@@ -33,6 +33,7 @@ public interface ExceptionInfo {
     public static final int UNSUPPORTED = 3;
     public static final int USER = 4;
     public static final int WRAPPED = 5;
+    public static final int UNAVAILABLE = 6;
 
 
     /**

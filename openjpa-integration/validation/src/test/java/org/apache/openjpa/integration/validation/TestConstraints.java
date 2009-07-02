@@ -15,6 +15,7 @@ package org.apache.openjpa.integration.validation;
 
 import javax.persistence.Query;
 import javax.persistence.ValidationMode;
+import javax.validation.ConstraintViolationException;
 
 import org.apache.openjpa.conf.OpenJPAConfiguration;
 import org.apache.openjpa.lib.log.Log;
@@ -102,7 +103,7 @@ public class TestConstraints extends SingleEMFTestCase {
             em.getTransaction().commit();            
             getLog().trace("testNullUpdateConstraint() Part 2 of 2 failed");
             fail("Expected a Validation exception");
-        } catch (Exception e) {
+        } catch (ConstraintViolationException e) {
             // expected
             getLog().trace("Caught expected exception = " + e);
             getLog().trace("testNullUpdateConstraint() Part 2 of 2 passed");
@@ -153,6 +154,9 @@ public class TestConstraints extends SingleEMFTestCase {
             if ((em != null) && em.isOpen()) {
                 em.close();
             }
+            if ((emf != null) && emf.isOpen()) {
+                emf.close();
+            }
         }
 
         // Part 2 - Verify delete using default group does not cause Validation
@@ -185,6 +189,9 @@ public class TestConstraints extends SingleEMFTestCase {
                 if (em.getTransaction().isActive())
                     em.getTransaction().rollback();
                 em.close();
+            }
+            if ((emf != null) && emf.isOpen()) {
+                emf.close();
             }
         }
     }
@@ -225,6 +232,9 @@ public class TestConstraints extends SingleEMFTestCase {
             if ((em != null) && em.isOpen()) {
                 em.close();
             }
+            if ((emf != null) && emf.isOpen()) {
+                emf.close();
+            }
         }
     }
 
@@ -251,7 +261,7 @@ public class TestConstraints extends SingleEMFTestCase {
             em.getTransaction().commit();
             getLog().trace("testNullConstraint() failed");
             fail("Expected a Validation exception");
-        } catch (Exception e) {
+        } catch (ConstraintViolationException e) {
             // expected
             getLog().trace("Caught expected exception = " + e);
             getLog().trace("testNullConstraint() passed");
@@ -285,7 +295,7 @@ public class TestConstraints extends SingleEMFTestCase {
             em.getTransaction().commit();
             getLog().trace("testNotNullConstraint() failed");
             fail("Expected a Validation exception");
-        } catch (Exception e) {
+        } catch (ConstraintViolationException e) {
             // expected
             getLog().trace("Caught expected exception = " + e);
             getLog().trace("testNotNullConstraint() passed");
@@ -351,7 +361,7 @@ public class TestConstraints extends SingleEMFTestCase {
             em.getTransaction().commit();
             getLog().trace("testAssertTrueConstraint() failed");
             fail("Expected a Validation exception");
-        } catch (Exception e) {
+        } catch (ConstraintViolationException e) {
             // expected
             getLog().trace("Caught expected exception = " + e);
             getLog().trace("testAssertTrueConstraint() passed");
@@ -385,7 +395,7 @@ public class TestConstraints extends SingleEMFTestCase {
             em.getTransaction().commit();
             getLog().trace("testAssertFalseConstraint() failed");
             fail("Expected a Validation exception");
-        } catch (Exception e) {
+        } catch (ConstraintViolationException e) {
             // expected
             getLog().trace("Caught expected exception = " + e);
             getLog().trace("testAssertFalseConstraint() passed");

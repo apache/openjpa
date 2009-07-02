@@ -23,7 +23,9 @@ import javax.persistence.ValidationMode;
 import org.apache.openjpa.conf.OpenJPAConfiguration;
 import org.apache.openjpa.lib.log.Log;
 import org.apache.openjpa.lib.util.Localizer;
+import org.apache.openjpa.lib.util.Localizer.Message;
 import org.apache.openjpa.validation.ValidationException;
+import org.apache.openjpa.validation.ValidationUnavailableException;
 
 
 /**
@@ -77,9 +79,11 @@ public class ValidationUtils {
             } catch (ClassNotFoundException e) {
                 if (bValRequired) {
                     // fatal error - ValidationMode requires a validator
-                    log.error(_loc.get("vlem-creation-error"), e);
-                    // rethrow as a WrappedException
-                    throw new ValidationException(
+                    Message msg = _loc.get("vlem-creation-error");
+                    log.error(msg, e);
+                    // rethrow as a more descriptive/identifiable exception
+                    throw new ValidationUnavailableException(
+                        msg.getMessage(),
                         new RuntimeException(e), true);
                 } else {
                     // no optional validation provider, so just trace output
@@ -105,9 +109,14 @@ public class ValidationUtils {
             } catch (RuntimeException e) {
                 if (bValRequired) {
                     // fatal error - ValidationMode requires a validator
-                    log.error(_loc.get("vlem-creation-error"), e);
                     // rethrow as a WrappedException
-                    throw new ValidationException(e, true);
+                    Message msg = _loc.get("vlem-creation-error");
+                    log.error(msg, e);
+                    // rethrow as a more descriptive/identifiable exception
+                    throw new ValidationUnavailableException(
+                        msg.getMessage(),
+                        e, true);
+
                 } else {
                     // unexpected, but validation is optional,
                     // so just log it as a warning
@@ -122,5 +131,22 @@ public class ValidationUtils {
             }
         }
         return brc;
+    }
+
+    /**
+     * Determines whether an exception is a constraint violation exception via
+     * class name. Does not require JSR-303 API to be in classpath.
+     * @param e exception to check
+     * @return true of the exception is a constraint violation exception
+     */
+    public static boolean isConstraintViolationException(Exception e) {
+        if (e == null)
+            return false;
+        
+        if (e.getClass().getName().equals(
+            "javax.validation.ConstraintViolationException"))
+            return true;
+        
+        return false;       
     }
 }

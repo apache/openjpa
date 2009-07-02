@@ -72,10 +72,12 @@ import org.apache.openjpa.meta.FieldMetaData;
 import org.apache.openjpa.meta.QueryMetaData;
 import org.apache.openjpa.meta.SequenceMetaData;
 import org.apache.openjpa.persistence.criteria.CriteriaBuilder;
+import org.apache.openjpa.persistence.validation.ValidationUtils;
 import org.apache.openjpa.util.Exceptions;
 import org.apache.openjpa.util.ImplHelper;
 import org.apache.openjpa.util.RuntimeExceptionTranslator;
 import org.apache.openjpa.util.UserException;
+import org.apache.openjpa.util.WrappedException;
 
 /**
  * Implementation of {@link EntityManager} interface.
@@ -552,6 +554,12 @@ public class EntityManagerImpl
         } catch (IllegalStateException e) {
             throw e;
         } catch (Exception e) {
+        	// Per JPA 2.0 spec, if the exception was due to a JSR-303 
+            // constraint violation, the ConstraintViolationException should be 
+            // thrown.  Since JSR-303 is optional, the cast to RuntimeException 
+            // prevents the introduction of a runtime dependency on the BV API.
+            if (ValidationUtils.isConstraintViolationException(e))
+                throw (RuntimeException)e;
             // RollbackExceptions are special and aren't handled by the
             // normal exception translator, since the spec says they
             // should be thrown whenever the commit fails for any reason at

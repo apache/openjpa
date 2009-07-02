@@ -33,6 +33,7 @@ import org.apache.openjpa.util.QueryException;
 import org.apache.openjpa.util.RuntimeExceptionTranslator;
 import org.apache.openjpa.util.StoreException;
 import org.apache.openjpa.util.UserException;
+import org.apache.openjpa.util.WrappedException;
 
 /**
  * Converts from OpenJPA to persistence exception types.
@@ -138,6 +139,8 @@ public class PersistenceExceptions
                 return translateStoreException(ke);
             case OpenJPAException.USER:
                 return translateUserException(ke);
+            case OpenJPAException.WRAPPED:
+                return translateWrappedException(ke);
             default:
                 return translateGeneralException(ke);
         }
@@ -248,6 +251,18 @@ public class PersistenceExceptions
         }
         e.setStackTrace(ke.getStackTrace());
         return e;
+    }
+    
+    /*
+     * Translate the given wrapped exception.  If contains an Exception, return
+     * the exception.  If contains a Throwable, wrap the throwable and
+     * return it.
+     */
+    private static Exception translateWrappedException(OpenJPAException ke) {
+        Throwable t = ke.getCause();
+        if (t instanceof Exception)
+        	return (Exception)t;
+        return translateCause(ke);
     }
 
     /**
