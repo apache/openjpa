@@ -67,7 +67,7 @@
                 <dependency>
                     <groupId>javax.validation</groupId>
                     <artifactId>validation-api</artifactId>
-                    <version>1.0.Beta4</version>
+                    <version>1.0.CR1</version>
                     <scope>test</scope>
                 </dependency>
                 -->
@@ -79,13 +79,13 @@
                 <dependency>
                     <groupId>com.agimatec</groupId>
                     <artifactId>agimatec-jsr303</artifactId>
-                    <version>0.9.0-SNAPSHOT</version>
+                    <version>0.9.1-SNAPSHOT</version>
                     <scope>test</scope>
                 </dependency>
                 <dependency>
                     <groupId>com.agimatec</groupId>
                     <artifactId>agimatec-validation</artifactId>
-                    <version>0.9.0-SNAPSHOT</version>
+                    <version>0.9.1-SNAPSHOT</version>
                     <scope>test</scope>
                 </dependency>
                 <dependency>

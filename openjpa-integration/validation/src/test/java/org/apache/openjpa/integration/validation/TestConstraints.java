@@ -29,22 +29,25 @@ import org.apache.openjpa.persistence.test.SingleEMFTestCase;
  * focusing on the following Validation scenarios:
  *      
  *   Check special update/delete/ignore cases once:
- *   1) Update @Null constraint exception on variables in mode=AUTO
- *      Tests that a constraint violation will occur on invalid update.
- *   2) No invalid Delete @Null constraint exception when mode=AUTO
- *      Tests that a violation will not occur when deleting invalid entity.
- *   3) No invalid Persist constraint exception when mode=NONE
- *      Tests that no Validation Providers are used when disabled.
+ *   1)  Update @Null constraint exception on variables in mode=AUTO
+ *       Tests that a constraint violation will occur on invalid update.
+ *   2)  No invalid Delete @Null constraint exception when mode=AUTO
+ *       Tests that a violation will not occur when deleting invalid entity.
+ *   3)  No invalid Persist constraint exception when mode=NONE
+ *       Tests that no Validation Providers are used when disabled.
  *   
  *   Basic constraint tests for violation exceptions:
- *   4) Persist @Null constraint exception on variables in mode=AUTO
- *   5) Persist @NotNull constraint exception on variables in mode=AUTO
- *   7) Test @AssertTrue constraint exception on variables in mode=AUTO
- *   8) Test @AssertFalse constraint exception on variables in mode=AUTO
+ *   4)  Persist @Null constraint exception on variables in mode=AUTO
+ *   5)  Persist @NotNull constraint exception on variables in mode=AUTO
+ *   7)  Test @AssertTrue constraint exception on variables in mode=AUTO
+ *   8)  Test @AssertFalse constraint exception on variables in mode=AUTO
+ *   10) Test @DecimalMin constraint exception on variables in mode=AUTO
+ *   11) Test @DecimalMax constraint exception on variables in mode=AUTO
  *   
  *   Basic constraint test for no violations:
- *   6) Persist @NotNull and @Null constraints pass in mode=AUTO
- *   9) Test @AssertFalse and @AssertTrue constraints pass in mode=AUTO
+ *   6)  Persist @NotNull and @Null constraints pass in mode=AUTO
+ *   9)  Test @AssertFalse and @AssertTrue constraints pass in mode=AUTO
+ *   12) Test @DecimalMin and @DecimalMax constraints pass in mode=AUTO
  *
  * @version $Rev$ $Date$
  */
@@ -53,7 +56,8 @@ public class TestConstraints extends SingleEMFTestCase {
     @Override
     public void setUp() {
         super.setUp(CLEAR_TABLES,
-            ConstraintNull.class, ConstraintBoolean.class);
+            ConstraintNull.class, ConstraintBoolean.class,
+            ConstraintDecimal.class);
     }
 
     /**
@@ -86,6 +90,8 @@ public class TestConstraints extends SingleEMFTestCase {
             fail("Caught unexpected exception = " + e);
         } finally {
             if ((em != null) && em.isOpen()) {
+                if (em.getTransaction().isActive())
+                    em.getTransaction().rollback();
                 em.close();
             }
         }
@@ -152,6 +158,8 @@ public class TestConstraints extends SingleEMFTestCase {
             fail("Unexpected Validation exception = " + e);
         } finally {
             if ((em != null) && em.isOpen()) {
+                if (em.getTransaction().isActive())
+                    em.getTransaction().rollback();
                 em.close();
             }
             if ((emf != null) && emf.isOpen()) {
@@ -230,6 +238,8 @@ public class TestConstraints extends SingleEMFTestCase {
             fail("Unexpected Validation exception = " + e);
         } finally {
             if ((em != null) && em.isOpen()) {
+                if (em.getTransaction().isActive())
+                    em.getTransaction().rollback();
                 em.close();
             }
             if ((emf != null) && emf.isOpen()) {
@@ -267,6 +277,8 @@ public class TestConstraints extends SingleEMFTestCase {
             getLog().trace("testNullConstraint() passed");
         } finally {
             if ((em != null) && em.isOpen()) {
+                if (em.getTransaction().isActive())
+                    em.getTransaction().rollback();
                 em.close();
             }
         }
@@ -301,6 +313,8 @@ public class TestConstraints extends SingleEMFTestCase {
             getLog().trace("testNotNullConstraint() passed");
         } finally {
             if ((em != null) && em.isOpen()) {
+                if (em.getTransaction().isActive())
+                    em.getTransaction().rollback();
                 em.close();
             }
         }
@@ -330,9 +344,12 @@ public class TestConstraints extends SingleEMFTestCase {
             getLog().trace("testNullNotNullConstraint() passed");
         } catch (Exception e) {
             // unexpected
+            getLog().trace("testNullNotNullConstraint() failed");
             fail("Caught unexpected exception = " + e);
         } finally {
             if ((em != null) && em.isOpen()) {
+                if (em.getTransaction().isActive())
+                    em.getTransaction().rollback();
                 em.close();
             }
         }
@@ -367,6 +384,8 @@ public class TestConstraints extends SingleEMFTestCase {
             getLog().trace("testAssertTrueConstraint() passed");
         } finally {
             if ((em != null) && em.isOpen()) {
+                if (em.getTransaction().isActive())
+                    em.getTransaction().rollback();
                 em.close();
             }
         }
@@ -401,6 +420,8 @@ public class TestConstraints extends SingleEMFTestCase {
             getLog().trace("testAssertFalseConstraint() passed");
         } finally {
             if ((em != null) && em.isOpen()) {
+                if (em.getTransaction().isActive())
+                    em.getTransaction().rollback();
                 em.close();
             }
         }
@@ -430,9 +451,119 @@ public class TestConstraints extends SingleEMFTestCase {
             getLog().trace("testAssertTrueFalseConstraint() passed");
         } catch (Exception e) {
             // unexpected
+            getLog().trace("testAssertTrueFalseConstraint() failed");
             fail("Caught unexpected exception = " + e);
         } finally {
             if ((em != null) && em.isOpen()) {
+                if (em.getTransaction().isActive())
+                    em.getTransaction().rollback();
+                em.close();
+            }
+        }
+    }
+
+    /**
+     * Scenario being tested:
+     *   10) Test @DecimalMin constraint exception on variables in mode=AUTO
+     *       Basic constraint test for a violation exception.
+     */
+    public void testDecimalMinConstraint() {
+        getLog().trace("testDecimalMinConstraint() started");
+        // create EM from default EMF
+        OpenJPAEntityManager em = emf.createEntityManager();
+        assertNotNull(em);
+        try {
+            // verify Validation Mode
+            OpenJPAConfiguration conf = em.getConfiguration();
+            assertNotNull(conf);
+            assertTrue("ValidationMode",
+                conf.getValidationMode().equalsIgnoreCase("AUTO"));
+            // create invalid ConstraintBoolean instance
+            em.getTransaction().begin();
+            ConstraintDecimal c = ConstraintDecimal.createInvalidMin();
+            em.persist(c);
+            em.getTransaction().commit();
+            getLog().trace("testDecimalMinConstraint() failed");
+            fail("Expected a Validation exception");
+        } catch (Exception e) {
+            // expected
+            getLog().trace("Caught expected exception = " + e);
+            getLog().trace("testDecimalMinConstraint() passed");
+        } finally {
+            if ((em != null) && em.isOpen()) {
+                if (em.getTransaction().isActive())
+                    em.getTransaction().rollback();
+                em.close();
+            }
+        }
+    }
+
+    /**
+     * Scenario being tested:
+     *   11) Test @DecimalMax constraint exception on variables in mode=AUTO
+     *       Basic constraint test for a violation exception.
+     */
+    public void testDecimalMaxConstraint() {
+        getLog().trace("testDecimalMaxConstraint() started");
+        // create EM from default EMF
+        OpenJPAEntityManager em = emf.createEntityManager();
+        assertNotNull(em);
+        try {
+            // verify Validation Mode
+            OpenJPAConfiguration conf = em.getConfiguration();
+            assertNotNull(conf);
+            assertTrue("ValidationMode",
+                conf.getValidationMode().equalsIgnoreCase("AUTO"));
+            // create invalid ConstraintBoolean instance
+            em.getTransaction().begin();
+            ConstraintDecimal c = ConstraintDecimal.createInvalidMax();
+            em.persist(c);
+            em.getTransaction().commit();
+            getLog().trace("testDecimalMaxConstraint() failed");
+            fail("Expected a Validation exception");
+        } catch (Exception e) {
+            // expected
+            getLog().trace("Caught expected exception = " + e);
+            getLog().trace("testDecimalMaxConstraint() passed");
+        } finally {
+            if ((em != null) && em.isOpen()) {
+                if (em.getTransaction().isActive())
+                    em.getTransaction().rollback();
+                em.close();
+            }
+        }
+    }
+
+    /**
+     * Scenario being tested:
+     *   12) Test @DecimalMin and @DecimalMax constraints pass in mode=AUTO
+     *       Basic constraint test for no violations.
+     */
+    public void testDecimalMinMaxConstraint() {
+        getLog().trace("testDecimalMinMaxConstraint() started");
+        // create EM from default EMF
+        OpenJPAEntityManager em = emf.createEntityManager();
+        assertNotNull(em);
+        try {
+            // verify Validation Mode
+            OpenJPAConfiguration conf = em.getConfiguration();
+            assertNotNull(conf);
+            assertTrue("ValidationMode",
+                conf.getValidationMode().equalsIgnoreCase("AUTO"));
+            // create valid ConstraintBoolean instance
+            em.getTransaction().begin();
+            ConstraintDecimal c = ConstraintDecimal.createValid();
+            em.persist(c);
+            em.getTransaction().commit();
+            getLog().trace("testDecimalMinMaxConstraint() passed");
+        } catch (Exception e) {
+            // unexpected
+            getLog().trace("testDecimalMinMaxConstraint() failed");
+            fail("Caught unexpected exception = " + e);
+        } finally {
+            if ((em != null) && em.isOpen()) {
+                if (em.getTransaction().isActive())
+                    em.getTransaction().rollback();
                 em.close();
             }
         }
