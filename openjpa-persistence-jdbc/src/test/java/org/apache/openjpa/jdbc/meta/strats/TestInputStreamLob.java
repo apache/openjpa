@@ -18,61 +18,61 @@
  */
 package org.apache.openjpa.jdbc.meta.strats;
 
-import java.io.CharArrayReader;
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
-import java.io.Reader;
+import java.io.InputStream;
 
 /**
  * Defines all the abstract methods from AbstractLobTest to tests the
- * the LOB support with a Reader.
+ * the LOB support with an InputStream.
  *
  * @author Ignacio Andreu
  * @since 1.1.0
  */
 
-public class ReaderLobTest extends AbstractLobTest {
+public class TestInputStreamLob extends AbstractLobTest {
 
     protected LobEntity newLobEntity(String s, int id) {
-        ReaderLobEntity rle = new ReaderLobEntity();
-        rle.setId(id);
+        InputStreamLobEntity isle = new InputStreamLobEntity();
+        isle.setId(id);
         if (s != null) {
-            rle.setStream(new CharArrayReader(s.toCharArray()));
+            isle.setStream(new ByteArrayInputStream(s.getBytes()));
         } else {
-            rle.setStream(null);
+            isle.setStream(null);
         }
-        return rle;
+        return isle;
     }
 
     protected LobEntity newLobEntityForLoadContent(String s, int id) {
-        ReaderLobEntity rle = new ReaderLobEntity();
-        rle.setId(id);
-        rle.setStream(new ReaderWrapper(s));
-        return rle;
+        InputStreamLobEntity isle = new InputStreamLobEntity();
+        isle.setId(id);
+        isle.setStream(new InputStreamWrapper(s));
+        return isle;
     }
 
     protected Class getLobEntityClass() {
-        return ReaderLobEntity.class;
+        return InputStreamLobEntity.class;
     }
 
     protected String getSelectQuery() {
-        return "SELECT o FROM ReaderLobEntity o";
+        return "SELECT o FROM InputStreamLobEntity o";
     }
 
     protected String getStreamContentAsString(Object o) throws IOException {
-        Reader r = (Reader) o;
+        InputStream is = (InputStream) o;
         String content = "";
-        char[] cs = new char[4];
+        byte[] bs = new byte[4];
         int read = -1;
         do {
-            read = r.read(cs);
+            read = is.read(bs);
             if (read == -1) {
                 return content;
             }
-            content = content + (new String(cs)).substring(0, read);
+            content = content + (new String(bs)).substring(0, read);
         } while (true);
     }
 
     protected void changeStream(LobEntity le, String s) {
-        le.setStream(new CharArrayReader(s.toCharArray()));
+        le.setStream(new ByteArrayInputStream(s.getBytes()));
     }
 }
