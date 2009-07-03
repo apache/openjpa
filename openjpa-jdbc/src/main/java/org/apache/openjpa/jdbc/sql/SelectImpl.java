@@ -2781,9 +2781,14 @@ public class SelectImpl
             // until we get past the local table
             String var = this.var;
             this.var = null;
+            Context ctx = context; 
+            context = null; 
 
             int alias1 = _sel.getTableIndex(localTable, this, true);
             this.append(var);
+            this.append(correlatedVar);
+            context = ctx; 
+            
             int alias2 = _sel.getTableIndex(foreignTable, this, true);
             Join j = new Join(localTable, alias1, foreignTable, alias2,
                 null, false);
@@ -2792,7 +2797,10 @@ public class SelectImpl
             if (_joins == null)
                 _joins = new JoinSet();
             _joins.add(j);
+            setCorrelated(j);
             _outer = false;
+            lastContext =  context;
+            context = null;
             return this;
         }
 

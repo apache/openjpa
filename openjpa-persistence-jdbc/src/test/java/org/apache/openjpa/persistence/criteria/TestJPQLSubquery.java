@@ -585,17 +585,15 @@ public class TestJPQLSubquery extends CriteriaTest {
         execute(jpql, expectedSQL);
     }
 
-    // a correated JPQL generates non correlated SQL
     public void testSubquery13() {
         String jpql = "select o1.id, c.name from Order o1, Customer c"
             + " where o1.quantity = "
             + " any(select o2.quantity from in(c.orders) o2)";
 
-        String expectedSQL = "SELECT t0.id, t1.name "
-            + "FROM CR_ODR t0 JOIN CR_CUST t1 ON (1 = 1) WHERE (t0.quantity = ANY ("
-            + "SELECT t4.quantity "
-            + "FROM CR_ODR t0 JOIN CR_CUST t2 ON (1 = 1) "
-            + "INNER JOIN CR_ODR t3 ON t2.id = t3.CUSTOMER_ID, CR_ODR t4 WHERE (t3.id = t4.id) ))";
+        String expectedSQL = "SELECT t0.id, t1.name " + 
+        "FROM CR_ODR t0 JOIN CR_CUST t1 ON (1 = 1) WHERE (t0.quantity = ANY (" + 
+        "SELECT t3.quantity FROM  CR_ODR t2, CR_ODR t3 WHERE (t2.id = t3.id) AND (t1.id = t2.CUSTOMER_ID) ))"; 
+
         execute(jpql, expectedSQL);
     }
 

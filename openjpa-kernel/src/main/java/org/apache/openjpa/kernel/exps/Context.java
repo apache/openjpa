@@ -143,7 +143,9 @@ public class Context implements Serializable {
     }
 
     public ClassMetaData getSchema(String id) {
-        return schemas.get(id.toLowerCase());
+        if (id != null)
+            return schemas.get(id.toLowerCase());
+        return null;
     }
 
     /**

@@ -106,6 +106,7 @@ public class PCPath
             _type = UNBOUND_VAR;
             action.op = Action.UNBOUND_VAR;
             action.data = var;
+            _schemaAlias = var.getName();
         } else {
             // bound variable; copy path
             _type = UNACCESSED_VAR;
@@ -511,7 +512,16 @@ public class PCPath
                 if (rel == null)
                 	throw new IllegalArgumentException(_loc.get(
                 	    "invalid-unbound-var", var.getName()).toString());
-                pstate.joins = pstate.joins.setVariable(var.getName());
+                	    
+                if (sel.getParent() != null && action.var != null &&
+                    sel.ctx().getVariable(action.var) == null) {
+                    System.out.println("action var="+action.var);
+                    isCorrelatedPath = true;
+                    pstate.joins = pstate.joins.setCorrelatedVariable(var.getName());
+                } else 
+                
+                    pstate.joins = pstate.joins.setVariable(var.getName());
+
                 pstate.joins = pstate.joins.crossJoin(_candidate.getTable(),
                     rel.getTable());
             } else {
