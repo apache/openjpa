@@ -170,6 +170,20 @@ public class TestJPQLSubquery extends CriteriaTest {
         execute(jpql, expectedSQL);
     }
 
+    public void testSubqueries4e() {
+        String jpql = "SELECT c FROM Customer c WHERE EXISTS "
+            + "(SELECT o.id FROM Order o WHERE o.customer = c)";
+        String expectedSQL = "SELECT t1.id, t1.accountNum, t2.id, t2.city, t2.country, t2.county, t2.state, " + 
+        "t2.street, t3.userid, t3.DTYPE, t3.age, t3.compName, t3.creditRating, t3.name, t2.zipCode, t1.balanceOwed, " + 
+        "t1.creditRating, t1.filledOrderCount, t1.firstName, t1.lastName, t1.name, t1.status " + 
+        "FROM CR_CUST t1 " + 
+        "LEFT OUTER JOIN CR_ADDR t2 ON t1.ADDRESS_ID = t2.id " + 
+        "LEFT OUTER JOIN CompUser t3 ON t2.id = t3.ADD_ID WHERE " + 
+        "(EXISTS (SELECT t0.id FROM CR_ODR t0 WHERE (t0.CUSTOMER_ID = t1.id) ))";
+
+        execute(jpql, expectedSQL);
+    }
+
     public void testSubqueries5() {
         String jpql = "SELECT o FROM Order o WHERE 10000 < ALL ("
             + "SELECT a.balance FROM o.customer c JOIN c.accounts a)";
@@ -283,10 +297,11 @@ public class TestJPQLSubquery extends CriteriaTest {
             + "LEFT OUTER JOIN CR_CUST t5 ON t2.CUSTOMER_ID = t5.id "
             + "INNER JOIN CR_ADDR t4 ON t3.ADDRESS_ID = t4.id "
             + "LEFT OUTER JOIN CR_ADDR t6 ON t5.ADDRESS_ID = t6.id "
-            + "LEFT OUTER JOIN CompUser t7 ON t6.id = t7.ADD_ID WHERE (? < ALL ("
-            + "SELECT t1.age FROM CR_ADDR t0 INNER JOIN CompUser t1 ON t0.id = t1.ADD_ID WHERE (t4.city = t0.city AND "
-            + "t3.ADDRESS_ID = t0.id) ) AND 1 = 1)";
-
+            + "LEFT OUTER JOIN CompUser t7 ON t6.id = t7.ADD_ID " 
+            + "WHERE ((? < ALL (" 
+            + "SELECT t1.age FROM CR_ADDR t0 INNER JOIN CompUser t1 ON t0.id = t1.ADD_ID WHERE ((t4.city = t0.city AND "
+            + "t3.ADDRESS_ID = t0.id)) ) AND 1 = 1))"; 
+        
         execute(jpql, expectedSQL);
     }
 
@@ -303,8 +318,8 @@ public class TestJPQLSubquery extends CriteriaTest {
             + "INNER JOIN CR_ADDR t2 ON t1.ADDRESS_ID = t2.id "
             + "LEFT OUTER JOIN CR_ADDR t6 ON t5.ADDRESS_ID = t6.id "
             + "LEFT OUTER JOIN CompUser t7 ON t6.id = t7.ADD_ID "
-            + "WHERE (? < ALL (SELECT t4.age FROM  CompUser t3, CompUser t4 "
-            + "WHERE (t3.userid = t4.userid) AND (t2.id = t3.ADD_ID) ) AND 1 = 1)";
+            + "WHERE ((? < ALL (SELECT t4.age FROM  CompUser t3, CompUser t4 "
+            + "WHERE (t3.userid = t4.userid) AND (t2.id = t3.ADD_ID) ) AND 1 = 1))"; 
 
         execute(jpql, expectedSQL);
     }
@@ -384,9 +399,10 @@ public class TestJPQLSubquery extends CriteriaTest {
             + "LEFT OUTER JOIN CR_ODR t1 ON t0.id = t1.CUSTOMER_ID "
             + "LEFT OUTER JOIN CR_ODR t2 ON t0.id = t2.CUSTOMER_ID "
             + "LEFT OUTER JOIN CR_ADDR t5 ON t0.ADDRESS_ID = t5.id "
-            + "LEFT OUTER JOIN CompUser t6 ON t5.id = t6.ADD_ID WHERE (EXISTS ("
-            + "SELECT t4.id FROM  CR_ODR t3, CR_ODR t4 WHERE (t2.id = t4.id AND t3.id = t4.id) "
-            + "AND (t0.id = t3.CUSTOMER_ID) ))";
+            + "LEFT OUTER JOIN CompUser t6 ON t5.id = t6.ADD_ID "
+            + "WHERE (EXISTS (" + 
+            "SELECT t4.id FROM  CR_ODR t3, CR_ODR t4 WHERE ((t2.id = t4.id AND t3.id = t4.id)) "
+            + "AND (t0.id = t3.CUSTOMER_ID) ))"; 
 
         execute(jpql, expectedSQL);
     }
@@ -413,9 +429,10 @@ public class TestJPQLSubquery extends CriteriaTest {
             + "LEFT OUTER JOIN CR_ODR t1 ON t0.id = t1.CUSTOMER_ID "
             + "LEFT OUTER JOIN CR_ODR t2 ON t0.id = t2.CUSTOMER_ID "
             + "LEFT OUTER JOIN CR_ADDR t5 ON t0.ADDRESS_ID = t5.id "
-            + "LEFT OUTER JOIN CompUser t6 ON t5.id = t6.ADD_ID WHERE (NOT (EXISTS ("
-            + "SELECT t4.id FROM  CR_ODR t3, CR_ODR t4 WHERE (t2.id = t4.id AND t3.id = t4.id) "
-            + "AND (t0.id = t3.CUSTOMER_ID) )))";
+            + "LEFT OUTER JOIN CompUser t6 ON t5.id = t6.ADD_ID "
+            + "WHERE (NOT (EXISTS ("
+            + "SELECT t4.id FROM  CR_ODR t3, CR_ODR t4 WHERE ((t2.id = t4.id AND t3.id = t4.id)) " 
+            + "AND (t0.id = t3.CUSTOMER_ID) )))"; 
 
         execute(jpql, expectedSQL);
     }
@@ -442,10 +459,11 @@ public class TestJPQLSubquery extends CriteriaTest {
             + " (select distinct o.id from LineItem i, Order o"
             + " where i.quantity > 10 and o.count > 1000 and i.id = o.id)";
 
-        String expectedSQL = "SELECT t0.id FROM CR_ODR t0 WHERE (t0.id IN ("
+        String expectedSQL = "SELECT t0.id FROM CR_ODR t0 "
+            + "WHERE (t0.id IN ("
             + "SELECT DISTINCT t2.id "
-            + "FROM CR_ODR t1 JOIN CR_ODR t2 ON (1 = 1), CR_LI t3 WHERE (" 
-            + "t3.quantity > ? AND t2.count > ? AND t3.id = t2.id) ))";
+            + "FROM CR_ODR t1 JOIN CR_ODR t2 ON (1 = 1), CR_LI t3 WHERE ("
+            + "(t3.quantity > ? AND (t2.count > ? AND t3.id = t2.id))) ))"; 
 
         execute(jpql, expectedSQL);
     }
@@ -528,10 +546,10 @@ public class TestJPQLSubquery extends CriteriaTest {
             + "or exists (select o from c.orders o where o.id = 2)";
 
         String expectedSQL = "SELECT t0.name FROM CR_CUST t0 WHERE (EXISTS ("
-            + "SELECT t2.id FROM  CR_ODR t1, CR_ODR t2 "
-            + "WHERE (t2.id = ? AND t1.id = t2.id) AND (t0.id = t1.CUSTOMER_ID) ) OR EXISTS ("
+            + "SELECT t2.id FROM  CR_ODR t1, CR_ODR t2 " 
+            + "WHERE ((t2.id = ? AND t1.id = t2.id)) AND (t0.id = t1.CUSTOMER_ID) ) OR EXISTS ("
             + "SELECT t4.id FROM  CR_ODR t3, CR_ODR t4 "
-            + "WHERE (t4.id = ? AND t3.id = t4.id) AND (t0.id = t3.CUSTOMER_ID) ))";
+            + "WHERE ((t4.id = ? AND t3.id = t4.id)) AND (t0.id = t3.CUSTOMER_ID) ))"; 
         execute(jpql, expectedSQL);
     }
 
@@ -543,8 +561,8 @@ public class TestJPQLSubquery extends CriteriaTest {
 
         String expectedSQL = "SELECT t0.name "
             + "FROM CR_CUST t0 INNER JOIN CR_ODR t1 ON t0.id = t1.CUSTOMER_ID WHERE ("
-            + "t1.quantity >= (SELECT MAX(t2.quantity) FROM CR_ODR t2 ) AND "
-            + "t1.quantity <= (SELECT AVG(t3.quantity) FROM CR_ODR t3 ))";
+            + "(t1.quantity >= (SELECT MAX(t2.quantity) FROM CR_ODR t2 ) AND "
+            + "t1.quantity <= (SELECT AVG(t3.quantity) FROM CR_ODR t3 )))"; 
         execute(jpql, expectedSQL);
     }
 
@@ -564,12 +582,14 @@ public class TestJPQLSubquery extends CriteriaTest {
             + " and (select min(o2.quantity) from Customer c, in(c.orders)"
             + " o2)";
 
-        String expectedSQL = "SELECT t4.id FROM CR_ODR t4 WHERE (t4.quantity >= ("
-            + "SELECT AVG(t1.quantity) "
+        String expectedSQL = "SELECT t4.id FROM CR_ODR t4 WHERE "
+            + "((t4.quantity >= ("
+            + "SELECT AVG(t1.quantity) " 
             + "FROM CR_CUST t0 INNER JOIN CR_ODR t1 ON t0.id = t1.CUSTOMER_ID ) AND "
             + "t4.quantity <= ("
             + "SELECT MIN(t3.quantity) "
-            + "FROM CR_CUST t2 INNER JOIN CR_ODR t3 ON t2.id = t3.CUSTOMER_ID ))";
+            + "FROM CR_CUST t2 INNER JOIN CR_ODR t3 ON t2.id = t3.CUSTOMER_ID )))"; 
+
         execute(jpql, expectedSQL);
     }
 
@@ -606,10 +626,11 @@ public class TestJPQLSubquery extends CriteriaTest {
             + "WHERE m3.idPublisher.id = p.id)) ";
 
         String expectedSQL = "SELECT t0.id, t1.id, t1.date_published, t1.id_publisher, t1.name "
-            + "FROM Publisher t0 LEFT OUTER JOIN Magazine t1 ON t0.id = t1.id_publisher WHERE (t1.id = ("
-            + "SELECT MAX(t2.id) FROM Magazine t2 WHERE ("
+            + "FROM Publisher t0 LEFT OUTER JOIN Magazine t1 ON t0.id = t1.id_publisher WHERE "
+            + "(t1.id = ("
+            + "SELECT MAX(t2.id) FROM Magazine t2 WHERE (("
             + "t2.id_publisher = t0.id AND "
-            + "t2.id = (SELECT MAX(t3.id) FROM Magazine t3 WHERE (t3.id_publisher = t0.id) )) ))";
+            + "t2.id = (SELECT MAX(t3.id) FROM Magazine t3 WHERE (t3.id_publisher = t0.id) ))) ))"; 
         execute(jpql, expectedSQL);
     }
 
@@ -633,7 +654,7 @@ public class TestJPQLSubquery extends CriteriaTest {
             + "o.id)";
         String expectedSQL = "SELECT t0.id FROM CR_ODR t0 WHERE (t0.quantity > ("
             + "SELECT (t2.quantity * ?) FROM CR_ODR t1 JOIN CR_ODR t2 ON (1 = 1), CR_LI t3 WHERE ("
-            + "t3.quantity > ? AND t2.quantity > ? AND t3.id = t2.id) ))";
+            + "(t3.quantity > ? AND (t2.quantity > ? AND t3.id = t2.id))) ))"; 
         execute(jpql, expectedSQL);
     }
 
@@ -821,6 +842,39 @@ public class TestJPQLSubquery extends CriteriaTest {
             }
         }
     }
+    
+    public void testCorrelatedNestedSubquery1() {
+        String jpql = "Select Object (c) From Customer c Where Not Exists ("
+                + "   Select a.id From Account As a Where "
+                + "        a.customer = c  And "
+                + "        exists (select o.id from Order o where o.customer = c and o.count = 1))";
+
+        String expectedSQL = "SELECT t1.id, t1.accountNum, t3.id, t3.city, t3.country, t3.county, t3.state, "
+            + "t3.street, t4.userid, t4.DTYPE, t4.age, t4.compName, t4.creditRating, t4.name, t3.zipCode, "
+            + "t1.balanceOwed, t1.creditRating, t1.filledOrderCount, t1.firstName, t1.lastName, t1.name, "
+            + "t1.status "
+            + "FROM CR_CUST t1 LEFT OUTER JOIN CR_ADDR t3 ON t1.ADDRESS_ID = t3.id "
+            + "LEFT OUTER JOIN CompUser t4 ON t3.id = t4.ADD_ID WHERE (NOT (EXISTS ("
+            + "SELECT t0.id FROM CR_ACCT t0 WHERE ((t0.CUSTOMER_ID = t1.id AND EXISTS ("
+            + "SELECT t2.id FROM CR_ODR t2 WHERE ((t2.CUSTOMER_ID = t1.id AND t2.count = ?)) ))) )))";
+        
+        execute(jpql, expectedSQL);
+    }
+    
+    public void testCorrelatedNestedSubquery1a() {
+        String jpql = "Select Object (o) From Product o Where Not Exists ("
+            + "   Select a.id From Account As a Where "
+            + "        a.product = o  And "
+            + "        exists (select r.id from Request r where r.account = a and r.status = 1))";
+
+        String expectedSQL = "SELECT t1.pid, t1.version, t1.productType FROM CR_PRDT t1 WHERE (NOT (EXISTS ("
+            + "SELECT t0.id FROM CR_ACCT t0 WHERE ((t0.PRODUCT_PID = t1.pid AND EXISTS ("
+            + "SELECT t2.id FROM Request t2 WHERE ((t2.ACCOUNT_ID = t0.id AND t2.status = ?)) ))) )))";
+        
+        execute(jpql, expectedSQL);
+    }
+
+    
 
     void execute(String jpql, String expectedSQL) {
         sql.clear();

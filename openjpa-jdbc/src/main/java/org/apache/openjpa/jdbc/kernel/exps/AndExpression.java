@@ -54,6 +54,7 @@ class AndExpression
         BinaryOpExpState bstate = (BinaryOpExpState) state;
         boolean paren1 = _exp1 instanceof OrExpression;
         boolean paren2 = _exp2 instanceof OrExpression;
+        buf.append("(");
         if (paren1)
             buf.append("(");
         _exp1.appendTo(sel, ctx, bstate.state1, buf);
@@ -65,6 +66,7 @@ class AndExpression
         _exp2.appendTo(sel, ctx, bstate.state2, buf);
         if (paren2)
             buf.append(")");
+        buf.append(")");
         sel.append(buf, state.joins);
     }
 

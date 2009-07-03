@@ -615,7 +615,26 @@ public class PCPath
             pstate.joins.moveJoinsToParent();
         }
         pstate.joins.setJoinContext(null);
+        
+        if (_actions == null) {
+            String subqAlias = findSubqAlias(sel);
+            pstate.joins = pstate.joins.setSubselect(subqAlias);
+            pstate.joins.setCorrelatedVariable(_schemaAlias);
+        }
+        
         return pstate;
+    }
+    
+    public String findSubqAlias(Select sel) {
+        Select pSel = sel.getParent();
+        if (pSel == null)
+            return null;
+        Context pCtx = pSel.ctx();
+        if (pCtx.subquery == null)
+            return null;
+        if (pCtx.getSchema(_schemaAlias) != null)
+            return ((SubQ)pCtx.subquery).getCandidateAlias();
+        return findSubqAlias(pSel);
     }
 
     /**

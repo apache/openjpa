@@ -19,8 +19,10 @@
 package org.apache.openjpa.persistence.criteria;
 
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.ManyToOne;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
@@ -39,6 +41,12 @@ public class Account {
     
     @OneToOne
     private Person owner;
+    
+    @ManyToOne
+    private Customer customer;
+    
+    @ManyToOne(optional = false, fetch = FetchType.LAZY)
+    private Product product;
     
     private String name;
 
@@ -76,5 +84,21 @@ public class Account {
 
     public void setLoan(Integer loan) {
         this.loan = loan;
+    }
+    
+    public Product getProduct() {
+        return product;
+    }
+    
+    public void setProduct(Product product) {
+        this.product = product;
+    }
+
+    public Customer getCustomer() {
+        return customer;
+    }
+    
+    public void setCustomer(Customer customer) {
+        this.customer = customer;
     }
 }
