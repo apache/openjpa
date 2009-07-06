@@ -3321,8 +3321,17 @@ public class BrokerImpl
 
         if (call == null)
             call = _call;
-        new DetachManager(this, true, call).detachAll
-            (new ManagedObjectCollection(states));
+        // Make sure ALL entities are detached, even new ones that are loaded
+        // during the detach processing
+        boolean origCascade = _compat.getCascadeWithDetach();
+        _compat.setCascadeWithDetach(true);        
+        try {
+            new DetachManager(this, true, call)
+                .detachAll(new ManagedObjectCollection(states));
+        } 
+        finally {
+            _compat.setCascadeWithDetach(origCascade);
+        }
     }
 
     public Object attach(Object obj, boolean copyNew, OpCallbacks call) {
