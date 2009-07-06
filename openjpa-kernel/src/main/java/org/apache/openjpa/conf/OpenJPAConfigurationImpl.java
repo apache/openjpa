@@ -67,6 +67,12 @@ import org.apache.openjpa.util.ImplHelper;
 import org.apache.openjpa.util.ProxyManager;
 import org.apache.openjpa.util.StoreFacadeTypeRegistry;
 import org.apache.openjpa.validation.ValidatingLifecycleEventManager;
+import org.apache.openjpa.writebehind.SimpleWriteBehindCache;
+import org.apache.openjpa.writebehind.SimpleWriteBehindCallback;
+import org.apache.openjpa.writebehind.WriteBehindCacheManager;
+import org.apache.openjpa.writebehind.WriteBehindCacheManagerImpl;
+import org.apache.openjpa.writebehind.WriteBehindCallback;
+import org.apache.openjpa.writebehind.WriteBehindCallbackManager;
 
 /**
  * Implementation of the {@link OpenJPAConfiguration} interface.
@@ -159,6 +165,9 @@ public class OpenJPAConfigurationImpl
     public ObjectValue validator;
     public ObjectValue lifecycleEventManager;
 
+    public ObjectValue writeBehindCachePlugin;
+    public ObjectValue writeBehindCacheManagerPlugin;
+    public ObjectValue writeBehindCallbackPlugin;
     
     // custom values
     public BrokerFactoryValue brokerFactoryPlugin;
@@ -605,6 +614,31 @@ public class OpenJPAConfigurationImpl
         supportedOptions.add(OPTION_VALUE_AUTOASSIGN);
         supportedOptions.add(OPTION_VALUE_INCREMENT);
         supportedOptions.add(OPTION_DATASTORE_CONNECTION);
+        
+        writeBehindCacheManagerPlugin = addPlugin("WriteBehindCacheManager", true);
+        aliases = new String[] { "default", WriteBehindCacheManagerImpl.class.getName() };
+        writeBehindCacheManagerPlugin.setAliases(aliases);
+        writeBehindCacheManagerPlugin.setDefault(aliases[0]);
+        writeBehindCacheManagerPlugin.setString(aliases[0]);
+        writeBehindCacheManagerPlugin.setInstantiatingGetter("getWriteBehindCacheManager");
+
+        writeBehindCachePlugin = addPlugin("WriteBehindCache", false);
+        aliases = new String[] { 
+            "false", null, 
+            "true", SimpleWriteBehindCache.class.getName(), 
+            "simple", SimpleWriteBehindCache.class.getName() };
+        writeBehindCachePlugin.setAliases(aliases);
+        writeBehindCachePlugin.setDefault(aliases[0]);
+        writeBehindCachePlugin.setString(aliases[0]);
+        
+        writeBehindCallbackPlugin = addPlugin("WriteBehindCallback", true); 
+        aliases = new String[] { 
+            "false", null, 
+            "true", SimpleWriteBehindCallback.class.getName(), 
+            "simple", SimpleWriteBehindCallback.class.getName() };
+        writeBehindCallbackPlugin.setAliases(aliases);
+        writeBehindCallbackPlugin.setDefault(aliases[0]);
+        writeBehindCallbackPlugin.setString(aliases[0]);
 
         if (derivations)
             ProductDerivations.beforeConfigurationLoad(this);
@@ -1655,5 +1689,56 @@ public class OpenJPAConfigurationImpl
     public void setDynamicEnhancementAgent(boolean dynamic) {
         dynamicEnhancementAgent.set(dynamic);
     }    
+
+    public String getWriteBehindCache() {
+        return writeBehindCachePlugin.getString();
+    }
+
+    public void setWriteBehindCache(String writeBehindCache) {
+        writeBehindCachePlugin.setString(writeBehindCache);
+    }
+    
+    public String getWriteBehindCacheManager() {
+        return writeBehindCacheManagerPlugin.getString();
+    }
+
+    public void setWriteBehindCacheManager(String writeBehindCacheManager) {
+        writeBehindCacheManagerPlugin.setString(writeBehindCacheManager);
+    }
+
+    public WriteBehindCacheManager getWriteBehindCacheManagerInstance() {
+        WriteBehindCacheManager wbcm =
+            (WriteBehindCacheManager) writeBehindCacheManagerPlugin.get();
+        if (wbcm == null) {
+            wbcm =
+                (WriteBehindCacheManager) writeBehindCacheManagerPlugin
+                    .instantiate(WriteBehindCacheManager.class, this);
+            wbcm.initialize(this, writeBehindCachePlugin); 
+        }
+        return wbcm;
+    }
+    
+    public String getWriteBehindCallback() { 
+        return writeBehindCallbackPlugin.getString();
+        
+    }
+    public WriteBehindCallback getWriteBehindCallbackInstance() {
+        WriteBehindCallback callback =
+            (WriteBehindCallback) writeBehindCallbackPlugin.get();
+        
+        if (callback == null) {
+            WriteBehindCallbackManager manager = WriteBehindCallbackManager.getInstance();
+            callback = manager.getCallback(getWriteBehindCallback());
+            if (callback == null) {
+                callback = (WriteBehindCallback) writeBehindCallbackPlugin.instantiate(WriteBehindCallback.class, this);
+                manager.putCallback(getWriteBehindCallback(), callback);
+            }
+        }
+        return callback;
+    }
+    
+    public void setWriteBehindCallback(String writeBehindCallback) {
+        writeBehindCallbackPlugin.setString(writeBehindCallback);
+    }
 }
 

@@ -52,6 +52,8 @@ import org.apache.openjpa.meta.MetaDataRepository;
 import org.apache.openjpa.util.ClassResolver;
 import org.apache.openjpa.util.ProxyManager;
 import org.apache.openjpa.util.StoreFacadeTypeRegistry;
+import org.apache.openjpa.writebehind.WriteBehindCacheManager;
+import org.apache.openjpa.writebehind.WriteBehindCallback;
 
 /**
  * Defines the properties necessary to configure runtime properties and
@@ -1722,5 +1724,53 @@ public interface OpenJPAConfiguration
      * 
      * @since 2.0.0
      */
-    public void setLifecycleEventManager(String eventMgr);    
+    public void setLifecycleEventManager(String eventMgr);
+
+    /**
+     * The {@link WriteBehindCache} configuration string.
+     * @since 2.0.0
+     */
+    public String getWriteBehindCache();
+
+    /**
+     * Set the {@link WriteBehindCache} configuration string.
+     * @since 2.0.0
+     */
+    public void setWriteBehindCache(String writeBehindCache);
+    
+    /**
+     * Get the {@link WriteBehindCacheManager} configuration string.
+     * @since 2.0.0
+     */
+    public String getWriteBehindCacheManager();
+
+    /**
+     * Set the {@link WriteBehindCacheManager} configuration string.
+     * @since 2.0.0
+     */
+    public void setWriteBehindCacheManager(String writeBehindCache);
+    
+    /**
+     * Get the {@link WriteBehindCacheManager} instance for this configuration.
+     * @since 2.0.0
+     */
+    public WriteBehindCacheManager getWriteBehindCacheManagerInstance();
+    
+    /**
+     * Get the {@link WriteBehindCallback} configuration string.
+     * @since 2.0.0
+     */
+    public String getWriteBehindCallback();
+    
+    /**
+     * Get the {@link WriteBehindCallback} instance for this configuration.
+     * @since 2.0.0 
+     */
+    public WriteBehindCallback getWriteBehindCallbackInstance();
+    
+    /**
+     * Set the {@link WriteBehindCallback} configuration string.
+     * @since 2.0.0
+     */
+    public void setWriteBehindCallback(String wbcallback);
 }

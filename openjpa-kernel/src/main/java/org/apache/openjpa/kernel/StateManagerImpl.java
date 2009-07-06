@@ -174,6 +174,53 @@ public class StateManagerImpl
     }
 
     /**
+     * Create a new StateManager instance based on the StateManager provided. A
+     * new PersistenceCapable instance will be created and associated with the
+     * new StateManager. All fields will be copied into the ne PC instance as
+     * well as the dirty, loaded, and flushed bitsets.
+     * 
+     * @param sm A statemanager instance which will effectively be cloned.
+     */
+    public StateManagerImpl(StateManagerImpl sm) {
+        this(sm, sm.getPCState());
+    }
+
+    /**
+     * Create a new StateManager instance, optionally overriding the state
+     * (FLUSHED, DELETED, etc) of the underlying PersistenceCapable instance).
+     * 
+     * @param sm
+     *            A statemanager instance which will effectively be cloned.
+     * @param newState
+     *            The new state of the underlying persistence capable object.
+     */
+    public StateManagerImpl(StateManagerImpl sm, PCState newState) { 
+        this(sm.getId(), sm.getMetaData(), sm.getBroker());
+
+        PersistenceCapable origPC = sm.getPersistenceCapable();
+        _pc = origPC.pcNewInstance(sm, false);
+        
+        int[] fields = new int[sm.getMetaData().getFields().length];
+        for (int i = 0; i < fields.length; i++) {
+            fields[i] = i;
+        }
+        _pc.pcCopyFields(origPC, fields);
+        _pc.pcReplaceStateManager(this);
+        _state = newState;
+
+        // clone the field bitsets. 
+        _dirty=(BitSet)sm.getDirty().clone();
+        _loaded = (BitSet)sm.getLoaded().clone();
+        _flush = (BitSet) sm.getFlushed().clone();
+        _version = sm.getVersion();
+        
+        _oid = sm.getObjectId(); 
+        _id = sm.getId();
+        
+        // more data may need to be copied. 
+    }
+
+    /**
      * Set the owning state and field if this is an embedded instance.
      */
     void setOwner(StateManagerImpl owner, ValueMetaData ownerMeta) {
