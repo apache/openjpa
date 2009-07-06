@@ -47,6 +47,8 @@ import org.apache.openjpa.persistence.test.SingleEMFTestCase;
  *   14) Test @Max constraint exception on getter in mode=AUTO
  *   16) Test @Digits constraint exception on variables in mode=AUTO
  *   17) Test @Digits constraint exception on getter in mode=AUTO
+ *   19) Test @Size constraint exception on variables in mode=AUTO
+ *   20) Test @Size constraint exception on getter in mode=AUTO
  *   
  *   Basic constraint test for no violations:
  *   6)  Persist @NotNull and @Null constraints pass in mode=AUTO
@@ -54,6 +56,7 @@ import org.apache.openjpa.persistence.test.SingleEMFTestCase;
  *   12) Test @DecimalMin and @DecimalMax constraints pass in mode=AUTO
  *   15) Test @Min and @Max constraints pass in mode=AUTO
  *   18) Test @Digits constraints pass in mode=AUTO
+ *   21) Test @Size constraints pass in mode=AUTO
  *
  * @version $Rev$ $Date$
  */
@@ -64,7 +67,7 @@ public class TestConstraints extends SingleEMFTestCase {
         super.setUp(CLEAR_TABLES,
             ConstraintNull.class, ConstraintBoolean.class,
             ConstraintDecimal.class, ConstraintNumber.class,
-            ConstraintDigits.class);
+            ConstraintDigits.class, ConstraintSize.class);
     }
 
     /**
@@ -780,6 +783,113 @@ public class TestConstraints extends SingleEMFTestCase {
         } catch (Exception e) {
             // unexpected
             getLog().trace("testDigitsConstraint() failed");
+            fail("Caught unexpected exception = " + e);
+        } finally {
+            if ((em != null) && em.isOpen()) {
+                if (em.getTransaction().isActive())
+                    em.getTransaction().rollback();
+                em.close();
+            }
+        }
+    }
+
+    /**
+     * Scenario being tested:
+     *   19) Test @Size constraint exception on variables in mode=AUTO
+     *       Basic constraint test for a violation exception.
+     */
+    public void testSizeStringConstraint() {
+        getLog().trace("testSizeStringConstraint() started");
+        // create EM from default EMF
+        OpenJPAEntityManager em = emf.createEntityManager();
+        assertNotNull(em);
+        try {
+            // verify Validation Mode
+            OpenJPAConfiguration conf = em.getConfiguration();
+            assertNotNull(conf);
+            assertTrue("ValidationMode",
+                conf.getValidationMode().equalsIgnoreCase("AUTO"));
+            // create invalid ConstraintBoolean instance
+            em.getTransaction().begin();
+            ConstraintSize c = ConstraintSize.createInvalidString();
+            em.persist(c);
+            em.getTransaction().commit();
+            getLog().trace("testSizeStringConstraint() failed");
+            fail("Expected a ConstraintViolationException");
+        } catch (ConstraintViolationException e) {
+            // expected
+            getLog().trace("Caught expected ConstraintViolationException = " + e);
+            getLog().trace("testSizeStringConstraint() passed");
+        } finally {
+            if ((em != null) && em.isOpen()) {
+                if (em.getTransaction().isActive())
+                    em.getTransaction().rollback();
+                em.close();
+            }
+        }
+    }
+
+    /**
+     * Scenario being tested:
+     *   20) Test @Size constraint exception on getter in mode=AUTO
+     *       Basic constraint test for a violation exception.
+     */
+    public void testSizeMapConstraint() {
+        getLog().trace("testSizeMapConstraint() started");
+        // create EM from default EMF
+        OpenJPAEntityManager em = emf.createEntityManager();
+        assertNotNull(em);
+        try {
+            // verify Validation Mode
+            OpenJPAConfiguration conf = em.getConfiguration();
+            assertNotNull(conf);
+            assertTrue("ValidationMode",
+                conf.getValidationMode().equalsIgnoreCase("AUTO"));
+            // create invalid ConstraintBoolean instance
+            em.getTransaction().begin();
+            ConstraintSize c = ConstraintSize.createInvalidMap();
+            em.persist(c);
+            em.getTransaction().commit();
+            getLog().trace("testSizeMapConstraint() failed");
+            fail("Expected a ConstraintViolationException");
+        } catch (Exception e) {
+            // expected
+            getLog().trace("Caught expected ConstraintViolationException = " + e);
+            getLog().trace("testSizeMapConstraint() passed");
+        } finally {
+            if ((em != null) && em.isOpen()) {
+                if (em.getTransaction().isActive())
+                    em.getTransaction().rollback();
+                em.close();
+            }
+        }
+    }
+
+    /**
+     * Scenario being tested:
+     *   21) Test @Size constraints pass in mode=AUTO
+     *       Basic constraint test for no violations.
+     */
+    public void testSizeConstraint() {
+        getLog().trace("testSizeConstraint() started");
+        // create EM from default EMF
+        OpenJPAEntityManager em = emf.createEntityManager();
+        assertNotNull(em);
+        try {
+            // verify Validation Mode
+            OpenJPAConfiguration conf = em.getConfiguration();
+            assertNotNull(conf);
+            assertTrue("ValidationMode",
+                conf.getValidationMode().equalsIgnoreCase("AUTO"));
+            // create valid ConstraintBoolean instance
+            em.getTransaction().begin();
+            ConstraintSize c = ConstraintSize.createValid();
+            em.persist(c);
+            em.getTransaction().commit();
+            getLog().trace("testSizeConstraint() passed");
+        } catch (Exception e) {
+            // unexpected
+            getLog().trace("testSizeConstraint() failed");
             fail("Caught unexpected exception = " + e);
         } finally {
             if ((em != null) && em.isOpen()) {

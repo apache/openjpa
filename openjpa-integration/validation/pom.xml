@@ -115,7 +115,7 @@
             </repositories>
         </profile>
 
-        <!-- Default profile for testing with Derby and Bean Validation RI -->
+        <!-- Profile for testing with Hibernate Bean Validation RI -->
         <profile>
             <id>hibernate</id>
             <activation>
@@ -128,14 +128,14 @@
                 <dependency>
                     <groupId>javax.validation</groupId>
                     <artifactId>validation-api</artifactId>
-                    <version>1.0.CR2</version>
+                    <version>1.0.CR1</version>
                     <!-- <version>1.0.CR3-SNAPSHOT</version> -->
                     <scope>test</scope>
                 </dependency>
                 <dependency>
                     <groupId>org.hibernate</groupId>
                     <artifactId>hibernate-validator</artifactId>
-                    <version>4.0.0.Beta1</version>
+                    <version>4.0.0.Alpha3</version>
                     <!-- <version>4.0.0.Beta2-SNAPSHOT</version> -->
                     <scope>test</scope>
                 </dependency>
