@@ -91,6 +91,7 @@ public class PersistenceProviderImpl
                 ;//return null;
             }
             loadAgent(_log, conf);
+            // TODO - Can this be moved back to BrokerImpl.initialize()?
             // Create appropriate LifecycleEventManager
             loadValidator(_log, conf);
             return JPAFacadeHelper.toEntityManagerFactory(factory);
