@@ -13,8 +13,6 @@
  */
 package org.apache.openjpa.integration.validation;
 
-import java.util.List;
-
 import javax.persistence.Query;
 import javax.persistence.ValidationMode;
 import javax.validation.ConstraintViolationException;
@@ -45,11 +43,14 @@ import org.apache.openjpa.persistence.test.SingleEMFTestCase;
  *   8)  Test @AssertFalse constraint exception on getter in mode=AUTO
  *   10) Test @DecimalMin constraint exception on variables in mode=AUTO
  *   11) Test @DecimalMax constraint exception on getter in mode=AUTO
+ *   13) Test @Min constraint exception on variables in mode=AUTO
+ *   14) Test @Max constraint exception on getter in mode=AUTO
  *   
  *   Basic constraint test for no violations:
  *   6)  Persist @NotNull and @Null constraints pass in mode=AUTO
  *   9)  Test @AssertFalse and @AssertTrue constraints pass in mode=AUTO
  *   12) Test @DecimalMin and @DecimalMax constraints pass in mode=AUTO
+ *   15) Test @Min and @Max constraints pass in mode=AUTO
  *
  * @version $Rev$ $Date$
  */
@@ -59,7 +60,7 @@ public class TestConstraints extends SingleEMFTestCase {
     public void setUp() {
         super.setUp(CLEAR_TABLES,
             ConstraintNull.class, ConstraintBoolean.class,
-            ConstraintDecimal.class);
+            ConstraintDecimal.class, ConstraintNumber.class);
     }
 
     /**
@@ -571,8 +572,114 @@ public class TestConstraints extends SingleEMFTestCase {
         }
     }
 
-    
+    /**
+     * Scenario being tested:
+     *   13) Test @Min constraint exception on variables in mode=AUTO
+     *       Basic constraint test for a violation exception.
+     */
+    public void testMinConstraint() {
+        getLog().trace("testMinConstraint() started");
+        // create EM from default EMF
+        OpenJPAEntityManager em = emf.createEntityManager();
+        assertNotNull(em);
+        try {
+            // verify Validation Mode
+            OpenJPAConfiguration conf = em.getConfiguration();
+            assertNotNull(conf);
+            assertTrue("ValidationMode",
+                conf.getValidationMode().equalsIgnoreCase("AUTO"));
+            // create invalid ConstraintBoolean instance
+            em.getTransaction().begin();
+            ConstraintNumber c = ConstraintNumber.createInvalidMin();
+            em.persist(c);
+            em.getTransaction().commit();
+            getLog().trace("testMinConstraint() failed");
+            fail("Expected a ConstraintViolationException");
+        } catch (ConstraintViolationException e) {
+            // expected
+            getLog().trace("Caught expected ConstraintViolationException = " + e);
+            getLog().trace("testMinConstraint() passed");
+        } finally {
+            if ((em != null) && em.isOpen()) {
+                if (em.getTransaction().isActive())
+                    em.getTransaction().rollback();
+                em.close();
+            }
+        }
+    }
 
+    /**
+     * Scenario being tested:
+     *   14) Test @Max constraint exception on getter in mode=AUTO
+     *       Basic constraint test for a violation exception.
+     */
+    public void testMaxConstraint() {
+        getLog().trace("testMaxConstraint() started");
+        // create EM from default EMF
+        OpenJPAEntityManager em = emf.createEntityManager();
+        assertNotNull(em);
+        try {
+            // verify Validation Mode
+            OpenJPAConfiguration conf = em.getConfiguration();
+            assertNotNull(conf);
+            assertTrue("ValidationMode",
+                conf.getValidationMode().equalsIgnoreCase("AUTO"));
+            // create invalid ConstraintBoolean instance
+            em.getTransaction().begin();
+            ConstraintNumber c = ConstraintNumber.createInvalidMax();
+            em.persist(c);
+            em.getTransaction().commit();
+            getLog().trace("testMaxConstraint() failed");
+            fail("Expected a ConstraintViolationException");
+        } catch (Exception e) {
+            // expected
+            getLog().trace("Caught expected ConstraintViolationException = " + e);
+            getLog().trace("testMaxConstraint() passed");
+        } finally {
+            if ((em != null) && em.isOpen()) {
+                if (em.getTransaction().isActive())
+                    em.getTransaction().rollback();
+                em.close();
+            }
+        }
+    }
+
+    /**
+     * Scenario being tested:
+     *   15) Test @Min and @Max constraints pass in mode=AUTO
+     *       Basic constraint test for no violations.
+     */
+    public void testMinMaxConstraint() {
+        getLog().trace("testMinMaxConstraint() started");
+        // create EM from default EMF
+        OpenJPAEntityManager em = emf.createEntityManager();
+        assertNotNull(em);
+        try {
+            // verify Validation Mode
+            OpenJPAConfiguration conf = em.getConfiguration();
+            assertNotNull(conf);
+            assertTrue("ValidationMode",
+                conf.getValidationMode().equalsIgnoreCase("AUTO"));
+            // create valid ConstraintBoolean instance
+            em.getTransaction().begin();
+            ConstraintNumber c = ConstraintNumber.createValid();
+            em.persist(c);
+            em.getTransaction().commit();
+            getLog().trace("testMinMaxConstraint() passed");
+        } catch (Exception e) {
+            // unexpected
+            getLog().trace("testMinMaxConstraint() failed");
+            fail("Caught unexpected exception = " + e);
+        } finally {
+            if ((em != null) && em.isOpen()) {
+                if (em.getTransaction().isActive())
+                    em.getTransaction().rollback();
+                em.close();
+            }
+        }
+    }
+
+        
     /**
      * Internal convenience method for getting the OpenJPA logger
      * 

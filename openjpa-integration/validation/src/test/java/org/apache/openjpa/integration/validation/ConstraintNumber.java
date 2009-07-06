@@ -19,7 +19,6 @@
 package org.apache.openjpa.integration.validation;
 
 import java.io.Serializable;
-import java.math.BigDecimal;
 
 import javax.persistence.Basic;
 import javax.persistence.Entity;
@@ -29,67 +28,67 @@ import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.Table;
 import javax.persistence.Transient;
-import javax.validation.constraints.DecimalMax;
-import javax.validation.constraints.DecimalMin;
+import javax.validation.constraints.Max;
+import javax.validation.constraints.Min;
 
 
 @NamedQueries( {
     @NamedQuery(name="FindFirst",
-            query="select c from VDECIMAL c where c.id = 1"),
-    @NamedQuery(name="FindAll", query="select c from VDECIMAL c")
+            query="select c from VNUMBER c where c.id = 1"),
+    @NamedQuery(name="FindAll", query="select c from VNUMBER c")
 })
 
-@Entity(name = "VDECIMAL")
-@Table(name = "DECIMAL_ENTITY")
-public class ConstraintDecimal implements Serializable {
+@Entity(name = "VNUMBER")
+@Table(name = "NUMBER_ENTITY")
+public class ConstraintNumber implements Serializable {
 
     @Transient
     private static final long serialVersionUID = 1L;
     
     @Transient
-    private static final BigDecimal negative = new BigDecimal(-99.99);
+    private static final long negative = -99;
 
     @Transient
-    private static final BigDecimal positive = new BigDecimal(99.99);
+    private static final long positive = 99;
 
     @Id
     @GeneratedValue
     private long id;
 
     @Basic
-    @DecimalMin(value = "0")
-    private BigDecimal minZero;
+    @Min(value = 0)
+    private long minZero;
 
     @Basic
-    private BigDecimal maxZero;     // @DecimalMax(value = "0") constraint is on the getter
+    private long maxZero;   // @Max(value = 0) constraint is on the getter
 
     
     /* 
      * Some helper methods to create the entities to test with
      */
-    public static ConstraintDecimal createInvalidMin() {
-        ConstraintDecimal c = new ConstraintDecimal();
+    public static ConstraintNumber createInvalidMin() {
+        ConstraintNumber c = new ConstraintNumber();
         c.setMinZero(negative);
         c.setMaxZero(negative);
         return c;
     }
 
-    public static ConstraintDecimal createInvalidMax() {
-        ConstraintDecimal c = new ConstraintDecimal();
+    public static ConstraintNumber createInvalidMax() {
+        ConstraintNumber c = new ConstraintNumber();
         c.setMinZero(positive);
         c.setMaxZero(positive);
         return c;
     }
 
-    public static ConstraintDecimal createInvalidMinMax() {
-        ConstraintDecimal c = new ConstraintDecimal();
+    public static ConstraintNumber createInvalidMinMax() {
+        ConstraintNumber c = new ConstraintNumber();
         c.setMinZero(negative);
         c.setMaxZero(positive);
         return c;
     }
 
-    public static ConstraintDecimal createValid() {
-        ConstraintDecimal c = new ConstraintDecimal();
+    public static ConstraintNumber createValid() {
+        ConstraintNumber c = new ConstraintNumber();
         c.setMinZero(positive);
         c.setMaxZero(negative);
         return c;
@@ -99,27 +98,27 @@ public class ConstraintDecimal implements Serializable {
     /*
      * Main entity code
      */
-    public ConstraintDecimal() {
+    public ConstraintNumber() {
     }
 
     public long getId() {
         return id;
     }
 
-    public BigDecimal getMinZero() {
+    public long getMinZero() {
         return minZero;
     }
 
-    public void setMinZero(BigDecimal d) {
+    public void setMinZero(long d) {
         minZero = d;
     }
 
-    @DecimalMax(value = "0")
-    public BigDecimal getMaxZero() {
+    @Max(value = 0)
+    public long getMaxZero() {
         return maxZero;
     }
 
-    public void setMaxZero(BigDecimal d) {
+    public void setMaxZero(long d) {
         maxZero = d;
     }
 }
