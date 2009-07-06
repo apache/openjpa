@@ -45,12 +45,15 @@ import org.apache.openjpa.persistence.test.SingleEMFTestCase;
  *   11) Test @DecimalMax constraint exception on getter in mode=AUTO
  *   13) Test @Min constraint exception on variables in mode=AUTO
  *   14) Test @Max constraint exception on getter in mode=AUTO
+ *   16) Test @Digits constraint exception on variables in mode=AUTO
+ *   17) Test @Digits constraint exception on getter in mode=AUTO
  *   
  *   Basic constraint test for no violations:
  *   6)  Persist @NotNull and @Null constraints pass in mode=AUTO
  *   9)  Test @AssertFalse and @AssertTrue constraints pass in mode=AUTO
  *   12) Test @DecimalMin and @DecimalMax constraints pass in mode=AUTO
  *   15) Test @Min and @Max constraints pass in mode=AUTO
+ *   18) Test @Digits constraints pass in mode=AUTO
  *
  * @version $Rev$ $Date$
  */
@@ -60,7 +63,8 @@ public class TestConstraints extends SingleEMFTestCase {
     public void setUp() {
         super.setUp(CLEAR_TABLES,
             ConstraintNull.class, ConstraintBoolean.class,
-            ConstraintDecimal.class, ConstraintNumber.class);
+            ConstraintDecimal.class, ConstraintNumber.class,
+            ConstraintDigits.class);
     }
 
     /**
@@ -669,6 +673,113 @@ public class TestConstraints extends SingleEMFTestCase {
         } catch (Exception e) {
             // unexpected
             getLog().trace("testMinMaxConstraint() failed");
+            fail("Caught unexpected exception = " + e);
+        } finally {
+            if ((em != null) && em.isOpen()) {
+                if (em.getTransaction().isActive())
+                    em.getTransaction().rollback();
+                em.close();
+            }
+        }
+    }
+
+    /**
+     * Scenario being tested:
+     *   16) Test @Digits constraint exception on variables in mode=AUTO
+     *       Basic constraint test for a violation exception.
+     */
+    public void testDigitsTwoConstraint() {
+        getLog().trace("testDigitsTwoConstraint() started");
+        // create EM from default EMF
+        OpenJPAEntityManager em = emf.createEntityManager();
+        assertNotNull(em);
+        try {
+            // verify Validation Mode
+            OpenJPAConfiguration conf = em.getConfiguration();
+            assertNotNull(conf);
+            assertTrue("ValidationMode",
+                conf.getValidationMode().equalsIgnoreCase("AUTO"));
+            // create invalid ConstraintBoolean instance
+            em.getTransaction().begin();
+            ConstraintDigits c = ConstraintDigits.createInvalidTwoDigits();
+            em.persist(c);
+            em.getTransaction().commit();
+            getLog().trace("testDigitsTwoConstraint() failed");
+            fail("Expected a ConstraintViolationException");
+        } catch (ConstraintViolationException e) {
+            // expected
+            getLog().trace("Caught expected ConstraintViolationException = " + e);
+            getLog().trace("testDigitsTwoConstraint() passed");
+        } finally {
+            if ((em != null) && em.isOpen()) {
+                if (em.getTransaction().isActive())
+                    em.getTransaction().rollback();
+                em.close();
+            }
+        }
+    }
+
+    /**
+     * Scenario being tested:
+     *   17) Test @Digits constraint exception on getter in mode=AUTO
+     *       Basic constraint test for a violation exception.
+     */
+    public void testDigitsFiveConstraint() {
+        getLog().trace("testDigitsFiveConstraint() started");
+        // create EM from default EMF
+        OpenJPAEntityManager em = emf.createEntityManager();
+        assertNotNull(em);
+        try {
+            // verify Validation Mode
+            OpenJPAConfiguration conf = em.getConfiguration();
+            assertNotNull(conf);
+            assertTrue("ValidationMode",
+                conf.getValidationMode().equalsIgnoreCase("AUTO"));
+            // create invalid ConstraintBoolean instance
+            em.getTransaction().begin();
+            ConstraintDigits c = ConstraintDigits.createInvalidFiveDigits();
+            em.persist(c);
+            em.getTransaction().commit();
+            getLog().trace("testDigitsFiveConstraint() failed");
+            fail("Expected a ConstraintViolationException");
+        } catch (Exception e) {
+            // expected
+            getLog().trace("Caught expected ConstraintViolationException = " + e);
+            getLog().trace("testDigitsFiveConstraint() passed");
+        } finally {
+            if ((em != null) && em.isOpen()) {
+                if (em.getTransaction().isActive())
+                    em.getTransaction().rollback();
+                em.close();
+            }
+        }
+    }
+
+    /**
+     * Scenario being tested:
+     *   18) Test @Digits constraints pass in mode=AUTO
+     *       Basic constraint test for no violations.
+     */
+    public void testDigitsConstraint() {
+        getLog().trace("testDigitsConstraint() started");
+        // create EM from default EMF
+        OpenJPAEntityManager em = emf.createEntityManager();
+        assertNotNull(em);
+        try {
+            // verify Validation Mode
+            OpenJPAConfiguration conf = em.getConfiguration();
+            assertNotNull(conf);
+            assertTrue("ValidationMode",
+                conf.getValidationMode().equalsIgnoreCase("AUTO"));
+            // create valid ConstraintBoolean instance
+            em.getTransaction().begin();
+            ConstraintDigits c = ConstraintDigits.createValid();
+            em.persist(c);
+            em.getTransaction().commit();
+            getLog().trace("testDigitsConstraint() passed");
+        } catch (Exception e) {
+            // unexpected
+            getLog().trace("testDigitsConstraint() failed");
             fail("Caught unexpected exception = " + e);
         } finally {
             if ((em != null) && em.isOpen()) {
