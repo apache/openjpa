@@ -27,6 +27,7 @@ import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.Table;
 import javax.persistence.Transient;
+import javax.validation.Valid;
 import javax.validation.constraints.AssertFalse;
 import javax.validation.constraints.AssertTrue;
 
@@ -52,8 +53,7 @@ public class ConstraintBoolean implements Serializable {
     private Boolean trueRequired;
 
     @Basic
-    @AssertFalse
-    private Boolean falseRequired;
+    private Boolean falseRequired;  // @AssertFalse constraint is on the getter
 
     
     /* 
@@ -98,7 +98,8 @@ public class ConstraintBoolean implements Serializable {
     public void setTrueRequired(Boolean b) {
         trueRequired = b;
     }
-
+    
+    @AssertFalse
     public Boolean getFalseRequired() {
         return falseRequired;
     }

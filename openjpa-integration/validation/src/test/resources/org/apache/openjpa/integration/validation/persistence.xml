@@ -40,6 +40,26 @@
         <validation-mode>NONE</validation-mode>
     </persistence-unit>
     
+    <persistence-unit name="boolean-none-mode">
+        <class>org.apache.openjpa.integration.validation.ConstraintBoolean</class>
+        <validation-mode>NONE</validation-mode>
+    </persistence-unit>
+
+    <persistence-unit name="boolean-callback-mode">
+        <class>org.apache.openjpa.integration.validation.ConstraintBoolean</class>
+        <validation-mode>CALLBACK</validation-mode>
+    </persistence-unit>
+    
+    <persistence-unit name="decimal-none-mode">
+        <class>org.apache.openjpa.integration.validation.ConstraintDecimal</class>
+        <validation-mode>NONE</validation-mode>
+    </persistence-unit>
+
+    <persistence-unit name="decimal-callback-mode">
+        <class>org.apache.openjpa.integration.validation.ConstraintDecimal</class>
+        <validation-mode>CALLBACK</validation-mode>
+    </persistence-unit>
+    
     <persistence-unit name="null-none-mode">
     	<class>org.apache.openjpa.integration.validation.ConstraintNull</class>
         <validation-mode>NONE</validation-mode>

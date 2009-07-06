@@ -13,6 +13,8 @@
  */
 package org.apache.openjpa.integration.validation;
 
+import java.util.List;
+
 import javax.persistence.Query;
 import javax.persistence.ValidationMode;
 import javax.validation.ConstraintViolationException;
@@ -38,11 +40,11 @@ import org.apache.openjpa.persistence.test.SingleEMFTestCase;
  *   
  *   Basic constraint tests for violation exceptions:
  *   4)  Persist @Null constraint exception on variables in mode=AUTO
- *   5)  Persist @NotNull constraint exception on variables in mode=AUTO
+ *   5)  Persist @NotNull constraint exception on getter in mode=AUTO
  *   7)  Test @AssertTrue constraint exception on variables in mode=AUTO
- *   8)  Test @AssertFalse constraint exception on variables in mode=AUTO
+ *   8)  Test @AssertFalse constraint exception on getter in mode=AUTO
  *   10) Test @DecimalMin constraint exception on variables in mode=AUTO
- *   11) Test @DecimalMax constraint exception on variables in mode=AUTO
+ *   11) Test @DecimalMax constraint exception on getter in mode=AUTO
  *   
  *   Basic constraint test for no violations:
  *   6)  Persist @NotNull and @Null constraints pass in mode=AUTO
@@ -108,10 +110,10 @@ public class TestConstraints extends SingleEMFTestCase {
             em.flush();
             em.getTransaction().commit();            
             getLog().trace("testNullUpdateConstraint() Part 2 of 2 failed");
-            fail("Expected a Validation exception");
+            fail("Expected a ConstraintViolationException");
         } catch (ConstraintViolationException e) {
             // expected
-            getLog().trace("Caught expected exception = " + e);
+            getLog().trace("Caught expected ConstraintViolationException = " + e);
             getLog().trace("testNullUpdateConstraint() Part 2 of 2 passed");
         } finally {
             if ((em != null) && em.isOpen()) {
@@ -155,7 +157,7 @@ public class TestConstraints extends SingleEMFTestCase {
         } catch (Exception e) {
             // unexpected
             getLog().trace("testNullDeleteIgnored() Part 1 of 2 failed");
-            fail("Unexpected Validation exception = " + e);
+            fail("Caught unexpected exception = " + e);
         } finally {
             if ((em != null) && em.isOpen()) {
                 if (em.getTransaction().isActive())
@@ -191,7 +193,7 @@ public class TestConstraints extends SingleEMFTestCase {
         } catch (Exception e) {
             // unexpected
             getLog().trace("testNullDeleteIgnored() Part 2 of 2 failed");
-            fail("Unexpected Validation exception = " + e);
+            fail("Caught unexpected exception = " + e);
         } finally {
             if ((em != null) && em.isOpen()) {
                 if (em.getTransaction().isActive())
@@ -235,7 +237,7 @@ public class TestConstraints extends SingleEMFTestCase {
         } catch (Exception e) {
             // unexpected
             getLog().trace("testNullConstraintIgnored() failed");
-            fail("Unexpected Validation exception = " + e);
+            fail("Caught unexpected exception = " + e);
         } finally {
             if ((em != null) && em.isOpen()) {
                 if (em.getTransaction().isActive())
@@ -270,10 +272,10 @@ public class TestConstraints extends SingleEMFTestCase {
             em.persist(c);
             em.getTransaction().commit();
             getLog().trace("testNullConstraint() failed");
-            fail("Expected a Validation exception");
+            fail("Expected a ConstraintViolationException");
         } catch (ConstraintViolationException e) {
             // expected
-            getLog().trace("Caught expected exception = " + e);
+            getLog().trace("Caught expected ConstraintViolationException = " + e);
             getLog().trace("testNullConstraint() passed");
         } finally {
             if ((em != null) && em.isOpen()) {
@@ -286,7 +288,7 @@ public class TestConstraints extends SingleEMFTestCase {
 
     /**
      * Scenario being tested:
-     *   5) Test @NotNull constraint exception on variables in mode=AUTO
+     *   5) Test @NotNull constraint exception on getter in mode=AUTO
      *      Basic constraint test for a violation exception.
      */
     public void testNotNullConstraint() {
@@ -306,10 +308,10 @@ public class TestConstraints extends SingleEMFTestCase {
             em.persist(c);
             em.getTransaction().commit();
             getLog().trace("testNotNullConstraint() failed");
-            fail("Expected a Validation exception");
+            fail("Expected a ConstraintViolationException");
         } catch (ConstraintViolationException e) {
             // expected
-            getLog().trace("Caught expected exception = " + e);
+            getLog().trace("Caught expected ConstraintViolationException = " + e);
             getLog().trace("testNotNullConstraint() passed");
         } finally {
             if ((em != null) && em.isOpen()) {
@@ -377,10 +379,10 @@ public class TestConstraints extends SingleEMFTestCase {
             em.persist(c);
             em.getTransaction().commit();
             getLog().trace("testAssertTrueConstraint() failed");
-            fail("Expected a Validation exception");
+            fail("Expected a ConstraintViolationException");
         } catch (ConstraintViolationException e) {
             // expected
-            getLog().trace("Caught expected exception = " + e);
+            getLog().trace("Caught expected ConstraintViolationException = " + e);
             getLog().trace("testAssertTrueConstraint() passed");
         } finally {
             if ((em != null) && em.isOpen()) {
@@ -393,7 +395,7 @@ public class TestConstraints extends SingleEMFTestCase {
 
     /**
      * Scenario being tested:
-     *   8) Test @AssertFalse constraint exception on variables in mode=AUTO
+     *   8) Test @AssertFalse constraint exception on getter in mode=AUTO
      *      Basic constraint test for a violation exception.
      */
     public void testAssertFalseConstraint() {
@@ -413,10 +415,10 @@ public class TestConstraints extends SingleEMFTestCase {
             em.persist(c);
             em.getTransaction().commit();
             getLog().trace("testAssertFalseConstraint() failed");
-            fail("Expected a Validation exception");
+            fail("Expected a ConstraintViolationException");
         } catch (ConstraintViolationException e) {
             // expected
-            getLog().trace("Caught expected exception = " + e);
+            getLog().trace("Caught expected ConstraintViolationException = " + e);
             getLog().trace("testAssertFalseConstraint() passed");
         } finally {
             if ((em != null) && em.isOpen()) {
@@ -484,10 +486,10 @@ public class TestConstraints extends SingleEMFTestCase {
             em.persist(c);
             em.getTransaction().commit();
             getLog().trace("testDecimalMinConstraint() failed");
-            fail("Expected a Validation exception");
-        } catch (Exception e) {
+            fail("Expected a ConstraintViolationException");
+        } catch (ConstraintViolationException e) {
             // expected
-            getLog().trace("Caught expected exception = " + e);
+            getLog().trace("Caught expected ConstraintViolationException = " + e);
             getLog().trace("testDecimalMinConstraint() passed");
         } finally {
             if ((em != null) && em.isOpen()) {
@@ -500,7 +502,7 @@ public class TestConstraints extends SingleEMFTestCase {
 
     /**
      * Scenario being tested:
-     *   11) Test @DecimalMax constraint exception on variables in mode=AUTO
+     *   11) Test @DecimalMax constraint exception on getter in mode=AUTO
      *       Basic constraint test for a violation exception.
      */
     public void testDecimalMaxConstraint() {
@@ -520,10 +522,10 @@ public class TestConstraints extends SingleEMFTestCase {
             em.persist(c);
             em.getTransaction().commit();
             getLog().trace("testDecimalMaxConstraint() failed");
-            fail("Expected a Validation exception");
+            fail("Expected a ConstraintViolationException");
         } catch (Exception e) {
             // expected
-            getLog().trace("Caught expected exception = " + e);
+            getLog().trace("Caught expected ConstraintViolationException = " + e);
             getLog().trace("testDecimalMaxConstraint() passed");
         } finally {
             if ((em != null) && em.isOpen()) {
@@ -569,6 +571,7 @@ public class TestConstraints extends SingleEMFTestCase {
         }
     }
 
+    
 
     /**
      * Internal convenience method for getting the OpenJPA logger

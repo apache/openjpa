@@ -19,6 +19,7 @@
 package org.apache.openjpa.integration.validation;
 
 import java.io.Serializable;
+import java.math.BigDecimal;
 //import java.math.BigDecimal;
 
 import javax.persistence.Basic;
@@ -47,12 +48,10 @@ public class ConstraintDecimal implements Serializable {
     private static final long serialVersionUID = 1L;
     
     @Transient
-    //private static final BigDecimal negative = new BigDecimal(-99);
-    private static final long negative = -99;
+    private static final BigDecimal negative = new BigDecimal(-99.99);
 
     @Transient
-    //private static final BigDecimal positive = new BigDecimal(99);
-    private static final long positive = 99;
+    private static final BigDecimal positive = new BigDecimal(99.99);
 
     @Id
     @GeneratedValue
@@ -60,13 +59,10 @@ public class ConstraintDecimal implements Serializable {
 
     @Basic
     @DecimalMin(value = "0")
-    //private BigDecimal minZero;
-    private long minZero;
+    private BigDecimal minZero;
 
     @Basic
-    @DecimalMax(value = "0")
-    //private BigDecimal maxZero;
-    private long maxZero;
+    private BigDecimal maxZero;     // @DecimalMax(value = "0") constraint is on the getter
 
     
     /* 
@@ -111,19 +107,20 @@ public class ConstraintDecimal implements Serializable {
         return id;
     }
 
-    public long getMinZero() {
+    public BigDecimal getMinZero() {
         return minZero;
     }
 
-    public void setMinZero(long d) {
+    public void setMinZero(BigDecimal d) {
         minZero = d;
     }
 
-    public long getMaxZero() {
+    @DecimalMax(value = "0")
+    public BigDecimal getMaxZero() {
         return maxZero;
     }
 
-    public void setMaxZero(long d) {
+    public void setMaxZero(BigDecimal d) {
         maxZero = d;
     }
 }

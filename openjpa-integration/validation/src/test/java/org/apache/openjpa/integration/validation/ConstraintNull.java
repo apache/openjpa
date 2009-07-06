@@ -53,8 +53,7 @@ public class ConstraintNull implements Serializable {
     private String nullRequired;
 
     @Basic
-    @NotNull
-    private String nullInvalid;
+    private String nullInvalid;     // @NotNull constraint is on the getter
 
     
     /* 
@@ -98,6 +97,7 @@ public class ConstraintNull implements Serializable {
         nullRequired = s;
     }
 
+    @NotNull
     public String getNullInvalid() {
         return nullInvalid;
     }
