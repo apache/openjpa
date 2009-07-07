@@ -164,7 +164,9 @@ public class OpenJPAConfigurationImpl
     public ObjectValue validationFactory;
     public ObjectValue validator;
     public ObjectValue lifecycleEventManager;
-
+    public StringValue validationGroupPrePersist;
+    public StringValue validationGroupPreUpdate;
+    public StringValue validationGroupPreRemove;
     public ObjectValue writeBehindCachePlugin;
     public ObjectValue writeBehindCacheManagerPlugin;
     public ObjectValue writeBehindCallbackPlugin;
@@ -573,6 +575,24 @@ public class OpenJPAConfigurationImpl
         // so the config will be done in PersistenceProductDerivation
         validationMode = addString("javax.persistence.validation.mode");
         validationMode.setDynamic(true);
+
+        String defValidationGroup = "javax.validation.groups.Default";
+        validationGroupPrePersist = 
+            addString("javax.persistence.validation.group.pre-persist");
+        validationGroupPrePersist.setString(defValidationGroup);
+        validationGroupPrePersist.setDefault("");
+        validationGroupPrePersist.setDynamic(true);
+
+        validationGroupPreUpdate = 
+            addString("javax.persistence.validation.group.pre-update");
+        validationGroupPreUpdate.setString(defValidationGroup);
+        validationGroupPreUpdate.setDefault("");
+        validationGroupPreUpdate.setDynamic(true);
+
+        validationGroupPreRemove = 
+            addString("javax.persistence.validation.group.pre-remove");
+        validationGroupPreRemove.setDefault("");
+        validationGroupPreRemove.setDynamic(true);
 
         validationFactory = addObject("javax.persistence.validation.factory");
         validationFactory.setInstantiatingGetter(
@@ -1590,6 +1610,39 @@ public class OpenJPAConfigurationImpl
         if (mode == null)
             mode = validationMode.getDefault();
         return mode;
+    }
+
+    public void setValidationGroupPrePersist(String vgPrePersist) {
+        validationGroupPrePersist.setString(vgPrePersist);
+    }
+
+    public String getValidationGroupPrePersist() {
+        String vgPrePersist = validationGroupPrePersist.getString();
+        if (vgPrePersist == null)
+            vgPrePersist = validationGroupPrePersist.getDefault();
+        return vgPrePersist;
+    }
+
+    public void setValidationGroupPreUpdate(String vgPreUpdate) {
+        validationGroupPreUpdate.setString(vgPreUpdate);
+    }
+
+    public String getValidationGroupPreUpdate() {
+        String vgPreUpdate = validationGroupPreUpdate.getString();
+        if (vgPreUpdate == null)
+            vgPreUpdate = validationGroupPreUpdate.getDefault();
+        return vgPreUpdate;
+    }
+
+    public void setValidationGroupPreRemove(String vgPreRemove) {
+        validationGroupPreRemove.setString(vgPreRemove);
+    }
+
+    public String getValidationGroupPreRemove() {
+        String vgPreRemove = validationGroupPreRemove.getString();
+        if (vgPreRemove == null)
+            vgPreRemove = validationGroupPreRemove.getDefault();
+        return vgPreRemove;
     }
 
     public void instantiateAll() {

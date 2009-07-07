@@ -30,7 +30,9 @@ import javax.validation.Validation;
 import javax.validation.Validator;
 import javax.validation.ValidatorFactory;
 
+import org.apache.openjpa.conf.OpenJPAConfiguration;
 import org.apache.openjpa.event.LifecycleEvent;
+import org.apache.openjpa.lib.conf.Configuration;
 import org.apache.openjpa.lib.util.Localizer;
 import org.apache.openjpa.validation.AbstractValidator;
 import org.apache.openjpa.validation.ValidationException;
@@ -43,6 +45,8 @@ public class ValidatorImpl extends AbstractValidator {
     private ValidatorFactory _validatorFactory = null;
     private Validator _validator = null;
     private ValidationMode _mode = ValidationMode.AUTO;
+    private OpenJPAConfiguration _conf = null;
+
     
     // A map storing the validation groups to use for a particular event type
     private Map<Integer, Class<?>[]> _validationGroups = 
@@ -61,7 +65,7 @@ public class ValidatorImpl extends AbstractValidator {
     
     static {
         _vgMapping.put(VG_PRE_PERSIST,
-            LifecycleEvent.BEFORE_STORE);
+            LifecycleEvent.BEFORE_PERSIST);
         _vgMapping.put(VG_PRE_REMOVE,
             LifecycleEvent.BEFORE_DELETE);
         _vgMapping.put(VG_PRE_UPDATE,
@@ -74,6 +78,25 @@ public class ValidatorImpl extends AbstractValidator {
      * Returns an Exception if a Validator could not be created.
      */
     public ValidatorImpl() {
+        initialize();
+    }
+    
+    public ValidatorImpl(Configuration conf) {
+        if (conf instanceof OpenJPAConfiguration) {
+            _conf = (OpenJPAConfiguration)conf;
+            Object validatorFactory = _conf.getValidationFactoryInstance();
+            String mode = _conf.getValidationMode();
+            _mode = Enum.valueOf(ValidationMode.class, mode);
+            if (validatorFactory != null) {
+                if (validatorFactory instanceof ValidatorFactory) {
+                    _validatorFactory = (ValidatorFactory)validatorFactory;
+                } else {
+                    // Supplied object was not an instance of a ValidatorFactory
+                    throw new IllegalArgumentException(
+                        _loc.get("invalid-factory").getMessage());                
+                }
+            }
+        }
         initialize();
     }
     
@@ -91,27 +114,6 @@ public class ValidatorImpl extends AbstractValidator {
         }
         if (validatorFactory != null) {
             _validatorFactory = validatorFactory;
-        }
-        initialize();
-    }
-
-    /**
-     * Generic-type constructor 
-     * Returns an Exception if a Validator could not be created.
-     * @param validatorFactory an instance to the validatorFactory
-     * @param mode validation mode enum as string value
-     */    
-    public ValidatorImpl(Object validatorFactory,
-        String mode) {        
-        _mode = Enum.valueOf(ValidationMode.class, mode);
-        if (validatorFactory != null) {
-            if (validatorFactory instanceof ValidatorFactory) {
-                _validatorFactory = (ValidatorFactory)validatorFactory;
-            } else {
-                // Supplied object was not an instance of a ValidatorFactory.
-                throw new IllegalArgumentException(
-                    _loc.get("invalid-factory").getMessage());                
-            }
         }
         initialize();
     }
@@ -140,8 +142,19 @@ public class ValidatorImpl extends AbstractValidator {
                     _loc.get("no-validator").getMessage());
             }
 
-            // add in default validation groups, which can be over-ridden later
-            addDefaultValidationGroups();
+            if (_conf != null) {
+                addValidationGroup(VG_PRE_PERSIST,
+                    _conf.getValidationGroupPrePersist());
+                addValidationGroup(VG_PRE_UPDATE,
+                    _conf.getValidationGroupPreUpdate());
+                addValidationGroup(VG_PRE_REMOVE,
+                    _conf.getValidationGroupPreRemove());        
+
+            }
+            else {
+                // add in default validation groups, which can be over-ridden later
+                addDefaultValidationGroups();
+            }
         } else {
             // A Validator should not be created based on the supplied ValidationMode.
             throw new RuntimeException(
@@ -181,6 +194,54 @@ public class ValidatorImpl extends AbstractValidator {
         _validationGroups.put(event, validationGroup);        
     }
     
+    /**
+     * Add the validation group(s) for the specified event.  Event definitions
+     * are defined in LifecycleEvent
+     * @param event
+     * @param group
+     */
+    public void addValidationGroup(String validationGroupName, String group) {
+        Integer event = findEvent(validationGroupName);
+        if (event != null) {
+            Class<?>[] vgs = getValidationGroup(validationGroupName, group);
+            if (vgs != null) {
+                addValidationGroup(event, vgs);
+            }
+        }
+        else {
+            // There were no events found for group "{0}".
+            throw new IllegalArgumentException(
+                _loc.get("no-group-events", validationGroupName).getMessage());
+        }
+    }
+
+    /**
+     * Converts a comma separated list of validation groups into an array
+     * of classes.
+     * @param group
+     * @return
+     */
+    private Class<?>[] getValidationGroup(String vgName, String group) {
+        Class<?>[] vgGrp = null;
+        if (group == null || group.trim().length() == 0) {
+            return null;
+        }
+        String[] strClasses = group.split(",");
+        if (strClasses.length > 0) {
+            vgGrp = new Class<?>[strClasses.length];
+            for (int i = 0; i < strClasses.length; i++) {
+                try {
+                    vgGrp[i] =  Class.forName(strClasses[i]);
+                } catch (Throwable t) {
+                    throw new IllegalArgumentException(
+                        _loc.get("invalid-validation-group", strClasses[i], 
+                            vgName).getMessage(), t);
+                }
+            }            
+        }
+        return vgGrp;
+    }
+
     /**
      * Return the validation groups to be validated for a specified event
      * @param event Lifecycle event id

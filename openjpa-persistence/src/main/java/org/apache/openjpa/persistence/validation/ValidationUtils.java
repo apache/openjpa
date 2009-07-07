@@ -97,9 +97,7 @@ public class ValidationUtils {
             // we have the javax.validation APIs
             try {
                 // try loading a validation provider
-                ValidatorImpl validator = new ValidatorImpl(
-                    conf.getValidationFactoryInstance(),
-                    conf.getValidationMode());
+                ValidatorImpl validator = new ValidatorImpl(conf);
                 // set the Validator into the config
                 conf.setValidatorInstance(validator);
                 // update the LifecycleEventManager plugin to use it

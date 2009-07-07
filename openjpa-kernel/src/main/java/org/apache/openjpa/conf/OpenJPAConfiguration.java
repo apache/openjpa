@@ -1773,4 +1773,46 @@ public interface OpenJPAConfiguration
      * @since 2.0.0
      */
     public void setWriteBehindCallback(String wbcallback);
+
+    /**
+     * Gets the validation groups for pre-persist
+     * 
+     * @Since 2.0.0
+     */
+    public String getValidationGroupPrePersist();
+
+    /**
+     * Sets the validation groups for pre-persist
+     * 
+     * @Since 2.0.0
+     */
+    public void setValidationGroupPrePersist(String vgPrePersist);
+
+    /**
+     * Gets the validation groups for pre-update
+     * 
+     * @Since 2.0.0
+     */
+    public String getValidationGroupPreUpdate();
+
+    /**
+     * Sets the validation groups for pre-update
+     * 
+     * @Since 2.0.0
+     */
+    public void setValidationGroupPreUpdate(String vgPreUpdate);
+
+    /**
+     * Gets the validation groups for pre-remove
+     * 
+     * @Since 2.0.0
+     */
+    public String getValidationGroupPreRemove();
+
+    /**
+     * Sets the validation groups for pre-remove
+     * 
+     * @Since 2.0.0
+     */
+    public void setValidationGroupPreRemove(String vgPreRemove);
 }
