@@ -1490,13 +1490,16 @@ public abstract class MappingInfo
             // if one primary key column use it for target; if multiple joins
             // look for a foreign column with same name as local column
             PrimaryKey pk = foreign.getPrimaryKey();
-            if (joins.length == 1 && pk != null && pk.getColumns().length == 1)
+            if (joins.length == 1 && pk != null && pk.getColumns().length == 1) {
                 targetName = pk.getColumns()[0].getName();
-            else if (foreign.getColumn(name) != null)
+            }
+            else if (foreign.getColumn(name) != null) {
                 targetName = name;
-            else
+            }
+            else {
                 throw new MetaDataException(_loc.get(prefix
                     + "-no-fkcol-target-adapt", context, name));
+            }
         }
 
         // find the target column, and create template for local column based
