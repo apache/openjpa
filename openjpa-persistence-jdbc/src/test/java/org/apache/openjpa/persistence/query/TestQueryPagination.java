@@ -49,32 +49,26 @@ public class TestQueryPagination
         em.close();
     }
 
-    @AllowFailure
     public void testFirstThenMax() {
         helper(true, 2, 3, 3);
     }
 
-    @AllowFailure
     public void testMaxThenFirst() {
         helper(false, 2, 3, 3);
     }
 
-    @AllowFailure
     public void testNoResultsFirstFirst() {
         helper(true, 10, 3, 0);
     }
 
-    @AllowFailure
     public void testNoResultsFirstLast() {
         helper(false, 10, 3, 0);
     }
 
-    @AllowFailure
     public void testAllResultsFirstFirst() {
         helper(true, 0, 10, 6);
     }
 
-    @AllowFailure
     public void testAllResultsFirstLast() {
         helper(false, 0, 10, 6);
     }

@@ -87,6 +87,18 @@ public class Context implements Serializable {
     }
 
     /**
+     * Reset alias count for prepared query cache
+     *
+     */
+    public void resetAliasCount() {
+        Context p = this;
+        while (p.subquery != null) {
+            p = p.parent;
+        }
+        p.aliasCount = -1;
+    }
+
+    /**
      * Register the select for this context.
      * @param select
      */
