@@ -18,6 +18,7 @@
  */
 package org.apache.openjpa.persistence.jdbc.sqlcache;
 
+import java.util.List;
 import java.util.Map;
 
 import junit.framework.TestCase;
@@ -55,10 +56,14 @@ public class TestPreparedQueryCacheExclusion extends TestCase {
 		String excludes = "a;b;c";
 		cache.setExcludes(excludes);
 		assertEquals(3, cache.getExcludes().size());
-		assertTrue(cache.isExcluded("a"));
-		assertTrue(cache.isExcluded("b"));
-		assertTrue(cache.isExcluded("c"));
-		assertFalse(cache.isExcluded("d"));
+		assertNotNull(cache.isExcluded("a"));
+		assertNotNull(cache.isExcluded("b"));
+		assertNotNull(cache.isExcluded("c"));
+		assertNull(cache.isExcluded("d"));
+		
+		List<PreparedQueryCache.Exclusion> exclusions = cache.getExcludes();
+		for (PreparedQueryCache.Exclusion e : exclusions)
+		    System.err.println(e);
 	}
 
 	public void testCachePopulationSetUp() {
@@ -106,7 +111,8 @@ public class TestPreparedQueryCacheExclusion extends TestCase {
 
 	public void testRemoveExclusionPatternDoesNotRemoveUserProhbitedKeys() {
 		String USER_MARKED_UNCACHABLE = "[user prohibited]";
-		cache.markUncachable(USER_MARKED_UNCACHABLE);
+		cache.markUncachable(USER_MARKED_UNCACHABLE, 
+		        new PreparedQueryCacheImpl.StrongExclusion(USER_MARKED_UNCACHABLE,"for testing"));
 		
         PreparedQuery p = new PreparedQueryImpl(USER_MARKED_UNCACHABLE, "xyz",
                 null);

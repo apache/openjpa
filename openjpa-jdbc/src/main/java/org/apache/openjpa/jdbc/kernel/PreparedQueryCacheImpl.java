@@ -51,21 +51,21 @@ import org.apache.openjpa.lib.util.Localizer;
  */
 public class PreparedQueryCacheImpl implements PreparedQueryCache {
 	private static final String PATTERN_SEPARATOR = "\\;";
-	private static final String EXLUDED_BY_USER = "Excluded by user";
 	// Key: Query identifier 
 	private final Map<String, PreparedQuery> _delegate;
 	// Key: Query identifier Value: Reason why excluded
-	private final Map<String, String> _uncachables;
-	private List<String> _exclusionPatterns;
+	private final Map<String, Exclusion> _uncachables;
+	private final List<Exclusion> _exclusionPatterns;
 	private final QueryStatistics<String> _stats;
 	private ReentrantLock _lock = new ReentrantLock();
 	private Log _log;
-    private Localizer _loc = Localizer.forPackage(PreparedQueryCacheImpl.class);
-
+    private static Localizer _loc = Localizer.forPackage(PreparedQueryCacheImpl.class);
+    
 	public PreparedQueryCacheImpl() {
 		_delegate = new HashMap<String, PreparedQuery>();
-		_uncachables = new HashMap<String, String>();
+		_uncachables = new HashMap<String, Exclusion>();
 		_stats = new QueryStatistics.Default<String>();
+		_exclusionPatterns = new ArrayList<Exclusion>();
 	}
 	
     public Boolean register(String id, Query query, FetchConfiguration hints) {
@@ -113,9 +113,9 @@ public class PreparedQueryCacheImpl implements PreparedQueryCache {
                     _log.warn(_loc.get("prepared-query-not-cachable", id));
 				return false;
 			}
-			String pattern = getMatchedExclusionPattern(id);
-			if (pattern != null) {
-				markUncachable(id, pattern);
+			Exclusion exclusion = getMatchedExclusionPattern(id);
+			if (exclusion != null) {
+				markUncachable(id, exclusion);
 				return false;
 			}
 			_delegate.put(id, q);
@@ -133,9 +133,9 @@ public class PreparedQueryCacheImpl implements PreparedQueryCache {
         if (pq == null)
             return null;
         
-        boolean cacheable = pq.initialize(result);
-        if (!cacheable) {
-            markUncachable(key);
+        Exclusion exclusion = pq.initialize(result);
+        if (exclusion != null) {
+            markUncachable(key, exclusion);
             return null;
         } 
         return pq;
@@ -144,8 +144,8 @@ public class PreparedQueryCacheImpl implements PreparedQueryCache {
 	public boolean invalidate(String id) {
 		lock();
 		try {
-			if (_log.isTraceEnabled())
-                _log.trace(_loc.get("prepared-query-invalidate", id));
+			if (_log != null && _log.isInfoEnabled())
+                _log.info(_loc.get("prepared-query-invalidate", id));
 			return _delegate.remove(id) != null;
 		} finally {
 			unlock();
@@ -174,22 +174,12 @@ public class PreparedQueryCacheImpl implements PreparedQueryCache {
 		}
 	}
 	
-	public PreparedQuery markUncachable(String id) {
-		return markUncachable(id, EXLUDED_BY_USER);
-	}
-	
-	private PreparedQuery markUncachable(String id, String reason) {
+	public PreparedQuery markUncachable(String id, Exclusion exclusion) {
 		lock();
 		try {
-            boolean excludedByUser = _uncachables.get(id) == EXLUDED_BY_USER;
-			if (!excludedByUser)
-				_uncachables.put(id, reason);
-			if (_log != null && _log.isInfoEnabled()) {
-				if (excludedByUser) 
-                    _log.info(_loc.get("prepared-query-uncache-strong", id));
-                else
-                    _log.info(_loc.get("prepared-query-uncache-weak", id,
-						reason));
+			if (_uncachables.put(id, exclusion) == null) {
+			    if (_log != null && _log.isInfoEnabled()) 
+			        _log.info(_loc.get("prepared-query-uncache", id, exclusion));
 			}
 			return _delegate.remove(id);
 		} finally {
@@ -197,8 +187,8 @@ public class PreparedQueryCacheImpl implements PreparedQueryCache {
 		}
 	}
 	
-	public boolean isExcluded(String id) {
-		return getMatchedExclusionPattern(id) != null;
+	public Exclusion isExcluded(String id) {
+		return getMatchedExclusionPattern(id);
 	}
 	
 	public void setExcludes(String excludes) {
@@ -206,8 +196,6 @@ public class PreparedQueryCacheImpl implements PreparedQueryCache {
 		try {
 			if (StringUtils.isEmpty(excludes))
 				return;
-			if (_exclusionPatterns == null)
-				_exclusionPatterns = new ArrayList<String>();
 			String[] patterns = excludes.split(PATTERN_SEPARATOR);
 			for (String pattern : patterns)
 				addExclusionPattern(pattern);
@@ -216,9 +204,8 @@ public class PreparedQueryCacheImpl implements PreparedQueryCache {
 		}
 	}
 
-	public List<String> getExcludes() {
-		return _exclusionPatterns == null ? Collections.EMPTY_LIST : 
-			Collections.unmodifiableList(_exclusionPatterns);
+	public List<Exclusion> getExcludes() {
+		return Collections.unmodifiableList(_exclusionPatterns);
 	}
 	
 	/**
@@ -228,16 +215,14 @@ public class PreparedQueryCacheImpl implements PreparedQueryCache {
 	public void addExclusionPattern(String pattern) {
 		lock();
 		try {
-			if (_exclusionPatterns == null)
-				_exclusionPatterns = new ArrayList<String>();
-			_exclusionPatterns.add(pattern);
-            Collection<String> invalidKeys = getMatchedKeys(pattern,
-                    _delegate.keySet());
-            if (!invalidKeys.isEmpty() && _log != null && _log.isInfoEnabled())
-                _log.info(_loc.get("prepared-query-add-pattern", pattern,
-					invalidKeys.size(), invalidKeys));
-			for (String invalidKey : invalidKeys)
-				markUncachable(invalidKey, pattern);
+		    String reason = _loc.get("prepared-query-excluded-by-user", pattern).getMessage();
+			Exclusion exclusion = new WeakExclusion(pattern, reason);
+			_exclusionPatterns.add(exclusion);
+            Collection<String> invalidKeys = getMatchedKeys(pattern, _delegate.keySet());
+			for (String invalidKey : invalidKeys) {
+			    Exclusion invalid = new WeakExclusion(invalidKey, reason);
+				markUncachable(invalidKey, invalid);
+			}
 		} finally {
 			unlock();
 		}
@@ -251,15 +236,14 @@ public class PreparedQueryCacheImpl implements PreparedQueryCache {
 	public void removeExclusionPattern(String pattern) {
 		lock();
 		try {
-			if (_exclusionPatterns == null)
-				return;
-			_exclusionPatterns.remove(pattern);
+            Exclusion exclusion = new WeakExclusion(pattern, null);
+			_exclusionPatterns.remove(exclusion);
             Collection<String> reborns = getMatchedKeys(pattern, _uncachables);
-            if (!reborns.isEmpty() && _log != null && _log.isInfoEnabled())
-                _log.info(_loc.get("prepared-query-remove-pattern", pattern,
-					reborns.size(), reborns));
-			for (String rebornKey : reborns)
-				_uncachables.remove(rebornKey);
+			for (String rebornKey : reborns) {
+                _uncachables.remove(rebornKey);
+	            if (_log != null && _log.isInfoEnabled())
+	                _log.info(_loc.get("prepared-query-remove-pattern", pattern, rebornKey));
+			}
 		} finally {
 			unlock();
 		}
@@ -272,11 +256,9 @@ public class PreparedQueryCacheImpl implements PreparedQueryCache {
 	/**
 	 * Gets the pattern that matches the given identifier.
 	 */
-	private String getMatchedExclusionPattern(String id) {
-		if (_exclusionPatterns == null || _exclusionPatterns.isEmpty())
-			return null;
-		for (String pattern : _exclusionPatterns)
-			if (matches(pattern, id))
+	private Exclusion getMatchedExclusionPattern(String id) {
+		for (Exclusion pattern : _exclusionPatterns)
+			if (pattern.matches(id))
 				return pattern;
 		return null;
 	}
@@ -284,11 +266,11 @@ public class PreparedQueryCacheImpl implements PreparedQueryCache {
 	/**
 	 * Gets the keys of the given map whose values match the given pattern. 
 	 */
-	private Collection<String> getMatchedKeys(String pattern, 
-			Map<String,String> map) {
+	private Collection<String> getMatchedKeys(String pattern, Map<String,Exclusion> map) {
         List<String> result = new ArrayList<String>();
-		for (Map.Entry<String, String> entry : map.entrySet()) {
-			if (matches(pattern, entry.getValue())) {
+		for (Map.Entry<String, Exclusion> entry : map.entrySet()) {
+		    Exclusion exclusion = entry.getValue();
+			if (!exclusion.isStrong() && exclusion.matches(pattern)) {
 				result.add(entry.getKey());
 			}
 		}
@@ -298,8 +280,7 @@ public class PreparedQueryCacheImpl implements PreparedQueryCache {
 	/**
 	 * Gets the elements of the given list which match the given pattern. 
 	 */
-	private Collection<String> getMatchedKeys(String pattern, 
-			Collection<String> coll) {
+	private Collection<String> getMatchedKeys(String pattern, Collection<String> coll) {
 		List<String> result = new ArrayList<String>();
 		for (String key : coll) {
 			if (matches(pattern, key)) {
@@ -347,5 +328,92 @@ public class PreparedQueryCacheImpl implements PreparedQueryCache {
     }
 
     public void endConfiguration() {
+    }
+    
+    /**
+     * An immutable abstract pattern for exclusion.
+     *
+     */
+    private static abstract class ExclusionPattern implements PreparedQueryCache.Exclusion {
+        private final boolean _strong;
+        private final String  _pattern;
+        private final String  _reason;
+        
+        private static Localizer _loc = Localizer.forPackage(PreparedQueryCacheImpl.class);
+        private static String STRONG = _loc.get("strong-exclusion").getMessage();
+        private static String WEAK   = _loc.get("weak-exclusion").getMessage();
+        
+        public ExclusionPattern(boolean _strong, String _pattern, String _reason) {
+            super();
+            this._strong = _strong;
+            this._pattern = _pattern;
+            this._reason = _reason;
+        }
+
+        public String getPattern() {
+            return _pattern;
+        }
+
+        public String getReason() {
+            return _reason;
+        }
+
+        public boolean isStrong() {
+            return _strong;
+        }
+
+        public boolean matches(String id) {
+            return _pattern != null && (_pattern.equals(id) || _pattern.matches(id));
+        }
+        
+        /**
+         * Equals by strength and pattern (not by reason).
+         */
+        @Override
+        public final boolean equals(Object other) {
+            if (other == this)
+                return true;
+            if (!(other instanceof Exclusion))
+                return false;
+            Exclusion that = (Exclusion)other;
+            return this._strong == that.isStrong() 
+                && StringUtils.equals(this._pattern, that.getPattern());
+        }
+        
+        @Override
+        public int hashCode() {
+            return (_strong ? 1 : 0) 
+                 + (_pattern == null ? 0 : _pattern.hashCode());
+        }
+        
+        public String toString() {
+            StringBuilder buf = new StringBuilder();
+            buf.append(_strong ? STRONG : WEAK);
+            if (_reason != null)
+                buf.append(_reason);
+            return buf.toString();
+        }
+    }
+    
+    /**
+     * Strong exclusion.
+     *
+     */
+    public static class StrongExclusion extends ExclusionPattern {
+
+        public StrongExclusion(String pattern, String reason) {
+            super(true, pattern, reason);
+        }
+    }
+    
+    /**
+     * Weak exclusion.
+     *
+     */
+    public static class WeakExclusion extends ExclusionPattern {
+
+        public WeakExclusion(String pattern, String reason) {
+            super(false, pattern, reason);
+        }
     }
 }

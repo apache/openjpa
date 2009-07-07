@@ -18,6 +18,7 @@
  */
 package org.apache.openjpa.kernel;
 
+import java.io.Serializable;
 import java.util.List;
 import java.util.Map;
 
@@ -55,8 +56,8 @@ import org.apache.openjpa.lib.conf.Configurable;
  * 
  * This cache allows customization of whether a query can be cached or not
  * via either explicit marking of certain keys as non-cachable (which is 
- * irreversible) or addition/removal of exclusion patterns (which is
- * reversible).
+ * irreversible or <em>strong</em>) or addition/removal of exclusion patterns 
+ * (which is reversible or <em>weak</em>).
  * 
  * @see #markUncachable(String)
  * @see #addExclusionPattern(String)
@@ -143,25 +144,28 @@ public interface PreparedQueryCache extends Configurable {
 
 	/**
 	 * Marks the given key as not amenable to caching.
-	 * Explicit marking helps to avoid repeated computational cost of 
-	 * determining whether a query can be cached or not.
+     * Explicit marking helps to avoid repeated computational cost of 
+     * determining whether a query can be cached or not.
 	 * 
-     * Explicit marking can not be reversed by removal of exclusion patterns.
+	 * @param id is the key to be excluded
+	 * @param exclusion directs whether exclusion is irreversible or not.
 	 * 
      * @return The value for the given key if it had been cached before. null
 	 * otherwise.
 	 */
-	public PreparedQuery markUncachable(String id);
+	public PreparedQuery markUncachable(String id, Exclusion exclusion);
 
 	/**
-	 * Affirms if the given key matches any of the exclusion patterns.
+	 * Returns the exclusion status of if the given query key.
+	 * 
+	 * @return null implies that the key is not excluded.
 	 */
-	public boolean isExcluded(String id);
+	public Exclusion isExcluded(String id);
 
 	/**
 	 * Gets the exclusion patterns.
 	 */
-	public List<String> getExcludes();
+	public List<Exclusion> getExcludes();
 	
 	/**
 	 * Sets one or more exclusion regular expression patterns separated by 
@@ -182,7 +186,7 @@ public interface PreparedQueryCache extends Configurable {
 	 * Any excluded key that matches the given pattern can now be cached
 	 * again, unless it has been marked non-cachable explicitly.
 	 * 
-	 * @see #markUncachable(String)
+	 * @see #markUncachable(String, Exclusion)
 	 */
 	public void removeExclusionPattern(String pattern);
 	
@@ -195,4 +199,31 @@ public interface PreparedQueryCache extends Configurable {
 	 * Gets the simple statistics for executed queries.
 	 */
 	public QueryStatistics<String> getStatistics();
+	
+	/**
+	 * A structure to describe the strength and reason for excluding a query from the cache.  
+	 *
+	 */
+	public static interface Exclusion {
+	    /**
+	     * Affirms if this exclusion is strong i.e. can never be reversed.
+	     */
+	    public boolean isStrong();
+	    
+	    /**
+	     * Gets the human-readable reason for excluding this query from being cached.
+	     */
+	    public String getReason();
+	    
+	    /**
+	     * The pattern (either the exact query string or a regular expression) that
+	     * denotes this exclusion.
+	     */
+	    public String getPattern();
+	    
+	    /**
+	     * Affirms if this exclusion matches the given identifier.
+	     */
+	    boolean matches(String id);
+	}
 }

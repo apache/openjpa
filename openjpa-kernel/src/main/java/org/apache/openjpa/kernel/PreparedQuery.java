@@ -20,6 +20,8 @@ package org.apache.openjpa.kernel;
 
 import java.util.Map;
 
+import org.apache.openjpa.kernel.PreparedQueryCache.Exclusion;
+
 /**
  * A prepared query associates a compiled query to a <em>parsed state</em> that
  * can be executed possibly with more efficiency. An obvious example is to 
@@ -86,10 +88,10 @@ public interface PreparedQuery  {
      * @param o an opaque instance supposed to carry post-execution data such
 	 * as target database query, parameters of the query etc.
 	 * 
-	 * @return true if this receiver can initialize itself from the given
+	 * @return Exclusion if this receiver can initialize itself from the given
 	 * argument. false otherwise.
 	 */
-	public boolean initialize(Object o);
+	public Exclusion initialize(Object o);
 	
 	/**
 	 * Affirms if this receiver has been initialized.

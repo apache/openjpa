@@ -40,6 +40,7 @@ import org.apache.openjpa.kernel.Query;
 import org.apache.openjpa.kernel.QueryImpl;
 import org.apache.openjpa.kernel.QueryLanguages;
 import org.apache.openjpa.kernel.StoreQuery;
+import org.apache.openjpa.kernel.PreparedQueryCache.Exclusion;
 import org.apache.openjpa.kernel.exps.QueryExpressions;
 import org.apache.openjpa.lib.rop.ResultList;
 import org.apache.openjpa.lib.util.Localizer;
@@ -153,42 +154,52 @@ public class PreparedQueryImpl implements PreparedQuery {
      * The input argument is processed only if it is a {@link ResultList} with
      * an attached {@link SelectResultObjectProvider} as its
      * {@link ResultList#getUserObject() user object}. 
+     * 
+     * @return an exclusion if can not be initialized for some reason. 
+     * null if initialization is successful. 
      */
-    public boolean initialize(Object result) {
+    public Exclusion initialize(Object result) {
         if (isInitialized())
-            return true;
-        SelectExecutor selector = extractSelectExecutor(result);
+            return null;
+        Object[] extract = extractSelectExecutor(result);
+        SelectExecutor selector = (SelectExecutor)extract[0];
+        if (selector == null)
+            return new PreparedQueryCacheImpl.StrongExclusion(_id, ((Localizer.Message)extract[1]).getMessage());
         if (selector == null || selector.hasMultipleSelects()
             || ((selector instanceof Union) 
             && (((Union)selector).getSelects().length != 1)))
-            return false;
+            return new PreparedQueryCacheImpl.StrongExclusion(_id, _loc.get("exclude-multi-select").getMessage());
         select = extractImplementation(selector);
         if (select == null)
-            return false;
+            return new PreparedQueryCacheImpl.StrongExclusion(_id, _loc.get("exclude-no-select").getMessage());
         SQLBuffer buffer = selector.getSQL();
         if (buffer == null)
-            return false;
+            return new PreparedQueryCacheImpl.StrongExclusion(_id, _loc.get("exclude-no-sql").getMessage());;
         setTargetQuery(buffer.getSQL());
         setParameters(buffer.getParameters());
         setUserParameterPositions(buffer.getUserParameters());
         _initialized = true;
         
-        return true;
+        return null;
     }
     
     /**
      * Extract the underlying SelectExecutor from the given argument, if possible.
+     * 
+     * @return two objects in an array. The element at index 0 is SelectExecutor, 
+     * if it can be extracted. The element at index 1 is the reason why it can
+     * not be extracted.
      */
-    private SelectExecutor extractSelectExecutor(Object result) {
+    private Object[] extractSelectExecutor(Object result) {
         if (result instanceof ResultList == false)
-            return null;
+            return new Object[]{null, _loc.get("exclude-not-result")};
         Object userObject = ((ResultList<?>)result).getUserObject();
         if (userObject == null || !userObject.getClass().isArray() || ((Object[])userObject).length != 2)
-            return null;
+            return new Object[]{null, _loc.get("exclude-no-user-object")};
         Object provider = ((Object[])userObject)[0];
         Object executor = ((Object[])userObject)[1];
         if (executor instanceof StoreQuery.Executor == false)
-            return null;
+            return new Object[]{null, _loc.get("exclude-not-executor")};
         _exps = ((StoreQuery.Executor)executor).getQueryExpressions();
         if (_exps[0].projections.length == 0) {
             _projTypes = StoreQuery.EMPTY_CLASSES;
@@ -202,9 +213,9 @@ public class PreparedQueryImpl implements PreparedQuery {
             provider = ((QueryImpl.PackingResultObjectProvider)provider).getDelegate();
         }
         if (provider instanceof SelectResultObjectProvider) {
-            return ((SelectResultObjectProvider)provider).getSelect();
+            return new Object[]{((SelectResultObjectProvider)provider).getSelect(), null};
         } 
-        return null;
+        return new Object[]{null, _loc.get("exclude-not-select-rop")};
     }
     
     private SelectImpl extractImplementation(SelectExecutor selector) {
