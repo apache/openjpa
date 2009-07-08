@@ -30,6 +30,7 @@ import java.sql.Ref;
 import java.sql.SQLException;
 import java.sql.Time;
 import java.sql.Timestamp;
+import java.sql.Types;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
@@ -756,15 +757,17 @@ public abstract class AbstractResult
 
     public String getString(Object obj)
         throws SQLException {
-        return getStringInternal(translate(obj, null), null);
+        return getStringInternal(translate(obj, null), null,
+            obj instanceof Column && ((Column) obj).getType() == Types.CLOB);
     }
 
     public String getString(Column col, Joins joins)
         throws SQLException {
-        return getStringInternal(translate(col, joins), joins);
+        return getStringInternal(translate(col, joins), joins,
+            col.getType() == Types.CLOB);
     }
 
-    protected String getStringInternal(Object obj, Joins joins)
+    protected String getStringInternal(Object obj, Joins joins, boolean isClobString)
         throws SQLException {
         Object val = checkNull(getObjectInternal(obj, JavaTypes.STRING,
             null, joins));

@@ -393,7 +393,8 @@ public class ResultSetResult
                 val = new Short(getShortInternal(obj, joins));
                 break;
             case JavaTypes.STRING:
-                return getStringInternal(obj, joins);
+                return getStringInternal(obj, joins,
+                    obj instanceof Column && ((Column) obj).getType() == Types.CLOB);
             case JavaTypes.OBJECT:
                 return _dict
                     .getBlobObject(_rs, ((Number) obj).intValue(), _store);
@@ -462,10 +463,11 @@ public class ResultSetResult
         return _dict.getShort(_rs, ((Number) obj).intValue());
     }
 
-    protected String getStringInternal(Object obj, Joins joins)
+    protected String getStringInternal(Object obj, Joins joins, boolean isClobString)
         throws SQLException {
-        if (obj instanceof Column && ((Column) obj).getType() == Types.CLOB)
-            return _dict.getClobString(_rs, findObject(obj, joins));
+        if (isClobString) {
+            return _dict.getClobString(_rs, ((Number) obj).intValue());
+        }
         return _dict.getString(_rs, ((Number) obj).intValue());
     }
 
@@ -489,9 +491,6 @@ public class ResultSetResult
         throws SQLException {
         if (obj instanceof Number)
             return obj;
-        // getStringInternal will take care the translation
-        if (obj instanceof Column && ((Column) obj).getType() == Types.CLOB)
-        	return obj;
         return Numbers.valueOf(findObject(obj, joins));
     }
 
