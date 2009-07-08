@@ -50,6 +50,8 @@ import org.apache.openjpa.persistence.test.SingleEMFTestCase;
  *   17) Test @Digits constraint exception on getter in mode=AUTO
  *   19) Test @Size constraint exception on variables in mode=AUTO
  *   20) Test @Size constraint exception on getter in mode=AUTO
+ *   22) Test @Future constraint exception on variables in mode=AUTO
+ *   23) Test @Past constraint exception on getter in mode=AUTO
  *   
  *   Basic constraint test for no violations:
  *   6)  Persist @NotNull and @Null constraints pass in mode=AUTO
@@ -58,6 +60,7 @@ import org.apache.openjpa.persistence.test.SingleEMFTestCase;
  *   15) Test @Min and @Max constraints pass in mode=AUTO
  *   18) Test @Digits constraints pass in mode=AUTO
  *   21) Test @Size constraints pass in mode=AUTO
+ *   24) Test @Past and @Future constraints pass in mode=AUTO
  *
  * @version $Rev$ $Date$
  */
@@ -68,7 +71,8 @@ public class TestConstraints extends SingleEMFTestCase {
         super.setUp(CLEAR_TABLES,
             ConstraintNull.class, ConstraintBoolean.class,
             ConstraintDecimal.class, ConstraintNumber.class,
-            ConstraintDigits.class, ConstraintSize.class);
+            ConstraintDigits.class, ConstraintSize.class,
+            ConstraintDates.class);
     }
 
     /**
@@ -521,7 +525,7 @@ public class TestConstraints extends SingleEMFTestCase {
             em.getTransaction().commit();
             getLog().trace("testDecimalMaxConstraint() failed");
             fail("Expected a ConstraintViolationException");
-        } catch (Exception e) {
+        } catch (ConstraintViolationException e) {
             // expected
             getLog().trace("Caught expected ConstraintViolationException = " + e);
             getLog().trace("testDecimalMaxConstraint() passed");
@@ -628,7 +632,7 @@ public class TestConstraints extends SingleEMFTestCase {
             em.getTransaction().commit();
             getLog().trace("testMaxConstraint() failed");
             fail("Expected a ConstraintViolationException");
-        } catch (Exception e) {
+        } catch (ConstraintViolationException e) {
             // expected
             getLog().trace("Caught expected ConstraintViolationException = " + e);
             getLog().trace("testMaxConstraint() passed");
@@ -735,7 +739,7 @@ public class TestConstraints extends SingleEMFTestCase {
             em.getTransaction().commit();
             getLog().trace("testDigitsFiveConstraint() failed");
             fail("Expected a ConstraintViolationException");
-        } catch (Exception e) {
+        } catch (ConstraintViolationException e) {
             // expected
             getLog().trace("Caught expected ConstraintViolationException = " + e);
             getLog().trace("testDigitsFiveConstraint() passed");
@@ -842,7 +846,7 @@ public class TestConstraints extends SingleEMFTestCase {
             em.getTransaction().commit();
             getLog().trace("testSizeMapConstraint() failed");
             fail("Expected a ConstraintViolationException");
-        } catch (Exception e) {
+        } catch (ConstraintViolationException e) {
             // expected
             getLog().trace("Caught expected ConstraintViolationException = " + e);
             getLog().trace("testSizeMapConstraint() passed");
@@ -889,6 +893,114 @@ public class TestConstraints extends SingleEMFTestCase {
             }
         }
     }
+
+    /**
+     * Scenario being tested:
+     *   22) Test @Future constraint exception on variables in mode=AUTO
+     *       Basic constraint test for a violation exception.
+     */
+    public void testDatesFutureConstraint() {
+        getLog().trace("testDatesFutureConstraint() started");
+        // create EM from default EMF
+        OpenJPAEntityManager em = emf.createEntityManager();
+        assertNotNull(em);
+        try {
+            // verify Validation Mode
+            OpenJPAConfiguration conf = em.getConfiguration();
+            assertNotNull(conf);
+            assertTrue("ValidationMode",
+                conf.getValidationMode().equalsIgnoreCase("AUTO"));
+            // create invalid ConstraintBoolean instance
+            em.getTransaction().begin();
+            ConstraintDates c = ConstraintDates.createInvalidFuture();
+            em.persist(c);
+            em.getTransaction().commit();
+            getLog().trace("testDatesFutureConstraint() failed");
+            fail("Expected a ConstraintViolationException");
+        } catch (ConstraintViolationException e) {
+            // expected
+            getLog().trace("Caught expected ConstraintViolationException = " + e);
+            getLog().trace("testDatesFutureConstraint() passed");
+        } finally {
+            if ((em != null) && em.isOpen()) {
+                if (em.getTransaction().isActive())
+                    em.getTransaction().rollback();
+                em.close();
+            }
+        }
+    }
+
+    /**
+     * Scenario being tested:
+     *   23) Test @Past constraint exception on getter in mode=AUTO
+     *       Basic constraint test for a violation exception.
+     */
+    public void testDatesPastConstraint() {
+        getLog().trace("testDatesPastConstraint() started");
+        // create EM from default EMF
+        OpenJPAEntityManager em = emf.createEntityManager();
+        assertNotNull(em);
+        try {
+            // verify Validation Mode
+            OpenJPAConfiguration conf = em.getConfiguration();
+            assertNotNull(conf);
+            assertTrue("ValidationMode",
+                conf.getValidationMode().equalsIgnoreCase("AUTO"));
+            // create invalid ConstraintBoolean instance
+            em.getTransaction().begin();
+            ConstraintDates c = ConstraintDates.createInvalidPast();
+            em.persist(c);
+            em.getTransaction().commit();
+            getLog().trace("testDatesPastConstraint() failed");
+            fail("Expected a ConstraintViolationException");
+        } catch (ConstraintViolationException e) {
+            // expected
+            getLog().trace("Caught expected ConstraintViolationException = " + e);
+            getLog().trace("testDatesPastConstraint() passed");
+        } finally {
+            if ((em != null) && em.isOpen()) {
+                if (em.getTransaction().isActive())
+                    em.getTransaction().rollback();
+                em.close();
+            }
+        }
+    }
+
+    /**
+     * Scenario being tested:
+     *   24) Test @Past and @Future constraints pass in mode=AUTO
+     *       Basic constraint test for no violations.
+     */
+    public void testDatesConstraint() {
+        getLog().trace("testDatesConstraint() started");
+        // create EM from default EMF
+        OpenJPAEntityManager em = emf.createEntityManager();
+        assertNotNull(em);
+        try {
+            // verify Validation Mode
+            OpenJPAConfiguration conf = em.getConfiguration();
+            assertNotNull(conf);
+            assertTrue("ValidationMode",
+                conf.getValidationMode().equalsIgnoreCase("AUTO"));
+            // create valid ConstraintBoolean instance
+            em.getTransaction().begin();
+            ConstraintDates c = ConstraintDates.createValid();
+            em.persist(c);
+            em.getTransaction().commit();
+            getLog().trace("testDatesConstraint() passed");
+        } catch (Exception e) {
+            // unexpected
+            getLog().trace("testDatesConstraint() failed");
+            fail("Caught unexpected exception = " + e);
+        } finally {
+            if ((em != null) && em.isOpen()) {
+                if (em.getTransaction().isActive())
+                    em.getTransaction().rollback();
+                em.close();
+            }
+        }
+    }
+
 
     /**
      * Helper method to remove entities and close the emf an any open em's.
