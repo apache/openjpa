@@ -740,9 +740,8 @@ public class TestOrderColumn extends SingleEMFTestCase {
     }
 
     /*
-     * Validates the use of the table attribute on OrderColumn with
-     * o2o, o2m, m2m, and collection table - with and without join
-     * tables.
+     * Validates the use of the OrderColumn with o2o, o2m, m2m relationships
+     * and collection table - with and without join tables.
      */
     public void testOrderColumnTable() {   
         

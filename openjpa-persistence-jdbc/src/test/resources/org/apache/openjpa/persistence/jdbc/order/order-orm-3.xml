@@ -40,22 +40,25 @@
             <id name="id">
                 <generated-value/>
             </id>
-            <one-to-many name="one2Melems">                
-                <order-column name="one2MOrder" table="xml_o2m_table" />
+            <one-to-many name="one2Melems">              
+                <order-column name="one2MOrder" />
+                <join-table name="xml_o2m_table"/>
                 <cascade>
                     <cascade-all/>
                 </cascade>
             </one-to-many>
 
             <many-to-many name="m2melems">
-                <order-column name="m2morder" table="xml_m2m_table" />
+                <order-column name="m2morder" />
+                <join-table name="xml_m2m_table"/>
                 <cascade>
                     <cascade-all/>
                 </cascade>
             </many-to-many>
             
             <element-collection name="collelems">
-                <order-column table="xml_coll_table" />
+                <order-column/>
+                <collection-table name="xml_coll_table"/>
             </element-collection>
             
         </attributes>    

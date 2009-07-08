@@ -21,6 +21,7 @@ package org.apache.openjpa.persistence.criteria;
 import java.util.Arrays;
 import java.util.List;
 
+import javax.persistence.criteria.CompoundSelection;
 import javax.persistence.criteria.Selection;
 
 import org.apache.openjpa.persistence.ResultItemImpl;
@@ -34,7 +35,7 @@ import org.apache.openjpa.persistence.ResultItemImpl;
  * @param <X>
  */
 public class NewInstanceSelection<X> extends ResultItemImpl<X> 
-    implements Selection<X> {
+    implements CompoundSelection<X> {
     
     private List<Selection<?>>  _args;
     
@@ -45,5 +46,25 @@ public class NewInstanceSelection<X> extends ResultItemImpl<X>
     
     public List<Selection<?>> getConstructorArguments() {
         return _args;
+    }
+
+    public List<Selection<?>> getSelectionItems() {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    public Selection<X> alias(String arg0) {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    public List<Selection<?>> getCompoundSelectionItems() {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    public boolean isCompoundSelection() {
+        // TODO Auto-generated method stub
+        return false;
     }
 }

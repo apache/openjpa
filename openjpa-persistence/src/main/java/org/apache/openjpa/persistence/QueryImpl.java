@@ -748,4 +748,36 @@ public class QueryImpl<X> implements OpenJPAQuerySPI<X>, Serializable {
         throw new UnsupportedOperationException(
             "JPA 2.0 - Method not yet implemented");
     }
+
+    public TypedQuery<X> setParameter(Parameter<Date> arg0, Date arg1,
+        TemporalType arg2) {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    public TypedQuery<X> setParameter(Parameter<Calendar> arg0, Calendar arg1,
+        TemporalType arg2) {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    public Parameter<?> getParameter(String arg0) {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    public Parameter<?> getParameter(int arg0) {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    public Object getParameterValue(String arg0) {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    public Object getParameterValue(int arg0) {
+        // TODO Auto-generated method stub
+        return null;
+    }
 }

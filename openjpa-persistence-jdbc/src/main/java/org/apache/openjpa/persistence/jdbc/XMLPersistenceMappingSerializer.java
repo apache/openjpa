@@ -457,8 +457,6 @@ public class XMLPersistenceMappingSerializer
                 addAttribute("updatable", "false");
             if (orderCol.getTypeName() != null)
                 addAttribute("column-definition", orderCol.getTypeName());
-            if (orderCol.getTableName() != null)
-                addAttribute("table", orderCol.getTableName());
             startElement("order-column");
             endElement("order-column");
         }        

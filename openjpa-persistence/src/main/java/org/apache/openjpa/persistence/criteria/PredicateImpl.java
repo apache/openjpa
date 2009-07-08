@@ -23,6 +23,7 @@ import java.util.List;
 
 import javax.persistence.criteria.Expression;
 import javax.persistence.criteria.Predicate;
+import javax.persistence.criteria.Selection;
 
 import org.apache.openjpa.kernel.exps.ExpressionFactory;
 import org.apache.openjpa.persistence.meta.MetamodelImpl;
@@ -132,5 +133,20 @@ public class PredicateImpl extends ExpressionImpl<Boolean> implements Predicate 
         public Or(Predicate...restrictions) {
             super(BooleanOperator.OR, restrictions);
         }
+    }
+
+    public Selection<Boolean> alias(String arg0) {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    public List<Selection<?>> getCompoundSelectionItems() {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    public boolean isCompoundSelection() {
+        // TODO Auto-generated method stub
+        return false;
     }
 }

@@ -32,6 +32,7 @@ import javax.persistence.criteria.ListJoin;
 import javax.persistence.criteria.MapJoin;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
+import javax.persistence.criteria.Selection;
 import javax.persistence.criteria.SetJoin;
 import javax.persistence.criteria.Subquery;
 import javax.persistence.metamodel.EntityType;
@@ -331,5 +332,20 @@ public class SubqueryImpl<T> extends ExpressionImpl<T> implements Subquery<T> {
                 : from._member.fmd.getElement().getDeclaredTypeMetaData();
         return from._member.fmd.getDeclaredTypeMetaData();
         
+    }
+
+    public Selection<T> alias(String arg0) {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    public List<Selection<?>> getCompoundSelectionItems() {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    public boolean isCompoundSelection() {
+        // TODO Auto-generated method stub
+        return false;
     }    
 }

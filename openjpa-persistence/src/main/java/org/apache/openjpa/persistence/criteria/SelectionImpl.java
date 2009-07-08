@@ -40,6 +40,21 @@ public class SelectionImpl<X> extends ResultItemImpl<X>
     public SelectionImpl(Class<X> cls) {
         super(cls);
     }
+
+    public Selection<X> alias(String arg0) {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    public List<Selection<?>> getCompoundSelectionItems() {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    public boolean isCompoundSelection() {
+        // TODO Auto-generated method stub
+        return false;
+    }
     
 //    public SelectionImpl<X> setSelections(Selection<?>... selections) {
 //        _sels = Arrays.asList(selections);

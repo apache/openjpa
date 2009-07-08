@@ -29,6 +29,7 @@ import java.util.Set;
 
 import javax.persistence.Parameter;
 import javax.persistence.Tuple;
+import javax.persistence.criteria.CompoundSelection;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Expression;
 import javax.persistence.criteria.Order;
@@ -542,7 +543,7 @@ public class CriteriaBuilder implements QueryBuilder, ExpressionParser {
      * @param selections  arguments to the constructor
      * @return selection item
      */
-    public <Y> Selection<Y> construct(Class<Y> result, Selection<?>... selections) {
+    public <Y> CompoundSelection<Y> construct(Class<Y> result, Selection<?>... selections) {
         return new NewInstanceSelection<Y>(result, selections);
     }
 
@@ -662,5 +663,25 @@ public class CriteriaBuilder implements QueryBuilder, ExpressionParser {
 
     public <V, M extends Map<?, V>> Expression<Collection<V>> values(M map) {
         throw new AbstractMethodError();
+    }
+
+    public CompoundSelection<Object[]> array(Selection<?>... arg0) {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    public Predicate isNotNull(Expression<?> arg0) {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    public Predicate isNull(Expression<?> arg0) {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    public CompoundSelection<Tuple> tuple(Selection<?>... arg0) {
+        // TODO Auto-generated method stub
+        return null;
     }
 }

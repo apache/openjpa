@@ -21,10 +21,12 @@ package org.apache.openjpa.persistence.jdbc.order;
 import java.util.Collection;
 
 import javax.persistence.CascadeType;
+import javax.persistence.CollectionTable;
 import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
 import javax.persistence.Inheritance;
 import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
 import javax.persistence.OneToMany;
 import javax.persistence.OrderColumn;
@@ -39,25 +41,28 @@ public class Owner extends Person {
     
     // bidirectional one-to-many w/ default join column
     @OneToMany(mappedBy="owner", cascade=CascadeType.ALL)
-    @OrderColumn(name="car_o2m_order", table="car_o2m_table")
+    @JoinTable(name="car_o2m_table")
+    @OrderColumn(name="car_o2m_order")
     private Collection<Car> cars;
 
     // unidirectional one-to-many w/ join column
     @OneToMany(cascade=CascadeType.ALL)
-    @OrderColumn(table="home_o2m_table")
+    @JoinTable(name="home_o2m_table")
+    @OrderColumn
     private Collection<Home> homes;
     
     @ManyToMany(cascade=CascadeType.ALL)
-    @OrderColumn(table="widget_m2m_table")
+    @JoinTable(name="widget_m2m_table")
+    @OrderColumn
     private Collection<Widget> widgets;
     
     // element collection
     @ElementCollection
-    @OrderColumn(name="bike_coll_order", table="bike_table")
+    @CollectionTable(name="bike_table")
+    @OrderColumn(name="bike_coll_order")
     private Collection<Bicycle> bikeColl;
 
-    
-    
+        
     public void setCars(Collection<Car> cars) {
         this.cars = cars;
     }

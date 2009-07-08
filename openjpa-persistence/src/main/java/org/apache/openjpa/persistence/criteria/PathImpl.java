@@ -19,10 +19,13 @@
 
 package org.apache.openjpa.persistence.criteria;
 
+import java.util.List;
+
 import javax.persistence.criteria.Expression;
 import javax.persistence.criteria.Join;
 import javax.persistence.criteria.JoinType;
 import javax.persistence.criteria.Path;
+import javax.persistence.criteria.Selection;
 import javax.persistence.metamodel.Bindable;
 import javax.persistence.metamodel.ManagedType;
 import javax.persistence.metamodel.MapAttribute;
@@ -252,4 +255,19 @@ public class PathImpl<Z,X> extends ExpressionImpl<X> implements Path<X> {
     public Expression<Class<? extends X>> type() {
         return new Expressions.Type<X>(this);
 }
+
+    public Selection<X> alias(String arg0) {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    public List<Selection<?>> getCompoundSelectionItems() {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    public boolean isCompoundSelection() {
+        // TODO Auto-generated method stub
+        return false;
+    }
 }

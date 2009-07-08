@@ -234,7 +234,7 @@ public class CriteriaQueryImpl<T> implements CriteriaQuery<T>, AliasContext {
      *        is to be returned in the query result
      * @return the modified query
      */
-    public CriteriaQuery<T> select(Selection<T> selection) {
+    public CriteriaQuery<T> select(Selection<? extends T> selection) {
         return select(new Selection<?>[]{selection});
     }
 
@@ -384,7 +384,7 @@ public class CriteriaQueryImpl<T> implements CriteriaQuery<T>, AliasContext {
         alias = ALIAS_BASE + (++aliasCount);
         while (_aliases.containsValue(alias))
             alias = ALIAS_BASE + (++aliasCount);
-        selection.setAlias(alias);
+        selection.alias(alias);
         _aliases.put(selection, alias);
         return _aliases.get(selection);
     }
@@ -436,5 +436,15 @@ public class CriteriaQueryImpl<T> implements CriteriaQuery<T>, AliasContext {
     
     public boolean isRegistered(Selection<?> selection) {
         return _variables.containsKey(selection);
+    }
+
+    public Class getResultType() {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    public CriteriaQuery<T> multiselect(List<Selection<?>> arg0) {
+        // TODO Auto-generated method stub
+        return null;
     }
 }

@@ -27,6 +27,7 @@ import javax.persistence.criteria.ListJoin;
 import javax.persistence.criteria.MapJoin;
 import javax.persistence.criteria.Path;
 import javax.persistence.criteria.PluralJoin;
+import javax.persistence.criteria.Selection;
 import javax.persistence.criteria.SetJoin;
 import javax.persistence.metamodel.Attribute;
 import javax.persistence.metamodel.CollectionAttribute;
@@ -363,6 +364,21 @@ public abstract class Joins {
             return (CollectionAttribute<? super Z, E>)
                _member.getType();
         }
+
+        public Selection<E> alias(String arg0) {
+            // TODO Auto-generated method stub
+            return null;
+        }
+
+        public java.util.List<Selection<?>> getCompoundSelectionItems() {
+            // TODO Auto-generated method stub
+            return null;
+        }
+
+        public boolean isCompoundSelection() {
+            // TODO Auto-generated method stub
+            return false;
+        }
     }
     
     /**
@@ -379,6 +395,21 @@ public abstract class Joins {
         
         public SetAttribute<? super Z, E> getModel() {
             return (SetAttribute<? super Z, E>)_member;
+        }
+
+        public Selection<E> alias(String arg0) {
+            // TODO Auto-generated method stub
+            return null;
+        }
+
+        public java.util.List<Selection<?>> getCompoundSelectionItems() {
+            // TODO Auto-generated method stub
+            return null;
+        }
+
+        public boolean isCompoundSelection() {
+            // TODO Auto-generated method stub
+            return false;
         }
     }
     
@@ -403,6 +434,21 @@ public abstract class Joins {
         
         public Expression<Integer> index() {
             return new Expressions.Index(this);
+        }
+
+        public Selection<E> alias(String arg0) {
+            // TODO Auto-generated method stub
+            return null;
+        }
+
+        public java.util.List<Selection<?>> getCompoundSelectionItems() {
+            // TODO Auto-generated method stub
+            return null;
+        }
+
+        public boolean isCompoundSelection() {
+            // TODO Auto-generated method stub
+            return false;
         }
     }
     
@@ -453,6 +499,21 @@ public abstract class Joins {
             org.apache.openjpa.kernel.exps.Expression join = factory.bindValueVariable(var, path);
             c.registerVariable(this, var, path);
             return join;
+        }
+
+        public Selection<V> alias(String arg0) {
+            // TODO Auto-generated method stub
+            return null;
+        }
+
+        public java.util.List<Selection<?>> getCompoundSelectionItems() {
+            // TODO Auto-generated method stub
+            return null;
+        }
+
+        public boolean isCompoundSelection() {
+            // TODO Auto-generated method stub
+            return false;
         }
     }
     

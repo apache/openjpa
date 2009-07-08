@@ -60,8 +60,8 @@ public class FetchPathImpl<Z,X> extends PathImpl<Z,X> implements Fetch<Z, X> {
      * Return the metamodel attribute corresponding to the fetch join.
      * @return metamodel attribute for the join
      */
-    public Attribute<? extends Z, X> getAttribute() {
-        return (Attribute<? extends Z, X>)_member;
+    public Attribute<Z, X> getAttribute() {
+        return (Attribute<Z, X>)_member;
     }
     
     public FetchParent<?, Z> getParent() {

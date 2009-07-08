@@ -19,6 +19,9 @@
 
 package org.apache.openjpa.persistence.criteria;
 
+import java.sql.Date;
+import java.sql.Time;
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -26,6 +29,7 @@ import java.util.List;
 import javax.persistence.criteria.Expression;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.QueryBuilder;
+import javax.persistence.criteria.Selection;
 import javax.persistence.criteria.Subquery;
 import javax.persistence.criteria.QueryBuilder.Trimspec;
 
@@ -129,6 +133,21 @@ public class Expressions {
             CriteriaQueryImpl<?> q) {
             return factory.abs(Expressions.toValue(e, factory, model, q));
         }
+
+        public Selection<X> alias(String arg0) {
+            // TODO Auto-generated method stub
+            return null;
+        }
+
+        public List<Selection<?>> getCompoundSelectionItems() {
+            // TODO Auto-generated method stub
+            return null;
+        }
+
+        public boolean isCompoundSelection() {
+            // TODO Auto-generated method stub
+            return false;
+        }
     }
     
     public static class Count extends UnaryFunctionalExpression<Long> {
@@ -149,6 +168,21 @@ public class Expressions {
             Value v = factory.count(Expressions.toValue(e, factory, model, q));
             return _distinct ? factory.distinct(v) : v;
         }
+
+        public Selection<Long> alias(String arg0) {
+            // TODO Auto-generated method stub
+            return null;
+        }
+
+        public List<Selection<?>> getCompoundSelectionItems() {
+            // TODO Auto-generated method stub
+            return null;
+        }
+
+        public boolean isCompoundSelection() {
+            // TODO Auto-generated method stub
+            return false;
+        }
     }
 
     public static class Avg extends UnaryFunctionalExpression<Double> {
@@ -160,6 +194,21 @@ public class Expressions {
         public Value toValue(ExpressionFactory factory, MetamodelImpl model,
             CriteriaQueryImpl<?> q) {
             return factory.avg(Expressions.toValue(e, factory, model, q));
+        }
+
+        public Selection<Double> alias(String arg0) {
+            // TODO Auto-generated method stub
+            return null;
+        }
+
+        public List<Selection<?>> getCompoundSelectionItems() {
+            // TODO Auto-generated method stub
+            return null;
+        }
+
+        public boolean isCompoundSelection() {
+            // TODO Auto-generated method stub
+            return false;
         }
     }
     
@@ -173,6 +222,21 @@ public class Expressions {
             CriteriaQueryImpl<?> q) {
             return factory.sqrt(Expressions.toValue(e, factory, model, q));
         }
+
+        public Selection<Double> alias(String arg0) {
+            // TODO Auto-generated method stub
+            return null;
+        }
+
+        public List<Selection<?>> getCompoundSelectionItems() {
+            // TODO Auto-generated method stub
+            return null;
+        }
+
+        public boolean isCompoundSelection() {
+            // TODO Auto-generated method stub
+            return false;
+        }
     }
     
     public static class Max<X> extends UnaryFunctionalExpression<X> {
@@ -185,6 +249,21 @@ public class Expressions {
             CriteriaQueryImpl<?> q) {
             return factory.max(Expressions.toValue(e, factory, model, q));
         }
+
+        public Selection<X> alias(String arg0) {
+            // TODO Auto-generated method stub
+            return null;
+        }
+
+        public List<Selection<?>> getCompoundSelectionItems() {
+            // TODO Auto-generated method stub
+            return null;
+        }
+
+        public boolean isCompoundSelection() {
+            // TODO Auto-generated method stub
+            return false;
+        }
     }
 
     public static class Min<X> extends UnaryFunctionalExpression<X> {
@@ -196,6 +275,21 @@ public class Expressions {
         public Value toValue(ExpressionFactory factory, MetamodelImpl model,
             CriteriaQueryImpl<?> q) {
             return factory.min(Expressions.toValue(e, factory, model, q));
+        }
+
+        public Selection<X> alias(String arg0) {
+            // TODO Auto-generated method stub
+            return null;
+        }
+
+        public List<Selection<?>> getCompoundSelectionItems() {
+            // TODO Auto-generated method stub
+            return null;
+        }
+
+        public boolean isCompoundSelection() {
+            // TODO Auto-generated method stub
+            return false;
         }
     }
     
@@ -213,6 +307,21 @@ public class Expressions {
             CriteriaQueryImpl<?> q) {
             return factory.size(Expressions.toValue(e, factory, model, q));
         }
+
+        public Selection<Integer> alias(String arg0) {
+            // TODO Auto-generated method stub
+            return null;
+        }
+
+        public List<Selection<?>> getCompoundSelectionItems() {
+            // TODO Auto-generated method stub
+            return null;
+        }
+
+        public boolean isCompoundSelection() {
+            // TODO Auto-generated method stub
+            return false;
+        }
     }
     
     public static class Type<X> 
@@ -227,6 +336,21 @@ public class Expressions {
             CriteriaQueryImpl<?> q) {
             return factory.type(Expressions.toValue(e, factory, model, q));
         }
+
+        public Selection<Class<? extends X>> alias(String arg0) {
+            // TODO Auto-generated method stub
+            return null;
+        }
+
+        public List<Selection<?>> getCompoundSelectionItems() {
+            // TODO Auto-generated method stub
+            return null;
+        }
+
+        public boolean isCompoundSelection() {
+            // TODO Auto-generated method stub
+            return false;
+        }
     }
 
     public static class Cast<B> extends UnaryFunctionalExpression<B> {
@@ -239,6 +363,21 @@ public class Expressions {
         public Value toValue(ExpressionFactory factory, MetamodelImpl model,
             CriteriaQueryImpl<?> q) {
             return factory.cast(Expressions.toValue(e, factory, model, q), b);
+        }
+
+        public Selection<B> alias(String arg0) {
+            // TODO Auto-generated method stub
+            return null;
+        }
+
+        public List<Selection<?>> getCompoundSelectionItems() {
+            // TODO Auto-generated method stub
+            return null;
+        }
+
+        public boolean isCompoundSelection() {
+            // TODO Auto-generated method stub
+            return false;
         }
     }
     
@@ -261,6 +400,21 @@ public class Expressions {
             return factory.concat(
                 Expressions.toValue(e1, factory, model, q), 
                 Expressions.toValue(e2, factory, model, q));
+        }
+
+        public Selection<String> alias(String arg0) {
+            // TODO Auto-generated method stub
+            return null;
+        }
+
+        public List<Selection<?>> getCompoundSelectionItems() {
+            // TODO Auto-generated method stub
+            return null;
+        }
+
+        public boolean isCompoundSelection() {
+            // TODO Auto-generated method stub
+            return false;
         }
     }
     
@@ -298,6 +452,21 @@ public class Expressions {
                 Expressions.toValue(e, factory, model, q), 
                 from == null ? null : from.toValue(factory, model, q), 
                 len == null ? null : len.toValue(factory, model, q));
+        }
+
+        public Selection<String> alias(String arg0) {
+            // TODO Auto-generated method stub
+            return null;
+        }
+
+        public List<Selection<?>> getCompoundSelectionItems() {
+            // TODO Auto-generated method stub
+            return null;
+        }
+
+        public boolean isCompoundSelection() {
+            // TODO Auto-generated method stub
+            return false;
         }
     }
 
@@ -348,6 +517,21 @@ public class Expressions {
                     factory.newLiteral(Numbers.valueOf(1),
                         Literal.TYPE_NUMBER));
         }
+
+        public Selection<Integer> alias(String arg0) {
+            // TODO Auto-generated method stub
+            return null;
+        }
+
+        public List<Selection<?>> getCompoundSelectionItems() {
+            // TODO Auto-generated method stub
+            return null;
+        }
+
+        public boolean isCompoundSelection() {
+            // TODO Auto-generated method stub
+            return false;
+        }
     }
     
     public static class Trim extends BinarayFunctionalExpression<String> {
@@ -396,6 +580,21 @@ public class Expressions {
                 Expressions.toValue(e1, factory, model, q), 
                 Expressions.toValue(e2, factory, model, q), spec);
         }
+
+        public Selection<String> alias(String arg0) {
+            // TODO Auto-generated method stub
+            return null;
+        }
+
+        public List<Selection<?>> getCompoundSelectionItems() {
+            // TODO Auto-generated method stub
+            return null;
+        }
+
+        public boolean isCompoundSelection() {
+            // TODO Auto-generated method stub
+            return false;
+        }
     }
     
     public static class Sum<N extends Number> 
@@ -426,6 +625,21 @@ public class Expressions {
                    Expressions.toValue(e1, factory, model, q), 
                    Expressions.toValue(e2, factory, model, q));
         }
+
+        public Selection<N> alias(String arg0) {
+            // TODO Auto-generated method stub
+            return null;
+        }
+
+        public List<Selection<?>> getCompoundSelectionItems() {
+            // TODO Auto-generated method stub
+            return null;
+        }
+
+        public boolean isCompoundSelection() {
+            // TODO Auto-generated method stub
+            return false;
+        }
     }
     
     public static class Product<N extends Number> 
@@ -450,6 +664,21 @@ public class Expressions {
                 Expressions.toValue(e1, factory, model, q), 
                 Expressions.toValue(e2, factory, model, q));
         }
+
+        public Selection<N> alias(String arg0) {
+            // TODO Auto-generated method stub
+            return null;
+        }
+
+        public List<Selection<?>> getCompoundSelectionItems() {
+            // TODO Auto-generated method stub
+            return null;
+        }
+
+        public boolean isCompoundSelection() {
+            // TODO Auto-generated method stub
+            return false;
+        }
     }
     
     public static class Diff<N extends Number> 
@@ -473,6 +702,21 @@ public class Expressions {
             return factory.subtract(
                 Expressions.toValue(e1, factory, model, q), 
                 Expressions.toValue(e2, factory, model, q));
+        }
+
+        public Selection<N> alias(String arg0) {
+            // TODO Auto-generated method stub
+            return null;
+        }
+
+        public List<Selection<?>> getCompoundSelectionItems() {
+            // TODO Auto-generated method stub
+            return null;
+        }
+
+        public boolean isCompoundSelection() {
+            // TODO Auto-generated method stub
+            return false;
         }
     }
 
@@ -499,6 +743,21 @@ public class Expressions {
                 Expressions.toValue(e1, factory, model, q), 
                 Expressions.toValue(e2, factory, model, q));
         }
+
+        public Selection<N> alias(String arg0) {
+            // TODO Auto-generated method stub
+            return null;
+        }
+
+        public List<Selection<?>> getCompoundSelectionItems() {
+            // TODO Auto-generated method stub
+            return null;
+        }
+
+        public boolean isCompoundSelection() {
+            // TODO Auto-generated method stub
+            return false;
+        }
     }
 
     public static class Mod extends BinarayFunctionalExpression<Integer> {
@@ -519,6 +778,18 @@ public class Expressions {
                 Expressions.toValue(e1, factory, model, q), 
                 Expressions.toValue(e2, factory, model, q));
         }
+        public Selection<Integer> alias(String arg0) {
+            // TODO Auto-generated method stub
+            return null;
+        }
+        public List<Selection<?>> getCompoundSelectionItems() {
+            // TODO Auto-generated method stub
+            return null;
+        }
+        public boolean isCompoundSelection() {
+            // TODO Auto-generated method stub
+            return false;
+        }
     }
 
     public static class CurrentDate extends ExpressionImpl<java.sql.Date> {
@@ -530,6 +801,21 @@ public class Expressions {
         public Value toValue(ExpressionFactory factory, MetamodelImpl model,
             CriteriaQueryImpl<?> q) {
             return factory.getCurrentDate();
+        }
+
+        public Selection<Date> alias(String arg0) {
+            // TODO Auto-generated method stub
+            return null;
+        }
+
+        public List<Selection<?>> getCompoundSelectionItems() {
+            // TODO Auto-generated method stub
+            return null;
+        }
+
+        public boolean isCompoundSelection() {
+            // TODO Auto-generated method stub
+            return false;
         }
     }
     
@@ -543,6 +829,21 @@ public class Expressions {
             CriteriaQueryImpl<?> q) {
             return factory.getCurrentTime();
         }
+
+        public Selection<Time> alias(String arg0) {
+            // TODO Auto-generated method stub
+            return null;
+        }
+
+        public List<Selection<?>> getCompoundSelectionItems() {
+            // TODO Auto-generated method stub
+            return null;
+        }
+
+        public boolean isCompoundSelection() {
+            // TODO Auto-generated method stub
+            return false;
+        }
     }
     
     public static class CurrentTimestamp 
@@ -555,6 +856,21 @@ public class Expressions {
         public Value toValue(ExpressionFactory factory, MetamodelImpl model,
             CriteriaQueryImpl<?> q) {
             return factory.getCurrentTimestamp();
+        }
+
+        public Selection<Timestamp> alias(String arg0) {
+            // TODO Auto-generated method stub
+            return null;
+        }
+
+        public List<Selection<?>> getCompoundSelectionItems() {
+            // TODO Auto-generated method stub
+            return null;
+        }
+
+        public boolean isCompoundSelection() {
+            // TODO Auto-generated method stub
+            return false;
         }
     }
 
@@ -723,6 +1039,21 @@ public class Expressions {
             }
             return factory.newLiteral(value, literalType);
         }
+
+        public Selection<X> alias(String arg0) {
+            // TODO Auto-generated method stub
+            return null;
+        }
+
+        public List<Selection<?>> getCompoundSelectionItems() {
+            // TODO Auto-generated method stub
+            return null;
+        }
+
+        public boolean isCompoundSelection() {
+            // TODO Auto-generated method stub
+            return false;
+        }
     }
     
     public static class TypeConstant<X> extends Constant<X> {
@@ -796,6 +1127,21 @@ public class Expressions {
                .getTypeMetaData();
             v.setMetaData(meta);
             return factory.index(v);
+        }
+
+        public Selection<Integer> alias(String arg0) {
+            // TODO Auto-generated method stub
+            return null;
+        }
+
+        public List<Selection<?>> getCompoundSelectionItems() {
+            // TODO Auto-generated method stub
+            return null;
+        }
+
+        public boolean isCompoundSelection() {
+            // TODO Auto-generated method stub
+            return false;
         }
     }
     
@@ -920,6 +1266,21 @@ public class Expressions {
                    factory, model, q);
             return factory.coalesceExpression(vs);
         }
+
+        public Selection<T> alias(String arg0) {
+            // TODO Auto-generated method stub
+            return null;
+        }
+
+        public List<Selection<?>> getCompoundSelectionItems() {
+            // TODO Auto-generated method stub
+            return null;
+        }
+
+        public boolean isCompoundSelection() {
+            // TODO Auto-generated method stub
+            return false;
+        }
     }
     
     public static class Nullif<T> extends ExpressionImpl<T> {
@@ -947,6 +1308,21 @@ public class Expressions {
             Value value2 = Expressions.toValue((ExpressionImpl<?>)val2, 
                 factory, model, q); 
             return factory.nullIfExpression(value1, value2);
+        }
+
+        public Selection<T> alias(String arg0) {
+            // TODO Auto-generated method stub
+            return null;
+        }
+
+        public List<Selection<?>> getCompoundSelectionItems() {
+            // TODO Auto-generated method stub
+            return null;
+        }
+
+        public boolean isCompoundSelection() {
+            // TODO Auto-generated method stub
+            return false;
         }
     }
 
@@ -1102,6 +1478,21 @@ public class Expressions {
                     (ExpressionImpl<?>)otherwise, factory, model, q);
             return factory.generalCaseExpression(exps, other);
         }
+
+        public Selection<T> alias(String arg0) {
+            // TODO Auto-generated method stub
+            return null;
+        }
+
+        public List<Selection<?>> getCompoundSelectionItems() {
+            // TODO Auto-generated method stub
+            return null;
+        }
+
+        public boolean isCompoundSelection() {
+            // TODO Auto-generated method stub
+            return false;
+        }
     }
 
     public static class SimpleCase<C,R> extends ExpressionImpl<R> 
@@ -1177,6 +1568,21 @@ public class Expressions {
                     (ExpressionImpl<?>)otherwise, factory, model, q);
             return factory.simpleCaseExpression(caseOperandExpr, exps, other);
         }
+
+        public Selection<R> alias(String arg0) {
+            // TODO Auto-generated method stub
+            return null;
+        }
+
+        public List<Selection<?>> getCompoundSelectionItems() {
+            // TODO Auto-generated method stub
+            return null;
+        }
+
+        public boolean isCompoundSelection() {
+            // TODO Auto-generated method stub
+            return false;
+        }
     }
 
     public static class Lower extends UnaryFunctionalExpression<String> {
@@ -1189,6 +1595,21 @@ public class Expressions {
             CriteriaQueryImpl<?> q) {
             return factory.toLowerCase(
                 Expressions.toValue(e, factory, model, q));
+        }
+
+        public Selection<String> alias(String arg0) {
+            // TODO Auto-generated method stub
+            return null;
+        }
+
+        public List<Selection<?>> getCompoundSelectionItems() {
+            // TODO Auto-generated method stub
+            return null;
+        }
+
+        public boolean isCompoundSelection() {
+            // TODO Auto-generated method stub
+            return false;
         }
     }
 
@@ -1203,6 +1624,21 @@ public class Expressions {
             return factory.toUpperCase(
                 Expressions.toValue(e, factory, model, q));
         }
+
+        public Selection<String> alias(String arg0) {
+            // TODO Auto-generated method stub
+            return null;
+        }
+
+        public List<Selection<?>> getCompoundSelectionItems() {
+            // TODO Auto-generated method stub
+            return null;
+        }
+
+        public boolean isCompoundSelection() {
+            // TODO Auto-generated method stub
+            return false;
+        }
     }
 
     public static class Length extends UnaryFunctionalExpression<Integer> {
@@ -1215,6 +1651,21 @@ public class Expressions {
             CriteriaQueryImpl<?> q) {
             return factory.stringLength(
                 Expressions.toValue(e, factory, model, q));
+        }
+
+        public Selection<Integer> alias(String arg0) {
+            // TODO Auto-generated method stub
+            return null;
+        }
+
+        public List<Selection<?>> getCompoundSelectionItems() {
+            // TODO Auto-generated method stub
+            return null;
+        }
+
+        public boolean isCompoundSelection() {
+            // TODO Auto-generated method stub
+            return false;
         }
     }
      
@@ -1251,6 +1702,21 @@ public class Expressions {
         public Value toValue(ExpressionFactory factory, MetamodelImpl model,
             CriteriaQueryImpl<?> q) {
             return factory.all(Expressions.toValue(e, factory, model, q));
+        }
+
+        public Selection<X> alias(String arg0) {
+            // TODO Auto-generated method stub
+            return null;
+        }
+
+        public List<Selection<?>> getCompoundSelectionItems() {
+            // TODO Auto-generated method stub
+            return null;
+        }
+
+        public boolean isCompoundSelection() {
+            // TODO Auto-generated method stub
+            return false;
         }        
     }
 
@@ -1265,6 +1731,21 @@ public class Expressions {
         public Value toValue(ExpressionFactory factory, MetamodelImpl model,
             CriteriaQueryImpl<?> q) {
             return factory.any(Expressions.toValue(e, factory, model, q));
+        }
+
+        public Selection<X> alias(String arg0) {
+            // TODO Auto-generated method stub
+            return null;
+        }
+
+        public List<Selection<?>> getCompoundSelectionItems() {
+            // TODO Auto-generated method stub
+            return null;
+        }
+
+        public boolean isCompoundSelection() {
+            // TODO Auto-generated method stub
+            return false;
         }        
     }
 
@@ -1300,6 +1781,21 @@ public class Expressions {
             org.apache.openjpa.kernel.exps.Value e = actual.toValue(factory, model, q);
             e.setImplicitType(getJavaType());
             return e;
+        }
+
+        public Selection<Y> alias(String arg0) {
+            // TODO Auto-generated method stub
+            return null;
+        }
+
+        public List<Selection<?>> getCompoundSelectionItems() {
+            // TODO Auto-generated method stub
+            return null;
+        }
+
+        public boolean isCompoundSelection() {
+            // TODO Auto-generated method stub
+            return false;
         }        
     }
 

@@ -225,7 +225,7 @@ public class TestMetaModelTypesafeCriteria extends CriteriaTest {
         Join<Customer, Order> o = c.join(customer_.getSet("orders", Order.class));
         Join<Customer, Address> a = c.join(customer_.getSingularAttribute("address", Address.class));
         Expression<Double> taxedCost = cb.prod(o.get(order_.getSingularAttribute("totalCost", Double.class)), 1.08);
-        taxedCost.setAlias("taxedCost");
+        taxedCost.alias("taxedCost");
         q.where(cb.equal(a.get(address_.getSingularAttribute("state", String.class)), "CA"), 
                 cb.equal(a.get(address_.getSingularAttribute("county", String.class)), "Santa Clara"));
         q.multiselect(o.get(order_.getSingularAttribute("quantity", Integer.class)),
@@ -552,7 +552,7 @@ public class TestMetaModelTypesafeCriteria extends CriteriaTest {
         Join<Customer, Order> o = c.join(customer_.getSet("orders",  Order.class));
         Join<Customer, Address> a = c.join(customer_.getSingularAttribute("address", Address.class));
         Expression<Double> taxedCost = cb.prod(o.get(order_.getSingularAttribute("totalCost", Double.class)), 1.08);
-        taxedCost.setAlias("taxedCost");
+        taxedCost.alias("taxedCost");
         q.where(cb.equal(a.get(address_.getSingularAttribute("state", String.class)), "CA"), 
                 cb.equal(a.get(address_.getSingularAttribute("county", String.class)), "Santa Clara"));
         q.orderBy(cb.asc(o.get(order_.getSingularAttribute("quantity", Integer.class))),

@@ -774,7 +774,7 @@ public class TestTypesafeCriteria extends CriteriaTest {
         Join<Customer, Order> o = c.join(Customer_.orders);
         Join<Customer, Address> a = c.join(Customer_.address);
         Expression<Double> taxedCost = cb.prod(o.get(Order_.totalCost), 1.08);
-        taxedCost.setAlias("taxedCost");
+        taxedCost.alias("taxedCost");
         q.where(cb.equal(a.get(Address_.state), "CA"), 
                 cb.equal(a.get(Address_.county), "Santa Clara"));
         q.orderBy(cb.asc(o.get(Order_.quantity)), 

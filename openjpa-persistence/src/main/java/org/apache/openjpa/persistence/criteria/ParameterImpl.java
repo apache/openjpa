@@ -19,9 +19,11 @@
 package org.apache.openjpa.persistence.criteria;
 
 import java.util.Collection;
+import java.util.List;
 
 import javax.persistence.Parameter;
 import javax.persistence.criteria.ParameterExpression;
+import javax.persistence.criteria.Selection;
 
 import org.apache.openjpa.kernel.exps.ExpressionFactory;
 import org.apache.openjpa.kernel.exps.Value;
@@ -85,5 +87,20 @@ public class ParameterImpl<T> extends ExpressionImpl<T> implements ParameterExpr
         if (position == null)
             throw new IllegalStateException(this + " index is not set");
         return position-1;
+    }
+
+    public Selection<T> alias(String arg0) {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    public List<Selection<?>> getCompoundSelectionItems() {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    public boolean isCompoundSelection() {
+        // TODO Auto-generated method stub
+        return false;
     }
 }
