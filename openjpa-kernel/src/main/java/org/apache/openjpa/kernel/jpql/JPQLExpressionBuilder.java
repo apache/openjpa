@@ -418,7 +418,7 @@ public class JPQLExpressionBuilder
                 exps.ascending[i] = node.getChildCount() <= 1 ||
                     lastChild(node).id == JJTASCENDING ? true : false;
             }
-            // check if order by selec item alias
+            // check if order by select item result alias
             for (int i = 0; i < ordercount; i++) {
                 if (exps.orderingClauses[i] != null && 
                     !exps.orderingClauses[i].equals(""))
@@ -1810,8 +1810,6 @@ public class JPQLExpressionBuilder
                 path.setSubqueryContext(ctx());
             }
         
-
-
             // all traversals but the first one will always be inner joins
             allowNull = false;
         }

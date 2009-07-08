@@ -24,6 +24,8 @@ import java.util.List;
 import javax.persistence.PersistenceException;
 import javax.persistence.Query;
 
+import org.apache.openjpa.persistence.query.Customer.CreditRating;
+
 /**
  * Tests type-strict version of Criteria API.
  * 
@@ -620,10 +622,10 @@ public class TestJPQLSubquery extends CriteriaTest {
             + "WHERE m3.idPublisher.id = p.id)) ";
 
         String expectedSQL = "SELECT t0.id, t1.id, t1.date_published, t1.id_publisher, t1.name "
-            + "FROM Publisher t0 LEFT OUTER JOIN Magazine t1 ON t0.id = t1.id_publisher WHERE (t1.id = ("
-            + "SELECT MAX(t2.id) FROM Magazine t2 WHERE ("
+            + "FROM CR_PSH t0 LEFT OUTER JOIN CR_MG t1 ON t0.id = t1.id_publisher WHERE (t1.id = ("
+            + "SELECT MAX(t2.id) FROM CR_MG t2 WHERE ("
             + "t2.id_publisher = t0.id AND "
-            + "t2.id = (SELECT MAX(t3.id) FROM Magazine t3 WHERE (t3.id_publisher = t0.id) )) ))";
+            + "t2.id = (SELECT MAX(t3.id) FROM CR_MG t3 WHERE (t3.id_publisher = t0.id) )) ))";
         execute(jpql, expectedSQL);
     }
 
@@ -700,11 +702,11 @@ public class TestJPQLSubquery extends CriteriaTest {
     public void testSubquery21() {
         String jpql = "select c from Customer c where c.creditRating ="
             + " (select " + "   CASE WHEN o2.quantity > 10 THEN "
-            + "          criteria1.Customer$CreditRating.POOR "
+            + "            Customer$CreditRating.POOR "
             + "        WHEN o2.quantity = 10 THEN "
-            + "          criteria1.Customer$CreditRating.GOOD "
+            + "            Customer$CreditRating.GOOD "
             + "        ELSE "
-            + "          criteria1.Customer$CreditRating.EXCELLENT "
+            + "            Customer$CreditRating.EXCELLENT "
             + "        END " + "   from Order o2 "
             + "   where c.id = o2.customer.id)";
 
@@ -848,8 +850,8 @@ public class TestJPQLSubquery extends CriteriaTest {
             + "t1.status "
             + "FROM CR_CUST t1 LEFT OUTER JOIN CR_ADDR t3 ON t1.ADDRESS_ID = t3.id "
             + "LEFT OUTER JOIN CompUser t4 ON t3.id = t4.ADD_ID WHERE (NOT (EXISTS ("
-            + "SELECT t0.id FROM CR_ACCT t0 WHERE ((t0.CUSTOMER_ID = t1.id AND EXISTS ("
-            + "SELECT t2.id FROM CR_ODR t2 WHERE ((t2.CUSTOMER_ID = t1.id AND t2.count = ?)) ))) )))";
+            + "SELECT t0.id FROM CR_ACCT t0 WHERE (t0.CUSTOMER_ID = t1.id AND EXISTS ("
+            + "SELECT t2.id FROM CR_ODR t2 WHERE (t2.CUSTOMER_ID = t1.id AND t2.count = ?) )) )))";
         
         execute(jpql, expectedSQL);
     }
@@ -860,13 +862,37 @@ public class TestJPQLSubquery extends CriteriaTest {
             + "        a.product = o  And "
             + "        exists (select r.id from Request r where r.account = a and r.status = 1))";
 
-        String expectedSQL = "SELECT t1.pid, t1.version, t1.productType FROM CR_PRDT t1 WHERE (NOT (EXISTS ("
-            + "SELECT t0.id FROM CR_ACCT t0 WHERE ((t0.PRODUCT_PID = t1.pid AND EXISTS ("
-            + "SELECT t2.id FROM Request t2 WHERE ((t2.ACCOUNT_ID = t0.id AND t2.status = ?)) ))) )))";
+        String expectedSQL = "SELECT t1.pid, t1.version, t1.productType FROM Product t1 WHERE (NOT (EXISTS ("
+            + "SELECT t0.id FROM CR_ACCT t0 WHERE (t0.PRODUCT_PID = t1.pid AND EXISTS ("
+            + "SELECT t2.id FROM Request t2 WHERE (t2.ACCOUNT_ID = t0.id AND t2.status = ?) )) )))";
         
         execute(jpql, expectedSQL);
     }
 
+    void execute(String jpql, String expectedSQL, Object[] params) {
+        sql.clear();
+        Query jQ = em.createQuery(jpql);
+        for (int n = 0; n < params.length; n++)
+            jQ.setParameter(n+1, params[n]);
+
+        try {
+            List jList = jQ.getResultList();
+        } catch (PersistenceException e) {
+            e.printStackTrace();
+            fail("Wrong SQL for JPQL :" + jpql + "\r\nSQL  :" + sql.get(0));
+        } catch (Exception e) {
+            e.printStackTrace();
+            fail("Wrong JPQL :" + jpql);
+        }
+
+        for (int i = 0; i < sql.size(); i++) {
+            String jSQL = sql.get(i).trim();
+            System.out.println("jSQL = " + sql.get(i));
+            if (expectedSQL != null) {
+                assertEquals(expectedSQL, jSQL);
+            }
+        }
+    }
     
 
     void execute(String jpql, String expectedSQL) {

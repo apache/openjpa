@@ -166,7 +166,7 @@ public class JDBCExpressionFactory
         return new OrExpression((Exp) exp1, (Exp) exp2);
     }
 
-    public Expression not(Expression exp) {// fyw
+    public Expression not(Expression exp) {
         if (!(exp instanceof IsNotEmptyExpression) &&
             HasContainsExpressionVisitor.hasContains(exp))
             return new NotContainsExpression((Exp) exp);

@@ -119,9 +119,6 @@ public class SelectImpl
     // 'parent.address.street' for the purposes of comparisons
     private Map _aliases = null;
 
-    // to cache table alias using Table as the key
-//    private Map<Table, String> _tableAliases = null;
-
     // map of indexes to table aliases like 'TABLENAME t0'
     private SortedMap _tables = null;
 
@@ -2140,9 +2137,9 @@ public class SelectImpl
         return aliases;
     }
 
-    //public String toString() {
-    //    return toSelect(false, null).getSQL();
-    //}
+    public String toString() {
+        return toSelect(false, null).getSQL();
+    }
 
     ////////////////////////////
     // PathJoins implementation
@@ -2617,15 +2614,15 @@ public class SelectImpl
         public void nullJoins() {
         }
 
-        public String getVariable() {
-            return var;
-        }
-        
         public Joins setVariable(String var) {
             this.var = var;
             return this;
         }
 
+        public String getVariable() {
+            return var;
+        }
+        
         public Joins setCorrelatedVariable(String var) {
             this.correlatedVar = var;
             return this;

@@ -75,6 +75,11 @@ public interface Joins {
     public Joins setVariable(String var);
 
     /**
+     * Set the subquery alias.
+     */
+    public Joins setSubselect(String alias);
+
+    /**
      * Set subquery context when traversing into the next join is
      * in transition from parent context to subquery.
      * @param context
@@ -82,18 +87,19 @@ public interface Joins {
     public Joins setJoinContext(Context context);
     
     /**
-     * Set the subquery alias.
-     */
-    public Joins setSubselect(String alias);
-
-    /**
-     * Return true if the variable name being traversed into
-     * with the next join is a correlated variable.
+     * Set the correlated variable name being traversed into
+     * with the next join.
      */
     public Joins setCorrelatedVariable(String var);
-    
+
+    /**
+     * Return correlated variable name
+     * @return
+     */
     public String getCorrelatedVariable();
 
+    /**
+     * Move joins that belong to subquery's parent
+     */
     public void moveJoinsToParent();
-
 }

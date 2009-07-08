@@ -439,8 +439,7 @@ public class PCPath
         if (act != null && act.op == Action.GET_XPATH)
             return ((XMLMetaData) act.data).getType();
         
-        FieldMetaData fld = act == null ? null :
-            (FieldMetaData) act.data;
+        FieldMetaData fld = (act == null) ? null : (FieldMetaData) act.data;
         boolean key = act != null && act.op == Action.GET_KEY;
         if (fld != null) {
             switch (fld.getDeclaredTypeCode()) {
@@ -491,6 +490,7 @@ public class PCPath
                 
         while (itr != null && itr.hasNext()) {
             action = (Action) itr.next();
+
             // treat subqueries like variables for alias generation purposes
             if (action.op == Action.VAR) {
                 if (sel.getParent() != null && action.var != null &&

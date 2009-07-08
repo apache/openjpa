@@ -68,10 +68,10 @@ public class TestSubquery
         "select c.name from Customer c where exists" +
             " (select o from c.orders o where o.oid = 1) or exists" +
             " (select o from c.orders o where o.oid = 2)",
-        "select c.name from Customer c, in(c.orders) o where o.amount " +
-        "between" +
+        "select c.name as name from Customer c, in(c.orders) o where o.amount" +
+            " between " +
             " (select max(o.amount) from Order o) and" +
-            " (select avg(o.amount) from Order o) ",
+            " (select avg(o.amount) from Order o) order by name",
         "select o.oid from Order o where o.amount >" +
             " (select sum(o2.amount) from Customer c, in(c.orders) o2) ",   
         "select o.oid from Order o where o.amount between" +

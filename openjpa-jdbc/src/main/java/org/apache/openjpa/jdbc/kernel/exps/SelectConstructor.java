@@ -133,7 +133,7 @@ public class SelectConstructor
             // this is the case subselect was created before parent got created
             Select subsel = (Select) exps.ctx().getSubselContext().getSelect();
             Subquery subquery = exps.ctx().getSubselContext().getSubquery();
-            subsel.setParent(sel, subquery.getAlias());
+            subsel.setParent(sel, subquery.getCandidateAlias());
         }
      
         initialize(sel, ctx, exps, state);
