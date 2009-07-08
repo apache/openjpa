@@ -52,6 +52,8 @@ import org.apache.openjpa.persistence.test.SingleEMFTestCase;
  *   20) Test @Size constraint exception on getter in mode=AUTO
  *   22) Test @Future constraint exception on variables in mode=AUTO
  *   23) Test @Past constraint exception on getter in mode=AUTO
+ *   25) Test @Pattern constraint exception on variables in mode=AUTO
+ *   26) Test @Pattern constraint exception on getter in mode=AUTO
  *   
  *   Basic constraint test for no violations:
  *   6)  Persist @NotNull and @Null constraints pass in mode=AUTO
@@ -61,6 +63,7 @@ import org.apache.openjpa.persistence.test.SingleEMFTestCase;
  *   18) Test @Digits constraints pass in mode=AUTO
  *   21) Test @Size constraints pass in mode=AUTO
  *   24) Test @Past and @Future constraints pass in mode=AUTO
+ *   27) Test @Pattern constraints pass in mode=AUTO
  *
  * @version $Rev$ $Date$
  */
@@ -72,7 +75,7 @@ public class TestConstraints extends SingleEMFTestCase {
             ConstraintNull.class, ConstraintBoolean.class,
             ConstraintDecimal.class, ConstraintNumber.class,
             ConstraintDigits.class, ConstraintSize.class,
-            ConstraintDates.class);
+            ConstraintDates.class, ConstraintPattern.class);
     }
 
     /**
@@ -991,6 +994,113 @@ public class TestConstraints extends SingleEMFTestCase {
         } catch (Exception e) {
             // unexpected
             getLog().trace("testDatesConstraint() failed");
+            fail("Caught unexpected exception = " + e);
+        } finally {
+            if ((em != null) && em.isOpen()) {
+                if (em.getTransaction().isActive())
+                    em.getTransaction().rollback();
+                em.close();
+            }
+        }
+    }
+
+    /**
+     * Scenario being tested:
+     *   25) Test @Pattern constraint exception on variables in mode=AUTO
+     *       Basic constraint test for a violation exception.
+     */
+    public void testPatternAlphaConstraint() {
+        getLog().trace("testPatternAlphaConstraint() started");
+        // create EM from default EMF
+        OpenJPAEntityManager em = emf.createEntityManager();
+        assertNotNull(em);
+        try {
+            // verify Validation Mode
+            OpenJPAConfiguration conf = em.getConfiguration();
+            assertNotNull(conf);
+            assertTrue("ValidationMode",
+                conf.getValidationMode().equalsIgnoreCase("AUTO"));
+            // create invalid ConstraintBoolean instance
+            em.getTransaction().begin();
+            ConstraintPattern c = ConstraintPattern.createInvalidString();
+            em.persist(c);
+            em.getTransaction().commit();
+            getLog().trace("testPatternAlphaConstraint() failed");
+            fail("Expected a ConstraintViolationException");
+        } catch (ConstraintViolationException e) {
+            // expected
+            getLog().trace("Caught expected ConstraintViolationException = " + e);
+            getLog().trace("testPatternAlphaConstraint() passed");
+        } finally {
+            if ((em != null) && em.isOpen()) {
+                if (em.getTransaction().isActive())
+                    em.getTransaction().rollback();
+                em.close();
+            }
+        }
+    }
+
+    /**
+     * Scenario being tested:
+     *   26) Test @Pattern constraint exception on getter in mode=AUTO
+     *       Basic constraint test for a violation exception.
+     */
+    public void testPatternNumericConstraint() {
+        getLog().trace("testPatternNumericConstraint() started");
+        // create EM from default EMF
+        OpenJPAEntityManager em = emf.createEntityManager();
+        assertNotNull(em);
+        try {
+            // verify Validation Mode
+            OpenJPAConfiguration conf = em.getConfiguration();
+            assertNotNull(conf);
+            assertTrue("ValidationMode",
+                conf.getValidationMode().equalsIgnoreCase("AUTO"));
+            // create invalid ConstraintBoolean instance
+            em.getTransaction().begin();
+            ConstraintPattern c = ConstraintPattern.createInvalidZipcode();
+            em.persist(c);
+            em.getTransaction().commit();
+            getLog().trace("testPatternNumericConstraint() failed");
+            fail("Expected a ConstraintViolationException");
+        } catch (ConstraintViolationException e) {
+            // expected
+            getLog().trace("Caught expected ConstraintViolationException = " + e);
+            getLog().trace("testPatternNumericConstraint() passed");
+        } finally {
+            if ((em != null) && em.isOpen()) {
+                if (em.getTransaction().isActive())
+                    em.getTransaction().rollback();
+                em.close();
+            }
+        }
+    }
+
+    /**
+     * Scenario being tested:
+     *   27) Test @Pattern constraints pass in mode=AUTO
+     *       Basic constraint test for no violations.
+     */
+    public void testPatternConstraint() {
+        getLog().trace("testPatternConstraint() started");
+        // create EM from default EMF
+        OpenJPAEntityManager em = emf.createEntityManager();
+        assertNotNull(em);
+        try {
+            // verify Validation Mode
+            OpenJPAConfiguration conf = em.getConfiguration();
+            assertNotNull(conf);
+            assertTrue("ValidationMode",
+                conf.getValidationMode().equalsIgnoreCase("AUTO"));
+            // create valid ConstraintBoolean instance
+            em.getTransaction().begin();
+            ConstraintPattern c = ConstraintPattern.createValid();
+            em.persist(c);
+            em.getTransaction().commit();
+            getLog().trace("testPatternConstraint() passed");
+        } catch (Exception e) {
+            // unexpected
+            getLog().trace("testPatternConstraint() failed");
             fail("Caught unexpected exception = " + e);
         } finally {
             if ((em != null) && em.isOpen()) {
