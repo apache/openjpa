@@ -2011,10 +2011,10 @@ public class SelectImpl
 
         // not found; create alias
         i = Numbers.valueOf(aliasSize(null));
-        System.out.println("GetTableIndex\t"+
-                ((_parent != null) ? "Sub" :"") +
-                " created alias: "+
-                i.intValue()+ " "+ key);
+//        System.out.println("GetTableIndex\t"+
+//                ((_parent != null) ? "Sub" :"") +
+//                " created alias: "+
+//                i.intValue()+ " "+ key);
         recordTableAlias(table, key, i);
         return i.intValue();
     }
@@ -2073,10 +2073,10 @@ public class SelectImpl
 
     private int createAlias(Table table, Object key) {
         Integer i = Numbers.valueOf(ctx().nextAlias());
-        System.out.println("\t"+
-                ((_parent != null) ? "Sub" :"") +
-                "Query created alias: "+ 
-                i.intValue()+ " "+ key);
+//        System.out.println("\t"+
+//                ((_parent != null) ? "Sub" :"") +
+//                "Query created alias: "+ 
+//                i.intValue()+ " "+ key);
         recordTableAlias(table, key, i);
         return i.intValue();
     }
@@ -2917,8 +2917,8 @@ public class SelectImpl
         }
 
         public void moveJoinsToParent() {
-            if (_joins == null)   // add this line
-                return;           // add this line
+            if (_joins == null)
+                return;
            if (_sel._parent._joins == null) 
                _sel._parent._joins = new SelectJoins(_sel._parent);
            SelectJoins p = _sel._parent._joins;

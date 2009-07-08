@@ -496,7 +496,7 @@ public class PCPath
                 if (sel.getParent() != null && action.var != null &&
                     prevaction != null && prevaction.data != null &&
                     sel.ctx().getVariable(action.var) == null) {
-                    System.out.println("action var="+action.var);
+                    //System.out.println("Correlated action var="+action.var);
                     isCorrelatedPath = true;
                     pstate.joins = pstate.joins.setCorrelatedVariable(action.var);
                 } else 
@@ -515,11 +515,10 @@ public class PCPath
                 	    
                 if (sel.getParent() != null && action.var != null &&
                     sel.ctx().getVariable(action.var) == null) {
-                    System.out.println("action var="+action.var);
+                    //System.out.println("Correlated action var="+action.var);
                     isCorrelatedPath = true;
                     pstate.joins = pstate.joins.setCorrelatedVariable(var.getName());
-                } else 
-                
+                } else                 
                     pstate.joins = pstate.joins.setVariable(var.getName());
 
                 pstate.joins = pstate.joins.crossJoin(_candidate.getTable(),
