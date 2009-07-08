@@ -39,8 +39,6 @@ public class PessimisticLockException
     extends javax.persistence.PessimisticLockException
     implements Serializable, ExceptionInfo {
 
-    private static final long serialVersionUID = -7241629816016553676L;
-    
     private transient boolean _fatal = false;
     private transient Object _failed = null;
     private transient Throwable[] _nested = null;

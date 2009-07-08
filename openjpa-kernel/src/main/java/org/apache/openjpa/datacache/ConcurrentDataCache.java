@@ -35,8 +35,6 @@ public class ConcurrentDataCache
     extends AbstractDataCache
     implements RemoteCommitListener {
 
-    private static final long serialVersionUID = 7331996968322793473L;
-
     private static final Localizer _loc = Localizer.forPackage
         (ConcurrentDataCache.class);
 

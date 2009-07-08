@@ -39,8 +39,6 @@ public class QueryTimeoutException
     extends javax.persistence.QueryTimeoutException
     implements Serializable, ExceptionInfo {
 
-    private static final long serialVersionUID = -2154020315916482766L;
-    
     private transient boolean _fatal = false;
     private transient Object _failed = null;
     private transient Throwable[] _nested = null;

@@ -39,8 +39,6 @@ public class LockTimeoutException
     extends javax.persistence.LockTimeoutException
     implements Serializable, ExceptionInfo {
 
-    private static final long serialVersionUID = -3221030392419625394L;
-    
     private transient boolean _fatal = false;
     private transient Object _failed = null;
     private transient Throwable[] _nested = null;
