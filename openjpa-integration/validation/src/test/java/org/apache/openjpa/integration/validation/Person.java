@@ -30,10 +30,11 @@ import javax.persistence.OneToOne;
 import javax.persistence.Transient;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Pattern;
 
 @Entity(name="VPerson")
 @Inheritance(strategy=InheritanceType.SINGLE_TABLE)
-public abstract class Person implements IPerson, Serializable {
+public class Person implements IPerson, Serializable {
     @Transient
     private static final long serialVersionUID = 1L;
 
@@ -42,18 +43,21 @@ public abstract class Person implements IPerson, Serializable {
     private long id;
 
     @Basic
-    @NotNull
-    private String firstName;
+    @Pattern(regexp = "^[A-Z0-9-]+$", flags = Pattern.Flag.CASE_INSENSITIVE,
+        message = "can only contain alphanumeric characters")
+    private String firstName;   // @NotNull is on IPerson getter
 
     @Basic
-    @NotNull
-    private String lastName;
+    @Pattern(regexp = "^[A-Z0-9-]+$", flags = Pattern.Flag.CASE_INSENSITIVE,
+        message = "can only contain alphanumeric characters")
+    private String lastName;    // @NotNull is on IPerson getter
 
     @OneToOne
-    @Valid
     @NotNull
+    @Valid
     private Address homeAddress;
 
+    
     public void setFirstName(String firstName) {
         this.firstName = firstName;
     }

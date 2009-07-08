@@ -13,8 +13,11 @@
  */
 package org.apache.openjpa.integration.validation;
 
+import java.util.Set;
+
 import javax.persistence.Query;
 import javax.persistence.ValidationMode;
+import javax.validation.ConstraintViolation;
 import javax.validation.ConstraintViolationException;
 
 import org.apache.openjpa.conf.OpenJPAConfiguration;
@@ -54,6 +57,7 @@ import org.apache.openjpa.persistence.test.SingleEMFTestCase;
  *   23) Test @Past constraint exception on getter in mode=AUTO
  *   25) Test @Pattern constraint exception on variables in mode=AUTO
  *   26) Test @Pattern constraint exception on getter in mode=AUTO
+ *   28) Test @Valid constraint exceptions in mode=AUTO
  *   
  *   Basic constraint test for no violations:
  *   6)  Persist @NotNull and @Null constraints pass in mode=AUTO
@@ -64,6 +68,7 @@ import org.apache.openjpa.persistence.test.SingleEMFTestCase;
  *   21) Test @Size constraints pass in mode=AUTO
  *   24) Test @Past and @Future constraints pass in mode=AUTO
  *   27) Test @Pattern constraints pass in mode=AUTO
+ *   29) Test @Valid constraints pass in mode=AUTO
  *
  * @version $Rev$ $Date$
  */
@@ -75,7 +80,8 @@ public class TestConstraints extends SingleEMFTestCase {
             ConstraintNull.class, ConstraintBoolean.class,
             ConstraintDecimal.class, ConstraintNumber.class,
             ConstraintDigits.class, ConstraintSize.class,
-            ConstraintDates.class, ConstraintPattern.class);
+            ConstraintDates.class, ConstraintPattern.class,
+            Person.class, Address.class);
     }
 
     /**
@@ -1101,6 +1107,146 @@ public class TestConstraints extends SingleEMFTestCase {
         } catch (Exception e) {
             // unexpected
             getLog().trace("testPatternConstraint() failed");
+            fail("Caught unexpected exception = " + e);
+        } finally {
+            if ((em != null) && em.isOpen()) {
+                if (em.getTransaction().isActive())
+                    em.getTransaction().rollback();
+                em.close();
+            }
+        }
+    }
+
+    /**
+     * Scenario being tested:
+     *   28) Test @Valid constraint exceptions in mode=AUTO
+     *       Basic constraint test for violation exceptions.
+     */
+    public void testValidFailuresConstraint() {
+        Address a = new Address();
+        getLog().trace("testValidFailuresConstraint() started");
+        
+        // Part 1 - Create an invalid Address entity
+        try {
+            OpenJPAEntityManagerFactorySPI emf = (OpenJPAEntityManagerFactorySPI)
+            OpenJPAPersistence.createEntityManagerFactory(
+                    "address-none-mode",
+                    "org/apache/openjpa/integration/validation/persistence.xml");
+            assertNotNull(emf);
+            // create EM
+            OpenJPAEntityManager em = emf.createEntityManager();
+            assertNotNull(em);
+            try{
+                // verify Validation Mode
+                OpenJPAConfiguration conf = em.getConfiguration();
+                assertNotNull(conf);
+                assertTrue("ValidationMode",
+                    conf.getValidationMode().equalsIgnoreCase("NONE"));
+                // provide an invalid Address (every value is invalid)
+                em.getTransaction().begin();
+                a.setStreetAddress(null);
+                a.setCity("a1!b2@c3#");
+                a.setState("00");
+                a.setPostalCode("a1b2c3");
+                // persist, which should NOT cause a CVE
+                em.persist(a);
+                em.getTransaction().commit();
+                getLog().trace("testValidFailuresConstraint() Part 1 of 2 passed");
+            } catch (Exception e) {
+                // unexpected
+                getLog().trace("testValidFailuresConstraint() Part 1 of 2 failed");
+                fail("Caught unexpected exception = " + e);
+            } finally {
+                if (em.getTransaction().isActive()) {
+                    em.getTransaction().rollback();
+                }
+                cleanup(emf);
+                em = null;
+            }
+        } catch (Exception e) {
+            // unexpected
+            getLog().trace("testValidFailuresConstraint() Part 1 of 2 failed");
+            fail("Caught unexpected exception = " + e);
+        }
+
+        // Part 2 - Create a Person entity that uses the invalid address above
+        OpenJPAEntityManager em = emf.createEntityManager();
+        assertNotNull(em);
+        try {
+            // verify Validation Mode
+            OpenJPAConfiguration conf = em.getConfiguration();
+            assertNotNull(conf);
+            assertTrue("ValidationMode",
+                conf.getValidationMode().equalsIgnoreCase("AUTO"));
+            // create invalid Person instance
+            em.getTransaction().begin();
+            // create a valid Person, minus the address
+            Person p = new Person();
+            p.setFirstName("Java");
+            p.setLastName("Joe");
+            // use invalid Address, which should cause CVEs due to @Valid
+            assertNotNull(a);
+            p.setHomeAddress(a);
+            // persist, which should cause a CVE
+            em.persist(p);
+            em.getTransaction().commit();
+            getLog().trace("testValidFailuresConstraint() Part 2 of 2 failed");
+            fail("Expected a ConstraintViolationException");
+        } catch (ConstraintViolationException e) {
+            // expected
+            getLog().trace("Caught expected ConstraintViolationException = " + e);
+            Set<ConstraintViolation<?>> cves = e.getConstraintViolations();
+            assertNotNull(cves);
+            for (ConstraintViolation<?> cv: cves) {
+                getLog().trace("CVE Contains ConstraintViolation = " + cv);
+            }
+            assertEquals("Wrong number of embedded ConstraintViolation failures",
+                5, cves.size());
+            getLog().trace("testValidFailuresConstraint() Part 2 of 2 passed");
+        } finally {
+            if ((em != null) && em.isOpen()) {
+                if (em.getTransaction().isActive())
+                    em.getTransaction().rollback();
+                em.close();
+            }
+        }            
+    }
+    
+    /**
+     * Scenario being tested:
+     *   29) Test @Pattern constraints pass in mode=AUTO
+     *       Basic constraint test for no violations.
+     */
+    public void testValidPassConstraint() {
+        getLog().trace("testValidPassConstraint() started");
+        // create EM from default EMF
+        OpenJPAEntityManager em = emf.createEntityManager();
+        assertNotNull(em);
+        try {
+            // provide a valid Address
+            em.getTransaction().begin();
+            Address a = new Address();
+            a.setStreetAddress("4205 South Miami Blvd.");
+            a.setCity("R.T.P.");
+            a.setState("NC");
+            a.setPostalCode("27709");
+            // persist, which should NOT cause a CVE
+            em.persist(a);
+            em.getTransaction().commit();
+
+            // create a valid Person
+            em.getTransaction().begin();
+            Person p = new Person();
+            p.setFirstName("Java");
+            p.setLastName("Joe");
+            p.setHomeAddress(a);
+            // persist, which should NOT cause a CVE
+            em.persist(p);
+            em.getTransaction().commit();
+            getLog().trace("testValidPassConstraint() passed");
+        } catch (Exception e) {
+            // unexpected
+            getLog().trace("testValidPassConstraint() failed");
             fail("Caught unexpected exception = " + e);
         } finally {
             if ((em != null) && em.isOpen()) {

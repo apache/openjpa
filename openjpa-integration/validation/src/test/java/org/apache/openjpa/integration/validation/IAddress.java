@@ -18,20 +18,26 @@
  */
 package org.apache.openjpa.integration.validation;
 
+import javax.validation.constraints.NotNull;
+
 public interface IAddress {
 
-    public void setStreetAddress(String streetAddress);
+    @NotNull
     public String getStreetAddress();
+    public void setStreetAddress(String streetAddress);
 
-    public void setCity(String city);
+    @NotNull
     public String getCity();
+    public void setCity(String city);
 
-    public void setState(String state);
+    @NotNull
     public String getState();
+    public void setState(String state);
 
-    public void setPostalCode(String postalCode);
+    @NotNull
     public String getPostalCode();
+    public void setPostalCode(String postalCode);
 
-    public void setPhoneNumber(String phoneNumber);
     public String getPhoneNumber();
+    public void setPhoneNumber(String phoneNumber);
 }

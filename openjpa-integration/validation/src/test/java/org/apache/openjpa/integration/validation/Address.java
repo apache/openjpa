@@ -27,7 +27,8 @@ import javax.persistence.Id;
 import javax.persistence.Inheritance;
 import javax.persistence.InheritanceType;
 import javax.persistence.Transient;
-import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Pattern;
+import javax.validation.constraints.Size;
 
 @Entity(name="VAddress")
 @Inheritance(strategy=InheritanceType.SINGLE_TABLE)
@@ -40,24 +41,31 @@ public class Address implements IAddress, Serializable {
     private long id;
 
     @Basic
-    @NotNull
-    private String streetAddress;
+    @Pattern(regexp = "^.*$", flags = Pattern.Flag.CASE_INSENSITIVE,
+        message = "can contain any character")
+    private String streetAddress;   // @NotNull is on IAddress getter
 
     @Basic
-    @NotNull
-    private String city;
+    @Pattern(regexp = "^[A-Z .-]*$", flags = Pattern.Flag.CASE_INSENSITIVE,
+        message = "can only contain alpha, '.', '-' and ' ' characters")
+    private String city;            // @NotNull is on IAddress getter
 
     @Basic
-    @NotNull
-    private String state;
+    @Size(min = 2, max = 2)
+    @Pattern(regexp = "^[A-Z]+$", flags = Pattern.Flag.CASE_INSENSITIVE,
+        message = "can only contain alpha characters")
+    private String state;           // @NotNull is on IAddress getter
 
     @Basic
-    @NotNull
-    private String postalCode;
+    @Size(min = 5, max = 5)
+    @Pattern(regexp = "^[0-9]+$", flags = Pattern.Flag.CASE_INSENSITIVE,
+        message = "can only contain numeric characters")
+    private String postalCode;      // @NotNull is on IAddress getter
 
     @Basic
     private String phoneNumber;
 
+    
     public void setStreetAddress(String streetAddress) {
         this.streetAddress = streetAddress;
     }
@@ -65,7 +73,6 @@ public class Address implements IAddress, Serializable {
     public String getStreetAddress() {
         return this.streetAddress;
     }
-
 
     public void setCity(String city) {
         this.city = city;
@@ -75,7 +82,6 @@ public class Address implements IAddress, Serializable {
         return this.city;
     }
 
-
     public void setState(String state) {
         this.state = state;
     }
@@ -83,7 +89,6 @@ public class Address implements IAddress, Serializable {
     public String getState() {
         return this.state;
     }
-
 
     public void setPostalCode(String postalCode) {
         this.postalCode = postalCode;
@@ -93,7 +98,6 @@ public class Address implements IAddress, Serializable {
         return this.postalCode;
     }
 
-
     public void setPhoneNumber(String phoneNumber) {
         this.phoneNumber = phoneNumber;
     }
@@ -101,7 +105,6 @@ public class Address implements IAddress, Serializable {
     public String getPhoneNumber() {
         return this.phoneNumber;
     }
-
 
     public void setId(long id) {
         this.id = id;

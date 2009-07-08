@@ -18,14 +18,19 @@
  */
 package org.apache.openjpa.integration.validation;
 
+import javax.validation.constraints.NotNull;
+
 public interface IPerson {
 
-    public void setFirstName(String firstName);
+    @NotNull
     public String getFirstName();
+    public void setFirstName(String firstName);
 
-    public void setLastName(String lastName);
+    @NotNull
     public String getLastName();
+    public void setLastName(String lastName);
 
-    public void setHomeAddress(IAddress homeAddress);
+    @NotNull
     public IAddress getHomeAddress();
+    public void setHomeAddress(IAddress homeAddress);
 }

@@ -70,6 +70,16 @@
         <validation-mode>CALLBACK</validation-mode>
     </persistence-unit>
 
+    <persistence-unit name="address-none-mode">
+        <class>org.apache.openjpa.integration.validation.Address</class>
+        <validation-mode>NONE</validation-mode>
+    </persistence-unit>
+
+    <persistence-unit name="person-none-mode">
+        <class>org.apache.openjpa.integration.validation.Person</class>
+        <validation-mode>NONE</validation-mode>
+    </persistence-unit>
+
     <persistence-unit name="default-validation-group">
         <class>org.apache.openjpa.integration.validation.DefGrpEntity</class>
         <validation-mode>CALLBACK</validation-mode>
