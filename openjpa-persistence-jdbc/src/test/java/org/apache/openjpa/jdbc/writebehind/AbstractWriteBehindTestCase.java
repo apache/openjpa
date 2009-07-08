@@ -107,7 +107,7 @@ public abstract class AbstractWriteBehindTestCase extends SingleEMTestCase {
     }
     
     public void tearDown() throws Exception { 
-        // intentionall skip super.tearDown()
+        // intentionally skip super.tearDown()
     }
 
 }
