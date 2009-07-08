@@ -21,6 +21,7 @@ import org.apache.openjpa.conf.OpenJPAConfiguration;
 import org.apache.openjpa.lib.log.Log;
 import org.apache.openjpa.persistence.OpenJPAEntityManager;
 import org.apache.openjpa.persistence.OpenJPAEntityManagerFactory;
+import org.apache.openjpa.persistence.OpenJPAEntityManagerFactorySPI;
 import org.apache.openjpa.persistence.OpenJPAPersistence;
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
 
@@ -142,8 +143,8 @@ public class TestConstraints extends SingleEMFTestCase {
         
         // Part 1 - Create an invalid entity
         // create our EMF w/ props
-        OpenJPAEntityManagerFactory emf = OpenJPAPersistence
-            .createEntityManagerFactory(
+        OpenJPAEntityManagerFactorySPI emf = (OpenJPAEntityManagerFactorySPI)
+        OpenJPAPersistence.createEntityManagerFactory(
                 "null-none-mode",
                 "org/apache/openjpa/integration/validation/persistence.xml");
         assertNotNull(emf);
@@ -167,19 +168,16 @@ public class TestConstraints extends SingleEMFTestCase {
             getLog().trace("testNullDeleteIgnored() Part 1 of 2 failed");
             fail("Caught unexpected exception = " + e);
         } finally {
-            if ((em != null) && em.isOpen()) {
-                if (em.getTransaction().isActive())
-                    em.getTransaction().rollback();
-                em.close();
+            if (em.getTransaction().isActive()) {
+                em.getTransaction().rollback();
             }
-            if ((emf != null) && emf.isOpen()) {
-                emf.close();
-            }
+            cleanup(emf);
         }
 
         // Part 2 - Verify delete using default group does not cause Validation
         // create our EMF w/ validation mode=CALLBACK
-        emf = OpenJPAPersistence.createEntityManagerFactory(
+        emf = (OpenJPAEntityManagerFactorySPI)OpenJPAPersistence
+            .createEntityManagerFactory(
                 "null-callback-mode",
                 "org/apache/openjpa/integration/validation/persistence.xml");
         assertNotNull(emf);
@@ -203,14 +201,10 @@ public class TestConstraints extends SingleEMFTestCase {
             getLog().trace("testNullDeleteIgnored() Part 2 of 2 failed");
             fail("Caught unexpected exception = " + e);
         } finally {
-            if ((em != null) && em.isOpen()) {
-                if (em.getTransaction().isActive())
-                    em.getTransaction().rollback();
-                em.close();
+            if (em.getTransaction().isActive()) {
+                em.getTransaction().rollback();
             }
-            if ((emf != null) && emf.isOpen()) {
-                emf.close();
-            }
+            cleanup(emf);
         }
     }
     
@@ -222,8 +216,8 @@ public class TestConstraints extends SingleEMFTestCase {
     public void testNullConstraintIgnored() {
         getLog().trace("testNullConstraintIgnored() started");
         // create our EMF w/ props
-        OpenJPAEntityManagerFactory emf = OpenJPAPersistence
-            .createEntityManagerFactory(
+        OpenJPAEntityManagerFactorySPI emf = (OpenJPAEntityManagerFactorySPI)
+            OpenJPAPersistence.createEntityManagerFactory(
                 "null-none-mode",
                 "org/apache/openjpa/integration/validation/persistence.xml");
         assertNotNull(emf);
@@ -247,14 +241,10 @@ public class TestConstraints extends SingleEMFTestCase {
             getLog().trace("testNullConstraintIgnored() failed");
             fail("Caught unexpected exception = " + e);
         } finally {
-            if ((em != null) && em.isOpen()) {
-                if (em.getTransaction().isActive())
-                    em.getTransaction().rollback();
-                em.close();
+            if (em.getTransaction().isActive()) {
+                em.getTransaction().rollback();
             }
-            if ((emf != null) && emf.isOpen()) {
-                emf.close();
-            }
+            cleanup(emf);
         }
     }
 
@@ -900,6 +890,14 @@ public class TestConstraints extends SingleEMFTestCase {
         }
     }
 
+    /**
+     * Helper method to remove entities and close the emf an any open em's.
+     * @param emf
+     */
+    private void cleanup(OpenJPAEntityManagerFactorySPI emf) {
+        clear(emf);
+        closeEMF(emf);
+    }
         
     /**
      * Internal convenience method for getting the OpenJPA logger
