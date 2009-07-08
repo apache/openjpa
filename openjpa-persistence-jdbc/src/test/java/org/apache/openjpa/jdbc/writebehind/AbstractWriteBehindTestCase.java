@@ -36,7 +36,7 @@ public abstract class AbstractWriteBehindTestCase extends SingleEMTestCase {
             "openjpa.DataCache", "true",
             "openjpa.RemoteCommitProvider", "sjvm", 
             "openjpa.WriteBehindCache", "true",
-            "openjpa.WriteBehindCallback", "true", 
+            "openjpa.WriteBehindCallback", "true(sleepTime=15000)", 
             "openjpa.RuntimeUnenhancedClasses", "unsupported",
             SimpleNonGeneratedIdEntity.class, SimpleTableGeneratedIdEntity.class,
             AbstractSimpleEntity.class};
@@ -107,8 +107,7 @@ public abstract class AbstractWriteBehindTestCase extends SingleEMTestCase {
     }
     
     public void tearDown() throws Exception { 
-//        _validatorEMF.close();
-//        super.tearDown();
+        // intentionall skip super.tearDown()
     }
 
 }

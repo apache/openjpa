@@ -53,7 +53,8 @@ public class SimpleWriteBehindCallback extends AbstractWriteBehindCallback {
             storeManager.begin();
             errors = storeManager.flush(sms);
             if(errors != null && !errors.isEmpty() ) {
-                for(Exception e : errors) { 
+                for(Exception e : errors) {
+                    // TODO add error handling.
                     e.printStackTrace();
                 }
             }
@@ -69,8 +70,7 @@ public class SimpleWriteBehindCallback extends AbstractWriteBehindCallback {
                 Thread.sleep(_sleepTime);
                 handleExceptions(flush());
             } catch (InterruptedException e) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
+                // ignore
             }
         }
     }
@@ -79,7 +79,6 @@ public class SimpleWriteBehindCallback extends AbstractWriteBehindCallback {
         if (exceptions != null && !exceptions.isEmpty()) {
             done = true;
             for (Exception e : exceptions) {
-                System.out.println(e.getMessage());
                 e.printStackTrace();
             }
         }
@@ -89,5 +88,13 @@ public class SimpleWriteBehindCallback extends AbstractWriteBehindCallback {
         done = true;
         flush();
         _broker.close();
+    }
+    
+    public int getSleepTime() { 
+        return _sleepTime;
+    }
+    
+    public void setSleepTime(int sleepTime) { 
+        _sleepTime = sleepTime;
     }
 }
