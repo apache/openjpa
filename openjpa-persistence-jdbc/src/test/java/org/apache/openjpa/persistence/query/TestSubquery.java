@@ -24,6 +24,7 @@ import java.util.List;
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
 
+import org.apache.openjpa.persistence.query.Customer.CreditRating;
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
 
 /**
@@ -204,6 +205,18 @@ public class TestSubquery
         q.setParameter("minDate", new Date(100));
         q.setParameter("maxDate", new Date(100000));
         q.getResultList();
+        em.close();
+    }
+
+    public void testUpdateWithCorrelatedSubquery() {
+        String update = "update Customer c set c.creditRating = ?1 where EXISTS" +
+           " (select o from  in(c.orders)  o)";
+        EntityManager em = emf.createEntityManager();
+        em.getTransaction().begin();
+        CreditRating creditRating = CreditRating.GOOD;
+        int updateCount = em.createQuery(update).
+            setParameter(1, creditRating).executeUpdate();
+        em.getTransaction().rollback();
         em.close();
     }
 }
