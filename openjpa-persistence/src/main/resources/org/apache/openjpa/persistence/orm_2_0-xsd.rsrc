@@ -1,12 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
     <!-- Java Persistence API object/relational mapping file schema -->
 <xsd:schema targetNamespace="http://java.sun.com/xml/ns/persistence/orm"
-    xmlns:orm="http://java.sun.com/xml/ns/persistence/orm" xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+    xmlns:orm="http://java.sun.com/xml/ns/persistence/orm" 
+    xmlns:xsd="http://www.w3.org/2001/XMLSchema"
     elementFormDefault="qualified" attributeFormDefault="unqualified"
     version="2.0">
     <xsd:annotation>
         <xsd:documentation>
-            @(#)orm_2_0.xsd 2.0 August 27 2008
+            @(#)orm_2_0.xsd 2.0 May 27 2009
         </xsd:documentation>
     </xsd:annotation>
     <xsd:annotation>
@@ -523,7 +524,8 @@ version="2.0">
                         <xsd:element name="map-key-enumerated"
                             type="orm:enumerated" minOccurs="0" />
                         <xsd:element name="map-key-attribute-override"
-                            type="orm:attribute-override" minOccurs="0" />
+                            type="orm:attribute-override" minOccurs="0"
+                            maxOccurs="unbounded" />
                     </xsd:choice>
                     <xsd:choice>
                         <xsd:element name="map-key-column"
@@ -962,7 +964,8 @@ version="2.0">
                         <xsd:element name="map-key-enumerated"
                             type="orm:enumerated" minOccurs="0" />
                         <xsd:element name="map-key-attribute-override"
-                            type="orm:attribute-override" minOccurs="0" />
+                            type="orm:attribute-override" minOccurs="0"
+                            maxOccurs="unbounded" />
                     </xsd:choice>
                     <xsd:choice>
                         <xsd:element name="map-key-column"
@@ -1222,7 +1225,8 @@ version="2.0">
                         <xsd:element name="map-key-enumerated"
                             type="orm:enumerated" minOccurs="0" />
                         <xsd:element name="map-key-attribute-override"
-                            type="orm:attribute-override" minOccurs="0" />
+                            type="orm:attribute-override" minOccurs="0"
+                            maxOccurs="unbounded" />
                     </xsd:choice>
                     <xsd:choice>
                         <xsd:element name="map-key-column"
@@ -1295,7 +1299,7 @@ version="2.0">
                 public @interface OrderBy {
                 String value() default "";
                 }
-</xsd:documentation>
+            </xsd:documentation>
         </xsd:annotation>
         <xsd:restriction base="xsd:string" />
     </xsd:simpleType>
@@ -1310,7 +1314,6 @@ version="2.0">
                 boolean insertable() default true;
                 boolean updatable() default true;
                 String columnDefinition() default "";
-                String table() default "";
                 }
             </xsd:documentation>
         </xsd:annotation>
@@ -1319,7 +1322,6 @@ version="2.0">
         <xsd:attribute name="insertable" type="xsd:boolean" />
         <xsd:attribute name="updatable" type="xsd:boolean" />
         <xsd:attribute name="column-definition" type="xsd:string" />
-        <xsd:attribute name="table" type="xsd:string" />
     </xsd:complexType>
     <!-- **************************************************** -->
     <xsd:complexType name="post-load">

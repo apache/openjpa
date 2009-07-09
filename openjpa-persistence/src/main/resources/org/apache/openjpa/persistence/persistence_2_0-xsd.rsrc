@@ -7,8 +7,8 @@
     version="2.0">
     <xsd:annotation>
         <xsd:documentation>
-            @(#)persistence_2_0.xsd 1.0 August 27 2008
-</xsd:documentation>
+            @(#)persistence_2_0.xsd 1.0 May 8 2009
+        </xsd:documentation>
     </xsd:annotation>
     <xsd:annotation>
         <xsd:documentation><![CDATA[
@@ -131,7 +131,7 @@ version="2.0">
                                 </xsd:annotation>
                             </xsd:element>
                             <!-- **************************************************** -->
-                            <xsd:element name="caching"
+                            <xsd:element name="shared-cache-mode"
                                 type="persistence:persistence-unit-caching-type"
                                 minOccurs="0">
                                 <xsd:annotation>
@@ -143,7 +143,8 @@ version="2.0">
                                         be cached. When set to ENABLE_SELECTIVE, only entities
                                         specified as cacheable will be cached. When set to
                                         DISABLE_SELECTIVE, entities specified as not cacheable
-                                        will not be cached.
+                                        will not be cached. When not specified or when set to
+                                        UNSPECIFIED, provider defaults may apply.
                                     </xsd:documentation>
                                 </xsd:annotation>
                             </xsd:element>
@@ -231,7 +232,7 @@ version="2.0">
         <xsd:annotation>
             <xsd:documentation>
                 public enum CachingType { ALL, NONE, ENABLE_SELECTIVE,
-                DISABLE_SELECTIVE};
+                DISABLE_SELECTIVE, UNSPECIFIED};
             </xsd:documentation>
         </xsd:annotation>
         <xsd:restriction base="xsd:token">
@@ -239,6 +240,7 @@ version="2.0">
             <xsd:enumeration value="NONE" />
             <xsd:enumeration value="ENABLE_SELECTIVE" />
             <xsd:enumeration value="DISABLE_SELECTIVE" />
+            <xsd:enumeration value="UNSPECIFIED" />
         </xsd:restriction>
     </xsd:simpleType>
     <!-- **************************************************** -->
