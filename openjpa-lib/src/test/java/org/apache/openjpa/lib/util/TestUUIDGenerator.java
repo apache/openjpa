@@ -18,6 +18,10 @@
  */
 package org.apache.openjpa.lib.util;
 
+import java.lang.reflect.Field;
+import java.security.AccessController;
+import java.security.PrivilegedAction;
+import java.security.PrivilegedExceptionAction;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -76,4 +80,35 @@ public class TestUUIDGenerator extends TestCase {
             time = newTime;
         }
     }
+    
+    public void testInitType1MultiThreaded() throws Exception {
+        // This test method depends IP and RANDOM in UUIDGenerator to be null
+        // and type1Initialized to be false. Using reflection to ensure that
+        // those fields are null. Wrap this  method in doPrivledgedAction so it
+        // doesn't fail when running with security.
+        AccessController.doPrivileged(new PrivilegedExceptionAction<Object>() {
+            public Object run() throws Exception {
+                Class uuid = UUIDGenerator.class;
+                Field[] fields = uuid.getDeclaredFields();
+                for (Field f : fields) {
+                    if (f.getName().equals("type1Initialized")) {
+                        f.setAccessible(true);
+                        f.set(null, false);
+                    } else if (f.getName().equals("IP") || f.getName().equals("RANDOM")) {
+                        f.setAccessible(true);
+                        f.set(null, null);
+                    }
+                }
+                Thread t = new Thread() {
+                    public void run() {
+                        UUIDGenerator.createType1();
+                    }
+                };
+
+                t.start();
+                UUIDGenerator.createType1();
+                return null;
+            }
+        });
+    }// end testInitType1MultiThreaded
 }

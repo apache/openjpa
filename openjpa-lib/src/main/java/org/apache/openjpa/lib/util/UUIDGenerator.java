@@ -94,15 +94,16 @@ public class UUIDGenerator {
     private static long _lastMillis = 0L;
     private static final int MAX_14BIT = 0x3FFF;
     private static short _seq = 0;
-        
+
+    private static boolean type1Initialized = false;
     /*
      * Initializer for type 1 UUIDs.  Creates random generator and genenerates
      * the node portion of the UUID using the IP address.
      */
-    private static synchronized void initializeForType1()
-    {
-        if (RANDOM != null)
+    private static synchronized void initializeForType1() {
+        if (type1Initialized == true) {
             return;
+        }
         // note that secure random is very slow the first time
         // it is used; consider switching to a standard random
         RANDOM = new SecureRandom();
@@ -118,6 +119,7 @@ public class UUIDGenerator {
         IP = new byte[6];
         RANDOM.nextBytes(IP);
         System.arraycopy(ip, 0, IP, 2, ip.length);        
+        type1Initialized = true;
     }
 
     /**
@@ -134,8 +136,9 @@ public class UUIDGenerator {
      * Creates a type 1 UUID 
      */
     public static byte[] createType1() {
-        if (RANDOM == null)
+        if (type1Initialized == false) {
             initializeForType1();
+        }
         // set ip addr
         byte[] uuid = new byte[16];
         System.arraycopy(IP, 0, uuid, 10, IP.length);
