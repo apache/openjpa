@@ -24,7 +24,7 @@ import java.util.List;
 import javax.persistence.criteria.CompoundSelection;
 import javax.persistence.criteria.Selection;
 
-import org.apache.openjpa.persistence.ResultItemImpl;
+import org.apache.openjpa.persistence.TupleElementImpl;
 
 /**
  * A selection item that constructs new instance of a user-defined class with arguments specified as other selected 
@@ -34,7 +34,7 @@ import org.apache.openjpa.persistence.ResultItemImpl;
  *
  * @param <X>
  */
-public class NewInstanceSelection<X> extends ResultItemImpl<X> 
+public class NewInstanceSelection<X> extends SelectionImpl<X> 
     implements CompoundSelection<X> {
     
     private List<Selection<?>>  _args;
@@ -44,27 +44,11 @@ public class NewInstanceSelection<X> extends ResultItemImpl<X>
         _args = Arrays.asList(selections);
     }
     
-    public List<Selection<?>> getConstructorArguments() {
-        return _args;
+    public final boolean isCompoundSelection() {
+        return true;
     }
-
+    
     public List<Selection<?>> getSelectionItems() {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
-    public Selection<X> alias(String arg0) {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
-    public List<Selection<?>> getCompoundSelectionItems() {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
-    public boolean isCompoundSelection() {
-        // TODO Auto-generated method stub
-        return false;
+        return _args;
     }
 }

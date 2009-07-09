@@ -88,19 +88,4 @@ public class ParameterImpl<T> extends ExpressionImpl<T> implements ParameterExpr
             throw new IllegalStateException(this + " index is not set");
         return position-1;
     }
-
-    public Selection<T> alias(String arg0) {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
-    public List<Selection<?>> getCompoundSelectionItems() {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
-    public boolean isCompoundSelection() {
-        // TODO Auto-generated method stub
-        return false;
-    }
 }

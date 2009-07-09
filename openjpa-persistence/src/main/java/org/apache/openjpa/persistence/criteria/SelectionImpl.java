@@ -18,12 +18,11 @@
  */
 package org.apache.openjpa.persistence.criteria;
 
-import java.util.Arrays;
 import java.util.List;
 
 import javax.persistence.criteria.Selection;
 
-import org.apache.openjpa.persistence.ResultItemImpl;
+import org.apache.openjpa.persistence.TupleElementImpl;
 
 /**
  * An item selected in the projection clause of  Criteria query.
@@ -32,36 +31,23 @@ import org.apache.openjpa.persistence.ResultItemImpl;
  *
  * @param <X>
  */
-public class SelectionImpl<X> extends ResultItemImpl<X> 
+public class SelectionImpl<X> extends TupleElementImpl<X> 
     implements Selection<X> {
-    
-    private List<Selection<?>>  _sels;
     
     public SelectionImpl(Class<X> cls) {
         super(cls);
     }
 
-    public Selection<X> alias(String arg0) {
-        // TODO Auto-generated method stub
-        return null;
+    public Selection<X> alias(String alias) {
+        super.setAlias(alias);
+        return this;
     }
 
-    public List<Selection<?>> getCompoundSelectionItems() {
-        // TODO Auto-generated method stub
+    public final List<Selection<?>> getCompoundSelectionItems() {
         return null;
     }
 
     public boolean isCompoundSelection() {
-        // TODO Auto-generated method stub
         return false;
     }
-    
-//    public SelectionImpl<X> setSelections(Selection<?>... selections) {
-//        _sels = Arrays.asList(selections);
-//        return this;
-//    }
-//    
-//    public List<Selection<?>> getSelections() {
-//        return _sels;
-//    }
 }

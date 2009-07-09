@@ -27,7 +27,7 @@ import javax.persistence.criteria.QueryBuilder.In;
 
 import org.apache.openjpa.kernel.exps.ExpressionFactory;
 import org.apache.openjpa.kernel.exps.Value;
-import org.apache.openjpa.persistence.ResultItemImpl;
+import org.apache.openjpa.persistence.TupleElementImpl;
 import org.apache.openjpa.persistence.meta.MetamodelImpl;
 
 /**
@@ -37,7 +37,7 @@ import org.apache.openjpa.persistence.meta.MetamodelImpl;
  *
  * @param <X> the type of the value this expression represents.
  */
-public abstract class ExpressionImpl<X> extends ResultItemImpl<X> 
+public abstract class ExpressionImpl<X> extends SelectionImpl<X> 
     implements Expression<X> {
 
     abstract Value toValue(ExpressionFactory factory, MetamodelImpl model,

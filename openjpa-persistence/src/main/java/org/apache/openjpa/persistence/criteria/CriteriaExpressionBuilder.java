@@ -213,7 +213,7 @@ public class CriteriaExpressionBuilder {
         for (Selection<?> s : selections) {
             if (s instanceof NewInstanceSelection<?>) {
                 exps.resultClass = s.getJavaType();
-                getProjections(exps, ((NewInstanceSelection)s).getConstructorArguments(), projections, aliases, 
+                getProjections(exps, ((NewInstanceSelection<?>)s).getSelectionItems(), projections, aliases, 
                         factory, q, model);               
             } else {
                 projections.add(((ExpressionImpl<?>)s).toValue(factory, model, q));

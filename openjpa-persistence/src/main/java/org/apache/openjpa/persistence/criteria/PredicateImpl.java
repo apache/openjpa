@@ -134,19 +134,4 @@ public class PredicateImpl extends ExpressionImpl<Boolean> implements Predicate 
             super(BooleanOperator.OR, restrictions);
         }
     }
-
-    public Selection<Boolean> alias(String arg0) {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
-    public List<Selection<?>> getCompoundSelectionItems() {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
-    public boolean isCompoundSelection() {
-        // TODO Auto-generated method stub
-        return false;
-    }
 }

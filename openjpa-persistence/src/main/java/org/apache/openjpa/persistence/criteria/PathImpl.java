@@ -254,20 +254,5 @@ public class PathImpl<Z,X> extends ExpressionImpl<X> implements Path<X> {
      */
     public Expression<Class<? extends X>> type() {
         return new Expressions.Type<X>(this);
-}
-
-    public Selection<X> alias(String arg0) {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
-    public List<Selection<?>> getCompoundSelectionItems() {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
-    public boolean isCompoundSelection() {
-        // TODO Auto-generated method stub
-        return false;
     }
 }

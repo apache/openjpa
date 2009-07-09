@@ -27,19 +27,19 @@ import javax.persistence.TupleElement;
  *
  * @param <X> type of the result
  */
-public class ResultItemImpl<X> implements TupleElement<X> {
-    protected String _alias;
+public class TupleElementImpl<X> implements TupleElement<X> {
+    private String _alias;
     protected final Class<X> _cls;
 
-    protected ResultItemImpl(Class<X> cls) {
+    protected TupleElementImpl(Class<X> cls) {
         _cls = cls;
     }
     
-    public String getAlias() {
+    public final String getAlias() {
         return _alias;
     }
 
-    public void setAlias(String alias) {
+    protected void setAlias(String alias) {
         _alias = alias;
     }
 

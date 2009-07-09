@@ -333,19 +333,4 @@ public class SubqueryImpl<T> extends ExpressionImpl<T> implements Subquery<T> {
         return from._member.fmd.getDeclaredTypeMetaData();
         
     }
-
-    public Selection<T> alias(String arg0) {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
-    public List<Selection<?>> getCompoundSelectionItems() {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
-    public boolean isCompoundSelection() {
-        // TODO Auto-generated method stub
-        return false;
-    }    
 }
