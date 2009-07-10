@@ -22,22 +22,23 @@
     http://java.sun.com/xml/ns/persistence/persistence_1_0.xsd"
   version="1.0">
 
-	<persistence-unit name="TestConv" transaction-type="RESOURCE_LOCAL">
-		<provider>org.apache.openjpa.persistence.PersistenceProviderImpl</provider>
-		<class>org.apache.openjpa.persistence.jdbc.common.apps.AutoIncrementPC1</class>
-		<class>org.apache.openjpa.persistence.jdbc.common.apps.AutoIncrementPC2</class>
-		<class>org.apache.openjpa.persistence.jdbc.common.apps.AutoIncrementPC3</class>
-		<class>org.apache.openjpa.persistence.jdbc.common.apps.ConstantJoinPC4</class>
-		<class>org.apache.openjpa.persistence.jdbc.common.apps.ConstantJoinPC5</class>
-		<class>org.apache.openjpa.persistence.jdbc.common.apps.CustomMappingPC</class>
+    <persistence-unit name="TestConv" transaction-type="RESOURCE_LOCAL">
+        <provider>org.apache.openjpa.persistence.PersistenceProviderImpl</provider>
+        <class>org.apache.openjpa.persistence.jdbc.common.apps.AutoIncrementPC1</class>
+        <class>org.apache.openjpa.persistence.jdbc.common.apps.AutoIncrementPC2</class>
+        <class>org.apache.openjpa.persistence.jdbc.common.apps.AutoIncrementPC3</class>
+        <class>org.apache.openjpa.persistence.jdbc.common.apps.ConstantJoinPC4</class>
+        <class>org.apache.openjpa.persistence.jdbc.common.apps.ConstantJoinPC5</class>
+        <class>org.apache.openjpa.persistence.jdbc.common.apps.CustomMappingPC</class>
         <class>org.apache.openjpa.persistence.jdbc.common.apps.DFGTest</class>
-		<class>org.apache.openjpa.persistence.jdbc.common.apps.EagerPC</class>
-		<class>org.apache.openjpa.persistence.jdbc.common.apps.EagerPCSub</class>
-		<class>org.apache.openjpa.persistence.jdbc.common.apps.HelperPC</class>
-		<class>org.apache.openjpa.persistence.jdbc.common.apps.HelperPC2</class>
-		<class>org.apache.openjpa.persistence.jdbc.common.apps.HelperPC3</class>
-		<class>org.apache.openjpa.persistence.jdbc.common.apps.HelperPC4</class>
-		<class>org.apache.openjpa.persistence.jdbc.common.apps.InvertA</class>
+        <class>org.apache.openjpa.persistence.jdbc.common.apps.EagerPC</class>
+        <class>org.apache.openjpa.persistence.jdbc.common.apps.EagerPCSub</class>
+        <class>org.apache.openjpa.persistence.jdbc.common.apps.HelperPC</class>
+        <class>org.apache.openjpa.persistence.jdbc.common.apps.HelperPC2</class>
+        <class>org.apache.openjpa.persistence.jdbc.common.apps.HelperPC3</class>
+        <class>org.apache.openjpa.persistence.jdbc.common.apps.HelperPC4</class>
+        <class>org.apache.openjpa.persistence.jdbc.common.apps.InvertA</class>
         <class>org.apache.openjpa.persistence.jdbc.common.apps.InvertB</class>
-	</persistence-unit>
+        <class>org.apache.openjpa.persistence.jdbc.common.apps.EagerOuterJoinPC</class>
+    </persistence-unit>
 </persistence>

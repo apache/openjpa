@@ -1675,14 +1675,14 @@ public class DBDictionary
      *                  size clause will be inserted appropriately.   
      */
     protected String insertSize(String typeName, String size) {
-    	if (StringUtils.isEmpty(size)) {
+        if (StringUtils.isEmpty(size)) {
             int idx = typeName.indexOf("{0}");
             if (idx != -1) {
                 return typeName.substring(0, idx);
             }
             return typeName;
         }
-    	
+        
         int idx = typeName.indexOf("{0}");
         if (idx != -1) {
             // replace '{0}' with size
@@ -1831,7 +1831,7 @@ public class DBDictionary
         from.append("(");
         from.append(toSelect(subSelect, null, subFrom, where,
             sel.getGrouping(), sel.getHaving(), null, sel.isDistinct(),
-            false, sel.getStartIndex(), sel.getEndIndex(), true));
+            false, sel.getStartIndex(), sel.getEndIndex(), true, sel));
         from.append(")");
         if (requiresAliasForSubselect)
             from.append(" ").append(Select.FROM_SELECT_ALIAS);
@@ -2318,11 +2318,11 @@ public class DBDictionary
     /**
      * Combine the given components into a SELECT statement.
      */
-    public SQLBuffer toSelect(SQLBuffer selects, JDBCFetchConfiguration fetch,
+    protected SQLBuffer toSelect(SQLBuffer selects, JDBCFetchConfiguration fetch,
         SQLBuffer from, SQLBuffer where, SQLBuffer group,
         SQLBuffer having, SQLBuffer order,
         boolean distinct, boolean forUpdate, long start, long end,
-        boolean subselect) {
+        boolean subselect, Select sel) {
         return toOperation(getSelectOperation(fetch), selects, from, where,
             group, having, order, distinct, start, end,
             getForUpdateClause(fetch, forUpdate, null), subselect);
@@ -2341,7 +2341,7 @@ public class DBDictionary
     /**
      * Combine the given components into a SELECT statement.
      */
-    public SQLBuffer toSelect(SQLBuffer selects, JDBCFetchConfiguration fetch,
+    protected SQLBuffer toSelect(SQLBuffer selects, JDBCFetchConfiguration fetch,
         SQLBuffer from, SQLBuffer where, SQLBuffer group,
         SQLBuffer having, SQLBuffer order,
         boolean distinct, boolean forUpdate, long start, long end,
@@ -3430,7 +3430,7 @@ public class DBDictionary
     /**
      * Return the declaration SQL for the given unique constraint. This
      * method is used from within {@link #getCreateTableSQL}.
-     * Returns	<code>CONSTRAINT &lt;name&gt; UNIQUE (&lt;col list&gt;)</code>
+     * Returns    <code>CONSTRAINT &lt;name&gt; UNIQUE (&lt;col list&gt;)</code>
      * by default.
      */
     protected String getUniqueConstraintSQL(Unique unq) {
@@ -4090,23 +4090,23 @@ public class DBDictionary
         InputStream stream = getClass().getResourceAsStream(rsrc);
         String dictionaryClassName = getClass().getName();
         if (stream == null) { // User supplied dictionary but no error codes xml
-        	stream = DBDictionary.class.getResourceAsStream(rsrc); // use default
-        	dictionaryClassName = getClass().getSuperclass().getName();
+            stream = DBDictionary.class.getResourceAsStream(rsrc); // use default
+            dictionaryClassName = getClass().getSuperclass().getName();
         }
         codeReader.parse(stream, dictionaryClassName, this);
     }
 
     public void addErrorCode(Integer errorType, String errorCode) {
-    	if (errorCode == null || errorCode.trim().length() == 0)
-    		return;
-		Set codes = (Set) sqlStateCodes.get(errorType);
-    	if (codes == null) {
-    		codes = new HashSet();
-    		codes.add(errorCode.trim());
-    		sqlStateCodes.put(errorType, codes);
-    	} else {
-    		codes.add(errorCode.trim());
-    	}
+        if (errorCode == null || errorCode.trim().length() == 0)
+            return;
+        Set codes = (Set) sqlStateCodes.get(errorType);
+        if (codes == null) {
+            codes = new HashSet();
+            codes.add(errorCode.trim());
+            sqlStateCodes.put(errorType, codes);
+        } else {
+            codes.add(errorCode.trim());
+        }
     }
     
     //////////////////////////////////////
@@ -4167,11 +4167,11 @@ public class DBDictionary
      */
     public OpenJPAException newStoreException(String msg, SQLException[] causes,
         Object failed) {
-    	if (causes != null && causes.length > 0) {
-    		OpenJPAException ret = narrow(msg, causes[0]);
-    		ret.setFailedObject(failed).setNestedThrowables(causes);
-    		return ret;
-    	}
+        if (causes != null && causes.length > 0) {
+            OpenJPAException ret = narrow(msg, causes[0]);
+            ret.setFailedObject(failed).setNestedThrowables(causes);
+            return ret;
+        }
         return new StoreException(msg).setFailedObject(failed).
             setNestedThrowables(causes);
     }
@@ -4182,29 +4182,29 @@ public class DBDictionary
      * Returns -1 if no matching code can be found.
      */
     OpenJPAException narrow(String msg, SQLException ex) {
-    	String errorState = ex.getSQLState();
-    	int errorType = StoreException.GENERAL;
-    	for (Iterator iter = sqlStateCodes.keySet().iterator(); iter.hasNext(); ) {
-        	Integer type = (Integer) iter.next();
-    		Set erroStates = (Set) sqlStateCodes.get(type);
-    		if (erroStates != null && erroStates.contains(errorState)) {
-    			errorType = type.intValue();
-    			break;
-    		}
-    	}
-    	switch (errorType) {
-	    	case StoreException.LOCK: 
-	            return new LockException(msg);
-	    	case StoreException.OBJECT_EXISTS:
-	            return new ObjectExistsException(msg);
-	    	case StoreException.OBJECT_NOT_FOUND:
-	            return new ObjectNotFoundException(msg);
-	    	case StoreException.OPTIMISTIC:
-	            return new OptimisticException(msg);
-	    	case StoreException.REFERENTIAL_INTEGRITY: 
-	            return new ReferentialIntegrityException(msg);
-	        default:
-	            return new StoreException(msg);
+        String errorState = ex.getSQLState();
+        int errorType = StoreException.GENERAL;
+        for (Iterator iter = sqlStateCodes.keySet().iterator(); iter.hasNext(); ) {
+            Integer type = (Integer) iter.next();
+            Set erroStates = (Set) sqlStateCodes.get(type);
+            if (erroStates != null && erroStates.contains(errorState)) {
+                errorType = type.intValue();
+                break;
+            }
+        }
+        switch (errorType) {
+            case StoreException.LOCK: 
+                return new LockException(msg);
+            case StoreException.OBJECT_EXISTS:
+                return new ObjectExistsException(msg);
+            case StoreException.OBJECT_NOT_FOUND:
+                return new ObjectNotFoundException(msg);
+            case StoreException.OPTIMISTIC:
+                return new OptimisticException(msg);
+            case StoreException.REFERENTIAL_INTEGRITY: 
+                return new ReferentialIntegrityException(msg);
+            default:
+                return new StoreException(msg);
         }
     }
 
