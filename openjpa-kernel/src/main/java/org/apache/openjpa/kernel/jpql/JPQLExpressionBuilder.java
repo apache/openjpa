@@ -1430,7 +1430,6 @@ public class JPQLExpressionBuilder
             subContext.setSubquery(subq);
         }
         subq.setMetaData(candidate);
-        subq.setAlias(alias);
         
         // evaluate from clause for resolving variables defined in subquery
         JPQLNode from = node.getChild(1);

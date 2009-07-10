@@ -862,7 +862,7 @@ public class TestJPQLSubquery extends CriteriaTest {
             + "        a.product = o  And "
             + "        exists (select r.id from Request r where r.account = a and r.status = 1))";
 
-        String expectedSQL = "SELECT t1.pid, t1.version, t1.productType FROM Product t1 WHERE (NOT (EXISTS ("
+        String expectedSQL = "SELECT t1.pid, t1.version, t1.productType FROM CR_PRD t1 WHERE (NOT (EXISTS ("
             + "SELECT t0.id FROM CR_ACCT t0 WHERE (t0.PRODUCT_PID = t1.pid AND EXISTS ("
             + "SELECT t2.id FROM Request t2 WHERE (t2.ACCOUNT_ID = t0.id AND t2.status = ?) )) )))";
         

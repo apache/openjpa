@@ -2916,24 +2916,44 @@ public class SelectImpl
         public void moveJoinsToParent() {
             if (_joins == null)
                 return;
-           if (_sel._parent._joins == null) 
-               _sel._parent._joins = new SelectJoins(_sel._parent);
-           SelectJoins p = _sel._parent._joins;
-           if (p.joins() == null)
-               p.setJoins(new JoinSet());
-           
            Join j = null;
            List<Join> removed = new ArrayList<Join>(5);
            for (Iterator itr = _joins.iterator(); itr.hasNext();) {
                j = (Join) itr.next();
                if (j.isNotMyJoin()) {
-                   p.joins().add(j);
+                   addJoinsToParent(_sel._parent, j);
                    removed.add(j);
                }
            }
            for (Join join : removed) {
                _joins.remove(join);
            }
+        }
+
+        private void addJoinsToParent(SelectImpl parent, Join join) {
+            Object aliases[] = parent._aliases.values().toArray();
+            boolean found1 = false;
+            boolean found2 = false;
+
+            for (int i = 0; i < aliases.length; i++) {
+                int alias = ((Integer)aliases[i]).intValue();
+                if (alias == join.getIndex1())
+                    found1 = true;
+                if (alias == join.getIndex2())
+                    found2 = true;
+            }
+                
+            if (found1 && found2) {
+                // this is my join, add join
+                if (parent._joins == null) 
+                    parent._joins = new SelectJoins(parent);
+                SelectJoins p = parent._joins;
+                if (p.joins() == null)
+                    p.setJoins(new JoinSet());                
+                p.joins().add(join);
+            }
+            else if (parent._parent != null)
+                addJoinsToParent(parent._parent, join);
         }
 
         public SelectJoins clone(SelectImpl sel) {
