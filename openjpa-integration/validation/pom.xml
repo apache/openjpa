@@ -81,6 +81,13 @@
                     <artifactId>agimatec-jsr303</artifactId>
                     <version>0.9.1-SNAPSHOT</version>
                     <scope>test</scope>
+                    <!-- force usage of the geronimo-validation spec -->
+                    <exclusions>
+                        <exclusion>
+                            <groupId>javax.validation</groupId>
+                            <artifactId>validation-api</artifactId>
+                        </exclusion>
+                    </exclusions>
                 </dependency>
                 <dependency>
                     <groupId>com.agimatec</groupId>
