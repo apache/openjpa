@@ -727,7 +727,8 @@ public class TestJPQLSubquery extends CriteriaTest {
     public void atestSubquery22() {
         String jpql = "select c from Customer c "
             + "where c.creditRating = (select COALESCE (c1.creditRating, "
-            + "criteria1.Customer$CreditRating.POOR) "
+            + "org.apache.openjpa.persistence.criteria."
+            + "Customer$CreditRating.POOR) "
             + "from Customer c1 where c1.name = 'Famzy') order by c.name "
             + "DESC";
 

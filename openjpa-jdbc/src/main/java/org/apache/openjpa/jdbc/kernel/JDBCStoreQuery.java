@@ -148,6 +148,8 @@ public class JDBCStoreQuery
         ClassMetaData base, ClassMetaData[] metas, boolean subclasses,
         ExpressionFactory[] facts, QueryExpressions[] exps, Object[] params,
         Range range) {
+        if (exps[0].ctx() != null)
+            exps[0].ctx().resetAliasCount();
         if (metas.length > 1 && exps[0].isAggregate())
             throw new UserException(Localizer.forPackage(JDBCStoreQuery.class).
                 get("mult-mapping-aggregate", Arrays.asList(metas)));
@@ -447,6 +449,8 @@ public class JDBCStoreQuery
     private Number executeBulkOperation(ClassMetaData[] metas,
         boolean subclasses, ExpressionFactory[] facts, QueryExpressions[] exps,
         Object[] params, Map updates) {
+        if (exps[0].ctx() != null)
+            exps[0].ctx().resetAliasCount();
         // we cannot execute a bulk delete statement when have mappings in
         // multiple tables, so indicate we want to use in-memory with null
         ClassMapping[] mappings = (ClassMapping[]) metas;

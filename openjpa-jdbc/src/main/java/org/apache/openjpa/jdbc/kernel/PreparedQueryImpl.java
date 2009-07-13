@@ -180,8 +180,6 @@ public class PreparedQueryImpl implements PreparedQuery {
         setParameters(buffer.getParameters());
         setUserParameterPositions(buffer.getUserParameters());
         _initialized = true;
-        if (select.ctx() != null)
-            select.ctx().resetAliasCount();
         
         return true;
     }
