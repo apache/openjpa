@@ -296,7 +296,9 @@ public class NativeJDBCSeq
         try {
             stmnt = conn.prepareStatement(_select);
             dict.setTimeouts(stmnt, _conf, false);
-            rs = stmnt.executeQuery();
+            synchronized(this) {
+                rs = stmnt.executeQuery();
+            }
             if (rs.next())
                 return rs.getLong(1);
 
