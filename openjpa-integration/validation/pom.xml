@@ -145,6 +145,12 @@
                     <version>4.0.0.Alpha3</version>
                     <!-- <version>4.0.0.Beta2-SNAPSHOT</version> -->
                     <scope>test</scope>
+                    <exclusions>
+                        <exclusion>
+                            <groupId>org.hibernate.java-persistence</groupId>
+                            <artifactId>jpa-api</artifactId>
+                        </exclusion>
+                    </exclusions>
                 </dependency>
                 <dependency>
                     <groupId>org.slf4j</groupId>
