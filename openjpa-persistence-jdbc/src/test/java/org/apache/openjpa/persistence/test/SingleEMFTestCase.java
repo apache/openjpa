@@ -42,7 +42,7 @@ public abstract class SingleEMFTestCase
     protected OpenJPAEntityManagerFactorySPI emf;
 
     /**
-     * Call {@link #setUp(Object...)} with no arguments so that the emf
+     * Call {@link #setUp(Object... props)} with no arguments so that the emf
      * set-up happens even if <code>setUp()</code> is not called from the
      * subclass.
      */
@@ -151,5 +151,9 @@ public abstract class SingleEMFTestCase
     public String getAlias(Class<?> t) {
         return emf.getConfiguration().getMetaDataRepositoryInstance()
             .getMetaData(t, null, true).getTypeAlias();
+    }
+
+    protected ClassMapping [] getMappings() {
+        return (ClassMapping [] ) emf.getConfiguration().getMetaDataRepositoryInstance().getMetaDatas();   
     }
 }
