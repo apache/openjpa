@@ -2222,15 +2222,15 @@ public class DBDictionary
         return fromSQL;
     }
 
-    //if table1 in join is in the main query, table2 is in
-    //subquery, and table2 participates in other joins
-    //in subquery, the join condition can only be placed in 
-    //the where clause in the subquery
     private boolean correlatedJoinCondition(Join join, Select sel) {
         if (!join.isCorrelated())
             return false;
         Iterator itr = sel.getJoinIterator();
         boolean skip = false;
+        // if table1 in join is in the main query, table2 is in
+        // subquery, and table2 participates in other joins
+        // in subquery, the join condition can only be placed in 
+        // the where clause in the subquery.
         while (itr.hasNext()) {
             Join join1 = (Join) itr.next();
             if (join == join1)
