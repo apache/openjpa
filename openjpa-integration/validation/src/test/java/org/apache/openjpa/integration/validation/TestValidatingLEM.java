@@ -14,22 +14,18 @@
 package org.apache.openjpa.integration.validation;
 
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import javax.persistence.EntityManager;
-import javax.persistence.Query;
 import javax.persistence.ValidationMode;
 import javax.validation.Validation;
 import javax.validation.ValidatorFactory;
 
 import org.apache.openjpa.conf.OpenJPAConfiguration;
-import org.apache.openjpa.event.LifecycleEventManager;
 import org.apache.openjpa.lib.log.Log;
 import org.apache.openjpa.persistence.OpenJPAEntityManager;
-import org.apache.openjpa.persistence.OpenJPAEntityManagerFactory;
+import org.apache.openjpa.persistence.OpenJPAEntityManagerFactorySPI;
 import org.apache.openjpa.persistence.OpenJPAPersistence;
-import org.apache.openjpa.persistence.test.AllowFailure;
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
 import org.apache.openjpa.validation.ValidatingLifecycleEventManager;
 
@@ -75,15 +71,16 @@ public class TestValidatingLEM extends SingleEMFTestCase {
     public void testValidatingLEM1() {
         getLog().trace("testValidatingLEM1() - NONE");
         // create our EMF
-        OpenJPAEntityManagerFactory emf = OpenJPAPersistence
-            .createEntityManagerFactory(
+        OpenJPAEntityManagerFactorySPI emf = (OpenJPAEntityManagerFactorySPI)
+            OpenJPAPersistence.createEntityManagerFactory(
                 "simple-none-mode",
                 "org/apache/openjpa/integration/validation/persistence.xml");
         assertNotNull(emf);
-        // create EM
-        OpenJPAEntityManager em = emf.createEntityManager();
-        assertNotNull(em);
+        OpenJPAEntityManager em = null;
         try {
+            // create EM
+            em = emf.createEntityManager();
+            assertNotNull(em);
             // verify created LifecycleEventManager type
             OpenJPAConfiguration conf = em.getConfiguration();
             assertNotNull(conf);
@@ -99,6 +96,7 @@ public class TestValidatingLEM extends SingleEMFTestCase {
             if ((em != null) && em.isOpen()) {
                 em.close();
             }
+            cleanup(emf);
         }
     }
 
@@ -109,15 +107,16 @@ public class TestValidatingLEM extends SingleEMFTestCase {
     public void testValidatingLEM2() {
         getLog().trace("testValidatingLEM2() - AUTO");
         // create our EMF
-        OpenJPAEntityManagerFactory emf = OpenJPAPersistence
-            .createEntityManagerFactory(
+        OpenJPAEntityManagerFactorySPI emf = (OpenJPAEntityManagerFactorySPI)
+            OpenJPAPersistence.createEntityManagerFactory(
                 "simple-auto-mode",
                 "org/apache/openjpa/integration/validation/persistence.xml");
         assertNotNull(emf);
-        // create EM
-        OpenJPAEntityManager em = emf.createEntityManager();
-        assertNotNull(em);
+        OpenJPAEntityManager em = null;
         try {
+            // create EM
+            em = emf.createEntityManager();
+            assertNotNull(em);
             // verify created LifecycleEventManager type
             OpenJPAConfiguration conf = em.getConfiguration();
             assertNotNull(conf);
@@ -133,6 +132,7 @@ public class TestValidatingLEM extends SingleEMFTestCase {
             if ((em != null) && em.isOpen()) {
                 em.close();
             }
+            cleanup(emf);
         }
     }
 
@@ -148,16 +148,17 @@ public class TestValidatingLEM extends SingleEMFTestCase {
         props.put("javax.persistence.validation.mode",
             String.valueOf(ValidationMode.CALLBACK));
         // create our EMF w/ props
-        OpenJPAEntityManagerFactory emf = OpenJPAPersistence
-            .createEntityManagerFactory(
+        OpenJPAEntityManagerFactorySPI emf = (OpenJPAEntityManagerFactorySPI)
+            OpenJPAPersistence.createEntityManagerFactory(
                 "simple-none-mode",
                 "org/apache/openjpa/integration/validation/persistence.xml",
                 props);
         assertNotNull(emf);
-        // create EM
-        OpenJPAEntityManager em = emf.createEntityManager();
-        assertNotNull(em);
+        OpenJPAEntityManager em = null;
         try {
+            // create EM
+            em = emf.createEntityManager();
+            assertNotNull(em);
             // verify created LifecycleEventManager type
             OpenJPAConfiguration conf = em.getConfiguration();
             assertNotNull(conf);
@@ -173,6 +174,7 @@ public class TestValidatingLEM extends SingleEMFTestCase {
             if ((em != null) && em.isOpen()) {
                 em.close();
             }
+            cleanup(emf);
         }
     }
 
@@ -187,23 +189,24 @@ public class TestValidatingLEM extends SingleEMFTestCase {
         try {
             factory = Validation.buildDefaultValidatorFactory();
         } catch (javax.validation.ValidationException e) {
-            // no validation providers found
+            fail("testValidatingLEM4() - no validation providers found" + e);
         }
         assertNotNull(factory);
         // create the Map to test overrides
         Map<String,Object> props = new HashMap<String,Object>();
         props.put("javax.persistence.validation.factory", factory);
         // create our EMF w/ props
-        OpenJPAEntityManagerFactory emf = OpenJPAPersistence
-            .createEntityManagerFactory(
+        OpenJPAEntityManagerFactorySPI emf = (OpenJPAEntityManagerFactorySPI)
+            OpenJPAPersistence.createEntityManagerFactory(
                 "simple-auto-mode",
                 "org/apache/openjpa/integration/validation/persistence.xml",
                 props);
         assertNotNull(emf);
-        // create EM
-        OpenJPAEntityManager em = emf.createEntityManager();
-        assertNotNull(em);
+        OpenJPAEntityManager em = null;
         try {
+            // create EM
+            em = emf.createEntityManager();
+            assertNotNull(em);
             // verify expected validation config items
             OpenJPAConfiguration conf = em.getConfiguration();
             assertNotNull(conf);
@@ -222,9 +225,19 @@ public class TestValidatingLEM extends SingleEMFTestCase {
             if ((em != null) && em.isOpen()) {
                 em.close();
             }
+            cleanup(emf);
         }
     }
 
+    
+    /**
+     * Helper method to remove entities and close the emf an any open em's.
+     * @param emf
+     */
+    private void cleanup(OpenJPAEntityManagerFactorySPI emf) {
+        clear(emf);
+        closeEMF(emf);
+    }    
 
     /**
      * Internal convenience method for getting the OpenJPA logger
