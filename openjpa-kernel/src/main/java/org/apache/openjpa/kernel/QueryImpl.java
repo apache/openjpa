@@ -56,6 +56,7 @@ import org.apache.openjpa.meta.FieldMetaData;
 import org.apache.openjpa.meta.JavaTypes;
 import org.apache.openjpa.meta.MetaDataRepository;
 import org.apache.openjpa.util.GeneralException;
+import org.apache.openjpa.util.InternalException;
 import org.apache.openjpa.util.InvalidStateException;
 import org.apache.openjpa.util.NonUniqueResultException;
 import org.apache.openjpa.util.NoResultException;
@@ -892,7 +893,10 @@ public class QueryImpl
     private Object[] toParameterArray(LinkedMap paramTypes, Map params) {
         if (params == null || params.isEmpty())
             return StoreQuery.EMPTY_OBJECTS;
-
+        if ((paramTypes == null || paramTypes == StoreQuery.EMPTY_PARAMS) 
+           && isNumericKey(params))
+            return toParameterArray(params);
+        
         Object[] arr = new Object[params.size()];
         Map.Entry entry;
         Object key;
@@ -939,6 +943,51 @@ public class QueryImpl
                 low = val;
         }
         return low;
+    }
+    
+    /**
+     * Special case of parameter handling for unparsed queries without any information
+     * on parameter types and all integer parameter keys. 
+     */
+    private Object[] toParameterArray(Map params) {
+        Object[] arr = new Object[calculateParameterSize(params)];
+        int base = 1;
+        for (Object key : params.keySet()) {
+            int idx = ((Number)key).intValue();
+            arr[idx - base] = params.get(key);
+        }
+        return arr;
+    }
+    
+    /**
+     * Affirms if all the keys in the given map is number.
+     */
+    private boolean isNumericKey(Map params) {
+        if (params == null)
+            return false;
+        for (Object key : params.keySet())
+            if (!(key instanceof Number))
+                return false;
+        return true;
+    }
+    
+    /**
+     * Calculate the maximum value of the keys in the given map.
+     *  
+     * @param all keys are assumed to be numeric.
+     */
+    private int calculateParameterSize(Map params) {
+        int max = 0;
+        if (params == null)
+            return 0;
+        for (Object key : params.keySet()) {
+            if (!(key instanceof Number))
+                throw new InternalException();
+            else {
+                max = Math.max(max, ((Number)key).intValue());
+            }
+        }
+        return max;
     }
 
     /**
