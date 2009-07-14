@@ -1542,7 +1542,6 @@ public class JPQLExpressionBuilder
         if (cmd != null) {
             // handle the case where the class name is the alias
             // for the candidate (we don't use variables for this)
-            //Value thiz = factory.getThis();
             Value thiz = null;
             if (ctx().subquery == null || 
                 ctx().getSchema(name.toLowerCase()) == null) {
@@ -1965,9 +1964,6 @@ public class JPQLExpressionBuilder
         Value v = c.getVariable(var);
         if (v != null)
             return v;
-//        if (c.getSchema(var) != null)
-//            // variable is to be defined in this context
-//            return null;
         if (c.getParent() != null)
             return c.getParent().findVariable(var);
 

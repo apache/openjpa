@@ -168,7 +168,6 @@ public class SelectImpl
 
     // A path navigation is begin with this schema alias
     private String _schemaAlias = null;
-    private String _correlatedVar = null;
      
     /**
      * Helper method to return the proper table alias for the given alias index.
@@ -2108,15 +2107,6 @@ public class SelectImpl
         if (_tables == null)
             _tables = new TreeMap();
         _tables.put(alias, tableString);
-    }
-
-    private void recordTableAlias(String table, Object key, Integer alias) {
-        if (_aliases == null)
-            _aliases = new HashMap();
-        _aliases.put(key, alias);
-        if (_tables == null)
-            _tables = new TreeMap();
-        _tables.put(alias, table);        
     }
 
     /**
