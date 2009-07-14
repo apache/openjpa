@@ -120,7 +120,7 @@ public class PreparedQueryCacheImpl implements PreparedQueryCache {
 			}
 			_delegate.put(id, q);
             if (_log != null && _log.isTraceEnabled())
-                _log.trace(_loc.get("prepared-query-cached", id);
+                _log.trace(_loc.get("prepared-query-cached", id));
 			return true;
 		} finally {
 			unlock();
