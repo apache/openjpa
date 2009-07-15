@@ -295,6 +295,7 @@ public class TestValidationGroups extends PersistenceTestCase {
                 "default-validation-group",
                 "org/apache/openjpa/integration/validation/persistence.xml");
         assertNotNull(emf);
+        getLog(emf).trace("verifyDefaultValidationGroup(" + flush + ")");
         // create EM
         OpenJPAEntityManager em = emf.createEntityManager();
         assertNotNull(em);
@@ -373,6 +374,7 @@ public class TestValidationGroups extends PersistenceTestCase {
                 "non-default-validation-group",
                 "org/apache/openjpa/integration/validation/persistence.xml");
         assertNotNull(emf);
+        getLog(emf).trace("verifyNonDefaultValidationGroup(" + flush + ")");
         // create EM
         OpenJPAEntityManager em = emf.createEntityManager();
         assertNotNull(em);
@@ -499,6 +501,7 @@ public class TestValidationGroups extends PersistenceTestCase {
                 "default-validation-group",
                 "org/apache/openjpa/integration/validation/persistence.xml");
         assertNotNull(emf);
+        getLog(emf).trace("verifyDefaultPreRemove(" + flush + ")");
         // create EM
         OpenJPAEntityManager em = emf.createEntityManager();
         assertNotNull(em);
@@ -551,6 +554,7 @@ public class TestValidationGroups extends PersistenceTestCase {
                 "pre-remove-default-validation-group",
                 "org/apache/openjpa/integration/validation/persistence.xml");
         assertNotNull(emf);
+        getLog(emf).trace("verifySpecifiedDefaultPreRemove(" + flush + ")");
         // create EM
         OpenJPAEntityManager em = emf.createEntityManager();
         assertNotNull(em);
@@ -608,14 +612,16 @@ public class TestValidationGroups extends PersistenceTestCase {
             ConstraintViolation<?> v = (ConstraintViolation<?>)i.next();
             boolean found = false;
             for (String vio : vioProperties) {
-                if (v.getPropertyPath().equals(vio)) {
+                // TODO - getPropertyPath() will return a Path in future APIs
+                if (v.getPropertyPath().compareTo(vio) == 0) {
                     found = true;
                     break;
                 }
             }
-            if (!found)
+            if (!found) {
                 fail("Unexpected ConstraintViolation for: " + 
                     v.getPropertyPath());
+            }
         }
     }
 
@@ -631,7 +637,7 @@ public class TestValidationGroups extends PersistenceTestCase {
     /**
      * Internal convenience method for getting the OpenJPA logger
      * 
-     * @return
+     * @return Log
      */
     private Log getLog(OpenJPAEntityManagerFactorySPI emf) {
         return emf.getConfiguration().getLog("Tests");
