@@ -81,8 +81,13 @@
                     <artifactId>agimatec-jsr303</artifactId>
                     <version>0.9.1-SNAPSHOT</version>
                     <scope>test</scope>
-                    <!-- force usage of the geronimo-validation spec -->
                     <exclusions>
+                        <!-- force usage of the geronimo-validation_1.0_spec -->
+                        <exclusion>
+                            <groupId>javax.validation</groupId>
+                            <artifactId>validation-api</artifactId>
+                        </exclusion>
+                        <!-- use our level of the geronimo-jpa_2.0_spec -->
                         <exclusion>
                             <groupId>javax.validation</groupId>
                             <artifactId>validation-api</artifactId>
@@ -135,20 +140,26 @@
                 <dependency>
                     <groupId>javax.validation</groupId>
                     <artifactId>validation-api</artifactId>
-                    <version>1.0.CR1</version>
-                    <!-- <version>1.0.CR3-SNAPSHOT</version> -->
+                    <version>1.0.CR2</version>
+                    <!-- <version>1.0.CR3</version> -->
                     <scope>test</scope>
                 </dependency>
                 <dependency>
                     <groupId>org.hibernate</groupId>
                     <artifactId>hibernate-validator</artifactId>
-                    <version>4.0.0.Alpha3</version>
+                    <version>4.0.0.Beta1</version>
                     <!-- <version>4.0.0.Beta2-SNAPSHOT</version> -->
                     <scope>test</scope>
                     <exclusions>
+                        <!-- force usage of the geronimo-jpa_2.0_spec -->
                         <exclusion>
                             <groupId>org.hibernate.java-persistence</groupId>
                             <artifactId>jpa-api</artifactId>
+                        </exclusion>
+                        <!-- force usage of the RI API level above -->
+                        <exclusion>
+                            <groupId>javax.validation</groupId>
+                            <artifactId>validation-api</artifactId>
                         </exclusion>
                     </exclusions>
                 </dependency>
@@ -178,7 +189,6 @@
                         <enabled>true</enabled>
                     </releases>
                 </repository>
-                <!--
                 <repository>
                     <id>snapshots.jboss.org</id>
                     <name>JBoss Repository</name>
@@ -191,7 +201,6 @@
                         <enabled>false</enabled>
                     </releases>
                 </repository>
-                -->
             </repositories>
         </profile>
     </profiles>
@@ -201,6 +210,13 @@
             <groupId>org.apache.openjpa</groupId>
             <artifactId>openjpa</artifactId>
             <version>${pom.version}</version>
+            <!-- allow profiles to decide which validation spec to use -->
+            <exclusions>
+                <exclusion>
+                    <groupId>org.apache.geronimo.specs</groupId>
+                    <artifactId>geronimo-validation_1.0_spec</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
         <dependency>
             <groupId>org.apache.openjpa</groupId>
