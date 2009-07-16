@@ -42,10 +42,9 @@ import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Expression;
 import javax.persistence.criteria.ParameterExpression;
 import javax.persistence.criteria.Root;
-import javax.persistence.criteria.Selection;
 import javax.persistence.criteria.Subquery;
 
-import org.apache.openjpa.persistence.inheritance.entity.ComputerUser;
+import org.apache.openjpa.persistence.test.AllowFailure;
 
 /**
  * Tests type-strict version of Criteria API. The test scenarios are adapted
@@ -193,7 +192,7 @@ public class TestTypeSafeCondExpression extends CriteriaTest {
         assertEquivalence(cq, query);
     }
     
-    // do not support isEmpty for array fields
+    @AllowFailure(message = "SQL generation is slightly different")
     
     public void testIsEmptyExprUsingCriteria() {
         String query = "SELECT o.name FROM CompUser o WHERE o.nicknames IS NOT EMPTY";
@@ -398,7 +397,7 @@ public class TestTypeSafeCondExpression extends CriteriaTest {
         assertEquivalence(q, query);
     }
     
-    
+    @AllowFailure
     public void testArithmFunc3() {
         String query = "select MOD(e.age, 4) From CompUser e WHERE e.name='Seetha'";
         
@@ -526,9 +525,7 @@ public class TestTypeSafeCondExpression extends CriteriaTest {
         assertEquivalence(q, query, new String[]{"t"}, new Class[]{MaleUser.class});
     }
 
-    // Type literal
-    // this Cartesian problem can not be rewritten to use JOIN
-    
+    @AllowFailure(message="cross join is not implemented")
     public void testTypeExpression3() {
         String query = "SELECT e, FemaleUser, a FROM Address a, FemaleUser e where e.address IS NOT NULL";
         

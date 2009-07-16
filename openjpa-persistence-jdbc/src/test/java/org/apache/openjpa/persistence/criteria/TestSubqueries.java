@@ -73,6 +73,7 @@ public class TestSubqueries extends CriteriaTest {
         assertEquivalence(q, query);
     }
 
+    @AllowFailure(message="cross join is not implemented")
     public void testSubquery01() {
         String query = "select o1.id from Order o1 where o1.id in "
                 + " (select distinct o.id from LineItem i, Order o"
@@ -243,7 +244,6 @@ public class TestSubqueries extends CriteriaTest {
         assertEquivalence(q, query);
     }
 
-    @AllowFailure(message="")
     public void testSubquery10() {
         String query = "select o.id from Order o where o.quantity >"
                 + " (select sum(o2.quantity) from Customer c, " 
@@ -259,7 +259,7 @@ public class TestSubqueries extends CriteriaTest {
         SetJoin<Customer, Order> o2 = c.join(Customer_.orders);
         sq.select(cb.sum(o2.get(Order_.quantity)));
 
-        q.where(cb.gt(o2.get(Order_.quantity), sq));
+        q.where(cb.gt(o.get(Order_.quantity), sq));
         
         assertEquivalence(q, query);
     }
@@ -285,7 +285,7 @@ public class TestSubqueries extends CriteriaTest {
         SetJoin<Customer, Order> o3 = c2.join(Customer_.orders);
         sq2.select(cb.min(o3.get(Order_.quantity)));
 
-        q.where(cb.between(o2.get(Order_.quantity), sq1.as(Integer.class), sq2));
+        q.where(cb.between(o.get(Order_.quantity), sq1.as(Integer.class), sq2));
         assertEquivalence(q, query);
     }
 
@@ -309,7 +309,7 @@ public class TestSubqueries extends CriteriaTest {
         assertEquivalence(q, query);
     }
 
-    @AllowFailure
+    @AllowFailure(message="cross join is not implemented")
     public void testSubquery13() {
         String query = "select o1.id, c.name from Order o1, Customer c"
                 + " where o1.quantity = "
@@ -389,23 +389,22 @@ public class TestSubqueries extends CriteriaTest {
         Root<Order> o = q.from(Order.class);
         q.select(o.get(Order_.id));
 
-        Subquery<Boolean> sq = q.subquery(Boolean.class);
+        Subquery<Object> sq = q.subquery(Object.class);
         Root<Order> o2 = sq.from(Order.class);
         sq.where(cb.equal(o.get(Order_.customer).get(Customer_.id), o2.get(
                 Order_.customer).get(Customer_.id)));
+        sq.select(
+            cb.selectCase().when(cb.gt(o2.get(Order_.quantity), 10), true)
+                .when(cb.equal(o2.get(Order_.quantity), 10), false)
+                .otherwise(false)
+        );
 
-        q.where(cb.equal(o.get(Order_.delivered),
-        // sq.select(
-                cb.selectCase().when(cb.gt(o2.get(Order_.quantity), 10), true)
-                        .when(cb.equal(o2.get(Order_.quantity), 10), false)
-                        .otherwise(false)
-        // )
-                ));
+        q.where(cb.equal(o.get(Order_.delivered), sq));
         
         assertEquivalence(q, query);
     }
 
-    
+    @AllowFailure(message="cross join is not implemented")
     public void testSubquery16() {
         String query = "select o1.id from Order o1 where o1.quantity > "
                 + " (select o.quantity*2 from LineItem i, Order o"
@@ -452,7 +451,7 @@ public class TestSubqueries extends CriteriaTest {
     }
 
     
-    public void testSubquery18() {
+    public void xtestSubquery18() {
         String query = "select o.id from Order o where o.orderTs >"
                 + " (select CURRENT_TIMESTAMP from o.lineItems i)";
 
@@ -476,9 +475,9 @@ public class TestSubqueries extends CriteriaTest {
         String query = "select o.id from Order o where o.quantity >"
                 + " (select SQRT(o.quantity) from Order o where o.delivered" +
                         " = true)";
-        CriteriaQuery<?> q = cb.createQuery();
+        CriteriaQuery<Integer> q = cb.createQuery(Integer.class);
         Root<Order> o = q.from(Order.class);
-//        q.select(o.get(Order_.id));
+        q.select(o.get(Order_.id));
 
         Subquery<Double> sq = q.subquery(Double.class);
         Root<Order> o2 = sq.from(Order.class);
@@ -494,9 +493,9 @@ public class TestSubqueries extends CriteriaTest {
         String query = "select o.id from Order o where o.customer.name in"
                 + " (select CONCAT(o.customer.name, 'XX') from Order o"
                 + " where o.quantity > 10)";
-        CriteriaQuery<?> q = cb.createQuery();
+        CriteriaQuery<Integer> q = cb.createQuery(Integer.class);
         Root<Order> o = q.from(Order.class);
-//        q.select(o.get(Order_.id));
+        q.select(o.get(Order_.id));
 
         Subquery<String> sq = q.subquery(String.class);
         Root<Order> o2 = sq.from(Order.class);
@@ -508,7 +507,6 @@ public class TestSubqueries extends CriteriaTest {
         assertEquivalence(q, query);
     }
 
-    @AllowFailure
     public void testSubquery21() {
         String query = "select c from Customer c where c.creditRating ="
                 + " (select "
@@ -521,30 +519,27 @@ public class TestSubqueries extends CriteriaTest {
                 + "     END from Order o2"
                 + " where c.id = o2.customer.id)";
         
-        CriteriaQuery<?> q = cb.createQuery();
+        CriteriaQuery<Customer> q = cb.createQuery(Customer.class);
         Root<Customer> c = q.from(Customer.class);
-//        q.select(c);
+        q.select(c);
 
-        Subquery<String> sq = q.subquery(String.class);
+        Subquery<Object> sq = q.subquery(Object.class);
         Root<Order> o2 = sq.from(Order.class);
         sq.where(cb.equal(
             c.get(Customer_.id), 
             o2.get(Order_.customer).get(Customer_.id)));
-
-        q.where(cb.equal(c.get(Customer_.creditRating), 
-          cb.selectCase()
+        Expression<Object> generalCase = cb.selectCase()
           .when(cb.gt(o2.get(Order_.quantity), 10), 
                   Customer.CreditRating.POOR)
           .when(cb.equal(o2.get(Order_.quantity), 10), 
                   Customer.CreditRating.GOOD)
-          .otherwise(Customer.CreditRating.EXCELLENT)
-            ));
+                .otherwise(Customer.CreditRating.EXCELLENT);
+        
+        sq.select(generalCase);
+        q.where(cb.equal(c.get(Customer_.creditRating), sq));
         assertEquivalence(q, query);
     }
 
-    // Coalesce for Enum type
-    @AllowFailure(message="Wrong JPQL due to enum oridinal/identifier " +
-    		"type mismatch")
     public void testSubquery22() {
         String query = "select c from Customer c "
                 + "where c.creditRating = (select COALESCE (c1.creditRating, "
@@ -553,9 +548,9 @@ public class TestSubqueries extends CriteriaTest {
                 + "from Customer c1 where c1.name = 'Famzy') order by c.name " +
                         "DESC";
         
-        CriteriaQuery<?> q = cb.createQuery();
+        CriteriaQuery<Customer> q = cb.createQuery(Customer.class);
         Root<Customer> c = q.from(Customer.class);
-//        q.select(c);
+        q.select(c);
         q.orderBy(cb.desc(c.get(Customer_.name)));        
 
         Subquery<Customer.CreditRating> sq =
@@ -580,9 +575,9 @@ public class TestSubqueries extends CriteriaTest {
                 + "Customer$CreditRating.POOR) "
                 + "from Customer c1 where c1.name = 'Famzy') "
                 + "order by c.name DESC";
-        CriteriaQuery<?> q = cb.createQuery();
+        CriteriaQuery<Customer> q = cb.createQuery(Customer.class);
         Root<Customer> c = q.from(Customer.class);
-//        q.select(c);
+        q.select(c);
         q.orderBy(cb.desc(c.get(Customer_.name)));        
 
         Subquery<Customer.CreditRating> sq =

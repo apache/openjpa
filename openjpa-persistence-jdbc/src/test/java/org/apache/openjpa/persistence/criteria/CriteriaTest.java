@@ -207,7 +207,7 @@ public abstract class CriteriaTest extends TestCase {
             e.printStackTrace(new PrintWriter(w));
             fail("JPQL " + jpql + " failed to execute\r\n" + w);
         }
-        
+        em.clear();
         try {
             cSQL = executeQueryAndCollectSQL(cQ);
         } catch (Exception e) {
@@ -231,6 +231,31 @@ public abstract class CriteriaTest extends TestCase {
                 printSQL("Target SQL for CriteriaQuery", cSQL);
                 assertEquals(i + "-th SQL for JPQL and CriteriaQuery for " + jpql + " is different",
                      jSQL.get(i), cSQL.get(i));
+            }
+        }
+    }
+    
+    void executeAndCompareSQL(String jpql, String expectedSQL) {
+        Query jQ = em.createQuery(jpql);
+
+        List<String> jSQL = null;
+        List<String> cSQL = null;
+        try {
+            jSQL = executeQueryAndCollectSQL(jQ);
+        } catch (Exception e) {
+            StringWriter w = new StringWriter();
+            e.printStackTrace(new PrintWriter(w));
+            fail("JPQL " + jpql + " failed to execute\r\n" + w);
+        }
+        
+        printSQL("Target SQL for JPQL", jSQL);
+        
+        for (int i = 0; i < jSQL.size(); i++) {
+            if (!jSQL.get(i).equals(expectedSQL)) {
+                printSQL("SQL for JPQL", jSQL);
+                printSQL("Expected SQL", cSQL);
+                assertEquals(i + "-th Expected SQL and SQL for JPQL: " + jpql + " are different",
+                     expectedSQL, jSQL.get(i));
             }
         }
     }

@@ -20,6 +20,7 @@ package org.apache.openjpa.persistence.criteria;
 import javax.persistence.*;
 
 @Entity
+@Table(name="CR_PRD")
 public class Product {
 	@Id 
 	@GeneratedValue(strategy=GenerationType.IDENTITY)

@@ -15,6 +15,7 @@ public class Order_ {
     public static volatile SingularAttribute<Order,Customer> customer;
     public static volatile SingularAttribute<Order,Boolean> delivered;
     public static volatile SingularAttribute<Order,Integer> id;
+    public static volatile SingularAttribute<Order,String> name;
     public static volatile ListAttribute<Order,LineItem> lineItems;
     public static volatile SingularAttribute<Order,Timestamp> orderTs;
     public static volatile SingularAttribute<Order,Integer> quantity;

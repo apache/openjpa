@@ -43,7 +43,7 @@ public class Customer {
 	private String lastName;
 	private String name;
 	
-	@OneToMany
+	@OneToMany(mappedBy="customer")
 	private Set<Order> orders = new HashSet<Order>(); 
 	
 	private int status;

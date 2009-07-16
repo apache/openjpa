@@ -38,6 +38,7 @@ public class Order {
     private int quantity;
 	private double totalCost;
 	private int count;
+	private String name;
 	
 	@ManyToOne
 	private Customer customer;
@@ -91,6 +92,14 @@ public class Order {
     
     public void setDelivered(boolean delivered) {
         this.delivered = delivered;
+    }
+
+    public String getName() {
+        return name;
+    }
+    
+    public void setName(String name) {
+        this.name = name;
     }
 
     public Timestamp getOrderTs() {

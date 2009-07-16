@@ -129,7 +129,7 @@ public class CoalesceExpression
         Val other, ExpState otherState) {
         CoalesceExpState cstate = (CoalesceExpState) state;
         for (int i = 0; i < _vals.length; i++)   
-            _vals[i].calculateValue(sel, ctx, cstate.states[i], null, null);
+            _vals[i].calculateValue(sel, ctx, cstate.states[i], other, otherState);
     }
 
     public void groupBy(Select sel, ExpContext ctx, ExpState state) {
@@ -141,7 +141,7 @@ public class CoalesceExpression
     }
 
     private SQLBuffer newSQLBuffer(Select sel, ExpContext ctx, ExpState state) {
-        calculateValue(sel, ctx, state, null, null);
+        calculateValue(sel, ctx, state, (Val)other, otherState);
         SQLBuffer buf = new SQLBuffer(ctx.store.getDBDictionary());
         appendTo(sel, ctx, state, buf, 0);
         return buf;

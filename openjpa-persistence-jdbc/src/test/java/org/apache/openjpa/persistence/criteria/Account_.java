@@ -14,4 +14,6 @@ public class Account_ {
     public static volatile SingularAttribute<Account,Integer> loan;
     public static volatile SingularAttribute<Account,String> name;
     public static volatile SingularAttribute<Account,Person> owner;
+    public static volatile SingularAttribute<Account,Customer> customer;
+    public static volatile SingularAttribute<Account,Product> product;
 }
