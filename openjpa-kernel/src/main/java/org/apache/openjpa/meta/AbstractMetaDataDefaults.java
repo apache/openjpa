@@ -375,11 +375,13 @@ public abstract class AbstractMetaDataDefaults
      * or<br>
      * <code> public T isXXX()</code> where T is boolean or Boolean.<br>
      */
-    public static boolean isGetter(Method method) {
+    public static boolean isGetter(Method method, boolean includePrivate) {
     	if (method == null)
     		return false;
     	int mods = method.getModifiers();
-    	if (!Modifier.isPublic(mods) 
+    	if (!(Modifier.isPublic(mods) 
+    	      || Modifier.isProtected(mods)
+    	      || (Modifier.isPrivate(mods) && includePrivate))
     	 || Modifier.isNative(mods) 
     	 || Modifier.isStatic(mods))
     		return false;

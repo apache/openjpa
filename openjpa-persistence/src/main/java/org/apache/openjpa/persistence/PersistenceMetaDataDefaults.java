@@ -305,7 +305,8 @@ public class PersistenceMetaDataDefaults
     	int access = determineExplicitAccessType(meta.getDescribedType());
     	if (!AccessCode.isUnknown(access))
     		return access;
-    	access = determineImplicitAccessType(meta.getDescribedType());
+    	access = determineImplicitAccessType(meta.getDescribedType(),
+    	            meta.getRepository().getConfiguration());
     	if (!AccessCode.isUnknown(access))
     		return access;
     	
@@ -331,7 +332,8 @@ public class PersistenceMetaDataDefaults
      * Annotation can be placed on either fields or getters but not on both.
      * If no field or getter is annotated then UNKNOWN access code is returned.
      */
-    private int determineImplicitAccessType(Class<?> cls) {
+    private int determineImplicitAccessType(Class<?> cls, OpenJPAConfiguration
+        conf) {
     	if (cls.isInterface()) // Managed interfaces
     		return AccessCode.PROPERTY;
         Field[] allFields = AccessController.doPrivileged(J2DoPrivHelper.
@@ -339,6 +341,15 @@ public class PersistenceMetaDataDefaults
 		Method[] methods = AccessController.doPrivileged(
 				J2DoPrivHelper.getDeclaredMethodsAction(cls));
         List<Field> fields = filter(allFields, nonTransientFilter);
+        /*
+         * OpenJPA 1.x permitted private properties to be persistent.  This is
+         * contrary to the JPA 1.0 specification, which states that persistent
+         * properties must be private or protected. OpenJPA 2.0+ will adhere
+         * to the specification by default, but provides a compatibility
+         * option to provide pre-2.0 behavior.
+         */
+        getterFilter.setIncludePrivate(
+            conf.getCompatibilityInstance().getPrivatePersistentProperties());
         List<Method> getters = filter(methods, getterFilter, 
         		nonTransientFilter);
         if (fields.isEmpty() && getters.isEmpty())
@@ -550,9 +561,11 @@ public class PersistenceMetaDataDefaults
             }            
             try {
                 // check for setters for methods
-                Method setter = meta.getDescribedType().getMethod(
-                		"set" + StringUtils.capitalize(name), 
-                        new Class[] {((Method) member).getReturnType()});
+                Method setter = (Method) AccessController.doPrivileged(
+                    J2DoPrivHelper.getDeclaredMethodAction(
+                        meta.getDescribedType(), "set" +
+                        StringUtils.capitalize(name), new Class[] { 
+                            ((Method) member).getReturnType() }));
                 if (setter == null && !isAnnotatedTransient(member)) {
                     logNoSetter(meta, name, null);
                     return false;
@@ -716,8 +729,19 @@ public class PersistenceMetaDataDefaults
      * 
      */
     static class GetterFilter implements InclusiveFilter<Method> {
+        
+        private boolean includePrivate;        
+                       
         public boolean includes(Method method) {
-            return isGetter(method);
+            return isGetter(method, isIncludePrivate());
+        }
+
+        public void setIncludePrivate(boolean includePrivate) {
+            this.includePrivate = includePrivate;
+        }
+
+        public boolean isIncludePrivate() {
+            return includePrivate;
         }
     }
 

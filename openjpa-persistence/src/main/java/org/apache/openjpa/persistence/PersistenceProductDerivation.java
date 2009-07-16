@@ -180,6 +180,7 @@ public class PersistenceProductDerivation
             Compatibility compatibility = conf.getCompatibilityInstance();
             compatibility.setFlushBeforeDetach(true);
             compatibility.setCopyOnDetach(true);
+            compatibility.setPrivatePersistentProperties(true);
         } 
         return true;
     }

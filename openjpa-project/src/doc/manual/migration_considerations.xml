@@ -107,6 +107,28 @@
 					</programlisting>
 				</para>
     		</section>
+            <section id="private_persistent_properties">
+                <title>
+                    Use of private persistent properties
+                </title>
+                <para>
+                    In 1.x.x releases of OpenJPA, if property access was used,
+                    private properties were considered persistent. This is 
+                    contrary to the JPA specification, which states that 
+                    persistent properties must be public or protected.  In
+                    OpenJPA 2.0 and later, private properties will not be 
+                    persistent by default.
+                </para>
+                <para>
+                    It is possible to revert back to the 1.x.x behavior which
+                    allowed private properties to be persistent by setting the 
+                    value of the <literal>openjpa.Compatibility</literal> 
+                    property <literal>PrivatePersistentProperties</literal> to 
+                    <literal>true</literal>.  If compile time enhancement is 
+                    used, this property must be specified at the time of 
+                    enhancement and at runtime.
+                </para>
+            </section>
     	</section>
     </section>
 </appendix>

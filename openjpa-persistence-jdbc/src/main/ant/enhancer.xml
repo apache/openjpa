@@ -80,6 +80,7 @@
             <exclude name="**/Unenhanced*.class" />
             <exclude name="**/AbstractUnenhanced*.class" />
             <exclude name="**/unenhanced/*.class" />
+			<exclude name="**/persistence/property/PrivAccessModsEntity.class"/>
         </fileset>
         <openjpac>
             <classpath refid="cp" />
@@ -98,6 +99,14 @@
             </fileset>
             <config log="DefaultLevel=${openjpa.loglevel}" />
         </openjpac>
-
+		<!-- Enhance with private persistent properties compatibility option -->
+        <openjpac>
+            <config compatibility="PrivatePersistentProperties=true" />
+            <classpath refid="cp" />
+            <fileset dir="${project.build.testOutputDirectory}">
+				<include name="**/persistence/property/PrivAccessModsEntity.class"/>
+            </fileset>
+            <config log="DefaultLevel=${openjpa.loglevel}" />
+        </openjpac>
     </target>
 </project>

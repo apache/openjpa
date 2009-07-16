@@ -59,6 +59,7 @@ public class Compatibility {
     private boolean _cascadeWithDetach = false;
     private boolean _useJPA2DefaultOrderColumnName = true;
     private boolean _copyOnDetach = false;
+    private boolean _privatePersistentProperties = false;
     
     /**
      * Whether to require exact identity value types when creating object
@@ -354,4 +355,34 @@ public class Compatibility {
     public void setUseJPA2DefaultOrderColumnName(boolean useJPA2Name) {
         _useJPA2DefaultOrderColumnName = useJPA2Name;
     }
+    
+
+    /**
+     * Whether OpenJPA allows private, non-transient properties to be 
+     * persistent.  Prior to OpenJPA 2.0, if property access was used,
+     * private properties were considered persistent. This is contrary to the
+     * JPA specification, which states that persistent properties must be
+     * public or protected.  The default value is false.
+     * 
+     * @since 2.0.0
+     * @return true if non-transient private properties should be persistent 
+     */
+    public boolean getPrivatePersistentProperties() {
+        return _privatePersistentProperties;
+    }
+
+    /**
+     * Whether OpenJPA allows private, non-transient properties to be 
+     * persistent.  Prior to OpenJPA 2.0, if property access was used,
+     * private properties were considered persistent. This is contrary to the
+     * JPA specification, which states that persistent properties must be
+     * public or protected.
+     * 
+     * @param privateProps true if non-transient private properties 
+     *        should be persistent
+     * @since 2.0.0
+     */
+    public void setPrivatePersistentProperties(boolean privateProps) {
+        _privatePersistentProperties = privateProps;
+    }    
 }
