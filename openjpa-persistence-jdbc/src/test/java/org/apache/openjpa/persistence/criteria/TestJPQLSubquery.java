@@ -23,7 +23,6 @@ import java.sql.Timestamp;
 import java.util.Date;
 import java.util.List;
 
-import javax.persistence.PersistenceException;
 import javax.persistence.Query;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Expression;
@@ -35,7 +34,6 @@ import javax.persistence.criteria.SetJoin;
 import javax.persistence.criteria.Subquery;
 
 import org.apache.openjpa.persistence.test.AllowFailure;
-
 
 /**
  * Tests type-strict version of Criteria API.
@@ -766,7 +764,6 @@ public class TestJPQLSubquery extends CriteriaTest {
     }
 
     // redundant t1
-    @AllowFailure(message="cross join is not implemented")
     public void testSubquery01() {
         String jpql = "select o1.id from Order o1 where o1.id in "
             + " (select distinct o.id from LineItem i, Order o"
@@ -1082,7 +1079,6 @@ public class TestJPQLSubquery extends CriteriaTest {
         assertEquivalence(q, jpql);
     }
 
-    @AllowFailure(message="cross join is not implemented")
     public void testSubquery13() {
         String jpql = "select o1.id, c.name from Order o1, Customer c"
             + " where o1.quantity = "
@@ -1179,7 +1175,6 @@ public class TestJPQLSubquery extends CriteriaTest {
         assertEquivalence(q, jpql);
     }
 
-    @AllowFailure(message="cross join is not implemented")
     public void testSubquery16() {
         String jpql = "select o1.id from Order o1 where o1.quantity > "
             + " (select o.quantity*2 from LineItem i, Order o"
@@ -1196,7 +1191,7 @@ public class TestJPQLSubquery extends CriteriaTest {
 
         Subquery<Integer> sq = q.subquery(Integer.class);
         Root<LineItem> i = sq.from(LineItem.class);
-        Join<LineItem, Order> o = i.join(LineItem_.order);
+        Root<Order> o = sq.from(Order.class);
         sq.where(cb.and(cb.and(cb.gt(i.get(LineItem_.quantity), 10), cb.gt(o
                 .get(Order_.quantity), 1000)), cb.equal(i.get(LineItem_.id), o
                 .get(Order_.id))));

@@ -1,3 +1,21 @@
+/*
+ * Licensed to the Apache Software Foundation (ASF) under one
+ * or more contributor license agreements.  See the NOTICE file
+ * distributed with this work for additional information
+ * regarding copyright ownership.  The ASF licenses this file
+ * to you under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied.  See the License for the
+ * specific language governing permissions and limitations
+ * under the License.    
+ */
 package org.apache.openjpa.persistence.criteria;
 
 import java.sql.Timestamp;
@@ -8,15 +26,12 @@ import javax.persistence.criteria.Expression;
 import javax.persistence.criteria.Join;
 import javax.persistence.criteria.JoinType;
 import javax.persistence.criteria.ListJoin;
-import javax.persistence.criteria.Path;
 import javax.persistence.criteria.Root;
 import javax.persistence.criteria.SetJoin;
 import javax.persistence.criteria.Subquery;
-import javax.persistence.criteria.QueryBuilder.Coalesce;
-
-import org.apache.openjpa.persistence.test.AllowFailure;
 
 public class TestSubqueries extends CriteriaTest {
+    
     public void testExist() {
         String query = "SELECT DISTINCT o.name FROM CompUser o WHERE EXISTS"
                 + " (SELECT c FROM Address c WHERE c = o.address )";
@@ -24,7 +39,6 @@ public class TestSubqueries extends CriteriaTest {
         CriteriaQuery<String> q = cb.createQuery(String.class);
         Root<CompUser> o = q.from(CompUser.class);
         Subquery<Address> sq = q.subquery(Address.class);
-        sq.correlate(o);
         Root<Address> c = sq.from(Address.class);
         sq.select(c);
         sq.where(cb.equal(c, o.get(CompUser_.address)));
@@ -42,7 +56,6 @@ public class TestSubqueries extends CriteriaTest {
         CriteriaQuery<String> q = cb.createQuery(String.class);
         Root<CompUser> o = q.from(CompUser.class);
         Subquery<CompUser> sq = q.subquery(CompUser.class);
-        sq.correlate(o);
         Root<CompUser> s = sq.from(CompUser.class);
         sq.select(s);
         sq.where(cb.equal(s.get(CompUser_.address).get(Address_.country), o
@@ -73,7 +86,6 @@ public class TestSubqueries extends CriteriaTest {
         assertEquivalence(q, query);
     }
 
-    @AllowFailure(message="cross join is not implemented")
     public void testSubquery01() {
         String query = "select o1.id from Order o1 where o1.id in "
                 + " (select distinct o.id from LineItem i, Order o"
@@ -85,13 +97,12 @@ public class TestSubqueries extends CriteriaTest {
 
         Subquery<Integer> sq = q.subquery(Integer.class);
         Root<LineItem> i = sq.from(LineItem.class);
-        Join<LineItem, Order> o = i.join(LineItem_.order);
+        Root<Order> o = sq.from(Order.class);
         sq.where(cb.and(cb.and(cb.gt(i.get(LineItem_.quantity), 10), cb.gt(o
                 .get(Order_.count), 1000)), cb.equal(i.get(LineItem_.id), o
                 .get(Order_.id))));
         sq.select(o.get(Order_.id)).distinct(true);
-        q.where(cb.in(o1.get(Order_.id)).value(
-                sq.select(o.get(Order_.id)).distinct(true)));
+        q.where(cb.in(o1.get(Order_.id)).value(sq));
         
         assertEquivalence(q, query);
     }
@@ -195,7 +206,6 @@ public class TestSubqueries extends CriteriaTest {
         assertEquivalence(q, query);
     }
 
-    @AllowFailure(message="JPQL generates invalid SQL")
     public void testSubquery08() {
         String query = "select c.name from Customer c "
                 + "where exists(select o from c.orders o where o.id = 1) "
@@ -249,7 +259,6 @@ public class TestSubqueries extends CriteriaTest {
                 + " (select sum(o2.quantity) from Customer c, " 
                 + "in(c.orders) o2) ";
         
-
         CriteriaQuery<Integer> q = cb.createQuery(Integer.class);
         Root<Order> o = q.from(Order.class);
         q.select(o.get(Order_.id));
@@ -309,7 +318,6 @@ public class TestSubqueries extends CriteriaTest {
         assertEquivalence(q, query);
     }
 
-    @AllowFailure(message="cross join is not implemented")
     public void testSubquery13() {
         String query = "select o1.id, c.name from Order o1, Customer c"
                 + " where o1.quantity = "
@@ -317,11 +325,11 @@ public class TestSubqueries extends CriteriaTest {
         
         CriteriaQuery<Tuple> q = cb.createTupleQuery();
         Root<Order> o1 = q.from(Order.class);
-        Join<Order, Customer> c = o1.join(Order_.customer);
+        Root<Customer> c = q.from(Customer.class);
         q.multiselect(o1.get(Order_.id), c.get(Customer_.name));
 
         Subquery<Integer> sq = q.subquery(Integer.class);
-        Join<Order, Customer> sqc = sq.correlate(c);
+        Root<Customer> sqc = sq.correlate(c);
         SetJoin<Customer, Order> o2 = sqc.join(Customer_.orders);
         sq.select(o2.get(Order_.quantity));
 
@@ -368,16 +376,6 @@ public class TestSubqueries extends CriteriaTest {
         assertEquivalence(q, query);
     }
 
-    // outstanding problem subqueries:
-    // "select o from Order o where o.amount > (select count(o) from Order o)",
-    // "select o from Order o where o.amount > (select count(o2) from Order o2)
-    //",
-    // "select c from Customer c left join c.orders p where not exists"
-    // + " (select o2 from c.orders o2 where o2 = o",
-
-    // not sure how to write CriteriaQuery for
-    // Subquery.select(SimpleCase/GeneralCase)
-    
     public void testSubquery15() {
         String query = "select o.id from Order o where o.delivered =(select "
                 + "   CASE WHEN o2.quantity > 10 THEN true"
@@ -404,7 +402,7 @@ public class TestSubqueries extends CriteriaTest {
         assertEquivalence(q, query);
     }
 
-    @AllowFailure(message="cross join is not implemented")
+    
     public void testSubquery16() {
         String query = "select o1.id from Order o1 where o1.quantity > "
                 + " (select o.quantity*2 from LineItem i, Order o"
@@ -417,7 +415,7 @@ public class TestSubqueries extends CriteriaTest {
 
         Subquery<Integer> sq = q.subquery(Integer.class);
         Root<LineItem> i = sq.from(LineItem.class);
-        Join<LineItem, Order> o = i.join(LineItem_.order);
+        Root<Order> o = sq.from(Order.class);
         sq.where(cb.and(cb.and(cb.gt(i.get(LineItem_.quantity), 10), cb.gt(o
                 .get(Order_.quantity), 1000)), cb.equal(i.get(LineItem_.id), o
                 .get(Order_.id))));
@@ -463,9 +461,8 @@ public class TestSubqueries extends CriteriaTest {
         Root<Order> o2 = sq.correlate(o);
         ListJoin<Order, LineItem> i = o2.join(Order_.lineItems);
 
-        // q.where(cb.gt(
-        // o.get(Order_.orderTs),
-        // sq.select(cb.currentTimestamp())));
+        //q.where(cb.gt(o.get(Order_.orderTs),
+        //sq.select(cb.currentTimestamp())));
         
         assertEquivalence(q, query);
     }
