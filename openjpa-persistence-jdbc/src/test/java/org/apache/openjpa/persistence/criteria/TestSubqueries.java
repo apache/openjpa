@@ -30,6 +30,8 @@ import javax.persistence.criteria.Root;
 import javax.persistence.criteria.SetJoin;
 import javax.persistence.criteria.Subquery;
 
+import org.apache.openjpa.persistence.test.AllowFailure;
+
 public class TestSubqueries extends CriteriaTest {
     
     public void testExist() {
@@ -448,8 +450,8 @@ public class TestSubqueries extends CriteriaTest {
         assertEquivalence(q, query);
     }
 
-    
-    public void xtestSubquery18() {
+    @AllowFailure(message="can not compare timestamp")
+    public void testSubquery18() {
         String query = "select o.id from Order o where o.orderTs >"
                 + " (select CURRENT_TIMESTAMP from o.lineItems i)";
 
@@ -587,22 +589,4 @@ public class TestSubqueries extends CriteriaTest {
                 Customer.CreditRating.POOR))));    
         assertEquivalence(q, query);
     }
-
-    /**
-     * Verify a sub query can contain MAX and additional date comparisons
-     * without losing the correct alias information. This sort of query
-     * originally caused problems for DBDictionaries which used DATABASE syntax.
-     */
-    // Not sure how to do Cartesian join when Employee can not 
-    // navigate to Dependent
-    
-    public void testSubSelectMaxDateRange() {
-        String query = "SELECT e,d from Employee e, Dependent d "
-            + "WHERE e.empId = :empid "
-            + "AND d.id.empid = (SELECT MAX (e2.empId) FROM Employee e2) "
-            + "AND d.id.effDate > :minDate "
-            + "AND d.id.effDate < :maxDate ";
-    }
-
-
 }

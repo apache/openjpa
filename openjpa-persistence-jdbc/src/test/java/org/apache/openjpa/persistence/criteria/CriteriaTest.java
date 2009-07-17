@@ -252,14 +252,39 @@ public abstract class CriteriaTest extends TestCase {
         
         for (int i = 0; i < jSQL.size(); i++) {
             if (!jSQL.get(i).equals(expectedSQL)) {
-                printSQL("SQL for JPQL", jSQL);
-                printSQL("Expected SQL", cSQL);
+                printSQL("SQL for JPQL", jSQL.get(i));
+                printSQL("Expected SQL", cSQL.get(i));
                 assertEquals(i + "-th Expected SQL and SQL for JPQL: " + jpql + " are different",
                      expectedSQL, jSQL.get(i));
             }
         }
     }
     
+    void executeAndCompareSQL(Query jQ, String expectedSQL) {
+        List<String> jSQL = null;
+        try {
+            jSQL = executeQueryAndCollectSQL(jQ);
+        } catch (Exception e) {
+            StringWriter w = new StringWriter();
+            e.printStackTrace(new PrintWriter(w));
+        }
+        
+        printSQL("Expected SQL", expectedSQL);
+        String jSql = jSQL.get(0).trim();
+        if (jSql.indexOf("optimize for 1 row") != -1)
+            jSql = jSql.substring(0, jSql.indexOf("optimize for 1 row")).trim();
+        
+        if (!jSql.equals(expectedSQL)) {
+            printSQL("SQL for JPQL", jSql);
+            assertEquals(expectedSQL, jSql);
+        }
+    }
+
+    void printSQL(String header, String sql) {
+        System.err.println(header);
+        System.err.println(sql);
+    }
+
     void printSQL(String header, List<String> sqls) {
         System.err.println(header);
         for (int i = 0; sqls != null && i < sqls.size(); i++) {

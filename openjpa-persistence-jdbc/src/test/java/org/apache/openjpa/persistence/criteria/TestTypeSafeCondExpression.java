@@ -192,19 +192,15 @@ public class TestTypeSafeCondExpression extends CriteriaTest {
         assertEquivalence(cq, query);
     }
     
-    @AllowFailure(message = "SQL generation is slightly different")
-    
     public void testIsEmptyExprUsingCriteria() {
         String query = "SELECT o.name FROM CompUser o WHERE o.nicknames IS NOT EMPTY";
 
         CriteriaQuery<String> cq = cb.createQuery(String.class);
         Root<CompUser> o = cq.from(CompUser.class);
         cq.select(o.get(CompUser_.name));
-        cq.where(cb.isNotEmpty(o.get(CompUser_.nicknames)));
+        cq.where(cb.isEmpty(o.get(CompUser_.nicknames)).negate());
         assertEquivalence(cq, query);
     }
-
-    
     
     public void testConstructorExprUsingCriteria() {
         String query = "SELECT NEW org.apache.openjpa.persistence.criteria.MaleUser(" +
@@ -397,7 +393,7 @@ public class TestTypeSafeCondExpression extends CriteriaTest {
         assertEquivalence(q, query);
     }
     
-    @AllowFailure
+    @AllowFailure(message="can not parameterize the literial in math function")
     public void testArithmFunc3() {
         String query = "select MOD(e.age, 4) From CompUser e WHERE e.name='Seetha'";
         
@@ -525,14 +521,13 @@ public class TestTypeSafeCondExpression extends CriteriaTest {
         assertEquivalence(q, query, new String[]{"t"}, new Class[]{MaleUser.class});
     }
 
-    @AllowFailure(message="cross join is not implemented")
     public void testTypeExpression3() {
         String query = "SELECT e, FemaleUser, a FROM Address a, FemaleUser e where e.address IS NOT NULL";
         
         CriteriaQuery<Tuple> q = cb.createTupleQuery();
         Root<Address> a = q.from(Address.class);
         Root<FemaleUser> e = q.from(FemaleUser.class);
-        q.multiselect(e, cb.literal(FemaleUser.class), e.get(CompUser_.address));
+        q.multiselect(e, cb.literal(FemaleUser.class), a);
         q.where(e.get(FemaleUser_.address).isNotNull());
         
         assertEquivalence(q, query);

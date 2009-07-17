@@ -21,14 +21,14 @@ package org.apache.openjpa.persistence.criteria;
 import java.math.BigDecimal;
 import java.sql.Timestamp;
 import java.util.Date;
-import java.util.List;
-
+import javax.persistence.Parameter;
 import javax.persistence.Query;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Expression;
 import javax.persistence.criteria.Join;
 import javax.persistence.criteria.JoinType;
 import javax.persistence.criteria.ListJoin;
+import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 import javax.persistence.criteria.SetJoin;
 import javax.persistence.criteria.Subquery;
@@ -1230,7 +1230,8 @@ public class TestJPQLSubquery extends CriteriaTest {
         assertEquivalence(q, jpql);
     }
 
-    public void xtestSubquery18() {
+    @AllowFailure(message="can not compare timestamp")
+    public void testSubquery18() {
         String jpql = "select o.id from Order o where o.orderTs >"
             + " (select CURRENT_TIMESTAMP from o.lineItems i)";
 
@@ -1471,11 +1472,7 @@ public class TestJPQLSubquery extends CriteriaTest {
         assertEquivalence(q, jpql);
     }
 
-    /**
-     * this test scenario must use Dependent.java and DependentId.java in
-     * org.apache.openjpa.persistence.query package.
-     */
-    @AllowFailure(message="")
+    @AllowFailure(message="can not compare timestamp")
     public void testSubSelectMaxDateRange() {
         String jpql = "SELECT e,d from Employee e, Dependent d "
             + "WHERE e.empId = :empid "
@@ -1493,7 +1490,27 @@ public class TestJPQLSubquery extends CriteriaTest {
         jQ.setParameter("minDate", new Date(100));
         jQ.setParameter("maxDate", new Date(100000));
 
-        List jList = jQ.getResultList();
+        executeAndCompareSQL(jQ, expectedSQL);
+        
+        CriteriaQuery<?> q = cb.createQuery();
+        Root<Employee> e = q.from(Employee.class);
+        Root<Dependent> d = q.from(Dependent.class);
+        q.multiselect(e, d);
+        Parameter<Integer> empid = cb.parameter(Integer.class, "empid");
+        Parameter<Date> minDate = cb.parameter(Date.class, "minDate");
+        Parameter<Date> maxDate = cb.parameter(Date.class, "maxDate");
+
+        Subquery<Integer> sq = q.subquery(Integer.class);
+        Root<Employee> e2 = sq.from(Employee.class);
+        sq.select(cb.max(e2.get(Employee_.empId)));
+        Predicate p1 = cb.equal(e.get(Employee_.empId), empid); 
+        Predicate p2 = cb.equal(d.get(Dependent_.id).get(DependentId_.empid), sq);
+        //Predicate p3 = cb.gt(d.get(Dependent_.id).get(DependentId_.effDate), minDate);
+        //Predicate p4 = cb.lt(d.get(Dependent_.id).get(DependentId_.effDate), maxDate);
+        
+        //q.where(cb.and(cb.and(cb.and(p1, p2), p3), p4));
+        assertEquivalence(q, jpql);
+        
     }
     
     public void testCorrelatedNestedSubquery1() {
