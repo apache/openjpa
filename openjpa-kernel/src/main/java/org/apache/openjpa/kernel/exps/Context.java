@@ -19,7 +19,9 @@
 package org.apache.openjpa.kernel.exps;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.apache.openjpa.kernel.jpql.JPQLExpressionBuilder.ParsedJPQL;
@@ -38,7 +40,7 @@ public class Context implements Serializable {
     public Subquery subquery;
     public Expression from = null;
     private Context parent = null;
-    private Context subsel = null;
+    private List<Context> subsels = null;
     private Object select = null;
     private int aliasCount = -1; 
     private Map<String,Value> variables = new HashMap<String,Value>();
@@ -51,14 +53,14 @@ public class Context implements Serializable {
         this.parent = parent;
         if (subquery != null) {
             this.select = subquery.getSelect();
-            parent.setSubselContext(this);
+            parent.addSubselContext(this);
         }
     }
 
     public void setSubquery(Subquery subquery) {
         this.subquery = subquery;
         this.select = subquery.getSelect();
-        parent.setSubselContext(this);
+        parent.addSubselContext(this);
     }
     
     public ClassMetaData meta() {
@@ -118,16 +120,18 @@ public class Context implements Serializable {
      * Register the subquery context in this context.
      * @param sub
      */
-    private void setSubselContext(Context sub) {
-        subsel = sub;
+    private void addSubselContext(Context sub) {
+        if (subsels == null)
+            subsels = new ArrayList<Context>();
+        subsels.add(sub);
     }
 
     /**
      * Returns the subquery context.
      * @return
      */
-    public Context getSubselContext() {
-        return subsel;
+    public List<Context> getSubselContexts() {
+        return subsels;
     }
 
     /**
@@ -187,10 +191,14 @@ public class Context implements Serializable {
                 return p;
             p = p.parent;
         }
-        if (subsel != null) {
-            var = subsel.getVariable(alias);
-            if (var != null)
-                return subsel;
+        if (subsels != null) {
+            for (Context subsel : subsels) {
+                if (subsel != null) {
+                    var = subsel.getVariable(alias);
+                    if (var != null)
+                        return subsel;
+                }
+            }
         }
         return null;
     }

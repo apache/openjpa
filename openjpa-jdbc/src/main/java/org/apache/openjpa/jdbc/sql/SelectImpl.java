@@ -2213,6 +2213,37 @@ public class SelectImpl
      */
     private static class Placeholder {
     }
+    
+    public void reset() {
+        _aliases = null;
+        _eager = null;
+        _eagerKeys = null;
+        _expectedResultCount = 0;
+        _flags = 0;
+        _from = null;
+        _grouped = null;
+        _grouping = null;
+        _having = null;
+        _joins = null;
+        _joinSyntax = 0;
+        _nullIds = 0;
+        _ordered = null;
+        _ordering = null;
+        _orders = 0;
+        _outer = null;
+        _parent = null;
+        _placeholders = 0;
+        _preJoins = null;
+        _schemaAlias = null;
+        _selects._aliases = null;
+        _selects._ids = null;
+        _subPath = null;
+        _subsels = null;
+        _tables = null;
+        _where = null;
+        
+    }
+    
 
     /**
      * Key type used for aliases.
@@ -2921,6 +2952,8 @@ public class SelectImpl
         }
 
         private void addJoinsToParent(SelectImpl parent, Join join) {
+            if (parent._aliases == null)
+                return;
             Object aliases[] = parent._aliases.values().toArray();
             boolean found1 = false;
             boolean found2 = false;

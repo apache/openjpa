@@ -20,6 +20,7 @@ package org.apache.openjpa.jdbc.kernel.exps;
 
 import java.io.Serializable;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.apache.openjpa.jdbc.meta.ClassMapping;
@@ -29,6 +30,7 @@ import org.apache.openjpa.jdbc.sql.SQLBuffer;
 import org.apache.openjpa.jdbc.sql.Select;
 import org.apache.openjpa.kernel.exps.AbstractExpressionVisitor;
 import org.apache.openjpa.kernel.exps.Constant;
+import org.apache.openjpa.kernel.exps.Context;
 import org.apache.openjpa.kernel.exps.Expression;
 import org.apache.openjpa.kernel.exps.QueryExpressions;
 import org.apache.openjpa.kernel.exps.Subquery;
@@ -129,11 +131,14 @@ public class SelectConstructor
         if (sel.ctx() == null)
             sel.setContext(exps.ctx());
 
-        if (parent == null && exps.ctx().getSubselContext() != null) {
+        if (parent == null && exps.ctx().getSubselContexts() != null) {
             // this is the case subselect was created before parent got created
-            Select subsel = (Select) exps.ctx().getSubselContext().getSelect();
-            Subquery subquery = exps.ctx().getSubselContext().getSubquery();
-            subsel.setParent(sel, subquery.getCandidateAlias());
+            List<Context> subselCtxs = exps.ctx().getSubselContexts();
+            for (Context subselCtx : subselCtxs) {
+                Select subsel = (Select) subselCtx.getSelect();
+                Subquery subquery = subselCtx.getSubquery();
+                subsel.setParent(sel, subquery.getCandidateAlias());
+            }
         }
      
         initialize(sel, ctx, exps, state);
