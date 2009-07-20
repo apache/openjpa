@@ -109,11 +109,9 @@
             </dependencies>
             <repositories>
                 <repository>
-                    <!-- have to use a commiters home dir for the Agimatec
-                         artifacts until released in a public repo -->
-                    <id>dwoods.people.apache.org</id>
-                    <name>dwoods Staging Repo</name>
-                    <url>http://people.apache.org/~dwoods/staging-repo</url>
+                    <id>agimatec-snapshots</id>
+                    <name>Sonatype OSS Repository</name>
+                    <url>http://oss.sonatype.org/content/repositories/agimatec-snapshots</url>
                     <layout>default</layout>
                     <snapshots>
                         <enabled>true</enabled>
