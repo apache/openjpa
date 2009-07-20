@@ -169,10 +169,12 @@ public abstract class AbstractExpressionBuilder {
             type = TYPE_OBJECT;
         else
             meta = getMetaData(type, false);
-        if (meta != null)
+        if (meta != null) {
             addAccessPath(meta);
+            addSchemaToContext(id, meta);
+        }
 
-        Value var;
+        Value var = null;
         if (bind)
             var = factory.newBoundVariable(id, type);
         else
@@ -182,6 +184,8 @@ public abstract class AbstractExpressionBuilder {
         if (_seenVars == null)
             _seenVars = new HashMap<String,Value>();
         _seenVars.put(id, var);
+
+        addVariableToContext(id, var);
         return var;
     }
 
@@ -308,7 +312,7 @@ public abstract class AbstractExpressionBuilder {
             }
         }
 
-        if (meta != null || !pcOnly)
+        if (meta != null || !pcOnly) 
             path.get(fmd, allowNull);
 
         return path;
@@ -521,5 +525,28 @@ public abstract class AbstractExpressionBuilder {
      * Returns the current string being parsed; used for error messages.
 	 */
 	protected abstract String currentQuery ();
+
+    /**
+     * Register the schema alias to the current JPQL query context.
+     * @param alias
+     * @param meta
+     */
+    protected abstract void addSchemaToContext(String alias,
+        ClassMetaData meta);
+
+    /**
+     * Register the variable associated with the schema alias (id) to
+     * the current JPQL query context.
+     * @param id
+     * @param var
+     */
+    protected abstract void addVariableToContext(String id, Value var);
+
+    /**
+     * Returns the variable associated with the schema alias (id).
+     * @param id
+     * @return
+     */
+    protected abstract Value getSeenVariable(String id);
 }
 

@@ -45,6 +45,7 @@ import org.apache.openjpa.kernel.Filters;
 import org.apache.openjpa.kernel.OpenJPAStateManager;
 import org.apache.openjpa.kernel.StoreContext;
 import org.apache.openjpa.kernel.exps.CandidatePath;
+import org.apache.openjpa.kernel.exps.Context;
 import org.apache.openjpa.lib.util.Localizer;
 import org.apache.openjpa.meta.ClassMetaData;
 import org.apache.openjpa.meta.FieldMetaData;
@@ -82,6 +83,7 @@ public class PCPath
     private boolean _cid = false;
     private FieldMetaData _xmlfield = null;
     private boolean _keyPath = false;
+    private String _schemaAlias = null;
 
     /**
      * Return a path starting with the 'this' ptr.
@@ -99,10 +101,12 @@ public class PCPath
 
         PCPath other = var.getPCPath();
         Action action = new Action();
+        action.var = var.getName();
         if (other == null) {
             _type = UNBOUND_VAR;
             action.op = Action.UNBOUND_VAR;
             action.data = var;
+            _schemaAlias = var.getName();
         } else {
             // bound variable; copy path
             _type = UNACCESSED_VAR;
@@ -111,6 +115,7 @@ public class PCPath
 
             action.op = Action.VAR;
             action.data = var.getName();
+            _schemaAlias = other._schemaAlias;
         }
         _actions.add(action);
         _cast = var.getType(); // initial type is var type
@@ -131,6 +136,22 @@ public class PCPath
         _varName = sub.getCandidateAlias();
     }
 
+    public void setSchemaAlias(String schemaAlias) {
+        if (_schemaAlias == null) 
+            _schemaAlias = schemaAlias;
+    }
+
+    public String getSchemaAlias() {
+        return _schemaAlias;
+    }
+    
+    public void setSubqueryContext(Context context) {
+        Action action = lastFieldAction();
+        if (action == null)
+            return;
+        action.context = context;
+    }
+    
     /**
      * Set the path as a binding of the given variable.
      */
@@ -420,8 +441,7 @@ public class PCPath
         if (act != null && act.op == Action.GET_XPATH)
             return ((XMLMetaData) act.data).getType();
         
-        FieldMetaData fld = act == null ? null :
-            (FieldMetaData) act.data;
+        FieldMetaData fld = (act == null) ? null : (FieldMetaData) act.data;
         boolean key = act != null && act.op == Action.GET_KEY;
         if (fld != null) {
             switch (fld.getDeclaredTypeCode()) {
@@ -457,6 +477,8 @@ public class PCPath
         boolean forceOuter = false;
         ClassMapping rel = _candidate;
 
+        sel.setSchemaAlias(_schemaAlias);
+
         // iterate to the final field
         ClassMapping owner;
         ClassMapping from, to;
@@ -464,14 +486,27 @@ public class PCPath
         Variable var;
         Iterator itr = (_actions == null) ? null : _actions.iterator();
         FieldMapping field = null;
+        Action prevaction = null;
+        boolean isCorrelatedPath = false;
+        boolean fromParentRootInSubselect = navigateFromParentRootInSubselect(sel);
+                
         while (itr != null && itr.hasNext()) {
             action = (Action) itr.next();
 
             // treat subqueries like variables for alias generation purposes
-            if (action.op == Action.VAR)
-                pstate.joins = pstate.joins.setVariable((String) action.data);
-            else if (action.op == Action.SUBQUERY)
+            if (action.op == Action.VAR) {
+                if (sel.getParent() != null && action.var != null &&
+                    prevaction != null && prevaction.data != null &&
+                    sel.ctx().getVariable(action.var) == null) {
+                    //System.out.println("Correlated action var="+action.var);
+                    isCorrelatedPath = true;
+                    pstate.joins = pstate.joins.setCorrelatedVariable(action.var);
+                } else 
+                    pstate.joins = pstate.joins.setVariable((String) action.data);
+            }
+            else if (action.op == Action.SUBQUERY) {
                 pstate.joins = pstate.joins.setSubselect((String) action.data);
+            }
             else if (action.op == Action.UNBOUND_VAR) {
                 // unbound vars are cross-joined to the candidate table
                 var = (Variable) action.data;
@@ -479,8 +514,16 @@ public class PCPath
                 if (rel == null)
                 	throw new IllegalArgumentException(_loc.get(
                 	    "invalid-unbound-var", var.getName()).toString());
-                pstate.joins = pstate.joins.setVariable(var.getName());
-                pstate.joins = pstate.joins.crossJoin(_candidate.getTable(), 
+                	    
+                if (sel.getParent() != null && action.var != null &&
+                    sel.ctx().getVariable(action.var) == null) {
+                    //System.out.println("Correlated action var="+action.var);
+                    isCorrelatedPath = true;
+                    pstate.joins = pstate.joins.setCorrelatedVariable(var.getName());
+                } else                 
+                    pstate.joins = pstate.joins.setVariable(var.getName());
+
+                pstate.joins = pstate.joins.crossJoin(_candidate.getTable(),
                     rel.getTable());
             } else {
                 // move past the previous field, if any
@@ -496,6 +539,13 @@ public class PCPath
                         pstate.cmpfield = field;
                         break;
                     }
+                    
+                    if (fromParentRootInSubselect) {
+                        isCorrelatedPath = true;
+                        pstate.joins = pstate.joins.setCorrelatedVariable(_schemaAlias);
+                        pstate.joins.setJoinContext(null);
+                    }
+                    
                     rel = traverseField(pstate, key, forceOuter, false);
                 }
 
@@ -543,6 +593,9 @@ public class PCPath
                 if (action.op == Action.GET_XPATH)
                     break;
             }
+            prevaction = action;
+            if (prevaction != null && prevaction.context != null) 
+                pstate.joins = pstate.joins.setJoinContext(prevaction.context);
         }
         if (_varName != null)
             pstate.joins = pstate.joins.setVariable(_varName);
@@ -557,9 +610,55 @@ public class PCPath
         if ((flags & JOIN_REL) != 0)
             joinRelation(pstate, key, forceOuter || (flags & FORCE_OUTER) != 0,
                 false);
+        if (isCorrelatedPath) {
+            // check if there are joins that belong to parent
+            pstate.joins.moveJoinsToParent();
+        }
+        pstate.joins.setJoinContext(null);
+        
+        if (_actions == null) {
+            String subqAlias = findSubqAlias(sel);
+            pstate.joins = pstate.joins.setSubselect(subqAlias);
+            pstate.joins.setCorrelatedVariable(_schemaAlias);
+        }
+        
         return pstate;
     }
+    
+    public String findSubqAlias(Select sel) {
+        Select pSel = sel.getParent();
+        if (pSel == null)
+            return null;
+        Context pCtx = pSel.ctx();
+        if (pCtx.subquery == null)
+            return null;
+        if (pCtx.getSchema(_schemaAlias) != null)
+            return ((SubQ)pCtx.subquery).getCandidateAlias();
+        return findSubqAlias(pSel);
+    }
 
+    /**
+     * When a PCPath is in subselect, and it is simply a navigation
+     * from the parent root, the joins involved in this PCPath
+     * must happen in the main select.  
+     */
+    private boolean navigateFromParentRootInSubselect(Select sel) {
+        if (sel.getParent() == null)
+            return false;
+        Iterator itr = (_actions == null) ? null : _actions.iterator();
+        boolean navigateFromRoot = false;
+        boolean hasVar = false;
+        boolean startsWithSubquery = false;
+        while (itr != null && itr.hasNext()) {
+            Action action = (Action) itr.next();
+            if (action.op == Action.VAR) 
+                hasVar = true;
+            else if (action.op == Action.SUBQUERY)
+                startsWithSubquery = true;
+        }
+        return !hasVar && !startsWithSubquery && sel.ctx().getSchema(_schemaAlias) == null;
+    }
+    
     /**
      * Return whether the given source field joins to the given target field.
      */
@@ -846,6 +945,8 @@ public class PCPath
     public void appendTo(Select sel, ExpContext ctx, ExpState state, 
         SQLBuffer sql, int index) {
         Column col = getColumns(state)[index];
+        if (sel != null)
+            sel.setSchemaAlias(_schemaAlias);
 
         // if select is null, it means we are not aliasing columns
         // (e.g., during a bulk update)
@@ -977,6 +1078,8 @@ public class PCPath
 
         public int op = -1;
         public Object data = null;
+        public String var = null;
+        public Context context = null;
 
         public String toString() {
             return op + "|" + data;

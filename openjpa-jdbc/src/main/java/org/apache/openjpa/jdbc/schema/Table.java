@@ -62,7 +62,8 @@ public class Table
     private Unique[] _unqs = null;
     private String _comment = null;
     private int _lineNum = 0;  
-    private int _colNum = 0;  
+    private int _colNum = 0;
+    private boolean _isAssociation = false;
 
     /**
      * Default constructor.
@@ -82,6 +83,14 @@ public class Table
         if (schema != null)
             setSchemaName(schema.getName());
         _schema = schema;
+    }
+
+    public void setAssociation() {
+        _isAssociation = true;
+    }
+
+    public boolean isAssociation() {
+        return _isAssociation;
     }
 
     /**

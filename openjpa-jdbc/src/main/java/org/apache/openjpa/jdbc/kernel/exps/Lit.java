@@ -36,6 +36,7 @@ public class Lit
     private Object _val;
     private int _ptype;
     private boolean _isRaw;
+    private Object _rawVal;
 
     /**
      * Constructor. Supply literal value.
@@ -46,6 +47,8 @@ public class Lit
     }
 
     public Class getType() {
+        if (_isRaw && _rawVal != null)
+            return Raw.class;
         return (_val == null) ? Object.class : _val.getClass();
     }
 
@@ -75,6 +78,10 @@ public class Lit
     
     public void setRaw(boolean isRaw) {
         _isRaw = isRaw;
+    }
+
+    public Object getRawValue() {
+        return _rawVal;
     }
 
     public ExpState initialize(Select sel, ExpContext ctx, int flags) {
@@ -120,7 +127,7 @@ public class Lit
                 if (!isOrdinal)
                     value.append("'");
                 lstate.sqlValue = new Raw(value.toString());
-                setValue(lstate.sqlValue);
+                _rawVal = lstate.sqlValue;
             }
             sql.appendValue(lstate.sqlValue, lstate.getColumn(index));
         }

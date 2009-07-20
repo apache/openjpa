@@ -20,6 +20,7 @@ package org.apache.openjpa.jdbc.kernel.exps;
 
 import java.io.Serializable;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.apache.openjpa.jdbc.meta.ClassMapping;
@@ -29,8 +30,10 @@ import org.apache.openjpa.jdbc.sql.SQLBuffer;
 import org.apache.openjpa.jdbc.sql.Select;
 import org.apache.openjpa.kernel.exps.AbstractExpressionVisitor;
 import org.apache.openjpa.kernel.exps.Constant;
+import org.apache.openjpa.kernel.exps.Context;
 import org.apache.openjpa.kernel.exps.Expression;
 import org.apache.openjpa.kernel.exps.QueryExpressions;
+import org.apache.openjpa.kernel.exps.Subquery;
 import org.apache.openjpa.kernel.exps.Value;
 
 /**
@@ -43,6 +46,7 @@ public class SelectConstructor
     implements Serializable {
 
     private boolean _extent = false;
+    private Select _subselect = null;
 
     /**
      * Return true if we know the select to have on criteria; to be an extent.
@@ -51,6 +55,10 @@ public class SelectConstructor
      */
     public boolean isExtent() {
         return _extent;
+    }
+
+    public void setSubselect(Select subselect) {
+        _subselect = subselect;
     }
 
     /**
@@ -114,10 +122,25 @@ public class SelectConstructor
      */
     private Select newSelect(ExpContext ctx, Select parent,
         String alias, QueryExpressions exps, QueryExpressionsState state) {
-        Select sel = ctx.store.getSQLFactory().newSelect();
+        Select sel = parent != null ? _subselect
+            : ctx.store.getSQLFactory().newSelect();
         sel.setAutoDistinct((exps.distinct & exps.DISTINCT_AUTO) != 0);
         sel.setJoinSyntax(ctx.fetch.getJoinSyntax());
         sel.setParent(parent, alias);
+
+        if (sel.ctx() == null)
+            sel.setContext(exps.ctx());
+
+        if (parent == null && exps.ctx().getSubselContexts() != null) {
+            // this is the case subselect was created before parent got created
+            List<Context> subselCtxs = exps.ctx().getSubselContexts();
+            for (Context subselCtx : subselCtxs) {
+                Select subsel = (Select) subselCtx.getSelect();
+                Subquery subquery = subselCtx.getSubquery();
+                subsel.setParent(sel, subquery.getCandidateAlias());
+            }
+        }
+     
         initialize(sel, ctx, exps, state);
 
         if (!sel.getAutoDistinct()) {

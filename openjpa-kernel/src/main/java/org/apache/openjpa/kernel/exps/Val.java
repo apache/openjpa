@@ -135,4 +135,8 @@ public abstract class Val
     public Path getPath() {
         return null;
     }
+
+    public String getName() {
+        return null;
+    }
 }

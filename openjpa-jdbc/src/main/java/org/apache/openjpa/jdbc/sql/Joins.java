@@ -21,6 +21,7 @@ package org.apache.openjpa.jdbc.sql;
 import org.apache.openjpa.jdbc.meta.ClassMapping;
 import org.apache.openjpa.jdbc.schema.ForeignKey;
 import org.apache.openjpa.jdbc.schema.Table;
+import org.apache.openjpa.kernel.exps.Context;
 
 /**
  * Tracks joins made when traversing relations in a select.
@@ -77,4 +78,28 @@ public interface Joins {
      * Set the subquery alias.
      */
     public Joins setSubselect(String alias);
+
+    /**
+     * Set subquery context when traversing into the next join is
+     * in transition from parent context to subquery.
+     * @param context
+     */
+    public Joins setJoinContext(Context context);
+    
+    /**
+     * Set the correlated variable name being traversed into
+     * with the next join.
+     */
+    public Joins setCorrelatedVariable(String var);
+
+    /**
+     * Return correlated variable name
+     * @return
+     */
+    public String getCorrelatedVariable();
+
+    /**
+     * Move joins that belong to subquery's parent
+     */
+    public void moveJoinsToParent();
 }

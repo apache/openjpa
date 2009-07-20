@@ -114,5 +114,9 @@ abstract class AbstractVal
     public Path getPath() {
         return null;
     }
+    
+    public String getName() {
+        return null;
+    }    
 }
 

@@ -46,6 +46,7 @@ import org.apache.openjpa.kernel.exps.QueryExpressions;
 import org.apache.openjpa.kernel.exps.Resolver;
 import org.apache.openjpa.kernel.exps.Subquery;
 import org.apache.openjpa.kernel.exps.Value;
+import org.apache.openjpa.kernel.exps.Context;
 import org.apache.openjpa.lib.util.Localizer;
 import org.apache.openjpa.lib.util.Localizer.Message;
 import org.apache.openjpa.lib.log.Log;
@@ -99,7 +100,7 @@ public class JPQLExpressionBuilder
             ? (ParsedJPQL) parsedQuery
             : parsedQuery instanceof String
             ? getParsedQuery((String) parsedQuery)
-            : null, null));
+            : null, null, null));
 
         if (ctx().parsed == null)
             throw new InternalException(parsedQuery + "");
@@ -271,11 +272,15 @@ public class JPQLExpressionBuilder
 
     QueryExpressions getQueryExpressions() {
         QueryExpressions exps = new QueryExpressions();
+        exps.setContexts(contexts);
 
         evalQueryOperation(exps);
 
         Expression filter = null;
-        filter = and(evalFromClause(root().id == JJTSELECT), filter);
+        Expression from = ctx().from;
+        if (from == null)
+            from = evalFromClause(root().id == JJTSELECT);
+        filter = and(from, filter);
         filter = and(evalWhereClause(), filter);
         filter = and(evalSelectClause(exps), filter);
 
@@ -413,7 +418,7 @@ public class JPQLExpressionBuilder
                 exps.ascending[i] = node.getChildCount() <= 1 ||
                     lastChild(node).id == JJTASCENDING ? true : false;
             }
-            // check if order by selec item alias
+            // check if order by select item result alias
             for (int i = 0; i < ordercount; i++) {
                 if (exps.orderingClauses[i] != null && 
                     !exps.orderingClauses[i].equals(""))
@@ -543,12 +548,15 @@ public class JPQLExpressionBuilder
     }
 
     private Expression evalFromClause(boolean needsAlias) {
-        Expression exp = null;
-
         // build up the alias map in the FROM clause
         JPQLNode from = root().findChildByID(JJTFROM, false);
         if (from == null)
             throw parseException(EX_USER, "no-from-clause", null, null);
+        return evalFromClause(from, needsAlias);
+    }
+
+    private Expression evalFromClause(JPQLNode from, boolean needsAlias) {
+        Expression exp = null;
 
         for (int i = 0; i < from.children.length; i++) {
             JPQLNode node = from.children[i];
@@ -573,7 +581,7 @@ public class JPQLExpressionBuilder
 
     private Expression bindVariableForKeyPath(Path path, String alias,
         Expression exp) {
-        if (alias != null && !isSeendVariable(alias)) {
+        if (alias != null && ctx().findVariable(alias) == null) {
             // subquery may have KEY range over a variable 
             // that is not defined.
             JPQLNode key = root().findChildByID(JJTKEY, true);
@@ -584,6 +592,29 @@ public class JPQLExpressionBuilder
         }
         return exp;
     }
+
+    private Expression getSubquery(String alias, Path path, Expression exp) {
+        FieldMetaData fmd = path.last();
+        ClassMetaData candidate = getFieldType(fmd);
+        if (candidate == null && fmd.isElementCollection())
+            candidate = fmd.getDefiningMetaData();
+
+        setCandidate(candidate, alias);
+
+        Context subContext = ctx();
+        Subquery subquery = ctx().getSubquery();
+        if (subquery == null){
+            subquery = factory.newSubquery(candidate, true, alias);
+            subContext.setSubquery(subquery);
+        }
+        Path subpath = factory.newPath(subquery);
+        subpath.setMetaData(candidate);
+        subquery.setMetaData(candidate);
+        exp = bindVariableForKeyPath(path, alias, exp);
+        exp =  and(exp, factory.equal(path, subpath));
+        return exp;
+    }
+
     /**
      * Adds a join condition to the given expression.
      *
@@ -604,14 +635,8 @@ public class JPQLExpressionBuilder
         JPQLNode alias = node.getChildCount() >= 2 ? right(node) : null;
         // OPENJPA-15 support subquery's from clause do not start with 
         // identification_variable_declaration()
-        if (inner && ctx().subquery != null && ctx().schemaAlias == null) {
-            setCandidate(getFieldType(path.last()), alias.text);
-
-            Path subpath = factory.newPath(ctx().subquery);
-            subpath.setMetaData(ctx().subquery.getMetaData());
-            exp = bindVariableForKeyPath(path, alias.text, exp);
-            exp =  and(exp, factory.equal(path, subpath));
-            return exp;
+        if (inner && ctx().getParent() != null && ctx().schemaAlias == null) {
+            return getSubquery(alias.text, path, exp);
         }
 
         return addJoin(path, alias, exp);
@@ -666,23 +691,13 @@ public class JPQLExpressionBuilder
         } else {
             alias = right(node).text;
             JPQLNode left = left(node);
+            addSchemaToContext(alias, cmd);
 
             // check to see if the we are referring to a path in the from
             // clause, since we might be in a subquery against a collection
             if (isPath(left)) {
                 Path path = getPath(left);
-                FieldMetaData fmd = path.last();
-                ClassMetaData candidate = getFieldType(fmd);
-
-                if (candidate == null && fmd.isElementCollection())
-                    candidate = fmd.getDefiningMetaData();
-
-                setCandidate(candidate, alias);
-
-                Path subpath = factory.newPath(ctx().subquery);
-                subpath.setMetaData(ctx().subquery.getMetaData());
-                exp = bindVariableForKeyPath(path, alias, exp);
-                return and(exp, factory.equal(path, subpath));
+                return getSubquery(alias, path, exp);
             } else {
                 // we have an alias: bind it as a variable
                 Value var = getVariable(alias, true);
@@ -764,8 +779,15 @@ public class JPQLExpressionBuilder
         return super.getVariable(id.toLowerCase(), bind);
     }
 
-    protected boolean isSeendVariable(String id) {
-        return id != null && super.isSeenVariable(id.toLowerCase());
+    protected Value getDefinedVariable(String id) {
+        return ctx().getVariable(id);
+    }
+
+    protected boolean isSeenVariable(String var) {
+        Context c = ctx().findContext(var);
+        if (c != null)
+            return true;
+        return false;
     }
 
     /**
@@ -1181,7 +1203,11 @@ public class JPQLExpressionBuilder
                 return eval(onlyChild(node));
 
             case JJTCOUNT:
-                return factory.count(getValue(lastChild(node)));
+                JPQLNode c = lastChild(node);
+                if (c.id == JJTIDENTIFIER)
+                    // count(e)
+                    return factory.count(getPath(node, false, true));
+                return factory.count(getValue(c));
 
             case JJTMAX:
                 return factory.max(getNumberValue(onlyChild(node)));
@@ -1392,12 +1418,22 @@ public class JPQLExpressionBuilder
 
         // parse the subquery
         ParsedJPQL parsed = new ParsedJPQL(node.parser.jpql, node);
+        Context parent = ctx();
+        Context subContext = new Context(parsed, null, ctx());
+        contexts.push(subContext);
+        subContext.setParent(parent);
 
         ClassMetaData candidate = getCandidateMetaData(node);
-        Subquery subq = factory.newSubquery(candidate, subclasses, alias);
+        Subquery subq = subContext.getSubquery();
+        if (subq == null) {
+            subq = factory.newSubquery(candidate, subclasses, alias);
+            subContext.setSubquery(subq);
+        }
         subq.setMetaData(candidate);
-
-        contexts.push(new Context(parsed, subq));
+        
+        // evaluate from clause for resolving variables defined in subquery
+        JPQLNode from = node.getChild(1);
+        subContext.from = evalFromClause(from, true);
 
         try {
             QueryExpressions subexp = getQueryExpressions();
@@ -1506,7 +1542,14 @@ public class JPQLExpressionBuilder
         if (cmd != null) {
             // handle the case where the class name is the alias
             // for the candidate (we don't use variables for this)
-            Value thiz = factory.getThis();
+            Value thiz = null;
+            if (ctx().subquery == null || 
+                ctx().getSchema(name.toLowerCase()) == null) {
+                thiz = factory.getThis();
+            } else {
+                thiz = factory.newPath(ctx().subquery);
+            }
+            ((Path)thiz).setSchemaAlias(name);
             thiz.setMetaData(cmd);
             return thiz;
         } else if (val instanceof Path) {
@@ -1734,6 +1777,7 @@ public class JPQLExpressionBuilder
             if (ctx().subquery != null) {
                 path = factory.newPath(ctx().subquery);
                 path.setMetaData(ctx().subquery.getMetaData());
+                factory.bindVariable(val, path);
             } else {
                 path = factory.newPath();
                 path.setMetaData(ctx().meta);
@@ -1748,6 +1792,8 @@ public class JPQLExpressionBuilder
             throw parseException(EX_USER, "path-invalid",
                 new Object[]{ assemble(node), name }, null);
 
+        path.setSchemaAlias(name);
+
         // walk through the children and assemble the path
         boolean allowNull = !inner;
         for (int i = 1; i < node.children.length; i++) {
@@ -1758,7 +1804,10 @@ public class JPQLExpressionBuilder
             }
             path = (Path) traversePath(path, node.children[i].text, pcOnly,
                 allowNull);
-
+            if (ctx().getParent() != null && ctx().getVariable(path.getSchemaAlias()) == null) {
+                path.setSubqueryContext(ctx());
+            }
+        
             // all traversals but the first one will always be inner joins
             allowNull = false;
         }
@@ -1902,17 +1951,23 @@ public class JPQLExpressionBuilder
         return null;
     }
 
-    private class Context {
+    protected void addSchemaToContext(String id, ClassMetaData meta) {
+        ctx().addSchema(id.toLowerCase(), meta);    
+    }
 
-        private final ParsedJPQL parsed;
-        private ClassMetaData meta;
-        private String schemaAlias;
-        private Subquery subquery;
+    protected void addVariableToContext(String id, Value var) {
+        ctx().addVariable(id, var);
+    }
 
-        Context(ParsedJPQL parsed, Subquery subquery) {
-            this.parsed = parsed;
-            this.subquery = subquery;
-        }
+    protected Value getSeenVariable(String var) {
+        Context c = ctx();
+        Value v = c.getVariable(var);
+        if (v != null)
+            return v;
+        if (c.getParent() != null)
+            return c.getParent().findVariable(var);
+
+        return null;
     }
 
     ////////////////////////////

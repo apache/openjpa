@@ -45,6 +45,8 @@ public class Join
     private int _subs;
     private Joins _joins;
     private boolean _inverse;
+    private boolean _correlated = false;
+    private boolean _isNotMyJoin = false;
 
     /**
      * Constructor for inner and outer joins.
@@ -188,6 +190,22 @@ public class Join
         } catch (Exception e) {
             return null;
         }
+    }
+
+    public boolean isCorrelated() {
+        return _correlated;
+    }
+
+    public void setCorrelated() {
+        _correlated = true;
+    }
+
+    public boolean isNotMyJoin() {
+        return _isNotMyJoin;
+    }
+
+    public void setIsNotMyJoin() {
+        _isNotMyJoin = true;
     }
 }
 

@@ -36,4 +36,6 @@ public interface Subquery
      * Set the parsed subquery.
      */
     public void setQueryExpressions(QueryExpressions query);
+
+    public Object getSelect();
 }

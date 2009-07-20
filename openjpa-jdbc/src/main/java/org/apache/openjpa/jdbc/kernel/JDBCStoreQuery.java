@@ -30,7 +30,6 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.openjpa.event.LifecycleEventManager;
-import org.apache.openjpa.jdbc.conf.JDBCConfiguration;
 import org.apache.openjpa.jdbc.kernel.exps.ExpContext;
 import org.apache.openjpa.jdbc.kernel.exps.GetColumn;
 import org.apache.openjpa.jdbc.kernel.exps.JDBCExpressionFactory;
@@ -46,20 +45,20 @@ import org.apache.openjpa.jdbc.meta.ClassMapping;
 import org.apache.openjpa.jdbc.meta.FieldMapping;
 import org.apache.openjpa.jdbc.meta.strats.VerticalClassStrategy;
 import org.apache.openjpa.jdbc.schema.Column;
-import org.apache.openjpa.jdbc.schema.ForeignKey;
 import org.apache.openjpa.jdbc.schema.Table;
 import org.apache.openjpa.jdbc.sql.DBDictionary;
 import org.apache.openjpa.jdbc.sql.SQLBuffer;
 import org.apache.openjpa.jdbc.sql.SQLExceptions;
 import org.apache.openjpa.jdbc.sql.Select;
+import org.apache.openjpa.jdbc.sql.SelectImpl;
 import org.apache.openjpa.jdbc.sql.Union;
 import org.apache.openjpa.kernel.ExpressionStoreQuery;
 import org.apache.openjpa.kernel.Filters;
 import org.apache.openjpa.kernel.OpenJPAStateManager;
 import org.apache.openjpa.kernel.OrderingMergedResultObjectProvider;
-import org.apache.openjpa.kernel.QueryContext;
 import org.apache.openjpa.kernel.QueryHints;
 import org.apache.openjpa.kernel.exps.Constant;
+import org.apache.openjpa.kernel.exps.Context;
 import org.apache.openjpa.kernel.exps.ExpressionFactory;
 import org.apache.openjpa.kernel.exps.ExpressionParser;
 import org.apache.openjpa.kernel.exps.FilterListener;
@@ -143,11 +142,28 @@ public class JDBCStoreQuery
     protected ExpressionFactory getExpressionFactory(ClassMetaData meta) {
         return new JDBCExpressionFactory((ClassMapping) meta);
     }
+    
+    private void resetSelect(Context ctx) {
+        List<Context> subselCtxs = ctx.getSubselContexts();
+        if (subselCtxs != null) {
+            for (Context subselCtx : subselCtxs) {
+                SelectImpl sel = (SelectImpl)subselCtx.getSelect();
+                sel.reset();
+                resetSelect(subselCtx);
+            }
+        }
+    }
 
     protected ResultObjectProvider executeQuery(Executor ex,
         ClassMetaData base, ClassMetaData[] metas, boolean subclasses,
         ExpressionFactory[] facts, QueryExpressions[] exps, Object[] params,
         Range range) {
+        Context expCtx = exps[0].ctx(); 
+        if (expCtx != null) {
+            expCtx.resetAliasCount();
+            expCtx.setSelect(null);
+            resetSelect(expCtx);
+        }
         if (metas.length > 1 && exps[0].isAggregate())
             throw new UserException(Localizer.forPackage(JDBCStoreQuery.class).
                 get("mult-mapping-aggregate", Arrays.asList(metas)));
@@ -449,6 +465,13 @@ public class JDBCStoreQuery
     private Number executeBulkOperation(ClassMetaData[] metas,
         boolean subclasses, ExpressionFactory[] facts, QueryExpressions[] exps,
         Object[] params, Map updates) {
+        Context expCtx = exps[0].ctx(); 
+        if (ctx != null) {
+            expCtx.resetAliasCount();
+            expCtx.setSelect(null);
+            resetSelect(expCtx);
+        }
+        
         // we cannot execute a bulk delete statement when have mappings in
         // multiple tables, so indicate we want to use in-memory with null
         ClassMapping[] mappings = (ClassMapping[]) metas;

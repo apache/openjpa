@@ -90,4 +90,6 @@ public interface Value
     public Value getSelectAs();
 
     public Path getPath();
+
+    public String getName();
 }

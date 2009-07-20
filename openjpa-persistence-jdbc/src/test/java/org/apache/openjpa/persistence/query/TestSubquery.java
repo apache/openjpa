@@ -24,6 +24,7 @@ import java.util.List;
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
 
+import org.apache.openjpa.persistence.query.Customer.CreditRating;
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
 
 /**
@@ -68,7 +69,7 @@ public class TestSubquery
             " (select o from c.orders o where o.oid = 1) or exists" +
             " (select o from c.orders o where o.oid = 2)",
         "select c.name from Customer c, in(c.orders) o where o.amount " +
-        "between" +
+            "between" +
             " (select max(o.amount) from Order o) and" +
             " (select avg(o.amount) from Order o) ",
         "select o.oid from Order o where o.amount >" +
@@ -90,12 +91,12 @@ public class TestSubquery
             "(SELECT MAX(m3.datePublished) "+
             "FROM Magazine m3 "+
             "WHERE m3.idPublisher.id = p.id)) ", 
-    // outstanding problem subqueries:
-    // "select o from Order o where o.amount > (select count(o) from Order o)",
-    // "select o from Order o where o.amount > (select count(o2) from
-    // Order o2)",
-    // "select c from Customer c left join c.orders o where not exists"
-    //   + " (select o2 from c.orders o2 where o2 = o)",
+        "select o from Order o where o.amount > " +
+            " (select count(o) from Order o)",
+        "select o from Order o where o.amount > " +
+            "(select count(o2) from Order o2)",
+        "select c from Customer c left join c.orders o where not exists"
+         + " (select o2 from c.orders o2 where o2 = o)",
     };
 
     static String[]  querys_jpa20 = new String[] {        
@@ -204,6 +205,18 @@ public class TestSubquery
         q.setParameter("minDate", new Date(100));
         q.setParameter("maxDate", new Date(100000));
         q.getResultList();
+        em.close();
+    }
+
+    public void testUpdateWithCorrelatedSubquery() {
+        String update = "update Customer c set c.creditRating = ?1 where EXISTS" +
+           " (select o from  in(c.orders)  o)";
+        EntityManager em = emf.createEntityManager();
+        em.getTransaction().begin();
+        CreditRating creditRating = CreditRating.GOOD;
+        int updateCount = em.createQuery(update).
+            setParameter(1, creditRating).executeUpdate();
+        em.getTransaction().rollback();
         em.close();
     }
 }
