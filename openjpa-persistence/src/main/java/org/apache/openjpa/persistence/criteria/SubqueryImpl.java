@@ -22,6 +22,7 @@ import java.util.ArrayList;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.Stack;
 
 import javax.persistence.criteria.AbstractQuery;
 import javax.persistence.criteria.CollectionJoin;
@@ -37,6 +38,7 @@ import javax.persistence.criteria.SetJoin;
 import javax.persistence.criteria.Subquery;
 import javax.persistence.metamodel.EntityType;
 
+import org.apache.openjpa.kernel.exps.Context;
 import org.apache.openjpa.kernel.exps.ExpressionFactory;
 import org.apache.openjpa.kernel.exps.QueryExpressions;
 import org.apache.openjpa.kernel.exps.Value;
@@ -91,9 +93,9 @@ public class SubqueryImpl<T> extends ExpressionImpl<T> implements Subquery<T> {
         return _model;
     }
     
-    //public Stack<Context> getContexts() {
-    //    return getInnermostParent().getContexts();
-    //}
+    public Stack<Context> getContexts() {
+        return getInnermostParent().getContexts();
+    }
     
     public CriteriaQueryImpl<?> getInnermostParent() {
         return (CriteriaQueryImpl<?>)(((_parent instanceof CriteriaQueryImpl)) ? 
@@ -278,17 +280,16 @@ public class SubqueryImpl<T> extends ExpressionImpl<T> implements Subquery<T> {
         ClassMetaData candidate = getCandidate(); 
         _subq = factory.newSubquery(candidate, subclasses, alias);
         _subq.setMetaData(candidate);
-        //TODO:
-        //Stack<Context> contexts = getContexts();
-        //Context context = new Context(null, _subq, contexts.peek());
-        //contexts.push(context);
-        //_delegate.setContexts(contexts);
+        Stack<Context> contexts = getContexts();
+        Context context = new Context(null, _subq, contexts.peek());
+        contexts.push(context);
+        _delegate.setContexts(contexts);
         QueryExpressions subexp = exprBuilder.getQueryExpressions(factory, 
                 _delegate);
         _subq.setQueryExpressions(subexp);
         if (subexp.projections.length > 0)
             JPQLExpressionBuilder.checkEmbeddable(subexp.projections[0], null);
-        //contexts.pop();
+        contexts.pop();
         return _subq;
     }
     

@@ -23,6 +23,7 @@ import javax.persistence.criteria.Root;
 import javax.persistence.metamodel.EntityType;
 
 import org.apache.openjpa.kernel.exps.AbstractExpressionBuilder;
+import org.apache.openjpa.kernel.exps.Context;
 import org.apache.openjpa.kernel.exps.ExpressionFactory;
 import org.apache.openjpa.kernel.exps.Path;
 import org.apache.openjpa.kernel.exps.Subquery;
@@ -48,19 +49,18 @@ public class RootImpl<X> extends FromImpl<X,X> implements Root<X> {
     public  EntityType<X> getModel() {
         return _entity;
     }
-    
-    public void  addToContext(ExpressionFactory factory, MetamodelImpl model, 
-        CriteriaQueryImpl<?> q) {
+
+    public void addToContext(ExpressionFactory factory, MetamodelImpl model,
+            CriteriaQueryImpl<?> q) {
         String alias = q.getAlias(this);
         Value var = factory.newBoundVariable(alias, 
             AbstractExpressionBuilder.TYPE_OBJECT);
         var.setMetaData(_entity.meta);
-        //TODO:
-        //Context currContext = (Context)q.getContexts().peek();
-        //currContext.addSchema(alias, _entity.meta); 
-        //currContext.addVariable(alias, var);
-        //if (currContext.schemaAlias == null)
-        //    currContext.schemaAlias = alias;
+        Context currContext = (Context) q.getContexts().peek();
+        currContext.addSchema(alias, _entity.meta);
+        currContext.addVariable(alias, var);
+        if (currContext.schemaAlias == null)
+            currContext.schemaAlias = alias;
     }
     
     /**
@@ -71,13 +71,18 @@ public class RootImpl<X> extends FromImpl<X,X> implements Root<X> {
         CriteriaQueryImpl<?> c) {
         SubqueryImpl<?> subquery = c.getDelegator();
         Path var = null;
-        //String alias = c.getAlias(this);
-        if (inSubquery(subquery)) {
+        Value val = null;
+        String alias = c.getAlias(this);
+        if (!alias.equalsIgnoreCase(c.ctx().schemaAlias)
+            && (val = c.getRegisteredRootVariable(this)) != null) {
+            // this is cross join
+            var = factory.newPath(val);
+        } else if (inSubquery(subquery)) {
             Subquery subQ = subquery.getSubQ();
             var = factory.newPath(subQ);
         } else {
             var = factory.newPath();
-            //var.setSchemaAlias(alias);
+            var.setSchemaAlias(alias);
         }
         var.setMetaData(_entity.meta);
         return var;

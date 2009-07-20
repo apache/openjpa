@@ -26,6 +26,7 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.Stack;
 
 import javax.persistence.criteria.AbstractQuery;
 import javax.persistence.criteria.CriteriaQuery;
@@ -40,6 +41,7 @@ import javax.persistence.metamodel.EntityType;
 
 import org.apache.commons.collections.map.LinkedMap;
 import org.apache.openjpa.kernel.StoreQuery;
+import org.apache.openjpa.kernel.exps.Context;
 import org.apache.openjpa.kernel.exps.ExpressionFactory;
 import org.apache.openjpa.kernel.exps.QueryExpressions;
 import org.apache.openjpa.kernel.exps.Value;
@@ -82,9 +84,11 @@ public class CriteriaQueryImpl<T> implements CriteriaQuery<T>, AliasContext {
     private Map<Selection<?>,Value> _values = 
         new HashMap<Selection<?>, Value>();
     private Map<Selection<?>,String> _aliases = null;
-
+    private Map<Selection<?>,Value> _rootVariables = 
+        new HashMap<Selection<?>, Value>();
+    
     // SubqueryContext
-    //private Stack<Context> _contexts = null;
+    private Stack<Context> _contexts = null;
     
     public CriteriaQueryImpl(MetamodelImpl model, Class<T> resultClass) {
         this._model = model;
@@ -111,9 +115,9 @@ public class CriteriaQueryImpl<T> implements CriteriaQuery<T>, AliasContext {
         return _model;
     }
     
-    //public Stack<Context> getContexts() {
-    //    return _contexts;
-    //}
+    public Stack<Context> getContexts() {
+        return _contexts;
+    }
     
     public CriteriaQuery<T> distinct(boolean distinct) {
         _distinct = distinct;
@@ -332,9 +336,9 @@ public class CriteriaQueryImpl<T> implements CriteriaQuery<T>, AliasContext {
      * receiver with the help of the given {@link ExpressionFactory}.
      */
     QueryExpressions getQueryExpressions(ExpressionFactory factory) {
-        //_contexts = new Stack<Context>();
-        //Context context = new Context(null, null, null);
-        //    _contexts.push(context);
+        _contexts = new Stack<Context>();
+        Context context = new Context(null, null, null);
+            _contexts.push(context);
         return new CriteriaExpressionBuilder()
              .getQueryExpressions(factory, this);
     }    
@@ -347,25 +351,29 @@ public class CriteriaQueryImpl<T> implements CriteriaQuery<T>, AliasContext {
     //
     // SubqueryContext
     //
-    //public void setContexts(Stack<Context> contexts) {
-    //    _contexts = contexts;
-    //}
+    public void setContexts(Stack<Context> contexts) {
+        _contexts = contexts;
+    }
     
-    public CriteriaQueryImpl<?> getInnermostParent() {
+    public CriteriaQueryImpl<?> getAncestor() {
         if (_delegator == null)
             return this;
         AbstractQuery<?> parent = _delegator.getParent();
         if (parent instanceof CriteriaQueryImpl) 
             return (CriteriaQueryImpl<?>)parent;
         // parent is a SubqueryImpl    
-        return ((SubqueryImpl<?>)parent).getDelegate().getInnermostParent();
+        return ((SubqueryImpl<?>)parent).getDelegate().getAncestor();
     }
     
     public Map<Selection<?>,String> getAliases() {
-        CriteriaQueryImpl<?> c = getInnermostParent();
+        CriteriaQueryImpl<?> c = getAncestor();
         if (c._aliases == null)
             c._aliases = new HashMap<Selection<?>, String>();
         return c._aliases;
+    }
+    
+    public Context ctx() {
+        return _contexts.peek();
     }
     
     //
@@ -430,14 +438,81 @@ public class CriteriaQueryImpl<T> implements CriteriaQuery<T>, AliasContext {
         _variables.put(node, var);
         _values.put(node, path);
         _aliases.put(node, alias);
-        //_contexts.peek().addSchema(alias, var.getMetaData());
-        //_contexts.peek().addVariable(alias, var);
+        _contexts.peek().addSchema(alias, var.getMetaData());
+        _contexts.peek().addVariable(alias, var);
     }
     
     public boolean isRegistered(Selection<?> selection) {
-        return _variables.containsKey(selection);
+        boolean found = _variables.containsKey(selection);
+        if (found) 
+            return true;
+        SubqueryImpl<?> delegator = getDelegator();
+        if (delegator == null)
+            return false;
+        
+        AbstractQuery<?> parent = delegator.getParent();
+        if (parent instanceof CriteriaQueryImpl) 
+            return ((CriteriaQueryImpl)parent).isRegistered(selection);
+        // parent is a SubqueryImpl    
+        return ((SubqueryImpl<?>)parent).getDelegate().isRegistered(selection);
+        
     }
 
+    public Value getRegisteredVariable(Selection<?> selection) {
+        Value var = getVariable(selection);
+        if (var != null)
+            return var;
+        SubqueryImpl<?> delegator = getDelegator();
+        if (delegator == null)
+            return null;
+        
+        AbstractQuery<?> parent = delegator.getParent();
+        if (parent instanceof CriteriaQueryImpl) 
+            return ((CriteriaQueryImpl)parent).getRegisteredVariable(selection);
+        // parent is a SubqueryImpl    
+        return ((SubqueryImpl<?>)parent).getDelegate().getRegisteredVariable(selection);
+
+    }
+
+    public Value getRegisteredValue(Selection<?> selection) {
+        Value var = getValue(selection);
+        if (var != null)
+            return var;
+        SubqueryImpl<?> delegator = getDelegator();
+        if (delegator == null)
+            return null;
+        
+        AbstractQuery<?> parent = delegator.getParent();
+        if (parent instanceof CriteriaQueryImpl) 
+            return ((CriteriaQueryImpl)parent).getRegisteredValue(selection);
+        // parent is a SubqueryImpl    
+        return ((SubqueryImpl<?>)parent).getDelegate().getRegisteredValue(selection);
+
+    }
+
+    public void registerRoot(Root<?> root, Value var) {
+        _rootVariables.put(root, var);
+    }
+    
+    public Value getRootVariable(Root<?> root) {
+        return _rootVariables.get(root);
+    }
+    
+    public Value getRegisteredRootVariable(Root<?> root) {
+        Value var = getRootVariable(root);
+        if (var != null)
+            return var;
+        SubqueryImpl<?> delegator = getDelegator();
+        if (delegator == null)
+            return null;
+        
+        AbstractQuery<?> parent = delegator.getParent();
+        if (parent instanceof CriteriaQueryImpl) 
+            return ((CriteriaQueryImpl)parent).getRegisteredRootVariable(root);
+        // parent is a SubqueryImpl    
+        return ((SubqueryImpl<?>)parent).getDelegate().getRegisteredRootVariable(root);
+    }
+    
     public Class getResultType() {
         // TODO Auto-generated method stub
         return null;

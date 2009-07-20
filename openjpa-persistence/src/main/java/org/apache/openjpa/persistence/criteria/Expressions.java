@@ -19,9 +19,6 @@
 
 package org.apache.openjpa.persistence.criteria;
 
-import java.sql.Date;
-import java.sql.Time;
-import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -764,7 +761,7 @@ public class Expressions {
             CriteriaQueryImpl<?> q) {
             Value val = Expressions.toValue(collection, factory, model, q);
             return (isNegated()) 
-                ? factory.isNotEmpty(val) : factory.isEmpty(val);
+                ? factory.not(factory.isEmpty(val)) : factory.isEmpty(val);
         }
     }
     
@@ -1036,8 +1033,20 @@ public class Expressions {
         org.apache.openjpa.kernel.exps.Expression toKernelExpression(
             ExpressionFactory factory, MetamodelImpl model, 
             CriteriaQueryImpl<?> q) {
-            org.apache.openjpa.kernel.exps.Expression inExpr = 
-                super.toKernelExpression(factory, model, q); 
+            org.apache.openjpa.kernel.exps.Expression inExpr = null;
+            if (_exps.size() == 1) {
+                Expressions.Equal e = (Expressions.Equal)_exps.get(0);
+                ExpressionImpl<?> e2 = e.e2;
+                Value val2 = Expressions.toValue(e2, factory, model, q);
+                if (!(val2 instanceof Literal)) {
+                    ExpressionImpl<?> e1 = e.e1;
+                    Value val1 = Expressions.toValue(e1, factory, model, q);
+                    Expressions.setImplicitTypes(val1, val2, e1.getJavaType(), q);
+                    inExpr = factory.contains(val2, val1);
+                    return negate ? factory.not(inExpr) : inExpr;
+                }
+            } 
+            inExpr = super.toKernelExpression(factory, model, q); 
             IsNotNull notNull = new Expressions.IsNotNull(e);
             if (negate) 
                 inExpr = factory.not(inExpr);

@@ -93,6 +93,7 @@ public abstract class CriteriaTest extends TestCase {
             Photo.class,
             Product.class,
             Publisher.class,
+            Request.class,
             Semester.class,
             Student.class,
             TransactionHistory.class,
@@ -239,7 +240,6 @@ public abstract class CriteriaTest extends TestCase {
         Query jQ = em.createQuery(jpql);
 
         List<String> jSQL = null;
-        List<String> cSQL = null;
         try {
             jSQL = executeQueryAndCollectSQL(jQ);
         } catch (Exception e) {
@@ -253,7 +253,7 @@ public abstract class CriteriaTest extends TestCase {
         for (int i = 0; i < jSQL.size(); i++) {
             if (!jSQL.get(i).equals(expectedSQL)) {
                 printSQL("SQL for JPQL", jSQL.get(i));
-                printSQL("Expected SQL", cSQL.get(i));
+                printSQL("Expected SQL", expectedSQL);
                 assertEquals(i + "-th Expected SQL and SQL for JPQL: " + jpql + " are different",
                      expectedSQL, jSQL.get(i));
             }

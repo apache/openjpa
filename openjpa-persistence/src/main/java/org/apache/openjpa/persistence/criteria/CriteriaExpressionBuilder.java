@@ -20,8 +20,10 @@
 package org.apache.openjpa.persistence.criteria;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import javax.persistence.criteria.Expression;
@@ -33,6 +35,7 @@ import javax.persistence.criteria.Root;
 import javax.persistence.criteria.Selection;
 import javax.persistence.metamodel.Type.PersistenceType;
 
+import org.apache.openjpa.kernel.exps.AbstractExpressionBuilder;
 import org.apache.openjpa.kernel.exps.ExpressionFactory;
 import org.apache.openjpa.kernel.exps.QueryExpressions;
 import org.apache.openjpa.kernel.exps.Value;
@@ -40,6 +43,7 @@ import org.apache.openjpa.meta.ClassMetaData;
 import org.apache.openjpa.persistence.meta.AbstractManagedType;
 import org.apache.openjpa.persistence.meta.Members;
 import org.apache.openjpa.persistence.meta.MetamodelImpl;
+import org.apache.openjpa.persistence.meta.Types;
 
 /**
  * Converts expressions of a CriteriaQuery to kernel Expression.
@@ -51,24 +55,21 @@ public class CriteriaExpressionBuilder {
     
     public QueryExpressions getQueryExpressions(ExpressionFactory factory, CriteriaQueryImpl<?> q) {
         QueryExpressions exps = new QueryExpressions();
-        //exps.setContexts(q.getContexts());
+        exps.setContexts(q.getContexts());
 
         evalAccessPaths(exps, factory, q);
         //exps.alias = null;      // String   
         exps.ascending = new boolean[]{false};
         evalDistinct(exps, factory, q);
         evalFetchJoin(exps, factory, q);
-
+        evalCrossJoinRoots(exps, factory, q);
         evalFilter(exps, factory, q);
 
         evalGrouping(exps, factory, q);
+        
+        evalOrderingAndProjection(exps, factory, q);
 
-        evalOrdering(exps, factory, q);
         //exps.operation = QueryOperations.OP_SELECT;
-
-        evalProjections(exps, factory, q);
-
-
         //exps.range = null; // Value[]
         //exps.resultClass = null; // Class
         exps.parameterTypes = q.getParameterTypes();
@@ -102,12 +103,19 @@ public class CriteriaExpressionBuilder {
         }
         exps.accessPath = metas.toArray(new ClassMetaData[metas.size()]);
     }
+
+    protected void evalOrderingAndProjection(QueryExpressions exps, ExpressionFactory factory, CriteriaQueryImpl<?> q) {
+        Map<Expression<?>, Value> exp2Vals = evalOrdering(exps, factory, q);
+        evalProjections(exps, factory, q, exp2Vals);
+    }
     
-    protected void evalOrdering(QueryExpressions exps, ExpressionFactory factory, CriteriaQueryImpl<?> q) {
+    protected Map<Expression<?>, Value> evalOrdering(QueryExpressions exps, ExpressionFactory factory, 
+        CriteriaQueryImpl<?> q) {
         List<Order> orders = q.getOrderList();
         MetamodelImpl model = q.getMetamodel(); 
         if (orders == null) 
-            return;
+            return null;
+        Map<Expression<?>, Value> exp2Vals = new HashMap<Expression<?>, Value>();
         int ordercount = orders.size();
         exps.ordering = new Value[ordercount];
         exps.orderingClauses = new String[ordercount];
@@ -117,13 +125,17 @@ public class CriteriaExpressionBuilder {
             OrderImpl order = (OrderImpl)orders.get(i);
             //Expression<? extends Comparable> expr = order.getExpression();
             Expression<?> expr = order.getExpression5();
-            exps.ordering[i] = Expressions.toValue(
+            Value val = Expressions.toValue(
                     (ExpressionImpl<?>)expr, factory, model, q);
-
-            //exps.orderingClauses[i] = assemble(firstChild);
-            //exps.orderingAliases[i] = firstChild.text;
+            exps.ordering[i] = val;
+            String alias = expr.getAlias();
+            exps.orderingAliases[i] = alias;
+            exps.orderingClauses[i] = "";
+            val.setAlias(alias);
             exps.ascending[i] = order.isAscending();
+            exp2Vals.put(expr, val);
         }
+        return exp2Vals;
     }
 
     protected void evalGrouping(QueryExpressions exps, ExpressionFactory factory, CriteriaQueryImpl<?> q) {
@@ -155,6 +167,23 @@ public class CriteriaExpressionBuilder {
         //exps.distinct &= ~QueryExpressions.DISTINCT_AUTO;
     }
 
+    protected void evalCrossJoinRoots(QueryExpressions exps, ExpressionFactory factory, CriteriaQueryImpl<?> q) {
+        Set<Root<?>> roots = q.getRoots();
+        MetamodelImpl model = q.getMetamodel();
+        SubqueryImpl<?> subQuery = q.getDelegator();
+        if (subQuery == null || subQuery.getCorrelatedJoins() == null) {
+            q.assertRoot();
+            if (roots.size() > 1) { // cross join
+                for (Root<?> root : roots) {
+                    String alias = q.getAlias(root);
+                    Value var = factory.newBoundVariable(alias, AbstractExpressionBuilder.TYPE_OBJECT);
+                    var.setMetaData(((Types.Entity)root.getModel()).meta);
+                    q.registerRoot(root, var);
+                }
+            }
+        }
+    }
+    
     protected void evalFilter(QueryExpressions exps, ExpressionFactory factory, CriteriaQueryImpl<?> q) {
         Set<Root<?>> roots = q.getRoots();
         MetamodelImpl model = q.getMetamodel();
@@ -190,11 +219,10 @@ public class CriteriaExpressionBuilder {
         exps.filter = filter;
     }
 
-    protected void evalProjections(QueryExpressions exps, ExpressionFactory factory, CriteriaQueryImpl<?> q) {
+    protected void evalProjections(QueryExpressions exps, ExpressionFactory factory, CriteriaQueryImpl<?> q,
+        Map<Expression<?>, Value> exp2Vals) {
         List<Selection<?>> selections = q.getSelectionList();
         MetamodelImpl model = q.getMetamodel();
-        // TODO: fill in projection clauses
-        //    exps.projectionClauses = null; // String[]
         if (isDefaultProjection(selections, q)) {
             exps.projections = new Value[0];
             return ;
@@ -202,22 +230,30 @@ public class CriteriaExpressionBuilder {
         exps.projections = new Value[selections.size()];
         List<Value> projections = new ArrayList<Value>();
         List<String> aliases = new ArrayList<String>();
-        getProjections(exps, selections, projections, aliases, factory, q, model);
+        List<String> clauses = new ArrayList<String>();
+        getProjections(exps, selections, projections, aliases, clauses, factory, q, model, exp2Vals);
         exps.projections = projections.toArray(new Value[projections.size()]);
         exps.projectionAliases = aliases.toArray(new String[aliases.size()]);
+        exps.projectionClauses = clauses.toArray(new String[clauses.size()]);
     }
 
     private void getProjections(QueryExpressions exps, List<Selection<?>> selections, 
-        List<Value> projections, List<String> aliases, 
-        ExpressionFactory factory, CriteriaQueryImpl<?> q, MetamodelImpl model) {
+        List<Value> projections, List<String> aliases, List<String> clauses, 
+        ExpressionFactory factory, CriteriaQueryImpl<?> q, MetamodelImpl model, 
+        Map<Expression<?>, Value> exp2Vals) {
         for (Selection<?> s : selections) {
             if (s instanceof NewInstanceSelection<?>) {
                 exps.resultClass = s.getJavaType();
                 getProjections(exps, ((NewInstanceSelection<?>)s).getSelectionItems(), projections, aliases, 
-                        factory, q, model);               
+                   clauses, factory, q, model, exp2Vals);               
             } else {
-                projections.add(((ExpressionImpl<?>)s).toValue(factory, model, q));
-                aliases.add(q.getAlias(s));
+                Value val = (exp2Vals != null && exp2Vals.containsKey(s) ? exp2Vals.get(s) :
+                    ((ExpressionImpl<?>)s).toValue(factory, model, q));
+                String alias = s.getAlias();
+                val.setAlias(alias);
+                projections.add(val);
+                aliases.add(alias);
+                clauses.add(alias);
             }         
         }
     }

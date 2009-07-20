@@ -27,7 +27,6 @@ import javax.persistence.criteria.ListJoin;
 import javax.persistence.criteria.MapJoin;
 import javax.persistence.criteria.Path;
 import javax.persistence.criteria.PluralJoin;
-import javax.persistence.criteria.Selection;
 import javax.persistence.criteria.SetJoin;
 import javax.persistence.metamodel.Attribute;
 import javax.persistence.metamodel.CollectionAttribute;
@@ -39,7 +38,6 @@ import javax.persistence.metamodel.SetAttribute;
 import org.apache.openjpa.kernel.exps.ExpressionFactory;
 import org.apache.openjpa.kernel.exps.Value;
 import org.apache.openjpa.meta.ClassMetaData;
-import org.apache.openjpa.meta.FieldMetaData;
 import org.apache.openjpa.persistence.meta.Members;
 import org.apache.openjpa.persistence.meta.MetamodelImpl;
 import org.apache.openjpa.persistence.meta.Members.Member;
@@ -94,13 +92,14 @@ public abstract class Joins {
             org.apache.openjpa.kernel.exps.Path path = null;
             SubqueryImpl<?> subquery = c.getDelegator();
             PathImpl<?,?> parent = getInnermostParentPath();
-            if (c.isRegistered(this))
-                return c.getValue(this);
+            Value val = c.getRegisteredValue(this);
+            if (val != null)
+                return val;
             else if (parent.inSubquery(subquery)) {
                 org.apache.openjpa.kernel.exps.Subquery subQ = subquery.getSubQ();
                 path = factory.newPath(subQ);
                 path.setMetaData(subQ.getMetaData());
-                //path.setSchemaAlias(c.getAlias(this));
+                path.setSchemaAlias(c.getAlias(this));
             } else {
                 path = (org.apache.openjpa.kernel.exps.Path) _parent.toValue(factory, model, c);
                 path.get(_member.fmd, allowNull);
@@ -134,10 +133,10 @@ public abstract class Joins {
                     } else {    
                         path.setMetaData(subQ.getMetaData());
                         path.get(_member.fmd, allowNull);
-                        //path.setSchemaAlias(c.getAlias(_parent));
+                        path.setSchemaAlias(c.getAlias(_parent));
                     } 
                 } else if (c.isRegistered(_parent)) {
-                    Value var = c.getVariable(_parent);
+                    Value var = c.getRegisteredVariable(_parent);
                     path = factory.newPath(var);
                     path.setMetaData(meta);
                     path.get(_member.fmd, false);
@@ -169,7 +168,10 @@ public abstract class Joins {
                     parentPath = (org.apache.openjpa.kernel.exps.Path)
                         correlatedParentPath.toValue(factory, model, c);
                 parentPath.get(_member.fmd, allowNull);
-                //parentPath.setSchemaAlias(c.getAlias(correlatedParent));
+                parentPath.setSchemaAlias(c.getAlias(correlatedParentPath));
+                if (c.ctx().getParent() != null && c.ctx().getVariable(parentPath.getSchemaAlias()) == null) 
+                    parentPath.setSubqueryContext(c.ctx());
+                
                 path.setMetaData(meta);
                 //filter = bindVariableForKeyPath(path, alias, filter);
                 filter = factory.equal(parentPath, path);
@@ -180,9 +182,9 @@ public abstract class Joins {
         private Value getVariableForCorrPath(SubqueryImpl<?> subquery, PathImpl<?,?> path) {
             AbstractQuery<?> parent = subquery.getParent();
             if (parent instanceof CriteriaQueryImpl) {
-                return ((CriteriaQueryImpl<?>)parent).getVariable(path);
+                return ((CriteriaQueryImpl<?>)parent).getRegisteredVariable(path);
             }
-            Value var = ((SubqueryImpl<?>)parent).getDelegate().getVariable(path); 
+            Value var = ((SubqueryImpl<?>)parent).getDelegate().getRegisteredVariable(path); 
             if (var != null)
                 return var;
             return getVariableForCorrPath((SubqueryImpl<?>)parent, path);
@@ -247,14 +249,14 @@ public abstract class Joins {
             SubqueryImpl<?> subquery = c.getDelegator();
             PathImpl<?,?> parent = getInnermostParentPath();
             
-            if (c.isRegistered(this)) {
-                Value var = c.getVariable(this);
-                path = factory.newPath(var);
+            Value var = c.getRegisteredVariable(this);
+            if (var != null) {
+                 path = factory.newPath(var);
             } else if (parent.inSubquery(subquery)) {
                 org.apache.openjpa.kernel.exps.Subquery subQ = subquery.getSubQ();
                 path = factory.newPath(subQ);
                 path.setMetaData(subQ.getMetaData());
-                //path.setSchemaAlias(c.getAlias(this));
+                path.setSchemaAlias(c.getAlias(this));
             } else {
                 path = (org.apache.openjpa.kernel.exps.Path) _parent.toValue(factory, model, c);
                 path.get(_member.fmd, allowNull);
@@ -292,10 +294,10 @@ public abstract class Joins {
                     } else {    
                         path.setMetaData(subQ.getMetaData());
                         path.get(_member.fmd, allowNull);
-                        //path.setSchemaAlias(c.getAlias(_parent));
+                        path.setSchemaAlias(c.getAlias(_parent));
                     } 
                 } else if (c.isRegistered(_parent)) {
-                    Value var = c.getVariable(_parent);
+                    Value var = c.getRegisteredVariable(_parent);
                     path = factory.newPath(var);
                     path.setMetaData(meta);
                     path.get(_member.fmd, false);
@@ -327,7 +329,10 @@ public abstract class Joins {
                         correlatedParentPath.toValue(factory, model, c);
                 
                 parentPath.get(_member.fmd, allowNull);
-                //parentPath.setSchemaAlias(c.getAlias(correlatedParentPath));
+                parentPath.setSchemaAlias(c.getAlias(correlatedParentPath));
+                if (c.ctx().getParent() != null && c.ctx().getVariable(parentPath.getSchemaAlias()) == null) 
+                    parentPath.setSubqueryContext(c.ctx());
+                
                 path.setMetaData(meta);
                 //filter = bindVariableForKeyPath(path, alias, filter);
                 filter = factory.equal(parentPath, path);
@@ -338,9 +343,9 @@ public abstract class Joins {
         private Value getVariableForCorrPath(SubqueryImpl<?> subquery, PathImpl<?,?> path) {
             AbstractQuery<?> parent = subquery.getParent();
             if (parent instanceof CriteriaQueryImpl) {
-                return ((CriteriaQueryImpl<?>)parent).getVariable(path);
+                return ((CriteriaQueryImpl<?>)parent).getRegisteredVariable(path);
             }
-            Value var = ((SubqueryImpl<?>)parent).getDelegate().getVariable(path); 
+            Value var = ((SubqueryImpl<?>)parent).getDelegate().getRegisteredVariable(path); 
             if (var != null)
                 return var;
             return getVariableForCorrPath((SubqueryImpl<?>)parent, path);
@@ -472,7 +477,7 @@ public abstract class Joins {
         */
        @Override
        public Value toValue(ExpressionFactory factory, MetamodelImpl model, CriteriaQueryImpl<?> c) {
-           org.apache.openjpa.kernel.exps.Path path = factory.newPath(c.getVariable(map));
+           org.apache.openjpa.kernel.exps.Path path = factory.newPath(c.getRegisteredVariable(map));
            return factory.getKey(path);
        }
    }

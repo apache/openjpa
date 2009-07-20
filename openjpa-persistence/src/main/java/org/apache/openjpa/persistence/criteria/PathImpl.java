@@ -19,13 +19,10 @@
 
 package org.apache.openjpa.persistence.criteria;
 
-import java.util.List;
-
 import javax.persistence.criteria.Expression;
 import javax.persistence.criteria.Join;
 import javax.persistence.criteria.JoinType;
 import javax.persistence.criteria.Path;
-import javax.persistence.criteria.Selection;
 import javax.persistence.metamodel.Bindable;
 import javax.persistence.metamodel.ManagedType;
 import javax.persistence.metamodel.MapAttribute;
@@ -148,14 +145,14 @@ public class PathImpl<Z,X> extends ExpressionImpl<X> implements Path<X> {
         PathImpl<?,?> corrJoin = getCorrelatedJoin(this);
         PathImpl<?,?> corrRoot = getCorrelatedRoot(subquery);
         if (_parent != null && q.isRegistered(_parent)) {
-            path = factory.newPath(q.getVariable(_parent));
-            //path.setSchemaAlias(q.getAlias(_parent));
+            path = factory.newPath(q.getRegisteredVariable(_parent));
+            path.setSchemaAlias(q.getAlias(_parent));
             path.get(_member.fmd, allowNull);
         } else if (corrJoin != null || corrRoot != null) {
             org.apache.openjpa.kernel.exps.Subquery subQ = subquery.getSubQ();
             path = factory.newPath(subQ);
             path.setMetaData(subQ.getMetaData());
-            //path.setSchemaAlias(q.getAlias(_parent));
+            path.setSchemaAlias(q.getAlias(_parent));
             traversePath(_parent, path, _member.fmd);
         } else if (_parent != null) {
             path = (org.apache.openjpa.kernel.exps.Path)_parent.toValue(factory, model, q);

@@ -670,14 +670,12 @@ public class CriteriaBuilder implements QueryBuilder, ExpressionParser {
         return null;
     }
 
-    public Predicate isNotNull(Expression<?> arg0) {
-        // TODO Auto-generated method stub
-        return null;
+    public Predicate isNotNull(Expression<?> x) {
+        return new Expressions.IsNull((ExpressionImpl<?> )x).negate();
     }
 
-    public Predicate isNull(Expression<?> arg0) {
-        // TODO Auto-generated method stub
-        return null;
+    public Predicate isNull(Expression<?> x) {
+        return new Expressions.IsNull((ExpressionImpl<?> )x);
     }
 
     public CompoundSelection<Tuple> tuple(Selection<?>... arg0) {
