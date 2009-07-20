@@ -29,6 +29,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.Map;
 import java.util.Set;
 
 import javax.sql.DataSource;
@@ -408,6 +409,8 @@ public class JDBCStoreManager
         for (int i = 0; i < fms.length; i++) {
             if (res.getEager(fms[i]) != null) {
                 Object coll =  owner.fetchObject(fms[i].getIndex());
+                if (coll instanceof Map)
+                    coll = ((Map)coll).values();
                 if (coll instanceof Collection && 
                     ((Collection) coll).size() > 0) {
                     // Found eagerly loaded collection.
