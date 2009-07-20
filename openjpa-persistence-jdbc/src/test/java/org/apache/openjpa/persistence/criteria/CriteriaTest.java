@@ -38,6 +38,7 @@ import junit.framework.TestCase;
 
 import org.apache.openjpa.jdbc.conf.JDBCConfiguration;
 import org.apache.openjpa.jdbc.sql.DBDictionary;
+import org.apache.openjpa.jdbc.sql.DerbyDictionary;
 import org.apache.openjpa.lib.jdbc.AbstractJDBCListener;
 import org.apache.openjpa.lib.jdbc.JDBCEvent;
 import org.apache.openjpa.lib.jdbc.JDBCListener;
@@ -237,6 +238,11 @@ public abstract class CriteriaTest extends TestCase {
     }
     
     void executeAndCompareSQL(String jpql, String expectedSQL) {
+        JDBCConfiguration conf = (JDBCConfiguration) emf.getConfiguration();
+        DBDictionary dict = conf.getDBDictionaryInstance();
+        if (!(dict instanceof DerbyDictionary))
+            return;
+
         Query jQ = em.createQuery(jpql);
 
         List<String> jSQL = null;
@@ -261,6 +267,11 @@ public abstract class CriteriaTest extends TestCase {
     }
     
     void executeAndCompareSQL(Query jQ, String expectedSQL) {
+        JDBCConfiguration conf = (JDBCConfiguration) emf.getConfiguration();
+        DBDictionary dict = conf.getDBDictionaryInstance();
+        if (!(dict instanceof DerbyDictionary))
+            return;
+
         List<String> jSQL = null;
         try {
             jSQL = executeQueryAndCollectSQL(jQ);
