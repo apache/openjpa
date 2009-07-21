@@ -18,13 +18,12 @@
  */
 package org.apache.openjpa.persistence.validation;
 
-import javax.persistence.ValidationMode;
+import javax.persistence.spi.ValidationMode;
 
 import org.apache.openjpa.conf.OpenJPAConfiguration;
 import org.apache.openjpa.lib.log.Log;
 import org.apache.openjpa.lib.util.Localizer;
 import org.apache.openjpa.lib.util.Localizer.Message;
-import org.apache.openjpa.validation.ValidationException;
 import org.apache.openjpa.validation.ValidationUnavailableException;
 
 

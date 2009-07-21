@@ -22,7 +22,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import javax.persistence.EntityManager;
-import javax.persistence.ValidationMode;
+import javax.persistence.spi.ValidationMode;
 import javax.validation.Validation;
 import javax.validation.ValidatorFactory;
 

@@ -22,7 +22,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
-import javax.persistence.ValidationMode;
+import javax.persistence.spi.ValidationMode;
 import javax.validation.metadata.BeanDescriptor;
 import javax.validation.ConstraintViolation;
 import javax.validation.ConstraintViolationException;

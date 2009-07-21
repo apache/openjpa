@@ -16,7 +16,7 @@ package org.apache.openjpa.persistence.validation;
 import java.util.HashMap;
 import java.util.Map;
 
-import javax.persistence.ValidationMode;
+import javax.persistence.spi.ValidationMode;
 
 import org.apache.openjpa.conf.OpenJPAConfiguration;
 import org.apache.openjpa.lib.log.Log;

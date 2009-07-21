@@ -30,6 +30,7 @@ import java.util.Set;
 
 import javax.persistence.Cache;
 import javax.persistence.EntityManagerFactory;
+import javax.persistence.PersistenceUnitUtil;
 import javax.persistence.criteria.QueryBuilder;
 import javax.persistence.metamodel.Metamodel;
 
@@ -375,5 +376,10 @@ public class EntityManagerFactoryImpl
                 .getMetaDataRepositoryInstance());
         }
         return _metaModel;
+    }
+
+    public PersistenceUnitUtil getPersistenceUnitUtil() {
+        // TODO Auto-generated method stub
+        return null;
     }
 }

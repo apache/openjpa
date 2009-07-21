@@ -27,6 +27,7 @@ import javax.persistence.spi.ClassTransformer;
 import javax.persistence.spi.LoadState;
 import javax.persistence.spi.PersistenceProvider;
 import javax.persistence.spi.PersistenceUnitInfo;
+import javax.persistence.spi.ProviderUtil;
 
 import org.apache.openjpa.conf.BrokerValue;
 import org.apache.openjpa.conf.OpenJPAConfiguration;
@@ -272,5 +273,10 @@ public class PersistenceProviderImpl
                 _log.isInfoEnabled()) {
             _log.info(_loc.get("vlem-creation-info"));
         }
+    }
+
+    public ProviderUtil getProviderUtil() {
+        // TODO Auto-generated method stub
+        return null;
     }
 }

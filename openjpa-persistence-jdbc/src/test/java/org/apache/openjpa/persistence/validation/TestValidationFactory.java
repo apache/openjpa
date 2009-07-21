@@ -16,7 +16,7 @@ package org.apache.openjpa.persistence.validation;
 import java.util.HashMap;
 import java.util.Map;
 
-import javax.persistence.ValidationMode;
+import javax.persistence.spi.ValidationMode;
 
 import org.apache.openjpa.conf.OpenJPAConfiguration;
 import org.apache.openjpa.lib.log.Log;
@@ -24,7 +24,6 @@ import org.apache.openjpa.persistence.OpenJPAEntityManagerFactory;
 import org.apache.openjpa.persistence.OpenJPAPersistence;
 import org.apache.openjpa.persistence.PersistenceException;
 import org.apache.openjpa.persistence.query.SimpleEntity;
-import org.apache.openjpa.persistence.test.AllowFailure;
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
 
 /**

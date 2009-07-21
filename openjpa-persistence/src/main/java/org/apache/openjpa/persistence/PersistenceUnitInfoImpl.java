@@ -35,7 +35,8 @@ import java.util.Properties;
 import java.util.Set;
 
 import javax.persistence.Caching;
-import javax.persistence.ValidationMode;
+import javax.persistence.spi.SharedCacheMode;
+import javax.persistence.spi.ValidationMode;
 import javax.persistence.spi.ClassTransformer;
 import javax.persistence.spi.PersistenceUnitInfo;
 import javax.persistence.spi.PersistenceUnitTransactionType;
@@ -546,5 +547,10 @@ public class PersistenceUnitInfoImpl
 
     public void setValidationMode(ValidationMode mode) {
         _validationMode = mode;
+    }
+
+    public SharedCacheMode getSharedCacheMode() {
+        // TODO Auto-generated method stub
+        return null;
     }
 }
