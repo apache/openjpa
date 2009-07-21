@@ -7,7 +7,7 @@
     version="2.0">
     <xsd:annotation>
         <xsd:documentation>
-            @(#)orm_2_0.xsd 2.0 May 27 2009
+            @(#)orm_2_0.xsd 2.0 July 17 2009
         </xsd:documentation>
     </xsd:annotation>
     <xsd:annotation>
@@ -270,12 +270,13 @@ version="2.0">
             </xsd:documentation>
         </xsd:annotation>
         <xsd:sequence>
-            <xsd:element name="description" type="xsd:string"
-                minOccurs="0" />
-            <xsd:element name="join-column" type="orm:join-column"
-                minOccurs="0" maxOccurs="unbounded" />
-            <xsd:element name="join-table" type="orm:join-table"
-                minOccurs="0" />
+            <xsd:element name="description" type="xsd:string" minOccurs="0" />
+            <xsd:choice>
+                <xsd:element name="join-column" type="orm:join-column"
+                    minOccurs="0" maxOccurs="unbounded" />
+                <xsd:element name="join-table" type="orm:join-table"
+                    minOccurs="0" />
+            </xsd:choice>
         </xsd:sequence>
         <xsd:attribute name="name" type="xsd:string" use="required" />
     </xsd:complexType>
@@ -369,7 +370,8 @@ version="2.0">
     <xsd:complexType name="cascade-type">
         <xsd:annotation>
             <xsd:documentation>
-                public enum CascadeType { ALL, PERSIST, MERGE, REMOVE, REFRESH};
+                public enum CascadeType { ALL, PERSIST, MERGE, REMOVE, REFRESH,
+                DETACH};
             </xsd:documentation>
         </xsd:annotation>
         <xsd:sequence>
@@ -382,6 +384,8 @@ version="2.0">
             <xsd:element name="cascade-remove" type="orm:emptyType"
                 minOccurs="0" />
             <xsd:element name="cascade-refresh" type="orm:emptyType"
+                minOccurs="0" />
+            <xsd:element name="cascade-detach" type="orm:emptyType"
                 minOccurs="0" />
         </xsd:sequence>
     </xsd:complexType>

@@ -2042,7 +2042,7 @@ found at <ulink url="http://java.sun.com/xml/ns/persistence/orm_1_0.xsd"/>.
     version="2.0"&gt;
     &lt;xsd:annotation&gt;
         &lt;xsd:documentation&gt;
-            @(#)orm_2_0.xsd 2.0 May 27 2009
+            @(#)orm_2_0.xsd 2.0 July 17 2009
         &lt;/xsd:documentation&gt;
     &lt;/xsd:annotation&gt;
     &lt;xsd:annotation&gt;
@@ -2307,12 +2307,13 @@ found at <ulink url="http://java.sun.com/xml/ns/persistence/orm_1_0.xsd"/>.
             &lt;/xsd:documentation&gt;
         &lt;/xsd:annotation&gt;
         &lt;xsd:sequence&gt;
-            &lt;xsd:element name="description" type="xsd:string"
-                minOccurs="0" /&gt;
-            &lt;xsd:element name="join-column" type="orm:join-column"
-                minOccurs="0" maxOccurs="unbounded" /&gt;
-            &lt;xsd:element name="join-table" type="orm:join-table"
-                minOccurs="0" /&gt;
+            &lt;xsd:element name="description" type="xsd:string" minOccurs="0" /&gt;
+            &lt;xsd:choice&gt;
+                &lt;xsd:element name="join-column" type="orm:join-column"
+                    minOccurs="0" maxOccurs="unbounded" /&gt;
+                &lt;xsd:element name="join-table" type="orm:join-table"
+                    minOccurs="0" /&gt;
+            &lt;/xsd:choice&gt;
         &lt;/xsd:sequence&gt;
         &lt;xsd:attribute name="name" type="xsd:string" use="required" /&gt;
     &lt;/xsd:complexType&gt;
@@ -2406,7 +2407,8 @@ found at <ulink url="http://java.sun.com/xml/ns/persistence/orm_1_0.xsd"/>.
     &lt;xsd:complexType name="cascade-type"&gt;
         &lt;xsd:annotation&gt;
             &lt;xsd:documentation&gt;
-                public enum CascadeType { ALL, PERSIST, MERGE, REMOVE, REFRESH};
+                public enum CascadeType { ALL, PERSIST, MERGE, REMOVE, REFRESH,
+                DETACH};
             &lt;/xsd:documentation&gt;
         &lt;/xsd:annotation&gt;
         &lt;xsd:sequence&gt;
@@ -2419,6 +2421,8 @@ found at <ulink url="http://java.sun.com/xml/ns/persistence/orm_1_0.xsd"/>.
             &lt;xsd:element name="cascade-remove" type="orm:emptyType"
                 minOccurs="0" /&gt;
             &lt;xsd:element name="cascade-refresh" type="orm:emptyType"
+                minOccurs="0" /&gt;
+            &lt;xsd:element name="cascade-detach" type="orm:emptyType"
                 minOccurs="0" /&gt;
         &lt;/xsd:sequence&gt;
     &lt;/xsd:complexType&gt;

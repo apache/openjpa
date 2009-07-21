@@ -114,7 +114,7 @@ schema can be found at
     version="2.0"&gt;
     &lt;xsd:annotation&gt;
         &lt;xsd:documentation&gt;
-            @(#)persistence_2_0.xsd 1.0 May 8 2009
+            @(#)persistence_2_0.xsd 1.0 July 17 2009
         &lt;/xsd:documentation&gt;
     &lt;/xsd:annotation&gt;
     &lt;xsd:annotation&gt;
@@ -211,8 +211,7 @@ schema can be found at
                                 maxOccurs="unbounded"&gt;
                                 &lt;xsd:annotation&gt;
                                     &lt;xsd:documentation&gt;
-                                        Jar file that should be scanned for entities.
-                                        Not applicable to Java SE persistence units.
+                                        Jar file that is to be scanned for managed classes.
                                     &lt;/xsd:documentation&gt;
                                 &lt;/xsd:annotation&gt;
                             &lt;/xsd:element&gt;
@@ -221,14 +220,15 @@ schema can be found at
                                 minOccurs="0" maxOccurs="unbounded"&gt;
                                 &lt;xsd:annotation&gt;
                                     &lt;xsd:documentation&gt;
-                                        Class to scan for annotations. It should be annotated
+                                        Managed class to be included in the persistence unit and
+                                        to scan for annotations. It should be annotated
                                         with either @Entity, @Embeddable or @MappedSuperclass.
                                     &lt;/xsd:documentation&gt;
                                 &lt;/xsd:annotation&gt;
                             &lt;/xsd:element&gt;
                             &lt;!-- **************************************************** --&gt;
                             &lt;xsd:element name="exclude-unlisted-classes"
-                                type="xsd:boolean" default="false"
+                                type="xsd:boolean" default="true"
                                 minOccurs="0"&gt;
                                 &lt;xsd:annotation&gt;
                                     &lt;xsd:documentation&gt;
@@ -263,8 +263,7 @@ schema can be found at
                                 minOccurs="0"&gt;
                                 &lt;xsd:annotation&gt;
                                     &lt;xsd:documentation&gt;
-                                        Specifies the validation mode to be used for the
-                                        persistence unit.
+                                        The validation mode to be used for the persistence unit.
                                     &lt;/xsd:documentation&gt;
                                 &lt;/xsd:annotation&gt;
                             &lt;/xsd:element&gt;
@@ -273,7 +272,8 @@ schema can be found at
                                 minOccurs="0"&gt;
                                 &lt;xsd:annotation&gt;
                                     &lt;xsd:documentation&gt;
-                                        A list of vendor-specific properties.
+                                        A list of standard and vendor-specific properties
+                                        and hints.
                                     &lt;/xsd:documentation&gt;
                                 &lt;/xsd:annotation&gt;
                                 &lt;xsd:complexType&gt;
@@ -328,7 +328,7 @@ schema can be found at
     &lt;xsd:simpleType name="persistence-unit-transaction-type"&gt;
         &lt;xsd:annotation&gt;
             &lt;xsd:documentation&gt;
-                public enum TransactionType { JTA, RESOURCE_LOCAL };
+                public enum PersistenceUnitTransactionType {JTA, RESOURCE_LOCAL};
             &lt;/xsd:documentation&gt;
         &lt;/xsd:annotation&gt;
         &lt;xsd:restriction base="xsd:token"&gt;
@@ -340,7 +340,7 @@ schema can be found at
     &lt;xsd:simpleType name="persistence-unit-caching-type"&gt;
         &lt;xsd:annotation&gt;
             &lt;xsd:documentation&gt;
-                public enum CachingType { ALL, NONE, ENABLE_SELECTIVE,
+                public enum SharedCacheMode { ALL, NONE, ENABLE_SELECTIVE,
                 DISABLE_SELECTIVE, UNSPECIFIED};
             &lt;/xsd:documentation&gt;
         &lt;/xsd:annotation&gt;
