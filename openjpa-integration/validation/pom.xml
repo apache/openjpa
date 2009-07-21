@@ -52,11 +52,10 @@
     </properties>
 
     <profiles>
-        <!-- Default profile for testing with Agimatec validation provider -->
+        <!-- Profile for testing with Agimatec validation provider -->
         <profile>
             <id>agimatec</id>
             <activation>
-                <activeByDefault>true</activeByDefault>
                 <property>
                     <name>agimatec</name>
                 </property>
@@ -79,7 +78,7 @@
                 <dependency>
                     <groupId>com.agimatec</groupId>
                     <artifactId>agimatec-jsr303</artifactId>
-                    <version>0.9.1-SNAPSHOT</version>
+                    <version>0.9.2-SNAPSHOT</version>
                     <scope>test</scope>
                     <exclusions>
                         <!-- force usage of the geronimo-validation_1.0_spec -->
@@ -97,7 +96,7 @@
                 <dependency>
                     <groupId>com.agimatec</groupId>
                     <artifactId>agimatec-validation</artifactId>
-                    <version>0.9.1-SNAPSHOT</version>
+                    <version>0.9.2-SNAPSHOT</version>
                     <scope>test</scope>
                 </dependency>
                 <dependency>
@@ -125,28 +124,27 @@
             </repositories>
         </profile>
 
-        <!-- Profile for testing with Hibernate Bean Validation RI -->
+        <!-- Default profile for testing with Hibernate Bean Validation RI -->
         <profile>
             <id>hibernate</id>
             <activation>
+                <activeByDefault>true</activeByDefault>
                 <property>
                     <name>hibernate</name>
                 </property>
             </activation>
             <dependencies>
-                <!-- Latest matching BV RI versions from 20090427 -->
                 <dependency>
                     <groupId>javax.validation</groupId>
                     <artifactId>validation-api</artifactId>
-                    <version>1.0.CR2</version>
-                    <!-- <version>1.0.CR3</version> -->
+                    <version>1.0.CR3</version>
                     <scope>test</scope>
                 </dependency>
+                <!-- Hibernate that implements 1.0.CR3 -->
                 <dependency>
                     <groupId>org.hibernate</groupId>
                     <artifactId>hibernate-validator</artifactId>
-                    <version>4.0.0.Beta1</version>
-                    <!-- <version>4.0.0.Beta2-SNAPSHOT</version> -->
+                    <version>4.0.0.Beta2</version>
                     <scope>test</scope>
                     <exclusions>
                         <!-- force usage of the geronimo-jpa_2.0_spec -->

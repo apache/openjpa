@@ -25,6 +25,8 @@ import java.util.Set;
 
 import javax.validation.ConstraintViolation;
 import javax.validation.ConstraintViolationException;
+import javax.validation.Path;
+import javax.validation.Path.Node;
 
 import org.apache.openjpa.lib.log.Log;
 import org.apache.openjpa.persistence.OpenJPAEntityManager;
@@ -602,7 +604,7 @@ public class TestValidationGroups extends PersistenceTestCase {
 
     private void checkCVE(ConstraintViolationException e,
         String... vioProperties) {
-        Set<?>cvs = e.getConstraintViolations();
+        Set<ConstraintViolation<?>>cvs = e.getConstraintViolations();
         if (vioProperties.length == 0 && cvs == null)
             return;
         assertEquals(vioProperties.length, cvs.size());
@@ -612,8 +614,7 @@ public class TestValidationGroups extends PersistenceTestCase {
             ConstraintViolation<?> v = (ConstraintViolation<?>)i.next();
             boolean found = false;
             for (String vio : vioProperties) {
-                // TODO - getPropertyPath() will return a Path in future APIs
-                if (v.getPropertyPath().compareTo(vio) == 0) {
+                if (v.getPropertyPath().toString().compareTo(vio) == 0) {
                     found = true;
                     break;
                 }

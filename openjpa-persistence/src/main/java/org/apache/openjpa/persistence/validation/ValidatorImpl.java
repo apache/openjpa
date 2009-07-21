@@ -23,7 +23,7 @@ import java.util.Map;
 import java.util.Set;
 
 import javax.persistence.ValidationMode;
-import javax.validation.BeanDescriptor;
+import javax.validation.metadata.BeanDescriptor;
 import javax.validation.ConstraintViolation;
 import javax.validation.ConstraintViolationException;
 import javax.validation.Validation;
