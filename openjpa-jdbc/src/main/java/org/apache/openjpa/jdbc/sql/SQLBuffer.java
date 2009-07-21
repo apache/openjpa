@@ -58,7 +58,7 @@ public final class SQLBuffer
     private static final String PARAMETER_TOKEN = "?";
 
     private final DBDictionary _dict;
-    private final StringBuffer _sql = new StringBuffer();
+    private final StringBuilder _sql = new StringBuilder();
     private List _subsels = null;
     private List _params = null;
     private List _cols = null;
@@ -446,7 +446,7 @@ public final class SQLBuffer
         if (!replaceParams || _params == null || _params.isEmpty())
             return sql;
 
-        StringBuffer buf = new StringBuffer();
+        StringBuilder buf = new StringBuilder();
         Iterator pi = _params.iterator();
         for (int i = 0; i < sql.length(); i++) {
             if (sql.charAt(i) != '?') {
