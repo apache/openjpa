@@ -24,18 +24,10 @@ import javax.persistence.Basic;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
-import javax.persistence.NamedQueries;
-import javax.persistence.NamedQuery;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 import javax.validation.constraints.Pattern;
 
-
-@NamedQueries( {
-    @NamedQuery(name="FindFirst",
-            query="select c from VPATTERN c where c.id = 1"),
-    @NamedQuery(name="FindAll", query="select c from VPATTERN c")
-})
 
 @Entity(name = "VPATTERN")
 @Table(name = "PATTERN_ENTITY")

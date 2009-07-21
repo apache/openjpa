@@ -19,7 +19,6 @@
 package org.apache.openjpa.integration.validation;
 
 import java.io.Serializable;
-import java.math.BigDecimal;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
@@ -28,21 +27,11 @@ import javax.persistence.Basic;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
-import javax.persistence.NamedQueries;
-import javax.persistence.NamedQuery;
 import javax.persistence.Table;
 import javax.persistence.Transient;
-import javax.validation.constraints.DecimalMax;
-import javax.validation.constraints.DecimalMin;
 import javax.validation.constraints.Future;
 import javax.validation.constraints.Past;
 
-
-@NamedQueries( {
-    @NamedQuery(name="FindFirst",
-            query="select c from VDATES c where c.id = 1"),
-    @NamedQuery(name="FindAll", query="select c from VDATES c")
-})
 
 @Entity(name = "VDATES")
 @Table(name = "DATES_ENTITY")

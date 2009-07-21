@@ -24,19 +24,11 @@ import javax.persistence.Basic;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
-import javax.persistence.NamedQueries;
-import javax.persistence.NamedQuery;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 import javax.validation.constraints.Max;
 import javax.validation.constraints.Min;
 
-
-@NamedQueries( {
-    @NamedQuery(name="FindFirst",
-            query="select c from VNUMBER c where c.id = 1"),
-    @NamedQuery(name="FindAll", query="select c from VNUMBER c")
-})
 
 @Entity(name = "VNUMBER")
 @Table(name = "NUMBER_ENTITY")
