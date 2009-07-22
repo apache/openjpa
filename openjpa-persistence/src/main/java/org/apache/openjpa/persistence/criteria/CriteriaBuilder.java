@@ -678,8 +678,7 @@ public class CriteriaBuilder implements QueryBuilder, ExpressionParser {
         return new Expressions.IsNull((ExpressionImpl<?> )x);
     }
 
-    public CompoundSelection<Tuple> tuple(Selection<?>... arg0) {
-        // TODO Auto-generated method stub
-        return null;
+    public CompoundSelection<Tuple> tuple(Selection<?>... selections) {
+        return new TupleSelection<Tuple>(Tuple.class, selections);
     }
 }

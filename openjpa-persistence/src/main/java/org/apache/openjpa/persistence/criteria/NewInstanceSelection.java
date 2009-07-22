@@ -24,8 +24,6 @@ import java.util.List;
 import javax.persistence.criteria.CompoundSelection;
 import javax.persistence.criteria.Selection;
 
-import org.apache.openjpa.persistence.TupleElementImpl;
-
 /**
  * A selection item that constructs new instance of a user-defined class with arguments specified as other selected 
  * items. 

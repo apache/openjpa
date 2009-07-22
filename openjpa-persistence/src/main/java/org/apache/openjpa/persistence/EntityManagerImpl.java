@@ -945,7 +945,8 @@ public class EntityManagerImpl
     }
 
     public <T> TypedQuery<T> createQuery(String query, Class<T> resultClass) {
-        throw new UnsupportedOperationException();
+        return new QueryImpl(this, _ret, 
+            _broker.newQuery(JPQLParser.LANG_JPQL, query));
     }
     
     public OpenJPAQuery createQuery(String query) {

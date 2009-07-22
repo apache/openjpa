@@ -16,6 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
+
 package org.apache.openjpa.persistence;
 
 import javax.persistence.TupleElement;
@@ -30,6 +31,7 @@ import javax.persistence.TupleElement;
 public class TupleElementImpl<X> implements TupleElement<X> {
     private String _alias;
     protected final Class<X> _cls;
+    private X _value;
 
     protected TupleElementImpl(Class<X> cls) {
         _cls = cls;
@@ -45,5 +47,16 @@ public class TupleElementImpl<X> implements TupleElement<X> {
 
     public Class<X> getJavaType() {
         return _cls;
+    }
+    
+    public X getValue() { 
+        return _value;
+    }
+    
+    @SuppressWarnings("unchecked")
+    public void setValue(Object x) {
+        // X is unknown at compile time in TupleImpl when we construct a new Tuple. 
+        // so we're stuck with this ugly cast.
+        _value = (X) x;
     }
 }

@@ -40,6 +40,7 @@ import org.apache.openjpa.kernel.exps.ExpressionFactory;
 import org.apache.openjpa.kernel.exps.QueryExpressions;
 import org.apache.openjpa.kernel.exps.Value;
 import org.apache.openjpa.meta.ClassMetaData;
+import org.apache.openjpa.persistence.TupleImpl;
 import org.apache.openjpa.persistence.meta.AbstractManagedType;
 import org.apache.openjpa.persistence.meta.Members;
 import org.apache.openjpa.persistence.meta.MetamodelImpl;
@@ -242,7 +243,12 @@ public class CriteriaExpressionBuilder {
         ExpressionFactory factory, CriteriaQueryImpl<?> q, MetamodelImpl model, 
         Map<Expression<?>, Value> exp2Vals) {
         for (Selection<?> s : selections) {
-            if (s instanceof NewInstanceSelection<?>) {
+            if(s instanceof TupleSelection<?> ) {
+                exps.resultClass = TupleImpl.class;
+                getProjections(exps, ((TupleSelection<?>)s).getSelectionItems(), projections, aliases, 
+                    clauses, factory, q, model, exp2Vals);
+            }
+            else if (s instanceof NewInstanceSelection<?>) {
                 exps.resultClass = s.getJavaType();
                 getProjections(exps, ((NewInstanceSelection<?>)s).getSelectionItems(), projections, aliases, 
                    clauses, factory, q, model, exp2Vals);               
