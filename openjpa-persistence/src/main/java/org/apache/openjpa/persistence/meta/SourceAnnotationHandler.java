@@ -544,7 +544,10 @@ public class SourceAnnotationHandler
     	mirror = box ? box(mirror) : mirror;
     	if (isPrimitive(mirror))
     		return ((PrimitiveType)mirror).toString();
-        return processingEnv.getTypeUtils().asElement(mirror).toString();
+    	Element elem = processingEnv.getTypeUtils().asElement(mirror);
+    	if (elem == null)
+    	    throw new RuntimeException(_loc.get("mmg-no-type", mirror).getMessage());
+        return elem.toString();
     }
 
     /**

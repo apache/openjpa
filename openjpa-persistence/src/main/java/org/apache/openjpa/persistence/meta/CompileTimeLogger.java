@@ -75,7 +75,13 @@ public class CompileTimeLogger {
     }
     
     public void error(Localizer.Message message) {
+        error(message, null);
+    }
+    
+    public void error(Localizer.Message message, Throwable t) {
         log(Level.ERROR, message, Diagnostic.Kind.ERROR);
+        if (t != null)
+            t.printStackTrace();
     }
     
     private void log(Level level, Localizer.Message message, 

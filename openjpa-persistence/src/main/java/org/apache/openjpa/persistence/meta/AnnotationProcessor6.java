@@ -24,12 +24,12 @@ import java.io.File;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.PrintWriter;
+import java.net.URI;
+import java.net.URL;
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
 import javax.annotation.Generated;
@@ -57,28 +57,42 @@ import org.apache.openjpa.persistence.PersistenceMetaDataFactory;
 import org.apache.openjpa.persistence.util.SourceCode;
 
 /**
- * Annotation processing tool generates souce code for a meta-model class given 
+ * Annotation processing tool generates source code for a meta-model class given 
  * the annotated source code of persistent entity.
  * <p>
  * This tool is invoked during compilation for JDK6 compiler if OpenJPA and JPA 
  * libraries are specified in the compiler <code>-processorpath</code> option.
  * <br>
- * Supported options
- * <LI>
- * For example,<br>
- * <center><code>$ javac -processorpath path/to/openjpa;/path/to/jpa 
- * -s src -Alog mypackage/MyClass.java</code></center>
- * <p> 
- * will generate source code for canonical meta-model class  at
- * <code>src/mypackage/MyClass_.java</code>.
+ * <B>Usage</B><br>
+ * <code>$ javac -processorpath path/to/openjpa-all.jar mypackage/MyEntity.java</code><br>
+ * will generate source code for canonical meta-model class <code>mypackage.MyEntity_.java</code>.
  * <p>
- * The generated source code is written relative to the source path root which
- * is, by default, the current directory or as specified by -s option to 
- * <code>javac</code> compiler. 
- * <p>
- * Currently the only recognized option is <code>-Alog</code> specified as shown
- * in the <code>javac</code> command above.
- * 
+ * The Annotation Processor recognizes the following options (none of them are mandatory):
+ * <LI><code>-Alog=TRACE|INFO|WARN|ERROR</code><br>
+ * The logging level. Default is <code>WARN</code>.
+ * <LI>-Asource=&lt;n&gt;<br>
+ * where &lt;n&gt; denotes the integral number for Java source version of the generated code. 
+ * Default is <code>6</code>.
+ * <LI>-Anaming=class name <br>
+ * fully-qualified name of a class implementing <code>org.apache.openjpa.meta.MetaDataFactory</code> that determines
+ * the name of a meta-class given the name of the original persistent Java entity class. Defaults to
+ * <code>org.apache.openjpa.persistence.PersistenceMetaDataFactory</code> which appends a underscore character
+ * (<code>_</code>) to the original Java class name. 
+ * <LI>-Aheader=&lt;url&gt;<br>
+ * A url whose content will appear as comment header to the generated file(s). Recognizes special value
+ * <code>ASL</code> for Apache Source License header as comment. By default adds a OpenJPA proprietary   
+ * text.
+ * <LI>-Aout=dir<br>
+ * A directory in the local file system. The generated files will be written <em>relative</em> to this directory
+ * according to the package structure i.e. if <code>dir</code> is specified as <code>/myproject/generated-src</code>
+ * then the generated source code will be written to <code>/myproject/generated-src/mypackage/MyEntity_.java</code>.
+ * If this option is not specified, then an attempt will be made to write the generated source file in the same
+ * directory of the source code of original class <code>mypackage.MyEntity</code>. The source code location for 
+ * <code>mypackage.MyEntity</code> can only be determined for Sun JDK6 and <code>tools.jar</code> being available 
+ * to the compiler classpath. If the source code location for the original class can not be determined, and the 
+ * option is not specified, then the generated source code is written relative to the current directory according 
+ * to the package structure.  
+ * <br>
  * @author Pinaki Poddar
  * 
  * @since 2.0.0
@@ -94,10 +108,11 @@ import org.apache.openjpa.persistence.util.SourceCode;
 public class AnnotationProcessor6 extends AbstractProcessor {
     private SourceAnnotationHandler handler;
     private StandardJavaFileManager fileManager;
+    private boolean isUserSpecifiedOutputLocation = false;
     private MetaDataFactory factory;
     private int generatedSourceVersion = 6;
     private CompileTimeLogger logger;
-    private boolean addHeader = false;
+    private String header;
     private static Localizer _loc =  Localizer.forPackage(AnnotationProcessor6.class);
 
     /**
@@ -180,7 +195,7 @@ public class AnnotationProcessor6 extends AbstractProcessor {
         setSourceVersion();
         setFileManager();
         setNamingPolicy();
-        addHeader = "true".equalsIgnoreCase(processingEnv.getOptions().get("header"));
+        setHeader();
         handler = new SourceAnnotationHandler(processingEnv, logger);
     }
     
@@ -224,7 +239,7 @@ public class AnnotationProcessor6 extends AbstractProcessor {
             source.getTopLevelClass().setSuper(superName);
         }
         try {
-            PrintWriter writer = createSourceFile(metaClass, e);
+            PrintWriter writer = createSourceFile(originalClass, metaClass, e);
             SourceCode.Class modelClass = source.getTopLevelClass();
             Set<? extends Element> members = handler.getPersistentMembers(e);
             
@@ -269,8 +284,9 @@ public class AnnotationProcessor6 extends AbstractProcessor {
             writer.flush();
             writer.close();
             return true;
-        } catch (IOException e1) {
-            throw new RuntimeException(e1);
+        } catch (Exception e1) {
+            logger.error(_loc.get("mmg-process-error", e.getQualifiedName()), e1);
+            return false;
         } finally {
 
         }
@@ -288,11 +304,10 @@ public class AnnotationProcessor6 extends AbstractProcessor {
     }
     
     private void comment(SourceCode source) {
-        if (addHeader) {
-           source.addComment(false, _loc.get("mmg-asl-header").getMessage());
-        } else {
-            source.addComment(false, _loc.get("mmg-tool-sign").getMessage());
-        }
+        if (header != null)
+            source.addComment(false, header);
+        String defaultHeader = _loc.get("mmg-tool-sign").getMessage();
+        source.addComment(false, defaultHeader);
     }
     
     /**
@@ -328,31 +343,162 @@ public class AnnotationProcessor6 extends AbstractProcessor {
         }
     }
     
-    private void setFileManager() {
-        JavaCompiler compiler = ToolProvider.getSystemJavaCompiler();
-        fileManager = compiler.getStandardFileManager(null, 
-            null, null);
-        String srcOutput = processingEnv.getOptions().get("out");
-        if (srcOutput != null) {
+    private void setHeader() {
+        String headerOption = processingEnv.getOptions().get("header");
+        if (headerOption == null) {
+            return;
+        }
+        if ("ASL".equalsIgnoreCase(headerOption)) {
+            header = _loc.get("mmg-asl-header").getMessage();
+        } else {
             try {
-                fileManager.setLocation(StandardLocation.SOURCE_OUTPUT, 
-                    Collections.singletonList(new File(srcOutput)));
+                URL url = new URL(headerOption);
+                header = url.getContent().toString();
             } catch (Throwable t) {
-                logger.warn(_loc.get("mmg-bad-out", srcOutput, 
-                    StandardLocation.SOURCE_OUTPUT));
+                
             }
         }
     }
+    
+    private void setFileManager() {
+        JavaCompiler compiler = ToolProvider.getSystemJavaCompiler();
+        fileManager = compiler.getStandardFileManager(null, null, null);
+        String outDir = processingEnv.getOptions().get("out");
+        if (outDir != null)
+           isUserSpecifiedOutputLocation = setSourceOutputDirectory(new File(outDir));
+    }
 
-    private PrintWriter createSourceFile(String metaClass, TypeElement e) 
+    /**
+     * Creates a file where source code of the given metaClass will be written.
+     * 
+     */
+    private PrintWriter createSourceFile(String originalClass, String metaClass, TypeElement e) 
         throws IOException {
-        
-        JavaFileObject javaFile = fileManager.getJavaFileForOutput(
-            StandardLocation.SOURCE_OUTPUT, 
-            metaClass, JavaFileObject.Kind.SOURCE, null);
+        if (!isUserSpecifiedOutputLocation) {
+            setSourceOutputDirectory(OutputPath.getAbsoluteDirectory(processingEnv, e));
+        }
+        JavaFileObject javaFile = fileManager.getJavaFileForOutput(StandardLocation.SOURCE_OUTPUT, 
+            metaClass, JavaFileObject.Kind.SOURCE, 
+            null); // do not use sibling hint because of indeterminable behavior across JDK 
         logger.info(_loc.get("mmg-process", javaFile.toUri()));
         OutputStream out = javaFile.openOutputStream();
         PrintWriter writer = new PrintWriter(out);
         return writer;
     }
+    
+    /**
+     * Sets the output directory for generated source files.
+     * Tries to create the directory structure if does not exist.
+     * 
+     * @return true if the output has been set successfully.
+     */
+    boolean setSourceOutputDirectory(File outDir) {
+        if (outDir == null)
+            return false;
+        if (!outDir.exists()) {
+            if (!outDir.mkdirs()) {
+                logger.warn(_loc.get("mmg-bad-out", outDir, StandardLocation.SOURCE_OUTPUT));
+                return false;
+            }
+        }
+        try {
+            fileManager.setLocation(StandardLocation.SOURCE_OUTPUT, Collections.singleton(outDir));
+            return true;
+        } catch (IOException e) {
+            logger.warn(_loc.get("mmg-bad-out", outDir, StandardLocation.SOURCE_OUTPUT));
+            return false;
+        }
+    }
+    
+    /**
+     * An utility class to determine the source file corresponding to a {@link TypeElement}.
+     * The utility uses Sun JDK internal API (com.sun.tools.*) and hence works reflectively
+     * to avoid compile-time dependency.
+     *   
+     * @author Pinaki Poddar
+     *
+     */
+    public static class OutputPath {
+        private static Class<?> trees = null;
+        static {
+            try {
+                trees = Class.forName("com.sun.source.util.Trees");
+            } catch (Throwable t) {
+                
+            }
+        }
+        
+        /**
+         * Gets the directory relative to the Java source file corresponding to the TypeElement.
+         * 
+         * @return null if the com.sun.source.util.* package is not available or the given TypeElement
+         * does not correspond to a compilation unit associated to a source file.
+         */
+        public static File getAbsoluteDirectory(ProcessingEnvironment env, TypeElement e) {
+            if (trees == null)
+                return null;
+            try {
+                // Trees root = Trees.instance(env);
+                Object root = trees.getMethod("instance", new Class[]{ProcessingEnvironment.class})
+                    .invoke(null, env);
+                
+                // TreePath path = root.getPath(e);
+                Object path = root.getClass().getMethod("getPath", new Class[]{Element.class})
+                    .invoke(root, e);
+                
+                // CompilationUnitTree unit = path.getCompilationUnit();
+                Object unit = path.getClass().getMethod("getCompilationUnit", (Class[])null)
+                    .invoke(path, (Object[])null);
+                
+                // JavaFileObject f = unit.getSourceFile();
+                JavaFileObject f = (JavaFileObject)unit.getClass().getMethod("getSourceFile", (Class[])null)
+                    .invoke(unit, (Object[])null);
+                
+                URI uri = f.toUri();
+                File dir = getParentFile(new File(uri.toURL().getPath()), packageDepth(e.getQualifiedName().toString()));
+                return dir;
+            } catch (Throwable t) {
+                return null;
+            }
+        }
+        
+        /**
+         * Gets the parent of the given file recursively traversing to given number of levels.
+         */
+        public static File getParentFile(File f, int n) {
+            if (n < 0)
+                return f;
+            if (n == 0)
+                return f.getParentFile();
+            return getParentFile(f.getParentFile(), n-1);
+        }
+        
+        public static int packageDepth(String s) {
+            String pkg = getPackageName(s);
+            if (pkg == null)
+                return 0;
+            int depth = 1;
+            int i = 0;
+            while ((i = pkg.indexOf('.')) != -1) {
+                depth++;
+                pkg = pkg.substring(i+1);
+            }
+            return depth;
+        }
+        
+        public static String getPackageName(String s) {
+            if (s == null)
+                return null;
+            int i = s.lastIndexOf('.');
+            return (i == -1) ? null : s.substring(0, i);
+        }
+        
+        public static String getSimpleName(String s) {
+            if (s == null)
+                return null;
+            int i = s.lastIndexOf('.');
+            return (i == -1) ? s : s.substring(i+1);
+        }
+    }
+
 }
