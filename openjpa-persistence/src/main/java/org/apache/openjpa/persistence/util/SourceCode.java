@@ -60,7 +60,7 @@ public class SourceCode {
 	private static final String[] BRACKET_ARGS   = {"(", ")"};
     private static final String[] BRACKET_PARAMS = {"<", ">"};
 	
-	private Comment comment;
+	private List<Comment> comments;
 	private final Package pkg;
 	private final Class   cls;
     private final Set<Import> imports = new TreeSet<Import>();
@@ -106,9 +106,12 @@ public class SourceCode {
 	public SourceCode addComment(boolean inline, String... lines) {
 	    if (lines == null)
 	        return this;
-	    if (lines.length == 1 && lines[0].length() > 80)
-	        return addComment(inline, wrap(lines[0], 80-4));
-		if (comment == null) comment = new Comment();
+	    if (lines.length == 1 && lines[0].length() > 120)
+	        return addComment(inline, wrap(lines[0], 120-4));
+		if (comments == null) 
+		    comments = new ArrayList<Comment>();
+		Comment comment = new Comment();
+		comments.add(comment);
 		comment.makeInline(inline);
 		for (String line:lines) comment.append(line);
 		return this;
@@ -119,9 +122,11 @@ public class SourceCode {
 	 * @param out
 	 */
 	public void write(PrintWriter out) {
-		if (comment != null) {
-		    comment.write(out, 0);
-		      out.println();
+		if (comments != null) {
+		    for (Comment comment : comments) {
+		        comment.write(out, 0);
+		        out.println();
+		    }
 		}
 		if (pkg != null) {
 		    pkg.write(out,0);
