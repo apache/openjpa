@@ -455,7 +455,8 @@ public class AnnotationProcessor6 extends AbstractProcessor {
                     .invoke(unit, (Object[])null);
                 
                 URI uri = f.toUri();
-                File dir = getParentFile(new File(uri.toURL().getPath()), packageDepth(e.getQualifiedName().toString()));
+                File dir = getParentFile(new File(uri.toURL().getPath()), 
+                        packageDepth(e.getQualifiedName().toString()));
                 return dir;
             } catch (Throwable t) {
                 return null;
