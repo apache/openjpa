@@ -25,7 +25,11 @@ import java.util.List;
 import javax.persistence.Tuple;
 import javax.persistence.TupleElement;
 
+import org.apache.openjpa.kernel.ExpressionStoreQuery;
+import org.apache.openjpa.lib.util.Localizer;
+
 public class TupleImpl implements Tuple {
+    private static final Localizer _loc = Localizer.forPackage(TupleImpl.class);
     List<TupleElement<?>> elements = new ArrayList<TupleElement<?>>();
 
     /**
@@ -39,9 +43,10 @@ public class TupleImpl implements Tuple {
      */
     public <X> X get(TupleElement<X> tupleElement) {
         if (!elements.contains(tupleElement)) {
-            throw new IllegalArgumentException("tupleElement was not found in this tuple"); // TODO MDD improve
+            throw new IllegalArgumentException(_loc.get(
+                "tuple-element-not-found",
+                new Object[] { tupleElement, elements }).getMessage());
         }
-
         TupleElementImpl<X> impl = (TupleElementImpl<X>) tupleElement;
         return impl.getValue();
     }
@@ -61,13 +66,13 @@ public class TupleImpl implements Tuple {
     @SuppressWarnings("unchecked")
     public <X> X get(String alias, Class<X> type) {
         if (type == null) {
-            throw new IllegalArgumentException("Type was null");
+            throw new IllegalArgumentException(_loc.get("tuple-was-null", "type").getMessage());
         }
         Object rval = get(alias);
         if (!type.isAssignableFrom(rval.getClass())) {
-            throw new IllegalArgumentException(String.format(
-                "TupleElement type did not match for alias: %s. Provided type: %s actual type: %s", alias, type, rval
-                    .getClass().toString()));
+            throw new IllegalArgumentException(_loc.get(
+                "tuple-element-wrong-type",
+                new Object[] { alias, type, rval.getClass() }).getMessage());
         }
         return (X) rval;
     }
@@ -83,14 +88,21 @@ public class TupleImpl implements Tuple {
      */
     public Object get(String alias) {
         if (alias == null) {
-            throw new IllegalArgumentException(String.format("Alias was null."));
+            // TODO MDD determine if we can support this. 
+            throw new IllegalArgumentException(_loc.get("typle-was-null", "alias").getMessage());
         }
         for (TupleElement<?> te : elements) {
             if (alias.equals(te.getAlias())) {
                 return ((TupleElementImpl<?>) te).getValue();
             }
         }
-        throw new IllegalArgumentException(String.format("Alias %s was not found.", alias));
+
+        List<String> knownAliases = new ArrayList<String>();
+        for(TupleElement<?> te : elements) { 
+            knownAliases.add(te.getAlias());
+        }
+        throw new IllegalArgumentException(_loc.get("tuple-alias-not-found",
+            new Object[] { alias, knownAliases }).getMessage());
     }
 
     /**
@@ -107,13 +119,13 @@ public class TupleImpl implements Tuple {
     @SuppressWarnings("unchecked")
     public <X> X get(int i, Class<X> type) {
         if (type == null) {
-            throw new IllegalArgumentException("Type was null");
+            throw new IllegalArgumentException(_loc.get("tuple-was-null", "type").getMessage());
         }
         Object rval = get(i);
         if(! type.isAssignableFrom(rval.getClass())) { 
-                throw new IllegalArgumentException(String.format(
-                    "Type did not match for position: %d. Provided type: %s actual type: %s", i, type.getClass(),
-                    rval.getClass()));
+            throw new IllegalArgumentException(_loc.get(
+                "tuple-element-wrong-type",
+                new Object[] { "position", i, type, type.getClass() }).getMessage());
         }
         return (X) rval;
     }
@@ -129,11 +141,11 @@ public class TupleImpl implements Tuple {
      */
     public Object get(int i) {
         if (i > elements.size()) {
-            throw new IllegalArgumentException(String.format(
-                "Attempt to read TupleElement %d when there are only %d elements available", i, elements.size()));
+            throw new IllegalArgumentException(_loc.get("tuple-exceeded-size",
+                new Object[] { i, elements.size() }).getMessage());
         }
-        if (i == -1) {
-            throw new IllegalArgumentException("Cannot obtain the -1th element in this tuple. Thank you for playing");
+        if (i <= -1) {
+            throw new IllegalArgumentException(_loc.get("tuple-stop-thinking-in-python").getMessage());
         }
         return toArray()[i];
     }

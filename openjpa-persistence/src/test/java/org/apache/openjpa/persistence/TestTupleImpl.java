@@ -21,9 +21,10 @@ package org.apache.openjpa.persistence;
 
 import java.util.List;
 
-import javax.persistence.Entity;
 import javax.persistence.Tuple;
 import javax.persistence.TupleElement;
+
+import org.apache.openjpa.lib.util.Localizer;
 
 import junit.framework.TestCase;
 
