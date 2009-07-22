@@ -34,7 +34,6 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
 
-import javax.persistence.Caching;
 import javax.persistence.spi.SharedCacheMode;
 import javax.persistence.spi.ValidationMode;
 import javax.persistence.spi.ClassTransformer;
@@ -527,12 +526,12 @@ public class PersistenceUnitInfoImpl
         _schemaVersion = version;
     }
 
-    public Caching getCaching() {
+    public SharedCacheMode getCaching() {
         throw new UnsupportedOperationException(
             "JPA 2.0 - Method not yet implemented");
     }
     
-    public void setCaching(Caching cache) {
+    public void setCaching(SharedCacheMode cache) {
         throw new UnsupportedOperationException(
         "JPA 2.0 - Method not yet implemented");
     }
