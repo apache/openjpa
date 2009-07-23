@@ -43,6 +43,7 @@ import javax.persistence.LockModeType;
 import javax.persistence.Query;
 import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.ParameterExpression;
 import javax.persistence.criteria.QueryBuilder;
 import javax.persistence.metamodel.Metamodel;
 
@@ -72,6 +73,7 @@ import org.apache.openjpa.meta.FieldMetaData;
 import org.apache.openjpa.meta.QueryMetaData;
 import org.apache.openjpa.meta.SequenceMetaData;
 import org.apache.openjpa.persistence.criteria.CriteriaBuilder;
+import org.apache.openjpa.persistence.criteria.CriteriaQueryImpl;
 import org.apache.openjpa.persistence.validation.ValidationUtils;
 import org.apache.openjpa.util.Exceptions;
 import org.apache.openjpa.util.ImplHelper;
@@ -1527,9 +1529,20 @@ public class EntityManagerImpl
         _broker.detach(entity, this);
     }
 
+    /**
+     * Crete a query from the given CritriaQuery.
+     * Compile to register the parameters in this query.
+     */
     public <T> TypedQuery<T> createQuery(CriteriaQuery<T> criteriaQuery) {
-        return new QueryImpl(this, _ret, 
-            _broker.newQuery(CriteriaBuilder.LANG_CRITERIA, criteriaQuery));
+        org.apache.openjpa.kernel.Query kernelQuery =_broker.newQuery(CriteriaBuilder.LANG_CRITERIA, criteriaQuery);
+        kernelQuery.compile();
+        QueryImpl<T> facadeQuery = new QueryImpl<T>(this, _ret, kernelQuery);
+        Set<ParameterExpression<?>> params = ((CriteriaQueryImpl<T>)criteriaQuery).getParameters();
+        
+        for (ParameterExpression<?> param : params) {
+            facadeQuery.registerParameter((QueryParameter<?>)param);
+        }
+        return facadeQuery;
     }
     
     public OpenJPAQuery createDynamicQuery(

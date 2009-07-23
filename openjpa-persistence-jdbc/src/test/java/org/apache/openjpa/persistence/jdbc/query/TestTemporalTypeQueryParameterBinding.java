@@ -142,12 +142,11 @@ public class TestTemporalTypeQueryParameterBinding extends SingleEMFTestCase {
 		Query q = em.createQuery(JPQL_NAMED);
 		q.setParameter("d",  d1, TemporalType.TIME);
 		q.setParameter("ts",  d2, TemporalType.TIMESTAMP);
-		q.setParameter("t",  d3, TemporalType.DATE);
 		
 		try {
-			q.getResultList();
+	        q.setParameter("t",  d3, TemporalType.DATE);
 			fail("Expeceted " + ArgumentException.class.getName());
-		} catch (ArgumentException ex) {
+		} catch (IllegalArgumentException ex) {
 			// good
 		}
 	}
@@ -159,16 +158,19 @@ public class TestTemporalTypeQueryParameterBinding extends SingleEMFTestCase {
 		
 		Query q = em.createQuery(JPQL_POSITIONAL);
 		q.setParameter(1,  d1, TemporalType.TIME);
-		q.setParameter(2,  d2, TemporalType.TIMESTAMP);
-		q.setParameter(3,  d3, TemporalType.DATE);
 		
 		try {
-			q.getResultList();
+	        q.setParameter(2,  d2, TemporalType.TIMESTAMP);
 			fail("Expeceted " + ArgumentException.class.getName());
-		} catch (ArgumentException ex) {
-		    // MDD I'm assuming good == expected.
-			// good
+		} catch (IllegalArgumentException ex) {
+		    // expected.
 		}
+        try {
+            q.setParameter(3,  d3, TemporalType.DATE);
+            fail("Expeceted " + ArgumentException.class.getName());
+        } catch (IllegalArgumentException ex) {
+            // expected.
+        }
 	}
 	
 	void verifyParams(String jpql, Class<? extends Exception> error,

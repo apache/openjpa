@@ -40,14 +40,9 @@ import org.apache.openjpa.persistence.meta.MetamodelImpl;
 public abstract class ExpressionImpl<X> extends SelectionImpl<X> 
     implements Expression<X> {
 
-    abstract Value toValue(ExpressionFactory factory, MetamodelImpl model,
-        CriteriaQueryImpl<?> q);
-//    {
-//        throw new AbstractMethodError(this.getClass().getName());
-//    }
+    abstract Value toValue(ExpressionFactory factory, MetamodelImpl model, CriteriaQueryImpl<?> q);
     
-    org.apache.openjpa.kernel.exps.Expression toKernelExpression(
-        ExpressionFactory factory, MetamodelImpl model,
+    org.apache.openjpa.kernel.exps.Expression toKernelExpression(ExpressionFactory factory, MetamodelImpl model,
         CriteriaQueryImpl<?> q) {
         throw new AbstractMethodError(this.getClass().getName());
     }

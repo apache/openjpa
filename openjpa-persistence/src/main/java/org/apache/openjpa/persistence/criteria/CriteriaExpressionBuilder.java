@@ -60,7 +60,6 @@ public class CriteriaExpressionBuilder {
 
         evalAccessPaths(exps, factory, q);
         //exps.alias = null;      // String   
-        exps.ascending = new boolean[]{false};
         evalDistinct(exps, factory, q);
         evalFetchJoin(exps, factory, q);
         evalCrossJoinRoots(exps, factory, q);
@@ -114,10 +113,8 @@ public class CriteriaExpressionBuilder {
         CriteriaQueryImpl<?> q) {
         List<Order> orders = q.getOrderList();
         MetamodelImpl model = q.getMetamodel(); 
-        if (orders == null) 
-            return null;
+        int ordercount = (orders == null) ? 0 : orders.size();
         Map<Expression<?>, Value> exp2Vals = new HashMap<Expression<?>, Value>();
-        int ordercount = orders.size();
         exps.ordering = new Value[ordercount];
         exps.orderingClauses = new String[ordercount];
         exps.orderingAliases = new String[ordercount];

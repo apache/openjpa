@@ -697,8 +697,8 @@ public class Expressions {
         public Value toValue(ExpressionFactory factory, MetamodelImpl model,
             CriteriaQueryImpl<?> q) {
             Object value = arg;
-            if (arg instanceof ParameterImpl) {
-                return ((ParameterImpl)arg).toValue(factory, model, q);
+            if (arg instanceof ParameterExpressionImpl) {
+                return ((ParameterExpressionImpl)arg).toValue(factory, model, q);
             }
             int literalType = Literal.TYPE_UNKNOWN;
             if (arg != null) {

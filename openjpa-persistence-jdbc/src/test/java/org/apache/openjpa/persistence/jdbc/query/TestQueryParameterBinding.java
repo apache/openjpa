@@ -65,11 +65,7 @@ public class TestQueryParameterBinding extends SingleEMFTestCase {
 	public void testPositionalParameterWithNamedBindingFails() {
         String JPQL_POSITIONAL = JPQL + "WHERE p.p1=?1 AND p.p2=?2 AND p.p3=?3";
 		Query q = em.createQuery(JPQL_POSITIONAL);
-		q.setParameter("p1", INT_VALUE);
-		q.setParameter("p2", STR_VALUE);
-		q.setParameter("p3", DBL_VALUE);
-		
-		fail(q);
+		assertSetParameterFails(q, "p1", INT_VALUE);
 	}
 	
 	public void testPositionalParameterWithInsufficientValuesFails() {
@@ -87,9 +83,7 @@ public class TestQueryParameterBinding extends SingleEMFTestCase {
 		q.setParameter(1, INT_VALUE);
 		q.setParameter(2, STR_VALUE);
 		q.setParameter(3, DBL_VALUE);
-		q.setParameter(4, 4);
-		
-		fail(q);
+		assertSetParameterFails(q, 4, 4);
 	}
 
 	public void testPositionalParameterWithRepeatedValuesSucceeds() {
@@ -118,8 +112,8 @@ public class TestQueryParameterBinding extends SingleEMFTestCase {
 			JPQL + "WHERE p.p1=?1 AND p.p3=?3";
 		Query q = em.createQuery(JPQL_POSITIONAL_GAP_IN_PARAM);
 		q.setParameter(1,  INT_VALUE);
-		q.setParameter(2,  STR_VALUE);
-		q.setParameter(3,  DBL_VALUE);
+        q.setParameter(3,  DBL_VALUE);
+		assertSetParameterFails(q, 2,  STR_VALUE);
 		
 		fail(q);
 	}
@@ -137,11 +131,7 @@ public class TestQueryParameterBinding extends SingleEMFTestCase {
 	public void testNamedParameterWithPositionalBindingFails() {
         String JPQL_NAMED = JPQL + "WHERE p.p1=:p1 AND p.p2=:p2 AND p.p3=:p3";
 		Query q = em.createQuery(JPQL_NAMED);
-		q.setParameter(1, INT_VALUE);
-		q.setParameter(2, STR_VALUE);
-		q.setParameter(3, DBL_VALUE);
-		
-		fail(q);
+		assertSetParameterFails(q, 1, INT_VALUE);
 	}
 	
 	public void testNamedParameterWithInsufficientValuesFails() {
@@ -159,9 +149,7 @@ public class TestQueryParameterBinding extends SingleEMFTestCase {
 		q.setParameter("p1", INT_VALUE);
 		q.setParameter("p2", STR_VALUE);
 		q.setParameter("p3", DBL_VALUE);
-		q.setParameter("p4", 4);
-		
-		fail(q);
+		assertSetParameterFails(q, "p4", 4);
 	}
 
 	public void testNamedParameterWithRepeatedValuesSucceeds() {
@@ -189,30 +177,23 @@ public class TestQueryParameterBinding extends SingleEMFTestCase {
 			JPQL + "WHERE p.p1=:p1 AND p.p3=:p3";
 		Query q = em.createQuery(JPQL_NAMED_GAP_IN_PARAM);
 		q.setParameter("p1",  INT_VALUE);
-		q.setParameter("p2",  STR_VALUE);
-		q.setParameter("p3",  DBL_VALUE);
-		
-		fail(q);
+        q.setParameter("p3",  DBL_VALUE);
+		assertSetParameterFails(q, "p2",  STR_VALUE);
 	}
 	
 	public void testNamedParameterWithWrongType() {
         String JPQL_NAMED = JPQL + "WHERE p.p1=:p1 AND p.p2=:p2 AND p.p3=:p3";
 		Query q = em.createQuery(JPQL_NAMED);
 		q.setParameter("p1",  INT_VALUE);
-		q.setParameter("p2",  DBL_VALUE);
-		q.setParameter("p3",  STR_VALUE);
-		
-		fail(q);
+		assertSetParameterFails(q, "p2",  DBL_VALUE);
+		assertSetParameterFails(q, "p3",  STR_VALUE);
 	}
 	
 	public void testPositionalParameterWithWrongType() {
         String JPQL_POSITIONAL = JPQL + "WHERE p.p1=?1 AND p.p2=?2 AND p.p3=?3";
 		Query q = em.createQuery(JPQL_POSITIONAL);
 		q.setParameter(1,  INT_VALUE);
-		q.setParameter(2,  DBL_VALUE);
-		q.setParameter(3,  STR_VALUE);
-		
-		fail(q);
+		assertSetParameterFails(q, 2,  DBL_VALUE);
 	}
 	
 	public void testNamedParameterWithNullValue() {
@@ -221,29 +202,23 @@ public class TestQueryParameterBinding extends SingleEMFTestCase {
 		Query q = em.createQuery(JPQL_POSITIONAL);
 		q.setParameter("p1",  INT_VALUE);
 		q.setParameter("p2",  null);
-		q.setParameter("p3",  null);
-		
-		fail(q);
+		assertSetParameterFails(q, "p3",  null); // Parameter<double> can not be set to null 
 	}
 	
 	public void testPositionalParameterWithNullValue() {
         String JPQL_POSITIONAL = JPQL + "WHERE p.p1=?1 AND p.p2=?2 AND p.p3=?3";
 		Query q = em.createQuery(JPQL_POSITIONAL);
 		q.setParameter(1,  INT_VALUE);
-		q.setParameter(2,  null);
-		q.setParameter(3,  null);
-		
-		fail(q);
+		q.setParameter(2,  null);             // Parameter<String> can be set to null 
+		assertSetParameterFails(q, 3,  null); // Parameter<double> can not be set to null 
 	}
 	
 	public void testPositionalParameterWithSingleResult() {
 		Query q = em.createNamedQuery("JPQL_POSITIONAL");
         // "SELECT p FROM Binder p WHERE p.p1=?1 AND p.p2=?2 AND p.p3=?3"
 		q.setParameter(1,  INT_VALUE);
-		q.setParameter(2,  null);
-		q.setParameter(3,  null);
-		
-		fail(q, true);
+		q.setParameter(2,  null);              // Parameter<String> can be set to null 
+		assertSetParameterFails(q, 3,  null); // Parameter<double> can not be set to null 
 	}
 	
 	public void testPositionalParameterWithNativeQuery() {
@@ -274,7 +249,24 @@ public class TestQueryParameterBinding extends SingleEMFTestCase {
 		fail(q);
 	}
 	
-	
+    void assertSetParameterFails(Query q, String name, Object v) {
+        try {
+            q.setParameter(name, v);
+            fail("Expected to fail in setting named parameter [" + name + "] to a value of " + v);
+        } catch (IllegalArgumentException e) {
+            // good
+        }
+    }
+    
+    void assertSetParameterFails(Query q, int pos, Object v) {
+        try {
+            q.setParameter(pos, v);
+            fail("Expected to fail in setting positional parameter [" + pos + "] to a value of " + v);
+        } catch (IllegalArgumentException e) {
+            // good
+        }
+    }
+    
 	void fail(Query q) {
 		fail(q, false);
 	}

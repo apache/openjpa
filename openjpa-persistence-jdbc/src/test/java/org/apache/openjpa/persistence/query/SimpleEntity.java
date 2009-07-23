@@ -38,6 +38,10 @@ import javax.persistence.Table;
 @NamedQueries( {
     @NamedQuery(name="FindOne",
             query="select s from simple s where s.name = ?1"),
+    @NamedQuery(name="SelectWithPositionalParameter",
+            query="select a from simple a where a.id=?1 and a.name=?2"),
+    @NamedQuery(name="SelectWithNamedParameter",
+            query="select a from simple a where a.id=:id and a.name=:name"),
     @NamedQuery(name="FindOne",
             query="select s from simple s where s.name = ?1"),
     @NamedQuery(name="FindAll", query="select s from simple s")
@@ -57,7 +61,9 @@ import javax.persistence.Table;
 @Entity(name = "simple")
 @Table(name = "SIMPLE_ENTITY")
 public class SimpleEntity implements Serializable {
-
+    public static final String NAMED_QUERY_WITH_POSITIONAL_PARAMS = "SelectWithPositionalParameter";
+    public static final String NAMED_QUERY_WITH_NAMED_PARAMS = "SelectWithNamedParameter";
+    
     @Id
     @GeneratedValue
     @Column(name = "ID")

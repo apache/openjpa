@@ -27,7 +27,6 @@ import java.util.Collection;
 import java.util.Map;
 import java.util.Set;
 
-import javax.persistence.Parameter;
 import javax.persistence.Tuple;
 import javax.persistence.criteria.CompoundSelection;
 import javax.persistence.criteria.CriteriaQuery;
@@ -71,7 +70,7 @@ public class CriteriaBuilder implements QueryBuilder, ExpressionParser {
 
     public QueryExpressions eval(Object parsed, ExpressionStoreQuery query,
         ExpressionFactory factory, ClassMetaData candidate) {
-        CriteriaQueryImpl c = (CriteriaQueryImpl) parsed;
+        CriteriaQueryImpl<?> c = (CriteriaQueryImpl<?>) parsed;
         return c.getQueryExpressions(factory);
     }
     
@@ -83,9 +82,9 @@ public class CriteriaBuilder implements QueryBuilder, ExpressionParser {
     public String getLanguage() {
         return LANG_CRITERIA;
     }
+    
     /**
-     *  Create a Criteria query object with the specified result 
-     *  type.
+     *  Create a Criteria query object with the specified result type.
      *  @param resultClass  type of the query result
      *  @return query object
      */
@@ -504,13 +503,21 @@ public class CriteriaBuilder implements QueryBuilder, ExpressionParser {
     	return new PredicateImpl.Or(x,y);
     }
 
+    /**
+     * Construct a ParameterExpression with a null name as key.
+     * The name of this parameter will be assigned automatically
+     * when this parameter expression is 
+     * {@linkplain CriteriaQueryImpl#registerParameter(ParameterExpressionImpl)
+     * registered} in a Criteriaquery during tree traversal.
+     * 
+     * @see ParameterExpressionImpl#assignAutoName(String)
+     */
     public <T> ParameterExpression<T> parameter(Class<T> paramClass) {
-        throw new UnsupportedOperationException("Unnamed parameter " +
-                "not supported for CriteriaQuery");
+        return new ParameterExpressionImpl<T>(paramClass, null);
     }
 
     public <T> ParameterExpression<T> parameter(Class<T> paramClass, String name) {
-        return new ParameterImpl<T>(paramClass, name);
+        return new ParameterExpressionImpl<T>(paramClass, name);
     }
 
     public <N extends Number> Expression<N> prod(Expression<? extends N> x, Expression<? extends N> y) {
@@ -667,7 +674,7 @@ public class CriteriaBuilder implements QueryBuilder, ExpressionParser {
 
     public CompoundSelection<Object[]> array(Selection<?>... arg0) {
         // TODO Auto-generated method stub
-        return null;
+        throw new AbstractMethodError();
     }
 
     public Predicate isNotNull(Expression<?> x) {

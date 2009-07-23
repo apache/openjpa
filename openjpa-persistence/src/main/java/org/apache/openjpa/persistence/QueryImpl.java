@@ -23,12 +23,13 @@ import static org.apache.openjpa.kernel.QueryLanguages.LANG_PREPARED_SQL;
 import java.io.Serializable;
 import java.sql.Time;
 import java.sql.Timestamp;
-import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -73,18 +74,18 @@ import org.apache.openjpa.util.UserException;
  * @author Abe White
  * @nojavadoc
  */
+@SuppressWarnings("serial")
 public class QueryImpl<X> implements OpenJPAQuerySPI<X>, Serializable {
 
     private static final Object[] EMPTY_ARRAY = new Object[0];
-    private static final String SELECT = "SELECT ";
     private static final Localizer _loc = Localizer.forPackage(QueryImpl.class);
 
 	private DelegatingQuery _query;
 	private transient EntityManagerImpl _em;
 	private transient FetchPlan _fetch;
 
-	private Map<String, Object> _named;
-	private Map<Integer, Object> _positional;
+	private Map<String, QueryParameter<?>> _named;
+	private Map<Integer, QueryParameter<?>> _positional;
 	private String _id;
     private transient ReentrantLock _lock = null;
 	private final HintHandler _hintHandler;
@@ -156,41 +157,41 @@ public class QueryImpl<X> implements OpenJPAQuerySPI<X>, Serializable {
 		return _query.getIgnoreChanges();
 	}
 
-	public OpenJPAQuery setIgnoreChanges(boolean ignore) {
+	public OpenJPAQuery<X> setIgnoreChanges(boolean ignore) {
 		_em.assertNotCloseInvoked();
 		_query.setIgnoreChanges(ignore);
 		return this;
 	}
 
-	public OpenJPAQuery addFilterListener(FilterListener listener) {
+	public OpenJPAQuery<X> addFilterListener(FilterListener listener) {
 		_em.assertNotCloseInvoked();
 		_query.addFilterListener(listener);
 		return this;
 	}
 
-	public OpenJPAQuery removeFilterListener(FilterListener listener) {
+	public OpenJPAQuery<X> removeFilterListener(FilterListener listener) {
 		_em.assertNotCloseInvoked();
 		_query.removeFilterListener(listener);
 		return this;
 	}
 
-	public OpenJPAQuery addAggregateListener(AggregateListener listener) {
+	public OpenJPAQuery<X> addAggregateListener(AggregateListener listener) {
 		_em.assertNotCloseInvoked();
 		_query.addAggregateListener(listener);
 		return this;
 	}
 
-    public OpenJPAQuery removeAggregateListener(AggregateListener listener) {
+    public OpenJPAQuery<X> removeAggregateListener(AggregateListener listener) {
 		_em.assertNotCloseInvoked();
 		_query.removeAggregateListener(listener);
 		return this;
 	}
 
-	public Collection getCandidateCollection() {
+	public Collection<?> getCandidateCollection() {
 		return _query.getCandidateCollection();
 	}
 
-	public OpenJPAQuery setCandidateCollection(Collection coll) {
+	public OpenJPAQuery<X> setCandidateCollection(Collection coll) {
 		_em.assertNotCloseInvoked();
 		_query.setCandidateCollection(coll);
 		return this;
@@ -216,9 +217,9 @@ public class QueryImpl<X> implements OpenJPAQuerySPI<X>, Serializable {
 		return _query.hasSubclasses();
 	}
 
-	public OpenJPAQuery setSubclasses(boolean subs) {
+	public OpenJPAQuery<X> setSubclasses(boolean subs) {
 		_em.assertNotCloseInvoked();
-		Class cls = _query.getCandidateType();
+		Class<?> cls = _query.getCandidateType();
         _query.setCandidateExtent(_query.getBroker().newExtent(cls, subs));
 		return this;
 	}
@@ -227,7 +228,7 @@ public class QueryImpl<X> implements OpenJPAQuerySPI<X>, Serializable {
 		return asInt(_query.getStartRange());
 	}
 
-	public OpenJPAQuery setFirstResult(int startPosition) {
+	public OpenJPAQuery<X> setFirstResult(int startPosition) {
 		_em.assertNotCloseInvoked();
 		long end;
 		if (_query.getEndRange() == Long.MAX_VALUE)
@@ -243,7 +244,7 @@ public class QueryImpl<X> implements OpenJPAQuerySPI<X>, Serializable {
 		return asInt(_query.getEndRange() - _query.getStartRange());
 	}
 
-	public OpenJPAQuery setMaxResults(int max) {
+	public OpenJPAQuery<X> setMaxResults(int max) {
 		_em.assertNotCloseInvoked();
 		long start = _query.getStartRange();
 		if (max == Integer.MAX_VALUE)
@@ -253,20 +254,33 @@ public class QueryImpl<X> implements OpenJPAQuerySPI<X>, Serializable {
 		return this;
 	}
 
-	public OpenJPAQuery compile() {
+	public OpenJPAQuery<X> compile() {
 		_em.assertNotCloseInvoked();
 		_query.compile();
 		return this;
 	}
 	
+	/**
+	 * Gets a map of values of each parameter indexed by their original key.
+	 * 
+	 * @return an empty map if no parameter is registered for this query.
+	 */
+	Map<?,?> getParameterValues() {
+	    Map<?,QueryParameter<?>> params = _positional != null ? _positional 
+                : _named != null ? _named : new HashMap();
+	    Map result = new LinkedHashMap();
+	    for (Map.Entry<?,QueryParameter<?>> entry : params.entrySet()) {
+	        result.put(entry.getKey(), entry.getValue().getValue());
+	    }
+	    return result;
+	}
+	
 	private Object execute() {
         if (!isNative() && _query.getOperation() != QueryOperations.OP_SELECT)
-            throw new InvalidStateException(_loc.get("not-select-query", _query
-                    .getQueryString()), null, null, false);
+            throw new InvalidStateException(_loc.get("not-select-query", getQueryString()), null, null, false);
 		try {
 		    lock();
-            Map params = _positional != null ? _positional 
-                : _named != null ? _named : new HashMap();
+            Map params = getParameterValues();
             boolean registered = preExecute(params);
             Object result = _query.execute(params);
             if (registered) {
@@ -316,24 +330,14 @@ public class QueryImpl<X> implements OpenJPAQuerySPI<X>, Serializable {
 
 	public int executeUpdate() {
 		_em.assertNotCloseInvoked();
+        Map<?,?> paramValues = getParameterValues();
 		if (_query.getOperation() == QueryOperations.OP_DELETE) {
-			// handle which types of parameters we are using, if any
-			if (_positional != null)
-				return asInt(_query.deleteAll(_positional));
-			if (_named != null)
-				return asInt(_query.deleteAll(_named));
-			return asInt(_query.deleteAll());
+		   return asInt(paramValues.isEmpty() ? _query.deleteAll() : _query.deleteAll(paramValues));
 		}
 		if (_query.getOperation() == QueryOperations.OP_UPDATE) {
-			// handle which types of parameters we are using, if any
-			if (_positional != null)
-				return asInt(_query.updateAll(_positional));
-			if (_named != null)
-				return asInt(_query.updateAll(_named));
-			return asInt(_query.updateAll());
+	       return asInt(paramValues.isEmpty() ? _query.updateAll() : _query.updateAll(paramValues));
 		}
-        throw new InvalidStateException(_loc.get("not-update-delete-query",
-                _query.getQueryString()), null, null, false);
+        throw new InvalidStateException(_loc.get("not-update-delete-query", getQueryString()), null, null, false);
 	}
 
 	/**
@@ -372,7 +376,6 @@ public class QueryImpl<X> implements OpenJPAQuerySPI<X>, Serializable {
 	/**
      * Converts the given Date to a value corresponding to given temporal type.
 	 */
-
 	Object convertTemporalType(Date value, TemporalType type) {
 		switch (type) {
 		case DATE:
@@ -390,69 +393,116 @@ public class QueryImpl<X> implements OpenJPAQuerySPI<X>, Serializable {
 		return convertTemporalType(value.getTime(), type);
 	}
 
-	public OpenJPAQuery setParameter(int position, Object value) {
+    /**
+     * Bind an argument to a positional parameter.
+     * @param position
+     * @param value
+     * @return the same query instance
+     * @throws IllegalArgumentException if position does not correspond to a positional 
+     * parameter of the query or if the argument is of incorrect type
+     */    
+	public OpenJPAQuery<X> setParameter(int position, Object value) {
 		_query.assertOpen();
 		_em.assertNotCloseInvoked();
 		_query.lock();
 		try {
+		    // native queries are not parsed and hence their parameter types are not known
+            if (!isNative() && !getDeclaredParameterKeys().contains(position)) {
+                throw new IllegalArgumentException(_loc.get("param-missing-pos", 
+                    position, getQueryString(), getDeclaredParameterKeys()).getMessage());
+            }
 			if (isNative() && position < 1) {
                 throw new IllegalArgumentException(_loc.get("bad-pos-params",
-                        position, _query.getQueryString()).toString());
+                        position, getQueryString()).toString());
 			}
-            // not allowed to mix positional and named parameters (EDR2 3.6.4)
-			if (_named != null)
-				throw new InvalidStateException(_loc.get(
-                       "no-pos-named-params-mix", _query.getQueryString()),
-                       null, null, false);
 
 			if (position < 1)
                 throw new InvalidStateException(_loc.get("illegal-index",
                         position), null, null, false);
 
-			if (_positional == null)
-				_positional = new TreeMap<Integer, Object>();
+			Class<?> valueType = (Class<?>)_query.getParameterTypes().get((Object)position);
+			ParameterImpl<?> param = new ParameterImpl<Object>(position, valueType);
+			registerParameter(param);
+			param.bindValue(value);
 
-			_positional.put(position, value);
 			return this;
 		} finally {
 			_query.unlock();
 		}
 	}
 
-	public OpenJPAQuery setParameter(String name, Calendar value,
+	public OpenJPAQuery<X> setParameter(String name, Calendar value,
 			TemporalType type) {
 		return setParameter(name, convertTemporalType(value, type));
 	}
 
-    public OpenJPAQuery setParameter(String name, Date value, TemporalType type)
-    {
+    public OpenJPAQuery<X> setParameter(String name, Date value, TemporalType type) {
 		return setParameter(name, convertTemporalType(value, type));
 	}
 
-	public OpenJPAQuery setParameter(String name, Object value) {
+    /**
+     * Sets the parameter of the given name to the given value.
+     */
+	public OpenJPAQuery<X> setParameter(String name, Object value) {
 		_query.assertOpen();
 		_em.assertNotCloseInvoked();
 		_query.lock();
 		try {
+            // native queries are not parsed and hence their parameter types are not known
+            if (!isNative() && !getDeclaredParameterKeys().contains(name)) {
+                throw new IllegalArgumentException(_loc.get("param-missing-name", 
+                    name, getQueryString(), getDeclaredParameterKeys()).getMessage());
+            }
 			if (isNative()) {
                 throw new IllegalArgumentException(_loc.get("no-named-params",
-                        name, _query.getQueryString()).toString());
+                        name, getQueryString()).toString());
 			}
-            // not allowed to mix positional and named parameters (EDR2 3.6.4)
-			if (_positional != null)
-				throw new InvalidStateException(_loc.get(
-                        "no-pos-named-params-mix", _query.getQueryString()),
-                        null, null, false);
-
-			if (_named == null)
-				_named = new HashMap();
-			_named.put(name, value);
+			
+			Class<?> valueType = (Class<?>)_query.getParameterTypes().get(name);
+			ParameterImpl<?> param = new ParameterImpl<Object>(name, valueType);
+			registerParameter(param);
+			param.bindValue(value);
+			
 			return this;
 		} finally {
 			_query.unlock();
 		}
 	}
 
+	/**
+	 * Registers a parameter by creating an entry in the named or positional parameter map.
+	 * The named or positional parameter map may be created if this is the first parameter
+	 * to be registered.
+	 * It is not permitted to mix named and positional parameter. So one of them is always
+	 * null.
+	 * 
+	 * @exception IllegalStateException if a positional parameter is given when named parameters 
+	 * had been registered or vice versa.
+	 */
+	QueryImpl<X> registerParameter(QueryParameter<?> param) {
+	    if (param.isNamed()) {
+	        if (_positional != null)
+                throw new IllegalStateException(_loc.get("param-pos-named-mix", param, _query.getQueryString(), 
+                        _positional.keySet()).getMessage());
+	        if (_named == null) {
+	            _named = new HashMap<String, QueryParameter<?>>();
+	        }
+	        _named.put(param.getName(), param);
+	    } else if (param.isPositional()) {
+            if (_named != null)
+                throw new IllegalStateException(_loc.get("param-pos-named-mix", param, _query.getQueryString(), 
+                        _named.keySet()).getMessage());
+	        if (_positional == null) {
+	            _positional = new TreeMap<Integer, QueryParameter<?>>();
+	        }
+	        _positional.put(param.getPosition(), param);
+	    } else {
+	        throw new IllegalStateException(_loc.get("param-no-key", param).getMessage());
+	    }
+
+	    return this;   
+	}
+	
 	public boolean isNative() {
 		return QueryLanguages.LANG_SQL.equals(getLanguage());
 	}
@@ -462,22 +512,42 @@ public class QueryImpl<X> implements OpenJPAQuerySPI<X>, Serializable {
 	}
 
     /**
-     * Gets the array of positional parameter values. A value of
-     * <code>GAP_FILLER</code> indicates that user has not set the
-     * corresponding positional parameter. A value of null implies that user has
-     * set the value as null.
+     * Gets the array of positional parameter values.
+     * The n-th array element represents (n+1)-th positional parameter.  
+     * If a parameter has been declared but not bound to a value then
+     * the value is null and hence is indistinguishable from the value
+     * being actually null.
+     * If the parameter indexing is not contiguous then the unspecified
+     * parameters are considered as null.
      */
     public Object[] getPositionalParameters() {
         _query.lock();
         try {
-            return (_positional == null) ? EMPTY_ARRAY : 
-                _positional.values().toArray();
+            if (_positional == null) 
+                return EMPTY_ARRAY;
+            Object[] result = new Object[calculateMaxKey(_positional.keySet())];
+            for (Map.Entry<Integer, QueryParameter<?>> e : _positional.entrySet()) {
+                result[e.getKey().intValue()-1] = e.getValue().getValue();
+            }
+            return result;
         } finally {
             _query.unlock();
         }
     }
+    
+    /**
+     * Calculate the maximum value of the given set.
+     */
+    int calculateMaxKey(Set<Integer> p) {
+        if (p == null)
+            return 0;
+        int max = Integer.MIN_VALUE;
+        for (Integer i : p)
+            max = Math.max(max, i);
+        return max;
+    }
 
-	public OpenJPAQuery setParameters(Object... params) {
+	public OpenJPAQuery<X> setParameters(Object... params) {
 		_query.assertOpen();
 		_em.assertNotCloseInvoked();
 		_query.lock();
@@ -493,17 +563,28 @@ public class QueryImpl<X> implements OpenJPAQuerySPI<X>, Serializable {
 		}
 	}
 
+	/**
+	 * Gets the value of all the named parameters.
+	 * If a parameter has been declared but not bound to a value then
+	 * the value is null and hence is indistinguishable from the value
+	 * being actually null.
+	 */
 	public Map<String, Object> getNamedParameters() {
 		_query.lock();
 		try {
-            return (_named == null) ? Collections.EMPTY_MAP : Collections
-					.unmodifiableMap(_named);
+            if (_named == null) 
+                return Collections.EMPTY_MAP;
+            Map<String, Object> result = new HashMap<String, Object>();
+            for (Map.Entry<String, QueryParameter<?>> e : _named.entrySet()) {
+                result.put(e.getKey(), e.getValue().getValue());
+            }
+            return result;
 		} finally {
 			_query.unlock();
 		}
 	}
 
-	public OpenJPAQuery setParameters(Map params) {
+	public OpenJPAQuery<X> setParameters(Map params) {
 		_query.assertOpen();
 		_em.assertNotCloseInvoked();
 		_query.lock();
@@ -519,7 +600,7 @@ public class QueryImpl<X> implements OpenJPAQuerySPI<X>, Serializable {
 		}
 	}
 
-	public OpenJPAQuery closeAll() {
+	public OpenJPAQuery<X> closeAll() {
 		_query.closeAll();
 		return this;
 	}
@@ -558,7 +639,7 @@ public class QueryImpl<X> implements OpenJPAQuerySPI<X>, Serializable {
         return _hintHandler.getHints();
     }
 
-    public OpenJPAQuery setHint(String key, Object value) {
+    public OpenJPAQuery<X> setHint(String key, Object value) {
         _em.assertNotCloseInvoked();
         _hintHandler.setHint(key, value);
         return this;
@@ -684,6 +765,7 @@ public class QueryImpl<X> implements OpenJPAQuerySPI<X>, Serializable {
         _query = new DelegatingQuery(newQuery, _em.getExceptionTranslator());
     }
     
+    // package protected
     QueryImpl setId(String id) {
         _id = id;
         return this;
@@ -699,24 +781,42 @@ public class QueryImpl<X> implements OpenJPAQuerySPI<X>, Serializable {
             _lock.unlock();
     }
 
-    public <T> Parameter<T> getParameter(String arg0, Class<T> arg1) {
-        throw new UnsupportedOperationException(
-            "JPA 2.0 - Method not yet implemented");
+    public <T> Parameter<T> getParameter(String name, Class<T> arg1) {
+        return (Parameter<T>)_named.get(name);
     }
 
-    public <T> Parameter<T> getParameter(int arg0, Class<T> arg1) {
-        throw new UnsupportedOperationException(
-            "JPA 2.0 - Method not yet implemented");
+    public <T> Parameter<T> getParameter(int pos, Class<T> arg1) {
+        return (Parameter<T>)_positional.get(pos);
     }
 
-    public <T> T getParameterValue(Parameter<T> arg0) {
-        throw new UnsupportedOperationException(
-            "JPA 2.0 - Method not yet implemented");
+    /**
+     * Return the value bound to the parameter.
+     * @param param parameter object
+     * @return parameter value
+     * @throws IllegalStateException if the parameter has not been been bound
+     * @throws IllegalArgumentException if the parameter does not belong to this query
+     */
+    public <T> T getParameterValue(Parameter<T> p) {
+        if ((_named == null || !_named.containsValue(p)) 
+         && (_positional == null || !_positional.containsValue(p))) {
+           throw new IllegalArgumentException(_loc.get("param-missing", p, getQueryString(), 
+               getBoundParameterKeys()).getMessage());
+        }
+        QueryParameter<T> param = (QueryParameter<T>)p;
+        return (T)param.getValue(true);
     }
 
+    /**
+     * Gets the parameters registered for this query.
+     */
     public Set<Parameter<?>> getParameters() {
-        throw new UnsupportedOperationException(
-            "JPA 2.0 - Method not yet implemented");
+        Set<Parameter<?>> result = new HashSet<Parameter<?>>();
+        if (_named != null) {
+            result.addAll(_named.values());
+        } else if (_positional != null) {
+            result.addAll(_positional.values());
+        }
+        return result;
     }
 
     public <T> ResultItem<T> getResultItem(String arg0, Class<T> arg1) {
@@ -744,40 +844,85 @@ public class QueryImpl<X> implements OpenJPAQuerySPI<X>, Serializable {
             "JPA 2.0 - Method not yet implemented");
     }
 
-    public <T> TypedQuery<X> setParameter(Parameter<T> param, T arg1) {
-        throw new UnsupportedOperationException(
-            "JPA 2.0 - Method not yet implemented");
+    public <T> OpenJPAQuery<X> setParameter(Parameter<T> p, T arg1) {
+        QueryParameter<T> param = (QueryParameter<T>)p;
+        param.bindValue(arg1);
+        return this;
     }
 
-    public TypedQuery<X> setParameter(Parameter<Date> arg0, Date arg1,
-        TemporalType arg2) {
-        // TODO Auto-generated method stub
-        return null;
+    public OpenJPAQuery<X> setParameter(Parameter<Date> p, Date date, TemporalType type) {
+        return setParameter(p, (Date)convertTemporalType(date, type));
     }
 
-    public TypedQuery<X> setParameter(Parameter<Calendar> arg0, Calendar arg1,
-        TemporalType arg2) {
-        // TODO Auto-generated method stub
-        return null;
+    public TypedQuery<X> setParameter(Parameter<Calendar> p, Calendar cal, TemporalType type) {
+        return setParameter(p, (Calendar)convertTemporalType(cal, type));
     }
 
-    public Parameter<?> getParameter(String arg0) {
-        // TODO Auto-generated method stub
-        return null;
+    public QueryParameter<?> getParameter(String name) {
+        if (_named == null || !_named.containsKey(name))
+            throw new IllegalArgumentException(_loc.get("param-missing-name", 
+                name, getQueryString(), getBoundParameterKeys()).getMessage());
+        return _named.get(name);
     }
 
-    public Parameter<?> getParameter(int arg0) {
-        // TODO Auto-generated method stub
-        return null;
+    /**
+     * Get the positional parameter with the given position.
+     * 
+     * @param position specified in the user query.
+     * @return parameter object
+     * @throws IllegalArgumentException if the parameter with the given position does not exist
+     */
+    public QueryParameter<?> getParameter(int pos) {
+        if (_positional == null || !_positional.containsKey(pos))
+            throw new IllegalArgumentException(_loc.get("param-missing-pos", 
+                pos, getQueryString(), getBoundParameterKeys()).getMessage());
+        return _positional.get(pos);
     }
 
-    public Object getParameterValue(String arg0) {
-        // TODO Auto-generated method stub
-        return null;
+    /**
+     * Return the value bound to the parameter.
+     * 
+     * @param name name of the parameter
+     * @return parameter value
+     * 
+     * @throws IllegalStateException if this parameter has not been bound
+     */
+    public Object getParameterValue(String name) {
+        return getParameter(name).getValue(true);
     }
 
-    public Object getParameterValue(int arg0) {
-        // TODO Auto-generated method stub
-        return null;
+    /**
+     * Return the value bound to the parameter.
+     * 
+     * @param pos position of the parameter
+     * @return parameter value
+     * 
+     * @throws IllegalStateException if this parameter has not been bound
+     */
+    public Object getParameterValue(int pos) {
+        return getParameter(pos).getValue(true);
     }
+    
+    /**
+     * Gets the parameter keys bound with this query.
+     */
+    public Set<?> getBoundParameterKeys() {
+        if (_named != null)
+            return _named.keySet();
+        if (_positional != null)
+            return _positional.keySet();
+        return Collections.EMPTY_SET;
+    }
+    
+    /**
+     * Gets the declared parameter keys in the given query.
+     * This information is only available after the query has been parsed.
+     * As native language queries are not parsed, this information is not available for them.
+     *   
+     * @return set of parameter identifiers in a parsed query
+     */
+    public Set<?> getDeclaredParameterKeys() {
+        return _query.getParameterTypes().keySet();
+    }
+
 }

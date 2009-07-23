@@ -20,6 +20,7 @@ package org.apache.openjpa.persistence.criteria;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
@@ -66,7 +67,7 @@ public class CriteriaQueryImpl<T> implements CriteriaQuery<T>, AliasContext {
     private Set<Root<?>>        _roots;
     private PredicateImpl       _where;
     private List<Order>         _orders;
-    private LinkedHashMap<ParameterExpression<?>, Class<?>>           _paramTypes;
+    private LinkedHashMap<ParameterExpression<?>, Class<?>> _paramTypes;
     private List<Selection<?>>  _selections;
     private List<Expression<?>> _groups;
     private PredicateImpl       _having;
@@ -79,11 +80,13 @@ public class CriteriaQueryImpl<T> implements CriteriaQuery<T>, AliasContext {
     private int aliasCount = 0;
     private static String ALIAS_BASE = "autoAlias";
     
-    private Map<Selection<?>,Value> _variables = 
-        new HashMap<Selection<?>, Value>();
-    private Map<Selection<?>,Value> _values = 
-        new HashMap<Selection<?>, Value>();
-    private Map<Selection<?>,String> _aliases = null;
+    // Auto-generated Parameter name 
+    private int autoParameterCount = 0;
+    private static String PARAM_BASE = "autoParam";
+    
+    private Map<Selection<?>,Value> _variables = new HashMap<Selection<?>, Value>();
+    private Map<Selection<?>,Value> _values    = new HashMap<Selection<?>, Value>();
+    private Map<Selection<?>,String> _aliases  = null;
     private Map<Selection<?>,Value> _rootVariables = 
         new HashMap<Selection<?>, Value>();
     
@@ -183,20 +186,21 @@ public class CriteriaQueryImpl<T> implements CriteriaQuery<T>, AliasContext {
 
     /**
      * Registers the given parameter.
+     * On registration, an unnamed parameter is assigned an auto-generated 
+     * name. 
      * 
-     * @param p
      */
-    public void registerParameter(ParameterImpl<?> p) {
+    public void registerParameter(ParameterExpressionImpl<?> p) {
         if (_paramTypes == null) {
             _paramTypes = new LinkedHashMap<ParameterExpression<?>, Class<?>>();
         }
         _paramTypes.put(p, p.getJavaType());
-        if (p.getPosition() == null)
-            p.setPosition(_paramTypes.size());
+        if (p.getName() == null)
+            p.assignAutoName(PARAM_BASE + (++autoParameterCount));
     }
     
     public Set<ParameterExpression<?>> getParameters() {
-        return _paramTypes.keySet();
+        return _paramTypes == null ? Collections.EMPTY_SET : _paramTypes.keySet();
     }
 
     /**
@@ -317,6 +321,10 @@ public class CriteriaQueryImpl<T> implements CriteriaQuery<T>, AliasContext {
         return subquery;
     }
     
+    /**
+     * Return map of <String, Class> where key is the name of the parameter
+     * and value is the expected type. 
+     */
     public LinkedMap getParameterTypes() {
         if (_paramTypes == null)
             return StoreQuery.EMPTY_PARAMS;
