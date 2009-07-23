@@ -18,6 +18,10 @@
  */
 package org.apache.openjpa.jdbc.kernel.exps;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
 import org.apache.openjpa.jdbc.sql.Joins;
 import org.apache.openjpa.jdbc.sql.Result;
 import org.apache.openjpa.jdbc.sql.SQLBuffer;
@@ -43,18 +47,21 @@ public class Args
      * Constructor. Supply values being combined.
      */
     public Args(Val val1, Val val2) {
-        int len1 = (val1 instanceof Args) ? ((Args) val1)._args.length : 1;
-        int len2 = (val2 instanceof Args) ? ((Args) val2)._args.length : 1;
-
-        _args = new Val[len1 + len2];
-        if (val1 instanceof Args)
-            System.arraycopy(((Args) val1)._args, 0, _args, 0, len1);
-        else
-            _args[0] = val1;
-        if (val2 instanceof Args)
-            System.arraycopy(((Args) val2)._args, 0, _args, len1, len2);
-        else
-            _args[len1] = val2;
+        this(new Val[]{val1, val2});
+    }
+    
+    public Args (Val... values) {
+        List<Val> list = new ArrayList<Val>();
+        if (values != null) {
+            for (Val v : values) {
+                if (v instanceof Args) {
+                    list.addAll(Arrays.asList(((Args)v)._args));
+                } else {
+                    list.add(v);
+                }
+            }
+        }
+        _args = list.toArray(new Val[list.size()]);
     }
 
     /**
@@ -166,6 +173,12 @@ public class Args
 
     public void appendTo(Select sel, ExpContext ctx, ExpState state, 
         SQLBuffer sql, int index) {
+        ArgsExpState astate = (ArgsExpState) state;
+        for (int i = 0; i < _args.length; i++) {
+            _args[i].appendTo(sel, ctx, astate.states[i], sql, index);
+            if (i < _args.length-1)
+                sql.append(", ");
+        }
     }
 
     public void appendIsEmpty(Select sel, ExpContext ctx, ExpState state, 

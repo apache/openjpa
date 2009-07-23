@@ -47,12 +47,12 @@ public class Expressions {
      * Handles null expression.
      */
      static Value toValue(ExpressionImpl<?> e, ExpressionFactory factory, 
-        MetamodelImpl model, CriteriaQueryImpl q) {
+        MetamodelImpl model, CriteriaQueryImpl<?> q) {
         return (e == null) ? factory.getNull() : e.toValue(factory, model, q);
     }
      
      static void setImplicitTypes(Value v1, Value v2, Class<?> expected, 
-             CriteriaQueryImpl q) {
+             CriteriaQueryImpl<?> q) {
          JPQLExpressionBuilder.setImplicitTypes(v1, v2, expected, 
              q.getMetamodel(), q.getParameterTypes(), q.toString());
      }
@@ -96,8 +96,26 @@ public class Expressions {
             e2 = (ExpressionImpl<?>)y;
         }
     }
-
     
+    /**
+     * Functional Expression applies a function on a list of input Expressions.
+     * 
+     *
+     * @param <X> the type of the resultant expression
+     */
+    public abstract static class FunctionalExpression<X> extends ExpressionImpl<X>{
+        protected final ExpressionImpl<?>[] args;
+        
+        public FunctionalExpression(Class<X> t, Expression<?>... args) {
+            super(t);
+            int len = args == null ? 0 : args.length;
+            this.args = new ExpressionImpl<?>[len];
+            for (int i = 0; args != null && i < args.length; i++) {
+                this.args[i] = (ExpressionImpl<?>)args[i];
+            }
+        }
+    }
+   
     /**
      * Binary Logical Expression applies a binary function on a pair of
      * input Expression to generate a Predicate.
@@ -215,6 +233,24 @@ public class Expressions {
             return factory.size(Expressions.toValue(e, factory, model, q));
         }
     }
+    
+    public static class DatabaseFunction<T> extends FunctionalExpression<T> {
+        private final String functionName;
+        private final Class<T> resultType;
+        public  DatabaseFunction(String name, Class<T> resultType, Expression<?>... exps) {
+            super(resultType, exps);
+            functionName = name;
+            this.resultType = resultType;
+        }
+        
+        @Override
+        public Value toValue(ExpressionFactory factory, MetamodelImpl model,
+            CriteriaQueryImpl<?> q) {
+            return factory.newFunction(functionName, getJavaType(), 
+                new Expressions.ListArgument(resultType, args).toValue(factory, model, q));
+        }
+    }
+
     
     public static class Type<X> 
         extends UnaryFunctionalExpression<Class<? extends X>> {
@@ -1341,6 +1377,32 @@ public class Expressions {
         public org.apache.openjpa.kernel.exps.Value toValue(
           ExpressionFactory factory, MetamodelImpl model, CriteriaQueryImpl<?> q) {
             org.apache.openjpa.kernel.exps.Value e = actual.toValue(factory, model, q);
+            e.setImplicitType(getJavaType());
+            return e;
+        }
+    }
+    
+    /**
+     * An expression that is composed of one or more expressions.
+     *
+     * @param <T>
+     */
+    public static class ListArgument<T> extends ExpressionImpl<T> {
+        private final ExpressionImpl<?>[] _args;
+        public ListArgument(Class<T> cls, ExpressionImpl<?>... args) {
+            super(cls);
+            _args = args;
+        }
+        
+        @Override
+        public org.apache.openjpa.kernel.exps.Arguments toValue(
+          ExpressionFactory factory, MetamodelImpl model, CriteriaQueryImpl<?> q) {
+            org.apache.openjpa.kernel.exps.Value[] kvs = new org.apache.openjpa.kernel.exps.Value[_args.length];
+            int i = 0;
+            for (ExpressionImpl<?> arg : _args) {
+                kvs[i++] = arg.toValue(factory, model, q);
+            }
+            org.apache.openjpa.kernel.exps.Arguments e = factory.newArgumentList(kvs);
             e.setImplicitType(getJavaType());
             return e;
         }

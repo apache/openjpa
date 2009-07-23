@@ -802,4 +802,58 @@ public class TestTypesafeCriteria extends CriteriaTest {
 
         assertEquivalence(q, jpql);
     }
+    
+    /**
+     * 0-arg function works only if there is a other projection items to determine the table to select from. 
+     */
+    public void testFunctionWithNoArgument() {
+        String jpql = "SELECT c.balanceOwed FROM Customer c";
+        String sql = "SELECT CURRENT_USER(), t0.balanceOwed FROM CR_CUST t0";
+        
+        CriteriaQuery<Tuple> q = cb.createTupleQuery();
+        Root<Customer> c = q.from(Customer.class);
+        q.multiselect(cb.function("CURRENT_USER", String.class, (Expression<?>[])null), c.get(Customer_.balanceOwed));
+        
+        executeAndCompareSQL(q, sql);
+//        assertEquivalence(q, jpql);
+    }
+
+    public void testFunctionWithOneArgument() {
+        String jpql = "SELECT MAX(c.balanceOwed) FROM Customer c";
+        
+        CriteriaQuery<Tuple> q = cb.createTupleQuery();
+        Root<Customer> c = q.from(Customer.class);
+        q.multiselect(cb.function("MAX", Integer.class, c.get(Customer_.balanceOwed)));
+        
+        assertEquivalence(q, jpql);
+
+    }
+    
+    public void testFunctionWithTwoArgument() {
+        String jpql = "SELECT MOD(c.balanceOwed,10) FROM Customer c";
+        
+        CriteriaQuery<Tuple> q = cb.createTupleQuery();
+        Root<Customer> c = q.from(Customer.class);
+        q.multiselect(cb.function("MOD", Integer.class, c.get(Customer_.balanceOwed), cb.literal(10)));
+        
+        assertEquivalence(q, jpql);
+
+    }
+    
+    public void testFunctionWithFunctionArgumentInOrderBy() {
+        String jpql = "SELECT MOD(c.balanceOwed,10) FROM Customer c WHERE LENGTH(c.name)>3 ORDER BY LENGTH(c.name)";
+        String sql = "SELECT MOD(t0.balanceOwed, ?), LENGTH(t0.name) FROM CR_CUST t0 WHERE (LENGTH(t0.name) > ?) " +
+                     "ORDER BY LENGTH(t0.name) ASC";
+        
+        CriteriaQuery<Tuple> q = cb.createTupleQuery();
+        Root<Customer> c = q.from(Customer.class);
+        Expression<Integer> nameLength = cb.function("LENGTH", Integer.class, c.get(Customer_.name));
+        q.multiselect(cb.function("MOD", Integer.class, c.get(Customer_.balanceOwed), cb.literal(10)));
+        q.where(cb.greaterThan(nameLength, 3));
+        q.orderBy(cb.asc(nameLength));
+        
+        executeAndCompareSQL(q, sql);
+
+    }
+
 }

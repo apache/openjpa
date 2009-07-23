@@ -81,8 +81,7 @@ public class CriteriaQueryImpl<T> implements CriteriaQuery<T>, AliasContext {
     private static String ALIAS_BASE = "autoAlias";
     
     // Auto-generated Parameter name 
-    private int autoParameterCount = 0;
-    private static String PARAM_BASE = "autoParam";
+    private static String PARAM_BASE = "*autoParam";
     
     private Map<Selection<?>,Value> _variables = new HashMap<Selection<?>, Value>();
     private Map<Selection<?>,Value> _values    = new HashMap<Selection<?>, Value>();
@@ -194,9 +193,13 @@ public class CriteriaQueryImpl<T> implements CriteriaQuery<T>, AliasContext {
         if (_paramTypes == null) {
             _paramTypes = new LinkedHashMap<ParameterExpression<?>, Class<?>>();
         }
+        if (_paramTypes.containsKey(p)) {
+            return;
+        }
+        p.setIndex(_paramTypes.size());
         _paramTypes.put(p, p.getJavaType());
         if (p.getName() == null)
-            p.assignAutoName(PARAM_BASE + (++autoParameterCount));
+            p.assignAutoName(PARAM_BASE + p.getIndex());
     }
     
     public Set<ParameterExpression<?>> getParameters() {

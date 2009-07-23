@@ -246,7 +246,7 @@ public class CriteriaBuilder implements QueryBuilder, ExpressionParser {
 
     public <T> Expression<T> function(String name, Class<T> type,
         Expression<?>... args) {
-        throw new AbstractMethodError();
+        return new Expressions.DatabaseFunction(name, type, args);
     }
 
     public Predicate ge(Expression<? extends Number> x,

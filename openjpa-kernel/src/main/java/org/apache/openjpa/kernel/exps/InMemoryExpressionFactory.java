@@ -525,6 +525,10 @@ public class InMemoryExpressionFactory
     public Arguments newArgumentList(Value val1, Value val2) {
         return new Args(val1, val2);
     }
+    
+    public Arguments newArgumentList(Value... values) {
+        return new Args(values);
+    }
 
     public Value newUnboundVariable(String name, Class type) {
         UnboundVariable var = new UnboundVariable(type);
@@ -787,5 +791,9 @@ public class InMemoryExpressionFactory
 
     public Value nullIfExpression(Value val1, Value val2) {
         return new NullIf((Val) val1, (Val) val2);
+    }
+
+    public Value newFunction(String functionName, Class<?> resultType, Value... args) {
+        throw new AbstractMethodError();
     }
 }

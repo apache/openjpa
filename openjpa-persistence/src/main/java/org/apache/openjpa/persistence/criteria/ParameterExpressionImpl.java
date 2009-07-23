@@ -51,6 +51,7 @@ public class ParameterExpressionImpl<T> extends ExpressionImpl<T>
     implements ParameterExpression<T>, QueryParameter<T> {
     
     private String _autoName = null;
+    private int _index = 0; // index of the parameter as seen by the kernel
 	private final ParameterImpl<T> _delegate;
 	
 	/**
@@ -127,6 +128,14 @@ public class ParameterExpressionImpl<T> extends ExpressionImpl<T>
     public final boolean isPositional() {
         return false;
     }
+    
+    void setIndex(int index) {
+        _index = index;
+    }
+    
+    public int getIndex() {
+        return _index;
+    }
 
     public final boolean isValueAssignable(Object v) {
         return _delegate.isValueAssignable(v);
@@ -155,6 +164,7 @@ public class ParameterExpressionImpl<T> extends ExpressionImpl<T>
             ? factory.newCollectionValuedParameter(paramKey, clzz) 
             : factory.newParameter(paramKey, clzz);
         param.setMetaData(meta);
+        param.setIndex(_index);
         
         return param;
     }   

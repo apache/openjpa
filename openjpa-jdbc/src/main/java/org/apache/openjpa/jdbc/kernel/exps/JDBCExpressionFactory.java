@@ -297,6 +297,17 @@ public class JDBCExpressionFactory
     public Arguments newArgumentList(Value v1, Value v2) {
         return new Args((Val) v1, (Val) v2);
     }
+    
+    public Arguments newArgumentList(Value... vs) {
+        if (vs == null)
+           return new Args(null);
+        Val[] vals = new Val[vs.length];
+        int i = 0;
+        for (Value v : vs) {
+            vals[i++] = (Val)v;
+        }
+        return new Args(vals);
+    }
 
     public Value newUnboundVariable(String name, Class type) {
         return new Variable(name, type);
@@ -502,5 +513,9 @@ public class JDBCExpressionFactory
         val1 = getLiteralRawString(val1);
         val2 = getLiteralRawString(val2);
         return new NullIfExpression((Val) val1, (Val) val2);
+    }
+    
+    public Value newFunction(String functionName, Class<?> resultType, Value... args) {
+        return new DatastoreFunction(functionName, resultType, newArgumentList(args));
     }
 }

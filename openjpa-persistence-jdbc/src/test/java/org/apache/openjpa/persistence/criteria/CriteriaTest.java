@@ -328,6 +328,10 @@ public abstract class CriteriaTest extends TestCase {
         assertFalse(auditor.getSQLs().isEmpty());
         return auditor.getSQLs();
     }
+    
+    void executeAndCompareSQL(CriteriaQuery<?> q, String expectedSQL) {
+        executeAndCompareSQL(em.createQuery(q), expectedSQL);
+    }
 
     String extractSQL(Exception e) {
         Throwable t = e.getCause();

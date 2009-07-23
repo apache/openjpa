@@ -32,24 +32,30 @@ class Args
     extends Val
     implements Arguments {
 
-    private final List _args = new ArrayList(3);
+    private final List<Value> _args = new ArrayList<Value>(3);
 
     /**
      * Constructor. Supply values being combined.
      */
     public Args(Value val1, Value val2) {
-        if (val1 instanceof Args)
-            _args.addAll(((Args) val1)._args);
-        else
-            _args.add(val1);
-        if (val2 instanceof Args)
-            _args.addAll(((Args) val2)._args);
-        else
-            _args.add(val2);
+        this(new Value[]{val1, val2});
+    }
+    
+    public Args(Value...values) {
+        if (values == null) {
+           return;
+        }
+        for (Value v : values) {
+            if (v instanceof Args) {
+                _args.addAll(((Args)v)._args);
+            } else {
+                _args.add(v);
+            }
+        }
     }
 
     public Value[] getValues() {
-        return (Value[]) _args.toArray(new Value[_args.size()]);
+        return _args.toArray(new Value[_args.size()]);
     }
 
     public Class getType() {
