@@ -21,6 +21,7 @@ package org.apache.openjpa.persistence;
 import java.lang.instrument.ClassFileTransformer;
 import java.lang.instrument.IllegalClassFormatException;
 import java.security.ProtectionDomain;
+import java.util.BitSet;
 import java.util.Map;
 import javax.persistence.EntityManager;
 import javax.persistence.spi.ClassTransformer;
@@ -34,18 +35,22 @@ import org.apache.openjpa.conf.OpenJPAConfiguration;
 import org.apache.openjpa.conf.OpenJPAConfigurationImpl;
 import org.apache.openjpa.enhance.PCClassFileTransformer;
 import org.apache.openjpa.enhance.PCEnhancerAgent;
+import org.apache.openjpa.enhance.PersistenceCapable;
+import org.apache.openjpa.enhance.StateManager;
 import org.apache.openjpa.kernel.Bootstrap;
 import org.apache.openjpa.kernel.BrokerFactory;
+import org.apache.openjpa.kernel.OpenJPAStateManager;
 import org.apache.openjpa.lib.conf.Configuration;
 import org.apache.openjpa.lib.conf.ConfigurationProvider;
 import org.apache.openjpa.lib.conf.Configurations;
 import org.apache.openjpa.lib.log.Log;
 import org.apache.openjpa.lib.util.Localizer;
+import org.apache.openjpa.lib.util.concurrent.ConcurrentReferenceHashSet;
+import org.apache.openjpa.meta.FieldMetaData;
 import org.apache.openjpa.meta.MetaDataModes;
 import org.apache.openjpa.meta.MetaDataRepository;
 import org.apache.openjpa.persistence.validation.ValidationUtils;
 import org.apache.openjpa.util.ClassResolver;
-import org.apache.openjpa.validation.ValidationException;
 
 
 /**
@@ -56,7 +61,7 @@ import org.apache.openjpa.validation.ValidationException;
  * @published
  */
 public class PersistenceProviderImpl
-    implements PersistenceProvider {
+    implements PersistenceProvider, ProviderUtil {
 
     static final String CLASS_TRANSFORMER_OPTIONS = "ClassTransformerOptions";
     private static final String EMF_POOL = "EntityManagerFactoryPool";
@@ -182,6 +187,14 @@ public class PersistenceProviderImpl
     }
 
     /*
+     * Returns a ProviderUtil for use with entities managed by this
+     * persistence provider.
+     */
+    public ProviderUtil getProviderUtil() {
+        return this;
+    }
+
+    /*
      * Returns a default Broker alias to be used when no openjpa.BrokerImpl
      *  is specified. This method allows PersistenceProvider subclass to
      *  override the default broker alias.
@@ -232,21 +245,6 @@ public class PersistenceProviderImpl
             return _trans.transform(cl, name, previousVersion, pd, bytes);
         }
 	}
-
-    public LoadState isLoaded(Object arg0) {
-        throw new UnsupportedOperationException(
-            "JPA 2.0 - Method not yet implemented");
-    }
-
-    public LoadState isLoadedWithReference(Object arg0, String arg1) {
-        throw new UnsupportedOperationException(
-        "JPA 2.0 - Method not yet implemented");
-    }
-
-    public LoadState isLoadedWithoutReference(Object arg0, String arg1) {
-        throw new UnsupportedOperationException(
-        "JPA 2.0 - Method not yet implemented");
-    }
     
     /**
      * This private worker method will attempt load the PCEnhancerAgent.
@@ -275,8 +273,99 @@ public class PersistenceProviderImpl
         }
     }
 
-    public ProviderUtil getProviderUtil() {
-        // TODO Auto-generated method stub
-        return null;
+    /**
+     * Determines whether the specified object is loaded.
+     * 
+     * @return LoadState.LOADED - if all implicit or explicit EAGER fetch
+     *         attributes are loaded
+     *         LoadState.NOT_LOADED - if any implicit or explicit EAGER fetch
+     *         attribute is not loaded
+     *         LoadState.UNKNOWN - if the entity is not managed by this
+     *         provider.
+     */
+    public LoadState isLoaded(Object obj) {
+        return isLoadedWithoutReference(obj, null);
+    }
+
+    /**
+     * Determines whether the attribute on the specified object is loaded.  This
+     * method may access the value of the attribute to determine load state (but
+     * currently does not).
+     * 
+     * @return LoadState.LOADED - if the attribute is loaded.
+     *         LoadState.NOT_LOADED - if the attribute is not loaded or any
+     *         EAGER fetch attributes of the entity are not loaded.
+     *         LoadState.UNKNOWN - if the entity is not managed by this
+     *         provider or if it does not contain the persistent
+     *         attribute.
+     */
+    public LoadState isLoadedWithReference(Object obj, String attr) {
+        // TODO: Are there be any cases where OpenJPA will need to examine
+        // the contents of a field to determine load state?  If so, per JPA 
+        // contract, this method permits that sort of access. In the extremely 
+        // unlikely case that the the entity is managed by multiple providers, 
+        // even if it doesn't trigger loading in OpenJPA, accessing field data 
+        // could trigger loading by an alternate provider.
+        return isLoadedWithoutReference(obj, attr);
+    }
+
+    /**
+     * Determines whether the attribute on the specified object is loaded.  This
+     * method does not access the value of the attribute to determine load 
+     * state.
+     * 
+     * @return LoadState.LOADED - if the attribute is loaded.
+     *         LoadState.NOT_LOADED - if the attribute is not loaded or any
+     *         EAGER fetch attributes of the entity are not loaded.
+     *         LoadState.UNKNOWN - if the entity is not managed by this
+     *         provider or if it does not contain the persistent
+     *         attribute.
+     */
+    public LoadState isLoadedWithoutReference(Object obj, String attr) {
+
+        if (obj == null)
+            return LoadState.UNKNOWN;
+        
+        // If the object has a state manager, call it directly.
+        if (obj instanceof PersistenceCapable) {
+            PersistenceCapable pc = (PersistenceCapable)obj;
+            StateManager sm = pc.pcGetStateManager();
+            if (sm != null && sm instanceof OpenJPAStateManager)
+                return isLoaded((OpenJPAStateManager)sm, attr);
+        }        
+        return LoadState.UNKNOWN;
+    }
+
+    /*
+     * Returns the load state for a given state manager and attribute.  If
+     * attr is null, determines the load state based upon all persistent 
+     * attributes of the state manager.  If an attribute is specified and not 
+     * known to be persistent by this provider, returns a load state of unknown,
+     * otherwise, returns the load state of the attribute.
+     */
+    private LoadState isLoaded(OpenJPAStateManager sm, String attr) {
+        boolean isLoaded = true;
+        BitSet loadSet = sm.getLoaded();
+        if (attr != null) {
+            FieldMetaData fmd = sm.getMetaData().getField(attr);
+            // Could not find field metadata for the specified attribute.
+            if (fmd == null)
+                return LoadState.UNKNOWN;
+            // Otherwise, return the load state
+            if(!loadSet.get(fmd.getIndex()))
+                return LoadState.NOT_LOADED;
+        }
+        FieldMetaData[] fmds = sm.getMetaData().getFields();
+        // Check load state of all persistent eager fetch attributes
+        for (FieldMetaData fmd : fmds) {
+            if (fmd.isInDefaultFetchGroup()) {
+                if (!loadSet.get(fmd.getIndex())) {
+                    isLoaded = false;
+                    break;
+                }
+                // TODO: Complete contract for collections
+            }
+        } 
+        return isLoaded ? LoadState.LOADED : LoadState.NOT_LOADED;        
     }
 }
