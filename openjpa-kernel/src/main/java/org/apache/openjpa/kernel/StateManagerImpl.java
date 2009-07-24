@@ -417,12 +417,11 @@ public class StateManagerImpl
      * Fire the given lifecycle event to all listeners.
      */
     private boolean fireLifecycleEvent(int type) {
-        if (type == LifecycleEvent.AFTER_PERSIST 
-        && _broker.getConfiguration().getCallbackOptionsInstance()
-                  .getPostPersistCallbackImmediate())
+        if (type == LifecycleEvent.AFTER_PERSIST
+                && _broker.getConfiguration().getCallbackOptionsInstance().getPostPersistCallbackImmediate()) {
             fetchObjectId();
-        return _broker.fireLifecycleEvent(getManagedInstance(), null,
-            _meta, type);
+        }
+        return _broker.fireLifecycleEvent(getManagedInstance(), null, _meta, type);
     }
 
     public void load(FetchConfiguration fetch) {

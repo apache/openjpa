@@ -412,16 +412,19 @@ public class EntityManagerFactoryImpl
     }
 
     public boolean isLoaded(Object entity, String attribute) {
-        if (entity == null)
+        if (entity == null) {
             return false;
+        }
                
         if (entity instanceof PersistenceCapable) {
             PersistenceCapable pc = (PersistenceCapable)entity;
-            if (!isManagedBy(pc))
+            if (!isManagedBy(pc)) {
                 return false;
+            }
             StateManager sm = pc.pcGetStateManager();
-            if (sm != null && sm instanceof OpenJPAStateManager)
-                return isLoaded((OpenJPAStateManager)sm, attribute);
+            if (sm != null && sm instanceof OpenJPAStateManager) {
+                return isLoaded((OpenJPAStateManager)sm, attribute); 
+            }
         }        
         return false;
     }
@@ -434,22 +437,26 @@ public class EntityManagerFactoryImpl
      * this persistence unit.
      */
     private boolean isManagedBy(PersistenceCapable entity) {
-        if (!isOpen())
-            return false;
+        if (!isOpen()) {
+            return false; 
+        }
         Object abfobj = JPAFacadeHelper.toBrokerFactory(this);
-        if (abfobj == null)
+        if (abfobj == null) {
             return false;
+        }
         if (abfobj instanceof AbstractBrokerFactory) {
             AbstractBrokerFactory abf = (AbstractBrokerFactory)abfobj;
             Collection<?> brokers = abf.getOpenBrokers();
-            if (brokers == null || brokers.size() == 0)
+            if (brokers == null || brokers.size() == 0) { 
                 return false;
+            }
             // Cycle through all brokers managed by this factory.  
             Broker[] brokerArr = brokers.toArray(new Broker[brokers.size()]);
             for (Broker broker : brokerArr) {
                 if (broker != null && !broker.isClosed() && 
-                    broker.isPersistent(entity))
+                    broker.isPersistent(entity)) {
                     return true;
+                }
             }
         }
         return false;
@@ -467,11 +474,13 @@ public class EntityManagerFactoryImpl
         if (attr != null) {
             FieldMetaData fmd = sm.getMetaData().getField(attr);
             // Could not find field metadata for the specified attribute.
-            if (fmd == null)
+            if (fmd == null) {
                 return false;
+            }
             // If the attribute is not loaded, return false.
-            if (!loadSet.get(fmd.getIndex()))
+            if (!loadSet.get(fmd.getIndex())) {
                 return false;
+            }
         }
         // Check load state of all persistent eager fetch attributes. Per
         // contract, if any of them are not loaded, return false.
