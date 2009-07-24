@@ -395,6 +395,7 @@
                                             <property name="nightly.user.name" value="${nightly.user.name}"/>
                                             <property name="nightly.password" value="${nightly.password}"/>
                                             <property name="nightly.version" value="${nightly.version}"/>
+                                            <property name="pom.version" value="${pom.version}"/>
                                         </ant>
                                     </tasks>
                                 </configuration>

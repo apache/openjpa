@@ -35,6 +35,9 @@
                 <include name="docs.zip"/>
             </fileset>
         </scp>
+        <!-- remove directories, hopefully this fails silently. mkdir does not and stops the process these exist.-->
+        <sshexec host="${host}" username="${nightly.user.name}" password="${nightly.password}" command="rm -Rf ${build.dir}/apache-openjpa-${pom.version}/docs" trust="true" />
+        <sshexec host="${host}" username="${nightly.user.name}" password="${nightly.password}" command="rm -Rf ${build.dir}/apache-openjpa-${pom.version}/downloads" trust="true" />
         <sshexec host="${host}" username="${nightly.user.name}" password="${nightly.password}" command="unzip -qq -d ${build.dir}/ ${build.dir}/docs.zip" trust="true" />
         <sshexec host="${host}" username="${nightly.user.name}" password="${nightly.password}" command="rm ${build.dir}/docs.zip" trust="true" />
         <sshexec host="${host}" username="${nightly.user.name}" password="${nightly.password}" command="mkdir ${build.dir}/apache-openjpa-${pom.version}/downloads " trust="true" />
