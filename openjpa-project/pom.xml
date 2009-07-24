@@ -391,10 +391,10 @@
                                 <phase>package</phase>
                                 <configuration>
                                     <tasks>
-                                        <ant antfile="upload.xml" target="upload" unheritRefs="true">
-                                            <property name="${nightly.user.name}" value="${nightly.user.name}"/>
-                                            <property name="${nightly.password}" value="${nightly.password}"/>
-                                            <property name="${nightly.version}" value="${nightly.version}"/>
+                                        <ant antfile="upload.xml" target="upload" inheritRefs="true">
+                                            <property name="nightly.user.name" value="${nightly.user.name}"/>
+                                            <property name="nightly.password" value="${nightly.password}"/>
+                                            <property name="nightly.version" value="${nightly.version}"/>
                                         </ant>
                                     </tasks>
                                 </configuration>
