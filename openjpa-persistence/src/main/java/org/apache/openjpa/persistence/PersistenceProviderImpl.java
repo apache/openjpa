@@ -321,51 +321,11 @@ public class PersistenceProviderImpl
      *         provider or if it does not contain the persistent
      *         attribute.
      */
-    public LoadState isLoadedWithoutReference(Object obj, String attr) {
-
-        if (obj == null)
+    public LoadState isLoadedWithoutReference(Object obj, String attr) {        
+        if (obj == null) {
             return LoadState.UNKNOWN;
-        
-        // If the object has a state manager, call it directly.
-        if (obj instanceof PersistenceCapable) {
-            PersistenceCapable pc = (PersistenceCapable)obj;
-            StateManager sm = pc.pcGetStateManager();
-            if (sm != null && sm instanceof OpenJPAStateManager)
-                return isLoaded((OpenJPAStateManager)sm, attr);
-        }        
-        return LoadState.UNKNOWN;
-    }
-
-    /*
-     * Returns the load state for a given state manager and attribute.  If
-     * attr is null, determines the load state based upon all persistent 
-     * attributes of the state manager.  If an attribute is specified and not 
-     * known to be persistent by this provider, returns a load state of unknown,
-     * otherwise, returns the load state of the attribute.
-     */
-    private LoadState isLoaded(OpenJPAStateManager sm, String attr) {
-        boolean isLoaded = true;
-        BitSet loadSet = sm.getLoaded();
-        if (attr != null) {
-            FieldMetaData fmd = sm.getMetaData().getField(attr);
-            // Could not find field metadata for the specified attribute.
-            if (fmd == null)
-                return LoadState.UNKNOWN;
-            // Otherwise, return the load state
-            if(!loadSet.get(fmd.getIndex()))
-                return LoadState.NOT_LOADED;
         }
-        FieldMetaData[] fmds = sm.getMetaData().getFields();
-        // Check load state of all persistent eager fetch attributes
-        for (FieldMetaData fmd : fmds) {
-            if (fmd.isInDefaultFetchGroup()) {
-                if (!loadSet.get(fmd.getIndex())) {
-                    isLoaded = false;
-                    break;
-                }
-                // TODO: Complete contract for collections
-            }
-        } 
-        return isLoaded ? LoadState.LOADED : LoadState.NOT_LOADED;        
+
+        return OpenJPAPersistenceUtil.isLoaded(obj, attr);
     }
 }
