@@ -22,12 +22,36 @@ import java.util.Collection;
 
 import org.apache.openjpa.kernel.Broker;
 
+/**
+ * The WriteBehindCallback is responsible for flushing changes to the database
+ * when OpenJPA is used in a Write-Behind mode.
+ * 
+ */
 public interface WriteBehindCallback extends Runnable {
 
-    public void initialize(Broker broker,
-        WriteBehindCache cache);
+    /**
+     * Initialize the WriteBehindCallback. The callback will pull changes from
+     * the provided WriteBehindCache flush them using the provided broker. The
+     * WriteBehindCallback is responsible for closing the Broker.
+     * 
+     * @param broker
+     *            A new broker instance that the writebehind callback will use
+     *            to flush changes to the database.
+     * @param cache
+     *            A {@link WriteBehindCache} which contains the inflight
+     *            changes.
+     */
+    public void initialize(Broker broker, WriteBehindCache cache);
 
+    /**
+     * Manually flush changes to the database.
+     * 
+     * @return A Collection of Exceptions which occurred during the flush.
+     */
     public Collection<Exception> flush();
 
+    /**
+     * Close the WriteBehindCallback releasing resources to the JVM
+     */
     public void close();
 }

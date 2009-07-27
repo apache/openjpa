@@ -21,11 +21,38 @@ package org.apache.openjpa.writebehind;
 import org.apache.openjpa.conf.OpenJPAConfiguration;
 import org.apache.openjpa.lib.conf.ObjectValue;
 
+/**
+ * Manages the system's WriteBehind cache(s). You can retrieve the data cache
+ * manager from the {@link OpenJPAConfiguration}.
+ * 
+ */
 public interface WriteBehindCacheManager {
+    /**
+     * Get the default WriteBehind cache.
+     * 
+     * @return If WriteBehind mode is enabled the default WriteBehind cache will
+     *         be returned. If WriteBehind is not enabled return null.
+     */
     public WriteBehindCache getSystemWriteBehindCache();
 
+    /**
+     * Obtain a named WriteBehindCache.
+     * 
+     * @param name
+     *            Name of the WriteBehindCache to obtain
+     * @return If WriteBehind mode is enabled a WriteBehindCache for 'name' will
+     *         be returned (creating a new instance if needed). Otherwise return
+     *         null.
+     */
     public WriteBehindCache getWriteBehindCache(String name);
 
-    public void initialize(OpenJPAConfiguration conf,
-        ObjectValue writeBehindCache);
+    /**
+     * Initialize the WriteBehindCacheManager
+     * 
+     * @param conf
+     *            OpenJPAConfiguration in use
+     * @param writeBehindCache
+     *            The pluginvalue for WritBehindCache.
+     */
+    public void initialize(OpenJPAConfiguration conf, ObjectValue writeBehindCache);
 }

@@ -18,8 +18,23 @@
  */
 package org.apache.openjpa.writebehind;
 
+/**
+ * Key used for entities in the WriteBehind Cache.
+ */
 public interface WriteBehindCacheKey {
+    /**
+     * Answers an integer hash for this key.
+     * 
+     * @return integer hashcode
+     */
     public int hashCode();
 
+    /**
+     * Return true if the supplied object is equal to this instance.
+     * 
+     * @param obj
+     *            object to compare
+     * @return True if they are equal, otherwise false.
+     */
     public boolean equals(Object obj);
 }
