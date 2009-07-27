@@ -140,7 +140,7 @@
                 </dependency>
             </dependencies>
             <properties>
-                <mysql.version>5.1.5</mysql.version>
+                <mysql.version>5.1.6</mysql.version>
                 <connection.driver.name>com.mysql.jdbc.Driver</connection.driver.name>
                 <connection.url>${openjpa.mysql.url}</connection.url>
                 <connection.username>${openjpa.mysql.username}</connection.username>
