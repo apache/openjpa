@@ -33,7 +33,6 @@ import javax.persistence.criteria.ListJoin;
 import javax.persistence.criteria.MapJoin;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
-import javax.persistence.criteria.Selection;
 import javax.persistence.criteria.SetJoin;
 import javax.persistence.criteria.Subquery;
 import javax.persistence.metamodel.EntityType;
@@ -324,12 +323,10 @@ public class SubqueryImpl<T> extends ExpressionImpl<T> implements Subquery<T> {
     
     
     private ClassMetaData getCandidate(FromImpl<?,?> from) {
-        if (from._member.fmd.getDeclaredTypeCode() == 
-            JavaTypes.COLLECTION || 
-            from._member.fmd.getDeclaredTypeCode() == 
-            JavaTypes.MAP)
+        if (from._member.fmd.getDeclaredTypeCode() == JavaTypes.COLLECTION || 
+            from._member.fmd.getDeclaredTypeCode() == JavaTypes.MAP)
             return from._member.fmd.isElementCollection()
-                ? from._member.fmd.getEmbeddedMetaData()
+                ? from._member.fmd.getElement().getEmbeddedMetaData()
                 : from._member.fmd.getElement().getDeclaredTypeMetaData();
         return from._member.fmd.getDeclaredTypeMetaData();
         

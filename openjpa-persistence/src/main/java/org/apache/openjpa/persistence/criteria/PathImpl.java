@@ -82,7 +82,8 @@ public class PathImpl<Z,X> extends ExpressionImpl<X> implements Path<X> {
         } else {
             _member = member;
         }
-        isEmbedded = _member.fmd.isEmbedded();
+        isEmbedded = _member.fmd.isElementCollection() ? _member.fmd.getElement().isEmbedded() : 
+            _member.fmd.isEmbedded();
     }
 
     /** 
@@ -112,7 +113,9 @@ public class PathImpl<Z,X> extends ExpressionImpl<X> implements Path<X> {
 
     protected FieldMetaData getEmbeddedFieldMetaData(FieldMetaData fmd) {
         Members.Member<?,?> member = getInnermostMember(_parent,_member);
-        ClassMetaData embeddedMeta = member.fmd.getEmbeddedMetaData();
+        ClassMetaData embeddedMeta = member.fmd.isElementCollection() ? 
+                member.fmd.getElement().getEmbeddedMetaData() :
+                member.fmd.getEmbeddedMetaData();
         if (embeddedMeta != null)
             return embeddedMeta.getField(fmd.getName());
         else

@@ -35,9 +35,11 @@ import javax.persistence.metamodel.MapAttribute;
 import javax.persistence.metamodel.PluralAttribute;
 import javax.persistence.metamodel.SetAttribute;
 
+import org.apache.openjpa.kernel.exps.AbstractExpressionBuilder;
 import org.apache.openjpa.kernel.exps.ExpressionFactory;
 import org.apache.openjpa.kernel.exps.Value;
 import org.apache.openjpa.meta.ClassMetaData;
+import org.apache.openjpa.meta.FieldMetaData;
 import org.apache.openjpa.persistence.meta.Members;
 import org.apache.openjpa.persistence.meta.MetamodelImpl;
 import org.apache.openjpa.persistence.meta.Members.Member;
@@ -100,6 +102,7 @@ public abstract class Joins {
                 path = factory.newPath(subQ);
                 path.setMetaData(subQ.getMetaData());
                 path.setSchemaAlias(c.getAlias(this));
+                path.get(_member.fmd, allowNull); 
             } else {
                 path = (org.apache.openjpa.kernel.exps.Path) _parent.toValue(factory, model, c);
                 path.get(_member.fmd, allowNull);
@@ -125,14 +128,19 @@ public abstract class Joins {
                 if (subquery != null) {
                     corrJoins = subquery.getCorrelatedJoins();
                     org.apache.openjpa.kernel.exps.Subquery subQ = subquery.getSubQ();
-                    path = factory.newPath(subQ);
                     if ((corrJoins != null && corrJoins.contains(_parent)) || 
-                            (corrJoins == null && parent.inSubquery(subquery))) { 
+                        (corrJoins == null && parent.inSubquery(subquery) && _parent.getCorrelatedPath() != null)) { 
+                        path = factory.newPath(subQ);
                         correlatedParentPath = _parent.getCorrelatedPath();
                         bind = false;
-                    } else {    
-                        path.setMetaData(subQ.getMetaData());
-                        path.get(_member.fmd, allowNull);
+                    } else { 
+                        if (c.isRegistered(_parent)) { 
+                            Value var = c.getRegisteredVariable(_parent);
+                            path = factory.newPath(var);
+                        } else 
+                            path = factory.newPath(subQ);
+                        path.setMetaData(meta);
+                        path.get(_member.fmd, false);
                         path.setSchemaAlias(c.getAlias(_parent));
                     } 
                 } else if (c.isRegistered(_parent)) {
@@ -142,12 +150,19 @@ public abstract class Joins {
                     path.get(_member.fmd, false);
                 } else            
                     path = (org.apache.openjpa.kernel.exps.Path)toValue(factory, model, c);
-
+                
+                Class<?> type = meta == null ? AbstractExpressionBuilder.TYPE_OBJECT : meta.getDescribedType();
+                Value var = null;
                 if (bind) {
-                    Value var = factory.newBoundVariable(c.getAlias(this), meta.getDescribedType());
+                    var = factory.newBoundVariable(c.getAlias(this),type);
                     join = factory.bindVariable(var, path);
                     c.registerVariable(this, var, path);
                 }
+                
+                if (!_member.fmd.isTypePC()) { // multi-valued relation
+                    setImplicitContainsTypes(path, var, AbstractExpressionBuilder.CONTAINS_TYPE_ELEMENT);
+                    join = factory.contains(path, var);
+                }                
             }
             if (getJoins() != null) {
                 for (Join<?, ?> join1 : getJoins()) {
@@ -190,6 +205,39 @@ public abstract class Joins {
             return getVariableForCorrPath((SubqueryImpl<?>)parent, path);
         }
         
+        /**
+         * Set the implicit types of the given values based on the fact that
+         * the first is supposed to contain the second.
+         */
+        public void setImplicitContainsTypes(Value val1, Value val2, int op) {
+            if (val1.getType() == AbstractExpressionBuilder.TYPE_OBJECT) {
+                if (op == AbstractExpressionBuilder.CONTAINS_TYPE_ELEMENT)
+                    val1.setImplicitType(Collection.class);
+                else
+                    val1.setImplicitType(Map.class);
+            }
+
+            if (val2.getType() == AbstractExpressionBuilder.TYPE_OBJECT && val1 instanceof Path) {
+                FieldMetaData fmd = ((org.apache.openjpa.kernel.exps.Path) val1).last();
+                ClassMetaData meta;
+                if (fmd != null) {
+                    if (op == AbstractExpressionBuilder.CONTAINS_TYPE_ELEMENT || 
+                        op == AbstractExpressionBuilder.CONTAINS_TYPE_VALUE) {
+                        val2.setImplicitType(fmd.getElement().getDeclaredType());
+                        meta = fmd.getElement().getDeclaredTypeMetaData();
+                        if (meta != null) {
+                            val2.setMetaData(meta);
+                        }
+                    } else {
+                        val2.setImplicitType(fmd.getKey().getDeclaredType());
+                        meta = fmd.getKey().getDeclaredTypeMetaData();
+                        if (meta != null) {
+                            val2.setMetaData(meta);
+                        }
+                    }
+                }
+            }
+        }
     }
     
     /**
@@ -235,7 +283,7 @@ public abstract class Joins {
         
         public ClassMetaData getMemberClassMetaData() {
             return _member.fmd.isElementCollection() 
-                ? _member.fmd.getEmbeddedMetaData()
+                ? _member.fmd.getElement().getEmbeddedMetaData()
                 : _member.fmd.getElement().getDeclaredTypeMetaData();
         }
 
@@ -288,12 +336,18 @@ public abstract class Joins {
                     corrJoins = subquery.getCorrelatedJoins();
                     org.apache.openjpa.kernel.exps.Subquery subQ = subquery.getSubQ();
                     path = factory.newPath(subQ); 
-                    if (corrJoin != null || corrRoot != null) { 
+                    if ((corrJoin != null || corrRoot != null) && _parent.getCorrelatedPath() != null) { 
+                        path = factory.newPath(subQ);
                         correlatedParentPath = _parent.getCorrelatedPath();
                         bind = false;
                     } else {    
-                        path.setMetaData(subQ.getMetaData());
-                        path.get(_member.fmd, allowNull);
+                        if (c.isRegistered(_parent)) { 
+                            Value var = c.getRegisteredVariable(_parent);
+                            path = factory.newPath(var);
+                        } else 
+                            path = factory.newPath(subQ);
+                        path.setMetaData(meta);
+                        path.get(_member.fmd, false);
                         path.setSchemaAlias(c.getAlias(_parent));
                     } 
                 } else if (c.isRegistered(_parent)) {
@@ -304,8 +358,9 @@ public abstract class Joins {
                 } else            
                     path = (org.apache.openjpa.kernel.exps.Path)toValue(factory, model, c);
 
+                Class<?> type = meta == null ? AbstractExpressionBuilder.TYPE_OBJECT : meta.getDescribedType(); 
                 if (bind) {
-                    Value var = factory.newBoundVariable(c.getAlias(this), meta.getDescribedType());
+                    Value var = factory.newBoundVariable(c.getAlias(this), type);
                     join = factory.bindVariable(var, path);
                     c.registerVariable(this, var, path);
                 }
@@ -477,8 +532,19 @@ public abstract class Joins {
         */
        @Override
        public Value toValue(ExpressionFactory factory, MetamodelImpl model, CriteriaQueryImpl<?> c) {
-           org.apache.openjpa.kernel.exps.Path path = factory.newPath(c.getRegisteredVariable(map));
-           return factory.getKey(path);
+           SubqueryImpl<?> subquery = c.getDelegator();
+           PathImpl<?,?> parent = map.getInnermostParentPath();
+           Value val = c.getRegisteredVariable(map);
+           org.apache.openjpa.kernel.exps.Path path = factory.newPath(val);
+           if (parent.inSubquery(subquery)) {
+               org.apache.openjpa.kernel.exps.Subquery subQ = subquery.getSubQ();
+               org.apache.openjpa.kernel.exps.Path var = factory.newPath(subQ);
+               ((org.apache.openjpa.kernel.exps.Path)var).setSchemaAlias(c.getAlias(this));
+               var.setMetaData(subQ.getMetaData());
+               return factory.mapKey(path, var);
+           } else {
+               return factory.getKey(path);
+           }
        }
    }
        
