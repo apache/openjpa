@@ -805,8 +805,8 @@
                         <!-- TestPMMemory creates heapdumps etc and there's no real asserts within the test.  -->
                         <exclude>org/apache/openjpa/persistence/kernel/TestPMMemory.java</exclude>
                         <!-- You can exclude the lockmgr test to save ~15 mins.
-                        <exclude>org/apache/openjpa/persistence/lockmgr/*.java</exclude>
                         -->
+                        <exclude>org/apache/openjpa/persistence/lockmgr/*.java</exclude>
 						<!-- ================================================================== -->
 						<!--  Critera & MetaModel tests are *temporarily* excluded to wait for  -->
 						<!--  spec to stabilize on Result Processing API                        -->

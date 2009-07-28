@@ -88,24 +88,31 @@ public class PersistenceProviderImpl
         try {
             Object poolValue = Configurations.removeProperty(EMF_POOL, m);
             ConfigurationProvider cp = pd.load(resource, name, m);
-            if (cp == null)
+            if (cp == null) {
                 return null;
+            }
 
             BrokerFactory factory = getBrokerFactory(cp, poolValue, null);
             OpenJPAConfiguration conf = factory.getConfiguration();
             _log = conf.getLog(OpenJPAConfiguration.LOG_RUNTIME);
-            if(pd.checkPuNameCollisions(_log,name)==true){
+            if(pd.checkPuNameCollisions(_log,name)==true) {
                 ;//return null;
             }
+            
             loadAgent(_log, conf);
+            
             // TODO - Can this be moved back to BrokerImpl.initialize()?
             // Create appropriate LifecycleEventManager
             loadValidator(_log, conf);
+            
             return JPAFacadeHelper.toEntityManagerFactory(factory);
         } catch (Exception e) {
             _log.error(_loc.get("create-emf-error", name), e);
-            throw PersistenceExceptions.toPersistenceException(e);
-            //return null;
+            /*
+             * Maintain 1.x behavior of throwing exceptions, even though
+             * JPA2 9.2 - createEMF "must" return null for PU it can't handle
+             */
+            throw PersistenceExceptions.toPersistenceException(e);                
         }
     }
 
