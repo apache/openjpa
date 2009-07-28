@@ -57,15 +57,19 @@ public class TestSpecificationConfiguration extends SingleEMFTestCase {
         assertEquals(1, spec.getVersion());
     }
     
+    /*
+     * Slight change for 2.0, in that the geronimo spec does not rethrow
+     * all exceptions wrapped as a PersistenceException
+     */
     public void testHigherVersionCanNotBeSet() {
         try {
             super.setUp("openjpa.Specification", "jpa 3.0", 
                 "openjpa.Log", "DefaultLevel=WARN");
             fail("Expected to fail with higher Spec version");
-        } catch (PersistenceException ex) {
+        } catch (IllegalArgumentException ex) {
             // good
             emf.getConfiguration().getLog("Tests").trace(
-                "Caught expected PersistenceException = " + ex);
+                "Caught expected IllegalArgumentException = " + ex);
         }
     }
     
