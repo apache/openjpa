@@ -101,7 +101,7 @@ public class ParameterExpressionImpl<T> extends ExpressionImpl<T>
         _delegate.clearBinding();
     }
     
-    public final QueryParameter<T> bindValue(Object v) {
+    public final QueryParameter<T> bindValue(T v) {
         return _delegate.bindValue(v);
     }
 

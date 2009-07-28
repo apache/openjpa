@@ -90,6 +90,8 @@ public class QueryImpl<X> implements OpenJPAQuerySPI<X>, Serializable {
     private transient ReentrantLock _lock = null;
 	private final HintHandler _hintHandler;
 
+	private Map<Parameter<?>, Object> parmatersToValues = new HashMap<Parameter<?>, Object>();
+
 	/**
 	 * Constructor; supply factory exception translator and delegate.
 	 * 
@@ -421,7 +423,7 @@ public class QueryImpl<X> implements OpenJPAQuerySPI<X>, Serializable {
                         position), null, null, false);
 
 			Class<?> valueType = (Class<?>)_query.getParameterTypes().get((Object)position);
-			ParameterImpl<?> param = new ParameterImpl<Object>(position, valueType);
+			ParameterImpl<Object> param = new ParameterImpl<Object>(position, valueType);
 			registerParameter(param);
 			param.bindValue(value);
 
@@ -459,7 +461,7 @@ public class QueryImpl<X> implements OpenJPAQuerySPI<X>, Serializable {
 			}
 			
 			Class<?> valueType = (Class<?>)_query.getParameterTypes().get(name);
-			ParameterImpl<?> param = new ParameterImpl<Object>(name, valueType);
+			ParameterImpl<Object> param = new ParameterImpl<Object>(name, valueType);
 			registerParameter(param);
 			param.bindValue(value);
 			
@@ -923,6 +925,10 @@ public class QueryImpl<X> implements OpenJPAQuerySPI<X>, Serializable {
      */
     public Set<?> getDeclaredParameterKeys() {
         return _query.getParameterTypes().keySet();
+    }
+
+    public boolean isBound(Parameter<?> param) {
+        return parmatersToValues.keySet().contains(param);
     }
 
 }

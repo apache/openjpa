@@ -48,7 +48,7 @@ public class ParameterImpl<T> implements QueryParameter<T> {
     private final String _name;
     private final Integer _position;
     private final Class<?> _expectedValueType;
-    private Object _value;
+    private T _value;
     private boolean _bound; 
     
     /**
@@ -128,7 +128,7 @@ public class ParameterImpl<T> implements QueryParameter<T> {
      * 
      * @exception if the given value is not permissible for this parameter.
      */
-    public QueryParameter<T> bindValue(Object v) {
+    public QueryParameter<T> bindValue(T v) {
         if (!isValueAssignable(v)) {
             if (v == null)
                 throw new IllegalArgumentException(_loc.get("param-null-not-assignable", this).getMessage());
@@ -200,5 +200,10 @@ public class ParameterImpl<T> implements QueryParameter<T> {
         buf.append((isBound() ? getValue() : "UNBOUND") + ")");
 
         return buf.toString();
+    }
+
+    public Class<T> getJavaType() {
+        Class<?> cls = _value.getClass();
+        return (Class<T>) cls;
     }
 }

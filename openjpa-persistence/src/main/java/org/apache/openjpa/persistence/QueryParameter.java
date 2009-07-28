@@ -52,7 +52,7 @@ public interface QueryParameter<T> extends Parameter<T> {
     /**
      * Binds the given value to this parameter.
      */
-    public abstract QueryParameter<T> bindValue(Object v);
+    public abstract QueryParameter<T> bindValue(T v);
 
     /**
      * Gets the value of this parameter without checking whether the any value has been

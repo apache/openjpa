@@ -518,7 +518,7 @@ public class PersistenceUnitInfoImpl
         }
 	}
 
-    public String PersistenceXMLSchemaVersion() {
+    public String getPersistenceXMLSchemaVersion() {
         return _schemaVersion;
     }
 
@@ -549,7 +549,6 @@ public class PersistenceUnitInfoImpl
     }
 
     public SharedCacheMode getSharedCacheMode() {
-        // TODO Auto-generated method stub
-        return null;
+        throw new UnsupportedOperationException("JPA 2.0 - Method not yet implemented");
     }
 }

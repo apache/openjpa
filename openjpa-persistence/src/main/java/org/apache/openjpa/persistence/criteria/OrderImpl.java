@@ -40,8 +40,8 @@ public class OrderImpl implements Order {
 		this(e, true);
 	}
 	
-	public <T extends Comparable<T>> Expression<T> getExpression() {
-		return (Expression<T>)e;
+	public Expression<?> getExpression() {
+		return e;
 	}
 	
 	public Expression getExpression5() {
