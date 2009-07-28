@@ -80,6 +80,7 @@ public class PersistenceProviderImpl
      * when doing this lookup, regardless of the name specified in the XML
      * resource or the name of the jar that the resource is contained in.
      * This does no pooling of EntityManagersFactories.
+     * @return EntityManagerFactory or null
      */
     public OpenJPAEntityManagerFactory createEntityManagerFactory(String name,
         String resource, Map m) {
@@ -102,7 +103,9 @@ public class PersistenceProviderImpl
             loadValidator(_log, conf);
             return JPAFacadeHelper.toEntityManagerFactory(factory);
         } catch (Exception e) {
+            _log.error(_loc.get("create-emf-error", name), e);
             throw PersistenceExceptions.toPersistenceException(e);
+            //return null;
         }
     }
 

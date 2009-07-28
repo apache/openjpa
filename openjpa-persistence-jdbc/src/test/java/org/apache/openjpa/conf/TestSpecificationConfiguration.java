@@ -64,6 +64,8 @@ public class TestSpecificationConfiguration extends SingleEMFTestCase {
             fail("Expected to fail with higher Spec version");
         } catch (PersistenceException ex) {
             // good
+            emf.getConfiguration().getLog("Tests").trace(
+                "Caught expected PersistenceException = " + ex);
         }
     }
     
