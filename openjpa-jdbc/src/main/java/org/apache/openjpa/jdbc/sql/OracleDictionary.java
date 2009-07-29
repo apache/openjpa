@@ -380,7 +380,16 @@ public class OracleDictionary
         return buf;
     }
 
-    public SQLBuffer toSelect(SQLBuffer select, JDBCFetchConfiguration fetch,
+    protected SQLBuffer toSelect(SQLBuffer select, JDBCFetchConfiguration fetch,
+        SQLBuffer tables, SQLBuffer where, SQLBuffer group,
+        SQLBuffer having, SQLBuffer order,
+        boolean distinct, boolean forUpdate, long start, long end,
+        boolean subselect, Select sel) {
+    	return toSelect(select, fetch, tables, where, group, having, order,
+            distinct, forUpdate, start, end, sel);
+    }
+
+    protected SQLBuffer toSelect(SQLBuffer select, JDBCFetchConfiguration fetch,
         SQLBuffer tables, SQLBuffer where, SQLBuffer group,
         SQLBuffer having, SQLBuffer order,
         boolean distinct, boolean forUpdate, long start, long end,

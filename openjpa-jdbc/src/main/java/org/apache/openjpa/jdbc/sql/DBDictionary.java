@@ -1851,7 +1851,7 @@ public class DBDictionary
         from.append("(");
         from.append(toSelect(subSelect, null, subFrom, where,
             sel.getGrouping(), sel.getHaving(), null, sel.isDistinct(),
-            false, sel.getStartIndex(), sel.getEndIndex(), true));
+            false, sel.getStartIndex(), sel.getEndIndex(), true, sel));
         from.append(")");
         if (requiresAliasForSubselect)
             from.append(" ").append(Select.FROM_SELECT_ALIAS);
@@ -2342,11 +2342,12 @@ public class DBDictionary
     /**
      * Combine the given components into a SELECT statement.
      */
-    public SQLBuffer toSelect(SQLBuffer selects, JDBCFetchConfiguration fetch,
+    protected SQLBuffer toSelect(SQLBuffer selects,
+        JDBCFetchConfiguration fetch,
         SQLBuffer from, SQLBuffer where, SQLBuffer group,
         SQLBuffer having, SQLBuffer order,
         boolean distinct, boolean forUpdate, long start, long end,
-        boolean subselect) {
+        boolean subselect, Select sel) {
         return toOperation(getSelectOperation(fetch), selects, from, where,
             group, having, order, distinct, start, end,
             getForUpdateClause(fetch, forUpdate, null), subselect);
@@ -2365,7 +2366,8 @@ public class DBDictionary
     /**
      * Combine the given components into a SELECT statement.
      */
-    public SQLBuffer toSelect(SQLBuffer selects, JDBCFetchConfiguration fetch,
+    protected SQLBuffer toSelect(SQLBuffer selects, 
+        JDBCFetchConfiguration fetch,
         SQLBuffer from, SQLBuffer where, SQLBuffer group,
         SQLBuffer having, SQLBuffer order,
         boolean distinct, boolean forUpdate, long start, long end,
