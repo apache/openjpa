@@ -49,6 +49,18 @@ import org.apache.openjpa.persistence.test.AllowFailure;
  */
 public class TestTypesafeCriteria extends CriteriaTest {
     
+    public void testTrue() {
+        CriteriaQuery<Person> q = cb.createQuery(Person.class);
+        q.from(Person.class);
+        assertEquivalence(q.where(cb.literal(Boolean.TRUE)), "SELECT p FROM Person p WHERE 1=1");
+    }
+    
+    public void testFalse() {
+        CriteriaQuery<Person> q = cb.createQuery(Person.class);
+        q.from(Person.class);
+        assertEquivalence(q.where(cb.literal(Boolean.FALSE)), "SELECT p FROM Person p WHERE 0=1");
+    }
+
     public void testExpressions() {
         String jpql = "SELECT o.quantity, o.totalCost*1.08, "
                 + "a.zipCode FROM Customer c JOIN c.orders o JOIN c.address a "

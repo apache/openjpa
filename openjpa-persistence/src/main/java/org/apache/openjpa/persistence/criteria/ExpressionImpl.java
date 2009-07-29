@@ -44,7 +44,7 @@ public abstract class ExpressionImpl<X> extends SelectionImpl<X>
     
     org.apache.openjpa.kernel.exps.Expression toKernelExpression(ExpressionFactory factory, MetamodelImpl model,
         CriteriaQueryImpl<?> q) {
-        throw new AbstractMethodError(this.getClass().getName());
+        return factory.asExpression(toValue(factory, model, q));
     }
     
 

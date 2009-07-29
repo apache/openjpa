@@ -738,8 +738,7 @@ public class Expressions {
         }
         
         @Override
-        public Value toValue(ExpressionFactory factory, MetamodelImpl model,
-            CriteriaQueryImpl<?> q) {
+        public Value toValue(ExpressionFactory factory, MetamodelImpl model, CriteriaQueryImpl<?> q) {
             Object value = arg;
             if (arg instanceof ParameterExpressionImpl) {
                 return ((ParameterExpressionImpl)arg).toValue(factory, model, q);
@@ -757,14 +756,11 @@ public class Expressions {
                     literalType = Literal.TYPE_ENUM;
                 } else if (Class.class.isAssignableFrom(literalClass)) {
                     literalType = Literal.TYPE_CLASS;
-                    Literal lit = factory.newTypeLiteral(value, 
-                        Literal.TYPE_CLASS);
-                    ClassMetaData can = ((Types.Entity<X>)q.getRoot()
-                            .getModel()).meta;
+                    Literal lit = factory.newTypeLiteral(value, Literal.TYPE_CLASS);
+                    ClassMetaData can = ((Types.Entity<X>)q.getRoot().getModel()).meta;
                     Class<?> candidate = can.getDescribedType();
                     if (candidate.isAssignableFrom((Class)value)) {
-                       lit.setMetaData(model.repos.getMetaData(
-                           (Class<?>)value, null, true));
+                       lit.setMetaData(model.repos.getMetaData((Class<?>)value, null, true));
                     } else {
                         lit.setMetaData(can);
                     }
