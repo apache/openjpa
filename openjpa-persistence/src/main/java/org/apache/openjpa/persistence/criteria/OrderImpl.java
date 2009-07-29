@@ -44,10 +44,6 @@ public class OrderImpl implements Order {
 		return e;
 	}
 	
-	public Expression getExpression5() {
-	    return e;
-	}
-
 	public boolean isAscending() {
 		return _ascending;
 	}

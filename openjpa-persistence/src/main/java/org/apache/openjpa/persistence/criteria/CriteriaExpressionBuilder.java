@@ -122,7 +122,7 @@ public class CriteriaExpressionBuilder {
         for (int i = 0; i < ordercount; i++) {
             OrderImpl order = (OrderImpl)orders.get(i);
             //Expression<? extends Comparable> expr = order.getExpression();
-            Expression<?> expr = order.getExpression5();
+            Expression<?> expr = order.getExpression();
             Value val = Expressions.toValue(
                     (ExpressionImpl<?>)expr, factory, model, q);
             exps.ordering[i] = val;
