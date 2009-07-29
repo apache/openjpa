@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.util;
 
@@ -52,23 +52,25 @@ public class BigDecimalId
     }
 
     public String toString() {
-        if (key == null)
+        if (key == null) {
             return "NULL";
-
+        }
         return key.toString();
     }
 
     protected int idHash() {
-        if (key != null)
+        if (key != null) {
             return key.hashCode();
-
+        }
         return 0;
     }
 
     protected boolean idEquals(OpenJPAId other) {
-        if(key == null)
+        if ((key == null) ||
+            (!BigDecimalId.class.isAssignableFrom(other.getClass()))) {
             return false;
-
-        return key.equals(other);
+        }
+        return key.equals(((BigDecimalId)other).key);
     }
 }
+
