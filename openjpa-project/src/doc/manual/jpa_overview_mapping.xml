@@ -3124,8 +3124,8 @@ public class LifetimeSubscription
 
     @Basic(fetch=FetchType.LAZY)
     @Column(name="ELITE")
-    private boolean getEliteClub () { ... }
-    public void setEliteClub (boolean elite) { ... }
+    private boolean getEliteClub() { ... }
+    public void setEliteClub(boolean elite) { ... }
 
     ...
 }
@@ -3136,8 +3136,8 @@ public class TrialSubscription
     extends Subscription {
 
     @Column(name="END")
-    public Date getEndDate () { ... }
-    public void setEndDate (Date end) { ... }
+    public Date getEndDate() { ... }
+    public void setEndDate(Date end) { ... }
 
     ...
 }
@@ -4581,8 +4581,8 @@ public class LifetimeSubscription
 
     @Basic(fetch=FetchType.LAZY)
     @Column(name="ELITE")
-    private boolean getEliteClub () { ... }
-    public void setEliteClub (boolean elite) { ... }
+    private boolean getEliteClub() { ... }
+    public void setEliteClub(boolean elite) { ... }
 
     ...
 }
@@ -4593,8 +4593,8 @@ public class TrialSubscription
     extends Subscription {
 
     @Column(name="END")
-    public Date getEndDate () { ... }
-    public void setEndDate (Date end) { ... }
+    public Date getEndDate() { ... }
+    public void setEndDate(Date end) { ... }
 
     ...
 }

@@ -707,7 +707,7 @@ EntityManager em = emf.createEntityManager();
 Query q = em.createQuery(...).
     setParameter(0, paramVal0).
     setParameter(1, paramVal1);
-qcache.evict (q);
+qcache.evict(q);
 </programlisting>
             </example>
             <para>
@@ -777,7 +777,7 @@ import org.apache.openjpa.persistence.*;
 
 // temporarily disable query caching for all queries created from em
 OpenJPAEntityManager oem = OpenJPAPersistence.cast(em);
-oem.getFetchPlan ().setQueryResultCacheEnabled(false);
+oem.getFetchPlan().setQueryResultCacheEnabled(false);
 
 // re-enable caching for a particular query
 OpenJPAQuery oq = oem.createQuery(...);

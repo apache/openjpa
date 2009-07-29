@@ -3708,7 +3708,7 @@ import org.apache.openjpa.persistence.jdbc.*;
 
 Query q = em.createQuery("select m from Magazine m where m.title = 'JDJ'");
 OpenJPAQuery kq = OpenJPAPersistence.cast(q);
-JDBCFetchPlan fetch = (JDBCFetchPlan) kq.getFetchPlan ();
+JDBCFetchPlan fetch = (JDBCFetchPlan) kq.getFetchPlan();
 fetch.setJoinSyntax(JoinSyntax.SQL92);
 List results = q.getResultList();
 </programlisting>

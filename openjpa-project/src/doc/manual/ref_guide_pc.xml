@@ -1759,7 +1759,7 @@ public class Magazine {
         ... logic to pack custom type into a list of authors ...
     }
 
-    public static CustomType authorsToCustomType (Collection authors) {
+    public static CustomType authorsToCustomType(Collection authors) {
         ... logic to create custom type from a collection of authors ...
     }
 

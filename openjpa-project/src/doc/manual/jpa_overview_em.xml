@@ -112,7 +112,7 @@ Closing.
             </secondary>
         </indexterm>
 <programlisting>
-public EntityTransaction getTransaction ();
+public EntityTransaction getTransaction();
 </programlisting>
         <para>
 Every <classname>EntityManager</classname> has a one-to-one relation with an
@@ -495,7 +495,7 @@ whose <link linkend="jpa_overview_meta_cascade">cascades</link> include
             </listitem>
         </itemizedlist>
 <programlisting>
-public void lock (Object entity, LockModeType mode);
+public void lock(Object entity, LockModeType mode);
 </programlisting>
         <para>
         <indexterm>

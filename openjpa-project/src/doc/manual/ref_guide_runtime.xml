@@ -347,7 +347,7 @@ import org.apache.openjpa.persistence.*;
 OpenJPAEntityManager kem = OpenJPAPersistence.cast(em);
 Extent&lt;Magazine&gt; mags = kem.createExtent(Magazine.class, false);
 for (Magazine m : mags)
-    processMagazine (m);
+    processMagazine(m);
 </programlisting>
             </example>
         </section>
@@ -619,7 +619,7 @@ em.getTransaction().begin();
 Query q = em.createQuery("select s from Stock s where symbol = :s");
 q.setParameter("s", symbol);
 OpenJPAQuery oq = OpenJPAPersistence.cast(q);
-FetchPlan fetch = oq.getFetchPlan ();
+FetchPlan fetch = oq.getFetchPlan();
 fetch.setReadLockMode(LockModeType.WRITE);
 fetch.setLockTimeout(3000); // 3 seconds
 Stock stock = (Stock) q.getSingleResult();
@@ -693,7 +693,7 @@ if (level == OpenJPAModeType.WRITE) ...
 ...
 
 oem.setOptimistic(true);
-oem.getTransaction().begin ();
+oem.getTransaction().begin();
 
 // override default of not locking during an opt trans to lock stock object
 oem.lock(stock, LockModeType.WRITE, 1000);
@@ -1139,8 +1139,8 @@ the 3 characters 'H', 'a', 'r'.
                     Basic Filter Extension
                 </title>
 <programlisting>
-Query q = em.createQuery ("select c from City c where c.name.ext:firstThreeChars () = 'Har'");
-List results = q.getResultList ();
+Query q = em.createQuery("select c from City c where c.name.ext:firstThreeChars () = 'Har'");
+List results = q.getResultList();
 </programlisting>
             </example>
             <para>
@@ -1153,9 +1153,9 @@ extension, <literal>equalsIgnoreCase</literal>:
                     Chaining Filter Extensions
                 </title>
 <programlisting>
-Query query = em.createQuery ("select c from City c where "
+Query query = em.createQuery("select c from City c where "
     + "c.name.ext:firstThreeChars ().ext:equalsIgnoreCase ('Har')");
-List results = q.getResultList ();
+List results = q.getResultList();
 </programlisting>
             </example>
             <para>

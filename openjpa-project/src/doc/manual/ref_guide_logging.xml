@@ -507,7 +507,7 @@ public class CustomLogFactory
 
     private String _prefix = "CUSTOM LOG";
 
-    public void setPrefix (String prefix) {
+    public void setPrefix(String prefix) {
         _prefix = prefix;
     }
  
@@ -522,7 +522,7 @@ public class CustomLogFactory
                 return true;
             }
 
-            protected void log (short type, String message, Throwable t) {
+            protected void log(short type, String message, Throwable t) {
                 // just send everything to System.err
                 System.err.println(_prefix + ": " + type + ": "
                     + message + ": " + t);

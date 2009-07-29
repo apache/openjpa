@@ -233,7 +233,7 @@ query.setParameter(2, 10d);
 
 List&lt;Magazine&gt; results = (List&lt;Magazine&gt;) query.getResultList();
 for (Magazine mag : results)
-    processMagazine (mag);
+    processMagazine(mag);
 </programlisting>
         </example>
         <para>

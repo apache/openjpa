@@ -1290,7 +1290,7 @@ public class MagazineLogger {
 
     @PostPersist
     public void logAddition(Object pc) {
-        getLog ().debug ("Added new magazine:" + ((Magazine) pc).getTitle ());
+        getLog().debug("Added new magazine:" + ((Magazine) pc).getTitle());
     }
 
 

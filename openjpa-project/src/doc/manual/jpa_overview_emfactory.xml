@@ -399,8 +399,8 @@ em.close();
             </secondary>
         </indexterm>
 <programlisting>
-public boolean isOpen ();
-public void close ();
+public boolean isOpen();
+public void close();
 </programlisting>
         <para>
 <classname>EntityManagerFactory</classname> instances are heavyweight objects.

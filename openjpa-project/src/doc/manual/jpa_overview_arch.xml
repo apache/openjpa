@@ -213,7 +213,7 @@ container.
                                "  FROM Employee e " +
                                " WHERE e.division.name = 'Research' " +
                                "   AND e.avgHours &gt; 40");
-  List results = query.getResultList ();
+  List results = query.getResultList();
 
   // give all those hard-working employees a raise
   for (Object res : results) {

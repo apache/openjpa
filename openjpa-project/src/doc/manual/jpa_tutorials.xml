@@ -526,11 +526,11 @@ AnimalMaintenance.java</filename> to look like this:
      *  @param  cls         the class of animal to query on
      *  @param  em          the EntityManager to obtain the query from
      */
-    public static List getAnimals (String filter, EntityManager em)
+    public static List getAnimals(String filter, EntityManager em)
     {
         // Execute a query for the specified filter.
-        Query query = em.createQuery (filter);
-        return query.getResultList ();
+        Query query = em.createQuery(filter);
+        return query.getResultList();
     }
 </programlisting>
                 </listitem>
@@ -612,17 +612,17 @@ AnimalMaintenance.java</filename> to look like this:
      *
      *  @param  object  the object to persist in the data store
      */
-    public static void persistObject (EntityManager em, Object object)
+    public static void persistObject(EntityManager em, Object object)
     {
         // Mark the beginning of the unit of work boundary.
-        em.getTransaction ().begin ();
+        em.getTransaction().begin();
 
-        em.persist (object);
+        em.persist(object);
 
         // Mark the end of the unit of work boundary,
         // and record all inserts in the database.
-        em.getTransaction ().commit ();
-        System.out.println ("Added " + object);
+        em.getTransaction().commit();
+        System.out.println("Added " + object);
     }
 </programlisting>
                         <note>
@@ -694,21 +694,21 @@ AnimalMaintenance.java</filename> to look like this:
      *  @param  objects     the objects to persist in the datastore
      *  @param  em          the EntityManager to delete with
      */
-    public static void deleteObjects (Collection objects, EntityManager em)
+    public static void deleteObjects(Collection objects, EntityManager em)
     {
         // Mark the beginning of the unit of work boundary.
-        em.getTransaction ().begin ();
+        em.getTransaction().begin();
 
         // This method removes the objects in 'objects' from the data store.
         for (Object ob : objects)
         {
-            System.out.println ("Removed animal: " + ob);
-            em.remove (ob);
+            System.out.println("Removed animal: " + ob);
+            em.remove(ob);
         }
 
         // Mark the end of the unit of work boundary, and record all
         // deletes in the database.
-        em.getTransaction ().commit ();
+        em.getTransaction().commit();
     }
 </programlisting>
                     </listitem>
@@ -981,27 +981,27 @@ For more information on types of relations, see
 <xref linkend="jpa_overview_mapping_field"/> of the JPA Overview.
                     </para>
                     <para>
-Modify the <literal>toString (boolean)</literal> method to output the giTract
+Modify the <literal>toString(boolean)</literal> method to output the giTract
 list.
                     </para>
 <programlisting>
-    public String toString (boolean detailed)
+    public String toString(boolean detailed)
     {
-        StringBuffer buf = new StringBuffer (1024);
-        buf.append ("Snake ").append (getName ());
+        StringBuffer buf = new StringBuffer(1024);
+        buf.append("Snake ").append(getName());
 
         if (detailed)
         {
-            buf.append (" (").append (length).append (" feet long) sells for ");
-            buf.append (getPrice ()).append (" dollars.");
-            buf.append ("  Its gastrointestinal tract contains:\n");
+            buf.append(" (").append(length).append(" feet long) sells for ");
+            buf.append(getPrice()).append(" dollars.");
+            buf.append("  Its gastrointestinal tract contains:\n");
             for (Rabbit rabbit : giTract)
-                buf.append ("\t").append (rabbit).append ("\n");
+                buf.append("\t").append(rabbit).append("\n");
         }
         else
-            buf.append ("; ate " + giTract.size () + " rabbits.");
+            buf.append("; ate " + giTract.size() + " rabbits.");
 
-        return buf.toString ();
+        return buf.toString();
     }
 </programlisting>
                     <para>
@@ -1011,75 +1011,75 @@ Add the following methods.
     /**
      *  Kills the specified rabbit and eats it.
      */
-    public void eat (Rabbit dinner)
+    public void eat(Rabbit dinner)
     {
         // Consume the rabbit.
-        dinner.kill ();
-        dinner.setEater (this);
-        giTract.add (dinner);
-        System.out.println ("Snake " + getName () + " ate rabbit " 
-            + dinner.getName () + ".");
+        dinner.kill();
+        dinner.setEater(this);
+        giTract.add(dinner);
+        System.out.println("Snake " + getName() + " ate rabbit " 
+            + dinner.getName() + ".");
     }
 
 
     /**
      *  Locates the specified snake and tells it to eat a rabbit.
      */
-    public static void eat (EntityManager em, String filter)
+    public static void eat(EntityManager em, String filter)
     {
-        em.getTransaction ().begin ();
+        em.getTransaction().begin();
 
         // Find the desired snake(s) in the data store.
-        Query query = em.createQuery (filter);
-        List&lt;Snake&gt; results = query.getResultList ();
-        if (results.isEmpty ())
+        Query query = em.createQuery(filter);
+        List&lt;Snake&gt; results = query.getResultList();
+        if (results.isEmpty())
         {
-            System.out.println ("No snakes matching '" + filter + "' found");
+            System.out.println("No snakes matching '" + filter + "' found");
             return;
         }
 
         Query uneatenQuery = em.createQuery
             ("select r from Rabbit r where r.isDead = false");
-        Random random = new Random ();
+        Random random = new Random();
         for (Snake snake : results)
         {
             // Run a query for a rabbit whose 'isDead' field indicates
             // that it is alive.
-            List&lt;Rabbit&gt; menu = uneatenQuery.getResultList ();
-            if (menu.isEmpty ())
+            List&lt;Rabbit&gt; menu = uneatenQuery.getResultList();
+            if (menu.isEmpty())
             {
-                System.out.println ("No live rabbits in DB.");
+                System.out.println("No live rabbits in DB.");
                 break;
             }
 
             // Select a random rabbit from the list.
-            Rabbit dinner = menu.get (random.nextInt (menu.size ()));
+            Rabbit dinner = menu.get(random.nextInt(menu.size()));
 
             // Perform the eating.
-            System.out.println (snake + " is eating:");
-            snake.eat (dinner);
+            System.out.println(snake + " is eating:");
+            snake.eat(dinner);
         }
 
-        em.getTransaction ().commit ();
+        em.getTransaction().commit();
     }
 
 
-    public static void main (String[] args)
+    public static void main(String[] args)
     {
-        if (args.length == 2 &amp;&amp; args[0].equals ("eat"))
+        if (args.length == 2 &amp;&amp; args[0].equals("eat"))
         {
             EntityManagerFactory emf = Persistence.
-                createEntityManagerFactory (null);
-            EntityManager em = emf.createEntityManager ();
-            eat (em, args[1]);
-            em.close ();
-            emf.close ();
+                createEntityManagerFactory(null);
+            EntityManager em = emf.createEntityManager();
+            eat(em, args[1]);
+            em.close();
+            emf.close();
             return;
         }
 
         // If we get here, something went wrong.
-        System.out.println ("Usage:");
-        System.out.println ("  java tutorial.persistence.Snake eat "
+        System.out.println("Usage:");
+        System.out.println("  java tutorial.persistence.Snake eat "
             + "\"snakequery\"");
     }
 </programlisting>
@@ -1095,13 +1095,13 @@ a getter and setter.
 
     ...
 
-    public Snake getEater ()
+    public Snake getEater()
     {
         return eater;
     }
 
 
-    public void setEater (Snake snake)
+    public void setEater(Snake snake)
     {
         eater = snake;
     }
