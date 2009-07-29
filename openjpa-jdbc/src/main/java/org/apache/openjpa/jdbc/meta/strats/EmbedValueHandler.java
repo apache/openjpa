@@ -247,8 +247,11 @@ public abstract class EmbedValueHandler
                 embed.loadEmbedded(em, store, fetch, cval);
             else {
                 if (!(em instanceof ObjectIdStateManager))
-                cval = embed.toEmbeddedObjectValue(cval);
-                em.store(fms[i].getIndex(), cval);
+                    cval = embed.toEmbeddedObjectValue(cval);
+                if (fms[i].getHandler() != null)
+                    cval = fms[i].getHandler().toObjectValue(fms[i], cval);
+
+                em.store(fms[i].getIndex(), cval); 
             }
         }
         return idx;

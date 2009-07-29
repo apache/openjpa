@@ -86,7 +86,8 @@ public class TestMappedById extends SingleEMFTestCase {
             Person2.class, Person3.class, MedicalHistory3.class, 
             Person4.class, PersonId4.class, MedicalHistory4.class,
             Dependent3.class, Employee3.class, DependentId3.class, 
-            Parent3.class, Dependent4.class, Employee4.class);
+            Parent3.class, Dependent4.class, Employee4.class,
+            BeneContact.class, BeneContactId.class, Beneficiary.class);
     }
 
     /**
@@ -736,5 +737,30 @@ public class TestMappedById extends SingleEMFTestCase {
             e.addChild(d);
         }
         return e;
+    }
+    
+    public void testEnumInEmbeddedId() {
+        EntityManager em = emf.createEntityManager();
+        Beneficiary b = new Beneficiary();
+        b.setId("b8");
+        List<BeneContact> contacts = new ArrayList<BeneContact>();
+        BeneContact c = new BeneContact();
+        c.setEmail("email8");
+        BeneContactId id = new BeneContactId();
+        id.setContactType(BeneContactId.ContactType.HOME);
+        c.setBeneficiary(b);
+        
+        c.setId(id);
+        em.persist(c);
+        contacts.add(c);
+        b.setContacts(contacts);
+        em.persist(b);
+        em.getTransaction().begin();
+        em.flush();
+        em.getTransaction().commit();
+        em.clear();
+        BeneContactId id1 = c.getId();
+        BeneContact c1 = em.find(BeneContact.class, id1);
+        assertEquals("email8", c1.getEmail());
     }
 }
