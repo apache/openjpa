@@ -99,7 +99,42 @@ public abstract class CriteriaTest extends TestCase {
             Student.class,
             TransactionHistory.class,
             Transaction.class,
-            VideoStore.class};
+            VideoStore.class,
+            org.apache.openjpa.persistence.embed.Company1.class,
+            org.apache.openjpa.persistence.embed.Company2.class,
+            org.apache.openjpa.persistence.embed.Department1.class,
+            org.apache.openjpa.persistence.embed.Department2.class,
+            org.apache.openjpa.persistence.embed.Department3.class,
+            org.apache.openjpa.persistence.embed.Division.class,
+            org.apache.openjpa.persistence.embed.Embed.class,
+            org.apache.openjpa.persistence.embed.Embed_Coll_Embed.class,
+            org.apache.openjpa.persistence.embed.Embed_Coll_Integer.class,
+            org.apache.openjpa.persistence.embed.Embed_Embed.class,
+            org.apache.openjpa.persistence.embed.Embed_Embed_ToMany.class,
+            org.apache.openjpa.persistence.embed.Embed_MappedToOne.class,
+            org.apache.openjpa.persistence.embed.Embed_ToMany.class,
+            org.apache.openjpa.persistence.embed.Embed_ToOne.class,
+            org.apache.openjpa.persistence.embed.Employee1.class,
+            org.apache.openjpa.persistence.embed.Employee2.class,
+            org.apache.openjpa.persistence.embed.Employee3.class,
+            org.apache.openjpa.persistence.embed.EmployeeName3.class,
+            org.apache.openjpa.persistence.embed.EmployeePK2.class,
+            org.apache.openjpa.persistence.embed.EntityA_Coll_Embed_Embed.class,
+            org.apache.openjpa.persistence.embed.EntityA_Coll_Embed_ToOne.class,
+            org.apache.openjpa.persistence.embed.EntityA_Coll_String.class,
+            org.apache.openjpa.persistence.embed.EntityA_Embed_Coll_Embed.class,
+            org.apache.openjpa.persistence.embed.EntityA_Embed_Coll_Integer.class,
+            org.apache.openjpa.persistence.embed.EntityA_Embed_Embed.class,
+            org.apache.openjpa.persistence.embed.EntityA_Embed_Embed_ToMany.class,
+            org.apache.openjpa.persistence.embed.EntityA_Embed_MappedToOne.class,
+            org.apache.openjpa.persistence.embed.EntityA_Embed_ToMany.class,
+            org.apache.openjpa.persistence.embed.EntityA_Embed_ToOne.class,
+            org.apache.openjpa.persistence.embed.EntityB1.class,
+            org.apache.openjpa.persistence.embed.Item1.class,
+            org.apache.openjpa.persistence.embed.Item2.class,
+            org.apache.openjpa.persistence.embed.Item3.class,
+            org.apache.openjpa.persistence.embed.VicePresident.class        
+    };
     
     protected Class[] getDomainClasses() {
         return CLASSES;
@@ -288,6 +323,58 @@ public abstract class CriteriaTest extends TestCase {
         if (!jSql.equals(expectedSQL)) {
             printSQL("SQL for JPQL", jSql);
             assertEquals(expectedSQL, jSql);
+        }
+    }
+
+    void executeExpectFail(CriteriaQuery<?> c, String jpql) {
+        List<String> cSQL = null;
+        StringWriter w = new StringWriter();
+        try {
+            Query cQ = em.createQuery(c);
+            cSQL = executeQueryAndCollectSQL(cQ);
+            fail("CriteriaQuery corresponding to " + jpql + " is expected to fail\r\n" + w);
+        } catch (Exception e) {
+            e.printStackTrace(new PrintWriter(w));
+        }
+    }
+    
+    void executeExpectFail(CriteriaQuery<?> c, String jpql, String[] paramNames, Object[] params) {
+        List<String> cSQL = null;
+        StringWriter w = new StringWriter();
+        try {
+            Query cQ = em.createQuery(c);
+            for (int i = 0; i < params.length; i++)
+                cQ.setParameter(paramNames[i], params[i]);
+            cSQL = executeQueryAndCollectSQL(cQ);
+            fail("CriteriaQuery corresponding to " + jpql + " is expected to fail\r\n" + w);
+        } catch (Exception e) {
+            e.printStackTrace(new PrintWriter(w));
+        }
+    }
+    
+    void executeExpectFail(String jpql) {
+        List<String> jSQL = null;
+        StringWriter w = new StringWriter();
+        try {
+            Query jQ = em.createQuery(jpql);
+            jSQL = executeQueryAndCollectSQL(jQ);
+            fail("JPQL " + jpql + " is expected to Failed to execute\r\n" + w);
+        } catch (Exception e) {
+            e.printStackTrace(new PrintWriter(w));
+        }
+    }
+
+    void executeExpectFail(String jpql, String[] paramNames, Object[] params) {
+        List<String> jSQL = null;
+        StringWriter w = new StringWriter();
+        try {
+            Query jQ = em.createQuery(jpql);
+            for (int i = 0; i < params.length; i++)
+                jQ.setParameter(paramNames[i], params[i]);
+            jSQL = executeQueryAndCollectSQL(jQ);
+            fail("JPQL " + jpql + " is expected to Failed to execute\r\n" + w);
+        } catch (Exception e) {
+            e.printStackTrace(new PrintWriter(w));
         }
     }
 

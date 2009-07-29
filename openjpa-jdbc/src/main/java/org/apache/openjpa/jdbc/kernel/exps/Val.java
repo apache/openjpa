@@ -51,6 +51,12 @@ public interface Val
      */
     public final int FORCE_OUTER = 2 << 2; 
 
+    /**
+     * Initialization flag indicating to this value is for compare/equal 
+     * path.
+     */
+    public final int CMP_EQUAL = 2 << 3; 
+
     public final int VAL = 0;
     public final int MATH_VAL = 1;
     public final int CONCAT_VAL = 2;

@@ -73,6 +73,12 @@ abstract class CompareEqualExpression
             if (direct && ((Const) _val2).getValue(ctx, s2) == null)
                 flags1 = Val.NULL_CMP;
         }
+
+        if (_val1 instanceof PCPath && _val2 instanceof PCPath &&
+            (((PCPath)_val1).isSubqueryPath() || ((PCPath)_val2).isSubqueryPath())) {
+            flags1 = flags1 | Val.CMP_EQUAL;
+            flags2 = flags2 | Val.CMP_EQUAL;
+        }
         
         if (s1 == null)
             s1 = _val1.initialize(sel, ctx, flags1);

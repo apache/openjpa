@@ -313,14 +313,15 @@ public class PCPath
                 case JavaTypes.ARRAY:
                 case JavaTypes.COLLECTION:
                     ValueMapping elem = pstate.field.getElementMapping();
-                    if (pstate.field.isElementCollection() &&
-                        pstate.field.getElement().isEmbedded()) {
+                    if (pstate.field.isElementCollection() && pstate.field.getElement().isEmbedded()) {
                         Strategy strategy = pstate.field.getStrategy();
-                        if (strategy instanceof
-                            HandlerCollectionTableFieldStrategy)
-                            return ((HandlerCollectionTableFieldStrategy)
-                                strategy).getElementColumns(
-                                elem.getTypeMapping());
+                        if (strategy instanceof HandlerCollectionTableFieldStrategy) {
+                            if (pstate.compareEqual)
+                                return pstate.field.getJoinForeignKey().getColumns();
+                            return ((HandlerCollectionTableFieldStrategy) strategy).
+                                getElementColumns(elem.getTypeMapping());
+                            
+                        }
                     }
                     if (pstate.joinedRel && elem.getTypeCode() == JavaTypes.PC)
                         return elem.getTypeMapping().getPrimaryKeyColumns();
@@ -473,6 +474,7 @@ public class PCPath
 
     public ExpState initialize(Select sel, ExpContext ctx, int flags) {
         PathExpState pstate = new PathExpState(sel.newJoins());
+        pstate.compareEqual = (flags & Val.CMP_EQUAL) != 0 ? true : false;
         boolean key = false;
         boolean forceOuter = false;
         ClassMapping rel = _candidate;
@@ -743,7 +745,8 @@ public class PCPath
         public Column[] cols = null;
         public boolean joinedRel = false;
         public boolean isEmbedElementColl = false;
-
+        public boolean compareEqual = false;
+        
         public PathExpState(Joins joins) {
             super(joins);
         }
@@ -1038,6 +1041,13 @@ public class PCPath
             sql.append(TRUE);
         else
             pstate.field.appendIsNotNull(sql, sel, pstate.joins);
+    }
+    
+    public boolean isSubqueryPath() {
+        if (_actions != null && _actions.size() == 1 && 
+           ((Action)_actions.get(0)).op == Action.SUBQUERY)
+            return true;
+        return false;
     }
 
     public int hashCode() {
