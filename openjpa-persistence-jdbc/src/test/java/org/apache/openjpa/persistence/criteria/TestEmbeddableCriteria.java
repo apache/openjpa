@@ -803,7 +803,7 @@ public class TestEmbeddableCriteria extends CriteriaTest {
         String expectedSQL = "SELECT t1.element, t0.intVal2 " + 
         "FROM TBL5A t0 INNER JOIN TBL5A_otherIntVals t1 ON t0.id = t1.EMBED_COLL_INTEGER_ID WHERE (EXISTS (" + 
         "SELECT t2.id FROM TBL5A t2 INNER JOIN TBL5A_otherIntVals t3 ON t2.id = t3.EMBED_COLL_INTEGER_ID WHERE " + 
-        "(t3.element > ? AND 1 = 1) ) AND 1 = 1) ORDER BY t1.element ASC";
+        "(t3.element > ? AND 1 = 1)) AND 1 = 1) ORDER BY t1.element ASC";
 
         executeAndCompareSQL(q, expectedSQL);
         
@@ -1034,7 +1034,7 @@ public class TestEmbeddableCriteria extends CriteriaTest {
             "FROM TBL1A t0 INNER JOIN TBL1A_embeds t1 ON t0.id = t1.ENTITYA_COLL_EMBED_EMBED_ID WHERE " + 
             "(t1.intVal1 < ANY (" + 
             "SELECT t3.intVal2 FROM TBL1A t2 " +
-            "INNER JOIN TBL1A_embeds t3 ON t2.id = t3.ENTITYA_COLL_EMBED_EMBED_ID )) " + 
+            "INNER JOIN TBL1A_embeds t3 ON t2.id = t3.ENTITYA_COLL_EMBED_EMBED_ID)) " + 
             "ORDER BY t1.intVal3 ASC";
         
         executeAndCompareSQL(q, expectedSQL);
@@ -1061,7 +1061,7 @@ public class TestEmbeddableCriteria extends CriteriaTest {
             "FROM TBL1A t0 INNER JOIN TBL1A_embeds t1 ON t0.id = t1.ENTITYA_COLL_EMBED_EMBED_ID WHERE "  +
             "(t1.intVal1 < ALL (" + 
             "SELECT t3.intVal2 FROM TBL1A t2 " +
-            "INNER JOIN TBL1A_embeds t3 ON t2.id = t3.ENTITYA_COLL_EMBED_EMBED_ID )) " + 
+            "INNER JOIN TBL1A_embeds t3 ON t2.id = t3.ENTITYA_COLL_EMBED_EMBED_ID)) " + 
             "ORDER BY t1.intVal3 ASC";
         executeAndCompareSQL(q, expectedSQL);
         
@@ -1086,7 +1086,7 @@ public class TestEmbeddableCriteria extends CriteriaTest {
         String expectedSQL = "SELECT t1.IntVal1x, t1.IntVal2x, t1.IntVal3x, t1.intVal1, t1.intVal2, t1.intVal3 " + 
         "FROM TBL1A t0 INNER JOIN TBL1A_embeds t1 ON t0.id = t1.ENTITYA_COLL_EMBED_EMBED_ID " +
         "WHERE (t1.intVal1 <= ANY (" + 
-        "SELECT t3.intVal2 FROM TBL1A t2 INNER JOIN TBL1A_embeds t3 ON t2.id = t3.ENTITYA_COLL_EMBED_EMBED_ID )) " + 
+        "SELECT t3.intVal2 FROM TBL1A t2 INNER JOIN TBL1A_embeds t3 ON t2.id = t3.ENTITYA_COLL_EMBED_EMBED_ID)) " + 
         "ORDER BY t1.intVal3 ASC";
     
         executeAndCompareSQL(q, expectedSQL);
@@ -1110,7 +1110,7 @@ public class TestEmbeddableCriteria extends CriteriaTest {
         String expectedSQL = "SELECT t1.IntVal1x, t1.IntVal2x, t1.IntVal3x, t1.intVal1, t1.intVal2, t1.intVal3 " + 
         "FROM TBL1A t0 INNER JOIN TBL1A_embeds t1 ON t0.id = t1.ENTITYA_COLL_EMBED_EMBED_ID WHERE " + 
         "(t1.intVal1 > ALL (" + 
-        "SELECT t3.intVal2 FROM TBL1A t2 INNER JOIN TBL1A_embeds t3 ON t2.id = t3.ENTITYA_COLL_EMBED_EMBED_ID )) " + 
+        "SELECT t3.intVal2 FROM TBL1A t2 INNER JOIN TBL1A_embeds t3 ON t2.id = t3.ENTITYA_COLL_EMBED_EMBED_ID)) " + 
         "ORDER BY t1.intVal3 ASC";
     
         executeAndCompareSQL(q, expectedSQL);
@@ -1134,7 +1134,7 @@ public class TestEmbeddableCriteria extends CriteriaTest {
         String expectedSQL = "SELECT t1.IntVal1x, t1.IntVal2x, t1.IntVal3x, t1.intVal1, t1.intVal2, t1.intVal3 " + 
         "FROM TBL1A t0 INNER JOIN TBL1A_embeds t1 ON t0.id = t1.ENTITYA_COLL_EMBED_EMBED_ID WHERE " + 
         "(t1.intVal1 < ANY (SELECT t2.intVal2 FROM  TBL1A_embeds t2, TBL1A t3 " + 
-        "WHERE (t2.ENTITYA_COLL_EMBED_EMBED_ID = t3.id) AND (t0.id = t2.ENTITYA_COLL_EMBED_EMBED_ID) )) " +
+        "WHERE (t2.ENTITYA_COLL_EMBED_EMBED_ID = t3.id) AND (t0.id = t2.ENTITYA_COLL_EMBED_EMBED_ID))) " +
         "ORDER BY t1.intVal3 ASC";
         executeAndCompareSQL(q, expectedSQL);
         //assertEquivalence(q, jpql);
@@ -1159,7 +1159,7 @@ public class TestEmbeddableCriteria extends CriteriaTest {
         String expectedSQL = "SELECT t1.IntVal1x, t1.IntVal2x, t1.IntVal3x, t1.intVal1, t1.intVal2, t1.intVal3 " + 
         "FROM TBL1A t0 INNER JOIN TBL1A_embeds t1 ON t0.id = t1.ENTITYA_COLL_EMBED_EMBED_ID WHERE " + 
         "(t1.intVal1 < ALL (SELECT t2.intVal2 FROM  TBL1A_embeds t2, TBL1A t3 " + 
-        "WHERE (t2.ENTITYA_COLL_EMBED_EMBED_ID = t3.id) AND (t0.id = t2.ENTITYA_COLL_EMBED_EMBED_ID) )) " + 
+        "WHERE (t2.ENTITYA_COLL_EMBED_EMBED_ID = t3.id) AND (t0.id = t2.ENTITYA_COLL_EMBED_EMBED_ID))) " + 
         "ORDER BY t1.intVal3 ASC";
         executeAndCompareSQL(q, expectedSQL);
     }
@@ -1183,7 +1183,7 @@ public class TestEmbeddableCriteria extends CriteriaTest {
         String expectedSQL = "SELECT t1.IntVal1x, t1.IntVal2x, t1.IntVal3x, t1.intVal1, t1.intVal2, t1.intVal3 " + 
         "FROM TBL1A t0 INNER JOIN TBL1A_embeds t1 ON t0.id = t1.ENTITYA_COLL_EMBED_EMBED_ID WHERE " + 
         "(t1.intVal1 <= ANY (SELECT t2.intVal2 FROM  TBL1A_embeds t2, TBL1A t3 " + 
-        "WHERE (t2.ENTITYA_COLL_EMBED_EMBED_ID = t3.id) AND (t0.id = t2.ENTITYA_COLL_EMBED_EMBED_ID) )) " + 
+        "WHERE (t2.ENTITYA_COLL_EMBED_EMBED_ID = t3.id) AND (t0.id = t2.ENTITYA_COLL_EMBED_EMBED_ID))) " + 
         "ORDER BY t1.intVal3 ASC";
         executeAndCompareSQL(q, expectedSQL);
     }
@@ -1207,7 +1207,7 @@ public class TestEmbeddableCriteria extends CriteriaTest {
         String expectedSQL = "SELECT t1.IntVal1x, t1.IntVal2x, t1.IntVal3x, t1.intVal1, t1.intVal2, t1.intVal3 " + 
         "FROM TBL1A t0 INNER JOIN TBL1A_embeds t1 ON t0.id = t1.ENTITYA_COLL_EMBED_EMBED_ID WHERE " + 
         "(t1.intVal1 > ALL (SELECT t2.intVal2 FROM  TBL1A_embeds t2, TBL1A t3 " + 
-        "WHERE (t2.ENTITYA_COLL_EMBED_EMBED_ID = t3.id) AND (t0.id = t2.ENTITYA_COLL_EMBED_EMBED_ID) )) " + 
+        "WHERE (t2.ENTITYA_COLL_EMBED_EMBED_ID = t3.id) AND (t0.id = t2.ENTITYA_COLL_EMBED_EMBED_ID))) " + 
         "ORDER BY t1.intVal3 ASC";
         executeAndCompareSQL(q, expectedSQL);
     }
@@ -1342,7 +1342,7 @@ public class TestEmbeddableCriteria extends CriteriaTest {
         String expectedSQL = "SELECT t3.A1, t3.A2, t3.A3 " + 
         "FROM TBL4A t2 INNER JOIN TBL4A_embeds t3 ON t2.id = t3.EMBED_COLL_EMBED_ID WHERE (" + 
         "EXISTS (SELECT t1.A1 FROM TBL4A t0 INNER JOIN TBL4A_embeds t1 ON t0.id = t1.EMBED_COLL_EMBED_ID " + 
-        "WHERE (t1.A2 = ? AND 1 = 1) ) AND 1 = 1) ORDER BY t3.A1 ASC, t3.A2 ASC, t3.A3 ASC";
+        "WHERE (t1.A2 = ? AND 1 = 1)) AND 1 = 1) ORDER BY t3.A1 ASC, t3.A2 ASC, t3.A3 ASC";
 
         executeAndCompareSQL(q, expectedSQL);
 

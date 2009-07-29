@@ -241,8 +241,6 @@ public abstract class CriteriaTest extends TestCase {
     void executeAndCompareSQL(String jpql, String expectedSQL) {
         JDBCConfiguration conf = (JDBCConfiguration) emf.getConfiguration();
         DBDictionary dict = conf.getDBDictionaryInstance();
-        if (!(dict instanceof DerbyDictionary))
-            return;
 
         Query jQ = em.createQuery(jpql);
 
@@ -257,6 +255,9 @@ public abstract class CriteriaTest extends TestCase {
         
         printSQL("Target SQL for JPQL", jSQL);
         
+        if (!(dict instanceof DerbyDictionary))
+            return;
+
         for (int i = 0; i < jSQL.size(); i++) {
             if (!jSQL.get(i).equals(expectedSQL)) {
                 printSQL("SQL for JPQL", jSQL.get(i));
@@ -270,8 +271,6 @@ public abstract class CriteriaTest extends TestCase {
     void executeAndCompareSQL(Query jQ, String expectedSQL) {
         JDBCConfiguration conf = (JDBCConfiguration) emf.getConfiguration();
         DBDictionary dict = conf.getDBDictionaryInstance();
-        if (!(dict instanceof DerbyDictionary))
-            return;
 
         List<String> jSQL = null;
         try {
@@ -281,6 +280,9 @@ public abstract class CriteriaTest extends TestCase {
             e.printStackTrace(new PrintWriter(w));
         }
         
+        if (!(dict instanceof DerbyDictionary))
+            return;
+
         printSQL("Expected SQL", expectedSQL);
         String jSql = jSQL.get(0).trim();
         if (jSql.indexOf("optimize for 1 row") != -1)
