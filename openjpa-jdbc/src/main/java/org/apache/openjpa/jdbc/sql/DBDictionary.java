@@ -143,7 +143,7 @@ public class DBDictionary
     private static final String ZERO_TIMESTAMP_STR =
         "'" + new Timestamp(0) + "'";
 
-    private static final Localizer _loc = Localizer.forPackage
+    protected static final Localizer _loc = Localizer.forPackage
         (DBDictionary.class);
 
     // schema data
@@ -304,6 +304,7 @@ public class DBDictionary
     protected JDBCConfiguration conf = null;
     protected Log log = null;
     protected boolean connected = false;
+    protected boolean isJDBC3 = false;
     protected final Set reservedWordSet = new HashSet();
     protected final Set systemSchemaSet = new HashSet();
     protected final Set systemTableSet = new HashSet();
@@ -355,15 +356,30 @@ public class DBDictionary
      */
     public void connectedConfiguration(Connection conn)
         throws SQLException {
-        if (!connected) {
+        DatabaseMetaData metaData = null;
+        try {
+            metaData = conn.getMetaData();
+            // JDBC3-only method, so it might throw a
+            // AbstractMethodError
             try {
-                if (log.isTraceEnabled())
-                    log.trace(DBDictionaryFactory.toString
-                        (conn.getMetaData()));
-            } catch (Exception e) {
-                log.trace(e.toString(), e);
+                isJDBC3 = metaData.getJDBCMajorVersion() >= 3;
+            } catch (Throwable t) {
+                // ignore if not JDBC3
             }
+        } catch (Exception e) {
+            if (log.isTraceEnabled())
+                log.trace(e.toString(), e);
         }
+        
+        if (log.isTraceEnabled()) {
+            log.trace(DBDictionaryFactory.toString(metaData));
+            if (isJDBC3)
+                log.trace(_loc.get("connection-defaults", new Object[]{
+                        new Boolean(conn.getAutoCommit()), 
+                        new Integer(conn.getHoldability()),
+                        new Integer(conn.getTransactionIsolation())}));
+        }
+        
         connected = true;
     }
 

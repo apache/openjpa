@@ -122,7 +122,6 @@ public class InformixDictionary
         }));
 
         supportsQueryTimeout = false;
-        supportsMultipleNontransactionalResultSets = false;
         supportsLockingWithDistinctClause = false;
         supportsLockingWithMultipleTables = false;
         supportsLockingWithOrderClause = false;
@@ -147,6 +146,14 @@ public class InformixDictionary
                 driverVendor = VENDOR_DATADIRECT;
             else
                 driverVendor = VENDOR_OTHER;
+        }
+        if (isJDBC3) {
+            conn.setHoldability(ResultSet.HOLD_CURSORS_OVER_COMMIT);
+            if (log.isTraceEnabled())
+                log.trace(_loc.get("connection-defaults", new Object[]{
+                        new Boolean(conn.getAutoCommit()), 
+                        new Integer(conn.getHoldability()),
+                        new Integer(conn.getTransactionIsolation())}));
         }
     }
 
