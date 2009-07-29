@@ -39,10 +39,11 @@ public class Context implements Serializable {
     public String schemaAlias;
     public Subquery subquery;
     public Expression from = null;
-    private Context parent = null;
+    public Context cloneFrom = null;
+    private final Context parent;
     private List<Context> subsels = null;
     private Object select = null;
-    private int aliasCount = -1; 
+    protected int aliasCount = -1; 
     private Map<String,Value> variables = new HashMap<String,Value>();
     private Map<String,ClassMetaData> schemas =
         new HashMap<String,ClassMetaData>();
@@ -120,7 +121,9 @@ public class Context implements Serializable {
      * Register the subquery context in this context.
      * @param sub
      */
-    private void addSubselContext(Context sub) {
+    public void addSubselContext(Context sub) {
+        if (sub == null)
+            return;
         if (subsels == null)
             subsels = new ArrayList<Context>();
         subsels.add(sub);
@@ -146,12 +149,16 @@ public class Context implements Serializable {
         return parent;
     }
 
-    public void setParent(Context parent) {
-        this.parent = parent;
-    }
-
     public void addVariable(String id, Value var) {
         variables.put(id.toLowerCase(), var);
+    }
+
+    public Map<String,Value> getVariables() {
+        return variables;
+    }
+
+    public void setVariables(Map<String,Value> variables) {
+        this.variables = variables;
     }
 
     public void addSchema(String id, ClassMetaData meta) {
@@ -164,14 +171,22 @@ public class Context implements Serializable {
         return null;
     }
 
+    public Map<String,ClassMetaData> getSchemas() {
+        return schemas;
+    }
+
+    public void setSchemas(Map<String,ClassMetaData> schemas) {
+        this.schemas = schemas;
+    }
+
     /**
      * Given an alias and return its associated variable.
-     * @param var
+     * @param alias
      * @return
      */
-    public Value getVariable(String var) {
-        Value variable = var == null ? null 
-            : variables.get(var.toLowerCase());
+    public Value getVariable(String alias) {
+        Value variable = alias == null ? null 
+            : variables.get(alias.toLowerCase());
         return variable;
     }
 

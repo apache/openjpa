@@ -22,6 +22,7 @@ import java.sql.SQLException;
 
 import org.apache.openjpa.jdbc.conf.JDBCConfiguration;
 import org.apache.openjpa.jdbc.kernel.JDBCFetchConfiguration;
+import org.apache.openjpa.jdbc.kernel.JDBCStoreQuery;
 import org.apache.openjpa.jdbc.meta.ClassMapping;
 import org.apache.openjpa.jdbc.meta.JavaSQLTypes;
 import org.apache.openjpa.jdbc.sql.Result;
@@ -119,9 +120,10 @@ public class SubQ
     }
 
     public ExpState initialize(Select sel, ExpContext ctx, int flags) {
-        _select.setParent(sel, null);
+        Select select = JDBCStoreQuery.getThreadLocalSelect(_select);
+        select.setParent(sel, null);
         if (_exps.projections.length == 1) {
-            return ((Val) _exps.projections[0]).initialize(_select, ctx, flags);
+            return ((Val) _exps.projections[0]).initialize(select, ctx, flags);
         }
         return ExpState.NULL;
     }

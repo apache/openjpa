@@ -26,6 +26,7 @@ import java.util.ListIterator;
 
 import org.apache.commons.lang.ObjectUtils;
 import org.apache.openjpa.jdbc.kernel.JDBCFetchConfiguration;
+import org.apache.openjpa.jdbc.kernel.JDBCStoreQuery;
 import org.apache.openjpa.jdbc.meta.ClassMapping;
 import org.apache.openjpa.jdbc.meta.Discriminator;
 import org.apache.openjpa.jdbc.meta.FieldMapping;
@@ -596,8 +597,10 @@ public class PCPath
                     break;
             }
             prevaction = action;
-            if (prevaction != null && prevaction.context != null) 
-                pstate.joins = pstate.joins.setJoinContext(prevaction.context);
+            if (prevaction != null && prevaction.context != null) {
+                Context jCtx = JDBCStoreQuery.getThreadLocalContext(prevaction.context);
+                pstate.joins = pstate.joins.setJoinContext(jCtx);
+            }
         }
         if (_varName != null)
             pstate.joins = pstate.joins.setVariable(_varName);
@@ -627,7 +630,7 @@ public class PCPath
         return pstate;
     }
     
-    public String findSubqAlias(Select sel) {
+    private String findSubqAlias(Select sel) {
         Select pSel = sel.getParent();
         if (pSel == null)
             return null;

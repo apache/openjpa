@@ -23,6 +23,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.openjpa.jdbc.kernel.JDBCStoreQuery;
 import org.apache.openjpa.jdbc.meta.ClassMapping;
 import org.apache.openjpa.jdbc.sql.DBDictionary;
 import org.apache.openjpa.jdbc.sql.Joins;
@@ -122,18 +123,28 @@ public class SelectConstructor
      */
     private Select newSelect(ExpContext ctx, Select parent,
         String alias, QueryExpressions exps, QueryExpressionsState state) {
-        Select sel = parent != null ? _subselect
+        Select subselect = JDBCStoreQuery.getThreadLocalSelect(_subselect);
+        Select sel = parent != null ? subselect
             : ctx.store.getSQLFactory().newSelect();
         sel.setAutoDistinct((exps.distinct & exps.DISTINCT_AUTO) != 0);
         sel.setJoinSyntax(ctx.fetch.getJoinSyntax());
         sel.setParent(parent, alias);
 
-        if (sel.ctx() == null)
-            sel.setContext(exps.ctx());
+        Context[] qryCtx = JDBCStoreQuery.getThreadLocalContext();
+        Context lctx = null;
+        for (int i = 0; i < qryCtx.length; i++) {
+            if (qryCtx[i].cloneFrom == exps.ctx()) {
+                lctx = qryCtx[i];
+                break;
+            }
+        }
 
-        if (parent == null && exps.ctx().getSubselContexts() != null) {
+        if (sel.ctx() == null)
+            sel.setContext(lctx);
+
+        if (parent == null && lctx.getSubselContexts() != null) {
             // this is the case subselect was created before parent got created
-            List<Context> subselCtxs = exps.ctx().getSubselContexts();
+            List<Context> subselCtxs = lctx.getSubselContexts();
             for (Context subselCtx : subselCtxs) {
                 Select subsel = (Select) subselCtx.getSelect();
                 Subquery subquery = subselCtx.getSubquery();

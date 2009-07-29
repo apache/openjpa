@@ -2214,36 +2214,15 @@ public class SelectImpl
     private static class Placeholder {
     }
     
-    public void reset() {
-        _aliases = null;
-        _eager = null;
-        _eagerKeys = null;
-        _expectedResultCount = 0;
-        _flags = 0;
-        _from = null;
-        _grouped = null;
-        _grouping = null;
-        _having = null;
-        _joins = null;
-        _joinSyntax = 0;
-        _nullIds = 0;
-        _ordered = null;
-        _ordering = null;
-        _orders = 0;
-        _outer = null;
-        _parent = null;
-        _placeholders = 0;
-        _preJoins = null;
-        _schemaAlias = null;
-        _selects._aliases = null;
-        _selects._ids = null;
-        _subPath = null;
-        _subsels = null;
-        _tables = null;
-        _where = null;
-        
+    public SelectImpl clone(Context ctx) {
+        SelectImpl sel = (SelectImpl) _conf.getSQLFactoryInstance().newSelect();
+        sel._ctx = ctx;
+        if (_parent != null && _parent.ctx() != null)
+            sel._parent = (SelectImpl)_parent.ctx().getSelect();
+        sel._schemaAlias = _schemaAlias;
+        sel._flags = _flags;
+        return sel;
     }
-    
 
     /**
      * Key type used for aliases.

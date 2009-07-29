@@ -1418,10 +1418,8 @@ public class JPQLExpressionBuilder
 
         // parse the subquery
         ParsedJPQL parsed = new ParsedJPQL(node.parser.jpql, node);
-        Context parent = ctx();
         Context subContext = new Context(parsed, null, ctx());
         contexts.push(subContext);
-        subContext.setParent(parent);
 
         ClassMetaData candidate = getCandidateMetaData(node);
         Subquery subq = subContext.getSubquery();
