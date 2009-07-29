@@ -65,6 +65,11 @@
             <groupId>net.sourceforge.serp</groupId>
             <artifactId>serp</artifactId>
         </dependency>
+        <dependency>
+            <groupId>org.apache.geronimo.specs</groupId>
+            <artifactId>geronimo-validation_1.0_spec</artifactId>
+            <scope>provided</scope>
+        </dependency>        
     </dependencies>
     <build>
         <plugins>

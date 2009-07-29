@@ -42,7 +42,11 @@ import java.security.PrivilegedAction;
 import java.security.PrivilegedExceptionAction;
 import java.util.Enumeration;
 import java.util.Properties;
+import java.util.Set;
 import java.util.zip.ZipFile;
+
+import javax.validation.ConstraintViolation;
+import javax.validation.Validator;
 
 import serp.bytecode.BCClass;
 import serp.bytecode.BCClassLoader;
@@ -106,6 +110,7 @@ import serp.bytecode.Project;
  * <li>AnnotatedElement.getAnnotations
  * <li>AnnotatedElement.getDeclaredAnnotations
  * <li>AnnotatedElement.isAnnotationPresent
+ * <li>javax.validationValidator.validate
  * </ul>
  * 
  * If these methods are used, the following sample usage patterns should be
@@ -1175,6 +1180,20 @@ public abstract class J2DoPrivHelper {
         return new PrivilegedAction<T>() {
             public T run() {
                 return (T) element.getAnnotation(annotationClazz);
+            }
+        };
+    }
+    
+    /**
+     * Return a PrivilegeAction object for javax.validationValidator.validate().
+     * 
+     * Requires security policy: 'permission java.lang.RuntimePermission "*";'
+     */
+    public static final <T> PrivilegedAction<Set<ConstraintViolation<T>>> validateAction(
+        final Validator validator, final T arg0, final Class<?>[] groups) {
+        return new PrivilegedAction<Set<ConstraintViolation<T>>>() {
+            public Set<ConstraintViolation<T>> run() {
+                return validator.validate(arg0, groups);
             }
         };
     }

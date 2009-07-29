@@ -18,6 +18,7 @@
  */
 package org.apache.openjpa.persistence.validation;
 
+import java.security.AccessController;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
@@ -33,6 +34,7 @@ import javax.validation.ValidatorFactory;
 import org.apache.openjpa.conf.OpenJPAConfiguration;
 import org.apache.openjpa.event.LifecycleEvent;
 import org.apache.openjpa.lib.conf.Configuration;
+import org.apache.openjpa.lib.util.J2DoPrivHelper;
 import org.apache.openjpa.lib.util.Localizer;
 import org.apache.openjpa.validation.AbstractValidator;
 import org.apache.openjpa.validation.ValidationException;
@@ -286,8 +288,9 @@ public class ValidatorImpl extends AbstractValidator {
     public <T> ValidationException validate(T arg0, int event) { 
         if (!isValidating(event))
             return null;
-        Set<ConstraintViolation<T>> violations = 
-            _validator.validate(arg0, getValidationGroup(event));
+        Set<ConstraintViolation<T>> violations = AccessController.doPrivileged(
+                J2DoPrivHelper.validateAction(_validator, arg0, getValidationGroup(event)));
+
         if (violations != null && violations.size() > 0) {
             return new ValidationException(
                 new ConstraintViolationException(
