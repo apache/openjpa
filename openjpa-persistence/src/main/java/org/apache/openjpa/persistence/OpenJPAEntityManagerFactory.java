@@ -23,6 +23,7 @@ import java.util.Map;
 
 import javax.persistence.EntityManagerFactory;
 
+import org.apache.openjpa.persistence.criteria.CriteriaBuilder;
 import org.apache.openjpa.persistence.query.QueryBuilder;
 
 /**
@@ -130,4 +131,11 @@ public interface OpenJPAEntityManagerFactory
      * Gets a builder for dynamic queries.
      */
     public QueryBuilder getDynamicQueryBuilder();
+    
+    /**
+     * Gets the QueryBuilder with OpenJPA-extended capabilities. 
+     * 
+     * @since 2.0.0
+     */
+    public CriteriaBuilder getQueryBuilder();
 }

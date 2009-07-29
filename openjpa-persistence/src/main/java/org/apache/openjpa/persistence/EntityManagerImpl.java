@@ -1566,7 +1566,7 @@ public class EntityManagerImpl
         return finalMap;
     }
 
-    public QueryBuilder getQueryBuilder() {
+    public CriteriaBuilder getQueryBuilder() {
         return _emf.getQueryBuilder();
     }
 

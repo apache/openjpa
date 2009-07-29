@@ -31,12 +31,15 @@ import javax.persistence.Tuple;
 import javax.persistence.criteria.CompoundSelection;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Expression;
+import javax.persistence.criteria.From;
 import javax.persistence.criteria.Order;
 import javax.persistence.criteria.ParameterExpression;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.QueryBuilder;
 import javax.persistence.criteria.Selection;
 import javax.persistence.criteria.Subquery;
+import javax.persistence.metamodel.Attribute;
+import javax.persistence.metamodel.ManagedType;
 
 import org.apache.openjpa.kernel.ExpressionStoreQuery;
 import org.apache.openjpa.kernel.exps.ExpressionFactory;
@@ -687,5 +690,46 @@ public class CriteriaBuilder implements QueryBuilder, ExpressionParser {
 
     public CompoundSelection<Tuple> tuple(Selection<?>... selections) {
         return new TupleSelection<Tuple>(Tuple.class, selections);
+    }
+    
+    /**
+     * Create a predicate based upon the attribute values of a given
+     * "example" entity instance. The predicate is the conjunction 
+     * or disjunction of predicates for subset of attribute of the entity.
+     * <br>
+     * By default, all the singular entity attributes (the basic, embedded
+     * and uni-cardinality relations) that have a non-null or non-default
+     * value for the example instance and are not an identity or version
+     * attribute are included. The comparable attributes can be further
+     * pruned by specifying variable list of attributes as the final argument.
+     * 
+     * @param example an instance of an entity class
+     * 
+     * @param style specifies various aspects of comparison such as whether
+     * non-null attribute values be included, how string-valued attribute be 
+     * compared, whether the individual attribute based predicates are ANDed
+     * or ORed etc.
+     * 
+     * @param excludes list of attributes that are excluded from comparison.
+     *  
+     * @return a predicate 
+     */
+    public <T> Predicate example(From<?, T> from, T example, ComparisonStyle style, Attribute<?,?>... excludes) {
+        if (from == null)
+            throw new NullPointerException();
+        if (example == null) {
+            return from.isNull();
+            
+        }
+        ManagedType<T> type = (ManagedType<T>)_model.type(example.getClass());
+        return new CompareByExample<T>(this, type, from, example, 
+            style == null ? comparisonStyle() : style, excludes);
+    }
+    
+    /**
+     * Create a style to tune different aspects of comparison by example. 
+     */
+    public ComparisonStyle comparisonStyle() {
+        return new ComparisonStyle.Default();
     }
 }

@@ -31,6 +31,7 @@ import org.apache.openjpa.kernel.AutoDetach;
 import org.apache.openjpa.kernel.ConnectionRetainModes;
 import org.apache.openjpa.kernel.DetachState;
 import org.apache.openjpa.kernel.RestoreState;
+import org.apache.openjpa.persistence.criteria.CriteriaBuilder;
 import org.apache.openjpa.persistence.query.QueryDefinition;
 
 /**
@@ -1141,4 +1142,12 @@ public interface OpenJPAEntityManager
      * instead: <code>em.getTransaction().getRollbackOnly()</code>
      */
     public boolean getRollbackOnly();
+    
+    /**
+     * Gets the QueryBuilder with OpenJPA-extended capabilities. 
+     * 
+     * @since 2.0.0
+     */
+    public CriteriaBuilder getQueryBuilder();
+
 }

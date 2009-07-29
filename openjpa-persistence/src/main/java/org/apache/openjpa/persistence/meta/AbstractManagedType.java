@@ -27,6 +27,7 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.Locale;
+import java.util.TreeSet;
 
 import javax.persistence.metamodel.Attribute;
 import javax.persistence.metamodel.CollectionAttribute;
@@ -186,7 +187,7 @@ public abstract class AbstractManagedType<X> extends Types.BaseType<X>
      * 
      */
     public java.util.Set<Attribute<X, ?>> getDeclaredAttributes() {
-        return filter(attrs, new HashSet<Attribute<X, ?>>(),
+        return filter(attrs, new TreeSet<Attribute<X, ?>>(),
                 declaredAttributeFilter);
     }
 
@@ -195,7 +196,7 @@ public abstract class AbstractManagedType<X> extends Types.BaseType<X>
      * 
      */
     public java.util.Set<SingularAttribute<? super X, ?>> getSingularAttributes() {
-        return filter(attrs, new HashSet<SingularAttribute<? super X, ?>>(),
+        return filter(attrs, new TreeSet<SingularAttribute<? super X, ?>>(),
                 singularAttributeFilter);
     }
 
@@ -204,7 +205,7 @@ public abstract class AbstractManagedType<X> extends Types.BaseType<X>
      * 
      */
     public java.util.Set<SingularAttribute<X, ?>> getDeclaredSingularAttributes() {
-        return filter(attrs, new HashSet<SingularAttribute<X, ?>>(),
+        return filter(attrs, new TreeSet<SingularAttribute<X, ?>>(),
                 declaredAttributeFilter, 
                 singularAttributeFilter);
     }

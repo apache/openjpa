@@ -364,7 +364,7 @@ public class EntityManagerFactoryImpl
         return getStoreCache();
     }
 
-    public QueryBuilder getQueryBuilder() {
+    public CriteriaBuilder getQueryBuilder() {
         return new CriteriaBuilder().setMetaModel(getMetamodel());
     }
     

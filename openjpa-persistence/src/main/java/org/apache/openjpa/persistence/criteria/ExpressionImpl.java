@@ -62,7 +62,7 @@ public abstract class ExpressionImpl<X> extends SelectionImpl<X>
      * @return expression
      */
     public <Y> Expression<Y> as(Class<Y> type) {
-       return new Expressions.CastAs<Y>(type, this);
+       return type == getJavaType() ? (Expression<Y>)this : new Expressions.CastAs<Y>(type, this);
     }
 
     /**

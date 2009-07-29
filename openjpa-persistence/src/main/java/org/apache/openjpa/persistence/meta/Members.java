@@ -52,7 +52,7 @@ public class Members {
      * @param <X> The type that contains this attribute
      * @param <Y> The type of this attribute
 	 */
-    public static abstract class Member<X, Y> implements Attribute<X, Y> {
+    public static abstract class Member<X, Y> implements Attribute<X, Y>, Comparable<Member<X,Y>> {
         public final AbstractManagedType<X> owner;
         public final FieldMetaData fmd;
 
@@ -129,6 +129,10 @@ public class Members {
             if (fmd.isElementCollection())
                 return PersistentAttributeType.ELEMENT_COLLECTION;
             return PersistentAttributeType.BASIC;
+        }
+
+        public int compareTo(Member<X, Y> o) {
+            return fmd.getName().compareTo(o.fmd.getName());
         }
     }
     
