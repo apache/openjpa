@@ -309,7 +309,7 @@ assertTrue(mag2 != mag1);
 // transaction
 Magazine mag3 = em.find(Magazine.class, magId);
 assertTrue(mag3 != mag1 &amp;&amp; mag3 != mag2);
-Magazine mag4 = em.find(Magazine.class (magId);
+Magazine mag4 = em.find(Magazine.class, magId);
 assertTrue(mag4 == mag3);
 ...
 
@@ -357,10 +357,10 @@ em.getTransaction().begin();
 // same persistence context active within the transaction
 Magazine mag3 = em.find(Magazine.class, magId);
 assertTrue(mag3 == mag1);
-Magazine mag4 = em.find(Magazine.class (magId);
+Magazine mag4 = em.find(Magazine.class, magId);
 assertTrue(mag4 == mag1);
 
-em.getTransaction.commit ();
+em.getTransaction.commit();
 
 // when the transaction commits, instance still managed
 Magazine mag5 = em.find(Magazine.class, magId);

@@ -115,7 +115,7 @@ result list will contain instances of the <classname>Magazine</classname> class.
             </para>
             <note>
                 <para>
-When selecting entities, you can optional use the keyword <literal>object
+When selecting entities, you can optionally use the keyword <literal>object
 </literal>. The clauses <literal>select x</literal> and <literal>SELECT
 OBJECT(x)</literal> are synonymous.
                 </para>
@@ -622,7 +622,7 @@ then execute the query with those values.
 public Query setParameter(String name, Object value);
 </programlisting>
             <para>
-Named parameter are denoted by prefixing an arbitrary name with a colon in your
+Named parameters are denoted by prefixing an arbitrary name with a colon in your
 JPQL string. You can then populate the <classname> Query</classname> object with
 parameter values using the method above. Like the positional parameter method,
 this method returns the <classname>Query</classname> instance for optional
@@ -810,7 +810,7 @@ Hints can also be included as part of a NamedQuery definition.
                  </title>
 <programlisting>
 ...
-@NamedQuery(name=" magsOverPrice",
+@NamedQuery(name="magsOverPrice",
 query="SELECT x FROM Magazine x WHERE x.price > ?1",
 hints={ @QueryHint  (name="openjpa.hint.OptimizeResultCount", value="2"),
         @QueryHint (name="openjpa.FetchPlan.ReadLockMode",value="WRITE")} )
@@ -1242,7 +1242,7 @@ SELECT DISTINCT mag FROM Magazine AS mag JOIN mag.articles AS art WHERE art.publ
 This query navigates over the association-field authors of the
 abstract schema type <literal>Magazine</literal> to find articles, and uses the
 state-field <literal>published</literal> of <literal>Article</literal> to select
-those magazines that have at least one article that is published. Although
+those magazines that have at least one article that is not published. Although
 predefined reserved identifiers, such as <literal>DISTINCT</literal>, <literal>
 FROM</literal>, <literal>AS</literal>, <literal>JOIN</literal>, <literal>
 WHERE</literal>, and <literal>FALSE</literal> appear in upper case in this 
@@ -2217,10 +2217,11 @@ semantically equivalent to: <programlisting>y &lt;= x AND x &lt;= z
 </programlisting> The rules for unknown and <literal>NULL</literal> values in
 comparison operations apply. See <xref linkend="jpa_langref_null_values"/>
 . Examples are: <programlisting>p.age BETWEEN 15 and 19</programlisting> is
-equivalent to <programlisting>p.age &gt;= 15 AND p.age &lt;= 19</programlisting>
+equivalent to: <programlisting>p.age &gt;= 15 AND p.age &lt;= 19</programlisting>
                 </para>
                 <para>
-<programlisting>p.age NOT BETWEEN 15 and 19</programlisting> is equivalent to
+The following expression:
+<programlisting>p.age NOT BETWEEN 15 and 19</programlisting> excludes the range, and is equivalent to:
 <programlisting>p.age &lt; 15 OR p.age &gt; 19</programlisting>
                 </para>
             </section>

@@ -67,7 +67,7 @@ additional utility methods.
     <para>
 Within a container, you will typically use <emphasis>injection</emphasis> to
 access an <classname>EntityManagerFactory</classname>. Applications operating
-of a container, however, can use the
+outside of a container, however, can use the
 <ulink url="http://java.sun.com/javaee/5/docs/api/javax/persistence/Persistence.html">
 <classname>Persistence</classname></ulink> class to obtain <classname>
 EntityManagerFactory</classname> objects in a vendor-neutral fashion.

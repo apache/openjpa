@@ -1020,7 +1020,7 @@ public Query createNativeQuery(String sql, String resultMapping);
 </programlisting>
         <para>
 <emphasis>Native</emphasis> queries are queries in the datastore's native
-language. For relational databases, this the Structured Query Language (SQL).
+language. For relational databases, this is the Structured Query Language (SQL).
 <xref linkend="jpa_overview_sqlquery"/> elaborates on JPA's
 native query support.
         </para>

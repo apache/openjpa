@@ -88,7 +88,7 @@ DomainObject order = customer.join("orders");
 		the domain objects and some variable. For example, to select the
 		Customers whose name is <emphasis>John Doe</emphasis> and has 
 		orders that are not yet delivered, you can build the predicate and set  
-		it to the query definition as
+		it to the query definition as:
 		<programlisting>
 qdef.where(customer.get("name").equal("John Doe")
       .and(order.get("status").equal(OrderStatus.DELIVERED).not()));
@@ -96,16 +96,16 @@ qdef.where(customer.get("name").equal("John Doe")
 		The <methodname>select()</methodname> method defines the result of the
 		query. If left unspecified, the select projection is assumed to be the
 		root domain object. However, you can specify the selected projections
-		explicitly as a list 
+		explicitly as a list:
 		<programlisting>
 qdef.select(customer.get("name"), order.get("status"));
 		</programlisting>
-		Attribute of a domain object is specified by navigating via 
+		An attribute of a domain object is specified by navigating via 
 		<methodname>get(String attr)</methodname>. The attribute 
 		<emphasis>should</emphasis> refer
 		to a valid persistent property of the receiving domain object, however
 		no such validation is enforced during the construction of the query 
-		definition. All validation is deferred till query is actually executed.
+		definition. All validation is deferred until the query is actually executed.
     	</para>
     </section> 
     
@@ -143,11 +143,11 @@ List result = query.getResultList();
     an equivalent JPQL query string via the extended OpenJPAQueryBuilder API.
     <programlisting>
     	public interface OpenJPAQueryBuilder extends QueryBuilder {
-			/**
-		 	 * Gets equivalent JPQL String for the given QueryDefinition.
-	 		*/
-			public String toJPQL(QueryDefinition qdef);
-		}
+		/**
+	 	 * Gets equivalent JPQL String for the given QueryDefinition.
+ 		*/
+		public String toJPQL(QueryDefinition qdef);
+	}
 	</programlisting>
     
     </para>
