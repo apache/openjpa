@@ -38,8 +38,6 @@ public class TestResWordEntity extends SingleEMFTestCase {
     public void testMultipleSchemafactories1() {
         OpenJPAEntityManagerFactorySPI emf = 
             createEMF(ResWordEntity.class,
-            "openjpa.ConnectionURL", 
-            "jdbc:derby:net://host:1527/databaseName",
             "openjpa.jdbc.SynchronizeMappings","buildSchema(ForeignKeys=true)", 
             "openjpa.jdbc.SchemaFactory","native(ForeignKeys=true)");
 
@@ -64,8 +62,6 @@ public class TestResWordEntity extends SingleEMFTestCase {
     public void testMultipleSchemafactories2() {
         OpenJPAEntityManagerFactorySPI emf = 
             createEMF(ResWordEntity.class,
-            "openjpa.ConnectionURL", 
-            "jdbc:derby:net://host:1527/databaseName",
             "openjpa.jdbc.SchemaFactory","native(ForeignKeys=true)",
             "openjpa.jdbc.SynchronizeMappings","buildSchema(ForeignKeys=true)");
 
@@ -90,8 +86,6 @@ public class TestResWordEntity extends SingleEMFTestCase {
     public void testMultipleSchemafactories3() {
         OpenJPAEntityManagerFactorySPI emf = 
             createEMF(ResWordEntity.class,
-            "openjpa.ConnectionURL", 
-            "jdbc:derby:net://host:1527/databaseName",
             "openjpa.jdbc.SynchronizeMappings","buildSchema(ForeignKeys=true)");
 
         EntityManager em = emf.createEntityManager();
@@ -115,8 +109,6 @@ public class TestResWordEntity extends SingleEMFTestCase {
     public void testMultipleSchemafactories4() {
         OpenJPAEntityManagerFactorySPI emf = 
             createEMF(ResWordEntity.class,
-            "openjpa.ConnectionURL", 
-            "jdbc:derby:net://host:1527/databaseName",
             "openjpa.jdbc.SchemaFactory","native(ForeignKeys=true)");
 
         EntityManager em = emf.createEntityManager();
