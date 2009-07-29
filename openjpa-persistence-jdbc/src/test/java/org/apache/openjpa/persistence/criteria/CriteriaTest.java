@@ -59,7 +59,7 @@ public abstract class CriteriaTest extends TestCase {
     protected static OpenJPAEntityManagerFactorySPI emf;
     protected static SQLAuditor auditor;
     
-    QueryBuilder cb;
+    CriteriaBuilder cb;
     EntityManager em;
     
     protected static Class[] CLASSES = {
@@ -100,40 +100,6 @@ public abstract class CriteriaTest extends TestCase {
             TransactionHistory.class,
             Transaction.class,
             VideoStore.class,
-            org.apache.openjpa.persistence.embed.Company1.class,
-            org.apache.openjpa.persistence.embed.Company2.class,
-            org.apache.openjpa.persistence.embed.Department1.class,
-            org.apache.openjpa.persistence.embed.Department2.class,
-            org.apache.openjpa.persistence.embed.Department3.class,
-            org.apache.openjpa.persistence.embed.Division.class,
-            org.apache.openjpa.persistence.embed.Embed.class,
-            org.apache.openjpa.persistence.embed.Embed_Coll_Embed.class,
-            org.apache.openjpa.persistence.embed.Embed_Coll_Integer.class,
-            org.apache.openjpa.persistence.embed.Embed_Embed.class,
-            org.apache.openjpa.persistence.embed.Embed_Embed_ToMany.class,
-            org.apache.openjpa.persistence.embed.Embed_MappedToOne.class,
-            org.apache.openjpa.persistence.embed.Embed_ToMany.class,
-            org.apache.openjpa.persistence.embed.Embed_ToOne.class,
-            org.apache.openjpa.persistence.embed.Employee1.class,
-            org.apache.openjpa.persistence.embed.Employee2.class,
-            org.apache.openjpa.persistence.embed.Employee3.class,
-            org.apache.openjpa.persistence.embed.EmployeeName3.class,
-            org.apache.openjpa.persistence.embed.EmployeePK2.class,
-            org.apache.openjpa.persistence.embed.EntityA_Coll_Embed_Embed.class,
-            org.apache.openjpa.persistence.embed.EntityA_Coll_Embed_ToOne.class,
-            org.apache.openjpa.persistence.embed.EntityA_Coll_String.class,
-            org.apache.openjpa.persistence.embed.EntityA_Embed_Coll_Embed.class,
-            org.apache.openjpa.persistence.embed.EntityA_Embed_Coll_Integer.class,
-            org.apache.openjpa.persistence.embed.EntityA_Embed_Embed.class,
-            org.apache.openjpa.persistence.embed.EntityA_Embed_Embed_ToMany.class,
-            org.apache.openjpa.persistence.embed.EntityA_Embed_MappedToOne.class,
-            org.apache.openjpa.persistence.embed.EntityA_Embed_ToMany.class,
-            org.apache.openjpa.persistence.embed.EntityA_Embed_ToOne.class,
-            org.apache.openjpa.persistence.embed.EntityB1.class,
-            org.apache.openjpa.persistence.embed.Item1.class,
-            org.apache.openjpa.persistence.embed.Item2.class,
-            org.apache.openjpa.persistence.embed.Item3.class,
-            org.apache.openjpa.persistence.embed.VicePresident.class        
     };
     
     protected Class[] getDomainClasses() {

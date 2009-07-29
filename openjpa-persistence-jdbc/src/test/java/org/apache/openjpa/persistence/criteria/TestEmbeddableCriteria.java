@@ -96,6 +96,47 @@ import org.apache.openjpa.persistence.test.AllowFailure;
 
 
 public class TestEmbeddableCriteria extends CriteriaTest {
+    protected static Class[] CLASSES = {
+    org.apache.openjpa.persistence.embed.Company1.class,
+    org.apache.openjpa.persistence.embed.Company2.class,
+    org.apache.openjpa.persistence.embed.Department1.class,
+    org.apache.openjpa.persistence.embed.Department2.class,
+    org.apache.openjpa.persistence.embed.Department3.class,
+    org.apache.openjpa.persistence.embed.Division.class,
+    org.apache.openjpa.persistence.embed.Embed.class,
+    org.apache.openjpa.persistence.embed.Embed_Coll_Embed.class,
+    org.apache.openjpa.persistence.embed.Embed_Coll_Integer.class,
+    org.apache.openjpa.persistence.embed.Embed_Embed.class,
+    org.apache.openjpa.persistence.embed.Embed_Embed_ToMany.class,
+    org.apache.openjpa.persistence.embed.Embed_MappedToOne.class,
+    org.apache.openjpa.persistence.embed.Embed_ToMany.class,
+    org.apache.openjpa.persistence.embed.Embed_ToOne.class,
+    org.apache.openjpa.persistence.embed.Employee1.class,
+    org.apache.openjpa.persistence.embed.Employee2.class,
+    org.apache.openjpa.persistence.embed.Employee3.class,
+    org.apache.openjpa.persistence.embed.EmployeeName3.class,
+    org.apache.openjpa.persistence.embed.EmployeePK2.class,
+    org.apache.openjpa.persistence.embed.EntityA_Coll_Embed_Embed.class,
+    org.apache.openjpa.persistence.embed.EntityA_Coll_Embed_ToOne.class,
+    org.apache.openjpa.persistence.embed.EntityA_Coll_String.class,
+    org.apache.openjpa.persistence.embed.EntityA_Embed_Coll_Embed.class,
+    org.apache.openjpa.persistence.embed.EntityA_Embed_Coll_Integer.class,
+    org.apache.openjpa.persistence.embed.EntityA_Embed_Embed.class,
+    org.apache.openjpa.persistence.embed.EntityA_Embed_Embed_ToMany.class,
+    org.apache.openjpa.persistence.embed.EntityA_Embed_MappedToOne.class,
+    org.apache.openjpa.persistence.embed.EntityA_Embed_ToMany.class,
+    org.apache.openjpa.persistence.embed.EntityA_Embed_ToOne.class,
+    org.apache.openjpa.persistence.embed.EntityB1.class,
+    org.apache.openjpa.persistence.embed.Item1.class,
+    org.apache.openjpa.persistence.embed.Item2.class,
+    org.apache.openjpa.persistence.embed.Item3.class,
+    org.apache.openjpa.persistence.embed.VicePresident.class
+    };       
+
+    @Override
+    protected Class[] getDomainClasses() {
+        return CLASSES;
+    }
 
     // can not translate to criteria
     @AllowFailure
