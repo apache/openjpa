@@ -28,7 +28,9 @@ import javax.persistence.criteria.Join;
 import javax.persistence.criteria.JoinType;
 import javax.persistence.criteria.ListJoin;
 import javax.persistence.criteria.MapJoin;
+import javax.persistence.criteria.Path;
 import javax.persistence.criteria.SetJoin;
+import javax.persistence.metamodel.Attribute;
 import javax.persistence.metamodel.CollectionAttribute;
 import javax.persistence.metamodel.ListAttribute;
 import javax.persistence.metamodel.MapAttribute;
@@ -38,6 +40,7 @@ import javax.persistence.metamodel.SingularAttribute;
 
 import org.apache.openjpa.persistence.meta.AbstractManagedType;
 import org.apache.openjpa.persistence.meta.Members;
+import org.apache.openjpa.persistence.meta.Members.Member;
 
 /**
  * Represents a bound type, usually an entity that appears in the from clause, 
@@ -249,5 +252,22 @@ public class FromImpl<Z,X> extends PathImpl<Z,X> implements From<Z,X> {
         _fetches.add(fetch);
         return fetch;
     }
+    
+    /**
+     * Return a path to the specified field.  
+     */
+    public <Y> Path<Y> get(String attName) {
+        Member<? super X, ?> member = null;
+        for (Attribute<? super X, ?> a : type.getAttributes()) { 
+            if(a instanceof Member<?, ?>){ 
+                if(a.getName().equals(attName)) { 
+                    member = ((Member<? super X,?>)a);
+                    break;
+                }
+            }
+        }
+        // TODO check for null member
+        return new PathImpl(this, member, (Class<X>) member.getJavaType());
+    }        
 
 }

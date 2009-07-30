@@ -19,13 +19,16 @@
 package org.apache.openjpa.persistence.criteria;
 
 import java.math.BigDecimal;
+import java.util.Set;
 
 import javax.persistence.Parameter;
 import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Expression;
 import javax.persistence.criteria.Join;
 import javax.persistence.criteria.JoinType;
 import javax.persistence.criteria.ListJoin;
 import javax.persistence.criteria.MapJoin;
+import javax.persistence.criteria.Path;
 import javax.persistence.criteria.Root;
 import javax.persistence.criteria.SetJoin;
 import javax.persistence.criteria.Subquery;
@@ -60,7 +63,6 @@ public class TestStringCriteria extends CriteriaTest {
         assertEquivalence(q, jpql);
     }
 
-    @AllowFailure
     public void testJoins2() {
         String jpql = "SELECT c FROM Customer c LEFT JOIN c.orders o WHERE "
                 + "c.status = 1";
@@ -101,7 +103,6 @@ public class TestStringCriteria extends CriteriaTest {
         assertEquivalence(q, jpql);
     }
 
-    @AllowFailure
     public void testKey() {
         String jpql = "SELECT i.name, p FROM Item i JOIN i.photos p "
                 + "WHERE KEY(p) LIKE '%egret%'";
@@ -115,7 +116,6 @@ public class TestStringCriteria extends CriteriaTest {
         assertEquivalence(q, jpql);
     }
 
-    @AllowFailure
     public void testRestrictQueryResult() {
         String jpql = "SELECT t FROM CreditCard c JOIN c.transactionHistory t "
                 + "WHERE c.customer.accountNum = 321987 AND INDEX(t) BETWEEN 0 "
@@ -204,19 +204,30 @@ public class TestStringCriteria extends CriteriaTest {
         String jpql = "SELECT e.name, CASE WHEN e.rating = 1 THEN e.salary * 1.1 "
                 + "WHEN e.rating = 2 THEN e.salary * 1.2 ELSE e.salary * 1.01 END "
                 + "FROM Employee e WHERE e.department.name = 'Engineering'";
-        CriteriaQuery q = cb.createQuery();
+        CriteriaQuery<Employee> q = cb.createQuery(Employee.class);
         Root<Employee> e = q.from(Employee.class);
         q.where(cb.equal(e.get("department").get("name"), "Engineering"));
         q.multiselect(e.get("name"), cb.selectCase().when(
-                cb.equal(e.get("rating"), 1), 1.1) // cb.prod(e.get("salary"),
-                                                   // 1.1))
-                .when(cb.equal(e.get("rating"), 2), 1.2) // cb.prod(e.get("salary"),
-                                                         // 1.2))
-                .otherwise(1.01)); // cb.prod(e.get("salary"), 1.01)));
-
+                cb.equal(e.get("rating"), 1), 1.1)       // cb.prod(e.get("salary"), 1.1))
+                .when(cb.equal(e.get("rating"), 2), 1.2) // cb.prod(e.get("salary"), 1.2))
+                .otherwise(1.01));                       // cb.prod(e.get("salary"), 1.01)));
         assertEquivalence(q, jpql);
     }
-
+//    
+//    public void testABCDEFG() {
+//        String jpql = "SELECT e.name, CASE WHEN e.rating = 1 THEN e.salary * 1.1 "
+//                + "WHEN e.rating = 2 THEN e.salary * 1.2 ELSE e.salary * 1.01 END "
+//                + "FROM Employee e WHERE e.department.name = 'Engineering'";
+//        CriteriaQuery<Employee> q = cb.createQuery(Employee.class);
+//        Root<Employee> e = q.from(Employee.class);
+//        q.where(cb.equal(e.get(Employee_.department).get(Department_.name), "Engineering"));
+//        q.multiselect(e.get(Employee_.name), cb.selectCase().when(
+//                cb.equal(e.get(Employee_.rating), 1), 1.1)       // cb.prod(e.get("salary"), 1.1))
+//                .when(cb.equal(e.get(Employee_.rating), 2), 1.2) // cb.prod(e.get("salary"), 1.2))
+//                .otherwise(1.01));                       // cb.prod(e.get("salary"), 1.01)));
+//        assertEquivalence(q, jpql);
+//    }
+    
     /*
      * @AllowFailure public void testLiterals() { String jpql =
      * "SELECT p FROM Person p where 'Joe' MEMBER OF " + "p.nickNames";
@@ -230,7 +241,7 @@ public class TestStringCriteria extends CriteriaTest {
     @AllowFailure
     public void testParameters() {
         String jpql = "SELECT c FROM Customer c Where c.status = :stat";
-        CriteriaQuery q = cb.createQuery();
+        CriteriaQuery<Customer> q = cb.createQuery(Customer.class);
         Root<Customer> c = q.from(Customer.class);
         Parameter<Integer> param = cb.parameter(Integer.class);
         q.select(c).where(cb.equal(c.get("status"), param));
@@ -284,7 +295,6 @@ public class TestStringCriteria extends CriteriaTest {
         assertEquivalence(q, jpql);
     }
 
-    @AllowFailure
     public void testSubquery2() {
         String jpql = "SELECT DISTINCT emp FROM Employee emp WHERE EXISTS ("
                 + "SELECT spouseEmp FROM Employee spouseEmp WHERE spouseEmp = "
@@ -319,7 +329,6 @@ public class TestStringCriteria extends CriteriaTest {
         assertEquivalence(q, jpql);
     }
 
-    @AllowFailure
     public void testSubquery4() {
         String jpql = "SELECT c FROM Customer c WHERE "
                 + "(SELECT COUNT(o) FROM c.orders o) > 10";
