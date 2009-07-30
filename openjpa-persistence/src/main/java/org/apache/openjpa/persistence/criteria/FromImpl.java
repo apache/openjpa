@@ -257,8 +257,9 @@ public class FromImpl<Z,X> extends PathImpl<Z,X> implements From<Z,X> {
      * Return a path to the specified field.  
      */
     public <Y> Path<Y> get(String attName) {
-        if (type == null)
+        if (type == null) {
             return super.get(attName);
+        }
         Member<? super X, ?> member = null;
         for (Attribute<? super X, ?> a : type.getAttributes()) { 
             if(a instanceof Member<?, ?>){ 
