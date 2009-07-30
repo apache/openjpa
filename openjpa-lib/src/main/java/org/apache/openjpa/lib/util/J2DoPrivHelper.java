@@ -46,7 +46,9 @@ import java.util.Set;
 import java.util.zip.ZipFile;
 
 import javax.validation.ConstraintViolation;
+import javax.validation.Validation;
 import javax.validation.Validator;
+import javax.validation.ValidatorFactory;
 
 import serp.bytecode.BCClass;
 import serp.bytecode.BCClassLoader;
@@ -110,7 +112,8 @@ import serp.bytecode.Project;
  * <li>AnnotatedElement.getAnnotations
  * <li>AnnotatedElement.getDeclaredAnnotations
  * <li>AnnotatedElement.isAnnotationPresent
- * <li>javax.validationValidator.validate
+ * <li>javax.validation.Validator.validate
+ * <li>javax.validation.Validation.buildDefaultValidatorFactory
  * </ul>
  * 
  * If these methods are used, the following sample usage patterns should be
@@ -1185,15 +1188,28 @@ public abstract class J2DoPrivHelper {
     }
     
     /**
-     * Return a PrivilegeAction object for javax.validationValidator.validate().
+     * Return a PrivilegeAction object for javax.validation.Validator.validate().
      * 
-     * Requires security policy: 'permission java.lang.RuntimePermission "*";'
+     * Requires security policy: 'permission java.lang.RuntimePermission "accessDeclaredMemeber";'
      */
     public static final <T> PrivilegedAction<Set<ConstraintViolation<T>>> validateAction(
         final Validator validator, final T arg0, final Class<?>[] groups) {
         return new PrivilegedAction<Set<ConstraintViolation<T>>>() {
             public Set<ConstraintViolation<T>> run() {
                 return validator.validate(arg0, groups);
+            }
+        };
+    }
+
+    /**
+     * Return a PrivilegeAction object for javax.validation.Validation.buildDefaultValidatorFactory().
+     * 
+     * Requires security policy: 'permission java.lang.RuntimePermission "createClassLoader";'
+     */
+    public static final <T> PrivilegedAction<ValidatorFactory> buildDefaultValidatorFactoryAction() {
+        return new PrivilegedAction<ValidatorFactory>() {
+            public ValidatorFactory run() {
+                return Validation.buildDefaultValidatorFactory();
             }
         };
     }

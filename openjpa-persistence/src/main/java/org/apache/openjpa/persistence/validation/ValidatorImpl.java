@@ -390,7 +390,7 @@ public class ValidatorImpl extends AbstractValidator {
     private ValidatorFactory getDefaultValidatorFactory() {
         ValidatorFactory factory = null;
         try {
-            factory = Validation.buildDefaultValidatorFactory();
+            factory = AccessController.doPrivileged(J2DoPrivHelper.buildDefaultValidatorFactoryAction());
         } catch (javax.validation.ValidationException e) {
             // no validation providers found
         }
