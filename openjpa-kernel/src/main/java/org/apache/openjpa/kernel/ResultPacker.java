@@ -18,6 +18,7 @@
  */
 package org.apache.openjpa.kernel;
 
+import java.lang.reflect.Array;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.Member;
@@ -108,7 +109,12 @@ public class ResultPacker {
     private ResultPacker(Class candidate, Class[] types, String[] aliases,
         Class resultClass) {
         _aliases = aliases;
-        if (resultClass.isPrimitive()) {
+        if (candidate == resultClass || resultClass.isArray()) {
+            _resultClass = resultClass;
+            _sets = null;
+            _put = null;
+            _constructor = null;
+        } else if (resultClass.isPrimitive()) {
             assertConvertable(candidate, types, resultClass);
             _resultClass = Filters.wrap(resultClass);
             _sets = null;
@@ -170,6 +176,8 @@ public class ResultPacker {
      * Pack the given object into an instance of the query's result class.
      */
     public Object pack(Object result) {
+        if (_resultClass == result.getClass())
+            return result;
         // special cases for efficient basic types where we want to avoid
         // creating an array for call to general pack method below
         if (_resultClass == Object.class)
@@ -207,6 +215,13 @@ public class ResultPacker {
                 return trim;
             }
             return result;
+        }
+        if (_resultClass.isArray()) {
+            Class<?> elementType = _resultClass.getComponentType();
+            Object castResult = Array.newInstance(elementType, result.length);
+            for (int i = 0; i < result.length; i++)
+                Array.set(castResult, i, elementType.cast(result[i]));
+            return castResult;
         }
         if (_resultClass == Object.class)
             return result[0];

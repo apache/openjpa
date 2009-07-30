@@ -29,6 +29,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.Stack;
 
+import javax.persistence.Tuple;
 import javax.persistence.criteria.AbstractQuery;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Expression;
@@ -46,6 +47,7 @@ import org.apache.openjpa.kernel.exps.Context;
 import org.apache.openjpa.kernel.exps.ExpressionFactory;
 import org.apache.openjpa.kernel.exps.QueryExpressions;
 import org.apache.openjpa.kernel.exps.Value;
+import org.apache.openjpa.persistence.TupleImpl;
 import org.apache.openjpa.persistence.meta.MetamodelImpl;
 import org.apache.openjpa.persistence.meta.Types;
 
@@ -75,6 +77,7 @@ public class CriteriaQueryImpl<T> implements CriteriaQuery<T>, AliasContext {
     private Boolean             _distinct;
     private SubqueryImpl<?>     _delegator;
     private final Class<T>      _resultClass;
+    private Class<?>            _runtimeResultClass;
     
     // AliasContext
     private int aliasCount = 0;
@@ -95,6 +98,7 @@ public class CriteriaQueryImpl<T> implements CriteriaQuery<T>, AliasContext {
     public CriteriaQueryImpl(MetamodelImpl model, Class<T> resultClass) {
         this._model = model;
         this._resultClass = resultClass;
+        _runtimeResultClass = Tuple.class.isAssignableFrom(resultClass) ? TupleImpl.class : resultClass;
         _aliases = new HashMap<Selection<?>, String>(); 
     }
     
@@ -180,6 +184,8 @@ public class CriteriaQueryImpl<T> implements CriteriaQuery<T>, AliasContext {
      * @return the modified query
      */
     public CriteriaQuery<T> multiselect(Selection<?>... selections) {
+        if (selections.length > 1 && _resultClass == Object.class)
+            _runtimeResultClass = Object[].class;
         return select(selections);
     }
 
@@ -524,13 +530,15 @@ public class CriteriaQueryImpl<T> implements CriteriaQuery<T>, AliasContext {
         return ((SubqueryImpl<?>)parent).getDelegate().getRegisteredRootVariable(root);
     }
     
-    public Class getResultType() {
-        // TODO Auto-generated method stub
-        return null;
+    public Class<T> getResultType() {
+        return _resultClass;
+    }
+    
+    public Class<?> getRuntimeResultClass() {
+        return _runtimeResultClass;
     }
 
-    public CriteriaQuery<T> multiselect(List<Selection<?>> arg0) {
-        // TODO Auto-generated method stub
-        return null;
+    public CriteriaQuery<T> multiselect(List<Selection<?>> list) {
+        return multiselect(list.toArray(new Selection<?>[list.size()]));
     }
 }

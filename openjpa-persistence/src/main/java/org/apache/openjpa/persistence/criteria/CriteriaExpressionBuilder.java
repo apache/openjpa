@@ -71,7 +71,7 @@ public class CriteriaExpressionBuilder {
 
         //exps.operation = QueryOperations.OP_SELECT;
         //exps.range = null; // Value[]
-        //exps.resultClass = null; // Class
+        exps.resultClass = q.getRuntimeResultClass();
         exps.parameterTypes = q.getParameterTypes();
         return exps;
     }
@@ -240,13 +240,10 @@ public class CriteriaExpressionBuilder {
         ExpressionFactory factory, CriteriaQueryImpl<?> q, MetamodelImpl model, 
         Map<Expression<?>, Value> exp2Vals) {
         for (Selection<?> s : selections) {
-            if(s instanceof TupleSelection<?> ) {
-                exps.resultClass = TupleImpl.class;
+            if (s instanceof TupleSelection<?> ) {
                 getProjections(exps, ((TupleSelection<?>)s).getSelectionItems(), projections, aliases, 
                     clauses, factory, q, model, exp2Vals);
-            }
-            else if (s instanceof NewInstanceSelection<?>) {
-                exps.resultClass = s.getJavaType();
+            } else if (s instanceof NewInstanceSelection<?>) {
                 getProjections(exps, ((NewInstanceSelection<?>)s).getSelectionItems(), projections, aliases, 
                    clauses, factory, q, model, exp2Vals);               
             } else {

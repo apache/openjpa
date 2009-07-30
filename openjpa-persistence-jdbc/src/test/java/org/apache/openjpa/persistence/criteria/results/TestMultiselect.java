@@ -30,6 +30,7 @@ import org.apache.openjpa.persistence.criteria.CriteriaTest;
 import org.apache.openjpa.persistence.criteria.Person;
 import org.apache.openjpa.persistence.criteria.Person_;
 import org.apache.openjpa.persistence.test.AllowFailure;
+import org.apache.openjpa.util.UserException;
 
 
 /**
@@ -39,7 +40,7 @@ import org.apache.openjpa.persistence.test.AllowFailure;
  *
  */
 
-@AllowFailure(value=true, message="Tests:16 Errors:1 Failure:7")
+@AllowFailure(value=false, message="Tests:16 Errors:1 Failure:1")
 public class TestMultiselect extends CriteriaTest {
     private static final Class[] CLASSES = {Person.class};
     private static boolean initialized = false;
@@ -148,6 +149,7 @@ public class TestMultiselect extends CriteriaTest {
         assertResult(q, String[].class);
     }
     
+    @AllowFailure(message="TupleArray needs special processing at multiselect")
     public void testTupleArray() {
         CriteriaQuery<Tuple[]> q = cb.createQuery(Tuple[].class);
         Root<Person> p = q.from(Person.class); 
@@ -229,6 +231,8 @@ public class TestMultiselect extends CriteriaTest {
         assertResult(q, Object[].class, String.class, Integer.class);
     }
     
+    @AllowFailure(message="Mixing constructor with other projections get CriteriaExpressionBuilder.getProjections() " +
+            "all messed up")
     public void testSingleObjectMultipleProjectionsAndConstructor() {
         CriteriaQuery<Object> q = cb.createQuery(Object.class);
         Root<Person> p = q.from(Person.class);
@@ -255,12 +259,13 @@ public class TestMultiselect extends CriteriaTest {
         List<?> result = em.createQuery(q).getResultList();
         assertFalse(result.isEmpty());
         for (Object row : result) {
-            assertTrue(row.getClass() + " does not match actual result " + resultClass, resultClass.isInstance(row));
+            assertTrue(toClass(row) + " does not match actual result " + toString(resultClass), 
+                resultClass.isInstance(row));
             if (resultClass.isArray() && arrayElementClasses != null) {
                 for (int i = 0; i < arrayElementClasses.length; i++) {
                     Object element = Array.get(row, i);
-                    assertTrue(i + "-th array element " + arrayElementClasses[i] + " does not match actual result " 
-                       + element.getClass(), arrayElementClasses[i].isInstance(element));
+                    assertTrue(i + "-th array element " + toString(arrayElementClasses[i]) + 
+                       " does not match actual result " + toClass(element), arrayElementClasses[i].isInstance(element));
                 }
             }
         }
@@ -270,8 +275,16 @@ public class TestMultiselect extends CriteriaTest {
         try {
             em.createQuery(q).getResultList();
             fail("Expected to fail " + msg);
-        } catch (PersistenceException e) {
+        } catch (UserException e) {
             // this is an expected exception
         }
+    }
+    
+    String toClass(Object o) {
+       return toString(o.getClass());
+    }
+    
+    String toString(Class<?> cls) {
+        return cls.isArray() ? toString(cls.getComponentType())+"[]" : cls.toString();
     }
 }
