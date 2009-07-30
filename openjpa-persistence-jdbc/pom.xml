@@ -44,6 +44,8 @@
         <dbcp.minIdle>2</dbcp.minIdle>
         <dbcp.maxWait>10000</dbcp.maxWait>
         <dbcp.args>MaxActive=${dbcp.maxActive},MaxIdle=${dbcp.maxIdle},MinIdle=${dbcp.minIdle},MaxWait=${dbcp.maxWait}</dbcp.args>
+        <derby.locks.waitTimeout>6</derby.locks.waitTimeout>        
+        <derby.locks.deadlockTimeout>5</derby.locks.deadlockTimeout>
     </properties>
     <profiles>
 
@@ -616,11 +618,11 @@
                         </property>
                         <property>
                             <name>derby.locks.deadlockTimeout</name>
-                            <value>5</value>
+                            <value>${derby.locks.deadlockTimeout}</value>
                         </property>
                         <property>
                             <name>derby.locks.waitTimeout</name>
-                            <value>6</value>
+                            <value>${derby.locks.waitTimeout}</value>
                         </property>
                         <property>
                             <name>openjpa.ConnectionProperties</name>
