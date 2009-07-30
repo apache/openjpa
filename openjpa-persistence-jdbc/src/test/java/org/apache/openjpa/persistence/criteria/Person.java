@@ -38,6 +38,14 @@ public class Person {
     
 	@ElementCollection
 	private Set<String> nickNames;
+	
+	protected Person() {
+	    this("?");
+	}
+	
+	public Person(String name) {
+	    setName(name);
+	}
 
     public int getId() {
         return id;

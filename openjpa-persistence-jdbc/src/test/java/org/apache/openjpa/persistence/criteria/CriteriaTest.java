@@ -59,8 +59,8 @@ public abstract class CriteriaTest extends TestCase {
     protected static OpenJPAEntityManagerFactorySPI emf;
     protected static SQLAuditor auditor;
     
-    CriteriaBuilder cb;
-    EntityManager em;
+    protected CriteriaBuilder cb;
+    protected EntityManager em;
     
     protected static Class[] CLASSES = {
             Account.class,
