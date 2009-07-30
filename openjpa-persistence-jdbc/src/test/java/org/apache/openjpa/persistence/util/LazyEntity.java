@@ -18,11 +18,17 @@
  */
 package org.apache.openjpa.persistence.util;
 
+import java.util.List;
+
 import javax.persistence.Basic;
+import javax.persistence.CascadeType;
+import javax.persistence.ElementCollection;
 import javax.persistence.Embedded;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.Id;
+import javax.persistence.OneToMany;
+import javax.persistence.OneToOne;
 import javax.persistence.Transient;
 
 @Entity
@@ -36,6 +42,15 @@ public class LazyEntity {
     
     @Embedded    
     private LazyEmbed lazyEmbed;
+
+    @ElementCollection(fetch=FetchType.LAZY)
+    private List<LazyEmbed> lazyEmbedColl;
+
+    @OneToMany(fetch=FetchType.LAZY, cascade=CascadeType.ALL)
+    private List<RelEntity> relEntities;
+    
+    @OneToOne(fetch=FetchType.LAZY)
+    private RelEntity relEntity;
     
     @Transient
     private String transField;
@@ -70,5 +85,29 @@ public class LazyEntity {
 
     public String getTransField() {
         return transField;
+    }
+
+    public void setLazyEmbedColl(List<LazyEmbed> lazyEmbedColl) {
+        this.lazyEmbedColl = lazyEmbedColl;
+    }
+
+    public List<LazyEmbed> getLazyEmbedColl() {
+        return lazyEmbedColl;
+    }
+
+    public void setRelEntities(List<RelEntity> relEntities) {
+        this.relEntities = relEntities;
+    }
+
+    public List<RelEntity> getRelEntities() {
+        return relEntities;
+    }
+
+    public void setRelEntity(RelEntity relEntity) {
+        this.relEntity = relEntity;
+    }
+
+    public RelEntity getRelEntity() {
+        return relEntity;
     }
 }

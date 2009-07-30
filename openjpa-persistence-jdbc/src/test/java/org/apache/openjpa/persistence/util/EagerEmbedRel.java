@@ -18,39 +18,37 @@
  */
 package org.apache.openjpa.persistence.util;
 
-import java.sql.Date;
 import java.util.Set;
 
+import javax.persistence.CascadeType;
 import javax.persistence.ElementCollection;
 import javax.persistence.Embeddable;
 import javax.persistence.FetchType;
 import javax.persistence.OneToMany;
-import javax.persistence.Temporal;
-import javax.persistence.TemporalType;
 
 @Embeddable
-public class EagerEmbed {
-
-    @Temporal(TemporalType.DATE)
-    private Date startDate;
+public class EagerEmbedRel {
     
-    @Temporal(TemporalType.DATE)
-    private Date endDate;
-        
-    public void setStartDate(Date startDate) {
-        this.startDate = startDate;
+    @ElementCollection(fetch=FetchType.EAGER)
+    private Set<Integer> intVals;
+    
+    @OneToMany(fetch=FetchType.EAGER, cascade=CascadeType.ALL)
+    private Set<EagerEntity> eagerEnts;
+
+    public void setIntVals(Set<Integer> intVals) {
+        this.intVals = intVals;
     }
 
-    public Date getStartDate() {
-        return startDate;
+    public Set<Integer> getIntVals() {
+        return intVals;
     }
 
-    public void setEndDate(Date endDate) {
-        this.endDate = endDate;
+    
+    public void setEagerEnts(Set<EagerEntity> eagerEnts) {
+        this.eagerEnts = eagerEnts;
     }
 
-    public Date getEndDate() {
-        return endDate;
+    public Set<EagerEntity> getEagerEnts() {
+        return eagerEnts;
     }
-
 }

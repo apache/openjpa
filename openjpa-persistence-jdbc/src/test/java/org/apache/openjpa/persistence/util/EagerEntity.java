@@ -18,9 +18,13 @@
  */
 package org.apache.openjpa.persistence.util;
 
+import java.util.List;
+
 import javax.persistence.Basic;
+import javax.persistence.ElementCollection;
 import javax.persistence.Embedded;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.Id;
 import javax.persistence.Transient;
 
@@ -35,6 +39,12 @@ public class EagerEntity {
     
     @Embedded    
     private EagerEmbed eagerEmbed;
+
+    @Embedded    
+    private EagerEmbedRel eagerEmbedRel;
+
+    @ElementCollection(fetch=FetchType.EAGER)
+    private List<EagerEmbed> eagerEmbedColl;
     
     @Transient
     private String transField;
@@ -69,5 +79,21 @@ public class EagerEntity {
 
     public String getTransField() {
         return transField;
+    }
+
+    public void setEagerEmbedColl(List<EagerEmbed> eagerEmbedColl) {
+        this.eagerEmbedColl = eagerEmbedColl;
+    }
+
+    public List<EagerEmbed> getEagerEmbedColl() {
+        return eagerEmbedColl;
+    }
+
+    public void setEagerEmbedRel(EagerEmbedRel eagerEmbedRel) {
+        this.eagerEmbedRel = eagerEmbedRel;
+    }
+
+    public EagerEmbedRel getEagerEmbedRel() {
+        return eagerEmbedRel;
     }
 }

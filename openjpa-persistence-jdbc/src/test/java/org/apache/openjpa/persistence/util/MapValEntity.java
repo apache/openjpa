@@ -18,39 +18,49 @@
  */
 package org.apache.openjpa.persistence.util;
 
-import java.sql.Date;
-import java.util.Set;
-
-import javax.persistence.ElementCollection;
-import javax.persistence.Embeddable;
+import javax.persistence.CascadeType;
+import javax.persistence.Entity;
 import javax.persistence.FetchType;
-import javax.persistence.OneToMany;
-import javax.persistence.Temporal;
-import javax.persistence.TemporalType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.OneToOne;
+import javax.persistence.Table;
 
-@Embeddable
-public class EagerEmbed {
+@Entity
+@Table(name="MVTABLE")
+public class MapValEntity {
 
-    @Temporal(TemporalType.DATE)
-    private Date startDate;
+    @Id
+    @GeneratedValue
+    private int id;
     
-    @Temporal(TemporalType.DATE)
-    private Date endDate;
-        
-    public void setStartDate(Date startDate) {
-        this.startDate = startDate;
+    private int intVal;
+    
+    @OneToOne(fetch=FetchType.EAGER, mappedBy="mapValEntity", 
+        cascade=CascadeType.ALL)
+    private MapEntity mapEntity;
+
+    public void setId(int id) {
+        this.id = id;
     }
 
-    public Date getStartDate() {
-        return startDate;
+    public int getId() {
+        return id;
     }
 
-    public void setEndDate(Date endDate) {
-        this.endDate = endDate;
+    public void setIntVal(int intVal) {
+        this.intVal = intVal;
     }
 
-    public Date getEndDate() {
-        return endDate;
+    public int getIntVal() {
+        return intVal;
     }
 
+    public void setMapEntity(MapEntity mapEntity) {
+        this.mapEntity = mapEntity;
+    }
+
+    public MapEntity getMapEntity() {
+        return mapEntity;
+    }    
 }

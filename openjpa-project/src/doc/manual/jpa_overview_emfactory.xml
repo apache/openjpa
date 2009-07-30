@@ -427,4 +427,44 @@ an obvious reason to create and close multiple <classname>EntityManagerFactory
 IllegalStateException</classname>.
         </para>
     </section>
+
+
+    <section id="jpa_overview_emfactory_puutil">
+        <title>
+            PersistenceUnitUtil
+        </title>
+        <indexterm zone="jpa_overview_emfactory_puutil">
+            <primary>
+                EntityManagerFactory
+            </primary>
+            <secondary>
+                util
+            </secondary>
+        </indexterm>
+<programlisting>
+public PersistenceUnitUtil getPersistenceUnitUtil();
+</programlisting>
+        <para>
+The <classname>EntityManagerFactory</classname> method 
+<methodname>getPersistenceUnitUtil</methodname> to provide access to a 
+<classname>PersistenceUnitUtil</classname> utility. <classname>PersistenceUnitUtil</classname>
+can be used to obtain the identity of a managed object and determine the load
+state of the entity or one of its attributes.  If the object is not
+managed by one of the entity managers created from the entity manager factory 
+from which the utility was obtained, the <methodname>getIdentifier</methodname> method will
+return null and the <methodname>isLoaded</methodname> methods will return false.
+<programlisting>
+EntityManagerFactory emf = Persistence.createEntityManagerFactory();
+PersistenceUnitUtil puUtil = emf.getPersistenceUnitUtil();
+
+if (puUtil.getIdentifier(deptEntity) == null) {
+    throw new Exception("Identity is not valid.");
+}
+if (!puUtil.isLoaded(deptEntity, "employees")) {
+    throw new Exception("Employees not loaded.")
+}
+</programlisting>
+        </para>
+    </section>
+
 </chapter>

@@ -19,6 +19,8 @@
 package org.apache.openjpa.persistence.util;
 
 import java.sql.Date;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Random;
 
 import javax.persistence.EntityManager;
@@ -35,7 +37,8 @@ public class TestPersistenceUtil extends SingleEMFTestCase{
     
     public void setUp() {
         setUp(CLEAR_TABLES, EagerEntity.class, LazyEmbed.class,
-            LazyEntity.class, EagerEmbed.class);
+            LazyEntity.class, EagerEmbed.class, EagerEmbedRel.class,
+            RelEntity.class);
     }
 
     /*
@@ -187,6 +190,11 @@ public class TestPersistenceUtil extends SingleEMFTestCase{
         emb.setEndDate(new Date(System.currentTimeMillis()));
         emb.setStartDate(new Date(System.currentTimeMillis()));
         le.setLazyEmbed(emb);
+        RelEntity re = new RelEntity();
+        re.setName("My ent");
+        ArrayList<RelEntity> rel = new ArrayList<RelEntity>();
+        rel.add(new RelEntity());
+        le.setRelEntities(rel);
         return le;
     }
     

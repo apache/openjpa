@@ -19,7 +19,12 @@
 package org.apache.openjpa.persistence.util;
 
 import java.sql.Date;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.List;
 import java.util.Random;
+import java.util.Set;
 
 import javax.persistence.EntityManager;
 import javax.persistence.spi.LoadState;
@@ -33,7 +38,8 @@ public class TestProviderUtil extends SingleEMFTestCase{
     
     public void setUp() {
         setUp(CLEAR_TABLES, EagerEntity.class, LazyEmbed.class,
-            LazyEntity.class, EagerEmbed.class);
+            LazyEntity.class, EagerEmbed.class, EagerEmbedRel.class,
+            RelEntity.class);
     }
 
     /*
@@ -72,7 +78,7 @@ public class TestProviderUtil extends SingleEMFTestCase{
     private void verifyIsLoadedEagerState(LoadState state) {
         ProviderUtil pu = getProviderUtil();
         EntityManager em = emf.createEntityManager();
-        EagerEntity ee = createEagerEntity();
+        EagerEntity ee = createEagerEntity(true);
         
         // Vfy LoadState is unknown for the unmanaged entity
         assertEquals(LoadState.UNKNOWN, pu.isLoaded(ee));
@@ -104,6 +110,10 @@ public class TestProviderUtil extends SingleEMFTestCase{
             "eagerEmbed"));
         assertEquals(state, pu.isLoadedWithoutReference(ee,
             "eagerEmbed"));
+        assertEquals(state, pu.isLoadedWithReference(ee, 
+            "eagerEmbedColl"));
+        assertEquals(state, pu.isLoadedWithoutReference(ee,
+            "eagerEmbedColl"));
         assertEquals(LoadState.UNKNOWN, pu.isLoadedWithReference(ee, 
             "transField"));
         assertEquals(LoadState.UNKNOWN, pu.isLoadedWithoutReference(ee,
@@ -149,6 +159,11 @@ public class TestProviderUtil extends SingleEMFTestCase{
             "lazyEmbed"));
         assertEquals(state, pu.isLoadedWithoutReference(le,
             "lazyEmbed"));
+        // lazyEmbedColl is lazy fetch so it should not be loaded
+        assertEquals(LoadState.NOT_LOADED, pu.isLoadedWithReference(le, 
+            "lazyEmbedColl"));
+        assertEquals(LoadState.NOT_LOADED, pu.isLoadedWithoutReference(le,
+            "lazyEmbedColl"));        
         assertEquals(LoadState.UNKNOWN, pu.isLoadedWithReference(le, 
             "transField"));
         assertEquals(LoadState.UNKNOWN, pu.isLoadedWithoutReference(le,
@@ -164,7 +179,7 @@ public class TestProviderUtil extends SingleEMFTestCase{
     public void testIsApplicationLoaded() {
         ProviderUtil pu = getProviderUtil();
         EntityManager em = emf.createEntityManager();
-        EagerEntity ee = createEagerEntity();
+        EagerEntity ee = createEagerEntity(true);
         
         em.getTransaction().begin();
         em.persist(ee);
@@ -202,15 +217,30 @@ public class TestProviderUtil extends SingleEMFTestCase{
             "id"));        
     }
 
-    private EagerEntity createEagerEntity() {
+    private EagerEntity createEagerEntity(boolean createRels) {
         EagerEntity ee = new EagerEntity();
         ee.setId(new Random().nextInt());
         ee.setName("EagerEntity");
         EagerEmbed emb = createEagerEmbed();
+        List<EagerEmbed> embcoll = createEagerEmbedColl();
         ee.setEagerEmbed(emb);
+        ee.setEagerEmbedColl(embcoll);
+        if (createRels) {
+            EagerEmbedRel eer = createEagerEmbedRel(createRels);
+            ee.setEagerEmbedRel(eer);
+        }
+        ee.setEagerEmbedRel(null);
         return ee;
     }
 
+    private List<EagerEmbed> createEagerEmbedColl() {
+        ArrayList<EagerEmbed> al = new ArrayList<EagerEmbed>();
+        for (int i = 0; i < 5; i++) {
+            al.add(createEagerEmbed());
+        }
+        return al;
+    }
+    
     private EagerEmbed createEagerEmbed() {
         EagerEmbed emb = new EagerEmbed();
         emb.setEndDate(new Date(System.currentTimeMillis()));
@@ -218,17 +248,49 @@ public class TestProviderUtil extends SingleEMFTestCase{
         return emb;
     }
 
+    private EagerEmbedRel createEagerEmbedRel(boolean createRels) {
+        EagerEmbedRel emb = new EagerEmbedRel();
+        Set<EagerEntity> ee = new HashSet<EagerEntity>();
+        if (createRels) {
+            ee.add(createEagerEntity(false));
+            ee.add(createEagerEntity(false));
+            ee.add(createEagerEntity(false));
+        }
+        Set<Integer> ints = new HashSet<Integer>();
+        for (int i = 0; i < 12; i++) {
+            ints.add(new Integer(i));
+        }
+        emb.setIntVals(ints);
+        
+        emb.setEagerEnts(ee);
+        return emb;
+    }
+
     private LazyEntity createLazyEntity() {
         LazyEntity le = new LazyEntity();
         le.setId(new Random().nextInt());
         le.setName("LazyEntity");
+        LazyEmbed emb = createLazyEmbed();
+        le.setLazyEmbed(emb);
+        le.setLazyEmbedColl(createLazyEmbedColl());
+        return le;
+    }
+
+    private LazyEmbed createLazyEmbed() {
         LazyEmbed emb = new LazyEmbed();
         emb.setEndDate(new Date(System.currentTimeMillis()));
         emb.setStartDate(new Date(System.currentTimeMillis()));
-        le.setLazyEmbed(emb);
-        return le;
+        return emb;
     }
-    
+
+    private List<LazyEmbed> createLazyEmbedColl() {
+        ArrayList<LazyEmbed> al = new ArrayList<LazyEmbed>();
+        for (int i = 0; i < 5; i++) {
+            al.add(createLazyEmbed());
+        }
+        return al;
+    }
+
     private void assertEagerLoadState(ProviderUtil pu, Object ent, 
         LoadState state) {
         assertEquals(state, pu.isLoaded(ent));
@@ -244,6 +306,10 @@ public class TestProviderUtil extends SingleEMFTestCase{
             "eagerEmbed"));
         assertEquals(state, pu.isLoadedWithoutReference(ent,
             "eagerEmbed"));
+        assertEquals(state, pu.isLoadedWithReference(ent, 
+            "eagerEmbedRel"));
+        assertEquals(state, pu.isLoadedWithoutReference(ent,
+            "eagerEmbedRel"));
         assertEquals(LoadState.UNKNOWN, pu.isLoadedWithReference(ent, 
             "transField"));
         assertEquals(LoadState.UNKNOWN, pu.isLoadedWithoutReference(ent,

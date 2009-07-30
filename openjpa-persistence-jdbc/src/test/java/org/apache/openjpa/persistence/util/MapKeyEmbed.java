@@ -18,39 +18,29 @@
  */
 package org.apache.openjpa.persistence.util;
 
-import java.sql.Date;
-import java.util.Set;
-
-import javax.persistence.ElementCollection;
 import javax.persistence.Embeddable;
-import javax.persistence.FetchType;
-import javax.persistence.OneToMany;
-import javax.persistence.Temporal;
-import javax.persistence.TemporalType;
 
 @Embeddable
-public class EagerEmbed {
+public class MapKeyEmbed {
 
-    @Temporal(TemporalType.DATE)
-    private Date startDate;
+    private String firstName;
     
-    @Temporal(TemporalType.DATE)
-    private Date endDate;
-        
-    public void setStartDate(Date startDate) {
-        this.startDate = startDate;
+    private String lastName;
+
+    public void setFirstName(String firstName) {
+        this.firstName = firstName;
     }
 
-    public Date getStartDate() {
-        return startDate;
+    public String getFirstName() {
+        return firstName;
     }
 
-    public void setEndDate(Date endDate) {
-        this.endDate = endDate;
+    public void setLastName(String lastName) {
+        this.lastName = lastName;
     }
 
-    public Date getEndDate() {
-        return endDate;
+    public String getLastName() {
+        return lastName;
     }
-
+    
 }

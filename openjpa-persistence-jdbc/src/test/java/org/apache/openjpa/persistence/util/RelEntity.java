@@ -18,39 +18,33 @@
  */
 package org.apache.openjpa.persistence.util;
 
-import java.sql.Date;
-import java.util.Set;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
 
-import javax.persistence.ElementCollection;
-import javax.persistence.Embeddable;
-import javax.persistence.FetchType;
-import javax.persistence.OneToMany;
-import javax.persistence.Temporal;
-import javax.persistence.TemporalType;
+@Entity
+public class RelEntity {
 
-@Embeddable
-public class EagerEmbed {
-
-    @Temporal(TemporalType.DATE)
-    private Date startDate;
+    @Id
+    @GeneratedValue
+    private int id;
     
-    @Temporal(TemporalType.DATE)
-    private Date endDate;
-        
-    public void setStartDate(Date startDate) {
-        this.startDate = startDate;
+    private String name;
+
+    public void setId(int id) {
+        this.id = id;
     }
 
-    public Date getStartDate() {
-        return startDate;
+    public int getId() {
+        return id;
     }
 
-    public void setEndDate(Date endDate) {
-        this.endDate = endDate;
+    public void setName(String name) {
+        this.name = name;
     }
 
-    public Date getEndDate() {
-        return endDate;
+    public String getName() {
+        return name;
     }
-
+    
 }

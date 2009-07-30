@@ -19,15 +19,21 @@
 package org.apache.openjpa.persistence.util;
 
 import java.sql.Date;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Random;
 
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
+import javax.persistence.Persistence;
 import javax.persistence.PersistenceUnitUtil;
+import javax.persistence.PersistenceUtil;
 import javax.persistence.spi.LoadState;
 import javax.persistence.spi.PersistenceProvider;
 import javax.persistence.spi.ProviderUtil;
 
+import org.apache.openjpa.persistence.OpenJPAEntityManagerFactorySPI;
+import org.apache.openjpa.persistence.OpenJPAPersistence;
 import org.apache.openjpa.persistence.PersistenceProviderImpl;
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
 
@@ -35,7 +41,9 @@ public class TestPersistenceUnitUtil extends SingleEMFTestCase{
     
     public void setUp() {
         setUp(CLEAR_TABLES, EagerEntity.class, LazyEmbed.class,
-            LazyEntity.class, EagerEmbed.class);
+            LazyEntity.class, EagerEmbed.class, RelEntity.class,
+            EagerEmbedRel.class, MapEntity.class,
+            MapKeyEmbed.class, MapValEntity.class);
     }
 
     /*
@@ -68,6 +76,85 @@ public class TestPersistenceUnitUtil extends SingleEMFTestCase{
      */
     public void testNotLoadedEager() {
         verifyIsLoadedEagerState(false);       
+    }
+    
+    /**
+     * Verifies the use of PersistenceUnitUtil with multiple PU's.
+     */
+    public void testMultiplePUs() {
+        OpenJPAEntityManagerFactorySPI emf1 =
+            (OpenJPAEntityManagerFactorySPI)OpenJPAPersistence.
+            createEntityManagerFactory("PUtil1",
+                "org/apache/openjpa/persistence/util/" +
+                "persistence.xml");
+        assertNotNull(emf1);
+
+        OpenJPAEntityManagerFactorySPI emf2 =
+            (OpenJPAEntityManagerFactorySPI)OpenJPAPersistence.
+            createEntityManagerFactory("PUtil2",
+                "org/apache/openjpa/persistence/util/" +
+                "persistence.xml");
+        
+        assertNotNull(emf2);
+        assertNotSame(emf, emf1);
+        assertNotSame(emf1, emf2);
+
+        PersistenceUnitUtil puu = emf.getPersistenceUnitUtil();
+        PersistenceUnitUtil puu1 = emf1.getPersistenceUnitUtil();
+        PersistenceUnitUtil puu2 = emf2.getPersistenceUnitUtil();
+
+        assertNotSame(puu, puu1);
+        assertNotSame(puu, puu2);
+        assertNotSame(puu1, puu2);
+
+        EntityManager em = emf.createEntityManager();
+        EntityManager em1 = emf1.createEntityManager();
+        EntityManager em2 = emf2.createEntityManager();
+
+        verifyPULoadState(em, puu, puu1, puu2);
+        verifyPULoadState(em1, puu1, puu, puu2);
+        verifyPULoadState(em2, puu2, puu, puu1);
+        
+        em.close();
+        em1.close();
+        em2.close();
+        
+        if (emf1 != null) {
+            emf1.close();
+        }
+        if (emf2 != null) {
+            emf2.close();
+        }
+        
+    }
+
+    private void verifyPULoadState(EntityManager em,
+        PersistenceUnitUtil...puu) {
+
+        EagerEntity ee = createEagerEntity();       
+        assertEquals(false, puu[0].isLoaded(ee));
+        assertEquals(false, puu[0].isLoaded(ee, 
+            "id"));
+        assertEquals(false, puu[1].isLoaded(ee));
+        assertEquals(false, puu[1].isLoaded(ee, 
+            "id"));
+        assertEquals(false, puu[2].isLoaded(ee));
+        assertEquals(false, puu[2].isLoaded(ee, 
+            "id"));
+        
+        em.getTransaction().begin();
+        em.persist(ee);
+        em.getTransaction().commit();
+
+        assertEquals(true, puu[0].isLoaded(ee));
+        assertEquals(true, puu[0].isLoaded(ee, 
+            "id"));
+        assertEquals(false, puu[1].isLoaded(ee));
+        assertEquals(false, puu[1].isLoaded(ee, 
+            "id"));
+        assertEquals(false, puu[2].isLoaded(ee));
+        assertEquals(false, puu[2].isLoaded(ee, 
+            "id"));
     }
 
     
@@ -163,7 +250,52 @@ public class TestPersistenceUnitUtil extends SingleEMFTestCase{
         
         em.close();
     }
+
+    public void testPCMapEager() {        
+        PersistenceUnitUtil puu = emf.getPersistenceUnitUtil();
+        EntityManager em = emf.createEntityManager();
         
+        MapValEntity mve = new MapValEntity();
+        mve.setIntVal(10);
+        MapKeyEmbed mke = new MapKeyEmbed();
+        mke.setFirstName("Jane");
+        mke.setLastName("Doe");
+        
+        MapEntity me = new MapEntity();
+
+        assertEquals(false, puu.isLoaded(me));
+        assertEquals(false, puu.isLoaded(me, 
+            "mapValEntity"));
+        assertEquals(false, puu.isLoaded(me, 
+            "mapEntities"));
+
+        assertEquals(false, puu.isLoaded(mve));
+
+        // Create a circular ref
+        me.setMapValEntity(mve);
+        mve.setMapEntity(me);
+
+        HashMap<MapKeyEmbed, MapValEntity> hm = 
+            new HashMap<MapKeyEmbed, MapValEntity>();
+        
+        hm.put(mke, mve);
+        me.setMapEntities(hm);
+
+        em.getTransaction().begin();
+        em.persist(me);
+        em.getTransaction().commit();
+        
+        assertEquals(true, puu.isLoaded(me));
+        assertEquals(true, puu.isLoaded(me, 
+            "mapValEntity"));
+        assertEquals(true, puu.isLoaded(me, 
+            "mapEntities"));
+
+        assertEquals(true, puu.isLoaded(mve));
+        
+        em.close();
+    }
+
     private EagerEntity createEagerEntity() {
         EagerEntity ee = new EagerEntity();
         ee.setId(new Random().nextInt());
@@ -188,6 +320,10 @@ public class TestPersistenceUnitUtil extends SingleEMFTestCase{
         emb.setEndDate(new Date(System.currentTimeMillis()));
         emb.setStartDate(new Date(System.currentTimeMillis()));
         le.setLazyEmbed(emb);
+        RelEntity re = new RelEntity();
+        re.setName("My ent");
+        ArrayList<RelEntity> rel = new ArrayList<RelEntity>();
+        rel.add(new RelEntity());
         return le;
     }
     

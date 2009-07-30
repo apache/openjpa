@@ -75,6 +75,7 @@ EntityManagerFactory</classname> objects in a vendor-neutral fashion.
 <programlisting>
 public static EntityManagerFactory createEntityManagerFactory(String name);
 public static EntityManagerFactory createEntityManagerFactory(String name, Map props);
+public static PersistenceUtil getPersistenceUtil();
 </programlisting>
     <para>
 Each <methodname>createEntityManagerFactory</methodname> method searches the
@@ -93,6 +94,18 @@ the <filename>conf</filename> directory, you could place an <classname>
 EntityManagerFactory</classname> definition in <filename>
 conf/META-INF/persistence.xml</filename>.
     </para>
+    <para>
+The <methodname>getPersistenceUtil</methodname> method returns a PersistenceUtil
+interface that can be used to determine whether an entity or attribute of an
+entity is loaded.  
+</para>
+<programlisting>
+PersistenceUtil pUtil = Persistence.getPersistenceUtil();
+
+if (!pUtil.isLoaded(myEntity)) {
+    loadEntity(myEntity);
+}
+</programlisting>
     <section id="jpa_overview_persistence_xml">
         <title>
             persistence.xml

@@ -20,6 +20,8 @@ package org.apache.openjpa.persistence;
 
 import java.util.BitSet;
 import java.util.Collection;
+import java.util.HashSet;
+import java.util.Map;
 
 import javax.persistence.spi.LoadState;
 
@@ -29,6 +31,9 @@ import org.apache.openjpa.kernel.AbstractBrokerFactory;
 import org.apache.openjpa.kernel.Broker;
 import org.apache.openjpa.kernel.OpenJPAStateManager;
 import org.apache.openjpa.meta.FieldMetaData;
+import org.apache.openjpa.meta.JavaTypes;
+import org.apache.openjpa.meta.ValueMetaData;
+import org.apache.openjpa.util.ImplHelper;
 
 public class OpenJPAPersistenceUtil {
 
@@ -95,9 +100,14 @@ public class OpenJPAPersistenceUtil {
             // Cycle through all brokers managed by this factory.  
             Broker[] brokerArr = brokers.toArray(new Broker[brokers.size()]);
             for (Broker broker : brokerArr) {
-                if (broker != null && !broker.isClosed() && 
-                    broker.isPersistent(entity))
-                    return true;
+                if (broker != null && !broker.isClosed())
+                    if (ImplHelper.isManageable(entity)) {
+                        PersistenceCapable pc = (PersistenceCapable)entity;
+                        // Vfy this broker is managing the entity
+                        if (pc.pcGetGenericContext() == broker) {
+                            return true;
+                        }
+                    }
             }
         }
         return false;
@@ -146,13 +156,14 @@ public class OpenJPAPersistenceUtil {
             }
             StateManager sm = pc.pcGetStateManager();
             if (sm != null && sm instanceof OpenJPAStateManager) {
-                return isLoaded((OpenJPAStateManager)sm, attr);
+                return isLoaded((OpenJPAStateManager)sm, attr, null);
             }
         }        
         return LoadState.UNKNOWN;
     }
 
-    private static LoadState isLoaded(OpenJPAStateManager sm, String attr) {
+    private static LoadState isLoaded(OpenJPAStateManager sm, String attr, 
+        HashSet<OpenJPAStateManager> pcs) {
         boolean isLoaded = true;
         BitSet loadSet = sm.getLoaded();
         if (attr != null) {
@@ -168,15 +179,160 @@ public class OpenJPAPersistenceUtil {
         }
         FieldMetaData[] fmds = sm.getMetaData().getFields();
         // Check load state of all persistent eager fetch attributes
-        for (FieldMetaData fmd : fmds) {
-            if (fmd.isInDefaultFetchGroup()) {
-                if (!loadSet.get(fmd.getIndex())) {
-                    isLoaded = false;
-                    break;
+        if (fmds != null && fmds.length > 0) {
+            pcs = addToLoadSet(pcs, sm);
+            for (FieldMetaData fmd : fmds) {
+                if (fmd.isInDefaultFetchGroup()) {
+                    if (!isLoadedField(sm, fmd, pcs)) {
+                        isLoaded = false;
+                        break;
+                    }
                 }
-                // TODO: Complete contract for collections
             }
-        } 
+            pcs.remove(sm);
+        }
         return isLoaded ? LoadState.LOADED : LoadState.NOT_LOADED;        
+    }
+    
+    private static HashSet<OpenJPAStateManager> addToLoadSet(
+        HashSet<OpenJPAStateManager> pcs, OpenJPAStateManager sm) {
+        if (pcs == null) {
+            pcs = new HashSet<OpenJPAStateManager>();
+        }
+        pcs.add(sm);
+        return pcs;
+    }
+
+    private static boolean isLoadedField(OpenJPAStateManager sm,
+        FieldMetaData fmd, HashSet<OpenJPAStateManager> pcs) {
+        BitSet loadSet = sm.getLoaded();
+                
+        // Simple load state check for the field
+        if (!loadSet.get(fmd.getIndex()))
+            return false;
+
+        Object field = sm.fetchField(fmd.getIndex(), false);
+
+        // Get the state manager for the field, if it is a PC
+        OpenJPAStateManager ofsm = getStateManager(field);
+
+        // Prevent circular load state evaluation for this sm.
+        if (ofsm != null && pcs.contains(ofsm))
+            return true;
+        
+        // If a collection type, determine if it is loaded
+        switch (fmd.getDeclaredTypeCode()) {
+            case JavaTypes.COLLECTION:   
+                return isLoadedCollection(sm, fmd.getElement(), 
+                    (Collection<?>)field, pcs);
+            case JavaTypes.MAP:
+                return isLoadedMap(sm, fmd, 
+                    (Map<?,?>)field, pcs);
+            case JavaTypes.ARRAY:
+                return isLoadedArray(sm, fmd.getElement(), 
+                    (Object[])field, pcs);
+        }
+        // If other PC type, determine if it is loaded
+        if (ofsm != null && fmd.isDeclaredTypePC()) {
+            return isLoaded(ofsm, null, pcs) ==
+                LoadState.LOADED;
+        }
+
+        return true;
+    } 
+    
+    private static boolean isLoadedCollection(OpenJPAStateManager sm, 
+        ValueMetaData vmd, Collection<?> coll, HashSet<OpenJPAStateManager> pcs) {
+        
+        // This field passed the load state check in isLoadedField, so
+        // if any of these conditions are true the collection is loaded.
+        if (sm == null || coll == null || coll.size() == 0) {
+            return true;
+        }
+        
+        // Convert to array to prevent concurrency issues
+        Object[] arr = coll.toArray();
+
+        return isLoadedArray(sm, vmd, arr, pcs);
+    }
+
+    private static boolean isLoadedArray(OpenJPAStateManager sm, 
+        ValueMetaData vmd, Object[] arr, 
+        HashSet<OpenJPAStateManager> pcs) {
+
+        // This field passed the load state check in isLoadedField, so
+        // if any of these conditions are true the array is loaded.
+        if (sm == null || arr == null || arr.length == 0) {
+            return true;
+        }
+
+        // Not a collection of PC's 
+        if (!vmd.isDeclaredTypePC()) {
+          return true;
+        }
+        
+        for (Object pc : arr) {
+            OpenJPAStateManager esm = getStateManager(pc);
+            if (esm == null) {
+                return true;
+            }
+            if (!(isLoaded(esm, null, pcs) == LoadState.LOADED))
+                return false;
+        }
+        return true;
+    }
+
+    private static boolean isLoadedMap(OpenJPAStateManager sm, 
+        FieldMetaData fmd, Map<?,?> map, HashSet<OpenJPAStateManager> pcs) {
+                
+        // This field passed the load state check in isLoadedField, so
+        // if any of these conditions are true the map is loaded.
+        if (sm == null || map == null || map.size() == 0) {
+            return true;
+        }
+
+        boolean keyIsPC = fmd.getKey().isDeclaredTypePC();
+        boolean valIsPC = fmd.getElement().isDeclaredTypePC();
+
+        // Map is does not contain PCs in either keys or values
+        if (!(keyIsPC || valIsPC)) {
+          return true;
+        }
+        
+        Object[] arr = map.keySet().toArray();
+
+        for (Object key : arr) {
+            if (keyIsPC) {
+                OpenJPAStateManager ksm = getStateManager(key);
+                if (ksm == null) {
+                    return true;
+                }                        
+                if (!(isLoaded(ksm, null, pcs) == LoadState.LOADED))
+                    return false;
+            }
+            if (valIsPC) {
+                Object value = map.get(key);
+                OpenJPAStateManager vsm = getStateManager(value);
+                if (vsm == null) {
+                    return true;
+                }                        
+                if (!(isLoaded(vsm, null, pcs) == LoadState.LOADED))
+                    return false;                    
+            }
+        }
+        return true;
+    }
+
+    private static OpenJPAStateManager getStateManager(Object obj) {        
+        if (obj == null || !(obj instanceof PersistenceCapable)) {
+            return null;
+        }
+        
+        PersistenceCapable pc = (PersistenceCapable)obj;
+        StateManager sm = pc.pcGetStateManager();
+        if (sm == null || !(sm instanceof OpenJPAStateManager)) {
+            return null;
+        }
+        return (OpenJPAStateManager)sm;
     }
 }
