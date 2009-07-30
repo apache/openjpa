@@ -19,16 +19,13 @@
 package org.apache.openjpa.persistence.criteria;
 
 import java.math.BigDecimal;
-import java.util.Set;
 
 import javax.persistence.Parameter;
 import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.Expression;
 import javax.persistence.criteria.Join;
 import javax.persistence.criteria.JoinType;
 import javax.persistence.criteria.ListJoin;
 import javax.persistence.criteria.MapJoin;
-import javax.persistence.criteria.Path;
 import javax.persistence.criteria.Root;
 import javax.persistence.criteria.SetJoin;
 import javax.persistence.criteria.Subquery;
@@ -213,20 +210,6 @@ public class TestStringCriteria extends CriteriaTest {
                 .otherwise(1.01));                       // cb.prod(e.get("salary"), 1.01)));
         assertEquivalence(q, jpql);
     }
-//    
-//    public void testABCDEFG() {
-//        String jpql = "SELECT e.name, CASE WHEN e.rating = 1 THEN e.salary * 1.1 "
-//                + "WHEN e.rating = 2 THEN e.salary * 1.2 ELSE e.salary * 1.01 END "
-//                + "FROM Employee e WHERE e.department.name = 'Engineering'";
-//        CriteriaQuery<Employee> q = cb.createQuery(Employee.class);
-//        Root<Employee> e = q.from(Employee.class);
-//        q.where(cb.equal(e.get(Employee_.department).get(Department_.name), "Engineering"));
-//        q.multiselect(e.get(Employee_.name), cb.selectCase().when(
-//                cb.equal(e.get(Employee_.rating), 1), 1.1)       // cb.prod(e.get("salary"), 1.1))
-//                .when(cb.equal(e.get(Employee_.rating), 2), 1.2) // cb.prod(e.get("salary"), 1.2))
-//                .otherwise(1.01));                       // cb.prod(e.get("salary"), 1.01)));
-//        assertEquivalence(q, jpql);
-//    }
     
     /*
      * @AllowFailure public void testLiterals() { String jpql =
