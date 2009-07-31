@@ -109,7 +109,9 @@ public class ResultPacker {
     private ResultPacker(Class candidate, Class[] types, String[] aliases,
         Class resultClass) {
         _aliases = aliases;
-        if (candidate == resultClass || resultClass.isArray()) {
+        if (candidate == resultClass 
+         ||(types != null && types.length == 1 && types[0] == resultClass) 
+         || resultClass.isArray()) {
             _resultClass = resultClass;
             _sets = null;
             _put = null;

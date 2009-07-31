@@ -177,7 +177,7 @@ public class TupleImpl implements Tuple {
     @SuppressWarnings("unchecked")
     public void put(Object key, Object value) {
         // TODO check for duplicate aliases? 
-        TupleElementImpl<?> element = new TupleElementImpl(value.getClass());
+        TupleElementImpl<?> element = new TupleElementImpl(value == null ? Object.class : value.getClass());
         element.setAlias((String) key);
         element.setValue(value);
         elements.add(element);

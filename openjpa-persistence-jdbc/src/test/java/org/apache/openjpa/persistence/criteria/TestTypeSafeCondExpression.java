@@ -393,7 +393,6 @@ public class TestTypeSafeCondExpression extends CriteriaTest {
         assertEquivalence(q, query);
     }
     
-    @AllowFailure(message="can not parameterize the literial in math function")
     public void testArithmFunc3() {
         String query = "select MOD(e.age, 4) From CompUser e WHERE e.name='Seetha'";
         

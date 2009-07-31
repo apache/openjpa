@@ -33,10 +33,14 @@ import javax.persistence.criteria.SetJoin;
 import javax.persistence.metamodel.Attribute;
 import javax.persistence.metamodel.CollectionAttribute;
 import javax.persistence.metamodel.ListAttribute;
+import javax.persistence.metamodel.ManagedType;
 import javax.persistence.metamodel.MapAttribute;
 import javax.persistence.metamodel.PluralAttribute;
 import javax.persistence.metamodel.SetAttribute;
 import javax.persistence.metamodel.SingularAttribute;
+import javax.persistence.metamodel.Type;
+import javax.persistence.metamodel.PluralAttribute.CollectionType;
+import javax.persistence.metamodel.Type.PersistenceType;
 
 import org.apache.openjpa.persistence.meta.AbstractManagedType;
 import org.apache.openjpa.persistence.meta.Members;
@@ -55,7 +59,7 @@ import org.apache.openjpa.persistence.meta.Members.Member;
 public class FromImpl<Z,X> extends PathImpl<Z,X> implements From<Z,X> {
     private java.util.Set<Join<X, ?>> _joins;
     private java.util.Set<Fetch<X, ?>> _fetches;
-    private AbstractManagedType<X> type;
+    private Type<X> type;
     
     /**
      * Supply the non-null managed type.
@@ -67,6 +71,12 @@ public class FromImpl<Z,X> extends PathImpl<Z,X> implements From<Z,X> {
     
     protected FromImpl(PathImpl<?,Z> parent, Members.Member<? super Z, ?> m, Class<X> x) {
         super(parent, m, x);
+        this.type = (Type<X>)m.getType();
+    }
+    
+    @Override
+    public Type<?> getType() {
+        return type;
     }
     
     /**
@@ -170,40 +180,56 @@ public class FromImpl<Z,X> extends PathImpl<Z,X> implements From<Z,X> {
     }
 
     public <W,Y> Join<W,Y> join(String attr, JoinType jt) {
-        return (Join<W,Y>)join(type.getSingularAttribute(attr), jt);
+        ManagedType<X> mtype = assertJoinable();
+        return (Join<W,Y>)join(mtype.getSingularAttribute(attr), jt);
     }
 
 
     public <W,Y> CollectionJoin<W, Y> joinCollection(String attr) {
-        return (CollectionJoin<W,Y>)join(type.getCollection(attr), JoinType.INNER);
+        ManagedType<X> mtype = assertJoinable();
+        return (CollectionJoin<W,Y>)join(mtype.getCollection(attr), JoinType.INNER);
     }
 
     public <W,Y> CollectionJoin<W, Y> joinCollection(String attr, JoinType jt) {
-        return (CollectionJoin<W,Y>)join(type.getCollection(attr), jt);
+        ManagedType<X> mtype = assertJoinable();
+        return (CollectionJoin<W,Y>)join(mtype.getCollection(attr), jt);
     }
 
     public <W,Y> ListJoin<W, Y> joinList(String attr) {
-        return (ListJoin<W,Y>)join(type.getList(attr), JoinType.INNER);
+        ManagedType<X> mtype = assertJoinable();
+        return (ListJoin<W,Y>)join(mtype.getList(attr), JoinType.INNER);
     }
 
     public <W,Y> ListJoin<W,Y> joinList(String attr, JoinType jt) {
-        return (ListJoin<W,Y>)join(type.getList(attr), jt);
+        ManagedType<X> mtype = assertJoinable();
+        return (ListJoin<W,Y>)join(mtype.getList(attr), jt);
     }
 
     public <W,K,V> MapJoin<W,K,V> joinMap(String attr) {
-        return (MapJoin<W,K,V>)join(type.getMap(attr));
+        ManagedType<X> mtype = assertJoinable();
+        return (MapJoin<W,K,V>)join(mtype.getMap(attr));
     }
 
     public <W,K,V> MapJoin<W,K,V>  joinMap(String attr, JoinType jt) {
-        return (MapJoin<W,K,V>)join(type.getMap(attr));
+        ManagedType<X> mtype = assertJoinable();
+        return (MapJoin<W,K,V>)join(mtype.getMap(attr));
     }
 
     public <W,Y> SetJoin<W, Y>  joinSet(String attr) {
-        return (SetJoin<W, Y>)join(type.getSet(attr));
+        ManagedType<X> mtype = assertJoinable();
+        return (SetJoin<W, Y>)join(mtype.getSet(attr));
     }
 
     public <W,Y> SetJoin<W, Y>  joinSet(String attr, JoinType jt) {
-        return (SetJoin<W, Y>)join(type.getSet(attr), jt);
+        ManagedType<X> mtype = assertJoinable();
+        return (SetJoin<W, Y>)join(mtype.getSet(attr), jt);
+    }
+    
+    ManagedType<X> assertJoinable() {
+        if (type.getPersistenceType() == PersistenceType.BASIC) {
+            throw new IllegalArgumentException(this + " is a basic path and can not be navigated to ");
+        }
+        return (ManagedType<X>)type;
     }
 
     private void addJoin(Join<X,?> join) {
@@ -236,8 +262,14 @@ public class FromImpl<Z,X> extends PathImpl<Z,X> implements From<Z,X> {
         return fetch(assocName, JoinType.INNER);
     }
 
-    public <Y> Fetch<X, Y> fetch(String assocName, JoinType jt) {
-        return (Fetch<X, Y>)fetch(type.getSingularAttribute(assocName), jt);
+    public <Y> Fetch<X, Y> fetch(String name, JoinType jt) {
+        ManagedType<X> mtype = assertJoinable();
+        Attribute<? super X,?> attr = mtype.getAttribute(name);
+        if (attr.isCollection()) {
+            return fetch((PluralAttribute)attr, jt);
+        } else {
+            return fetch(((SingularAttribute)attr), jt);
+        }
     }
 
     public java.util.Set<Fetch<X, ?>> getFetches() {
@@ -252,25 +284,4 @@ public class FromImpl<Z,X> extends PathImpl<Z,X> implements From<Z,X> {
         _fetches.add(fetch);
         return fetch;
     }
-    
-    /**
-     * Return a path to the specified field.  
-     */
-    public <Y> Path<Y> get(String attName) {
-        if (type == null) {
-            return super.get(attName);
-        }
-        Member<? super X, ?> member = null;
-        for (Attribute<? super X, ?> a : type.getAttributes()) { 
-            if(a instanceof Member<?, ?>){ 
-                if(a.getName().equals(attName)) { 
-                    member = ((Member<? super X,?>)a);
-                    break;
-                }
-            }
-        }
-        // TODO check for null member
-        return new PathImpl(this, member, (Class<X>) member.getJavaType());
-    }        
-
 }

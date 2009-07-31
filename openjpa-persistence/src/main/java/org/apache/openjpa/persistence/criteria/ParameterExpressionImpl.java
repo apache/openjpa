@@ -88,6 +88,12 @@ public class ParameterExpressionImpl<T> extends ExpressionImpl<T>
             throw new InternalException("Can not assign name [" + auto + "] to " + this);
         _autoName = auto;
     }
+    
+    public ParameterExpression<T> alias(String alias) {
+        assignAutoName(alias);
+        super.alias(alias);
+        return this;
+    }
 	
     /**
      * Raises an internal exception because parameters of CriteriaQuery

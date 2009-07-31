@@ -34,6 +34,7 @@ import javax.persistence.metamodel.ListAttribute;
 import javax.persistence.metamodel.MapAttribute;
 import javax.persistence.metamodel.PluralAttribute;
 import javax.persistence.metamodel.SetAttribute;
+import javax.persistence.metamodel.Type;
 
 import org.apache.openjpa.kernel.exps.AbstractExpressionBuilder;
 import org.apache.openjpa.kernel.exps.ExpressionFactory;
@@ -43,6 +44,7 @@ import org.apache.openjpa.meta.FieldMetaData;
 import org.apache.openjpa.meta.JavaTypes;
 import org.apache.openjpa.persistence.meta.Members;
 import org.apache.openjpa.persistence.meta.MetamodelImpl;
+import org.apache.openjpa.persistence.meta.Members.MapAttributeImpl;
 import org.apache.openjpa.persistence.meta.Members.Member;
 
 /**
@@ -517,10 +519,17 @@ public abstract class Joins {
        
    public static class MapKey<Z,K> extends PathImpl<Z,K> {
        Map<?,K,?> map;
+       MapAttributeImpl<Z, K, ?> attr;
        
        public MapKey(Map<Z,K,?> joinMap){
            super(((MapAttribute<Z, K, ?>)joinMap.getAttribute()).getKeyJavaType());
+           attr = ((MapAttributeImpl<Z, K, ?>)joinMap.getAttribute());
            this.map = joinMap;
+       }
+       
+       @Override
+       public Type<?> getType() {
+           return attr.getKeyType();
        }
        
        /**

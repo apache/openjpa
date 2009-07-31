@@ -239,7 +239,7 @@ public class PathImpl<Z,X> extends ExpressionImpl<X> implements Path<X> {
      * further.
      */
     public <Y> Path<Y> get(String attName) {
-        Type<?> type = _member.getType();
+        Type<?> type = this.getType();
         if (type.getPersistenceType() == PersistenceType.BASIC) {
             throw new IllegalArgumentException(this + " is a basic path and can not be navigated to " + attName);
         }
@@ -247,6 +247,10 @@ public class PathImpl<Z,X> extends ExpressionImpl<X> implements Path<X> {
         Members.Member<? super X, Y> next = (Members.Member<? super X, Y>) 
            ((ManagedType<? super X>)type).getAttribute(attName);
         return new PathImpl<X,Y>(this, next, next.getJavaType());
+    }
+    
+    public Type<?> getType() {
+        return _member.getType();
     }
     
     /**

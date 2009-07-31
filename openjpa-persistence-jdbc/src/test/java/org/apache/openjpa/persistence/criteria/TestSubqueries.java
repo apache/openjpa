@@ -450,7 +450,6 @@ public class TestSubqueries extends CriteriaTest {
         assertEquivalence(q, query);
     }
 
-    @AllowFailure(message="can not compare timestamp")
     public void testSubquery18() {
         String query = "select o.id from Order o where o.orderTs >"
                 + " (select CURRENT_TIMESTAMP from o.lineItems i)";
@@ -463,8 +462,7 @@ public class TestSubqueries extends CriteriaTest {
         Root<Order> o2 = sq.correlate(o);
         ListJoin<Order, LineItem> i = o2.join(Order_.lineItems);
 
-        //q.where(cb.gt(o.get(Order_.orderTs),
-        //sq.select(cb.currentTimestamp())));
+        q.where(cb.gt(o.get(Order_.orderTs).as(Long.class), sq.select(cb.currentTimestamp()).as(Long.class)));
         
         assertEquivalence(q, query);
     }

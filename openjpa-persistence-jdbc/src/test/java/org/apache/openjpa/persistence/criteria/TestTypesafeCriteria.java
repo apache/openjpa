@@ -599,11 +599,11 @@ public class TestTypesafeCriteria extends CriteriaTest {
         String jpql = "SELECT NEW CustomerDetails(c.id, c.status, o.quantity) "
                     + "FROM Customer c JOIN c.orders o WHERE o.quantity > 100";
         
-        CriteriaQuery<?> q = cb.createQuery();
+        CriteriaQuery<CustomerDetails> q = cb.createQuery(CustomerDetails.class);
         Root<Customer> c = q.from(Customer.class);
         SetJoin<Customer, Order> o = c.join(Customer_.orders);
         q.where(cb.gt(o.get(Order_.quantity), 100));
-        q.multiselect(cb.construct(CustomerDetails.class, 
+        q.select(cb.construct(CustomerDetails.class, 
                             c.get(Customer_.id), 
                             c.get(Customer_.status), 
                             o.get(Order_.quantity)));

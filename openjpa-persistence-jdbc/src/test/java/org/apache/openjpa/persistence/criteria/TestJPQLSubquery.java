@@ -28,6 +28,7 @@ import javax.persistence.criteria.Expression;
 import javax.persistence.criteria.Join;
 import javax.persistence.criteria.JoinType;
 import javax.persistence.criteria.ListJoin;
+import javax.persistence.criteria.ParameterExpression;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 import javax.persistence.criteria.SetJoin;
@@ -1230,7 +1231,6 @@ public class TestJPQLSubquery extends CriteriaTest {
         assertEquivalence(q, jpql);
     }
 
-    @AllowFailure(message="can not compare timestamp")
     public void testSubquery18() {
         String jpql = "select o.id from Order o where o.orderTs >"
             + " (select CURRENT_TIMESTAMP from o.lineItems i)";
@@ -1248,8 +1248,7 @@ public class TestJPQLSubquery extends CriteriaTest {
         Root<Order> o2 = sq.correlate(o);
         ListJoin<Order, LineItem> i = o2.join(Order_.lineItems);
 
-        //q.where(cb.gt(o.get(Order_.orderTs),
-        //sq.select(cb.currentTimestamp())));
+        q.where(cb.greaterThan(o.get(Order_.orderTs).as(Long.class), sq.select(cb.currentTimestamp()).as(Long.class)));
         
         assertEquivalence(q, jpql);
     }
@@ -1472,45 +1471,40 @@ public class TestJPQLSubquery extends CriteriaTest {
         assertEquivalence(q, jpql);
     }
 
-    @AllowFailure(message="can not compare timestamp")
+    @AllowFailure(message="parameter setting problem")
     public void testSubSelectMaxDateRange() {
         String jpql = "SELECT e,d from Employee e, Dependent d "
             + "WHERE e.empId = :empid "
             + "AND d.id.empid = (SELECT MAX (e2.empId) FROM Employee e2) "
             + "AND d.id.effDate > :minDate "
             + "AND d.id.effDate < :maxDate ";
-        String expectedSQL = "SELECT t0.empId, t1.effDate, t1.empid, t1.name " + 
-        "FROM CR_EMP t0 JOIN SUBQ_DEPENDENT t1 ON (1 = 1) " + 
-        "WHERE (t0.empId = ? " + 
-        "AND t1.empid = (SELECT MAX(t2.empId) FROM CR_EMP t2) " + 
-        "AND t1.effDate > ? AND t1.effDate < ?)";
 
         Query jQ = em.createQuery(jpql);
         jQ.setParameter("empid", (long) 101);
         jQ.setParameter("minDate", new Date(100));
         jQ.setParameter("maxDate", new Date(100000));
 
-        executeAndCompareSQL(jQ, expectedSQL);
-        
         CriteriaQuery<?> q = cb.createQuery();
         Root<Employee> e = q.from(Employee.class);
         Root<Dependent> d = q.from(Dependent.class);
         q.multiselect(e, d);
-        Parameter<Integer> empid = cb.parameter(Integer.class, "empid");
-        Parameter<Date> minDate = cb.parameter(Date.class, "minDate");
-        Parameter<Date> maxDate = cb.parameter(Date.class, "maxDate");
+        ParameterExpression<Integer> empid = cb.parameter(Integer.class, "empid");
+        ParameterExpression<Date> minDate = cb.parameter(Date.class, "minDate");
+        ParameterExpression<Date> maxDate = cb.parameter(Date.class, "maxDate");
 
         Subquery<Integer> sq = q.subquery(Integer.class);
         Root<Employee> e2 = sq.from(Employee.class);
         sq.select(cb.max(e2.get(Employee_.empId)));
         Predicate p1 = cb.equal(e.get(Employee_.empId), empid); 
         Predicate p2 = cb.equal(d.get(Dependent_.id).get(DependentId_.empid), sq);
-        //Predicate p3 = cb.gt(d.get(Dependent_.id).get(DependentId_.effDate), minDate);
-        //Predicate p4 = cb.lt(d.get(Dependent_.id).get(DependentId_.effDate), maxDate);
+        Predicate p3 = cb.gt(d.get(Dependent_.id).get(DependentId_.effDate).as(Long.class), minDate.as(Long.class));
+        Predicate p4 = cb.lt(d.get(Dependent_.id).get(DependentId_.effDate).as(Long.class), maxDate.as(Long.class));
         
-        //q.where(cb.and(cb.and(cb.and(p1, p2), p3), p4));
-        assertEquivalence(q, jpql);
+        q.where(cb.and(cb.and(cb.and(p1, p2), p3), p4));
         
+        assertEquivalence(q, jpql, 
+            new String[]{"empid", "minDate", "maxDate"}, 
+            new Object[]{101L, new Date(100).getTime(), new Date(100000).getTime()});
     }
     
     public void testCorrelatedNestedSubquery1() {
