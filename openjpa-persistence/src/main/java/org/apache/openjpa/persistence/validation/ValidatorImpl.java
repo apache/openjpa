@@ -27,7 +27,6 @@ import javax.persistence.spi.ValidationMode;
 import javax.validation.metadata.BeanDescriptor;
 import javax.validation.ConstraintViolation;
 import javax.validation.ConstraintViolationException;
-import javax.validation.Validation;
 import javax.validation.Validator;
 import javax.validation.ValidatorFactory;
 
@@ -130,7 +129,10 @@ public class ValidatorImpl extends AbstractValidator {
                 _validatorFactory = getDefaultValidatorFactory();
             }
             if (_validatorFactory != null) {
-                _validator = _validatorFactory.getValidator();
+                // use our TraversableResolver instead of BV provider one
+                _validator = _validatorFactory.usingContext().
+                    traversableResolver(new TraversableResolverImpl()).
+                    getValidator();
             } else {
                 // A default ValidatorFactory could not be created.
                 throw new RuntimeException(
@@ -150,10 +152,8 @@ public class ValidatorImpl extends AbstractValidator {
                 addValidationGroup(VG_PRE_UPDATE,
                     _conf.getValidationGroupPreUpdate());
                 addValidationGroup(VG_PRE_REMOVE,
-                    _conf.getValidationGroupPreRemove());        
-
-            }
-            else {
+                    _conf.getValidationGroupPreRemove());
+            } else {
                 // add in default validation groups, which can be over-ridden later
                 addDefaultValidationGroups();
             }
@@ -209,8 +209,7 @@ public class ValidatorImpl extends AbstractValidator {
             if (vgs != null) {
                 addValidationGroup(event, vgs);
             }
-        }
-        else {
+        } else {
             // There were no events found for group "{0}".
             throw new IllegalArgumentException(
                 _loc.get("no-group-events", validationGroupName).getMessage());
