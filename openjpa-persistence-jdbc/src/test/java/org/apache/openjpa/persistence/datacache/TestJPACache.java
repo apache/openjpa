@@ -28,8 +28,7 @@ import org.apache.openjpa.persistence.test.SingleEMFTestCase;
 public class TestJPACache extends SingleEMFTestCase {
 
     public void setUp() {
-        super.setUp(CachedPerson.class, CachedManager.class,
-            CachedEmployee.class, "openjpa.DataCache", "true",
+        super.setUp(CachedPerson.class, CachedManager.class, CachedEmployee.class, "openjpa.DataCache", "true",
             "openjpa.RemoteCommitProvider", "sjvm");
     }
 
@@ -79,8 +78,7 @@ public class TestJPACache extends SingleEMFTestCase {
     }
 
     /**
-     * Ensure the cached returned by emf.getCache supports the JPA and OpenJPA
-     * interfaces. Expected interfaces are
+     * Ensure the cached returned by emf.getCache supports the JPA and OpenJPA interfaces. Expected interfaces are
      * <ul>
      * <li>javax.persistence.Cache</li>
      * <li>org.apache.openjpa.persistence.StoreCache</li>
@@ -94,8 +92,7 @@ public class TestJPACache extends SingleEMFTestCase {
     }
 
     /**
-     * Ensure that an Entity is not inserted in the cache until the transaction
-     * commits.
+     * Ensure that an Entity is not inserted in the cache until the transaction commits.
      */
     public void testContains() {
         EntityManager em = emf.createEntityManager();
@@ -120,19 +117,13 @@ public class TestJPACache extends SingleEMFTestCase {
     }
 
     /**
-     * Evict a single entity instance of type CachedPerson from the cache.
-     * Testcase will fail if
+     * Evict a single entity instance of type CachedPerson from the cache. Testcase will fail if
      * <ul>
-     * <li>CachedPerson id:10 and 11 are not in the cache when the test starts.
-     * </li>
-     * <li>CachedPerson id:1 <b>is</b> found in the cache when the test starts.
-     * </li>
-     * <li>CachedPerson id:10 is not found in the cache after evicting
-     * CachedPerson id:11</li>
-     * <li>CachedPerson id:11 is found in the cache after evicting CachedPerson
-     * id:11</li>
-     * <li>CachedPerson id:1 is found in the cache after evicting CachedPerson
-     * id:11</li>
+     * <li>CachedPerson id:10 and 11 are not in the cache when the test starts.</li>
+     * <li>CachedPerson id:1 <b>is</b> found in the cache when the test starts.</li>
+     * <li>CachedPerson id:10 is not found in the cache after evicting CachedPerson id:11</li>
+     * <li>CachedPerson id:11 is found in the cache after evicting CachedPerson id:11</li>
+     * <li>CachedPerson id:1 is found in the cache after evicting CachedPerson id:11</li>
      * </ul>
      */
     public void testEvictInstance() {
@@ -149,18 +140,13 @@ public class TestJPACache extends SingleEMFTestCase {
     }
 
     /**
-     * Ensure that evict(Class cls) evicts only the specified class. This test
-     * will fail if
+     * Ensure that evict(Class cls) evicts the specified class and any subclasses. This test will fail if
      * <ul>
-     * <li>Any of the entites created in populate() are not found in the cache
-     * before calling evict()</li>
-     * <li>Any instance of CachedPerson from populate() is found in the cache
-     * after calling evict(CachedPerson.class)</li>
-     * <li>Any instance of CachedManager or CachedEmployee which previously
-     * existed in the cache was evicted after calling evict(CachedPerson.class)
-     * </li>
+     * <li>Any of the entites created in populate() are not found in the cache before calling evict()</li>
+     * <li>Any instance of CachedPerson from populate() is found in the cache after
+     *   calling evict(CachedPerson.class)</li>
+     * <li>Any instance of CachedManager or CachedEmployee is found in the cache after calling evict()</li>
      * </ul>
-     * 
      */
     public void testEvictClass() {
         populate();
@@ -174,20 +160,18 @@ public class TestJPACache extends SingleEMFTestCase {
 
         assertNotInCache(CachedPerson.class, 10);
         assertNotInCache(CachedPerson.class, 11);
-        assertInCache(CachedEmployee.class, 13);
-        assertInCache(CachedEmployee.class, 14);
-        assertInCache(CachedManager.class, 12);
+        assertNotInCache(CachedEmployee.class, 13);
+        assertNotInCache(CachedEmployee.class, 14);
+        assertNotInCache(CachedManager.class, 12);
 
     }
 
     /**
-     * Ensure the cache is cleared after calling evictAll. This test will fail
-     * if :
+     * Ensure the cache is cleared after calling evictAll. This test will fail if :
      * <ul>
-     * <li>Any of the entities created in populate() are not found in the cache
-     * </li>
-     * <li>Any of the entities which were in the cache before calling evictAll()
-     * are still in the cache after calling evictAll()</li>
+     * <li>Any of the entities created in populate() are not found in the cache</li>
+     * <li>Any of the entities which were in the cache before calling evictAll() are still in the cache after calling
+     * evictAll()</li>
      * </ul>
      * 
      */
@@ -213,8 +197,7 @@ public class TestJPACache extends SingleEMFTestCase {
     public void testContainsNullEntity() {
         try {
             emf.getCache().contains(null, 1);
-            fail("Expected ArgumentException when calling  "
-                + "contains(<null>, <nonNull>)");
+            fail("Expected ArgumentException when calling  " + "contains(<null>, <nonNull>)");
         } catch (ArgumentException ae) {
             // normal
         }
@@ -223,8 +206,7 @@ public class TestJPACache extends SingleEMFTestCase {
     public void testContainsNonEntityClass() {
         try {
             emf.getCache().contains(Object.class, 1);
-            fail("Expected ArgumentException when calling "
-                + "contains(<nonEntityClass>, <nonNull>");
+            fail("Expected ArgumentException when calling " + "contains(<nonEntityClass>, <nonNull>");
         } catch (ArgumentException ae) {
             // expected exception
         }
@@ -245,8 +227,7 @@ public class TestJPACache extends SingleEMFTestCase {
     public void testEvictNullInstance() {
         try {
             emf.getCache().evict(null, 1);
-            fail("Expected ArgumentException when calling "
-                + "evict(<null>, <id");
+            fail("Expected ArgumentException when calling " + "evict(<null>, <id");
         } catch (ArgumentException ae) {
             // expected exception
         }
@@ -255,8 +236,7 @@ public class TestJPACache extends SingleEMFTestCase {
     public void testEvictNonEntityInstance() {
         try {
             emf.getCache().evict(Object.class, 1);
-            fail("Expected ArgumentException when calling "
-                + "evict(<null>, <id");
+            fail("Expected ArgumentException when calling " + "evict(<null>, <id");
         } catch (ArgumentException ae) {
             // expected exception
         }
@@ -286,31 +266,27 @@ public class TestJPACache extends SingleEMFTestCase {
     public void testEvictNonEntity() {
         try {
             emf.getCache().evict(Object.class);
-            fail("Expected ArgumentException when calling "
-                + "evict(<nonEntity>");
+            fail("Expected ArgumentException when calling " + "evict(<nonEntity>");
         } catch (ArgumentException ae) {
             // expected exception
         }
     }
 
     /**
-     * Convenience method. Asserts that the class & primary key do exist in the
-     * cache
+     * Convenience method. Asserts that the class & primary key do exist in the cache
      * 
      * @param cls
      *            Entity class.
      * @param primaryKey
      *            PrimaryKey of the entity.
      */
-    private void assertInCache(Class<?> cls, int primaryKey) {
-        assertTrue(
-            "Expected " + cls + ":" + primaryKey + " to exist in cache ", emf
-                .getCache().contains(cls, primaryKey));
+    private void assertInCache(Class<?> cls, Object primaryKey) {
+        assertTrue(String.format("%s:%s should exist in cache", cls.toString(), primaryKey.toString()), emf.getCache()
+            .contains(cls, primaryKey));
     }
 
     /**
-     * Convenience method. Assert that the class and primary key do not exist in
-     * the cache
+     * Convenience method. Assert that the class and primary key do not exist in the cache
      * 
      * @param cls
      *            Entity class.
@@ -318,7 +294,8 @@ public class TestJPACache extends SingleEMFTestCase {
      *            PrimaryKey of the entity.
      */
     private void assertNotInCache(Class<?> cls, Object primaryKey) {
-        assertFalse(emf.getCache().contains(cls, primaryKey));
+        assertFalse(String.format("%s:%s should not exist in cache", cls.toString(), primaryKey.toString()), emf
+            .getCache().contains(cls, primaryKey));
     }
 
 }

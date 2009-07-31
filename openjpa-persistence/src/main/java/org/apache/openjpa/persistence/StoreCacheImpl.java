@@ -164,7 +164,7 @@ public class StoreCacheImpl
         // Check MetaData throws a consistent exception with evict(Class,
         // Object)
         if(getMetaData(cls) != null) {
-            _cache.removeAll(cls, false);
+            _cache.removeAll(cls, true);
         }
     }
 }

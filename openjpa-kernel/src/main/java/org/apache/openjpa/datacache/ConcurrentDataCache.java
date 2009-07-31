@@ -140,9 +140,10 @@ public class ConcurrentDataCache
         _cache = newCacheMap(); 
         for (Object o : orig.values()) {
             Class<?> curClass = ((DataCachePCData) o).getType();
-            if (cls == curClass
-                || (curClass != null && curClass.isAssignableFrom(cls))) {
-                orig.remove(((DataCachePCData) o).getId());
+            if (subs) {
+                if (cls == curClass || (cls != null && cls.isAssignableFrom(curClass))) {
+                    orig.remove(((DataCachePCData) o).getId());
+                }
             }
         }
         _cache.putAll(orig, false);
