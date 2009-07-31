@@ -96,9 +96,6 @@ public class InformixDictionary
         maxIndexNameLength = 18;
         maxConstraintNameLength = 18;
 
-        // Informix uses a non-standard ":" to separate schema and table names
-        catalogSeparator = ":";
-
         // informix supports "CLOB" type, but any attempt to insert
         // into them raises: "java.sql.SQLException: Can't convert fromnull"
         useGetStringForClobs = true;
