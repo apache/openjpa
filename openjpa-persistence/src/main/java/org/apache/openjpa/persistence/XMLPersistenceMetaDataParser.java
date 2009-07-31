@@ -1321,10 +1321,7 @@ public class XMLPersistenceMetaDataParser
         fmd.setExplicit(true);
         fmd.setManagement(FieldMetaData.MANAGE_PERSISTENT);
 
-        String val = attrs.getValue("fetch");
-        if (val != null)
-            fmd.setInDefaultFetchGroup("EAGER".equals(val));
-        val = attrs.getValue("optional");
+        String val = attrs.getValue("optional");
         if ("false".equals(val))
             fmd.setNullValue(FieldMetaData.NULL_EXCEPTION);
         else if ("true".equals(val)
@@ -1373,6 +1370,10 @@ public class XMLPersistenceMetaDataParser
                 parseOneToMany(fmd, attrs);
                 break;
             case TRANSIENT:
+                String val = attrs.getValue("fetch");
+                if (val != null) {
+                    fmd.setInDefaultFetchGroup("EAGER".equals(val));
+                }
                 fmd.setManagement(FieldMetaData.MANAGE_NONE);
                 break;
             case ELEM_COLL:
@@ -1385,6 +1386,10 @@ public class XMLPersistenceMetaDataParser
      */
     protected void parseBasic(FieldMetaData fmd, Attributes attrs)
         throws SAXException {
+        String val = attrs.getValue("fetch");
+        if (val != null) {
+            fmd.setInDefaultFetchGroup("EAGER".equals(val));
+        }
     }
 
     /**
@@ -1393,6 +1398,7 @@ public class XMLPersistenceMetaDataParser
     protected void parseEmbedded(FieldMetaData fmd, Attributes attrs)
         throws SAXException {
         assertPC(fmd, "Embedded");
+        fmd.setInDefaultFetchGroup(true);
         fmd.setEmbedded(true);
         fmd.setSerialized(false); // override any Lob annotation
         
@@ -1416,13 +1422,15 @@ public class XMLPersistenceMetaDataParser
      */
     protected void parseOneToOne(FieldMetaData fmd, Attributes attrs)
         throws SAXException {
-        String val = attrs.getValue("target-entity");
+        String val = attrs.getValue("fetch");
+        if (val != null && "EAGER".equals(val)) {
+            fmd.setInDefaultFetchGroup(true);
+        }
+        val = attrs.getValue("target-entity");
         if (val != null)
             fmd.setTypeOverride(classForName(val));
         assertPC(fmd, "OneToOne");
         fmd.setSerialized(false); // override any Lob annotation
-        if (!fmd.isDefaultFetchGroupExplicit())
-            fmd.setInDefaultFetchGroup(true);
         boolean orphanRemoval = Boolean.valueOf(attrs.getValue(
             "orphan-removal"));
         setOrphanRemoval(fmd, orphanRemoval);
@@ -1433,13 +1441,15 @@ public class XMLPersistenceMetaDataParser
      */
     protected void parseManyToOne(FieldMetaData fmd, Attributes attrs)
         throws SAXException {
-        String val = attrs.getValue("target-entity");
+        String val = attrs.getValue("fetch");
+        if (val != null && "EAGER".equals(val)) {
+            fmd.setInDefaultFetchGroup(true);
+        }
+        val = attrs.getValue("target-entity");
         if (val != null)
             fmd.setTypeOverride(classForName(val));
         assertPC(fmd, "ManyToOne");
         fmd.setSerialized(false); // override any Lob annotation
-        if (!fmd.isDefaultFetchGroupExplicit())
-            fmd.setInDefaultFetchGroup(true);
     }
 
     /**
@@ -1447,7 +1457,11 @@ public class XMLPersistenceMetaDataParser
      */
     protected void parseManyToMany(FieldMetaData fmd, Attributes attrs)
         throws SAXException {
-        String val = attrs.getValue("target-entity");
+        String val = attrs.getValue("fetch");
+        if (val != null) {
+            fmd.setInDefaultFetchGroup("EAGER".equals(val));
+        }
+        val = attrs.getValue("target-entity");
         if (val != null)
             fmd.getElement().setDeclaredType(classForName(val));
         assertPCCollection(fmd, "ManyToMany");
@@ -1477,7 +1491,11 @@ public class XMLPersistenceMetaDataParser
      */
     protected void parseOneToMany(FieldMetaData fmd, Attributes attrs)
         throws SAXException {
-        String val = attrs.getValue("target-entity");
+        String val = attrs.getValue("fetch");
+        if (val != null) {
+            fmd.setInDefaultFetchGroup("EAGER".equals(val));
+        }
+        val = attrs.getValue("target-entity");
         if (val != null)
             fmd.getElement().setDeclaredType(classForName(val));
         assertPCCollection(fmd, "OneToMany");
