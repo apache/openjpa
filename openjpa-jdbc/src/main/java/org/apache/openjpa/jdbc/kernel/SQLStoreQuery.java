@@ -346,7 +346,7 @@ public class SQLStoreQuery
             for (Integer key : paramOrder) {
                 if (!userParams.containsKey(key)) 
                     throw new UserException(_loc.get("uparam-missing", 
-                        sql, key, userParams));
+                        key, sql, userParams));
                 result[idx++] = userParams.get(key);
             }
             // modify original JPA-style SQL to proper SQL
