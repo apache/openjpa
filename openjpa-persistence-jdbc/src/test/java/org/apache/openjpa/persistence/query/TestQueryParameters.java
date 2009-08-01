@@ -8,7 +8,6 @@ import javax.persistence.criteria.ParameterExpression;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.QueryBuilder;
 import javax.persistence.criteria.Root;
-import javax.persistence.metamodel.Attribute;
 import javax.persistence.metamodel.EntityType;
 import javax.persistence.metamodel.Metamodel;
 import javax.persistence.metamodel.SingularAttribute;
@@ -18,7 +17,6 @@ import org.apache.openjpa.kernel.jpql.JPQLParser;
 import org.apache.openjpa.persistence.OpenJPAEntityManagerFactorySPI;
 import org.apache.openjpa.persistence.OpenJPAPersistence;
 import org.apache.openjpa.persistence.ParameterImpl;
-import org.apache.openjpa.persistence.QueryParameter;
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
 
 /**
@@ -125,11 +123,11 @@ public class TestQueryParameters extends SingleEMFTestCase {
         
         Parameter<?> param1 = q.getParameter(1);
         assertTrue(param1 instanceof ParameterImpl);
-        assertEquals(long.class, ((QueryParameter<?>)param1).getExpectedValueType());
+        assertEquals(long.class, param1.getJavaType());
         
         Parameter<?> param2 = q.getParameter(2);
         assertTrue(param2 instanceof ParameterImpl);
-        assertEquals(String.class, ((QueryParameter<?>)param2).getExpectedValueType());
+        assertEquals(String.class, param2.getJavaType());
     }
     
     public void testNamedParameterValueTypeInJPQLQuery() {
@@ -140,11 +138,11 @@ public class TestQueryParameters extends SingleEMFTestCase {
         
         Parameter<?> param1 = q.getParameter("id");
         assertTrue(param1 instanceof ParameterImpl);
-        assertEquals(long.class, ((QueryParameter<?>)param1).getExpectedValueType());
+        assertEquals(long.class, param1.getJavaType());
         
         Parameter<?> param2 = q.getParameter("name");
         assertTrue(param2 instanceof ParameterImpl);
-        assertEquals(String.class, ((QueryParameter<?>)param2).getExpectedValueType());
+        assertEquals(String.class, param2.getJavaType());
     }
     
     public void testNamedParameterInPreparedQuery() {
@@ -242,11 +240,11 @@ public class TestQueryParameters extends SingleEMFTestCase {
         
         Parameter<?> param1 = q.getParameter(1);
         assertTrue(param1 instanceof ParameterImpl);
-        assertEquals(long.class, ((QueryParameter<?>)param1).getExpectedValueType());
+        assertEquals(long.class, param1.getJavaType());
         
         Parameter<?> param2 = q.getParameter(2);
         assertTrue(param2 instanceof ParameterImpl);
-        assertEquals(String.class, ((QueryParameter<?>)param2).getExpectedValueType());
+        assertEquals(String.class, param2.getJavaType());
     }
     
     public void testNamedParameterValueTypeInNamedQuery() {
@@ -256,11 +254,11 @@ public class TestQueryParameters extends SingleEMFTestCase {
         
         Parameter<?> param1 = q.getParameter("id");
         assertTrue(param1 instanceof ParameterImpl);
-        assertEquals(long.class, ((QueryParameter<?>)param1).getExpectedValueType());
+        assertEquals(long.class, param1.getJavaType());
         
         Parameter<?> param2 = q.getParameter("name");
         assertTrue(param2 instanceof ParameterImpl);
-        assertEquals(String.class, ((QueryParameter<?>)param2).getExpectedValueType());
+        assertEquals(String.class, param2.getJavaType());
     }
     
     public void testCriteriaQueryWithNamedParameter() {
@@ -284,6 +282,8 @@ public class TestQueryParameters extends SingleEMFTestCase {
         assertEquals(2, q.getParameters().size());
         assertTrue(q.getParameters().contains(param1));
         assertTrue(q.getParameters().contains(param2));
+        assertNotNull(q.getParameter("id"));
+        assertNotNull(q.getParameter("name"));
     }
     
     public void testCriteriaQueryWithUnnamedParameter() {

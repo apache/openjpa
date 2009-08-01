@@ -1540,7 +1540,7 @@ public class EntityManagerImpl
         Set<ParameterExpression<?>> params = ((CriteriaQueryImpl<T>)criteriaQuery).getParameters();
         
         for (ParameterExpression<?> param : params) {
-            facadeQuery.registerParameter((QueryParameter<?>)param);
+            facadeQuery.declareParameter(param, param);
         }
         return facadeQuery;
     }

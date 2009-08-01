@@ -465,6 +465,13 @@ public class QueryImpl
             unlock();
         }
     }
+    
+    /**
+     * Affirms if this query has originated by parsing a string-based query.
+     */
+    public boolean isParsedQuery() {
+        return getQueryString() != null;
+    }
 
     public void setUnique(boolean unique) {
         lock();
@@ -622,7 +629,7 @@ public class QueryImpl
     protected Compilation compilationFromCache() {
         Map compCache =
             _broker.getConfiguration().getQueryCompilationCacheInstance();
-        if (compCache == null || getQueryString() == null) {
+        if (compCache == null || !isParsedQuery()) {
             return newCompilation();
         } else {
             CompilationKey key = new CompilationKey();
@@ -1684,7 +1691,7 @@ public class QueryImpl
      */
     protected void assertParameters(StoreQuery q, StoreQuery.Executor ex, 
         Object[] params) {
-        if (!q.requiresParameterDeclarations())
+        if (!q.requiresParameterDeclarations() || !isParsedQuery())
             return;
 
         LinkedMap paramTypes = ex.getParameterTypes(q);

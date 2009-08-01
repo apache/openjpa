@@ -56,6 +56,14 @@ public class TestNativeQueryParameterBinding extends SingleEMFTestCase {
 		verifyParams(sql, IllegalArgumentException.class, 0, 10);
 	}
 	
+	public void testNativeQueryDeclaredParameters() {
+        String sql = "SELECT * FROM Application WHERE id=?1 AND name=?2";
+        EntityManager em = emf.createEntityManager();
+        em.getTransaction().begin();
+        Query query = em.createNativeQuery(sql);
+        assertTrue(query.getParameters().isEmpty());
+	}
+	
 	void verifyParams(String jpql, Class<? extends Exception> error,
         Object... params) {
         EntityManager em = emf.createEntityManager();

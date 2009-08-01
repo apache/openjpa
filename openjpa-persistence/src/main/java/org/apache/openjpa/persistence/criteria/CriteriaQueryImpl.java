@@ -22,6 +22,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -69,7 +70,7 @@ public class CriteriaQueryImpl<T> implements CriteriaQuery<T>, AliasContext {
     private Set<Root<?>>        _roots;
     private PredicateImpl       _where;
     private List<Order>         _orders;
-    private LinkedHashMap<ParameterExpression<?>, Class<?>> _paramTypes;
+    private Set<ParameterExpression<?>> _params;
     private List<Selection<?>>  _selections;
     private List<Expression<?>> _groups;
     private PredicateImpl       _having;
@@ -82,9 +83,6 @@ public class CriteriaQueryImpl<T> implements CriteriaQuery<T>, AliasContext {
     // AliasContext
     private int aliasCount = 0;
     private static String ALIAS_BASE = "autoAlias";
-    
-    // Auto-generated Parameter name 
-    private static String PARAM_BASE = "*autoParam";
     
     private Map<Selection<?>,Value> _variables = new HashMap<Selection<?>, Value>();
     private Map<Selection<?>,Value> _values    = new HashMap<Selection<?>, Value>();
@@ -196,20 +194,15 @@ public class CriteriaQueryImpl<T> implements CriteriaQuery<T>, AliasContext {
      * 
      */
     public void registerParameter(ParameterExpressionImpl<?> p) {
-        if (_paramTypes == null) {
-            _paramTypes = new LinkedHashMap<ParameterExpression<?>, Class<?>>();
+        if (_params == null)
+            _params = new HashSet<ParameterExpression<?>>();
+        if (_params.add(p)) {
+            p.setIndex(_params.size());
         }
-        if (_paramTypes.containsKey(p)) {
-            return;
-        }
-        p.setIndex(_paramTypes.size());
-        _paramTypes.put(p, p.getJavaType());
-        if (p.getName() == null)
-            p.assignAutoName(PARAM_BASE + p.getIndex());
     }
     
     public Set<ParameterExpression<?>> getParameters() {
-        return _paramTypes == null ? Collections.EMPTY_SET : _paramTypes.keySet();
+        return _params == null ? Collections.EMPTY_SET : Collections.unmodifiableSet(_params);
     }
 
     /**
@@ -331,19 +324,15 @@ public class CriteriaQueryImpl<T> implements CriteriaQuery<T>, AliasContext {
     }
     
     /**
-     * Return map of <String, Class> where key is the name of the parameter
-     * and value is the expected type. 
+     * Return map where key is the parameter expression itself and value is the expected type.
+     * Empty map if no parameter has been declared. 
      */
     public LinkedMap getParameterTypes() {
-        if (_paramTypes == null)
+        if (_params == null)
             return StoreQuery.EMPTY_PARAMS;
         LinkedMap  parameterTypes = new LinkedMap();
-        for (ParameterExpression<?> p : _paramTypes.keySet()) {
-            if (p.getName() == null && p.getPosition() == null)
-                throw new RuntimeException(p + " is not set");
-            Object paramKey = p.getName() == null 
-               ? p.getPosition() : p.getName();
-            parameterTypes.put(paramKey, p.getJavaType());
+        for (ParameterExpression<?> p : _params) {
+            parameterTypes.put(p, p.getJavaType());
         }
         return parameterTypes;
     }

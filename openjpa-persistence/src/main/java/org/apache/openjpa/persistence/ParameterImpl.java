@@ -20,9 +20,6 @@ package org.apache.openjpa.persistence;
 
 import javax.persistence.Parameter;
 
-import org.apache.openjpa.kernel.Filters;
-import org.apache.openjpa.lib.util.Localizer;
-
 /**
  * A user-defined parameter of a query.
  * 
@@ -42,28 +39,16 @@ import org.apache.openjpa.lib.util.Localizer;
  * @param <T> type of value carried by this parameter.
  * 
  */
-public class ParameterImpl<T> implements QueryParameter<T> {
-    private static final Localizer _loc = Localizer.forPackage(ParameterImpl.class);
-    
+public class ParameterImpl<T> implements Parameter<T> {
     private final String _name;
     private final Integer _position;
-    private final Class<?> _expectedValueType;
-    private T _value;
-    private boolean _bound; 
-    
-    /**
-     * Construct a positional parameter with the given position as key and
-     * no expected value type.
-     */
-    public ParameterImpl(int position) {
-        this(position, null);
-    }
+    private final Class<T> _expectedValueType;
     
     /**
      * Construct a positional parameter with the given position as key and
      * given expected value type.
      */
-    public ParameterImpl(int position, Class<?> expectedValueType) {
+    public ParameterImpl(int position, Class<T> expectedValueType) {
         _name = null;
         _position = position;
         _expectedValueType = expectedValueType;
@@ -71,17 +56,9 @@ public class ParameterImpl<T> implements QueryParameter<T> {
     
     /**
      * Construct a named parameter with the given name as key and
-     * no expected value type.
-     */
-    public ParameterImpl(String name) {
-        this(name, null);
-    }
-    
-    /**
-     * Construct a named parameter with the given name as key and
      * given expected value type.
      */
-    public ParameterImpl(String name, Class<?> expectedValueType) {
+    public ParameterImpl(String name, Class<T> expectedValueType) {
         _name = name;
         _position = null;
         _expectedValueType = expectedValueType;
@@ -95,81 +72,8 @@ public class ParameterImpl<T> implements QueryParameter<T> {
         return _position;
     }
     
-    public final boolean isNamed() {
-        return _name != null;
-    }
-    
-    public final boolean isPositional() {
-        return _position != null;
-    }
-    
-    /**
-     * Affirms if the given value can be assigned to this parameter.
-     * 
-     * If no expected value type is set, then always returns true.
-     */
-    public boolean isValueAssignable(Object v) {
-        if (_expectedValueType == null)
-            return true;
-        if (v == null)
-            return !_expectedValueType.isPrimitive();
-        return Filters.canConvert(v.getClass(), _expectedValueType, true);
-    }
-    
-    /**
-     * Affirms if this parameter has been bound to a value.
-     */
-    public boolean isBound() {
-        return _bound;
-    }
-    
-    /**
-     * Binds the given value to this parameter.
-     * 
-     * @exception if the given value is not permissible for this parameter.
-     */
-    public QueryParameter<T> bindValue(T v) {
-        if (!isValueAssignable(v)) {
-            if (v == null)
-                throw new IllegalArgumentException(_loc.get("param-null-not-assignable", this).getMessage());
-            else
-                throw new IllegalArgumentException(_loc.get("param-value-not-assignable", this, v, v.getClass())
-                        .getMessage());
-        }
-        _value = v;
-        _bound = true;
-        return this;
-    }
-    
-    /**
-     * Gets the current value irrespective of whether a value has been bound or not.
-     */
-    public Object getValue() {
-        return getValue(false);
-    }
-    
-    /**
-     * Gets the current value only if a value has been bound or not.
-     */
-    public Object getValue(boolean mustBeBound) {
-        if (mustBeBound && !isBound())
-            throw new IllegalStateException(_loc.get("param-not-bound", this).getMessage());
-        return _value;
-    }
-    
-    /**
-     * Clears bound value.
-     */
-    public void clearBinding() {
-        _bound = false;
-        _value = null;
-    }
-    
-    /**
-     * Gets (immutable) type of expected value of this parameter. 
-     */
-    public Class<?> getExpectedValueType() {
-        return _expectedValueType;
+    public Class<T> getJavaType() {
+      return _expectedValueType;
     }
     
     /**
@@ -182,28 +86,25 @@ public class ParameterImpl<T> implements QueryParameter<T> {
         if (!(other instanceof Parameter))
             return false;
         Parameter<?> that = (Parameter<?>)other;
-        if (isNamed())
-            return this.getName().equals(that.getName());
-        if (isPositional())
-            return getPosition().equals(that.getPosition());
+        if (_name != null)
+            return _name.equals(that.getName());
+        if (_position != null)
+            return _position.equals(that.getPosition());
         return false;
     }
     
     public String toString() {
         StringBuilder buf = new StringBuilder("Parameter");
-        buf.append("<" + (getExpectedValueType() == null ? "?" : getExpectedValueType().getName()) + ">");
-        if (isNamed()) {
-            buf.append("('" + getName() + "':");
-        } else if (isPositional()) {
-            buf.append("(" + getPosition() + ":");
+        buf.append("<" + getJavaType().getSimpleName() + ">");
+        if (_name != null) {
+            buf.append("('" + _name + "')");
+        } else if (_position != null) {
+            buf.append("(" + _position + ")");
+        } else {
+            buf.append("(?)");
         }
-        buf.append((isBound() ? getValue() : "UNBOUND") + ")");
 
         return buf.toString();
     }
 
-    public Class<T> getJavaType() {
-        Class<?> cls = _value.getClass();
-        return (Class<T>) cls;
-    }
 }
