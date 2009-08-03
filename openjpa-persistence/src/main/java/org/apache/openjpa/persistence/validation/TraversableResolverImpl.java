@@ -56,36 +56,17 @@ public class TraversableResolverImpl implements TraversableResolver {
         Node traversableProperty, Class<?> rootBeanType,
         Path pathToTraversableObject, ElementType elementType) {
 
-        if (traversableObject == null) {
+        /*
+         * OpenJPA optimized version of the default provider implementation,
+         * which doesn't ask all the providers on the classpath about the obj.
+         */
+        if (OpenJPAPersistenceUtil.isLoaded(emf, traversableObject, 
+            traversableProperty.getName()) == LoadState.NOT_LOADED) {
+            return false;
+        } else {
+            // LoadState.LOADED or LoadState.UNKNOWN
             return true;
         }
-        
-        // Identical behavior to spec defined default provider implementation
-        return javax.persistence.Persistence.getPersistenceUtil().isLoaded(
-            traversableObject, traversableProperty.getName());
-        
-        /*
-         * Improved OpenJPA version of the default provider implementation
-         * 
-         * The below code causes -
-         * Caused by: javax.validation.ValidationException: java.lang.UnsupportedOperationException
-         * at org.apache.openjpa.persistence.validation.TraversableResolverImpl.isReachable
-         *      (TraversableResolverImpl.java:73)
-         * at org.hibernate.validation.engine.resolver.SingleThreadCachedTraversableResolver.isReachable
-         *      (SingleThreadCachedTraversableResolver.java:47)
-         *
-        try {
-            if (OpenJPAPersistenceUtil.isLoaded(emf, traversableObject, 
-                traversableProperty.getName()) == LoadState.NOT_LOADED) {
-                return false;
-            }
-        } catch (Exception e) {
-            // BV Spec Section 3.5.2 - any exceptions must be wrapped
-            throw new ValidationException(e);
-        }
-        // LoadState.LOADED or LoadState.UNKNOWN
-        return true;
-        */
     }
 
     /* (non-Javadoc) isCascadable() is called by the Validator after 
@@ -100,7 +81,7 @@ public class TraversableResolverImpl implements TraversableResolver {
         Node traversableProperty, Class<?> rootBeanType,
         Path pathToTraversableObject, ElementType elementType) {
 
-        // BV Spec Section 3.5.2 says to always return true for JPA
+        // BV Spec Section 3.5.2 says to always return true for JPA ???
         return true;
     }
 }

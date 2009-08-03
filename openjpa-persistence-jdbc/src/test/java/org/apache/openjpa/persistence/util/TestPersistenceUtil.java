@@ -73,7 +73,56 @@ public class TestPersistenceUtil extends SingleEMFTestCase{
         verifyIsLoadedEagerState(false);       
     }
 
-    
+    /*
+     * Verifies that an entity and attributes are considered loaded if they
+     * are assigned by the application.
+     */
+    public void testIsApplicationLoaded() {
+        PersistenceUtil putil = Persistence.getPersistenceUtil();
+        EntityManager em = emf.createEntityManager();
+        EagerEntity ee = createEagerEntity();
+        
+        em.getTransaction().begin();
+        em.persist(ee);
+        em.getTransaction().commit();
+        em.clear();
+        
+        ee = em.getReference(EagerEntity.class, ee.getId());
+        assertNotNull(ee);
+        assertEagerLoadState(putil, ee, false);
+        
+        ee.setName("AppEagerName");
+        EagerEmbed emb = createEagerEmbed();
+        ee.setEagerEmbed(emb);
+        // Assert fields are loaded via application loading
+        assertEagerLoadState(putil, ee, true);
+        // Vfy the set values are applied to the entity
+        assertEquals("AppEagerName", ee.getName());
+        assertEquals(emb, ee.getEagerEmbed());
+        
+        em.close();
+    }
+        
+    /*
+     * Verifies that an entity and attributes are considered loaded if they
+     * are in the detached state.
+     */
+    public void testIsDetachLoaded() {
+        PersistenceUtil putil = Persistence.getPersistenceUtil();
+        EntityManager em = emf.createEntityManager();
+        EagerEntity ee = createEagerEntity();
+        
+        em.getTransaction().begin();
+        em.persist(ee);
+        em.getTransaction().commit();
+        em.clear();
+        
+        // should be true, as detached is treated as LoadState.UNKNOWN
+        assertEquals(true, putil.isLoaded(ee));
+        
+        em.close();
+    }
+
     private void verifyIsLoadedEagerState(boolean loaded) {
         PersistenceUtil putil = Persistence.getPersistenceUtil();
         EntityManager em = emf.createEntityManager();
@@ -136,36 +185,6 @@ public class TestPersistenceUtil extends SingleEMFTestCase{
         em.close();
     }
 
-    /*
-     * Verifies that an entity and attributes are considered loaded if they
-     * are assigned by the application.
-     */
-    public void testIsApplicationLoaded() {
-        PersistenceUtil putil = Persistence.getPersistenceUtil();
-        EntityManager em = emf.createEntityManager();
-        EagerEntity ee = createEagerEntity();
-        
-        em.getTransaction().begin();
-        em.persist(ee);
-        em.getTransaction().commit();
-        em.clear();
-        
-        ee = em.getReference(EagerEntity.class, ee.getId());
-        assertNotNull(ee);
-        assertEagerLoadState(putil, ee, false);
-        
-        ee.setName("AppEagerName");
-        EagerEmbed emb = createEagerEmbed();
-        ee.setEagerEmbed(emb);
-        // Assert fields are loaded via application loading
-        assertEagerLoadState(putil, ee, true);
-        // Vfy the set values are applied to the entity
-        assertEquals("AppEagerName", ee.getName());
-        assertEquals(emb, ee.getEagerEmbed());
-        
-        em.close();
-    }
-        
     private EagerEntity createEagerEntity() {
         EagerEntity ee = new EagerEntity();
         ee.setId(new Random().nextInt());

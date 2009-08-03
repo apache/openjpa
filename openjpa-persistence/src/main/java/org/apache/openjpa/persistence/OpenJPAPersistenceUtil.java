@@ -165,31 +165,37 @@ public class OpenJPAPersistenceUtil {
     private static LoadState isLoaded(OpenJPAStateManager sm, String attr, 
         HashSet<OpenJPAStateManager> pcs) {
         boolean isLoaded = true;
-        BitSet loadSet = sm.getLoaded();
-        if (attr != null) {
-            FieldMetaData fmd = sm.getMetaData().getField(attr);
-            // Could not find field metadata for the specified attribute.
-            if (fmd == null) {
-                return LoadState.UNKNOWN;
-            }
-            // Otherwise, return the load state
-            if(!loadSet.get(fmd.getIndex())) {
-                return LoadState.NOT_LOADED;
-            }
-        }
-        FieldMetaData[] fmds = sm.getMetaData().getFields();
-        // Check load state of all persistent eager fetch attributes
-        if (fmds != null && fmds.length > 0) {
-            pcs = addToLoadSet(pcs, sm);
-            for (FieldMetaData fmd : fmds) {
-                if (fmd.isInDefaultFetchGroup()) {
-                    if (!isLoadedField(sm, fmd, pcs)) {
-                        isLoaded = false;
-                        break;
-                    }
+        try {
+            BitSet loadSet = sm.getLoaded();
+            if (attr != null) {
+                FieldMetaData fmd = sm.getMetaData().getField(attr);
+                // Could not find field metadata for the specified attribute.
+                if (fmd == null) {
+                    return LoadState.UNKNOWN;
+                }
+                // Otherwise, return the load state
+                if(!loadSet.get(fmd.getIndex())) {
+                    return LoadState.NOT_LOADED;
                 }
             }
-            pcs.remove(sm);
+            FieldMetaData[] fmds = sm.getMetaData().getFields();
+            // Check load state of all persistent eager fetch attributes
+            if (fmds != null && fmds.length > 0) {
+                pcs = addToLoadSet(pcs, sm);
+                for (FieldMetaData fmd : fmds) {
+                    if (fmd.isInDefaultFetchGroup()) {
+                        if (!isLoadedField(sm, fmd, pcs)) {
+                            isLoaded = false;
+                            break;
+                        }
+                    }
+                }
+                pcs.remove(sm);
+            }
+        } catch (RuntimeException e) {
+            // treat any exceptions, like UnsupportedOperationException
+            // for detached entities, as LoadState.UNKNOWN
+            return LoadState.UNKNOWN;
         }
         return isLoaded ? LoadState.LOADED : LoadState.NOT_LOADED;        
     }

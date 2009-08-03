@@ -1188,6 +1188,7 @@ public class TestConstraints extends SingleEMFTestCase {
             p.setFirstName("Java");
             p.setLastName("Joe");
             // use invalid Address, which should cause CVEs due to @Valid
+            //a = em.getReference(Address.class, a.getId());
             assertNotNull(a);
             p.setHomeAddress(a);
             // persist, which should cause a CVE
@@ -1201,7 +1202,7 @@ public class TestConstraints extends SingleEMFTestCase {
             Set<ConstraintViolation<?>> cves = e.getConstraintViolations();
             assertNotNull(cves);
             for (ConstraintViolation<?> cv: cves) {
-                getLog().trace("CVE Contains ConstraintViolation = " + cv);
+                getLog().trace("CVE Contains ConstraintViolation = " + cv.getMessage());
             }
             assertEquals("Wrong number of embedded ConstraintViolation failures",
                 5, cves.size());
