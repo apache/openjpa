@@ -36,8 +36,9 @@ public class MapChangeTrackerImpl
     /**
      * Constructor; supply delegate map.
      */
-    public MapChangeTrackerImpl(Map map) {
+    public MapChangeTrackerImpl(Map map, boolean autoOff) {
         _map = map;
+        this.setAutoOff(autoOff);
     }
 
     public boolean getTrackKeys() {

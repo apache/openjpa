@@ -43,5 +43,5 @@ public interface ProxyMap
      * Create a new instance of this proxy type.
      */
     public ProxyMap newInstance(Class keyType, Class valueType,
-        Comparator compare, boolean trackChanges);
+        Comparator compare, boolean trackChanges, boolean autoOff);
 }

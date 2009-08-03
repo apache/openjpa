@@ -73,7 +73,7 @@ public abstract class AbstractLRSProxyMap<K,V>
     public AbstractLRSProxyMap(Class<K> keyType, Class<V> valueType) {
         _keyType = keyType;
         _valueType = valueType;
-        _ct = new MapChangeTrackerImpl(this);
+        _ct = new MapChangeTrackerImpl(this,false);
         _ct.setAutoOff(false);
     }
 

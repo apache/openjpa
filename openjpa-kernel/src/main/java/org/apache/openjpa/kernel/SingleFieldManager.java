@@ -125,7 +125,9 @@ class SingleFieldManager
                     return false;
                 proxy = checkProxy();
                 if (proxy == null) {
-                    proxy = getProxyManager().newCustomProxy(objval);
+                    proxy = getProxyManager().newCustomProxy(objval,
+                        _sm.getBroker().getConfiguration().
+                        getCompatibilityInstance().getAutoOff());
                     ret = proxy != null;
                 }
                 break;

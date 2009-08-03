@@ -43,10 +43,11 @@ public class CollectionChangeTrackerImpl
      * @param order true if the collection is ordered, false otherwise
      */
     public CollectionChangeTrackerImpl(Collection coll, boolean dups,
-        boolean order) {
+        boolean order,boolean autoOff) {
         _coll = coll;
         _dups = dups;
         _order = order;
+        this.setAutoOff(autoOff);
     }
 
     /**

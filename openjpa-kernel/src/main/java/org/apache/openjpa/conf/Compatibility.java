@@ -60,6 +60,7 @@ public class Compatibility {
     private boolean _useJPA2DefaultOrderColumnName = true;
     private boolean _copyOnDetach = false;
     private boolean _privatePersistentProperties = false;
+    private boolean _autoOff = true;
     
     /**
      * Whether to require exact identity value types when creating object
@@ -75,6 +76,22 @@ public class Compatibility {
      */
     public void setStrictIdentityValues(boolean strictVals) {
         _strictIdValues = strictVals;
+    }
+    
+    /**
+     * Whether to turn collection/map tracing off in case of more number of modifications.
+     * Defaults to true.
+     */
+    public boolean getAutoOff() {
+        return _autoOff;
+    }
+
+    /**
+     * Whether to turn collection/map tracing off in case of more number of modifications.
+     * Defaults to true.
+     */
+    public void setAutoOff(boolean autoOff) {
+        _autoOff = autoOff;
     }
 
     /**

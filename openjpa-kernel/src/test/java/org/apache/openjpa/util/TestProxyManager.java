@@ -173,12 +173,12 @@ public class TestProxyManager
     }
 
     public void testCopyProxyCollection() {
-        List orig = (List) _mgr.newCollectionProxy(ArrayList.class, null, null);
+        List orig = (List) _mgr.newCollectionProxy(ArrayList.class, null, null,true);
         populate(orig);
         assertListsEqual(new ArrayList(orig), (List) _mgr.copyCollection(orig));
 
         TreeSet torig = (TreeSet) _mgr.newCollectionProxy(TreeSet.class, null, 
-            new CustomComparator());
+            new CustomComparator(),true);
         assertTrue(torig.comparator() instanceof CustomComparator);
         populate(torig);
         assertSortedSetsEqual(new TreeSet(torig), (SortedSet) 
@@ -189,7 +189,7 @@ public class TestProxyManager
         // List doesn't support clone()
         
         TreeSet torig = (TreeSet) _mgr.newCollectionProxy(TreeSet.class, null, 
-            new CustomComparator());
+            new CustomComparator(),true);
         assertTrue(torig.comparator() instanceof CustomComparator);
         populate(torig);
         assertSortedSetsEquals(new TreeSet(torig), (SortedSet) torig.clone());
@@ -197,11 +197,11 @@ public class TestProxyManager
 
     public void testListMethodsProxied() 
         throws Exception {
-        Class proxy = _mgr.newCollectionProxy(ArrayList.class, null, null).
+        Class proxy = _mgr.newCollectionProxy(ArrayList.class, null, null,true).
             getClass();
         assertListMethodsProxied(proxy);
 
-        proxy = _mgr.newCollectionProxy(CustomList.class, null, null).
+        proxy = _mgr.newCollectionProxy(CustomList.class, null, null,true).
             getClass();
         assertListMethodsProxied(proxy);
     }
@@ -255,19 +255,19 @@ public class TestProxyManager
 
     public void testSetMethodsProxied() 
         throws Exception {
-        Class proxy = _mgr.newCollectionProxy(HashSet.class, null, null).
+        Class proxy = _mgr.newCollectionProxy(HashSet.class, null, null,true).
             getClass();
         assertCollectionMethodsProxied(proxy);
 
-        proxy = _mgr.newCollectionProxy(CustomSet.class, null, null).getClass();
+        proxy = _mgr.newCollectionProxy(CustomSet.class, null, null,true).getClass();
         assertCollectionMethodsProxied(proxy);
 
-        proxy = _mgr.newCollectionProxy(CustomSortedSet.class, null, null).
+        proxy = _mgr.newCollectionProxy(CustomSortedSet.class, null, null,true).
             getClass();
         assertCollectionMethodsProxied(proxy);
 
         proxy = _mgr.newCollectionProxy(CustomComparatorSortedSet.class, null, 
-            new CustomComparator()).getClass();
+            new CustomComparator(),true).getClass();
         assertCollectionMethodsProxied(proxy);
     }
 
@@ -277,7 +277,7 @@ public class TestProxyManager
         if (queue == null)
             return;
 
-        Class proxy = _mgr.newCollectionProxy(LinkedList.class, null, null).
+        Class proxy = _mgr.newCollectionProxy(LinkedList.class, null, null,true).
             getClass();
         assertTrue(queue.isAssignableFrom(proxy));        
         assertCollectionMethodsProxied(proxy);
@@ -295,7 +295,7 @@ public class TestProxyManager
 
     public void testLinkedListMethodsProxied() 
         throws Exception {
-        Class proxy = _mgr.newCollectionProxy(LinkedList.class, null, null).
+        Class proxy = _mgr.newCollectionProxy(LinkedList.class, null, null,true).
             getClass();
         assertListMethodsProxied(proxy);
         assertNotNull(proxy.getDeclaredMethod("addFirst", 
@@ -308,7 +308,7 @@ public class TestProxyManager
 
     public void testVectorMethodsProxied() 
         throws Exception {
-         Class proxy = _mgr.newCollectionProxy(Vector.class, null, null).
+         Class proxy = _mgr.newCollectionProxy(Vector.class, null, null,true).
             getClass();
         assertListMethodsProxied(proxy);
         assertNotNull(proxy.getDeclaredMethod("addElement", 
@@ -326,7 +326,7 @@ public class TestProxyManager
     }
 
     public void testListChangeTracker() {
-        Proxy coll = _mgr.newCollectionProxy(ArrayList.class, null, null);
+        Proxy coll = _mgr.newCollectionProxy(ArrayList.class, null, null,true);
         assertNotNull(coll);
         assertNotNull(coll.getChangeTracker());
         assertTrue(coll.getChangeTracker() 
@@ -338,7 +338,7 @@ public class TestProxyManager
     }
     
     public void testSetChangeTracker() {
-        Proxy coll = _mgr.newCollectionProxy(HashSet.class, null, null);
+        Proxy coll = _mgr.newCollectionProxy(HashSet.class, null, null,true);
         assertNotNull(coll);
         assertNotNull(coll.getChangeTracker());
         assertTrue(coll.getChangeTracker() 
@@ -350,25 +350,25 @@ public class TestProxyManager
     }
  
     public void testCollectionInterfaceProxy() {
-        Proxy coll = _mgr.newCollectionProxy(Collection.class, null, null);
+        Proxy coll = _mgr.newCollectionProxy(Collection.class, null, null,true);
         assertNotNull(coll);
     }
 
     public void testListInterfaceProxy() {
-        Proxy coll = _mgr.newCollectionProxy(List.class, null, null);
+        Proxy coll = _mgr.newCollectionProxy(List.class, null, null,true);
         assertNotNull(coll);
         assertTrue(coll instanceof List);
     }
 
     public void testSetInterfaceProxy() {
-        Proxy coll = _mgr.newCollectionProxy(Set.class, null, null);
+        Proxy coll = _mgr.newCollectionProxy(Set.class, null, null,true);
         assertNotNull(coll);
         assertTrue(coll instanceof Set);
         assertFalse(coll instanceof SortedSet);
     }
 
     public void testSortedSetInterfaceProxy() {
-        Proxy coll = _mgr.newCollectionProxy(SortedSet.class, null, null);
+        Proxy coll = _mgr.newCollectionProxy(SortedSet.class, null, null,true);
         assertNotNull(coll);
         assertTrue(coll instanceof SortedSet);
     }
@@ -378,7 +378,7 @@ public class TestProxyManager
         if (queue == null)
             return;
 
-        Proxy coll = _mgr.newCollectionProxy(queue, null, null);
+        Proxy coll = _mgr.newCollectionProxy(queue, null, null,true);
         assertNotNull(coll);
         assertTrue(queue.isInstance(coll));
     }
@@ -479,12 +479,12 @@ public class TestProxyManager
     }
 
     public void testCopyProxyMap() {
-        Map orig = (Map) _mgr.newMapProxy(HashMap.class, null, null, null);
+        Map orig = (Map) _mgr.newMapProxy(HashMap.class, null, null, null,true);
         populate(orig);
         assertMapsEqual(new HashMap(orig), (Map) _mgr.copyMap(orig));
 
         TreeMap torig = (TreeMap) _mgr.newMapProxy(TreeMap.class, null, null, 
-            new CustomComparator());
+            new CustomComparator(),true);
         assertTrue(torig.comparator() instanceof CustomComparator);
         populate(torig);
         assertSortedMapsEqual(new TreeMap(torig), (SortedMap) 
@@ -495,7 +495,7 @@ public class TestProxyManager
         // Map does not support clone()
         
         TreeMap torig = (TreeMap) _mgr.newMapProxy(TreeMap.class, null, null, 
-            new CustomComparator());
+            new CustomComparator(),true);
         assertTrue(torig.comparator() instanceof CustomComparator);
         populate(torig);
         assertSortedMapsEquals(new TreeMap(torig), (SortedMap) torig.clone());
@@ -503,26 +503,26 @@ public class TestProxyManager
 
     public void testMapMethodsProxied() 
         throws Exception {
-        Class proxy = _mgr.newMapProxy(HashMap.class, null, null, null).
+        Class proxy = _mgr.newMapProxy(HashMap.class, null, null, null,true).
             getClass();
         assertMapMethodsProxied(proxy);
 
-        proxy = _mgr.newMapProxy(TreeMap.class, null, null, null).getClass();
+        proxy = _mgr.newMapProxy(TreeMap.class, null, null, null,true).getClass();
         assertMapMethodsProxied(proxy);
 
         proxy = _mgr.newMapProxy(TreeMap.class, null, null, 
-            new CustomComparator()).getClass();
+            new CustomComparator(),true).getClass();
         assertMapMethodsProxied(proxy);
 
-        proxy = _mgr.newMapProxy(CustomMap.class, null, null, null).getClass();
+        proxy = _mgr.newMapProxy(CustomMap.class, null, null, null,true).getClass();
         assertMapMethodsProxied(proxy);
 
-        proxy = _mgr.newMapProxy(CustomSortedMap.class, null, null, null).
+        proxy = _mgr.newMapProxy(CustomSortedMap.class, null, null, null,true).
             getClass();
         assertMapMethodsProxied(proxy);
 
         proxy = _mgr.newMapProxy(CustomComparatorSortedMap.class, null, null, 
-            new CustomComparator()).getClass();
+            new CustomComparator(),true).getClass();
         assertMapMethodsProxied(proxy);
     }
 
@@ -554,7 +554,7 @@ public class TestProxyManager
 
     public void testPropertiesMethodsProxied() 
         throws Exception {
-        Class proxy = _mgr.newMapProxy(Properties.class, null, null, null).
+        Class proxy = _mgr.newMapProxy(Properties.class, null, null, null,true).
             getClass();
         assertMapMethodsProxied(proxy);
         assertNotNull(proxy.getDeclaredMethod("setProperty", 
@@ -797,7 +797,7 @@ public class TestProxyManager
         NonproxyableBean orig = new NonproxyableBean(1);
         populate(orig);
         assertNull(_mgr.copyCustom(orig));
-        assertNull(_mgr.newCustomProxy(orig));
+        assertNull(_mgr.newCustomProxy(orig,true));
     }
 
 
@@ -815,7 +815,7 @@ public class TestProxyManager
     }
 
     public void testCopyProxyBean() {
-        CustomBean orig = (CustomBean) _mgr.newCustomProxy(new CustomBean());
+        CustomBean orig = (CustomBean) _mgr.newCustomProxy(new CustomBean(),true);
         populate(orig);
         CustomBean comp = new CustomBean();
         populate(comp);
@@ -824,11 +824,11 @@ public class TestProxyManager
 
     public void testBeanMethodsProxied()
         throws Exception {
-        Class proxy = _mgr.newCustomProxy(new CustomBean()).getClass();
+        Class proxy = _mgr.newCustomProxy(new CustomBean(),true).getClass();
         assertBeanMethodsProxied(proxy);
 
         proxy = _mgr.newCustomProxy(new CustomCopyConstructorBean
-            (new CustomBean())).getClass();
+            (new CustomBean()),true).getClass();
         assertBeanMethodsProxied(proxy);
     }
 
