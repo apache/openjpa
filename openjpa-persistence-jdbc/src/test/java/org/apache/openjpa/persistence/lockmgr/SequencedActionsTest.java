@@ -74,7 +74,7 @@ public abstract class SequencedActionsTest extends SQLListenerTestCase {
 
     protected static final int MinThreadWaitInMs = 10000;
 
-    private long waitInMsec = -1;
+    private static long waitInMsec = -1;
     private String empTableName;
     private List<TestThread> threads = null;
 
