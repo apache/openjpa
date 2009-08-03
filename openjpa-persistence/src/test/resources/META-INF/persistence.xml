@@ -23,5 +23,13 @@
     <persistence-unit name="pu_1" transaction-type="RESOURCE_LOCAL">
     </persistence-unit>      
     <persistence-unit name="pu_2" transaction-type="RESOURCE_LOCAL">
-    </persistence-unit>      
+    </persistence-unit>
+    <persistence-unit name="encryption_plugin_pu" transaction-type="RESOURCE_LOCAL">
+        <properties>
+            <property name="openjpa.EncryptionProvider"
+                value="org.apache.openjpa.persistence.TestPersistenceProductDerivation$TestEncryptionProvider" />
+        </properties>
+    </persistence-unit>
+    <persistence-unit name="encryption_plugin_default_pu" transaction-type="RESOURCE_LOCAL">
+    </persistence-unit>
 </persistence>
