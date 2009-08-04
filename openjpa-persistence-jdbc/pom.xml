@@ -808,11 +808,11 @@
                         <exclude>org/apache/openjpa/persistence/kernel/TestPMMemory.java</exclude>
                         <!-- You can exclude the lockmgr test to save ~15 mins. -->
                         <!-- <exclude>org/apache/openjpa/persistence/lockmgr/*.java</exclude> -->
-						
+
                         <!-- ================================================================== -->
-						<!--  MetaModel tests are *temporarily* excluded to wait for            -->
-						<!--  spec to stabilize on Result Processing API                        -->
-						<!-- ================================================================== --> 
+                        <!--  MetaModel tests are *temporarily* excluded to wait for            -->
+                        <!--  spec to stabilize on Result Processing API                        -->
+                        <!-- ================================================================== --> 
                         <exclude>org/apache/openjpa/persistence/meta/*.java</exclude>
                         
                         <!-- Exclude subclassing tests   -->
