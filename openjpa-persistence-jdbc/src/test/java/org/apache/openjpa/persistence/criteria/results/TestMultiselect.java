@@ -42,7 +42,6 @@ import org.apache.openjpa.util.UserException;
 
 @AllowFailure(value=false, message="Tests:16 Errors:1 Failure:1")
 public class TestMultiselect extends CriteriaTest {
-    private static final Class[] CLASSES = {Person.class};
     private static boolean initialized = false;
     
     @Override
@@ -52,11 +51,6 @@ public class TestMultiselect extends CriteriaTest {
             createData();
             initialized = true;
         }
-    }
-    
-    @Override
-    protected Class[] getDomainClasses() {
-        return CLASSES;
     }
     
     void createData() {
