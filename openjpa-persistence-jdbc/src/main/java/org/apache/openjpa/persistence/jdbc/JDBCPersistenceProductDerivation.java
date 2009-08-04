@@ -94,7 +94,7 @@ public class JDBCPersistenceProductDerivation
             return false;
         JDBCConfigurationImpl conf = (JDBCConfigurationImpl) c;
         Specification jpa = PersistenceProductDerivation.SPEC_JPA;
-        if (!jpa.equals(conf.getSpecificationInstance()))
+        if (!jpa.getName().equals(conf.getSpecificationInstance().getName()))
             return false;
         
         conf.mappingDefaultsPlugin.setDefault(jpa.getName());

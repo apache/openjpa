@@ -181,6 +181,8 @@ public class PersistenceProductDerivation
             compatibility.setFlushBeforeDetach(true);
             compatibility.setCopyOnDetach(true);
             compatibility.setPrivatePersistentProperties(true);
+            // Disable bean validation for spec level < 2 configurations
+            conf.validationMode.set(String.valueOf(ValidationMode.NONE));
         } 
         return true;
     }
@@ -563,7 +565,19 @@ public class PersistenceProductDerivation
         public void setInto(Configuration conf) {
             if (conf instanceof OpenJPAConfiguration) {
                 OpenJPAConfiguration oconf = (OpenJPAConfiguration) conf;
-                oconf.setSpecification(SPEC_JPA);
+                Object persistenceVersion = 
+                    getProperties().get(
+                        PersistenceUnitInfoImpl.PERSISTENCE_VERSION);
+                if (persistenceVersion == null) {
+                    oconf.setSpecification(SPEC_JPA);
+                } else {
+                    // Set the spec level based on the persistence version
+                    oconf.setSpecification("jpa " + 
+                        persistenceVersion.toString());
+                    getProperties().remove(
+                        PersistenceUnitInfoImpl.PERSISTENCE_VERSION);
+                }
+                    
 
                 // we merge several persistence.xml elements into the 
                 // MetaDataFactory property implicitly.  if the user has a

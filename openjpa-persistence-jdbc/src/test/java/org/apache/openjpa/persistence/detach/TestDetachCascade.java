@@ -71,6 +71,9 @@ public class TestDetachCascade extends SingleEMFTestCase {
         assertNotNull(em);
         compat = emf.getConfiguration().getCompatibilityInstance();
         assertNotNull(compat);
+        compat.setFlushBeforeDetach(false);
+        compat.setCopyOnDetach(false);
+        compat.setCascadeWithDetach(true);
     }
 
     private void create(int id) {
@@ -145,6 +148,8 @@ public class TestDetachCascade extends SingleEMFTestCase {
     
     // Make sure cascade is no longer done by default
     public void testNoCascade() {
+        boolean cwd = compat.getCascadeWithDetach();
+        compat.setCascadeWithDetach(false);
         id++;
         em.getTransaction().begin();
         create(id);
@@ -155,6 +160,7 @@ public class TestDetachCascade extends SingleEMFTestCase {
         assertFalse(em.contains(e1));
         assertTrue(em.contains(e14));
         em.getTransaction().commit();
+        compat.setCascadeWithDetach(cwd);
     }
     
     // Change to the previous behavior to always cascade
@@ -179,6 +185,8 @@ public class TestDetachCascade extends SingleEMFTestCase {
     
     // Test explicit cascade of entities
     public void testCascadeOfEntities() {
+        boolean cwd = compat.getCascadeWithDetach();
+        compat.setCascadeWithDetach(false);
         id++;
         em.getTransaction().begin();
         create(id);
@@ -193,6 +201,7 @@ public class TestDetachCascade extends SingleEMFTestCase {
         assertTrue(em.contains(e6));
         assertTrue(em.contains(e7));
         em.getTransaction().commit();
+        compat.setCascadeWithDetach(cwd);
     }
     
     // Test always cascade of entities

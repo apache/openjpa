@@ -31,8 +31,13 @@
     		</title>
     		<para>
     		The following sections indicate changes that are incompatible between
-    		OpenJPA 1.x.x releases and the 2.0 release. Some of these may
-    		require application changes.
+    		OpenJPA 1.x.x releases and the 2.0 release. Some of may
+    		require application changes. Others can be remedied through the use
+            of compatibility options.  If your application uses a version 1.0 persistence.xml,
+            compatibility options will be set appropriately to maintain backward 
+            compatibility.  OpenJPA 2.0 applications using a version 2.0 persistence.xml
+            and require OpenJPA 1.x.x compatibility may need to configure the appropriate
+            compatibility options to get the desired behavior.
     		</para>
     		<section id="getProperties">
     			<title>
@@ -88,7 +93,9 @@
 					</itemizedlist>
     			</para>
     			<para>
-    				It is possible to revert back to the 1.x.x behavior for
+    				Applications that use a 1.0 persistence.xml will automatically 
+                    maintain OpenJPA 1.0 behavior.  It is possible for a version 2.0 
+                    application to revert back to the 1.x.x behavior for
     				some of these items by setting the openjpa.Compatibility
     				property as follows:
     				<simplelist>
@@ -120,8 +127,9 @@
                     persistent by default.
                 </para>
                 <para>
-                    It is possible to revert back to the 1.x.x behavior which
-                    allowed private properties to be persistent by setting the 
+                    Applications that use a 1.0 persistence.xml will automatically 
+                    maintain OpenJPA 1.x.x behavior. It is possible for a version 2.0 
+                    application to revert back to the 1.x.x behavior by setting the 
                     value of the <literal>openjpa.Compatibility</literal> 
                     property <literal>PrivatePersistentProperties</literal> to 
                     <literal>true</literal>.  If compile time enhancement is 

@@ -26,13 +26,14 @@ public class TestAccessMods
     extends SingleEMFTestCase {
 
         public void setUp() {
-            setUp(DROP_TABLES, AccessModsEntity.class);
+            setUp("openjpa.Compatibility", "PrivatePersistentProperties=false",
+                DROP_TABLES, AccessModsEntity.class);
         }
         
         /**
-         * Verifies that by default, per JPA spec, non-transient public and 
-         * protected properties should be persistent.  Private should not be
-         * persistent.
+         * Verifies that when the PrivatePersistentProperties compat option 
+         * is false, non-transient public and protected properties should be 
+         * persistent.  Private should not be persistent.
          */
         public void testAccessMods() {
             EntityManager em = emf.createEntityManager();            

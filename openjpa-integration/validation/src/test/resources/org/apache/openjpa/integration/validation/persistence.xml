@@ -124,5 +124,23 @@
             <!-- Properties passed in via createEMF -->
         </properties>
     </persistence-unit>
+
+    <persistence-unit name="ConstraintPU">
+        <class>org.apache.openjpa.integration.validation.ConstraintNull</class>
+        <class>org.apache.openjpa.integration.validation.ConstraintBoolean</class>
+        <class>org.apache.openjpa.integration.validation.ConstraintDecimal</class>
+        <class>org.apache.openjpa.integration.validation.ConstraintNumber</class>
+        <class>org.apache.openjpa.integration.validation.ConstraintDigits</class>
+        <class>org.apache.openjpa.integration.validation.ConstraintSize</class>
+        <class>org.apache.openjpa.integration.validation.ConstraintDates</class>
+        <class>org.apache.openjpa.integration.validation.ConstraintPattern</class>
+        <class>org.apache.openjpa.integration.validation.Person</class>
+        <class>org.apache.openjpa.integration.validation.Address</class>        
+        <validation-mode>AUTO</validation-mode>
+        <properties>
+            <property name="openjpa.jdbc.SynchronizeMappings" 
+                value="buildSchema"/>
+        </properties>
+    </persistence-unit>
     
 </persistence>

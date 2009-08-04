@@ -22,6 +22,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import org.apache.openjpa.conf.Compatibility;
 import org.apache.openjpa.meta.ClassMetaData;
 import org.apache.openjpa.meta.MetaDataRepository;
 import org.apache.openjpa.meta.ValueMetaData;
@@ -56,6 +57,12 @@ public class TestDetach extends SingleEMFTestCase {
     public void setUp() {
         super.setUp(DMCustomer.class, DMCustomerInventory.class, DMItem.class,
             CLEAR_TABLES);
+        
+        Compatibility compat = 
+            emf.getConfiguration().getCompatibilityInstance();
+        compat.setCopyOnDetach(false);
+        compat.setFlushBeforeDetach(false);
+        
         em = emf.createEntityManager();
         root = createData();
     }

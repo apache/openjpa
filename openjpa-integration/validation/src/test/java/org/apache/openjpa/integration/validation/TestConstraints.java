@@ -21,6 +21,7 @@ package org.apache.openjpa.integration.validation;
 import java.util.Set;
 
 import javax.persistence.Query;
+import javax.persistence.spi.ValidationMode;
 import javax.validation.ConstraintViolation;
 import javax.validation.ConstraintViolationException;
 
@@ -29,6 +30,7 @@ import org.apache.openjpa.lib.log.Log;
 import org.apache.openjpa.persistence.OpenJPAEntityManager;
 import org.apache.openjpa.persistence.OpenJPAEntityManagerFactorySPI;
 import org.apache.openjpa.persistence.OpenJPAPersistence;
+import org.apache.openjpa.persistence.test.PersistenceTestCase;
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
 
 /**
@@ -75,16 +77,24 @@ import org.apache.openjpa.persistence.test.SingleEMFTestCase;
  *
  * @version $Rev$ $Date$
  */
-public class TestConstraints extends SingleEMFTestCase {
+public class TestConstraints extends PersistenceTestCase {
 
+    private static OpenJPAEntityManagerFactorySPI emf = null;
+    
     @Override
     public void setUp() {
-        super.setUp(CLEAR_TABLES,
-            ConstraintNull.class, ConstraintBoolean.class,
-            ConstraintDecimal.class, ConstraintNumber.class,
-            ConstraintDigits.class, ConstraintSize.class,
-            ConstraintDates.class, ConstraintPattern.class,
-            Person.class, Address.class);
+        
+        emf = (OpenJPAEntityManagerFactorySPI) 
+        OpenJPAPersistence.createEntityManagerFactory(
+                "ConstraintPU",
+                "org/apache/openjpa/integration/validation/persistence.xml");
+    }
+    
+    @Override
+    public void tearDown() {
+        if (emf != null) {
+            cleanup(emf);
+        }
     }
 
     /**
@@ -95,6 +105,7 @@ public class TestConstraints extends SingleEMFTestCase {
     public void testNullUpdateConstraint() {
         getLog().trace("testNullUpdateConstraint() started");
         
+        long id = 0;
         // Part 1 - Create and persist a valid entity
         // create EM from default EMF
         OpenJPAEntityManager em = emf.createEntityManager();
@@ -110,6 +121,7 @@ public class TestConstraints extends SingleEMFTestCase {
             ConstraintNull c = ConstraintNull.createValid();
             em.persist(c);
             em.getTransaction().commit();
+            id = c.getId();
             getLog().trace("testNullUpdateConstraint() Part 1 of 2 passed");
         } catch (Exception e) {
             // unexpected
@@ -129,7 +141,7 @@ public class TestConstraints extends SingleEMFTestCase {
         assertNotNull(em);        
         try {
             // update entity to be invalid
-            ConstraintNull c = em.find(ConstraintNull.class, new Integer(1));
+            ConstraintNull c = em.find(ConstraintNull.class, id);
             em.getTransaction().begin();
             c.setNullRequired(new String("not null"));
             em.flush();

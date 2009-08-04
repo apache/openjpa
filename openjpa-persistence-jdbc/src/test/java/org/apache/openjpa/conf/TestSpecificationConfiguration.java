@@ -20,6 +20,8 @@ package org.apache.openjpa.conf;
 
 import javax.persistence.PersistenceException;
 
+import org.apache.openjpa.persistence.OpenJPAEntityManagerFactorySPI;
+import org.apache.openjpa.persistence.OpenJPAPersistence;
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
 
 /**
@@ -42,13 +44,34 @@ public class TestSpecificationConfiguration extends SingleEMFTestCase {
         assertTrue(spec.isSame("jpa"));
     }
     
-    public void testSpecificationVersionIsJPA2() {
+    public void testSpecificationVersionIsJPA1() {
         Specification spec = getSpecifcation();
         int major = spec.getVersion();
-        assertEquals(2, major);
+        assertEquals(1, major);
         assertTrue(spec.isSame("JPA"));
     }
-    
+
+    public void testSpecificationVersionIsJPA2() {
+        
+        OpenJPAEntityManagerFactorySPI emf1 = null;
+        try {
+          emf1 = 
+            (OpenJPAEntityManagerFactorySPI)OpenJPAPersistence.
+            createEntityManagerFactory("persistence2_0",
+            "org/apache/openjpa/conf/META-INF/" +
+            "persistence-2_0-config.xml");
+
+            Specification spec = emf1.getConfiguration().getSpecificationInstance();
+            int major = spec.getVersion();
+            assertEquals(2, major);
+            assertTrue(spec.isSame("JPA"));
+        } finally {
+            if (emf1 != null) {
+                emf1.close();
+            }
+        }
+    }
+
     public void testLowerVersionCanBeSet() {
         super.setUp("openjpa.Specification", "JPA 1.0");
         Specification spec = getSpecifcation();

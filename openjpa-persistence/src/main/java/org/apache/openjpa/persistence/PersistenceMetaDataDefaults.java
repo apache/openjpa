@@ -344,7 +344,7 @@ public class PersistenceMetaDataDefaults
         /*
          * OpenJPA 1.x permitted private properties to be persistent.  This is
          * contrary to the JPA 1.0 specification, which states that persistent
-         * properties must be private or protected. OpenJPA 2.0+ will adhere
+         * properties must be public or protected. OpenJPA 2.0+ will adhere
          * to the specification by default, but provides a compatibility
          * option to provide pre-2.0 behavior.
          */

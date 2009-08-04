@@ -62,6 +62,9 @@ public class TestDetachStateCascade extends SingleEMFTestCase {
         assertNotNull(em);
         compat = emf.getConfiguration().getCompatibilityInstance();
         assertNotNull(compat);
+        compat.setFlushBeforeDetach(true);
+        compat.setCopyOnDetach(false);
+        compat.setCascadeWithDetach(false);
         id++;
         create(id);
         

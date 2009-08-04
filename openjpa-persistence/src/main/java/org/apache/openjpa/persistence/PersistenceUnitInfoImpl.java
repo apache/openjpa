@@ -62,6 +62,7 @@ public class PersistenceUnitInfoImpl
     public static final String KEY_PROVIDER = "javax.persistence.provider";
     public static final String VALIDATION_MODE =
         "javax.persistence.validation.mode";
+    public static final String PERSISTENCE_VERSION = "PersistenceVersion";
 
     private static final Localizer s_loc = Localizer.forPackage
         (PersistenceUnitInfoImpl.class);
@@ -460,6 +461,10 @@ public class PersistenceUnitInfoImpl
         if (info.getValidationMode() != null)
             map.put(VALIDATION_MODE, String.valueOf(info.getValidationMode()));
 
+        if (info.getPersistenceXMLSchemaVersion() != null) {
+            map.put(PERSISTENCE_VERSION, info.getPersistenceXMLSchemaVersion());
+        }
+        
         return map;
     }
 
