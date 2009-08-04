@@ -49,7 +49,6 @@ public class TestByteArray extends SingleEMTestCase {
     public void testByteArray() {
         if (! runTest) { 
             // skip if not DB2 (from setup)
-            System.out.println("MDD skipping");
             return;
         }
 
