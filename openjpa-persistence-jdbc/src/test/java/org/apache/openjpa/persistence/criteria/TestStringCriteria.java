@@ -206,7 +206,8 @@ public class TestStringCriteria extends CriteriaTest {
       
           assertEquivalence(q, jpql); 
      }
-
+      
+    @AllowFailure
     public void testParameters() {
         String jpql = "SELECT c FROM Customer c Where c.status = :stat";
         CriteriaQuery<Customer> q = cb.createQuery(Customer.class);

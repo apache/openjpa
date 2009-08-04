@@ -34,11 +34,7 @@ import javax.persistence.metamodel.Bindable;
  * @author Pinaki Poddar
  *
  */
-public class TestJoinCondition extends CriteriaTest {
-    protected Class[] getDomainClasses() {
-        return new Class[]{A.class,B.class,C.class,D.class};
-    }
-
+public class TestJoinCondition extends JoinDomainTestCase {
     public void testSingleAttributeJoinModel() {
         CriteriaQuery<?> cq = cb.createQuery();
         Root<A> a = cq.from(A.class);

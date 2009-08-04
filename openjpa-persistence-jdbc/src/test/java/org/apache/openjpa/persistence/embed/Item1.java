@@ -24,6 +24,7 @@ import java.util.Map;
 import javax.persistence.*;
 
 @Entity
+@Table(name="CR_EMBED_ITEM")
 public class Item1 {
     @Id
     int id;
