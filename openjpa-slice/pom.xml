@@ -145,6 +145,7 @@
                             <name>derby.stream.error.file</name>
                             <value>target/derby.log</value>
                         </property>
+                        <!--
                         <property>
                             <name>derby.locks.deadlockTimeout</name>
                             <value>5</value>
@@ -153,6 +154,7 @@
                             <name>derby.locks.waitTimeout</name>
                             <value>6</value>
                         </property>
+                        -->
                     </systemProperties>
                 </configuration>
             </plugin>
