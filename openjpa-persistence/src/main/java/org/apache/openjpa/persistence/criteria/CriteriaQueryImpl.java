@@ -197,7 +197,7 @@ public class CriteriaQueryImpl<T> implements CriteriaQuery<T>, AliasContext {
         if (_params == null)
             _params = new HashSet<ParameterExpression<?>>();
         if (_params.add(p)) {
-            p.setIndex(_params.size());
+            p.setIndex(_params.size()-1);
         }
     }
     
