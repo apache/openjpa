@@ -897,6 +897,13 @@ public class TestEmbeddable extends SingleEMFTestCase {
         EntityA_Coll_Embed_Embed a =
             em.find(EntityA_Coll_Embed_Embed.class, ID);
         checkEntityA_Coll_Embed_Embed(a);
+        
+        em.clear();
+        em.getTransaction().begin();
+        Embed_Embed embed = createEmbed_Embed(em, ID, 100);
+        a.addEmbed(embed);
+        em.merge(a);
+        em.getTransaction().commit();
         em.close();
     }
 
