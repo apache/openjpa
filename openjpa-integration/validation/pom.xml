@@ -35,11 +35,6 @@
     <description>OpenJPA Integration Tests - Bean Validation</description>
 
     <properties>
-        <openjpa.loglevel>INFO</openjpa.loglevel>
-        <!-- to set debug arguments, you might set the following at the command line:
-            -Dtest.jvm.arguments="-Xmx500m -agentlib:jdwp=transport=dt_socket,server=y,address=8000"
-        -->
-        <test.jvm.arguments>-Xmx500m</test.jvm.arguments>
         <dbcp.maxActive>10</dbcp.maxActive>
         <dbcp.maxIdle>5</dbcp.maxIdle>
         <dbcp.minIdle>2</dbcp.minIdle>
@@ -284,6 +279,10 @@
                         <property>
                             <name>openjpa.Log</name>
                             <value>DefaultLevel=${openjpa.loglevel}</value>
+                        </property>
+                        <property>
+                            <name>openjpa.DynamicEnhancementAgent</name>
+                            <value>false</value>
                         </property>
                         <property>
                             <name>openjpa.ConnectionDriverName</name>
