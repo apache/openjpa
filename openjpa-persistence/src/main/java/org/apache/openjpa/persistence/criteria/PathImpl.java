@@ -257,6 +257,6 @@ public class PathImpl<Z,X> extends ExpressionImpl<X> implements Path<X> {
      * Get the type() expression corresponding to this path. 
      */
     public Expression<Class<? extends X>> type() {
-        return new Expressions.Type<X>(this);
+        return new Expressions.Type<Class<? extends X>>(this);
     }
 }
