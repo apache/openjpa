@@ -138,23 +138,9 @@
                             <value>DefaultLevel=${openjpa.loglevel}</value>
                         </property>
                         <property>
-                            <name>openjpa.DynamicEnhancementAgent</name>
-                            <value>false</value>
-                        </property>
-                        <property>
                             <name>derby.stream.error.file</name>
                             <value>target/derby.log</value>
                         </property>
-                        <!--
-                        <property>
-                            <name>derby.locks.deadlockTimeout</name>
-                            <value>5</value>
-                        </property>
-                        <property>
-                            <name>derby.locks.waitTimeout</name>
-                            <value>6</value>
-                        </property>
-                        -->
                     </systemProperties>
                 </configuration>
             </plugin>
