@@ -27,6 +27,7 @@ import java.util.Map;
 import java.util.Set;
 
 import javax.persistence.Tuple;
+import javax.persistence.criteria.CompoundSelection;
 import javax.persistence.criteria.Expression;
 import javax.persistence.criteria.Fetch;
 import javax.persistence.criteria.Join;
@@ -38,6 +39,7 @@ import javax.persistence.metamodel.Type.PersistenceType;
 
 import org.apache.openjpa.kernel.QueryOperations;
 import org.apache.openjpa.kernel.ResultShape;
+import org.apache.openjpa.kernel.ResultShape.FillStrategy;
 import org.apache.openjpa.kernel.exps.AbstractExpressionBuilder;
 import org.apache.openjpa.kernel.exps.ExpressionFactory;
 import org.apache.openjpa.kernel.exps.QueryExpressions;
@@ -52,8 +54,11 @@ import org.apache.openjpa.persistence.meta.Types;
 /**
  * Converts expressions of a CriteriaQuery to kernel Expression.
  * 
+ * 
+ * @author Pinaki Poddar
  * @author Fay Wang
  * 
+ * @since 2.0.0
  */
 public class CriteriaExpressionBuilder {
     
@@ -75,6 +80,7 @@ public class CriteriaExpressionBuilder {
         exps.operation = QueryOperations.OP_SELECT;
         //exps.range = null; // Value[]
         exps.resultClass = q.getResultType();
+        exps.shape = evalResultShape(q, q.getSelectionList());
         exps.parameterTypes = q.getParameterTypes();
         return exps;
     }
@@ -109,7 +115,7 @@ public class CriteriaExpressionBuilder {
 
     protected void evalOrderingAndProjection(QueryExpressions exps, ExpressionFactory factory, CriteriaQueryImpl<?> q) {
         Map<ExpressionImpl<?>, Value> exp2Vals = evalOrdering(exps, factory, q);
-        evalProjections(exps, factory, q, exp2Vals, q.getResultShape());
+        evalProjections(exps, factory, q, exp2Vals);
     }
     
     /**
@@ -233,7 +239,7 @@ public class CriteriaExpressionBuilder {
     }
 
     protected void evalProjections(QueryExpressions exps, ExpressionFactory factory, CriteriaQueryImpl<?> q,
-        Map<ExpressionImpl<?>, Value> exp2Vals, ResultShape<?> shape) {
+        Map<ExpressionImpl<?>, Value> exp2Vals) {
         List<Selection<?>> selections = q.getSelectionList();
         MetamodelImpl model = q.getMetamodel();
         if (isDefaultProjection(selections, q)) {
@@ -244,11 +250,10 @@ public class CriteriaExpressionBuilder {
         List<Value> projections = new ArrayList<Value>();
         List<String> aliases = new ArrayList<String>();
         List<String> clauses = new ArrayList<String>();
-        getProjections(exps, selections, projections, aliases, clauses, factory, q, model, exp2Vals, shape);
+        getProjections(exps, selections, projections, aliases, clauses, factory, q, model, exp2Vals);
         exps.projections = projections.toArray(new Value[projections.size()]);
         exps.projectionAliases = aliases.toArray(new String[aliases.size()]);
         exps.projectionClauses = clauses.toArray(new String[clauses.size()]);
-        exps.shape = shape;
     }
 
     /**
@@ -268,11 +273,11 @@ public class CriteriaExpressionBuilder {
     private void getProjections(QueryExpressions exps, List<Selection<?>> selections, 
         List<Value> projections, List<String> aliases, List<String> clauses, 
         ExpressionFactory factory, CriteriaQueryImpl<?> q, MetamodelImpl model, 
-        Map<ExpressionImpl<?>, Value> exp2Vals, ResultShape<?> shape) {
+        Map<ExpressionImpl<?>, Value> exp2Vals) {
         for (Selection<?> s : selections) {
             if (s.isCompoundSelection()) {
                 getProjections(exps, s.getCompoundSelectionItems(), projections, aliases, 
-                    clauses, factory, q, model, exp2Vals, q.getNestedShape(s));
+                    clauses, factory, q, model, exp2Vals);
             } else {
                 Value val = (exp2Vals != null && exp2Vals.containsKey(s) 
                         ? exp2Vals.get(s) : ((ExpressionImpl<?>)s).toValue(factory, model, q));
@@ -328,4 +333,85 @@ public class CriteriaExpressionBuilder {
         org.apache.openjpa.kernel.exps.Expression e1, org.apache.openjpa.kernel.exps.Expression e2) {
         return e1 == null ? e2 : e2 == null ? e1 : factory.and(e1, e2);
     }
+    
+    // ===================================================================================
+    // Result Shape processing
+    // ===================================================================================
+    
+    /**
+     * Gets the shape of a selection item. Creates the shape if necessary.
+     */
+    ResultShape<?> getShape(Selection<?> s, Map<Selection<?>, ResultShape<?>> nestedShapes) {
+        if (nestedShapes.containsKey(s)) {
+            return nestedShapes.get(s);
+        }
+        Class<?> type = s.getJavaType() == null ? Object.class : s.getJavaType();
+        ResultShape<?> result = null;
+        FillStrategy strategy = FillStrategy.ASSIGN;
+        if (s.isCompoundSelection()) {
+            if (s instanceof CompoundSelections.NewInstance) {
+                strategy = FillStrategy.CONSTRUCTOR;
+            } else if (s instanceof CompoundSelections.Array) {
+                strategy = FillStrategy.ARRAY;
+            } else if (s instanceof CompoundSelections.Tuple) {
+                strategy = FillStrategy.MAP;
+            }
+            result = new ResultShape(type, strategy);
+            List<Selection<?>> terms = ((CompoundSelection<?>)s).getCompoundSelectionItems();
+            for (Selection<?> term : terms) {
+                result.nest(getShape(term, nestedShapes));
+            }
+        } else {
+            result = new ResultShape(type, strategy, true);
+        }
+        nestedShapes.put(s, result);
+        return result;
+    }
+    
+    /**
+     * Builds the result shape by creating shape for the complete result and how it nests each selection terms.
+     * The shape varies based on whether the terms were selected based on multiselect() or select(). 
+     */
+    private ResultShape<?> evalResultShape(CriteriaQueryImpl<?> q, List<Selection<?>> selections) {
+        Map<Selection<?>, ResultShape<?>> nestedShapes = new HashMap<Selection<?>, ResultShape<?>>();
+        Class<?> resultClass = q.getResultType();
+        FillStrategy strategy = FillStrategy.ASSIGN;
+        ResultShape<?> result = null;
+        if (q.isMultiselect()) {
+            if (Tuple.class.isAssignableFrom(resultClass)) {
+                resultClass = TupleImpl.class;
+                strategy = FillStrategy.MAP;
+           } else if (resultClass == Object.class) {
+               if (selections.size() > 1) { 
+                   resultClass = Object[].class;
+                   strategy = FillStrategy.ARRAY;
+               }
+           } else {
+               strategy = resultClass.isArray() ? FillStrategy.ARRAY : FillStrategy.CONSTRUCTOR;
+           } 
+           result = new ResultShape(resultClass, strategy);
+           for (Selection<?> term : selections) {
+               result.nest(getShape(term, nestedShapes));
+           }
+        } else { // not multiselect
+            if (Tuple.class.isAssignableFrom(resultClass)) {
+                resultClass = TupleImpl.class;
+                strategy = FillStrategy.MAP;
+            }
+            result = new ResultShape(resultClass, strategy);
+            if (q.getSelectionList() == null)
+                return result;
+            if (q.getSelectionList().size() == 1) {
+                result = getShape(q.getSelectionList().get(0), nestedShapes);
+            } else {
+                for (Selection<?> term : q.getSelectionList()) {
+                    result.nest(getShape(term, nestedShapes));
+                }
+            }
+        }
+    
+        return result;
+   }
+
+    
 }
