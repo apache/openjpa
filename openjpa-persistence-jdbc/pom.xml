@@ -197,6 +197,8 @@
                 by also supplying the following properties:
                     -Dmssql.groupid=com.microsoft.sqlserver
                     -Dmssql.version=2.0
+                If you are using Java SE 6 or later, you will need to use:
+                    -Dmssql.artifactid=sqljdbc4
             -->
             <id>test-mssql</id>
             <dependencies>
