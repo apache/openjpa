@@ -149,8 +149,6 @@ public abstract class AbstractCriteriaTestCase extends TestCase {
             fail("CriteriaQuery corresponding to " + jpql + " failed to execute\r\n" + w);
         }
 
-        printSQL("Target SQL for JPQL", jSQL);
-        printSQL("Target SQL for CriteriaQuery", cSQL);
         if (jSQL.size() != cSQL.size()) {
             printSQL("Target SQL for JPQL", jSQL);
             printSQL("Target SQL for CriteriaQuery", cSQL);
@@ -183,8 +181,6 @@ public abstract class AbstractCriteriaTestCase extends TestCase {
             fail("JPQL " + jpql + " failed to execute\r\n" + w);
         }
 
-        printSQL("Target SQL for JPQL", jSQL);
-
         if (!(dict instanceof DerbyDictionary))
             return;
 
@@ -213,7 +209,6 @@ public abstract class AbstractCriteriaTestCase extends TestCase {
         if (!(dict instanceof DerbyDictionary))
             return;
 
-        printSQL("Expected SQL", expectedSQL);
         String jSql = jSQL.get(0).trim();
         if (jSql.indexOf("optimize for 1 row") != -1)
             jSql = jSql.substring(0, jSql.indexOf("optimize for 1 row")).trim();
@@ -225,54 +220,46 @@ public abstract class AbstractCriteriaTestCase extends TestCase {
     }
 
     void executeExpectFail(CriteriaQuery<?> c, String jpql) {
-        List<String> cSQL = null;
-        StringWriter w = new StringWriter();
         try {
             Query cQ = getEntityManager().createQuery(c);
-            cSQL = executeQueryAndCollectSQL(cQ);
-            fail("CriteriaQuery corresponding to " + jpql + " is expected to fail\r\n" + w);
+            executeQueryAndCollectSQL(cQ);
+            fail("CriteriaQuery corresponding to " + jpql + " is expected to fail\r\n");
         } catch (Exception e) {
-            e.printStackTrace(new PrintWriter(w));
+            // expected
         }
     }
 
     void executeExpectFail(CriteriaQuery<?> c, String jpql, String[] paramNames, Object[] params) {
-        List<String> cSQL = null;
-        StringWriter w = new StringWriter();
         try {
             Query cQ = getEntityManager().createQuery(c);
             for (int i = 0; i < params.length; i++)
                 cQ.setParameter(paramNames[i], params[i]);
-            cSQL = executeQueryAndCollectSQL(cQ);
-            fail("CriteriaQuery corresponding to " + jpql + " is expected to fail\r\n" + w);
+            executeQueryAndCollectSQL(cQ);
+            fail("CriteriaQuery corresponding to " + jpql + " is expected to fail\r\n");
         } catch (Exception e) {
-            e.printStackTrace(new PrintWriter(w));
+            // expected
         }
     }
 
     void executeExpectFail(String jpql) {
-        List<String> jSQL = null;
-        StringWriter w = new StringWriter();
         try {
             Query jQ = getEntityManager().createQuery(jpql);
-            jSQL = executeQueryAndCollectSQL(jQ);
-            fail("JPQL " + jpql + " is expected to Failed to execute\r\n" + w);
+            executeQueryAndCollectSQL(jQ);
+            fail("JPQL " + jpql + " is expected to Failed to execute\r\n");
         } catch (Exception e) {
-            e.printStackTrace(new PrintWriter(w));
+            // expected
         }
     }
 
     void executeExpectFail(String jpql, String[] paramNames, Object[] params) {
-        List<String> jSQL = null;
-        StringWriter w = new StringWriter();
         try {
             Query jQ = getEntityManager().createQuery(jpql);
             for (int i = 0; i < params.length; i++)
                 jQ.setParameter(paramNames[i], params[i]);
-            jSQL = executeQueryAndCollectSQL(jQ);
-            fail("JPQL " + jpql + " is expected to Failed to execute\r\n" + w);
+            executeQueryAndCollectSQL(jQ);
+            fail("JPQL " + jpql + " is expected to Failed to execute\r\n");
         } catch (Exception e) {
-            e.printStackTrace(new PrintWriter(w));
+            // expected
         }
     }
 
@@ -305,7 +292,7 @@ public abstract class AbstractCriteriaTestCase extends TestCase {
     List<String> executeQueryAndCollectSQL(Query q) {
         getAuditor().clear();
         try {
-            List<?> result = q.getResultList();
+            q.getResultList();
         } catch (Exception e) {
             throw new RuntimeException(extractSQL(e), e);
         }
@@ -319,8 +306,9 @@ public abstract class AbstractCriteriaTestCase extends TestCase {
 
     String extractSQL(Exception e) {
         Throwable t = e.getCause();
-        if (t instanceof ReportingSQLException)
+        if (t instanceof ReportingSQLException) {
             return ((ReportingSQLException) t).getSQL();
+        }
         return "Can not extract SQL from exception " + e;
     }
 
@@ -349,13 +337,15 @@ public abstract class AbstractCriteriaTestCase extends TestCase {
      *                Set -DIgnoreAllowFailure=true to ignore this directive altogether.
      */
     protected AllowFailure getAllowFailure() {
-        if (Boolean.getBoolean("IgnoreAllowFailure"))
+        if (Boolean.getBoolean("IgnoreAllowFailure")) {
             return null;
+        }
         try {
             Method runMethod = getClass().getMethod(getName(), (Class[]) null);
             AllowFailure anno = runMethod.getAnnotation(AllowFailure.class);
-            if (anno != null)
+            if (anno != null) {
                 return anno;
+            }
         } catch (SecurityException e) {
             // ignore
         } catch (NoSuchMethodException e) {
@@ -370,7 +360,6 @@ public abstract class AbstractCriteriaTestCase extends TestCase {
         @Override
         public void beforeExecuteStatement(JDBCEvent event) {
             if (event.getSQL() != null && sqls != null) {
-                System.err.println("Adding " + event.getSQL());
                 sqls.add(event.getSQL());
             }
         }
