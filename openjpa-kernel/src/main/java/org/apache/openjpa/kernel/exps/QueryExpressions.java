@@ -26,6 +26,7 @@ import java.util.Stack;
 
 import org.apache.commons.collections.map.LinkedMap;
 import org.apache.openjpa.kernel.QueryOperations;
+import org.apache.openjpa.kernel.ResultShape;
 import org.apache.openjpa.kernel.StoreQuery;
 import org.apache.openjpa.kernel.exps.Context;
 import org.apache.openjpa.meta.ClassMetaData;
@@ -73,6 +74,7 @@ public class QueryExpressions
     private Boolean _aggregate = null;
     private Stack<Context> _contexts = null;
     public Object state;
+    public ResultShape<?> shape;
     
     /**
      * Set reference to the JPQL query contexts.

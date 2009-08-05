@@ -353,6 +353,10 @@ public class ExpressionStoreQuery
         public final Class getResultClass(StoreQuery q) {
             return assertQueryExpression().resultClass;
         }
+        
+        public final ResultShape<?> getResultShape(StoreQuery q) {
+            return assertQueryExpression().shape;
+        }
 
         public final boolean[] getAscending(StoreQuery q) {
             return assertQueryExpression().ascending;

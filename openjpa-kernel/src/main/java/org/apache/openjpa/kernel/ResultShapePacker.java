@@ -16,40 +16,36 @@
  * specific language governing permissions and limitations
  * under the License.    
  */
-package org.apache.openjpa.persistence.criteria;
+package org.apache.openjpa.kernel;
 
-import javax.persistence.criteria.Expression;
-import javax.persistence.criteria.Order;
 
 /**
- * Ordering clause of a criteria query.
+ * Packs result by delegation to a ResultShape.
  * 
  * @author Pinaki Poddar
  *
  */
-public class OrderImpl implements Order {
-	private boolean _ascending;
-	private final ExpressionImpl<?> e;
-	
-	public OrderImpl(Expression<?> e, boolean asc) {
-		this.e = (ExpressionImpl<?>) e;
-		_ascending = asc;
-	}
-	
-	public OrderImpl(Expression<?> e) {
-		this(e, true);
-	}
-	
-	public ExpressionImpl<?> getExpression() {
-		return e;
-	}
-	
-	public boolean isAscending() {
-		return _ascending;
-	}
+public class ResultShapePacker extends ResultPacker {
+    private final ResultShape<?> _shape;
+    private final Class<?>[] _types;
+    private final String[] _aliases;
+    public ResultShapePacker(Class<?>[] types, String[] aliases, Class resultClass, ResultShape<?> shape) {
+        super(); // bypass superclass implementation
+        _shape = shape;
+        _types = types;
+        _aliases = aliases;
+    }
+    
+    @Override
+    public Object pack(Object o) {
+        return pack(new Object[]{o});
+    }
+    
+    @Override
+    public Object pack(Object[] values) {
+        if (_shape == null)
+            return super.pack(values);
+        return _shape.pack(values, _types, _aliases);
+    }
 
-	public Order reverse() {
-		_ascending = !_ascending;
-		return this;
-	}
 }

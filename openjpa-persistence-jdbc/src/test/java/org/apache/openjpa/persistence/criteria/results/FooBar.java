@@ -14,39 +14,28 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
-package org.apache.openjpa.persistence.criteria;
-
-import java.util.Arrays;
-import java.util.List;
-
-import javax.persistence.criteria.CompoundSelection;
-import javax.persistence.criteria.Selection;
+package org.apache.openjpa.persistence.criteria.results;
 
 /**
- * A selection item that constructs new instance of a user-defined class with arguments specified as other selected 
- * items. 
+ * A non-entity class for testing constructor expressions in query.
  * 
  * @author Pinaki Poddar
  *
- * @param <X>
  */
-public class NewInstanceSelection<X> extends SelectionImpl<X> 
-    implements CompoundSelection<X> {
-    
-    private List<Selection<?>>  _args;
-    
-    public NewInstanceSelection(Class<X> cls, Selection<?>... selections) {
-        super(cls);
-        _args = Arrays.asList(selections);
+public class FooBar {
+    private final long fid;
+    private final long bid;
+    public FooBar(long fid, long bid) {
+        super();
+        this.fid = fid;
+        this.bid = bid;
     }
-    
-    public final boolean isCompoundSelection() {
-        return true;
+    public long getFid() {
+        return fid;
     }
-    
-    public List<Selection<?>> getSelectionItems() {
-        return _args;
+    public long getBid() {
+        return bid;
     }
 }

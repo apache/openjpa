@@ -934,8 +934,7 @@ public class Expressions {
     
     public static class Coalesce<T> extends ExpressionImpl<T> 
         implements QueryBuilder.Coalesce<T> {
-        private List<Expression<? extends T>> values = 
-            new ArrayList<Expression<? extends T>>();
+        private List<Expression<? extends T>> values = new ArrayList<Expression<? extends T>>();
         
         public Coalesce() {
             super(null);
@@ -1115,8 +1114,7 @@ public class Expressions {
             super(cls);
         }
 
-        public Case<T> when(Expression<Boolean> when, 
-            Expression<? extends T> then) {
+        public Case<T> when(Expression<Boolean> when, Expression<? extends T> then) {
             whens.add(when);
             thens.add(then);
             return this;
@@ -1124,8 +1122,7 @@ public class Expressions {
 
         public Case<T> when(Expression<Boolean> when, T then) {
             whens.add(when);
-            Expression<? extends T> thenExpr = 
-                new Expressions.Constant<T>(then);
+            Expression<? extends T> thenExpr = new Expressions.Constant<T>(then);
             thens.add(thenExpr);
             return this;
         }
@@ -1136,8 +1133,7 @@ public class Expressions {
         }
 
         public Case<T> otherwise(T otherwise) {
-            this.otherwise = new Expressions.Constant<T>(otherwise);
-            return this;
+            return otherwise(new Expressions.Constant<T>(otherwise));
         }
 
         @Override
@@ -1202,11 +1198,7 @@ public class Expressions {
         }
 
         public SimpleCase<C,R> when(C when, R then) {
-            whens.add(new Constant<C>(when));
-            Expression<? extends R> thenExpr = 
-                new Expressions.Constant<R>(then);
-            thens.add(thenExpr);
-            return this;
+            return when(when, new Expressions.Constant<R>(then));
         }
 
         public SimpleCase<C,R> otherwise(Expression<? extends R> otherwise) {
@@ -1215,8 +1207,7 @@ public class Expressions {
         }
 
         public SimpleCase<C,R> otherwise(R otherwise) {
-            this.otherwise = new Expressions.Constant<R>(otherwise);
-            return this;
+            return otherwise(new Expressions.Constant<R>(otherwise));
         }
 
         @Override

@@ -26,6 +26,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import javax.persistence.Tuple;
 import javax.persistence.criteria.Expression;
 import javax.persistence.criteria.Fetch;
 import javax.persistence.criteria.Join;
@@ -35,6 +36,8 @@ import javax.persistence.criteria.Root;
 import javax.persistence.criteria.Selection;
 import javax.persistence.metamodel.Type.PersistenceType;
 
+import org.apache.openjpa.kernel.QueryOperations;
+import org.apache.openjpa.kernel.ResultShape;
 import org.apache.openjpa.kernel.exps.AbstractExpressionBuilder;
 import org.apache.openjpa.kernel.exps.ExpressionFactory;
 import org.apache.openjpa.kernel.exps.QueryExpressions;
@@ -69,9 +72,9 @@ public class CriteriaExpressionBuilder {
         
         evalOrderingAndProjection(exps, factory, q);
 
-        //exps.operation = QueryOperations.OP_SELECT;
+        exps.operation = QueryOperations.OP_SELECT;
         //exps.range = null; // Value[]
-        exps.resultClass = q.getRuntimeResultClass();
+        exps.resultClass = q.getResultType();
         exps.parameterTypes = q.getParameterTypes();
         return exps;
     }
@@ -105,26 +108,38 @@ public class CriteriaExpressionBuilder {
     }
 
     protected void evalOrderingAndProjection(QueryExpressions exps, ExpressionFactory factory, CriteriaQueryImpl<?> q) {
-        Map<Expression<?>, Value> exp2Vals = evalOrdering(exps, factory, q);
-        evalProjections(exps, factory, q, exp2Vals);
+        Map<ExpressionImpl<?>, Value> exp2Vals = evalOrdering(exps, factory, q);
+        evalProjections(exps, factory, q, exp2Vals, q.getResultShape());
     }
     
-    protected Map<Expression<?>, Value> evalOrdering(QueryExpressions exps, ExpressionFactory factory, 
+    /**
+     * Evaluates the ordering expressions by converting them to kernel values.
+     * Sets the ordering fields of kernel QueryExpressions.
+     *   
+     * @param exps kernel QueryExpressions
+     * @param factory for kernel expressions
+     * @param q a criteria query
+     * 
+     * @return map of kernel values indexed by criteria query expressions that created it.
+     * These kernel values are required to be held in a map to avoid recomputing for the
+     * same CriteriaQuery Expressions appearing in ordering terms as well as projection
+     * term. 
+     * 
+     */
+    protected Map<ExpressionImpl<?>, Value> evalOrdering(QueryExpressions exps, ExpressionFactory factory, 
         CriteriaQueryImpl<?> q) {
         List<Order> orders = q.getOrderList();
         MetamodelImpl model = q.getMetamodel(); 
         int ordercount = (orders == null) ? 0 : orders.size();
-        Map<Expression<?>, Value> exp2Vals = new HashMap<Expression<?>, Value>();
+        Map<ExpressionImpl<?>, Value> exp2Vals = new HashMap<ExpressionImpl<?>, Value>();
         exps.ordering = new Value[ordercount];
         exps.orderingClauses = new String[ordercount];
         exps.orderingAliases = new String[ordercount];
         exps.ascending = new boolean[ordercount];
         for (int i = 0; i < ordercount; i++) {
             OrderImpl order = (OrderImpl)orders.get(i);
-            //Expression<? extends Comparable> expr = order.getExpression();
-            Expression<?> expr = order.getExpression();
-            Value val = Expressions.toValue(
-                    (ExpressionImpl<?>)expr, factory, model, q);
+            ExpressionImpl<?> expr = order.getExpression();
+            Value val = Expressions.toValue(expr, factory, model, q);
             exps.ordering[i] = val;
             String alias = expr.getAlias();
             exps.orderingAliases[i] = alias;
@@ -218,7 +233,7 @@ public class CriteriaExpressionBuilder {
     }
 
     protected void evalProjections(QueryExpressions exps, ExpressionFactory factory, CriteriaQueryImpl<?> q,
-        Map<Expression<?>, Value> exp2Vals) {
+        Map<ExpressionImpl<?>, Value> exp2Vals, ResultShape<?> shape) {
         List<Selection<?>> selections = q.getSelectionList();
         MetamodelImpl model = q.getMetamodel();
         if (isDefaultProjection(selections, q)) {
@@ -229,26 +244,38 @@ public class CriteriaExpressionBuilder {
         List<Value> projections = new ArrayList<Value>();
         List<String> aliases = new ArrayList<String>();
         List<String> clauses = new ArrayList<String>();
-        getProjections(exps, selections, projections, aliases, clauses, factory, q, model, exp2Vals);
+        getProjections(exps, selections, projections, aliases, clauses, factory, q, model, exp2Vals, shape);
         exps.projections = projections.toArray(new Value[projections.size()]);
         exps.projectionAliases = aliases.toArray(new String[aliases.size()]);
         exps.projectionClauses = clauses.toArray(new String[clauses.size()]);
+        exps.shape = shape;
     }
 
+    /**
+     * Scans the projection terms to populate the kernel QueryExpressions projection clauses
+     * and aliases.
+     *   
+     * @param exps 
+     * @param selections
+     * @param projections list of kernel values for projections 
+     * @param aliases list of kernel projection aliases 
+     * @param clauses list of kernel projection clauses
+     * @param factory for kernel expressions
+     * @param q a Criteria Query
+     * @param model of domain entities
+     * @param exp2Vals the evaluated kernel values indexed by the Criteria Expressions
+     */
     private void getProjections(QueryExpressions exps, List<Selection<?>> selections, 
         List<Value> projections, List<String> aliases, List<String> clauses, 
         ExpressionFactory factory, CriteriaQueryImpl<?> q, MetamodelImpl model, 
-        Map<Expression<?>, Value> exp2Vals) {
+        Map<ExpressionImpl<?>, Value> exp2Vals, ResultShape<?> shape) {
         for (Selection<?> s : selections) {
-            if (s instanceof TupleSelection<?> ) {
-                getProjections(exps, ((TupleSelection<?>)s).getSelectionItems(), projections, aliases, 
-                    clauses, factory, q, model, exp2Vals);
-            } else if (s instanceof NewInstanceSelection<?>) {
-                getProjections(exps, ((NewInstanceSelection<?>)s).getSelectionItems(), projections, aliases, 
-                   clauses, factory, q, model, exp2Vals);               
+            if (s.isCompoundSelection()) {
+                getProjections(exps, s.getCompoundSelectionItems(), projections, aliases, 
+                    clauses, factory, q, model, exp2Vals, q.getNestedShape(s));
             } else {
-                Value val = (exp2Vals != null && exp2Vals.containsKey(s) ? exp2Vals.get(s) :
-                    ((ExpressionImpl<?>)s).toValue(factory, model, q));
+                Value val = (exp2Vals != null && exp2Vals.containsKey(s) 
+                        ? exp2Vals.get(s) : ((ExpressionImpl<?>)s).toValue(factory, model, q));
                 String alias = s.getAlias();
                 val.setAlias(alias);
                 projections.add(val);
@@ -257,6 +284,7 @@ public class CriteriaExpressionBuilder {
             }         
         }
     }
+    
 
     protected boolean isDefaultProjection(List<Selection<?>> selections, CriteriaQueryImpl<?> q) {
         if (selections == null)

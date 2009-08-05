@@ -137,6 +137,10 @@ public abstract class AbstractStoreQuery
             return null;
         }
         
+        public ResultShape<?> getResultShape(StoreQuery q) {
+            return null;
+        }
+        
         public void getRange(StoreQuery q, Object[] params, Range range) {
         }
 

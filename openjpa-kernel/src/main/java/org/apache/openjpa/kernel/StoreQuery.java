@@ -330,6 +330,8 @@ public interface StoreQuery
          * Returns the result class, if any.
          */
         public Class getResultClass(StoreQuery q);
+        
+        public ResultShape<?> getResultShape(StoreQuery q);
 
         /**
          * Return a map of {@link FieldMetaData} to update

@@ -21,16 +21,16 @@ package org.apache.openjpa.persistence.criteria.results;
 import java.lang.reflect.Array;
 import java.util.List;
 
-import javax.persistence.PersistenceException;
 import javax.persistence.Tuple;
+import javax.persistence.criteria.CompoundSelection;
 import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Join;
 import javax.persistence.criteria.Root;
 
 import org.apache.openjpa.persistence.criteria.CriteriaTest;
 import org.apache.openjpa.persistence.criteria.Person;
 import org.apache.openjpa.persistence.criteria.Person_;
 import org.apache.openjpa.persistence.test.AllowFailure;
-import org.apache.openjpa.util.UserException;
 
 
 /**
@@ -40,7 +40,6 @@ import org.apache.openjpa.util.UserException;
  *
  */
 
-@AllowFailure(value=false, message="Tests:16 Errors:1 Failure:1")
 public class TestMultiselect extends CriteriaTest {
     private static boolean initialized = false;
     
@@ -48,15 +47,30 @@ public class TestMultiselect extends CriteriaTest {
     public void setUp() {
         super.setUp();
         if (!initialized) {
+            clearData();
             createData();
             initialized = true;
         }
+    }
+    
+    void clearData() {
+        em.getTransaction().begin();
+        em.createQuery("DELETE FROM Foo f").executeUpdate();
+        em.createQuery("DELETE FROM Bar b").executeUpdate();
+        em.createQuery("DELETE FROM Person p").executeUpdate();
+        em.getTransaction().commit();
     }
     
     void createData() {
         em.getTransaction().begin();
         Person p = new Person("Test Result Shape");
         em.persist(p);
+        
+        Foo foo = new Foo(100L, "Test Foo");
+        Bar bar = new Bar(200L, "Test Bar");
+        foo.setBar(bar);
+        em.persist(foo);
+        em.persist(bar);
         em.getTransaction().commit();
     }
     
@@ -75,7 +89,7 @@ public class TestMultiselect extends CriteriaTest {
         Root<Person> p = q.from(Person.class); 
         q.multiselect(p.get(Person_.name), p.get(Person_.id));
         
-        assertResult(q, Tuple.class);
+        assertResult(q, Tuple.class, String.class, Integer.class);
     }
     
     public void testTupleQueryExplicit() {
@@ -83,7 +97,7 @@ public class TestMultiselect extends CriteriaTest {
         Root<Person> p = q.from(Person.class); 
         q.multiselect(p.get(Person_.name), p.get(Person_.id));
         
-        assertResult(q, Tuple.class);
+        assertResult(q, Tuple.class, String.class, Integer.class);
     }
   
     //=======================================================================
@@ -106,7 +120,7 @@ public class TestMultiselect extends CriteriaTest {
     
     public void testUserResultQueryWithImplicitProjection() {
         CriteriaQuery<Person> q = cb.createQuery(Person.class);
-        Root<Person> p = q.from(Person.class); 
+        q.from(Person.class); 
         
         assertResult(q, Person.class);
     }
@@ -117,6 +131,32 @@ public class TestMultiselect extends CriteriaTest {
         q.multiselect(p.get(Person_.name), p.get(Person_.id));
         
         fail("Person has no constrcutor with (name,id)", q);
+    }
+    
+    public void testMultipleConstructorWithAliasRepeatedAndInOrderingClause() {
+        // SELECT NEW(p.name), p.id, NEW(p.name), p.name FROM Person p ORDER BY p.name
+        CriteriaQuery<Tuple> q = cb.createTupleQuery();
+        Root<Person> p = q.from(Person.class); 
+        q.multiselect(
+            cb.construct(Person.class, p.get(Person_.name)),
+            p.get(Person_.id),
+            cb.construct(Person.class, p.get(Person_.name)),
+            p.get(Person_.name))
+            .orderBy(cb.asc(p.get(Person_.name)));
+        
+        List<Tuple> tuples = em.createQuery(q).getResultList();
+        assertTrue(!tuples.isEmpty());
+        for (Tuple row : tuples) {
+            assertEquals(4, row.getElements().size());
+            
+            assertEquals(Person.class,  row.get(0).getClass());
+            assertEquals(Integer.class, row.get(1).getClass());
+            assertEquals(Person.class,  row.get(2).getClass());
+            assertEquals(String.class,  row.get(3).getClass());
+            
+            assertEquals(((Person)row.get(0)).getName(), ((Person)row.get(2)).getName());
+            assertEquals(((Person)row.get(0)).getName(), row.get(3));
+        }
     }
     
     // ======================================================================
@@ -239,7 +279,40 @@ public class TestMultiselect extends CriteriaTest {
      * An element of the list passed to the multiselect method 
      * must not be a tuple- or array-valued compound selection item. 
      */
+    public void testTupleCanNotBeNested() {
+        CriteriaQuery<Tuple> q = cb.createTupleQuery();
+        Root<Person> p = q.from(Person.class);
+        
+        CompoundSelection<Tuple> tuple1 = cb.tuple(p.get(Person_.name), p.get(Person_.id));
+        CompoundSelection<Tuple> tuple2 = cb.tuple(p.get(Person_.id), p.get(Person_.name));
+        
+        try {
+            cb.tuple(tuple1, tuple2);
+            fail("Expected exception while nesting tuples");
+        } catch (IllegalArgumentException e) {
+            
+        }
+    }
     
+    public void testMultiConstructor() {
+        // SELECT NEW Foo(f.fid,f.fint), b, NEW FooBar(f.fid, b.bid) from Foo f JOIN f.bar b WHERE f.b=b
+        CriteriaQuery<Object[]> q = cb.createQuery(Object[].class);
+        Root<Foo> f = q.from(Foo.class);
+        Join<Foo, Bar> b = f.join(Foo_.bar);
+        q.multiselect(cb.construct(Foo.class, f.get(Foo_.fid), f.get(Foo_.fstring)), 
+                      b, 
+                      cb.construct(FooBar.class, f.get(Foo_.fid), b.get(Bar_.bid)));
+        q.where(cb.equal(f.get(Foo_.fid), 100L));
+        
+        List<Object[]> result = em.createQuery(q).getResultList();
+        assertFalse(result.isEmpty());
+        for (Object[] row : result) {
+            assertEquals(3, row.length);
+            assertTrue("0-th element " + row[0].getClass() + " is not Foo", row[0] instanceof Foo);
+            assertTrue("1-st element " + row[1].getClass() + " is not Bar", row[1] instanceof Bar);
+            assertTrue("2-nd element " + row[2].getClass() + " is not FooBar", row[2] instanceof FooBar);
+        }
+    }
     
 // =============== assertions by result types ========================
     
@@ -262,14 +335,23 @@ public class TestMultiselect extends CriteriaTest {
                        " does not match actual result " + toClass(element), arrayElementClasses[i].isInstance(element));
                 }
             }
+            if (resultClass == Tuple.class && arrayElementClasses != null) {
+                Tuple tuple = (Tuple)row;
+                for (int i = 0; i < arrayElementClasses.length; i++) {
+                    Object element = tuple.get(i);
+                    assertTrue(i + "-th tuple element " + toString(arrayElementClasses[i]) + 
+                       " does not match actual result " + toClass(element), arrayElementClasses[i].isInstance(element));
+                }
+            }
         }
     }
+    
     
     void fail(String msg, CriteriaQuery<?> q) {
         try {
             em.createQuery(q).getResultList();
             fail("Expected to fail " + msg);
-        } catch (UserException e) {
+        } catch (Exception e) {
             // this is an expected exception
         }
     }

@@ -84,6 +84,17 @@ public class ResultPacker {
     private final Member[] _sets;
     private final Method _put;
     private final Constructor _constructor;
+    
+    /**
+     * Protected constructor to bypass this implementation but allow extension.
+     */
+    protected ResultPacker() {
+        _resultClass = null;
+        _aliases = null;
+        _sets = null;
+        _put = null;
+        _constructor = null;
+    }
 
     /**
      * Constructor for result class without a projection.
@@ -358,7 +369,7 @@ public class ResultPacker {
      * Return the put method if one exists.
      */
     private static Method findPut(Method[] methods) {
-        Class[] params;
+        Class<?>[] params;
         for (int i = 0; i < methods.length; i++) {
             if (!methods[i].getName().equals("put"))
                 continue;

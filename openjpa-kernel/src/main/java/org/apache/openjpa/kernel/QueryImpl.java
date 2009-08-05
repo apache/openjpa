@@ -1267,10 +1267,14 @@ public class QueryImpl
             // result class but no result; means candidate is being set
             // into some result class
             _packer = new ResultPacker(_class, getAlias(), resultClass);
-        } else if (resultClass != null) {
-            // projection
+        } else if (resultClass != null) { // projection
+            ResultShape shape = ex.getResultShape(q);
             Class[] types = ex.getProjectionTypes(q);
-            _packer = new ResultPacker(types, aliases, resultClass);
+            if (shape == null) {
+                _packer = new ResultPacker(types, aliases, resultClass);
+            } else {
+                _packer = new ResultShapePacker(types, aliases, resultClass, shape);
+            }
         }
         return _packer;
     }
@@ -1934,6 +1938,10 @@ public class QueryImpl
             return _executors[0].getResultClass(q);
         }
 
+        public ResultShape<?> getResultShape(StoreQuery q) {
+            return _executors[0].getResultShape(q);
+        }
+        
         public Class[] getProjectionTypes(StoreQuery q) {
             return _executors[0].getProjectionTypes(q);
         }

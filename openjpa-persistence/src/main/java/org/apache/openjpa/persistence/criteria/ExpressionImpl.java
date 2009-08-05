@@ -27,7 +27,6 @@ import javax.persistence.criteria.QueryBuilder.In;
 
 import org.apache.openjpa.kernel.exps.ExpressionFactory;
 import org.apache.openjpa.kernel.exps.Value;
-import org.apache.openjpa.persistence.TupleElementImpl;
 import org.apache.openjpa.persistence.meta.MetamodelImpl;
 
 /**

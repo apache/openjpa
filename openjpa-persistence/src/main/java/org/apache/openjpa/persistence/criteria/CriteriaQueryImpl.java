@@ -32,6 +32,7 @@ import java.util.Stack;
 
 import javax.persistence.Tuple;
 import javax.persistence.criteria.AbstractQuery;
+import javax.persistence.criteria.CompoundSelection;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Expression;
 import javax.persistence.criteria.Order;
@@ -43,7 +44,9 @@ import javax.persistence.criteria.Subquery;
 import javax.persistence.metamodel.EntityType;
 
 import org.apache.commons.collections.map.LinkedMap;
+import org.apache.openjpa.kernel.ResultShape;
 import org.apache.openjpa.kernel.StoreQuery;
+import org.apache.openjpa.kernel.ResultShape.FillStrategy;
 import org.apache.openjpa.kernel.exps.Context;
 import org.apache.openjpa.kernel.exps.ExpressionFactory;
 import org.apache.openjpa.kernel.exps.QueryExpressions;
@@ -78,8 +81,11 @@ public class CriteriaQueryImpl<T> implements CriteriaQuery<T>, AliasContext {
     private Boolean             _distinct;
     private SubqueryImpl<?>     _delegator;
     private final Class<T>      _resultClass;
-    private Class<?>            _runtimeResultClass;
+    private ResultShape<?>      _shape;
+    private boolean             _multiselect;
+    private Map<Selection<?>, ResultShape<?>> _nestedShapes;
     
+
     // AliasContext
     private int aliasCount = 0;
     private static String ALIAS_BASE = "autoAlias";
@@ -96,7 +102,6 @@ public class CriteriaQueryImpl<T> implements CriteriaQuery<T>, AliasContext {
     public CriteriaQueryImpl(MetamodelImpl model, Class<T> resultClass) {
         this._model = model;
         this._resultClass = resultClass;
-        _runtimeResultClass = Tuple.class.isAssignableFrom(resultClass) ? TupleImpl.class : resultClass;
         _aliases = new HashMap<Selection<?>, String>(); 
     }
     
@@ -182,9 +187,9 @@ public class CriteriaQueryImpl<T> implements CriteriaQuery<T>, AliasContext {
      * @return the modified query
      */
     public CriteriaQuery<T> multiselect(Selection<?>... selections) {
-        if (selections.length > 1 && _resultClass == Object.class)
-            _runtimeResultClass = Object[].class;
-        return select(selections);
+        _multiselect = true;
+        _selections = Arrays.asList(selections); // do not telescope
+        return this;
     }
 
     /**
@@ -249,6 +254,7 @@ public class CriteriaQueryImpl<T> implements CriteriaQuery<T>, AliasContext {
     }
 
     public CriteriaQuery<T> select(Selection<?>... selections) {
+        _multiselect = false;
         _selections = Arrays.asList(selections);
         return this;
     }
@@ -522,12 +528,100 @@ public class CriteriaQueryImpl<T> implements CriteriaQuery<T>, AliasContext {
     public Class<T> getResultType() {
         return _resultClass;
     }
-    
-    public Class<?> getRuntimeResultClass() {
-        return _runtimeResultClass;
-    }
 
     public CriteriaQuery<T> multiselect(List<Selection<?>> list) {
         return multiselect(list.toArray(new Selection<?>[list.size()]));
     }
+    
+    // ===================================================================================
+    // Result Shape processing
+    // ===================================================================================
+    
+    /**
+     * Gets the shape of the query result. 
+     * Can be null if called before build
+     */
+    ResultShape<?> getResultShape() {
+        if (_shape == null) {
+            _shape = buildShape();
+        }
+        return _shape;
+    }
+    
+    /**
+     * Gets the shape of a selection item. Creates the shape if necessary.
+     */
+    ResultShape<?> getNestedShape(Selection<?> s) {
+        if (_nestedShapes == null) {
+            _nestedShapes = new HashMap<Selection<?>, ResultShape<?>>();
+        } else if (_nestedShapes.containsKey(s)) {
+            return _nestedShapes.get(s);
+        }
+        Class<?> type = s.getJavaType() == null ? Object.class : s.getJavaType();
+        ResultShape<?> result = null;
+        FillStrategy strategy = FillStrategy.ASSIGN;
+        if (s.isCompoundSelection()) {
+            if (s instanceof CompoundSelections.NewInstance) {
+                strategy = FillStrategy.CONSTRUCTOR;
+            } else if (s instanceof CompoundSelections.Array) {
+                strategy = FillStrategy.ARRAY;
+            } else if (s instanceof CompoundSelections.Tuple) {
+                strategy = FillStrategy.MAP;
+            }
+            result = new ResultShape(type, strategy);
+            List<Selection<?>> terms = ((CompoundSelection<?>)s).getCompoundSelectionItems();
+            for (Selection<?> term : terms) {
+                result.nest(getNestedShape(term));
+            }
+        } else {
+            result = new ResultShape(type, strategy, true);
+        }
+        _nestedShapes.put(s, result);
+        return result;
+    }
+    
+    /**
+     * Builds the result shape by creating shape for the complete result and how it nests each selection terms.
+     * The shape varies based on whether the terms were selected based on multiselect() or select(). 
+     */
+    private ResultShape<?> buildShape() {
+        Class<?> runtimeResultClass = _resultClass;
+        FillStrategy strategy = FillStrategy.ASSIGN;
+        ResultShape<?> result = null;
+        if (_multiselect) {
+            if (Tuple.class.isAssignableFrom(_resultClass)) {
+                runtimeResultClass = TupleImpl.class;
+                strategy = FillStrategy.MAP;
+           } else if (_resultClass == Object.class) {
+               if (_selections.size() > 1) { 
+                   runtimeResultClass = Object[].class;
+                   strategy = FillStrategy.ARRAY;
+               }
+           } else {
+               strategy = _resultClass.isArray() ? FillStrategy.ARRAY : FillStrategy.CONSTRUCTOR;
+           } 
+           result = new ResultShape(runtimeResultClass, strategy);
+           for (Selection<?> term : _selections) {
+               result.nest(getNestedShape(term));
+           }
+        } else { // not multiselect
+            if (Tuple.class.isAssignableFrom(_resultClass)) {
+                runtimeResultClass = TupleImpl.class;
+                strategy = FillStrategy.MAP;
+            }
+            result = new ResultShape(runtimeResultClass, strategy);
+            if (_selections == null)
+                return result;
+            if (_selections.size() == 1) {
+                result = getNestedShape(_selections.get(0));
+            } else {
+                for (Selection<?> term : _selections) {
+                    result.nest(getNestedShape(term));
+                }
+            }
+        }
+    
+        return result;
+   }
+
 }

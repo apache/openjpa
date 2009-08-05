@@ -14,42 +14,24 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
-package org.apache.openjpa.persistence.criteria;
+package org.apache.openjpa.persistence.criteria.results;
 
-import javax.persistence.criteria.Expression;
-import javax.persistence.criteria.Order;
+import javax.persistence.metamodel.SingularAttribute;
+import javax.persistence.metamodel.StaticMetamodel;
 
 /**
- * Ordering clause of a criteria query.
- * 
+ * Hand-written (i.e. non-canonical in techie terms).
+ *  
  * @author Pinaki Poddar
  *
  */
-public class OrderImpl implements Order {
-	private boolean _ascending;
-	private final ExpressionImpl<?> e;
-	
-	public OrderImpl(Expression<?> e, boolean asc) {
-		this.e = (ExpressionImpl<?>) e;
-		_ascending = asc;
-	}
-	
-	public OrderImpl(Expression<?> e) {
-		this(e, true);
-	}
-	
-	public ExpressionImpl<?> getExpression() {
-		return e;
-	}
-	
-	public boolean isAscending() {
-		return _ascending;
-	}
+@StaticMetamodel(Foo.class)
+public class Foo_ {
+    public static volatile SingularAttribute<Foo, Long> fid;
+    public static volatile SingularAttribute<Foo, String> fstring;
+    public static volatile SingularAttribute<Foo, Integer> fint;
+    public static volatile SingularAttribute<Foo, Bar> bar;
 
-	public Order reverse() {
-		_ascending = !_ascending;
-		return this;
-	}
 }

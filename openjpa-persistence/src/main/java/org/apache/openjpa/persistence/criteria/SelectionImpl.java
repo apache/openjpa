@@ -43,8 +43,8 @@ public class SelectionImpl<X> extends TupleElementImpl<X>
         return this;
     }
 
-    public final List<Selection<?>> getCompoundSelectionItems() {
-        return null;
+    public List<Selection<?>> getCompoundSelectionItems() {
+        throw new IllegalStateException(this + " is not a compound selection");
     }
 
     public boolean isCompoundSelection() {

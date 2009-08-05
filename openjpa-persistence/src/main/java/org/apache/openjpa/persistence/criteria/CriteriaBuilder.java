@@ -24,6 +24,7 @@ import java.sql.Date;
 import java.sql.Time;
 import java.sql.Timestamp;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Map;
 import java.util.Set;
 
@@ -47,6 +48,7 @@ import org.apache.openjpa.kernel.exps.ExpressionParser;
 import org.apache.openjpa.kernel.exps.QueryExpressions;
 import org.apache.openjpa.kernel.exps.Value;
 import org.apache.openjpa.meta.ClassMetaData;
+import org.apache.openjpa.persistence.TupleImpl;
 import org.apache.openjpa.persistence.meta.MetamodelImpl;
 
 /**
@@ -331,7 +333,7 @@ public class CriteriaBuilder implements QueryBuilder, ExpressionParser {
     }
 
     public <K, M extends Map<K, ?>> Expression<Set<K>> keys(M map) {
-        throw new AbstractMethodError();
+        return new Expressions.Constant<Set<K>>(map == null ? Collections.EMPTY_SET : map.keySet());
     }
 
     public Predicate le(Expression<? extends Number> x, Expression<? extends Number> y) {
@@ -554,7 +556,7 @@ public class CriteriaBuilder implements QueryBuilder, ExpressionParser {
      * @return selection item
      */
     public <Y> CompoundSelection<Y> construct(Class<Y> result, Selection<?>... selections) {
-        return new NewInstanceSelection<Y>(result, selections);
+        return new CompoundSelections.NewInstance<Y>(result, selections);
     }
 
     public <R> Case<R> selectCase() {
@@ -672,12 +674,11 @@ public class CriteriaBuilder implements QueryBuilder, ExpressionParser {
     }
 
     public <V, M extends Map<?, V>> Expression<Collection<V>> values(M map) {
-        throw new AbstractMethodError();
+        return new Expressions.Constant<Collection<V>>(map == null ? Collections.EMPTY_LIST : map.values());
     }
 
-    public CompoundSelection<Object[]> array(Selection<?>... arg0) {
-        // TODO Auto-generated method stub
-        throw new AbstractMethodError();
+    public CompoundSelection<Object[]> array(Selection<?>... terms) {
+        return new CompoundSelections.Array<Object[]>(Object[].class, terms);
     }
 
     public Predicate isNotNull(Expression<?> x) {
@@ -688,8 +689,15 @@ public class CriteriaBuilder implements QueryBuilder, ExpressionParser {
         return new Expressions.IsNull((ExpressionImpl<?> )x);
     }
 
+    /**
+     * Define a tuple-valued selection item
+     * @param selections  selection items
+     * @return tuple-valued compound selection
+     * @throws IllegalArgumentException if an argument is a tuple- or
+     *          array-valued selection item
+     */
     public CompoundSelection<Tuple> tuple(Selection<?>... selections) {
-        return new TupleSelection<Tuple>(Tuple.class, selections);
+        return new CompoundSelections.Tuple(TupleImpl.class, selections);
     }
     
     /**

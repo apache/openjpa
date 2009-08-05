@@ -37,6 +37,7 @@ import org.apache.openjpa.kernel.FetchConfiguration;
 import org.apache.openjpa.kernel.LockLevels;
 import org.apache.openjpa.kernel.OpenJPAStateManager;
 import org.apache.openjpa.kernel.QueryContext;
+import org.apache.openjpa.kernel.ResultShape;
 import org.apache.openjpa.kernel.StoreContext;
 import org.apache.openjpa.kernel.StoreQuery;
 import org.apache.openjpa.kernel.exps.AggregateListener;
@@ -438,6 +439,10 @@ public class QueryCacheStoreQuery
             return _ex.getResultClass(unwrap(q));
         }
 
+        public ResultShape<?> getResultShape(StoreQuery q) {
+            return _ex.getResultShape(q);
+        }
+        
         public String[] getProjectionAliases(StoreQuery q) {
             return _ex.getProjectionAliases(unwrap(q));
         }

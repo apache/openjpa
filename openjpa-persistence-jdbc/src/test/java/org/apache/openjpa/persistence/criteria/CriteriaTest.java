@@ -21,6 +21,8 @@ package org.apache.openjpa.persistence.criteria;
 import javax.persistence.EntityManager;
 
 import org.apache.openjpa.persistence.OpenJPAEntityManagerFactorySPI;
+import org.apache.openjpa.persistence.criteria.results.Bar;
+import org.apache.openjpa.persistence.criteria.results.Foo;
 
 /**
  * Generic utility to run Criteria tests.
@@ -41,7 +43,7 @@ public abstract class CriteriaTest extends AbstractCriteriaTestCase {
             Dependent.class, D.class, Employee.class, Exempt.class, FemaleUser.class, FrequentFlierPlan.class,
             Item.class, LineItem.class, Magazine.class, MaleUser.class, Manager.class, Movie.class, Order.class,
             Person.class, Phone.class, Photo.class, Product.class, Publisher.class, Request.class, Semester.class,
-            Student.class, TransactionHistory.class, Transaction.class, VideoStore.class, };
+            Student.class, TransactionHistory.class, Transaction.class, VideoStore.class, Foo.class, Bar.class};
 
     protected Class<?>[] getDomainClasses() {
         return CLASSES;
