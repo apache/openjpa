@@ -546,7 +546,7 @@ public class PersistenceUnitInfoImpl
     }
     
     protected void setValidationMode(String mode) {
-        setValidationMode(Enum.valueOf(ValidationMode.class, mode));
+        setValidationMode(Enum.valueOf(ValidationMode.class, mode.toUpperCase()));
     }
 
     public void setValidationMode(ValidationMode mode) {
