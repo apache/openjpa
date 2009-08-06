@@ -289,7 +289,7 @@ public class MetamodelImpl implements Metamodel, Resolver {
             mcls.getName(), cls.getName(), anno.value()).getMessage());
         }
         
-    	Field[] mfields = mcls.getFields();
+        Field[] mfields = mcls.getDeclaredFields();
     	for (Field mf : mfields) {
             try {
                 ParameterizedType mfType = getParameterziedType(mf);
