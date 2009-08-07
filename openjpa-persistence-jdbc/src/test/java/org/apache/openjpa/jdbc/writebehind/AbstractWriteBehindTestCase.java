@@ -25,12 +25,13 @@ import org.apache.openjpa.jdbc.writebehind.entities.AbstractSimpleEntity;
 import org.apache.openjpa.jdbc.writebehind.entities.SimpleNonGeneratedIdEntity;
 import org.apache.openjpa.jdbc.writebehind.entities.SimpleTableGeneratedIdEntity;
 import org.apache.openjpa.persistence.OpenJPAEntityManagerFactorySPI;
-import org.apache.openjpa.persistence.test.SingleEMTestCase;
+import org.apache.openjpa.persistence.OpenJPAEntityManagerSPI;
+import org.apache.openjpa.persistence.test.PersistenceTestCase;
 import org.apache.openjpa.writebehind.WriteBehindCache;
 import org.apache.openjpa.writebehind.WriteBehindCacheManager;
 import org.apache.openjpa.writebehind.WriteBehindCallback;
 
-public abstract class AbstractWriteBehindTestCase extends SingleEMTestCase {
+public abstract class AbstractWriteBehindTestCase extends PersistenceTestCase {
     protected static Object[] writeBehindProps =
         new Object[] { 
             "openjpa.DataCache", "true",
@@ -47,16 +48,26 @@ public abstract class AbstractWriteBehindTestCase extends SingleEMTestCase {
         SimpleNonGeneratedIdEntity.class, SimpleTableGeneratedIdEntity.class,
         AbstractSimpleEntity.class  };
     
-    protected EntityManagerFactory _validatorEMF = null; 
+    protected static OpenJPAEntityManagerFactorySPI _validatorEMF = null; 
+    protected static OpenJPAEntityManagerFactorySPI emf = null;
+    protected OpenJPAEntityManagerSPI em = null;
     
-    public void setUp() {
+    public void setUp() throws Exception {
+        super.setUp();
         if(emf == null) { 
-            super.setUp(writeBehindProps);
+            emf = createEMF(writeBehindProps);
         }
         if(_validatorEMF == null) { 
             _validatorEMF = createEMF(validatorProps);
         }
+        em = emf.createEntityManager();
     }
+    
+    public void tearDown() throws Exception {
+        em.close();
+        super.tearDown();
+    }
+    
     
     public static Object[] getDefaultWriteBehindProperties() { 
         return writeBehindProps;
@@ -66,10 +77,8 @@ public abstract class AbstractWriteBehindTestCase extends SingleEMTestCase {
         return getWBCacheManager(emf);
     }
 
-    protected WriteBehindCacheManager getWBCacheManager(
-        OpenJPAEntityManagerFactorySPI factory) {
-        WriteBehindCacheManager wbcm =
-            factory.getConfiguration().getWriteBehindCacheManagerInstance();
+    protected WriteBehindCacheManager getWBCacheManager(OpenJPAEntityManagerFactorySPI factory) {
+        WriteBehindCacheManager wbcm = factory.getConfiguration().getWriteBehindCacheManagerInstance();
         return wbcm;
     }
 
@@ -91,8 +100,7 @@ public abstract class AbstractWriteBehindTestCase extends SingleEMTestCase {
         return factory.getConfiguration().getWriteBehindCallbackInstance();
     }
 
-    protected WriteBehindCache getWBCache(
-        OpenJPAEntityManagerFactorySPI factory, String name) {
+    protected WriteBehindCache getWBCache(OpenJPAEntityManagerFactorySPI factory, String name) {
         WriteBehindCache wbc = null;
         if (StringUtils.isEmpty(name)) {
             wbc = getWBCacheManager(factory).getSystemWriteBehindCache();
@@ -101,13 +109,8 @@ public abstract class AbstractWriteBehindTestCase extends SingleEMTestCase {
         }
         return wbc;
     }
-    
+
     protected EntityManagerFactory getValidatorEMF() { 
         return _validatorEMF;
     }
-    
-    public void tearDown() throws Exception { 
-        // intentionally skip super.tearDown()
-    }
-
 }
