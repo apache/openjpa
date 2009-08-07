@@ -192,10 +192,10 @@ public class PrimaryRow
     }
 
     /**
-     * If this is a delete, delay foreign keys to other deleted objects if
-     * the key is restricted. If this is an update or insert, delay foreign
-     * keys to other inserts if the key is not logical. If the foreign key
-     * is to a new record and the columns are auto-inc, record it.
+     * If this is a delete, delay foreign keys to other deleted objects if the 
+     * key is restricted or cascade. If this is an update or insert, delay 
+     * foreign keys to other inserts if the key is not logical. If the foreign 
+     * key is to a new record and the columns are auto-inc, record it.
      */
     private boolean delayForeignKey(ForeignKey fk, OpenJPAStateManager sm,
         boolean set) {
@@ -204,7 +204,8 @@ public class PrimaryRow
 
         if (getAction() == ACTION_DELETE)
             return sm.isDeleted() && !fk.isDeferred()
-                && fk.getDeleteAction() == ForeignKey.ACTION_RESTRICT;
+                && (fk.getDeleteAction() == ForeignKey.ACTION_RESTRICT ||
+                    fk.getDeleteAction() == ForeignKey.ACTION_CASCADE);
 
         if (!sm.isNew() || sm.isFlushed())
             return false;

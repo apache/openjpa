@@ -18,6 +18,8 @@
  */
 package org.apache.openjpa.jdbc.kernel;
 
+import java.util.ArrayList;
+import java.util.List;
 import javax.persistence.EntityManager;
 
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
@@ -37,7 +39,8 @@ public class TestNoForeignKeyViolation
     private EntityD entityD;
 
     public void setUp() {
-        setUp(EntityA.class, EntityB.class, EntityC.class, EntityD.class, EntityE.class);
+        setUp(EntityA.class, EntityB.class, EntityC.class, EntityD.class, 
+              EntityE.class, EntityF.class, EntityG.class);
 
         createTestData();
     }
@@ -154,4 +157,55 @@ public class TestNoForeignKeyViolation
             em.close();
         }
     }
+    
+    public void testForeignKeyCascade() {
+        EntityManager em = emf.createEntityManager();
+        try {
+            EntityF f = new EntityF();
+            f.setId(1);
+
+            List<EntityG> listG = new ArrayList<EntityG>();
+            EntityG g1 = new EntityG();
+            g1.setId(1);
+            listG.add(g1);
+            g1.setEntityF(f);
+            
+            EntityG g2 = new EntityG();
+            g2.setId(2);
+            listG.add(g2);
+            g2.setEntityF(f);
+
+            EntityG g3 = new EntityG();
+            g3.setId(3);
+            listG.add(g3);
+            g3.setEntityF(f);
+
+            EntityG g4 = new EntityG();
+            g4.setId(4);
+            listG.add(g4);
+            g4.setEntityF(f);
+            
+            f.setListG(listG);
+            em.getTransaction().begin();
+            em.persist(f);
+            em.persist(g1);
+            em.persist(g2);
+            em.persist(g3);
+            em.persist(g4);
+            em.getTransaction().commit();
+
+            em.getTransaction().begin();
+            em.remove(f);
+            em.getTransaction().commit();
+        }
+        catch (Exception e) {
+            fail("Fail to delete EntityF");
+        }
+        finally {
+            if (em.getTransaction().isActive())
+                em.getTransaction().rollback();
+            em.close();
+        }
+    }
+    
 }

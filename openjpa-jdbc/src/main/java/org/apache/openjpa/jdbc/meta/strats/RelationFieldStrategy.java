@@ -248,7 +248,8 @@ public class RelationFieldStrategy
             if (rel != null) {
                 ForeignKey fk = field.getForeignKey((ClassMapping)
                     rel.getMetaData());
-                if (fk.getDeleteAction() == ForeignKey.ACTION_RESTRICT) {
+                if (fk.getDeleteAction() == ForeignKey.ACTION_RESTRICT ||
+                    fk.getDeleteAction() == ForeignKey.ACTION_CASCADE) {
                     Row row = field.getRow(sm, store, rm, Row.ACTION_DELETE);
                     row.setForeignKey(fk, null, rel);
                 }
