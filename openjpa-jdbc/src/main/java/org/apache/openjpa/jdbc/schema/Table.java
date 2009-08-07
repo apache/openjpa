@@ -702,4 +702,15 @@ public class Table
     public void setComment(String comment) {
         _comment = comment;
     }
+
+    /**
+    * Add a column to the subNames set to avoid naming conflict.
+    */
+    public void addSubColumn(String name) {
+        addSubName(name);
+    }
+
+    public void resetSubColumns() {
+        resetSubNames();
+    }
 }

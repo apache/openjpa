@@ -39,13 +39,17 @@ public class NameSet
 
     private Set _names = null;
 
+    // an additional names Set for checking name duplication
+    private Set _subNames = null;
+
     /**
      * Return true if the given name is in use already.
      */
     public boolean isNameTaken(String name) {
         if (name == null)
             return true;
-        return _names != null && _names.contains(name.toUpperCase());
+        return (_names != null && _names.contains(name.toUpperCase())) ||
+            (_subNames != null && _subNames.contains(name.toUpperCase()));
     }
 
     /**
@@ -76,5 +80,21 @@ public class NameSet
     protected void removeName(String name) {
         if (name != null && _names != null)
             _names.remove(name.toUpperCase());
+    }
+
+    /**
+    * Attempt to add the given name to the set.
+    *
+    * @param name the name to add
+    */
+    protected void addSubName(String name) {
+        if (_subNames == null) {
+            _subNames = new HashSet();
+        }
+        _subNames.add(name.toUpperCase());
+    }
+
+    protected void resetSubNames() {
+        _subNames = null;
     }
 }
