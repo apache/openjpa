@@ -115,8 +115,8 @@ public class Lit
         if (lstate.otherLength > 1)
             sql.appendValue(((Object[]) lstate.sqlValue)[index], 
                 lstate.getColumn(index));
-        else {
-            if (getParseType() == Literal.TYPE_ENUM && _isRaw) { 
+        else if (_isRaw) {
+            if (getParseType() == Literal.TYPE_ENUM) { 
                 StringBuilder value = new StringBuilder();
                 boolean isOrdinal = false;
                 if (lstate.sqlValue instanceof Integer)
@@ -128,8 +128,11 @@ public class Lit
                     value.append("'");
                 lstate.sqlValue = new Raw(value.toString());
                 _rawVal = lstate.sqlValue;
+            } else {
+                lstate.sqlValue = new Raw(_val instanceof String ? "'"+_val+"'" : _val.toString());
+                _rawVal = lstate.sqlValue;
             }
-            sql.appendValue(lstate.sqlValue, lstate.getColumn(index));
         }
+        sql.appendValue(lstate.sqlValue, lstate.getColumn(index));
     }
 }

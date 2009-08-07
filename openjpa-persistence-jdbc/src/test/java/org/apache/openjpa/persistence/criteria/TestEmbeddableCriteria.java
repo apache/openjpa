@@ -23,17 +23,20 @@ import java.util.Map;
 import java.util.Set;
 
 import javax.persistence.Parameter;
+import javax.persistence.Tuple;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Expression;
 import javax.persistence.criteria.Join;
 import javax.persistence.criteria.JoinType;
 import javax.persistence.criteria.ListJoin;
 import javax.persistence.criteria.MapJoin;
+import javax.persistence.criteria.ParameterExpression;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 import javax.persistence.criteria.Subquery;
 
-import org.apache.openjpa.persistence.OpenJPAEntityManagerFactorySPI;
+import org.apache.openjpa.persistence.OpenJPAPersistence;
+import org.apache.openjpa.persistence.OpenJPAQuery;
 import org.apache.openjpa.persistence.embed.Company1;
 import org.apache.openjpa.persistence.embed.Company1_;
 import org.apache.openjpa.persistence.embed.Company2;
@@ -97,28 +100,30 @@ import org.apache.openjpa.persistence.test.AllowFailure;
 
 
 public class TestEmbeddableCriteria extends EmbeddableDomainTestCase {
-    // can not translate to criteria
-    @AllowFailure
+    @AllowFailure(message= "JPQL works because projection/result class is null, but Criteria can be written using " 
+                         + "projection explictly. That makes it fail in AbstractExpression.assertNotContainer" 
+                         + "because the project is a collection")
     public void testEmbeddableQuery1() {
         String jpql = "select e from EntityA_Coll_String a, in (a.nickNames) e order by a.id";
+        
         CriteriaQuery<Set> q = cb.createQuery(Set.class);
         Root<EntityA_Coll_String> a = q.from(EntityA_Coll_String.class);
         Join<EntityA_Coll_String, String> e = a.join(EntityA_Coll_String_.nickNames);
-        //q.select(e);
+        q.select(a.get(EntityA_Coll_String_.nickNames));
         q.orderBy(cb.asc(a.get(EntityA_Coll_String_.id)));
         
         assertEquivalence(q, jpql);
     }
     
-    // can not translate to criteria
-    @AllowFailure
+    @AllowFailure(message= "JPQL works because projection/result class is null, but Criteria can be written using " 
+        + "projection explictly. That makes it fail in AbstractExpression.assertNotContainer" 
+        + "because the project is a collection")
     public void testEmbeddableQuery3() {
         String jpql = "select e from EntityA_Coll_String a, in (a.nickNames) e order by e";
-        CriteriaQuery<?> q = cb.createQuery();
+        CriteriaQuery<Set> q = cb.createQuery(Set.class);
         Root<EntityA_Coll_String> a = q.from(EntityA_Coll_String.class);
         Join<EntityA_Coll_String, String> e = a.join(EntityA_Coll_String_.nickNames);
-        e.alias("e");
-        //q.select(e);
+        q.select(a.get(EntityA_Coll_String_.nickNames));
         q.orderBy(cb.asc(e));
         
         assertEquivalence(q, jpql);
@@ -1171,38 +1176,35 @@ public class TestEmbeddableCriteria extends EmbeddableDomainTestCase {
         executeAndCompareSQL(q, expectedSQL);
     }
     
-    // not sure how to translate to criteria
-    @AllowFailure
+    @AllowFailure(message="JPQL parse error")
     public void testEmbeddableQuery84() {
-        String jpql = "select e, e.intVal1, e.embed.intVal2 from EntityA_Coll_Embed_Embed a " +
-                " , in (a.embeds) e WHERE ?1 MEMBER OF a.embeds order by e.intVal3";
-        CriteriaQuery<?> q = cb.createQuery();
+        String jpql = "select e, e.intVal1, e.embed.intVal2 from EntityA_Coll_Embed_Embed a, " +
+                " in (a.embeds) e WHERE :embed2 MEMBER OF a.embeds order by e.intVal3";
+        CriteriaQuery<Tuple> q = cb.createTupleQuery();
         Root<EntityA_Coll_Embed_Embed> a = q.from(EntityA_Coll_Embed_Embed.class);
         ListJoin<EntityA_Coll_Embed_Embed, Embed_Embed> e = a.join(EntityA_Coll_Embed_Embed_.embeds);
         q.orderBy(cb.asc(e.get(Embed_Embed_.intVal3)));
         q.multiselect(e, e.get(Embed_Embed_.intVal1), e.get(Embed_Embed_.embed).get(Embed_.intVal2));
-        Parameter<Embed_Embed> param1 = cb.parameter(Embed_Embed.class);
-        //q.where(cb.isMember(param1, a.get(EntityA_Coll_Embed_Embed_.embeds)));
-        assertEquivalence(q, jpql);
+        ParameterExpression<Embed_Embed> param1 = cb.parameter(Embed_Embed.class, "embed2");
+        q.where(cb.isMember(param1, a.get(EntityA_Coll_Embed_Embed_.embeds)));
+        assertEquivalence(q, jpql, new String[]{"embed2"}, new Object[]{new Embed_Embed()});
     }
     
-    // not sure how to translate to criteria
-    @AllowFailure
+    @AllowFailure(message="JPQL parse error")
     public void testEmbeddableQuery85() {
         String jpql = "select e, e.intVal1, e.embed.intVal2 from EntityA_Coll_Embed_Embed a " +
-                " left join a.embeds e WHERE ?1 MEMBER OF a.embeds order by e.intVal3";
+                " left join a.embeds e WHERE :embed2 MEMBER OF a.embeds order by e.intVal3";
         CriteriaQuery<?> q = cb.createQuery();
         Root<EntityA_Coll_Embed_Embed> a = q.from(EntityA_Coll_Embed_Embed.class);
         ListJoin<EntityA_Coll_Embed_Embed, Embed_Embed> e = a.join(EntityA_Coll_Embed_Embed_.embeds, JoinType.LEFT);
         q.orderBy(cb.asc(e.get(Embed_Embed_.intVal3)));
         q.multiselect(e, e.get(Embed_Embed_.intVal1), e.get(Embed_Embed_.embed).get(Embed_.intVal2));
-        Parameter<Embed_Embed> param1 = cb.parameter(Embed_Embed.class);
-        //q.where(cb.isMember(param1, a.get(EntityA_Coll_Embed_Embed_.embeds)));
-        assertEquivalence(q, jpql);
+        ParameterExpression<Embed_Embed> param1 = cb.parameter(Embed_Embed.class, "embed2");
+        q.where(cb.isMember(param1, a.get(EntityA_Coll_Embed_Embed_.embeds)));
+        assertEquivalence(q, jpql, new String[]{"embed2"}, new Object[]{new Embed_Embed()});
     }
     
-    // not sure how to translate to criteria
-    @AllowFailure
+    @AllowFailure(message="JPQL parse error")
     public void testEmbeddableQuery86() {
         String jpql = "select e, e.intVal1, e.embed.intVal2 from EntityA_Coll_Embed_Embed a " +
                 " , in (a.embeds) e WHERE ?1 = e order by e.intVal3";
@@ -1213,7 +1215,7 @@ public class TestEmbeddableCriteria extends EmbeddableDomainTestCase {
         q.multiselect(e, e.get(Embed_Embed_.intVal1), e.get(Embed_Embed_.embed).get(Embed_.intVal2));
         Parameter<Embed_Embed> param1 = cb.parameter(Embed_Embed.class);
         //q.where(cb.equal(param1, e));
-        assertEquivalence(q, jpql);
+        assertEquivalence(q, jpql, new String[]{"embed2"}, new Object[]{new Embed_Embed()});
     }
 
     public void testEmbeddableQuery87() {
@@ -1509,10 +1511,9 @@ public class TestEmbeddableCriteria extends EmbeddableDomainTestCase {
         assertEquivalence(q, jpql);
     }
 
-    // not sure how to translate to criteria
-    @AllowFailure
+    @AllowFailure(message="JPQL parse exception")
     public void testEmbeddableQuery111() {
-        String jpql = "select i from Item1 i where ?1 = any (select KEY(e) from i.images e) order by i";
+        String jpql = "select i from Item1 i where :image = any(select KEY(e) from i.images e) order by i";
         CriteriaQuery<Item1> q = cb.createQuery(Item1.class);
         Root<Item1> i = q.from(Item1.class);
         Subquery<String> sq = q.subquery(String.class);
@@ -1520,16 +1521,14 @@ public class TestEmbeddableCriteria extends EmbeddableDomainTestCase {
         MapJoin<Item1, String, String> e = i1.join(Item1_.images);
         sq.select(e.key());
         q.select(i);
-        Parameter<String> param1 = cb.parameter(String.class);
-        //q.where(cb.equal(param1, cb.any(sq)));
+        ParameterExpression<String> param1 = cb.parameter(String.class, "image");
+        q.where(cb.equal(param1, cb.any(sq)));
         q.orderBy(cb.asc(i));
-        assertEquivalence(q, jpql);
+        assertEquivalence(q, jpql, new String[]{"image"}, new String[]{"my photo"});
     }
     
-    // not sure how to translate to criteria
-    @AllowFailure
     public void testEmbeddableQuery112() {
-        String jpql = "select i from Item1 i where ?1 = any (select KEY(e) from Item1 i, in(i.images) e) " +
+        String jpql = "select i from Item1 i where :image = any (select KEY(e) from Item1 i, in(i.images) e) " +
                 " order by i";
         CriteriaQuery<Item1> q = cb.createQuery(Item1.class);
         Root<Item1> i = q.from(Item1.class);
@@ -1538,35 +1537,33 @@ public class TestEmbeddableCriteria extends EmbeddableDomainTestCase {
         MapJoin<Item1, String, String> e = i1.join(Item1_.images);
         sq.select(e.key());
         q.select(i);
-        Parameter<String> param1 = cb.parameter(String.class);
-        //q.where(cb.equal(param1, cb.any(sq)));
+        ParameterExpression<String> param1 = cb.parameter(String.class, "image");
+        q.where(cb.equal(param1, cb.any(sq)));
         q.orderBy(cb.asc(i));
-        assertEquivalence(q, jpql);
+        assertEquivalence(q, jpql, new String[]{"image"}, new String[]{"my photo"});
     }
     
-    // not sure how to translate to criteria
-    @AllowFailure
+    @AllowFailure(message="MapJoin varaible getting registered more than once")
     public void testEmbeddableQuery113() {
         String jpql = "select i from Item1 i where exists (select e from Item1 i, in(i.images) e" +
-                " where ?1 = KEY(e)) order by i";
+                " where :image = KEY(e)) order by i";
         CriteriaQuery<Item1> q = cb.createQuery(Item1.class);
         Root<Item1> i = q.from(Item1.class);
         Subquery<Map> sq = q.subquery(Map.class);
         Root<Item1> i1 = sq.from(Item1.class);
         MapJoin<Item1, String, String> e = i1.join(Item1_.images);
-        //sq.select(e);
+//        sq.select(i1.get(Item1_.images).as(Map.class));
         q.select(i);
-        Parameter<String> param1 = cb.parameter(String.class);
-        //sq.where(cb.equal(param1, cb.any(sq)));
+        ParameterExpression<String> param1 = cb.parameter(String.class, "image");
+        sq.where(cb.equal(param1, cb.any(sq)));
         q.where(cb.exists(sq));
         q.orderBy(cb.asc(i));
-        assertEquivalence(q, jpql);
+        assertEquivalence(q, jpql, new String[]{"image"}, new String[]{"my photo"});
     }
      
-    // not sure how to translate to criteria
-    @AllowFailure
+    @AllowFailure(message="MapJoin varaible getting registered more than once")
     public void testEmbeddableQuery114() {
-        String jpql = "select i from Item2 i where ?1 = any (select KEY(e) from Item2 i, in(i.images) e) " +
+        String jpql = "select i from Item2 i where :image = any (select KEY(e) from Item2 i, in(i.images) e) " +
                 " order by i";
         CriteriaQuery<Item2> q = cb.createQuery(Item2.class);
         Root<Item2> i = q.from(Item2.class);
@@ -1575,36 +1572,33 @@ public class TestEmbeddableCriteria extends EmbeddableDomainTestCase {
         MapJoin<Item2, String, String> e = i1.join(Item2_.images);
         sq.select(e.key());
         q.select(i);
-        Parameter<String> param1 = cb.parameter(String.class);
-        //sq.where(cb.equal(param1, cb.any(sq)));
+        ParameterExpression<String> param1 = cb.parameter(String.class, "image");
+        sq.where(cb.equal(param1, cb.any(sq)));
         q.where(cb.exists(sq));
         q.orderBy(cb.asc(i));
-        assertEquivalence(q, jpql);
+        assertEquivalence(q, jpql, new String[]{"image"}, new String[]{"my photo"});
     }
     
-    // not sure how to translate to criteria
-    @AllowFailure
+    @AllowFailure(message="MapJoin varaible getting registered more than once")
     public void testEmbeddableQuery115() {
         String jpql = "select i from Item2 i where exists (select e from Item2 i, in(i.images) e" +
-                "   where ?1 = KEY(e)) order by i";
+                "   where :image = KEY(e)) order by i";
         CriteriaQuery<Item2> q = cb.createQuery(Item2.class);
         Root<Item2> i = q.from(Item2.class);
         Subquery<Map> sq = q.subquery(Map.class);
         Root<Item2> i1 = sq.from(Item2.class);
         MapJoin<Item2, String, String> e = i1.join(Item2_.images);
-        //sq.select(e);
+        sq.select(i1.get(Item2_.images).as(Map.class));
         q.select(i);
-        Parameter<String> param1 = cb.parameter(String.class);
-        //sq.where(cb.equal(param1, cb.any(sq)));
+        ParameterExpression<String> param1 = cb.parameter(String.class, "image");
+        sq.where(cb.equal(param1, cb.any(sq)));
         q.where(cb.exists(sq));
         q.orderBy(cb.asc(i));
-        assertEquivalence(q, jpql);
+        assertEquivalence(q, jpql, new String[]{"image"}, new String[]{"my photo"});
     }
     
-    // not sure how to translate to criteria
-    @AllowFailure
     public void testEmbeddableQuery116() {
-        String jpql = "select i from Item3 i where ?1 = any (select KEY(e) from Item3 i, in(i.images) e) " +
+        String jpql = "select i from Item3 i where :image = any (select KEY(e) from Item3 i, in(i.images) e) " +
                 "order by i";
         CriteriaQuery<Item3> q = cb.createQuery(Item3.class);
         Root<Item3> i = q.from(Item3.class);
@@ -1613,29 +1607,28 @@ public class TestEmbeddableCriteria extends EmbeddableDomainTestCase {
         MapJoin<Item3, String, String> e = i1.join(Item3_.images);
         sq.select(e.key());
         q.select(i);
-        Parameter<String> param1 = cb.parameter(String.class);
-        //q.where(cb.equal(param1, cb.any(sq)));
+        ParameterExpression<String> param1 = cb.parameter(String.class, "image");
+        q.where(cb.equal(param1, cb.any(sq)));
         q.orderBy(cb.asc(i));
-        assertEquivalence(q, jpql);
+        assertEquivalence(q, jpql, new String[]{"image"}, new String[]{"my photo"});
     }
     
-    // not sure how to translate to criteria
-    @AllowFailure
+    @AllowFailure(message="extra join in SubQuery")
     public void testEmbeddableQuery117() {
         String jpql = "select i from Item3 i where exists (select e from Item3 i, in(i.images) e" +
-                " where ?1 = KEY(e)) order by i";
+                " where :image = KEY(e)) order by i";
         CriteriaQuery<Item3> q = cb.createQuery(Item3.class);
         Root<Item3> i = q.from(Item3.class);
         Subquery<Map> sq = q.subquery(Map.class);
         Root<Item3> i1 = sq.from(Item3.class);
         MapJoin<Item3, String, String> e = i1.join(Item3_.images);
-        //sq.select(e);
+        sq.select(i1.get(Item3_.images).as(Map.class));
         q.select(i);
-        Parameter<String> param1 = cb.parameter(String.class);
-        //sq.where(cb.equal(param1, e.key()));
+        ParameterExpression<String> param1 = cb.parameter(String.class, "image");
+        sq.where(cb.equal(param1, e.key()));
         q.where(cb.exists(sq));
         q.orderBy(cb.asc(i));
-        assertEquivalence(q, jpql);
+        assertEquivalence(q, jpql, new String[]{"image"}, new String[]{"my photo"});
     }
     
     public void testEmbeddableQuery118() {
@@ -1654,13 +1647,8 @@ public class TestEmbeddableCriteria extends EmbeddableDomainTestCase {
         assertEquivalence(q, jpql);
     }
     
-    public void testEmbeddableQuery120() {
-        String jpql = "select c from Company1 c, in(c.organization) d where KEY(d) = ?1";
-    }
-    
-    @AllowFailure
     public void testEmbeddableQuery121() {
-        String jpql = "select c from Company1 c where ?1 = " +
+        String jpql = "select c from Company1 c where :division = " +
                 " (select KEY(d) from Company1 c, in(c.organization) d where d.id = 1) order by c ";
         CriteriaQuery<Company1> q = cb.createQuery(Company1.class);
         Root<Company1> c = q.from(Company1.class);
@@ -1669,17 +1657,16 @@ public class TestEmbeddableCriteria extends EmbeddableDomainTestCase {
         MapJoin<Company1,Division,VicePresident> d = c1.join(Company1_.organization);
         sq.select(d.key());
         q.select(c);
-        Parameter<Division> param1 = cb.parameter(Division.class);
+        ParameterExpression<Division> param1 = cb.parameter(Division.class, "division");
         sq.where(cb.equal(d.value().get(VicePresident_.id), 1));
-        //q.where(cb.equal(param1, sq));
+        q.where(cb.equal(param1, sq));
         q.orderBy(cb.asc(c));
-        assertEquivalence(q, jpql);
+        assertEquivalence(q, jpql, new String[]{"division"}, new Object[]{new Division()});
     }
     
-    @AllowFailure
     public void testEmbeddableQuery122() {
         String jpql = "select c from Company1 c where exists (select d from in(c.organization) d" +
-                "  where KEY(d) = ?1) order by c ";
+                "  where KEY(d) = :division) order by c ";
         CriteriaQuery<Company1> q = cb.createQuery(Company1.class);
         Root<Company1> c = q.from(Company1.class);
         Subquery<Map> sq = q.subquery(Map.class);
@@ -1687,17 +1674,16 @@ public class TestEmbeddableCriteria extends EmbeddableDomainTestCase {
         MapJoin<Company1,Division,VicePresident> d = c1.join(Company1_.organization);
         //sq.select(d);
         q.select(c);
-        Parameter<Division> param1 = cb.parameter(Division.class);
+        Parameter<Division> param1 = cb.parameter(Division.class, "division");
         sq.where(cb.equal(d.key(), param1));
         q.where(cb.exists(sq));
         q.orderBy(cb.asc(c));
-        assertEquivalence(q, jpql);
+        assertEquivalence(q, jpql, new String[]{"division"}, new Object[]{new Division()});
     }
     
-    @AllowFailure
     public void testEmbeddableQuery123() {
         String jpql = "select c from Company1 c where exists (select d from c.organization d" +
-                "  where KEY(d) = ?1) order by c ";  
+                "  where KEY(d) = :division) order by c ";  
         CriteriaQuery<Company1> q = cb.createQuery(Company1.class);
         Root<Company1> c = q.from(Company1.class);
         Subquery<Map> sq = q.subquery(Map.class);
@@ -1705,17 +1691,17 @@ public class TestEmbeddableCriteria extends EmbeddableDomainTestCase {
         MapJoin<Company1,Division,VicePresident> d = c1.join(Company1_.organization);
         //sq.select(d);
         q.select(c);
-        Parameter<Division> param1 = cb.parameter(Division.class);
+        Parameter<Division> param1 = cb.parameter(Division.class, "division");
         sq.where(cb.equal(d.key(), param1));
         q.where(cb.exists(sq));
         q.orderBy(cb.asc(c));
-        assertEquivalence(q, jpql);
+        assertEquivalence(q, jpql, new String[]{"division"}, new Object[]{new Division()});
     }
     
-    @AllowFailure
+    @AllowFailure(message="RelationRelationMapTableFieldStrategy.toKeyDataStoreValue() fails. Analyze MapKey")
     public void testEmbeddableQuery124() {
-        String jpql = "select c from Company2 c where ?1 = (select KEY(d) from Company2 c, in(c.organization) d" +
-                " where d.id = 3) order by c ";
+        String jpql = "select c from Company2 c where :division = (select KEY(d) from Company2 c, in(c.organization) d" 
+                    + " where d.id = 3) order by c ";
         CriteriaQuery<Company2> q = cb.createQuery(Company2.class);
         Root<Company2> c = q.from(Company2.class);
         Subquery<Division> sq = q.subquery(Division.class);
@@ -1723,47 +1709,43 @@ public class TestEmbeddableCriteria extends EmbeddableDomainTestCase {
         MapJoin<Company2,Division,VicePresident> d = c1.join(Company2_.organization);
         sq.select(d.key());
         q.select(c);
-        Parameter<Division> param1 = cb.parameter(Division.class);
+        ParameterExpression<Division> param1 = cb.parameter(Division.class, "division");
         sq.where(cb.equal(d.key().get(Division_.id), 3));
-        //q.where(cb.equal(param1, sq));
+        q.where(cb.equal(param1, sq));
         q.orderBy(cb.asc(c));
-        assertEquivalence(q, jpql);
+        assertEquivalence(q, jpql, new String[]{"division"}, new Object[]{new Division()});
     }
     
-    @AllowFailure
     public void testEmbeddableQuery125() {
         String jpql = "select c from Company2 c where exists (select d from in(c.organization) d" +
-                "  where KEY(d) = ?1) order by c ";
+                "  where KEY(d) = :k) order by c ";
         CriteriaQuery<Company2> q = cb.createQuery(Company2.class);
         Root<Company2> c = q.from(Company2.class);
-        Subquery<Map> sq = q.subquery(Map.class);
+        Subquery<Division> sq = q.subquery(Division.class);
         Root<Company2> c1 = sq.correlate(c);
         MapJoin<Company2,Division,VicePresident> d = c1.join(Company2_.organization);
-        //sq.select(d);
         q.select(c);
-        Parameter<Division> param1 = cb.parameter(Division.class);
+        Parameter<Division> param1 = cb.parameter(Division.class, "k");
         sq.where(cb.equal(d.key(), param1));
         q.where(cb.exists(sq));
         q.orderBy(cb.asc(c));
-        assertEquivalence(q, jpql);
+        assertEquivalence(q, jpql, new String[]{"k"}, new Object[]{new Division()});
     }
     
-    @AllowFailure
     public void testEmbeddableQuery126() {
-        String jpql = "select c from Company2 c where exists (select d from c.organization d" +
-                "  where KEY(d) = ?1) order by c ";  
+        String jpql = "select c from Company2 c where exists (select d from c.organization d  where KEY(d) = :k) " 
+                    + "order by c ";  
         CriteriaQuery<Company2> q = cb.createQuery(Company2.class);
         Root<Company2> c = q.from(Company2.class);
-        Subquery<Map> sq = q.subquery(Map.class);
+        Subquery<Division> sq = q.subquery(Division.class);
         Root<Company2> c1 = sq.correlate(c);
         MapJoin<Company2,Division,VicePresident> d = c1.join(Company2_.organization);
-        //sq.select(d);
         q.select(c);
-        Parameter<Division> param1 = cb.parameter(Division.class);
+        Parameter<Division> param1 = cb.parameter(Division.class, "k");
         sq.where(cb.equal(d.key(), param1));
         q.where(cb.exists(sq));
         q.orderBy(cb.asc(c));
-        assertEquivalence(q, jpql);
+        assertEquivalence(q, jpql, new String[]{"k"}, new Object[]{new Division()});
     }
 
     public void testEmbeddableQuery127() {

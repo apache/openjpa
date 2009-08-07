@@ -113,9 +113,8 @@ public abstract class AbstractCriteriaTestCase extends TestCase {
      * Executes the given CriteriaQuery and JPQL string and compare their respective SQLs for equality.
      */
     void assertEquivalence(CriteriaQuery<?> c, String jpql, Object[] params) {
-        
-        Query cQ = getEntityManager().createQuery(c);
         Query jQ = getEntityManager().createQuery(jpql);
+        Query cQ = getEntityManager().createQuery(c);
         setParameters(cQ, params);
         setParameters(jQ, params);
 
@@ -204,6 +203,7 @@ public abstract class AbstractCriteriaTestCase extends TestCase {
         } catch (Exception e) {
             StringWriter w = new StringWriter();
             e.printStackTrace(new PrintWriter(w));
+            fail(w.toString());
         }
 
         if (!(dict instanceof DerbyDictionary))

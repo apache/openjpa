@@ -273,6 +273,8 @@ public class QueryImpl<X> implements OpenJPAQuerySPI<X>, Serializable {
 	 */
 	Map<Object,Object> getParameterValues() {
 	    Map<Object,Object> result = new HashMap<Object,Object>();
+	    if (_boundParams == null)
+	        return result;
 	    for (Map.Entry<Object,Parameter<?>> entry : getDeclaredParameters().entrySet()) {
 	        Object paramKey = entry.getKey();
 	        Parameter<?> param = entry.getValue();

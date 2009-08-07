@@ -199,6 +199,16 @@ public class CriteriaQueryImpl<T> implements CriteriaQuery<T>, AliasContext {
      * 
      */
     public void registerParameter(ParameterExpressionImpl<?> p) {
+        if (_delegator != null) {
+            CriteriaQueryImpl<?> owner = _delegator.getInnermostParent();
+            if (owner != this) {
+                owner.registerParameter(p);
+            } 
+        } 
+        registerParameterInternal(p);
+    }
+    
+    private void registerParameterInternal(ParameterExpressionImpl<?> p) {
         if (_params == null)
             _params = new LinkedMap/*<ParameterExpression<?>, Class<?>*/();
         if (!_params.containsKey(p)) {
@@ -420,8 +430,9 @@ public class CriteriaQueryImpl<T> implements CriteriaQuery<T>, AliasContext {
      * on the variable and path.  
      */
     public void registerVariable(Selection<?> node, Value var, Value path) {
-        if (isRegistered(node))
+        if (isRegistered(node)) {
             throw new RuntimeException(node + " is already bound");
+        }
         if (!var.isVariable())
             throw new RuntimeException(var.getClass() + " is not a variable");
         if (var.getPath() != path)

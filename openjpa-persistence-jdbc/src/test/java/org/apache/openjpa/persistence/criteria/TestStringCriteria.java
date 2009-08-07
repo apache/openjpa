@@ -21,11 +21,9 @@ package org.apache.openjpa.persistence.criteria;
 import java.math.BigDecimal;
 import java.util.Collection;
 
-import javax.persistence.Parameter;
 import javax.persistence.Tuple;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Expression;
-import javax.persistence.criteria.From;
 import javax.persistence.criteria.Join;
 import javax.persistence.criteria.JoinType;
 import javax.persistence.criteria.ListJoin;

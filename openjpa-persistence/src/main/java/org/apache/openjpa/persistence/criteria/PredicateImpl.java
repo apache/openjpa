@@ -23,12 +23,15 @@ import java.util.List;
 
 import javax.persistence.criteria.Expression;
 import javax.persistence.criteria.Predicate;
-import javax.persistence.criteria.Selection;
 
 import org.apache.openjpa.kernel.exps.ExpressionFactory;
 import org.apache.openjpa.persistence.meta.MetamodelImpl;
 
 public class PredicateImpl extends ExpressionImpl<Boolean> implements Predicate {
+    private static final ExpressionImpl<Integer> ONE = new Expressions.Constant<Integer>(1);
+    public static final ExpressionImpl<Boolean> TRUE  = new Expressions.Equal(ONE,ONE);
+    public static final ExpressionImpl<Boolean> FALSE = new Expressions.Equal(ONE,ONE).negate();
+    
     List<Expression<Boolean>> _exps;
     BooleanOperator _op = BooleanOperator.AND;
     boolean _negated = false;
@@ -91,11 +94,17 @@ public class PredicateImpl extends ExpressionImpl<Boolean> implements Predicate 
     @Override
     org.apache.openjpa.kernel.exps.Expression toKernelExpression(ExpressionFactory factory, MetamodelImpl model, 
         CriteriaQueryImpl<?> q) {
-        if (_exps == null || _exps.isEmpty())
-            return factory.emptyExpression();
-        
-        if (_exps.size() == 1)
-            return ((ExpressionImpl<?>)_exps.get(0)).toKernelExpression(factory, model, q);
+        if (_exps == null || _exps.isEmpty()) {
+            ExpressionImpl<Boolean> nil = _op == BooleanOperator.AND ? TRUE : FALSE;
+            return nil.toKernelExpression(factory, model, q);
+        }
+        if (_exps.size() == 1) {
+            ExpressionImpl<Boolean> e0 = (ExpressionImpl<Boolean>)_exps.get(0);
+            if (e0 instanceof Expressions.Constant && e0.getJavaType() == Boolean.class) {
+                e0 = Boolean.TRUE.equals(((Expressions.Constant<Boolean>)e0).arg) ? TRUE : FALSE;
+            }
+            return e0.toKernelExpression(factory, model, q);
+        }
         
         ExpressionImpl<?> e1 = (ExpressionImpl<?>)_exps.get(0);
         ExpressionImpl<?> e2 = (ExpressionImpl<?>)_exps.get(1);

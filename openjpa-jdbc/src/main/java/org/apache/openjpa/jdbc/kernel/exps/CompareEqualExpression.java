@@ -47,6 +47,10 @@ abstract class CompareEqualExpression
     public CompareEqualExpression(Val val1, Val val2) {
         _val1 = val1;
         _val2 = val2;
+        if (_val1 instanceof Lit && _val2 instanceof Lit) {
+            ((Lit)_val1).setRaw(true);
+            ((Lit)_val2).setRaw(true);
+        }
     }
 
     public Val getValue1() {

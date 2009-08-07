@@ -158,8 +158,14 @@ public class PathImpl<Z,X> extends ExpressionImpl<X> implements Path<X> {
             path.setSchemaAlias(q.getAlias(_parent));
             traversePath(_parent, path, _member.fmd);
         } else if (_parent != null) {
-            path = (org.apache.openjpa.kernel.exps.Path)_parent.toValue(factory, model, q);
-            path.get(_member.fmd, allowNull);
+            Value val = _parent.toValue(factory, model, q);
+            if (val instanceof org.apache.openjpa.kernel.exps.Path) {
+                path = (org.apache.openjpa.kernel.exps.Path)val;
+                path.get(_member.fmd, allowNull);
+            } else {
+                val.setAlias(q.getAlias(this));
+                return val;
+            }
         } else if (_parent == null) {
             path = factory.newPath();
             path.setMetaData(model.repos.getCachedMetaData(getJavaType()));

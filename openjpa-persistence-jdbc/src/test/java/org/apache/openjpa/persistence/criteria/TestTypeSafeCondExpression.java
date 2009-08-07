@@ -44,8 +44,6 @@ import javax.persistence.criteria.ParameterExpression;
 import javax.persistence.criteria.Root;
 import javax.persistence.criteria.Subquery;
 
-import org.apache.openjpa.persistence.test.AllowFailure;
-
 /**
  * Tests type-strict version of Criteria API. The test scenarios are adapted
  * from TestEJBQLCondExpression in
@@ -154,7 +152,6 @@ public class TestTypeSafeCondExpression extends CriteriaTest {
         assertEquivalence(cq, jpql);
     }
     
-    @AllowFailure
     public void testLikeWithEscapeCharacter() {
         String query = "SELECT o.name FROM CompUser o WHERE o.name LIKE :name ESCAPE '|'";
         
@@ -491,7 +488,6 @@ public class TestTypeSafeCondExpression extends CriteriaTest {
         assertEquivalence(q, query);
     }
 
-    @AllowFailure
     public void testTypeExpression1() {
         String jpql = "SELECT e FROM CompUser e where TYPE(e) in (:a, :b) ORDER By e.name";
         
@@ -507,7 +503,6 @@ public class TestTypeSafeCondExpression extends CriteriaTest {
              new Class[]{MaleUser.class,FemaleUser.class});
     }
 
-    @AllowFailure
     public void testTypeExpression2() {
         String query = "SELECT TYPE(e) FROM CompUser e where TYPE(e) <> :t";
         
