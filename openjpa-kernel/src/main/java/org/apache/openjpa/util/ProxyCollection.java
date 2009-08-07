@@ -38,5 +38,5 @@ public interface ProxyCollection
      * Create a new instance of this proxy type.
      */
     public ProxyCollection newInstance(Class elementType, Comparator comp,
-        boolean trackChanges);
+        boolean trackChanges, boolean autoOff);
 }

@@ -82,7 +82,7 @@ public interface ProxyManager {
      * element type and will use the given comparator, if it is not null.
      */
     public Proxy newCollectionProxy(Class type, Class elementType,
-        Comparator compare);
+        Comparator compare, boolean autoOff);
 
     /**
      * Return a new map of the same type as the given one
@@ -96,7 +96,7 @@ public interface ProxyManager {
      * keyType/valueType, and will use the given comparator, if it is not null.
      */
     public Proxy newMapProxy(Class type, Class keyType, Class valueType,
-        Comparator compare);
+        Comparator compare, boolean autoOff);
 
     /**
      * Return a copy of the given object with the same information, or null if
@@ -112,5 +112,5 @@ public interface ProxyManager {
      *
      * @since 0.2.5
      */
-    public Proxy newCustomProxy (Object obj);
+    public Proxy newCustomProxy (Object obj, boolean autoOff);
 }

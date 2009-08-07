@@ -719,7 +719,9 @@ public class DetachManager
                         newVal = _proxy.newCollectionProxy(fmd.getProxyType(),
                             fmd.getElement().getDeclaredType(),
                             fmd.getInitializer() instanceof Comparator ?
-                            (Comparator) fmd.getInitializer() : null);
+                            (Comparator) fmd.getInitializer() : null,
+                            sm.getBroker().getConfiguration().
+                            getCompatibilityInstance().getAutoOff());
                         ((Collection) newVal).addAll((Collection) curVal);
                     } else
                         newVal = _proxy.copyCollection((Collection) curVal);
@@ -734,7 +736,9 @@ public class DetachManager
                             fmd.getKey().getDeclaredType(),
                             fmd.getElement().getDeclaredType(),
                             fmd.getInitializer() instanceof Comparator ?
-                                (Comparator) fmd.getInitializer() : null);
+                                (Comparator) fmd.getInitializer() : null,
+                                sm.getBroker().getConfiguration().
+                                getCompatibilityInstance().getAutoOff());
                         ((Map) newVal).putAll((Map) curVal);
                     } else
                         newVal = _proxy.copyMap((Map) curVal);

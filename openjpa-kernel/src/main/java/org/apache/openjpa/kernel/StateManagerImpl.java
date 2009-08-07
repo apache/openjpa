@@ -1697,12 +1697,14 @@ public class StateManagerImpl
             case JavaTypes.COLLECTION:
                 return mgr.newCollectionProxy(fmd.getProxyType(),
                     fmd.getElement().getDeclaredType(),
-                    init instanceof Comparator ? (Comparator) init : null);
+                    init instanceof Comparator ? (Comparator) init : null,
+                        _broker.getConfiguration().getCompatibilityInstance().getAutoOff());
             case JavaTypes.MAP:
                 return mgr.newMapProxy(fmd.getProxyType(),
                     fmd.getKey().getDeclaredType(),
                     fmd.getElement().getDeclaredType(),
-                    init instanceof Comparator ? (Comparator) init : null);
+                    init instanceof Comparator ? (Comparator) init : null,
+                        _broker.getConfiguration().getCompatibilityInstance().getAutoOff());
         }
         return null;
     }

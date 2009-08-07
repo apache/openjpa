@@ -69,7 +69,7 @@ public abstract class AbstractLRSProxyCollection
      */
     public AbstractLRSProxyCollection(Class elementType, boolean ordered) {
         _elementType = elementType;
-        _ct = new CollectionChangeTrackerImpl(this, false, ordered);
+        _ct = new CollectionChangeTrackerImpl(this, false, ordered,false);
         _ct.setAutoOff(false);
     }
 

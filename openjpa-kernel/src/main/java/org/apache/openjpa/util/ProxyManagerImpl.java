@@ -184,11 +184,11 @@ public class ProxyManagerImpl
     }
 
     public Proxy newCollectionProxy(Class type, Class elementType,
-        Comparator compare) {
+        Comparator compare, boolean autoOff) {
         type = toProxyableCollectionType(type);
         ProxyCollection proxy = getFactoryProxyCollection(type);
         return proxy.newInstance((_assertType) ? elementType : null, compare,
-            _trackChanges);
+            _trackChanges, autoOff);
     }
 
     public Map copyMap(Map orig) {
@@ -202,11 +202,11 @@ public class ProxyManagerImpl
     }
 
     public Proxy newMapProxy(Class type, Class keyType, 
-        Class elementType, Comparator compare) {
+        Class elementType, Comparator compare, boolean autoOff) {
         type = toProxyableMapType(type);
         ProxyMap proxy = getFactoryProxyMap(type);
         return proxy.newInstance((_assertType) ? keyType : null, 
-            (_assertType) ? elementType : null, compare, _trackChanges);
+            (_assertType) ? elementType : null, compare, _trackChanges, autoOff);
     }
 
     public Date copyDate(Date orig) {
@@ -263,7 +263,7 @@ public class ProxyManagerImpl
         return (proxy == null) ? null : proxy.copy(orig); 
     }
 
-    public Proxy newCustomProxy(Object orig) {
+    public Proxy newCustomProxy(Object orig, boolean autoOff) {
         if (orig == null)
             return null;
         if (orig instanceof Proxy)
@@ -274,14 +274,14 @@ public class ProxyManagerImpl
             Comparator comp = (orig instanceof SortedSet) 
                 ? ((SortedSet) orig).comparator() : null;
             Collection c = (Collection) newCollectionProxy(orig.getClass(), 
-                null, comp); 
+                null, comp, autoOff); 
             c.addAll((Collection) orig);
             return (Proxy) c;
         }
         if (orig instanceof Map) {
             Comparator comp = (orig instanceof SortedMap) 
                 ? ((SortedMap) orig).comparator() : null;
-            Map m = (Map) newMapProxy(orig.getClass(), null, null, comp);
+            Map m = (Map) newMapProxy(orig.getClass(), null, null, comp, autoOff);
             m.putAll((Map) orig);
             return (Proxy) m;
         }
@@ -813,7 +813,7 @@ public class ProxyManagerImpl
 
         // new instance factory
         m = bc.declareMethod("newInstance", ProxyCollection.class, 
-            new Class[] { Class.class, Comparator.class, boolean.class });
+            new Class[] { Class.class, Comparator.class, boolean.class, boolean.class });
         m.makePublic();
         code = m.getCode(true);
 
@@ -841,9 +841,10 @@ public class ProxyManagerImpl
         code.aload().setLocal(ret);
         code.constant().setValue(allowsDuplicates(type));
         code.constant().setValue(isOrdered(type));
+        code.aload().setParam(3);
         code.invokespecial().setMethod(CollectionChangeTrackerImpl.class, 
             "<init>", void.class, new Class[] { Collection.class, 
-            boolean.class, boolean.class });
+            boolean.class, boolean.class, boolean.class });
         code.putfield().setField(changeTracker);
 
         ifins.setTarget(code.aload().setLocal(ret));
@@ -947,7 +948,7 @@ public class ProxyManagerImpl
         // new instance factory
         m = bc.declareMethod("newInstance", ProxyMap.class, 
             new Class[] { Class.class, Class.class, Comparator.class, 
-            boolean.class });
+            boolean.class, boolean.class });
         m.makePublic();
         code = m.getCode(true);
 
@@ -976,8 +977,9 @@ public class ProxyManagerImpl
         code.anew().setType(MapChangeTrackerImpl.class);
         code.dup();
         code.aload().setLocal(ret);
+        code.aload().setParam(4);
         code.invokespecial().setMethod(MapChangeTrackerImpl.class, 
-            "<init>", void.class, new Class[] { Map.class });
+            "<init>", void.class, new Class[] { Map.class, boolean.class });
         code.putfield().setField(changeTracker);
 
         ifins.setTarget(code.aload().setLocal(ret));
