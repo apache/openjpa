@@ -1033,7 +1033,8 @@ public class QueryImpl<X> implements OpenJPAQuerySPI<X>, Serializable {
             return;
         }
         if (!Filters.canConvert(v.getClass(), param.getJavaType(), true)) {
-            throw new IllegalArgumentException(_loc.get("param-no-convert", param, v).getMessage());
+            throw new IllegalArgumentException(_loc.get("param-type-mismatch", new Object[]{
+                param, getQueryString(), v, v.getClass().getName(), param.getJavaType().getName()}).getMessage());
         }
     }
     

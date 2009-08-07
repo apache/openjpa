@@ -207,12 +207,11 @@ public class TestStringCriteria extends CriteriaTest {
           assertEquivalence(q, jpql); 
      }
       
-    @AllowFailure
     public void testParameters() {
         String jpql = "SELECT c FROM Customer c Where c.status = :stat";
         CriteriaQuery<Customer> q = cb.createQuery(Customer.class);
         Root<Customer> c = q.from(Customer.class);
-        ParameterExpression<Integer> param = cb.parameter(Integer.class);
+        ParameterExpression<Integer> param = cb.parameter(Integer.class, "stat");
         param.alias("stat");
         q.select(c).where(cb.equal(c.get("status"), param));
 

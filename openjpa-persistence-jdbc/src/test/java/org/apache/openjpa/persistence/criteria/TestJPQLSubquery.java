@@ -1497,14 +1497,14 @@ public class TestJPQLSubquery extends CriteriaTest {
         sq.select(cb.max(e2.get(Employee_.empId)));
         Predicate p1 = cb.equal(e.get(Employee_.empId), empid); 
         Predicate p2 = cb.equal(d.get(Dependent_.id).get(DependentId_.empid), sq);
-        Predicate p3 = cb.gt(d.get(Dependent_.id).get(DependentId_.effDate).as(Long.class), minDate.as(Long.class));
-        Predicate p4 = cb.lt(d.get(Dependent_.id).get(DependentId_.effDate).as(Long.class), maxDate.as(Long.class));
+        Predicate p3 = cb.greaterThan(d.get(Dependent_.id).get(DependentId_.effDate), minDate);
+        Predicate p4 = cb.lessThan(d.get(Dependent_.id).get(DependentId_.effDate), maxDate);
         
         q.where(cb.and(cb.and(cb.and(p1, p2), p3), p4));
         
         assertEquivalence(q, jpql, 
             new String[]{"empid", "minDate", "maxDate"}, 
-            new Object[]{101L, new Date(100).getTime(), new Date(100000).getTime()});
+            new Object[]{101L, new Date(100), new Date(100000)});
     }
     
     public void testCorrelatedNestedSubquery1() {

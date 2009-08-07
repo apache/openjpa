@@ -28,7 +28,9 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.SortedSet;
 import java.util.Stack;
+import java.util.TreeSet;
 
 import javax.persistence.Tuple;
 import javax.persistence.criteria.AbstractQuery;
@@ -73,7 +75,7 @@ public class CriteriaQueryImpl<T> implements CriteriaQuery<T>, AliasContext {
     private Set<Root<?>>        _roots;
     private PredicateImpl       _where;
     private List<Order>         _orders;
-    private Set<ParameterExpression<?>> _params;
+    private LinkedMap/*<ParameterExpression<?>, Class<?>>*/ _params;
     private List<Selection<?>>  _selections;
     private List<Expression<?>> _groups;
     private PredicateImpl       _having;
@@ -198,14 +200,15 @@ public class CriteriaQueryImpl<T> implements CriteriaQuery<T>, AliasContext {
      */
     public void registerParameter(ParameterExpressionImpl<?> p) {
         if (_params == null)
-            _params = new HashSet<ParameterExpression<?>>();
-        if (_params.add(p)) {
-            p.setIndex(_params.size()-1);
+            _params = new LinkedMap/*<ParameterExpression<?>, Class<?>*/();
+        if (!_params.containsKey(p)) {
+            p.setIndex(_params.size());
+            _params.put(p, p.getJavaType());
         }
     }
     
     public Set<ParameterExpression<?>> getParameters() {
-        return _params == null ? Collections.EMPTY_SET : Collections.unmodifiableSet(_params);
+        return _params == null ? Collections.EMPTY_SET : _params.keySet();
     }
 
     /**
@@ -332,13 +335,7 @@ public class CriteriaQueryImpl<T> implements CriteriaQuery<T>, AliasContext {
      * Empty map if no parameter has been declared. 
      */
     public LinkedMap getParameterTypes() {
-        if (_params == null)
-            return StoreQuery.EMPTY_PARAMS;
-        LinkedMap  parameterTypes = new LinkedMap();
-        for (ParameterExpression<?> p : _params) {
-            parameterTypes.put(p, p.getJavaType());
-        }
-        return parameterTypes;
+        return _params == null ? StoreQuery.EMPTY_PARAMS : _params;
     }
     
     /**
