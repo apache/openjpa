@@ -48,12 +48,14 @@ import org.apache.openjpa.persistence.test.AllowFailure;
  * 
  */
 public class TestTypesafeCriteria extends CriteriaTest {
+    
     @AllowFailure
     public void testTrue() {
         CriteriaQuery<Person> q = cb.createQuery(Person.class);
         q.from(Person.class);
         assertEquivalence(q.where(cb.literal(Boolean.TRUE)), "SELECT p FROM Person p WHERE 1=1");
     }
+    
     @AllowFailure
     public void testFalse() {
         CriteriaQuery<Person> q = cb.createQuery(Person.class);
@@ -503,7 +505,7 @@ public class TestTypesafeCriteria extends CriteriaTest {
 
         assertEquivalence(q, jpql);
     }
-    @AllowFailure
+    
     public void testParameters1() {
         String jpql = "SELECT c FROM Customer c Where c.status = :stat";
         
@@ -514,7 +516,7 @@ public class TestTypesafeCriteria extends CriteriaTest {
 
         assertEquivalence(q, jpql, new String[] { "stat" }, new Object[] { 1 });
     }
-    @AllowFailure
+    
     public void testParameters2() {
         String jpql = "SELECT c FROM Customer c Where c.status = :stat AND c.name = :name";
         
@@ -528,7 +530,7 @@ public class TestTypesafeCriteria extends CriteriaTest {
         assertEquivalence(q, jpql, new String[] { "stat", "name" },
                 new Object[] { 1, "test" });
     }
-    @AllowFailure
+    
     public void testParameters3() {
         String jpql = "SELECT c FROM Customer c Where c.status = :stat";
 
@@ -539,7 +541,7 @@ public class TestTypesafeCriteria extends CriteriaTest {
         
         assertEquivalence(q, jpql, new String[]{"stat"}, new Object[] { 1 });
     }
-    @AllowFailure
+    
     public void testParameters4() {
         String jpql = "SELECT c FROM Customer c Where c.status = :stat AND c.name = :name";
         
@@ -552,7 +554,7 @@ public class TestTypesafeCriteria extends CriteriaTest {
         assertEquivalence(q, jpql, new String[]{"stat", "name"},
                 new Object[] { 1, "test" });
     }
-    @AllowFailure
+    
     public void testParameters5() {
         String jpql = "SELECT c FROM Customer c Where c.status IN (:coll)";
         
@@ -611,7 +613,7 @@ public class TestTypesafeCriteria extends CriteriaTest {
         assertEquivalence(q, jpql);
     }
 
-    @AllowFailure(message="Projections of multiple NEW does not work")
+    @AllowFailure
     public void testMultipleConstructorInProjection() {
         String jpql = "SELECT NEW CustomerDetails(c.id, c.status), " 
                     + "NEW CustomerFullName(c.firstName, c.lastName) "

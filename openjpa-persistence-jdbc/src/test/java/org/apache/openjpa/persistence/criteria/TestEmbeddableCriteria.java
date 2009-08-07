@@ -805,7 +805,7 @@ public class TestEmbeddableCriteria extends EmbeddableDomainTestCase {
     }
     
     //comparison of embed is not support
-    @AllowFailure
+    
     public void btestEmbeddableQuery63() {
         String jpql = "select a.embed from EntityA_Embed_Embed a WHERE a.embed.embed IS NOT NULL";
         CriteriaQuery<Embed_Embed> q = cb.createQuery(Embed_Embed.class);

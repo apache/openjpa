@@ -1471,7 +1471,7 @@ public class TestJPQLSubquery extends CriteriaTest {
         assertEquivalence(q, jpql);
     }
 
-    @AllowFailure(message="parameter setting problem")
+    
     public void testSubSelectMaxDateRange() {
         String jpql = "SELECT e,d from Employee e, Dependent d "
             + "WHERE e.empId = :empid "
