@@ -459,7 +459,7 @@ public class PersistenceUnitInfoImpl
         
         // convert validation-mode enum to a StringValue
         if (info.getValidationMode() != null)
-            map.put(VALIDATION_MODE, String.valueOf(info.getValidationMode()));
+            map.put(VALIDATION_MODE, String.valueOf(info.getValidationMode()).toLowerCase());
 
         if (info.getPersistenceXMLSchemaVersion() != null) {
             map.put(PERSISTENCE_VERSION, info.getPersistenceXMLSchemaVersion());
