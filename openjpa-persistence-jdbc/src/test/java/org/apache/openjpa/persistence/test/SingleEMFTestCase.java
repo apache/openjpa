@@ -68,9 +68,31 @@ public abstract class SingleEMFTestCase
         }
     }
     
+    /**
+     * Get the class mapping for a given entity
+     * 
+     * @param name The Entity's name.
+     * 
+     * @return If the entity is a known type the ClassMapping for the Entity
+     *         will be returned. Otherwise null
+     */
     protected ClassMapping getMapping(String name) {
         return (ClassMapping) emf.getConfiguration()
                 .getMetaDataRepositoryInstance().getMetaData(name,
+                        getClass().getClassLoader(), true);
+    }
+    
+    /**
+     * Get the class mapping for a given entity
+     * 
+     * @param entityClass an entity class.
+     * 
+     * @return If the entity is a known type the ClassMapping for the Entity
+     *         will be returned. Otherwise null
+     */
+    protected ClassMapping getMapping(Class<?> entityClass) {
+        return (ClassMapping) emf.getConfiguration()
+                .getMetaDataRepositoryInstance().getMetaData(entityClass,
                         getClass().getClassLoader(), true);
     }
 }
