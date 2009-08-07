@@ -95,8 +95,8 @@ public abstract class AbstractPCData
                     keys.add(e.getKey());
                     values.add(e.getValue());
                 }
-
-                Object[] keyArray = keys.toArray();
+                Object[] keyArray = toNestedFields(sm, fmd.getKey(),
+                    keys, fetch, context).toArray();
                 Object[] valueArray = toNestedFields(sm, fmd.getElement(),
                     values, fetch, context).toArray();
                 for (int idx = 0; idx < keyArray.length; idx++)
