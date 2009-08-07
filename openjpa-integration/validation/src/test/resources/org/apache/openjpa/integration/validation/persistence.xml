@@ -143,4 +143,17 @@
         </properties>
     </persistence-unit>
     
+    <persistence-unit name="XMLConstraintPU">
+        <description>Make sure the mapping file and class listings match the same PU
+         in META-INF/ehn-persistence.xml</description>
+        <mapping-file>org/apache/openjpa/integration/validation/validation-orm.xml</mapping-file>
+        <class>org.apache.openjpa.integration.validation.XMLBase</class>
+        <class>org.apache.openjpa.integration.validation.XMLSuper</class>
+        <validation-mode>AUTO</validation-mode>
+        <properties>
+            <property name="openjpa.jdbc.SynchronizeMappings" 
+                value="buildSchema"/>
+        </properties>
+    </persistence-unit>
+    
 </persistence>

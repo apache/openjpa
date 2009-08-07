@@ -33,6 +33,7 @@ import javax.validation.ValidatorFactory;
 import org.apache.openjpa.conf.OpenJPAConfiguration;
 import org.apache.openjpa.event.LifecycleEvent;
 import org.apache.openjpa.lib.conf.Configuration;
+import org.apache.openjpa.lib.log.Log;
 import org.apache.openjpa.lib.util.J2DoPrivHelper;
 import org.apache.openjpa.lib.util.Localizer;
 import org.apache.openjpa.validation.AbstractValidator;
@@ -47,7 +48,7 @@ public class ValidatorImpl extends AbstractValidator {
     private Validator _validator = null;
     private ValidationMode _mode = ValidationMode.AUTO;
     private OpenJPAConfiguration _conf = null;
-
+    private transient Log _log = null;
     
     // A map storing the validation groups to use for a particular event type
     private Map<Integer, Class<?>[]> _validationGroups = 
@@ -85,6 +86,7 @@ public class ValidatorImpl extends AbstractValidator {
     public ValidatorImpl(Configuration conf) {
         if (conf instanceof OpenJPAConfiguration) {
             _conf = (OpenJPAConfiguration)conf;
+            _log = _conf.getLog(OpenJPAConfiguration.LOG_RUNTIME);
             Object validatorFactory = _conf.getValidationFactoryInstance();
             String mode = _conf.getValidationMode();
             _mode = Enum.valueOf(ValidationMode.class, mode);
@@ -391,7 +393,8 @@ public class ValidatorImpl extends AbstractValidator {
         try {
             factory = AccessController.doPrivileged(J2DoPrivHelper.buildDefaultValidatorFactoryAction());
         } catch (javax.validation.ValidationException e) {
-            // no validation providers found
+            if (_log != null && _log.isTraceEnabled())
+                _log.trace(_loc.get("factory-create-failed"), e);
         }
         return factory;
     }

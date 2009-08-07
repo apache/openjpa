@@ -81,10 +81,22 @@
             <exclude name="**/Unenhanced*.class" />
             <exclude name="**/AbstractUnenhanced*.class" />
             <exclude name="**/unenhanced/*.class" />
+			<exclude name="**/XMLBase.class"/>
+			<exclude name="**/XMLSuper.class"/>
         </fileset>
         <openjpac>
             <classpath refid="cp" />
             <fileset refid="enhance.path.ref" />
+            <config log="DefaultLevel=${openjpa.loglevel}" />
+        </openjpac>
+        <openjpac>
+        	<!-- enhance XML-defined pc's separately since they use their own mapping file -->
+            <config propertiesFile="${project.build.testOutputDirectory}/META-INF/ehn-persistence.xml" />
+            <classpath refid="cp" />
+            <fileset dir="${project.build.testOutputDirectory}">
+				<include name="**/XMLBase.class"/>
+				<include name="**/XMLSuper.class"/>
+            </fileset>
             <config log="DefaultLevel=${openjpa.loglevel}" />
         </openjpac>
     </target>
