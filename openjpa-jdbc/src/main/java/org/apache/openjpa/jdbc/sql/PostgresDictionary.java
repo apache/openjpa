@@ -474,6 +474,17 @@ public class PostgresDictionary
     }
     
     /**
+     * Return a SQL string to act as a placeholder for the given column.
+     */
+    public String getPlaceholderValueString(Column col) {
+        if (col.getType() == Types.BIT) {
+            return "false";
+        } else {
+            return super.getPlaceholderValueString(col);
+        }
+    }
+    
+    /**
      * Connection wrapper to work around the postgres empty result set bug.
      */
     private static class PostgresConnection
