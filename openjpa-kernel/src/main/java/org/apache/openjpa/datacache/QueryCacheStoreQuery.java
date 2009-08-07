@@ -261,7 +261,8 @@ public class QueryCacheStoreQuery
 
     public Executor newDataStoreExecutor(ClassMetaData meta, boolean subs) {
         Executor ex = _query.newDataStoreExecutor(meta, subs);
-        return new QueryCacheExecutor(ex, meta, subs);
+        return new QueryCacheExecutor(ex, meta, subs,
+                      getContext().getFetchConfiguration());
     }
 
     public boolean supportsAbstractExecutors() {
@@ -289,12 +290,14 @@ public class QueryCacheStoreQuery
         private final Executor _ex;
         private final Class _candidate;
         private final boolean _subs;
+        private final FetchConfiguration _fc;
 
         public QueryCacheExecutor(Executor ex, ClassMetaData meta,
-            boolean subs) {
+            boolean subs, FetchConfiguration fc) {
             _ex = ex;
             _candidate = (meta == null) ? null : meta.getDescribedType();
             _subs = subs;
+            _fc = fc;
         }
 
         public ResultObjectProvider executeQuery(StoreQuery q, Object[] params,
@@ -309,7 +312,10 @@ public class QueryCacheStoreQuery
 
             ResultObjectProvider rop = _ex.executeQuery(cq.getDelegate(),
                 params, range);
-            return cq.wrapResult(rop, key);
+            if (_fc.getQueryCacheEnabled())
+                return cq.wrapResult(rop, key);
+            else
+                return rop;
         }
 
         /**
@@ -653,8 +659,8 @@ public class QueryCacheStoreQuery
         public final Object oid;
 
         public CachedObjectId (Object oid)
-		{
-			this.oid = oid;
-		}
-	}
+        {
+            this.oid = oid;
+        }
+    }
 }
