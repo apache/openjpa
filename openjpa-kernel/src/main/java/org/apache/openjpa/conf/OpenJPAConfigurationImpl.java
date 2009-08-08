@@ -558,8 +558,8 @@ public class OpenJPAConfigurationImpl
             "warn", String.valueOf(
                 RuntimeUnenhancedClassesModes.WARN),
         });
-        runtimeUnenhancedClasses.setDefault("supported");
-        runtimeUnenhancedClasses.setString("supported");
+        runtimeUnenhancedClasses.setDefault("unsupported");
+        runtimeUnenhancedClasses.setString("unsupported");
         runtimeUnenhancedClasses.setAliasListComprehensive(true);
 
         cacheMarshallerPlugins = (CacheMarshallersValue)

@@ -30,9 +30,10 @@ public class TestDataCachingAndUnenhancedPropertyAccess
 
     @Override
     public void setUp() {
-        setUp(UnenhancedIdentityIdPropertyAccess.class, CLEAR_TABLES,
+        setUp(UnenhancedIdentityIdPropertyAccess.class, CLEAR_TABLES, 
             "openjpa.DataCache", "true",
-            "openjpa.RemoteCommitProvider", "sjvm");
+            "openjpa.RemoteCommitProvider", "sjvm", 
+            "openjpa.RuntimeUnenhancedClasses", "supported");
     }
 
     public void testSimpleDataCacheOperation() {

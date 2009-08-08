@@ -495,11 +495,21 @@ notifications when you read or write persistent data.
                 <para>
                 <note>
 Runtime Unenhanced Classes has some known limitations which are discussed below
-and documented in JIRA issues on the OpenJPA website. Support for this method 
-of automatic enhancement may be enabled or disabled via the 
-<xref linkend="openjpa.RuntimeUnenhancedClasses">
+and documented in JIRA issues on the OpenJPA website. As a result this option is
+disabled by default. Support for this method of automatic enhancement may be 
+enabled via the<xref linkend="openjpa.RuntimeUnenhancedClasses">
 openjpa.RuntimeUnenhancedClasses configuration </xref>option.
                 </note>
+                </para>
+                <para>
+To enable Runtime Unenhanced Classes for a specific persistence unit add the following property to persistence.xml :
+<programlisting>
+<![CDATA[<properties> 
+    . . .
+    <property name="openjpa.RuntimeUnenhancedClasses" value="supported"/>
+    . . .
+<properties>]]>
+</programlisting>
                 </para>
                 <para>
 If you are using <emphasis>property access</emphasis> for your persistent data,

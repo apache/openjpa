@@ -2971,7 +2971,7 @@ serious problems.
             </para>
             <para>
                 <emphasis role="bold">Default: </emphasis>
-                <literal>supported</literal>
+                <literal>unsupported</literal>
                 
             </para>
             <para>
@@ -2992,6 +2992,12 @@ serious problems.
                 they are detected. If set to <literal>warn</literal> OpenJPA 
                 will not create subclasses for unenhanced entity classes 
                 but will log a warning message.  
+            </para>
+            <para>
+                This function is often useful for rapid prototyping but is not
+                <emphasis role="italic">generally</emphasis>
+                recommended for use in production. Please consult the reference guide 
+                before changing the default value. 
             </para>
             <para>
                 See the reference guide section on unenhanced types for more 

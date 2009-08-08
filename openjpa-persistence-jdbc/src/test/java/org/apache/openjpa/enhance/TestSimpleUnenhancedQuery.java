@@ -17,6 +17,9 @@
  */
 package org.apache.openjpa.enhance;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import javax.persistence.EntityManager;
 
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
@@ -34,7 +37,7 @@ import org.apache.openjpa.persistence.test.SingleEMFTestCase;
  */
 public class TestSimpleUnenhancedQuery extends SingleEMFTestCase {
 	public void setUp() throws Exception {
-		setUp(CLEAR_TABLES, UnenhancedPObject.class);
+		setUp(CLEAR_TABLES, UnenhancedPObject.class,"openjpa.RuntimeUnenhancedClasses", "supported");
 		EntityManager em = emf.createEntityManager();
 		em.getTransaction().begin();
 		em.persist(new UnenhancedPObject());

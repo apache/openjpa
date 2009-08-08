@@ -27,7 +27,8 @@ public class TestMixedAccess extends PersistenceTestCase {
 
     public void testMixedAccessEntityError() {
         try {
-            EntityManagerFactory emf = createEMF(UnenhancedMixedAccess.class);
+            EntityManagerFactory emf =
+                createEMF(UnenhancedMixedAccess.class, "openjpa.RuntimeUnenhancedClasses", "supported");
             emf.createEntityManager().close();
         } catch (RuntimeException e) {
             String msg = e.getMessage();
@@ -40,7 +41,7 @@ public class TestMixedAccess extends PersistenceTestCase {
     public void testInappropriateTransientError() {
         try {
             EntityManagerFactory emf = createEMF(
-                UnenhancedInappropriateTransient.class);
+                UnenhancedInappropriateTransient.class, "openjpa.RuntimeUnenhancedClasses", "supported");
             emf.createEntityManager().close();
          } catch (RuntimeException e) {
             String msg = e.getMessage();

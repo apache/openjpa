@@ -31,7 +31,7 @@ public class TestPessimisticPNonTransToPDirty
     extends SingleEMTestCase {
 
     public void setUp() {
-        setUp(UnenhancedPropertyAccess.class, CLEAR_TABLES);
+        setUp(UnenhancedPropertyAccess.class, CLEAR_TABLES, "openjpa.RuntimeUnenhancedClasses", "supported");
 
         UnenhancedPropertyAccess o = new UnenhancedPropertyAccess();
         EntityManager em = emf.createEntityManager();

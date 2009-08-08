@@ -68,9 +68,7 @@
 
         <fileset id="enhance.path.ref"
                  dir="${project.build.testOutputDirectory}">
-            <include name="**/Address.class" />
-            <include name="**/Person.class" />
-            <include name="**/PObject.class" />
+            <include name="**/*.class" />
             <exclude name="**/Test*.class" />
         </fileset>
         <openjpac>

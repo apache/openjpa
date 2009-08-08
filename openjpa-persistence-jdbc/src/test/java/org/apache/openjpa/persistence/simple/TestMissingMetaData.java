@@ -18,12 +18,15 @@
  */
 package org.apache.openjpa.persistence.simple;
 
-import org.apache.openjpa.persistence.ArgumentException;
-import org.apache.openjpa.persistence.OpenJPAEntityManagerFactory;
-import org.apache.openjpa.persistence.OpenJPAPersistence;
+import java.util.HashMap;
+import java.util.Map;
 
 import junit.framework.TestCase;
 import junit.textui.TestRunner;
+
+import org.apache.openjpa.persistence.ArgumentException;
+import org.apache.openjpa.persistence.OpenJPAEntityManagerFactory;
+import org.apache.openjpa.persistence.OpenJPAPersistence;
 
 // This test case extends TestCase directly instead of SingleEMTestCase with the
 // corresponding setup() method because that scheme goes down a different code
@@ -32,11 +35,13 @@ public class TestMissingMetaData extends TestCase {
     private OpenJPAEntityManagerFactory emf;
 
     public void setUp() {
+        Map<String, String> props = new HashMap<String, String>();
+        props.put("openjpa.RuntimeUnenhancedClasses", "supported");
         // This test case uses a different persistence xml file because
         // modifying the current persistence.xml file with a bad class would
         // cause the TestEnhancementWithMultiplePUs test case to fail.
         emf = OpenJPAPersistence.createEntityManagerFactory(
-            "test-missing-metadata", "persistence2.xml");
+            "test-missing-metadata", "persistence2.xml", props);
     }
     
     public void testMissingMetaData() {
@@ -48,7 +53,7 @@ public class TestMissingMetaData extends TestCase {
             fail("didn't receive expected ArgumentException - " + msg);
         } catch (Exception e) {
             assertEquals(ArgumentException.class,e.getClass());
-            assertTrue(e.getMessage().startsWith(msg));
+            assertTrue("Unexpected Exception : " + e.getMessage(), e.getMessage().startsWith(msg));
         }
     }
     
