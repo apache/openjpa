@@ -66,6 +66,12 @@ public abstract class PersistenceTestCase
     public static final String RETAIN_DATA = "Retain data after test run";
     private boolean retainDataOnTearDown; 
     protected boolean _fresh = false;
+    
+    public static String ALLOW_FAILURE_LOG = "log";
+    public static String ALLOW_FAILURE_IGNORE = "ignore";
+    public static String ALLOW_FAILURE_SYS_PROP= "tests.openjpa.allowfailure";
+    
+    private static String allowFailureConfig = System.getProperty(ALLOW_FAILURE_SYS_PROP, ALLOW_FAILURE_IGNORE);
     /**
      * Marker object you pass to {@link #setUp} to indicate that the
      * database table rows should be cleared.
@@ -469,21 +475,35 @@ public abstract class PersistenceTestCase
      */
     @Override
     public void runBare() throws Throwable {
-        if (!isRunsOnCurrentPlatform())
+        if (!isRunsOnCurrentPlatform()) {
             return;
-        try {
-            super.runBare();
-        } catch (Throwable t) {
-            AllowFailure allowFailure = getAllowFailure();
-            if ( allowFailure != null && allowFailure.value()==true) {
-                System.err.println("*** FAILED (but ignored): " + this);
-                System.err.println("***              Reason : " 
-                    + allowFailure.message());
-                System.err.println("Stacktrace of failure");
-                t.printStackTrace();
-            } else {
-                throw t;
+        }
+        runBare(getAllowFailure());
+    }
+    
+    protected void runBare(AllowFailure allowFailureAnnotation) throws Throwable { 
+        boolean allowFailureValue = allowFailureAnnotation == null ? false : allowFailureAnnotation.value();
+        
+        if(allowFailureValue) { 
+            if(ALLOW_FAILURE_IGNORE.equalsIgnoreCase(allowFailureConfig)){ 
+                return; // skip this test
             }
+            else {
+                try {
+                    super.runBare();
+                } catch (Throwable t) {
+                    if (ALLOW_FAILURE_LOG.equalsIgnoreCase(allowFailureConfig)) {
+                        System.err.println("*** FAILED (but ignored): " + this);
+                        System.err.println("***              Reason : " + allowFailureAnnotation.message());
+                        System.err.println("Stacktrace of failure");
+                        t.printStackTrace();
+                    } else {
+                        throw t;
+                    }
+                }
+            }
+        } else {
+            super.runBare();
         }
     }
     

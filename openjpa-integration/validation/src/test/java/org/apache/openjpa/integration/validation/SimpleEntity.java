@@ -57,7 +57,7 @@ public class SimpleEntity implements Serializable {
 
     @Id
     @GeneratedValue
-    @Column(name = "ID")
+    @Column(name = "ID",columnDefinition="")
     private long id;
 
     @Basic

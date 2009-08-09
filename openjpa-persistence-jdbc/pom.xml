@@ -41,6 +41,7 @@
         <dbcp.args>MaxActive=${dbcp.maxActive},MaxIdle=${dbcp.maxIdle},MinIdle=${dbcp.minIdle},MaxWait=${dbcp.maxWait}</dbcp.args>
         <derby.locks.waitTimeout>60</derby.locks.waitTimeout>        
         <derby.locks.deadlockTimeout>5</derby.locks.deadlockTimeout>
+        <tests.openjpa.allowfailure>ignore</tests.openjpa.allowfailure>
     </properties>
     <profiles>
 
@@ -79,6 +80,10 @@
                         <property>
                             <name>openjpa.ConnectionProperties</name>
                             <value>DriverClassName=${connection.driver.name},Url=${connection.url},Username=${connection.username},Password=${connection.password},${dbcp.args}</value>
+                        </property>
+                        <property>
+                            <name>tests.openjpa.allowfailure</name>
+                            <value>${tests.openjpa.allowfailure}</value>
                         </property>
                     </systemProperties>
                 </configuration>
@@ -854,6 +859,10 @@
                         <property>
                             <name>openjpa.ConnectionProperties</name>
                             <value>DriverClassName=${connection.driver.name},Url=${connection.url},Username=${connection.username},Password=${connection.password},${dbcp.args}</value>
+                        </property>
+                        <property>
+                            <name>tests.openjpa.allowfailure</name>
+                            <value>${tests.openjpa.allowfailure}</value>
                         </property>
                     </systemProperties>
                 </configuration>
