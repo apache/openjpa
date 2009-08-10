@@ -62,6 +62,7 @@ public class SequenceMapping
     private static final String PROP_PK_COL = "PrimaryKeyColumn";
     private static final String PROP_PK_VALUE = "PrimaryKeyValue";
     private static final String PROP_UNIQUE = "UniqueColumns";
+    private static final String PROP_UNIQUE_CONSTRAINT = "UniqueConstraintName";
 
     private File _mapFile = null;
     private String _table = null;
@@ -69,6 +70,7 @@ public class SequenceMapping
     private String _primaryKeyColumn = null;
     private String _primaryKeyValue = null;
     private String[] _uniqueColumns   = null;
+    private String _uniqueConstraintName = null;
     
     public SequenceMapping(String name, MappingRepository repos) {
         super(name, repos);
@@ -175,6 +177,12 @@ public class SequenceMapping
         // Array of unique column names are passed to configuration
         // as a single string "x|y|z". The configurable (TableJDBCSeq) must
         // parse it back.
+        if (_uniqueConstraintName != null && 
+                _uniqueConstraintName.length() > 0) {
+            appendProperty(props, PROP_UNIQUE_CONSTRAINT, 
+                addQuotes(_uniqueConstraintName));
+        }
+            
         if (_uniqueColumns != null && _uniqueColumns.length > 0)
         	appendProperty(props, PROP_UNIQUE, 
         			StringUtils.join(_uniqueColumns,'|'));
@@ -185,5 +193,15 @@ public class SequenceMapping
             return "\"" + name + "\"";
         }
         return name;
+    }
+
+    public void setUniqueConstraintName(String name) {
+        _uniqueConstraintName = name;
+        
+    }
+
+    public String getUniqueConstraintName() {
+        return _uniqueConstraintName;
+        
     }
 }

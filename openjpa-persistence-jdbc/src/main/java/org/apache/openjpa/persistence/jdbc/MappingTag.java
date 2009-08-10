@@ -96,6 +96,7 @@ enum MappingTag {
     MAP_KEY_TEMPORAL,
     MAPPING_OVERRIDE,
     MAPPING_OVERRIDES,
+    NAME,
     NONPOLY,
     ORDER_COL,
     STRAT,

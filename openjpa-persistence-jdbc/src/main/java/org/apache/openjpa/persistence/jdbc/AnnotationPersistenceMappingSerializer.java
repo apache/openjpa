@@ -601,6 +601,9 @@ public class AnnotationPersistenceMappingSerializer
         if (columns.length > 1)
             sb.insert(0, "{").append("}");
         ab.add("columnNames", sb.toString());
+        if (StringUtils.isNotEmpty(unique.getName())) {
+            ab.add("name", unique.getName());
+        }
     }
 
     @Override

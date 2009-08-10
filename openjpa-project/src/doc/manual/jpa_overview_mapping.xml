@@ -363,9 +363,15 @@ is sent to the database before the SQL inserting <literal>B</literal> to avoid a
 unique constraint violation.
         </para>
         <para>
-<classname>UniqueConstraint</classname> has a single property:
+<classname>UniqueConstraint</classname> has these properties:
         </para>
         <itemizedlist>
+            <listitem>
+                <para>
+<literal>String name</literal>: The name of the constraint. OpenJPA will choose
+a name if you do not provide one, or will create an anonymous constraint.
+                </para>
+            </listitem>            
             <listitem>
                 <para>
 <literal>String[] columnNames</literal>: The names of the columns the
@@ -390,7 +396,7 @@ column of the <literal>ART</literal> table:
             </para>
 <programlisting>
 @Entity
-@Table(name="ART", uniqueConstraints=@Unique(columnNames="TITLE"))
+@Table(name="ART", uniqueConstraints=@UniqueConstraint(name="TITLE_CNSTR", columnNames="TITLE"))
 public class Article {
     ...
 }
@@ -402,6 +408,7 @@ The same metadata expressed in XML form:
 &lt;entity class="org.mag.Article"&gt;
     &lt;table name="ART"&gt;
         &lt;unique-constraint&gt;
+            &lt;name&gt;TITLE_CNSTR&lt;/name&gt;
             &lt;column-name&gt;TITLE&lt;/column-name&gt;
         &lt;/unique-constraint&gt;
     &lt;/table&gt;

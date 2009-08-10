@@ -92,6 +92,7 @@ public class TableJDBCSeq
     private String _seqColumnName = "SEQUENCE_VALUE";
     private String _pkColumnName = "ID";
     private String[] _uniqueColumnNames;
+    private String _uniqueConstraintName;
 
     private Column _seqColumn = null;
     private Column _pkColumn = null;
@@ -397,7 +398,10 @@ public class TableJDBCSeq
         _seqColumn.setJavaType(JavaTypes.LONG);
         
         if (_uniqueColumnNames != null) {
-    		String uniqueName = dict.getValidUniqueName("UNQ", table);
+            String uniqueName = _uniqueConstraintName;
+            if (StringUtils.isEmpty(uniqueName)) {
+                uniqueName = dict.getValidUniqueName("UNQ", table);
+            }
     		Unique u = table.addUnique(uniqueName);
     		for (String columnName : _uniqueColumnNames) {
     			if (!table.containsColumn(columnName))
@@ -803,6 +807,14 @@ public class TableJDBCSeq
         if (rs == null || !rs.next())
             return -1;
         return dict.getLong(rs, 1);
+    }
+
+    public void setUniqueConstraintName(String _uniqueConstraintName) {
+        this._uniqueConstraintName = _uniqueConstraintName;
+    }
+
+    public String getUniqueConstraintName() {
+        return _uniqueConstraintName;
     }
 
     /**

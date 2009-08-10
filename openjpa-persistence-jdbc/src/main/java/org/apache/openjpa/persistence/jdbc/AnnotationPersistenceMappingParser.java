@@ -277,6 +277,7 @@ public class AnnotationPersistenceMappingParser
         	break; // nothing to do
         case 1: 
         	meta.setUniqueColumns(gen.uniqueConstraints()[0].columnNames());
+        	meta.setUniqueConstraintName(gen.uniqueConstraints()[0].name());
         	break;
         default:
         	log.warn(_loc.get("unique-many-on-seq-unsupported", el, name));
@@ -557,6 +558,10 @@ public class AnnotationPersistenceMappingParser
             Column column = new Column();
             column.setName(columnNames[i]);
             uniqueConstraint.addColumn(column);
+        }
+        String name = anno.name();
+        if (!StringUtils.isEmpty(name)) {
+            uniqueConstraint.setName(name);
         }
         return uniqueConstraint;
     }

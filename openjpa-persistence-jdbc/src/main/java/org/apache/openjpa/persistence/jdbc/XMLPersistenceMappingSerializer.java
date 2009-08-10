@@ -566,6 +566,14 @@ public class XMLPersistenceMappingSerializer
     }
 
     private void serializeUniqueConstraint(Unique unique) throws SAXException {
+        if (StringUtils.isNotEmpty(unique.getName())) {
+        	//TODO JRB: If the spec is modified to use a name attribute
+        	// remove the element def and uncomment the attribute def
+        	startElement("name");
+        	addText(unique.getName());
+        	endElement("name");
+//            addAttribute("name", unique.getName());
+        }
         startElement("unique-constraint");
         Column[] columns = unique.getColumns();
         for (Column column:columns) {

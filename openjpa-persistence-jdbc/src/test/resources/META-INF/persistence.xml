@@ -220,5 +220,16 @@
                 value="buildSchema"/> 
         </properties>
     </persistence-unit>    
+    
+    <persistence-unit name="NamedUniqueConstraintTest" transaction-type="RESOURCE_LOCAL">
+        <description>PU for order named unique constraint testing</description>
+        <provider>org.apache.openjpa.persistence.PersistenceProviderImpl</provider>
+        <mapping-file>org/apache/openjpa/persistence/jdbc/unique/named-constraint-orm.xml</mapping-file>
+        <class>org.apache.openjpa.persistence.jdbc.unique.NamedUniqueA</class>
+        <class>org.apache.openjpa.persistence.jdbc.unique.NamedUniqueB</class>
+        <properties>
+            <property name="openjpa.jdbc.SynchronizeMappings" value="buildSchema"/>    
+        </properties>
+    </persistence-unit>    
 
 </persistence>

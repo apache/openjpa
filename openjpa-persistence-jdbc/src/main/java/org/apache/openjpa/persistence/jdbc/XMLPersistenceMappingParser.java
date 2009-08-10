@@ -99,6 +99,7 @@ public class XMLPersistenceMappingParser
         _elems.put("map-key-column", MAP_KEY_COL);
         _elems.put("map-key-join-column", MAP_KEY_JOIN_COL);
         _elems.put("map-key-temporal", MAP_KEY_TEMPORAL);
+        _elems.put("name", NAME);
         _elems.put("order-column", ORDER_COLUMN);
         _elems.put("primary-key-join-column", PK_JOIN_COL);
         _elems.put("secondary-table", SECONDARY_TABLE);
@@ -249,6 +250,9 @@ public class XMLPersistenceMappingParser
             case UNIQUE:
                 ret = startUniqueConstraint(attrs);
                 break;
+            case NAME:
+                ret = true;
+                break;
             case TEMPORAL:
             case ENUMERATED:
             case MAP_KEY_ENUMERATED:
@@ -283,6 +287,19 @@ public class XMLPersistenceMappingParser
                 ret = false;
         }
         return (ret) ? tag : null;
+    }
+
+    private boolean endName() {
+        String name = this.currentText();
+        if (StringUtils.isNotEmpty(name)) {
+            Object current = currentElement();
+            if (current instanceof Unique) {
+                Unique unq = (Unique)current;
+                unq.setName(name);
+            }
+        }
+            
+        return true;
     }
 
     @Override
@@ -333,6 +350,9 @@ public class XMLPersistenceMappingParser
             case TABLE_GEN:
             	endTableGenerator();
             	break;
+            case NAME:
+                endName();
+                break;
         }
     }
 
@@ -1130,6 +1150,14 @@ public class XMLPersistenceMappingParser
     private boolean startUniqueConstraint(Attributes attrs) 
         throws SAXException {
         Unique unique = new Unique();
+        // TODO JRB: If the spec is corrected, get the unique constraint name
+		// via attribute
+		/*
+        String name = attrs.getValue("name");
+        if (StringUtils.isNotEmpty(name)) {
+            unique.setName(name);
+        }
+		*/
         pushElement(unique);
         return true;
     }
@@ -1161,6 +1189,9 @@ public class XMLPersistenceMappingParser
         	for (Column uniqueColumn : uniqueColumns)
         		columnNames[i++] = uniqueColumn.getName();
         	seq.setUniqueColumns(columnNames);
+        	if (StringUtils.isNotEmpty(unique.getName())) {
+        	    seq.setUniqueConstraintName(unique.getName());
+        	}
         } else {
         	throw new InternalException();
         }
