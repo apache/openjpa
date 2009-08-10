@@ -20,7 +20,9 @@ package org.apache.openjpa.persistence.criteria;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.persistence.Parameter;
 import javax.persistence.Tuple;
@@ -36,7 +38,6 @@ import javax.persistence.criteria.SetJoin;
 import javax.persistence.criteria.Subquery;
 
 import org.apache.openjpa.persistence.test.AllowFailure;
-import org.apache.openjpa.persistence.test.DatabasePlatform;
 
 /**
  * Tests type-strict version of Criteria API.
@@ -897,4 +898,319 @@ public class TestTypesafeCriteria extends CriteriaTest {
 
     }
 
+    public void testKeys1() {
+        String sql = "SELECT t0.name, t2.id, t2.label FROM CR_ITEM t0 "
+            + "INNER JOIN CR_ITEM_photos t1 ON t0.id = t1.ITEM_ID "
+            + "INNER JOIN CR_PHT t2 ON t1.VALUE_ID = t2.id WHERE " + 
+            "((t1.KEY0 = ? OR t1.KEY0 = ? OR t1.KEY0 = ? OR t1.KEY0 = ? OR t1.KEY0 = ?) "
+            + "AND 0 < (SELECT COUNT(*) FROM CR_ITEM_photos WHERE CR_ITEM_photos.ITEM_ID = t0.id))";
+
+        CriteriaQuery<Customer> q = cb.createQuery(Customer.class);
+        Root<Item> item = q.from(Item.class);
+        MapJoin<Item, String, Photo> photo = item.join(Item_.photos);
+        q.multiselect(item.get(Item_.name), photo);
+        Map<String, Photo> photo1 = new HashMap<String, Photo>();
+        for (int i = 0; i < 5; i++) {
+            Photo p1 = new Photo();
+            p1.setLabel("label" + i);
+            photo1.put("photo" + i, p1);
+        }
+        q.where(photo.key().in(cb.keys(photo1))); 
+        executeAndCompareSQL(q, sql);
+    }
+
+    public void testKeys2() {
+        String sql = "SELECT t0.name, t2.id, t2.label FROM CR_ITEM t0 "
+            + "INNER JOIN CR_ITEM_photos t1 ON t0.id = t1.ITEM_ID "
+            + "INNER JOIN CR_PHT t2 ON t1.VALUE_ID = t2.id WHERE " + 
+            "(t1.KEY0 IN (?, ?, ?, ?, ?))";
+
+        CriteriaQuery<Customer> q = cb.createQuery(Customer.class);
+        Root<Item> item = q.from(Item.class);
+        MapJoin<Item, String, Photo> photo = item.join(Item_.photos);
+        q.multiselect(item.get(Item_.name), photo);
+        Map<String, Photo> photo1 = new HashMap<String, Photo>();
+        for (int i = 0; i < 5; i++) {
+            Photo p1 = new Photo();
+            p1.setLabel("label" + i);
+            photo1.put("photo" + i, p1);
+        }
+        q.where(cb.isMember(photo.key(), cb.keys(photo1))); 
+        executeAndCompareSQL(q, sql);
+    }
+
+    public void testKeys3() {
+        String sql = "SELECT t0.name, t2.id, t2.label FROM CR_ITEM t0 "
+            + "INNER JOIN CR_ITEM_photos t1 ON t0.id = t1.ITEM_ID "
+            + "INNER JOIN CR_PHT t2 ON t1.VALUE_ID = t2.id WHERE (1 <> 1)";
+
+        CriteriaQuery<Customer> q = cb.createQuery(Customer.class);
+        Root<Item> item = q.from(Item.class);
+        MapJoin<Item, String, Photo> photo = item.join(Item_.photos);
+        q.multiselect(item.get(Item_.name), photo);
+        Map<String, Photo> photo1 = new HashMap<String, Photo>();
+        for (int i = 0; i < 5; i++) {
+            Photo p1 = new Photo();
+            p1.setLabel("label" + i);
+            photo1.put("photo" + i, p1);
+        }
+        q.where(cb.isEmpty(cb.keys(photo1))); 
+        executeAndCompareSQL(q, sql);
+    }
+
+    public void testKeys4() {
+        String sql = "SELECT t0.name, t2.id, t2.label FROM CR_ITEM t0 "
+            + "INNER JOIN CR_ITEM_photos t1 ON t0.id = t1.ITEM_ID "
+            + "INNER JOIN CR_PHT t2 ON t1.VALUE_ID = t2.id WHERE (5 = 5)";
+
+        CriteriaQuery<Customer> q = cb.createQuery(Customer.class);
+        Root<Item> item = q.from(Item.class);
+        MapJoin<Item, String, Photo> photo = item.join(Item_.photos);
+        q.multiselect(item.get(Item_.name), photo);
+        Map<String, Photo> photo1 = new HashMap<String, Photo>();
+        for (int i = 0; i < 5; i++) {
+            Photo p1 = new Photo();
+            p1.setLabel("label" + i);
+            photo1.put("photo" + i, p1);
+        }
+        q.where(cb.equal(cb.size(cb.keys(photo1)), 5)); 
+        executeAndCompareSQL(q, sql);
+    }
+
+    public void testKeys5() {
+        String sql = "SELECT t0.name, t2.id, t2.label FROM CR_ITEM t0 "
+            + "INNER JOIN CR_ITEM_photos t1 ON t0.id = t1.ITEM_ID "
+            + "INNER JOIN CR_PHT t2 ON t1.VALUE_ID = t2.id WHERE " + 
+            "(NOT (t1.KEY0 = ? OR t1.KEY0 = ? OR t1.KEY0 = ? OR t1.KEY0 = ? OR t1.KEY0 = ?) "
+            + "AND 0 < (SELECT COUNT(*) FROM CR_ITEM_photos WHERE CR_ITEM_photos.ITEM_ID = t0.id))";
+        
+        CriteriaQuery<Customer> q = cb.createQuery(Customer.class);
+        Root<Item> item = q.from(Item.class);
+        MapJoin<Item, String, Photo> photo = item.join(Item_.photos);
+        q.multiselect(item.get(Item_.name), photo);
+        Map<String, Photo> photo1 = new HashMap<String, Photo>();
+        for (int i = 0; i < 5; i++) {
+            Photo p1 = new Photo();
+            p1.setLabel("label" + i);
+            photo1.put("photo" + i, p1);
+        }
+        q.where(photo.key().in(cb.keys(photo1)).negate()); 
+        executeAndCompareSQL(q, sql);
+    }
+
+    public void testKeys6() {
+        String sql = "SELECT t0.name, t2.id, t2.label FROM CR_ITEM t0 "
+            + "INNER JOIN CR_ITEM_photos t1 ON t0.id = t1.ITEM_ID "
+            + "INNER JOIN CR_PHT t2 ON t1.VALUE_ID = t2.id WHERE " + 
+            "(NOT (t1.KEY0 IN (?, ?, ?, ?, ?)))";
+
+        CriteriaQuery<Customer> q = cb.createQuery(Customer.class);
+        Root<Item> item = q.from(Item.class);
+        MapJoin<Item, String, Photo> photo = item.join(Item_.photos);
+        q.multiselect(item.get(Item_.name), photo);
+        Map<String, Photo> photo1 = new HashMap<String, Photo>();
+        for (int i = 0; i < 5; i++) {
+            Photo p1 = new Photo();
+            p1.setLabel("label" + i);
+            photo1.put("photo" + i, p1);
+        }
+        q.where(cb.isNotMember(photo.key(), cb.keys(photo1))); 
+        executeAndCompareSQL(q, sql);
+    }
+
+    public void testKeys7() {
+        String sql = "SELECT t0.name, t2.id, t2.label FROM CR_ITEM t0 "
+            + "INNER JOIN CR_ITEM_photos t1 ON t0.id = t1.ITEM_ID "
+            + "INNER JOIN CR_PHT t2 ON t1.VALUE_ID = t2.id";
+
+        CriteriaQuery<Customer> q = cb.createQuery(Customer.class);
+        Root<Item> item = q.from(Item.class);
+        MapJoin<Item, String, Photo> photo = item.join(Item_.photos);
+        q.multiselect(item.get(Item_.name), photo);
+        Map<String, Photo> photo1 = new HashMap<String, Photo>();
+        for (int i = 0; i < 5; i++) {
+            Photo p1 = new Photo();
+            p1.setLabel("label" + i);
+            photo1.put("photo" + i, p1);
+        }
+        q.where(cb.isNotEmpty(cb.keys(photo1))); 
+        executeAndCompareSQL(q, sql);
+    }
+
+    public void testKeys8() {
+        String sql = "SELECT t0.name, t2.id, t2.label FROM CR_ITEM t0 "
+            + "INNER JOIN CR_ITEM_photos t1 ON t0.id = t1.ITEM_ID "
+            + "INNER JOIN CR_PHT t2 ON t1.VALUE_ID = t2.id WHERE (5 = 4)";
+        CriteriaQuery<Customer> q = cb.createQuery(Customer.class);
+        Root<Item> item = q.from(Item.class);
+        MapJoin<Item, String, Photo> photo = item.join(Item_.photos);
+        q.multiselect(item.get(Item_.name), photo);
+        Map<String, Photo> photo1 = new HashMap<String, Photo>();
+        for (int i = 0; i < 5; i++) {
+            Photo p1 = new Photo();
+            p1.setLabel("label" + i);
+            photo1.put("photo" + i, p1);
+        }
+        q.where(cb.equal(cb.size(cb.keys(photo1)), 4)); 
+        executeAndCompareSQL(q, sql);
+    }
+
+    public void testValues1() {
+        String sql = "SELECT t0.name, t2.id, t2.label FROM CR_ITEM t0 "
+            + "INNER JOIN CR_ITEM_photos t1 ON t0.id = t1.ITEM_ID "
+            + "INNER JOIN CR_ITEM_photos t3 ON t0.id = t3.ITEM_ID "
+            + "INNER JOIN CR_PHT t2 ON t1.VALUE_ID = t2.id WHERE " + 
+            "((t3.VALUE_ID = ? OR t3.VALUE_ID = ? OR t3.VALUE_ID = ? OR t3.VALUE_ID = ? OR t3.VALUE_ID = ?) "
+            + "AND 0 < (SELECT COUNT(*) FROM CR_ITEM_photos WHERE CR_ITEM_photos.ITEM_ID = t0.id))";
+
+        CriteriaQuery<Customer> q = cb.createQuery(Customer.class);
+        Root<Item> item = q.from(Item.class);
+        MapJoin<Item, String, Photo> photo = item.join(Item_.photos);
+        q.multiselect(item.get(Item_.name), photo);
+        Map<String, Photo> photo1 = new HashMap<String, Photo>();
+        for (int i = 0; i < 5; i++) {
+            Photo p1 = new Photo();
+            p1.setLabel("label" + i);
+            photo1.put("photo" + i, p1);
+        }
+        q.where(photo.value().in(cb.values(photo1))); 
+        executeAndCompareSQL(q, sql);
+    }
+
+    public void testValues2() {
+        String sql = "SELECT t0.name, t2.id, t2.label FROM CR_ITEM t0 "
+            + "INNER JOIN CR_ITEM_photos t1 ON t0.id = t1.ITEM_ID "
+            + "INNER JOIN CR_PHT t2 ON t1.VALUE_ID = t2.id WHERE (t1.VALUE_ID IN (?, ?, ?, ?, ?))";
+
+        CriteriaQuery<Customer> q = cb.createQuery(Customer.class);
+        Root<Item> item = q.from(Item.class);
+        MapJoin<Item, String, Photo> photo = item.join(Item_.photos);
+        q.multiselect(item.get(Item_.name), photo);
+        Map<String, Photo> photo1 = new HashMap<String, Photo>();
+        for (int i = 0; i < 5; i++) {
+            Photo p1 = new Photo();
+            p1.setLabel("label" + i);
+            photo1.put("photo" + i, p1);
+        }
+        q.where(cb.isMember(photo.value(), cb.values(photo1))); 
+        executeAndCompareSQL(q, sql);
+    }
+
+    public void testValues3() {
+        String sql = "SELECT t0.name, t2.id, t2.label FROM CR_ITEM t0 "
+            + "INNER JOIN CR_ITEM_photos t1 ON t0.id = t1.ITEM_ID "
+            + "INNER JOIN CR_PHT t2 ON t1.VALUE_ID = t2.id WHERE (1 <> 1)";
+
+        CriteriaQuery<Customer> q = cb.createQuery(Customer.class);
+        Root<Item> item = q.from(Item.class);
+        MapJoin<Item, String, Photo> photo = item.join(Item_.photos);
+        q.multiselect(item.get(Item_.name), photo);
+        Map<String, Photo> photo1 = new HashMap<String, Photo>();
+        for (int i = 0; i < 5; i++) {
+            Photo p1 = new Photo();
+            p1.setLabel("label" + i);
+            photo1.put("photo" + i, p1);
+        }
+        q.where(cb.isEmpty(cb.values(photo1))); 
+        executeAndCompareSQL(q, sql);
+    }
+
+    public void testValue4() {
+        String sql = "SELECT t0.name, t2.id, t2.label FROM CR_ITEM t0 "
+            + "INNER JOIN CR_ITEM_photos t1 ON t0.id = t1.ITEM_ID "
+            + "INNER JOIN CR_PHT t2 ON t1.VALUE_ID = t2.id WHERE (5 = 5)";
+
+        CriteriaQuery<Customer> q = cb.createQuery(Customer.class);
+        Root<Item> item = q.from(Item.class);
+        MapJoin<Item, String, Photo> photo = item.join(Item_.photos);
+        q.multiselect(item.get(Item_.name), photo);
+        Map<String, Photo> photo1 = new HashMap<String, Photo>();
+        for (int i = 0; i < 5; i++) {
+            Photo p1 = new Photo();
+            p1.setLabel("label" + i);
+            photo1.put("photo" + i, p1);
+        }
+        q.where(cb.equal(cb.size(cb.values(photo1)), 5)); 
+        executeAndCompareSQL(q, sql);
+    }
+
+    public void testValues5() {
+        String sql = "SELECT t0.name, t2.id, t2.label FROM CR_ITEM t0 "
+            + "INNER JOIN CR_ITEM_photos t1 ON t0.id = t1.ITEM_ID "
+            + "INNER JOIN CR_PHT t2 ON t1.VALUE_ID = t2.id WHERE "
+            + "(0 = (SELECT COUNT(*) FROM CR_ITEM_photos t3 WHERE "
+            + "(t3.VALUE_ID = ? OR t3.VALUE_ID = ? OR t3.VALUE_ID = ? OR t3.VALUE_ID = ? OR t3.VALUE_ID = ?) "
+            + "AND t0.id = t3.ITEM_ID) AND 0 < (SELECT COUNT(*) FROM CR_ITEM_photos WHERE "
+            + "CR_ITEM_photos.ITEM_ID = t0.id))"; 
+        
+        CriteriaQuery<Customer> q = cb.createQuery(Customer.class);
+        Root<Item> item = q.from(Item.class);
+        MapJoin<Item, String, Photo> photo = item.join(Item_.photos);
+        q.multiselect(item.get(Item_.name), photo);
+        Map<String, Photo> photo1 = new HashMap<String, Photo>();
+        for (int i = 0; i < 5; i++) {
+            Photo p1 = new Photo();
+            p1.setLabel("label" + i);
+            photo1.put("photo" + i, p1);
+        }
+        q.where(photo.value().in(cb.values(photo1)).negate()); 
+        executeAndCompareSQL(q, sql);
+    }
+
+    public void testValues6() {
+        String sql = "SELECT t0.name, t2.id, t2.label FROM CR_ITEM t0 "
+            + "INNER JOIN CR_ITEM_photos t1 ON t0.id = t1.ITEM_ID "
+            + "INNER JOIN CR_PHT t2 ON t1.VALUE_ID = t2.id WHERE (NOT (t1.VALUE_ID IN (?, ?, ?, ?, ?)))";
+
+        CriteriaQuery<Customer> q = cb.createQuery(Customer.class);
+        Root<Item> item = q.from(Item.class);
+        MapJoin<Item, String, Photo> photo = item.join(Item_.photos);
+        q.multiselect(item.get(Item_.name), photo);
+        Map<String, Photo> photo1 = new HashMap<String, Photo>();
+        for (int i = 0; i < 5; i++) {
+            Photo p1 = new Photo();
+            p1.setLabel("label" + i);
+            photo1.put("photo" + i, p1);
+        }
+        q.where(cb.isNotMember(photo.value(), cb.values(photo1))); 
+        executeAndCompareSQL(q, sql);
+    }
+
+    public void testValues7() {
+        String sql = "SELECT t0.name, t2.id, t2.label FROM CR_ITEM t0 "
+            + "INNER JOIN CR_ITEM_photos t1 ON t0.id = t1.ITEM_ID "
+            + "INNER JOIN CR_PHT t2 ON t1.VALUE_ID = t2.id";
+
+        CriteriaQuery<Customer> q = cb.createQuery(Customer.class);
+        Root<Item> item = q.from(Item.class);
+        MapJoin<Item, String, Photo> photo = item.join(Item_.photos);
+        q.multiselect(item.get(Item_.name), photo);
+        Map<String, Photo> photo1 = new HashMap<String, Photo>();
+        for (int i = 0; i < 5; i++) {
+            Photo p1 = new Photo();
+            p1.setLabel("label" + i);
+            photo1.put("photo" + i, p1);
+        }
+        q.where(cb.isNotEmpty(cb.values(photo1))); 
+        executeAndCompareSQL(q, sql);
+    }
+
+    public void testValue8() {
+        String sql = "SELECT t0.name, t2.id, t2.label FROM CR_ITEM t0 "
+            + "INNER JOIN CR_ITEM_photos t1 ON t0.id = t1.ITEM_ID "
+            + "INNER JOIN CR_PHT t2 ON t1.VALUE_ID = t2.id WHERE (5 = 4)";
+
+        CriteriaQuery<Customer> q = cb.createQuery(Customer.class);
+        Root<Item> item = q.from(Item.class);
+        MapJoin<Item, String, Photo> photo = item.join(Item_.photos);
+        q.multiselect(item.get(Item_.name), photo);
+        Map<String, Photo> photo1 = new HashMap<String, Photo>();
+        for (int i = 0; i < 5; i++) {
+            Photo p1 = new Photo();
+            p1.setLabel("label" + i);
+            photo1.put("photo" + i, p1);
+        }
+        q.where(cb.equal(cb.size(cb.values(photo1)), 4)); 
+        executeAndCompareSQL(q, sql);
+    }
 }

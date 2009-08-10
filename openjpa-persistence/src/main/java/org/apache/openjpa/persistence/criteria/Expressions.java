@@ -231,7 +231,12 @@ public class Expressions {
 
         @Override
         public Value toValue(ExpressionFactory factory, MetamodelImpl model, CriteriaQueryImpl<?> q) {
-            return factory.size(Expressions.toValue(e, factory, model, q));
+            Value val = Expressions.toValue(e, factory, model, q);
+            if (val instanceof Literal && ((Literal)val).getParseType() == Literal.TYPE_COLLECTION)
+                return factory.newLiteral(((Collection)((Literal)val).getValue()).size(), 
+                    Literal.TYPE_NUMBER);
+                
+            return factory.size(val);
         }
     }
     
@@ -712,6 +717,8 @@ public class Expressions {
                         lit.setMetaData(can);
                     }
                     return lit;
+                } else if (Collection.class.isAssignableFrom(literalClass)) {
+                    literalType = Literal.TYPE_COLLECTION;
                 }
             }
             return factory.newLiteral(value, literalType);
@@ -810,9 +817,10 @@ public class Expressions {
         @Override
         public org.apache.openjpa.kernel.exps.Expression toKernelExpression(
             ExpressionFactory factory, MetamodelImpl model, CriteriaQueryImpl<?> q) {
-            return factory.contains(
+            org.apache.openjpa.kernel.exps.Expression contains = factory.contains(
                 Expressions.toValue(collection, factory, model, q), 
                 Expressions.toValue(element, factory, model, q));
+            return _negated ? factory.not(contains) : contains;
         }
     }
     
@@ -1005,13 +1013,20 @@ public class Expressions {
             if (_exps.size() == 1) {
                 Expressions.Equal e = (Expressions.Equal)_exps.get(0);
                 ExpressionImpl<?> e2 = e.e2;
-                Value val2 = Expressions.toValue(e2, factory, model, q);
+                ExpressionImpl<?> e1 = e.e1;
+               Value val2 = Expressions.toValue(e2, factory, model, q);
                 if (!(val2 instanceof Literal)) {
-                    ExpressionImpl<?> e1 = e.e1;
-                    Value val1 = Expressions.toValue(e1, factory, model, q);
+                     Value val1 = Expressions.toValue(e1, factory, model, q);
                     Expressions.setImplicitTypes(val1, val2, e1.getJavaType(), q);
                     inExpr = factory.contains(val2, val1);
                     return negate ? factory.not(inExpr) : inExpr;
+                } else if (((Literal)val2).getParseType() == Literal.TYPE_COLLECTION) {
+                    List<Expression<Boolean>> exps = new ArrayList<Expression<Boolean>>();
+                    Collection coll = (Collection)((Literal)val2).getValue();
+                    for (Object v : coll) {
+                        exps.add(new Expressions.Equal(e1,v));
+                    }
+                    _exps = exps;
                 }
             } 
             inExpr = super.toKernelExpression(factory, model, q); 
