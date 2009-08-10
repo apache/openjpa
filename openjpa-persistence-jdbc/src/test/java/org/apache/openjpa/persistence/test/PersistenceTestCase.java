@@ -47,6 +47,9 @@ import org.apache.openjpa.persistence.JPAFacadeHelper;
 public abstract class PersistenceTestCase
     extends TestCase {
 
+    public static final String RETAIN_DATA = "Retain data after test run";
+    private boolean retainDataOnTearDown;
+    
     /**
      * Marker object you an pass to {@link #setUp} to indicate that the
      * database tables should be cleared.
@@ -93,6 +96,10 @@ public abstract class PersistenceTestCase
         List<Class> types = new ArrayList<Class>();
         boolean prop = false;
         for (int i = 0; i < props.length; i++) {
+            if (props[i] == RETAIN_DATA) {
+                retainDataOnTearDown= true;
+                continue;
+            }
             if (prop) {
                 map.put(props[i - 1], props[i]);
                 prop = false;
@@ -213,7 +220,8 @@ public abstract class PersistenceTestCase
         // before issuing delete statements on a new entity manager.
         if (closeEMs)
             closeAllOpenEMs(emf);
-
+        if (retainDataOnTearDown)
+            return;
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
         for (ClassMetaData meta : types) {

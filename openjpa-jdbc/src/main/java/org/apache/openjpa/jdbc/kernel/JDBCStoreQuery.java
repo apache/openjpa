@@ -572,7 +572,8 @@ public class JDBCStoreQuery
      * returns INVALID. Also returns INVALID if field is dependent.
      */
     private Table getTable(FieldMapping fm, Table table) {
-        if (fm.getCascadeDelete() != ValueMetaData.CASCADE_NONE)
+        if (fm.getCascadeDelete() != ValueMetaData.CASCADE_NONE 
+            && !fm.isEmbeddedPC())
             return INVALID;
 
         Column[] columns = fm.getColumns();
