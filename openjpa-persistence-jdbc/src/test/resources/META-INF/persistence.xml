@@ -39,6 +39,7 @@
             class.
         </description>
         <mapping-file>org/apache/openjpa/persistence/xml/orm.xml</mapping-file>
+        <mapping-file>org/apache/openjpa/persistence/orm.xml</mapping-file>
         <properties>
             <property name="openjpa.jdbc.SynchronizeMappings"
                 value="buildSchema(ForeignKeys=true)"/>
@@ -87,6 +88,19 @@
         <properties>
             <property name="openjpa.jdbc.SynchronizeMappings"
                   value="buildSchema(ForeignKeys=true)"/>
+        </properties>
+    </persistence-unit>
+    
+    <persistence-unit name="test-persistence-xml-orm">
+        <mapping-file>org/apache/openjpa/persistence/orm.xml</mapping-file>
+        <class>org.apache.openjpa.persistence.Security1</class>
+        <class>org.apache.openjpa.persistence.Country1</class>
+        <class>org.apache.openjpa.persistence.Security</class>
+        <class>org.apache.openjpa.persistence.Country</class>
+        <class>org.apache.openjpa.persistence.Embed</class>
+        <properties>
+            <property name="openjpa.DynamicEnhancementAgent" 
+                value="false"/> 
         </properties>
     </persistence-unit>
 </persistence>
