@@ -882,10 +882,6 @@ public class Expressions {
     public static class Coalesce<T> extends ExpressionImpl<T> implements QueryBuilder.Coalesce<T> {
         private final List<Expression<? extends T>> values = new ArrayList<Expression<? extends T>>();
         
-        public Coalesce() {
-            super(null);
-        }
-        
         public Coalesce(Class<T> cls) {
             super(cls);
         }
@@ -1043,10 +1039,6 @@ public class Expressions {
         private final List<Expression<Boolean>> whens     = new ArrayList<Expression<Boolean>>();
         private Expression<? extends T> otherwise;
 
-        public Case() {
-            super(null);
-        }
-
         public Case(Class<T> cls) {
             super(cls);
         }
@@ -1092,10 +1084,6 @@ public class Expressions {
         private final List<Expression<C>> whens = new ArrayList<Expression<C>>();
         private Expression<? extends R> otherwise;
         private Expression<C> caseOperand;
-
-        public SimpleCase() {
-            super(null);
-        }
 
         public SimpleCase(Class<R> cls) {
             super(cls);

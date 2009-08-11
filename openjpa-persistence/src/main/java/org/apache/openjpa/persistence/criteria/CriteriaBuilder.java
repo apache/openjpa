@@ -48,7 +48,6 @@ import org.apache.openjpa.kernel.exps.ExpressionParser;
 import org.apache.openjpa.kernel.exps.QueryExpressions;
 import org.apache.openjpa.kernel.exps.Value;
 import org.apache.openjpa.meta.ClassMetaData;
-import org.apache.openjpa.persistence.TupleImpl;
 import org.apache.openjpa.persistence.meta.MetamodelImpl;
 
 /**
@@ -157,16 +156,16 @@ public class CriteriaBuilder implements QueryBuilder, ExpressionParser {
     }
 
     public <T> Coalesce<T> coalesce() {
-        return new Expressions.Coalesce();
+        return new Expressions.Coalesce(Object.class);
     }
 
     public <Y> Expression<Y> coalesce(Expression<? extends Y> x,
         Expression<? extends Y> y) {
-    	return new Expressions.Coalesce<Y>().value(x).value(y);
+    	return new Expressions.Coalesce(x.getClass()).value(x).value(y);
     }
 
     public <Y> Expression<Y> coalesce(Expression<? extends Y> x, Y y) {
-    	return new Expressions.Coalesce<Y>().value(x).value(y);
+    	return new Expressions.Coalesce(x.getClass()).value(x).value(y);
    }
 
     public Expression<String> concat(Expression<String> x, 
@@ -560,7 +559,7 @@ public class CriteriaBuilder implements QueryBuilder, ExpressionParser {
     }
 
     public <R> Case<R> selectCase() {
-        return new Expressions.Case();
+        return new Expressions.Case(Object.class);
     }
 
     public <C, R> SimpleCase<C, R> selectCase(Expression<? extends C> expression) {
@@ -697,7 +696,7 @@ public class CriteriaBuilder implements QueryBuilder, ExpressionParser {
      *          array-valued selection item
      */
     public CompoundSelection<Tuple> tuple(Selection<?>... selections) {
-        return new CompoundSelections.Tuple(TupleImpl.class, selections);
+        return new CompoundSelections.Tuple(selections);
     }
     
     /**

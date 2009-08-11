@@ -23,6 +23,7 @@ import java.util.List;
 
 import javax.persistence.Tuple;
 import javax.persistence.TupleElement;
+import javax.persistence.criteria.Selection;
 
 import org.apache.openjpa.lib.util.Localizer;
 
@@ -66,12 +67,18 @@ public class TestTupleImpl extends TestCase {
      * @return
      */
     protected TupleImpl getTuple() {
-        TupleImpl tuple = new TupleImpl();
-        tuple.put("alias1", _order);
-        tuple.put("alias2", _product);
-        tuple.put("alias3", _item);
-        tuple.put("alias4", _store);
-        tuple.put("alias5", _urgentOrder);
+        TupleElement<Order> order = new TupleElementImpl<Order>(Order.class).setAlias("alias1"); 
+        TupleElement<Product> product = new TupleElementImpl<Product>(Product.class).setAlias("alias2");
+        TupleElement<Item> item = new TupleElementImpl<Item>(Item.class).setAlias("alias3");
+        TupleElement<Store> store = new TupleElementImpl<Store>(Store.class).setAlias("alias4");
+        TupleElement<UrgentOrder> urgentOrder = new TupleElementImpl<UrgentOrder>(UrgentOrder.class).setAlias("alias5");
+        TupleFactory factory = new TupleFactory(order, product, item, store, urgentOrder);
+        TupleImpl tuple = factory.newInstance();
+        tuple.put(0, _order);
+        tuple.put(1, _product);
+        tuple.put(2, _item);
+        tuple.put(3, _store);
+        tuple.put(4, _urgentOrder);
         return tuple;
     }
 
@@ -81,7 +88,6 @@ public class TestTupleImpl extends TestCase {
         assertEquals(_item, tuple.get(2));
         assertEquals(_store, tuple.get(3));
         assertEquals(_urgentOrder, tuple.get(4));
-        // TODO MDD more tests
     }
 
     public void testGetIntNegativeValueThrowsException() {
@@ -205,12 +211,6 @@ public class TestTupleImpl extends TestCase {
             fail("Expected an IllegalArgumentException for null alias");
         } catch (IllegalArgumentException iae) {
             // expected
-        }
-    }
-
-    public void testGetTupleElement() {
-        for (TupleElement<?> element : tuple.getElements()) {
-            assertEquals(((TupleElementImpl) element).getValue(), tuple.get(element));
         }
     }
 

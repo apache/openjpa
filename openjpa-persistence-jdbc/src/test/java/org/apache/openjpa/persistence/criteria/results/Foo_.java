@@ -32,6 +32,7 @@ public class Foo_ {
     public static volatile SingularAttribute<Foo, Long> fid;
     public static volatile SingularAttribute<Foo, String> fstring;
     public static volatile SingularAttribute<Foo, Integer> fint;
+    public static volatile SingularAttribute<Foo, Long> flong;
     public static volatile SingularAttribute<Foo, Bar> bar;
 
 }

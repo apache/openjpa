@@ -1,18 +1,30 @@
+/*
+ * Licensed to the Apache Software Foundation (ASF) under one
+ * or more contributor license agreements.  See the NOTICE file
+ * distributed with this work for additional information
+ * regarding copyright ownership.  The ASF licenses this file
+ * to you under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied.  See the License for the
+ * specific language governing permissions and limitations
+ * under the License.
+ */
 package org.apache.openjpa.kernel;
 
 import java.io.Serializable;
 import java.lang.reflect.Array;
-import java.lang.reflect.Constructor;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-
-import org.apache.openjpa.enhance.Reflection;
-import org.apache.openjpa.kernel.Filters;
 
 /**
  * Describes the shape of a query result.
@@ -50,27 +62,14 @@ import org.apache.openjpa.kernel.Filters;
  */
 @SuppressWarnings("serial")
 public class ResultShape<T> implements Serializable {
-    // Determines how to populate an instance from the input array values and aliases
-    public static enum FillStrategy {
-        ARRAY,       // copy input array elements to this shape's array element values
-        ASSIGN,      // assign the single input array element to this shape's value 
-        BEAN,        // invoke bean-style setter methods of alias names with array element values as arguments
-        CONSTRUCTOR, // invoke constructor with array element values as arguments
-        MAP          // invoke put(Object, Object) method with alias as key and array elements as values 
-    }
-    
     private final Class<T> cls;        // the type of value this shape represents or populates
     private final boolean isPrimitive; // flags this shape as primitive
     private boolean isNesting;         // flags this shape as nesting
     private String alias;
     
-    private final FillStrategy strategy;   // the strategy to populate this shape
+    private final FillStrategy<T> strategy;   // the strategy to populate this shape
     private final List<ResultShape<?>> children; // children of this shape. null for primitives
     private Set<ResultShape<?>> parents;   // the shapes that have nested this shape
-    
-    private Method putMethod;            // Population method for MAP FillStrategy
-    private Constructor<? extends T> constructor;  // Constructor for CONSTRUCTOR FillStrategy
-    private Method[] setters;            // Setter methods for BEAN FillStrategy
 
     /**
      * Construct a non-primitive shape with ASSIGN or ARRAY fill strategy. 
@@ -84,7 +83,7 @@ public class ResultShape<T> implements Serializable {
      * If the shape is declared as primitive then the given class can not be an array.
      */
     public ResultShape(Class<T> cls, boolean primitive) {
-        this(cls, cls.isArray() ? FillStrategy.ARRAY : FillStrategy.ASSIGN, primitive);
+        this(cls, cls.isArray() ? new FillStrategy.Array<T>(cls) : new FillStrategy.Assign<T>(), primitive);
         if (cls.isArray() && primitive)
             throw new IllegalArgumentException(cls.getSimpleName() + " can not be primitive shape");
     }
@@ -93,7 +92,7 @@ public class ResultShape<T> implements Serializable {
      * 
      * Construct a non-primitive shape with the given fill strategy. 
      */
-    public ResultShape(Class<T> cls, FillStrategy strategy) {
+    public ResultShape(Class<T> cls, FillStrategy<T> strategy) {
         this(cls, strategy, false);
     }
     
@@ -101,7 +100,7 @@ public class ResultShape<T> implements Serializable {
      * Construct a shape with the given fill strategy. 
      * 
      */
-    public ResultShape(Class<T> cls, FillStrategy strategy, boolean primitive) {
+    public ResultShape(Class<T> cls, FillStrategy<T> strategy, boolean primitive) {
         if (cls == null) throw new NullPointerException();
         this.cls = cls;
         this.strategy = strategy;
@@ -109,30 +108,29 @@ public class ResultShape<T> implements Serializable {
         children = isPrimitive ? null : new ArrayList<ResultShape<?>>();
     }
     
-    /**
-     * Construct a shape with the MAP fill strategy to invoke the given method. 
-     * 
-     */
-    public ResultShape(Class<T> cls, Method putMethod) {
-        if (cls == null) throw new NullPointerException();
-        this.cls = cls;
-        this.strategy = FillStrategy.MAP;
-        isPrimitive = true;
-        children = new ArrayList<ResultShape<?>>();
-    }
-
-    /**
-     * Construct a shape with the CONSTRUCTOR fill strategy to invoke the given constructor. 
-     * 
-     */
-    public ResultShape(Class<T> cls, Constructor<? extends T> cons) {
-        if (cls == null) throw new NullPointerException();
-        this.cls = cls;
-        this.strategy = FillStrategy.CONSTRUCTOR;
-        this.constructor = cons;
-        isPrimitive = false;
-        children = new ArrayList<ResultShape<?>>();
-    }
+//    /**
+//     * Construct a shape with the MAP fill strategy to invoke the given method. 
+//     * 
+//     */
+//    public ResultShape(Class<T> cls, Method putMethod) {
+//        if (cls == null) throw new NullPointerException();
+//        this.cls = cls;
+//        this.strategy = new FillStrategy.Map<T>(putMethod);
+//        isPrimitive = true;
+//        children = new ArrayList<ResultShape<?>>();
+//    }
+//
+//    /**
+//     * Construct a shape with the CONSTRUCTOR fill strategy to invoke the given constructor. 
+//     * 
+//     */
+//    public ResultShape(Class<T> cls, Constructor<? extends T> cons) {
+//        if (cls == null) throw new NullPointerException();
+//        this.cls = cls;
+//        this.strategy = new FillStrategy.NewInstance<T>(cons);
+//        isPrimitive = false;
+//        children = new ArrayList<ResultShape<?>>();
+//    }
     
     /**
      * Gets the type of instance populated by this shape.
@@ -141,7 +139,7 @@ public class ResultShape<T> implements Serializable {
         return cls;
     }
     
-    public FillStrategy getStrategy() {
+    public FillStrategy<T> getStrategy() {
         return strategy;
     }
     
@@ -341,7 +339,6 @@ public class ResultShape<T> implements Serializable {
         if (values.length < argLength()) // input can be longer than required
             throw new IndexOutOfBoundsException(values.length + " values are less than " + 
                     argLength() + " argumenets required to pack " + this); 
-        Object result = null;
         Object[] args = new Object[length()];
         Class<?>[] argTypes = new Class[length()];
         String[] argAliases = new String[length()];
@@ -362,27 +359,7 @@ public class ResultShape<T> implements Serializable {
                 i++;
             }
         }
-        initializeStrategyElements(cls, args, argTypes, aliases);
-        switch (strategy) {
-        case ARRAY:
-            result = newArray(cls.getComponentType(), args);
-            break;
-        case ASSIGN:
-            result = args[0];
-            break;
-        case CONSTRUCTOR:
-            result = newInstance(constructor, args, aliases);
-            break;
-        case MAP:
-            result = newMap(putMethod, args, aliases);
-            break;
-        case BEAN:
-            result = newBean(setters, args, aliases);
-            break;
-        default:
-            result = values;
-        }
-        return (T)result;
+        return (T)strategy.fill(args, argTypes, argAliases);
     }
 
     /**
@@ -393,114 +370,6 @@ public class ResultShape<T> implements Serializable {
         System.arraycopy(values, start, result, 0, finish-start);
         return result;
     }
-    
-    <X> X[] newArray(Class<X> cls, Object[] values) {
-        X[] result = (X[])Array.newInstance(cls, values.length);
-        System.arraycopy(values, 0, result, 0, values.length);
-        return result;
-    }
-    
-    /**
-     * Construct and populate an instance by the given constructor and arguments.
-     */
-    Object newInstance(Constructor<?> cons, Object[] args, String[] aliases) {
-        try {
-            Class[] types = cons.getParameterTypes();
-            for (int i = 0; i < args.length; i++) {
-                args[i] = Filters.convert(args[i], types[i]);
-            }
-            return cons.newInstance(args);
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
-    }
-    
-    /**
-     * Construct and populate an instance by invoking the put method 
-     * with each alias as key and element of the given args[] as value.
-     */
-    Object newMap(Method put, Object[] args, String[] aliases) {
-        try {
-            Object map = put.getDeclaringClass().newInstance();
-            for (int i = 0; i < args.length; i++)
-                putMethod.invoke(map, aliases[i], args[i]);
-            return map;
-        } catch (InvocationTargetException t) {
-            throw new RuntimeException(t.getTargetException());
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
-    }
-    
-    /**
-     * Create and populate a bean with the given setter methods with each array
-     * element value as argument.
-     */
-    Object newBean(Method[] setters, Object[] args, String[] aliases) {
-        try {
-            Object bean = cls.newInstance();
-            for (int i = 0; i < args.length; i++)
-                setters[i].invoke(bean, args[i]);
-            return bean;
-        } catch (InvocationTargetException t) {
-            throw new RuntimeException(t.getTargetException());
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
-    }
-    
-    /**
-     * Initializes the mechanism to populate. Population mechanism can be a constructor,
-     * a put method for Map or bean-style setter methods.
-     */
-    void initializeStrategyElements(Class<T> cls, Object[] args, Class<?>[] types, String[] aliases) {
-        switch (strategy) {
-        case MAP:
-            if (putMethod == null)
-                putMethod = findMapPopulationMethod();
-            break;
-        case CONSTRUCTOR:
-            if (constructor == null)
-                constructor = findConstructor(cls, args, types);
-            break;
-        case BEAN:
-            if (setters == null) {
-                setters = new Method[args.length];
-                for (int i = 0; i < args.length; i++) {
-                    setters[i] = Reflection.findSetter(cls, aliases[i], true);
-                }
-            }
-            break;  
-        default:
-        }
-    }
-    
-    /**
-     * Find a method named <code>put(Object, Object)</code> or <code>put(String, Object)</code>.
-     */
-    Method findMapPopulationMethod() {
-        try {
-            return cls.getMethod("put", Object.class, Object.class);
-        } catch (Exception e1) {
-            try {
-                return cls.getMethod("put", String.class, Object.class);
-            } catch (Exception e2) {
-                throw new RuntimeException(e2);
-            }
-        }
-    }
-    
-    /**
-     * Finds a constructor of the given class with given argument types.
-     */
-    <X> Constructor<X> findConstructor(Class<X> cls, Object[] args, Class<?>[] types) {
-        try {
-            return cls.getConstructor(types);
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
-    }
-    
     /**
      * Gets a human-readable representation of this shape.
      * 

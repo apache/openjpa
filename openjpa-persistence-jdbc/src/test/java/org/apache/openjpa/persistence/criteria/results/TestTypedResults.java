@@ -47,7 +47,8 @@ public class TestTypedResults extends SingleEMFTestCase {
     DateFormat df = DateFormat.getInstance(); // uses SHORT dateformat by default
 
     public void setUp() throws Exception {
-        setUp(Order.class, Item.class, Shop.class, Producer.class);
+        setUp(CLEAR_TABLES, Order.class, Item.class, Shop.class, Producer.class,
+             "openjpa.DynamicEnhancerAgent", "false");
         populate();
     }
 

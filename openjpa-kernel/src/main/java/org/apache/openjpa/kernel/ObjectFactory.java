@@ -16,36 +16,18 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-
-package org.apache.openjpa.persistence;
-
-import javax.persistence.TupleElement;
+package org.apache.openjpa.kernel;
 
 /**
- * A single dimension of projection in query result.
+ * An interface to create objects that are used by result processing.
+ * @see FillStrategy.Factory
  * 
  * @author Pinaki Poddar
- *
- * @param <X> type of the result
+ * @since 2.0.0
+ * 
+ * @param <T> the type created by this factory.
+ * 
  */
-public class TupleElementImpl<X> implements TupleElement<X> {
-    private String _alias;
-    protected final Class<X> _cls;
-
-    protected TupleElementImpl(Class<X> cls) {
-        _cls = cls;
-    }
-    
-    public final String getAlias() {
-        return _alias;
-    }
-
-    protected TupleElement<X> setAlias(String alias) {
-        _alias = alias;
-        return this;
-    }
-
-    public Class<X> getJavaType() {
-        return _cls;
-    }
+public interface ObjectFactory<T> {
+    public T newInstance();
 }

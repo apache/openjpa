@@ -19,167 +19,100 @@
 
 package org.apache.openjpa.persistence;
 
-import java.util.ArrayList;
+import java.lang.reflect.Method;
 import java.util.List;
 
 import javax.persistence.Tuple;
 import javax.persistence.TupleElement;
 
-import org.apache.openjpa.kernel.ExpressionStoreQuery;
+import org.apache.openjpa.kernel.Filters;
 import org.apache.openjpa.lib.util.Localizer;
 
+/**
+ * Tuple holds a set of values corresponding to a set of {@link TupleElement}.
+ * This implementation prefers index-based access. 
+ * A Tuple instance is constructed by a TupleFactory.
+ * The TupleElemets are shared across all the tuple instances.
+ * 
+ * @author Pinaki Poddar
+ *
+ */
 public class TupleImpl implements Tuple {
     private static final Localizer _loc = Localizer.forPackage(TupleImpl.class);
-    List<TupleElement<?>> elements = new ArrayList<TupleElement<?>>();
-
+    private final TupleFactory factory;
+    private final Object[] values;
+    public static Method PUT;
+    static {
+        try {
+            PUT = TupleImpl.class.getMethod("put", new Class[]{Integer.class, Object.class});
+        } catch (Exception e) {
+        }
+    }
+    
     /**
-     * Get the value of the specified tuple element.
-     * 
-     * @param tupleElement
-     *            tuple element
-     * @return value of tuple element
-     * @throws IllegalArgumentException
-     *             if tuple element does not correspond to an element in the query result tuple
+     * Supply the factory that creates prototypes and holds the elements.
      */
+    TupleImpl(TupleFactory factory) {
+        this.factory = factory;
+        values = new Object[factory.getElements().size()];
+    }
+    
     public <X> X get(TupleElement<X> tupleElement) {
-        if (!elements.contains(tupleElement)) {
-            throw new IllegalArgumentException(_loc.get(
-                "tuple-element-not-found",
-                new Object[] { tupleElement, elements }).getMessage());
-        }
-        TupleElementImpl<X> impl = (TupleElementImpl<X>) tupleElement;
-        return impl.getValue();
+        int i = factory.getIndex(tupleElement);
+        return assertAndConvertType(""+i, values[i], tupleElement.getJavaType());
     }
 
-    /**
-     * Get the value of the tuple element to which the specified alias has been assigned.
-     * 
-     * @param alias
-     *            alias assigned to tuple element
-     * @param type
-     *            of the tuple element
-     * @return value of the tuple element
-     * @throws IllegalArgumentException
-     *             if alias does not correspond to an element in the query result tuple or element cannot be assigned to
-     *             the specified type
-     */
-    @SuppressWarnings("unchecked")
     public <X> X get(String alias, Class<X> type) {
-        if (type == null) {
-            throw new IllegalArgumentException(_loc.get("tuple-was-null", "type").getMessage());
-        }
-        Object rval = get(alias);
-        if (!type.isAssignableFrom(rval.getClass())) {
-            throw new IllegalArgumentException(_loc.get(
-                "tuple-element-wrong-type",
-                new Object[] { alias, type, rval.getClass() }).getMessage());
-        }
-        return (X) rval;
+        Object val = values[factory.getIndex(alias)];
+        return assertAndConvertType(alias, val, type);
     }
 
-    /**
-     * Get the value of the tuple element to which the specified alias has been assigned.
-     * 
-     * @param alias
-     *            alias assigned to tuple element
-     * @return value of the tuple element
-     * @throws IllegalArgumentException
-     *             if alias does not correspond to an element in the query result tuple
-     */
     public Object get(String alias) {
-        if (alias == null) {
-            // TODO MDD determine if we can support this. 
-            throw new IllegalArgumentException(_loc.get("typle-was-null", "alias").getMessage());
-        }
-        for (TupleElement<?> te : elements) {
-            if (alias.equals(te.getAlias())) {
-                return ((TupleElementImpl<?>) te).getValue();
-            }
-        }
-
-        List<String> knownAliases = new ArrayList<String>();
-        for(TupleElement<?> te : elements) { 
-            knownAliases.add(te.getAlias());
-        }
-        throw new IllegalArgumentException(_loc.get("tuple-alias-not-found",
-            new Object[] { alias, knownAliases }).getMessage());
+        return get(alias, null);
     }
 
-    /**
-     * Get the value of the element at the specified position in the result tuple. The first position is 0.
-     * 
-     * @param i
-     *            position in result tuple
-     * @param type
-     *            type of the tuple element
-     * @return value of the tuple element
-     * @throws IllegalArgumentException
-     *             if i exceeds length of result tuple or element cannot be assigned to the specified type
-     */
-    @SuppressWarnings("unchecked")
     public <X> X get(int i, Class<X> type) {
-        if (type == null) {
-            throw new IllegalArgumentException(_loc.get("tuple-was-null", "type").getMessage());
+        if (i >= values.length || i < 0) {
+            throw new IllegalArgumentException(_loc.get("tuple-exceeded-size", i, values.length).getMessage());
         }
-        Object rval = get(i);
-        if(! type.isAssignableFrom(rval.getClass())) { 
-            throw new IllegalArgumentException(_loc.get(
-                "tuple-element-wrong-type",
-                new Object[] { "position", i, type, type.getClass() }).getMessage());
-        }
-        return (X) rval;
+        Object val = values[i];
+        return assertAndConvertType(""+i, val, type);
     }
 
-    /**
-     * Get the value of the element at the specified position in the result tuple. The first position is 0.
-     * 
-     * @param i
-     *            position in result tuple
-     * @return value of the tuple element
-     * @throws IllegalArgumentException
-     *             if i exceeds length of result tuple
-     */
     public Object get(int i) {
-        if (i > elements.size()) {
-            throw new IllegalArgumentException(_loc.get("tuple-exceeded-size",
-                new Object[] { i, elements.size() }).getMessage());
-        }
-        if (i <= -1) {
-            throw new IllegalArgumentException(_loc.get("tuple-stop-thinking-in-python").getMessage());
-        }
-        return toArray()[i];
+        return get(i, null);
     }
 
-    /**
-     * Return the values of the result tuple elements as an array.
-     * 
-     * @return tuple element values
-     */
     public Object[] toArray() {
-        Object[] rval = new Object[elements.size()];
-        int i = 0;
-        for (TupleElement<?> tupleElement : elements) {
-            rval[i] = ((TupleElementImpl<?>) tupleElement).getValue();
-            i++;
-        }
-        return rval;
+        return values;
+    }
+
+    public List<TupleElement<?>> getElements() {
+        return factory.getElements();
     }
 
     /**
-     * Return the tuple elements
-     * 
-     * @return tuple elements
+     * Put the value at the given key index.
+     * This is invoked by the kernel to populate a Tuple.
      */
-    public List<TupleElement<?>> getElements() {
-        return elements;
+    public void put(Integer key, Object value) {
+        values[key] = value;
     }
-
-    @SuppressWarnings("unchecked")
-    public void put(Object key, Object value) {
-        // TODO check for duplicate aliases? 
-        TupleElementImpl<?> element = new TupleElementImpl(value == null ? Object.class : value.getClass());
-        element.setAlias((String) key);
-        element.setValue(value);
-        elements.add(element);
+    
+    /**
+     * Assert that the given value is convertible to the given type and convert.
+     * null type implies no conversion and a pure cast.
+     */
+    <X> X assertAndConvertType(String id, Object value, Class<X> type) {
+        try {
+            if (type == null || value == null) {
+                return (X) value;
+            } else {
+                return (X) Filters.convert(value, type);
+            }
+        } catch (Exception e) {
+            throw new IllegalArgumentException(_loc.get("tuple-element-wrong-type", new Object[]{id, value, 
+                value.getClass().getName(), type.getName()}).getMessage());
+        }
     }
 }

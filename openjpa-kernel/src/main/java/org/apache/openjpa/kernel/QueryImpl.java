@@ -1263,17 +1263,21 @@ public class QueryImpl
             return null;
 
         String[] aliases = ex.getProjectionAliases(q);
-        if (aliases.length == 0) {
-            // result class but no result; means candidate is being set
-            // into some result class
-            _packer = new ResultPacker(_class, getAlias(), resultClass);
-        } else if (resultClass != null) { // projection
-            ResultShape shape = ex.getResultShape(q);
-            Class[] types = ex.getProjectionTypes(q);
-            if (shape == null) {
-                _packer = new ResultPacker(types, aliases, resultClass);
+        ResultShape<?> shape = ex.getResultShape(q);
+        if (shape != null) { // using JPA2.0 style result shape for packing
+            if (aliases.length == 0) {
+                _packer = new ResultShapePacker(new Class[]{_class}, new String[]{""}, resultClass, shape);
             } else {
-                _packer = new ResultShapePacker(types, aliases, resultClass, shape);
+                _packer = new ResultShapePacker(ex.getProjectionTypes(q), aliases, resultClass, shape);
+            }
+        } else {
+            if (aliases.length == 0) {
+                // result class but no result; means candidate is being set
+                // into some result class
+                _packer = new ResultPacker(_class, getAlias(), resultClass);
+            } else if (resultClass != null) { // projection
+                Class[] types = ex.getProjectionTypes(q);
+                _packer = new ResultPacker(types, aliases, resultClass);
             }
         }
         return _packer;

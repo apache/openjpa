@@ -1,3 +1,21 @@
+/*
+ * Licensed to the Apache Software Foundation (ASF) under one
+ * or more contributor license agreements.  See the NOTICE file
+ * distributed with this work for additional information
+ * regarding copyright ownership.  The ASF licenses this file
+ * to you under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied.  See the License for the
+ * specific language governing permissions and limitations
+ * under the License.
+ */
 package org.apache.openjpa.util;
 
 import java.lang.reflect.Constructor;
@@ -7,17 +25,17 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.openjpa.kernel.FillStrategy;
 import org.apache.openjpa.kernel.ResultShape;
 
 import junit.framework.TestCase;
-import static org.apache.openjpa.kernel.ResultShape.FillStrategy.*;
 
 public class TestResultShape extends TestCase {
 
     public void testPrimitiveShapeIsImmutable() {
         ResultShape<Object> shape = new ResultShape<Object>(Object.class, true);
         assertCategory(shape, true, false, false);
-        assertEquals(ASSIGN, shape.getStrategy());
+        assertEquals(FillStrategy.Assign.class, shape.getStrategy().getClass());
         
         try {
             shape.add(int.class);
@@ -25,7 +43,7 @@ public class TestResultShape extends TestCase {
         } catch (UnsupportedOperationException e) {
         }
         try {
-            shape.nest(Object[].class, ARRAY, int.class, double.class);
+            shape.nest(Object[].class, new FillStrategy.Array(Object[].class), int.class, double.class);
             fail(shape + " should not allow nesting other shapes");
         } catch (UnsupportedOperationException e) {
         }
@@ -34,7 +52,7 @@ public class TestResultShape extends TestCase {
     public void testArrayIsMutable() {
         ResultShape<Object[]> shape = new ResultShape<Object[]>(Object[].class);
         assertCategory(shape, false, true, false);
-        assertEquals(ARRAY, shape.getStrategy());
+        assertEquals(FillStrategy.Array.class, shape.getStrategy().getClass());
         
         shape.add(int.class, double.class); // will add primitive shapes
         assertCategory(shape, false, true, false);
@@ -51,29 +69,31 @@ public class TestResultShape extends TestCase {
     }
 
     public void testMethodImpliesMapStrategy() {
-        ResultShape<Map> mapShape = new ResultShape<Map>(Map.class, 
-                method(Map.class, "put", Object.class, Object.class));
+        FillStrategy<Map> strategy = new FillStrategy.Map<Map>(method(Map.class, "put", Object.class, Object.class));
+        ResultShape<Map> mapShape = new ResultShape<Map>(Map.class, strategy, true);
         assertCategory(mapShape, true, false, false);
-        assertEquals(MAP, mapShape.getStrategy());
+        assertEquals(FillStrategy.Map.class, mapShape.getStrategy().getClass());
     }
 
     public void testShapeWithConstrcutorStrategy() {
-        ResultShape<List> listShape = new ResultShape<List>(List.class, constructor(ArrayList.class, int.class));
+        FillStrategy<List> strategy = new FillStrategy.NewInstance<List>(constructor(ArrayList.class, int.class));
+        ResultShape<List> listShape = new ResultShape<List>(List.class, strategy);
         assertCategory(listShape, false, true, false);
-        assertEquals(CONSTRUCTOR, listShape.getStrategy());
+        assertEquals(FillStrategy.NewInstance.class, listShape.getStrategy().getClass());
     }
 
     public void testGetCompositeTypes() {
-        ResultShape<Object[]> root = new ResultShape<Object[]>(Object[].class);
-        ResultShape<Bar> bar1 = new ResultShape<Bar>(Bar.class, CONSTRUCTOR, false);
+        ResultShape<Object[]> root  = new ResultShape<Object[]>(Object[].class);
+        FillStrategy<Bar> strategy1 = new FillStrategy.NewInstance<Bar>(Bar.class);
+        ResultShape<Bar> bar1 = new ResultShape<Bar>(Bar.class, strategy1, false);
         bar1.add(int.class);
-        ResultShape<Foo> fooBarConstructor = new ResultShape<Foo>(Foo.class, 
-                constructor(Foo.class, short.class, Bar.class));
+        FillStrategy<Foo> strategy2 = new FillStrategy.NewInstance<Foo>(constructor(Foo.class, short.class, Bar.class));
+        ResultShape<Foo> fooBarConstructor = new ResultShape<Foo>(Foo.class, strategy2);
         fooBarConstructor.add(short.class);
         fooBarConstructor.nest(bar1);
         root.add(Foo.class, Object.class);
         root.nest(fooBarConstructor);
-        ResultShape<Bar> bar2 = new ResultShape<Bar>(Bar.class, CONSTRUCTOR, false);
+        ResultShape<Bar> bar2 = new ResultShape<Bar>(Bar.class, new FillStrategy.NewInstance(Bar.class), false);
         root.nest(bar2);
         assertEquals("Object[]{Foo, Object, Foo{short, Bar{int}}, Bar}", root.toString());
         assertEquals(Arrays.asList(Foo.class, Object.class, short.class, int.class, Bar.class), 
@@ -85,15 +105,15 @@ public class TestResultShape extends TestCase {
 
     public void testRecursiveNestingIsNotAllowed() {
         ResultShape<Object[]> root = new ResultShape<Object[]>(Object[].class);
-        ResultShape<Bar> bar1 = new ResultShape<Bar>(Bar.class, CONSTRUCTOR, false);
+        ResultShape<Bar> bar1 = new ResultShape<Bar>(Bar.class, new FillStrategy.NewInstance(Bar.class), false);
         bar1.add(int.class);
         ResultShape<Foo> fooBarConstructor = new ResultShape<Foo>(Foo.class, 
-                constructor(Foo.class, short.class, Bar.class));
+                new FillStrategy.NewInstance(constructor(Foo.class, short.class, Bar.class)));
         fooBarConstructor.add(short.class);
         fooBarConstructor.nest(bar1);
         root.add(Foo.class, Object.class);
         root.nest(fooBarConstructor);
-        ResultShape<Bar> bar2 = new ResultShape<Bar>(Bar.class, CONSTRUCTOR, false);
+        ResultShape<Bar> bar2 = new ResultShape<Bar>(Bar.class, new FillStrategy.NewInstance(Bar.class), false);
         root.nest(bar2);
         
         try {
@@ -107,8 +127,8 @@ public class TestResultShape extends TestCase {
 
     public void testFill() {
         //Fill this shape: Foo{short, Bar{String, Double}};
-        ResultShape<Foo> foo = new ResultShape<Foo>(Foo.class, CONSTRUCTOR, false);
-        ResultShape<Bar> bar = new ResultShape<Bar>(Bar.class, CONSTRUCTOR, false);
+        ResultShape<Foo> foo = new ResultShape<Foo>(Foo.class, new FillStrategy.NewInstance(Foo.class), false);
+        ResultShape<Bar> bar = new ResultShape<Bar>(Bar.class, new FillStrategy.NewInstance(Bar.class), false);
         bar.add(String.class, Double.class);
         foo.add(short.class);
         foo.nest(bar);
@@ -126,15 +146,15 @@ public class TestResultShape extends TestCase {
     public void testFill2() {
         //Fill this shape: Object[]{Foo, Object, Foo{short, Bar{String, Double}}, Bar{double}};
         ResultShape<Object[]> root = new ResultShape<Object[]>(Object[].class);
-        ResultShape<Bar> bar1 = new ResultShape<Bar>(Bar.class, CONSTRUCTOR, false);
+        ResultShape<Bar> bar1 = new ResultShape<Bar>(Bar.class, new FillStrategy.NewInstance<Bar>(Bar.class));
         bar1.add(String.class, Double.class);
-        ResultShape<Foo> fooBarConstructor = new ResultShape<Foo>(Foo.class, CONSTRUCTOR, false);
-        fooBarConstructor.add(short.class);
-        fooBarConstructor.nest(bar1);
-        ResultShape<Bar> bar2 = new ResultShape<Bar>(Bar.class, CONSTRUCTOR, false);
+        ResultShape<Foo> fooBarConstr = new ResultShape<Foo>(Foo.class, new FillStrategy.NewInstance<Foo>(Foo.class));
+        fooBarConstr.add(short.class);
+        fooBarConstr.nest(bar1);
+        ResultShape<Bar> bar2 = new ResultShape<Bar>(Bar.class, new FillStrategy.NewInstance<Bar>(Bar.class));
         bar2.add(double.class);
         root.add(Foo.class, Object.class);
-        root.nest(fooBarConstructor);
+        root.nest(fooBarConstr);
         root.nest(bar2);
         assertEquals("Object[]{Foo, Object, Foo{short, Bar{String, Double}}, Bar{double}}", root.toString());
         

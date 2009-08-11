@@ -30,7 +30,6 @@ import javax.persistence.criteria.Root;
 import org.apache.openjpa.persistence.criteria.CriteriaTest;
 import org.apache.openjpa.persistence.criteria.Person;
 import org.apache.openjpa.persistence.criteria.Person_;
-import org.apache.openjpa.persistence.test.AllowFailure;
 
 
 /**
@@ -183,13 +182,12 @@ public class TestMultiselect extends CriteriaTest {
         assertResult(q, String[].class);
     }
     
-    @AllowFailure(message="TupleArray needs special processing at multiselect")
     public void testTupleArray() {
         CriteriaQuery<Tuple[]> q = cb.createQuery(Tuple[].class);
         Root<Person> p = q.from(Person.class); 
-        q.multiselect(p.get(Person_.name), p.get(Person_.name));
+        q.multiselect(p.get(Person_.name), p.get(Person_.id), p.get(Person_.name));
         
-        assertResult(q, Tuple[].class);
+        assertResult(q, Tuple[].class, String.class, Integer.class, String.class);
     }
 // =================================================================    
     /**
@@ -265,8 +263,6 @@ public class TestMultiselect extends CriteriaTest {
         assertResult(q, Object[].class, String.class, Integer.class);
     }
     
-    @AllowFailure(message="Mixing constructor with other projections get CriteriaExpressionBuilder.getProjections() " +
-            "all messed up")
     public void testSingleObjectMultipleProjectionsAndConstructor() {
         CriteriaQuery<Object> q = cb.createQuery(Object.class);
         Root<Person> p = q.from(Person.class);
@@ -278,8 +274,10 @@ public class TestMultiselect extends CriteriaTest {
     /**
      * An element of the list passed to the multiselect method 
      * must not be a tuple- or array-valued compound selection item. 
+     * 
      */
-    public void testTupleCanNotBeNested() {
+    // This test is retired because we are now supporting arbitrary nesting 
+    public void xtestTupleCanNotBeNested() {
         CriteriaQuery<Tuple> q = cb.createTupleQuery();
         Root<Person> p = q.from(Person.class);
         
@@ -314,6 +312,73 @@ public class TestMultiselect extends CriteriaTest {
         }
     }
     
+    public void testSelectSingleTermWithMultiselectObjectArray() {
+        CriteriaQuery<Object[]> q = cb.createQuery(Object[].class);
+        Root<Foo> f = q.from(Foo.class);
+        q.multiselect(f);
+        
+        assertResult(q, Object[].class, Foo.class);
+    }
+    
+    public void testSelectSingleTermWithMultiselectObject() {
+        CriteriaQuery<Object> q = cb.createQuery(Object.class);
+        Root<Foo> f = q.from(Foo.class);
+        q.multiselect(f);
+        
+        assertResult(q, Foo.class);
+    }
+    
+    public void testSelectSingleTermWithMultiselectTuple() {
+        CriteriaQuery<Tuple> q = cb.createQuery(Tuple.class);
+        Root<Foo> f = q.from(Foo.class);
+        q.multiselect(f);
+        
+        assertResult(q, Tuple.class, Foo.class);
+    }
+    
+    public void testSelectSingleTermWithMultiselectTupleArray() {
+        CriteriaQuery<Tuple[]> q = cb.createQuery(Tuple[].class);
+        Root<Foo> f = q.from(Foo.class);
+        q.multiselect(f);
+        
+        assertResult(q, Tuple[].class, Foo.class);
+    }
+    
+    public void testSanity() {
+        CriteriaQuery<Foo> q = cb.createQuery(Foo.class);
+        Root<Foo> f = q.from(Foo.class);
+        
+        assertResult(q, Foo.class);
+    }
+    
+    public void testSanity2() {
+        CriteriaQuery<Foo> q = cb.createQuery(Foo.class);
+        Root<Foo> f = q.from(Foo.class);
+        q.select(f);
+        assertResult(q, Foo.class);
+    }
+    
+    public void testDeeplyNestedShape() {
+        CriteriaQuery<Tuple> q = cb.createQuery(Tuple.class);
+        Root<Foo> foo = q.from(Foo.class);
+        q.multiselect(cb.construct(Foo.class, foo.get(Foo_.flong), foo.get(Foo_.fstring)), 
+                 cb.tuple(foo, cb.array(foo.get(Foo_.fint), cb.tuple(foo.get(Foo_.fstring)))));
+        List<Tuple> result = em.createQuery(q).getResultList();
+        assertFalse(result.isEmpty());
+        Tuple tuple = result.get(0);
+        
+        assertEquals(Foo.class,   tuple.get(0).getClass());
+        assertTrue(Tuple.class.isAssignableFrom(tuple.get(1).getClass()));
+        Tuple tuple2 = (Tuple)tuple.get(1);
+        assertEquals(Foo.class,   tuple2.get(0).getClass());
+        assertEquals(Object[].class, tuple2.get(1).getClass());
+        Object[] level3 = (Object[])tuple2.get(1);
+        assertEquals(Integer.class, level3[0].getClass());
+        assertTrue(Tuple.class.isAssignableFrom(level3[1].getClass()));
+        Tuple tuple4 = (Tuple)level3[1];
+        assertEquals(String.class, tuple4.get(0).getClass());
+    }
+    
 // =============== assertions by result types ========================
     
     void assertResult(CriteriaQuery<?> q, Class<?> resultClass) {
@@ -331,8 +396,12 @@ public class TestMultiselect extends CriteriaTest {
             if (resultClass.isArray() && arrayElementClasses != null) {
                 for (int i = 0; i < arrayElementClasses.length; i++) {
                     Object element = Array.get(row, i);
+                    if (Tuple.class.isInstance(element)) {
+                        assertEquals(arrayElementClasses[i], Tuple.class.cast(element).get(0).getClass()); 
+                    } else {
                     assertTrue(i + "-th array element " + toString(arrayElementClasses[i]) + 
                        " does not match actual result " + toClass(element), arrayElementClasses[i].isInstance(element));
+                    }
                 }
             }
             if (resultClass == Tuple.class && arrayElementClasses != null) {

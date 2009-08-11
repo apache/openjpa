@@ -33,6 +33,7 @@ import java.util.Stack;
 import java.util.TreeSet;
 
 import javax.persistence.Tuple;
+import javax.persistence.TupleElement;
 import javax.persistence.criteria.AbstractQuery;
 import javax.persistence.criteria.CompoundSelection;
 import javax.persistence.criteria.CriteriaQuery;
@@ -46,13 +47,14 @@ import javax.persistence.criteria.Subquery;
 import javax.persistence.metamodel.EntityType;
 
 import org.apache.commons.collections.map.LinkedMap;
+import org.apache.openjpa.kernel.FillStrategy;
 import org.apache.openjpa.kernel.ResultShape;
 import org.apache.openjpa.kernel.StoreQuery;
-import org.apache.openjpa.kernel.ResultShape.FillStrategy;
 import org.apache.openjpa.kernel.exps.Context;
 import org.apache.openjpa.kernel.exps.ExpressionFactory;
 import org.apache.openjpa.kernel.exps.QueryExpressions;
 import org.apache.openjpa.kernel.exps.Value;
+import org.apache.openjpa.persistence.TupleFactory;
 import org.apache.openjpa.persistence.TupleImpl;
 import org.apache.openjpa.persistence.meta.MetamodelImpl;
 import org.apache.openjpa.persistence.meta.Types;
@@ -76,6 +78,7 @@ public class CriteriaQueryImpl<T> implements CriteriaQuery<T>, AliasContext {
     private PredicateImpl       _where;
     private List<Order>         _orders;
     private LinkedMap/*<ParameterExpression<?>, Class<?>>*/ _params;
+    private Selection<T>        _selection;
     private List<Selection<?>>  _selections;
     private List<Expression<?>> _groups;
     private PredicateImpl       _having;
@@ -83,7 +86,6 @@ public class CriteriaQueryImpl<T> implements CriteriaQuery<T>, AliasContext {
     private Boolean             _distinct;
     private SubqueryImpl<?>     _delegator;
     private final Class<T>      _resultClass;
-    private boolean             _multiselect;
     
 
     // AliasContext
@@ -142,8 +144,9 @@ public class CriteriaQueryImpl<T> implements CriteriaQuery<T>, AliasContext {
      * @return the item to be returned in the query result
      */
     public Selection<T> getSelection() {
-        throw new AbstractMethodError();
+        return _selection;
     }
+    
     /**
      * Specify the items that are to be returned in the query result.
      * Replaces the previously specified selection(s), if any.
@@ -187,8 +190,8 @@ public class CriteriaQueryImpl<T> implements CriteriaQuery<T>, AliasContext {
      * @return the modified query
      */
     public CriteriaQuery<T> multiselect(Selection<?>... selections) {
-        _multiselect = true;
         _selections = Arrays.asList(selections); // do not telescope
+        _selection  = new CompoundSelections.MultiSelection(_resultClass, selections);
         return this;
     }
 
@@ -226,7 +229,9 @@ public class CriteriaQueryImpl<T> implements CriteriaQuery<T>, AliasContext {
      * @return the selection items of the query as a list
      */
     public List<Selection<?>> getSelectionList() {
-        return _selections;
+        if (_selections == null)
+            return Collections.EMPTY_LIST;
+        return Collections.unmodifiableList(_selections);
     }
 
     public CriteriaQuery<T> groupBy(Expression<?>... grouping) {
@@ -261,12 +266,9 @@ public class CriteriaQueryImpl<T> implements CriteriaQuery<T>, AliasContext {
      * @return the modified query
      */
     public CriteriaQuery<T> select(Selection<? extends T> selection) {
-        return select(new Selection<?>[]{selection});
-    }
-
-    public CriteriaQuery<T> select(Selection<?>... selections) {
-        _multiselect = false;
-        _selections = Arrays.asList(selections);
+        _selection = (Selection<T>)selection;
+        _selections = new ArrayList<Selection<?>>();
+        _selections.add(selection);
         return this;
     }
 
@@ -540,6 +542,6 @@ public class CriteriaQueryImpl<T> implements CriteriaQuery<T>, AliasContext {
     }
     
     boolean isMultiselect() {
-        return _multiselect;
+        return _selection instanceof CompoundSelections.MultiSelection;
     }
 }
