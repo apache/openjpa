@@ -467,7 +467,7 @@
             <dependency>
                 <groupId>commons-pool</groupId>
                 <artifactId>commons-pool</artifactId>
-                <version>1.3</version>
+                <version>1.5.2</version>
             </dependency>
             <dependency>
                 <groupId>commons-logging</groupId>
@@ -482,7 +482,7 @@
             <dependency>
                 <groupId>commons-collections</groupId>
                 <artifactId>commons-collections</artifactId>
-                <version>3.2</version>
+                <version>3.2.1</version>
             </dependency>
             <dependency>
                 <groupId>net.sourceforge.serp</groupId>
@@ -517,7 +517,7 @@
             <dependency>
                 <groupId>commons-dbcp</groupId>
                 <artifactId>commons-dbcp</artifactId>
-                <version>1.2.1</version>
+                <version>1.2.2</version>
             </dependency>
             <dependency>
                 <groupId>javax.xml.bind</groupId>
