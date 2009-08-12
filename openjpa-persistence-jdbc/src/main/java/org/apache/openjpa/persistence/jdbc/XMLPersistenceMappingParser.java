@@ -573,7 +573,10 @@ public class XMLPersistenceMappingParser
         FieldMapping fm = (FieldMapping) currentElement();
         String strat = EnumValueHandler.class.getName() + "(StoreOrdinal="
             + String.valueOf(type == EnumType.ORDINAL) + ")";
-        fm.getValueInfo().setStrategy(strat);
+        if (fm.isElementCollection())
+            fm.getElementMapping().getValueInfo().setStrategy(strat);
+        else
+            fm.getValueInfo().setStrategy(strat);
     }
 
     /**
@@ -626,14 +629,17 @@ public class XMLPersistenceMappingParser
         // setup columns with cached lob and temporal info
         FieldMapping fm = (FieldMapping) field;
         if (_lob || _temporal != null) {
+            int typeCode = fm.isElementCollection() ? fm.getElement().getDeclaredTypeCode() : 
+                fm.getDeclaredTypeCode();
+            Class type = fm.isElementCollection() ? fm.getElement().getDeclaredType() : fm.getDeclaredType();  
             if (_cols == null) {
                 _cols = new ArrayList<Column>(1);
                 _cols.add(new Column());
             }
             for (Column col : _cols) {
-                if (_lob && (fm.getDeclaredTypeCode() == JavaTypes.STRING
-                    || fm.getDeclaredType() == char[].class
-                    || fm.getDeclaredType() == Character[].class)) {
+                if (_lob && (typeCode == JavaTypes.STRING
+                    || type == char[].class
+                    || type == Character[].class)) {
                     col.setSize(-1);
                     col.setType(Types.CLOB);
                 } else if (_lob)

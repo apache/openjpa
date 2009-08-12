@@ -995,14 +995,22 @@ public class AnnotationPersistenceMappingParser
     @Override
     protected void parseLobMapping(FieldMetaData fmd) {
         Column col = new Column();
-        if (fmd.getDeclaredTypeCode() == JavaTypes.STRING
-            || fmd.getDeclaredType() == char[].class
-            || fmd.getDeclaredType() == Character[].class)
+        int typeCode = fmd.isElementCollection() ? fmd.getElement().getDeclaredTypeCode() :
+            fmd.getDeclaredTypeCode();
+        Class type = fmd.isElementCollection() ? fmd.getElement().getDeclaredType() :
+            fmd.getDeclaredType();
+   
+        if (typeCode == JavaTypes.STRING
+                || type == char[].class
+                || type == Character[].class)
             col.setType(Types.CLOB);
         else
             col.setType(Types.BLOB);
-        ((FieldMapping) fmd).getValueInfo().setColumns(Arrays.asList
-            (new Column[]{ col }));
+        if (fmd.isElementCollection())
+            ((FieldMapping) fmd).getElementMapping().getValueInfo().setColumns(Arrays.asList(new Column[]{ col }));
+        else    
+            ((FieldMapping) fmd).getValueInfo().setColumns(Arrays.asList(new Column[]{ col }));
+        
     }
 
     @Override
@@ -1439,7 +1447,10 @@ public class AnnotationPersistenceMappingParser
     private void parseEnumerated(FieldMapping fm, Enumerated anno) {
         String strat = EnumValueHandler.class.getName() + "(StoreOrdinal="
             + String.valueOf(anno.value() == EnumType.ORDINAL) + ")";
-        fm.getValueInfo().setStrategy(strat);
+        if (fm.isElementCollection()) 
+            fm.getElementMapping().getValueInfo().setStrategy(strat);
+        else
+            fm.getValueInfo().setStrategy(strat);
     }
 
     /**
@@ -1461,7 +1472,10 @@ public class AnnotationPersistenceMappingParser
                 String.valueOf(cols.size()), "1"));
         if (cols.isEmpty()) {
             cols = Arrays.asList(new Column[]{ new Column() });
-            fm.getValueInfo().setColumns(cols);
+            if (fm.isElementCollection())
+                fm.getElementMapping().getValueInfo().setColumns(cols);
+            else
+                fm.getValueInfo().setColumns(cols);
         }
 
         Column col = (Column) cols.get(0);

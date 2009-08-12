@@ -1091,11 +1091,13 @@ public class XMLPersistenceMetaDataParser
     protected boolean startLob(Attributes attrs)
         throws SAXException {
         FieldMetaData fmd = (FieldMetaData) currentElement();
-        if (fmd.getDeclaredTypeCode() != JavaTypes.STRING
-            && fmd.getDeclaredType() != char[].class
-            && fmd.getDeclaredType() != Character[].class
-            && fmd.getDeclaredType() != byte[].class
-            && fmd.getDeclaredType() != Byte[].class)
+        int typeCode = fmd.isElementCollection() ? fmd.getElement().getDeclaredTypeCode() : fmd.getDeclaredTypeCode();
+        Class type = fmd.isElementCollection() ? fmd.getElement().getDeclaredType() : fmd.getDeclaredType();
+        if (typeCode != JavaTypes.STRING
+            && type != char[].class
+            && type != Character[].class
+            && type != byte[].class
+            && type != Byte[].class)
             fmd.setSerialized(true);
         return true;
     }
@@ -1525,7 +1527,7 @@ public class XMLPersistenceMetaDataParser
         if (val != null)
             fmd.setInDefaultFetchGroup("EAGER".equals(val));
         fmd.setElementCollection(true);
-        if (JavaTypes.maybePC(fmd.getElement())) {
+        if (JavaTypes.maybePC(fmd.getElement()) && !fmd.getElement().getDeclaredType().isEnum()) {
             fmd.getElement().setEmbedded(true);
             if (fmd.getElement().getEmbeddedMetaData() == null)
 //                fmd.getElement().addEmbeddedMetaData();

@@ -19,14 +19,22 @@
 package org.apache.openjpa.persistence.embed;
 
 import java.io.Serializable;
+import java.sql.Timestamp;
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.persistence.FetchType;
 import javax.persistence.Id;
+import javax.persistence.Lob;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
 
 import javax.persistence.ElementCollection;
 import javax.persistence.CollectionTable;
@@ -48,6 +56,18 @@ public class EntityA_Coll_String implements Serializable {
     @CollectionTable(name="NickNames_Tbl")
     @Column(name="nicknames1", length=20)
     protected Set<String> nickNames = new HashSet<String>();
+
+    @ElementCollection
+    @Enumerated(EnumType.ORDINAL)
+    protected List<CreditRating> cr = new ArrayList<CreditRating>();
+    
+    @ElementCollection
+    @Temporal(TemporalType.DATE)
+    protected List<Timestamp> ts = new ArrayList<Timestamp>();
+
+    @ElementCollection
+    @Lob
+    protected List<String> lobs = new ArrayList<String>();
 
     public int getAge() {
         return age;
@@ -80,5 +100,31 @@ public class EntityA_Coll_String implements Serializable {
     public void addNickName(String nickName) {
         nickNames.add(nickName);
     }
+
+    public List<CreditRating> getCreditRating() {
+        return cr;
+    }
+    
+    public void addCreditRating(CreditRating c) {
+        cr.add(c);
+    }
+    
+    public List<Timestamp> getTimestamps() {
+        return ts;
+    }
+    
+    public void addTimestamp(Timestamp t) {
+        ts.add(t);
+    }
+    
+    public List<String> getLobs() {
+        return lobs;
+    }
+    
+    public void addLob(String lob) {
+        lobs.add(lob);
+    }
+
+    public enum CreditRating { POOR, GOOD, EXCELLENT };
 }
 

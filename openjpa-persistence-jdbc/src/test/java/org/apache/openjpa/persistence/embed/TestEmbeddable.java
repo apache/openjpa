@@ -205,6 +205,9 @@ public class TestEmbeddable extends SingleEMFTestCase {
         a.setAge(id);
         for (int i = 0; i < numBasicTypes; i++)
             a.addNickName("nickName_" + id + i);
+        a.addCreditRating(EntityA_Coll_String.CreditRating.POOR);
+        a.addTimestamp(new Timestamp(System.currentTimeMillis()));
+        a.addLob("lob");
         em.persist(a);
     }
 
@@ -931,6 +934,9 @@ public class TestEmbeddable extends SingleEMFTestCase {
         Set<String> nickNames = a.getNickNames();
         for (String nickName : nickNames)
             assertEquals("nickName_" + id + "0", nickName);
+        List<EntityA_Coll_String.CreditRating> cr = a.getCreditRating();
+        for (EntityA_Coll_String.CreditRating c : cr)
+            assertEquals("POOR", c.toString());
     }
 
     /*
@@ -1548,6 +1554,10 @@ public class TestEmbeddable extends SingleEMFTestCase {
                 " WHERE exists (select a from " +
                 " EntityA_Embed_Coll_Integer a " +
                 " , in (a.embed.otherIntVals) e " +
+                " where e > 0) order by e",
+            "select e, a0.intVal2 from EntityA_Embed_Coll_Integer a " +
+                "JOIN a.embed a0 JOIN a0.otherIntVals e WHERE exists (select a from " +
+                " EntityA_Embed_Coll_Integer a JOIN a.embed a0 JOIN a0.otherIntVals e " +
                 " where e > 0) order by e",
         };
         List<Object[]> rs = null;
