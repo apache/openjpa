@@ -75,7 +75,8 @@ class CompareExpression
         ctx.store.getDBDictionary().comparison(buf, _op,
             new FilterValueImpl(sel, ctx, bstate.state1, _val1),
             new FilterValueImpl(sel, ctx, bstate.state2, _val2));
-        sel.append(buf, state.joins);
+        if (sel != null)
+            sel.append(buf, state.joins);
     }
 
     public void selectColumns(Select sel, ExpContext ctx, ExpState state, 

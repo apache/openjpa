@@ -118,4 +118,12 @@ public abstract class Val
         visitor.enter(this);
         visitor.exit(this);
     }
+
+    public Path getPath() {
+        return null;
+    }
+
+    public String getName() {
+        return null;
+    }
 }

@@ -29,6 +29,8 @@ import java.util.List;
 import org.apache.openjpa.jdbc.conf.JDBCConfiguration;
 import org.apache.openjpa.jdbc.kernel.JDBCFetchConfiguration;
 import org.apache.openjpa.jdbc.kernel.JDBCStore;
+import org.apache.openjpa.kernel.exps.Value;
+import org.apache.openjpa.kernel.exps.Context;
 import org.apache.openjpa.jdbc.meta.ClassMapping;
 import org.apache.openjpa.jdbc.meta.FieldMapping;
 import org.apache.openjpa.jdbc.schema.Column;
@@ -896,6 +898,18 @@ public class LogicalUnion
         public void setExpectedResultCount(int expectedResultCount, 
             boolean force) {
             sel.setExpectedResultCount(expectedResultCount, force);
+        }
+
+        public void setContext(Context context) {
+            sel.setContext(context);
+        }
+
+        public Context ctx() {
+            return sel.ctx();
+        }
+
+        public void setSchemaAlias(String schemaAlias) {
+            sel.setSchemaAlias(schemaAlias);
         }
     }
 

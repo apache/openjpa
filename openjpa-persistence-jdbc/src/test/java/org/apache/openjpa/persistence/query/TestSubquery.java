@@ -24,6 +24,7 @@ import java.util.List;
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
 
+import org.apache.openjpa.persistence.query.Customer.CreditRating;
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
 
 /**
@@ -35,10 +36,18 @@ public class TestSubquery
     public void setUp() {
         setUp(Customer.class, Customer.CustomerKey.class, Order.class,
             OrderItem.class, Magazine.class, Publisher.class, Employee.class,
-            Dependent.class, DependentId.class, CLEAR_TABLES);
+            Dependent.class, DependentId.class, DROP_TABLES);
     }
 
     static String[]  querys = new String[] {
+        "select c from Customer c where EXISTS" +
+            " (select o from  in(c.orders)  o)" , 
+        "select c from Customer c where EXISTS" +
+            " (select o from c.orders o)" , 
+        "select c from Customer c where NOT EXISTS" +
+            " (select o from in (c.orders) o)" , 
+        "select c from Customer c where NOT EXISTS" +
+            " (select o from  c.orders o)" , 
         "select o1.oid from Order o1 where o1.oid in " +
             " (select distinct o.oid from OrderItem i, Order o" +
             " where i.quantity > 10 and o.amount > 1000 and i.lid = o.oid)" ,
@@ -59,7 +68,8 @@ public class TestSubquery
         "select c.name from Customer c where exists" +
             " (select o from c.orders o where o.oid = 1) or exists" +
             " (select o from c.orders o where o.oid = 2)",
-        "select c.name from Customer c, in(c.orders) o where o.amount between" +
+        "select c.name from Customer c, in(c.orders) o where o.amount " +
+            "between" +
             " (select max(o.amount) from Order o) and" +
             " (select avg(o.amount) from Order o) ",
         "select o.oid from Order o where o.amount >" +
@@ -81,11 +91,12 @@ public class TestSubquery
             "(SELECT MAX(m3.datePublished) "+
             "FROM Magazine m3 "+
             "WHERE m3.idPublisher.id = p.id)) ", 
-    // outstanding problem subqueries:
-    //"select o from Order o where o.amount > (select count(o) from Order o)",
-    //"select o from Order o where o.amount > (select count(o2) from Order o2)",
-    // "select c from Customer c left join c.orders p where not exists"
-    //   + " (select o2 from c.orders o2 where o2 = o",
+        "select o from Order o where o.amount > " +
+            " (select count(o) from Order o)",
+        "select o from Order o where o.amount > " +
+            "(select count(o2) from Order o2)",
+        "select c from Customer c left join c.orders o where not exists"
+           + " (select o2 from c.orders o2 where o2 = o)",
     };
 
 
@@ -94,6 +105,78 @@ public class TestSubquery
             " (select max(o2.customer.name) from Order o2 " + 
             " where o.customer.cid.id = o2.customer.cid.id)",  
     };
+
+    static String[]  querys2 = new String[] {
+//        "SELECT distinct p.name " +
+//            " FROM Publisher p WHERE " +
+//            " Exists(SELECT p.name FROM p.magazineCollection p WHERE p.name LIKE 'Math%')",
+
+        "select o1.oid, c.name from Order o1, Customer c" +
+            " where o1.customer.name = " + 
+            " any(select o2.customer.name from in(c.orders) o2)",
+
+        "select o1.oid, c.name from Order o1, Customer c" +
+            " where o1.amount = " +
+            " any(select o2.amount from in(c.orders) o2)",
+
+        "select DISTINCT c.name FROM Customer c JOIN c.orders o " +
+            "WHERE EXISTS (SELECT o FROM o.lineitems l where l.quantity > 2 ) ",
+
+        "select DISTINCT c.name FROM Customer c, IN(c.orders) co " +
+            "WHERE co.amount > ALL " +
+            "(Select o.amount FROM Order o, in(o.lineitems) l WHERE l.quantity > 2)", 
+
+        "select distinct c.name FROM Customer C, IN(C.orders) co " +
+            "WHERE co.amount < ALL " +
+            "(Select o.amount FROM Order o, IN(o.lineitems) l WHERE l.quantity > 2)", 
+
+        "select c.name FROM Customer c, IN(c.orders) co " +
+            "WHERE co.amount <= ALL " +
+            "(Select o.amount FROM Order o, IN(o.lineitems) l WHERE l.quantity > 2)",
+
+        "select DISTINCT c.name FROM Customer c, IN(c.orders) co " +
+            "WHERE co.amount > ANY " +
+            "(Select o.amount FROM Order o, IN(o.lineitems) l WHERE l.quantity = 2)",
+
+        "select DISTINCT c.name FROM Customer c " +
+            "WHERE EXISTS (SELECT o FROM c.orders o where o.amount " +
+            "BETWEEN 1000 AND 1200)",
+
+        "select DISTINCT c.name FROM Customer c " +
+            "WHERE EXISTS (SELECT o FROM c.orders o where o.amount > 1000 )",
+
+        "SELECT o.oid from Order o WHERE " +
+            "EXISTS (SELECT c.name From o.customer c WHERE c.name LIKE '%los') ",
+
+        "select Distinct c.name FROM Customer c, IN(c.orders) co " +
+            "WHERE co.amount >= SOME" +
+            "(Select o.amount FROM Order o, IN(o.lineitems) l WHERE l.quantity = 2)",
+           
+        "select c FROM Customer c WHERE EXISTS" +
+            " (SELECT o FROM c.orders o where o.amount > 1000)",
+           
+        "select c FROM Customer c WHERE EXISTS" +
+            " (SELECT o FROM c.orders o)",
+           
+        "SELECT c FROM Customer c WHERE "
+            + "(SELECT COUNT(o) FROM c.orders o) > 10"
+    };
+
+    public void testSubquery2() {
+        EntityManager em = emf.createEntityManager();
+        for (int i = 0; i < querys2.length; i++) {
+            String q = querys2[i];
+            System.err.println(">>> JPQL JPA2 :[ " + i + "]" +q);
+            try {
+            List rs = em.createQuery(q).getResultList();
+            assertEquals(0, rs.size());
+            } catch (Exception e) {
+                e.printStackTrace();
+                em.close();
+            }
+        }
+        em.close();
+    }
 
 
     public void testSubquery() {
@@ -117,7 +200,8 @@ public class TestSubquery
     /**
      * Verify a sub query can contain MAX and additional date comparisons 
      * without losing the correct alias information. This sort of query 
-     * originally caused problems for DBDictionaries which used DATABASE syntax. 
+     * originally caused problems for DBDictionaries which used DATABASE 
+     * syntax.
      */
     public void testSubSelectMaxDateRange() {        
         String query =
@@ -132,6 +216,18 @@ public class TestSubquery
         q.setParameter("minDate", new Date(100));
         q.setParameter("maxDate", new Date(100000));
         q.getResultList();
+        em.close();
+    }
+
+    public void testUpdateWithCorrelatedSubquery() {
+        String update = "update Customer c set c.creditRating = ?1 where EXISTS" +
+           " (select o from  in(c.orders)  o)";
+        EntityManager em = emf.createEntityManager();
+        em.getTransaction().begin();
+        CreditRating creditRating = CreditRating.GOOD;
+        int updateCount = em.createQuery(update).
+            setParameter(1, creditRating).executeUpdate();
+        em.getTransaction().rollback();
         em.close();
     }
 }

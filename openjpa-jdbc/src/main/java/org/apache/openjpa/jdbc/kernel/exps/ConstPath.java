@@ -27,6 +27,7 @@ import org.apache.openjpa.jdbc.sql.Select;
 import org.apache.openjpa.kernel.Broker;
 import org.apache.openjpa.kernel.Filters;
 import org.apache.openjpa.kernel.OpenJPAStateManager;
+import org.apache.openjpa.kernel.exps.Context;
 import org.apache.openjpa.kernel.exps.ExpressionVisitor;
 import org.apache.openjpa.meta.ClassMetaData;
 import org.apache.openjpa.meta.FieldMetaData;
@@ -215,6 +216,20 @@ class ConstPath
     }
 
     public XMLMetaData getXmlMapping() {
+        return null;
+    }
+
+    public void setSchemaAlias(String schemaAlias) {
+    }
+    
+    public String getSchemaAlias() {
+        return null;
+    }
+    
+    public void setSubqueryContext(Context conext, String correlationVar) {
+    }
+
+    public String getCorrelationVar() {
         return null;
     }
 }

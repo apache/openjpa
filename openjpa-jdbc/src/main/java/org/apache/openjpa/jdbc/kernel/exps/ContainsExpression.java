@@ -42,7 +42,7 @@ class ContainsExpression
         Val val1 = getValue1();
         if (contains != null && val1 instanceof PCPath) {
             PCPath sql = (PCPath) val1;
-            String path = sql.getPath();
+            String path = sql.getPCPathString();
 
             // update the count for this path
             Integer count = (Integer) contains.get(path);

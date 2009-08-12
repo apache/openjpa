@@ -159,8 +159,12 @@ public abstract class AbstractExpressionBuilder {
     protected Value getVariable(String id, boolean bind) {
         // check for already constructed var
         if (isSeenVariable(id))
-            return (Value) _seenVars.get(id);
+            return getVariable(id);
 
+        return createVariable(id, bind);
+    }
+
+    protected Value createVariable(String id, boolean bind) {
         // create and cache var
         Class type = getDeclaredVariableType(id);
 
@@ -170,10 +174,12 @@ public abstract class AbstractExpressionBuilder {
             type = TYPE_OBJECT;
         else
             meta = getMetaData(type, false);
-        if (meta != null)
-            _accessPath.add(meta);
+        if (meta != null) {
+            addAccessPath(meta);
+            addSchemaToContext(id, meta);
+        }
 
-        Value var;
+        Value var = null;
         if (bind)
             var = factory.newBoundVariable(id, type);
         else
@@ -183,6 +189,8 @@ public abstract class AbstractExpressionBuilder {
         if (_seenVars == null)
             _seenVars = new HashMap();
         _seenVars.put(id, var);
+
+        addVariableToContext(id, var);
         return var;
     }
 
@@ -330,7 +338,7 @@ public abstract class AbstractExpressionBuilder {
     }
 
     /**
-     * Returns the type of the named variabe if it has been declared.
+     * Returns the type of the named variable if it has been declared.
      */
     protected abstract Class getDeclaredVariableType(String name);
 
@@ -520,5 +528,28 @@ public abstract class AbstractExpressionBuilder {
      * Returns the current string being parsed; used for error messages.
 	 */
 	protected abstract String currentQuery ();
+
+    /**
+     * Register the schema alias to the current JPQL query context.
+     * @param alias
+     * @param meta
+     */
+    protected abstract void addSchemaToContext(String alias,
+        ClassMetaData meta);
+
+    /**
+     * Register the variable associated with the schema alias (id) to
+     * the current JPQL query context.
+     * @param id
+     * @param var
+     */
+    protected abstract void addVariableToContext(String id, Value var);
+
+    /**
+     * Returns the variable associated with the schema alias (id).
+     * @param id
+     * @return
+     */
+    protected abstract Value getVariable(String id);
 }
 

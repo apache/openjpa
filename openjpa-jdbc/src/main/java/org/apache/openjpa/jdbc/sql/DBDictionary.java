@@ -1007,7 +1007,7 @@ public class DBDictionary
     public void setCalendar(PreparedStatement stmnt, int idx, Calendar val,
         Column col)
         throws SQLException {
-        // by default we merely delegate the the Date parameter
+        // by default we merely delegate to the Date parameter
         setDate(stmnt, idx, val.getTime(), col);
     }
 
@@ -1056,7 +1056,7 @@ public class DBDictionary
     }
 
     /**
-     * Set the given value as a parameters to the statement. The column
+     * Set null as a parameter to the statement. The column
      * type will come from {@link Types}.
      */
     public void setNull(PreparedStatement stmnt, int idx, int colType,
@@ -1082,7 +1082,7 @@ public class DBDictionary
     }
 
     /**
-     * Set the given value as a parameters to the statement. The column
+     * Set the given value as a parameter to the statement. The column
      * type will come from {@link Types}.
      */
     public void setObject(PreparedStatement stmnt, int idx, Object val,
@@ -1655,7 +1655,7 @@ public class DBDictionary
      * those types (or add the type names to the
      * <code>fixedSizeTypeNameSet</code>).
      * 
-     * <P>Some databases support "type modifiers" for example the unsigned
+     * <P>Some databases support "type modifiers", for example the unsigned
      * "modifier" in MySQL. In these cases the size should go between the type 
      * and the "modifier", instead of after the modifier. For example 
      * CREATE table FOO ( myint INT (10) UNSIGNED . . .) instead of 
@@ -1687,8 +1687,8 @@ public class DBDictionary
      * 
      * @see appendSize
      * 
-     * @param typeName  The SQL type ie INT
-     * @param size      The size clause ie (10)
+     * @param typeName  The SQL type e.g. INT
+     * @param size      The size clause e.g. (10)
      * @return          The typeName + size clause. Usually the size clause will 
      *                  be appended to typeName. If the typeName contains a 
      *                  marker : {0} or if typeName contains a modifier the 
@@ -1741,7 +1741,7 @@ public class DBDictionary
     ///////////
 
     /**
-     * Set the name of the join syntax to use: sql92, traditional, database
+     * Set the name of the join syntax to use: sql92, traditional, database.
      */
     public void setJoinSyntax(String syntax) {
         if ("sql92".equals(syntax))
@@ -1880,7 +1880,7 @@ public class DBDictionary
     /**
      * Returns the SQL for a bulk operation, either a DELETE or an UPDATE.
      *
-     * @param mapping the mappng against which we are operating
+     * @param mapping the mapping against which we are operating
      * @param sel the Select that will constitute the WHERE clause
      * @param store the current store
      * @param updateParams the Map that holds the update parameters; a null
@@ -1946,7 +1946,7 @@ public class DBDictionary
 
         // we need to use a subselect if we are to bulk delete where
         // the select includes multiple tables; if the database
-        // doesn't support it, then we need to sigal this by returning null
+        // doesn't support it, then we need to signal this by returning null
         if (!supportsSubselect || !supportsCorrelatedSubselect)
             return null;
 
@@ -2166,18 +2166,84 @@ public class DBDictionary
                 if (itr.hasNext())
                     fromSQL.append(", ");
             }
+            if (aliases.size() < 2 && sel.getParent() != null) {
+                // subquery may contain correlated joins
+                Iterator itr = sel.getJoinIterator();
+                while (itr.hasNext()) {
+                    Join join = (Join) itr.next();
+                    // append where clause
+                    if (join.isCorrelated() && join.getForeignKey() != null) {
+                        SQLBuffer where = new SQLBuffer(this);
+                        where.append("(").append(toTraditionalJoin(join)).append(")");
+                        sel.where(where.getSQL());
+                    }                
+                }
+            }
         } else {
             Iterator itr = sel.getJoinIterator();
             boolean first = true;
             while (itr.hasNext()) {
-                fromSQL.append(toSQL92Join((Join) itr.next(), forUpdate,
-                    first));
+                Join join = (Join) itr.next();
+                if (correlatedJoinCondition(join, sel))
+                    continue;
+                
+                if (join.isCorrelated())
+                    toCorrelatedJoin(sel, join, forUpdate, first);                    
+                else    
+                    fromSQL.append(toSQL92Join(sel, join, forUpdate,
+                        first));
                 first = false;
+                if (itr.hasNext() && join.isCorrelated()) {
+                    if (fromSQL.getSQL().length() > 0)
+                        fromSQL.append(", ");
+                    first = true;
+                }
+            }
+
+            for (Iterator itr2 = aliases.iterator(); itr2.hasNext();) {
+                String tableAlias = itr2.next().toString();
+                if (fromSQL.getSQL().indexOf(tableAlias) == -1) {
+                    if (!first && fromSQL.getSQL().length() > 0)
+                        fromSQL.append(", ");
+                    fromSQL.append(tableAlias);
+                    if (forUpdate && tableForUpdateClause != null)
+                        fromSQL.append(" ").append(tableForUpdateClause);
+                    first = false;
+                }
             }
         }
         return fromSQL;
     }
 
+    private boolean correlatedJoinCondition(Join join, Select sel) {
+        if (!join.isCorrelated())
+            return false;
+        Iterator itr = sel.getJoinIterator();
+        boolean skip = false;
+        // if table1 in join is in the main query, table2 is in
+        // subquery, and table2 participates in other joins
+        // in subquery, the join condition can only be placed in 
+        // the where clause in the subquery.
+        while (itr.hasNext()) {
+            Join join1 = (Join) itr.next();
+            if (join == join1 && !join.isForeignKeyInversed()) {
+                continue;
+            }
+            if (join.getIndex2() == join1.getIndex1() ||
+                join.getIndex2() == join1.getIndex2()) {
+                skip = true;
+                if (join.getForeignKey() != null){
+                    SQLBuffer where = new SQLBuffer(this);
+                    where.append("(").append(toTraditionalJoin(join)).append(")");
+                    sel.where(where.getSQL());
+                }                
+                break;
+            }
+        }
+        return skip;
+    }
+    
+    
     /**
      * Return the FROM clause for a select that selects from a tmp table
      * created by an inner select.
@@ -2281,8 +2347,10 @@ public class DBDictionary
      * Use the given join instance to create SQL joining its tables in
      * the SQL92 style.
      */
-    public SQLBuffer toSQL92Join(Join join, boolean forUpdate, boolean first) {
+    public SQLBuffer toSQL92Join(Select sel, Join join, boolean forUpdate,
+        boolean first) {
         SQLBuffer buf = new SQLBuffer(this);
+
         if (first) {
             buf.append(join.getTable1()).append(" ").
                 append(join.getAlias1());
@@ -2306,10 +2374,21 @@ public class DBDictionary
         if (join.getForeignKey() != null)
             buf.append(" ON ").append(toTraditionalJoin(join));
         else if (requiresConditionForCrossJoin &&
-            join.getType() == Join.TYPE_CROSS)
+                join.getType() == Join.TYPE_CROSS)
             buf.append(" ON (1 = 1)");
-
+        
         return buf;
+    }
+
+    private SQLBuffer toCorrelatedJoin(Select sel, Join join, boolean forUpdate,
+        boolean first) {
+        if (join.getForeignKey() != null){
+            SQLBuffer where = new SQLBuffer(this);
+            where.append("(").append(toTraditionalJoin(join)).append(")");
+            sel.where(where.getSQL());
+        }
+
+        return null;
     }
 
     /**
@@ -2394,6 +2473,14 @@ public class DBDictionary
         }
     }
 
+    /**
+     * Return true if the dictionary uses isolation level to compute the 
+     * returned getForUpdateClause() SQL clause.  
+     */
+    public boolean supportsIsolationForUpdate() {
+        return false;
+    }
+    
     /**
      * Return the "SELECT" operation clause, adding any available hints, etc.
      */

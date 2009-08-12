@@ -27,9 +27,12 @@ import javax.persistence.GenerationType;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.FetchType;
+import javax.persistence.Table;
+
 import java.sql.Date;
 
 @Entity
+@Table(name="AMagazine")
 public class Magazine implements Serializable {
 
     @Id
@@ -40,7 +43,7 @@ public class Magazine implements Serializable {
     @Column(name="name")
     private String name;
     
-    @Column(name="date_published")
+    @Column(name="publishdate")
     private Date datePublished;
 
     @ManyToOne(fetch=FetchType.LAZY)

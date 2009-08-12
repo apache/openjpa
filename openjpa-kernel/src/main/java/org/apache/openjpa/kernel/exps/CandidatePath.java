@@ -37,11 +37,12 @@ import org.apache.openjpa.util.ImplHelper;
  *
  * @author Abe White
  */
-class CandidatePath
+public class CandidatePath
     extends Val
     implements Path {
 
-    private LinkedList _actions = null;
+    protected LinkedList _actions = null;
+    protected String _correlationVar = null;
 
     /**
      * Traverse into the given field of the current object, and update
@@ -195,5 +196,19 @@ class CandidatePath
     
     public XMLMetaData getXmlMapping() {
         return null;
+    }
+
+    public void setSchemaAlias(String schemaAlias) {
+    }
+
+    public String getSchemaAlias() {
+        return null;
+    }
+    
+    public void setSubqueryContext(Context conext, String correlationVar) {
+    }
+
+    public String getCorrelationVar() {
+        return _correlationVar;
     }
 }

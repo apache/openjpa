@@ -21,6 +21,7 @@ package org.apache.openjpa.jdbc.kernel.exps;
 import org.apache.openjpa.jdbc.sql.SQLBuffer;
 import org.apache.openjpa.jdbc.sql.Select;
 import org.apache.openjpa.kernel.exps.ExpressionVisitor;
+import org.apache.openjpa.kernel.exps.Path;
 
 /**
  * Abstract value for easy extension.
@@ -84,6 +85,14 @@ abstract class AbstractVal
 
     public int getId() {
         return Val.VAL;
+    }
+
+    public Path getPath() {
+        return null;
+    }
+
+    public String getName() {
+        return null;
     }
 }
 

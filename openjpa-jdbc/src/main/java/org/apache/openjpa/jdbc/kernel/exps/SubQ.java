@@ -20,7 +20,9 @@ package org.apache.openjpa.jdbc.kernel.exps;
 
 import java.sql.SQLException;
 
+import org.apache.openjpa.jdbc.conf.JDBCConfiguration;
 import org.apache.openjpa.jdbc.kernel.JDBCFetchConfiguration;
+import org.apache.openjpa.jdbc.kernel.JDBCStoreQuery;
 import org.apache.openjpa.jdbc.meta.ClassMapping;
 import org.apache.openjpa.jdbc.meta.JavaSQLTypes;
 import org.apache.openjpa.jdbc.sql.Result;
@@ -43,12 +45,13 @@ class SubQ
 
     private final ClassMapping _candidate;
     private final boolean _subs;
-    private final String _alias;
+    private final String _subqAlias;
     private final SelectConstructor _cons = new SelectConstructor();
 
     private Class _type = null;
     private ClassMetaData _meta = null;
     private QueryExpressions _exps = null;
+    private Select _select = null;
 
     /**
      * Constructor. Supply candidate, whether subclasses are included in
@@ -57,7 +60,14 @@ class SubQ
     public SubQ(ClassMapping candidate, boolean subs, String alias) {
         _candidate = candidate;
         _subs = subs;
-        _alias = alias;
+        _subqAlias = alias;
+        _select = (((JDBCConfiguration) candidate.getMappingRepository().
+            getConfiguration()).getSQLFactoryInstance().newSelect());
+        _cons.setSubselect(_select);
+    }
+
+    public Object getSelect() {
+        return _select;
     }
 
     /**
@@ -66,9 +76,17 @@ class SubQ
     public ClassMapping getCandidate() {
         return _candidate;
     }
+    
+    public boolean getSubs() {
+        return _subs;
+    }
+    
+    public String getSubqAlias() {
+        return _subqAlias;
+    }
 
     public Class getType() {
-        if (_exps != null) {
+        if (_exps != null && _type == null) {
             if (_exps.projections.length == 0)
                 return _candidate.getDescribedType();
             if (_exps.projections.length == 1)
@@ -92,16 +110,20 @@ class SubQ
     }
 
     public String getCandidateAlias() {
-        return _alias;
+        return _subqAlias;
     }
 
     public void setQueryExpressions(QueryExpressions query) {
         _exps = query;
+        _select.setContext(query.ctx());
     }
 
     public ExpState initialize(Select sel, ExpContext ctx, int flags) {
-        if (_exps.projections.length == 1)
-            return ((Val) _exps.projections[0]).initialize(sel, ctx, flags);
+        Select select = JDBCStoreQuery.getThreadLocalSelect(_select);
+        select.setParent(sel, null);
+        if (_exps.projections.length == 1) {
+            return ((Val) _exps.projections[0]).initialize(select, ctx, flags);
+        }
         return ExpState.NULL;
     }
 
@@ -163,7 +185,7 @@ class SubQ
     private void appendTo(Select sel, ExpContext ctx, ExpState state, 
         SQLBuffer sql, int index, boolean size) {
         QueryExpressionsState substate = new QueryExpressionsState();
-        Select sub = _cons.evaluate(ctx, sel, _alias, _exps, substate);
+        Select sub = _cons.evaluate(ctx, sel, _subqAlias, _exps, substate);
         _cons.select(sub, ctx, _candidate, _subs, _exps, substate, 
             JDBCFetchConfiguration.EAGER_NONE);
 

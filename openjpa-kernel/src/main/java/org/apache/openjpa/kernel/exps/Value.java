@@ -73,4 +73,8 @@ public interface Value
      * Accept a visit from a tree visitor.
      */
     public void acceptVisit(ExpressionVisitor visitor);
+
+    public Path getPath();
+
+    public String getName();
 }

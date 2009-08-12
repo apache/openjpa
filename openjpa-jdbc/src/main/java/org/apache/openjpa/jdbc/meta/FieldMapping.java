@@ -559,6 +559,7 @@ public class FieldMapping
             _unq = _info.getJoinUnique(this, false, adapt);
             _joinTableUniques = _info.getJoinTableUniques(this, false, adapt);
             _idx = _info.getJoinIndex(this, adapt);
+            table.setAssociation();
         }
     }
 

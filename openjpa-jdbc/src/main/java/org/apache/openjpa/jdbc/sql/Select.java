@@ -29,6 +29,8 @@ import org.apache.openjpa.jdbc.meta.FieldMapping;
 import org.apache.openjpa.jdbc.schema.Column;
 import org.apache.openjpa.jdbc.schema.ForeignKey;
 import org.apache.openjpa.jdbc.schema.Table;
+import org.apache.openjpa.kernel.exps.Value;
+import org.apache.openjpa.kernel.exps.Context;
 
 /**
  * Abstraction of a SQL SELECT statement.
@@ -720,4 +722,21 @@ public interface Select
      * Implement toString to generate SQL string for profiling/debuggging.
      */
     public String toString();
+
+    /**
+     * Set JPQL query context for this select
+     * @param context
+     */
+    public void setContext(Context context);
+
+    /**
+     * Return the JPQL query context of this select
+     */
+    public Context ctx();
+
+    /**
+     * Record the initial schemaAlias of a join path
+     * @param schemaAlias
+     */
+    public void setSchemaAlias(String schemaAlias);
 }
