@@ -22,6 +22,8 @@ import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Random;
 
 import javax.persistence.Query;
@@ -53,7 +55,7 @@ public class TestExplicitAccess extends SingleEMFTestCase {
             EmbedOuterField.class, MixedMultEmbedEntity.class,
             FieldAccessPropStratsEntity.class, 
             PropAccessFieldStratsEntity.class,
-            EmbedId.class);
+            EmbedId.class, MenuItem.class, Ingredient.class, Quantity.class);
     }
 
     
@@ -1064,6 +1066,66 @@ public class TestExplicitAccess extends SingleEMFTestCase {
         em.close();
     }
 
+    /**
+     * Verifies the use of a map of embeddables containing a nested
+     * mixed access embeddable. 
+     */
+    public void testMapWithNestedEmbeddable() {
+        OpenJPAEntityManagerSPI em = emf.createEntityManager();
+        
+        MenuItem mi = new MenuItem();
+        mi.setName("PB & J Sandwich");
+        
+        Map<String, Ingredient> ingredients = new HashMap<String, Ingredient>();
+        mi.setIngredients(ingredients);
+        
+        Ingredient i1 = new Ingredient("Peanut Butter");
+        i1.setDescription("Edible brown paste, made from peanuts");
+        Quantity q1 = new Quantity(1.0, "Tbsp");
+        i1.setQuantity(q1);
+        ingredients.put("Peanut Butter", i1);
+        
+        Ingredient i2 = new Ingredient("Jelly");
+        i2.setDescription("Sweet gel, made from fruit");
+        Quantity q2 = new Quantity(1.5, "Tbsp");
+        i2.setQuantity(q2);
+        ingredients.put("Jelly", i2);
+
+        Ingredient i3 = new Ingredient("Bread");
+        i3.setDescription("Baked material, made from flour and water");
+        Quantity q3 = new Quantity(2.0, "Slice");
+        i3.setQuantity(q3);
+        ingredients.put("Bread", i3);
+
+        em.getTransaction().begin();
+        em.persist(mi);
+        em.getTransaction().commit();
+        em.clear();
+        
+        MenuItem mi2 = em.find(MenuItem.class, mi.getId());
+        
+        assertEquals(mi2.getId(), mi.getId());
+        Map<String, Ingredient> ing2 = mi2.getIngredients();
+        assertTrue(ing2.containsKey("Peanut Butter"));
+        Quantity q = ing2.get("Peanut Butter").getQuantity();
+        assertNotNull(q);
+        assertEquals(1.0, q.getAmount());
+        assertEquals("Tbsp", q.getUnitOfMeasure());
+        assertTrue(ing2.containsKey("Jelly"));
+        q = ing2.get("Jelly").getQuantity();
+        assertNotNull(q);
+        assertEquals(1.5, q.getAmount());
+        assertEquals("Tbsp", q.getUnitOfMeasure());
+        assertTrue(ing2.containsKey("Bread"));
+        q = ing2.get("Bread").getQuantity();
+        assertNotNull(q);
+        assertEquals(2.0, q.getAmount());
+        assertEquals("Slice", q.getUnitOfMeasure());
+
+        em.remove(mi2);
+        
+        em.close();
+    }
     
     /*
      * Simple method to verify if an exception is of the correct type and

@@ -382,9 +382,10 @@ public class PersistenceMetaDataDefaults
      * @see ValueMetaData#addEmbeddedMetaData()
      */
     private int determineExplicitAccessType(Class<?> cls) {
-    	Access access = cls.getAnnotation(Access.class);
-        return access == null ? AccessCode.UNKNOWN : (access.value() == 
-        	AccessType.FIELD ? AccessCode.FIELD : AccessCode.PROPERTY);
+        Access access = cls.getAnnotation(Access.class);
+        return access == null ? AccessCode.UNKNOWN : ((access.value() == 
+            AccessType.FIELD ? AccessCode.FIELD : AccessCode.PROPERTY) |
+            AccessCode.EXPLICIT);
     }
     
     /**
