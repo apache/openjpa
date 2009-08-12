@@ -119,10 +119,14 @@ public class DynamicSchemaFactory
         }
 
         public Column getColumn(String name) {
+            return getColumn(name, null);
+        }
+
+        public Column getColumn(String name, DBDictionary dict) {
             if (name == null)
                 return null;
 
-            Column col = super.getColumn(name);
+            Column col = super.getColumn(name, dict);
             if (col != null)
                 return col;
 

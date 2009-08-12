@@ -404,11 +404,11 @@ public class TableJDBCSeq
             }
     		Unique u = table.addUnique(uniqueName);
     		for (String columnName : _uniqueColumnNames) {
-    			if (!table.containsColumn(columnName))
+    			if (!table.containsColumn(columnName, _conf.getDBDictionaryInstance()))
                     throw new UserException(_loc.get("unique-missing-column",
                             columnName, table.getName(),
                             table.getColumnNames()));
-    			Column col = table.getColumn(columnName);
+    			Column col = table.getColumn(columnName, _conf.getDBDictionaryInstance());
     			u.addColumn(col);
     		}
         }

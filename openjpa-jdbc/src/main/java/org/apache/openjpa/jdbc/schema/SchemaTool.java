@@ -486,7 +486,7 @@ public class SchemaTool {
                             colName = colName.substring(1, colName.length()-1);
                             delimCol = true;
                         }
-                        col = dbTable.getColumn(colName);
+                        col = dbTable.getColumn(colName, _dict);
                         if (col == null) {
                             if (addColumn(cols[k]))
                                 dbTable.importColumn(cols[k]);
@@ -724,7 +724,7 @@ public class SchemaTool {
                 reposTable = repos.findTable(tabs[j]);
                 if (reposTable != null) {
                     for (int k = 0; k < cols.length; k++) {
-                        col = reposTable.getColumn(cols[k].getName());
+                        col = reposTable.getColumn(cols[k].getName(), _dict);
                         if (col == null || !cols[k].equalsColumn(col)) {
                             if (tabs[j].getColumns().length == 1)
                                 drops.add(tabs[j]);
@@ -797,7 +797,7 @@ public class SchemaTool {
 
                 dbCols = dbTable.getColumns();
                 for (int k = 0; k < dbCols.length; k++)
-                    if (tabs[j].getColumn(dbCols[k].getName()) == null)
+                    if (tabs[j].getColumn(dbCols[k].getName(), _dict) == null)
                         continue tables;
 
                 drops.add(tabs[j]);
@@ -869,7 +869,7 @@ public class SchemaTool {
                 for (int k = 0; k < cols.length; k++) {
                     col = null;
                     if (dbTable != null)
-                        col = dbTable.getColumn(cols[k].getName());
+                        col = dbTable.getColumn(cols[k].getName(), _dict);
                     if (dbTable == null || col == null)
                         continue;
 

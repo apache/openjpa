@@ -189,7 +189,7 @@ public class XMLSchemaParser
             pkInfo = (PrimaryKeyInfo) itr.next();
             for (Iterator cols = pkInfo.cols.iterator(); cols.hasNext();) {
                 colName = (String) cols.next();
-                col = pkInfo.pk.getTable().getColumn(colName);
+                col = pkInfo.pk.getTable().getColumn(colName, _dict);
                 if (col == null)
                     throwUserException(_loc.get("pk-resolve", new Object[]
                         { colName, pkInfo.pk.getTable() }));
@@ -210,7 +210,7 @@ public class XMLSchemaParser
             indexInfo = (IndexInfo) itr.next();
             for (Iterator cols = indexInfo.cols.iterator(); cols.hasNext();) {
                 colName = (String) cols.next();
-                col = indexInfo.index.getTable().getColumn(colName);
+                col = indexInfo.index.getTable().getColumn(colName, _dict);
                 if (col == null)
                     throwUserException(_loc.get("index-resolve", new Object[]
                         { indexInfo.index, colName,
@@ -250,13 +250,13 @@ public class XMLSchemaParser
             pks = fkInfo.pks.iterator();
             for (cols = fkInfo.cols.iterator(); cols.hasNext();) {
                 colName = (String) cols.next();
-                col = fkInfo.fk.getTable().getColumn(colName);
+                col = fkInfo.fk.getTable().getColumn(colName, _dict);
                 if (col == null)
                     throwUserException(_loc.get("fk-nocol",
                         fkInfo.fk, colName, fkInfo.fk.getTable()));
 
                 pkColName = (String) pks.next();
-                pkCol = toTable.getColumn(pkColName);
+                pkCol = toTable.getColumn(pkColName, _dict);
                 if (pkCol == null)
                     throwUserException(_loc.get("fk-nopkcol", new Object[]
                         { fkInfo.fk, pkColName, toTable,
@@ -269,7 +269,7 @@ public class XMLSchemaParser
             cols = fkInfo.constCols.iterator();
             for (Iterator vals = fkInfo.consts.iterator(); vals.hasNext();) {
                 colName = (String) cols.next();
-                col = fkInfo.fk.getTable().getColumn(colName);
+                col = fkInfo.fk.getTable().getColumn(colName, _dict);
                 if (col == null)
                     throwUserException(_loc.get("fk-nocol",
                         fkInfo.fk, colName, fkInfo.fk.getTable()));
@@ -280,7 +280,7 @@ public class XMLSchemaParser
             pks = fkInfo.constColsPK.iterator();
             for (Iterator vals = fkInfo.constsPK.iterator(); vals.hasNext();) {
                 pkColName = (String) pks.next();
-                pkCol = toTable.getColumn(pkColName);
+                pkCol = toTable.getColumn(pkColName, _dict);
                 if (pkCol == null)
                     throwUserException(_loc.get("fk-nopkcol", new Object[]
                         { fkInfo.fk, pkColName, toTable,
@@ -303,7 +303,7 @@ public class XMLSchemaParser
             unqInfo = (UniqueInfo) itr.next();
             for (Iterator cols = unqInfo.cols.iterator(); cols.hasNext();) {
                 colName = (String) cols.next();
-                col = unqInfo.unq.getTable().getColumn(colName);
+                col = unqInfo.unq.getTable().getColumn(colName, _dict);
                 if (col == null)
                     throwUserException(_loc.get("unq-resolve", new Object[]
                         { unqInfo.unq, colName, unqInfo.unq.getTable() }));

@@ -769,9 +769,9 @@ public class ForeignKey
                     fkTemp.setDeleteAction(fks[i].getDeleteAction());
                 }
                 if( ! fkTemp.containsColumn(
-                    localtable.getColumn(fks[i].getColumnName())))
-                fkTemp.join(localtable.getColumn(fks[i].getColumnName()), 
-                    pkTable.getColumn(fks[i].getPrimaryKeyColumnName()));
+                    localtable.getColumn(fks[i].getColumnName(), dbdict)))
+                fkTemp.join(localtable.getColumn(fks[i].getColumnName(), dbdict), 
+                    pkTable.getColumn(fks[i].getPrimaryKeyColumnName(), dbdict));
                 if( equalsForeignKey(fkTemp))
                 {
                     if(addFK)

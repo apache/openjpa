@@ -27,6 +27,7 @@ import java.util.TreeMap;
 import java.util.LinkedHashMap;
 
 import org.apache.commons.lang.StringUtils;
+import org.apache.openjpa.jdbc.sql.DBDictionary;
 import org.apache.openjpa.lib.meta.SourceTracker;
 
 /**
@@ -272,9 +273,30 @@ public class Table
      * Return the column with the given name, or null if none.
      */
     public Column getColumn(String name) {
+        return getColumn(name, null);
+    }
+
+    /**
+     * Return the column with the given name, or null if none.
+     * @param dict the current database dictionary or null.
+     */
+    public Column getColumn(String name, DBDictionary dict) {
         if (name == null || _colMap == null)
             return null;
-        return (Column) _colMap.get(name.toUpperCase());
+        Column col = (Column)_colMap.get(name.toUpperCase());
+        if (col == null) {
+            String delim = null;
+            if (dict != null) {
+                delim = dict.getDelimiter();
+            }
+            else {
+                delim = "\"";
+            }
+            String delimName = delim + name + delim;
+            col = (Column) _colMap.get(delimName.toUpperCase());
+        }
+        
+        return col;
     }
     
     /**
@@ -284,8 +306,37 @@ public class Table
      * for dynamic table implementation.
      */
     public boolean containsColumn(String name) {
-        return name != null && _colMap != null 
-            && _colMap.containsKey(name.toUpperCase());
+        return containsColumn(name, null);
+    }
+
+    /**
+     * Affirms if this table contains the column of the given name without any 
+     * side-effect. 
+     * @param dict the current database dictionary or null.
+     * @see Table#getColumn(String) can have side-effect of creating a column
+     * for dynamic table implementation.
+     */
+    public boolean containsColumn(String name, DBDictionary dict) {
+        if (name == null || _colMap == null) {
+            return false;
+        }
+        if (_colMap.containsKey(name.toUpperCase())) {
+            return true;
+        }
+        
+        String delim = null;
+        if (dict != null) {
+            delim = dict.getDelimiter();
+        }
+        else {
+            delim = "\"";
+        }
+        String delimName = delim + name + delim;
+        if (_colMap.containsKey(delimName.toUpperCase())) {
+            return true;
+        }
+        
+        return false;
     }
 
     /**

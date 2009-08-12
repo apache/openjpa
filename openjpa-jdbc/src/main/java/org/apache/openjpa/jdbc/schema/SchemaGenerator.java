@@ -527,13 +527,8 @@ public class SchemaGenerator {
             if (_log.isTraceEnabled())
                 _log.trace(_loc.get("gen-column", cols[i].getName(), table));
 
-            if (table.getColumn(cols[i].getName()) == null) {
-                // It's possible that the original column name was delimited,
-                // so delimit it and try again
-                String delimCol = _dict.addDelimiters(cols[i].getName());
-                if (table.getColumn(delimCol) == null) {
-                    table.importColumn(cols[i]);
-                }
+            if (table.getColumn(cols[i].getName(), _dict) == null) {
+                table.importColumn(cols[i]);
             }
         }
     }
@@ -630,7 +625,7 @@ public class SchemaGenerator {
             pk = table.getPrimaryKey();
             if (pk == null)
                 pk = table.addPrimaryKey(name);
-            pk.addColumn(table.getColumn(colName));
+            pk.addColumn(table.getColumn(colName, _dict));
         }
     }
 
@@ -692,7 +687,7 @@ public class SchemaGenerator {
                 continue;
 
             colName = idxs[i].getColumnName();
-            if (table.getColumn(colName) == null)
+            if (table.getColumn(colName, _dict) == null)
                 continue;
 
             if (_log.isTraceEnabled())
@@ -704,7 +699,7 @@ public class SchemaGenerator {
                 idx = table.addIndex(name);
                 idx.setUnique(idxs[i].isUnique());
             }
-            idx.addColumn(table.getColumn(colName));
+            idx.addColumn(table.getColumn(colName, _dict));
         }
     }
 
@@ -804,13 +799,13 @@ public class SchemaGenerator {
 
             if (invalids == null || !invalids.contains(fk)) {
                 try {
-                    Column fkCol = table.getColumn(fkColName);
+                    Column fkCol = table.getColumn(fkColName, _dict);
                     if (fkCol == null) {
                         throw new IllegalArgumentException(_loc.get(
                             "no-column", fkColName, table.getName())
                             .getMessage());
                     }
-                    fk.join(fkCol, pkTable.getColumn(pkColName));
+                    fk.join(fkCol, pkTable.getColumn(pkColName, _dict));
                 } catch (IllegalArgumentException iae) {
                     if (_log.isWarnEnabled())
                         _log.warn(_loc.get("bad-join", iae.toString()));
