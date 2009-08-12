@@ -29,7 +29,7 @@ import javax.persistence.Id;
 import javax.persistence.Table;
 
 @Entity
-@Table(name = "ITEM")
+@Table(name = "I_ITEM")
 public class Item implements Serializable {
 
     private static final long serialVersionUID = 489786296539819572L;
@@ -39,7 +39,7 @@ public class Item implements Serializable {
     public java.math.BigDecimal itemPrice;
     public String itemData;
 
-    @Column(name = "I_DATA", table = "ITEM")
+    @Column(name = "I_DATA", table = "I_ITEM")
     public String getItemData() {
         return itemData;
     }
@@ -49,7 +49,7 @@ public class Item implements Serializable {
     }
 
     @Id
-    @Column(name = "I_ID", table = "ITEM")
+    @Column(name = "I_ID", table = "I_ITEM")
     @GeneratedValue(strategy = GenerationType.AUTO)
     public int getItemId() {
         return itemId;
@@ -59,7 +59,7 @@ public class Item implements Serializable {
         this.itemId = itemId;
     }
 
-    @Column(name = "I_NAME", table = "ITEM")
+    @Column(name = "I_NAME", table = "I_ITEM")
     public String getItemName() {
         return itemName;
     }
@@ -69,7 +69,7 @@ public class Item implements Serializable {
     }
 
     @Basic
-    @Column(name = "I_PRICE", table = "ITEM")
+    @Column(name = "I_PRICE", table = "I_ITEM")
     public java.math.BigDecimal getItemPrice() {
         return itemPrice;
     }

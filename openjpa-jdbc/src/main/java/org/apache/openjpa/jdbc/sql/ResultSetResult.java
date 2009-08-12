@@ -501,7 +501,9 @@ public class ResultSetResult
     protected int findObject(Object obj, Joins joins)
         throws SQLException {
         try {
-            return getResultSet().findColumn(obj.toString());
+          String s1 = obj.toString();
+          s1 = _dict.stripDelimiters(s1);
+          return getResultSet().findColumn(s1);
         } catch (SQLException se) {
             return 0;
         }

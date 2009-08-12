@@ -18,31 +18,39 @@
  */
 package org.apache.openjpa.persistence.delimited.identifiers;
 
-import javax.persistence.Column;
+import javax.persistence.ColumnResult;
 import javax.persistence.DiscriminatorColumn;
 import javax.persistence.Entity;
+import javax.persistence.EntityResult;
+import javax.persistence.FieldResult;
 import javax.persistence.Id;
 import javax.persistence.Inheritance;
+import javax.persistence.SqlResultSetMapping;
 import javax.persistence.Table;
 
+@SqlResultSetMapping(name="AnimalResultSet",
+    entities={@EntityResult(entityClass=Animal2.class,
+        fields={
+        @FieldResult(name="type", column="\"animal type\""),
+        @FieldResult(name="name", column="\"animal name\"")
+    },
+    discriminatorColumn="\"discr col\"")},
+    columns={@ColumnResult(name="\"animal age\"")})
+    
 @Entity
 @Inheritance
 @DiscriminatorColumn(name="\"discr col\"", columnDefinition="VARCHAR(10)")
-@Table(name="\"Animal\"")
-public class Animal {
+@Table(name="\"Animal2\"")
+public class Animal2 {
     @Id
     private int id;
     
-    @Column(name="\"animal type\"")
     protected String type;
-    @Column(name="\"animal name\"")
     protected String name;
-    @Column(name="\"animal age\"")
-    protected int age;
 
-    public Animal() {}
+    public Animal2() {}
     
-    public Animal(int id) {
+    public Animal2(int id) {
         this.id = id;
     }
     
@@ -86,19 +94,5 @@ public class Animal {
      */
     public void setName(String name) {
         this.name = name;
-    }
-
-    /**
-     * @return the age
-     */
-    public int getAge() {
-        return age;
-    }
-
-    /**
-     * @param age the age to set
-     */
-    public void setAge(int age) {
-        this.age = age;
     }
 }
