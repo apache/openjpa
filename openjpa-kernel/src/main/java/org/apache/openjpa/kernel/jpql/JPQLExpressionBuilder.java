@@ -38,30 +38,25 @@ import org.apache.openjpa.kernel.ExpressionStoreQuery;
 import org.apache.openjpa.kernel.QueryContext;
 import org.apache.openjpa.kernel.QueryOperations;
 import org.apache.openjpa.kernel.StoreContext;
-import org.apache.openjpa.kernel.BrokerFactory;
 import org.apache.openjpa.kernel.exps.AbstractExpressionBuilder;
+import org.apache.openjpa.kernel.exps.Context;
 import org.apache.openjpa.kernel.exps.Expression;
 import org.apache.openjpa.kernel.exps.ExpressionFactory;
 import org.apache.openjpa.kernel.exps.Literal;
 import org.apache.openjpa.kernel.exps.Parameter;
 import org.apache.openjpa.kernel.exps.Path;
 import org.apache.openjpa.kernel.exps.QueryExpressions;
-import org.apache.openjpa.kernel.exps.Resolver;
 import org.apache.openjpa.kernel.exps.Subquery;
 import org.apache.openjpa.kernel.exps.Value;
-import org.apache.openjpa.kernel.exps.Context;
-import org.apache.openjpa.lib.util.Localizer;
-import org.apache.openjpa.lib.util.Localizer.Message;
 import org.apache.openjpa.lib.log.Log;
+import org.apache.openjpa.lib.util.Localizer;
 import org.apache.openjpa.meta.ClassMetaData;
 import org.apache.openjpa.meta.FieldMetaData;
-import org.apache.openjpa.meta.JavaTypes;
 import org.apache.openjpa.meta.MetaDataRepository;
 import org.apache.openjpa.meta.ValueMetaData;
 import org.apache.openjpa.util.InternalException;
 import org.apache.openjpa.util.UserException;
-import org.apache.openjpa.conf.Compatibility;
-import org.apache.openjpa.conf.OpenJPAConfiguration;
+
 import serp.util.Numbers;
 
 /**
