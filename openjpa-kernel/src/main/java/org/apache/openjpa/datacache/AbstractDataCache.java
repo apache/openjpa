@@ -135,6 +135,7 @@ public abstract class AbstractDataCache
 
     public boolean contains(Object key) {
         DataCachePCData o = getInternal(key);
+        stats.newGet(o == null ? null : o.getType(), o != null);
         if (o != null && o.isTimedOut()) {
             o = null;
             removeInternal(key);
@@ -186,16 +187,18 @@ public abstract class AbstractDataCache
     }
 
     public DataCachePCData put(DataCachePCData data) {
+        stats.newPut(data.getType());
         DataCachePCData o = putInternal(data.getId(), data);
-    	stats.newPut((o == null) ? null : o.getType());
         if (log.isTraceEnabled())
             log.trace(s_loc.get("cache-put", data.getId()));
         return (o == null || o.isTimedOut()) ? null : o;
     }
 
     public void update(DataCachePCData data) {
-        if (recacheUpdates())
+        if (recacheUpdates()) {
+            stats.newPut(data.getType());
             putInternal(data.getId(), data);
+        }
     }
 
     public DataCachePCData remove(Object key) {
