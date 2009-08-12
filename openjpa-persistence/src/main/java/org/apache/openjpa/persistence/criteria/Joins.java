@@ -42,14 +42,20 @@ import org.apache.openjpa.kernel.exps.Value;
 import org.apache.openjpa.meta.ClassMetaData;
 import org.apache.openjpa.meta.FieldMetaData;
 import org.apache.openjpa.meta.JavaTypes;
+import org.apache.openjpa.persistence.meta.AbstractManagedType;
 import org.apache.openjpa.persistence.meta.Members;
 import org.apache.openjpa.persistence.meta.MetamodelImpl;
+import org.apache.openjpa.persistence.meta.Members.KeyAttributeImpl;
 import org.apache.openjpa.persistence.meta.Members.MapAttributeImpl;
 import org.apache.openjpa.persistence.meta.Members.Member;
 
 /**
+ * Implements strongly-typed Join expressions via singular and plural attributes.
+ * 
  * @author Fay Wang
  * @author Pinaki Poddar
+ * 
+ * @since 2.0.0
  * 
  */
 public abstract class Joins {
@@ -244,15 +250,14 @@ public abstract class Joins {
     }
     
     /**
-     * Join a multi-valued attribute.
+     * Join a plural attribute.
      * 
      * @param Z type being joined from
      * @param C Java collection type of the container
      * @param E type of the element being joined to
      * 
      */
-    public static abstract class AbstractCollection<Z,C,E> extends FromImpl<Z,E> 
-        implements PluralJoin<Z, C, E> {
+    public static abstract class AbstractCollection<Z,C,E> extends FromImpl<Z,E> implements PluralJoin<Z, C, E> {
         final JoinType joinType;
         boolean allowNull = false;
         
@@ -294,8 +299,7 @@ public abstract class Joins {
          * Convert this path to a kernel path (value).
          */
         @Override
-        public Value toValue(ExpressionFactory factory, MetamodelImpl model,
-            CriteriaQueryImpl<?> c) {
+        public Value toValue(ExpressionFactory factory, MetamodelImpl model, CriteriaQueryImpl<?> c) {
             org.apache.openjpa.kernel.exps.Path path = null;
             SubqueryImpl<?> subquery = c.getDelegator();
             PathImpl<?,?> parent = getInnermostParentPath();
@@ -320,9 +324,8 @@ public abstract class Joins {
          * 
          */
         @Override
-        public org.apache.openjpa.kernel.exps.Expression toKernelExpression(
-            ExpressionFactory factory, MetamodelImpl model, 
-            CriteriaQueryImpl<?> c) {
+        public org.apache.openjpa.kernel.exps.Expression toKernelExpression(ExpressionFactory factory, 
+            MetamodelImpl model, CriteriaQueryImpl<?> c) {
             ClassMetaData meta = getMemberClassMetaData(); 
             org.apache.openjpa.kernel.exps.Path path = null;
             SubqueryImpl<?> subquery = c.getDelegator();
@@ -418,10 +421,10 @@ public abstract class Joins {
     }
     
     /**
-     * Join a java.util.Collection type attribute.
+     * Join a java.util.Collection&lt;E&gt; type attribute.
      *
-     * @param <Z>
-     * @param <E>
+     * @param <Z> the type from which being joined
+     * @param <E> the type of the the collection attribute elements
      */
     public static class Collection<Z,E> extends AbstractCollection<Z,java.util.Collection<E>,E> 
         implements CollectionJoin<Z,E>{
@@ -431,16 +434,15 @@ public abstract class Joins {
         }
         
         public CollectionAttribute<? super Z, E> getModel() {
-            return (CollectionAttribute<? super Z, E>)
-               _member.getType();
+            return (CollectionAttribute<? super Z, E>)_member.getType();
         }
     }
     
     /**
-     * Join a java.util.Set type attribute.
+     * Join a java.util.Set&lt;E&gt; type attribute.
      *
-     * @param <Z>
-     * @param <E>
+     * @param <Z> the type from which being joined
+     * @param <E> the type of the the set attribute elements
      */
     public static class Set<Z,E> extends AbstractCollection<Z,java.util.Set<E>,E> 
         implements SetJoin<Z,E>{
@@ -454,10 +456,10 @@ public abstract class Joins {
     }
     
     /**
-     * Join a java.util.List type attribute.
+     * Join a java.util.List&lt;E&gt; type attribute.
      *
-     * @param <Z>
-     * @param <E>
+     * @param <Z> the type from which being joined
+     * @param <E> the type of the the list attribute elements
      */
     
     public static class List<Z,E> extends AbstractCollection<Z,java.util.List<E>,E> 
@@ -478,29 +480,40 @@ public abstract class Joins {
     }
     
     /**
-     * Join a java.util.Map type attribute.
+     * Join a java.util.Map&lt;K,V&gt; type attribute.
      *
-     * @param <Z>
-     * @param <E>
+     * @param <Z> the type from which being joined
+     * @param <K> the type of the the map attribute keys
+     * @param <V> the type of the the map attribute values
      */
     
     public static class Map<Z,K,V> extends AbstractCollection<Z,java.util.Map<K,V>,V> 
         implements MapJoin<Z,K,V> {
+        private KeyJoin<K,V> _keyJoin;
         
         public Map(FromImpl<?,Z> parent, Members.MapAttributeImpl<? super Z, K,V> member, JoinType jt) {
             super(parent, member, jt);
         }
         
         public MapAttribute<? super Z, K,V> getModel() {
-            return (MapAttribute<? super Z, K,V>) _member.getType();
+            return (MapAttribute<? super Z, K,V>) _member;
         }
         
         public Join<java.util.Map<K, V>, K> joinKey() {
-            throw new AbstractMethodError();
+            return joinKey(JoinType.INNER);
         }
         
+        /**
+         * Create a pseudo-attribute of a pseudo-managed type for java.util.Map&lt;K,V&gt; to represent its keys as 
+         * a pseudo-attribute of type java.util.Set&lt;V&gt;.
+         */
         public Join<java.util.Map<K, V>, K> joinKey(JoinType jt) {
-            throw new AbstractMethodError();
+            AbstractManagedType<java.util.Map<K,V>> pseudoOwner = (AbstractManagedType<java.util.Map<K,V>>)
+               _member.owner.model.getType(getModel().getJavaType());
+            KeyAttributeImpl<java.util.Map<K,V>, K> keyAttr = 
+              new Members.KeyAttributeImpl<java.util.Map<K,V>, K>(pseudoOwner, _member.fmd);
+            _keyJoin = new KeyJoin<K, V>((FromImpl<?,java.util.Map<K,V>>)this, keyAttr, jt);
+            return _keyJoin;
         }
         
         public Expression<java.util.Map.Entry<K, V>> entry() {
@@ -513,6 +526,14 @@ public abstract class Joins {
         
         public Path<V> value() {
             return this;
+        }
+                
+        @Override
+        public org.apache.openjpa.kernel.exps.Expression toKernelExpression(ExpressionFactory factory, 
+            MetamodelImpl model, CriteriaQueryImpl<?> c) {
+            return (_keyJoin == null) 
+                ? super.toKernelExpression(factory, model, c)
+                : _keyJoin.toKernelExpression(factory, model, c);
         }
     }
     
@@ -568,12 +589,30 @@ public abstract class Joins {
         */
        @Override
        public Value toValue(ExpressionFactory factory, MetamodelImpl model, CriteriaQueryImpl<?> c) {
-           SubqueryImpl<?> subquery = c.getDelegator();
-           PathImpl<?,?> parent = map.getInnermostParentPath();
            Value val = c.getRegisteredVariable(map);
            org.apache.openjpa.kernel.exps.Path path = factory.newPath(val);
            org.apache.openjpa.kernel.exps.Path var = factory.newPath(val);
            return factory.mapEntry(path, var);
        }
+   }
+   
+   /**
+    * A specialized join via key of a java.util.Map&lt;K,V&gt; attribute.
+    * Treats the map key as a pseudo-attribute of type java.util.Set&lt;K&gt; of a pseduo-managed type corresponding
+    * to java.util.Map&lt;K,V&gt;. 
+    *  
+    * @param <K> the type of the key of the original java.util.Map attribute 
+    * @param <V> the type of the value of the original java.util.Map attribute
+    */
+   public static class KeyJoin<K,V> extends Joins.Set<java.util.Map<K, V>, K> {
+    public KeyJoin(FromImpl<?, java.util.Map<K, V>> parent, KeyAttributeImpl<? super java.util.Map<K, V>, K> member, 
+            JoinType jt) {
+        super(parent, member, jt);
+    }
+    
+    @Override
+    public Value toValue(ExpressionFactory factory, MetamodelImpl model, CriteriaQueryImpl<?> c) {
+        return factory.getKey(getParent().toValue(factory, model, c));
+    }
    }
 }

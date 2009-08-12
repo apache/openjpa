@@ -227,4 +227,19 @@ public class Types {
             return getJavaType();
         }
     }   
+    
+    /**
+     * A pseudo managed type used to represent keys of a java.util.Map as a 
+     * pseudo attribute.
+    **/ 
+    public static class PseudoEntity<X> extends AbstractManagedType<X> {
+
+        protected PseudoEntity(Class<X> cls, MetamodelImpl model) {
+            super(cls, model);
+        }
+
+        public javax.persistence.metamodel.Type.PersistenceType getPersistenceType() {
+            return PersistenceType.ENTITY;
+        }       
+    }
 }

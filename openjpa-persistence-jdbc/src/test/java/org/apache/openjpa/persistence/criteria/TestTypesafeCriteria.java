@@ -1213,4 +1213,52 @@ public class TestTypesafeCriteria extends CriteriaTest {
         q.where(cb.equal(cb.size(cb.values(photo1)), 4)); 
         executeAndCompareSQL(q, sql);
     }
+    
+    /**
+     * The syntax for joining the key of a Map attribute is different in JPQL.
+     * Hence instead of comparing target SQL we compare the result.
+     */
+    public void testJoinKey() {
+        em.getTransaction().begin();
+        em.createQuery("DELETE FROM Student s").executeUpdate();
+        em.createQuery("DELETE FROM Course s").executeUpdate();
+        em.createQuery("DELETE FROM Semester s").executeUpdate();
+        em.getTransaction().commit();
+        
+        em.getTransaction().begin();
+        Student s1 = new Student(); s1.setName("S1");
+        Student s2 = new Student(); s2.setName("S2");
+        Student s3 = new Student(); s3.setName("S3");
+        Student s4 = new Student(); s4.setName("S4");
+        Semester sm1 = new Semester(); sm1.setName("Summer");
+        Semester sm2 = new Semester(); sm2.setName("Fall");
+        Course c1 = new Course(); c1.setName("C1");
+        Course c2 = new Course(); c2.setName("C2");
+
+        s1.addToEnrollment(c1, sm1); s1.addToEnrollment(c2, sm2);
+        s2.addToEnrollment(c2, sm1); s2.addToEnrollment(c1, sm2);
+                                     s3.addToEnrollment(c1, sm2); 
+        s4.addToEnrollment(c2, sm1);
+        
+        em.persist(s1); em.persist(s2); em.persist(s3); em.persist(s4);
+        em.persist(c1); em.persist(c2);
+        em.persist(sm1); em.persist(sm2);
+        em.getTransaction().commit();
+        
+        String jpql = "select s from Student s JOIN s.enrollment e where KEY(e).name=:name";
+        List<Student> jResult = em.createQuery(jpql).setParameter("name", "C1").getResultList();
+        
+        CriteriaQuery<Student> q = cb.createQuery(Student.class);
+        Root<Student> s = q.from(Student.class);
+        Join<Map<Course,Semester>,Course> c = s.join(Student_.enrollment).joinKey();
+        q.where(cb.equal(c.get(Course_.name), cb.parameter(String.class, "name")));
+        
+        List<Student> cResult = em.createQuery(q).setParameter("name","C1").getResultList();
+        
+        assertFalse(jResult.isEmpty());
+        assertEquals(cResult.size(), jResult.size());
+        for (int i = 0; i < jResult.size(); i++) {
+            assertEquals(jResult.get(i).getName(), cResult.get(i).getName());
+        }
+    }
 }

@@ -69,6 +69,18 @@ public abstract class AbstractManagedType<X> extends Types.BaseType<X>
     private final SingularAttributeFilter<X> pluralAttributeFilter;
     
     /**
+     * A protected constructor for creating psudo-managed types.
+     */
+    protected AbstractManagedType(Class<X> cls, MetamodelImpl model) {
+        super(cls);
+        this.model = model;
+        this.meta = null;
+        declaredAttributeFilter = null;
+        singularAttributeFilter = null;
+        pluralAttributeFilter   = null;
+    }
+    
+    /**
      * Construct a managed type. The supplied metadata must be resolved i.e. all
      * its fields populated. Because this receiver will populate its attributes
      * corresponding to the available fields of the metadata.

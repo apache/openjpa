@@ -19,6 +19,8 @@
 
 package org.apache.openjpa.persistence.meta;
 
+import java.util.Set;
+
 import javax.persistence.metamodel.Attribute;
 import javax.persistence.metamodel.CollectionAttribute;
 import javax.persistence.metamodel.ListAttribute;
@@ -236,7 +238,7 @@ public class Members {
          * 
          * For PLURAL_ATTRIBUTE, the Java element type is returned. 
          */
-        public final Class<E> getBindableJavaType() {
+        public Class<E> getBindableJavaType() {
             return fmd.getElement().getDeclaredType();
         }
         
@@ -293,9 +295,26 @@ public class Members {
             return CollectionType.SET;
         }
     }
+    
+    /**
+     * Represents the keys of java.util.Map&lt;K,V&gt; in managed type &lt;X&gt; as a pseudo-attribute of type 
+     * java.util.Set&lt;K&gt;.
+     *
+     * @param <X> the declaring type of the original java.util.Map&lt;K,V&gt; attribute 
+     * @param <K> the type of the key of the original java.util.Map&lt;K,V&gt; attribute
+     */
+    public static class KeyAttributeImpl<X,K> extends SetAttributeImpl<X, K> {
+        public KeyAttributeImpl(AbstractManagedType<X> owner, FieldMetaData fmd){
+            super(owner, fmd);
+        }
+
+        public Class<K> getBindableJavaType() {
+            return (Class<K>)fmd.getKey().getDeclaredType();
+        }
+    }
 
     /**
-     * Represents attributes declared as java.util.Map&lt;E&gt;.
+     * Represents attributes declared as java.util.Map&lt;K,V&gt; in managed type &lt;X&gt;.
      */
     public static class MapAttributeImpl<X, K, V> 
         extends PluralAttributeImpl<X, java.util.Map<K, V>, V> 

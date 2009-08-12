@@ -68,10 +68,9 @@ public class MetamodelImpl implements Metamodel, Resolver {
     public final MetaDataRepository repos;
     private Map<Class<?>, Type<?>> _basics = new HashMap<Class<?>, Type<?>>();
     private Map<Class<?>, EntityType<?>> _entities = new HashMap<Class<?>, EntityType<?>>();
-    private Map<Class<?>, EmbeddableType<?>> _embeddables 
-        = new HashMap<Class<?>, EmbeddableType<?>>();
-    private Map<Class<?>, MappedSuperclassType<?>> _mappedsupers 
-        = new HashMap<Class<?>, MappedSuperclassType<?>>();
+    private Map<Class<?>, EmbeddableType<?>> _embeddables = new HashMap<Class<?>, EmbeddableType<?>>();
+    private Map<Class<?>, MappedSuperclassType<?>> _mappedsupers = new HashMap<Class<?>, MappedSuperclassType<?>>();
+    private Map<Class<?>, Types.PseudoEntity<?>> _pseudos = new HashMap<Class<?>, Types.PseudoEntity<?>>();
 
     private static Localizer _loc = Localizer.forPackage(MetamodelImpl.class);
 
@@ -170,8 +169,10 @@ public class MetamodelImpl implements Metamodel, Resolver {
     }
 
     /**
-     *  Return the type representing the basic, 
-     *  entity, mapped superclass, or embeddable class.
+     *  Return the type representing the basic, entity, mapped superclass, or embeddable class.
+     *  This method differs from {@linkplain #type(Class)} as it also creates a basic or pesudo
+     *  type for the given class argument if not already available in this receiver.
+     *  
      *  @param cls  the type of the represented managed class
      *  @return the metamodel managed type
      *  @throws IllegalArgumentException if not a managed class
@@ -182,9 +183,17 @@ public class MetamodelImpl implements Metamodel, Resolver {
         } catch (IllegalArgumentException ex) {
             if (_basics.containsKey(cls))
                 return (Type<X>)_basics.get(cls);
-            Type<X> basic = new Types.Basic<X>(cls);
-            _basics.put(cls, basic);
-            return basic;
+            if (_pseudos.containsKey(cls))
+                return (Type<X>)_pseudos.get(cls);
+            if (java.util.Map.class.isAssignableFrom(cls)) {
+                Types.PseudoEntity<X> pseudo = new Types.PseudoEntity(cls, this);
+                _pseudos.put(cls, new Types.PseudoEntity(cls, this));
+                return pseudo;
+            } else {
+                Type<X> basic = new Types.Basic<X>(cls);
+                _basics.put(cls, basic);
+                return basic;
+            }
         }
     }
 
