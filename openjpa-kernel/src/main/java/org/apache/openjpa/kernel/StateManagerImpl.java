@@ -1357,7 +1357,7 @@ public class StateManagerImpl
     }
     
     public boolean getDereferencedEmbedDependent() {
-        return ((_flags |= FLAG_EMBED_DEREF) == 0 ? false : true);
+        return ((_flags & FLAG_EMBED_DEREF) == 0 ? false : true);
     }
 
     ///////////

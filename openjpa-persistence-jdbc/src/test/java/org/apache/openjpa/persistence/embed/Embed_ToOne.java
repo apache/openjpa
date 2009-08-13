@@ -18,6 +18,7 @@
  */
 package org.apache.openjpa.persistence.embed;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Embeddable;
 import javax.persistence.OneToOne;
 
@@ -26,7 +27,7 @@ public class Embed_ToOne {
     protected String name1;
     protected String name2;
     protected String name3;
-    @OneToOne
+    @OneToOne(cascade=CascadeType.ALL)
     protected EntityB1 b;
     
     public String getName1() {

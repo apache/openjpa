@@ -289,13 +289,17 @@ class SingleFieldManager
      * Dereference field values.
      */
     public void dereferenceDependent() {
-        delete(false, null);
+        delete(false, null, true);
     }
 
+    private void delete(boolean immediate, OpCallbacks call) {
+        delete(immediate, call, false);
+    }
+        
     /**
      * Delete or dereference the stored field as necessary.
      */
-    private void delete(boolean immediate, OpCallbacks call) {
+    private void delete(boolean immediate, OpCallbacks call, boolean deref) {
         if (objval == null)
             return;
 
@@ -305,8 +309,8 @@ class SingleFieldManager
             // works on external value
             if ((immediate || fmd.isEmbeddedPC())
                 && fmd.getCascadeDelete() == ValueMetaData.CASCADE_IMMEDIATE) {
-                if (fmd.isEmbeddedPC())
-                    dereferenceEmbedDependent(_sm);
+                if (fmd.isEmbeddedPC() && deref)
+                    dereferenceEmbedDependent(_broker.getStateManagerImpl(objval, false));
                 delete(fmd, objval, call);
             }
             else if (fmd.getCascadeDelete() == ValueMetaData.CASCADE_AUTO)

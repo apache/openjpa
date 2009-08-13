@@ -825,6 +825,12 @@ public class TestEmbeddable extends SingleEMFTestCase {
         EntityManager em = emf.createEntityManager();
         EntityA_Embed_ToOne a = em.find(EntityA_Embed_ToOne.class, ID);
         checkEntityA_Embed_ToOne(a);
+        em.getTransaction().begin();
+        em.remove(a);
+        em.getTransaction().commit();
+        //delete cascade
+        EntityB1 b = em.find(EntityB1.class, ID);
+        assertNull(b);
         em.close();
     }
 
