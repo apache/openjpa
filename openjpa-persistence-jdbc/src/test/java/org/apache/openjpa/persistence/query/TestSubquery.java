@@ -36,7 +36,7 @@ public class TestSubquery
     public void setUp() {
         setUp(Customer.class, Customer.CustomerKey.class, Order.class,
             OrderItem.class, Magazine.class, Publisher.class, Employee.class,
-            Dependent.class, DependentId.class, DROP_TABLES);
+            Dependent.class, DependentId.class, Account.class, DROP_TABLES);
     }
 
     static String[]  querys = new String[] {
@@ -159,6 +159,74 @@ public class TestSubquery
             " (select max(o2.customer.name) from Order o2 " + 
             " where o.customer.cid.id = o2.customer.cid.id)",  
     };
+
+    static String[]  querys2 = new String[] {
+            // 0
+        "select o1.oid, c.name from Order o1, Customer c" +
+            " where o1.customer.name = " + 
+            " any(select o2.customer.name from in(c.orders) o2)",
+            // 1
+        "select o1.oid, c.name from Order o1, Customer c" +
+            " where o1.amount = " +
+            " any(select o2.amount from in(c.orders) o2)",
+            // 2
+        "select DISTINCT c.name FROM Customer c JOIN c.orders o " +
+            "WHERE EXISTS (SELECT o FROM o.lineitems l where l.quantity > 2 ) ",
+            // 3
+        "select DISTINCT c.name FROM Customer c, IN(c.orders) co " +
+            "WHERE co.amount > ALL " +
+            "(Select o.amount FROM Order o, in(o.lineitems) l WHERE l.quantity > 2)", 
+            // 4
+        "select distinct c.name FROM Customer C, IN(C.orders) co " +
+            "WHERE co.amount < ALL " +
+            "(Select o.amount FROM Order o, IN(o.lineitems) l WHERE l.quantity > 2)", 
+            //5
+        "select c.name FROM Customer c, IN(c.orders) co " +
+            "WHERE co.amount <= ALL " +
+            "(Select o.amount FROM Order o, IN(o.lineitems) l WHERE l.quantity > 2)",
+            // 6
+        "select DISTINCT c.name FROM Customer c, IN(c.orders) co " +
+            "WHERE co.amount > ANY " +
+            "(Select o.amount FROM Order o, IN(o.lineitems) l WHERE l.quantity = 2)",
+            // 7
+        "select DISTINCT c.name FROM Customer c " +
+            "WHERE EXISTS (SELECT o FROM c.orders o where o.amount " +
+            "BETWEEN 1000 AND 1200)",
+            // 8
+        "select DISTINCT c.name FROM Customer c " +
+            "WHERE EXISTS (SELECT o FROM c.orders o where o.amount > 1000 )",
+            // 9
+        "SELECT o.oid from Order o WHERE " +
+            "EXISTS (SELECT c.name From o.customer c WHERE c.name LIKE '%los') ",
+            // 10
+        "select Distinct c.name FROM Customer c, IN(c.orders) co " +
+            "WHERE co.amount >= SOME" +
+            "(Select o.amount FROM Order o, IN(o.lineitems) l WHERE l.quantity = 2)",
+            // 11
+        "select c FROM Customer c WHERE EXISTS" +
+            " (SELECT o FROM c.orders o where o.amount > 1000)",
+            // 12
+        "select c FROM Customer c WHERE EXISTS" +
+            " (SELECT o FROM c.orders o)",
+            // 13
+        "SELECT c FROM Customer c WHERE "
+            + "(SELECT COUNT(o) FROM c.orders o) > 10",
+            // 14
+        "SELECT o FROM Order o JOIN o.customer c WHERE c.name = "
+            + "SOME (SELECT a.name FROM c.accounts a)",
+
+        };
+
+    public void testSubquery2() {
+        EntityManager em = emf.createEntityManager();
+        for (int i = 0; i < querys2.length; i++) {
+            String q = querys2[i];
+            System.err.println(">>> JPQL JPA2 :[ " + i + "]" +q);
+            List rs = em.createQuery(q).getResultList();
+            assertEquals(0, rs.size());
+        }
+        em.close();
+    }
 
 
     public void testSubquery() {

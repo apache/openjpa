@@ -23,39 +23,40 @@ import javax.persistence.*;
 import java.io.Serializable;
 import java.util.Collection;
 import java.util.ArrayList;
+import java.util.List;
 
 @Entity
-@Table(name="TCTMR")
+@Table(name="TCUS")
 public class Customer {
 
     @Embeddable
 	public static class CustomerKey implements Serializable {
-		public String countryCode;
+		public String cyCode;
 		public int id;
 		
 		public CustomerKey(){}
 		
 		public  CustomerKey(String cc, int id){
-			countryCode=cc;
+			cyCode=cc;
 			this.id=id;
 		}
 		
 		public String toString() {
-			return countryCode+"/"+id;
+			return cyCode+"/"+id;
 		}
 		@Override
 		public boolean equals(Object obj){
 			if (obj==this) return true;
 			if ( ! (obj instanceof CustomerKey) ) return false;
 			CustomerKey key = (CustomerKey)obj;
-			if (key.countryCode.equals(this.countryCode) && 
+			if (key.cyCode.equals(this.cyCode) && 
 					key.id==this.id) return true;
 			return false;
 		}
 		
 		@Override
 		public int hashCode() {
-			return this.countryCode.hashCode()
+			return this.cyCode.hashCode()
 				^ this.id;
 		}
 	}
@@ -75,7 +76,10 @@ public class Customer {
 	
     @OneToMany(fetch=FetchType.EAGER, mappedBy="customer")
     private Collection<Order> orders = new ArrayList<Order>();
-	
+
+    @OneToMany(mappedBy="cust")
+    private List<Account> accounts = new ArrayList<Account>();
+
 	public Customer() {}
 	
 	public Customer(CustomerKey cid, String name, CreditRating rating){
@@ -104,6 +108,14 @@ public class Customer {
 	public void setOrders(Collection<Order> orders) {
 		this.orders = orders;
 	}
+    
+    public List<Account> getAccounts() {
+        return accounts;
+    }
+    
+    public void setAccounts(List<Account> accounts) {
+        this.accounts = accounts;
+    }
 	
 	public String toString() {
 		return "Customer:"+cid+" name:"+name; 
