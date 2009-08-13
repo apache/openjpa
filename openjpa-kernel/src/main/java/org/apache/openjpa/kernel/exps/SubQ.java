@@ -35,10 +35,12 @@ class SubQ
     private static final Localizer _loc = Localizer.forPackage(Subquery.class);
 
     private final String _alias;
+    private String _subqAlias = null;
     private Class _type = null;
 
     public SubQ(String alias) {
         _alias = alias;
+        _subqAlias = alias;
     }
 
     public Object getSelect() {
@@ -47,6 +49,14 @@ class SubQ
 
     public String getCandidateAlias() {
         return _alias;
+    }
+
+    public void setSubqAlias(String subqAlias) {
+        _subqAlias = subqAlias;
+    }
+
+    public String getSubqAlias() {
+        return _subqAlias;
     }
 
     public void setQueryExpressions(QueryExpressions q) {

@@ -46,7 +46,7 @@ public class SubQ
 
     private final ClassMapping _candidate;
     private final boolean _subs;
-    private final String _subqAlias;
+    private String _subqAlias;
     private final SelectConstructor _cons = new SelectConstructor();
 
     private Class _type = null;
@@ -80,6 +80,10 @@ public class SubQ
     
     public boolean getSubs() {
         return _subs;
+    }
+
+    public void setSubqAlias(String subqAlias) {
+        _subqAlias = subqAlias;
     }
     
     public String getSubqAlias() {

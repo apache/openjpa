@@ -154,6 +154,7 @@ public class Join
         join._target = _target;
         join._subs = _subs;
         join._joins = _joins;
+        join._correlated = _correlated;
         return join;
     }
 
@@ -180,6 +181,8 @@ public class Join
             typeString = "inner";
         else
             typeString = "outer";
+        if (_correlated)
+            typeString += " &";
         return "<" + System.identityHashCode(this) + "> t"
             + _alias1 + "->t" + _alias2 + " (" + typeString + ")";
     }

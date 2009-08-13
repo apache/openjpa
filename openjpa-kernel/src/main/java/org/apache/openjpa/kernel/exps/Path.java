@@ -77,5 +77,7 @@ public interface Path
         
     public String getSchemaAlias();
     
-    public void setSubqueryContext(Context context);
+    public void setSubqueryContext(Context context, String correlationVar);
+
+    public String getCorrelationVar();
 }

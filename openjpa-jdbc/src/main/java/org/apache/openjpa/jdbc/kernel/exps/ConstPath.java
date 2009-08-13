@@ -226,6 +226,10 @@ class ConstPath
         return null;
     }
     
-    public void setSubqueryContext(Context conext) {
+    public void setSubqueryContext(Context conext, String correlationVar) {
+    }
+
+    public String getCorrelationVar() {
+        return null;
     }
 }

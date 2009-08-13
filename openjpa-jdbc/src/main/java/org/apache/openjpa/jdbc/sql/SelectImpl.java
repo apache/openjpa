@@ -2845,7 +2845,8 @@ public class SelectImpl
             // update the path with the relation name before getting pk alias
             this.append(name);
             this.append(var);
-            this.append(correlatedVar);
+            if (var == null)
+                this.append(correlatedVar);
             context = ctx; 
             
             if (toMany) {

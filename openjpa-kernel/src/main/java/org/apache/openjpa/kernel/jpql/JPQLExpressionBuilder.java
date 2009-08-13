@@ -31,12 +31,15 @@ import java.util.Stack;
 import java.util.TreeSet;
 
 import org.apache.commons.collections.map.LinkedMap;
+import org.apache.openjpa.conf.Compatibility;
+import org.apache.openjpa.conf.OpenJPAConfiguration;
+import org.apache.openjpa.kernel.BrokerFactory;
 import org.apache.openjpa.kernel.ExpressionStoreQuery;
 import org.apache.openjpa.kernel.QueryContext;
 import org.apache.openjpa.kernel.QueryOperations;
 import org.apache.openjpa.kernel.StoreContext;
-import org.apache.openjpa.kernel.BrokerFactory;
 import org.apache.openjpa.kernel.exps.AbstractExpressionBuilder;
+import org.apache.openjpa.kernel.exps.Context;
 import org.apache.openjpa.kernel.exps.Expression;
 import org.apache.openjpa.kernel.exps.ExpressionFactory;
 import org.apache.openjpa.kernel.exps.Literal;
@@ -46,10 +49,9 @@ import org.apache.openjpa.kernel.exps.QueryExpressions;
 import org.apache.openjpa.kernel.exps.Resolver;
 import org.apache.openjpa.kernel.exps.Subquery;
 import org.apache.openjpa.kernel.exps.Value;
-import org.apache.openjpa.kernel.exps.Context;
+import org.apache.openjpa.lib.log.Log;
 import org.apache.openjpa.lib.util.Localizer;
 import org.apache.openjpa.lib.util.Localizer.Message;
-import org.apache.openjpa.lib.log.Log;
 import org.apache.openjpa.meta.ClassMetaData;
 import org.apache.openjpa.meta.FieldMetaData;
 import org.apache.openjpa.meta.JavaTypes;
@@ -57,8 +59,7 @@ import org.apache.openjpa.meta.MetaDataRepository;
 import org.apache.openjpa.meta.ValueMetaData;
 import org.apache.openjpa.util.InternalException;
 import org.apache.openjpa.util.UserException;
-import org.apache.openjpa.conf.Compatibility;
-import org.apache.openjpa.conf.OpenJPAConfiguration;
+
 import serp.util.Numbers;
 
 /**
@@ -83,6 +84,7 @@ public class JPQLExpressionBuilder
     private final Stack<Context> contexts = new Stack<Context>();
     private LinkedMap parameterTypes;
     private int aliasCount = 0;
+    private boolean inAssignSubselectProjection = false;
 
     /**
      * Constructor.
@@ -147,7 +149,11 @@ public class JPQLExpressionBuilder
         // we might be referencing a collection field of a subquery's parent
         if (isPath(node)) {
             Path path = getPath(node);
-            return getFieldType(path.last());
+            FieldMetaData fmd = path.last();
+            cmd = getFieldType(fmd);
+            if (cmd == null && fmd.isElementCollection())
+                cmd = fmd.getDefiningMetaData();
+            return cmd;
         }
 
         // now run again to throw the correct exception
@@ -322,6 +328,22 @@ public class JPQLExpressionBuilder
         return result.toString();
     }
 
+    private Expression assignSubselectProjection(JPQLNode node,
+        QueryExpressions exps) {
+        inAssignSubselectProjection = true;
+        exps.projections = new Value[1];
+        exps.projectionClauses = new String[1];
+        exps.projectionAliases = new String[1];
+
+        Value val = getValue(node);
+        exps.projections[0] = val;
+        exps.projectionClauses[0] = 
+            projectionClause(node.id == JJTSCALAREXPRESSION ?
+                firstChild(node) : node);
+        inAssignSubselectProjection = false;
+        return null;
+    }
+
     private Expression assignProjections(JPQLNode parametersNode,
         QueryExpressions exps) {
         int count = parametersNode.getChildCount();
@@ -334,7 +356,7 @@ public class JPQLExpressionBuilder
             JPQLNode parent = parametersNode.getChild(i);
             JPQLNode node = firstChild(parent);
             JPQLNode aliasNode = parent.children.length > 1 ? right(parent)
-                : null;; 
+                : null; 
             Value proj = getValue(node);
             String alias = aliasNode == null ? nextAlias()
                  : aliasNode.text;
@@ -467,6 +489,10 @@ public class JPQLExpressionBuilder
             int selectCount = expNode.getChildCount();
             JPQLNode selectChild = firstChild(expNode);
 
+            if (selectClause.parent.id == JJTSUBSELECT) {
+                exps.distinct &= ~QueryExpressions.DISTINCT_AUTO;
+                return assignSubselectProjection(onlyChild(selectChild), exps);
+            }
             // if we are selecting just one thing and that thing is the
             // schema's alias, then do not treat it as a projection
             if (selectCount == 1 && selectChild != null &&
@@ -579,21 +605,10 @@ public class JPQLExpressionBuilder
         return exp;
     }
 
-    private Expression bindVariableForKeyPath(Path path, String alias,
-        Expression exp) {
-        if (alias != null && ctx().findVariable(alias) == null) {
-            // subquery may have KEY range over a variable 
-            // that is not defined.
-            JPQLNode key = root().findChildByID(JJTKEY, true);
-            if (key != null && firstChild(key).text.equalsIgnoreCase(alias)) {
-                Value var = getVariable(alias, true);
-                exp = and(exp, factory.bindVariable(var, path));
-            }
-        }
-        return exp;
-    }
-
     private Expression getSubquery(String alias, Path path, Expression exp) {
+        Value var = getVariable(alias, true);
+        // this bind is for validateMapPath to resolve alias
+        Expression bindVar = factory.bindVariable(var, path);
         FieldMetaData fmd = path.last();
         ClassMetaData candidate = getFieldType(fmd);
         if (candidate == null && fmd.isElementCollection())
@@ -607,11 +622,19 @@ public class JPQLExpressionBuilder
             subquery = factory.newSubquery(candidate, true, alias);
             subContext.setSubquery(subquery);
         }
+        else {
+            subquery.setSubqAlias(alias);
+        }
+
         Path subpath = factory.newPath(subquery);
+        subpath.setSchemaAlias(path.getCorrelationVar());
         subpath.setMetaData(candidate);
         subquery.setMetaData(candidate);
-        exp = bindVariableForKeyPath(path, alias, exp);
-        exp =  and(exp, factory.equal(path, subpath));
+        if (fmd.isElementCollection())
+            exp = and(exp, bindVar);
+        else
+            exp = and(exp, factory.equal(path, subpath));
+
         return exp;
     }
 
@@ -775,6 +798,9 @@ public class JPQLExpressionBuilder
     protected Value getVariable(String id, boolean bind) {
         if (id == null)
             return null;
+
+        if (bind && getDefinedVariable(id) == null)
+            return createVariable(id, bind);
 
         return super.getVariable(id.toLowerCase(), bind);
     }
@@ -1414,7 +1440,6 @@ public class JPQLExpressionBuilder
 
     private Value getSubquery(JPQLNode node) {
         final boolean subclasses = true;
-        String alias = nextAlias();
 
         // parse the subquery
         ParsedJPQL parsed = new ParsedJPQL(node.parser.jpql, node);
@@ -1424,7 +1449,7 @@ public class JPQLExpressionBuilder
         ClassMetaData candidate = getCandidateMetaData(node);
         Subquery subq = subContext.getSubquery();
         if (subq == null) {
-            subq = factory.newSubquery(candidate, subclasses, alias);
+            subq = factory.newSubquery(candidate, subclasses, nextAlias());
             subContext.setSubquery(subq);
         }
         subq.setMetaData(candidate);
@@ -1543,7 +1568,10 @@ public class JPQLExpressionBuilder
             Value thiz = null;
             if (ctx().subquery == null || 
                 ctx().getSchema(name.toLowerCase()) == null) {
-                thiz = factory.getThis();
+                if (ctx().subquery != null && inAssignSubselectProjection)
+                    thiz = factory.newPath(ctx().subquery);
+                else
+                    thiz = factory.getThis();
             } else {
                 thiz = factory.newPath(ctx().subquery);
             }
@@ -1775,7 +1803,6 @@ public class JPQLExpressionBuilder
             if (ctx().subquery != null) {
                 path = factory.newPath(ctx().subquery);
                 path.setMetaData(ctx().subquery.getMetaData());
-                factory.bindVariable(val, path);
             } else {
                 path = factory.newPath();
                 path.setMetaData(ctx().meta);
@@ -1803,7 +1830,7 @@ public class JPQLExpressionBuilder
             path = (Path) traversePath(path, node.children[i].text, pcOnly,
                 allowNull);
             if (ctx().getParent() != null && ctx().getVariable(path.getSchemaAlias()) == null) {
-                path.setSubqueryContext(ctx());
+                path.setSubqueryContext(ctx(), name);
             }
         
             // all traversals but the first one will always be inner joins
@@ -1957,7 +1984,7 @@ public class JPQLExpressionBuilder
         ctx().addVariable(id, var);
     }
 
-    protected Value getSeenVariable(String var) {
+    protected Value getVariable(String var) {
         Context c = ctx();
         Value v = c.getVariable(var);
         if (v != null)

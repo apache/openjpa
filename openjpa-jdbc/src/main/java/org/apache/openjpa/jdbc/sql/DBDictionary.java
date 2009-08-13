@@ -2193,6 +2193,19 @@ public class DBDictionary
                 if (itr.hasNext())
                     fromSQL.append(", ");
             }
+            if (aliases.size() < 2 && sel.getParent() != null) {
+                // subquery may contain correlated joins
+                Iterator itr = sel.getJoinIterator();
+                while (itr.hasNext()) {
+                    Join join = (Join) itr.next();
+                    // append where clause
+                    if (join.isCorrelated() && join.getForeignKey() != null) {
+                        SQLBuffer where = new SQLBuffer(this);
+                        where.append("(").append(toTraditionalJoin(join)).append(")");
+                        sel.where(where.getSQL());
+                    }                
+                }
+            }
         } else {
             Iterator itr = sel.getJoinIterator();
             boolean first = true;
@@ -2200,11 +2213,16 @@ public class DBDictionary
                 Join join = (Join) itr.next();
                 if (correlatedJoinCondition(join, sel))
                     continue;
-                fromSQL.append(toSQL92Join(sel, join, forUpdate,
-                    first));
+
+                if (join.isCorrelated())
+                    toCorrelatedJoin(sel, join, forUpdate, first);                    
+                else    
+                    fromSQL.append(toSQL92Join(sel, join, forUpdate,
+                        first));
                 first = false;
                 if (itr.hasNext() && join.isCorrelated()) {
-                    fromSQL.append(", ");
+                    if (fromSQL.getSQL().length() > 0)
+                        fromSQL.append(", ");
                     first = true;
                 }
             }
@@ -2212,9 +2230,11 @@ public class DBDictionary
             for (Iterator itr2 = aliases.iterator(); itr2.hasNext();) {
                 String tableAlias = itr2.next().toString();
                 if (fromSQL.getSQL().indexOf(tableAlias) == -1) {
-                    if (!first)
+                    if (!first && fromSQL.getSQL().length() > 0)
                         fromSQL.append(", ");
                     fromSQL.append(tableAlias);
+                    if (forUpdate && tableForUpdateClause != null)
+                        fromSQL.append(" ").append(tableForUpdateClause);
                     first = false;
                 }
             }
@@ -2233,8 +2253,9 @@ public class DBDictionary
         //the where clause in the subquery
         while (itr.hasNext()) {
             Join join1 = (Join) itr.next();
-            if (join == join1)
+            if (join == join1 && !join.isForeignKeyInversed()) {
                 continue;
+            }
             if (join.getIndex2() == join1.getIndex1() ||
                 join.getIndex2() == join1.getIndex2()) {
                 skip = true;
@@ -2356,8 +2377,8 @@ public class DBDictionary
     public SQLBuffer toSQL92Join(Select sel, Join join, boolean forUpdate,
         boolean first) {
         SQLBuffer buf = new SQLBuffer(this);
-        boolean corelated = join.isCorrelated();
-        if (first && !corelated) {
+
+        if (first) {
             buf.append(join.getTable1()).append(" ").
                 append(join.getAlias1());
             if (forUpdate && tableForUpdateClause != null)
@@ -2365,33 +2386,36 @@ public class DBDictionary
         }
 
         buf.append(" ");
-        if (!corelated) {
-            if (join.getType() == Join.TYPE_OUTER)
-                buf.append(outerJoinClause);
-            else if (join.getType() == Join.TYPE_INNER)
-                buf.append(innerJoinClause);
-            else // cross
-                buf.append(crossJoinClause);
-            buf.append(" ");
-        }
+        if (join.getType() == Join.TYPE_OUTER)
+            buf.append(outerJoinClause);
+        else if (join.getType() == Join.TYPE_INNER)
+            buf.append(innerJoinClause);
+        else // cross
+            buf.append(crossJoinClause);
+        buf.append(" ");
 
         buf.append(join.getTable2()).append(" ").append(join.getAlias2());
         if (forUpdate && tableForUpdateClause != null)
             buf.append(" ").append(tableForUpdateClause);
 
-        if (!corelated) {
-            if (join.getForeignKey() != null)
-                buf.append(" ON ").append(toTraditionalJoin(join));
-            else if (requiresConditionForCrossJoin &&
-                    join.getType() == Join.TYPE_CROSS)
-                buf.append(" ON (1 = 1)");
-        } else if (join.getForeignKey() != null){
+        if (join.getForeignKey() != null)
+            buf.append(" ON ").append(toTraditionalJoin(join));
+        else if (requiresConditionForCrossJoin &&
+                join.getType() == Join.TYPE_CROSS)
+            buf.append(" ON (1 = 1)");
+        
+        return buf;
+    }
+
+    private SQLBuffer toCorrelatedJoin(Select sel, Join join, boolean forUpdate,
+        boolean first) {
+        if (join.getForeignKey() != null){
             SQLBuffer where = new SQLBuffer(this);
             where.append("(").append(toTraditionalJoin(join)).append(")");
             sel.where(where.getSQL());
         }
 
-        return buf;
+        return null;
     }
 
     /**

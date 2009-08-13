@@ -117,6 +117,7 @@ public class PCPath
             action.op = Action.VAR;
             action.data = var.getName();
             _schemaAlias = other._schemaAlias;
+            _correlationVar = other._correlationVar;
         }
         _actions.add(action);
         _cast = var.getType(); // initial type is var type
@@ -146,11 +147,12 @@ public class PCPath
         return _schemaAlias;
     }
     
-    public void setSubqueryContext(Context context) {
+    public void setSubqueryContext(Context context, String correlationVar) {
         Action action = lastFieldAction();
         if (action == null)
             return;
         action.context = context;
+        _correlationVar = correlationVar;
     }
     
     /**
@@ -317,11 +319,8 @@ public class PCPath
                     if (pstate.field.isElementCollection() && pstate.field.getElement().isEmbedded()) {
                         Strategy strategy = pstate.field.getStrategy();
                         if (strategy instanceof HandlerCollectionTableFieldStrategy) {
-                            if (pstate.compareEqual)
-                                return pstate.field.getJoinForeignKey().getColumns();
                             return ((HandlerCollectionTableFieldStrategy) strategy).
-                                getElementColumns(elem.getTypeMapping());
-                            
+                                getElementColumns(elem.getTypeMapping());                            
                         }
                     }
                     if (pstate.joinedRel && elem.getTypeCode() == JavaTypes.PC)
@@ -475,7 +474,6 @@ public class PCPath
 
     public ExpState initialize(Select sel, ExpContext ctx, int flags) {
         PathExpState pstate = new PathExpState(sel.newJoins());
-        pstate.compareEqual = (flags & Val.CMP_EQUAL) != 0 ? true : false;
         boolean key = false;
         boolean forceOuter = false;
         ClassMapping rel = _candidate;
@@ -501,7 +499,6 @@ public class PCPath
                 if (sel.getParent() != null && action.var != null &&
                     prevaction != null && prevaction.data != null &&
                     sel.ctx().getVariable(action.var) == null) {
-                    //System.out.println("Correlated action var="+action.var);
                     isCorrelatedPath = true;
                     pstate.joins = pstate.joins.setCorrelatedVariable(action.var);
                 } else 
@@ -748,7 +745,6 @@ public class PCPath
         public Column[] cols = null;
         public boolean joinedRel = false;
         public boolean isEmbedElementColl = false;
-        public boolean compareEqual = false;
         
         public PathExpState(Joins joins) {
             super(joins);
@@ -827,6 +823,7 @@ public class PCPath
 
     public void selectColumns(Select sel, ExpContext ctx, ExpState state, 
         boolean pks) {
+        sel.setSchemaAlias(_schemaAlias);
         ClassMapping mapping = getClassMapping(state);
         PathExpState pstate = (PathExpState) state;
         if (mapping == null || !pstate.joinedRel ||
