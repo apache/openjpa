@@ -118,7 +118,7 @@
         <profile>
             <id>jdk1.5</id>
             <activation>
-                <jdk>1.5</jdk>
+                <jdk>(,1.5)</jdk>
             </activation>
             <modules>
                 <module>openjpa-lib-5</module>

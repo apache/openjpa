@@ -215,6 +215,11 @@ public class DBDictionary
     public boolean supportsModOperator = false;
     public boolean supportsXMLColumn = false;
 
+    /**
+     * Some Databases append whitespace after the schema name
+     */
+    public boolean trimSchemaName = false;
+
     // functions
     public String castFunction = "CAST({0} AS {1})";
     public String toLowerCaseFunction = "LOWER({0})";
@@ -4051,5 +4056,17 @@ public class DBDictionary
             }
         }
         return false;
+    }
+
+    public boolean needsToCreateIndex(Index idx, Table table) {
+        return true;
+    }
+
+    public boolean getTrimSchemaName() {
+        return trimSchemaName;
+    }
+
+    public void setTrimSchemaName(boolean trimSchemaName) {
+        this.trimSchemaName = trimSchemaName;
     }
 }
