@@ -744,7 +744,6 @@ public class TestEmbeddableCriteria extends EmbeddableDomainTestCase {
         assertEquivalence(q, jpql);
     }
     
-    // JPQL is not correct
     public void testEmbeddableQuery58() {
         String jpql = "select e, a0.intVal2 from EntityA_Embed_Coll_Integer a " +
                 "JOIN a.embed a0 JOIN a0.otherIntVals e WHERE exists (select a from " +
@@ -763,15 +762,7 @@ public class TestEmbeddableCriteria extends EmbeddableDomainTestCase {
         sq.where(cb.gt(e1, 0));
         q.where(cb.exists(sq));
         q.orderBy(cb.asc(e));
-        
-        String expectedSQL = "SELECT t1.element, t0.intVal2 " + 
-        "FROM TBL5A t0 INNER JOIN TBL5A_otherIntVals t1 ON t0.id = t1.EMBED_COLL_INTEGER_ID WHERE (EXISTS (" + 
-        "SELECT t2.id FROM TBL5A t2 INNER JOIN TBL5A_otherIntVals t3 ON t2.id = t3.EMBED_COLL_INTEGER_ID WHERE " + 
-        "(t3.element > ? AND 1 = 1)) AND 1 = 1) ORDER BY t1.element ASC";
-
-        executeAndCompareSQL(q, expectedSQL);
-        
-        //assertEquivalence(q, jpql);
+        assertEquivalence(q, jpql);
     }
 
     public void testEmbeddableQuery59() {
@@ -810,8 +801,8 @@ public class TestEmbeddableCriteria extends EmbeddableDomainTestCase {
     }
     
     //comparison of embed is not support
-    
-    public void btestEmbeddableQuery63() {
+    @AllowFailure(message="")
+    public void testEmbeddableQuery63() {
         String jpql = "select a.embed from EntityA_Embed_Embed a WHERE a.embed.embed IS NOT NULL";
         CriteriaQuery<Embed_Embed> q = cb.createQuery(Embed_Embed.class);
         Root<EntityA_Embed_Embed> a = q.from(EntityA_Embed_Embed.class);
@@ -832,7 +823,8 @@ public class TestEmbeddableCriteria extends EmbeddableDomainTestCase {
         sq.where(cb.isNotNull(a1.get(EntityA_Embed_Embed_.embed)));
         sq.select(a1.get(EntityA_Embed_Embed_.embed).get(Embed_Embed_.embed));
         q.where(cb.exists(sq));
-    }
+        executeExpectFail(q, jpql);
+        executeExpectFail(jpql);    }
     
     public void testEmbeddableQuery65() {
         String jpql = "select a from EntityA_Embed_Embed a";
@@ -977,12 +969,19 @@ public class TestEmbeddableCriteria extends EmbeddableDomainTestCase {
         q.where(cb.gt(e.get(Embed_Embed_.intVal1), cb.all(sq)));
         assertEquivalence(q, jpql);
     }
-    
-    // JPQL generates incorrect correlated SQL
+
     public void testEmbeddableQuery76() {
         String jpql = "select e, e.intVal1, e.embed.intVal2 from EntityA_Coll_Embed_Embed a " +
                 " , in (a.embeds) e WHERE e.intVal1 < ANY (select e.intVal2 " +
                 " from EntityA_Coll_Embed_Embed a, in (a.embeds) e) order by e.intVal3";
+
+        String expectedSQL = "SELECT t1.IntVal1x, t1.IntVal2x, t1.IntVal3x, t1.intVal1, t1.intVal2, t1.intVal3 " + 
+        "FROM TBL1A t0 INNER JOIN TBL1A_embeds t1 ON t0.id = t1.ENTITYA_COLL_EMBED_EMBED_ID WHERE " + 
+        "(t1.intVal1 < ANY (" + 
+        "SELECT t3.intVal2 FROM TBL1A t2 " +
+        "INNER JOIN TBL1A_embeds t3 ON t2.id = t3.ENTITYA_COLL_EMBED_EMBED_ID)) " + 
+        "ORDER BY t1.intVal3 ASC";
+
         CriteriaQuery<?> q = cb.createQuery();
         Root<EntityA_Coll_Embed_Embed> a = q.from(EntityA_Coll_Embed_Embed.class);
         ListJoin<EntityA_Coll_Embed_Embed, Embed_Embed> e = a.join(EntityA_Coll_Embed_Embed_.embeds);
@@ -994,21 +993,21 @@ public class TestEmbeddableCriteria extends EmbeddableDomainTestCase {
         sq.select(e2.get(Embed_Embed_.intVal2));
         q.where(cb.lt(e.get(Embed_Embed_.intVal1), cb.any(sq)));
         
-        String expectedSQL = "SELECT t1.IntVal1x, t1.IntVal2x, t1.IntVal3x, t1.intVal1, t1.intVal2, t1.intVal3 " + 
-            "FROM TBL1A t0 INNER JOIN TBL1A_embeds t1 ON t0.id = t1.ENTITYA_COLL_EMBED_EMBED_ID WHERE " + 
-            "(t1.intVal1 < ANY (" + 
-            "SELECT t3.intVal2 FROM TBL1A t2 " +
-            "INNER JOIN TBL1A_embeds t3 ON t2.id = t3.ENTITYA_COLL_EMBED_EMBED_ID)) " + 
-            "ORDER BY t1.intVal3 ASC";
-        
-        executeAndCompareSQL(q, expectedSQL);
+        assertEquivalence(q, jpql, expectedSQL);
     }
-    
-    // JPQL generates incorrect correlated SQL
+
     public void testEmbeddableQuery77() {
         String jpql = "select e, e.intVal1, e.embed.intVal2 from EntityA_Coll_Embed_Embed a " +
                 " , in (a.embeds) e WHERE e.intVal1 < ALL (select e.intVal2 " +
                 " from EntityA_Coll_Embed_Embed a, in (a.embeds) e) order by e.intVal3";
+
+        String expectedSQL = "SELECT t1.IntVal1x, t1.IntVal2x, t1.IntVal3x, t1.intVal1, t1.intVal2, t1.intVal3 " + 
+        "FROM TBL1A t0 INNER JOIN TBL1A_embeds t1 ON t0.id = t1.ENTITYA_COLL_EMBED_EMBED_ID " +
+        "WHERE (t1.intVal1 < ALL (" + 
+        "SELECT t3.intVal2 FROM TBL1A t2 INNER JOIN TBL1A_embeds t3 " +
+        "ON t2.id = t3.ENTITYA_COLL_EMBED_EMBED_ID)) " + 
+        "ORDER BY t1.intVal3 ASC";
+
         CriteriaQuery<?> q = cb.createQuery();
         Root<EntityA_Coll_Embed_Embed> a = q.from(EntityA_Coll_Embed_Embed.class);
         ListJoin<EntityA_Coll_Embed_Embed, Embed_Embed> e = a.join(EntityA_Coll_Embed_Embed_.embeds);
@@ -1019,16 +1018,7 @@ public class TestEmbeddableCriteria extends EmbeddableDomainTestCase {
         Join<EntityA_Coll_Embed_Embed, Embed_Embed> e2 = a1.join(EntityA_Coll_Embed_Embed_.embeds);
         sq.select(e2.get(Embed_Embed_.intVal2));
         q.where(cb.lt(e.get(Embed_Embed_.intVal1), cb.all(sq)));
-        //assertEquivalence(q, jpql);
-        
-        String expectedSQL = "SELECT t1.IntVal1x, t1.IntVal2x, t1.IntVal3x, t1.intVal1, t1.intVal2, t1.intVal3 " + 
-            "FROM TBL1A t0 INNER JOIN TBL1A_embeds t1 ON t0.id = t1.ENTITYA_COLL_EMBED_EMBED_ID WHERE "  +
-            "(t1.intVal1 < ALL (" + 
-            "SELECT t3.intVal2 FROM TBL1A t2 " +
-            "INNER JOIN TBL1A_embeds t3 ON t2.id = t3.ENTITYA_COLL_EMBED_EMBED_ID)) " + 
-            "ORDER BY t1.intVal3 ASC";
-        executeAndCompareSQL(q, expectedSQL);
-        
+        assertEquivalence(q, jpql, expectedSQL);
     }
     
     public void testEmbeddableQuery78() {
@@ -1036,6 +1026,11 @@ public class TestEmbeddableCriteria extends EmbeddableDomainTestCase {
                 " EntityA_Coll_Embed_Embed a, in (a.embeds) e WHERE e.intVal1 <= SOME " +
                 " (select e.intVal2 from EntityA_Coll_Embed_Embed a, in (a.embeds) e) " +
                 " order by e.intVal3";
+        String expectedSQL = "SELECT t1.IntVal1x, t1.IntVal2x, t1.IntVal3x, t1.intVal1, t1.intVal2, t1.intVal3 " + 
+        "FROM TBL1A t0 INNER JOIN TBL1A_embeds t1 ON t0.id = t1.ENTITYA_COLL_EMBED_EMBED_ID " +
+        "WHERE (t1.intVal1 <= ANY (" + 
+        "SELECT t3.intVal2 FROM TBL1A t2 INNER JOIN TBL1A_embeds t3 ON t2.id = t3.ENTITYA_COLL_EMBED_EMBED_ID)) " + 
+        "ORDER BY t1.intVal3 ASC";
         CriteriaQuery<?> q = cb.createQuery();
         Root<EntityA_Coll_Embed_Embed> a = q.from(EntityA_Coll_Embed_Embed.class);
         ListJoin<EntityA_Coll_Embed_Embed, Embed_Embed> e = a.join(EntityA_Coll_Embed_Embed_.embeds);
@@ -1046,20 +1041,18 @@ public class TestEmbeddableCriteria extends EmbeddableDomainTestCase {
         Join<EntityA_Coll_Embed_Embed, Embed_Embed> e2 = a1.join(EntityA_Coll_Embed_Embed_.embeds);
         sq.select(e2.get(Embed_Embed_.intVal2));
         q.where(cb.le(e.get(Embed_Embed_.intVal1), cb.some(sq)));
-        //assertEquivalence(q, jpql);
-        String expectedSQL = "SELECT t1.IntVal1x, t1.IntVal2x, t1.IntVal3x, t1.intVal1, t1.intVal2, t1.intVal3 " + 
-        "FROM TBL1A t0 INNER JOIN TBL1A_embeds t1 ON t0.id = t1.ENTITYA_COLL_EMBED_EMBED_ID " +
-        "WHERE (t1.intVal1 <= ANY (" + 
-        "SELECT t3.intVal2 FROM TBL1A t2 INNER JOIN TBL1A_embeds t3 ON t2.id = t3.ENTITYA_COLL_EMBED_EMBED_ID)) " + 
-        "ORDER BY t1.intVal3 ASC";
-    
-        executeAndCompareSQL(q, expectedSQL);
+        assertEquivalence(q, jpql, expectedSQL);
     }
     
     public void testEmbeddableQuery79() {
         String jpql = "select e, e.intVal1, e.embed.intVal2 from EntityA_Coll_Embed_Embed a " +
                 " , in (a.embeds) e WHERE e.intVal1 > ALL (select e.intVal2 " +
                 " from EntityA_Coll_Embed_Embed a, in (a.embeds) e) order by e.intVal3";
+        String expectedSQL = "SELECT t1.IntVal1x, t1.IntVal2x, t1.IntVal3x, t1.intVal1, t1.intVal2, t1.intVal3 " + 
+            "FROM TBL1A t0 INNER JOIN TBL1A_embeds t1 ON t0.id = t1.ENTITYA_COLL_EMBED_EMBED_ID " +
+            "WHERE (t1.intVal1 > ALL (" + 
+            "SELECT t3.intVal2 FROM TBL1A t2 INNER JOIN TBL1A_embeds t3 ON t2.id = t3.ENTITYA_COLL_EMBED_EMBED_ID)) " + 
+            "ORDER BY t1.intVal3 ASC";
         CriteriaQuery<?> q = cb.createQuery();
         Root<EntityA_Coll_Embed_Embed> a = q.from(EntityA_Coll_Embed_Embed.class);
         ListJoin<EntityA_Coll_Embed_Embed, Embed_Embed> e = a.join(EntityA_Coll_Embed_Embed_.embeds);
@@ -1070,20 +1063,18 @@ public class TestEmbeddableCriteria extends EmbeddableDomainTestCase {
         Join<EntityA_Coll_Embed_Embed, Embed_Embed> e2 = a1.join(EntityA_Coll_Embed_Embed_.embeds);
         sq.select(e2.get(Embed_Embed_.intVal2));
         q.where(cb.gt(e.get(Embed_Embed_.intVal1), cb.all(sq)));
-        //assertEquivalence(q, jpql);
-        String expectedSQL = "SELECT t1.IntVal1x, t1.IntVal2x, t1.IntVal3x, t1.intVal1, t1.intVal2, t1.intVal3 " + 
-        "FROM TBL1A t0 INNER JOIN TBL1A_embeds t1 ON t0.id = t1.ENTITYA_COLL_EMBED_EMBED_ID WHERE " + 
-        "(t1.intVal1 > ALL (" + 
-        "SELECT t3.intVal2 FROM TBL1A t2 INNER JOIN TBL1A_embeds t3 ON t2.id = t3.ENTITYA_COLL_EMBED_EMBED_ID)) " + 
-        "ORDER BY t1.intVal3 ASC";
-    
-        executeAndCompareSQL(q, expectedSQL);
+        assertEquivalence(q, jpql, expectedSQL);
     }
     
     public void testEmbeddableQuery80() {
         String jpql = "select e, e.intVal1, e.embed.intVal2 from EntityA_Coll_Embed_Embed a " +
                 " , in (a.embeds) e WHERE e.intVal1 < ANY (select e2.intVal2 " +
                 " from in(a.embeds) e2) order by e.intVal3";
+        String expectedSQL = "SELECT t1.IntVal1x, t1.IntVal2x, t1.IntVal3x, t1.intVal1, t1.intVal2, t1.intVal3 " + 
+        "FROM TBL1A t0 INNER JOIN TBL1A_embeds t1 ON t0.id = t1.ENTITYA_COLL_EMBED_EMBED_ID WHERE " + 
+        "(t1.intVal1 < ANY (SELECT t2.intVal2 FROM TBL1A_embeds t2 " + 
+        "WHERE (t0.id = t2.ENTITYA_COLL_EMBED_EMBED_ID))) ORDER BY t1.intVal3 ASC";
+
         CriteriaQuery<?> q = cb.createQuery();
         Root<EntityA_Coll_Embed_Embed> a = q.from(EntityA_Coll_Embed_Embed.class);
         ListJoin<EntityA_Coll_Embed_Embed, Embed_Embed> e = a.join(EntityA_Coll_Embed_Embed_.embeds);
@@ -1094,20 +1085,19 @@ public class TestEmbeddableCriteria extends EmbeddableDomainTestCase {
         Join<EntityA_Coll_Embed_Embed, Embed_Embed> e2 = a1.join(EntityA_Coll_Embed_Embed_.embeds);
         sq.select(e2.get(Embed_Embed_.intVal2));
         q.where(cb.lt(e.get(Embed_Embed_.intVal1), cb.any(sq)));
-        
-        String expectedSQL = "SELECT t1.IntVal1x, t1.IntVal2x, t1.IntVal3x, t1.intVal1, t1.intVal2, t1.intVal3 " + 
-        "FROM TBL1A t0 INNER JOIN TBL1A_embeds t1 ON t0.id = t1.ENTITYA_COLL_EMBED_EMBED_ID WHERE " + 
-        "(t1.intVal1 < ANY (SELECT t2.intVal2 FROM  TBL1A_embeds t2, TBL1A t3 " + 
-        "WHERE (t2.ENTITYA_COLL_EMBED_EMBED_ID = t3.id) AND (t0.id = t2.ENTITYA_COLL_EMBED_EMBED_ID))) " +
-        "ORDER BY t1.intVal3 ASC";
-        executeAndCompareSQL(q, expectedSQL);
-        //assertEquivalence(q, jpql);
+        assertEquivalence(q, jpql, expectedSQL);
     }
     
     public void testEmbeddableQuery81() {
         String jpql = "select e, e.intVal1, e.embed.intVal2 from EntityA_Coll_Embed_Embed a " +
                 " , in (a.embeds) e WHERE e.intVal1 < ALL (select e2.intVal2 " +
                 " from a.embeds e2) order by e.intVal3";
+        String expectedSQL = "SELECT t1.IntVal1x, t1.IntVal2x, t1.IntVal3x, t1.intVal1, t1.intVal2, t1.intVal3 " + 
+        "FROM TBL1A t0 INNER JOIN TBL1A_embeds t1 ON t0.id = t1.ENTITYA_COLL_EMBED_EMBED_ID WHERE " + 
+        "(t1.intVal1 < ALL (SELECT t2.intVal2 FROM TBL1A_embeds t2 " + 
+        "WHERE (t0.id = t2.ENTITYA_COLL_EMBED_EMBED_ID))) " + 
+        "ORDER BY t1.intVal3 ASC";
+
         CriteriaQuery<?> q = cb.createQuery();
         Root<EntityA_Coll_Embed_Embed> a = q.from(EntityA_Coll_Embed_Embed.class);
         ListJoin<EntityA_Coll_Embed_Embed, Embed_Embed> e = a.join(EntityA_Coll_Embed_Embed_.embeds);
@@ -1118,20 +1108,19 @@ public class TestEmbeddableCriteria extends EmbeddableDomainTestCase {
         Join<EntityA_Coll_Embed_Embed, Embed_Embed> e2 = a1.join(EntityA_Coll_Embed_Embed_.embeds);
         sq.select(e2.get(Embed_Embed_.intVal2));
         q.where(cb.lt(e.get(Embed_Embed_.intVal1), cb.all(sq)));
-        //assertEquivalence(q, jpql);
-        
-        String expectedSQL = "SELECT t1.IntVal1x, t1.IntVal2x, t1.IntVal3x, t1.intVal1, t1.intVal2, t1.intVal3 " + 
-        "FROM TBL1A t0 INNER JOIN TBL1A_embeds t1 ON t0.id = t1.ENTITYA_COLL_EMBED_EMBED_ID WHERE " + 
-        "(t1.intVal1 < ALL (SELECT t2.intVal2 FROM  TBL1A_embeds t2, TBL1A t3 " + 
-        "WHERE (t2.ENTITYA_COLL_EMBED_EMBED_ID = t3.id) AND (t0.id = t2.ENTITYA_COLL_EMBED_EMBED_ID))) " + 
-        "ORDER BY t1.intVal3 ASC";
-        executeAndCompareSQL(q, expectedSQL);
+        assertEquivalence(q, jpql, expectedSQL);
     }
     
     public void testEmbeddableQuery82() {
         String jpql = "select e, e.intVal1, e.embed.intVal2 from EntityA_Coll_Embed_Embed a " +
                 " , in (a.embeds) e WHERE e.intVal1 <= SOME (select e2.intVal2 " +
                 " from in(a.embeds) e2) order by e.intVal3";
+        String expectedSQL = "SELECT t1.IntVal1x, t1.IntVal2x, t1.IntVal3x, t1.intVal1, t1.intVal2, t1.intVal3 " + 
+        "FROM TBL1A t0 INNER JOIN TBL1A_embeds t1 ON t0.id = t1.ENTITYA_COLL_EMBED_EMBED_ID WHERE " + 
+        "(t1.intVal1 <= ANY (SELECT t2.intVal2 FROM TBL1A_embeds t2 " + 
+        "WHERE (t0.id = t2.ENTITYA_COLL_EMBED_EMBED_ID))) " + 
+        "ORDER BY t1.intVal3 ASC";
+
         CriteriaQuery<?> q = cb.createQuery();
         Root<EntityA_Coll_Embed_Embed> a = q.from(EntityA_Coll_Embed_Embed.class);
         ListJoin<EntityA_Coll_Embed_Embed, Embed_Embed> e = a.join(EntityA_Coll_Embed_Embed_.embeds);
@@ -1142,20 +1131,19 @@ public class TestEmbeddableCriteria extends EmbeddableDomainTestCase {
         Join<EntityA_Coll_Embed_Embed, Embed_Embed> e2 = a1.join(EntityA_Coll_Embed_Embed_.embeds);
         sq.select(e2.get(Embed_Embed_.intVal2));
         q.where(cb.le(e.get(Embed_Embed_.intVal1), cb.some(sq)));
-        //assertEquivalence(q, jpql);
-        
-        String expectedSQL = "SELECT t1.IntVal1x, t1.IntVal2x, t1.IntVal3x, t1.intVal1, t1.intVal2, t1.intVal3 " + 
-        "FROM TBL1A t0 INNER JOIN TBL1A_embeds t1 ON t0.id = t1.ENTITYA_COLL_EMBED_EMBED_ID WHERE " + 
-        "(t1.intVal1 <= ANY (SELECT t2.intVal2 FROM  TBL1A_embeds t2, TBL1A t3 " + 
-        "WHERE (t2.ENTITYA_COLL_EMBED_EMBED_ID = t3.id) AND (t0.id = t2.ENTITYA_COLL_EMBED_EMBED_ID))) " + 
-        "ORDER BY t1.intVal3 ASC";
-        executeAndCompareSQL(q, expectedSQL);
+        assertEquivalence(q, jpql, expectedSQL);
     }
     
     public void testEmbeddableQuery83() {
         String jpql = "select e, e.intVal1, e.embed.intVal2 from EntityA_Coll_Embed_Embed a " +
                 " , in (a.embeds) e WHERE e.intVal1 > ALL (select e2.intVal2 " +
                 " from a.embeds e2) order by e.intVal3";
+        String expectedSQL = "SELECT t1.IntVal1x, t1.IntVal2x, t1.IntVal3x, t1.intVal1, t1.intVal2, t1.intVal3 " + 
+        "FROM TBL1A t0 INNER JOIN TBL1A_embeds t1 ON t0.id = t1.ENTITYA_COLL_EMBED_EMBED_ID WHERE " + 
+        "(t1.intVal1 > ALL (SELECT t2.intVal2 FROM TBL1A_embeds t2 " + 
+        "WHERE (t0.id = t2.ENTITYA_COLL_EMBED_EMBED_ID))) " + 
+        "ORDER BY t1.intVal3 ASC";
+
         CriteriaQuery<?> q = cb.createQuery();
         Root<EntityA_Coll_Embed_Embed> a = q.from(EntityA_Coll_Embed_Embed.class);
         ListJoin<EntityA_Coll_Embed_Embed, Embed_Embed> e = a.join(EntityA_Coll_Embed_Embed_.embeds);
@@ -1166,14 +1154,7 @@ public class TestEmbeddableCriteria extends EmbeddableDomainTestCase {
         Join<EntityA_Coll_Embed_Embed, Embed_Embed> e2 = a1.join(EntityA_Coll_Embed_Embed_.embeds);
         sq.select(e2.get(Embed_Embed_.intVal2));
         q.where(cb.gt(e.get(Embed_Embed_.intVal1), cb.all(sq)));
-        //assertEquivalence(q, jpql);
-        
-        String expectedSQL = "SELECT t1.IntVal1x, t1.IntVal2x, t1.IntVal3x, t1.intVal1, t1.intVal2, t1.intVal3 " + 
-        "FROM TBL1A t0 INNER JOIN TBL1A_embeds t1 ON t0.id = t1.ENTITYA_COLL_EMBED_EMBED_ID WHERE " + 
-        "(t1.intVal1 > ALL (SELECT t2.intVal2 FROM  TBL1A_embeds t2, TBL1A t3 " + 
-        "WHERE (t2.ENTITYA_COLL_EMBED_EMBED_ID = t3.id) AND (t0.id = t2.ENTITYA_COLL_EMBED_EMBED_ID))) " + 
-        "ORDER BY t1.intVal3 ASC";
-        executeAndCompareSQL(q, expectedSQL);
+        assertEquivalence(q, jpql, expectedSQL);
     }
     
     @AllowFailure(message="JPQL parse error")
@@ -1281,12 +1262,18 @@ public class TestEmbeddableCriteria extends EmbeddableDomainTestCase {
         q.where(cb.isEmpty(a.get(EntityA_Embed_Coll_Embed_.embed).get(Embed_Coll_Embed_.embeds)).negate());
         assertEquivalence(q, jpql);
     }
-    
+
     public void testEmbeddableQuery93() {
+        String jpql1 = "select e, e.intVal1, e.intVal2 from EntityA_Embed_Coll_Embed a " +
+            " , in (a.embed.embeds) e where exists (select e.intVal1 " +
+            " from EntityA_Embed_Coll_Embed a, in (a.embed.embeds) e " +
+            " where e.intVal2 = 105) order by e";
+        
         String jpql = "select e, e.intVal1, e.intVal2 from EntityA_Embed_Coll_Embed a " +
-                " , in (a.embed.embeds) e where exists (select e.intVal1 " +
-                " from EntityA_Embed_Coll_Embed a, in (a.embed.embeds) e " +
-                " where e.intVal2 = 105) order by e";
+            " JOIN a.embed ae JOIN ae.embeds e where exists (select e.intVal1 " +
+            " from EntityA_Embed_Coll_Embed a JOIN a.embed ae JOIN ae.embeds e " +
+            " where e.intVal2 = 105) order by e";
+
         CriteriaQuery<?> q = cb.createQuery();
         Root<EntityA_Embed_Coll_Embed> a = q.from(EntityA_Embed_Coll_Embed.class);
         ListJoin<Embed_Coll_Embed, Embed> e = a.join(EntityA_Embed_Coll_Embed_.embed).join(Embed_Coll_Embed_.embeds);
@@ -1298,15 +1285,7 @@ public class TestEmbeddableCriteria extends EmbeddableDomainTestCase {
         sq.where(cb.equal(e1.get(Embed_.intVal2), 105));
         sq.select(e1.get(Embed_.intVal1));
         q.where(cb.exists(sq));
-        //assertEquivalence(q, jpql);
-        
-        String expectedSQL = "SELECT t3.A1, t3.A2, t3.A3 " + 
-        "FROM TBL4A t2 INNER JOIN TBL4A_embeds t3 ON t2.id = t3.EMBED_COLL_EMBED_ID WHERE (" + 
-        "EXISTS (SELECT t1.A1 FROM TBL4A t0 INNER JOIN TBL4A_embeds t1 ON t0.id = t1.EMBED_COLL_EMBED_ID " + 
-        "WHERE (t1.A2 = ? AND 1 = 1)) AND 1 = 1) ORDER BY t3.A1 ASC, t3.A2 ASC, t3.A3 ASC";
-
-        executeAndCompareSQL(q, expectedSQL);
-
+        assertEquivalence(q, jpql);
     }
     
     public void testEmbeddableQuery94() {
@@ -1328,9 +1307,6 @@ public class TestEmbeddableCriteria extends EmbeddableDomainTestCase {
         sq.select(e2.get(Embed_.intVal1));
         q.where(cb.equal(e.get(Embed_.intVal1), cb.some(sq)));
         assertEquivalence(q, jpql);
-        //String expectedSQL = "";
-    
-        //executeAndCompareSQL(q, expectedSQL);
     }
     
     public void testEmbeddableQuery95() {
@@ -1413,6 +1389,7 @@ public class TestEmbeddableCriteria extends EmbeddableDomainTestCase {
         assertEquivalence(q, jpql);
     }
     
+    @AllowFailure(message = "JPQL has redundant table join")
     public void testEmbeddableQuery103() {
         String jpql = "select d from Department1 d where d.deptId < ANY " +
                 " (select KEY(e) from in(d.empMap) e) order by d";
@@ -1665,31 +1642,31 @@ public class TestEmbeddableCriteria extends EmbeddableDomainTestCase {
     }
     
     public void testEmbeddableQuery122() {
-        String jpql = "select c from Company1 c where exists (select d from in(c.organization) d" +
+        String jpql = "select c from Company1 c where exists (select KEY(d) from in(c.organization) d" +
                 "  where KEY(d) = :division) order by c ";
         CriteriaQuery<Company1> q = cb.createQuery(Company1.class);
         Root<Company1> c = q.from(Company1.class);
-        Subquery<Map> sq = q.subquery(Map.class);
+        Subquery<Division> sq = q.subquery(Division.class);
         Root<Company1> c1 = sq.correlate(c);
         MapJoin<Company1,Division,VicePresident> d = c1.join(Company1_.organization);
-        //sq.select(d);
         q.select(c);
         Parameter<Division> param1 = cb.parameter(Division.class, "division");
         sq.where(cb.equal(d.key(), param1));
+        sq.select(d.key());
         q.where(cb.exists(sq));
         q.orderBy(cb.asc(c));
         assertEquivalence(q, jpql, new String[]{"division"}, new Object[]{new Division()});
     }
     
     public void testEmbeddableQuery123() {
-        String jpql = "select c from Company1 c where exists (select d from c.organization d" +
+        String jpql = "select c from Company1 c where exists (select KEY(d) from c.organization d" +
                 "  where KEY(d) = :division) order by c ";  
         CriteriaQuery<Company1> q = cb.createQuery(Company1.class);
         Root<Company1> c = q.from(Company1.class);
-        Subquery<Map> sq = q.subquery(Map.class);
+        Subquery<Division> sq = q.subquery(Division.class);
         Root<Company1> c1 = sq.correlate(c);
         MapJoin<Company1,Division,VicePresident> d = c1.join(Company1_.organization);
-        //sq.select(d);
+        sq.select(d.key());
         q.select(c);
         Parameter<Division> param1 = cb.parameter(Division.class, "division");
         sq.where(cb.equal(d.key(), param1));
@@ -1698,7 +1675,6 @@ public class TestEmbeddableCriteria extends EmbeddableDomainTestCase {
         assertEquivalence(q, jpql, new String[]{"division"}, new Object[]{new Division()});
     }
     
-    @AllowFailure(message="RelationRelationMapTableFieldStrategy.toKeyDataStoreValue() fails. Analyze MapKey")
     public void testEmbeddableQuery124() {
         String jpql = "select c from Company2 c where :division = (select KEY(d) from Company2 c, in(c.organization) d" 
                     + " where d.id = 3) order by c ";
@@ -1710,14 +1686,14 @@ public class TestEmbeddableCriteria extends EmbeddableDomainTestCase {
         sq.select(d.key());
         q.select(c);
         ParameterExpression<Division> param1 = cb.parameter(Division.class, "division");
-        sq.where(cb.equal(d.key().get(Division_.id), 3));
+        sq.where(cb.equal(d.value().get(VicePresident_.id), 3));
         q.where(cb.equal(param1, sq));
         q.orderBy(cb.asc(c));
         assertEquivalence(q, jpql, new String[]{"division"}, new Object[]{new Division()});
     }
     
     public void testEmbeddableQuery125() {
-        String jpql = "select c from Company2 c where exists (select d from in(c.organization) d" +
+        String jpql = "select c from Company2 c where exists (select KEY(d) from in(c.organization) d" +
                 "  where KEY(d) = :k) order by c ";
         CriteriaQuery<Company2> q = cb.createQuery(Company2.class);
         Root<Company2> c = q.from(Company2.class);
@@ -1727,22 +1703,24 @@ public class TestEmbeddableCriteria extends EmbeddableDomainTestCase {
         q.select(c);
         Parameter<Division> param1 = cb.parameter(Division.class, "k");
         sq.where(cb.equal(d.key(), param1));
+        sq.select(d.key());
         q.where(cb.exists(sq));
         q.orderBy(cb.asc(c));
         assertEquivalence(q, jpql, new String[]{"k"}, new Object[]{new Division()});
     }
     
     public void testEmbeddableQuery126() {
-        String jpql = "select c from Company2 c where exists (select d from c.organization d  where KEY(d) = :k) " 
-                    + "order by c ";  
+        String jpql = "select c from Company2 c where exists (select VALUE(d) from c.organization d "
+            + "where KEY(d) = :k) order by c ";  
         CriteriaQuery<Company2> q = cb.createQuery(Company2.class);
         Root<Company2> c = q.from(Company2.class);
-        Subquery<Division> sq = q.subquery(Division.class);
+        Subquery<VicePresident> sq = q.subquery(VicePresident.class);
         Root<Company2> c1 = sq.correlate(c);
         MapJoin<Company2,Division,VicePresident> d = c1.join(Company2_.organization);
         q.select(c);
         Parameter<Division> param1 = cb.parameter(Division.class, "k");
         sq.where(cb.equal(d.key(), param1));
+        sq.select(d.value());
         q.where(cb.exists(sq));
         q.orderBy(cb.asc(c));
         assertEquivalence(q, jpql, new String[]{"k"}, new Object[]{new Division()});

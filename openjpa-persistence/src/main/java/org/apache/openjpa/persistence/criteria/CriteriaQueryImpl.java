@@ -22,20 +22,13 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.HashSet;
-import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.SortedSet;
 import java.util.Stack;
-import java.util.TreeSet;
 
-import javax.persistence.Tuple;
-import javax.persistence.TupleElement;
 import javax.persistence.criteria.AbstractQuery;
-import javax.persistence.criteria.CompoundSelection;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Expression;
 import javax.persistence.criteria.Order;
@@ -47,15 +40,11 @@ import javax.persistence.criteria.Subquery;
 import javax.persistence.metamodel.EntityType;
 
 import org.apache.commons.collections.map.LinkedMap;
-import org.apache.openjpa.kernel.FillStrategy;
-import org.apache.openjpa.kernel.ResultShape;
 import org.apache.openjpa.kernel.StoreQuery;
 import org.apache.openjpa.kernel.exps.Context;
 import org.apache.openjpa.kernel.exps.ExpressionFactory;
 import org.apache.openjpa.kernel.exps.QueryExpressions;
 import org.apache.openjpa.kernel.exps.Value;
-import org.apache.openjpa.persistence.TupleFactory;
-import org.apache.openjpa.persistence.TupleImpl;
 import org.apache.openjpa.persistence.meta.MetamodelImpl;
 import org.apache.openjpa.persistence.meta.Types;
 
@@ -458,8 +447,8 @@ public class CriteriaQueryImpl<T> implements CriteriaQuery<T>, AliasContext {
         _variables.put(node, var);
         _values.put(node, path);
         _aliases.put(node, alias);
-        _contexts.peek().addSchema(alias, var.getMetaData());
-        _contexts.peek().addVariable(alias, var);
+        ctx().addSchema(alias, var.getMetaData());
+        ctx().addVariable(alias, var);
     }
     
     public boolean isRegistered(Selection<?> selection) {
@@ -512,6 +501,9 @@ public class CriteriaQueryImpl<T> implements CriteriaQuery<T>, AliasContext {
 
     public void registerRoot(Root<?> root, Value var) {
         _rootVariables.put(root, var);
+        String alias = var.getName();
+        ctx().addSchema(alias, var.getMetaData());
+        ctx().addVariable(alias, var);
     }
     
     public Value getRootVariable(Root<?> root) {

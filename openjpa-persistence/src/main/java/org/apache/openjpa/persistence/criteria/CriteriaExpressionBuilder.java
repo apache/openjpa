@@ -276,6 +276,13 @@ public class CriteriaExpressionBuilder {
         List<Value> projections, List<String> aliases, List<String> clauses, 
         ExpressionFactory factory, CriteriaQueryImpl<?> q, MetamodelImpl model, 
         Map<ExpressionImpl<?>, Value> exp2Vals) {
+
+        if (selections.size() == 0 && q.getDelegator() != null) { // this is subquery
+            Root<?> r = q.getRoot();
+            selections = new ArrayList<Selection<?>>(1);
+            selections.add(r);
+        }
+        
         for (Selection<?> s : selections) {
             if (s.isCompoundSelection()) {
                 getProjections(exps, s.getCompoundSelectionItems(), projections, aliases, 

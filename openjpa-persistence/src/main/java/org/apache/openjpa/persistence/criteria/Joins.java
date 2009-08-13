@@ -194,7 +194,7 @@ public abstract class Joins {
                 parentPath.get(_member.fmd, allowNull);
                 parentPath.setSchemaAlias(c.getAlias(correlatedParentPath));
                 if (c.ctx().getParent() != null && c.ctx().getVariable(parentPath.getSchemaAlias()) == null) 
-                    parentPath.setSubqueryContext(c.ctx());
+                    parentPath.setSubqueryContext(c.ctx(), parentPath.getSchemaAlias());
                 
                 path.setMetaData(meta);
                 //filter = bindVariableForKeyPath(path, alias, filter);
@@ -343,6 +343,7 @@ public abstract class Joins {
                     org.apache.openjpa.kernel.exps.Subquery subQ = subquery.getSubQ();
                     path = factory.newPath(subQ); 
                     if ((corrJoin != null || corrRoot != null) && _parent.getCorrelatedPath() != null) { 
+                        subQ.setSubqAlias(c.getAlias(this));
                         path = factory.newPath(subQ);
                         correlatedParentPath = _parent.getCorrelatedPath();
                         bind = false;
@@ -392,18 +393,22 @@ public abstract class Joins {
                 parentPath.get(_member.fmd, allowNull);
                 parentPath.setSchemaAlias(c.getAlias(correlatedParentPath));
                 if (c.ctx().getParent() != null && c.ctx().getVariable(parentPath.getSchemaAlias()) == null) 
-                    parentPath.setSubqueryContext(c.ctx());
+                    parentPath.setSubqueryContext(c.ctx(), parentPath.getSchemaAlias());
                 
+                path.setSchemaAlias(c.getAlias(correlatedParentPath));
                 path.setMetaData(meta);
-                //filter = bindVariableForKeyPath(path, alias, filter);
-                filter = factory.equal(parentPath, path);
-                if (_member.fmd.isElementCollection() || _member.fmd.getDeclaredTypeCode() == JavaTypes.MAP) {
-                    Class<?> type = meta == null ? AbstractExpressionBuilder.TYPE_OBJECT : meta.getDescribedType(); 
-                    Value var = factory.newBoundVariable(c.getAlias(this), type);
-                    join = factory.bindVariable(var, parentPath);
+                Class<?> type = meta == null ? AbstractExpressionBuilder.TYPE_OBJECT : meta.getDescribedType(); 
+                Value var = factory.newBoundVariable(c.getAlias(this), type);
+                join = factory.bindVariable(var, parentPath);
+                
+                if (_member.fmd.getDeclaredTypeCode() == JavaTypes.MAP)
                     c.registerVariable(this, var, parentPath);
+                
+                if (_member.fmd.isElementCollection()) 
                     filter = CriteriaExpressionBuilder.and(factory, join, filter);
-                }
+                else 
+                    filter = factory.equal(parentPath, path);
+                
                 return CriteriaExpressionBuilder.and(factory, expr, filter);
             }
         }
@@ -563,15 +568,7 @@ public abstract class Joins {
            PathImpl<?,?> parent = map.getInnermostParentPath();
            Value val = c.getRegisteredVariable(map);
            org.apache.openjpa.kernel.exps.Path path = factory.newPath(val);
-           if (parent.inSubquery(subquery)) {
-               org.apache.openjpa.kernel.exps.Subquery subQ = subquery.getSubQ();
-               org.apache.openjpa.kernel.exps.Path var = factory.newPath(subQ);
-               ((org.apache.openjpa.kernel.exps.Path)var).setSchemaAlias(c.getAlias(this));
-               var.setMetaData(subQ.getMetaData());
-               return factory.mapKey(path, var);
-           } else {
-               return factory.getKey(path);
-           }
+           return factory.getKey(path);
        }
    }
        

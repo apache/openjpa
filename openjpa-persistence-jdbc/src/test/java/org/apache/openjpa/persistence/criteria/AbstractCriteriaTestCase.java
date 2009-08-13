@@ -92,8 +92,15 @@ public abstract class AbstractCriteriaTestCase extends TestCase {
     /**
      * Executes the given CriteriaQuery and JPQL string and compare their respective SQLs for equality.
      */
+    void assertEquivalence(CriteriaQuery<?> c, String jpql, String expectedSQL) {
+        assertEquivalence(c, jpql, null, null, expectedSQL);
+    }
+
+    /**
+     * Executes the given CriteriaQuery and JPQL string and compare their respective SQLs for equality.
+     */
     void assertEquivalence(CriteriaQuery<?> c, String jpql) {
-        assertEquivalence(c, jpql, null);
+        assertEquivalence(c, jpql, null, null, null);
     }
 
     /**
@@ -101,12 +108,21 @@ public abstract class AbstractCriteriaTestCase extends TestCase {
      * supplied parameters, if any.
      */
     void assertEquivalence(CriteriaQuery<?> c, String jpql, String[] paramNames, Object[] params) {
+        assertEquivalence(c, jpql, paramNames, params, null);
+    }
+    
+    /**
+     * Executes the given CriteriaQuery and JPQL string and compare their respective SQLs for equality. Sets the
+     * supplied parameters, if any.
+     */
+    void assertEquivalence(CriteriaQuery<?> c, String jpql, String[] paramNames, Object[] params,
+        String expectedSQL) {
         Query cQ = getEntityManager().createQuery(c);
         Query jQ = getEntityManager().createQuery(jpql);
         setParameters(cQ, paramNames, params);
         setParameters(jQ, paramNames, params);
 
-        executeAndCompareSQL(jpql, cQ, jQ);
+        executeAndCompareSQL(jpql, cQ, jQ, expectedSQL);
     }
 
     /**
@@ -118,7 +134,7 @@ public abstract class AbstractCriteriaTestCase extends TestCase {
         setParameters(cQ, params);
         setParameters(jQ, params);
 
-        executeAndCompareSQL(jpql, cQ, jQ);
+        executeAndCompareSQL(jpql, cQ, jQ, null);
     }
 
     /**
@@ -129,7 +145,7 @@ public abstract class AbstractCriteriaTestCase extends TestCase {
      *            The target SQL for the queries will be filled-in the given array.
      * @return true if both queries execute successfully.
      */
-    void executeAndCompareSQL(String jpql, Query cQ, Query jQ) {
+    void executeAndCompareSQL(String jpql, Query cQ, Query jQ, String expectedSQL) {
         List<String> jSQL = null;
         List<String> cSQL = null;
         try {
@@ -162,6 +178,12 @@ public abstract class AbstractCriteriaTestCase extends TestCase {
                 assertEquals(i + "-th SQL for JPQL and CriteriaQuery for " + jpql + " is different", jSQL.get(i), cSQL
                     .get(i));
             }
+        }
+        
+        if (expectedSQL != null) {
+            assertEquals("SQL for JPQL and ExpectedSQL for " + jpql + " is different", jSQL.get(0), 
+                    expectedSQL);
+            
         }
     }
 
