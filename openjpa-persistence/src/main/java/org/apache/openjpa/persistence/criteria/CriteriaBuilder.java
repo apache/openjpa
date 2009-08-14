@@ -159,17 +159,15 @@ public class CriteriaBuilder implements QueryBuilder, ExpressionParser {
         return new Expressions.Coalesce(Object.class);
     }
 
-    public <Y> Expression<Y> coalesce(Expression<? extends Y> x,
-        Expression<? extends Y> y) {
-    	return new Expressions.Coalesce(x.getClass()).value(x).value(y);
+    public <Y> Expression<Y> coalesce(Expression<? extends Y> x, Expression<? extends Y> y) {
+    	return new Expressions.Coalesce(x.getJavaType()).value(x).value(y);
     }
 
     public <Y> Expression<Y> coalesce(Expression<? extends Y> x, Y y) {
-    	return new Expressions.Coalesce(x.getClass()).value(x).value(y);
+    	return new Expressions.Coalesce(x.getJavaType()).value(x).value(y);
    }
 
-    public Expression<String> concat(Expression<String> x, 
-        Expression<String> y) {
+    public Expression<String> concat(Expression<String> x, Expression<String> y) {
     	return new Expressions.Concat(x, y);
     }
 
