@@ -36,57 +36,58 @@
  */
 package org.apache.openjpa.persistence.common.utils;
 
-import java.util.Map;
-import java.util.Date;
-import java.util.Collection;
-import java.util.EnumSet;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Iterator;
-import java.util.Collections;
-import java.util.LinkedList;
-import java.util.StringTokenizer;
-import java.util.ListIterator;
-import java.util.NoSuchElementException;
-import java.util.Arrays;
-import java.util.Comparator;
-import java.math.BigInteger;
-import java.math.BigDecimal;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
 import java.beans.BeanInfo;
 import java.beans.Introspector;
 import java.beans.PropertyDescriptor;
-import java.io.IOException;
-import java.io.ByteArrayOutputStream;
-import java.io.ObjectOutputStream;
 import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.io.ObjectInputStream;
-import java.io.StringWriter;
-import java.io.PrintWriter;
+import java.io.ObjectOutputStream;
 import java.io.PrintStream;
+import java.io.PrintWriter;
+import java.io.StringWriter;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.math.BigDecimal;
+import java.math.BigInteger;
 import java.net.URL;
-import javax.persistence.EntityManager;
-import javax.persistence.Query;
-import javax.persistence.EntityManagerFactory;
-import javax.management.IntrospectionException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.Date;
+import java.util.EnumSet;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.ListIterator;
+import java.util.Map;
+import java.util.NoSuchElementException;
+import java.util.StringTokenizer;
 
-import org.apache.regexp.RESyntaxException;
-import org.apache.regexp.RE;
-import org.apache.regexp.REUtil;
-import org.apache.openjpa.persistence.test.PersistenceTestCase;
-import org.apache.openjpa.persistence.OpenJPAEntityManagerFactory;
-import org.apache.openjpa.persistence.OpenJPAEntityManager;
-import org.apache.openjpa.persistence.JPAFacadeHelper;
-import org.apache.openjpa.persistence.OpenJPAPersistence;
+import javax.management.IntrospectionException;
+import javax.persistence.EntityManager;
+import javax.persistence.EntityManagerFactory;
+import javax.persistence.Query;
+
 import org.apache.openjpa.conf.OpenJPAConfiguration;
-import org.apache.openjpa.kernel.OpenJPAStateManager;
 import org.apache.openjpa.kernel.BrokerFactory;
+import org.apache.openjpa.kernel.OpenJPAStateManager;
 import org.apache.openjpa.lib.log.Log;
 import org.apache.openjpa.meta.ClassMetaData;
+import org.apache.openjpa.persistence.JPAFacadeHelper;
+import org.apache.openjpa.persistence.OpenJPAEntityManager;
+import org.apache.openjpa.persistence.OpenJPAEntityManagerFactory;
+import org.apache.openjpa.persistence.OpenJPAPersistence;
+import org.apache.openjpa.persistence.test.AbstractCachedEMFTestCase;
+import org.apache.regexp.RE;
+import org.apache.regexp.RESyntaxException;
+import org.apache.regexp.REUtil;
 
-public abstract class AbstractTestCase extends PersistenceTestCase {
+public abstract class AbstractTestCase extends AbstractCachedEMFTestCase {
 
     private String persistenceXmlResource;
     private Map<Map,OpenJPAEntityManagerFactory> emfs =
