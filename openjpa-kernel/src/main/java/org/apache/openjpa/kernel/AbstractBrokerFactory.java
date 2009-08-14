@@ -818,7 +818,7 @@ public abstract class AbstractBrokerFactory
      * Returns a set of all the open brokers associated with this factory. The
      * returned set is unmodifiable, and may contain null references.
      */
-    public Collection getOpenBrokers() {
+    public Collection<Broker> getOpenBrokers() {
         return Collections.unmodifiableCollection(_brokers);
     }
 
