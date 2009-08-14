@@ -39,7 +39,7 @@
         <dbcp.minIdle>2</dbcp.minIdle>
         <dbcp.maxWait>10000</dbcp.maxWait>
         <dbcp.args>MaxActive=${dbcp.maxActive},MaxIdle=${dbcp.maxIdle},MinIdle=${dbcp.minIdle},MaxWait=${dbcp.maxWait}</dbcp.args>
-        <derby.locks.waitTimeout>8</derby.locks.waitTimeout>        
+        <derby.locks.waitTimeout>10</derby.locks.waitTimeout>        
         <derby.locks.deadlockTimeout>5</derby.locks.deadlockTimeout>
         <tests.openjpa.allowfailure>ignore</tests.openjpa.allowfailure>
     </properties>
@@ -832,8 +832,6 @@
                         <exclude>org/apache/openjpa/persistence/meta/TestXMLPersistenceMetaDataSerializer.java</exclude>
                         <!-- TestPMMemory creates heapdumps etc and there's no real asserts within the test.  -->
                         <exclude>org/apache/openjpa/persistence/kernel/TestPMMemory.java</exclude>
-                        <!-- You can exclude the lockmgr test to save ~15 mins. -->
-                        <!-- <exclude>org/apache/openjpa/persistence/lockmgr/*.java</exclude> -->
 
                         <!-- ================================================================== -->
                         <!--  MetaModel tests are *temporarily* excluded to wait for            -->
@@ -870,7 +868,6 @@
                             <name>derby.locks.deadlockTimeout</name>
                             <value>${derby.locks.deadlockTimeout}</value>
                         </property>
-                        <!-- following causes lockmgr test failures  -->
                         <property>
                             <name>derby.locks.waitTimeout</name>
                             <value>${derby.locks.waitTimeout}</value>
