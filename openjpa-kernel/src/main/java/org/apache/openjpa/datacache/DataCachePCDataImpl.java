@@ -59,6 +59,10 @@ public class DataCachePCDataImpl
     public boolean isTimedOut() {
         return _exp != -1 && _exp < System.currentTimeMillis();
     }
+    
+    public long getTimeOut() {
+        return _exp;
+    }
 
     public synchronized Object getData(int index) {
         return super.getData(index);

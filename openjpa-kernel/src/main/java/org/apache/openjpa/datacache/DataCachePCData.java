@@ -32,4 +32,11 @@ public interface DataCachePCData
      * Whether this data is timed out.
      */
     public boolean isTimedOut();
+    
+    /**
+     * Gets the original timeout of this instance.
+     *  
+     * @return -1 for no timeout ever.
+     */
+    public long getTimeOut();
 }
