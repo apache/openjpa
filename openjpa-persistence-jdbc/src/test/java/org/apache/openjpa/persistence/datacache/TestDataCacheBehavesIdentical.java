@@ -27,10 +27,8 @@ import org.apache.openjpa.persistence.OpenJPAEntityManagerFactorySPI;
 import org.apache.openjpa.persistence.OpenJPAEntityManagerSPI;
 import org.apache.openjpa.persistence.StoreCache;
 import org.apache.openjpa.persistence.StoreCacheImpl;
-import org.apache.openjpa.persistence.cache.common.apps.
-        BidirectionalOne2OneOwned;
-import org.apache.openjpa.persistence.cache.common.apps.
-        BidirectionalOne2OneOwner;
+import org.apache.openjpa.persistence.querycache.common.apps.BidirectionalOne2OneOwned;
+import org.apache.openjpa.persistence.querycache.common.apps.BidirectionalOne2OneOwner;
 import org.apache.openjpa.persistence.common.utils.AbstractTestCase;
 import org.apache.openjpa.persistence.datacache.common.apps.PObject;
 

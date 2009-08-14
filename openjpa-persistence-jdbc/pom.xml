@@ -673,7 +673,7 @@
                         <exclude>org/apache/openjpa/persistence/annotations/TestEntityOrderBy.java</exclude>
                         <exclude>org/apache/openjpa/persistence/annotations/TestPropertyAccess.java</exclude>
                         <exclude>org/apache/openjpa/persistence/annotations/TestVersion.java</exclude>
-                        <exclude>org/apache/openjpa/persistence/cache/TestQueryCache.java</exclude>
+                        <exclude>org/apache/openjpa/persistence/querycache/TestQueryCache.java</exclude>
                         <exclude>org/apache/openjpa/persistence/conf/TestOpenJPAConfiguration.java</exclude>
                         <exclude>org/apache/openjpa/persistence/datacache/TestCacheMultiThreadedLoad.java</exclude>
                         <exclude>org/apache/openjpa/persistence/datacache/TestConcurrentDataCache.java</exclude>

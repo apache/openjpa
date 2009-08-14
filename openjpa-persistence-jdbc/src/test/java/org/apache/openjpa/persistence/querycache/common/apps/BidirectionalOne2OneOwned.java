@@ -1,3 +1,6 @@
+package org.apache.openjpa.persistence.querycache.common.apps;
+
+import javax.persistence.*;
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -17,9 +20,6 @@
  * under the License.    
  */
 
-package org.apache.openjpa.persistence.cache.common.apps;
-
-import javax.persistence.*;
 /**
  * A persistent entity that is owned by unidirectional single-valued 
  * relationship.
@@ -33,7 +33,7 @@ import javax.persistence.*;
  * 
  * Used to test identical application behavior with or without DataCache.
  * 
- * @see UnidirectionalOne2OneOwned
+ * @see BidirectionalOne2OneOwned
  * @see TestDataCacheBehavesIdentical
  * @see Section 2.1.8.3 of JPA Specification Version 1.0
  * 
@@ -42,11 +42,14 @@ import javax.persistence.*;
  */
 
 @Entity
-public class UnidirectionalOne2OneOwned {
+public class BidirectionalOne2OneOwned {
 	@Id
 	private long id;
 	
 	private String name;
+	
+	@OneToOne(mappedBy="owned")
+	private BidirectionalOne2OneOwner owner;
 	
 	@Version
 	private int version;
@@ -67,6 +70,14 @@ public class UnidirectionalOne2OneOwned {
 		this.name = name;
 	}
 
+	public BidirectionalOne2OneOwner getOwner() {
+		return owner;
+	}
+
+	public void setOwner(BidirectionalOne2OneOwner owner) {
+		this.owner = owner;
+	}
+
 	public int getVersion() {
 		return version;
 	}
@@ -74,4 +85,5 @@ public class UnidirectionalOne2OneOwned {
 	public String toString() {
 		return this.getClass().getSimpleName() + ":" + id + ":" + name;
 	}
+
 }

@@ -17,38 +17,36 @@
  * under the License.    
  */
 
-package org.apache.openjpa.persistence.cache.common.apps;
+package org.apache.openjpa.persistence.querycache.common.apps;
 
 import javax.persistence.*;
 
 /**
- * A persistent entity that owns unidirectional single-valued relationship.
- * A unidirectional relationship has only one owning side, which is this 
- * receiver.
+ * A persistent entity that owns bidirectional single-valued relationship.
+ * A bidirectional relationship has only an owning side, which is this receiver.
  * Given the following relationship between Entity A and Entity B:
- *   Entity A refers a single instance of Entity B 
- *   Entity B does not refer Entity A (owner)
- * Entity A is called owner and Entity B is called owned with respect
- * to the above relationship.
+ *   Entity A refers to a single instance of Entity B 
+ *   Entity B refers to a single instance of Entity A 
+ * If Entity B qualifies its relation to the Entity A with mappedBy 
+ * annotation qualifier then Entity B is called owned and Entity A is called 
+ * owner with respect to the above relationship.
  * 
  * Used to test identical application behavior with or without DataCache.
  * 
- * @see UnidirectionalOne2OneOwned
- * @see TestDataCacheBehavesIdentical
- * @see Section 2.1.8.3 of JPA Specification Version 1.0
+ * @see BidirectionalOne2OneOwned
  * 
  * @author Pinaki Poddar
  *
  */
 @Entity
-public class UnidirectionalOne2OneOwner {
+public class BidirectionalOne2OneOwner {
 	@Id
 	private long id;
 	
 	private String name;
 	
 	@OneToOne
-	private UnidirectionalOne2OneOwned owned;
+	private BidirectionalOne2OneOwned owned;
 	
 	@Version
 	private int version;
@@ -69,11 +67,11 @@ public class UnidirectionalOne2OneOwner {
 		this.name = name;
 	}
 
-	public UnidirectionalOne2OneOwned getOwned() {
+	public BidirectionalOne2OneOwned getOwned() {
 		return owned;
 	}
 
-	public void setOwned(UnidirectionalOne2OneOwned owned) {
+	public void setOwned(BidirectionalOne2OneOwned owned) {
 		this.owned = owned;
 	}
 	
@@ -84,4 +82,5 @@ public class UnidirectionalOne2OneOwner {
 	public String toString() {
 		return this.getClass().getSimpleName() + ":" + id + ":" + name;
 	}
+
 }

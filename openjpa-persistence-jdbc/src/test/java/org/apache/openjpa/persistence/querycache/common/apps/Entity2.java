@@ -16,7 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.    
  */
-package org.apache.openjpa.persistence.cache.common.apps;
+package org.apache.openjpa.persistence.querycache.common.apps;
 
 import java.io.Serializable;
 import javax.persistence.Basic;

@@ -16,15 +16,16 @@
  * specific language governing permissions and limitations
  * under the License.    
  */
-package org.apache.openjpa.persistence.cache;
+package org.apache.openjpa.persistence.querycache;
 
 import java.util.List;
+
 import javax.persistence.EntityManager;
 import javax.persistence.NamedQuery;
 
-import org.apache.openjpa.persistence.cache.common.apps.Entity1;
-import org.apache.openjpa.persistence.cache.common.apps.Entity2;
 import org.apache.openjpa.persistence.common.utils.AbstractTestCase;
+import org.apache.openjpa.persistence.querycache.common.apps.Entity1;
+import org.apache.openjpa.persistence.querycache.common.apps.Entity2;
 
 @NamedQuery(name = "setParam1",
     query = "SELECT o FROM Entity1 o WHERE o.pk LIKE :pk")
@@ -33,7 +34,7 @@ public class TestQueryCache extends AbstractTestCase {
     EntityManager em;
 
     public TestQueryCache(String name) {
-        super(name);
+        super(name, "");
         System.setProperty("cactus.contextURL",
             "http://localhost:9000/cachecactus");
         em = currentEntityManager();
@@ -111,7 +112,7 @@ public class TestQueryCache extends AbstractTestCase {
             .executeUpdate();
         assertEquals(ret, 1);
 
-//cascade remove doesn't remove the entity2
+        // cascade remove doesn't remove the entity2
         int retTmp = em.createQuery("Delete FROM Entity2 o WHERE o.pk LIKE :pk")
             .setParameter("pk", entity1.getEntity2Field().getPk())
             .executeUpdate();
@@ -177,6 +178,11 @@ public class TestQueryCache extends AbstractTestCase {
         assertEquals(1, ret.size());
 
         endTx(em);
+    }
+    
+    @Override
+    public String getPersistenceUnitName() { 
+        return "QueryCache";
     }
 
     //rest of the interface is tested by the CTS

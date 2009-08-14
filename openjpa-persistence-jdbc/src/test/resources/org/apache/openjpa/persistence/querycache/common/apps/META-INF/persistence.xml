@@ -22,8 +22,8 @@
     http://java.sun.com/xml/ns/persistence/persistence_1_0.xsd"
   version="1.0">
 
-	<persistence-unit name="TestConv" transaction-type="RESOURCE_LOCAL">
-	    <class>org.apache.openjpa.persistence.cache.common.apps.Entity1</class>
-	    <class>org.apache.openjpa.persistence.cache.common.apps.Entity2</class>
+	<persistence-unit name="QueryCache" transaction-type="RESOURCE_LOCAL">
+	    <class>org.apache.openjpa.persistence.querycache.common.apps.Entity1</class>
+	    <class>org.apache.openjpa.persistence.querycache.common.apps.Entity2</class>
 	</persistence-unit>
 </persistence>
