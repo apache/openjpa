@@ -23,17 +23,15 @@ import java.util.Set;
 
 import javax.validation.ConstraintViolation;
 import javax.validation.ConstraintViolationException;
-import javax.validation.Validation;
 
 import org.apache.openjpa.persistence.OpenJPAEntityManager;
 import org.apache.openjpa.persistence.OpenJPAEntityManagerFactorySPI;
 import org.apache.openjpa.persistence.OpenJPAPersistence;
-import org.apache.openjpa.persistence.test.AbstractCachedEMFTestCase;
 import org.apache.openjpa.persistence.test.AllowFailure;
 import org.apache.openjpa.persistence.test.PersistenceTestCase;
 
 
-public class TestMappedSuper extends AbstractCachedEMFTestCase {
+public class TestMappedSuper extends PersistenceTestCase {
 
     /*
      * Verify constraints defined via XML on a mapped superclass are validated.

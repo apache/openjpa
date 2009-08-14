@@ -21,7 +21,6 @@ package org.apache.openjpa.integration.validation;
 import java.util.Set;
 
 import javax.persistence.Query;
-import javax.persistence.spi.ValidationMode;
 import javax.validation.ConstraintViolation;
 import javax.validation.ConstraintViolationException;
 
@@ -30,9 +29,7 @@ import org.apache.openjpa.lib.log.Log;
 import org.apache.openjpa.persistence.OpenJPAEntityManager;
 import org.apache.openjpa.persistence.OpenJPAEntityManagerFactorySPI;
 import org.apache.openjpa.persistence.OpenJPAPersistence;
-import org.apache.openjpa.persistence.test.AbstractCachedEMFTestCase;
 import org.apache.openjpa.persistence.test.PersistenceTestCase;
-import org.apache.openjpa.persistence.test.SingleEMFTestCase;
 
 /**
  * Tests the new Bean Validation constraint support in the JPA 2.0 spec by
@@ -78,7 +75,7 @@ import org.apache.openjpa.persistence.test.SingleEMFTestCase;
  *
  * @version $Rev$ $Date$
  */
-public class TestConstraints extends AbstractCachedEMFTestCase {
+public class TestConstraints extends PersistenceTestCase {
 
     private static OpenJPAEntityManagerFactorySPI emf = null;
     
