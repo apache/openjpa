@@ -512,13 +512,12 @@
                 </repository>
             </repositories>
         </profile>
-
     </profiles>
 
     <dependencies>
         <dependency>
             <groupId>org.apache.openjpa</groupId>
-            <artifactId>openjpa</artifactId>
+            <artifactId>openjpa-persistence-jdbc</artifactId>
             <version>${pom.version}</version>
         </dependency>
         <dependency>
