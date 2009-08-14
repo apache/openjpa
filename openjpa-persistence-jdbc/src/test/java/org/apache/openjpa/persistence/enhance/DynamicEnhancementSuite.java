@@ -66,9 +66,6 @@ import org.apache.openjpa.persistence.kernel.TestProxies2;
 import org.apache.openjpa.persistence.kernel.TestSavepoints;
 import org.apache.openjpa.persistence.kernel.TestStateManagerImplData;
 import org.apache.openjpa.persistence.kernel.TestStoreBlob;
-import org.apache.openjpa.persistence.lockmgr.TestMixedLockManagerLockBasic;
-import org.apache.openjpa.persistence.lockmgr.
-    TestMixedLockManagerLockPermutation;
 import org.apache.openjpa.persistence.meta.TestMetamodel;
 import org.apache.openjpa.persistence.query.TestComplexQueries;
 import org.apache.openjpa.persistence.query.TestNamedQueries;
@@ -171,8 +168,6 @@ public class DynamicEnhancementSuite extends TestCase {
             suite.addTestSuite(TestQueryResultSize.class);
             suite.addTestSuite(TestQueryResultSize.class);
             suite.addTestSuite(TestDetachNoCascade.class);
-            suite.addTestSuite(TestMixedLockManagerLockBasic.class);
-            suite.addTestSuite(TestMixedLockManagerLockPermutation.class);
             // end Subclassing failing tests
 
             // org.apache.openjpa.persistence.enhance

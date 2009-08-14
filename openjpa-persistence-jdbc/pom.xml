@@ -39,7 +39,7 @@
         <dbcp.minIdle>2</dbcp.minIdle>
         <dbcp.maxWait>10000</dbcp.maxWait>
         <dbcp.args>MaxActive=${dbcp.maxActive},MaxIdle=${dbcp.maxIdle},MinIdle=${dbcp.minIdle},MaxWait=${dbcp.maxWait}</dbcp.args>
-        <derby.locks.waitTimeout>60</derby.locks.waitTimeout>        
+        <derby.locks.waitTimeout>8</derby.locks.waitTimeout>        
         <derby.locks.deadlockTimeout>5</derby.locks.deadlockTimeout>
         <tests.openjpa.allowfailure>ignore</tests.openjpa.allowfailure>
     </properties>
