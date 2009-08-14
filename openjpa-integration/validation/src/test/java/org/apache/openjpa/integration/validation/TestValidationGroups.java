@@ -32,6 +32,7 @@ import org.apache.openjpa.lib.log.Log;
 import org.apache.openjpa.persistence.OpenJPAEntityManager;
 import org.apache.openjpa.persistence.OpenJPAEntityManagerFactorySPI;
 import org.apache.openjpa.persistence.OpenJPAPersistence;
+import org.apache.openjpa.persistence.test.AbstractCachedEMFTestCase;
 import org.apache.openjpa.persistence.test.PersistenceTestCase;
 
 /**
@@ -56,7 +57,7 @@ import org.apache.openjpa.persistence.test.PersistenceTestCase;
  *
  * @version $Rev$ $Date$
  */
-public class TestValidationGroups extends PersistenceTestCase {
+public class TestValidationGroups extends AbstractCachedEMFTestCase {
 
     /**
      * 1a) verify validation occurs using the default validation groups

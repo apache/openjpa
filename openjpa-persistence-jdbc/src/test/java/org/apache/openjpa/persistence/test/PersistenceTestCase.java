@@ -57,7 +57,7 @@ import org.apache.openjpa.persistence.OpenJPAPersistence;
  * If a extended test does not want cached EntityManagerFactory
  * then it must specify FRESH_EMF as one of the arguments of #setUp(Object[]).
  * 
- * 
+ * @deprecated use AbstractEMFCacheTestCase or AbstractPersistenceTestCase instead
  */
 public abstract class PersistenceTestCase
     extends TestCase {

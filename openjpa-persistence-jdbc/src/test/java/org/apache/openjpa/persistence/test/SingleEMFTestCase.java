@@ -37,7 +37,7 @@ import org.apache.openjpa.persistence.OpenJPAEntityManagerFactorySPI;
  *   
  */
 public abstract class SingleEMFTestCase
-    extends PersistenceTestCase {
+    extends AbstractCachedEMFTestCase  {
 
     protected OpenJPAEntityManagerFactorySPI emf;
 

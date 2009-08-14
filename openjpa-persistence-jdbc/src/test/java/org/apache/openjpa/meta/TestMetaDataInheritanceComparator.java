@@ -20,10 +20,11 @@ package org.apache.openjpa.meta;
 
 import javax.persistence.EntityManagerFactory;
 
+import org.apache.openjpa.persistence.test.AbstractCachedEMFTestCase;
 import org.apache.openjpa.persistence.test.PersistenceTestCase;
 import org.apache.openjpa.persistence.JPAFacadeHelper;
 
-public class TestMetaDataInheritanceComparator extends PersistenceTestCase {
+public class TestMetaDataInheritanceComparator extends AbstractCachedEMFTestCase {
 
     public void testInheritanceComparatorWithBase() {
         inheritanceComparatorHelper(true);

@@ -44,9 +44,10 @@ import org.apache.openjpa.persistence.OpenJPAEntityManagerSPI;
 import org.apache.openjpa.persistence.OpenJPAPersistence;
 import org.apache.openjpa.persistence.jdbc.XMLPersistenceMappingParser;
 import org.apache.openjpa.persistence.jdbc.XMLPersistenceMappingSerializer;
+import org.apache.openjpa.persistence.test.AbstractCachedEMFTestCase;
 import org.apache.openjpa.persistence.test.PersistenceTestCase;
 
-public class TestOrderColumnXML extends PersistenceTestCase {       
+public class TestOrderColumnXML extends AbstractCachedEMFTestCase {       
 
     /*
      * Validates the use of the nullable attribute on OrderColumn through

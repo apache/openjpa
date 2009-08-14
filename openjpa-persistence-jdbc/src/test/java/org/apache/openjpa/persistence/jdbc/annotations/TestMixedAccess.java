@@ -21,9 +21,10 @@ package org.apache.openjpa.persistence.jdbc.annotations;
 import javax.persistence.PersistenceException;
 import javax.persistence.EntityManagerFactory;
 
+import org.apache.openjpa.persistence.test.AbstractCachedEMFTestCase;
 import org.apache.openjpa.persistence.test.PersistenceTestCase;
 
-public class TestMixedAccess extends PersistenceTestCase {
+public class TestMixedAccess extends AbstractCachedEMFTestCase {
 
     public void testMixedAccessEntityError() {
         try {

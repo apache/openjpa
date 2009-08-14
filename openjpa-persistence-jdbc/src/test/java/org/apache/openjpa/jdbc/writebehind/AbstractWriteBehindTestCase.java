@@ -26,12 +26,13 @@ import org.apache.openjpa.jdbc.writebehind.entities.SimpleNonGeneratedIdEntity;
 import org.apache.openjpa.jdbc.writebehind.entities.SimpleTableGeneratedIdEntity;
 import org.apache.openjpa.persistence.OpenJPAEntityManagerFactorySPI;
 import org.apache.openjpa.persistence.OpenJPAEntityManagerSPI;
+import org.apache.openjpa.persistence.test.AbstractCachedEMFTestCase;
 import org.apache.openjpa.persistence.test.PersistenceTestCase;
 import org.apache.openjpa.writebehind.WriteBehindCache;
 import org.apache.openjpa.writebehind.WriteBehindCacheManager;
 import org.apache.openjpa.writebehind.WriteBehindCallback;
 
-public abstract class AbstractWriteBehindTestCase extends PersistenceTestCase {
+public abstract class AbstractWriteBehindTestCase extends AbstractCachedEMFTestCase  {
     protected static Object[] writeBehindProps =
         new Object[] { 
             "openjpa.DataCache", "true",

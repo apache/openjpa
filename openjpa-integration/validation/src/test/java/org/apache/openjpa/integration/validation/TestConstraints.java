@@ -30,6 +30,7 @@ import org.apache.openjpa.lib.log.Log;
 import org.apache.openjpa.persistence.OpenJPAEntityManager;
 import org.apache.openjpa.persistence.OpenJPAEntityManagerFactorySPI;
 import org.apache.openjpa.persistence.OpenJPAPersistence;
+import org.apache.openjpa.persistence.test.AbstractCachedEMFTestCase;
 import org.apache.openjpa.persistence.test.PersistenceTestCase;
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
 
@@ -77,7 +78,7 @@ import org.apache.openjpa.persistence.test.SingleEMFTestCase;
  *
  * @version $Rev$ $Date$
  */
-public class TestConstraints extends PersistenceTestCase {
+public class TestConstraints extends AbstractCachedEMFTestCase {
 
     private static OpenJPAEntityManagerFactorySPI emf = null;
     

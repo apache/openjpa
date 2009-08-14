@@ -20,11 +20,12 @@ package org.apache.openjpa.persistence.xml;
 
 import javax.persistence.EntityManagerFactory;
 
+import org.apache.openjpa.persistence.test.AbstractCachedEMFTestCase;
 import org.apache.openjpa.persistence.test.PersistenceTestCase;
 import org.apache.openjpa.persistence.OpenJPAPersistence;
 import org.apache.openjpa.enhance.PCEnhancer;
 
-public class TestPersistenceUnitWithoutXSD extends PersistenceTestCase {
+public class TestPersistenceUnitWithoutXSD extends AbstractCachedEMFTestCase {
 
     public void testPersistenceUnitWithoutXSD() {
         EntityManagerFactory emf = OpenJPAPersistence

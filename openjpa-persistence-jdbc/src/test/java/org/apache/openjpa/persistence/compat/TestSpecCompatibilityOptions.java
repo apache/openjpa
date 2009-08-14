@@ -22,10 +22,11 @@ import org.apache.openjpa.conf.Compatibility;
 import org.apache.openjpa.conf.Specification;
 import org.apache.openjpa.persistence.OpenJPAEntityManagerFactorySPI;
 import org.apache.openjpa.persistence.OpenJPAPersistence;
+import org.apache.openjpa.persistence.test.AbstractCachedEMFTestCase;
 import org.apache.openjpa.persistence.test.PersistenceTestCase;
 
 public class TestSpecCompatibilityOptions 
-    extends PersistenceTestCase {
+extends AbstractCachedEMFTestCase {
     
     /*
      * Verifies compatibility options and spec level are appropriate

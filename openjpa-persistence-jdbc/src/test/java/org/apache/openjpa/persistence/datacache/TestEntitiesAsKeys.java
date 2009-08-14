@@ -24,9 +24,10 @@ import java.util.Map;
 import javax.persistence.EntityManager;
 
 import org.apache.openjpa.persistence.OpenJPAEntityManagerFactorySPI;
+import org.apache.openjpa.persistence.test.AbstractCachedEMFTestCase;
 import org.apache.openjpa.persistence.test.PersistenceTestCase;
 
-public class TestEntitiesAsKeys extends PersistenceTestCase {
+public class TestEntitiesAsKeys extends AbstractCachedEMFTestCase {
 
     OpenJPAEntityManagerFactorySPI emf =
         createEMF(MapHolder.class, MapEmbeddable.class, "openjpa.DataCache", "true", "openjpa.RemoteCommitProvider",

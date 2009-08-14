@@ -30,11 +30,12 @@ import org.apache.openjpa.persistence.JPAFacadeHelper;
 import org.apache.openjpa.persistence.OpenJPAEntityManagerFactorySPI;
 import org.apache.openjpa.persistence.query.NamedQueryEntity;
 import org.apache.openjpa.persistence.simple.AllFieldTypes;
+import org.apache.openjpa.persistence.test.AbstractCachedEMFTestCase;
 import org.apache.openjpa.persistence.test.PersistenceTestCase;
 import org.apache.openjpa.lib.log.Log;
 
 public class TestCacheMarshallerEndToEnd
-    extends PersistenceTestCase {
+    extends AbstractCachedEMFTestCase  {
 
     private static final Object[] STORE_PROPS = new Object[] {
         "openjpa.CacheMarshallers",
