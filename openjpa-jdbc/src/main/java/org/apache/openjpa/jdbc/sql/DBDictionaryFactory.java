@@ -223,6 +223,8 @@ public class DBDictionaryFactory {
             return dbdictionaryPlugin.unalias("sybase");
         if (prod.indexOf("informix") != -1 || prod.indexOf("ids") != -1)
             return dbdictionaryPlugin.unalias("informix");
+        if (prod.indexOf("ingres") != -1)
+            return dbdictionaryPlugin.unalias("ingres");
         if (prod.indexOf("hsql") != -1)
             return dbdictionaryPlugin.unalias("hsql");
         if (prod.indexOf("foxpro") != -1)

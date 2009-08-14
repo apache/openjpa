@@ -105,6 +105,7 @@ public abstract class AbstractTestCase extends PersistenceTestCase {
         INFORMIX,
         POINTBASE,
         SYBASE,
+        INGRES,
     }
 
     protected String multiThreadExecuting = null;
