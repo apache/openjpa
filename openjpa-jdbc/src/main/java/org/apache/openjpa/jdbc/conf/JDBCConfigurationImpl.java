@@ -205,6 +205,7 @@ public class JDBCConfigurationImpl
             "h2", "org.apache.openjpa.jdbc.sql.H2Dictionary",
             "hsql", "org.apache.openjpa.jdbc.sql.HSQLDictionary",
             "informix", "org.apache.openjpa.jdbc.sql.InformixDictionary",
+            "ingres", "org.apache.openjpa.jdbc.sql.IngresDictionary",
             "jdatastore", "org.apache.openjpa.jdbc.sql.JDataStoreDictionary",
             "mysql", "org.apache.openjpa.jdbc.sql.MySQLDictionary",
             "oracle", "org.apache.openjpa.jdbc.sql.OracleDictionary",

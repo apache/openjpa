@@ -321,6 +321,20 @@ by OpenJPA.
                         5.5 (5.5)
                     </entry>
                 </row>
+                <row>
+                    <entry colname="dbname">
+                        <link linkend="dbsupport_ingres">Ingres Database</link>
+                    </entry>
+                    <entry colname="dbversion">
+                        9.2
+                    </entry>
+                    <entry colname="drivname">
+                        iijdbc
+                    </entry>
+                    <entry colname="drivversion">
+                        9.2-3.4.8
+                    </entry>
+                </row>
             </tbody>
         </tgroup>
     </table>
@@ -1062,6 +1076,33 @@ the column type mapped by the BigDecimal Java type. See
 more detail. Alternatively, application can set the precision and scale using
 the standard <classname>Column</classname> annotation, described in
 <xref linkend="jpa_overview_mapping_column"/>.
+                    </para>
+                </listitem>
+            </itemizedlist>
+        </section>
+    </section>
+    <section id="dbsupport_ingres">
+        <title>
+            Ingres Database
+        </title>
+<!--        <example id="example_props_ingres">-->
+<!--            <title>-->
+<!--                Example properties for Sybase-->
+<!--            </title>-->
+<!--<programlisting>-->
+<!--openjpa.ConnectionDriverName: com.sybase.jdbc2.jdbc.SybDriver-->
+<!--openjpa.ConnectionURL: \-->
+<!--    jdbc:sybase:Tds:SERVER_NAME:4100/DB_NAME?ServiceName=DB_NAME&amp;BE_AS_JDBC_COMPLIANT_AS_POSSIBLE=true-->
+<!--</programlisting>-->
+<!--        </example>-->
+        <section id="dbsupport_ingres_issues">
+            <title>
+                Known issues with Ingres
+            </title>
+            <itemizedlist>
+                <listitem>
+                    <para> 
+                        None.
                     </para>
                 </listitem>
             </itemizedlist>

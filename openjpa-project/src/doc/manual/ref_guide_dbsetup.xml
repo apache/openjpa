@@ -674,6 +674,19 @@ class.
 class.
                 </para>
             </listitem>
+            <listitem>
+                <para>
+                <indexterm>
+                    <primary>
+                        Ingres
+                    </primary>
+                </indexterm>
+<literal>ingres</literal>: Dictionary for Ingres. This is an alias for the
+<ulink url="../javadoc/org/apache/openjpa/jdbc/sql/IngresDictionary.html">
+<classname>org.apache.openjpa.jdbc.sql.IngresDictionary</classname></ulink>
+class.
+                </para>
+            </listitem>
         </itemizedlist>
         <para>
 The example below demonstrates how to set a dictionary and configure its
