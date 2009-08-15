@@ -1628,6 +1628,12 @@ public class StateManagerImpl
         dirty(field, null, true);
     }
 
+    private boolean isEmbeddedNotUpdatable() {
+        // embeddable object returned from query result is not uptable
+        return (_ownerId != null ||
+            _state instanceof ENonTransState);
+    }
+
     /**
      * Make the given field dirty.
      *
@@ -1652,8 +1658,13 @@ public class StateManagerImpl
             }
 
             if (isEmbedded()) {
-                // notify owner of change
-                _owner.dirty(_ownerIndex, Boolean.TRUE, loadFetchGroup);
+                if (isEmbeddedNotUpdatable())
+                    throw new UserException(_loc.get
+                        ("cant-update-embed-in-query-result")).setFailedObject
+                        (getManagedInstance());
+                else
+                    // notify owner of change
+                    _owner.dirty(_ownerIndex, Boolean.TRUE, loadFetchGroup);
             }
 
             // is this a direct mutation of an sco field?
