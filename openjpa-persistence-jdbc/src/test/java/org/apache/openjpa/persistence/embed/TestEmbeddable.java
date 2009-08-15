@@ -1621,9 +1621,9 @@ public class TestEmbeddable extends SingleEMFTestCase {
         }
         for (int i = 0; i < query2.length; i++) {
             try {
-            rs = em.createQuery(query2[i]).getResultList();
+                rs = em.createQuery(query2[i]).getResultList();
             } catch(ArgumentException e) {
-                // as expected
+                // as expected: comparison over embedded object is not allowed
             }
         }
         EntityTransaction tran = em.getTransaction();
@@ -1692,7 +1692,7 @@ public class TestEmbeddable extends SingleEMFTestCase {
                 " from EntityA_Coll_Embed_Embed a1, in (a1.embeds) e2) " +
                 " order by e.intVal3",
             // non-corelated subquery:
-            // TODO: known problem in table alias resolution for subquery
+            // Fixed in OPENJPA-1185: known problem in table alias resolution for subquery
             //       the genarated SQL subquery should be non-corelated,
             //       but generated corelated subquery.
             "select e, e.intVal1, e.embed.intVal2 from " +
@@ -1717,7 +1717,7 @@ public class TestEmbeddable extends SingleEMFTestCase {
                 " from EntityA_Coll_Embed_Embed a, in (a.embeds) e) " +
                 " order by e.intVal3",
             // corelated subquery:
-            // TODO: known problem in table alias resolution for subquery
+            // Fixed in OPENJPA-1185: known problem in table alias resolution for subquery
             //       the genarated SQL subquery should be corelated,
             //       but generated non-corelated subquery.
             "select e, e.intVal1, e.embed.intVal2 from " +
@@ -1777,7 +1777,7 @@ public class TestEmbeddable extends SingleEMFTestCase {
             try {
             rs = em.createQuery(query3[i]).setParameter(1, obj).getResultList();
             } catch(ArgumentException e) {
-                // as expected
+                // as expected: comparison over embedded object is not allowed
             }
         }
 
@@ -1855,7 +1855,7 @@ public class TestEmbeddable extends SingleEMFTestCase {
                 setParameter(1, (Embed) obj).
                 getResultList();
             } catch (ArgumentException e) {
-                // expected exception
+                // expected exception: comparison over embedded object is not allowed
             }
         }
         try {
@@ -1865,7 +1865,7 @@ public class TestEmbeddable extends SingleEMFTestCase {
                 setParameter(1, ea.getEmbed()).
                 getResultList();
         } catch (ArgumentException e) {
-            // expected exception
+            // expected exception: comparison over embedded object is not allowed
         }
         em.clear();
 
