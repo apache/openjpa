@@ -20,21 +20,25 @@ package org.apache.openjpa.persistence.test;
 
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.HashMap;
+
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.Persistence;
 
 import junit.framework.TestCase;
 import junit.framework.TestResult;
+
+import org.apache.openjpa.jdbc.conf.JDBCConfiguration;
+import org.apache.openjpa.jdbc.sql.DBDictionary;
 import org.apache.openjpa.kernel.AbstractBrokerFactory;
 import org.apache.openjpa.kernel.Broker;
 import org.apache.openjpa.meta.ClassMetaData;
-import org.apache.openjpa.persistence.OpenJPAEntityManagerFactorySPI;
 import org.apache.openjpa.persistence.JPAFacadeHelper;
+import org.apache.openjpa.persistence.OpenJPAEntityManagerFactorySPI;
 
 /**
  * Base test class providing persistence utilities.
@@ -194,5 +198,10 @@ public abstract class PersistenceTestCase
     protected String entityName(EntityManagerFactory emf, Class c) {
         ClassMetaData meta = JPAFacadeHelper.getMetaData(emf, c);
         return (meta == null) ? null : meta.getTypeAlias();
+    }
+    
+    protected DBDictionary getDBDictionary(OpenJPAEntityManagerFactorySPI emf) {
+        return ((JDBCConfiguration) emf.getConfiguration())
+            .getDBDictionaryInstance();
     }
 }

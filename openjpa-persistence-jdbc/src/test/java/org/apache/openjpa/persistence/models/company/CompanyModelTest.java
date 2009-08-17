@@ -18,12 +18,23 @@
  */
 package org.apache.openjpa.persistence.models.company;
 
-import java.beans.*;
-import java.io.*;
-import java.util.*;
-import javax.persistence.*;
-import junit.framework.*;
-import org.apache.openjpa.persistence.test.*;
+import java.beans.ExceptionListener;
+import java.beans.Introspector;
+import java.beans.PropertyDescriptor;
+import java.beans.XMLDecoder;
+import java.util.Collection;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.TreeSet;
+
+import junit.framework.AssertionFailedError;
+
+import org.apache.openjpa.persistence.OpenJPAEntityManagerFactorySPI;
+import org.apache.openjpa.persistence.test.SingleEMTestCase;
 
 /** 
  * Generic test case that will be extended by a concrete company
@@ -36,11 +47,13 @@ public abstract class CompanyModelTest
 
     private static Map<Class,Class> factoryClasses;
     private Map<Class,Class> impls;
+    
+    private static Boolean canExecute = null; 
 
     public void setUp() {
         // make a map of the implementations based on the class names in
         // the current package of the test subclass
-        impls = new HashMap<Class,Class>();
+        impls = new HashMap<Class, Class>();
         impls.put(IAddress.class, localClass("Address"));
         impls.put(ICompany.class, localClass("Company"));
         impls.put(ICustomer.class, localClass("Customer"));
@@ -53,7 +66,15 @@ public abstract class CompanyModelTest
         impls.put(IProduct.class, localClass("Product"));
 
         setUp(impls.values().toArray(new Class[impls.size()]));
-        checkModel();
+        
+        if (canExecute == null) {
+            // This testcase requires subselects. Skip it if subselects will not
+            // work.
+            canExecute = getDBDictionary(emf).supportsSubselect;
+        }
+        if (canExecute) {
+            checkModel();
+        }
     }
 
     private Class localClass(String name) {
@@ -72,26 +93,29 @@ public abstract class CompanyModelTest
      * should always return all known instances in the database.
      */
     public void testBasicQueries() throws Exception {
-        for (Class c : impls.values()) {
-            for (PropertyDescriptor pd :
-                Introspector.getBeanInfo(c).getPropertyDescriptors()) {
+        if (canExecute) {
+            for (Class c : impls.values()) {
+                for (PropertyDescriptor pd : Introspector.getBeanInfo(c)
+                    .getPropertyDescriptors()) {
 
-                if (pd.getWriteMethod() == null) // ignore read-only
-                    continue;
+                    if (pd.getWriteMethod() == null) // ignore read-only
+                        continue;
 
-                Set<String> queries = new TreeSet<String>();
-                getBasicQueries(queries, pd, "x.");
+                    Set<String> queries = new TreeSet<String>();
+                    getBasicQueries(queries, pd, "x.");
 
-                StringBuilder str = new StringBuilder();
+                    StringBuilder str = new StringBuilder();
 
-                // execute the individual queries
-                for (String query : queries) {
-                    find(c, "where " + query);
-                    str.append(str.length() > 0 ? " or " : "").append(query);
+                    // execute the individual queries
+                    for (String query : queries) {
+                        find(c, "where " + query);
+                        str.append(str.length() > 0 ? " or " : "")
+                            .append(query);
+                    }
+
+                    // now execute all the queries combined
+                    find(c, "where " + str);
                 }
-
-                // now execute all the queries combined
-                find(c, "where " + str);
             }
         }
     }

@@ -146,32 +146,36 @@ public class TestDiscriminatorTypes extends SingleEMFTestCase {
         em.close();
     }
 
+    @SuppressWarnings("unchecked")
     public void testExistsQuery() {
-        EntityManager em = emf.createEntityManager();
-        em.getTransaction().begin();
+        if (getDBDictionary(emf).supportsSubselect) {
+            EntityManager em = emf.createEntityManager();
+            em.getTransaction().begin();
 
-        StringRootEntity e = new StringRootEntity();
-        e.setName("foo");
-        em.persist(e);
+            StringRootEntity e = new StringRootEntity();
+            e.setName("foo");
+            em.persist(e);
 
-        e = new StringRootEntity();
-        e.setName("foo");
-        em.persist(e);
+            e = new StringRootEntity();
+            e.setName("foo");
+            em.persist(e);
 
-        e = new StringRootEntity();
-        e.setName("bar");
-        em.persist(e);
+            e = new StringRootEntity();
+            e.setName("bar");
+            em.persist(e);
 
-        em.getTransaction().commit();
-        em.close();
+            em.getTransaction().commit();
+            em.close();
 
-        em = emf.createEntityManager();
-        Query q = em.createQuery("select o from StringAbstractEntity o " +
-            "where exists (select o2 from StringLeafEntity o2)");
-        List<StringAbstractEntity> list = q.getResultList();
-        assertEquals(0, list.size());
-        for (StringAbstractEntity entity : list)
-            assertTrue(entity instanceof StringLeafEntity);
-        em.close();
+            em = emf.createEntityManager();
+            Query q =
+                em.createQuery("select o from StringAbstractEntity o "
+                    + "where exists (select o2 from StringLeafEntity o2)");
+            List<StringAbstractEntity> list = q.getResultList();
+            assertEquals(0, list.size());
+            for (StringAbstractEntity entity : list)
+                assertTrue(entity instanceof StringLeafEntity);
+            em.close();
+        }
     }
 }

@@ -87,21 +87,23 @@ public class TestSubquery
 
 
     public void testSubquery() {
-        EntityManager em = emf.createEntityManager();
-        for (int i = 0; i < querys.length; i++) {
-            String q = querys[i];
-            List rs = em.createQuery(q).getResultList();
-            assertEquals(0, rs.size());
-        }
+        if(getDBDictionary(emf).supportsSubselect) {
+            EntityManager em = emf.createEntityManager();
+            for (int i = 0; i < querys.length; i++) {
+                String q = querys[i];
+                List rs = em.createQuery(q).getResultList();
+                assertEquals(0, rs.size());
+            }
 
-        em.getTransaction().begin();
-        for (int i = 0; i < updates.length; i++) {
-            int updateCount = em.createQuery(updates[i]).executeUpdate();
-            assertEquals(0, updateCount);
-        }
+            em.getTransaction().begin();
+            for (int i = 0; i < updates.length; i++) {
+                int updateCount = em.createQuery(updates[i]).executeUpdate();
+                assertEquals(0, updateCount);
+            }
 
-        em.getTransaction().rollback();
-        em.close();
+            em.getTransaction().rollback();
+            em.close();
+        }
     }
     
     /**
@@ -109,19 +111,21 @@ public class TestSubquery
      * without losing the correct alias information. This sort of query 
      * originally caused problems for DBDictionaries which used DATABASE syntax. 
      */
-    public void testSubSelectMaxDateRange() {        
-        String query =
-            "SELECT e,d from Employee e, Dependent d "
+    public void testSubSelectMaxDateRange() {
+        if(getDBDictionary(emf).supportsSubselect) { 
+            String query =
+                "SELECT e,d from Employee e, Dependent d "
                 + "WHERE e.empId = :empid "
                 + "AND d.id.empid = (SELECT MAX (e2.empId) FROM Employee e2) "
                 + "AND d.id.effDate > :minDate "
                 + "AND d.id.effDate < :maxDate ";
-        EntityManager em = emf.createEntityManager();
-        Query q = em.createQuery(query);
-        q.setParameter("empid", (long) 101);
-        q.setParameter("minDate", new Date(100));
-        q.setParameter("maxDate", new Date(100000));
-        q.getResultList();
-        em.close();
+            EntityManager em = emf.createEntityManager();
+            Query q = em.createQuery(query);
+            q.setParameter("empid", (long) 101);
+            q.setParameter("minDate", new Date(100));
+            q.setParameter("maxDate", new Date(100000));
+            q.getResultList();
+            em.close();
+        }
     }
 }
