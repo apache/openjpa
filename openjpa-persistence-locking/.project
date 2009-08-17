@@ -1,7 +1,13 @@
 <projectDescription>
   <name>openjpa-persistence-locking</name>
   <comment>OpenJPA Persistence Locking Tests</comment>
-  <projects/>
+  <projects>
+    <project>openjpa-jdbc</project>
+    <project>openjpa-kernel</project>
+    <project>openjpa-lib</project>
+    <project>openjpa-persistence</project>
+    <project>openjpa-persistence-jdbc</project>
+  </projects>
   <buildSpec>
     <buildCommand>
       <name>org.eclipse.jdt.core.javabuilder</name>
