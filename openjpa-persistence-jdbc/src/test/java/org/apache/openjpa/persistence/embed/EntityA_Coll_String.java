@@ -52,7 +52,7 @@ public class EntityA_Coll_String implements Serializable {
     @Basic(fetch=FetchType.LAZY)
     int age;
 
-    @ElementCollection // use default table (BasicA_NICKNAMES)
+    @ElementCollection(fetch=FetchType.EAGER) 
     @CollectionTable(name="NickNames_Tbl")
     @Column(name="nicknames1", length=20)
     protected Set<String> nickNames = new HashSet<String>();
