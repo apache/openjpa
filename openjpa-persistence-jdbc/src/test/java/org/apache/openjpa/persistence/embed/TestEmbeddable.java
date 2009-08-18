@@ -19,8 +19,10 @@
 package org.apache.openjpa.persistence.embed;
 
 import java.sql.Timestamp;
+import java.util.Calendar;
 import java.util.Collection;
 import java.util.Date;
+import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -32,11 +34,13 @@ import javax.persistence.EntityTransaction;
 import javax.persistence.Query;
 
 
+import org.apache.openjpa.lib.log.Log;
 import org.apache.openjpa.persistence.ArgumentException;
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
 
 public class TestEmbeddable extends SingleEMFTestCase {
-   
+    private static final Calendar cal = new GregorianCalendar();
+    private static final Integer timeHash = new Integer(cal.hashCode());
     public int numEmbeddables = 1;
     public int numBasicTypes = 1;
     public int numProgramManagers = 2;
@@ -86,7 +90,8 @@ public class TestEmbeddable extends SingleEMFTestCase {
             VicePresident.class, EntityA_Embed_MappedToOne.class,
             Embed_MappedToOne.class, Embed_MappedToOneCascadeDelete.class, 
             EntityA_Embed_MappedToOneCascadeDelete.class, EntityB2.class, 
-            Book.class, Listing.class, Seller.class, DROP_TABLES);
+            Book.class, Listing.class, Seller.class,
+            EntityA_Embed_Complex.class, CLEAR_TABLES);
     }
     
     public void testEntityA_Coll_String() {
@@ -185,6 +190,7 @@ public class TestEmbeddable extends SingleEMFTestCase {
     public void testEmbeddableContainingRelationWithGeneratedKey() {
         createEmbeddableContainingRelationWithGeneratedKey();
     }
+
     /*
      * Create EntityA_Coll_String
      */
@@ -2524,7 +2530,8 @@ public class TestEmbeddable extends SingleEMFTestCase {
         }
         tran.commit();
         em.close();
-    }        
+    }
+    
     public void createEmbeddableContainingRelationWithGeneratedKey() {
         EntityManager em = emf.createEntityManager();
         EntityTransaction tran = em.getTransaction();
@@ -2548,6 +2555,236 @@ public class TestEmbeddable extends SingleEMFTestCase {
             assertNotNull(seller);
             assertTrue(seller.getId() != 0);
         }
-        
+    }
+
+    /*
+     * EntityA_Embed_Complex routines
+     */
+    public void testEntityA_Embed_Complex() {
+        getLog().trace("testEntityA_Embed_Complex() - entered");
+        createEntityA_Embed_Complex(null);
+        queryEntityA_Embed_Complex(null);
+        findEntityA_Embed_Complex(null);
+    }
+
+    public void testEntityA_Embed_Complex2() {
+        getLog().trace("testEntityA_Embed_Complex2() - entered");
+        EntityManager em = emf.createEntityManager();
+        em.clear();
+        createEntityA_Embed_Complex(em);
+        em.clear();
+        //queryEntityA_Embed_Complex(em);
+        //em.clear();
+        findEntityA_Embed_Complex(em);
+        em.clear();
+        updateEntityA_Embed_Complex(em);
+        em.clear();
+        findEntityA_Embed_Complex(em);
+        em.clear();
+        removeEntityA_Embed_Complex(em);
+        em.close();
+    }
+
+    public void createEntityA_Embed_Complex(EntityManager em) {
+        Boolean emClose = false;
+        if (em == null) {
+            em = emf.createEntityManager();
+            emClose = true;
+        }
+        em.getTransaction().begin();
+        createEntityA_Embed_Complex(em, ID);
+        //em.getTransaction().begin();
+        em.flush();
+        em.getTransaction().commit();
+        if (emClose) {
+            em.close();
+        }
+    }
+
+    public void createEntityA_Embed_Complex(EntityManager em, int id) {
+        getLog().trace("createEntityA_Embed_Complex() - entered");
+        EntityA_Embed_Complex a = new EntityA_Embed_Complex();
+        a.setId(id);
+        a.setName("a" + id);
+        a.setAge(id);
+        for (int i = 0; i < numBasicTypes; i++) {
+            a.addNickName("nickName_" + id + i);
+        }
+        a.addCreditRating(EntityA_Embed_Complex.CreditRating.POOR);
+        a.addTimestamp(new Timestamp(cal.getTimeInMillis()));
+        a.addLob("lob_0");
+        a.setEmbed(createEmbed_Embed(em, numEmbeddables, 0));
+        for (int i = 0; i < numEmbeddables; i++) {
+            Embed_Embed embed = createEmbed_Embed(em, id, i);
+            a.addEmbed(embed);
+        }
+        for (int i = 0; i < numEmbeddables; i++) {
+            Embed_ToOne embed = createEmbed_ToOne(em, i+id);
+            a.addEmbed1ToOnes(embed);
+        }
+        a.setTransientJavaValue(timeHash);
+        a.setTransientValue(timeHash);
+        em.persist(a);
+    }
+
+    public void checkEntityA_Embed_Complex(EntityA_Embed_Complex a) {
+        getLog().trace("checkEntityA_Embed_Complex() - entered");
+        int id = a.getId();
+        String name = a.getName();
+        int age = a.getAge();
+        assertEquals(ID, id);
+        assertEquals("a" + id ,name);
+        assertEquals(ID, age);
+        Set<String> nickNames = a.getNickNames();
+        for (String nickName : nickNames) {
+            assertEquals("nickName_" + id + "0", nickName);
+        }
+        List<EntityA_Embed_Complex.CreditRating> cr = a.getCreditRating();
+        for (EntityA_Embed_Complex.CreditRating c : cr) {
+            assertEquals("POOR", c.toString());
+        }
+        List<Timestamp> tstamps = a.getTimestamps();
+        for (Timestamp ts : tstamps) {
+            assertNotEquals(0, ts.getTime());
+        }
+        List<String> lobs = a.getLobs();
+        int i = 0;
+        for (String lob : lobs) {
+            assertEquals("lob_" + i++, lob);
+        }
+        Embed_Embed embedded = a.getEmbed();
+        checkEmbed_Embed(embedded);
+        List<Embed_Embed> embeds = a.getEmbeds();
+        for (Embed_Embed embed : embeds) {
+            checkEmbed_Embed(embed);
+        }
+        Set<Embed_ToOne> embedOnes = a.getEmbed1ToOnes();
+        for (Embed_ToOne embed : embedOnes) {
+            checkEmbed_ToOne(embed);
+        }
+        assertNotEquals(a.getTransientJavaValue(), timeHash);
+        assertNotEquals(a.getTransientValue(), timeHash);
+    }
+
+    public void findEntityA_Embed_Complex(EntityManager em) {
+        Boolean emClose = false;
+        getLog().trace("findEntityA_Embed_Complex() - entered");
+        if (em == null) {
+            em = emf.createEntityManager();
+            emClose = true;
+        }
+        EntityA_Embed_Complex a = em.find(EntityA_Embed_Complex.class, ID);
+        checkEntityA_Embed_Complex(a);
+        if (emClose) {
+            em.close();
+        }
+    }
+
+    public void updateEntityA_Embed_Complex(EntityManager em) {
+        Boolean emClose = false;
+        getLog().trace("updateEntityA_Embed_Complex() - entered");
+        if (em == null) {
+            em = emf.createEntityManager();
+            emClose = true;
+        }
+        em.getTransaction().begin();
+        EntityA_Embed_Complex a = em.find(EntityA_Embed_Complex.class, ID);
+        checkEntityA_Embed_Complex(a);
+        for (int i = 1; i < numEmbeddables; i++) {
+            a.addLob("lob_" + i);
+        }
+        a.setTransientJavaValue(2009);
+        a.setTransientValue(2009);
+        em.persist(a);
+        em.flush();
+        em.getTransaction().commit();
+        if (emClose) {
+            em.close();
+        }
+    }
+
+    public void removeEntityA_Embed_Complex(EntityManager em) {
+        Boolean emClose = false;
+        getLog().trace("removeEntityA_Embed_Complex() - entered");
+        if (em == null) {
+            em = emf.createEntityManager();
+            emClose = true;
+        }
+        em.getTransaction().begin();
+        EntityA_Embed_Complex a = em.find(EntityA_Embed_Complex.class, ID);
+        checkEntityA_Embed_Complex(a);
+        em.remove(a);
+        em.flush();
+        em.getTransaction().commit();
+        em.clear();
+        a = em.find(EntityA_Embed_Complex.class, ID);
+        assertNull("Entity should no longer exist", a);
+        if (emClose) {
+            em.close();
+        }
+    }
+
+    public void queryEntityA_Embed_Complex(EntityManager em) {
+        Boolean emClose = false;
+        getLog().trace("queryEntityA_Embed_Complex() - entered");
+        if (em == null) {
+            em = emf.createEntityManager();
+            emClose = true;
+        }
+        String[] query = {
+            "select e from " +
+                " EntityA_Embed_Complex a " +
+                " , in (a.nickNames) e order by a.id",
+            "select e from " +
+                " EntityA_Embed_Complex a " +
+                " , in (a.nickNames) e order by a.id",
+            "select e from " +
+                " EntityA_Embed_Complex a " +
+                " , in (a.nickNames) e order by e",
+            "select a from " +
+                " EntityA_Embed_Complex a " +
+                " WHERE a.nickNames IS EMPTY order by a",
+            "select a from " +
+                " EntityA_Embed_Complex a " +
+                " WHERE exists (select n from EntityA_Embed_Complex a, " +
+                " in (a.nickNames) n where n like '%1') " +
+                " order by a",
+        };
+        List rs = null;
+        for (int i = 0; i < query.length; i++) {
+            rs = em.createQuery(query[i]).getResultList();
+            switch (i) {
+            case 0:
+            case 1:
+            case 2:
+                assertTrue(rs.size() > 0);
+                Object obj = rs.get(0);
+                assertTrue(obj instanceof String);
+                break;
+            case 3:
+            case 4:
+                assertTrue(rs.size() == 0);
+            }
+            em.clear();
+        }
+        em.getTransaction().begin();
+        Query q = em.createQuery("select a from EntityA_Embed_Complex a");
+        List<EntityA_Embed_Complex> as = q.getResultList();
+        for (EntityA_Embed_Complex a : as) {
+            checkEntityA_Embed_Complex(a);
+        }
+        em.getTransaction().commit();
+        if (emClose) {
+            em.close();
+        }
+    }
+    
+    /**
+     * Internal convenience method for getting the OpenJPA logger
+     * 
+     * @return
+     */
+    private Log getLog() {
+        return emf.getConfiguration().getLog("Tests");
     }
 }
