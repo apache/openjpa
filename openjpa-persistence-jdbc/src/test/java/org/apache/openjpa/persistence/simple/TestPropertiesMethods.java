@@ -18,126 +18,114 @@
  */
 package org.apache.openjpa.persistence.simple;
 
+import java.util.Arrays;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
-import org.apache.openjpa.kernel.AutoClear;
+import javax.persistence.EntityManager;
+import javax.persistence.EntityManagerFactory;
+import javax.persistence.Persistence;
+
+import junit.framework.TestCase;
+
+import org.apache.openjpa.lib.conf.ProductDerivations;
 import org.apache.openjpa.lib.conf.Value;
 import org.apache.openjpa.persistence.AutoClearType;
 import org.apache.openjpa.persistence.OpenJPAEntityManager;
-import org.apache.openjpa.persistence.test.SingleEMFTestCase;
+import org.apache.openjpa.persistence.OpenJPAPersistence;
 
 /**
  * This test case tests the getProperties() and getSupportedProperties() methods
  * for the EntityManager and EntityManagerFactory.
  * 
  * @author Dianne Richards
+ * @author Pinaki Poddar
  * 
  */
-public class TestPropertiesMethods extends SingleEMFTestCase {
-    OpenJPAEntityManager em;
-
+public class TestPropertiesMethods extends TestCase {
+    private static final String UNIT_NAME = "test";
+    private static EntityManagerFactory emf;
+    private OpenJPAEntityManager em;
+    
+    @SuppressWarnings("unchecked")
     public void setUp() throws Exception {
-        setUp("openjpa.DataCacheTimeout", "3",
-            "openjpa.ConnectionURL",
-            "jdbc:derby:target/database/jpa-test-database;create=true");
-        assertNotNull(emf);
-        em = emf.createEntityManager();
-        assertNotNull(em);
+        if (emf == null) {
+            Map config = new HashMap();
+            config.putAll(System.getProperties());
+            
+/* numeric   */ config.put("openjpa.DataCacheTimeout", 300);
+/* num enum  */ config.put("openjpa.AutoClear", 0);
+/* hidden    */ config.put("openjpa.Connection2Password", "xyz");
+/* plug-in   */ config.put("openjpa.ProxyManager", "default(TrackChanges=false)");
+/* no funky  */ config.put("openjpa.DynamicEnhancementAgent", "false");
+
+// following properties are not used becuase that makes the test dependent on database specifics
+/* equiv key */ //config.put("javax.persistence.jdbc.url", "jdbc:derby:target/database/test;create=true"); 
+/* prime use */ //config.put("openjpa.ConnectionUserName", "root");
+            
+            emf = Persistence.createEntityManagerFactory(UNIT_NAME, config);
+            assertNotNull(emf);
+        }
+        em = OpenJPAPersistence.cast(emf.createEntityManager());
+    }
+    
+//    public void testProperties() {
+//        print("EMF Properties", emf.getProperties());
+//        print("EMF Supported Properties", emf.getSupportedProperties());
+//        print("EM Properties", em.getProperties());
+//        print("EM Supported Properties", emf.getSupportedProperties());
+//    }
+    
+    public void testConfigurationPrefixes() {
+        String[] prefixes = ProductDerivations.getConfigurationPrefixes();
+        assertEquals("openjpa", prefixes[0]);
+        assertTrue(Arrays.asList(prefixes).contains("javax.persistence"));
+    }
+    
+    public void testEMNumericPropertyValueForEnumTypeIsReturnedAsString() {
+        Map<String, Object> props = em.getProperties();
+
+        assertProperty("openjpa.AutoClear", props, AutoClearType.DATASTORE);
+        assertProperty("openjpa.IgnoreChanges", props, Boolean.FALSE);
+    }
+
+    public void testEMPluginPropertyParameterIsPreserved() {
+        Map<String,Object> props = emf.getProperties();
+        Object val = props.get("openjpa.ProxyManager");
+        assertNotNull(val);
+        assertTrue(val instanceof String);
+        String proxyManager = (String)val;
+        assertEquals("default(TrackChanges=false)", proxyManager);
     }
     
     /**
-     * Test the EntityManager getProperties() method.
-     */
-    public void testEMGetProperties() {
-        Map<String, Object> emProperties = em.getProperties();
-
-        // First, check a default property
-        String autoClear = (String) emProperties.get("openjpa.AutoClear");
-        assertEquals(String.valueOf(AutoClear.CLEAR_DATASTORE), autoClear);
-        
-        // Next, check that the correct property key is returned for
-        // some properties that can have 2 keys. The success of this test
-        // case is dependent on the connection system values that are set
-        // in the pom.xml file for the test harness. It assumes that the
-        // system value keys are javax.persistence.jdbc.driver and 
-        // openjpa.ConnectionProperties. If either one of these are changed,
-        // this test case may fail.
-        String javaxConnectionDriver =
-            (String) emProperties.get("openjpa.ConnectionDriverName");
-        assertNotNull(javaxConnectionDriver);
-        String openjpaConnectionURL =
-            (String) emProperties.get("openjpa.ConnectionURL");
-        assertNotNull(openjpaConnectionURL);
-        
-        // Next, check that the javax.persistent property is returned instead
-        // of the corresponding openjpa one when no value has been set.
-        boolean javaxUserNameExists =
-            emProperties.containsKey("javax.persistence.jdbc.user");
-        assertTrue(javaxUserNameExists);
-        boolean openjpaUserNameExists =
-            emProperties.containsKey("openjpaConnectionUserName");
-        assertFalse(openjpaUserNameExists);
-        
-        // Next, change a property and check for the changed value
-        em.setAutoClear(AutoClearType.ALL);
-        emProperties = em.getProperties();
-        autoClear = (String) emProperties.get("openjpa.AutoClear");
-        assertEquals(String.valueOf(AutoClear.CLEAR_ALL), autoClear);
-        
-        // Make sure the password property is not returned.
-        boolean javaxPasswordExists =
-            emProperties.containsKey("javax.persistence.jdbc.password");
-        assertFalse(javaxPasswordExists);
-        boolean openjpaPasswordExists =
-            emProperties.containsKey("openjpa.ConnectionPassword");
-        assertFalse(openjpaPasswordExists);
-        assertFalse(emProperties.containsKey("openjpa.Connection2Password"));
-        
-        // Add a dummy javax.persistence... equivalent key to one of the
-        // values that can be changed to force the code down a specific path.
-        Value autoClearValue = emf.getConfiguration().getValue("AutoClear");
-        assertNotNull(autoClearValue);
-        autoClearValue.addEquivalentKey("javax.persistence.AutoClear");
-        emProperties = em.getProperties();
-        assertFalse(emProperties.containsKey("openjpa.AutoClear"));
-        assertTrue(emProperties.containsKey("javax.persistence.AutoClear"));
-    }
-
-    /**
      * Test the EntityManagerFactory getProperties() method.
      */
-    public void testEMFGetProperties() {
-        Map<String, Object> emfProperties = emf.getProperties();
+    public void testFactoryPropertiesContainDefaultValue() {
+        Map<String, Object> props = emf.getProperties();
 
-        // First, check a default property
-        String dataCacheManager =
-            (String) emfProperties.get("openjpa.DataCacheManager");
-        assertEquals("default", dataCacheManager);
+        assertEquals("default", props.get("openjpa.DataCacheManager"));
+        assertEquals(300, props.get("openjpa.DataCacheTimeout"));
+    }
+    
+    public void testFactoryPropertiesContainUserSpecifiedValue() {
+        Map<String, Object> props = emf.getProperties();
+        assertEquals(new Integer(300), props.get("openjpa.DataCacheTimeout"));
+    }
 
-        // Next, check a property that was set during emf creation
-        String dataCacheTimeout =
-            (String) emfProperties.get("openjpa.DataCacheTimeout");
-        assertEquals(3, Integer.valueOf(dataCacheTimeout).intValue());
-
-        // Next get the Platform value set by the JDBCBrokerFactory
-        // or possibly a subclass
-        String platform = (String) emfProperties.get("Platform");
-        assertNotNull(platform);
-
-        // Next get one of the values set by the AbstractBrokerFactory
-        // or possibly a subclass
-        String vendorName = (String) emfProperties.get("VendorName");
-        assertNotNull(vendorName);
+    public void testFactoryPropertiesAddPlatformOrVendor() {
+        Map<String, Object> props = emf.getProperties();
+        assertTrue(props.containsKey("Platform"));
+        assertNotNull(props.containsKey("VendorName"));
     }
 
     /**
      * Test the EntityManagerFactory getSupportedProperties() method.
      */
-    public void testEMFGetSupportedProperties() {
-        Set<String> emfSupportedProperties = emf.getSupportedProperties();
-        assertNotNull(emfSupportedProperties);
-        assertTrue(emfSupportedProperties.contains("openjpa.IgnoreChanges"));
+    public void testFactorySupportedProperties() {
+        Set<String> props = emf.getSupportedProperties();
+        assertTrue(props.contains("openjpa.IgnoreChanges"));
     }
 
     /**
@@ -149,16 +137,153 @@ public class TestPropertiesMethods extends SingleEMFTestCase {
         assertTrue(emSupportedProperties.contains("openjpa.AutoDetach"));
         
         // Make sure the all possible keys are returned
-        assertTrue(emSupportedProperties.contains(
-            "javax.persistence.lock.timeout"));
+        assertTrue(emSupportedProperties.contains("javax.persistence.lock.timeout"));
         assertTrue(emSupportedProperties.contains("openjpa.LockTimeout"));
         
         // Make sure the spec property for query timeout, that only has one
         // key, is returned.
-        assertTrue(emSupportedProperties.contains(
-            "javax.persistence.query.timeout"));
-        assertFalse(emSupportedProperties.contains(
-            "openjpa.javax.persistence.query.timeout"));
+        assertTrue(emSupportedProperties.contains("javax.persistence.query.timeout"));
+        assertFalse(emSupportedProperties.contains("openjpa.javax.persistence.query.timeout"));
     }
+    
+    /**
+     * Property values preserve the type in which they were specified in the facade.
+     * Enumerated property such as AutoClear has different representation in kernel
+     * (as int) and in facade (as enum). The test verifies that {@link EntityManager#getProperties()} 
+     * return enum type rather than an integer.
+     */
+    public void testEMFPropertyValueTypeIsPreserved() {
+        Map<String, Object> props = emf.getProperties();
+        
+        Object autoClear = props.get("openjpa.AutoClear");
+        print("EMF Properties ", props);
+        assertTrue("AutoClear " + autoClear + " is of " + autoClear.getClass(), autoClear instanceof AutoClearType);
+        assertEquals(AutoClearType.DATASTORE, autoClear);
+        
+        Object ignoreChanges = props.get("openjpa.IgnoreChanges");
+        assertTrue(ignoreChanges instanceof Boolean);
+    }
+
+    public void testEMFPluginPropertyParameterIsPreserved() {
+        Map<String,Object> props = emf.getProperties();
+        Object val = props.get("openjpa.ProxyManager");
+        assertNotNull(val);
+        assertTrue(val instanceof String);
+        String proxyManager = (String)val;
+        assertEquals("default(TrackChanges=false)", proxyManager);
+    }
+    
+    /**
+     * Certain logical property such as ConnectionUserName can appear under different
+     * keys such as openjpa.ConnectionUserName or javax.persistence.jdbc.user.
+     * The key under which the property value appears depends on the key under which
+     * property value was loaded into the configuration.  
+     * 
+     */
+    // Not run because that makes these tests database specific
+    public void xtestLoadKeyWithEquivalentPropertyKey() {
+        Map<String, Object> props = emf.getProperties();
+
+        // This property was loaded with equivalent javax. key
+        assertFalse(props.containsKey("openjpa.ConnectionURL"));
+        assertTrue(props.containsKey("javax.persistence.jdbc.url"));
+    }
+    
+    // Not run because that makes these tests database specific
+    public void xtestLoadKeyWithPrimaryPropertyKey() {
+        Map<String, Object> props = emf.getProperties();
+
+        // This property was loaded with primary openjpa. key
+        assertTrue(props.containsKey("openjpa.ConnectionUserName"));
+        assertFalse(props.containsKey("javax.persistence.jdbc.user"));
+    }
+    
+    /**
+     * Property values preserve the type in which they were specified in the facade.
+     * Enumerated property such as AutoClear has different representation in kernel
+     * (as int) and in facade (as enum). The test verifies that {@link EntityManager#getProperties()} 
+     * return enum type rather than an integer.
+     */
+    public void testPropertyValueTypeIsPreserved() {
+        Map<String, Object> props = em.getProperties();
+        assertProperty("openjpa.AutoClear", props, AutoClearType.DATASTORE);
+        assertProperty("openjpa.IgnoreChanges", props, Boolean.FALSE);
+    }
+
+    public void testPluginPropertyParameterIsPreserved() {
+        Map<String,Object> props = emf.getProperties();
+        assertProperty("openjpa.ProxyManager", props, "default(TrackChanges=false)");
+    }
+    
+    /**
+     * Test that property value changes are reflected when mutated directly.
+     */
+    public void testChangePropertyValue() {
+        Map<String, Object> props = em.getProperties();
+        Boolean original = (Boolean)props.get("openjpa.IgnoreChanges");
+        assertNotNull(original);
+        
+        Boolean invert = !original.booleanValue();
+        em.setIgnoreChanges(invert);
+        
+        assertProperty("openjpa.IgnoreChanges", em.getProperties(), invert);
+    }
+    
+    /**
+     * Test that property value changes are reflected when instantiated with configuration.
+     */
+    public void testConfiguredPropertyValue() {
+        Map<String, Object> props = em.getProperties();
+        Boolean original = (Boolean)props.get("openjpa.IgnoreChanges");
+        assertNotNull(original);
+        
+        Map<String,Boolean> config = new HashMap<String, Boolean>();
+        Boolean invert = !original.booleanValue();
+        config.put("openjpa.IgnoreChanges", invert);
+        
+        EntityManager em2 = emf.createEntityManager(config);
+        assertProperty("openjpa.IgnoreChanges", em2.getProperties(), invert);
+    }
+
+    
+    public void testEquivalentKeysArePresentInSupportedProperties() {
+        Set<String> keys = em.getSupportedProperties();
+        assertTrue(keys.contains("openjpa.ConnectionURL"));
+        assertTrue(keys.contains("javax.persistence.jdbc.url"));
+    }
+    
+    public void testPasswordValuesAreInvisible() {
+        Map<String, Object> props = em.getProperties();
+        assertProperty("openjpa.Connection2Password", props, Value.INVISIBLE);
+    }
+    
+    void assertProperty(String prop, Map props) {
+        assertProperty(prop, props, null);
+    }
+    
+    void assertProperty(String prop, Map props, Object expected) {
+        assertTrue(prop + " not present", props.containsKey(prop));
+        Object actual = props.get(prop);
+        if (expected != null) {
+            assertTrue(prop + ": Actual " + actual.getClass() + " does not match expected " + expected.getClass(),
+                expected.getClass().isAssignableFrom(actual.getClass()));
+            assertEquals(prop + " value does not match", expected, actual);
+        }
+    }
+    
+    void print(String message, Map<String, Object> props) {
+        System.err.println(message);
+        for (Map.Entry<String, Object> e : props.entrySet()) {
+            System.err.println(e.getKey() + ":" + e.getValue() + " [" + (e.getValue() == null ?
+                    "" : e.getValue().getClass().getSimpleName()) + "]");
+        }
+    }
+    void print(String message, Set<String> props) {
+        System.err.println(message);
+        for (String p : props) {
+            System.err.println(p);
+        }
+    }
+    
 
 }

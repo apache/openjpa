@@ -24,11 +24,9 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
-import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.Properties;
 import java.util.Set;
 import java.util.TreeSet;
 import java.util.concurrent.ConcurrentHashMap;
@@ -66,7 +64,6 @@ import org.apache.openjpa.util.UserException;
 import org.apache.openjpa.writebehind.WriteBehindCache;
 import org.apache.openjpa.writebehind.WriteBehindCallback;
 import org.apache.openjpa.writebehind.WriteBehindConfigurationException;
-import org.apache.openjpa.writebehind.WriteBehindException;
 import org.apache.openjpa.writebehind.WriteBehindStoreManager;
 
 /**
@@ -117,10 +114,7 @@ public abstract class AbstractBrokerFactory
 
     // key under which this instance can be stored in the broker pool
     // and later identified
-    private Object _poolKey;
-    
-    // Set of properties supported for the EntityManagerFactory
-    private Set<String> _supportedPropertyNames = new TreeSet<String>();
+    private Object _poolKey;   
     
     private WriteBehindCallback _writeBehindCallback; 
 
@@ -180,27 +174,22 @@ public abstract class AbstractBrokerFactory
     }
 
     public Broker newBroker() {
-        return newBroker(_conf.getConnectionUserName(),
-            _conf.getConnectionPassword());
+        return newBroker(_conf.getConnectionUserName(), _conf.getConnectionPassword());
     }
 
     public Broker newBroker(String user, String pass) {
-        return newBroker(user, pass, _conf.isTransactionModeManaged(),
-            _conf.getConnectionRetainModeConstant());
+        return newBroker(user, pass, _conf.isTransactionModeManaged(), _conf.getConnectionRetainModeConstant());
     }
 
     public Broker newBroker(boolean managed, int connRetainMode) {
-        return newBroker(_conf.getConnectionUserName(),
-            _conf.getConnectionPassword(), managed, connRetainMode);
+        return newBroker(_conf.getConnectionUserName(), _conf.getConnectionPassword(), managed, connRetainMode);
     }
 
-    public Broker newBroker(String user, String pass, boolean managed,
-        int connRetainMode) {
+    public Broker newBroker(String user, String pass, boolean managed, int connRetainMode) {
         return newBroker(user, pass, managed, connRetainMode, true);
     }
 
-    public Broker newBroker(String user, String pass, boolean managed,
-        int connRetainMode, boolean findExisting) {
+    public Broker newBroker(String user, String pass, boolean managed, int connRetainMode, boolean findExisting) {
         try {
             assertOpen();
             makeReadOnly();
@@ -430,52 +419,17 @@ public abstract class AbstractBrokerFactory
      * property listing the runtime platform, such as:
      * <code>OpenJPA JDBC Edition: Oracle Database</code>
      */
-    public Properties getProperties() {
+    public Map<String,Object> getProperties() {
         // required props are VendorName and VersionNumber
-        Properties props = new Properties();
-        props.setProperty("VendorName", OpenJPAVersion.VENDOR_NAME);
-        props.setProperty("VersionNumber", OpenJPAVersion.VERSION_NUMBER);
-        props.setProperty("VersionId", OpenJPAVersion.VERSION_ID);
+        Map<String,Object> props = _conf.toProperties(true);
+        props.put("VendorName", OpenJPAVersion.VENDOR_NAME);
+        props.put("VersionNumber", OpenJPAVersion.VERSION_NUMBER);
+        props.put("VersionId", OpenJPAVersion.VERSION_ID);
         return props;
     }
 
-    public Map<String, String> getAllProperties() {
-        Map<String, String> propertiesMap = _conf.getAllProperties();
-        Properties properties = getProperties();
-        Set<Object> propKeys = properties.keySet();
-        for (Object key : propKeys) {
-            String keyString = (String) key;
-            propertiesMap.put(keyString, (String) properties
-                .getProperty(keyString));
-        }
-
-        return propertiesMap;
-    }
-    
     public Set<String> getSupportedProperties() {
-        if (_supportedPropertyNames.isEmpty()) {
-            synchronized (_supportedPropertyNames) {
-                if (_supportedPropertyNames.isEmpty()) {
-                    _supportedPropertyNames.add("AutoClear");
-                    _supportedPropertyNames.add("AutoDetach");
-                    _supportedPropertyNames.add("DetachState");
-                    _supportedPropertyNames.add("IgnoreChanges");
-                    _supportedPropertyNames.add("LockTimeout");
-                    _supportedPropertyNames.add("Multithreaded");
-                    _supportedPropertyNames.add("NontransactionalRead");
-                    _supportedPropertyNames.add("NontransactionalWrite");
-                    _supportedPropertyNames.add("Optimistic");
-                    _supportedPropertyNames.add("RestoreState");
-                    _supportedPropertyNames.add("RetainState");
-                }
-            }
-        }
-        Set<String> supportedProperties = new LinkedHashSet<String>();
-        for (String propertyName : _supportedPropertyNames) {
-            supportedProperties.addAll(_conf.getPropertyKeys(propertyName));
-        }
-        
-        return supportedProperties;
+        return _conf.getPropertyKeys();
     }
 
     public Object getUserObject(Object key) {
@@ -651,8 +605,7 @@ public abstract class AbstractBrokerFactory
         broker.setIgnoreChanges(_conf.getIgnoreChanges());
         broker.setMultithreaded(_conf.getMultithreaded());
         broker.setAutoDetach(_conf.getAutoDetachConstant());
-        broker.setDetachState(_conf.getDetachStateInstance().
-            getDetachState());
+        broker.setDetachState(_conf.getDetachStateInstance().getDetachState());
     }
 
     /**

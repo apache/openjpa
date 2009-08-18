@@ -200,7 +200,7 @@ public interface Broker
      * 
      * @since 2.0.0
      */
-    public Map<String, String> getProperties();
+    public Map<String, Object> getProperties();
     
     /**
      * Return the supported properties for this broker as property keys. If a

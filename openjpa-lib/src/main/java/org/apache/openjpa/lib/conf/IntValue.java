@@ -51,7 +51,7 @@ public class IntValue extends Value {
     /**
      * The internal value.
      */
-    public int get() {
+    public Integer get() {
         return this.value;
     }
 

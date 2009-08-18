@@ -121,9 +121,9 @@ public class AbstractStoreBrokerFactory
         _platform = platform;
     }
 
-    public Properties getProperties() {
-        Properties props = super.getProperties();
-        props.setProperty("Platform", _platform);
+    public Map<String,Object> getProperties() {
+        Map<String,Object> props = super.getProperties();
+        props.put("Platform", _platform);
         return props;
     }
 

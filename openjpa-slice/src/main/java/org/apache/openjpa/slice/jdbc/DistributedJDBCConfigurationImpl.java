@@ -485,17 +485,20 @@ public class DistributedJDBCConfigurationImpl extends JDBCConfigurationImpl
         String prefix = PREFIX_SLICE + slice + DOT;
         for (Object o : original.keySet()) {
             String key = o.toString();
+            Object value = original.get(key);
+            if (value == null)
+                continue;
             if (key.startsWith(prefix)) {
                 String newKey = PREFIX_OPENJPA + key.substring(prefix.length());
-                result.put(newKey, original.get(o));
+                result.put(newKey, value);
             } else if (key.startsWith(PREFIX_SLICE)) {
                 // ignore keys that are in 'slice.' namespace but not this slice
             } else if (key.startsWith(PREFIX_OPENJPA)) {
                 String newKey = prefix + key.substring(PREFIX_OPENJPA.length());
                 if (!original.containsKey(newKey))
-                    result.put(key, original.get(o));
+                    result.put(key, value);
             } else { // keys that are neither "openjpa" nor "slice" namespace
-                result.put(key, original.get(o));
+                result.put(key, value);
             }
         }
         return result;

@@ -39,6 +39,10 @@ public class TestValue extends TestCase {
         protected void setInternalString(String str) {
         }
         
+        public Object get() {
+            return null;
+        }
+        
     }
     
     public void testSetAliasesByValue() {
@@ -96,5 +100,4 @@ public class TestValue extends TestCase {
             fail();
         }
     }
-    
 }

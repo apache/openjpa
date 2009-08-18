@@ -106,7 +106,7 @@ public class DelegatingBrokerFactory
         }
     }
 
-    public Properties getProperties() {
+    public Map<String,Object> getProperties() {
         try {
             return _factory.getProperties();
         } catch (RuntimeException re) {
@@ -117,14 +117,6 @@ public class DelegatingBrokerFactory
     public Set<String> getSupportedProperties() {
         try {
             return _factory.getSupportedProperties();
-        } catch (RuntimeException re) {
-            throw translate(re);
-        }
-    }
-    
-    public Map<String, String> getAllProperties() {
-        try {
-            return _factory.getAllProperties();
         } catch (RuntimeException re) {
             throw translate(re);
         }

@@ -104,16 +104,13 @@ public class ProductDerivations {
             derivations.toArray(new ProductDerivation[derivations.size()]);
 
         List<String> prefixes = new ArrayList<String>(2);
+        prefixes.add("openjpa");
         for (int i = 0; i < _derivations.length; i++) {
-            if (_derivations[i].getConfigurationPrefix() != null
-                && !"openjpa".equals(_derivations[i].getConfigurationPrefix()))
-                prefixes.add(_derivations[i].getConfigurationPrefix());
+            String prefix = _derivations[i].getConfigurationPrefix();
+            if (prefix != null && !"openjpa".equals(prefix))
+                prefixes.add(prefix);
         }
-        String[] prefixArray = new String[1 + prefixes.size()];
-        prefixArray[0] = "openjpa";
-        for (int i = 0; i < prefixes.size(); i++)
-            prefixArray[i + 1] = (String) prefixes.get(i);
-        setConfigurationPrefixes(prefixArray);
+        _prefixes = prefixes.toArray(new String[prefixes.size()]);
     }
 
     /**

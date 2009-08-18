@@ -87,17 +87,16 @@ public class JDBCBrokerFactory
         super(conf);
     }
 
-    public Properties getProperties() {
+    public Map<String,Object> getProperties() {
         // add platform property
-        Properties props = super.getProperties();
+        Map<String,Object> props = super.getProperties();
         String db = "Unknown";
         try {
             JDBCConfiguration conf = (JDBCConfiguration) getConfiguration();
             db = conf.getDBDictionaryInstance().platform;
         } catch (RuntimeException re) {
         }
-        props.setProperty("Platform",
-            "OpenJPA JDBC Edition: " + db + " Database");
+        props.put("Platform", "OpenJPA JDBC Edition: " + db + " Database");
 
         return props;
     }

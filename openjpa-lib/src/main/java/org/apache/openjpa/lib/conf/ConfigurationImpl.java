@@ -118,15 +118,14 @@ public class ConfigurationImpl
     private boolean _globals = false;
     private String _auto = null;
     private final List<Value> _vals = new ArrayList<Value>();
-
+    private Set<String> _supportedKeys;
+    
     // property listener helper
     private PropertyChangeSupport _changeSupport = null;
 
     // cache descriptors
     private PropertyDescriptor[] _pds = null;
     private MethodDescriptor[] _mds = null;
-    
-    private boolean getVisibleOnly = false;
 
     /**
      * Default constructor. Attempts to load default properties through
@@ -246,15 +245,22 @@ public class ConfigurationImpl
         return (Value[]) _vals.toArray(new Value[_vals.size()]);
     }
 
+    /**
+     * Gets the registered Value for the given propertyName.
+     * 
+     * @param propertyName can be either fully-qualified name or the simple name
+     * with which the value has been registered. A value may have multiple
+     * equivalent names and this method searches with all equivalent names.
+     */
     public Value getValue(String property) {
         if (property == null)
             return null;
 
         // search backwards so that custom values added after construction
         // are found quickly, since this will be the std way of accessing them
-        for (Value val : _vals) { 
-            if (val.matches(property))
-                return val;
+        for (int i = _vals.size()-1; i >= 0; i--) { 
+            if (_vals.get(i).matches(property))
+                return _vals.get(i);
         }
         return null;
     }
@@ -324,8 +330,7 @@ public class ConfigurationImpl
 
         String newString = val.getString();
         if (_changeSupport != null)
-            _changeSupport.firePropertyChange(val.getProperty(), null,
-                newString);
+            _changeSupport.firePropertyChange(val.getProperty(), null, newString);
 
         // keep cached props up to date
         if (_props != null) {
@@ -334,7 +339,7 @@ public class ConfigurationImpl
             else if (Configurations.containsProperty(val, _props)
                 || val.getDefault() == null
                 || !val.getDefault().equals(newString))
-                setValue(_props, val, newString);
+                setValue(_props, val);
         }
     }
 
@@ -584,8 +589,7 @@ public class ConfigurationImpl
      *            whether or not to get all of the properties
      * @return
      */
-    private Map<String, String> toProperties(boolean storeDefaults,
-        boolean getAll) {
+    public Map toProperties(boolean storeDefaults) {
         // clone properties before making any modifications; we need to keep
         // the internal properties instance consistent to maintain equals and
         // hashcode contracts
@@ -601,18 +605,13 @@ public class ConfigurationImpl
         // with default values, add values to properties
         if (_props == null || storeDefaults) {
             String str;
-            for(Value val : _vals) { 
-                // if key in existing properties, we already know value is up
-                // to date
-                if (_props != null && Configurations.containsProperty
-                    (val, _props))
-                    continue;
-
+            for (Value val : _vals) { 
+                // if key in existing properties, we already know value is up to date
+//                if (_props != null && Configurations.containsProperty(val, _props) && val.isVisible())
+//                    continue;
                 str = val.getString();
-                if (getAll
-                    || (str != null && (storeDefaults || !str.equals(val
-                        .getDefault()))))
-                    setValue(clone, val, str);
+                if ((str != null && (storeDefaults || !str.equals(val.getDefault()))))
+                    setValue(clone, val);
             }
             if (_props == null)
                 _props = new TreeMap(clone);
@@ -620,18 +619,6 @@ public class ConfigurationImpl
         return clone;
     }
     
-    public Map<String, String> getAllProperties() {
-        boolean saveGetVisibleOnly = getVisibleOnly;
-        getVisibleOnly = true;
-        Map<String, String> properties = toProperties(true, true);
-        getVisibleOnly = saveGetVisibleOnly;
-        return properties;
-    }
-
-    public Map<String, String> toProperties(boolean storeDefaults) {
-        return toProperties(storeDefaults, false);
-    }
-
     public void fromProperties(Map map) {
         if (map == null || map.isEmpty())
             return;
@@ -694,14 +681,44 @@ public class ConfigurationImpl
             _props = map;
     }
     
-    public Set<String> getPropertyKeys(String propertyName) {
-        Set<String> keys = new TreeSet<String>();
-        Map<String,String> properties = getAllProperties();
+    public List<String> getPropertyKeys(String propertyName) {
         Value value = getValue(propertyName);
-        keys.add(ProductDerivations.getConfigurationKey(value.getProperty(),
-            properties));
-        keys.addAll(value.getEquivalentKeys());
-        return keys;
+        return value == null ? Collections.EMPTY_LIST : value.getPropertyKeys();
+    }
+    
+    /**
+     * Gets all known property keys.
+     */
+    public Set<String> getPropertyKeys() {
+        if (_supportedKeys != null) 
+            return _supportedKeys;
+        
+        _supportedKeys = new TreeSet<String>();
+        for (Value val : _vals) {
+            List<String> keys = val.getPropertyKeys();
+            for (String key : keys) {
+                _supportedKeys.add(fixPrefix(key));
+            }
+        }
+        return _supportedKeys;
+    }
+    
+    /**
+     * Adds a prefix <code>"openjpa."</code> to the given key, if necessary. A key is 
+     * considered without prefix if it starts neither of <code>"openjpa."</code>, 
+     * <code>"java."</code> and <code>"javax."</code>. 
+     */
+    String fixPrefix(String key) {
+        return (key == null || hasKnownPrefix(key)) ? key : "openjpa."+key;
+    }
+    
+    boolean hasKnownPrefix(String key) {
+        String[] prefixes = ProductDerivations.getConfigurationPrefixes();
+        for (String prefix : prefixes) {
+            if (key.startsWith(prefix))
+                return true;
+        }
+        return false;
     }
 
     /**
@@ -709,32 +726,23 @@ public class ConfigurationImpl
      * Use this method instead of attempting to add the value directly because 
      * this will account for the property prefix.
      */
-    private void setValue(Map map, Value val, Object o) {
+    private void setValue(Map map, Value val) {
         Object key = val.getLoadKey();
-        // TODO: This change can be removed later when Value.setLoadKey() no
-        // longer throws an exception. Then, we can use setLoadKey() at 
-        // creation time for the spec keys.
         if (key == null) {
-            Set<String> equivalentKeys = val.getEquivalentKeys();
-            if (equivalentKeys.isEmpty()) {
+            List<String> keys = val.getPropertyKeys();
+            for (String k : keys) {
+                if (hasKnownPrefix(k)) {
+                    key = k;
+                    break;
+                }
+            }
+            if (key == null) {
                 key = "openjpa." + val.getProperty();
             }
-            else {
-                for (String equivalentKey : equivalentKeys) {
-                    if (equivalentKey.startsWith("javax.persistence.")) {
-                        key = equivalentKey;
-                        break;
-                    }
-                }
-                if (key == null) {
-                    key = "openjpa." + val.getProperty();
-                }
-            }
         }
-        if (getVisibleOnly && !val.isVisible()) {
-            return;
-        }
-        map.put(key, o);
+        Object external = val.isVisible() ? val instanceof ObjectValue 
+                ? val.getString() : val.get() : Value.INVISIBLE;
+        map.put(key, external);
     }
 
     /**

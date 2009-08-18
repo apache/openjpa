@@ -20,46 +20,31 @@ package org.apache.openjpa.persistence;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
-import java.util.BitSet;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
 import javax.persistence.Cache;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.PersistenceUnitUtil;
-import javax.persistence.criteria.QueryBuilder;
 import javax.persistence.spi.LoadState;
 
 import org.apache.openjpa.conf.OpenJPAConfiguration;
-import org.apache.openjpa.enhance.PersistenceCapable;
-import org.apache.openjpa.enhance.Reflection;
-import org.apache.openjpa.enhance.StateManager;
-import org.apache.openjpa.kernel.AbstractBrokerFactory;
 import org.apache.openjpa.kernel.AutoDetach;
 import org.apache.openjpa.kernel.Broker;
 import org.apache.openjpa.kernel.BrokerFactory;
 import org.apache.openjpa.kernel.DelegatingBrokerFactory;
 import org.apache.openjpa.kernel.DelegatingFetchConfiguration;
 import org.apache.openjpa.kernel.FetchConfiguration;
-import org.apache.openjpa.kernel.OpenJPAStateManager;
 import org.apache.openjpa.lib.conf.Configurations;
-import org.apache.openjpa.lib.conf.ProductDerivations;
 import org.apache.openjpa.lib.conf.Value;
-import org.apache.openjpa.lib.util.Localizer;
 import org.apache.openjpa.lib.util.Closeable;
-import org.apache.openjpa.meta.FieldMetaData;
+import org.apache.openjpa.lib.util.Localizer;
 import org.apache.openjpa.persistence.criteria.CriteriaBuilder;
 import org.apache.openjpa.persistence.meta.MetamodelImpl;
 import org.apache.openjpa.persistence.query.OpenJPAQueryBuilder;
 import org.apache.openjpa.persistence.query.QueryBuilderImpl;
-import org.apache.openjpa.util.OpenJPAException;
-import serp.util.Strings;
 
 /**
  * Implementation of {@link EntityManagerFactory} that acts as a
@@ -68,6 +53,7 @@ import serp.util.Strings;
  * @author Marc Prud'hommeaux
  * @nojavadoc
  */
+@SuppressWarnings("serial")
 public class EntityManagerFactoryImpl
     implements OpenJPAEntityManagerFactory, OpenJPAEntityManagerFactorySPI,
     Closeable, PersistenceUnitUtil {
@@ -113,19 +99,11 @@ public class EntityManagerFactoryImpl
         return _factory.getConfiguration();
     }
     
-    /* 
-     * @see javax.persistence.EntityManagerFactory#getProperties()
-     * 
-     * This does not return the password property.
-     */
-    public Map getProperties() {
-        Map properties = _factory.getAllProperties();
-        
-        // Remove the password property
-        properties.remove("javax.persistence.jdbc.password");
-        properties.remove("openjpa.ConnectionPassword");
-        
-        return properties;
+    public Map<String,Object> getProperties() {
+        Map<String,Object> props = _factory.getProperties();
+        // convert to user readable values
+        props.putAll(createEntityManager().getProperties());
+        return props;
     }
 
     public Object putUserObject(Object key, Object val) {
@@ -172,6 +150,13 @@ public class EntityManagerFactoryImpl
         return createEntityManager(null);
     }
 
+    /**
+     * Creates and configures a entity manager with the given properties.
+     *  
+     * The property keys in the given map can be either qualified or not.
+     * 
+     * @return list of exceptions raised or empty list.
+     */
     public OpenJPAEntityManagerSPI createEntityManager(Map props) {
         if (props == null)
             props = Collections.EMPTY_MAP;
@@ -179,17 +164,14 @@ public class EntityManagerFactoryImpl
             props = new HashMap(props);
 
         OpenJPAConfiguration conf = getConfiguration();
-        String user = (String) Configurations.removeProperty
-            ("ConnectionUserName", props);
+        String user = (String) Configurations.removeProperty("ConnectionUserName", props);
         if (user == null)
             user = conf.getConnectionUserName();
-        String pass = (String) Configurations.removeProperty
-            ("ConnectionPassword", props);
+        String pass = (String) Configurations.removeProperty("ConnectionPassword", props);
         if (pass == null)
             pass = conf.getConnectionPassword();
 
-        String str = (String) Configurations.removeProperty
-            ("TransactionMode", props);
+        String str = (String) Configurations.removeProperty("TransactionMode", props);
         boolean managed;
         if (str == null)
             managed = conf.isTransactionModeManaged();
@@ -198,94 +180,38 @@ public class EntityManagerFactoryImpl
             managed = Boolean.parseBoolean(val.unalias(str));
         }
 
-        Object obj = Configurations.removeProperty("ConnectionRetainMode", 
-            props);
+        Object obj = Configurations.removeProperty("ConnectionRetainMode", props);
         int retainMode;
-        if (obj instanceof Number)
+        if (obj instanceof Number) {
             retainMode = ((Number) obj).intValue();
-        else if (obj == null)
+        } else if (obj == null) {
             retainMode = conf.getConnectionRetainModeConstant();
-        else {
+        } else {
             Value val = conf.getValue("ConnectionRetainMode");
             try {
                 retainMode = Integer.parseInt(val.unalias((String) obj));
             } catch (Exception e) {
-                throw new ArgumentException(_loc.get("bad-em-prop",
-                    "openjpa.ConnectionRetainMode", obj),
+                throw new ArgumentException(_loc.get("bad-em-prop", "openjpa.ConnectionRetainMode", obj),
                     new Throwable[]{ e }, obj, true);
             }
         }
 
-        Broker broker = _factory.newBroker(user, pass, managed, retainMode,
-            false);
+        Broker broker = _factory.newBroker(user, pass, managed, retainMode, false);
             
         // add autodetach for close and rollback conditions to the configuration
         broker.setAutoDetach(AutoDetach.DETACH_CLOSE, true);
         broker.setAutoDetach(AutoDetach.DETACH_ROLLBACK, true);
-        
         broker.setDetachedNew(false);
+        
         OpenJPAEntityManagerSPI em = newEntityManagerImpl(broker);
 
         // allow setting of other bean properties of EM
-        String[] prefixes = ProductDerivations.getConfigurationPrefixes();
-        List<RuntimeException> errs = null;
-        Method setter;
-        String prop, prefix;
-        Object val;
-        for (Map.Entry entry : (Set<Map.Entry>) props.entrySet()) {
-            prop = (String) entry.getKey();
-            prefix = null;
-            for (int i = 0; i < prefixes.length; i++) {
-                prefix = prefixes[i] + ".";
-                if (prop.startsWith(prefix))
-                    break;
-                prefix = null; 
-            } 
-            if (prefix == null)
-                continue; 
-            prop = prop.substring(prefix.length());
-            try {
-                setter = Reflection.findSetter(em.getClass(), prop, true);
-            } catch (OpenJPAException ke) {
-                if (errs == null)
-                    errs = new LinkedList<RuntimeException>();
-                errs.add(PersistenceExceptions.toPersistenceException(ke));
-                continue;
-            }
-
-            val = entry.getValue();
-            try {
-                if (val instanceof String) {
-                    if ("null".equals(val))
-                        val = null;
-                    else
-                        val = Strings.parse((String) val,
-                            setter.getParameterTypes()[0]);
-                }
-                Reflection.set(em, setter, val);
-            } catch (Throwable t) {
-                while (t.getCause() != null)
-                    t = t.getCause();
-                ArgumentException err = new ArgumentException(_loc.get
-                    ("bad-em-prop", prop, entry.getValue()),
-                    new Throwable[]{ t }, null, true);
-                if (errs == null)
-                    errs = new LinkedList<RuntimeException>();
-                errs.add(err);
-            }
-        }
-
-        if (errs != null) {
-            em.close();
-            if (errs.size() == 1)
-                throw errs.get(0);
-            throw new ArgumentException(_loc.get("bad-em-props"),
-                errs.toArray(new Throwable[errs.size()]),
-                null, true);
+        for (Object key : props.keySet()) {
+            em.setProperty(key.toString(), props.get(key));
         }
         return em;
     }
-
+    
     /**
      * Create a new entity manager around the given broker.
      */
