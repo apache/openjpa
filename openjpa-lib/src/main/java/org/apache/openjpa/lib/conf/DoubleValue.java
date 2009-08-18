@@ -51,7 +51,7 @@ public class DoubleValue extends Value {
     /**
      * The internal value.
      */
-    public double get() {
+    public Double get() {
         return value;
     }
 

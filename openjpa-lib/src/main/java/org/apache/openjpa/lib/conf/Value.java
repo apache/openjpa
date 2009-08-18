@@ -40,6 +40,7 @@ public abstract class Value implements Cloneable {
 
     private static final String[] EMPTY_ALIASES = new String[0];
     private static final Localizer s_loc = Localizer.forPackage(Value.class);
+    public static final String INVISIBLE = "******";
     
     private String prop = null;
     private String loadKey = null;
@@ -53,7 +54,7 @@ public abstract class Value implements Cloneable {
     private String originalValue = null;
     private Set<String> otherNames = null;
     private boolean visible = true;
-
+    
     /**
      * Default constructor.
      */
@@ -285,7 +286,7 @@ public abstract class Value implements Cloneable {
     }
 
     /**
-     * The default value for the propert as a string.
+     * The default value for the property as a string.
      */
     public void setDefault(String def) {
         this.def = def;
@@ -411,7 +412,7 @@ public abstract class Value implements Cloneable {
     /**
      * Returns the type of the property that this Value represents.
      */
-    public abstract Class getValueType();
+    public abstract Class<?> getValueType();
 
     /**
      * Return the internal string form of this value.
@@ -558,5 +559,14 @@ public abstract class Value implements Cloneable {
 
     public void setVisible(boolean visible) {
         this.visible = visible;
+    }
+    
+    /**
+     * Get the actual data stored in this value.
+     */
+    public abstract Object get();
+    
+    public String toString() {
+        return getProperty()+ ":" + get() + "[" + getValueType().getName() + "]";
     }
 }

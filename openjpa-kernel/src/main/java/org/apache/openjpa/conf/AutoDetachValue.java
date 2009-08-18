@@ -77,10 +77,10 @@ class AutoDetachValue
         return _flags;
     }
 
-    protected List getAliasList() {
+    protected List<String> getAliasList() {
         // We do not document the numeric values and they are not
         // helpful to someone trying to understand the error message
-        ArrayList list = new ArrayList();
+        ArrayList<String> list = new ArrayList<String>();
         for (int x = 0; x < ALIASES.length; x += 2)
             list.add(ALIASES[x]);
         return list;

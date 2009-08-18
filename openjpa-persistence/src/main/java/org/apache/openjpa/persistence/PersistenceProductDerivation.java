@@ -99,6 +99,11 @@ public class PersistenceProductDerivation
     public int getType() {
         return TYPE_SPEC;
     }
+    
+    @Override
+    public String getConfigurationPrefix() {
+        return "javax.persistence";
+    }
 
     @Override
     public void validate()
@@ -174,8 +179,7 @@ public class PersistenceProductDerivation
         conf.lockManagerPlugin.setString("mixed");
         conf.nontransactionalWrite.setDefault("true");
         conf.nontransactionalWrite.set(true);
-        int specVersion = ((OpenJPAConfiguration) c).getSpecificationInstance()
-            .getVersion();
+        int specVersion = ((OpenJPAConfiguration) c).getSpecificationInstance().getVersion();
         if (specVersion < 2) {
             Compatibility compatibility = conf.getCompatibilityInstance();
             compatibility.setFlushBeforeDetach(true);
@@ -354,7 +358,7 @@ public class PersistenceProductDerivation
       */
      public boolean checkPuNameCollisions(Log logger,String puName){
          PUNameCollision p = _puNameCollisions.get(puName);
-         if(p!=null){
+         if (p != null){
              p.logCollision(logger);
              return true;
          }
@@ -365,13 +369,10 @@ public class PersistenceProductDerivation
         throws IOException {
         Enumeration<URL> urls = null;
         try {
-            urls = AccessController.doPrivileged(
-                J2DoPrivHelper.getResourcesAction(loader, rsrc)); 
+            urls = AccessController.doPrivileged(J2DoPrivHelper.getResourcesAction(loader, rsrc)); 
             if (!urls.hasMoreElements()) {
                 if (!rsrc.startsWith("META-INF"))
-                    urls = AccessController.doPrivileged(
-                        J2DoPrivHelper.getResourcesAction(
-                            loader, "META-INF/" + rsrc)); 
+                  urls = AccessController.doPrivileged(J2DoPrivHelper.getResourcesAction(loader, "META-INF/" + rsrc));
                 if (!urls.hasMoreElements())
                     return null;
             }
@@ -396,22 +397,19 @@ public class PersistenceProductDerivation
         String name, Map m, ClassLoader loader, boolean explicit)
         throws IOException {
         if (loader == null)
-            loader = AccessController.doPrivileged(
-                J2DoPrivHelper.getContextClassLoaderAction());
+            loader = AccessController.doPrivileged(J2DoPrivHelper.getContextClassLoaderAction());
 
         List<URL> urls = getResourceURLs(rsrc, loader);
         if (urls == null || urls.size() == 0)
             return null;
 
         ConfigurationParser parser = new ConfigurationParser(m);
-        PersistenceUnitInfoImpl pinfo = parseResources(parser, urls, name, 
-            loader);
+        PersistenceUnitInfoImpl pinfo = parseResources(parser, urls, name, loader);
         if (pinfo == null) {
             if (!explicit)
                 return Boolean.FALSE;
             throw new MissingResourceException(_loc.get("missing-xml-config", 
-                rsrc, String.valueOf(name)).getMessage(), getClass().getName(), 
-                rsrc);
+                rsrc, String.valueOf(name)).getMessage(), getClass().getName(), rsrc);
         } else if (!isOpenJPAPersistenceProvider(pinfo, loader)) {
             if (!explicit) {
                 warnUnknownProvider(pinfo);
@@ -434,8 +432,7 @@ public class PersistenceProductDerivation
     private PersistenceUnitInfoImpl parseResources(ConfigurationParser parser,
         List<URL> urls, String name, ClassLoader loader)
         throws IOException {
-        List<PersistenceUnitInfoImpl> pinfos = 
-            new ArrayList<PersistenceUnitInfoImpl>();
+        List<PersistenceUnitInfoImpl> pinfos = new ArrayList<PersistenceUnitInfoImpl>();
         for (URL url : urls) {
             parser.parse(url);
             pinfos.addAll((List<PersistenceUnitInfoImpl>) parser.getResults());
@@ -455,16 +452,13 @@ public class PersistenceProductDerivation
             // found named unit?
             if (name != null) {
                 if (name.equals(pinfo.getPersistenceUnitName())){
-
-                    if(result!=null){
-                        this.addPuNameCollision(name,
-                            result.getPersistenceXmlFileUrl().toString(),
+                    if (result != null){
+                        this.addPuNameCollision(name, result.getPersistenceXmlFileUrl().toString(),
                                 pinfo.getPersistenceXmlFileUrl().toString());
 
-                    }else{
+                    } else {
                         // Grab a ref to the pinfo that matches the name we're
-                        // looking for. Keep going to look for duplicate pu
-                        // names.
+                        // looking for. Keep going to look for duplicate pu names.
                         result = pinfo;
                     }
                 }
@@ -473,8 +467,7 @@ public class PersistenceProductDerivation
 
             if (isOpenJPAPersistenceProvider(pinfo, loader)) {
                 // if no name given and found unnamed unit, return it.  
-                // otherwise record as default unit unless we find a 
-                // better match later
+                // otherwise record as default unit unless we find a better match later
                 if (StringUtils.isEmpty(pinfo.getPersistenceUnitName()))
                     return pinfo;
                 if (ojpa == null)
@@ -493,16 +486,13 @@ public class PersistenceProductDerivation
     private static boolean isOpenJPAPersistenceProvider
         (PersistenceUnitInfo pinfo, ClassLoader loader) {
         String provider = pinfo.getPersistenceProviderClassName();
-        if (StringUtils.isEmpty(provider) 
-            || PersistenceProviderImpl.class.getName().equals(provider))
+        if (StringUtils.isEmpty(provider) || PersistenceProviderImpl.class.getName().equals(provider))
             return true;
 
         if (loader == null)
-            loader = AccessController.doPrivileged(
-                J2DoPrivHelper.getContextClassLoaderAction());
+            loader = AccessController.doPrivileged(J2DoPrivHelper.getContextClassLoaderAction());
         try {
-            if (PersistenceProviderImpl.class.isAssignableFrom
-                (Class.forName(provider, false, loader)))
+            if (PersistenceProviderImpl.class.isAssignableFrom(Class.forName(provider, false, loader)))
                 return true;
         } catch (Throwable t) {
             log(_loc.get("unloadable-provider", provider, t).getMessage());
@@ -516,8 +506,7 @@ public class PersistenceProductDerivation
      * provider.
      */
     private static void warnUnknownProvider(PersistenceUnitInfo pinfo) {
-        log(_loc.get("unrecognized-provider", 
-            pinfo.getPersistenceProviderClassName()).getMessage());
+        log(_loc.get("unrecognized-provider", pinfo.getPersistenceProviderClassName()).getMessage());
     }
     
     /**
@@ -530,13 +519,11 @@ public class PersistenceProductDerivation
 
     private void addPuNameCollision(String puName, String file1, String file2){
         PUNameCollision pun = _puNameCollisions.get(puName);
-        if(pun!=null){
+        if (pun != null){
             pun.addCollision(file1, file2);
-        }else{
-            _puNameCollisions.put(puName,
-            	new PUNameCollision(puName, file1, file2));
+        } else {
+            _puNameCollisions.put(puName, new PUNameCollision(puName, file1, file2));
         }
-
     }
     
     /**
@@ -565,17 +552,13 @@ public class PersistenceProductDerivation
         public void setInto(Configuration conf) {
             if (conf instanceof OpenJPAConfiguration) {
                 OpenJPAConfiguration oconf = (OpenJPAConfiguration) conf;
-                Object persistenceVersion = 
-                    getProperties().get(
-                        PersistenceUnitInfoImpl.PERSISTENCE_VERSION);
+                Object persistenceVersion = getProperties().get(PersistenceUnitInfoImpl.PERSISTENCE_VERSION);
                 if (persistenceVersion == null) {
                     oconf.setSpecification(SPEC_JPA);
                 } else {
                     // Set the spec level based on the persistence version
-                    oconf.setSpecification("jpa " + 
-                        persistenceVersion.toString());
-                    getProperties().remove(
-                        PersistenceUnitInfoImpl.PERSISTENCE_VERSION);
+                    oconf.setSpecification("jpa " + persistenceVersion.toString());
+                    getProperties().remove(PersistenceUnitInfoImpl.PERSISTENCE_VERSION);
                 }
                     
 
@@ -586,12 +569,10 @@ public class PersistenceProductDerivation
                 // the global value with our settings
                 String orig = oconf.getMetaDataFactory();
                 if (!StringUtils.isEmpty(orig)) {
-                    String key = ProductDerivations.getConfigurationKey
-                        ("MetaDataFactory", getProperties());
+                    String key = ProductDerivations.getConfigurationKey("MetaDataFactory", getProperties());
                     Object override = getProperties().get(key);
                     if (override instanceof String)
-                        addProperty(key, Configurations.combinePlugins(orig, 
-                            (String) override));
+                        addProperty(key, Configurations.combinePlugins(orig, (String) override));
                 }
             }
 
@@ -674,16 +655,14 @@ public class PersistenceProductDerivation
         protected Object getSchemaSource() {
             // use the version 1 schema by default.  non-versioned docs will 
             // continue to parse with the old xml if they do not contain a 
-            // persistence-unit.  that is currently the only signficant change
+            // persistence-unit.  that is currently the only significant change
             // to the schema.  if more significant changes are made in the 
             // future, the 2.0 schema may be preferable.
             String persistencexsd = "persistence-xsd.rsrc";
             // if the version and/or schema location is for 1.0, use the 1.0 
             // schema
-            if (_persistenceVersion != null &&
-                _persistenceVersion.equals(XMLVersionParser.VERSION_2_0) ||
-                (_schemaLocation != null && 
-                _schemaLocation.indexOf(PERSISTENCE_XSD_2_0) != -1)) {
+            if (_persistenceVersion != null && _persistenceVersion.equals(XMLVersionParser.VERSION_2_0) 
+            || (_schemaLocation != null && _schemaLocation.indexOf(PERSISTENCE_XSD_2_0) != -1)) {
                 persistencexsd = "persistence_2_0-xsd.rsrc";
             }
             return getClass().getResourceAsStream(persistencexsd);
@@ -701,8 +680,7 @@ public class PersistenceProductDerivation
             if (currentDepth() == 1)
                 startPersistenceUnit(attrs);
             else if (currentDepth() == 3 && "property".equals(name))
-                _info.setProperty(attrs.getValue("name"),
-                    attrs.getValue("value"));
+                _info.setProperty(attrs.getValue("name"), attrs.getValue("value"));
             return true;
         }
 
@@ -772,16 +750,15 @@ public class PersistenceProductDerivation
             // transaction type to local
             String val = attrs.getValue("transaction-type");
             if (val == null)
-                _info.setTransactionType
-                    (PersistenceUnitTransactionType.RESOURCE_LOCAL);
+                _info.setTransactionType(PersistenceUnitTransactionType.RESOURCE_LOCAL);
             else
-                _info.setTransactionType(Enum.valueOf
-                    (PersistenceUnitTransactionType.class, val));
+                _info.setTransactionType(Enum.valueOf(PersistenceUnitTransactionType.class, val));
 
             if (_source != null)
                 _info.setPersistenceXmlFileUrl(_source);
 		}
 	}
+    
     /**
      * This private class is used to hold onto information regarding
      * PersistentUnit name collisions.
@@ -797,13 +774,14 @@ public class PersistenceProductDerivation
 
             _puName=puName;
         }
+        
         void logCollision(Log logger){
             if(logger.isWarnEnabled()){
-                logger.warn(_loc.getFatal("dup-pu",
-                    new Object[]{_puName,_resources.toString(),
-                    	_resources.iterator().next()}));
+                logger.warn(_loc.getFatal("dup-pu", new Object[]{_puName,_resources.toString(),	
+                    _resources.iterator().next()}));
             }
         }
+        
         void addCollision(String file1, String file2){
             _resources.add(file1);
             _resources.add(file2);

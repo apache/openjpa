@@ -180,7 +180,7 @@ public class DelegatingBroker
         }
     }
     
-    public Map<String, String> getProperties() {
+    public Map<String,Object> getProperties() {
         try {
             return _broker.getProperties();
         } catch (RuntimeException re) {

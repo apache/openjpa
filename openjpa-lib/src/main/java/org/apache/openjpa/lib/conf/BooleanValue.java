@@ -50,7 +50,7 @@ public class BooleanValue extends Value {
     /**
      * The internal value.
      */
-    public boolean get() {
+    public Boolean get() {
         return value;
     }
 

@@ -28,6 +28,7 @@ import java.io.ObjectOutput;
 import java.io.ObjectOutputStream;
 import java.io.ObjectStreamClass;
 import java.lang.reflect.Array;
+import java.lang.reflect.Method;
 import java.sql.Connection;
 import java.util.Arrays;
 import java.util.Collection;
@@ -53,6 +54,7 @@ import org.apache.openjpa.conf.OpenJPAConfiguration;
 import org.apache.openjpa.ee.ManagedRuntime;
 import org.apache.openjpa.enhance.PCEnhancer;
 import org.apache.openjpa.enhance.PCRegistry;
+import org.apache.openjpa.enhance.Reflection;
 import org.apache.openjpa.kernel.AbstractBrokerFactory;
 import org.apache.openjpa.kernel.Broker;
 import org.apache.openjpa.kernel.DelegatingBroker;
@@ -66,6 +68,7 @@ import org.apache.openjpa.kernel.QueryFlushModes;
 import org.apache.openjpa.kernel.QueryLanguages;
 import org.apache.openjpa.kernel.Seq;
 import org.apache.openjpa.kernel.jpql.JPQLParser;
+import org.apache.openjpa.lib.log.Log;
 import org.apache.openjpa.lib.util.Closeable;
 import org.apache.openjpa.lib.util.Localizer;
 import org.apache.openjpa.meta.ClassMetaData;
@@ -81,6 +84,8 @@ import org.apache.openjpa.util.RuntimeExceptionTranslator;
 import org.apache.openjpa.util.UserException;
 import org.apache.openjpa.util.WrappedException;
 
+import serp.util.Strings;
+
 /**
  * Implementation of {@link EntityManager} interface.
  *
@@ -92,17 +97,14 @@ public class EntityManagerImpl
     implements OpenJPAEntityManagerSPI, Externalizable,
     FindCallbacks, OpCallbacks, Closeable, OpenJPAEntityTransaction {
 
-    private static final Localizer _loc = Localizer.forPackage
-        (EntityManagerImpl.class);
+    private static final Localizer _loc = Localizer.forPackage(EntityManagerImpl.class);
     private static final Object[] EMPTY_OBJECTS = new Object[0];
 
     private DelegatingBroker _broker;
     private EntityManagerFactoryImpl _emf;
-    private Map<FetchConfiguration,FetchPlan> _plans =
-        new IdentityHashMap<FetchConfiguration,FetchPlan>(1);
+    private Map<FetchConfiguration,FetchPlan> _plans = new IdentityHashMap<FetchConfiguration,FetchPlan>(1);
 
-    private RuntimeExceptionTranslator _ret =
-        PersistenceExceptions.getRollbackTranslator(this);
+    private RuntimeExceptionTranslator _ret = PersistenceExceptions.getRollbackTranslator(this);
 
     public EntityManagerImpl() {
         // for Externalizable
@@ -111,8 +113,7 @@ public class EntityManagerImpl
     /**
      * Constructor; supply factory and delegate.
      */
-    public EntityManagerImpl(EntityManagerFactoryImpl factory,
-        Broker broker) {
+    public EntityManagerImpl(EntityManagerFactoryImpl factory, Broker broker) {
         initialize(factory, broker);
     }
 
@@ -1551,19 +1552,14 @@ public class EntityManagerImpl
         return createQuery(jpql);
     }
 
-    /*
-     * @see javax.persistence.EntityManager#getProperties()
-     * 
-     * This does not return the password property.
-     */
     public Map<String, Object> getProperties() {
-        Map<String, String> currentProperties = _broker.getProperties();
-        
-        // Convert the <String, String> map into a <String, Object> map
-        Map<String, Object> finalMap =
-            new HashMap<String, Object>(currentProperties);
-        
-        return finalMap;
+        Map props = _broker.getProperties();
+        for (String s : _broker.getSupportedProperties()) {
+            Method getter = Reflection.findGetter(this.getClass(), getPropertyName(s), false);
+            if (getter != null)
+                props.put(s, Reflection.get(this, getter));
+        }
+        return props;
     }
 
     public CriteriaBuilder getQueryBuilder() {
@@ -1614,8 +1610,29 @@ public class EntityManagerImpl
         return _emf.getMetamodel();
     }
 
-    public void setProperty(String arg0, Object arg1) {
-        throw new UnsupportedOperationException(
-        "JPA 2.0 - Method not yet implemented");
+    public void setProperty(String prop, Object value) {
+        String beanProp = getPropertyName(prop);
+        try {
+            Method setter = Reflection.findSetter(this.getClass(), beanProp, false);
+            if (setter != null) {
+                if (value instanceof String) {
+                    if ("null".equals(value)) {
+                        value = null;
+                    } else {
+                        value = Strings.parse((String) value, setter.getParameterTypes()[0]);
+                    }
+                }
+                Reflection.set(this, setter, value);
+            }
+        } catch (Exception ex) {
+            Log log = getConfiguration().getLog(OpenJPAConfiguration.LOG_RUNTIME);
+            if (log.isWarnEnabled())
+                log.warn(_loc.get("bad-em-prop", prop, value));
+        }
+    }
+    
+    String getPropertyName(String s) {
+        int dot = s.lastIndexOf('.');
+        return dot == -1 ? s : s.substring(dot+1);
     }
 }

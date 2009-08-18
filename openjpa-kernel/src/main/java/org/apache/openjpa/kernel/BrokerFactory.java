@@ -43,15 +43,7 @@ public interface BrokerFactory
     /**
      * Return properties describing this runtime.
      */
-    public Properties getProperties();
-    
-    /**
-     * Return all of the configured properties plus those returned in 
-     * @see #getProperties().
-     * 
-     * @since 2.0.0
-     */
-    public Map<String, String> getAllProperties();
+    public Map<String,Object> getProperties();
     
     /**
      * Return all of the supported properties as a set of keys. If a property
