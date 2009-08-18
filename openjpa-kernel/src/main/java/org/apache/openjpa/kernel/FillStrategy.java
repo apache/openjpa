@@ -21,15 +21,17 @@ package org.apache.openjpa.kernel;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.util.Arrays;
 
 import org.apache.openjpa.enhance.Reflection;
+import org.apache.openjpa.lib.util.Localizer;
 
 
 /**
  * A strategy to fill data into a {@link ResultShape}.
  * <BR>
  * Available strategy implementations can fill by invoking constructor, setting array elements, direct assignment,
- * invoking put(key,value)-style methods or a constructing by a factory. 
+ * invoking put(key,value)-style method on Map or factory-constructed instance. 
  * 
  * @author Pinaki Poddar
  * 
@@ -37,6 +39,8 @@ import org.apache.openjpa.enhance.Reflection;
  *
  */
 public interface FillStrategy<T> {
+    static final Localizer _loc = Localizer.forPackage(FillStrategy.class);
+    
     T fill(Object[] data, Class<?>[] types, String[] aliases);
     
     
@@ -48,8 +52,8 @@ public interface FillStrategy<T> {
     public static class Array<T> implements FillStrategy<T> {
         private final Class<?> cls;
         public Array(Class<T> arrayCls) {
-            if (!arrayCls.isArray())
-                throw new IllegalArgumentException(arrayCls + " is not an array");
+            if (arrayCls == null || !arrayCls.isArray())
+                throw new IllegalArgumentException(_loc.get("fill-bad-array", arrayCls).getMessage());
             this.cls = arrayCls.getComponentType();
         }
         
@@ -70,19 +74,24 @@ public interface FillStrategy<T> {
         private final Method putMethod;
         
         public Map(Method put) {
+            if (put == null || put.getParameterTypes().length != 2)
+                throw new IllegalArgumentException(_loc.get("fill-bad-put", put).getMessage());
             putMethod = put;
         }
         
         public T fill(Object[] values, Class<?>[] types, String[] aliases) {
+            int i = 0;
             try {
                 Object map = putMethod.getDeclaringClass().newInstance();
-                for (int i = 0; i < values.length; i++)
+                for (i = 0; i < values.length; i++)
                     putMethod.invoke(map, aliases[i], values[i]);
                 return (T)map;
             } catch (InvocationTargetException t) {
-                throw new RuntimeException(t.getTargetException());
+                throw new RuntimeException(_loc.get("fill-map-error", putMethod, aliases[i], values[i]).getMessage(), 
+                    t.getTargetException());
             } catch (Exception e) {
-                throw new RuntimeException(e);
+                throw new RuntimeException(_loc.get("fill-map-error", putMethod, aliases[i], values[i]).getMessage(), 
+                        e);
             }
         }
         
@@ -94,6 +103,7 @@ public interface FillStrategy<T> {
     public static class NewInstance<T> implements FillStrategy<T> {
         private Constructor<? extends T> cons;
         private Class<T> cls;
+        
         public NewInstance(Constructor<? extends T> cons) {
             this.cons = cons;
         }
@@ -110,7 +120,7 @@ public interface FillStrategy<T> {
             try {
                 return cls.getConstructor(types);
             } catch (Exception e) {
-                throw new RuntimeException(e);
+                throw new RuntimeException(_loc.get("fill-ctor-none", cls, Arrays.toString(types)).getMessage());
             }
         }
         
@@ -124,7 +134,8 @@ public interface FillStrategy<T> {
                 }
                 return cons.newInstance(values);
             } catch (Exception e) {
-                throw new RuntimeException(e);
+                throw new RuntimeException(_loc.get("fill-ctor-error", cons, Arrays.toString(values), 
+                        Arrays.toString(types)).getMessage(), e);
             }
         }
         
@@ -142,23 +153,28 @@ public interface FillStrategy<T> {
             this.cls = cls;
         }
     
-        public T fill(Object[] args, Class<?>[] types, String[] aliases) {
+        public T fill(Object[] values, Class<?>[] types, String[] aliases) {
+            int i = 0;
             try {
                 if (setters == null) {
-                    setters = new Method[args.length];
+                    setters = new Method[values.length];
                 }
                 T bean = cls.newInstance();
-                for (int i = 0; i < args.length; i++) {
+                for (i = 0; i < values.length; i++) {
                     if (setters[i] == null) {
-                        setters[i] = Reflection.findSetter(cls, aliases[i], true);
+                        setters[i] = Reflection.findSetter(cls, aliases[i], false);
+                        if (setters[i] == null)
+                            throw new RuntimeException(_loc.get("fill-bean-setter", cls, aliases[i]).getMessage());
                     }
-                    setters[i].invoke(bean, args[i]);
+                    setters[i].invoke(bean, Filters.convert(values[i], types[i]));
                 }
                 return bean;
             } catch (InvocationTargetException t) {
-                throw new RuntimeException(t.getTargetException());
+                throw new RuntimeException(_loc.get("fill-bean-error", setters[i], values[i], types[i]).getMessage(), 
+                        t.getTargetException());
             } catch (Exception e) {
-                throw new RuntimeException(e);
+                throw new RuntimeException(_loc.get("fill-bean-error", setters[i], values[i], types[i]).getMessage(), 
+                        e);
             }
         }
     }
@@ -168,8 +184,13 @@ public interface FillStrategy<T> {
      * Populate an instance by simply assigning the 0-th element of the input values.  
      */
     public static class Assign<T> implements FillStrategy<T> {
-        public T fill(Object[] args, Class<?>[] types, String[] aliases) {
-            return (T)args[0];
+        public T fill(Object[] values, Class<?>[] types, String[] aliases) {
+            try {
+                return (T)values[0];
+            } catch (Exception e) {
+                throw new RuntimeException(_loc.get("fill-assign-error", Arrays.toString(values),
+                        Arrays.toString(types)).getMessage(), e);
+            }
         }
     }
     
@@ -183,23 +204,31 @@ public interface FillStrategy<T> {
         final Method putMethod;
         final boolean isArray;
         
-        public Factory(ObjectFactory<T> factory, Method putMethod) {
+        public Factory(ObjectFactory<T> factory, Method put) {
             this.factory = factory;
-            this.putMethod = putMethod;
+            this.putMethod = put;
+            if (put == null || put.getParameterTypes().length != 2)
+                throw new IllegalArgumentException(_loc.get("fill-factory-bad-put", put).getMessage());
             Class<?> keyType = putMethod.getParameterTypes()[0];
             this.isArray = keyType == int.class || keyType == Integer.class;
         }
         
         public T fill(Object[] values, Class<?>[] types, String[] aliases) {
+            int i = 0;
+            Object key = null;
             T result = factory.newInstance();
             try {
-                for (int i = 0; i < values.length; i++)
-                    putMethod.invoke(result, isArray ? i : aliases[i], values[i]);
+                for (i = 0; i < values.length; i++) {
+                    key = isArray ? i : aliases[i];
+                    putMethod.invoke(result, key, Filters.convert(values[i], types[i]));
+                }
                 return result;
             } catch (InvocationTargetException t) {
-                throw new RuntimeException(t.getTargetException());
+                throw new RuntimeException(_loc.get("fill-factory-error", new Object[]{putMethod, key, values[i], 
+                        types[i]}).getMessage(), t.getTargetException());
             } catch (Exception e) {
-                throw new RuntimeException(e);
+                throw new RuntimeException(_loc.get("fill-factory-error", new Object[]{putMethod, key, values[i], 
+                        types[i]}).getMessage(), e);
             }
         }
     }
