@@ -46,6 +46,7 @@
         <surefire.jvm.args>${test.jvm.arguments}</surefire.jvm.args>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <checkstyle.config.location>../openjpa-project/checkstyle.xml</checkstyle.config.location>
+        <derby.version>10.2.2.0</derby.version>
     </properties>
 
     <!--
@@ -513,7 +514,7 @@
             <dependency>
                 <groupId>org.apache.derby</groupId>
                 <artifactId>derby</artifactId>
-                <version>10.2.2.0</version>
+                <version>${derby.version}</version>
             </dependency>
             <dependency>
                 <groupId>commons-dbcp</groupId>

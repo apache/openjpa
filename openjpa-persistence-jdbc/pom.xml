@@ -63,7 +63,9 @@
                 <artifactId>maven-surefire-plugin</artifactId>
                 <configuration>
                     <argLine>${surefire.jvm.args}</argLine>
-                    <includes><include>org/apache/openjpa/persistence/enhance/DynamicEnhancementSuite.java</include></includes>
+                    <includes>
+                        <include>org/apache/openjpa/persistence/enhance/DynamicEnhancementSuite.java</include>
+                     </includes>
                     <systemProperties>
                         <property>
                             <name>openjpa.Log</name>
@@ -91,17 +93,25 @@
         </plugins>
         </build>
         </profile>
-        <!-- Profile for testing with Apache Derby -->
+
+        <!-- Default profile for testing with embedded Apache Derby -->
         <profile>
+            <!--
+                Optionally, you can override the following properties:
+                    -Dderby.version=10.2.2.0
+            -->
             <id>test-derby</id>
             <activation>
                 <activeByDefault>true</activeByDefault>
-                <property><name>test-derby</name></property>
+                <property>
+                    <name>test-derby</name>
+                </property>
             </activation>
             <dependencies>
                 <dependency>
                     <groupId>org.apache.derby</groupId>
                     <artifactId>derby</artifactId>
+                    <version>${derby.version}</version>
                     <scope>test</scope>
                 </dependency>
             </dependencies>
@@ -113,10 +123,54 @@
             </properties>
         </profile>
 
+        <!-- Profile for testing with Apache Derby network server -->
+        <profile>
+            <!--
+                Example Derby Network Server profile.
+                You must manually start a Derby network server instance and
+                also set the following properties:
+                    -Dopenjpa.derbynet.url=jdbc:derby://<HOST>:<PORT>/<DBNAME>;\
+                    	create=true
+
+                Optionally, you can override the following properties:
+                    -Dopenjpa.derbynet.driver=org.apache.derby.jdbc.ClientXADataSource
+                    -Dopenjpa.derbynet.username=
+                    -Dopenjpa.derbynet.password=
+                    -Dderby.version=10.2.2.0
+            -->
+            <id>test-derbynet</id>
+            <activation>
+                <property><name>test-derbynet</name></property>
+            </activation>
+            <dependencies>
+                <dependency>
+                    <groupId>org.apache.derby</groupId>
+                    <artifactId>derbyclient</artifactId>
+                    <version>${derby.version}</version>
+                    <scope>test</scope>
+                </dependency>
+            </dependencies>
+            <properties>
+                <openjpa.derbynet.url>jdbc:derby://localhost:1527/openjpa20;create=true;traceDirectory=target;traceFile=derby.log</openjpa.derbynet.url>
+                <openjpa.derbynet.driver>org.apache.derby.jdbc.ClientDriver</openjpa.derbynet.driver>
+                <!-- Note: commons-dbcp requires dummy values for uid/pwd -->
+                <openjpa.derbynet.username>uid</openjpa.derbynet.username>
+                <openjpa.derbynet.password>pwd</openjpa.derbynet.password>
+                <connection.driver.name>${openjpa.derbynet.driver}</connection.driver.name>
+                <connection.url>${openjpa.derbynet.url}</connection.url>
+                <connection.username>${openjpa.derbynet.username}</connection.username>
+                <connection.password>${openjpa.derbynet.password}</connection.password>
+            </properties>
+        </profile>
+
         <!-- Profile for testing with HSQL DB -->
         <profile>
             <id>test-hsqldb</id>
-            <activation><property><name>test-hsqldb</name></property></activation>
+            <activation>
+                <property>
+                    <name>test-hsqldb</name>
+                </property>
+            </activation>
             <dependencies>
                 <dependency>
                     <groupId>hsqldb</groupId>
@@ -137,7 +191,11 @@
         <!-- Profile for testing with MySQL DB -->
         <profile>
             <id>test-mysql</id>
-            <activation><property><name>test-mysql</name></property></activation>
+            <activation>
+                <property>
+                    <name>test-mysql</name>
+                </property>
+            </activation>
             <dependencies>
                 <dependency>
                     <groupId>mysql</groupId>
@@ -158,7 +216,11 @@
         <!-- Profile for testing with PostgreSQL DB -->
         <profile>
             <id>test-postgresql</id>
-            <activation><property><name>test-postgresql</name></property></activation>
+            <activation>
+                <property>
+                    <name>test-postgresql</name>
+                </property>
+            </activation>
             <dependencies>
                 <dependency>
                     <groupId>postgresql</groupId>
@@ -248,11 +310,12 @@
                 <dependency>
                     <groupId>net.sourceforge.jtds</groupId>
                     <artifactId>jtds</artifactId>
-                    <version>1.2</version>
+                    <version>${jtds.version}</version>
                     <scope>test</scope>
                 </dependency>
             </dependencies>
             <properties>
+                <jtds.version>1.2</jtds.version>
                 <connection.driver.name>net.sourceforge.jtds.jdbc.Driver</connection.driver.name>
                 <connection.url>${openjpa.sqlserver.url}</connection.url>
                 <connection.username>${openjpa.sqlserver.username}</connection.username>
@@ -263,16 +326,21 @@
         <!-- Profile for testing with Sybase DB using the jTDS driver -->
         <profile>
             <id>test-sybase</id>
-            <activation><property><name>test-sybase</name></property></activation>
+            <activation>
+                <property>
+                    <name>test-sybase</name>
+                </property>
+            </activation>
             <dependencies>
                 <dependency>
                     <groupId>net.sourceforge.jtds</groupId>
                     <artifactId>jtds</artifactId>
-                    <version>1.2</version>
+                    <version>${jtds.version}</version>
                     <scope>test</scope>
                 </dependency>
             </dependencies>
             <properties>
+                <jtds.version>1.2</jtds.version>
                 <connection.driver.name>net.sourceforge.jtds.jdbc.Driver</connection.driver.name>
                 <connection.url>${openjpa.sybase.url}</connection.url>
                 <connection.username>${openjpa.sybase.username}</connection.username>
@@ -280,6 +348,7 @@
             </properties>
         </profile>
         
+        <!-- Profile for testing with Ingres DB -->
         <profile>
             <id>test-ingres</id>
             <activation><property><name>test-ingres</name></property></activation>
@@ -287,11 +356,12 @@
                 <dependency>
                     <groupId>com.ingres.jdbc</groupId>
                     <artifactId>iijdbc</artifactId>
-                    <version>9.2-3.4.8</version>
+                    <version>${ingres.version}</version>
                     <scope>test</scope>
                 </dependency>
             </dependencies>
             <properties>
+                <ingres.version>9.2-3.4.8</ingres.version>
                 <connection.driver.name>com.ingres.jdbc.IngresDriver</connection.driver.name>
                 <connection.url>${openjpa.ingres.url}</connection.url>
                 <connection.username>${openjpa.ingres.username}</connection.username>
@@ -311,7 +381,11 @@
         -->
         <profile>
             <id>test-custom</id>
-            <activation><property><name>test-custom</name></property></activation>
+            <activation>
+                <property>
+                    <name>test-custom</name>
+                </property>
+            </activation>
             <dependencies>
                 <dependency>
                     <groupId>openjpa.customdriver</groupId>
@@ -347,7 +421,11 @@
         -->
         <profile>
             <id>test-custom2</id>
-            <activation><property><name>test-custom2</name></property></activation>
+            <activation>
+                <property>
+                    <name>test-custom2</name>
+                </property>
+            </activation>
             <dependencies>
                 <dependency>
                     <groupId>openjpa.customdriver1</groupId>
@@ -452,6 +530,8 @@
                 </repository>
             </repositories>
         </profile>          
+
+        <!-- Profile for testing Informix with the DB2 JCC driver -->
         <profile>
             <!-- 
                 Example Informix JCC profile. You can use this profile if you:
@@ -517,7 +597,9 @@
                     </releases>
                 </repository>
             </repositories>
-        </profile>          
+        </profile>
+
+        <!-- Profile for testing with Oracle DB -->
         <profile>
             <!-- 
                 Example oracle profile. You can use this profile if you:
