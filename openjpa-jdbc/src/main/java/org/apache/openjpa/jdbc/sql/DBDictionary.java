@@ -158,7 +158,6 @@ public class DBDictionary
     public int maxIndexNameLength = 128;
     public int maxIndexesPerTable = Integer.MAX_VALUE;
     public boolean supportsForeignKeys = true;
-    public boolean supportsTimestampNanos = true;
     public boolean supportsUniqueConstraints = true;
     public boolean supportsDeferredConstraints = true;
     public boolean supportsRestrictDeleteAction = true;
@@ -1097,10 +1096,7 @@ public class DBDictionary
             nanos = 0;
         }
 
-        if (supportsTimestampNanos)
-            val.setNanos(nanos);
-        else
-            val.setNanos(0);
+        val.setNanos(nanos);
 
         if (cal == null)
             stmnt.setTimestamp(idx, val);

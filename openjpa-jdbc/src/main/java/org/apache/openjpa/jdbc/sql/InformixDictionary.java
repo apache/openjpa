@@ -129,8 +129,6 @@ public class InformixDictionary
         // Informix doesn't support aliases in deletes if the table has an index
         allowsAliasInBulkClause = false;
 
-        supportsTimestampNanos = false;
-
         // Informix doesn't understand "X CROSS JOIN Y", but it does understand
         // the equivalent "X JOIN Y ON 1 = 1"
         crossJoinClause = "JOIN";
