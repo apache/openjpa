@@ -2015,7 +2015,8 @@ public class PCEnhancer {
                 code.iadd();
                 code.invokeinterface().setMethod
                     (getFieldSupplierMethod(type));
-                if (fmds[i].getObjectIdFieldTypeCode() == JavaTypes.OBJECT) {
+                if (fmds[i].getObjectIdFieldTypeCode() == JavaTypes.OBJECT &&
+                    !fmds[i].getDeclaredType().isEnum()) {
                 	code.checkcast().setType(ObjectId.class);
                 	code.invokevirtual().setMethod(ObjectId.class, "getId", 
             			Object.class, null);                	

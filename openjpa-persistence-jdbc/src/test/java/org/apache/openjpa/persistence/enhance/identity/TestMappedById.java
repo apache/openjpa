@@ -79,14 +79,14 @@ public class TestMappedById extends SingleEMFTestCase {
     public int mId4 = 1;
 
     public void setUp() throws Exception {
-        super.setUp(DROP_TABLES, Dependent1.class, Employee1.class, 
+        super.setUp(DROP_TABLES, Dependent1.class, Employee.class, Employee1.class, 
             DependentId1.class, Dependent2.class, Employee2.class,
             DependentId2.class, EmployeeId2.class, MedicalHistory1.class,
             Person1.class, PersonId1.class, MedicalHistory2.class,
             Person2.class, Person3.class, MedicalHistory3.class, 
             Person4.class, PersonId4.class, MedicalHistory4.class,
             Dependent3.class, Employee3.class, DependentId3.class, 
-            Parent3.class, Dependent4.class, Employee4.class,
+            Parent3.class, Dependent4.class, Employee4.class, PhoneNumber.class,
             BeneContact.class, BeneContactId.class, Beneficiary.class);
     }
 
@@ -164,6 +164,29 @@ public class TestMappedById extends SingleEMFTestCase {
         queryObj7();
     }
 
+    public void testEnumIdClass() {
+        EntityManager em = emf.createEntityManager();
+        Employee e = new Employee();
+        e.setEmpId(1);
+        e.setEmpType(Employee.EmpType.A1);
+        PhoneNumber phoneNumber = new PhoneNumber();
+        phoneNumber.setNumber(1);
+        phoneNumber.setEmp(e);
+        e.setPhoneNumber(phoneNumber);
+        em.persist(phoneNumber);
+        em.persist(e);
+        EntityTransaction tran = em.getTransaction();
+        tran.begin();
+        em.flush();
+        tran.commit();
+        em.clear();
+        PhoneNumber p = em.find(PhoneNumber.class, 1);
+        Employee emp = p.getEmp();
+        assertEquals(1, emp.getEmpId());
+        em.close();
+    }
+    
+    
     public void createObj1() {
         EntityManager em = emf.createEntityManager();
         EntityTransaction tran = em.getTransaction();
