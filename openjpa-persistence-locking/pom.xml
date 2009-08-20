@@ -142,7 +142,9 @@
             -->
             <id>test-derbynet</id>
             <activation>
-                <property><name>test-derbynet</name></property>
+                <property>
+                    <name>test-derbynet</name>
+                </property>
             </activation>
             <dependencies>
                 <dependency>
@@ -270,6 +272,11 @@
                     -Dmssql.artifactid=sqljdbc4
             -->
             <id>test-mssql</id>
+            <activation>
+                <property>
+                    <name>test-mssql</name>
+                </property>
+            </activation>
             <dependencies>
                 <dependency>
                     <groupId>${mssql.groupid}</groupId>
@@ -308,6 +315,11 @@
         <!-- Profile for testing with SQLServer DB using the jTDS driver -->
         <profile>
             <id>test-sqlserver</id>
+            <activation>
+                <property>
+                    <name>test-sqlserver</name>
+                </property>
+            </activation>
             <dependencies>
                 <dependency>
                     <groupId>net.sourceforge.jtds</groupId>
@@ -353,7 +365,11 @@
         <!-- Profile for testing with Ingres DB -->
         <profile>
             <id>test-ingres</id>
-            <activation><property><name>test-ingres</name></property></activation>
+            <activation>
+                <property>
+                    <name>test-ingres</name>
+                </property>
+            </activation>
             <dependencies>
                 <dependency>
                     <groupId>com.ingres.jdbc</groupId>
@@ -406,10 +422,10 @@
         </profile>
 
 
-        <!--
-            Profile for testing with a custom DB using two system jars. Some databases (DB2) use more than one jar for
-            their JDBC provider. Functionally this is identical to the previous profile, with a second system dependency
-            added.
+        <!-- Profile for testing with a custom DB using two system jars.
+             Some databases (DB2) use more than one jar for their JDBC provider.
+             Functionally this is identical to the previous profile, with a
+             second system dependency added.
         -->
         <!--
             For example, to test with DB2, you might run:
@@ -491,6 +507,11 @@
                     -Ddb2.version=9.5
             -->
             <id>test-db2-jcc</id>
+            <activation>
+                <property>
+                    <name>test-db2-jcc</name>
+                </property>
+            </activation>
             <dependencies>
                 <dependency>
                     <groupId>${db2.groupid}</groupId>
@@ -515,6 +536,65 @@
                 <connection.url>${openjpa.db2.url}</connection.url>
                 <connection.username>${openjpa.db2.username}</connection.username>
                 <connection.password>${openjpa.db2.password}</connection.password>
+            </properties>
+            <repositories>
+                <repository>
+                    <id>db2.repository</id>
+                    <name>DB2 Repository</name>
+                    <url>${db2.maven.repo}</url>
+                    <layout>default</layout>
+                    <snapshots>
+                        <enabled>false</enabled>
+                    </snapshots>
+                    <releases>
+                        <enabled>true</enabled>
+                        <checksumPolicy>ignore</checksumPolicy>
+                    </releases>
+                </repository>
+            </repositories>
+        </profile>
+
+        <!-- Profile for testing Apache Derby with the DB2 JCC driver -->
+        <profile>
+            <id>test-derbyjcc</id>
+            <activation>
+                <property>
+                    <name>test-derbyjcc</name>
+                </property>
+            </activation>
+            <dependencies>
+                <dependency>
+                    <groupId>${db2.groupid}</groupId>
+                    <artifactId>${db2.driver.artifactid}</artifactId>
+                    <version>${db2.version}</version>
+                    <scope>test</scope>
+                </dependency>
+                <dependency>
+                    <groupId>${db2.groupid}</groupId>
+                    <artifactId>${db2.license.artifactid}</artifactId>
+                    <version>${db2.version}</version>
+                    <scope>test</scope>
+                </dependency>
+            </dependencies>
+            <properties>
+                <db2.maven.repo>http://not.a.real.repository</db2.maven.repo>
+                <db2.groupid>com.ibm.db2</db2.groupid>
+                <db2.driver.artifactid>jcc-driver</db2.driver.artifactid>
+                <db2.license.artifactid>jcc-license</db2.license.artifactid>
+                <db2.version>9.5</db2.version>
+                <!--
+                    Note: DB must be created before using this profile,
+                    which can be done by running:
+                        mvn test -Dtest=<testcase> -Ptest-derbynet
+                -->
+                <openjpa.derbyjcc.url>jdbc:db2://localhost:1527/openjpa20</openjpa.derbyjcc.url>
+                <!-- Note: commons-dbcp requires dummy values for uid/pwd -->
+                <openjpa.derbyjcc.username>uid</openjpa.derbyjcc.username>
+                <openjpa.derbyjcc.password>pwd</openjpa.derbyjcc.password>
+                <connection.driver.name>com.ibm.db2.jcc.DB2Driver</connection.driver.name>
+                <connection.url>${openjpa.derbyjcc.url}</connection.url>
+                <connection.username>${openjpa.derbyjcc.username}</connection.username>
+                <connection.password>${openjpa.derbyjcc.password}</connection.password>
             </properties>
             <repositories>
                 <repository>
@@ -559,6 +639,11 @@
                     -Dids.version=9.5
             -->
             <id>test-ids-jcc</id>
+            <activation>
+                <property>
+                    <name>test-ids-jcc</name>
+                </property>
+            </activation>
             <dependencies>
                 <dependency>
                     <groupId>${ids.groupid}</groupId>
@@ -627,6 +712,11 @@
                     -Doracle.version=10g
             -->
             <id>test-oracle</id>
+            <activation>
+                <property>
+                    <name>test-oracle</name>
+                </property>
+            </activation>
             <dependencies>
                 <dependency>
                     <groupId>${oracle.groupid}</groupId>
