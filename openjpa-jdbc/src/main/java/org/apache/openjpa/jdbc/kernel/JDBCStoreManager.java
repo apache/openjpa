@@ -41,6 +41,7 @@ import org.apache.openjpa.jdbc.meta.ClassMapping;
 import org.apache.openjpa.jdbc.meta.Discriminator;
 import org.apache.openjpa.jdbc.meta.FieldMapping;
 import org.apache.openjpa.jdbc.meta.ValueMapping;
+import org.apache.openjpa.jdbc.meta.strats.SuperclassDiscriminatorStrategy;
 import org.apache.openjpa.jdbc.sql.DBDictionary;
 import org.apache.openjpa.jdbc.sql.JoinSyntaxes;
 import org.apache.openjpa.jdbc.sql.Joins;
@@ -1050,15 +1051,11 @@ public class JDBCStoreManager
         OpenJPAStateManager sm, BitSet fields, JDBCFetchConfiguration fetch,
         int eager, boolean ident, boolean outer) {
         // add class conditions so that they're cloned for any batched selects
-        boolean joinedSupers = false;
-        if ((sm == null || sm.getPCState() == PCState.TRANSIENT)
-            && (subs == Select.SUBS_JOINABLE || subs == Select.SUBS_NONE)) {
-            loadSubclasses(mapping); 
-            Joins joins = (outer) ? sel.newOuterJoins() : null;
-            joinedSupers = mapping.getDiscriminator().addClassConditions(sel,
-                subs == Select.SUBS_JOINABLE, joins);
+        boolean joinedSupers = false;    
+        if(needClassCondition(mapping, subs, sm)) {
+            joinedSupers = getJoinedSupers(sel, mapping, subs, outer);
         }
-
+        
         // create all our eager selects so that those fields are reserved
         // and cannot be reused during the actual eager select process,
         // preventing infinite recursion
@@ -1087,6 +1084,31 @@ public class JDBCStoreManager
         return seld > 0;
     }
 
+    private boolean getJoinedSupers(Select sel, ClassMapping mapping, int subs, boolean outer) {
+        loadSubclasses(mapping); 
+        Joins joins = (outer) ? sel.newOuterJoins() : null;
+        return mapping.getDiscriminator().addClassConditions(sel, subs == Select.SUBS_JOINABLE, joins);
+    }
+    
+    private boolean needClassCondition(ClassMapping mapping, int subs,
+        OpenJPAStateManager sm) {
+        boolean retVal = false;
+        if(sm == null || sm.getPCState() == PCState.TRANSIENT) {
+            if(subs == Select.SUBS_JOINABLE || subs == Select.SUBS_NONE) {
+                retVal = true;
+            }
+            else {
+                if (mapping.getDiscriminator() != null
+                    && SuperclassDiscriminatorStrategy.class.isInstance(mapping.getDiscriminator().getStrategy())
+                    && mapping.getMappingRepository().getConfiguration().getCompatibilityInstance()
+                        .getSuperclassDiscriminatorStrategyByDefault()) {
+                    retVal = true;
+                }
+            }
+        }
+        return retVal;
+    }
+    
     /**
      * Mark the fields of this mapping as reserved so that eager fetches can't
      * get into infinite recursive situations.

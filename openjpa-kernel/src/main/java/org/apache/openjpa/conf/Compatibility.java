@@ -61,6 +61,7 @@ public class Compatibility {
     private boolean _copyOnDetach = false;
     private boolean _privatePersistentProperties = false;
     private boolean _autoOff = true;
+    private boolean _superclassDiscriminatorStrategyByDefault = true;
     
     /**
      * Whether to require exact identity value types when creating object
@@ -92,6 +93,22 @@ public class Compatibility {
      */
     public void setAutoOff(boolean autoOff) {
         _autoOff = autoOff;
+    }
+    
+    /**
+     * Whether to add class criteria for super class discreminator strategy.
+     * Defaults to false.
+     */
+    public boolean getSuperclassDiscriminatorStrategyByDefault() {
+        return _superclassDiscriminatorStrategyByDefault;
+    }
+
+    /**
+     * Whether to add class criteria for super class discreminator strategy.
+     * Defaults to false.
+     */
+    public void setSuperclassDiscriminatorStrategyByDefault(boolean superclassDiscriminatorStrategyByDefault) {
+        _superclassDiscriminatorStrategyByDefault = superclassDiscriminatorStrategyByDefault;
     }
 
     /**
@@ -403,3 +420,4 @@ public class Compatibility {
         _privatePersistentProperties = privateProps;
     }    
 }
+
