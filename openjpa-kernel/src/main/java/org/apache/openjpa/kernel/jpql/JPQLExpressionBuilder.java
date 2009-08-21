@@ -558,6 +558,10 @@ public class JPQLExpressionBuilder
         JPQLNode[] nodes = root().findChildrenByID(JJTUPDATEITEM);
         for (int i = 0; nodes != null && i < nodes.length; i++) {
             Path path = getPath(firstChild(nodes[i]));
+            if (path.last().getValue().getEmbeddedMetaData() != null)
+                throw parseException(EX_USER, "cant-bulk-update-embeddable",
+                        new Object[]{assemble(firstChild(nodes[i]))}, null);
+
             JPQLNode lastChild = lastChild(nodes[i]);
             Value val = (lastChild.children == null) 
                       ? null : getValue(onlyChild(lastChild));

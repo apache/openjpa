@@ -85,6 +85,29 @@ public class TestUpdateEmbeddedQueryResult extends SingleEMFTestCase {
     }
 
     /*
+     * 
+     */
+    public void testBulkUpdateEmbeddedField() {
+        EntityManager em = emf.createEntityManager();
+        String update = "UPDATE EntityA_Embed_Embed a set a.embed.embed.intVal1 = ?1," +
+                " a.embed.embed.intVal2 = ?2 where a.id = 10";
+        em.getTransaction().begin();
+        int count = em.createQuery(update).setParameter(1, 100).setParameter(2, 200).executeUpdate();
+        em.getTransaction().commit();
+        assertEquals(count, 0);
+
+        // test invalid bulk update embeddable field
+        update = "UPDATE EntityA_Embed_Embed a set a.embed.embed = ?1";
+        Embed embed1 = createEmbed(ID, 10);
+        try {
+        int updateCount = em.createQuery(update).setParameter(1, embed1).executeUpdate();
+        } catch (ArgumentException e) {
+            // as expected: Bulk update of embeddable field is not allowed.
+        }
+        em.close();
+    }
+
+    /*
      * update embedded object returned from query
      */
     public void updateEmbedded_EntityA_Embed_Embed() {
