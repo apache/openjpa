@@ -89,7 +89,7 @@ public class PreparedSQLStoreQuery extends SQLStoreQuery {
             return _query.getPreparedQuery().getQueryExpressions();
         }
         
-        public Class[] getProjectionTypes() {
+        public Class[] getProjectionTypes(StoreQuery q) {
             return _query.getPreparedQuery().getProjectionTypes();
         }
 

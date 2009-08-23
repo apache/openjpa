@@ -22,10 +22,12 @@ import java.io.PrintStream;
 import java.io.Serializable;
 import java.lang.reflect.Field;
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.LinkedHashSet;
+import java.util.List;
 import java.util.Set;
 import java.util.Stack;
 import java.util.TreeSet;
@@ -35,8 +37,10 @@ import org.apache.openjpa.conf.Compatibility;
 import org.apache.openjpa.conf.OpenJPAConfiguration;
 import org.apache.openjpa.kernel.BrokerFactory;
 import org.apache.openjpa.kernel.ExpressionStoreQuery;
+import org.apache.openjpa.kernel.FillStrategy;
 import org.apache.openjpa.kernel.QueryContext;
 import org.apache.openjpa.kernel.QueryOperations;
+import org.apache.openjpa.kernel.ResultShape;
 import org.apache.openjpa.kernel.StoreContext;
 import org.apache.openjpa.kernel.exps.AbstractExpressionBuilder;
 import org.apache.openjpa.kernel.exps.Context;
@@ -344,12 +348,14 @@ public class JPQLExpressionBuilder
         return null;
     }
 
+    /**
+     * Assign projections for NEW contructor in selection list.
+     *     Example:  SELECT NEW Person(p.name) FROM Person p WHERE ...
+     */
     private Expression assignProjections(JPQLNode parametersNode,
-        QueryExpressions exps) {
+        QueryExpressions exps, List<Value> projections,
+        List<String> projectionClauses, List<String> projectionAliases) {
         int count = parametersNode.getChildCount();
-        exps.projections = new Value[count];
-        exps.projectionClauses = new String[count];
-        exps.projectionAliases = new String[count];
 
         Expression exp = null;
         for (int i = 0; i < count; i++) {
@@ -358,17 +364,94 @@ public class JPQLExpressionBuilder
             JPQLNode aliasNode = parent.children.length > 1 ? right(parent)
                 : null; 
             Value proj = getValue(node);
-            String alias = aliasNode == null ? nextAlias()
-                 : aliasNode.text;
+            String alias = aliasNode != null ? aliasNode.text :
+                projectionClause(node.id == JJTSCALAREXPRESSION ?
+                        firstChild(node) : node);
             if (aliasNode != null)
                 proj.setAlias(alias);
-            exps.projections[i] = proj;
-            exps.projectionClauses[i] = aliasNode != null ? alias :
-                projectionClause(node.id == JJTSCALAREXPRESSION ?
-                    firstChild(node) : node);
-            exps.projectionAliases[i] = alias;
+            projections.add(proj);
+            projectionClauses.add(alias);
+            projectionAliases.add(alias);
         }
         return exp;
+    }
+
+    private void evalProjectionsResultShape(JPQLNode selectionsNode,
+        QueryExpressions exps,
+        List<Value> projections,
+        List<String> projectionClauses,
+        List<String> projectionAliases) {
+        int count = selectionsNode.getChildCount();
+        Class<?> resultClass = null;
+        ResultShape<?> resultShape = null;
+        if (count > 1) {
+            // muti-selection
+            resultClass = Object[].class;
+            resultShape = new ResultShape(resultClass, new FillStrategy.Array<Object[]>(Object[].class));
+        }
+
+        for (int i = 0; i < count; i++) {
+            JPQLNode parent = selectionsNode.getChild(i);
+            JPQLNode node = firstChild(parent);
+            if (node.id == JJTCONSTRUCTOR) {
+                // build up the fully-qualified result class name by
+                // appending together the components of the children
+                String resultClassName = assemble(left(node));
+                Class<?> constructor = resolver.classForName(resultClassName, null);
+                if (constructor == null) {
+                    // try resolve it again using simple name
+                    int n = left(node).getChildCount();
+                    String baseName = left(node).getChild(n-1).text;
+                    constructor = resolver.classForName(baseName, null);
+                }
+                if (constructor == null)
+                    throw parseException(EX_USER, "no-constructor",
+                            new Object[]{ resultClassName }, null);
+
+                List<Value> terms = new ArrayList<Value>();
+                List<String> aliases = new ArrayList<String>();
+                List<String> clauses = new ArrayList<String>();
+                // now assign the arguments to the select clause as the projections
+                assignProjections(right(node), exps, terms, aliases, clauses);
+                FillStrategy fill = new FillStrategy.NewInstance(constructor);
+                ResultShape<?> cons = new ResultShape(constructor, fill);
+                for (Value val : terms) {
+                    Class<?> type = val.getType();
+                    cons.nest(new ResultShape(type, new FillStrategy.Assign(), type.isPrimitive()));
+                }
+                if (count == 1) {
+                    resultClass = constructor;
+                    resultShape = cons;
+                }
+                else
+                    resultShape.nest(cons);
+                projections.addAll(terms);
+                projectionAliases.addAll(aliases);
+                projectionClauses.addAll(clauses);
+
+            } else {
+                JPQLNode aliasNode = parent.children.length > 1 ? right(parent)
+                        : null; 
+                Value proj = getValue(node);
+                String alias = aliasNode != null ? aliasNode.text :
+                    projectionClause(node.id == JJTSCALAREXPRESSION ?
+                            firstChild(node) : node);
+                if (aliasNode != null)
+                    proj.setAlias(alias);
+                projections.add(proj);
+                projectionClauses.add(alias);
+                projectionAliases.add(alias);
+                Class<?> type = proj.getType();
+                ResultShape<?> projShape = new ResultShape(type, new FillStrategy.Assign(), type.isPrimitive());
+
+                if (count == 1)
+                    resultShape = projShape;
+                else
+                    resultShape.nest(projShape);
+            }
+        }
+        exps.shape = resultShape;
+        exps.resultClass = resultClass;
     }
 
     private String projectionClause(JPQLNode node) {
@@ -470,45 +553,43 @@ public class JPQLExpressionBuilder
         else
             exps.distinct = QueryExpressions.DISTINCT_FALSE;
 
-        JPQLNode constructor = selectNode.findChildByID(JJTCONSTRUCTOR, true);
-        if (constructor != null) {
-            // build up the fully-qualified result class name by
-            // appending together the components of the children
-            String resultClassName = assemble(left(constructor));
-            exps.resultClass = resolver.classForName(resultClassName, null);
-
-            // now assign the arguments to the select clause as the projections
-            return assignProjections(right(constructor), exps);
-        } else {
-            // handle SELECT clauses
-            JPQLNode expNode = selectNode.
-                findChildByID(JJTSELECTEXPRESSIONS, true);
-            if (expNode == null)
-                return null;
-
-            int selectCount = expNode.getChildCount();
-            JPQLNode selectChild = firstChild(expNode);
-
-            if (selectClause.parent.id == JJTSUBSELECT) {
-                exps.distinct &= ~QueryExpressions.DISTINCT_AUTO;
-                return assignSubselectProjection(onlyChild(selectChild), exps);
-            }
-            // if we are selecting just one thing and that thing is the
-            // schema's alias, then do not treat it as a projection
-            if (selectCount == 1 && selectChild != null &&
-                selectChild.getChildCount() == 1 &&
-                onlyChild(selectChild) != null) {
-                JPQLNode child = onlyChild(selectChild);
-                if (child.id == JJTSCALAREXPRESSION)
-                    child = onlyChild(child);
-                if (assertSchemaAlias().
-                    equalsIgnoreCase(child.text)) 
-                    return null;
-            } 
-            // JPQL does not filter relational joins for projections
-            exps.distinct &= ~QueryExpressions.DISTINCT_AUTO;
-            return assignProjections(expNode, exps);
+        // handle SELECT clauses
+        JPQLNode expNode = selectNode.
+        findChildByID(JJTSELECTEXPRESSIONS, true);
+        if (expNode == null) {
+            return null;
         }
+
+        int selectCount = expNode.getChildCount();
+        JPQLNode selectChild = firstChild(expNode);
+
+        if (selectClause.parent.id == JJTSUBSELECT) {
+            exps.distinct &= ~QueryExpressions.DISTINCT_AUTO;
+            return assignSubselectProjection(onlyChild(selectChild), exps);
+        }
+        // if we are selecting just one thing and that thing is the
+        // schema's alias, then do not treat it as a projection
+        if (selectCount == 1 && selectChild != null &&
+            selectChild.getChildCount() == 1 &&
+            onlyChild(selectChild) != null) {
+            JPQLNode child = onlyChild(selectChild);
+            if (child.id == JJTSCALAREXPRESSION)
+                child = onlyChild(child);
+            if (assertSchemaAlias().equalsIgnoreCase(child.text)) {
+                return null;
+            }
+        } 
+        // JPQL does not filter relational joins for projections
+        exps.distinct &= ~QueryExpressions.DISTINCT_AUTO;
+        exps.projections = new Value[selectCount];
+        List<Value> projections = new ArrayList<Value>();
+        List<String> aliases = new ArrayList<String>();
+        List<String> clauses = new ArrayList<String>();
+        evalProjectionsResultShape(expNode, exps, projections, aliases, clauses);
+        exps.projections = projections.toArray(new Value[projections.size()]);
+        exps.projectionAliases = aliases.toArray(new String[aliases.size()]);
+        exps.projectionClauses = clauses.toArray(new String[clauses.size()]);
+        return null;
     }
 
     private String assertSchemaAlias() {
