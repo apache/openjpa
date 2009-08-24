@@ -189,7 +189,7 @@ by OpenJPA.
                         9.2
                     </entry>
                     <entry colname="drivname">
-                        iijdbc
+                        Ingres JDBC Driver
                     </entry>
                     <entry colname="drivversion">
                         9.2-3.4.8
@@ -616,16 +616,16 @@ None
         <title>
             Ingres Database
         </title>
-<!--        <example id="example_props_ingres">-->
-<!--            <title>-->
-<!--                Example properties for Sybase-->
-<!--            </title>-->
-<!--<programlisting>-->
-<!--openjpa.ConnectionDriverName: com.sybase.jdbc2.jdbc.SybDriver-->
-<!--openjpa.ConnectionURL: \-->
-<!--    jdbc:sybase:Tds:SERVER_NAME:4100/DB_NAME?ServiceName=DB_NAME&amp;BE_AS_JDBC_COMPLIANT_AS_POSSIBLE=true-->
-<!--</programlisting>-->
-<!--        </example>-->
+        <example id="example_props_ingres">
+            <title>
+                Example properties for Ingres
+            </title>
+<programlisting>
+openjpa.ConnectionDriverName: com.ingres.jdbc.IngresDriver
+openjpa.ConnectionURL: \
+    jdbc:ingres://SERVER_NAME:DAS_SERVER_PORT/DB_NAME
+</programlisting>
+        </example>
         <section id="dbsupport_ingres_issues">
             <title>
                 Known issues with Ingres
@@ -633,7 +633,8 @@ None
             <itemizedlist>
                 <listitem>
                     <para> 
-                        None.
+                        Databases must be created with the -n flag for Unicode compatibility in
+                        order to use LOBs.
                     </para>
                 </listitem>
             </itemizedlist>
