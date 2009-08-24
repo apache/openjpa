@@ -574,7 +574,7 @@ public class Expressions {
         }
         
         public <X> Equal(Expression<X> x, Object y) {
-            this(x, new Constant<Object>(Object.class, y));
+            this(x, new Constant(y));
         }
         
         @Override
@@ -598,7 +598,7 @@ public class Expressions {
         }
         
         public <X> GreaterThan(Expression<X> x, Object y) {
-            this(x, new Constant<Object>(Object.class, y));
+            this(x, new Constant(y));
         }
         
         @Override
@@ -617,7 +617,7 @@ public class Expressions {
         }
         
         public <X> GreaterThanEqual(Expression<X> x, Object y) {
-            this(x, new Constant<Object>(Object.class, y));
+            this(x, new Constant(y));
         }
         
         @Override
@@ -636,7 +636,7 @@ public class Expressions {
         }
         
         public <X> LessThan(Expression<X> x, Object y) {
-            this(x, new Constant<Object>(Object.class, y));
+            this(x, new Constant(y));
         }
         
         @Override
@@ -655,7 +655,7 @@ public class Expressions {
         }
         
         public <X> LessThanEqual(Expression<X> x, Object y) {
-            this(x, new Constant<Object>(Object.class, y));
+            this(x, new Constant(y));
         }
         
         @Override
@@ -686,55 +686,53 @@ public class Expressions {
         }
         
         public Constant(X x) {
-            this((Class<X>)x.getClass(), x);
+            this(x == null ? null : (Class<X>)x.getClass(), x);
         }
         
         @Override
         public Value toValue(ExpressionFactory factory, MetamodelImpl model, CriteriaQueryImpl<?> q) {
             Object value = arg;
+            Class<?> literalClass = getJavaType();
             if (arg instanceof ParameterExpressionImpl) {
                 return ((ParameterExpressionImpl)arg).toValue(factory, model, q);
             }
             int literalType = Literal.TYPE_UNKNOWN;
-            if (arg != null) {
-                Class<?> literalClass = value.getClass();
-                if (Number.class.isAssignableFrom(literalClass)) {
-                    literalType = Literal.TYPE_NUMBER;
-                } else if (Boolean.class.isAssignableFrom(literalClass)) {
-                    literalType = Literal.TYPE_BOOLEAN;
-                } else if (String.class.isAssignableFrom(literalClass)) {
-                    literalType = Literal.TYPE_STRING;
-                } else if (Enum.class.isAssignableFrom(literalClass)) {
-                    literalType = Literal.TYPE_ENUM;
-                } else if (Class.class.isAssignableFrom(literalClass)) {
-                    literalType = Literal.TYPE_CLASS;
-                    Literal lit = factory.newTypeLiteral(value, Literal.TYPE_CLASS);
-                    ClassMetaData can = ((Types.Entity<X>)q.getRoot().getModel()).meta;
-                    Class<?> candidate = can.getDescribedType();
-                    if (candidate.isAssignableFrom((Class)value)) {
-                       lit.setMetaData(model.repos.getMetaData((Class<?>)value, null, true));
-                    } else {
-                        lit.setMetaData(can);
-                    }
-                    return lit;
-                } else if (Collection.class.isAssignableFrom(literalClass)) {
-                    literalType = Literal.TYPE_COLLECTION;
+            if (Number.class.isAssignableFrom(literalClass)) {
+                literalType = Literal.TYPE_NUMBER;
+            } else if (Boolean.class.isAssignableFrom(literalClass)) {
+                literalType = Literal.TYPE_BOOLEAN;
+            } else if (String.class.isAssignableFrom(literalClass)) {
+                literalType = Literal.TYPE_STRING;
+            } else if (Enum.class.isAssignableFrom(literalClass)) {
+                literalType = Literal.TYPE_ENUM;
+            } else if (Class.class.isAssignableFrom(literalClass)) {
+                literalType = Literal.TYPE_CLASS;
+                Literal lit = factory.newTypeLiteral(value, Literal.TYPE_CLASS);
+                ClassMetaData can = ((Types.Entity<X>)q.getRoot().getModel()).meta;
+                Class<?> candidate = can.getDescribedType();
+                if (candidate.isAssignableFrom((Class)value)) {
+                   lit.setMetaData(model.repos.getMetaData((Class<?>)value, null, true));
+                } else {
+                    lit.setMetaData(can);
                 }
+                return lit;
+            } else if (Collection.class.isAssignableFrom(literalClass)) {
+                literalType = Literal.TYPE_COLLECTION;
             }
             return factory.newLiteral(value, literalType);
         }
     }
     
-    public static class TypeConstant<X> extends Constant<X> {
-        public TypeConstant(X x) {
-            super((Class<X>)x.getClass(),x);
-        }
-        
-        @Override
-        public Value toValue(ExpressionFactory factory, MetamodelImpl model, CriteriaQueryImpl<?> q) {
-            return factory.newTypeLiteral(arg, Literal.TYPE_CLASS);
-        }
-    }
+//    public static class TypeConstant<X> extends Constant<X> {
+//        public TypeConstant(X x) {
+//            super((Class<X>)x.getClass(),x);
+//        }
+//        
+//        @Override
+//        public Value toValue(ExpressionFactory factory, MetamodelImpl model, CriteriaQueryImpl<?> q) {
+//            return factory.newTypeLiteral(arg, Literal.TYPE_CLASS);
+//        }
+//    }
     
     public static class IsEmpty extends PredicateImpl {
         final ExpressionImpl<?> collection;

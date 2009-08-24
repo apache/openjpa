@@ -84,8 +84,7 @@ public class CriteriaQueryImpl<T> implements CriteriaQuery<T>, AliasContext {
     private Map<Selection<?>,Value> _variables = new HashMap<Selection<?>, Value>();
     private Map<Selection<?>,Value> _values    = new HashMap<Selection<?>, Value>();
     private Map<Selection<?>,String> _aliases  = null;
-    private Map<Selection<?>,Value> _rootVariables = 
-        new HashMap<Selection<?>, Value>();
+    private Map<Selection<?>,Value> _rootVariables = new HashMap<Selection<?>, Value>();
     
     // SubqueryContext
     private Stack<Context> _contexts = null;
@@ -467,7 +466,7 @@ public class CriteriaQueryImpl<T> implements CriteriaQuery<T>, AliasContext {
         
     }
 
-    public Value getRegisteredVariable(Selection<?> selection) {
+    Value getRegisteredVariable(Selection<?> selection) {
         Value var = getVariable(selection);
         if (var != null)
             return var;
@@ -483,7 +482,7 @@ public class CriteriaQueryImpl<T> implements CriteriaQuery<T>, AliasContext {
 
     }
 
-    public Value getRegisteredValue(Selection<?> selection) {
+    Value getRegisteredValue(Selection<?> selection) {
         Value var = getValue(selection);
         if (var != null)
             return var;
@@ -499,18 +498,18 @@ public class CriteriaQueryImpl<T> implements CriteriaQuery<T>, AliasContext {
 
     }
 
-    public void registerRoot(Root<?> root, Value var) {
+    void registerRoot(Root<?> root, Value var) {
         _rootVariables.put(root, var);
         String alias = var.getName();
         ctx().addSchema(alias, var.getMetaData());
         ctx().addVariable(alias, var);
     }
     
-    public Value getRootVariable(Root<?> root) {
+    Value getRootVariable(Root<?> root) {
         return _rootVariables.get(root);
     }
     
-    public Value getRegisteredRootVariable(Root<?> root) {
+    Value getRegisteredRootVariable(Root<?> root) {
         Value var = getRootVariable(root);
         if (var != null)
             return var;

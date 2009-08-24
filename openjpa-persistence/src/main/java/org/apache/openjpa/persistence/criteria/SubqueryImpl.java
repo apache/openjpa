@@ -194,9 +194,9 @@ public class SubqueryImpl<T> extends ExpressionImpl<T> implements Subquery<T> {
         return _corrJoins;
     }
     
-    public <X,Y> Join<X,Y> correlate(Join<X,Y> join) {
-        Join corrJoin = clone(join);
-        ((PathImpl<?,?>)corrJoin).setCorrelatedPath((PathImpl<?,?>)join);
+    public <X,Y> Join<X,Y> correlate(Join<X,Y> parentJoin) {
+        Join corrJoin = clone(parentJoin);
+        ((PathImpl<?,?>)corrJoin).setCorrelatedPath((PathImpl<?,?>)parentJoin);
         if (_corrJoins == null)
             _corrJoins = new ArrayList<Join<?,?>>();
         _corrJoins.add(corrJoin);
@@ -204,8 +204,7 @@ public class SubqueryImpl<T> extends ExpressionImpl<T> implements Subquery<T> {
     }
     
     private Join<?,?> clone(Join<?,?> join) {
-        List<Members.SingularAttributeImpl<?,?>> members = 
-            new ArrayList<Members.SingularAttributeImpl<?,?>>();
+        List<Members.SingularAttributeImpl<?,?>> members = new ArrayList<Members.SingularAttributeImpl<?,?>>();
         List<JoinType> jts = new ArrayList<JoinType>();
         FromImpl<?,?> root = getMembers(join, members, jts);
         Members.SingularAttributeImpl<?,?> member = members.get(0);
@@ -224,8 +223,8 @@ public class SubqueryImpl<T> extends ExpressionImpl<T> implements Subquery<T> {
     private FromImpl<?,?> getMembers(Join<?,?> join, List<Members.SingularAttributeImpl<?,?>> members, 
         List<JoinType> jts) {
         PathImpl<?,?> parent = (PathImpl<?,?>)join.getParentPath();
-        Members.SingularAttributeImpl<?,?> member = 
-            (Members.SingularAttributeImpl<?,?>)((Joins.SingularJoin<?,?>)join).getMember();
+        Members.SingularAttributeImpl<?,?> member = (Members.SingularAttributeImpl<?,?>)((Joins.SingularJoin<?,?>)join)
+            .getMember();
         JoinType jt = join.getJoinType();
         FromImpl<?,?> root = null;
         if (parent instanceof RootImpl) {
@@ -239,6 +238,7 @@ public class SubqueryImpl<T> extends ExpressionImpl<T> implements Subquery<T> {
         jts.add(jt);
         return root;
     }
+    
     public <X,Y> CollectionJoin<X,Y> correlate(CollectionJoin<X,Y> join) {
         _delegate.from(join.getModel().getBindableJavaType());
         return join;
@@ -263,7 +263,7 @@ public class SubqueryImpl<T> extends ExpressionImpl<T> implements Subquery<T> {
         return _joins;
     }
     
-    public org.apache.openjpa.kernel.exps.Subquery getSubQ() {
+    org.apache.openjpa.kernel.exps.Subquery getSubQ() {
         return _subq;
     }
 
@@ -283,8 +283,7 @@ public class SubqueryImpl<T> extends ExpressionImpl<T> implements Subquery<T> {
         Context context = new Context(null, _subq, contexts.peek());
         contexts.push(context);
         _delegate.setContexts(contexts);
-        QueryExpressions subexp = exprBuilder.getQueryExpressions(factory, 
-                _delegate);
+        QueryExpressions subexp = exprBuilder.getQueryExpressions(factory, _delegate);
         _subq.setQueryExpressions(subexp);
         if (subexp.projections.length > 0)
             JPQLExpressionBuilder.checkEmbeddable(subexp.projections[0], null);
@@ -330,5 +329,9 @@ public class SubqueryImpl<T> extends ExpressionImpl<T> implements Subquery<T> {
                 : from._member.fmd.getElement().getDeclaredTypeMetaData();
         return from._member.fmd.getDeclaredTypeMetaData();
         
+    }
+    
+    public Class<T> getResultType() {
+        return getJavaType();
     }
 }

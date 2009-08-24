@@ -685,6 +685,11 @@ public class CriteriaBuilder implements QueryBuilder, ExpressionParser {
     public Predicate isNull(Expression<?> x) {
         return new Expressions.IsNull((ExpressionImpl<?> )x);
     }
+    
+    public <T> Expression<T> nullLiteral(Class<T> t) {
+        return new Expressions.Constant<T>(t, (T)null);
+    }
+
 
     /**
      * Define a tuple-valued selection item

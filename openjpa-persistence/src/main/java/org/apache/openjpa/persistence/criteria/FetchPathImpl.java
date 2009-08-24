@@ -18,6 +18,7 @@
  */
 package org.apache.openjpa.persistence.criteria;
 
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -39,7 +40,7 @@ import org.apache.openjpa.persistence.meta.Members;
  * @param <X> type of this
  */
 public class FetchPathImpl<Z,X> extends PathImpl<Z,X> implements Fetch<Z, X> {
-    Set<Fetch<X,?>> _fetches;
+    Set<Fetch<?,?>> _fetches;
     JoinType joinType;
     
     
@@ -76,7 +77,7 @@ public class FetchPathImpl<Z,X> extends PathImpl<Z,X> implements Fetch<Z, X> {
         return addFetch((Members.Member<? super X,Y>)assoc, JoinType.INNER);
     }
 
-    public <Y> Fetch<X, Y> fetch(String assocName) {
+    public <X,Y> Fetch<X, Y> fetch(String assocName) {
         return fetch(assocName, JoinType.INNER);
     }
 
@@ -84,26 +85,27 @@ public class FetchPathImpl<Z,X> extends PathImpl<Z,X> implements Fetch<Z, X> {
         return addFetch((Members.Member<? super X,Y>)assoc, jt);
     }
 
-    public <Y> Fetch<X, Y> fetch(PluralAttribute<? super X, ?, Y> assoc,
-            JoinType jt) {
+    public <Y> Fetch<X, Y> fetch(PluralAttribute<? super X, ?, Y> assoc, JoinType jt) {
         return addFetch((Members.Member<? super X,Y>)assoc, jt);
     }
 
-    public <Y> Fetch<X, Y> fetch(String assocName, JoinType jt) {
-        Attribute<? super X, ?> assoc = ((ManagedType<X>)_member.getType())
-        .getAttribute(assocName);
+    public <X,Y> Fetch<X, Y> fetch(String assocName, JoinType jt) {
+        Attribute<? super X, ?> assoc = ((ManagedType<X>)_member.getType()).getAttribute(assocName);
         return addFetch((Members.Member<? super X,Y>)assoc, jt);
     }
 
     public Set<Fetch<X, ?>> getFetches() {
-        return _fetches;
+        Set<Fetch<X,?>> result = new HashSet<Fetch<X,?>>();
+        for (Fetch f : _fetches) {
+            result.add(f);
+        }
+        return result;
     }
     
-    private <Y> Fetch<X,Y> addFetch(Members.Member<? super X, Y> member, 
-            JoinType jt) {
+    private <X,Y> Fetch<X,Y> addFetch(Members.Member<? super X, Y> member, JoinType jt) {
         Fetch<X,Y> fetch = new FetchPathImpl(this, member, jt);
         if (_fetches == null)
-            _fetches = new HashSet<Fetch<X,?>>();
+            _fetches = new HashSet<Fetch<?,?>>();
         _fetches.add(fetch);
         return fetch;
     }

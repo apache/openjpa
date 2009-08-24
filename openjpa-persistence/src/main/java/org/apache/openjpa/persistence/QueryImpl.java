@@ -42,8 +42,6 @@ import javax.persistence.NoResultException;
 import javax.persistence.NonUniqueResultException;
 import javax.persistence.Parameter;
 import javax.persistence.Query;
-import javax.persistence.Result;
-import javax.persistence.ResultItem;
 import javax.persistence.TemporalType;
 import javax.persistence.TypedQuery;
 import javax.persistence.criteria.ParameterExpression;
