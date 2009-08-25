@@ -34,8 +34,73 @@ public class TestUpdateEmbeddedQueryResult extends SingleEMFTestCase {
     public void setUp() {
         setUp(Embed.class,
             Embed_Embed.class, 
-            EntityA_Embed_Embed.class, 
+            EntityA_Embed_Embed.class,
+            BaseEntity.class, Address.class, Geocode.class,
             DROP_TABLES);
+    }
+
+    public void testUpdateEmbedded() {
+        EntityManager em = emf.createEntityManager();
+        Address a = new Address();
+        a.setStreetAddress("555 Bailey Ave");
+        a.setCity("San Jose");
+        a.setState("CA");
+        a.setZip(12955);
+        Geocode g = new Geocode();
+        g.setLatitude(1.0f);
+        g.setLongtitude(2.0f);
+        a.setGeocode(g);
+        em.getTransaction().begin();        
+        em.persist(a);
+        em.getTransaction().commit();
+
+        em.clear();
+        em.getTransaction().begin();
+        String query = "select address from Address address" +
+            " where address.streetAddress = '555 Bailey Ave'";
+        List<Address> list = (List<Address>) em.createQuery(query).getResultList();
+        Address a1 = list.get(0);
+
+        assertEquals(a1.getGeocode().getLatitude(),1.0f);
+        
+        Long id = a1.getId();
+
+        g = new Geocode();
+        g.setLatitude(3.0f);
+        g.setLongtitude(4.0f);
+        a1.setGeocode(g);
+
+        em.getTransaction().commit();
+
+        Address a2 = em.find(Address.class, id);
+        assertEquals(a2.getGeocode().getLatitude(),3.0f);
+
+        em.getTransaction().begin();
+        g.setLatitude(5.0f);
+        a2.setGeocode(g);
+        em.getTransaction().commit();
+
+        em.clear();
+        Address a3 = em.find(Address.class, id);
+        assertEquals(a3.getGeocode().getLatitude(),5.0f);
+
+        em.clear();
+        query = "select a.geocode from Address a where a.id = ?1";
+        List<Geocode> rs = em.createQuery(query).setParameter(1, id).getResultList();
+        Geocode g2 = rs.get(0);
+        em.getTransaction().begin();
+        try {
+            g2.setLatitude(7.0f);
+        } catch (ArgumentException e) {
+            //as expected: update of embeddable field in query result is not allowed.
+        }
+
+        try {
+            em.getTransaction().commit();
+        } catch (RollbackException e) {
+            //as expected: update of embeddable field in query result is not allowed.
+        }
+        em.close();
     }
 
     public void testEntityA_Embed_Embed_update() {

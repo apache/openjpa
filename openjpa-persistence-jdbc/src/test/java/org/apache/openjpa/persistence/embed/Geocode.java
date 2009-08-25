@@ -27,7 +27,7 @@ import javax.persistence.*;
  *
  */
 @Embeddable
-public class Geocode extends BaseEntity {
+public class Geocode {
     float latitude, longtitude;
 
     public float getLatitude() {

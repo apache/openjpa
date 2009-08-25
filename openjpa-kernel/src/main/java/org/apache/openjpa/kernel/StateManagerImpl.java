@@ -1630,8 +1630,7 @@ public class StateManagerImpl
 
     private boolean isEmbeddedNotUpdatable() {
         // embeddable object returned from query result is not uptable
-        return (_ownerId != null ||
-            _state instanceof ENonTransState);
+        return (_owner == null && _ownerId != null);
     }
 
     /**
