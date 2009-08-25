@@ -27,6 +27,7 @@ import javax.persistence.*;
  *
  */
 @Entity
+@Table(name="EADDR")
 public class Address extends BaseEntity {
     protected String streetAddress, city, state;
 
