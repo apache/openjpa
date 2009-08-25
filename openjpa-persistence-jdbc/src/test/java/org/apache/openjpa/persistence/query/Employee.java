@@ -18,11 +18,15 @@
  */
 package org.apache.openjpa.persistence.query;
 
+import java.util.Date;
+
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.Table;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
 
 @NamedQueries( { 
     @NamedQuery(name = "Employee.findByName", 
@@ -41,7 +45,16 @@ public class Employee {
     private long someLong;
 
     private int statusId; 
+    
+    @Temporal(TemporalType.DATE)
+    private Date hireDate;
+    
+    @Temporal(TemporalType.TIME)
+    private Date hireTime;
 
+    @Temporal(TemporalType.TIMESTAMP)
+    private Date hireTimestamp;
+    
     public int getStatusId() {
         return statusId;
     }
@@ -74,5 +87,28 @@ public class Employee {
         this.someLong = someLong;
     }
 
+    public Date getHireDate() {
+        return hireDate;
+    }
+    
+    public void setHireDate(Date hireDate) {
+        this.hireDate = hireDate;
+    }
+
+    public Date getHireTime() {
+        return hireTime;
+    }
+    
+    public void setHireTime(Date hireTime) {
+        this.hireTime = hireTime;
+    }
+    
+    public Date getHireTimestamp() {
+        return hireTimestamp;
+    }
+    
+    public void setHireTimestamp(Date hireTimestamp) {
+        this.hireTimestamp = hireTimestamp;
+    }
     
 }

@@ -44,6 +44,9 @@ public class Lit
     public Lit(Object val, int ptype) {
         _val = val;
         _ptype = ptype;
+        if (_ptype == Literal.TYPE_DATE || _ptype == Literal.TYPE_TIME ||
+            _ptype == Literal.TYPE_TIMESTAMP)
+            _isRaw = true;
     }
 
     public Class getType() {
@@ -116,7 +119,8 @@ public class Lit
             sql.appendValue(((Object[]) lstate.sqlValue)[index], 
                 lstate.getColumn(index));
         else if (_isRaw) {
-            if (getParseType() == Literal.TYPE_ENUM) { 
+            int parseType = getParseType();
+            if (parseType == Literal.TYPE_ENUM) { 
                 StringBuilder value = new StringBuilder();
                 boolean isOrdinal = false;
                 if (lstate.sqlValue instanceof Integer)
@@ -127,6 +131,10 @@ public class Lit
                 if (!isOrdinal)
                     value.append("'");
                 lstate.sqlValue = new Raw(value.toString());
+                _rawVal = lstate.sqlValue;
+            } else if (parseType == Literal.TYPE_DATE || parseType == Literal.TYPE_TIME ||
+                parseType == Literal.TYPE_TIMESTAMP) {
+                lstate.sqlValue = new Raw(_val.toString());
                 _rawVal = lstate.sqlValue;
             } else {
                 lstate.sqlValue = new Raw(_val instanceof String ? "'"+_val+"'" : _val.toString());

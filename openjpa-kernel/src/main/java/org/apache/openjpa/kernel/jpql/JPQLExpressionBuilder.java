@@ -1375,6 +1375,15 @@ public class JPQLExpressionBuilder
                 assertQueryExtensions("ORDER BY");
                 return eval(onlyChild(node));
 
+            case JJTDATELITERAL:
+                return factory.newLiteral(node.text, Literal.TYPE_DATE);
+
+            case JJTTIMELITERAL:
+                return factory.newLiteral(node.text, Literal.TYPE_TIME);
+
+            case JJTTIMESTAMPLITERAL:    
+                return factory.newLiteral(node.text, Literal.TYPE_TIMESTAMP);
+
             default:
                 throw parseException(EX_FATAL, "bad-tree",
                     new Object[]{ node }, null);

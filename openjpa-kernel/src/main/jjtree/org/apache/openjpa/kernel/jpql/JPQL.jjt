@@ -293,6 +293,24 @@ TOKEN : /* literals */
 	  )
 	  "'"
 	>
+	| < DATE_LITERAL: "{d '" (["0"-"9"])(["0"-"9"])(["0"-"9"])(["0"-"9"]) ("-") 
+	                   (["0"-"1"])(["0"-"9"]) ("-") 
+	                   (["0"-"3"])(["0"-"9"]) "'}" 
+	>
+	| < TIME_LITERAL: "{t '" (["0"-"2"])(["0"-"9"]) (":") 
+	                   (["0"-"6"])(["0"-"9"]) (":") 
+	                   (["0"-"6"])(["0"-"9"]) "'}" 
+	>
+	| < TIMESTAMP_LITERAL: "{ts '" (["0"-"9"])(["0"-"9"])(["0"-"9"])(["0"-"9"]) ("-") 
+	                   (["0"-"1"])(["0"-"9"]) ("-") 
+	                   (["0"-"3"])(["0"-"9"]) (" ")
+	                   (["0"-"2"])(["0"-"9"]) (":") 
+	                   (["0"-"6"])(["0"-"9"]) (":") 
+	                   (["0"-"6"])(["0"-"9"]) 
+	                   ((".") (["0"-"9"]) (["0"-"9"])? (["0"-"9"])? (["0"-"9"])?
+	                   (["0"-"9"])? (["0"-"9"])? )?
+	                   "'}" 
+	>
 }
 
 TOKEN [ IGNORE_CASE ]: /* boolean literals can be case-insensitive */
@@ -1105,6 +1123,7 @@ void datetime_expression() : { }
 
 void datetime_primary() : { }
 {
+    date_literal() | time_literal() | timestamp_literal() |
 	LOOKAHEAD(path()) path() | functions_returning_datetime() | input_parameter() | aggregate_select_expression()
 	| LOOKAHEAD(qualified_path()) qualified_path()
 	| LOOKAHEAD(general_identification_variable()) general_identification_variable()
@@ -1408,7 +1427,8 @@ void path_component() #IDENTIFICATIONVARIABLE :
 
 void literal() : { }
 {
-	numeric_literal() | boolean_literal() | string_literal() | enum_literal()
+	numeric_literal() | boolean_literal() | string_literal() | enum_literal() | date_literal() |
+	time_literal() | timestamp_literal()
 }
 
 
@@ -1443,6 +1463,27 @@ void string_literal() #STRINGLITERAL :
 { Token t; }
 {
 	t = <STRING_LITERAL> { jjtThis.setToken (t); }
+}
+
+
+void date_literal() #DATELITERAL :
+{ Token t; }
+{
+	t = <DATE_LITERAL> { jjtThis.setToken (t); }
+}
+
+
+void time_literal() #TIMELITERAL :
+{ Token t; }
+{
+	t = <TIME_LITERAL> { jjtThis.setToken (t); }
+}
+
+
+void timestamp_literal() #TIMESTAMPLITERAL :
+{ Token t; }
+{
+	t = <TIMESTAMP_LITERAL> { jjtThis.setToken (t); }
 }
 
 

@@ -35,6 +35,9 @@ public interface Literal
     public static final int TYPE_CLASS = 5;
     public static final int TYPE_ENUM = 6;
     public static final int TYPE_COLLECTION = 7;
+    public static final int TYPE_DATE = 8;
+    public static final int TYPE_TIME = 9;
+    public static final int TYPE_TIMESTAMP = 10;
 
     /**
      * The value of this literal.
