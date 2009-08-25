@@ -688,12 +688,12 @@ public abstract class AbstractResult
 
     public Object getObject(Object obj, int metaType, Object arg)
         throws SQLException {
-        return getObjectInternal(translate(obj, null), metaType, arg, null);
+        return getObjectInternal(obj, metaType, arg, null);
     }
 
     public Object getObject(Column col, Object arg, Joins joins)
         throws SQLException {
-        return getObjectInternal(translate(col, joins), col.getJavaType(),
+        return getObjectInternal(col, col.getJavaType(),
             arg, joins);
     }
 
@@ -834,7 +834,8 @@ public abstract class AbstractResult
 
     /**
      * Translate the user-given id or column. This method is called before
-     * delegating to any <code>get*Internal</code> methods. Return the
+     * delegating to any <code>get*Internal</code> methods with the exception of
+     * <code>getObjectInternal</code>. Return the
      * original value by default.
      */
     protected Object translate(Object obj, Joins joins)

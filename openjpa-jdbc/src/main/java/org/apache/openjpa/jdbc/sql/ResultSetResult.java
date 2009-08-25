@@ -357,6 +357,9 @@ public class ResultSetResult
         if (metaTypeCode == -1 && obj instanceof Column)
             metaTypeCode = ((Column) obj).getJavaType();
 
+        boolean isClob = (obj instanceof Column) ? ((Column) obj).getType() == Types.CLOB : false;
+        obj = translate(obj, joins);
+        
         Object val = null;
         switch (metaTypeCode) {
             case JavaTypes.BOOLEAN:
@@ -393,8 +396,7 @@ public class ResultSetResult
                 val = new Short(getShortInternal(obj, joins));
                 break;
             case JavaTypes.STRING:
-                return getStringInternal(obj, joins,
-                    obj instanceof Column && ((Column) obj).getType() == Types.CLOB);
+                return getStringInternal(obj, joins, isClob);
             case JavaTypes.OBJECT:
                 return _dict
                     .getBlobObject(_rs, ((Number) obj).intValue(), _store);
