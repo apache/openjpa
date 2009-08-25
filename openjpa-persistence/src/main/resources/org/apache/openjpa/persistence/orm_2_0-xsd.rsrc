@@ -7,7 +7,7 @@
     version="2.0">
     <xsd:annotation>
         <xsd:documentation>
-            @(#)orm_2_0.xsd 2.0 July 17 2009
+            @(#)orm_2_0.xsd 2.0 August 11 2009
         </xsd:documentation>
     </xsd:annotation>
     <xsd:annotation>
@@ -1646,11 +1646,10 @@ version="2.0">
             </xsd:documentation>
         </xsd:annotation>
         <xsd:sequence>
-            <xsd:element name="name" type="xsd:string"
-                minOccurs="0" />
             <xsd:element name="column-name" type="xsd:string"
                 maxOccurs="unbounded" />
         </xsd:sequence>
+        <xsd:attribute name="name" type="xsd:string" />
     </xsd:complexType>
     <!-- **************************************************** -->
     <xsd:complexType name="version">

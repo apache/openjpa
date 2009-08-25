@@ -30,20 +30,17 @@
 	<package>org.apache.openjpa.persistence.jdbc.unique</package>
 	<entity name="NamedUniqueA" class="NamedUniqueA">
 		<table name="NX_UNIQUE_A">
-			<unique-constraint>
-                <name>ucxa_f1_f2</name>
+			<unique-constraint name="ucxa_f1_f2">
 				<column-name>f1x</column-name>
 				<column-name>f2x</column-name>
 			</unique-constraint>
-			<unique-constraint>
-                <name>ucxa_f3_f4</name>
+			<unique-constraint name="ucxa_f3_f4">
 				<column-name>f3x</column-name>
 				<column-name>f4x</column-name>
 			</unique-constraint>
 		</table>
 		<secondary-table name="NX_UNIQUE_SECONDARY">
-			<unique-constraint>
-                <name>ucxa_sf1</name>
+			<unique-constraint name="ucxa_sf1">
 				<column-name>sf1x</column-name>
 			</unique-constraint>
 		</secondary-table>
@@ -79,8 +76,7 @@
 				<join-table name="NX_UNIQUE_JOINTABLE">
 					<join-column name="FK_A_XML" referenced-column-name="aid" nullable="false"/>
 					<inverse-join-column name="FK_B_XML" referenced-column-name="bid" nullable="false"/>
-					<unique-constraint>
-                        <name>ucxa_fka_fkb</name>
+					<unique-constraint name="ucxa_fka_fkb">
 						<column-name>FK_A_XML</column-name>
 						<column-name>FK_B_XML</column-name>
 					</unique-constraint>
@@ -91,8 +87,7 @@
 
 	<entity name="NamedUniqueB" class="NamedUniqueB">
 		<table name="NX_UNIQUE_B">
-			<unique-constraint>
-                <name>ucxb_f1_f2</name>
+			<unique-constraint name="ucxb_f1_f2">
 				<column-name>f1x</column-name>
 				<column-name>f2x</column-name>
 			</unique-constraint>
@@ -104,8 +99,7 @@
 				<table-generator name="testGeneratorXML"
 					table="NX_UNIQUE_GENERATOR" pk-column-name="GEN1_XML"
 					value-column-name="GEN2_XML">
-					<unique-constraint>
-                        <name>ucxb_gen1_gen2</name>
+					<unique-constraint name="ucxb_gen1_gen2">
 						<column-name>GEN1_XML</column-name>
 						<column-name>GEN2_XML</column-name>
 					</unique-constraint>
@@ -120,8 +114,7 @@
             <element-collection name="f3">
                 <column name="f3x" nullable="false"/>
                 <collection-table name="NX_U_COLL_TBL">
-                    <unique-constraint>
-                        <name>ucxb_f3</name>
+                    <unique-constraint name="ucxb_f3">
                         <column-name>f3x</column-name>
                     </unique-constraint>
                 </collection-table>

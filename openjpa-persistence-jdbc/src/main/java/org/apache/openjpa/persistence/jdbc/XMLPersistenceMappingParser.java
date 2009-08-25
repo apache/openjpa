@@ -1156,14 +1156,12 @@ public class XMLPersistenceMappingParser
     private boolean startUniqueConstraint(Attributes attrs) 
         throws SAXException {
         Unique unique = new Unique();
-        // TODO JRB: If the spec is corrected, get the unique constraint name
-		// via attribute
-		/*
+
         String name = attrs.getValue("name");
         if (StringUtils.isNotEmpty(name)) {
             unique.setName(name);
         }
-		*/
+
         pushElement(unique);
         return true;
     }

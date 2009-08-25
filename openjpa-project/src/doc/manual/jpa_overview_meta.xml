@@ -2042,7 +2042,7 @@ found at <ulink url="http://java.sun.com/xml/ns/persistence/orm_1_0.xsd"/>.
     version="2.0"&gt;
     &lt;xsd:annotation&gt;
         &lt;xsd:documentation&gt;
-            @(#)orm_2_0.xsd 2.0 July 17 2009
+            @(#)orm_2_0.xsd 2.0 August 11 2009
         &lt;/xsd:documentation&gt;
     &lt;/xsd:annotation&gt;
     &lt;xsd:annotation&gt;
@@ -3683,11 +3683,10 @@ found at <ulink url="http://java.sun.com/xml/ns/persistence/orm_1_0.xsd"/>.
             &lt;/xsd:documentation&gt;
         &lt;/xsd:annotation&gt;
         &lt;xsd:sequence&gt;
-            &lt;xsd:element name="name" type="xsd:string"
-                minOccurs="0" /&gt;
             &lt;xsd:element name="column-name" type="xsd:string"
                 maxOccurs="unbounded" /&gt;
         &lt;/xsd:sequence&gt;
+        &lt;xsd:attribute name="name" type="xsd:string" /&gt;        
     &lt;/xsd:complexType&gt;
     &lt;!-- **************************************************** --&gt;
     &lt;xsd:complexType name="version"&gt;
