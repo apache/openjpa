@@ -2720,5 +2720,5 @@ public class ClassMetaData
     public Boolean getCacheEnabled() { 
         return _cacheEnabled;
     }
-
 }
+

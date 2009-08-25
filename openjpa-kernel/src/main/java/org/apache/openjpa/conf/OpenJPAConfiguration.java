@@ -1848,3 +1848,4 @@ public interface OpenJPAConfiguration
      */
     public String getDataCacheMode();
 }
+
