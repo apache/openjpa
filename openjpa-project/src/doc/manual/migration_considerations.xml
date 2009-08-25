@@ -137,6 +137,25 @@
                     enhancement and at runtime.
                 </para>
             </section>
-    	</section>
+        </section>
+        <section id="Disabling AutoOff Collection Tracking">
+            <title>
+                Disabling AutoOff Collection Tracking
+            </title>
+            <para>
+                The default behavior of openJPA in tracking collections is that if the number of
+                modifications to the collection exceeds the current number of elements in
+                collection then openJPA will disable tracking the collections.
+                Added a Compatibility property to disable turning off the collection tracking.
+            </para>
+            <para>
+                The behavior of Auto disabling of collection tracking can be avoided by setting
+                the value of the <literal>openjpa.Compatibility</literal>
+                property <literal>autoOff</literal> to  <literal>false</literal>.
+                The default behavior of auto disabling the collection tracking
+                is not changed. But when the above property is set then the collection tracking
+                will not be disabled automatically.
+            </para>
+        </section>
     </section>
 </appendix>
