@@ -897,6 +897,11 @@ public class XMLPersistenceMetaDataParser
                 addDeferredEmbeddableMetaData(_cls, access);
             }
         }
+        
+        if(attrs.getValue("cacheable") != null) { 
+            meta.setCacheEnabled(Boolean.valueOf(attrs.getValue("cacheable")));
+        }
+        
         if (isMappingMode())
             meta.setSourceMode(MODE_MAPPING, true);
         if (isMappingOverrideMode())

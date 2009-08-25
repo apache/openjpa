@@ -19,54 +19,7 @@
 package org.apache.openjpa.persistence;
 
 import static javax.persistence.GenerationType.AUTO;
-import static org.apache.openjpa.persistence.MetaDataTag.ACCESS;
-import static org.apache.openjpa.persistence.MetaDataTag.DATASTORE_ID;
-import static org.apache.openjpa.persistence.MetaDataTag.DATA_CACHE;
-import static org.apache.openjpa.persistence.MetaDataTag.DEPENDENT;
-import static org.apache.openjpa.persistence.MetaDataTag.DETACHED_STATE;
-import static org.apache.openjpa.persistence.MetaDataTag.ELEM_DEPENDENT;
-import static org.apache.openjpa.persistence.MetaDataTag.ELEM_TYPE;
-import static org.apache.openjpa.persistence.MetaDataTag.EMBEDDED_ID;
-import static org.apache.openjpa.persistence.MetaDataTag.ENTITY_LISTENERS;
-import static org.apache.openjpa.persistence.MetaDataTag.
-        EXCLUDE_DEFAULT_LISTENERS;
-import static org.apache.openjpa.persistence.MetaDataTag.
-        EXCLUDE_SUPERCLASS_LISTENERS;
-import static org.apache.openjpa.persistence.MetaDataTag.EXTERNALIZER;
-import static org.apache.openjpa.persistence.MetaDataTag.EXTERNAL_VALS;
-import static org.apache.openjpa.persistence.MetaDataTag.FACTORY;
-import static org.apache.openjpa.persistence.MetaDataTag.FETCH_GROUP;
-import static org.apache.openjpa.persistence.MetaDataTag.FETCH_GROUPS;
-import static org.apache.openjpa.persistence.MetaDataTag.FLUSH_MODE;
-import static org.apache.openjpa.persistence.MetaDataTag.GENERATED_VALUE;
-import static org.apache.openjpa.persistence.MetaDataTag.ID;
-import static org.apache.openjpa.persistence.MetaDataTag.ID_CLASS;
-import static org.apache.openjpa.persistence.MetaDataTag.INVERSE_LOGICAL;
-import static org.apache.openjpa.persistence.MetaDataTag.KEY_DEPENDENT;
-import static org.apache.openjpa.persistence.MetaDataTag.KEY_TYPE;
-import static org.apache.openjpa.persistence.MetaDataTag.LOAD_FETCH_GROUP;
-import static org.apache.openjpa.persistence.MetaDataTag.LRS;
-import static org.apache.openjpa.persistence.MetaDataTag.MANAGED_INTERFACE;
-import static org.apache.openjpa.persistence.MetaDataTag.MAPPED_BY_ID;
-import static org.apache.openjpa.persistence.MetaDataTag.MAP_KEY;
-import static org.apache.openjpa.persistence.MetaDataTag.MAP_KEY_CLASS;
-import static org.apache.openjpa.persistence.MetaDataTag.NATIVE_QUERIES;
-import static org.apache.openjpa.persistence.MetaDataTag.NATIVE_QUERY;
-import static org.apache.openjpa.persistence.MetaDataTag.ORDER_BY;
-import static org.apache.openjpa.persistence.MetaDataTag.POST_LOAD;
-import static org.apache.openjpa.persistence.MetaDataTag.POST_PERSIST;
-import static org.apache.openjpa.persistence.MetaDataTag.POST_REMOVE;
-import static org.apache.openjpa.persistence.MetaDataTag.POST_UPDATE;
-import static org.apache.openjpa.persistence.MetaDataTag.PRE_PERSIST;
-import static org.apache.openjpa.persistence.MetaDataTag.PRE_REMOVE;
-import static org.apache.openjpa.persistence.MetaDataTag.PRE_UPDATE;
-import static org.apache.openjpa.persistence.MetaDataTag.QUERIES;
-import static org.apache.openjpa.persistence.MetaDataTag.QUERY;
-import static org.apache.openjpa.persistence.MetaDataTag.READ_ONLY;
-import static org.apache.openjpa.persistence.MetaDataTag.REPLICATED;
-import static org.apache.openjpa.persistence.MetaDataTag.SEQ_GENERATOR;
-import static org.apache.openjpa.persistence.MetaDataTag.TYPE;
-import static org.apache.openjpa.persistence.MetaDataTag.VERSION;
+import static org.apache.openjpa.persistence.MetaDataTag.*;
 
 import java.io.File;
 import java.io.Serializable;
@@ -90,7 +43,10 @@ import java.util.Set;
 import java.util.Stack;
 import java.util.TreeSet;
 
+import javax.persistence.Access;
+import javax.persistence.AccessType;
 import javax.persistence.Basic;
+import javax.persistence.Cacheable;
 import javax.persistence.CascadeType;
 import javax.persistence.ElementCollection;
 import javax.persistence.Embeddable;
@@ -190,6 +146,7 @@ public class AnnotationPersistenceMetaDataParser
 
     static {
         _tags.put(Access.class, ACCESS);
+        _tags.put(Cacheable.class, CACHEABLE);
         _tags.put(EmbeddedId.class, EMBEDDED_ID);
         _tags.put(EntityListeners.class, ENTITY_LISTENERS);
         _tags.put(ExcludeDefaultListeners.class, EXCLUDE_DEFAULT_LISTENERS);
@@ -653,6 +610,11 @@ public class AnnotationPersistenceMetaDataParser
                     if (isMetaDataMode())
                         parseAccess(meta, (Access)anno);
                     break;
+                case CACHEABLE: 
+                    if (isMetaDataMode()) { 
+                        parseCache(meta, (Cacheable) anno);
+                    }
+                    break;
                 default:
                     throw new UnsupportedException(_loc.get("unsupported", _cls,
                         anno.toString()));
@@ -849,15 +811,22 @@ public class AnnotationPersistenceMetaDataParser
      * Parse @DataCache.
      */
     private void parseDataCache(ClassMetaData meta, DataCache cache) {
-        if (cache.timeout() != Integer.MIN_VALUE)
+        if (cache.timeout() != Integer.MIN_VALUE) {
             meta.setDataCacheTimeout(cache.timeout());
-        if (!StringUtils.isEmpty(cache.name()))
+        }
+        if (!StringUtils.isEmpty(cache.name())) {
             meta.setDataCacheName(cache.name());
-        else if (cache.enabled())
-            meta.setDataCacheName(
-                org.apache.openjpa.datacache.DataCache.NAME_DEFAULT);
-        else
+            if(cache.enabled()) {
+                meta.setCacheEnabled(true);
+            }
+        }
+        else if (cache.enabled()) {
+            meta.setDataCacheName(org.apache.openjpa.datacache.DataCache.NAME_DEFAULT);
+            meta.setCacheEnabled(true); 
+        } else {
             meta.setDataCacheName(null);
+            meta.setCacheEnabled(false);
+        }
     }
 
     private void parseManagedInterface(ClassMetaData meta,
@@ -1253,6 +1222,13 @@ public class AnnotationPersistenceMetaDataParser
      * Parse member mapping components.
      */
     protected void parseMemberMappingAnnotations(FieldMetaData fmd) {
+    }
+    
+    /**
+     * Parse @Cache.
+     */
+    private void parseCache(ClassMetaData meta, Cacheable cacheable) {
+        meta.setCacheEnabled(cacheable.value());
     }
 
     /**

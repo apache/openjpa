@@ -32,6 +32,7 @@ package org.apache.openjpa.persistence;
 public enum MetaDataTag {
     // sorted by XML order
     ACCESS,
+    CACHEABLE,
     MAPPED_SUPERCLASS,
     ENTITY,
     EMBEDDABLE,

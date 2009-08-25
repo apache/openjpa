@@ -23,6 +23,7 @@ import java.util.Map;
 
 import org.apache.openjpa.datacache.DataCache;
 import org.apache.openjpa.datacache.DataCacheManager;
+import org.apache.openjpa.datacache.DataCacheMode;
 import org.apache.openjpa.ee.ManagedRuntime;
 import org.apache.openjpa.enhance.RuntimeUnenhancedClassesModes;
 import org.apache.openjpa.event.BrokerFactoryEventManager;
@@ -1830,4 +1831,20 @@ public interface OpenJPAConfiguration
      * @return EncryptionProvider
      */
     public EncryptionProvider getEncryptionProvider();
+    
+    
+    /**
+     * Set the {@link DataCacheMode}
+     * 
+     * @param mode One of the Sting constants from {@link DataCacheMode}
+     * @since 2.0.0
+     */
+    public void setDataCacheMode(String mode);
+
+    /**
+     * Return the String constant that matches the {@link DataCacheMode}
+     * @return DataCacheMode
+     * @since 2.0.0
+     */
+    public String getDataCacheMode();
 }

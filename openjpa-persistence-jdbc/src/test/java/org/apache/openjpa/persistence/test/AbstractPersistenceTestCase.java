@@ -31,6 +31,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.persistence.Cache;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.Persistence;
@@ -140,7 +141,13 @@ public abstract class AbstractPersistenceTestCase extends TestCase {
                     + "SchemaAction='drop,add')");
             } else if (props[i] instanceof Class<?>) {
                 types.add((Class<?>) props[i]);
-            } else if (props[i] != null) {
+            } 
+            else if (props[i] instanceof Class<?>[]) { 
+                for(Class<?> clss : (Class<?>[]) props[i]) { 
+                    types.add(clss);
+                }
+            }
+            else if (props[i] != null) {
                 prop = true;
             }
         }
@@ -559,5 +566,24 @@ public abstract class AbstractPersistenceTestCase extends TestCase {
     public String getPlatform() {
         return System.getProperty("platform", "derby");
     }
-
+    
+    /**
+     * Assert whether the Cache contains an instance of the specified class and id.
+     * 
+     * @param cache
+     *            The JPA Cache to verify
+     * @param clss
+     *            The Entity type
+     * @param id
+     *            ID of the entity
+     * @param expected
+     *            Whether the class should be found in the cache
+     */
+    protected void assertCached(Cache cache, Class<?> clss, Object id, boolean expected) {
+        if (expected) {
+            assertTrue(String.format("Expected %s:%s to exist in cache", clss, id), cache.contains(clss, id));
+        } else {
+            assertFalse(String.format("Expected %s:%s not to exist in cache", clss, id), cache.contains(clss, id));
+        }
+    }
 }

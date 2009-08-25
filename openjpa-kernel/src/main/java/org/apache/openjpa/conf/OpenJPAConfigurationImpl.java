@@ -27,6 +27,7 @@ import org.apache.openjpa.datacache.ConcurrentDataCache;
 import org.apache.openjpa.datacache.ConcurrentQueryCache;
 import org.apache.openjpa.datacache.DataCacheManager;
 import org.apache.openjpa.datacache.DataCacheManagerImpl;
+import org.apache.openjpa.datacache.DataCacheMode;
 import org.apache.openjpa.ee.ManagedRuntime;
 import org.apache.openjpa.enhance.RuntimeUnenhancedClassesModes;
 import org.apache.openjpa.event.BrokerFactoryEventManager;
@@ -172,6 +173,7 @@ public class OpenJPAConfigurationImpl
     public ObjectValue writeBehindCachePlugin;
     public ObjectValue writeBehindCacheManagerPlugin;
     public ObjectValue writeBehindCallbackPlugin;
+    public StringValue dataCacheMode; 
     public BooleanValue dynamicEnhancementAgent;
     
     // custom values
@@ -634,6 +636,10 @@ public class OpenJPAConfigurationImpl
         writeBehindCallbackPlugin.setAliases(aliases);
         writeBehindCallbackPlugin.setDefault(aliases[0]);
         writeBehindCallbackPlugin.setString(aliases[0]);
+        
+        dataCacheMode = addString(DataCacheMode.class.getSimpleName());
+        dataCacheMode.setDefault(DataCacheMode.UNSPECIFIED.toString());
+        dataCacheMode.set(DataCacheMode.UNSPECIFIED.toString());
 
         if (derivations)
             ProductDerivations.beforeConfigurationLoad(this);
@@ -1781,6 +1787,14 @@ public class OpenJPAConfigurationImpl
         if (encryptionProvider.get() == null)
             encryptionProvider.instantiate(EncryptionProvider.class, this);
         return (EncryptionProvider) encryptionProvider.get();
+    }
+
+    public void setDataCacheMode(String mode) {
+        this.dataCacheMode.setString(mode);
+    }
+
+    public String getDataCacheMode() {
+        return dataCacheMode.getString();
     }
 }
 

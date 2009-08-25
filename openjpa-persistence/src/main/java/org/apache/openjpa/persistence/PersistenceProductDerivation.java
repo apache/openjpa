@@ -730,6 +730,9 @@ public class PersistenceProductDerivation
                     if ("provider".equals(name))
                         _info.setPersistenceProviderClassName(currentText());
                     break;
+                case 's' : // shared-cache-mode
+                    _info.setSharedCacheMode(currentText());
+                    break;
                 case 'v': // validation-mode
                     _info.setValidationMode(Enum.valueOf(ValidationMode.class,
                         currentText()));

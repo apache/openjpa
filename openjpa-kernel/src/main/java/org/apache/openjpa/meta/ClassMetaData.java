@@ -40,6 +40,7 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.openjpa.conf.OpenJPAConfiguration;
 import org.apache.openjpa.datacache.AbstractDataCache;
 import org.apache.openjpa.datacache.DataCache;
+import org.apache.openjpa.datacache.DataCacheMode;
 import org.apache.openjpa.enhance.PCRegistry;
 import org.apache.openjpa.enhance.Reflection;
 import org.apache.openjpa.enhance.PersistenceCapable;
@@ -183,6 +184,7 @@ public class ClassMetaData
     private String _seqName = DEFAULT_STRING;
     private SequenceMetaData _seqMeta = null;
     private String _cacheName = DEFAULT_STRING;
+    private Boolean _cacheEnabled = null;
     private int _cacheTimeout = Integer.MIN_VALUE;
     private Boolean _detachable = null;
     private String _detachState = DEFAULT_STRING;
@@ -1415,14 +1417,13 @@ public class ClassMetaData
      */
     public String getDataCacheName() {
         if (DEFAULT_STRING.equals(_cacheName)) {
-            if (_super != null) {
+            if (_super != null && StringUtils.isNotEmpty(getPCSuperclassMetaData().getDataCacheName())) {
                 _cacheName = getPCSuperclassMetaData().getDataCacheName();
-            }
-            else {
+            } else {
                 _cacheName = DataCache.NAME_DEFAULT;
             }
-            if(!isCacheable(_cacheName)) { 
-               _cacheName = null; 
+            if (!isCacheable(_cacheName)) {
+                _cacheName = null;
             }
         }
         return _cacheName;
@@ -1462,10 +1463,10 @@ public class ClassMetaData
      */
     public DataCache getDataCache() {
         String name = getDataCacheName();
-        if (name == null)
+        if (name == null) {
             return null;
-        return _repos.getConfiguration().getDataCacheManagerInstance().
-            getDataCache(name, true);
+        }
+        return _repos.getConfiguration().getDataCacheManagerInstance().getDataCache(name, true);
     }
 
     /**
@@ -1729,8 +1730,9 @@ public class ClassMetaData
 
         // are we the target of an embedded value?
         if (embed) {
-            if (recursiveEmbed(_owner))
+            if (recursiveEmbed(_owner)) {
                 throw new MetaDataException(_loc.get("recurse-embed", _owner));
+            }
 
             // copy info from the "real" metadata for this type
             ClassMetaData meta = _repos.getMetaData(_type, _loader, true);
@@ -1883,16 +1885,21 @@ public class ClassMetaData
             throw new MetaDataException(_loc.get("cache-timeout-invalid",
                 _type, String.valueOf(timeout)));
 
-        if (_super == null)
+        if (_super == null) {
             return;
+        }
         String cache = getDataCacheName();
-        if (cache == null)
+        if (cache == null) {
             return;
+        }
 
         String superCache = getPCSuperclassMetaData().getDataCacheName();
-        if (!StringUtils.equals(cache, superCache))
-            throw new MetaDataException(_loc.get("cache-names", new Object[]
-                { _type, cache, _super, superCache }));
+        
+        if (!StringUtils.isEmpty(superCache)) {  
+            if (!StringUtils.equals(cache, superCache)) {
+                throw new MetaDataException(_loc.get("cache-names", new Object[] { _type, cache, _super, superCache }));
+            }
+        }
     }
 
     /**
@@ -2583,17 +2590,54 @@ public class ClassMetaData
      * 
      * @return true if the DataCache will accept this type, otherwise false.
      */
-    private boolean isCacheable(String candidateCacheName) {
+    private boolean isConfiguredForCaching(String candidateCacheName) {
         boolean rval = true;
         DataCache cache =
-            getRepository().getConfiguration().getDataCacheManagerInstance()
-                .getDataCache(candidateCacheName);
+            getRepository().getConfiguration().getDataCacheManagerInstance().getDataCache(candidateCacheName);
         if (cache != null && (cache instanceof AbstractDataCache)) {
             AbstractDataCache adc = (AbstractDataCache) cache;
             if (!adc.isCacheableType(getDescribedType().getName()))
                 rval = false;
         }
         return rval;
+    }
+    
+    private boolean isCacheable(String candidateCacheName) { 
+        boolean rval;
+        switch(DataCacheMode.valueOf(_repos.getConfiguration().getDataCacheMode())) {
+          case ALL:
+              // include everything, regardless of annotation or xml configuration
+              rval = true;
+              break;
+          case NONE:
+              // excluded everything, regardless of annotation of xml configuration
+              rval = false;
+              break;
+          case ENABLE_SELECTIVE:
+              // cache only those entities which were specifically enabled
+              if(getCacheEnabled() == null) { 
+                  rval = false; 
+              }
+              else { 
+                  rval = getCacheEnabled();
+              }
+              break;
+          case DISABLE_SELECTIVE:
+              // exclude *only* the entities which are explicitly excluded. 
+              if(getCacheEnabled() == null) { 
+                  rval = true; 
+              }
+              else { 
+                  rval = getCacheEnabled();
+              }
+              break;
+          case UNSPECIFIED:
+          default:
+              // behavior from previous releases. 
+              rval = isConfiguredForCaching(candidateCacheName); 
+      }
+      return rval;
+        
     }
     
     /**
@@ -2667,6 +2711,14 @@ public class ClassMetaData
         }
 
         return _hasPKFieldsFromAbstractClass.booleanValue();
+    }
+    
+    public void setCacheEnabled(Boolean enabled) { 
+        _cacheEnabled = enabled;
+    }
+    
+    public Boolean getCacheEnabled() { 
+        return _cacheEnabled;
     }
 
 }

@@ -41,6 +41,7 @@ import javax.persistence.spi.PersistenceUnitInfo;
 import javax.persistence.spi.PersistenceUnitTransactionType;
 import javax.sql.DataSource;
 
+import org.apache.openjpa.datacache.DataCacheMode;
 import org.apache.openjpa.lib.conf.Configuration;
 import org.apache.openjpa.lib.conf.Configurations;
 import org.apache.openjpa.lib.conf.ProductDerivations;
@@ -63,6 +64,13 @@ public class PersistenceUnitInfoImpl
     public static final String VALIDATION_MODE =
         "javax.persistence.validation.mode";
     public static final String PERSISTENCE_VERSION = "PersistenceVersion";
+    
+    /**
+     * Properties key for the SHARED_CACHE_MODE. The JPA 2.0 spec
+     * SharedCacheMode maps to OpenJPA's DataCacheMode so we're using that
+     * class' simple name as the property key.
+     */
+    public static final String SHARED_CACHE_MODE=DataCacheMode.class.getSimpleName();  
 
     private static final Localizer s_loc = Localizer.forPackage
         (PersistenceUnitInfoImpl.class);
@@ -84,6 +92,7 @@ public class PersistenceUnitInfoImpl
     private URL _persistenceXmlFile;
     private String _schemaVersion = "1.0";
     private ValidationMode _validationMode;
+    private SharedCacheMode _sharedCacheMode;
 
     // A persistence unit is defined by a persistence.xml file. The jar
     // file or directory whose META-INF directory contains the
@@ -299,29 +308,46 @@ public class PersistenceUnitInfoImpl
                 setPersistenceProviderClassName((String) val);
             else if ("javax.persistence.transactionType".equals(key)) {
                 PersistenceUnitTransactionType ttype;
-                if (val instanceof String)
+                if (val instanceof String) {
                     ttype = Enum.valueOf(PersistenceUnitTransactionType.class, 
                         (String) val);
-                else
+                }
+                else {
                     ttype = (PersistenceUnitTransactionType) val;
+                }
                 setTransactionType(ttype);
             } else if ("javax.persistence.jtaDataSource".equals(key)) {
-                if (val instanceof String)
+                if (val instanceof String) {
                     setJtaDataSourceName((String) val);
-                else
+                }
+                else {
                     setJtaDataSource((DataSource) val);
+                }
             } else if ("javax.persistence.nonJtaDataSource".equals(key)) {
-                if (val instanceof String)
+                if (val instanceof String) {
                     setNonJtaDataSourceName((String) val);
-                else
+                }
+                else {
                     setNonJtaDataSource((DataSource) val);
+                }
             } else if (VALIDATION_MODE.equals(key)) {
-                if (val instanceof String)
+                if (val instanceof String) {
                     setValidationMode((String) val);
-                else
+                }
+                else {
                     setValidationMode((ValidationMode) val);
-            } else
+                }
+            } else if (SHARED_CACHE_MODE.equals(key)) { 
+               if(val instanceof String) { 
+                   setSharedCacheMode((String) val);
+               }
+               else {
+                   setSharedCacheMode((SharedCacheMode) val);
+               }
+            }
+            else {
                 _props.put(key, val);
+            }
         }
     }
 
@@ -465,6 +491,10 @@ public class PersistenceUnitInfoImpl
             map.put(PERSISTENCE_VERSION, info.getPersistenceXMLSchemaVersion());
         }
         
+        if (info.getSharedCacheMode() != null) { 
+            put(map, added, SHARED_CACHE_MODE, info.getSharedCacheMode().toString());
+        }
+        
         return map;
     }
 
@@ -531,16 +561,6 @@ public class PersistenceUnitInfoImpl
         _schemaVersion = version;
     }
 
-    public SharedCacheMode getCaching() {
-        throw new UnsupportedOperationException(
-            "JPA 2.0 - Method not yet implemented");
-    }
-    
-    public void setCaching(SharedCacheMode cache) {
-        throw new UnsupportedOperationException(
-        "JPA 2.0 - Method not yet implemented");
-    }
-
     public ValidationMode getValidationMode() {
         return _validationMode;
     }
@@ -554,6 +574,14 @@ public class PersistenceUnitInfoImpl
     }
 
     public SharedCacheMode getSharedCacheMode() {
-        throw new UnsupportedOperationException("JPA 2.0 - Method not yet implemented");
+        return _sharedCacheMode;
+    }
+    
+    public void setSharedCacheMode(String mode) { 
+        setSharedCacheMode(Enum.valueOf(SharedCacheMode.class, mode.toUpperCase()));
+    }
+
+    public void setSharedCacheMode(SharedCacheMode mode) { 
+        _sharedCacheMode = mode;
     }
 }
