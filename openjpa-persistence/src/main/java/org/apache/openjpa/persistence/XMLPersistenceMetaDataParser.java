@@ -1425,7 +1425,7 @@ public class XMLPersistenceMetaDataParser
     protected void parseOneToOne(FieldMetaData fmd, Attributes attrs)
         throws SAXException {
         String val = attrs.getValue("fetch");
-        if (val != null && "EAGER".equals(val)) {
+        if (val == null || "EAGER".equals(val)) {
             fmd.setInDefaultFetchGroup(true);
         }
         val = attrs.getValue("target-entity");
@@ -1444,7 +1444,7 @@ public class XMLPersistenceMetaDataParser
     protected void parseManyToOne(FieldMetaData fmd, Attributes attrs)
         throws SAXException {
         String val = attrs.getValue("fetch");
-        if (val != null && "EAGER".equals(val)) {
+        if (val == null || "EAGER".equals(val)) {
             fmd.setInDefaultFetchGroup(true);
         }
         val = attrs.getValue("target-entity");

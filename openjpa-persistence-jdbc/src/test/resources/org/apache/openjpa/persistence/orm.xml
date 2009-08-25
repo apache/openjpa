@@ -31,6 +31,8 @@
             <many-to-one name="country" optional="false" fetch="LAZY">
                 <join-column name="COUNTRY_ID" />
             </many-to-one>
+            <many-to-one name="countryEager">
+            </many-to-one>
             <embedded name="symbol" />
         </attributes>
     </entity>

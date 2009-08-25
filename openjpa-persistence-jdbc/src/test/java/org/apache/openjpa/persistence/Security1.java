@@ -26,6 +26,8 @@ public class Security1 {
     
     private Country1 country;
 
+    private Country1 countryEager;
+
     public Security1() {
         super();
     }
@@ -46,6 +48,14 @@ public class Security1 {
 
     public void setCountry1(Country1 c) {
         this.country = c;
+    }
+
+    public Country1 getCountryEager() {
+        return countryEager;
+    }
+
+    public void setCountryEager(Country1 c) {
+        this.countryEager = c;
     }
 
     public Embed getSymbol() {

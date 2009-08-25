@@ -34,6 +34,9 @@ public class Security {
     @JoinColumn(name="COUNTRY_ID")
     private Country country;
 
+    @ManyToOne
+    private Country countryEager;
+
     public Security() {
         super();
     }
@@ -54,6 +57,14 @@ public class Security {
 
     public void setCountry(Country c) {
         this.country = c;
+    }
+
+    public Country getCountryEager() {
+        return countryEager;
+    }
+
+    public void setCountryEager(Country c) {
+        this.countryEager = c;
     }
 
     public Embed getSymbol() {

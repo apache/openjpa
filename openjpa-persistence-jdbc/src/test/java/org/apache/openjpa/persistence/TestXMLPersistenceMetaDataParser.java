@@ -126,6 +126,45 @@ public class TestXMLPersistenceMetaDataParser extends SQLListenerTestCase {
         em.close();
 
     }
+    
+    public void testManyToOneEagerFetch() {
+        // initialize objects
+        EntityManager em = emf.createEntityManager();
+
+        long aI_sid = 148007245;
+        long aUS_sid = 2;
+
+        Security1 aI_security = new Security1(aI_sid, new Embed("XYZ"));
+        Country1 aUS_country = new Country1(aUS_sid, "USA");
+        aI_security.setCountry1(aUS_country);
+        aI_security.setCountryEager(aUS_country);
+        
+        Security aI_securityAnn = new Security(aI_sid, new Embed("XYZ"));
+        Country aUS_countryAnn = new Country(aUS_sid, "USA");
+        aI_securityAnn.setCountry(aUS_countryAnn);
+        aI_securityAnn.setCountryEager(aUS_countryAnn);
+
+        em.getTransaction().begin();
+        em.persist(aI_security);
+        em.persist(aUS_country);
+        em.getTransaction().commit();
+        em.clear();
+
+        aI_security = em.find(Security1.class, aI_sid);
+        em.clear();
+        Country1 countryEager = aI_security.getCountryEager(); 
+        assertNotNull(countryEager);
+        
+        aI_securityAnn = em.find(Security.class, aI_sid);
+        em.clear();
+        Country countryEagerAnn = aI_securityAnn.getCountryEager(); 
+        assertNotNull(countryEagerAnn);
+        
+        // Close
+        em.close();
+        
+    }
+    
 
     private void printArrayList(ArrayList aList) {
         Iterator itr = aList.iterator();
