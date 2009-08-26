@@ -55,14 +55,16 @@ public class TestJDBCEscapeDate extends SingleEMFTestCase {
         
         String[] jpql = {
             "select a from Employee a where a.hireDate >= {d '2009-08-25'}",
+            "select a from Employee a where a.hireDate >= {d '2009-8-5'}",
             "select a from Employee a where a.hireTime >= {t '00:00:00'}",
             "select a from Employee a where a.hireTimestamp >= {ts '2009-08-25 00:00:00'}",
+            "select a from Employee a where a.hireTimestamp >= {ts '2009-08-25 00:00:00.'}",
             "select a from Employee a where a.hireTimestamp >= {ts '2009-08-25 00:00:00.1'}",
-            "select a from Employee a where a.hireTimestamp >= {ts '2009-08-25 00:00:00.11'}",
-            "select a from Employee a where a.hireTimestamp >= {ts '2009-08-25 00:00:00.111'}",
-            "select a from Employee a where a.hireTimestamp >= {ts '2009-08-25 00:00:00.1111'}",
-            "select a from Employee a where a.hireTimestamp >= {ts '2009-08-25 00:00:00.11111'}",
-            "select a from Employee a where a.hireTimestamp >= {ts '2009-08-25 00:00:00.111111'}",
+            "select a from Employee a where a.hireTimestamp >= {ts '2009-08-25 00:00:00.12'}",
+            "select a from Employee a where a.hireTimestamp >= {ts '2009-08-25 00:00:00.123'}",
+            "select a from Employee a where a.hireTimestamp >= {ts '2009-08-25 00:00:00.1234'}",
+            "select a from Employee a where a.hireTimestamp >= {ts '2009-08-25 00:00:00.12345'}",
+            "select a from Employee a where a.hireTimestamp >= {ts '2009-08-25 00:00:00.123456'}",
             "select {t '00:00:00'}, a.empId from Employee a",
         };
 
@@ -72,16 +74,8 @@ public class TestJDBCEscapeDate extends SingleEMFTestCase {
             Assert.assertEquals(1, results.size());
         }
 
-        String wrongTs = "select a from Employee a where a.hireTimestamp > {ts '2009-08-25 00:00:00.1111111'}";
-        try {
-            Query q = em.createQuery(wrongTs);
-            List results = q.getResultList();
-            Assert.fail();
-        } catch (Exception ex) {
-        }
-
         em.getTransaction().begin();
-        String update = "update Employee a set a.hireTimestamp = {ts '2009-08-25 00:00:00.111111'} where a.empId = 1";
+        String update = "update Employee a set a.hireTimestamp = {ts '2009-08-25 00:00:00.123456'} where a.empId = 1";
         Query q = em.createQuery(update);
         int updateCnt = q.executeUpdate();
         em.getTransaction().commit();
