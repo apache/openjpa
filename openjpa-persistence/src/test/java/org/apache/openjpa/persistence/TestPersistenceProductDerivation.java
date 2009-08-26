@@ -23,10 +23,15 @@ import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
+import java.io.IOException;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.security.AccessController;
+import java.security.PrivilegedActionException;
 import java.util.Arrays;
+import java.util.Collections;
+import java.util.Enumeration;
+import java.util.HashMap;
 import java.util.List;
 import java.util.jar.JarEntry;
 import java.util.jar.JarOutputStream;
@@ -144,6 +149,118 @@ public class TestPersistenceProductDerivation extends TestCase {
 
 		assertNull(conf.getEncryptionProvider());
 	}
+    
+    /*
+     * Verifies value of exclude-unlisted-classes with a version 1.0
+     * persistence.xml.
+     */
+    public void testJPA1ExcludeUnlistedClasses() throws Exception {
+        PersistenceProductDerivation.ConfigurationParser cp = 
+                new PersistenceProductDerivation.ConfigurationParser(new HashMap());
+
+        List<URL> urls = getResourceURL(PersistenceProductDerivation.RSRC_DEFAULT);
+        assertNotNull(urls);
+        assertEquals(1, urls.size());
+        cp.parse(urls.get(0));
+        
+        List<PersistenceUnitInfoImpl> units = cp.getResults();
+                
+        int vfyCount = 0;
+        for (PersistenceUnitInfoImpl ppui : units) {
+            if ("exclude_not_specified".equals(ppui.getPersistenceUnitName())) {
+                vfyCount++;
+                assertFalse(ppui.excludeUnlistedClasses());
+            }
+            // Verify case where exclude-unlisted-classes was specified, but
+            // is the default ie <exclude-unlisted-classes/>
+            if ("exclude_default".equals(ppui.getPersistenceUnitName())) {
+                vfyCount++;
+                assertFalse(ppui.excludeUnlistedClasses());
+            }
+            // Verify case where exclude-unlisted-classes was specified as
+            // true <exclude-unlisted-classes>true</exclude-unlisted-classes>
+            if ("exclude_true".equals(ppui.getPersistenceUnitName())) {
+                vfyCount++;
+                assertTrue(ppui.excludeUnlistedClasses());
+            }
+            // Verify case where exclude-unlisted-classes was specified as
+            // false <exclude-unlisted-classes>false</exclude-unlisted-classes>
+            if ("exclude_false".equals(ppui.getPersistenceUnitName())) {
+                vfyCount++;
+                assertFalse(ppui.excludeUnlistedClasses());
+            }            
+        }
+        // Make sure all pu's were validated
+        assertEquals(4, vfyCount);                
+    }
+
+    /*
+     * Verifies value of exclude-unlisted-classes with a version 2.0
+     * persistence.xml.
+     */
+    public void testExcludeUnlistedClasses() throws Exception {
+        PersistenceProductDerivation.ConfigurationParser cp = 
+            new PersistenceProductDerivation.ConfigurationParser(new HashMap());
+
+    List<URL> urls = getResourceURL("META-INF/persistence-2_0.xml");
+    assertNotNull(urls);
+    assertEquals(1, urls.size());
+    cp.parse(urls.get(0));
+    
+    List<PersistenceUnitInfoImpl> units = cp.getResults();
+            
+    int vfyCount = 0;
+    for (PersistenceUnitInfoImpl ppui : units) {
+        // Verify case where exclude-unlisted-classes was not specified
+        if ("exclude_not_specified".equals(ppui.getPersistenceUnitName())) {
+            vfyCount++;
+            assertTrue(ppui.excludeUnlistedClasses());
+        }
+        // Verify case where exclude-unlisted-classes was specified, but
+        // is the default ie <exclude-unlisted-classes/>
+        if ("exclude_default".equals(ppui.getPersistenceUnitName())) {
+            vfyCount++;
+            assertTrue(ppui.excludeUnlistedClasses());
+        }
+        // Verify case where exclude-unlisted-classes was specified as
+        // true <exclude-unlisted-classes>true</exclude-unlisted-classes>
+        if ("exclude_true".equals(ppui.getPersistenceUnitName())) {
+            vfyCount++;
+            assertTrue(ppui.excludeUnlistedClasses());
+        }
+        // Verify case where exclude-unlisted-classes was specified as
+        // false <exclude-unlisted-classes>false</exclude-unlisted-classes>
+        if ("exclude_false".equals(ppui.getPersistenceUnitName())) {
+            vfyCount++;
+            assertFalse(ppui.excludeUnlistedClasses());
+        }            
+    }
+    // Make sure all pu's were validated
+    assertEquals(4, vfyCount);                
+        
+    }
+
+    private static List<URL> getResourceURL(String rsrc)
+        throws IOException {
+    Enumeration<URL> urls = null;
+    try {
+        ClassLoader cl = TestPersistenceProductDerivation.class.getClassLoader();
+        urls = AccessController.doPrivileged(
+            J2DoPrivHelper.getResourcesAction(cl, rsrc)); 
+        if (!urls.hasMoreElements()) {
+            if (!rsrc.startsWith("META-INF"))
+              urls = AccessController.doPrivileged(
+                  J2DoPrivHelper.getResourcesAction(cl, "META-INF/" + rsrc));
+            if (!urls.hasMoreElements())
+                return null;
+        }
+    } catch (PrivilegedActionException pae) {
+        throw (IOException) pae.getException();
+    }
+
+    return Collections.list(urls);
+}
+
     private void buildJar(File sourceFile, File targetFile) throws Exception {
         
         JarOutputStream out = new JarOutputStream(

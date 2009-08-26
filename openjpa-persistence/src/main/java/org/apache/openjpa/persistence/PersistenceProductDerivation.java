@@ -20,6 +20,7 @@ package org.apache.openjpa.persistence;
 
 import java.io.File;
 import java.io.IOException;
+import java.math.BigDecimal;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.security.AccessController;
@@ -87,6 +88,7 @@ public class PersistenceProductDerivation
     public static final Specification ALIAS_EJB = new Specification("ejb 3");
     public static final String RSRC_GLOBAL = "META-INF/openjpa.xml";
     public static final String RSRC_DEFAULT = "META-INF/persistence.xml";
+    public static final BigDecimal VERSION_1_0 = BigDecimal.valueOf(1.0);
 
     private static final Localizer _loc = Localizer.forPackage
         (PersistenceProductDerivation.class);
@@ -603,6 +605,7 @@ public class PersistenceProductDerivation
         private URL _source = null;
         private String _persistenceVersion;
         private String _schemaLocation;
+        private boolean _excludeUnlistedSet = false;
 
         public ConfigurationParser(Map map) {
             _map = map;
@@ -673,6 +676,7 @@ public class PersistenceProductDerivation
             super.reset();
             _info = null;
             _source = null;
+            _excludeUnlistedSet = false;
         }
 
         protected boolean startElement(String name, Attributes attrs)
@@ -687,6 +691,7 @@ public class PersistenceProductDerivation
         protected void endElement(String name)
             throws SAXException {
             if (currentDepth() == 1) {
+                endPersistenceUnit();
                 _info.fromUserProperties(_map);
                 addResult(_info);
             }
@@ -705,8 +710,7 @@ public class PersistenceProductDerivation
                             "Not implemented yet");
                     break;
                 case 'e': // exclude-unlisted-classes
-                    _info.setExcludeUnlistedClasses("true".equalsIgnoreCase
-                        (currentText()));
+                    setExcludeUnlistedClasses(currentText());
                     break;
                 case 'j':
                     if ("jta-data-source".equals(name))
@@ -740,11 +744,30 @@ public class PersistenceProductDerivation
             }
         }
 
+        // The default value for exclude-unlisted-classes was 
+        // modified in JPA 2.0 from false to true.  Set the default
+        // based upon the persistence version to preserve behavior 
+        // of pre-JPA 2.0 applications.
+        private void setExcludeUnlistedClasses(String value) {
+            if (!_excludeUnlistedSet) {
+                BigDecimal version = getPersistenceVersion();
+                boolean excludeUnlisted;
+                if (version.compareTo(VERSION_1_0) > 0) {
+                    excludeUnlisted = !("false".equalsIgnoreCase(value));
+                } else {
+                    excludeUnlisted = "true".equalsIgnoreCase(value);
+                }                    
+                _info.setExcludeUnlistedClasses(excludeUnlisted);
+                _excludeUnlistedSet = true;            
+            }
+        }
+
         /**
          * Parse persistence-unit element.
          */
         private void startPersistenceUnit(Attributes attrs)
             throws SAXException {
+            _excludeUnlistedSet = false;            
             _info = new PersistenceUnitInfoImpl();
             _info.setPersistenceUnitName(attrs.getValue("name"));
             _info.setPersistenceXMLSchemaVersion(_persistenceVersion);
@@ -760,7 +783,32 @@ public class PersistenceProductDerivation
             if (_source != null)
                 _info.setPersistenceXmlFileUrl(_source);
 		}
-	}
+        
+        private void endPersistenceUnit() {
+            if (!_excludeUnlistedSet) {
+                setExcludeUnlistedClasses(null);
+            }
+        }
+
+        private BigDecimal getPersistenceVersion() {
+            if (_info.getPersistenceXMLSchemaVersion() != null) {
+                try {
+                    return new BigDecimal(_info.getPersistenceXMLSchemaVersion());
+                }
+                catch (Throwable t) {
+                    log(_loc.get("invalid-version-attribute", 
+                        _info.getPersistenceXMLSchemaVersion(),
+                        VERSION_1_0.toString()).toString());
+                }
+            }
+            // OpenJPA supports persistence files without a version attribute.
+            // A persistence file without a version attribute will be considered
+            // a version 1.0 persistence file by default to maintain backward 
+            // compatibility.
+            return VERSION_1_0;
+        }
+    }
+    
     
     /**
      * This private class is used to hold onto information regarding

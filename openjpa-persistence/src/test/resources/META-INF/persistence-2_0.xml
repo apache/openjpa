@@ -19,19 +19,7 @@
 -->
 <persistence xmlns="http://java.sun.com/xml/ns/persistence"
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-    version="1.0">
-    <persistence-unit name="pu_1" transaction-type="RESOURCE_LOCAL">
-    </persistence-unit>      
-    <persistence-unit name="pu_2" transaction-type="RESOURCE_LOCAL">
-    </persistence-unit>
-    <persistence-unit name="encryption_plugin_pu" transaction-type="RESOURCE_LOCAL">
-        <properties>
-            <property name="openjpa.EncryptionProvider"
-                value="org.apache.openjpa.persistence.TestPersistenceProductDerivation$TestEncryptionProvider" />
-        </properties>
-    </persistence-unit>
-    <persistence-unit name="encryption_plugin_default_pu" transaction-type="RESOURCE_LOCAL">
-    </persistence-unit>
+    version="2.0">
     <persistence-unit name="exclude_not_specified">
     </persistence-unit>
     <persistence-unit name="exclude_default">
