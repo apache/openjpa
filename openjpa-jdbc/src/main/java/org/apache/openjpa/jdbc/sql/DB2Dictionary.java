@@ -44,6 +44,7 @@ import org.apache.openjpa.jdbc.schema.Sequence;
 import org.apache.openjpa.jdbc.schema.Table;
 import org.apache.openjpa.kernel.Filters;
 import org.apache.openjpa.kernel.MixedLockLevels;
+import org.apache.openjpa.kernel.exps.Literal;
 import org.apache.openjpa.lib.util.Localizer;
 import org.apache.openjpa.meta.JavaTypes;
 import org.apache.openjpa.util.OpenJPAException;
@@ -195,14 +196,19 @@ public class DB2Dictionary
         int idx) {
         // if this is a literal value, add a cast...
         Object val = sel.getSelects().get(idx);
-        if (val instanceof Lit)
+        boolean toCast = (val instanceof Lit) && 
+            ((Lit)val).getParseType() != Literal.TYPE_DATE && 
+            ((Lit)val).getParseType() != Literal.TYPE_TIME &&
+            ((Lit)val).getParseType() != Literal.TYPE_TIMESTAMP;
+        
+        if (toCast) 
             selectSQL.append("CAST(");
 
         // ... and add the select per super's behavior...
         super.appendSelect(selectSQL, alias, sel, idx);
 
         // ... and finish the cast
-        if (val instanceof Lit) {
+        if (toCast) {
             Class c = ((Lit) val).getType();
             int javaTypeCode = JavaTypes.getTypeCode(c);
             int jdbcTypeCode = getJDBCType(javaTypeCode, false);
