@@ -134,4 +134,36 @@ public class TestSerializedLobs extends SingleEMFTestCase {
             assertEquals('a' + (i % 24), str.charAt(i));
         em.close();
     }
+
+    public void testNullableClob() throws Exception {
+        EntityManager em = emf.createEntityManager();
+        em.getTransaction().begin();
+
+        AnnoTest1 pc = new AnnoTest1(1);
+        em.persist(pc);
+        em.getTransaction().commit();
+        em.close();
+
+        em = emf.createEntityManager();
+        pc = em.find(AnnoTest1.class, new Long(1));
+        String str = pc.getClob();
+        assertNull(str);
+        em.close();
+    }
+
+    public void testNullableBlob() throws Exception {
+        EntityManager em = emf.createEntityManager();
+        em.getTransaction().begin();
+
+        AnnoTest1 pc = new AnnoTest1(1);
+        em.persist(pc);
+        em.getTransaction().commit();
+        em.close();
+
+        em = emf.createEntityManager();
+        pc = em.find(AnnoTest1.class, new Long(1));
+        byte[] bl = pc.getBlob();
+        assertNull(bl);
+        em.close();
+    }
 }

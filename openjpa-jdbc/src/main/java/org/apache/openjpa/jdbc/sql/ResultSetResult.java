@@ -357,6 +357,9 @@ public class ResultSetResult
         if (metaTypeCode == -1 && obj instanceof Column)
             metaTypeCode = ((Column) obj).getJavaType();
 
+        boolean isClob = (obj instanceof Column) ? ((Column) obj).getType() == Types.CLOB : false;
+        obj = translate(obj, joins);
+        
         Object val = null;
         switch (metaTypeCode) {
             case JavaTypes.BOOLEAN:
@@ -393,7 +396,7 @@ public class ResultSetResult
                 val = new Short(getShortInternal(obj, joins));
                 break;
             case JavaTypes.STRING:
-                return getStringInternal(obj, joins);
+                return getStringInternal(obj, joins, isClob);
             case JavaTypes.OBJECT:
                 return _dict
                     .getBlobObject(_rs, ((Number) obj).intValue(), _store);
@@ -462,10 +465,11 @@ public class ResultSetResult
         return _dict.getShort(_rs, ((Number) obj).intValue());
     }
 
-    protected String getStringInternal(Object obj, Joins joins)
+    protected String getStringInternal(Object obj, Joins joins, boolean isClobString)
         throws SQLException {
-        if (obj instanceof Column && ((Column) obj).getType() == Types.CLOB)
-            return _dict.getClobString(_rs, ((Column) obj).getIndex());
+        if (isClobString) {
+            return _dict.getClobString(_rs, ((Number) obj).intValue());
+        }
         return _dict.getString(_rs, ((Number) obj).intValue());
     }
 
@@ -491,6 +495,7 @@ public class ResultSetResult
             return obj;
         return Numbers.valueOf(findObject(obj, joins));
     }
+
 
     /**
      * Return the 1-based result set index for the given column or id, or a

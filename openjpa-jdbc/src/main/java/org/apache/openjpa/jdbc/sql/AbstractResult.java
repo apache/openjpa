@@ -30,6 +30,7 @@ import java.sql.Ref;
 import java.sql.SQLException;
 import java.sql.Time;
 import java.sql.Timestamp;
+import java.sql.Types;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
@@ -687,12 +688,12 @@ public abstract class AbstractResult
 
     public Object getObject(Object obj, int metaType, Object arg)
         throws SQLException {
-        return getObjectInternal(translate(obj, null), metaType, arg, null);
+        return getObjectInternal(obj, metaType, arg, null);
     }
 
     public Object getObject(Column col, Object arg, Joins joins)
         throws SQLException {
-        return getObjectInternal(translate(col, joins), col.getJavaType(),
+        return getObjectInternal(col, col.getJavaType(),
             arg, joins);
     }
 
@@ -757,15 +758,17 @@ public abstract class AbstractResult
 
     public String getString(Object obj)
         throws SQLException {
-        return getStringInternal(translate(obj, null), null);
+        return getStringInternal(translate(obj, null), null,
+            obj instanceof Column && ((Column) obj).getType() == Types.CLOB);
     }
 
     public String getString(Column col, Joins joins)
         throws SQLException {
-        return getStringInternal(translate(col, joins), joins);
+        return getStringInternal(translate(col, joins), joins,
+            col.getType() == Types.CLOB);
     }
 
-    protected String getStringInternal(Object obj, Joins joins)
+    protected String getStringInternal(Object obj, Joins joins, boolean isClobString)
         throws SQLException {
         Object val = checkNull(getObjectInternal(obj, JavaTypes.STRING,
             null, joins));
@@ -831,7 +834,8 @@ public abstract class AbstractResult
 
     /**
      * Translate the user-given id or column. This method is called before
-     * delegating to any <code>get*Internal</code> methods. Return the
+     * delegating to any <code>get*Internal</code> methods with the exception of
+     * <code>getObjectInternal</code>. Return the
      * original value by default.
      */
     protected Object translate(Object obj, Joins joins)
