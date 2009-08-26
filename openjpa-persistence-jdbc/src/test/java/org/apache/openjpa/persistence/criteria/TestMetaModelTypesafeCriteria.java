@@ -131,7 +131,7 @@ public class TestMetaModelTypesafeCriteria extends CriteriaTest {
                     + "LEFT JOIN c.orders o "
                     + "WHERE c.status = 1";
         
-        CriteriaQuery q = cb.createQuery();
+        CriteriaQuery<Customer> q = cb.createQuery(Customer.class);
         Root<Customer> c = q.from(Customer.class);
         SetJoin<Customer, Order> o = c.join(customer_.getSet("orders",
                 Order.class), JoinType.LEFT);
@@ -394,13 +394,12 @@ public class TestMetaModelTypesafeCriteria extends CriteriaTest {
         String jpql = "SELECT DISTINCT emp FROM Employee emp WHERE EXISTS ("
                 + "SELECT spouseEmp FROM Employee spouseEmp WHERE spouseEmp = "
                 + "emp.spouse)";
-        CriteriaQuery<?> q = cb.createQuery();
+        CriteriaQuery<Employee> q = cb.createQuery(Employee.class);
         Root<Employee> emp = q.from(Employee.class);
         Subquery<Employee> sq = q.subquery(Employee.class);
         Root<Employee> spouseEmp = sq.from(Employee.class);
         sq.select(spouseEmp);
-        sq.where(cb.equal(spouseEmp, emp.get(employee_.getSingularAttribute("spouse",
-                Employee.class))));
+        sq.where(cb.equal(spouseEmp, emp.get(employee_.getSingularAttribute("spouse", Employee.class))));
         q.where(cb.exists(sq));
         q.distinct(true);
 
@@ -412,7 +411,7 @@ public class TestMetaModelTypesafeCriteria extends CriteriaTest {
                 + "SELECT m.salary FROM Manager m WHERE m.department ="
                 + " emp.department)";
         
-        CriteriaQuery<?> q = cb.createQuery();
+        CriteriaQuery<Employee> q = cb.createQuery(Employee.class);
         Root<Employee> emp = q.from(Employee.class);
         
         Subquery<BigDecimal> sq = q.subquery(BigDecimal.class);
@@ -430,7 +429,7 @@ public class TestMetaModelTypesafeCriteria extends CriteriaTest {
     public void testCorrelatedSubqueryWithCount() {
         String jpql = "SELECT c FROM Customer c WHERE "
                 + "(SELECT COUNT(o) FROM c.orders o) > 10";
-        CriteriaQuery<?> q = cb.createQuery();
+        CriteriaQuery<Customer> q = cb.createQuery(Customer.class);
         Root<Customer> c1 = q.from(Customer.class);
         Subquery<Long> sq3 = q.subquery(Long.class);
         Root<Customer> c2 = sq3.correlate(c1);
@@ -445,7 +444,7 @@ public class TestMetaModelTypesafeCriteria extends CriteriaTest {
         String jpql = "SELECT o FROM Order o WHERE 10000 < ALL ("
                 + "SELECT a.balance FROM o.customer c JOIN c.accounts a)";
         
-        CriteriaQuery<?> q = cb.createQuery();
+        CriteriaQuery<Order> q = cb.createQuery(Order.class);
         Root<Order> o = q.from(Order.class);
         
         Subquery<Integer> sq = q.subquery(Integer.class);
@@ -464,7 +463,7 @@ public class TestMetaModelTypesafeCriteria extends CriteriaTest {
         String jpql = "SELECT o FROM Order o JOIN o.customer c "
                     + "WHERE 10000 < ALL (SELECT a.balance FROM c.accounts a)";
         
-        CriteriaQuery<?> q = cb.createQuery();
+        CriteriaQuery<Order> q = cb.createQuery(Order.class);
         Root<Order> o = q.from(Order.class);
         
         Join<Order, Customer> c = o.join(Order_.customer);

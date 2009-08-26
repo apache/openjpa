@@ -181,12 +181,7 @@ public class SubqueryImpl<T> extends ExpressionImpl<T> implements Subquery<T> {
         Types.Entity<Y> entity = (Types.Entity<Y>)root.getModel();
         RootImpl<Y> corrRoot = new RootImpl<Y>(entity);
         corrRoot.setCorrelatedPath((RootImpl<Y>)root);
-        Set<Root<?>> roots = getRoots();
-        if (roots == null) {
-            roots = new LinkedHashSet<Root<?>>();
-            _delegate.setRoots(roots);
-        }
-        roots.add(corrRoot);
+        _delegate.addRoot(corrRoot);
         return corrRoot;
     }
     
@@ -271,8 +266,7 @@ public class SubqueryImpl<T> extends ExpressionImpl<T> implements Subquery<T> {
      * Convert this path to a kernel path value.
      */
     @Override
-    public Value toValue(ExpressionFactory factory, MetamodelImpl model,
-        CriteriaQueryImpl<?> q) {
+    public Value toValue(ExpressionFactory factory, MetamodelImpl model, CriteriaQueryImpl<?> q) {
         final boolean subclasses = true;
         CriteriaExpressionBuilder exprBuilder = new CriteriaExpressionBuilder();
         String alias = q.getAlias(this);

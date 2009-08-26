@@ -19,7 +19,9 @@
 package org.apache.openjpa.persistence.criteria;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 import javax.persistence.criteria.Expression;
 import javax.persistence.criteria.Predicate;
@@ -61,7 +63,7 @@ public class PredicateImpl extends ExpressionImpl<Boolean> implements Predicate 
     }
 
     public List<Expression<Boolean>> getExpressions() {
-        return _exps;
+        return _exps == null ? Collections.EMPTY_LIST : new CopyOnWriteArrayList<Expression<Boolean>>(_exps);
     }
 
     public BooleanOperator getOperator() {

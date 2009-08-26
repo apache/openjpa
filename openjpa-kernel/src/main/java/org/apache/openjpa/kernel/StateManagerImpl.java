@@ -3138,7 +3138,7 @@ public class StateManagerImpl
         _fm = store;
         pc.pcProvideField(field);
         // Retaining original FM because of the possibility of reentrant calls
-        _fm = beforeFM;
+        if (beforeFM != null) _fm = beforeFM;
     }
 
     /**
@@ -3150,7 +3150,7 @@ public class StateManagerImpl
         _fm = load;
         pc.pcReplaceField(field);
         // Retaining original FM because of the possibility of reentrant calls
-        _fm = beforeFM;
+        if (beforeFM != null) _fm = beforeFM;
     }
 
     /**

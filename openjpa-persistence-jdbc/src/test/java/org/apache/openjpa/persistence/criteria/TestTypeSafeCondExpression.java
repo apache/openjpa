@@ -57,8 +57,8 @@ public class TestTypeSafeCondExpression extends CriteriaTest {
     public void testNothingUsingCriteria() {
         String query = "SELECT o FROM CompUser o";
         
-        CriteriaQuery<?> cq = cb.createQuery();
-        cq.from(CompUser.class);
+        CriteriaQuery<CompUser> cq = cb.createQuery(CompUser.class);
+        cq.select(cq.from(CompUser.class));
         assertEquivalence(cq, query);
     }
 
@@ -543,7 +543,7 @@ public class TestTypeSafeCondExpression extends CriteriaTest {
     public void testTypeExpression5() {
         String query = "SELECT e FROM CompUser e where TYPE(e) in (MaleUser)";
         
-        CriteriaQuery<?> cq = cb.createQuery();
+        CriteriaQuery<CompUser> cq = cb.createQuery(CompUser.class);
         Root<CompUser> e = cq.from(CompUser.class);
         cq.where(cb.in(e.type()).value(MaleUser.class));
         
@@ -554,7 +554,7 @@ public class TestTypeSafeCondExpression extends CriteriaTest {
         String query = "SELECT e FROM CompUser e where TYPE(e) not in " +
             "(MaleUser, FemaleUser)";
         
-        CriteriaQuery<?> cq = cb.createQuery();
+        CriteriaQuery<CompUser> cq = cb.createQuery(CompUser.class);
         Root<CompUser> e = cq.from(CompUser.class);
         cq.where(cb.in(e.type()).value(MaleUser.class).value(FemaleUser.class)
                 .negate());

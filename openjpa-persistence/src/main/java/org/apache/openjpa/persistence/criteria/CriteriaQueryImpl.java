@@ -27,6 +27,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.Stack;
+import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.concurrent.CopyOnWriteArraySet;
 
 import javax.persistence.criteria.AbstractQuery;
 import javax.persistence.criteria.CriteriaQuery;
@@ -45,6 +47,7 @@ import org.apache.openjpa.kernel.exps.Context;
 import org.apache.openjpa.kernel.exps.ExpressionFactory;
 import org.apache.openjpa.kernel.exps.QueryExpressions;
 import org.apache.openjpa.kernel.exps.Value;
+import org.apache.openjpa.lib.util.Localizer;
 import org.apache.openjpa.persistence.meta.MetamodelImpl;
 import org.apache.openjpa.persistence.meta.Types;
 
@@ -62,6 +65,8 @@ import org.apache.openjpa.persistence.meta.Types;
  * @since 2.0.0
  */
 public class CriteriaQueryImpl<T> implements CriteriaQuery<T>, AliasContext {
+    private static final Localizer _loc = Localizer.forPackage(CriteriaQueryImpl.class);
+    
     private final MetamodelImpl  _model;
     private Set<Root<?>>        _roots;
     private PredicateImpl       _where;
@@ -124,7 +129,7 @@ public class CriteriaQueryImpl<T> implements CriteriaQuery<T>, AliasContext {
     }
 
     public List<Order> getOrderList() {
-        return _orders;
+        return _orders == null ? Collections.EMPTY_LIST : new CopyOnWriteArrayList<Order>(_orders);
     }
     
     /**
@@ -273,11 +278,8 @@ public class CriteriaQueryImpl<T> implements CriteriaQuery<T>, AliasContext {
     }
 
     public <X> Root<X> from(EntityType<X> entity) {
-        Root<X> root = new RootImpl<X>((Types.Entity<X>)entity);
-        if (_roots == null) {
-            _roots = new LinkedHashSet<Root<?>>();
-        }
-        _roots.add(root);
+        RootImpl<X> root = new RootImpl<X>((Types.Entity<X>)entity);
+        addRoot(root);
         return root;
     }
 
@@ -285,12 +287,12 @@ public class CriteriaQueryImpl<T> implements CriteriaQuery<T>, AliasContext {
     public <X> Root<X> from(Class<X> cls) {
         EntityType<X> entity = _model.entity(cls);
         if (entity == null)
-            throw new IllegalArgumentException(cls + " is not an entity");
+            throw new IllegalArgumentException(_loc.get("root-non-entity", cls).getMessage());
         return from(entity);
     }
 
     public List<Expression<?>> getGroupList() {
-        return _groups;
+        return _groups == null ? Collections.EMPTY_LIST : new CopyOnWriteArrayList<Expression<?>>(_groups);
     }
 
     public PredicateImpl getGroupRestriction() {
@@ -304,16 +306,19 @@ public class CriteriaQueryImpl<T> implements CriteriaQuery<T>, AliasContext {
     public Set<Root<?>> getRoots() {
         return _roots;
     }
-    
-    public void setRoots (Set<Root<?>> roots) {
-        this._roots = roots;
-    }
 
     public Root<?> getRoot() {
         assertRoot();
         return _roots.iterator().next();
     }
-
+    
+    void addRoot(RootImpl<?> root) {
+        if (_roots == null) {
+            _roots = new LinkedHashSet<Root<?>>();
+        }
+        _roots.add(root);
+    }
+    
     public boolean isDistinct() {
         return _distinct;
     }
@@ -352,7 +357,12 @@ public class CriteriaQueryImpl<T> implements CriteriaQuery<T>, AliasContext {
     
     public void assertRoot() {
         if (_roots == null || _roots.isEmpty())
-            throw new IllegalStateException("no root is set");
+            throw new IllegalStateException(_loc.get("root-undefined").getMessage());
+    }
+    
+    public void assertSelection() {
+        if (_selection == null && !isDefaultProjection())
+            throw new IllegalStateException(_loc.get("select-undefined").getMessage());
     }
     
     //
@@ -535,4 +545,22 @@ public class CriteriaQueryImpl<T> implements CriteriaQuery<T>, AliasContext {
     boolean isMultiselect() {
         return _selection instanceof CompoundSelections.MultiSelection;
     }
+    
+    protected boolean isDefaultProjection() {
+        if (_selections == null) {
+            return _roots != null && _roots.size() == 1 && getRoot().getModel().getJavaType() == _resultClass;
+        } 
+        if (_selections.size() != 1) {
+            return false;
+        }
+        Selection<?> sel = _selections.get(0);
+        if (getRoots() != null && sel == getRoot()) {
+            return true;
+        }
+        if ((sel instanceof PathImpl<?,?>) && ((PathImpl<?,?>)sel)._correlatedPath != null) {
+            return true;
+        }
+        return false;
+    }
+
 }

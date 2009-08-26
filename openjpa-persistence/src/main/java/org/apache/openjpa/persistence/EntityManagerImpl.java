@@ -1531,14 +1531,17 @@ public class EntityManagerImpl
     }
 
     /**
-     * Crete a query from the given CritriaQuery.
+     * Create a query from the given CritriaQuery.
      * Compile to register the parameters in this query.
      */
     public <T> TypedQuery<T> createQuery(CriteriaQuery<T> criteriaQuery) {
+        CriteriaQueryImpl<T> impl = (CriteriaQueryImpl<T>)criteriaQuery;
+        impl.assertRoot();
+        impl.assertSelection();
         org.apache.openjpa.kernel.Query kernelQuery =_broker.newQuery(CriteriaBuilder.LANG_CRITERIA, criteriaQuery);
         kernelQuery.compile();
         QueryImpl<T> facadeQuery = new QueryImpl<T>(this, _ret, kernelQuery);
-        Set<ParameterExpression<?>> params = ((CriteriaQueryImpl<T>)criteriaQuery).getParameters();
+        Set<ParameterExpression<?>> params = impl.getParameters();
         
         for (ParameterExpression<?> param : params) {
             facadeQuery.declareParameter(param, param);

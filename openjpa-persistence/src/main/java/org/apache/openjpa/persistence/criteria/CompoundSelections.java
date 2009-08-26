@@ -21,6 +21,7 @@ package org.apache.openjpa.persistence.criteria;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 import javax.persistence.Tuple;
 import javax.persistence.TupleElement;
@@ -77,7 +78,7 @@ public class CompoundSelections {
          *           selection
          */
         public final List<Selection<?>> getCompoundSelectionItems() {
-            return Collections.unmodifiableList(_args);
+            return _args == null ? Collections.EMPTY_LIST : new CopyOnWriteArrayList<Selection<?>>(_args);
         }
         
         void assertNoCompoundSelection(Selection<?>...args) {

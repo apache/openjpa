@@ -175,17 +175,15 @@ public class TestTypesafeCriteria extends CriteriaTest {
 
     public void testInPredicate() {
         String jpql = "select a from Account a where a.name in ('X','Y','Z')";
-        CriteriaQuery<?> c = cb.createQuery();
+        CriteriaQuery<Account> c = cb.createQuery(Account.class);
         Root<Account> account = c.from(Account.class);
-        c.where(cb.in(account.get(Account_.name)).value("X").value("Y").value(
-        "Z"));
+        c.where(cb.in(account.get(Account_.name)).value("X").value("Y").value("Z"));
         assertEquivalence(c, jpql);
     }
 
     public void testInPredicateWithPath() {
-        String jpql =
-            "select a from Account a where a.owner.name in ('X','Y','Z')";
-        CriteriaQuery<?> c = cb.createQuery();
+        String jpql = "select a from Account a where a.owner.name in ('X','Y','Z')";
+        CriteriaQuery<Account> c = cb.createQuery(Account.class);
         Root<Account> account = c.from(Account.class);
         c.where(cb.in(account.get(Account_.owner).get(Person_.name)).value("X")
                 .value("Y").value("Z"));
@@ -230,7 +228,7 @@ public class TestTypesafeCriteria extends CriteriaTest {
 
     public void testSimplePath() {
         String jpql = "select a from Account a where a.owner.name='Pinaki'";
-        CriteriaQuery<?> c = cb.createQuery();
+        CriteriaQuery<Account> c = cb.createQuery(Account.class);
         Root<Account> a = c.from(Account.class);
         c.where(cb.equal(a.get(Account_.owner).get(Person_.name), "Pinaki"));
 
@@ -239,7 +237,7 @@ public class TestTypesafeCriteria extends CriteriaTest {
 
     public void testSimpleLeftJoin() {
         String jpql = "SELECT c FROM Customer c LEFT JOIN c.orders o ";
-        CriteriaQuery<?> c = cb.createQuery();
+        CriteriaQuery<Customer> c = cb.createQuery(Customer.class);
         c.from(Customer.class).join(Customer_.orders, JoinType.LEFT);
         assertEquivalence(c, jpql);
     }
@@ -247,7 +245,7 @@ public class TestTypesafeCriteria extends CriteriaTest {
     public void testMultipartNavigation() {
         String jpql = "select a from A a where a.b.age=22";
         
-        CriteriaQuery<?> cq = cb.createQuery();
+        CriteriaQuery<A> cq = cb.createQuery(A.class);
         Root<A> a = cq.from(A.class);
         cq.where(cb.equal(a.get(A_.b).get(B_.age), 22));
         

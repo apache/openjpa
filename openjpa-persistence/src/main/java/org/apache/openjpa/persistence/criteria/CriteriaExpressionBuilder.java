@@ -244,7 +244,7 @@ public class CriteriaExpressionBuilder {
         Map<ExpressionImpl<?>, Value> exp2Vals) {
         List<Selection<?>> selections = q.getSelectionList();
         MetamodelImpl model = q.getMetamodel();
-        if (isDefaultProjection(selections, q)) {
+        if (q.isDefaultProjection()) {
             exps.projections = new Value[0];
             return ;
         }
@@ -300,18 +300,18 @@ public class CriteriaExpressionBuilder {
     }
     
 
-    protected boolean isDefaultProjection(List<Selection<?>> selections, CriteriaQueryImpl<?> q) {
-        if (selections == null)
-            return true;
-        if (selections.size() != 1)
-            return false;
-        Selection<?> sel = selections.get(0);
-        if (q.getRoots() != null && sel == q.getRoot())
-            return true;
-        if ((sel instanceof PathImpl<?,?>) && ((PathImpl<?,?>)sel)._correlatedPath != null)
-            return true;
-        return false;
-    }
+//    protected boolean isDefaultProjection(List<Selection<?>> selections, CriteriaQueryImpl<?> q) {
+//        if (selections == null)
+//            return true;
+//        if (selections.size() != 1)
+//            return false;
+//        Selection<?> sel = selections.get(0);
+//        if (q.getRoots() != null && sel == q.getRoot())
+//            return true;
+//        if ((sel instanceof PathImpl<?,?>) && ((PathImpl<?,?>)sel)._correlatedPath != null)
+//            return true;
+//        return false;
+//    }
 
     protected void evalFetchJoin(QueryExpressions exps, ExpressionFactory factory, CriteriaQueryImpl<?> q) {
         List<String> iPaths = new ArrayList<String>();
