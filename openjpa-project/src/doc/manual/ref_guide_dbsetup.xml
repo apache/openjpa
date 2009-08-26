@@ -583,6 +583,19 @@ class.
                 <para>
                 <indexterm>
                     <primary>
+                        Ingres
+                    </primary>
+                </indexterm>
+<literal>ingres</literal>: Dictionary for Ingres. This is an alias for the
+<ulink url="../javadoc/org/apache/openjpa/jdbc/sql/IngresDictionary.html">
+<classname>org.apache.openjpa.jdbc.sql.IngresDictionary</classname></ulink>
+class.
+                </para>
+            </listitem>
+            <listitem>
+                <para>
+                <indexterm>
+                    <primary>
                         JDataStore
                     </primary>
                 </indexterm>
@@ -671,19 +684,6 @@ class.
 <literal>sybase</literal>: Dictionary for Sybase. This is an alias for the
 <ulink url="../javadoc/org/apache/openjpa/jdbc/sql/SybaseDictionary.html">
 <classname>org.apache.openjpa.jdbc.sql.SybaseDictionary</classname></ulink>
-class.
-                </para>
-            </listitem>
-            <listitem>
-                <para>
-                <indexterm>
-                    <primary>
-                        Ingres
-                    </primary>
-                </indexterm>
-<literal>ingres</literal>: Dictionary for Ingres. This is an alias for the
-<ulink url="../javadoc/org/apache/openjpa/jdbc/sql/IngresDictionary.html">
-<classname>org.apache.openjpa.jdbc.sql.IngresDictionary</classname></ulink>
 class.
                 </para>
             </listitem>
