@@ -23,6 +23,8 @@ import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.security.AccessController;
 import java.security.PrivilegedActionException;
+import java.sql.Time;
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collection;
@@ -231,6 +233,8 @@ public class Filters {
             return true;
         if (c2 == String.class)
             return !strict;
+        if (c1 == String.class && isTemporalType(c2))
+            return true;
         return false;
     }
 
@@ -287,6 +291,14 @@ public class Filters {
                     if (type == Integer.class)
                         return i;
                     num = true;
+                }
+            } else if (o instanceof String && isJDBCTemporalSyntax(o.toString())) {
+                try {
+                    Object temporal = parseJDBCTemporalSyntax(o.toString());
+                    if (temporal != null && type.isAssignableFrom(temporal.getClass()))
+                        return temporal;
+                } catch (IllegalArgumentException e) {
+                    
                 }
             }
         }
@@ -911,4 +923,65 @@ public class Filters {
         }
         Reflection.set(target, setter, value);
 	}
+    
+    /**
+     * Parses the given string assuming it is a JDBC key expression. Extracts the 
+     * data portion and based on the key, calls static java.sql.Date/Time/Timestamp.valueOf(String)
+     * method to convert to a java.sql.Date/Time/Timestamp instance.
+     */
+    public static Object parseJDBCTemporalSyntax(String s) {
+        s = clip(s.trim(), "{", "}", true);
+        if (s.startsWith("ts")) {
+            return java.sql.Timestamp.valueOf(clip(s.substring(2).trim(), "'", "'", false));
+        } else if (s.startsWith("d")) {
+            return java.sql.Date.valueOf(clip(s.substring(1).trim(), "'", "'", false));
+        } else if (s.startsWith("t")) {
+            return java.sql.Time.valueOf(clip(s.substring(2).trim(), "'", "'", false));
+        } else {
+            return null;
+        }
+    }
+    
+    /**
+     * Affirms if the given String is enclosed in {}.
+     * 
+     */
+    public static boolean isJDBCTemporalSyntax(String s) {
+        if (s != null) {
+            s = s.trim();
+        }
+        return s != null && s.startsWith("{") && s.endsWith("}");
+    }
+    
+    /**
+     * Removes the first and last string if they are the terminal sequence in the given string.
+     * 
+     * @param s a string to be examined
+     * @param first the characters in the beginning of the given string
+     * @param last the characters in the end of the given string
+     * @param fail if true throws exception if the given string does not have the given terminal sequences.
+     * @return the string with terminal sequences removed.
+     */
+    public static String clip(String s, String first, String last, boolean fail) {
+        if (s == null)
+            return s;
+        if (s.startsWith(first) && s.endsWith(last)) {
+            return s.substring(first.length(), s.length()-last.length()).trim();
+        }
+        if (fail) {
+            throw new IllegalArgumentException(s + " is not valid escape syntax for JDBC");
+        }
+        return s;
+    }
+    
+    /**
+     * Affirms if the given class is Data, Time or Timestamp.
+     */
+    public static boolean isTemporalType(Class<?> c) {
+        return c != null 
+            && (Date.class.isAssignableFrom(c) 
+             || Time.class.isAssignableFrom(c) 
+             || Timestamp.class.isAssignableFrom(c));
+    }
+
 }
