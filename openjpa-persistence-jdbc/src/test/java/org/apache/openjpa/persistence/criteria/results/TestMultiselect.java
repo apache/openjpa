@@ -379,6 +379,26 @@ public class TestMultiselect extends CriteriaTest {
         assertEquals(String.class, tuple4.get(0).getClass());
     }
     
+    public void testConstructorFailsFast() {
+        CriteriaQuery<Tuple> q = cb.createQuery(Tuple.class);
+        Root<Foo> foo = q.from(Foo.class);
+        try {
+            q.multiselect(cb.construct(Foo.class, foo.get(Foo_.flong)));
+            fail("Expected IllegalArgumentException becuase Foo(long) is not a valid constructor");
+        } catch (IllegalArgumentException e) {
+            // good -- but print the error message to check it is informative enough
+            System.err.println(e);
+        }
+        try {
+            q.multiselect(cb.construct(Foo.class));
+            fail("Expected IllegalArgumentException becuase Foo() is not a valid constructor");
+        } catch (IllegalArgumentException e) {
+            // good -- but print the error message to check it is informative enough
+            System.err.println(e);
+        }
+        
+    }
+    
 // =============== assertions by result types ========================
     
     void assertResult(CriteriaQuery<?> q, Class<?> resultClass) {

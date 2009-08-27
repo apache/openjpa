@@ -18,6 +18,7 @@
  */
 package org.apache.openjpa.persistence.criteria;
 
+import java.lang.reflect.Constructor;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -30,6 +31,7 @@ import javax.persistence.criteria.Selection;
 
 import org.apache.openjpa.kernel.FillStrategy;
 import org.apache.openjpa.kernel.ResultShape;
+import org.apache.openjpa.lib.util.Localizer;
 import org.apache.openjpa.persistence.TupleFactory;
 import org.apache.openjpa.persistence.TupleImpl;
 
@@ -42,6 +44,7 @@ import org.apache.openjpa.persistence.TupleImpl;
  *
  */
 public class CompoundSelections {
+    private static Localizer _loc = Localizer.forPackage(CompoundSelections.class);
     /**
      * Gets the strategy to fill a given compound selection.
      * 
@@ -118,12 +121,29 @@ public class CompoundSelections {
      * @param <X> type of the constructed instance
      */
     public static class NewInstance<X> extends CompoundSelectionImpl<X> {
+        private FillStrategy.NewInstance<X> strategy;
         public NewInstance(Class<X> cls, Selection<?>... selections) {
             super(cls, selections);
+            strategy = new FillStrategy.NewInstance<X>(findConstructor(cls, selections));
         }
         
         public FillStrategy<X> getFillStrategy() {
-            return new FillStrategy.NewInstance<X>(getJavaType());
+            return strategy;
+        }
+        
+        private Constructor<X> findConstructor(Class<X> cls, Selection<?>... selections) {
+            Class<?>[] types = selections == null ? null : new Class[selections.length];
+            if (selections != null) {
+                for (int i = 0; i < selections.length; i++) {
+                    types[i] = selections[i].getJavaType();
+                }
+            }
+            try {
+                return cls.getConstructor(types);
+            } catch (NoSuchMethodException e) {
+                throw new IllegalArgumentException(_loc.get("select-no-ctor", cls, 
+                    types == null ? "[]" : Arrays.toString(types)).getMessage());
+            }
         }
     }
     
