@@ -186,17 +186,6 @@ public class TestEdit extends CriteriaTest {
         assertFails("Expected to fail without a defined root", c);
     }
     
-//    public void testDateString() {
-//        String jpql = "select d from Dependent d where d.endDate >= {d '2009-08-25'}";
-//        CriteriaQuery<Dependent> c = cb.createQuery(Dependent.class);
-//        Root<Dependent> d = c.from(Dependent.class);
-//        
-//        c.where(cb.greaterThanOrEqualTo(d.get(Dependent_.endDate), cb.literal("{d '2009-08-25'}").as(Date.class)));
-//        
-//        assertEquivalence(c, jpql);
-//    }
-
-    
     void assertFails(String message, CriteriaQuery<?> c) {
         try {
             em.createQuery(c);
