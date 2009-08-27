@@ -1923,7 +1923,8 @@ public class ClassMetaData
     private boolean hasConcretePCSuperclass() {
         if (_super == null)
             return false;
-        if (!Modifier.isAbstract(_super.getModifiers()))
+        if (!Modifier.isAbstract(_super.getModifiers()) && 
+        		(!getPCSuperclassMetaData().isAbstract()))
             return true;
         return getPCSuperclassMetaData().hasConcretePCSuperclass();
     }
