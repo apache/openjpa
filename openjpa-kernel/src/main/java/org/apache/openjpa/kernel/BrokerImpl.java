@@ -4902,22 +4902,18 @@ public class BrokerImpl
         }
     }
 
-    @Override
     public DataCacheRetrieveMode getCacheRetrieveMode() {
         return _cacheRetrieveMode;
     }
 
-    @Override
     public DataCacheStoreMode getCacheStoreMode() {
         return _cacheStoreMode;
     }
 
-    @Override
     public void setCacheRetrieveMode(DataCacheRetrieveMode mode) {
         _cacheRetrieveMode = mode;
     }
 
-    @Override
     public void setCacheStoreMode(DataCacheStoreMode mode) {
         _cacheStoreMode = mode;
     }

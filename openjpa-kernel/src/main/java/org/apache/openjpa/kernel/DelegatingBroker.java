@@ -1411,22 +1411,18 @@ public class DelegatingBroker
         _broker.setCachePreparedQuery(flag);
     }
 
-    @Override
     public DataCacheRetrieveMode getCacheRetrieveMode() {
         return _broker.getCacheRetrieveMode();
     }
 
-    @Override
     public DataCacheStoreMode getCacheStoreMode() {
         return _broker.getCacheStoreMode();
     }
 
-    @Override
     public void setCacheRetrieveMode(DataCacheRetrieveMode mode) {
         _broker.setCacheRetrieveMode(mode);
     }
 
-    @Override
     public void setCacheStoreMode(DataCacheStoreMode mode) {
         _broker.setCacheStoreMode(mode);
     }
