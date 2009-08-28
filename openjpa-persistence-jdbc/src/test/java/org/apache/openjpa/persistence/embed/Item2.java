@@ -29,6 +29,7 @@ public class Item2 {
     int id;
     
     @ElementCollection
+    @MapKeyColumn(name="IMAGE_NAME", table="ITEM2_XXX")
     Map<String, String> images = new HashMap<String, String>();
     
     public int getId() {

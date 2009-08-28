@@ -1968,6 +1968,9 @@ public class AnnotationPersistenceMappingParser
      */
     protected void parseMapKeyColumn(FieldMapping fm, MapKeyColumn anno) {
         int unique = 0;
+        FieldMappingInfo info = fm.getMappingInfo();
+        if (anno.table() != null && anno.table().length() > 0)
+        info.setTableName(anno.table());
         Column col = new Column();
         setupMapKeyColumn(fm, col, anno);
         unique |= (anno.unique()) ? TRUE : FALSE;

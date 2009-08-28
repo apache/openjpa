@@ -36,9 +36,10 @@ import javax.persistence.Query;
 
 import org.apache.openjpa.lib.log.Log;
 import org.apache.openjpa.persistence.ArgumentException;
+import org.apache.openjpa.persistence.test.SQLListenerTestCase;
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
 
-public class TestEmbeddable extends SingleEMFTestCase {
+public class TestEmbeddable extends SQLListenerTestCase {
     private static final Calendar cal = new GregorianCalendar();
     private static final Integer timeHash = new Integer(cal.hashCode());
     public int numEmbeddables = 1;
@@ -92,6 +93,7 @@ public class TestEmbeddable extends SingleEMFTestCase {
             EntityA_Embed_MappedToOneCascadeDelete.class, EntityB2.class, 
             Book.class, Listing.class, Seller.class,
             EntityA_Embed_Complex.class, CLEAR_TABLES);
+            sql.clear();
     }
     
     public void testEntityA_Coll_String() {
@@ -1964,6 +1966,20 @@ public class TestEmbeddable extends SingleEMFTestCase {
         tran.begin();
         em.flush();
         tran.commit();
+        boolean found = false;
+        for (String sqlStr : sql) {
+            if (sqlStr.toUpperCase().indexOf("ITEM2_XXX") != -1) {
+                found = true;
+                break;
+            } 
+            if (sqlStr.toUpperCase().indexOf("ITEM2_IMAGES") != -1) {
+                found = false;
+                break;
+            }
+        }
+        if (!found) {
+            fail("Table name ITEM2_IMG specified in the MapKeyColumn annotation is not honored");
+        }
         em.close();
     }
 
