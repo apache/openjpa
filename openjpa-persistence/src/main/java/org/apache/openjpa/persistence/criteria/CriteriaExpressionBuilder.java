@@ -174,7 +174,7 @@ public class CriteriaExpressionBuilder {
             exps.grouping[i] = Expressions.toValue((ExpressionImpl<?>)groupBy, factory, model, q);;
         }
 
-        exps.having = having == null ? factory.emptyExpression() : having.toKernelExpression(factory, model, q);
+        exps.having = having == null ? null : having.toKernelExpression(factory, model, q);
     }
 
     protected void evalDistinct(QueryExpressions exps, ExpressionFactory factory, CriteriaQueryImpl<?> q) {

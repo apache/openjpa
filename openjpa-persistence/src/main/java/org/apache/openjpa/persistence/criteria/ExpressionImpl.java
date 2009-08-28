@@ -37,13 +37,20 @@ import org.apache.openjpa.persistence.meta.MetamodelImpl;
  * @param <X> the type of the value this expression represents.
  */
 public abstract class ExpressionImpl<X> extends SelectionImpl<X> 
-    implements Expression<X> {
-
-    abstract Value toValue(ExpressionFactory factory, MetamodelImpl model, CriteriaQueryImpl<?> q);
+    implements CriteriaExpression<X> {
+    abstract org.apache.openjpa.kernel.exps.Value toValue(ExpressionFactory factory, MetamodelImpl model,
+            CriteriaQueryImpl<?> q);
     
     org.apache.openjpa.kernel.exps.Expression toKernelExpression(ExpressionFactory factory, MetamodelImpl model,
         CriteriaQueryImpl<?> q) {
         return factory.asExpression(toValue(factory, model, q));
+    }
+    
+    public void acceptVisit(CriteriaExpressionVisitor visitor) {
+        if (!visitor.isVisited(this)) {
+            visitor.enter(this);
+            visitor.exit(this);
+        }
     }
     
 

@@ -124,6 +124,14 @@ public class PredicateImpl extends ExpressionImpl<Boolean> implements Predicate 
         return _negated ? factory.not(result) : result;
     }
 
+    public void acceptVisit(CriteriaExpressionVisitor visitor) {
+        if (_exps == null)
+            return;
+        for (Expression<?> e : _exps) {
+            ((ExpressionImpl<?>)e).acceptVisit(visitor);
+        }
+    }
+    
     public static class And extends PredicateImpl {
         public And(Expression<Boolean> x, Expression<Boolean> y) {
             super(BooleanOperator.AND);

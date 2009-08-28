@@ -118,6 +118,7 @@ public abstract class AbstractPersistenceTestCase extends TestCase {
 
     protected Map<String, Object> getPropertiesMap(Object... props) {
         Map<String, Object> map = new HashMap<String, Object>();
+        map.put("openjpa.DynamicEnhancementAgent", "false");
         List<Class<?>> types = new ArrayList<Class<?>>();
         boolean prop = false;
 

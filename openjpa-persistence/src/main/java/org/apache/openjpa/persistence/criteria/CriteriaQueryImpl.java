@@ -28,7 +28,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.Stack;
 import java.util.concurrent.CopyOnWriteArrayList;
-import java.util.concurrent.CopyOnWriteArraySet;
 
 import javax.persistence.criteria.AbstractQuery;
 import javax.persistence.criteria.CriteriaQuery;
@@ -80,7 +79,7 @@ public class CriteriaQueryImpl<T> implements CriteriaQuery<T>, AliasContext {
     private Boolean             _distinct;
     private SubqueryImpl<?>     _delegator;
     private final Class<T>      _resultClass;
-    
+    private boolean             _compiled;
 
     // AliasContext
     private int aliasCount = 0;
@@ -190,21 +189,8 @@ public class CriteriaQueryImpl<T> implements CriteriaQuery<T>, AliasContext {
 
     /**
      * Registers the given parameter.
-     * On registration, an unnamed parameter is assigned an auto-generated 
-     * name. 
-     * 
      */
-    public void registerParameter(ParameterExpressionImpl<?> p) {
-        if (_delegator != null) {
-            CriteriaQueryImpl<?> owner = _delegator.getInnermostParent();
-            if (owner != this) {
-                owner.registerParameter(p);
-            } 
-        } 
-        registerParameterInternal(p);
-    }
-    
-    private void registerParameterInternal(ParameterExpressionImpl<?> p) {
+    void registerParameter(ParameterExpressionImpl<?> p) {
         if (_params == null)
             _params = new LinkedMap/*<ParameterExpression<?>, Class<?>*/();
         if (!_params.containsKey(p)) {
@@ -214,6 +200,7 @@ public class CriteriaQueryImpl<T> implements CriteriaQuery<T>, AliasContext {
     }
     
     public Set<ParameterExpression<?>> getParameters() {
+        collectParameters(new CriteriaExpressionVisitor.ParameterVisitor(this));
         return _params == null ? Collections.EMPTY_SET : _params.keySet();
     }
 
@@ -266,11 +253,21 @@ public class CriteriaQueryImpl<T> implements CriteriaQuery<T>, AliasContext {
     }
 
     public CriteriaQuery<T> where(Expression<Boolean> restriction) {
+        invalidateCompilation();
+        if (restriction == null) {
+            _where = null;
+            return this;
+        }
         _where = new PredicateImpl().add(restriction);
         return this;
     }
 
     public CriteriaQuery<T> where(Predicate... restrictions) {
+        invalidateCompilation();
+        if (restrictions == null) {
+            _where = null;
+            return this;
+        }
         _where = new PredicateImpl();
         for (Predicate p : restrictions)
         	_where.add(p);
@@ -340,6 +337,7 @@ public class CriteriaQueryImpl<T> implements CriteriaQuery<T>, AliasContext {
      * Empty map if no parameter has been declared. 
      */
     public LinkedMap getParameterTypes() {
+        collectParameters(new CriteriaExpressionVisitor.ParameterVisitor(this));
         return _params == null ? StoreQuery.EMPTY_PARAMS : _params;
     }
     
@@ -561,6 +559,38 @@ public class CriteriaQueryImpl<T> implements CriteriaQuery<T>, AliasContext {
             return true;
         }
         return false;
+    }
+    
+    void invalidateCompilation() {
+        _compiled = false;
+        _params   = null;
+    }
+    
+    /**
+     * Compiles to verify that at least one root is defined, a selection term is present
+     * and, most importantly, collects all the parameters so that they can be bound to
+     * the executable query. 
+     */
+    public void compile() {
+        if (_compiled)
+            return;
+        assertRoot();
+        assertSelection();
+        collectParameters(new CriteriaExpressionVisitor.ParameterVisitor(this));
+        _compiled = true;
+    }
+    
+    private void collectParameters(CriteriaExpressionVisitor visitor) {
+        if (_compiled)
+            return;
+        if (_where != null) {
+            _where.acceptVisit(visitor);
+        }
+        if (_subqueries != null) {
+            for (Subquery<?> subq : _subqueries) {
+                ((SubqueryImpl<?>)subq).getDelegate().collectParameters(visitor);
+            }
+        }
     }
 
 }
