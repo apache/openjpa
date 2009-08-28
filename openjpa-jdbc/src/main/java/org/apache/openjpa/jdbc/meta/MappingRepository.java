@@ -96,6 +96,7 @@ import org.apache.openjpa.meta.Order;
 import org.apache.openjpa.meta.SequenceMetaData;
 import org.apache.openjpa.meta.ValueMetaData;
 import org.apache.openjpa.util.MetaDataException;
+import org.apache.openjpa.util.UserException;
 
 /**
  * Repository of object/relational mapping information.
@@ -1266,7 +1267,8 @@ public class MappingRepository
             case JavaTypes.NUMBER:
                 return new NumberVersionStrategy();
             default:
-                return NoneVersionStrategy.getInstance();
+                throw new UserException(_loc.get("version-type-unsupported", vfield, vfield.getDeclaredType()));
+//                return NoneVersionStrategy.getInstance();
         }
     }
     
