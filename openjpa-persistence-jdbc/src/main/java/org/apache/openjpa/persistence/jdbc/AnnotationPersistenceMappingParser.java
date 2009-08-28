@@ -1212,7 +1212,7 @@ public class AnnotationPersistenceMappingParser
                     parseOrderColumn(fm, (OrderColumn) anno);
                     break;
                 case STRAT:
-                    fm.getValueInfo().setStrategy(((Strategy) anno).value());
+                    fm.getMappingInfo().setStrategy(((Strategy) anno).value());
                     break;
                 case UNIQUE:
                     parseUnique(fm,
