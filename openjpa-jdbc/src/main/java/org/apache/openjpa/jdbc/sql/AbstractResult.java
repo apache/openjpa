@@ -661,8 +661,8 @@ public abstract class AbstractResult
     protected long getLongInternal(Object obj, Joins joins)
         throws SQLException {
         Number val = (Number) checkNull(getObjectInternal(obj,
-            JavaTypes.INT, null, joins));
-        return (val == null) ? 0 : val.intValue();
+            JavaTypes.LONG, null, joins));
+        return (val == null) ? 0 : val.longValue();
     }
 
     public Number getNumber(Object obj)
