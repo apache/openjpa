@@ -31,6 +31,8 @@ public class CacheableEntity  implements CacheEntity {
 
     @Version
     private int version;
+    
+    private String name; 
 
     public int getId() {
         return id;
@@ -46,5 +48,13 @@ public class CacheableEntity  implements CacheEntity {
 
     public void setVersion(int version) {
         this.version = version;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
     }
 }

@@ -21,4 +21,6 @@ package org.apache.openjpa.persistence.cache.jpa.model;
 public interface CacheEntity {
 
     public void setId(int id);
+    public void setName(String name);
+    public String getName();
 }

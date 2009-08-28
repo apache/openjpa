@@ -18,14 +18,24 @@
  */
 package org.apache.openjpa.persistence.cache.jpa;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import javax.persistence.Cache;
 
+import org.apache.openjpa.lib.jdbc.JDBCListener;
 import org.apache.openjpa.persistence.OpenJPAEntityManagerFactorySPI;
+import org.apache.openjpa.persistence.StoreCache;
 
-public class TestCacheModeNone extends AbstractJPACacheTestCase {
+public class TestCacheModeNone extends AbstractCacheModeTestCase {
 
     private static OpenJPAEntityManagerFactorySPI emf = null;
     private static Cache cache = null;
+    private static List<String> sql = new ArrayList<String>();
+    private static JDBCListener listener;
+    
+    private static Class<?>[] expectedInCache = {}; 
+    private static Class<?>[] expectedNotInCache = persistentTypes;
 
     @Override
     public OpenJPAEntityManagerFactorySPI getEntityManagerFactory() {
@@ -36,6 +46,22 @@ public class TestCacheModeNone extends AbstractJPACacheTestCase {
             assertNotNull(cache);
         }
         return emf;
+    }
+
+    public JDBCListener getListener() {
+        if (listener == null) {
+            listener = new Listener();
+        }
+        return listener;
+    }
+
+    public List<String> getSql() {
+        return sql;
+    }
+    
+    @Override
+    public boolean getCacheEnabled() {
+        return false;
     }
 
     public void testCacheables() {
@@ -49,4 +75,15 @@ public class TestCacheModeNone extends AbstractJPACacheTestCase {
     public void testUnspecified() {
         assertUnspecified(cache, false);
     }
+    
+    @Override
+    protected Class<?>[] getExpectedInCache() {
+        return expectedInCache;
+    }
+
+    @Override
+    protected Class<?>[] getExpectedNotInCache() {
+        return expectedNotInCache;
+    }
+
 }

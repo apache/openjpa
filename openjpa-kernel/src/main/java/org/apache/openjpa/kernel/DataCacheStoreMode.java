@@ -16,43 +16,27 @@
  * specific language governing permissions and limitations
  * under the License.    
  */
-package org.apache.openjpa.persistence.cache.jpa.model;
+package org.apache.openjpa.kernel;
 
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.Version;
+/**
+ * DataCache Store modes
+ */
+public enum DataCacheStoreMode {
 
-@Entity
-public class UnspecifiedEntity implements CacheEntity {
-    @Id
-    private int id;
-
-    @Version
-    private int version;
-    
-    private String name;
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public int getId() {
-        return id;
-    }
-
-    public void setId(int id) {
-        this.id = id;
-    }
-
-    public int getVersion() {
-        return version;
-    }
-
-    public void setVersion(int version) {
-        this.version = version;
-    }
+    /**
+     * Store updates, inserts and deletes in the DataCache. The DataCache will
+     * not be refreshed when data is read from the database.
+     */
+    USE,
+    /**
+     * Write updates, inserts and deletes directly to the database. The
+     * DataCache will not be aware of these changes and may need to be
+     * refreshed.
+     */
+    BYPASS,
+    /**
+     * Store updates, inserts and deletes in the DataCache. Entities which are
+     * read from the database will be refreshed in the DataCache.
+     */
+    REFRESH
 }

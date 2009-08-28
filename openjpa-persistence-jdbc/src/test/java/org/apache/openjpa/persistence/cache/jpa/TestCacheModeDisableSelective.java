@@ -18,14 +18,32 @@
  */
 package org.apache.openjpa.persistence.cache.jpa;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import javax.persistence.Cache;
+import javax.persistence.CacheStoreMode;
 
+import org.apache.openjpa.lib.jdbc.JDBCListener;
 import org.apache.openjpa.persistence.OpenJPAEntityManagerFactorySPI;
+import org.apache.openjpa.persistence.cache.jpa.model.CacheableEntity;
+import org.apache.openjpa.persistence.cache.jpa.model.NegatedUncacheableEntity;
+import org.apache.openjpa.persistence.cache.jpa.model.UncacheableEntity;
+import org.apache.openjpa.persistence.cache.jpa.model.UnspecifiedEntity;
+import org.apache.openjpa.persistence.cache.jpa.model.XmlCacheableEntity;
+import org.apache.openjpa.persistence.cache.jpa.model.XmlUncacheableEntity;
 
-public class TestCacheModeDisableSelective extends AbstractJPACacheTestCase {
+public class TestCacheModeDisableSelective extends AbstractCacheModeTestCase {
 
     private static OpenJPAEntityManagerFactorySPI emf = null;
     private static Cache cache = null;
+    private static List<String> sql = new ArrayList<String>();
+    private static JDBCListener listener;
+    
+    private static Class<?>[] expectedInCache =
+        { CacheableEntity.class, XmlCacheableEntity.class, NegatedUncacheableEntity.class, UnspecifiedEntity.class, };
+    private static Class<?>[] expectedNotInCache =
+        { UncacheableEntity.class, XmlUncacheableEntity.class, };
 
     @Override
     public OpenJPAEntityManagerFactorySPI getEntityManagerFactory() {
@@ -38,6 +56,17 @@ public class TestCacheModeDisableSelective extends AbstractJPACacheTestCase {
         return emf;
     }
 
+    public JDBCListener getListener() {
+        if (listener == null) {
+            listener = new Listener();
+        }
+        return listener;
+    }
+
+    public List<String> getSql() {
+        return sql;
+    }
+
     public void testCacheables() {
         assertCacheables(cache, true);
     }
@@ -48,5 +77,15 @@ public class TestCacheModeDisableSelective extends AbstractJPACacheTestCase {
 
     public void testUnspecified() {
         assertUnspecified(cache, true);
+    }
+    
+    @Override
+    protected Class<?>[] getExpectedInCache() {
+        return expectedInCache;
+    }
+
+    @Override
+    protected Class<?>[] getExpectedNotInCache() {
+        return expectedNotInCache;
     }
 }

@@ -38,6 +38,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.Stack;
 import java.util.TreeSet;
 import java.util.concurrent.locks.ReentrantLock;
 
@@ -229,6 +230,12 @@ public class BrokerImpl
     private boolean _cachePreparedQuery = true;
     private boolean _cacheFinderQuery = true;
     
+    private DataCacheStoreMode _cacheStoreMode; 
+    private DataCacheRetrieveMode _cacheRetrieveMode;
+    
+    // Store and Retrieve mode may be suspended for a given operation. Stack may be overkill here.
+    private Stack<DataCacheStoreMode> _cacheStoreModeStack = new Stack<DataCacheStoreMode>();
+    private Stack<DataCacheRetrieveMode> _cacheRetrieveModeStack = new Stack<DataCacheRetrieveMode>();
 
     // Map of properties whose values have been changed
 //    private Map<String, String> _changedProperties =
@@ -4893,5 +4900,41 @@ public class BrokerImpl
         } finally {
             unlock();
         }
+    }
+
+    @Override
+    public DataCacheRetrieveMode getCacheRetrieveMode() {
+        return _cacheRetrieveMode;
+    }
+
+    @Override
+    public DataCacheStoreMode getCacheStoreMode() {
+        return _cacheStoreMode;
+    }
+
+    @Override
+    public void setCacheRetrieveMode(DataCacheRetrieveMode mode) {
+        _cacheRetrieveMode = mode;
+    }
+
+    @Override
+    public void setCacheStoreMode(DataCacheStoreMode mode) {
+        _cacheStoreMode = mode;
+    }
+    
+    public void popCacheRetrieveMode() { 
+        _cacheRetrieveMode = _cacheRetrieveModeStack.pop();
+    }
+    
+    public void popCacheStoreMode() { 
+        _cacheStoreMode = _cacheStoreModeStack.pop();
+    }
+    
+    public void pushCacheRetrieveMode() { 
+        _cacheRetrieveModeStack.push(_cacheRetrieveMode);
+    }
+    
+    public void pushCacheStoreMode() { 
+        _cacheStoreModeStack.push(_cacheStoreMode);
     }
 }

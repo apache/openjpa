@@ -16,43 +16,18 @@
  * specific language governing permissions and limitations
  * under the License.    
  */
-package org.apache.openjpa.persistence.cache.jpa.model;
+package org.apache.openjpa.kernel;
 
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.Version;
-
-@Entity
-public class UnspecifiedEntity implements CacheEntity {
-    @Id
-    private int id;
-
-    @Version
-    private int version;
-    
-    private String name;
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public int getId() {
-        return id;
-    }
-
-    public void setId(int id) {
-        this.id = id;
-    }
-
-    public int getVersion() {
-        return version;
-    }
-
-    public void setVersion(int version) {
-        this.version = version;
-    }
+/**
+ * DataCache Retrieve Modes.
+ */
+public enum DataCacheRetrieveMode {
+    /**
+     *  Retrieve objects from the DataCache if a DataCache is enabled. 
+     */
+    USE,
+    /**
+     * Ignore the DataCache and fetch data directly from the database. 
+     */
+    BYPASS,
 }

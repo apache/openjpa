@@ -458,4 +458,61 @@ public interface StoreContext {
 	 * Releases the internal lock.
 	 */
 	public void unlock ();
+
+    /**
+     * Return the current DataCacheStoreMode for this context. The
+     * DataCacheStoreMode controls when entities are added / updated in the
+     * DataCache.
+     * 
+     * @return DataCacheStore mode in use
+     * @since 2.0.0
+     */
+	public DataCacheStoreMode getCacheStoreMode();
+	
+	/**
+	 * Set DataCacheStoreMode
+	 * @param mode The new DataCacheStoreMode
+	 * @since 2.0.0
+	 */
+	public void setCacheStoreMode(DataCacheStoreMode mode);
+
+    /**
+     * Return the current DataCacheRetrieveMode (controls whether objects will
+     * be loaded from the DataCache or direct from the database).
+     * 
+     * @return DataCacheRetrieveMode in use.
+     * @since 2.0.0
+     */
+	public DataCacheRetrieveMode getCacheRetrieveMode();
+	
+	/**
+	 * Set DataCacheRetrieveMode
+	 * @param mode new mode for obtaining data from the cache
+	 * @since 2.0.0
+	 */
+	public void setCacheRetrieveMode(DataCacheRetrieveMode mode);
+
+	/**
+	 * Pop the DataCacheRetrieveMode stack
+	 * @since 2.0.0
+	 */
+    public void popCacheRetrieveMode();
+    
+    /**
+     * Pop the DataCacheStoreMode stack.
+     * @since 2.0.0
+     */
+    public void popCacheStoreMode() ;
+    
+    /**
+     * Push the current DataCacheRetrieveMode onto a saved stack. 
+     * @since 2.0.0     
+     */
+    public void pushCacheRetrieveMode() ;
+
+    /**
+     * Push the current DataCacheStoreMode onto a saved stack.
+     * @since 2.0.0 
+     */
+    public void pushCacheStoreMode();
 }

@@ -18,14 +18,31 @@
  */
 package org.apache.openjpa.persistence.cache.jpa;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import javax.persistence.Cache;
 
+import org.apache.openjpa.lib.jdbc.JDBCListener;
 import org.apache.openjpa.persistence.OpenJPAEntityManagerFactorySPI;
+import org.apache.openjpa.persistence.cache.jpa.model.CacheableEntity;
+import org.apache.openjpa.persistence.cache.jpa.model.NegatedUncacheableEntity;
+import org.apache.openjpa.persistence.cache.jpa.model.UncacheableEntity;
+import org.apache.openjpa.persistence.cache.jpa.model.UnspecifiedEntity;
+import org.apache.openjpa.persistence.cache.jpa.model.XmlCacheableEntity;
+import org.apache.openjpa.persistence.cache.jpa.model.XmlUncacheableEntity;
 
-public class TestCacheModeEnableSelective extends AbstractJPACacheTestCase {
+public class TestCacheModeEnableSelective extends AbstractCacheModeTestCase {
 
     private static OpenJPAEntityManagerFactorySPI emf = null;
     private static Cache cache = null;
+    private static List<String> sql = new ArrayList<String>();
+    private static JDBCListener listener;
+
+    private static Class<?>[] expectedInCache =
+        { CacheableEntity.class, XmlCacheableEntity.class, NegatedUncacheableEntity.class, };
+    private static Class<?>[] expectedNotInCache =
+        { UncacheableEntity.class, XmlUncacheableEntity.class, UnspecifiedEntity.class, };
 
     @Override
     public OpenJPAEntityManagerFactorySPI getEntityManagerFactory() {
@@ -38,6 +55,31 @@ public class TestCacheModeEnableSelective extends AbstractJPACacheTestCase {
         return emf;
     }
 
+    public JDBCListener getListener() {
+        if (listener == null) {
+            listener = new Listener();
+        }
+        return listener;
+    }
+
+    public List<String> getSql() {
+        return sql;
+    }
+
+    @Override
+    protected Class<?>[] getExpectedInCache() {
+        return expectedInCache;
+    }
+
+    @Override
+    protected Class<?>[] getExpectedNotInCache() {
+        return expectedNotInCache;
+    }
+    
+    // =======================================================================
+    // Tests
+    // =======================================================================
+    
     public void testCacheables() {
         assertCacheables(cache, true);
     }
@@ -49,5 +91,5 @@ public class TestCacheModeEnableSelective extends AbstractJPACacheTestCase {
     public void testUnspecified() {
         assertUnspecified(cache, false);
     }
-    
+
 }

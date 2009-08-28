@@ -38,6 +38,8 @@ import java.util.IdentityHashMap;
 import java.util.Map;
 import java.util.Set;
 
+import javax.persistence.CacheRetrieveMode;
+import javax.persistence.CacheStoreMode;
 import javax.persistence.EntityManager;
 import javax.persistence.FlushModeType;
 import javax.persistence.LockModeType;
@@ -57,6 +59,8 @@ import org.apache.openjpa.enhance.PCRegistry;
 import org.apache.openjpa.enhance.Reflection;
 import org.apache.openjpa.kernel.AbstractBrokerFactory;
 import org.apache.openjpa.kernel.Broker;
+import org.apache.openjpa.kernel.DataCacheRetrieveMode;
+import org.apache.openjpa.kernel.DataCacheStoreMode;
 import org.apache.openjpa.kernel.DelegatingBroker;
 import org.apache.openjpa.kernel.FetchConfiguration;
 import org.apache.openjpa.kernel.FindCallbacks;
@@ -105,6 +109,9 @@ public class EntityManagerImpl
     private Map<FetchConfiguration,FetchPlan> _plans = new IdentityHashMap<FetchConfiguration,FetchPlan>(1);
 
     private RuntimeExceptionTranslator _ret = PersistenceExceptions.getRollbackTranslator(this);
+    
+    protected final String RETRIEVE_MODE_PROP = "javax.persistence.cache.retrieveMode";
+    protected final String STORE_MODE_PROP = "javax.persistence.cache.storeMode";
 
     public EntityManagerImpl() {
         // for Externalizable
@@ -482,9 +489,9 @@ public class EntityManagerImpl
     public <T> T find(Class<T> cls, Object oid, LockModeType mode,
         Map<String, Object> properties) {
         assertNotCloseInvoked();
-        if (mode != null && mode != LockModeType.NONE)
+        if (mode != null && mode != LockModeType.NONE) {
             _broker.assertActiveTransaction();
-
+        }
         processLockProperties(pushFetchPlan(), mode, properties);
         try {
             oid = _broker.newObjectId(cls, oid);
@@ -1637,5 +1644,39 @@ public class EntityManagerImpl
     String getPropertyName(String s) {
         int dot = s.lastIndexOf('.');
         return dot == -1 ? s : s.substring(dot+1);
+    }
+    
+    public void setRetrieveMode(CacheRetrieveMode retrieveMode) { 
+        _broker.setCacheRetrieveMode(toDataCacheRetrieveMode(retrieveMode));
+    }
+
+    public CacheRetrieveMode getRetrieveMode() { 
+        return fromDataCacheRetrieveMode(_broker.getCacheRetrieveMode());
+    }
+    
+    public void setStoreMode(CacheStoreMode storeMode) { 
+        _broker.setCacheStoreMode(toDataCacheStoreMode(storeMode));
+    }
+    
+    public CacheStoreMode getStoreMode() { 
+        return fromDataCacheStoreMode(_broker.getCacheStoreMode());
+    }
+    
+    private final DataCacheRetrieveMode toDataCacheRetrieveMode(CacheRetrieveMode mode ) {
+        // relies on the CacheRetrieveMode enums being nearly identical 
+        return DataCacheRetrieveMode.valueOf(mode.toString());
+    }
+    
+    private final DataCacheStoreMode toDataCacheStoreMode(CacheStoreMode mode ) {
+        // relies on the CacheStoreMode enums being nearly identical 
+        return DataCacheStoreMode.valueOf(mode.toString());
+    }
+    
+    private final CacheRetrieveMode fromDataCacheRetrieveMode(DataCacheRetrieveMode mode) { 
+        return CacheRetrieveMode.valueOf(mode.toString());
+    }
+    
+    private final CacheStoreMode fromDataCacheStoreMode(DataCacheStoreMode mode) { 
+        return CacheStoreMode.valueOf(mode.toString());
     }
 }
