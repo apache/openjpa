@@ -21,13 +21,17 @@ package org.apache.openjpa.persistence.criteria;
 import java.util.Date;
 import java.util.List;
 
+import javax.persistence.Query;
 import javax.persistence.Tuple;
+import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Expression;
 import javax.persistence.criteria.Order;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 import javax.persistence.criteria.Selection;
+
+import org.apache.openjpa.persistence.OpenJPAPersistence;
 
 /**
  * Test editing of Criteria Query.
@@ -184,6 +188,85 @@ public class TestEdit extends CriteriaTest {
         assertNull(term);
         
         assertFails("Expected to fail without a defined root", c);
+    }
+    
+    public void testEditParameterizedPredicate() {
+        String jpql = "select p from Person p where p.name=:p1";
+        String editedjpql = "select p from Person p where p.name=:p1 and p.name=:p2";
+        
+        CriteriaQuery<Person> c = cb.createQuery(Person.class);
+        Root<Person> p = c.from(Person.class);
+        c.where(cb.equal(p.get(Person_.name), cb.parameter(String.class, "p1")));
+        
+        assertEquivalence(c, jpql, new String[]{"p1"}, new String[]{"XYZ"});
+        
+        Predicate where = c.getRestriction();
+        c.where(cb.and(where, cb.equal(p.get(Person_.name), cb.parameter(String.class, "p2"))));
+        
+        assertEquivalence(c, editedjpql, new String[]{"p1", "p2"}, new String[]{"MNO", "ABC"});
+    }
+    
+    public void testEditParameterizedPredicateReplaced() {
+        String jpql = "select p from Person p where p.name=:p1 and p.name=:p2";
+        String editedjpql = "select p from Person p where p.name=:p3";
+        
+        CriteriaQuery<Person> c = cb.createQuery(Person.class);
+        Root<Person> p = c.from(Person.class);
+        c.where(cb.and(cb.equal(p.get(Person_.name), cb.parameter(String.class, "p1")),
+                       cb.equal(p.get(Person_.name), cb.parameter(String.class, "p2"))));
+        assertEquals(2,c.getParameters().size());
+        assertEquivalence(c, jpql, new String[]{"p1", "p2"}, new String[]{"XYZ", "ABC"});
+        
+        c.where(cb.equal(p.get(Person_.name), cb.parameter(String.class, "p3")));
+        
+        assertEquivalence(c, editedjpql, new String[]{"p3"}, new String[]{"MNO"});
+    }
+    
+    public void testEditParameterizedPredicateRemoved() {
+        String jpql = "select p from Person p where p.name=:p1 and p.name=:p2";
+        String editedjpql = "select p from Person p where p.name=:p1";
+        
+        CriteriaQuery<Person> c = cb.createQuery(Person.class);
+        Root<Person> p = c.from(Person.class);
+        c.where(cb.and(cb.equal(p.get(Person_.name), cb.parameter(String.class, "p1")),
+                       cb.equal(p.get(Person_.name), cb.parameter(String.class, "p2"))));
+        assertEquals(2,c.getParameters().size());
+        assertEquivalence(c, jpql, new String[]{"p1", "p2"}, new String[]{"XYZ", "ABC"});
+        
+        c.where(cb.equal(p.get(Person_.name), cb.parameter(String.class, "p1")));
+        
+        assertEquivalence(c, editedjpql, new String[]{"p1"}, new String[]{"MNO"});
+    }
+    
+    public void testSerachWithinResult() {
+        em.getTransaction().begin();
+        em.createQuery("DELETE FROM Person p").executeUpdate();
+        em.getTransaction().commit();
+        em.getTransaction().begin();
+        Person p1 = new Person(); p1.setName("Pinaki");
+        Person p2 = new Person(); p2.setName("Pacino");
+        Person p3 = new Person(); p3.setName("Tom");
+        Person p4 = new Person(); p4.setName("Dick");
+        em.persist(p1); em.persist(p2);em.persist(p3); em.persist(p4);
+        em.getTransaction().commit();
+        
+        CriteriaQuery<Person> c = cb.createQuery(Person.class);
+        Root<Person> p = c.from(Person.class);
+        c.select(p);
+        Predicate like = cb.like(p.get(Person_.name), cb.parameter(String.class, "pattern"));
+        c.where(like);
+        TypedQuery<Person> q1 = em.createQuery(c).setParameter("pattern", "P%");
+        List<Person> r1 = q1.getResultList();
+        assertEquals(2, r1.size());
+        
+        Predicate exact = cb.equal(p.get(Person_.name), cb.parameter(String.class, "exact"));
+        c.where(like, exact);
+        TypedQuery<Person> q2 = em.createQuery(c).setParameter("pattern", "P%").setParameter("exact","Pinaki");
+        OpenJPAPersistence.cast(q2).setCandidateCollection(r1);
+        auditor.clear();
+        List<Person> r2 = q2.getResultList();
+        assertTrue(auditor.getSQLs().isEmpty());
+        assertEquals(1, r2.size());
     }
     
     void assertFails(String message, CriteriaQuery<?> c) {

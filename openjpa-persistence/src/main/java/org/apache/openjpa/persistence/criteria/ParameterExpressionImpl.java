@@ -86,8 +86,6 @@ public class ParameterExpressionImpl<T> extends ExpressionImpl<T>
     
     @Override
     public Value toValue(ExpressionFactory factory, MetamodelImpl model, CriteriaQueryImpl<?> q) {
-        q.registerParameter(this);
-        
         Class<?> clzz = getJavaType();
         Object paramKey = _name == null ? _index : _name;
         boolean isCollectionValued  = Collection.class.isAssignableFrom(clzz);

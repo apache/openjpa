@@ -80,6 +80,7 @@ import org.apache.openjpa.meta.FieldMetaData;
 import org.apache.openjpa.meta.QueryMetaData;
 import org.apache.openjpa.meta.SequenceMetaData;
 import org.apache.openjpa.persistence.criteria.CriteriaBuilder;
+import org.apache.openjpa.persistence.criteria.CriteriaExpressionVisitor;
 import org.apache.openjpa.persistence.criteria.CriteriaQueryImpl;
 import org.apache.openjpa.persistence.validation.ValidationUtils;
 import org.apache.openjpa.util.Exceptions;
@@ -1543,10 +1544,9 @@ public class EntityManagerImpl
      */
     public <T> TypedQuery<T> createQuery(CriteriaQuery<T> criteriaQuery) {
         CriteriaQueryImpl<T> impl = (CriteriaQueryImpl<T>)criteriaQuery;
-        impl.assertRoot();
-        impl.assertSelection();
+        impl.compile(); // important to collect parameters to be set on executable query
+        
         org.apache.openjpa.kernel.Query kernelQuery =_broker.newQuery(CriteriaBuilder.LANG_CRITERIA, criteriaQuery);
-        kernelQuery.compile();
         QueryImpl<T> facadeQuery = new QueryImpl<T>(this, _ret, kernelQuery);
         Set<ParameterExpression<?>> params = impl.getParameters();
         
