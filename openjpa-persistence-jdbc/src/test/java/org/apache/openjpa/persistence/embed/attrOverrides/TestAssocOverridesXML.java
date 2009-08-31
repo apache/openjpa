@@ -54,19 +54,42 @@ public class TestAssocOverridesXML  extends AbstractPersistenceTestCase{
             "embed-persistence.xml", props);
 
         EntityManager em = emf1.createEntityManager();
+
+        XMLAssocOverEntityA ea = new XMLAssocOverEntityA();
+        XMLAssocOverEntityB eb = new XMLAssocOverEntityB();
+        XMLAssocOverEntityB meb = new XMLAssocOverEntityB();
+        XMLAssocOverEmbed emb = new XMLAssocOverEmbed();
+        eb.setName("XMLAssocOverEntityB");
+        meb.setName("XMLAssocOverEntityBM21");
+        List<XMLAssocOverEntityA> eaList1 = new ArrayList<XMLAssocOverEntityA>();
+        eaList1.add(ea);
+        List<XMLAssocOverEntityA> eaList2 = new ArrayList<XMLAssocOverEntityA>();        
+        eaList2.add(ea);
+        eb.setEaList(eaList1);
+        meb.setEaList(eaList2);
+        emb.setName("XMLAssocOverEmbed");
+        emb.setEb(eb);
+        emb.setMeb(meb);
+        List<XMLAssocOverEmbed> embList = new ArrayList<XMLAssocOverEmbed>();
+        embList.add(emb);
+        ea.setEmbA(embList);
+        
         em.getTransaction().begin();
+        em.persist(ea);
         em.getTransaction().commit();
         em.close();
-        // The above should trigger schema definition
-                
-        assertSQLFragnments(_sql, "CREATE TABLE XML_EMBALIST .*" +
+        try {
+            assertSQLFragnments(_sql, "CREATE TABLE XML_EMBALIST .*" +
                 " .*emba_entb.*emba_mentb");
         
-        try {
-            if (emf1 != null)
-                cleanupEMF(emf1);
-        } catch (Exception e) {
-            fail(e.getMessage());
+        } 
+        finally {
+            try {
+                if (emf1 != null)
+                    cleanupEMF(emf1);
+            } catch (Exception e) {
+                fail(e.getMessage());
+            }
         }
     }
 

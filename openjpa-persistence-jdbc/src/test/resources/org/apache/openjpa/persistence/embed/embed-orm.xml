@@ -216,36 +216,6 @@ version="2.0">
         </attributes>
     </entity>    
 
-    <entity class="org.apache.openjpa.persistence.embed.attrOverrides.XMLAssocOverEntityA">
-        <attributes>
-            <id name="id">
-                <generated-value/>
-            </id>
-            <element-collection name="embaList">
-                <association-override name="eb">
-                    <join-column name="emba_entb" />
-                </association-override>
-                <association-override name="meb">
-                    <join-column name="emba_mentb" />
-                </association-override>
-                <collection-table name="XML_EMBALIST"/>
-            </element-collection>
-        </attributes>
-    </entity>
-    
-    <entity class="org.apache.openjpa.persistence.embed.attrOverrides.XMLAssocOverEntityB">
-        <attributes>
-            <id name="id">
-                <generated-value/>
-            </id>
-            <basic name="name"/>
-            <one-to-many name="eaList">
-                <cascade>
-                    <cascade-all />
-                </cascade>
-            </one-to-many>
-        </attributes>
-    </entity>
     <embeddable 
         class="org.apache.openjpa.persistence.embed.attrOverrides.AddressXml" 
         access="FIELD">
@@ -303,21 +273,5 @@ version="2.0">
                 <column name="shouldNotExist" />
             </basic>
         </attributes>
-    </embeddable>
-    
-    <embeddable class="org.apache.openjpa.persistence.embed.attrOverrides.XMLAssocOverEmbed">
-        <attributes>
-            <basic name="name"/>
-            <many-to-one name="meb">
-                <cascade>
-                    <cascade-all />
-                </cascade>
-            </many-to-one>
-            <one-to-one name="eb">
-                <cascade>
-                    <cascade-all />
-                </cascade>
-            </one-to-one>
-        </attributes>
-    </embeddable>
+    </embeddable>    
 </entity-mappings>
