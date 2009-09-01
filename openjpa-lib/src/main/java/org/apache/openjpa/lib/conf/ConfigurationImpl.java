@@ -794,7 +794,6 @@ public class ConfigurationImpl
     /**
      * Return a comprehensive list of recognized map keys.
      */
-    // TODO MDD checkme
     private Collection<String> newPropertyList() {
         String[] prefixes = ProductDerivations.getConfigurationPrefixes();
         List<String> l = new ArrayList<String>(_vals.size() * prefixes.length);
