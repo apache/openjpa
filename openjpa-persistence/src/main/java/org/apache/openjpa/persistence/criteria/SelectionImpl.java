@@ -20,6 +20,7 @@ package org.apache.openjpa.persistence.criteria;
 
 import java.util.List;
 
+import javax.persistence.criteria.Expression;
 import javax.persistence.criteria.Selection;
 
 import org.apache.openjpa.persistence.TupleElementImpl;
@@ -32,7 +33,7 @@ import org.apache.openjpa.persistence.TupleElementImpl;
  * @param <X>
  */
 public class SelectionImpl<X> extends TupleElementImpl<X> 
-    implements Selection<X> {
+    implements Selection<X>, CriteriaExpression {
     
     public SelectionImpl(Class<X> cls) {
         super(cls);
@@ -50,4 +51,17 @@ public class SelectionImpl<X> extends TupleElementImpl<X>
     public boolean isCompoundSelection() {
         return false;
     }
+    
+    public StringBuilder asValue(CriteriaQueryImpl<?> q) {
+        throw new IllegalStateException(this.getClass().getSimpleName() + " can not be rendered as value");
+    }
+    
+    public StringBuilder asVariable(CriteriaQueryImpl<?> q) {
+        throw new IllegalStateException(this.getClass().getSimpleName() + " can not be rendered as variable");
+    }
+    
+    public void acceptVisit(CriteriaExpressionVisitor visitor) {
+        Expressions.acceptVisit(visitor, this, (Expression<?>[])null);
+    }
+
 }

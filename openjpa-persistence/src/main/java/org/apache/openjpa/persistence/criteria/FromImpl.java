@@ -28,7 +28,6 @@ import javax.persistence.criteria.Join;
 import javax.persistence.criteria.JoinType;
 import javax.persistence.criteria.ListJoin;
 import javax.persistence.criteria.MapJoin;
-import javax.persistence.criteria.Path;
 import javax.persistence.criteria.SetJoin;
 import javax.persistence.metamodel.Attribute;
 import javax.persistence.metamodel.CollectionAttribute;
@@ -39,12 +38,10 @@ import javax.persistence.metamodel.PluralAttribute;
 import javax.persistence.metamodel.SetAttribute;
 import javax.persistence.metamodel.SingularAttribute;
 import javax.persistence.metamodel.Type;
-import javax.persistence.metamodel.PluralAttribute.CollectionType;
 import javax.persistence.metamodel.Type.PersistenceType;
 
 import org.apache.openjpa.persistence.meta.AbstractManagedType;
 import org.apache.openjpa.persistence.meta.Members;
-import org.apache.openjpa.persistence.meta.Members.Member;
 
 /**
  * Represents a bound type, usually an entity that appears in the from clause, 
@@ -83,7 +80,7 @@ public class FromImpl<Z,X> extends PathImpl<Z,X> implements From<Z,X> {
      *  Return the joins that have been made from this receiver.
      */
     public java.util.Set<Join<X, ?>> getJoins() {
-        return _joins;
+        return Expressions.returnCopy(_joins);
     }
 
     /**
@@ -272,7 +269,7 @@ public class FromImpl<Z,X> extends PathImpl<Z,X> implements From<Z,X> {
     }
 
     public java.util.Set<Fetch<X, ?>> getFetches() {
-        return _fetches;
+        return Expressions.returnCopy(_fetches);
     }
     
     private <Y> Fetch<X,Y> addFetch(Members.Member<? super X, Y> member, 
@@ -282,5 +279,10 @@ public class FromImpl<Z,X> extends PathImpl<Z,X> implements From<Z,X> {
             _fetches = new HashSet<Fetch<X,?>>();
         _fetches.add(fetch);
         return fetch;
+    }
+    
+    public void acceptVisit(CriteriaExpressionVisitor visitor) {
+        Expressions.acceptVisit(visitor, this, 
+                _joins == null ? null : _joins.toArray(new ExpressionImpl<?>[_joins.size()]));
     }
 }

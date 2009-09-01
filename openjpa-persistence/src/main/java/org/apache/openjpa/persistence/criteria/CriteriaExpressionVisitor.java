@@ -19,7 +19,6 @@
 package org.apache.openjpa.persistence.criteria;
 
 import java.util.HashSet;
-import java.util.IdentityHashMap;
 import java.util.Set;
 
 /**
@@ -30,31 +29,60 @@ import java.util.Set;
  *
  */
 public interface CriteriaExpressionVisitor {
-    /**
-     * Enter the given expression.
-     */
-    void enter(CriteriaExpression<?> expr);
+    // Enumerates order of traversal of nodes
+    public static enum TraversalStyle {
+        INFIX,    // operand1 operator operand2   e.g. a + b
+        POSTFIX,  // operand1 operand2 operator   e.g. a b +
+        PREFIX,   // operator operand1 operand2   e.g. + a b
+        FUNCTION  // operator(operand1, operand2) e.g. f(a,b)
+    }
     
     /**
-     * Exit the given expression.
+     * Enter the given node.
      */
-    void exit(CriteriaExpression<?> expr);
+    void enter(CriteriaExpression node);
     
-    boolean isVisited(CriteriaExpression<?> expr);
+    /**
+     * Exit the given node.
+     */
+    void exit(CriteriaExpression node);
+    
+    /**
+     * Affirms if this node has been visited.
+     */
+    boolean isVisited(CriteriaExpression node);
+    
+    /**
+     * Get the traversal style of the children of the given node.
+     */
+    TraversalStyle getTraversalStyle(CriteriaExpression node);
     
     /**
      * An abstract implementation that can detect cycles during traversal.
      *  
      */
     public static abstract class AbstractVisitor implements CriteriaExpressionVisitor {
-        protected final Set<CriteriaExpression<?>> _visited = new HashSet<CriteriaExpression<?>>();
+        protected final Set<CriteriaExpression> _visited = new HashSet<CriteriaExpression>();
         
         /**
-         * Affirms if this expression has been visited before.
-         * Remembers the given node as visited.
+         * Remembers the node being visited.
          */
-        public boolean isVisited(CriteriaExpression<?> expr) {
-            return _visited.contains(expr);
+        public void exit(CriteriaExpression node) {
+            _visited.add(node);
+        }
+        
+        /**
+         * Affirms if this node has been visited before.
+         */
+        public boolean isVisited(CriteriaExpression node) {
+            return _visited.contains(node);
+        }
+        
+        /**
+         * Returns PREFIX as the default traversal style.
+         */
+        public TraversalStyle getTraversalStyle(CriteriaExpression node) {
+            return TraversalStyle.PREFIX;
         }
     }
     
@@ -69,15 +97,11 @@ public interface CriteriaExpressionVisitor {
             query = q;
         }
         
-        public void enter(CriteriaExpression<?> expr) {
-            if (expr != null && expr instanceof ParameterExpressionImpl) {
+        public void enter(CriteriaExpression expr) {
+            if (expr instanceof ParameterExpressionImpl) {
                 query.registerParameter((ParameterExpressionImpl<?>)expr);
             }
         }
 
-        public void exit(CriteriaExpression<?> expr) {
-            _visited.add(expr);
-        }
-        
     }
 }

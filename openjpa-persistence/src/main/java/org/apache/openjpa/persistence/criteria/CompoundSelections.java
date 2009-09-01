@@ -36,7 +36,7 @@ import org.apache.openjpa.persistence.TupleFactory;
 import org.apache.openjpa.persistence.TupleImpl;
 
 /**
- * Implements slection terms that are composed of other selection terms.
+ * Implements selection terms that are composed of other selection terms.
  *  
  * @author Pinaki Poddar
  * 
@@ -81,7 +81,7 @@ public class CompoundSelections {
          *           selection
          */
         public final List<Selection<?>> getCompoundSelectionItems() {
-            return _args == null ? Collections.EMPTY_LIST : new CopyOnWriteArrayList<Selection<?>>(_args);
+            return Expressions.returnCopy(_args);
         }
         
         void assertNoCompoundSelection(Selection<?>...args) {
@@ -94,7 +94,18 @@ public class CompoundSelections {
             }
         }
 
-        public abstract FillStrategy<X> getFillStrategy();
+        abstract FillStrategy<X> getFillStrategy();
+        
+        @Override
+        public StringBuilder asValue(CriteriaQueryImpl<?> q) {
+            StringBuilder buffer = new StringBuilder();
+            for (int i = 0; i < _args.size(); i++) {
+                buffer.append((((CriteriaExpression)_args.get(i)).asValue(q)));
+                if (i+1 != _args.size())
+                    buffer.append(", ");
+            }
+            return buffer;
+        }
     }
     
     /**
@@ -144,6 +155,12 @@ public class CompoundSelections {
                 throw new IllegalArgumentException(_loc.get("select-no-ctor", cls, 
                     types == null ? "[]" : Arrays.toString(types)).getMessage());
             }
+        }
+        
+        @Override
+        public StringBuilder asValue(CriteriaQueryImpl<?> q) {
+            return new StringBuilder("NEW ").append(getJavaType().getName()).append("(")
+               .append(super.asValue(q)).append(")");
         }
     }
     

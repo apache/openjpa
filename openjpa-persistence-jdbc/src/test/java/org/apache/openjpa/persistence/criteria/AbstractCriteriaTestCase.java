@@ -100,6 +100,8 @@ public abstract class AbstractCriteriaTestCase extends TestCase {
      * Executes the given CriteriaQuery and JPQL string and compare their respective SQLs for equality.
      */
     void assertEquivalence(CriteriaQuery<?> c, String jpql) {
+        System.err.println("JPQL :" + jpql);
+        System.err.println("CJQL :" + ((CriteriaQueryImpl<?>)c).toCQL());
         assertEquivalence(c, jpql, null, null, null);
     }
 

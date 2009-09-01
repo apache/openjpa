@@ -50,13 +50,11 @@ public class RootImpl<X> extends FromImpl<X,X> implements Root<X> {
         return _entity;
     }
 
-    public void addToContext(ExpressionFactory factory, MetamodelImpl model,
-            CriteriaQueryImpl<?> q) {
+    public void addToContext(ExpressionFactory factory, MetamodelImpl model, CriteriaQueryImpl<?> q) {
         String alias = q.getAlias(this);
-        Value var = factory.newBoundVariable(alias, 
-            AbstractExpressionBuilder.TYPE_OBJECT);
+        Value var = factory.newBoundVariable(alias, AbstractExpressionBuilder.TYPE_OBJECT);
         var.setMetaData(_entity.meta);
-        Context currContext = (Context) q.getContexts().peek();
+        Context currContext = q.ctx();
         currContext.addSchema(alias, _entity.meta);
         currContext.addVariable(alias, var);
         if (currContext.schemaAlias == null)
@@ -101,7 +99,20 @@ public class RootImpl<X> extends FromImpl<X,X> implements Root<X> {
         return factory.bindVariable(var, path);
     }
     
-    public String toString() {
-        return _entity.toString();
+    public StringBuilder asValue(CriteriaQueryImpl<?> q) {
+        Value v = q.getRegisteredRootVariable(this);
+        if (v != null)
+            return new StringBuilder(v.getAlias());
+        v = q.getRegisteredValue(this);
+        if (v != null)
+            return new StringBuilder(v.getAlias());
+        if (q.isRegistered(this)) 
+            return new StringBuilder(q.getRegisteredValue(this).getName());
+        return new StringBuilder().append(Character.toLowerCase(_entity.getName().charAt(0)));
     }
+    
+    public StringBuilder asVariable(CriteriaQueryImpl<?> q) {
+        return new StringBuilder(_entity.getName()).append(" ").append(asValue(q));
+    }
+
 }

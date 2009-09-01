@@ -190,7 +190,6 @@ public class CriteriaExpressionBuilder {
 
     protected void evalCrossJoinRoots(QueryExpressions exps, ExpressionFactory factory, CriteriaQueryImpl<?> q) {
         Set<Root<?>> roots = q.getRoots();
-        MetamodelImpl model = q.getMetamodel();
         SubqueryImpl<?> subQuery = q.getDelegator();
         if (subQuery == null || subQuery.getCorrelatedJoins() == null) {
             q.assertRoot();
@@ -201,8 +200,7 @@ public class CriteriaExpressionBuilder {
                     var.setMetaData(((Types.Entity)root.getModel()).meta);
                     q.registerRoot(root, var);
                 }
-            }
-        }
+            }         }
     }
     
     protected void evalFilter(QueryExpressions exps, ExpressionFactory factory, CriteriaQueryImpl<?> q) {

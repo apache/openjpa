@@ -40,7 +40,7 @@ public class TestQueryByExample extends CriteriaTest {
         
         ComparisonStyle style = null;
         Attribute<?,?>[] excludes = null;
-        q.where(cb.example(q.from(Employee.class), example, style, excludes));
+        q.where(cb.qbe(q.from(Employee.class), example, style, excludes));
         
         assertEquivalence(q, jpql);
     }
@@ -56,7 +56,7 @@ public class TestQueryByExample extends CriteriaTest {
         
         ComparisonStyle style = null;
         Attribute<?,?>[] excludes = {Employee_.rating};
-        q.where(cb.example(q.from(Employee.class), example, style, excludes));
+        q.where(cb.qbe(q.from(Employee.class), example, style, excludes));
         
         assertEquivalence(q, jpql);
     }
@@ -71,7 +71,7 @@ public class TestQueryByExample extends CriteriaTest {
         
         ComparisonStyle style = null;
         Attribute<?,?>[] excludes = null;
-        q.where(cb.example(q.from(Employee.class), example, style, excludes));
+        q.where(cb.qbe(q.from(Employee.class), example, style, excludes));
         
         executeAndCompareSQL(q, "WHERE (t0.rating = ?)");        
         assertEquivalence(q, jpql);
@@ -85,9 +85,9 @@ public class TestQueryByExample extends CriteriaTest {
         Employee example = new Employee();
         example.setRating(1);
         
-        ComparisonStyle style = cb.comparisonStyle();
+        ComparisonStyle style = cb.qbeStyle();
         Attribute<?,?>[] excludes = null;
-        q.where(cb.example(q.from(Employee.class), example, style.setExcludeDefault(false), excludes));
+        q.where(cb.qbe(q.from(Employee.class), example, style.setExcludeDefault(false), excludes));
         
         executeAndCompareSQL(q, "WHERE (t0.rating = ? AND t0.salary = ?)");
         assertEquivalence(q, jpql);
@@ -106,9 +106,9 @@ public class TestQueryByExample extends CriteriaTest {
         example.setDepartment(dept);
         
         
-        ComparisonStyle style = cb.comparisonStyle();
+        ComparisonStyle style = cb.qbeStyle();
         Attribute<?,?>[] excludes = null;
-        q.where(cb.example(q.from(Employee.class), example, style, excludes));
+        q.where(cb.qbe(q.from(Employee.class), example, style, excludes));
         
         executeAndCompareSQL(q, "WHERE (t1.name = ? AND t0.rating = ? AND t0.salary = ?)");
     }
@@ -124,9 +124,9 @@ public class TestQueryByExample extends CriteriaTest {
         example.setRating(1);
         example.setDepartment(null);
         
-        ComparisonStyle style = cb.comparisonStyle();
+        ComparisonStyle style = cb.qbeStyle();
         Attribute<?,?>[] excludes = {Employee_.frequentFlierPlan, Employee_.manager, Employee_.spouse};
-        q.where(cb.example(q.from(Employee.class), example, style.setExcludeNull(false).setExcludeDefault(false), 
+        q.where(cb.qbe(q.from(Employee.class), example, style.setExcludeNull(false).setExcludeDefault(false), 
                 excludes));
         
         executeAndCompareSQL(q, "WHERE (1 <> 1 AND t0.DEPARTMENT_DEPTNO IS NULL " 
@@ -150,10 +150,10 @@ public class TestQueryByExample extends CriteriaTest {
         contact.setAddress(address);
         example.setContactInfo(contact);
         
-        ComparisonStyle style = cb.comparisonStyle();
+        ComparisonStyle style = cb.qbeStyle();
         Attribute<?,?>[] excludes = {Employee_.department, Employee_.frequentFlierPlan, 
                 Employee_.manager, Employee_.spouse};
-        q.where(cb.example(q.from(Employee.class), example, style, excludes));
+        q.where(cb.qbe(q.from(Employee.class), example, style, excludes));
         
         executeAndCompareSQL(q, "WHERE (t1.city = ? AND t1.country = ? AND t1.state = ? " 
                 + "AND t0.name = ? AND t0.rating = ? AND t0.salary = ?)");

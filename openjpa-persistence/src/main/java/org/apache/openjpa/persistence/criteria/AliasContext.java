@@ -56,12 +56,12 @@ public interface AliasContext {
      * Gets the registered variable for the given node. 
      * Return null if the node is not registered.     
      */
-    Value getVariable(Selection<?> node);
+    Value getRegisteredVariable(Selection<?> node);
     
     /**
      * Gets the registered path value for the given node. 
      * Return null if the node is not registered.     
      */
-    Value getValue(Selection<?> node);
+    Value getRegisteredValue(Selection<?> node);
     
 }

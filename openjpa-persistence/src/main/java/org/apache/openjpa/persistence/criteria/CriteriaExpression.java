@@ -18,16 +18,13 @@
  */
 package org.apache.openjpa.persistence.criteria;
 
-import javax.persistence.criteria.Expression;
-
 /**
- * Extends specification interface to define contract for Visitor pattern.
+ * Interface to support Visitor pattern on Criteria Query nodes.
  * 
  * @author Pinaki Poddar
- *
- * @param <X>
+ * @since 2.0.0
  */
-public interface CriteriaExpression<X> extends Expression<X> {
+public interface CriteriaExpression  {
     /**
      * Accept visit from the given visitor. The receiver is responsible 
      * to propagate the visitor to the constituent sub-nodes if any.
@@ -35,5 +32,14 @@ public interface CriteriaExpression<X> extends Expression<X> {
      * @param visitor a processor to walk the nodes of a tree.
      */
     void acceptVisit(CriteriaExpressionVisitor visitor);
-
+    
+    /**
+     * Get a string representation of this node as a value in the context of the given query.
+     */
+    StringBuilder asValue(CriteriaQueryImpl<?> q);
+    
+    /**
+     * Get a string representation of this node as a variable in the context of the given query.
+     */
+    StringBuilder asVariable(CriteriaQueryImpl<?> q);
 }

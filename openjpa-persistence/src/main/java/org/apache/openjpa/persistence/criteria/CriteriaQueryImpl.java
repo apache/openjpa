@@ -20,6 +20,7 @@ package org.apache.openjpa.persistence.criteria;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedHashSet;
@@ -32,6 +33,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
 import javax.persistence.criteria.AbstractQuery;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Expression;
+import javax.persistence.criteria.Join;
 import javax.persistence.criteria.Order;
 import javax.persistence.criteria.ParameterExpression;
 import javax.persistence.criteria.Predicate;
@@ -63,7 +65,7 @@ import org.apache.openjpa.persistence.meta.Types;
  *
  * @since 2.0.0
  */
-public class CriteriaQueryImpl<T> implements CriteriaQuery<T>, AliasContext {
+public class CriteriaQueryImpl<T> implements OpenJPACriteriaQuery<T>, AliasContext {
     private static final Localizer _loc = Localizer.forPackage(CriteriaQueryImpl.class);
     
     private final MetamodelImpl  _model;
@@ -71,13 +73,13 @@ public class CriteriaQueryImpl<T> implements CriteriaQuery<T>, AliasContext {
     private PredicateImpl       _where;
     private List<Order>         _orders;
     private LinkedMap/*<ParameterExpression<?>, Class<?>>*/ _params;
-    private Selection<T>        _selection;
+    private Selection<? extends T>        _selection;
     private List<Selection<?>>  _selections;
     private List<Expression<?>> _groups;
     private PredicateImpl       _having;
     private List<Subquery<?>>   _subqueries;
     private Boolean             _distinct;
-    private SubqueryImpl<?>     _delegator;
+    private final SubqueryImpl<?> _delegator;
     private final Class<T>      _resultClass;
     private boolean             _compiled;
 
@@ -96,39 +98,60 @@ public class CriteriaQueryImpl<T> implements CriteriaQuery<T>, AliasContext {
     public CriteriaQueryImpl(MetamodelImpl model, Class<T> resultClass) {
         this._model = model;
         this._resultClass = resultClass;
+        this._delegator = null;
         _aliases = new HashMap<Selection<?>, String>(); 
     }
     
-    public CriteriaQueryImpl(MetamodelImpl model, SubqueryImpl<T> delegator) {
+    /**
+     * Used by a subquery to delegate to this receiver.
+     * 
+     * @param model the metamodel defines the scope of all persistent entity references.
+     * @param delegator the subquery which will delegate to this receiver.
+     */
+    CriteriaQueryImpl(MetamodelImpl model, SubqueryImpl<T> delegator) {
         this._model = model;
         this._resultClass = delegator.getJavaType();
         _delegator = delegator;
         _aliases = getAliases();
     }
-
-    public void setDelegator(SubqueryImpl<?> delegator) {
-        _delegator = delegator;
-    }
     
-    public SubqueryImpl<?> getDelegator() {
+    /**
+     * Gets the subquery, if any, which is delegating to this receiver.
+     */
+    SubqueryImpl<?> getDelegator() {
         return _delegator;
     }
     
+    /**
+     * Gets the metamodel which defines the scope of all persistent entity references.
+     */
     public MetamodelImpl getMetamodel() {
         return _model;
     }
     
-    public Stack<Context> getContexts() {
+    /**
+     * Gets the stack of contexts used by this query.
+     */
+    Stack<Context> getContexts() {
         return _contexts;
     }
     
+    /**
+     * Sets whether this query as distinct.
+     */
     public CriteriaQuery<T> distinct(boolean distinct) {
         _distinct = distinct;
         return this;
     }
 
+    /**
+     * Gets the list of ordering elements.
+     * 
+     * @return Empty list if there is no ordering elements.
+     * The returned list if mutable but mutation has no impact on this query.
+     */
     public List<Order> getOrderList() {
-        return _orders == null ? Collections.EMPTY_LIST : new CopyOnWriteArrayList<Order>(_orders);
+        return Expressions.returnCopy(_orders);
     }
     
     /**
@@ -136,7 +159,7 @@ public class CriteriaQueryImpl<T> implements CriteriaQuery<T>, AliasContext {
      * @return the item to be returned in the query result
      */
     public Selection<T> getSelection() {
-        return _selection;
+        return (Selection<T>)_selection;
     }
     
     /**
@@ -209,9 +232,7 @@ public class CriteriaQueryImpl<T> implements CriteriaQuery<T>, AliasContext {
      * @return the selection items of the query as a list
      */
     public List<Selection<?>> getSelectionList() {
-        if (_selections == null)
-            return Collections.EMPTY_LIST;
-        return Collections.unmodifiableList(_selections);
+        return Expressions.returnCopy(_selections);
     }
 
     public CriteriaQuery<T> groupBy(Expression<?>... grouping) {
@@ -246,7 +267,7 @@ public class CriteriaQueryImpl<T> implements CriteriaQuery<T>, AliasContext {
      * @return the modified query
      */
     public CriteriaQuery<T> select(Selection<? extends T> selection) {
-        _selection = (Selection<T>)selection;
+        _selection = selection;
         _selections = new ArrayList<Selection<?>>();
         _selections.add(selection);
         return this;
@@ -289,7 +310,7 @@ public class CriteriaQueryImpl<T> implements CriteriaQuery<T>, AliasContext {
     }
 
     public List<Expression<?>> getGroupList() {
-        return _groups == null ? Collections.EMPTY_LIST : new CopyOnWriteArrayList<Expression<?>>(_groups);
+        return Expressions.returnCopy(_groups);
     }
 
     public PredicateImpl getGroupRestriction() {
@@ -301,12 +322,19 @@ public class CriteriaQueryImpl<T> implements CriteriaQuery<T>, AliasContext {
     }
 
     public Set<Root<?>> getRoots() {
-        return _roots;
+        return Expressions.returnCopy(_roots);
     }
 
     public Root<?> getRoot() {
         assertRoot();
         return _roots.iterator().next();
+    }
+    
+    Root<?> getRoot(boolean mustExist) {
+        if (mustExist) {
+            return getRoot();
+        }
+        return _roots == null || _roots.isEmpty() ? null : _roots.iterator().next();
     }
     
     void addRoot(RootImpl<?> root) {
@@ -317,10 +345,10 @@ public class CriteriaQueryImpl<T> implements CriteriaQuery<T>, AliasContext {
     }
     
     public boolean isDistinct() {
-        return _distinct;
+        return _distinct == null ? false : _distinct.booleanValue();
     }
 
-    public Boolean getDistinct() {
+    Boolean getDistinct() {
         return _distinct;
     }
 
@@ -348,9 +376,8 @@ public class CriteriaQueryImpl<T> implements CriteriaQuery<T>, AliasContext {
     QueryExpressions getQueryExpressions(ExpressionFactory factory) {
         _contexts = new Stack<Context>();
         Context context = new Context(null, null, null);
-            _contexts.push(context);
-        return new CriteriaExpressionBuilder()
-             .getQueryExpressions(factory, this);
+        _contexts.push(context);
+        return new CriteriaExpressionBuilder().getQueryExpressions(factory, this);
     }    
     
     public void assertRoot() {
@@ -366,11 +393,16 @@ public class CriteriaQueryImpl<T> implements CriteriaQuery<T>, AliasContext {
     //
     // SubqueryContext
     //
-    public void setContexts(Stack<Context> contexts) {
+    void setContexts(Stack<Context> contexts) {
         _contexts = contexts;
     }
     
-    public CriteriaQueryImpl<?> getAncestor() {
+    /**
+     * Gets either this query itself if this is not a captive query for
+     * a subquery. Otherwise gets the parent query of the delegating
+     * subquery.
+     */
+    CriteriaQueryImpl<?> getAncestor() {
         if (_delegator == null)
             return this;
         AbstractQuery<?> parent = _delegator.getParent();
@@ -387,7 +419,10 @@ public class CriteriaQueryImpl<T> implements CriteriaQuery<T>, AliasContext {
         return c._aliases;
     }
     
-    public Context ctx() {
+    /**
+     * Gets the current context.
+     */
+    Context ctx() {
         return _contexts.peek();
     }
     
@@ -412,14 +447,6 @@ public class CriteriaQueryImpl<T> implements CriteriaQuery<T>, AliasContext {
         return _aliases.get(selection);
     }
     
-    public Value getVariable(Selection<?> selection) {
-        return _variables.get(selection);
-    }
-    
-    public Value getValue(Selection<?> selection) {
-        return _values.get(selection);
-    }
-    
     /**
      * Register the given variable of given path value against the given node.
      * If the given node has no alias then an alias is set to the given node.
@@ -434,7 +461,7 @@ public class CriteriaQueryImpl<T> implements CriteriaQuery<T>, AliasContext {
         if (!var.isVariable())
             throw new RuntimeException(var.getClass() + " is not a variable");
         if (var.getPath() != path)
-            throw new RuntimeException(var + " and " + path);
+            throw new RuntimeException(var + " does not match given " + path + " Variable path is " + var.getPath());
         String alias = getAlias(node);
         
         if (!alias.equals(var.getAlias())) {
@@ -454,82 +481,69 @@ public class CriteriaQueryImpl<T> implements CriteriaQuery<T>, AliasContext {
         _variables.put(node, var);
         _values.put(node, path);
         _aliases.put(node, alias);
+        // add to context
         ctx().addSchema(alias, var.getMetaData());
         ctx().addVariable(alias, var);
     }
     
     public boolean isRegistered(Selection<?> selection) {
-        boolean found = _variables.containsKey(selection);
-        if (found) 
+        if (_variables.containsKey(selection))
             return true;
         SubqueryImpl<?> delegator = getDelegator();
-        if (delegator == null)
-            return false;
-        
-        AbstractQuery<?> parent = delegator.getParent();
-        if (parent instanceof CriteriaQueryImpl) 
-            return ((CriteriaQueryImpl)parent).isRegistered(selection);
-        // parent is a SubqueryImpl    
-        return ((SubqueryImpl<?>)parent).getDelegate().isRegistered(selection);
-        
+        return (delegator == null) ? false : getDelegatorParent().isRegistered(selection);
     }
 
-    Value getRegisteredVariable(Selection<?> selection) {
-        Value var = getVariable(selection);
+    public Value getRegisteredVariable(Selection<?> selection) {
+        Value var = _variables.get(selection);
         if (var != null)
             return var;
         SubqueryImpl<?> delegator = getDelegator();
-        if (delegator == null)
-            return null;
-        
-        AbstractQuery<?> parent = delegator.getParent();
-        if (parent instanceof CriteriaQueryImpl) 
-            return ((CriteriaQueryImpl)parent).getRegisteredVariable(selection);
-        // parent is a SubqueryImpl    
-        return ((SubqueryImpl<?>)parent).getDelegate().getRegisteredVariable(selection);
-
+        return (delegator == null) ? null : getDelegatorParent().getRegisteredVariable(selection);
     }
 
-    Value getRegisteredValue(Selection<?> selection) {
-        Value var = getValue(selection);
-        if (var != null)
-            return var;
+    public Value getRegisteredValue(Selection<?> selection) {
+        Value val = _values.get(selection);
+        if (val != null)
+            return val;
         SubqueryImpl<?> delegator = getDelegator();
-        if (delegator == null)
-            return null;
-        
-        AbstractQuery<?> parent = delegator.getParent();
-        if (parent instanceof CriteriaQueryImpl) 
-            return ((CriteriaQueryImpl)parent).getRegisteredValue(selection);
-        // parent is a SubqueryImpl    
-        return ((SubqueryImpl<?>)parent).getDelegate().getRegisteredValue(selection);
-
+        return (delegator == null) ? null : getDelegatorParent().getRegisteredValue(selection);
     }
 
+    /**
+     * Registers a variable for the given root expression.
+     * A root expression is registered only for cross join.  
+     * @param root
+     * @param var
+     */
     void registerRoot(Root<?> root, Value var) {
+        if (var == null || !var.isVariable())
+            throw new IllegalArgumentException("Attempt to register non-variable " + var);
         _rootVariables.put(root, var);
         String alias = var.getName();
         ctx().addSchema(alias, var.getMetaData());
         ctx().addVariable(alias, var);
     }
     
-    Value getRootVariable(Root<?> root) {
-        return _rootVariables.get(root);
-    }
-    
+    /**
+     * Gets the registered variable for the given root. 
+     * 
+     * @param root
+     * @return
+     */
     Value getRegisteredRootVariable(Root<?> root) {
-        Value var = getRootVariable(root);
+        Value var = _rootVariables.get(root);
         if (var != null)
             return var;
         SubqueryImpl<?> delegator = getDelegator();
-        if (delegator == null)
-            return null;
-        
-        AbstractQuery<?> parent = delegator.getParent();
+        return (delegator == null) ? null : getDelegatorParent().getRegisteredRootVariable(root);
+    }
+    
+    CriteriaQueryImpl<?> getDelegatorParent() {
+        AbstractQuery<?> parent = _delegator.getParent();
         if (parent instanceof CriteriaQueryImpl) 
-            return ((CriteriaQueryImpl)parent).getRegisteredRootVariable(root);
+            return ((CriteriaQueryImpl<?>)parent);
         // parent is a SubqueryImpl    
-        return ((SubqueryImpl<?>)parent).getDelegate().getRegisteredRootVariable(root);
+        return ((SubqueryImpl<?>)parent).getDelegate();
     }
     
     public Class<T> getResultType() {
@@ -546,16 +560,16 @@ public class CriteriaQueryImpl<T> implements CriteriaQuery<T>, AliasContext {
     
     protected boolean isDefaultProjection() {
         if (_selections == null) {
-            return _roots != null && _roots.size() == 1 && getRoot().getModel().getJavaType() == _resultClass;
+            return getRoots().size() == 1 && getRoot().getModel().getJavaType() == _resultClass;
         } 
         if (_selections.size() != 1) {
             return false;
         }
         Selection<?> sel = _selections.get(0);
-        if (getRoots() != null && sel == getRoot()) {
+        if (!getRoots().isEmpty() && sel == getRoot()) {
             return true;
         }
-        if ((sel instanceof PathImpl<?,?>) && ((PathImpl<?,?>)sel)._correlatedPath != null) {
+        if ((sel instanceof PathImpl<?,?>) && ((PathImpl<?,?>)sel).isCorrelated()) {
             return true;
         }
         return false;
@@ -593,4 +607,49 @@ public class CriteriaQueryImpl<T> implements CriteriaQuery<T>, AliasContext {
         }
     }
 
+    /**
+     * Gets the string representation of the query.
+     */
+    public String toCQL() {
+        StringBuilder buffer = new StringBuilder();
+        render(buffer, _roots, null);
+        return buffer.toString();
+    }
+    
+    void render(StringBuilder buffer, Set<Root<?>> roots, List<Join<?,?>> correlatedJoins) {
+        buffer.append("SELECT ");
+        if (isDistinct()) buffer.append(" DISTINCT ");
+        buffer.append(_selection != null ? ((CriteriaExpression)_selection).asValue(this) : "*");
+        buffer.append(" FROM ");
+        renderRoots(buffer, roots);
+        renderJoins(buffer, correlatedJoins);
+        if (_where != null) {
+            buffer.append(" WHERE ").append(_where.asValue(this));
+        }
+        if (_orders != null) {
+            buffer.append(" ORDER BY ");
+            List<Order> orderBys = getOrderList();
+            for (int i = 0; i < orderBys.size(); i++) {
+                buffer.append(((CriteriaExpression)orderBys.get(i)).asValue(this));
+            }
+        }
+    }
+    
+    private void renderJoins(StringBuilder buffer, Collection<Join<?,?>> joins) {
+        if (joins == null) return;
+        for (Join j : joins) {
+            buffer.append(((ExpressionImpl<?>)j).asVariable(this)).append(" ");
+            renderJoins(buffer, j.getJoins());
+        }
+    }
+    
+    private void renderRoots(StringBuilder buffer, Collection<Root<?>> roots) {
+        if (roots == null) return;
+        int i = 0;
+        for (Root r : roots) {
+            buffer.append(((ExpressionImpl<?>)r).asVariable(this));
+            if (++i != roots.size()) buffer.append(", ");
+            renderJoins(buffer, r.getJoins());
+        }
+    }
 }

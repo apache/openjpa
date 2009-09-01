@@ -62,7 +62,7 @@ import org.apache.openjpa.persistence.meta.MetamodelImpl;
  *
  */
 @SuppressWarnings("serial")
-public class CriteriaBuilder implements QueryBuilder, ExpressionParser {
+public class CriteriaBuilder implements OpenJPACriteriaBuilder, ExpressionParser {
     public static final String LANG_CRITERIA = "javax.persistence.criteria";
 
     private MetamodelImpl _model;
@@ -724,7 +724,7 @@ public class CriteriaBuilder implements QueryBuilder, ExpressionParser {
      *  
      * @return a predicate 
      */
-    public <T> Predicate example(From<?, T> from, T example, ComparisonStyle style, Attribute<?,?>... excludes) {
+    public <T> Predicate qbe(From<?, T> from, T example, ComparisonStyle style, Attribute<?,?>... excludes) {
         if (from == null)
             throw new NullPointerException();
         if (example == null) {
@@ -733,13 +733,25 @@ public class CriteriaBuilder implements QueryBuilder, ExpressionParser {
         }
         ManagedType<T> type = (ManagedType<T>)_model.type(example.getClass());
         return new CompareByExample<T>(this, type, from, example, 
-            style == null ? comparisonStyle() : style, excludes);
+            style == null ? qbeStyle() : style, excludes);
+    }
+    
+    public <T> Predicate qbe(From<?, T> from, T example, ComparisonStyle style) {
+        return qbe(from, example, style, null);
+    }
+    
+    public <T> Predicate qbe(From<?, T> from, T example, Attribute<?,?>... excludes) {
+        return qbe(from, example, qbeStyle(), excludes);
+    }
+    
+    public <T> Predicate qbe(From<?, T> from, T example) {
+        return qbe(from, example, qbeStyle(), null);
     }
     
     /**
      * Create a style to tune different aspects of comparison by example. 
      */
-    public ComparisonStyle comparisonStyle() {
+    public ComparisonStyle qbeStyle() {
         return new ComparisonStyle.Default();
     }
 }

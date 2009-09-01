@@ -133,7 +133,7 @@ public abstract class Joins {
             boolean bind = true;
             java.util.List<Join<?,?>> corrJoins = null;
             org.apache.openjpa.kernel.exps.Expression join = null;
-            if (_correlatedPath == null) {
+            if (!isCorrelated()) {
                 if (subquery != null) {
                     corrJoins = subquery.getCorrelatedJoins();
                     org.apache.openjpa.kernel.exps.Subquery subQ = subquery.getSubQ();
@@ -247,6 +247,19 @@ public abstract class Joins {
                 }
             }
         }
+        
+        @Override
+        public StringBuilder asVariable(CriteriaQueryImpl<?> q) {
+            String varName = "?";
+            Value var = q.getRegisteredVariable(this);
+            if (var == null) {
+                varName = ""+_member.fmd.getName().charAt(0);
+            } else {
+                varName = var.getName();
+            }
+            return new StringBuilder(joinType.toString()).append(" JOIN ")
+                .append(super.asVariable(q)).append(" " + varName);
+        }
     }
     
     /**
@@ -268,16 +281,14 @@ public abstract class Joins {
             allowNull = joinType != JoinType.INNER;
         }
         
-        public JoinType getJoinType() {
+        public final JoinType getJoinType() {
             return joinType;
         }
 
-        public FromImpl<?, Z> getParent() {
-            return (FromImpl<?, Z>) _parent;
-        }
-        
-        @Override
-        public FromImpl<?, Z> getParentPath() {
+        /**
+         * Gets the parent of this join.
+         */
+        public final FromImpl<?, Z> getParent() {
             return (FromImpl<?, Z>) _parent;
         }
         
@@ -337,7 +348,7 @@ public abstract class Joins {
             PathImpl<?,?> corrRoot = getCorrelatedRoot(subquery);
 
             PathImpl<?,?> correlatedParentPath = null;
-            if (_correlatedPath == null) {
+            if (!isCorrelated()) {
                 if (subquery != null) {
                     corrJoins = subquery.getCorrelatedJoins();
                     org.apache.openjpa.kernel.exps.Subquery subQ = subquery.getSubQ();
@@ -351,8 +362,9 @@ public abstract class Joins {
                         if (c.isRegistered(_parent)) { 
                             Value var = c.getRegisteredVariable(_parent);
                             path = factory.newPath(var);
-                        } else 
+                        } else {
                             path = factory.newPath(subQ);
+                        }
                         path.setMetaData(meta);
                         path.get(_member.fmd, false);
                         path.setSchemaAlias(c.getAlias(_parent));
@@ -362,9 +374,9 @@ public abstract class Joins {
                     path = factory.newPath(var);
                     path.setMetaData(meta);
                     path.get(_member.fmd, false);
-                } else            
+                } else {           
                     path = (org.apache.openjpa.kernel.exps.Path)toValue(factory, model, c);
-
+                }
                 Class<?> type = meta == null ? AbstractExpressionBuilder.TYPE_OBJECT : meta.getDescribedType(); 
                 if (bind) {
                     Value var = factory.newBoundVariable(c.getAlias(this), type);
@@ -386,10 +398,10 @@ public abstract class Joins {
                 if (corrJoins != null && corrJoins.contains(_parent)) {
                     Value var = getVariableForCorrPath(subquery, correlatedParentPath);
                     parentPath = factory.newPath(var);
-                } else 
+                } else {
                     parentPath = (org.apache.openjpa.kernel.exps.Path)
                         correlatedParentPath.toValue(factory, model, c);
-                
+                }
                 parentPath.get(_member.fmd, allowNull);
                 parentPath.setSchemaAlias(c.getAlias(correlatedParentPath));
                 if (c.ctx().getParent() != null && c.ctx().getVariable(parentPath.getSchemaAlias()) == null) 
@@ -404,11 +416,11 @@ public abstract class Joins {
                 if (_member.fmd.getDeclaredTypeCode() == JavaTypes.MAP)
                     c.registerVariable(this, var, parentPath);
                 
-                if (_member.fmd.isElementCollection()) 
+                if (_member.fmd.isElementCollection()) {
                     filter = CriteriaExpressionBuilder.and(factory, join, filter);
-                else 
+                } else { 
                     filter = factory.equal(parentPath, path);
-                
+                }
                 return CriteriaExpressionBuilder.and(factory, expr, filter);
             }
         }
@@ -433,13 +445,12 @@ public abstract class Joins {
      */
     public static class Collection<Z,E> extends AbstractCollection<Z,java.util.Collection<E>,E> 
         implements CollectionJoin<Z,E>{
-        public Collection(FromImpl<?,Z> parent, 
-            Members.CollectionAttributeImpl<? super Z, E> member, JoinType jt) {
+        public Collection(FromImpl<?,Z> parent, Members.CollectionAttributeImpl<? super Z, E> member, JoinType jt) {
             super(parent, member, jt);
         }
         
         public CollectionAttribute<? super Z, E> getModel() {
-            return (CollectionAttribute<? super Z, E>)_member.getType();
+            return (CollectionAttribute<? super Z, E>)_member;
         }
     }
     
@@ -450,7 +461,7 @@ public abstract class Joins {
      * @param <E> the type of the the set attribute elements
      */
     public static class Set<Z,E> extends AbstractCollection<Z,java.util.Set<E>,E> 
-        implements SetJoin<Z,E>{
+        implements SetJoin<Z,E> {
         public Set(FromImpl<?,Z> parent, Members.SetAttributeImpl<? super Z, E> member, JoinType jt) {
             super(parent, member, jt);
         }
@@ -470,13 +481,12 @@ public abstract class Joins {
     public static class List<Z,E> extends AbstractCollection<Z,java.util.List<E>,E> 
         implements ListJoin<Z,E> {
         
-        public List(FromImpl<?,Z> parent, 
-            Members.ListAttributeImpl<? super Z, E> member, JoinType jt) {
+        public List(FromImpl<?,Z> parent, Members.ListAttributeImpl<? super Z, E> member, JoinType jt) {
             super(parent, member, jt);
         }
         
         public ListAttribute<? super Z, E> getModel() {
-            return (ListAttribute<? super Z, E>)_member.getType();
+            return (ListAttribute<? super Z, E>)_member;
         }
         
         public Expression<Integer> index() {
@@ -509,8 +519,8 @@ public abstract class Joins {
         }
         
         /**
-         * Create a pseudo-attribute of a pseudo-managed type for java.util.Map&lt;K,V&gt; to represent its keys as 
-         * a pseudo-attribute of type java.util.Set&lt;V&gt;.
+         * Create a pseudo-attribute of a pseudo-managed type for java.util.Map&lt;K,V&gt; 
+         * to represent its keys of type java.util.Set&lt;V&gt;.
          */
         public Join<java.util.Map<K, V>, K> joinKey(JoinType jt) {
             AbstractManagedType<java.util.Map<K,V>> pseudoOwner = (AbstractManagedType<java.util.Map<K,V>>)
@@ -564,11 +574,17 @@ public abstract class Joins {
         */
        @Override
        public Value toValue(ExpressionFactory factory, MetamodelImpl model, CriteriaQueryImpl<?> c) {
-           SubqueryImpl<?> subquery = c.getDelegator();
-           PathImpl<?,?> parent = map.getInnermostParentPath();
            Value val = c.getRegisteredVariable(map);
            org.apache.openjpa.kernel.exps.Path path = factory.newPath(val);
            return factory.getKey(path);
+       }
+       
+       @Override
+       public StringBuilder asValue(CriteriaQueryImpl<?> q) {
+           StringBuilder buffer = new StringBuilder("KEY(");
+           Value var = q.getRegisteredVariable(map);
+           buffer.append(var != null ? var.getName() : map.asValue(q)).append(")");
+           return buffer;
        }
    }
        
@@ -590,6 +606,14 @@ public abstract class Joins {
            org.apache.openjpa.kernel.exps.Path path = factory.newPath(val);
            org.apache.openjpa.kernel.exps.Path var = factory.newPath(val);
            return factory.mapEntry(path, var);
+       }
+       
+       @Override
+       public StringBuilder asValue(CriteriaQueryImpl<?> q) {
+           StringBuilder buffer = new StringBuilder("ENTRY(");
+           Value var = q.getRegisteredVariable(map);
+           buffer.append(var != null ? var.getName() : map.asValue(q)).append(")");
+           return buffer;
        }
    }
    

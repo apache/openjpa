@@ -27,7 +27,7 @@ import javax.persistence.criteria.Order;
  * @author Pinaki Poddar
  *
  */
-public class OrderImpl implements Order {
+public class OrderImpl implements Order, CriteriaExpression {
 	private boolean _ascending;
 	private final ExpressionImpl<?> e;
 	
@@ -52,4 +52,19 @@ public class OrderImpl implements Order {
 		_ascending = !_ascending;
 		return this;
 	}
+	
+    public void acceptVisit(CriteriaExpressionVisitor visitor) {
+        if (!visitor.isVisited(this)) {
+            visitor.enter(this);
+            visitor.exit(this);
+        }
+    }
+    
+    public StringBuilder asValue(CriteriaQueryImpl<?> q) {
+        return e.asValue(q).append(_ascending ? "" : " DESC");
+    }
+    
+    public StringBuilder asVariable(CriteriaQueryImpl<?> q) {
+        throw new IllegalStateException(this + " can not be rendered as variable");
+    }
 }

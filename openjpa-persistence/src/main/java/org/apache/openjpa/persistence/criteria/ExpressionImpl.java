@@ -26,34 +26,17 @@ import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.QueryBuilder.In;
 
 import org.apache.openjpa.kernel.exps.ExpressionFactory;
-import org.apache.openjpa.kernel.exps.Value;
 import org.apache.openjpa.persistence.meta.MetamodelImpl;
 
 /**
  * Expression for Criteria query.
  * 
- * @author Pinaki Poddar
- *
  * @param <X> the type of the value this expression represents.
+ * 
+ * @author Pinaki Poddar
+ * @since 2.0.0
  */
-public abstract class ExpressionImpl<X> extends SelectionImpl<X> 
-    implements CriteriaExpression<X> {
-    abstract org.apache.openjpa.kernel.exps.Value toValue(ExpressionFactory factory, MetamodelImpl model,
-            CriteriaQueryImpl<?> q);
-    
-    org.apache.openjpa.kernel.exps.Expression toKernelExpression(ExpressionFactory factory, MetamodelImpl model,
-        CriteriaQueryImpl<?> q) {
-        return factory.asExpression(toValue(factory, model, q));
-    }
-    
-    public void acceptVisit(CriteriaExpressionVisitor visitor) {
-        if (!visitor.isVisited(this)) {
-            visitor.enter(this);
-            visitor.exit(this);
-        }
-    }
-    
-
+public abstract class ExpressionImpl<X> extends SelectionImpl<X> implements Expression<X> {
     /**
      * @param cls the type of the evaluated result of the expression
      */
@@ -136,5 +119,13 @@ public abstract class ExpressionImpl<X> extends SelectionImpl<X>
      */
     public Predicate isNull() {
     	return new Expressions.IsNull(this);
+    }
+    
+    abstract org.apache.openjpa.kernel.exps.Value toValue(ExpressionFactory factory, MetamodelImpl model,
+            CriteriaQueryImpl<?> q);
+    
+    org.apache.openjpa.kernel.exps.Expression toKernelExpression(ExpressionFactory factory, MetamodelImpl model,
+        CriteriaQueryImpl<?> q) {
+        return factory.asExpression(toValue(factory, model, q));
     }
 }

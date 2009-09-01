@@ -21,7 +21,11 @@ package org.apache.openjpa.persistence.criteria;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
+import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.concurrent.CopyOnWriteArraySet;
 
 import javax.persistence.criteria.Expression;
 import javax.persistence.criteria.Predicate;
@@ -34,6 +38,7 @@ import org.apache.openjpa.kernel.exps.Literal;
 import org.apache.openjpa.kernel.exps.Value;
 import org.apache.openjpa.kernel.jpql.JPQLExpressionBuilder;
 import org.apache.openjpa.meta.ClassMetaData;
+import org.apache.openjpa.persistence.criteria.CriteriaExpressionVisitor.TraversalStyle;
 import org.apache.openjpa.persistence.meta.MetamodelImpl;
 import org.apache.openjpa.persistence.meta.Types;
 
@@ -49,7 +54,10 @@ import org.apache.openjpa.persistence.meta.Types;
  *
  */
 public class Expressions {
-	
+    static final String OPEN_BRACE = "(";
+    static final String CLOSE_BRACE = ")";
+    static final String COMMA = ",";
+    
     /**
      * Convert the given Criteria expression to a corresponding kernel value 
      * using the given ExpressionFactory.
@@ -64,16 +72,112 @@ public class Expressions {
              q.getParameterTypes(), q.toString());
      }
      
-     static void acceptVisit(CriteriaExpressionVisitor visitor, Expression<?>...exprs) {
-         if (exprs == null)
+     /**
+      * Visits the given expression and the given children recursively.
+      * The order of traversal depends on the parent and is determined by the visitor.
+      */
+     static void acceptVisit(CriteriaExpressionVisitor visitor, CriteriaExpression parent, Expression<?>...exprs) {
+         if (parent == null)
              return;
-         for (Expression<?> e : exprs) {
-             if (e != null)
-                 ((ExpressionImpl<?>)e).acceptVisit(visitor);
+         TraversalStyle traversal = visitor.getTraversalStyle(parent);
+         switch (traversal) {
+         case INFIX : 
+             if (exprs == null || exprs.length == 0) {
+                 visitor.enter(parent);
+                 visitor.exit(parent);
+                 return;
+             }
+             for (int i = 0; i < exprs.length; i++) {
+                 ExpressionImpl<?> e = (ExpressionImpl<?>)exprs[i];
+                 if (e != null) e.acceptVisit(visitor);
+                 if (i + 1 != exprs.length) {
+                     visitor.enter(parent);
+                     visitor.exit(parent);
+                 }
+             }
+             break;
+         case POSTFIX:
+             visitChildren(visitor,exprs);
+             visitor.enter(parent);
+             visitor.exit(parent);
+             break;
+         case PREFIX :
+             visitor.enter(parent);
+             visitor.exit(parent);
+             visitChildren(visitor,exprs);
+             break;
+         case FUNCTION:
+             visitor.enter(parent);
+             visitChildren(visitor, exprs);
+             visitor.exit(parent);
+             break;
          }
      }
-    
-    /**
+     
+     static void visitChildren(CriteriaExpressionVisitor visitor, Expression<?>...exprs) {
+         for (int i = 0; exprs != null && i < exprs.length; i++) {
+             ExpressionImpl<?> e = (ExpressionImpl<?>)exprs[i];
+             if (e != null) e.acceptVisit(visitor);
+         }
+     }
+     
+     /**
+      * Renders the given expressions as a list of values separated by the given connector.
+      */
+     static StringBuilder asValue(CriteriaQueryImpl<?> q, Expression<?>[] exps, String connector) {
+         StringBuilder buffer = new StringBuilder();
+         if (exps == null) return buffer;
+         for (int i = 0; i < exps.length; i++) {
+             buffer.append(((ExpressionImpl<?>)exps[i]).asValue(q));
+             if (i+1 != exps.length) {
+                 buffer.append(connector);
+             }
+         }
+         return buffer;
+     }
+     
+     /**
+      * Renders the given arguments as a list of values separated by the given connector.
+      */
+     static StringBuilder asValue(CriteriaQueryImpl<?> q, Object...params) {
+         StringBuilder buffer = new StringBuilder();
+         if (params == null) return buffer;
+         for (int i = 0; i < params.length; i++) {
+             Object o = params[i];
+             if (o == null) {
+                 if (i+1 < params.length && params[i+1].equals(COMMA)) {
+                     i++;
+                 }
+                 continue;
+             }
+             if (o instanceof CriteriaExpression) {
+                 buffer.append(((CriteriaExpression)o).asValue(q));
+             } else {
+                 buffer.append(o);
+             }
+         }
+         return buffer;
+     }
+     
+     /**
+      * Return a list that is either empty (if the given list is null) or a list
+      * whose mutation do not impact the original list.
+      */
+     static <X> List<X> returnCopy(List<X> list) {
+         return list == null ? new ArrayList<X>() : new CopyOnWriteArrayList<X>(list);
+     }
+     
+     /**
+      * Return a set that is either empty (if the given set is null) or a set
+      * whose mutation do not impact the original list.
+      */
+     static <X> Set<X> returnCopy(Set<X> set) {
+         return set == null ? new HashSet<X>() : new CopyOnWriteArraySet<X>(set);
+     }
+     
+
+
+     /**
      * Unary Functional Expression applies a unary function on a input operand Expression.
      *
      * @param <X> the type of the resultant expression
@@ -93,8 +197,7 @@ public class Expressions {
         }
         
         public void acceptVisit(CriteriaExpressionVisitor visitor) {
-            super.acceptVisit(visitor);
-            Expressions.acceptVisit(visitor, e);
+            Expressions.acceptVisit(visitor, this, e);
         }
     }
     
@@ -117,8 +220,7 @@ public class Expressions {
         }
         
         public void acceptVisit(CriteriaExpressionVisitor visitor) {
-            super.acceptVisit(visitor);
-            Expressions.acceptVisit(visitor, e1, e2);
+            Expressions.acceptVisit(visitor, this, e1, e2);
         }
     }
     
@@ -143,8 +245,7 @@ public class Expressions {
         }
         
         public void acceptVisit(CriteriaExpressionVisitor visitor) {
-            super.acceptVisit(visitor);
-            Expressions.acceptVisit(visitor, args);
+            Expressions.acceptVisit(visitor, this, args);
         }
     }
    
@@ -169,8 +270,7 @@ public class Expressions {
         }
         
         public void acceptVisit(CriteriaExpressionVisitor visitor) {
-            super.acceptVisit(visitor);
-            Expressions.acceptVisit(visitor, e1, e2);
+            Expressions.acceptVisit(visitor, this, e1, e2);
         }
     }
     
@@ -183,6 +283,10 @@ public class Expressions {
         @Override
         public Value toValue(ExpressionFactory factory, MetamodelImpl model, CriteriaQueryImpl<?> q) {
             return factory.abs(Expressions.toValue(e, factory, model, q));
+        }
+        
+        public StringBuilder asValue(CriteriaQueryImpl<?> q) {
+            return Expressions.asValue(q, "ABS", OPEN_BRACE, e, CLOSE_BRACE);
         }
     }
     
@@ -203,6 +307,12 @@ public class Expressions {
             Value v = factory.count(Expressions.toValue(e, factory, model, q));
             return _distinct ? factory.distinct(v) : v;
         }
+        
+        @Override
+        public StringBuilder asValue(CriteriaQueryImpl<?> q) {
+            return Expressions.asValue(q, "COUNT", OPEN_BRACE, _distinct ? "DISTINCT"+OPEN_BRACE : "", 
+                e, _distinct ? CLOSE_BRACE : "", CLOSE_BRACE);
+        }
     }
 
     public static class Avg extends UnaryFunctionalExpression<Double> {
@@ -213,6 +323,11 @@ public class Expressions {
         @Override
         public Value toValue(ExpressionFactory factory, MetamodelImpl model, CriteriaQueryImpl<?> q) {
             return factory.avg(Expressions.toValue(e, factory, model, q));
+        }
+        
+        @Override
+        public StringBuilder asValue(CriteriaQueryImpl<?> q) {
+            return Expressions.asValue(q, "AVG", OPEN_BRACE, e, CLOSE_BRACE);
         }
     }
     
@@ -225,6 +340,10 @@ public class Expressions {
         public Value toValue(ExpressionFactory factory, MetamodelImpl model, CriteriaQueryImpl<?> q) {
             return factory.sqrt(Expressions.toValue(e, factory, model, q));
         }
+        
+        public StringBuilder asValue(CriteriaQueryImpl<?> q) {
+            return Expressions.asValue(q, "SQRT", OPEN_BRACE, e, CLOSE_BRACE);
+        }
     }
     
     public static class Max<X> extends UnaryFunctionalExpression<X> {
@@ -236,6 +355,10 @@ public class Expressions {
         public Value toValue(ExpressionFactory factory, MetamodelImpl model, CriteriaQueryImpl<?> q) {
             return factory.max(Expressions.toValue(e, factory, model, q));
         }
+        
+        public StringBuilder asValue(CriteriaQueryImpl<?> q) {
+            return Expressions.asValue(q, "MAX", OPEN_BRACE, e, CLOSE_BRACE);
+        }
     }
 
     public static class Min<X> extends UnaryFunctionalExpression<X> {
@@ -246,6 +369,10 @@ public class Expressions {
         @Override
         public Value toValue(ExpressionFactory factory, MetamodelImpl model, CriteriaQueryImpl<?> q) {
             return factory.min(Expressions.toValue(e, factory, model, q));
+        }
+        
+        public StringBuilder asValue(CriteriaQueryImpl<?> q) {
+            return Expressions.asValue(q, "MIN", OPEN_BRACE, e, CLOSE_BRACE);
         }
     }
     
@@ -267,11 +394,16 @@ public class Expressions {
                 
             return factory.size(val);
         }
+        
+        public StringBuilder asValue(CriteriaQueryImpl<?> q) {
+            return Expressions.asValue(q, "SIZE", OPEN_BRACE, e, CLOSE_BRACE);
+        }
     }
     
     public static class DatabaseFunction<T> extends FunctionalExpression<T> {
         private final String functionName;
         private final Class<T> resultType;
+       
         public  DatabaseFunction(String name, Class<T> resultType, Expression<?>... exps) {
             super(resultType, exps);
             functionName = name;
@@ -282,6 +414,10 @@ public class Expressions {
         public Value toValue(ExpressionFactory factory, MetamodelImpl model, CriteriaQueryImpl<?> q) {
             return factory.newFunction(functionName, getJavaType(), 
                 new Expressions.ListArgument(resultType, args).toValue(factory, model, q));
+        }
+        
+        public StringBuilder asValue(CriteriaQueryImpl<?> q) {
+            return Expressions.asValue(q, functionName, OPEN_BRACE, Expressions.asValue(q, args, COMMA), CLOSE_BRACE);
         }
     }
 
@@ -295,6 +431,11 @@ public class Expressions {
         public Value toValue(ExpressionFactory factory, MetamodelImpl model, CriteriaQueryImpl<?> q) {
             return factory.type(Expressions.toValue(e, factory, model, q));
         }
+        
+        @Override
+        public StringBuilder asValue(CriteriaQueryImpl<?> q) {
+            return Expressions.asValue(q, "TYPE", OPEN_BRACE, e, CLOSE_BRACE);
+        }
     }
 
     public static class Cast<B> extends UnaryFunctionalExpression<B> {
@@ -305,6 +446,11 @@ public class Expressions {
         @Override
         public Value toValue(ExpressionFactory factory, MetamodelImpl model, CriteriaQueryImpl<?> q) {
             return factory.cast(Expressions.toValue(e, factory, model, q), getJavaType());
+        }
+        
+        @Override
+        public StringBuilder asValue(CriteriaQueryImpl<?> q) {
+            return Expressions.asValue(q, OPEN_BRACE, getJavaType().getSimpleName(), CLOSE_BRACE, e);
         }
     }
     
@@ -327,6 +473,11 @@ public class Expressions {
                 Expressions.toValue(e1, factory, model, q), 
                 Expressions.toValue(e2, factory, model, q));
         }
+        
+        @Override
+        public StringBuilder asValue(CriteriaQueryImpl<?> q) {
+            return Expressions.asValue(q, "CONCAT", OPEN_BRACE, e1, COMMA, e2, CLOSE_BRACE);
+        }
     }
     
     public static class Substring extends UnaryFunctionalExpression<String> {
@@ -334,7 +485,7 @@ public class Expressions {
         private ExpressionImpl<Integer> len;
         
         public Substring(Expression<String> s, Expression<Integer> from, Expression<Integer> len) {
-            super(s);
+            super(String.class, s);
             this.from = (ExpressionImpl<Integer>)from;
             this.len  = (ExpressionImpl<Integer>)len;
         }
@@ -366,6 +517,11 @@ public class Expressions {
         public void acceptVisit(CriteriaExpressionVisitor visitor) {
             super.acceptVisit(visitor);
             Expressions.acceptVisit(visitor, from, len);
+        }
+        
+        @Override
+        public StringBuilder asValue(CriteriaQueryImpl<?> q) {
+            return Expressions.asValue(q, "SUBSTRING", OPEN_BRACE, e, COMMA, from, COMMA, len, CLOSE_BRACE);
         }
     }
 
@@ -412,8 +568,12 @@ public class Expressions {
         }
         
         public void acceptVisit(CriteriaExpressionVisitor visitor) {
-            super.acceptVisit(visitor);
-            Expressions.acceptVisit(visitor, pattern, from, path);
+            Expressions.acceptVisit(visitor, this, pattern, from, path);
+        }
+        
+        @Override
+        public StringBuilder asValue(CriteriaQueryImpl<?> q) {
+            return Expressions.asValue(q, "LOCATE", OPEN_BRACE, pattern, COMMA, path, CLOSE_BRACE);
         }
     }
     
@@ -422,8 +582,7 @@ public class Expressions {
         static Trimspec defaultSpec = Trimspec.BOTH;
         private Trimspec ts;
         
-        public Trim(Expression<String> x, Expression<Character> y, 
-            Trimspec ts) {
+        public Trim(Expression<String> x, Expression<Character> y, Trimspec ts) {
             super(String.class, x, y);
             this.ts = ts;
         }
@@ -462,6 +621,11 @@ public class Expressions {
                 Expressions.toValue(e1, factory, model, q), 
                 Expressions.toValue(e2, factory, model, q), spec);
         }
+        
+        @Override
+        public StringBuilder asValue(CriteriaQueryImpl<?> q) {
+            return Expressions.asValue(q, "TRIM", OPEN_BRACE, e1, COMMA, e2, CLOSE_BRACE);
+        }        
     }
     
     public static class Sum<N extends Number> extends BinarayFunctionalExpression<N> {
@@ -489,7 +653,14 @@ public class Expressions {
                    Expressions.toValue(e1, factory, model, q), 
                    Expressions.toValue(e2, factory, model, q));
         }
-    }
+        
+        @Override
+        public StringBuilder asValue(CriteriaQueryImpl<?> q) {
+            return e2 == null 
+               ? Expressions.asValue(q, "SUM", OPEN_BRACE, e1, CLOSE_BRACE)
+               : Expressions.asValue(q, e1, " + ", e2);
+        }        
+     }
     
     public static class Product<N extends Number> extends BinarayFunctionalExpression<N> {
         public Product(Expression<? extends Number> x, Expression<? extends Number> y) {
@@ -510,6 +681,11 @@ public class Expressions {
                 Expressions.toValue(e1, factory, model, q), 
                 Expressions.toValue(e2, factory, model, q));
         }
+        
+        @Override
+        public StringBuilder asValue(CriteriaQueryImpl<?> q) {
+            return Expressions.asValue(q, e1, " * " ,e2);
+        }        
     }
     
     public static class Diff<N extends Number> extends BinarayFunctionalExpression<N> {
@@ -531,6 +707,11 @@ public class Expressions {
                 Expressions.toValue(e1, factory, model, q), 
                 Expressions.toValue(e2, factory, model, q));
         }
+        
+        @Override
+        public StringBuilder asValue(CriteriaQueryImpl<?> q) {
+            return Expressions.asValue(q, e1, " - " ,e2);
+        }        
     }
 
     
@@ -553,6 +734,11 @@ public class Expressions {
                 Expressions.toValue(e1, factory, model, q), 
                 Expressions.toValue(e2, factory, model, q));
         }
+        
+        @Override
+        public StringBuilder asValue(CriteriaQueryImpl<?> q) {
+            return Expressions.asValue(q, e1, "%" ,e2);
+        }        
     }
 
     public static class Mod extends BinarayFunctionalExpression<Integer> {
@@ -572,6 +758,11 @@ public class Expressions {
                 Expressions.toValue(e1, factory, model, q), 
                 Expressions.toValue(e2, factory, model, q));
         }
+        
+        @Override
+        public StringBuilder asValue(CriteriaQueryImpl<?> q) {
+            return Expressions.asValue(q, "MOD", OPEN_BRACE, e1, COMMA, e2, CLOSE_BRACE);
+        }        
     }
 
     public static class CurrentDate extends ExpressionImpl<java.sql.Date> {
@@ -582,6 +773,11 @@ public class Expressions {
         @Override
         public Value toValue(ExpressionFactory factory, MetamodelImpl model, CriteriaQueryImpl<?> q) {
             return factory.getCurrentDate();
+        }
+        
+        @Override
+        public StringBuilder asValue(CriteriaQueryImpl<?> q) {
+            return new StringBuilder("CURRENT_DATE");
         }
     }
     
@@ -594,6 +790,11 @@ public class Expressions {
         public Value toValue(ExpressionFactory factory, MetamodelImpl model, CriteriaQueryImpl<?> q) {
             return factory.getCurrentTime();
         }
+        
+        @Override
+        public StringBuilder asValue(CriteriaQueryImpl<?> q) {
+            return new StringBuilder("CURRENT_TIME");
+        }
     }
     
     public static class CurrentTimestamp extends ExpressionImpl<java.sql.Timestamp> {
@@ -604,6 +805,11 @@ public class Expressions {
         @Override
         public Value toValue(ExpressionFactory factory, MetamodelImpl model, CriteriaQueryImpl<?> q) {
             return factory.getCurrentTimestamp();
+        }
+        
+        @Override
+        public StringBuilder asValue(CriteriaQueryImpl<?> q) {
+            return new StringBuilder("CURRENT_TIMESTAMP");
         }
     }
 
@@ -629,6 +835,11 @@ public class Expressions {
             Expressions.setImplicitTypes(val1, val2, e1.getJavaType(), q);
             return isNegated() ? factory.notEqual(val1, val2) : factory.equal(val1, val2);
         }
+        
+        @Override
+        public StringBuilder asValue(CriteriaQueryImpl<?> q) {
+            return Expressions.asValue(q, e1, " = ", e2);
+        }        
     }
     
     public static class GreaterThan extends BinaryLogicalExpression {
@@ -648,6 +859,11 @@ public class Expressions {
             Expressions.setImplicitTypes(val1, val2, e1.getJavaType(), q); 
             return factory.greaterThan(val1, val2);
         }
+        
+        @Override
+        public StringBuilder asValue(CriteriaQueryImpl<?> q) {
+            return Expressions.asValue(q, e1, " > ", e2);
+        }        
     }
     
     public static class GreaterThanEqual extends BinaryLogicalExpression {
@@ -667,6 +883,11 @@ public class Expressions {
             Expressions.setImplicitTypes(val1, val2, e1.getJavaType(), q); 
             return factory.greaterThanEqual(val1, val2);
         }
+        
+        @Override
+        public StringBuilder asValue(CriteriaQueryImpl<?> q) {
+            return Expressions.asValue(q, e1, " >= ", e2);
+        }        
     }
    
     public static class LessThan extends BinaryLogicalExpression {
@@ -686,6 +907,11 @@ public class Expressions {
             Expressions.setImplicitTypes(val1, val2, e1.getJavaType(), q); 
             return factory.lessThan(val1, val2);
         }
+        
+        @Override
+        public StringBuilder asValue(CriteriaQueryImpl<?> q) {
+            return Expressions.asValue(q, e1, " < ", e2);
+        }        
     }
     
     public static class LessThanEqual extends BinaryLogicalExpression {
@@ -705,15 +931,33 @@ public class Expressions {
             Expressions.setImplicitTypes(val1, val2, e1.getJavaType(), q); 
             return factory.lessThanEqual(val1, val2);
         }
+        
+        
+        @Override
+        public StringBuilder asValue(CriteriaQueryImpl<?> q) {
+            return Expressions.asValue(q, e1, " <= ", e2);
+        }        
     }
 
     public static class Between<Y extends Comparable<Y>> extends PredicateImpl.And {
+        private final ExpressionImpl<?> e;
+        private final ExpressionImpl<?> v1;
+        private final ExpressionImpl<?> v2;
+        
         public Between(Expression<? extends Y> v, Expression<? extends Y> x, Expression<? extends Y> y) {
             super(new GreaterThanEqual(v,x), new LessThanEqual(v,y));
+            e = (ExpressionImpl<?>)v;
+            v1 = (ExpressionImpl<?>)x;
+            v2 = (ExpressionImpl<?>)y;
         }
         
         public Between(Expression<? extends Y> v, Y x, Y y) {
             this(v, new Constant<Y>(x), new Constant<Y>(y));
+        }
+        
+        @Override
+        public StringBuilder asValue(CriteriaQueryImpl<?> q) {
+            return Expressions.asValue(q, e, " BETWEEN ", v1, " AND ", v2);
         }
     }
     
@@ -762,10 +1006,29 @@ public class Expressions {
         }
         
         public void acceptVisit(CriteriaExpressionVisitor visitor) {
-            super.acceptVisit(visitor);
-            if (arg instanceof CriteriaExpression) {
-                ((CriteriaExpression<?>)arg).acceptVisit(visitor);
+            Expressions.acceptVisit(visitor, this, arg instanceof Expression ? ((Expression)arg) : null);
+        }
+        
+        public StringBuilder asValue(CriteriaQueryImpl<?> q) {
+            if (arg == null)
+                return new StringBuilder("NULL");
+            Class<?> literalClass = getJavaType();
+            if (arg instanceof ParameterExpressionImpl) {
+                return ((ParameterExpressionImpl<?>)arg).asValue(q);
+            } else if (Number.class.isAssignableFrom(literalClass)) {
+                return new StringBuilder(arg.toString());
+            } else if (Boolean.class.isAssignableFrom(literalClass)) {
+                return new StringBuilder(arg.toString());
+            } else if (String.class.isAssignableFrom(literalClass)) {
+                return new StringBuilder("'").append(arg.toString()).append("'");
+            } else if (Enum.class.isAssignableFrom(literalClass)) {
+                return new StringBuilder(arg.toString());
+            } else if (Class.class.isAssignableFrom(literalClass)) {
+                return new StringBuilder(((Class)arg).getSimpleName());
+            } else if (Collection.class.isAssignableFrom(literalClass)) {
+                return new StringBuilder(((Collection)arg).toString());
             }
+            return new StringBuilder(arg.toString());
         }
     }
     
@@ -792,6 +1055,11 @@ public class Expressions {
             super.acceptVisit(visitor);
             Expressions.acceptVisit(visitor, collection);
         }
+        
+        @Override
+        public StringBuilder asValue(CriteriaQueryImpl<?> q) {
+            return Expressions.asValue(q, collection, " IS EMPTY");
+        }
     }
     
     public static class IsNotEmpty extends PredicateImpl {
@@ -817,6 +1085,11 @@ public class Expressions {
             super.acceptVisit(visitor);
             Expressions.acceptVisit(visitor, collection);
         }
+        
+        @Override
+        public StringBuilder asValue(CriteriaQueryImpl<?> q) {
+            return Expressions.asValue(q, collection, " IS NOT EMPTY");
+        }
     }
 
     
@@ -833,6 +1106,11 @@ public class Expressions {
             v.setMetaData(meta);
             return factory.index(v);
         }
+        
+        @Override
+        public StringBuilder asValue(CriteriaQueryImpl<?> q) {
+            return Expressions.asValue(q, "INDEX", OPEN_BRACE, e, CLOSE_BRACE);
+        }
     }
     
     public static class IsMember<E> extends PredicateImpl {
@@ -840,6 +1118,7 @@ public class Expressions {
         final ExpressionImpl<?> collection;
         
         public IsMember(Class<E> t, Expression<E> element, Expression<?> collection) {
+            super();
             this.element = (ExpressionImpl<E>)element;
             this.collection = (ExpressionImpl<?>)collection;
         }
@@ -863,12 +1142,17 @@ public class Expressions {
             org.apache.openjpa.kernel.exps.Expression contains = factory.contains(
                 Expressions.toValue(collection, factory, model, q), 
                 Expressions.toValue(element, factory, model, q));
-            return _negated ? factory.not(contains) : contains;
+            return isNegated() ? factory.not(contains) : contains;
         }
         
         public void acceptVisit(CriteriaExpressionVisitor visitor) {
             super.acceptVisit(visitor);
             Expressions.acceptVisit(visitor, collection, element);
+        }
+        
+        @Override
+        public StringBuilder asValue(CriteriaQueryImpl<?> q) {
+            return Expressions.asValue(q, element, isNegated() ? "NOT " : "", "MEMBER OF ", collection);
         }
     }
     
@@ -927,9 +1211,13 @@ public class Expressions {
         }
         
         public void acceptVisit(CriteriaExpressionVisitor visitor) {
-            super.acceptVisit(visitor);
-            Expressions.acceptVisit(visitor, str, pattern, escapeChar);
+            Expressions.acceptVisit(visitor, this, str, pattern, escapeChar);
         }
+        
+        @Override
+        public StringBuilder asValue(CriteriaQueryImpl<?> q) {
+            return Expressions.asValue(q, str, " LIKE ", pattern);
+        }        
     }
     
     public static class Coalesce<T> extends ExpressionImpl<T> implements QueryBuilder.Coalesce<T> {
@@ -960,9 +1248,14 @@ public class Expressions {
         }
         
         public void acceptVisit(CriteriaExpressionVisitor visitor) {
-            super.acceptVisit(visitor);
-            Expressions.acceptVisit(visitor, values.toArray(new ExpressionImpl[values.size()]));
+            Expressions.acceptVisit(visitor, this, values.toArray(new ExpressionImpl[values.size()]));
         }
+        
+        @Override
+        public StringBuilder asValue(CriteriaQueryImpl<?> q) {
+            return Expressions.asValue(q, "COALESCE", OPEN_BRACE, Expressions.asValue(q, values == null 
+                    ? null : values.toArray(new Expression<?>[values.size()]), COMMA), CLOSE_BRACE);
+        }        
     }
     
     public static class Nullif<T> extends ExpressionImpl<T> {
@@ -990,9 +1283,13 @@ public class Expressions {
         }
         
         public void acceptVisit(CriteriaExpressionVisitor visitor) {
-            super.acceptVisit(visitor);
-            Expressions.acceptVisit(visitor, val1, val2);
+            Expressions.acceptVisit(visitor, this, val1, val2);
         }
+        
+        @Override
+        public StringBuilder asValue(CriteriaQueryImpl<?> q) {
+            return Expressions.asValue(q, "NULLIF", OPEN_BRACE, val1, COMMA, val2, CLOSE_BRACE);
+        }        
     }
 
     public static class IsNull extends PredicateImpl {
@@ -1018,6 +1315,11 @@ public class Expressions {
         public void acceptVisit(CriteriaExpressionVisitor visitor) {
             super.acceptVisit(visitor);
             Expressions.acceptVisit(visitor, e);
+        }
+        
+        @Override
+        public StringBuilder asValue(CriteriaQueryImpl<?> q) {
+            return Expressions.asValue(q, e, " IS NULL");
         }
     }
     
@@ -1045,6 +1347,11 @@ public class Expressions {
             super.acceptVisit(visitor);
             Expressions.acceptVisit(visitor, e);
         }
+        
+        @Override
+        public StringBuilder asValue(CriteriaQueryImpl<?> q) {
+            return Expressions.asValue(q, e, " IS NOT NULL");
+        }
     }
     
     
@@ -1052,7 +1359,7 @@ public class Expressions {
         final ExpressionImpl<T> e;
         private boolean negate;
         public In(Expression<?> e) {
-            super((Predicate[])null);
+            super();
             this.e = (ExpressionImpl<T>)e;
         }
         
@@ -1083,7 +1390,7 @@ public class Expressions {
                 Expressions.Equal e = (Expressions.Equal)_exps.get(0);
                 ExpressionImpl<?> e2 = e.e2;
                 ExpressionImpl<?> e1 = e.e1;
-               Value val2 = Expressions.toValue(e2, factory, model, q);
+                Value val2 = Expressions.toValue(e2, factory, model, q);
                 if (!(val2 instanceof Literal)) {
                      Value val1 = Expressions.toValue(e1, factory, model, q);
                     Expressions.setImplicitTypes(val1, val2, e1.getJavaType(), q);
@@ -1108,13 +1415,22 @@ public class Expressions {
         
         public void acceptVisit(CriteriaExpressionVisitor visitor) {
             super.acceptVisit(visitor);
-            Expressions.acceptVisit(visitor, e);
+            Expressions.acceptVisit(visitor, this, e);
         }
+        
+        @Override
+        public StringBuilder asValue(CriteriaQueryImpl<?> q) {
+            StringBuilder buffer = Expressions.asValue(q, e, negate ? " NOT IN " : " IN ", OPEN_BRACE);
+            for (int i = 0; i < _exps.size(); i++) {
+                buffer.append(((Equal)_exps.get(i)).e2.asValue(q)).append(i+1 == _exps.size() ? CLOSE_BRACE : COMMA);
+            }
+            return buffer;
+        }        
     }
     
     public static class Case<T> extends ExpressionImpl<T> implements QueryBuilder.Case<T> {
         private final List<Expression<? extends T>> thens = new ArrayList<Expression<? extends T>>();
-        private final List<Expression<Boolean>> whens     = new ArrayList<Expression<Boolean>>();
+        private final List<Expression<Boolean>> whens = new ArrayList<Expression<Boolean>>();
         private Expression<? extends T> otherwise;
 
         public Case(Class<T> cls) {
@@ -1146,8 +1462,8 @@ public class Expressions {
             int size = whens.size();
             org.apache.openjpa.kernel.exps.Expression[] exps = new org.apache.openjpa.kernel.exps.Expression[size];
             for (int i = 0; i < size; i++) {
-                org.apache.openjpa.kernel.exps.Expression expr = ((Expressions.BinaryLogicalExpression)whens.get(i)).
-                    toKernelExpression(factory, model, q);
+                org.apache.openjpa.kernel.exps.Expression expr = 
+                    ((ExpressionImpl<?>)whens.get(i)).toKernelExpression(factory, model, q);
                 Value action = Expressions.toValue((ExpressionImpl<?>)thens.get(i), factory, model, q);
                 exps[i] = factory.whenCondition(expr, action);
             }
@@ -1157,10 +1473,24 @@ public class Expressions {
         }
         
         public void acceptVisit(CriteriaExpressionVisitor visitor) {
-            super.acceptVisit(visitor);
-            Expressions.acceptVisit(visitor, thens.toArray(new ExpressionImpl[thens.size()]));
-            Expressions.acceptVisit(visitor, whens.toArray(new ExpressionImpl[whens.size()]));
-            Expressions.acceptVisit(visitor, otherwise);
+            visitor.enter(this);
+            for (int i = 0; i < whens.size(); i++) {
+                Expressions.visitChildren(visitor, whens.get(i));
+                Expressions.visitChildren(visitor, thens.get(i));
+            }
+            Expressions.visitChildren(visitor, otherwise);
+            visitor.exit(this);
+        }
+        
+        @Override
+        public StringBuilder asValue(CriteriaQueryImpl<?> q) {
+            StringBuilder buffer = new StringBuilder("CASE ");
+            int size = whens.size();
+            for (int i = 0; i < size; i++) {
+                buffer.append(Expressions.asValue(q, " WHEN ", whens.get(i), " THEN ", thens.get(i)));
+            }
+            buffer.append(Expressions.asValue(q, " ELSE ", otherwise, " END"));
+            return buffer;
         }
     }
 
@@ -1219,10 +1549,25 @@ public class Expressions {
         }
         
         public void acceptVisit(CriteriaExpressionVisitor visitor) {
-            super.acceptVisit(visitor);
-            Expressions.acceptVisit(visitor, thens.toArray(new ExpressionImpl[thens.size()]));
-            Expressions.acceptVisit(visitor, whens.toArray(new ExpressionImpl[whens.size()]));
-            Expressions.acceptVisit(visitor, otherwise, caseOperand);
+            visitor.enter(this);
+            Expressions.visitChildren(visitor, caseOperand);
+            for (int i = 0; i < whens.size(); i++) {
+                Expressions.visitChildren(visitor, whens.get(i));
+                Expressions.visitChildren(visitor, thens.get(i));
+            }
+            Expressions.visitChildren(visitor, otherwise);
+            visitor.exit(this);
+        }
+        
+        @Override
+        public StringBuilder asValue(CriteriaQueryImpl<?> q) {
+            StringBuilder buffer = new StringBuilder("CASE ");
+            int size = whens.size();
+            for (int i = 0; i < size; i++) {
+                buffer.append(Expressions.asValue(q, " WHEN ", whens.get(i), " THEN ", thens.get(i)));
+            }
+            buffer.append(Expressions.asValue(q, " ELSE ", otherwise, " END"));
+            return buffer;
         }
     }
 
@@ -1233,8 +1578,12 @@ public class Expressions {
         
         @Override
         public Value toValue(ExpressionFactory factory, MetamodelImpl model, CriteriaQueryImpl<?> q) {
-            return factory.toLowerCase(
-                Expressions.toValue(e, factory, model, q));
+            return factory.toLowerCase(Expressions.toValue(e, factory, model, q));
+        }
+        
+        @Override
+        public StringBuilder asValue(CriteriaQueryImpl<?> q) {
+            return Expressions.asValue(q, "LOWER", OPEN_BRACE, e, CLOSE_BRACE);
         }
     }
 
@@ -1244,10 +1593,13 @@ public class Expressions {
         }
         
         @Override
-        public Value toValue(ExpressionFactory factory, MetamodelImpl model,
-            CriteriaQueryImpl<?> q) {
-            return factory.toUpperCase(
-                Expressions.toValue(e, factory, model, q));
+        public Value toValue(ExpressionFactory factory, MetamodelImpl model, CriteriaQueryImpl<?> q) {
+            return factory.toUpperCase(Expressions.toValue(e, factory, model, q));
+        }
+        
+        @Override
+        public StringBuilder asValue(CriteriaQueryImpl<?> q) {
+            return Expressions.asValue(q, "UPPER", OPEN_BRACE, e, CLOSE_BRACE);
         }
     }
 
@@ -1260,6 +1612,11 @@ public class Expressions {
         public Value toValue(ExpressionFactory factory, MetamodelImpl model, CriteriaQueryImpl<?> q) {
             return factory.stringLength(Expressions.toValue(e, factory, model, q));
         }
+        
+        @Override
+        public StringBuilder asValue(CriteriaQueryImpl<?> q) {
+            return Expressions.asValue(q, "LENGTH", OPEN_BRACE, e, CLOSE_BRACE);
+        }
     }
     
     public static abstract class SubqueryPredicate<X> extends PredicateImpl {
@@ -1271,8 +1628,7 @@ public class Expressions {
         }
         
         public void acceptVisit(CriteriaExpressionVisitor visitor) {
-            super.acceptVisit(visitor);
-            Expressions.acceptVisit(visitor, e);
+            Expressions.acceptVisit(visitor, this, e);
         }
     }
      
@@ -1285,8 +1641,7 @@ public class Expressions {
         }
         
         public void acceptVisit(CriteriaExpressionVisitor visitor) {
-            super.acceptVisit(visitor);
-            if (e != null) e.acceptVisit(visitor);
+            Expressions.acceptVisit(visitor, this, e);
         }
     }
 
@@ -1307,6 +1662,11 @@ public class Expressions {
                 factory.isNotEmpty(Expressions.toValue(e, factory, model, q));
             return isNegated() ? factory.not(exists) : exists;
         }        
+        
+        @Override
+        public StringBuilder asValue(CriteriaQueryImpl<?> q) {
+            return Expressions.asValue(q, isNegated() ? "NOT" : "", " EXISTS", OPEN_BRACE, e, CLOSE_BRACE);
+        }
     }
     
     public static class All<X> extends SubqueryExpression<X> {
@@ -1319,6 +1679,11 @@ public class Expressions {
             CriteriaQueryImpl<?> q) {
             return factory.all(Expressions.toValue(e, factory, model, q));
         }
+        
+        @Override
+        public StringBuilder asValue(CriteriaQueryImpl<?> q) {
+            return Expressions.asValue(q, "ALL", OPEN_BRACE, e, CLOSE_BRACE);
+        }
     }
 
     public static class Any<X> extends SubqueryExpression<X> {
@@ -1329,6 +1694,11 @@ public class Expressions {
         @Override
         public Value toValue(ExpressionFactory factory, MetamodelImpl model, CriteriaQueryImpl<?> q) {
             return factory.any(Expressions.toValue(e, factory, model, q));
+        }
+        
+        @Override
+        public StringBuilder asValue(CriteriaQueryImpl<?> q) {
+            return Expressions.asValue(q, "ANY", OPEN_BRACE, e, CLOSE_BRACE);
         }
     }
 
@@ -1351,8 +1721,12 @@ public class Expressions {
         }        
         
         public void acceptVisit(CriteriaExpressionVisitor visitor) {
-            super.acceptVisit(visitor);
-            Expressions.acceptVisit(visitor, e);
+            Expressions.acceptVisit(visitor, this, e);
+        }
+        
+        @Override
+        public StringBuilder asValue(CriteriaQueryImpl<?> q) {
+            return Expressions.asValue(q, "NOT", OPEN_BRACE, e, CLOSE_BRACE);
         }
     }
     
@@ -1372,8 +1746,12 @@ public class Expressions {
         }
         
         public void acceptVisit(CriteriaExpressionVisitor visitor) {
-            super.acceptVisit(visitor);
-            Expressions.acceptVisit(visitor, actual);
+            Expressions.acceptVisit(visitor, this, actual);
+        }
+        
+        @Override
+        public StringBuilder asValue(CriteriaQueryImpl<?> q) {
+            return actual.asValue(q);
         }
     }
     
@@ -1403,9 +1781,30 @@ public class Expressions {
         }
         
         public void acceptVisit(CriteriaExpressionVisitor visitor) {
-            super.acceptVisit(visitor);
-            Expressions.acceptVisit(visitor, _args);
+            Expressions.acceptVisit(visitor, this, _args);
         }
     }
 
+    public static class DelegatingExpression<X> extends ExpressionImpl<X> {
+        final ExpressionImpl<? extends X> _delegate;
+        public DelegatingExpression(ExpressionImpl<? extends X> del) {
+            super((Class<X>)del.getJavaType());
+            _delegate = del;
+        }
+        
+        @Override
+        Value toValue(ExpressionFactory factory, MetamodelImpl model, CriteriaQueryImpl<?> q) {
+            return _delegate.toValue(factory, model, q);
+        }
+        
+        @Override
+        public org.apache.openjpa.kernel.exps.Expression toKernelExpression(
+            ExpressionFactory factory, MetamodelImpl model, CriteriaQueryImpl<?> q) {
+            return _delegate.toKernelExpression(factory, model, q);
+        }
+        
+        public void acceptVisit(CriteriaExpressionVisitor visitor) {
+            Expressions.acceptVisit(visitor, this, _delegate);
+        }
+    }
 }

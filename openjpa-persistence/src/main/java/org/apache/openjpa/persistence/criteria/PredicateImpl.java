@@ -30,23 +30,32 @@ import org.apache.openjpa.kernel.exps.ExpressionFactory;
 import org.apache.openjpa.persistence.meta.MetamodelImpl;
 
 public class PredicateImpl extends ExpressionImpl<Boolean> implements Predicate {
-    private static final ExpressionImpl<Integer> ONE = new Expressions.Constant<Integer>(1);
+    private static final ExpressionImpl<Integer> ONE  = new Expressions.Constant<Integer>(1);
     public static final ExpressionImpl<Boolean> TRUE  = new Expressions.Equal(ONE,ONE);
     public static final ExpressionImpl<Boolean> FALSE = new Expressions.Equal(ONE,ONE).negate();
     
     List<Expression<Boolean>> _exps;
-    BooleanOperator _op = BooleanOperator.AND;
-    boolean _negated = false;
+    protected final BooleanOperator _op;
+    private boolean _negated = false;
 
+    /**
+     * A predicate with empty name and AND operator.
+     */
     protected PredicateImpl() {
-        super(Boolean.class);
+        this(BooleanOperator.AND);
     }
-
+    
+    /**
+     * A predicate with given name and given operator.
+     */
     protected PredicateImpl(BooleanOperator op) {
-        this();
+        super(Boolean.class);
         _op = op;
     }
 
+    /**
+     * A predicate with given name, given operator with given arguments.
+     */
     protected PredicateImpl(BooleanOperator op, Predicate...restrictions) {
         this(op);
         if (restrictions != null) {
@@ -55,6 +64,9 @@ public class PredicateImpl extends ExpressionImpl<Boolean> implements Predicate 
         }
     }
 
+    /**
+     * Adds the given predicate expression.
+     */
     public PredicateImpl add(Expression<Boolean> s) {
         if (_exps == null)
             _exps = new ArrayList<Expression<Boolean>>();
@@ -63,14 +75,14 @@ public class PredicateImpl extends ExpressionImpl<Boolean> implements Predicate 
     }
 
     public List<Expression<Boolean>> getExpressions() {
-        return _exps == null ? Collections.EMPTY_LIST : new CopyOnWriteArrayList<Expression<Boolean>>(_exps);
+        return Expressions.returnCopy(_exps);
     }
 
-    public BooleanOperator getOperator() {
+    public final BooleanOperator getOperator() {
         return _op;
     }
 
-    public boolean isNegated() {
+    public final boolean isNegated() {
         return _negated;
     }
 
@@ -125,12 +137,14 @@ public class PredicateImpl extends ExpressionImpl<Boolean> implements Predicate 
     }
 
     public void acceptVisit(CriteriaExpressionVisitor visitor) {
-        if (_exps == null)
-            return;
-        for (Expression<?> e : _exps) {
-            ((ExpressionImpl<?>)e).acceptVisit(visitor);
-        }
+        Expressions.acceptVisit(visitor, this, _exps == null ? null : _exps.toArray(new Expression<?>[_exps.size()]));
     }
+    
+    public StringBuilder asValue(CriteriaQueryImpl<?> q) {
+        return Expressions.asValue(q, _exps == null ? null : _exps.toArray(new Expression<?>[_exps.size()]), 
+            " " +_op + " ");
+    }
+
     
     public static class And extends PredicateImpl {
         public And(Expression<Boolean> x, Expression<Boolean> y) {

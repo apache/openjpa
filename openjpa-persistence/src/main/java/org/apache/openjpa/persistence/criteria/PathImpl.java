@@ -46,7 +46,7 @@ import org.apache.openjpa.persistence.meta.MetamodelImpl;
 /**
  * Path is an expression often representing a persistent attribute traversed from another (parent) path.
  * The type of the path is the type of the persistent attribute.
- * If the persistent attribute is bindable, then further path can be travesered from this path. 
+ * If the persistent attribute is bindable, then further path can be traversed from this path. 
  * 
  * @author Pinaki Poddar
  * @author Fay Wang
@@ -58,7 +58,7 @@ public class PathImpl<Z,X> extends ExpressionImpl<X> implements Path<X> {
     protected final PathImpl<?,Z> _parent;
     protected final Members.Member<? super Z,?> _member;
     private boolean isEmbedded = false;
-    protected PathImpl<?,?> _correlatedPath;
+    private PathImpl<?,?> _correlatedPath;
     
     /**
      * Protected constructor use by root path which neither represent a member nor has a parent. 
@@ -100,7 +100,7 @@ public class PathImpl<Z,X> extends ExpressionImpl<X> implements Path<X> {
     /**
      *  Return the parent "node" in the path or null if no parent.
      */
-    public Path<Z> getParentPath() {
+    public final Path<Z> getParentPath() {
         return _parent;
     }
     
@@ -126,12 +126,25 @@ public class PathImpl<Z,X> extends ExpressionImpl<X> implements Path<X> {
         return member != null ? member : getInnermostMember(parent._parent,  parent._member); 
     }
     
+    /**
+     * Makes this path correlated to the given path.  
+     */
     public void setCorrelatedPath(PathImpl<?,?> correlatedPath) {
         _correlatedPath = correlatedPath;
     }
     
+    /**
+     * Gets the path correlated to this path, if any.
+     */
     public PathImpl<?,?> getCorrelatedPath() {
         return _correlatedPath;
+    }
+    
+    /**
+     * Affirms if this path is correlated to another path.
+     */
+    public boolean isCorrelated() {
+        return _correlatedPath != null;
     }
     
     /**
@@ -140,7 +153,7 @@ public class PathImpl<Z,X> extends ExpressionImpl<X> implements Path<X> {
     @Override
     public Value toValue(ExpressionFactory factory, MetamodelImpl model,  CriteriaQueryImpl<?> q) {
         if (q.isRegistered(this))
-            return q.getValue(this);
+            return q.getRegisteredValue(this);
         org.apache.openjpa.kernel.exps.Path path = null;
         SubqueryImpl<?> subquery = q.getDelegator();
         boolean allowNull = _parent == null ? false : _parent instanceof Join 
@@ -264,5 +277,22 @@ public class PathImpl<Z,X> extends ExpressionImpl<X> implements Path<X> {
      */
     public Expression<Class<? extends X>> type() {
         return new Expressions.Type<Class<? extends X>>(this);
+    }
+    
+    public StringBuilder asValue(CriteriaQueryImpl<?> q) {
+        StringBuilder buffer = new StringBuilder();
+        if (_parent != null) {
+            Value var = q.getRegisteredVariable(_parent);
+            buffer.append(var != null ? var.getName() : _parent.asValue(q)).append(".");
+        }
+        if (_member != null) {
+            buffer.append(_member.fmd.getName());
+        } 
+        return buffer;
+    }
+    
+    public StringBuilder asVariable(CriteriaQueryImpl<?> q) {
+        Value var = q.getRegisteredVariable(this);
+        return asValue(q).append(" ").append(var == null ? "?" : var.getName());
     }
 }
