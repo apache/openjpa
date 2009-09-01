@@ -96,4 +96,9 @@ public class ParameterExpressionImpl<T> extends ExpressionImpl<T>
         
         return param;
     }   
+    
+    @Override
+    public StringBuilder asValue(CriteriaQueryImpl<?> q) {
+        return Expressions.asValue(q, ":", _name == null ? "param" : _name);
+    }
 }
