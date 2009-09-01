@@ -336,9 +336,9 @@ public class DataCacheStoreManager
     public boolean initialize(OpenJPAStateManager sm, PCState state, FetchConfiguration fetch, Object edata) {
         boolean rval; 
         DataCache cache = sm.getMetaData().getDataCache();
+        boolean updateCache = _ctx.getCacheStoreMode() != DataCacheStoreMode.BYPASS && _ctx.getPopulateDataCache();
         if (cache == null || sm.isEmbedded() || _ctx.getCacheRetrieveMode() == DataCacheRetrieveMode.BYPASS
             || _ctx.getCacheStoreMode() == DataCacheStoreMode.REFRESH) {
-            // save the return value and return later in case we need to update the cache)
             rval = super.initialize(sm, state, fetch, edata);
         }
 
@@ -349,18 +349,17 @@ public class DataCacheStoreManager
                 //### addressed for bug 511
                 sm.initialize(data.getType(), state);
                 data.load(sm, fetch, edata);
-                return true;
+                // no need to update the cache. 
+                updateCache = false;
+                rval = true;
+            } else {
+                // initialize from store manager
+                rval = super.initialize(sm, state, fetch, edata);
             }
-
-            // initialize from store manager
-            if (!super.initialize(sm, state, fetch, edata)) {
-                return false;
-            }
-            rval = true; // same as rval = super.initialize(...)
         }
 
-        // update the cache if configured appropriately. 
-        if (_ctx.getCacheStoreMode() == DataCacheStoreMode.REFRESH && _ctx.getPopulateDataCache()) {
+        if (cache != null && (rval && updateCache)) {
+            // update cache if the result came from the database and configured to store or refresh the cache.
             cacheStateManager(cache, sm);
         }
         return rval;

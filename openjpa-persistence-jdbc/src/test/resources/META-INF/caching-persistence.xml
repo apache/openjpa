@@ -67,4 +67,12 @@
             <property name="openjpa.jdbc.SynchronizeMappings" value="buildSchema(ForeignKeys=true)" />
         </properties>
     </persistence-unit>
+        <persistence-unit name="cache-mode-empty">
+        <mapping-file>META-INF/caching-orm.xml</mapping-file>
+        <properties>
+            <!-- Connection info is passed in via system properties -->
+            <!-- Cache configuration ie openjpa.DataCache is passed in at EMF initialization -->
+            <property name="openjpa.jdbc.SynchronizeMappings" value="buildSchema(ForeignKeys=true)" />
+        </properties>
+    </persistence-unit>
 </persistence>
