@@ -7,7 +7,7 @@
     version="2.0">
     <xsd:annotation>
         <xsd:documentation>
-            @(#)persistence_2_0.xsd 1.0 July 17 2009
+            @(#)persistence_2_0.xsd 1.0 August 31 2009
         </xsd:documentation>
     </xsd:annotation>
     <xsd:annotation>

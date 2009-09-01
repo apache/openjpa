@@ -127,7 +127,7 @@ schema can be found at
     version="2.0"&gt;
     &lt;xsd:annotation&gt;
         &lt;xsd:documentation&gt;
-            @(#)persistence_2_0.xsd 1.0 July 17 2009
+            @(#)persistence_2_0.xsd 1.0 August 31 2009
         &lt;/xsd:documentation&gt;
     &lt;/xsd:annotation&gt;
     &lt;xsd:annotation&gt;

@@ -7,7 +7,7 @@
     version="2.0">
     <xsd:annotation>
         <xsd:documentation>
-            @(#)orm_2_0.xsd 2.0 August 11 2009
+            @(#)orm_2_0.xsd 2.0 August 31 2009
         </xsd:documentation>
     </xsd:annotation>
     <xsd:annotation>
