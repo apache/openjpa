@@ -101,6 +101,7 @@ public class XMLPersistenceMetaDataParser
     protected static final String ELEM_CASCADE_MER = "cascade-merge";
     protected static final String ELEM_CASCADE_REM = "cascade-remove";
     protected static final String ELEM_CASCADE_REF = "cascade-refresh";
+    protected static final String ELEM_CASCADE_DET = "cascade-detach";
     protected static final String ELEM_PU_META = "persistence-unit-metadata";
     protected static final String ELEM_PU_DEF = "persistence-unit-defaults";
     protected static final String ELEM_XML_MAP_META_COMPLETE =
@@ -125,6 +126,7 @@ public class XMLPersistenceMetaDataParser
         _elems.put(ELEM_CASCADE_REM, ELEM_CASCADE_REM);
         _elems.put(ELEM_CASCADE_MER, ELEM_CASCADE_MER);
         _elems.put(ELEM_CASCADE_REF, ELEM_CASCADE_REF);
+        _elems.put(ELEM_CASCADE_DET, ELEM_CASCADE_DET);
         _elems.put(ELEM_PU_META, ELEM_PU_META);
         _elems.put(ELEM_PU_DEF, ELEM_PU_DEF);
         _elems.put(ELEM_XML_MAP_META_COMPLETE, ELEM_XML_MAP_META_COMPLETE);
@@ -570,7 +572,7 @@ public class XMLPersistenceMetaDataParser
             ret = isMetaDataMode();
         else if (tag == ELEM_CASCADE_ALL || tag == ELEM_CASCADE_PER
             || tag == ELEM_CASCADE_MER || tag == ELEM_CASCADE_REM
-            || tag == ELEM_CASCADE_REF)
+            || tag == ELEM_CASCADE_REF || tag == ELEM_CASCADE_DET)
             ret = startCascade(tag, attrs);
 
         if (ret)
@@ -718,7 +720,7 @@ public class XMLPersistenceMetaDataParser
             ret = isMetaDataMode();
         else if (tag == ELEM_CASCADE_ALL || tag == ELEM_CASCADE_PER
             || tag == ELEM_CASCADE_MER || tag == ELEM_CASCADE_REM
-            || tag == ELEM_CASCADE_REF)
+            || tag == ELEM_CASCADE_REF || tag == ELEM_CASCADE_DET)
             ret = startCascade(tag, attrs);
 
         if (ret)
@@ -1161,6 +1163,8 @@ public class XMLPersistenceMetaDataParser
             cascades.add(MERGE);
         if (all || ELEM_CASCADE_REF == tag)
             cascades.add(REFRESH);
+        if (all || ELEM_CASCADE_DET == tag)
+            cascades.add(DETACH);
         return true;
     }
 

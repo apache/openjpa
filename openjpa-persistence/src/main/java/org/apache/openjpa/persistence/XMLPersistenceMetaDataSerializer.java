@@ -1032,7 +1032,12 @@ public class XMLPersistenceMetaDataSerializer
                 cascades = new ArrayList<String>();
             cascades.add("cascade-refresh");
         }
-        if (cascades != null && cascades.size() == 4) // ALL
+        if (vmd.getCascadeDetach() == ValueMetaData.CASCADE_IMMEDIATE) {
+            if (cascades == null)
+                cascades = new ArrayList<String>();
+            cascades.add("cascade-detach");
+        }
+        if (cascades != null && cascades.size() == 5) // ALL
         {
             cascades.clear();
             cascades.add("cascade-all");
