@@ -28,6 +28,8 @@ import javax.persistence.ManyToOne;
 public class CD extends Merchandise {
     private String label;
     
+    private int status; 
+    
     @ManyToOne
     private Singer singer;
 
@@ -55,4 +57,12 @@ public class CD extends Merchandise {
         this.singer = singer;
         singer.addCd(this);
     }
+    
+    public int getStatus() {
+        return status;
+    }
+    
+    public void setStatus(int status) {
+        this.status = status;
+    }     
 }

@@ -702,6 +702,43 @@ public class TestPreparedQueryCache extends TestCase {
         assertNotNull(book2.getAuthors());
         assertFalse(book2.getAuthors().isEmpty());
     }
+
+    public void testQueryWithUserDefinedAndInternalParamtersInSubquery() {
+        String jpql = "Select a From Address a Where Not Exists ("
+            + "     Select s.id From Singer As s Where "
+            + "        s.address = a  And "
+            + "        Not ("
+            + "              (s.firstName = :firstName) "
+            + "              Or "
+            + "              ("
+            + "                  ("
+            + "                      exists (select c.id from CD c where c.singer = s and c.status = 1) And "
+            + "                      s.lastName = :lastName"
+            + "                  ) "
+            + "                  Or "
+            + "                  ("
+            + "                      not exists (Select c.id from CD c where c.singer = s and c.status = 2)"
+            + "                  )"
+            + "              )"
+            + "            )"
+            + "     )";
+        
+        Query jQ = em.createQuery(jpql);
+        jQ.setParameter("lastName", "LastName");
+        jQ.setParameter("firstName", "FirstName");
+        List jList = jQ.getResultList();
+        
+        Query jQ1 = em.createQuery(jpql);
+        jQ1.setParameter("lastName", "LastName1");
+        jQ1.setParameter("firstName", "FirstName1");
+        try {
+            List jList1 = jQ1.getResultList();
+        } catch (Exception e) {
+            fail("Fail to execute again - Parameters are messed up:" + e.getMessage());
+        }
+    }
+    
+    
     PreparedQueryCache getPreparedQueryCache() {
         return emf.getConfiguration().getQuerySQLCacheInstance();
     }

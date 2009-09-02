@@ -166,6 +166,20 @@ public final class SQLBuffer
                 _userIndex.add(newIndex);
                 _userIndex.add(userParam);
             }
+        } else { 
+            if (_userIndex != null) {
+                List userIndex = new ArrayList();
+                for (int i = 0; i < _userIndex.size(); i+=2) {
+                    int oldIndex = ((Integer)_userIndex.get(i)).intValue();
+                    Object userParam = _userIndex.get(i+1);
+                    if (oldIndex >= paramIndex) 
+                        userIndex.add(oldIndex + paramIndex);
+                    else 
+                        userIndex.add(oldIndex);
+                    userIndex.add(userParam);
+                }
+                _userIndex = userIndex;
+            }
         }
     }
 
