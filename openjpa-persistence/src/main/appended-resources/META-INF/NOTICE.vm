@@ -1,6 +1,11 @@
    This is an implementation of an early-draft specification developed under the   Java Community Process (JCP) and is made available for testing and evaluation   purposes only. The code is not compatible with any specification of the JCP.
 
-   OpenJPA is bundled with the schemas from the JPA specification, by
-     Sun Microsystems and licensed under the CDDL 1.0. The source code is
-     available at: https://glassfish.dev.java.net/source/browse/glassfish/
+   OpenJPA includes the persistence and orm schemas from the JPA specifications.
+     Copyright 2005-2007 Sun Microsystems, Inc. All rights reserved.
+     OpenJPA elects to include this software in this distribution under the
+        CDDL license.
+     You can obtain a copy of the License at:
+       https://glassfish.dev.java.net/public/CDDL+GPL.html
+     The source code is available at:
+        https://glassfish.dev.java.net/source/browse/glassfish/
 
