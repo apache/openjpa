@@ -92,7 +92,7 @@ public class CriteriaBuilder implements OpenJPACriteriaBuilder, ExpressionParser
      *  @param resultClass  type of the query result
      *  @return query object
      */
-    public <T> CriteriaQuery<T> createQuery(Class<T> resultClass) {
+    public <T> OpenJPACriteriaQuery<T> createQuery(Class<T> resultClass) {
         return new CriteriaQueryImpl<T>(_model, resultClass);
     }
 
@@ -101,7 +101,7 @@ public class CriteriaBuilder implements OpenJPACriteriaBuilder, ExpressionParser
      *  objects as its result.
      *  @return query object
      */
-    public CriteriaQuery<Tuple> createTupleQuery() {
+    public OpenJPACriteriaQuery<Tuple> createTupleQuery() {
         return new CriteriaQueryImpl<Tuple>(_model, Tuple.class);
     }
 
@@ -498,7 +498,7 @@ public class CriteriaBuilder implements OpenJPACriteriaBuilder, ExpressionParser
     }
 
     public Predicate or(Predicate... restrictions) {
-        return new PredicateImpl.Or();
+        return new PredicateImpl.Or(restrictions);
     }
 
     public Predicate or(Expression<Boolean> x, Expression<Boolean> y) {

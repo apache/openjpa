@@ -141,8 +141,11 @@ public class PredicateImpl extends ExpressionImpl<Boolean> implements Predicate 
     }
     
     public StringBuilder asValue(CriteriaQueryImpl<?> q) {
-        return Expressions.asValue(q, _exps == null ? null : _exps.toArray(new Expression<?>[_exps.size()]), 
-            " " +_op + " ");
+        boolean braces = _exps != null && _exps.size() > 1;
+        StringBuilder buffer =  Expressions.asValue(q, _exps == null ? null : 
+            _exps.toArray(new Expression<?>[_exps.size()]), " " +_op + " ");
+        if (braces) buffer.insert(0, "(").append(")");
+        return buffer;
     }
 
     
