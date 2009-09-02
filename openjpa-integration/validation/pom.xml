@@ -132,14 +132,14 @@
                 <dependency>
                     <groupId>javax.validation</groupId>
                     <artifactId>validation-api</artifactId>
-                    <version>1.0.CR3</version>
+                    <version>1.0.CR5</version>
                     <scope>test</scope>
                 </dependency>
                 <!-- Hibernate that implements 1.0.CR3 -->
                 <dependency>
                     <groupId>org.hibernate</groupId>
                     <artifactId>hibernate-validator</artifactId>
-                    <version>4.0.0.Beta2</version>
+                    <version>4.0.0.CR1</version>
                     <scope>test</scope>
                     <exclusions>
                         <!-- force usage of the geronimo-jpa_2.0_spec -->

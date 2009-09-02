@@ -36,8 +36,6 @@ public class TestMappedSuper extends PersistenceTestCase {
     /*
      * Verify constraints defined via XML on a mapped superclass are validated.
      */
-    @AllowFailure(message="This test currently fails with the CR3 version of" +
-        " the RI.  See: https://forum.hibernate.org/viewtopic.php?f=26&t=998810")
     public void testMappedSuperXMLConstraint() {
         OpenJPAEntityManagerFactorySPI emf = (OpenJPAEntityManagerFactorySPI) 
         OpenJPAPersistence.createEntityManagerFactory(
