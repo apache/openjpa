@@ -123,11 +123,11 @@ public class TestQueryParameters extends SingleEMFTestCase {
         
         Parameter<?> param1 = q.getParameter(1);
         assertTrue(param1 instanceof ParameterImpl);
-        assertEquals(long.class, param1.getJavaType());
+        assertEquals(long.class, param1.getParameterType());
         
         Parameter<?> param2 = q.getParameter(2);
         assertTrue(param2 instanceof ParameterImpl);
-        assertEquals(String.class, param2.getJavaType());
+        assertEquals(String.class, param2.getParameterType());
     }
     
     public void testNamedParameterValueTypeInJPQLQuery() {
@@ -138,11 +138,11 @@ public class TestQueryParameters extends SingleEMFTestCase {
         
         Parameter<?> param1 = q.getParameter("id");
         assertTrue(param1 instanceof ParameterImpl);
-        assertEquals(long.class, param1.getJavaType());
+        assertEquals(long.class, param1.getParameterType());
         
         Parameter<?> param2 = q.getParameter("name");
         assertTrue(param2 instanceof ParameterImpl);
-        assertEquals(String.class, param2.getJavaType());
+        assertEquals(String.class, param2.getParameterType());
     }
     
     public void testNamedParameterInPreparedQuery() {
@@ -240,11 +240,11 @@ public class TestQueryParameters extends SingleEMFTestCase {
         
         Parameter<?> param1 = q.getParameter(1);
         assertTrue(param1 instanceof ParameterImpl);
-        assertEquals(long.class, param1.getJavaType());
+        assertEquals(long.class, param1.getParameterType());
         
         Parameter<?> param2 = q.getParameter(2);
         assertTrue(param2 instanceof ParameterImpl);
-        assertEquals(String.class, param2.getJavaType());
+        assertEquals(String.class, param2.getParameterType());
     }
     
     public void testNamedParameterValueTypeInNamedQuery() {
@@ -254,11 +254,11 @@ public class TestQueryParameters extends SingleEMFTestCase {
         
         Parameter<?> param1 = q.getParameter("id");
         assertTrue(param1 instanceof ParameterImpl);
-        assertEquals(long.class, param1.getJavaType());
+        assertEquals(long.class, param1.getParameterType());
         
         Parameter<?> param2 = q.getParameter("name");
         assertTrue(param2 instanceof ParameterImpl);
-        assertEquals(String.class, param2.getJavaType());
+        assertEquals(String.class, param2.getParameterType());
     }
     
     public void testCriteriaQueryWithNamedParameter() {

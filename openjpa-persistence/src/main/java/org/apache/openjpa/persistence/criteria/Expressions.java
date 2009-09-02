@@ -193,7 +193,7 @@ public class Expressions {
         }
         
         public UnaryFunctionalExpression(Expression<X> e) {
-            this(e.getJavaType(), e);
+            this((Class<X>)e.getJavaType(), e);
         }
         
         public void acceptVisit(CriteriaExpressionVisitor visitor) {
@@ -1263,15 +1263,13 @@ public class Expressions {
         private Expression<?> val2;
 
         public Nullif(Expression<T> x, Expression<?> y) {
-            super(x.getJavaType());
+            super((Class<T>)x.getJavaType());
             val1 = x;
             val2 = y;
         }
 
         public Nullif(Expression<T> x, T y) {
-            super(x.getJavaType());
-            val1 = x;
-            val2 = new Constant<T>(y);
+            this(x, new Constant<T>(y));
         }
 
         @Override
@@ -1636,7 +1634,7 @@ public class Expressions {
         final SubqueryImpl<X> e;
         
         public SubqueryExpression(Subquery<X> x) {
-            super(x.getJavaType());
+            super((Class<X>)x.getJavaType());
             e = (SubqueryImpl<X>)x;
         }
         

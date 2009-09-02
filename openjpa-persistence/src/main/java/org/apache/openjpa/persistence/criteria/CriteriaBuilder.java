@@ -310,7 +310,7 @@ public class CriteriaBuilder implements OpenJPACriteriaBuilder, ExpressionParser
     }
 
     public <E, C extends Collection<E>> Predicate isMember(Expression<E> e, Expression<C> c) {
-        return new Expressions.IsMember<E>(e.getJavaType(), e, c);
+        return new Expressions.IsMember<E>((Class<E>)e.getJavaType(), e, c);
     }
 
     public <C extends Collection<?>> Predicate isNotEmpty(Expression<C> collection) {

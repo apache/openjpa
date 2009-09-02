@@ -229,10 +229,10 @@ public class TestMetamodel extends SingleEMFTestCase {
         assertNotNull(superClass.getCollection("collectionRelation"));
         assertNotNull(superClass.getCollection("collectionRelation", ExplicitFieldAccess.class));
         
-        assertNotNull(subClass.getCollections());
-        assertNotNull(superClass.getCollections());
-        assertEquals(6, subClass.getCollections().size());
-        assertEquals(5, superClass.getCollections().size());
+        assertNotNull(subClass.getPluralAttributes());
+        assertNotNull(superClass.getPluralAttributes());
+        assertEquals(6, subClass.getPluralAttributes().size());
+        assertEquals(5, superClass.getPluralAttributes().size());
         
         assertNotNull(subClass.getDeclaredAttribute("mapRelationKeyEmbedded"));
         
@@ -243,10 +243,10 @@ public class TestMetamodel extends SingleEMFTestCase {
         
         assertNotNull(superClass.getDeclaredCollection("collectionRelation"));
         
-        assertNotNull(subClass.getDeclaredCollections());
-        assertNotNull(superClass.getDeclaredCollections());
-        assertEquals(1, subClass.getDeclaredCollections().size());
-        assertEquals(5, superClass.getDeclaredCollections().size());
+        assertNotNull(subClass.getDeclaredPluralAttributes());
+        assertNotNull(superClass.getDeclaredPluralAttributes());
+        assertEquals(1, subClass.getDeclaredPluralAttributes().size());
+        assertEquals(5, superClass.getDeclaredPluralAttributes().size());
         
         assertNotNull(superClass.getDeclaredList("listRelation"));
         assertNotNull(superClass.getDeclaredList("listRelation", ExplicitFieldAccess.class));

@@ -237,10 +237,22 @@ public class CriteriaQueryImpl<T> implements OpenJPACriteriaQuery<T>, AliasConte
 
     public CriteriaQuery<T> groupBy(Expression<?>... grouping) {
     	_groups = new ArrayList<Expression<?>>();
+    	if (grouping == null)
+    	    return this;
     	for (Expression<?> e : grouping)
     		_groups.add(e);
         return this;
     }
+    
+    public CriteriaQuery<T> groupBy(List<Expression<?>> grouping) {
+        _groups = new ArrayList<Expression<?>>();
+        if (grouping == null)
+            return this;
+        for (Expression<?> e : grouping)
+            _groups.add(e);
+        return this;
+    }
+
 
     public CriteriaQuery<T> having(Expression<Boolean> restriction) {
         _having = new PredicateImpl().add(restriction);
@@ -254,8 +266,23 @@ public class CriteriaQueryImpl<T> implements OpenJPACriteriaQuery<T>, AliasConte
         return this;
     }
 
-    public CriteriaQuery<T> orderBy(Order... o) {
-        _orders = Arrays.asList(o);
+    public CriteriaQuery<T> orderBy(Order... orders) {
+        _orders = new ArrayList<Order>();
+        if (orders == null)
+            return this;
+        for (Order o : orders) {
+            _orders.add(o);
+        }
+        return this;
+    }
+    
+    public CriteriaQuery<T> orderBy(List<Order> orders) {
+        _orders = new ArrayList<Order>();
+        if (orders == null)
+            return this;
+        for (Order o : orders) {
+            _orders.add(o);
+        }
         return this;
     }
     

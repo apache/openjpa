@@ -156,6 +156,11 @@ public class SubqueryImpl<T> extends ExpressionImpl<T> implements Subquery<T> {
         _delegate.groupBy(grouping);
         return this;
     }
+    
+    public Subquery<T> groupBy(List<Expression<?>> grouping) {
+        _delegate.groupBy(grouping);
+        return this;
+    }
 
     public Subquery<T> having(Expression<Boolean> restriction) {
         _delegate.having(restriction);

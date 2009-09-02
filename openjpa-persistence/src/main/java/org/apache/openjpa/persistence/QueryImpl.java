@@ -757,7 +757,7 @@ public class QueryImpl<X> implements OpenJPAQuerySPI<X>, Serializable {
      */
     public <T> Parameter<T> getParameter(String name, Class<T> type) {
         Parameter<?> param = getParameter(name);
-        if (param.getJavaType().isAssignableFrom(type))
+        if (param.getParameterType().isAssignableFrom(type))
             throw new IllegalArgumentException(param + " does not match the requested type " + type);
         return (Parameter<T>)param;
     }
@@ -772,7 +772,7 @@ public class QueryImpl<X> implements OpenJPAQuerySPI<X>, Serializable {
      */
     public <T> Parameter<T> getParameter(int pos, Class<T> type) {
         Parameter<?> param = getParameter(pos);
-        if (param.getJavaType().isAssignableFrom(type))
+        if (param.getParameterType().isAssignableFrom(type))
             throw new IllegalArgumentException(param + " does not match the requested type " + type);
         return (Parameter<T>)param;
     }
@@ -1028,13 +1028,13 @@ public class QueryImpl<X> implements OpenJPAQuerySPI<X>, Serializable {
 
     void assertValueAssignable(Parameter<?> param, Object v) {
         if (v == null) {
-            if (param.getJavaType().isPrimitive())
+            if (param.getParameterType().isPrimitive())
                 throw new IllegalArgumentException(_loc.get("param-null-primitive", param).getMessage());
             return;
         }
-        if (!Filters.canConvert(v.getClass(), param.getJavaType(), true)) {
+        if (!Filters.canConvert(v.getClass(), param.getParameterType(), true)) {
             throw new IllegalArgumentException(_loc.get("param-type-mismatch", new Object[]{
-                param, getQueryString(), v, v.getClass().getName(), param.getJavaType().getName()}).getMessage());
+                param, getQueryString(), v, v.getClass().getName(), param.getParameterType().getName()}).getMessage());
         }
     }
     
