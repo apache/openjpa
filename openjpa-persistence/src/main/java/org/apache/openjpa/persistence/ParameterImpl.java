@@ -72,7 +72,7 @@ public class ParameterImpl<T> implements Parameter<T> {
         return _position;
     }
     
-    public Class<T> getJavaType() {
+    public Class<T> getParameterType() {
       return _expectedValueType;
     }
     
@@ -95,7 +95,7 @@ public class ParameterImpl<T> implements Parameter<T> {
     
     public String toString() {
         StringBuilder buf = new StringBuilder("Parameter");
-        buf.append("<" + getJavaType().getSimpleName() + ">");
+        buf.append("<" + getParameterType().getSimpleName() + ">");
         if (_name != null) {
             buf.append("('" + _name + "')");
         } else if (_position != null) {

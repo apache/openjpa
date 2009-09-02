@@ -290,7 +290,7 @@ public abstract class AbstractManagedType<X> extends Types.BaseType<X>
      * Returns all collection-valued attributes of the managed type.
      * 
      */
-    public java.util.Set<PluralAttribute<? super X, ?, ?>> getCollections() {
+    public java.util.Set<PluralAttribute<? super X, ?, ?>> getPluralAttributes() {
         return filter(attrs, new HashSet<PluralAttribute<? super X, ?, ?>>(),
                 pluralAttributeFilter);
     }
@@ -299,7 +299,7 @@ public abstract class AbstractManagedType<X> extends Types.BaseType<X>
      * Return all collection-valued attributes declared by the managed type.
      * 
      */
-    public java.util.Set<PluralAttribute<X, ?, ?>> getDeclaredCollections() {
+    public java.util.Set<PluralAttribute<X, ?, ?>> getDeclaredPluralAttributes() {
         return filter(attrs, new HashSet<PluralAttribute<X, ?, ?>>(),
                 declaredAttributeFilter, 
                 pluralAttributeFilter);

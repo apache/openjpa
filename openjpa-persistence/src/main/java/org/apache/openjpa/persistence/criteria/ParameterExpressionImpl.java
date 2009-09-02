@@ -101,4 +101,8 @@ public class ParameterExpressionImpl<T> extends ExpressionImpl<T>
     public StringBuilder asValue(CriteriaQueryImpl<?> q) {
         return Expressions.asValue(q, ":", _name == null ? "param" : _name);
     }
+    
+    public Class<T> getParameterType() {
+        return getJavaType();
+    }
 }
