@@ -425,12 +425,14 @@
 
         <!-- included so we can include it in the distribution -->
         <dependency>
-            <groupId>org.apache.geronimo.specs</groupId>
-            <artifactId>geronimo-validation_1.0_spec</artifactId>
-        </dependency>
-        <dependency>
             <groupId>org.apache.derby</groupId>
             <artifactId>derby</artifactId>
         </dependency>
+        <!-- excluded optional dependency that user should provide with BV impl
+        <dependency>
+            <groupId>org.apache.geronimo.specs</groupId>
+            <artifactId>geronimo-validation_1.0_spec</artifactId>
+        </dependency>
+        -->
     </dependencies>
 </project>

@@ -216,19 +216,21 @@
         </dependency>
         <dependency>
             <groupId>org.apache.geronimo.specs</groupId>
-            <artifactId>geronimo-jms_1.1_spec</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.geronimo.specs</groupId>
             <artifactId>geronimo-jta_1.1_spec</artifactId>
         </dependency>
         <dependency>
             <groupId>org.apache.geronimo.specs</groupId>
             <artifactId>geronimo-jpa_2.0_spec</artifactId>
         </dependency>
+        <!-- optional dependencies -->
+        <dependency>
+            <groupId>org.apache.geronimo.specs</groupId>
+            <artifactId>geronimo-jms_1.1_spec</artifactId>
+        </dependency>
         <dependency>
             <groupId>org.apache.geronimo.specs</groupId>
             <artifactId>geronimo-validation_1.0_spec</artifactId>
+            <scope>provided</scope>
         </dependency>
     </dependencies>
 </project>
