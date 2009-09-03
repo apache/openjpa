@@ -50,6 +50,7 @@ public abstract class AbstractCriteriaTestCase extends TestCase {
     protected abstract OpenJPAEntityManagerFactorySPI getEntityManagerFactory();
     
     protected abstract EntityManager getEntityManager();
+    private DBDictionary dict = null;
 
     /**
      * Create an entity manager factory for persistence unit <code>pu</code>. Put {@link #CLEAR_TABLES} in this list to
@@ -84,7 +85,7 @@ public abstract class AbstractCriteriaTestCase extends TestCase {
 
     void setDictionary() {
         JDBCConfiguration conf = (JDBCConfiguration) getEntityManagerFactory().getConfiguration();
-        DBDictionary dict = conf.getDBDictionaryInstance();
+        dict = conf.getDBDictionaryInstance();
         dict.requiresCastForComparisons = false;
         dict.requiresCastForMathFunctions = false;
     }
@@ -181,7 +182,10 @@ public abstract class AbstractCriteriaTestCase extends TestCase {
                     .get(i));
             }
         }
-        
+
+        if (!(dict instanceof DerbyDictionary))
+            return;
+
         if (expectedSQL != null) {
             assertEquals("SQL for JPQL and ExpectedSQL for " + jpql + " is different", jSQL.get(0), 
                     expectedSQL);
@@ -190,9 +194,6 @@ public abstract class AbstractCriteriaTestCase extends TestCase {
     }
 
     void executeAndCompareSQL(String jpql, String expectedSQL) {
-        JDBCConfiguration conf = (JDBCConfiguration) getEntityManagerFactory().getConfiguration();
-        DBDictionary dict = conf.getDBDictionaryInstance();
-
         Query jQ = getEntityManager().createQuery(jpql);
 
         List<String> jSQL = null;
@@ -218,9 +219,6 @@ public abstract class AbstractCriteriaTestCase extends TestCase {
     }
 
     void executeAndCompareSQL(Query jQ, String expectedSQL) {
-        JDBCConfiguration conf = (JDBCConfiguration) getEntityManagerFactory().getConfiguration();
-        DBDictionary dict = conf.getDBDictionaryInstance();
-
         List<String> jSQL = null;
         try {
             jSQL = executeQueryAndCollectSQL(jQ);
