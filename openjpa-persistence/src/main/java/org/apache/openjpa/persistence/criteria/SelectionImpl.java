@@ -52,11 +52,11 @@ public class SelectionImpl<X> extends TupleElementImpl<X>
         return false;
     }
     
-    public StringBuilder asValue(CriteriaQueryImpl<?> q) {
+    public StringBuilder asValue(AliasContext q) {
         throw new IllegalStateException(this.getClass().getSimpleName() + " can not be rendered as value");
     }
     
-    public StringBuilder asVariable(CriteriaQueryImpl<?> q) {
+    public StringBuilder asVariable(AliasContext q) {
         throw new IllegalStateException(this.getClass().getSimpleName() + " can not be rendered as variable");
     }
     

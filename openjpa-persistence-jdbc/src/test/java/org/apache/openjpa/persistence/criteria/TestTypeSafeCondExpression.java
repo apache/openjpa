@@ -112,13 +112,13 @@ public class TestTypeSafeCondExpression extends CriteriaTest {
 
     public void testLike1() {
         String jpql = "SELECT o.computerName FROM CompUser o "
-                 + "WHERE o.name LIKE 'Sha%' AND o.computerName NOT IN ('PC')";
+                 + "WHERE o.name LIKE 'Sha%' AND o.computerName NOT IN ('PC','Laptop')";
 
         CriteriaQuery<String> cq = cb.createQuery(String.class);
         Root<CompUser> o = cq.from(CompUser.class);
         cq.where(cb.and(
                     cb.like(o.get(CompUser_.name),"Sha%"), 
-                    cb.in(o.get(CompUser_.computerName)).value("PC").negate()
+                    cb.in(o.get(CompUser_.computerName)).value("PC").value("Laptop").negate()
                 ));
         
         cq.select(o.get(CompUser_.computerName));
@@ -128,13 +128,13 @@ public class TestTypeSafeCondExpression extends CriteriaTest {
     
     public void testLike2() {
         String jpql = "SELECT o.computerName FROM CompUser o "
-            + "WHERE o.name LIKE 'Sha%o_' AND o.computerName NOT IN ('UNIX')";
+            + "WHERE o.name LIKE 'Sha%o_' AND o.computerName NOT IN ('UNIX','DOS')";
 
         CriteriaQuery<String> cq = cb.createQuery(String.class);
         Root<CompUser> o = cq.from(CompUser.class);
         cq.where(cb.and(
                     cb.like(o.get(CompUser_.name),"Sha%o_"), 
-                    cb.in(o.get(CompUser_.computerName)).value("UNIX").negate()
+                    cb.in(o.get(CompUser_.computerName)).value("UNIX").value("DOS").negate()
                 ));
         cq.select(o.get(CompUser_.computerName));
         

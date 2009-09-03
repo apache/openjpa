@@ -110,4 +110,7 @@ public class FetchPathImpl<Z,X> extends PathImpl<Z,X> implements Fetch<Z, X> {
         return fetch;
     }
 
+    public StringBuilder asValue(AliasContext q) {
+        return super.asValue(q).insert(0, " " + joinType + " JOIN FETCH ");
+    }
 }

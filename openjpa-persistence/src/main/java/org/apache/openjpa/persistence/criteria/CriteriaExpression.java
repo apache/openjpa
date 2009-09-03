@@ -36,10 +36,10 @@ public interface CriteriaExpression  {
     /**
      * Get a string representation of this node as a value in the context of the given query.
      */
-    StringBuilder asValue(CriteriaQueryImpl<?> q);
+    StringBuilder asValue(AliasContext q);
     
     /**
      * Get a string representation of this node as a variable in the context of the given query.
      */
-    StringBuilder asVariable(CriteriaQueryImpl<?> q);
+    StringBuilder asVariable(AliasContext q);
 }

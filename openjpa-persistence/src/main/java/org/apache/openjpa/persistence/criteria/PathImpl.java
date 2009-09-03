@@ -279,7 +279,7 @@ public class PathImpl<Z,X> extends ExpressionImpl<X> implements Path<X> {
         return new Expressions.Type<Class<? extends X>>(this);
     }
     
-    public StringBuilder asValue(CriteriaQueryImpl<?> q) {
+    public StringBuilder asValue(AliasContext q) {
         StringBuilder buffer = new StringBuilder();
         if (_parent != null) {
             Value var = q.getRegisteredVariable(_parent);
@@ -291,7 +291,7 @@ public class PathImpl<Z,X> extends ExpressionImpl<X> implements Path<X> {
         return buffer;
     }
     
-    public StringBuilder asVariable(CriteriaQueryImpl<?> q) {
+    public StringBuilder asVariable(AliasContext q) {
         Value var = q.getRegisteredVariable(this);
         return asValue(q).append(" ").append(var == null ? "?" : var.getName());
     }

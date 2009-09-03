@@ -148,8 +148,7 @@ public class FromImpl<Z,X> extends PathImpl<Z,X> implements From<Z,X> {
      *  Join to the given List-valued attribute using the given join type.
      */
     public <Y> ListJoin<X,Y> join(ListAttribute<? super X, Y> list, JoinType jt) {
-        ListJoin<X, Y> join = new Joins.List<X, Y>(this, 
-                (Members.ListAttributeImpl<? super X, Y>)list, jt);
+        ListJoin<X, Y> join = new Joins.List<X, Y>(this, (Members.ListAttributeImpl<? super X, Y>)list, jt);
         addJoin(join);    
         return join;
     }
@@ -283,6 +282,6 @@ public class FromImpl<Z,X> extends PathImpl<Z,X> implements From<Z,X> {
     
     public void acceptVisit(CriteriaExpressionVisitor visitor) {
         Expressions.acceptVisit(visitor, this, 
-                _joins == null ? null : _joins.toArray(new ExpressionImpl<?>[_joins.size()]));
+            _joins == null ? null : _joins.toArray(new ExpressionImpl<?>[_joins.size()]));
     }
 }

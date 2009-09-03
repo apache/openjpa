@@ -98,7 +98,7 @@ public class ParameterExpressionImpl<T> extends ExpressionImpl<T>
     }   
     
     @Override
-    public StringBuilder asValue(CriteriaQueryImpl<?> q) {
+    public StringBuilder asValue(AliasContext q) {
         return Expressions.asValue(q, ":", _name == null ? "param" : _name);
     }
     

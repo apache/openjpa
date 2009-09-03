@@ -18,6 +18,7 @@
  */
 package org.apache.openjpa.persistence.criteria;
 
+import javax.persistence.criteria.Root;
 import javax.persistence.criteria.Selection;
 
 import org.apache.openjpa.kernel.exps.Value;
@@ -57,6 +58,12 @@ public interface AliasContext {
      * Return null if the node is not registered.     
      */
     Value getRegisteredVariable(Selection<?> node);
+    
+    /**
+     * Gets the registered root variable for the given node. 
+     * Return null if the node is not registered.     
+     */
+    Value getRegisteredRootVariable(Root<?> node);
     
     /**
      * Gets the registered path value for the given node. 

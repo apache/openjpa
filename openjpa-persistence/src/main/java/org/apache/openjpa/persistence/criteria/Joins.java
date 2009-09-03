@@ -175,11 +175,11 @@ public abstract class Joins {
             }
             if (getJoins() != null) {
                 for (Join<?, ?> join1 : getJoins()) {
-                    filter = CriteriaExpressionBuilder.and(factory, 
-                                 ((FromImpl<?,?>)join1).toKernelExpression(factory, model, c), filter);
+                    filter = Expressions.and(factory, 
+                             ((FromImpl<?,?>)join1).toKernelExpression(factory, model, c), filter);
                 }
             }
-            org.apache.openjpa.kernel.exps.Expression expr = CriteriaExpressionBuilder.and(factory, join, filter);
+            org.apache.openjpa.kernel.exps.Expression expr = Expressions.and(factory, join, filter);
             
             if (correlatedParentPath == null) {
                 return expr;
@@ -199,7 +199,7 @@ public abstract class Joins {
                 path.setMetaData(meta);
                 //filter = bindVariableForKeyPath(path, alias, filter);
                 filter = factory.equal(parentPath, path);
-                return CriteriaExpressionBuilder.and(factory, expr, filter);
+                return Expressions.and(factory, expr, filter);
             }
         }
         
@@ -249,7 +249,7 @@ public abstract class Joins {
         }
         
         @Override
-        public StringBuilder asVariable(CriteriaQueryImpl<?> q) {
+        public StringBuilder asVariable(AliasContext q) {
             String varName = "?";
             Value var = q.getRegisteredVariable(this);
             if (var == null) {
@@ -257,8 +257,7 @@ public abstract class Joins {
             } else {
                 varName = var.getName();
             }
-            return new StringBuilder(joinType.toString()).append(" JOIN ")
-                .append(super.asVariable(q)).append(" " + varName);
+            return new StringBuilder(" " + joinType + " JOIN ").append(super.asVariable(q)).append(" " + varName);
         }
     }
     
@@ -386,11 +385,11 @@ public abstract class Joins {
             }
             if (getJoins() != null) {
                 for (Join<?, ?> join1 : getJoins()) {
-                    filter = CriteriaExpressionBuilder.and(factory, 
+                    filter = Expressions.and(factory, 
                         ((FromImpl<?,?>)join1).toKernelExpression(factory, model, c), filter);
                 }
             }
-            org.apache.openjpa.kernel.exps.Expression expr = CriteriaExpressionBuilder.and(factory, join, filter);
+            org.apache.openjpa.kernel.exps.Expression expr = Expressions.and(factory, join, filter);
             if (correlatedParentPath == null) {
                 return expr;
             } else {
@@ -417,11 +416,11 @@ public abstract class Joins {
                     c.registerVariable(this, var, parentPath);
                 
                 if (_member.fmd.isElementCollection()) {
-                    filter = CriteriaExpressionBuilder.and(factory, join, filter);
+                    filter = Expressions.and(factory, join, filter);
                 } else { 
                     filter = factory.equal(parentPath, path);
                 }
-                return CriteriaExpressionBuilder.and(factory, expr, filter);
+                return Expressions.and(factory, expr, filter);
             }
         }
         
@@ -580,7 +579,7 @@ public abstract class Joins {
        }
        
        @Override
-       public StringBuilder asValue(CriteriaQueryImpl<?> q) {
+       public StringBuilder asValue(AliasContext q) {
            StringBuilder buffer = new StringBuilder("KEY(");
            Value var = q.getRegisteredVariable(map);
            buffer.append(var != null ? var.getName() : map.asValue(q)).append(")");
@@ -609,7 +608,7 @@ public abstract class Joins {
        }
        
        @Override
-       public StringBuilder asValue(CriteriaQueryImpl<?> q) {
+       public StringBuilder asValue(AliasContext q) {
            StringBuilder buffer = new StringBuilder("ENTRY(");
            Value var = q.getRegisteredVariable(map);
            buffer.append(var != null ? var.getName() : map.asValue(q)).append(")");

@@ -124,7 +124,7 @@ public class Expressions {
      /**
       * Renders the given expressions as a list of values separated by the given connector.
       */
-     static StringBuilder asValue(CriteriaQueryImpl<?> q, Expression<?>[] exps, String connector) {
+     static StringBuilder asValue(AliasContext q, Expression<?>[] exps, String connector) {
          StringBuilder buffer = new StringBuilder();
          if (exps == null) return buffer;
          for (int i = 0; i < exps.length; i++) {
@@ -139,7 +139,7 @@ public class Expressions {
      /**
       * Renders the given arguments as a list of values separated by the given connector.
       */
-     static StringBuilder asValue(CriteriaQueryImpl<?> q, Object...params) {
+     static StringBuilder asValue(AliasContext q, Object...params) {
          StringBuilder buffer = new StringBuilder();
          if (params == null) return buffer;
          for (int i = 0; i < params.length; i++) {
@@ -175,6 +175,11 @@ public class Expressions {
          return set == null ? new HashSet<X>() : new CopyOnWriteArraySet<X>(set);
      }
      
+     static org.apache.openjpa.kernel.exps.Expression and(ExpressionFactory factory,
+             org.apache.openjpa.kernel.exps.Expression e1, org.apache.openjpa.kernel.exps.Expression e2) {
+             return e1 == null ? e2 : e2 == null ? e1 : factory.and(e1, e2);
+     }
+         
 
 
      /**
@@ -254,7 +259,7 @@ public class Expressions {
      * i.e. an expression whose resultant type is Boolean.
      *
      */
-   public static class BinaryLogicalExpression extends PredicateImpl {
+   public static abstract class BinaryLogicalExpression extends PredicateImpl {
         protected final ExpressionImpl<?> e1;
         protected final ExpressionImpl<?> e2;
         
@@ -264,10 +269,10 @@ public class Expressions {
             e2 = (ExpressionImpl<?>)y;
         }
         
-        @Override
-        public PredicateImpl clone() {
-            return new BinaryLogicalExpression(e1, e2);
-        }
+//        @Override
+//        public PredicateImpl clone() {
+//            return new BinaryLogicalExpression(e1, e2);
+//        }
         
         public void acceptVisit(CriteriaExpressionVisitor visitor) {
             Expressions.acceptVisit(visitor, this, e1, e2);
@@ -285,7 +290,7 @@ public class Expressions {
             return factory.abs(Expressions.toValue(e, factory, model, q));
         }
         
-        public StringBuilder asValue(CriteriaQueryImpl<?> q) {
+        public StringBuilder asValue(AliasContext q) {
             return Expressions.asValue(q, "ABS", OPEN_BRACE, e, CLOSE_BRACE);
         }
     }
@@ -309,7 +314,7 @@ public class Expressions {
         }
         
         @Override
-        public StringBuilder asValue(CriteriaQueryImpl<?> q) {
+        public StringBuilder asValue(AliasContext q) {
             return Expressions.asValue(q, "COUNT", OPEN_BRACE, _distinct ? "DISTINCT"+OPEN_BRACE : "", 
                 e, _distinct ? CLOSE_BRACE : "", CLOSE_BRACE);
         }
@@ -326,7 +331,7 @@ public class Expressions {
         }
         
         @Override
-        public StringBuilder asValue(CriteriaQueryImpl<?> q) {
+        public StringBuilder asValue(AliasContext q) {
             return Expressions.asValue(q, "AVG", OPEN_BRACE, e, CLOSE_BRACE);
         }
     }
@@ -341,7 +346,7 @@ public class Expressions {
             return factory.sqrt(Expressions.toValue(e, factory, model, q));
         }
         
-        public StringBuilder asValue(CriteriaQueryImpl<?> q) {
+        public StringBuilder asValue(AliasContext q) {
             return Expressions.asValue(q, "SQRT", OPEN_BRACE, e, CLOSE_BRACE);
         }
     }
@@ -356,7 +361,7 @@ public class Expressions {
             return factory.max(Expressions.toValue(e, factory, model, q));
         }
         
-        public StringBuilder asValue(CriteriaQueryImpl<?> q) {
+        public StringBuilder asValue(AliasContext q) {
             return Expressions.asValue(q, "MAX", OPEN_BRACE, e, CLOSE_BRACE);
         }
     }
@@ -371,7 +376,7 @@ public class Expressions {
             return factory.min(Expressions.toValue(e, factory, model, q));
         }
         
-        public StringBuilder asValue(CriteriaQueryImpl<?> q) {
+        public StringBuilder asValue(AliasContext q) {
             return Expressions.asValue(q, "MIN", OPEN_BRACE, e, CLOSE_BRACE);
         }
     }
@@ -395,7 +400,7 @@ public class Expressions {
             return factory.size(val);
         }
         
-        public StringBuilder asValue(CriteriaQueryImpl<?> q) {
+        public StringBuilder asValue(AliasContext q) {
             return Expressions.asValue(q, "SIZE", OPEN_BRACE, e, CLOSE_BRACE);
         }
     }
@@ -416,7 +421,7 @@ public class Expressions {
                 new Expressions.ListArgument(resultType, args).toValue(factory, model, q));
         }
         
-        public StringBuilder asValue(CriteriaQueryImpl<?> q) {
+        public StringBuilder asValue(AliasContext q) {
             return Expressions.asValue(q, functionName, OPEN_BRACE, Expressions.asValue(q, args, COMMA), CLOSE_BRACE);
         }
     }
@@ -433,7 +438,7 @@ public class Expressions {
         }
         
         @Override
-        public StringBuilder asValue(CriteriaQueryImpl<?> q) {
+        public StringBuilder asValue(AliasContext q) {
             return Expressions.asValue(q, "TYPE", OPEN_BRACE, e, CLOSE_BRACE);
         }
     }
@@ -449,7 +454,7 @@ public class Expressions {
         }
         
         @Override
-        public StringBuilder asValue(CriteriaQueryImpl<?> q) {
+        public StringBuilder asValue(AliasContext q) {
             return Expressions.asValue(q, OPEN_BRACE, getJavaType().getSimpleName(), CLOSE_BRACE, e);
         }
     }
@@ -475,7 +480,7 @@ public class Expressions {
         }
         
         @Override
-        public StringBuilder asValue(CriteriaQueryImpl<?> q) {
+        public StringBuilder asValue(AliasContext q) {
             return Expressions.asValue(q, "CONCAT", OPEN_BRACE, e1, COMMA, e2, CLOSE_BRACE);
         }
     }
@@ -520,7 +525,7 @@ public class Expressions {
         }
         
         @Override
-        public StringBuilder asValue(CriteriaQueryImpl<?> q) {
+        public StringBuilder asValue(AliasContext q) {
             return Expressions.asValue(q, "SUBSTRING", OPEN_BRACE, e, COMMA, from, COMMA, len, CLOSE_BRACE);
         }
     }
@@ -572,7 +577,7 @@ public class Expressions {
         }
         
         @Override
-        public StringBuilder asValue(CriteriaQueryImpl<?> q) {
+        public StringBuilder asValue(AliasContext q) {
             return Expressions.asValue(q, "LOCATE", OPEN_BRACE, pattern, COMMA, path, CLOSE_BRACE);
         }
     }
@@ -623,7 +628,7 @@ public class Expressions {
         }
         
         @Override
-        public StringBuilder asValue(CriteriaQueryImpl<?> q) {
+        public StringBuilder asValue(AliasContext q) {
             return Expressions.asValue(q, "TRIM", OPEN_BRACE, e1, COMMA, e2, CLOSE_BRACE);
         }        
     }
@@ -655,7 +660,7 @@ public class Expressions {
         }
         
         @Override
-        public StringBuilder asValue(CriteriaQueryImpl<?> q) {
+        public StringBuilder asValue(AliasContext q) {
             return e2 == null 
                ? Expressions.asValue(q, "SUM", OPEN_BRACE, e1, CLOSE_BRACE)
                : Expressions.asValue(q, e1, " + ", e2);
@@ -683,7 +688,7 @@ public class Expressions {
         }
         
         @Override
-        public StringBuilder asValue(CriteriaQueryImpl<?> q) {
+        public StringBuilder asValue(AliasContext q) {
             return Expressions.asValue(q, e1, " * " ,e2);
         }        
     }
@@ -709,7 +714,7 @@ public class Expressions {
         }
         
         @Override
-        public StringBuilder asValue(CriteriaQueryImpl<?> q) {
+        public StringBuilder asValue(AliasContext q) {
             return Expressions.asValue(q, e1, " - " ,e2);
         }        
     }
@@ -736,7 +741,7 @@ public class Expressions {
         }
         
         @Override
-        public StringBuilder asValue(CriteriaQueryImpl<?> q) {
+        public StringBuilder asValue(AliasContext q) {
             return Expressions.asValue(q, e1, "%" ,e2);
         }        
     }
@@ -760,7 +765,7 @@ public class Expressions {
         }
         
         @Override
-        public StringBuilder asValue(CriteriaQueryImpl<?> q) {
+        public StringBuilder asValue(AliasContext q) {
             return Expressions.asValue(q, "MOD", OPEN_BRACE, e1, COMMA, e2, CLOSE_BRACE);
         }        
     }
@@ -776,7 +781,7 @@ public class Expressions {
         }
         
         @Override
-        public StringBuilder asValue(CriteriaQueryImpl<?> q) {
+        public StringBuilder asValue(AliasContext q) {
             return new StringBuilder("CURRENT_DATE");
         }
     }
@@ -792,7 +797,7 @@ public class Expressions {
         }
         
         @Override
-        public StringBuilder asValue(CriteriaQueryImpl<?> q) {
+        public StringBuilder asValue(AliasContext q) {
             return new StringBuilder("CURRENT_TIME");
         }
     }
@@ -808,7 +813,7 @@ public class Expressions {
         }
         
         @Override
-        public StringBuilder asValue(CriteriaQueryImpl<?> q) {
+        public StringBuilder asValue(AliasContext q) {
             return new StringBuilder("CURRENT_TIMESTAMP");
         }
     }
@@ -821,10 +826,10 @@ public class Expressions {
         public <X> Equal(Expression<X> x, Object y) {
             this(x, new Constant(y));
         }
-        
+
         @Override
-        public PredicateImpl clone() {
-            return new Equal(e1, e2);
+        public PredicateImpl negate() {
+            return new NotEqual(e1, e2).markNegated();
         }
         
         @Override
@@ -833,12 +838,41 @@ public class Expressions {
             Value val1 = Expressions.toValue(e1, factory, model, q);
             Value val2 = Expressions.toValue(e2, factory, model, q);
             Expressions.setImplicitTypes(val1, val2, e1.getJavaType(), q);
-            return isNegated() ? factory.notEqual(val1, val2) : factory.equal(val1, val2);
+            return factory.equal(val1, val2);
         }
         
         @Override
-        public StringBuilder asValue(CriteriaQueryImpl<?> q) {
+        public StringBuilder asValue(AliasContext q) {
             return Expressions.asValue(q, e1, " = ", e2);
+        }        
+    }
+    
+    public static class NotEqual extends BinaryLogicalExpression {
+        public <X,Y> NotEqual(Expression<X> x, Expression<Y> y) {
+            super(x,y);
+        }
+        
+        public <X> NotEqual(Expression<X> x, Object y) {
+            this(x, new Constant(y));
+        }
+        
+        @Override
+        public PredicateImpl negate() {
+            return new Equal(e1, e2).markNegated();
+        }
+        
+        @Override
+        org.apache.openjpa.kernel.exps.Expression toKernelExpression(ExpressionFactory factory, MetamodelImpl model, 
+            CriteriaQueryImpl<?> q) {
+            Value val1 = Expressions.toValue(e1, factory, model, q);
+            Value val2 = Expressions.toValue(e2, factory, model, q);
+            Expressions.setImplicitTypes(val1, val2, e1.getJavaType(), q);
+            return factory.notEqual(val1, val2);
+        }
+        
+        @Override
+        public StringBuilder asValue(AliasContext q) {
+            return Expressions.asValue(q, e1, " <> ", e2);
         }        
     }
     
@@ -852,6 +886,11 @@ public class Expressions {
         }
         
         @Override
+        public PredicateImpl negate() {
+            return new LessThanEqual(e1, e2).markNegated();
+        }
+        
+        @Override
         org.apache.openjpa.kernel.exps.Expression toKernelExpression(ExpressionFactory factory, MetamodelImpl model, 
             CriteriaQueryImpl<?> q) {
             Value val1 = Expressions.toValue(e1, factory, model, q);
@@ -861,7 +900,7 @@ public class Expressions {
         }
         
         @Override
-        public StringBuilder asValue(CriteriaQueryImpl<?> q) {
+        public StringBuilder asValue(AliasContext q) {
             return Expressions.asValue(q, e1, " > ", e2);
         }        
     }
@@ -876,6 +915,11 @@ public class Expressions {
         }
         
         @Override
+        public PredicateImpl negate() {
+            return new LessThan(e1, e2).markNegated();
+        }
+        
+        @Override
         org.apache.openjpa.kernel.exps.Expression toKernelExpression(ExpressionFactory factory, MetamodelImpl model, 
             CriteriaQueryImpl<?> q) {
             Value val1 = Expressions.toValue(e1, factory, model, q);
@@ -885,7 +929,7 @@ public class Expressions {
         }
         
         @Override
-        public StringBuilder asValue(CriteriaQueryImpl<?> q) {
+        public StringBuilder asValue(AliasContext q) {
             return Expressions.asValue(q, e1, " >= ", e2);
         }        
     }
@@ -900,6 +944,11 @@ public class Expressions {
         }
         
         @Override
+        public PredicateImpl negate() {
+            return new GreaterThanEqual(e1, e2).markNegated();
+        }
+        
+        @Override
         org.apache.openjpa.kernel.exps.Expression toKernelExpression(ExpressionFactory factory, MetamodelImpl model, 
             CriteriaQueryImpl<?> q) {
             Value val1 = Expressions.toValue(e1, factory, model, q);
@@ -909,7 +958,7 @@ public class Expressions {
         }
         
         @Override
-        public StringBuilder asValue(CriteriaQueryImpl<?> q) {
+        public StringBuilder asValue(AliasContext q) {
             return Expressions.asValue(q, e1, " < ", e2);
         }        
     }
@@ -924,6 +973,11 @@ public class Expressions {
         }
         
         @Override
+        public PredicateImpl negate() {
+            return new GreaterThan(e1, e2).markNegated();
+        }
+        
+        @Override
         org.apache.openjpa.kernel.exps.Expression toKernelExpression(ExpressionFactory factory, MetamodelImpl model, 
             CriteriaQueryImpl<?> q) {
             Value val1 = Expressions.toValue(e1, factory, model, q);
@@ -934,7 +988,7 @@ public class Expressions {
         
         
         @Override
-        public StringBuilder asValue(CriteriaQueryImpl<?> q) {
+        public StringBuilder asValue(AliasContext q) {
             return Expressions.asValue(q, e1, " <= ", e2);
         }        
     }
@@ -956,7 +1010,7 @@ public class Expressions {
         }
         
         @Override
-        public StringBuilder asValue(CriteriaQueryImpl<?> q) {
+        public StringBuilder asValue(AliasContext q) {
             return Expressions.asValue(q, e, " BETWEEN ", v1, " AND ", v2);
         }
     }
@@ -1009,7 +1063,7 @@ public class Expressions {
             Expressions.acceptVisit(visitor, this, arg instanceof Expression ? ((Expression)arg) : null);
         }
         
-        public StringBuilder asValue(CriteriaQueryImpl<?> q) {
+        public StringBuilder asValue(AliasContext q) {
             if (arg == null)
                 return new StringBuilder("NULL");
             Class<?> literalClass = getJavaType();
@@ -1040,15 +1094,20 @@ public class Expressions {
         }
         
         @Override
-        public PredicateImpl clone() {
-            return new IsEmpty(collection);
+        public PredicateImpl negate() {
+            return new IsNotEmpty(collection).markNegated();
+        }
+        
+        @Override
+        Value toValue(ExpressionFactory factory, MetamodelImpl model, CriteriaQueryImpl<?> q) {
+            return Expressions.toValue(collection, factory, model, q);
         }
         
         @Override
         org.apache.openjpa.kernel.exps.Expression toKernelExpression(ExpressionFactory factory, MetamodelImpl model, 
             CriteriaQueryImpl<?> q) {
             Value val = Expressions.toValue(collection, factory, model, q);
-            return (isNegated()) ? factory.not(factory.isEmpty(val)) : factory.isEmpty(val);
+            return factory.isEmpty(val);
         }
         
         public void acceptVisit(CriteriaExpressionVisitor visitor) {
@@ -1057,7 +1116,7 @@ public class Expressions {
         }
         
         @Override
-        public StringBuilder asValue(CriteriaQueryImpl<?> q) {
+        public StringBuilder asValue(AliasContext q) {
             return Expressions.asValue(q, collection, " IS EMPTY");
         }
     }
@@ -1070,15 +1129,21 @@ public class Expressions {
         }
         
         @Override
-        public PredicateImpl clone() {
-            return new IsNotEmpty(collection);
+        public PredicateImpl negate() {
+            return new IsEmpty(collection).markNegated();
+        }
+        
+        @Override
+        Value toValue(ExpressionFactory factory, MetamodelImpl model, CriteriaQueryImpl<?> q) {
+            return Expressions.toValue(collection, factory, model, q);
         }
         
         @Override
         org.apache.openjpa.kernel.exps.Expression toKernelExpression(ExpressionFactory factory, MetamodelImpl model, 
             CriteriaQueryImpl<?> q) {
             Value val = Expressions.toValue(collection, factory, model, q);
-            return (isNegated()) ? factory.isEmpty(val) : factory.isNotEmpty(val);
+            // factory.isNotEmpty() not used to match JPQL
+            return factory.not(factory.isEmpty(val));
         }
         
         public void acceptVisit(CriteriaExpressionVisitor visitor) {
@@ -1087,7 +1152,7 @@ public class Expressions {
         }
         
         @Override
-        public StringBuilder asValue(CriteriaQueryImpl<?> q) {
+        public StringBuilder asValue(AliasContext q) {
             return Expressions.asValue(q, collection, " IS NOT EMPTY");
         }
     }
@@ -1108,7 +1173,7 @@ public class Expressions {
         }
         
         @Override
-        public StringBuilder asValue(CriteriaQueryImpl<?> q) {
+        public StringBuilder asValue(AliasContext q) {
             return Expressions.asValue(q, "INDEX", OPEN_BRACE, e, CLOSE_BRACE);
         }
     }
@@ -1132,17 +1197,12 @@ public class Expressions {
         }
         
         @Override
-        public PredicateImpl clone() {
-            return new IsMember<E>(element.getJavaType(), element, collection);
-        }
-        
-        @Override
         public org.apache.openjpa.kernel.exps.Expression toKernelExpression(
             ExpressionFactory factory, MetamodelImpl model, CriteriaQueryImpl<?> q) {
             org.apache.openjpa.kernel.exps.Expression contains = factory.contains(
                 Expressions.toValue(collection, factory, model, q), 
                 Expressions.toValue(element, factory, model, q));
-            return isNegated() ? factory.not(contains) : contains;
+            return contains;
         }
         
         public void acceptVisit(CriteriaExpressionVisitor visitor) {
@@ -1151,8 +1211,8 @@ public class Expressions {
         }
         
         @Override
-        public StringBuilder asValue(CriteriaQueryImpl<?> q) {
-            return Expressions.asValue(q, element, isNegated() ? "NOT " : "", "MEMBER OF ", collection);
+        public StringBuilder asValue(AliasContext q) {
+            return Expressions.asValue(q, element, "MEMBER OF ", collection);
         }
     }
     
@@ -1193,11 +1253,6 @@ public class Expressions {
         }
 
         @Override
-        public PredicateImpl clone() {
-            return new Like(str, pattern, escapeChar);
-        }
-        
-        @Override
         public org.apache.openjpa.kernel.exps.Expression toKernelExpression(
             ExpressionFactory factory, MetamodelImpl model, CriteriaQueryImpl<?> q) {
             String escapeStr = escapeChar == null ? null :
@@ -1215,7 +1270,7 @@ public class Expressions {
         }
         
         @Override
-        public StringBuilder asValue(CriteriaQueryImpl<?> q) {
+        public StringBuilder asValue(AliasContext q) {
             return Expressions.asValue(q, str, " LIKE ", pattern);
         }        
     }
@@ -1252,7 +1307,7 @@ public class Expressions {
         }
         
         @Override
-        public StringBuilder asValue(CriteriaQueryImpl<?> q) {
+        public StringBuilder asValue(AliasContext q) {
             return Expressions.asValue(q, "COALESCE", OPEN_BRACE, Expressions.asValue(q, values == null 
                     ? null : values.toArray(new Expression<?>[values.size()]), COMMA), CLOSE_BRACE);
         }        
@@ -1285,7 +1340,7 @@ public class Expressions {
         }
         
         @Override
-        public StringBuilder asValue(CriteriaQueryImpl<?> q) {
+        public StringBuilder asValue(AliasContext q) {
             return Expressions.asValue(q, "NULLIF", OPEN_BRACE, val1, COMMA, val2, CLOSE_BRACE);
         }        
     }
@@ -1299,8 +1354,8 @@ public class Expressions {
         
         @Override
         public PredicateImpl negate() {
-            return new Expressions.IsNotNull(e);
-        }        
+            return new IsNotNull(e).markNegated();
+        }
         
         @Override
         org.apache.openjpa.kernel.exps.Expression toKernelExpression(
@@ -1316,7 +1371,7 @@ public class Expressions {
         }
         
         @Override
-        public StringBuilder asValue(CriteriaQueryImpl<?> q) {
+        public StringBuilder asValue(AliasContext q) {
             return Expressions.asValue(q, e, " IS NULL");
         }
     }
@@ -1330,9 +1385,9 @@ public class Expressions {
         
         @Override
         public PredicateImpl negate() {
-            return new Expressions.IsNull(e);
-        }       
-
+            return new IsNull(e).markNegated();
+        }
+        
         @Override
         org.apache.openjpa.kernel.exps.Expression toKernelExpression(
             ExpressionFactory factory, MetamodelImpl model, CriteriaQueryImpl<?> q) {
@@ -1347,7 +1402,7 @@ public class Expressions {
         }
         
         @Override
-        public StringBuilder asValue(CriteriaQueryImpl<?> q) {
+        public StringBuilder asValue(AliasContext q) {
             return Expressions.asValue(q, e, " IS NOT NULL");
         }
     }
@@ -1355,7 +1410,6 @@ public class Expressions {
     
     public static class In<T> extends PredicateImpl.Or implements QueryBuilder.In<T> {
         final ExpressionImpl<T> e;
-        private boolean negate;
         public In(Expression<?> e) {
             super();
             this.e = (ExpressionImpl<T>)e;
@@ -1375,11 +1429,16 @@ public class Expressions {
             return this;
         }
         
-        public In<T> negate() {
-            this.negate = !negate;
-            return this;
+        @Override
+        public PredicateImpl negate() {
+            In<T> notIn = new In<T>(e);
+            notIn.markNegated();
+            for (Predicate e : _exps) {
+                notIn.add(e);
+            }
+            return notIn;
         }
-    
+        
         @Override
         org.apache.openjpa.kernel.exps.Expression toKernelExpression(
             ExpressionFactory factory, MetamodelImpl model, CriteriaQueryImpl<?> q) {
@@ -1390,23 +1449,20 @@ public class Expressions {
                 ExpressionImpl<?> e1 = e.e1;
                 Value val2 = Expressions.toValue(e2, factory, model, q);
                 if (!(val2 instanceof Literal)) {
-                     Value val1 = Expressions.toValue(e1, factory, model, q);
+                    Value val1 = Expressions.toValue(e1, factory, model, q);
                     Expressions.setImplicitTypes(val1, val2, e1.getJavaType(), q);
                     inExpr = factory.contains(val2, val1);
-                    return negate ? factory.not(inExpr) : inExpr;
+                    return isNegated() ? factory.not(inExpr) : inExpr;
                 } else if (((Literal)val2).getParseType() == Literal.TYPE_COLLECTION) {
-                    List<Expression<Boolean>> exps = new ArrayList<Expression<Boolean>>();
                     Collection coll = (Collection)((Literal)val2).getValue();
+                    _exps.clear();
                     for (Object v : coll) {
-                        exps.add(new Expressions.Equal(e1,v));
+                        add(new Expressions.Equal(e1,v));
                     }
-                    _exps = exps;
                 }
             } 
             inExpr = super.toKernelExpression(factory, model, q); 
             IsNotNull notNull = new Expressions.IsNotNull(e);
-            if (negate) 
-                inExpr = factory.not(inExpr);
             
             return factory.and(inExpr, notNull.toKernelExpression(factory, model, q));
         }
@@ -1417,8 +1473,8 @@ public class Expressions {
         }
         
         @Override
-        public StringBuilder asValue(CriteriaQueryImpl<?> q) {
-            StringBuilder buffer = Expressions.asValue(q, e, negate ? " NOT IN " : " IN ", OPEN_BRACE);
+        public StringBuilder asValue(AliasContext q) {
+            StringBuilder buffer = Expressions.asValue(q, e, " IN ", OPEN_BRACE);
             for (int i = 0; i < _exps.size(); i++) {
                 buffer.append(((Equal)_exps.get(i)).e2.asValue(q)).append(i+1 == _exps.size() ? CLOSE_BRACE : COMMA);
             }
@@ -1481,7 +1537,7 @@ public class Expressions {
         }
         
         @Override
-        public StringBuilder asValue(CriteriaQueryImpl<?> q) {
+        public StringBuilder asValue(AliasContext q) {
             StringBuilder buffer = new StringBuilder("CASE ");
             int size = whens.size();
             for (int i = 0; i < size; i++) {
@@ -1558,7 +1614,7 @@ public class Expressions {
         }
         
         @Override
-        public StringBuilder asValue(CriteriaQueryImpl<?> q) {
+        public StringBuilder asValue(AliasContext q) {
             StringBuilder buffer = new StringBuilder("CASE ");
             int size = whens.size();
             for (int i = 0; i < size; i++) {
@@ -1580,7 +1636,7 @@ public class Expressions {
         }
         
         @Override
-        public StringBuilder asValue(CriteriaQueryImpl<?> q) {
+        public StringBuilder asValue(AliasContext q) {
             return Expressions.asValue(q, "LOWER", OPEN_BRACE, e, CLOSE_BRACE);
         }
     }
@@ -1596,7 +1652,7 @@ public class Expressions {
         }
         
         @Override
-        public StringBuilder asValue(CriteriaQueryImpl<?> q) {
+        public StringBuilder asValue(AliasContext q) {
             return Expressions.asValue(q, "UPPER", OPEN_BRACE, e, CLOSE_BRACE);
         }
     }
@@ -1612,7 +1668,7 @@ public class Expressions {
         }
         
         @Override
-        public StringBuilder asValue(CriteriaQueryImpl<?> q) {
+        public StringBuilder asValue(AliasContext q) {
             return Expressions.asValue(q, "LENGTH", OPEN_BRACE, e, CLOSE_BRACE);
         }
     }
@@ -1649,21 +1705,16 @@ public class Expressions {
         }
 
         @Override
-        public PredicateImpl clone() {
-            return new Exists<X>(e);
-        }
-        
-        @Override
         org.apache.openjpa.kernel.exps.Expression toKernelExpression(
             ExpressionFactory factory, MetamodelImpl model, CriteriaQueryImpl<?> q) {
             org.apache.openjpa.kernel.exps.Expression exists = 
                 factory.isNotEmpty(Expressions.toValue(e, factory, model, q));
-            return isNegated() ? factory.not(exists) : exists;
+            return exists;
         }        
         
         @Override
-        public StringBuilder asValue(CriteriaQueryImpl<?> q) {
-            return Expressions.asValue(q, isNegated() ? "NOT" : "", " EXISTS", OPEN_BRACE, e, CLOSE_BRACE);
+        public StringBuilder asValue(AliasContext q) {
+            return Expressions.asValue(q, " EXISTS", OPEN_BRACE, e, CLOSE_BRACE);
         }
     }
     
@@ -1679,7 +1730,7 @@ public class Expressions {
         }
         
         @Override
-        public StringBuilder asValue(CriteriaQueryImpl<?> q) {
+        public StringBuilder asValue(AliasContext q) {
             return Expressions.asValue(q, "ALL", OPEN_BRACE, e, CLOSE_BRACE);
         }
     }
@@ -1695,12 +1746,12 @@ public class Expressions {
         }
         
         @Override
-        public StringBuilder asValue(CriteriaQueryImpl<?> q) {
+        public StringBuilder asValue(AliasContext q) {
             return Expressions.asValue(q, "ANY", OPEN_BRACE, e, CLOSE_BRACE);
         }
     }
 
-    public static class Not<X> extends PredicateImpl {
+    public static class Not extends PredicateImpl {
         protected final ExpressionImpl<Boolean> e;
         public Not(Expression<Boolean> ne) {
             super();
@@ -1708,14 +1759,9 @@ public class Expressions {
         }
         
         @Override
-        public PredicateImpl clone() {
-            return new Not<X>(e);
-        }
-        
-        @Override
         public org.apache.openjpa.kernel.exps.Expression toKernelExpression(
           ExpressionFactory factory, MetamodelImpl model, CriteriaQueryImpl<?> q) {
-            return factory.not(super.toKernelExpression(factory, model, q));
+            return factory.not(e.toKernelExpression(factory, model, q));
         }        
         
         public void acceptVisit(CriteriaExpressionVisitor visitor) {
@@ -1723,8 +1769,8 @@ public class Expressions {
         }
         
         @Override
-        public StringBuilder asValue(CriteriaQueryImpl<?> q) {
-            return Expressions.asValue(q, "NOT", OPEN_BRACE, e, CLOSE_BRACE);
+        public StringBuilder asValue(AliasContext q) {
+            return Expressions.asValue(q, "NOT ", e);
         }
     }
     
@@ -1748,7 +1794,7 @@ public class Expressions {
         }
         
         @Override
-        public StringBuilder asValue(CriteriaQueryImpl<?> q) {
+        public StringBuilder asValue(AliasContext q) {
             return actual.asValue(q);
         }
     }

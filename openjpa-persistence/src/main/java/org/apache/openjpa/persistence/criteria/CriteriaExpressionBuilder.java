@@ -89,27 +89,20 @@ public class CriteriaExpressionBuilder {
 
     protected void evalAccessPaths(QueryExpressions exps, ExpressionFactory factory, CriteriaQueryImpl<?> q) {
         Set<ClassMetaData> metas = new HashSet<ClassMetaData>();
-        Set<Root<?>> roots = q.getRoots();
-        if (roots != null) {
-            MetamodelImpl metamodel = q.getMetamodel();    
-            for (Root<?> root : roots) {
-                metas.add(((AbstractManagedType<?>)root.getModel()).meta);
-                if (root.getJoins() != null) {
-                    for (Join<?,?> join : root.getJoins()) {
-                        Class<?> cls = join.getAttribute().getJavaType();
-                        if (join.getAttribute().isAssociation()) {
-                            ClassMetaData meta = metamodel.repos.getMetaData(cls, null, true);
-                            PersistenceType type = MetamodelImpl.getPersistenceType(meta);
-                            if (type == PersistenceType.ENTITY || type == PersistenceType.EMBEDDABLE) 
-                                metas.add(meta);
-                        }
-                    }
-                    if (root.getFetches() != null) {
-                        for (Fetch<?,?> fetch : root.getFetches()) {
-                            metas.add(metamodel.repos.getMetaData(fetch.getAttribute().getJavaType(), null, false));
-                        }
-                    }
+        MetamodelImpl metamodel = q.getMetamodel();    
+        for (Root<?> root : q.getRoots()) {
+            metas.add(((AbstractManagedType<?>)root.getModel()).meta);
+            for (Join<?,?> join : root.getJoins()) {
+                Class<?> cls = join.getAttribute().getJavaType();
+                if (join.getAttribute().isAssociation()) {
+                    ClassMetaData meta = metamodel.repos.getMetaData(cls, null, true);
+                    PersistenceType type = MetamodelImpl.getPersistenceType(meta);
+                    if (type == PersistenceType.ENTITY || type == PersistenceType.EMBEDDABLE) 
+                        metas.add(meta);
                 }
+            }
+            for (Fetch<?,?> fetch : root.getFetches()) {
+                metas.add(metamodel.repos.getCachedMetaData(fetch.getAttribute().getJavaType()));
             }
         }
         exps.accessPath = metas.toArray(new ClassMetaData[metas.size()]);
@@ -178,15 +171,9 @@ public class CriteriaExpressionBuilder {
     }
 
     protected void evalDistinct(QueryExpressions exps, ExpressionFactory factory, CriteriaQueryImpl<?> q) {
-        Boolean distinct = q.getDistinct();
-        if (distinct == null) {
-            exps.distinct = QueryExpressions.DISTINCT_FALSE;
-        } else if (distinct) {
-            exps.distinct = QueryExpressions.DISTINCT_TRUE 
-            | QueryExpressions.DISTINCT_AUTO;
-        }
-        //exps.distinct &= ~QueryExpressions.DISTINCT_AUTO;
-    }
+        exps.distinct = q.isDistinct() ? QueryExpressions.DISTINCT_TRUE | QueryExpressions.DISTINCT_AUTO
+                : QueryExpressions.DISTINCT_FALSE;
+     }
 
     protected void evalCrossJoinRoots(QueryExpressions exps, ExpressionFactory factory, CriteriaQueryImpl<?> q) {
         Set<Root<?>> roots = q.getRoots();
@@ -197,10 +184,11 @@ public class CriteriaExpressionBuilder {
                 for (Root<?> root : roots) {
                     String alias = q.getAlias(root);
                     Value var = factory.newBoundVariable(alias, AbstractExpressionBuilder.TYPE_OBJECT);
-                    var.setMetaData(((Types.Entity)root.getModel()).meta);
+                    var.setMetaData(((AbstractManagedType<?>)root.getModel()).meta);
                     q.registerRoot(root, var);
                 }
-            }         }
+            }         
+        }
     }
     
     protected void evalFilter(QueryExpressions exps, ExpressionFactory factory, CriteriaQueryImpl<?> q) {
@@ -212,25 +200,23 @@ public class CriteriaExpressionBuilder {
         if (subQuery == null || subQuery.getCorrelatedJoins() == null) {
             q.assertRoot();
             for (Root<?> root : roots) {
-                if (root.getJoins() != null) {
-                    for (Join<?, ?> join : root.getJoins()) {
-                        filter = and(factory, ((ExpressionImpl<?>)join).toKernelExpression(factory, model, q), filter);
-                    }
+                for (Join<?, ?> join : root.getJoins()) {
+                    filter = Expressions.and(factory, 
+                            ((ExpressionImpl<?>)join).toKernelExpression(factory, model, q), filter);
                 }
                 ((RootImpl<?>)root).addToContext(factory, model, q);
             }
         }
         if (subQuery != null) {
             List<Join<?,?>> corrJoins = subQuery.getCorrelatedJoins();
-            if (corrJoins != null) {
-                for (int i = 0; i < corrJoins.size(); i++) 
-                    filter = and(factory, ((ExpressionImpl<?>)corrJoins.get(i)).toKernelExpression(factory, model, q),  
-                            filter);
+            for (int i = 0; corrJoins != null && i < corrJoins.size(); i++) {
+                filter = Expressions.and(factory, ((ExpressionImpl<?>)corrJoins.get(i))
+                        .toKernelExpression(factory, model, q), filter);
             }
         }
         
         if (where != null) {
-            filter = and(factory, where.toKernelExpression(factory, model, q), filter);
+            filter = Expressions.and(factory, where.toKernelExpression(factory, model, q), filter);
         }
         if (filter == null) {
             filter = factory.emptyExpression();
@@ -296,51 +282,31 @@ public class CriteriaExpressionBuilder {
             }         
         }
     }
-    
-
-//    protected boolean isDefaultProjection(List<Selection<?>> selections, CriteriaQueryImpl<?> q) {
-//        if (selections == null)
-//            return true;
-//        if (selections.size() != 1)
-//            return false;
-//        Selection<?> sel = selections.get(0);
-//        if (q.getRoots() != null && sel == q.getRoot())
-//            return true;
-//        if ((sel instanceof PathImpl<?,?>) && ((PathImpl<?,?>)sel)._correlatedPath != null)
-//            return true;
-//        return false;
-//    }
 
     protected void evalFetchJoin(QueryExpressions exps, ExpressionFactory factory, CriteriaQueryImpl<?> q) {
         List<String> iPaths = new ArrayList<String>();
         List<String> oPaths = new ArrayList<String>();
         Set<Root<?>> roots = q.getRoots();
-        if (roots == null)
-            return;
         for (Root root : roots) {
             Set<Fetch> fetches = root.getFetches();
             if (fetches == null)
                 continue;
             for (Fetch<?,?> fetch : fetches) {
-                String fPath = ((Members.Member<?, ?>)fetch.getAttribute())
-                   .fmd.getFullName(false);
+                String fPath = ((Members.Member<?, ?>)fetch.getAttribute()).fmd.getFullName(false);
                 oPaths.add(fPath);
                 if (fetch.getJoinType() == JoinType.INNER) {
                    iPaths.add(fPath);
                 } 
             }
         }
-        if (!iPaths.isEmpty())
+        if (!iPaths.isEmpty()) {
             exps.fetchInnerPaths = iPaths.toArray(new String[iPaths.size()]);
-        if (!oPaths.isEmpty())
+        }
+        if (!oPaths.isEmpty()) {
             exps.fetchPaths = oPaths.toArray(new String[oPaths.size()]);
+        }
     }
 
-    protected static org.apache.openjpa.kernel.exps.Expression and (ExpressionFactory factory,
-        org.apache.openjpa.kernel.exps.Expression e1, org.apache.openjpa.kernel.exps.Expression e2) {
-        return e1 == null ? e2 : e2 == null ? e1 : factory.and(e1, e2);
-    }
-    
     // ===================================================================================
     // Result Shape processing
     // ===================================================================================
@@ -358,7 +324,7 @@ public class CriteriaExpressionBuilder {
         if (type == null)
             type = Object.class;
         if (s.isCompoundSelection()) {
-            CompoundSelection<?> cs = (CompoundSelection)s;
+            CompoundSelection<?> cs = (CompoundSelection<?>)s;
             result = new ResultShape(s.getJavaType(), CompoundSelections.getFillStrategy(cs));
             List<Selection<?>> terms = cs.getCompoundSelectionItems();
             for (Selection<?> term : terms) {
@@ -414,6 +380,4 @@ public class CriteriaExpressionBuilder {
     
         return result;
    }
-
-    
 }

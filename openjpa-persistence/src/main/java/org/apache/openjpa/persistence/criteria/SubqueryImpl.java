@@ -379,13 +379,13 @@ public class SubqueryImpl<T> extends ExpressionImpl<T> implements Subquery<T> {
         return getJavaType();
     }
     
-    public StringBuilder asValue(CriteriaQueryImpl<?> q) {
+    public StringBuilder asValue(AliasContext q) {
         StringBuilder buffer = new StringBuilder();
         _delegate.render(buffer, _delegate.getRoots(), _corrJoins);
         return buffer;
     }
     
-    public StringBuilder asVariable(CriteriaQueryImpl<?> q) {
+    public StringBuilder asVariable(AliasContext q) {
         return asValue(q);
     }
 }

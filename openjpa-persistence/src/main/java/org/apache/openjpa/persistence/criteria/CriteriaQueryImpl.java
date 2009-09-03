@@ -28,11 +28,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.Stack;
-import java.util.concurrent.CopyOnWriteArrayList;
 
 import javax.persistence.criteria.AbstractQuery;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Expression;
+import javax.persistence.criteria.Fetch;
 import javax.persistence.criteria.Join;
 import javax.persistence.criteria.Order;
 import javax.persistence.criteria.ParameterExpression;
@@ -72,13 +72,13 @@ public class CriteriaQueryImpl<T> implements OpenJPACriteriaQuery<T>, AliasConte
     private Set<Root<?>>        _roots;
     private PredicateImpl       _where;
     private List<Order>         _orders;
-    private LinkedMap/*<ParameterExpression<?>, Class<?>>*/ _params;
-    private Selection<? extends T>        _selection;
+    private LinkedMap           _params; /*<ParameterExpression<?>, Class<?>>*/ 
+    private Selection<? extends T> _selection;
     private List<Selection<?>>  _selections;
     private List<Expression<?>> _groups;
     private PredicateImpl       _having;
     private List<Subquery<?>>   _subqueries;
-    private Boolean             _distinct;
+    private boolean             _distinct;
     private final SubqueryImpl<?> _delegator;
     private final Class<T>      _resultClass;
     private boolean             _compiled;
@@ -236,18 +236,22 @@ public class CriteriaQueryImpl<T> implements OpenJPACriteriaQuery<T>, AliasConte
     }
 
     public CriteriaQuery<T> groupBy(Expression<?>... grouping) {
-    	_groups = new ArrayList<Expression<?>>();
-    	if (grouping == null)
+    	if (grouping == null) {
+    	    _groups = null;
     	    return this;
+    	}
+        _groups = new ArrayList<Expression<?>>();
     	for (Expression<?> e : grouping)
     		_groups.add(e);
         return this;
     }
     
     public CriteriaQuery<T> groupBy(List<Expression<?>> grouping) {
-        _groups = new ArrayList<Expression<?>>();
-        if (grouping == null)
+        if (grouping == null) {
+            _groups = null;
             return this;
+        }
+        _groups = new ArrayList<Expression<?>>();
         for (Expression<?> e : grouping)
             _groups.add(e);
         return this;
@@ -255,21 +259,27 @@ public class CriteriaQueryImpl<T> implements OpenJPACriteriaQuery<T>, AliasConte
 
 
     public CriteriaQuery<T> having(Expression<Boolean> restriction) {
-        _having = new PredicateImpl().add(restriction);
+        _having = (PredicateImpl)restriction;
         return this;
     }
 
     public CriteriaQuery<T> having(Predicate... restrictions) {
-        _having = new PredicateImpl();
+        if (restrictions == null) {
+            _having = null;
+            return this;
+        }
+        _having = new PredicateImpl.And();
         for (Predicate p : restrictions)
         	_having.add(p);
         return this;
     }
 
     public CriteriaQuery<T> orderBy(Order... orders) {
-        _orders = new ArrayList<Order>();
-        if (orders == null)
+        if (orders == null) {
+            _orders = null;
             return this;
+        }
+        _orders = new ArrayList<Order>();
         for (Order o : orders) {
             _orders.add(o);
         }
@@ -277,9 +287,11 @@ public class CriteriaQueryImpl<T> implements OpenJPACriteriaQuery<T>, AliasConte
     }
     
     public CriteriaQuery<T> orderBy(List<Order> orders) {
-        _orders = new ArrayList<Order>();
-        if (orders == null)
+        if (orders == null) {
+            _orders = null;
             return this;
+        }
+        _orders = new ArrayList<Order>();
         for (Order o : orders) {
             _orders.add(o);
         }
@@ -306,7 +318,7 @@ public class CriteriaQueryImpl<T> implements OpenJPACriteriaQuery<T>, AliasConte
             _where = null;
             return this;
         }
-        _where = new PredicateImpl().add(restriction);
+        _where = (PredicateImpl)restriction;
         return this;
     }
 
@@ -316,9 +328,7 @@ public class CriteriaQueryImpl<T> implements OpenJPACriteriaQuery<T>, AliasConte
             _where = null;
             return this;
         }
-        _where = new PredicateImpl();
-        for (Predicate p : restrictions)
-        	_where.add(p);
+        _where = new PredicateImpl.And(restrictions);
         return this;
     }
 
@@ -371,11 +381,10 @@ public class CriteriaQueryImpl<T> implements OpenJPACriteriaQuery<T>, AliasConte
         _roots.add(root);
     }
     
+    /**
+     * Affirms if selection of this query is distinct.
+     */
     public boolean isDistinct() {
-        return _distinct == null ? false : _distinct.booleanValue();
-    }
-
-    Boolean getDistinct() {
         return _distinct;
     }
 
@@ -553,11 +562,8 @@ public class CriteriaQueryImpl<T> implements OpenJPACriteriaQuery<T>, AliasConte
     
     /**
      * Gets the registered variable for the given root. 
-     * 
-     * @param root
-     * @return
      */
-    Value getRegisteredRootVariable(Root<?> root) {
+    public Value getRegisteredRootVariable(Root<?> root) {
         Value var = _rootVariables.get(root);
         if (var != null)
             return var;
@@ -640,7 +646,7 @@ public class CriteriaQueryImpl<T> implements OpenJPACriteriaQuery<T>, AliasConte
     public String toCQL() {
         StringBuilder buffer = new StringBuilder();
         render(buffer, _roots, null);
-        return buffer.toString();
+        return buffer.toString().trim();
     }
     
     void render(StringBuilder buffer, Set<Root<?>> roots, List<Join<?,?>> correlatedJoins) {
@@ -655,10 +661,19 @@ public class CriteriaQueryImpl<T> implements OpenJPACriteriaQuery<T>, AliasConte
         }
         if (_orders != null) {
             buffer.append(" ORDER BY ");
-            List<Order> orderBys = getOrderList();
-            for (int i = 0; i < orderBys.size(); i++) {
-                buffer.append(((CriteriaExpression)orderBys.get(i)).asValue(this));
+            for (Order orderBy : getOrderList()) {
+                buffer.append(((CriteriaExpression)orderBy).asValue(this));
             }
+        }
+        if (_groups != null) {
+            buffer.append(" GROUP BY ");
+            for (Expression<?> groupBy : getGroupList()) {
+                buffer.append(((CriteriaExpression)groupBy).asValue(this));
+            }
+        }
+        if (_having != null) {
+            buffer.append(" HAVING ");
+            buffer.append(_having.asValue(this));
         }
     }
     
@@ -667,6 +682,7 @@ public class CriteriaQueryImpl<T> implements OpenJPACriteriaQuery<T>, AliasConte
         for (Join j : joins) {
             buffer.append(((ExpressionImpl<?>)j).asVariable(this)).append(" ");
             renderJoins(buffer, j.getJoins());
+            renderFetches(buffer, j.getFetches());
         }
     }
     
@@ -677,6 +693,13 @@ public class CriteriaQueryImpl<T> implements OpenJPACriteriaQuery<T>, AliasConte
             buffer.append(((ExpressionImpl<?>)r).asVariable(this));
             if (++i != roots.size()) buffer.append(", ");
             renderJoins(buffer, r.getJoins());
+            renderFetches(buffer, r.getFetches());
+        }
+    }
+    private void renderFetches(StringBuilder buffer, Set<Fetch> fetches) {
+        if (fetches == null) return;
+        for (Fetch j : fetches) {
+            buffer.append(((ExpressionImpl<?>)j).asValue(this)).append(" ");
         }
     }
 }

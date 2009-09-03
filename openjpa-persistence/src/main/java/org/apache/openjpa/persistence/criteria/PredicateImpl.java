@@ -19,7 +19,6 @@
 package org.apache.openjpa.persistence.criteria;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 
@@ -29,24 +28,37 @@ import javax.persistence.criteria.Predicate;
 import org.apache.openjpa.kernel.exps.ExpressionFactory;
 import org.apache.openjpa.persistence.meta.MetamodelImpl;
 
-public class PredicateImpl extends ExpressionImpl<Boolean> implements Predicate {
+/**
+ * Predicate is a expression that evaluates to true or false.
+ * All boolean expressions are implemented as Predicate.
+ * A predicate can have zero or more predicate arguments.
+ * Default predicate operator is AND (conjunction).
+ * Two constant predicates are Predicate.TRUE and Predicate.FALSE.
+ * AND predicate with no argument evaluates to TRUE.
+ * OR predicate with no argument evaluates to FALSE.
+ * Negation of a Predicate creates a new Predicate.
+ * 
+ * @author Pinaki Poddar
+ *
+ */
+public abstract class PredicateImpl extends ExpressionImpl<Boolean> implements Predicate {
     private static final ExpressionImpl<Integer> ONE  = new Expressions.Constant<Integer>(1);
-    public static final ExpressionImpl<Boolean> TRUE  = new Expressions.Equal(ONE,ONE);
-    public static final ExpressionImpl<Boolean> FALSE = new Expressions.Equal(ONE,ONE).negate();
+    public static final Predicate TRUE  = new Expressions.Equal(ONE,ONE);
+    public static final Predicate FALSE = new Expressions.NotEqual(ONE,ONE);
     
-    List<Expression<Boolean>> _exps;
+    protected final List<Predicate> _exps = new ArrayList<Predicate>();
     protected final BooleanOperator _op;
-    private boolean _negated = false;
+    protected boolean _negated = false;
 
     /**
-     * A predicate with empty name and AND operator.
+     * A predicate no arguments representing AND operator.
      */
     protected PredicateImpl() {
         this(BooleanOperator.AND);
     }
     
     /**
-     * A predicate with given name and given operator.
+     * A predicate representing given operator.
      */
     protected PredicateImpl(BooleanOperator op) {
         super(Boolean.class);
@@ -54,13 +66,13 @@ public class PredicateImpl extends ExpressionImpl<Boolean> implements Predicate 
     }
 
     /**
-     * A predicate with given name, given operator with given arguments.
+     * A predicate of given operator with given arguments.
      */
     protected PredicateImpl(BooleanOperator op, Predicate...restrictions) {
         this(op);
         if (restrictions != null) {
             for (Predicate p : restrictions)
-                add((PredicateImpl)p);
+                add(p);
         }
     }
 
@@ -68,14 +80,16 @@ public class PredicateImpl extends ExpressionImpl<Boolean> implements Predicate 
      * Adds the given predicate expression.
      */
     public PredicateImpl add(Expression<Boolean> s) {
-        if (_exps == null)
-            _exps = new ArrayList<Expression<Boolean>>();
-        _exps.add(s);
+        _exps.add((Predicate)s); // all boolean expressions are Predicate
         return this;
     }
 
     public List<Expression<Boolean>> getExpressions() {
-        return Expressions.returnCopy(_exps);
+        List<Expression<Boolean>> result = new CopyOnWriteArrayList<Expression<Boolean>>();
+        if (_exps.isEmpty())
+            return result;
+        result.addAll(_exps);
+        return result;
     }
 
     public final BooleanOperator getOperator() {
@@ -86,38 +100,38 @@ public class PredicateImpl extends ExpressionImpl<Boolean> implements Predicate 
         return _negated;
     }
 
+    /**
+     * Default negation creates a Not expression with this receiver as delegate.
+     * Derived predicates can return the inverse expression such as NotEqual
+     * for Equal or LessThan for GreaterThanEqual etc.
+     */
     public PredicateImpl negate() {
-        PredicateImpl not = clone();
-        not._negated = true;
-        return not;
+        return new Expressions.Not(this).markNegated();
     }
-
-    public PredicateImpl clone() {
-        PredicateImpl clone = new PredicateImpl(_op);
-        if (_exps != null)
-            clone._exps = new ArrayList<Expression<Boolean>>(this._exps);
-        return clone;
+    
+    protected PredicateImpl markNegated() {
+        _negated = true;
+        return this;
     }
     
     @Override
-    org.apache.openjpa.kernel.exps.Value toValue(ExpressionFactory factory, MetamodelImpl model, 
+    org.apache.openjpa.kernel.exps.Value toValue(ExpressionFactory factory, MetamodelImpl model,
         CriteriaQueryImpl<?> q) {
-        throw new AbstractMethodError();
+        throw new AbstractMethodError(this.getClass().getName());
     }
     
     @Override
     org.apache.openjpa.kernel.exps.Expression toKernelExpression(ExpressionFactory factory, MetamodelImpl model, 
         CriteriaQueryImpl<?> q) {
-        if (_exps == null || _exps.isEmpty()) {
-            ExpressionImpl<Boolean> nil = _op == BooleanOperator.AND ? TRUE : FALSE;
-            return nil.toKernelExpression(factory, model, q);
+        if (_exps.isEmpty()) {
+            Predicate nil = _op == BooleanOperator.AND ? TRUE : FALSE;
+            return ((PredicateImpl)nil).toKernelExpression(factory, model, q);
         }
         if (_exps.size() == 1) {
-            ExpressionImpl<Boolean> e0 = (ExpressionImpl<Boolean>)_exps.get(0);
-            if (e0 instanceof Expressions.Constant && e0.getJavaType() == Boolean.class) {
-                e0 = Boolean.TRUE.equals(((Expressions.Constant<Boolean>)e0).arg) ? TRUE : FALSE;
-            }
-            return e0.toKernelExpression(factory, model, q);
+            Predicate e0 = _exps.get(0);
+            if (isNegated())
+                e0 = e0.negate();
+            return ((PredicateImpl)e0).toKernelExpression(factory, model, q);
         }
         
         ExpressionImpl<?> e1 = (ExpressionImpl<?>)_exps.get(0);
@@ -128,27 +142,30 @@ public class PredicateImpl extends ExpressionImpl<Boolean> implements Predicate 
             ? factory.and(ke1,ke2) : factory.or(ke1, ke2);
 
         for (int i = 2; i < _exps.size(); i++) {
-            ExpressionImpl<?> e = (ExpressionImpl<?>)_exps.get(i);
+            PredicateImpl p = (PredicateImpl)_exps.get(i);
             result = _op == BooleanOperator.AND 
-            ? factory.and(result, e.toKernelExpression(factory, model, q))
-            : factory.or(result, e.toKernelExpression(factory,model,q));
+              ? factory.and(result, p.toKernelExpression(factory, model, q))
+              : factory.or(result, p.toKernelExpression(factory,model,q));
         }
         return _negated ? factory.not(result) : result;
     }
 
     public void acceptVisit(CriteriaExpressionVisitor visitor) {
-        Expressions.acceptVisit(visitor, this, _exps == null ? null : _exps.toArray(new Expression<?>[_exps.size()]));
+        Expressions.acceptVisit(visitor, this, _exps.toArray(new Expression<?>[_exps.size()]));
     }
     
-    public StringBuilder asValue(CriteriaQueryImpl<?> q) {
-        boolean braces = _exps != null && _exps.size() > 1;
-        StringBuilder buffer =  Expressions.asValue(q, _exps == null ? null : 
-            _exps.toArray(new Expression<?>[_exps.size()]), " " +_op + " ");
+    public StringBuilder asValue(AliasContext q) {
+        boolean braces = _exps.size() > 1;
+        StringBuilder buffer =  Expressions.asValue(q, _exps.toArray(new Expression<?>[_exps.size()]), " " +_op + " ");
         if (braces) buffer.insert(0, "(").append(")");
+        if (isNegated()) buffer.insert(0, "NOT ");
         return buffer;
     }
 
-    
+    /**
+     * Concrete AND predicate.
+     *
+     */
     public static class And extends PredicateImpl {
         public And(Expression<Boolean> x, Expression<Boolean> y) {
             super(BooleanOperator.AND);
@@ -160,6 +177,10 @@ public class PredicateImpl extends ExpressionImpl<Boolean> implements Predicate 
         }
     }
 
+    /**
+     * Concrete OR predicate.
+     *
+     */
     public static class Or extends PredicateImpl {
         public Or(Expression<Boolean> x, Expression<Boolean> y) {
             super(BooleanOperator.OR);

@@ -1019,7 +1019,7 @@ public class TestTypesafeCriteria extends CriteriaTest {
     public void testKeys7() {
         String sql = "SELECT t0.name, t2.id, t2.label FROM CR_ITEM t0 "
             + "INNER JOIN CR_ITEM_photos t1 ON t0.id = t1.ITEM_ID "
-            + "INNER JOIN CR_PHT t2 ON t1.VALUE_ID = t2.id";
+            + "INNER JOIN CR_PHT t2 ON t1.VALUE_ID = t2.id WHERE (NOT (1 <> 1))";
 
         CriteriaQuery<Customer> q = cb.createQuery(Customer.class);
         Root<Item> item = q.from(Item.class);
@@ -1178,7 +1178,7 @@ public class TestTypesafeCriteria extends CriteriaTest {
     public void testValues7() {
         String sql = "SELECT t0.name, t2.id, t2.label FROM CR_ITEM t0 "
             + "INNER JOIN CR_ITEM_photos t1 ON t0.id = t1.ITEM_ID "
-            + "INNER JOIN CR_PHT t2 ON t1.VALUE_ID = t2.id";
+            + "INNER JOIN CR_PHT t2 ON t1.VALUE_ID = t2.id WHERE (NOT (1 <> 1))";
 
         CriteriaQuery<Customer> q = cb.createQuery(Customer.class);
         Root<Item> item = q.from(Item.class);

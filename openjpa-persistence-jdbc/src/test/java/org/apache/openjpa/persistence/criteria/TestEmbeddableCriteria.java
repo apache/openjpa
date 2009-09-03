@@ -1477,7 +1477,6 @@ public class TestEmbeddableCriteria extends EmbeddableDomainTestCase {
         assertEquivalence(q, jpql);
     }
 
-    @AllowFailure(message="JPQL parse exception")
     public void testEmbeddableQuery111() {
         String jpql = "select i from Item1 i where :image = any(select KEY(e) from i.images e) order by i";
         CriteriaQuery<Item1> q = cb.createQuery(Item1.class);

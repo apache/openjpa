@@ -392,6 +392,10 @@ public class CriteriaBuilder implements OpenJPACriteriaBuilder, ExpressionParser
     }
 
     public <T> Expression<T> literal(T value) {
+        if (Boolean.TRUE.equals(value))
+            return (Expression<T>)PredicateImpl.TRUE;
+        if (Boolean.FALSE.equals(value))
+            return (Expression<T>)PredicateImpl.FALSE;
         return new Expressions.Constant<T>(value);
     }
 
@@ -452,15 +456,15 @@ public class CriteriaBuilder implements OpenJPACriteriaBuilder, ExpressionParser
     }
 
     public Predicate not(Expression<Boolean> restriction) {
-        return new Expressions.Not(restriction);
+        return ((Predicate)restriction).negate();
     }
 
     public Predicate notEqual(Expression<?> x, Expression<?> y) {
-        return equal(x, y).negate();
+        return new Expressions.NotEqual(x, y);
     }
 
     public Predicate notEqual(Expression<?> x, Object y) {
-        return equal(x, y).negate();
+        return new Expressions.NotEqual(x, y);
     }
 
     public Predicate notLike(Expression<String> x, Expression<String> pattern) {
@@ -679,7 +683,7 @@ public class CriteriaBuilder implements OpenJPACriteriaBuilder, ExpressionParser
     }
 
     public Predicate isNotNull(Expression<?> x) {
-        return new Expressions.IsNull((ExpressionImpl<?> )x).negate();
+        return new Expressions.IsNotNull((ExpressionImpl<?> )x);
     }
 
     public Predicate isNull(Expression<?> x) {

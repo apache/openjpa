@@ -60,11 +60,11 @@ public class OrderImpl implements Order, CriteriaExpression {
         }
     }
     
-    public StringBuilder asValue(CriteriaQueryImpl<?> q) {
+    public StringBuilder asValue(AliasContext q) {
         return e.asValue(q).append(_ascending ? "" : " DESC");
     }
     
-    public StringBuilder asVariable(CriteriaQueryImpl<?> q) {
+    public StringBuilder asVariable(AliasContext q) {
         throw new IllegalStateException(this + " can not be rendered as variable");
     }
 }

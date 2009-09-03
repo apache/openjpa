@@ -63,5 +63,23 @@ public class TestCQL extends CriteriaTest {
         jpql = "SELECT p FROM Person p WHERE (p.name = 'A' OR (p.name = 'B' AND (p.name = 'C' OR p.name = 'D')))";
         assertEquivalence(q, jpql);
         assertEquals(jpql, q.toCQL());
+        
+        // NOT (a OR b) 
+        q.where(cb.or(a, b).negate());
+        jpql = "SELECT p FROM Person p WHERE NOT (p.name = 'A' OR p.name = 'B')";
+        assertEquivalence(q, jpql);
+        assertEquals(jpql, q.toCQL());
+        
+        // NOT a 
+        q.where(cb.and(a).negate());
+        jpql = "SELECT p FROM Person p WHERE NOT p.name = 'A'";
+        assertEquivalence(q, jpql);
+        assertEquals(jpql, q.toCQL());
+
+        // NOT a OR NOT b
+        q.where(cb.or(cb.not(a), cb.not(b)));
+        jpql = "SELECT p FROM Person p WHERE (p.name <> 'A' OR p.name <> 'B')";
+        assertEquivalence(q, jpql);
+        assertEquals(jpql, q.toCQL());
     }
 }

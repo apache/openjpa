@@ -97,7 +97,7 @@ public class CompoundSelections {
         abstract FillStrategy<X> getFillStrategy();
         
         @Override
-        public StringBuilder asValue(CriteriaQueryImpl<?> q) {
+        public StringBuilder asValue(AliasContext q) {
             StringBuilder buffer = new StringBuilder();
             for (int i = 0; i < _args.size(); i++) {
                 buffer.append((((CriteriaExpression)_args.get(i)).asValue(q)));
@@ -158,7 +158,7 @@ public class CompoundSelections {
         }
         
         @Override
-        public StringBuilder asValue(CriteriaQueryImpl<?> q) {
+        public StringBuilder asValue(AliasContext q) {
             return new StringBuilder("NEW ").append(getJavaType().getName()).append("(")
                .append(super.asValue(q)).append(")");
         }
