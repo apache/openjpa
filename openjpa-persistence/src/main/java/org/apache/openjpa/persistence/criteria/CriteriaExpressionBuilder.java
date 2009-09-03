@@ -84,6 +84,7 @@ public class CriteriaExpressionBuilder {
         exps.resultClass = q.getResultType();
         exps.shape = evalResultShape(q);
         exps.parameterTypes = q.getParameterTypes();
+        exps.isAggregate();
         return exps;
     }
 

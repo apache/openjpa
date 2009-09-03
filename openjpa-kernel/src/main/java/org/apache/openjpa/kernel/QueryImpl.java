@@ -446,7 +446,7 @@ public class QueryImpl
             assertOpen();
             if (_unique != null)
                 return _unique.booleanValue();
-            if (_query == null || _compiling || _broker == null)
+            if ((_query == null && _language.endsWith("JPQL")) || _compiling || _broker == null)
                 return false;
 
             // check again after compilation; maybe encoded in string
