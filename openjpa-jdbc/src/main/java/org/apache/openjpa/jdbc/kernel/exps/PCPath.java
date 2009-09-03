@@ -33,6 +33,7 @@ import org.apache.openjpa.jdbc.meta.FieldMapping;
 import org.apache.openjpa.jdbc.meta.Strategy;
 import org.apache.openjpa.jdbc.meta.ValueMapping;
 import org.apache.openjpa.jdbc.meta.strats.HandlerCollectionTableFieldStrategy;
+import org.apache.openjpa.jdbc.meta.strats.HandlerHandlerMapTableFieldStrategy;
 import org.apache.openjpa.jdbc.meta.strats.LRSMapFieldStrategy;
 import org.apache.openjpa.jdbc.schema.Column;
 import org.apache.openjpa.jdbc.schema.ForeignKey;
@@ -320,7 +321,10 @@ public class PCPath
                         Strategy strategy = pstate.field.getStrategy();
                         if (strategy instanceof HandlerCollectionTableFieldStrategy) {
                             return ((HandlerCollectionTableFieldStrategy) strategy).
-                                getElementColumns(elem.getTypeMapping());                            
+                                getElementColumns(elem.getTypeMapping());
+                        } else if (strategy instanceof HandlerHandlerMapTableFieldStrategy) {
+                            return ((HandlerHandlerMapTableFieldStrategy) strategy).
+                            getValueColumns(elem.getTypeMapping());
                         }
                     }
                     if (pstate.joinedRel && elem.getTypeCode() == JavaTypes.PC)

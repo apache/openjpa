@@ -182,6 +182,7 @@ public class TestEmbeddable extends SQLListenerTestCase {
     public void testMapKeyTemporal() {
         createObjMapKeyTemporal();
         findObjMapKeyTemporal();
+        queryObjMapKeyTemporal();
     }
 
     public void testEntityA_Embed_MappedToOneCascadeDelete() {
@@ -2356,6 +2357,17 @@ public class TestEmbeddable extends SQLListenerTestCase {
         assertEquals(3, item.getImages().size());
     }
     
+    public void queryObjMapKeyTemporal() {
+        EntityManager em = emf.createEntityManager();
+        String jpql = "SELECT VALUE(img) FROM Item5 item, IN (item.images) img " + 
+            "WHERE img.fName = :fName and item.id = :id";
+        Query q = em.createQuery(jpql);
+        q.setParameter("fName", "file1");
+        q.setParameter("id", 1);
+        List coll = q.getResultList();
+        assertEquals(1, coll.size());
+    }
+
     public void queryItem(EntityManagerFactory emf) {
         EntityManager em = emf.createEntityManager();
         EntityTransaction tran = em.getTransaction();
