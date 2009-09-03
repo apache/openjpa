@@ -552,13 +552,18 @@ The equivalent declarations in XML:
 The persistence implementation must be able to retrieve and set the persistent
 state of your entities, mapped superclasses, and embeddable types. JPA offers
 two modes of persistent state access: <emphasis>field access</emphasis>, and
-<emphasis>property access</emphasis>. Under field access, the implementation
-injects state directly into your persistent fields, and retrieves changed state
-from your fields as well. To declare field access on an entity with XML
-metadata, set the <literal>access</literal> attribute of your <literal>entity
-</literal> XML element to <literal>FIELD</literal>. To use field access for an
-entity using annotation metadata, simply place your metadata and mapping
-annotations on your field declarations:
+<emphasis>property access</emphasis>.  The access type of a persistent attribute
+can be either set explicitly on a class or attribute level, inherited, or 
+determined by the provider. 
+        </para>
+        <para>
+Under field access, the implementation injects state directly into your 
+persistent fields, and retrieves changed state from your fields as well. To 
+declare field access on an entire entity with XML metadata, set the 
+<literal>access</literal> attribute of your <literal>entity</literal> XML 
+element to <literal>FIELD</literal>. To use field access for an entire entity 
+using annotation metadata, simply place your metadata and mapping annotations 
+on your field declarations:
         </para>
 <programlisting>
 @ManyToOne
@@ -609,9 +614,10 @@ You must also define the following setter method:
 void setP(T value);
 </programlisting>
         <para>
-To use property access, set your <literal>entity</literal> element's <literal>
-access</literal> attribute to <literal>PROPERTY</literal>, or place your
-metadata and mapping annotations on the getter method:
+To implicitly use property access for an entire class by default, set your 
+<literal>entity</literal> element's <literal> access</literal> attribute to 
+<literal>PROPERTY</literal>, or place your metadata and mapping annotations on 
+the getter method:
         </para>
 <programlisting>
 @ManyToOne
@@ -619,6 +625,112 @@ private Company getPublisher() { ... }
 
 private void setPublisher(Company publisher) { ... }
 </programlisting>
+    <section id="jpa_overview_explicit_access">
+        <title>
+            Explicit Access
+        </title>
+        <para>
+            <indexterm>
+                <primary>
+                    metadata
+                </primary>
+                <secondary>
+                    explicit access
+                </secondary>
+            </indexterm>
+            <indexterm>
+                <primary>
+                    persistent classes
+                </primary>
+                <secondary>
+                    explicit access
+                </secondary>
+            </indexterm>
+            <indexterm>
+                <primary>
+                    persistent attributes
+                </primary>
+                <seealso>
+                    persistent fields
+                </seealso>
+                <seealso>
+                    persistent properties
+                </seealso>
+            </indexterm>
+The access type of a class or individual persistent attributes can be specified 
+explicitly using the <literal>@Access</literal> annotation or <literal>access
+</literal> attribute on the XML elements used to define persistent attributes.  
+When explicitly defining access, specify the explicit access type for the class 
+and then apply the <literal>@Access</literal> annotation or <literal>access
+</literal>XML attribute to individual fields or properties.  If explicit 
+<literal>FIELD</literal> or <literal>PROPERTY</literal> is specified at the 
+class level, all eligible non-transient fields or properties will be persistent.
+If using class level <literal>FIELD</literal> access, non-persistent fields must 
+be <literal>transient</literal> or annotated with <literal>@Transient</literal>.
+If using class level <literal>PROPERTY</literal> access, non-persistent 
+properties must be annotated <literal>@Transient</literal> or excluded using
+the <literal>transient</literal> XML attribute.  Refer to the JPA specification
+for specific rules regarding the use of explicit access with embeddables and
+within an inheritance hierarchy.
+        </para>
+        <para>
+This entity definitions shows how multiple access types may be specified
+on an entity:
+        </para>
+<programlisting>
+@Entity
+@Access(AccessType.FIELD)
+public class PaymentContract {
+
+    @Id
+    private String id;
+
+    @Temporal(TemporalType.DATE)
+    private String contractDate;
+    
+    @Transient
+    private String terms;
+    
+    @Version
+    private int version;
+    
+    @Lob
+    @Access(AccessType.PROPERTY)
+    public String getContractTerms() {
+        return terms;
+    }
+    
+    public void setContractTerms(String terms) {
+        // Format string before persisting
+        this.terms = formatTerms(terms);
+    }
+    ... 
+}
+</programlisting>
+                <para>
+The equivalent declarations in XML:
+                </para>
+<programlisting>
+&lt;entity-mappings xmlns="http://java.sun.com/xml/ns/persistence/orm" 
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+    xsi:schemaLocation="http://java.sun.com/xml/ns/persistence/orm orm_2_0.xsd"
+    version="2.0"&gt;
+    &lt;entity class="org.xyz.PaymentContract" access="FIELD"&gt;
+        &lt;attributes&gt;
+            &lt;id name="id"/&gt;
+             &lt;basic name="contractTerms" access="PROPERTY"&gt; 
+                &lt;lob/&gt;
+            &lt;/basic&gt;
+            &lt;basic name="contractDate"&gt;
+                &lt;temporal>DATE&lt;/temporal&gt;
+            &lt;/basic>
+            &lt;version name="version"/&gt;
+            &lt;transient name="terms"/&gt;
+       &lt;/attributes&gt;
+    &lt;/entity&gt;
+&lt;/entity-mappings&gt;
+</programlisting>
+    </section>
         <warning>
             <para>
 When using property access, only the getter and setter method for a property
