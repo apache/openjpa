@@ -24,6 +24,10 @@ import java.util.List;
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
 
+import org.apache.openjpa.jdbc.conf.JDBCConfiguration;
+import org.apache.openjpa.jdbc.sql.DBDictionary;
+import org.apache.openjpa.jdbc.sql.DerbyDictionary;
+import org.apache.openjpa.jdbc.sql.MySQLDictionary;
 import org.apache.openjpa.persistence.query.Customer.CreditRating;
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
 
@@ -230,6 +234,9 @@ public class TestSubquery
 
 
     public void testSubquery() {
+        JDBCConfiguration conf = (JDBCConfiguration) emf.getConfiguration();
+        DBDictionary dict = conf.getDBDictionaryInstance();
+        
         EntityManager em = emf.createEntityManager();
         for (int i = 0; i < querys_jpa20.length; i++) {
             String q = querys_jpa20[i];
@@ -244,6 +251,14 @@ public class TestSubquery
             assertEquals(0, rs.size());
         }
 
+        // MySQL throws exception for the jpql in the updates:
+        // "You can't specify target table 'xxx' for update in FROM clause". The MySQL manual mentions 
+        // this at the bottom of the UPDATE documentation(http://dev.mysql.com/doc/refman/5.0/en/update.html): 
+        // “Currently, you cannot update a table and select from the same table in a subquery.”
+        
+        if (dict instanceof MySQLDictionary)
+            return;
+        
         em.getTransaction().begin();
         for (int i = 0; i < updates.length; i++) {
             int updateCount = em.createQuery(updates[i]).executeUpdate();
