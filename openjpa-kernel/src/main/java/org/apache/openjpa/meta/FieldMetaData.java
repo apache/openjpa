@@ -48,6 +48,7 @@ import java.util.TimeZone;
 import org.apache.commons.collections.comparators.ComparatorChain;
 import org.apache.commons.lang.StringUtils;
 import org.apache.openjpa.conf.OpenJPAConfiguration;
+import org.apache.openjpa.conf.Specification;
 import org.apache.openjpa.kernel.OpenJPAStateManager;
 import org.apache.openjpa.kernel.StoreContext;
 import org.apache.openjpa.lib.conf.Configurations;
@@ -858,6 +859,19 @@ public class FieldMetaData
             if (field.getMappedBy() != null)
                 throw new MetaDataException(_loc.get("circ-mapped-by", this,
                     _mappedBy));
+            Specification spec = getRepository().getConfiguration().getSpecificationInstance();
+            if (spec != null) {
+                int specVersion = spec.getVersion();
+                if (specVersion >= 2) {
+                    if (field.getDeclaringMetaData().isAbstract())
+                        throw new MetaDataException(_loc.get("no-mapped-by-in-mapped-super", field,
+                                field.getDeclaringMetaData()));
+
+                    if (this.getDeclaringMetaData().isAbstract())
+                        throw new MetaDataException(_loc.get("no-mapped-by-in-mapped-super", this,
+                                this.getDeclaringMetaData()));
+                }            
+            }
             _mappedByMeta = field;
         }
         return _mappedByMeta;
