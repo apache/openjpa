@@ -23,7 +23,7 @@ import javax.persistence.Id;
 import javax.persistence.Table;
 
 @Entity
-@Table(schema="embed", name="Division")
+@Table(name="Division_EMB")
 public class Division {
     @Id
     int id;
