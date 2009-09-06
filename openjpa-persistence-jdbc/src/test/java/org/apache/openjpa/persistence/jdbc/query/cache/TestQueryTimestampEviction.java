@@ -87,10 +87,10 @@ public class TestQueryTimestampEviction extends SingleEMFTestCase {
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
 
-        String insert1 = "insert into part(partno,parttype,name,cost,mass)" +
+        String insert1 = "insert into Part(partno,parttype,name,cost,mass)" +
             " values(13,'PartBase','breakes',1000.0,100.0)";
         em.createNativeQuery(insert1).executeUpdate();
-        String insert2 = "insert into supplier_part(suppliers_sid," +
+        String insert2 = "insert into Supplier_Part(suppliers_sid," +
             "supplies_partno) values(1,13)";
         em.createNativeQuery(insert2).executeUpdate();
 
@@ -100,7 +100,7 @@ public class TestQueryTimestampEviction extends SingleEMFTestCase {
         em = emf.createEntityManager();
         em.getTransaction().begin();
 
-        String sql = "select partno from part where cost > 120 ";
+        String sql = "select partno from Part where cost > 120 ";
         Query nativeq = em.createNativeQuery(sql);
         int nativelistSize = nativeq.getResultList().size();
 
@@ -203,7 +203,7 @@ public class TestQueryTimestampEviction extends SingleEMFTestCase {
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
 
-        em.createNativeQuery("delete from supplier_part").executeUpdate();
+        em.createNativeQuery("delete from Supplier_Part").executeUpdate();
         em.createQuery("delete from PartBase s").executeUpdate();
         em.createQuery("delete from Supplier s").executeUpdate();
         em.createQuery("delete from Usage u").executeUpdate();

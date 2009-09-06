@@ -24,7 +24,7 @@ import org.apache.openjpa.persistence.DataCache;
 
 @Entity
 @DataCache(timeout=100000)
-
+@Table(name="Usage1")
 public class Usage {
     @Id  
     @GeneratedValue(strategy=GenerationType.IDENTITY)
