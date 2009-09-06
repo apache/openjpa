@@ -33,8 +33,10 @@ public class XMLPropertySub2 extends XMLMappedSuperField {
     public boolean equals(Object obj) {
         if (obj instanceof XMLPropertySub2) {
             XMLPropertySub2 ps = (XMLPropertySub2)obj;
-            return super.equals(obj) &&
-                   crtDate.equals(ps.getCreateDate());
+            String crtDateString = ps.getCreateDate() != null ? ps.getCreateDate().toString() : null;
+            if (!crtDate.toString().equals(crtDateString))
+                return false;
+            return super.equals(obj);
         }
         return false;
     }

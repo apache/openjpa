@@ -234,7 +234,7 @@ public class TestXMLExplicitAccess extends SingleEMFTestCase {
             (XMLPropertySub)qry.getSingleResult();
         assertEquals(ps, ps2);
         assertEquals(ps2.getName(), "AbsMappedSuperName");
-        assertEquals(ps2.getCreateDate(), now);
+        assertEquals(ps2.getCreateDate().toString(), now.toString());
 
         try {
             qry = em.createNamedQuery("XMLPropertySub.badQuery");
@@ -290,7 +290,7 @@ public class TestXMLExplicitAccess extends SingleEMFTestCase {
             (XMLFieldSub)qry.getSingleResult();
         assertEquals(fs, fs2);
         assertEquals(fs2.getName(), "AbsMappedSuperName");
-        assertEquals(fs2.getCreateDate(), now);
+        assertEquals(fs2.getCreateDate().toString(), now.toString());
 
         try {
             qry = em.createNamedQuery("XMLFieldSub.badQuery");
@@ -347,7 +347,7 @@ public class TestXMLExplicitAccess extends SingleEMFTestCase {
             (XMLPropertySub2)qry.getSingleResult();
         assertEquals(ps, ps2);
         assertEquals(ps2.getName(), "MappedSuperName");
-        assertEquals(ps2.getCreateDate(), now);
+        assertEquals(ps2.getCreateDate().toString(), now.toString());
 
         try {
             qry = em.createNamedQuery("XMLPropertySub2.badQuery");
@@ -398,7 +398,7 @@ public class TestXMLExplicitAccess extends SingleEMFTestCase {
             (XMLFieldSub2)qry.getSingleResult();
         assertEquals(fs, fs2);
         assertEquals(fs2.getName(), "MappedSuperName");
-        assertEquals(fs2.getCreateDate(), now);
+        assertEquals(fs2.getCreateDate().toString(), now.toString());
 
         try {
             qry = em.createNamedQuery("XMLFieldSub2.badQuery");
@@ -450,7 +450,7 @@ public class TestXMLExplicitAccess extends SingleEMFTestCase {
             (XMLMixedFieldSub)qry.getSingleResult();
         assertEquals(fs, fs2);
         assertEquals(fs2.getName(), "XMLMixedMappedSuperName");
-        assertEquals(fs2.getCreateDate(), now);
+        assertEquals(fs2.getCreateDate().toString(), now.toString());
 
         try {
             qry = em.createNamedQuery("XMLMixedFieldSub.badQuery");
@@ -505,7 +505,7 @@ public class TestXMLExplicitAccess extends SingleEMFTestCase {
             (XMLFieldSub3)qry.getSingleResult();
         assertEquals(fs, fs2);
         assertEquals(fs2.getName(), "EntitySuperName");
-        assertEquals(fs2.getCreateDate(), now);
+        assertEquals(fs2.getCreateDate().toString(), now.toString());
 
         try {
             qry = em.createNamedQuery("XMLFieldSub3.badQuery");
@@ -584,7 +584,7 @@ public class TestXMLExplicitAccess extends SingleEMFTestCase {
             (XMLPropertySub3)qry.getSingleResult();
         assertEquals(ps, ps2);
         assertEquals(ps2.getName(), "EntitySuperName");
-        assertEquals(ps2.getCreateDate(), now);
+        assertEquals(ps2.getCreateDate().toString(), now.toString());
 
         try {
             qry = em.createNamedQuery("XMLPropertySub3.badQuery");

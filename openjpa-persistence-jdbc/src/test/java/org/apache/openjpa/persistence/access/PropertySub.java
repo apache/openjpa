@@ -55,8 +55,10 @@ public class PropertySub extends AbstractMappedSuperField {
     public boolean equals(Object obj) {
         if (obj instanceof PropertySub) {
             PropertySub ps = (PropertySub)obj;
-            return super.equals(obj) &&
-                   crtDate.equals(ps.getCreateDate());
+            String crtDateString = ps.getCreateDate() != null ? ps.getCreateDate().toString() : null;
+            if (!crtDate.toString().equals(crtDateString))
+                return false;
+            return super.equals(obj);
         }
         return false;
     }

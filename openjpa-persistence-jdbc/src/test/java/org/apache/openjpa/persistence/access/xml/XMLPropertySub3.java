@@ -35,8 +35,10 @@ public class XMLPropertySub3 extends XMLSuperFieldEntity {
     public boolean equals(Object obj) {
         if (obj instanceof XMLPropertySub3) {
             XMLPropertySub3 ps = (XMLPropertySub3)obj;
-            return super.equals(obj) &&
-                   crtDate.equals(ps.getCreateDate());
+            String crtDateString = ps.getCreateDate() != null ? ps.getCreateDate().toString() : null;
+            if (!crtDate.toString().equals(crtDateString))
+                return false;
+            return super.equals(obj);
         }
         return false;
     }

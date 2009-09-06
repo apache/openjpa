@@ -59,8 +59,10 @@ public class MixedFieldSub extends MixedMappedSuper {
     public boolean equals(Object obj) {
         if (obj instanceof MixedFieldSub) {
             MixedFieldSub ps = (MixedFieldSub)obj;
-            return super.equals(obj) &&
-                   getCreateDate().equals(ps.getCreateDate());
+            String crtDateString = ps.getCreateDate() != null ? ps.getCreateDate().toString() : null;
+            if (!crtDate.toString().equals(crtDateString))
+                return false;
+            return super.equals(obj);
         }
         return false;
     }

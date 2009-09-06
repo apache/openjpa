@@ -241,7 +241,7 @@ public class TestExplicitAccess extends SingleEMFTestCase {
             (PropertySub)qry.getSingleResult();
         assertEquals(ps, ps2);
         assertEquals(ps2.getName(), "AbsMappedSuperName");
-        assertEquals(ps2.getCreateDate(), now);
+        assertEquals(ps2.getCreateDate().toString(), now.toString());
 
         try {
             qry = em.createNamedQuery("PropertySub.badQuery");
@@ -290,7 +290,7 @@ public class TestExplicitAccess extends SingleEMFTestCase {
             (FieldSub)qry.getSingleResult();
         assertEquals(fs, fs2);
         assertEquals(fs2.getName(), "AbsMappedSuperName");
-        assertEquals(fs2.getCreateDate(), now);
+        assertEquals(fs2.getCreateDate().toString(), now.toString());
 
         try {
             qry = em.createNamedQuery("FieldSub.badQuery");
@@ -340,7 +340,7 @@ public class TestExplicitAccess extends SingleEMFTestCase {
             (PropertySub2)qry.getSingleResult();
         assertEquals(ps, ps2);
         assertEquals(ps2.getName(), "MappedSuperName");
-        assertEquals(ps2.getCreateDate(), now);
+        assertEquals(ps2.getCreateDate().toString(), now.toString());
 
         try {
             qry = em.createNamedQuery("PropertySub2.badQuery");
@@ -390,7 +390,7 @@ public class TestExplicitAccess extends SingleEMFTestCase {
             (FieldSub2)qry.getSingleResult();
         assertEquals(fs, fs2);
         assertEquals(fs2.getName(), "MappedSuperName");
-        assertEquals(fs2.getCreateDate(), now);
+        assertEquals(fs2.getCreateDate().toString(), now.toString());
 
         try {
             qry = em.createNamedQuery("FieldSub2.badQuery");
@@ -442,7 +442,7 @@ public class TestExplicitAccess extends SingleEMFTestCase {
             (MixedFieldSub)qry.getSingleResult();
         assertEquals(fs, fs2);
         assertEquals(fs2.getName(), "MixedMappedSuperName");
-        assertEquals(fs2.getCreateDate(), now);
+        assertEquals(fs2.getCreateDate().toString(), now.toString());
 
         try {
             qry = em.createNamedQuery("MixedFieldSub.badQuery");
@@ -497,7 +497,7 @@ public class TestExplicitAccess extends SingleEMFTestCase {
             (FieldSub3)qry.getSingleResult();
         assertEquals(fs, fs2);
         assertEquals(fs2.getName(), "EntitySuperName");
-        assertEquals(fs2.getCreateDate(), now);
+        assertEquals(fs2.getCreateDate().toString(), now.toString());
 
         try {
             qry = em.createNamedQuery("FieldSub3.badQuery");
@@ -576,7 +576,7 @@ public class TestExplicitAccess extends SingleEMFTestCase {
             (PropertySub3)qry.getSingleResult();
         assertEquals(ps, ps2);
         assertEquals(ps2.getName(), "EntitySuperName");
-        assertEquals(ps2.getCreateDate(), now);
+        assertEquals(ps2.getCreateDate().toString(), now.toString());
 
         try {
             qry = em.createNamedQuery("PropertySub3.badQuery");
