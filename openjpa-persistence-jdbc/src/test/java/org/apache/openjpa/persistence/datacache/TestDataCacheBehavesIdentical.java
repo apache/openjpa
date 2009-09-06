@@ -483,7 +483,7 @@ public class TestDataCacheBehavesIdentical extends AbstractTestCase {
         // delete the record in the database in a separate transaction using
         // native SQL so that the in-memory instance is not altered 
         em.getTransaction().begin();
-        String sql = "DELETE FROM POBJECT WHERE id="+oid;
+        String sql = "DELETE FROM PObject WHERE id="+oid;
         em.createNativeQuery(sql).executeUpdate();
         em.getTransaction().commit();
         

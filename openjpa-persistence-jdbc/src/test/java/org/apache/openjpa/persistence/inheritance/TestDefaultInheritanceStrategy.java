@@ -211,7 +211,7 @@ public class TestDefaultInheritanceStrategy
         em.clear();
 
         // Verify that baseclass2 contains a discriminator column
-        verifyDtypeColumnEntriesAndMapping(em, "BASECLASS2", 3, 
+        verifyDtypeColumnEntriesAndMapping(em, "BaseClass2", 3, 
                 BaseClass2.class);
         
         // Verify that the subclass tables do not contain a discriminator column
