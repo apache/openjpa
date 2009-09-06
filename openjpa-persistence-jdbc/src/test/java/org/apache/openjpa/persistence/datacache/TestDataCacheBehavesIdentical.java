@@ -316,7 +316,7 @@ public class TestDataCacheBehavesIdentical extends AbstractTestCase {
         // Modify the record in the database in a separate transaction using
         // native SQL so that the in-memory instance is not altered 
         em.getTransaction().begin();
-        String sql = "UPDATE POBJECT SET NAME='" + MARKER_DATABASE
+        String sql = "UPDATE PObject SET NAME='" + MARKER_DATABASE
         + "' WHERE id=" + oid;
         em.createNativeQuery(sql).executeUpdate();
         em.getTransaction().commit();

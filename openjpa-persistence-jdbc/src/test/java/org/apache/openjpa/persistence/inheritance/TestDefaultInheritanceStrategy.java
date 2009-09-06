@@ -122,7 +122,7 @@ public class TestDefaultInheritanceStrategy
 
         em.clear();
         
-        verifyDtypeColumnEntriesAndMapping(em, "BASECLASS", 4, BaseClass.class);
+        verifyDtypeColumnEntriesAndMapping(em, "BaseClass", 4, BaseClass.class);
                 
         verifyInheritanceQueryResult(em, "SubclassA", 
             classArray(SubclassA.class), 0, 1);
@@ -309,7 +309,7 @@ public class TestDefaultInheritanceStrategy
         verifyNoDypeColumn(em, "SubclassF");
 
         // Verify that the base class does contain a discriminator column
-        verifyDtypeColumnEntriesAndMapping(em, "BASECLASS3", 2, 
+        verifyDtypeColumnEntriesAndMapping(em, "BaseClass3", 2, 
             BaseClass3.class);
 
         // Query the subclass table.  Make sure the counts are correct and
@@ -356,7 +356,7 @@ public class TestDefaultInheritanceStrategy
 
         em.clear();
         
-        verifyDtypeColumnEntriesAndMapping(em, "BASECLASS4", 2, 
+        verifyDtypeColumnEntriesAndMapping(em, "BaseClass4", 2, 
             BaseClass4.class);
 
         // Verify that the subclass table does not contain a discriminator
@@ -413,7 +413,7 @@ public class TestDefaultInheritanceStrategy
         
         em.clear();
 
-        verifyDtypeColumnEntriesAndMapping(em, "BASECLASS5", 3, 
+        verifyDtypeColumnEntriesAndMapping(em, "BaseClass5", 3, 
                 BaseClass5.class);
 
         // Verify that the midclass table does not contain a discriminator
@@ -491,7 +491,7 @@ public class TestDefaultInheritanceStrategy
         
         em.clear();
 
-        verifyDtypeColumnEntriesAndMapping(em, "ABSTRACTCLASS", 2, 
+        verifyDtypeColumnEntriesAndMapping(em, "AbstractClass", 2, 
                 AbstractClass.class);
 
         // Verify that the midclass table does not contain a discriminator
@@ -543,7 +543,7 @@ public class TestDefaultInheritanceStrategy
         
         em.clear();
         
-        verifyDtypeColumnEntriesAndMapping(em, "BASECLASS6", 2, 
+        verifyDtypeColumnEntriesAndMapping(em, "BaseClass6", 2, 
                 BaseClass6.class);
 
         // Verify that the subclass table does not contain a discriminator
