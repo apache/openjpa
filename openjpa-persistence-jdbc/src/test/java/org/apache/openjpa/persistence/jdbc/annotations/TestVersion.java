@@ -91,7 +91,7 @@ public class TestVersion extends SingleEMFTestCase {
         // ensure that some time has passed
         // since the records were created
         try {
-            Thread.sleep(50);
+            Thread.sleep(5000);
         }
         catch (InterruptedException e) {
             // do nothing
