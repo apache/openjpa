@@ -19,8 +19,11 @@
 package org.apache.openjpa.persistence.generationtype;
 
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 import javax.persistence.EntityManager;
+import javax.persistence.EntityManagerFactory;
 import javax.persistence.PersistenceException;
 import javax.persistence.Query;
 
@@ -35,7 +38,17 @@ import org.apache.openjpa.persistence.test.SingleEMFTestCase;
 
 public class TestMultipleSchemaNames extends SingleEMFTestCase {
 
+    static Boolean isMySQL = null;
+    
     public void setUp() {
+        
+        // Exclude mysql
+        if (isMySQL == null)
+            isMySQL = isMySQL();
+        if (isMySQL)
+            return;
+        
+
         // Create schemas when database requires this and we are about
         // to execute the first test.
         if ("testGeneratedAUTO".equals(getName())) {
@@ -133,6 +146,9 @@ public class TestMultipleSchemaNames extends SingleEMFTestCase {
     }
 
     public void testGeneratedAUTO() {
+        if (isMySQL)
+            return;
+
         EntityManager em = emf.createEntityManager();
         OpenJPAEntityManager kem = OpenJPAPersistence.cast(em);
         em.getTransaction().begin();
@@ -210,6 +226,9 @@ public class TestMultipleSchemaNames extends SingleEMFTestCase {
     }
 
     public void testGeneratedTABLE() {
+        if (isMySQL)
+            return;
+
         EntityManager em = emf.createEntityManager();
         OpenJPAEntityManager kem = OpenJPAPersistence.cast(em);
         em.getTransaction().begin();
@@ -355,6 +374,9 @@ public class TestMultipleSchemaNames extends SingleEMFTestCase {
     }
     
     public void testGeneratedIDENTITY() {
+        if (isMySQL)
+            return;
+
         EntityManager em = emf.createEntityManager();
         OpenJPAEntityManager kem = OpenJPAPersistence.cast(em);
 
@@ -396,6 +418,25 @@ public class TestMultipleSchemaNames extends SingleEMFTestCase {
 
         em.close();
     }
+
+    private Boolean isMySQL() {
+        EntityManagerFactory emf = (EntityManagerFactory)createEMF();
+        
+        Map<String, Object> props = emf.getProperties();
+        Set<String> keys = props.keySet();
+        for (String key : keys) {
+            String platform = null;
+            if (key.equals("Platform")) {
+                platform = (String) props.get(key);
+                if (platform.equals("OpenJPA JDBC Edition: MySQL Database"))
+                    return Boolean.TRUE;
+                return Boolean.FALSE;
+            }
+        }
+               
+        return Boolean.FALSE;
+    }    
+    
     
     /**
      * Create necessary schemas if running on PostgreSQL as it does
