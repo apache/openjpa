@@ -85,7 +85,7 @@ public class TestMultipleEntityProjection extends SingleEMFTestCase {
 				} catch (ParseException e) {
 					mag.setDatePublished(null);
 				}
-                mag.setTsPublished(new Timestamp(System.currentTimeMillis()));
+                mag.setTsPublished(new Timestamp(System.currentTimeMillis() - 100000));
 				
 				em.persist(pub);
 			}

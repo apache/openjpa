@@ -49,7 +49,7 @@ public class EmployeePK implements Serializable {
             return false;
         EmployeePK pk = (EmployeePK) o;
         if (pk.name.equals(name) &&
-            pk.bDay.equals(bDay))
+            pk.bDay.toString().equals(bDay.toString()))
             return true;    
         return false;
     }

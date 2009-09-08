@@ -70,11 +70,15 @@ public class PhoneNumber {
             (Collection<Map.Entry<EmployeePK, Employee>>) emps.entrySet();
         for (Map.Entry<EmployeePK, Employee> entry : entries) {
             EmployeePK key = entry.getKey();
-            Employee e0 = map.get(key);
-            Employee e = emps.get(key);
+            Employee e0 = Employee.findEmpl(map, key);
+            Employee e = Employee.findEmpl(emps, key);
+            if ((e == null && e0 != null) || (e != null && e0 == null))
+                return false;
             if (!e.getEmpPK().equals(e0.getEmpPK()))
                 return false;
         }
         return true;
     }    
+    
+    
 }

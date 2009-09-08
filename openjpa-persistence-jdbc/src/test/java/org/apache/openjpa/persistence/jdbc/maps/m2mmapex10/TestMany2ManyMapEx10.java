@@ -46,8 +46,8 @@ public class TestMany2ManyMapEx10 extends SQLListenerTestCase {
     public List<EmployeePK> empPKs = new ArrayList<EmployeePK>();
     public List<PhonePK> phonePKs = new ArrayList<PhonePK>();
 
-    public Map<EmployeePK, Employee> empMap = 
-        new HashMap<EmployeePK, Employee>();
+    public Map<String, Employee> empMap = 
+        new HashMap<String, Employee>();
     public Map<PhonePK, PhoneNumber> phoneMap = 
         new HashMap<PhonePK, PhoneNumber>();
 
@@ -190,7 +190,7 @@ public class TestMany2ManyMapEx10 extends SQLListenerTestCase {
         EntityTransaction tran = em.getTransaction();
         for (int i = 0; i < numEmployees; i++) {
             Employee e = createEmployee(em, empId++);
-            empMap.put(e.getEmpPK(), e);
+            empMap.put(e.getEmpPK().getName(), e);
         }
         tran.begin();
         em.flush();
@@ -200,7 +200,8 @@ public class TestMany2ManyMapEx10 extends SQLListenerTestCase {
 
     public Employee createEmployee(EntityManager em, int id) {
         Employee e = new Employee();
-        EmployeePK empPK = new EmployeePK("e" + id, new Date());
+        Date bDay = new Date(System.currentTimeMillis() - 1000000);
+        EmployeePK empPK = new EmployeePK("e" + id, bDay);
         empPKs.add(empPK);
         e.setEmpPK(empPK);
         e.setSalary(1000);
@@ -264,7 +265,7 @@ public class TestMany2ManyMapEx10 extends SQLListenerTestCase {
 
     public void assertEmployee(Employee e) throws Exception {
         EmployeePK empPK = e.getEmpPK();
-        Employee e0 = empMap.get(empPK);
+        Employee e0 = empMap.get(empPK.getName());
         Map<PhonePK, PhoneNumber> phones = e.getPhoneNumbers();
         Map<PhonePK, PhoneNumber> phones0 = e0.getPhoneNumbers();
         Assert.assertEquals(phones0.size(), phones.size());
@@ -300,7 +301,8 @@ public class TestMany2ManyMapEx10 extends SQLListenerTestCase {
         for (Map.Entry<EmployeePK, Employee> entry0 : entrySets0) {
             EmployeePK key0 = entry0.getKey();
             Employee e0 = entry0.getValue();
-            Employee e = es.get(key0);
+            //Employee e = es.get(key0);
+            Employee e = Employee.findEmpl(es, key0);
             if (!e0.equals(e))
                 throw new Exception("Assertion failure");
         }

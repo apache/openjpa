@@ -78,4 +78,26 @@ public class Employee {
         }
         return true;
     }    
+
+    /*
+     * The following change is for the comparison of Date object. In MySQL, 
+     * "microseconds cannot be stored into a column of any temporal data type. 
+     * Any microseconds part is discarded. " (http://dev.mysql.com/doc/refman/5.1/en/datetime.html). 
+     * As a result, when the value retrieved from the database will be different from the 
+     * original value in the memory for the loss of microsecond. The fix is to call toString 
+     * (which will strip the microseconds0 on the Date object and compare the String values.
+     */
+    
+    public static Employee findEmpl(Map<EmployeePK, Employee> map, EmployeePK key) {
+        String name = key.getName();
+        String bDateStr = key.getBDay().toString();
+        Set<EmployeePK> keys = map.keySet();
+        for (EmployeePK thisKey : keys) {
+           if (name.equals(thisKey.getName()) && 
+               bDateStr.equals(thisKey.getBDay().toString())) {
+               return map.get(thisKey);
+           }
+        }
+        return null;
+    }
 }
