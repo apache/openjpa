@@ -18,12 +18,13 @@
  */
 package org.apache.openjpa.persistence.compat;
 
+import javax.persistence.EntityManager;
+
 import org.apache.openjpa.conf.Compatibility;
 import org.apache.openjpa.conf.Specification;
 import org.apache.openjpa.persistence.OpenJPAEntityManagerFactorySPI;
 import org.apache.openjpa.persistence.OpenJPAPersistence;
 import org.apache.openjpa.persistence.test.AbstractCachedEMFTestCase;
-import org.apache.openjpa.persistence.test.PersistenceTestCase;
 
 public class TestSpecCompatibilityOptions 
 extends AbstractCachedEMFTestCase {
@@ -75,5 +76,41 @@ extends AbstractCachedEMFTestCase {
         assertEquals(spec.getVersion(), 2);
         
         emf.close();
+    }
+
+    /*
+     * Per JPA 2.0, Relationships in mapped superclass must be unidirectional.
+     * An exceptioin will be thrown when a bi-directional relation is detected in
+     * a mapped superclass. 
+     */
+    public void testMappedSuperClass() {
+        OpenJPAEntityManagerFactorySPI emf =
+            (OpenJPAEntityManagerFactorySPI)OpenJPAPersistence.
+                createEntityManagerFactory("persistence_2_0",
+                    "org/apache/openjpa/persistence/compat/" +
+                    "persistence_2_0.xml");
+        EntityManager em = null;
+        try {
+            em = emf.createEntityManager();
+            EntityA a = new EntityA();
+            a.setId(1);
+            EntityB b = new EntityB();
+            b.setId(1);
+            a.setEntityB(b);
+            b.setEntityA(a);
+            em.getTransaction().begin();
+            em.persist(a);
+            em.persist(b);
+            em.getTransaction().commit();
+            em.close();
+            fail("An exceptioin will be thrown for a bi-directional relation declared in mapped superclass");
+        } catch (org.apache.openjpa.persistence.ArgumentException e) {
+            if (em != null) {
+                em.getTransaction().rollback();
+                em.close();
+            }
+        } finally {
+            emf.close();
+        }
     }
 }
