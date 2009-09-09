@@ -19,17 +19,17 @@
 package org.apache.openjpa.persistence.generationtype;
 
 import java.util.List;
-import java.util.Map;
-import java.util.Set;
 
 import javax.persistence.EntityManager;
-import javax.persistence.EntityManagerFactory;
 import javax.persistence.PersistenceException;
 import javax.persistence.Query;
 
 import org.apache.openjpa.jdbc.conf.JDBCConfiguration;
 import org.apache.openjpa.jdbc.sql.DBDictionary;
+import org.apache.openjpa.jdbc.sql.MySQLDictionary;
+import org.apache.openjpa.jdbc.sql.OracleDictionary;
 import org.apache.openjpa.jdbc.sql.PostgresDictionary;
+import org.apache.openjpa.jdbc.sql.SQLServerDictionary;
 import org.apache.openjpa.persistence.OpenJPAEntityManager;
 import org.apache.openjpa.persistence.OpenJPAEntityManagerFactorySPI;
 import org.apache.openjpa.persistence.OpenJPAEntityManagerSPI;
@@ -38,16 +38,32 @@ import org.apache.openjpa.persistence.test.SingleEMFTestCase;
 
 public class TestMultipleSchemaNames extends SingleEMFTestCase {
 
-    static Boolean isMySQL = null;
+    static DBDictionary dict = null;
+    static Boolean skipTests = null;
     
     public void setUp() {
+        // Need to skip tests on MySQL, Oracle and MS SQL Server
+        // See createSchemas() comment at the bottom
+        if ((dict == null) || (skipTests == null)) {
+            OpenJPAEntityManagerFactorySPI emf = createEMF();
+            OpenJPAEntityManagerSPI em = emf.createEntityManager();
+            JDBCConfiguration conf = (JDBCConfiguration) em.getConfiguration();
+            dict = conf.getDBDictionaryInstance();
+            
+            if ((dict instanceof MySQLDictionary) ||
+                    (dict instanceof OracleDictionary) ||
+                    (dict instanceof SQLServerDictionary)) {
+                skipTests = Boolean.TRUE;
+            } else {
+                skipTests = Boolean.FALSE;
+            }
+            
+            closeEMF(emf);
+        }
         
-        // Exclude mysql
-        if (isMySQL == null)
-            isMySQL = isMySQL();
-        if (isMySQL)
+        if (skipTests) {
             return;
-        
+        }
 
         // Create schemas when database requires this and we are about
         // to execute the first test.
@@ -142,11 +158,10 @@ public class TestMultipleSchemaNames extends SingleEMFTestCase {
 
         em.getTransaction().commit();
         em.close();
-
     }
 
     public void testGeneratedAUTO() {
-        if (isMySQL)
+        if (skipTests)
             return;
 
         EntityManager em = emf.createEntityManager();
@@ -226,7 +241,7 @@ public class TestMultipleSchemaNames extends SingleEMFTestCase {
     }
 
     public void testGeneratedTABLE() {
-        if (isMySQL)
+        if (skipTests)
             return;
 
         EntityManager em = emf.createEntityManager();
@@ -374,7 +389,7 @@ public class TestMultipleSchemaNames extends SingleEMFTestCase {
     }
     
     public void testGeneratedIDENTITY() {
-        if (isMySQL)
+        if (skipTests)
             return;
 
         EntityManager em = emf.createEntityManager();
@@ -419,42 +434,21 @@ public class TestMultipleSchemaNames extends SingleEMFTestCase {
         em.close();
     }
 
-    private Boolean isMySQL() {
-        EntityManagerFactory emf = (EntityManagerFactory)createEMF();
-        
-        Map<String, Object> props = emf.getProperties();
-        Set<String> keys = props.keySet();
-        for (String key : keys) {
-            String platform = null;
-            if (key.equals("Platform")) {
-                platform = (String) props.get(key);
-                if (platform.equals("OpenJPA JDBC Edition: MySQL Database"))
-                    return Boolean.TRUE;
-                return Boolean.FALSE;
-            }
-        }
-               
-        return Boolean.FALSE;
-    }    
-    
-    
+
     /**
      * Create necessary schemas if running on PostgreSQL as it does
      * not create them automatically.
-     * Oracle and MySQL also don't create schemas automatically but
+     * Oracle, MySQL and MSSQL also don't create schemas automatically but
      * we give up as they treat schemas in special ways.
      */
     private void createSchemas() {
-        OpenJPAEntityManagerFactorySPI emf = createEMF();
-        OpenJPAEntityManagerSPI em = emf.createEntityManager();
-        DBDictionary dict = ((JDBCConfiguration) em.getConfiguration())
-            .getDBDictionaryInstance();
-
+        
         if (!(dict instanceof PostgresDictionary)) {
-            closeEMF(emf);
             return;
         }
         
+        OpenJPAEntityManagerFactorySPI emf = createEMF();
+        OpenJPAEntityManagerSPI em = emf.createEntityManager();
         String[] schemas =
             { "SCHEMA1", "SCHEMA2", "SCHEMA3", "SCHEMA3G", "SCHEMA4G" };
         for (String schema : schemas) {
@@ -471,3 +465,4 @@ public class TestMultipleSchemaNames extends SingleEMFTestCase {
     }
 
 } // end of TestMultipleSchemaNames
+
