@@ -19,6 +19,7 @@
 package org.apache.openjpa.jdbc.schema;
 
 import java.io.PrintWriter;
+import java.lang.reflect.Constructor;
 import java.security.AccessController;
 import java.security.PrivilegedActionException;
 import java.sql.Connection;
@@ -27,6 +28,8 @@ import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.util.List;
 import java.util.Properties;
+
+import javax.sql.DataSource;
 
 import org.apache.openjpa.jdbc.sql.DBDictionary;
 import org.apache.openjpa.lib.jdbc.DelegatingDataSource;
@@ -50,17 +53,14 @@ public abstract class SimpleDriverDataSource
     private Driver _driver;
     private ClassLoader _classLoader;
     
-    protected static Localizer _loc = 
-    	Localizer.forPackage(SimpleDriverDataSource.class);
-    protected static Localizer _eloc = 
-    	Localizer.forPackage(DelegatingDataSource.class);
+    protected static Localizer _loc = Localizer.forPackage(SimpleDriverDataSource.class);
+    protected static Localizer _eloc = Localizer.forPackage(DelegatingDataSource.class);
 
-    private static final Class<SimpleDriverDataSource> implClass;
+    private static final Class<? extends SimpleDriverDataSource> implClass;
 
     static {
         try {
-            implClass = ConcreteClassGenerator.
-                makeConcrete(SimpleDriverDataSource.class);
+            implClass = ConcreteClassGenerator.makeConcrete(SimpleDriverDataSource.class);
         } catch (Exception e) {
             throw new ExceptionInInitializerError(e);
         }

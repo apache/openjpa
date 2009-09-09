@@ -18,6 +18,7 @@
  */
 package org.apache.openjpa.slice.jdbc;
 
+import java.lang.reflect.Constructor;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -82,14 +83,14 @@ class DistributedJDBCStoreManager extends JDBCStoreManager
     private static final Localizer _loc =
             Localizer.forPackage(DistributedJDBCStoreManager.class);
 
-    private static final Class<ClientConnection> clientConnectionImpl;
-    private static final Class<RefCountConnection> refCountConnectionImpl;
+    private static final Constructor<ClientConnection> clientConnectionImpl;
+    private static final Constructor<RefCountConnection> refCountConnectionImpl;
     static {
         try {
             clientConnectionImpl = ConcreteClassGenerator.
-                makeConcrete(ClientConnection.class);
+                getConcreteConstructor(ClientConnection.class, Connection.class);
             refCountConnectionImpl = ConcreteClassGenerator.
-                makeConcrete(RefCountConnection.class);
+                getConcreteConstructor(RefCountConnection.class, JDBCStoreManager.class, Connection.class);
         } catch (Exception e) {
             throw new ExceptionInInitializerError(e);
         }
@@ -364,8 +365,7 @@ class DistributedJDBCStoreManager extends JDBCStoreManager
     }
 
     public Object getClientConnection() {
-        return ConcreteClassGenerator.newInstance
-            (clientConnectionImpl, Connection.class, getConnection());
+        return ConcreteClassGenerator.newInstance(clientConnectionImpl, getConnection());
     }
 
     public Seq getDataStoreIdSequence(ClassMetaData forClass) {
@@ -480,9 +480,7 @@ class DistributedJDBCStoreManager extends JDBCStoreManager
         for (SliceStoreManager slice : _slices)
             list.add(slice.getConnection());
         DistributedConnection con = DistributedConnection.newInstance(list);
-        return ConcreteClassGenerator.newInstance(refCountConnectionImpl, 
-            JDBCStoreManager.class, DistributedJDBCStoreManager.this, 
-            Connection.class, con);
+        return ConcreteClassGenerator.newInstance(refCountConnectionImpl, DistributedJDBCStoreManager.this, con);
     }
     
     /**

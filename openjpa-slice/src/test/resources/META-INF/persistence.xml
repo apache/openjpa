@@ -46,6 +46,8 @@
          <property name="openjpa.slice.Two.ConnectionURL"   value="jdbc:derby:target/database/openjpa-slice2;create=true"/>
          <property name="openjpa.slice.Three.ConnectionURL" value="jdbc:some-bad-url"/>
          
+         <property name="openjpa.DynamicEnhancementAgent"   value="false"/>
+         
       </properties>
    </persistence-unit>
 
@@ -68,7 +70,9 @@
          <property name="openjpa.Multithreaded" value="false"/>
          <property name="openjpa.jdbc.SynchronizeMappings" value="refresh"/>
          <property name="openjpa.jdbc.MappingDefaults" value="DefaultMissingInfo=true"/>
-         <property name="openjpa.RuntimeUnenhancedClasses" value="supported"/>
+         
+         <property name="openjpa.RuntimeUnenhancedClasses" value="unsupported"/>
+         <property name="openjpa.DynamicEnhancementAgent"   value="false"/>
       </properties>
    </persistence-unit>
    
@@ -96,7 +100,9 @@
 	        <property name="openjpa.jdbc.SynchronizeMappings" value="buildSchema"/>
             <property name="openjpa.QueryCompilationCache" value="false"/>
             <property name="openjpa.jdbc.MappingDefaults" value="DefaultMissingInfo=true"/>
-            <property name="openjpa.RuntimeUnenhancedClasses" value="supported"/>
+            
+            <property name="openjpa.RuntimeUnenhancedClasses" value="unsupported"/>
+            <property name="openjpa.DynamicEnhancementAgent"   value="false"/>
       	</properties>
    </persistence-unit>
    
@@ -120,6 +126,8 @@
             <property name="openjpa.Connection2URL" value="jdbc:derby:target/database/openjpa-slice1;create=true"/>
             <property name="openjpa.jdbc.SynchronizeMappings" value="buildSchema"/>
             <property name="openjpa.jdbc.MappingDefaults" value="DefaultMissingInfo=true"/>
+            <property name="openjpa.RuntimeUnenhancedClasses" value="unsupported"/>
+            <property name="openjpa.DynamicEnhancementAgent"   value="false"/>
         </properties>
    </persistence-unit>
    
@@ -141,7 +149,8 @@
          <property name="openjpa.Multithreaded" value="false"/>
          <property name="openjpa.jdbc.SynchronizeMappings" value="refresh"/>
          <property name="openjpa.jdbc.MappingDefaults" value="DefaultMissingInfo=true"/>
-         <property name="openjpa.RuntimeUnenhancedClasses" value="supported"/>
+            <property name="openjpa.RuntimeUnenhancedClasses" value="unsupported"/>
+            <property name="openjpa.DynamicEnhancementAgent"   value="false"/>
       </properties>
    </persistence-unit>
    
@@ -166,7 +175,8 @@
          <property name="openjpa.Log" value="DefaultLevel=INFO, Enhance=TRACE, SQL=TRACE"/>
          <property name="openjpa.jdbc.SynchronizeMappings" value="refresh"/>
          <property name="openjpa.jdbc.MappingDefaults" value="DefaultMissingInfo=true"/>
-         <property name="openjpa.RuntimeUnenhancedClasses" value="supported"/>
+            <property name="openjpa.RuntimeUnenhancedClasses" value="unsupported"/>
+            <property name="openjpa.DynamicEnhancementAgent"   value="false"/>
       </properties>
    </persistence-unit>
    

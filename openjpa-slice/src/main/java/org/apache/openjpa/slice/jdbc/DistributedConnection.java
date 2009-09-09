@@ -18,6 +18,7 @@
  */
 package org.apache.openjpa.slice.jdbc;
 
+import java.lang.reflect.Constructor;
 import java.sql.CallableStatement;
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
@@ -38,11 +39,10 @@ import org.apache.openjpa.lib.util.ConcreteClassGenerator;
  * 
  */
 public abstract class DistributedConnection implements Connection {
-    static final Class<DistributedConnection> concreteImpl;
+    static final Constructor<DistributedConnection> concreteImpl;
     static {
         try {
-            concreteImpl = ConcreteClassGenerator.
-                makeConcrete(DistributedConnection.class);
+            concreteImpl = ConcreteClassGenerator.getConcreteConstructor(DistributedConnection.class, List.class);
         } catch (Exception e) {
             throw new ExceptionInInitializerError(e);
         }
@@ -61,8 +61,7 @@ public abstract class DistributedConnection implements Connection {
      *  Constructor for the concrete implementation of this abstract class.
      */
     public static DistributedConnection newInstance(List<Connection> conns) {
-        return ConcreteClassGenerator.newInstance(concreteImpl, 
-            List.class, conns);
+        return ConcreteClassGenerator.newInstance(concreteImpl, conns);
     }
 
     /** 

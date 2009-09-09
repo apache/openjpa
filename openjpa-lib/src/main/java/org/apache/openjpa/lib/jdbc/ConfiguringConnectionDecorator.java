@@ -18,6 +18,7 @@
  */
 package org.apache.openjpa.lib.jdbc;
 
+import java.lang.reflect.Constructor;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
@@ -39,12 +40,12 @@ import org.apache.openjpa.lib.util.ConcreteClassGenerator;
  */
 public class ConfiguringConnectionDecorator implements ConnectionDecorator {
 
-   static final Class<ConfiguringConnection> configuringConnectionImpl;
+   static final Constructor<ConfiguringConnection> configuringConnectionImpl;
 
     static {
         try {
-            configuringConnectionImpl = ConcreteClassGenerator.
-                makeConcrete(ConfiguringConnection.class);
+            configuringConnectionImpl = ConcreteClassGenerator.getConcreteConstructor(ConfiguringConnection.class, 
+                    ConfiguringConnectionDecorator.class, Connection.class);
         } catch (Exception e) {
             throw new ExceptionInInitializerError(e);
         }
@@ -104,9 +105,7 @@ public class ConfiguringConnectionDecorator implements ConnectionDecorator {
         if (_isolation == Connection.TRANSACTION_NONE || _queryTimeout != -1
             || _autoCommit != null)
             conn = ConcreteClassGenerator.
-                newInstance(configuringConnectionImpl,
-                    ConfiguringConnectionDecorator.class, this,
-                    Connection.class, conn);
+                newInstance(configuringConnectionImpl, this, conn);
         if (_isolation != -1 && _isolation != Connection.TRANSACTION_NONE)
             conn.setTransactionIsolation(_isolation);
         return conn;

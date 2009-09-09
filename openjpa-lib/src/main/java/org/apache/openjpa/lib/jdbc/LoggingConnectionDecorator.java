@@ -20,6 +20,7 @@ package org.apache.openjpa.lib.jdbc;
 
 import java.io.InputStream;
 import java.io.Reader;
+import java.lang.reflect.Constructor;
 import java.math.BigDecimal;
 import java.sql.Array;
 import java.sql.BatchUpdateException;
@@ -69,12 +70,12 @@ import org.apache.openjpa.lib.util.J2DoPrivHelper;
 public class LoggingConnectionDecorator implements ConnectionDecorator {
 
     private static final String SEP = J2DoPrivHelper.getLineSeparator();
-    static final Class<LoggingConnection> loggingConnectionImpl;
-    static final Class<LoggingResultSet> loggingResultSetImpl;
-    static final Class<LoggingStatement> loggingStatementImpl;
-    static final Class<LoggingPreparedStatement> loggingPreparedStatementImpl;
-    static final Class<LoggingCallableStatement> loggingCallableStatementImpl;
-    static final Class<LoggingDatabaseMetaData> loggingDatabaseMetaDataImpl;
+    static final Constructor<LoggingConnection> loggingConnectionImpl;
+    static final Constructor<LoggingResultSet> loggingResultSetImpl;
+    static final Constructor<LoggingStatement> loggingStatementImpl;
+    static final Constructor<LoggingPreparedStatement> loggingPreparedStatementImpl;
+    static final Constructor<LoggingCallableStatement> loggingCallableStatementImpl;
+    static final Constructor<LoggingDatabaseMetaData> loggingDatabaseMetaDataImpl;
 
     private static final int WARN_IGNORE = 0;
     private static final int WARN_LOG_TRACE = 1;
@@ -95,18 +96,23 @@ public class LoggingConnectionDecorator implements ConnectionDecorator {
         WARNING_ACTIONS[WARN_HANDLE] = "handle";
 
         try {
-            loggingConnectionImpl = ConcreteClassGenerator.
-                makeConcrete(LoggingConnection.class);
-            loggingResultSetImpl = ConcreteClassGenerator.
-                makeConcrete(LoggingConnection.LoggingResultSet.class);
-            loggingStatementImpl = ConcreteClassGenerator.
-                makeConcrete(LoggingConnection.LoggingStatement.class);
-            loggingPreparedStatementImpl = ConcreteClassGenerator.
-                makeConcrete(LoggingConnection.LoggingPreparedStatement.class);
-            loggingCallableStatementImpl = ConcreteClassGenerator.
-                makeConcrete(LoggingConnection.LoggingCallableStatement.class);
-            loggingDatabaseMetaDataImpl = ConcreteClassGenerator.
-                makeConcrete(LoggingConnection.LoggingDatabaseMetaData.class);
+            loggingConnectionImpl = ConcreteClassGenerator.getConcreteConstructor(LoggingConnection.class,
+                LoggingConnectionDecorator.class, Connection.class);
+            loggingResultSetImpl = ConcreteClassGenerator.getConcreteConstructor(
+                LoggingConnection.LoggingResultSet.class, 
+                LoggingConnection.class, ResultSet.class, Statement.class);
+            loggingStatementImpl = ConcreteClassGenerator.getConcreteConstructor(
+                LoggingConnection.LoggingStatement.class,
+                LoggingConnection.class, Statement.class);
+            loggingPreparedStatementImpl = ConcreteClassGenerator.getConcreteConstructor(
+                LoggingConnection.LoggingPreparedStatement.class, 
+                LoggingConnection.class, PreparedStatement.class, String.class);
+            loggingCallableStatementImpl = ConcreteClassGenerator.getConcreteConstructor(
+                LoggingConnection.LoggingCallableStatement.class,
+                LoggingConnection.class, CallableStatement.class, String.class);
+            loggingDatabaseMetaDataImpl = ConcreteClassGenerator.getConcreteConstructor(
+                LoggingConnection.LoggingDatabaseMetaData.class,
+                LoggingConnection.class, DatabaseMetaData.class);
         } catch (Exception e) {
             throw new ExceptionInInitializerError(e);
         }
@@ -220,10 +226,7 @@ public class LoggingConnectionDecorator implements ConnectionDecorator {
          
     private LoggingConnection newLoggingConnection(Connection conn)
         throws SQLException {
-        return ConcreteClassGenerator.
-            newInstance(loggingConnectionImpl,
-            LoggingConnectionDecorator.class, LoggingConnectionDecorator.this,
-            Connection.class, conn);
+        return ConcreteClassGenerator.newInstance(loggingConnectionImpl, LoggingConnectionDecorator.this, conn);
     }
 
 
@@ -342,36 +345,21 @@ public class LoggingConnectionDecorator implements ConnectionDecorator {
 
         private LoggingPreparedStatement newLoggingPreparedStatement
             (PreparedStatement stmnt, String sql) throws SQLException {
-            return ConcreteClassGenerator.
-                newInstance(loggingPreparedStatementImpl,
-                LoggingConnection.class, LoggingConnection.this,
-                PreparedStatement.class, stmnt,
-                String.class, sql);
+            return ConcreteClassGenerator.newInstance(loggingPreparedStatementImpl, LoggingConnection.this, stmnt, sql);
         }
         
-        private CallableStatement newLoggingCallableStatement
-            (CallableStatement stmnt, String sql) throws SQLException {
-            return ConcreteClassGenerator.
-               newInstance(loggingCallableStatementImpl,
-               LoggingConnection.class, LoggingConnection.this,
-               CallableStatement.class, stmnt,
-               String.class, sql);
-    }
+        private CallableStatement newLoggingCallableStatement(CallableStatement stmnt, String sql) throws SQLException {
+            return ConcreteClassGenerator.newInstance(loggingCallableStatementImpl, LoggingConnection.this, stmnt, sql);
+        }
         
         private LoggingStatement newLoggingStatement(Statement stmnt)
             throws SQLException {
-            return ConcreteClassGenerator.
-                newInstance(loggingStatementImpl,
-                LoggingConnection.class, LoggingConnection.this,
-                Statement.class, stmnt);
+            return ConcreteClassGenerator.newInstance(loggingStatementImpl, LoggingConnection.this, stmnt);
         }
         
         private LoggingDatabaseMetaData newLoggingDatabaseMetaData
             (DatabaseMetaData meta) throws SQLException {
-            return ConcreteClassGenerator.
-                newInstance(loggingDatabaseMetaDataImpl,
-                LoggingConnection.class, LoggingConnection.this,
-                DatabaseMetaData.class, meta);
+            return ConcreteClassGenerator.newInstance(loggingDatabaseMetaDataImpl, LoggingConnection.this, meta);
         }
 
 
@@ -900,13 +888,8 @@ public class LoggingConnectionDecorator implements ConnectionDecorator {
                 super(stmnt, LoggingConnection.this);
             }
 
-            private LoggingResultSet newLoggingResultSet(ResultSet rs,
-                Statement stmnt) {
-                return ConcreteClassGenerator.
-                    newInstance(loggingResultSetImpl,
-                    LoggingConnection.class, LoggingConnection.this,
-                    ResultSet.class, rs,
-                    Statement.class, stmnt);
+            private LoggingResultSet newLoggingResultSet(ResultSet rs, Statement stmnt) {
+                return ConcreteClassGenerator.newInstance(loggingResultSetImpl, LoggingConnection.this, rs, stmnt);
             }
 
             public void appendInfo(StringBuffer buf) {

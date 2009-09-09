@@ -18,6 +18,7 @@
  */
 package org.apache.openjpa.lib.jdbc;
 
+import java.lang.reflect.Constructor;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.Collection;
@@ -37,12 +38,11 @@ import java.util.concurrent.CopyOnWriteArrayList;
  */
 public abstract class DecoratingDataSource extends DelegatingDataSource {
     
-    private static final Class<DecoratingDataSource> implClass;
+    private static final Constructor<DecoratingDataSource> implClass;
 
     static {
         try {
-            implClass = ConcreteClassGenerator.
-                makeConcrete(DecoratingDataSource.class);
+            implClass = ConcreteClassGenerator.getConcreteConstructor(DecoratingDataSource.class, DataSource.class);
         } catch (Exception e) {
             throw new ExceptionInInitializerError(e);
         }
@@ -60,8 +60,7 @@ public abstract class DecoratingDataSource extends DelegatingDataSource {
     }
     
     public static DecoratingDataSource newDecoratingDataSource(DataSource ds) {
-        return ConcreteClassGenerator.newInstance(implClass, 
-            DataSource.class, ds);
+        return ConcreteClassGenerator.newInstance(implClass, ds);
     }
 
 

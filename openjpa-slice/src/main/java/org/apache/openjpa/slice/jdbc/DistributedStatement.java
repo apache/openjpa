@@ -18,6 +18,7 @@
  */
 package org.apache.openjpa.slice.jdbc;
 
+import java.lang.reflect.Constructor;
 import java.sql.Statement;
 
 import org.apache.openjpa.lib.util.ConcreteClassGenerator;
@@ -30,12 +31,12 @@ import org.apache.openjpa.lib.util.ConcreteClassGenerator;
  */
 public abstract class DistributedStatement extends
     DistributedTemplate<Statement> {
-    static final Class<DistributedStatement> concreteImpl;
+    static final Constructor<DistributedStatement> concreteImpl;
 
     static {
         try {
-            concreteImpl = ConcreteClassGenerator.makeConcrete(
-                DistributedStatement.class);
+            concreteImpl = ConcreteClassGenerator.getConcreteConstructor(DistributedStatement.class, 
+                DistributedConnection.class);
         } catch (Exception e) {
             throw new ExceptionInInitializerError(e);
         }
@@ -46,7 +47,6 @@ public abstract class DistributedStatement extends
     }
 
     public static DistributedStatement newInstance(DistributedConnection conn) {
-        return ConcreteClassGenerator.newInstance(concreteImpl, 
-            DistributedConnection.class, conn);
+        return ConcreteClassGenerator.newInstance(concreteImpl, conn);
     }
 }

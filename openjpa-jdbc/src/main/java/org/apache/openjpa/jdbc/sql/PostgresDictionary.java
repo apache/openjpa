@@ -21,6 +21,7 @@ package org.apache.openjpa.jdbc.sql;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.sql.Connection;
@@ -63,16 +64,16 @@ public class PostgresDictionary
     private static final Localizer _loc = Localizer.forPackage
         (PostgresDictionary.class);
 
-    private static Class<PostgresConnection> postgresConnectionImpl;
-    private static Class<PostgresPreparedStatement>
-            postgresPreparedStatementImpl;
+    private static Constructor<PostgresConnection> postgresConnectionImpl;
+    private static Constructor<PostgresPreparedStatement> postgresPreparedStatementImpl;
 
     static {
         try {
-            postgresConnectionImpl = ConcreteClassGenerator.
-                makeConcrete(PostgresConnection.class);
-            postgresPreparedStatementImpl = ConcreteClassGenerator.
-                makeConcrete(PostgresPreparedStatement.class);
+            postgresConnectionImpl = ConcreteClassGenerator.getConcreteConstructor(PostgresConnection.class,
+                    Connection.class, PostgresDictionary.class);
+            postgresPreparedStatementImpl = ConcreteClassGenerator.getConcreteConstructor(
+                    PostgresPreparedStatement.class,
+                    PreparedStatement.class, Connection.class, PostgresDictionary.class);
         } catch (Exception e) {
             throw new ExceptionInInitializerError(e);
         }
@@ -372,9 +373,7 @@ public class PostgresDictionary
 
     public Connection decorate(Connection conn)
         throws SQLException {
-        return ConcreteClassGenerator.
-            newInstance(postgresConnectionImpl, Connection.class, 
-                super.decorate(conn), PostgresDictionary.class, this);
+        return ConcreteClassGenerator.newInstance(postgresConnectionImpl, super.decorate(conn), this);
     }
 
     public InputStream getLOBStream(JDBCStore store, ResultSet rs,
@@ -688,11 +687,8 @@ public class PostgresDictionary
 
         protected PreparedStatement prepareStatement(String sql, boolean wrap)
             throws SQLException {
-           return ConcreteClassGenerator.
-                newInstance(postgresPreparedStatementImpl,
-                    PreparedStatement.class, super.prepareStatement(sql, false),
-                    Connection.class, PostgresConnection.this,
-                    PostgresDictionary.class, _dict);
+           return ConcreteClassGenerator.newInstance(postgresPreparedStatementImpl, 
+                   super.prepareStatement(sql, false), PostgresConnection.this, _dict);
         }
 
         protected PreparedStatement prepareStatement(String sql, int rsType,

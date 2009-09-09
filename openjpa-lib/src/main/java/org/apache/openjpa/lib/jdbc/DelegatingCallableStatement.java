@@ -20,6 +20,7 @@ package org.apache.openjpa.lib.jdbc;
 
 import java.io.InputStream;
 import java.io.Reader;
+import java.lang.reflect.Constructor;
 import java.math.BigDecimal;
 import java.net.URL;
 import java.sql.Array;
@@ -50,12 +51,12 @@ import org.apache.openjpa.lib.util.ConcreteClassGenerator;
 public abstract class DelegatingCallableStatement
     implements CallableStatement, Closeable {
 
-    static final Class<DelegatingCallableStatement> concreteImpl;
+    static final Constructor<DelegatingCallableStatement> concreteImpl;
 
     static {
         try {
-            concreteImpl = ConcreteClassGenerator.
-                makeConcrete(DelegatingCallableStatement.class);
+            concreteImpl = ConcreteClassGenerator.getConcreteConstructor(DelegatingCallableStatement.class, 
+                CallableStatement.class, Connection.class);
         } catch (Exception e) {
             throw new ExceptionInInitializerError(e);
         }
@@ -78,10 +79,8 @@ public abstract class DelegatingCallableStatement
     /** 
      *  Constructor for the concrete implementation of this abstract class.
      */
-    public static DelegatingCallableStatement newInstance
-        (CallableStatement stmnt, Connection conn) {
-        return ConcreteClassGenerator.newInstance(concreteImpl,
-                CallableStatement.class, stmnt, Connection.class, conn);
+    public static DelegatingCallableStatement newInstance(CallableStatement stmnt, Connection conn) {
+        return ConcreteClassGenerator.newInstance(concreteImpl, stmnt, conn);
     }
 
     protected ResultSet wrapResult(boolean wrap, ResultSet rs) {

@@ -18,6 +18,7 @@
  */
 package org.apache.openjpa.lib.jdbc;
 
+import java.lang.reflect.Constructor;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -37,12 +38,12 @@ import org.apache.openjpa.lib.util.ConcreteClassGenerator;
  */
 public abstract class DelegatingStatement implements Statement, Closeable {
 
-    static final Class<DelegatingStatement> concreteImpl;
+    static final Constructor<DelegatingStatement> concreteImpl;
 
     static {
         try {
-            concreteImpl = ConcreteClassGenerator.
-                makeConcrete(DelegatingStatement.class);
+            concreteImpl = ConcreteClassGenerator.getConcreteConstructor(DelegatingStatement.class, 
+                Statement.class, Connection.class);
         } catch (Exception e) {
             throw new ExceptionInInitializerError(e);
         }
@@ -61,10 +62,8 @@ public abstract class DelegatingStatement implements Statement, Closeable {
             _del = null;
     }
 
-    public static DelegatingStatement newInstance
-        (Statement stmnt, Connection conn)  {
-        return ConcreteClassGenerator.newInstance(concreteImpl,
-                Statement.class, stmnt, Connection.class, conn);
+    public static DelegatingStatement newInstance(Statement stmnt, Connection conn)  {
+        return ConcreteClassGenerator.newInstance(concreteImpl, stmnt, conn);
     }
 
     /** 

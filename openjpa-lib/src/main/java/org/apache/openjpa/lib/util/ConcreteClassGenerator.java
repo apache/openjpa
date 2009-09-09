@@ -18,6 +18,7 @@ package org.apache.openjpa.lib.util;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Modifier;
 import java.security.AccessController;
+import java.util.Arrays;
 
 import serp.bytecode.BCClass;
 import serp.bytecode.BCClassLoader;
@@ -29,11 +30,40 @@ import serp.bytecode.Project;
  * Dynamically generates concrete implementations of abstract classes.
  *
  * @author Marc Prud'hommeaux
+ * @author Pinaki Poddar
+ * 
  * @nojavadoc
- * @since 0.9.8
+ * @since 1.3.0
  */
 public class ConcreteClassGenerator {
-
+    /**
+     * Get the constructor of the concrete, dynamic wrapper class of the given abstract class 
+     * with matching argument types.
+     * @param the argTypes of the constructor to look for. null signify default constructor.
+     */
+    public static <T> Constructor<T> getConcreteConstructor(Class<T> abstractClass, Class<?>... argTypes)
+    throws ClassNotFoundException {
+        Class<? extends T> cls = makeConcrete(abstractClass);
+        Constructor<?>[] constructors = cls.getConstructors();
+        int args = argTypes == null ? 0 : argTypes.length;
+        for (Constructor<?> cons : constructors) {
+            Class<?>[] params = cons.getParameterTypes();
+            if (params.length != args)
+                continue;
+            boolean match = false;
+            for (int i = 0; i < params.length; i++) {
+                match = params[i].isAssignableFrom(argTypes[i]);
+                if (!match)
+                    break;
+            }
+            if (match) {
+                return (Constructor<T>)cons;
+            }
+        }
+        throw new RuntimeException(abstractClass + " has no constructor with " + 
+                (args == 0 ? "void" : Arrays.toString(argTypes)));
+    }
+    
     /** 
      *  Takes an abstract class and returns a concrete implementation. Note
      *  that it doesn't actually implement any abstract methods, it
@@ -43,7 +73,7 @@ public class ConcreteClassGenerator {
      *  @param  abstractClass  the abstract class
      *  @return a concrete class
      */
-    public static <T> Class<T> makeConcrete(Class<T> abstractClass)
+    public static <T> Class<? extends T> makeConcrete(Class<T> abstractClass)
         throws ClassNotFoundException {
         if (abstractClass == null)
             return null;
@@ -61,13 +91,13 @@ public class ConcreteClassGenerator {
         
         bc.setSuperclass(abstractClass);
 
-        Constructor[] constructors = abstractClass.getConstructors();
+        Constructor<?>[] constructors = abstractClass.getConstructors();
         if (constructors == null || constructors.length == 0) {
             bc.addDefaultConstructor().makePublic();
         } else {
             for (int i = 0; i < constructors.length; i++) {
-                Constructor con = constructors[i];
-                Class[] args = con.getParameterTypes();
+                Constructor<?> con = constructors[i];
+                Class<?>[] args = con.getParameterTypes();
 
                 BCMethod bccon = bc.declareMethod("<init>", void.class, args);
                 Code code = bccon.getCode(true);
@@ -79,8 +109,7 @@ public class ConcreteClassGenerator {
                     code.checkcast().setType(args[j]);
                 }
 
-                code.invokespecial().setMethod(abstractClass,
-                    "<init>", void.class, args);
+                code.invokespecial().setMethod(abstractClass, "<init>", void.class, args);
                 code.vreturn();
 
                 code.calculateMaxStack();
@@ -88,10 +117,23 @@ public class ConcreteClassGenerator {
             }
         }
 
-        Class cls = Class.forName(bc.getName(), false, loader);
-        return cls;
+        Class<?> cls = Class.forName(bc.getName(), false, loader);
+        return (Class<? extends T>)cls;
     }
 
+    /**
+     * Construct a new instance by the given constructor and its arguments.
+     * Hopefully faster than looking for constructor in overloaded implementations. 
+     */
+    public static <T> T newInstance(Constructor<T> cons, Object... params) {
+        try {
+            return cons.newInstance(params);
+        } catch (Exception e) {
+            throw new ExceptionInInitializerError(e);
+        }
+        
+    }
+    
     /** 
      *  Utility method for safely invoking a constructor that we do
      *  not expect to throw exceptions. 

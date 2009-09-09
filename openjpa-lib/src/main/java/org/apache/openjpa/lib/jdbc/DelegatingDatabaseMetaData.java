@@ -18,6 +18,7 @@
  */
 package org.apache.openjpa.lib.jdbc;
 
+import java.lang.reflect.Constructor;
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
 import java.sql.ResultSet;
@@ -32,12 +33,12 @@ import org.apache.openjpa.lib.util.ConcreteClassGenerator;
  */
 public abstract class DelegatingDatabaseMetaData implements DatabaseMetaData {
 
-    static final Class<DelegatingDatabaseMetaData> concreteImpl;
+    static final Constructor<DelegatingDatabaseMetaData> concreteImpl;
 
     static {
         try {
-            concreteImpl = ConcreteClassGenerator.
-                makeConcrete(DelegatingDatabaseMetaData.class);
+            concreteImpl = ConcreteClassGenerator.getConcreteConstructor(DelegatingDatabaseMetaData.class, 
+                    DatabaseMetaData.class, Connection.class);
         } catch (Exception e) {
             throw new ExceptionInInitializerError(e);
         }
@@ -52,10 +53,8 @@ public abstract class DelegatingDatabaseMetaData implements DatabaseMetaData {
         _metaData = metaData;
     }
 
-    public static DelegatingDatabaseMetaData newInstance
-        (DatabaseMetaData metaData, Connection conn) {
-        return ConcreteClassGenerator.newInstance(concreteImpl,
-                DatabaseMetaData.class, metaData, Connection.class, conn);
+    public static DelegatingDatabaseMetaData newInstance(DatabaseMetaData metaData, Connection conn) {
+        return ConcreteClassGenerator.newInstance(concreteImpl, metaData, conn);
     }
 
     /** 

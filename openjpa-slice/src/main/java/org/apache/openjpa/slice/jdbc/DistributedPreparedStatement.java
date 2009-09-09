@@ -20,6 +20,7 @@ package org.apache.openjpa.slice.jdbc;
 
 import java.io.InputStream;
 import java.io.Reader;
+import java.lang.reflect.Constructor;
 import java.math.BigDecimal;
 import java.net.URL;
 import java.sql.Array;
@@ -49,11 +50,11 @@ public abstract class DistributedPreparedStatement
     extends DistributedTemplate<PreparedStatement> 
     implements PreparedStatement {
 
-    static final Class<DistributedPreparedStatement> concreteImpl;
+    static final Constructor<DistributedPreparedStatement> concreteImpl;
     static {
         try {
-            concreteImpl = ConcreteClassGenerator.
-                makeConcrete(DistributedPreparedStatement.class);
+            concreteImpl = ConcreteClassGenerator.getConcreteConstructor(DistributedPreparedStatement.class, 
+                    DistributedConnection.class);
         } catch (Exception e) {
             throw new ExceptionInInitializerError(e);
         }
@@ -63,11 +64,9 @@ public abstract class DistributedPreparedStatement
 		super(c);
 	}
 	
-    public static DistributedPreparedStatement newInstance(
-        DistributedConnection conn) {
-    return ConcreteClassGenerator.newInstance(concreteImpl, 
-        DistributedConnection.class, conn);
-}
+    public static DistributedPreparedStatement newInstance(DistributedConnection conn) {
+        return ConcreteClassGenerator.newInstance(concreteImpl, conn);
+    }
 
 	public void clearParameters() throws SQLException {
 		for (PreparedStatement s : this)

@@ -18,6 +18,7 @@
  */
 package org.apache.openjpa.jdbc.kernel;
 
+import java.lang.reflect.Constructor;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -107,22 +108,21 @@ public class JDBCStoreManager
     // track the pending statements so we can cancel them
     private Set _stmnts = Collections.synchronizedSet(new HashSet());
 
-    private static final Class<ClientConnection> clientConnectionImpl;
-    private static final Class<RefCountConnection> refCountConnectionImpl;
-    private static final Class<CancelStatement> cancelStatementImpl;
-    private static final Class<CancelPreparedStatement>
-            cancelPreparedStatementImpl;
+    private static final Constructor<ClientConnection> clientConnectionImpl;
+    private static final Constructor<RefCountConnection> refCountConnectionImpl;
+    private static final Constructor<CancelStatement> cancelStatementImpl;
+    private static final Constructor<CancelPreparedStatement> cancelPreparedStatementImpl;
 
     static {
         try {
-            clientConnectionImpl = ConcreteClassGenerator.
-                makeConcrete(ClientConnection.class);
-            refCountConnectionImpl = ConcreteClassGenerator.
-                makeConcrete(RefCountConnection.class);
-            cancelStatementImpl = ConcreteClassGenerator.
-                makeConcrete(CancelStatement.class);
-            cancelPreparedStatementImpl = ConcreteClassGenerator.
-                makeConcrete(CancelPreparedStatement.class);
+            clientConnectionImpl = ConcreteClassGenerator.getConcreteConstructor(ClientConnection.class, 
+                Connection.class);
+            refCountConnectionImpl = ConcreteClassGenerator.getConcreteConstructor(RefCountConnection.class,
+                JDBCStoreManager.class, Connection.class);
+            cancelStatementImpl = ConcreteClassGenerator.getConcreteConstructor(CancelStatement.class,
+                JDBCStoreManager.class, Statement.class, Connection.class);
+            cancelPreparedStatementImpl = ConcreteClassGenerator.getConcreteConstructor(CancelPreparedStatement.class,
+                JDBCStoreManager.class, PreparedStatement.class, Connection.class);
         } catch (Exception e) {
             throw new ExceptionInInitializerError(e);
         }
@@ -236,8 +236,7 @@ public class JDBCStoreManager
     }
 
     public Object getClientConnection() {
-        return ConcreteClassGenerator.newInstance
-            (clientConnectionImpl, Connection.class, getConnection());
+        return ConcreteClassGenerator.newInstance(clientConnectionImpl, getConnection());
     }
 
     public Connection getConnection() {
@@ -901,9 +900,7 @@ public class JDBCStoreManager
      * can be overridden.
      */
     protected RefCountConnection connectInternal() throws SQLException {
-        return ConcreteClassGenerator.newInstance
-            (refCountConnectionImpl, JDBCStoreManager.class, 
-                JDBCStoreManager.this, Connection.class, _ds.getConnection());
+        return ConcreteClassGenerator.newInstance(refCountConnectionImpl, JDBCStoreManager.this, _ds.getConnection());
     }
 
     /**
@@ -1521,11 +1518,8 @@ public class JDBCStoreManager
         }
 
         protected Statement createStatement(boolean wrap) throws SQLException {
-            return ConcreteClassGenerator.newInstance
-                (cancelStatementImpl,
-                    JDBCStoreManager.class, JDBCStoreManager.this,
-                    Statement.class, super.createStatement(false),
-                    Connection.class, RefCountConnection.this);
+            return ConcreteClassGenerator.newInstance(cancelStatementImpl, JDBCStoreManager.this,
+                    super.createStatement(false), RefCountConnection.this);
         }
 
         protected Statement createStatement(int rsType, int rsConcur,
@@ -1540,11 +1534,8 @@ public class JDBCStoreManager
 
         protected PreparedStatement prepareStatement(String sql, boolean wrap)
             throws SQLException {
-            return ConcreteClassGenerator.newInstance
-                (cancelPreparedStatementImpl,
-                    JDBCStoreManager.class, JDBCStoreManager.this,
-                    PreparedStatement.class, super.prepareStatement(sql, false),
-                    Connection.class, RefCountConnection.this);
+            return ConcreteClassGenerator.newInstance(cancelPreparedStatementImpl,
+                    JDBCStoreManager.this, super.prepareStatement(sql, false), RefCountConnection.this);
         }
 
         protected PreparedStatement prepareStatement(String sql, int rsType,

@@ -18,6 +18,7 @@
  */
 package org.apache.openjpa.jdbc.schema;
 
+import java.lang.reflect.Constructor;
 import java.security.AccessController;
 import java.sql.Connection;
 import java.sql.Driver;
@@ -295,12 +296,12 @@ public class DataSourceFactory {
     protected abstract static class DefaultsDataSource
         extends DelegatingDataSource {
 
-        private static final Class<DefaultsDataSource> implClass;
+        private static final Constructor<DefaultsDataSource> implClass;
 
         static {
             try {
-                implClass = ConcreteClassGenerator.
-                    makeConcrete(DefaultsDataSource.class);
+                implClass = ConcreteClassGenerator.getConcreteConstructor(DefaultsDataSource.class, 
+                        DataSource.class, String.class, String.class);
             } catch (Exception e) {
                 throw new ExceptionInInitializerError(e);
             }
@@ -315,13 +316,8 @@ public class DataSourceFactory {
             _pass = pass;
         }
 
-        public static DefaultsDataSource newInstance(DataSource ds,
-            String user, String pass) {
-            return ConcreteClassGenerator.
-                newInstance(implClass,
-                    DataSource.class, ds,
-                    String.class, user,
-                    String.class, pass);
+        public static DefaultsDataSource newInstance(DataSource ds, String user, String pass) {
+            return ConcreteClassGenerator.newInstance(implClass, ds, user, pass);
         }
 
         public Connection getConnection()

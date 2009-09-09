@@ -20,6 +20,7 @@ package org.apache.openjpa.slice.jdbc;
 
 import java.io.InputStream;
 import java.io.Reader;
+import java.lang.reflect.Constructor;
 import java.math.BigDecimal;
 import java.net.URL;
 import java.sql.Array;
@@ -49,12 +50,11 @@ import org.apache.openjpa.lib.util.ConcreteClassGenerator;
  *
  */
 public abstract class DistributedResultSet implements ResultSet {
-    static final Class<DistributedResultSet> concreteImpl;
+    static final Constructor<DistributedResultSet> concreteImpl;
 
     static {
         try {
-            concreteImpl = ConcreteClassGenerator.
-                makeConcrete(DistributedResultSet.class);
+            concreteImpl = ConcreteClassGenerator.getConcreteConstructor(DistributedResultSet.class);
         } catch (Exception e) {
             throw new ExceptionInInitializerError(e);
         }

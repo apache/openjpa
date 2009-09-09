@@ -18,6 +18,7 @@
  */
 package org.apache.openjpa.lib.jdbc;
 
+import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
 import java.sql.CallableStatement;
 import java.sql.Connection;
@@ -35,6 +36,7 @@ import org.apache.commons.lang.exception.NestableRuntimeException;
 import org.apache.openjpa.lib.util.Closeable;
 import org.apache.openjpa.lib.util.ConcreteClassGenerator;
 import org.apache.openjpa.lib.util.Localizer;
+
 import serp.util.Numbers;
 
 /**
@@ -47,11 +49,10 @@ import serp.util.Numbers;
  */
 public abstract class DelegatingConnection implements Connection, Closeable {
 
-    static final Class<DelegatingConnection> concreteImpl;
+    static final Constructor<DelegatingConnection> concreteImpl;
     static {
         try {
-            concreteImpl = ConcreteClassGenerator.
-                makeConcrete(DelegatingConnection.class);
+            concreteImpl = ConcreteClassGenerator.getConcreteConstructor(DelegatingConnection.class, Connection.class);
         } catch (Exception e) {
             throw new ExceptionInInitializerError(e);
         }
@@ -80,8 +81,7 @@ public abstract class DelegatingConnection implements Connection, Closeable {
         boolean jdbc3 = false;
         Method m = null;
         try {
-            m = Connection.class.getMethod("setSavepoint",
-                new Class[]{ String.class });
+            m = Connection.class.getMethod("setSavepoint", new Class[]{ String.class });
             jdbc3 = true;
         } catch (Throwable t) {
         }
@@ -108,8 +108,7 @@ public abstract class DelegatingConnection implements Connection, Closeable {
      *  Constructor for the concrete implementation of this abstract class.
      */
     public static DelegatingConnection newInstance(Connection conn) {
-        return ConcreteClassGenerator.newInstance(concreteImpl, 
-            Connection.class, conn);
+        return ConcreteClassGenerator.newInstance(concreteImpl, conn);
     }
 
     /** 

@@ -18,6 +18,7 @@
  */
 package org.apache.openjpa.jdbc.sql;
 
+import java.lang.reflect.Constructor;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.sql.Connection;
@@ -61,12 +62,12 @@ public class SybaseDictionary
     private static Localizer _loc = Localizer.forPackage
         (SybaseDictionary.class);
 
-    private static Class<SybaseConnection> sybaseConnectionImpl;
+    private static Constructor<SybaseConnection> sybaseConnectionImpl;
 
     static {
         try {
-            sybaseConnectionImpl = ConcreteClassGenerator.
-                makeConcrete(SybaseConnection.class);
+            sybaseConnectionImpl = ConcreteClassGenerator.getConcreteConstructor(SybaseConnection.class, 
+                    Connection.class);
         } catch (Exception e) {
             throw new ExceptionInInitializerError(e);
         }
@@ -308,8 +309,7 @@ public class SybaseDictionary
             stmnt.close();            
         }        
         
-        return ConcreteClassGenerator.newInstance(sybaseConnectionImpl, 
-            Connection.class, conn);
+        return ConcreteClassGenerator.newInstance(sybaseConnectionImpl, conn);
     }
 
     /**

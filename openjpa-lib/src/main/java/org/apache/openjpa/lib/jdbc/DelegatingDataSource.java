@@ -19,6 +19,7 @@
 package org.apache.openjpa.lib.jdbc;
 
 import java.io.PrintWriter;
+import java.lang.reflect.Constructor;
 import java.sql.Connection;
 import java.sql.SQLException;
 import javax.sql.DataSource;
@@ -35,12 +36,11 @@ import org.apache.openjpa.lib.util.ConcreteClassGenerator;
  */
 public abstract class DelegatingDataSource implements DataSource, Closeable {
 
-    static final Class<DelegatingDataSource> concreteImpl;
+    static final Constructor<DelegatingDataSource> concreteImpl;
 
     static {
         try {
-            concreteImpl = ConcreteClassGenerator.
-                makeConcrete(DelegatingDataSource.class);
+            concreteImpl = ConcreteClassGenerator.getConcreteConstructor(DelegatingDataSource.class, DataSource.class);
         } catch (Exception e) {
             throw new ExceptionInInitializerError(e);
         }
@@ -65,8 +65,7 @@ public abstract class DelegatingDataSource implements DataSource, Closeable {
      *  Constructor for the concrete implementation of this abstract class.
      */
     public static DelegatingDataSource newInstance(DataSource ds) {
-        return ConcreteClassGenerator.newInstance(concreteImpl, 
-            DataSource.class, ds);
+        return ConcreteClassGenerator.newInstance(concreteImpl, ds);
     }
 
     /** 
