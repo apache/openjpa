@@ -38,8 +38,8 @@ import org.apache.openjpa.persistence.test.SingleEMFTestCase;
 
 public class TestMultipleSchemaNames extends SingleEMFTestCase {
 
-    static DBDictionary dict = null;
-    static Boolean skipTests = null;
+    static private DBDictionary dict = null;
+    static private Boolean skipTests = null;
     
     public void setUp() {
         // Need to skip tests on MySQL, Oracle and MS SQL Server
@@ -54,10 +54,12 @@ public class TestMultipleSchemaNames extends SingleEMFTestCase {
                     (dict instanceof OracleDictionary) ||
                     (dict instanceof SQLServerDictionary)) {
                 skipTests = Boolean.TRUE;
+                // do some logging
+                emf.getConfiguration().getLog("Tests").trace(
+                    "TestMultipleSchemaNames() - Skipping all tests - Not supported on this DB");
             } else {
                 skipTests = Boolean.FALSE;
-            }
-            
+            }            
             closeEMF(emf);
         }
         
@@ -433,7 +435,6 @@ public class TestMultipleSchemaNames extends SingleEMFTestCase {
 
         em.close();
     }
-
 
     /**
      * Create necessary schemas if running on PostgreSQL as it does
