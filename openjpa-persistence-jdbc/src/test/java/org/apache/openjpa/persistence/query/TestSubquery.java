@@ -254,7 +254,7 @@ public class TestSubquery
         // MySQL throws exception for the jpql in the updates:
         // "You can't specify target table 'xxx' for update in FROM clause". The MySQL manual mentions 
         // this at the bottom of the UPDATE documentation(http://dev.mysql.com/doc/refman/5.0/en/update.html): 
-        // “Currently, you cannot update a table and select from the same table in a subquery.”
+        // Currently, you cannot update a table and select from the same table in a subquery.
         
         if (dict instanceof MySQLDictionary)
             return;
