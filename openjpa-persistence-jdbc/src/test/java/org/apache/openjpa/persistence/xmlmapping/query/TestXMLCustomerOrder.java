@@ -28,6 +28,7 @@ import junit.textui.TestRunner;
 
 import org.apache.openjpa.jdbc.conf.JDBCConfiguration;
 import org.apache.openjpa.jdbc.sql.DBDictionary;
+import org.apache.openjpa.lib.log.Log;
 import org.apache.openjpa.persistence.OpenJPAEntityManagerFactorySPI;
 import org.apache.openjpa.persistence.OpenJPAEntityManagerSPI;
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
@@ -51,8 +52,6 @@ import org.apache.openjpa.persistence.xmlmapping.xmlbindings.myaddress.USAAddres
  */
 public class TestXMLCustomerOrder
     extends SingleEMFTestCase {
-
-    private static Boolean skipTests = null;
     
     private static final int ORDER_1_OID = 10;
     private static final double ORDER_1_AMOUNT = 850;
@@ -63,26 +62,16 @@ public class TestXMLCustomerOrder
     private static final boolean ORDER_2_DELIVERED = false;
 
     public void setUp() {
-        // skip test if dictionary has no support for XML column type
-        if (skipTests == null) {
-            if (!dictionarySupportsXMLColumn()) {
-                skipTests = Boolean.TRUE;
-                // do some logging
-                OpenJPAEntityManagerFactorySPI emf = createEMF();
-                emf.getConfiguration().getLog("Tests").trace(
-                    "TestXMLCustomerOrder() - Skipping all tests - No XML Column support");
-                closeEMF(emf);
-            } else {
-                skipTests = Boolean.FALSE;
-            }
-        }
+        setUp(Customer.class, Customer.CustomerKey.class, Order.class,
+            EAddress.class, CLEAR_TABLES);
 
-        if (skipTests) {
+        // skip test if dictionary has no support for XML column type
+        setTestsDisabled(!dictionarySupportsXMLColumn());
+        if (isTestsDisabled()) {
+            getLog().trace("TestXMLCustomerOrder() - Skipping all tests - No XML Column support");
             return;
         }
         
-        setUp(Customer.class, Customer.CustomerKey.class, Order.class,
-            EAddress.class, CLEAR_TABLES);
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
         persistEntities(em);
@@ -92,10 +81,6 @@ public class TestXMLCustomerOrder
 
     @SuppressWarnings("unchecked")
     public void testXMLFieldProjection() {
-        if (skipTests) {
-            return;
-        }
-        
         EntityManager em = emf.createEntityManager();
         List<Address> addrs = em.createQuery(
             "select o.shipAddress from Order o order by o.oid")
@@ -116,10 +101,6 @@ public class TestXMLCustomerOrder
     
     @SuppressWarnings("unchecked")
     public void testXMLFieldInEntity() {
-        if (skipTests) {
-            return;
-        }
-        
         EntityManager em = emf.createEntityManager();
         List<Order> orders = em.createQuery(
             "select o from Order o order by o.oid")
@@ -142,10 +123,6 @@ public class TestXMLCustomerOrder
 
     @SuppressWarnings("unchecked")
     public void testXMLStringToXMLStringComparison() {
-        if (skipTests) {
-            return;
-        }
-        
         EntityManager em = emf.createEntityManager();
         List<Object[]> orders = em.createQuery(
             "select o, o2 from Order o, Order o2 where o.shipAddress.city " +
@@ -171,10 +148,6 @@ public class TestXMLCustomerOrder
 
     @SuppressWarnings("unchecked")
     public void testXMLStringToEmbeddedStringComparison() {
-        if (skipTests) {
-            return;
-        }
-        
         EntityManager em = emf.createEntityManager();
         List<Order> orders = em.createQuery(
             "select o from Order o, Customer c where o.shipAddress.city " +
@@ -190,10 +163,6 @@ public class TestXMLCustomerOrder
 
     @SuppressWarnings("unchecked")
     public void testXMLStringToConstantStringComparison() {
-        if (skipTests) {
-            return;
-        }
-        
         EntityManager em = emf.createEntityManager();
         List<Order> orders = em.createQuery(
             "select o from Order o where o.shipAddress.city = 'San Jose'")
@@ -208,10 +177,6 @@ public class TestXMLCustomerOrder
 
     @SuppressWarnings("unchecked")
     public void testXMLStringToParameterStringComparison() {
-        if (skipTests) {
-            return;
-        }
-        
         EntityManager em = emf.createEntityManager();
         Query query = em.createQuery(
             "select o from Order o where o.shipAddress.city = :city");
@@ -227,10 +192,6 @@ public class TestXMLCustomerOrder
 
     @SuppressWarnings("unchecked")
     public void testParameterStringToXMLStringComparison() {
-        if (skipTests) {
-            return;
-        }
-        
         EntityManager em = emf.createEntityManager();
         Query query = em.createQuery(
             "select o from Order o where :city = o.shipAddress.city");
@@ -245,10 +206,6 @@ public class TestXMLCustomerOrder
     }
 
     public void testUpdate() {
-        if (skipTests) {
-            return;
-        }
-        
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
 
@@ -273,10 +230,6 @@ public class TestXMLCustomerOrder
     }
 
     public void testNullify() {
-        if (skipTests) {
-            return;
-        }
-        
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
 
@@ -298,10 +251,6 @@ public class TestXMLCustomerOrder
     }
 
     public void testXMLStringToConstantIntComparison() {
-        if (skipTests) {
-            return;
-        }
-        
         EntityManager em = emf.createEntityManager();
         try {
             em.createQuery(
@@ -316,10 +265,6 @@ public class TestXMLCustomerOrder
     }
 
     public void testXMLListToConstantStringComparison() {
-        if (skipTests) {
-            return;
-        }
-        
         EntityManager em = emf.createEntityManager();
         try {
             em.createQuery(
@@ -334,10 +279,6 @@ public class TestXMLCustomerOrder
     }
 
     public void testSubclassPropertyInXMLFieldComparison() {
-        if (skipTests) {
-            return;
-        }
-        
         EntityManager em = emf.createEntityManager();
         try {
             em.createQuery(

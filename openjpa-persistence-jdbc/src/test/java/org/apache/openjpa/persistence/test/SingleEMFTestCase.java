@@ -22,8 +22,12 @@ import java.util.List;
 
 import javax.persistence.EntityManager;
 
+import org.apache.openjpa.jdbc.conf.JDBCConfiguration;
 import org.apache.openjpa.jdbc.meta.ClassMapping;
+import org.apache.openjpa.jdbc.sql.DBDictionary;
+import org.apache.openjpa.lib.log.Log;
 import org.apache.openjpa.persistence.OpenJPAEntityManagerFactorySPI;
+import org.apache.openjpa.persistence.OpenJPAEntityManagerSPI;
 
 /**
  * Base class for OpenJPA-specific Test Case.
@@ -155,5 +159,53 @@ public abstract class SingleEMFTestCase
 
     protected ClassMapping [] getMappings() {
         return (ClassMapping [] ) emf.getConfiguration().getMetaDataRepositoryInstance().getMetaDatas();   
+    }
+    
+    protected void setUnsupportedDatabases(Class<?> ... dbs) {
+        OpenJPAEntityManagerFactorySPI tempEMF = emf;
+        if (tempEMF == null) {
+            tempEMF = createEMF();
+        }
+        OpenJPAEntityManagerSPI em = tempEMF.createEntityManager();
+        JDBCConfiguration conf = (JDBCConfiguration) em.getConfiguration();
+        DBDictionary dict = conf.getDBDictionaryInstance();
+        for (Class<?> db : dbs) {
+            if (dict.getClass().getCanonicalName().equalsIgnoreCase(db.getCanonicalName())) {
+                setTestsDisabled(true);
+                break;
+            }
+        }
+        if (emf == null) {
+            closeEMF(tempEMF);
+        } else {
+            em.close();
+        }
+    }
+    
+    protected void setSupportedDatabases(Class<?> ... dbs) {
+        OpenJPAEntityManagerFactorySPI tempEMF = emf;
+        if (tempEMF == null) {
+            tempEMF = createEMF();
+        }
+        OpenJPAEntityManagerSPI em = tempEMF.createEntityManager();
+        JDBCConfiguration conf = (JDBCConfiguration) em.getConfiguration();
+        DBDictionary dict = conf.getDBDictionaryInstance();
+        boolean supportedDB = false;
+        for (Class<?> db : dbs) {
+            if (dict.getClass().getCanonicalName().equalsIgnoreCase(db.getCanonicalName())) {
+                supportedDB = true;
+                break;
+            }
+        }
+        setTestsDisabled(!supportedDB);
+        if (emf == null) {
+            closeEMF(tempEMF);
+        } else {
+            em.close();
+        }
+    }
+    
+    protected Log getLog() {
+        return emf.getConfiguration().getLog("Tests");
     }
 }

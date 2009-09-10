@@ -133,6 +133,7 @@ public class TestQueryTimeout extends SQLListenerTestCase {
             } else {
                 // unknown db, so skip all timeout tests
                 skipTests = skipExceptionTests = noSelectTimeouts = true;
+                setTestsDisabled(true);
                 getLog().info("TestQueryTimeout tests are being skipped, due " +
                     "to " + dict.platform + " not supporting Query Timeouts.");
             }
@@ -140,6 +141,7 @@ public class TestQueryTimeout extends SQLListenerTestCase {
             getLog().info("TestQueryTimeout tests are being skipped, " +
                 "due to " + dict.platform + " not supporting Query Timeouts.");
             skipTests = skipExceptionTests = true;
+            setTestsDisabled(true);
         }
     }
 
@@ -1040,15 +1042,6 @@ public class TestQueryTimeout extends SQLListenerTestCase {
                 em.close();
             }
         }
-    }
-
-    /**
-     * Internal convenience method for getting the OpenJPA logger
-     * 
-     * @return
-     */
-    private Log getLog() {
-        return emf.getConfiguration().getLog("Tests");
     }
 
     /**

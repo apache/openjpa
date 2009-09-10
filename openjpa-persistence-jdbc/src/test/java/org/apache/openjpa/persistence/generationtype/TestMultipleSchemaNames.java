@@ -39,12 +39,11 @@ import org.apache.openjpa.persistence.test.SingleEMFTestCase;
 public class TestMultipleSchemaNames extends SingleEMFTestCase {
 
     static private DBDictionary dict = null;
-    static private Boolean skipTests = null;
     
     public void setUp() {
         // Need to skip tests on MySQL, Oracle and MS SQL Server
         // See createSchemas() comment at the bottom
-        if ((dict == null) || (skipTests == null)) {
+        if (dict == null) {
             OpenJPAEntityManagerFactorySPI emf = createEMF();
             OpenJPAEntityManagerSPI em = emf.createEntityManager();
             JDBCConfiguration conf = (JDBCConfiguration) em.getConfiguration();
@@ -53,17 +52,15 @@ public class TestMultipleSchemaNames extends SingleEMFTestCase {
             if ((dict instanceof MySQLDictionary) ||
                     (dict instanceof OracleDictionary) ||
                     (dict instanceof SQLServerDictionary)) {
-                skipTests = Boolean.TRUE;
+                setTestsDisabled(true);
                 // do some logging
                 emf.getConfiguration().getLog("Tests").trace(
                     "TestMultipleSchemaNames() - Skipping all tests - Not supported on this DB");
-            } else {
-                skipTests = Boolean.FALSE;
-            }            
+            }
             closeEMF(emf);
         }
         
-        if (skipTests) {
+        if (isTestsDisabled()) {
             return;
         }
 
@@ -163,9 +160,6 @@ public class TestMultipleSchemaNames extends SingleEMFTestCase {
     }
 
     public void testGeneratedAUTO() {
-        if (skipTests)
-            return;
-
         EntityManager em = emf.createEntityManager();
         OpenJPAEntityManager kem = OpenJPAPersistence.cast(em);
         em.getTransaction().begin();
@@ -243,9 +237,6 @@ public class TestMultipleSchemaNames extends SingleEMFTestCase {
     }
 
     public void testGeneratedTABLE() {
-        if (skipTests)
-            return;
-
         EntityManager em = emf.createEntityManager();
         OpenJPAEntityManager kem = OpenJPAPersistence.cast(em);
         em.getTransaction().begin();
@@ -391,9 +382,6 @@ public class TestMultipleSchemaNames extends SingleEMFTestCase {
     }
     
     public void testGeneratedIDENTITY() {
-        if (skipTests)
-            return;
-
         EntityManager em = emf.createEntityManager();
         OpenJPAEntityManager kem = OpenJPAPersistence.cast(em);
 

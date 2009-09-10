@@ -311,12 +311,4 @@ public class TestQueryProperties extends SingleEMFTestCase {
         }
     }
     
-    /**
-     * Internal convenience method for getting the OpenJPA logger
-     * 
-     * @return
-     */
-    private Log getLog() {
-        return emf.getConfiguration().getLog("Tests");
-    }
 }

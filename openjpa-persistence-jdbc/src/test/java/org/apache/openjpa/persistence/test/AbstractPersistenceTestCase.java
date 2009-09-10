@@ -54,6 +54,7 @@ public abstract class AbstractPersistenceTestCase extends TestCase {
     public static final String RETAIN_DATA = "Retain data after test run";
     private boolean retainDataOnTearDown;
     protected boolean _fresh = false;
+    private Boolean testsDisabled = Boolean.FALSE;
 
     public static final String ALLOW_FAILURE_LOG = "log";
     public static final String ALLOW_FAILURE_IGNORE = "ignore";
@@ -463,8 +464,10 @@ public abstract class AbstractPersistenceTestCase extends TestCase {
     }
 
     /**
-     * Overrides to allow tests annotated with @AllowFailure to fail. If the test is in error then the normal pathway is
-     * executed.
+     * Overrides to allow tests annotated with @AllowFailure to fail.
+     * If @DatabasePlatform value matches the current JDBC driver or
+     * tests have been disabled, then the test will not be run.
+     * If the test is in error then the normal pathway is executed.
      */
     @Override
     public void runBare() throws Throwable {
@@ -499,6 +502,18 @@ public abstract class AbstractPersistenceTestCase extends TestCase {
         }
     }
 
+    /**
+     * Override to run the test and assert its state.
+     * @exception Throwable if any exception is thrown
+     */
+    @Override
+    protected void runTest() throws Throwable {
+        if (isTestsDisabled()) {
+            return;
+        }
+        super.runTest();
+    }
+    
     /**
      * Affirms if the test case or the test method is annotated with
      * 
@@ -587,4 +602,17 @@ public abstract class AbstractPersistenceTestCase extends TestCase {
             assertFalse(String.format("Expected %s:%s not to exist in cache", clss, id), cache.contains(clss, id));
         }
     }
+    
+    protected void setTestsDisabled(boolean disable) {
+        synchronized (testsDisabled) {
+            testsDisabled = new Boolean(disable);
+        }
+    }
+    
+    protected boolean isTestsDisabled() {
+        synchronized (testsDisabled) {
+            return testsDisabled.booleanValue();
+        }
+    }
+
 }
