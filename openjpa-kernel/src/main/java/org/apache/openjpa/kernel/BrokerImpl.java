@@ -3670,9 +3670,25 @@ public class BrokerImpl
             default:
                 // use store manager for native sequence
                 if (fmd == null) {
-                    // this will return a sequence even for app id classes,
-                    // which is what we want for backwards-compatibility
-                    return _store.getDataStoreIdSequence(meta);
+                    // This will return a sequence even for app id classes,
+                    // which is what we want for backwards-compatibility.
+                    // Even if user uses Application Identity,
+                    // user might use custom sequence information.
+                    // So, first, the sequence should be checked.
+                    // Trying to get primary key field if it has
+                    // sequence meta data.
+                    FieldMetaData[] pks = meta.getPrimaryKeyFields();
+                    if (pks != null && pks.length == 1) {
+                        smd = pks[0].getValueSequenceMetaData();
+                    } else {
+                        smd = meta.getIdentitySequenceMetaData();
+                    }
+
+                    if (smd != null) {
+                        return smd.getInstance(_loader);
+                    } else {
+                        return _store.getDataStoreIdSequence(meta);
+                    }
                 }
                 return _store.getValueSequence(fmd);
         }
