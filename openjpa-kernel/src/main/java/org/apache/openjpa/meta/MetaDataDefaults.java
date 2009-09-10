@@ -20,6 +20,7 @@ package org.apache.openjpa.meta;
 
 import java.lang.reflect.Member;
 
+import org.apache.openjpa.conf.OpenJPAConfiguration;
 import org.apache.openjpa.event.CallbackModes;
 
 /**
@@ -105,4 +106,12 @@ public interface MetaDataDefaults
      * managed interface methods.
      */
     public Class getUnimplementedExceptionType();
+    
+    /**
+     * Whether the relationship in MappedSuper class must be
+     * uni-directional.  
+     * @return 2.0.0
+     */
+    public boolean isAbstractMappingUniDirectional(OpenJPAConfiguration conf);
+
 }

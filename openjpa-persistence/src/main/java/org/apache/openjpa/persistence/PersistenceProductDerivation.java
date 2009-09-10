@@ -35,9 +35,9 @@ import java.util.Map;
 import java.util.MissingResourceException;
 import java.util.Set;
 
-import javax.persistence.spi.ValidationMode;
 import javax.persistence.spi.PersistenceUnitInfo;
 import javax.persistence.spi.PersistenceUnitTransactionType;
+import javax.persistence.spi.ValidationMode;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.openjpa.conf.Compatibility;
@@ -45,7 +45,6 @@ import org.apache.openjpa.conf.OpenJPAConfiguration;
 import org.apache.openjpa.conf.OpenJPAConfigurationImpl;
 import org.apache.openjpa.conf.OpenJPAProductDerivation;
 import org.apache.openjpa.conf.Specification;
-import org.apache.openjpa.event.LifecycleEventManager;
 import org.apache.openjpa.kernel.MixedLockLevels;
 import org.apache.openjpa.lib.conf.AbstractProductDerivation;
 import org.apache.openjpa.lib.conf.Configuration;
@@ -58,10 +57,6 @@ import org.apache.openjpa.lib.meta.XMLMetaDataParser;
 import org.apache.openjpa.lib.meta.XMLVersionParser;
 import org.apache.openjpa.lib.util.J2DoPrivHelper;
 import org.apache.openjpa.lib.util.Localizer;
-import org.apache.openjpa.persistence.validation.ValidatorImpl;
-import org.apache.openjpa.validation.Validator;
-import org.apache.openjpa.validation.ValidationException;
-import org.apache.openjpa.validation.ValidatingLifecycleEventManager;
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
 
@@ -187,6 +182,7 @@ public class PersistenceProductDerivation
             compatibility.setFlushBeforeDetach(true);
             compatibility.setCopyOnDetach(true);
             compatibility.setPrivatePersistentProperties(true);
+            compatibility.setAbstractMappingUniDirectional(false);
             // Disable bean validation for spec level < 2 configurations
             conf.validationMode.set(String.valueOf(ValidationMode.NONE));
         } 

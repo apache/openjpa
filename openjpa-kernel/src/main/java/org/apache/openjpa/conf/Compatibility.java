@@ -62,6 +62,7 @@ public class Compatibility {
     private boolean _privatePersistentProperties = false;
     private boolean _autoOff = true;
     private boolean _superclassDiscriminatorStrategyByDefault = true;
+    private boolean _isAbstractMappingUniDirectional = true;
     
     /**
      * Whether to require exact identity value types when creating object
@@ -418,6 +419,36 @@ public class Compatibility {
      */
     public void setPrivatePersistentProperties(boolean privateProps) {
         _privatePersistentProperties = privateProps;
-    }    
+    }
+    
+    /**
+     * Whether OpenJPA allows bi-directional relationship in the MappedSuperclass.
+     * Prior to OpenJPA 2.0, the bi-directional relationship in the MappedSuperclass,
+     * is not blocked. This is contrary to the JPA specification, which states that 
+     * Persistent relationships defined by a mapped superclass must be
+     * unidirectional.
+     * 
+     * @param isAbstractMappingUniDirectional true if relationship defined in the 
+     *        MappedSuperclass must be uni-directional
+     * @since 2.0.0
+     */
+    public void setAbstractMappingUniDirectional(boolean isAbstractMappingUniDirectional) {
+        _isAbstractMappingUniDirectional = isAbstractMappingUniDirectional;
+    }
+
+    
+    /**
+     * Whether OpenJPA allows bi-directional relationship in the MappedSuperclass.
+     * Prior to OpenJPA 2.0, the bi-directional relationship in the MappedSuperclass,
+     * is not blocked. This is contrary to the JPA specification, which states that 
+     * Persistent relationships defined by a mapped superclass must be
+     * unidirectional. The default value is true.
+     * 
+     * @since 2.0.0
+     */
+    public boolean isAbstractMappingUniDirectional() {
+        return _isAbstractMappingUniDirectional;
+    }
+
 }
 

@@ -131,7 +131,8 @@ public class PersistenceMetaDataDefaults
     protected AnnotatedFilter annotatedFilter = new AnnotatedFilter();
     protected GetterFilter getterFilter = new GetterFilter();
     protected SetterFilter setterFilter = new SetterFilter();
-
+    private Boolean _isAbstractMappingUniDirectional = null;
+    
     public PersistenceMetaDataDefaults() {
         setCallbackMode(CALLBACK_RETHROW | CALLBACK_ROLLBACK |
             CALLBACK_FAIL_FAST);
@@ -860,5 +861,15 @@ public class PersistenceMetaDataDefaults
     
     String toMethodNames(List<Method> methods) {
     	return methods.toString();
+    }
+    
+    public boolean isAbstractMappingUniDirectional(OpenJPAConfiguration conf) {
+        if (_isAbstractMappingUniDirectional == null)
+            setAbstractMappingUniDirectional(conf);
+        return _isAbstractMappingUniDirectional;
+    }
+    
+    public void setAbstractMappingUniDirectional(OpenJPAConfiguration conf) {
+        _isAbstractMappingUniDirectional = conf.getCompatibilityInstance().isAbstractMappingUniDirectional();
     }
 }
