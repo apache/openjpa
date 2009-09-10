@@ -48,7 +48,7 @@ public class TestMultipleSchemaNames extends SingleEMFTestCase {
                 org.apache.openjpa.jdbc.sql.OracleDictionary.class,
                 org.apache.openjpa.jdbc.sql.SQLServerDictionary.class);
         if (isTestsDisabled()) {
-            getLog().trace("TestMultipleSchemaNames() - Skipping all tests - Not supported on this DB");
+            // getLog().trace("TestMultipleSchemaNames() - Skipping all tests - Not supported on this DB");
             return;
         }
 
