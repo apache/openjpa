@@ -43,24 +43,12 @@ public class TestMultipleSchemaNames extends SingleEMFTestCase {
     public void setUp() {
         // Need to skip tests on MySQL, Oracle and MS SQL Server
         // See createSchemas() comment at the bottom
-        if (dict == null) {
-            OpenJPAEntityManagerFactorySPI emf = createEMF();
-            OpenJPAEntityManagerSPI em = emf.createEntityManager();
-            JDBCConfiguration conf = (JDBCConfiguration) em.getConfiguration();
-            dict = conf.getDBDictionaryInstance();
-            
-            if ((dict instanceof MySQLDictionary) ||
-                    (dict instanceof OracleDictionary) ||
-                    (dict instanceof SQLServerDictionary)) {
-                setTestsDisabled(true);
-                // do some logging
-                emf.getConfiguration().getLog("Tests").trace(
-                    "TestMultipleSchemaNames() - Skipping all tests - Not supported on this DB");
-            }
-            closeEMF(emf);
-        }
-        
+        setUnsupportedDatabases(
+                org.apache.openjpa.jdbc.sql.MySQLDictionary.class,
+                org.apache.openjpa.jdbc.sql.OracleDictionary.class,
+                org.apache.openjpa.jdbc.sql.SQLServerDictionary.class);
         if (isTestsDisabled()) {
+            getLog().trace("TestMultipleSchemaNames() - Skipping all tests - Not supported on this DB");
             return;
         }
 

@@ -206,6 +206,19 @@ public abstract class SingleEMFTestCase
     }
     
     protected Log getLog() {
-        return emf.getConfiguration().getLog("Tests");
+        return getLog("Tests");
+    }
+
+    protected Log getLog(String s) {
+        OpenJPAEntityManagerFactorySPI tempEMF = emf;
+        if (tempEMF == null) {
+            tempEMF = createEMF();
+        }
+        Log log = emf.getConfiguration().getLog(s);
+        if (emf == null) {
+            closeEMF(tempEMF);
+        }
+        return log;
     }
 }
+
