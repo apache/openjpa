@@ -23,7 +23,7 @@ import javax.persistence.Embeddable;
 @Embeddable
 public class Inning {
 
-    private int number;
+    private int inningNumber;
     
     private int hitsHome;
     
@@ -33,17 +33,17 @@ public class Inning {
     }
 
     public Inning(int num, int hh, int ha) {        
-        number = num;
+        inningNumber = num;
         hitsHome = hh;
         hitsAway = ha;
     }
 
-    public void setNumber(int number) {
-        this.number = number;
+    public void setInningNumber(int number) {
+        this.inningNumber = number;
     }
 
-    public int getNumber() {
-        return number;
+    public int getInningNumber() {
+        return inningNumber;
     }
 
     public void setHitsHome(int hitsHome) {
@@ -65,7 +65,7 @@ public class Inning {
     public boolean equals(Object obj) {
         if (obj instanceof Inning) {
             Inning in = (Inning)obj;
-            return getNumber() == in.getNumber() &&
+            return getInningNumber() == in.getInningNumber() &&
                 getHitsHome() == in.getHitsHome() &&
                 getHitsAway() == in.getHitsAway();
         }

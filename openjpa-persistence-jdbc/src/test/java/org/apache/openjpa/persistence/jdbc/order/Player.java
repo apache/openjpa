@@ -27,7 +27,7 @@ import javax.persistence.OrderColumn;
 @Entity
 public class Player extends Person {
     
-    private int number;
+    private int playerNumber;
 
     @ManyToMany(mappedBy="playersTrained")
     private List<Trainer> trainers;
@@ -41,15 +41,15 @@ public class Player extends Person {
     
     public Player(String name, int number) {
         setName(name);
-        this.number = number;
+        this.playerNumber = number;
     }
 
-    public void setNumber(int number) {
-        this.number = number;
+    public void setPlayerNumber(int number) {
+        this.playerNumber = number;
     }
 
-    public int getNumber() {
-        return number;
+    public int getPlayerNumber() {
+        return playerNumber;
     }    
 
     public void setTrainers(List<Trainer> trainers) {
@@ -64,7 +64,7 @@ public class Player extends Person {
         if (obj instanceof Player) {
             Player player = (Player)obj;
             return super.equals(obj) &&
-                player.getNumber() == number;
+                player.getPlayerNumber() == playerNumber;
         }
         return false;
     }

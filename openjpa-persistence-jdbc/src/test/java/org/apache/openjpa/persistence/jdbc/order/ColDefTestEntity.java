@@ -43,15 +43,15 @@ public class ColDefTestEntity {
     private int id;
     
     @OneToMany(cascade=CascadeType.PERSIST)
-    @OrderColumn(name="one2McoldefOrder", columnDefinition="BIGINT")
+    @OrderColumn(name="one2McoldefOrder", columnDefinition="INTEGER")
     private List<ColDefTestElement> one2Mcoldef;
 
     @ElementCollection
-    @OrderColumn(name="colcoldefOrder", columnDefinition="BIGINT")
+    @OrderColumn(name="colcoldefOrder", columnDefinition="INTEGER")
     private Set<ColDefTestElement> collcoldef;
     
     @ManyToMany(cascade=CascadeType.PERSIST)
-    @OrderColumn(name="m2McoldefOrder", columnDefinition="BIGINT")
+    @OrderColumn(name="m2McoldefOrder", columnDefinition="INTEGER")
     private List<ColDefTestElement> m2mcoldef;
 
     public void setOne2Mcoldef(List<ColDefTestElement> one2Mcoldef) {

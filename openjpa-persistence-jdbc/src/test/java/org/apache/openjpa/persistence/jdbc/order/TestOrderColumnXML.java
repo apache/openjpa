@@ -89,15 +89,9 @@ public class TestOrderColumnXML extends AbstractCachedEMFTestCase {
     }
     
     /*
-     * Validates the use of the columnDefinition attribute on OrderColumn. This
-     * test will be skipped unless the database in use is Derby since the 
-     * annotation column definition attribute value is hard coded and all 
-     * databases may not support the supplied column definition. 
+     * Validates the use of the columnDefinition attribute on OrderColumn.
      */
     public void testOrderColumnColumnDefinition() {
-        if (!isTargetPlatform("derby")) {
-            return;
-        }
 
         OpenJPAEntityManagerFactorySPI emf1 = 
             (OpenJPAEntityManagerFactorySPI)OpenJPAPersistence.
@@ -110,13 +104,13 @@ public class TestOrderColumnXML extends AbstractCachedEMFTestCase {
         // 
         // Create a collection using a custom column definition
         validateOrderColumnDef(emf1, ColDefTestEntity.class, 
-            "one2Mcoldef", "BIGINT");
+            "one2Mcoldef", "INTEGER");
 
         validateOrderColumnDef(emf1, ColDefTestEntity.class, 
-            "collcoldef", "BIGINT");
+            "collcoldef", "INTEGER");
 
         validateOrderColumnDef(emf1, ColDefTestEntity.class, 
-            "m2mcoldef", "BIGINT");
+            "m2mcoldef", "INTEGER");
 
         // Add and query some values
         ColDefTestEntity cdent = new ColDefTestEntity();
