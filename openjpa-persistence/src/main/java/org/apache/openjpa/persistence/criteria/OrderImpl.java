@@ -61,7 +61,12 @@ public class OrderImpl implements Order, CriteriaExpression {
     }
     
     public StringBuilder asValue(AliasContext q) {
-        return e.asValue(q).append(_ascending ? "" : " DESC");
+        return (e.isAutoAliased() ? e.asValue(q) : new StringBuilder(e.getAlias()))
+            .append(_ascending ? "" : " DESC");
+    }
+    
+    public StringBuilder asProjection(AliasContext q) {
+        throw new IllegalStateException(this + " can not be rendered as projection");
     }
     
     public StringBuilder asVariable(AliasContext q) {

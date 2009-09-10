@@ -29,7 +29,7 @@ import org.apache.openjpa.kernel.exps.ExpressionFactory;
 import org.apache.openjpa.persistence.meta.MetamodelImpl;
 
 /**
- * Expression for Criteria query.
+ * Expression node for Criteria query.
  * 
  * @param <X> the type of the value this expression represents.
  * 
@@ -45,20 +45,16 @@ public abstract class ExpressionImpl<X> extends SelectionImpl<X> implements Expr
     }
 
     /**
-     * Perform a typecast upon the expression.
-     * Warning: may result in a runtime failure.
-     * @param type 
-     * @return expression
+     * Creates a new expression of the given type. If the given type is same as this expression's type then
+     * returns the same instance. 
+     * May cause runtime cast failure if this expression's immutable type is not convertible to the given type. 
      */
     public <Y> Expression<Y> as(Class<Y> type) {
        return type == getJavaType() ? (Expression<Y>)this : new Expressions.CastAs<Y>(type, this);
     }
 
     /**
-     * Apply a predicate to test whether the expression is a member
-     * of the argument list.
-     * @param values
-     * @return predicate testing for membership in the list
+     * Create a predicate to test whether this expression is a member of the given argument values.
      */
    public Predicate in(Object... values) {
         In<X> result = new Expressions.In<X>(this);
@@ -68,10 +64,7 @@ public abstract class ExpressionImpl<X> extends SelectionImpl<X> implements Expr
     }
 
    /**
-    * Apply a predicate to test whether the expression is a member
-    * of the argument list.
-    * @param values
-    * @return predicate testing for membership
+    * Create a predicate to test whether this expression is a member of the given argument expressions.
     */
     public Predicate in(Expression<?>... values) {
         In<X> result = new Expressions.In<X>(this);
@@ -81,10 +74,7 @@ public abstract class ExpressionImpl<X> extends SelectionImpl<X> implements Expr
     }
 
     /**
-     * Apply a predicate to test whether the expression is a member
-     * of the collection.
-     * @param values collection
-     * @return predicate testing for membership
+     * Create a predicate to test whether this expression is a member of the given collection element values.
      */
     public Predicate in(Collection<?> values) {
         In<X> result = new Expressions.In<X>(this);
@@ -94,10 +84,7 @@ public abstract class ExpressionImpl<X> extends SelectionImpl<X> implements Expr
     }
 
     /**
-     * Apply a predicate to test whether the expression is a member
-     * of the collection.
-     * @param values expression corresponding to collection
-     * @return predicate testing for membership
+     * Create a predicate to test whether this expression is a member of the given expression representing a collection.
      */
     public Predicate in(Expression<Collection<?>> values) {
         In<X> result = new Expressions.In<X>(this);
@@ -106,16 +93,14 @@ public abstract class ExpressionImpl<X> extends SelectionImpl<X> implements Expr
     }
 
     /**
-     *  Apply a predicate to test whether the expression is not null.
-     *  @return predicate testing whether the expression is not null.
+     *  Create a predicate to test whether this expression is not null.
      */
     public Predicate isNotNull() {
     	return new Expressions.IsNotNull(this);
     }
 
     /**
-     *  Apply a predicate to test whether the expression is null.
-     *  @return predicate testing whether the expression is null
+     *  Create a predicate to test whether this expression is null.
      */
     public Predicate isNull() {
     	return new Expressions.IsNull(this);

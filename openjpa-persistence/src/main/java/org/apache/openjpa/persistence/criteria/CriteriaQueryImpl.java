@@ -467,7 +467,7 @@ public class CriteriaQueryImpl<T> implements OpenJPACriteriaQuery<T>, AliasConte
     //
     
     /**
-     * Gets the alias of the given node. Creates if necessary.
+     * Gets the alias of the given node. Creates an automatic alias, if necessary.
      */
     public String getAlias(Selection<?> selection) {
         String alias = selection.getAlias();
@@ -478,7 +478,7 @@ public class CriteriaQueryImpl<T> implements OpenJPACriteriaQuery<T>, AliasConte
         alias = ALIAS_BASE + (++aliasCount);
         while (_aliases.containsValue(alias))
             alias = ALIAS_BASE + (++aliasCount);
-        selection.alias(alias);
+        ((SelectionImpl<?>)selection).setAutoAlias(alias);
         _aliases.put(selection, alias);
         return _aliases.get(selection);
     }
@@ -652,7 +652,7 @@ public class CriteriaQueryImpl<T> implements OpenJPACriteriaQuery<T>, AliasConte
     void render(StringBuilder buffer, Set<Root<?>> roots, List<Join<?,?>> correlatedJoins) {
         buffer.append("SELECT ");
         if (isDistinct()) buffer.append(" DISTINCT ");
-        buffer.append(_selection != null ? ((CriteriaExpression)_selection).asValue(this) : "*");
+        buffer.append(_selection != null ? ((CriteriaExpression)_selection).asProjection(this) : "*");
         buffer.append(" FROM ");
         renderRoots(buffer, roots);
         renderJoins(buffer, correlatedJoins);

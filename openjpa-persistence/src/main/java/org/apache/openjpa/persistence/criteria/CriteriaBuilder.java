@@ -41,6 +41,7 @@ import javax.persistence.criteria.Selection;
 import javax.persistence.criteria.Subquery;
 import javax.persistence.metamodel.Attribute;
 import javax.persistence.metamodel.ManagedType;
+import javax.persistence.metamodel.Metamodel;
 
 import org.apache.openjpa.kernel.ExpressionStoreQuery;
 import org.apache.openjpa.kernel.exps.ExpressionFactory;
@@ -70,6 +71,10 @@ public class CriteriaBuilder implements OpenJPACriteriaBuilder, ExpressionParser
     public CriteriaBuilder setMetaModel(MetamodelImpl model) {
         _model = model;
         return this;
+    }
+    
+    public Metamodel getMetamodel() {
+        return _model;
     }
 
     public QueryExpressions eval(Object parsed, ExpressionStoreQuery query,
@@ -310,7 +315,7 @@ public class CriteriaBuilder implements OpenJPACriteriaBuilder, ExpressionParser
     }
 
     public <E, C extends Collection<E>> Predicate isMember(Expression<E> e, Expression<C> c) {
-        return new Expressions.IsMember<E>((Class<E>)e.getJavaType(), e, c);
+        return new Expressions.IsMember<E>(e, c);
     }
 
     public <C extends Collection<?>> Predicate isNotEmpty(Expression<C> collection) {

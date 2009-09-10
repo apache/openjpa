@@ -268,12 +268,7 @@ public class Expressions {
             e1 = (ExpressionImpl<?>)x;
             e2 = (ExpressionImpl<?>)y;
         }
-        
-//        @Override
-//        public PredicateImpl clone() {
-//            return new BinaryLogicalExpression(e1, e2);
-//        }
-        
+                
         public void acceptVisit(CriteriaExpressionVisitor visitor) {
             Expressions.acceptVisit(visitor, this, e1, e2);
         }
@@ -535,27 +530,27 @@ public class Expressions {
         private ExpressionImpl<Integer> from;
         private ExpressionImpl<String> path;
         
-        public Locate(Expression<String> x, Expression<String> y, Expression<Integer> from) {
+        public Locate(Expression<String> path, Expression<String> pattern, Expression<Integer> from) {
             super(Integer.class);
-            path = (ExpressionImpl<String>)x;
-            pattern = (ExpressionImpl<String>)y;
+            this.path = (ExpressionImpl<String>)path;
+            this.pattern = (ExpressionImpl<String>)pattern;
             this.from = (ExpressionImpl<Integer>)from;
         }
 
-        public Locate(Expression<String> x, Expression<String> y) {
-            this(x, y, null);
+        public Locate(Expression<String> path, Expression<String> pattern) {
+            this(path, pattern, null);
          }
         
-        public Locate(Expression<String> x, String y) {
-            this(x, new Constant<String>(y), null);
+        public Locate(Expression<String> path, String pattern) {
+            this(path, new Constant<String>(pattern), null);
         }
         
-        public Locate(String x, Expression<String> y) {
-            this(new Constant<String>(x), y, null);
+        public Locate(String path, Expression<String> pattern) {
+            this(new Constant<String>(path), pattern, null);
         }
         
-        public Locate(Expression<String> x, String y, int from) {
-            this(x, new Constant<String>(y), new Constant<Integer>(from));
+        public Locate(Expression<String> path, String pattern, int from) {
+            this(path, new Constant<String>(pattern), new Constant<Integer>(from));
         }
 
         @Override
@@ -994,15 +989,15 @@ public class Expressions {
     }
 
     public static class Between<Y extends Comparable<Y>> extends PredicateImpl.And {
-        private final ExpressionImpl<?> e;
-        private final ExpressionImpl<?> v1;
-        private final ExpressionImpl<?> v2;
+        private final ExpressionImpl<? extends Y> e;
+        private final ExpressionImpl<? extends Y> v1;
+        private final ExpressionImpl<? extends Y> v2;
         
         public Between(Expression<? extends Y> v, Expression<? extends Y> x, Expression<? extends Y> y) {
             super(new GreaterThanEqual(v,x), new LessThanEqual(v,y));
-            e = (ExpressionImpl<?>)v;
-            v1 = (ExpressionImpl<?>)x;
-            v2 = (ExpressionImpl<?>)y;
+            e = (ExpressionImpl<? extends Y>)v;
+            v1 = (ExpressionImpl<? extends Y>)x;
+            v2 = (ExpressionImpl<? extends Y>)y;
         }
         
         public Between(Expression<? extends Y> v, Y x, Y y) {
@@ -1182,18 +1177,14 @@ public class Expressions {
         final ExpressionImpl<E> element;
         final ExpressionImpl<?> collection;
         
-        public IsMember(Class<E> t, Expression<E> element, Expression<?> collection) {
+        public IsMember(Expression<E> element, Expression<?> collection) {
             super();
             this.element = (ExpressionImpl<E>)element;
             this.collection = (ExpressionImpl<?>)collection;
         }
         
-        public IsMember(Class<E> t, E element, Expression<?> collection) {
-            this(t, new Constant<E>(element), collection);
-        }
-        
         public IsMember(E element, Expression<?> collection) {
-            this((Class<E>)element.getClass(), element, collection);
+            this(new Constant<E>(element), collection);
         }
         
         @Override
@@ -1567,10 +1558,14 @@ public class Expressions {
             return caseOperand;
         }
 
-        public SimpleCase<C,R> when(C when, Expression<? extends R> then) {
-            whens.add(new Constant<C>(when));
+        public SimpleCase<C,R> when(Expression<C> when, Expression<? extends R> then) {
+            whens.add(when);
             thens.add(then);
             return this;
+        }
+
+        public SimpleCase<C,R> when(C when, Expression<? extends R> then) {
+            return when(new Constant<C>(when), then);
         }
 
         public SimpleCase<C,R> when(C when, R then) {
@@ -1826,29 +1821,6 @@ public class Expressions {
         
         public void acceptVisit(CriteriaExpressionVisitor visitor) {
             Expressions.acceptVisit(visitor, this, _args);
-        }
-    }
-
-    public static class DelegatingExpression<X> extends ExpressionImpl<X> {
-        final ExpressionImpl<? extends X> _delegate;
-        public DelegatingExpression(ExpressionImpl<? extends X> del) {
-            super((Class<X>)del.getJavaType());
-            _delegate = del;
-        }
-        
-        @Override
-        Value toValue(ExpressionFactory factory, MetamodelImpl model, CriteriaQueryImpl<?> q) {
-            return _delegate.toValue(factory, model, q);
-        }
-        
-        @Override
-        public org.apache.openjpa.kernel.exps.Expression toKernelExpression(
-            ExpressionFactory factory, MetamodelImpl model, CriteriaQueryImpl<?> q) {
-            return _delegate.toKernelExpression(factory, model, q);
-        }
-        
-        public void acceptVisit(CriteriaExpressionVisitor visitor) {
-            Expressions.acceptVisit(visitor, this, _delegate);
         }
     }
 }

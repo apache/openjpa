@@ -224,8 +224,8 @@ public class TestMetaModelTypesafeCriteria extends CriteriaTest {
         Root<Customer> c = q.from(Customer.class);
         Join<Customer, Order> o = c.join(customer_.getSet("orders", Order.class));
         Join<Customer, Address> a = c.join(customer_.getSingularAttribute("address", Address.class));
-        Expression<Double> taxedCost = cb.prod(o.get(order_.getSingularAttribute("totalCost", Double.class)), 1.08);
-        taxedCost.alias("taxedCost");
+        Expression<Double> taxedCost = (Expression<Double>)cb.prod(o.get(order_.getSingularAttribute("totalCost", 
+                Double.class)), 1.08).alias("taxedCost");
         q.where(cb.equal(a.get(address_.getSingularAttribute("state", String.class)), "CA"), 
                 cb.equal(a.get(address_.getSingularAttribute("county", String.class)), "Santa Clara"));
         q.multiselect(o.get(order_.getSingularAttribute("quantity", Integer.class)),
@@ -550,8 +550,8 @@ public class TestMetaModelTypesafeCriteria extends CriteriaTest {
         Root<Customer> c = q.from(Customer.class);
         Join<Customer, Order> o = c.join(customer_.getSet("orders",  Order.class));
         Join<Customer, Address> a = c.join(customer_.getSingularAttribute("address", Address.class));
-        Expression<Double> taxedCost = cb.prod(o.get(order_.getSingularAttribute("totalCost", Double.class)), 1.08);
-        taxedCost.alias("taxedCost");
+        Expression<Double> taxedCost = (Expression<Double>)cb.prod(o.get(order_.getSingularAttribute("totalCost", 
+                Double.class)), 1.08).alias("taxedCost");
         q.where(cb.equal(a.get(address_.getSingularAttribute("state", String.class)), "CA"), 
                 cb.equal(a.get(address_.getSingularAttribute("county", String.class)), "Santa Clara"));
         q.orderBy(cb.asc(o.get(order_.getSingularAttribute("quantity", Integer.class))),

@@ -76,7 +76,7 @@ public abstract class CriteriaTest extends AbstractCriteriaTestCase {
         CriteriaTest.auditor = auditor;
     }
 
-    protected CriteriaBuilder getCriteriaBuilder() {
+    protected OpenJPACriteriaBuilder getCriteriaBuilder() {
         return cb;
     }
 

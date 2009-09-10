@@ -23,34 +23,84 @@ import java.util.List;
 import javax.persistence.criteria.Expression;
 import javax.persistence.criteria.Selection;
 
-import org.apache.openjpa.persistence.TupleElementImpl;
-
 /**
- * An item selected in the projection clause of  Criteria query.
+ * An item selected in the projection clause of Criteria query.
+ * Base implementation for all concrete expressions.
  * 
  * @author Pinaki Poddar
  *
  * @param <X>
  */
-public class SelectionImpl<X> extends TupleElementImpl<X> 
-    implements Selection<X>, CriteriaExpression {
+public abstract class SelectionImpl<X> implements Selection<X>, CriteriaExpression {
+    private final Class<X> _cls;
+    private String _alias;
+    private Boolean _autoAliased;
     
+    /**
+     * Construct with the immutable type represented by this selection term.
+     */
     public SelectionImpl(Class<X> cls) {
-        super(cls);
+        _cls = cls;
     }
-
+    
+    /**
+     * Gets the immutable type represented by this selection term.
+     */
+    public Class<X> getJavaType() {
+        return _cls;
+    }
+    
+    /**
+     * Gets the alias set of this selection term.
+     */
+    public String getAlias() {
+        return _alias; 
+    }
+    
+    /**
+     * Sets the alias on this selection term.
+     */
     public Selection<X> alias(String alias) {
-        super.setAlias(alias);
+        _alias = alias;
+        _autoAliased = false;
         return this;
     }
+    
+    /**
+     * Sets the alias of this expression internally. Only valid if the expression is not aliased explicitly
+     * by calling {@linkplain #alias(String)}.
+     */
+    void setAutoAlias(String alias) {
+        if (Boolean.FALSE.equals(_autoAliased))
+            throw new IllegalStateException(this + " has been aliased. Can not set alias automatically");
+        _alias = alias;
+        _autoAliased = true;
+    }
+    
+    /**
+     * Affirms if the alias of this expression is assigned automatically.
+     */
+    boolean isAutoAliased() {
+        return _autoAliased == null ? true : _autoAliased.booleanValue();
+    }  
 
+    /**
+     * Throws IllegalStateException because a selection term, by default, consists of single value.
+     */
     public List<Selection<?>> getCompoundSelectionItems() {
         throw new IllegalStateException(this + " is not a compound selection");
     }
 
+    /**
+     * Returns false because a selection term, by default, consists of single value.
+     */
     public boolean isCompoundSelection() {
         return false;
     }
+    
+    //  ------------------------------------------------------------------------------------
+    //  Contract for CriteriaExpression implemented mostly as a no-op for easier derivation.
+    //  ------------------------------------------------------------------------------------
     
     public StringBuilder asValue(AliasContext q) {
         throw new IllegalStateException(this.getClass().getSimpleName() + " can not be rendered as value");
@@ -60,8 +110,12 @@ public class SelectionImpl<X> extends TupleElementImpl<X>
         throw new IllegalStateException(this.getClass().getSimpleName() + " can not be rendered as variable");
     }
     
+    public final StringBuilder asProjection(AliasContext q) {
+        String as = (isAutoAliased() ? "" : " AS " + getAlias());
+        return asValue(q).append(as);
+    }
+    
     public void acceptVisit(CriteriaExpressionVisitor visitor) {
         Expressions.acceptVisit(visitor, this, (Expression<?>[])null);
     }
-
 }

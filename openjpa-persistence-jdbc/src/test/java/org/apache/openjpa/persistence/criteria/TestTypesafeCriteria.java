@@ -34,6 +34,7 @@ import javax.persistence.criteria.ListJoin;
 import javax.persistence.criteria.MapJoin;
 import javax.persistence.criteria.ParameterExpression;
 import javax.persistence.criteria.Root;
+import javax.persistence.criteria.Selection;
 import javax.persistence.criteria.SetJoin;
 import javax.persistence.criteria.Subquery;
 
@@ -806,8 +807,7 @@ public class TestTypesafeCriteria extends CriteriaTest {
         Root<Customer> c = q.from(Customer.class);
         Join<Customer, Order> o = c.join(Customer_.orders);
         Join<Customer, Address> a = c.join(Customer_.address);
-        Expression<Double> taxedCost = cb.prod(o.get(Order_.totalCost), 1.08);
-        taxedCost.alias("taxedCost");
+        Expression<Double> taxedCost = (Expression<Double>)cb.prod(o.get(Order_.totalCost), 1.08).alias("taxedCost");
         q.where(cb.equal(a.get(Address_.state), "CA"), 
                 cb.equal(a.get(Address_.county), "Santa Clara"));
         q.orderBy(cb.asc(o.get(Order_.quantity)), 
@@ -1259,5 +1259,20 @@ public class TestTypesafeCriteria extends CriteriaTest {
         for (int i = 0; i < jResult.size(); i++) {
             assertEquals(jResult.get(i).getName(), cResult.get(i).getName());
         }
+    }
+    
+    public void testAlias() {
+        String jpql = "SELECT AVG(a.balance) AS x FROM Account a ORDER BY x";
+
+        OpenJPACriteriaQuery<Double> c = cb.createQuery(Double.class);
+        Root<Account> account = c.from(Account.class);
+        Expression<Double> original = cb.avg(account.get(Account_.balance));
+        Expression<Double> aliased = (Expression<Double>)original.alias("x");
+        c.orderBy(cb.asc(aliased));
+        assertSame(original, aliased);
+        assertEquals("x", aliased.getAlias());
+        c.select(aliased);
+        assertEquivalence(c, jpql);
+        assertEquals(jpql, c.toCQL());
     }
 }

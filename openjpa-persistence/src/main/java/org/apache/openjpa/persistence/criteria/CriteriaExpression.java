@@ -19,7 +19,7 @@
 package org.apache.openjpa.persistence.criteria;
 
 /**
- * Interface to support Visitor pattern on Criteria Query nodes.
+ * Interface to support Visitor pattern and CQL conversion of Criteria Query nodes.
  * 
  * @author Pinaki Poddar
  * @since 2.0.0
@@ -42,4 +42,9 @@ public interface CriteriaExpression  {
      * Get a string representation of this node as a variable in the context of the given query.
      */
     StringBuilder asVariable(AliasContext q);
+    
+    /**
+     * Get a string representation of this node as a projection term in the context of the given query.
+     */
+    StringBuilder asProjection(AliasContext q);
 }

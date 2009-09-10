@@ -29,6 +29,7 @@ import javax.persistence.criteria.JoinType;
 import javax.persistence.criteria.ListJoin;
 import javax.persistence.criteria.MapJoin;
 import javax.persistence.criteria.ParameterExpression;
+import javax.persistence.criteria.Path;
 import javax.persistence.criteria.Root;
 import javax.persistence.criteria.SetJoin;
 import javax.persistence.criteria.Subquery;
@@ -41,6 +42,7 @@ public class TestStringCriteria extends CriteriaTest {
         String jpql = "select c from Customer c where c.name='Autowest Toyota'";
         CriteriaQuery<Customer> q = cb.createQuery(Customer.class);
         Root<Customer> customer = q.from(Customer.class);
+        Path<String> path = customer.<String>get("name");
         q.select(customer).where(cb.equal(customer.get("name"), "Autowest Toyota"));
 
         assertEquivalence(q, jpql);
@@ -138,8 +140,8 @@ public class TestStringCriteria extends CriteriaTest {
         SetJoin<Customer, Order> o = c.joinSet("orders");
         Join<Customer, Address> a  = c.join("address");
         q.where(cb.equal(a.get("state"), "CA"), cb.equal(a.get("county"), "Santa Clara"));
-        Expression<Float> productTerm = cb.toFloat(cb.prod(o.get("totalCost").as(Float.class), 1.08));
-        productTerm.alias("taxedCost");
+        Expression<Float> productTerm = (Expression<Float>)cb.toFloat(cb.prod(o.get("totalCost").as(Float.class), 1.08))
+           .alias("taxedCost");
         q.multiselect(o.get("quantity"), productTerm, a.get("zipCode"));
 
         assertEquivalence(q, jpql);
@@ -387,8 +389,8 @@ public class TestStringCriteria extends CriteriaTest {
         SetJoin<Customer, Order> o = c.joinSet("orders");
         Join<Customer, Address> a = c.join("address");
         q.where(cb.equal(a.get("state"), "CA"), cb.equal(a.get("county"), "Santa Clara"));
-        Expression<Float> productTerm = cb.toFloat(cb.prod(o.get("totalCost").as(Float.class), 1.08));
-        productTerm.alias("taxedCost");
+        Expression<Float> productTerm = (Expression<Float>)cb.toFloat(cb.prod(o.get("totalCost").as(Float.class), 1.08))
+            .alias("taxedCost");
         q.orderBy(cb.asc(o.get("quantity")), cb.asc(productTerm), cb.asc(a.get("zipCode")));
         q.multiselect(o.get("quantity"), productTerm, a.get("zipCode"));
 

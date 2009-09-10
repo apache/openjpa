@@ -25,12 +25,13 @@ import org.apache.openjpa.kernel.exps.Value;
 
 /**
  * The context holds named variables for nodes of CriteriaQuery.
- * Creates unique alias for the nodes.
+ * Can create unique alias for the nodes that has not been aliased explicitly.
  *  
  * @author Pinaki Poddar
+ * @since 2.0.0
  *
  */
-public interface AliasContext {
+interface AliasContext {
     /**
      * Gets the alias for the given node.
      * If no alias is set on the given node then create an alias, assign it to
@@ -70,5 +71,4 @@ public interface AliasContext {
      * Return null if the node is not registered.     
      */
     Value getRegisteredValue(Selection<?> node);
-    
 }

@@ -789,5 +789,4 @@ public class TestTypeSafeCondExpression extends CriteriaTest {
         
         assertEquivalence(q, query);
     }
-
 }
