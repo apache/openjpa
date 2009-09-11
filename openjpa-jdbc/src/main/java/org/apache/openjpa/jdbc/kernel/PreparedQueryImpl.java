@@ -42,6 +42,7 @@ import org.apache.openjpa.kernel.QueryLanguages;
 import org.apache.openjpa.kernel.StoreQuery;
 import org.apache.openjpa.kernel.PreparedQueryCache.Exclusion;
 import org.apache.openjpa.kernel.exps.QueryExpressions;
+import org.apache.openjpa.lib.rop.RangeResultObjectProvider;
 import org.apache.openjpa.lib.rop.ResultList;
 import org.apache.openjpa.lib.util.Localizer;
 import org.apache.openjpa.util.ImplHelper;
@@ -212,10 +213,13 @@ public class PreparedQueryImpl implements PreparedQuery {
         if (provider instanceof QueryImpl.PackingResultObjectProvider) {
             provider = ((QueryImpl.PackingResultObjectProvider)provider).getDelegate();
         }
+        if (provider instanceof RangeResultObjectProvider) {
+            provider = ((RangeResultObjectProvider)provider).getDelegate();
+        }
         if (provider instanceof SelectResultObjectProvider) {
             return new Object[]{((SelectResultObjectProvider)provider).getSelect(), null};
         } 
-        return new Object[]{null, _loc.get("exclude-not-select-rop")};
+        return new Object[]{null, _loc.get("exclude-not-select-rop", provider)};
     }
     
     private SelectImpl extractImplementation(SelectExecutor selector) {
