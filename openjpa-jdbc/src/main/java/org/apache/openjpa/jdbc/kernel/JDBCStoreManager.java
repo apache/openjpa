@@ -1524,12 +1524,8 @@ public class JDBCStoreManager
 
         protected Statement createStatement(int rsType, int rsConcur,
             boolean wrap) throws SQLException {
-            return ConcreteClassGenerator.newInstance
-                (cancelStatementImpl,
-                    JDBCStoreManager.class, JDBCStoreManager.this,
-                    Statement.class,
-                        super.createStatement(rsType, rsConcur, false),
-                    Connection.class, RefCountConnection.this);
+            return ConcreteClassGenerator.newInstance(cancelStatementImpl, JDBCStoreManager.this,
+                    super.createStatement(rsType, rsConcur, false), RefCountConnection.this);
         }
 
         protected PreparedStatement prepareStatement(String sql, boolean wrap)
@@ -1542,10 +1538,8 @@ public class JDBCStoreManager
             int rsConcur, boolean wrap) throws SQLException {
             return ConcreteClassGenerator.newInstance
                 (cancelPreparedStatementImpl,
-                    JDBCStoreManager.class, JDBCStoreManager.this,
-                    PreparedStatement.class,
-                        super.prepareStatement(sql, rsType, rsConcur, false),
-                    Connection.class, RefCountConnection.this);
+                    JDBCStoreManager.this, super.prepareStatement(sql, rsType, rsConcur, false),
+                    RefCountConnection.this);
         }
     }
 
