@@ -131,7 +131,6 @@ public class ConcreteClassGenerator {
         } catch (Exception e) {
             throw new ExceptionInInitializerError(e);
         }
-        
     }
     
     /** 
@@ -143,8 +142,7 @@ public class ConcreteClassGenerator {
      *  @param  params     the parameter values
      *  @return            the new instance
      */
-    public static <T> T newInstance(Class<T> c, Class[] paramTypes,
-        Object[] params) {
+    public static <T> T newInstance(Class<T> c, Class<?>[] paramTypes, Object[] params) {
         try {
             return c.getConstructor(paramTypes).newInstance(params);
         } catch (Exception e) {
@@ -162,7 +160,7 @@ public class ConcreteClassGenerator {
     /** 
      *  @see #newInstance(java.lang.Class,java.lang.Class[],java.lang.Object[])
      */
-    public static <T> T newInstance(Class<T> c, Class paramType, Object param) {
+    public static <T,P> T newInstance(Class<T> c, Class<? extends P> paramType, P param) {
         return newInstance(c,
             new Class[] { paramType },
             new Object[] { param });
@@ -171,8 +169,8 @@ public class ConcreteClassGenerator {
     /** 
      *  @see #newInstance(java.lang.Class,java.lang.Class[],java.lang.Object[])
      */
-    public static <T> T newInstance(Class<T> c, Class paramType1, Object param1,
-        Class paramType2, Object param2) {
+    public static <T,P1,P2> T newInstance(Class<T> c, Class<? extends P1> paramType1, P1 param1,
+        Class<? extends P2> paramType2, P2 param2) {
         return newInstance(c,
             new Class[] { paramType1, paramType2 },
             new Object[] { param1, param2 });
@@ -181,8 +179,8 @@ public class ConcreteClassGenerator {
     /** 
      *  @see #newInstance(java.lang.Class,java.lang.Class[],java.lang.Object[])
      */
-    public static <T> T newInstance(Class<T> c, Class paramType1, Object param1,
-        Class paramType2, Object param2, Class paramType3, Object param3) {
+    public static <T,P1,P2,P3> T newInstance(Class<T> c, Class<? extends P1> paramType1, P1 param1,
+        Class<? extends P2> paramType2, P2 param2, Class<? extends P3> paramType3, P3 param3) {
         return newInstance(c,
             new Class[] { paramType1, paramType2, paramType3 },
             new Object[] { param1, param2, param3 });
@@ -191,9 +189,9 @@ public class ConcreteClassGenerator {
     /** 
      *  @see #newInstance(java.lang.Class,java.lang.Class[],java.lang.Object[])
      */
-    public static <T> T newInstance(Class<T> c, Class paramType1, Object param1,
-        Class paramType2, Object param2, Class paramType3, Object param3,
-        Class paramType4, Object param4) {
+    public static <T,P1,P2,P3,P4> T newInstance(Class<T> c, Class<? extends P1> paramType1, P1 param1,
+        Class<? extends P2> paramType2, P2 param2, Class<? extends P3> paramType3, P3 param3,
+        Class<? extends P4> paramType4, P4 param4) {
         return newInstance(c,
             new Class[] { paramType1, paramType2, paramType3, paramType4 },
             new Object[] { param1, param2, param3, param4 });
