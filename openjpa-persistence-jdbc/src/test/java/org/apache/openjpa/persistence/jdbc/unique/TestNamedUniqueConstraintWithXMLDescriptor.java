@@ -24,12 +24,16 @@ import java.util.List;
 import javax.persistence.EntityManager;
 
 import org.apache.openjpa.jdbc.conf.JDBCConfiguration;
+import org.apache.openjpa.jdbc.sql.DBDictionary;
+import org.apache.openjpa.jdbc.sql.MySQLDictionary;
 import org.apache.openjpa.persistence.OpenJPAEntityManagerFactorySPI;
 import org.apache.openjpa.persistence.OpenJPAEntityManagerSPI;
 import org.apache.openjpa.persistence.jdbc.SQLSniffer;
 import org.apache.openjpa.persistence.test.SQLListenerTestCase;
 
 public class TestNamedUniqueConstraintWithXMLDescriptor extends SQLListenerTestCase {
+    DBDictionary dict;
+
     @Override
     public void setUp(Object... props) {
         super.setUp(DROP_TABLES, NamedUniqueA.class, NamedUniqueB.class);
@@ -54,27 +58,39 @@ public class TestNamedUniqueConstraintWithXMLDescriptor extends SQLListenerTestC
         List<String> sqls = super.sql;
         
         assertSQLFragnments(sqls, "CREATE TABLE NX_UNIQUE_A",
-            "ucxa_f1_f2 UNIQUE .*\\(f1x, f2x\\)", 
-            "ucxa_f3_f4 UNIQUE .*\\(f3x, f4x\\).*");
+            getUniqueConstraint("ucxa_f1_f2 UNIQUE .*\\(f1x, f2x\\)"), 
+            getUniqueConstraint("ucxa_f3_f4 UNIQUE .*\\(f3x, f4x\\).*"));
         assertSQLFragnments(sqls, "CREATE TABLE NX_UNIQUE_B",
-            "ucxb_f1_f2 UNIQUE .*\\(f1x, f2x\\).*");
+            getUniqueConstraint("ucxb_f1_f2 UNIQUE .*\\(f1x, f2x\\).*"));
         assertSQLFragnments(sqls, "CREATE TABLE NX_UNIQUE_SECONDARY",
-            "ucxa_sf1 UNIQUE .*\\(sf1x\\)");
+            getUniqueConstraint("ucxa_sf1 UNIQUE .*\\(sf1x\\)"));
         assertSQLFragnments(sqls, "CREATE TABLE NX_UNIQUE_GENERATOR",
-            "ucxb_gen1_gen2 UNIQUE .*\\(GEN1_XML, GEN2_XML\\)");
+            getUniqueConstraint("ucxb_gen1_gen2 UNIQUE .*\\(GEN1_XML, GEN2_XML\\)"));
         assertSQLFragnments(sqls, "CREATE TABLE NX_UNIQUE_JOINTABLE",
-            "ucxa_fka_fkb UNIQUE .*\\(FK_A_XML, FK_B_XML\\)");
+            getUniqueConstraint("ucxa_fka_fkb UNIQUE .*\\(FK_A_XML, FK_B_XML\\)"));
         assertSQLFragnments(sqls, "CREATE TABLE NX_U_COLL_TBL",
-            "ucxb_f3 UNIQUE .*\\(f3x\\).*");
-
+            getUniqueConstraint("ucxb_f3 UNIQUE .*\\(f3x\\).*"));
     }
         
     private boolean supportsUniqueConstraints() {
         OpenJPAEntityManagerFactorySPI emfs = (OpenJPAEntityManagerFactorySPI)emf;
         JDBCConfiguration jdbccfg = (JDBCConfiguration)emfs.getConfiguration();
-        return jdbccfg.getDBDictionaryInstance().supportsUniqueConstraints;
+        dict = jdbccfg.getDBDictionaryInstance();
+        return dict.supportsUniqueConstraints;
     }
 
+    private String getUniqueConstraint(String unique) {
+        if (dict instanceof MySQLDictionary) {
+            //CREATE TABLE N_UNIQUE_A (aid INTEGER NOT NULL, f1 INTEGER NOT NULL, f2 INTEGER NOT NULL, 
+            //f3 INTEGER NOT NULL, f4 INTEGER NOT NULL, f5 INTEGER, f6 INTEGER, PRIMARY KEY (aid), 
+            //UNIQUE U_N_UNQU__F1 (f1), 
+            //UNIQUE uca_f1_f2 (f1, f2), 
+            //UNIQUE uca_f3_f4 (f3, f4)) TYPE = innodb
+            return TestNamedUniqueConstraint.getUniqueConstraint(dict, unique);
+        }
+        return unique;
+    }
+    
     void assertSQLFragnments(List<String> list, String... keys) {
         if (SQLSniffer.matches(list, keys))
             return;
