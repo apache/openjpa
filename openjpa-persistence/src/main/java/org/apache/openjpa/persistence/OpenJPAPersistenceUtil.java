@@ -61,7 +61,7 @@ public class OpenJPAPersistenceUtil {
             PersistenceCapable pc = (PersistenceCapable)entity;
             // Per contract, if not managed by the owning emf, return null.
             if (emf != null) {
-                if (!OpenJPAPersistenceUtil.isManagedBy(emf, pc)) {
+                if (!isManagedBy(emf, pc)) {
                     return null;
                 }
             }
@@ -77,14 +77,13 @@ public class OpenJPAPersistenceUtil {
 
     /**
      * Determines whether the specified state manager is managed by a broker
-     * within the persistence unit of this util instance.
+     * within the persistence unit of this utility instance.
      * @param sm StateManager
      * @return true if this state manager is managed by a broker within
      * this persistence unit.
      */
-    public static boolean isManagedBy(OpenJPAEntityManagerFactory emf, 
-        Object entity) {
-        if (emf == null || !emf.isOpen()) {
+    public static boolean isManagedBy(OpenJPAEntityManagerFactory emf, Object entity) {
+        if (emf == null || !emf.isOpen() || !ImplHelper.isManageable(entity)) {
             return false;
         }
         Object abfobj = JPAFacadeHelper.toBrokerFactory(emf);
@@ -93,21 +92,19 @@ public class OpenJPAPersistenceUtil {
         }
         if (abfobj instanceof AbstractBrokerFactory) {
             AbstractBrokerFactory abf = (AbstractBrokerFactory)abfobj;
-            Collection<?> brokers = abf.getOpenBrokers();
+            Collection<Broker> brokers = abf.getOpenBrokers();
             if (brokers == null || brokers.size() == 0) {
                 return false;
             }
             // Cycle through all brokers managed by this factory.  
-            Broker[] brokerArr = brokers.toArray(new Broker[brokers.size()]);
-            for (Broker broker : brokerArr) {
-                if (broker != null && !broker.isClosed())
-                    if (ImplHelper.isManageable(entity)) {
-                        PersistenceCapable pc = (PersistenceCapable)entity;
-                        // Vfy this broker is managing the entity
-                        if (pc.pcGetGenericContext() == broker) {
-                            return true;
-                        }
+            for (Broker broker : brokers) {
+                if (broker != null && !broker.isClosed()) {
+                    PersistenceCapable pc = (PersistenceCapable)entity;
+                    // Verify this broker is managing the entity
+                    if (pc.pcGetGenericContext() == broker) {
+                        return true;
                     }
+                }
             }
         }
         return false;
@@ -140,8 +137,7 @@ public class OpenJPAPersistenceUtil {
      *         entity manager factory, or if it does not contain the persistent
      *         attribute.
      */
-    public static LoadState isLoaded(OpenJPAEntityManagerFactory emf, 
-        Object obj, String attr) {
+    public static LoadState isLoaded(OpenJPAEntityManagerFactory emf, Object obj, String attr) {
 
         if (obj == null) {
             return LoadState.UNKNOWN;
