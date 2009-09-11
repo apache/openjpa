@@ -4,6 +4,7 @@ import javax.persistence.criteria.From;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.QueryBuilder;
 import javax.persistence.metamodel.Attribute;
+import javax.persistence.metamodel.Metamodel;
 
 /**
  * OpenJPA-specific extension to JPA 2.0 Criteria Query Builder API.
@@ -57,5 +58,9 @@ public interface OpenJPACriteriaBuilder extends QueryBuilder {
      * Create a mutable style to apply on query-by-example.
      */
     public ComparisonStyle qbeStyle();
-
+    
+    /**
+     * Gets the metamodel for the managed, persistent domain entities.
+     */
+    public Metamodel getMetamodel();
 }

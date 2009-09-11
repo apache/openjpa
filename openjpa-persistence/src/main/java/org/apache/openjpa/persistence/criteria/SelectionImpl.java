@@ -23,6 +23,8 @@ import java.util.List;
 import javax.persistence.criteria.Expression;
 import javax.persistence.criteria.Selection;
 
+import org.apache.openjpa.persistence.util.ReservedWords;
+
 /**
  * An item selected in the projection clause of Criteria query.
  * Base implementation for all concrete expressions.
@@ -34,7 +36,7 @@ import javax.persistence.criteria.Selection;
 public abstract class SelectionImpl<X> implements Selection<X>, CriteriaExpression {
     private final Class<X> _cls;
     private String _alias;
-    private Boolean _autoAliased;
+    private Boolean _autoAliased; 
     
     /**
      * Construct with the immutable type represented by this selection term.
@@ -59,8 +61,13 @@ public abstract class SelectionImpl<X> implements Selection<X>, CriteriaExpressi
     
     /**
      * Sets the alias on this selection term.
+     * Alias can only be set once.
      */
     public Selection<X> alias(String alias) {
+        assertValidName(alias);
+        if (isAliased())
+            throw new IllegalStateException(this + " has been aliased to [" + _alias 
+                    + ". Can not alias again to " + alias);
         _alias = alias;
         _autoAliased = false;
         return this;
@@ -71,8 +78,8 @@ public abstract class SelectionImpl<X> implements Selection<X>, CriteriaExpressi
      * by calling {@linkplain #alias(String)}.
      */
     void setAutoAlias(String alias) {
-        if (Boolean.FALSE.equals(_autoAliased))
-            throw new IllegalStateException(this + " has been aliased. Can not set alias automatically");
+        if (isAliased())
+            throw new IllegalStateException(this + " has been aliased. Can not set alias internally");
         _alias = alias;
         _autoAliased = true;
     }
@@ -82,6 +89,15 @@ public abstract class SelectionImpl<X> implements Selection<X>, CriteriaExpressi
      */
     boolean isAutoAliased() {
         return _autoAliased == null ? true : _autoAliased.booleanValue();
+    }  
+    
+    /**
+     * Affirms if this expression has been assigned an alias by {@linkplain #alias(String)} method.
+     * An alias can be assigned also by internal implementation.
+     * @see #isAutoAliased() 
+     */
+    boolean isAliased() {
+        return Boolean.FALSE.equals(_autoAliased);
     }  
 
     /**
@@ -96,6 +112,16 @@ public abstract class SelectionImpl<X> implements Selection<X>, CriteriaExpressi
      */
     public boolean isCompoundSelection() {
         return false;
+    }
+    
+    void assertValidName(String name) {
+        if (name == null || name.trim().length() == 0)
+            throw new IllegalArgumentException("empty name is invalid");
+        if (ReservedWords.isKeyword(name)) 
+            throw new IllegalArgumentException("reserved word " + name + " is not valid");
+        Character ch = ReservedWords.hasSpecialCharacter(name);
+        if (ch != null) 
+            throw new IllegalArgumentException(name + " contains reserved symbol " + ch);
     }
     
     //  ------------------------------------------------------------------------------------

@@ -1261,7 +1261,7 @@ public class TestTypesafeCriteria extends CriteriaTest {
         }
     }
     
-    public void testAlias() {
+    public void testAliasInOrderByClause() {
         String jpql = "SELECT AVG(a.balance) AS x FROM Account a ORDER BY x";
 
         OpenJPACriteriaQuery<Double> c = cb.createQuery(Double.class);
@@ -1275,4 +1275,63 @@ public class TestTypesafeCriteria extends CriteriaTest {
         assertEquivalence(c, jpql);
         assertEquals(jpql, c.toCQL());
     }
+    
+    public void testRealiasNotAllowed() {
+        OpenJPACriteriaQuery<Double> c = cb.createQuery(Double.class);
+        Root<Account> account = c.from(Account.class);
+        Selection<Double> term = cb.avg(account.get(Account_.balance));
+        term.alias("firsttime");
+        try {
+            term.alias("secondtime");
+            fail("Expected to fail on re-aliasing");
+        } catch (IllegalStateException e) {
+            // good
+        }
+    }
+    
+    public void testInvalidAliasNotAllowed() {
+        OpenJPACriteriaQuery<Double> c = cb.createQuery(Double.class);
+        Root<Account> account = c.from(Account.class);
+        Selection<Double> term = cb.avg(account.get(Account_.balance));
+        try {
+            term.alias("from");
+            fail("Expected to fail on reserved word as alias");
+        } catch (IllegalArgumentException e) {
+            // good
+            assertNull(term.getAlias());
+        }
+        try {
+            term.alias(" with a space");
+            fail("Expected to fail on invalid alias");
+        } catch (IllegalArgumentException e) {
+            // good
+            assertNull(term.getAlias());
+        }
+        try {
+            term.alias(" with?known_symbol");
+            fail("Expected to fail on invalid alias");
+        } catch (IllegalArgumentException e) {
+            // good
+            assertNull(term.getAlias());
+        }
+    }
+    
+    public void testInvalidParameterName() {
+        try {
+            cb.parameter(Integer.class, "from");
+            fail("Expected to fail on reserved word as alias");
+        } catch (IllegalArgumentException e) {
+        }
+        try {
+            cb.parameter(Integer.class, ":name");
+            fail("Expected to fail on invalid alias");
+        } catch (IllegalArgumentException e) {
+        }
+        try {
+            cb.parameter(Integer.class, "?3");
+            fail("Expected to fail on invalid alias");
+        } catch (IllegalArgumentException e) {
+        }
+    }
+
 }

@@ -52,6 +52,8 @@ public class ParameterExpressionImpl<T> extends ExpressionImpl<T>
 	 */
     public ParameterExpressionImpl(Class<T> cls, String name) {
         super(cls);
+        if (name != null)
+            assertValidName(name);
         _name = name;
     }
 
