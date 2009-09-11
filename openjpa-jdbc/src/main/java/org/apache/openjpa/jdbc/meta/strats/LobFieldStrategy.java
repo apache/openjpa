@@ -135,7 +135,7 @@ public class LobFieldStrategy extends AbstractFieldStrategy {
                     (row, field.getColumns()[0], store, ob, sel);
             } else {
                 store.getDBDictionary().insertClobForStreamingLoad
-                    (row, field.getColumns()[0], sel);
+                    (row, field.getColumns()[0], ob);
             }
         }
     }
