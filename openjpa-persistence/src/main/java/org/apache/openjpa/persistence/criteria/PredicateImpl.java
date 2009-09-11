@@ -47,8 +47,8 @@ public abstract class PredicateImpl extends ExpressionImpl<Boolean> implements P
     public static final Predicate FALSE = new Expressions.NotEqual(ONE,ONE);
     
     protected final List<Predicate> _exps = new ArrayList<Predicate>();
-    protected final BooleanOperator _op;
-    protected boolean _negated = false;
+    private final BooleanOperator _op;
+    private boolean _negated = false;
 
     /**
      * A predicate no arguments representing AND operator.

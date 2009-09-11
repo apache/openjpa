@@ -65,7 +65,7 @@ import org.apache.openjpa.util.InternalException;
  * 
  */
 public class MetamodelImpl implements Metamodel, Resolver {
-    public final MetaDataRepository repos;
+    private final MetaDataRepository repos;
     private Map<Class<?>, Type<?>> _basics = new HashMap<Class<?>, Type<?>>();
     private Map<Class<?>, EntityType<?>> _entities = new HashMap<Class<?>, EntityType<?>>();
     private Map<Class<?>, EmbeddableType<?>> _embeddables = new HashMap<Class<?>, EmbeddableType<?>>();
@@ -99,6 +99,10 @@ public class MetamodelImpl implements Metamodel, Resolver {
             default:
             }
         }
+    }
+    
+    public MetaDataRepository getRepository() {
+        return repos;
     }
 
     /**
@@ -267,7 +271,7 @@ public class MetamodelImpl implements Metamodel, Resolver {
         return result;
     }
 
-    public static CollectionType categorizeCollection(Class<?> cls) {
+    static CollectionType categorizeCollection(Class<?> cls) {
         if (Set.class.isAssignableFrom(cls))
             return CollectionType.SET;
         if (List.class.isAssignableFrom(cls))

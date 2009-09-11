@@ -96,14 +96,14 @@ public class CriteriaExpressionBuilder {
             for (Join<?,?> join : root.getJoins()) {
                 Class<?> cls = join.getAttribute().getJavaType();
                 if (join.getAttribute().isAssociation()) {
-                    ClassMetaData meta = metamodel.repos.getMetaData(cls, null, true);
+                    ClassMetaData meta = metamodel.getRepository().getMetaData(cls, null, true);
                     PersistenceType type = MetamodelImpl.getPersistenceType(meta);
                     if (type == PersistenceType.ENTITY || type == PersistenceType.EMBEDDABLE) 
                         metas.add(meta);
                 }
             }
             for (Fetch<?,?> fetch : root.getFetches()) {
-                metas.add(metamodel.repos.getCachedMetaData(fetch.getAttribute().getJavaType()));
+                metas.add(metamodel.getRepository().getCachedMetaData(fetch.getAttribute().getJavaType()));
             }
         }
         exps.accessPath = metas.toArray(new ClassMetaData[metas.size()]);

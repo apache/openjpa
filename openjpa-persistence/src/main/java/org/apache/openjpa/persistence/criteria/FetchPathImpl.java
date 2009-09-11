@@ -40,8 +40,8 @@ import org.apache.openjpa.persistence.meta.Members;
  * @param <X> type of this
  */
 public class FetchPathImpl<Z,X> extends PathImpl<Z,X> implements Fetch<Z, X> {
-    Set<Fetch<?,?>> _fetches;
-    JoinType joinType;
+    protected Set<Fetch<?,?>> _fetches;
+    protected JoinType joinType;
     
     
     FetchPathImpl(FetchParent<?,Z> parent, Members.Member<? super Z,X> member) {

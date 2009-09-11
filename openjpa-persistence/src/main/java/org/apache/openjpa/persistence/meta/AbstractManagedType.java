@@ -783,30 +783,30 @@ public abstract class AbstractManagedType<X> extends Types.BaseType<X>
         return null;
     }
     
-    public static <T, C extends java.util.Collection<E>, E> C filter(Collection<T> original, 
+    static <T, C extends java.util.Collection<E>, E> C filter(Collection<T> original, 
             C result, Filter<T> f1) {
         return filter(original, result, f1, null, null, null);
     }
     
-    public static <T, C extends java.util.Collection<E>, E> C filter(Collection<T> original, 
+    static <T, C extends java.util.Collection<E>, E> C filter(Collection<T> original, 
             C result, Filter<T> f1, Filter<T> f2) {
         return filter(original, result, f1, f2, null, null);
     }
     
-    public static <T, C extends java.util.Collection<E>, E> C filter(Collection<T> original, 
+    static <T, C extends java.util.Collection<E>, E> C filter(Collection<T> original, 
             C result, Filter<T> f1, Filter<T> f2, Filter<T> f3) {
         return filter(original, result, f1, f2, f3, null);
     }
     
-    public static <T> T pick(Collection<T> original, Filter<T> f1) {
+    static <T> T pick(Collection<T> original, Filter<T> f1) {
         return pick(original, f1, null, null, null);
     }
 
-    public static <T> T pick(Collection<T> original, Filter<T> f1, Filter<T> f2) {
+    static <T> T pick(Collection<T> original, Filter<T> f1, Filter<T> f2) {
         return pick(original, f1, f2, null, null);
     }
     
-    public static <T> T pick(Collection<T> original, Filter<T> f1, Filter<T> f2, Filter<T> f3) {
+    static <T> T pick(Collection<T> original, Filter<T> f1, Filter<T> f2, Filter<T> f3) {
         return pick(original, f1, f2, f3, null);
     }
     

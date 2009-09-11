@@ -181,7 +181,7 @@ public class PathImpl<Z,X> extends ExpressionImpl<X> implements Path<X> {
             }
         } else if (_parent == null) {
             path = factory.newPath();
-            path.setMetaData(model.repos.getCachedMetaData(getJavaType()));
+            path.setMetaData(model.getRepository().getCachedMetaData(getJavaType()));
         }
         if (_member != null && !_member.isCollection()) {
             path.setImplicitType(getJavaType());

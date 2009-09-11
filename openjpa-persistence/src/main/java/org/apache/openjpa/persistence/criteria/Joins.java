@@ -270,8 +270,8 @@ public abstract class Joins {
      * 
      */
     public static abstract class AbstractCollection<Z,C,E> extends FromImpl<Z,E> implements PluralJoin<Z, C, E> {
-        final JoinType joinType;
-        boolean allowNull = false;
+        private final JoinType joinType;
+        private boolean allowNull = false;
         
         public AbstractCollection(FromImpl<?,Z> from, Members.PluralAttributeImpl<? super Z, C, E> member, 
             JoinType jt) {
@@ -553,8 +553,8 @@ public abstract class Joins {
     
        
    public static class MapKey<Z,K> extends PathImpl<Z,K> {
-       Map<?,K,?> map;
-       MapAttributeImpl<Z, K, ?> attr;
+       private final Map<?,K,?> map;
+       private final MapAttributeImpl<Z, K, ?> attr;
        
        public MapKey(Map<Z,K,?> joinMap){
            super(((MapAttribute<Z, K, ?>)joinMap.getAttribute()).getKeyJavaType());
@@ -588,7 +588,7 @@ public abstract class Joins {
    }
        
    public static class MapEntry<K,V> extends ExpressionImpl<java.util.Map.Entry<K,V>> {
-       Map<?,K,V> map;
+       private final Map<?,K,V> map;
        
        public MapEntry(Map<?,K,V> joinMap){
            super(((MapAttribute)joinMap.getAttribute()).getJavaType());

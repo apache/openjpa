@@ -86,7 +86,7 @@ public class TestMetamodel extends SingleEMFTestCase {
         Class<?> mCls = m.getJavaType();
         assertSame(ImplicitFieldAccessSubclass.class, mCls);
         
-        Class<?> m2Cls = model.repos.getMetaModel(mCls, true);
+        Class<?> m2Cls = model.getRepository().getMetaModel(mCls, true);
         assertNotNull(m2Cls);
         try {
             Field f2 = getStaticField(m2Cls, "base");
