@@ -129,5 +129,9 @@ public class RangeResultObjectProvider implements ResultObjectProvider {
     public void handleCheckedException(Exception e) {
         _delegate.handleCheckedException(e);
     }
+    
+    public ResultObjectProvider getDelegate() {
+        return _delegate;
+    }
 }
 
