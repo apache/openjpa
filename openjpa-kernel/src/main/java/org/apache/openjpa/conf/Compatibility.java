@@ -62,7 +62,7 @@ public class Compatibility {
     private boolean _privatePersistentProperties = false;
     private boolean _autoOff = true;
     private boolean _superclassDiscriminatorStrategyByDefault = true;
-    private boolean _isAbstractMappingUniDirectional = true;
+    private boolean _isAbstractMappingUniDirectional = false;
     
     /**
      * Whether to require exact identity value types when creating object

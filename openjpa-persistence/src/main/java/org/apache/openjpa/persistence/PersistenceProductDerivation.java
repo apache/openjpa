@@ -177,15 +177,16 @@ public class PersistenceProductDerivation
         conf.nontransactionalWrite.setDefault("true");
         conf.nontransactionalWrite.set(true);
         int specVersion = ((OpenJPAConfiguration) c).getSpecificationInstance().getVersion();
+        Compatibility compatibility = conf.getCompatibilityInstance();
         if (specVersion < 2) {
-            Compatibility compatibility = conf.getCompatibilityInstance();
-            compatibility.setFlushBeforeDetach(true);
+             compatibility.setFlushBeforeDetach(true);
             compatibility.setCopyOnDetach(true);
             compatibility.setPrivatePersistentProperties(true);
-            compatibility.setAbstractMappingUniDirectional(false);
             // Disable bean validation for spec level < 2 configurations
             conf.validationMode.set(String.valueOf(ValidationMode.NONE));
-        } 
+        } else {
+            compatibility.setAbstractMappingUniDirectional(true);
+        }
         return true;
     }
 
