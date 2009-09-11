@@ -21,6 +21,7 @@ package org.apache.openjpa.jdbc.kernel.exps;
 import java.util.Map;
 
 import org.apache.openjpa.jdbc.schema.Column;
+import org.apache.openjpa.jdbc.sql.DBDictionary;
 import org.apache.openjpa.jdbc.sql.SQLBuffer;
 import org.apache.openjpa.jdbc.sql.Select;
 import org.apache.openjpa.kernel.exps.ExpressionVisitor;
@@ -103,8 +104,12 @@ class MatchesExpression
             buf.append(" LIKE ").appendValue(str, col);
 
             // escape out characters by using the database's escape sequence
-            if (_escape != null)
+            DBDictionary dict = ctx.store.getDBDictionary();
+            if (_escape != null && _escape.equals("\\")) {
+                buf.append(" ESCAPE '").append(dict.searchStringEscape).append("'");
+            } else
                 buf.append(" ESCAPE '").append(_escape).append("'");
+            
         }
         sel.append(buf, state.joins);
     }
