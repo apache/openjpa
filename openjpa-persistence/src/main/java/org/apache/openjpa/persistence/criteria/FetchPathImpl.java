@@ -18,7 +18,6 @@
  */
 package org.apache.openjpa.persistence.criteria;
 
-import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -39,7 +38,7 @@ import org.apache.openjpa.persistence.meta.Members;
  * @param <Z> type of parent
  * @param <X> type of this
  */
-public class FetchPathImpl<Z,X> extends PathImpl<Z,X> implements Fetch<Z, X> {
+class FetchPathImpl<Z,X> extends PathImpl<Z,X> implements Fetch<Z, X> {
     protected Set<Fetch<?,?>> _fetches;
     protected JoinType joinType;
     

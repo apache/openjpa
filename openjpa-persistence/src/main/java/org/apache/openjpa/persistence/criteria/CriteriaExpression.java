@@ -24,7 +24,7 @@ package org.apache.openjpa.persistence.criteria;
  * @author Pinaki Poddar
  * @since 2.0.0
  */
-public interface CriteriaExpression  {
+interface CriteriaExpression  {
     /**
      * Accept visit from the given visitor. The receiver is responsible 
      * to propagate the visitor to the constituent sub-nodes if any.

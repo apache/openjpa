@@ -65,7 +65,7 @@ import org.apache.openjpa.persistence.meta.Types;
  *
  * @since 2.0.0
  */
-public class CriteriaQueryImpl<T> implements OpenJPACriteriaQuery<T>, AliasContext {
+class CriteriaQueryImpl<T> implements OpenJPACriteriaQuery<T>, AliasContext {
     private static final Localizer _loc = Localizer.forPackage(CriteriaQueryImpl.class);
     
     private final MetamodelImpl  _model;
@@ -618,13 +618,14 @@ public class CriteriaQueryImpl<T> implements OpenJPACriteriaQuery<T>, AliasConte
      * and, most importantly, collects all the parameters so that they can be bound to
      * the executable query. 
      */
-    public void compile() {
+    public OpenJPACriteriaQuery<T> compile() {
         if (_compiled)
-            return;
+            return this;
         assertRoot();
         assertSelection();
         collectParameters(new CriteriaExpressionVisitor.ParameterVisitor(this));
         _compiled = true;
+        return this;
     }
     
     private void collectParameters(CriteriaExpressionVisitor visitor) {

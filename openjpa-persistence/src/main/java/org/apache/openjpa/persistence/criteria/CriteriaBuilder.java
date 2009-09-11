@@ -36,7 +36,6 @@ import javax.persistence.criteria.From;
 import javax.persistence.criteria.Order;
 import javax.persistence.criteria.ParameterExpression;
 import javax.persistence.criteria.Predicate;
-import javax.persistence.criteria.QueryBuilder;
 import javax.persistence.criteria.Selection;
 import javax.persistence.criteria.Subquery;
 import javax.persistence.metamodel.Attribute;
@@ -498,12 +497,10 @@ public class CriteriaBuilder implements OpenJPACriteriaBuilder, ExpressionParser
 
     public <Y> Expression<Y> nullif(Expression<Y> x, Expression<?> y) {
         return new Expressions.Nullif(x, y);
-
     }
 
     public <Y> Expression<Y> nullif(Expression<Y> x, Y y) {
         return new Expressions.Nullif(x, y);
-
     }
 
     public Predicate or(Predicate... restrictions) {
@@ -688,7 +685,7 @@ public class CriteriaBuilder implements OpenJPACriteriaBuilder, ExpressionParser
     }
 
     public Predicate isNotNull(Expression<?> x) {
-        return new Expressions.IsNotNull((ExpressionImpl<?> )x);
+        return new Expressions.IsNotNull((ExpressionImpl<?>)x);
     }
 
     public Predicate isNull(Expression<?> x) {

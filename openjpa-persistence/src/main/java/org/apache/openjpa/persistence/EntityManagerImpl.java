@@ -29,11 +29,9 @@ import java.io.ObjectOutputStream;
 import java.io.ObjectStreamClass;
 import java.lang.reflect.Array;
 import java.lang.reflect.Method;
-import java.sql.Connection;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.EnumSet;
-import java.util.HashMap;
 import java.util.IdentityHashMap;
 import java.util.Map;
 import java.util.Set;
@@ -47,7 +45,6 @@ import javax.persistence.Query;
 import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.ParameterExpression;
-import javax.persistence.criteria.QueryBuilder;
 import javax.persistence.metamodel.Metamodel;
 
 import org.apache.commons.lang.StringUtils;
@@ -80,14 +77,12 @@ import org.apache.openjpa.meta.FieldMetaData;
 import org.apache.openjpa.meta.QueryMetaData;
 import org.apache.openjpa.meta.SequenceMetaData;
 import org.apache.openjpa.persistence.criteria.CriteriaBuilder;
-import org.apache.openjpa.persistence.criteria.CriteriaExpressionVisitor;
-import org.apache.openjpa.persistence.criteria.CriteriaQueryImpl;
+import org.apache.openjpa.persistence.criteria.OpenJPACriteriaQuery;
 import org.apache.openjpa.persistence.validation.ValidationUtils;
 import org.apache.openjpa.util.Exceptions;
 import org.apache.openjpa.util.ImplHelper;
 import org.apache.openjpa.util.RuntimeExceptionTranslator;
 import org.apache.openjpa.util.UserException;
-import org.apache.openjpa.util.WrappedException;
 
 import serp.util.Strings;
 
@@ -1543,12 +1538,11 @@ public class EntityManagerImpl
      * Compile to register the parameters in this query.
      */
     public <T> TypedQuery<T> createQuery(CriteriaQuery<T> criteriaQuery) {
-        CriteriaQueryImpl<T> impl = (CriteriaQueryImpl<T>)criteriaQuery;
-        impl.compile(); // important to collect parameters to be set on executable query
+        ((OpenJPACriteriaQuery<T>)criteriaQuery).compile(); 
         
         org.apache.openjpa.kernel.Query kernelQuery =_broker.newQuery(CriteriaBuilder.LANG_CRITERIA, criteriaQuery);
         QueryImpl<T> facadeQuery = new QueryImpl<T>(this, _ret, kernelQuery);
-        Set<ParameterExpression<?>> params = impl.getParameters();
+        Set<ParameterExpression<?>> params = criteriaQuery.getParameters();
         
         for (ParameterExpression<?> param : params) {
             facadeQuery.declareParameter(param, param);

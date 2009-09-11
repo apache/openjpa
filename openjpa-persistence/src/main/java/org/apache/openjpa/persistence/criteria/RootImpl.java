@@ -34,11 +34,14 @@ import org.apache.openjpa.persistence.meta.Types;
 /**
  * A root path without a parent.
  * 
- * @author Pinaki Poddar
- *
  * @param <X> the type of the entity
+ *
+ * @author Pinaki Poddar
+ * @author Fay Wang
+ * 
+ * @since 2.0.0
  */
-public class RootImpl<X> extends FromImpl<X,X> implements Root<X> {
+class RootImpl<X> extends FromImpl<X,X> implements Root<X> {
     private final Types.Entity<X> _entity;
         
     public RootImpl(Types.Entity<X> type) {
@@ -65,8 +68,7 @@ public class RootImpl<X> extends FromImpl<X,X> implements Root<X> {
      * Convert this path to a kernel path value.
      */
     @Override
-    public Value toValue(ExpressionFactory factory, MetamodelImpl model, 
-        CriteriaQueryImpl<?> c) {
+    public Value toValue(ExpressionFactory factory, CriteriaQueryImpl<?> c) {
         SubqueryImpl<?> subquery = c.getDelegator();
         Path var = null;
         Value val = null;
@@ -92,8 +94,8 @@ public class RootImpl<X> extends FromImpl<X,X> implements Root<X> {
      */
     @Override
     public org.apache.openjpa.kernel.exps.Expression toKernelExpression(
-        ExpressionFactory factory, MetamodelImpl model, CriteriaQueryImpl<?> c) {
-        Value path = toValue(factory, model, c);
+        ExpressionFactory factory, CriteriaQueryImpl<?> c) {
+        Value path = toValue(factory, c);
         Value var = factory.newBoundVariable(c.getAlias(this), 
              _entity.meta.getDescribedType());
         return factory.bindVariable(var, path);

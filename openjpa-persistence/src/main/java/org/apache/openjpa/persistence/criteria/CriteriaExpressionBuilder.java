@@ -51,7 +51,6 @@ import org.apache.openjpa.persistence.TupleImpl;
 import org.apache.openjpa.persistence.meta.AbstractManagedType;
 import org.apache.openjpa.persistence.meta.Members;
 import org.apache.openjpa.persistence.meta.MetamodelImpl;
-import org.apache.openjpa.persistence.meta.Types;
 
 /**
  * Converts expressions of a CriteriaQuery to kernel Expression.
@@ -62,25 +61,22 @@ import org.apache.openjpa.persistence.meta.Types;
  * 
  * @since 2.0.0
  */
-public class CriteriaExpressionBuilder {
+class CriteriaExpressionBuilder {
     
     public QueryExpressions getQueryExpressions(ExpressionFactory factory, CriteriaQueryImpl<?> q) {
         QueryExpressions exps = new QueryExpressions();
         exps.setContexts(q.getContexts());
 
         evalAccessPaths(exps, factory, q);
-        //exps.alias = null;      // String   
+        exps.alias = null;      // String   
         evalDistinct(exps, factory, q);
         evalFetchJoin(exps, factory, q);
         evalCrossJoinRoots(exps, factory, q);
         evalFilter(exps, factory, q);
-
         evalGrouping(exps, factory, q);
-        
         evalOrderingAndProjection(exps, factory, q);
-
         exps.operation = QueryOperations.OP_SELECT;
-        //exps.range = null; // Value[]
+        exps.range = QueryExpressions.EMPTY_VALUES;
         exps.resultClass = q.getResultType();
         exps.shape = evalResultShape(q);
         exps.parameterTypes = q.getParameterTypes();
@@ -141,7 +137,7 @@ public class CriteriaExpressionBuilder {
         for (int i = 0; i < ordercount; i++) {
             OrderImpl order = (OrderImpl)orders.get(i);
             ExpressionImpl<?> expr = order.getExpression();
-            Value val = Expressions.toValue(expr, factory, model, q);
+            Value val = Expressions.toValue(expr, factory, q);
             exps.ordering[i] = val;
             String alias = expr.getAlias();
             exps.orderingAliases[i] = alias;
@@ -165,10 +161,10 @@ public class CriteriaExpressionBuilder {
         exps.grouping = new Value[groupByCount];
         for (int i = 0; i < groupByCount; i++) {
             Expression<?> groupBy = groups.get(i);    
-            exps.grouping[i] = Expressions.toValue((ExpressionImpl<?>)groupBy, factory, model, q);;
+            exps.grouping[i] = Expressions.toValue((ExpressionImpl<?>)groupBy, factory, q);;
         }
 
-        exps.having = having == null ? null : having.toKernelExpression(factory, model, q);
+        exps.having = having == null ? null : having.toKernelExpression(factory, q);
     }
 
     protected void evalDistinct(QueryExpressions exps, ExpressionFactory factory, CriteriaQueryImpl<?> q) {
@@ -203,7 +199,7 @@ public class CriteriaExpressionBuilder {
             for (Root<?> root : roots) {
                 for (Join<?, ?> join : root.getJoins()) {
                     filter = Expressions.and(factory, 
-                            ((ExpressionImpl<?>)join).toKernelExpression(factory, model, q), filter);
+                            ((ExpressionImpl<?>)join).toKernelExpression(factory, q), filter);
                 }
                 ((RootImpl<?>)root).addToContext(factory, model, q);
             }
@@ -212,12 +208,12 @@ public class CriteriaExpressionBuilder {
             List<Join<?,?>> corrJoins = subQuery.getCorrelatedJoins();
             for (int i = 0; corrJoins != null && i < corrJoins.size(); i++) {
                 filter = Expressions.and(factory, ((ExpressionImpl<?>)corrJoins.get(i))
-                        .toKernelExpression(factory, model, q), filter);
+                        .toKernelExpression(factory, q), filter);
             }
         }
         
         if (where != null) {
-            filter = Expressions.and(factory, where.toKernelExpression(factory, model, q), filter);
+            filter = Expressions.and(factory, where.toKernelExpression(factory, q), filter);
         }
         if (filter == null) {
             filter = factory.emptyExpression();
@@ -274,7 +270,7 @@ public class CriteriaExpressionBuilder {
                     clauses, factory, q, model, exp2Vals);
             } else {
                 Value val = (exp2Vals != null && exp2Vals.containsKey(s) 
-                        ? exp2Vals.get(s) : ((ExpressionImpl<?>)s).toValue(factory, model, q));
+                        ? exp2Vals.get(s) : ((ExpressionImpl<?>)s).toValue(factory, q));
                 String alias = s.getAlias();
                 val.setAlias(alias);
                 projections.add(val);

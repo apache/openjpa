@@ -27,7 +27,7 @@ import javax.persistence.criteria.Order;
  * @author Pinaki Poddar
  *
  */
-public class OrderImpl implements Order, CriteriaExpression {
+class OrderImpl implements Order, CriteriaExpression {
 	private boolean _ascending;
 	private final ExpressionImpl<?> e;
 	

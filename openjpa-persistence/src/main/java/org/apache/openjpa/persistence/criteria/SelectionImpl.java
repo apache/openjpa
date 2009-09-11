@@ -23,17 +23,20 @@ import java.util.List;
 import javax.persistence.criteria.Expression;
 import javax.persistence.criteria.Selection;
 
+import org.apache.openjpa.kernel.exps.ExpressionFactory;
 import org.apache.openjpa.persistence.util.ReservedWords;
 
 /**
  * An item selected in the projection clause of Criteria query.
  * Base implementation for all concrete expressions.
  * 
+ * @param <X> the type this term evaluates to
+ * 
  * @author Pinaki Poddar
  *
- * @param <X>
+ * @since 2.0.0
  */
-public abstract class SelectionImpl<X> implements Selection<X>, CriteriaExpression {
+abstract class SelectionImpl<X> implements Selection<X>, CriteriaExpression {
     private final Class<X> _cls;
     private String _alias;
     private Boolean _autoAliased; 

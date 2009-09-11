@@ -26,17 +26,17 @@ import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.QueryBuilder.In;
 
 import org.apache.openjpa.kernel.exps.ExpressionFactory;
-import org.apache.openjpa.persistence.meta.MetamodelImpl;
 
 /**
  * Expression node for Criteria query.
+ * Acts a bridge pattern to equivalent kernel representation.
  * 
  * @param <X> the type of the value this expression represents.
  * 
  * @author Pinaki Poddar
  * @since 2.0.0
  */
-public abstract class ExpressionImpl<X> extends SelectionImpl<X> implements Expression<X> {
+abstract class ExpressionImpl<X> extends SelectionImpl<X> implements Expression<X> {
     /**
      * @param cls the type of the evaluated result of the expression
      */
@@ -106,11 +106,24 @@ public abstract class ExpressionImpl<X> extends SelectionImpl<X> implements Expr
     	return new Expressions.IsNull(this);
     }
     
-    abstract org.apache.openjpa.kernel.exps.Value toValue(ExpressionFactory factory, MetamodelImpl model,
-            CriteriaQueryImpl<?> q);
+    //  ------------------------------------------------------------------------------------
+    //  Contract for bridge pattern to convert to an equivalent kernel representation.
+    //  ------------------------------------------------------------------------------------
+    /**
+     * Bridge contract to convert this facade expression to a kernel value.
+     * @param factory creates the kernel expression
+     * @param q the query definition context of this expression
+     * @return an equivalent kernel value
+     */
+    abstract org.apache.openjpa.kernel.exps.Value toValue(ExpressionFactory factory, CriteriaQueryImpl<?> q);
     
-    org.apache.openjpa.kernel.exps.Expression toKernelExpression(ExpressionFactory factory, MetamodelImpl model,
-        CriteriaQueryImpl<?> q) {
-        return factory.asExpression(toValue(factory, model, q));
+    /**
+     * Bridge contract to convert this facade expression to a kernel expression.
+     * @param factory creates the kernel expression
+     * @param q the query definition context of this expression
+     * @return an equivalent kernel expression
+     */
+    org.apache.openjpa.kernel.exps.Expression toKernelExpression(ExpressionFactory factory, CriteriaQueryImpl<?> q) {
+        return factory.asExpression(toValue(factory, q));
     }
 }

@@ -24,7 +24,6 @@ import javax.persistence.criteria.ParameterExpression;
 
 import org.apache.openjpa.kernel.exps.ExpressionFactory;
 import org.apache.openjpa.kernel.exps.Value;
-import org.apache.openjpa.persistence.meta.MetamodelImpl;
 import org.apache.openjpa.util.InternalException;
 
 /**
@@ -39,7 +38,7 @@ import org.apache.openjpa.util.InternalException;
  * 
  * @param <T> the type of value held by this parameter.
  */
-public class ParameterExpressionImpl<T> extends ExpressionImpl<T> 
+class ParameterExpressionImpl<T> extends ExpressionImpl<T> 
     implements ParameterExpression<T> {
     private String _name;
     private int _index = 0; // index of the parameter as seen by the kernel, not position
@@ -87,7 +86,7 @@ public class ParameterExpressionImpl<T> extends ExpressionImpl<T>
     }
     
     @Override
-    public Value toValue(ExpressionFactory factory, MetamodelImpl model, CriteriaQueryImpl<?> q) {
+    public Value toValue(ExpressionFactory factory, CriteriaQueryImpl<?> q) {
         Class<?> clzz = getJavaType();
         Object paramKey = _name == null ? _index : _name;
         boolean isCollectionValued  = Collection.class.isAssignableFrom(clzz);

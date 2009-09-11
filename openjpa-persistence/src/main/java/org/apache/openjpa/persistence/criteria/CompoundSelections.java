@@ -22,15 +22,12 @@ import java.lang.reflect.Constructor;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
-import java.util.concurrent.CopyOnWriteArrayList;
 
-import javax.persistence.Tuple;
 import javax.persistence.TupleElement;
 import javax.persistence.criteria.CompoundSelection;
 import javax.persistence.criteria.Selection;
 
 import org.apache.openjpa.kernel.FillStrategy;
-import org.apache.openjpa.kernel.ResultShape;
 import org.apache.openjpa.lib.util.Localizer;
 import org.apache.openjpa.persistence.TupleFactory;
 import org.apache.openjpa.persistence.TupleImpl;
@@ -43,13 +40,13 @@ import org.apache.openjpa.persistence.TupleImpl;
  * @since 2.0.0
  *
  */
-public class CompoundSelections {
+class CompoundSelections {
     private static Localizer _loc = Localizer.forPackage(CompoundSelections.class);
     /**
      * Gets the strategy to fill a given compound selection.
      * 
      */
-    public static <X> FillStrategy<X> getFillStrategy(Selection<X> s) {
+    static <X> FillStrategy<X> getFillStrategy(Selection<X> s) {
         if (s instanceof CompoundSelectionImpl) {
             return ((CompoundSelectionImpl<X>)s).getFillStrategy();
         } else {
@@ -113,7 +110,7 @@ public class CompoundSelections {
      *
      * @param <X> type must be an array
      */
-    public static class Array<X> extends CompoundSelectionImpl<X> {
+    static class Array<X> extends CompoundSelectionImpl<X> {
         public Array(Class<X> cls, Selection<?>... terms) {
             super(cls, terms);
             if (!cls.isArray()) {
@@ -131,7 +128,7 @@ public class CompoundSelections {
      *
      * @param <X> type of the constructed instance
      */
-    public static class NewInstance<X> extends CompoundSelectionImpl<X> {
+    static class NewInstance<X> extends CompoundSelectionImpl<X> {
         private FillStrategy.NewInstance<X> strategy;
         public NewInstance(Class<X> cls, Selection<?>... selections) {
             super(cls, selections);
@@ -168,7 +165,7 @@ public class CompoundSelections {
      * A compound selection which is a Tuple composed of its component terms.
      *
      */
-    public static class Tuple extends CompoundSelectionImpl<javax.persistence.Tuple> {
+    static class Tuple extends CompoundSelectionImpl<javax.persistence.Tuple> {
         public Tuple(final Selection<?>[] selections) {
             super(javax.persistence.Tuple.class, selections);
         }
@@ -180,10 +177,16 @@ public class CompoundSelections {
         }
     }
 
-    public static class MultiSelection<T> extends CompoundSelectionImpl<T> {
+    /**
+     * A selection of terms that interprets its arguments based on target result type.
+     *
+     * @param <T> the target result type.
+     */
+    static class MultiSelection<T> extends CompoundSelectionImpl<T> {
         public MultiSelection(Class<T> result, final Selection<?>[] selections) {
             super(result, selections);
         }
+        
         public FillStrategy<T> getFillStrategy() {
             Class<?> resultClass = getJavaType();
             List<Selection<?>> terms = getCompoundSelectionItems();

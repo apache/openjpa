@@ -54,12 +54,14 @@ import org.apache.openjpa.persistence.meta.Types;
  * context of a parent query. A subquery delegates to a captive query for most
  * of the operations but also maintains its own joins and correlated joins.
  * 
+ * @param <T> the type selected by this subquery.
+ * 
  * @author Pinaki Poddar
  * @author Fay Wang
  * 
- * @param <T> the type selected by this subquery.
+ * @since 2.0.0
  */
-public class SubqueryImpl<T> extends ExpressionImpl<T> implements Subquery<T> {
+class SubqueryImpl<T> extends ExpressionImpl<T> implements Subquery<T> {
     private final AbstractQuery<?> _parent;
     private final CriteriaQueryImpl<T> _delegate;
     private final MetamodelImpl  _model;
@@ -299,7 +301,7 @@ public class SubqueryImpl<T> extends ExpressionImpl<T> implements Subquery<T> {
      * Convert this path to a kernel path value.
      */
     @Override
-    public Value toValue(ExpressionFactory factory, MetamodelImpl model, CriteriaQueryImpl<?> q) {
+    public Value toValue(ExpressionFactory factory, CriteriaQueryImpl<?> q) {
         final boolean subclasses = true;
         CriteriaExpressionBuilder exprBuilder = new CriteriaExpressionBuilder();
         String alias = q.getAlias(this);

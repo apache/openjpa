@@ -53,7 +53,7 @@ import org.apache.openjpa.persistence.meta.Members;
  * @param <X> the type represented by this receiver 
  */
 
-public class FromImpl<Z,X> extends PathImpl<Z,X> implements From<Z,X> {
+class FromImpl<Z,X> extends PathImpl<Z,X> implements From<Z,X> {
     private java.util.Set<Join<X, ?>> _joins;
     private java.util.Set<Fetch<X, ?>> _fetches;
     private Type<X> type;

@@ -36,7 +36,6 @@ import org.apache.openjpa.kernel.exps.Value;
 import org.apache.openjpa.meta.ClassMetaData;
 import org.apache.openjpa.meta.FieldMetaData;
 import org.apache.openjpa.persistence.meta.Members;
-import org.apache.openjpa.persistence.meta.MetamodelImpl;
 
 /**
  * Represents a simple or compound attribute path from a 
@@ -54,7 +53,7 @@ import org.apache.openjpa.persistence.meta.MetamodelImpl;
  * @param <Z> the type of the parent path 
  * @param <X> the type of this path
  */
-public class PathImpl<Z,X> extends ExpressionImpl<X> implements Path<X> {
+class PathImpl<Z,X> extends ExpressionImpl<X> implements Path<X> {
     protected final PathImpl<?,Z> _parent;
     protected final Members.Member<? super Z,?> _member;
     private boolean isEmbedded = false;
@@ -151,7 +150,7 @@ public class PathImpl<Z,X> extends ExpressionImpl<X> implements Path<X> {
      * Convert this path to a kernel path.
      */
     @Override
-    public Value toValue(ExpressionFactory factory, MetamodelImpl model,  CriteriaQueryImpl<?> q) {
+    public Value toValue(ExpressionFactory factory, CriteriaQueryImpl<?> q) {
         if (q.isRegistered(this))
             return q.getRegisteredValue(this);
         org.apache.openjpa.kernel.exps.Path path = null;
@@ -171,7 +170,7 @@ public class PathImpl<Z,X> extends ExpressionImpl<X> implements Path<X> {
             path.setSchemaAlias(q.getAlias(_parent));
             traversePath(_parent, path, _member.fmd);
         } else if (_parent != null) {
-            Value val = _parent.toValue(factory, model, q);
+            Value val = _parent.toValue(factory, q);
             if (val instanceof org.apache.openjpa.kernel.exps.Path) {
                 path = (org.apache.openjpa.kernel.exps.Path)val;
                 path.get(_member.fmd, allowNull);
@@ -181,7 +180,7 @@ public class PathImpl<Z,X> extends ExpressionImpl<X> implements Path<X> {
             }
         } else if (_parent == null) {
             path = factory.newPath();
-            path.setMetaData(model.getRepository().getCachedMetaData(getJavaType()));
+            path.setMetaData(q.getMetamodel().getRepository().getCachedMetaData(getJavaType()));
         }
         if (_member != null && !_member.isCollection()) {
             path.setImplicitType(getJavaType());
