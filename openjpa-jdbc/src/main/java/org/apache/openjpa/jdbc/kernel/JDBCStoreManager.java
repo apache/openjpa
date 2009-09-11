@@ -902,6 +902,14 @@ public class JDBCStoreManager
     protected RefCountConnection connectInternal() throws SQLException {
         return ConcreteClassGenerator.newInstance(refCountConnectionImpl, JDBCStoreManager.this, _ds.getConnection());
     }
+    
+    public Connection getNewConnection() {
+        try {
+            return connectInternal();
+        } catch (SQLException e) {
+            throw SQLExceptions.getStore(e, _dict);
+        }
+    }
 
     /**
      * Find the object with the given oid.

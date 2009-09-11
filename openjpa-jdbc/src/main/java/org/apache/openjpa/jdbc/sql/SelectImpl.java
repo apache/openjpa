@@ -329,7 +329,7 @@ public class SelectImpl
         ResultSet rs = null;
         try {
             SQLBuffer sql = toSelectCount();
-            conn = store.getConnection();
+            conn = store.getNewConnection();
             stmnt = prepareStatement(conn, sql, null, 
                 ResultSet.TYPE_FORWARD_ONLY, 
                 ResultSet.CONCUR_READ_ONLY, false);

@@ -861,6 +861,10 @@ public class TestUpdateManagerFlushException extends /* Abstract */TestCase {
             throw new RuntimeException("TestConnection is abstract for JDK6");
 //            return new TestConnection();
         }
+        
+        public Connection getNewConnection() {
+            return getConnection();
+        }
 
         public StoreContext getContext() {
             return null;
