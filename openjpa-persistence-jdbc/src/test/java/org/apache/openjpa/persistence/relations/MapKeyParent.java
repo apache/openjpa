@@ -29,7 +29,6 @@ import javax.persistence.Id;
 import javax.persistence.MapKey;
 import javax.persistence.OneToMany;
 
-
 @Entity
 public class MapKeyParent implements Serializable {
 
@@ -37,22 +36,20 @@ public class MapKeyParent implements Serializable {
     @GeneratedValue
     private long id;
 
-	@OneToMany(mappedBy = "parent", cascade = CascadeType.ALL, 
-			fetch=FetchType.EAGER)
-	@MapKey(name = "mapKey")
-    private Map<String,MapKeyChild> children;
+    @OneToMany(mappedBy = "parent", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    @MapKey(name = "mapKey")
+    private Map<String, MapKeyChild> children;
 
-
-    public long getId() { 
-        return id; 
+    public long getId() {
+        return id;
     }
 
-	public Map<String, MapKeyChild> getChildren() {
-		return this.children;
-	}
+    public Map<String, MapKeyChild> getChildren() {
+        return this.children;
+    }
 
-	public void setChildren(Map<String, MapKeyChild> children) {
-		this.children = children;
-	}
+    public void setChildren(Map<String, MapKeyChild> children) {
+        this.children = children;
+    }
 
 }

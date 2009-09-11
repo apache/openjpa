@@ -24,44 +24,45 @@ import java.util.Map;
 import org.apache.openjpa.persistence.OpenJPAEntityManager;
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
 
-public class TestParallelEagerMap
-    extends SingleEMFTestCase {
+public class TestParallelEagerMap extends SingleEMFTestCase {
 
     public void setUp() {
-    	super.setUp(CLEAR_TABLES, MapKeyParent.class, MapKeyChild.class,
-    			"openjpa.jdbc.EagerFetchMode", "parallel");
+        super.setUp(CLEAR_TABLES, MapKeyParent.class, MapKeyChild.class,
+            "openjpa.jdbc.EagerFetchMode", "parallel");
     }
 
     public void testParentNotNull() {
-    	
-    	MapKeyParent[] parents = { new MapKeyParent(), new MapKeyParent() };
-    	for( MapKeyParent parent : parents ) {
-	    	Map<String,MapKeyChild> children = new HashMap<String,MapKeyChild>();
-	    	for(String key : new String[]{"childA"}) {
-	    		MapKeyChild child = new MapKeyChild();
-	    		child.setParent(parent);
-	    		child.setMapKey(key);
-	    		children.put(key, child);
-	    	}
-	    	parent.setChildren(children);
-    	}
-    	
-    	OpenJPAEntityManager em = emf.createEntityManager();
-    	em.getTransaction().begin();
-    	for(MapKeyParent parent : parents) {
-    		em.persist(parent);
-    	}
-    	em.getTransaction().commit();
-    	em.close();
-    	
-    	em = emf.createEntityManager();
-    	MapKeyParent parent2 = (MapKeyParent)em.createQuery(
-    			"SELECT p FROM MapKeyParent p WHERE p.id=" + parents[0].getId() + 
-    			" OR p.id=" + parents[1].getId()).getResultList().get(1);
-    	em.close();
-    	
-    	for(MapKeyChild child : parent2.getChildren().values()) {
-    		assertNotNull("Parent should not be null", child.getParent());
-    	}
+
+        MapKeyParent[] parents = { new MapKeyParent(), new MapKeyParent() };
+        for (MapKeyParent parent : parents) {
+            Map<String, MapKeyChild> children =
+                new HashMap<String, MapKeyChild>();
+            for (String key : new String[] { "childA" }) {
+                MapKeyChild child = new MapKeyChild();
+                child.setParent(parent);
+                child.setMapKey(key);
+                children.put(key, child);
+            }
+            parent.setChildren(children);
+        }
+
+        OpenJPAEntityManager em = emf.createEntityManager();
+        em.getTransaction().begin();
+        for (MapKeyParent parent : parents) {
+            em.persist(parent);
+        }
+        em.getTransaction().commit();
+        em.close();
+
+        em = emf.createEntityManager();
+        MapKeyParent parent2 =
+            (MapKeyParent) em.createQuery(
+                "SELECT p FROM MapKeyParent p WHERE p.id=" + parents[0].getId()
+                    + " OR p.id=" + parents[1].getId()).getResultList().get(1);
+        em.close();
+
+        for (MapKeyChild child : parent2.getChildren().values()) {
+            assertNotNull("Parent should not be null", child.getParent());
+        }
     }
 }

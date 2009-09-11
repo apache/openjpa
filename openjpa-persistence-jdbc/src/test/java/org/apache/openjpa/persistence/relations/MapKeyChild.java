@@ -21,10 +21,8 @@ package org.apache.openjpa.persistence.relations;
 import java.io.Serializable;
 
 import javax.persistence.Basic;
-import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
@@ -38,30 +36,30 @@ public class MapKeyChild implements Serializable {
     private long id;
 
     @Basic
-    @Column(length=32)
+    @Column(length = 32)
     private String mapKey;
 
-	@ManyToOne
-	@JoinColumn
+    @ManyToOne
+    @JoinColumn
     private MapKeyParent parent;
 
-    public long getId() { 
-        return id; 
+    public long getId() {
+        return id;
     }
-    
-	public MapKeyParent getParent() {
-		return this.parent;
-	}
 
-	public void setParent(MapKeyParent parent) {
-		this.parent = parent;
-	}
+    public MapKeyParent getParent() {
+        return this.parent;
+    }
 
-	public String getMapKey() {
-		return this.mapKey;
-	}
+    public void setParent(MapKeyParent parent) {
+        this.parent = parent;
+    }
 
-	public void setMapKey(String mapKey) {
-		this.mapKey = mapKey;
-	}
+    public String getMapKey() {
+        return this.mapKey;
+    }
+
+    public void setMapKey(String mapKey) {
+        this.mapKey = mapKey;
+    }
 }
