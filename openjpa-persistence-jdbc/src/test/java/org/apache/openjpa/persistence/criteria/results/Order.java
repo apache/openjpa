@@ -23,6 +23,7 @@ import java.util.Date;
 import java.util.Set;
 
 import javax.persistence.CascadeType;
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.ManyToOne;
@@ -35,6 +36,7 @@ public class Order {
     @Id
     long id;
     boolean filled;
+    @Column(name="CDATE")
     Date date;
 
     @OneToMany(cascade=CascadeType.PERSIST)

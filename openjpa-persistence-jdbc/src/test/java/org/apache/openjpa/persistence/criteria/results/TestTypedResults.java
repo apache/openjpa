@@ -21,6 +21,7 @@ package org.apache.openjpa.persistence.criteria.results;
 
 import java.text.DateFormat;
 import java.text.ParseException;
+import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 
@@ -140,28 +141,29 @@ public class TestTypedResults extends SingleEMFTestCase {
      */
     public void testDateQuery() throws Exception {
         EntityManager em = emf.createEntityManager();
-
+        Date maxDate = df.parse(ORDER_DATES[2]);
+        
         Query jpqlQuery = em.createQuery("Select o from Order o where o.date < :maxDate");
-        jpqlQuery.setParameter("maxDate", df.parse(ORDER_DATES[2]));
+        jpqlQuery.setParameter("maxDate", maxDate);
         List<Order> jpqlResults = jpqlQuery.getResultList();
         assertEquals(N_ORDERS / 2, jpqlResults.size());
 
         TypedQuery<Order> typedJpqlQuery = em.createQuery("Select o from Order o where o.date < :maxDate", Order.class);
-        typedJpqlQuery.setParameter("maxDate", df.parse(ORDER_DATES[2]));
+        typedJpqlQuery.setParameter("maxDate", maxDate);
         List<Order> typedJpqlResults = typedJpqlQuery.getResultList();
         assertEquals(N_ORDERS / 2, typedJpqlResults.size());
 
         QueryBuilder qb = em.getQueryBuilder();
         CriteriaQuery<Order> criteriaQuery = qb.createQuery(Order.class);
         Root<Order> order = criteriaQuery.from(Order.class);
-        criteriaQuery.select(order).where(qb.lessThan(order.get(Order_.date), df.parse(ORDER_DATES[2])));
+        criteriaQuery.select(order).where(qb.lessThan(order.get(Order_.date), qb.parameter(Date.class, "maxDate")));
         TypedQuery<Order> tq = em.createQuery(criteriaQuery);
+        tq.setParameter("maxDate", maxDate);
         List<Order> criteriaResults = tq.getResultList();
         assertEquals(N_ORDERS / 2, criteriaResults.size());
 
-        String parm = new java.sql.Timestamp(df.parse(ORDER_DATES[2]).getTime()).toString();
-        Query nativeQuery =
-            em.createNativeQuery("Select * from CRIT_RES_ORD o WHERE (o.date < '" + parm + "')", Order.class);
+        Query nativeQuery = em.createNativeQuery("Select * from CRIT_RES_ORD o WHERE (o.cdate < ?1)", Order.class);
+        nativeQuery.setParameter(1, maxDate);
         List<Order> nativeResults = nativeQuery.getResultList();
         assertEquals(N_ORDERS / 2, nativeResults.size());
 
