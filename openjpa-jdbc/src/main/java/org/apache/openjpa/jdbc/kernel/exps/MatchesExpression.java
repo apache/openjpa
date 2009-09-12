@@ -105,10 +105,12 @@ class MatchesExpression
 
             // escape out characters by using the database's escape sequence
             DBDictionary dict = ctx.store.getDBDictionary();
-            if (_escape != null && _escape.equals("\\")) {
-                buf.append(" ESCAPE '").append(dict.searchStringEscape).append("'");
-            } else
-                buf.append(" ESCAPE '").append(_escape).append("'");
+            if (_escape != null) {
+                if (_escape.equals("\\")) 
+                    buf.append(" ESCAPE '").append(dict.searchStringEscape).append("'");
+                else
+                    buf.append(" ESCAPE '").append(_escape).append("'");
+            }
             
         }
         sel.append(buf, state.joins);
