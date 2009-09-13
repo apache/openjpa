@@ -54,8 +54,8 @@ public class TestExtents2 extends BaseKernelTest {
     public TestExtents2() {
     }
 
-    public void setUp() {
-        deleteAll(RuntimeTest1.class);
+    public void setUp() throws Exception {
+        super.setUp(RuntimeTest1.class, RuntimeTest2.class, RuntimeTest3.class);
 
         RuntimeTest1 test1 = new RuntimeTest1();
         test1.setIntField(1);
@@ -170,7 +170,7 @@ public class TestExtents2 extends BaseKernelTest {
         startTx(pm);
         try {
             RuntimeTest2 test2 =
-                (RuntimeTest2) pm.find(RuntimeTest2.class, _oid2);
+                pm.find(RuntimeTest2.class, _oid2);
             pm.remove(test2);
             RuntimeTest1 test1 = new RuntimeTest1();
             pm.persist(test1);

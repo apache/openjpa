@@ -67,6 +67,7 @@ import java.util.ListIterator;
 import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.StringTokenizer;
+import java.util.Map.Entry;
 
 import javax.management.IntrospectionException;
 import javax.persistence.EntityManager;
@@ -93,6 +94,7 @@ public abstract class AbstractTestCase extends AbstractCachedEMFTestCase {
     private Map<Map,OpenJPAEntityManagerFactory> emfs =
         new HashMap<Map,OpenJPAEntityManagerFactory>();
     private OpenJPAEntityManager currentEntityManager;
+    private Object[] props;
 
     protected enum Platform {
         EMPRESS,
@@ -116,6 +118,18 @@ public abstract class AbstractTestCase extends AbstractCachedEMFTestCase {
     public AbstractTestCase(String name, String s) {
         setName(name);
         persistenceXmlResource = computePersistenceXmlResource(s);
+    }
+
+    /**
+     * Use the given persistent types during the test.
+     * 
+     * @param props
+     *            list of persistent types used in testing and/or configuration values in the form
+     *            key,value,key,value...
+     */
+    protected void setUp(Object... props) throws Exception {
+        super.setUp();
+        this.props = props;
     }
 
     public void tearDown() throws Exception {
@@ -194,11 +208,25 @@ public abstract class AbstractTestCase extends AbstractCachedEMFTestCase {
         addProperties(map);
 
         OpenJPAEntityManagerFactory emf = emfs.get(map);
-        if (emf == null) {
-            emf = OpenJPAPersistence.createEntityManagerFactory(
-                "TestConv", persistenceXmlResource, map);
-            emfs.put(map, emf);
+        if (emf != null) {
+            return emf;
         }
+
+        if (props != null) {
+            // Join properties passed in setUp (usually entities) with the given map and use them to create EMF.
+            Object[] propsAndMap = new Object[props.length + map.size() * 2];
+            System.arraycopy(props, 0, propsAndMap, 0, props.length);
+            int i = props.length;
+            for (Object o : map.entrySet()) {
+                Entry mapEntry = (Entry) o;
+                propsAndMap[i++] = mapEntry.getKey();
+                propsAndMap[i++] = mapEntry.getValue();
+            }
+            emf = createEMF(propsAndMap);
+        } else {
+            emf = OpenJPAPersistence.createEntityManagerFactory("TestConv", persistenceXmlResource, map);
+        }
+        emfs.put(map, emf);
         return emf;
     }
 
