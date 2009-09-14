@@ -686,8 +686,7 @@ record.
                 </tertiary>
             </indexterm>
             <para>
-The JPA specification limits identity fields to simple types.  OpenJPA, however,
-also allows <literal>ManyToOne</literal> and <literal>OneToOne</literal> 
+OpenJPA allows <literal>ManyToOne</literal> and <literal>OneToOne</literal> 
 relations to be identity fields.  To identify a relation field as an identity
 field, simply annotate it with both the <literal>@ManyToOne</literal> or
 <literal>@OneToOne</literal> relation annotation and the <literal>@Id</literal>
@@ -718,12 +717,17 @@ public Delivery findDelivery(EntityManager em, Order order) {
             </example>
             <para>
 When your entity has multiple identity fields, at least one of which is a 
-relation to another entity, you must use an identity class (see 
-<xref linkend="jpa_overview_pc_identitycls"/> in the JPA Overview).  You cannot
-use an embedded identity object.  Identity class fields corresponding to
+relation to another entity, you can use an identity class (see 
+<xref linkend="jpa_overview_pc_identitycls"/> in the JPA Overview), or 
+an embedded identity object.  Identity class fields corresponding to
 entity identity fields should be of the same type as the related entity's 
-identity.  
+identity. If an embedded identity object is used, you must annotate the 
+relation field with both the <literal>@ManyToOne</literal> or
+<literal>@OneToOne</literal> relation annotation and the 
+<literal>@MappedById</literal> annotation.
+
             </para>
+            
             <example id="ref_guide_pc_oid_entitypk_idcls">
                 <title>
                     Id Class for Entity Identity Fields
@@ -771,7 +775,63 @@ class <classname>OrderId</classname> in place of a simple <classname>long
 </classname> value, then the <literal>LineItemId.order</literal> field would
 have been of type <classname>OrderId</classname>.
             </para>
+            
+            <example id="ref_guide_pc_oid_entitypk_embeded_id">
+                <title>
+                    Embedded Id for Entity Identity Fields
+                </title>
+<programlisting>
+@Entity
+public class Order {
+
+    @Id
+    private long id;
+
+    ... 
+}
+
+	/**
+	 * LineItem uses a compound primary key. Part of the compound key 
+	 * LineItemId is relation or reference to Order instance.
+	**/   
+@Entity
+public class LineItem {
+    
+    @EmbeddedId LineItemId id;
+
+    @ManyToOne
+    @MappedById("orderId") // The value element of the MappedById annotation 
+                           // must be used to specify the name of the primary
+                           // key attribute to which the relationship  
+                           // corresponds. If the primary key referenced by  
+                           // the relationship attribute is of the same Java  
+                           // type as the dependent's primary key, then the 
+                           // value element is not specified.
+    private Order order;
+
+    ...
+}
+
+@Embeddable
+public class LineItemId {
+
+    public int index;
+    public long orderId; 
+}
+</programlisting>    
+            </example>
+
+            <para>
+In the example above, the <classname>LineItem</classname> uses an embedded id to  
+represent its primary key. The primary key attribute corresponding to the 
+relationship in the <classname>LineItemId</classname> must be of the same 
+type as the primary key of the <classname>Order</classname>. The 
+<literal>MappedById</literal> annotation must be applied to the relationship 
+field <literal>LineItem.order</literal>.
+            </para>
+            
         </section>
+        
         <section id="ref_guide_pc_oid_application">
             <title>
                 Application Identity Tool
