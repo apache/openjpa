@@ -34,10 +34,20 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 
+import org.apache.openjpa.persistence.FetchAttribute;
+import org.apache.openjpa.persistence.FetchGroup;
+import org.apache.openjpa.persistence.FetchGroups;
+
 
 @Entity
 @Inheritance(strategy = InheritanceType.JOINED)
 @DiscriminatorColumn(discriminatorType=DiscriminatorType.STRING)
+@FetchGroups(
+    {
+        @FetchGroup(name="nothing", attributes={}),
+        @FetchGroup(name="children", attributes={@FetchAttribute(name="children")})
+    }
+)
 public abstract class InheritanceHierarchyAbstract implements Serializable {
 
     @Id
@@ -74,3 +84,4 @@ public abstract class InheritanceHierarchyAbstract implements Serializable {
 	}
 
 }
+
