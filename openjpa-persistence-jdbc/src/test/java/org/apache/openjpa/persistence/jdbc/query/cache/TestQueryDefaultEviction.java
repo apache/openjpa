@@ -20,43 +20,41 @@ package org.apache.openjpa.persistence.jdbc.query.cache;
 
 import org.apache.openjpa.datacache.ConcurrentQueryCache;
 import org.apache.openjpa.datacache.AbstractQueryCache.EvictPolicy;
-import org.apache.openjpa.jdbc.conf.JDBCConfiguration;
 
-public class TestQueryTimestampEviction extends AbstractQueryCacheTest {
+public class TestQueryDefaultEviction extends AbstractQueryCacheTest {
     public void setUp() throws Exception {
         super.setUp(
                 "openjpa.DataCache", "true",
                 "openjpa.QueryCache",
-                "CacheSize=1000, EvictPolicy='timestamp'",
+                "CacheSize=1000",
                 "openjpa.RemoteCommitProvider", "sjvm");
     }
 
     /**
      * Verify that the persistent unit property configuration is enabling
-     * the TIMESTAMP Eviction Policy.
+     * the DEFAULT Eviction Policy.
      */
     public void testTimestampEvictionEnablement() {
         ConcurrentQueryCache qc = getQueryCache();
         EvictPolicy ep = qc.getEvictPolicy();
-        assertTrue(ep == EvictPolicy.TIMESTAMP);
+        assertTrue(ep == EvictPolicy.DEFAULT);
     }
     
     public void testLoadQueries() {
         // Not all databases support GenerationType.IDENTITY column(s)
-        if (!((JDBCConfiguration) emf.getConfiguration()).
-            getDBDictionaryInstance().supportsAutoAssign) {
-        	return;
-        }                                 
+        if (!checkSupportsIdentityGenerationType()) {
+            return;
+        }
+        
         loadQueryCache();
         int cacheSizeBeforeUpdate = queryCacheGet();
         updateAnEntity();
         int cacheSizeAfterUpdate = queryCacheGet();
 
-        // If evictPolicy is timestamp the querycache size should be equal to
+        // If evictPolicy is default the query cache size should not be equal to
         // cacheSizeBeforeUpdate value.
-        assertEquals(cacheSizeBeforeUpdate, cacheSizeAfterUpdate);
+        assertNotEquals(cacheSizeBeforeUpdate, cacheSizeAfterUpdate);
 
         this.recreateData = false;
     }
 }
-
