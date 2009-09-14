@@ -34,10 +34,14 @@ import javax.persistence.InheritanceType;
 import javax.persistence.MapKey;
 import javax.persistence.OneToMany;
 
+import org.apache.openjpa.persistence.FetchAttribute;
+import org.apache.openjpa.persistence.FetchGroup;
+
 
 @Entity
 @Inheritance(strategy = InheritanceType.JOINED)
 @DiscriminatorValue("concrete")
+@FetchGroup(name="value", attributes={@FetchAttribute(name="value")})
 public class InheritanceHierarchyConcrete extends InheritanceHierarchyAbstract implements Serializable {
 
 	@Basic
@@ -52,3 +56,4 @@ public class InheritanceHierarchyConcrete extends InheritanceHierarchyAbstract i
 	}
 
 }
+
