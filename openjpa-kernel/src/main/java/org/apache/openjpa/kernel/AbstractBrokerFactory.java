@@ -485,7 +485,7 @@ public abstract class AbstractBrokerFactory
         else
             bv = (BrokerValue) _conf.getValue(BrokerValue.KEY);
 
-        if (FinalizingBrokerImpl.class.isAssignableFrom(
+        if (!FinalizingBrokerImpl.class.isAssignableFrom(
             bv.getTemplateBrokerType(_conf))) {
             return MapBackedSet.decorate(new ConcurrentHashMap(),
                 new Object() { });
