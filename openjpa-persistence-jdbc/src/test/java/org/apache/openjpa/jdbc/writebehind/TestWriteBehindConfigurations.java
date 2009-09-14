@@ -26,6 +26,8 @@ import javax.persistence.Persistence;
 import junit.framework.TestCase;
 
 import org.apache.openjpa.persistence.ArgumentException;
+import org.apache.openjpa.persistence.PersistenceException;
+import org.apache.openjpa.writebehind.WriteBehindConfigurationException;
 
 
 /** 
@@ -51,6 +53,10 @@ public class TestWriteBehindConfigurations extends TestCase {
         }
         catch (ArgumentException ae) {
         }
+        catch (PersistenceException pe) {
+        }
+        catch (WriteBehindConfigurationException wbce) {
+        }
         catch (Exception e) {
             fail("testInvalidConfiguration01: Caught unexpected exception: " + e);
             e.printStackTrace();
@@ -72,13 +78,17 @@ public class TestWriteBehindConfigurations extends TestCase {
         Map map = new HashMap();
         map.put( "openjpa.DataCache", "true" );
         map.put( "openjpa.WriteBehindCache", "true");
-        map.put( "openjpa.WriteBehindCallback", "true(sleepTime=1000)" );
+        map.put( "openjpa.WriteBehindCallback", "true(sleepTime=30000)" );
         map.put( "openjpa.RuntimeUnenhancedClasses", "unsupported" );
         try {
             emf02 = Persistence.createEntityManagerFactory("empty-pu", map);
             fail("testInvalidConfiguration02: Exception expected but not thrown");
         }
         catch (ArgumentException ae) {
+        }
+        catch (PersistenceException pe) {
+        }
+        catch (WriteBehindConfigurationException wbce) {
         }
         catch (Exception e) {
             fail("testInvalidConfiguration02: Caught unexpected exception: " + e);
@@ -109,6 +119,10 @@ public class TestWriteBehindConfigurations extends TestCase {
         }
         catch (ArgumentException ae) {
         }
+        catch (PersistenceException pe) {
+        }
+        catch (WriteBehindConfigurationException wbce) {
+        }
         catch (Exception e) {
             fail("testInvalidConfiguration03: Caught unexpected exception: " + e);
             e.printStackTrace();
@@ -136,6 +150,10 @@ public class TestWriteBehindConfigurations extends TestCase {
             fail("testInvalidConfiguration04: Exception not thrown");
         }
         catch (ArgumentException ae) {
+        }
+        catch (PersistenceException pe) {
+        }
+        catch (WriteBehindConfigurationException wbce) {
         }
         catch (Exception e) {
             fail("testInvalidConfiguration04: Caught unexpected exception: " + e);
@@ -186,7 +204,7 @@ public class TestWriteBehindConfigurations extends TestCase {
         map.put( "openjpa.DataCache", "true" );
         map.put( "openjpa.RemoteCommitProvider", "sjvm");
         map.put( "openjpa.WriteBehindCache", "true");
-        map.put( "openjpa.WriteBehindCallback", "true(sleepTime=1000)" );
+        map.put( "openjpa.WriteBehindCallback", "true(sleepTime=30000)" );
         map.put( "openjpa.RuntimeUnenhancedClasses", "supported" );
         try {
             emf06 = Persistence.createEntityManagerFactory("empty-pu", map);
@@ -213,7 +231,7 @@ public class TestWriteBehindConfigurations extends TestCase {
         map.put( "openjpa.DataCache", "true" );
         map.put( "openjpa.RemoteCommitProvider", "sjvm");
         map.put( "openjpa.WriteBehindCache", "true");
-        map.put( "openjpa.WriteBehindCallback", "true(sleepTime=1000)" );
+        map.put( "openjpa.WriteBehindCallback", "true(sleepTime=30000)" );
         map.put( "openjpa.RuntimeUnenhancedClasses", "warn" );
         try {
             emf07 = Persistence.createEntityManagerFactory("empty-pu", map);
