@@ -437,7 +437,7 @@ public class JDBCStoreManager
     protected void setMappedBy(OpenJPAStateManager sm,
         FieldMapping mappedByFieldMapping, Object mappedByObject) {
         ClassMapping mapping = (ClassMapping) sm.getMetaData();
-        FieldMapping[] fms = mapping.getDeclaredFieldMappings();
+        FieldMapping[] fms = mapping.getFieldMappings();
         for (int i = 0; i < fms.length; i++) {
             if (fms[i] == mappedByFieldMapping) {
                 sm.storeObject(fms[i].getIndex(), mappedByObject);
