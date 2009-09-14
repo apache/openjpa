@@ -157,5 +157,28 @@
                 will not be disabled automatically.
             </para>
         </section>
+    	<section id="internal_differences">
+    		<title>
+    			Internal Behavioral Differences
+    		</title>
+    		<para>
+    		The following sections indicate internal changes between
+    		OpenJPA 1.x.x releases and the 2.0 release. As these are
+                internal implementation classes, no changes to applications
+                should be required.
+    		</para>
+    		<section id="getStrategy">
+    			<title>
+    				FieldMapping.getStrategy()
+    			</title>
+    			<para>
+    				The FieldMapping.getStrategy() in OpenJPA 1.x
+				returned an instance of RelationFieldStrategy
+				for embded super classes, but will now return an
+				EmbedFieldStrategy.  See OPENJPA-1214 for an
+				example test case demonstrating the change.
+			</para>
+		</section>
+        </section>
     </section>
 </appendix>
