@@ -36,6 +36,7 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.openjpa.lib.util.J2DoPrivHelper;
 import org.apache.openjpa.lib.util.JavaVersions;
 import org.apache.openjpa.lib.util.Localizer;
+import org.apache.openjpa.lib.util.MultiClassLoader;
 import org.apache.openjpa.lib.util.Services;
 
 /**
@@ -55,8 +56,10 @@ public class ProductDerivations {
     private static final Throwable[] _derivationErrors;
     private static String[] _prefixes;
     static {
-        ClassLoader l = AccessController.doPrivileged(
-            J2DoPrivHelper.getClassLoaderAction(ProductDerivation.class)); 
+        MultiClassLoader l = AccessController.doPrivileged(J2DoPrivHelper.newMultiClassLoaderAction());
+        l.addClassLoader(0, AccessController
+            .doPrivileged(J2DoPrivHelper.getClassLoaderAction(ProductDerivations.class)));
+        l.addClassLoader(1, AccessController.doPrivileged(J2DoPrivHelper.getContextClassLoaderAction()));
         _derivationNames = Services.getImplementors(ProductDerivation.class, l);
         _derivationErrors = new Throwable[_derivationNames.length];
         List<ProductDerivation> derivations =
