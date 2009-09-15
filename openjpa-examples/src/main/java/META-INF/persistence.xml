@@ -81,4 +81,14 @@
     <persistence-unit name="reversemapping" transaction-type="RESOURCE_LOCAL">
         <mapping-file>reversemapping/orm.xml</mapping-file>
     </persistence-unit>
+    
+    <persistence-unit name="embeddables" transaction-type="RESOURCE_LOCAL">
+        <provider>org.apache.openjpa.persistence.PersistenceProviderImpl</provider>
+        <class>embeddables.Address</class>
+        <class>embeddables.ContactInfo</class>
+        <class>embeddables.Coordinates</class>
+        <class>embeddables.Phone</class>
+        <class>embeddables.User</class>
+    </persistence-unit>
+    
 </persistence>
