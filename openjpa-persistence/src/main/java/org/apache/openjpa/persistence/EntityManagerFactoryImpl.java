@@ -291,13 +291,15 @@ public class EntityManagerFactoryImpl
     }
 
     public int hashCode() {
-        return _factory.hashCode();
+        return (_factory == null) ? 0 : _factory.hashCode();
     }
 
     public boolean equals(Object other) {
         if (other == this)
             return true;
-        if (!(other instanceof EntityManagerFactoryImpl))
+        if ((other == null) || (other.getClass() != this.getClass()))
+            return false;
+        if (_factory == null)
             return false;
         return _factory.equals(((EntityManagerFactoryImpl) other)._factory);
     }
