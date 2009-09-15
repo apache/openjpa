@@ -111,7 +111,7 @@ public abstract class AbstractQueryCacheTest extends SingleEMFTestCase {
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
 
-        em.createNativeQuery("delete from supplier_part").executeUpdate();
+        em.createNativeQuery("delete from Supplier_Part").executeUpdate();
         em.createQuery("delete from PartBase s").executeUpdate();
         em.createQuery("delete from Supplier s").executeUpdate();
         em.createQuery("delete from Usage u").executeUpdate();
