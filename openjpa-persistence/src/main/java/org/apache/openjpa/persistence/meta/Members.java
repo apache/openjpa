@@ -126,7 +126,7 @@ public class Members {
          *  Returns the persistent category for the attribute.
          */
         public PersistentAttributeType getPersistentAttributeType() {
-            if (fmd.isEmbedded())
+            if (fmd.isEmbeddedPC())
                 return PersistentAttributeType.EMBEDDED;
             if (fmd.isElementCollection())
                 return PersistentAttributeType.ELEMENT_COLLECTION;

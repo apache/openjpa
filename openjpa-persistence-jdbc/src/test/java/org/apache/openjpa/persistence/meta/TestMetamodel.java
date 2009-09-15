@@ -29,6 +29,7 @@ import javax.persistence.metamodel.IdentifiableType;
 import javax.persistence.metamodel.ListAttribute;
 import javax.persistence.metamodel.ManagedType;
 import javax.persistence.metamodel.SetAttribute;
+import javax.persistence.metamodel.SingularAttribute;
 import javax.persistence.metamodel.Attribute.PersistentAttributeType;
 import javax.persistence.metamodel.Bindable.BindableType;
 import javax.persistence.metamodel.PluralAttribute.CollectionType;
@@ -304,6 +305,11 @@ public class TestMetamodel extends SingleEMFTestCase {
         assertFalse(entity.hasSingleIdAttribute());
     }
 
+    public void testBasicAttributeType() {
+        ManagedType<ImplicitFieldAccessBase> e0 = model.entity(ImplicitFieldAccessBase.class);
+        SingularAttribute<ImplicitFieldAccessBase,?> pInt = e0.getDeclaredSingularAttribute("primitiveInt");
+        assertEquals(PersistentAttributeType.BASIC, pInt.getPersistentAttributeType());
+    }
     
     void assertFails(ManagedType<?> type, String name, boolean dec) {
         try {
