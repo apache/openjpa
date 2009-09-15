@@ -234,11 +234,11 @@ public abstract class AbstractQueryCacheTest extends SingleEMFTestCase {
         em.getTransaction().begin();
 
         String insert1 = 
-            "insert into part(partno,parttype,name,cost,mass)" +
+            "insert into Part(partno,parttype,name,cost,mass)" +
             " values(13,'PartBase','breakes',1000.0,100.0)";
         em.createNativeQuery(insert1).executeUpdate();
         String insert2 = 
-            "insert into supplier_part(suppliers_sid,supplies_partno)" + 
+            "insert into Supplier_Part(suppliers_sid,supplies_partno)" + 
             " values(1,13)";
         em.createNativeQuery(insert2).executeUpdate();
 
@@ -248,7 +248,7 @@ public abstract class AbstractQueryCacheTest extends SingleEMFTestCase {
         em = emf.createEntityManager();
         em.getTransaction().begin();
 
-        String sql = "select partno from part where cost > 120 ";
+        String sql = "select partno from Part where cost > 120 ";
         Query nativeq = em.createNativeQuery(sql);
         int nativelistSize = nativeq.getResultList().size();
 
