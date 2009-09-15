@@ -24,18 +24,18 @@ import javax.persistence.*;
 @Table(name="PH_MBI")
 public class PhoneNumber {
     @Id
-    int number;
+    int phNumber;
     
     @OneToOne(fetch=FetchType.LAZY)
     Employee emp;
     
     
-    public int getNumber() {
-        return number;
+    public int getPhNumber() {
+        return phNumber;
     }
 
-    public void setNumber(int number) {
-        this.number = number;
+    public void setPhNumber(int number) {
+        this.phNumber = number;
     }
     
     public Employee getEmp() {

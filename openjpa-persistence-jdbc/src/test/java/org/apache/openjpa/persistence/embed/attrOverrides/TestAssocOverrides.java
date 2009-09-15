@@ -145,7 +145,7 @@ public class TestAssocOverrides  extends SQLListenerTestCase {
 	
     public PhoneNumber createPhoneNumber(EntityManager em) {
     	PhoneNumber p = new PhoneNumber();
-    	p.setNumber(phoneId++);
+    	p.setPhNumber(phoneId++);
     	em.persist(p);
     	return p;
     }    
@@ -187,7 +187,7 @@ public class TestAssocOverrides  extends SQLListenerTestCase {
     }
 	
     public void assertPhoneNumber(PhoneNumber p, int empId) {
-        int number = p.getNumber();
+        int number = p.getPhNumber();
         Collection<Employee> es = p.getEmployees();
         for (Employee e: es) {
             assertEquals(empId, e.getEmpId());

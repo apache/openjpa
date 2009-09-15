@@ -62,7 +62,7 @@ public class Employee {
     public boolean equals(Object o) {
         Employee e = (Employee) o;
         PhoneNumber p = e.getPhoneNumber();
-        if (p.getNumber() != phoneNumber.getNumber())
+        if (p.getPhNumber() != phoneNumber.getPhNumber())
             return false;
         
         return true;

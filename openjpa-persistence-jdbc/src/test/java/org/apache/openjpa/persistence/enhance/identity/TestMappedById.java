@@ -170,7 +170,7 @@ public class TestMappedById extends SingleEMFTestCase {
         e.setEmpId(1);
         e.setEmpType(Employee.EmpType.A1);
         PhoneNumber phoneNumber = new PhoneNumber();
-        phoneNumber.setNumber(1);
+        phoneNumber.setPhNumber(1);
         phoneNumber.setEmp(e);
         e.setPhoneNumber(phoneNumber);
         em.persist(phoneNumber);

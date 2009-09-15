@@ -25,17 +25,18 @@ import java.util.*;
 @Table(name="PHONE_ATTROVER")
 public class PhoneNumber {
     @Id 
-    int number;
+    int phNumber;
+    
     
     @ManyToMany(mappedBy="contactInfo.phoneNumbers")
     Collection<Employee> employees = new ArrayList<Employee>();
     
-    public int getNumber() {
-        return number;
+    public int getPhNumber() {
+        return phNumber;
     }
     
-    public void setNumber(int number) {
-        this.number = number;
+    public void setPhNumber(int number) {
+        this.phNumber = number;
     }
     
     public Collection<Employee> getEmployees() {
