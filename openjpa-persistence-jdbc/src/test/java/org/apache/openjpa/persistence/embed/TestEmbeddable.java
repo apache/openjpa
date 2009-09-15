@@ -34,6 +34,9 @@ import javax.persistence.EntityTransaction;
 import javax.persistence.Query;
 
 
+import org.apache.openjpa.jdbc.conf.JDBCConfiguration;
+import org.apache.openjpa.jdbc.sql.DBDictionary;
+import org.apache.openjpa.jdbc.sql.OracleDictionary;
 import org.apache.openjpa.lib.log.Log;
 import org.apache.openjpa.persistence.ArgumentException;
 import org.apache.openjpa.persistence.test.SQLListenerTestCase;
@@ -94,6 +97,10 @@ public class TestEmbeddable extends SQLListenerTestCase {
             Book.class, Listing.class, Seller.class,
             EntityA_Embed_Complex.class, CLEAR_TABLES);
             sql.clear();
+            DBDictionary dict = ((JDBCConfiguration)emf.getConfiguration()).getDBDictionaryInstance();
+            if (dict.getClass().getName().indexOf("oracle") != -1) {
+                ((OracleDictionary)dict).useTriggersForAutoAssign = true;
+            }
     }
     
     public void testEntityA_Coll_String() {
