@@ -22,6 +22,7 @@ import java.sql.SQLException;
 import java.util.Collection;
 import java.util.Iterator;
 
+import org.apache.openjpa.conf.OpenJPAConfiguration;
 import org.apache.openjpa.jdbc.kernel.JDBCFetchConfiguration;
 import org.apache.openjpa.jdbc.kernel.JDBCStore;
 import org.apache.openjpa.jdbc.meta.ClassMapping;
@@ -106,7 +107,12 @@ public abstract class RelationToManyInverseKeyFieldStrategy
     }
 
     public void map(boolean adapt) {
-        field.getValueInfo().assertNoSchemaComponents(field, !adapt);
+        OpenJPAConfiguration conf = field.getRepository().getConfiguration();
+        boolean isJoinColumnAllowedForToManyRelation = field.getRepository().
+            getMetaDataFactory().getDefaults().isJoinColumnAllowedForToManyRelation(conf);
+        if (!isJoinColumnAllowedForToManyRelation) 
+            field.getValueInfo().assertNoSchemaComponents(field, !adapt);
+        
         field.getKeyMapping().getValueInfo().assertNoSchemaComponents
             (field.getKey(), !adapt);
 

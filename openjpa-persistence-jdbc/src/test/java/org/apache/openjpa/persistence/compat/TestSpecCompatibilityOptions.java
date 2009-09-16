@@ -113,4 +113,25 @@ extends AbstractCachedEMFTestCase {
             emf.close();
         }
     }
+
+    /*
+     * Per JPA 2.0, JoinColumn annotation is allowed on OneToMany relations.
+     */
+    public void testJoinColumnOnToManyRelation() {
+        OpenJPAEntityManagerFactorySPI emf =
+            (OpenJPAEntityManagerFactorySPI)OpenJPAPersistence.
+                createEntityManagerFactory("persistence_2_0",
+                    "org/apache/openjpa/persistence/compat/" +
+                    "persistence_2_0.xml");
+        try {
+            EntityManager em = emf.createEntityManager();
+            // trigger table creation
+            em.getTransaction().begin();
+            em.getTransaction().commit();
+            em.close();
+            emf.close();
+        } catch (Exception e) {
+            fail("JoinColumn annotation fails to be with OneToMany relation");
+        }
+    }
 }

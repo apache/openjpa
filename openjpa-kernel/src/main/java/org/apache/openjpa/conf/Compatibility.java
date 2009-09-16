@@ -63,6 +63,7 @@ public class Compatibility {
     private boolean _autoOff = true;
     private boolean _superclassDiscriminatorStrategyByDefault = true;
     private boolean _isAbstractMappingUniDirectional = false;
+    private boolean _isJoinColumnAllowedForToManyRelation = false;
     
     /**
      * Whether to require exact identity value types when creating object
@@ -425,7 +426,7 @@ public class Compatibility {
      * Whether OpenJPA allows bi-directional relationship in the MappedSuperclass.
      * Prior to OpenJPA 2.0, the bi-directional relationship in the MappedSuperclass,
      * is not blocked. This is contrary to the JPA specification, which states that 
-     * Persistent relationships defined by a mapped superclass must be
+     * persistent relationships defined by a mapped superclass must be
      * unidirectional.
      * 
      * @param isAbstractMappingUniDirectional true if relationship defined in the 
@@ -441,14 +442,38 @@ public class Compatibility {
      * Whether OpenJPA allows bi-directional relationship in the MappedSuperclass.
      * Prior to OpenJPA 2.0, the bi-directional relationship in the MappedSuperclass,
      * is not blocked. This is contrary to the JPA specification, which states that 
-     * Persistent relationships defined by a mapped superclass must be
-     * unidirectional. The default value is true.
+     * persistent relationships defined by a mapped superclass must be
+     * unidirectional. The default value is false.
      * 
      * @since 2.0.0
      */
     public boolean isAbstractMappingUniDirectional() {
         return _isAbstractMappingUniDirectional;
     }
+    
+    /**
+     * Whether OpenJPA allows JoinColumn annotation in conjunction with 
+     * OneToMany annotation.
+     * Prior to OpenJPA 2.0, the JoinColumn annotation is not allowed for 
+     * is OneToMany relation. JPA 2.0 spec relaxes this restriction.
+     * 
+     * @param isJoinColumnAllowedForToManyRelation true if JoinColumn is 
+     *        allowed for OneToMany relation
+     * @since 2.0.0
+     */
+    public void setJoinColumnAllowedForToManyRelation(boolean isJoinColumnAllowedForToManyRelation) {
+        _isJoinColumnAllowedForToManyRelation = isJoinColumnAllowedForToManyRelation;
+    }
 
+    /**
+     * Whether OpenJPA allows JoinColumn annotation in conjunction with 
+     * OneToMany annotation.
+     * Prior to OpenJPA 2.0, the JoinColumn annotation is not allowed for 
+     * is OneToMany relation. JPA 2.0 spec relaxes this restriction. The
+     * default value is false.
+     * @since 2.0.0
+     */
+    public boolean isJoinColumnAllowedForToManyRelation() {
+        return _isJoinColumnAllowedForToManyRelation;
+    }
 }
-

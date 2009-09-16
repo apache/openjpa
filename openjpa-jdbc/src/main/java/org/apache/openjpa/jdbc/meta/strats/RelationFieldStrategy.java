@@ -26,6 +26,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.apache.openjpa.conf.OpenJPAConfiguration;
 import org.apache.openjpa.enhance.PersistenceCapable;
 import org.apache.openjpa.enhance.ReflectingPersistenceCapable;
 import org.apache.openjpa.jdbc.kernel.JDBCFetchConfiguration;
@@ -133,6 +134,28 @@ public class RelationFieldStrategy
 
             field.setUseClassCriteria(criteria);
             return;
+        } else { // this could be the owner in a bi-directional relation
+            OpenJPAConfiguration conf = field.getRepository().getConfiguration();
+            boolean isJoinColumnAllowedForToManyRelation = field.getRepository().
+                getMetaDataFactory().getDefaults().isJoinColumnAllowedForToManyRelation(conf);
+            if (isJoinColumnAllowedForToManyRelation) { 
+                ClassMapping inverse = field.getValueMapping().getTypeMapping();
+                FieldMapping[] fmds = inverse.getFieldMappings();
+                for (int i = 0; i < fmds.length; i++) {
+                    if (field == fmds[i].getMappedByMapping()) {
+                        int typeCode = fmds[i].getDeclaredTypeCode(); 
+                        if (typeCode == JavaTypes.ARRAY ||
+                            typeCode == JavaTypes.COLLECTION ||
+                            typeCode == JavaTypes.MAP) {
+                            // this is a bi-directional oneToMany relation                         
+                            ValueMappingInfo info = field.getValueInfo();
+                            if (info.getColumns().size() == 0) 
+                                info.setColumns(fmds[i].getValueInfo().getColumns());
+                        }
+                        break;
+                    }
+                }
+            }
         }
 
         // this is necessary to support openjpa 3 mappings, which didn't

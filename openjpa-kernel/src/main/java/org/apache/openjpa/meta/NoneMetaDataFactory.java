@@ -160,6 +160,11 @@ public class NoneMetaDataFactory
     }
 
     public boolean isAbstractMappingUniDirectional(OpenJPAConfiguration conf) {
-        return true;
+        return false;
     }
+    
+    public boolean isJoinColumnAllowedForToManyRelation(OpenJPAConfiguration conf) {
+        return false;
+    }
+    
 }

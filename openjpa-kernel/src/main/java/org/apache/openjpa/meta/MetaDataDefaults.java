@@ -110,8 +110,15 @@ public interface MetaDataDefaults
     /**
      * Whether the relationship in MappedSuper class must be
      * uni-directional.  
-     * @return 2.0.0
+     * @since 2.0.0
      */
     public boolean isAbstractMappingUniDirectional(OpenJPAConfiguration conf);
+    
+    /**
+     * Whether the JoinColumn annotation is allowed in conjunction with toMany
+     * relation.  
+     * @since 2.0.0
+     */
+    public boolean isJoinColumnAllowedForToManyRelation(OpenJPAConfiguration conf);
 
 }
