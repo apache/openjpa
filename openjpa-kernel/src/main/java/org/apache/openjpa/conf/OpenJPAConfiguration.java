@@ -44,6 +44,7 @@ import org.apache.openjpa.kernel.Seq;
 import org.apache.openjpa.kernel.exps.AggregateListener;
 import org.apache.openjpa.kernel.exps.FilterListener;
 import org.apache.openjpa.lib.conf.Configuration;
+import org.apache.openjpa.lib.encryption.EncryptionProvider;
 import org.apache.openjpa.meta.MetaDataFactory;
 import org.apache.openjpa.meta.MetaDataRepository;
 import org.apache.openjpa.util.ClassResolver;
@@ -1526,4 +1527,18 @@ public interface OpenJPAConfiguration
      * @since 1.3.0
      */
     public void setInitializeEagerly(boolean flag);
+
+    /**
+     * Sets the {@link EncryptionProvider}.
+     * 
+     * @param className
+     */
+    public void setEncryptionProvider(String className);
+    
+    /**
+     * Gets the {@link EncryptionProvider}.
+     * 
+     * @return EncryptionProvider
+     */
+    public EncryptionProvider getEncryptionProvider(); 
 }

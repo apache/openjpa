@@ -55,6 +55,7 @@ import org.apache.openjpa.lib.conf.PluginValue;
 import org.apache.openjpa.lib.conf.ProductDerivations;
 import org.apache.openjpa.lib.conf.StringListValue;
 import org.apache.openjpa.lib.conf.StringValue;
+import org.apache.openjpa.lib.encryption.EncryptionProvider;
 import org.apache.openjpa.lib.log.Log;
 import org.apache.openjpa.lib.util.Localizer;
 import org.apache.openjpa.meta.MetaDataFactory;
@@ -108,6 +109,7 @@ public class OpenJPAConfigurationImpl
     public ObjectValue proxyManagerPlugin;
     public StringValue connectionUserName;
     public StringValue connectionPassword;
+    public PluginValue encryptionProvider;
     public StringValue connectionURL;
     public StringValue connectionDriverName;
     public ObjectValue connectionFactory;
@@ -330,6 +332,9 @@ public class OpenJPAConfigurationImpl
 
         connectionUserName = addString("ConnectionUserName");
         connectionPassword = addString("ConnectionPassword");
+        
+        encryptionProvider = addPlugin("EncryptionProvider",true);
+ 
         connectionURL = addString("ConnectionURL");
         connectionDriverName = addString("ConnectionDriverName");
         connectionFactoryName = addString("ConnectionFactoryName");
@@ -889,6 +894,10 @@ public class OpenJPAConfigurationImpl
     }
 
     public String getConnectionPassword() {
+    	EncryptionProvider p = getEncryptionProvider();
+    	if(p != null) {
+    		return p.decrypt(connectionPassword.getString());
+    	}
         return connectionPassword.getString();
     }
 
@@ -989,6 +998,10 @@ public class OpenJPAConfigurationImpl
     }
 
     public String getConnection2Password() {
+    	EncryptionProvider p = getEncryptionProvider();
+    	if(p != null){
+    		return p.decrypt(connection2Password.getString());
+    	}
         return connection2Password.getString();
     }
 
@@ -1468,4 +1481,14 @@ public class OpenJPAConfigurationImpl
     public Log getConfigurationLog() {
         return getLog(LOG_RUNTIME);
     }
+
+    public void setEncryptionProvider(String p) {
+        encryptionProvider.setString(p);
+    }
+    
+    public EncryptionProvider getEncryptionProvider() {
+        if (encryptionProvider.get() == null)
+            encryptionProvider.instantiate(EncryptionProvider.class, this);
+        return (EncryptionProvider) encryptionProvider.get();
+    } 
 }

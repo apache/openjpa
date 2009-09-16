@@ -31,9 +31,13 @@ import java.util.List;
 import java.util.jar.JarEntry;
 import java.util.jar.JarOutputStream;
 
-import org.apache.openjpa.lib.util.J2DoPrivHelper;
-
 import junit.framework.TestCase;
+
+import org.apache.openjpa.conf.OpenJPAConfiguration;
+import org.apache.openjpa.conf.OpenJPAConfigurationImpl;
+import org.apache.openjpa.lib.conf.ConfigurationProvider;
+import org.apache.openjpa.lib.encryption.EncryptionProvider;
+import org.apache.openjpa.lib.util.J2DoPrivHelper;
 
 public class TestPersistenceProductDerivation extends TestCase {
     private File sourceFile;
@@ -90,7 +94,7 @@ public class TestPersistenceProductDerivation extends TestCase {
         }
     }
     /**
-     * Added for OPENJPA-932. Verifies a ppd properly loads pu's from multiple 
+     * Added for OPENJPA-932. Verifies a PersistenceProductDerivation properly loads pu's from multiple 
      * archives.
      * 
      * @throws Exception
@@ -101,11 +105,46 @@ public class TestPersistenceProductDerivation extends TestCase {
             new String[]{"pu_1","pu_2","pu_3"});
         
         PersistenceProductDerivation ppd = new PersistenceProductDerivation();
-        List actual = ppd.getAnchorsInResource("META-INF/persistence.xml");
+        List<String> actual = ppd.getAnchorsInResource("META-INF/persistence.xml");
         
-        assertEquals(expectedPUs, actual);        
+        assertTrue(actual.containsAll(expectedPUs));
     }
-    
+    public void testEncryptionPluginConfiguration() throws Exception {
+		PersistenceProductDerivation ppd = new PersistenceProductDerivation();
+		OpenJPAConfiguration conf = new OpenJPAConfigurationImpl();
+		String encryptedPassword = "encrypted_password";
+		ClassLoader loader = null;
+
+		ConfigurationProvider provider = ppd.load(
+				PersistenceProductDerivation.RSRC_DEFAULT,
+				"encryption_plugin_pu", loader);
+		provider.setInto(conf);
+		EncryptionProvider ep = conf.getEncryptionProvider();
+		assertNotNull(ep);
+		// Cast to test impl
+		TestEncryptionProvider tep = (TestEncryptionProvider) ep;
+
+		conf.setConnectionPassword(encryptedPassword);
+		// Validate that when we get the ConnectionPassword from configuration
+		// that it is decrypted
+		assertEquals(TestEncryptionProvider.decryptedPassword, conf
+				.getConnectionPassword());
+		// Validate that the EncryptionProvider is called with the 'encrypted'
+		// password
+		assertEquals(encryptedPassword, tep.getEncryptedPassword());
+	}
+    public void testEncryptionPluginConfigurationDefaultValue() throws Exception {
+		PersistenceProductDerivation ppd = new PersistenceProductDerivation();
+		OpenJPAConfiguration conf = new OpenJPAConfigurationImpl();
+		ClassLoader loader = null;
+
+		ConfigurationProvider provider = ppd.load(
+				PersistenceProductDerivation.RSRC_DEFAULT,
+				"encryption_plugin_default_pu", loader);
+		provider.setInto(conf);
+
+		assertNull(conf.getEncryptionProvider());
+	}
     private void buildJar(File sourceFile, File targetFile) throws Exception {
         
         JarOutputStream out = new JarOutputStream(
@@ -132,4 +171,31 @@ public class TestPersistenceProductDerivation extends TestCase {
             super(urls,parent);
         }
     }
+    public static class TestEncryptionProvider implements EncryptionProvider {
+		public static final String decryptedPassword = "decypted_password";
+		// Save the 'encrypted' password so our UT can perform validation.
+		private String encryptedPassword;
+
+		public String getEncryptedPassword() {
+			return encryptedPassword;
+		}
+
+		/**
+		 * This method ALWAYS returns the String "decypted_password".
+		 * 
+		 * @see EncryptionProvider#decrypt(String)
+		 */
+		public String decrypt(String password) {
+			encryptedPassword = password;
+
+			return decryptedPassword;
+		}
+
+		/**
+		 * @see EncryptionProvider#encrypt(String)
+		 */
+		public String encrypt(String password) {
+			return password;
+		}
+	}
 }

@@ -1698,6 +1698,47 @@ once when scrolling through a result set. The fetch size can also be set at
 runtime. See <xref linkend="ref_guide_dbsetup_lrs"/> for details.
             </para>
         </section>
+<!-- start -->     
+<section id="openjpa.EncryptionProvider">
+            <title>
+                openjpa.EncryptionProvider
+            </title>
+            <indexterm zone="openjpa.EncryptionProvider">
+                <primary>
+                    DataCache
+                </primary>
+            </indexterm>
+            <indexterm zone="openjpa.EncryptionProvider">
+                <primary>
+                    encryption
+                </primary>
+            </indexterm>
+            <para>
+		<emphasis role="bold">Property name: </emphasis><literal>openjpa.EncryptionProvider</literal>
+            </para>
+            <para>
+		<emphasis role="bold">Configuration API:</emphasis>
+		<ulink url="../javadoc/org/apache/openjpa/conf/OpenJPAConfiguration.html#getEncryptionProvider()">
+			<methodname>org.apache.openjpa.conf.OpenJPAConfiguration.getEncryptionProvider</methodname>
+		</ulink>
+            </para>
+            <para>
+		<emphasis role="bold">Resource adaptor config-property: </emphasis>
+		<literal>EncryptionProvider</literal>
+            </para>
+            <para>
+		<emphasis role="bold">Default: </emphasis><literal>false</literal>
+            </para>
+            <para>
+<emphasis role="bold">Description:</emphasis> A plugin list string (see
+<xref linkend="ref_guide_conf_plugins"/>) describing the
+<ulink url="../javadoc/org/apache/openjpa/lib/EncryptionProvider.html"><classname>
+org.apache.openjpa.lib.EncryptionProvider</classname></ulink>s to use for connection password
+encryption. See <xref linkend="ref_guide_encryption1"/> for details.
+            </para>
+        </section>
+
+<!-- end -->        
         <section id="openjpa.FetchGroups">
             <title>
                 openjpa.FetchGroups
