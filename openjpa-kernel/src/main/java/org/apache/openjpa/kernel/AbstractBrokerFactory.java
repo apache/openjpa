@@ -892,7 +892,7 @@ public abstract class AbstractBrokerFactory
             Broker broker =
                 newBroker(_conf.getConnectionUserName(), 
                           _conf.getConnectionPassword(), 
-                          _conf.isConnectionFactoryModeManaged(), 
+                          false, // WriteBehind broker is always unmanaged.
                           _conf.getConnectionRetainModeConstant(),
                           false);
 
