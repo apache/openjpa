@@ -18,25 +18,31 @@
  */
 package org.apache.openjpa.persistence.compat;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-import javax.persistence.ManyToOne;
-import javax.persistence.Table;
+import java.util.List;
+
+import javax.persistence.*;
+
+//non-default mapping
+//Sec 11.1.36, Example 3: 
+//    Unidirectional One-to-Many association using a foreign key mapping
+//    In Customer class:
+//    @OneToMany(orphanRemoval=true)
+//    @JoinColumn(name="CUST_ID") // join column is in table for Order
+//    public Set<Order> getOrders() {return orders;}
 
 @Entity
-@Table(name="JnCol_C")
-public class EntityC {
+public class Uni_1ToM_FK {
 
     @Id
     @GeneratedValue
     private long id;
 
     private String name;
-    
-    @ManyToOne
-    Bi_1ToM_FK bi1mfk;
 
+    @OneToMany
+    @JoinColumn(name="Uni1MFK_ColA")
+    private List<EntityC> entityAs = null;
+    
     public long getId() { 
         return id; 
     }
@@ -49,11 +55,11 @@ public class EntityC {
         this.name = name; 
     }
 
-    public void setBi1mfk(Bi_1ToM_FK bi1mfk) {
-        this.bi1mfk = bi1mfk;
+    public List<EntityC> getEntityAs() { 
+        return entityAs; 
     }
-    
-    public Bi_1ToM_FK getBi1mfk() {
-        return bi1mfk;
+
+    public void setEntityAs(List<EntityC> entityAs) { 
+        this.entityAs = entityAs; 
     }
 }

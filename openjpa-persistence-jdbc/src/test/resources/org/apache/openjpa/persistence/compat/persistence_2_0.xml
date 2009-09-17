@@ -24,11 +24,5 @@
         http://java.sun.com/xml/ns/persistence/persistence_2_0.xsd"
     version="2.0" >
     <persistence-unit name="persistence_2_0" transaction-type="RESOURCE_LOCAL">
-	<class>org.apache.openjpa.persistence.compat.EntityA</class>
-	<class>org.apache.openjpa.persistence.compat.EntityB</class>
-	<class>org.apache.openjpa.persistence.compat.EntityC</class>
-	<class>org.apache.openjpa.persistence.compat.MappedSuper</class>
-	<class>org.apache.openjpa.persistence.compat.Bi_1ToM_FK</class>
-    
     </persistence-unit>
 </persistence>

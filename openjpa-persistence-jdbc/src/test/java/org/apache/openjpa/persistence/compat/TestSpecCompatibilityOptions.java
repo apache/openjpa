@@ -18,17 +18,30 @@
  */
 package org.apache.openjpa.persistence.compat;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 import javax.persistence.EntityManager;
+import javax.persistence.Query;
 
 import org.apache.openjpa.conf.Compatibility;
 import org.apache.openjpa.conf.Specification;
+import org.apache.openjpa.lib.jdbc.AbstractJDBCListener;
+import org.apache.openjpa.lib.jdbc.JDBCEvent;
+import org.apache.openjpa.lib.jdbc.JDBCListener;
 import org.apache.openjpa.persistence.OpenJPAEntityManagerFactorySPI;
 import org.apache.openjpa.persistence.OpenJPAPersistence;
+import org.apache.openjpa.persistence.jdbc.SQLSniffer;
 import org.apache.openjpa.persistence.test.AbstractCachedEMFTestCase;
 
 public class TestSpecCompatibilityOptions 
 extends AbstractCachedEMFTestCase {
     
+    protected List<String> sql = new ArrayList<String>();
+    protected int sqlCount;
+
     /*
      * Verifies compatibility options and spec level are appropriate
      * for a version 2 persistence.xml
@@ -84,11 +97,11 @@ extends AbstractCachedEMFTestCase {
      * a mapped superclass. 
      */
     public void testMappedSuperClass() {
-        OpenJPAEntityManagerFactorySPI emf =
-            (OpenJPAEntityManagerFactorySPI)OpenJPAPersistence.
-                createEntityManagerFactory("persistence_2_0",
-                    "org/apache/openjpa/persistence/compat/" +
-                    "persistence_2_0.xml");
+        List<Class<?>> types = new ArrayList<Class<?>>();
+        types.add(EntityA.class);
+        types.add(EntityB.class);
+        types.add(MappedSuper.class);
+        OpenJPAEntityManagerFactorySPI emf = createEMF2_0(types);
         EntityManager em = null;
         try {
             em = emf.createEntityManager();
@@ -118,20 +131,95 @@ extends AbstractCachedEMFTestCase {
      * Per JPA 2.0, JoinColumn annotation is allowed on OneToMany relations.
      */
     public void testJoinColumnOnToManyRelation() {
-        OpenJPAEntityManagerFactorySPI emf =
-            (OpenJPAEntityManagerFactorySPI)OpenJPAPersistence.
-                createEntityManagerFactory("persistence_2_0",
-                    "org/apache/openjpa/persistence/compat/" +
-                    "persistence_2_0.xml");
+        List<Class<?>> types = new ArrayList<Class<?>>();
+        types.add(EntityC.class);
+        types.add(Bi_1ToM_FK.class);
+        types.add(Uni_1ToM_FK.class);
+        types.add(Uni_1ToM_JT.class);
+
+        OpenJPAEntityManagerFactorySPI emf = createEMF2_0(types);
+        EntityManager em = emf.createEntityManager();
+
         try {
-            EntityManager em = emf.createEntityManager();
             // trigger table creation
             em.getTransaction().begin();
             em.getTransaction().commit();
             em.close();
             emf.close();
+            if (!SQLSniffer.matches(sql, "CREATE TABLE JnCol_C", "Bi1MFK_ColA"))
+                fail("JoinColumn annotation fails to be with OneToMany relation");
         } catch (Exception e) {
             fail("JoinColumn annotation fails to be with OneToMany relation");
+        }
+    }
+
+    /*
+     * Per JPA 2.0, non-default mapping of uni-directional OneToMany using
+     * foreign key strategy is allowed.
+     */
+    public void testNonDefaultUniOneToManyRelationUsingForeignKey() {
+        List<Class<?>> types = new ArrayList<Class<?>>();
+        types.add(EntityC.class);
+        types.add(Bi_1ToM_FK.class);
+        types.add(Uni_1ToM_FK.class);
+        types.add(Uni_1ToM_JT.class);
+        OpenJPAEntityManagerFactorySPI emf = createEMF2_0(types);
+        EntityManager em = emf.createEntityManager();
+        
+        try {
+            // trigger table creation
+            Uni_1ToM_FK uni1mfk = new Uni_1ToM_FK();
+            uni1mfk.setName("test");
+            EntityC c = new EntityC();
+            c.setName("c");
+            List cs = new ArrayList();
+            cs.add(c);
+            uni1mfk.setEntityAs(cs);
+            em.persist(uni1mfk);
+            em.persist(c);
+            em.getTransaction().begin();
+            em.getTransaction().commit();
+            em.close();
+            emf.close();
+            if (!SQLSniffer.matches(sql, "CREATE TABLE JnCol_C", "Uni1MFK_ColA"))
+                fail("JoinColumn annotation fails to be with OneToMany relation");
+        } catch (Exception e) {
+            fail("Non-default uni-directional OneToMany Using foreign key fails");
+        }
+    }
+
+    private OpenJPAEntityManagerFactorySPI createEMF2_0(List<Class<?>> types) {
+        Map<Object,Object> map = new HashMap<Object,Object>();
+        map.put("openjpa.jdbc.JDBCListeners", 
+                new JDBCListener[] { 
+                    this.new Listener() 
+                });
+        map.put("openjpa.jdbc.SynchronizeMappings", 
+            "buildSchema(ForeignKeys=true,SchemaAction='drop,add')");
+
+        StringBuffer buf = new StringBuffer();
+        for (Class<?> c : types) {
+            if (buf.length() > 0) {
+                buf.append(";");
+            }
+            buf.append(c.getName());
+        }
+        String oldValue =
+            map.containsKey("openjpa.MetaDataFactory") ? "," + map.get("openjpa.MetaDataFactory").toString() : "";
+        map.put("openjpa.MetaDataFactory", "jpa(Types=" + buf.toString() + oldValue + ")");
+        return (OpenJPAEntityManagerFactorySPI)OpenJPAPersistence.
+                createEntityManagerFactory("persistence_2_0",
+                    "org/apache/openjpa/persistence/compat/" +
+                    "persistence_2_0.xml", map);        
+    }
+    
+    public class Listener extends AbstractJDBCListener {
+        @Override
+        public void beforeExecuteStatement(JDBCEvent event) {
+            if (event.getSQL() != null && sql != null) {
+                sql.add(event.getSQL());
+                sqlCount++;
+            }
         }
     }
 }

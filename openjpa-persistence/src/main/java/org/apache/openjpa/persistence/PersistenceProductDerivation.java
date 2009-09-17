@@ -187,6 +187,7 @@ public class PersistenceProductDerivation
         } else {
             compatibility.setAbstractMappingUniDirectional(true);
             compatibility.setJoinColumnAllowedForToManyRelation(true);
+            compatibility.setNonDefaultMappingAllowed(true);
         }
         return true;
     }

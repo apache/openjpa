@@ -28,6 +28,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.openjpa.conf.OpenJPAConfiguration;
 import org.apache.openjpa.jdbc.conf.JDBCConfiguration;
 import org.apache.openjpa.jdbc.meta.strats.BlobValueHandler;
 import org.apache.openjpa.jdbc.meta.strats.ByteArrayValueHandler;
@@ -964,8 +965,18 @@ public class MappingRepository
         // an association table
         FieldMappingInfo info = field.getMappingInfo();
         ValueMapping elem = field.getElementMapping();
-        return info.getTableName() == null && info.getColumns().isEmpty()
+        boolean useInverseKeyMapping = info.getTableName() == null && info.getColumns().isEmpty()
             && !elem.getValueInfo().getColumns().isEmpty();
+        
+        OpenJPAConfiguration conf = field.getRepository().getConfiguration();
+        boolean isNonDefaultMappingAllowed = field.getRepository().
+            getMetaDataFactory().getDefaults().isNonDefaultMappingAllowed(conf);
+        if (isNonDefaultMappingAllowed && field.getValueInfo().getColumns().size() > 0) {
+            // uni-/M-1/joinColumn ==> useInverseKeyMapping (foreign key strategy)
+            field.getElementMapping().getValueInfo().setColumns(field.getValueInfo().getColumns());
+            return true;
+        }
+        return useInverseKeyMapping;
     }
 
     /**

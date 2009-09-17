@@ -133,6 +133,7 @@ public class PersistenceMetaDataDefaults
     protected SetterFilter setterFilter = new SetterFilter();
     private Boolean _isAbstractMappingUniDirectional = null;
     private Boolean _isJoinColumnAllowedForToManyRelation = null;
+    private Boolean _isNonDefaultMappingAllowed = null;
     
     public PersistenceMetaDataDefaults() {
         setCallbackMode(CALLBACK_RETHROW | CALLBACK_ROLLBACK |
@@ -883,5 +884,16 @@ public class PersistenceMetaDataDefaults
     public void setJoinColumnAllowedForToManyRelation(OpenJPAConfiguration conf) {
         _isJoinColumnAllowedForToManyRelation = conf.getCompatibilityInstance().
             isJoinColumnAllowedForToManyRelation();
+    }
+
+    public boolean isNonDefaultMappingAllowed(OpenJPAConfiguration conf) {
+        if (_isNonDefaultMappingAllowed == null)
+            setNonDefaultMappingAllowed(conf);
+        return _isNonDefaultMappingAllowed;
+    }
+
+    public void setNonDefaultMappingAllowed(OpenJPAConfiguration conf) {
+        _isNonDefaultMappingAllowed = conf.getCompatibilityInstance().
+            isNonDefaultMappingAllowed();
     }
 }

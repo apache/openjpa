@@ -121,4 +121,10 @@ public interface MetaDataDefaults
      */
     public boolean isJoinColumnAllowedForToManyRelation(OpenJPAConfiguration conf);
 
+    /**
+     * Whether non-default mapping is allowed.
+     * @since 2.0.0
+     */
+    public boolean isNonDefaultMappingAllowed(OpenJPAConfiguration conf);
+    
 }

@@ -64,6 +64,7 @@ public class Compatibility {
     private boolean _superclassDiscriminatorStrategyByDefault = true;
     private boolean _isAbstractMappingUniDirectional = false;
     private boolean _isJoinColumnAllowedForToManyRelation = false;
+    private boolean _isNonDefaultMappingAllowed = false;
     
     /**
      * Whether to require exact identity value types when creating object
@@ -476,4 +477,27 @@ public class Compatibility {
     public boolean isJoinColumnAllowedForToManyRelation() {
         return _isJoinColumnAllowedForToManyRelation;
     }
+
+    /**
+     * Whether OpenJPA allows non-default entity relationship mapping. 
+     * Prior to OpenJPA 2.0, the non-default entity relationship mapping
+     * is not allowed. JPA 2.0 spec relaxes this restriction. The
+     * default value is false.
+     * @since 2.0.0
+     */
+    public void setNonDefaultMappingAllowed(boolean isNonDefaultMappingAllowed) {
+        _isNonDefaultMappingAllowed = isNonDefaultMappingAllowed;
+    }
+
+    /**
+     * Whether OpenJPA allows non-default entity relationship mapping. 
+     * Prior to OpenJPA 2.0, the non-default entity relationship mapping
+     * is not allowed. JPA 2.0 spec relaxes this restriction. The
+     * default value is false.
+     * @since 2.0.0
+     */
+    public boolean isNonDefaultMappingAllowed() {
+        return _isNonDefaultMappingAllowed;
+    }
+
 }

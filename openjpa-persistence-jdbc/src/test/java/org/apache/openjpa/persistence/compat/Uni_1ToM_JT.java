@@ -18,25 +18,30 @@
  */
 package org.apache.openjpa.persistence.compat;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-import javax.persistence.ManyToOne;
-import javax.persistence.Table;
+import java.util.List;
+
+import javax.persistence.*;
+
 
 @Entity
-@Table(name="JnCol_C")
-public class EntityC {
+public class Uni_1ToM_JT {
 
     @Id
     @GeneratedValue
     private long id;
 
     private String name;
-    
-    @ManyToOne
-    Bi_1ToM_FK bi1mfk;
 
+    @OneToMany
+    @JoinTable(
+            name="Uni_1TOM_JT_C",
+            joinColumns=
+            @JoinColumn(name="Uni1MJT_ID", referencedColumnName="ID"),
+            inverseJoinColumns=
+            @JoinColumn(name="C_ID", referencedColumnName="ID")
+            )    
+    private List<EntityC> entityAs = null;
+    
     public long getId() { 
         return id; 
     }
@@ -49,11 +54,11 @@ public class EntityC {
         this.name = name; 
     }
 
-    public void setBi1mfk(Bi_1ToM_FK bi1mfk) {
-        this.bi1mfk = bi1mfk;
+    public List<EntityC> getEntityAs() { 
+        return entityAs; 
     }
-    
-    public Bi_1ToM_FK getBi1mfk() {
-        return bi1mfk;
+
+    public void setEntityAs(List<EntityC> entityAs) { 
+        this.entityAs = entityAs; 
     }
 }
