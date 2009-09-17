@@ -31,7 +31,7 @@
     		</title>
     		<para>
     		The following sections indicate changes that are incompatible between
-    		OpenJPA 1.x.x releases and the 2.0 release. Some of may
+    		OpenJPA 1.x.x releases and the 2.0 release. Some may
     		require application changes. Others can be remedied through the use
             of compatibility options.  If your application uses a version 1.0 persistence.xml,
             compatibility options will be set appropriately to maintain backward 
@@ -137,6 +137,24 @@
                     enhancement and at runtime.
                 </para>
             </section>
+            <section id="setParameters">
+                <title>
+                    Query.setParameteres()
+                </title>
+                <para>
+                    The Query interface setParameters() method behavior has
+                    changed to throw an IllegalArgumentException if more
+                    parameter substitutions are supplied than defined in the
+                    createQuery() call, as required by the JPA2 specification.
+                    OpenJPA 1.2.x and prior versions would silently ignore the
+                    supplied parameter substitutions and allow the Query to be
+                    processed.
+                </para>
+                <para>
+                    See OPENJPA-1213 for test cases that
+                    demonstrate the behavioral differences.
+                </para>
+            </section>
         </section>
         <section id="Disabling AutoOff Collection Tracking">
             <title>
@@ -175,7 +193,10 @@
     				The FieldMapping.getStrategy() in OpenJPA 1.x
 				returned an instance of RelationFieldStrategy
 				for embded super classes, but will now return an
-				EmbedFieldStrategy.  See OPENJPA-1214 for an
+				EmbedFieldStrategy.
+			</para>
+			<para>
+                                See OPENJPA-1214 for an
 				example test case demonstrating the change.
 			</para>
 		</section>
