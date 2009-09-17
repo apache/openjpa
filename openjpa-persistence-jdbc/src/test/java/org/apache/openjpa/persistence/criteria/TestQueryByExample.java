@@ -21,6 +21,12 @@ package org.apache.openjpa.persistence.criteria;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.metamodel.Attribute;
 
+import org.apache.openjpa.jdbc.conf.JDBCConfiguration;
+import org.apache.openjpa.jdbc.sql.DBDictionary;
+import org.apache.openjpa.jdbc.sql.OracleDictionary;
+import org.apache.openjpa.persistence.OpenJPAEntityManagerSPI;
+import org.apache.openjpa.persistence.criteria.AbstractCriteriaTestCase.SQLAuditor;
+
 /**
  * Tests different styles for query by example.
  * 
@@ -28,6 +34,20 @@ import javax.persistence.metamodel.Attribute;
  *
  */
 public class TestQueryByExample extends CriteriaTest {
+    
+    public void setUp() {
+        super.setUp();
+        
+        // If using an Oracle DB, use sql92 syntax in order to get a correct
+        // comparison of SQL.  This may not work on Oracle JDBC drivers
+        // prior to 10.x
+        OpenJPAEntityManagerSPI ojem = (OpenJPAEntityManagerSPI)em;
+        DBDictionary dict = ((JDBCConfiguration) ojem.getConfiguration())
+            .getDBDictionaryInstance();
+        if (dict instanceof OracleDictionary) {
+            dict.setJoinSyntax("sql92");
+        }
+    }
     
     public void testBasicFieldsWithNonDefaultValue() {
         String jpql = "SELECT e FROM Employee e WHERE e.rating=1 AND e.salary=1100";
