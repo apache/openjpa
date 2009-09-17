@@ -145,7 +145,8 @@
                     The Query interface setParameters() method behavior has
                     changed to throw an IllegalArgumentException if more
                     parameter substitutions are supplied than defined in the
-                    createQuery() call, as required by the JPA2 specification.
+                    createQuery() or createNamedQuery() call, as required by
+                    the JPA2 specification.
                     OpenJPA 1.2.x and prior versions would silently ignore the
                     supplied parameter substitutions and allow the Query to be
                     processed.
