@@ -18,6 +18,7 @@
  */
 package org.apache.openjpa.jdbc.sql;
 
+import java.io.ByteArrayInputStream;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.security.AccessController;
@@ -40,6 +41,7 @@ import java.util.Map;
 import java.util.Set;
 
 import org.apache.openjpa.jdbc.kernel.JDBCFetchConfiguration;
+import org.apache.openjpa.jdbc.kernel.JDBCStore;
 import org.apache.openjpa.jdbc.kernel.exps.FilterValue;
 import org.apache.openjpa.jdbc.meta.JavaSQLTypes;
 import org.apache.openjpa.jdbc.schema.Column;
@@ -1191,4 +1193,12 @@ public class OracleDictionary
         }
         return recoverable;
     }
+    
+    @Override
+    public void insertBlobForStreamingLoad(Row row, Column col, 
+        JDBCStore store, Object ob, Select sel) throws SQLException {
+        if (ob == null)
+            col.setType(Types.OTHER);
+        row.setNull(col);
+    }    
 }
