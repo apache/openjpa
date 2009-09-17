@@ -39,17 +39,25 @@
             and require OpenJPA 1.x.x compatibility may need to configure the appropriate
             compatibility options to get the desired behavior.
     		</para>
+                <para>
+                    See OPENJPA-1208 for test cases that
+                    demonstrate the behavioral differences.
+                </para>
     		<section id="getProperties">
     			<title>
     				getProperties()
     			</title>
     			<para>
-    					The OpenJPAEntityManagerFactory interface getProperties()
-    					method was changed to return a Map instead of a
-    					Properties object. This change was made in order to
-    					support the getProperties() method defined in the 2.0
-    					JPA specification.
-    					</para>
+    				The OpenJPAEntityManagerFactory interface getProperties()
+    				method was changed to return a Map instead of a
+    				Properties object. This change was made in order to
+    				support the getProperties() method defined in the 2.0
+    				JPA specification.
+    			</para>
+                    <para>
+                        See OPENJPA-849 for test cases that
+                        demonstrate the behavioral differences.
+                    </para>
     		</section>
     		<section id="migration_detach_behavior">
     			<title>
@@ -112,7 +120,11 @@
     				<programlisting>
 					public &lt;T&gt; T detachCopy(T pc):
 					</programlisting>
-				</para>
+			</para>
+                    <para>
+                        See OPENJPA-1215 for test cases that
+                        demonstrate the behavioral differences.
+                    </para>
     		</section>
             <section id="private_persistent_properties">
                 <title>
@@ -135,6 +147,10 @@
                     <literal>true</literal>.  If compile time enhancement is 
                     used, this property must be specified at the time of 
                     enhancement and at runtime.
+                </para>
+                <para>
+                    See OPENJPA-1176 for test cases that
+                    demonstrate the behavioral differences.
                 </para>
             </section>
             <section id="setParameters">
@@ -174,6 +190,10 @@
                 The default behavior of auto disabling the collection tracking
                 is not changed. But when the above property is set then the collection tracking
                 will not be disabled automatically.
+            </para>
+            <para>
+                See OPENJPA-1223 and OPENJPA-1163 for test cases that
+                demonstrate the behavioral differences.
             </para>
         </section>
     	<section id="internal_differences">
