@@ -232,7 +232,7 @@
                 </dependency>
             </dependencies>
             <properties>
-                <postgresql.version>8.4-701.jdbc3</postgresql.version>
+                <postgresql.version>8.3-603.jdbc3</postgresql.version>
                 <connection.driver.name>org.postgresql.Driver</connection.driver.name>
                 <connection.url>${openjpa.postgresql.url}</connection.url>
                 <connection.username>${openjpa.postgresql.username}</connection.username>
