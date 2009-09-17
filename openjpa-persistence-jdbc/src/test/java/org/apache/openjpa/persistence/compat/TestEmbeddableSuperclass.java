@@ -20,10 +20,12 @@ package org.apache.openjpa.persistence.compat;
 
 import java.sql.Types;
 
+import org.apache.openjpa.conf.OpenJPAVersion;
 import org.apache.openjpa.jdbc.conf.JDBCConfiguration;
 import org.apache.openjpa.jdbc.meta.ClassMapping;
 import org.apache.openjpa.jdbc.meta.FieldMapping;
 import org.apache.openjpa.jdbc.meta.strats.ClobValueHandler;
+import org.apache.openjpa.jdbc.meta.strats.EmbedFieldStrategy;
 import org.apache.openjpa.jdbc.meta.strats.FullClassStrategy;
 import org.apache.openjpa.jdbc.meta.strats.MaxEmbeddedClobFieldStrategy;
 import org.apache.openjpa.jdbc.meta.strats.NoneClassStrategy;
@@ -65,8 +67,15 @@ public class TestEmbeddableSuperclass
         assertTrue(fm.getStrategy() instanceof RelationFieldStrategy);
 
         fm = cls.getFieldMapping("sup");
-        // OPENJPA-1214 - Starting with OpenJPA 2, the below will return
-        // an EmbedFieldStrategy instead.
-        assertTrue(fm.getStrategy() instanceof RelationFieldStrategy);
+
+        if (OpenJPAVersion.MAJOR_RELEASE >= 2) {
+            // OPENJPA-1214 - OpenJPA 2 returns a EmbedFieldStrategy instead of
+            // a RelationFieldStrategy as in prior releases.
+            assertTrue(fm.getStrategy() instanceof EmbedFieldStrategy);
+        } else {
+            // Prior OpenJPA 1.2/1.3 behavior
+            assertTrue(fm.getStrategy() instanceof RelationFieldStrategy);
+        }
     } 
 }
+
