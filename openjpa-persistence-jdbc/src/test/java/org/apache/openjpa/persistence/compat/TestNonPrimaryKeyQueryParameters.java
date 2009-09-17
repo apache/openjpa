@@ -79,14 +79,20 @@ public class TestNonPrimaryKeyQueryParameters extends SQLListenerTestCase {
                 assertEquals(PARTTIME_EMPLOYEE_COUNT, dept.getPartTimeEmployees().size());
                 assertSQL(".* AND t0.TYPE = .*");
             }
-        } catch (ArgumentException e) {
-            if (((OpenJPAVersion.MAJOR_RELEASE == 1) &&
-                 (OpenJPAVersion.MINOR_RELEASE >= 3)) ||
-                (OpenJPAVersion.MAJOR_RELEASE >= 2)) {
+        } catch (ArgumentException ae) {
+            if ((OpenJPAVersion.MAJOR_RELEASE == 1) &&
+                 (OpenJPAVersion.MINOR_RELEASE >= 3)) {
                 // expected exception for new behavior
             } else {
                 // unexpected exception
-                throw e;
+                throw ae;
+            }
+        } catch (IllegalArgumentException iae) {
+            if (OpenJPAVersion.MAJOR_RELEASE >= 2) {
+                // expected exception for new behavior
+            } else {
+                // unexpected exception
+                throw iae;
             }
         } finally {
             em.close();
