@@ -186,7 +186,6 @@ public class PersistenceProductDerivation
             conf.validationMode.set(String.valueOf(ValidationMode.NONE));
         } else {
             compatibility.setAbstractMappingUniDirectional(true);
-            compatibility.setJoinColumnAllowedForToManyRelation(true);
             compatibility.setNonDefaultMappingAllowed(true);
         }
         return true;

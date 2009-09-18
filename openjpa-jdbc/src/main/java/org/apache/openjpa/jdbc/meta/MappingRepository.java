@@ -949,8 +949,17 @@ public class MappingRepository
      * field should use an inverse foreign key or an association table mapping.
      */
     private boolean useInverseKeyMapping(FieldMapping field) {
+        OpenJPAConfiguration conf = field.getRepository().getConfiguration();
+        boolean isNonDefaultMappingAllowed = field.getRepository().
+            getMetaDataFactory().getDefaults().isNonDefaultMappingAllowed(conf);
         FieldMapping mapped = field.getMappedByMapping();
         if (mapped != null) {
+            // JPA 2.0: non-default mapping: bi-/1-M/JoinTable ==> join table strategy
+            FieldMappingInfo info = field.getMappingInfo();
+            if (isNonDefaultMappingAllowed && 
+                field.getAssociationType() == FieldMetaData.ONE_TO_MANY && 
+                info.getTableName() != null) 
+                return false;
             if (mapped.getTypeCode() == JavaTypes.PC)
                 return true;
             if (mapped.getElement().getTypeCode() == JavaTypes.PC)
@@ -968,17 +977,16 @@ public class MappingRepository
         boolean useInverseKeyMapping = info.getTableName() == null && info.getColumns().isEmpty()
             && !elem.getValueInfo().getColumns().isEmpty();
         
-        OpenJPAConfiguration conf = field.getRepository().getConfiguration();
-        boolean isNonDefaultMappingAllowed = field.getRepository().
-            getMetaDataFactory().getDefaults().isNonDefaultMappingAllowed(conf);
-        if (isNonDefaultMappingAllowed && field.getValueInfo().getColumns().size() > 0) {
-            // uni-/M-1/joinColumn ==> useInverseKeyMapping (foreign key strategy)
+        // JPA 2.0: non-default mapping: uni-/1-M/JoinColumn ==> foreign key strategy
+        if (isNonDefaultMappingAllowed && 
+            field.getValueInfo().getColumns().size() > 0 &&
+            field.getAssociationType() == FieldMetaData.ONE_TO_MANY) {
             field.getElementMapping().getValueInfo().setColumns(field.getValueInfo().getColumns());
             return true;
         }
         return useInverseKeyMapping;
     }
-
+    
     /**
      * Check the given value against mapped strategies.
      */

@@ -22,6 +22,13 @@ import java.util.List;
 
 import javax.persistence.*;
 
+/**
+ * This is the default bi-directional one-to-many mapping.
+ * Foreign key strategy is used. 
+ * Exception is thrown if @JoinColumn is used in conjunction
+ * with @OneToMany. 
+ * @author faywang
+ */
 
 @Entity
 public class Bi_1ToM_FK {
@@ -32,9 +39,9 @@ public class Bi_1ToM_FK {
 
     private String name;
 
-    @OneToMany(mappedBy="bi1mfk")
-    @JoinColumn(name="Bi1MFK_ColA")
-    private List<EntityC> entityAs = null;
+    @OneToMany(mappedBy="bi1mfk", fetch=FetchType.EAGER)
+    //@JoinColumn(name="Bi1MFK_ColC") // should comment out
+    private List<EntityC_B1MFK> entityCs = null;
     
     public long getId() { 
         return id; 
@@ -48,11 +55,27 @@ public class Bi_1ToM_FK {
         this.name = name; 
     }
 
-    public List<EntityC> getEntityAs() { 
-        return entityAs; 
+    public List<EntityC_B1MFK> getEntityCs() { 
+        return entityCs; 
     }
 
-    public void setEntityAs(List<EntityC> entityAs) { 
-        this.entityAs = entityAs; 
+    public void setEntityCs(List<EntityC_B1MFK> entityCs) { 
+        this.entityCs = entityCs; 
+    }
+    
+    public int hashCode() {
+        return name.hashCode();
+    }
+    
+    public boolean equals(Object o) {
+        if (!(o instanceof Bi_1ToM_FK)) return false;
+        Bi_1ToM_FK b = (Bi_1ToM_FK)o;
+        if (!b.name.equals(name)) return false;
+        if (b.entityCs.size() != entityCs.size()) return false;
+        if (b.entityCs.size() == 1) {
+            if (!b.entityCs.get(0).getName().equals(entityCs.get(0).getName()))
+                return false;
+        }
+        return true;
     }
 }

@@ -163,10 +163,6 @@ public class NoneMetaDataFactory
         return false;
     }
     
-    public boolean isJoinColumnAllowedForToManyRelation(OpenJPAConfiguration conf) {
-        return false;
-    }
-    
     public boolean isNonDefaultMappingAllowed(OpenJPAConfiguration conf) {
         return false;
     }

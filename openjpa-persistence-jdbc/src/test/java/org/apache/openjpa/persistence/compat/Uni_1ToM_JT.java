@@ -22,6 +22,12 @@ import java.util.List;
 
 import javax.persistence.*;
 
+/**
+ * This is the default uni-directional one-to-many mapping.
+ * Join table strategy is used. 
+ *  
+ * @author faywang
+ */
 
 @Entity
 public class Uni_1ToM_JT {
@@ -32,15 +38,15 @@ public class Uni_1ToM_JT {
 
     private String name;
 
-    @OneToMany
+    @OneToMany(fetch=FetchType.EAGER)
     @JoinTable(
-            name="Uni_1TOM_JT_C",
+            name="Uni1MJT_C",
             joinColumns=
             @JoinColumn(name="Uni1MJT_ID", referencedColumnName="ID"),
             inverseJoinColumns=
             @JoinColumn(name="C_ID", referencedColumnName="ID")
             )    
-    private List<EntityC> entityAs = null;
+    private List<EntityC> entityCs = null;
     
     public long getId() { 
         return id; 
@@ -54,11 +60,27 @@ public class Uni_1ToM_JT {
         this.name = name; 
     }
 
-    public List<EntityC> getEntityAs() { 
-        return entityAs; 
+    public List<EntityC> getEntityCs() { 
+        return entityCs; 
     }
 
-    public void setEntityAs(List<EntityC> entityAs) { 
-        this.entityAs = entityAs; 
+    public void setEntityCs(List<EntityC> entityAs) { 
+        this.entityCs = entityAs; 
+    }
+
+    public int hashCode() {
+        return name.hashCode();
+    }
+    
+    public boolean equals(Object o) {
+        if (!(o instanceof Uni_1ToM_JT)) return false;
+        Uni_1ToM_JT b = (Uni_1ToM_JT)o;
+        if (!b.name.equals(name)) return false;
+        if (b.entityCs.size() != entityCs.size()) return false;
+        if (b.entityCs.size() == 1) {
+            if (!b.entityCs.get(0).getName().equals(entityCs.get(0).getName()))
+                return false;
+        }
+        return true;
     }
 }

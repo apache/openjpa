@@ -22,16 +22,10 @@ import java.util.List;
 
 import javax.persistence.*;
 
-/**
- * This is the non-default uni-directional one-to-many mapping.
- * Foreign key strategy is used. 
- * @JoinColumn is required for this strategy (see Spec 11.1.36, Ex 3)
- * with @OneToMany. 
- * @author faywang
- */
+
 
 @Entity
-public class Uni_1ToM_FK {
+public class Bi_1ToM_JT {
 
     @Id
     @GeneratedValue
@@ -39,9 +33,15 @@ public class Uni_1ToM_FK {
 
     private String name;
 
-    @OneToMany(fetch=FetchType.EAGER)
-    @JoinColumn(name="Uni1MFK_ID")
-    private List<EntityC_U1MFK> entityCs = null;
+    @OneToMany(mappedBy="bi1mjt", fetch=FetchType.EAGER)
+    @JoinTable(
+        name="Bi1MJT_C",
+        joinColumns=
+          @JoinColumn(name="C_ID", referencedColumnName="ID"),
+          inverseJoinColumns=
+          @JoinColumn(name="Bi1MJT_ID", referencedColumnName="ID")
+    )
+    private List<EntityC_B1MJT> entityCs = null;
     
     public long getId() { 
         return id; 
@@ -55,11 +55,11 @@ public class Uni_1ToM_FK {
         this.name = name; 
     }
 
-    public List<EntityC_U1MFK> getEntityCs() { 
+    public List<EntityC_B1MJT> getEntityCs() { 
         return entityCs; 
     }
 
-    public void setEntityCs(List<EntityC_U1MFK> entityCs) { 
+    public void setEntityCs(List<EntityC_B1MJT> entityCs) { 
         this.entityCs = entityCs; 
     }
 
@@ -68,8 +68,8 @@ public class Uni_1ToM_FK {
     }
     
     public boolean equals(Object o) {
-        if (!(o instanceof Uni_1ToM_FK)) return false;
-        Uni_1ToM_FK b = (Uni_1ToM_FK)o;
+        if (!(o instanceof Bi_1ToM_JT)) return false;
+        Bi_1ToM_JT b = (Bi_1ToM_JT)o;
         if (!b.name.equals(name)) return false;
         if (b.entityCs.size() != entityCs.size()) return false;
         if (b.entityCs.size() == 1) {

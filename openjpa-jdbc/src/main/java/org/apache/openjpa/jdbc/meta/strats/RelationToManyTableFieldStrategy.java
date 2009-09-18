@@ -22,6 +22,7 @@ import java.sql.SQLException;
 import java.util.Collection;
 import java.util.Iterator;
 
+import org.apache.openjpa.conf.OpenJPAConfiguration;
 import org.apache.openjpa.jdbc.kernel.JDBCFetchConfiguration;
 import org.apache.openjpa.jdbc.kernel.JDBCStore;
 import org.apache.openjpa.jdbc.meta.ClassMapping;
@@ -39,6 +40,7 @@ import org.apache.openjpa.jdbc.sql.Select;
 import org.apache.openjpa.kernel.OpenJPAStateManager;
 import org.apache.openjpa.kernel.StoreContext;
 import org.apache.openjpa.lib.util.Localizer;
+import org.apache.openjpa.meta.FieldMetaData;
 import org.apache.openjpa.meta.JavaTypes;
 import org.apache.openjpa.util.ChangeTracker;
 import org.apache.openjpa.util.MetaDataException;
@@ -52,6 +54,8 @@ import org.apache.openjpa.util.Proxy;
  */
 public abstract class RelationToManyTableFieldStrategy
     extends StoreCollectionFieldStrategy {
+
+    boolean _isBiOneToManyJoinTable = false;
 
     private static final Localizer _loc = Localizer.forPackage
         (RelationToManyTableFieldStrategy.class);
@@ -105,46 +109,62 @@ public abstract class RelationToManyTableFieldStrategy
         FieldMapping mapped = field.getMappedByMapping();
         ValueMappingInfo vinfo = elem.getValueInfo();
         boolean criteria = vinfo.getUseClassCriteria();
+
+        OpenJPAConfiguration conf = field.getRepository().getConfiguration();
+        boolean isNonDefaultMappingAllowed = field.getRepository().
+            getMetaDataFactory().getDefaults().isNonDefaultMappingAllowed(conf);
+        // Bi-directional oneToMany relation with
+        // @JoinTable annotation ==> join table strategy
+        // ==> should not mapped in the owner's table
         if (mapped != null) {
-            if (mapped.getElement().getTypeCode() != JavaTypes.PC)
-                throw new MetaDataException(_loc.get("not-inv-relation-coll",
-                    field, mapped));
-            field.getMappingInfo().assertNoSchemaComponents(field, !adapt);
-            vinfo.assertNoSchemaComponents(elem, !adapt);
-            mapped.resolve(mapped.MODE_META | mapped.MODE_MAPPING);
+            _isBiOneToManyJoinTable = 
+                field.getAssociationType() == FieldMetaData.ONE_TO_MANY &&
+                field.getMappingInfo().getTableName() != null ? true : false;
+        
+            if (!isNonDefaultMappingAllowed || !_isBiOneToManyJoinTable) {
+                // JPA 2.0: Bi-/OneToMany/@JoinTable ==> join table strategy is allowed
+                if (mapped.getElement().getTypeCode() != JavaTypes.PC) {
+                    throw new MetaDataException(_loc.get("not-inv-relation-coll",
+                            field, mapped));
+                }
+                field.getMappingInfo().assertNoSchemaComponents(field, !adapt);
+                vinfo.assertNoSchemaComponents(elem, !adapt);
 
-            if (!mapped.isMapped() || mapped.isSerialized())
-                throw new MetaDataException(_loc.get("mapped-by-unmapped",
-                    field, mapped));
-
-            field.setJoinForeignKey(mapped.getElementMapping().
-                getForeignKey(field.getDefiningMapping()));
-            elem.setForeignKey(mapped.getJoinForeignKey());
-            elem.setUseClassCriteria(criteria);
-            field.setOrderColumn(mapped.getOrderColumn());
-            return;
+                mapped.resolve(mapped.MODE_META | mapped.MODE_MAPPING);
+                if (!mapped.isMapped() || mapped.isSerialized())
+                    throw new MetaDataException(_loc.get("mapped-by-unmapped",
+                            field, mapped));
+                field.setJoinForeignKey(mapped.getElementMapping().
+                        getForeignKey(field.getDefiningMapping()));
+                elem.setForeignKey(mapped.getJoinForeignKey());
+                elem.setUseClassCriteria(criteria);
+                field.setOrderColumn(mapped.getOrderColumn());
+                return;
+            }
         }
 
-        field.mapJoin(adapt, true);
-        if (elem.getTypeMapping().isMapped()) {
-            ForeignKey fk = vinfo.getTypeJoin(elem, "element", false, adapt);
-            elem.setForeignKey(fk);
-            elem.setColumnIO(vinfo.getColumnIO());
-        } else
-            RelationStrategies.mapRelationToUnmappedPC(elem, "element", adapt);
-        elem.setUseClassCriteria(criteria);
-        elem.mapConstraints("element", adapt);
+        if (mapped == null || (_isBiOneToManyJoinTable && isNonDefaultMappingAllowed)) {
+            field.mapJoin(adapt, true);
+            if (elem.getTypeMapping().isMapped()) {
+                ForeignKey fk = vinfo.getTypeJoin(elem, "element", false, adapt);
+                elem.setForeignKey(fk);
+                elem.setColumnIO(vinfo.getColumnIO());
+            } else
+                RelationStrategies.mapRelationToUnmappedPC(elem, "element", adapt);
+            elem.setUseClassCriteria(criteria);
+            elem.mapConstraints("element", adapt);
 
-        FieldMappingInfo finfo = field.getMappingInfo();
-        Column orderCol = finfo.getOrderColumn(field, field.getTable(), adapt);
-        field.setOrderColumn(orderCol);
-        field.setOrderColumnIO(finfo.getColumnIO());
-        field.mapPrimaryKey(adapt);
+            FieldMappingInfo finfo = field.getMappingInfo();
+            Column orderCol = finfo.getOrderColumn(field, field.getTable(), adapt);
+            field.setOrderColumn(orderCol);
+            field.setOrderColumnIO(finfo.getColumnIO());
+            field.mapPrimaryKey(adapt);
+        }
     }
 
     public void insert(OpenJPAStateManager sm, JDBCStore store, RowManager rm)
         throws SQLException {
-        if (field.getMappedBy() == null)
+        if (field.getMappedBy() == null || _isBiOneToManyJoinTable) 
             insert(sm, rm, sm.fetchObject(field.getIndex()));
     }
 
@@ -175,7 +195,7 @@ public abstract class RelationToManyTableFieldStrategy
 
     public void update(OpenJPAStateManager sm, JDBCStore store, RowManager rm)
         throws SQLException {
-        if (field.getMappedBy() != null)
+        if (field.getMappedBy() != null && !_isBiOneToManyJoinTable)
             return;
 
         Object obj = sm.fetchObject(field.getIndex());

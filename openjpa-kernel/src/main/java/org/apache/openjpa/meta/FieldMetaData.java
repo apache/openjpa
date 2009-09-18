@@ -114,6 +114,11 @@ public class FieldMetaData
      * Constant specifying the management level of a field.
      */
     public static final int MANAGE_NONE = 0;
+    
+    public static final int ONE_TO_ONE = 1;
+    public static final int ONE_TO_MANY = 2;
+    public static final int MANY_TO_ONE = 3;
+    public static final int MANY_TO_MANY = 4;
 
     private static final Localizer _loc = Localizer.forPackage
         (FieldMetaData.class);
@@ -213,6 +218,7 @@ public class FieldMetaData
     // indicate if this field is used by other field as "order by" value 
     private boolean _usedInOrderBy = false;
     private boolean _isElementCollection = false;
+    private int _associationType;
 
     /**
      * Constructor.
@@ -2217,5 +2223,14 @@ public class FieldMetaData
     	ClassMetaData owner = getDeclaringMetaData();
     	owner.mergeFieldAccess(this, fCode);
         _access = fCode;
-    }    
+    }
+    
+    public int getAssociationType() {
+        return _associationType;
+    }
+    
+    public void setAssociationType(int type) {
+        _associationType = type;
+    }
+    
 }

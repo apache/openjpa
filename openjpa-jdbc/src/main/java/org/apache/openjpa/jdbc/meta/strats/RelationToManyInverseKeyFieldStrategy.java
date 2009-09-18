@@ -108,11 +108,15 @@ public abstract class RelationToManyInverseKeyFieldStrategy
 
     public void map(boolean adapt) {
         OpenJPAConfiguration conf = field.getRepository().getConfiguration();
-        boolean isJoinColumnAllowedForToManyRelation = field.getRepository().
-            getMetaDataFactory().getDefaults().isJoinColumnAllowedForToManyRelation(conf);
-        if (!isJoinColumnAllowedForToManyRelation) 
+        boolean isNonDefaultMappingAllowed = field.getRepository().
+            getMetaDataFactory().getDefaults().isNonDefaultMappingAllowed(conf);
+        FieldMapping mapped = field.getMappedByMapping();
+
+        // JPA 2.0 allows non-default mapping: Uni-/1-M/@JoinColumn ==> foreign key strategy
+        // Bi-/1-M/@JoinColumn should result in exception 
+        if (!isNonDefaultMappingAllowed || mapped != null) {
             field.getValueInfo().assertNoSchemaComponents(field, !adapt);
-        
+        }
         field.getKeyMapping().getValueInfo().assertNoSchemaComponents
             (field.getKey(), !adapt);
 
@@ -122,7 +126,6 @@ public abstract class RelationToManyInverseKeyFieldStrategy
             throw new MetaDataException(_loc.get("not-elem-relation", field));
 
         // check for named inverse
-        FieldMapping mapped = field.getMappedByMapping();
         FieldMappingInfo finfo = field.getMappingInfo();
         ValueMappingInfo vinfo = elem.getValueInfo();
         boolean criteria = vinfo.getUseClassCriteria();

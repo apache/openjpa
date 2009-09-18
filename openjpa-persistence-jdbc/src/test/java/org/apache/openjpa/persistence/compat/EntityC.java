@@ -21,11 +21,10 @@ package org.apache.openjpa.persistence.compat;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
-import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
 @Entity
-@Table(name="JnCol_C")
+@Table(name="Compact_C")
 public class EntityC {
 
     @Id
@@ -34,9 +33,6 @@ public class EntityC {
 
     private String name;
     
-    @ManyToOne
-    Bi_1ToM_FK bi1mfk;
-
     public long getId() { 
         return id; 
     }
@@ -47,13 +43,5 @@ public class EntityC {
 
     public void setName(String name) { 
         this.name = name; 
-    }
-
-    public void setBi1mfk(Bi_1ToM_FK bi1mfk) {
-        this.bi1mfk = bi1mfk;
-    }
-    
-    public Bi_1ToM_FK getBi1mfk() {
-        return bi1mfk;
     }
 }

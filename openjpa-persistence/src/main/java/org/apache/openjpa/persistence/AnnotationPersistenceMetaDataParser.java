@@ -1386,6 +1386,7 @@ public class AnnotationPersistenceMetaDataParser
         if (anno.targetEntity() != void.class)
             fmd.setTypeOverride(anno.targetEntity());
         setCascades(fmd, anno.cascade());
+        fmd.setAssociationType(FieldMetaData.MANY_TO_ONE);
     }
 
     /**
@@ -1410,6 +1411,7 @@ public class AnnotationPersistenceMetaDataParser
             fmd.setTypeOverride(anno.targetEntity());
         setCascades(fmd, anno.cascade());
         setOrphanRemoval(fmd, anno.orphanRemoval());
+        fmd.setAssociationType(FieldMetaData.ONE_TO_ONE);
     }
 
     /**
@@ -1450,6 +1452,7 @@ public class AnnotationPersistenceMetaDataParser
             fmd.getElement().setDeclaredType(anno.targetEntity());
         setCascades(fmd.getElement(), anno.cascade());
         setOrphanRemoval(fmd.getElement(), anno.orphanRemoval());
+        fmd.setAssociationType(FieldMetaData.ONE_TO_MANY);
     }
 
     /**
@@ -1474,6 +1477,7 @@ public class AnnotationPersistenceMetaDataParser
         if (anno.targetEntity() != void.class)
             fmd.getElement().setDeclaredType(anno.targetEntity());
         setCascades(fmd.getElement(), anno.cascade());
+        fmd.setAssociationType(FieldMetaData.MANY_TO_MANY);
     }
 
     /**
