@@ -1,13 +1,9 @@
 package org.apache.openjpa.persistence.cache.jpa;
 
 import java.lang.reflect.Modifier;
-import java.util.ArrayList;
-import java.util.List;
 
 import javax.persistence.EntityManager;
 
-import org.apache.openjpa.lib.jdbc.AbstractJDBCListener;
-import org.apache.openjpa.lib.jdbc.JDBCEvent;
 import org.apache.openjpa.lib.jdbc.JDBCListener;
 import org.apache.openjpa.persistence.OpenJPAEntityManagerFactorySPI;
 import org.apache.openjpa.persistence.OpenJPAPersistence;
@@ -20,7 +16,6 @@ import org.apache.openjpa.persistence.cache.jpa.model.UnspecifiedEntity;
 import org.apache.openjpa.persistence.cache.jpa.model.XmlCacheableEntity;
 import org.apache.openjpa.persistence.cache.jpa.model.XmlUncacheableEntity;
 import org.apache.openjpa.persistence.test.AbstractPersistenceTestCase;
-import org.apache.openjpa.persistence.test.SQLListenerTestCase.Listener;
 
 public abstract class AbstractCacheTestCase extends AbstractPersistenceTestCase {
     protected final String RETRIEVE_MODE_PROP = "javax.persistence.cache.retrieveMode";

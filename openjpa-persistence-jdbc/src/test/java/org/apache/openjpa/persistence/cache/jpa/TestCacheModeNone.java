@@ -25,7 +25,6 @@ import javax.persistence.Cache;
 
 import org.apache.openjpa.lib.jdbc.JDBCListener;
 import org.apache.openjpa.persistence.OpenJPAEntityManagerFactorySPI;
-import org.apache.openjpa.persistence.StoreCache;
 
 public class TestCacheModeNone extends AbstractCacheModeTestCase {
 
