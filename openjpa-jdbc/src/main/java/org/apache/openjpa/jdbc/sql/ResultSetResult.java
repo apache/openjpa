@@ -357,7 +357,8 @@ public class ResultSetResult
         if (metaTypeCode == -1 && obj instanceof Column)
             metaTypeCode = ((Column) obj).getJavaType();
 
-        boolean isClob = (obj instanceof Column) ? ((Column) obj).getType() == Types.CLOB : false;
+        boolean isClob = (obj instanceof Column) ? ((Column) obj).getType() == Types.CLOB && !((Column) obj).isXML()
+                : false;
         obj = translate(obj, joins);
         
         Object val = null;

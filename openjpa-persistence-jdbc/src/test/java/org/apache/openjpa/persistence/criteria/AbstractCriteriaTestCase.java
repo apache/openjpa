@@ -52,6 +52,10 @@ public abstract class AbstractCriteriaTestCase extends TestCase {
     protected abstract EntityManager getEntityManager();
     private DBDictionary dict = null;
 
+    public DBDictionary getDictionary() {
+        return dict;
+    }
+
     /**
      * Create an entity manager factory for persistence unit <code>pu</code>. Put {@link #CLEAR_TABLES} in this list to
      * tell the test framework to delete all table contents before running the tests.
@@ -86,8 +90,10 @@ public abstract class AbstractCriteriaTestCase extends TestCase {
     void setDictionary() {
         JDBCConfiguration conf = (JDBCConfiguration) getEntityManagerFactory().getConfiguration();
         dict = conf.getDBDictionaryInstance();
-        dict.requiresCastForComparisons = false;
-        dict.requiresCastForMathFunctions = false;
+        if (dict instanceof DerbyDictionary) {
+            dict.requiresCastForComparisons = false;
+            dict.requiresCastForMathFunctions = false;
+        }
     }
 
     /**
@@ -174,6 +180,9 @@ public abstract class AbstractCriteriaTestCase extends TestCase {
                 cSQL.size());
         }
 
+        if (!(dict instanceof DerbyDictionary))
+            return;
+
         for (int i = 0; i < jSQL.size(); i++) {
             if (!jSQL.get(i).equals(cSQL.get(i))) {
                 printSQL("Target SQL for JPQL", jSQL);
@@ -182,9 +191,6 @@ public abstract class AbstractCriteriaTestCase extends TestCase {
                     .get(i));
             }
         }
-
-        if (!(dict instanceof DerbyDictionary))
-            return;
 
         if (expectedSQL != null) {
             assertEquals("SQL for JPQL and ExpectedSQL for " + jpql + " is different", jSQL.get(0), 

@@ -203,5 +203,9 @@ class EndsWithExpression
         public XMLMetaData getXmlMapping() {
             return null;
         }
+
+        public boolean requiresCast() {
+            return false;
+        }
     }
 }

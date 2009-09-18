@@ -54,8 +54,8 @@ public abstract class CriteriaTest extends AbstractCriteriaTestCase {
             auditor = new SQLAuditor();
             setEntityManagerFactory(createNamedEMF(getDomainClasses()));
             assertNotNull(getEntityManagerFactory());
-            setDictionary();
         }
+        setDictionary();
         em = getEntityManagerFactory().createEntityManager();
         cb = getEntityManagerFactory().getQueryBuilder();
     }

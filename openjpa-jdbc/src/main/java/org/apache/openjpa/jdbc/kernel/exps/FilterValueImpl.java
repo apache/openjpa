@@ -110,4 +110,8 @@ class FilterValueImpl
     public XMLMetaData getXmlMapping() {
         return (getXPath() == null) ? null : getXPath().getXmlMapping();
     }
+
+    public boolean requiresCast() {
+        return !(_val instanceof All || _val instanceof Any || _val instanceof PCPath);
+    }
 }

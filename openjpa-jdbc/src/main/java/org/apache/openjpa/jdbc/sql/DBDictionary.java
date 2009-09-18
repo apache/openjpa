@@ -2784,7 +2784,7 @@ public class DBDictionary
         Class rc = Filters.wrap(rhs.getType());
         int type = 0;
         if (requiresCastForMathFunctions && (lc != rc
-            || (lhs.isConstant() && rhs.isConstant()))) {
+            || (lhs.isConstant() || rhs.isConstant()))) {
             Class c = Filters.promote(lc, rc);
             type = getJDBCType(JavaTypes.getTypeCode(c), false);
             if (type != Types.VARBINARY && type != Types.BLOB) {
@@ -2848,6 +2848,8 @@ public class DBDictionary
             if (type != Types.VARBINARY && type != Types.BLOB) {
                 castlhs = (lhs.isConstant() && rhs.isConstant()) || lc != c;
                 castrhs = (lhs.isConstant() && rhs.isConstant()) || rc != c;
+                castlhs = castlhs && lhs.requiresCast();
+                castrhs = castrhs && rhs.requiresCast();
             }
         }
 

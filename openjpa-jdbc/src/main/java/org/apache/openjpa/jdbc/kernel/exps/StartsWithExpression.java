@@ -194,6 +194,10 @@ class StartsWithExpression
             return null;
         }
 
+        public boolean requiresCast() {
+            return false;
+        }
+
     }
 
     /**
@@ -277,6 +281,10 @@ class StartsWithExpression
         
         public XMLMetaData getXmlMapping() {
             return null;
+        }
+
+        public boolean requiresCast() {
+            return false;
         }
     }
 }

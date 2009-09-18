@@ -116,4 +116,10 @@ public interface FilterValue {
      * else return null;
      */
     public XMLMetaData getXmlMapping();
+
+    /**
+     * return true if CAST is required for this filter value
+     * else return false.
+     */
+    public boolean requiresCast();
 }

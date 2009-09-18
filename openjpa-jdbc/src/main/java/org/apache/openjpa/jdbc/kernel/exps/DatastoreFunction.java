@@ -18,6 +18,8 @@
  */
 package org.apache.openjpa.jdbc.kernel.exps;
 
+import org.apache.openjpa.jdbc.sql.SQLBuffer;
+import org.apache.openjpa.jdbc.sql.Select;
 import org.apache.openjpa.kernel.exps.Arguments;
 
 /**
@@ -41,4 +43,20 @@ public class DatastoreFunction extends UnaryOp {
         return _functionName;
     }
 
+    public void appendTo(Select sel, ExpContext ctx, ExpState state, 
+        SQLBuffer sql, int index) {
+        Args args = (Args) getValue();
+        if (!ctx.store.getDBDictionary().requiresCastForMathFunctions || args.getValues().length == 1)
+            super.appendTo(sel, ctx, state, sql, index);
+        else {
+            sql.append(getOperator());
+            sql.append("(");            
+            args.appendTo(sel, ctx, state, sql, 0);
+            Val[] vals = args.getVals();
+            for (int i = 1; i < vals.length; i++) {
+                sql.addCastForParam(getOperator(), vals[i]);
+            }
+            sql.append(")");
+        }            
+    }
 }
