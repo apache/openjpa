@@ -55,11 +55,11 @@ import javax.xml.bind.annotation.XmlType;
 })
 public class Address {
 
-    @XmlElement(name = "Name")
+    @XmlElement(name = "name")
     protected String name;
-    @XmlElement(name = "Street")
+    @XmlElement(name = "street")
     protected List<String> street;
-    @XmlElement(name = "City")
+    @XmlElement(name = "city")
     protected String city;
 
     /**

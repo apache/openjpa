@@ -51,9 +51,9 @@ public class CANAddress
     extends Address
 {
 
-    @XmlElement(name = "Province")
+    @XmlElement(name = "province")
     protected String province;
-    @XmlElement(name = "PostalCode")
+    @XmlElement(name = "postalCode")
     protected String postalCode;
 
     /**

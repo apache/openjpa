@@ -69,7 +69,9 @@ public class XMLValueHandler
                 (val.getClass().getName().endsWith(PROXY_SUFFIX))
                      ? val.getClass().getSuperclass()
                      : val.getClass());
-            Marshaller m = jc.createMarshaller();            
+            Marshaller m = jc.createMarshaller();
+            // Some DBs, like MS SQL Server, require a different encoding than the JAXB default of UTF-8
+            m.setProperty("jaxb.encoding", store.getDBDictionary().getXMLTypeEncoding());
             Writer result = new StringWriter();
             m.marshal( val, result );
             return result.toString();

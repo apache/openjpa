@@ -75,7 +75,7 @@ public class SQLServerDictionary
                     driverVendor = VENDOR_MICROSOFT;                
                     // serverMajorVersion of 8==2000, 9==2005, 10==2008
                     if (meta.getDatabaseMajorVersion() >= 9)
-                        supportsXMLColumn = true;
+                        setSupportsXMLColumn(true);
                     if (meta.getDriverMajorVersion() >= 2) {
                         // see http://blogs.msdn.com/jdbcteam/archive/2007/05/\
                         // 02/what-is-adaptive-response-buffering-and-why-\
@@ -109,7 +109,7 @@ public class SQLServerDictionary
                                 versionString.indexOf(" "));
                         int version = Integer.parseInt(versionString);
                         if (version >= 2005)
-                            supportsXMLColumn = true;
+                            setSupportsXMLColumn(true);
                     }
                 }
             } else {
@@ -256,7 +256,14 @@ public class SQLServerDictionary
         appendLength(buf, type);
         buf.append("')");
     }
-    
+
+    @Override
+    public void setSupportsXMLColumn(boolean b) {
+        super.setSupportsXMLColumn(b);
+        // MS SQL Server requires XML data in UTF-16 or UCS-2 instead of JAXB default of UTF-8
+        super.setXMLTypeEncoding("UTF-16");
+    }
+
     /**
      * Return DB specific schemaCase
      */
