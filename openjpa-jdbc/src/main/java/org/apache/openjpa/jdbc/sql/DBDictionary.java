@@ -311,6 +311,7 @@ public class DBDictionary
     public String varbinaryTypeName = "VARBINARY";
     public String varcharTypeName = "VARCHAR";
     public String xmlTypeName = "XML";
+    public String xmlTypeEncoding = "UTF-8";
     public String getStringVal = "";
 
     // schema metadata
@@ -5026,6 +5027,34 @@ public class DBDictionary
      */
     public void setDelimitIds(boolean delimitIds) {
         this.delimitIds = delimitIds;
+    }
+    
+    /**
+     * @return supportsXMLColumn
+     */
+    public boolean getSupportsXMLColumn() {
+        return supportsXMLColumn;
+    }
+
+    /**
+     * @param b boolean representing if XML columns are supported
+     */
+    public void setSupportsXMLColumn(boolean b) {
+        supportsXMLColumn = b;
+    }
+    
+    /**
+     * @return xmlTypeEncoding
+     */
+    public String getXMLTypeEncoding() {
+        return xmlTypeEncoding;
+    }
+
+    /**
+     * @param encoding database required JAXB encoding for the XML value
+     */
+    public void setXMLTypeEncoding(String encoding) {
+        xmlTypeEncoding = encoding;
     }
     
     // TODO: Should we pass in combining char, or just assume '_'?

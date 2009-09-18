@@ -50,9 +50,9 @@ public class USAAddress
     extends Address
 {
 
-    @XmlElement(name = "State")
+    @XmlElement(name = "state")
     protected String state;
-    @XmlElement(name = "ZIP")
+    @XmlElement(name = "zip")
     protected int zip;
 
     /**
