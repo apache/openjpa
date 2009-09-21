@@ -50,6 +50,30 @@
                     demonstrate the behavioral differences.
             </para>
         </section>
+        <section id="prePostUpdate">
+            <title>
+                PreUpdate/PostUpdate Life Cycle Callbacks
+            </title>
+            <para>
+                If an entity was updated between the persist()
+                and commit() operations in OpenJPA 1.x, then
+                any PreUpdate and PostUpdate life cycle callback
+                methods would be executed.  Starting in OpenJPA
+                1.3 and 2.0, these callbacks will not get executed.
+            </para>
+            <para>
+                The JPA 2.0 specification section on "Semantics
+                of the Life Cycle Callback Methods for Entities"
+                has been updated to include a Note that the
+                callback behavior for updating an entity after
+                the persist operation is implementation specific
+                and should not be relied upon.
+            </para>
+            <para>
+                See OPENJPA-1182 for an
+                example test case demonstrating the change.
+            </para>
+        </section>
     </section>
 </appendix>
 
