@@ -1230,13 +1230,15 @@ public class EntityManagerImpl
     }
 
     public int hashCode() {
-        return _broker.hashCode();
+        return (_broker == null) ? 0 : _broker.hashCode();
     }
 
     public boolean equals(Object other) {
         if (other == this)
             return true;
-        if (!(other instanceof EntityManagerImpl))
+        if ((other == null) || (other.getClass() != this.getClass()))
+            return false;
+        if (_broker == null)
             return false;
         return _broker.equals(((EntityManagerImpl) other)._broker);
     }
