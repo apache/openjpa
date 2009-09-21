@@ -1651,9 +1651,16 @@ public class AnnotationPersistenceMappingParser
     private void parseJoinTable(FieldMapping fm, JoinTable join) {
     	FieldMappingInfo info = fm.getMappingInfo();
         info.setTableName(toTableName(join.schema(), join.name()));
-        parseJoinColumns(fm, info, false, join.joinColumns());
-        parseJoinColumns(fm, fm.getElementMapping().getValueInfo(), false,
-            join.inverseJoinColumns());
+        if (fm.getAssociationType() == FieldMetaData.ONE_TO_MANY && 
+            fm.getMappedBy() != null) { //Bi-/One-To-Many/JoinTable+JoinColumn
+            parseJoinColumns(fm, info, false, join.inverseJoinColumns());
+            parseJoinColumns(fm, fm.getElementMapping().getValueInfo(), false,
+                join.joinColumns());
+        } else {
+            parseJoinColumns(fm, info, false, join.joinColumns());
+            parseJoinColumns(fm, fm.getElementMapping().getValueInfo(), false,
+                join.inverseJoinColumns());
+        }
         addUniqueConstraints(info.getTableName(), fm, info,  
             join.uniqueConstraints());
     }

@@ -25,7 +25,7 @@ public class EntityC_B1MJT {
 
     @Id
     @GeneratedValue
-    private long id;
+    private long cid;
 
     private String name;
     
@@ -33,7 +33,7 @@ public class EntityC_B1MJT {
     Bi_1ToM_JT bi1mjt;
 
     public long getId() { 
-        return id; 
+        return cid; 
     }
 
     public String getName() { 

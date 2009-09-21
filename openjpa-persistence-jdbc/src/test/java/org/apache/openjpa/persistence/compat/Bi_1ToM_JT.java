@@ -29,7 +29,7 @@ public class Bi_1ToM_JT {
 
     @Id
     @GeneratedValue
-    private long id;
+    private long bid;
 
     private String name;
 
@@ -37,14 +37,14 @@ public class Bi_1ToM_JT {
     @JoinTable(
         name="Bi1MJT_C",
         joinColumns=
-          @JoinColumn(name="C_ID", referencedColumnName="ID"),
+          @JoinColumn(name="C_ID", referencedColumnName="CID"),
           inverseJoinColumns=
-          @JoinColumn(name="Bi1MJT_ID", referencedColumnName="ID")
+          @JoinColumn(name="Bi1MJT_ID", referencedColumnName="BID")
     )
     private List<EntityC_B1MJT> entityCs = null;
     
     public long getId() { 
-        return id; 
+        return bid; 
     }
 
     public String getName() { 
