@@ -41,7 +41,7 @@ public class Student {
     private String name;
     
     @ManyToMany
-    @JoinTable(name="ENROLLMENTS",
+    @JoinTable(name="TENROLLMNTS",
         joinColumns=@JoinColumn(name="STUDENT"),
         inverseJoinColumns=@JoinColumn(name="SEMESTER"))
     @MapKeyJoinColumn(name="COURSE")    
