@@ -40,6 +40,7 @@ import javax.transaction.TransactionManager;
 import org.apache.commons.collections.set.MapBackedSet;
 import org.apache.commons.lang.StringUtils;
 import org.apache.openjpa.conf.BrokerValue;
+import org.apache.openjpa.conf.MetaDataRepositoryValue;
 import org.apache.openjpa.conf.OpenJPAConfiguration;
 import org.apache.openjpa.conf.OpenJPAConfigurationImpl;
 import org.apache.openjpa.conf.OpenJPAVersion;
@@ -163,6 +164,20 @@ public abstract class AbstractBrokerFactory
                 _conf.getConnectionRetainModeConstant(), false).close(); 
         }
 
+        // This logic needs to happen here for a reason! The preloading of the MDR
+        // can not happen during the configuration of the MDR because when running
+        // in a container environment we need to be able to get an uninitialized
+        // MDR to pass to the PCClassFileTransformer. If we preload before registering
+        // the class transformer, we miss the class being defined by the JVM and in turn
+        // we fail to enhance our entities.
+        OpenJPAConfigurationImpl impl = (OpenJPAConfigurationImpl) config;
+        MetaDataRepositoryValue m = impl.metaRepositoryPlugin;
+        if (m.getPreload() == true) {
+            // Obtain a reference to the MetaDataRepository and trigger the preload
+            MetaDataRepository mdr = config.getMetaDataRepositoryInstance();
+            mdr.preload();
+        }
+        
         initWriteBehindCallback();
     }
 

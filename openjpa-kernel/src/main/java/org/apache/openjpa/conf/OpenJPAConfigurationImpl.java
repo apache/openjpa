@@ -42,7 +42,6 @@ import org.apache.openjpa.kernel.FinderCache;
 import org.apache.openjpa.kernel.InverseManager;
 import org.apache.openjpa.kernel.LockLevels;
 import org.apache.openjpa.kernel.LockManager;
-import org.apache.openjpa.kernel.MixedLockLevels;
 import org.apache.openjpa.kernel.PreparedQueryCache;
 import org.apache.openjpa.kernel.QueryFlushModes;
 import org.apache.openjpa.kernel.RestoreState;
@@ -149,7 +148,7 @@ public class OpenJPAConfigurationImpl
     public BooleanValue multithreaded;
     public StringValue mapping;
     public PluginValue metaFactoryPlugin;
-    public ObjectValue metaRepositoryPlugin;
+    public MetaDataRepositoryValue metaRepositoryPlugin;
     public ObjectValue lockManagerPlugin;
     public ObjectValue inverseManagerPlugin;
     public ObjectValue savepointManagerPlugin;
@@ -335,8 +334,7 @@ public class OpenJPAConfigurationImpl
         mapping = addString("Mapping");
         metaFactoryPlugin = addPlugin("MetaDataFactory", false);
 
-        metaRepositoryPlugin = (ObjectValue)
-            addValue(new MetaDataRepositoryValue());
+        metaRepositoryPlugin = (MetaDataRepositoryValue)addValue(new MetaDataRepositoryValue());
 
         connectionFactory = addObject("ConnectionFactory");
         connectionFactory.setInstantiatingGetter("getConnectionFactory");

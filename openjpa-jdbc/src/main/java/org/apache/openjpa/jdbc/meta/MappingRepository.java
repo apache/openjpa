@@ -149,7 +149,7 @@ public class MappingRepository
     /**
      * Representation of the database schema.
      */
-    public synchronized SchemaGroup getSchemaGroup() {
+    public SchemaGroup getSchemaGroup() {
         if (_schema == null)
             _schema = ((JDBCConfiguration) getConfiguration()).
                 getSchemaFactoryInstance().readSchema();
@@ -159,14 +159,14 @@ public class MappingRepository
     /**
      * Representation of the database schema.
      */
-    public synchronized void setSchemaGroup(SchemaGroup schema) {
+    public void setSchemaGroup(SchemaGroup schema) {
         _schema = schema;
     }
 
     /**
      * Installs mapping strategies on components.
      */
-    public synchronized StrategyInstaller getStrategyInstaller() {
+    public StrategyInstaller getStrategyInstaller() {
         if (_installer == null)
             _installer = new RuntimeStrategyInstaller(this);
         return _installer;
@@ -175,20 +175,24 @@ public class MappingRepository
     /**
      * Installs mapping strategies on components.
      */
-    public synchronized void setStrategyInstaller(StrategyInstaller installer) {
+    public void setStrategyInstaller(StrategyInstaller installer) {
         _installer = installer;
     }
 
     /**
      * Return the query result mapping for the given name.
      */
-    public synchronized QueryResultMapping getQueryResultMapping(Class cls,
+    public QueryResultMapping getQueryResultMapping(Class cls,
         String name, ClassLoader envLoader, boolean mustExist) {
-        QueryResultMapping res = getQueryResultMappingInternal(cls, name,
-            envLoader);
-        if (res == null && mustExist)
-            throw new MetaDataException(_loc.get("no-query-res", cls, name));
-        return res;
+        lock();
+        try {
+            QueryResultMapping res = getQueryResultMappingInternal(cls, name, envLoader);
+            if (res == null && mustExist)
+                throw new MetaDataException(_loc.get("no-query-res", cls, name));
+            return res;
+        } finally {
+            unlock();
+        }
     }
 
     /**
@@ -226,47 +230,71 @@ public class MappingRepository
      * Return all cached query result mappings.
      */
     public synchronized QueryResultMapping[] getQueryResultMappings() {
-        Collection values = _results.values();
-        return (QueryResultMapping[]) values.toArray
-            (new QueryResultMapping[values.size()]);
+        lock();
+        try {
+            Collection values = _results.values();
+            return (QueryResultMapping[]) values.toArray(new QueryResultMapping[values.size()]);
+        } finally {
+            unlock();
+        }
     }
 
     /**
      * Return the cached query result mapping with the given name, or null if
      * none.
      */
-    public synchronized QueryResultMapping getCachedQueryResultMapping
+    public QueryResultMapping getCachedQueryResultMapping
         (Class cls, String name) {
-        return (QueryResultMapping) _results.get(getQueryResultKey(cls, name));
+        lock();
+        try {
+            return (QueryResultMapping) _results.get(getQueryResultKey(cls, name));
+        } finally {
+            unlock();
+        }
     }
 
     /**
      * Add a query result mapping.
      */
-    public synchronized QueryResultMapping addQueryResultMapping(Class cls,
+    public QueryResultMapping addQueryResultMapping(Class cls,
         String name) {
-        QueryResultMapping res = new QueryResultMapping(name, this);
-        res.setDefiningType(cls);
-        _results.put(getQueryResultKey(res), res);
-        return res;
+        lock();
+        try {
+            QueryResultMapping res = new QueryResultMapping(name, this);
+            res.setDefiningType(cls);
+            _results.put(getQueryResultKey(res), res);
+            return res;
+        } finally {
+            unlock();
+        }
     }
 
     /**
      * Remove a query result mapping.
      */
-    public synchronized boolean removeQueryResultMapping
+    public boolean removeQueryResultMapping
         (QueryResultMapping res) {
-        return _results.remove(getQueryResultKey(res)) != null;
+        lock();
+        try {
+            return _results.remove(getQueryResultKey(res)) != null;
+        } finally {
+            unlock();
+        }
     }
 
     /**
      * Remove a query result mapping.
      */
-    public synchronized boolean removeQueryResultMapping(Class cls,
+    public boolean removeQueryResultMapping(Class cls,
         String name) {
-        if (name == null)
-            return false;
-        return _results.remove(getQueryResultKey(cls, name)) != null;
+        lock();
+        try {
+            if (name == null)
+                return false;
+            return _results.remove(getQueryResultKey(cls, name)) != null;
+        } finally {
+            unlock();
+        }
     }
 
     /**
@@ -307,9 +335,14 @@ public class MappingRepository
     }
 
     public synchronized void clear() {
-        super.clear();
-        _schema = null;
-        _results.clear();
+        lock();
+        try {
+            super.clear();
+            _schema = null;
+            _results.clear();
+        } finally {
+            unlock();
+        }
     }
 
     protected void prepareMapping(ClassMetaData meta) {
