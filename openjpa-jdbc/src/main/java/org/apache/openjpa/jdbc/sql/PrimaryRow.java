@@ -361,8 +361,8 @@ public class PrimaryRow
      * is a default value or was not set and the column is not a primary key.
      */
     boolean allowsUpdate(Column col, Object old, Object cur) {
-    	return !col.isPrimaryKey() && col.isImplicitRelation()
-    	   && (isDefaultValue(old));
+    	return ((!col.isPrimaryKey() && col.isImplicitRelation()) ||
+    	   col.isUni1MFK()) && (isDefaultValue(old));
     }
     
     boolean isDefaultValue(Object val) {

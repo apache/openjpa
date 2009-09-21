@@ -42,6 +42,7 @@ import org.apache.openjpa.kernel.OpenJPAStateManager;
 import org.apache.openjpa.kernel.StoreContext;
 import org.apache.openjpa.lib.log.Log;
 import org.apache.openjpa.lib.util.Localizer;
+import org.apache.openjpa.meta.FieldMetaData;
 import org.apache.openjpa.meta.JavaTypes;
 import org.apache.openjpa.util.ChangeTracker;
 import org.apache.openjpa.util.InternalException;
@@ -63,6 +64,7 @@ public abstract class RelationToManyInverseKeyFieldStrategy
 
     private boolean _orderInsert = false;
     private boolean _orderUpdate = false;
+    private boolean _uni1MFK = false;
 
     protected ClassMapping[] getIndependentElementMappings(boolean traverse) {
         return field.getElementMapping().getIndependentTypeMappings();
@@ -153,10 +155,20 @@ public abstract class RelationToManyInverseKeyFieldStrategy
             	field.setOrderColumnIO(finfo.getColumnIO());
             }
             return;
+        } else { 
+            if (field.getValueInfo().getColumns().size() > 0 && 
+                field.getAccessType() == FieldMetaData.ONE_TO_MANY) {
+                _uni1MFK = true;
+            }
         }
 
         // map inverse foreign key in related table
         ForeignKey fk = vinfo.getInverseTypeJoin(elem, field.getName(), adapt);
+        if (_uni1MFK) {
+            Column[] locals = fk.getColumns();
+            for (int i = 0; i < locals.length; i++)
+                locals[i].setUni1MFK(true);
+        }
         elem.setForeignKey(fk);
         elem.setColumnIO(vinfo.getColumnIO());
         elem.setColumns(elem.getTypeMapping().getPrimaryKeyColumns());

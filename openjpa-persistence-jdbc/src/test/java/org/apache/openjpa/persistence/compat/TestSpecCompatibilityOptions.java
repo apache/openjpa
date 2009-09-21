@@ -221,22 +221,34 @@ extends AbstractCachedEMFTestCase {
         cs.add(c1);
         em.persist(c1);
         em.getTransaction().commit();
+        
+        // update by removing a c and then add this c to a new u
+        em.getTransaction().begin();
+        EntityC_U1MFK c2 = cs.remove(0);
+        
+        Uni_1ToM_FK u2 = new Uni_1ToM_FK();
+        u2.setName("uni1mfk2");
+        List<EntityC_U1MFK> cs2 = new ArrayList<EntityC_U1MFK>();
+        cs2.add(c2);
+        u2.setEntityCs(cs2);
+        em.persist(u2);
+        em.getTransaction().commit();
         em.clear();
         
         //query
-        Query q = em.createQuery("SELECT u FROM Uni_1ToM_FK u");
+        Query q = em.createQuery("SELECT u FROM Uni_1ToM_FK u where u.name = 'newName'");
         Uni_1ToM_FK u1 = (Uni_1ToM_FK)q.getSingleResult();
         assertEquals(u, u1);
         em.clear();
 
         //find
         long id = u1.getId();
-        Uni_1ToM_FK u2 = em.find(Uni_1ToM_FK.class, id);
-        assertEquals(u, u2);
+        Uni_1ToM_FK findU1 = em.find(Uni_1ToM_FK.class, id);
+        assertEquals(findU1, u1);
         
         //remove
         em.getTransaction().begin();
-        em.remove(u2);
+        em.remove(findU1);
         em.getTransaction().commit();
         em.clear();
     }

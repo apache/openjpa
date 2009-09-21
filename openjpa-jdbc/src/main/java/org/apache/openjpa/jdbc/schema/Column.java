@@ -75,6 +75,7 @@ public class Column
     private VersionStrategy _versionStrategy = null;
     private String _comment = null;
     private boolean _XML = false;
+    private boolean _isUni1MFK = false;
     
     /**
      * Default constructor.
@@ -733,6 +734,8 @@ public class Column
             _flags = from._flags;
         if (!isXML())
             setXML(from.isXML());
+        if (!isUni1MFK())
+            setUni1MFK(from.isUni1MFK());
     }
     
     /**
@@ -791,5 +794,27 @@ public class Column
      */
     public void setImplicitRelation(boolean flag) {
     	_implicitRelation |= flag;
+    }
+    
+    /**
+     * Sets a marker to indicate that this instance represents a uni-directional 
+     * one to many relation using the foreign key strategy. This non-default 
+     * mapping of uni-directional one-to-many is supported in JPA 2.0.  
+     * 
+     * @since 2.0
+     */
+    public boolean isUni1MFK() {
+        return _isUni1MFK;
+    }
+    
+    /** 
+     *  Affirms if this instance represents a uni-directional one to many relation
+     *  using the foreign key strategy. This non-default mapping of uni-directional 
+     *  one-to-many is supported in JPA 2.0.  
+     *
+     * @since 2.0
+     */
+    public void setUni1MFK(boolean isUni1MFK) {
+        _isUni1MFK = isUni1MFK;
     }
 }
