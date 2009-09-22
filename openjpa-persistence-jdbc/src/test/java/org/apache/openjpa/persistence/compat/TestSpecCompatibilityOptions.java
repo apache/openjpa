@@ -369,11 +369,17 @@ extends AbstractCachedEMFTestCase {
         em.clear();
         
         //query
-        Query q = em.createQuery("SELECT u FROM Bi_1ToM_JT u");
+        Query q = em.createQuery("SELECT b FROM Bi_1ToM_JT b where b.name = 'newName'");
         Bi_1ToM_JT b1 = (Bi_1ToM_JT)q.getSingleResult();
         assertEquals(b, b1);
         em.clear();
 
+        //query
+        q = em.createQuery("SELECT c FROM EntityC_B1MJT c");
+        List<EntityC_B1MJT> cs1 = q.getResultList();
+        assertEquals(2, cs1.size());
+        em.clear();
+                
         //find
         long id = b1.getId();
         Bi_1ToM_JT b2 = em.find(Bi_1ToM_JT.class, id);
