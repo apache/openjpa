@@ -18,6 +18,8 @@
  */
 package org.apache.openjpa.persistence.embed;
 
+import java.io.IOException;
+import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.util.Calendar;
 import java.util.Collection;
@@ -33,14 +35,14 @@ import javax.persistence.EntityManagerFactory;
 import javax.persistence.EntityTransaction;
 import javax.persistence.Query;
 
-
 import org.apache.openjpa.jdbc.conf.JDBCConfiguration;
+import org.apache.openjpa.jdbc.meta.MappingTool;
+import org.apache.openjpa.jdbc.meta.MappingTool.Flags;
 import org.apache.openjpa.jdbc.sql.DBDictionary;
 import org.apache.openjpa.jdbc.sql.OracleDictionary;
-import org.apache.openjpa.lib.log.Log;
 import org.apache.openjpa.persistence.ArgumentException;
+import org.apache.openjpa.persistence.OpenJPAEntityManagerSPI;
 import org.apache.openjpa.persistence.test.SQLListenerTestCase;
-import org.apache.openjpa.persistence.test.SingleEMFTestCase;
 
 public class TestEmbeddable extends SQLListenerTestCase {
     private static final Calendar cal = new GregorianCalendar();
@@ -197,7 +199,8 @@ public class TestEmbeddable extends SQLListenerTestCase {
         updateEntityA_Embed_MappedToOneCascadeDelete();
     }
     
-    public void testEmbeddableContainingRelationWithGeneratedKey() {
+    public void testEmbeddableContainingRelationWithGeneratedKey() 
+        throws IOException, SQLException {
         createEmbeddableContainingRelationWithGeneratedKey();
     }
 
@@ -2567,8 +2570,20 @@ public class TestEmbeddable extends SQLListenerTestCase {
         em.close();
     }
     
-    public void createEmbeddableContainingRelationWithGeneratedKey() {
+    /**
+     * To run this method on Oracle requires the user to have the authority
+     * to create triggers.  ex.  GRANT CREATE TRIGGER TO "SCOTT"
+     */
+    public void createEmbeddableContainingRelationWithGeneratedKey() 
+        throws IOException, SQLException {
         EntityManager em = emf.createEntityManager();
+        
+        OpenJPAEntityManagerSPI ojem = (OpenJPAEntityManagerSPI)em;
+        JDBCConfiguration conf = (JDBCConfiguration) ojem.getConfiguration();
+        DBDictionary dict = conf.getDBDictionaryInstance();
+        if (dict instanceof OracleDictionary) {
+            recreateOracleArtifacts((OracleDictionary)dict, conf);                
+        }
         EntityTransaction tran = em.getTransaction();
         
         Book b = new Book(1590596455);
@@ -2590,6 +2605,27 @@ public class TestEmbeddable extends SQLListenerTestCase {
             assertNotNull(seller);
             assertTrue(seller.getId() != 0);
         }
+    }
+
+    /*
+     * This method uses the mapping tool to regenerate Oracle db artifacts
+     * with the useTriggersForAutoAssign db option enabled.
+     */
+    private void recreateOracleArtifacts(OracleDictionary dict, 
+        JDBCConfiguration conf) throws IOException, SQLException {
+        dict.useTriggersForAutoAssign = true;
+        Flags flags = new MappingTool.Flags();
+        flags.dropTables = true;
+        flags.schemaAction = "drop,add";
+        flags.sequences = true;
+        flags.ignoreErrors = true;
+        flags.dropSequences = true;
+        MappingTool.run( 
+            conf, 
+            new String[] { "org.apache.openjpa.persistence.embed.Book" },
+            flags,
+            conf.getClassResolverInstance().
+            getClassLoader(MappingTool.class, null));        
     }
 
     /*
