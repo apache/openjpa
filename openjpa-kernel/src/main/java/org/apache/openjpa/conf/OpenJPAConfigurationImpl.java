@@ -74,7 +74,6 @@ import org.apache.openjpa.writebehind.SimpleWriteBehindCallback;
 import org.apache.openjpa.writebehind.WriteBehindCacheManager;
 import org.apache.openjpa.writebehind.WriteBehindCacheManagerImpl;
 import org.apache.openjpa.writebehind.WriteBehindCallback;
-import org.apache.openjpa.writebehind.WriteBehindCallbackManager;
 
 /**
  * Implementation of the {@link OpenJPAConfiguration} interface.
@@ -1759,16 +1758,9 @@ public class OpenJPAConfigurationImpl
         
     }
     public WriteBehindCallback getWriteBehindCallbackInstance() {
-        WriteBehindCallback callback =
-            (WriteBehindCallback) writeBehindCallbackPlugin.get();
-        
+        WriteBehindCallback callback = (WriteBehindCallback) writeBehindCallbackPlugin.get();
         if (callback == null) {
-            WriteBehindCallbackManager manager = WriteBehindCallbackManager.getInstance();
-            callback = manager.getCallback(getWriteBehindCallback());
-            if (callback == null) {
-                callback = (WriteBehindCallback) writeBehindCallbackPlugin.instantiate(WriteBehindCallback.class, this);
-                manager.putCallback(getWriteBehindCallback(), callback);
-            }
+            callback = (WriteBehindCallback) writeBehindCallbackPlugin.instantiate(WriteBehindCallback.class, this);
         }
         return callback;
     }

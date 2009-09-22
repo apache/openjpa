@@ -18,12 +18,13 @@
  */
 package org.apache.openjpa.jdbc.writebehind;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
 import javax.persistence.Persistence;
-import javax.persistence.PersistenceException;
 
+import org.apache.openjpa.conf.OpenJPAConfigurationImpl;
 import org.apache.openjpa.datacache.DataCacheStoreManager;
 import org.apache.openjpa.kernel.DelegatingStoreManager;
 import org.apache.openjpa.persistence.EntityManagerImpl;
@@ -33,7 +34,6 @@ import org.apache.openjpa.writebehind.SimpleWriteBehindCallback;
 import org.apache.openjpa.writebehind.WriteBehindCache;
 import org.apache.openjpa.writebehind.WriteBehindCacheManager;
 import org.apache.openjpa.writebehind.WriteBehindCallback;
-import org.apache.openjpa.writebehind.WriteBehindException;
 import org.apache.openjpa.writebehind.WriteBehindStoreManager;
 
 public class TestWriteBehindConfiguration extends AbstractWriteBehindTestCase {
@@ -102,6 +102,42 @@ public class TestWriteBehindConfiguration extends AbstractWriteBehindTestCase {
         assertTrue(String.format("Expecting %s to be an instance of %s",
             callback, CustomWriteBehindCallback.class),
             callback instanceof CustomWriteBehindCallback);
+    }
+    
+    
+    public void testWriteBehindCallbackCreatedForEachConfiguration() {
+        OpenJPAEntityManagerFactorySPI emf1 = emf;
+        ArrayList<Object> clonedProps = new ArrayList<Object>();
+        for(Object o : writeBehindProps) {
+            // quick and dirty way to alter the properties, this should prevent the cached EMF from being reused.
+            if(o.toString().equals("unsupported")) {
+                // just change the runtimeUnenhancedClasses value.
+                clonedProps.add("supported");
+            }
+            else {
+                clonedProps.add(o);
+            }
+        }
+        OpenJPAEntityManagerFactorySPI emf2 = createEMF(clonedProps.toArray()); 
+        assertNotNull("Unable to create first EntityManager ", emf1);
+        assertNotNull("Unable to create second EntityManager ", emf2);
+        assertNotSame("Test is invalid if the same EMF is used", emf1, emf2);
+
+        OpenJPAConfigurationImpl conf1 = (OpenJPAConfigurationImpl) emf1.getConfiguration();
+        OpenJPAConfigurationImpl conf2 = (OpenJPAConfigurationImpl) emf2.getConfiguration();
+
+        assertNotNull(conf1);
+        assertNotNull(conf2);
+        assertNotSame("Configuration objects for different EMFs should not be the same", conf1, conf2);
+
+        assertNotSame("Each Configuration should have its own WriteBehindCallbackPlugins",
+            conf1.writeBehindCallbackPlugin, conf2.writeBehindCallbackPlugin);
+        
+        WriteBehindCallback wbc1 = conf1.getWriteBehindCallbackInstance();
+        WriteBehindCallback wbc2 = conf2.getWriteBehindCallbackInstance();
+        assertNotNull(wbc1);
+        assertNotNull(wbc2);
+        assertNotSame("Each Configuration should have its own WriteBehindCallback", wbc1, wbc2);
     }
     
     public OpenJPAEntityManagerFactorySPI getCustomFactory(
