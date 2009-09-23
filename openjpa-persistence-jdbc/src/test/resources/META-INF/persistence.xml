@@ -234,4 +234,13 @@
         </properties>
     </persistence-unit>    
 
+    <persistence-unit name="example" transaction-type="RESOURCE_LOCAL">
+        <class>org.apache.openjpa.persistence.jdbc.strategy.Person</class>
+        <class>org.apache.openjpa.persistence.jdbc.strategy.Address</class>
+        <properties>
+            <property name="openjpa.jdbc.SynchronizeMappings" value="buildSchema"/>
+        </properties>
+    </persistence-unit>
+
 </persistence>
+
