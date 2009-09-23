@@ -742,14 +742,16 @@ public class QueryImpl implements OpenJPAQuerySPI, Serializable {
 	}
 
 	public int hashCode() {
-		return _query.hashCode();
+        return (_query == null) ? 0 : _query.hashCode();
 	}
 
 	public boolean equals(Object other) {
 		if (other == this)
 			return true;
-		if (!(other instanceof QueryImpl))
-			return false;
+        if ((other == null) || (other.getClass() != this.getClass()))
+            return false;
+        if (_query == null)
+            return false;
 		return _query.equals(((QueryImpl) other)._query);
 	}
 }
