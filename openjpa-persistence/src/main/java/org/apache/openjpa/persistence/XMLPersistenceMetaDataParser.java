@@ -114,6 +114,8 @@ public class XMLPersistenceMetaDataParser
     // after embeddables are loaded.
     private static final Map<Class<?>, ArrayList<MetaDataContext>> 
         _embeddables = new HashMap<Class<?>, ArrayList<MetaDataContext>>();
+    private static final Map<Class<?>, Integer> 
+        _embeddableAccess = new HashMap<Class<?>, Integer>();
 
     static {
         _elems.put(ELEM_PKG, ELEM_PKG);
@@ -896,7 +898,7 @@ public class XMLPersistenceMetaDataParser
             
             if (embeddable) {
                 meta.setEmbeddable();
-                addDeferredEmbeddableMetaData(_cls, access);
+                setDeferredEmbeddableAccessType(_cls, access);
             }
         }
         
@@ -1955,8 +1957,12 @@ public class XMLPersistenceMetaDataParser
 	            new Class<?>[_embeddables.size()]);
 	        for (int i = classes.length - 1 ; i >= 0; i--) {
 	            try {
+	                Integer access = _embeddableAccess.get(classes[i]);
+	                if (access == null) {
+	                    access = AccessCode.UNKNOWN;
+	                }
 	                addDeferredEmbeddableMetaData(classes[i], 
-	                    AccessCode.UNKNOWN);
+	                    access);
 	            }
 	            catch (Exception e) {
 	                throw new MetaDataException(
@@ -1996,6 +2002,10 @@ public class XMLPersistenceMetaDataParser
             _embeddables.remove(embedType);
         }
     }
+    protected void setDeferredEmbeddableAccessType(Class<?> embedType,
+        int access) {
+        _embeddableAccess.put(embedType, access);
+    }
 
     /*
      * Clear any deferred metadata
@@ -2003,6 +2013,7 @@ public class XMLPersistenceMetaDataParser
     @Override
     protected void clearDeferredMetaData() {
         _embeddables.clear();
+        _embeddableAccess.clear();
     }
 
     /*
