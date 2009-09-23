@@ -82,7 +82,7 @@ public class TestMixedLockManagerRefreshException extends SequencedActionsTest {
             {Act.TestEmployee, 1, Default_FirstName},
             
             {Act.RefreshWithLock, 1, LockModeType.NONE },
-            {Act.TestException, 0, TransactionRequiredException.class },
+            {Act.TestException, 0, null },
             
             {Act.RefreshWithLock, 1, LockModeType.READ },
             {Act.TestException, 0, TransactionRequiredException.class },

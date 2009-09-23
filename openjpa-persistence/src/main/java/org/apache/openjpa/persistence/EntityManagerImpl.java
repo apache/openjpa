@@ -752,7 +752,9 @@ public class EntityManagerImpl
         Map<String, Object> properties) {
         assertNotCloseInvoked();
         assertValidAttchedEntity(entity);
-        _broker.assertActiveTransaction();
+        if (mode != null && mode != LockModeType.NONE) {
+            _broker.assertActiveTransaction();
+        }
         _broker.assertWriteOperation();
 
         processLockProperties(pushFetchPlan(), mode, properties);
