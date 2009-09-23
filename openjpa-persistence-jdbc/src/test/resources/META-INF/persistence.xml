@@ -234,7 +234,7 @@
         </properties>
     </persistence-unit>    
 
-    <persistence-unit name="example" transaction-type="RESOURCE_LOCAL">
+    <persistence-unit name="testStrategy" transaction-type="RESOURCE_LOCAL">
         <class>org.apache.openjpa.persistence.jdbc.strategy.Person</class>
         <class>org.apache.openjpa.persistence.jdbc.strategy.Address</class>
         <properties>

@@ -32,7 +32,7 @@ import org.apache.openjpa.persistence.test.SingleEMFTestCase;
 public class TestStrategyAnnotaion extends SingleEMFTestCase {
 	 public void testStrategy() {
 	    	EntityManagerFactory emf = Persistence.
-	       		createEntityManagerFactory("example", System.getProperties());
+	       		createEntityManagerFactory("testStrategy", System.getProperties());
 	   	EntityManager em = emf.createEntityManager();
 		em.getTransaction().begin();
 		Person person = new Person();
