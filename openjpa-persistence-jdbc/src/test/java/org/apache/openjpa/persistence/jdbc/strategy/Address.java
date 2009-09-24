@@ -22,6 +22,7 @@ import java.util.*;
 import javax.persistence.*;
 
 @Entity
+@Table(name="ADDR_STR")
 public class Address {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
