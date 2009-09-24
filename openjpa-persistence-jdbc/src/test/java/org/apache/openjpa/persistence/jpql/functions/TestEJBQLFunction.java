@@ -21,6 +21,9 @@ package org.apache.openjpa.persistence.jpql.functions;
 import java.util.List;
 import javax.persistence.EntityManager;
 
+import org.apache.openjpa.jdbc.conf.JDBCConfiguration;
+import org.apache.openjpa.jdbc.sql.DBDictionary;
+import org.apache.openjpa.jdbc.sql.OracleDictionary;
 import org.apache.openjpa.persistence.common.apps.Address;
 import org.apache.openjpa.persistence.common.apps.CompUser;
 import org.apache.openjpa.persistence.common.apps.FemaleUser;
@@ -129,7 +132,21 @@ public class TestEJBQLFunction extends AbstractTestCase {
         user = em.find(CompUser.class, userid1);
         em.refresh(user);
         assertNotNull(user);
-        assertEquals("", user.getName());
+        // Empty strings are stored as null on Oracle so the assertion below
+        // must be handled differently on that DB.  The docs indicate that
+        // this may not be the case in future releases so either result is
+        // allowed.
+        // The note in this section of Oracle doc explains the behavior:
+        // http://download.oracle.com/docs/cd/B14117_01/server.101/ +
+        // b10759/sql_elements005.htm#sthref511
+        DBDictionary dict = ((JDBCConfiguration) getEmf().getConfiguration())
+            .getDBDictionaryInstance();
+        if (dict instanceof OracleDictionary) {
+            assertTrue(user.getName() == null ||
+                "".equals(user.getName()));
+        } else {
+            assertEquals("", user.getName());            
+        }
 
         endTx(em);
         endEm(em);
@@ -407,4 +424,5 @@ public class TestEJBQLFunction extends AbstractTestCase {
         }
         return user;
     }
+    
 }
