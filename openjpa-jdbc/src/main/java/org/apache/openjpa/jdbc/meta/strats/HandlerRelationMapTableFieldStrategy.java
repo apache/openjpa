@@ -89,11 +89,11 @@ public class HandlerRelationMapTableFieldStrategy
                 if (isUni1ToMFK()) {
                     sel.whereForeignKey(field.getElementMapping().getForeignKey(),
                         sm.getObjectId(), field.getElementMapping().getDeclaredTypeMapping(), store);
+                    sel.select(vals[idx], field.getElementMapping().
+                            getSelectSubclasses(), store, fetch, eagerMode, null);
                 } else {
                     sel.whereForeignKey(field.getJoinForeignKey(),
                         sm.getObjectId(), field.getDefiningMapping(), store);
-                }
-                if (!isUni1ToMFK()) {
                     Joins joins = joinValueRelation(sel.newJoins(), vals[idx]);
                     sel.select(vals[idx], field.getElementMapping().
                         getSelectSubclasses(), store, fetch, eagerMode, joins);
@@ -102,10 +102,7 @@ public class HandlerRelationMapTableFieldStrategy
                     //### thus we can use first mapping of union only
                     if (idx == 0)
                         resJoins[1] = joins;
-                } else {
-                    sel.select(vals[idx], field.getElementMapping().
-                        getSelectSubclasses(), store, fetch, eagerMode, null);
-                }
+               }
             }
         });
         Result res = union.execute(store, fetch);
