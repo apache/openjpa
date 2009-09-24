@@ -22,6 +22,10 @@ import java.util.List;
 import javax.persistence.EntityManager;
 
 import junit.textui.TestRunner;
+
+import org.apache.openjpa.jdbc.conf.JDBCConfiguration;
+import org.apache.openjpa.jdbc.sql.DBDictionary;
+import org.apache.openjpa.jdbc.sql.OracleDictionary;
 import org.apache.openjpa.persistence.OpenJPAEntityManager;
 import org.apache.openjpa.persistence.OpenJPAQuery;
 import org.apache.openjpa.persistence.test.SQLListenerTestCase;
@@ -43,6 +47,15 @@ public class TestEagerBidiSQL
     public void setUp() {
         setUp(BidiParent.class, BidiChild.class);
         
+        
+        // If using an Oracle DB, use sql92 syntax in order to get a correct
+        // comparison of SQL.  This may not work on Oracle JDBC drivers
+        // prior to 10.x
+        DBDictionary dict = ((JDBCConfiguration) emf.getConfiguration())
+            .getDBDictionaryInstance();
+        if (dict instanceof OracleDictionary) {
+            dict.setJoinSyntax("sql92");
+        }
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
 
