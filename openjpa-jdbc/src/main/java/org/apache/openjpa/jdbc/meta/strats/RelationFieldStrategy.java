@@ -279,9 +279,8 @@ public class RelationFieldStrategy
             updateInverse(sm, rel, store, rm);
         else {
             Row row = field.getRow(sm, store, rm, Row.ACTION_INSERT);
-            if (row != null) {
-                if (_biOneToManyJoinTable == -1)
-                    field.setForeignKey(row, rel);
+            if (row != null && _biOneToManyJoinTable == -1) {
+                field.setForeignKey(row, rel);
                 // this is for bi-directional maps, the key and value of the 
                 // map are stored in the table of the mapped-by entity  
                 setMapKey(sm, rel, store, row);
@@ -366,9 +365,8 @@ public class RelationFieldStrategy
                     field.isBidirectionalJoinTableMappingNonOwner()) ?
                     Row.ACTION_DELETE : Row.ACTION_UPDATE;
             Row row = field.getRow(sm, store, rm, action);
-            if (row != null) {
-                if (_biOneToManyJoinTable == -1)
-                    field.setForeignKey(row, rel);
+            if (row != null && _biOneToManyJoinTable == -1) {
+                field.setForeignKey(row, rel);
                 // this is for bi-directional maps, the key and value of the 
                 // map are stored in the table of the mapped-by entity  
                 setMapKey(sm, rel, store, row);

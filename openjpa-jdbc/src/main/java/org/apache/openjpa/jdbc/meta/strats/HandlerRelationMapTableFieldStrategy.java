@@ -145,10 +145,12 @@ public class HandlerRelationMapTableFieldStrategy
             throw new MetaDataException(_loc.get("not-relation", val));
         
         FieldMapping mapped = field.getMappedByMapping();
-        if ((isUni1ToMFK() && !isBi1ToMJT()) || mapped != null) { 
+        if ((isUni1ToMFK() && !isBi1ToMJT()) || 
+            (!isUni1ToMFK() && !isBi1ToMJT() && mapped != null)) { 
             // map to the owner table
             handleMappedByForeignKey(adapt);
-        } else if ((!isUni1ToMFK() && isBi1ToMJT()) || mapped == null){ 
+        } else if ((!isUni1ToMFK() && isBi1ToMJT()) || 
+            (!isUni1ToMFK() && !isBi1ToMJT() && mapped == null)){ 
             // map to a separate table
             field.mapJoin(adapt, true);
             if (val.getTypeMapping().isMapped()) {
@@ -185,7 +187,7 @@ public class HandlerRelationMapTableFieldStrategy
         if (map == null || map.isEmpty())
             return;
         
-        if (field.getMappedBy() != null)
+        if (!isBi1ToMJT() && field.getMappedBy() != null)
             return;
 
         Row row = null;
@@ -237,7 +239,7 @@ public class HandlerRelationMapTableFieldStrategy
 
     public void update(OpenJPAStateManager sm, JDBCStore store, RowManager rm)
         throws SQLException {
-        if (field.getMappedBy() != null)
+        if (field.getMappedBy() != null && !isBi1ToMJT())
             return;
 
         Map map = (Map) sm.fetchObject(field.getIndex());
@@ -420,7 +422,7 @@ public class HandlerRelationMapTableFieldStrategy
     
     public void delete(OpenJPAStateManager sm, JDBCStore store, RowManager rm)
         throws SQLException {
-        if (field.getMappedBy() != null || isUni1ToMFK())
+        if ((field.getMappedBy() != null && !isBi1ToMJT()) || isUni1ToMFK())
             return;
         super.delete(sm, store, rm);
     }

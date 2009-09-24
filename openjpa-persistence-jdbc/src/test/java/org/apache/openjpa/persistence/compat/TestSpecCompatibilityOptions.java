@@ -396,6 +396,8 @@ extends AbstractCachedEMFTestCase {
         List<Class<?>> types = new ArrayList<Class<?>>();
         types.add(EntityC_U1M_Map_FK.class);
         types.add(Uni_1ToM_Map_FK.class);
+        types.add(EntityC_B1M_Map_JT.class);
+        types.add(Bi_1ToM_Map_JT.class);
         OpenJPAEntityManagerFactorySPI emf = createEMF2_0(types);
         EntityManager em = emf.createEntityManager();
         
@@ -405,6 +407,7 @@ extends AbstractCachedEMFTestCase {
             em.getTransaction().commit();
             assertSQLFragnments(sql, "CREATE TABLE EntityC_U1M_Map_FK", "Uni1MFK_ID", "KEY0");
             crudUni1MMapFK(em);
+            crudBi1MMapJT(em);
         } catch (Exception e) {
             e.printStackTrace();
             fail("OneToMany mapping failed with exception message: " + e.getMessage());
@@ -474,6 +477,54 @@ extends AbstractCachedEMFTestCase {
         em.getTransaction().commit();
     }
     
+    public void crudBi1MMapJT(EntityManager em) {
+        Bi_1ToM_Map_JT b = new Bi_1ToM_Map_JT();
+        b.setName("bi1mfk");
+        Map<String, EntityC_B1M_Map_JT> cs = new HashMap<String, EntityC_B1M_Map_JT>();
+        EntityC_B1M_Map_JT c = new EntityC_B1M_Map_JT();
+        c.setName("c");
+        c.setBi1mjt(b);
+        cs.put(c.getName(), c);
+        b.setEntityCs(cs);
+        em.persist(b);
+        em.persist(c);
+        em.getTransaction().begin();
+        em.getTransaction().commit();
+
+        //update
+        em.getTransaction().begin();
+        cs = b.getEntityCs();
+        b.setName("newName");
+        EntityC_B1M_Map_JT c1 = new EntityC_B1M_Map_JT();
+        c1.setName("c1");
+        cs.put(c1.getName(), c1);
+        c1.setBi1mjt(b);
+        em.persist(c1);
+        em.getTransaction().commit();
+        em.clear();
+        
+        //query
+        Query q = em.createQuery("SELECT u FROM Bi_1ToM_Map_JT u");
+        Bi_1ToM_Map_JT b1 = (Bi_1ToM_Map_JT)q.getSingleResult();
+        assertEquals(b, b1);
+        em.clear();
+
+        // query the owner
+        q = em.createQuery("SELECT c FROM EntityC_B1M_Map_JT c");
+        List<EntityC_B1M_Map_JT> cs1 = q.getResultList();
+        System.err.println("cs1 size = " + cs1.size());
+        em.clear();
+        
+        //find
+        long id = b1.getId();
+        Bi_1ToM_Map_JT b2 = em.find(Bi_1ToM_Map_JT.class, id);
+        assertEquals(b, b2);
+        
+        //remove
+        em.getTransaction().begin();
+        em.remove(b2);
+        em.getTransaction().commit();
+    }
     
     private OpenJPAEntityManagerFactorySPI createEMF2_0(List<Class<?>> types) {
         Map<Object,Object> map = new HashMap<Object,Object>();

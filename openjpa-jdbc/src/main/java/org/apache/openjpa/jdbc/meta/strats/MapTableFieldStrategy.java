@@ -78,7 +78,7 @@ public abstract class MapTableFieldStrategy
         FieldMapping mapped = field.getMappedByMapping();
         if (isNonDefaultMappingAllowed() && 
             field.getAssociationType() == FieldMetaData.ONE_TO_MANY &&
-            field.getValueInfo().getColumns().size() > 0) {
+            hasJoinColumnOrJoinTable()) {
             if (mapped != null) {
                 _isBi1ToMJT = true;
                 _isUni1ToMFK = false;
@@ -90,6 +90,13 @@ public abstract class MapTableFieldStrategy
             _isBi1ToMJT = false;
             _isUni1ToMFK = false;
         }
+    }
+    
+    private boolean hasJoinColumnOrJoinTable() {
+        boolean hasJoinColumn = (field.getValueInfo().getColumns().size() > 0 ? true : false);
+        boolean hasJoinTable = (field.getMappingInfo().getTableName() != null ? true : false);
+        return hasJoinColumn || hasJoinTable;
+        
     }
     
     protected boolean isBi1ToMJT() {
