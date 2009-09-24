@@ -353,6 +353,45 @@ SELECT x FROM Magazine x inner join x.articles y WHERE y.authorName = 'John Doe'
                 </para>
             </note>
         </section>
+        <section id="jpa_overview_query_embeddables">
+            <title>
+                Embeddable Traversal
+            </title>
+            <para>
+Similar to relation traversal, nested embeddable objects can be traversed using Java-like syntax.
+For example, if the <classname>Compony</classname> class has a field named "address" of 
+an embeddable type <classname>Address</classname>, 
+and the <classname>Address</classname> has a field named "geocode" of
+an embeddable type <classname>Geocode</classname>,
+the <literal>geocode</literal> of a company's address can be queried as follows:
+            </para>
+<programlisting>
+SELECT c.address.geocode FROM Company c WHERE c.name = 'Random House'
+</programlisting>
+            <note>
+                <para>
+The <literal>geocode</literal> returned by the above query will not be part of the state of any managed
+entity. Modifications to these embeddable instances are not allowed.
+                </para>
+            </note>
+            <para>
+Traverse into embeddable's state field is also allowed as shown in the following query:
+            </para>
+<programlisting>
+SELECT c.address.geocode.latitude FROM Company c WHERE c.name = 'Random House'
+</programlisting>
+            <para>
+Embeddable objects may contain single-valued or collection-valued relations.
+These relations can also be traversed using Java-like syntax.
+For example, if the Address has a relation field named "phoneLists" of 
+an entity type <classname>PhoneNumber</classname>,
+the following query returns the <classname>PhoneNumber</classname> entities of the <classname>Company</classname>
+ named 'Random House':
+            </para>
+<programlisting>
+SELECT p FROM Company c, IN(c.address.phoneLists) p WHERE c.name = 'Random House'
+</programlisting>
+        </section>
         <section id="jpa_overview_join_fetch">
             <title>
                 Fetch Joins
@@ -374,6 +413,21 @@ returned instances.
 Multiple fields may be specified in separate <literal>join fetch</literal>
 declarations: <programlisting>
 SELECT x FROM Magazine x join fetch x.articles join fetch x.authors WHERE x.title = 'JDJ'
+</programlisting>
+            </para>
+            <para>
+Notice that in the above query, both <literal>articles</literal> and <literal>authors</literal>
+are relation property in <classname>Magazine</classname>.
+JPQL syntax does not allow range variable declared for paths on the right-hand side of 
+<literal>join fetch</literal>.
+Therefore, if <classname>Article</classname> entity has a relation property of 
+<literal>publishers</literal>,
+it is not possible to specify a query
+that returns <classname>Magazine</classname> instances and pre-fetch 
+the <literal>articles</literal> and the <literal>publishers</literal>.
+The following query will result in syntax error:
+<programlisting>
+SELECT x FROM Magazine x join fetch x.articles a join fetch a.publishers p WHERE x.title = 'JDJ'
 </programlisting>
             </para>
             <para>
@@ -414,10 +468,12 @@ SELECT x FROM Magazine x WHERE CONCAT(x.title, 's') = 'JDJs'
                             SUBSTRING function
                         </primary>
                     </indexterm>
-<literal>SUBSTRING(string, startIndex, length)</literal>: Returns the part of
+<literal>SUBSTRING(string, startIndex, [length])</literal>: Returns the part of
 the <literal>string</literal> argument starting at <literal>startIndex</literal>
-(1-based) and ending at <literal>length</literal> characters past <literal>
-startIndex</literal>.
+(1-based) and optionally ending at <literal>length</literal> characters past <literal>
+startIndex</literal>. If the <literal>length</literal> argument is not specified, 
+the substring from the <literal>startIndex</literal> to the end of the <literal>string</literal>
+is returned.
                     </para>
 <programlisting>
 SELECT x FROM Magazine x WHERE SUBSTRING(x.title, 1, 1) = 'J'
@@ -542,6 +598,26 @@ SELECT x FROM Magazine x WHERE MOD(x.price, 10) = 0
                     <para>
                     <indexterm>
                         <primary>
+                            INDEX function
+                        </primary>
+                    </indexterm>
+<literal>INDEX(identification_variable)</literal>: Returns an integer value corresponding
+ to the position of its argument in an ordered list. 
+ The INDEX function can only be applied to identification variables denoting types for
+which an order column has been specified.
+                    </para>
+                    <para>
+In the following example, <literal>studentWaitlist</literal> is a list of students for which an order column has
+been specified, the query returns the name of the first student on the waitiing list of the course named 'Calculus':
+                    </para>
+<programlisting>
+SELECT w.name FROM Course c JOIN c.studentWaitlist w WHERE c.name = ‘Calculus’ AND INDEX(w) = 0
+</programlisting>
+                </listitem>
+                <listitem>
+                    <para>
+                    <indexterm>
+                        <primary>
                             CURRENT_DATE function
                         </primary>
                     </indexterm>
@@ -585,6 +661,10 @@ example, the following query may return instances of <classname> Magazine
 Digest</classname> are <classname>Magazine</classname> subclasses.
             </para>
 <programlisting>SELECT x FROM Magazine x WHERE x.price &lt; 5</programlisting>
+            <para>
+Non-polymorphic queries or queries whose polymorphism is restricted can be specified using entity
+type expressions in the WHERE clause to restrict the domain of the query.
+            </para>
         </section>
         <section id="jpa_overview_query_params">
             <title>
