@@ -22,9 +22,9 @@ import java.util.*;
 import javax.persistence.*;
 
 import org.apache.openjpa.persistence.jdbc.Strategy;
-import org.apache.openjpa.persistence.jdbc.Strategy;
 
 @Entity
+@Table(name="PERSON_STR")
 public class Person {
 	
 	private long idPerson;
