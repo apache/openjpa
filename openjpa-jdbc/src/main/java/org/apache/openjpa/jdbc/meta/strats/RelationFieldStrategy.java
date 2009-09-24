@@ -375,14 +375,15 @@ public class RelationFieldStrategy
             }
             
             if (_biOneToManyJoinTable != -1) { // also need to update the join table
-                PersistenceCapable inversePC = (PersistenceCapable)sm.fetchObject(_biOneToManyJoinTable);
+                PersistenceCapable invPC = (PersistenceCapable)sm.fetchObject(_biOneToManyJoinTable);
                 Row secondaryRow = null;
-                if (inversePC != null) {
+                if (invPC != null) {
                     secondaryRow = rm.getSecondaryRow(_biOneToManyJoinFK.getTable(),
                         Row.ACTION_INSERT);
                     secondaryRow.setForeignKey(_biOneToManyElemFK, null, sm);
                     secondaryRow.setForeignKey(_biOneToManyJoinFK, null, 
-                        (OpenJPAStateManager)inversePC.pcGetStateManager());
+                        RelationStrategies.getStateManager(invPC,
+                        store.getContext()));
                 } else { 
                     secondaryRow = rm.getSecondaryRow(_biOneToManyJoinFK.getTable(),
                             Row.ACTION_DELETE);

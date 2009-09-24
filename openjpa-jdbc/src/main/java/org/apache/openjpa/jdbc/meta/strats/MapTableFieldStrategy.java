@@ -22,6 +22,7 @@ import java.sql.SQLException;
 import java.util.Collection;
 import java.util.Map;
 
+import org.apache.openjpa.conf.OpenJPAConfiguration;
 import org.apache.openjpa.enhance.PersistenceCapable;
 import org.apache.openjpa.enhance.ReflectingPersistenceCapable;
 import org.apache.openjpa.jdbc.kernel.JDBCFetchConfiguration;
@@ -31,6 +32,7 @@ import org.apache.openjpa.jdbc.meta.FieldMapping;
 import org.apache.openjpa.jdbc.meta.FieldStrategy;
 import org.apache.openjpa.jdbc.meta.Strategy;
 import org.apache.openjpa.jdbc.meta.ValueMapping;
+import org.apache.openjpa.jdbc.meta.ValueMappingInfo;
 import org.apache.openjpa.jdbc.schema.ForeignKey;
 import org.apache.openjpa.jdbc.sql.Joins;
 import org.apache.openjpa.jdbc.sql.Result;
@@ -42,6 +44,7 @@ import org.apache.openjpa.kernel.OpenJPAStateManager;
 import org.apache.openjpa.kernel.StoreContext;
 import org.apache.openjpa.lib.log.Log;
 import org.apache.openjpa.lib.util.Localizer;
+import org.apache.openjpa.meta.FieldMetaData;
 import org.apache.openjpa.meta.JavaTypes;
 import org.apache.openjpa.util.MetaDataException;
 
@@ -63,8 +66,42 @@ public abstract class MapTableFieldStrategy
     private static final Localizer _loc = Localizer.forPackage
         (MapTableFieldStrategy.class);
 
+    private Boolean _isNonDefaultMappingAllowed = null;
+    private Boolean _isBi1ToMJT = null;
+    private Boolean _isUni1ToMFK = null;
+
     public FieldMapping getFieldMapping() {
         return field;
+    }
+
+    private void isNonDefaultMapping() {
+        FieldMapping mapped = field.getMappedByMapping();
+        if (isNonDefaultMappingAllowed() && 
+            field.getAssociationType() == FieldMetaData.ONE_TO_MANY &&
+            field.getValueInfo().getColumns().size() > 0) {
+            if (mapped != null) {
+                _isBi1ToMJT = true;
+                _isUni1ToMFK = false;
+            } else {
+                _isBi1ToMJT = false;
+                _isUni1ToMFK = true;
+            }
+        } else {
+            _isBi1ToMJT = false;
+            _isUni1ToMFK = false;
+        }
+    }
+    
+    protected boolean isBi1ToMJT() {
+        if (_isBi1ToMJT == null)
+            isNonDefaultMapping();
+        return _isBi1ToMJT;
+    }
+    
+    protected boolean isUni1ToMFK() {
+        if (_isUni1ToMFK == null)
+            isNonDefaultMapping();
+        return _isUni1ToMFK;
     }
 
     public ClassMapping[] getIndependentKeyMappings(boolean traverse) {
@@ -108,7 +145,22 @@ public abstract class MapTableFieldStrategy
             throw new MetaDataException(_loc.get("not-map", field));
         if (field.getKey().getValueMappedBy() != null)
             throw new MetaDataException(_loc.get("mapped-by-key", field));
+
+        // Non-default mapping Uni-/OneToMany/ForeignKey allows schema components
+        if (isNonDefaultMappingAllowed() && 
+            field.getAssociationType() == FieldMetaData.ONE_TO_MANY && 
+            field.getMappedByMapping() == null)  
+                return;
         field.getValueInfo().assertNoSchemaComponents(field, !adapt);
+    }
+    
+    protected boolean isNonDefaultMappingAllowed() {
+        if (_isNonDefaultMappingAllowed == null) {
+            OpenJPAConfiguration conf = field.getRepository().getConfiguration();
+            _isNonDefaultMappingAllowed = field.getRepository().
+                getMetaDataFactory().getDefaults().isNonDefaultMappingAllowed(conf);
+        }
+        return _isNonDefaultMappingAllowed;
     }
 
     public void delete(OpenJPAStateManager sm, JDBCStore store, RowManager rm)
@@ -182,12 +234,11 @@ public abstract class MapTableFieldStrategy
         return ClassMapping.EMPTY_MAPPINGS;
     }
     
-    protected void handleMappedBy(boolean adapt){
+    protected void handleMappedByForeignKey(boolean adapt){
         boolean criteria = field.getValueInfo().getUseClassCriteria();
         // check for named inverse
         FieldMapping mapped = field.getMappedByMapping();
         if (mapped != null) {
-            field.getMappingInfo().assertNoSchemaComponents(field, !adapt);
             field.getValueInfo().assertNoSchemaComponents(field, !adapt);
             mapped.resolve(mapped.MODE_META | mapped.MODE_MAPPING);
 
@@ -228,6 +279,21 @@ public abstract class MapTableFieldStrategy
                     field, mapped));
 
             field.setUseClassCriteria(criteria);
+            return;
+        } else {
+            // Uni-/OneToMany/ForeingKey
+            ValueMapping val = field.getElementMapping();
+            val.getValueInfo().setColumns(field.getValueInfo().getColumns());
+            if (val.getTypeMapping().isMapped()) {
+                ValueMappingInfo vinfo = val.getValueInfo();
+                ForeignKey fk = vinfo.getTypeJoin(val, null, false, adapt);
+                val.setForeignKey(fk);
+                val.setColumnIO(vinfo.getColumnIO());
+            } else
+                RelationStrategies.mapRelationToUnmappedPC(val, "value", adapt);
+
+            val.mapConstraints("value", adapt);
+            
             return;
         }
 /*

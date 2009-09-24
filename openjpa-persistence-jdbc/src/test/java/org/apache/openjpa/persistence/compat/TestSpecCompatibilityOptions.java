@@ -392,7 +392,89 @@ extends AbstractCachedEMFTestCase {
         em.clear();
     }
     
+    public void testOneToManyMapRelation() {
+        List<Class<?>> types = new ArrayList<Class<?>>();
+        types.add(EntityC_U1M_Map_FK.class);
+        types.add(Uni_1ToM_Map_FK.class);
+        OpenJPAEntityManagerFactorySPI emf = createEMF2_0(types);
+        EntityManager em = emf.createEntityManager();
+        
+        try {
+            // trigger table creation
+            em.getTransaction().begin();
+            em.getTransaction().commit();
+            assertSQLFragnments(sql, "CREATE TABLE EntityC_U1M_Map_FK", "Uni1MFK_ID", "KEY0");
+            crudUni1MMapFK(em);
+        } catch (Exception e) {
+            e.printStackTrace();
+            fail("OneToMany mapping failed with exception message: " + e.getMessage());
+        } finally {
+            em.close();
+            emf.close();            
+        }
+    }
 
+    public void crudUni1MMapFK(EntityManager em) {
+        //create
+        Uni_1ToM_Map_FK u = new Uni_1ToM_Map_FK();
+        u.setName("uni1mfk");
+        Map<String, EntityC_U1M_Map_FK> cs = new HashMap<String, EntityC_U1M_Map_FK>();
+        EntityC_U1M_Map_FK c1 = new EntityC_U1M_Map_FK();
+        c1.setName("c1");
+        cs.put(c1.getName(), c1);
+        EntityC_U1M_Map_FK c2 = new EntityC_U1M_Map_FK();
+        c2.setName("c2");
+        cs.put(c2.getName(), c2);
+        u.setEntityCs(cs);
+        
+        em.persist(u);
+        em.persist(c1);
+        em.persist(c2);
+        em.getTransaction().begin();
+        em.getTransaction().commit();
+
+        //update by adding a new C
+        cs = u.getEntityCs();
+        u.setName("uni1mfk_new");
+        EntityC_U1M_Map_FK c3 = new EntityC_U1M_Map_FK();
+        c3.setName("c3");
+        cs.put(c3.getName(), c3);
+        em.persist(c3);
+
+        em.getTransaction().begin();
+        em.getTransaction().commit();
+        
+        // update by removing a c and then add this c to a new u
+        em.getTransaction().begin();
+        EntityC_U1M_Map_FK c4 = cs.remove("c1");
+        
+        Uni_1ToM_Map_FK u2 = new Uni_1ToM_Map_FK();
+        u2.setName("uni1mfk2");
+        Map<String, EntityC_U1M_Map_FK> cs2 = new HashMap<String, EntityC_U1M_Map_FK>();
+        cs2.put(c4.getName(), c4);
+        u2.setEntityCs(cs2);
+        em.persist(u2);
+        em.getTransaction().commit();
+        em.clear();
+        
+        //query
+        Query q = em.createQuery("SELECT u FROM Uni_1ToM_Map_FK u where u.name='uni1mfk_new'");
+        Uni_1ToM_Map_FK u1 = (Uni_1ToM_Map_FK)q.getSingleResult();
+        assertEquals(u, u1);
+        em.clear();
+
+        //find
+        long id = u1.getId();
+        Uni_1ToM_Map_FK findU = em.find(Uni_1ToM_Map_FK.class, id);
+        assertEquals(u, findU);
+        
+        //remove
+        em.getTransaction().begin();
+        em.remove(findU);
+        em.getTransaction().commit();
+    }
+    
+    
     private OpenJPAEntityManagerFactorySPI createEMF2_0(List<Class<?>> types) {
         Map<Object,Object> map = new HashMap<Object,Object>();
         map.put("openjpa.jdbc.JDBCListeners", 

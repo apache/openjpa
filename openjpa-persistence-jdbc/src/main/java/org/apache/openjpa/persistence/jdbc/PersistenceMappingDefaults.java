@@ -214,16 +214,18 @@ public class PersistenceMappingDefaults
         // otherwise jpa always uses <field>_<pkcol> for column name, even
         // when only one col
         if (target instanceof Column) {
-            if (elem)
-                name = vm.getFieldMapping().getName();
+            if (name == null) {
+                name = col.getName();
+            } else {
+                if (elem)
+                    name = vm.getFieldMapping().getName();
+                if (isRemoveHungarianNotation())
+                    name = removeHungarianNotation(name);
+                name = dict.combineNames(name, ((Column)target).getName());
 
-            if (isRemoveHungarianNotation())
-                name = removeHungarianNotation(name);
-            
-            name = dict.combineNames(name, ((Column)target).getName());
-            
-            // No need to check for uniqueness.
-            name = dict.getValidColumnName(name, local, false);
+                // No need to check for uniqueness.
+                name = dict.getValidColumnName(name, local, false);
+            }
             col.setName(name);
         }
     }

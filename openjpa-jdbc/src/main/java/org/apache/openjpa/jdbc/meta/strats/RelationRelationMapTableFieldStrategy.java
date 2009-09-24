@@ -185,7 +185,7 @@ public class RelationRelationMapTableFieldStrategy
         DBDictionary dict = field.getMappingRepository().getDBDictionary();
         String keyName = null;
         if (mapped != null) {         
-            handleMappedBy(adapt);
+            handleMappedByForeignKey(adapt);
             keyName = dict.getValidColumnName("vkey", field.getTable());
          } else {
             field.mapJoin(adapt, true);

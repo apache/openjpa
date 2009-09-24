@@ -86,18 +86,26 @@ public class HandlerRelationMapTableFieldStrategy
         union.select(new Union.Selector() {
             public void select(Select sel, int idx) {
                 sel.select(_kcols);
-                sel.whereForeignKey(field.getJoinForeignKey(),
-                    sm.getObjectId(), field.getDefiningMapping(), store);
-                FieldMapping mapped = field.getMappedByMapping();
-                Joins joins = joinValueRelation(sel.newJoins(), vals[idx]);
-                
-                sel.select(vals[idx], field.getElementMapping().
-                    getSelectSubclasses(), store, fetch, eagerMode, joins);
+                if (isUni1ToMFK()) {
+                    sel.whereForeignKey(field.getElementMapping().getForeignKey(),
+                        sm.getObjectId(), field.getElementMapping().getDeclaredTypeMapping(), store);
+                } else {
+                    sel.whereForeignKey(field.getJoinForeignKey(),
+                        sm.getObjectId(), field.getDefiningMapping(), store);
+                }
+                if (!isUni1ToMFK()) {
+                    Joins joins = joinValueRelation(sel.newJoins(), vals[idx]);
+                    sel.select(vals[idx], field.getElementMapping().
+                        getSelectSubclasses(), store, fetch, eagerMode, joins);
 
-                //### cheat: result joins only care about the relation path;
-                //### thus we can use first mapping of union only
-                if (idx == 0)
-                    resJoins[1] = joins;
+                    //### cheat: result joins only care about the relation path;
+                    //### thus we can use first mapping of union only
+                    if (idx == 0)
+                        resJoins[1] = joins;
+                } else {
+                    sel.select(vals[idx], field.getElementMapping().
+                        getSelectSubclasses(), store, fetch, eagerMode, null);
+                }
             }
         });
         Result res = union.execute(store, fetch);
@@ -138,11 +146,12 @@ public class HandlerRelationMapTableFieldStrategy
         ValueMapping val = field.getElementMapping();
         if (val.getTypeCode() != JavaTypes.PC || val.isEmbeddedPC())
             throw new MetaDataException(_loc.get("not-relation", val));
-        FieldMapping mapped = field.getMappedByMapping();
         
-        if (mapped != null) // map to the owner table
-            handleMappedBy(adapt);
-        else { 
+        FieldMapping mapped = field.getMappedByMapping();
+        if ((isUni1ToMFK() && !isBi1ToMJT()) || mapped != null) { 
+            // map to the owner table
+            handleMappedByForeignKey(adapt);
+        } else if ((!isUni1ToMFK() && isBi1ToMJT()) || mapped == null){ 
             // map to a separate table
             field.mapJoin(adapt, true);
             if (val.getTypeMapping().isMapped()) {
@@ -178,13 +187,16 @@ public class HandlerRelationMapTableFieldStrategy
         throws SQLException {
         if (map == null || map.isEmpty())
             return;
+        
         if (field.getMappedBy() != null)
             return;
 
-        Row row = rm.getSecondaryRow(field.getTable(), Row.ACTION_INSERT);
-        row.setForeignKey(field.getJoinForeignKey(), field.getJoinColumnIO(),
-            sm);
-
+        Row row = null;
+        if (!isUni1ToMFK()) {
+            row = rm.getSecondaryRow(field.getTable(), Row.ACTION_INSERT);
+            row.setForeignKey(field.getJoinForeignKey(), field.getJoinColumnIO(),
+                sm);
+        }
         ValueMapping key = field.getKeyMapping();
         ValueMapping val = field.getElementMapping();
         StoreContext ctx = store.getContext();
@@ -192,21 +204,30 @@ public class HandlerRelationMapTableFieldStrategy
         Map.Entry entry;
         for (Iterator itr = map.entrySet().iterator(); itr.hasNext();) {
             entry = (Map.Entry) itr.next();
-            HandlerStrategies.set(key, entry.getKey(), store, row, _kcols,
-                _kio, true);
             valsm = RelationStrategies.getStateManager(entry.getValue(),
                 ctx);
-            val.setForeignKey(row, valsm);
+            if (isUni1ToMFK()){
+                row = rm.getRow(field.getElementMapping().getDeclaredTypeMapping().getTable(),
+                    Row.ACTION_UPDATE, valsm, true);
+                row.wherePrimaryKey(valsm);
+                val.setForeignKey(row, sm);
+            } else {
+                val.setForeignKey(row, valsm);
+            }
+            HandlerStrategies.set(key, entry.getKey(), store, row, _kcols,
+                    _kio, true);
             
-            // So far we poplulated the key/value of each
+            // So far we populated the key/value of each
             // map element owned by the entity.
             // In the case of ToMany, and both sides
             // use Map to represent the relation,
             // we need to populate the key value of the owner
             // from the view point of the owned side
             PersistenceCapable obj = sm.getPersistenceCapable();
-            if (!populateKey(row, valsm, obj, ctx, rm, store))
-                rm.flushSecondaryRow(row);
+            if (!populateKey(row, valsm, obj, ctx, rm, store)) {
+                if (!isUni1ToMFK())
+                    rm.flushSecondaryRow(row);
+            }
         }
     }
     
@@ -249,36 +270,66 @@ public class HandlerRelationMapTableFieldStrategy
         boolean canChange = val.getForeignKey().isLogical();
         Object mkey;
         if (canChange && !change.isEmpty()) {
-            Row changeRow = rm.getSecondaryRow(field.getTable(),
-                Row.ACTION_UPDATE);
-            changeRow.whereForeignKey(field.getJoinForeignKey(), sm);
-
+            Row changeRow = null;
+            if (!isUni1ToMFK()) {
+                changeRow = rm.getSecondaryRow(field.getTable(),
+                    Row.ACTION_UPDATE);
+                changeRow.whereForeignKey(field.getJoinForeignKey(), sm);
+            }
+            
             for (Iterator itr = change.iterator(); itr.hasNext();) {
                 mkey = itr.next();
-                HandlerStrategies.where(key, mkey, store, changeRow, _kcols);
                 valsm = RelationStrategies.getStateManager(map.get(mkey), ctx);
-                val.setForeignKey(changeRow, valsm);
-                rm.flushSecondaryRow(changeRow);
+                if (isUni1ToMFK()){
+                    changeRow = rm.getRow(field.getElementMapping().getDeclaredTypeMapping().getTable(),
+                        Row.ACTION_UPDATE, valsm, true);
+                    changeRow.wherePrimaryKey(valsm);
+                    val.setForeignKey(changeRow, sm);
+                } else {
+                    val.setForeignKey(changeRow, valsm);
+                }
+                
+                HandlerStrategies.where(key, mkey, store, changeRow, _kcols);
+                if (!isUni1ToMFK())
+                    rm.flushSecondaryRow(changeRow);
             }
         }
 
         // delete the removes
         Collection rem = ct.getRemoved();
         if (!rem.isEmpty() || (!canChange && !change.isEmpty())) {
-            Row delRow = rm.getSecondaryRow(field.getTable(),
-                Row.ACTION_DELETE);
-            delRow.whereForeignKey(field.getJoinForeignKey(), sm);
-
+            Row delRow = null;
+            if (!isUni1ToMFK()) {
+                delRow = rm.getSecondaryRow(field.getTable(),
+                    Row.ACTION_DELETE);
+                delRow.whereForeignKey(field.getJoinForeignKey(), sm);
+            }
             for (Iterator itr = rem.iterator(); itr.hasNext();) {
-                HandlerStrategies.where(key, itr.next(), store, delRow,
+                mkey = itr.next();
+                if (isUni1ToMFK()){
+                    delRow = rm.getRow(field.getElementMapping().getDeclaredTypeMapping().getTable(),
+                        Row.ACTION_UPDATE, sm, true);
+                    val.setForeignKey(delRow, null);
+                } 
+                
+                HandlerStrategies.where(key, mkey, store, delRow,
                     _kcols);
-                rm.flushSecondaryRow(delRow);
+                if (!isUni1ToMFK())
+                    rm.flushSecondaryRow(delRow);
             }
             if (!canChange && !change.isEmpty()) {
                 for (Iterator itr = change.iterator(); itr.hasNext();) {
+                    mkey = itr.next();
+                    if (isUni1ToMFK()){
+                        delRow = rm.getRow(field.getElementMapping().getDeclaredTypeMapping().getTable(),
+                            Row.ACTION_UPDATE, sm, true);
+                        val.setForeignKey(delRow, null);
+                    } 
+
                     HandlerStrategies.where(key, itr.next(), store, delRow,
                         _kcols);
-                    rm.flushSecondaryRow(delRow);
+                    if (!isUni1ToMFK())
+                        rm.flushSecondaryRow(delRow);
                 }
             }
         }
@@ -286,28 +337,47 @@ public class HandlerRelationMapTableFieldStrategy
         // insert the adds
         Collection add = ct.getAdded();
         if (!add.isEmpty() || (!canChange && !change.isEmpty())) {
-            Row addRow = rm.getSecondaryRow(field.getTable(),
-                Row.ACTION_INSERT);
-            addRow.setForeignKey(field.getJoinForeignKey(),
-                field.getJoinColumnIO(), sm);
-
+            Row addRow = null;
+            if (!isUni1ToMFK()) {
+                addRow = rm.getSecondaryRow(field.getTable(),
+                        Row.ACTION_INSERT);
+                addRow.setForeignKey(field.getJoinForeignKey(),
+                        field.getJoinColumnIO(), sm);
+            }
             for (Iterator itr = add.iterator(); itr.hasNext();) {
                 mkey = itr.next();
+                valsm = RelationStrategies.getStateManager(map.get(mkey), ctx);
+                if (isUni1ToMFK()){
+                    addRow = rm.getRow(field.getElementMapping().getDeclaredTypeMapping().getTable(),
+                        Row.ACTION_UPDATE, valsm, true);
+                    addRow.wherePrimaryKey(valsm);
+                    val.setForeignKey(addRow, sm);
+                } else {
+                    val.setForeignKey(addRow, valsm);
+                }
+                
                 HandlerStrategies.set(key, mkey, store, addRow, _kcols,
                     _kio, true);
-                valsm = RelationStrategies.getStateManager(map.get(mkey), ctx);
-                val.setForeignKey(addRow, valsm);
-                rm.flushSecondaryRow(addRow);
+                if (!isUni1ToMFK())
+                    rm.flushSecondaryRow(addRow);
             }
             if (!canChange && !change.isEmpty()) {
                 for (Iterator itr = change.iterator(); itr.hasNext();) {
                     mkey = itr.next();
+                    valsm = RelationStrategies.getStateManager(map.get(mkey), ctx);
+                    if (isUni1ToMFK()){
+                        addRow = rm.getRow(field.getElementMapping().getDeclaredTypeMapping().getTable(),
+                            Row.ACTION_UPDATE, valsm, true);
+                        addRow.wherePrimaryKey(valsm);
+                        val.setForeignKey(addRow, sm);
+                    } else {
+                        val.setForeignKey(addRow, valsm);
+                    }
+                    
                     HandlerStrategies.set(key, mkey, store, addRow, _kcols,
                         _kio, true);
-                    valsm = RelationStrategies.getStateManager(map.get(mkey),
-                        ctx);
-                    val.setForeignKey(addRow, valsm);
-                    rm.flushSecondaryRow(addRow);
+                    if (!isUni1ToMFK())
+                        rm.flushSecondaryRow(addRow);
                 }
             }
         }
@@ -353,7 +423,7 @@ public class HandlerRelationMapTableFieldStrategy
     
     public void delete(OpenJPAStateManager sm, JDBCStore store, RowManager rm)
         throws SQLException {
-        if (field.getMappedBy() != null)
+        if (field.getMappedBy() != null || isUni1ToMFK())
             return;
         super.delete(sm, store, rm);
     }
