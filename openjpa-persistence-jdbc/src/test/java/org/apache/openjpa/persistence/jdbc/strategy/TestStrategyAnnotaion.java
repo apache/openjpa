@@ -33,7 +33,7 @@ public class TestStrategyAnnotaion extends SingleEMFTestCase {
 
     @Override
     public void setUp() {
-        super.setUp(DROP_TABLES, Person.class, Address.class);
+        super.setUp(Person.class, Address.class, CLEAR_TABLES);
     }
 
     public void testStrategy() {
