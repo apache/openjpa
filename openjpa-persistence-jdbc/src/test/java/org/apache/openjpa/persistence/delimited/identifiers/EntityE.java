@@ -27,12 +27,11 @@ import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 
 @Entity
-//@Table(name="primary_entityE", schema="delim_id")
 @Table(name="\"primary entityE\"", schema="\"delim id\"")
 public class EntityE {
     @Id
     @SequenceGenerator(name="entityE_seq_gen_name", 
-        sequenceName="\"entityE_seq_gen\"", schema="\"delim_id\"")
+        sequenceName="\"entityE_seq_gen\"", schema="\"delim id\"")
     @GeneratedValue(strategy=GenerationType.SEQUENCE, 
         generator="entityE_seq_gen_name")
     private int id;
@@ -41,13 +40,7 @@ public class EntityE {
     
     public EntityE(String name) {
         this.name = name;
-//        id = 1;
     }
-    
-//    public EntityE(int id, String name) {
-//        this.id = id;
-//        this.name = name;
-//    }
     
     /**
      * @return the id

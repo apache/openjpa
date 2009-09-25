@@ -19,7 +19,9 @@
 package org.apache.openjpa.persistence.delimited.identifiers;
 
 import org.apache.openjpa.jdbc.conf.JDBCConfiguration;
+import org.apache.openjpa.jdbc.sql.DB2Dictionary;
 import org.apache.openjpa.jdbc.sql.DBDictionary;
+import org.apache.openjpa.jdbc.sql.DerbyDictionary;
 import org.apache.openjpa.persistence.OpenJPAEntityManager;
 import org.apache.openjpa.persistence.test.SQLListenerTestCase;
 
@@ -33,6 +35,13 @@ public class TestManualDelimIdSeqGen extends SQLListenerTestCase {
     
     @Override
     public void setUp() throws Exception {
+        // NOTE: This test is only configured to run on DB2 and Derby since 
+        // those DBs handle non-default schemas without additional authority or 
+        // configuration  
+        setSupportedDatabases(DB2Dictionary.class, DerbyDictionary.class);
+        if (isTestsDisabled())
+            return;
+
         super.setUp(EntityE.class,DROP_TABLES);
         assertNotNull(emf);
         
@@ -50,37 +59,6 @@ public class TestManualDelimIdSeqGen extends SQLListenerTestCase {
         entityE = new EntityE("e name");
     }
     
-    // TODO: temp
-//    public void testDBCapability() {
-//        Connection conn = (Connection)em.getConnection();
-//        try {
-//            DatabaseMetaData meta = conn.getMetaData();
-//            System.out.println("LC - " + 
-//                meta.storesLowerCaseIdentifiers());
-//            System.out.println("LCQ - " + 
-//                meta.storesLowerCaseQuotedIdentifiers());
-//            System.out.println("MC - " + 
-//                meta.storesMixedCaseIdentifiers());
-//            System.out.println("MCQ - " + 
-//                meta.storesMixedCaseQuotedIdentifiers());
-//            System.out.println("UC - " + 
-//                meta.storesUpperCaseIdentifiers());
-//            System.out.println("UCQ - " + 
-//                meta.storesUpperCaseQuotedIdentifiers());
-//            
-//            System.out.println("db product name - " + 
-//                meta.getDatabaseProductName());
-//            System.out.println("db product version - " + 
-//                meta.getDatabaseProductVersion());
-//            System.out.println("driver name - " + 
-//                meta.getDriverName());
-//            System.out.println("driver version - " + 
-//                meta.getDriverVersion());
-//        } catch (SQLException e) {
-//            e.printStackTrace();
-//        }
-//    }
-    
     public void testSeqGen() {
         if (!supportsNativeSequence) {
             return;
@@ -90,11 +68,8 @@ public class TestManualDelimIdSeqGen extends SQLListenerTestCase {
         em.getTransaction().begin();
         em.persist(entityE);
         em.getTransaction().commit();
-        
-        System.out.println(super.toString(sql));
-        
+                
         int genId = entityE.getId();
-        System.out.println("generated id - " + genId);
         em.clear();
         em.getTransaction().begin();
         EntityE eA = em.find(EntityE.class, genId);

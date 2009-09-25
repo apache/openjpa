@@ -5,7 +5,9 @@ import java.util.List;
 import javax.persistence.Query;
 
 import org.apache.openjpa.jdbc.conf.JDBCConfiguration;
+import org.apache.openjpa.jdbc.sql.DB2Dictionary;
 import org.apache.openjpa.jdbc.sql.DBDictionary;
+import org.apache.openjpa.jdbc.sql.DerbyDictionary;
 import org.apache.openjpa.persistence.OpenJPAEntityManager;
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
@@ -32,22 +34,25 @@ public class TestManualDelimInheritance extends SQLListenerTestCase {
     int id = 0;
     Dog dog;
     Cat cat;
-    JDBCConfiguration conf;
-    DBDictionary dict;
     
     @Override
     public void setUp() throws Exception {
+        // NOTE: This test is only configured to run on DB2 and Derby since 
+        // those DBs handle non-default schemas without additional authority or 
+        // configuration  
+        setSupportedDatabases(DB2Dictionary.class, DerbyDictionary.class);
+        if (isTestsDisabled())
+            return;
+
         super.setUp(
             org.apache.openjpa.persistence.delimited.identifiers.Animal.class,
             org.apache.openjpa.persistence.delimited.identifiers.Dog.class,
-            org.apache.openjpa.persistence.delimited.identifiers.Cat.class);
+            org.apache.openjpa.persistence.delimited.identifiers.Cat.class,
+            DROP_TABLES);
         assertNotNull(emf);
         
         em = emf.createEntityManager();
         assertNotNull(em);
-        
-        conf = (JDBCConfiguration) emf.getConfiguration();
-        dict = conf.getDBDictionaryInstance();
     }
     
     private void createDog(int id) {

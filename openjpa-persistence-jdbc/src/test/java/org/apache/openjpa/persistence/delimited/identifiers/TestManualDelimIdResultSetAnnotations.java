@@ -22,6 +22,8 @@ import java.util.List;
 
 import javax.persistence.Query;
 
+import org.apache.openjpa.jdbc.sql.DB2Dictionary;
+import org.apache.openjpa.jdbc.sql.DerbyDictionary;
 import org.apache.openjpa.persistence.OpenJPAEntityManager;
 import org.apache.openjpa.persistence.test.SQLListenerTestCase;
 
@@ -38,6 +40,13 @@ public class TestManualDelimIdResultSetAnnotations
     
     @Override
     public void setUp() throws Exception {
+        // NOTE: This test is only configured to run on DB2 and Derby since 
+        // those DBs handle non-default schemas without additional authority or 
+        // configuration  
+        setSupportedDatabases(DB2Dictionary.class, DerbyDictionary.class);
+        if (isTestsDisabled())
+            return;
+        
         super.setUp(
             org.apache.openjpa.persistence.delimited.identifiers.Animal.class,
             org.apache.openjpa.persistence.delimited.identifiers.Dog.class,

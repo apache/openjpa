@@ -25,10 +25,8 @@ import javax.persistence.Table;
 
 @Entity
 @Table(name="\"entity d4\"", schema="\"delim id\"")
-//@Table(name="xxx")
 public class EntityG {
     @Id
-//    @Column(name="\"entityD4 id\"")
     int id;
     String name;
     

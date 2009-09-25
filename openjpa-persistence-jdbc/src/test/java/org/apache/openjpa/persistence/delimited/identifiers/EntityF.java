@@ -77,8 +77,8 @@ public class EntityF {
     @ElementCollection
     // Note: Delimited column definition is not supported on some DBs, so
     // it is not delimited here
-    // TODO: create a separate entity and conditionally run the test
-    @MapKeyColumn(name="\"mapKey\"", columnDefinition="varchar(20)")
+    // TODO: create a separate entity and conditionally run the test on a supported DB
+    @MapKeyColumn(name="\"mapKey\"", columnDefinition="varchar(20)", table="\"delim collection map\"")
     private Map<String, String> delimCollectionMap = 
         new HashMap<String, String>();
     
