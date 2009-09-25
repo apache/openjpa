@@ -43,4 +43,8 @@
     <persistence-unit name="exclude_true">
         <exclude-unlisted-classes>true</exclude-unlisted-classes>
     </persistence-unit>
+    <persistence-unit name="test_parsing">
+    	<mapping-file>META-INF/parsing-orm.xml</mapping-file>
+		<class>org.apache.openjpa.persistence.entity.MixedMappingLocation</class>		
+    </persistence-unit>
 </persistence>
