@@ -30,23 +30,29 @@ import org.apache.openjpa.persistence.test.SingleEMFTestCase;
 
 
 public class TestStrategyAnnotaion extends SingleEMFTestCase {
-	 public void testStrategy() {
-	    	EntityManagerFactory emf = Persistence.
-	       		createEntityManagerFactory("testStrategy", System.getProperties());
-	   	EntityManager em = emf.createEntityManager();
-		em.getTransaction().begin();
-		Person person = new Person();
-		person.setName("parul");
-		person.setAge(21);
 
-		// no address entered for person.
-		em.persist(person);
-		em.getTransaction().commit();
-		em.clear();
+    @Override
+    public void setUp() {
+        super.setUp(Person.class, Address.class, CLEAR_TABLES);
+    }
 
-		// In case of inner join, the result set should be empty
-		List pers = em.createQuery("select p from Person p").getResultList();
-		assertTrue(pers.isEmpty());
-	}
+    public void testStrategy() {
+        EntityManagerFactory emf = Persistence.createEntityManagerFactory(
+            "testStrategy", System.getProperties());
+        EntityManager em = emf.createEntityManager();
+        em.getTransaction().begin();
+        Person person = new Person();
+        person.setName("parul");
+        person.setAge(21);
+
+        // no address entered for person.
+        em.persist(person);
+        em.getTransaction().commit();
+        em.clear();
+
+        // In case of inner join, the result set should be empty
+        List pers = em.createQuery("select p from Person p").getResultList();
+        assertTrue(pers.isEmpty());
+    }
 }
 
