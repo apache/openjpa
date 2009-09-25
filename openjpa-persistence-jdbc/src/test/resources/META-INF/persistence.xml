@@ -105,7 +105,8 @@
         <class>org.apache.openjpa.persistence.jdbc.strategy.Person</class>
         <class>org.apache.openjpa.persistence.jdbc.strategy.Address</class>
         <properties>
-            <property name="openjpa.jdbc.SynchronizeMappings" value="buildSchema"/>
+            <property name="openjpa.jdbc.SynchronizeMappings"
+                value="buildSchema(SchemaAction='drop,add')"/>
         </properties>
     </persistence-unit>
 
