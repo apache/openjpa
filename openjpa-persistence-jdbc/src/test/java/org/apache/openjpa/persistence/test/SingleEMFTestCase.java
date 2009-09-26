@@ -166,9 +166,7 @@ public abstract class SingleEMFTestCase
         if (tempEMF == null) {
             tempEMF = createEMF();
         }
-        OpenJPAEntityManagerSPI em = tempEMF.createEntityManager();
-        JDBCConfiguration conf = (JDBCConfiguration) em.getConfiguration();
-        DBDictionary dict = conf.getDBDictionaryInstance();
+        DBDictionary dict = ((JDBCConfiguration)tempEMF.getConfiguration()).getDBDictionaryInstance();
         for (Class<?> db : dbs) {
             if (dict.getClass().getCanonicalName().equalsIgnoreCase(db.getCanonicalName())) {
                 setTestsDisabled(true);
@@ -177,8 +175,6 @@ public abstract class SingleEMFTestCase
         }
         if (emf == null) {
             closeEMF(tempEMF);
-        } else {
-            em.close();
         }
     }
     
@@ -187,9 +183,7 @@ public abstract class SingleEMFTestCase
         if (tempEMF == null) {
             tempEMF = createEMF();
         }
-        OpenJPAEntityManagerSPI em = tempEMF.createEntityManager();
-        JDBCConfiguration conf = (JDBCConfiguration) em.getConfiguration();
-        DBDictionary dict = conf.getDBDictionaryInstance();
+        DBDictionary dict = ((JDBCConfiguration)tempEMF.getConfiguration()).getDBDictionaryInstance();
         boolean supportedDB = false;
         for (Class<?> db : dbs) {
             if (dict.getClass().getCanonicalName().equalsIgnoreCase(db.getCanonicalName())) {
@@ -200,8 +194,6 @@ public abstract class SingleEMFTestCase
         setTestsDisabled(!supportedDB);
         if (emf == null) {
             closeEMF(tempEMF);
-        } else {
-            em.close();
         }
     }
     
