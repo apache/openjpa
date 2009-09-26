@@ -99,13 +99,13 @@ public abstract class MapTableFieldStrategy
         
     }
     
-    protected boolean isBi1ToMJT() {
+    public boolean isBi1ToMJT() {
         if (_isBi1ToMJT == null)
             isNonDefaultMapping();
         return _isBi1ToMJT;
     }
     
-    protected boolean isUni1ToMFK() {
+    public boolean isUni1ToMFK() {
         if (_isUni1ToMFK == null)
             isNonDefaultMapping();
         return _isUni1ToMFK;

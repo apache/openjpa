@@ -23,6 +23,7 @@ import java.util.Collection;
 import java.util.List;
 
 import org.apache.openjpa.conf.Compatibility;
+import org.apache.openjpa.jdbc.meta.strats.MapTableFieldStrategy;
 import org.apache.openjpa.jdbc.schema.Column;
 import org.apache.openjpa.jdbc.schema.ColumnIO;
 import org.apache.openjpa.jdbc.schema.ForeignKey;
@@ -147,6 +148,17 @@ public class FieldMappingInfo
         }, schemaName, tableName, adapt);
     }
 
+    public ForeignKey getJoinForeignKey (final FieldMapping field, Table table,
+        boolean adapt) {
+        Strategy strat = field.getStrategy();
+        if (strat instanceof MapTableFieldStrategy && 
+            ((MapTableFieldStrategy)strat).isUni1ToMFK()) {
+            List cols = field.getElementMapping().getValueInfo().getColumns();
+            return getJoin(field, table, adapt, cols);
+        }
+        return null;
+    }
+    
     /**
      * Return the join from the field table to the owning class table.
      */
@@ -154,7 +166,11 @@ public class FieldMappingInfo
         boolean adapt) {
         // if we have no join columns defined, check class-level join
     	// if the given field is embedded then consider primary table of owner
-        List cols = getColumns();
+        return getJoin(field, table, adapt, getColumns());
+    }
+    
+    public ForeignKey getJoin(final FieldMapping field, Table table,
+            boolean adapt, List cols) {
         if (cols.isEmpty()) {
         	ClassMapping mapping;
         	if (field.isEmbedded() && 

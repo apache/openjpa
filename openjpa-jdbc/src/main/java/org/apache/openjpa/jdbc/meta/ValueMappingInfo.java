@@ -107,7 +107,7 @@ public class ValueMappingInfo
             getDefiningMapping(), rel, inversable, adapt);
     }
 
-    private Table getTable(ValueMapping val) {
+    public Table getTable(ValueMapping val) {
         FieldMapping field = val.getFieldMapping();
         Table table = field.getTable();
         if (table == null) {

@@ -44,4 +44,17 @@ public class EntityC {
     public void setName(String name) { 
         this.name = name; 
     }
+    
+    public int hashCode() {
+        return name.hashCode() + (int)id;
+    }
+    
+    public boolean equals(Object o) {
+        if (!(o instanceof EntityC)) return false;
+        EntityC c = (EntityC)o;
+        if (!c.name.equals(name)) return false;
+        if (c.id != id) return false;
+        return true;
+    }
+    
 }
