@@ -31,7 +31,7 @@ import javax.persistence.Table;
 public class EntityE {
     @Id
     @SequenceGenerator(name="entityE_seq_gen_name", 
-        sequenceName="\"entityE_seq_gen\"", schema="\"delim id\"")
+        sequenceName="\"entityE_seq_gen\"", schema="\"delim_id\"")
     @GeneratedValue(strategy=GenerationType.SEQUENCE, 
         generator="entityE_seq_gen_name")
     private int id;

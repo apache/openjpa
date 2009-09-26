@@ -19,6 +19,7 @@
 package org.apache.openjpa.persistence.delimited.identifiers.noschema;
 
 import org.apache.openjpa.jdbc.conf.JDBCConfiguration;
+import org.apache.openjpa.jdbc.sql.DB2Dictionary;
 import org.apache.openjpa.jdbc.sql.DBDictionary;
 import org.apache.openjpa.jdbc.sql.MySQLDictionary;
 import org.apache.openjpa.persistence.OpenJPAEntityManager;
@@ -35,12 +36,15 @@ public class TestNoSchemaManualDelimIdSeqGen extends SQLListenerTestCase {
     @Override
     public void setUp() throws Exception {
 
-        // TODO: Delimiter support is limited to 
-        setUnsupportedDatabases(MySQLDictionary.class);
+        // TODO: Delimiter support is currently limited to database that use
+        // double quote as a delimiter.
+        // Also Disabling DB2 until a SQLCODE -204 issue during the cleanup phase 
+        // is resolved.
+        setUnsupportedDatabases(MySQLDictionary.class, DB2Dictionary.class);
         if (isTestsDisabled())
             return;
         
-        super.setUp(EntityE.class,DROP_TABLES);
+        super.setUp(EntityE.class); //,DROP_TABLES);
         assertNotNull(emf);
         
         conf = (JDBCConfiguration) emf.getConfiguration();

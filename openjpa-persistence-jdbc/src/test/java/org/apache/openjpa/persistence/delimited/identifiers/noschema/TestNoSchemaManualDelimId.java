@@ -40,7 +40,9 @@ public class TestNoSchemaManualDelimId extends SQLListenerTestCase {
         
         // TODO: Delimiter support is currently limited to database that use
         // double quote as a delimiter.
-        setUnsupportedDatabases(MySQLDictionary.class);
+        // Also Disabling DB2 until a SQLCODE -204 issue during the cleanup phase 
+        // is resolved.
+        setUnsupportedDatabases(MySQLDictionary.class, DB2Dictionary.class);
         if (isTestsDisabled())
             return;
         

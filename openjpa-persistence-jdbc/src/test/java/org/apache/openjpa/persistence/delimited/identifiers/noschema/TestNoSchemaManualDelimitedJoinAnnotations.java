@@ -23,6 +23,7 @@ import java.util.List;
 import javax.persistence.Query;
 
 import org.apache.openjpa.jdbc.conf.JDBCConfiguration;
+import org.apache.openjpa.jdbc.sql.DB2Dictionary;
 import org.apache.openjpa.jdbc.sql.DBDictionary;
 import org.apache.openjpa.jdbc.sql.MySQLDictionary;
 import org.apache.openjpa.persistence.OpenJPAEntityManager;
@@ -44,7 +45,9 @@ public class TestNoSchemaManualDelimitedJoinAnnotations extends SQLListenerTestC
         
         // TODO: Delimiter support is currently limited to database that use
         // double quote as a delimiter.
-        setUnsupportedDatabases(MySQLDictionary.class);
+        // Also Disabling DB2 until a SQLCODE -204 issue during the cleanup phase 
+        // is resolved.
+        setUnsupportedDatabases(MySQLDictionary.class, DB2Dictionary.class);
         if (isTestsDisabled())
             return;
 
