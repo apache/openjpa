@@ -400,6 +400,8 @@ extends AbstractCachedEMFTestCase {
         types.add(EntityC_U1M_Map_RelKey_FK.class);
         types.add(Uni_1ToM_Map_RelKey_FK.class);
         types.add(EntityC.class);
+        types.add(EntityC_B1M_Map_RelKey_JT.class);
+        types.add(Bi_1ToM_Map_RelKey_JT.class);
         OpenJPAEntityManagerFactorySPI emf = createEMF2_0(types);
         EntityManager em = emf.createEntityManager();
         
@@ -408,9 +410,13 @@ extends AbstractCachedEMFTestCase {
             em.getTransaction().begin();
             em.getTransaction().commit();
             assertSQLFragnments(sql, "CREATE TABLE EntityC_U1M_Map_FK", "Uni1MFK_ID", "KEY0");
+            assertSQLFragnments(sql, "CREATE TABLE Bi1M_Map_JT_C", "B_ID", "C_ID");
+            assertSQLFragnments(sql, "CREATE TABLE EntityC_U1M_Map_RelKey_FK", "Uni1MFK_ID");
+            assertSQLFragnments(sql, "CREATE TABLE Bi1M_Map_RelKey_JT_C", "B_ID", "C_ID");
             crudUni1MMapFK(em);
             crudBi1MMapJT(em);
             crudUni1MMapRelKeyFK(em);
+            crudBi1MMapRelKeyJT(em);
         } catch (Exception e) {
             e.printStackTrace();
             fail("OneToMany mapping failed with exception message: " + e.getMessage());
@@ -594,6 +600,61 @@ extends AbstractCachedEMFTestCase {
         //remove
         em.getTransaction().begin();
         em.remove(findU);
+        em.getTransaction().commit();
+    }
+
+    public void crudBi1MMapRelKeyJT(EntityManager em) {
+        Bi_1ToM_Map_RelKey_JT b = new Bi_1ToM_Map_RelKey_JT();
+        b.setName("bi1mfk");
+        Map<EntityC, EntityC_B1M_Map_RelKey_JT> cs = new HashMap<EntityC, EntityC_B1M_Map_RelKey_JT>();
+        EntityC_B1M_Map_RelKey_JT c = new EntityC_B1M_Map_RelKey_JT();
+        c.setName("c");
+        c.setBi1mjt(b);
+        EntityC cKey = new EntityC();
+        cKey.setName("cKey");
+        cs.put(cKey, c);
+        b.setEntityCs(cs);
+        em.persist(b);
+        em.persist(c);
+        em.persist(cKey);
+        em.getTransaction().begin();
+        em.getTransaction().commit();
+
+        //update
+        em.getTransaction().begin();
+        cs = b.getEntityCs();
+        b.setName("newName");
+        EntityC_B1M_Map_RelKey_JT c1 = new EntityC_B1M_Map_RelKey_JT();
+        c1.setName("c1");
+        EntityC cKey1 = new EntityC();
+        cKey1.setName("cKey1");
+        cs.put(cKey1, c1);
+        c1.setBi1mjt(b);
+        em.persist(c1);
+        em.persist(cKey1);
+        em.getTransaction().commit();
+        em.clear();
+        
+        //query
+        Query q = em.createQuery("SELECT u FROM Bi_1ToM_Map_RelKey_JT u");
+        Bi_1ToM_Map_RelKey_JT b1 = (Bi_1ToM_Map_RelKey_JT)q.getSingleResult();
+        assertEquals(b, b1);
+        em.clear();
+
+        // query the owner
+        q = em.createQuery("SELECT c FROM EntityC_B1M_Map_RelKey_JT c where c.name = 'c'");
+        EntityC_B1M_Map_RelKey_JT newC = (EntityC_B1M_Map_RelKey_JT)q.getSingleResult();
+        assertEquals(newC, c);
+        em.clear();
+        
+        //find
+        long id = b1.getId();
+        Bi_1ToM_Map_RelKey_JT b2 = em.find(Bi_1ToM_Map_RelKey_JT.class, id);
+        assertEquals(b, b2);
+        
+        //remove
+        em.getTransaction().begin();
+        em.remove(b2);
         em.getTransaction().commit();
     }
 
