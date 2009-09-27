@@ -18,7 +18,6 @@
  */
 package org.apache.openjpa.jdbc.sql;
 
-import java.io.ByteArrayInputStream;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.security.AccessController;
@@ -1145,13 +1144,6 @@ public class OracleDictionary
             append(",'/*/");
         val.appendTo(buf);
         buf.append("')");
-    }
-    
-    public void insertBlobForStreamingLoad(Row row, Column col, Object ob)
-        throws SQLException {
-        if (ob == null)
-            col.setType(Types.OTHER);
-        row.setNull(col);
     }
     
     public void insertClobForStreamingLoad(Row row, Column col, Object ob)
