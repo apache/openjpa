@@ -68,8 +68,9 @@ public class TestFetchGroups extends BaseKernelTest {
     public TestFetchGroups() {
     }
 
-    public void setUp() {
-        deleteAll(FetchGroupTestObject.class);
+    public void setUp() throws Exception {
+        super.setUp(FetchGroupTestObject.class, FetchGroupTestObjectChild.class,
+            AttachA.class, AttachB.class, AttachC.class, AttachD.class, AttachE.class, AttachF.class);
 
         FetchGroupTestObject o1 = new FetchGroupTestObject();
         // the value that 'a' is set to is important -- TestFetchGroupsExtent
@@ -128,8 +129,7 @@ public class TestFetchGroups extends BaseKernelTest {
         props.put("openjpa.FetchGroups", "default,fg1,fg2");
         OpenJPAEntityManagerFactory factory = getEmf(props);
 
-        OpenJPAEntityManager pm =
-            (OpenJPAEntityManager) factory.createEntityManager();
+        OpenJPAEntityManager pm = factory.createEntityManager();
         checkGroups(pm, new String[]{ "fg1", "fg2" });
         factory.close();
     }
@@ -359,16 +359,7 @@ public class TestFetchGroups extends BaseKernelTest {
      * managed object.
      */
     public void testFetchGroupInstantiated() {
-        deleteAll(AttachA.class);
-        deleteAll(AttachB.class);
-        deleteAll(AttachC.class);
-        deleteAll(AttachD.class);
-        deleteAll(AttachE.class);
-        deleteAll(AttachF.class);
-
-        OpenJPAEntityManager pm;
-
-        pm = getPM();
+        OpenJPAEntityManager pm = getPM();
         startTx(pm);
         AttachE e = new AttachE();
         AttachB b = new AttachB();
@@ -378,12 +369,10 @@ public class TestFetchGroups extends BaseKernelTest {
         endTx(pm);
         endEm(pm);
 
-        Object ob;
-
         pm = getPM();
         startTx(pm);
         assertSize(0, pm.getManagedObjects());
-        ob = pm.createExtent(AttachE.class, true).iterator().next();
+        pm.createExtent(AttachE.class, true).iterator().next();
         // make sure relation is not loaded
         assertSize(1, pm.getManagedObjects());
         rollbackTx(pm);
@@ -394,7 +383,7 @@ public class TestFetchGroups extends BaseKernelTest {
         // now make sure we load relations
         pm.getFetchPlan().addFetchGroup("all");
         assertSize(0, pm.getManagedObjects());
-        ob = pm.createExtent(AttachE.class, true).iterator().next();
+        pm.createExtent(AttachE.class, true).iterator().next();
         // make sure relation is loaded
         assertSize(2, pm.getManagedObjects());
         rollbackTx(pm);
