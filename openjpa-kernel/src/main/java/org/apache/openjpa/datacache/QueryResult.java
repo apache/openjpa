@@ -26,8 +26,9 @@ import java.util.Collection;
  *
  * @author Abe White
  */
+@SuppressWarnings("serial")
 public class QueryResult
-    extends ArrayList {
+    extends ArrayList<Object> {
 
     private final long _ex;
 
@@ -35,7 +36,7 @@ public class QueryResult
     /**
      * Constructor; supply corresponding query key and result data.
      */
-    public QueryResult(QueryKey key, Collection data) {
+    public QueryResult(QueryKey key, Collection<Object> data) {
         super(data);
 
         if (key.getTimeout() == -1)
@@ -47,7 +48,7 @@ public class QueryResult
     /**
      * Constructor to set internal data from a serializer.
      */
-    public QueryResult(Collection data, long ex) {
+    public QueryResult(Collection<Object> data, long ex) {
         super(data);
         _ex = ex;
     }

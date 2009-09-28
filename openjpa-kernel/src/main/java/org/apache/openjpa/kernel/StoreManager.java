@@ -213,7 +213,7 @@ public interface StoreManager
      * which no data store record exists
      * @see org.apache.openjpa.util.ImplHelper#loadAll
      */
-    public Collection loadAll(Collection sms, PCState state, int load,
+    public Collection<Object> loadAll(Collection<OpenJPAStateManager> sms, PCState state, int load,
         FetchConfiguration fetch, Object edata);
 
     /**
@@ -244,7 +244,7 @@ public interface StoreManager
      *
      * @see org.apache.openjpa.util.ApplicationIds#assign()
      */
-    public Collection flush(Collection sms);
+    public Collection<Exception> flush(Collection<OpenJPAStateManager> sms);
 
     /**
      * Assign an object id to the given new instance. Return false if the
@@ -288,7 +288,7 @@ public interface StoreManager
      *
      * @since 0.3.0
      */
-    public Class getManagedType(Object oid);
+    public Class<?> getManagedType(Object oid);
 
     /**
      * Return the class used by this StoreManager for datastore identity
@@ -296,7 +296,7 @@ public interface StoreManager
      * value should the common datastore identity class for all classes, or
      * null if this store manager does not use a common identity class.
      */
-    public Class getDataStoreIdType(ClassMetaData meta);
+    public Class<?> getDataStoreIdType(ClassMetaData meta);
 
     /**
      * Copy the given object id value. Use the described type of the given

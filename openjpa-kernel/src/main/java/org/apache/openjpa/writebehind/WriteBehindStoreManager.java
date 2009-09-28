@@ -24,6 +24,7 @@ import java.util.LinkedHashSet;
 import java.util.Set;
 
 import org.apache.openjpa.kernel.DelegatingStoreManager;
+import org.apache.openjpa.kernel.OpenJPAStateManager;
 import org.apache.openjpa.kernel.PCState;
 import org.apache.openjpa.kernel.StateManagerImpl;
 import org.apache.openjpa.kernel.StoreManager;
@@ -42,7 +43,7 @@ public class WriteBehindStoreManager extends DelegatingStoreManager {
     public static final int OP_UPDATE = 3; 
 
     WriteBehindCache _cache;
-    Collection<StateManagerImpl> inFlightSMs = new ArrayList<StateManagerImpl>();
+    Collection<OpenJPAStateManager> inFlightSMs = new ArrayList<OpenJPAStateManager>();
 
     public WriteBehindStoreManager(StoreManager store) {
         this(store, null);
@@ -54,30 +55,27 @@ public class WriteBehindStoreManager extends DelegatingStoreManager {
         _cache = wbCache;
     }
 
-    public Collection flush(Collection sms) {
-        LinkedHashSet<StateManagerImpl> passingThrough = null;
-        for (Object o : sms) {
-            if(cacheAble((StateManagerImpl)o)) {
-                StateManagerImpl sm = (StateManagerImpl) o;
+    public Collection<Exception> flush(Collection<OpenJPAStateManager> sms) {
+        LinkedHashSet<OpenJPAStateManager> passingThrough = null;
+        for (OpenJPAStateManager sm : sms) {
+            if (cacheAble(sm)) {
                 PCState newState = sm.getPCState();
-                if(newState == PCState.PDELETEDFLUSHED) { 
+                if (newState == PCState.PDELETEDFLUSHED) { 
                     newState = PCState.PDELETED; // effectively reset the flush
                 }
-                inFlightSMs.add(new StateManagerImpl(sm, newState));
-            }
-            else {
-                if(passingThrough == null) { 
-                    passingThrough = new LinkedHashSet<StateManagerImpl>();
+                inFlightSMs.add(new StateManagerImpl((StateManagerImpl)sm, newState));
+            } else {
+                if (passingThrough == null) { 
+                    passingThrough = new LinkedHashSet<OpenJPAStateManager>();
                 }
-                passingThrough.add((StateManagerImpl)o);
+                passingThrough.add(sm);
             }
         }
         
-        Collection rval;
-        if(passingThrough != null) { 
+        Collection<Exception> rval;
+        if (passingThrough != null) { 
             rval = getDelegate().flush(passingThrough);
-        }
-        else { 
+        } else { 
             rval = new ArrayList<Exception>();
         }
         return rval;
@@ -100,11 +98,11 @@ public class WriteBehindStoreManager extends DelegatingStoreManager {
         }
     }
 
-    public Collection<Exception> flushBehind(Collection<StateManagerImpl> sms) {
+    public Collection<Exception> flushBehind(Collection<OpenJPAStateManager> sms) {
         return super.flush(sms);
     }
 
-    public boolean cacheAble(StateManagerImpl sm) {
+    public boolean cacheAble(OpenJPAStateManager sm) {
         boolean rval = false;
         switch (getOperation(sm)) {
         case OP_INSERT:
@@ -135,7 +133,7 @@ public class WriteBehindStoreManager extends DelegatingStoreManager {
         return rval;
     }
     
-    protected int getOperation(StateManagerImpl sm) {
+    protected int getOperation(OpenJPAStateManager sm) {
         int rval = -1; // TODO define me
         if (sm.isDirty()) {
             if (sm.isNew()) {

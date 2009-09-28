@@ -33,7 +33,7 @@ import org.apache.openjpa.writebehind.WriteBehindCacheManager;
  */
 public class CustomWriteBehindCache extends AbstractWriteBehindCache {
 
-    public List<Exception> add(Collection<StateManagerImpl> sms) {
+    public List<Exception> add(Collection<OpenJPAStateManager> sms) {
         List<Exception> exceptions = new ArrayList<Exception>(); 
         return exceptions;
     }
@@ -48,7 +48,7 @@ public class CustomWriteBehindCache extends AbstractWriteBehindCache {
     public void flush() {
     }
 
-    public WriteBehindCacheKey getKey(StateManagerImpl sm) {
+    public WriteBehindCacheKey getKey(OpenJPAStateManager sm) {
         return null;
     }
 
@@ -64,7 +64,7 @@ public class CustomWriteBehindCache extends AbstractWriteBehindCache {
         return 0;
     }
 
-    public Collection<StateManagerImpl> getStateManagers() {
+    public Collection<OpenJPAStateManager> getStateManagers() {
         return null;
     }
 

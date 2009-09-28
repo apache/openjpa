@@ -25,16 +25,18 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.openjpa.enhance.PersistenceCapable;
+import org.apache.openjpa.kernel.OpenJPAStateManager;
 import org.apache.openjpa.kernel.StateManagerImpl;
 import org.apache.openjpa.meta.ClassMetaData;
 
 public class SimpleWriteBehindCache extends AbstractWriteBehindCache {
 
-    private Map<WriteBehindCacheKey, StateManagerImpl> _cache = new HashMap<WriteBehindCacheKey, StateManagerImpl>();
+    private Map<WriteBehindCacheKey, OpenJPAStateManager> _cache = 
+        new HashMap<WriteBehindCacheKey, OpenJPAStateManager>();
 
-    public List<Exception> add(Collection<StateManagerImpl> sms) {
+    public List<Exception> add(Collection<OpenJPAStateManager> sms) {
         List<Exception> exceptions = new ArrayList<Exception>();
-        for (StateManagerImpl sm : sms) {
+        for (OpenJPAStateManager sm : sms) {
             try {
                 add(sm);
             } catch (WriteBehindException wbe) {
@@ -44,7 +46,7 @@ public class SimpleWriteBehindCache extends AbstractWriteBehindCache {
         return exceptions;
     }
 
-    protected void add(StateManagerImpl sm) {
+    protected void add(OpenJPAStateManager sm) {
         WriteBehindCacheKey key = getKey(sm);
         synchronized (_cache) {
             if (_cache.containsKey(key) && _cache.get(key) != sm) {
@@ -65,14 +67,13 @@ public class SimpleWriteBehindCache extends AbstractWriteBehindCache {
         return rval;
     }
 
-    public WriteBehindCacheKey getKey(StateManagerImpl sm) {
+    public WriteBehindCacheKey getKey(OpenJPAStateManager sm) {
         ClassMetaData md = sm.getMetaData();
         Class<?> cls = md.getDescribedType();
         String className = cls.getCanonicalName();
         Object id = sm.getId();
         
-        SimpleWriteBehindCacheKey key =
-            new SimpleWriteBehindCacheKey(className, id);
+        SimpleWriteBehindCacheKey key = new SimpleWriteBehindCacheKey(className, id);
         return key;
     }
 
@@ -80,8 +81,8 @@ public class SimpleWriteBehindCache extends AbstractWriteBehindCache {
         return _cache.size();
     }
 
-    public Collection<StateManagerImpl> getStateManagers() {
-        return new ArrayList<StateManagerImpl>(_cache.values());
+    public Collection<OpenJPAStateManager> getStateManagers() {
+        return new ArrayList<OpenJPAStateManager>(_cache.values());
     }
 
     public void initialize(WriteBehindCacheManager manager) {
@@ -109,8 +110,7 @@ public class SimpleWriteBehindCache extends AbstractWriteBehindCache {
     }
     
     // Might be better in smImpl. 
-    protected StateManagerImpl merge(StateManagerImpl from,
-        StateManagerImpl into) {
+    protected OpenJPAStateManager merge(OpenJPAStateManager from, OpenJPAStateManager into) {
         for (int i = 0; i < into.getMetaData().getFields().length; i++) {
             if (from.getDirty().get(i)) {
                 into.dirty(i);

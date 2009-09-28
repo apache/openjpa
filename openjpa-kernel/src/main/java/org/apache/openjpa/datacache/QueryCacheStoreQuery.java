@@ -111,7 +111,7 @@ public class QueryCacheStoreQuery
      * READ_SERIALIZABLE -- to do so, we'd just return false when in
      * a transaction.
      */
-    private List checkCache(QueryKey qk) {
+    private List<Object> checkCache(QueryKey qk) {
         if (qk == null)
             return null;
         FetchConfiguration fetch = getContext().getFetchConfiguration();
@@ -125,7 +125,7 @@ public class QueryCacheStoreQuery
         if (res == null)
             return null;        
         if (res.isEmpty())
-            return Collections.EMPTY_LIST;
+            return Collections.emptyList();
 
         // this if block is invoked if the evictOnTimestamp is set to true
         if (_cache instanceof AbstractQueryCache) {
@@ -323,7 +323,7 @@ public class QueryCacheStoreQuery
         implements Executor {
 
         private final Executor _ex;
-        private final Class _candidate;
+        private final Class<?> _candidate;
         private final boolean _subs;
         private final FetchConfiguration _fc;
 
@@ -341,7 +341,7 @@ public class QueryCacheStoreQuery
             QueryKey key = QueryKey.newInstance(cq.getContext(),
                 _ex.isPacking(q), params, _candidate, _subs, range.start, 
                 range.end);
-            List cached = cq.checkCache(key);
+            List<Object> cached = cq.checkCache(key);
             if (cached != null)
                 return new ListResultObjectProvider(cached);
 
@@ -371,7 +371,7 @@ public class QueryCacheStoreQuery
             if (cmd == null || cmd.length == 0)
                 return;
 
-            List classes = new ArrayList(cmd.length);
+            List<Class<?>> classes = new ArrayList<Class<?>>(cmd.length);
             for (int i = 0; i < cmd.length; i++)
                 classes.add(cmd[i].getDescribedType());
 
@@ -435,7 +435,7 @@ public class QueryCacheStoreQuery
             return _ex.getAlias(unwrap(q));
         }
 
-        public Class getResultClass(StoreQuery q) {
+        public Class<?> getResultClass(StoreQuery q) {
             return _ex.getResultClass(unwrap(q));
         }
 
@@ -447,7 +447,7 @@ public class QueryCacheStoreQuery
             return _ex.getProjectionAliases(unwrap(q));
         }
 
-        public Class[] getProjectionTypes(StoreQuery q) {
+        public Class<?>[] getProjectionTypes(StoreQuery q) {
             return _ex.getProjectionTypes(unwrap(q));
         }
 
@@ -488,8 +488,7 @@ public class QueryCacheStoreQuery
      * Result list implementation for a cached query result. Package-protected
      * for testing.
      */
-    public static class CachedList
-        extends AbstractList
+    public static class CachedList extends AbstractList<Object>
         implements Serializable {
 
         private final QueryResult _res;
@@ -521,7 +520,7 @@ public class QueryCacheStoreQuery
 
         public Object writeReplace()
             throws ObjectStreamException {
-            return new ArrayList(this);
+            return new ArrayList<Object>(this);
         }
     }
 
@@ -537,7 +536,7 @@ public class QueryCacheStoreQuery
         private final ResultObjectProvider _rop;
         private final boolean _proj;
         private final QueryKey _qk;
-        private final TreeMap _data = new TreeMap();
+        private final TreeMap<Integer,Object> _data = new TreeMap<Integer,Object>();
         private boolean _maintainCache = true;
         private int _pos = -1;
 

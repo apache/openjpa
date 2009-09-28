@@ -20,11 +20,9 @@ package org.apache.openjpa.writebehind;
 
 public abstract class AbstractWriteBehindCache implements WriteBehindCache {
     public String getName() {
-        // TODO Auto-generated method stub
         return null;
     }
     
     public void setName(String name) {
-        // TODO Auto-generated method stub
     }
 }

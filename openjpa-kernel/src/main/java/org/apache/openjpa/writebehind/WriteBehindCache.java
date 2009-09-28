@@ -21,6 +21,7 @@ package org.apache.openjpa.writebehind;
 import java.util.Collection;
 import java.util.List;
 
+import org.apache.openjpa.kernel.OpenJPAStateManager;
 import org.apache.openjpa.kernel.StateManagerImpl;
 
 /**
@@ -69,14 +70,14 @@ public interface WriteBehindCache {
      *         StateManager to the cache. If no exceptions occur the collection
      *         will be empty.
      */
-    public List<Exception> add(Collection<StateManagerImpl> sms);
+    public List<Exception> add(Collection<OpenJPAStateManager> sms);
 
     /**
      * Obtain the StateManagers currently in the cache.
      * 
      * @return collection of state managers.
      */
-    public Collection<StateManagerImpl> getStateManagers();
+    public Collection<OpenJPAStateManager> getStateManagers();
 
     /**
      * Initialize any resources associated with the given
@@ -92,7 +93,7 @@ public interface WriteBehindCache {
      *            A StateManager
      * @return A key that may be used to cache the StateManager.
      */
-    public WriteBehindCacheKey getKey(StateManagerImpl sm);
+    public WriteBehindCacheKey getKey(OpenJPAStateManager sm);
 
     /**
      * Determine whether the cache is empty.

@@ -116,7 +116,7 @@ public abstract class DelegatingStoreManager
         return _store.load(sm, fields, fetch, lockLevel, context);
     }
 
-    public Collection loadAll(Collection sms, PCState state, int load,
+    public Collection<Object> loadAll(Collection<OpenJPAStateManager> sms, PCState state, int load,
         FetchConfiguration fetch, Object context) {
         return _store.loadAll(sms, state, load, fetch, context);
     }
@@ -126,7 +126,7 @@ public abstract class DelegatingStoreManager
         _store.beforeStateChange(sm, fromState, toState);
     }
 
-    public Collection flush(Collection sms) {
+    public Collection<Exception> flush(Collection<OpenJPAStateManager> sms) {
         return _store.flush(sms);
     }
 
@@ -139,11 +139,11 @@ public abstract class DelegatingStoreManager
         return _store.assignField(sm, field, preFlush);
     }
 
-    public Class getManagedType(Object oid) {
+    public Class<?> getManagedType(Object oid) {
         return _store.getManagedType(oid);
     }
 
-    public Class getDataStoreIdType(ClassMetaData meta) {
+    public Class<?> getDataStoreIdType(ClassMetaData meta) {
         return _store.getDataStoreIdType(meta);
     }
 

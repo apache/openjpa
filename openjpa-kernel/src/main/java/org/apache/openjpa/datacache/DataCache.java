@@ -97,8 +97,8 @@ public interface DataCache
      * @param deletes A collection of object IDs that have been deleted
      * and must therefore be dropped from the cache.
      */
-    public void commit(Collection additions, Collection newUpdates,
-        Collection existingUpdates, Collection deletes);
+    public void commit(Collection<DataCachePCData> additions, Collection<DataCachePCData> newUpdates,
+        Collection<DataCachePCData> existingUpdates, Collection<Object> deletes);
 
     /**
      * Returns <code>true</code> if this cache contains data
@@ -110,7 +110,7 @@ public interface DataCache
     /**
      * Returns the indexes of the oids in this cache.
      */
-    public BitSet containsAll(Collection oids);
+    public BitSet containsAll(Collection<Object> oids);
 
     /**
      * Return the cached object for the given oid. Modifying the returned
@@ -165,7 +165,7 @@ public interface DataCache
      * @return the indexes of the removed oids
      * @see #remove
      */
-    public BitSet removeAll(Collection oids);
+    public BitSet removeAll(Collection<Object> oids);
 
     /**
      * Evict all values of a specified type.
@@ -197,7 +197,7 @@ public interface DataCache
      * @return the indexes of the pinned oids
      * @see #pin
      */
-    public BitSet pinAll(Collection oids);
+    public BitSet pinAll(Collection<Object> oids);
 
     /**
      * Pin all oids for the given type.
@@ -223,7 +223,7 @@ public interface DataCache
      * @return the indexes of the unpinned oids
      * @see #unpin
      */
-    public BitSet unpinAll(Collection oids);
+    public BitSet unpinAll(Collection<Object> oids);
 
     /**
      * Unpin all oids associaed with the given type from the cache.
@@ -261,9 +261,13 @@ public interface DataCache
 	public void close ();
     
     /**
-	 * returns objects from the caches for a given list of keys
+	 * Gets objects from the caches for a given list of keys.
+	 * The returned map has the same keys as the given keys.
+	 * If the cache does not contain data for a specific key,
+	 * the returned map still contains the key with a null value.  
+	 * 
      */
-    public Map getAll(List keys);
+    public Map<Object,DataCachePCData> getAll(List<Object> keys);
     
     /**
      * Returns number of read/write request and cache hit ratio data.

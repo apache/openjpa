@@ -49,7 +49,7 @@ import serp.bytecode.JumpInstruction;
 import serp.bytecode.LookupSwitchInstruction;
 
 /**
- * Generates {@link PCData} instances which avoid primitve wrappers
+ * Generates {@link PCData} instances which avoid primitive wrappers
  * to optimize memory use and performance at the cost of slightly higher
  * startup time.
  *
@@ -65,7 +65,7 @@ public class PCDataGenerator
 
     protected static final String POSTFIX = "$openjpapcdata";
 
-    private final Map _generated = new ConcurrentHashMap();
+    private final Map<Class<?>, DynamicStorage> _generated = new ConcurrentHashMap<Class<?>, DynamicStorage>();
     private final OpenJPAConfiguration _conf;
     private final Log _log;
 
@@ -87,8 +87,8 @@ public class PCDataGenerator
     public PCData generatePCData(Object oid, ClassMetaData meta) {
         if (meta == null)
             return null;
-        Class type = meta.getDescribedType();
-        DynamicStorage storage = (DynamicStorage) _generated.get(type);
+        Class<?> type = meta.getDescribedType();
+        DynamicStorage storage = _generated.get(type);
         if (storage == null) {
             storage = generateStorage(meta);
             _generated.put(type, storage);
@@ -142,7 +142,7 @@ public class PCDataGenerator
     /**
      * Creates a unique name for the given type's pcdata implementation.
      */
-    protected String getUniqueName(Class type) {
+    protected String getUniqueName(Class<?> type) {
         return type.getName() + "$" + System.identityHashCode(type) + POSTFIX;
     }
 
@@ -218,7 +218,7 @@ public class PCDataGenerator
         // }
         code.getstatic().setField(type);
 
-        Collection jumps = new LinkedList();
+        Collection<Instruction> jumps = new LinkedList<Instruction>();
         jumps.add(code.ifnonnull());
         ExceptionHandler handler = code.addExceptionHandler();
 
@@ -528,8 +528,8 @@ public class PCDataGenerator
         // 		Object context)
         Code code = addLoadMethod(bc, false);
         FieldMetaData[] fmds = meta.getFields();
-        Collection jumps = new LinkedList();
-        Collection jumps2;
+        Collection<Instruction> jumps = new LinkedList<Instruction>();
+        Collection<Instruction> jumps2;
 		
         int local = code.getNextLocalsIndex();
         code.constant().setNull();
@@ -541,7 +541,7 @@ public class PCDataGenerator
         int objectCount = 0;
         boolean intermediate;
         for (int i = 0; i < fmds.length; i++) {
-            jumps2 = new LinkedList();
+            jumps2 = new LinkedList<Instruction>();
             intermediate = usesIntermediate(fmds[i]);
             setTarget(code.aload().setThis(), jumps);
             // if (loaded.get(i)) or (!loaded.get(i)) depending on inter resp
@@ -583,8 +583,8 @@ public class PCDataGenerator
         // public void load(OpenJPAStateManager sm, BitSet fields,
         // 		FetchConfiguration fetch, Object conn)
         FieldMetaData[] fmds = meta.getFields();
-        Collection jumps = new LinkedList();
-        Collection jumps2;
+        Collection<Instruction> jumps = new LinkedList<Instruction>();
+        Collection<Instruction> jumps2;
         int objectCount = 0;
         boolean intermediate;
         int local = code.getNextLocalsIndex();
@@ -595,7 +595,7 @@ public class PCDataGenerator
         code.astore().setLocal(inter);
 
         for (int i = 0; i < fmds.length; i++) {
-            jumps2 = new LinkedList();
+            jumps2 = new LinkedList<Instruction>();
             intermediate = usesIntermediate(fmds[i]);
             // if (fields.get(i))
             // {
@@ -650,7 +650,7 @@ public class PCDataGenerator
      * Declare and start the base load method.
      */
     private Code addLoadMethod(BCClass bc, boolean fields) {
-        Class[] args = null;
+        Class<?>[] args = null;
         if (fields)
             args = new Class[]{ OpenJPAStateManager.class, BitSet.class,
                 FetchConfiguration.class, Object.class };
@@ -684,7 +684,7 @@ public class PCDataGenerator
         Instruction first;
         if (typeCode < JavaTypes.OBJECT) {
             // sm.store<type>(i, field<i>)
-            Class type = forType(fmd.getTypeCode());
+            Class<?> type = forType(fmd.getTypeCode());
             first = code.aload().setParam(0);
             code.constant().setValue(index);
             code.aload().setThis();
@@ -730,7 +730,7 @@ public class PCDataGenerator
      * Load intermediate data if possible.
      */
     private Instruction addLoadIntermediate(Code code, int index,
-        int objectCount, Collection jumps2, int inter) {
+        int objectCount, Collection<Instruction> jumps2, int inter) {
         // {
         // 		Object inter = objects[objectCount];
         Instruction first = code.aload().setThis();
@@ -794,7 +794,7 @@ public class PCDataGenerator
             new Class[]{ OpenJPAStateManager.class });
 
         FieldMetaData[] fmds = meta.getFields();
-        Collection jumps = new LinkedList();
+        Collection<Instruction> jumps = new LinkedList<Instruction>();
         int objectCount = 0;
         for (int i = 0; i < fmds.length; i++) {
             if (fields) {
@@ -857,7 +857,7 @@ public class PCDataGenerator
         int typeCode = replaceType(fmd);
         int index = fmd.getIndex();
         if (typeCode < JavaTypes.OBJECT) {
-            Class type = forType(typeCode);
+            Class<?> type = forType(typeCode);
             // field<i> = sm.fetch<Type>(index)
             code.aload().setThis();
             code.aload().setParam(0);
@@ -1027,8 +1027,8 @@ public class PCDataGenerator
     /**
      * Add method which defers to AbstractPCData.
      */
-    protected void callAbstractPCData(BCClass bc, String name, Class retType,
-        Class[] args) {
+    protected void callAbstractPCData(BCClass bc, String name, Class<?> retType,
+        Class<?>[] args) {
         BCMethod meth = bc.declareMethod(name, retType, args);
         Code code = meth.getCode(true);
         code.aload().setThis();
@@ -1046,8 +1046,8 @@ public class PCDataGenerator
      * Set the collection of {@link JumpInstruction}s to the given instruction,
      * clearing the collection in the process.
      */
-    protected void setTarget(Instruction ins, Collection jumps) {
-        for (Iterator it = jumps.iterator(); it.hasNext();)
+    protected void setTarget(Instruction ins, Collection<Instruction> jumps) {
+        for (Iterator<Instruction> it = jumps.iterator(); it.hasNext();)
             ((JumpInstruction) it.next()).setTarget(ins);
         jumps.clear();
     }
@@ -1055,7 +1055,7 @@ public class PCDataGenerator
     /**
      * Transform the given array of classes to strings.
      */
-    private static String[] toStrings(Class[] cls) {
+    private static String[] toStrings(Class<?>[] cls) {
         String[] strings = new String[cls.length];
         for (int i = 0; i < strings.length; i++)
             strings[i] = cls[i].getName();

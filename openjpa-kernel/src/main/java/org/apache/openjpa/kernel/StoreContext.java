@@ -142,7 +142,7 @@ public interface StoreContext {
      * parameter
      * @see #find(Object,boolean,FindCallbacks)
      */
-    public Object[] findAll(Collection oids, boolean validate,
+    public Object[] findAll(Collection<Object> oids, boolean validate,
         FindCallbacks call);
 
     /**
@@ -150,7 +150,7 @@ public interface StoreContext {
      * cached instance will be returned. Otherwise, the instance will be
      * initialized through the store as usual; however, in this case
      * the store will be passed the given execution data, and the
-     * system will load the object according to the given fetch configuratiion
+     * system will load the object according to the given fetch configuration
      * (or the context's configuration, if the given one is null).
      * Fields can optionally be excluded from required loading using the
      * <code>exclude</code> mask. By default this method does not find new
@@ -166,7 +166,7 @@ public interface StoreContext {
      *
      * @see #find(Object,FetchConfiguration,BitSet,Object,int)
      */
-    public Object[] findAll(Collection oids, FetchConfiguration fetch,
+    public Object[] findAll(Collection<Object> oids, FetchConfiguration fetch,
         BitSet exclude, Object edata, int flags);
 
     /**
@@ -175,7 +175,7 @@ public interface StoreContext {
      * when no longer needed. This method delegates to 
      * {@link StoreManager#executeExtent}.
      */
-    public Iterator extentIterator(Class cls, boolean subs,
+    public Iterator<Object> extentIterator(Class<?> cls, boolean subs,
         FetchConfiguration fetch, boolean ignoreChanges);
 
     /**
@@ -198,7 +198,7 @@ public interface StoreContext {
      * @param fgOnly indicator as to whether to retrieve only fields
      * @see #retrieve
      */
-    public void retrieveAll(Collection objs, boolean fgOnly, OpCallbacks call);
+    public void retrieveAll(Collection<Object> objs, boolean fgOnly, OpCallbacks call);
 
     /**
      * Make the given instance embedded.
@@ -217,16 +217,16 @@ public interface StoreContext {
      * Return the application or datastore identity class the given persistent
      * class uses for object ids.
      */
-    public Class getObjectIdType(Class cls);
+    public Class<?> getObjectIdType(Class<?> cls);
 
     /**
      * Create a new object id instance from the given value.
      *
-     * @param cls the persitent class that uses this identity value
+     * @param cls the persistent class that uses this identity value
      * @param val an object id instance, stringified object id, or primary
      * key value
      */
-    public Object newObjectId(Class cls, Object val);
+    public Object newObjectId(Class<?> cls, Object val);
 
     /**
      * Return the set of classes that have been made persistent in the current
@@ -234,7 +234,7 @@ public interface StoreContext {
      *
      * @since 0.3.4
      */
-    public Collection getPersistedTypes();
+    public Collection<Class<?>> getPersistedTypes();
 
     /**
      * Return the set of classes that have been deleted in the current
@@ -242,7 +242,7 @@ public interface StoreContext {
      *
      * @since 0.3.4
      */
-    public Collection getDeletedTypes();
+    public Collection<Class<?>> getDeletedTypes();
 
     /**
      * Return the set of classes for objects that have been modified
@@ -250,28 +250,28 @@ public interface StoreContext {
      *
      * @since 0.3.4
      */
-    public Collection getUpdatedTypes();
+    public Collection<Class<?>> getUpdatedTypes();
 
     /**
      * Return a list of all managed instances.
      */
-    public Collection getManagedObjects();
+    public Collection<Object> getManagedObjects();
 
     /**
      * Return a list of current transaction instances.
      */
-    public Collection getTransactionalObjects();
+    public Collection<Object> getTransactionalObjects();
 
     /**
      * Return a list of instances which will become transactional upon
      * the next transaction.
      */
-    public Collection getPendingTransactionalObjects();
+    public Collection<Object> getPendingTransactionalObjects();
 
     /**
      * Return a list of current dirty instances.
      */
-    public Collection getDirtyObjects();
+    public Collection<Object> getDirtyObjects();
 
     /**
      * Whether to maintain the order in which objects are dirtied for
@@ -319,8 +319,7 @@ public interface StoreContext {
      * @param updateVersion if true, the instance's version will be
      * incremented at the next flush
      */
-    public void transactional(Object pc, boolean updateVersion,
-        OpCallbacks call);
+    public void transactional(Object pc, boolean updateVersion, OpCallbacks call);
 
     /**
      * Make the given objects transactional.
@@ -329,18 +328,17 @@ public interface StoreContext {
      * @param updateVersion if true, the instance's version will be
      * incremented at the next flush
      */
-    public void transactionalAll(Collection objs, boolean updateVersion,
-        OpCallbacks call);
+    public void transactionalAll(Collection<Object> objs, boolean updateVersion, OpCallbacks call);
 
     /**
-     * Make the given object nontransactional.
+     * Make the given object non-transactional.
      */
     public void nontransactional(Object pc, OpCallbacks call);
 
     /**
      * Make the given objects nontransactional.
      */
-    public void nontransactionalAll(Collection objs, OpCallbacks call);
+    public void nontransactionalAll(Collection<Object> objs, OpCallbacks call);
 
     /**
      * Return whether the given object is persistent.

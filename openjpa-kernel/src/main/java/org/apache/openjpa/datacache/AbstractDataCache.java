@@ -117,9 +117,9 @@ public abstract class AbstractDataCache
             putAllInternal(existingUpdates);
 
         if (log.isTraceEnabled()) {
-            Collection addIds = new ArrayList(additions.size());
-            Collection upIds = new ArrayList(newUpdates.size());
-            Collection exIds = new ArrayList(existingUpdates.size());
+            Collection<Object> addIds = new ArrayList<Object>(additions.size());
+            Collection<Object> upIds = new ArrayList<Object>(newUpdates.size());
+            Collection<Object> exIds = new ArrayList<Object>(existingUpdates.size());
 
             for (Iterator iter = additions.iterator(); iter.hasNext();)
                 addIds.add(((DataCachePCData) iter.next()).getId());

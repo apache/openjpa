@@ -21,6 +21,7 @@ package org.apache.openjpa.writebehind;
 import java.util.Collection;
 
 import org.apache.openjpa.kernel.Broker;
+import org.apache.openjpa.kernel.OpenJPAStateManager;
 import org.apache.openjpa.kernel.StateManagerImpl;
 import org.apache.openjpa.kernel.StoreManager;
 
@@ -42,7 +43,7 @@ public class SimpleWriteBehindCallback extends AbstractWriteBehindCallback {
         // skip past any delegating store managers.
         StoreManager storeManager =
             _broker.getStoreManager().getInnermostDelegate();
-        Collection<StateManagerImpl> sms = null;
+        Collection<OpenJPAStateManager> sms = null;
         if (_cache != null && !_cache.isEmpty()) {
             // TODO lock or switch the cache
             sms = _cache.getStateManagers();
