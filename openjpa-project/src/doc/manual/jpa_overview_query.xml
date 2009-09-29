@@ -607,8 +607,10 @@ SELECT x FROM Magazine x WHERE MOD(x.price, 10) = 0
 which an order column has been specified.
                     </para>
                     <para>
-In the following example, <literal>studentWaitlist</literal> is a list of students for which an order column has
-been specified, the query returns the name of the first student on the waitiing list of the course named 'Calculus':
+In the following example, <literal>studentWaitlist</literal> is a list of 
+students for which an order column has
+been specified, the query returns the name of the first student on the waiting list of 
+the course named 'Calculus':
                     </para>
 <programlisting>
 SELECT w.name FROM Course c JOIN c.studentWaitlist w WHERE c.name = ‘Calculus’ AND INDEX(w) = 0
@@ -718,6 +720,11 @@ List&lt;Magazine&gt; results = (List&lt;Magazine&gt;) q.getResultList();
 This code substitutes <literal>JDJ</literal> for the <literal> :titleParam
 </literal> parameter and <literal>5.0</literal> for the <literal>:priceParam
 </literal> parameter, then executes the query with those values.
+            </para>
+            <para>
+All input parameters must be single-valued, except in IN expressions 
+(see section <xref linkend="jpa_langref_in"/>), which support the use of collection-valued
+ input parameters. 
             </para>
         </section>
         <section id="jpa_overview_query_hints">
@@ -1118,7 +1125,7 @@ language.
         <note>
             <para> 
 Much of this section is paraphrased or taken directly from Chapter 4 of the 
-JSR 220 specification.
+JSR 317 Java Persistence API Specification.
             </para>
         </note>
         <section id="jpa_langref_stmnttypes">
@@ -1245,12 +1252,15 @@ The Java Persistence query language is a typed language, and every expression
 has a type. The type of an expression is derived from the structure of the
 expression, the abstract schema types of the identification variable
 declarations, the types to which the persistent fields and relationships
-evaluate, and the types of literals. The abstract schema type of an entity is
+evaluate, and the types of literals. 
+            </para>
+            <para>
+The abstract schema type of an entity or embeddable is
 derived from the entity class and the metadata information provided by Java
 language annotations or in the XML descriptor.
             </para>
             <para>
-Informally, the abstract schema type of an entity can be characterized as
+Informally, the abstract schema type of an entity or embeddable can be characterized as
 follows: 
             </para>
             <itemizedlist>
@@ -1268,18 +1278,28 @@ For every persistent relationship field or get accessor method (for a persistent
 relationship property) of the entity class, there is a field
 ("association-field") whose type is the abstract schema type of the related
 entity (or, if the relationship is a one-to-many or many-to-many, a collection
-of such). Abstract schema types are specific to the query language data model.
-The persistence provider is not required to implement or otherwise materialize
-an abstract schema type. The domain of a query consists of the abstract schema
-types of all entities that are defined in the same persistence unit. The domain
-of a query may be restricted by the navigability of the relationships of the
-entity on which it is based. The association-fields of an entity's abstract
-schema type determine navigability. Using the association-fields and their
-values, a query can select related entities and use their abstract schema types
-in the query.
+of such). 
                     </para>
                 </listitem>
             </itemizedlist>
+                    <para>
+Abstract schema types are specific to the query language data model.
+The persistence provider is not required to implement or otherwise materialize
+an abstract schema type.
+                    </para>
+                    <para>
+The domain of a query consists of the abstract schema
+types of all entities and embeddables that are defined in the same persistence unit.
+                    </para>
+                    <para>
+The domain
+of a query may be restricted by the <literal>navigability</literal> of the relationships of the
+entity and associated embeddable classes on which it is based. The association-fields of an entity's
+or embeddable's abstract
+schema type determine navigability. Using the association fields and their
+values, a query can select related entities and use their abstract schema types
+in the query.
+                    </para>
             <section id="jpa_langref_schemanaming">
                 <title>
                     JPQL Entity Naming
@@ -1312,28 +1332,37 @@ in a one-to-one relationship.
                 </para>
                 <para>
 Queries to select magazines can be defined by navigating over the
-association-fields and state-fields defined by Magazine and Author. A query to
+association-fields and state-fields defined by <literal>Magazine</literal> and 
+<literal>Author</literal>. A query to
 find all magazines that have unpublished articles is as follows:
                 </para>
 <programlisting>
 SELECT DISTINCT mag FROM Magazine AS mag JOIN mag.articles AS art WHERE art.published = FALSE
 </programlisting> 
                 <para>
-This query navigates over the association-field authors of the
+This query navigates over the association-field <literal>authors</literal> of the
 abstract schema type <literal>Magazine</literal> to find articles, and uses the
 state-field <literal>published</literal> of <literal>Article</literal> to select
 those magazines that have at least one article that is not published. Although
 predefined reserved identifiers, such as <literal>DISTINCT</literal>, <literal>
 FROM</literal>, <literal>AS</literal>, <literal>JOIN</literal>, <literal>
 WHERE</literal>, and <literal>FALSE</literal> appear in upper case in this 
-example, predefined reserved identifiers are case insensitive. The <literal>
+example, predefined reserved identifiers are case insensitive.
+                </para>
+                <para>
+ The <literal>
 SELECT</literal> clause of this example designates the return type of this 
-query to be of type Magazine. Because the same persistence unit defines the 
+query to be of type <literal>Magazine</literal>.
+                </para>
+                <para>
+Because the same persistence unit defines the 
 abstract persistence schemas of the related entities, the developer can also 
-specify a query over <literal>articles</literal> that utilizes the abstract 
+specify a query over articles that utilizes the abstract 
 schema type for products, and hence the state-fields and association-fields of 
-both the abstract schema types Magazine and Author. For example, if the 
-abstract schema type Author has a state-field named firstName, a query over 
+both the abstract schema types <literal>Magazine</literal> and <literal>Author</literal>. 
+For example, if the 
+abstract schema type <literal>Author</literal> has a state-field named <literal>firstName</literal>,
+ a query over 
 articles can be specified using this state-field. Such a query might be to 
 find all magazines that have articles authored by someone with the first name 
 "John".
@@ -1342,13 +1371,16 @@ find all magazines that have articles authored by someone with the first name
 SELECT DISTINCT mag FROM Magazine mag JOIN mag.articles art JOIN art.author auth WHERE auth.firstName = 'John'
 </programlisting> 
                 <para>
-Because Magazine is related to Author by means of the
-relationships between Magazine and Article and between Article and Author,
-navigation using the association-fields authors and product is used to express
-the query. This query is specified by using the abstract schema name Magazine,
+Because <literal>Magazine</literal> is related to <literal>Author</literal> by means of the
+relationships between <literal>Magazine</literal> and <literal>Article</literal> 
+and between <literal>Article</literal> and <literal>Author</literal>,
+navigation using the association-fields <literal>authors</literal> and 
+<literal>product</literal> is used to express
+the query. This query is specified by using the abstract schema name <literal>Magazine</literal>,
 which designates the abstract schema type over which the query ranges. The basis
-for the navigation is provided by the association-fields authors and product of
-the abstract schema types Magazine and Article respectively.
+for the navigation is provided by the association-fields <literal>authors</literal> 
+and <literal>product</literal> of
+the abstract schema types <literal>Magazine</literal> and <literal>Article</literal> respectively.
                 </para>
             </section>
         </section>
@@ -1360,7 +1392,10 @@ the abstract schema types Magazine and Article respectively.
 The <literal>FROM</literal> clause of a query defines the domain of the query by
 declaring identification variables. An identification variable is an identifier
 declared in the <literal>FROM</literal> clause of a query. The domain of the
-query may be constrained by path expressions. Identification variables designate
+query may be constrained by path expressions (See section <xref linkend="jpa_langref_path"/>.
+            </para>
+            <para>
+Identification variables designate
 instances of a particular entity abstract schema type. The <literal>FROM
 </literal> clause can contain multiple identification variable declarations
 separated by a comma (,).
@@ -1411,6 +1446,9 @@ identification_variable
                     </para>
                 </listitem>
             </itemizedlist>
+            <para>
+The following subsections discuss the constructs used in the <literal>FROM</literal> clause.
+            </para>
             <section id="jpa_langref_from_identifiers">
                 <title>
                     JPQL FROM Identifiers
@@ -1430,52 +1468,47 @@ query language. The following are reserved identifiers:
                 <itemizedlist>
                     <listitem>
                         <para>
-                        <literal>SELECT</literal>
+<literal>ABS</literal>
+                            </para>
+                        </listitem>
+                        <listitem>
+                            <para>
+<literal>ALL</literal>
+                            </para>
+                        </listitem>
+                        <listitem>
+                            <para>
+<literal>AND</literal>
                         </para>
                     </listitem>
                     <listitem>
                         <para>
-<literal>FROM</literal>
+<literal>ANY</literal>
+                            </para>
+                        </listitem>
+                        <listitem>
+                            <para>
+<literal>AS</literal>
                         </para>
                     </listitem>
                     <listitem>
                         <para>
-<literal>WHERE</literal>
+<literal>ASC</literal>
+                            </para>
+                        </listitem>
+                        <listitem>
+                            <para>
+<literal>AVG</literal>
+                            </para>
+                        </listitem>
+                        <listitem>
+                            <para>
+<literal>BETWEEN</literal>
                         </para>
                     </listitem>
                     <listitem>
                         <para>
-<literal>UPDATE</literal>
-                        </para>
-                    </listitem>
-                    <listitem>
-                        <para>
-<literal>DELETE</literal>
-                        </para>
-                    </listitem>
-                    <listitem>
-                        <para>
-<literal>JOIN</literal>
-                        </para>
-                    </listitem>
-                    <listitem>
-                        <para>
-<literal>OUTER</literal>
-                        </para>
-                    </listitem>
-                    <listitem>
-                        <para>
-<literal>INNER</literal>
-                        </para>
-                    </listitem>
-                    <listitem>
-                        <para>
-<literal>LEFT</literal>
-                        </para>
-                    </listitem>
-                    <listitem>
-                        <para>
-<literal>GROUP</literal>
+<literal>BOTH</literal>
                         </para>
                     </listitem>
                     <listitem>
@@ -1485,77 +1518,62 @@ query language. The following are reserved identifiers:
                     </listitem>
                     <listitem>
                         <para>
-<literal>HAVING</literal>
+<literal>CASE</literal>
                         </para>
                     </listitem>
                     <listitem>
                         <para>
-<literal>FETCH</literal>
+<literal>CLASS</literal>
                         </para>
                     </listitem>
                     <listitem>
                         <para>
+<literal>COALESCE</literal>
+                        </para>
+                    </listitem>
+                    <listitem>
+                        <para>
+<literal>CONCAT</literal>
+                        </para>
+                    </listitem>
+                    <listitem>
+                        <para>
+<literal>COUNT</literal>
+                            </para>
+                        </listitem>
+                        <listitem>
+                            <para>
+<literal>CURRENT_DATE</literal>
+                            </para>
+                        </listitem>
+                        <listitem>
+                            <para>
+<literal>CURRENT_TIME</literal>
+                            </para>
+                        </listitem>
+                        <listitem>
+                            <para>
+<literal>CURRENT_TIMESTAMP</literal>
+                            </para>
+                        </listitem>
+                        <listitem>
+                            <para>
+<literal>DELETE</literal>
+                        </para>
+                    </listitem>
+                    <listitem>
+                        <para>
+<literal>DESC</literal>
+                            </para>
+                        </listitem>
+                        <listitem>
+                            <para>
 <literal>DISTINCT</literal>
                         </para>
                     </listitem>
                     <listitem>
                         <para>
-<literal>OBJECT</literal>
-                        </para>
-                    </listitem>
-                    <listitem>
-                        <para>
-<literal>NULL</literal>
-                        </para>
-                    </listitem>
-                    <listitem>
-                        <para>
-<literal>TRUE</literal>
-                        </para>
-                    </listitem>
-                    <listitem>
-                        <para>
-<literal>FALSE</literal>
-                        </para>
-                    </listitem>
-                    <listitem>
-                        <para>
-<literal>NOT</literal>
-                        </para>
-                    </listitem>
-                    <listitem>
-                        <para>
-<literal>AND</literal>
-                        </para>
-                    </listitem>
-                    <listitem>
-                        <para>
-<literal>OR</literal>
-                        </para>
-                    </listitem>
-                    <listitem>
-                        <para>
-<literal>BETWEEN</literal>
-                        </para>
-                    </listitem>
-                    <listitem>
-                        <para>
-<literal>LIKE</literal>
-                        </para>
-                    </listitem>
-                    <listitem>
-                        <para>
-<literal>IN</literal>
-                        </para>
-                    </listitem>
-                    <listitem>
-                        <para>
-<literal>AS</literal>
-                        </para>
-                    </listitem>
-                    <listitem>
-                        <para>
-<literal>UNKNOWN</literal>
+<literal>ELSE</literal>
                         </para>
                     </listitem>
                     <listitem>
@@ -1565,12 +1583,62 @@ query language. The following are reserved identifiers:
                     </listitem>
                     <listitem>
                         <para>
-<literal>MEMBER</literal>
+<literal>END</literal>
                         </para>
                     </listitem>
                     <listitem>
                         <para>
-<literal>OF</literal>
+<literal>ENTRY</literal>
+                        </para>
+                    </listitem>
+                    <listitem>
+                        <para>
+<literal>ESCAPE</literal>
+                        </para>
+                    </listitem>
+                    <listitem>
+                        <para>
+<literal>EXISTS</literal>
+                            </para>
+                        </listitem>
+                        <listitem>
+                            <para>
+<literal>FALSE</literal>
+                        </para>
+                    </listitem>
+                    <listitem>
+                        <para>
+<literal>FETCH</literal>
+                        </para>
+                    </listitem>
+                    <listitem>
+                        <para>
+<literal>FROM</literal>
+                        </para>
+                    </listitem>
+                    <listitem>
+                        <para>
+<literal>GROUP</literal>
+                        </para>
+                    </listitem>
+                    <listitem>
+                        <para>
+<literal>HAVING</literal>
+                        </para>
+                    </listitem>
+                    <listitem>
+                        <para>
+<literal>IN</literal>
+                        </para>
+                    </listitem>
+                    <listitem>
+                        <para>
+<literal>INDEX</literal>
+                        </para>
+                    </listitem>
+                    <listitem>
+                        <para>
+<literal>INNER</literal>
                         </para>
                     </listitem>
                     <listitem>
@@ -1580,7 +1648,42 @@ query language. The following are reserved identifiers:
                     </listitem>
                     <listitem>
                         <para>
-<literal>AVG</literal>
+<literal>JOIN</literal>
+                        </para>
+                    </listitem>
+                    <listitem>
+                        <para>
+<literal>KEY</literal>
+                        </para>
+                    </listitem>
+                    <listitem>
+                        <para>
+<literal>LEADING</literal>
+                        </para>
+                    </listitem>
+                    <listitem>
+                        <para>
+<literal>LEFT</literal>
+                        </para>
+                    </listitem>
+                    <listitem>
+                        <para>
+<literal>LENGTH</literal>
+                        </para>
+                    </listitem>
+                    <listitem>
+                        <para>
+<literal>LIKE</literal>
+                        </para>
+                    </listitem>
+                    <listitem>
+                        <para>
+<literal>LOCATE</literal>
+                        </para>
+                    </listitem>
+                    <listitem>
+                        <para>
+<literal>LOWER</literal>
                             </para>
                         </listitem>
                         <listitem>
@@ -1590,37 +1693,12 @@ query language. The following are reserved identifiers:
                         </listitem>
                         <listitem>
                             <para>
+<literal>MEMBER</literal>
+                        </para>
+                    </listitem>
+                    <listitem>
+                        <para>
 <literal>MIN</literal>
-                            </para>
-                        </listitem>
-                        <listitem>
-                            <para>
-<literal>SUM</literal>
-                            </para>
-                        </listitem>
-                        <listitem>
-                            <para>
-<literal>COUNT</literal>
-                            </para>
-                        </listitem>
-                        <listitem>
-                            <para>
-<literal>ORDER</literal>
-                            </para>
-                        </listitem>
-                        <listitem>
-                            <para>
-<literal>BY</literal>
-                            </para>
-                        </listitem>
-                        <listitem>
-                            <para>
-<literal>ASC</literal>
-                            </para>
-                        </listitem>
-                        <listitem>
-                            <para>
-<literal>DESC</literal>
                             </para>
                         </listitem>
                         <listitem>
@@ -1630,26 +1708,136 @@ query language. The following are reserved identifiers:
                         </listitem>
                         <listitem>
                             <para>
+<literal>NEW</literal>
+                            </para>
+                        </listitem>
+                        <listitem>
+                            <para>
+<literal>NOT</literal>
+                        </para>
+                    </listitem>
+                    <listitem>
+                        <para>
+<literal>NULL</literal>
+                        </para>
+                    </listitem>
+                    <listitem>
+                        <para>
+<literal>NULLIF</literal>
+                        </para>
+                    </listitem>
+                    <listitem>
+                        <para>
+<literal>OBJECT</literal>
+                        </para>
+                    </listitem>
+                    <listitem>
+                        <para>
+<literal>OF</literal>
+                        </para>
+                    </listitem>
+                    <listitem>
+                        <para>
+<literal>OR</literal>
+                        </para>
+                    </listitem>
+                    <listitem>
+                        <para>
+<literal>ORDER</literal>
+                            </para>
+                        </listitem>
+                        <listitem>
+                            <para>
+<literal>OUTER</literal>
+                        </para>
+                    </listitem>
+                    <listitem>
+                        <para>
+<literal>SELECT</literal>
+                        </para>
+                    </listitem>
+                    <listitem>
+                        <para>
+<literal>SET</literal>
+                        </para>
+                    </listitem>
+                    <listitem>
+                        <para>
+<literal>SIZE</literal>
+                        </para>
+                    </listitem>
+                    <listitem>
+                        <para>
+<literal>SOME</literal>
+                        </para>
+                    </listitem>
+                    <listitem>
+                        <para>
+<literal>SQRT</literal>
+                        </para>
+                    </listitem>
+                    <listitem>
+                        <para>
+<literal>SIBSTRING</literal>
+                        </para>
+                    </listitem>
+                    <listitem>
+                        <para>
+<literal>SUM</literal>
+                        </para>
+                    </listitem>
+                    <listitem>
+                        <para>
+<literal>THEN</literal>
+                        </para>
+                    </listitem>
+                    <listitem>
+                        <para>
+<literal>TRAILING</literal>
+                        </para>
+                    </listitem>
+                    <listitem>
+                        <para>
+<literal>TRIM</literal>
+                        </para>
+                    </listitem>
+                    <listitem>
+                        <para>
+<literal>TRUE</literal>
+                        </para>
+                    </listitem>
+                    <listitem>
+                        <para>
+<literal>TYPE</literal>
+                        </para>
+                    </listitem>
+                    <listitem>
+                        <para>
+<literal>UPDATE</literal>
+                        </para>
+                    </listitem>
+                    <listitem>
+                        <para>
 <literal>UPPER</literal>
                             </para>
                         </listitem>
                         <listitem>
                             <para>
-<literal>LOWER</literal>
-                            </para>
-                        </listitem>
-                        <listitem>
-                            <para>
-<literal>TRIM</literal>
-                            </para>
-                        </listitem>
-                        <listitem>
-                            <para>
-<literal>POSITION</literal>
-                            </para>
-                        </listitem>
-                        <listitem>
-                            <para>
+<literal>VALUE</literal>
+                        </para>
+                    </listitem>
+                    <listitem>
+                        <para>
+<literal>WHEN</literal>
+                        </para>
+                    </listitem>
+                    <listitem>
+                        <para>
+<literal>WHERE</literal>
+                        </para>
+                    </listitem>
+                    <listitem>
+                        <para>
 <literal>CHARACTER_LENGTH</literal>
                             </para>
                         </listitem>
@@ -1663,53 +1851,34 @@ query language. The following are reserved identifiers:
 <literal>BIT_LENGTH</literal>
                             </para>
                         </listitem>
-                        <listitem>
-                            <para>
-<literal>CURRENT_TIME</literal>
+                    <listitem>
+                        <para>
+<literal>POSITION</literal>
                             </para>
                         </listitem>
                         <listitem>
                             <para>
-<literal>CURRENT_DATE</literal>
-                            </para>
-                        </listitem>
-                        <listitem>
-                            <para>
-<literal>CURRENT_TIMESTAMP</literal>
-                            </para>
-                        </listitem>
-                        <listitem>
-                            <para>
-<literal>NEW</literal>
-                            </para>
-                        </listitem>
-                        <listitem>
-                            <para>
-<literal>EXISTS</literal>
-                            </para>
-                        </listitem>
-                        <listitem>
-                            <para>
-<literal>ALL</literal>
-                            </para>
-                        </listitem>
-                        <listitem>
-                            <para>
-<literal>ANY</literal>
-                            </para>
-                        </listitem>
-                        <listitem>
-                            <para>
-<literal>SOME</literal>
+<literal>UNKNOWN</literal>
                         </para>
                     </listitem>
                 </itemizedlist>
                 <para>    
 Reserved identifiers are case insensitive. Reserved identifiers must not be 
-used as identification variables. It is recommended that other SQL reserved 
+used as identification variables or result variables.
+                </para>
+                <note>
+                    <para>
+It is recommended that other SQL reserved 
 words also not be as identification variables in queries because they may be 
 used as reserved identifiers in future releases of the specification.  
-                </para>
+                    </para>
+                </note>
+                <note>
+                    <para>
+BIT_LENGTH, CHAR_LENGTH, CHARACTER_LENGTH, POSITION, and UNKNOWN are not currently used: they are
+reserved for future use.
+                    </para>
+                </note>
             </section>
             <section id="jpa_langref_from_vars">
                 <title>
@@ -1717,31 +1886,74 @@ used as reserved identifiers in future releases of the specification.
                 </title>
                 <para>
 An identification variable is a valid identifier declared in the <literal>FROM
-</literal> clause of a query. All identification variables must be declared in
+</literal> clause of a query.
+                </para>
+                <para> 
+All identification variables must be declared in
 the <literal>FROM</literal> clause. Identification variables cannot be declared
-in other clauses. An identification variable must not be a reserved identifier
-or have the same name as any entity in the same persistence unit. Identification
-variables are case insensitive. An identification variable evaluates to a value
+in other clauses. 
+                </para>
+                <para>
+An identification variable must not be a reserved identifier
+or have the same name as any entity in the same persistence unit.
+                </para>
+                <para>                
+Identification variables are case insensitive.
+                </para> 
+                <para>                
+An identification variable evaluates to a value
 of the type of the expression used in declaring the variable. For example,
 consider the previous query: <programlisting>SELECT DISTINCT mag FROM Magazine mag JOIN mag.articles art JOIN art.author auth WHERE auth.firstName = 'John'
-</programlisting> In the <literal>FROM</literal> clause declaration <literal>
+</programlisting> 
+In the <literal>FROM</literal> clause declaration <literal>
 mag.articles</literal> <literal>art</literal>, the identification variable
 <literal>art</literal> evaluates to any <literal>Article</literal> value
 directly reachable from <literal>Magazine</literal>. The association-field
 <literal>articles</literal> is a collection of instances of the abstract schema
 type <literal>Article</literal> and the identification variable <literal>art
 </literal> refers to an element of this collection. The type of <literal>auth
-</literal> is the abstract schema type of <literal>Author</literal>. An
-identification variable ranges over the abstract schema type of an entity. An
+</literal> is the abstract schema type of <literal>Author</literal>. 
+                 </para>
+                 <para>
+An identification variable can range over an entity, 
+embeddable, or basic abstract schema type. An
 identification variable designates an instance of an entity abstract schema type
-or an element of a collection of entity abstract schema type instances.
-Identification variables are existentially quantified in a query. An
+or an element of a collection of entity abstract schema type instances. 
+                 </para>
+                 <para>
+Note that for identification variables referring to an instance of an association or collection represented
+as a <literal>java.util.Map</literal>, the identification variable is of the abstract schema type of the map 
+<literal>value</literal>.
+                 </para>
+                 <para>
+An
 identification variable always designates a reference to a single value. It is
 declared in one of three ways: in a range variable declaration, in a join
 clause, or in a collection member declaration. The identification variable
 declarations are evaluated from left to right in the <literal>FROM</literal>
 clause, and an identification variable declaration can use the result of a
 preceding identification variable declaration of the query string.
+                </para>
+                <para>
+All identification variables used in the <literal>SELECT</literal>, 
+<literal>WHERE</literal>, 
+<literal>ORDER BY</literal>, 
+<literal>GROUP BY</literal>, or 
+<literal>HAVING</literal>
+clause of a <literal>SELECT</literal> or 
+<literal>DELETE</literal> statement must be declared in the <literal>FROM</literal> clause. 
+The identification
+variables used in the <literal>WHERE</literal> clause of 
+an <literal>UPDATE</literal> statement must be declared in the <literal>UPDATE</literal> clause.
+                </para>
+                <para>
+Identification variables are existentially quantified in these clauses. This means that an identification
+variable represents a member of a collection or an instance of an entity’s abstract schema type. An identification
+variable never designates a collection in its entirety.
+                </para>
+                <para>
+An identification variable is scoped to the query (or subquery) in which it is defined and is also visible
+to any subqueries within that query scope that do not define an identification variable of the same name.
                 </para>
             </section>
             <section id="jpa_langref_range">
@@ -1750,19 +1962,28 @@ preceding identification variable declaration of the query string.
                 </title>
                 <para>
 The syntax for declaring an identification variable as a range variable is
-similar to that of SQL; optionally, it uses the AS keyword. 
+similar to that of SQL; optionally, it uses the AS keyword. A range variable designates an 
+entity abstract schema type.
                 </para>
+                <note>
+                <para>
+A range variable must not designate an embeddable class abstract schema type.
+                </para>
+                </note>
                 <itemizedlist>
                     <listitem>
                         <para>
-range_variable_declaration ::= abstract_schema_name [AS]
+range_variable_declaration ::= entity_name [AS]
 identification_variable
                         </para>
                     </listitem>
                 </itemizedlist>
                 <para>
 Range variable declarations allow the developer to designate a "root" for
-objects which may not be reachable by navigation. In order to select values by
+objects which may not be reachable by navigation. 
+                </para>
+                <para>
+In order to select values by
 comparing more than one instance of an entity abstract schema type, more than
 one identification variable ranging over the abstract schema type is needed in
 the <literal>FROM</literal> clause.
@@ -1789,14 +2010,101 @@ An identification variable followed by the navigation operator (.) and a
 state-field or association-field is a path expression. The type of the path
 expression is the type computed as the result of navigation; that is, the type
 of the state-field or association-field to which the expression navigates.
+                </para>
+                <para>
+An identification variable qualified by the <literal>KEY</literal>, 
+<literal>VALUE</literal>, or <literal>ENTRY</literal> 
+operator is a path expression. The
+<literal>KEY</literal>, <literal>VALUE</literal>, 
+and <literal>ENTRY</literal> operators may only be applied to identification variables that correspond to
+map-valued associations or map-valued element collections. The type of the path expression is the type
+computed as the result of the operation; that is, the abstract schema type of the field that is the value of
+the <literal>KEY</literal>, 
+<literal>VALUE</literal>, or <literal>ENTRY</literal> 
+operator (the map key, map value, or map entry respectively).
+                </para>
+                <note>
+                <para>
+Note that use of <literal>VALUE</literal> is optional, 
+as an identification variable referring to an association of type 
+<literal>java.util.Map</literal> is of the
+abstract schema type of the map value.
+                </para>
+                </note>
+                <para>
+The syntax for qualified identification variables is as follows.
+                </para>
+                <itemizedlist>
+                    <listitem>
+                        <para>
+qualified_identification_variable :: =
+KEY(identification_variable) |
+VALUE(identification_variable) |
+ENTRY(identification_variable)
+                        </para>
+                    </listitem>
+                </itemizedlist>
+                <para>
+A path expression using the <literal>KEY</literal> or <literal>VALUE</literal> 
+operator may be further composed. A path expression
+using the <literal>ENTRY</literal> operator is terminal. 
+It cannot be further composed and can only appear in the
+<literal>SELECT</literal> list of a query.
+                </para>
+                <para>
+In the following query, <literal>photos</literal> is a map from photo label to filename.
+                </para>
+<programlisting>
+SELECT i.name, VALUE(p)
+FROM Item i JOIN i.photos p
+WHERE KEY(p) LIKE ‘egret’
+</programlisting>
+                <para>
+In the above query the identification variable <literal>p</literal> designates 
+an abstract schema type corresponding to the
+map value. The results of <literal>VALUE(p)</literal> and <literal>KEY(p)</literal> 
+are the map value and the map key associated with
+p, respectively. The following query is equivalent:
+                </para>
+<programlisting>
+SELECT i.name, p
+FROM Item i JOIN i.photos p
+WHERE KEY(p) LIKE ‘egret’
+</programlisting>
+                <para>
 Depending on navigability, a path expression that leads to a association-field
+or to a field whose type is an embeddable class 
 may be further composed. Path expressions can be composed from other path
 expressions if the original path expression evaluates to a single-valued type
-(not a collection) corresponding to a association-field. Path expression
+(not a collection) corresponding to a association-field.
+                </para>
+                <para>
+In the following example, <literal>contactInfo</literal> denotes an embeddable 
+class consisting of an address and
+set of phones. <literal>Phone</literal> is an entity.
+                </para>
+<programlisting>
+SELECT p.vendor
+FROM Employee e JOIN e.contactInfo.phones p
+WHERE e.contactInfo.address.zipcode = '95054'
+</programlisting>
+                <para>
+Path expression
 navigability is composed using "inner join" semantics. That is, if the value of
 a non-terminal association-field in the path expression is null, the path is
 considered to have no value, and does not participate in the determination of
-the result. The syntax for single-valued path expressions and collection valued
+the result. 
+                </para>
+                <para>
+The following query is equivalent to the query above:
+                </para>
+<programlisting>
+SELECT p.vendor
+FROM Employee e JOIN e.contactInfo c JOIN c.phones p
+WHERE e.contactInfo.address.zipcode = '95054'
+</programlisting>
+                <para>
+The syntax for single-valued path expressions and collection valued
 path expressions is as follows:
                 </para>
                 <itemizedlist>
@@ -2315,12 +2623,12 @@ The syntax for the use of the comparison operator [ <literal>NOT</literal> ]
                 </para>
                 <para>
 <itemizedlist><listitem><para>in_expression ::= state_field_path_expression
-[NOT] IN ( in_item {, in_item}* | subquery)
+[NOT] IN {( in_item {, in_item}* ) | (subquery) | collection_valued_input_parameter }
                             </para>
                         </listitem>
                         <listitem>
                             <para>
-in_item ::= literal | input_parameter
+in_item ::= literal | single_valued_input_parameter
                             </para>
                         </listitem>
                     </itemizedlist>
@@ -2345,6 +2653,10 @@ that defines the set of values for the <literal>IN</literal> expression. If the
 value of a state_field_path_expression in an <literal>IN</literal> or <literal>
 NOT IN</literal> expression is <literal>NULL</literal> or unknown, the value of
 the expression is unknown.
+                </para>
+                <para>
+Note that use of a collection-valued input parameter will mean that a static query cannot
+be precompiled.
                 </para>
             </section>
             <section id="jpa_langref_like">
@@ -2588,13 +2900,62 @@ illustrated in the following example involving a numeric comparison operation.
 </programlisting>
                 </para>
             </section>
-            <section id="jpa_langref_functional">
+        </section>
+        <section id="jpa_langref_scalar_expressions">
                 <title>
-                    JPQL Functional Expressions
+                    JPQL Scalar Expressions
                 </title>
                 <para>
-The JPQL includes the following built-in functions, which may be used in the
-<literal>WHERE</literal> or <literal>HAVING</literal> clause of a query. If the
+Numeric, string, datetime, case, and entity type expressions result in scalar values.
+                </para>
+                <para>
+Scalar expressions may be used in the <literal>SELECT</literal> clause of a query as well as in the
+ <literal>WHERE</literal> and <literal>HAVING</literal> clauses.
+                </para>
+                <para>
+scalar_expression::=
+arithmetic_expression |
+string_primary |
+enum_primary |
+datetime_primary |
+boolean_primary |
+case_expression |
+entity_type_expression                
+                </para>
+            <section id="jpa_langref_arithmetic_expressions">
+                <title>
+                    Arithmetic Expressions
+                </title>
+                <para>
+The arithmetic operators are:
+<itemizedlist>
+<listitem>+, - unary</listitem>
+<listitem>*, / multiplication and division</listitem>
+<listitem>+, - addition and subtraction</listitem>
+                </itemizedlist>
+                <para>
+Arithmetic operations use numeric promotion.
+                </para>
+                <para>
+Arithmetic functions are described in section <xref link="jpa_langref_arithmetic"/>.
+                </para>
+                </para>
+            </section>
+            <section id="jpa_langref_functional_expressions">
+                <title>
+                    String, Arithmetic, and Datetime Functional Expressions
+                </title>
+                <para> 
+JPQL includes the built-in functions described in subsections 
+<xref linkend="jpa_langref_string_fun"/>, 
+<xref linkend="jpa_langref_arithmetic"/>,
+<xref linkend="jpa_langref_datetime"/>,
+which may be used in the <literal>SELECT</literal>,
+<literal>WHERE</literal>
+or <literal>HAVING</literal> clause of a query.
+                 <para>
+                 </para>               
+If the
 value of any argument to a functional expression is null or unknown, the value
 of the functional expression is unknown.
                 </para>
@@ -2605,7 +2966,7 @@ of the functional expression is unknown.
                     <para>
 <itemizedlist><listitem><para>functions_returning_strings ::=
 CONCAT(string_primary, string_primary) | SUBSTRING(string_primary,
-simple_arithmetic_expression, simple_arithmetic_expression) |
+simple_arithmetic_expression[, simple_arithmetic_expression]) |
 TRIM([[trim_specification] [trim_character] FROM] string_primary) |
 LOWER(string_primary) | UPPER(string_primary)
                                 </para>
@@ -2625,25 +2986,43 @@ LOCATE(string_primary, string_primary[, simple_arithmetic_expression])
                     </para>
                     <para>
 The <literal>CONCAT</literal> function returns a string that is a concatenation
-of its arguments. The second and third arguments of the <literal>SUBSTRING
+of its arguments.
+                    </para>
+                    <para>
+ The second and third arguments of the <literal>SUBSTRING
 </literal> function denote the starting position and length of the substring to
-be returned. These arguments are integers. The first position of a string is
-denoted by 1. The <literal>SUBSTRING</literal> function returns a string. The
+be returned. These arguments are integers. 
+The third argument is optional. If it is not specified, 
+the substring from the start position to the end of the string is returned.
+ The first position of a string is
+denoted by 1. The <literal>SUBSTRING</literal> function returns a string. 
+                    </para>
+                    <para>
+The
 <literal>TRIM</literal> function trims the specified character from a string. If
 the character to be trimmed is not specified, it is assumed to be space (or
 blank). The optional trim_character is a single-character string literal or a
 character-valued input parameter (i.e., char or Character). If a trim
 specification is not provided, <literal>BOTH</literal> is assumed. The <literal>
-TRIM</literal> function returns the trimmed string. The <literal>LOWER</literal>
+TRIM</literal> function returns the trimmed string.
+                     </para>
+                     <para>
+ The <literal>LOWER</literal>
 and <literal>UPPER</literal> functions convert a string to lower and upper case,
-respectively. They return a string. The <literal>LOCATE</literal> function
+respectively. They return a string. 
+                     </para>
+                     <para>
+The <literal>LOCATE</literal> function
 returns the position of a given string within a string, starting the search at a
 specified position. It returns the first position at which the string was found
 as an integer. The first argument is the string to be located; the second
 argument is the string to be searched; the optional third argument is an integer
 that represents the string position at which the search is started (by default,
 the beginning of the string to be searched). The first position in a string is
-denoted by 1. If the string is not found, 0 is returned. The <literal>LENGTH
+denoted by 1. If the string is not found, 0 is returned. 
+                     </para>
+                     <para>
+The <literal>LENGTH
 </literal> function returns the length of the string in characters as an
 integer.
                     </para>
@@ -2656,7 +3035,8 @@ integer.
 <itemizedlist><listitem><para>functions_returning_numerics ::=
 ABS(simple_arithmetic_expression) | SQRT(simple_arithmetic_expression) |
 MOD(simple_arithmetic_expression, simple_arithmetic_expression) |
-SIZE(collection_valued_path_expression)
+SIZE(collection_valued_path_expression) |
+INDEX(identification_variable)
                                 </para>
                             </listitem>
                         </itemizedlist>
@@ -2664,7 +3044,10 @@ SIZE(collection_valued_path_expression)
                     <para>
 The <literal>ABS</literal> function takes a numeric argument and returns a
 number (integer, float, or double) of the same type as the argument to the
-function. The <literal>SQRT</literal> function takes a numeric argument and
+function. 
+                    </para>
+                    <para>
+The <literal>SQRT</literal> function takes a numeric argument and
 returns a double.
                     </para>
                     <para>
@@ -2676,11 +3059,19 @@ not portable.
                     </para>
                     <para>
 The <literal>MOD</literal> function takes two integer arguments and returns an
-integer. The <literal>SIZE</literal> function returns an integer value, the
+integer. 
+                    </para>
+                    <para>
+The <literal>SIZE</literal> function returns an integer value, the
 number of elements of the collection. If the collection is empty, the <literal>
 SIZE</literal> function evaluates to zero. Numeric arguments to these functions
 may correspond to the numeric Java object types as well as the primitive numeric
 types.
+                    </para>
+                    <para>
+The INDEX function returns an integer value corresponding to the position of its argument in an
+ordered list. The INDEX function can only be applied to identification variables denoting types for
+which an order column has been specified.
                     </para>
                 </section>
                 <section id="jpa_langref_datetime">
@@ -2696,7 +3087,7 @@ the database server.
                     </para>
                 </section>
             </section>
-        </section>
+            </section>
         <section id="jpa_langref_group">
             <title>
                 JPQL GROUP BY, HAVING
