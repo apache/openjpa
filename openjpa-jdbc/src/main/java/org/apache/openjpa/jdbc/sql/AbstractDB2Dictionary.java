@@ -29,7 +29,6 @@ public abstract class AbstractDB2Dictionary
     public int varcharCastLength = 1000;
 
     public AbstractDB2Dictionary() {
-        numericTypeName = "DOUBLE";
         bitTypeName = "SMALLINT";
         smallintTypeName = "SMALLINT";
         tinyintTypeName = "SMALLINT";

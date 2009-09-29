@@ -19,6 +19,8 @@
 package org.apache.openjpa.persistence.identity;
 
 import java.math.BigDecimal;
+
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 
@@ -29,6 +31,7 @@ import javax.persistence.Id;
 public class SQLBigDecimalIdEntity {
 
     @Id
+    @Column(precision=15)
     private BigDecimal id;
     private int data;
 

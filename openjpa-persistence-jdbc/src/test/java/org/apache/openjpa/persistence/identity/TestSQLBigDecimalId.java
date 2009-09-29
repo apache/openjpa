@@ -19,16 +19,11 @@
 package org.apache.openjpa.persistence.identity;
 
 import java.math.BigDecimal;
+
 import javax.persistence.EntityManager;
 
 import junit.textui.TestRunner;
 
-import org.apache.openjpa.jdbc.conf.JDBCConfiguration;
-import org.apache.openjpa.jdbc.sql.DBDictionary;
-import org.apache.openjpa.jdbc.sql.MySQLDictionary;
-import org.apache.openjpa.persistence.OpenJPAEntityManagerFactorySPI;
-import org.apache.openjpa.persistence.OpenJPAEntityManagerSPI;
-import org.apache.openjpa.persistence.test.SQLListenerTestCase;
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
 
 /**
@@ -48,17 +43,6 @@ public class TestSQLBigDecimalId
         SQLBigDecimalIdEntity e = new SQLBigDecimalIdEntity();
         e.setId(decimal);
         e.setData(1);
-
-        // trigger schema definition
-        JDBCConfiguration jdbccfg = (JDBCConfiguration)emf.getConfiguration();
-        DBDictionary dict = jdbccfg.getDBDictionaryInstance();
-        //currently BigDecimal is mapped to NUMERIC column type. This causes
-        //truncation error from MySQL. Without knowing the implication of changing the 
-        //mapping of BigDecimal universally to DOUBLE, I will just change the mapping
-        //for this test case. 
-        if (dict instanceof MySQLDictionary) {
-            dict.numericTypeName = "DOUBLE";
-        }
         
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
@@ -71,6 +55,29 @@ public class TestSQLBigDecimalId
         e = em.find(SQLBigDecimalIdEntity.class, decimal);
         assertEquals(1, e.getData());
         em.close();
+        
+    }
+    
+    public void testQuery() {
+        int data = 156;
+        BigDecimal decimal = new BigDecimal(1234);
+        SQLBigDecimalIdEntity e = new SQLBigDecimalIdEntity();
+        e.setId(decimal);
+        e.setData(data);
+
+        EntityManager em = emf.createEntityManager();
+        em.getTransaction().begin();
+        em.persist(e);
+        em.getTransaction().commit();
+
+        SQLBigDecimalIdEntity e2 =
+            (SQLBigDecimalIdEntity) em.createQuery("SELECT a FROM SQLBigDecimalIdEntity a WHERE a.data=" + data)
+                .getSingleResult();
+        
+        // This would fail prior to OPENJPA-1224.
+        assertEquals(e, e2);
+        em.close();
+
     }
 
     public static void main(String[] args) {
