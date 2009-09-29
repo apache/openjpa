@@ -28,6 +28,7 @@ import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
@@ -65,7 +66,7 @@ public class Filters {
     /**
      * Return the correct wrapper type for the given class.
      */
-    public static Class wrap(Class c) {
+    public static Class<?> wrap(Class<?> c) {
         if (!c.isPrimitive())
             return c;
         if (c == int.class)
@@ -91,7 +92,7 @@ public class Filters {
      * Return the correct primitive type for the given class, if it is a
      * wrapper.
      */
-    public static Class unwrap(Class c) {
+    public static Class<?> unwrap(Class<?> c) {
         if (c.isPrimitive() || c == String.class)
             return c;
         if (c == Integer.class)
@@ -117,11 +118,11 @@ public class Filters {
      * Given two types, return type they should both be converted
      * to before performing any operations between them.
      */
-    public static Class promote(Class c1, Class c2) {
+    public static Class<?> promote(Class<?> c1, Class<?> c2) {
         if (c1 == c2)
             return unwrap(c1);
-        Class w1 = wrap(c1);
-        Class w2 = wrap(c2);
+        Class<?> w1 = wrap(c1);
+        Class<?> w2 = wrap(c2);
         if (w1 == w2)
             return unwrap(c1);
 
@@ -194,7 +195,7 @@ public class Filters {
     /**
      * Return whether the given type is not a standard persistent type.
      */
-    private static boolean isNonstandardType(Class c) {
+    private static boolean isNonstandardType(Class<?> c) {
         switch (JavaTypes.getTypeCode(c))
         {
         case JavaTypes.ARRAY:
@@ -214,7 +215,7 @@ public class Filters {
      * Return whether an instance of the first class can be converted to
      * an instance of the second.
      */
-    public static boolean canConvert(Class c1, Class c2, boolean strict) {
+    public static boolean canConvert(Class<?> c1, Class<?> c2, boolean strict) {
         c1 = wrap(c1);
         c2 = wrap(c2);
         if (c2.isAssignableFrom(c1))
@@ -241,7 +242,7 @@ public class Filters {
     /**
      * Convert the given value to the given type.
      */
-    public static Object convert(Object o, Class type) {
+    public static Object convert(Object o, Class<?> type) {
         if (o == null)
             return null;
         if (o.getClass() == type)
@@ -342,43 +343,43 @@ public class Filters {
     /**
      * Add the given values.
      */
-    public static Object add(Object o1, Class c1, Object o2, Class c2) {
+    public static Object add(Object o1, Class<?> c1, Object o2, Class<?> c2) {
         return op(o1, c1, o2, c2, OP_ADD);
     }
 
     /**
      * Subtract the given values.
      */
-    public static Object subtract(Object o1, Class c1, Object o2, Class c2) {
+    public static Object subtract(Object o1, Class<?> c1, Object o2, Class<?> c2) {
         return op(o1, c1, o2, c2, OP_SUBTRACT);
     }
 
     /**
      * Multiply the given values.
      */
-    public static Object multiply(Object o1, Class c1, Object o2, Class c2) {
+    public static Object multiply(Object o1, Class<?> c1, Object o2, Class<?> c2) {
         return op(o1, c1, o2, c2, OP_MULTIPLY);
     }
 
     /**
      * Divide the given values.
      */
-    public static Object divide(Object o1, Class c1, Object o2, Class c2) {
+    public static Object divide(Object o1, Class<?> c1, Object o2, Class<?> c2) {
         return op(o1, c1, o2, c2, OP_DIVIDE);
     }
 
     /**
      * Mod the given values.
      */
-    public static Object mod(Object o1, Class c1, Object o2, Class c2) {
+    public static Object mod(Object o1, Class<?> c1, Object o2, Class<?> c2) {
         return op(o1, c1, o2, c2, OP_MOD);
     }
 
     /**
      * Perform the given operation on two numbers.
      */
-    private static Object op(Object o1, Class c1, Object o2, Class c2, int op) {
-        Class promote = promote(c1, c2);
+    private static Object op(Object o1, Class<?> c1, Object o2, Class<?> c2, int op) {
+        Class<?> promote = promote(c1, c2);
         if (promote == int.class) {
             int n1 = (o1 == null) ? 0 : ((Number) o1).intValue();
             int n2 = (o2 == null) ? 0 : ((Number) o2).intValue();
@@ -575,8 +576,7 @@ public class Filters {
      * @param decType the type of declaration being parsed, for use in
      * error messages
      */
-    public static List parseDeclaration(String dec, char split,
-        String decType) {
+    public static List<String> parseDeclaration(String dec, char split, String decType) {
         if (dec == null)
             return null;
 
@@ -591,7 +591,7 @@ public class Filters {
         char cur;
         int start = 0;
         boolean skipSpace = false;
-        List results = new ArrayList(6);
+        List<String> results = new ArrayList<String>(6);
         for (int i = 0; i < dec.length(); i++) {
             cur = dec.charAt(i);
             if (cur == bad)
@@ -629,11 +629,11 @@ public class Filters {
      * (valid assumptions given the checks in our setters and before
      * this method call).
      */
-    public static List splitExpressions(String str, char split, int expected) {
+    public static List<String> splitExpressions(String str, char split, int expected) {
         if (str == null)
             return null;
 
-        List exps = null;
+        List<String> exps = null;
         int parenDepth = 0;
         int begin = 0, pos = 0;
         boolean escape = false;
@@ -678,7 +678,7 @@ public class Filters {
                 case '\r':
                     if (c == split && !string && parenDepth == 0 && nonspace) {
                         if (exps == null)
-                            exps = new ArrayList(expected);
+                            exps = new ArrayList<String>(expected);
                         exps.add(str.substring(begin, pos).trim());
                         begin = pos + 1;
                         nonspace = false;
@@ -687,7 +687,7 @@ public class Filters {
                 default:
                     if (c == split && !string && parenDepth == 0) {
                         if (exps == null)
-                            exps = new ArrayList(expected);
+                            exps = new ArrayList<String>(expected);
                         exps.add(str.substring(begin, pos).trim());
                         begin = pos + 1;
                     }
@@ -697,13 +697,11 @@ public class Filters {
         }
 
         if (exps == null) {
-            // Collections.singletonList wasn't added until 1.3
-            exps = new ArrayList(1);
-            exps.add(str);
+            exps = Collections.singletonList(str);
             return exps;
         }
 
-        // add last exp and return array
+        // add last expression and return array
         String last = str.substring(begin).trim();
         if (last.length() > 0)
             exps.add(last);
@@ -714,14 +712,13 @@ public class Filters {
      * Add the given access path metadatas to the full path list, making sure
      * to maintain only base metadatas in the list. The given list may be null.
      */
-    public static List addAccessPathMetaDatas(List metas,
-        ClassMetaData[] path) {
+    public static List<ClassMetaData> addAccessPathMetaDatas(List<ClassMetaData> metas, ClassMetaData[] path) {
         if (path == null || path.length == 0)
             return metas;
 
         // create set of base class metadatas in access path
         if (metas == null)
-            metas = new ArrayList();
+            metas = new ArrayList<ClassMetaData>();
         int last = metas.size();
 
         // for every element in the path of this executor, compare it
@@ -733,14 +730,12 @@ public class Filters {
         for (int i = 0; i < path.length; i++) {
             add = true;
             for (int j = 0; add && j < last; j++) {
-                meta = (ClassMetaData) metas.get(j);
+                meta = metas.get(j);
 
-                if (meta.getDescribedType().isAssignableFrom
-                    (path[i].getDescribedType())) {
+                if (meta.getDescribedType().isAssignableFrom(path[i].getDescribedType())) {
                     // list already contains base class
                     add = false;
-                } else if (path[i].getDescribedType().isAssignableFrom
-                    (meta.getDescribedType())) {
+                } else if (path[i].getDescribedType().isAssignableFrom(meta.getDescribedType())) {
                     // this element replaces its subclass
                     add = false;
                     metas.set(j, path[i]);
@@ -760,8 +755,7 @@ public class Filters {
      * Convert the user-given hint value to an aggregate listener.
      * The hint can be an aggregate listener instance or class name.
      */
-    public static AggregateListener hintToAggregateListener(Object hint,
-        ClassLoader loader) {
+    public static AggregateListener hintToAggregateListener(Object hint, ClassLoader loader) {
         if (hint == null)
             return null;
         if (hint instanceof AggregateListener)
@@ -771,8 +765,7 @@ public class Filters {
         if (hint instanceof String) {
             try {
                 return (AggregateListener) AccessController.doPrivileged(
-                    J2DoPrivHelper.newInstanceAction(
-                        Class.forName((String) hint, true, loader)));
+                    J2DoPrivHelper.newInstanceAction(Class.forName((String) hint, true, loader)));
             } catch (Exception e) {
                 if (e instanceof PrivilegedActionException)
                     e = ((PrivilegedActionException) e).getException();
@@ -788,8 +781,7 @@ public class Filters {
      * The hint can be an aggregate listener, aggregate listener array,
      * collection, or comma-separated class names.
      */
-    public static AggregateListener[] hintToAggregateListeners(Object hint,
-        ClassLoader loader) {
+    public static AggregateListener[] hintToAggregateListeners(Object hint, ClassLoader loader) {
         if (hint == null)
             return null;
         if (hint instanceof AggregateListener[])
@@ -797,9 +789,8 @@ public class Filters {
         if (hint instanceof AggregateListener)
             return new AggregateListener[]{ (AggregateListener) hint };
         if (hint instanceof Collection) {
-            Collection c = (Collection) hint;
-            return (AggregateListener[]) c.toArray
-                (new AggregateListener[c.size()]);
+            Collection<AggregateListener> c = (Collection<AggregateListener>) hint;
+            return c.toArray(new AggregateListener[c.size()]);
         }
 
         Exception cause = null;
@@ -826,8 +817,7 @@ public class Filters {
      * Convert the user-given hint value to a filter listener.
      * The hint can be a filter listener instance or class name.
      */
-    public static FilterListener hintToFilterListener(Object hint,
-        ClassLoader loader) {
+    public static FilterListener hintToFilterListener(Object hint, ClassLoader loader) {
         if (hint == null)
             return null;
         if (hint instanceof FilterListener)
@@ -854,8 +844,7 @@ public class Filters {
      * The hint can be a filter listener, filter listener array,
      * collection, or comma-separated class names.
      */
-    public static FilterListener[] hintToFilterListeners(Object hint,
-        ClassLoader loader) {
+    public static FilterListener[] hintToFilterListeners(Object hint, ClassLoader loader) {
         if (hint == null)
             return null;
         if (hint instanceof FilterListener[])
@@ -863,8 +852,8 @@ public class Filters {
         if (hint instanceof FilterListener)
             return new FilterListener[]{ (FilterListener) hint };
         if (hint instanceof Collection) {
-            Collection c = (Collection) hint;
-            return (FilterListener[]) c.toArray(new FilterListener[c.size()]);
+            Collection<FilterListener> c = (Collection<FilterListener>) hint;
+            return c.toArray(new FilterListener[c.size()]);
         }
 
         Exception cause = null;
