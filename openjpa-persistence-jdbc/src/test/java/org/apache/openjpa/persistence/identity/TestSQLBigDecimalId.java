@@ -19,9 +19,11 @@
 package org.apache.openjpa.persistence.identity;
 
 import java.math.BigDecimal;
+
 import javax.persistence.EntityManager;
 
 import junit.textui.TestRunner;
+
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
 
 /**
@@ -54,7 +56,28 @@ public class TestSQLBigDecimalId
         assertEquals(1, e.getData());
         em.close();
     }
+    
+    public void testQuery() {
+        int data = 156;
+        BigDecimal decimal = new BigDecimal(1234);
+        SQLBigDecimalIdEntity e = new SQLBigDecimalIdEntity();
+        e.setId(decimal);
+        e.setData(data);
 
+        EntityManager em = emf.createEntityManager();
+        em.getTransaction().begin();
+        em.persist(e);
+        em.getTransaction().commit();
+
+        SQLBigDecimalIdEntity e2 =
+            (SQLBigDecimalIdEntity) em.createQuery("SELECT a FROM SQLBigDecimalIdEntity a WHERE a.data=" + data)
+                .getSingleResult();
+        
+        // This would fail prior to OPENJPA-1224.
+        assertEquals(e, e2);
+        em.close();
+
+    }
     public static void main(String[] args) {
         TestRunner.run(SQLBigDecimalIdEntity.class);
     }
