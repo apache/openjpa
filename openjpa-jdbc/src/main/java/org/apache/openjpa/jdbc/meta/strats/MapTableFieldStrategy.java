@@ -66,49 +66,8 @@ public abstract class MapTableFieldStrategy
     private static final Localizer _loc = Localizer.forPackage
         (MapTableFieldStrategy.class);
 
-    private Boolean _isNonDefaultMappingAllowed = null;
-    private Boolean _isBi1ToMJT = null;
-    private Boolean _isUni1ToMFK = null;
-
     public FieldMapping getFieldMapping() {
         return field;
-    }
-
-    private void isNonDefaultMapping() {
-        FieldMapping mapped = field.getMappedByMapping();
-        if (isNonDefaultMappingAllowed() && 
-            field.getAssociationType() == FieldMetaData.ONE_TO_MANY &&
-            hasJoinColumnOrJoinTable()) {
-            if (mapped != null) {
-                _isBi1ToMJT = true;
-                _isUni1ToMFK = false;
-            } else {
-                _isBi1ToMJT = false;
-                _isUni1ToMFK = true;
-            }
-        } else {
-            _isBi1ToMJT = false;
-            _isUni1ToMFK = false;
-        }
-    }
-    
-    private boolean hasJoinColumnOrJoinTable() {
-        boolean hasJoinColumn = (field.getValueInfo().getColumns().size() > 0 ? true : false);
-        boolean hasJoinTable = (field.getMappingInfo().getTableName() != null ? true : false);
-        return hasJoinColumn || hasJoinTable;
-        
-    }
-    
-    public boolean isBi1ToMJT() {
-        if (_isBi1ToMJT == null)
-            isNonDefaultMapping();
-        return _isBi1ToMJT;
-    }
-    
-    public boolean isUni1ToMFK() {
-        if (_isUni1ToMFK == null)
-            isNonDefaultMapping();
-        return _isUni1ToMFK;
     }
 
     public ClassMapping[] getIndependentKeyMappings(boolean traverse) {
@@ -161,15 +120,6 @@ public abstract class MapTableFieldStrategy
         field.getValueInfo().assertNoSchemaComponents(field, !adapt);
     }
     
-    protected boolean isNonDefaultMappingAllowed() {
-        if (_isNonDefaultMappingAllowed == null) {
-            OpenJPAConfiguration conf = field.getRepository().getConfiguration();
-            _isNonDefaultMappingAllowed = field.getRepository().
-                getMetaDataFactory().getDefaults().isNonDefaultMappingAllowed(conf);
-        }
-        return _isNonDefaultMappingAllowed;
-    }
-
     public void delete(OpenJPAStateManager sm, JDBCStore store, RowManager rm)
         throws SQLException {
         Row row = rm.getAllRows(field.getTable(), Row.ACTION_DELETE);
