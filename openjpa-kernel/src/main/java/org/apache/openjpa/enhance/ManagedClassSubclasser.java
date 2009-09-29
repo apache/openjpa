@@ -25,7 +25,6 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -78,20 +77,19 @@ public class ManagedClassSubclasser {
      *
      * @since 1.0.0
      */
-    public static List<Class> prepareUnenhancedClasses(
+    public static List<Class<?>> prepareUnenhancedClasses(
         final OpenJPAConfiguration conf,
-        final Collection<? extends Class> classes,
+        final Collection<? extends Class<?>> classes,
         final ClassLoader envLoader) {
         if (classes == null)
             return null;
         if (classes.size() == 0)
-            return Collections.EMPTY_LIST;
+            return Collections.emptyList();
 
         Log log = conf.getLog(OpenJPAConfiguration.LOG_ENHANCE);
-        if (conf.getRuntimeUnenhancedClassesConstant()
-            != RuntimeUnenhancedClassesModes.SUPPORTED) {
-            Collection unenhanced = new ArrayList();
-            for (Class cls : classes)
+        if (conf.getRuntimeUnenhancedClassesConstant() != RuntimeUnenhancedClassesModes.SUPPORTED) {
+            Collection<Class<?>> unenhanced = new ArrayList<Class<?>>();
+            for (Class<?> cls : classes)
                 if (!PersistenceCapable.class.isAssignableFrom(cls))
                     unenhanced.add(cls);
             if (unenhanced.size() > 0) {
@@ -123,28 +121,26 @@ public class ManagedClassSubclasser {
 
         boolean redefine = ClassRedefiner.canRedefineClasses(log);
         if (redefine)
-            log.info(_loc.get("enhance-and-subclass-and-redef-start",
-                classes));
+            log.info(_loc.get("enhance-and-subclass-and-redef-start", classes));
         else
-            log.info(_loc.get("enhance-and-subclass-no-redef-start",
-                classes));
+            log.info(_loc.get("enhance-and-subclass-no-redef-start",  classes));
 
-        final Map<Class, byte[]> map = new HashMap<Class, byte[]>();
-        final List subs = new ArrayList(classes.size());
-        final List ints = new ArrayList(classes.size());
-        Set<Class> unspecified = null;
-        for (Iterator iter = classes.iterator(); iter.hasNext(); ) {
-            final Class cls = (Class) iter.next();
+        final Map<Class<?>, byte[]> map = new HashMap<Class<?>, byte[]>();
+        final List<Class<?>> subs = new ArrayList<Class<?>>(classes.size());
+        final List<Class<?>> ints = new ArrayList<Class<?>>(classes.size());
+        Set<Class<?>> unspecified = null;
+        for (Class<?> cls : classes) {
+            final Class<?> c = cls;
             final PCEnhancer enhancer = new PCEnhancer(conf, cls); 
 
             enhancer.setBytecodeWriter(new BytecodeWriter() {
                 public void write(BCClass bc) throws IOException {
-                    ManagedClassSubclasser.write(bc, enhancer, map,
-                        cls, subs, ints);
+                    ManagedClassSubclasser.write(bc, enhancer, map, c, subs, ints);
                 }
             });
-            if (redefine)
+            if (redefine) {
                 enhancer.setRedefine(true);
+            }
             enhancer.setCreateSubclass(true);
             enhancer.setAddDefaultConstructor(true);
 
@@ -157,13 +153,11 @@ public class ManagedClassSubclasser {
             // reconfiguration at the end of this method.
             ClassMetaData meta = enhancer.getMetaData();
             if (meta == null) {
-                throw new MetaDataException(_loc.get("no-meta", cls)).
-                        setFatal(true);
+                throw new MetaDataException(_loc.get("no-meta", cls)).setFatal(true);
             }
             configureMetaData(meta, conf, redefine, false);
 
-            unspecified = collectRelatedUnspecifiedTypes(enhancer.getMetaData(),
-                classes, unspecified);
+            unspecified = collectRelatedUnspecifiedTypes(enhancer.getMetaData(), classes, unspecified);
 
             int runResult = enhancer.run();
             if (runResult == PCEnhancer.ENHANCE_PC) {
@@ -177,24 +171,23 @@ public class ManagedClassSubclasser {
         }
 
         if (unspecified != null && !unspecified.isEmpty())
-            throw new UserException(_loc.get("unspecified-unenhanced-types",
-                classes, unspecified));
+            throw new UserException(_loc.get("unspecified-unenhanced-types", classes, unspecified));
 
         ClassRedefiner.redefineClasses(conf, map);
-        for (Class cls : map.keySet()) {
+        for (Class<?> cls : map.keySet()) {
             setIntercepting(conf, envLoader, cls);
             configureMetaData(conf, envLoader, cls, redefine);
         }
-        for (Class cls : (Collection<Class>) subs)
+        for (Class<?> cls : subs)
             configureMetaData(conf, envLoader, cls, redefine);
-        for (Class cls : (Collection<Class>) ints)
+        for (Class<?> cls : ints)
             setIntercepting(conf, envLoader, cls);
 
         return subs;
     }
 
-    private static Set<Class> collectRelatedUnspecifiedTypes(ClassMetaData meta,
-        Collection<? extends Class> classes, Set<Class> unspecified) {
+    private static Set<Class<?>> collectRelatedUnspecifiedTypes(ClassMetaData meta,
+        Collection<? extends Class<?>> classes, Set<Class<?>> unspecified) {
         unspecified = collectUnspecifiedType(meta.getPCSuperclass(), classes,
             unspecified);
 
@@ -217,20 +210,20 @@ public class ManagedClassSubclasser {
         return unspecified;
     }
 
-    private static Set<Class> collectUnspecifiedType(Class cls,
-        Collection<? extends Class> classes, Set<Class> unspecified) {
+    private static Set<Class<?>> collectUnspecifiedType(Class<?> cls,
+        Collection<? extends Class<?>> classes, Set<Class<?>> unspecified) {
         if (cls != null && !classes.contains(cls)
             && !ImplHelper.isManagedType(null, cls)
             && !cls.isInterface()) {
             if (unspecified == null)
-                unspecified = new HashSet<Class>();
+                unspecified = new HashSet<Class<?>>();
             unspecified.add(cls);
         }
         return unspecified;
     }
 
     private static void configureMetaData(OpenJPAConfiguration conf,
-        ClassLoader envLoader, Class cls, boolean redefineAvailable) {
+        ClassLoader envLoader, Class<?> cls, boolean redefineAvailable) {
         ClassMetaData meta = conf.getMetaDataRepositoryInstance()
             .getMetaData(cls, envLoader, true);
         configureMetaData(meta, conf, redefineAvailable, true);
@@ -272,7 +265,7 @@ public class ManagedClassSubclasser {
     }
 
     private static void write(BCClass bc, PCEnhancer enhancer,
-        Map<Class, byte[]> map, Class cls, List subs, List ints)
+        Map<Class<?>, byte[]> map, Class<?> cls, List<Class<?>> subs, List<Class<?>> ints)
         throws IOException {
 
         if (bc == enhancer.getManagedTypeBytecode()) {
@@ -313,7 +306,7 @@ public class ManagedClassSubclasser {
     }
 
     private static void setIntercepting(OpenJPAConfiguration conf,
-        ClassLoader envLoader, Class cls) {
+        ClassLoader envLoader, Class<?> cls) {
         ClassMetaData meta = conf.getMetaDataRepositoryInstance()
             .getMetaData(cls, envLoader, true);
         meta.setIntercepting(true);

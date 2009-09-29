@@ -263,9 +263,8 @@ public abstract class AbstractUnenhancedClassTest
     }
 
     public void testEnhancer() throws IOException {
-        List<Class> subs =  ManagedClassSubclasser.prepareUnenhancedClasses(
-            emf.getConfiguration(),
-            Collections.singleton(getUnenhancedClass()), null);
+        List<Class<?>> subs =  ManagedClassSubclasser.prepareUnenhancedClasses(
+            emf.getConfiguration(), Collections.singleton(getUnenhancedClass()), null);
         Class sub = subs.get(0);
         assertNotNull(sub);
         assertEquals("org.apache.openjpa.enhance."
@@ -588,9 +587,9 @@ public abstract class AbstractUnenhancedClassTest
     public void testGetMetaDataOfSubtype() {
         ClassMetaData meta = JPAFacadeHelper.getMetaData(emf,
             getUnenhancedClass());
-        List<Class> subs =  ManagedClassSubclasser.prepareUnenhancedClasses(
-            emf.getConfiguration(),
-            Collections.singleton(getUnenhancedClass()), null);
+        List<Class<?>> subs =  ManagedClassSubclasser.prepareUnenhancedClasses(
+            emf.getConfiguration(), Collections.singleton(getUnenhancedClass()),
+            null);
         assertSame(meta, JPAFacadeHelper.getMetaData(emf, subs.get(0)));
 
         meta = JPAFacadeHelper.getMetaData(emf, getUnenhancedSubclass());

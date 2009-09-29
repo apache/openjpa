@@ -20,7 +20,6 @@ package org.apache.openjpa.kernel;
 
 import java.io.Serializable;
 import java.util.Map;
-import java.util.Properties;
 import java.util.Set;
 
 import org.apache.openjpa.conf.OpenJPAConfiguration;
@@ -83,7 +82,7 @@ public interface BrokerFactory
      *
      * @since 0.3.3
      */
-    public void addLifecycleListener(Object listener, Class[] classes);
+    public void addLifecycleListener(Object listener, Class<?>[] classes);
 
     /**
      * Remove a listener for lifecycle-related events.

@@ -398,7 +398,7 @@ public abstract class AbstractBrokerSerializationTest<T>
     /**
      * An additional type that must be available in this PC. May be null.
      */
-    protected Class getSecondaryType() {
+    protected Class<?> getSecondaryType() {
         return null;
     }
 

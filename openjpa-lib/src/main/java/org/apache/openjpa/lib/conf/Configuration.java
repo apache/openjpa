@@ -173,7 +173,7 @@ public interface Configuration
      * @param storeDefaults if true, then properties will be written
      * out even if they match the default value for a property
      */
-    public Map toProperties(boolean storeDefaults);
+    public Map<String,Object> toProperties(boolean storeDefaults);
     
     /**
      * Get the set of all known property keys, including any equivalent keys,

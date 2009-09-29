@@ -21,8 +21,8 @@ package org.apache.openjpa.persistence;
 import java.lang.instrument.ClassFileTransformer;
 import java.lang.instrument.IllegalClassFormatException;
 import java.security.ProtectionDomain;
-import java.util.BitSet;
 import java.util.Map;
+
 import javax.persistence.EntityManager;
 import javax.persistence.spi.ClassTransformer;
 import javax.persistence.spi.LoadState;
@@ -35,18 +35,13 @@ import org.apache.openjpa.conf.OpenJPAConfiguration;
 import org.apache.openjpa.conf.OpenJPAConfigurationImpl;
 import org.apache.openjpa.enhance.PCClassFileTransformer;
 import org.apache.openjpa.enhance.PCEnhancerAgent;
-import org.apache.openjpa.enhance.PersistenceCapable;
-import org.apache.openjpa.enhance.StateManager;
 import org.apache.openjpa.kernel.Bootstrap;
 import org.apache.openjpa.kernel.BrokerFactory;
-import org.apache.openjpa.kernel.OpenJPAStateManager;
 import org.apache.openjpa.lib.conf.Configuration;
 import org.apache.openjpa.lib.conf.ConfigurationProvider;
 import org.apache.openjpa.lib.conf.Configurations;
 import org.apache.openjpa.lib.log.Log;
 import org.apache.openjpa.lib.util.Localizer;
-import org.apache.openjpa.lib.util.concurrent.ConcurrentReferenceHashSet;
-import org.apache.openjpa.meta.FieldMetaData;
 import org.apache.openjpa.meta.MetaDataModes;
 import org.apache.openjpa.meta.MetaDataRepository;
 import org.apache.openjpa.persistence.validation.ValidationUtils;
@@ -66,10 +61,8 @@ public class PersistenceProviderImpl
     static final String CLASS_TRANSFORMER_OPTIONS = "ClassTransformerOptions";
     private static final String EMF_POOL = "EntityManagerFactoryPool";
 
-    private static final Localizer _loc = Localizer.forPackage(
-        PersistenceProviderImpl.class);
+    private static final Localizer _loc = Localizer.forPackage(PersistenceProviderImpl.class);
 
-    private static final String _name = PersistenceProviderImpl.class.getName();
     private Log _log;
     /**
      * Loads the entity manager specified by <code>name</code>, applying
@@ -82,8 +75,7 @@ public class PersistenceProviderImpl
      * This does no pooling of EntityManagersFactories.
      * @return EntityManagerFactory or null
      */
-    public OpenJPAEntityManagerFactory createEntityManagerFactory(String name,
-        String resource, Map m) {
+    public OpenJPAEntityManagerFactory createEntityManagerFactory(String name, String resource, Map m) {
         PersistenceProductDerivation pd = new PersistenceProductDerivation();
         try {
             Object poolValue = Configurations.removeProperty(EMF_POOL, m);
@@ -108,9 +100,18 @@ public class PersistenceProviderImpl
             if (_log != null) {
                 _log.error(_loc.get("create-emf-error", name), e);
             }
+            
             /*
+             * 
              * Maintain 1.x behavior of throwing exceptions, even though
-             * JPA2 9.2 - createEMF "must" return null for PU it can't handle
+             * JPA2 9.2 - createEMF "must" return null for PU it can't handle.
+             * 
+             * JPA 2.0 Specification Section 9.2 states:
+             * "If a provider does not qualify as the provider for the named persistence unit, 
+             * it must return null when createEntityManagerFactory is invoked on it."
+             * That specification compliance behavior has happened few lines above on null return. 
+             * Throwing runtime exception in the following code is valid (and useful) behavior
+             * because the qualified provider has encountered an unexpected situation.
              */
             throw PersistenceExceptions.toPersistenceException(e);                
         }
@@ -135,13 +136,11 @@ public class PersistenceProviderImpl
             return Bootstrap.getBrokerFactory(cp, loader);
     }
 
-    public OpenJPAEntityManagerFactory createEntityManagerFactory(String name,
-        Map m) {
+    public OpenJPAEntityManagerFactory createEntityManagerFactory(String name, Map m) {
         return createEntityManagerFactory(name, null, m);
     }
 
-    public OpenJPAEntityManagerFactory createContainerEntityManagerFactory(
-        PersistenceUnitInfo pui, Map m) {
+    public OpenJPAEntityManagerFactory createContainerEntityManagerFactory(PersistenceUnitInfo pui, Map m) {
         PersistenceProductDerivation pd = new PersistenceProductDerivation();
         try {
             Object poolValue = Configurations.removeProperty(EMF_POOL, m);
@@ -151,8 +150,7 @@ public class PersistenceProviderImpl
 
             // add enhancer
             Exception transformerException = null;
-            String ctOpts = (String) Configurations.getProperty
-                (CLASS_TRANSFORMER_OPTIONS, pui.getProperties());
+            String ctOpts = (String) Configurations.getProperty(CLASS_TRANSFORMER_OPTIONS, pui.getProperties());
             try {
                 pui.addTransformer(new ClassTransformerImpl(cp, ctOpts,
                     pui.getNewTempClassLoader(), newConfigurationImpl()));
@@ -164,24 +162,17 @@ public class PersistenceProviderImpl
             // if the BrokerImpl hasn't been specified, switch to the
             // non-finalizing one, since anything claiming to be a container
             // should be doing proper resource management.
-            if (!Configurations.containsProperty(BrokerValue.KEY,
-                cp.getProperties())) {
-                cp.addProperty("openjpa." + BrokerValue.KEY, 
-                    getDefaultBrokerAlias());
+            if (!Configurations.containsProperty(BrokerValue.KEY, cp.getProperties())) {
+                cp.addProperty("openjpa." + BrokerValue.KEY, getDefaultBrokerAlias());
             }
 
-            BrokerFactory factory = getBrokerFactory(cp, poolValue,
-                pui.getClassLoader());
+            BrokerFactory factory = getBrokerFactory(cp, poolValue, pui.getClassLoader());
             if (transformerException != null) {
-                Log log = factory.getConfiguration().getLog(
-                    OpenJPAConfiguration.LOG_RUNTIME);
+                Log log = factory.getConfiguration().getLog(OpenJPAConfiguration.LOG_RUNTIME);
                 if (log.isTraceEnabled()) {
-                    log.warn(
-                        _loc.get("transformer-registration-error-ex", pui),
-                        transformerException);
+                    log.warn(_loc.get("transformer-registration-error-ex", pui), transformerException);
                 } else {
-                    log.warn(
-                        _loc.get("transformer-registration-error", pui));
+                    log.warn(_loc.get("transformer-registration-error", pui));
                 }
             }
             
@@ -234,10 +225,9 @@ public class PersistenceProviderImpl
         private ClassTransformerImpl(ConfigurationProvider cp, String props, 
             final ClassLoader tmpLoader, OpenJPAConfiguration conf) {
             cp.setInto(conf);
-            // use the tmp loader for everything
+            // use the temporary loader for everything
             conf.setClassResolver(new ClassResolver() {
-                public ClassLoader getClassLoader(Class context, 
-                    ClassLoader env) {
+                public ClassLoader getClassLoader(Class<?> context, ClassLoader env) {
                     return tmpLoader;
                 }
             });

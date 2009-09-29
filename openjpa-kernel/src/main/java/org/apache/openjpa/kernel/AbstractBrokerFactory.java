@@ -28,7 +28,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.TreeSet;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.locks.ReentrantLock;
 
@@ -57,6 +56,7 @@ import org.apache.openjpa.lib.log.Log;
 import org.apache.openjpa.lib.util.J2DoPrivHelper;
 import org.apache.openjpa.lib.util.Localizer;
 import org.apache.openjpa.lib.util.concurrent.ConcurrentReferenceHashSet;
+import org.apache.openjpa.meta.MetaDataModes;
 import org.apache.openjpa.meta.MetaDataRepository;
 import org.apache.openjpa.util.GeneralException;
 import org.apache.openjpa.util.InvalidStateException;
@@ -77,8 +77,7 @@ import org.apache.openjpa.writebehind.WriteBehindStoreManager;
 public abstract class AbstractBrokerFactory
     implements BrokerFactory {
 
-    private static final Localizer _loc = Localizer.forPackage
-        (AbstractBrokerFactory.class);
+    private static final Localizer _loc = Localizer.forPackage(AbstractBrokerFactory.class);
 
     // static mapping of configurations to pooled broker factories
     private static final Map<Object,AbstractBrokerFactory> _pool = 
@@ -111,7 +110,7 @@ public abstract class AbstractBrokerFactory
     private transient Map<Object, Class<?>[]> _lifecycleListeners = null;
 
     // transaction listeners to pass to each broker
-    private transient List _transactionListeners = null;
+    private transient List<Object> _transactionListeners = null;
 
     // key under which this instance can be stored in the broker pool
     // and later identified
@@ -124,7 +123,7 @@ public abstract class AbstractBrokerFactory
      *
      * @since 1.1.0
      */
-    protected static Object toPoolKey(Map map) {
+    protected static Object toPoolKey(Map<String,Object> map) {
         Object key = Configurations.getProperty("Id", map);
         return ( key != null) ? key : map;
     }
@@ -209,7 +208,7 @@ public abstract class AbstractBrokerFactory
             assertOpen();
             makeReadOnly();
 
-            BrokerImpl broker = null;
+            Broker broker = null;
             if (findExisting)
                 broker = findBroker(user, pass, managed);
             if (broker == null) {
@@ -224,22 +223,19 @@ public abstract class AbstractBrokerFactory
         }
     }
 
-    void initializeBroker(boolean managed, int connRetainMode,
-        BrokerImpl broker, boolean fromDeserialization) {
+    void initializeBroker(boolean managed, int connRetainMode, Broker broker, boolean fromDeserialization) {
         assertOpen();
         makeReadOnly();
         
         DelegatingStoreManager dsm = createDelegatingStoreManager();
 
-        broker.initialize(this, dsm, managed, connRetainMode,
-            fromDeserialization);
+        ((BrokerImpl) broker).initialize(this, dsm, managed, connRetainMode, fromDeserialization);
         if (!fromDeserialization)
             addListeners(broker);
 
         // if we're using remote events, register the event manager so
         // that it can broadcast commit notifications from the broker
-        RemoteCommitEventManager remote = _conf.
-            getRemoteCommitEventManager();
+        RemoteCommitEventManager remote = _conf.getRemoteCommitEventManager();
         if (remote.areRemoteEventsEnabled())
             broker.addTransactionListener(remote);
 
@@ -251,19 +247,15 @@ public abstract class AbstractBrokerFactory
     /**
      * Add factory-registered lifecycle listeners to the broker.
      */
-    protected void addListeners(BrokerImpl broker) {
+    protected void addListeners(Broker broker) {
         if (_lifecycleListeners != null && !_lifecycleListeners.isEmpty()) {
-            Map.Entry entry;
-            for (Iterator itr = _lifecycleListeners.entrySet().iterator();
-                itr.hasNext();) {
-                entry = (Map.Entry) itr.next();
-                broker.addLifecycleListener(entry.getKey(), (Class[])
-                    entry.getValue());
+            for (Map.Entry<Object,Class<?>[]> entry : _lifecycleListeners.entrySet()) {
+                broker.addLifecycleListener(entry.getKey(), entry.getValue());
             }
         }
 
         if (_transactionListeners != null && !_transactionListeners.isEmpty()) {
-            for (Iterator itr = _transactionListeners.iterator();
+            for (Iterator<Object> itr = _transactionListeners.iterator();
                 itr.hasNext(); ) {
                 broker.addTransactionListener(itr.next());
             }
@@ -294,7 +286,7 @@ public abstract class AbstractBrokerFactory
             Collection<Class<?>> clss = _conf.getMetaDataRepositoryInstance().
                 loadPersistentTypes(false, loader, _conf.isInitializeEagerly());
             if (clss.isEmpty())
-                _pcClassNames = Collections.EMPTY_SET;
+                _pcClassNames = Collections.emptyList();
             else {
                 Collection<String> c = new ArrayList<String>(clss.size());
                 for (Iterator<Class<?>> itr = clss.iterator(); itr.hasNext();) {
@@ -310,31 +302,28 @@ public abstract class AbstractBrokerFactory
         } else {
             // reload with this loader
             if (getPcClassLoaders().add(loader)) {
-                for (Iterator itr = _pcClassNames.iterator(); itr.hasNext();) {
+                for (String clsName : _pcClassNames) {
                     try {
-                        Class cls =
-                            Class.forName((String) itr.next(), true, loader);
+                        Class<?> cls = Class.forName(clsName, true, loader);
                         if (needsSub(cls))
                             toRedefine.add(cls);
                     } catch (Throwable t) {
-                        _conf.getLog(OpenJPAConfiguration.LOG_RUNTIME)
-                            .warn(null, t);
+                        _conf.getLog(OpenJPAConfiguration.LOG_RUNTIME).warn(null, t);
                     }
                 }
             }
         }
 
         // get the ManagedClassSubclasser into the loop
-        ManagedClassSubclasser.prepareUnenhancedClasses(
-            _conf, toRedefine, envLoader);
+        ManagedClassSubclasser.prepareUnenhancedClasses(_conf, toRedefine, envLoader);
     }
 
-    private boolean needsSub(Class cls) {
+    private boolean needsSub(Class<?> cls) {
         return !cls.isInterface()
             && !PersistenceCapable.class.isAssignableFrom(cls);
     }
 
-    public void addLifecycleListener(Object listener, Class[] classes) {
+    public void addLifecycleListener(Object listener, Class<?>[] classes) {
         lock();
         try {
             assertOpen();
@@ -362,7 +351,7 @@ public abstract class AbstractBrokerFactory
         try {
             assertOpen();
             if (_transactionListeners == null)
-                _transactionListeners = new LinkedList();
+                _transactionListeners = new LinkedList<Object>();
             _transactionListeners.add(listener);
         } finally {
             unlock();
@@ -405,9 +394,7 @@ public abstract class AbstractBrokerFactory
             }
 
             // close all brokers
-            Broker broker;
-            for (Iterator itr = _brokers.iterator(); itr.hasNext();) {
-                broker = (Broker) itr.next();
+            for (Broker broker : _brokers) {
                 // Check for null because _brokers may contain weak references
                 if ((broker != null) && (!broker.isClosed()))
                     broker.close();
@@ -491,14 +478,14 @@ public abstract class AbstractBrokerFactory
             return factory;
 
         // reset these transient fields to empty values
-        _transactional = new ConcurrentHashMap();
+        _transactional = new ConcurrentHashMap<Object,Collection<Broker>>();
         _brokers = newBrokerSet();
 
         makeReadOnly();
         return this;
     }
 
-    private Set newBrokerSet() {
+    private Set<Broker> newBrokerSet() {
         BrokerValue bv;
         if (_conf instanceof OpenJPAConfigurationImpl)
             bv = ((OpenJPAConfigurationImpl) _conf).brokerPlugin;
@@ -507,11 +494,9 @@ public abstract class AbstractBrokerFactory
 
         if (FinalizingBrokerImpl.class.isAssignableFrom(
             bv.getTemplateBrokerType(_conf))) {
-            return MapBackedSet.decorate(new ConcurrentHashMap(),
-                new Object() { });
+            return MapBackedSet.decorate(new ConcurrentHashMap(), new Object() { });
         } else {
-            return new ConcurrentReferenceHashSet(
-                ConcurrentReferenceHashSet.WEAK);
+            return new ConcurrentReferenceHashSet<Broker>(ConcurrentReferenceHashSet.WEAK);
         }
     }
 
@@ -534,7 +519,7 @@ public abstract class AbstractBrokerFactory
      * pooling can return a matching manager before a new {@link StoreManager}
      * is created.
      */
-    protected BrokerImpl findBroker(String user, String pass, boolean managed) {
+    protected Broker findBroker(String user, String pass, boolean managed) {
         if (managed)
             return findTransactionalBroker(user, pass);
         return null;
@@ -572,7 +557,7 @@ public abstract class AbstractBrokerFactory
      * Find a managed runtime broker associated with the
      * current transaction, or returns null if none.
      */
-    protected BrokerImpl findTransactionalBroker(String user, String pass) {
+    protected Broker findTransactionalBroker(String user, String pass) {
         Transaction trans;
         ManagedRuntime mr = _conf.getManagedRuntimeInstance();
         Object txKey;
@@ -591,16 +576,13 @@ public abstract class AbstractBrokerFactory
             throw new GeneralException(e);
         }
 
-        Collection brokers = (Collection) _transactional.get(txKey);
+        Collection<Broker> brokers = _transactional.get(txKey);
         if (brokers != null) {
             // we don't need to synchronize on brokers since one JTA transaction
             // can never be active on multiple concurrent threads.
-            BrokerImpl broker;
-            for (Iterator itr = brokers.iterator(); itr.hasNext();) {
-                broker = (BrokerImpl) itr.next();
-                if (StringUtils.equals(broker.getConnectionUserName(),
-                    user) && StringUtils.equals
-                    (broker.getConnectionPassword(), pass))
+            for (Broker broker : brokers) {
+                if (StringUtils.equals(broker.getConnectionUserName(), user) 
+                 && StringUtils.equals(broker.getConnectionPassword(), pass))
                     return broker;
             }
         }
@@ -641,15 +623,13 @@ public abstract class AbstractBrokerFactory
             if (log.isInfoEnabled())
                 log.info(getFactoryInitializationBanner());
             if (log.isTraceEnabled()) {
-                Map props = _conf.toProperties(true);
+                Map<String,Object> props = _conf.toProperties(true);
                 String lineSep = J2DoPrivHelper.getLineSeparator();
                 StringBuffer buf = new StringBuffer();
-                Map.Entry entry;
-                for (Iterator itr = props.entrySet().iterator();
-                    itr.hasNext();) {
-                    entry = (Map.Entry) itr.next();
-                    buf.append(entry.getKey()).append(": ").
-                        append(entry.getValue());
+                Map.Entry<?,?> entry;
+                for (Iterator<Map.Entry<String,Object>> itr = props.entrySet().iterator(); itr.hasNext();) {
+                    entry = itr.next();
+                    buf.append(entry.getKey()).append(": ").append(entry.getValue());
                     if (itr.hasNext())
                         buf.append(lineSep);
                 }
@@ -662,8 +642,8 @@ public abstract class AbstractBrokerFactory
             // register the metdata repository to auto-load persistent types
             // and make sure types are enhanced
             MetaDataRepository repos = _conf.getMetaDataRepositoryInstance();
-            repos.setValidate(repos.VALIDATE_RUNTIME, true);
-            repos.setResolve(repos.MODE_MAPPING_INIT, true);
+            repos.setValidate(MetaDataRepository.VALIDATE_RUNTIME, true);
+            repos.setResolve(MetaDataModes.MODE_MAPPING_INIT, true);
             PCRegistry.addRegisterClassListener(repos);
 
             // freeze underlying configuration and eagerly initialize to
@@ -715,24 +695,20 @@ public abstract class AbstractBrokerFactory
      * failed objects in the nested exceptions.
      */
     private void assertNoActiveTransaction() {
-        Collection excs;
+        Collection<Throwable> excs;
         if (_transactional.isEmpty())
             return;
 
-        excs = new ArrayList(_transactional.size());
-        for (Iterator trans = _transactional.values().iterator();
-            trans.hasNext();) {
-            Collection brokers = (Collection) trans.next();
-            for (Iterator itr = brokers.iterator(); itr.hasNext();) {
-                excs.add(new InvalidStateException(_loc.get("active")).
-                    setFailedObject(itr.next()));
+        excs = new ArrayList<Throwable>(_transactional.size());
+        for (Collection<Broker> brokers : _transactional.values()) {
+            for (Broker broker : brokers) {
+                excs.add(new InvalidStateException(_loc.get("active")).setFailedObject(broker));
             }
         }
 
         if (!excs.isEmpty())
             throw new InvalidStateException(_loc.get("nested-exceps")).
-                setNestedThrowables((Throwable[]) excs.toArray
-                    (new Throwable[excs.size()]));
+                setNestedThrowables((Throwable[]) excs.toArray(new Throwable[excs.size()]));
     }
 
     /**
@@ -765,10 +741,10 @@ public abstract class AbstractBrokerFactory
             // threads using the same trans since one JTA transaction can never
             // be active on multiple concurrent threads.
             Object txKey = mr.getTransactionKey();
-            Collection brokers = (Collection) _transactional.get(txKey);
+            Collection<Broker> brokers = _transactional.get(txKey);
             
             if (brokers == null) {
-                brokers = new ArrayList(2);
+                brokers = new ArrayList<Broker>(2);
                 _transactional.put(txKey, brokers);
                 trans.registerSynchronization(new RemoveTransactionSync(txKey));
             }
@@ -844,10 +820,9 @@ public abstract class AbstractBrokerFactory
     /**
      * Method insures that deserialized EMF has this reference re-instantiated
      */
-    private Collection getPcClassLoaders() {
+    private Collection<ClassLoader> getPcClassLoaders() {
        if (_pcClassLoaders == null)
-         _pcClassLoaders = new ConcurrentReferenceHashSet(
-             ConcurrentReferenceHashSet.WEAK);
+         _pcClassLoaders = new ConcurrentReferenceHashSet<ClassLoader>(ConcurrentReferenceHashSet.WEAK);
           
        return _pcClassLoaders;
     }
