@@ -3753,8 +3753,8 @@ UpdateManager</literal>
 <classname>org.apache.openjpa.jdbc.kernel.UpdateManager</classname></ulink> to
 use to flush persistent object changes to the datastore. The provided default
 implementation is
-<ulink url="../javadoc/org/apache/openjpa/jdbc/kernel/OperationOrderUpdateManager">
-<classname>org.apache.openjpa.jdbc.kernel.OperationOrderUpdateManager</classname>
+<ulink url="../javadoc/org/apache/openjpa/jdbc/kernel/ConstraintUpdateManager">
+<classname>org.apache.openjpa.jdbc.kernel.ConstraintUpdateManager</classname>
 </ulink>.
             </para>
         </section>
