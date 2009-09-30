@@ -24,6 +24,13 @@ public class WriteBehindConfigurationException extends OpenJPAException {
 
     private static final long serialVersionUID = 4378466107767896762L;
 
+    /**
+     * Constructor; supply message as String.
+     */
+    public WriteBehindConfigurationException(String msg) {
+        super(msg);
+    }
+
     @Override
     public int getType() {
         return USER;

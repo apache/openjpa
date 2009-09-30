@@ -866,17 +866,19 @@ public abstract class AbstractBrokerFactory
     protected void initWriteBehindCallback() { 
         WriteBehindCache cache = _conf.getWriteBehindCacheManagerInstance().getSystemWriteBehindCache();
         if (cache != null) {
-    
-            if (_conf.getDataCacheManagerInstance().getSystemDataCache() == null ||
-                _conf.getWriteBehindCallbackInstance() == null ) {
-                //
-                // Missing one or more of the following required WriteBehind configuration 
-                // parameters:
-                //
-                //   - openjpa.DataCache
-                //   - openjpa.WriteBehindCallback
-                //
-                throw new WriteBehindConfigurationException();
+            // Verify we are not missing one or more of the following required
+            // WriteBehind configuration parameters:
+            //   - openjpa.DataCache
+            //   - openjpa.WriteBehindCallback
+            if (_conf.getDataCacheManagerInstance().getSystemDataCache() == null) {
+                throw new WriteBehindConfigurationException(
+                    _loc.get("writebehind-cfg-err",
+                    "openjpa.DataCache").getMessage());
+            }
+            if (_conf.getWriteBehindCallbackInstance() == null ) {
+                throw new WriteBehindConfigurationException(
+                    _loc.get("writebehind-cfg-err",
+                    "openjpa.WriteBehindCallback").getMessage());
             }
     
             Broker broker =
@@ -899,3 +901,4 @@ public abstract class AbstractBrokerFactory
         }
     }
 }
+

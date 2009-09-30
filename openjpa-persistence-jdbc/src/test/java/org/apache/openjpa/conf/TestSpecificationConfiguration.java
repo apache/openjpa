@@ -90,9 +90,13 @@ public class TestSpecificationConfiguration extends SingleEMFTestCase {
                 "openjpa.Log", "DefaultLevel=WARN");
             fail("Expected to fail with higher Spec version");
         } catch (IllegalArgumentException ex) {
-            // good
+            // prior behavior - spec api returned runtime exceptions as-is
             emf.getConfiguration().getLog("Tests").trace(
                 "Caught expected IllegalArgumentException = " + ex);
+        } catch (PersistenceException pe) {
+            // new 2.0 behavior - Geronimo spec api wraps exceptions and tries all providers
+            emf.getConfiguration().getLog("Tests").trace(
+                "Caught expected PersistenceException = " + pe);
         }
     }
     

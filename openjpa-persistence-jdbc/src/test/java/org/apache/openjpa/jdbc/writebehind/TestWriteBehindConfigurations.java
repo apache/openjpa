@@ -22,11 +22,12 @@ import java.util.HashMap;
 import java.util.Map;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.Persistence;
+import javax.persistence.PersistenceException;
 
 import junit.framework.TestCase;
 
 import org.apache.openjpa.persistence.ArgumentException;
-import org.apache.openjpa.persistence.PersistenceException;
+//import org.apache.openjpa.persistence.PersistenceException;
 import org.apache.openjpa.writebehind.WriteBehindConfigurationException;
 
 
@@ -50,19 +51,14 @@ public class TestWriteBehindConfigurations extends TestCase {
         try {
             emf01 = Persistence.createEntityManagerFactory("empty-pu", map);
             fail("testInvalidConfiguration01: Exception expected but not thrown");
-        }
-        catch (ArgumentException ae) {
-        }
-        catch (PersistenceException pe) {
-        }
-        catch (WriteBehindConfigurationException wbce) {
-        }
-        catch (Exception e) {
+        } catch (ArgumentException ae) {
+            // prior behavior - spec api returned runtime exceptions as-is
+        } catch (PersistenceException pe) {
+            // new 2.0 behavior - Geronimo spec api wraps exceptions and tries all providers
+        } catch (Exception e) {
             fail("testInvalidConfiguration01: Caught unexpected exception: " + e);
             e.printStackTrace();
-        }
-        finally {
-            assertNull(emf01);
+        } finally {
             if (emf01 != null) {
                 emf01.close();
             }
@@ -83,19 +79,14 @@ public class TestWriteBehindConfigurations extends TestCase {
         try {
             emf02 = Persistence.createEntityManagerFactory("empty-pu", map);
             fail("testInvalidConfiguration02: Exception expected but not thrown");
-        }
-        catch (ArgumentException ae) {
-        }
-        catch (PersistenceException pe) {
-        }
-        catch (WriteBehindConfigurationException wbce) {
-        }
-        catch (Exception e) {
+        } catch (ArgumentException ae) {
+            // prior behavior - spec api returned runtime exceptions as-is
+        } catch (PersistenceException pe) {
+            // new 2.0 behavior - Geronimo spec api wraps exceptions and tries all providers
+        } catch (Exception e) {
             fail("testInvalidConfiguration02: Caught unexpected exception: " + e);
             e.printStackTrace();
-        }
-        finally {
-            assertNull(emf02);
+        } finally {
             if (emf02 != null) {
                 emf02.close();
             }
@@ -116,19 +107,14 @@ public class TestWriteBehindConfigurations extends TestCase {
         try {
             emf03 = Persistence.createEntityManagerFactory("empty-pu", map);
             fail("testInvalidConfiguration03: Exception not thrown");
-        }
-        catch (ArgumentException ae) {
-        }
-        catch (PersistenceException pe) {
-        }
-        catch (WriteBehindConfigurationException wbce) {
-        }
-        catch (Exception e) {
+        } catch (ArgumentException ae) {
+            // prior behavior - spec api returned runtime exceptions as-is
+        } catch (PersistenceException pe) {
+            // new 2.0 behavior - Geronimo spec api wraps exceptions and tries all providers
+        } catch (Exception e) {
             fail("testInvalidConfiguration03: Caught unexpected exception: " + e);
             e.printStackTrace();
-        }
-        finally {
-            assertNull(emf03);
+        } finally {
             if (emf03 != null) {
                 emf03.close();
             }
@@ -148,19 +134,14 @@ public class TestWriteBehindConfigurations extends TestCase {
         try {
             emf04 = Persistence.createEntityManagerFactory("empty-pu", map);
             fail("testInvalidConfiguration04: Exception not thrown");
-        }
-        catch (ArgumentException ae) {
-        }
-        catch (PersistenceException pe) {
-        }
-        catch (WriteBehindConfigurationException wbce) {
-        }
-        catch (Exception e) {
+        } catch (ArgumentException ae) {
+            // prior behavior - spec api returned runtime exceptions as-is
+        } catch (PersistenceException pe) {
+            // new 2.0 behavior - Geronimo spec api wraps exceptions and tries all providers
+        } catch (Exception e) {
             fail("testInvalidConfiguration04: Caught unexpected exception: " + e);
             e.printStackTrace();
-        }
-        finally {
-            assertNull(emf04);
+        } finally {
             if (emf04 != null) {
                 emf04.close();
             }
@@ -181,12 +162,10 @@ public class TestWriteBehindConfigurations extends TestCase {
         map.put( "openjpa.RuntimeUnenhancedClasses", "unsupported" );
         try {
             emf05 = Persistence.createEntityManagerFactory("empty-pu", map);
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             fail("testValidConfiguration01: Caught unexpected exception: " + e);
             e.printStackTrace();
-        }
-        finally {
+        } finally {
             assertNotNull(emf05);
             if (emf05 != null) {
                 emf05.close();
@@ -208,12 +187,10 @@ public class TestWriteBehindConfigurations extends TestCase {
         map.put( "openjpa.RuntimeUnenhancedClasses", "supported" );
         try {
             emf06 = Persistence.createEntityManagerFactory("empty-pu", map);
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             fail("testValidConfiguration02: Caught unexpected exception: " + e);
             e.printStackTrace();
-        }
-        finally {
+        } finally {
             assertNotNull(emf06);
             if (emf06 != null) {
                 emf06.close();
@@ -235,12 +212,10 @@ public class TestWriteBehindConfigurations extends TestCase {
         map.put( "openjpa.RuntimeUnenhancedClasses", "warn" );
         try {
             emf07 = Persistence.createEntityManagerFactory("empty-pu", map);
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             fail("testValidConfiguration03: Caught unexpected exception: " + e);
             e.printStackTrace();
-        }                                   
-        finally {
+        } finally {
             assertNotNull(emf07);
             if (emf07 != null) {
                 emf07.close();
