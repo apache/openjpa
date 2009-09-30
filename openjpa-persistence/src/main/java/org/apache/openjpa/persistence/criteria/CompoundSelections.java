@@ -103,6 +103,17 @@ class CompoundSelections {
             }
             return buffer;
         }
+        
+        @Override
+        public StringBuilder asProjection(AliasContext q) {
+            StringBuilder buffer = new StringBuilder();
+            for (int i = 0; i < _args.size(); i++) {
+                buffer.append((((CriteriaExpression)_args.get(i)).asProjection(q)));
+                if (i+1 != _args.size())
+                    buffer.append(", ");
+            }
+            return buffer;
+        }
     }
     
     /**

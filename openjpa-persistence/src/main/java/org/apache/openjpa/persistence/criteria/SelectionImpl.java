@@ -139,7 +139,7 @@ abstract class SelectionImpl<X> implements Selection<X>, CriteriaExpression {
         throw new IllegalStateException(this.getClass().getSimpleName() + " can not be rendered as variable");
     }
     
-    public final StringBuilder asProjection(AliasContext q) {
+    public StringBuilder asProjection(AliasContext q) {
         String as = (isAutoAliased() ? "" : " AS " + getAlias());
         return asValue(q).append(as);
     }

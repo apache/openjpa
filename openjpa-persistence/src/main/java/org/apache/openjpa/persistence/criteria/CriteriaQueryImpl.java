@@ -681,7 +681,7 @@ class CriteriaQueryImpl<T> implements OpenJPACriteriaQuery<T>, AliasContext {
     private void renderJoins(StringBuilder buffer, Collection<Join<?,?>> joins) {
         if (joins == null) return;
         for (Join j : joins) {
-            buffer.append(((ExpressionImpl<?>)j).asVariable(this)).append(" ");
+            buffer.append(((CriteriaExpression)j).asVariable(this)).append(" ");
             renderJoins(buffer, j.getJoins());
             renderFetches(buffer, j.getFetches());
         }

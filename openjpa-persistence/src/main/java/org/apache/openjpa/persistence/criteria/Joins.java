@@ -249,14 +249,7 @@ abstract class Joins {
         
         @Override
         public StringBuilder asVariable(AliasContext q) {
-            String varName = "?";
-            Value var = q.getRegisteredVariable(this);
-            if (var == null) {
-                varName = ""+_member.fmd.getName().charAt(0);
-            } else {
-                varName = var.getName();
-            }
-            return new StringBuilder(" " + joinType + " JOIN ").append(super.asVariable(q)).append(" " + varName);
+            return new StringBuilder(" " + joinType + " JOIN ").append(super.asVariable(q));
         }
     }
     
@@ -432,6 +425,11 @@ abstract class Joins {
                 return var;
             return getVariableForCorrPath((SubqueryImpl<?>)parent, path);
         }
+        
+        @Override
+        public StringBuilder asVariable(AliasContext q) {
+            return new StringBuilder(" " + joinType + " JOIN ").append(super.asVariable(q));
+        }
     }
     
     /**
@@ -441,7 +439,7 @@ abstract class Joins {
      * @param <E> the type of the the collection attribute elements
      */
     static class Collection<Z,E> extends AbstractCollection<Z,java.util.Collection<E>,E> 
-        implements CollectionJoin<Z,E>{
+        implements CollectionJoin<Z,E> {
         public Collection(FromImpl<?,Z> parent, Members.CollectionAttributeImpl<? super Z, E> member, JoinType jt) {
             super(parent, member, jt);
         }
