@@ -494,7 +494,7 @@
             <dependency>
                 <groupId>org.apache.geronimo.specs</groupId>
                 <artifactId>geronimo-jpa_2.0_spec</artifactId>
-                <version>1.0-PFD2-SNAPSHOT</version>
+                <version>1.0-PFD2</version>
             </dependency>
             <dependency>
                 <groupId>org.apache.geronimo.specs</groupId>
@@ -509,7 +509,7 @@
             <dependency>
                 <groupId>org.apache.geronimo.specs</groupId>
                 <artifactId>geronimo-validation_1.0_spec</artifactId>
-                <version>1.0-CR5-SNAPSHOT</version>
+                <version>1.0-CR5</version>
             </dependency>            
             <dependency>
                 <groupId>org.apache.derby</groupId>
@@ -827,7 +827,6 @@
         </plugins>
     </reporting>
 
-
     <distributionManagement>
       <repository>
         <id>local-repository</id>
@@ -843,9 +842,25 @@
         <url>scp://people.apache.org/home/${user.name}/public_html/openjpa/${pom.version}/staging-site</url>
       </site>
     </distributionManagement>
+
     <scm>
         <connection>scm:svn:http://svn.apache.org/repos/asf/openjpa/trunk</connection>
         <developerConnection>scm:svn:https://svn.apache.org/repos/asf/openjpa/trunk</developerConnection>
         <url>http://svn.apache.org/repos/asf/openjpa/trunk</url>
     </scm>
+
+    <repositories>
+        <repository>
+            <id>geronimo-staging</id>
+            <url>https://repository.apache.org/content/repositories/geronimo-staging-015/</url>
+            <releases>
+                <checksumPolicy>fail</checksumPolicy>
+                <enabled>true</enabled>
+                <updatePolicy>always</updatePolicy>
+            </releases>
+            <snapshots>
+                <enabled>false</enabled>
+            </snapshots>
+        </repository>
+    </repositories>
 </project>
