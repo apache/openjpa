@@ -688,6 +688,10 @@ public class ConfigurationImpl
     
     /**
      * Gets all known property keys.
+     * The keys are harvested from the property names (including the equivalent names) of the registered values.
+     * A key may be prefixed if the corresponding property name was without a prefix.
+     * @see #fixPrefix(String)
+     * The Values that are {@linkplain Value#makePrivate() marked private} are filtered out. 
      */
     public Set<String> getPropertyKeys() {
         if (_supportedKeys != null) 
@@ -695,6 +699,8 @@ public class ConfigurationImpl
         
         _supportedKeys = new TreeSet<String>();
         for (Value val : _vals) {
+            if (val.isPrivate())
+                continue;
             List<String> keys = val.getPropertyKeys();
             for (String key : keys) {
                 _supportedKeys.add(fixPrefix(key));
@@ -740,8 +746,8 @@ public class ConfigurationImpl
                 key = "openjpa." + val.getProperty();
             }
         }
-        Object external = val.isVisible() ? val instanceof ObjectValue 
-                ? val.getString() : val.get() : Value.INVISIBLE;
+        Object external = val.isHidden() ? Value.INVISIBLE : 
+            val instanceof ObjectValue ? val.getString() : val.get();
         map.put(key, external);
     }
 

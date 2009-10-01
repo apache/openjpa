@@ -352,7 +352,7 @@ public class OpenJPAConfigurationImpl
         
         connectionPassword = addString("ConnectionPassword");
         connectionPassword.addEquivalentKey("javax.persistence.jdbc.password");
-        connectionPassword.setVisible(false);
+        connectionPassword.hide();
         
         encryptionProvider = addPlugin("EncryptionProvider",true);
 
@@ -367,7 +367,8 @@ public class OpenJPAConfigurationImpl
         connectionFactoryProperties = addString("ConnectionFactoryProperties");
         connection2UserName = addString("Connection2UserName");
         connection2Password = addString("Connection2Password");
-        connection2Password.setVisible(false);
+        connection2Password.hide();
+        
         connection2URL = addString("Connection2URL");
         connection2DriverName = addString("Connection2DriverName");
         connection2Properties = addString("Connection2Properties");
@@ -577,7 +578,8 @@ public class OpenJPAConfigurationImpl
         validator = addObject("Validator");
         validator.setInstantiatingGetter("getValidatorInstance");
         validator.setDynamic(true);
-
+        validator.makePrivate();
+        
         lifecycleEventManager = addPlugin("LifecycleEventManager", true);
         aliases = new String[] {
             "default", LifecycleEventManager.class.getName(),
