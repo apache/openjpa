@@ -158,7 +158,8 @@ public interface Configuration
      * Add the given value to the set of configuration properties. This
      * method replaces any existing value under the same property.
      */
-    public Value addValue(Value val);
+    public <T extends Value> T addValue(T val);
+    //public Value addValue(Value val);
 
     /**
      * Remove the given value from the set of configuration properties.

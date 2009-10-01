@@ -274,32 +274,58 @@ public class MetaDataRepository implements PCRegistry.RegisterClassListener, Con
             _sourceMode &= ~mode;
     }
 
+    /**
+     * Sets whether this repository will load all known persistent classes at initialization.
+     * Defaults to false.
+     */
+    public boolean getPreload() {
+        return _preload;
+    }
+    
+    /**
+     * Sets whether this repository will load all known persistent classes at initialization.
+     * Defaults to false.
+     */
     public void setPreload(boolean l) {
         _preload = l;
     }
 
+    /**
+     * Sets whether this repository will use unguarded access. Unguarded access
+     * can be safe if all metadata has been loaded at initialization.
+     */
     public void setNoLock(boolean l) {
         _noLock = l;
     }
+    
+    /**
+     * Affirms whether this repository will use unguarded access. Unguarded access
+     * can be safe if all metadata has been loaded at initialization.
+     */
+    public boolean getNoLock() {
+        return _noLock;
+    }
 
     /**
+     * Loads all the known persistent classes if {@linkplain #setPreload(boolean) early loading} 
+     * initialization has been set. The configuration must enlist all classes.
+     * 
+     * <br>
+     * If {@linkplain #setNoLock(boolean) no lock} has been set then uses unguarded access to
+     * all internal data container structures.
      * If the openjpa.MetaDataRepository plugin value preload=false is set, this method will noop.
-     * If preload=true this method gets the list of persistent classes and calls to the
-     * MetaDataFactory to load ALL metadata.
      * <p>
-     * 
-     * If noLock=true, calling this method will also remove ALL locking from this class.
-     * <p>
-     * 
      * NOTE : This method is not thread safe and should ONLY be called by the AbstractBrokerFactory
      * constructor.
+     * 
+     * @see #getPersistentTypeNames(boolean, ClassLoader)
      */
     public void preload() {
-        if (_preload == false) {
+        if (!_preload) {
             return;
         }
-        if (_log.isTraceEnabled()) {
-            _log.trace("MetaDataRepository preload=" + _preload + ",noLock=" + _noLock);
+        if (_log.isInfoEnabled()) {
+            _log.info(_loc.get(_noLock ? "repos-preload" : "repos-preload-nolock"));
         }
 
         // Remove locking and use unsynchronized maps.
@@ -319,15 +345,14 @@ public class MetaDataRepository implements PCRegistry.RegisterClassListener, Con
         MultiClassLoader multi = AccessController.doPrivileged(J2DoPrivHelper.newMultiClassLoaderAction());
         multi.addClassLoader(AccessController.doPrivileged(J2DoPrivHelper.getContextClassLoaderAction()));
         multi.addClassLoader(AccessController.doPrivileged(J2DoPrivHelper
-            .getClassLoaderAction(MetaDataRepository.class)));
+             .getClassLoaderAction(MetaDataRepository.class)));
 
         Set<String> classes = getPersistentTypeNames(false, multi);
         if (classes == null || classes.size() == 0) {
-            throw new RuntimeException("No persistent classes listed when trying to preload the MetaDataRepository");
+            throw new MetaDataException(_loc.get("repos-preload-none"));
         }
-        if (_log.isTraceEnabled() == true) {
-            _log.trace(MetaDataRepository.class.getName() 
-                + " preloading the following classes : " + classes.toString());
+        if (_log.isTraceEnabled()) {
+            _log.trace(_loc.get("repos-preloading", this.getClass().getName(), classes.toString()));
         }
 
         for (String c : classes) {
@@ -335,12 +360,9 @@ public class MetaDataRepository implements PCRegistry.RegisterClassListener, Con
                 Class<?> cls = AccessController.doPrivileged((J2DoPrivHelper.getForNameAction(c, true, multi)));
                 _factory.load(cls, MODE_ALL, multi);
             } catch (PrivilegedActionException pae) {
-                // Unexpected!
-                if (_log.isTraceEnabled() == true) {
-                    _log.trace(MetaDataRepository.class.getName() + " encountered an unexpected exception ", pae);
-                }
+                throw new MetaDataException(_loc.get("repos-preload-error"), pae);
             }
-        }// end for
+        }
     }
 
     protected void lock() {

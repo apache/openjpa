@@ -994,7 +994,7 @@ public class ConfigurationImpl
         return true;
     }
 
-    public Value addValue(Value val) {
+    public <T extends Value> T addValue(T val) {
         _vals.add(val);
         val.addListener(this);
         return val;

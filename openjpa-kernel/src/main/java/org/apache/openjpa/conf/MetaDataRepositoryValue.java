@@ -35,9 +35,7 @@ public class MetaDataRepositoryValue
     extends PluginValue {
 
     private static final String KEY = "MetaDataRepository";
-    private static final String PRELOAD_STR = "Preload=true";
-    private static final String NOLOCK_STR = "NoLock=true";
-      
+
     public MetaDataRepositoryValue() {
         super(KEY, false);
         String[] aliases = new String[] {
@@ -49,25 +47,6 @@ public class MetaDataRepositoryValue
         setString(aliases[0]);
     }
 
-    public boolean getPreload() {
-        String p = getProperties();
-        if (p != null && p.indexOf(PRELOAD_STR) >= 0) {
-            return true;
-        } else if (getNoLock() == true) {
-            // No locking implies that we need to also preload.
-            // Return true regardless of the value of the
-            // preload flag.
-            return true;
-        }
-        return false;
-    }
-    public boolean getNoLock(){
-        String p = getProperties();
-        if (p != null && p.indexOf(NOLOCK_STR) >= 0) {
-            return true;
-        }
-        return false;
-    }
     public Object instantiate(Class type, Configuration c, boolean fatal) {
         MetaDataRepository repos = null;
         OpenJPAConfiguration conf = (OpenJPAConfiguration) c;

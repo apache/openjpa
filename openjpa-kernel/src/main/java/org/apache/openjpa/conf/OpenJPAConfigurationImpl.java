@@ -333,7 +333,7 @@ public class OpenJPAConfigurationImpl
         mapping = addString("Mapping");
         metaFactoryPlugin = addPlugin("MetaDataFactory", false);
 
-        metaRepositoryPlugin = (MetaDataRepositoryValue)addValue(new MetaDataRepositoryValue());
+        metaRepositoryPlugin = addValue(new MetaDataRepositoryValue());
 
         connectionFactory = addObject("ConnectionFactory");
         connectionFactory.setInstantiatingGetter("getConnectionFactory");

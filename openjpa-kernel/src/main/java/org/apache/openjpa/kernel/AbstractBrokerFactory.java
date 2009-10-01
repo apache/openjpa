@@ -60,6 +60,7 @@ import org.apache.openjpa.meta.MetaDataModes;
 import org.apache.openjpa.meta.MetaDataRepository;
 import org.apache.openjpa.util.GeneralException;
 import org.apache.openjpa.util.InvalidStateException;
+import org.apache.openjpa.util.MetaDataException;
 import org.apache.openjpa.util.OpenJPAException;
 import org.apache.openjpa.util.UserException;
 import org.apache.openjpa.writebehind.WriteBehindCache;
@@ -163,21 +164,24 @@ public abstract class AbstractBrokerFactory
                 _conf.getConnectionRetainModeConstant(), false).close(); 
         }
 
-        // This logic needs to happen here for a reason! The preloading of the MDR
-        // can not happen during the configuration of the MDR because when running
-        // in a container environment we need to be able to get an uninitialized
-        // MDR to pass to the PCClassFileTransformer. If we preload before registering
+        // This eager metadata loading is invoked at construction. 
+        // It can not happen during the MetaDataRepository configuration because 
+        // within a container environment an uninitialized repository must be passed
+        // to the PCClassFileTransformer. If we attempt to load before registering
         // the class transformer, we miss the class being defined by the JVM and in turn
         // we fail to enhance our entities.
-        OpenJPAConfigurationImpl impl = (OpenJPAConfigurationImpl) config;
-        MetaDataRepositoryValue m = impl.metaRepositoryPlugin;
-        if (m.getPreload() == true) {
-            // Obtain a reference to the MetaDataRepository and trigger the preload
+        try {
             MetaDataRepository mdr = config.getMetaDataRepositoryInstance();
             mdr.preload();
+        } catch (MetaDataException e) {
+            // recognize metadata related error if using early initialization
+            throw e;
+        } catch (Throwable t) {
+            // swallow other errors because merely trying to obtain a repository 
+            // may trigger a database connection 
+            _conf.getConfigurationLog().error(_loc.get("factory-init-error",t));
         }
-        
-        initWriteBehindCallback();
+        initWriteBehindCallback();        
     }
 
     /**
