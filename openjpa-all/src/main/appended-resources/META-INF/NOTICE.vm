@@ -1,27 +1,26 @@
-   This is an implementation of an early-draft specification developed under the   Java Community Process (JCP) and is made available for testing and evaluation   purposes only. The code is not compatible with any specification of the JCP.
 
+This is an implementation of an early-draft specification developed under the Java Community Process (JCP). The code is untested and presumed not to be a compatible implementation of the JSR-317 Java Persistence API, Version 2.0 specification.  We encourage you to migrate to an implementation of the JSR-317 Java Persistence API, Version 2.0 specification that has been tested and verified to be compatible as soon as such an implementation is available, and we encourage you to retain this notice in any implementation of JSR-317 Java Persistence API, Version 2.0 specification that you distribute.
 
-   openjpa-all includes software developed by the:
-     Apache Commons Collections project
-     Apache Commons Lang project
-     Apache Commons Logging project
-     Apache Commons Pool project
-     Apache Geronimo project (JMS 1.1, JTA 1.1, JPA 2.0 and Bean Validation 1.0 spec apis)
-     SERP project
+openjpa-all includes software developed by the:
+    Apache Commons Collections project
+    Apache Commons Lang project
+    Apache Commons Logging project
+    Apache Commons Pool project
+    Apache Geronimo project (JMS 1.1, JTA 1.1 and JPA 2.0 spec apis)
+    SERP project
 
-   OpenJPA includes software developed by the SERP project
-     Copyright (c) 2002-2006, A. Abram White. All rights reserved.
+OpenJPA includes software developed by the SERP project
+Copyright (c) 2002-2006, A. Abram White. All rights reserved.
 
-   OpenJPA includes the persistence and orm schemas from the JPA specifications.
-     Copyright 2005-2007 Sun Microsystems, Inc. All rights reserved.
-     OpenJPA elects to include this software in this distribution under the
-       CDDL license.
-     You can obtain a copy of the License at:
-       https://glassfish.dev.java.net/public/CDDL+GPL.html
-     The source code is available at:
-       https://glassfish.dev.java.net/source/browse/glassfish/
+OpenJPA includes the persistence and orm schemas from the JPA specifications.
+Copyright 2005-2007 Sun Microsystems, Inc. All rights reserved.
+OpenJPA elects to include this software in this distribution under the
+CDDL license.  You can obtain a copy of the License at:
+    https://glassfish.dev.java.net/public/CDDL+GPL.html
+The source code is available at:
+    https://glassfish.dev.java.net/source/browse/glassfish/
 
-   OpenJPA includes software written by Miroslav Nachev
+OpenJPA includes software written by Miroslav Nachev
 
-   OpenJPA uses test code written by Charles Tillman.
+OpenJPA uses test code written by Charles Tillman.
 

@@ -34,7 +34,7 @@
     <artifactId>openjpa-parent</artifactId>
     <packaging>pom</packaging>
     <name>OpenJPA Parent POM</name>
-    <description>OpenJPA</description>
+    <description>Apache OpenJPA implementation of JSR-317 JPA 2.0</description>
 
     <properties>
         <openjpa.version>${pom.version}</openjpa.version>
@@ -852,7 +852,7 @@
     <repositories>
         <repository>
             <id>geronimo-staging</id>
-            <url>https://repository.apache.org/content/repositories/geronimo-staging-015/</url>
+            <url>https://repository.apache.org/content/repositories/geronimo-staging-017/</url>
             <releases>
                 <checksumPolicy>fail</checksumPolicy>
                 <enabled>true</enabled>
