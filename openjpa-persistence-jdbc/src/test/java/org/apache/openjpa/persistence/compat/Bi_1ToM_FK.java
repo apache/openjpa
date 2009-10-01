@@ -40,7 +40,6 @@ public class Bi_1ToM_FK {
     private String name;
 
     @OneToMany(mappedBy="bi1mfk", fetch=FetchType.EAGER)
-    //@JoinColumn(name="Bi1MFK_ColC") // should comment out
     private List<EntityC_B1MFK> entityCs = null;
     
     public long getId() { 

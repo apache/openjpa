@@ -26,7 +26,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.apache.openjpa.conf.OpenJPAConfiguration;
 import org.apache.openjpa.enhance.PersistenceCapable;
 import org.apache.openjpa.enhance.ReflectingPersistenceCapable;
 import org.apache.openjpa.jdbc.kernel.JDBCFetchConfiguration;
@@ -34,7 +33,6 @@ import org.apache.openjpa.jdbc.kernel.JDBCStore;
 import org.apache.openjpa.jdbc.meta.ClassMapping;
 import org.apache.openjpa.jdbc.meta.Embeddable;
 import org.apache.openjpa.jdbc.meta.FieldMapping;
-import org.apache.openjpa.jdbc.meta.FieldMappingInfo;
 import org.apache.openjpa.jdbc.meta.FieldStrategy;
 import org.apache.openjpa.jdbc.meta.Joinable;
 import org.apache.openjpa.jdbc.meta.MappingInfo;
@@ -90,8 +88,9 @@ public class RelationFieldStrategy
 
         field.getKeyMapping().getValueInfo().assertNoSchemaComponents
             (field.getKey(), !adapt);
-        field.getElementMapping().getValueInfo().assertNoSchemaComponents
-            (field.getElement(), !adapt);
+        if (!field.isBiMTo1JT())
+            field.getElementMapping().getValueInfo().assertNoSchemaComponents
+                (field.getElement(), !adapt);
         boolean criteria = field.getValueInfo().getUseClassCriteria();
 
         // check for named inverse
@@ -135,9 +134,7 @@ public class RelationFieldStrategy
 
             field.setUseClassCriteria(criteria);
             return;
-        } else { // this could be the owner in a bi-directional relation
-            getBiOneToManyInfo();
-        }
+        } 
 
         // this is necessary to support openjpa 3 mappings, which didn't
         // differentiate between secondary table joins and relations built
@@ -155,13 +152,14 @@ public class RelationFieldStrategy
             field.getMappingInfo().setTableName(null);
             field.getMappingInfo().setColumns(null);
         }
-
-        field.mapJoin(adapt, false);
+        
+        if (!field.isBiMTo1JT())
+            field.mapJoin(adapt, false);
         if (field.getTypeMapping().isMapped()) {
             if (field.getMappedByIdValue() != null) 
                 setMappedByIdColumns();            
              
-            if (getFieldIndexBi1ToMJT() == -1) {
+            if (!field.isBiMTo1JT()) {
                 ForeignKey fk = vinfo.getTypeJoin(field, field.getName(), true,
                     adapt);
                 field.setForeignKey(fk);
@@ -272,7 +270,7 @@ public class RelationFieldStrategy
             updateInverse(sm, rel, store, rm);
         else {
             Row row = field.getRow(sm, store, rm, Row.ACTION_INSERT);
-            if (row != null && getFieldIndexBi1ToMJT() == -1) {
+            if (row != null && !field.isBiMTo1JT()) {
                 field.setForeignKey(row, rel);
                 // this is for bi-directional maps, the key and value of the 
                 // map are stored in the table of the mapped-by entity  
@@ -364,21 +362,22 @@ public class RelationFieldStrategy
                     field.isBidirectionalJoinTableMappingNonOwner()) ?
                     Row.ACTION_DELETE : Row.ACTION_UPDATE;
             Row row = field.getRow(sm, store, rm, action);
-            if (row != null && getFieldIndexBi1ToMJT() == -1) {
+            if (row != null && !field.isBiMTo1JT()) {
                 field.setForeignKey(row, rel);
                 // this is for bi-directional maps, the key and value of the 
                 // map are stored in the table of the mapped-by entity  
                 setMapKey(sm, rel, store, row);
             }
             
-            if (getFieldIndexBi1ToMJT() != -1) { // also need to update the join table
-                PersistenceCapable invPC = (PersistenceCapable)sm.fetchObject(getFieldIndexBi1ToMJT());
+            if (field.isBiMTo1JT()) { // also need to update the join table
+                PersistenceCapable invPC = (PersistenceCapable)sm.fetchObject(
+                    field.getBi_1ToM_JTField().getIndex());
                 Row secondaryRow = null;
                 if (invPC != null) {
-                    secondaryRow = rm.getSecondaryRow(getBi1ToMJoinFK().getTable(),
+                    secondaryRow = rm.getSecondaryRow(field.getBi1ToMJoinFK().getTable(),
                         Row.ACTION_INSERT);
-                    secondaryRow.setForeignKey(getBi1ToMElemFK(), null, sm);
-                    secondaryRow.setForeignKey(getBi1ToMJoinFK(), null, 
+                    secondaryRow.setForeignKey(field.getBi1ToMElemFK(), null, sm);
+                    secondaryRow.setForeignKey(field.getBi1ToMJoinFK(), null, 
                         RelationStrategies.getStateManager(invPC,
                         store.getContext()));
                     rm.flushSecondaryRow(secondaryRow);
@@ -556,7 +555,7 @@ public class RelationFieldStrategy
      */
     private void selectEagerParallel(Select sel, ClassMapping cls,
         JDBCStore store, JDBCFetchConfiguration fetch, int eagerMode) {
-        if (getFieldIndexBi1ToMJT() != -1)
+        if (field.isBiMTo1JT())
             return;
         sel.selectPrimaryKey(field.getDefiningMapping());
         // set a variable name that does not conflict with any in the query;
@@ -571,7 +570,7 @@ public class RelationFieldStrategy
 
     public void selectEagerJoin(Select sel, OpenJPAStateManager sm,
         JDBCStore store, JDBCFetchConfiguration fetch, int eagerMode) {
-        if (getFieldIndexBi1ToMJT() != -1) 
+        if (field.isBiMTo1JT()) 
             return;
 
         // limit the eager mode to single on recursive eager fetching b/c
@@ -676,7 +675,7 @@ public class RelationFieldStrategy
     public void loadEagerJoin(OpenJPAStateManager sm, JDBCStore store,
         JDBCFetchConfiguration fetch, Result res)
         throws SQLException {
-        if (getFieldIndexBi1ToMJT() != -1)
+        if (field.isBiMTo1JT())
             return;
         ClassMapping cls = field.getIndependentTypeMappings()[0];
 
@@ -725,7 +724,7 @@ public class RelationFieldStrategy
         // get the related object's oid
         ClassMapping relMapping = field.getTypeMapping();
         Object oid = null;
-        if (relMapping.isMapped() && getFieldIndexBi1ToMJT() == -1) { 
+        if (relMapping.isMapped() && !field.isBiMTo1JT()) { 
             oid = relMapping.getObjectId(store, res, field.getForeignKey(),
                     field.getPolymorphic() != ValueMapping.POLY_FALSE, null);
         } else {
@@ -791,16 +790,16 @@ public class RelationFieldStrategy
                     sel.whereForeignKey(field.getForeignKey(rels[idx]),
                         sm.getObjectId(), field.getDefiningMapping(), store);
                 else {
-                    if (getFieldIndexBi1ToMJT() == -1) {
+                    if (!field.isBiMTo1JT()) {
                         resJoins[idx] = sel.newJoins().joinRelation(field.getName(),
                             field.getForeignKey(rels[idx]), rels[idx],
                             field.getSelectSubclasses(), false, false);
                         field.wherePrimaryKey(sel, sm, store);
                     } else {
                         resJoins[idx] = sel.newJoins().joinRelation(null,
-                            getBi1ToMJoinFK(), rels[idx],
+                            field.getBi1ToMJoinFK(), rels[idx],
                             field.getSelectSubclasses(), false, false);
-                        sel.whereForeignKey(getBi1ToMElemFK(), sm.getObjectId(), 
+                        sel.whereForeignKey(field.getBi1ToMElemFK(), sm.getObjectId(), 
                             field.getDefiningMapping(), store);
                     }
                 }

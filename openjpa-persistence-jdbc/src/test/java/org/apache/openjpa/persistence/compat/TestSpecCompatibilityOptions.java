@@ -180,10 +180,10 @@ extends AbstractCachedEMFTestCase {
             em.getTransaction().begin();
             em.getTransaction().commit();
             assertSQLFragnments(sql, "CREATE TABLE Bi1MJT_C", "C_ID", "Bi1MJT_ID");
-            assertSQLFragnments(sql, "CREATE TABLE EntityC_B1MFK", "BI1MFK_ID");
+            assertSQLFragnments(sql, "CREATE TABLE C_B1MFK", "BI1MFK_ID");
             assertSQLFragnments(sql, "CREATE TABLE Uni1MJT_C", "Uni1MJT_ID", "C_ID");
-            assertSQLFragnments(sql, "CREATE TABLE EntityC_B1MFK", "BI1MFK_ID");
-            assertSQLFragnments(sql, "CREATE TABLE EntityC_U1MFK", "Uni1MFK_ID");
+            assertSQLFragnments(sql, "CREATE TABLE C_B1MFK", "BI1MFK_ID");
+            assertSQLFragnments(sql, "CREATE TABLE C_U1MFK", "Uni1MFK_ID");
             crudUni1MFK(em);
             crudUni1MJT(em);
             crudBi1MFK(em);
@@ -409,9 +409,9 @@ extends AbstractCachedEMFTestCase {
             // trigger table creation
             em.getTransaction().begin();
             em.getTransaction().commit();
-            assertSQLFragnments(sql, "CREATE TABLE EntityC_U1M_Map_FK", "Uni1MFK_ID", "KEY0");
+            assertSQLFragnments(sql, "CREATE TABLE C_U1M_Map_FK", "Uni1MFK_ID", "KEY0");
             assertSQLFragnments(sql, "CREATE TABLE Bi1M_Map_JT_C", "B_ID", "C_ID");
-            assertSQLFragnments(sql, "CREATE TABLE EntityC_U1M_Map_RelKey_FK", "Uni1MFK_ID");
+            assertSQLFragnments(sql, "CREATE TABLE C_U1M_Map_RelKey_FK", "Uni1MFK_ID");
             assertSQLFragnments(sql, "CREATE TABLE Bi1M_Map_RelKey_JT_C", "B_ID", "C_ID");
             crudUni1MMapFK(em);
             crudBi1MMapJT(em);

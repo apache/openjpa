@@ -18,11 +18,11 @@
  */
 package org.apache.openjpa.persistence.compat;
 
-import java.util.List;
 
 import javax.persistence.*;
 
 @Entity
+@Table(name="C_U1M_Map_FK")
 public class EntityC_U1M_Map_FK {
 
     @Id

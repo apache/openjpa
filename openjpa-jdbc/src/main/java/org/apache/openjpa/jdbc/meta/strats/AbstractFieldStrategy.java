@@ -20,14 +20,10 @@ package org.apache.openjpa.jdbc.meta.strats;
 
 import java.sql.SQLException;
 
-import org.apache.openjpa.conf.OpenJPAConfiguration;
 import org.apache.openjpa.jdbc.kernel.JDBCFetchConfiguration;
 import org.apache.openjpa.jdbc.kernel.JDBCStore;
-import org.apache.openjpa.jdbc.meta.ClassMapping;
 import org.apache.openjpa.jdbc.meta.FieldMapping;
-import org.apache.openjpa.jdbc.meta.FieldMappingInfo;
 import org.apache.openjpa.jdbc.meta.FieldStrategy;
-import org.apache.openjpa.jdbc.schema.ForeignKey;
 import org.apache.openjpa.jdbc.sql.Joins;
 import org.apache.openjpa.jdbc.sql.Result;
 import org.apache.openjpa.jdbc.sql.RowManager;
@@ -36,8 +32,6 @@ import org.apache.openjpa.jdbc.sql.Select;
 import org.apache.openjpa.jdbc.sql.SelectExecutor;
 import org.apache.openjpa.kernel.OpenJPAStateManager;
 import org.apache.openjpa.lib.util.Localizer;
-import org.apache.openjpa.meta.FieldMetaData;
-import org.apache.openjpa.meta.JavaTypes;
 import org.apache.openjpa.util.MetaDataException;
 
 /**
@@ -52,13 +46,6 @@ public abstract class AbstractFieldStrategy
     private static final Localizer _loc = Localizer.forPackage
         (AbstractFieldStrategy.class);
 
-    private Boolean _isNonDefaultMappingAllowed = null;
-    private Boolean _isBi1ToMJT = null;
-    private Boolean _isUni1ToMFK = null;
-    private Integer _bi1ToMJT = null; //index of the field
-    private ForeignKey _bi_1ToM_JoinFK = null;
-    private ForeignKey _bi_1ToM_ElemFK = null;
-    
     /**
      * The owning field mapping.
      */
@@ -193,108 +180,5 @@ public abstract class AbstractFieldStrategy
     public void where(OpenJPAStateManager sm, JDBCStore store, RowManager rm,
         Object prevValue)
         throws SQLException {
-    }
-    
-    private void isNonDefaultMapping() {
-        FieldMapping mapped = field.getMappedByMapping();
-        _isBi1ToMJT = false;
-        _isUni1ToMFK = false;
-        if (isNonDefaultMappingAllowed()) {
-            if (field.getAssociationType() == FieldMetaData.ONE_TO_MANY ) {
-                if (mapped == null) {
-                    if (hasJoinTable())
-                        return;
-                    else if (hasJoinColumn()) {
-                        _isUni1ToMFK = true;
-                        return;
-                    }
-                } else {
-                    if (hasJoinTable()) {
-                        _isBi1ToMJT = true;
-                        return;
-                    } else if (hasJoinColumn()){
-                        return;
-                    }
-                }
-            }
-        }
-    }
-    
-    private boolean hasJoinColumn() {
-        boolean hasJoinColumn = (field.getValueInfo().getColumns().size() > 0 ? true : false);
-        return hasJoinColumn;
-    }
-    
-    private boolean hasJoinTable() {
-        boolean hasJoinTable = (field.getMappingInfo().getTableName() != null ? true : false);
-        return hasJoinTable;
-    }
-
-    public boolean isBi1ToMJT() {
-        if (_isBi1ToMJT == null)
-            isNonDefaultMapping();
-        return _isBi1ToMJT;
-    }
-    
-    public boolean isUni1ToMFK() {
-        if (_isUni1ToMFK == null)
-            isNonDefaultMapping();
-        return _isUni1ToMFK;
-    }
-
-    protected boolean isNonDefaultMappingAllowed() {
-        if (_isNonDefaultMappingAllowed == null) {
-            OpenJPAConfiguration conf = field.getRepository().getConfiguration();
-            _isNonDefaultMappingAllowed = field.getRepository().
-                getMetaDataFactory().getDefaults().isNonDefaultMappingAllowed(conf);
-        }
-        return _isNonDefaultMappingAllowed;
-    }
-
-    protected void getBiOneToManyInfo() {
-        _bi1ToMJT = -1;
-        if (!isNonDefaultMappingAllowed())
-            return;
-        ClassMapping inverse = field.getValueMapping().getTypeMapping();
-        FieldMapping[] fmds = inverse.getFieldMappings();
-        for (int i = 0; i < fmds.length; i++) {
-            if (field == fmds[i].getMappedByMapping()) {
-                int typeCode = fmds[i].getDeclaredTypeCode(); 
-                if (typeCode == JavaTypes.ARRAY ||
-                        typeCode == JavaTypes.COLLECTION ||
-                        typeCode == JavaTypes.MAP) {
-                    // this is a bi-directional oneToMany relation with
-                    // @JoinTable annotation ==> join table strategy
-                    // ==> should not mapped in the owner's table
-                    FieldMappingInfo info = fmds[i].getMappingInfo();
-                    if (info.getTableName() != null)
-                        _bi1ToMJT = i;
-                    _bi_1ToM_ElemFK = fmds[i].getElementMapping().getForeignKey();
-                    _bi_1ToM_JoinFK = fmds[i].getJoinForeignKey();
-                }
-                break;
-            } 
-        }
-    }
-
-    protected int getFieldIndexBi1ToMJT() {
-        if (_bi1ToMJT == null) {
-            getBiOneToManyInfo();
-        }
-        return _bi1ToMJT;
-    }
-    
-    protected ForeignKey getBi1ToMElemFK() {
-        if (_bi1ToMJT == null) {
-            getBiOneToManyInfo();
-        }
-        return _bi_1ToM_ElemFK;
-    }
-    
-    protected ForeignKey getBi1ToMJoinFK() {
-        if (_bi1ToMJT == null) {
-            getBiOneToManyInfo();
-        }
-        return _bi_1ToM_JoinFK;
     }
 }

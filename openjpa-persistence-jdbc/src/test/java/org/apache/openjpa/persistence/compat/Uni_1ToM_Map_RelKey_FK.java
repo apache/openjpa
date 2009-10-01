@@ -42,7 +42,7 @@ public class Uni_1ToM_Map_RelKey_FK {
 
     private String name;
 
-    @OneToMany(/*cascade = CascadeType.ALL,*/ fetch=FetchType.EAGER)
+    @OneToMany(cascade = CascadeType.ALL, fetch=FetchType.EAGER)
     @JoinColumn(name="Uni1MFK_ID")
     private Map<EntityC, EntityC_U1M_Map_RelKey_FK> entityCs = null;
     

@@ -21,6 +21,7 @@ package org.apache.openjpa.persistence.compat;
 import javax.persistence.*;
 
 @Entity
+@Table(name="C_B1M_Map_RelKey_JT")
 public class EntityC_B1M_Map_RelKey_JT {
 
     @Id
@@ -30,6 +31,13 @@ public class EntityC_B1M_Map_RelKey_JT {
     private String name;
     
     @ManyToOne
+    @JoinTable(
+        name="Bi1M_Map_RelKey_JT_C",
+        joinColumns=
+            @JoinColumn(name="C_ID", referencedColumnName="ID"),
+        inverseJoinColumns=
+            @JoinColumn(name="B_ID", referencedColumnName="ID")
+    )
     Bi_1ToM_Map_RelKey_JT bi1mjt;
 
     public long getId() { 

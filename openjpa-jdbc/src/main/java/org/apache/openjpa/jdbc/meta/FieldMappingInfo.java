@@ -150,9 +150,7 @@ public class FieldMappingInfo
 
     public ForeignKey getJoinForeignKey (final FieldMapping field, Table table,
         boolean adapt) {
-        Strategy strat = field.getStrategy();
-        if (strat instanceof MapTableFieldStrategy && 
-            ((MapTableFieldStrategy)strat).isUni1ToMFK()) {
+        if (field.isUni1ToMFK()) {
             List cols = field.getElementMapping().getValueInfo().getColumns();
             return getJoin(field, table, adapt, cols);
         }

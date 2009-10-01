@@ -982,16 +982,10 @@ public class MappingRepository
      * field should use an inverse foreign key or an association table mapping.
      */
     private boolean useInverseKeyMapping(FieldMapping field) {
-        OpenJPAConfiguration conf = field.getRepository().getConfiguration();
-        boolean isNonDefaultMappingAllowed = field.getRepository().
-            getMetaDataFactory().getDefaults().isNonDefaultMappingAllowed(conf);
         FieldMapping mapped = field.getMappedByMapping();
         if (mapped != null) {
-            // JPA 2.0: non-default mapping: bi-/1-M/JoinTable ==> join table strategy
-            FieldMappingInfo info = field.getMappingInfo();
-            if (isNonDefaultMappingAllowed && 
-                field.getAssociationType() == FieldMetaData.ONE_TO_MANY && 
-                info.getTableName() != null) 
+            //bi-/M-1/JoinTable ==> join table strategy
+            if (isBiMTo1JT(field)) 
                 return false;
             if (mapped.getTypeCode() == JavaTypes.PC)
                 return true;
@@ -1011,13 +1005,100 @@ public class MappingRepository
             && !elem.getValueInfo().getColumns().isEmpty();
         
         // JPA 2.0: non-default mapping: uni-/1-M/JoinColumn ==> foreign key strategy
-        if (isNonDefaultMappingAllowed && 
-            field.getValueInfo().getColumns().size() > 0 &&
-            field.getAssociationType() == FieldMetaData.ONE_TO_MANY) {
-            field.getElementMapping().getValueInfo().setColumns(field.getValueInfo().getColumns());
+        if (isUni1ToMFK(field)) {
             return true;
         }
         return useInverseKeyMapping;
+    }
+        
+    public boolean isNonDefaultMappingAllowed() {
+        OpenJPAConfiguration conf = getConfiguration();
+        return getMetaDataFactory().getDefaults().isNonDefaultMappingAllowed(conf);
+    }
+    
+    public boolean isUni1ToMFK(FieldMapping field) {
+        FieldMapping mapped = field.getMappedByMapping();
+        if (isNonDefaultMappingAllowed()) {
+            if (field.getAssociationType() == FieldMetaData.ONE_TO_MANY ) {
+                if (mapped == null) {
+                    if (hasJoinTable(field))
+                        return false;
+                    else if (hasJoinColumn(field)) {
+                        field.getElementMapping().getValueInfo().setColumns(field.getValueInfo().getColumns());
+                        return true;
+                    }
+                } 
+            } 
+        }
+        return false;
+    }
+    
+    public boolean isBiMTo1JT(FieldMapping field) {
+        FieldMapping mapped = field.getMappedByMapping();
+        if (isNonDefaultMappingAllowed()) {
+            if (field.getAssociationType() == FieldMetaData.ONE_TO_MANY ) {
+                if (mapped != null && hasJoinTable(mapped))
+                    return true;
+            } else if (field.getAssociationType() == FieldMetaData.MANY_TO_ONE) {
+                if (getBi_1ToM_JoinTableField(field) != null)
+                    return true;
+            }
+        }
+        return false;
+    }
+
+    // return the inverse field of bidirectional many to one
+    // relation using join table strategy
+    public FieldMapping getBi_1ToM_JoinTableField(FieldMapping field) {
+        if (isNonDefaultMappingAllowed()) {
+            if (field.getAssociationType() == FieldMetaData.ONE_TO_MANY) {
+                FieldMapping mappedBy = field.getMappedByMapping();
+                if (mappedBy != null && hasJoinTable(mappedBy))
+                    return field;
+            } else if (field.getAssociationType() == FieldMetaData.MANY_TO_ONE) {
+                if (!hasJoinTable(field))
+                    return null;
+                ClassMapping inverse = field.getValueMapping().getTypeMapping();
+                FieldMapping[] fmds = inverse.getFieldMappings();
+                for (int i = 0; i < fmds.length; i++) {
+                    if (field == fmds[i].getMappedByMapping()) 
+                        return fmds[i];
+                }
+            }
+        }
+        return null;
+    }
+
+    // return the owning field of bidirectional one to many
+    // relation using join table strategy
+    public FieldMapping getBi_MTo1_JoinTableField(FieldMapping field) {
+        if (isNonDefaultMappingAllowed()) {
+            if (field.getAssociationType() == FieldMetaData.MANY_TO_ONE) {
+                if (!hasJoinTable(field))
+                    return null;
+                ClassMapping inverse = field.getValueMapping().getTypeMapping();
+                FieldMapping[] fmds = inverse.getFieldMappings();
+                for (int i = 0; i < fmds.length; i++) {
+                    if (field == fmds[i].getMappedByMapping()) 
+                        return field;
+                }
+             } else if (field.getAssociationType() == FieldMetaData.ONE_TO_MANY) {
+                FieldMapping mappedBy = field.getMappedByMapping();
+                if (mappedBy != null && hasJoinTable(mappedBy))
+                    return mappedBy;
+            }
+        }
+        return null;
+    }
+    
+    public boolean hasJoinColumn(FieldMapping field) {
+        boolean hasJoinColumn = (field.getValueInfo().getColumns().size() > 0 ? true : false);
+        return hasJoinColumn;
+    }
+    
+    public boolean hasJoinTable(FieldMapping field) {
+        boolean hasJoinTable = field.getMappingInfo().getTableName() != null ? true : false;
+        return hasJoinTable;
     }
     
     /**

@@ -30,6 +30,13 @@ public class EntityC_B1MJT {
     private String name;
     
     @ManyToOne
+    @JoinTable(
+            name="Bi1MJT_C",
+            joinColumns=
+              @JoinColumn(name="C_ID", referencedColumnName="CID"),
+              inverseJoinColumns=
+              @JoinColumn(name="Bi1MJT_ID", referencedColumnName="BID")
+    )
     Bi_1ToM_JT bi1mjt;
 
     public long getId() { 

@@ -22,6 +22,7 @@ package org.apache.openjpa.persistence.compat;
 import javax.persistence.*;
 
 @Entity
+@Table(name="C_U1MFK")
 public class EntityC_U1MFK {
 
     @Id

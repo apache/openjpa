@@ -23,6 +23,7 @@ import java.util.List;
 import javax.persistence.*;
 
 @Entity
+@Table(name="C_U1M_Map_RelKey_FK")
 public class EntityC_U1M_Map_RelKey_FK {
 
     @Id

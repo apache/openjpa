@@ -82,6 +82,13 @@ public class FieldMapping
     private Boolean _bidirectionalJoinTableOwner = null;
     private Boolean _bidirectionalJoinTableNonOwner = null;
     
+    private Boolean _bi_MTo1_JT = null;
+    private Boolean _uni_1ToM_FK = null;
+    private FieldMapping _bi_1ToM_JT_Field = null;
+    private FieldMapping _bi_MTo1_JT_Field = null;
+    private ForeignKey _bi_1ToM_Join_FK = null;
+    private ForeignKey _bi_1ToM_Elem_FK = null;
+        
     /**
      * Constructor.
      */
@@ -1243,5 +1250,64 @@ public class FieldMapping
         }
         return _bidirectionalJoinTableNonOwner.booleanValue();
     }
+    
+    public boolean isBiMTo1JT() {
+        if (_bi_MTo1_JT == null) {
+            _bi_MTo1_JT = getMappingRepository().isBiMTo1JT(this);
+        }
+        return _bi_MTo1_JT;
+    }
 
+    public FieldMapping getBi_1ToM_JTField() {
+        if (_bi_1ToM_JT_Field == null) {
+            _bi_1ToM_JT_Field = getMappingRepository().getBi_1ToM_JoinTableField(this);
+        }
+        return _bi_1ToM_JT_Field;
+    }
+    
+    public FieldMapping getBi_MTo1_JTField() {
+        if (_bi_MTo1_JT_Field == null) {
+            _bi_MTo1_JT_Field = getMappingRepository().getBi_MTo1_JoinTableField(this);
+        }
+        return _bi_MTo1_JT_Field;
+    }
+
+    public ForeignKey getBi1ToMJoinFK() {
+        if (_bi_1ToM_Join_FK == null) {
+            getBi_1ToM_JTField();
+            if (_bi_1ToM_JT_Field != null)
+                _bi_1ToM_Join_FK = _bi_1ToM_JT_Field.getJoinForeignKey();
+        }
+        return _bi_1ToM_Join_FK;
+    }
+    
+    public ForeignKey getBi1ToMElemFK() {
+        if (_bi_1ToM_Elem_FK == null) {
+            getBi_1ToM_JTField();
+            if (_bi_1ToM_JT_Field != null)
+                _bi_1ToM_Elem_FK = _bi_1ToM_JT_Field.getElementMapping().getForeignKey();
+        }
+        return _bi_1ToM_Elem_FK;
+    }
+    
+    public boolean isUni1ToMFK() {
+        if (_uni_1ToM_FK == null)
+            _uni_1ToM_FK = getMappingRepository().isUni1ToMFK(this);
+        return _uni_1ToM_FK;
+    }
+    
+    public void setBi1MJoinTableInfo() {
+        if (getAssociationType() == FieldMetaData.ONE_TO_MANY) {
+            FieldMapping mapped = getBi_MTo1_JTField();
+            if (mapped != null) {
+                FieldMappingInfo info = getMappingInfo();
+                FieldMappingInfo mappedInfo = mapped.getMappingInfo();
+                info.setTableName(mappedInfo.getTableName());
+                info.setColumns(mapped.getElementMapping().getValueInfo().getColumns());
+                getElementMapping().getValueInfo().setColumns(
+                    mappedInfo.getColumns());
+            }
+        }
+    }
+   
 }

@@ -40,7 +40,6 @@ import org.apache.openjpa.jdbc.sql.Select;
 import org.apache.openjpa.kernel.OpenJPAStateManager;
 import org.apache.openjpa.kernel.StoreContext;
 import org.apache.openjpa.lib.util.Localizer;
-import org.apache.openjpa.meta.FieldMetaData;
 import org.apache.openjpa.meta.JavaTypes;
 import org.apache.openjpa.util.ChangeTracker;
 import org.apache.openjpa.util.MetaDataException;
@@ -54,8 +53,6 @@ import org.apache.openjpa.util.Proxy;
  */
 public abstract class RelationToManyTableFieldStrategy
     extends StoreCollectionFieldStrategy {
-
-    boolean _isBiOneToManyJoinTable = false;
 
     private static final Localizer _loc = Localizer.forPackage
         (RelationToManyTableFieldStrategy.class);
@@ -113,16 +110,10 @@ public abstract class RelationToManyTableFieldStrategy
         OpenJPAConfiguration conf = field.getRepository().getConfiguration();
         boolean isNonDefaultMappingAllowed = field.getRepository().
             getMetaDataFactory().getDefaults().isNonDefaultMappingAllowed(conf);
-        // Bi-directional oneToMany relation with
-        // @JoinTable annotation ==> join table strategy
+        // Bi-directional oneToMany relation with join table strategy
         // ==> should not mapped in the owner's table
         if (mapped != null) {
-            _isBiOneToManyJoinTable = 
-                field.getAssociationType() == FieldMetaData.ONE_TO_MANY &&
-                field.getMappingInfo().getTableName() != null ? true : false;
-        
-            if (!isNonDefaultMappingAllowed || !_isBiOneToManyJoinTable) {
-                // JPA 2.0: Bi-/OneToMany/@JoinTable ==> join table strategy is allowed
+            if (!field.isBiMTo1JT()) {
                 if (mapped.getElement().getTypeCode() != JavaTypes.PC) {
                     throw new MetaDataException(_loc.get("not-inv-relation-coll",
                             field, mapped));
@@ -143,7 +134,9 @@ public abstract class RelationToManyTableFieldStrategy
             }
         }
 
-        if (mapped == null || (_isBiOneToManyJoinTable && isNonDefaultMappingAllowed)) {
+        if (mapped == null || field.isBiMTo1JT()) {
+            if (field.isBiMTo1JT())
+                field.setBi1MJoinTableInfo();
             field.mapJoin(adapt, true);
             if (elem.getTypeMapping().isMapped()) {
                 ForeignKey fk = vinfo.getTypeJoin(elem, "element", false, adapt);
@@ -164,7 +157,7 @@ public abstract class RelationToManyTableFieldStrategy
 
     public void insert(OpenJPAStateManager sm, JDBCStore store, RowManager rm)
         throws SQLException {
-        if (field.getMappedBy() == null || _isBiOneToManyJoinTable) 
+        if (field.getMappedBy() == null || field.isBiMTo1JT()) 
             insert(sm, rm, sm.fetchObject(field.getIndex()));
     }
 
@@ -195,7 +188,7 @@ public abstract class RelationToManyTableFieldStrategy
 
     public void update(OpenJPAStateManager sm, JDBCStore store, RowManager rm)
         throws SQLException {
-        if (field.getMappedBy() != null && !_isBiOneToManyJoinTable)
+        if (field.getMappedBy() != null && !field.isBiMTo1JT())
             return;
 
         Object obj = sm.fetchObject(field.getIndex());

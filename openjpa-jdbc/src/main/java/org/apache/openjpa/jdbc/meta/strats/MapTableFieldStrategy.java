@@ -22,7 +22,6 @@ import java.sql.SQLException;
 import java.util.Collection;
 import java.util.Map;
 
-import org.apache.openjpa.conf.OpenJPAConfiguration;
 import org.apache.openjpa.enhance.PersistenceCapable;
 import org.apache.openjpa.enhance.ReflectingPersistenceCapable;
 import org.apache.openjpa.jdbc.kernel.JDBCFetchConfiguration;
@@ -44,7 +43,6 @@ import org.apache.openjpa.kernel.OpenJPAStateManager;
 import org.apache.openjpa.kernel.StoreContext;
 import org.apache.openjpa.lib.log.Log;
 import org.apache.openjpa.lib.util.Localizer;
-import org.apache.openjpa.meta.FieldMetaData;
 import org.apache.openjpa.meta.JavaTypes;
 import org.apache.openjpa.util.MetaDataException;
 
@@ -113,10 +111,10 @@ public abstract class MapTableFieldStrategy
             throw new MetaDataException(_loc.get("mapped-by-key", field));
 
         // Non-default mapping Uni-/OneToMany/ForeignKey allows schema components
-        if (isNonDefaultMappingAllowed() && 
-            field.getAssociationType() == FieldMetaData.ONE_TO_MANY && 
-            field.getMappedByMapping() == null)  
-                return;
+        if (field.isUni1ToMFK())  
+            return;
+        if (field.isBiMTo1JT())
+            field.setBi1MJoinTableInfo();
         field.getValueInfo().assertNoSchemaComponents(field, !adapt);
     }
     

@@ -36,13 +36,6 @@ public class Bi_1ToM_Map_JT {
     private String name;
 
     @OneToMany(mappedBy="bi1mjt", fetch=FetchType.EAGER)
-    @JoinTable(
-        name="Bi1M_Map_JT_C",
-        joinColumns=
-          @JoinColumn(name="C_ID", referencedColumnName="ID"),
-          inverseJoinColumns=
-          @JoinColumn(name="B_ID", referencedColumnName="ID")
-    )
     private Map<String, EntityC_B1M_Map_JT> entityCs = null;
     
     public long getId() { 

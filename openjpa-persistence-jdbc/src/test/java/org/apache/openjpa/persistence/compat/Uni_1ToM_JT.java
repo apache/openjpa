@@ -40,12 +40,12 @@ public class Uni_1ToM_JT {
 
     @OneToMany(fetch=FetchType.EAGER)
     @JoinTable(
-            name="Uni1MJT_C",
-            joinColumns=
+        name="Uni1MJT_C",
+        joinColumns=
             @JoinColumn(name="Uni1MJT_ID", referencedColumnName="ID"),
-            inverseJoinColumns=
+        inverseJoinColumns=
             @JoinColumn(name="C_ID", referencedColumnName="ID")
-            )    
+    )    
     private List<EntityC> entityCs = null;
     
     public long getId() { 
