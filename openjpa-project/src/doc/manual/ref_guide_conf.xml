@@ -1658,6 +1658,46 @@ expire from the cache. This property can also be specified for individual
 classes. See <xref linkend="ref_guide_cache_conf"/> for details.
             </para>
         </section>
+
+        <section id="openjpa.DataCacheMode">
+            <title>
+                openjpa.DataCacheMode
+            </title>
+            <indexterm zone="openjpa.DataCacheMode">
+                <primary>
+                    DataCacheMode
+                </primary>
+            </indexterm>
+            <indexterm zone="openjpa.DataCacheMode">
+                <primary>
+                    caching
+                </primary>
+                <secondary>
+                    DataCacheTimeout
+                </secondary>
+            </indexterm>
+            <para>
+<emphasis role="bold">Property name: </emphasis><literal>
+openjpa.DataCacheMode</literal>
+            </para>
+            <para>
+<emphasis role="bold">Configuration API:</emphasis>
+<ulink url="../javadoc/org/apache/openjpa/conf/OpenJPAConfiguration.html#getDataCacheMode()">
+<methodname>org.apache.openjpa.conf.OpenJPAConfiguration.getDataCacheMode
+</methodname></ulink>
+            </para>
+            <para>
+<emphasis role="bold">Resource adaptor config-property: </emphasis><literal>
+DataCacheMode</literal>
+            </para>
+            <para>
+<emphasis role="bold">Default: </emphasis><literal>-1</literal>
+            </para>
+            <para>
+<emphasis role="bold">Description:</emphasis>Determines which entities will be included in the DataCache. May be any of the values defined in <ulink url="../javadoc/org/apache/openjpa/datacache/DataCacheMode.html"/>.
+            </para>
+        </section>
+
         <section id="openjpa.DetachState">
             <title>
                 openjpa.DetachState
