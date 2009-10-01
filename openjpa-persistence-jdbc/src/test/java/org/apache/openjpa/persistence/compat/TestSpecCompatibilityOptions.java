@@ -201,7 +201,7 @@ extends AbstractCachedEMFTestCase {
     public void crudUni1MFK(EntityManager em) {
         //create
         Uni_1ToM_FK u = new Uni_1ToM_FK();
-        u.setName("uni1mfk");
+        u.setName("u");
         List<EntityC_U1MFK> cs = new ArrayList<EntityC_U1MFK>();
         EntityC_U1MFK c = new EntityC_U1MFK();
         c.setName("c");
@@ -227,7 +227,7 @@ extends AbstractCachedEMFTestCase {
         EntityC_U1MFK c2 = cs.remove(0);
         
         Uni_1ToM_FK u2 = new Uni_1ToM_FK();
-        u2.setName("uni1mfk2");
+        u2.setName("u2");
         List<EntityC_U1MFK> cs2 = new ArrayList<EntityC_U1MFK>();
         cs2.add(c2);
         u2.setEntityCs(cs2);
@@ -256,7 +256,7 @@ extends AbstractCachedEMFTestCase {
     // default
     public void crudUni1MJT(EntityManager em) {
         Uni_1ToM_JT u = new Uni_1ToM_JT();
-        u.setName("uni1mjt");
+        u.setName("u");
         List<EntityC> cs = new ArrayList<EntityC>();
         EntityC c = new EntityC();
         c.setName("c");
@@ -299,7 +299,7 @@ extends AbstractCachedEMFTestCase {
     //default
     public void crudBi1MFK(EntityManager em) {
         Bi_1ToM_FK b = new Bi_1ToM_FK();
-        b.setName("bi1mfk");
+        b.setName("b");
         List<EntityC_B1MFK> cs = new ArrayList<EntityC_B1MFK>();
         EntityC_B1MFK c = new EntityC_B1MFK();
         c.setName("c");
@@ -324,7 +324,7 @@ extends AbstractCachedEMFTestCase {
         em.clear();
         
         //query
-        Query q = em.createQuery("SELECT u FROM Bi_1ToM_FK u");
+        Query q = em.createQuery("SELECT b FROM Bi_1ToM_FK b");
         Bi_1ToM_FK b1 = (Bi_1ToM_FK)q.getSingleResult();
         assertEquals(b, b1);
         em.clear();
@@ -343,7 +343,7 @@ extends AbstractCachedEMFTestCase {
 
     public void crudBi1MJT(EntityManager em) {
         Bi_1ToM_JT b = new Bi_1ToM_JT();
-        b.setName("bi1mfk");
+        b.setName("b");
         List<EntityC_B1MJT> cs = new ArrayList<EntityC_B1MJT>();
         EntityC_B1MJT c = new EntityC_B1MJT();
         c.setName("c");
@@ -429,7 +429,7 @@ extends AbstractCachedEMFTestCase {
     public void crudUni1MMapFK(EntityManager em) {
         //create
         Uni_1ToM_Map_FK u = new Uni_1ToM_Map_FK();
-        u.setName("uni1mfk");
+        u.setName("u");
         Map<String, EntityC_U1M_Map_FK> cs = new HashMap<String, EntityC_U1M_Map_FK>();
         EntityC_U1M_Map_FK c1 = new EntityC_U1M_Map_FK();
         c1.setName("c1");
@@ -447,7 +447,7 @@ extends AbstractCachedEMFTestCase {
 
         //update by adding a new C
         cs = u.getEntityCs();
-        u.setName("uni1mfk_new");
+        u.setName("newName");
         EntityC_U1M_Map_FK c3 = new EntityC_U1M_Map_FK();
         c3.setName("c3");
         cs.put(c3.getName(), c3);
@@ -461,7 +461,7 @@ extends AbstractCachedEMFTestCase {
         EntityC_U1M_Map_FK c4 = cs.remove("c1");
         
         Uni_1ToM_Map_FK u2 = new Uni_1ToM_Map_FK();
-        u2.setName("uni1mfk2");
+        u2.setName("u2");
         Map<String, EntityC_U1M_Map_FK> cs2 = new HashMap<String, EntityC_U1M_Map_FK>();
         cs2.put(c4.getName(), c4);
         u2.setEntityCs(cs2);
@@ -470,7 +470,7 @@ extends AbstractCachedEMFTestCase {
         em.clear();
         
         //query
-        Query q = em.createQuery("SELECT u FROM Uni_1ToM_Map_FK u where u.name='uni1mfk_new'");
+        Query q = em.createQuery("SELECT u FROM Uni_1ToM_Map_FK u where u.name='newName'");
         Uni_1ToM_Map_FK u1 = (Uni_1ToM_Map_FK)q.getSingleResult();
         assertEquals(u, u1);
         em.clear();
@@ -488,7 +488,7 @@ extends AbstractCachedEMFTestCase {
     
     public void crudBi1MMapJT(EntityManager em) {
         Bi_1ToM_Map_JT b = new Bi_1ToM_Map_JT();
-        b.setName("bi1mfk");
+        b.setName("b");
         Map<String, EntityC_B1M_Map_JT> cs = new HashMap<String, EntityC_B1M_Map_JT>();
         EntityC_B1M_Map_JT c = new EntityC_B1M_Map_JT();
         c.setName("c");
@@ -513,7 +513,7 @@ extends AbstractCachedEMFTestCase {
         em.clear();
         
         //query
-        Query q = em.createQuery("SELECT u FROM Bi_1ToM_Map_JT u");
+        Query q = em.createQuery("SELECT b FROM Bi_1ToM_Map_JT b");
         Bi_1ToM_Map_JT b1 = (Bi_1ToM_Map_JT)q.getSingleResult();
         assertEquals(b, b1);
         em.clear();
@@ -521,7 +521,7 @@ extends AbstractCachedEMFTestCase {
         // query the owner
         q = em.createQuery("SELECT c FROM EntityC_B1M_Map_JT c");
         List<EntityC_B1M_Map_JT> cs1 = q.getResultList();
-        System.err.println("cs1 size = " + cs1.size());
+        assertEquals(2, cs.size());
         em.clear();
         
         //find
@@ -538,7 +538,7 @@ extends AbstractCachedEMFTestCase {
     public void crudUni1MMapRelKeyFK(EntityManager em) {
         //create
         Uni_1ToM_Map_RelKey_FK u = new Uni_1ToM_Map_RelKey_FK();
-        u.setName("uni1mfk");
+        u.setName("u");
         Map<EntityC, EntityC_U1M_Map_RelKey_FK> cs = new HashMap<EntityC, EntityC_U1M_Map_RelKey_FK>();
         EntityC_U1M_Map_RelKey_FK c1 = new EntityC_U1M_Map_RelKey_FK();
         c1.setName("c1");
@@ -563,7 +563,7 @@ extends AbstractCachedEMFTestCase {
         //update by adding a new C
         em.getTransaction().begin();
         cs = u.getEntityCs();
-        u.setName("uni1mfk_new");
+        u.setName("newName");
         EntityC_U1M_Map_RelKey_FK c3 = new EntityC_U1M_Map_RelKey_FK();
         c3.setName("c3");
         EntityC cKey3 = new EntityC();
@@ -578,7 +578,7 @@ extends AbstractCachedEMFTestCase {
         EntityC_U1M_Map_RelKey_FK c4 = cs.remove(cKey1);
         
         Uni_1ToM_Map_RelKey_FK u2 = new Uni_1ToM_Map_RelKey_FK();
-        u2.setName("uni1mfk2");
+        u2.setName("u2");
         Map<EntityC, EntityC_U1M_Map_RelKey_FK> cs2 = new HashMap<EntityC, EntityC_U1M_Map_RelKey_FK>();
         cs2.put(cKey1, c4);
         u2.setEntityCs(cs2);
@@ -587,7 +587,7 @@ extends AbstractCachedEMFTestCase {
         em.clear();
         
         //query
-        Query q = em.createQuery("SELECT u FROM Uni_1ToM_Map_RelKey_FK u where u.name='uni1mfk_new'");
+        Query q = em.createQuery("SELECT u FROM Uni_1ToM_Map_RelKey_FK u where u.name='newName'");
         Uni_1ToM_Map_RelKey_FK u1 = (Uni_1ToM_Map_RelKey_FK)q.getSingleResult();
         assertEquals(u, u1);
         em.clear();
@@ -605,7 +605,7 @@ extends AbstractCachedEMFTestCase {
 
     public void crudBi1MMapRelKeyJT(EntityManager em) {
         Bi_1ToM_Map_RelKey_JT b = new Bi_1ToM_Map_RelKey_JT();
-        b.setName("bi1mfk");
+        b.setName("b");
         Map<EntityC, EntityC_B1M_Map_RelKey_JT> cs = new HashMap<EntityC, EntityC_B1M_Map_RelKey_JT>();
         EntityC_B1M_Map_RelKey_JT c = new EntityC_B1M_Map_RelKey_JT();
         c.setName("c");
@@ -636,7 +636,7 @@ extends AbstractCachedEMFTestCase {
         em.clear();
         
         //query
-        Query q = em.createQuery("SELECT u FROM Bi_1ToM_Map_RelKey_JT u");
+        Query q = em.createQuery("SELECT b FROM Bi_1ToM_Map_RelKey_JT b");
         Bi_1ToM_Map_RelKey_JT b1 = (Bi_1ToM_Map_RelKey_JT)q.getSingleResult();
         assertEquals(b, b1);
         em.clear();
@@ -650,6 +650,201 @@ extends AbstractCachedEMFTestCase {
         //find
         long id = b1.getId();
         Bi_1ToM_Map_RelKey_JT b2 = em.find(Bi_1ToM_Map_RelKey_JT.class, id);
+        assertEquals(b, b2);
+        
+        //remove
+        em.getTransaction().begin();
+        em.remove(b2);
+        em.getTransaction().commit();
+    }
+
+    public void testUniManyToOneUsingJoinTable() {
+        List<Class<?>> types = new ArrayList<Class<?>>();
+        types.add(EntityC.class);
+        types.add(Uni_MTo1_JT.class);
+        OpenJPAEntityManagerFactorySPI emf = createEMF2_0(types);
+        EntityManager em = emf.createEntityManager();
+        
+        try {
+            // trigger table creation
+            em.getTransaction().begin();
+            em.getTransaction().commit();
+            assertSQLFragnments(sql, "CREATE TABLE UniM1JT_C", "U_ID", "C_ID");
+            crudUniM1JT(em);
+        } catch (Exception e) {
+            e.printStackTrace();
+            fail("ManyToOne mapping failed with exception message: " + e.getMessage());
+        } finally {
+            em.close();
+            emf.close();            
+        }
+    }
+    
+    public void crudUniM1JT(EntityManager em) {
+        //create
+        Uni_MTo1_JT u = new Uni_MTo1_JT();
+        u.setName("u");
+
+        Uni_MTo1_JT u1 = new Uni_MTo1_JT();
+        u1.setName("u1");
+
+        EntityC c1 = new EntityC();
+        c1.setName("c1");
+        u.setEntityC(c1);
+        u1.setEntityC(c1);
+        
+        em.persist(u);
+        em.persist(u1);
+        em.persist(c1);
+        em.getTransaction().begin();
+        em.getTransaction().commit();
+
+        //update by changing the many-to-one value 
+        em.getTransaction().begin();
+        u.setName("u_new");
+        EntityC c3 = new EntityC();
+        c3.setName("c3");
+        u.setEntityC(c3);
+        em.persist(c3);
+        em.getTransaction().commit();
+        
+        // update be removing the many-to-one value
+        em.getTransaction().begin();
+        u.setEntityC(null);
+        em.getTransaction().commit();
+        
+        //query
+        Query q = em.createQuery("SELECT u FROM Uni_MTo1_JT u where u.name='u_new'");
+        Uni_MTo1_JT queryU = (Uni_MTo1_JT)q.getSingleResult();
+        assertEquals(u, queryU);
+        em.clear();
+
+        //find
+        long id = u1.getId();
+        Uni_MTo1_JT findU = em.find(Uni_MTo1_JT.class, id);
+        assertEquals(u1, findU);
+        
+        //remove
+        em.getTransaction().begin();
+        em.remove(findU);
+        em.getTransaction().commit();
+    }
+
+    public void testOneToOneUsingJoinTable() {
+        List<Class<?>> types = new ArrayList<Class<?>>();
+        types.add(EntityC_B11JT.class);
+        types.add(EntityC_U11JT.class);
+        types.add(Bi_1To1_JT.class);
+        types.add(Uni_1To1_JT.class);
+        OpenJPAEntityManagerFactorySPI emf = createEMF2_0(types);
+        EntityManager em = emf.createEntityManager();
+        
+        try {
+            // trigger table creation
+            em.getTransaction().begin();
+            em.getTransaction().commit();
+            assertSQLFragnments(sql, "CREATE TABLE Bi11JT_C", "B_ID", "C_ID");
+            assertSQLFragnments(sql, "CREATE TABLE Uni11JT_C", "U_ID", "C_ID");
+            crudBi11JT(em);
+            crudUni11JT(em);
+        } catch (Exception e) {
+            e.printStackTrace();
+            fail("OneToOne mapping failed with exception message: " + e.getMessage());
+        } finally {
+            em.close();
+            emf.close();            
+        }
+    }
+
+    public void crudUni11JT(EntityManager em) {
+        Uni_1To1_JT u = new Uni_1To1_JT();
+        u.setName("uni1mjt");
+
+        EntityC_U11JT c1 = new EntityC_U11JT();
+        c1.setName("c1");
+        u.setEntityC(c1);
+
+        em.persist(u);
+        em.persist(c1);
+        em.getTransaction().begin();
+        em.getTransaction().commit();
+        
+        //update by setting to a new C
+        em.getTransaction().begin();
+        u.setName("uni1mjt_new");
+        EntityC_U11JT newC = new EntityC_U11JT();
+        newC.setName("newC");
+        u.setEntityC(newC);
+        em.persist(newC);
+        em.getTransaction().commit();
+        
+        // update by setting to null
+        em.getTransaction().begin();
+        u.setEntityC(null);
+        em.getTransaction().commit();
+        em.clear();
+        
+        //query
+        Query q = em.createQuery("SELECT u FROM Uni_1To1_JT u where u.name = 'uni1mjt_new'");
+        Uni_1To1_JT u1 = (Uni_1To1_JT)q.getSingleResult();
+        assertEquals(u, u1);
+        em.clear();
+
+        //find
+        long id = u1.getId();
+        Uni_1To1_JT findU1 = em.find(Uni_1To1_JT.class, id);
+        assertEquals(u, findU1);
+        
+        //remove
+        em.getTransaction().begin();
+        em.remove(findU1);
+        em.getTransaction().commit();
+    }
+
+    public void crudBi11JT(EntityManager em) {
+        Bi_1To1_JT b = new Bi_1To1_JT();
+        b.setName("bi11fk");
+        
+        EntityC_B11JT c = new EntityC_B11JT();
+        c.setName("c");
+        b.setEntityC(c);
+        //c.setBi11jt(b);
+
+        em.persist(b);
+        em.persist(c);
+        em.getTransaction().begin();
+        em.getTransaction().commit();
+
+        // update by removing a c 
+        em.getTransaction().begin();
+        b.setEntityC(null);
+        em.getTransaction().commit();
+
+        //update
+        em.getTransaction().begin();
+        b.setName("newName");
+        EntityC_B11JT c1 = new EntityC_B11JT();
+        c1.setName("c1");
+        b.setEntityC(c1);
+        //c1.setBi11jt(b);
+        em.persist(c1);
+        em.getTransaction().commit();
+        
+        //query
+        Query q = em.createQuery("SELECT u FROM Bi_1To1_JT u");
+        Bi_1To1_JT b1 = (Bi_1To1_JT)q.getSingleResult();
+        assertEquals(b, b1);
+        em.clear();
+
+        // query
+        q = em.createQuery("SELECT c FROM EntityC_B11JT c");
+        List<EntityC_B11JT> cs1 = q.getResultList();
+        assertEquals(2, cs1.size());
+        em.clear();
+        
+        //find
+        long id = b1.getId();
+        Bi_1To1_JT b2 = em.find(Bi_1To1_JT.class, id);
         assertEquals(b, b2);
         
         //remove

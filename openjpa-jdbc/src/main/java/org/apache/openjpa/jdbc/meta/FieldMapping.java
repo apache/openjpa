@@ -84,6 +84,10 @@ public class FieldMapping
     
     private Boolean _bi_MTo1_JT = null;
     private Boolean _uni_1ToM_FK = null;
+    private Boolean _uni_MTo1_JT = null;
+    private Boolean _uni_1To1_JT = null;
+    private Boolean _bi_1To1_JT = null;
+    
     private FieldMapping _bi_1ToM_JT_Field = null;
     private FieldMapping _bi_MTo1_JT_Field = null;
     private ForeignKey _bi_1ToM_Join_FK = null;
@@ -1258,6 +1262,30 @@ public class FieldMapping
         return _bi_MTo1_JT;
     }
 
+    public boolean isUni1ToMFK() {
+        if (_uni_1ToM_FK == null)
+            _uni_1ToM_FK = getMappingRepository().isUni1ToMFK(this);
+        return _uni_1ToM_FK;
+    }
+    
+    public boolean isUniMTo1JT() {
+        if (_uni_MTo1_JT == null)
+            _uni_MTo1_JT = getMappingRepository().isUniMTo1JT(this);
+        return _uni_MTo1_JT;
+    }
+
+    public boolean isUni1To1JT() {
+        if (_uni_1To1_JT == null)
+            _uni_1To1_JT = getMappingRepository().isUni1To1JT(this);
+        return _uni_1To1_JT;
+    }
+
+    public boolean isBi1To1JT() {
+        if (_bi_1To1_JT == null)
+            _bi_1To1_JT = getMappingRepository().isBi1To1JT(this);
+        return _bi_1To1_JT;
+    }
+    
     public FieldMapping getBi_1ToM_JTField() {
         if (_bi_1ToM_JT_Field == null) {
             _bi_1ToM_JT_Field = getMappingRepository().getBi_1ToM_JoinTableField(this);
@@ -1290,12 +1318,6 @@ public class FieldMapping
         return _bi_1ToM_Elem_FK;
     }
     
-    public boolean isUni1ToMFK() {
-        if (_uni_1ToM_FK == null)
-            _uni_1ToM_FK = getMappingRepository().isUni1ToMFK(this);
-        return _uni_1ToM_FK;
-    }
-    
     public void setBi1MJoinTableInfo() {
         if (getAssociationType() == FieldMetaData.ONE_TO_MANY) {
             FieldMapping mapped = getBi_MTo1_JTField();
@@ -1310,4 +1332,7 @@ public class FieldMapping
         }
     }
    
+    public boolean isNonDefaultMappingUsingJoinTableStrategy() {
+        return isBi1To1JT() || isUni1To1JT() || isUniMTo1JT() || isBiMTo1JT();
+    }
 }

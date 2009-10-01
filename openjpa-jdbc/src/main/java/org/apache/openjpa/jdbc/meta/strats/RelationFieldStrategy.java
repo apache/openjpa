@@ -88,7 +88,7 @@ public class RelationFieldStrategy
 
         field.getKeyMapping().getValueInfo().assertNoSchemaComponents
             (field.getKey(), !adapt);
-        if (!field.isBiMTo1JT())
+        if (!field.isNonDefaultMappingUsingJoinTableStrategy())
             field.getElementMapping().getValueInfo().assertNoSchemaComponents
                 (field.getElement(), !adapt);
         boolean criteria = field.getValueInfo().getUseClassCriteria();

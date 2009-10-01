@@ -1016,19 +1016,46 @@ public class MappingRepository
         return getMetaDataFactory().getDefaults().isNonDefaultMappingAllowed(conf);
     }
     
+    public boolean isUniMTo1JT(FieldMapping field) {
+        if (isNonDefaultMappingAllowed() && 
+            field.getAssociationType() == FieldMetaData.MANY_TO_ONE &&
+            hasJoinTable(field) && 
+            !isBidirectional(field))  {
+            field.getValueMapping().getValueInfo().setColumns(field.getElementMapping().getValueInfo().getColumns());
+            return true;
+        }
+        return false;
+    }
+
+    public boolean isUni1To1JT(FieldMapping field) {
+        if (isNonDefaultMappingAllowed() && 
+            field.getAssociationType() == FieldMetaData.ONE_TO_ONE && 
+            hasJoinTable(field) && 
+            !isBidirectional(field)) {
+            field.getValueMapping().getValueInfo().setColumns(field.getElementMapping().getValueInfo().getColumns());
+            return true;
+        }
+        return false;
+    }
+
+    public boolean isBi1To1JT(FieldMapping field) {
+        if (isNonDefaultMappingAllowed() && 
+            field.getAssociationType() == FieldMetaData.ONE_TO_ONE && 
+            hasJoinTable(field) && 
+            isBidirectional(field)) {
+            field.getValueMapping().getValueInfo().setColumns(field.getElementMapping().getValueInfo().getColumns());
+            return true;
+        }
+        return false;
+    }
+    
     public boolean isUni1ToMFK(FieldMapping field) {
-        FieldMapping mapped = field.getMappedByMapping();
-        if (isNonDefaultMappingAllowed()) {
-            if (field.getAssociationType() == FieldMetaData.ONE_TO_MANY ) {
-                if (mapped == null) {
-                    if (hasJoinTable(field))
-                        return false;
-                    else if (hasJoinColumn(field)) {
-                        field.getElementMapping().getValueInfo().setColumns(field.getValueInfo().getColumns());
-                        return true;
-                    }
-                } 
-            } 
+        if (isNonDefaultMappingAllowed() && 
+            field.getAssociationType() == FieldMetaData.ONE_TO_MANY &&
+            hasJoinColumn(field) &&
+            !isBidirectional(field)) {
+            field.getElementMapping().getValueInfo().setColumns(field.getValueInfo().getColumns());
+            return true;
         }
         return false;
     }
@@ -1076,12 +1103,8 @@ public class MappingRepository
             if (field.getAssociationType() == FieldMetaData.MANY_TO_ONE) {
                 if (!hasJoinTable(field))
                     return null;
-                ClassMapping inverse = field.getValueMapping().getTypeMapping();
-                FieldMapping[] fmds = inverse.getFieldMappings();
-                for (int i = 0; i < fmds.length; i++) {
-                    if (field == fmds[i].getMappedByMapping()) 
-                        return field;
-                }
+                if (isBidirectional(field))
+                    return field;
              } else if (field.getAssociationType() == FieldMetaData.ONE_TO_MANY) {
                 FieldMapping mappedBy = field.getMappedByMapping();
                 if (mappedBy != null && hasJoinTable(mappedBy))
@@ -1099,6 +1122,21 @@ public class MappingRepository
     public boolean hasJoinTable(FieldMapping field) {
         boolean hasJoinTable = field.getMappingInfo().getTableName() != null ? true : false;
         return hasJoinTable;
+    }
+
+    public boolean isBidirectional(FieldMapping field) {
+        if (field.getMappedByMapping() != null) return true;
+        int assoType = field.getAssociationType();
+        if (assoType == FieldMetaData.ONE_TO_ONE || 
+            assoType == FieldMetaData.MANY_TO_ONE) {
+            ClassMapping inverse = field.getValueMapping().getTypeMapping();
+            FieldMapping[] fmds = inverse.getFieldMappings();
+            for (int i = 0; i < fmds.length; i++) {
+                if (field == fmds[i].getMappedByMapping()) 
+                    return true;
+            }
+        }
+        return false;
     }
     
     /**
