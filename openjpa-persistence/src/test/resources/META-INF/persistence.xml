@@ -32,8 +32,4 @@
     </persistence-unit>
     <persistence-unit name="encryption_plugin_default_pu" transaction-type="RESOURCE_LOCAL">
     </persistence-unit>
-    <persistence-unit name="test_parsing">
-    	<mapping-file>META-INF/parsing-orm.xml</mapping-file>
-		<class>org.apache.openjpa.persistence.entity.MixedMappingLocation</class>		
-    </persistence-unit>
 </persistence>
