@@ -59,7 +59,7 @@ public class TestMappedSuper extends PersistenceTestCase {
             }
         }
         catch (Exception e) {
-            fail("Should have caught a ConstraintViolationException");
+            fail("Should have caught a ConstraintViolationException, but instead caught Exception=" + e);
         }
         finally {
             if (em.getTransaction().isActive()) {

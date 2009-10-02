@@ -61,7 +61,7 @@
                 <dependency>
                     <groupId>javax.validation</groupId>
                     <artifactId>validation-api</artifactId>
-                    <version>1.0.CR1</version>
+                    <version>1.0.CR5</version>
                     <scope>test</scope>
                 </dependency>
                 -->
@@ -73,7 +73,7 @@
                 <dependency>
                     <groupId>com.agimatec</groupId>
                     <artifactId>agimatec-jsr303</artifactId>
-                    <version>0.9.2-SNAPSHOT</version>
+                    <version>0.9.3</version>
                     <scope>test</scope>
                     <exclusions>
                         <!-- force usage of the geronimo-validation_1.0_spec -->
@@ -91,7 +91,7 @@
                 <dependency>
                     <groupId>com.agimatec</groupId>
                     <artifactId>agimatec-validation</artifactId>
-                    <version>0.9.2-SNAPSHOT</version>
+                    <version>0.9.3-SNAPSHOT</version>
                     <scope>test</scope>
                 </dependency>
                 <dependency>
@@ -100,20 +100,27 @@
                     <version>1.8.0</version>
                     <scope>test</scope>
                 </dependency>
+                <dependency>
+                    <groupId>commons-lang</groupId>
+                    <artifactId>commons-lang</artifactId>
+                    <version>2.4</version>
+                    <scope>test</scope>
+                </dependency>
             </dependencies>
             <repositories>
                 <repository>
                     <id>agimatec-snapshots</id>
                     <name>Sonatype OSS Repository</name>
-                    <url>http://oss.sonatype.org/content/repositories/agimatec-snapshots</url>
+                    <url>http://oss.sonatype.org/content/repositories/agimatec</url>
                     <layout>default</layout>
                     <snapshots>
                         <enabled>true</enabled>
-                        <updatePolicy>daily</updatePolicy>
                         <checksumPolicy>ignore</checksumPolicy>
+                        <updatePolicy>daily</updatePolicy>
                     </snapshots>
                     <releases>
-                        <enabled>false</enabled>
+                        <enabled>true</enabled>
+                        <checksumPolicy>fail</checksumPolicy>
                     </releases>
                 </repository>
             </repositories>
@@ -135,7 +142,7 @@
                     <version>1.0.CR5</version>
                     <scope>test</scope>
                 </dependency>
-                <!-- Hibernate that implements 1.0.CR3 -->
+                <!-- Hibernate that implements 1.0.CR5 -->
                 <dependency>
                     <groupId>org.hibernate</groupId>
                     <artifactId>hibernate-validator</artifactId>
