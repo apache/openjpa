@@ -2089,7 +2089,7 @@ FROM Employee e JOIN e.contactInfo.phones p
 WHERE e.contactInfo.address.zipcode = '95054'
 </programlisting>
                 <para>
-Path expression
+Path expression 
 navigability is composed using "inner join" semantics. That is, if the value of
 a non-terminal association-field in the path expression is null, the path is
 considered to have no value, and does not participate in the determination of
@@ -2110,51 +2110,71 @@ path expressions is as follows:
                 <itemizedlist>
                     <listitem>
                         <para>
-single_valued_path_expression ::= state_field_path_expression | 
-single_valued_association_path_expression
-                            </para>
-                        </listitem>
-                        <listitem>
-                            <para>
-state_field_path_expression ::= {identification_variable |
-single_valued_association_path_expression}.state_field
-                            </para>
-                        </listitem>
-                        <listitem>
-                            <para>
-single_valued_association_path_expression ::=
-identification_variable.{single_valued_association_field.}*single_valued_association_field
-                            </para>
-                        </listitem>
-                        <listitem>
-                            <para>
+single_valued_path_expression ::= 
+qualified_identification_variable |
+state_field_path_expression | 
+single_valued_object_path_expression
+                        </para>
+                    </listitem>
+                    <listitem>
+                        <para>
+state_field_path_expression ::= 
+general_identification_variable.{single_valued_object_field.}*state_field
+                        </para>
+                    </listitem>
+                    <listitem>
+                        <para>
+single_valued_object_path_expression ::=
+general_identification_variable.{single_valued_object_field.}*single_valued_object_field
+                        </para>
+                    </listitem>
+                    <listitem>
+                        <para>
 collection_valued_path_expression ::=
-identification_variable.{single_valued_association_field.}*collection_valued_association_field
-                            </para>
-                        </listitem>
-                        <listitem>
-                            <para>
-state_field ::= {embedded_class_state_field.}*simple_state_field
+general_identification_variable.{single_valued_object_field.}*collection_valued_field
                         </para>
                     </listitem>
                 </itemizedlist>
                 <para>
-A single_valued_association_field is designated by the name of an
-association-field in a one-to-one or many-to-one relationship. The type of a
-single_valued_association_field and thus a
-single_valued_association_path_expression is the abstract schema type of the
-related entity. A collection_valued_association_field is designated by the name
-of an association-field in a one-to-many or a many-to-many relationship. The
-type of a collection_valued_association_field is a collection of values of the
-abstract schema type of the related entity. An embedded_class_state _field is
-designated by the name of an entity state field that corresponds to an embedded
-class. Navigation to a related entity results in a value of the related entity's
-abstract schema type.
+A <literal>single_valued_object_field</literal> is designated by the name of an
+association-field in a one-to-one or many-to-one relationship 
+or a field of embeddable class type. The type of a
+<literal>single_valued_object_field</literal> is the abstract schema type of the
+related entity or embeddable class.
                 </para>
                 <para>
-The evaluation of a path expression terminating in a state-field results in the
-abstract schema type corresponding to the Java type designated by the
-state-field. It is syntactically illegal to compose a path expression from a
+A <literal>state_field</literal> is designated by the name of an entity or 
+embeddable class state field that corresponds to
+a basic type.                
+                </para>
+                <para>
+A collection_valued_field is designated by the name
+of an association-field in a one-to-many or a many-to-many relationship 
+or by the name of an element collection field. The
+type of a <literal>collection_valued_field</literal> is 
+a collection of values of the
+abstract schema type of the related entity 
+or element type. 
+                </para>
+                <para>
+An identification variable used in a 
+<literal>single_valued_object_path_expression</literal> or in a
+<literal>collection_valued_path_expression</literal>  
+may be an unqualified identification variable or an identification
+variable to which the KEY or VALUE function has been applied.
+                </para>
+                <itemizedlist>
+                    <listitem>
+                        <para>
+general_identification_variable ::=
+identification_variable |
+KEY(identification_variable) |
+VALUE(identification_variable)
+                        </para>
+                    </listitem>
+                </itemizedlist>
+                <para>
+It is syntactically illegal to compose a path expression from a
 path expression that evaluates to a collection. For example, if <literal>mag
 </literal> designates <literal>Magazine</literal>, the path expression <literal>
 mag.articles.author</literal> is illegal since navigation to authors results in
@@ -2164,8 +2184,19 @@ declared in the <literal>FROM</literal> clause to range over the elements of the
 <literal>articles</literal> collection. Another path expression must be used to
 navigate over each such element in the <literal>WHERE</literal> clause of the
 query, as in the following query which returns all authors that have any
-articles in any magazines: <programlisting>SELECT DISTINCT art.author FROM Magazine AS mag, IN(mag.articles) art
+articles in any magazines: 
+               </para>
+<programlisting>
+SELECT DISTINCT art.author FROM Magazine AS mag, IN(mag.articles) art
 </programlisting>
+                <para>
+It is illegal to use a <literal>collection_valued_path_expression</literal> other than 
+in the <literal>FROM</literal> clause of a query
+except in an <literal>empty_collection_comparison_expression</literal>, 
+in a <literal>collection_member_expression</literal>, or
+as an argument to the <literal>SIZE</literal> operator. 
+See Sections <xref linkend="jpa_langref_empty_comp"/>,  <xref linkend="jpa_langref_collection_member"/>, 
+and <xref linkend="jpa_langref_arithmetic"/>.       
                 </para>
             </section>
             <section id="jpa_langref_Joins">
@@ -2175,7 +2206,16 @@ articles in any magazines: <programlisting>SELECT DISTINCT art.author FROM Magaz
                 <para>
 An inner join may be implicitly specified by the use of a cartesian product in
 the <literal>FROM</literal> clause and a join condition in the <literal>WHERE
-</literal> clause.
+</literal> clause. In the absence of a join condition, this reduces to the cartesian product.
+               </para>
+               <para>
+The main use case for this generalized style of join is when a join condition does not involve
+a foreign key relationship that is mapped to an entity relationship. For Example,
+                </para>
+<example>SELECT c FROM Customer c, Employee e WHERE c.hatsize = e.shoesize</example>
+                <para>
+In general, use of this style of inner join (also referred to as theta-join) is less typical than explicitly
+defined joins over relationships.
                 </para>
                 <para>
 The syntax for explicit join operations is as follows:
@@ -2194,8 +2234,20 @@ fetch_join ::= join_spec FETCH join_association_path_expression
                         <listitem>
                             <para>
 join_association_path_expression ::= join_collection_valued_path_expression |
-join_single_valued_association_path_expression
+join_single_valued_path_expression
                             </para>
+                        </listitem>
+                        <listitem>
+                            <para>
+join_collection_valued_path_expression::=
+identification_variable.{single_valued_embeddable_object_field.}*collection_valued_field  
+                          </para>
+                        </listitem>
+                        <listitem>
+                            <para>
+join_single_valued_path_expression::=
+identification_variable.{single_valued_embeddable_object_field.}*single_valued_object_field  
+                          </para>
                         </listitem>
                         <listitem>
                             <para>
@@ -2233,6 +2285,15 @@ over 1 million for which at least one magazine exists:
                     </para>
 <programlisting>
 SELECT OBJECT(pub) FROM Publisher pub, IN(pub.magazines) mag WHERE pub.revenue &gt; 1000000
+</programlisting>
+                    <para>
+The query below joins over Employee, ContactInfo and Phone. ContactInfo is an
+embeddable class that consists of an address and set of phones. Phone is an entity.
+                    </para>
+<programlisting>
+SELECT p.vendor
+FROM Employee e JOIN e.contactInfo c JOIN c.phones p
+WHERE c.address.zipcode = '95054'
 </programlisting>
                 </section>
                 <section id="jpa_langref_outer_joins">
@@ -2276,7 +2337,10 @@ The association referenced by the right side of the <literal>FETCH JOIN
 returned as a result of the query. It is not permitted to specify an
 identification variable for the entities referenced by the right side of the
 <literal>FETCH JOIN</literal> clause, and hence references to the implicitly
-fetched entities cannot appear elsewhere in the query. The following query
+fetched entities cannot appear elsewhere in the query. 
+                    </para>
+                    <para>
+The following query
 returns a set of magazines. As a side effect, the associated articles for those
 magazines are also retrieved, even though they are not part of the explicit
 query result. The persistent fields or properties of the articles that are
@@ -2293,6 +2357,9 @@ join operation are not returned in the query result or otherwise referenced in
 the query. Hence, for example, if magazine id 1 has five articles, the above
 query returns five references to the magazine 1 entity.
                     </para>
+                    <para>
+The <literal>FETCH JOIN</literal> construct must not be used in the FROM clause of a subquery.
+                    </para>
                 </section>
             </section>
             <section id="jpa_langref_collection_dec">
@@ -2300,17 +2367,24 @@ query returns five references to the magazine 1 entity.
                     JPQL Collection Member Declarations
                 </title>
                 <para>
-An identification variable declared by a collection_member_declaration ranges
+An identification variable declared by a <literal>collection_member_declaration</literal> ranges
 over values of a collection obtained by navigation using a path expression. Such
 a path expression represents a navigation involving the association-fields of an
 entity abstract schema type. Because a path expression can be based on another
 path expression, the navigation can use the association-fields of related
-entities. An identification variable of a collection member declaration is
+entities. 
+                </para>
+                <para>
+An identification variable of a collection member declaration is
 declared using a special operator, the reserved identifier <literal>IN</literal>
 . The argument to the <literal>IN</literal> operator is a collection-valued path
 expression. The path expression evaluates to a collection type specified as a
-result of navigation to a collection-valued association-field of an entity
-abstract schema type. The syntax for declaring a collection member
+result of navigation to a collection-valued association-field of an entity 
+or embeddable class 
+abstract schema type. 
+                </para>
+                <para>
+The syntax for declaring a collection member
 identification variable is as follows:
                 </para>
                 <para>
@@ -2324,7 +2398,7 @@ identification variable is as follows:
 For example, the query <programlisting>SELECT DISTINCT mag FROM Magazine mag
     JOIN mag.articles art
     JOIN art.author auth
-    WHERE auth.lastName = 'Grisham'</programlisting> may equivalently be
+    WHERE auth.lastName = 'Grisham'</programlisting> can equivalently be
 expressed as follows, using the <literal>IN</literal> operator: <programlisting>SELECT DISTINCT mag FROM Magazine mag,
     IN(mag.articles) art
     WHERE art.author.lastName = 'Grisham'</programlisting> In this example,
@@ -2335,6 +2409,28 @@ collection, a single <literal>Article</literal> abstract schema type instance.
 In this example, <literal>mag</literal> is an identification variable of the
 abstract schema type <literal>Magazine</literal>.
                 </para>
+            </section>
+            <section id="jpa_langref_from_clause_and_sql">
+                <title>
+                    JPQL FROM Clause and SQL
+                </title>
+                <para>
+The Java Persistence query language treats the FROM clause similarly to SQL in that the declared identification
+variables affect the results of the query even if they are not used in the WHERE clause. Application
+developers should use caution in defining identification variables because the domain of the
+query can depend on whether there are any values of the declared type.
+                </para>
+                <para>
+For example, the <literal>FROM</literal> clause below defines a query over 
+all orders that have line items and existing
+products. If there are no <litera.>Product</litera.> instances in the database, 
+the domain of the query is empty and no
+order is selected.
+                </para>
+<programlisting>
+SELECT o
+FROM Order AS o JOIN o.lineItems l JOIN l.product p
+</programlisting>
             </section>
             <section id="jpa_langref_polymorph">
                 <title>
@@ -2347,6 +2443,11 @@ entity classes to which explicitly refers but of subclasses as well. The
 instances returned by a query include instances of the subclasses that satisfy
 the query criteria.
                 </para>
+                <para>
+Non-polymorphic queries or queries whose polymorphism is restricted can be specified using entity
+type expressions in the WHERE clause to restrict the domain of the query.
+See section <xref linked="jpa_langref_entity_type_expressions"/>.
+                </para>
             </section>
         </section>
         <section id="jpa_langref_where">
@@ -2357,7 +2458,10 @@ the query criteria.
 The <literal>WHERE</literal> clause of a query consists of a conditional
 expression used to select objects or values that satisfy the expression. The
 <literal>WHERE</literal> clause restricts the result of a select statement or
-the scope of an update or delete operation. A <literal>WHERE</literal> clause is
+the scope of an update or delete operation. 
+            </para>
+            <para>
+A <literal>WHERE</literal> clause is
 defined as follows: <itemizedlist><listitem><para>where_clause ::= WHERE
 conditional_expression
                         </para>
@@ -2368,7 +2472,10 @@ conditional_expression
 The <literal>GROUP BY</literal> construct enables the aggregation of values
 according to the properties of an entity class. The <literal>HAVING</literal>
 construct enables conditions to be specified that further restrict the query
-result as restrictions upon the groups. The syntax of the <literal>HAVING
+result as restrictions upon the groups. 
+            </para>
+            <para>
+The syntax of the <literal>HAVING
 </literal> clause is as follows: <itemizedlist><listitem><para>having_clause
 ::= HAVING conditional_expression
                         </para>
@@ -2387,7 +2494,10 @@ further discussed in <xref linkend="jpa_langref_group"/>.
             <para>
 The following sections describe the language constructs that can be used in a
 conditional expression of the <literal>WHERE</literal> clause or <literal>
-HAVING</literal> clause. State-fields that are mapped in serialized form or as
+HAVING</literal> clause. 
+            </para>
+            <para>
+State-fields that are mapped in serialized form or as
 lobs may not be portably used in conditional expressions. <note><para> The
 implementation is not expected to perform such query operations involving such
 fields in memory rather than in the database.
@@ -2403,16 +2513,48 @@ A string literal is enclosed in single quotes--for example: 'literal'. A string
 literal that includes a single quote is represented by two single quotes--for
 example: 'literal''s'. String literals in queries, like Java String literals,
 use unicode character encoding. The use of Java escape notation is not supported
-in query string literals. Exact numeric literals support the use of Java integer
-literal syntax as well as SQL exact numeric literal syntax. Approximate literals
+in query string literals. 
+            </para>
+            <para>
+Exact numeric literals support the use of Java integer
+literal syntax as well as SQL exact numeric literal syntax. 
+            </para>
+            <para>
+Approximate literals
 support the use of Java floating point literal syntax as well as SQL approximate
-numeric literal syntax. Enum literals support the use of Java enum literal
-syntax. The enum class name must be specified. Appropriate suffixes may be used
+numeric literal syntax. 
+            </para>
+            <para>
+Enum literals support the use of Java enum literal
+syntax. The enum class name must be specified. 
+            </para>
+            <para>
+Appropriate suffixes can be used
 to indicate the specific type of a numeric literal in accordance with the Java
 Language Specification. The boolean literals are <literal>TRUE</literal> and
 <literal>FALSE</literal>. Although predefined reserved literals appear in upper
 case, they are case insensitive.
-                </para>
+            </para>
+            <para>
+The JDBC escape syntax may be used for the specification of date, time, and timestamp literals. For
+example:            
+            </para>
+            <programlisting>
+SELECT o
+FROM Customer c JOIN c.orders o
+WHERE c.name = 'Smith'
+AND o.submissionDate &lt; {d '2008-12-31'}
+            </programlisting>
+            <para>
+Date, time, and timestamp literals are passed as it to the JDBC driver
+in use.
+            </para>
+            <para>
+Entity type literals are specified by entity names—for example: <literal>Customer</literal>.
+            </para>
+            <para>
+Although reserved literals appear in upper case, they are case insensitive.            
+            </para>
             </section>
             <section id="jpa_langref_idvar">
                 <title>
@@ -2425,6 +2567,8 @@ HAVING</literal> clause of a <literal>SELECT</literal> or <literal>DELETE
 described in <xref linkend="jpa_langref_from_vars"/>. The identification
 variables used in the <literal>WHERE</literal> clause of an <literal>UPDATE
 </literal> statement must be declared in the <literal>UPDATE</literal> clause.
+                 </para>
+                 <para>
 Identification variables are existentially quantified in the <literal>WHERE
 </literal> and <literal>HAVING</literal> clause. This means that an
 identification variable represents a member of a collection or an instance of an
@@ -2437,10 +2581,10 @@ collection in its entirety.
                     JPQL Path Expressions
                 </title>
                 <para>
-It is illegal to use a collection_valued_path_expression within a <literal>
+It is illegal to use a <literal>collection_valued_path_expression</literal> within a <literal>
 WHERE</literal> or <literal>HAVING</literal> clause as part of a conditional
-expression except in an empty_collection_comparison_expression, in a
-collection_member_expression, or as an argument to the <literal>SIZE</literal>
+expression except in an <literal>empty_collection_comparison_expression</literal>, in a
+<literal>collection_member_expression</literal>, or as an argument to the <literal>SIZE</literal>
 operator.
                 </para>
             </section>
@@ -2450,7 +2594,10 @@ operator.
                 </title>
                 <para>
 Either positional or named parameters may be used. Positional and named
-parameters may not be mixed in a single query. Input parameters can only be used
+parameters may not be mixed in a single query. 
+                </para>
+                <para>
+Input parameters can only be used
 in the <literal>WHERE</literal> clause or <literal>HAVING</literal> clause of a
 query.
                 </para>
@@ -2458,6 +2605,11 @@ query.
 Note that if an input parameter value is null, comparison operations or
 arithmetic operations involving the input parameter will return an unknown
 value. See <xref linkend="jpa_langref_null_values"/>.
+                </para>
+                <para>
+All input parameters must be single-valued, except in IN expressions (see section
+<xref linkend="jpa_lagref_in_expression"/>), which support the use of collection-valued
+input parameters.
                 </para>
                 <section id="jpa_langref_pos_params">
                     <title>
@@ -2471,8 +2623,18 @@ by an integer. For example: ?1.
                             </listitem>
                             <listitem>
                                 <para>
-Input parameters are numbered starting from 1. Note that the same parameter can
-be used more than once in the query string and that the ordering of the use of
+Input parameters are numbered starting from 1. 
+                                </para>
+                            </listitem>
+                            <listitem>
+                                <para>
+The same parameter can
+be used more than once in the query string.
+                                </para>
+                            </listitem>
+                            <listitem>
+                                <para>
+The ordering of the use of
 parameters within the query string need not conform to the order of the
 positional parameters.
                                 </para>
@@ -2494,6 +2656,9 @@ sensitive.
 Example: <programlisting>SELECT pub FROM Publisher pub WHERE pub.revenue &gt; :rev
 </programlisting>
                     </para>
+                    <para>
+The same named parameter can be used more than once in the query string.
+                    </para>
                 </section>
             </section>
             <section id="jpa_langref_cond_comp">
@@ -2503,12 +2668,22 @@ Example: <programlisting>SELECT pub FROM Publisher pub WHERE pub.revenue &gt; :r
                 <para>
 Conditional expressions are composed of other conditional expressions,
 comparison operations, logical operations, path expressions that evaluate to
-boolean values, boolean literals, and boolean input parameters. Arithmetic
-expressions can be used in comparison expressions. Arithmetic expressions are
-composed of other arithmetic expressions, arithmetic operations, path
-expressions that evaluate to numeric values, numeric literals, and numeric input
-parameters. Arithmetic operations use numeric promotion. Standard bracketing ()
-for ordering expression evaluation is supported. Conditional expressions are
+boolean values, boolean literals, and boolean input parameters. 
+                </para>
+                <para>
+The scalar expressions described in section <xref linkend="jpa_langref_scalar_expressions"/> 
+ can be used in conditional expressions. 
+                </para>
+                <para>
+Standard bracketing ()
+for ordering expression evaluation is supported.
+                </para>
+                <para>
+Aggregate functions can only be used in conditional expressions in a <literal>
+HAVING</literal> clause. See <xref linkend="jpa_langref_group"/>.
+                </para>
+                <para> 
+Conditional expressions are
 defined as follows:
                 </para>
                 <para>
@@ -2541,10 +2716,6 @@ exists_expression
                             </para>
                         </listitem>
                     </itemizedlist>
-                </para>
-                <para>
-Aggregate functions can only be used in conditional expressions in a <literal>
-HAVING</literal> clause. See <xref linkend="jpa_langref_group"/>.
                 </para>
             </section>
             <section id="jpa_langref_operators">
@@ -2585,6 +2756,50 @@ Logical operators: <literal>NOT</literal>, <literal>AND</literal>,
       
                 </para>
             </section>
+            <section id="jpa_langref_comparison_expressions">
+                <title>
+                    JPQL Comparison Expressions
+                </title>
+                <para>
+The syntax for the use of comparison expressions in a conditional expression is as follows:
+                </para>
+                <itemizedlist>
+                <listitem>
+                  <para> 
+comparison_expression ::=
+string_expression comparison_operator {string_expression | all_or_any_expression} |
+boolean_expression { =|&lt;&gt; } {boolean_expression | all_or_any_expression} |
+enum_expression { =|&lt;&gt; } {enum_expression | all_or_any_expression} |
+datetime_expression comparison_operator
+{datetime_expression | all_or_any_expression} |
+entity_expression { = | &lt;&gt; } {entity_expression | all_or_any_expression} |
+arithmetic_expression comparison_operator
+{arithmetic_expression | all_or_any_expression} |
+entity_type_expression { = | &lt;&gt; } entity_type_expression}
+                  </para>
+                </listitem>
+                <listitem>
+                  <para>
+comparison_operator ::= = | &gt; | &gt;= | &lt; | &lt;= | &lt;&gt;
+                  </para>
+                </listitem>
+                </itemizedlist>
+                <para>
+Examples:
+                </para>
+<programlisting>
+item.cost * 1.08 &lt;= 100.00
+</programlisting>
+<programlisting>
+CONCAT(person.lastName, ‘, ’, person.firstName)) = ‘Jones, Sam’
+</programlisting>
+<programlisting>
+TYPE(e) = ExemptEmployee
+</programlisting>
+<note>
+Comparisons over instances of embeddable class types are not supported.
+</note>
+                </section>
             <section id="jpa_langref_between">
                 <title>
                     JPQL Between Expressions
@@ -2604,7 +2819,10 @@ The BETWEEN expression <programlisting>x BETWEEN y AND z</programlisting> is
 semantically equivalent to: <programlisting>y &lt;= x AND x &lt;= z
 </programlisting> The rules for unknown and <literal>NULL</literal> values in
 comparison operations apply. See <xref linkend="jpa_langref_null_values"/>
-. Examples are: <programlisting>p.age BETWEEN 15 and 19</programlisting> is
+. 
+                 </para>
+                 <para>
+Examples are: <programlisting>p.age BETWEEN 15 and 19</programlisting> is
 equivalent to: <programlisting>p.age &gt;= 15 AND p.age &lt;= 19</programlisting>
                 </para>
                 <para>
@@ -2612,6 +2830,15 @@ The following expression:
 <programlisting>p.age NOT BETWEEN 15 and 19</programlisting> excludes the range, and is equivalent to:
 <programlisting>p.age &lt; 15 OR p.age &gt; 19</programlisting>
                 </para>
+                <para>
+In the following example, <literal>transactionHistory</literal> is a list of credit card 
+transactions defined using an order column.
+                </para>
+<programlisting>
+SELECT t
+FROM CreditCard c JOIN c.transactionHistory t
+WHERE c.holder.name = ‘John Doe’ AND INDEX(t) BETWEEN 0 AND 9
+</programlisting>
             </section>
             <section id="jpa_langref_in">
                 <title>
@@ -2634,23 +2861,37 @@ in_item ::= literal | single_valued_input_parameter
                     </itemizedlist>
                 </para>
                 <para>
-The state_field_path_expression must have a string, numeric, or enum value. The
-literal and/or input_parameter values must be like the same abstract schema type
-of the state_field_path_expression in type. (See
+The <literal>state_field_path_expression</literal> must have a string, numeric, or enum value.
+                </para>
+                <para>
+ The literal and/or input_parameter values must be <literal>like</literal> 
+ the same abstract schema type
+of the <literal>state_field_path_expression</literal> in type. (See
 <xref linkend="jpa_langref_equality"/> ).
                 </para>
                 <para>
-The results of the subquery must be like the same abstract schema type of the
-state_field_path_expression in type. Subqueries are discussed in
-<xref linkend="jpa_langref_subqueries"/>. Examples are: <programlisting>o.country IN ('UK', 'US', 'France')
+The results of the subquery must be <literal>like</literal> the same abstract schema type of the
+<literal>state_field_path_expression</literal> in type. Subqueries are discussed in
+<xref linkend="jpa_langref_subqueries"/>.
+                </para>
+                <para> 
+Examples: 
+                </para>
+<programlisting>o.country IN ('UK', 'US', 'France')
 </programlisting> is true for UK and false for Peru, and is equivalent to the
 expression: <programlisting>(o.country = 'UK') OR (o.country = 'US') OR (o.country = ' France')
 </programlisting> In the following expression: <programlisting>o.country NOT IN ('UK', 'US', 'France')
 </programlisting> is false for UK and true for Peru, and is equivalent to the
 expression: <programlisting>NOT ((o.country = 'UK') OR (o.country = 'US') OR (o.country = 'France'))
-</programlisting> There must be at least one element in the comma separated list
-that defines the set of values for the <literal>IN</literal> expression. If the
-value of a state_field_path_expression in an <literal>IN</literal> or <literal>
+</programlisting> 
+                <para>
+There must be at least one element in the comma separated list
+that defines the set of values for the <literal>IN</literal> expression. 
+                </para>
+                <para>
+If the 
+value of a <literal>state_field_path_expression</literal> or <literal>in_item</literal> 
+ in an <literal>IN</literal> or <literal>
 NOT IN</literal> expression is <literal>NULL</literal> or unknown, the value of
 the expression is unknown.
                 </para>
@@ -2668,17 +2909,21 @@ The syntax for the use of the comparison operator [ <literal>NOT</literal> ]
 <literal>LIKE</literal> in a conditional expression is as follows:
                 </para>
                 <para>
-string_expression [NOT] LIKE pattern_value [ESCAPE escape_character]
+like_expression ::=
+string_expression [NOT] LIKE <literal>pattern_value</literal> [ESCAPE <literal>escape_character</literal>]
                 </para>
                 <para>
-The string_expression must have a string value. The pattern_value is a string
+The <literal>string_expression</literal> must have a string value. 
+The <literal>pattern_value</literal> is a string
 literal or a string-valued input parameter in which an underscore (_) stands for
 any single character, a percent (%) character stands for any sequence of
 characters (including the empty sequence), and all other characters stand for
 themselves. The optional escape_character is a single-character string literal
 or a character-valued input parameter (i.e., char or Character) and is used to
 escape the special meaning of the underscore and percent characters in
-pattern_value. Examples are:
+pattern_value. </para>
+               <para>
+Examples:
                 </para>
                 <para>
 <itemizedlist><listitem><para><programlisting>address.phone LIKE '12%3'
@@ -2700,14 +2945,17 @@ for '_foo' and false for 'bar'
                         <listitem>
                             <para>
 <programlisting>address.phone NOT LIKE '12%3'</programlisting> is false for
-'123' and '12993' and true for '1234'. If the value of the string_expression or
-pattern_value is <literal>NULL</literal> or unknown, the value of the <literal>
-LIKE</literal> expression is unknown. If the escape_character is specified and
-is <literal>NULL</literal>, the value of the <literal>LIKE</literal> expression
-is unknown.
+'123' and '12993' and true for '1234'. 
                             </para>
                         </listitem>
                     </itemizedlist>
+                </para>
+                <para>
+If the value of the <literal>string_expression</literal> or
+<literal>pattern_value</literal> is <literal>NULL</literal> or unknown, the value of the <literal>
+LIKE</literal> expression is unknown. If the <literal>escape_character</literal> is specified and
+is <literal>NULL</literal>, the value of the <literal>LIKE</literal> expression
+is unknown.
                 </para>
             </section>
             <section id="jpa_langref_null">
@@ -2719,11 +2967,14 @@ The syntax for the use of the comparison operator <literal>IS NULL</literal> in
 a conditional expression is as follows:
                 </para>
                 <para>
-{single_valued_path_expression | input_parameter } IS [NOT] NULL
+null_comparison_expression ::= {single_valued_path_expression | input_parameter } IS [NOT] NULL
                 </para>
                 <para>
 A null comparison expression tests whether or not the single-valued path
 expression or input parameter is a <literal>NULL</literal> value.
+                </para>
+                <para>
+Null comparisons over instances of embeddable class types are not supported.
                 </para>
             </section>
             <section id="jpa_langref_empty_comp">
@@ -2732,10 +2983,11 @@ expression or input parameter is a <literal>NULL</literal> value.
                 </title>
                 <para>
 The syntax for the use of the comparison operator <literal>IS EMPTY</literal> in
-an empty_collection_comparison_expression is as follows:
+an <literal>empty_collection_comparison_expression</literal> is as follows:
                 </para>
                 <para>
-collection_valued_path_expression IS [NOT] EMPTY
+empty_collection_comparison_expression ::=
+    collection_valued_path_expression IS [NOT] EMPTY
                 </para>
                 <para>
 This expression tests whether or not the collection designated by the
@@ -2744,7 +2996,10 @@ collection-valued path expression is empty (i.e. has no elements).
                 <para>
 For example, the following query will return all magazines that don't have any
 articles at all: <programlisting>SELECT mag FROM Magazine mag WHERE mag.articles IS EMPTY
-</programlisting> If the value of the collection-valued path expression in an
+</programlisting> 
+                 </para>
+                 <para>
+If the value of the collection-valued path expression in an
 empty collection comparison expression is unknown, the value of the empty
 comparison expression is unknown.
                 </para>
@@ -2754,41 +3009,60 @@ comparison expression is unknown.
                     JPQL Collection Member Expressions
                 </title>
                 <para>
-The use of the comparison collection_member_expression is as follows:
+The syntax for the use of the comparison operator <literal>MEMBER OF</literal> 
+in an <literal>collection_member_expression</literal> is as follows:
                     <itemizedlist>
                         <listitem>
                             <para>
-collection_member_expression ::= entity_expression [NOT] MEMBER [OF]
+collection_member_expression ::= entity_or_value_expression [NOT] MEMBER [OF]
 collection_valued_path_expression
                             </para>
                         </listitem>
                         <listitem>
                             <para>
-entity_expression ::= single_valued_association_path_expression |
-simple_entity_expression
+entity_or_value_expression ::= single_valued_object_path_expression |
+state_field_path_expression |
+simple_entity_or_value_expression
                             </para>
                         </listitem>
                         <listitem>
                             <para>
-simple_entity_expression ::= identification_variable | input_parameter
+simple_entity_or_value_expression ::= 
+    identification_variable | 
+    input_parameter | 
+    literal
                             </para>
                         </listitem>
                     </itemizedlist>
                 </para>
                 <para>
 This expression tests whether the designated value is a member of the collection
-specified by the collection-valued path expression. If the collection valued
+specified by the collection-valued path expression. 
+                </para>
+                <para>
+                </para>
+Expressions that evaluate to embeddable types are not supported in collection member expressions.
+                <para>
+If the collection valued
 path expression designates an empty collection, the value of the <literal>
 MEMBER OF</literal> expression is <literal>FALSE</literal> and the value of the
 <literal>NOT MEMBER OF</literal> expression is <literal>TRUE</literal>.
-Otherwise, if the value of the collection-valued path expression or
-single-valued association-field path expression in the collection member
+Otherwise, if the value of the <literal>collection_valued_path_expression</literal> or
+<literal>entity_or_value_expression</literal> in the collection member
 expression is <literal>NULL</literal> or unknown, the value of the collection
 member expression is unknown.
                 </para>
                 <para>
 The use of the reserved word OF is optional in this expression.
                 </para>
+                <para>
+Example:
+                </para>
+                <programlisting>
+SELECT p
+FROM Person p
+WHERE 'Joe' MEMBER OF p.nicknames
+                </programlisting>
             </section>
             <section id="jpa_langref_exists">
                 <title>
@@ -2816,17 +3090,25 @@ is also an author.
                     JPQL All or Any Expressions
                 </title>
                 <para>
-An <literal>ALL</literal> conditional expression is a predicate that is true if
-the comparison operation is true for all values in the result of the subquery or
-the result of the subquery is empty. An <literal>ALL</literal> conditional
+An <literal>ALL</literal> conditional expression is a predicate 
+over a subquery that is true if the comparison operation is
+true for all values in the result of the subquery or the result of the subquery is empty. 
+An <literal>ALL</literal> conditional
 expression is false if the result of the comparison is false for at least one
-row, and is unknown if neither true nor false. An <literal>ANY</literal>
-conditional expression is a predicate that is true if the comparison operation
+value of the result of the subquery, 
+and is unknown if neither true nor false. 
+                 </para>
+                 <para>
+An <literal>ANY</literal> 
+conditional expression is a predicate over a subquery that is true if the comparison operation
 is true for some value in the result of the subquery. An <literal>ANY</literal>
 conditional expression is false if the result of the subquery is empty or if the
 comparison operation is false for every value in the result of the subquery, and
 is unknown if neither true nor false. The keyword <literal>SOME</literal> is
-synonymous with <literal>ANY</literal>. The comparison operators used with
+synonymous with <literal>ANY</literal>. 
+                  </para>
+                  <para>
+The comparison operators used with
 <literal>ALL</literal> or <literal>ANY</literal> conditional expressions are =,
 &lt;, &lt;=, &gt;, &gt;=, &lt;&gt;. The result of the subquery must be like that
 of the other argument to the comparison operator in type. See
@@ -2869,20 +3151,35 @@ simple_select_expression
                         <listitem>
                             <para>
 subquery_from_clause ::= FROM subselect_identification_variable_declaration {,
-subselect_identification_variable_declaration}*
+subselect_identification_variable_declaration |
+collection_member_declaration }*
                             </para>
                         </listitem>
                         <listitem>
                             <para>
 subselect_identification_variable_declaration ::=
-identification_variable_declaration | association_path_expression [AS]
-identification_variable | collection_member_declaration
+identification_variable_declaration | derived_path_expression [AS]
+identification_variable {join}* | derived_collection_member_declaration
                             </para>
                         </listitem>
                         <listitem>
                             <para>
 simple_select_expression ::= single_valued_path_expression |
+scalar_expression |
 aggregate_expression | identification_variable
+                            </para>
+                        </listitem>
+                        <listitem>
+                            <para>
+derived_path_expression ::=
+superquery_identification_variable.{single_valued_object_field.}*collection_valued_field |
+superquery_identification_variable.{single_valued_object_field.}*single_valued_object_field
+                            </para>
+                        </listitem>
+                        <listitem>
+                            <para>
+derived_collection_member_declaration ::=
+IN superquery_identification_variable.{single_valued_object_field.}*collection_valued_field 
                             </para>
                         </listitem>
                     </itemizedlist>
@@ -2897,6 +3194,12 @@ subquery be a scalar subquery (i.e., produce a single result). This is
 illustrated in the following example involving a numeric comparison operation.
 <programlisting>SELECT goodPublisher FROM Publisher goodPublisher
     WHERE goodPublisher.revenue &lt; (SELECT AVG(p.revenue) FROM Publisher p)
+</programlisting>
+<programlisting>
+SELECT goodCustomer
+FROM Customer goodCustomer
+WHERE goodCustomer.balanceOwed &lt; (
+SELECT AVG(c.balanceOwed)/2.0 FROM Customer c)
 </programlisting>
                 </para>
             </section>
@@ -2922,7 +3225,7 @@ boolean_primary |
 case_expression |
 entity_type_expression                
                 </para>
-            <section id="jpa_langref_arithmetic_expressions">
+            <section id="jpa_langref_math_expressions">
                 <title>
                     Arithmetic Expressions
                 </title>
@@ -2937,7 +3240,7 @@ The arithmetic operators are:
 Arithmetic operations use numeric promotion.
                 </para>
                 <para>
-Arithmetic functions are described in section <xref link="jpa_langref_arithmetic"/>.
+Arithmetic functions are described in section <xref linkend="jpa_langref_arithmetic"/>.
                 </para>
                 </para>
             </section>
@@ -2948,15 +3251,15 @@ Arithmetic functions are described in section <xref link="jpa_langref_arithmetic
                 <para> 
 JPQL includes the built-in functions described in subsections 
 <xref linkend="jpa_langref_string_fun"/>, 
-<xref linkend="jpa_langref_arithmetic"/>,
-<xref linkend="jpa_langref_datetime"/>,
-which may be used in the <literal>SELECT</literal>,
-<literal>WHERE</literal>
+<xref linkend="jpa_langref_arithmetic"/>, 
+<xref linkend="jpa_langref_datetime"/>, 
+which may be used in the <literal>SELECT</literal>, 
+<literal>WHERE</literal> 
 or <literal>HAVING</literal> clause of a query.
                  <para>
                  </para>               
 If the
-value of any argument to a functional expression is null or unknown, the value
+value of any argument to a functional expression is null or unknown, the value 
 of the functional expression is unknown.
                 </para>
                 <section id="jpa_langref_string_fun">
@@ -3033,7 +3336,8 @@ integer.
                     </title>
                     <para>
 <itemizedlist><listitem><para>functions_returning_numerics ::=
-ABS(simple_arithmetic_expression) | SQRT(simple_arithmetic_expression) |
+ABS(simple_arithmetic_expression) | 
+SQRT(simple_arithmetic_expression) |
 MOD(simple_arithmetic_expression, simple_arithmetic_expression) |
 SIZE(collection_valued_path_expression) |
 INDEX(identification_variable)
@@ -3087,6 +3391,142 @@ the database server.
                     </para>
                 </section>
             </section>
+            <section id="jpa_langref_case_expressions">
+                <title>
+                    Case Expressions
+                </title>
+                <para>
+The following forms of case expressions are supported: general case expressions, simple case expressions,
+coalesce expressions, and nullif expressions.[
+<itemizedlist>
+<listitem>
+case_expression::=
+general_case_expression |
+simple_case_expression |
+coalesce_expression |
+nullif_expression
+</listitem>
+<listitem>
+general_case_expression::=
+<literal>CASE</literal> when_clause {when_clause}* <literal>ELSE</literal> scalar_expression <literal>END</literal>
+</listitem>
+<listitem>
+when_clause::= <literal>WHEN</literal> conditional_expression <literal>THEN</literal> scalar_expression
+</listitem>
+simple_case_expression::=
+<literal>CASE</literal> case_operand simple_when_clause {simple_when_clause}*
+<literal>ELSE</literal> scalar_expression
+<literal>END</literal>
+<listitem>
+case_operand::= state_field_path_expression | type_discriminator
+</listitem>
+<listitem>
+simple_when_clause::= <literal>WHEN</literal> scalar_expression <literal>THEN</literal> scalar_expression
+</listitem>
+<listitem>
+coalesce_expression::= <literal>COALESCE</literal>(scalar_expression {, scalar_expression}+)
+</listitem>
+<listitem>
+nullif_expression::= <literal>NULLIF</literal>(scalar_expression, scalar_expression)
+</listitem>
+                </itemizedlist>
+                </para>
+                <para>
+Examples:
+                </para>
+<programlisting>
+UPDATE Employee e
+SET e.salary =
+    CASE WHEN e.rating = 1 THEN e.salary * 1.1
+         WHEN e.rating = 2 THEN e.salary * 1.05
+         ELSE e.salary * 1.01
+    END
+</programlisting>
+<programlisting>
+UPDATE Employee e
+SET e.salary =
+    CASE e.rating WHEN 1 THEN e.salary * 1.1
+                  WHEN 2 THEN e.salary * 1.05
+                  ELSE e.salary * 1.01
+    END
+</programlisting>
+<programlisting>
+SELECT e.name,
+    CASE TYPE(e) WHEN Exempt THEN 'Exempt'
+                 WHEN Contractor THEN 'Contractor'
+                 WHEN Intern THEN 'Intern'
+                 ELSE 'NonExempt'
+    END
+FROM Employee e
+WHERE e.dept.name = 'Engineering'
+</programlisting>
+<programlisting>
+SELECT e.name,
+       f.name,
+       CONCAT(CASE WHEN f.annualMiles &gt; 50000 THEN 'Platinum '
+                   WHEN f.annualMiles &gt; 25000 THEN 'Gold '
+                   ELSE ''
+                   END,
+              'Frequent Flyer')
+FROM Employee e JOIN e.frequentFlierPlan f  
+</programlisting>
+            </section>
+            <section id="jpa_langref_entity_type_expressions">
+                <title>
+                    Entity Type Expressions
+                </title>
+                <para>
+An entity type expression can be used to restrict query polymorphism. 
+The <literal>TYPE</literal> operator returns the
+exact type of the argument.
+                </para>
+                <para>
+The syntax of an entity type expression is as follows:
+                </para>
+                <itemizedlist>
+<listitem>
+entity_type_expression ::=
+type_discriminator |
+entity_type_literal |
+input_parameter
+</listitem>
+<listitem>
+type_discriminator ::=
+TYPE(identification_variable |
+single_valued_object_path_expression |
+input_parameter )
+</listitem>
+                </itemizedlist>
+                <para>
+An <literal>entity_type_literal</literal> is designated by the entity name.
+                </para>
+                <para>
+The Java class of the entity is used as an input parameter to specify the entity type.
+                </para>
+                <para>
+Examples:
+                </para>
+<programlisting>
+SELECT e
+FROM Employee e
+WHERE TYPE(e) IN (Exempt, Contractor)
+</programlisting>
+<programlisting>
+SELECT e
+FROM Employee e
+WHERE TYPE(e) IN (:empType1, :empType2)
+</programlisting>
+<programlisting>
+SELECT e
+FROM Employee e
+WHERE TYPE(e) IN :empTypes
+</programlisting>
+<programlisting>
+SELECT TYPE(e)
+FROM Employee e
+WHERE TYPE(e) &lt;&gt; Exempt
+</programlisting>
+            </section>
             </section>
         <section id="jpa_langref_group">
             <title>
@@ -3096,7 +3536,10 @@ the database server.
 The <literal>GROUP BY</literal> construct enables the aggregation of values
 according to a set of properties. The <literal>HAVING</literal> construct
 enables conditions to be specified that further restrict the query result. Such
-conditions are restrictions upon the groups. The syntax of the <literal>GROUP
+conditions are restrictions upon the groups.
+            </para>
+            <para> 
+The syntax of the <literal>GROUP
 BY</literal> and <literal>HAVING</literal> clauses is as follows:
             </para>
             <para>
@@ -3122,13 +3565,24 @@ BY</literal> clause, the effect is that of first applying the where clause, and
 then forming the groups and filtering them according to the <literal>HAVING
 </literal> clause. The <literal>HAVING</literal> clause causes those groups to
 be retained that satisfy the condition of the <literal>HAVING</literal> clause.
+             </para>
+             <para>
 The requirements for the <literal>SELECT</literal> clause when <literal>GROUP
 BY</literal> is used follow those of SQL: namely, any item that appears in the
 <literal>SELECT</literal> clause (other than as an argument to an aggregate
 function) must also appear in the <literal>GROUP BY</literal> clause. In forming
-the groups, null values are treated as the same for grouping purposes. Grouping
+the groups, null values are treated as the same for grouping purposes. 
+             </para>
+             <para>
+Grouping
 by an entity is permitted. In this case, the entity must contain no serialized
-state fields or lob-valued state fields. The <literal>HAVING</literal> clause
+state fields or lob-valued state fields that are eagerly fetched.
+             </para>
+             <para>
+Grouping by embeddables is not supported.
+             </para>
+             <para>
+The <literal>HAVING</literal> clause
 must specify search conditions over the grouping items or aggregate functions
 that apply to grouping items.
             </para>
@@ -3139,6 +3593,21 @@ select list can only consist of aggregate functions. When a query declares a
 <literal>HAVING</literal> clause, it must always also declare a <literal>GROUP
 BY</literal> clause.
             </para>
+            <para>
+Examples:
+            </para>
+            <programlisting>
+SELECT c.status, AVG(c.filledOrderCount), COUNT(c)
+FROM Customer c
+GROUP BY c.status
+HAVING c.status IN (1, 2)
+</programlisting>
+<programlisting>
+SELECT c.country, COUNT(c)
+FROM Customer c
+GROUP BY c.country
+HAVING COUNT(c) &gt; 30
+</programlisting>
         </section>
         <section id="jpa_langref_select_clause">
             <title>
@@ -3146,21 +3615,34 @@ BY</literal> clause.
             </title>
             <para>
 The <literal>SELECT</literal> clause denotes the query result. More than one
-value may be returned from the <literal>SELECT</literal> clause of a query. The
-<literal>SELECT</literal> clause may contain one or more of the following
+value may be returned from the <literal>SELECT</literal> clause of a query.
+            </para>
+            <para> 
+The <literal>SELECT</literal> clause can contain one or more of the following
 elements: a single range variable or identification variable that ranges over an
-entity abstract schema type, a single-valued path expression, an aggregate
-select expression, a constructor expression. The <literal>SELECT</literal>
+entity abstract schema type, a single-valued path expression, 
+a scalar expression, 
+an aggregate expression, a constructor expression. 
+             </para>
+             <para>
+The <literal>SELECT</literal>
 clause has the following syntax:
             </para>
             <para>
 <itemizedlist><listitem><para>select_clause ::= SELECT [DISTINCT]
-select_expression {, select_expression}*
+select_item {, select_item}*
                         </para>
                     </listitem>
                     <listitem>
                         <para>
-select_expression ::= single_valued_path_expression | aggregate_expression |
+select_item ::= select_expression [ [AS] result_variable]
+                        </para>
+                    </listitem>
+                    <listitem>
+                        <para>
+select_expression ::= single_valued_path_expression | 
+scalar_expression | 
+aggregate_expression |
 identification_variable | OBJECT(identification_variable) |
 constructor_expression
                         </para>
@@ -3173,14 +3655,17 @@ constructor_item}*)
                     </listitem>
                     <listitem>
                         <para>
-constructor_item ::= single_valued_path_expression | aggregate_expression
+constructor_item ::= single_valued_path_expression | 
+scalar_expression | 
+aggregate_expression |
+identification_variable
                         </para>
                     </listitem>
                     <listitem>
                         <para>
 aggregate_expression ::= { AVG | MAX | MIN | SUM } ([DISTINCT]
 state_field_path_expression) | COUNT ([DISTINCT] identification_variable |
-state_field_path_expression | single_valued_association_path_expression)
+state_field_path_expression | single_valued_object_path_expression)
                         </para>
                     </listitem>
                 </itemizedlist>
@@ -3191,15 +3676,45 @@ For example: <programlisting>SELECT pub.id, pub.revenue
 </programlisting>
             </para>
             <para>
+In the following example, videoInventory is a Map from the entity Movie to the number of copies
+in stock:
+            </para>
+<programlisting>
+SELECT v.location.street, KEY(i).title, VALUE(i)
+FROM VideoStore v JOIN v.videoInventory i
+WHERE v.location.zipcode = '94301' AND VALUE(i) &gt; 0
+</programlisting>
+            <para>
 Note that the <literal>SELECT</literal> clause must be specified to return only
 single-valued expressions. The query below is therefore not valid:
-<programlisting>SELECT mag.authors FROM Magazine AS mag</programlisting> The
-<literal>DISTINCT</literal> keyword is used to specify that duplicate values
-must be eliminated from the query result. If <literal>DISTINCT</literal> is not
-specified, duplicate values are not eliminated. Standalone identification
+<programlisting>SELECT mag.authors FROM Magazine AS mag</programlisting>
+            </para>
+            <para>
+The <literal>DISTINCT</literal> keyword is used to specify that duplicate values
+must be eliminated from the query result.
+            </para>
+            <para> 
+If <literal>DISTINCT</literal> is not
+specified, duplicate values are not eliminated. 
+            </para>
+            <para>
+The result of DISTINCT over embeddable objects or map entry results is undefined.
+            </para>
+            <para>
+Standalone identification
 variables in the <literal>SELECT</literal> clause may optionally be qualified by
 the <literal>OBJECT</literal> operator. The <literal>SELECT</literal> clause
 must not use the OBJECT operator to qualify path expressions.
+            </para>
+            <para>
+A result_variable may be used to name a select_item in the query result. 
+ For example,
+<programlisting>
+SELECT c, COUNT(l) AS itemCount
+FROM Customer c JOIN c.Orders o JOIN o.lineItems l
+WHERE c.address.state = ‘CA’
+ORDER BY itemCount
+ </programlisting>          
             </para>
             <section id="jpa_langref_resulttype">
                 <title>
@@ -3207,34 +3722,89 @@ must not use the OBJECT operator to qualify path expressions.
                 </title>
                 <para>
 The type of the query result specified by the <literal>SELECT</literal> clause
-of a query is an entity abstract schema type, a state-field type, the result of
+of a query is an entity abstract schema type, a state-field type, 
+the result of of a scalar expression, the result of 
 an aggregate function, the result of a construction operation, or some sequence
-of these. The result type of the <literal>SELECT</literal> clause is defined by
+of these. 
+                </para>
+                <para>
+The result type of the <literal>SELECT</literal> clause is defined by
 the result types of the select_expressions contained in it. When multiple
-select_expressions are used in the <literal>SELECT</literal> clause, the result
+select expressions are used in the <literal>SELECT</literal> clause, the result
 of the query is of type Object[], and the elements in this result correspond in
 order to the order of their specification in the <literal>SELECT</literal>
-clause and in type to the result types of each of the select_expressions. The
-type of the result of a select_expression is as follows: <itemizedlist>
-<listitem><para> A single_valued_path_expression that is a
-state_field_path_expression results in an object of the same type as the
-corresponding state field of the entity. If the state field of the entity is a
-primitive type, the corresponding object type is returned.
+clause and in type to the result types of each of the select expressions. 
+                </para>
+                <para>
+The type of the result of a <literal>select_expression</literal> is as follows:
+<itemizedlist>
+                        <listitem>
+                            <para>
+The result type of an <literal>identification_variable</literal>  
+is the type of the entity object or embeddable
+object to which the identification variable corresponds. The type of an 
+<literal>identification_variable</literal>
+that refers to an entity abstract schema type is the type of the entity to which that identification
+variable corresponds or a subtype as determined by the object/relational mapping.
+                            </para>
+                        </listitem>
+                        <listitem>
+                            <para> 
+The result type of a <literal>single_valued_path_expression</literal> that is a
+<literal>state_field_path_expression</literal> 
+results in an object of the same type as the
+corresponding state field of the entity or embeddable class. 
+If the state field of the entity is a
+primitive type, the result type is the corresponding object type.
                             </para>
                         </listitem>
                         <listitem>
                             <para>
-single_valued_path_expression that is a
-single_valued_association_path_expression results in an entity object of the
-type of the relationship field or the subtype of the relationship field of the
-entity object as determined by the object/relational mapping.
+The result type of a <literal>single_valued_path_expression</literal> that is a
+<literal>single_valued_object_path_expression</literal> 
+is the type of the entity object or embeddable
+object to which the path expression corresponds.
+A <literal>single_valued_object_path_expression</literal> 
+that results in an entity object will result in an entity of the type of 
+the relationship field or the
+subtype of the relationship field of the entity object as determined by 
+the object/relational mapping.
                             </para>
                         </listitem>
                         <listitem>
                             <para>
-The result type of an identification_variable is the type of the entity to which
-that identification variable corresponds or a subtype as determined by the
-object/relational mapping.
+The result type of a 
+<literal>single_valued_path_expression</literal> 
+that is an identification_variable to
+which the <literal>KEY</literal> or <literal>VALUE</literal> function 
+has been applied is determined by the type of the map key
+or value respectively, as defined by the above rules
+                            </para>
+                        </listitem>
+                        <listitem>
+                            <para>
+The result type of a 
+<literal>single_valued_path_expression</literal> that is an 
+<literal>identification_variable</literal> to
+which the <literal>ENTRY</literal> function has been applied is 
+<literal>java.util.Map.Entry</literal>, where the key
+and value types of the map entry are determined by the above rules as applied to the map key
+and map value respectively.
+                            </para>
+                        </listitem>
+                        <listitem>
+                            <para>
+The result type of a 
+<literal>scalar_expression</literal> is the type of the scalar value to which the expression
+evaluates. The result type of a numeric <literal>scalar_expression</literal> is defined in section
+<xref linkend="jpa_langref_scalar_expressions"/>
+                            </para>
+                        </listitem>
+                        <listitem>
+                            <para>
+The result type of an 
+<literal>entity_type_expression</literal> scalar expression is the Java class to which the
+resulting abstract schema type corresponds.
                             </para>
                         </listitem>
                         <listitem>
@@ -3245,7 +3815,8 @@ The result type of aggregate_expression is defined in section
                         </listitem>
                         <listitem>
                             <para>
-The result type of a constructor_expression is the type of the class for which
+The result type of a 
+<literal>constructor_expression</literal> is the type of the class for which
 the constructor is defined. The types of the arguments to the constructor are
 defined by the above rules.
                             </para>
@@ -3265,10 +3836,18 @@ The constructor name must be fully qualified.
                 </para>
                 <para>
 If an entity class name is specified in the <literal>SELECT NEW</literal>
-clause, the resulting entity instances are in the new state. <programlisting>SELECT NEW com.company.PublisherInfo(pub.id, pub.revenue, mag.price)
+clause, the resulting entity instances are in the new state.
+                </para>
+                <para>
+If a single_valued_path_expression or identification_variable that is an argument to the constructor
+references an entity, the resulting entity instance will be in the managed state.
+                </para>
+                <para>
+Example:
+                </para> 
+<programlisting>SELECT NEW com.company.PublisherInfo(pub.id, pub.revenue, mag.price)
     FROM Publisher pub JOIN pub.magazines mag WHERE mag.price &gt; 5.00
 </programlisting>
-                </para>
             </section>
             <section id="jpa_langref_null_select">
                 <title>
@@ -3278,11 +3857,56 @@ clause, the resulting entity instances are in the new state. <programlisting>SEL
 If the result of a query corresponds to a association-field or state-field whose
 value is null, that null value is returned in the result of the query method.
 The <literal>IS NOT NULL</literal> construct can be used to eliminate such null
-values from the result set of the query. Note, however, that state-field types
+values from the result set of the query.
+                </para>
+                <para> 
+Note, however, that state-field types
 defined in terms of Java numeric primitive types cannot produce <literal>NULL
 </literal> values in the query result. A query that returns such a state-field
 type as a result type must not return a null value.
                 </para>
+            </section>
+            <section id="jpa_langref_embeddables">
+                <title>
+                    JPQL Embeddables in the Query Result
+                </title>
+                <para> 
+If the result of a query corresponds to an identification variable or state field whose value is an
+embeddable, the embeddable instance returned by the query will not be in the managed state (i.e., it will
+not be part of the state of any managed entity). 
+                </para>          
+                <para> 
+In the following example, the <literal>Address</literal> instances returned by the query will reference Phone
+instances. While the <literal>Phone</literal> instances will be managed, 
+the <literal>Address</literal>> instances referenced by the
+<literal>addr</literal> result variable will not be. 
+Modifications to these embeddable instances are not allowed.
+                </para>  
+<programlisting>
+@Entity
+public class Employee {
+  @Id int id;
+  Address address;
+  ...
+}
+
+@Embeddable
+public class Address { 
+  String street;
+  ...
+  @OneToOne Phone phone; // fetch=EAGER
+}
+
+@Entity
+public class Phone {
+  @Id int id;
+  ...
+  @OneToOne(mappedBy="address.phone") Employee emp; // fetch=EAGER
+}
+
+SELECT e.address AS addr
+FROM Employee e
+</programlisting>        
             </section>
             <section id="jpa_langref_aggregates">
                 <title>
@@ -3290,19 +3914,30 @@ type as a result type must not return a null value.
                 </title>
                 <para>
 The result of a query may be the result
-of an aggregate function applied to a path expression. The following aggregate
+of an aggregate function applied to a path expression.
+                </para>
+                <para> 
+The following aggregate
 functions can be used in the <literal>SELECT</literal> clause of a query:
 <literal>AVG</literal>, <literal>COUNT</literal>, <literal>MAX</literal>,
-<literal>MIN</literal>, <literal>SUM</literal>. For all aggregate functions
+<literal>MIN</literal>, <literal>SUM</literal>. 
+                </para>
+                <para>
+For all aggregate functions
 except <literal>COUNT</literal>, the path expression that is the argument to
 the aggregate function must terminate in a state-field. The path expression
 argument to <literal>COUNT</literal> may terminate in either a state-field or a
 association-field, or the argument to <literal>COUNT</literal> may be an
-identification variable. Arguments to the functions <literal>SUM</literal> and
+identification variable. 
+                </para>
+                <para>
+Arguments to the functions <literal>SUM</literal> and
 <literal>AVG</literal> must be numeric. Arguments to the functions <literal>MAX
 </literal> and <literal>MIN</literal> must correspond to orderable state-field
-types (i.e., numeric types, string types, character types, or date types). The
-Java type that is contained in the result of a query using an aggregate function
+types (i.e., numeric types, string types, character types, or date types).
+                </para>
+                <para>
+The Java type that is contained in the result of a query using an aggregate function
 is as follows: <itemizedlist><listitem><para><literal>COUNT</literal> returns
 Long.
                             </para>
@@ -3323,25 +3958,36 @@ state-field to which they are applied.
 <literal>SUM</literal> returns Long when applied to state-fields of integral
 types (other than BigInteger); Double when applied to state-fields of floating
 point types; BigInteger when applied to state-fields of type BigInteger; and
-BigDecimal when applied to state-fields of type BigDecimal. If <literal>SUM
-</literal>, <literal>AVG</literal>, <literal>MAX</literal>, or <literal>MIN
-</literal> is used, and there are no values to which the aggregate function can
-be applied, the result of the aggregate function is <literal>NULL</literal>. If
-<literal>COUNT</literal> is used, and there are no values to which <literal>
-COUNT</literal> can be applied, the result of the aggregate function is 0.
-                            </para>
+BigDecimal when applied to state-fields of type BigDecimal. 
+                </para>
                         </listitem>
                     </itemizedlist>
                 </para>
+                <para>
+If <literal>SUM
+</literal>, <literal>AVG</literal>, <literal>MAX</literal>, or <literal>MIN
+</literal> is used, and there are no values to which the aggregate function can
+be applied, the result of the aggregate function is <literal>NULL</literal>.
+                </para>
+                <para>
+If <literal>COUNT</literal> is used, and there are no values to which <literal>
+COUNT</literal> can be applied, the result of the aggregate function is 0.
+                            </para>
                 <para>
 The argument to an aggregate function may be preceded by the keyword <literal>
 DISTINCT</literal> to specify that duplicate values are to be eliminated before
 the aggregate function is applied.
 It is legal to specify <literal>DISTINCT</literal> with <literal>MAX</literal>
 or <literal>MIN</literal>, but it does not affect the result.
+                </para>
+                <para>
 Null values are eliminated before the
 aggregate function is applied, regardless of whether the keyword <literal>
 DISTINCT</literal> is specified.
+                </para>
+                <para>
+The use of <literal>DISTINCT</literal> with <literal>COUNT</literal> is not supported for arguments of 
+embeddable types or map entry types.
                 </para>
                 <section id="jpa_langref_agg_examples">
                     <title>
@@ -3355,6 +4001,66 @@ magazines published by 'Larry': <programlisting>SELECT SUM(mag.price) FROM Publi
 </programlisting> The following query returns the total number of magazines:
 <programlisting>SELECT COUNT(mag) FROM Magazine mag</programlisting>
                     </para>
+                </section>
+                <section id ="jpa_langref_numeric_expressions_in_select">
+                    <title>
+                        JPQL Numeric Expressions in the SELECT Clause
+                    </title>
+                    <para>
+The type of a numeric expression in the query result is determined as follows:
+                    </para>
+                    <para>
+An operand that corresponds to a persistent state-field is of the same type as that persistent state-field.
+                    </para>
+                    <para>
+An operand that corresponds to one of arithmetic functions described in section 
+<xref linkend="jpa_langref_arithmetic"/> is of the type defined by section 
+<xref linkend="jpa_langref_arithmetic"/>.
+                    </para>
+                    <para>
+An operand that corresponds to one of an aggregate functions described in section 
+<xref linkend="jpa_langref_aggregates"/> is of the type defined by section 
+<xref linkend="jpa_langref_aggregates"/>.
+                    </para>
+                    <para>
+The result of a case expression, coalesce expression, nullif expression, or arithmetic expression (+, -, *,
+/) is determined by applying the following rule to its operands.
+                    </para>
+                    <itemizedlist>
+                    <listitem>
+                        <para>
+If there is an operand of type Double or double, the result of the operation is of type Double;
+                        </para>
+                    </listitem>
+                    <listitem>
+                        <para>
+otherwise, if there is an operand of type Float or float, the result of the operation is of type
+Float;
+                        </para>
+                    </listitem>
+                    <listitem>
+                        <para>
+otherwise, if there is an operand of type BigDecimal, the result of the operation is of type Big-
+Decimal;
+                        </para>
+                    </listitem>
+                    <listitem>
+                        <para>
+otherwise, if there is an operand of type BigInteger, the result of the operation is of type BigInteger;
+                        </para>
+                    </listitem>
+                    <listitem>
+                        <para>
+otherwise, if there is an operand of type Long or long, the result of the operation is of type
+Long;
+                        </para>
+                    </listitem>
+                    <listitem>
+                        <para>
+otherwise, if there is an operand of integral type, the result of the operation is of type Integer.
+                        </para>
+                    </listitem>
+                    </itemizedlist>
                 </section>
             </section>
         </section>
@@ -3374,7 +4080,7 @@ orderby_item}*
                     </listitem>
                     <listitem>
                         <para>
-orderby_item ::= state_field_path_expression [ASC | DESC]
+orderby_item ::= { state_field_path_expression | result_variable } [ASC | DESC]
                         </para>
                     </listitem>
                 </itemizedlist>
