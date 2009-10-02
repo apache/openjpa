@@ -957,10 +957,21 @@ back as a blank string.
                 <listitem>
                     <para>
 Oracle corp's JDBC driver for Oracle has only limited support for batch updates.
-The result for OpenJPA is that in some cases, the exact object that failed an
-optimistic lock check cannot be determined, and OpenJPA will throw an
-<classname>OptimisticVerificationException</classname> with more failed objects
-than actually failed.
+The result for OpenJPA is that batching of some statements may fail and in some cases, 
+the exact object that failed an optimistic lock check cannot be determined. OpenJPA will
+throw an <classname>OptimisticException</classname> with more failed objects than actually
+failed.  This situation may be resolved by disabling statement batching by setting the
+batchLimit value to zero or by using a more recent Oracle JDBC Driver (11.2.0.1) with 
+batch support improvements.  Attempting to resolve the issue with a more current driver
+is recommended since disabling statement batching can result in a decrease in performance.
+            <example id="dbsupport_oracle_disable_batch_updates">
+                <title>
+                    Property to disable statement batching for Oracle
+                </title>
+<programlisting>
+openjpa.jdbc.DBDictionary: oracle(batchLimit=0)
+</programlisting> 
+            </example>
                     </para>
                 </listitem>
                 <listitem>
