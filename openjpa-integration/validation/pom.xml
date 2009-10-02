@@ -91,7 +91,7 @@
                 <dependency>
                     <groupId>com.agimatec</groupId>
                     <artifactId>agimatec-validation</artifactId>
-                    <version>0.9.3-SNAPSHOT</version>
+                    <version>0.9.3</version>
                     <scope>test</scope>
                 </dependency>
                 <dependency>
