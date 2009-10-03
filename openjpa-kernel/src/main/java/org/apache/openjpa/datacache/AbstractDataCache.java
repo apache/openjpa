@@ -489,42 +489,4 @@ public abstract class AbstractDataCache
             StringUtils.isEmpty(types) ? null : new HashSet<String>(Arrays
                 .asList(Strings.split(types, ";", 0)));
     }
-
-    /**
-     * Determine whether a provided class can be applied to this cache.
-     * 
-     * <P>
-     * The algorithm used to determine which types apply is as follows:
-     * <UL>
-     * <LI>If neither included nor excluded types are found all types will be
-     * used.</LI>
-     * <LI>If included types are specified and excluded types are not specified
-     * <b>only</b> the included types will be used.</LI>
-     * <LI>If included types are not specified and excluded types are specified
-     * all types will be used <b>except</b> those which are explicitly excluded.
-     * </LI>
-     * <LI>If both included types and excluded types are specified then
-     * <b>only</b> the included types will be used. If an included type is also
-     * an excluded type the <b>excluded</b> setting will take precedence (ie 
-     * the type will not be used).</LI>
-     * </UL>
-     * 
-     * @param className
-     *            A class which may be used by this plugin.
-     * @return True if the type should be used, otherwise false.
-     */
-    public boolean isCacheableType(String classname) {
-        boolean rval = true;
-        if (_includedTypes != null && ! _includedTypes.isEmpty()) { 
-            if(!_includedTypes.contains(classname)) {
-                rval = false;
-            }
-        }
-        if (_excludedTypes != null && ! _excludedTypes.isEmpty()) { 
-            if(_excludedTypes.contains(classname)) {
-                rval = false;
-            }
-        }
-        return rval;
-    }
 }

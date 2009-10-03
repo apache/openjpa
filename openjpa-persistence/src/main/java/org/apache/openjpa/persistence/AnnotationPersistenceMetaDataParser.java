@@ -757,6 +757,8 @@ public class AnnotationPersistenceMetaDataParser
                 org.apache.openjpa.datacache.DataCache.NAME_DEFAULT);
         else
             meta.setDataCacheName(null);
+        
+        meta.setIsCacheable(cache.enabled(), true);
     }
 
     private void parseManagedInterface(ClassMetaData meta,
