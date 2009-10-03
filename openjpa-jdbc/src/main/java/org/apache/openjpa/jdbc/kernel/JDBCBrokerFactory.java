@@ -86,6 +86,10 @@ public class JDBCBrokerFactory
         super(conf);
     }
 
+    public JDBCBrokerFactory(JDBCConfiguration conf, boolean earlyInit) {
+        super(conf, earlyInit);
+    }
+    
     public Map<String,Object> getProperties() {
         // add platform property
         Map<String,Object> props = super.getProperties();
