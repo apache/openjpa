@@ -827,6 +827,7 @@ public class AnnotationPersistenceMetaDataParser
             meta.setDataCacheName(null);
             meta.setCacheEnabled(false);
         }
+        meta.setIsCacheable(cache.enabled(), true);
     }
 
     private void parseManagedInterface(ClassMetaData meta,
