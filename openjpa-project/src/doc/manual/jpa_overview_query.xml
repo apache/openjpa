@@ -665,7 +665,12 @@ Digest</classname> are <classname>Magazine</classname> subclasses.
 <programlisting>SELECT x FROM Magazine x WHERE x.price &lt; 5</programlisting>
             <para>
 Non-polymorphic queries or queries whose polymorphism is restricted can be specified using entity
-type expressions in the WHERE clause to restrict the domain of the query.
+type expressions (see <xref linkend="jpa_langref_entity_type_expressions"/> ) 
+ in the <literal>WHERE</literal> clause to restrict the domain of the query. 
+For example, the following query returns instances of <classname>Digest</classname>:
+<programlisting>
+SELECT x FROM Magazine WHERE TYPE(x) = Digest
+</programlisting>
             </para>
         </section>
         <section id="jpa_overview_query_params">
@@ -723,7 +728,7 @@ This code substitutes <literal>JDJ</literal> for the <literal> :titleParam
             </para>
             <para>
 All input parameters must be single-valued, except in IN expressions 
-(see section <xref linkend="jpa_langref_in"/>), which support the use of collection-valued
+(see <xref linkend="jpa_langref_in_expressions"/>), which support the use of collection-valued
  input parameters. 
             </para>
         </section>
@@ -1147,7 +1152,7 @@ QL_statement ::= select_statement | update_statement | delete_statement
                 </listitem>
             </itemizedlist>
             <para> 
-The complete BNF for JPQL is defined in <xref linkend="jpa_langref_bnf"/>.
+The complete BNF for JPQL is defined in <xref linkend="jpa_langref_bnf"/>. 
 Any JPQL statement may be constructed dynamically or may be statically defined 
 in a metadata annotation or XML descriptor element. All statement types may 
 have parameters, as discussed in <xref linkend="jpa_langref_input_params"/>.
@@ -1433,6 +1438,17 @@ fetch_join ::= join_spec FETCH join_association_path_expression
 join_association_path_expression ::= join_collection_valued_path_expression |
 join_single_valued_association_path_expression
                     </para>
+                </listitem>
+                <listitem>
+                    <para>
+join_collection_valued_path_expression::=
+identification_variable.{single_valued_embeddable_object_field.}*collection_valued_field                    
+                    </para>
+                </listitem>
+                <listitem>
+                    <para>
+join_single_valued_path_expression::=
+identification_variable.{single_valued_embeddable_object_field.}*single_valued_object_field                    </para>
                 </listitem>
                 <listitem>
                     <para>
@@ -2195,7 +2211,7 @@ in the <literal>FROM</literal> clause of a query
 except in an <literal>empty_collection_comparison_expression</literal>, 
 in a <literal>collection_member_expression</literal>, or
 as an argument to the <literal>SIZE</literal> operator. 
-See Sections <xref linkend="jpa_langref_empty_comp"/>,  <xref linkend="jpa_langref_collection_member"/>, 
+See <xref linkend="jpa_langref_empty_comp"/>,  <xref linkend="jpa_langref_collection_member"/>, 
 and <xref linkend="jpa_langref_arithmetic"/>.       
                 </para>
             </section>
@@ -2212,7 +2228,7 @@ the <literal>FROM</literal> clause and a join condition in the <literal>WHERE
 The main use case for this generalized style of join is when a join condition does not involve
 a foreign key relationship that is mapped to an entity relationship. For Example,
                 </para>
-<example>SELECT c FROM Customer c, Employee e WHERE c.hatsize = e.shoesize</example>
+<programlisting>SELECT c FROM Customer c, Employee e WHERE c.hatsize = e.shoesize</programlisting>
                 <para>
 In general, use of this style of inner join (also referred to as theta-join) is less typical than explicitly
 defined joins over relationships.
@@ -2256,16 +2272,19 @@ join_spec ::= [ LEFT [OUTER] | INNER ] JOIN
                     </listitem>
                 </itemizedlist>
                 <para>
-The following inner and outer join operation types are supported.
+The inner and outer join operation types described in 
+<xref linkend="jpa_langref_inner_joins"/> and <xref linkend="jpa_langref_outer_joins"/> are supported.
                 </para>
                 <section id="jpa_langref_inner_joins">
                     <title>
                         JPQL Inner Joins (Relationship Joins)
                     </title>
                     <para>
-The syntax for the inner join operation is <programlisting>
+The syntax for the inner join operation is <itemizedlist>
+<listitem>
 [ INNER ] JOIN join_association_path_expression [AS] identification_variable
-</programlisting> For example, the query below joins over the relationship
+</listitem>
+</itemizedlist> For example, the query below joins over the relationship
 between publishers and magazines. This type of join typically equates to a join
 over a foreign key relationship in the database. 
                     </para>
@@ -2304,8 +2323,10 @@ WHERE c.address.zipcode = '95054'
 <literal>LEFT JOIN</literal> and <literal>LEFT OUTER JOIN</literal> are
 synonymous. They enable the retrieval of a set of entities where matching values
 in the join condition may be absent. The syntax for a left outer join is:
-<programlisting>LEFT [OUTER] JOIN join_association_path_expression [AS] identification_variable
-</programlisting>
+<itemizedlist>
+<listitem>LEFT [OUTER] JOIN join_association_path_expression [AS] identification_variable
+</listitem>
+</itemizedlist>
                     </para>
                     <para>
 For example: <programlisting>SELECT pub FROM Publisher pub LEFT JOIN pub.magazines mag WHERE pub.revenue &gt; 1000000
@@ -2423,7 +2444,7 @@ query can depend on whether there are any values of the declared type.
                 <para>
 For example, the <literal>FROM</literal> clause below defines a query over 
 all orders that have line items and existing
-products. If there are no <litera.>Product</litera.> instances in the database, 
+products. If there are no <literal>Product</literal> instances in the database, 
 the domain of the query is empty and no
 order is selected.
                 </para>
@@ -2445,8 +2466,8 @@ the query criteria.
                 </para>
                 <para>
 Non-polymorphic queries or queries whose polymorphism is restricted can be specified using entity
-type expressions in the WHERE clause to restrict the domain of the query.
-See section <xref linked="jpa_langref_entity_type_expressions"/>.
+type expressions in the <literal>WHERE</literal> clause to restrict the domain of the query.
+See <xref linkend="jpa_langref_entity_type_expressions"/>.
                 </para>
             </section>
         </section>
@@ -2607,8 +2628,8 @@ arithmetic operations involving the input parameter will return an unknown
 value. See <xref linkend="jpa_langref_null_values"/>.
                 </para>
                 <para>
-All input parameters must be single-valued, except in IN expressions (see section
-<xref linkend="jpa_lagref_in_expression"/>), which support the use of collection-valued
+All input parameters must be single-valued, except in IN expressions (see 
+<xref linkend="jpa_langref_in_expressions"/> ), which support the use of collection-valued
 input parameters.
                 </para>
                 <section id="jpa_langref_pos_params">
@@ -2671,8 +2692,8 @@ comparison operations, logical operations, path expressions that evaluate to
 boolean values, boolean literals, and boolean input parameters. 
                 </para>
                 <para>
-The scalar expressions described in section <xref linkend="jpa_langref_scalar_expressions"/> 
- can be used in conditional expressions. 
+The scalar expressions described in <xref linkend="jpa_langref_scalar_expressions"/> 
+  can be used in conditional expressions. 
                 </para>
                 <para>
 Standard bracketing ()
@@ -2840,7 +2861,7 @@ FROM CreditCard c JOIN c.transactionHistory t
 WHERE c.holder.name = ‘John Doe’ AND INDEX(t) BETWEEN 0 AND 9
 </programlisting>
             </section>
-            <section id="jpa_langref_in">
+            <section id="jpa_langref_in_expressions">
                 <title>
                     JPQL In Expressions
                 </title>
@@ -2861,7 +2882,8 @@ in_item ::= literal | single_valued_input_parameter
                     </itemizedlist>
                 </para>
                 <para>
-The <literal>state_field_path_expression</literal> must have a string, numeric, or enum value.
+The <literal>state_field_path_expression</literal> must have a string, numeric, 
+date, time, timestamp, or enum value.
                 </para>
                 <para>
  The literal and/or input_parameter values must be <literal>like</literal> 
@@ -3133,56 +3155,60 @@ magazine: <programlisting>SELECT auth FROM Author auth
                 </title>
                 <para>
 Subqueries may be used in the <literal>WHERE</literal> or <literal>HAVING
-</literal> clause. The syntax for subqueries is as follows: <itemizedlist>
-<listitem><para>subquery ::= simple_select_clause subquery_from_clause
-[where_clause] [groupby_clause] [having_clause]
-                            </para>
-                        </listitem>
-                    </itemizedlist>
+</literal> clause. The syntax for subqueries is as follows:
                 </para>
-                <para>
-Subqueries are restricted to the <literal>WHERE</literal> and <literal>HAVING
-</literal> clauses in this release. Support for subqueries in the <literal>FROM
-</literal> clause will be considered in a later release of the specification.
-<itemizedlist><listitem><para>simple_select_clause ::= SELECT [DISTINCT]
+<itemizedlist>
+                    <listitem>
+                        <para>
+subquery ::= simple_select_clause subquery_from_clause
+[where_clause] [groupby_clause] [having_clause]
+                        </para>
+                    </listitem>
+                    <listitem>
+                        <para>
+simple_select_clause ::= SELECT [DISTINCT]
 simple_select_expression
-                            </para>
-                        </listitem>
-                        <listitem>
-                            <para>
+                        </para>
+                    </listitem>
+                    <listitem>
+                        <para>
 subquery_from_clause ::= FROM subselect_identification_variable_declaration {,
 subselect_identification_variable_declaration |
 collection_member_declaration }*
-                            </para>
-                        </listitem>
-                        <listitem>
-                            <para>
+                        </para>
+                    </listitem>
+                    <listitem>
+                        <para>
 subselect_identification_variable_declaration ::=
 identification_variable_declaration | derived_path_expression [AS]
 identification_variable {join}* | derived_collection_member_declaration
-                            </para>
-                        </listitem>
-                        <listitem>
-                            <para>
+                        </para>
+                    </listitem>
+                    <listitem>
+                        <para>
 simple_select_expression ::= single_valued_path_expression |
 scalar_expression |
 aggregate_expression | identification_variable
-                            </para>
-                        </listitem>
-                        <listitem>
-                            <para>
+                        </para>
+                    </listitem>
+                    <listitem>
+                        <para>
 derived_path_expression ::=
 superquery_identification_variable.{single_valued_object_field.}*collection_valued_field |
 superquery_identification_variable.{single_valued_object_field.}*single_valued_object_field
-                            </para>
-                        </listitem>
-                        <listitem>
-                            <para>
+                        </para>
+                    </listitem>
+                    <listitem>
+                        <para>
 derived_collection_member_declaration ::=
 IN superquery_identification_variable.{single_valued_object_field.}*collection_valued_field 
-                            </para>
-                        </listitem>
-                    </itemizedlist>
+                        </para>
+                    </listitem>
+                </itemizedlist>
+                <para>
+Subqueries are restricted to the <literal>WHERE</literal> and <literal>HAVING
+</literal> clauses in this release. Support for subqueries in the <literal>FROM
+</literal> clause will be considered in a later release of the specification. 
                 </para>
                 <para>
 Examples: <programlisting>SELECT DISTINCT auth FROM Author auth
@@ -3240,7 +3266,7 @@ The arithmetic operators are:
 Arithmetic operations use numeric promotion.
                 </para>
                 <para>
-Arithmetic functions are described in section <xref linkend="jpa_langref_arithmetic"/>.
+Arithmetic functions are described in  <xref linkend="jpa_langref_arithmetic"/>.
                 </para>
                 </para>
             </section>
@@ -3397,7 +3423,7 @@ the database server.
                 </title>
                 <para>
 The following forms of case expressions are supported: general case expressions, simple case expressions,
-coalesce expressions, and nullif expressions.[
+coalesce expressions, and nullif expressions.
 <itemizedlist>
 <listitem>
 case_expression::=
@@ -3707,7 +3733,7 @@ the <literal>OBJECT</literal> operator. The <literal>SELECT</literal> clause
 must not use the OBJECT operator to qualify path expressions.
             </para>
             <para>
-A result_variable may be used to name a select_item in the query result. 
+A <literal>result_variable</literal> may be used to name a <literal>select_item</literal> in the query result. 
  For example,
 <programlisting>
 SELECT c, COUNT(l) AS itemCount
@@ -3796,7 +3822,7 @@ and map value respectively.
                             <para>
 The result type of a 
 <literal>scalar_expression</literal> is the type of the scalar value to which the expression
-evaluates. The result type of a numeric <literal>scalar_expression</literal> is defined in section
+evaluates. The result type of a numeric <literal>scalar_expression</literal> is defined in 
 <xref linkend="jpa_langref_scalar_expressions"/>
                             </para>
                         </listitem>
@@ -3809,7 +3835,7 @@ resulting abstract schema type corresponds.
                         </listitem>
                         <listitem>
                             <para>
-The result type of aggregate_expression is defined in section
+The result type of aggregate_expression is defined in 
 <xref linkend="jpa_langref_aggregates"/>.
                             </para>
                         </listitem>
@@ -4013,13 +4039,13 @@ The type of a numeric expression in the query result is determined as follows:
 An operand that corresponds to a persistent state-field is of the same type as that persistent state-field.
                     </para>
                     <para>
-An operand that corresponds to one of arithmetic functions described in section 
-<xref linkend="jpa_langref_arithmetic"/> is of the type defined by section 
+An operand that corresponds to one of arithmetic functions described in  
+<xref linkend="jpa_langref_arithmetic"/> is of the type defined by  
 <xref linkend="jpa_langref_arithmetic"/>.
                     </para>
                     <para>
-An operand that corresponds to one of an aggregate functions described in section 
-<xref linkend="jpa_langref_aggregates"/> is of the type defined by section 
+An operand that corresponds to one of an aggregate functions described in  
+<xref linkend="jpa_langref_aggregates"/> is of the type defined by  
 <xref linkend="jpa_langref_aggregates"/>.
                     </para>
                     <para>
@@ -4086,20 +4112,106 @@ orderby_item ::= { state_field_path_expression | result_variable } [ASC | DESC]
                 </itemizedlist>
             </para>
             <para>
-When the <literal>ORDER BY</literal> clause is used in a query, each element of
-the <literal>SELECT</literal> clause of the query must be one of the following:
-an identification variable x, optionally denoted as <literal>OBJECT(x)</literal>
-, a single_valued_association_path_expression, or a state_field_path_expression.
-For example: <programlisting>
+An orderby_item must be one of the following:
+            </para>
+<itemizedlist>
+    <listitem>
+    <para>
+    A <literal>state_field_path_expression</literal> that evaluates to an orderable state field of an entity or
+embeddable class abstract schema type designated in the SELECT clause by one of the following:
+    </para>
+    <itemizedlist>
+        <listitem>
+        <para>a <literal>general_identification_variable</literal></para>
+        </listitem>
+        <listitem>
+        <para>a <literal>single_valued_object_path_expression</literal></para>
+        </listitem>
+    </itemizedlist>
+    </listitem>
+    <listitem>
+        <para>
+A <literal>state_field_path_expression</literal> that evaluates to the same state field of the same entity or
+embeddable abstract schema type as a <literal>state_field_path_expression</literal> 
+in the <literal>SELECT</literal> clause.
+        </para>
+    </listitem>
+    <listitem>
+        <para>
+A <literal>result_variable</literal> that refers to an orderable item in the 
+<literal>SELECT</literal> clause for which the same
+<literal>result_variable</literal> has been specified. 
+This may be the result of an <literal>aggregate_expression</literal>, a
+<literal>scalar_expression</literal>, 
+or a <literal>state_field_path_expression</literal> in the <literal>SELECT</literal> clause.
+        </para>
+    </listitem>
+</itemizedlist>
+            <para>
+For example, the five queries below are legal. 
+            </para>
+<programlisting>
 SELECT pub FROM Publisher pub ORDER BY pub.revenue, pub.name
-</programlisting> If more than one orderby_item is specified, the left-to-right
-sequence of the orderby_item elements determines the precedence, whereby the
-leftmost orderby_item has highest precedence. The keyword <literal>ASC</literal>
+</programlisting> 
+<programlisting>
+SELECT o
+FROM Customer c JOIN c.orders o JOIN c.address a
+WHERE a.state = ‘CA’
+ORDER BY o.quantity DESC, o.totalcost
+</programlisting> 
+<programlisting>
+SELECT o.quantity, a.zipcode
+FROM Customer c JOIN c.orders o JOIN c.address a
+WHERE a.state = ‘CA’
+ORDER BY o.quantity, a.zipcode
+</programlisting> 
+<programlisting>
+SELECT o.quantity, o.cost*1.08 AS taxedCost, a.zipcode
+FROM Customer c JOIN c.orders o JOIN c.address a
+WHERE a.state = ‘CA’ AND a.county = ‘Santa Clara’
+ORDER BY o.quantity, taxedCost, a.zipcode
+</programlisting> 
+<programlisting>
+SELECT AVG(o.quantity) as q, a.zipcode
+FROM Customer c JOIN c.orders o JOIN c.address a
+WHERE a.state = ‘CA’
+GROUP BY a.zipcode
+ORDER BY q DESC
+</programlisting> 
+<para>
+The following two queries are not legal because the <literal>orderby_item</literal> 
+is not reflected in the <literal>SELECT</literal>
+clause of the query.
+</para>
+<programlisting>
+SELECT p.product_name
+FROM Order o JOIN o.lineItems l JOIN l.product p JOIN o.customer c
+WHERE c.lastname = ‘Smith’ AND c.firstname = ‘John’
+ORDER BY p.price
+</programlisting> 
+<programlisting>
+SELECT p.product_name
+FROM Order o, IN(o.lineItems) l JOIN o.customer c
+WHERE c.lastname = ‘Smith’ AND c.firstname = ‘John’
+ORDER BY o.quantity
+</programlisting> 
+          <para>
+If more than one <literal>orderby_item</literal> is specified, the left-to-right
+sequence of the <literal>orderby_item</literal> elements determines the precedence, whereby the
+leftmost <literal>orderby_item</literal> has highest precedence. 
+          </para>
+          <para>
+The keyword <literal>ASC</literal>
 specifies that ascending ordering be used; the keyword <literal>DESC</literal>
 specifies that descending ordering be used. Ascending ordering is the default.
+           </para>
+           <para>
 SQL rules for the ordering of null values apply: that is, all null values must
 appear before all non-null values in the ordering or all null values must appear
-after all non-null values in the ordering, but it is not specified which. The
+after all non-null values in the ordering, but it is not specified which.
+           </para>
+           <para> 
+The
 ordering of the query result is preserved in the result of the query method if
 the <literal>ORDER BY</literal> clause is used.
             </para>
@@ -4120,20 +4232,20 @@ schema type may be specified in the <literal>FROM</literal> or <literal>UPDATE
                     </listitem>
                     <listitem>
                         <para>
-update_clause ::= UPDATE abstract_schema_name [[AS] identification_variable] SET
+update_clause ::= UPDATE entity_name [[AS] identification_variable] SET
 update_item {, update_item}*
                         </para>
                     </listitem>
                     <listitem>
                         <para>
 update_item ::= [identification_variable.]{state_field |
-single_valued_association_field} = new_value
+single_valued_object_field} = new_value
                         </para>
                     </listitem>
                     <listitem>
                         <para>
-new_value ::= simple_arithmetic_expression | string_primary | datetime_primary |
-boolean_primary | enum_primary simple_entity_expression | NULL
+new_value ::= scalar_expression | 
+simple_entity_expression | NULL
                         </para>
                     </listitem>
                     <listitem>
@@ -4143,7 +4255,7 @@ delete_statement ::= delete_clause [where_clause]
                     </listitem>
                     <listitem>
                         <para>
-delete_clause ::= DELETE FROM abstract_schema_name [[AS]
+delete_clause ::= DELETE FROM entity_name [[AS]
 identification_variable]
                         </para>
                     </listitem>
@@ -4151,18 +4263,32 @@ identification_variable]
             </para>
             <para>
 The syntax of the <literal>WHERE</literal> clause is described in
-<xref linkend="jpa_langref_where"/>. A delete operation only applies to
+<xref linkend="jpa_langref_where"/>. 
+            </para>
+            <para>
+A delete operation only applies to
 entities of the specified class and its subclasses. It does not cascade to
-related entities. The new_value specified for an update operation must be
-compatible in type with the state-field to which it is assigned. Bulk update
+related entities. 
+            </para>
+            <para>
+The <literal>new_value</literal> specified for an update operation must be
+compatible in type with the state-field to which it is assigned. 
+            </para>
+            <para>
+Bulk update
 maps directly to a database update operation, bypassing optimistic locking
 checks. Portable applications must manually update the value of the version
 column, if desired, and/or manually validate the value of the version column.
+            </para>
+            <para>
 The persistence context is not synchronized with the result of the bulk update
-or delete. Caution should be used when executing bulk update or delete
+or delete. 
+            </para>
+            <para>
+Caution should be used when executing bulk update or delete
 operations because they may result in inconsistencies between the database and
 the entities in the active persistence context. In general, bulk update and
-delete operations should only be performed within a separate transaction or at
+delete operations should only be performed within a transaction in a new persistence context or at
 the beginning of a transaction (before entities have been accessed whose state
 might be affected by such operations).
             </para>
@@ -4225,18 +4351,29 @@ semantics of query comparisons involving the empty string and <literal>NULL
                 JPQL Equality and Comparison Semantics
             </title>
             <para>
-Only the values of like types are permitted to be compared. A type is like
+Only the values of <literal>like</literal> types are permitted to be compared. A type is <literal>like</literal> 
 another type if they correspond to the same Java language type, or if one is a
 primitive Java language type and the other is the wrappered Java class type
-equivalent (e.g., int and Integer are like types in this sense). There is one
+equivalent (e.g., <literal>int</literal> and <literal>Integer</literal> are like types in this sense). There is one
 exception to this rule: it is valid to compare numeric values for which the
 rules of numeric promotion apply. Conditional expressions attempting to compare
-non-like type values are disallowed except for this numeric case. Note that the
+non-like type values are disallowed except for this numeric case. 
+            </para>
+            <para>
+Note that the
 arithmetic operators and comparison operators are permitted to be applied to
 state-fields and input parameters of the wrappered Java class equivalents to the
-primitive numeric Java types. Two entities of the same abstract schema type are
-equal if and only if they have the same primary key value. Only
-equality/inequality comparisons over enums are required to be supported.
+primitive numeric Java types. 
+            </para>
+            <para>
+Two entities of the same abstract schema type are
+equal if and only if they have the same primary key value.
+            </para>
+            <para>
+Equality/inequality comparisons over enums are supported.
+            </para>
+            <para>
+Comparisons over instances of embeddable class or map entry types are not supported.
             </para>
         </section>
         <section id="jpa_langref_bnf">
@@ -4245,7 +4382,7 @@ equality/inequality comparisons over enums are required to be supported.
             </title>
             <para>
 The following is the BNF for the Java Persistence query language, from section
-4.14 of the JSR 220 specification.
+4.14 of the JSR 317 specification.
             </para>
             <itemizedlist>
                 <listitem>
@@ -4283,7 +4420,7 @@ fetch_join }*
                 </listitem>
                 <listitem>
                     <para>
-range_variable_declaration ::= abstract_schema_name [ <literal>AS</literal> ]
+range_variable_declaration ::= entity_name [ <literal>AS</literal> ]
 identification_variable
                     </para>
                 </listitem>
@@ -4301,74 +4438,81 @@ join_association_path_expression
                 </listitem>
                 <listitem>
                     <para>
-association_path_expression ::= collection_valued_path_expression |
-single_valued_association_path_expression
-                    </para>
-                </listitem>
-                <listitem>
-                    <para>
 join_spec ::= [ <literal>LEFT</literal> [ <literal>OUTER</literal> ]| <literal>
 INNER</literal> ] <literal>JOIN</literal>
                     </para>
                 </listitem>
-                <listitem>
+                 <listitem>
                     <para>
 join_association_path_expression ::= join_collection_valued_path_expression |
-join_single_valued_association_path_expression
+join_single_valued_path_expression
                     </para>
                 </listitem>
                 <listitem>
                     <para>
 join_collection_valued_path_expression ::=
-identification_variable.collection_valued_association_field
+identification_variable.{single_valued_embeddable_object_field.}*collection_valued_field
                     </para>
                 </listitem>
                 <listitem>
                     <para>
-join_single_valued_association_path_expression ::=
-identification_variable.single_valued_association_field
+join_single_valued_path_expression ::=
+identification_variable.{single_valued_embeddable_object_field.}*single_valued_object_field
                     </para>
                 </listitem>
                 <listitem>
                     <para>
 collection_member_declaration ::= <literal>IN</literal>
-(collection_valued_path_expression) [ <literal>AS</literal> ]
+(join_collection_valued_path_expression) [ <literal>AS</literal> ]
 identification_variable
                     </para>
                 </listitem>
                 <listitem>
                     <para>
-single_valued_path_expression ::= state_field_path_expression |
-single_valued_association_path_expression
+qualified_identification_variable ::=
+KEY(identification_variable) |
+VALUE(identification_variable) |
+ENTRY(identification_variable)
                     </para>
                 </listitem>
                 <listitem>
                     <para>
-state_field_path_expression ::= {identification_variable |
-single_valued_association_path_expression}.state_field
+single_valued_path_expression ::= 
+qualified_identification_variable |
+state_field_path_expression |
+single_valued_object_path_expression
                     </para>
                 </listitem>
                 <listitem>
                     <para>
-single_valued_association_path_expression ::=
-identification_variable.{single_valued_association_field.}*
-single_valued_association_field
+general_identification_variable ::=
+identification_variable |
+KEY(identification_variable) |
+VALUE(identification_variable)        
+                    </para>
+                </listitem>
+                <listitem>
+                    <para>
+state_field_path_expression ::= 
+general_identification_variable.{single_valued_object_field.}*state_field
+                    </para>
+                </listitem>
+                <listitem>
+                    <para>
+single_valued_object_path_expression ::=
+general_identification_variable.{single_valued_object_field.}*
+single_valued_object_field
                     </para>
                 </listitem>
                 <listitem>
                     <para>
 collection_valued_path_expression ::=
-identification_variable.{single_valued_association_field.}*collection_valued_association_field
+general_identification_variable.{single_valued_object_field.}*collection_valued_field
                     </para>
                 </listitem>
                 <listitem>
                     <para>
-state_field ::= {embedded_class_state_field.}*simple_state_field
-                    </para>
-                </listitem>
-                <listitem>
-                    <para>
-update_clause ::= <literal>UPDATE</literal> abstract_schema_name [[ <literal>AS
+update_clause ::= <literal>UPDATE</literal> entity_name [[ <literal>AS
 </literal> ] identification_variable] <literal>SET</literal> update_item {,
 update_item}*
                     </para>
@@ -4376,31 +4520,38 @@ update_item}*
                 <listitem>
                     <para>
 update_item ::= [identification_variable.]{state_field |
-single_valued_association_field}= new_value
+single_valued_object_field}= new_value
                     </para>
                 </listitem>
                 <listitem>
                     <para>
-new_value ::= simple_arithmetic_expression | string_primary | datetime_primary |
-boolean_primary | enum_primary simple_entity_expression | <literal>NULL
+new_value ::= scalar_expression | 
+simple_entity_expression | <literal>NULL
 </literal>
                     </para>
                 </listitem>
                 <listitem>
                     <para>
 delete_clause ::= <literal>DELETE</literal><literal>FROM</literal>
-abstract_schema_name [[ <literal>AS</literal> ] identification_variable]
+entity_name [[ <literal>AS</literal> ] identification_variable]
                     </para>
                 </listitem>
                 <listitem>
                     <para>
 select_clause ::= <literal>SELECT</literal> [ <literal>DISTINCT</literal> ]
-select_expression {, select_expression}*
+select_item {, select_item}*
                     </para>
+                </listitem>
+                    <para>
+select_item ::= select_expression [[AS] result_variable]
+                    </para>
+                <listitem>
                 </listitem>
                 <listitem>
                     <para>
-select_expression ::= single_valued_path_expression | aggregate_expression |
+select_expression ::= single_valued_path_expression | 
+scalar_expression |
+aggregate_expression |
 identification_variable | <literal>OBJECT</literal> (identification_variable)|
 constructor_expression
                     </para>
@@ -4413,7 +4564,10 @@ constructor_item {, constructor_item}*)
                 </listitem>
                 <listitem>
                     <para>
-constructor_item ::= single_valued_path_expression | aggregate_expression
+constructor_item ::= single_valued_path_expression | 
+scalar_expression |
+aggregate_expression |
+identification_variable
                     </para>
                 </listitem>
                 <listitem>
@@ -4422,7 +4576,7 @@ aggregate_expression ::= { <literal>AVG</literal> | <literal>MAX</literal> |
 <literal>MIN</literal> | <literal>SUM</literal> }([ <literal>DISTINCT</literal>
 ] state_field_path_expression) | <literal>COUNT</literal> ([ <literal>DISTINCT
 </literal> ] identification_variable | state_field_path_expression |
-single_valued_association_path_expression)
+single_valued_object_path_expression)
                     </para>
                 </listitem>
                 <listitem>
@@ -4454,7 +4608,7 @@ orderby_item}*
                 </listitem>
                 <listitem>
                     <para>
-orderby_item ::= state_field_path_expression [ <literal>ASC</literal> |
+orderby_item ::= state_field_path_expression | result_variable [ <literal>ASC</literal> |
 <literal>DESC</literal> ]
                     </para>
                 </listitem>
@@ -4468,14 +4622,28 @@ subquery ::= simple_select_clause subquery_from_clause [where_clause]
                     <para>
 subquery_from_clause ::= <literal>FROM</literal>
 subselect_identification_variable_declaration {,
-subselect_identification_variable_declaration}*
+subselect_identification_variable_declaration | 
+collection_member_declaration}*
                     </para>
                 </listitem>
                 <listitem>
                     <para>
 subselect_identification_variable_declaration ::=
-identification_variable_declaration | association_path_expression [ <literal>AS
-</literal> ] identification_variable | collection_member_declaration
+identification_variable_declaration | derived_path_expression [ <literal>AS
+</literal> ] identification_variable | derived_collection_member_declaration
+                    </para>
+                </listitem>
+                <listitem>
+                    <para>
+derived_path_expression ::=
+superquery_identification_variable.{single_valued_object_field.}*collection_valued_field |
+superquery_identification_variable.{single_valued_object_field.}*single_valued_object_field
+                    </para>
+                </listitem>
+                <listitem>
+                    <para>
+derived_collection_member_declaration ::=
+IN superquery_identification_variable.{single_valued_object_field.}*collection_valued_field
                     </para>
                 </listitem>
                 <listitem>
@@ -4487,7 +4655,19 @@ simple_select_clause ::= <literal>SELECT</literal> [ <literal>DISTINCT</literal>
                 <listitem>
                     <para>
 simple_select_expression ::= single_valued_path_expression |
-aggregate_expression | identification_variable
+scalar_expression | aggregate_expression | identification_variable
+                    </para>
+                </listitem>
+                <listitem>
+                    <para>
+scalar_expression ::=
+simple_arithmetic_expression |
+string_primary |
+enum_primary |
+datetime_primary |
+boolean_primary |
+case_expression |
+entity_type_expression
                     </para>
                 </listitem>
                 <listitem>
@@ -4532,13 +4712,13 @@ datetime_expression <literal>AND</literal> datetime_expression
                 </listitem>
                 <listitem>
                     <para>
-in_expression ::= state_field_path_expression [ <literal>NOT</literal> ]
-<literal>IN</literal> ( in_item {, in_item}* | subquery)
+in_expression ::= {state_field_path_expression | type_discriminator} [ <literal>NOT</literal> ]
+<literal>IN</literal> {( in_item {, in_item}*) | (subquery) | collection_valued_input_parameter }
                     </para>
                 </listitem>
                 <listitem>
                     <para>
-in_item ::= literal | input_parameter
+in_item ::= literal | single_valued_input_parameter
                     </para>
                 </listitem>
                 <listitem>
@@ -4568,6 +4748,22 @@ collection_valued_path_expression
                 </listitem>
                 <listitem>
                     <para>
+entity_or_value_expression ::=
+single_valued_object_path_expression |
+state_field_path_expression |
+simple_entity_or_value_expression
+                    </para>
+                </listitem>
+                <listitem>
+                    <para>
+simple_entity_or_value_expression ::=
+identification_variable |
+input_parameter |
+literal
+                    </para>
+                </listitem>
+                <listitem>
+                    <para>
 exists_expression ::= [ <literal>NOT</literal> ] <literal>EXISTS</literal>
 (subquery)
                     </para>
@@ -4587,7 +4783,8 @@ enum_expression {=|&lt;&gt;} {enum_expression | all_or_any_expression} |
 datetime_expression comparison_operator {datetime_expression |
 all_or_any_expression} | entity_expression {= |&lt;&gt; } {entity_expression |
 all_or_any_expression} | arithmetic_expression comparison_operator
-{arithmetic_expression | all_or_any_expression}
+{arithmetic_expression | all_or_any_expression} |
+entity_type_expression { =|&lt;&gt;>} entity_type_expression}
                     </para>
                 </listitem>
                 <listitem>
@@ -4621,7 +4818,8 @@ arithmetic_factor ::= [{+ |-}] arithmetic_primary
                     <para>
 arithmetic_primary ::= state_field_path_expression | numeric_literal |
 (simple_arithmetic_expression) | input_parameter | functions_returning_numerics
-| aggregate_expression
+| aggregate_expression |
+case_expression
                     </para>
                 </listitem>
                 <listitem>
@@ -4632,7 +4830,8 @@ string_expression ::= string_primary |(subquery)
                 <listitem>
                     <para>
 string_primary ::= state_field_path_expression | string_literal |
-input_parameter | functions_returning_strings | aggregate_expression
+input_parameter | functions_returning_strings | aggregate_expression |
+case_expression
                     </para>
                 </listitem>
                 <listitem>
@@ -4643,7 +4842,9 @@ datetime_expression ::= datetime_primary |(subquery)
                 <listitem>
                     <para>
 datetime_primary ::= state_field_path_expression | input_parameter |
-functions_returning_datetime | aggregate_expression
+functions_returning_datetime | aggregate_expression |
+case_expression |
+date_time_timestamp_literal
                     </para>
                 </listitem>
                 <listitem>
@@ -4655,6 +4856,7 @@ boolean_expression ::= boolean_primary |(subquery)
                     <para>
 boolean_primary ::= state_field_path_expression | boolean_literal |
 input_parameter |
+case_expression
                     </para>
                 </listitem>
                 <listitem>
@@ -4664,12 +4866,13 @@ enum_expression ::= enum_primary |(subquery)
                 </listitem>
                 <listitem>
                     <para>
-enum_primary ::= state_field_path_expression | enum_literal | input_parameter |
+enum_primary ::= state_field_path_expression | enum_literal | input_parameter | 
+case_expression
                     </para>
                 </listitem>
                 <listitem>
                     <para>
-entity_expression ::= single_valued_association_path_expression |
+entity_expression ::= single_valued_object_path_expression |
 simple_entity_expression
                     </para>
                 </listitem>
@@ -4680,13 +4883,30 @@ simple_entity_expression ::= identification_variable | input_parameter
                 </listitem>
                 <listitem>
                     <para>
+entity_type_expression ::=
+type_discriminator |
+entity_type_literal |
+input_parameter
+                    </para>
+                </listitem>
+                <listitem>
+                    <para>
+type_discriminator ::=
+<literal>TYPE</literal>(identification_variable |
+single_valued_object_path_expression |
+input_parameter)
+                    </para>
+                </listitem>
+                <listitem>
+                    <para>
 functions_returning_numerics ::= <literal>LENGTH</literal> (string_primary)|
 <literal>LOCATE</literal> (string_primary,string_primary [,
 simple_arithmetic_expression]) | <literal>ABS</literal>
 (simple_arithmetic_expression) | <literal>SQRT</literal>
 (simple_arithmetic_expression) | <literal>MOD</literal>
 (simple_arithmetic_expression, simple_arithmetic_expression) | <literal>SIZE
-</literal> (collection_valued_path_expression)
+</literal> (collection_valued_path_expression) |
+<literal>INDEX</literal>(identification_variable)
                     </para>
                 </listitem>
                 <listitem>
@@ -4699,7 +4919,7 @@ CURRENT_TIME</literal> | <literal>CURRENT_TIMESTAMP</literal>
                     <para>
 functions_returning_strings ::= <literal>CONCAT</literal> (string_primary,
 string_primary) | <literal>SUBSTRING</literal> (string_primary,
-simple_arithmetic_expression,simple_arithmetic_expression)| <literal>TRIM
+simple_arithmetic_expression[,simple_arithmetic_expression])| <literal>TRIM
 </literal> ([[trim_specification] [trim_character] <literal>FROM</literal> ]
 string_primary) | <literal>LOWER</literal> (string_primary) | <literal>UPPER
 </literal> (string_primary)
@@ -4709,6 +4929,54 @@ string_primary) | <literal>LOWER</literal> (string_primary) | <literal>UPPER
                     <para>
 trim_specification ::= <literal>LEADING</literal> | <literal>TRAILING</literal>
 | <literal>BOTH</literal>
+                    </para>
+                </listitem>
+                <listitem>
+                    <para>
+case_expression ::=
+general_case_expression |
+simple_case_expression |
+coalesce_expression |
+nullif_expression
+                    </para>
+                </listitem>
+                 <listitem>
+                    <para>
+general_case_expression::=
+<literal>CASE</literal> when_clause {when_clause}* <literal>ELSE</literal> scalar_expression <literal>END</literal>
+                    </para>
+                </listitem>
+                 <listitem>
+                    <para>
+when_clause::= <literal>WHEN</literal> conditional_expression <literal>THEN</literal> scalar_expression
+                    </para>
+                </listitem>
+                 <listitem>
+                    <para>
+simple_case_expression::=
+<literal>CASE</literal> case_operand simple_when_clause {simple_when_clause}*
+<literal>ELSE</literal> scalar_expression
+<literal>END</literal>
+                    </para>
+                </listitem>
+                 <listitem>
+                    <para>
+case_operand::= state_field_path_expression | type_discriminator
+                    </para>
+                </listitem>
+                 <listitem>
+                    <para>
+simple_when_clause::= <literal>WHEN</literal> scalar_expression <literal>THEN</literal> scalar_expression    
+                    </para>
+                </listitem>
+                 <listitem>
+                    <para>
+coalesce_expression::= <literal>COALESCE</literal>(scalar_expression {, scalar_expression}+)
+                    </para>
+                </listitem>
+                 <listitem>
+                    <para>
+nullif_expression::= <literal>NULLIF</literal>(scalar_expression, scalar_expression)
                     </para>
                 </listitem>
             </itemizedlist>
