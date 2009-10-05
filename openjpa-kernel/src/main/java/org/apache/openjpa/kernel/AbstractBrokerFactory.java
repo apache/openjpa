@@ -150,13 +150,10 @@ public abstract class AbstractBrokerFactory
         return (AbstractBrokerFactory) _pool.get(key);
     }
 
-    protected AbstractBrokerFactory(OpenJPAConfiguration config) {
-       this(config, true); 
-    }
     /**
      * Constructor. Configuration must be provided on construction.
      */
-    protected AbstractBrokerFactory(OpenJPAConfiguration config, boolean earlyInit) {
+    protected AbstractBrokerFactory(OpenJPAConfiguration config) {
         _conf = config;
         _brokers = newBrokerSet();
         getPcClassLoaders();
@@ -167,25 +164,6 @@ public abstract class AbstractBrokerFactory
                 _conf.getConnectionRetainModeConstant(), false).close(); 
         }
 
-        if (!earlyInit)
-            return;
-        // This eager metadata loading is invoked at construction. 
-        // It can not happen during the MetaDataRepository configuration because 
-        // within a container environment an uninitialized repository must be passed
-        // to the PCClassFileTransformer. If we attempt to load before registering
-        // the class transformer, we miss the class being defined by the JVM and in turn
-        // we fail to enhance our entities.
-        try {
-            MetaDataRepository mdr = config.getMetaDataRepositoryInstance();
-            mdr.preload();
-        } catch (MetaDataException e) {
-            // recognize metadata related error if using early initialization
-            throw e;
-        } catch (Throwable t) {
-            // swallow other errors because merely trying to obtain a repository 
-            // may trigger a database connection 
-            _conf.getConfigurationLog().error(_loc.get("factory-init-error",t));
-        }
         initWriteBehindCallback();        
     }
 

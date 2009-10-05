@@ -315,8 +315,7 @@ public class MetaDataRepository implements PCRegistry.RegisterClassListener, Con
      * all internal data container structures.
      * If the openjpa.MetaDataRepository plugin value preload=false is set, this method will noop.
      * <p>
-     * NOTE : This method is not thread safe and should ONLY be called by the AbstractBrokerFactory
-     * constructor.
+     * NOTE : This method is not thread safe and should ONLY be called by PersistenceProviderImpl.
      * 
      * @see #getPersistentTypeNames(boolean, ClassLoader)
      */

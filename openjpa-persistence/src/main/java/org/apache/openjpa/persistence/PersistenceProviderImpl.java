@@ -42,6 +42,7 @@ import org.apache.openjpa.lib.conf.ConfigurationProvider;
 import org.apache.openjpa.lib.conf.Configurations;
 import org.apache.openjpa.lib.log.Log;
 import org.apache.openjpa.lib.util.Localizer;
+import org.apache.openjpa.lib.util.Options;
 import org.apache.openjpa.meta.MetaDataModes;
 import org.apache.openjpa.meta.MetaDataRepository;
 import org.apache.openjpa.persistence.validation.ValidationUtils;
@@ -94,6 +95,16 @@ public class PersistenceProviderImpl
             // TODO - Can this be moved back to BrokerImpl.initialize()?
             // Create appropriate LifecycleEventManager
             loadValidator(_log, conf);
+
+            // We need to wait to preload until after we get back a fully configured/instantiated
+            // BrokerFactory. This is because it is possible that someone has extended OpenJPA
+            // functions and they need to be allowed time to configure themselves before we go off and
+            // start instanting configurable objects (ie:openjpa.MetaDataRepository). Don't catch
+            // any exceptions here because we want to fail-fast.
+            Options o = Configurations.parseProperties(Configurations.getProperties("openjpa.MetaDataRepository"));
+            if(o.getBooleanProperty("Preload")){
+                conf.getMetaDataRepositoryInstance().preload();
+            }
             
             return JPAFacadeHelper.toEntityManagerFactory(factory);
         } catch (Exception e) {
@@ -180,7 +191,16 @@ public class PersistenceProviderImpl
             OpenJPAConfiguration conf = factory.getConfiguration();
             _log = conf.getLog(OpenJPAConfiguration.LOG_RUNTIME);
             loadValidator(_log, conf);
-
+            // We need to wait to preload until after we get back a fully configured/instantiated
+            // BrokerFactory. This is because it is possible that someone has extended OpenJPA
+            // functions and they need to be allowed time to configure themselves before we go off and
+            // start instanting configurable objects (ie:openjpa.MetaDataRepository). Don't catch
+            // any exceptions here because we want to fail-fast.
+            Options o = Configurations.parseProperties(Configurations.getProperties("openjpa.MetaDataRepository"));
+            if(o.getBooleanProperty("Preload")){
+                conf.getAbstractBrokerFactoryInstance().preload();
+            }
+            
             return JPAFacadeHelper.toEntityManagerFactory(factory);
         } catch (Exception e) {
             throw PersistenceExceptions.toPersistenceException(e);
@@ -213,7 +233,7 @@ public class PersistenceProviderImpl
     protected OpenJPAConfiguration newConfigurationImpl() {
         return new OpenJPAConfigurationImpl();
     }
-    
+        
     /**
      * Java EE 5 class transformer.
      */
