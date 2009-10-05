@@ -21,17 +21,193 @@
     <title>
         Supported Databases
     </title>
-    <section id="dbsupport">
+
+    <section id="dbappendix">
     <title>
-        Supported Database Matrix
+        Overview
     </title>
     <para>
-Following is a table of the database and JDBC driver versions that are supported
-by OpenJPA.
+The following appendix covers the database and JDBC driver versions that are
+known to work with OpenJPA, along with any database specific configuration
+parameters, known issues or limitations.
+The <link linkend="dbsupport">Verified Database Matrix</link>, contains the
+list of databases and drivers that were tested extensively against this
+release of OpenJPA, while the <link linkend="dbcompatible">Compatible Database
+Matrix</link> contains the list of databases and drivers that were tested 
+against prior releases or by OpenJPA users and may not support every feature
+of this release.
+    </para>
+    </section>
+
+    <section id="dbsupport">
+    <title>
+        Verified Database Matrix
+    </title>
+    <para>
+Following is a table of the supported database and JDBC driver versions that
+have been verified against this version of OpenJPA.  For the list of other
+databases and drivers that were tested in prior releases or by other OpenJPA
+users, but may not support every feature of this release, please refer to the
+<link linkend="dbcompatible">Compatible Database Matrix</link> section.
     </para>
     <table tocentry="1">
         <title>
             Supported Databases and JDBC Drivers
+        </title>
+        <tgroup rowsep="1" colsep="1" align="left" cols="4">
+            <colspec colname="dbname"/>
+            <colspec colname="dbversion"/>
+            <colspec colname="drivname"/>
+            <colspec colname="drivversion"/>
+            <thead>
+                <row>
+                    <entry colname="dbname">
+                        Database Name
+                    </entry>
+                    <entry colname="dbversion">
+                        Database Version
+                    </entry>
+                    <entry colname="drivname">
+                        JDBC Driver Name
+                    </entry>
+                    <entry colname="drivversion">
+                        JDBC Driver Version
+                    </entry>
+                </row>
+            </thead>
+            <tbody>
+                <row>
+                    <entry colname="dbname">
+                        <link linkend="dbsupport_derby">Apache Derby</link>
+                    </entry>
+                    <entry colname="dbversion">
+                        10.2.2.0, 10.3.3.0, 10.4.2.0, 10.5.3.0
+                    </entry>
+                    <entry colname="drivname">
+                        Apache Derby Embedded JDBC Driver
+                    </entry>
+                    <entry colname="drivversion">
+                        Same as DB Version
+                    </entry>
+                </row>
+                <row>
+                    <entry colname="dbname">
+                        <link linkend="dbsupport_db2">IBM DB2</link>
+                    </entry>
+                    <entry colname="dbversion">
+                        8.1, 8.2, 9.1, 9.5, 9.7
+                    </entry>
+                    <entry colname="drivname">
+                        IBM DB2 JDBC Universal Driver
+                    </entry>
+                    <entry colname="drivversion">
+                        3.50.152
+                    </entry>
+                </row>
+                <row>
+                    <entry colname="dbname">
+                        <link linkend="dbsupport_informix">IBM Informix Dynamic Server</link>
+                    </entry>
+                    <entry colname="dbversion">
+                        10.00xC6, 11.10xC1, 11.5xC1
+                    </entry>
+                    <entry colname="drivname">
+                        Informix JDBC driver
+                    </entry>
+                    <entry colname="drivversion">
+                        3.00 JC3, 3.10 JC1, 3.50 JC1
+                    </entry>
+                </row>
+                <row>
+                    <entry colname="dbname">
+                        <link linkend="dbsupport_sqlserver">Microsoft SQL Server</link>
+                    </entry>
+                    <entry colname="dbversion">
+                        2005 (9.00), 2008 (10.00)
+                    </entry>
+                    <entry colname="drivname">
+                        Microsoft SQL Server JDBC Driver
+                    </entry>
+                    <entry colname="drivversion">
+                        1.2 or 2.0
+                    </entry>
+                </row>
+                <row>
+                    <entry colname="dbname">
+                        <link linkend="dbsupport_mysql">MySQL</link>
+                    </entry>
+                    <entry colname="dbversion">
+                        5.0.26, 5.1.6
+                    </entry>
+                    <entry colname="drivname">
+                        MySQL Driver
+                    </entry>
+                    <entry colname="drivversion">
+                        5.1.6
+                    </entry>
+                </row>
+                <row>
+                    <entry colname="dbname">
+                        <link linkend="dbsupport_oracle">Oracle</link>
+                    </entry>
+                    <entry colname="dbversion">
+                        10g (10.1, 10.2), 11g (11.1, 11.2)
+                    </entry>
+                    <entry colname="drivname">
+                        Oracle JDBC driver
+                    </entry>
+                    <entry colname="drivversion">
+                        11.2.0.1
+                    </entry>
+                </row>
+                <row>
+                    <entry colname="dbname">
+                        <link linkend="dbsupport_postgresql">PostgreSQL</link>
+                    </entry>
+                    <entry colname="dbversion">
+                        8.3.5, 8.4
+                    </entry>
+                    <entry colname="drivname">
+                        PostgreSQL Native Driver
+                    </entry>
+                    <entry colname="drivversion">
+                        8.3 JDBC3 (build 603), 8.4 JDBC3 (build 701)
+                    </entry>
+                </row>
+                <row>
+                    <entry colname="dbname">
+                        <link linkend="dbsupport_sybase">Sybase Adaptive Server Enterprise</link>
+                    </entry>
+                    <entry colname="dbversion">
+                        12.5, 15.0
+                    </entry>
+                    <entry colname="drivname">
+                        jConnect
+                    </entry>
+                    <entry colname="drivversion">
+                        5.5, 6.0
+                    </entry>
+                </row>
+            </tbody>
+        </tgroup>
+    </table>
+    </section>
+
+    <section id="dbcompatible">
+    <title>
+        Compatible Database Matrix
+    </title>
+    <para>
+Following is a table of the database and JDBC driver versions that are
+compatible with OpenJPA.  Some of these databases have been tested against this
+version of OpenJPA, while others were added or tested in prior releases and
+may not support all of the new features of this release.  For the list of
+databases that have been fully tested against this release, please refer to the
+<link linkend="dbsupport">Verified Database Matrix</link> section.
+    </para>
+    <table tocentry="1">
+        <title>
+            Compatible Databases and JDBC Drivers
         </title>
         <tgroup rowsep="1" colsep="1" align="left" cols="4">
             <colspec colname="dbname"/>
@@ -108,7 +284,7 @@ by OpenJPA.
                         IBM DB2 JDBC Universal Driver
                     </entry>
                     <entry colname="drivversion">
-                        1.0.581
+                        1.0.581, 2.10.72
                     </entry>
                 </row>
                 <row>
@@ -172,13 +348,13 @@ by OpenJPA.
                         <link linkend="dbsupport_informix">Informix Dynamic Server</link>
                     </entry>
                     <entry colname="dbversion">
-                        9.30.UC10
+                        9.30.UC10, 9.4xC7
                     </entry>
                     <entry colname="drivname">
                         Informix JDBC driver
                     </entry>
                     <entry colname="drivversion">
-                        2.21.JC2
+                        2.21.JC2, 3.00 JC3, 3.10 JC1
                     </entry>
                 </row>
                 <row>
@@ -228,13 +404,13 @@ by OpenJPA.
                         <link linkend="dbsupport_sqlserver">Microsoft SQL Server</link>
                     </entry>
                     <entry colname="dbversion">
-                        2005 (9.00), 2008 (10.00)
+                        2000 (8.00)
                     </entry>
                     <entry colname="drivname">
                         Microsoft SQL Server JDBC Driver
                     </entry>
                     <entry colname="drivversion">
-                        1.2 or 2.0
+                        1.2
                     </entry>
                 </row>
                 <row>
@@ -267,30 +443,16 @@ by OpenJPA.
                 </row>
                 <row>
                     <entry colname="dbname">
-                        <link linkend="dbsupport_mysql">MySQL</link>
-                    </entry>
-                    <entry colname="dbversion">
-                        5.0.26
-                    </entry>
-                    <entry colname="drivname">
-                        MySQL Driver
-                    </entry>
-                    <entry colname="drivversion">
-                        3.0.14
-                    </entry>
-                </row>
-                <row>
-                    <entry colname="dbname">
                         <link linkend="dbsupport_oracle">Oracle</link>
                     </entry>
                     <entry colname="dbversion">
-                        8.1,9.2,10.1
+                        8.1, 9.2
                     </entry>
                     <entry colname="drivname">
                         Oracle JDBC driver
                     </entry>
                     <entry colname="drivversion">
-                        10.2.0.1.0
+                        10.2.0.1
                     </entry>
                 </row>
                 <row>
@@ -312,7 +474,7 @@ by OpenJPA.
                         <link linkend="dbsupport_postgresql">PostgreSQL</link>
                     </entry>
                     <entry colname="dbversion">
-                        7.2.1,8.1.5
+                        7.2.1, 8.1.5
                     </entry>
                     <entry colname="drivname">
                         PostgreSQL Native Driver
@@ -338,7 +500,9 @@ by OpenJPA.
             </tbody>
         </tgroup>
     </table>
+
     </section>
+
     <section id="dbsupport_derby">
         <title>
             Apache Derby
