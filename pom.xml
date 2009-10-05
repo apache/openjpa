@@ -877,7 +877,7 @@
     <repositories>
         <repository>
             <id>geronimo-staging</id>
-            <url>https://repository.apache.org/content/repositories/geronimo-staging-017/</url>
+            <url>https://repository.apache.org/content/repositories/releases/</url>
             <releases>
                 <checksumPolicy>fail</checksumPolicy>
                 <enabled>true</enabled>
