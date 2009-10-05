@@ -198,7 +198,7 @@ public class PersistenceProviderImpl
             // any exceptions here because we want to fail-fast.
             Options o = Configurations.parseProperties(Configurations.getProperties("openjpa.MetaDataRepository"));
             if(o.getBooleanProperty("Preload")){
-                conf.getAbstractBrokerFactoryInstance().preload();
+                conf.getMetaDataRepositoryInstance().preload();
             }
             
             return JPAFacadeHelper.toEntityManagerFactory(factory);
