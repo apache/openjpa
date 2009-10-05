@@ -248,6 +248,39 @@
 				example test case demonstrating the change.
 			</para>
 		</section>
+    		<section id="createemf">
+    			<title>
+    			createEntityManagerFactory Exceptions	
+    			</title>
+    			<para>
+    				The JPA 2.0 specification section on
+                                "Bootstrapping in Java SE Environments" states
+                                that persistence providers must return null
+                                if they are not a qualified provider for the 
+                                given persistence unit.
+			</para>
+    			<para>
+                                However, OpenJPA may throw a RuntimeException
+                                if an error occurs while trying to create a
+                                qualified persistence unit, like for invalid
+                                openjpa.* specific configuration settings or
+                                for schema validation failures.
+			</para>
+    			<para>
+                                If the Apache Geronimo JPA 2.0 Spec APIs are
+                                used, then any exceptions returned by a
+                                persistence provider will be wrapped within
+                                a PersistenceException.  When the JPA 2.0 API
+                                reference implementation is used, any
+                                RuntimeExceptions will be returned to the
+                                calling application without being wrapped.
+                                Other JPA 2.0 API and implementation providers
+                                or versions may behave differently.
+			</para>
+			<para>
+                                See OPENJPA-1203 for more details.
+			</para>
+		</section>
         </section>
     </section>
 </appendix>
