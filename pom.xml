@@ -873,19 +873,4 @@
         <developerConnection>scm:svn:https://svn.apache.org/repos/asf/openjpa/trunk</developerConnection>
         <url>http://svn.apache.org/repos/asf/openjpa/trunk</url>
     </scm>
-
-    <repositories>
-        <repository>
-            <id>geronimo-staging</id>
-            <url>https://repository.apache.org/content/repositories/releases/</url>
-            <releases>
-                <checksumPolicy>fail</checksumPolicy>
-                <enabled>true</enabled>
-                <updatePolicy>always</updatePolicy>
-            </releases>
-            <snapshots>
-                <enabled>false</enabled>
-            </snapshots>
-        </repository>
-    </repositories>
 </project>

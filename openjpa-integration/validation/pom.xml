@@ -109,7 +109,7 @@
             </dependencies>
             <repositories>
                 <repository>
-                    <id>agimatec-snapshots</id>
+                    <id>agimatec.oss.sonatype.org</id>
                     <name>Sonatype OSS Repository</name>
                     <url>http://oss.sonatype.org/content/repositories/agimatec</url>
                     <layout>default</layout>
