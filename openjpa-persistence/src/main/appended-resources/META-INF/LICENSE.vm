@@ -15,11 +15,11 @@ The exceptions are as follows:
   orm-xsd.rsrc - included in the openjpa jar, taken from:
     http://java.sun.com/xml/ns/persistence/orm_1_0.xsd)
   orm_2_0-xsd.rsrc - included in the openjpa jar, taken from:
-    http://java.sun.com/xml/ns/persistence/orm_2_0.xsd)
+    JSR-317 Java Persistence 2.0 Specification, Proposed Final Draft 2
   persistence-xsd.rsrc - included in the openjpa jar, taken from:
     http://java.sun.com/xml/ns/persistence/persistence_1_0.xsd)
   persistence_2_0-xsd.rsrc - included in the openjpa jar, taken from:
-    http://java.sun.com/xml/ns/persistence/persistence_2_0.xsd)
+    JSR-317 Java Persistence 2.0 Specification, Proposed Final Draft 2
   websphere-uow-api.jar - this jar file contains WebSphere proprietary
     API code which is licensed for use when compiling OpenJPA. The
     jar is not distributed with OpenJPA and is only included with the
