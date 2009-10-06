@@ -1731,20 +1731,20 @@ public class JPQLExpressionBuilder
 
     private Value getGeneralIdentifier(JPQLNode node, boolean inWhereClause) {
         JPQLNode id = onlyChild(node);
-        if (inWhereClause && node.id == JJTVALUE)
-            throw parseException(EX_USER, "bad-general-identifier",
-                new Object[]{ id.text, "VALUE" }, null);
-
         Path path = validateMapPath(node, id);
+
+        if (node.id == JJTKEY)
+            path = (Path) factory.getKey(path);
         FieldMetaData fld = path.last();
-        path = (Path) factory.getKey(path);
-        ClassMetaData meta = fld.getKey().getTypeMetaData();
-        if (inWhereClause && meta != null &&
-            fld.isElementCollection() &&
-            fld.getElement().getEmbeddedMetaData() != null)
-            // check basic type
-            throw parseException(EX_USER, "bad-general-identifier",
-                new Object[]{ id.text, "KEY" }, null);
+        ClassMetaData meta = node.id == JJTKEY ? meta = fld.getKey().getTypeMetaData()
+                : fld.getDeclaredTypeMetaData();
+        if (inWhereClause &&
+            (meta != null && meta.isEmbeddable()) ||
+                (fld.isElementCollection() &&
+                 fld.getElement().getEmbeddedMetaData() != null))   
+                 // check basic type
+                throw parseException(EX_USER, "bad-general-identifier",
+                    new Object[]{ id.text, node.id == JJTVALUE ? "VALUE" : "KEY" }, null);
 
         return path;
     }

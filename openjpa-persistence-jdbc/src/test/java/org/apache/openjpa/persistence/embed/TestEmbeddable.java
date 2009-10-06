@@ -97,6 +97,7 @@ public class TestEmbeddable extends SQLListenerTestCase {
             Embed_MappedToOne.class, Embed_MappedToOneCascadeDelete.class, 
             EntityA_Embed_MappedToOneCascadeDelete.class, EntityB2.class, 
             Book.class, Listing.class, Seller.class,
+            EntityA_Embed_Coll_Map.class, Embed_Coll_Map.class,
             EntityA_Embed_Complex.class, CLEAR_TABLES);
             sql.clear();
             DBDictionary dict = ((JDBCConfiguration)emf.getConfiguration()).getDBDictionaryInstance();
@@ -104,7 +105,24 @@ public class TestEmbeddable extends SQLListenerTestCase {
                 ((OracleDictionary)dict).useTriggersForAutoAssign = true;
             }
     }
-    
+
+    public void testEntityA_Embed_Coll_Map() {
+        queryEntityA_Embed_Coll_Map();
+    }
+
+    public void queryEntityA_Embed_Coll_Map() {
+        EntityManager em = emf.createEntityManager();
+        String query[] = {
+                "select e from EntityA_Embed_Coll_Map a join a.embed e " +
+                "join e.mapKeyInteger i where value(i) > 0 ",
+            };
+        List rs = null;
+        for (int i = 0; i < query.length; i++) {
+            rs = em.createQuery(query[i]).getResultList();
+            em.clear();
+        }        
+    }
+
     public void testEntityA_Coll_String() {
         createEntityA_Coll_String();
         queryEntityA_Coll_String();
