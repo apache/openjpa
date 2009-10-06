@@ -106,6 +106,53 @@ public class TestEmbeddable extends SQLListenerTestCase {
             }
     }
 
+    public void testGroupByEmbed() {
+        EntityManager em = emf.createEntityManager();
+        String query[] = {
+                "select a.embed from EntityA_Embed_Embed a group by a.embed",
+                "select e from EntityA_Embed_Embed a join a.embed e group by e",
+        };
+        List rs = null;
+        for (int i = 0; i < query.length; i++) {
+            try {
+            rs = em.createQuery(query[i]).getResultList();
+            } catch(ArgumentException e) {
+                ; // as expected : Group by embeddable field is not allowed
+            }
+        }
+        em.close();
+    }
+
+    public void testKeyEmbeddableCompare() {
+        EntityManager em = emf.createEntityManager();
+        String query[] = {
+                "select o from Company1 c join c.organization o where KEY(o) = ?1",
+                "select d from Department3 d join d.emps e where KEY(e) = ? 1"
+        };
+        List rs = null;
+        Division d = new Division();
+        d.setId(10);
+        d.setName("division 10");
+        EmployeeName3 name = new EmployeeName3("fname1", "lname1");
+        for (int i = 0; i < query.length; i++) {
+            switch (i) {
+            case 0:
+                // Division is an embeddable as well as an entity, comparison is allowed
+                rs = em.createQuery(query[i]).setParameter(1, d).getResultList();
+                break;
+            case 1:
+                try {
+                    rs = em.createQuery(query[i]).setParameter(1, name).getResultList();
+                } catch(ArgumentException e) {
+                    // as expected : compare embeddable is not allowed
+                    System.out.println(e.getMessage()); 
+                }
+                break;
+            }
+        }
+        em.close();        
+    }
+
     public void testEntityA_Embed_Coll_Map() {
         queryEntityA_Embed_Coll_Map();
     }
@@ -120,7 +167,8 @@ public class TestEmbeddable extends SQLListenerTestCase {
         for (int i = 0; i < query.length; i++) {
             rs = em.createQuery(query[i]).getResultList();
             em.clear();
-        }        
+        }
+        em.close();
     }
 
     public void testEntityA_Coll_String() {

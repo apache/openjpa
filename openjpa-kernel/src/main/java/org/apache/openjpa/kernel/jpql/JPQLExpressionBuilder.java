@@ -1736,15 +1736,14 @@ public class JPQLExpressionBuilder
         if (node.id == JJTKEY)
             path = (Path) factory.getKey(path);
         FieldMetaData fld = path.last();
-        ClassMetaData meta = node.id == JJTKEY ? meta = fld.getKey().getTypeMetaData()
-                : fld.getDeclaredTypeMetaData();
+        ClassMetaData meta = fld.getKey().getTypeMetaData();
         if (inWhereClause &&
-            (meta != null && meta.isEmbeddable()) ||
-                (fld.isElementCollection() &&
+            (node.id == JJTKEY && meta != null && fld.getKey().isEmbedded()) ||
+            (node.id == JJTVALUE && fld.isElementCollection() &&
                  fld.getElement().getEmbeddedMetaData() != null))   
                  // check basic type
                 throw parseException(EX_USER, "bad-general-identifier",
-                    new Object[]{ id.text, node.id == JJTVALUE ? "VALUE" : "KEY" }, null);
+                    new Object[]{ node.id == JJTVALUE ? "VALUE" : "KEY", id.text }, null);
 
         return path;
     }
