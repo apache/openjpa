@@ -106,23 +106,6 @@ public class TestEmbeddable extends SQLListenerTestCase {
             }
     }
 
-    public void testGroupByEmbed() {
-        EntityManager em = emf.createEntityManager();
-        String query[] = {
-                "select a.embed from EntityA_Embed_Embed a group by a.embed",
-                "select e from EntityA_Embed_Embed a join a.embed e group by e",
-        };
-        List rs = null;
-        for (int i = 0; i < query.length; i++) {
-            try {
-            rs = em.createQuery(query[i]).getResultList();
-            } catch(ArgumentException e) {
-                ; // as expected : Group by embeddable field is not allowed
-            }
-        }
-        em.close();
-    }
-
     public void testKeyEmbeddableCompare() {
         EntityManager em = emf.createEntityManager();
         String query[] = {
