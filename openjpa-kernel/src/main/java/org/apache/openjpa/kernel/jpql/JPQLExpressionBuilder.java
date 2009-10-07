@@ -489,7 +489,14 @@ public class JPQLExpressionBuilder
 
         for (int i = 0; i < groupByCount; i++) {
             JPQLNode node = groupByNode.getChild(i);
-            exps.grouping[i] = getValue(node);
+            Value val = getValue(node);
+            if (val instanceof Path) {
+                FieldMetaData fmd = ((Path) val).last();
+                if (fmd != null && fmd.getValue().getTypeMetaData() != null && fmd.getValue().isEmbedded())
+                    throw parseException(EX_USER, "cant-groupby-embeddable",
+                        new Object[]{ node.getChildCount() > 1 ? assemble(node) : node.text }, null);
+            }
+            exps.grouping[i] = val;
         }
     }
 
@@ -1166,7 +1173,7 @@ public class JPQLExpressionBuilder
 
             case JJTGENERALIDENTIFIER:
                 // KEY(e), VALUE(e)
-                if (node.parent.parent.id == JJTWHERE)
+                if (node.parent.parent.id == JJTWHERE || node.parent.id == JJTGROUPBY)
                     return getGeneralIdentifier(onlyChild(node), true);
                 return getQualifiedIdentifier(onlyChild(node));
 
@@ -1729,7 +1736,7 @@ public class JPQLExpressionBuilder
         return path;
     }
 
-    private Value getGeneralIdentifier(JPQLNode node, boolean inWhereClause) {
+    private Value getGeneralIdentifier(JPQLNode node, boolean verifyEmbeddable) {
         JPQLNode id = onlyChild(node);
         Path path = validateMapPath(node, id);
 
@@ -1737,14 +1744,18 @@ public class JPQLExpressionBuilder
             path = (Path) factory.getKey(path);
         FieldMetaData fld = path.last();
         ClassMetaData meta = fld.getKey().getTypeMetaData();
-        if (inWhereClause &&
+        if (verifyEmbeddable &&
             (node.id == JJTKEY && meta != null && fld.getKey().isEmbedded()) ||
             (node.id == JJTVALUE && fld.isElementCollection() &&
-                 fld.getElement().getEmbeddedMetaData() != null))   
+                 fld.getElement().getEmbeddedMetaData() != null)) { 
                  // check basic type
+            if (node.parent.parent.id == JJTGROUPBY)
+                throw parseException(EX_USER, "cant-groupby-key-value-embeddable",
+                    new Object[]{ node.id == JJTVALUE ? "VALUE" : "KEY", id.text }, null);
+            else
                 throw parseException(EX_USER, "bad-general-identifier",
                     new Object[]{ node.id == JJTVALUE ? "VALUE" : "KEY", id.text }, null);
-
+        }
         return path;
     }
 

@@ -673,6 +673,7 @@ void groupby_item() : { }
 	LOOKAHEAD(path()) path()
 	| LOOKAHEAD(groupby_extension()) groupby_extension()
 	| LOOKAHEAD(qualified_path()) qualified_path()
+	| LOOKAHEAD(general_identification_variable()) general_identification_variable()
 	| LOOKAHEAD(identification_variable()) identification_variable()
 }
 
