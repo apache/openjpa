@@ -24,17 +24,18 @@ known to work on Linux and Mac OSX. They are also reported to work from Windows.
 The most up to date version of these instructions may be found on the OpenJPA 
 website at http://openjpa.apache.org/building-openjpa.html
 
-   1. Ensure that you have Java 1.5 installed and in your path by running:
-      java -version
-      OpenJPA requires Java 1.5 but will not compile with Java 6. For more
-      detail please see http://issues.apache.org/jira/browse/OPENJPA-5.
-   2. Install the build tool Apache Maven 2.0.6, from http://maven.apache.org/.
+   1. Ensure that Java 1.5 or 1.6 is installed and on your path by running:
+          java -version
+      OpenJPA requires Java 1.5 or later, but some features are only available
+      with Java 6.
+   2. Install the build tool Apache Maven 2.0.9 or later, from:
+          http://maven.apache.org/
       If it is installed correctly, typing mvn -v from the console will result
-      in the text "Maven version: 2.0.6"
+      in the text "Maven version: 2.0.9"
    3. Extract the source archive if you have not already done so. 
       The source will create a new directory named:
       openjpa-<version>-source. Where <version> is the openjpa 
-      version, for example apache-openjpa-1.1.0-source.
+      version, for example apache-openjpa-2.0.0-source.
    4. Change to the openjpa source directory, which has already been created in
       the previous step.
    5. Build OpenJPA by running: mvn package or better mvn install. 
@@ -63,22 +64,18 @@ An example session as as follows:
 $ cd /tmp/
 
 $ java -version
-
-java version "1.5.0_06"
-Java(TM) 2 Runtime Environment, Standard Edition (build 1.5.0_06-112)
-Java HotSpot(TM) Client VM (build 1.5.0_06-64, mixed mode, sharing)
+java version "1.5.0_20"
+Java(TM) 2 Runtime Environment, Standard Edition (build 1.5.0_20-b02-315)
+Java HotSpot(TM) Client VM (build 1.5.0_20-144, mixed mode, sharing)
 
 $ mvn -v
-
-Maven version: 2.0.4
+Maven version: 2.0.10
 
 $ svn --version
-
-svn, version 1.1.4 (r13838)
-   compiled Jul 10 2006, 22:17:43
+svn, version 1.5.5 (r34862)
+   compiled Jan  5 2009, 12:30:39
 
 $ svn co https://svn.apache.org/repos/asf/openjpa/trunk/
-
 A  trunk/openjpa-lib
 A  trunk/openjpa-lib/src
 A  trunk/openjpa-lib/src/test
@@ -94,28 +91,35 @@ java
  ...
 
 A  trunk/openjpa-persistence/pom.xml
-Checked out revision 421381.
+Checked out revision 822485.
 
 $ cd trunk/
 
-$ mvn compile
+$ mvn clean install -DfailIfNoTests=false -Dtest= 
 
 [INFO] Scanning for projects...
 [INFO] Reactor build order: 
-[INFO]   OpenJPA
-[INFO]   Utilities
-[INFO]   Kernel
-[INFO]   JDBC
-[INFO]   XML Store
-[INFO]   JDBC 1.5
-[INFO]   Kernel 1.5
-[INFO]   JPA
-[INFO]   JPA JDBC
-[INFO]   OpenJPA Project
-[INFO] -------------------------------------------------------------------------
-[INFO] Building OpenJPA
-[INFO]    task-segment: [compile]
-[INFO] -------------------------------------------------------------------------
+[INFO]   OpenJPA Parent POM
+[INFO]   OpenJPA Utilities Library
+[INFO]   OpenJPA Kernel
+[INFO]   OpenJPA JDBC
+[INFO]   OpenJPA Persistence
+[INFO]   OpenJPA Persistence JDBC
+[INFO]   OpenJPA Persistence Locking Tests
+[INFO]   OpenJPA XML Store
+[INFO]   OpenJPA Slice
+[INFO]   OpenJPA Aggregate Jar
+[INFO]   OpenJPA Aggregate Jar with Dependencies
+[INFO]   OpenJPA Project Docs and Assemblies
+[INFO]   OpenJPA Examples
+[INFO]   OpenJPA Integration Tests
+[INFO]   OpenJPA Integration Tests - Examples
+[INFO]   OpenJPA Integration Tests - JPA TCK
+[INFO]   OpenJPA Integration Tests - Bean Validation
+[INFO] ------------------------------------------------------------------------
+[INFO] Building OpenJPA Parent POM
+[INFO]    task-segment: [clean, install]
+[INFO] ------------------------------------------------------------------------
 
  ...
 
@@ -123,43 +127,35 @@ $ mvn compile
 [INFO] ------------------------------------------------------------------------
 [INFO] Reactor Summary:
 [INFO] ------------------------------------------------------------------------
-[INFO] OpenJPA ............................................... SUCCESS [0.789s]
-[INFO] Utilities ............................................. SUCCESS [3.489s]
-[INFO] Kernel ................................................ SUCCESS [9.347s]
-[INFO] JDBC .................................................. SUCCESS [12.208s]
-[INFO] XML Store ............................................. SUCCESS [1.166s]
-[INFO] JDBC 1.5 .............................................. SUCCESS [1.519s]
-[INFO] Kernel 1.5 ............................................ SUCCESS [0.538s]
-[INFO] JPA ................................................... SUCCESS [2.777s]
-[INFO] JPA JDBC .............................................. SUCCESS [2.151s]
-[INFO] OpenJPA Project ....................................... SUCCESS [1.495s]
+[INFO] OpenJPA Parent POM .................................... SUCCESS [4.767s]
+[INFO] OpenJPA Utilities Library ............................. SUCCESS [13.592s]
+[INFO] OpenJPA Kernel ........................................ SUCCESS [14.810s]
+[INFO] OpenJPA JDBC .......................................... SUCCESS [6.430s]
+[INFO] OpenJPA Persistence ................................... SUCCESS [5.194s]
+[INFO] OpenJPA Persistence JDBC .............................. SUCCESS [56.944s]
+[INFO] OpenJPA Persistence Locking Tests ..................... SUCCESS [2.662s]
+[INFO] OpenJPA XML Store ..................................... SUCCESS [1.423s]
+[INFO] OpenJPA Slice ......................................... SUCCESS [2.742s]
+[INFO] OpenJPA Aggregate Jar ................................. SUCCESS [10.928s]
+[INFO] OpenJPA Aggregate Jar with Dependencies ............... SUCCESS [4.026s]
+[INFO] OpenJPA Project Docs and Assemblies ................... SUCCESS [32.172s]
+[INFO] OpenJPA Examples ...................................... SUCCESS [1.085s]
+[INFO] OpenJPA Integration Tests ............................. SUCCESS [0.195s]
+[INFO] OpenJPA Integration Tests - Examples .................. SUCCESS [0.128s]
+[INFO] OpenJPA Integration Tests - JPA TCK ................... SUCCESS [0.136s]
+[INFO] OpenJPA Integration Tests - Bean Validation ........... SUCCESS [2.956s]
 [INFO] ------------------------------------------------------------------------
 [INFO] ------------------------------------------------------------------------
 [INFO] BUILD SUCCESSFUL
 [INFO] ------------------------------------------------------------------------
-[INFO] Total time: 37 seconds
-[INFO] Finished at: Wed Jul 26 11:44:33 PDT 2006
-[INFO] Final Memory: 10M/41M
+[INFO] Total time: 2 minutes 42 seconds
+[INFO] Finished at: Wed Oct 07 12:38:44 EDT 2009
+[INFO] Final Memory: 96M/291M
 [INFO] ------------------------------------------------------------------------
 
 
-$ mvn package -Dtest=false
+$ ls openjpa-project/target/site/downloads/
 
-[INFO] Scanning for projects...
-
-...
-
-[INFO] [assembly:assembly {execution: bin}]
-[INFO] Building zip: /tmp/openjpatestbuild/trunk/openjpa-project/target/filtered
--site/resources/downloads/openjpa-0.9.0.zip
-
-... 
-
-
-$ ls -lh openjpa-project/target/filtered-site/resources/downloads/
-
-total 9.2M
--rw-r--r--    1 mprudhom wheel       4.0M Jul 26 11:46 openjpa-0.9.0-sources.zip
--rw-r--r--    1 mprudhom wheel       5.2M Jul 26 11:46 openjpa-0.9.0.zip
-
+apache-openjpa-2.0.0-SNAPSHOT-binary.zip
+apache-openjpa-2.0.0-SNAPSHOT-source.zip
  
