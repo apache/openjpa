@@ -29,7 +29,6 @@ import java.util.Map;
 
 import org.apache.openjpa.meta.ClassMetaData;
 import org.apache.openjpa.meta.MetaDataDefaults;
-import org.apache.openjpa.lib.log.Log;
 import org.apache.openjpa.lib.util.Localizer;
 import org.apache.openjpa.util.InvalidStateException;
 
@@ -47,6 +46,7 @@ import org.apache.openjpa.util.InvalidStateException;
  * @since 0.3.3
  * @nojavadoc
  */
+@SuppressWarnings("serial")
 public class LifecycleEventManager
     implements CallbackModes, Serializable {
 
@@ -55,11 +55,12 @@ public class LifecycleEventManager
     private static final Localizer _loc = Localizer.forPackage(
         LifecycleEventManager.class);
 
-    private Map _classListeners = null; // class -> listener list
+    private Map<Class<?>, ListenerList> _classListeners = null; 
     private ListenerList _listeners = null;
-    private List _addListeners = new LinkedList();
-    private List _remListeners = new LinkedList();
-    private List _exceps = new LinkedList();
+    // odd-element: Listener even-element: Class[]
+    private List<Object> _addListeners = new LinkedList<Object>();
+    private List<Object> _remListeners = new LinkedList<Object>();
+    private List<Exception> _exceps = new LinkedList<Exception>();
     private boolean _firing = false;
     private boolean _fail = false;
     private boolean _failFast = false;
@@ -82,7 +83,7 @@ public class LifecycleEventManager
      * Register a lifecycle listener for the given classes. If the classes
      * array is null, register for all classes.
      */
-    public synchronized void addListener(Object listener, Class[] classes) {
+    public synchronized void addListener(Object listener, Class<?>[] classes) {
         if (listener == null)
             return;
         if (classes != null && classes.length == 0)
@@ -101,7 +102,7 @@ public class LifecycleEventManager
         }
 
         if (_classListeners == null)
-            _classListeners = new HashMap();
+            _classListeners = new HashMap<Class<?>, ListenerList>();
         ListenerList listeners;
         for (int i = 0; i < classes.length; i++) {
             listeners = (ListenerList) _classListeners.get(classes[i]);
@@ -126,7 +127,7 @@ public class LifecycleEventManager
             return;
         if (_classListeners != null) {
             ListenerList listeners;
-            for (Iterator itr = _classListeners.values().iterator();
+            for (Iterator<ListenerList> itr = _classListeners.values().iterator();
                 itr.hasNext();) {
                 listeners = (ListenerList) itr.next();
                 listeners.remove(listener);
@@ -236,16 +237,14 @@ public class LifecycleEventManager
         ClassMetaData meta, int type) {
         if (meta.getLifecycleMetaData().getIgnoreSystemListeners())
             return false;
-        if (fireEvent(null, source, null, type, _listeners, true, null) 
-            == Boolean.TRUE)
+        if (fireEvent(null, source, null, type, _listeners, true, null) == Boolean.TRUE)
             return true;
         ListenerList system = meta.getRepository().getSystemListeners();
         if (!system.isEmpty() && fireEvent(null, source, null, type, system,
             true, null) == Boolean.TRUE)
             return true;
         if (_classListeners != null) {
-            Class c = source == null ? meta.getDescribedType() :
-                source.getClass();
+            Class<?> c = source == null ? meta.getDescribedType() : source.getClass();
             do {
                 if (fireEvent(null, source, null, type, (ListenerList)
                     _classListeners.get(c), true, null) == Boolean.TRUE)
@@ -271,7 +270,7 @@ public class LifecycleEventManager
         ClassMetaData meta, int type) {
         boolean reentrant = _firing;
         _firing = true;
-        List exceptions = (reentrant) ? new LinkedList() : _exceps;
+        List<Exception> exceptions = (reentrant) ? new LinkedList<Exception>() : _exceps;
         MetaDataDefaults def = meta.getRepository().getMetaDataFactory().
             getDefaults();
 
@@ -283,8 +282,7 @@ public class LifecycleEventManager
             type, _listeners, false, exceptions);
 
         if (_classListeners != null) {
-            Class c = source == null ? meta.getDescribedType() :
-                source.getClass();
+            Class<?> c = source == null ? meta.getDescribedType() : source.getClass();
             do {
                 ev = (LifecycleEvent) fireEvent(ev, source, related, type,
                     (ListenerList) _classListeners.get(c), false, exceptions);
@@ -315,10 +313,10 @@ public class LifecycleEventManager
             _firing = false;
             _fail = false;
             if (!_addListeners.isEmpty())
-                for (Iterator itr = _addListeners.iterator(); itr.hasNext();)
+                for (Iterator<Object> itr = _addListeners.iterator(); itr.hasNext();)
                     addListener(itr.next(), (Class[]) itr.next());
             if (!_remListeners.isEmpty())
-                for (Iterator itr = _remListeners.iterator(); itr.hasNext();)
+                for (Iterator<Object> itr = _remListeners.iterator(); itr.hasNext();)
                     removeListener(itr.next());
             _addListeners.clear();
             _remListeners.clear();
@@ -331,7 +329,7 @@ public class LifecycleEventManager
      * Make callbacks, recording any exceptions in the given collection.
      */
     private void makeCallbacks(Object source, Object related,
-        ClassMetaData meta, int type, Collection exceptions) {
+        ClassMetaData meta, int type, Collection<Exception> exceptions) {
         // make lifecycle callbacks
         LifecycleCallbacks[] callbacks = meta.getLifecycleMetaData().
             getCallbacks(type);
@@ -351,7 +349,7 @@ public class LifecycleEventManager
      * listeners. The event may have already been constructed.
      */
     private Object fireEvent(LifecycleEvent ev, Object source, Object rel,
-        int type, ListenerList listeners, boolean mock, List exceptions) {
+        int type, ListenerList listeners, boolean mock, List<Exception> exceptions) {
         if (listeners == null || !listeners.hasListeners(type))
             return null;
 
@@ -365,9 +363,9 @@ public class LifecycleEventManager
                 responds = ((ListenerAdapter) listener).respondsTo(type);
                 if (!responds)
                     continue;
-            } else
+            } else {
                 responds = false;
-
+            }
             try {
                 switch (type) {
                     case LifecycleEvent.BEFORE_CLEAR:
@@ -490,14 +488,12 @@ public class LifecycleEventManager
                         break;
 
                     case LifecycleEvent.AFTER_PERSIST_PERFORMED:
-                        if (responds || listener instanceof PostPersistListener)
-                        {
+                        if (responds || listener instanceof PostPersistListener) {
                             if (mock)
                                 return Boolean.TRUE;
                             if (ev == null)
                                 ev = new LifecycleEvent(source, rel, type);
-                            ((PostPersistListener) listener)
-                                .afterPersistPerformed(ev);
+                            ((PostPersistListener) listener).afterPersistPerformed(ev);
                         }
                         break;
                     case LifecycleEvent.BEFORE_UPDATE:
@@ -510,8 +506,7 @@ public class LifecycleEventManager
                             if (type == LifecycleEvent.BEFORE_UPDATE)
                                 ((UpdateListener) listener).beforeUpdate(ev);
                             else
-                                ((UpdateListener) listener)
-                                    .afterUpdatePerformed(ev);
+                                ((UpdateListener) listener).afterUpdatePerformed(ev);
                         }
                         break;
                     case LifecycleEvent.AFTER_DELETE_PERFORMED:
@@ -520,14 +515,11 @@ public class LifecycleEventManager
                                 return Boolean.TRUE;
                             if (ev == null)
                                 ev = new LifecycleEvent(source, rel, type);
-                            ((PostDeleteListener) listener)
-                                .afterDeletePerformed(ev);
+                            ((PostDeleteListener) listener).afterDeletePerformed(ev);
                         }
                         break;
                     default:
-                        throw new InvalidStateException(
-                            _loc.get("unknown-lifecycle-event",
-                                Integer.toString(type)));
+                        throw new InvalidStateException(_loc.get("unknown-lifecycle-event", Integer.toString(type)));
                 }
             }
             catch (Exception e) {
@@ -558,8 +550,7 @@ public class LifecycleEventManager
      * Extended list that tracks what event types its elements care about.
      * Maintains set semantics as well.
      */
-    public static class ListenerList
-        extends ArrayList {
+    public static class ListenerList extends ArrayList<Object> {
 
         private int _types = 0;
 
