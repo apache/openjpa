@@ -30,6 +30,8 @@
     <modelVersion>4.0.0</modelVersion>
     <artifactId>openjpa-integration-osgi-itests</artifactId>
     <version>2.0.0-SNAPSHOT</version>
+    <packaging>jar</packaging>
+
     <name>OpenJPA Integration Tests - OSGi</name>
     <description>OpenJPA Integration Tests - OSGi</description>
 
@@ -42,8 +44,14 @@
             <groupId>org.apache.openjpa</groupId>
             <artifactId>openjpa</artifactId>
             <version>${version}</version>
-            <scope>test</scope>
+            <scope>provided</scope>
         </dependency>
+        <dependency>
+            <groupId>org.apache.geronimo.specs</groupId>
+            <artifactId>geronimo-jpa_2.0_spec</artifactId>
+            <scope>provided</scope>
+        </dependency>
+
         <dependency>
             <groupId>org.apache.geronimo.specs</groupId>
             <artifactId>geronimo-jms_1.1_spec</artifactId>
@@ -52,12 +60,7 @@
         <dependency>
             <groupId>org.apache.geronimo.specs</groupId>
             <artifactId>geronimo-jta_1.1_spec</artifactId>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.geronimo.specs</groupId>
-            <artifactId>geronimo-jpa_2.0_spec</artifactId>
-            <scope>test</scope>
+            <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>org.apache.geronimo.specs</groupId>
@@ -75,12 +78,11 @@
             <groupId>commons-lang</groupId>
             <artifactId>commons-lang</artifactId>
             <version>2.4</version>
-            <scope>test</scope>
+            <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>commons-pool</groupId>
             <artifactId>commons-pool</artifactId>
-            <version>1.4</version>
             <scope>test</scope>
         </dependency>
         <!-- Testcase depends -->
@@ -155,6 +157,7 @@
             <groupId>org.apache.felix</groupId>
             <artifactId>org.osgi.core</artifactId>
             <version>1.2.0</version>
+            <scope>provided</scope>
         </dependency>
         <!-- Apache Felix framework -->
         <dependency>
@@ -194,6 +197,11 @@
 
     <build>
         <resources>
+            <!-- for source jar -->
+            <resource>
+                <directory>src/main/resources</directory>
+            </resource>
+            <!-- for test jar -->
             <resource>
                 <directory>src/test/resources</directory>
             </resource>
@@ -211,6 +219,49 @@
 
         <plugins>
             <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <configuration>
+                    <source>1.5</source>
+                    <target>1.5</target>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-antrun-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <phase>process-classes</phase>
+                        <configuration>
+                            <tasks>
+                                <ant antfile="src/main/ant/enhancer.xml" target="enhance" inheritRefs="true">
+                                    <property name="maven.test.skip" value="${maven.test.skip}" />
+                                    <property name="test" value="${test}" />
+                                    <property name="outdir" value="${project.build.outputDirectory}" />
+                                    <property name="project.build.outputDirectory" value="${project.build.outputDirectory}" />
+                                    <property name="openjpa.loglevel" value="${openjpa.loglevel}" />
+                                    <property name="build.enhance" value="${build.enhance}" />
+                                </ant>
+                            </tasks>
+                        </configuration>
+                        <goals>
+                            <goal>run</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-jar-plugin</artifactId>
+                <configuration>
+                    <archive>
+                        <manifestFile>${project.build.outputDirectory}/META-INF/MANIFEST.MF</manifestFile>
+                    </archive>
+                </configuration>
+            </plugin>
+<!--
+            <plugin>
                 <groupId>org.apache.servicemix.tooling</groupId>
                 <artifactId>depends-maven-plugin</artifactId>
                 <version>1.1</version>
@@ -223,11 +274,46 @@
                     </execution>
                 </executions>
             </plugin>
+-->
+            <plugin>
+                <groupId>org.apache.felix</groupId>
+                <artifactId>maven-bundle-plugin</artifactId>
+                <extensions>true</extensions>
+                <configuration>
+                    <instructions>
+                        <Bundle-Name>${artifactId}</Bundle-Name>
+                        <Bundle-SymbolicName>${groupId}.${artifactId};singleton=true</Bundle-SymbolicName>
+                        <Bundle-DocURL>http://openjpa.apache.org/documentation.html</Bundle-DocURL>
+                        <!-- OSGi Bundle Metadata -->
+                        <Private-Package>hellojpa*,META-INF*</Private-Package>
+                        <Export-Package></Export-Package>
+                        <Bundle-Activator>hellojpa.Main</Bundle-Activator>
+                        <!-- Eclipse metadata -->
+                        <Eclipse-Autostart>false</Eclipse-Autostart>
+                        <Bundle-ClassPath>.</Bundle-ClassPath>
+                    </instructions>
+                    <unpackBundle>true</unpackBundle>
+                </configuration>
+                <executions>
+                    <execution>
+                        <id>bundle-manifest</id>
+                        <phase>process-classes</phase>
+                        <goals>
+                            <goal>manifest</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-plugin</artifactId>
                 <configuration>
                     <forkMode>pertest</forkMode>
+                    <argLine>${surefire.jvm.args}</argLine>
+                    <excludes>
+                        <!-- exclude everything for now.... -->
+                        <exclude>org/apache/openjpa/**/Test*.java</exclude>
+                    </excludes>
                 </configuration>
             </plugin>
         </plugins>
