@@ -30,14 +30,11 @@ package org.apache.openjpa.persistence.kernel;
 import java.util.Collection;
 import java.util.Iterator;
 
-
-
-import org.apache.openjpa.persistence.kernel.common.apps.RuntimeTest1;
-import org.apache.openjpa.persistence.kernel.common.apps.RuntimeTest2;
-
-import org.apache.openjpa.persistence.Extent;
 import org.apache.openjpa.persistence.OpenJPAEntityManager;
 import org.apache.openjpa.persistence.OpenJPAQuery;
+import org.apache.openjpa.persistence.kernel.common.apps.RuntimeTest1;
+import org.apache.openjpa.persistence.kernel.common.apps.RuntimeTest2;
+import org.apache.openjpa.persistence.kernel.common.apps.RuntimeTest3;
 
 public class TestQueries extends BaseKernelTest {
 
@@ -53,8 +50,7 @@ public class TestQueries extends BaseKernelTest {
 
     public void setUp()
         throws Exception {
-        super.setUp();
-        deleteAll(RuntimeTest1.class);
+        super.setUp(RuntimeTest1.class, RuntimeTest2.class, RuntimeTest3.class);
     }
 
     public void testSimpleQuery() {
@@ -141,7 +137,7 @@ public class TestQueries extends BaseKernelTest {
 //        OpenJPAQuery q = pm.createNativeQuery("",RuntimeTest1.class);
         OpenJPAQuery q = pm.createQuery("SELECT o FROM RuntimeTest1 o");
         try {
-            Collection c = (Collection) q.getResultList();
+            q.getResultList();
             fail("Query.execute() should have thrown a JDOException when "
                 + "PM is outside a Transaction and NTR==false");
         } catch (Exception jdoe) {
@@ -158,7 +154,7 @@ public class TestQueries extends BaseKernelTest {
     private void deleteByQuery(Class type, boolean subs, String filter,
         OpenJPAEntityManager pm) {
         startTx(pm);
-        Extent extent = pm.createExtent(type, subs);
+        pm.createExtent(type, subs);
         //FIXME jthomas
 //        OpenJPAQuery query = pm.newQuery(extent, filter);
 //        Collection items = (Collection) query.execute();
@@ -167,7 +163,7 @@ public class TestQueries extends BaseKernelTest {
         OpenJPAQuery query =
             pm.createQuery("SELECT o FROM " + cstrng + " o WHERE o." + filter);
         query.setSubclasses(subs);
-        Collection items = (Collection) query.getResultList();
+        Collection items = query.getResultList();
         for (Iterator i = items.iterator(); i.hasNext();)
             pm.remove(i.next());
 
@@ -186,14 +182,14 @@ public class TestQueries extends BaseKernelTest {
 
     private Collection runQuery(Class type, boolean subs, String filter,
         OpenJPAEntityManager pm) {
-        Extent extent = pm.createExtent(type, subs);
+        pm.createExtent(type, subs);
         //FIXME jthomas
         //Query query = pm.newQuery(extent, filter);
         String cstrng = type.getName();
         OpenJPAQuery query =
             pm.createQuery("SELECT o FROM " + cstrng + " o WHERE o." + filter);
         query.setSubclasses(subs);
-        Collection results = (Collection) query.getResultList();
+        Collection results = query.getResultList();
         return results;
     }
 

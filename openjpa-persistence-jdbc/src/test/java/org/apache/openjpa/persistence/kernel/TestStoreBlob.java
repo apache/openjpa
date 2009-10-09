@@ -45,6 +45,10 @@ public class TestStoreBlob extends BaseKernelTest {
         super(name);
     }
 
+    public void setUp() throws Exception {
+        super.setUp(BlobTest.class);
+    }
+
     public void testStoreBlob() {
         OpenJPAEntityManager pm;
 

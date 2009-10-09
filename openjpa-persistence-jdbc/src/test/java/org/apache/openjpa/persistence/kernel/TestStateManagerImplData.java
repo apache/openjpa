@@ -29,6 +29,7 @@ package org.apache.openjpa.persistence.kernel;
 
 
 import org.apache.openjpa.persistence.kernel.common.apps.ModRuntimeTest1;
+import org.apache.openjpa.persistence.kernel.common.apps.ModRuntimeTest2;
 
 import org.apache.openjpa.kernel.OpenJPAStateManager;
 import org.apache.openjpa.meta.ClassMetaData;
@@ -50,6 +51,10 @@ public class TestStateManagerImplData extends BaseKernelTest {
 
     public TestStateManagerImplData(String test) {
         super(test);
+    }
+
+    public void setUp() throws Exception {
+        super.setUp(ModRuntimeTest1.class, ModRuntimeTest2.class);
     }
 
     public void setUpMetaData(ClassMetaData meta) {
@@ -119,7 +124,6 @@ public class TestStateManagerImplData extends BaseKernelTest {
     }
 
     public void testNotClearedIfRetainValues() {
-        deleteAll(ModRuntimeTest1.class);
         notClearedIfRetainValuesTest(true);
         notClearedIfRetainValuesTest(false);
     }
@@ -149,7 +153,7 @@ public class TestStateManagerImplData extends BaseKernelTest {
 
             // test in next transaction
             startTx(pm);
-            pc = (ModRuntimeTest1) pm.find(ModRuntimeTest1.class, oid);
+            pc = pm.find(ModRuntimeTest1.class, oid);
             sm = getStateManager(pc, pm);
             assertNotNull(sm);
             if (pm.getOptimistic())
@@ -164,7 +168,7 @@ public class TestStateManagerImplData extends BaseKernelTest {
 
         // test in another pm for good measure
         pm = getPM(optimistic, true);
-        pc = (ModRuntimeTest1) pm.find(ModRuntimeTest1.class, oid);
+        pc = pm.find(ModRuntimeTest1.class, oid);
         sm = getStateManager(pc, pm);
         assertNotNull(sm);
         setUpMetaData(sm.getMetaData());
@@ -174,7 +178,7 @@ public class TestStateManagerImplData extends BaseKernelTest {
 
             // test in transaction; re-lookup pc to be sure it enters the trans
             startTx(pm);
-            pc = (ModRuntimeTest1) pm.find(ModRuntimeTest1.class, oid);
+            pc = pm.find(ModRuntimeTest1.class, oid);
             if (pm.getOptimistic())
                 assertEquals(value, sm.getImplData(key));
             else {
