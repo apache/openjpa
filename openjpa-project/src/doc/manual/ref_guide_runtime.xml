@@ -1679,7 +1679,7 @@ public class Author {
 
     @Id
     @GeneratedValue(strategy=GenerationType.SEQUENCE, generator="AuthorSeq")
-    @SequenceGenerator(name="AuthorSeq" sequence="table(Table=AUTO_SEQ, Increment=100)")
+    @SequenceGenerator(name="AuthorSeq", sequenceName="table(Table=AUTO_SEQ)", allocationSize=100)
     @Column(name="AID")
     private long id;
  
@@ -1689,10 +1689,10 @@ public class Author {
             <para>
 Note that if you want to use a plugin string without any arguments, you must
 still suffix the plugin type with <literal>()</literal> to differentiate it from
-a sequence name in the <literal> SequenceGenerator.sequence</literal> attribute:
+a sequence name in the <literal>SequenceGenerator.sequenceName</literal> attribute:
             </para>
 <programlisting>
-@SequenceGenerator(name="AuthorSeq", sequence="table()")
+@SequenceGenerator(name="AuthorSeq", sequenceName="table()")
 </programlisting>
         </example>
         <para>

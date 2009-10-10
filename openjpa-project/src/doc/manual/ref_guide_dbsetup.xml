@@ -3428,7 +3428,7 @@ auto-increment support, see <xref linkend="ref_guide_pc_oid_pkgen_autoinc"/>
 <literal>AutoAssignSequenceName</literal>: The global name of the sequence that
 OpenJPA will assume to hold the value of primary key value for rows that use
 auto-increment. If left unset, OpenJPA will use a sequence named <literal>
-"SEQ_&lt;table name&gt;"</literal>.
+"&lt;table name&gt;_&lt;column name&gt;_SEQ"</literal>.
                     </para>
                 </listitem>
                 <listitem id="OracleDictionary.MaxEmbeddedBlobSize">
