@@ -38,8 +38,7 @@ public class TestEJBLobs extends AbstractTestCase {
     }
 
     public void setUp() throws Exception {
-        deleteAll(Inner.class);
-        deleteAll(Inner2.class);
+        super.setUp(Inner.class, Inner2.class);
 
         EntityManager em = currentEntityManager();
         startTx(em);
@@ -70,7 +69,7 @@ public class TestEJBLobs extends AbstractTestCase {
         endEm(_pm);
 
         _pm = currentEntityManager();
-        _inner = (Inner) _pm.find(Inner.class, "string");
+        _inner = _pm.find(Inner.class, "string");
     }
 
     public void testOtherFields() {

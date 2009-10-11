@@ -25,20 +25,19 @@ import javax.persistence.EntityManager;
 
 import org.apache.openjpa.persistence.kernel.common.apps.RuntimeTest1;
 import org.apache.openjpa.persistence.kernel.common.apps.RuntimeTest2;
+import org.apache.openjpa.persistence.kernel.common.apps.RuntimeTest3;
 import org.apache.openjpa.persistence.common.utils.AbstractTestCase;
 
 public class TestEJBEntityManager extends AbstractTestCase {
 
     private Object _id = null;
 
-    private Object _id2 = null;
-
     public TestEJBEntityManager(String name) {
         super(name, "kernelcactusapp");
     }
 
     public void setUp() throws Exception {
-        deleteAll(RuntimeTest1.class);
+        super.setUp(RuntimeTest1.class, RuntimeTest2.class, RuntimeTest3.class);
 
         EntityManager em = currentEntityManager();
         startTx(em);
@@ -48,7 +47,7 @@ public class TestEJBEntityManager extends AbstractTestCase {
         em.persist(a);
         em.persist(b);
         _id = a.getIntField();
-        _id2 = b.getIntField();
+        b.getIntField();
 
         endTx(em);
         endEm(em);
@@ -110,7 +109,7 @@ public class TestEJBEntityManager extends AbstractTestCase {
         }.start();
 
         while (result.size() == 0)
-            Thread.currentThread().yield(); // wait for results
+            Thread.yield(); // wait for results
         Object ret = result.get(0);
 
         if (ret instanceof Exception)
@@ -128,7 +127,7 @@ public class TestEJBEntityManager extends AbstractTestCase {
         EntityManager em = currentEntityManager();
 
         RuntimeTest1 a = new RuntimeTest1("foo", 10);
-        RuntimeTest1 a2 = (RuntimeTest1) em.find(RuntimeTest1.class, _id);
+        em.find(RuntimeTest1.class, _id);
 
         try {
             em.persist(a);
