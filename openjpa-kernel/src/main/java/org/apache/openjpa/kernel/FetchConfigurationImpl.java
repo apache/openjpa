@@ -495,7 +495,8 @@ public class FetchConfigurationImpl
 
         lock();
         try {
-            assertActiveTransaction();
+            if (level != MixedLockLevels.LOCK_NONE)
+                assertActiveTransaction();
             if (level == DEFAULT)
                 _state.readLockLevel = _state.ctx.getConfiguration().
                     getReadLockLevelConstant();
