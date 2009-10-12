@@ -20,6 +20,7 @@ package org.apache.openjpa.persistence.lockmgr;
 
 import javax.persistence.EntityManager;
 import javax.persistence.LockModeType;
+import javax.persistence.TransactionRequiredException;
 
 import org.apache.openjpa.jdbc.conf.JDBCConfiguration;
 import org.apache.openjpa.jdbc.kernel.JDBCFetchConfigurationImpl;
@@ -260,5 +261,53 @@ public class TestEmLockMode extends SequencedActionsTest {
             assertAllSQLInOrder(expectedVersionUpdateSQL);
 
         assertEquals(beforeIsolation, fConfig.getIsolation());
+    }
+
+    /*
+     * Test em.getLockMode();
+     */
+    public void testGetLockMode() {
+        EntityManager em = emf.createEntityManager();
+
+        LockEmployee employee = em.find(LockEmployee.class, 1);
+        try {
+            em.getLockMode(employee);
+            fail("Expecting TransactionRequiredException.");
+        } catch (TransactionRequiredException tre) {
+        } catch (Exception e){
+            fail("Expecting TransactionRequiredException.");
+        }
+
+        em.getTransaction().begin();
+        try {
+            assertEquals("getLockMode only allows in transaction.",LockModeType.NONE, em.getLockMode(employee));
+        } catch (Exception e){
+            fail("Do not expecting any exception.");
+        }        
+        em.getTransaction().rollback();
+
+        em.clear();
+        em.getTransaction().begin();
+        try {
+            // getLockMode on a detached entity;
+            em.getLockMode(employee);
+            fail("Expecting IllegalArgumentException for getLockMode on a detached entity in an active transaction.");
+        } catch (IllegalArgumentException iae) {
+        } catch (Exception e){
+            fail("Expecting IllegalArgumentException for getLockMode on a detached entity in an active transaction.");
+        }        
+        em.getTransaction().rollback();
+
+        em.getTransaction().begin();
+        try {
+            employee = em.find(LockEmployee.class, 1, LockModeType.PESSIMISTIC_WRITE);
+            assertEquals("Test getLockMode on non-NONE lock mode type.", LockModeType.PESSIMISTIC_WRITE, em
+                    .getLockMode(employee));
+        } catch (Exception e){
+            fail("Do not expecting any exception.");
+        }        
+        em.getTransaction().rollback();
+
+        em.close();
     }
 }

@@ -1124,6 +1124,8 @@ public class EntityManagerImpl
 
     public LockModeType getLockMode(Object entity) {
         assertNotCloseInvoked();
+        _broker.assertActiveTransaction();
+        assertValidAttchedEntity(entity);
         return MixedLockLevelsHelper.fromLockLevel(
             _broker.getLockLevel(entity));
     }
