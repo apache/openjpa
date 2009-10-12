@@ -1935,7 +1935,7 @@ public class BrokerImpl
 
             if ((_autoDetach & DETACH_COMMIT) != 0)
                 detachAllInternal(null);
-            else if (status == Status.STATUS_ROLLEDBACK 
+            else if (status == Status.STATUS_ROLLEDBACK
                 && (_autoDetach & DETACH_ROLLBACK) != 0) {
                 detachAllInternal(null);
             }
@@ -2313,7 +2313,7 @@ public class BrokerImpl
             _derefCache = null;
         }
 
-        // peform commit or rollback state transitions on each instance
+        // perform commit or rollback state transitions on each instance
         StateManagerImpl sm;
         for (Iterator itr = transStates.iterator(); itr.hasNext();) {
             sm = (StateManagerImpl) itr.next();
@@ -2323,8 +2323,13 @@ public class BrokerImpl
                     // (and therefore deleted) to un-deref
                     sm.setDereferencedDependent(false, false);
                     sm.rollback();
-                } else
+                } else {
+                    if (sm.getPCState() == PCState.PNEWDELETED || sm.getPCState() == PCState.PDELETED) {
+                        fireLifecycleEvent(sm.getPersistenceCapable(), null, sm.getMetaData(), 
+                            LifecycleEvent.AFTER_DELETE_PERFORMED);
+                    }
                     sm.commit();
+                }
             } catch (RuntimeException re) {
                 exceps = add(exceps, re);
             }
@@ -3907,7 +3912,7 @@ public class BrokerImpl
     /**
      * Return a copy of all transactional state managers.
      */
-    protected Collection getTransactionalStates() {
+    protected Collection<StateManagerImpl> getTransactionalStates() {
         if (!hasTransactionalObjects())
             return Collections.EMPTY_SET;
         return _transCache.copy();

@@ -25,7 +25,7 @@ import org.apache.openjpa.persistence.test.SingleEMFTestCase;
 
 /**
  * Simulates a container transaction around a test method. 
- * 
+ * <br>
  * The concrete tests derived from this class must adhere to the following guidelines:
  * <LI>They must configure openjpa.ManagedRuntime in setUp() properties as
  * to <code>org.apache.openjpa.jta.JTAManagedRuntime</code> 

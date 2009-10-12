@@ -242,6 +242,14 @@
                 value="buildSchema(SchemaAction='drop,add')"/>
         </properties>
     </persistence-unit>
+    
+    <persistence-unit name="post-remove" transaction-type="JTA">
+        <class>org.apache.openjpa.persistence.event.PostRemoveCallbackEntity</class>
+        <properties>
+            <property name="openjpa.jdbc.SynchronizeMappings" value="buildSchema(SchemaAction='drop,add')"/>
+            <property name="openjpa.ManagedRuntime" value="org.apache.openjpa.jta.JTAManagedRuntime"/>
+        </properties>
+    </persistence-unit>
 
 </persistence>
 

@@ -51,6 +51,7 @@ public abstract class SingleEMFTestCase
      * subclass.
      */
     public void setUp() throws Exception {
+        super.setUp();
         setUp(new Object[0]);
     }
 
