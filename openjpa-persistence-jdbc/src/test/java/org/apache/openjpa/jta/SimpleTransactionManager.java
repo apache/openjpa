@@ -29,8 +29,7 @@ import javax.transaction.Transaction;
 import javax.transaction.TransactionManager;
 
 /**
- * A very very simple Transaction Manager for testing JTA resource 
- * without a container.
+ * A very simple Transaction Manager for testing JTA resource without a container.
  * <br>
  * Provides a single transaction per-thread model.
  * 

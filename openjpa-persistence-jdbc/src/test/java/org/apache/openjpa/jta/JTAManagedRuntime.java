@@ -53,5 +53,4 @@ public class JTAManagedRuntime implements ManagedRuntime {
     public void setRollbackOnly(Throwable cause) throws Exception {
         txm.getTransaction().setRollbackOnly(cause);
     }
-
 }

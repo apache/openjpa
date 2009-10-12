@@ -60,9 +60,10 @@ public class SimpleTransaction implements Transaction {
             }
         }
         // do nothing
+        status = errors.isEmpty() ? Status.STATUS_COMMITTED : Status.STATUS_ROLLEDBACK;
         for (Synchronization synch : synchs) {
             try {
-                synch.afterCompletion(Status.STATUS_COMMITTED);
+                synch.afterCompletion(status);
             } catch (Throwable t) {
                 errors.add(t);
             }
