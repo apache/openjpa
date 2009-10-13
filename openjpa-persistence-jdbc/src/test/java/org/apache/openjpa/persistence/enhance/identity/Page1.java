@@ -26,7 +26,7 @@ import javax.persistence.Entity;
 import javax.persistence.JoinColumn;
 import javax.persistence.JoinColumns;
 import javax.persistence.ManyToOne;
-import javax.persistence.MappedById;
+import javax.persistence.MapsId;
 
 import org.apache.openjpa.persistence.jdbc.VersionColumn;
 
@@ -48,7 +48,7 @@ public class Page1 implements Serializable {
     @EmbeddedId
     private PageId1 pid;
 
-    @MappedById("book")
+    @MapsId("book")
     @Column(nullable = false)
     @ManyToOne
     @JoinColumns({

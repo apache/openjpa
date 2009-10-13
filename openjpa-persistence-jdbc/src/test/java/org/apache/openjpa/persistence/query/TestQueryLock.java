@@ -22,10 +22,10 @@ import javax.persistence.EntityManager;
 import javax.persistence.LockModeType;
 import javax.persistence.Query;
 import javax.persistence.TransactionRequiredException;
+import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Root;
 
-import org.apache.openjpa.persistence.criteria.CriteriaBuilder;
 import org.apache.openjpa.persistence.query.common.apps.Entity1;
 
 public class TestQueryLock extends BaseQueryTest {
@@ -72,7 +72,7 @@ public class TestQueryLock extends BaseQueryTest {
 
     public void testCriteriaLock() {
         EntityManager em = currentEntityManager();
-        CriteriaBuilder cb = getEmf().getQueryBuilder();
+        CriteriaBuilder cb = getEmf().getCriteriaBuilder();
         CriteriaQuery<Entity1> cq = cb.createQuery(Entity1.class);
         Root<Entity1> customer = cq.from(Entity1.class);
         Query q = em.createQuery(cq);

@@ -28,7 +28,7 @@ public class MedicalHistory2 {
     
     String name;
     
-    @MappedById
+    @MapsId
     @OneToOne Person2 patient;
     
     public Person2 getPatient() {

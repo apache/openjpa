@@ -76,7 +76,8 @@ import org.apache.openjpa.meta.ClassMetaData;
 import org.apache.openjpa.meta.FieldMetaData;
 import org.apache.openjpa.meta.QueryMetaData;
 import org.apache.openjpa.meta.SequenceMetaData;
-import org.apache.openjpa.persistence.criteria.CriteriaBuilder;
+import org.apache.openjpa.persistence.criteria.CriteriaBuilderImpl;
+import org.apache.openjpa.persistence.criteria.OpenJPACriteriaBuilder;
 import org.apache.openjpa.persistence.criteria.OpenJPACriteriaQuery;
 import org.apache.openjpa.persistence.validation.ValidationUtils;
 import org.apache.openjpa.util.Exceptions;
@@ -1546,7 +1547,7 @@ public class EntityManagerImpl
     public <T> TypedQuery<T> createQuery(CriteriaQuery<T> criteriaQuery) {
         ((OpenJPACriteriaQuery<T>)criteriaQuery).compile(); 
         
-        org.apache.openjpa.kernel.Query kernelQuery =_broker.newQuery(CriteriaBuilder.LANG_CRITERIA, criteriaQuery);
+        org.apache.openjpa.kernel.Query kernelQuery =_broker.newQuery(CriteriaBuilderImpl.LANG_CRITERIA, criteriaQuery);
         QueryImpl<T> facadeQuery = new QueryImpl<T>(this, _ret, kernelQuery);
         Set<ParameterExpression<?>> params = criteriaQuery.getParameters();
         
@@ -1572,8 +1573,8 @@ public class EntityManagerImpl
         return props;
     }
 
-    public CriteriaBuilder getQueryBuilder() {
-        return _emf.getQueryBuilder();
+    public OpenJPACriteriaBuilder getCriteriaBuilder() {
+        return _emf.getCriteriaBuilder();
     }
 
     public Set<String> getSupportedProperties() {

@@ -62,7 +62,7 @@ public class TestSubqueries extends CriteriaTest {
         sq.select(s);
         sq.where(cb.equal(s.get(CompUser_.address).get(Address_.country), o
                 .get(CompUser_.address).get(Address_.country)));
-        q.where(cb.exists(sq).negate());
+        q.where(cb.exists(sq).not());
         q.select(o.get(CompUser_.name)).distinct(true);
 
         assertEquivalence(q, query);

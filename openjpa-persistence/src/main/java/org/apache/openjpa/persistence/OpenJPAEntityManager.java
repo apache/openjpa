@@ -20,6 +20,8 @@ package org.apache.openjpa.persistence;
 
 import java.util.Collection;
 import java.util.EnumSet;
+import java.util.Set;
+
 import javax.persistence.EntityManager;
 import javax.persistence.EntityTransaction;
 import javax.persistence.LockModeType;
@@ -31,7 +33,7 @@ import org.apache.openjpa.kernel.AutoDetach;
 import org.apache.openjpa.kernel.ConnectionRetainModes;
 import org.apache.openjpa.kernel.DetachState;
 import org.apache.openjpa.kernel.RestoreState;
-import org.apache.openjpa.persistence.criteria.CriteriaBuilder;
+import org.apache.openjpa.persistence.criteria.OpenJPACriteriaBuilder;
 import org.apache.openjpa.persistence.query.QueryDefinition;
 
 /**
@@ -1148,6 +1150,14 @@ public interface OpenJPAEntityManager
      * 
      * @since 2.0.0
      */
-    public CriteriaBuilder getQueryBuilder();
+    public OpenJPACriteriaBuilder getCriteriaBuilder();
+    
+    /**
+     * Get the properties supported by this runtime.
+     * 
+     * @since 2.0.0
+    */
+    public Set<String> getSupportedProperties();
+
 
 }

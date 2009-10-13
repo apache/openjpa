@@ -20,10 +20,11 @@ package org.apache.openjpa.persistence;
 
 import java.io.Serializable;
 import java.util.Map;
+import java.util.Set;
 
 import javax.persistence.EntityManagerFactory;
 
-import org.apache.openjpa.persistence.criteria.CriteriaBuilder;
+import org.apache.openjpa.persistence.criteria.OpenJPACriteriaBuilder;
 import org.apache.openjpa.persistence.query.QueryBuilder;
 
 /**
@@ -137,5 +138,12 @@ public interface OpenJPAEntityManagerFactory
      * 
      * @since 2.0.0
      */
-    public CriteriaBuilder getQueryBuilder();
+    public OpenJPACriteriaBuilder getCriteriaBuilder();
+    
+    /**
+     * Get the properties supported by this runtime.
+     * 
+     * @since 2.0.0
+    */
+    public Set<String> getSupportedProperties();
 }

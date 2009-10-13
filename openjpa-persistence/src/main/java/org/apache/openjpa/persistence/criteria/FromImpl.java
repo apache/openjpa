@@ -284,4 +284,8 @@ class FromImpl<Z,X> extends PathImpl<Z,X> implements From<Z,X> {
         Expressions.acceptVisit(visitor, this, 
             _joins == null ? null : _joins.toArray(new ExpressionImpl<?>[_joins.size()]));
     }
+    
+    public From<Z,X> getCorrelationParent() {
+        return (From<Z,X>)getCorrelatedPath();
+    }
 }

@@ -116,8 +116,8 @@ public class TestMetamodel extends SingleEMFTestCase {
         java.util.Set<ManagedType<?>> managedTypes = model.getManagedTypes();
         managedTypes.removeAll(model.getEmbeddables());
         managedTypes.removeAll(model.getEntities());
-        assertNotNull(model.type(ImplicitFieldAccessMappedSuperclass.class));
-        assertTrue(managedTypes.contains(model.type(ImplicitFieldAccessMappedSuperclass.class)));
+        assertNotNull(model.managedType(ImplicitFieldAccessMappedSuperclass.class));
+        assertTrue(managedTypes.contains(model.managedType(ImplicitFieldAccessMappedSuperclass.class)));
     }
     
     public void testGetAttributeByNameAndTypeFromMetaClass() {

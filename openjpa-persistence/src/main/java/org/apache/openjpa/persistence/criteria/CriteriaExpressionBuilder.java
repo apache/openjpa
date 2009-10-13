@@ -175,7 +175,7 @@ class CriteriaExpressionBuilder {
     protected void evalCrossJoinRoots(QueryExpressions exps, ExpressionFactory factory, CriteriaQueryImpl<?> q) {
         Set<Root<?>> roots = q.getRoots();
         SubqueryImpl<?> subQuery = q.getDelegator();
-        if (subQuery == null || subQuery.getCorrelatedJoins() == null) {
+        if (subQuery == null || subQuery.getCorrelatedJoins().isEmpty()) {
             q.assertRoot();
             if (roots.size() > 1) { // cross join
                 for (Root<?> root : roots) {
@@ -194,7 +194,7 @@ class CriteriaExpressionBuilder {
         PredicateImpl where = q.getRestriction();
         SubqueryImpl<?> subQuery = q.getDelegator();
         org.apache.openjpa.kernel.exps.Expression filter = null;
-        if (subQuery == null || subQuery.getCorrelatedJoins() == null) {
+        if (subQuery == null || subQuery.getCorrelatedJoins().isEmpty()) {
             q.assertRoot();
             for (Root<?> root : roots) {
                 for (Join<?, ?> join : root.getJoins()) {
@@ -205,9 +205,9 @@ class CriteriaExpressionBuilder {
             }
         }
         if (subQuery != null) {
-            List<Join<?,?>> corrJoins = subQuery.getCorrelatedJoins();
-            for (int i = 0; corrJoins != null && i < corrJoins.size(); i++) {
-                filter = Expressions.and(factory, ((ExpressionImpl<?>)corrJoins.get(i))
+            Set<Join<?,?>> corrJoins = subQuery.getCorrelatedJoins();
+            for (Join<?,?> corrJoin : corrJoins) {
+                filter = Expressions.and(factory, ((ExpressionImpl<?>)corrJoin)
                         .toKernelExpression(factory, q), filter);
             }
         }

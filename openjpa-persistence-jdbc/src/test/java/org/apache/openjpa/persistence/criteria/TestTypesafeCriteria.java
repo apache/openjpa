@@ -992,7 +992,7 @@ public class TestTypesafeCriteria extends CriteriaTest {
             p1.setLabel("label" + i);
             photo1.put("photo" + i, p1);
         }
-        q.where(photo.key().in(cb.keys(photo1)).negate()); 
+        q.where(photo.key().in(cb.keys(photo1)).not()); 
         executeAndCompareSQL(q, sql);
     }
 
@@ -1152,7 +1152,7 @@ public class TestTypesafeCriteria extends CriteriaTest {
             p1.setLabel("label" + i);
             photo1.put("photo" + i, p1);
         }
-        q.where(photo.value().in(cb.values(photo1)).negate()); 
+        q.where(photo.value().in(cb.values(photo1)).not()); 
         executeAndCompareSQL(q, sql);
     }
 
@@ -1249,7 +1249,7 @@ public class TestTypesafeCriteria extends CriteriaTest {
         
         CriteriaQuery<Student> q = cb.createQuery(Student.class);
         Root<Student> s = q.from(Student.class);
-        Join<Map<Course,Semester>,Course> c = s.join(Student_.enrollment).joinKey();
+        Join<Map<Course,Semester>,Course> c = ((Joins.Map)s.join(Student_.enrollment)).joinKey();
         q.where(cb.equal(c.get(Course_.name), cb.parameter(String.class, "name")));
         
         List<Student> cResult = em.createQuery(q).setParameter("name","C1").getResultList();

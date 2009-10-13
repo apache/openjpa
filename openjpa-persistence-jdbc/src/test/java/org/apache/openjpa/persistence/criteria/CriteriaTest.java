@@ -19,6 +19,7 @@
 package org.apache.openjpa.persistence.criteria;
 
 import javax.persistence.EntityManager;
+import javax.persistence.criteria.CriteriaBuilder;
 
 import org.apache.openjpa.persistence.OpenJPAEntityManagerFactorySPI;
 import org.apache.openjpa.persistence.criteria.results.Bar;
@@ -34,7 +35,7 @@ public abstract class CriteriaTest extends AbstractCriteriaTestCase {
     protected static OpenJPAEntityManagerFactorySPI emf;
     protected static SQLAuditor auditor;
 
-    protected CriteriaBuilder cb;
+    protected OpenJPACriteriaBuilder cb;
     protected EntityManager em;
 
     protected static Class<?>[] CLASSES =
@@ -57,7 +58,7 @@ public abstract class CriteriaTest extends AbstractCriteriaTestCase {
         }
         setDictionary();
         em = getEntityManagerFactory().createEntityManager();
-        cb = getEntityManagerFactory().getQueryBuilder();
+        cb = getEntityManagerFactory().getCriteriaBuilder();
     }
 
     protected OpenJPAEntityManagerFactorySPI getEntityManagerFactory() {
@@ -80,7 +81,7 @@ public abstract class CriteriaTest extends AbstractCriteriaTestCase {
         return cb;
     }
 
-    protected void setCriteriaBuilder(CriteriaBuilder cb) {
+    protected void setCriteriaBuilder(OpenJPACriteriaBuilder cb) {
         this.cb = cb;
     }
 

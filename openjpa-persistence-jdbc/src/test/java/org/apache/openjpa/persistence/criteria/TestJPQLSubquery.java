@@ -700,7 +700,7 @@ public class TestJPQLSubquery extends CriteriaTest {
         Root<Address> a = sq.from(Address.class);
         sq.select(a);
         sq.where(cb.equal(a, c.get(CompUser_.address)));
-        q.where(cb.exists(sq).negate());
+        q.where(cb.exists(sq).not());
 
         assertEquivalence(q, jpql);
     }
@@ -732,7 +732,7 @@ public class TestJPQLSubquery extends CriteriaTest {
         SetJoin<Customer,Order> o2 = c1.join(Customer_.orders);
         sq.select(o2);
         sq.where(cb.equal(o2, o));
-        q.where(cb.exists(sq).negate());
+        q.where(cb.exists(sq).not());
 
         assertEquivalence(q, jpql);
     }
@@ -1540,7 +1540,7 @@ public class TestJPQLSubquery extends CriteriaTest {
         
         sq.where(cb.and(cb.equal(a.get(Account_.customer), c), cb.exists(sq1)));
 
-        q.where(cb.exists(sq).negate());
+        q.where(cb.exists(sq).not());
         assertEquivalence(q, jpql);
     }
     
@@ -1572,7 +1572,7 @@ public class TestJPQLSubquery extends CriteriaTest {
         
         sq.where(cb.and(cb.equal(a.get(Account_.product), o), cb.exists(sq1)));
 
-        q.where(cb.exists(sq).negate());
+        q.where(cb.exists(sq).not());
         assertEquivalence(q, jpql);
     }
 }

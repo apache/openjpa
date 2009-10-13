@@ -26,7 +26,7 @@ public class Dependent2 {
     @EmbeddedId
     DependentId2 id;
     
-    @MappedById("empPK")
+    @MapsId("empPK")
     @ManyToOne Employee2 emp;
     
     public Employee2 getEmp() {

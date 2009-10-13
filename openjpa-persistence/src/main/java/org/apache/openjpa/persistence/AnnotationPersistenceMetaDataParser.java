@@ -70,7 +70,7 @@ import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 import javax.persistence.MapKey;
 import javax.persistence.MapKeyClass;
-import javax.persistence.MappedById;
+import javax.persistence.MapsId;
 import javax.persistence.MappedSuperclass;
 import javax.persistence.NamedNativeQueries;
 import javax.persistence.NamedNativeQuery;
@@ -158,7 +158,7 @@ public class AnnotationPersistenceMetaDataParser
         _tags.put(IdClass.class, ID_CLASS);
         _tags.put(MapKey.class, MAP_KEY);
         _tags.put(MapKeyClass.class, MAP_KEY_CLASS);
-        _tags.put(MappedById.class, MAPPED_BY_ID);
+        _tags.put(MapsId.class, MAPPED_BY_ID);
         _tags.put(NamedNativeQueries.class, NATIVE_QUERIES);
         _tags.put(NamedNativeQuery.class, NATIVE_QUERY);
         _tags.put(NamedQueries.class, QUERIES);
@@ -1133,7 +1133,7 @@ public class AnnotationPersistenceMetaDataParser
                     fmd.setPrimaryKey(true);
                     break;
                 case MAPPED_BY_ID:
-                    parseMappedById(fmd, (MappedById)anno);
+                    parseMapsId(fmd, (MapsId)anno);
                     break;
                 case MAP_KEY:
                     if (isMappingOverrideMode())
@@ -1504,9 +1504,9 @@ public class AnnotationPersistenceMetaDataParser
     }
 
     /**
-     * Parse @MappedById.
+     * Parse @MapsId.
      */
-    private void parseMappedById(FieldMetaData fmd, MappedById anno) {
+    private void parseMapsId(FieldMetaData fmd, MapsId anno) {
         String value = anno.value();
         if (value != null)
             fmd.setMappedByIdValue(value);

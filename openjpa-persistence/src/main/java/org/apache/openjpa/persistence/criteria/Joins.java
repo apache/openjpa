@@ -130,14 +130,14 @@ abstract class Joins {
             org.apache.openjpa.kernel.exps.Expression filter = null;
             PathImpl<?,?> correlatedParentPath = null;
             boolean bind = true;
-            java.util.List<Join<?,?>> corrJoins = null;
+            java.util.Set<Join<?,?>> corrJoins = null;
             org.apache.openjpa.kernel.exps.Expression join = null;
             if (!isCorrelated()) {
                 if (subquery != null) {
                     corrJoins = subquery.getCorrelatedJoins();
                     org.apache.openjpa.kernel.exps.Subquery subQ = subquery.getSubQ();
-                    if ((corrJoins != null && corrJoins.contains(_parent)) || 
-                        (corrJoins == null && parent.inSubquery(subquery) && _parent.getCorrelatedPath() != null)) { 
+                    if ((!corrJoins.isEmpty() && corrJoins.contains(_parent)) || 
+                        (corrJoins.isEmpty() && parent.inSubquery(subquery) && _parent.getCorrelatedPath() != null)) { 
                         path = factory.newPath(subQ);
                         correlatedParentPath = _parent.getCorrelatedPath();
                         bind = false;
@@ -332,7 +332,7 @@ abstract class Joins {
             org.apache.openjpa.kernel.exps.Path path = null;
             SubqueryImpl<?> subquery = c.getDelegator();
             org.apache.openjpa.kernel.exps.Expression filter = null;
-            java.util.List<Join<?,?>> corrJoins = null;
+            java.util.Set<Join<?,?>> corrJoins = null;
             boolean bind = true;
             org.apache.openjpa.kernel.exps.Expression join = null;
             PathImpl<?,?> corrJoin = getCorrelatedJoin(this);
@@ -386,7 +386,7 @@ abstract class Joins {
                 return expr;
             } else {
                 org.apache.openjpa.kernel.exps.Path parentPath = null;
-                if (corrJoins != null && corrJoins.contains(_parent)) {
+                if (!corrJoins.isEmpty() && corrJoins.contains(_parent)) {
                     Value var = getVariableForCorrPath(subquery, correlatedParentPath);
                     parentPath = factory.newPath(var);
                 } else {

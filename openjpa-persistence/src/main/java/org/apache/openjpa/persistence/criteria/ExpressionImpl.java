@@ -23,7 +23,7 @@ import java.util.Collection;
 
 import javax.persistence.criteria.Expression;
 import javax.persistence.criteria.Predicate;
-import javax.persistence.criteria.QueryBuilder.In;
+import javax.persistence.criteria.CriteriaBuilder.In;
 
 import org.apache.openjpa.kernel.exps.ExpressionFactory;
 

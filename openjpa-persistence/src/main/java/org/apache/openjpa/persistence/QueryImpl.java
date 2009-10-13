@@ -62,7 +62,7 @@ import org.apache.openjpa.kernel.jpql.JPQLParser;
 import org.apache.openjpa.lib.log.Log;
 import org.apache.openjpa.lib.rop.ResultList;
 import org.apache.openjpa.lib.util.Localizer;
-import org.apache.openjpa.persistence.criteria.CriteriaBuilder;
+import org.apache.openjpa.persistence.criteria.CriteriaBuilderImpl;
 import org.apache.openjpa.util.ImplHelper;
 import org.apache.openjpa.util.RuntimeExceptionTranslator;
 import org.apache.openjpa.util.UserException;
@@ -373,7 +373,7 @@ public class QueryImpl<X> implements OpenJPAQuerySPI<X>, Serializable {
 	}
 
 	void assertJPQLOrCriteriaQuery() {
-        if (!(JPQLParser.LANG_JPQL.equals(getLanguage()) || CriteriaBuilder.LANG_CRITERIA.equals(getLanguage()))) {
+        if (!(JPQLParser.LANG_JPQL.equals(getLanguage()) || CriteriaBuilderImpl.LANG_CRITERIA.equals(getLanguage()))) {
             throw new IllegalStateException(_loc.get("not-jpql-or-criteria-query").getMessage());
         }
 	}

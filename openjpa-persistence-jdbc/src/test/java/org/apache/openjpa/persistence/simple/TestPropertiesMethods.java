@@ -33,6 +33,7 @@ import org.apache.openjpa.lib.conf.ProductDerivations;
 import org.apache.openjpa.lib.conf.Value;
 import org.apache.openjpa.persistence.AutoClearType;
 import org.apache.openjpa.persistence.OpenJPAEntityManager;
+import org.apache.openjpa.persistence.OpenJPAEntityManagerFactory;
 import org.apache.openjpa.persistence.OpenJPAPersistence;
 
 /**
@@ -45,7 +46,7 @@ import org.apache.openjpa.persistence.OpenJPAPersistence;
  */
 public class TestPropertiesMethods extends TestCase {
     private static final String UNIT_NAME = "test";
-    private static EntityManagerFactory emf;
+    private static OpenJPAEntityManagerFactory emf;
     private OpenJPAEntityManager em;
     
     @SuppressWarnings("unchecked")
@@ -64,7 +65,7 @@ public class TestPropertiesMethods extends TestCase {
 /* equiv key */ //config.put("javax.persistence.jdbc.url", "jdbc:derby:target/database/test;create=true"); 
 /* prime use */ //config.put("openjpa.ConnectionUserName", "root");
             
-            emf = Persistence.createEntityManagerFactory(UNIT_NAME, config);
+            emf = OpenJPAPersistence.cast(Persistence.createEntityManagerFactory(UNIT_NAME, config));
             assertNotNull(emf);
         }
         em = OpenJPAPersistence.cast(emf.createEntityManager());

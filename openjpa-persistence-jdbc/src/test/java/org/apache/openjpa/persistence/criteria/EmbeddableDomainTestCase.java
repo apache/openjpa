@@ -19,6 +19,7 @@
 package org.apache.openjpa.persistence.criteria;
 
 import javax.persistence.EntityManager;
+import javax.persistence.criteria.CriteriaBuilder;
 
 import org.apache.openjpa.persistence.OpenJPAEntityManagerFactorySPI;
 import org.apache.openjpa.persistence.embed.Company1;
@@ -87,7 +88,7 @@ public abstract class EmbeddableDomainTestCase extends AbstractCriteriaTestCase 
             setDictionary();
         }
         em = getEntityManagerFactory().createEntityManager();
-        cb = getEntityManagerFactory().getQueryBuilder();
+        cb = getEntityManagerFactory().getCriteriaBuilder();
     }
 
     protected OpenJPAEntityManagerFactorySPI getEntityManagerFactory() {

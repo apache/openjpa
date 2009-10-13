@@ -65,13 +65,13 @@ public class TestCQL extends CriteriaTest {
         assertEquals(jpql, q.toCQL());
         
         // NOT (a OR b) 
-        q.where(cb.or(a, b).negate());
+        q.where(cb.or(a, b).not());
         jpql = "SELECT p FROM Person p WHERE NOT (p.name = 'A' OR p.name = 'B')";
         assertEquivalence(q, jpql);
         assertEquals(jpql, q.toCQL());
         
         // NOT a 
-        q.where(cb.and(a).negate());
+        q.where(cb.and(a).not());
         jpql = "SELECT p FROM Person p WHERE NOT p.name = 'A'";
         assertEquivalence(q, jpql);
         assertEquals(jpql, q.toCQL());

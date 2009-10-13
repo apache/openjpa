@@ -33,6 +33,7 @@ import javax.persistence.criteria.AbstractQuery;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Expression;
 import javax.persistence.criteria.Fetch;
+import javax.persistence.criteria.From;
 import javax.persistence.criteria.Join;
 import javax.persistence.criteria.Order;
 import javax.persistence.criteria.ParameterExpression;
@@ -602,7 +603,7 @@ class CriteriaQueryImpl<T> implements OpenJPACriteriaQuery<T>, AliasContext {
         if (!getRoots().isEmpty() && sel == getRoot()) {
             return true;
         }
-        if ((sel instanceof PathImpl<?,?>) && ((PathImpl<?,?>)sel).isCorrelated()) {
+        if ((sel instanceof From<?,?>) && ((From<?,?>)sel).isCorrelated()) {
             return true;
         }
         return false;

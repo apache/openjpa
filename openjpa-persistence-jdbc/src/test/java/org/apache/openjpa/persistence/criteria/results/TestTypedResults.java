@@ -31,7 +31,7 @@ import javax.persistence.Tuple;
 import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Join;
-import javax.persistence.criteria.QueryBuilder;
+import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.Root;
 
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
@@ -111,7 +111,7 @@ public class TestTypedResults extends SingleEMFTestCase {
         assertEquals(N_ORDERS / 2, jpqlTypedResults.size());
 
         // create the same query and get typed results.
-        QueryBuilder qb = em.getQueryBuilder();
+        CriteriaBuilder qb = em.getCriteriaBuilder();
         CriteriaQuery<Order> cq = qb.createQuery(Order.class);
         Root<Order> order = cq.from(Order.class);
         cq.select(order).where(qb.equal(order.get(Order_.filled), Boolean.TRUE));
@@ -153,7 +153,7 @@ public class TestTypedResults extends SingleEMFTestCase {
         List<Order> typedJpqlResults = typedJpqlQuery.getResultList();
         assertEquals(N_ORDERS / 2, typedJpqlResults.size());
 
-        QueryBuilder qb = em.getQueryBuilder();
+        CriteriaBuilder qb = em.getCriteriaBuilder();
         CriteriaQuery<Order> criteriaQuery = qb.createQuery(Order.class);
         Root<Order> order = criteriaQuery.from(Order.class);
         criteriaQuery.select(order).where(qb.lessThan(order.get(Order_.date), qb.parameter(Date.class, "maxDate")));
@@ -190,7 +190,7 @@ public class TestTypedResults extends SingleEMFTestCase {
         List<Object[]> jpqlResults = jpqlQuery.getResultList();
 
         // Get results using Tuple
-        QueryBuilder qb = em.getQueryBuilder();
+        CriteriaBuilder qb = em.getCriteriaBuilder();
         CriteriaQuery<Tuple> criteriaQuery = qb.createTupleQuery();
         Root<Order> order = criteriaQuery.from(Order.class);
         Join<Item, Producer> producer = order.join(Order_.items).join(Item_.producer);

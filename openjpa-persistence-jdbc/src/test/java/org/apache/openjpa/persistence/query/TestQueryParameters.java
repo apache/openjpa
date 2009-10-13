@@ -24,7 +24,7 @@ import javax.persistence.Query;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.ParameterExpression;
 import javax.persistence.criteria.Predicate;
-import javax.persistence.criteria.QueryBuilder;
+import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.Root;
 import javax.persistence.metamodel.EntityType;
 import javax.persistence.metamodel.Metamodel;
@@ -287,7 +287,7 @@ public class TestQueryParameters extends SingleEMFTestCase {
         SingularAttribute<SimpleEntity, String> name = 
             (SingularAttribute<SimpleEntity, String>)entity.getSingularAttribute("name");
         
-        QueryBuilder cb = oemf.getQueryBuilder();
+        CriteriaBuilder cb = oemf.getCriteriaBuilder();
         CriteriaQuery<SimpleEntity> c = cb.createQuery(SimpleEntity.class);
         Root<SimpleEntity> root = c.from(SimpleEntity.class);
         ParameterExpression<Long> param1 = cb.parameter(long.class, "id");
@@ -312,7 +312,7 @@ public class TestQueryParameters extends SingleEMFTestCase {
         SingularAttribute<SimpleEntity, String> name = 
             (SingularAttribute<SimpleEntity, String>)entity.getSingularAttribute("name");
         
-        QueryBuilder cb = oemf.getQueryBuilder();
+        CriteriaBuilder cb = oemf.getCriteriaBuilder();
         CriteriaQuery<SimpleEntity> c = cb.createQuery(SimpleEntity.class);
         Root<SimpleEntity> root = c.from(SimpleEntity.class);
         ParameterExpression<Long> param1 = cb.parameter(long.class);

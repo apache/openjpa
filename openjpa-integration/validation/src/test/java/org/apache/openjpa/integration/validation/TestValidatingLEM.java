@@ -22,11 +22,12 @@ import java.util.HashMap;
 import java.util.Map;
 
 import javax.persistence.EntityManager;
-import javax.persistence.spi.ValidationMode;
+import javax.persistence.ValidationMode;
 import javax.validation.Validation;
 import javax.validation.ValidatorFactory;
 
 import org.apache.openjpa.conf.OpenJPAConfiguration;
+import org.apache.openjpa.integration.validation.SimpleEntity;
 import org.apache.openjpa.lib.log.Log;
 import org.apache.openjpa.persistence.OpenJPAEntityManager;
 import org.apache.openjpa.persistence.OpenJPAEntityManagerFactorySPI;

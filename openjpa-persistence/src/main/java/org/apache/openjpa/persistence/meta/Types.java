@@ -139,7 +139,7 @@ public class Types {
          *  @return supertype of identifiable type or null if no such supertype
          */
         public IdentifiableType<? super X> getSupertype() {
-            return (IdentifiableType<? super X>) model.type(meta
+            return (IdentifiableType<? super X>) model.managedType(meta
                 .getPCSuperclassMetaData().getDescribedType());
         }
 

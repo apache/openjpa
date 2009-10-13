@@ -22,6 +22,8 @@ import java.util.Calendar;
 import java.util.Collection;
 import java.util.Date;
 import java.util.Map;
+import java.util.Set;
+
 import javax.persistence.FlushModeType;
 import javax.persistence.TemporalType;
 import javax.persistence.TypedQuery;
@@ -254,4 +256,11 @@ public interface OpenJPAQuery<X> extends TypedQuery<X> {
      */
     public OpenJPAQuery<X> removeAggregateListener(
         org.apache.openjpa.kernel.exps.AggregateListener listener);
+    
+    /**
+     * Gets hints supported by this query.
+     * 
+     * @since 2.0.0
+     */
+    public Set<String> getSupportedHints();
 }

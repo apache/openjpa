@@ -112,7 +112,7 @@ abstract class PredicateImpl extends ExpressionImpl<Boolean> implements Predicat
      * Derived predicates can return the inverse expression, if exists.
      * For example, NotEqual for Equal or LessThan for GreaterThanEqual etc.
      */
-    public PredicateImpl negate() {
+    public PredicateImpl not() {
         return new Expressions.Not(this).markNegated();
     }
     
@@ -135,7 +135,7 @@ abstract class PredicateImpl extends ExpressionImpl<Boolean> implements Predicat
         if (_exps.size() == 1) {
             Predicate e0 = _exps.get(0);
             if (isNegated())
-                e0 = e0.negate();
+                e0 = e0.not();
             return ((PredicateImpl)e0).toKernelExpression(factory, q);
         }
         

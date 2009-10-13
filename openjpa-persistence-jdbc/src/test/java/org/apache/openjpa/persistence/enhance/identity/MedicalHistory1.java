@@ -28,7 +28,7 @@ public class MedicalHistory1 {
     @EmbeddedId
     PersonId1 id;
     
-    @MappedById
+    @MapsId
     @OneToOne Person1 patient;
     
     public PersonId1 getId() {

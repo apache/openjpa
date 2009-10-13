@@ -19,9 +19,11 @@
 package org.apache.openjpa.persistence.criteria;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 import java.util.Stack;
+import java.util.concurrent.CopyOnWriteArraySet;
 
 import javax.persistence.criteria.AbstractQuery;
 import javax.persistence.criteria.CollectionJoin;
@@ -210,8 +212,8 @@ class SubqueryImpl<T> extends ExpressionImpl<T> implements Subquery<T> {
         return corrRoot;
     }
     
-    public List<Join<?,?>> getCorrelatedJoins() {
-        return _corrJoins;
+    public Set<Join<?,?>> getCorrelatedJoins() {
+        return _corrJoins == null ? Collections.emptySet() : new CopyOnWriteArraySet(_corrJoins);
     }
     
     /**
