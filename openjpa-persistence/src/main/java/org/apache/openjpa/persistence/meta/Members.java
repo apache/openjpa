@@ -73,7 +73,7 @@ public class Members {
          *  Returns the managed type which declared this attribute.
          */
         public final ManagedType<X> getDeclaringType() {
-            return owner.model.type(fmd.getDeclaringType());
+            return owner.model.managedType(fmd.getDeclaringType());
         }
         
         /**

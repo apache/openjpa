@@ -30,6 +30,7 @@ import java.util.Set;
 
 import javax.persistence.Tuple;
 import javax.persistence.criteria.CompoundSelection;
+import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Expression;
 import javax.persistence.criteria.From;
@@ -62,12 +63,11 @@ import org.apache.openjpa.persistence.meta.MetamodelImpl;
  *
  */
 @SuppressWarnings("serial")
-public class CriteriaBuilder implements OpenJPACriteriaBuilder, ExpressionParser {
-    public static final String LANG_CRITERIA = "javax.persistence.criteria";
+public class CriteriaBuilderImpl implements OpenJPACriteriaBuilder, ExpressionParser {
 
     private MetamodelImpl _model;
 
-    public CriteriaBuilder setMetaModel(MetamodelImpl model) {
+    public OpenJPACriteriaBuilder setMetaModel(MetamodelImpl model) {
         _model = model;
         return this;
     }
@@ -148,15 +148,13 @@ public class CriteriaBuilder implements OpenJPACriteriaBuilder, ExpressionParser
         return new Expressions.Avg(x);
     }
 
-    public <Y extends Comparable<Y>> Predicate between(
-        Expression<? extends Y> v, Expression<? extends Y> x,
+    public <Y extends Comparable<? super Y>> Predicate between(Expression<? extends Y> v, Expression<? extends Y> x,
         Expression<? extends Y> y) {
-        return new Expressions.Between<Y>(v, x, y);
+        return new Expressions.Between(v,x,y);
     }
 
-    public <Y extends Comparable<Y>> Predicate between(
-        Expression<? extends Y> v, Y x, Y y) {
-        return new Expressions.Between<Y>(v,x,y);
+    public <Y extends Comparable<? super Y>> Predicate between(Expression<? extends Y> v, Y x, Y y) {
+        return new Expressions.Between(v,x,y);
     }
 
     public <T> Coalesce<T> coalesce() {
@@ -195,7 +193,7 @@ public class CriteriaBuilder implements OpenJPACriteriaBuilder, ExpressionParser
         return new Expressions.Count(x, true);
     }
 
-    public CriteriaQuery<Object> createQuery() {
+    public OpenJPACriteriaQuery<Object> createQuery() {
         return new CriteriaQueryImpl<Object>(_model, Object.class);
     }
 
@@ -264,27 +262,27 @@ public class CriteriaBuilder implements OpenJPACriteriaBuilder, ExpressionParser
         return new Expressions.GreaterThanEqual(x,y);
     }
 
-    public <Y extends Comparable<Y>> Predicate greaterThan(
+    public <Y extends Comparable<? super Y>> Predicate greaterThan(
         Expression<? extends Y> x, Expression<? extends Y> y) {
         return new Expressions.GreaterThan(x,y);
     }
 
-    public <Y extends Comparable<Y>> Predicate greaterThan(
+    public <Y extends Comparable<? super Y>> Predicate greaterThan(
         Expression<? extends Y> x, Y y) {
         return new Expressions.GreaterThan(x, y);
     }
 
-    public <Y extends Comparable<Y>> Predicate greaterThanOrEqualTo(
+    public <Y extends Comparable<? super Y>> Predicate greaterThanOrEqualTo(
         Expression<? extends Y> x, Expression<? extends Y> y) {
         return new Expressions.GreaterThanEqual(x,y);
     }
 
-    public <Y extends Comparable<Y>> Predicate greaterThanOrEqualTo(
+    public <Y extends Comparable<? super Y>> Predicate greaterThanOrEqualTo(
         Expression<? extends Y> x, Y y) {
         return new Expressions.GreaterThanEqual(x,y);
     }
 
-    public <X extends Comparable<X>> Expression<X> greatest(Expression<X> x) {
+    public <X extends Comparable<? super X>> Expression<X> greatest(Expression<X> x) {
     	return new Expressions.Max<X>(x);
     }
 
@@ -322,11 +320,11 @@ public class CriteriaBuilder implements OpenJPACriteriaBuilder, ExpressionParser
     }
 
     public <E, C extends Collection<E>> Predicate isNotMember(E e, Expression<C> c) {
-        return isMember(e, c).negate();
+        return isMember(e, c).not();
     }
 
     public <E, C extends Collection<E>> Predicate isNotMember(Expression<E> e, Expression<C> c) {
-        return isMember(e, c).negate();
+        return isMember(e, c).not();
     }
 
     public Predicate isTrue(Expression<Boolean> x) {
@@ -345,7 +343,7 @@ public class CriteriaBuilder implements OpenJPACriteriaBuilder, ExpressionParser
         return new Expressions.LessThanEqual(x,y);
     }
 
-    public <X extends Comparable<X>> Expression<X> least(Expression<X> x) {
+    public <X extends Comparable<? super X>> Expression<X> least(Expression<X> x) {
         return new Expressions.Min<X>(x);
     }
 
@@ -354,20 +352,21 @@ public class CriteriaBuilder implements OpenJPACriteriaBuilder, ExpressionParser
 
     }
 
-    public <Y extends Comparable<Y>> Predicate lessThan(Expression<? extends Y> x, Expression<? extends Y> y) {
+    public <Y extends Comparable<? super Y>> Predicate lessThan(Expression<? extends Y> x, Expression<? extends Y> y) {
         return new Expressions.LessThan(x,y);
     }
 
-    public <Y extends Comparable<Y>> Predicate lessThan(Expression<? extends Y> x, Y y) {
+    public <Y extends Comparable<? super Y>> Predicate lessThan(Expression<? extends Y> x, Y y) {
         return new Expressions.LessThan(x,y);
 
     }
 
-    public <Y extends Comparable<Y>> Predicate lessThanOrEqualTo(Expression<? extends Y> x, Expression<? extends Y> y) {
+    public <Y extends Comparable<? super Y>> Predicate lessThanOrEqualTo(Expression<? extends Y> x, 
+        Expression<? extends Y> y) {
         return new Expressions.LessThanEqual(x,y);
     }
 
-    public <Y extends Comparable<Y>> Predicate lessThanOrEqualTo(Expression<? extends Y> x, Y y) {
+    public <Y extends Comparable<? super Y>> Predicate lessThanOrEqualTo(Expression<? extends Y> x, Y y) {
         return new Expressions.LessThanEqual(x,y);
     }
 
@@ -460,7 +459,7 @@ public class CriteriaBuilder implements OpenJPACriteriaBuilder, ExpressionParser
     }
 
     public Predicate not(Expression<Boolean> restriction) {
-        return ((Predicate)restriction).negate();
+        return ((Predicate)restriction).not();
     }
 
     public Predicate notEqual(Expression<?> x, Expression<?> y) {
@@ -472,27 +471,27 @@ public class CriteriaBuilder implements OpenJPACriteriaBuilder, ExpressionParser
     }
 
     public Predicate notLike(Expression<String> x, Expression<String> pattern) {
-        return like(x, pattern).negate();
+        return like(x, pattern).not();
     }
 
     public Predicate notLike(Expression<String> x, String pattern) {
-        return like(x, pattern).negate();
+        return like(x, pattern).not();
     }
 
     public Predicate notLike(Expression<String> x, Expression<String> pattern, Expression<Character> escapeChar) {
-        return like(x, pattern, escapeChar).negate();
+        return like(x, pattern, escapeChar).not();
     }
 
     public Predicate notLike(Expression<String> x, Expression<String> pattern, char escapeChar) {
-        return like(x, pattern, escapeChar).negate();
+        return like(x, pattern, escapeChar).not();
     }
 
     public Predicate notLike(Expression<String> x, String pattern, Expression<Character> escapeChar) {
-        return like(x, pattern, escapeChar).negate();
+        return like(x, pattern, escapeChar).not();
     }
 
     public Predicate notLike(Expression<String> x, String pattern, char escapeChar) {
-        return like(x, pattern, escapeChar).negate();
+        return like(x, pattern, escapeChar).not();
     }
 
     public <Y> Expression<Y> nullif(Expression<Y> x, Expression<?> y) {
@@ -618,6 +617,14 @@ public class CriteriaBuilder implements OpenJPACriteriaBuilder, ExpressionParser
     public <N extends Number> Expression<N> sum(N x, Expression<? extends N> y) {
         return new Expressions.Sum<N>(x,y);
     }
+    
+    public Expression<Long> sumAsLong(Expression<Integer> x) {
+        return sum(x).as(Long.class);
+    }
+    
+    public Expression<Double> sumAsDouble(Expression<Float> x) {
+        return sum(x).as(Double.class);
+    }
 
     public Expression<BigDecimal> toBigDecimal(Expression<? extends Number> number) {
         return new Expressions.Cast<BigDecimal>(number, BigDecimal.class);
@@ -735,9 +742,8 @@ public class CriteriaBuilder implements OpenJPACriteriaBuilder, ExpressionParser
             throw new NullPointerException();
         if (example == null) {
             return from.isNull();
-            
         }
-        ManagedType<T> type = (ManagedType<T>)_model.type(example.getClass());
+        ManagedType<T> type = (ManagedType<T>)_model.managedType(example.getClass());
         return new CompareByExample<T>(this, type, from, example, 
             style == null ? qbeStyle() : style, excludes);
     }

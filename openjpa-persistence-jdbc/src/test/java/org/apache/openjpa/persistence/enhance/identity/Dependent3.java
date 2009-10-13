@@ -26,10 +26,10 @@ public class Dependent3 {
     @EmbeddedId
     DependentId3 id;
     
-    @MappedById("empPK")
+    @MapsId("empPK")
     @ManyToOne Employee3 emp;
     
-    @MappedById("parentPK")
+    @MapsId("parentPK")
     @OneToOne Parent3 parent;
     
     public Employee3 getEmp() {

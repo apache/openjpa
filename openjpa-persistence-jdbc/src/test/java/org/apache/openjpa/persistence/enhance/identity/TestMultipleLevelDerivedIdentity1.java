@@ -27,7 +27,7 @@ import org.apache.openjpa.persistence.test.SingleEMFTestCase;
 
 /**
  * This is a variation of TestMultipleLevelDerivedIdentity Using
- * MappedById annotations.
+ * MapsId annotations.
  * @author Fay Wang
  * 
  */

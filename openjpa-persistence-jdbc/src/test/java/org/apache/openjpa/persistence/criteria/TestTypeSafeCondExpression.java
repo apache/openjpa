@@ -80,7 +80,7 @@ public class TestTypeSafeCondExpression extends CriteriaTest {
 
         CriteriaQuery<String> cq = cb.createQuery(String.class);
         Root<CompUser> o = cq.from(CompUser.class);
-        cq.where(cb.and(cb.between(o.get(CompUser_.age), 19, 40).negate(), 
+        cq.where(cb.and(cb.between(o.get(CompUser_.age), 19, 40).not(), 
                 cb.equal(o.get(CompUser_.computerName), "PC")));
         cq.select(o.get(CompUser_.name));
         
@@ -104,7 +104,7 @@ public class TestTypeSafeCondExpression extends CriteriaTest {
         CriteriaQuery<String> cq = cb.createQuery(String.class);
         Root<CompUser> o = cq.from(CompUser.class);
         cq.where(cb.in(o.get(CompUser_.age)).value(29).value(40).value(10)
-            .negate());
+            .not());
         cq.select(o.get(CompUser_.name));
         
         assertEquivalence(cq, jpql);
@@ -118,7 +118,7 @@ public class TestTypeSafeCondExpression extends CriteriaTest {
         Root<CompUser> o = cq.from(CompUser.class);
         cq.where(cb.and(
                     cb.like(o.get(CompUser_.name),"Sha%"), 
-                    cb.in(o.get(CompUser_.computerName)).value("PC").value("Laptop").negate()
+                    cb.in(o.get(CompUser_.computerName)).value("PC").value("Laptop").not()
                 ));
         
         cq.select(o.get(CompUser_.computerName));
@@ -134,7 +134,7 @@ public class TestTypeSafeCondExpression extends CriteriaTest {
         Root<CompUser> o = cq.from(CompUser.class);
         cq.where(cb.and(
                     cb.like(o.get(CompUser_.name),"Sha%o_"), 
-                    cb.in(o.get(CompUser_.computerName)).value("UNIX").value("DOS").negate()
+                    cb.in(o.get(CompUser_.computerName)).value("UNIX").value("DOS").not()
                 ));
         cq.select(o.get(CompUser_.computerName));
         
@@ -196,7 +196,7 @@ public class TestTypeSafeCondExpression extends CriteriaTest {
         CriteriaQuery<String> cq = cb.createQuery(String.class);
         Root<CompUser> o = cq.from(CompUser.class);
         cq.select(o.get(CompUser_.name));
-        cq.where(cb.isEmpty(o.get(CompUser_.nicknames)).negate());
+        cq.where(cb.isEmpty(o.get(CompUser_.nicknames)).not());
         assertEquivalence(cq, query);
     }
     
@@ -512,7 +512,7 @@ public class TestTypeSafeCondExpression extends CriteriaTest {
         Expression<Class<? extends CompUser>> etype = e.type();
         // how to specify the following
         q.multiselect(e.type());
-        q.where(cb.equal(e.type(), param1).negate());
+        q.where(cb.equal(e.type(), param1).not());
         
         assertEquivalence(q, query, new String[]{"t"}, new Class[]{MaleUser.class});
     }
@@ -557,7 +557,7 @@ public class TestTypeSafeCondExpression extends CriteriaTest {
         CriteriaQuery<CompUser> cq = cb.createQuery(CompUser.class);
         Root<CompUser> e = cq.from(CompUser.class);
         cq.where(cb.in(e.type()).value(MaleUser.class).value(FemaleUser.class)
-                .negate());
+                .not());
         
         assertEquivalence(cq, query);
     }

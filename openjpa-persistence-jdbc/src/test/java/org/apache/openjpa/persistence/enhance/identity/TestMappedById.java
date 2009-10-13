@@ -93,7 +93,7 @@ public class TestMappedById extends SingleEMFTestCase {
     /**
      * This is spec 2.4.1.2 Example 1, case(b)
      */
-    public void testMappedById1() {
+    public void testMapsId1() {
         createObj1();
         findObj1();
         queryObj1();
@@ -102,7 +102,7 @@ public class TestMappedById extends SingleEMFTestCase {
     /**
      * This is spec 2.4.1.2 Example 3, case(b)
      */
-    public void testMappedById2() {
+    public void testMapsId2() {
         createObj2();
         findObj2();
         queryObj2();
@@ -111,7 +111,7 @@ public class TestMappedById extends SingleEMFTestCase {
     /**
      * This is spec 2.4.1.2 Example 5, case(b)
      */
-    public void testMappedById3() {
+    public void testMapsId3() {
         createObj3();
         findObj3();
         queryObj3();
@@ -120,7 +120,7 @@ public class TestMappedById extends SingleEMFTestCase {
     /**
      * This is a variation of spec 2.4.1.2 Example 4, case(b) with generated key
      */
-    public void testMappedById4() {
+    public void testMapsId4() {
         // Not all databases support GenerationType.IDENTITY column(s)
         if (!((JDBCConfiguration) emf.getConfiguration()).
             getDBDictionaryInstance().supportsAutoAssign) {
@@ -132,10 +132,10 @@ public class TestMappedById extends SingleEMFTestCase {
 
     /**
      * This is a variation of spec 2.4.1.2 Example 1, case(b):
-     * two MappedById annotations in Dependent3 and both parent
+     * two MapsId annotations in Dependent3 and both parent
      * classes use generated key 
      */
-    public void testMappedById5() {
+    public void testMapsId5() {
         // Not all databases support GenerationType.IDENTITY column(s)
         if (!((JDBCConfiguration) emf.getConfiguration()).
             getDBDictionaryInstance().supportsAutoAssign) {
@@ -149,7 +149,7 @@ public class TestMappedById extends SingleEMFTestCase {
     /**
      * This is spec 2.4.1.2 Example 5, case(a)
      */
-    public void testMappedById6() {
+    public void testMapsId6() {
         createObj6();
         findObj6();
         queryObj6();
@@ -158,7 +158,7 @@ public class TestMappedById extends SingleEMFTestCase {
     /**
      * This is spec 2.4.1.2 Example 6, case(a)
      */
-    public void testMappedById7() {
+    public void testMapsId7() {
         createObj7();
         findObj7();
         queryObj7();

@@ -67,7 +67,6 @@ class SubqueryImpl<T> extends ExpressionImpl<T> implements Subquery<T> {
     private final AbstractQuery<?> _parent;
     private final CriteriaQueryImpl<T> _delegate;
     private final MetamodelImpl  _model;
-    private java.util.Set<Join<?,?>> _joins;
     private org.apache.openjpa.kernel.exps.Subquery _subq;
     private List<Join<?,?>> _corrJoins = null;
     
@@ -289,10 +288,6 @@ class SubqueryImpl<T> extends ExpressionImpl<T> implements Subquery<T> {
     public <X,K,V> MapJoin<X,K,V> correlate(MapJoin<X,K,V> join) {
         _delegate.from(join.getModel().getBindableJavaType());
         return join;
-    }
-    
-    public java.util.Set<Join<?, ?>> getJoins() {
-        return _joins;
     }
     
     org.apache.openjpa.kernel.exps.Subquery getSubQ() {

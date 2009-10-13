@@ -161,7 +161,7 @@ public class MetamodelImpl implements Metamodel, Resolver {
      *  @return the metamodel managed type
      *  @throws IllegalArgumentException if not a managed class
      */
-    public <X> ManagedType<X> type(Class<X> clazz) {
+    public <X> ManagedType<X> managedType(Class<X> clazz) {
         if (_entities.containsKey(clazz))
             return (EntityType<X>) _entities.get(clazz);
         if (_embeddables.containsKey(clazz))
@@ -183,7 +183,7 @@ public class MetamodelImpl implements Metamodel, Resolver {
      */
     public <X> Type<X> getType(Class<X> cls) {
         try {
-            return type(cls);
+            return managedType(cls);
         } catch (IllegalArgumentException ex) {
             if (_basics.containsKey(cls))
                 return (Type<X>)_basics.get(cls);

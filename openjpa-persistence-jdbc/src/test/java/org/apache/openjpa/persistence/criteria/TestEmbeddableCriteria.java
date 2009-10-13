@@ -385,7 +385,7 @@ public class TestEmbeddableCriteria extends EmbeddableDomainTestCase {
         Root<EntityA_Coll_Embed_ToOne> a = q.from(EntityA_Coll_Embed_ToOne.class);
         Join<EntityA_Coll_Embed_ToOne, Embed_ToOne> e = a.join(EntityA_Coll_Embed_ToOne_.embed1s);
         Predicate p1 = cb.like(e.get(Embed_ToOne_.name1), "%1");
-        Predicate p2 = cb.isEmpty(a.get(EntityA_Coll_Embed_ToOne_.embed1s)).negate();
+        Predicate p2 = cb.isEmpty(a.get(EntityA_Coll_Embed_ToOne_.embed1s)).not();
         Predicate p3 = cb.isNotNull(e.get(Embed_ToOne_.b));
         q.where(cb.and(cb.and(p1, p2), p3));
         q.orderBy(cb.asc(e));
@@ -497,7 +497,7 @@ public class TestEmbeddableCriteria extends EmbeddableDomainTestCase {
         Join<EntityA_Embed_ToMany, Embed_ToMany> e = a.join(EntityA_Embed_ToMany_.embed);
         e.alias("e");
         q.select(e);
-        q.where(cb.isEmpty(e.get(Embed_ToMany_.bs)).negate());
+        q.where(cb.isEmpty(e.get(Embed_ToMany_.bs)).not());
         q.orderBy(cb.asc(e));
         assertEquivalence(q, jpql);
     }
@@ -512,7 +512,7 @@ public class TestEmbeddableCriteria extends EmbeddableDomainTestCase {
         Subquery<EntityA_Embed_ToMany> sq = q.subquery(EntityA_Embed_ToMany.class);
         Root<EntityA_Embed_ToMany> a1 = sq.from(EntityA_Embed_ToMany.class);
         sq.select(a1);
-        sq.where(cb.isEmpty(a1.get(EntityA_Embed_ToMany_.embed).get(Embed_ToMany_.bs)).negate());
+        sq.where(cb.isEmpty(a1.get(EntityA_Embed_ToMany_.embed).get(Embed_ToMany_.bs)).not());
         q.where(cb.exists(sq));
         q.orderBy(cb.asc(a));
         assertEquivalence(q, jpql);
@@ -627,7 +627,7 @@ public class TestEmbeddableCriteria extends EmbeddableDomainTestCase {
         Expression<Embed_Embed_ToMany> e = a.get(EntityA_Embed_Embed_ToMany_.embed);
         q.select(e);
         q.where(cb.isEmpty(a.get(EntityA_Embed_Embed_ToMany_.embed).get(Embed_Embed_ToMany_.embed).
-            get(Embed_ToMany_.bs)).negate());
+            get(Embed_ToMany_.bs)).not());
         q.orderBy(cb.asc(e));
         assertEquivalence(q, jpql);
     }
@@ -729,7 +729,7 @@ public class TestEmbeddableCriteria extends EmbeddableDomainTestCase {
             join(Embed_Coll_Integer_.otherIntVals);
         e.alias("e");
         q.multiselect(e, a.get(EntityA_Embed_Coll_Integer_.embed).get(Embed_Coll_Integer_.intVal2));
-        q.where(cb.isEmpty(a.get(EntityA_Embed_Coll_Integer_.embed).get(Embed_Coll_Integer_.otherIntVals)).negate());
+        q.where(cb.isEmpty(a.get(EntityA_Embed_Coll_Integer_.embed).get(Embed_Coll_Integer_.otherIntVals)).not());
         q.orderBy(cb.asc(e));
         assertEquivalence(q, jpql);
     }
@@ -865,7 +865,7 @@ public class TestEmbeddableCriteria extends EmbeddableDomainTestCase {
         ListJoin<EntityA_Coll_Embed_Embed, Embed_Embed> e = a.join(EntityA_Coll_Embed_Embed_.embeds);
         q.orderBy(cb.asc(e.get(Embed_Embed_.intVal3)));
         q.multiselect(e, e.get(Embed_Embed_.intVal1), e.get(Embed_Embed_.embed).get(Embed_.intVal2));
-        q.where(cb.isEmpty(a.get(EntityA_Coll_Embed_Embed_.embeds)).negate());
+        q.where(cb.isEmpty(a.get(EntityA_Coll_Embed_Embed_.embeds)).not());
         assertEquivalence(q, jpql);
     }
     
@@ -1249,7 +1249,7 @@ public class TestEmbeddableCriteria extends EmbeddableDomainTestCase {
         ListJoin<Embed_Coll_Embed, Embed> e = a.join(EntityA_Embed_Coll_Embed_.embed).join(Embed_Coll_Embed_.embeds);
         q.orderBy(cb.asc(e));
         q.multiselect(e, e.get(Embed_.intVal1), e.get(Embed_.intVal2));
-        q.where(cb.isEmpty(a.get(EntityA_Embed_Coll_Embed_.embed).get(Embed_Coll_Embed_.embeds)).negate());
+        q.where(cb.isEmpty(a.get(EntityA_Embed_Coll_Embed_.embed).get(Embed_Coll_Embed_.embeds)).not());
         assertEquivalence(q, jpql);
     }
 

@@ -18,9 +18,11 @@
  */
 package org.apache.openjpa.persistence.criteria;
 
+import javax.persistence.Tuple;
+import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.From;
 import javax.persistence.criteria.Predicate;
-import javax.persistence.criteria.QueryBuilder;
+import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.metamodel.Attribute;
 import javax.persistence.metamodel.Metamodel;
 
@@ -31,7 +33,12 @@ import javax.persistence.metamodel.Metamodel;
  * @author Pinaki Poddar
  * @since 2.0.0
  */
-public interface OpenJPACriteriaBuilder extends QueryBuilder {
+public interface OpenJPACriteriaBuilder extends CriteriaBuilder {
+    /**
+     * The mnemonic to identify the query language.
+     */
+    public static final String LANG_CRITERIA = "javax.persistence.criteria";
+    
     /**
      * Create a predicate based upon the attribute values of a given
      * "example" entity instance. The predicate is the conjunction 
@@ -81,5 +88,27 @@ public interface OpenJPACriteriaBuilder extends QueryBuilder {
      * Gets the metamodel for the managed, persistent domain entities.
      */
     public Metamodel getMetamodel();
+    
+    /**
+     *  Create a <code>CriteriaQuery</code> object.
+     *  @return criteria query object
+     */
+    OpenJPACriteriaQuery<Object> createQuery();
+
+    /**
+     *  Create a <code>CriteriaQuery</code> object with the specified result 
+     *  type.
+     *  @param resultClass  type of the query result
+     *  @return criteria query object
+     */
+    <T> OpenJPACriteriaQuery<T> createQuery(Class<T> resultClass);
+
+    /**
+     *  Create a <code>CriteriaQuery</code> object that returns a tuple of 
+     *  objects as its result.
+     *  @return criteria query object
+     */
+    OpenJPACriteriaQuery<Tuple> createTupleQuery();
+
 }
 

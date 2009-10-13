@@ -27,7 +27,7 @@ import javax.persistence.Column;
 import javax.persistence.EmbeddedId;
 import javax.persistence.Entity;
 import javax.persistence.ManyToOne;
-import javax.persistence.MappedById;
+import javax.persistence.MapsId;
 import javax.persistence.OneToMany;
 
 import org.apache.openjpa.persistence.jdbc.VersionColumn;
@@ -52,7 +52,7 @@ public class Book1 implements Serializable {
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "book")
     private Set<Page1> pages = new HashSet<Page1>();
     
-    @MappedById("library")
+    @MapsId("library")
     @Column(nullable = false)
     @ManyToOne
     private Library1 library;

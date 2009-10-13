@@ -29,9 +29,9 @@ import java.util.concurrent.CopyOnWriteArraySet;
 
 import javax.persistence.criteria.Expression;
 import javax.persistence.criteria.Predicate;
-import javax.persistence.criteria.QueryBuilder;
+import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.Subquery;
-import javax.persistence.criteria.QueryBuilder.Trimspec;
+import javax.persistence.criteria.CriteriaBuilder.Trimspec;
 
 import org.apache.openjpa.kernel.exps.ExpressionFactory;
 import org.apache.openjpa.kernel.exps.Literal;
@@ -822,7 +822,7 @@ class Expressions {
         }
 
         @Override
-        public PredicateImpl negate() {
+        public PredicateImpl not() {
             return new NotEqual(e1, e2).markNegated();
         }
         
@@ -850,7 +850,7 @@ class Expressions {
         }
         
         @Override
-        public PredicateImpl negate() {
+        public PredicateImpl not() {
             return new Equal(e1, e2).markNegated();
         }
         
@@ -878,7 +878,7 @@ class Expressions {
         }
         
         @Override
-        public PredicateImpl negate() {
+        public PredicateImpl not() {
             return new LessThanEqual(e1, e2).markNegated();
         }
         
@@ -906,7 +906,7 @@ class Expressions {
         }
         
         @Override
-        public PredicateImpl negate() {
+        public PredicateImpl not() {
             return new LessThan(e1, e2).markNegated();
         }
         
@@ -934,7 +934,7 @@ class Expressions {
         }
         
         @Override
-        public PredicateImpl negate() {
+        public PredicateImpl not() {
             return new GreaterThanEqual(e1, e2).markNegated();
         }
         
@@ -962,7 +962,7 @@ class Expressions {
         }
         
         @Override
-        public PredicateImpl negate() {
+        public PredicateImpl not() {
             return new GreaterThan(e1, e2).markNegated();
         }
         
@@ -1082,7 +1082,7 @@ class Expressions {
         }
         
         @Override
-        public PredicateImpl negate() {
+        public PredicateImpl not() {
             return new IsNotEmpty(collection).markNegated();
         }
         
@@ -1116,7 +1116,7 @@ class Expressions {
         }
         
         @Override
-        public PredicateImpl negate() {
+        public PredicateImpl not() {
             return new IsEmpty(collection).markNegated();
         }
         
@@ -1256,7 +1256,7 @@ class Expressions {
         }        
     }
     
-    public static class Coalesce<T> extends ExpressionImpl<T> implements QueryBuilder.Coalesce<T> {
+    public static class Coalesce<T> extends ExpressionImpl<T> implements CriteriaBuilder.Coalesce<T> {
         private final List<Expression<? extends T>> values = new ArrayList<Expression<? extends T>>();
         
         public Coalesce(Class<T> cls) {
@@ -1334,7 +1334,7 @@ class Expressions {
         }
         
         @Override
-        public PredicateImpl negate() {
+        public PredicateImpl not() {
             return new IsNotNull(e).markNegated();
         }
         
@@ -1365,7 +1365,7 @@ class Expressions {
         }
         
         @Override
-        public PredicateImpl negate() {
+        public PredicateImpl not() {
             return new IsNull(e).markNegated();
         }
         
@@ -1389,7 +1389,7 @@ class Expressions {
     }
     
     
-    public static class In<T> extends PredicateImpl.Or implements QueryBuilder.In<T> {
+    public static class In<T> extends PredicateImpl.Or implements CriteriaBuilder.In<T> {
         final ExpressionImpl<T> e;
         public In(Expression<?> e) {
             super();
@@ -1411,7 +1411,7 @@ class Expressions {
         }
         
         @Override
-        public PredicateImpl negate() {
+        public PredicateImpl not() {
             In<T> notIn = new In<T>(e);
             notIn.markNegated();
             for (Predicate e : _exps) {
@@ -1463,7 +1463,7 @@ class Expressions {
         }        
     }
     
-    public static class Case<T> extends ExpressionImpl<T> implements QueryBuilder.Case<T> {
+    public static class Case<T> extends ExpressionImpl<T> implements CriteriaBuilder.Case<T> {
         private final List<Expression<? extends T>> thens = new ArrayList<Expression<? extends T>>();
         private final List<Expression<Boolean>> whens = new ArrayList<Expression<Boolean>>();
         private Expression<? extends T> otherwise;
@@ -1529,7 +1529,7 @@ class Expressions {
         }
     }
 
-    public static class SimpleCase<C,R> extends ExpressionImpl<R> implements QueryBuilder.SimpleCase<C,R> {
+    public static class SimpleCase<C,R> extends ExpressionImpl<R> implements CriteriaBuilder.SimpleCase<C,R> {
         private final List<Expression<? extends R>> thens = new ArrayList<Expression<? extends R>>();
         private final List<Expression<C>> whens = new ArrayList<Expression<C>>();
         private Expression<? extends R> otherwise;
