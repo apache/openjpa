@@ -8,7 +8,7 @@
 
     <xsd:annotation>
         <xsd:documentation>
-            @(#)orm_2_0.xsd 2.0 August 31 2009
+            @(#)orm_2_0.xsd 2.0 October 1 2009
         </xsd:documentation>
     </xsd:annotation>
 
@@ -89,7 +89,7 @@
         <xsd:complexType>
             <xsd:annotation>
                 <xsd:documentation>
-                    The entity-mappings element is the root element of an mapping
+                    The entity-mappings element is the root element of a mapping
                     file. It contains the following four types of elements:
                     1. The persistence-unit-metadata element contains metadata
                     for the entire persistence unit. It is undefined if this element
@@ -179,12 +179,12 @@
                 These defaults are applied to the persistence unit as a whole
                 unless they are overridden by local annotation or XML
                 element settings.
-                schema - Used as the schema for all tables, secondary tables,
-                collection tables, sequence generators, and table generators
-                that apply to the persistence unit
-                catalog - Used as the catalog for all tables, secondary tables,
-                collection tables, sequence generators, and table generators
-                that apply to the persistence unit
+                schema - Used as the schema for all tables, secondary tables, join
+                tables, collection tables, sequence generators, and table
+                generators that apply to the persistence unit
+                catalog - Used as the catalog for all tables, secondary tables, join
+                tables, collection tables, sequence generators, and
+                table generators that apply to the persistence unit
                 delimited-identifiers - Used to treat database identifiers as
                 delimited identifiers.
                 access - Used as the access type for all managed classes in
@@ -1066,7 +1066,7 @@
         <xsd:attribute name="fetch" type="orm:fetch-type" />
         <xsd:attribute name="optional" type="xsd:boolean" />
         <xsd:attribute name="access" type="orm:access-type" />
-        <xsd:attribute name="mapped-by-id" type="xsd:string" />
+        <xsd:attribute name="maps-id" type="xsd:string" />
         <xsd:attribute name="id" type="xsd:boolean" />
     </xsd:complexType>
     <!-- **************************************************** -->
@@ -1339,7 +1339,7 @@
         <xsd:attribute name="access" type="orm:access-type" />
         <xsd:attribute name="mapped-by" type="xsd:string" />
         <xsd:attribute name="orphan-removal" type="xsd:boolean" />
-        <xsd:attribute name="mapped-by-id" type="xsd:string" />
+        <xsd:attribute name="maps-id" type="xsd:string" />
         <xsd:attribute name="id" type="xsd:boolean" />
     </xsd:complexType>
     <!-- **************************************************** -->

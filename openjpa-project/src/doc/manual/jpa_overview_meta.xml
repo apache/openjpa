@@ -2152,11 +2152,57 @@ found at <ulink url="http://java.sun.com/xml/ns/persistence/orm_1_0.xsd"/>.
     xmlns:xsd="http://www.w3.org/2001/XMLSchema"
     elementFormDefault="qualified" attributeFormDefault="unqualified"
     version="2.0"&gt;
+
     &lt;xsd:annotation&gt;
         &lt;xsd:documentation&gt;
-            @(#)orm_2_0.xsd 2.0 August 31 2009
+            @(#)orm_2_0.xsd 2.0 October 1 2009
         &lt;/xsd:documentation&gt;
     &lt;/xsd:annotation&gt;
+
+  &lt;xsd:annotation&gt;
+    &lt;xsd:documentation&gt;
+
+          DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
+
+          Copyright 2005-2009 Sun Microsystems, Inc. All rights reserved.
+
+          The contents of this file are subject to the terms of either the
+          GNU General Public License Version 2 only ("GPL") or the Common
+          Development and Distribution License("CDDL") (collectively, the
+          "License").  You may not use this file except in compliance with
+          the License. You can obtain a copy of the License at
+          https://glassfish.dev.java.net/public/CDDL+GPL.html or
+          glassfish/bootstrap/legal/LICENSE.txt.  See the License for the
+          specific language governing permissions and limitations under the
+          License.
+
+          When distributing the software, include this License Header
+          Notice in each file and include the License file at
+          glassfish/bootstrap/legal/LICENSE.txt.  Sun designates this
+          particular file as subject to the "Classpath" exception as
+          provided by Sun in the GPL Version 2 section of the License file
+          that accompanied this code.  If applicable, add the following
+          below the License Header, with the fields enclosed by brackets []
+          replaced by your own identifying information:
+          "Portions Copyrighted [year] [name of copyright owner]"
+
+          Contributor(s):
+
+          If you wish your version of this file to be governed by only the
+          CDDL or only the GPL Version 2, indicate your decision by adding
+          "[Contributor] elects to include this software in this
+          distribution under the [CDDL or GPL Version 2] license."  If you
+          don't indicate a single choice of license, a recipient has the
+          option to distribute your version of this file under either the
+          CDDL, the GPL Version 2 or to extend the choice of license to its
+          licensees as provided above.  However, if you add GPL Version 2
+          code and therefore, elected the GPL Version 2 license, then the
+          option applies only if the new code is made subject to such
+          option by the copyright holder.
+
+        &lt;/xsd:documentation&gt;
+    &lt;/xsd:annotation&gt;
+
     &lt;xsd:annotation&gt;
         &lt;xsd:documentation&gt;
         &lt;![CDATA[
@@ -2180,6 +2226,7 @@ found at <ulink url="http://java.sun.com/xml/ns/persistence/orm_1_0.xsd"/>.
         ]]&gt;
         &lt;/xsd:documentation&gt;
     &lt;/xsd:annotation&gt;
+
     &lt;xsd:complexType name="emptyType" /&gt;
     &lt;xsd:simpleType name="versionType"&gt;
         &lt;xsd:restriction base="xsd:token"&gt;
@@ -2191,7 +2238,7 @@ found at <ulink url="http://java.sun.com/xml/ns/persistence/orm_1_0.xsd"/>.
         &lt;xsd:complexType&gt;
             &lt;xsd:annotation&gt;
                 &lt;xsd:documentation&gt;
-                    The entity-mappings element is the root element of an mapping
+                    The entity-mappings element is the root element of a mapping
                     file. It contains the following four types of elements:
                     1. The persistence-unit-metadata element contains metadata
                     for the entire persistence unit. It is undefined if this element
@@ -2281,12 +2328,12 @@ found at <ulink url="http://java.sun.com/xml/ns/persistence/orm_1_0.xsd"/>.
                 These defaults are applied to the persistence unit as a whole
                 unless they are overridden by local annotation or XML
                 element settings.
-                schema - Used as the schema for all tables, secondary tables,
-                collection tables, sequence generators, and table generators
-                that apply to the persistence unit
-                catalog - Used as the catalog for all tables, secondary tables,
-                collection tables, sequence generators, and table generators
-                that apply to the persistence unit
+                schema - Used as the schema for all tables, secondary tables, join
+                tables, collection tables, sequence generators, and table
+                generators that apply to the persistence unit
+                catalog - Used as the catalog for all tables, secondary tables, join
+                tables, collection tables, sequence generators, and
+                table generators that apply to the persistence unit
                 delimited-identifiers - Used to treat database identifiers as
                 delimited identifiers.
                 access - Used as the access type for all managed classes in
@@ -3168,7 +3215,7 @@ found at <ulink url="http://java.sun.com/xml/ns/persistence/orm_1_0.xsd"/>.
         &lt;xsd:attribute name="fetch" type="orm:fetch-type" /&gt;
         &lt;xsd:attribute name="optional" type="xsd:boolean" /&gt;
         &lt;xsd:attribute name="access" type="orm:access-type" /&gt;
-        &lt;xsd:attribute name="mapped-by-id" type="xsd:string" /&gt;
+        &lt;xsd:attribute name="maps-id" type="xsd:string" /&gt;
         &lt;xsd:attribute name="id" type="xsd:boolean" /&gt;
     &lt;/xsd:complexType&gt;
     &lt;!-- **************************************************** --&gt;
@@ -3441,7 +3488,7 @@ found at <ulink url="http://java.sun.com/xml/ns/persistence/orm_1_0.xsd"/>.
         &lt;xsd:attribute name="access" type="orm:access-type" /&gt;
         &lt;xsd:attribute name="mapped-by" type="xsd:string" /&gt;
         &lt;xsd:attribute name="orphan-removal" type="xsd:boolean" /&gt;
-        &lt;xsd:attribute name="mapped-by-id" type="xsd:string" /&gt;
+        &lt;xsd:attribute name="maps-id" type="xsd:string" /&gt;
         &lt;xsd:attribute name="id" type="xsd:boolean" /&gt;
     &lt;/xsd:complexType&gt;
     &lt;!-- **************************************************** --&gt;
@@ -3798,7 +3845,7 @@ found at <ulink url="http://java.sun.com/xml/ns/persistence/orm_1_0.xsd"/>.
             &lt;xsd:element name="column-name" type="xsd:string"
                 maxOccurs="unbounded" /&gt;
         &lt;/xsd:sequence&gt;
-        &lt;xsd:attribute name="name" type="xsd:string" /&gt;        
+        &lt;xsd:attribute name="name" type="xsd:string" /&gt;
     &lt;/xsd:complexType&gt;
     &lt;!-- **************************************************** --&gt;
     &lt;xsd:complexType name="version"&gt;

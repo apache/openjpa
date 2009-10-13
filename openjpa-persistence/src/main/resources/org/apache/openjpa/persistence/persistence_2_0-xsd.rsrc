@@ -8,7 +8,7 @@
 
     <xsd:annotation>
         <xsd:documentation>
-            @(#)persistence_2_0.xsd 1.0 August 31 2009
+            @(#)persistence_2_0.xsd 1.0 October 1 2009
         </xsd:documentation>
     </xsd:annotation>
 
@@ -72,7 +72,7 @@
             http://java.sun.com/xml/ns/persistence/persistence_2_0.xsd"
             version="2.0">
             ...
-            </persistence>
+           </persistence>
         ]]></xsd:documentation>
     </xsd:annotation>
 
@@ -171,9 +171,9 @@
                                 <xsd:annotation>
                                     <xsd:documentation>
                                         When set to true then only listed classes and jars will
-                                        be scanned for persistent classes, otherwise the enclosing
-                                        jar or directory will also be scanned. Not applicable to
-                                        Java SE persistence units.
+                                        be scanned for persistent classes, otherwise the
+                                        enclosing jar or directory will also be scanned.
+                                        Not applicable to Java SE persistence units.
                                     </xsd:documentation>
                                 </xsd:annotation>
                             </xsd:element>
