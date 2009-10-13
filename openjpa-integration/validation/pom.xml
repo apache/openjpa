@@ -139,14 +139,14 @@
                 <dependency>
                     <groupId>javax.validation</groupId>
                     <artifactId>validation-api</artifactId>
-                    <version>1.0.CR5</version>
+                    <version>1.0.0.GA</version>
                     <scope>test</scope>
                 </dependency>
-                <!-- Hibernate that implements 1.0.CR5 -->
+                <!-- Hibernate that implements 1.0.0.GA -->
                 <dependency>
                     <groupId>org.hibernate</groupId>
                     <artifactId>hibernate-validator</artifactId>
-                    <version>4.0.0.CR1</version>
+                    <version>4.0.0.GA</version>
                     <scope>test</scope>
                     <exclusions>
                         <!-- force usage of the geronimo-jpa_2.0_spec -->
@@ -185,18 +185,6 @@
                     </snapshots>
                     <releases>
                         <enabled>true</enabled>
-                    </releases>
-                </repository>
-                <repository>
-                    <id>snapshots.jboss.org</id>
-                    <name>JBoss Repository</name>
-                    <url>http://snapshots.jboss.org/maven2</url>
-                    <layout>default</layout>
-                    <snapshots>
-                        <enabled>true</enabled>
-                    </snapshots>
-                    <releases>
-                        <enabled>false</enabled>
                     </releases>
                 </repository>
             </repositories>
