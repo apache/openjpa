@@ -49,16 +49,15 @@ import serp.util.Strings;
  * @author Patrick Linskey
  * @author Abe White
  */
-public abstract class AbstractDataCache
-    extends AbstractConcurrentEventManager
+@SuppressWarnings("serial")
+public abstract class AbstractDataCache extends AbstractConcurrentEventManager
     implements DataCache, Configurable {
 	
     protected CacheStatistics.Default stats = new CacheStatistics.Default();
 
     private static final BitSet EMPTY_BITSET = new BitSet(0);
 
-    private static final Localizer s_loc =
-        Localizer.forPackage(AbstractDataCache.class);
+    private static final Localizer s_loc = Localizer.forPackage(AbstractDataCache.class);
     
 
     /**
@@ -102,8 +101,8 @@ public abstract class AbstractDataCache
         }
     }
 
-    public void commit(Collection additions, Collection newUpdates,
-        Collection existingUpdates, Collection deletes) {
+    public void commit(Collection<DataCachePCData> additions, Collection<DataCachePCData> newUpdates,
+            Collection<DataCachePCData> existingUpdates, Collection<Object> deletes) {
         // remove all objects in deletes list
         removeAllInternal(deletes);
 
@@ -121,15 +120,14 @@ public abstract class AbstractDataCache
             Collection<Object> upIds = new ArrayList<Object>(newUpdates.size());
             Collection<Object> exIds = new ArrayList<Object>(existingUpdates.size());
 
-            for (Iterator iter = additions.iterator(); iter.hasNext();)
-                addIds.add(((DataCachePCData) iter.next()).getId());
-            for (Iterator iter = newUpdates.iterator(); iter.hasNext();)
-                upIds.add(((DataCachePCData) iter.next()).getId());
-            for (Iterator iter = existingUpdates.iterator(); iter.hasNext();)
-                exIds.add(((DataCachePCData) iter.next()).getId());
+            for (DataCachePCData addition : additions)
+                addIds.add(addition.getId());
+            for (DataCachePCData newUpdate : newUpdates)
+                upIds.add(newUpdate.getId());
+            for (DataCachePCData existingUpdate : existingUpdates)
+                exIds.add(existingUpdate.getId());
 
-            log.trace(s_loc.get("cache-commit",
-                new Object[]{ addIds, upIds, exIds, deletes }));
+            log.trace(s_loc.get("cache-commit", new Object[]{ addIds, upIds, exIds, deletes }));
         }
     }
 
@@ -145,13 +143,13 @@ public abstract class AbstractDataCache
         return o != null;
     }
 
-    public BitSet containsAll(Collection keys) {
+    public BitSet containsAll(Collection<Object> keys) {
         if (keys.isEmpty())
             return EMPTY_BITSET;
 
         BitSet set = new BitSet(keys.size());
         int i = 0;
-        for (Iterator iter = keys.iterator(); iter.hasNext(); i++)
+        for (Iterator<Object> iter = keys.iterator(); iter.hasNext(); i++)
             if (contains(iter.next()))
                 set.set(i);
         return set;
@@ -179,9 +177,9 @@ public abstract class AbstractDataCache
     /**
      * Returns the objects for the given key List.
      */
-    public Map getAll(List keys) {
-        Map resultMap = new HashMap(keys.size());
-        for(Object key : keys)
+    public Map<Object,DataCachePCData> getAll(List<Object> keys) {
+        Map<Object,DataCachePCData> resultMap = new HashMap<Object,DataCachePCData>(keys.size());
+        for (Object key : keys)
             resultMap.put(key, get(key));
         return resultMap;
     }
@@ -214,13 +212,13 @@ public abstract class AbstractDataCache
         return o;
     }
 
-    public BitSet removeAll(Collection keys) {
+    public BitSet removeAll(Collection<Object> keys) {
         if (keys.isEmpty())
             return EMPTY_BITSET;
 
         BitSet set = new BitSet(keys.size());
         int i = 0;
-        for (Iterator iter = keys.iterator(); iter.hasNext(); i++)
+        for (Iterator<Object> iter = keys.iterator(); iter.hasNext(); i++)
             if (remove(iter.next()) != null)
                 set.set(i);
         return set;
@@ -229,7 +227,7 @@ public abstract class AbstractDataCache
     /**
      * Remove the objects of the given class from the cache.
      */
-    public void removeAll(Class cls, boolean subClasses) {
+    public void removeAll(Class<?> cls, boolean subClasses) {
         removeAllInternal(cls, subClasses);
     }
 
@@ -244,13 +242,13 @@ public abstract class AbstractDataCache
         return bool;
     }
 
-    public BitSet pinAll(Collection keys) {
+    public BitSet pinAll(Collection<Object> keys) {
         if (keys.isEmpty())
             return EMPTY_BITSET;
 
         BitSet set = new BitSet(keys.size());
         int i = 0;
-        for (Iterator iter = keys.iterator(); iter.hasNext(); i++)
+        for (Iterator<Object> iter = keys.iterator(); iter.hasNext(); i++)
             if (pin(iter.next()))
                 set.set(i);
         return set;
@@ -272,13 +270,13 @@ public abstract class AbstractDataCache
         return bool;
     }
 
-    public BitSet unpinAll(Collection keys) {
+    public BitSet unpinAll(Collection<Object> keys) {
         if (keys.isEmpty())
             return EMPTY_BITSET;
 
         BitSet set = new BitSet(keys.size());
         int i = 0;
-        for (Iterator iter = keys.iterator(); iter.hasNext(); i++)
+        for (Iterator<Object> iter = keys.iterator(); iter.hasNext(); i++)
             if (unpin(iter.next()))
                 set.set(i);
         return set;
@@ -383,10 +381,8 @@ public abstract class AbstractDataCache
     /**
      * Add all of the given objects to the cache.
      */
-    protected void putAllInternal(Collection pcs) {
-        DataCachePCData pc;
-        for (Iterator iter = pcs.iterator(); iter.hasNext();) {
-            pc = (DataCachePCData) iter.next();
+    protected void putAllInternal(Collection<DataCachePCData> pcs) {
+        for (DataCachePCData pc : pcs) {
             stats.newPut(pc.getType());
             putInternal(pc.getId(), pc);
         }
@@ -405,22 +401,20 @@ public abstract class AbstractDataCache
     /**
      * Remove all objects under the given oids from the cache.
      */
-    protected void removeAllInternal(Collection oids) {
-        for (Iterator iter = oids.iterator(); iter.hasNext();)
-            removeInternal(iter.next());
+    protected void removeAllInternal(Collection<Object> oids) {
+        for (Object oid : oids)
+            removeInternal(oid);
     }
 
     /**
      * Remove all objects of the given class names from the cache.
      */
-    protected void removeAllTypeNamesInternal(Collection classNames) {
-        Collection classes = Caches.addTypesByName(conf, classNames, null);
+    protected void removeAllTypeNamesInternal(Collection<String> classNames) {
+        Collection<Class<?>> classes = Caches.addTypesByName(conf, classNames, null);
         if (classes == null)
             return;
 
-        Class cls;
-        for (Iterator iter = classes.iterator(); iter.hasNext();) {
-            cls = (Class) iter.next();
+        for (Class<?> cls : classes) {
             if (log.isTraceEnabled())
                 log.trace(s_loc.get("cache-removeclass", cls.getName()));
             removeAllInternal(cls, false);

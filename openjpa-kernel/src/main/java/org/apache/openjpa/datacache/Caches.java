@@ -20,7 +20,6 @@ package org.apache.openjpa.datacache;
 
 import java.util.Collection;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.Set;
 
 import org.apache.openjpa.conf.OpenJPAConfiguration;
@@ -32,22 +31,19 @@ class Caches {
      * when operating outside the context of a persistence manager.
      * The set classes can be null, in which case a new Set will be created.
      */
-    static Set addTypesByName(OpenJPAConfiguration conf,
-        Collection classNames, Set classes) {
-        if (classNames.isEmpty())
+    static Set<Class<?>> addTypesByName(OpenJPAConfiguration conf,
+        Collection<String> classNames, Set<Class<?>> classes) {
+        if (classNames == null || classNames.isEmpty())
             return classes;
 
-        ClassLoader loader = conf.getClassResolverInstance().
-            getClassLoader(null, null);
+        ClassLoader loader = conf.getClassResolverInstance().getClassLoader(null, null);
 
-        Class cls;
-        String className;
-        for (Iterator iter = classNames.iterator(); iter.hasNext();) {
-            className = (String) iter.next();
+        Class<?> cls;
+        for (String className : classNames) {
             try {
                 cls = Class.forName(className, true, loader);
                 if (classes == null)
-                    classes = new HashSet();
+                    classes = new HashSet<Class<?>>();
                 classes.add(cls);
             } catch (Throwable t) {
                 conf.getLog(OpenJPAConfiguration.LOG_RUNTIME).warn(null, t);
