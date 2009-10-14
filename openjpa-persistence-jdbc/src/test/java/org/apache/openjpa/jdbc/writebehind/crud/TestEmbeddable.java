@@ -25,6 +25,7 @@ import org.apache.openjpa.jdbc.writebehind.entities.Entity01;
 import org.apache.openjpa.jdbc.writebehind.entities.Entity02;
 import org.apache.openjpa.persistence.OpenJPAEntityManagerFactorySPI;
 import org.apache.openjpa.persistence.OpenJPAEntityManagerSPI;
+import org.apache.openjpa.persistence.test.AllowFailure;
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
 import org.apache.openjpa.writebehind.WriteBehindCache;
 import org.apache.openjpa.writebehind.WriteBehindCacheManager;
@@ -123,7 +124,8 @@ public class TestEmbeddable extends SingleEMFTestCase {
      *
      * @exception Exception
      */
-/*  public void testEntity01ManualFlush() { 
+    @AllowFailure(value=true, message="See OPENJPA-1348")
+    public void test_Entity01_Manual_Flush() { 
 
         // 
         // Create a new instance of the entity/embeddable class
@@ -181,10 +183,10 @@ public class TestEmbeddable extends SingleEMFTestCase {
         assertEquals(findEntity01.getEnt01_int01(), 1);
         assertEquals(findEntity01.getEnt01_int02(), 2);
         assertEquals(findEntity01.getEnt01_int03(), 3);
-        assertEquals(fndEntity01.getEmb01_int01(), 4);
+        assertEquals(findEntity01.getEmb01_int01(), 4);
         assertEquals(findEntity01.getEmb01_int02(), 5);
         assertEquals(findEntity01.getEmb01_int03(), 6);
-    }  */
+    }  
 
 
     /**
@@ -192,7 +194,7 @@ public class TestEmbeddable extends SingleEMFTestCase {
      *
      * @exception Exception
      */
-    public void testEntity02ManualFlush() { 
+    public void test_Entity02_Manual_Flush() { 
 
         // 
         // Create a new instance of the entity class
