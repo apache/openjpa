@@ -558,7 +558,6 @@ public class PersistenceProductDerivation
                 } else {
                     // Set the spec level based on the persistence version
                     oconf.setSpecification("jpa " + persistenceVersion.toString());
-                    getProperties().remove(PersistenceUnitInfoImpl.PERSISTENCE_VERSION);
                 }
                     
 
