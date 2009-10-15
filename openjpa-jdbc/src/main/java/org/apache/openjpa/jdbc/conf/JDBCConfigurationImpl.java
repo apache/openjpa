@@ -760,8 +760,22 @@ public class JDBCConfigurationImpl
     public Object getConnectionFactory2() {
         // override to configure data source
         if (dataSource2 == null) {
-            // superclass will lookup from JNDI. 
-            DataSource ds = (DataSource) super.getConnectionFactory2();
+            // superclass will lookup from JNDI.
+            Object obj = super.getConnectionFactory2();
+            DataSource ds = null;
+            if (obj != null) {
+                if (obj instanceof DataSource) 
+                    ds = (DataSource) obj;
+                else {
+                    Log log = getLog(LOG_JDBC);
+                    if (log.isTraceEnabled()) {
+                        Localizer loc = Localizer.forPackage(JDBCConfigurationImpl.class);
+                        log.trace(loc.get("unknown-datasource", getConnectionFactory2Name(), 
+                            obj.getClass().getName()));
+                    }
+                }
+            }
+                
             if (ds == null) {
                 // the driver name is always required, so if not specified,
                 // then no connection factory 2
