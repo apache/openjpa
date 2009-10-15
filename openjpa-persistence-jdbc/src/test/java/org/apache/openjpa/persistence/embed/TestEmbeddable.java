@@ -21,6 +21,7 @@ package org.apache.openjpa.persistence.embed;
 import java.io.IOException;
 import java.sql.SQLException;
 import java.sql.Timestamp;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Collection;
 import java.util.Date;
@@ -2915,6 +2916,45 @@ public class TestEmbeddable extends SQLListenerTestCase {
         if (emClose) {
             em.close();
         }
+    }
+
+    /*
+     * EntityA_Embed_Complex routines
+     */
+    public void testEmbeddableCollUsingArraysAsList() {
+        getLog().trace("testEmbeddableCollUsingArraysAsList() - entered");
+        EntityManager em = emf.createEntityManager();
+        EntityTransaction tran = em.getTransaction();
+        Embed_Embed[] embedArray = new Embed_Embed[5];
+        for (int i = 1; i < 5; i++) {
+          embedArray[i] = new Embed_Embed();
+          embedArray[i].setIntVal1(i);
+        }
+        
+        List embedList = Arrays.asList(embedArray);
+        EntityA_Coll_Embed_Embed a1 = new EntityA_Coll_Embed_Embed();
+        a1.setId(1);
+        a1.setAge(1);
+        a1.setName("name" + 1);
+        a1.setEmbeds(embedList);
+        
+        em.persist(a1);
+        tran.begin();
+        em.flush();
+        tran.commit();
+
+        //update
+        tran.begin();
+        Embed_Embed embed1 = new Embed_Embed();
+        embed1.setIntVal1(100);
+        a1.addEmbed(embed1);
+        tran.commit();
+        em.clear();
+        
+        //find
+        EntityA_Coll_Embed_Embed findA = em.find(EntityA_Coll_Embed_Embed.class, 1);
+        assertEquals(6, findA.getEmbeds().size());
+        em.close();
     }
     
 }

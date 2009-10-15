@@ -810,11 +810,15 @@ class SingleFieldManager
     private Collection embed(ValueMetaData vmd, Collection orig) {
         // we have to copy to get a collection of the right type and size,
         // though we immediately clear it
-        Collection coll = getProxyManager().copyCollection(orig);
-        if (coll == null)
+        if (orig == null)
             throw new UserException(_loc.get("not-copyable",
                 vmd.getFieldMetaData()));
-
+        Collection coll = null;
+        try {
+            coll = getProxyManager().copyCollection(orig);
+        } catch (Exception e) {
+            coll = (Collection) _sm.newFieldProxy(vmd.getFieldMetaData().getIndex());
+        }
         coll.clear();
         for (Iterator itr = orig.iterator(); itr.hasNext();)
             coll.add(embed(vmd, itr.next()));
@@ -832,12 +836,15 @@ class SingleFieldManager
         // if we have to replace keys, we need to copy the map; otherwise
         // we can mutate the values directly
         if (keyEmbed) {
+            if (orig == null)
+                throw new UserException(_loc.get("not-copyable", fmd));
             // we have to copy to get a collection of the right type and size,
             // though we immediately clear it
-            map = getProxyManager().copyMap(orig);
-            if (map == null)
-                throw new UserException(_loc.get("not-copyable", fmd));
-
+            try {
+                map = getProxyManager().copyMap(orig);
+            } catch (Exception e) {
+                map = (Map) _sm.newFieldProxy(fmd.getIndex());
+            }
             map.clear();
             Object key, val;
             for (Iterator itr = orig.entrySet().iterator(); itr.hasNext();) {

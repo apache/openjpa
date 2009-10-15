@@ -74,6 +74,10 @@ public class EntityA_Coll_Embed_Embed implements Serializable {
         return embeds;
     }
     
+    public void setEmbeds(List<Embed_Embed> embeds) {
+        this.embeds = embeds;
+    }
+
     public void addEmbed(Embed_Embed embed) {
         embeds.add(embed);
     }
