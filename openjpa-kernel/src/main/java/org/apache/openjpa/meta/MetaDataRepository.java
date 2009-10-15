@@ -362,6 +362,11 @@ public class MetaDataRepository implements PCRegistry.RegisterClassListener, Con
                 throw new MetaDataException(_loc.get("repos-preload-error"), pae);
             }
         }
+        
+        // Hook this class in early so we can process registered classes and add them 
+        // to _aliases list.
+        PCRegistry.addRegisterClassListener(this);
+        processRegisteredClasses(multi);
     }
 
     protected void lock() {
@@ -369,13 +374,13 @@ public class MetaDataRepository implements PCRegistry.RegisterClassListener, Con
             _lock.lock();
         }
     }
-
+    
     protected void unlock() {
         if (_lock != null) {
             _lock.unlock();
         }
     }
-
+    
     /**
      * Return the metadata for the given class.
      * 
@@ -1530,6 +1535,7 @@ public class MetaDataRepository implements PCRegistry.RegisterClassListener, Con
         } finally {
             unlock();
         }
+        
 
         Collection<String> pcNames = getPersistentTypeNames(false, envLoader);
         Collection<Class<?>> failed = null;

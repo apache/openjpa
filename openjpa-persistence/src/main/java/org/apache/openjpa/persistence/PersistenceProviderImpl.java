@@ -101,7 +101,7 @@ public class PersistenceProviderImpl
             // functions and they need to be allowed time to configure themselves before we go off and
             // start instanting configurable objects (ie:openjpa.MetaDataRepository). Don't catch
             // any exceptions here because we want to fail-fast.
-            Options o = Configurations.parseProperties(Configurations.getProperties("openjpa.MetaDataRepository"));
+            Options o = Configurations.parseProperties(Configurations.getProperties(conf.getMetaDataRepository()));
             if(o.getBooleanProperty("Preload")){
                 conf.getMetaDataRepositoryInstance().preload();
             }
@@ -196,7 +196,7 @@ public class PersistenceProviderImpl
             // functions and they need to be allowed time to configure themselves before we go off and
             // start instanting configurable objects (ie:openjpa.MetaDataRepository). Don't catch
             // any exceptions here because we want to fail-fast.
-            Options o = Configurations.parseProperties(Configurations.getProperties("openjpa.MetaDataRepository"));
+            Options o = Configurations.parseProperties(Configurations.getProperties(conf.getMetaDataRepository()));
             if(o.getBooleanProperty("Preload")){
                 conf.getMetaDataRepositoryInstance().preload();
             }

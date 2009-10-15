@@ -250,6 +250,10 @@
             <property name="openjpa.ManagedRuntime" value="org.apache.openjpa.jta.JTAManagedRuntime"/>
         </properties>
     </persistence-unit>
+    
+    <persistence-unit name="mdr-pu">
+        <class>org.apache.openjpa.persistence.meta.MdrTestEntity</class>
+    </persistence-unit>      
 
 </persistence>
 
