@@ -156,6 +156,7 @@ public class XMLPersistenceMetaDataParser
         _elems.put("id", ID);
         _elems.put("id-class", ID_CLASS);
         _elems.put("embedded-id", EMBEDDED_ID);
+        _elems.put("maps-id", MAPPED_BY_ID);
         _elems.put("version", VERSION);
         _elems.put("generated-value", GENERATED_VALUE);
         _elems.put("map-key", MAP_KEY);
@@ -1447,6 +1448,9 @@ public class XMLPersistenceMetaDataParser
         boolean orphanRemoval = Boolean.valueOf(attrs.getValue(
             "orphan-removal"));
         setOrphanRemoval(fmd, orphanRemoval);
+        String mapsId = attrs.getValue("maps-id");
+        if (mapsId != null) 
+            fmd.setMappedByIdValue(mapsId);
     }
 
     /**
@@ -1463,6 +1467,9 @@ public class XMLPersistenceMetaDataParser
             fmd.setTypeOverride(classForName(val));
         assertPC(fmd, "ManyToOne");
         fmd.setSerialized(false); // override any Lob annotation
+        String mapsId = attrs.getValue("maps-id");
+        if (mapsId != null) 
+            fmd.setMappedByIdValue(mapsId);
     }
 
     /**
