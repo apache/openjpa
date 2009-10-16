@@ -25,6 +25,7 @@ import java.util.Set;
 
 import org.apache.openjpa.conf.OpenJPAConfiguration;
 import org.apache.openjpa.datacache.DataCache;
+import org.apache.openjpa.datacache.DataCacheManager;
 import org.apache.openjpa.lib.conf.Configurable;
 import org.apache.openjpa.lib.conf.Configuration;
 import org.apache.openjpa.lib.log.Log;
@@ -43,10 +44,11 @@ import org.apache.openjpa.util.InvalidStateException;
  */
 public class InverseManager implements Configurable {
 
-    private static final Localizer _loc = Localizer.forPackage
-        (InverseManager.class);
+    private static final Localizer _loc = Localizer.forPackage(InverseManager.class);
 
     protected static final Object NONE = new Object();
+    
+    protected DataCacheManager _mgr;
 
     /**
      * Constant representing the {@link #ACTION_MANAGE} action
@@ -121,6 +123,7 @@ public class InverseManager implements Configurable {
 
     public void setConfiguration(Configuration conf) {
         _log = conf.getLog(OpenJPAConfiguration.LOG_RUNTIME);
+        _mgr = ((OpenJPAConfiguration)conf).getDataCacheManagerInstance();
     }
 
     /**
@@ -214,7 +217,7 @@ public class InverseManager implements Configurable {
         // if the field isn't loaded in the state manager, it still might be
         // loaded in the data cache, in which case we still have to correct
         // it to keep the cache in sync
-        DataCache cache = sm.getMetaData().getDataCache();
+        DataCache cache = _mgr.selectCache(sm);
         if (cache == null)
             return false;
 

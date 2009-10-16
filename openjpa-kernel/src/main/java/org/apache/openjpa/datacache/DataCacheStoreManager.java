@@ -34,6 +34,7 @@ import org.apache.openjpa.kernel.DataCacheRetrieveMode;
 import org.apache.openjpa.kernel.DataCacheStoreMode;
 import org.apache.openjpa.kernel.DelegatingStoreManager;
 import org.apache.openjpa.kernel.FetchConfiguration;
+import org.apache.openjpa.kernel.FindCallbacks;
 import org.apache.openjpa.kernel.LockLevels;
 import org.apache.openjpa.kernel.OpenJPAStateManager;
 import org.apache.openjpa.kernel.PCState;
@@ -62,7 +63,7 @@ public class DataCacheStoreManager
 
     // the owning context
     private StoreContext _ctx = null;
-
+    private DataCacheManager _mgr = null;
     // pc data generator
     private PCDataGenerator _gen = null;
 
@@ -77,7 +78,8 @@ public class DataCacheStoreManager
 
     public void setContext(StoreContext ctx) {
         _ctx = ctx;
-        _gen = ctx.getConfiguration().getDataCacheManagerInstance().getPCDataGenerator();
+        _mgr = ctx.getConfiguration().getDataCacheManagerInstance();
+        _gen = _mgr.getPCDataGenerator();
         super.setContext(ctx);
     }
 
@@ -113,8 +115,7 @@ public class DataCacheStoreManager
         if (classes.isEmpty())
             return;
 
-        MetaDataRepository mdr = _ctx.getConfiguration().
-            getMetaDataRepositoryInstance();
+        MetaDataRepository mdr = _ctx.getConfiguration().getMetaDataRepositoryInstance();
         ClassLoader loader = _ctx.getClassLoader();
 
         DataCache cache;
@@ -141,7 +142,7 @@ public class DataCacheStoreManager
             // create pc datas for inserts
             if (_ctx.getPopulateDataCache() && _inserts != null) {
                 for (OpenJPAStateManager sm : _inserts) {
-                    cache = sm.getMetaData().getDataCache();
+                    cache = _mgr.selectCache(sm);
                     if (cache == null)
                         continue;
 
@@ -160,7 +161,7 @@ public class DataCacheStoreManager
                     sm = entry.getKey();
                     fields = entry.getValue();
 
-                    cache = sm.getMetaData().getDataCache();
+                    cache = _mgr.selectCache(sm);
                     if (cache == null) {
                         continue;
                     }
@@ -190,7 +191,7 @@ public class DataCacheStoreManager
             // remove pcdatas for deletes
             if (_deletes != null) {
                 for (OpenJPAStateManager sm : _deletes) { 
-                    cache = sm.getMetaData().getDataCache();
+                    cache = _mgr.selectCache(sm);
                     if (cache == null)
                         continue;
 
@@ -290,7 +291,7 @@ public class DataCacheStoreManager
     }
 
     public boolean exists(OpenJPAStateManager sm, Object edata) {
-        DataCache cache = sm.getMetaData().getDataCache();
+        DataCache cache = _mgr.selectCache(sm); 
         if (cache != null && !isLocking(null)
             && cache.contains(sm.getObjectId()))
             return true;
@@ -298,7 +299,7 @@ public class DataCacheStoreManager
     }
 
     public boolean syncVersion(OpenJPAStateManager sm, Object edata) {
-        DataCache cache = sm.getMetaData().getDataCache();
+        DataCache cache = _mgr.selectCache(sm);
         if (cache == null || sm.isEmbedded())
             return super.syncVersion(sm, edata);
 
@@ -323,7 +324,7 @@ public class DataCacheStoreManager
 
     public boolean initialize(OpenJPAStateManager sm, PCState state, FetchConfiguration fetch, Object edata) {
         boolean fromDatabase; 
-        DataCache cache = sm.getMetaData().getDataCache();
+        DataCache cache = _mgr.selectCache(sm);
         DataCachePCData data = null;
         boolean updateCache = _ctx.getCacheStoreMode() != DataCacheStoreMode.BYPASS && _ctx.getPopulateDataCache();
         if (cache == null || sm.isEmbedded() || _ctx.getCacheRetrieveMode() == DataCacheRetrieveMode.BYPASS
@@ -353,7 +354,7 @@ public class DataCacheStoreManager
     }
     
     private void cacheStateManager(DataCache cache, OpenJPAStateManager sm, DataCachePCData data) {
-        if(sm.isFlushed()) { 
+        if (sm.isFlushed()) { 
             return;
         }
         // make sure that we're not trying to cache an old version
@@ -383,7 +384,7 @@ public class DataCacheStoreManager
 
     public boolean load(OpenJPAStateManager sm, BitSet fields,
         FetchConfiguration fetch, int lockLevel, Object edata) {
-        DataCache cache = sm.getMetaData().getDataCache();
+        DataCache cache = _mgr.selectCache(sm);
         if (cache == null || sm.isEmbedded() || _ctx.getCacheRetrieveMode() == DataCacheRetrieveMode.BYPASS)
             return super.load(sm, fields, fetch, lockLevel, edata);
 
@@ -421,7 +422,7 @@ public class DataCacheStoreManager
         BitSet fields;
 
         for (OpenJPAStateManager sm : sms) {
-            cache = sm.getMetaData().getDataCache();
+            cache = _mgr.selectCache(sm);
             if (cache == null || sm.isEmbedded()) {
                 unloaded = addUnloaded(sm, null, unloaded);
                 continue;
@@ -494,7 +495,7 @@ public class DataCacheStoreManager
             OpenJPAStateManager sm = entry.getKey();
             fields = entry.getValue();
 
-            cache = sm.getMetaData().getDataCache();
+            cache = _mgr.selectCache(sm);
             if (cache == null || sm.isEmbedded() || (failed != null
                 && failed.contains(sm.getId())))
                 continue;
@@ -607,8 +608,7 @@ public class DataCacheStoreManager
         // this logic could be more efficient -- we could aggregate
         // all the cache->oid changes, and then use DataCache.removeAll() 
         // and less write locks to do the mutation.
-        ClassMetaData meta = sm.getMetaData();
-        DataCache cache = meta.getDataCache();
+        DataCache cache = _mgr.selectCache(sm);
         if (cache == null)
             return;
 
@@ -684,7 +684,7 @@ public class DataCacheStoreManager
         ClassMetaData meta = sm.getMetaData();
         if (_gen != null)
             return (DataCachePCData) _gen.generatePCData(sm.getObjectId(), meta);
-        return new DataCachePCDataImpl(sm.fetchObjectId(), meta);
+        return new DataCachePCDataImpl(sm.fetchObjectId(), meta, _mgr.selectCache(sm).getName());
     }
 
     /**
@@ -694,8 +694,8 @@ public class DataCacheStoreManager
         if (fetch == null)
             fetch = _ctx.getFetchConfiguration();
         return fetch.getReadLockLevel() > LockLevels.LOCK_NONE;
-    }
-
+    }  
+    
     /**
      * Structure used during the commit process to track cache modifications.
      */

@@ -19,6 +19,7 @@
 package org.apache.openjpa.datacache;
 
 import org.apache.openjpa.conf.OpenJPAConfiguration;
+import org.apache.openjpa.kernel.OpenJPAStateManager;
 import org.apache.openjpa.lib.conf.ObjectValue;
 
 /**
@@ -69,6 +70,24 @@ public interface DataCacheManager {
      * Return the runnable which schedules evictions.
      */
     public DataCacheScheduler getDataCacheScheduler();
+    
+    /**
+     * Select the cache where the given managed proxy instance should be cached.
+     * This decision <em>may</em> override the cache returned by 
+     * {@link CacheDistributionPolicy#selectCache(OpenJPAStateManager, Object) policy}
+     * as specified by the user.  
+     *  
+     * @param sm the managed proxy instance
+     * @return the cache that will store the state of the given managed instance.
+     * @since 2.0.0
+     */
+    public DataCache selectCache(OpenJPAStateManager sm);
+    
+    /**
+     * Return the policy that suggests the cache where a managed entity state is stored.  
+     * @since 2.0.0
+     */
+    public CacheDistributionPolicy getDistributionPolicy();
 
     /**
      * Close all caches.

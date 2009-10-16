@@ -22,6 +22,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.BitSet;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -475,6 +476,20 @@ public abstract class AbstractDataCache extends AbstractConcurrentEventManager
     public Set<String> getExcludedTypes() {
         return _excludedTypes;
     }
+    
+    public boolean isExcludedType(String type) {
+        if (_excludedTypes != null) {
+            if (_excludedTypes.contains(type)) {
+                return true;
+            }
+        }
+        if (_includedTypes != null) {
+             if (!_includedTypes.contains(type)) {
+                 return true;
+             }
+        }
+        return false;
+    }
 
     public void setTypes(Set<String> types) {
         _includedTypes = types;
@@ -495,4 +510,25 @@ public abstract class AbstractDataCache extends AbstractConcurrentEventManager
             StringUtils.isEmpty(types) ? null : new HashSet<String>(Arrays
                 .asList(Strings.split(types, ";", 0)));
     }
+    
+    /**
+     * 
+     */
+    public DataCache getPartition(String name, boolean create) {
+        if (StringUtils.equals(_name, name))
+            return this;
+        return null;
+    }
+
+    /**
+     * 
+     */
+    public Set<String> getPartitionNames() {
+        return Collections.emptySet();
+    }
+    
+    public boolean isPartitioned() {
+        return false;
+    }
+
 }

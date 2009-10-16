@@ -3212,7 +3212,7 @@ public class BrokerImpl
 
             sm.evict();
             if (_evictDataCache && sm.getObjectId() != null) {
-                DataCache cache = sm.getMetaData().getDataCache();
+                DataCache cache = _conf.getDataCacheManagerInstance().selectCache(sm);
                 if (cache != null)
                     cache.remove(sm.getObjectId());
             }

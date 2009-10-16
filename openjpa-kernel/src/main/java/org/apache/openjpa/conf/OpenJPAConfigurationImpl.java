@@ -28,6 +28,7 @@ import org.apache.openjpa.datacache.ConcurrentQueryCache;
 import org.apache.openjpa.datacache.DataCacheManager;
 import org.apache.openjpa.datacache.DataCacheManagerImpl;
 import org.apache.openjpa.datacache.DataCacheMode;
+import org.apache.openjpa.datacache.PartitionedDataCache;
 import org.apache.openjpa.ee.ManagedRuntime;
 import org.apache.openjpa.enhance.RuntimeUnenhancedClassesModes;
 import org.apache.openjpa.event.BrokerFactoryEventManager;
@@ -238,7 +239,8 @@ public class OpenJPAConfigurationImpl
         aliases = new String[] { 
             "false", null, 
             "true", ConcurrentDataCache.class.getName(), 
-            "concurrent", ConcurrentDataCache.class.getName(), 
+            "concurrent", ConcurrentDataCache.class.getName(),
+            "partitioned", PartitionedDataCache.class.getName(),
         };
         dataCachePlugin.setAliases(aliases);
         dataCachePlugin.setDefault(aliases[0]);

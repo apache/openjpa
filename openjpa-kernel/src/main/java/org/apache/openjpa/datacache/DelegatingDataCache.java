@@ -22,6 +22,7 @@ import java.util.BitSet;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.apache.commons.lang.ObjectUtils;
 import org.apache.openjpa.util.RuntimeExceptionTranslator;
@@ -125,8 +126,8 @@ public class DelegatingDataCache
         }
     }
 
-    public void commit(Collection additions, Collection newUpdates,
-        Collection existingUpdates, Collection deletes) {
+    public void commit(Collection<DataCachePCData> additions, Collection<DataCachePCData> newUpdates,
+        Collection<DataCachePCData> existingUpdates, Collection<Object> deletes) {
         if (_cache == null)
             return;
         try {
@@ -146,7 +147,7 @@ public class DelegatingDataCache
         }
     }
 
-    public BitSet containsAll(Collection oids) {
+    public BitSet containsAll(Collection<Object> oids) {
         if (_cache == null)
             return EMPTY_BITSET;
         try {
@@ -196,7 +197,7 @@ public class DelegatingDataCache
         }
     }
 
-    public BitSet removeAll(Collection oids) {
+    public BitSet removeAll(Collection<Object> oids) {
         if (_cache == null)
             return EMPTY_BITSET;
         try {
@@ -206,7 +207,7 @@ public class DelegatingDataCache
         }
     }
 
-    public void removeAll(Class cls, boolean subclasses) {
+    public void removeAll(Class<?> cls, boolean subclasses) {
         if (_cache == null)
             return;
         try {
@@ -236,7 +237,7 @@ public class DelegatingDataCache
         }
     }
 
-    public BitSet pinAll(Collection oids) {
+    public BitSet pinAll(Collection<Object> oids) {
         if (_cache == null)
             return EMPTY_BITSET;
         try {
@@ -246,7 +247,7 @@ public class DelegatingDataCache
         }
     }
 
-    public void pinAll(Class cls, boolean subs) {
+    public void pinAll(Class<?> cls, boolean subs) {
         if (_cache == null)
             return;
         try {
@@ -266,7 +267,7 @@ public class DelegatingDataCache
         }
     }
 
-    public BitSet unpinAll(Collection oids) {
+    public BitSet unpinAll(Collection<Object> oids) {
         if (_cache == null)
             return EMPTY_BITSET;
         try {
@@ -276,7 +277,7 @@ public class DelegatingDataCache
         }
     }
 
-    public void unpinAll(Class cls, boolean subs) {
+    public void unpinAll(Class<?> cls, boolean subs) {
         if (_cache == null)
             return;
         try {
@@ -336,7 +337,7 @@ public class DelegatingDataCache
 		}
 	}
 
-    public Map getAll(List keys) {
+    public Map<Object,DataCachePCData> getAll(List<Object> keys) {
         if (_cache == null)
             return null;
         try {
@@ -348,5 +349,36 @@ public class DelegatingDataCache
     
     public CacheStatistics getStatistics() {
     	return (_cache == null) ? null : _cache.getStatistics();
+    }
+
+    
+    public DataCache getPartition(String name, boolean create) {
+        if (_cache == null)
+            return null;
+        try {
+            return _cache.getPartition(name, create);
+        } catch (RuntimeException re) {
+            throw translate(re);
+        }
+    }
+
+    public Set<String> getPartitionNames() {
+        if (_cache == null)
+            return null;
+        try {
+            return _cache.getPartitionNames();
+        } catch (RuntimeException re) {
+            throw translate(re);
+        }
+    }
+
+    public boolean isPartitioned() {
+        if (_cache == null)
+            return false;
+        try {
+            return _cache.isPartitioned();
+        } catch (RuntimeException re) {
+            throw translate(re);
+        }
     }
 }

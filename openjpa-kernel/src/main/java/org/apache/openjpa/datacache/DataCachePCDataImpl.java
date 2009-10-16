@@ -37,6 +37,7 @@ import org.apache.openjpa.meta.ValueMetaData;
  *
  * @author Patrick Linskey
  */
+@SuppressWarnings("serial")
 public class DataCachePCDataImpl
     extends PCDataImpl
     implements DataCachePCData {
@@ -46,8 +47,8 @@ public class DataCachePCDataImpl
     /**
      * Constructor.
      */
-    public DataCachePCDataImpl(Object oid, ClassMetaData meta) {
-        super(oid, meta);
+    public DataCachePCDataImpl(Object oid, ClassMetaData meta, String name) {
+        super(oid, meta, name);
 
         int timeout = meta.getDataCacheTimeout();
         if (timeout > 0)
@@ -130,7 +131,7 @@ public class DataCachePCDataImpl
      * order.
      */
     protected void storeField(OpenJPAStateManager sm, FieldMetaData fmd) {
-        if (fmd.getManagement() != fmd.MANAGE_PERSISTENT)
+        if (fmd.getManagement() != FieldMetaData.MANAGE_PERSISTENT)
             return;
         int index = fmd.getIndex();
 
@@ -160,25 +161,22 @@ public class DataCachePCDataImpl
      * in inverse relation. If it is, clear the other field cache because it
      * could be out of order.
      */
-    protected void clearInverseRelationCache(OpenJPAStateManager sm,
-        FieldMetaData fmd) {
+    protected void clearInverseRelationCache(OpenJPAStateManager sm, FieldMetaData fmd) {
+        DataCache cache = sm.getMetaData().getDataCache();
+        if (cache == null)
+            return;
         ClassMetaData cmd = sm.getMetaData();
         FieldMetaData[] fields = cmd.getFields();
         for (int i = 0; i < fields.length; i++) {
             FieldMetaData[] inverses = fields[i].getInverseMetaDatas();
             if (inverses.length == 0)
                 continue;
-            for (int j = 0; j < inverses.length; j++) {
-                if (inverses[j].getOrderDeclaration()
-                    .indexOf(fmd.getName()) != -1) {
-                    DataCache cache = sm.getMetaData().getDataCache();
+            for (FieldMetaData inverse : inverses) {
+                if (inverse.getOrderDeclaration().indexOf(fmd.getName()) != -1) {
                     Object oid = sm.getContext().getObjectId(sm.fetch(i));
-                    DataCachePCData data = cache == null ? null
-                        : cache.get(oid);
-                    if ((data != null) &&
-                        (data instanceof DataCachePCDataImpl)) {
-                        ((DataCachePCDataImpl) data)
-                            .clearData(inverses[j].getIndex());
+                    DataCachePCData data = cache.get(oid);
+                    if (data instanceof DataCachePCDataImpl) {
+                        ((DataCachePCDataImpl) data).clearData(inverse.getIndex());
                     }
                 }
             }
@@ -209,6 +207,6 @@ public class DataCachePCDataImpl
     }
 
     public AbstractPCData newEmbeddedPCData(OpenJPAStateManager sm) {
-        return new DataCachePCDataImpl(sm.getId(), sm.getMetaData());
+        return new DataCachePCDataImpl(sm.getId(), sm.getMetaData(), getCache());
     }
 }

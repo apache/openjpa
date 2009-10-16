@@ -104,4 +104,9 @@ public interface PCData
      * Whether the given field index has stored data.
      */
     public boolean isLoaded(int i);
+    
+    /**
+     * Get the name of the cache where this data is stored.
+     */
+    public String getCache();
 }

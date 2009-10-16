@@ -22,6 +22,7 @@ import java.util.BitSet;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.apache.openjpa.lib.util.Closeable;
 
@@ -36,6 +37,7 @@ import org.apache.openjpa.lib.util.Closeable;
  * @see DataCachePCData#isTimedOut
  * @author Patrick Linskey
  * @author Abe White
+ * @author Pinaki Poddar
  */
 public interface DataCache
     extends Closeable {
@@ -268,6 +270,34 @@ public interface DataCache
 	 * 
      */
     public Map<Object,DataCachePCData> getAll(List<Object> keys);
+    
+    /**
+     * Gets the named partition. Note that a partition itself is another cache.
+     *  
+     * @param name name of the given partition. 
+     * 
+     * @param create if true optionally create a new partition. 
+     * 
+     * @return a partition of the given name. Or null, if either no such partition exists or can not be created.
+     * @since 2.0.0
+     */
+    public DataCache getPartition(String name, boolean create);
+    
+    /**
+     * Gets the name of the known partitions. 
+     * 
+     * @return empty set if no partition exists.
+     * 
+     * @since 2.0.0
+     */
+    public Set<String> getPartitionNames();
+        
+    /**
+     * Affirms if this cache maintains partitions.
+     * 
+     * @since 2.0.0
+     */
+    public boolean isPartitioned();
     
     /**
      * Returns number of read/write request and cache hit ratio data.

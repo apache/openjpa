@@ -19,6 +19,7 @@
 package org.apache.openjpa.datacache;
 
 import org.apache.openjpa.conf.OpenJPAConfiguration;
+import org.apache.openjpa.kernel.OpenJPAStateManager;
 import org.apache.openjpa.lib.conf.ObjectValue;
 import org.apache.openjpa.lib.util.Closeable;
 import org.apache.openjpa.util.ImplHelper;
@@ -36,21 +37,20 @@ public class DataCacheManagerImpl
     private QueryCache _queryCache = null;
     private DataCachePCDataGenerator _pcGenerator = null;
     private DataCacheScheduler _scheduler = null;
+    private CacheDistributionPolicy _policy = new CacheDistributionPolicy.Default();
 
-    public void initialize(OpenJPAConfiguration conf, ObjectValue dataCache,
-        ObjectValue queryCache) {
+    public void initialize(OpenJPAConfiguration conf, ObjectValue dataCache, ObjectValue queryCache) {
         _cache = (DataCache) dataCache.instantiate(DataCache.class, conf);
         if (_cache == null)
             return;
-
+         
         // create helpers before initializing caches
         if (conf.getDynamicDataStructs())
             _pcGenerator = new DataCachePCDataGenerator(conf);
         _scheduler = new DataCacheScheduler(conf);
 
         _cache.initialize(this);
-        _queryCache = (QueryCache) queryCache.instantiate(QueryCache.class,
-            conf);
+        _queryCache = (QueryCache) queryCache.instantiate(QueryCache.class, conf);
         if (_queryCache != null)
             _queryCache.initialize(this);
     }
@@ -63,9 +63,14 @@ public class DataCacheManagerImpl
         return getDataCache(name, false);
     }
 
+    /**
+     * Returns the named cache. 
+     */
     public DataCache getDataCache(String name, boolean create) {
         if (name == null || (_cache != null && name.equals(_cache.getName())))
             return _cache;
+        if (_cache != null)
+            return _cache.getPartition(name, create);
         return null;
     }
 
@@ -86,5 +91,23 @@ public class DataCacheManagerImpl
         ImplHelper.close(_queryCache);
         if (_scheduler != null)
             _scheduler.stop();
+    }
+
+    public DataCache selectCache(OpenJPAStateManager sm) {
+        if (sm == null)
+            return null;
+        if (_cache instanceof AbstractDataCache 
+        && ((AbstractDataCache)_cache).isExcludedType(sm.getMetaData().getDescribedType().getName()))
+            return null;
+        String name = _policy.selectCache(sm, null);
+        return name == null ? null : getDataCache(name);
+    }
+    
+    public CacheDistributionPolicy getDistributionPolicy() {
+        return _policy;
+    }
+    
+    public void setDistributionPolicy(CacheDistributionPolicy policy) {
+        _policy = policy;
     }
 }
