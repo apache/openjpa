@@ -19,17 +19,17 @@
 -->
 <chapter id="openjpa_intro">
     <title>
-        OpenJPA 
+        About
     </title>
     <indexterm zone="openjpa_intro">
         <primary>
-            OpenJPA 
+            About
         </primary>
     </indexterm>
     <para>
-OpenJPA is Apache's implementation of Sun's Java Persistence API (JPA)
-specification for the transparent persistence of Java objects. This
-document provides an overview of the JPA standard and technical
+OpenJPA is Apache's implementation of Sun's Java Persistence 2.0 API 
+(JSR-317 JPA 2.0) specification for the transparent persistence of Java objects.
+This document provides an overview of the JPA standard and technical
 details on the use of OpenJPA.
     </para>
 <!-- 
@@ -41,10 +41,12 @@ introduction to the JPA specification, begin with
 <xref linkend="jpa_overview_intro"/>.
     </para>
 -->
+<!--
     <section id="openjpa_intro_about">
         <title>
             About This Document
         </title>
+-->
         <para>
 This document is intended for OpenJPA users. It is divided into several parts:
         </para>
@@ -103,5 +105,7 @@ details on a specific aspect of OpenJPA.
             	</para>
             </listitem>
         </itemizedlist>
+<!--
     </section>
+-->
 </chapter>

@@ -22,6 +22,7 @@
     <!ENTITY openjpa-version "VERSION">
 
     <!ENTITY openjpa_intro.xml SYSTEM "openjpa_intro.xml">
+    <!ENTITY openjpa_legal.xml SYSTEM "openjpa_legal.xml">
     <!ENTITY jpa_overview_intro.xml SYSTEM "jpa_overview_intro.xml">
     <!ENTITY jpa_overview_why.xml SYSTEM "jpa_overview_why.xml">
     <!ENTITY jpa_overview_arch.xml SYSTEM "jpa_overview_arch.xml">
@@ -60,12 +61,13 @@
 ]>
 <book id="manual">
     <bookinfo>
-        <title>Apache OpenJPA User's Guide</title>
+        <title>Apache OpenJPA 2.0 User's Guide</title>
     </bookinfo>
 
     <part id="introduction">
         <title>Introduction</title>
         &openjpa_intro.xml;
+        &openjpa_legal.xml;
     </part>
 
     <part id="jpa_overview">
@@ -120,7 +122,10 @@
     </part>
     -->
 
-    &jpa_resources.xml;
-    &supported_databases.xml;
-    &migration_considerations.xml;
+    <part id="appendices">
+        <title>Appendices</title>
+        &jpa_resources.xml;
+        &supported_databases.xml;
+        &migration_considerations.xml;
+    </part>
 </book>
