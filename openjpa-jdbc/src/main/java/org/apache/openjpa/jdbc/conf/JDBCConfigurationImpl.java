@@ -40,8 +40,6 @@ import org.apache.openjpa.jdbc.sql.DBDictionary;
 import org.apache.openjpa.jdbc.sql.DBDictionaryFactory;
 import org.apache.openjpa.jdbc.sql.SQLFactory;
 import org.apache.openjpa.kernel.BrokerImpl;
-import org.apache.openjpa.kernel.FinderCache;
-import org.apache.openjpa.kernel.PreparedQueryCache;
 import org.apache.openjpa.kernel.StoreContext;
 import org.apache.openjpa.lib.conf.IntValue;
 import org.apache.openjpa.lib.conf.ObjectValue;
