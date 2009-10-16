@@ -21,7 +21,7 @@ package org.apache.openjpa.persistence.criteria;
 import java.math.BigDecimal;
 import java.sql.Timestamp;
 import java.util.Date;
-import javax.persistence.Parameter;
+
 import javax.persistence.Query;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Expression;
@@ -1575,4 +1575,47 @@ public class TestJPQLSubquery extends CriteriaTest {
         q.where(cb.exists(sq).not());
         assertEquivalence(q, jpql);
     }
+
+    // Plural correlated Join
+    public void testCollectionJoin1() {
+        String jpql = "SELECT o.quantity, o.totalCost*1.08, "
+            + "a.zipCode FROM Customer c JOIN c.orders o JOIN c.address a "
+            + "WHERE a.state = " 
+            + "(SELECT o.name from Customer c1 JOIN c1.orders o1 where o.quantity = o1.quantity)";
+        CriteriaQuery<?> q = cb.createQuery();
+        Root<Customer> cust = q.from(Customer.class);
+        SetJoin<Customer, Order> order = cust.joinSet("orders");
+        Join<Customer, Address> address = cust.join("address");
+        
+        Subquery<String> sq = q.subquery(String.class);
+        Root<Customer> cust1 = sq.from(Customer.class);
+        SetJoin<Customer, Order> order1 = cust1.joinSet("orders");
+        SetJoin<Customer, Order> corrJoin = sq.correlate(order);
+        sq.where(cb.equal(corrJoin.get(Order_.quantity), order1.get(Order_.quantity)));
+        q.where(cb.equal(address.get("state"), sq.select(corrJoin.get(Order_.name))));
+        Expression<Double> taxedCost = cb.prod(order.get(Order_.totalCost), 1.08);
+        q.multiselect(order.get("quantity"), taxedCost, address.get("zipCode"));
+
+        assertEquivalence(q, jpql);
+    }
+
+    // correlated Singular Join => Plural Join
+    public void testCollection3() {
+        String jpql = "SELECT o FROM Order o JOIN o.customer c JOIN c.accounts a WHERE 10000 < "
+            + "ANY (SELECT a1.balance FROM Account a1 WHERE a.owner = a1.owner)";
+        
+        CriteriaQuery<Order> q = cb.createQuery(Order.class);
+        Root<Order> o = q.from(Order.class);
+        Join<Order,Customer> c = o.join(Order_.customer);
+        ListJoin<Customer,Account> a = c.joinList("accounts");
+        q.select(o);
+        Subquery<Integer> sq = q.subquery(Integer.class);
+        Root<Account> a1 = sq.from(Account.class);
+        ListJoin<Customer,Account> corrJoin = sq.correlate(a);
+        sq.select(a1.get(Account_.balance));
+        sq.where(cb.equal(corrJoin.get(Account_.owner), a1.get(Account_.owner)));
+        q.where(cb.lt(cb.literal(10000), cb.any(sq)));
+
+        assertEquivalence(q, jpql);
+    }    
 }

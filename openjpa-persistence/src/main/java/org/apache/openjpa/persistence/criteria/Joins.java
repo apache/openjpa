@@ -18,6 +18,9 @@
  */
 package org.apache.openjpa.persistence.criteria;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import javax.persistence.criteria.AbstractQuery;
 import javax.persistence.criteria.CollectionJoin;
 import javax.persistence.criteria.Expression;
@@ -58,7 +61,56 @@ import org.apache.openjpa.persistence.meta.Members.Member;
  * 
  */
 abstract class Joins {
-   
+
+    static Join clone(Join join) {
+        java.util.List<Members.Member> members = new ArrayList<Members.Member>();
+        java.util.List<JoinType> jts = new ArrayList<JoinType>();
+        FromImpl<?, ?> root = getMembers((PathImpl)join, members, jts);
+        Members.Member<?, ?> member = members.get(0);
+        JoinType jt = jts.get(0);
+        Join join1 = makeJoin(root, member, jt);
+        for (int i = 1; i < members.size(); i++)
+            join1 = makeJoin((FromImpl<?, ?>) join1, members.get(i), jts.get(i));
+
+        return join1;
+    }
+
+    static Join<?, ?> makeJoin(FromImpl<?, ?> from, Members.Member member,
+            JoinType jt) {
+        if (member instanceof Members.SingularAttributeImpl)
+            return new Joins.SingularJoin(from,
+                    (Members.SingularAttributeImpl) member, jt);
+        else if (member instanceof Members.CollectionAttributeImpl)
+            return new Joins.Collection(from,
+                    (Members.CollectionAttributeImpl) member, jt);
+        else if (member instanceof Members.ListAttributeImpl)
+            return new Joins.List(from, (Members.ListAttributeImpl) member, jt);
+        else if (member instanceof Members.SetAttributeImpl)
+            return new Joins.Set(from, (Members.SetAttributeImpl) member, jt);
+        else if (member instanceof Members.MapAttributeImpl)
+            return new Joins.Map(from, (Members.MapAttributeImpl) member, jt);
+        return null;
+    }
+
+    static FromImpl getMembers(PathImpl join,
+            java.util.List<Members.Member> members,
+            java.util.List<JoinType> jts) {
+        PathImpl parent = (PathImpl) join.getParentPath();
+        Members.Member member = join.getMember();
+        JoinType jt = ((Join) join).getJoinType();
+        FromImpl<?, ?> from = null;
+        if (parent instanceof RootImpl) {
+            members.add(member);
+            jts.add(jt);
+            return (FromImpl) parent;
+        } else {
+            from = getMembers(parent, members, jts);
+        }
+        members.add(member);
+        jts.add(jt);
+        return from;
+    }
+
     /**
      * Join a single-valued attribute.
      * 

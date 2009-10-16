@@ -46,6 +46,7 @@ import org.apache.openjpa.kernel.jpql.JPQLExpressionBuilder;
 import org.apache.openjpa.meta.ClassMetaData;
 import org.apache.openjpa.meta.FieldMetaData;
 import org.apache.openjpa.meta.ValueMetaData;
+import org.apache.openjpa.persistence.criteria.Joins.SingularJoin;
 import org.apache.openjpa.persistence.meta.AbstractManagedType;
 import org.apache.openjpa.persistence.meta.Members;
 import org.apache.openjpa.persistence.meta.MetamodelImpl;
@@ -219,25 +220,12 @@ class SubqueryImpl<T> extends ExpressionImpl<T> implements Subquery<T> {
      * Correlate this subquery with the given join.
      */
     public <X,Y> Join<X,Y> correlate(Join<X,Y> parentJoin) {
-        Join<?,?> corrJoin = clone(parentJoin);
+        Join<?,?> corrJoin = Joins.clone(parentJoin);
         ((PathImpl<?,?>)corrJoin).setCorrelatedPath((PathImpl<?,?>)parentJoin);
         if (_corrJoins == null)
             _corrJoins = new ArrayList<Join<?,?>>();
         _corrJoins.add(corrJoin);
         return (Join<X,Y>)corrJoin;
-    }
-    
-    private Join<?,?> clone(Join<?,?> join) {
-        List<Members.SingularAttributeImpl<?,?>> members = new ArrayList<Members.SingularAttributeImpl<?,?>>();
-        List<JoinType> jts = new ArrayList<JoinType>();
-        FromImpl<?,?> root = getMembers(join, members, jts);
-        Members.SingularAttributeImpl<?,?> member = members.get(0);
-        JoinType jt = jts.get(0);
-        Join<?,?> join1 = makeJoin(root, member, jt);
-        for (int i = 1; i < members.size(); i++) {
-            join1 = makeJoin((FromImpl<?,?>)join1, members.get(i), jts.get(i));
-        }
-        return join1;
     }
     
     /**
@@ -247,47 +235,40 @@ class SubqueryImpl<T> extends ExpressionImpl<T> implements Subquery<T> {
         return _corrJoins != null;
     }
     
-    private Join<?,?> makeJoin(FromImpl<?,?> parent, Members.SingularAttributeImpl<?,?> member, JoinType jt) {
-        return new Joins.SingularJoin(parent, member, jt);
+    public <X,Y> CollectionJoin<X,Y> correlate(CollectionJoin<X,Y> parentJoin) {
+        Join corrJoin = Joins.clone((Joins.Collection)parentJoin);
+        ((PathImpl<?,?>)corrJoin).setCorrelatedPath((PathImpl<?,?>)parentJoin);
+        if (_corrJoins == null)
+            _corrJoins = new ArrayList<Join<?,?>>();
+        _corrJoins.add(corrJoin);
+        return (CollectionJoin<X,Y>)corrJoin;
     }
     
-    private FromImpl<?,?> getMembers(Join<?,?> join, List<Members.SingularAttributeImpl<?,?>> members, 
-        List<JoinType> jts) {
-        PathImpl<?,?> parent = (PathImpl<?,?>)join.getParentPath();
-        Members.SingularAttributeImpl<?,?> member = (Members.SingularAttributeImpl<?,?>)((Joins.SingularJoin<?,?>)join)
-            .getMember();
-        JoinType jt = join.getJoinType();
-        FromImpl<?,?> root = null;
-        if (parent instanceof RootImpl) {
-            members.add(member);
-            jts.add(jt);
-            return (FromImpl<?,?>)parent;
-        } else {
-            root = getMembers((Join<?,?>)parent, members, jts);
-        }
-        members.add(member);
-        jts.add(jt);
-        return root;
+    public <X,Y> SetJoin<X,Y> correlate(SetJoin<X,Y> parentJoin) {
+        Join corrJoin = Joins.clone((Joins.Set)parentJoin);
+        ((PathImpl<?,?>)corrJoin).setCorrelatedPath((PathImpl<?,?>)parentJoin);
+        if (_corrJoins == null)
+            _corrJoins = new ArrayList<Join<?,?>>();
+        _corrJoins.add(corrJoin);
+        return (SetJoin<X,Y>)corrJoin;
     }
     
-    public <X,Y> CollectionJoin<X,Y> correlate(CollectionJoin<X,Y> join) {
-        _delegate.from(join.getModel().getBindableJavaType());
-        return join;
+    public <X,Y> ListJoin<X,Y> correlate(ListJoin<X,Y> parentJoin) {
+        Join corrJoin = Joins.clone((Joins.List)parentJoin);
+        ((PathImpl<?,?>)corrJoin).setCorrelatedPath((PathImpl<?,?>)parentJoin);
+        if (_corrJoins == null)
+            _corrJoins = new ArrayList<Join<?,?>>();
+        _corrJoins.add(corrJoin);
+        return (ListJoin<X,Y>)corrJoin;
     }
     
-    public <X,Y> SetJoin<X,Y> correlate(SetJoin<X,Y> join) {
-        _delegate.from(join.getModel().getBindableJavaType());
-        return join;
-    }
-    
-    public <X,Y> ListJoin<X,Y> correlate(ListJoin<X,Y> join) {
-        _delegate.from(join.getModel().getBindableJavaType());
-        return join;
-    }
-    
-    public <X,K,V> MapJoin<X,K,V> correlate(MapJoin<X,K,V> join) {
-        _delegate.from(join.getModel().getBindableJavaType());
-        return join;
+    public <X,K,V> MapJoin<X,K,V> correlate(MapJoin<X,K,V> parentJoin) {
+        Join corrJoin = Joins.clone((Joins.Map)parentJoin);
+        ((PathImpl<?,?>)corrJoin).setCorrelatedPath((PathImpl<?,?>)parentJoin);
+        if (_corrJoins == null)
+            _corrJoins = new ArrayList<Join<?,?>>();
+        _corrJoins.add(corrJoin);
+        return (MapJoin<X,K,V>)corrJoin;
     }
     
     org.apache.openjpa.kernel.exps.Subquery getSubQ() {

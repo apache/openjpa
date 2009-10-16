@@ -36,6 +36,7 @@ import org.apache.openjpa.kernel.exps.Value;
 import org.apache.openjpa.meta.ClassMetaData;
 import org.apache.openjpa.meta.FieldMetaData;
 import org.apache.openjpa.persistence.meta.Members;
+import org.apache.openjpa.persistence.meta.Members.Member;
 
 /**
  * Represents a simple or compound attribute path from a 
@@ -163,6 +164,10 @@ class PathImpl<Z,X> extends ExpressionImpl<X> implements Path<X> {
             path = factory.newPath(q.getRegisteredVariable(_parent));
             path.setSchemaAlias(q.getAlias(_parent));
             path.get(_member.fmd, allowNull);
+        } else if (_parent != null && _parent._correlatedPath != null && q.isRegistered(_parent._correlatedPath)){
+            path = factory.newPath(q.getRegisteredVariable(_parent._correlatedPath));
+            path.setSchemaAlias(q.getAlias(_parent._correlatedPath));
+            path.get(_member.fmd, allowNull);
         } else if (corrJoin != null || corrRoot != null) {
             org.apache.openjpa.kernel.exps.Subquery subQ = subquery.getSubQ();
             path = factory.newPath(subQ);
@@ -269,6 +274,10 @@ class PathImpl<Z,X> extends ExpressionImpl<X> implements Path<X> {
     
     public Type<?> getType() {
         return _member.getType();
+    }
+
+    public Member<? extends Z, X> getMember() {
+        return (Member<? extends Z, X>) _member;
     }
     
     /**

@@ -194,21 +194,21 @@ class CriteriaExpressionBuilder {
         PredicateImpl where = q.getRestriction();
         SubqueryImpl<?> subQuery = q.getDelegator();
         org.apache.openjpa.kernel.exps.Expression filter = null;
-        if (subQuery == null || subQuery.getCorrelatedJoins().isEmpty()) {
+        if (subQuery == null || subQuery.getCorrelatedJoins().isEmpty()) 
             q.assertRoot();
-            for (Root<?> root : roots) {
-                for (Join<?, ?> join : root.getJoins()) {
-                    filter = Expressions.and(factory, 
-                            ((ExpressionImpl<?>)join).toKernelExpression(factory, q), filter);
-                }
-                ((RootImpl<?>)root).addToContext(factory, model, q);
+            
+        for (Root<?> root : roots) {
+            for (Join<?, ?> join : root.getJoins()) {
+                filter = Expressions.and(factory, 
+                    ((ExpressionImpl<?>)join).toKernelExpression(factory, q), filter);
             }
+            ((RootImpl<?>)root).addToContext(factory, model, q);
         }
         if (subQuery != null) {
             Set<Join<?,?>> corrJoins = subQuery.getCorrelatedJoins();
             for (Join<?,?> corrJoin : corrJoins) {
                 filter = Expressions.and(factory, ((ExpressionImpl<?>)corrJoin)
-                        .toKernelExpression(factory, q), filter);
+                    .toKernelExpression(factory, q), filter);
             }
         }
         
