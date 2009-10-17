@@ -1018,6 +1018,9 @@
                         <exclude>org/apache/openjpa/enhance/TestEnhancementConfiguration.java</exclude>
                         <exclude>org/apache/openjpa/enhance/TestRelationToUnlistedClass.java</exclude>
                         <exclude>org/apache/openjpa/kernel/TestDynamicClassRegistration.java</exclude>
+
+                        <!-- TestEJBTransactionalClass tests nothing -->
+                        <exclude>org/apache/openjpa/persistence/kernel/TestEJBTransactionalClass.java</exclude>
                     </excludes>
                     <systemProperties>
                         <property>
