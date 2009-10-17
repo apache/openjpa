@@ -27,14 +27,12 @@ import org.apache.openjpa.persistence.common.utils.AbstractTestCase;
 
 public class TestEJBState extends AbstractTestCase {
 
-    private static final int INSERT_COUNT = 20;
-
     public TestEJBState(String name) {
         super(name, "kernelcactusapp");
     }
 
-    public void setUp() {
-        deleteAll(AllFieldsTypeTest.class);
+    public void setUp() throws Exception {
+        super.setUp(AllFieldsTypeTest.class);
     }
 
     public void testBigDecimalsLoseTrailingZeros() {

@@ -24,6 +24,7 @@ import javax.persistence.EntityManager;
 import org.apache.openjpa.persistence.kernel.common.apps.InterfaceHolder;
 import org.apache.openjpa.persistence.kernel.common.apps.InterfaceTestImpl1;
 import org.apache.openjpa.persistence.kernel.common.apps.InterfaceTestImpl2;
+import org.apache.openjpa.persistence.kernel.common.apps.InterfaceTestImpl3;
 import org.apache.openjpa.persistence.common.utils.AbstractTestCase;
 
 /**
@@ -37,16 +38,14 @@ public class TestEJBInterfaces extends AbstractTestCase {
         super(name, "kernelcactusapp");
     }
 
+    @Override
+    public void setUp() throws Exception {
+        super.setUp(InterfaceTestImpl1.class, InterfaceTestImpl2.class, InterfaceTestImpl3.class,
+            InterfaceHolder.class);
+    }
+
     @SuppressWarnings("unchecked")
     public void testInterfaceField() {
-        try {
-            deleteAll(InterfaceTestImpl1.class);
-            deleteAll(InterfaceTestImpl2.class);
-            deleteAll(InterfaceHolder.class);
-        }
-        catch (Exception e) {
-        }
-
         EntityManager em2 = currentEntityManager();
         startTx(em2);
 
@@ -65,8 +64,7 @@ public class TestEJBInterfaces extends AbstractTestCase {
 
         em = currentEntityManager();
         startTx(em);
-        InterfaceHolder hold =
-            (InterfaceHolder) em.find(InterfaceHolder.class, 1);
+        InterfaceHolder hold = em.find(InterfaceHolder.class, 1);
         assertNotNull(hold.getIntf());
         assertEquals("intf-1-field", hold.getIntf().getStringField());
         endTx(em);
@@ -74,7 +72,7 @@ public class TestEJBInterfaces extends AbstractTestCase {
 
         em = currentEntityManager();
         startTx(em);
-        hold = (InterfaceHolder) em.find(InterfaceHolder.class, 1);
+        hold = em.find(InterfaceHolder.class, 1);
         hold.setIntf(null);
         assertNull(hold.getIntf());
         endTx(em);
@@ -82,14 +80,14 @@ public class TestEJBInterfaces extends AbstractTestCase {
 
         em = currentEntityManager();
         startTx(em);
-        hold = (InterfaceHolder) em.find(InterfaceHolder.class, 1);
+        hold = em.find(InterfaceHolder.class, 1);
         assertNull(hold.getIntf());
         endTx(em);
         endEm(em);
 
         em = currentEntityManager();
         startTx(em);
-        hold = (InterfaceHolder) em.find(InterfaceHolder.class, 1);
+        hold = em.find(InterfaceHolder.class, 1);
         hold.setIntf(new InterfaceTestImpl2("intf-2-field"));
         assertEquals("intf-2-field", hold.getIntf().getStringField());
         endTx(em);
@@ -97,7 +95,7 @@ public class TestEJBInterfaces extends AbstractTestCase {
 
         em = currentEntityManager();
         startTx(em);
-        hold = (InterfaceHolder) em.find(InterfaceHolder.class, 1);
+        hold = em.find(InterfaceHolder.class, 1);
         assertNotNull(hold.getIntf());
         assertEquals("intf-2-field", hold.getIntf().getStringField());
         endTx(em);
@@ -105,7 +103,7 @@ public class TestEJBInterfaces extends AbstractTestCase {
 
         em = currentEntityManager();
         startTx(em);
-        hold = (InterfaceHolder) em.find(InterfaceHolder.class, 1);
+        hold = em.find(InterfaceHolder.class, 1);
         hold.getIntfs().add(new InterfaceTestImpl1("intf-1-set"));
         endTx(em);
         endEm(em);
