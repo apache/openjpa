@@ -49,7 +49,7 @@ public class TestJPQLSubquery extends SingleEMFTestCase {
                 DependentId.class, Dependent.class, FrequentFlierPlan.class,
                 LineItem.class, Magazine.class, Manager.class,
                 Order.class, Phone.class, Product.class,
-                Publisher.class, Request.class,
+                Publisher.class, Request.class, Person.class,
                 "openjpa.jdbc.JDBCListeners", new JDBCListener[] {  auditor },
                 DROP_TABLES
                 );
@@ -1080,6 +1080,96 @@ public class TestJPQLSubquery extends SingleEMFTestCase {
 
         executeAndCompareSQL(jpql, expectedSQL);
     }
+    
+    public void testPluralCorrelatedJoin1() {
+        String jpql = "SELECT o.quantity, o.totalCost, "
+            + "a.zipCode FROM Customer c JOIN c.orders o JOIN c.address a "
+            + "WHERE a.state = " 
+            + "(SELECT o.name from Customer c1 JOIN c1.orders o1 where o.quantity = o1.quantity)";
+        
+        String expectedSQL = "SELECT t2.quantity, t2.totalCost, t1.zipCode "
+            + "FROM CR_CUST t0 INNER JOIN CR_ODR t2 ON t0.id = t2.CUSTOMER_ID "
+            + "INNER JOIN CR_ADDR t1 ON t0.ADDRESS_ID = t1.id "
+            + "WHERE (t1.state = "
+            + "(SELECT t2.name "
+            + "FROM CR_CUST t3 INNER JOIN CR_ODR t4 ON t3.id = t4.CUSTOMER_ID "
+            + "WHERE (t2.quantity = t4.quantity)) AND 1 = 1)";
+
+        executeAndCompareSQL(jpql, expectedSQL);
+    }
+
+    public void testPluralCorrelatedJoin2() {
+        String jpql = "SELECT d.name FROM Department d JOIN d.employees e JOIN e.manager m "
+           + "WHERE m.name = (SELECT e1.name from Employee e1 JOIN e1.manager m1 "
+           + "where m.name = m1.name)";
+        String expectedSQL = "SELECT t0.name FROM CR_DEPT t0 "
+            + "INNER JOIN CR_DEPT_CR_EMP t1 ON t0.deptNo = t1.DEPARTMENT_DEPTNO "
+            + "INNER JOIN CR_EMP t2 ON t1.EMPLOYEES_EMPID = t2.empId "
+            + "INNER JOIN CR_EMP t6 ON t1.EMPLOYEES_EMPID = t6.empId "
+            + "INNER JOIN CR_MGR t3 ON t2.MANAGER_ID = t3.id "
+            + "INNER JOIN CR_MGR t7 ON t6.MANAGER_ID = t7.id "
+            + "WHERE (t3.name = (SELECT t4.name FROM CR_EMP t4 "
+            + "INNER JOIN CR_MGR t5 ON t4.MANAGER_ID = t5.id "
+            + "WHERE (t7.name = t5.name)) AND 1 = 1)";
+
+        executeAndCompareSQL(jpql, expectedSQL);
+    }
+
+    public void testPluralCorrelatedJoin3() {
+        String jpql = "SELECT o FROM Order o JOIN o.customer c JOIN c.accounts a WHERE c.name = "
+            + "ANY (SELECT a1.name FROM Account a1 WHERE a.owner = a1.owner)";
+        String expectedSQL = "SELECT t0.id, t0.count, t6.id, t6.accountNum, t7.id, t7.city, "
+            + "t7.country, t7.county, t7.state, t7.street, t8.userid, t8.DTYPE, t8.age, "
+            + "t8.compName, t8.creditRating, t8.name, t7.zipCode, t6.balanceOwed, "
+            + "t6.creditRating, t6.filledOrderCount, t6.firstName, t6.lastName, t6.name, "
+            + "t6.status, t0.delivered, t0.name, t0.orderTs, t0.quantity, t0.totalCost "
+            + "FROM CR_ODR t0 "
+            + "INNER JOIN CR_CUST t1 ON t0.CUSTOMER_ID = t1.id "
+            + "LEFT OUTER JOIN CR_CUST t6 ON t0.CUSTOMER_ID = t6.id "
+            + "INNER JOIN CR_CUST_CR_ACCT t2 ON t1.id = t2.CUSTOMER_ID "
+            + "LEFT OUTER JOIN CR_ADDR t7 ON t6.ADDRESS_ID = t7.id "
+            + "INNER JOIN CR_ACCT t3 ON t2.ACCOUNTS_ID = t3.id "
+            + "INNER JOIN CR_ACCT t4 ON t2.ACCOUNTS_ID = t4.id "
+            + "LEFT OUTER JOIN CompUser t8 ON t7.id = t8.ADD_ID WHERE (t1.name = "
+            + "ANY (SELECT t5.name FROM CR_ACCT t5 "
+            + "WHERE (t4.OWNER_ID = t5.OWNER_ID)) AND 1 = 1)";
+
+        executeAndCompareSQL(jpql, expectedSQL);
+    }    
+
+    public void testPluralCorrelatedJoin4() {
+        String jpql = 
+        "SELECT o.quantity FROM Order o JOIN o.customer c JOIN c.accounts a JOIN a.owner owner WHERE c.name = "
+        + "ANY (SELECT a1.name FROM Account a1 JOIN a1.owner owner1 WHERE owner.name = owner1.name)";
+        String expectedSQL = "SELECT t0.quantity FROM CR_ODR t0 "
+            + "INNER JOIN CR_CUST t1 ON t0.CUSTOMER_ID = t1.id "
+            + "INNER JOIN CR_CUST_CR_ACCT t2 ON t1.id = t2.CUSTOMER_ID "
+            + "INNER JOIN CR_ACCT t3 ON t2.ACCOUNTS_ID = t3.id "
+            + "INNER JOIN CR_ACCT t7 ON t2.ACCOUNTS_ID = t7.id "
+            + "INNER JOIN CR_PSN t4 ON t3.OWNER_ID = t4.id "
+            + "INNER JOIN CR_PSN t8 ON t7.OWNER_ID = t8.id WHERE (t1.name = "
+            + "ANY (SELECT t5.name "
+            + "FROM CR_ACCT t5 INNER JOIN CR_PSN t6 ON t5.OWNER_ID = t6.id "
+            + "WHERE (t8.name = t6.name)) AND 1 = 1)";
+
+        executeAndCompareSQL(jpql, expectedSQL);
+    }    
+
+    public void testPluralCorrelatedJoin5() {
+        String jpql = "SELECT o.quantity FROM Order o JOIN o.customer c JOIN c.accounts a WHERE c.name = "
+            + "ANY (SELECT owner.name FROM a.owner owner WHERE owner.id = 1)";
+        String expectedSQL = "SELECT t0.quantity FROM CR_ODR t0 "
+            + "INNER JOIN CR_CUST t1 ON t0.CUSTOMER_ID = t1.id "
+            + "INNER JOIN CR_CUST_CR_ACCT t2 ON t1.id = t2.CUSTOMER_ID "
+            + "INNER JOIN CR_ACCT t3 ON t2.ACCOUNTS_ID = t3.id "
+            + "INNER JOIN CR_ACCT t4 ON t2.ACCOUNTS_ID = t4.id "
+            + "WHERE (t1.name = "
+            + "ANY (SELECT t5.name FROM CR_PSN t5 WHERE ("
+            + "CAST(t5.id AS BIGINT) = CAST(? AS BIGINT) AND t4.OWNER_ID = t5.id)) "
+            + "AND 1 = 1)";
+
+        executeAndCompareSQL(jpql, expectedSQL);
+    }    
 
     void executeQueryAndCompareSQL(Query q, String jpql, String expectedSQL) {
         JDBCConfiguration conf = (JDBCConfiguration) emf.getConfiguration();

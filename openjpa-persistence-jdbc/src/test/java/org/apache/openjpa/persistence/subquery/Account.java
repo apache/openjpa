@@ -39,6 +39,9 @@ public class Account {
     private int balance;
     private Integer loan;
     
+    @OneToOne
+    private Person owner;
+    
     @ManyToOne
     private Customer customer;
     
@@ -49,6 +52,14 @@ public class Account {
 
     public long getId() {
         return id;
+    }
+
+    public Person getOwner() {
+        return owner;
+    }
+
+    public void setOwner(Person owner) {
+        this.owner = owner;
     }
 
     public String getName() {
