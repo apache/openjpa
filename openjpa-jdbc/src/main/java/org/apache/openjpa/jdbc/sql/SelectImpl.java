@@ -2859,13 +2859,21 @@ public class SelectImpl
                 boolean createIndex = true;
                 Table table2 = (inverse) ? fk.getTable() 
                     : fk.getPrimaryKeyTable();
-                if (table2.isAssociation())
-                    createIndex = true;
+                boolean created = false;
+                int alias2 = -1;
+                if (table2.isAssociation()) {
+                    alias2 = _sel.getTableIndex(table2, this, false);
+                    if (alias2 == -1)
+                        createIndex = true;
+                    else 
+                        created = true;
+                }
                 else if (context == _sel.ctx()) 
                    createIndex = true;
                 else if (correlatedVar != null)
                     createIndex = false;
-                int alias2 = _sel.getTableIndex(table2, this, createIndex);
+                if (!created)
+                    alias2 = _sel.getTableIndex(table2, this, createIndex);
                 Join j = new Join(table1, alias1, table2, alias2, fk, inverse);
                 j.setType((outer) ? Join.TYPE_OUTER : Join.TYPE_INNER);
 
