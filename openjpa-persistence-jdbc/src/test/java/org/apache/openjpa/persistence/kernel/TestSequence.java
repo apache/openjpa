@@ -45,6 +45,10 @@ public class TestSequence extends BaseKernelTest {
         super(name);
     }
 
+    public void setUp() throws Exception {
+        super.setUp(AImplB.class);
+    }
+    
     public void testSequence() {
         OpenJPAEntityManager pm = getPM();
         startTx(pm);

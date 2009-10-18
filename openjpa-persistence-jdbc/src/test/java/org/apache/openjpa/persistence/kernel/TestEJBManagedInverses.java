@@ -31,9 +31,8 @@ public class TestEJBManagedInverses extends AbstractTestCase {
         super(name, "kernelcactusapp");
     }
 
-    public void setUp() {
-        deleteAll(InverseA.class);
-        deleteAll(InverseB.class);
+    public void setUp() throws Exception {
+        super.setUp(InverseA.class, InverseB.class);
     }
 
     public void testOneOne() {

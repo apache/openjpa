@@ -30,6 +30,8 @@ package org.apache.openjpa.persistence.kernel;
 
 
 import org.apache.openjpa.persistence.kernel.common.apps.RuntimeTest1;
+import org.apache.openjpa.persistence.kernel.common.apps.RuntimeTest2;
+import org.apache.openjpa.persistence.kernel.common.apps.RuntimeTest3;
 
 import org.apache.openjpa.kernel.OpenJPAStateManager;
 import org.apache.openjpa.kernel.PCState;
@@ -51,8 +53,8 @@ public class TestIncrementalFlushesDeletes extends BaseKernelTest {
     public TestIncrementalFlushesDeletes() {
     }
 
-    public void setUp() {
-        deleteAll(RuntimeTest1.class);
+    public void setUp() throws Exception {
+        super.setUp(RuntimeTest1.class, RuntimeTest2.class, RuntimeTest3.class);
 
         pm = getPM(true, false);
         startTx(pm);

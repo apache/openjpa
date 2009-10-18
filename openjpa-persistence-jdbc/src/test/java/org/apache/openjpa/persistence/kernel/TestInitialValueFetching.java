@@ -34,6 +34,8 @@ import java.util.Map;
 
 
 import org.apache.openjpa.persistence.kernel.common.apps.RuntimeTest1;
+import org.apache.openjpa.persistence.kernel.common.apps.RuntimeTest2;
+import org.apache.openjpa.persistence.kernel.common.apps.RuntimeTest3;
 
 import org.apache.openjpa.kernel.OpenJPAStateManager;
 import org.apache.openjpa.meta.FieldMetaData;
@@ -51,8 +53,8 @@ public class TestInitialValueFetching extends BaseKernelTest {
         super(name);
     }
 
-    public void setUp() {
-        deleteAll(RuntimeTest1.class);
+    public void setUp() throws Exception {
+        super.setUp(RuntimeTest1.class, RuntimeTest2.class, RuntimeTest3.class);
         OpenJPAEntityManager pm = getPM();
         startTx(pm);
         RuntimeTest1 rt1 = new RuntimeTest1("TestInitialValueFetching", 10);
@@ -100,14 +102,12 @@ public class TestInitialValueFetching extends BaseKernelTest {
     public void testInitialValueMutableValueFailures() {
         Map props = new HashMap();
         props.put("openjpa.RestoreMutableValues", "false");
-        OpenJPAEntityManagerFactory pmf = (OpenJPAEntityManagerFactory)
-            getEmf(props);
+        OpenJPAEntityManagerFactory pmf = getEmf(props);
 
-        OpenJPAEntityManager pm = (OpenJPAEntityManager)
-            pmf.createEntityManager();
+        OpenJPAEntityManager pm = pmf.createEntityManager();
         RuntimeTest1 rt1 = getObject(pm);
 
-        Date d = rt1.getDateField();
+        rt1.getDateField();
         OpenJPAStateManager sm = getStateManager(rt1, pm);
         FieldMetaData fmd = sm.getMetaData().getField("dateField");
         try {
@@ -123,10 +123,8 @@ public class TestInitialValueFetching extends BaseKernelTest {
     public void testInitialValueDate() {
         Map props = new HashMap();
         props.put("openjpa.RestoreState", "all");
-        OpenJPAEntityManagerFactory pmf = (OpenJPAEntityManagerFactory)
-            getEmf(props);
-        OpenJPAEntityManager pm = (OpenJPAEntityManager)
-            pmf.createEntityManager();
+        OpenJPAEntityManagerFactory pmf = getEmf(props);
+        OpenJPAEntityManager pm = pmf.createEntityManager();
         startTx(pm);
         RuntimeTest1 rt1 = getObject(pm);
 

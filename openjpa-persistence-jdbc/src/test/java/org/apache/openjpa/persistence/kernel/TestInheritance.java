@@ -51,9 +51,7 @@ public class TestInheritance extends BaseKernelTest {
 
     public void setUp()
         throws Exception {
-        deleteAll(RuntimeTest1.class);
-        deleteAll(RuntimeTest2.class);
-        deleteAll(RuntimeTest3.class);
+        super.setUp(RuntimeTest1.class, RuntimeTest2.class, RuntimeTest3.class);
 
         // create some instances to query on
         OpenJPAEntityManager pm = getPM();
@@ -71,7 +69,7 @@ public class TestInheritance extends BaseKernelTest {
     public void testGetAllRuntimeTest1s() {
         OpenJPAEntityManager pm = getPM();
         OpenJPAQuery q = pm.createQuery("SELECT o FROM RuntimeTest1 o");
-        Collection c = (Collection) q.getResultList();
+        Collection c = q.getResultList();
         assertEquals(3, c.size());
         endEm(pm);
     }
@@ -82,7 +80,7 @@ public class TestInheritance extends BaseKernelTest {
     public void testGetAllRuntimeTest2s() {
         OpenJPAEntityManager pm = getPM();
         OpenJPAQuery q = pm.createQuery("SELECT o FROM RuntimeTest2 o");
-        Collection c = (Collection) q.getResultList();
+        Collection c = q.getResultList();
         assertEquals(2, c.size());
         endEm(pm);
     }
@@ -93,7 +91,7 @@ public class TestInheritance extends BaseKernelTest {
     public void testGetAllRuntimeTest3s() {
         OpenJPAEntityManager pm = getPM();
         OpenJPAQuery q = pm.createQuery("SELECT o FROM RuntimeTest3 o");
-        Collection c = (Collection) q.getResultList();
+        Collection c = q.getResultList();
         assertEquals(1, c.size());
         endEm(pm);
     }
@@ -109,7 +107,7 @@ public class TestInheritance extends BaseKernelTest {
 //        OpenJPAQuery q = pm.createNativeQuery("",RuntimeTest1.class);
 //        FIXME jthomas
 //        q.setCandidates(pm.getExtent(RuntimeTest1.class, false));
-        Collection c = (Collection) q.getResultList();
+        Collection c = q.getResultList();
         assertEquals(1, c.size());
         endEm(pm);
     }
@@ -125,7 +123,7 @@ public class TestInheritance extends BaseKernelTest {
 //        FIXME jthomas        
 //        OpenJPAQuery q = pm.createNativeQuery("",RuntimeTest2.class);
 //        q.setCandidates(pm.createExtent(RuntimeTest2.class, false));
-        Collection c = (Collection) q.getResultList();
+        Collection c = q.getResultList();
         assertEquals(1, c.size());
         endEm(pm);
     }
@@ -141,7 +139,7 @@ public class TestInheritance extends BaseKernelTest {
 //      FIXME jthomas
 //        OpenJPAQuery q = pm.createNativeQuery("",RuntimeTest3.class);
 //        q.setCandidates(pm.getExtent(RuntimeTest3.class, false));
-        Collection c = (Collection) q.getResultList();
+        Collection c = q.getResultList();
         assertEquals(1, c.size());
         endEm(pm);
     }

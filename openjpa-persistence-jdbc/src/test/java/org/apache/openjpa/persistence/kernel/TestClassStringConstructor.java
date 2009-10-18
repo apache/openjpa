@@ -41,8 +41,8 @@ public class TestClassStringConstructor extends BaseKernelTest {
         super(name);
     }
 
-    public void setUp() {
-        deleteAll(AppIdClassString.class);
+    public void setUp() throws Exception {
+        super.setUp(AppIdClassString.class);
     }
 
     public void testConstructor() {

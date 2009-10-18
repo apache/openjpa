@@ -32,6 +32,7 @@ import java.util.Properties;
 
 
 import org.apache.openjpa.persistence.kernel.common.apps.ModRuntimeTest1;
+import org.apache.openjpa.persistence.kernel.common.apps.ModRuntimeTest2;
 import org.apache.openjpa.persistence.kernel.common.apps.RuntimeTest4;
 import org.apache.openjpa.persistence.kernel.common.apps.RuntimeTest5;
 
@@ -59,10 +60,8 @@ public class TestSavepoints extends BaseKernelTest {
         return properties;
     }
 
-    public void setUp() {
-        deleteAll(ModRuntimeTest1.class);
-        deleteAll(RuntimeTest4.class);
-        deleteAll(RuntimeTest5.class);
+    public void setUp() throws Exception {
+        super.setUp(ModRuntimeTest1.class, ModRuntimeTest2.class, RuntimeTest4.class, RuntimeTest5.class);
     }
 
     public void testSimple() {
@@ -89,7 +88,7 @@ public class TestSavepoints extends BaseKernelTest {
             endTx(pm);
             pm = getPM();
             startTx(pm);
-            pc = (ModRuntimeTest1) pm.find(ModRuntimeTest1.class, oid);
+            pc = pm.find(ModRuntimeTest1.class, oid);
         }
         for (int i = 0; i < before; i++) {
             pc.setStringField("before" + i);
@@ -123,7 +122,7 @@ public class TestSavepoints extends BaseKernelTest {
         endEm(pm);
 
         pm = getPM();
-        pc = (ModRuntimeTest1) pm.find(ModRuntimeTest1.class, oid);
+        pc = pm.find(ModRuntimeTest1.class, oid);
         assertEquals("value", pc.getStringField());
         assertEquals(333, pc.getIntField());
         //FIXME jthomas - setDateField
@@ -146,7 +145,7 @@ public class TestSavepoints extends BaseKernelTest {
         ModRuntimeTest1 pc2 = new ModRuntimeTest1("foo", 2);
         pm.persist(pc2);
         pm.setSavepoint("s1");
-        pc = (ModRuntimeTest1) pm.find(ModRuntimeTest1.class, oid);
+        pc = pm.find(ModRuntimeTest1.class, oid);
         assertTrue(pm.isTransactional(pc));
         pm.setSavepoint("s2");
         pc.setStringField("bar");
@@ -170,7 +169,7 @@ public class TestSavepoints extends BaseKernelTest {
         pm = getPM();
         pm.setOptimistic(false);
         startTx(pm);
-        pc = (ModRuntimeTest1) pm.find(ModRuntimeTest1.class, oid);
+        pc = pm.find(ModRuntimeTest1.class, oid);
         pc.setStringField("s1");
         pm.setSavepoint("s1");
         pc.setStringField("s2");
@@ -256,7 +255,7 @@ public class TestSavepoints extends BaseKernelTest {
         pm = getPM();
         pm.setRetainState(true);
         startTx(pm);
-        pc = (ModRuntimeTest1) pm.find(ModRuntimeTest1.class, oid);
+        pc = pm.find(ModRuntimeTest1.class, oid);
 
         for (int i = 0; i < before; i++) {
             pc.setSelfOneOne(new ModRuntimeTest1("before" + i, i));
@@ -288,7 +287,7 @@ public class TestSavepoints extends BaseKernelTest {
         endEm(pm);
 
         pm = getPM();
-        pc = (ModRuntimeTest1) pm.find(ModRuntimeTest1.class, oid);
+        pc = pm.find(ModRuntimeTest1.class, oid);
         assertEquals("orig", pc.getStringField());
         if (before > 0)
             assertEquals("before" + (before - 1),
@@ -325,7 +324,7 @@ public class TestSavepoints extends BaseKernelTest {
         pm = getPM();
         pm.setRetainState(true);
         startTx(pm);
-        pc = (ModRuntimeTest1) pm.find(ModRuntimeTest1.class, oid);
+        pc = pm.find(ModRuntimeTest1.class, oid);
 
         for (int i = 0; i < before; i++) {
             pc.setSelfOneOne(new ModRuntimeTest1("before" + i, i));
@@ -351,7 +350,7 @@ public class TestSavepoints extends BaseKernelTest {
         endEm(pm);
 
         pm = getPM();
-        pc = (ModRuntimeTest1) pm.find(ModRuntimeTest1.class, oid);
+        pc = pm.find(ModRuntimeTest1.class, oid);
         assertEquals("orig", pc.getStringField());
         if (before > 0)
             assertEquals("before" + (before - 1),
@@ -386,7 +385,7 @@ public class TestSavepoints extends BaseKernelTest {
 
             pm = getPM();
             startTx(pm);
-            pc = (ModRuntimeTest1) pm.find(ModRuntimeTest1.class, oid);
+            pc = pm.find(ModRuntimeTest1.class, oid);
             assertEquals(2, pc.getSelfOneMany().size());
             for (Iterator it = pc.getSelfOneMany().iterator(); it.hasNext();) {
                 temp = (ModRuntimeTest1) it.next();
@@ -434,7 +433,7 @@ public class TestSavepoints extends BaseKernelTest {
         endEm(pm);
 
         pm = getPM();
-        pc = (ModRuntimeTest1) pm.find(ModRuntimeTest1.class, oid);
+        pc = pm.find(ModRuntimeTest1.class, oid);
         assertEquals("orig", pc.getStringField());
         assertEquals(2 + before, pc.getSelfOneMany().size());
         boolean found2 = false;
@@ -466,7 +465,7 @@ public class TestSavepoints extends BaseKernelTest {
 
         pm = getPM();
         startTx(pm);
-        pc = (RuntimeTest4) pm.find(RuntimeTest4.class, oid);
+        pc = pm.find(RuntimeTest4.class, oid);
         assertEquals(12, pc.getRuntimeTest5s().size());
         int count = 0;
         for (Iterator i = pc.getRuntimeTest5s().iterator();
@@ -487,7 +486,7 @@ public class TestSavepoints extends BaseKernelTest {
         endEm(pm);
 
         pm = getPM();
-        pc = (RuntimeTest4) pm.find(RuntimeTest4.class, oid);
+        pc = pm.find(RuntimeTest4.class, oid);
         assertEquals(8, pc.getRuntimeTest5s().size());
         endEm(pm);
     }

@@ -48,8 +48,8 @@ public class TestCalendarFields extends BaseKernelTest {
         super(name);
     }
 
-    public void setUp() {
-        deleteAll(CalendarFields.class);
+    public void setUp() throws Exception {
+        super.setUp(CalendarFields.class);
     }
 
     public void testFieldDefaultTimeZone() {
@@ -67,7 +67,7 @@ public class TestCalendarFields extends BaseKernelTest {
         endEm(pm);
 
         pm = getPM();
-        cal = (CalendarFields) pm.find(CalendarFields.class, id);
+        cal = pm.find(CalendarFields.class, id);
         assertEquals(TimeZone.getTimeZone("Asia/Singapore"),
             cal.getSingapore().getTimeZone());
         endEm(pm);
@@ -90,9 +90,9 @@ public class TestCalendarFields extends BaseKernelTest {
         endEm(pm);
 
         pm = getPM();
-        c2 = (CalendarFields) pm.find(CalendarFields.class, id2);
+        c2 = pm.find(CalendarFields.class, id2);
         assertTimeZonesEquals(c1, c2);
-        assertTimeZonesEquals(c1, (CalendarFields) pm.detach(c2));
+        assertTimeZonesEquals(c1, pm.detach(c2));
         endEm(pm);
     }
 
@@ -107,7 +107,7 @@ public class TestCalendarFields extends BaseKernelTest {
         startTx(pm);
         cal.getSingapore().setTime(new Date(time));
         pm.persist(cal);
-        int id = cal.getId();
+        cal.getId();
         endTx(pm);
         endEm(pm);
 

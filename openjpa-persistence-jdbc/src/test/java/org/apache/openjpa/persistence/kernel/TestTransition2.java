@@ -46,6 +46,7 @@ public class TestTransition2 extends BaseKernelTest {
     }
 
     public void setUp() throws Exception {
+        super.setUp(ModRuntimeTest1.class, ModRuntimeTest2.class, PersistenceAware.class);
         try {
             OpenJPAEntityManager pm = getPM(false, false);
             supportsPessimistic = !pm.getOptimistic();
@@ -129,8 +130,7 @@ public class TestTransition2 extends BaseKernelTest {
         OpenJPAEntityManager pm = getPM(false, false);
         startTx(pm);
 
-        ModRuntimeTest2 b =
-            (ModRuntimeTest2) pm.find(ModRuntimeTest2.class, _id);
+        ModRuntimeTest2 b = pm.find(ModRuntimeTest2.class, _id);
         assertPersistent(b, true, false, false, false);
         assertPersistent(b.getSelfOneOne(), true, false, false, false);
 
@@ -153,8 +153,7 @@ public class TestTransition2 extends BaseKernelTest {
         OpenJPAEntityManager pm = getPM(false, false);
         startTx(pm);
 
-        ModRuntimeTest2 b =
-            (ModRuntimeTest2) pm.find(ModRuntimeTest2.class, _id);
+        ModRuntimeTest2 b = pm.find(ModRuntimeTest2.class, _id);
         assertPersistent(b, true, false, false, false);
         assertPersistent(b.getSelfOneOne(), true, false, false, false);
 
@@ -176,8 +175,7 @@ public class TestTransition2 extends BaseKernelTest {
             return;
 
         OpenJPAEntityManager pm = getPM(false, false);
-        ModRuntimeTest2 b =
-            (ModRuntimeTest2) pm.find(ModRuntimeTest2.class, _id);
+        ModRuntimeTest2 b = pm.find(ModRuntimeTest2.class, _id);
 
         assertPersistent(b, false, false, false, false);
         assertPersistent(b.getSelfOneOne(), false, false, false, false);
@@ -197,8 +195,7 @@ public class TestTransition2 extends BaseKernelTest {
         OpenJPAEntityManager pm = getPM(false, false);
         startTx(pm);
 
-        ModRuntimeTest2 b =
-            (ModRuntimeTest2) pm.find(ModRuntimeTest2.class, _id);
+        ModRuntimeTest2 b = pm.find(ModRuntimeTest2.class, _id);
         ModRuntimeTest1 parent = b.getSelfOneOne();
         pm.remove(b);
         assertPersistent(b, true, false, true, true);
@@ -223,8 +220,7 @@ public class TestTransition2 extends BaseKernelTest {
         OpenJPAEntityManager pm = getPM(false, false);
         startTx(pm);
 
-        ModRuntimeTest2 b =
-            (ModRuntimeTest2) pm.find(ModRuntimeTest2.class, _id);
+        ModRuntimeTest2 b = pm.find(ModRuntimeTest2.class, _id);
         ModRuntimeTest1 parent = b.getSelfOneOne();
         pm.remove(b);
         assertPersistent(b, true, false, true, true);
@@ -298,8 +294,7 @@ public class TestTransition2 extends BaseKernelTest {
         OpenJPAEntityManager pm = getPM(false, false);
         startTx(pm);
 
-        ModRuntimeTest2 b =
-            (ModRuntimeTest2) pm.find(ModRuntimeTest2.class, _id);
+        ModRuntimeTest2 b = pm.find(ModRuntimeTest2.class, _id);
         changeTest2(b);
 
         endTx(pm);
@@ -320,8 +315,7 @@ public class TestTransition2 extends BaseKernelTest {
         OpenJPAEntityManager pm = getPM(false, false);
         startTx(pm);
 
-        ModRuntimeTest2 b =
-            (ModRuntimeTest2) pm.find(ModRuntimeTest2.class, _id);
+        ModRuntimeTest2 b = pm.find(ModRuntimeTest2.class, _id);
         changeTest2(b);
 
         endTx(pm);
@@ -342,8 +336,7 @@ public class TestTransition2 extends BaseKernelTest {
         OpenJPAEntityManager pm = getPM(false, false);
         startTx(pm);
 
-        ModRuntimeTest2 b =
-            (ModRuntimeTest2) pm.find(ModRuntimeTest2.class, _id);
+        ModRuntimeTest2 b = pm.find(ModRuntimeTest2.class, _id);
         assertTest2Orig(b);
         changeTest2(b);
 
@@ -365,8 +358,7 @@ public class TestTransition2 extends BaseKernelTest {
         OpenJPAEntityManager pm = getPM(false, false);
         startTx(pm);
 
-        ModRuntimeTest2 b =
-            (ModRuntimeTest2) pm.find(ModRuntimeTest2.class, _id);
+        ModRuntimeTest2 b = pm.find(ModRuntimeTest2.class, _id);
         assertTest2Orig(b);
         changeTest2(b);
 
@@ -388,8 +380,7 @@ public class TestTransition2 extends BaseKernelTest {
         OpenJPAEntityManager pm = getPM(false, false);
         startTx(pm);
 
-        ModRuntimeTest2 b =
-            (ModRuntimeTest2) pm.find(ModRuntimeTest2.class, _id);
+        ModRuntimeTest2 b = pm.find(ModRuntimeTest2.class, _id);
         ModRuntimeTest1 parent = b.getSelfOneOne();
         assertNotNull("parent is null", parent);
         pm.remove(b);
@@ -417,8 +408,7 @@ public class TestTransition2 extends BaseKernelTest {
         OpenJPAEntityManager pm = getPM(false, false);
         startTx(pm);
 
-        ModRuntimeTest2 b =
-            (ModRuntimeTest2) pm.find(ModRuntimeTest2.class, _id);
+        ModRuntimeTest2 b = pm.find(ModRuntimeTest2.class, _id);
         assertTest2Orig(b);
         pm.remove(b);
 
@@ -480,8 +470,7 @@ public class TestTransition2 extends BaseKernelTest {
         OpenJPAEntityManager pm = getPM(true, false);
         startTx(pm);
 
-        ModRuntimeTest2 b =
-            (ModRuntimeTest2) pm.find(ModRuntimeTest2.class, _id);
+        ModRuntimeTest2 b = pm.find(ModRuntimeTest2.class, _id);
         assertTest2Orig(b);
         changeTest2(b);
 
@@ -500,8 +489,7 @@ public class TestTransition2 extends BaseKernelTest {
         OpenJPAEntityManager pm = getPM(true, false);
         startTx(pm);
 
-        ModRuntimeTest2 b =
-            (ModRuntimeTest2) pm.find(ModRuntimeTest2.class, _id);
+        ModRuntimeTest2 b = pm.find(ModRuntimeTest2.class, _id);
         assertTest2Orig(b);
         changeTest2(b);
 
@@ -520,8 +508,7 @@ public class TestTransition2 extends BaseKernelTest {
         OpenJPAEntityManager pm = getPM(true, false);
         startTx(pm);
 
-        ModRuntimeTest2 b =
-            (ModRuntimeTest2) pm.find(ModRuntimeTest2.class, _id);
+        ModRuntimeTest2 b = pm.find(ModRuntimeTest2.class, _id);
         ModRuntimeTest1 parent = b.getSelfOneOne();
         assertNotNull("parent is null", parent);
         pm.remove(b);
@@ -546,8 +533,7 @@ public class TestTransition2 extends BaseKernelTest {
         OpenJPAEntityManager pm = getPM(true, false);
         startTx(pm);
 
-        ModRuntimeTest2 b =
-            (ModRuntimeTest2) pm.find(ModRuntimeTest2.class, _id);
+        ModRuntimeTest2 b = pm.find(ModRuntimeTest2.class, _id);
         pm.remove(b);
 
         rollbackTx(pm);
@@ -608,8 +594,7 @@ public class TestTransition2 extends BaseKernelTest {
         OpenJPAEntityManager pm = getPM(true, true);
         startTx(pm);
 
-        ModRuntimeTest2 b =
-            (ModRuntimeTest2) pm.find(ModRuntimeTest2.class, _id);
+        ModRuntimeTest2 b = pm.find(ModRuntimeTest2.class, _id);
         assertTest2Orig(b);
         changeTest2(b);
 
@@ -628,8 +613,7 @@ public class TestTransition2 extends BaseKernelTest {
         OpenJPAEntityManager pm = getPM(true, true);
         startTx(pm);
 
-        ModRuntimeTest2 b =
-            (ModRuntimeTest2) pm.find(ModRuntimeTest2.class, _id);
+        ModRuntimeTest2 b = pm.find(ModRuntimeTest2.class, _id);
         assertTest2Orig(b);
         changeTest2(b);
 
@@ -648,8 +632,7 @@ public class TestTransition2 extends BaseKernelTest {
         OpenJPAEntityManager pm = getPM(true, true);
         startTx(pm);
 
-        ModRuntimeTest2 b =
-            (ModRuntimeTest2) pm.find(ModRuntimeTest2.class, _id);
+        ModRuntimeTest2 b = pm.find(ModRuntimeTest2.class, _id);
         ModRuntimeTest1 parent = b.getSelfOneOne();
 
         assertNotNull("parent is null", parent);
@@ -675,8 +658,7 @@ public class TestTransition2 extends BaseKernelTest {
         OpenJPAEntityManager pm = getPM(true, true);
         startTx(pm);
 
-        ModRuntimeTest2 b =
-            (ModRuntimeTest2) pm.find(ModRuntimeTest2.class, _id);
+        ModRuntimeTest2 b = pm.find(ModRuntimeTest2.class, _id);
         pm.remove(b);
 
         rollbackTx(pm);
@@ -749,8 +731,7 @@ public class TestTransition2 extends BaseKernelTest {
         OpenJPAEntityManager pm = getPM(false, true);
         startTx(pm);
 
-        ModRuntimeTest2 b =
-            (ModRuntimeTest2) pm.find(ModRuntimeTest2.class, _id);
+        ModRuntimeTest2 b = pm.find(ModRuntimeTest2.class, _id);
         assertTest2Orig(b);
         changeTest2(b);
 
@@ -772,8 +753,7 @@ public class TestTransition2 extends BaseKernelTest {
         OpenJPAEntityManager pm = getPM(false, true);
         startTx(pm);
 
-        ModRuntimeTest2 b =
-            (ModRuntimeTest2) pm.find(ModRuntimeTest2.class, _id);
+        ModRuntimeTest2 b = pm.find(ModRuntimeTest2.class, _id);
         assertTest2Orig(b);
         changeTest2(b);
 
@@ -794,8 +774,7 @@ public class TestTransition2 extends BaseKernelTest {
         OpenJPAEntityManager pm = getPM(false, true);
         startTx(pm);
 
-        ModRuntimeTest2 b = (ModRuntimeTest2) pm.find(ModRuntimeTest2.class,
-            _id);
+        ModRuntimeTest2 b = pm.find(ModRuntimeTest2.class, _id);
         ModRuntimeTest1 parent = b.getSelfOneOne();
         assertNotNull("parent is null", parent);
         pm.remove(b);
@@ -823,8 +802,7 @@ public class TestTransition2 extends BaseKernelTest {
         OpenJPAEntityManager pm = getPM(false, true);
         startTx(pm);
 
-        ModRuntimeTest2 b =
-            (ModRuntimeTest2) pm.find(ModRuntimeTest2.class, _id);
+        ModRuntimeTest2 b = pm.find(ModRuntimeTest2.class, _id);
         pm.remove(b);
 
         rollbackTx(pm);
@@ -900,7 +878,7 @@ public class TestTransition2 extends BaseKernelTest {
 
         pm = getPM(false, false);
         //FIXME jthomas
-        b = (ModRuntimeTest2) pm.find(ModRuntimeTest2.class, oid);
+        b = pm.find(ModRuntimeTest2.class, oid);
         pm.retrieve(b);
         //FIXME jthomas
         endEm(pm);
@@ -975,11 +953,10 @@ public class TestTransition2 extends BaseKernelTest {
      */
     public void assertPersistent(Object a, boolean isTrans, boolean isNew,
         boolean isDeleted, boolean isDirty) {
-        OpenJPAEntityManager pm =
-            (OpenJPAEntityManager) currentEntityManager();
+        OpenJPAEntityManager pm = currentEntityManager();
         assertTrue(pm.isPersistent(a));
 
-        PersistenceCapable xman = (PersistenceCapable) a;
+        assertTrue(a instanceof PersistenceCapable);
 
         assertEquals(isTrans, pm.isTransactional(a));
 		assertEquals(isNew, pm.isNewlyPersistent(a));

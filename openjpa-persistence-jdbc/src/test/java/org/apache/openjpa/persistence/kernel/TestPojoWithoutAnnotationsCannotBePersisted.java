@@ -20,14 +20,13 @@ package org.apache.openjpa.persistence.kernel;
 
 import javax.persistence.EntityManager;
 
-
-import org.apache.openjpa.persistence.kernel.common.apps.UnAnnotPojo;
 import org.apache.openjpa.persistence.common.utils.AbstractTestCase;
-/*
- * @author Afam Okeke
- * Ensures that pojo that is not persistent capable cannot be persisted.
- */
+import org.apache.openjpa.persistence.kernel.common.apps.UnAnnotPojo;
 
+/**
+ * Ensures that pojo that is not persistent capable cannot be persisted.
+ * @author Afam Okeke
+ */
 public class TestPojoWithoutAnnotationsCannotBePersisted
     extends AbstractTestCase {
 
@@ -37,7 +36,8 @@ public class TestPojoWithoutAnnotationsCannotBePersisted
         super(name, "kernelcactusapp");
     }
 
-    public void setUp() {
+    public void setUp() throws Exception {
+        super.setUp(new Object[] {});
         pojo = new UnAnnotPojo();
         pojo.setName("failure");
         pojo.setNum(0);

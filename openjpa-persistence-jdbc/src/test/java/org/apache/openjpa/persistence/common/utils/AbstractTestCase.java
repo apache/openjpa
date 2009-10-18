@@ -14,24 +14,6 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.
- */
-/*
- * Licensed to the Apache Software Foundation (ASF) under one
- * or more contributor license agreements.  See the NOTICE file
- * distributed with this work for additional information
- * regarding copyright ownership.  The ASF licenses this file
- * to you under the Apache License, Version 2.0 (the
- * "License"); you may not use this file except in compliance
- * with the License.  You may obtain a copy of the License at
- *
- * http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing,
- * software distributed under the License is distributed on an
- * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
- * KIND, either express or implied.  See the License for the
- * specific language governing permissions and limitations
  * under the License.    
  */
 package org.apache.openjpa.persistence.common.utils;
@@ -51,6 +33,7 @@ import java.util.ListIterator;
 import java.util.NoSuchElementException;
 import java.util.Arrays;
 import java.util.Comparator;
+import java.util.Map.Entry;
 import java.math.BigInteger;
 import java.math.BigDecimal;
 import java.lang.reflect.InvocationTargetException;
@@ -92,6 +75,7 @@ public abstract class AbstractTestCase extends PersistenceTestCase {
     private Map<Map,OpenJPAEntityManagerFactory> emfs =
         new HashMap<Map,OpenJPAEntityManagerFactory>();
     private OpenJPAEntityManager currentEntityManager;
+    private Object[] props;
 
     protected enum Platform {
         EMPRESS,
@@ -115,6 +99,18 @@ public abstract class AbstractTestCase extends PersistenceTestCase {
     public AbstractTestCase(String name, String s) {
         setName(name);
         persistenceXmlResource = computePersistenceXmlResource(s);
+    }
+
+    /**
+     * Use the given persistent types during the test.
+     * 
+     * @param props
+     *            list of persistent types used in testing and/or configuration values in the form
+     *            key,value,key,value...
+     */
+    protected void setUp(Object... props) throws Exception {
+        super.setUp();
+        this.props = props;
     }
 
     public void tearDown() throws Exception {
@@ -193,11 +189,25 @@ public abstract class AbstractTestCase extends PersistenceTestCase {
         addProperties(map);
 
         OpenJPAEntityManagerFactory emf = emfs.get(map);
-        if (emf == null) {
-            emf = OpenJPAPersistence.createEntityManagerFactory(
-                "TestConv", persistenceXmlResource, map);
-            emfs.put(map, emf);
+        if (emf != null) {
+            return emf;
         }
+
+        if (props != null) {
+            // Join properties passed in setUp (usually entities) with the given map and use them to create EMF.
+            Object[] propsAndMap = new Object[props.length + map.size() * 2];
+            System.arraycopy(props, 0, propsAndMap, 0, props.length);
+            int i = props.length;
+            for (Object o : map.entrySet()) {
+                Entry mapEntry = (Entry) o;
+                propsAndMap[i++] = mapEntry.getKey();
+                propsAndMap[i++] = mapEntry.getValue();
+            }
+            emf = createEMF(propsAndMap);
+        } else {
+            emf = OpenJPAPersistence.createEntityManagerFactory("TestConv", persistenceXmlResource, map);
+        }
+        emfs.put(map, emf);
         return emf;
     }
 

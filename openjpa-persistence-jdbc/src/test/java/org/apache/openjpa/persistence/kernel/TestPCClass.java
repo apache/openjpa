@@ -52,8 +52,8 @@ public class TestPCClass extends BaseKernelTest {
         super(test);
     }
 
-    public void setUp() {
-        deleteAll(PCClassPC.class);
+    public void setUp() throws Exception {
+        super.setUp(PCClassPC.class);
     }
 
     public void testMetaData() {
@@ -138,7 +138,7 @@ public class TestPCClass extends BaseKernelTest {
 
         pm = getPM();
 
-        pc = (PCClassPC) pm.find(PCClassPC.class, oid);
+        pc = pm.find(PCClassPC.class, oid);
 
         assertTrue(pc == pc.getSpecificPC());
         assertTrue(pc == pc.getGenericPC());

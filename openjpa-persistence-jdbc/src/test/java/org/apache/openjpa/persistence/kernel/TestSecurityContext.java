@@ -33,13 +33,14 @@ import java.security.Permission;
 
 
 import org.apache.openjpa.persistence.kernel.common.apps.RuntimeTest1;
+import org.apache.openjpa.persistence.kernel.common.apps.RuntimeTest2;
+import org.apache.openjpa.persistence.kernel.common.apps.RuntimeTest3;
 
 import org.apache.openjpa.persistence.OpenJPAEntityManager;
 
 public class TestSecurityContext extends BaseKernelTest {
 
     private SecurityManager oldManager;
-    private StrictSecurityManager ssm;
 
     /**
      * Creates a new instance of TestSecurityContext
@@ -51,7 +52,8 @@ public class TestSecurityContext extends BaseKernelTest {
         super(name);
     }
 
-    public void setUp() {
+    public void setUp() throws Exception {
+        super.setUp(RuntimeTest1.class, RuntimeTest2.class, RuntimeTest3.class);
         oldManager = System.getSecurityManager();
         // System.setSecurityManager (ssm = new StrictSecurityManager ());
     }

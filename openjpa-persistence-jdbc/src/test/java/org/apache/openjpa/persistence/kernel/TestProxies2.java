@@ -44,8 +44,8 @@ public class TestProxies2 extends BaseKernelTest {
         super(casename);
     }
 
-    public void setUp() {
-        deleteAll(ProxiesPC.class);
+    public void setUp() throws Exception {
+        super.setUp(ProxiesPC.class);
 
         OpenJPAEntityManager pm = getPM(false, false);
         startTx(pm);

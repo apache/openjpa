@@ -33,6 +33,8 @@ import java.util.Map;
 
 
 import org.apache.openjpa.persistence.kernel.common.apps.RuntimeTest1;
+import org.apache.openjpa.persistence.kernel.common.apps.RuntimeTest2;
+import org.apache.openjpa.persistence.kernel.common.apps.RuntimeTest3;
 import org.apache.openjpa.persistence.common.utils.AbstractTestCase;
 
 import org.apache.openjpa.jdbc.conf.JDBCConfiguration;
@@ -82,11 +84,11 @@ public class TestPessimisticLocking extends BaseKernelTest {
     }
 
     public void setUp() throws Exception {
-        deleteAll(RuntimeTest1.class);
+        super.setUp(RuntimeTest1.class, RuntimeTest2.class, RuntimeTest3.class);
 
         Map propsMap = new HashMap();
         propsMap.put("openjpa.LockManager", "pessimistic");
-        _factory = (OpenJPAEntityManagerFactory) getEmf(propsMap);
+        _factory = getEmf(propsMap);
 
         OpenJPAEntityManager pm = getLockingPM();
         startTx(pm);
@@ -188,7 +190,7 @@ public class TestPessimisticLocking extends BaseKernelTest {
 
         getLog().trace("verifying pessimistic locking worked...");
         OpenJPAEntityManager pm = getLockingPM();
-        RuntimeTest1 a = (RuntimeTest1) pm.find(RuntimeTest1.class, _id);
+        RuntimeTest1 a = pm.find(RuntimeTest1.class, _id);
         assertEquals(20 - _bugCount, a.getIntField1());
         getLog().trace("closing pm");
         endEm(pm);

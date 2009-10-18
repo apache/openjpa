@@ -916,7 +916,9 @@
                         
                         <!-- TestPMMemory creates heapdumps etc and there's no real asserts within the test.  -->
                         <exclude>org/apache/openjpa/persistence/kernel/TestPMMemory.java</exclude>
-                  
+
+                        <!-- TestEJBTransactionalClass tests nothing -->
+                        <exclude>org/apache/openjpa/persistence/kernel/TestEJBTransactionalClass.java</exclude>
                     </excludes>
                     <systemProperties>
                         <property>

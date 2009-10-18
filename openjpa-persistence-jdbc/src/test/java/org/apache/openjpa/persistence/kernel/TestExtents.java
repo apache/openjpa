@@ -52,8 +52,8 @@ public class TestExtents extends BaseKernelTest {
         super(name);
     }
 
-    public void setUp() {
-        deleteAll(RuntimeTest1.class);
+    public void setUp() throws Exception {
+        super.setUp(RuntimeTest1.class, RuntimeTest2.class);
 
         OpenJPAEntityManager pm = getPM();
         startTx(pm);
@@ -101,7 +101,7 @@ public class TestExtents extends BaseKernelTest {
 
     public void testExtent4() {
         OpenJPAEntityManager pm = getPM();
-        Extent ext = (Extent) pm.createExtent(RuntimeTest1.class, true);
+        Extent ext = pm.createExtent(RuntimeTest1.class, true);
 
         List all = new LinkedList();
         for (Iterator i = ext.iterator(); i.hasNext();)

@@ -30,8 +30,8 @@ public class TestEJBNullValues extends AbstractTestCase {
         super(name, "kernelcactusapp");
     }
 
-    public void setUp() {
-        deleteAll(Inner.class);
+    public void setUp() throws Exception {
+        super.setUp(Inner.class);
     }
 
     public void testException() {

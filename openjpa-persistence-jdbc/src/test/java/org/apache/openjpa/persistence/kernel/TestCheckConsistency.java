@@ -45,8 +45,8 @@ public class TestCheckConsistency extends BaseKernelTest {
         super(name);
     }
 
-    public void setUp() {
-        deleteAll(RuntimeTest1.class);
+    public void setUp() throws Exception {
+        super.setUp(RuntimeTest1.class);
 
         RuntimeTest1 pc = new RuntimeTest1();
         pc.setIntField(1);
@@ -61,7 +61,7 @@ public class TestCheckConsistency extends BaseKernelTest {
         pm.validateChanges();        // no-op outside trans
         startTx(pm);
 
-        RuntimeTest1 pc = (RuntimeTest1) pm.find(RuntimeTest1.class, _oid);
+        RuntimeTest1 pc = pm.find(RuntimeTest1.class, _oid);
         pc.setIntField1(100);
 
         RuntimeTest1 npc = new RuntimeTest1();
@@ -89,7 +89,7 @@ public class TestCheckConsistency extends BaseKernelTest {
         pm.validateChanges();        // no-op outside trans
         startTx(pm);
 
-        RuntimeTest1 pc = (RuntimeTest1) pm.find(RuntimeTest1.class, _oid);
+        RuntimeTest1 pc = pm.find(RuntimeTest1.class, _oid);
         pc.setIntField1(100);
 
         RuntimeTest1 npc = new RuntimeTest1();
@@ -112,7 +112,7 @@ public class TestCheckConsistency extends BaseKernelTest {
         pm = getPM();
         try {
             RuntimeTest1 temp =
-                (RuntimeTest1) pm.find(RuntimeTest1.class, noid);
+                pm.find(RuntimeTest1.class, noid);
             fail("Object should not exist." + temp.getIntField() + "::" +
                 temp.getIntField1());
         } catch (Exception jonfe) {
@@ -176,7 +176,7 @@ try {
         startTx(pm);
         boolean hasConn = hasConnection(pm);
 
-        RuntimeTest1 pc = (RuntimeTest1) pm.find(RuntimeTest1.class, _oid);
+        RuntimeTest1 pc = pm.find(RuntimeTest1.class, _oid);
         pc.setIntField1(100);
 
         RuntimeTest1 npc = new RuntimeTest1();
@@ -212,7 +212,7 @@ try {
         startTx(pm);
         boolean hasConn = hasConnection(pm);
 
-        RuntimeTest1 pc = (RuntimeTest1) pm.find(RuntimeTest1.class, _oid);
+        RuntimeTest1 pc = pm.find(RuntimeTest1.class, _oid);
         pc.setIntField1(100);
 
         RuntimeTest1 npc = new RuntimeTest1();
@@ -238,7 +238,7 @@ try {
         pm = getPM();
         try {
             RuntimeTest1 temp =
-                (RuntimeTest1) pm.find(RuntimeTest1.class, noid);
+                pm.find(RuntimeTest1.class, noid);
 
             fail("Object should not exist." + temp.getIntField() + "::" +
                 temp.getIntField1());

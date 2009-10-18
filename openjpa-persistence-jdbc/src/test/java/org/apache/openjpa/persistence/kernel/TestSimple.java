@@ -31,6 +31,8 @@ import java.util.List;
 
 
 import org.apache.openjpa.persistence.kernel.common.apps.RuntimeTest1;
+import org.apache.openjpa.persistence.kernel.common.apps.RuntimeTest2;
+import org.apache.openjpa.persistence.kernel.common.apps.RuntimeTest3;
 
 import org.apache.openjpa.persistence.Extent;
 import org.apache.openjpa.persistence.OpenJPAEntityManager;
@@ -45,8 +47,8 @@ public class TestSimple extends BaseKernelTest {
         super(name);
     }
 
-    public void setUp() {
-        deleteAll(RuntimeTest1.class);
+    public void setUp() throws Exception {
+        super.setUp(RuntimeTest1.class, RuntimeTest2.class, RuntimeTest3.class);
     }
 
     public void testSimple() {
@@ -117,7 +119,7 @@ public class TestSimple extends BaseKernelTest {
             String delete =
                 "DELETE FROM RuntimeTest1 r WHERE r.stringField = \'testSimple2\'";
             OpenJPAQuery deleteQuery = pm.createQuery(delete);
-            int deleted = deleteQuery.executeUpdate();
+            deleteQuery.executeUpdate();
             endTx(pm);
             endEm(pm);
 

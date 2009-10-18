@@ -60,7 +60,7 @@ public class TestDateQueries extends BaseKernelTest {
 
     public void setUp()
         throws Exception {
-        super.setUp();
+        super.setUp(AllFieldTypesTest.class);
 
         SimpleDateFormat sdf = new SimpleDateFormat("MMMMM dd, yyyy",
             Locale.US);
@@ -68,9 +68,6 @@ public class TestDateQueries extends BaseKernelTest {
         _before = sdf.parse("April 25, 1978");
         _after = sdf.parse("April 27, 1978");
         _pm = getPM();
-
-        // delete all existing instances
-        deleteAll(AllFieldTypesTest.class);
 
         // create some instances to query on
         startTx(_pm);

@@ -23,19 +23,18 @@ import javax.persistence.EntityManager;
 
 import org.apache.openjpa.persistence.kernel.common.apps.AImplB;
 import org.apache.openjpa.persistence.kernel.common.apps.RuntimeTest1;
+import org.apache.openjpa.persistence.kernel.common.apps.RuntimeTest2;
+import org.apache.openjpa.persistence.kernel.common.apps.RuntimeTest3;
 import org.apache.openjpa.persistence.common.utils.AbstractTestCase;
 
 public class TestEJBGetObjectByIdValue extends AbstractTestCase {
-
-    private Object[] oids;
 
     public TestEJBGetObjectByIdValue(String name) {
         super(name, "kernelcactusapp");
     }
 
     public void setUp() throws Exception {
-        deleteAll(RuntimeTest1.class);
-        deleteAll(AImplB.class);
+        super.setUp(RuntimeTest1.class, RuntimeTest2.class, RuntimeTest3.class, AImplB.class);
 
         EntityManager em = currentEntityManager();
         startTx(em);
@@ -56,12 +55,12 @@ public class TestEJBGetObjectByIdValue extends AbstractTestCase {
         endEm(em);
 
         em = currentEntityManager();
-        pc = (RuntimeTest1) em.find(RuntimeTest1.class, 1);
+        pc = em.find(RuntimeTest1.class, 1);
         assertEquals("foo", pc.getStringField());
         em.close();
 
         em = currentEntityManager();
-        pc = (RuntimeTest1) em.find(RuntimeTest1.class, pc.getIntField());
+        pc = em.find(RuntimeTest1.class, pc.getIntField());
         assertEquals("foo", pc.getStringField());
         endEm(em);
     }
@@ -78,12 +77,12 @@ public class TestEJBGetObjectByIdValue extends AbstractTestCase {
         endEm(em);
 
         em = currentEntityManager();
-        pc = (AImplB) em.find(AImplB.class, oid);
+        pc = em.find(AImplB.class, oid);
         assertEquals("foo", pc.getName());
         endEm(em);
 
         em = currentEntityManager();
-        pc = (AImplB) em.find(AImplB.class, oid.toString());
+        pc = em.find(AImplB.class, oid.toString());
         assertEquals("foo", pc.getName());
         endEm(em);
     }

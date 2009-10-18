@@ -32,8 +32,8 @@ public class TestEJBQueryInterface extends BaseQueryTest {
         super(name);
     }
 
-    public void setUp() {
-        deleteAll(Entity1.class);
+    public void setUp() throws Exception {
+        super.setUp(Entity1.class, Entity2.class);
 
         int instNum = 10;
 

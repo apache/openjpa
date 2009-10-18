@@ -30,6 +30,8 @@ package org.apache.openjpa.persistence.kernel;
 
 
 import org.apache.openjpa.persistence.kernel.common.apps.RuntimeTest1;
+import org.apache.openjpa.persistence.kernel.common.apps.RuntimeTest2;
+import org.apache.openjpa.persistence.kernel.common.apps.RuntimeTest3;
 
 import org.apache.openjpa.kernel.OpenJPAStateManager;
 import org.apache.openjpa.meta.FieldMetaData;
@@ -49,8 +51,8 @@ public class TestFieldState extends BaseKernelTest {
         super(name);
     }
 
-    public void setUp() {
-        deleteAll(RuntimeTest1.class);
+    public void setUp() throws Exception {
+        super.setUp(RuntimeTest1.class, RuntimeTest2.class, RuntimeTest3.class);
 
         OpenJPAEntityManager pm = getPM();
         startTx(pm);
@@ -69,7 +71,7 @@ public class TestFieldState extends BaseKernelTest {
         OpenJPAEntityManager pm = getPM();
         startTx(pm);
 
-        RuntimeTest1 a = (RuntimeTest1) pm.find(RuntimeTest1.class, oid);
+        RuntimeTest1 a = pm.find(RuntimeTest1.class, oid);
         a.setStringField(a.getStringField());
         OpenJPAStateManager sm = getStateManager(a, pm);
         FieldMetaData fmd = sm.getMetaData().getField("stringField");

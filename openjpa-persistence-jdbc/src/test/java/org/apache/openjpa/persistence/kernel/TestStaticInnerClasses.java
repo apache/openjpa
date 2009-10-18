@@ -50,6 +50,7 @@ public class TestStaticInnerClasses extends BaseKernelTest {
 
     public void setUp()
         throws Exception {
+        super.setUp(Inner.class);
         Inner inner = new Inner("foo");
         inner.addTwin();
         OpenJPAEntityManager pm = getPM();
@@ -62,7 +63,7 @@ public class TestStaticInnerClasses extends BaseKernelTest {
 
     public void testGetById() {
         OpenJPAEntityManager pm = getPM();
-        Inner inner = (Inner) pm.find(Inner.class, _oid);
+        Inner inner = pm.find(Inner.class, _oid);
         assertNotNull(inner);
         assertEquals("foo", inner.getString());
         endEm(pm);
@@ -122,6 +123,7 @@ public class TestStaticInnerClasses extends BaseKernelTest {
     @Table(name="StaticInner")
     public static class Inner {
 
+        @SuppressWarnings("unused")
         private int num = 0;
         private String string = null;
         private List twins = new LinkedList();
