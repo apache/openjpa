@@ -260,7 +260,7 @@
                     </archive>
                 </configuration>
             </plugin>
-<!--
+
             <plugin>
                 <groupId>org.apache.servicemix.tooling</groupId>
                 <artifactId>depends-maven-plugin</artifactId>
@@ -274,7 +274,7 @@
                     </execution>
                 </executions>
             </plugin>
--->
+
             <plugin>
                 <groupId>org.apache.felix</groupId>
                 <artifactId>maven-bundle-plugin</artifactId>
@@ -284,13 +284,13 @@
                         <Bundle-Name>${artifactId}</Bundle-Name>
                         <Bundle-SymbolicName>${groupId}.${artifactId};singleton=true</Bundle-SymbolicName>
                         <Bundle-DocURL>http://openjpa.apache.org/documentation.html</Bundle-DocURL>
-                        <!-- OSGi Bundle Metadata -->
-                        <Private-Package>hellojpa*,META-INF*</Private-Package>
-                        <Export-Package></Export-Package>
                         <Bundle-Activator>hellojpa.Main</Bundle-Activator>
+                        <!-- <Private-Package>hellojpa*,META-INF*</Private-Package> -->
+                        <Import-Package>org.apache.openjpa.*,*</Import-Package>
+                        <!-- <Export-Package></Export-Package> -->
+                        <Require-Bundle>org.apache.openjpa.openjpa;bundle-version="[1.3.0,3.0.0)"</Require-Bundle>
                         <!-- Eclipse metadata -->
                         <Eclipse-Autostart>false</Eclipse-Autostart>
-                        <Bundle-ClassPath>.</Bundle-ClassPath>
                     </instructions>
                     <unpackBundle>true</unpackBundle>
                 </configuration>
