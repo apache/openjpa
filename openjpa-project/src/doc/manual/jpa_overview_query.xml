@@ -3865,13 +3865,26 @@ If an entity class name is specified in the <literal>SELECT NEW</literal>
 clause, the resulting entity instances are in the new state.
                 </para>
                 <para>
-If a single_valued_path_expression or identification_variable that is an argument to the constructor
-references an entity, the resulting entity instance will be in the managed state.
+If a <literal>single_valued_path_expression</literal> or 
+<literal>identification_variable</literal> that is an argument to the constructor
+references an entity, the resulting entity instance referenced by that 
+<literal>single_valued_path_expression</literal> or 
+<literal>identification_variable</literal> 
+will be in the managed state.
                 </para>
                 <para>
+If <literal>PublisherInfo</literal> is an entity class, the following 2 queries return
+ instances of <literal>PublisherInfo</literal> that will be in the new state.
+In the second example, <literal>mag</literal> is an <literal>identification_variable</literal> 
+passed as an argument to the constructor <literal>PublisherInfo(Magazine mag)</literal>;
+the entity instances of <literal>Magazine</literal> created during query evaluation
+will be in the managed state.
 Example:
                 </para> 
 <programlisting>SELECT NEW com.company.PublisherInfo(pub.id, pub.revenue, mag.price)
+    FROM Publisher pub JOIN pub.magazines mag WHERE mag.price &gt; 5.00
+</programlisting>
+<programlisting>SELECT NEW com.company.PublisherInfo(mag)
     FROM Publisher pub JOIN pub.magazines mag WHERE mag.price &gt; 5.00
 </programlisting>
             </section>

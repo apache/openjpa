@@ -176,7 +176,7 @@ as follows:
             </example>
             <para>
 The distribution policy is configured by a full-qualified class name that implements 
-<literal>org.apache.openjpa.datacahe.CacheDistributionPolicy</lietral>. The partitions
+<literal>org.apache.openjpa.datacahe.CacheDistributionPolicy</literal>. The partitions
 are specified as value of <literal>partitions</literal> attribute as a series of
 individually configurable plug-in strings. As the example shows, i) each partition plug-in configuration
 must be enclosed in parentheses, ii) must be separated by comma and iii) the complete
