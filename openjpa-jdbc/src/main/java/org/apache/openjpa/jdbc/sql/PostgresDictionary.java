@@ -69,11 +69,15 @@ public class PostgresDictionary
 
     static {
         try {
-            postgresConnectionImpl = ConcreteClassGenerator.getConcreteConstructor(PostgresConnection.class,
-                    Connection.class, PostgresDictionary.class);
+            postgresConnectionImpl = ConcreteClassGenerator.getConcreteConstructor(
+                    PostgresConnection.class,
+                    Connection.class, 
+                    PostgresDictionary.class);
             postgresPreparedStatementImpl = ConcreteClassGenerator.getConcreteConstructor(
                     PostgresPreparedStatement.class,
-                    PreparedStatement.class, Connection.class, PostgresDictionary.class);
+                    PreparedStatement.class, 
+                    Connection.class, 
+                    PostgresDictionary.class);
         } catch (Exception e) {
             throw new ExceptionInInitializerError(e);
         }
@@ -696,10 +700,9 @@ public class PostgresDictionary
             throws SQLException {
             return ConcreteClassGenerator.
                 newInstance(postgresPreparedStatementImpl,
-                    PreparedStatement.class,
-                        super.prepareStatement(sql, rsType, rsConcur, false),
-                    Connection.class, PostgresConnection.this,
-                    PostgresDictionary.class, _dict);
+                    super.prepareStatement(sql, rsType, rsConcur, false),
+                    PostgresConnection.this,
+                    _dict);
         }
     }
 
