@@ -27,6 +27,7 @@ package org.apache.openjpa.kernel;
  *
  * @author Steve Kim
  */
+@SuppressWarnings("serial")
 class TLoadedState
     extends PCState {
 
@@ -36,5 +37,9 @@ class TLoadedState
 
     PCState release(StateManagerImpl context) {
         return TRANSIENT;
+    }
+    
+    public String toString() {
+        return "Transient-Loaded";
     }
 }
