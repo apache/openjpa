@@ -25,9 +25,13 @@ import org.apache.openjpa.lib.conf.ObjectValue;
 /**
  * Manages the system's data and query caches. You can
  * retrieve the data cache manager from the {@link OpenJPAConfiguration}.
+ * <br>
+ * Decides eligibility to cache for managed types.
+ * 
  *
  * @author Abe White
  * @author Patrick Linskey
+ * @author Pinaki Poddar
  */
 public interface DataCacheManager {
 
@@ -79,15 +83,33 @@ public interface DataCacheManager {
      *  
      * @param sm the managed proxy instance
      * @return the cache that will store the state of the given managed instance.
+     * 
      * @since 2.0.0
      */
-    public DataCache selectCache(OpenJPAStateManager sm);
+    public DataCache selectCache(final OpenJPAStateManager sm);
     
     /**
-     * Return the policy that suggests the cache where a managed entity state is stored.  
+     * Return the user-specific policy that <em>suggests</em> the cache where a managed entity state is stored.  
+     * 
      * @since 2.0.0
      */
     public CacheDistributionPolicy getDistributionPolicy();
+    
+    /**
+     * Set the types that are explicitly excluded from being cached.
+     * 
+     * @param typeNames semicolon separated fully qualified class names.
+     * @since 2.0.0
+     */
+    public void setExcludedTypes(String typeNames);
+    
+    /**
+     * Set the types that are explicitly included to be cached.
+     * 
+     * @param typeNames semicolon separated fully qualified class names.
+     * @since 2.0.0
+     */
+    public void setIncludedTypes(String typeNames);
 
     /**
      * Close all caches.

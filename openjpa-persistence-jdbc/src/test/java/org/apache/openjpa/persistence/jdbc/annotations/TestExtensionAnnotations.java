@@ -21,6 +21,7 @@ package org.apache.openjpa.persistence.jdbc.annotations;
 import org.apache.openjpa.jdbc.conf.JDBCConfiguration;
 import org.apache.openjpa.jdbc.meta.ClassMapping;
 import org.apache.openjpa.jdbc.meta.FieldMapping;
+import org.apache.openjpa.meta.ClassMetaData;
 import org.apache.openjpa.meta.FetchGroup;
 import org.apache.openjpa.meta.JavaTypes;
 import org.apache.openjpa.meta.UpdateStrategies;
@@ -51,8 +52,13 @@ public class TestExtensionAnnotations
         assertEquals("system", _mapping.getIdentitySequenceName());
     }
 
+    /**
+     * {@linkplain ClassMetaData#getDataCacheName()} now returns non-null name even for types that 
+     * have data cache disabled.
+     * To test whether a type is disabled for caching, use {@linkplain ClassMetaData#getCacheEnabled()}. 
+     */
     public void testDataCache() {
-        assertNull(_mapping.getDataCacheName());
+        assertFalse(_mapping.getCacheEnabled());
     }
 
     public void testFetchGroups() {

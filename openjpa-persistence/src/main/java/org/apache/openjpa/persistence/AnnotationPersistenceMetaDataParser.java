@@ -820,20 +820,10 @@ public class AnnotationPersistenceMetaDataParser
         if (cache.timeout() != Integer.MIN_VALUE) {
             meta.setDataCacheTimeout(cache.timeout());
         }
-        if (!StringUtils.isEmpty(cache.name())) {
-            meta.setDataCacheName(cache.name());
-            if(cache.enabled()) {
-                meta.setCacheEnabled(true);
-            }
-        }
-        else if (cache.enabled()) {
-            meta.setDataCacheName(org.apache.openjpa.datacache.DataCache.NAME_DEFAULT);
-            meta.setCacheEnabled(true); 
-        } else {
-            meta.setDataCacheName(null);
-            meta.setCacheEnabled(false);
-        }
-        meta.setIsCacheable(cache.enabled(), true);
+        String cacheName = cache.name();
+        if (!StringUtils.isEmpty(cacheName))
+            meta.setDataCacheName(cacheName);
+        meta.setCacheEnabled(cache.enabled(), false);
     }
 
     private void parseManagedInterface(ClassMetaData meta,
@@ -1235,7 +1225,7 @@ public class AnnotationPersistenceMetaDataParser
      * Parse @Cache.
      */
     private void parseCache(ClassMetaData meta, Cacheable cacheable) {
-        meta.setCacheEnabled(cacheable.value());
+        meta.setCacheEnabled(cacheable.value(), false);
     }
 
     /**

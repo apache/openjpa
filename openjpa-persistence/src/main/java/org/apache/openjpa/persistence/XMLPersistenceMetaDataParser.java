@@ -104,8 +104,7 @@ public class XMLPersistenceMetaDataParser
     protected static final String ELEM_CASCADE_DET = "cascade-detach";
     protected static final String ELEM_PU_META = "persistence-unit-metadata";
     protected static final String ELEM_PU_DEF = "persistence-unit-defaults";
-    protected static final String ELEM_XML_MAP_META_COMPLETE =
-        "xml-mapping-metadata-complete";
+    protected static final String ELEM_XML_MAP_META_COMPLETE = "xml-mapping-metadata-complete";
     protected static final String ELEM_DELIM_IDS = "delimited-identifiers";
 
     private static final Map<String, Object> _elems =
@@ -907,8 +906,8 @@ public class XMLPersistenceMetaDataParser
             }
         }
         
-        if(attrs.getValue("cacheable") != null) { 
-            meta.setCacheEnabled(Boolean.valueOf(attrs.getValue("cacheable")));
+        if (attrs.getValue("cacheable") != null) { 
+            meta.setCacheEnabled(Boolean.valueOf(attrs.getValue("cacheable")), true);
         }
         
         if (isMappingMode())

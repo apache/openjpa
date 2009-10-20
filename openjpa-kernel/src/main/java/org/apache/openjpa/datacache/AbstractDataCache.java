@@ -74,9 +74,6 @@ public abstract class AbstractDataCache extends AbstractConcurrentEventManager
     private String _name = null;
     private boolean _closed = false;
     private String _schedule = null;
-    
-    protected Set<String> _includedTypes;
-    protected Set<String> _excludedTypes;
 
     public String getName() {
         return _name;
@@ -437,6 +434,26 @@ public abstract class AbstractDataCache extends AbstractConcurrentEventManager
      */
     protected abstract boolean unpinInternal(Object oid);
     
+    /**
+     * 
+     */
+    public DataCache getPartition(String name, boolean create) {
+        if (StringUtils.equals(_name, name))
+            return this;
+        return null;
+    }
+
+    /**
+     * 
+     */
+    public Set<String> getPartitionNames() {
+        return Collections.emptySet();
+    }
+    
+    public boolean isPartitioned() {
+        return false;
+    }
+
     public CacheStatistics getStatistics() {
     	return stats;
     }
@@ -469,66 +486,4 @@ public abstract class AbstractDataCache extends AbstractConcurrentEventManager
 		}
 	}
     
-    public Set<String> getTypes() {
-        return _includedTypes;
-    }
-    
-    public Set<String> getExcludedTypes() {
-        return _excludedTypes;
-    }
-    
-    public boolean isExcludedType(String type) {
-        if (_excludedTypes != null) {
-            if (_excludedTypes.contains(type)) {
-                return true;
-            }
-        }
-        if (_includedTypes != null) {
-             if (!_includedTypes.contains(type)) {
-                 return true;
-             }
-        }
-        return false;
-    }
-
-    public void setTypes(Set<String> types) {
-        _includedTypes = types;
-    }
-
-    public void setTypes(String types) {
-        _includedTypes =
-            StringUtils.isEmpty(types) ? null : new HashSet<String>(Arrays
-                .asList(Strings.split(types, ";", 0)));
-    }
-
-    public void setExcludedTypes(Set<String> types) {
-        _excludedTypes = types;
-    }
-
-    public void setExcludedTypes(String types) {
-        _excludedTypes =
-            StringUtils.isEmpty(types) ? null : new HashSet<String>(Arrays
-                .asList(Strings.split(types, ";", 0)));
-    }
-    
-    /**
-     * 
-     */
-    public DataCache getPartition(String name, boolean create) {
-        if (StringUtils.equals(_name, name))
-            return this;
-        return null;
-    }
-
-    /**
-     * 
-     */
-    public Set<String> getPartitionNames() {
-        return Collections.emptySet();
-    }
-    
-    public boolean isPartitioned() {
-        return false;
-    }
-
 }

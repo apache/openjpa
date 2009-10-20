@@ -106,7 +106,7 @@ public class TestCacheExclusions extends AbstractCachedEMFTestCase {
         getEntityManagerFactoryCacheSettings(new Class[] { Item.class }, null);
         populate();
         StoreCache cache = emf.getStoreCache();
-        assertCacheContents(cache, false, false, true);
+        assertCacheContents(cache, true, true, true);
     }
 
     public void testCacheItemsAndPurchases() {
@@ -114,7 +114,7 @@ public class TestCacheExclusions extends AbstractCachedEMFTestCase {
             Purchase.class }, null);
         populate();
         StoreCache cache = emf.getStoreCache();
-        assertCacheContents(cache, true, false, true);
+        assertCacheContents(cache, true, true, true);
     }
 
     public void testCacheItemsAndOrders() {
@@ -122,7 +122,7 @@ public class TestCacheExclusions extends AbstractCachedEMFTestCase {
             Order.class }, null);
         populate();
         StoreCache cache = emf.getStoreCache();
-        assertCacheContents(cache, false, true, true);
+        assertCacheContents(cache, true, true, true);
     }
 
     public void testCachePurchasesAndOrders() {
@@ -130,7 +130,7 @@ public class TestCacheExclusions extends AbstractCachedEMFTestCase {
             Order.class }, null);
         populate();
         StoreCache cache = emf.getStoreCache();
-        assertCacheContents(cache, true, true, false);
+        assertCacheContents(cache, true, true, true);
     }
 
     public void testExcludePurchases() {
@@ -168,14 +168,14 @@ public class TestCacheExclusions extends AbstractCachedEMFTestCase {
             Item.class }, new Class[] { Purchase.class });
         populate();
         StoreCache cache = emf.getStoreCache();
-        assertCacheContents(cache, false, false, true);
+        assertCacheContents(cache, false, true, true);
     }
 
     public OpenJPAEntityManagerFactorySPI getEntityManagerFactoryCacheSettings(
         Class<?>[] includedTypes, Class<?>[] excludedTypes) {
         StringBuilder includes = new StringBuilder();
         if (includedTypes != null && includedTypes.length > 0) {
-            includes.append("Types=");
+            includes.append("IncludedTypes=");
             for (Class<?> c : includedTypes) {
                 includes.append(c.getName());
                 includes.append(_tSep);
@@ -192,7 +192,7 @@ public class TestCacheExclusions extends AbstractCachedEMFTestCase {
             excludes.setLength(excludes.length() - 1); // remove last semicolon
         }
         StringBuilder dataCacheSettings = new StringBuilder();
-        dataCacheSettings.append("true");
+        dataCacheSettings.append("default");
         if (includes.length() > 0 || excludes.length() > 0) {
             dataCacheSettings.append("(");
             dataCacheSettings.append(includes);
@@ -203,7 +203,8 @@ public class TestCacheExclusions extends AbstractCachedEMFTestCase {
             dataCacheSettings.append(")");
         }
         Map<String, String> props = new HashMap<String, String>();
-        props.put("openjpa.DataCache", dataCacheSettings.toString());
+        props.put("openjpa.DataCacheManager", dataCacheSettings.toString());
+        props.put("openjpa.DataCache", "true");
         props.put("openjpa.RemoteCommitProvider", "sjvm");
         props.put("openjpa.MetaDataFactory", "jpa(Types="
             + Item.class.getName() + _tSep + Purchase.class.getName() + _tSep

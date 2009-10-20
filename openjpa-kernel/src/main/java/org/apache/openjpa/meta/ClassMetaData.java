@@ -214,7 +214,6 @@ public class ClassMetaData
     private boolean _abstract = false;
     private Boolean _hasAbstractPKField = null;
     private Boolean _hasPKFieldsFromAbstractClass = null;
-    private Boolean _isCacheable = null;
     
     /**
      * Constructor. Supply described type and repository.
@@ -1412,11 +1411,12 @@ public class ClassMetaData
     }
 
     /**
-     * The name of the datacache to use for this class. If this class is not
-     * eligible for caching based its annotation or the cache configuration
-     * null will be returned.
+     * The name of the data cache that stores the managed instance of this class, by default.
+     * This can be overwritten by per-instance basis {@linkplain CacheDistributionPolicy cache distribution policy}. 
      * 
-     * @return The cache name, or null if this type should not be cached.
+     * @return If this class is disabled from cache or no name has been set then returns 
+     * {@linkplain DataCache#NAME_DEFAULT default} data cache name. 
+     * 
      */
     public String getDataCacheName() {
         if (DEFAULT_STRING.equals(_cacheName)) {
@@ -1425,15 +1425,15 @@ public class ClassMetaData
             } else {
                 _cacheName = DataCache.NAME_DEFAULT;
             }
-            if (!isCacheable(_cacheName)) {
-                _cacheName = null;
-            }
         }
         return _cacheName;
     }
 
     /**
-     * Set the cache name for this class. Set to null to disable caching.
+     * Set the cache name for this class. 
+     * 
+     * @param can not be null. To disable cache use {@linkplain ClassMetaData#setCacheEnabled(boolean, boolean)} 
+     * instead. 
      */
     public void setDataCacheName(String name) {
         _cacheName = name;
@@ -2429,6 +2429,7 @@ public class ClassMetaData
             _cacheName = meta.getDataCacheName();
         if (_cacheTimeout == Integer.MIN_VALUE)
             _cacheTimeout = meta.getDataCacheTimeout();
+        _cacheEnabled = meta.getCacheEnabled();
         if (_detachable == null)
             _detachable = meta._detachable;
         if (DEFAULT_STRING.equals(_detachState))
@@ -2589,137 +2590,6 @@ public class ClassMetaData
     }
 
     /**
-     * Determine whether this Type should be included in the DataCache (if one
-     * is provided) based on the DataCache's configuration.
-     * 
-     * @return true if the DataCache will accept this type, otherwise false.
-     */
-    private boolean isConfiguredForCaching() {
-        if (_isCacheable != null) {
-            return _isCacheable.booleanValue();
-        }
-
-        setIsCacheable(true, false);
-        return _isCacheable.booleanValue();
-    }
-
-    /**
-     * <p>
-     * Set whether or not the class represented by this ClassMetaData object should be included in the datacache. The
-     * arguments provided are *hints* as to whether the class should be included in the datacache, and can be overridden
-     * by the configuration set in openjpa.Datacache.
-     * </p>
-     * 
-     * <p>
-     * Rules for this determination are:
-     * </p>
-     * <ol>
-     * <li>If the class shows up in the list of excluded types, it does not get cached, period.</li>
-     * <li>If the class does not show up in the excluded types, but the included types field is set (ie, has at least
-     * one class), then:
-     * <ol>
-     * <li>If the class is listed in the include list, then it gets cached</li>
-     * <li>If the class is set as cacheable by the @Datacache annotation, it gets cached</li>
-     * <li>If neither a or b are true, then the class does not get cached</li>
-     * </ol>
-     * </li>
-     * <li>If neither the include or exclude lists are defined, then go along with the value passed into the argument,
-     * which is either the default value (true) or whatever was set with the @Datacache annotation</li>
-     * </ol>
-     * 
-     * @param isCacheable
-     *            Hint whether this class should be included in the datacache. Default behavior is yes, though the 
-     *            @Datacache annotation can specify if it should not be cached.
-     * @param annotationOverride
-     *            Whether this hint originated from the @Datacache annotation or whether this is the default "yes" hint.
-     *            The origination of the hint influences the decision making process in rule #2b.
-     */
-    public void setIsCacheable(boolean isCacheable, boolean annotationOverride) {
-        Options dataCacheOptions = getDataCacheOptions();
-        Set excludedTypes = extractDataCacheClassListing(dataCacheOptions.getProperty("ExcludedTypes", null));
-        Set types = extractDataCacheClassListing(dataCacheOptions.getProperty("Types", null));
-
-        String className = getDescribedType().getName();
-        if (excludedTypes != null && excludedTypes.contains(className)) {
-            // Rule #1
-            _isCacheable = Boolean.FALSE;
-        } else if (types != null) {
-            // Rule #2
-            if ((annotationOverride && isCacheable) || (types.contains(className))) {
-                _isCacheable = Boolean.TRUE;
-            } else {
-                _isCacheable = Boolean.FALSE;
-            }
-        } else {
-            // Rule #3
-            _isCacheable = isCacheable ? Boolean.TRUE : Boolean.FALSE;
-        }
-    }
-
-    /**
-     * Extract all of the DataCache plugin options from the configuration
-     */
-    private Options getDataCacheOptions() {
-        String dataCacheConfig = getRepository().getConfiguration().getDataCache();
-        Options dataCacheOptions = Configurations.parseProperties(Configurations.getProperties(dataCacheConfig));
-        return dataCacheOptions;
-    }
-
-    /**
-     * Tool to extract classes defined in the datacache include and exclude list into individual entries in a Set.
-     */
-    private final Set extractDataCacheClassListing(String classList) {
-        if (classList == null || classList.length() == 0)
-            return null;
-
-        HashSet returnSet = new HashSet();
-        String[] entries = classList.split(";");
-        for (int index = 0; index < entries.length; index++) {
-            returnSet.add(entries[index]);
-        }
-
-        return returnSet;
-    }
-
-    private boolean isCacheable(String candidateCacheName) { 
-        boolean rval;
-        switch(DataCacheMode.valueOf(_repos.getConfiguration().getDataCacheMode())) {
-          case ALL:
-              // include everything, regardless of annotation or xml configuration
-              rval = true;
-              break;
-          case NONE:
-              // excluded everything, regardless of annotation of xml configuration
-              rval = false;
-              break;
-          case ENABLE_SELECTIVE:
-              // cache only those entities which were specifically enabled
-              if(getCacheEnabled() == null) { 
-                  rval = false; 
-              }
-              else { 
-                  rval = getCacheEnabled();
-              }
-              break;
-          case DISABLE_SELECTIVE:
-              // exclude *only* the entities which are explicitly excluded. 
-              if(getCacheEnabled() == null) { 
-                  rval = true; 
-              }
-              else { 
-                  rval = getCacheEnabled();
-              }
-              break;
-          case UNSPECIFIED:
-          default:
-              // behavior from previous releases. 
-              rval = isConfiguredForCaching(); 
-      }
-      return rval;
-        
-    }
-    
-    /**
      * Convenience method to determine if the pcType modeled by
      * this ClassMetaData object is both abstract and declares PKFields. This
      * method is used by the PCEnhancer to determine if special handling is
@@ -2792,10 +2662,24 @@ public class ClassMetaData
         return _hasPKFieldsFromAbstractClass.booleanValue();
     }
     
-    public void setCacheEnabled(Boolean enabled) { 
+    /**
+     * Sets the eligibility status of this class for cache.
+     * To set enable from true to false, overwrite flag must be true.
+     */
+    public void setCacheEnabled(boolean enabled, boolean overwrite) { 
+        if (Boolean.TRUE.equals(_cacheEnabled) && enabled == false && !overwrite) {
+            getRepository().getConfiguration().getConfigurationLog().warn(_loc.get("cache-enable-overwrite"));
+            return;
+        }
         _cacheEnabled = enabled;
     }
     
+    /**
+     * Returns tri-state status on whether this class has been enabled for caching.
+     * 
+     * @return TRUE or FALSE denote the class has been explicitly enabled or disabled for caching.
+     * null denotes that no status for caching has been set. 
+     */
     public Boolean getCacheEnabled() { 
         return _cacheEnabled;
     }
