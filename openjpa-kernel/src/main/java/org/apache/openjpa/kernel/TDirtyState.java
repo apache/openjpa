@@ -25,6 +25,7 @@ package org.apache.openjpa.kernel;
  *
  * @author Abe White
  */
+@SuppressWarnings("serial")
 class TDirtyState
     extends PCState {
 
@@ -69,6 +70,10 @@ class TDirtyState
 
     boolean isDirty() {
         return true;
+    }
+    
+    public String toString() {
+        return "Transient-Dirty";
     }
 }
 

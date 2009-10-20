@@ -25,6 +25,7 @@ package org.apache.openjpa.kernel;
  *
  * @author Patrick Linskey
  */
+@SuppressWarnings("serial")
 class PNewFlushedDeletedState
     extends PCState {
 
@@ -90,5 +91,9 @@ class PNewFlushedDeletedState
 
     boolean isDirty() {
         return true;
+    }
+    
+    public String toString() {
+        return "Persistent-New-Flushed-Deleted";
     }
 }

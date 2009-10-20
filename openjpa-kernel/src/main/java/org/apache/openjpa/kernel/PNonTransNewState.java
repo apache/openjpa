@@ -24,6 +24,7 @@ package org.apache.openjpa.kernel;
  *
  * @author Steve Kim
  */
+@SuppressWarnings("serial")
 class PNonTransNewState
     extends PCState {
 
@@ -58,6 +59,10 @@ class PNonTransNewState
 
     boolean isPendingTransactional() {
         return true;
+    }
+    
+    public String toString() {
+        return "Persistent-Notransactional-New";
     }
 }
 

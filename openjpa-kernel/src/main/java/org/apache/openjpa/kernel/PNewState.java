@@ -25,6 +25,7 @@ package org.apache.openjpa.kernel;
  *
  * @author Abe White
  */
+@SuppressWarnings("serial")
 class PNewState
     extends PCState {
 
@@ -89,5 +90,9 @@ class PNewState
 
     boolean isDirty() {
         return true;
+    }
+    
+    public String toString() {
+        return "Persistent-New";
     }
 }

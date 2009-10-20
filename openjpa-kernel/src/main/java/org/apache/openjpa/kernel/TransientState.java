@@ -26,6 +26,7 @@ package org.apache.openjpa.kernel;
  *
  * @author Abe White
  */
+@SuppressWarnings("serial")
 class TransientState
     extends PCState {
 
@@ -35,5 +36,9 @@ class TransientState
         context.getPersistenceCapable().pcReplaceStateManager(null);
         context.getBroker().setStateManager(context.getId(),
             context, BrokerImpl.STATUS_TRANSIENT);
+    }
+    
+    public String toString() {
+        return "Transient";
     }
 }

@@ -25,6 +25,7 @@ package org.apache.openjpa.kernel;
  *
  * @author Abe White
  */
+@SuppressWarnings("serial")
 class ECopyState
     extends PCState {
 
@@ -79,5 +80,9 @@ class ECopyState
 
     boolean isDirty() {
         return true;
+    }
+    
+    public String toString() {
+        return "Embedded-Copy";
     }
 }

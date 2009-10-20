@@ -25,6 +25,7 @@ package org.apache.openjpa.kernel;
  *
  * @author Abe White
  */
+@SuppressWarnings("serial")
 class EDirtyState
     extends PCState {
 
@@ -85,6 +86,10 @@ class EDirtyState
 
     boolean isDirty() {
         return true;
+    }
+    
+    public String toString() {
+        return "Embedded-Dirty";
     }
 }
 

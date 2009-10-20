@@ -25,6 +25,7 @@ package org.apache.openjpa.kernel;
  *
  * @author Abe White
  */
+@SuppressWarnings("serial")
 class PNewDeletedState
     extends PCState {
 
@@ -87,6 +88,10 @@ class PNewDeletedState
 
     boolean isDirty() {
         return true;
+    }
+    
+    public String toString() {
+        return "Persistent-New-Deleted";
     }
 }
 

@@ -28,6 +28,7 @@ package org.apache.openjpa.kernel;
  *
  * @author Abe White
  */
+@SuppressWarnings("serial")
 class HollowState
     extends PCState {
 
@@ -78,6 +79,10 @@ class HollowState
 
     boolean isPersistent() {
         return true;
+    }
+    
+    public String toString() {
+        return "Hollow";
     }
 }
 

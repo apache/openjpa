@@ -26,6 +26,7 @@ package org.apache.openjpa.kernel;
  *
  * @author Abe White
  */
+@SuppressWarnings("serial")
 class ECleanState
     extends PCState {
 
@@ -81,6 +82,10 @@ class ECleanState
 
     boolean isPersistent() {
         return true;
+    }
+    
+    public String toString() {
+        return "Embedded-Clean";
     }
 }
 

@@ -26,6 +26,7 @@ package org.apache.openjpa.kernel;
  *
  * @author Abe White
  */
+@SuppressWarnings("serial")
 class TCleanState
     extends PCState {
 
@@ -58,6 +59,10 @@ class TCleanState
     PCState beforeOptimisticWrite(StateManagerImpl context, int field,
         boolean mutate) {
         return TDIRTY;
+    }
+    
+    public String toString() {
+        return "Transient-Clean";
     }
 }
 

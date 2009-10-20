@@ -26,6 +26,7 @@ package org.apache.openjpa.kernel;
  *
  * @author Abe White
  */
+@SuppressWarnings("serial")
 class ENonTransState
     extends PCState {
 
@@ -72,6 +73,10 @@ class ENonTransState
 
     boolean isPersistent() {
         return true;
+    }
+    
+    public String toString() {
+        return "Embedded-Nontransactional";
     }
 }
 

@@ -25,6 +25,7 @@ package org.apache.openjpa.kernel;
  *
  * @author Abe White
  */
+@SuppressWarnings("serial")
 class EDeletedState
     extends PCState {
 
@@ -69,6 +70,10 @@ class EDeletedState
 
     boolean isDirty() {
         return true;
+    }
+    
+    public String toString() {
+        return "Embedded-Deleted";
     }
 }
 

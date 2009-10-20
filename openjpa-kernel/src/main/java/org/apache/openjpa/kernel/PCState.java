@@ -37,6 +37,7 @@ import org.apache.openjpa.util.InvalidStateException;
  *
  * @author Abe White
  */
+@SuppressWarnings("serial")
 public class PCState
     implements Serializable {
 
@@ -143,20 +144,17 @@ public class PCState
     /**
      * Persistent-New-Flushed-Deleted
      */
-    public static final PCState PNEWFLUSHEDDELETED =
-        new PNewFlushedDeletedState();
+    public static final PCState PNEWFLUSHEDDELETED = new PNewFlushedDeletedState();
 
     /**
      * Persistent-New-Flushed-Deleted-Flushed
      */
-    public static final PCState PNEWFLUSHEDDELETEDFLUSHED =
-        new PNewFlushedDeletedFlushedState();
+    public static final PCState PNEWFLUSHEDDELETEDFLUSHED = new PNewFlushedDeletedFlushedState();
 
     /**
      * Persistent-Deleted-Flushed
      */
-    public static final PCState PDELETEDFLUSHED =
-        new PDeletedFlushedState();
+    public static final PCState PDELETEDFLUSHED = new PDeletedFlushedState();
 
     private static Localizer _loc = Localizer.forPackage(PCState.class);
 

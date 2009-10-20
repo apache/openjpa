@@ -26,6 +26,7 @@ package org.apache.openjpa.kernel;
  * @author Steve Kim
  * @author: Abe White
  */
+@SuppressWarnings("serial")
 class PNewProvisionalState
     extends PCState {
 
@@ -89,5 +90,9 @@ class PNewProvisionalState
 
     boolean isProvisional() {
         return true;
+    }
+    
+    public String toString() {
+        return "Persistent-New-Provisional";
     }
 }

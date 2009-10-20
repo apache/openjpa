@@ -25,6 +25,7 @@ package org.apache.openjpa.kernel;
  *
  * @author Abe White
  */
+@SuppressWarnings("serial")
 class PDirtyState
     extends PCState {
 
@@ -89,6 +90,10 @@ class PDirtyState
 
     boolean isDirty() {
         return true;
+    }
+    
+    public String toString() {
+        return "Persistent-Dirty";
     }
 }
 

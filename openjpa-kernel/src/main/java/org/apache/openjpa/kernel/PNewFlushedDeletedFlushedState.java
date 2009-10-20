@@ -25,6 +25,7 @@ package org.apache.openjpa.kernel;
  *
  * @author Patrick Linskey
  */
+@SuppressWarnings("serial")
 class PNewFlushedDeletedFlushedState
     extends PNewFlushedDeletedState {
 
@@ -34,5 +35,9 @@ class PNewFlushedDeletedFlushedState
     PCState persist(StateManagerImpl context) {
         context.eraseFlush();
         return PNEW;
+    }
+    
+    public String toString() {
+        return "Persistent-New-Flushed-Deleted-Flushed";
     }
 }

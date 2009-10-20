@@ -24,6 +24,7 @@ package org.apache.openjpa.kernel;
  *
  * @author Steve Kim
  */
+@SuppressWarnings("serial")
 public class PNonTransDeletedState
     extends PCState {
 
@@ -75,5 +76,9 @@ public class PNonTransDeletedState
 
     boolean isDirty() {
         return true;
+    }
+    
+    public String toString() {
+        return "Persistent-Notransactional-Deleted";
     }
 }

@@ -30,6 +30,7 @@ import org.apache.openjpa.lib.util.Localizer;
  *
  * @author Abe White
  */
+@SuppressWarnings("serial")
 class PNonTransState
     extends PCState {
 
@@ -117,6 +118,10 @@ class PNonTransState
 
     boolean isPersistent() {
         return true;
+    }
+    
+    public String toString() {
+        return "Persistent-Notransactional";
     }
 }
 
