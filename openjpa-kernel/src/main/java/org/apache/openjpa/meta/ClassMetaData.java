@@ -693,7 +693,7 @@ public class ClassMetaData
     		    this, AccessCode.toClassString(type)).getMessage());
     	}
     	if (_accessType != AccessCode.UNKNOWN) { // changing access type
-    	    _repos.getLog().warn(_loc.get("access-type-change", 
+    	    _repos.getLog().trace(_loc.get("access-type-change", 
     		    this, AccessCode.toClassString(type), 
     		    AccessCode.toClassString(_accessType)).getMessage());
     	}
