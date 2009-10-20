@@ -20,7 +20,6 @@ package org.apache.openjpa.enhance;
 
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.Map;
 
@@ -28,7 +27,6 @@ import org.apache.openjpa.lib.util.Localizer;
 import org.apache.openjpa.lib.util.ReferenceMap;
 import org.apache.openjpa.lib.util.concurrent.ConcurrentReferenceHashMap;
 import org.apache.openjpa.util.UserException;
-import org.apache.openjpa.util.InvalidStateException;
 
 /**
  * Tracks registered persistence-capable classes.
@@ -39,15 +37,14 @@ import org.apache.openjpa.util.InvalidStateException;
 public class PCRegistry {
     // DO NOT ADD ADDITIONAL DEPENDENCIES TO THIS CLASS
 
-    private static final Localizer _loc = Localizer.forPackage
-        (PCRegistry.class);
+    private static final Localizer _loc = Localizer.forPackage(PCRegistry.class);
 
-    // map of pc classes to meta structs; weak so the VM can GC classes
-    private static final Map _metas = new ConcurrentReferenceHashMap
-        (ReferenceMap.WEAK, ReferenceMap.HARD);
+    // map of persistent classes to meta structures; weak so the VM can GC classes
+    private static final Map<Class<?>,Meta> _metas = new ConcurrentReferenceHashMap(ReferenceMap.WEAK, 
+            ReferenceMap.HARD);
 
     // register class listeners
-    private static final Collection _listeners = new LinkedList();
+    private static final Collection<RegisterClassListener> _listeners = new LinkedList<RegisterClassListener>();
 
     /**
      * Register a {@link RegisterClassListener}.
@@ -62,8 +59,8 @@ public class PCRegistry {
             _listeners.add(rcl);
         }
         synchronized (_metas) {
-            for (Iterator itr = _metas.keySet().iterator(); itr.hasNext();)
-                rcl.register((Class) itr.next());
+            for (Class<?> cls : _metas.keySet())
+                rcl.register(cls);
         }
     }
 
@@ -79,7 +76,7 @@ public class PCRegistry {
     /**
      * Get the field names for a <code>PersistenceCapable</code> class.
      */
-    public static String[] getFieldNames(Class pcClass) {
+    public static String[] getFieldNames(Class<?> pcClass) {
         Meta meta = getMeta(pcClass);
         return meta.fieldNames;
     }
@@ -87,7 +84,7 @@ public class PCRegistry {
     /**
      * Get the field types for a <code>PersistenceCapable</code> class.
      */
-    public static Class[] getFieldTypes(Class pcClass) {
+    public static Class<?>[] getFieldTypes(Class<?> pcClass) {
         Meta meta = getMeta(pcClass);
         return meta.fieldTypes;
     }
@@ -97,7 +94,7 @@ public class PCRegistry {
      * class, or null if none. The superclass may or may not implement
      * {@link PersistenceCapable}, depending on the access type of the class.
      */
-    public static Class getPersistentSuperclass(Class pcClass) {
+    public static Class<?> getPersistentSuperclass(Class<?> pcClass) {
         Meta meta = getMeta(pcClass);
         return meta.pcSuper;
     }
@@ -106,8 +103,7 @@ public class PCRegistry {
      * Create a new instance of the class and assign its state manager.
      * The new instance has its flags set to <code>LOAD_REQUIRED</code>.
      */
-    public static PersistenceCapable newInstance(Class pcClass,
-        StateManager sm, boolean clear) {
+    public static PersistenceCapable newInstance(Class<?> pcClass, StateManager sm, boolean clear) {
         Meta meta = getMeta(pcClass);
         return (meta.pc == null) ? null : meta.pc.pcNewInstance(sm, clear);
     }
@@ -116,8 +112,7 @@ public class PCRegistry {
      * Create a new instance of the class and assign its state manager and oid.
      * The new instance has its flags set to <code>LOAD_REQUIRED</code>.
      */
-    public static PersistenceCapable newInstance(Class pcClass,
-        StateManager sm, Object oid, boolean clear) {
+    public static PersistenceCapable newInstance(Class<?> pcClass, StateManager sm, Object oid, boolean clear) {
         Meta meta = getMeta(pcClass);
         return (meta.pc == null) ? null : meta.pc.pcNewInstance(sm, oid, clear);
     }
@@ -128,7 +123,7 @@ public class PCRegistry {
      *
      * @since 1.1.0
      */
-    public static Class getPCType(Class type) {
+    public static Class<?> getPCType(Class<?> type) {
         Meta meta = getMeta(type);
         return (meta.pc == null) ? null : meta.pc.getClass();
     }
@@ -137,7 +132,7 @@ public class PCRegistry {
      * Create a new identity object for the given
      * <code>PersistenceCapable</code> class.
      */
-    public static Object newObjectId(Class pcClass) {
+    public static Object newObjectId(Class<?> pcClass) {
         Meta meta = getMeta(pcClass);
         return (meta.pc == null) ? null : meta.pc.pcNewObjectIdInstance();
     }
@@ -147,7 +142,7 @@ public class PCRegistry {
      * <code>PersistenceCapable</code> class, using the <code>String</code>
      * form of the constructor.
      */
-    public static Object newObjectId(Class pcClass, String str) {
+    public static Object newObjectId(Class<?> pcClass, String str) {
         Meta meta = getMeta(pcClass);
         return (meta.pc == null) ? null : meta.pc.pcNewObjectIdInstance(str);
     }
@@ -155,7 +150,7 @@ public class PCRegistry {
     /**
      * Return the alias for the given type.
      */
-    public static String getTypeAlias(Class pcClass) {
+    public static String getTypeAlias(Class<?> pcClass) {
         return getMeta(pcClass).alias;
     }
 
@@ -163,8 +158,7 @@ public class PCRegistry {
      * Copy fields from an outside source to the key fields in the identity
      * object.
      */
-    public static void copyKeyFieldsToObjectId(Class pcClass, FieldSupplier fm,
-        Object oid) {
+    public static void copyKeyFieldsToObjectId(Class<?> pcClass, FieldSupplier fm, Object oid) {
         Meta meta = getMeta(pcClass);
         if (meta.pc == null)
             throw new UserException(_loc.get("copy-no-id", pcClass));
@@ -176,8 +170,7 @@ public class PCRegistry {
      * Copy fields to an outside source from the key fields in the identity
      * object.
      */
-    public static void copyKeyFieldsFromObjectId(Class pcClass,
-        FieldConsumer fm, Object oid) {
+    public static void copyKeyFieldsFromObjectId(Class<?> pcClass, FieldConsumer fm, Object oid) {
         Meta meta = getMeta(pcClass);
         if (meta.pc == null)
             throw new UserException(_loc.get("copy-no-id", pcClass));
@@ -196,9 +189,8 @@ public class PCRegistry {
      * @param alias the class alias
      * @param pc an instance of the class, if not abstract
      */
-    public static void register(Class pcClass, String[] fieldNames,
-        Class[] fieldTypes, byte[] fieldFlags, Class sup, String alias,
-        PersistenceCapable pc) {
+    public static void register(Class<?> pcClass, String[] fieldNames, Class<?>[] fieldTypes, byte[] fieldFlags, 
+        Class<?> sup, String alias, PersistenceCapable pc) {
         if (pcClass == null)
             throw new NullPointerException();
 
@@ -209,8 +201,8 @@ public class PCRegistry {
             _metas.put(pcClass, meta);
         }
         synchronized (_listeners) {
-            for (Iterator i = _listeners.iterator(); i.hasNext();)
-                ((RegisterClassListener) i.next()).register(pcClass);
+            for (RegisterClassListener r : _listeners)
+                r.register(pcClass);
         }
     }
 
@@ -222,8 +214,7 @@ public class PCRegistry {
      */
     public static void deRegister(ClassLoader cl) {
         synchronized (_metas) {
-            for (Iterator i = _metas.keySet().iterator(); i.hasNext();) {
-                Class pcClass = (Class) i.next();
+            for (Class<?> pcClass : _metas.keySet()) {
                 if (pcClass.getClassLoader() == cl) {
                     _metas.remove(pcClass);
                 }
@@ -235,21 +226,21 @@ public class PCRegistry {
      * Returns a collection of class objects of the registered
      * persistence-capable classes.
      */
-    public static Collection getRegisteredTypes() {
+    public static Collection<Class<?>> getRegisteredTypes() {
         return Collections.unmodifiableCollection(_metas.keySet());
     }
 
     /**
-     * Returns <code>true</code> if <code>cls</code> is already registered.
+     * Returns <code>true</code> if the given class is already registered.
      */
-    public static boolean isRegistered(Class cls) {
+    public static boolean isRegistered(Class<?> cls) {
         return _metas.containsKey(cls);
     }
 
     /**
      * Look up the metadata for a <code>PersistenceCapable</code> class.
      */
-    private static Meta getMeta(Class pcClass) {
+    private static Meta getMeta(Class<?> pcClass) {
         Meta ret = (Meta) _metas.get(pcClass);
         if (ret == null)
             throw new IllegalStateException(_loc.get("no-meta", pcClass).
@@ -262,7 +253,7 @@ public class PCRegistry {
      */
     public static interface RegisterClassListener {
 
-        public void register(Class cls);
+        public void register(Class<?> cls);
     }
 
     /**
@@ -272,12 +263,12 @@ public class PCRegistry {
 
         public final PersistenceCapable pc;
         public final String[] fieldNames;
-        public final Class[] fieldTypes;
-        public final Class pcSuper;
+        public final Class<?>[] fieldTypes;
+        public final Class<?> pcSuper;
         public final String alias;
 
         public Meta(PersistenceCapable pc, String[] fieldNames,
-            Class[] fieldTypes, Class pcSuper, String alias) {
+            Class<?>[] fieldTypes, Class<?> pcSuper, String alias) {
             this.pc = pc;
             this.fieldNames = fieldNames;
             this.fieldTypes = fieldTypes;

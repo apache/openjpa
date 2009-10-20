@@ -1498,6 +1498,7 @@ public class MetaDataRepository implements PCRegistry.RegisterClassListener, Con
         lock();
         try {
             _registered.add(cls);
+            registerAlias(cls);
         } finally {
             unlock();
         }
@@ -1627,20 +1628,32 @@ public class MetaDataRepository implements PCRegistry.RegisterClassListener, Con
         }
 
         // set alias for class
-        String alias = PCRegistry.getTypeAlias(cls);
-        if (alias != null) {
+        registerAlias(cls);
+    }
+    
+    
+    /**
+     * Register the given class to the list of known aliases.
+     * The alias is registered only if the class has been enhanced.
+     * 
+     */
+    void registerAlias(Class<?> cls) {
+        try {
             lock();
-            try {
-                List<Class<?>> classList = _aliases.get(alias);
-                if (classList == null) {
-                    classList = new ArrayList<Class<?>>(3);
-                    _aliases.put(alias, classList);
+            String alias = PCRegistry.getTypeAlias(cls);
+            if (alias != null) {
+                List<Class<?>> classes = _aliases.get(alias);
+                if (classes == null)
+                    classes = new ArrayList<Class<?>>(3);
+                if (!classes.contains(cls)) {
+                    classes.add(cls);
+                    _aliases.put(alias, classes);
                 }
-                if (!classList.contains(cls))
-                    classList.add(cls);
-            } finally {
-                unlock();
             }
+        } catch (IllegalStateException ise) {
+            // the class has not been registered to PCRegistry
+        } finally {
+            unlock();
         }
     }
 
