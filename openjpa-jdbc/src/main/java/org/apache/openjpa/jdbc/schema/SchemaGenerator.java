@@ -859,10 +859,27 @@ public class SchemaGenerator {
                 continue;
 
             schema = group.getSchema(sequenceSchema);
-            if (schema == null)
+            if (schema == null) {
+                // TODO: temp until a more global name solution is implemented
+                schema = group.getSchema(_dict.addDelimiters(sequenceSchema));
+//                schema = group.getSchema(_dict.delimitString(sequenceSchema, 
+//                    DBDictionary.DBIdentifiers.SEQUENCE_GEN_SCHEMA));
+            }
+            if (schema == null) {
                 schema = group.addSchema(sequenceSchema);
-            if (schema.getSequence(sequenceName) == null)
-                schema.addSequence(sequenceName);
+                // TODO: temp until a more global solution is implemented
+//                group.addDelimSchemaName(_dict.delimitString(sequenceSchema, 
+//                    DBDictionary.DBIdentifiers.SEQUENCE_GEN_SCHEMA), schema);
+                group.addDelimSchemaName(_dict.addDelimiters(sequenceSchema), schema);
+            }
+            if (schema.getSequence(sequenceName) == null) {
+                Sequence seq = schema.addSequence(sequenceName);
+                // TODO: temp until a more global solution is implemented
+//                schema.addDelimSequenceName(_dict.delimitString(sequenceName, 
+//                    DBDictionary.DBIdentifiers.SEQUENCE_GEN_SEQ_NAME), seq);
+                schema.addDelimSequenceName(_dict.addDelimiters(sequenceName), seq);
+            }
+                
         }
     }
 

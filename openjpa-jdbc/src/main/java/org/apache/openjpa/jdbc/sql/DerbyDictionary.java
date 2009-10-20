@@ -40,9 +40,6 @@ public class DerbyDictionary
      */
     public boolean shutdownOnClose = true;
     
-    private EnumSet<DBIdentifiers> unsupportedDelimitedIds =
-        EnumSet.of(DBIdentifiers.COLUMN_COLUMN_DEFINITION); 
-
     public DerbyDictionary() {
         platform = "Apache Derby";
         validationSQL = "VALUES(1)";
@@ -156,14 +153,6 @@ public class DerbyDictionary
             }
         }
         return recoverable;
-    }
-
-    /**
-     * @return the unsupportedDelimitedIds
-     */
-    @Override
-    protected EnumSet<DBIdentifiers> getUnsupportedDelimitedIds() {
-        return unsupportedDelimitedIds;
     }
 
 }

@@ -18,27 +18,30 @@
  */
 package org.apache.openjpa.persistence.delimited.identifiers;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 
 @Entity
-@Table(name="\"entity g\"", schema="\"delim id\"")
-public class EntityG {
+@Table(name="primary entityB", schema="delim id2")
+public class EntityB {
     @Id
-    int id;
-    String name;
+    @SequenceGenerator(name="entityB_seq_gen_name", 
+        sequenceName="entityB seq gen", schema="delim id2")
+    @GeneratedValue(strategy=GenerationType.SEQUENCE, 
+        generator="entityB_seq_gen_name")
+    private int id;
+    @Column(name="e_name")
+    private String name;
     
-    public EntityG() {}
-    
-    public EntityG(int id) {
-        this.id = id;
-    }
-    
-    public EntityG(int id, String name) {
-        this.id = id;
+    public EntityB(String name) {
         this.name = name;
     }
+    
     
     /**
      * @return the id
@@ -64,5 +67,4 @@ public class EntityG {
     public void setName(String name) {
         this.name = name;
     }
-
 }

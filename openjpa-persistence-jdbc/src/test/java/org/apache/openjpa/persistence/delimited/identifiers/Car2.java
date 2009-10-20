@@ -18,26 +18,40 @@
  */
 package org.apache.openjpa.persistence.delimited.identifiers;
 
+import javax.persistence.ColumnResult;
+import javax.persistence.DiscriminatorColumn;
 import javax.persistence.Entity;
+import javax.persistence.EntityResult;
+import javax.persistence.FieldResult;
 import javax.persistence.Id;
+import javax.persistence.Inheritance;
+import javax.persistence.SqlResultSetMapping;
 import javax.persistence.Table;
 
+@SqlResultSetMapping(name="CarResultSet",
+    entities={@EntityResult(entityClass=Car2.class,
+        fields={
+        @FieldResult(name="model", column="car model"),
+        @FieldResult(name="color", column="car color")
+    },
+    discriminatorColumn="discr col")},
+    columns={@ColumnResult(name="model year")})
+    
 @Entity
-@Table(name="\"entity g\"", schema="\"delim id\"")
-public class EntityG {
+@Inheritance
+@DiscriminatorColumn(name="discr col", columnDefinition="VARCHAR(10)")
+@Table(name="Car2")
+public class Car2 {
     @Id
-    int id;
-    String name;
+    private int id;
     
-    public EntityG() {}
+    protected String model;
+    protected String color;
+
+    public Car2() {}
     
-    public EntityG(int id) {
+    public Car2(int id) {
         this.id = id;
-    }
-    
-    public EntityG(int id, String name) {
-        this.id = id;
-        this.name = name;
     }
     
     /**
@@ -46,23 +60,40 @@ public class EntityG {
     public int getId() {
         return id;
     }
+
     /**
      * @param id the id to set
      */
     public void setId(int id) {
         this.id = id;
     }
+
     /**
-     * @return the name
+     * @return the model
      */
-    public String getName() {
-        return name;
+    public String getModel() {
+        return model;
     }
+
+    /**
+     * @param type the type to set
+     */
+    public void setModel(String model) {
+        this.model = model;
+    }
+
+    /**
+     * @return the color
+     */
+    public String getColor() {
+        return color;
+    }
+
     /**
      * @param name the name to set
      */
-    public void setName(String name) {
-        this.name = name;
+    public void setName(String color) {
+        this.color = color;
     }
 
 }

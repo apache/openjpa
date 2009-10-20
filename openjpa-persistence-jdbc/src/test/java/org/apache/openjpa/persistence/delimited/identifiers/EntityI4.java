@@ -18,26 +18,23 @@
  */
 package org.apache.openjpa.persistence.delimited.identifiers;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.Table;
 
 @Entity
-@Table(name="\"entity g\"", schema="\"delim id\"")
-public class EntityG {
+@Table(name="entity i4", schema="delim id2")
+public class EntityI4 {
     @Id
+    @Column(name="entityI4 id")
     int id;
     String name;
     
-    public EntityG() {}
+    public EntityI4() {}
     
-    public EntityG(int id) {
+    public EntityI4(int id) {
         this.id = id;
-    }
-    
-    public EntityG(int id, String name) {
-        this.id = id;
-        this.name = name;
     }
     
     /**

@@ -353,16 +353,18 @@ public class DBDictionary
     protected final Set typeModifierSet = new HashSet();
     
     private boolean delimitIds = false;
-    protected boolean supportsDelimitedIds = false;
-    protected String delimiter = "\"";
+    // Specifies whether or not the specific DB and version supports delimited ids
+    public boolean supportsDelimitedIds = true;
+    public String delimiter = "\""; // This is public so it can be changed by a user with a property
     // Assume mixed case by default.
     protected String delimitedCase = SCHEMA_CASE_PRESERVE;
     
-    // TODO: complete the list
     public static enum DBIdentifiers {
         TABLE_NAME,
         TABLE_SCHEMA,
         TABLE_CATALOG,
+        COLLECTION_TABLE_NAME,
+        COLLECTION_TABLE_SCHEMA,
         SECONDARY_TABLE_NAME,
         SECONDARY_TABLE_SCHEMA,
         SECONDARY_TABLE_CATALOG,
@@ -372,16 +374,48 @@ public class DBDictionary
         TABLE_GEN_VALUE_COLUMN,
         COLUMN_NAME,
         COLUMN_COLUMN_DEFINITION,
-        COLUMN_TABLE
+        COLUMN_TABLE,
+        MAP_KEY_COLUMN_NAME,
+        MAP_KEY_COLUMN_COLUMN_DEFINITION,
+        MAP_KEY_COLUMN_TABLE,
+        JOIN_TABLE_NAME,
+        JOIN_TABLE_SCHEMA,
+        PRIMARY_KEY_JOIN_COLUMN_NAME,
+        PRIMARY_KEY_JOIN_COLUMN_REFERENCED_COLUMN_NAME,
+        PRIMARY_KEY_JOIN_COLUMN_COLUMN_DEFINITION,
+        JOIN_COLUMN_NAME,
+        JOIN_COLUMN_REFERENCED_COLUMN_NAME,
+        JOIN_COLUMN_COLUMN_DEFINITION,
+        JOIN_COLUMN_TABLE,
+        MAP_KEY_JOIN_COLUMN_NAME,
+        MAP_KEY_JOIN_COLUMN_REFERENCED_COLUMN_NAME,
+        MAP_KEY_JOIN_COLUMN_COLUMN_DEFINITION,
+        MAP_KEY_JOIN_COLUMN_TABLE,
+        DISCRIMINATOR_COLUMN_NAME,
+        DISCRIMINATOR_COLUMN_COLUMN_DEFINITION,
+        FIELD_RESULT_COLUMN,
+        COLUMN_REUSLT_NAME,
+        SEQUENCE_GEN_SEQ_NAME,
+        SEQUENCE_GEN_SCHEMA,
+        UNIQUE_CONSTRAINT_NAME,
+        UNIQUE_CONSTRAINT_COLUMN_NAMES,
+        ORDER_COLUMN_NAME,
+        ORDER_COLUMN_COLUMN_DEFINITION
+        
     }
     
-    // TODO: describe; maybe make private
+    // This is to temporarily disable support for columnDefinition elements until support is implemented.
     protected EnumSet<DBIdentifiers> unsupportedDelimitedIds =
-        EnumSet.noneOf(DBIdentifiers.class);
-    // TODO
-    // Should this be EnumSet.<DBIdentifiers>noneOf(....)
-    // or EnumSet<DBIdentifiers>.noneOf....?
-
+        EnumSet.of(DBIdentifiers.COLUMN_COLUMN_DEFINITION,
+            DBIdentifiers.DISCRIMINATOR_COLUMN_COLUMN_DEFINITION,
+            DBIdentifiers.JOIN_COLUMN_COLUMN_DEFINITION,
+            DBIdentifiers.MAP_KEY_COLUMN_COLUMN_DEFINITION,
+            DBIdentifiers.MAP_KEY_JOIN_COLUMN_COLUMN_DEFINITION,
+            DBIdentifiers.PRIMARY_KEY_JOIN_COLUMN_COLUMN_DEFINITION); 
+    
+//    protected EnumSet<DBIdentifiers> unsupportedDelimitedIds =
+//        EnumSet.noneOf(DBIdentifiers.class);
+    
     /**
      * If a native query begins with any of the values found here then it will
      * be treated as a select statement.  
@@ -3242,7 +3276,6 @@ public class DBDictionary
                 return name;
             }
         }
-        // TODO: This is the original. Should the db supported case be checked?
         return name.toUpperCase();
     }
     
@@ -4188,7 +4221,7 @@ public class DBDictionary
             return null;
 
         // Handle delimited string differently. Return unquoted name.
-        if (delimitIds || isDelimited(objectName)) {
+        if (isDelimitIds() || isDelimited(objectName)) {
             String delimCase = getDelimitedCase();
             if (SCHEMA_CASE_UPPER.equals(delimCase)) {
                 objectName.toUpperCase();
@@ -4933,8 +4966,8 @@ public class DBDictionary
     }
     
     public String delimitString(String name, DBIdentifiers type) {
-        if (StringUtils.isEmpty(name)) {
-            return null;
+        if (StringUtils.isEmpty(name) || type == null) {
+            return name;
         }
         
         if (!getSupportsDelimitedIds()) {
@@ -4943,16 +4976,30 @@ public class DBDictionary
             return name;
         }
         
-        if (!delimitIds) {
-            return name;
+        if (!isDelimitIds()) {
+            return convertQuotes(name);
         }
         // TODO: merge with if stmt above (maybe not, may want to log this)
         if (!supportsDelimitedId(type)) {
             // TODO: log
             return name;
         }
-        String delimitedString = delimiter + name + delimiter;
-        return delimitedString;
+        return addDelimiters(name);
+    }
+    
+    public void delimitArray(String[] names, DBIdentifiers type) {
+//        String[] delimNames = new String[names.length];
+        for (int i = 0; i < names.length; i++) {
+            names[i] = delimitString(names[i], type);
+        }
+    }
+    
+    private String convertQuotes(String name) {
+        if (name.startsWith("\"") && name.endsWith("\"")) {
+            return getDelimiter() + name.substring(1, name.length() - 1) + getDelimiter();
+        }
+        
+        return name;
     }
 
     /**
@@ -5057,7 +5104,12 @@ public class DBDictionary
         xmlTypeEncoding = encoding;
     }
     
-    // TODO: Should we pass in combining char, or just assume '_'?
+    /**
+     * Combine a number of names into 1 name with each part separated by an underscore ("_").
+     * If a name part is delimited, remove the delimiters.
+     * @param names
+     * @return combined name
+     */
     public String combineNames(String... names) {
         boolean delimited = false;
         String combined = null;

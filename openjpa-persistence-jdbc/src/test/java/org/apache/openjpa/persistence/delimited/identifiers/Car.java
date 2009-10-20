@@ -18,26 +18,32 @@
  */
 package org.apache.openjpa.persistence.delimited.identifiers;
 
+import javax.persistence.Column;
+import javax.persistence.DiscriminatorColumn;
 import javax.persistence.Entity;
 import javax.persistence.Id;
+import javax.persistence.Inheritance;
 import javax.persistence.Table;
 
 @Entity
-@Table(name="\"entity g\"", schema="\"delim id\"")
-public class EntityG {
+@Inheritance
+@DiscriminatorColumn(name="discr col", columnDefinition="VARCHAR(10)")
+@Table(name="Car")
+public class Car {
     @Id
-    int id;
-    String name;
+    private int id;
     
-    public EntityG() {}
+    @Column(name="car model")
+    protected String model;
+    @Column(name="car color")
+    protected String color;
+    @Column(name="model year")
+    protected String modelYear;
+
+    public Car() {}
     
-    public EntityG(int id) {
+    public Car(int id) {
         this.id = id;
-    }
-    
-    public EntityG(int id, String name) {
-        this.id = id;
-        this.name = name;
     }
     
     /**
@@ -46,23 +52,54 @@ public class EntityG {
     public int getId() {
         return id;
     }
+
     /**
      * @param id the id to set
      */
     public void setId(int id) {
         this.id = id;
     }
+
     /**
-     * @return the name
+     * @return the model
      */
-    public String getName() {
-        return name;
+    public String getModel() {
+        return model;
     }
+
     /**
-     * @param name the name to set
+     * @param model the type to set
      */
-    public void setName(String name) {
-        this.name = name;
+    public void setModel(String model) {
+        this.model = model;
+    }
+
+    /**
+     * @return the color
+     */
+    public String getColor() {
+        return color;
+    }
+
+    /**
+     * @param color the color to set
+     */
+    public void setColor(String color) {
+        this.color = color;
+    }
+
+    /**
+     * @return the modelYear
+     */
+    public String getModelYear() {
+        return modelYear;
+    }
+
+    /**
+     * @param modelYear the modelYear to set
+     */
+    public void setModelYear(String modelYear) {
+        this.modelYear = modelYear;
     }
 
 }

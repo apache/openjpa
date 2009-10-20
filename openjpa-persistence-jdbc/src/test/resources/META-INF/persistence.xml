@@ -269,5 +269,12 @@
         </properties>
     </persistence-unit>
 
+    <persistence-unit name="delimited-identifiers">
+        <mapping-file>META-INF/delimited-identifiers-orm.xml</mapping-file>
+        <properties>
+            <property name="openjpa.jdbc.SynchronizeMappings"
+                value="buildSchema"/>
+        </properties>
+    </persistence-unit>
 </persistence>
 

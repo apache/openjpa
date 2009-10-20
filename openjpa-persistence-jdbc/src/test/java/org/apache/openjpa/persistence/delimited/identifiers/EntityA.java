@@ -31,33 +31,28 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.MapKeyColumn;
+import javax.persistence.OrderColumn;
 import javax.persistence.SecondaryTable;
 import javax.persistence.Table;
 import javax.persistence.TableGenerator;
 import javax.persistence.UniqueConstraint;
 
 @Entity
-@Table(name="\"primary entityF\"", schema="\"delim id\"",
+@Table(name="primary entityA", schema="delim id2")
+@SecondaryTable(name="secondary EntityA", schema="delim id2",
     uniqueConstraints=
-        @UniqueConstraint(columnNames={"\"f name\"", "f_nonDelimName"}))
-@SecondaryTable(name="\"secondary entityF\"", schema="\"delim id\"",
-    uniqueConstraints=
-        @UniqueConstraint(name="\"sec unq\"", 
-            columnNames={"\"secondary name\""}))         
-public class EntityF {
-    @TableGenerator(name = "f_id_gen", table = "\"f_id_gen\"", 
-        schema = "\"delim id\"",
-        pkColumnName = "\"gen_pk\"", valueColumnName = "\"gen_value\"")
-    @GeneratedValue(strategy = GenerationType.TABLE, generator = "f_id_gen")
+        @UniqueConstraint(name="sec unq", 
+            columnNames={"secondary name"}))
+public class EntityA {
+    @TableGenerator(name = "id_gen", table = "id gen", schema = "delim id2",
+        pkColumnName = "gen pk", valueColumnName = "gen value")
+    @GeneratedValue(strategy = GenerationType.TABLE, generator = "id_gen")
     @Id
     private int id;
-    // Note: Delimited columnDefinition is not supported on some DBs
-    // TODO: copy into a separate entity and conditionally run a different test
-    @Column(name="\"f name\"", columnDefinition="char(15)")
+    @Column(name="primary name", columnDefinition="VARCHAR")
     private String name;
-    @Column(name="f_nonDelimName")
-    private String nonDelimName;
-    @Column(name="\"secondary name\"", table="\"secondary entityF\"")
+    
+    @Column(name="secondary name", table="secondary EntityA")
     private String secName;
     
     @ElementCollection
@@ -66,7 +61,8 @@ public class EntityF {
     private Set<String> collectionSet = new HashSet<String>();
     
     @ElementCollection
-    @CollectionTable(name="\"collectionDelimSet\"", schema="\"delim id\"")
+    @OrderColumn(name="order col")
+    @CollectionTable(name="collection delim set", schema="delim id2")
     private Set<String> collectionDelimSet = new HashSet<String>();
     
     @ElementCollection
@@ -75,15 +71,15 @@ public class EntityF {
     private Map<String, String> collectionMap = new HashMap<String, String>();
     
     @ElementCollection
-    // Note: Delimited column definition is not supported on some DBs, so
-    // it is not delimited here
-    // TODO: create a separate entity and conditionally run the test on a supported DB
-    @MapKeyColumn(name="\"mapKey\"", columnDefinition="varchar(20)", table="\"delim collection map\"")
+    @MapKeyColumn(name="map key", columnDefinition="varchar(20)", table="map key table")
     private Map<String, String> delimCollectionMap = 
         new HashMap<String, String>();
     
-    public EntityF(String name) {
-        this.name = name;
+    public EntityA(){
+    }
+    
+    public EntityA(int id, String name) {
+        this.name=name;
     }
     
     /**
@@ -109,20 +105,6 @@ public class EntityF {
      */
     public void setName(String name) {
         this.name = name;
-    }
-
-    /**
-     * @return the nonDelimName
-     */
-    public String getNonDelimName() {
-        return nonDelimName;
-    }
-
-    /**
-     * @param nonDelimName the nonDelimName to set
-     */
-    public void setNonDelimName(String nonDelimName) {
-        this.nonDelimName = nonDelimName;
     }
 
     /**
@@ -153,44 +135,24 @@ public class EntityF {
         this.collectionSet = collectionSet;
     }
     
+    /**
+     * Add an item to the collectionSet
+     * @param item
+     */
     public void addCollectionSet(String item) {
         collectionSet.add(item);
     }
 
-    /**
-     * @return the collectionNamedSet
-     */
     public Set<String> getCollectionDelimSet() {
         return collectionDelimSet;
     }
 
-    /**
-     * @param collectionNamedSet the collectionNamedSet to set
-     */
     public void setCollectionDelimSet(Set<String> collectionDelimSet) {
         this.collectionDelimSet = collectionDelimSet;
-    } 
+    }
     
     public void addCollectionDelimSet(String item) {
         this.collectionDelimSet.add(item);
-    }
-
-    /**
-     * @return the collectionMap
-     */
-    public Map<String, String> getCollectionMap() {
-        return collectionMap;
-    }
-
-    /**
-     * @param collectionMap the collectionMap to set
-     */
-    public void setCollectionMap(Map<String, String> collectionMap) {
-        this.collectionMap = collectionMap;
-    }
-
-    public void addCollectionMap(String key, String value) {
-        collectionMap.put(key, value);
     }
 
     /**
@@ -208,6 +170,6 @@ public class EntityF {
     }
     
     public void addDelimCollectionMap(String key, String value) {
-        delimCollectionMap.put(key, value);
+        this.delimCollectionMap.put(key, value);
     }
 }

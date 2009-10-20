@@ -18,51 +18,15 @@
  */
 package org.apache.openjpa.persistence.delimited.identifiers;
 
+import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.Table;
 
 @Entity
-@Table(name="\"entity g\"", schema="\"delim id\"")
-public class EntityG {
-    @Id
-    int id;
-    String name;
+@DiscriminatorValue("Chevrolet")
+public class Chevrolet2 extends Car2 {
+    public Chevrolet2() {}
     
-    public EntityG() {}
-    
-    public EntityG(int id) {
-        this.id = id;
+    public Chevrolet2(int id) {
+        super(id);
     }
-    
-    public EntityG(int id, String name) {
-        this.id = id;
-        this.name = name;
-    }
-    
-    /**
-     * @return the id
-     */
-    public int getId() {
-        return id;
-    }
-    /**
-     * @param id the id to set
-     */
-    public void setId(int id) {
-        this.id = id;
-    }
-    /**
-     * @return the name
-     */
-    public String getName() {
-        return name;
-    }
-    /**
-     * @param name the name to set
-     */
-    public void setName(String name) {
-        this.name = name;
-    }
-
 }

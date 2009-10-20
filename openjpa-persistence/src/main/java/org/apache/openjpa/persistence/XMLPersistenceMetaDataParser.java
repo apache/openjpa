@@ -106,6 +106,7 @@ public class XMLPersistenceMetaDataParser
     protected static final String ELEM_PU_DEF = "persistence-unit-defaults";
     protected static final String ELEM_XML_MAP_META_COMPLETE =
         "xml-mapping-metadata-complete";
+    protected static final String ELEM_DELIM_IDS = "delimited-identifiers";
 
     private static final Map<String, Object> _elems =
         new HashMap<String, Object>();
@@ -132,6 +133,7 @@ public class XMLPersistenceMetaDataParser
         _elems.put(ELEM_PU_META, ELEM_PU_META);
         _elems.put(ELEM_PU_DEF, ELEM_PU_DEF);
         _elems.put(ELEM_XML_MAP_META_COMPLETE, ELEM_XML_MAP_META_COMPLETE);
+        _elems.put(ELEM_DELIM_IDS, ELEM_DELIM_IDS);
 
         _elems.put("entity-listeners", ENTITY_LISTENERS);
         _elems.put("pre-persist", PRE_PERSIST);
@@ -571,6 +573,8 @@ public class XMLPersistenceMetaDataParser
             ret = _mode != MODE_QUERY;
         else if (tag == ELEM_LISTENER)
             ret = startEntityListener(attrs);
+        else if (tag == ELEM_DELIM_IDS)
+            ret = startDelimitedIdentifiers();
         else if (tag == ELEM_CASCADE)
             ret = isMetaDataMode();
         else if (tag == ELEM_CASCADE_ALL || tag == ELEM_CASCADE_PER
@@ -2093,5 +2097,9 @@ public class XMLPersistenceMetaDataParser
      */
     public Class<?> getParseClass() {
         return _cls;
-    }    
+    }
+    
+    protected boolean startDelimitedIdentifiers() {
+        return false;
+    }
 }

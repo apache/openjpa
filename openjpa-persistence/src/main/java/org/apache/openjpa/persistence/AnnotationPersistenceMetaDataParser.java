@@ -143,6 +143,12 @@ public class AnnotationPersistenceMetaDataParser
 
     private static final Map<Class<?>, MetaDataTag> _tags =
         new HashMap<Class<?>, MetaDataTag>();
+    
+    // The following is needed for input into the delimitString() method
+    protected static enum DBIdentifiers {
+        SEQUENCE_GEN_SEQ_NAME,
+        SEQUENCE_GEN_SCHEMA
+    }
 
     static {
         _tags.put(Access.class, ACCESS);
@@ -1709,10 +1715,10 @@ public class AnnotationPersistenceMetaDataParser
 
         // create new sequence
         meta = getRepository().addSequenceMetaData(name);
-        String seq = gen.sequenceName();
+        String seq = delimitString(gen.sequenceName(), DBIdentifiers.SEQUENCE_GEN_SEQ_NAME);
         int initial = gen.initialValue();
         int allocate = gen.allocationSize();
-        String schema = gen.schema();
+        String schema = delimitString(gen.schema(), DBIdentifiers.SEQUENCE_GEN_SCHEMA);
         String catalog = gen.catalog();
         // don't allow initial of 0 b/c looks like def value
         if (initial == 0)
@@ -1898,5 +1904,9 @@ public class AnnotationPersistenceMetaDataParser
 			return compare;
 		}
 	}
+    
+    protected String delimitString(String name, DBIdentifiers type) {
+        return name;
+    }
 }
 

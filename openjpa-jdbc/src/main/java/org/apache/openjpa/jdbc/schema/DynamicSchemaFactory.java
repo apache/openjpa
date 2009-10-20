@@ -88,8 +88,11 @@ public class DynamicSchemaFactory
             schemaName = _schema;
 
         Schema schema = getSchema(schemaName);
-        if (schema == null)
+        if (schema == null) {
             schema = addSchema(schemaName);
+            // TODO: temp until a more global name scheme is implemented
+            addDelimSchemaName(_dict.addDelimiters(schemaName), schema);
+        }
 
         // Ensure only valid table name(s) are added to the schema
         if (tableName.length() > _dict.maxTableNameLength) {

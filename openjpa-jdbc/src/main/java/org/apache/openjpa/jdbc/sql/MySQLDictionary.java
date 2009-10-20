@@ -139,6 +139,8 @@ public class MySQLDictionary
 
         typeModifierSet.addAll(Arrays.asList(new String[] { "UNSIGNED",
             "ZEROFILL" }));
+
+        delimiter = "`";
     }
 
     public void connectedConfiguration(Connection conn) throws SQLException {

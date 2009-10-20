@@ -18,46 +18,52 @@
  */
 package org.apache.openjpa.persistence.delimited.identifiers;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
+import javax.persistence.OneToOne;
+import javax.persistence.PrimaryKeyJoinColumn;
 import javax.persistence.Table;
 
 @Entity
-@Table(name="\"entity g\"", schema="\"delim id\"")
-public class EntityG {
+@Table(name="entity i2", schema="delim id2")
+public class EntityI2 {
     @Id
-    int id;
-    String name;
+    @Column(name="entityI2 id")
+    private int id;
+    private String name;
     
-    public EntityG() {}
+    @OneToOne
+    @PrimaryKeyJoinColumn
+    private EntityI3 entityI3;
     
-    public EntityG(int id) {
+    public EntityI2() {}
+    
+    public EntityI2(int id) {
         this.id = id;
     }
-    
-    public EntityG(int id, String name) {
-        this.id = id;
-        this.name = name;
-    }
-    
+
     /**
      * @return the id
      */
     public int getId() {
         return id;
     }
+
     /**
      * @param id the id to set
      */
     public void setId(int id) {
         this.id = id;
     }
+
     /**
      * @return the name
      */
     public String getName() {
         return name;
     }
+
     /**
      * @param name the name to set
      */
@@ -65,4 +71,17 @@ public class EntityG {
         this.name = name;
     }
 
+    /**
+     * @return the entityI3
+     */
+    public EntityI3 getEntityI3() {
+        return entityI3;
+    }
+
+    /**
+     * @param entityI3 the entityI3 to set
+     */
+    public void setEntityI3(EntityI3 entityI3) {
+        this.entityI3 = entityI3;
+    }
 }

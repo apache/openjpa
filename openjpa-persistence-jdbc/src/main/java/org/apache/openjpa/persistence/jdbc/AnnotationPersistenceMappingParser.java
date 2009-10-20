@@ -255,11 +255,8 @@ public class AnnotationPersistenceMappingParser
 
         meta = (SequenceMapping) getRepository().addSequenceMetaData(name);
         meta.setSequencePlugin(SequenceMapping.IMPL_VALUE_TABLE);
-        String schema = _dict.delimitString(gen.schema(), 
-            DBDictionary.DBIdentifiers.TABLE_GEN_SCHEMA);
-        String table = _dict.delimitString(gen.table(), 
-            DBDictionary.DBIdentifiers.TABLE_GEN_TABLE);
-        meta.setTable(toTableName(schema,table));
+        meta.setTable(toTableName(gen.schema(), gen.table(),
+            DBDictionary.DBIdentifiers.TABLE_GEN_SCHEMA, DBDictionary.DBIdentifiers.TABLE_GEN_TABLE));
         String pkColumnName = _dict.delimitString(gen.pkColumnName(), 
             DBDictionary.DBIdentifiers.TABLE_GEN_PK_COLUMN);
         meta.setPrimaryKeyColumn(pkColumnName);
@@ -485,15 +482,17 @@ public class AnnotationPersistenceMappingParser
     /**
      * Create a new schema column with information from the given annotation.
      */
-    private static Column newColumn(PrimaryKeyJoinColumn join) {
+    private Column newColumn(PrimaryKeyJoinColumn join) {
         Column col = new Column();
         col.setFlag(Column.FLAG_PK_JOIN, true);
         if (!StringUtils.isEmpty(join.name()))
-            col.setName(join.name());
+            col.setName(_dict.delimitString(join.name(), DBDictionary.DBIdentifiers.PRIMARY_KEY_JOIN_COLUMN_NAME));
         if (!StringUtils.isEmpty(join.columnDefinition()))
-            col.setTypeName(join.columnDefinition());
+            col.setTypeName(_dict.delimitString(join.columnDefinition(), 
+                DBDictionary.DBIdentifiers.PRIMARY_KEY_JOIN_COLUMN_COLUMN_DEFINITION));
         if (!StringUtils.isEmpty(join.referencedColumnName()))
-            col.setTarget(join.referencedColumnName());
+            col.setTarget(_dict.delimitString(join.referencedColumnName(),
+                DBDictionary.DBIdentifiers.PRIMARY_KEY_JOIN_COLUMN_REFERENCED_COLUMN_NAME));
         return col;
     }
 
@@ -534,22 +533,20 @@ public class AnnotationPersistenceMappingParser
      * Set class table.
      */
     private void parseTable(ClassMapping cm, Table table) {
-        String tableName = _dict.delimitString(table.name(), 
-                        DBDictionary.DBIdentifiers.TABLE_NAME);
-        String schemaName = _dict.delimitString(table.schema(),
-            DBDictionary.DBIdentifiers.TABLE_SCHEMA);
-        String fullTableName = toTableName(schemaName, tableName);
-        if (fullTableName != null)
-            cm.getMappingInfo().setTableName(fullTableName);
-
-        addUniqueConstraints(fullTableName, cm, cm.getMappingInfo(), 
-        		table.uniqueConstraints());
+        String tableName = toTableName(table.schema(), table.name(),
+            DBDictionary.DBIdentifiers.TABLE_SCHEMA, DBDictionary.DBIdentifiers.TABLE_NAME);
+        if (tableName != null) {
+            cm.getMappingInfo().setTableName(tableName);
+        }
+        addUniqueConstraints(tableName, cm, cm.getMappingInfo(),
+            table.uniqueConstraints());
     }
     
     Unique createUniqueConstraint(MetaDataContext ctx, UniqueConstraint anno) {
         String[] columnNames = anno.columnNames();
         if (columnNames == null || columnNames.length == 0)
             throw new UserException(_loc.get("unique-no-column", ctx));
+        _dict.delimitArray(columnNames, DBDictionary.DBIdentifiers.UNIQUE_CONSTRAINT_COLUMN_NAMES);
         Unique uniqueConstraint = new Unique();
         for (int i = 0; i < columnNames.length; i++) {
             if (StringUtils.isEmpty(columnNames[i]))
@@ -559,7 +556,7 @@ public class AnnotationPersistenceMappingParser
             column.setName(columnNames[i]);
             uniqueConstraint.addColumn(column);
         }
-        String name = anno.name();
+        String name = _dict.delimitString(anno.name(), DBDictionary.DBIdentifiers.UNIQUE_CONSTRAINT_NAME);
         if (!StringUtils.isEmpty(name)) {
             uniqueConstraint.setName(name);
         }
@@ -583,12 +580,15 @@ public class AnnotationPersistenceMappingParser
     /**
      * Form a qualified table name from a schema and table name.
      */
-    private static String toTableName(String schema, String table) {
+    private String toTableName(String schema, String table, 
+        DBDictionary.DBIdentifiers schemaType, DBDictionary.DBIdentifiers nameType) {
         if (StringUtils.isEmpty(table))
             return null;
         if (StringUtils.isEmpty(schema))
-            return table;
-        return schema + "." + table;
+            return _dict.delimitString(table, nameType);
+        String delimTable = _dict.delimitString(table, nameType);
+        String delimSchema = _dict.delimitString(schema, schemaType);
+        return delimSchema + "." + delimTable;
     }
 
     /**
@@ -622,11 +622,16 @@ public class AnnotationPersistenceMappingParser
                     entityResult.addMapping(entityResult.DISCRIMINATOR,
                         entity.discriminatorColumn());
 
-                for (FieldResult field : entity.fields())
-                    entityResult.addMapping(field.name(), field.column());
+                for (FieldResult field : entity.fields()) {
+                    String column = _dict.delimitString(field.column(), 
+                        DBDictionary.DBIdentifiers.FIELD_RESULT_COLUMN);
+                    entityResult.addMapping(field.name(), column);
+                }
             }
-            for (ColumnResult column : anno.columns())
-                result.addColumnResult(column.name());
+            for (ColumnResult column : anno.columns()) {
+                result.addColumnResult(_dict.delimitString(column.name(), 
+                    DBDictionary.DBIdentifiers.COLUMN_REUSLT_NAME));
+            }
         }
     }
 
@@ -637,9 +642,10 @@ public class AnnotationPersistenceMappingParser
         DiscriminatorColumn dcol) {
         Column col = new Column();
         if (!StringUtils.isEmpty(dcol.name()))
-            col.setName(dcol.name());
+            col.setName(_dict.delimitString(dcol.name(), DBDictionary.DBIdentifiers.DISCRIMINATOR_COLUMN_NAME));
         if (!StringUtils.isEmpty(dcol.columnDefinition()))
-            col.setTypeName(dcol.columnDefinition());
+            col.setTypeName(_dict.delimitString(dcol.columnDefinition(), 
+                DBDictionary.DBIdentifiers.DISCRIMINATOR_COLUMN_COLUMN_DEFINITION));
         Discriminator discrim = cm.getDiscriminator();
         switch (dcol.discriminatorType()) {
             case CHAR:
@@ -1650,7 +1656,8 @@ public class AnnotationPersistenceMappingParser
      */
     private void parseJoinTable(FieldMapping fm, JoinTable join) {
     	FieldMappingInfo info = fm.getMappingInfo();
-        info.setTableName(toTableName(join.schema(), join.name()));
+        info.setTableName(toTableName(join.schema(), join.name(),
+            DBDictionary.DBIdentifiers.JOIN_TABLE_SCHEMA, DBDictionary.DBIdentifiers.JOIN_TABLE_NAME));
         parseJoinColumns(fm, info, false, join.joinColumns());
         parseJoinColumns(fm, fm.getElementMapping().getValueInfo(), false,
             join.inverseJoinColumns());
@@ -1672,8 +1679,9 @@ public class AnnotationPersistenceMappingParser
         for (int i = 0; i < joins.length; i++) {
             cols.add(newColumn(joins[i]));
             unique |= (joins[i].unique()) ? TRUE : FALSE;
+            String table = _dict.delimitString(joins[i].table(), DBDictionary.DBIdentifiers.JOIN_COLUMN_TABLE);
             secondary = trackSecondaryTable(fm, secondary,
-                joins[i].table(), i);
+                table, i);
             if (!secondaryAllowed && secondary != null)
                 throw new MetaDataException(_loc.get("bad-second", fm));
         }
@@ -1686,14 +1694,16 @@ public class AnnotationPersistenceMappingParser
     /**
      * Create a new schema column with information from the given annotation.
      */
-    private static Column newColumn(JoinColumn join) {
+    private Column newColumn(JoinColumn join) {
         Column col = new Column();
         if (!StringUtils.isEmpty(join.name()))
-            col.setName(join.name());
+            col.setName(_dict.delimitString(join.name(), DBDictionary.DBIdentifiers.JOIN_COLUMN_NAME));
         if (!StringUtils.isEmpty(join.columnDefinition()))
-            col.setTypeName(join.columnDefinition());
+            col.setTypeName(_dict.delimitString(join.columnDefinition(), 
+                DBDictionary.DBIdentifiers.JOIN_COLUMN_COLUMN_DEFINITION));
         if (!StringUtils.isEmpty(join.referencedColumnName()))
-            col.setTarget(join.referencedColumnName());
+            col.setTarget(_dict.delimitString(join.referencedColumnName(), 
+                DBDictionary.DBIdentifiers.JOIN_COLUMN_REFERENCED_COLUMN_NAME));
         col.setNotNull(!join.nullable());
         col.setFlag(Column.FLAG_UNINSERTABLE, !join.insertable());
         col.setFlag(Column.FLAG_UNUPDATABLE, !join.updatable());
@@ -1867,7 +1877,7 @@ public class AnnotationPersistenceMappingParser
      */
     protected void parseContainerTable(FieldMapping fm, ContainerTable ctbl) {
         fm.getMappingInfo().setTableName(toTableName(ctbl.schema(),
-            ctbl.name()));
+            ctbl.name(), null, null));
         parseXJoinColumns(fm, fm.getMappingInfo(), false, ctbl.joinColumns());
         if (ctbl.joinForeignKey().specified())
             parseForeignKey(fm.getMappingInfo(), ctbl.joinForeignKey());
@@ -1880,8 +1890,8 @@ public class AnnotationPersistenceMappingParser
      */
     protected void parseCollectionTable(FieldMapping fm, CollectionTable ctbl) {
         FieldMappingInfo info = fm.getMappingInfo(); 
-        info.setTableName(toTableName(ctbl.schema(),
-            ctbl.name()));
+        info.setTableName(toTableName(ctbl.schema(), ctbl.name(),
+            DBDictionary.DBIdentifiers.COLLECTION_TABLE_SCHEMA, DBDictionary.DBIdentifiers.COLLECTION_TABLE_NAME));
         //ctbl.catalog()
         parseJoinColumns(fm, fm.getMappingInfo(), false, ctbl.joinColumns());
         addUniqueConstraints(info.getTableName(), fm.getDefiningMetaData(), 
@@ -1899,9 +1909,10 @@ public class AnnotationPersistenceMappingParser
 
         Column col = new Column();
         if (!StringUtils.isEmpty(order.name()))
-            col.setName(order.name());
+            col.setName(_dict.delimitString(order.name(), DBDictionary.DBIdentifiers.ORDER_COLUMN_NAME));
         if (!StringUtils.isEmpty(order.columnDefinition()))
-            col.setTypeName(order.columnDefinition());
+            col.setTypeName(_dict.delimitString(order.columnDefinition(), 
+                DBDictionary.DBIdentifiers.ORDER_COLUMN_COLUMN_DEFINITION));
         if (order.precision() != 0)
             col.setSize(order.precision());
         col.setFlag(Column.FLAG_UNINSERTABLE, !order.insertable());
@@ -1917,9 +1928,10 @@ public class AnnotationPersistenceMappingParser
         
         Column col = new Column();
         if (!StringUtils.isEmpty(order.name()))
-            col.setName(order.name());
+            col.setName(_dict.delimitString(order.name(), DBDictionary.DBIdentifiers.ORDER_COLUMN_NAME));
         if (!StringUtils.isEmpty(order.columnDefinition()))
-            col.setTypeName(order.columnDefinition());
+            col.setTypeName(_dict.delimitString(order.columnDefinition(), 
+                DBDictionary.DBIdentifiers.ORDER_COLUMN_COLUMN_DEFINITION));
         col.setNotNull(!order.nullable());
         col.setFlag(Column.FLAG_UNINSERTABLE, !order.insertable());
         col.setFlag(Column.FLAG_UNUPDATABLE, !order.updatable());
@@ -1969,8 +1981,10 @@ public class AnnotationPersistenceMappingParser
     protected void parseMapKeyColumn(FieldMapping fm, MapKeyColumn anno) {
         int unique = 0;
         FieldMappingInfo info = fm.getMappingInfo();
-        if (anno.table() != null && anno.table().length() > 0)
-        info.setTableName(anno.table());
+        if (anno.table() != null && anno.table().length() > 0) {
+            String tableName = _dict.delimitString(anno.table(), DBDictionary.DBIdentifiers.MAP_KEY_COLUMN_TABLE);
+            info.setTableName(tableName);
+        }
         Column col = new Column();
         setupMapKeyColumn(fm, col, anno);
         unique |= (anno.unique()) ? TRUE : FALSE;
@@ -1980,14 +1994,17 @@ public class AnnotationPersistenceMappingParser
     /**
      * Setup the given column with information from the given annotation.
      */
-    private static void setupMapKeyColumn(FieldMapping fm, Column col, 
+    private void setupMapKeyColumn(FieldMapping fm, Column col, 
         MapKeyColumn anno) {
-        if (!StringUtils.isEmpty(anno.name()))
-            col.setName(anno.name());
+        if (!StringUtils.isEmpty(anno.name())) {
+            String name = _dict.delimitString(anno.name(), DBDictionary.DBIdentifiers.MAP_KEY_COLUMN_NAME);
+            col.setName(name);
+        }
         else 
             col.setName(fm.getName() + "_" + "KEY");
         if (!StringUtils.isEmpty(anno.columnDefinition()))
-            col.setTypeName(anno.columnDefinition());
+            col.setTypeName(_dict.delimitString(anno.columnDefinition(), 
+                DBDictionary.DBIdentifiers.MAP_KEY_COLUMN_COLUMN_DEFINITION));
         if (anno.precision() != 0)
             col.setSize(anno.precision());
         else if (anno.length() != 255)
@@ -2033,18 +2050,32 @@ public class AnnotationPersistenceMappingParser
     /**
      *  Create a new schema column with information from the given annotation.
      */
-    private static Column newColumn(MapKeyJoinColumn join) {
+    private Column newColumn(MapKeyJoinColumn join) {
         Column col = new Column();
         if (!StringUtils.isEmpty(join.name()))
-            col.setName(join.name());
+            col.setName(_dict.delimitString(join.name(), DBDictionary.DBIdentifiers.MAP_KEY_JOIN_COLUMN_NAME));
         if (!StringUtils.isEmpty(join.columnDefinition()))
-            col.setName(join.columnDefinition());
+            col.setTypeName(_dict.delimitString(join.columnDefinition(), 
+                DBDictionary.DBIdentifiers.MAP_KEY_JOIN_COLUMN_COLUMN_DEFINITION));
         if (!StringUtils.isEmpty(join.referencedColumnName()))
-            col.setTarget(join.referencedColumnName());
+            col.setTarget(_dict.delimitString(join.referencedColumnName(), 
+                DBDictionary.DBIdentifiers.MAP_KEY_JOIN_COLUMN_REFERENCED_COLUMN_NAME));
         col.setNotNull(!join.nullable());
         col.setFlag(Column.FLAG_UNINSERTABLE, !join.insertable());
         col.setFlag(Column.FLAG_UNUPDATABLE, !join.updatable ());
         return col;
+    }
+    
+    @Override
+    protected String delimitString(String name, DBIdentifiers type) {
+        if (type == DBIdentifiers.SEQUENCE_GEN_SCHEMA) {
+            return _dict.delimitString(name, DBDictionary.DBIdentifiers.SEQUENCE_GEN_SCHEMA);
+        }
+        else if (type == DBIdentifiers.SEQUENCE_GEN_SEQ_NAME) {
+            return _dict.delimitString(name, DBDictionary.DBIdentifiers.SEQUENCE_GEN_SEQ_NAME);
+        }
+        
+        return name;
     }
     
 }

@@ -183,6 +183,8 @@ public class NativeJDBCSeq
         if (schema == null)
             schema = group.addSchema(schemaName);
         schema.importSequence(_seq);
+        // TODO: temp until a more global name solution is implemented
+        schema.addDelimSequenceName(_conf.getDBDictionaryInstance().addDelimiters(_seqName), _seq);
     }
 
     @Override
@@ -250,6 +252,8 @@ public class NativeJDBCSeq
         Schema schema = group.addSchema(schemaName);
 
         _seq = schema.addSequence(seqName);
+        // TODO: temp until a global name solution is implemented
+        schema.addDelimSequenceName(_conf.getDBDictionaryInstance().addDelimiters(seqName), _seq);
         _seq.setInitialValue(_initial);
         _seq.setIncrement(_increment);
         _seq.setAllocate(_allocate);

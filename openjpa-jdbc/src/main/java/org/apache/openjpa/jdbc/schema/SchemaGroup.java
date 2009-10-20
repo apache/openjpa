@@ -33,6 +33,7 @@ public class SchemaGroup
     implements Cloneable {
 
     private Map _schemaMap = null;
+    private Map<String, Schema> _delimSchemaMap = null;
 
     // cache
     private Schema[] _schemas = null;
@@ -55,7 +56,13 @@ public class SchemaGroup
             return null;
         if (name != null)
             name = name.toUpperCase();
-        return (Schema) _schemaMap.get(name);
+        // TODO: temp until a more global solution is implemented
+        Schema schema = (Schema) _schemaMap.get(name);
+        if (schema == null && _delimSchemaMap != null) {
+            schema = _delimSchemaMap.get(name);
+        }
+        return schema;
+//        return (Schema) _schemaMap.get(name);
     }
 
     /**
@@ -78,6 +85,17 @@ public class SchemaGroup
         _schemaMap.put(name, schema);
         _schemas = null;
         return schema;
+    }
+    
+    // TODO: temp until a more global solution is implemented
+    public void addDelimSchemaName(String name, Schema schema) {
+        addName(name,false);
+        if (name != null)
+            name = name.toUpperCase();
+        if (_delimSchemaMap == null) {
+            _delimSchemaMap = new HashMap<String, Schema>();
+        }
+        _delimSchemaMap.put(name, schema);
     }
 
     /**

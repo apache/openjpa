@@ -18,46 +18,50 @@
  */
 package org.apache.openjpa.persistence.delimited.identifiers;
 
+import java.util.Collection;
+import java.util.HashSet;
+
 import javax.persistence.Entity;
 import javax.persistence.Id;
+import javax.persistence.ManyToMany;
 import javax.persistence.Table;
 
 @Entity
-@Table(name="\"entity g\"", schema="\"delim id\"")
-public class EntityG {
+@Table(name="entity i", schema="delim id2")
+public class EntityI {
     @Id
-    int id;
-    String name;
+    private int id;
+    private String name;
+    @ManyToMany(mappedBy="entityIs")
+    private Collection<EntityH> entityHs = new HashSet<EntityH>();
     
-    public EntityG() {}
+    public EntityI() {}
     
-    public EntityG(int id) {
+    public EntityI(int id) {
         this.id = id;
     }
-    
-    public EntityG(int id, String name) {
-        this.id = id;
-        this.name = name;
-    }
-    
+
     /**
      * @return the id
      */
     public int getId() {
         return id;
     }
+
     /**
      * @param id the id to set
      */
     public void setId(int id) {
         this.id = id;
     }
+
     /**
      * @return the name
      */
     public String getName() {
         return name;
     }
+
     /**
      * @param name the name to set
      */
@@ -65,4 +69,21 @@ public class EntityG {
         this.name = name;
     }
 
+    /**
+     * @return the entityHs
+     */
+    public Collection<EntityH> getEntityHs() {
+        return entityHs;
+    }
+
+    /**
+     * @param entityHs the entityHs to set
+     */
+    public void setEntityHs(Collection<EntityH> entityHs) {
+        this.entityHs = entityHs;
+    }
+    
+    public void addEntityH(EntityH entityH) {
+        entityHs.add(entityH);
+    }
 }

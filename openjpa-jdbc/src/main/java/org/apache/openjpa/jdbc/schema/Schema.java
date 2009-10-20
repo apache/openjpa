@@ -36,6 +36,8 @@ public class Schema
     private SchemaGroup _group = null;
     private Map _tableMap = null;
     private Map _seqMap = null;
+    // TODO: temp until a more global solution is implemented
+    private Map<String, Sequence> _delimSeqMap = null;
 
     // cache
     private Table[] _tables = null;
@@ -206,7 +208,12 @@ public class Schema
     public Sequence getSequence(String name) {
         if (name == null || _seqMap == null)
             return null;
-        return (Sequence) _seqMap.get(name.toUpperCase());
+        // TODO: temp until a more global solution is implemented
+        Sequence seq = (Sequence) _seqMap.get(name.toUpperCase());
+        if (seq == null && _delimSeqMap != null) {
+            seq = _delimSeqMap.get(name.toUpperCase());
+        }
+        return seq;
     }
 
     /**
@@ -225,6 +232,17 @@ public class Schema
         _seqMap.put(name.toUpperCase(), seq);
         _seqs = null;
         return seq;
+    }
+    
+    public void addDelimSequenceName(String name, Sequence seq) {
+        SchemaGroup group = getSchemaGroup();
+        if (group != null) {
+            group.addName(name, true);
+        }
+        if (_delimSeqMap == null) {
+            _delimSeqMap = new TreeMap<String, Sequence>();
+        }
+        _delimSeqMap.put(name.toUpperCase(), seq);
     }
 
     /**

@@ -51,6 +51,7 @@ import org.apache.openjpa.jdbc.meta.strats.VerticalClassStrategy;
 import org.apache.openjpa.jdbc.schema.Column;
 import org.apache.openjpa.jdbc.schema.Table;
 import org.apache.openjpa.jdbc.schema.Unique;
+import org.apache.openjpa.jdbc.sql.DBDictionary;
 import org.apache.openjpa.lib.log.Log;
 import org.apache.openjpa.lib.util.Localizer;
 import org.apache.openjpa.meta.ClassMetaData;
@@ -1405,5 +1406,13 @@ public class XMLPersistenceMappingParser
         private String _defTable;
         private String _attrName;
         private EnumSet<UniqueFlag> _unique;
-    }    
+    }  
+    
+    @Override
+    protected boolean startDelimitedIdentifiers() {
+        JDBCConfiguration conf = (JDBCConfiguration) getConfiguration();
+        DBDictionary dict = conf.getDBDictionaryInstance();
+        dict.setDelimitIds(true);
+        return true;
+    }
 }

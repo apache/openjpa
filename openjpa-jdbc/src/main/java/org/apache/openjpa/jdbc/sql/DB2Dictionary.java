@@ -89,9 +89,6 @@ public class DB2Dictionary
     
     private int defaultBatchLimit = 100;
     
-    private EnumSet<DBIdentifiers> unsupportedDelimitedIds =
-        EnumSet.of(DBIdentifiers.COLUMN_COLUMN_DEFINITION); 
-    
     public DB2Dictionary() {
         platform = "DB2";
         validationSQL = "SELECT DISTINCT(CURRENT TIMESTAMP) FROM "
@@ -884,14 +881,6 @@ public class DB2Dictionary
             }
         }
         return recoverable;
-    }
-    
-    /**
-     * @return the unsupportedDelimitedIds
-     */
-    @Override
-    protected EnumSet<DBIdentifiers> getUnsupportedDelimitedIds() {
-        return unsupportedDelimitedIds;
     }
     
     @Override
