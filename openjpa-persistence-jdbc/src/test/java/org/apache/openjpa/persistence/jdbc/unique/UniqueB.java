@@ -22,7 +22,7 @@ import javax.persistence.*;
 
 @Entity
 @Table(name="UNIQUE_B",
-	   uniqueConstraints={@UniqueConstraint(columnNames={"b1","b2"})})
+	   uniqueConstraints={@UniqueConstraint(columnNames={"f1","f2"})})
 public class UniqueB {
 	@Id
 	@GeneratedValue(strategy=GenerationType.TABLE, generator="testGenerator")
@@ -31,8 +31,10 @@ public class UniqueB {
 			uniqueConstraints={@UniqueConstraint(columnNames={"GEN1","GEN2"})})
 	private int bid;
 	
+	// Same named field in UniqueA also is defined as unique
+	@Column(unique=true, nullable=false)
+	private int f1;
+	
 	@Column(nullable=false)
-	private int b1;
-	@Column(nullable=false)
-	private int b2;
+	private int f2;
 }

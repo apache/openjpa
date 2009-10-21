@@ -19,7 +19,7 @@
 -->
 <entity-mappings xmlns="http://java.sun.com/xml/ns/persistence/orm"
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://java.sun.com/xml/ns/persistence/orm orm_1_0.xsd"
+	xsi:schemaLocation="http://java.sun.com/xml/ns/persistence orm_1_0.xsd"
 	version="1.0">
 	
 	<persistence-unit-metadata>
@@ -31,46 +31,45 @@
 	<entity name="UniqueA" class="UniqueA">
 		<table name="UNIQUE_A_XML">
 			<unique-constraint>
-				<column-name>a1x</column-name>
-				<column-name>a2x</column-name>
+				<column-name>f1x</column-name>
+				<column-name>f2x</column-name>
 			</unique-constraint>
 			<unique-constraint>
-				<column-name>a3x</column-name>
-				<column-name>a4x</column-name>
+				<column-name>f3x</column-name>
+				<column-name>f4x</column-name>
 			</unique-constraint>
 		</table>
 		<secondary-table name="UNIQUE_SECONDARY_XML">
 			<unique-constraint>
-				<column-name>sa1x</column-name>
+				<column-name>sf1x</column-name>
 			</unique-constraint>
 		</secondary-table>
 		<attributes>
 			<id name="aid">
 			</id>
-			<basic name="a1">
-				<column name="a1x"/>
+			<basic name="f1">
+				<column name="f1x" unique="true"/>
 			</basic>
-			<basic name="a2">
-				<column name="a2x"/>
+			<basic name="f2">
+				<column name="f2x"/>
 			</basic>
-			<basic name="a3">
-				<column name="a3x"/>
+			<basic name="f3">
+				<column name="f3x"/>
 			</basic>
-			<basic name="a4">
-				<column name="a4x"/>
+			<basic name="f4">
+				<column name="f4x"/>
 			</basic>
-			<basic name="a5">
-				<column name="a5x"/>
+			<basic name="f5">
+				<column name="f5x"/>
 			</basic>
-			<basic name="a6">
-				<column name="a6x"/>
+			<basic name="f6">
+				<column name="f6x"/>
 			</basic>
-			
-			<basic name="sa1">
-				<column name="sa1x" table="UNIQUE_SECONDARY_XML" />
+			<basic name="sf1">
+				<column name="sf1x" table="UNIQUE_SECONDARY_XML" />
 			</basic>
-			<basic name="sa2">
-				<column name="sa2x" table="UNIQUE_SECONDARY_XML" />
+			<basic name="sf2">
+				<column name="sf2x" table="UNIQUE_SECONDARY_XML" />
 			</basic>
 
 			<many-to-many name="bs">
@@ -89,8 +88,8 @@
 	<entity name="UniqueB" class="UniqueB">
 		<table name="UNIQUE_B_XML">
 			<unique-constraint>
-				<column-name>b1x</column-name>
-				<column-name>b2x</column-name>
+				<column-name>f1x</column-name>
+				<column-name>f2x</column-name>
 			</unique-constraint>
 		</table>
 		<attributes>
@@ -106,11 +105,11 @@
 					</unique-constraint>
 				</table-generator>
 			</id>
-			<basic name="b1">
-				<column name="b1x"/>
+			<basic name="f1">
+				<column name="f1x" unique="true"/>
 			</basic>
-			<basic name="b2">
-				<column name="b2x"/>
+			<basic name="f2">
+				<column name="f2x"/>
 			</basic>
 		</attributes>
 	</entity>
