@@ -40,7 +40,7 @@ public class TestQueryLock extends BaseQueryTest {
 
     public void testJPQLLock() {
         EntityManager em = currentEntityManager();
-        Query q = em.createQuery("SELECT o FROM Entity1 o " + "WHERE o.stringField = 'testSimple'");
+        Query q = em.createQuery("SELECT o FROM Entity1 o WHERE o.stringField = 'testSimple'");
 
         try {
             q.setLockMode(LockModeType.NONE);
