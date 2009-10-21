@@ -43,7 +43,11 @@ class ToLowerCase
         DBDictionary dict = ctx.store.getDBDictionary();
         String func = dict.toLowerCaseFunction;
         dict.assertSupport(func != null, "ToLowerCaseFunction");
-        func = dict.getCastFunction(getValue(), func);
+        if (getValue() instanceof PCPath) {
+            func = dict.getCastFunction(getValue(), func, ((PCPath) getValue()).getFieldMapping(state).getColumns()[0]);
+        } else {
+            func = dict.getCastFunction(getValue(), func);
+        }
 
         int idx = func.indexOf("{0}");
         buf.append(func.substring(0, idx));

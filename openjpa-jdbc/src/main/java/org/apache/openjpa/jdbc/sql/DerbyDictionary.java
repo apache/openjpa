@@ -40,6 +40,8 @@ public class DerbyDictionary
         validationSQL = "VALUES(1)";
         stringLengthFunction = "LENGTH({0})";
         substringFunctionName = "SUBSTR";
+        toUpperCaseFunction = "UPPER(CAST({0} AS VARCHAR(1000)))";
+        toLowerCaseFunction = "LOWER(CAST({0} AS VARCHAR(1000)))";
 
         maxConstraintNameLength = 18;
         maxIndexNameLength = 18;
