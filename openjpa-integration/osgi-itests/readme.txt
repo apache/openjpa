@@ -39,25 +39,28 @@ Installing and running the Felix Web Console and Jetty:
 
 Installing OpenJPA 2.0.x
 --------------------------------------------
-1) Install the following prereq bundles:
+1) Install the following released prereq bundles:
 
    a) osgi:install http://repo1.maven.org/maven2/commons-collections/commons-collections/3.2.1/commons-collections-3.2.1.jar
    b) osgi:install http://repo1.maven.org/maven2/commons-lang/commons-lang/2.4/commons-lang-2.4.jar
    c) osgi:install http://repo1.maven.org/maven2/commons-pool/commons-pool/1.5/commons-pool-1.5.jar
    d) osgi:install http://repo1.maven.org/maven2/org/apache/geronimo/specs/geronimo-jms_1.1_spec/1.1.1/geronimo-jms_1.1_spec-1.1.1.jar
    e) osgi:install http://repo1.maven.org/maven2/org/apache/geronimo/specs/geronimo-jta_1.1_spec/1.1.1/geronimo-jta_1.1_spec-1.1.1.jar
-   f) osgi:install http://mirrors.ibiblio.org/pub/mirrors/maven2/org/apache/geronimo/specs/geronimo-jpa_2.0_spec/1.0-PFD2/geronimo-jpa_2.0_spec-1.0-PFD2.jar
-   g) osgi:install http://mirrors.ibiblio.org/pub/mirrors/maven2/org/apache/geronimo/specs/geronimo-validation_1.0_spec/1.0-CR5/geronimo-validation_1.0_spec-1.0-CR5.jar
 
-2) Install OpenJPA 2.0.x:
+2) Install the following SNAPSHOT prereq bundles:
 
-  For OpenJPA 2.0.0-M3:
-  a) osgi:install http://people.apache.org/~dwoods/openjpa/2.0.0-M3/staging-repo/org/apache/openjpa/openjpa/2.0.0-M3/openjpa-2.0.0-M3.jar
+   a) osgi:install http://mirrors.ibiblio.org/pub/mirrors/maven2/org/apache/geronimo/specs/geronimo-jpa_2.0_spec/1.0-EA9-SNAPSHOT/geronimo-jpa_2.0_spec-1.0-EA9-SNAPSHOT.jar
+   b) osgi:install http://mirrors.ibiblio.org/pub/mirrors/maven2/org/apache/geronimo/specs/geronimo-validation_1.0_spec/1.0-EA6-SNAPSHOT/geronimo-validation_1.0_spec-1.0-EA6-SNAPSHOT.jar
+
+3) Install the latest OpenJPA 2.0.0-SNAPSHOT build:
+
+  For latest published nightly build of OpenJPA 2.0.0-SNAPSHOT:
+  a) osgi:install http://people.apache.org/repo/m2-snapshot-repository/org/apache/openjpa/openjpa-osgi/2.0.0-SNAPSHOT/openjpa-osgi-2.0.0-SNAPSHOT.jar
 
   For a locally built OpenJPA trunk (2.0.0-SNAPSHOT):
-  a) osgi:install file:///<m2_repo>/org/apache/openjpa/openjpa/2.0.0-SNAPSHOT/openjpa-2.0.0-SNAPSHOT.jar
+  a) osgi:install file:///<m2_repo>/org/apache/openjpa/openjpa-osgi/2.0.0-SNAPSHOT/openjpa-osgi-2.0.0-SNAPSHOT.jar
 
-3) Check the Karaf logfile for any problems:
+4) Check the Karaf logfile for any problems:
 
    apache-felix-karaf-1.0.0/data/log/karaf.log 
 
@@ -72,9 +75,16 @@ from source.
 2) Install the bundlized HelloJPA example:
 
    a) osgi:install file:///<m2_repo>/org/apache/openjpa/openjpa-integration-osgi-itests/2.0.0-SNAPSHOT/openjpa-integration-osgi-itests-2.0.0-SNAPSHOT.jar
-   b) osgi:start <bundle id for openjpa-integration-osgi-itests>
+   b) osgi:start <bundle id for geronimo-jpa_2.0_spec>
+   c) osgi:start <bundle id for openjpa-osgi>
+   d) osgi:start <bundle id for openjpa-integration-osgi-itests>
 
-Note:  At this point the start should fail with a message like:
+
+Note:  At this point the start should fail with one of the following messages:
+
+   a) If you are not using a level of OpenJPA and the Geronimo Spec that 
+      supports resolving providers in an OSGi environment -
+
     Bundle start
     org.osgi.framework.BundleException: Activator start error in bundle
     org.apache.openjpa.openjpa-integration-osgi-itests [45].
@@ -90,10 +100,25 @@ Note:  At this point the start should fail with a message like:
 	... 15 more
 
 
-2) To reinstall the sample app, you'll need to stop and uninstall it first, even if the initial install failed:
+   b) The latest code, which still has some issues loading in OSGi -
 
-   a) osgi:stop <bundle id for openjpa-integration-osgi-itests>
-   b) osgi:uninstall <bundle id for openjpa-integration-osgi-itests>
+    Bundle start
+    org.osgi.framework.BundleException: Activator start error in bundle
+    org.apache.openjpa.openjpa-integration-osgi-itests [45].
+    . . .
+    Caused by: java.lang.NoSuchMethodError: javax.persistence.spi.PersistenceUnitInfo.getValidationMode()Ljavax/persistence/ValidationMode;
+	at org.apache.openjpa.persistence.PersistenceUnitInfoImpl.toOpenJPAProperties(PersistenceUnitInfoImpl.java:487)
+    . . .
+	at hellojpa.Main.main(Main.java:38)
+	at hellojpa.Main.start(Main.java:81)
+	at org.apache.felix.framework.util.SecureAction.startActivator(SecureAction.java:667)
+	at org.apache.felix.framework.Felix.activateBundle(Felix.java:1699)
+	... 15 more
+ 
+
+2) To reinstall the sample app, you'll need to uninstall it first, even if the initial install failed:
+
+   a) osgi:uninstall <bundle id for openjpa-integration-osgi-itests>
 
 
 Shutting down Karaf:

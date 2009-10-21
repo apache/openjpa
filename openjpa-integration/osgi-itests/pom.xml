@@ -42,7 +42,7 @@
         <!-- OpenJPA runtime and depends -->
         <dependency>
             <groupId>org.apache.openjpa</groupId>
-            <artifactId>openjpa</artifactId>
+            <artifactId>openjpa-osgi</artifactId>
             <version>${version}</version>
             <scope>provided</scope>
         </dependency>
@@ -62,11 +62,13 @@
             <artifactId>geronimo-jta_1.1_spec</artifactId>
             <scope>provided</scope>
         </dependency>
+        <!-- Not needed yet...
         <dependency>
             <groupId>org.apache.geronimo.specs</groupId>
             <artifactId>geronimo-validation_1.0_spec</artifactId>
             <scope>test</scope>
         </dependency>
+        -->
         <!-- Note: Overriding parent versions as these have bundle metadata -->
         <dependency>
             <groupId>commons-collections</groupId>
@@ -86,12 +88,14 @@
             <scope>test</scope>
         </dependency>
         <!-- Testcase depends -->
+        <!--
         <dependency>
             <groupId>org.apache.openjpa</groupId>
             <artifactId>openjpa-examples</artifactId>
             <version>${version}</version>
             <scope>test</scope>
         </dependency>
+        -->
         <dependency>
             <groupId>org.apache.derby</groupId>
             <artifactId>derby</artifactId>
@@ -288,7 +292,7 @@
                         <!-- <Private-Package>hellojpa*,META-INF*</Private-Package> -->
                         <Import-Package>org.apache.openjpa.*,*</Import-Package>
                         <!-- <Export-Package></Export-Package> -->
-                        <Require-Bundle>org.apache.openjpa.openjpa;bundle-version="[1.3.0,3.0.0)"</Require-Bundle>
+                        <Require-Bundle>org.apache.geronimo.specs.geronimo-jpa_2.0_spec;bundle-version="[1.0.0,2.0.0)",org.apache.openjpa.openjpa-osgi;bundle-version="[2.0.0,3.0.0)"</Require-Bundle>
                         <!-- Eclipse metadata -->
                         <Eclipse-Autostart>false</Eclipse-Autostart>
                     </instructions>

@@ -104,6 +104,7 @@
         <module>openjpa-xmlstore</module>
         <module>openjpa-slice</module>
         <module>openjpa</module>
+        <!-- <module>openjpa-osgi</module> -->
         <module>openjpa-project</module>
         <module>openjpa-examples</module>
         <module>openjpa-integration</module>
