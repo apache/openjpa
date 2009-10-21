@@ -17,8 +17,12 @@ regarding copyright ownership.  The ASF licenses this file
  specific language governing permissions and limitations
 under the License.
 -->
-<entity-mappings xmlns="http://java.sun.com/xml/ns/persistence/orm" version="1.0">
-    <entity class="org.apache.openjpa.persistence.entity.MixedMappingLocation">
+<entity-mappings xmlns="http://java.sun.com/xml/ns/persistence/orm"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://java.sun.com/xml/ns/persistence/orm orm_2_0.xsd"
+    version="2.0">
+    <package>org.apache.openjpa.persistence.entity</package>
+    <entity name="MixedMappingLocation" class="MixedMappingLocation">
 		<attributes>
 			<embedded-id name="id"></embedded-id>
 			<basic name="basic1">
@@ -26,5 +30,12 @@ under the License.
 			</basic>         
 		</attributes>
     </entity>
-    <embeddable class="org.apache.openjpa.persistence.entity.MixedMappingLocationEmbeddedId"></embeddable>
+    <embeddable class="MixedMappingLocationEmbeddedId">
+    <attributes>
+		<basic name="basic10">
+			<column name="basic10_override" length="100"/>
+		</basic>
+		</attributes>         
+		</embeddable>
+		
 </entity-mappings>

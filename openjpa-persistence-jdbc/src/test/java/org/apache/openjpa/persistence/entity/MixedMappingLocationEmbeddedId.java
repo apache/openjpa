@@ -31,6 +31,8 @@ public class MixedMappingLocationEmbeddedId implements Serializable {
     @Basic
     private String country;
 
+    private String basic10;
+    
     public MixedMappingLocationEmbeddedId() {
         // TODO Auto-generated constructor stub
     }

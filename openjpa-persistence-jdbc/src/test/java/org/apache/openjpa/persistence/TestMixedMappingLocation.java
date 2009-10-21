@@ -18,20 +18,17 @@
  */
 package org.apache.openjpa.persistence;
 
-import javax.persistence.Entity;
-
 import org.apache.openjpa.persistence.entity.MixedMappingLocation;
 import org.apache.openjpa.persistence.entity.MixedMappingLocationEmbeddedId;
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
 
 // org.apache.openjpa.persistence.TestMixedMappingLocation
-@Entity
 public class TestMixedMappingLocation extends SingleEMFTestCase {
 
-    @Override
     protected String getPersistenceUnitName() {
-        return "test_parsing";
+        return "xml-persistence-unit";
     }
+    
     public void setUp() {
         setUp(DROP_TABLES,MixedMappingLocationEmbeddedId.class, MixedMappingLocation.class);
     }
