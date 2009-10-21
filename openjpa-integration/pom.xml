@@ -35,6 +35,6 @@
         <module>examples</module>
         <module>tck</module>
         <module>validation</module>
-        <module>osgi-itests</module>
+        <!-- <module>osgi-itests</module> -->
     </modules>
 </project>
