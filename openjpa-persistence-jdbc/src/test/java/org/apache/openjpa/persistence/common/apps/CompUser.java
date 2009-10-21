@@ -18,10 +18,20 @@
  */
 package org.apache.openjpa.persistence.common.apps;
 
-import javax.persistence.*;
-import org.apache.openjpa.persistence.*;
+import javax.persistence.Basic;
+import javax.persistence.CascadeType;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.Inheritance;
+import javax.persistence.InheritanceType;
+import javax.persistence.JoinColumn;
+import javax.persistence.Lob;
+import javax.persistence.OneToOne;
 
-import java.util.*;
+import org.apache.openjpa.persistence.PersistentCollection;
 
 @Entity
 @Inheritance(strategy=InheritanceType.SINGLE_TABLE)
@@ -37,7 +47,11 @@ public class CompUser
 	@Basic
 	@Column(name="compName", length=50)
 	private String computerName;
-
+    
+	@Basic
+    @Lob
+    private String nameAsLob;
+	
 	@PersistentCollection
 	private String[] nicknames = new String[0];
 
@@ -57,6 +71,7 @@ public class CompUser
 		this.computerName = cName;
 		this.address = address;
 		this.age = age;
+		this.nameAsLob = name;
 	}
 
 	public String getComputerName() {
@@ -83,7 +98,15 @@ public class CompUser
 		return address;
 	}
 
-	public void setAddress(Address address) {
+	public String[] getNicknames() {
+        return nicknames;
+    }
+
+    public void setNicknames(String[] nicknames) {
+        this.nicknames = nicknames;
+    }
+
+    public void setAddress(Address address) {
 		this.address = address;
 	}
 
@@ -93,6 +116,14 @@ public class CompUser
 
 	public void setAge(int age) {
 		this.age = age;
+	}
+
+	public String getNameAsLob() {
+		return nameAsLob;
+	}
+
+	public void setNameAsLob(String nameAsLob) {
+		this.nameAsLob = nameAsLob;
 	}
 
 }
