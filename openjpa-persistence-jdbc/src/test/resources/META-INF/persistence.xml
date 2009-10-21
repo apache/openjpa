@@ -254,7 +254,13 @@
     
     <persistence-unit name="mdr-pu">
         <class>org.apache.openjpa.persistence.meta.MdrTestEntity</class>
-    </persistence-unit>      
+    </persistence-unit>    
+    
+    <persistence-unit name="test_parsing">
+		<mapping-file>org/apache/openjpa/persistence/entity/orm.xml</mapping-file>
+		<class>org.apache.openjpa.persistence.entity.MixedMappingLocation</class>
+		<class>org.apache.openjpa.persistence.entity.MixedMappingLocationEmbeddedId</class>			
+	</persistence-unit>  
 
     <persistence-unit name="mapsId-pu">
         <mapping-file>org/apache/openjpa/persistence/enhance/identity/mapsId-orm.xml</mapping-file>

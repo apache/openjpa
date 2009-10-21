@@ -491,21 +491,22 @@ public class AnnotationPersistenceMetaDataParser
      * Read annotations for the current type.
      */
     private ClassMetaData parseClassAnnotations() {
-        // check immediately whether the user is using any annotations,
-        // regardless of mode.  this prevents adding non-entity classes to
-        // repository if we're ignoring these annotations in mapping mode
-        if (!(AccessController.doPrivileged(J2DoPrivHelper
-            .isAnnotationPresentAction(_cls, Entity.class))).booleanValue()
-            && !(AccessController.doPrivileged(J2DoPrivHelper
-                .isAnnotationPresentAction(_cls, Embeddable.class)))
+        // Check to see if there is cached metadata for the class that we are currently parsing. It
+        // is possible that one of the annotations (Entity, Embeddable, MappedSuperclass) is in the
+        // orm.xml. We still need to look at these files for other annotations and more importantly
+        // setup defaults (ie: Basic fields).
+        ClassMetaData m = getRepository().getCachedMetaData(_cls);
+        if (m == null) {
+        if (!(AccessController.doPrivileged(J2DoPrivHelper.isAnnotationPresentAction(_cls, Entity.class)))
                 .booleanValue()
-            && !(AccessController.doPrivileged(J2DoPrivHelper
-                .isAnnotationPresentAction(_cls, MappedSuperclass.class)))
-                .booleanValue())
-            return null;
-
+                && !(AccessController.doPrivileged(J2DoPrivHelper.isAnnotationPresentAction(_cls, Embeddable.class)))
+                    .booleanValue()
+                && !(AccessController.doPrivileged(J2DoPrivHelper.isAnnotationPresentAction(_cls,
+                    MappedSuperclass.class))).booleanValue())
+                return null;
+        }
         // find / create metadata
-        ClassMetaData meta = getMetaData();
+        ClassMetaData meta = (m == null) ? getMetaData() : m;
         if (meta == null)
             return null;
 

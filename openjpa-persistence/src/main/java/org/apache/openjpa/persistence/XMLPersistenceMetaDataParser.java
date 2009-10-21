@@ -1063,6 +1063,7 @@ public class XMLPersistenceMetaDataParser
         fmd.setExplicit(true);
         fmd.setPrimaryKey(true);
         fmd.setEmbedded(true);
+        fmd.setSerialized(false);
         if (fmd.getEmbeddedMetaData() == null)
 //            fmd.addEmbeddedMetaData();
             deferEmbeddable(fmd.getDeclaredType(), fmd);
