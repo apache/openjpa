@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.persistence;
 
@@ -143,7 +143,7 @@ public class AnnotationPersistenceMetaDataParser
 
     private static final Map<Class<?>, MetaDataTag> _tags =
         new HashMap<Class<?>, MetaDataTag>();
-    
+
     // The following is needed for input into the delimitString() method
     protected static enum DBIdentifiers {
         SEQUENCE_GEN_SEQ_NAME,
@@ -617,8 +617,8 @@ public class AnnotationPersistenceMetaDataParser
                     if (isMetaDataMode())
                         parseAccess(meta, (Access)anno);
                     break;
-                case CACHEABLE: 
-                    if (isMetaDataMode()) { 
+                case CACHEABLE:
+                    if (isMetaDataMode()) {
                         parseCache(meta, (Cacheable) anno);
                     }
                     break;
@@ -671,11 +671,11 @@ public class AnnotationPersistenceMetaDataParser
 
     /**
      * Set the explicit access type, if specified.
-     */    
+     */
     private void parseAccess(ClassMetaData meta, Access access) {
     	if (access != null) {
-    		meta.setAccessType(AccessCode.EXPLICIT 
-            | (access.value() == AccessType.FIELD ? 
+    		meta.setAccessType(AccessCode.EXPLICIT
+            | (access.value() == AccessType.FIELD ?
             	AccessCode.FIELD : AccessCode.PROPERTY));
     	}
     }
@@ -720,7 +720,7 @@ public class AnnotationPersistenceMetaDataParser
 
     /**
      * Gets the explicit access for the class, if any.
-     * Explicit access type specification does not affect the access type of 
+     * Explicit access type specification does not affect the access type of
      * other entity classes or mapped super classes in the entity hierarchy.
      */
     private int getAccessCode(Class<?> cls) {
@@ -728,8 +728,8 @@ public class AnnotationPersistenceMetaDataParser
         Access access = AccessController.doPrivileged(
             J2DoPrivHelper.getAnnotationAction(cls, Access.class));
         if (access != null) {
-            accessCode |=  AccessCode.EXPLICIT | 
-                (access.value() == AccessType.FIELD ? 
+            accessCode |=  AccessCode.EXPLICIT |
+                (access.value() == AccessType.FIELD ?
                 AccessCode.FIELD : AccessCode.PROPERTY);
         }
         return accessCode;
@@ -748,17 +748,17 @@ public class AnnotationPersistenceMetaDataParser
 
         String rsrc = StringUtils.replace(cls.getName(), ".", "/");
         ClassLoader loader = AccessController.doPrivileged(
-            J2DoPrivHelper.getClassLoaderAction(cls)); 
+            J2DoPrivHelper.getClassLoaderAction(cls));
         if (loader == null)
             loader = AccessController.doPrivileged(
-                J2DoPrivHelper.getSystemClassLoaderAction()); 
+                J2DoPrivHelper.getSystemClassLoaderAction());
         if (loader == null)
             return null;
         URL url = AccessController.doPrivileged(
-            J2DoPrivHelper.getResourceAction(loader, rsrc + ".java")); 
+            J2DoPrivHelper.getResourceAction(loader, rsrc + ".java"));
         if (url == null) {
             url = AccessController.doPrivileged(
-                J2DoPrivHelper.getResourceAction(loader, rsrc + ".class")); 
+                J2DoPrivHelper.getResourceAction(loader, rsrc + ".class"));
             if (url == null)
                 return null;
         }
@@ -847,7 +847,7 @@ public class AnnotationPersistenceMetaDataParser
         } else {
             Field[] fields = (Field[]) AccessController.doPrivileged(
                 J2DoPrivHelper.getDeclaredFieldsAction(
-                    meta.getDescribedType())); 
+                    meta.getDescribedType()));
             for (int i = 0; i < fields.length; i++)
                 if ((AccessController.doPrivileged(J2DoPrivHelper
                     .isAnnotationPresentAction(fields[i], DetachedState.class)))
@@ -864,7 +864,7 @@ public class AnnotationPersistenceMetaDataParser
         Class<?>[] classes = listeners.value();
         Collection<LifecycleCallbacks>[] parsed = null;
         for (Class<?> cls : classes)
-            parsed = parseCallbackMethods(cls, parsed, true, true, 
+            parsed = parseCallbackMethods(cls, parsed, true, true,
                 getRepository());
         return parsed;
     }
@@ -929,7 +929,7 @@ public class AnnotationPersistenceMetaDataParser
                     int e = events[i];
                     if (callbacks[e] == null)
                         callbacks[e] = new ArrayList<LifecycleCallbacks>(3);
-                    MetaDataParsers.validateMethodsForSameCallback(cls, 
+                    MetaDataParsers.validateMethodsForSameCallback(cls,
                         callbacks[e], m, tag, conf, repos.getLog());
                     if (listener) {
                         callbacks[e].add(new BeanLifecycleCallbacks(cls, m,
@@ -943,7 +943,7 @@ public class AnnotationPersistenceMetaDataParser
         }
         return callbacks;
     }
-    
+
     /**
      * Store lifecycle metadata.
      */
@@ -973,13 +973,13 @@ public class AnnotationPersistenceMetaDataParser
     /**
      * Create fetch groups.
      * If FetchGroup A includes FetchGroup B, then a bi-link is set between
-     * A and B. Both A and B must be declared in the same Class. 
+     * A and B. Both A and B must be declared in the same Class.
      * <br>
-     * Call {@link #parseFetchAttribute(ClassMetaData, 
+     * Call {@link #parseFetchAttribute(ClassMetaData,
      * org.apache.openjpa.meta.FetchGroup, FetchAttribute) only after the
      * bi-links have been established, because a field f will not only add the
-     * fetch group A which explictly includes f to its custom fetch groups but 
-     * also will also add any fetch group B that includes A.  
+     * fetch group A which explictly includes f to its custom fetch groups but
+     * also will also add any fetch group B that includes A.
      */
     private void parseFetchGroups(ClassMetaData meta, FetchGroup... groups) {
         org.apache.openjpa.meta.FetchGroup fg;
@@ -989,39 +989,39 @@ public class AnnotationPersistenceMetaDataParser
 
             fg = meta.addDeclaredFetchGroup(group.name());
             if (group.postLoad())
-                fg.setPostLoad(true); 
+                fg.setPostLoad(true);
             for (String s : group.fetchGroups()) {
                 fg.addDeclaredInclude(s);
             }
         }
-        // Add the parent-child style bi-links between fetch groups in a 
-        // separate pass. 
+        // Add the parent-child style bi-links between fetch groups in a
+        // separate pass.
         for (FetchGroup group:groups) {
         	fg = meta.getFetchGroup(group.name());
         	String[] includedFetchGropNames = fg.getDeclaredIncludes();
         	for (String includedFectchGroupName:includedFetchGropNames) {
         		org.apache.openjpa.meta.FetchGroup child =
         	    meta.getFetchGroup(includedFectchGroupName);
-        		if (child == null) 
-                    throw new UserException(_loc.get("missing-included-fg", 
+        		if (child == null)
+                    throw new UserException(_loc.get("missing-included-fg",
                             meta.getDescribedType().getName(), fg.getName(),
                             includedFectchGroupName));
         		child.addContainedBy(fg);
         	}
         }
-        
+
         for (FetchGroup group : groups) {
             fg = meta.getFetchGroup(group.name());
             for (FetchAttribute attr : group.attributes())
                 parseFetchAttribute(meta, fg, attr);
         }
     }
-    
+
 
     /**
      * Set a field's fetch group.
      */
-    private void parseFetchAttribute(ClassMetaData meta, 
+    private void parseFetchAttribute(ClassMetaData meta,
         org.apache.openjpa.meta.FetchGroup fg, FetchAttribute attr) {
         FieldMetaData field = meta.getDeclaredField(attr.name());
         if (field == null
@@ -1221,7 +1221,7 @@ public class AnnotationPersistenceMetaDataParser
      */
     protected void parseMemberMappingAnnotations(FieldMetaData fmd) {
     }
-    
+
     /**
      * Parse @Cache.
      */
@@ -1422,7 +1422,7 @@ public class AnnotationPersistenceMetaDataParser
 
         fmd.setInDefaultFetchGroup(true);
         fmd.setEmbedded(true);
-        
+
         if (fmd.getEmbeddedMetaData() == null)
             fmd.addEmbeddedMetaData(getAccessCode(fmd.getDeclaredType()));
     }
@@ -1510,7 +1510,7 @@ public class AnnotationPersistenceMetaDataParser
         else
             fmd.setMappedByIdValue("");
     }
-    
+
     /**
      * Setup the field as a LOB mapping.
      */
@@ -1527,13 +1527,13 @@ public class AnnotationPersistenceMetaDataParser
                 if (dec.length() == 0 || dec.equals("ASC") ||
                     dec.equals("DESC"))
                     throw new MetaDataException(_loc.get(
-                        "invalid-orderBy", fmd)); 
+                        "invalid-orderBy", fmd));
         }
         if (dec.length() == 0 || dec.equals("ASC"))
             dec = Order.ELEMENT + " asc";
         else if (dec.equals("DESC"))
             dec = Order.ELEMENT + " desc";
-            
+
         fmd.setOrderDeclaration(dec);
     }
 
@@ -1606,7 +1606,7 @@ public class AnnotationPersistenceMetaDataParser
     private void parseElementCollection(FieldMetaData fmd,
         ElementCollection anno) {
         // TODO: throw exception if the runtime env is OpenJpa 1.x
-            
+
         if (fmd.getDeclaredTypeCode() != JavaTypes.COLLECTION &&
             fmd.getDeclaredTypeCode() != JavaTypes.MAP)
             throw new MetaDataException(_loc.get("bad-meta-anno", fmd,
@@ -1624,7 +1624,7 @@ public class AnnotationPersistenceMetaDataParser
                 elem.addEmbeddedMetaData(getAccessCode(elem.getDeclaredType()));
         }
     }
-    
+
     /**
      * Parse @PersistentMap.
      */
@@ -1678,9 +1678,9 @@ public class AnnotationPersistenceMetaDataParser
                 vmd.setCascadeRefresh(ValueMetaData.CASCADE_IMMEDIATE);
         }
     }
-    
+
     private void setOrphanRemoval(ValueMetaData vmd, boolean orphanRemoval) {
-        if (orphanRemoval) 
+        if (orphanRemoval)
             vmd.setCascadeDelete(ValueMetaData.CASCADE_AUTO);
     }
 
@@ -1758,9 +1758,9 @@ public class AnnotationPersistenceMetaDataParser
             meta = getRepository().searchQueryMetaDataByName(query.name());
             if (meta != null) {
             	Class<?> definingType = meta.getDefiningType();
-                if ((definingType == null || definingType != _cls) 
+                if ((definingType == null || definingType != _cls)
                   && _log.isWarnEnabled()) {
-                    _log.warn(_loc.get("dup-query", query.name(), el, 
+                    _log.warn(_loc.get("dup-query", query.name(), el,
                     		definingType));
                 }
                 continue;
@@ -1832,14 +1832,14 @@ public class AnnotationPersistenceMetaDataParser
                 meta.setSourceMode(MODE_QUERY);
         }
     }
-    
+
     /**
      * Set the explicit access type, if specified.
-     */    
+     */
     private void parseAccess(FieldMetaData meta, Access access) {
     	if (access != null) {
-    		meta.setAccessType(AccessCode.EXPLICIT 
-            | (access.value() == AccessType.FIELD ? 
+    		meta.setAccessType(AccessCode.EXPLICIT
+            | (access.value() == AccessType.FIELD ?
             		AccessCode.FIELD : AccessCode.PROPERTY));
     	}
     }
@@ -1895,7 +1895,7 @@ public class AnnotationPersistenceMetaDataParser
 			return compare;
 		}
 	}
-    
+
     protected String delimitString(String name, DBIdentifiers type) {
         return name;
     }
