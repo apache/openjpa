@@ -45,6 +45,8 @@ public class DerbyDictionary
         validationSQL = "VALUES(1)";
         stringLengthFunction = "LENGTH({0})";
         substringFunctionName = "SUBSTR";
+        toUpperCaseFunction = "UPPER(CAST({0} AS VARCHAR(" + varcharCastLength + ")))";
+        toLowerCaseFunction = "LOWER(CAST({0} AS VARCHAR(" + varcharCastLength + ")))";
 
         // Derby name length restriction has been relaxed 
         //http://www.archivum.info/derby-dev@db.apache.org/2004-12/msg00270.html

@@ -24,6 +24,7 @@ import javax.persistence.EntityManager;
 import org.apache.openjpa.jdbc.conf.JDBCConfiguration;
 import org.apache.openjpa.jdbc.sql.DBDictionary;
 import org.apache.openjpa.jdbc.sql.OracleDictionary;
+import org.apache.openjpa.persistence.OpenJPAEntityManagerSPI;
 import org.apache.openjpa.persistence.common.apps.Address;
 import org.apache.openjpa.persistence.common.apps.CompUser;
 import org.apache.openjpa.persistence.common.apps.FemaleUser;
@@ -196,6 +197,33 @@ public class TestEJBQLFunction extends AbstractTestCase {
         endEm(em);
     }
 
+    public void testLowerClobFunc() {
+        OpenJPAEntityManagerSPI em = (OpenJPAEntityManagerSPI) currentEntityManager();
+        // some databases do not support case conversion on LOBs,
+        // just skip this test case
+        DBDictionary dict = ((JDBCConfiguration) em.getConfiguration()).getDBDictionaryInstance();
+        if (!dict.supportsCaseConversionForLob) {
+            return;
+        }
+        startTx(em);
+
+        CompUser user = em.find(CompUser.class, userid5);
+        assertNotNull(user);
+        assertEquals("Famzy", user.getName());
+
+        String query = "UPDATE CompUser e SET e.name = LOWER(e.name) WHERE LOWER(e.nameAsLob)='famzy'";
+
+        int result = em.createQuery(query).executeUpdate();
+
+        user = em.find(CompUser.class, userid5);
+        em.refresh(user);
+        assertNotNull(user);
+        assertEquals("famzy", user.getName());
+
+        endTx(em);
+        endEm(em);
+    }
+
     public void testUpperFunc() {
         EntityManager em = currentEntityManager();
         startTx(em);
@@ -213,6 +241,33 @@ public class TestEJBQLFunction extends AbstractTestCase {
         em.refresh(user);
         assertNotNull(user);
         assertEquals("UGO", user.getName());
+
+        endTx(em);
+        endEm(em);
+    }
+
+    public void testUpperClobFunc() {
+        OpenJPAEntityManagerSPI em = (OpenJPAEntityManagerSPI) currentEntityManager();
+        // some databases do not support case conversion on LOBs,
+        // just skip this test case
+        DBDictionary dict = ((JDBCConfiguration) em.getConfiguration()).getDBDictionaryInstance();
+        if (!dict.supportsCaseConversionForLob) {
+            return;
+        }
+        startTx(em);
+
+        CompUser user = em.find(CompUser.class, userid5);
+        assertNotNull(user);
+        assertEquals("Famzy", user.getName());
+
+        String query = "UPDATE CompUser e SET e.name = UPPER(e.name) WHERE UPPER(e.nameAsLob)='FAMZY'";
+
+        int result = em.createQuery(query).executeUpdate();
+
+        user = em.find(CompUser.class, userid5);
+        em.refresh(user);
+        assertNotNull(user);
+        assertEquals("FAMZY", user.getName());
 
         endTx(em);
         endEm(em);
@@ -415,12 +470,14 @@ public class TestEJBQLFunction extends AbstractTestCase {
             user.setComputerName(cName);
             user.setAddress(add);
             user.setAge(age);
+            user.setNameAsLob(name);
         } else {
             user = new FemaleUser();
             user.setName(name);
             user.setComputerName(cName);
             user.setAddress(add);
             user.setAge(age);
+            user.setNameAsLob(name);
         }
         return user;
     }

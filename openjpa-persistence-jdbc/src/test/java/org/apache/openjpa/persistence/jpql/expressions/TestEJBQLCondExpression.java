@@ -313,12 +313,14 @@ public class TestEJBQLCondExpression extends AbstractTestCase {
             user.setComputerName(cName);
             user.setAddress(add);
             user.setAge(age);
+            user.setNameAsLob(name);
         } else {
             user = new FemaleUser();
             user.setName(name);
             user.setComputerName(cName);
             user.setAddress(add);
             user.setAge(age);
+            user.setNameAsLob(name);
         }
         return user;
 	}

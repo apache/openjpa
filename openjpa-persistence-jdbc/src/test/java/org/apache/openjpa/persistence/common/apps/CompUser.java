@@ -18,94 +18,135 @@
  */
 package org.apache.openjpa.persistence.common.apps;
 
-import javax.persistence.*;
-import org.apache.openjpa.persistence.*;
+import javax.persistence.Basic;
+import javax.persistence.CascadeType;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.Enumerated;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.Inheritance;
+import javax.persistence.InheritanceType;
+import javax.persistence.JoinColumn;
+import javax.persistence.Lob;
+import javax.persistence.OneToOne;
 
-import java.util.*;
+import org.apache.openjpa.persistence.PersistentCollection;
 
 @Entity
-@Inheritance(strategy=InheritanceType.SINGLE_TABLE)
-public class CompUser
-{
-	@Basic
-	@Column(length=50)
-	private String name;
+@Inheritance(strategy = InheritanceType.SINGLE_TABLE)
+public class CompUser {
+    @Basic
+    @Column(length = 50)
+    private String name;
 
-	@Basic
-	private int age;
+    @Basic
+    private int age;
 
-	@Basic
-	@Column(name="compName", length=50)
-	private String computerName;
+    @Basic
+    @Column(name = "compName", length = 50)
+    private String computerName;
 
-	@PersistentCollection
-	private String[] nicknames = new String[0];
+    @Basic
+    @Lob
+    private String nameAsLob;
 
-	@OneToOne(cascade={CascadeType.PERSIST, CascadeType.REMOVE})
-	@JoinColumn(name="ADD_ID")
-	private Address address;
+    @PersistentCollection
+    private String[] nicknames = new String[0];
 
-	@Id
-	@GeneratedValue(strategy=GenerationType.AUTO)
-	public int userid;
-	
+    @OneToOne(cascade = { CascadeType.PERSIST, CascadeType.REMOVE })
+    @JoinColumn(name = "ADD_ID")
+    private Address address;
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    public int userid;
+
     @Enumerated
     @Basic
     private CreditRating creditRating;
-	
-	public CompUser(){}
 
-	public CompUser(String name, String cName, Address address, int age)
-	{
-		this.name = name;
-		this.computerName = cName;
-		this.address = address;
-		this.age = age;
-	}
+    public CompUser() {
+    }
 
-	public String getComputerName() {
-		return computerName;
-	}
+    public CompUser(String name, String cName, Address address, int age) {
+        this.name = name;
+        this.computerName = cName;
+        this.address = address;
+        this.age = age;
+        this.nameAsLob = name;
+    }
 
-	public void setComputerName(String computerName) {
-		this.computerName = computerName;
-	}
+    public String getComputerName() {
+        return computerName;
+    }
 
-	public String getName() {
-		return name;
-	}
+    public void setComputerName(String computerName) {
+        this.computerName = computerName;
+    }
 
-	public void setName(String name) {
-		this.name = name;
-	}
+    public String getName() {
+        return name;
+    }
 
-	public int getUserid() {
-		return userid;
-	}
+    public void setName(String name) {
+        this.name = name;
+    }
 
-	public Address getAddress() {
-		return address;
-	}
+    public int getUserid() {
+        return userid;
+    }
 
-	public void setAddress(Address address) {
-		this.address = address;
-	}
+    public Address getAddress() {
+        return address;
+    }
 
-	public int getAge() {
-		return age;
-	}
+    public void setAddress(Address address) {
+        this.address = address;
+    }
 
-	public void setAge(int age) {
-		this.age = age;
-	}
+    public int getAge() {
+        return age;
+    }
+
+    public void setAge(int age) {
+        this.age = age;
+    }
+
+    public String getNameAsLob() {
+        return nameAsLob;
+    }
+
+    public void setNameAsLob(String nameAsLob) {
+        this.nameAsLob = nameAsLob;
+    }
 
     public CreditRating getRating() {
         return creditRating;
     }
-    
+
     public void setRating(CreditRating rating) {
         this.creditRating = rating;
     }
-	
-    public enum CreditRating { POOR, GOOD, EXCELLENT };
+
+    public enum CreditRating {
+        POOR, GOOD, EXCELLENT
+    };
+
+    public String[] getNicknames() {
+        return nicknames;
+    }
+
+    public void setNicknames(String[] nicknames) {
+        this.nicknames = nicknames;
+    }
+
+    public CreditRating getCreditRating() {
+        return creditRating;
+    }
+
+    public void setCreditRating(CreditRating creditRating) {
+        this.creditRating = creditRating;
+    }
 }

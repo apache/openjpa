@@ -240,6 +240,7 @@ public class DBDictionary
     public boolean requiresCastForComparisons = false;
     public boolean supportsModOperator = false;
     public boolean supportsXMLColumn = false;
+    public boolean supportsCaseConversionForLob = false;
     public boolean reportsSuccessNoInfoOnBatchUpdates = false;
     public boolean supportsSelectFromFinalTable = false;
     public boolean supportsSimpleCaseExpression = true;
@@ -4797,6 +4798,19 @@ public class DBDictionary
      */
     public String getCastFunction(Val val, String func) {
         return func;
+    }
+
+    /**
+     * Return the correct CAST function syntax.  This should be overriden by subclasses
+     * that need access to the Column information.
+     * 
+     * @param val operand of cast
+     * @param func original string
+     * @param col database column
+     * @return a String with the correct CAST function syntax
+     */
+    public String getCastFunction(Val val, String func, Column col) {
+        return getCastFunction (val, func);
     }
     
     /**
