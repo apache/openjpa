@@ -498,13 +498,13 @@ public class AnnotationPersistenceMetaDataParser
         ClassMetaData m = getRepository().getCachedMetaData(_cls);
         if (m == null) {
             if (!(AccessController.doPrivileged(J2DoPrivHelper.isAnnotationPresentAction(_cls, Entity.class)))
+                .booleanValue()
+                && !(AccessController.doPrivileged(J2DoPrivHelper.isAnnotationPresentAction(_cls, Embeddable.class)))
                     .booleanValue()
-                    && !(AccessController.doPrivileged(J2DoPrivHelper.isAnnotationPresentAction(_cls, Embeddable.class)))
-                        .booleanValue()
-                    && !(AccessController.doPrivileged(J2DoPrivHelper.isAnnotationPresentAction(_cls,
-                        MappedSuperclass.class))).booleanValue())
-                    return null;
-            }
+                && !(AccessController.doPrivileged(J2DoPrivHelper.isAnnotationPresentAction(_cls,
+                    MappedSuperclass.class))).booleanValue())
+                return null;
+        }
         // find / create metadata
         ClassMetaData meta = (m == null) ? getMetaData() : m;
         if (meta == null)
