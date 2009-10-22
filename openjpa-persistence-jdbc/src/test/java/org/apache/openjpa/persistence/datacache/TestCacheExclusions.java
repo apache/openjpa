@@ -81,10 +81,12 @@ public class TestCacheExclusions extends AbstractCachedEMFTestCase {
             for (ClassMapping mapping : ((ClassMapping[]) emf
                 .getConfiguration().getMetaDataRepositoryInstance()
                 .getMetaDatas())) {
-                Query q =
-                    em.createNativeQuery("DROP TABLE "
-                        + mapping.getTable().getName());
-                q.executeUpdate();
+                if (mapping.getTable() != null) {
+                    Query q =
+                        em.createNativeQuery("DROP TABLE "
+                            + mapping.getTable().getName());
+                    q.executeUpdate();
+                }
             }
             em.getTransaction().commit();
             em.close();

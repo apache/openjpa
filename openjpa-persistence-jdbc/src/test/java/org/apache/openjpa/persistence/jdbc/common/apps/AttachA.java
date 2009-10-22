@@ -25,11 +25,12 @@ import java.io.*;
 
 import javax.persistence.Entity;
 import javax.persistence.Id;
+import javax.persistence.Table;
+
 import java.lang.annotation.Annotation;
 
 @Entity
-
-
+@Table(name="JDBC_AttachA")
 public class AttachA
     implements Serializable, PreDetachCallback,
     PostDetachCallback, PreAttachCallback, PostAttachCallback {

@@ -28,6 +28,7 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.Table;
 import javax.persistence.Version;
 
 import org.apache.openjpa.persistence.FetchAttribute;
@@ -42,6 +43,7 @@ import org.apache.openjpa.persistence.FetchGroups;
 @FetchAttribute(name = "attachEArray", recursionDepth = 0)
     })
     })
+@Table(name="K_AttachA")
 public class AttachA implements Serializable {
 
     @Id

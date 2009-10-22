@@ -21,6 +21,7 @@ package org.apache.openjpa.persistence.datacache.common.apps;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.Table;
 import javax.persistence.Version;
 
 /**
@@ -31,6 +32,7 @@ import javax.persistence.Version;
  *
  */
 @Entity
+@Table(name="L2_PObject")
 public class PObject {
 	@Id
 	@GeneratedValue

@@ -22,6 +22,7 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.Table;
 
 /**
  * A persistent entity to verify IDENTITY strategy for primary key value
@@ -31,6 +32,7 @@ import javax.persistence.Id;
  *
  */
 @Entity
+@Table(name="ORCL_POBJECT")
 public class PObject {
 	@Id
 	@GeneratedValue(strategy=GenerationType.IDENTITY)
