@@ -767,6 +767,11 @@
                     <artifactId>maven-bundle-plugin</artifactId>
                     <version>1.4.3</version>
                 </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-enforcer-plugin</artifactId>
+                    <version>1.0-beta-1</version>
+                </plugin>
             </plugins>
         </pluginManagement>
         <plugins>
@@ -808,6 +813,28 @@
                             <consoleOutput>true</consoleOutput>
                             <includeTestSourceDirectory>true</includeTestSourceDirectory>
                             <excludes>**/*_.java</excludes>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-enforcer-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <phase>validate</phase>
+                        <goals>
+                            <goal>enforce</goal>
+                        </goals>
+                        <configuration>
+                            <rules>
+                                <requireMavenVersion>
+                                    <version>[2.0.5,)</version>
+                                </requireMavenVersion>
+                                <requireJavaVersion>
+                                    <version>[1.5,)</version>
+                                </requireJavaVersion>
+                            </rules>
                         </configuration>
                     </execution>
                 </executions>
