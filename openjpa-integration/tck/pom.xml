@@ -55,7 +55,7 @@
 -->
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <modelVersion>4.0.0</modelVersion>
-    <artifactId>tck</artifactId>
+    <artifactId>openjpa-integration-tck</artifactId>
     <packaging>pom</packaging>
     <name>OpenJPA Integration Tests - JPA TCK</name>
     <description>OpenJPA Integration Tests - JPA TCK</description>
@@ -102,7 +102,6 @@
                             <!-- use official JPA API instead of GM's -->
                             <fileset dir="${tck.dir}/lib">
                                 <include name="**/*.jar" />
-                                <exclude name="**/geronimo-jpa*" />
                             </fileset>
                             <pathelement path="${java.class.path}" />
                             <pathelement path="${db.jar}" />
@@ -280,11 +279,18 @@ databaseName=${db.name}
     </repositories>
 
     <dependencies>
-        <!-- use the authoritative javax.persistence API for testing -->
+        <!-- use the authoritative javax.persistence API for testing
         <dependency>
             <groupId>javax.persistence</groupId>
             <artifactId>persistence-api</artifactId>
             <version>1.0b</version>
+        </dependency>
+        -->
+        <!--  Use the JPA spec from Geronimo -->
+        <dependency>
+            <groupId>org.apache.geronimo.specs</groupId>
+            <artifactId>geronimo-jpa_1.0_spec</artifactId>
+            <scope>compile</scope>
         </dependency>
         <dependency>
             <groupId>org.apache.openjpa</groupId>
