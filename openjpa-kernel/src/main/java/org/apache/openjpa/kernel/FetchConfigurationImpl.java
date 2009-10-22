@@ -88,6 +88,8 @@ public class FetchConfigurationImpl
         public boolean fetchGroupContainsDefault = false;
         public boolean fetchGroupContainsAll = false;
         public boolean extendedPathLookup = false;
+        public DataCacheRetrieveMode cacheRetrieveMode;
+        public DataCacheStoreMode cacheStoreMode;
     }
 
     private final ConfigurationState _state;
@@ -578,9 +580,8 @@ public class FetchConfigurationImpl
         setHint(name, value, false);
     }
 
-    public void setHint(String name, Object value,
-        boolean validThrowException) {
-        if(_hintHandler.setHint(name, value, validThrowException))
+    public void setHint(String name, Object value, boolean validThrowException) {
+        if (_hintHandler.setHint(name, value, validThrowException))
             addHint(name, value);
     }
 
@@ -887,5 +888,21 @@ public class FetchConfigurationImpl
                 buf.append("->");
         }
         return buf.toString();
+    }
+
+    public DataCacheRetrieveMode getCacheRetrieveMode() {
+        return _state.cacheRetrieveMode;
+    }
+
+    public DataCacheStoreMode getCacheStoreMode() {
+        return _state.cacheStoreMode;
+    }
+
+    public void setCacheRetrieveMode(DataCacheRetrieveMode mode) {
+        _state.cacheRetrieveMode = mode;
+    }
+
+    public void setCacheStoreMode(DataCacheStoreMode mode) {
+        _state.cacheStoreMode = mode;
     }
 }

@@ -179,7 +179,7 @@ public class HintHandler extends FetchPlanHintHandler {
                 Reflection.getBeanStylePropertyNames(
                       owner.getFetchPlan().getClass())));
 
-            _supportedKeys.addAll(JavaxHintsMap.keySet());
+            _supportedKeys.addAll(javaxHintsMap.keySet());
 
             _supportedKeys.addAll(Reflection.getFieldValues(
                 HintHandler.class, 

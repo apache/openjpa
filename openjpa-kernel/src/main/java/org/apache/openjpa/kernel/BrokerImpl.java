@@ -229,17 +229,6 @@ public class BrokerImpl
     private boolean _orderDirty = false;
     private boolean _cachePreparedQuery = true;
     private boolean _cacheFinderQuery = true;
-    
-    private DataCacheStoreMode _cacheStoreMode; 
-    private DataCacheRetrieveMode _cacheRetrieveMode;
-    
-    // Store and Retrieve mode may be suspended for a given operation. Stack may be overkill here.
-    private Stack<DataCacheStoreMode> _cacheStoreModeStack = new Stack<DataCacheStoreMode>();
-    private Stack<DataCacheRetrieveMode> _cacheRetrieveModeStack = new Stack<DataCacheRetrieveMode>();
-
-    // Map of properties whose values have been changed
-//    private Map<String, String> _changedProperties =
-//        new HashMap<String, String>();
 
     // status
     private int _flags = 0;
@@ -4921,37 +4910,5 @@ public class BrokerImpl
         } finally {
             unlock();
         }
-    }
-
-    public DataCacheRetrieveMode getCacheRetrieveMode() {
-        return _cacheRetrieveMode;
-    }
-
-    public DataCacheStoreMode getCacheStoreMode() {
-        return _cacheStoreMode;
-    }
-
-    public void setCacheRetrieveMode(DataCacheRetrieveMode mode) {
-        _cacheRetrieveMode = mode;
-    }
-
-    public void setCacheStoreMode(DataCacheStoreMode mode) {
-        _cacheStoreMode = mode;
-    }
-    
-    public void popCacheRetrieveMode() { 
-        _cacheRetrieveMode = _cacheRetrieveModeStack.pop();
-    }
-    
-    public void popCacheStoreMode() { 
-        _cacheStoreMode = _cacheStoreModeStack.pop();
-    }
-    
-    public void pushCacheRetrieveMode() { 
-        _cacheRetrieveModeStack.push(_cacheRetrieveMode);
-    }
-    
-    public void pushCacheStoreMode() { 
-        _cacheStoreModeStack.push(_cacheStoreMode);
     }
 }

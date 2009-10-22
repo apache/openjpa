@@ -34,6 +34,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Set;
 import java.util.TimeZone;
 import java.util.concurrent.locks.ReentrantLock;
 
@@ -153,7 +154,7 @@ public class StateManagerImpl
     // for embeddable object from query result
     private Object _ownerId = null;
     private int _ownerIndex = -1;
-    private List _mappedByIdFields = null;
+    private List<FieldMetaData> _mappedByIdFields = null;
     
     private transient ReentrantLock _instanceLock = null;
 
@@ -360,7 +361,7 @@ public class StateManagerImpl
                 if (mappedByIdValue != null) { 
                     if (!ApplicationIds.isIdSet(_id, _meta, mappedByIdValue)) {
                         if (_mappedByIdFields == null)
-                            _mappedByIdFields = new ArrayList();
+                            _mappedByIdFields = new ArrayList<FieldMetaData>();
                         _mappedByIdFields.add(fmds[i]);
                     }
                 }
@@ -3012,10 +3013,8 @@ public class StateManagerImpl
                 continue;
 
             if (fmds[i].getCascadePersist() == ValueMetaData.CASCADE_IMMEDIATE
-                || fmds[i].getKey().getCascadePersist()
-                == ValueMetaData.CASCADE_IMMEDIATE
-                || fmds[i].getElement().getCascadePersist()
-                == ValueMetaData.CASCADE_IMMEDIATE) {
+             || fmds[i].getKey().getCascadePersist() == ValueMetaData.CASCADE_IMMEDIATE
+             || fmds[i].getElement().getCascadePersist() == ValueMetaData.CASCADE_IMMEDIATE) {
                 _single.storeObjectField(i, fetchField(i, false));
                 _single.persist(call);
                 _single.clear();
@@ -3044,10 +3043,8 @@ public class StateManagerImpl
             if (len > 0) {
                 if (fetch == null)
                     fetch = _broker.getFetchConfiguration();
-                if (!_broker.getStoreManager().load(this, fields, fetch,
-                    lockLevel, sdata)) {
-                    throw new ObjectNotFoundException(_loc.get("del-instance",
-                        _meta.getDescribedType(), _oid)).
+                if (!_broker.getStoreManager().load(this, fields, fetch, lockLevel, sdata)) {
+                    throw new ObjectNotFoundException(_loc.get("del-instance", _meta.getDescribedType(), _oid)).
                         setFailedObject(getManagedInstance());
                 }
                 ret = true;
@@ -3058,7 +3055,7 @@ public class StateManagerImpl
             // we do this even if no fields were loaded -- could be that this
             // method is being called after a field is set)... some instances
             // might not have version info, in which case this gets called
-            // mutiple times; that should be ok too
+            // multiple times; that should be ok too
             if (_loadVersion == null) {
                 syncVersion(sdata);
                 ret = ret || _loadVersion != null;
@@ -3297,8 +3294,7 @@ public class StateManagerImpl
      * broker.
      */
     protected RuntimeException translate(RuntimeException re) {
-        RuntimeExceptionTranslator trans = _broker.
-            getInstanceExceptionTranslator();
+        RuntimeExceptionTranslator trans = _broker.getInstanceExceptionTranslator();
         return (trans == null) ? re : trans.translate(re);
     }
 
@@ -3335,8 +3331,7 @@ public class StateManagerImpl
     void writePC(ObjectOutputStream oos, PersistenceCapable pc)
         throws IOException {
         if (!Serializable.class.isAssignableFrom(_meta.getDescribedType()))
-            throw new NotSerializableException(
-                _meta.getDescribedType().getName());
+            throw new NotSerializableException(_meta.getDescribedType().getName());
 
         oos.writeObject(pc);
     }
@@ -3380,7 +3375,7 @@ public class StateManagerImpl
         return pc;
     }
     
-    public List getMappedByIdFields() {
+    public List<FieldMetaData> getMappedByIdFields() {
         return _mappedByIdFields;
     }
 }

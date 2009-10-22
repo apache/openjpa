@@ -42,20 +42,19 @@ public abstract class AbstractHintHandler implements Serializable {
     protected static final String PREFIX_OPENJPA = "openjpa.";
     protected static final String PREFIX_JDBC = PREFIX_OPENJPA + "jdbc.";
 
-    protected FetchConfigurationImpl _fConfig;
+    protected FetchConfiguration _fConfig;
 
     /**
      * Constructor; supply delegate.
      */
-    public AbstractHintHandler(FetchConfigurationImpl fConfig) {
+    public AbstractHintHandler(FetchConfiguration fConfig) {
         _fConfig = fConfig;
     }
 
     protected abstract boolean setHintInternal(String hintName, Object value,
         boolean validateThrowException);
 
-    public boolean setHint(String hintName, Object value,
-        boolean validateThrowException) {
+    public boolean setHint(String hintName, Object value, boolean validateThrowException) {
         String key = hintToKey(hintName);
         boolean valueSet = !hintName.equals(key);
         if (hasPrecedent(hintName)) {
@@ -66,20 +65,18 @@ public abstract class AbstractHintHandler implements Serializable {
                     if (rte instanceof IllegalArgumentException)
                         throw rte;
                     else if (rte instanceof ClassCastException)
-                        throw new IllegalArgumentException(_loc.get(
-                            "bad-hint-value", key, value, rte.getMessage())
+                        throw new IllegalArgumentException(_loc.get("bad-hint-value", key, value, rte.getMessage())
                             .getMessage());
-                    else
+                    else {
                         handleException(rte);
+                    }
                 } else
-                    _fConfig.getContext().getConfiguration().getLog(
-                        OpenJPAConfiguration.LOG_RUNTIME)
-                        .warn(
-                            _loc.get("bad-hint-value", key, value, rte
-                                .getMessage()));
+                    _fConfig.getContext().getConfiguration().getConfigurationLog().warn(
+                            _loc.get("bad-hint-value", key, value, rte.getMessage()));
             }
-        } else
+        } else {
             valueSet = true;
+        }
         return valueSet;
     }
     

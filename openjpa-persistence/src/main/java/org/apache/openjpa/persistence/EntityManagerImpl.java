@@ -28,6 +28,7 @@ import java.io.ObjectOutput;
 import java.io.ObjectOutputStream;
 import java.io.ObjectStreamClass;
 import java.lang.reflect.Array;
+import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.Arrays;
 import java.util.Collection;
@@ -483,8 +484,7 @@ public class EntityManagerImpl
     }
 
     @SuppressWarnings("unchecked")
-    public <T> T find(Class<T> cls, Object oid, LockModeType mode,
-        Map<String, Object> properties) {
+    public <T> T find(Class<T> cls, Object oid, LockModeType mode, Map<String, Object> properties) {
         assertNotCloseInvoked();
         if (mode != null && mode != LockModeType.NONE) {
             _broker.assertActiveTransaction();
@@ -1154,8 +1154,7 @@ public class EntityManagerImpl
         }
     }
 
-    public void lock(Object entity, LockModeType mode,
-        Map<String, Object> properties) {
+    public void lock(Object entity, LockModeType mode, Map<String, Object> properties) {
         assertNotCloseInvoked();
         assertValidAttchedEntity(entity);
         _broker.assertActiveTransaction();
@@ -1566,7 +1565,7 @@ public class EntityManagerImpl
     public Map<String, Object> getProperties() {
         Map props = _broker.getProperties();
         for (String s : _broker.getSupportedProperties()) {
-            Method getter = Reflection.findGetter(this.getClass(), getPropertyName(s), false);
+            Method getter = Reflection.findGetter(this.getClass(), getBeanPropertyName(s), false);
             if (getter != null)
                 props.put(s, Reflection.get(this, getter));
         }
@@ -1604,16 +1603,32 @@ public class EntityManagerImpl
         return _ret;
     }
 
-    private void processLockProperties(FetchPlan fPlan, LockModeType mode,
-        Map<String, Object> properties) {
+    /**
+     * Populate the given FetchPlan with the given properties. 
+     * Optionally overrides the given lock mode.
+     */
+    private void processLockProperties(FetchPlan fetch, LockModeType lock, Map<String, Object> properties) {
         // handle properties in map first
-        fPlan.addHints(properties);
+        fetch.addHints(properties);
         // override with the specific lockMode, if needed.
-        if (mode != null && mode != LockModeType.NONE) {
-            // Set overriden read lock level
-            LockModeType curReadLockMode = fPlan.getReadLockMode();
-            if (mode != curReadLockMode)
-                fPlan.setReadLockMode(mode);
+        if (lock != null && lock != LockModeType.NONE) {
+            // Override read lock level
+            LockModeType curReadLockMode = fetch.getReadLockMode();
+            if (lock != curReadLockMode)
+                fetch.setReadLockMode(lock);
+        }
+    }
+    
+    private void processFetchProperties(FetchPlan fetch, Map<String, Object> properties) {
+        if (properties == null)
+            return;
+        CacheRetrieveMode rMode = JPAProperties.getCacheRetrieveMode(properties);
+        if (rMode != null) {
+            fetch.setCacheRetrieveMode(DataCacheRetrieveMode.valueOf(rMode.toString()));
+        }
+        CacheStoreMode sMode = JPAProperties.getCacheStoreMode(properties);
+        if (rMode != null) {
+            fetch.setCacheStoreMode(DataCacheStoreMode.valueOf(sMode.toString()));
         }
     }
 
@@ -1621,63 +1636,80 @@ public class EntityManagerImpl
         return _emf.getMetamodel();
     }
 
+    /**
+     * Sets the given property to the given value, reflectively.
+     * 
+     * The property key is transposed to a bean-style property.
+     * The value is converted to a type consumable by the kernel.
+     * After requisite transformation, if the value can not be set
+     * on either this instance or its fetch plan by reflection,
+     * then an warning message (not an exception as per JPA specification) is issued.
+     */
     public void setProperty(String prop, Object value) {
-        String beanProp = getPropertyName(prop);
-        try {
-            Method setter = Reflection.findSetter(this.getClass(), beanProp, false);
-            if (setter != null) {
-                if (value instanceof String) {
-                    if ("null".equals(value)) {
-                        value = null;
-                    } else {
-                        value = Strings.parse((String) value, setter.getParameterTypes()[0]);
-                    }
-                }
-                Reflection.set(this, setter, value);
+        if (!setKernelProperty(this, prop, value)) {
+            if (!setKernelProperty(this.getFetchPlan(), prop, value)) {
+                Log log = getConfiguration().getLog(OpenJPAConfiguration.LOG_RUNTIME);
+                if (log.isWarnEnabled()) {
+                    log.warn(_loc.get("bad-em-prop", prop, value == null ? "" : value.getClass()+":" + value));
+                 }
             }
-        } catch (Exception ex) {
-            Log log = getConfiguration().getLog(OpenJPAConfiguration.LOG_RUNTIME);
-            if (log.isWarnEnabled())
-                log.warn(_loc.get("bad-em-prop", prop, value));
         }
     }
     
-    String getPropertyName(String s) {
+    /**
+     * Attempt to set the given property and value to the given target instance.
+     * The original property is transposed to a bean-style property name.
+     * The original value is transformed to a type consumable by the target.
+     *  
+     * @return if the property can be set to the given target.
+     */
+    private boolean setKernelProperty(Object target, String original, Object value) {
+        String beanProp = getBeanPropertyName(original);
+        Class<?> kType  = null;
+        Object   kValue = null;
+        Method setter = Reflection.findSetter(target.getClass(), beanProp, false);
+        if (setter != null) {
+            kType  = setter.getParameterTypes()[0];
+            kValue = convertUserValue(original, value, kType);
+            Reflection.set(target, setter, kValue);
+            return true;
+        } else {
+            Field field = Reflection.findField(target.getClass(), beanProp, false);
+            if (field != null) {
+                kType  = field.getType();
+                kValue = convertUserValue(original, value, kType);
+                Reflection.set(target, field, kValue);
+                return true;
+            }
+        }
+        return false;
+    }
+    
+    /**
+     * Extract a bean-style property name from the given string.
+     * If the given string is <code>"a.b.xyz"</code> then returns <code>"xyz"</code> 
+     */
+    String getBeanPropertyName(String s) {
+        if (JPAProperties.isValidKey(s)) {
+            return JPAProperties.getBeanProperty(s);
+        }
         int dot = s.lastIndexOf('.');
         return dot == -1 ? s : s.substring(dot+1);
     }
     
-    public void setRetrieveMode(CacheRetrieveMode retrieveMode) { 
-        _broker.setCacheRetrieveMode(toDataCacheRetrieveMode(retrieveMode));
-    }
-
-    public CacheRetrieveMode getRetrieveMode() { 
-        return fromDataCacheRetrieveMode(_broker.getCacheRetrieveMode());
-    }
-    
-    public void setStoreMode(CacheStoreMode storeMode) { 
-        _broker.setCacheStoreMode(toDataCacheStoreMode(storeMode));
-    }
-    
-    public CacheStoreMode getStoreMode() { 
-        return fromDataCacheStoreMode(_broker.getCacheStoreMode());
-    }
-    
-    private final DataCacheRetrieveMode toDataCacheRetrieveMode(CacheRetrieveMode mode ) {
-        // relies on the CacheRetrieveMode enums being nearly identical 
-        return DataCacheRetrieveMode.valueOf(mode.toString());
-    }
-    
-    private final DataCacheStoreMode toDataCacheStoreMode(CacheStoreMode mode ) {
-        // relies on the CacheStoreMode enums being nearly identical 
-        return DataCacheStoreMode.valueOf(mode.toString());
-    }
-    
-    private final CacheRetrieveMode fromDataCacheRetrieveMode(DataCacheRetrieveMode mode) { 
-        return CacheRetrieveMode.valueOf(mode.toString());
-    }
-    
-    private final CacheStoreMode fromDataCacheStoreMode(DataCacheStoreMode mode) { 
-        return CacheStoreMode.valueOf(mode.toString());
+    /**
+     * Convert the given value to a value consumable by OpenJPA kernel constructs.
+     */
+    Object convertUserValue(String key, Object value, Class<?> targetType) {
+        if (JPAProperties.isValidKey(key)) 
+            return JPAProperties.convertValue(key, value);
+        if (value instanceof String) {
+            if ("null".equals(value)) {
+                return null;
+            } else {
+                return Strings.parse((String) value, targetType);
+            }
+        }
+        return value;
     }
 }

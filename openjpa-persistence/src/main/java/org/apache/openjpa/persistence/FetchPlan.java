@@ -24,6 +24,8 @@ import java.util.Set;
 
 import javax.persistence.LockModeType;
 
+import org.apache.openjpa.kernel.DataCacheRetrieveMode;
+import org.apache.openjpa.kernel.DataCacheStoreMode;
 import org.apache.openjpa.kernel.FetchConfiguration;
 import org.apache.openjpa.lib.util.Reflectable;
 import org.apache.openjpa.meta.FetchGroup;
@@ -371,5 +373,32 @@ public interface FetchPlan {
      * @since 2.0.0
      */
     public FetchPlan setExtendedPathLookup(boolean flag);
-
+    
+    /**
+     * Gets the current storage mode for data cache.
+     * 
+     * @since 2.0.0
+     */
+    public DataCacheStoreMode getCacheStoreMode();
+    
+    /**
+     * Sets the current storage mode for data cache.
+     * 
+     * @since 2.0.0
+     */
+    public FetchPlan setCacheStoreMode(DataCacheStoreMode mode);
+    
+    /**
+     * Gets the current retrieve mode for data cache.
+     * 
+     * @since 2.0.0
+     */
+    public DataCacheRetrieveMode getCacheRetrieveMode();
+    
+    /**
+     * Sets the current retrieve mode for data cache.
+     * 
+     * @since 2.0.0
+     */
+    public FetchPlan setCacheRetrieveMode(DataCacheRetrieveMode mode);
 }

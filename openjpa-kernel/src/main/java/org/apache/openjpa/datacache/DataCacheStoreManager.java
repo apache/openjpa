@@ -130,7 +130,7 @@ public class DataCacheStoreManager
      * Update all caches with the committed inserts, updates, and deletes.
      */
     private void updateCaches() {
-        if(_ctx.getCacheStoreMode() != DataCacheStoreMode.BYPASS ) { 
+        if(_ctx.getFetchConfiguration().getCacheStoreMode() != DataCacheStoreMode.BYPASS ) { 
             // map each data cache to the modifications we need to perform
             Map<DataCache,Modifications> modMap = null;
             if ((_ctx.getPopulateDataCache() && _inserts != null) || _updates != null || _deletes != null)
@@ -326,9 +326,11 @@ public class DataCacheStoreManager
         boolean fromDatabase; 
         DataCache cache = _mgr.selectCache(sm);
         DataCachePCData data = null;
-        boolean updateCache = _ctx.getCacheStoreMode() != DataCacheStoreMode.BYPASS && _ctx.getPopulateDataCache();
-        if (cache == null || sm.isEmbedded() || _ctx.getCacheRetrieveMode() == DataCacheRetrieveMode.BYPASS
-            || _ctx.getCacheStoreMode() == DataCacheStoreMode.REFRESH) {
+        boolean updateCache = _ctx.getFetchConfiguration().getCacheStoreMode() != DataCacheStoreMode.BYPASS 
+                            && _ctx.getPopulateDataCache();
+        if (cache == null || sm.isEmbedded() 
+            || _ctx.getFetchConfiguration().getCacheRetrieveMode() == DataCacheRetrieveMode.BYPASS
+            || _ctx.getFetchConfiguration().getCacheStoreMode() == DataCacheStoreMode.REFRESH) {
             fromDatabase = super.initialize(sm, state, fetch, edata);
         } else {
             data = cache.get(sm.getObjectId());
@@ -385,7 +387,8 @@ public class DataCacheStoreManager
     public boolean load(OpenJPAStateManager sm, BitSet fields,
         FetchConfiguration fetch, int lockLevel, Object edata) {
         DataCache cache = _mgr.selectCache(sm);
-        if (cache == null || sm.isEmbedded() || _ctx.getCacheRetrieveMode() == DataCacheRetrieveMode.BYPASS)
+        if (cache == null || sm.isEmbedded() 
+            || _ctx.getFetchConfiguration().getCacheRetrieveMode() == DataCacheRetrieveMode.BYPASS)
             return super.load(sm, fields, fetch, lockLevel, edata);
 
         DataCachePCData data = cache.get(sm.getObjectId());

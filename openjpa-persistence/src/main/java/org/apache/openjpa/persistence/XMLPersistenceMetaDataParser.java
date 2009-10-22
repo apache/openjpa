@@ -907,7 +907,7 @@ public class XMLPersistenceMetaDataParser
         }
 
         if (attrs.getValue("cacheable") != null) {
-            meta.setCacheEnabled(Boolean.valueOf(attrs.getValue("cacheable")), true);
+            meta.setCacheEnabled(Boolean.valueOf(attrs.getValue("cacheable")));
         }
 
         if (isMappingMode())

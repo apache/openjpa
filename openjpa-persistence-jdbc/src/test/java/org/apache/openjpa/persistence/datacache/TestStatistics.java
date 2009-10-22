@@ -21,7 +21,9 @@ package org.apache.openjpa.persistence.datacache;
 import javax.persistence.EntityManager;
 
 import org.apache.openjpa.datacache.CacheStatistics;
+import org.apache.openjpa.persistence.OpenJPAEntityManagerFactory;
 import org.apache.openjpa.persistence.StoreCache;
+import org.apache.openjpa.persistence.StoreCacheImpl;
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
 
 /**
@@ -118,5 +120,17 @@ public class TestStatistics extends SingleEMFTestCase {
     void print(String msg, CacheStatistics stats) {
         System.err.println(msg + stats + " H:" + stats.getHitCount() + " R:" + stats.getReadCount() + " W:" + 
                 stats.getWriteCount());
+    }
+    
+    public void testMultipleUnits() {
+        String[] props = {"openjpa.DataCache", "true", "openjpa.RemoteCommitProvider", "sjvm"};
+        OpenJPAEntityManagerFactory emf1 = createNamedEMF("test", props);
+        OpenJPAEntityManagerFactory emf2 = createNamedEMF("empty-pu", props);
+        assertNotSame(emf1, emf2);
+        assertNotSame(emf1.getStoreCache(), emf2.getStoreCache());
+        assertNotSame(emf1.getStoreCache().getStatistics(), emf2.getStoreCache().getStatistics());
+        assertNotSame(((StoreCacheImpl)emf1.getStoreCache()).getDelegate(), 
+                ((StoreCacheImpl)emf2.getStoreCache()).getDelegate());
+        
     }
 }

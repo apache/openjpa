@@ -26,6 +26,8 @@ import java.util.Map;
 
 import javax.persistence.LockModeType;
 
+import org.apache.openjpa.kernel.DataCacheRetrieveMode;
+import org.apache.openjpa.kernel.DataCacheStoreMode;
 import org.apache.openjpa.kernel.DelegatingFetchConfiguration;
 import org.apache.openjpa.kernel.FetchConfiguration;
 
@@ -309,5 +311,23 @@ public class FetchPlanImpl
         if (!(other instanceof FetchPlanImpl))
             return false;
         return _fetch.equals(((FetchPlanImpl) other)._fetch);
+    }
+
+    public DataCacheRetrieveMode getCacheRetrieveMode() {
+        return _fetch.getCacheRetrieveMode();
+    }
+
+    public DataCacheStoreMode getCacheStoreMode() {
+        return _fetch.getCacheStoreMode();
+    }
+
+    public FetchPlan setCacheStoreMode(DataCacheStoreMode mode) {
+        _fetch.setCacheStoreMode(mode);
+        return this;
+    }
+
+    public FetchPlan setCacheRetrieveMode(DataCacheRetrieveMode mode) {
+        _fetch.setCacheRetrieveMode(mode);
+        return this;
     }
 }

@@ -816,15 +816,17 @@ public class AnnotationPersistenceMetaDataParser
 
     /**
      * Parse @DataCache.
+     * 
      */
     private void parseDataCache(ClassMetaData meta, DataCache cache) {
         if (cache.timeout() != Integer.MIN_VALUE) {
             meta.setDataCacheTimeout(cache.timeout());
         }
         String cacheName = cache.name();
-        if (!StringUtils.isEmpty(cacheName))
-            meta.setDataCacheName(cacheName);
-        meta.setCacheEnabled(cache.enabled(), false);
+        if (StringUtils.isEmpty(cacheName)) {
+            cacheName = org.apache.openjpa.datacache.DataCache.NAME_DEFAULT;
+        }
+        meta.setDataCacheName(cache.enabled() ? cacheName : null);
     }
 
     private void parseManagedInterface(ClassMetaData meta,
@@ -1226,7 +1228,7 @@ public class AnnotationPersistenceMetaDataParser
      * Parse @Cache.
      */
     private void parseCache(ClassMetaData meta, Cacheable cacheable) {
-        meta.setCacheEnabled(cacheable.value(), false);
+        meta.setCacheEnabled(cacheable.value());
     }
 
     /**

@@ -170,19 +170,18 @@ public class DataCacheManagerImpl
           case DISABLE_SELECTIVE: // exclude *only* the entities which are explicitly excluded 
               return !Boolean.FALSE.equals(meta.getCacheEnabled());
           case UNSPECIFIED:
-          default: // not determined by mode 
+          default: // not determinable by mode 
               return null; 
       }
     }
     
     /**
-     * Is the given type cacheable by its own flag.
-     * The flag being unset (null) implies TRUE.
+     * Is the given type cacheable by @DataCache annotation.
      *  
-     * @see ClassMetaData#getCacheEnabled()
+     * @see ClassMetaData#getDataCacheName()
      */
     private Boolean isCacheableByType(ClassMetaData meta) {
-        return meta.getCacheEnabled() == null || meta.getCacheEnabled();
+        return meta.getDataCacheName() != null;
     }
     
     /**

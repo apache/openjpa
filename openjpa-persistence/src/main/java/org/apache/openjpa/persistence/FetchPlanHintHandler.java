@@ -38,42 +38,35 @@ import org.apache.openjpa.lib.util.Localizer;
  * @since 2.0.0
  * @nojavadoc
  */
+@SuppressWarnings("serial")
 public class FetchPlanHintHandler extends AbstractHintHandler {
 
-    private static final Localizer _loc = Localizer
-        .forPackage(FetchPlanHintHandler.class);
+    private static final Localizer _loc = Localizer.forPackage(FetchPlanHintHandler.class);
 
-    protected static final String PREFIX_JPA = "javax.persistence.";
-    protected static final String PREFIX_FETCHPLAN = PREFIX_OPENJPA
-        + "FetchPlan.";
+    protected static final String PREFIX_FETCHPLAN = PREFIX_OPENJPA + "FetchPlan.";
 
     // Valid defined product derivation prefixes
-    protected static final Set<String> ValidProductPrefixes =
-        new HashSet<String>();
+    protected static final Set<String> validProductPrefixes =  new HashSet<String>();
     // JPA Specification 2.0 keys are mapped to equivalent FetchPlan keys
-    protected static final Map<String, String> JavaxHintsMap =
-        new HashMap<String, String>();
+    protected static final Map<String, String> javaxHintsMap   = new HashMap<String, String>();
     // hints precedent definitions
-    protected static final Map<String, String[]> PrecedenceMap =
-        new HashMap<String, String[]>();
+    protected static final Map<String, String[]> precedenceMap = new HashMap<String, String[]>();
 
     static {
         // Initialize valid product prefixes from available product derivations.
         for (String prefix : ProductDerivations.getConfigurationPrefixes()) {
-            ValidProductPrefixes.add(prefix);
+            validProductPrefixes.add(prefix);
         }
-        // Initiali javax.persistence to openjpa.FetchPlan hint mapping.
-        JavaxHintsMap.put(PREFIX_JPA + "lock.timeout", PREFIX_FETCHPLAN
-            + "LockTimeout");
-        JavaxHintsMap.put(PREFIX_JPA + "query.timeout", PREFIX_FETCHPLAN
-            + "QueryTimeout");
-        // Initialize hint precendent order mapping from list.
+        // Initialize javax.persistence to openjpa.FetchPlan hint mapping.
+        javaxHintsMap.put(JPAProperties.LOCK_TIMEOUT,  PREFIX_FETCHPLAN + "LockTimeout");
+        javaxHintsMap.put(JPAProperties.QUERY_TIMEOUT, PREFIX_FETCHPLAN + "QueryTimeout");
+        // Initialize hint precedence order mapping from list.
         String[][] precedenceMapList = {
-            { PREFIX_JPA        + "lock.timeout",
+            { JPAProperties.LOCK_TIMEOUT,
               PREFIX_FETCHPLAN  + "LockTimeout",
               PREFIX_OPENJPA    + "LockTimeout" },
 
-            { PREFIX_JPA        + "query.timeout",
+            { JPAProperties.QUERY_TIMEOUT,
               PREFIX_FETCHPLAN  + "QueryTimeout",
               PREFIX_OPENJPA    + "QueryTimeout" },
 
@@ -113,7 +106,7 @@ public class FetchPlanHintHandler extends AbstractHintHandler {
         };
         for (String[] list : precedenceMapList) {
             for (String hint : list)
-                PrecedenceMap.put(hint, list);
+                precedenceMap.put(hint, list);
         }
     }
 
@@ -127,45 +120,43 @@ public class FetchPlanHintHandler extends AbstractHintHandler {
         _fPlan = fetchPlan;
     }
 
-    public boolean setHint(String hintName, Object value,
-        boolean validateThrowException) {
-        if (!hintName.startsWith(PREFIX_JPA)
-            && !ValidProductPrefixes.contains(getPrefixOf(hintName)))
+    public boolean setHint(String hintName, Object value, boolean validateThrowException) {
+        if (!JPAProperties.isValidKey(hintName)
+            && !validProductPrefixes.contains(getPrefixOf(hintName)))
             return false;
         return super.setHint(hintName, value, validateThrowException);
     }
 
-    protected boolean setHintInternal(String hintName, Object value,
-        boolean validateThrowException) {
+    protected boolean setHintInternal(String hintName, Object value, boolean validateThrowException) {
         boolean valueSet = false;
         if (hintName.startsWith(PREFIX_FETCHPLAN)) {
-            if (hintName.endsWith("LockMode")
-                && !_fConfig.getContext().isActive()) {
-                _fConfig.setHint(hintName + ".Defer", toLockLevel(value),
-                    false);
+            if (hintName.endsWith("LockMode") && !_fConfig.getContext().isActive()) {
+                _fConfig.setHint(hintName + ".Defer", toLockLevel(value));
                 valueSet = true;
-            } else
+            } else {
                 valueSet = hintToSetter(_fPlan, hintName, value);
-        } else
+            }
+        } else {
             _fConfig.setHint(hintName, value, validateThrowException);
+        }
         return valueSet;
     }
 
     protected String hintToKey(String key) {
         // transform product derived prefix to openjpa prefix
         if (!key.startsWith(PREFIX_OPENJPA)
-            && ValidProductPrefixes.contains(getPrefixOf(key)))
+            && validProductPrefixes.contains(getPrefixOf(key)))
             key = PREFIX_OPENJPA + key.substring(key.indexOf('.') + 1);
 
         // transform javax.persistence.* hints to fetch plan hints.
-        if (JavaxHintsMap.containsKey(key))
-            key = JavaxHintsMap.get(key);
+        if (javaxHintsMap.containsKey(key))
+            key = javaxHintsMap.get(key);
         return key;
     }
 
     protected boolean hasPrecedent(String key) {
         boolean hasPrecedent = true;
-        String[] list = PrecedenceMap.get(key);
+        String[] list = precedenceMap.get(key);
         if (list != null) {
             for (String hint : list) {
                 if (hint.equals(key))

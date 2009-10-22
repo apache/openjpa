@@ -27,10 +27,10 @@ import java.util.Map;
  * @since 2.0.0
  * @nojavadoc
  */
+@SuppressWarnings("serial")
 public class FetchConfigurationHintHandler extends AbstractHintHandler {
 
-    protected static final Map<String, String> hintsMap =
-        new HashMap<String, String>();
+    protected static final Map<String, String> hintsMap = new HashMap<String, String>();
 
     static {
         // Initialize hint to property name mapping.
@@ -44,13 +44,10 @@ public class FetchConfigurationHintHandler extends AbstractHintHandler {
         super(fConfig);
     }
 
-    public boolean setHintInternal(String hintName, Object value,
-        boolean validateThrowException) {
+    public boolean setHintInternal(String hintName, Object value, boolean validateThrowException) {
         boolean valueSet = false;
-        String longPrefix = hintName
-            .substring(0, hintName.lastIndexOf(DOT) + 1);
-        if ((longPrefix.equals(PREFIX_JDBC) || longPrefix
-            .equals(PREFIX_OPENJPA))) {
+        String longPrefix = hintName.substring(0, hintName.lastIndexOf(DOT) + 1);
+        if ((longPrefix.equals(PREFIX_JDBC) || longPrefix.equals(PREFIX_OPENJPA))) {
             valueSet = hintToSetter(_fConfig, hintToPropName(hintName), value);
         } else {
             valueSet = true;

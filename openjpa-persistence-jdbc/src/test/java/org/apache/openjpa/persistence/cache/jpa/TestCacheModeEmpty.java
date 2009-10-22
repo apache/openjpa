@@ -25,13 +25,6 @@ import javax.persistence.Cache;
 
 import org.apache.openjpa.lib.jdbc.JDBCListener;
 import org.apache.openjpa.persistence.OpenJPAEntityManagerFactorySPI;
-import org.apache.openjpa.persistence.cache.jpa.model.CacheableEntity;
-import org.apache.openjpa.persistence.cache.jpa.model.NegatedCachableEntity;
-import org.apache.openjpa.persistence.cache.jpa.model.NegatedUncacheableEntity;
-import org.apache.openjpa.persistence.cache.jpa.model.UncacheableEntity;
-import org.apache.openjpa.persistence.cache.jpa.model.UnspecifiedEntity;
-import org.apache.openjpa.persistence.cache.jpa.model.XmlCacheableEntity;
-import org.apache.openjpa.persistence.cache.jpa.model.XmlUncacheableEntity;
 
 public class TestCacheModeEmpty extends AbstractCacheModeTestCase {
     private static OpenJPAEntityManagerFactorySPI emf = null;
@@ -39,10 +32,8 @@ public class TestCacheModeEmpty extends AbstractCacheModeTestCase {
     private static List<String> sql = new ArrayList<String>();
     private static JDBCListener listener;
     
-    private static Class<?>[] expectedInCache = {CacheableEntity.class, UnspecifiedEntity.class, 
-        NegatedUncacheableEntity.class, XmlCacheableEntity.class};
-    private static Class<?>[] expectedNotInCache = {UncacheableEntity.class, NegatedCachableEntity.class,
-        XmlUncacheableEntity.class};
+    private static Class<?>[] expectedInCache = persistentTypes;
+    private static Class<?>[] expectedNotInCache = {};
 
     @Override
     public OpenJPAEntityManagerFactorySPI getEntityManagerFactory() {
@@ -71,7 +62,7 @@ public class TestCacheModeEmpty extends AbstractCacheModeTestCase {
     }
 
     public void testUncacheables() {
-        assertUncacheables(cache, false);
+        assertUncacheables(cache, true);
     }
 
     public void testUnspecified() {

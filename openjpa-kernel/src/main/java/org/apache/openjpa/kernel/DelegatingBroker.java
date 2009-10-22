@@ -1410,36 +1410,4 @@ public class DelegatingBroker
     public void setCachePreparedQuery(boolean flag) {
         _broker.setCachePreparedQuery(flag);
     }
-
-    public DataCacheRetrieveMode getCacheRetrieveMode() {
-        return _broker.getCacheRetrieveMode();
-    }
-
-    public DataCacheStoreMode getCacheStoreMode() {
-        return _broker.getCacheStoreMode();
-    }
-
-    public void setCacheRetrieveMode(DataCacheRetrieveMode mode) {
-        _broker.setCacheRetrieveMode(mode);
-    }
-
-    public void setCacheStoreMode(DataCacheStoreMode mode) {
-        _broker.setCacheStoreMode(mode);
-    }
-    
-    public void popCacheRetrieveMode() { 
-        _broker.popCacheRetrieveMode();
-    }
-    
-    public void popCacheStoreMode() { 
-        _broker.popCacheStoreMode();
-    }
-    
-    public void pushCacheRetrieveMode() { 
-        _broker.pushCacheRetrieveMode();
-    }
-    
-    public void pushCacheStoreMode() { 
-        _broker.pushCacheStoreMode();
-    }
 }

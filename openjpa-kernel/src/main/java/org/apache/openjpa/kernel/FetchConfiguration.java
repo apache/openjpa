@@ -305,6 +305,34 @@ public interface FetchConfiguration
      * @since 0.3.1
      */
     public int getWriteLockLevel();
+    
+    /**
+     * Gets the current storage mode for data cache.
+     * 
+     * @since 2.0.0
+     */
+    public DataCacheStoreMode getCacheStoreMode();
+    
+    /**
+     * Sets the current storage mode for data cache.
+     * 
+     * @since 2.0.0
+     */
+    public void setCacheStoreMode(DataCacheStoreMode mode);
+    
+    /**
+     * Gets the current retrieve mode for data cache.
+     * 
+     * @since 2.0.0
+     */
+    public DataCacheRetrieveMode getCacheRetrieveMode();
+    
+    /**
+     * Sets the current retrieve mode for data cache.
+     * 
+     * @since 2.0.0
+     */
+    public void setCacheRetrieveMode(DataCacheRetrieveMode mode);
 
     /**
      * The lock level to use for locking dirtied objects.
@@ -327,6 +355,16 @@ public interface FetchConfiguration
      * @since 0.4.0
      */
     public void setHint(String name, Object value);
+
+    /**
+     * Sets an arbitrary query hint that may be utilized during
+     * execution. The hint may be datastore-specific.
+     *
+     * @param name the name of the hint
+     * @param value the value of the hint
+     * @since 2.0.0
+     */
+    public void setHint(String name, Object value, boolean validate);
 
     /**
      * Returns the hint for the specific key, or null if the hint

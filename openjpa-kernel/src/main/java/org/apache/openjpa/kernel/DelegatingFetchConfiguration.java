@@ -466,6 +466,14 @@ public class DelegatingFetchConfiguration
             throw translate(re);
         }
     }
+    
+    public void setHint(String name, Object value, boolean validate) {
+        try {
+            _fetch.setHint(name, value, validate);
+        } catch (RuntimeException re) {
+            throw translate(re);
+        }
+    }
 
     public Object getHint(String name) {
         try {
@@ -530,4 +538,36 @@ public class DelegatingFetchConfiguration
             throw translate(re);
 		}
 	}
+
+    public DataCacheRetrieveMode getCacheRetrieveMode() {
+        try {
+            return _fetch.getCacheRetrieveMode();
+        } catch (RuntimeException re) {
+            throw translate(re);
+        }
+    }
+
+    public DataCacheStoreMode getCacheStoreMode() {
+        try {
+            return _fetch.getCacheStoreMode();
+        } catch (RuntimeException re) {
+            throw translate(re);
+        }
+    }
+
+    public void setCacheRetrieveMode(DataCacheRetrieveMode mode) {
+        try {
+            _fetch.setCacheRetrieveMode(mode);
+        } catch (RuntimeException re) {
+            throw translate(re);
+        }
+    }
+
+    public void setCacheStoreMode(DataCacheStoreMode mode) {
+        try {
+            _fetch.setCacheStoreMode(mode);
+        } catch (RuntimeException re) {
+            throw translate(re);
+        }
+    }
 }

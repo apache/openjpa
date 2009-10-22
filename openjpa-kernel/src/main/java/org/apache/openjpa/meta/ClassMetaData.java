@@ -38,20 +38,16 @@ import java.util.TreeMap;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.openjpa.conf.OpenJPAConfiguration;
-import org.apache.openjpa.datacache.AbstractDataCache;
 import org.apache.openjpa.datacache.DataCache;
-import org.apache.openjpa.datacache.DataCacheMode;
 import org.apache.openjpa.enhance.PCRegistry;
-import org.apache.openjpa.enhance.Reflection;
 import org.apache.openjpa.enhance.PersistenceCapable;
-import org.apache.openjpa.lib.conf.Configurations;
+import org.apache.openjpa.enhance.Reflection;
 import org.apache.openjpa.lib.conf.Value;
 import org.apache.openjpa.lib.conf.ValueListener;
 import org.apache.openjpa.lib.log.Log;
 import org.apache.openjpa.lib.meta.SourceTracker;
 import org.apache.openjpa.lib.util.J2DoPrivHelper;
 import org.apache.openjpa.lib.util.Localizer;
-import org.apache.openjpa.lib.util.Options;
 import org.apache.openjpa.lib.xml.Commentable;
 import org.apache.openjpa.util.BigDecimalId;
 import org.apache.openjpa.util.BigIntegerId;
@@ -61,6 +57,7 @@ import org.apache.openjpa.util.DateId;
 import org.apache.openjpa.util.DoubleId;
 import org.apache.openjpa.util.FloatId;
 import org.apache.openjpa.util.GeneralException;
+import org.apache.openjpa.util.ImplHelper;
 import org.apache.openjpa.util.IntId;
 import org.apache.openjpa.util.InternalException;
 import org.apache.openjpa.util.LongId;
@@ -70,7 +67,7 @@ import org.apache.openjpa.util.OpenJPAId;
 import org.apache.openjpa.util.ShortId;
 import org.apache.openjpa.util.StringId;
 import org.apache.openjpa.util.UnsupportedException;
-import org.apache.openjpa.util.ImplHelper;
+
 import serp.util.Strings;
 
 /**
@@ -185,8 +182,8 @@ public class ClassMetaData
     
     private String _seqName = DEFAULT_STRING;
     private SequenceMetaData _seqMeta = null;
-    private String _cacheName = DEFAULT_STRING;
-    private Boolean _cacheEnabled = null;
+    private String _cacheName = DEFAULT_STRING; // null implies @DataCache(enabled=false)
+    private Boolean _cacheEnabled = null;       // denotes status of JPA 2 @Cacheable annotation
     private int _cacheTimeout = Integer.MIN_VALUE;
     private Boolean _detachable = null;
     private String _detachState = DEFAULT_STRING;
@@ -1414,8 +1411,9 @@ public class ClassMetaData
      * The name of the data cache that stores the managed instance of this class, by default.
      * This can be overwritten by per-instance basis {@linkplain CacheDistributionPolicy cache distribution policy}. 
      * 
-     * @return If this class is disabled from cache or no name has been set then returns 
-     * {@linkplain DataCache#NAME_DEFAULT default} data cache name. 
+     * @return null if this class is disabled from cache by @DataCache(enabled=false).
+     *         {@linkplain DataCache#NAME_DEFAULT default} if @DataCache(enabled=true) without a name.
+     *         Otherwise, data cache name set by the user via @DataCache name attribute. 
      * 
      */
     public String getDataCacheName() {
@@ -1432,8 +1430,7 @@ public class ClassMetaData
     /**
      * Set the cache name for this class. 
      * 
-     * @param can not be null. To disable cache use {@linkplain ClassMetaData#setCacheEnabled(boolean, boolean)} 
-     * instead. 
+     * @param can be null to disable cache.
      */
     public void setDataCacheName(String name) {
         _cacheName = name;
@@ -2664,24 +2661,22 @@ public class ClassMetaData
     
     /**
      * Sets the eligibility status of this class for cache.
-     * To set enable from true to false, overwrite flag must be true.
+     * 
      */
-    public void setCacheEnabled(boolean enabled, boolean overwrite) { 
-        if (Boolean.TRUE.equals(_cacheEnabled) && enabled == false && !overwrite) {
-            getRepository().getConfiguration().getConfigurationLog().warn(_loc.get("cache-enable-overwrite"));
-            return;
-        }
+    public void setCacheEnabled(boolean enabled) { 
         _cacheEnabled = enabled;
     }
     
     /**
      * Returns tri-state status on whether this class has been enabled for caching.
      * 
-     * @return TRUE or FALSE denote the class has been explicitly enabled or disabled for caching.
-     * null denotes that no status for caching has been set. 
+     * @return TRUE or FALSE denote this class has been explicitly enabled or disabled for caching.
+     * If no status has been explicitly set, then the status of the persistent super class, if any, is returned. 
      */
     public Boolean getCacheEnabled() { 
-        return _cacheEnabled;
+        if (_cacheEnabled != null)
+            return _cacheEnabled;
+        return getPCSuperclassMetaData() != null ?  getPCSuperclassMetaData().getCacheEnabled() : null; 
     }
 }
 
