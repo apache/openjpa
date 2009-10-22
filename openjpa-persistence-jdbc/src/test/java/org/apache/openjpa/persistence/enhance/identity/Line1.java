@@ -48,55 +48,35 @@ import org.apache.openjpa.persistence.jdbc.VersionColumn;
  *
  */
 @Entity
-@Table(name="DI_PAGE1")
+@Table(name="DI_LINE1")
 @VersionColumn
-public class Page1 implements Serializable {
+public class Line1 implements Serializable {
     @EmbeddedId
-    @AttributeOverride(name="number", column=@Column(name="PAGE_NUM"))
-    private PageId1 pid;
+    @AttributeOverride(name="lineNum", column=@Column(name="LINE_NUM"))
+    private LineId1 lid;
 
-    @MapsId("book")
+    @MapsId("page")
     @ManyToOne
     @JoinColumns({
         @JoinColumn(name="LIBRARY_NAME", referencedColumnName="LIBRARY_NAME"),
-        @JoinColumn(name="BOOK_NAME", referencedColumnName="BOOK_NAME")    
+        @JoinColumn(name="BOOK_NAME", referencedColumnName="BOOK_NAME"),    
+        @JoinColumn(name="PAGE_NUM", referencedColumnName="PAGE_NUM")    
     })
-    private Book1 book;
+    private Page1 page;
 
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "page")
-    private Set<Line1> lines = new HashSet<Line1>();
-        
-    public PageId1 getPid() {
-        return pid;
+    public LineId1 getLid() {
+        return lid;
     }
 
-    public void setPid(PageId1 pid) {
-        this.pid = pid;
+    public void setLid(LineId1 lid) {
+        this.lid = lid;
     }
 
-    public Book1 getBook() {
-        return book;
+    public Page1 getPage() {
+        return page;
     }
 
-    public void setBook(Book1 book) {
-        this.book = book;
+    public void setPage(Page1 page) {
+        this.page = page;
     }    
-
-    public Set<Line1> getLines() {
-        return lines;
-    }
-    
-    public Line1 getLine(LineId1 lid) {
-        for (Line1 l: lines) {
-            if (l.getLid().equals(lid)) {
-                return l;
-            }
-        }
-        return null;
-    }
-    
-    public void addLine(Line1 l) {
-        l.setPage(this);
-        lines.add(l);
-    }
 }

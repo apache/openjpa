@@ -40,44 +40,41 @@ import javax.persistence.Embedded;
  */
 
 @Embeddable
-public final class PageId1 implements Serializable {
-    private int number;
+public final class LineId1 implements Serializable {
+    @Column(name="LINE_NUM")
+    private int lineNum;
 
     @Embedded
-    @AttributeOverrides({
-        @AttributeOverride(name="name", column=@Column(name="BOOK_NAME")),
-        @AttributeOverride(name="library", column=@Column(name="LIBRARY_NAME"))
-    })
-    private BookId1 book;
+    @AttributeOverride(name="number", column=@Column(name="PAGE_NUM"))
+    private PageId1 page;
 
-    public PageId1() {}
+    public LineId1() {}
     
-    public PageId1(int number, BookId1 book) {
-    	this.number = number;
-    	this.book = book;
+    public LineId1(int lineNum, PageId1 page) {
+        this.lineNum = lineNum;
+        this.page = page;
     }
     
-    
-    public int getNumber() {
-        return number;
+    public int getLineNum() {
+        return lineNum;
     }
 
-    public void setNumber(int number) {
-        this.number = number;
+    public void setLineNum(int lineNum) {
+        this.lineNum = lineNum;
     }
     
     public boolean equals(Object o) {
-        if (!(o instanceof PageId1)) {
+        if (!(o instanceof LineId1)) {
             return false;
         }
         
-        PageId1 other = (PageId1)o;
+        LineId1 other = (LineId1)o;
         
-        if (!(getNumber() == other.getNumber())) {
+        if (!(getLineNum() == other.getLineNum())) {
             return false;
         }
       
-        if (!getBook().equals(other.getBook())) {
+        if (!getPage().equals(other.getPage())) {
             return false;
         }
 
@@ -85,15 +82,14 @@ public final class PageId1 implements Serializable {
     }
     
     public int hashCode() {
-        return number * (book != null ? getBook().hashCode() : 31);
+        return lineNum * (page != null ? getPage().hashCode() : 31);
     }
-
     
-    public BookId1 getBook() {
-        return book;
+    public PageId1 getPage() {
+        return page;
     }
 
-    public void setBook(BookId1 book) {
-        this.book = book;
+    public void setPage(PageId1 page) {
+        this.page = page;
     }
 }

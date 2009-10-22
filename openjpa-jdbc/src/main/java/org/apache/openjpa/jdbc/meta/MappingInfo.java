@@ -544,6 +544,10 @@ public abstract class MappingInfo
         // n columns because we don't know which of the n columns the info
         // applies to
         List given = getColumns();
+        
+        if (context instanceof FieldMapping && ((FieldMapping)context).hasMapsIdCols())
+            given = ((FieldMapping)context).getValueInfo().getMapsIdColumns();
+        
         boolean fill = ((MappingRepository) context.getRepository()).
             getMappingDefaults().defaultMissingInfo();
         if ((!given.isEmpty() || (!adapt && !fill))

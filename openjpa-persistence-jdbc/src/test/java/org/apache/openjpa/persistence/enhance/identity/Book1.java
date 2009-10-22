@@ -22,13 +22,17 @@ import java.io.Serializable;
 import java.util.HashSet;
 import java.util.Set;
 
+import javax.persistence.AttributeOverride;
+import javax.persistence.AttributeOverrides;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.EmbeddedId;
 import javax.persistence.Entity;
+import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.MapsId;
 import javax.persistence.OneToMany;
+import javax.persistence.Table;
 
 import org.apache.openjpa.persistence.jdbc.VersionColumn;
 
@@ -44,17 +48,22 @@ import org.apache.openjpa.persistence.jdbc.VersionColumn;
  *
  */
 @Entity
+@Table(name="DI_BOOK1")
 @VersionColumn
 public class Book1 implements Serializable {
     @EmbeddedId
+    @AttributeOverrides({
+        @AttributeOverride(name="name", column=@Column(name="BOOK_NAME")),
+        @AttributeOverride(name="library", column=@Column(name="LIBRARY_NAME"))
+    })
     private BookId1 bid;
     
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "book")
     private Set<Page1> pages = new HashSet<Page1>();
     
     @MapsId("library")
-    @Column(nullable = false)
     @ManyToOne
+    @JoinColumn(name="LIBRARY_NAME", referencedColumnName="LIBRARY_NAME")
     private Library1 library;
     
     private String author;

@@ -18,6 +18,7 @@
  */
 package org.apache.openjpa.jdbc.meta;
 
+import java.util.Collections;
 import java.util.List;
 
 import org.apache.openjpa.jdbc.schema.Column;
@@ -47,6 +48,7 @@ public class ValueMappingInfo
 
     private boolean _criteria = false;
     private boolean _canNull = true;
+    private List _mapsIdCols = null;
 
     /**
      * Whether to use class criteria when joining to related type.
@@ -330,5 +332,19 @@ public class ValueMappingInfo
             _criteria = vinfo.getUseClassCriteria();
         if (_canNull)
             _canNull = vinfo.canIndicateNull();
+    }
+    
+    /**
+     * Raw column data.
+     */
+    public List getMapsIdColumns() {
+        return (_mapsIdCols == null) ? Collections.EMPTY_LIST : _mapsIdCols;
+    }
+    
+    /**
+     * Raw column data.
+     */
+    public void setMapsIdColumns(List cols) {
+        _mapsIdCols = cols;
     }
 }

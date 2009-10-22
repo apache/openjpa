@@ -18,11 +18,13 @@
  */
 package org.apache.openjpa.persistence.enhance.identity;
 
+import java.util.Arrays;
 import java.util.List;
 
 import javax.persistence.EntityManager;
 
-import org.apache.openjpa.persistence.test.SingleEMFTestCase;
+import org.apache.openjpa.persistence.jdbc.SQLSniffer;
+import org.apache.openjpa.persistence.test.SQLListenerTestCase;
 
 
 /**
@@ -32,22 +34,25 @@ import org.apache.openjpa.persistence.test.SingleEMFTestCase;
  * 
  */
 @SuppressWarnings("unchecked")
-public class TestMultipleLevelDerivedIdentity1 extends SingleEMFTestCase {
+public class TestMultipleLevelDerivedIdentity1 extends SQLListenerTestCase {
 	private static String LIBRARY_NAME = "LIB";
 	private static String BOOK_NAME    = "foo";
 	private static int    NUM_PAGES    = 3;
+	private static int    NUM_LINES    = 20;
     public void setUp() throws Exception {
-        super.setUp(CLEAR_TABLES, Library1.class, Book1.class, Page1.class,
-            BookId1.class, PageId1.class,
+        super.setUp(DROP_TABLES, Library1.class, Book1.class, Page1.class,
+            BookId1.class, PageId1.class, Line1.class, LineId1.class,
             "openjpa.RuntimeUnenhancedClasses", "unsupported");
         create();
     }
     
 	public void testPersist() {
+	    sql.clear();
 		create();
 	}
 
 	public void testQueryRootLevel() {
+	    sql.clear();
 		EntityManager em = emf.createEntityManager();
 		List<Library1> list = em.createQuery("SELECT p FROM Library1 p")
 							   .getResultList();
@@ -62,6 +67,7 @@ public class TestMultipleLevelDerivedIdentity1 extends SingleEMFTestCase {
 	}
 	
 	public void testQueryIntermediateLevel() {
+	    sql.clear();
 		EntityManager em = emf.createEntityManager();
 		List<Book1> list = em.createQuery("SELECT p FROM Book1 p")
 							   .getResultList();
@@ -80,6 +86,7 @@ public class TestMultipleLevelDerivedIdentity1 extends SingleEMFTestCase {
 	}
 	
 	public void testQueryLeafLevel() {
+	    sql.clear();
 		EntityManager em = emf.createEntityManager();
 		List<Page1> list = em.createQuery("SELECT p FROM Page1 p")
 							   .getResultList();
@@ -95,6 +102,7 @@ public class TestMultipleLevelDerivedIdentity1 extends SingleEMFTestCase {
 	}
 
 	public void testFindRootNode() {
+	    sql.clear();
 		EntityManager em = emf.createEntityManager();
 		Library1 lib = em.find(Library1.class, LIBRARY_NAME);
 		assertNotNull(lib);
@@ -106,6 +114,7 @@ public class TestMultipleLevelDerivedIdentity1 extends SingleEMFTestCase {
 	}
 	
 	public void testFindIntermediateNode() {
+	    sql.clear();
 		EntityManager em = emf.createEntityManager();
 		
 		BookId1 bookId = new BookId1();
@@ -116,6 +125,7 @@ public class TestMultipleLevelDerivedIdentity1 extends SingleEMFTestCase {
 	}
 	
 	public void testFindLeafNode() {
+	    sql.clear();
 		EntityManager em = emf.createEntityManager();
 		
 		BookId1 bookId = new BookId1();
@@ -129,6 +139,7 @@ public class TestMultipleLevelDerivedIdentity1 extends SingleEMFTestCase {
 	}
 	
 	public void testUpdate() {
+	    sql.clear();
 		EntityManager em = emf.createEntityManager();
 		em.getTransaction().begin();
 		BookId1 bookId = new BookId1();
@@ -141,6 +152,7 @@ public class TestMultipleLevelDerivedIdentity1 extends SingleEMFTestCase {
 	}
 	
 	public void testDeleteRoot() {
+	    sql.clear();
 		EntityManager em = emf.createEntityManager();
 		em.getTransaction().begin();
 		Library1 lib = em.find(Library1.class, LIBRARY_NAME);
@@ -153,6 +165,7 @@ public class TestMultipleLevelDerivedIdentity1 extends SingleEMFTestCase {
 	}
 	
 	public void testDeleteLeafObtainedByQuery() {
+	    sql.clear();
 		EntityManager em = emf.createEntityManager();
 		em.getTransaction().begin();
         Page1 page = (Page1)em.createQuery(
@@ -168,6 +181,7 @@ public class TestMultipleLevelDerivedIdentity1 extends SingleEMFTestCase {
 	}
 	
 	public void testDeleteLeafObtainedByFind() {
+	    sql.clear();
 		EntityManager em = emf.createEntityManager();
 		em.getTransaction().begin();
 		BookId1 bookId = new BookId1();
@@ -212,10 +226,36 @@ public class TestMultipleLevelDerivedIdentity1 extends SingleEMFTestCase {
 			PageId1 pid = new PageId1(i, bid);
 			page.setPid(pid);
 			book.addPage(page);
+			for (int j = 1; j <= NUM_LINES; j++) {
+			    Line1 line = new Line1();
+			    LineId1 lid = new LineId1(j, pid);
+			    line.setLid(lid);
+			    page.addLine(line);
+			    
+			}
 		}
 		em.persist(lib);
 		em.getTransaction().commit();
 
 		em.clear();
+        assertSQLFragnments(sql, "CREATE TABLE DI_LIBRARY1", "LIBRARY_NAME");
+        assertSQLFragnments(sql, "CREATE TABLE DI_BOOK1", "LIBRARY_NAME", "BOOK_NAME");
+        assertSQLFragnments(sql, "CREATE TABLE DI_PAGE1", "LIBRARY_NAME", "BOOK_NAME", "PAGE_NUM");
+        assertSQLFragnments(sql, "CREATE TABLE DI_LINE1", "LIBRARY_NAME", "BOOK_NAME", "PAGE_NUM", "LINE_NUM");
 	}
+
+    void assertSQLFragnments(List<String> list, String... keys) {
+        if (SQLSniffer.matches(list, keys))
+            return;
+        fail("None of the following " + sql.size() + " SQL \r\n" + 
+                toString(sql) + "\r\n contains all keys \r\n"
+                + toString(Arrays.asList(keys)));
+    }
+
+    public String toString(List<String> list) {
+        StringBuffer buf = new StringBuffer();
+        for (String s : list)
+            buf.append(s).append("\r\n");
+        return buf.toString();
+    }
 }

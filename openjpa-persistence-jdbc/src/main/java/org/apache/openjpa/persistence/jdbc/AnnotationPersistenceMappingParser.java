@@ -1689,6 +1689,21 @@ public class AnnotationPersistenceMappingParser
         setColumns(fm, info, cols, unique);
         if (secondary != null)
             fm.getMappingInfo().setTableName(secondary);
+        String mappedByIdValue = fm.getMappedByIdValue();
+        if (mappedByIdValue != null) {
+            FieldMapping[] pks = fm.getDefiningMapping().getPrimaryKeyFieldMappings();
+            pks[0].setMapsIdCols(true);
+            if (mappedByIdValue.length() == 0) { 
+                pks[0].getValueInfo().setMapsIdColumns(cols);
+            } else { 
+                ClassMapping embeddedMeta = (ClassMapping)pks[0].getValue().getEmbeddedMetaData();
+                if (embeddedMeta != null) {
+                    FieldMapping fmd = embeddedMeta.getFieldMapping(mappedByIdValue);
+                    if (fmd != null)
+                        fmd.getValueInfo().setMapsIdColumns(cols);
+                }
+            }
+        }
     }
 
     /**

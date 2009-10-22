@@ -200,7 +200,8 @@ public class RelationFieldStrategy
             FieldMapping fm = (FieldMapping) pks[i];
             ValueMappingImpl val = (ValueMappingImpl) field.getValue();
             ValueMappingInfo info = val.getValueInfo();
-            info.setColumns(getMappedByIdColumns(fm));
+            if (info.getColumns().size() == 0) 
+                info.setColumns(getMappedByIdColumns(fm));
         }
     }
 

@@ -92,6 +92,8 @@ public class FieldMapping
     private FieldMapping _bi_MTo1_JT_Field = null;
     private ForeignKey _bi_1ToM_Join_FK = null;
     private ForeignKey _bi_1ToM_Elem_FK = null;
+    
+    private boolean _hasMapsIdCols = false;
         
     /**
      * Constructor.
@@ -1334,5 +1336,13 @@ public class FieldMapping
    
     public boolean isNonDefaultMappingUsingJoinTableStrategy() {
         return isBi1To1JT() || isUni1To1JT() || isUniMTo1JT() || isBiMTo1JT();
+    }
+    
+    public void setMapsIdCols(boolean hasMapsIdCols) {
+        _hasMapsIdCols = hasMapsIdCols;
+    }
+    
+    public boolean hasMapsIdCols() {
+        return _hasMapsIdCols;
     }
 }

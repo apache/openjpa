@@ -283,7 +283,7 @@ public abstract class EmbedValueHandler
         Column[] pkCols =  ((ValueMappingImpl)fmd.getValue()).getColumns();
         for (int j = 0; j < pkCols.length; j++) {
             Column newCol = new Column();
-            newCol.setName(pkCols[j].getName());
+            newCol.copy(pkCols[j]);
             cols.add(newCol);
         }
     }

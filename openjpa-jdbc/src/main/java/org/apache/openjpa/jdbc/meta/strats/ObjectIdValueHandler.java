@@ -23,6 +23,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.openjpa.jdbc.kernel.JDBCStore;
+import org.apache.openjpa.jdbc.meta.ClassMapping;
+import org.apache.openjpa.jdbc.meta.FieldMapping;
 import org.apache.openjpa.jdbc.meta.ValueMapping;
 import org.apache.openjpa.jdbc.schema.Column;
 import org.apache.openjpa.jdbc.schema.ColumnIO;
@@ -46,11 +48,91 @@ public class ObjectIdValueHandler
         boolean adapt) {
         List cols = new ArrayList();
         List args = new ArrayList();
+        setMapsIdCol(vm);
         super.map(vm, name, io, adapt, cols, args);
 
         vm.setColumns((Column[]) cols.toArray(new Column[cols.size()]));
         _args = args.toArray();
         return vm.getColumns();
+    }
+    
+    private void setMapsIdCol(ValueMapping vm) {
+        if (!(vm instanceof FieldMapping)) 
+            return;
+        if (!((FieldMapping)vm).hasMapsIdCols())
+            return;
+        ClassMapping embeddedMeta = (ClassMapping)((FieldMapping)vm).getValue().getEmbeddedMetaData();
+        if (embeddedMeta == null)
+            return;
+        List mapsIdColList = ((FieldMapping)vm).getValueInfo().getMapsIdColumns();
+        if (mapsIdColList.size() > 0 ) {
+            setMapsIdCols(mapsIdColList, embeddedMeta);
+            return;
+        } 
+
+        FieldMapping[] fmds = embeddedMeta.getFieldMappings();
+        for (int i = 0; i < fmds.length; i++) {
+            mapsIdColList = fmds[i].getValueInfo().getMapsIdColumns();
+            if (mapsIdColList.size() == 0)
+                continue;
+            ClassMapping embeddedMeta1 = (ClassMapping)fmds[i].getEmbeddedMetaData();
+            if (embeddedMeta1 != null) 
+                setMapsIdCols(mapsIdColList, embeddedMeta1);
+            else 
+                setMapsIdCols(mapsIdColList, fmds[i]);
+        }
+    }
+    
+    private void setMapsIdCols(List cols, ClassMapping cm) {
+        for (int i = 0; i < cols.size(); i++) {
+            String refColName = ((Column)cols.get(i)).getTarget();
+            FieldMapping fm = getReferenceField(cm, refColName);
+            if (fm != null) {
+                List colList1 = new ArrayList();
+                colList1.add(cols.get(i));
+                fm.setMapsIdCols(true);
+                fm.getValueInfo().setMapsIdColumns(colList1);
+            }
+        }
+    }
+
+    private void setMapsIdCols(List cols, FieldMapping fm) {
+        if (cols.size() == 1) {
+            fm.setMapsIdCols(true);
+            fm.getValueInfo().setMapsIdColumns(cols);
+            return;
+        }
+            
+        for (int i = 0; i < cols.size(); i++) {
+            String refColName = ((Column)cols.get(i)).getTarget();
+            if (isReferenceField(fm, refColName)) {
+                List colList1 = new ArrayList();
+                colList1.add(cols.get(i));
+                fm.setMapsIdCols(true);
+                fm.getValueInfo().setMapsIdColumns(colList1);
+            }
+        }
+    }
+    
+    private FieldMapping getReferenceField(ClassMapping cm, String refColName) {
+        FieldMapping[] fmds = cm.getFieldMappings();
+        for (int i = 0; i < fmds.length; i++) {
+            if (isReferenceField(fmds[i], refColName))
+                return fmds[i];
+        }
+        return null;
+    }
+    
+    private boolean isReferenceField(FieldMapping fm, String refColName) {
+        List cols = fm.getValueInfo().getColumns();
+        if (cols.size() == 0) {
+            if (fm.getName().equals(refColName))
+                return true;                
+        } else {
+            if (((Column)cols.get(0)).getName().equals(refColName))
+                return true;
+        } 
+        return false;
     }
 
     public Object getResultArgument(ValueMapping vm) {

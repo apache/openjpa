@@ -26,6 +26,7 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
+import javax.persistence.Table;
 
 import org.apache.openjpa.persistence.jdbc.VersionColumn;
 
@@ -41,6 +42,7 @@ import org.apache.openjpa.persistence.jdbc.VersionColumn;
  *
  */
 @Entity
+@Table(name="DI_LIBRARY1")
 @VersionColumn
 public class Library1 implements Serializable {
     @Id

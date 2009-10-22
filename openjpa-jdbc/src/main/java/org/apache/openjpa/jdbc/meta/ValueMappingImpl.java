@@ -34,6 +34,7 @@ import org.apache.openjpa.jdbc.sql.Select;
 import org.apache.openjpa.kernel.OpenJPAStateManager;
 import org.apache.openjpa.lib.util.Localizer;
 import org.apache.openjpa.meta.JavaTypes;
+import org.apache.openjpa.meta.ValueMetaData;
 import org.apache.openjpa.meta.ValueMetaDataImpl;
 import org.apache.openjpa.util.InternalException;
 import org.apache.openjpa.util.MetaDataException;
@@ -457,6 +458,11 @@ public class ValueMappingImpl
             if (embed != null)
                 embed.syncMappingInfo();
         }
+    }
+    
+    public void copy(ValueMetaData vmd) {
+        super.copy(vmd);
+        copyMappingInfo((ValueMapping)vmd);
     }
 
     public void copyMappingInfo(ValueMapping vm) {
