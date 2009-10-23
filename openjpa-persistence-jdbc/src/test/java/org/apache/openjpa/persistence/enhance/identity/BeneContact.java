@@ -34,7 +34,7 @@ import javax.persistence.Version;
 
 
 @Entity
-@Table(name="BENE_CONTACT")
+@Table(name="DI_BENE_CONTACT")
 public class BeneContact {
 
 	private static final long serialVersionUID = 4571838649566012594L;
