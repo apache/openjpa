@@ -22,6 +22,7 @@ import javax.persistence.EntityManager;
 
 import org.apache.openjpa.jdbc.conf.JDBCConfiguration;
 import org.apache.openjpa.jdbc.sql.DBDictionary;
+import org.apache.openjpa.jdbc.sql.MySQLDictionary;
 import org.apache.openjpa.persistence.OpenJPAEntityManagerSPI;
 import org.apache.openjpa.persistence.common.apps.CompUser;
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
@@ -55,8 +56,14 @@ public class TestEJBQLFunction extends SingleEMFTestCase {
         em.close();
     }
 
+    
     public void testLowerFunc() {
-        EntityManager em = emf.createEntityManager();
+        OpenJPAEntityManagerSPI em = emf.createEntityManager();
+        DBDictionary dict = ((JDBCConfiguration) em.getConfiguration()).getDBDictionaryInstance();
+        if (dict instanceof MySQLDictionary ) {
+            // This testcase requires OPENJPA-612 to execute on MySQL. 
+            return;
+        }
         em.getTransaction().begin();
 
         CompUser user = em.find(CompUser.class, userid3);
@@ -109,7 +116,12 @@ public class TestEJBQLFunction extends SingleEMFTestCase {
     }
 
     public void testUpperFunc() {
-        EntityManager em = emf.createEntityManager();
+        OpenJPAEntityManagerSPI em = emf.createEntityManager();
+        DBDictionary dict = ((JDBCConfiguration) em.getConfiguration()).getDBDictionaryInstance();
+        if (dict instanceof MySQLDictionary ) {
+            // This testcase requires OPENJPA-612 to execute on MySQL. 
+            return;
+        }
         em.getTransaction().begin();
 
         CompUser user = em.find(CompUser.class, userid3);
