@@ -38,6 +38,9 @@ public class CompUser
 	@Column(name="compName", length=50)
 	private String computerName;
 
+    @Basic @Lob
+    private String nameAsLob;
+
 	@PersistentCollection
 	private String[] nicknames = new String[0];
 
@@ -57,6 +60,7 @@ public class CompUser
 		this.computerName = cName;
 		this.address = address;
 		this.age = age;
+        this.nameAsLob = name;
 	}
 
 	public String getComputerName() {
@@ -95,4 +99,13 @@ public class CompUser
 		this.age = age;
 	}
 
+    public String getNameAsLob() {
+        return nameAsLob;
+    }
+
+    public void setNameAsLob(String nameAsLob) {
+        this.nameAsLob = nameAsLob;
+    }
+
 }
+

@@ -52,6 +52,8 @@ import org.apache.openjpa.util.UnsupportedException;
 public class InformixDictionary
     extends DBDictionary {
 
+    public static final String VENDOR_IBM = "ibm";
+
     /**
      * If true, then we will issue a "SET LOCK MODE TO WAIT N"
      * statement whenever we create a {@link Connection}, in order
@@ -154,22 +156,25 @@ public class InformixDictionary
     public void connectedConfiguration(Connection conn)
         throws SQLException {
         super.connectedConfiguration(conn);
-        if (driverVendor == null) {
-            DatabaseMetaData meta = conn.getMetaData();
-            String driverName = meta.getDriverName();
-            if ("Informix".equalsIgnoreCase(driverName))
-                driverVendor = VENDOR_DATADIRECT;
-            else
-                driverVendor = VENDOR_OTHER;
-            
-            if (driverName.equals("IBM DB2 JDBC Universal Driver Architecture")) { 
+
+        DatabaseMetaData meta = conn.getMetaData();
+        String driverName = meta.getDriverName();
+        if (driverName != null) {
+            if (driverName.equals("IBM DB2 JDBC Universal Driver Architecture"))
+            { 
+                driverVendor = VENDOR_IBM;
                 useJCC = true;
                 try {
                     if (meta.storesLowerCaseIdentifiers()) 
                         schemaCase = SCHEMA_CASE_LOWER;
                 } catch (SQLException e) {}
-            }
-        }
+            } else if ("Informix".equalsIgnoreCase(driverName))
+                driverVendor = VENDOR_DATADIRECT;
+            else
+                driverVendor = VENDOR_OTHER;
+        } else
+            driverVendor = VENDOR_OTHER;
+
         if (isJDBC3) {
             conn.setHoldability(ResultSet.HOLD_CURSORS_OVER_COMMIT);
             if (log.isTraceEnabled())

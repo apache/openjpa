@@ -237,6 +237,7 @@ public class DBDictionary
     public boolean requiresCastForComparisons = false;
     public boolean supportsModOperator = false;
     public boolean supportsXMLColumn = false;
+    public boolean supportsCaseConversionForLob = false;
     public boolean reportsSuccessNoInfoOnBatchUpdates = false;
     public boolean supportsSelectFromFinalTable = false;
     
@@ -381,7 +382,7 @@ public class DBDictionary
     public DBDictionary() {
         fixedSizeTypeNameSet.addAll(Arrays.asList(new String[]{
             "BIGINT", "BIT", "BLOB", "CLOB", "DATE", "DECIMAL", "DISTINCT",
-            "DOUBLE", "FLOAT", "INTEGER", "JAVA_OBJECT", "NULL", 
+            "DOUBLE", "FLOAT", "INTEGER", "JAVA_OBJECT", "NULL",
             "OTHER", "REAL", "REF", "SMALLINT", "STRUCT", "TIME", "TIMESTAMP",
             "TINYINT",
         }));
@@ -480,7 +481,7 @@ public class DBDictionary
         // try from the most generic, and if errors occur, try
         // less generic types; this enables us to handle values
         // like Double.NaN without having to introspect on the
-        // ResultSetMetaData (bug #1053). note that we handle
+        // ResultSetMetaData (bug #1053). Note that we handle
         // generic exceptions, since some drivers may throw
         // NumberFormatExceptions, whereas others may throw SQLExceptions
         try {
@@ -2748,7 +2749,7 @@ public class DBDictionary
         Class rc = Filters.wrap(rhs.getType());
         int type = 0;
         if (requiresCastForMathFunctions && (lc != rc
-            || (lhs.isConstant() && rhs.isConstant()))) {
+            || (lhs.isConstant() || rhs.isConstant()))) {
             Class c = Filters.promote(lc, rc);
             type = getJDBCType(JavaTypes.getTypeCode(c), false);
             if (type != Types.VARBINARY && type != Types.BLOB) {
@@ -4504,6 +4505,19 @@ public class DBDictionary
      */
     public String getCastFunction(Val val, String func) {
         return func;
+    }
+
+    /**
+     * Return the correct CAST function syntax.  This should be overriden by subclasses
+     * that need access to the Column information.
+     * 
+     * @param val operand of cast
+     * @param func original string
+     * @param col database column
+     * @return a String with the correct CAST function syntax
+     */
+    public String getCastFunction(Val val, String func, Column col) {
+        return getCastFunction (val, func);
     }
     
     /**

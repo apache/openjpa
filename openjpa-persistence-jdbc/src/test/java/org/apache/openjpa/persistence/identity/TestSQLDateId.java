@@ -57,7 +57,7 @@ public class TestSQLDateId
     }
 
     public static void main(String[] args) {
-        TestRunner.run(SQLDateIdEntity.class);
+        TestRunner.run(TestSQLBigIntegerId.class);
     }
 }
 

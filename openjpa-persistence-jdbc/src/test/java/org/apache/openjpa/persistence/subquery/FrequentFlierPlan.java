@@ -21,8 +21,10 @@ package org.apache.openjpa.persistence.subquery;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.Table;
 
 @Entity
+@Table(name="CR_FFPLAN")
 public class FrequentFlierPlan {
     @Id
     @GeneratedValue

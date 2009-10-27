@@ -23,6 +23,7 @@ import java.sql.Date;
 import javax.persistence.*;
 
 @Entity
+@Table(name="CR_REQ")
 public class Request {
      @Id
      int id;

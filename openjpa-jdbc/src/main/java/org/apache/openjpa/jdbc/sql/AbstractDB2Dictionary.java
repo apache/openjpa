@@ -37,13 +37,9 @@ public abstract class AbstractDB2Dictionary
 
         // DB2-based databases have restrictions on having uncast parameters
         // in string functions
-        toUpperCaseFunction = "UPPER(CAST({0} AS VARCHAR(" + varcharCastLength
-            + ")))";
-        toLowerCaseFunction = "LOWER(CAST({0} AS VARCHAR(" + varcharCastLength
-            + ")))";
         stringLengthFunction = "LENGTH({0})";
         concatenateFunction = "(CAST({0} AS VARCHAR(" + varcharCastLength
-            + ")))||(CAST({1} AS VARCHAR(1000)))";
+            + ")) || CAST({1} AS VARCHAR(" + varcharCastLength + ")))";
 
         trimLeadingFunction = "LTRIM({0})";
         trimTrailingFunction = "RTRIM({0})";
@@ -59,6 +55,7 @@ public abstract class AbstractDB2Dictionary
         supportsLockingWithOuterJoin = false;
         supportsLockingWithInnerJoin = false;
         supportsLockingWithSelectRange = true;
+        supportsCaseConversionForLob = true;
 
         requiresAutoCommitForMetaData = true;
         requiresAliasForSubselect = true;

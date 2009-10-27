@@ -22,6 +22,7 @@ import javax.persistence.*;
 import org.apache.openjpa.persistence.*;
 
 @Entity
+@Table(name="CR_COMPUSER")
 @Inheritance(strategy=InheritanceType.SINGLE_TABLE)
 public class CompUser
 {
