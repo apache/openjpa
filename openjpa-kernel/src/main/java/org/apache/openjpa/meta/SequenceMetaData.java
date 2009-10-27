@@ -344,12 +344,23 @@ public class SequenceMetaData
      * Add standard properties to the given properties buffer.
      */
     protected void addStandardProperties(StringBuffer props) {
-        appendProperty(props, PROP_SEQUENCE, "\"" + _sequence + "\"");
+        appendProperty(props, PROP_SEQUENCE, wrapValue(_sequence));
         appendProperty(props, PROP_INITIAL_VALUE, _initial);
         appendProperty(props, PROP_ALLOCATE, _allocate);
         appendProperty(props, PROP_INCREMENT, _increment);
-        appendProperty(props, PROP_SCHEMA, "\"" + _schema + "\"");
-        appendProperty(props, PROP_CATALOG, "\"" + _catalog + "\"");
+        appendProperty(props, PROP_SCHEMA, wrapValue(_schema));
+        appendProperty(props, PROP_CATALOG, wrapValue(_catalog));
+    }
+    
+    /**
+     * Wraps property values that may contain spaces or other special characters
+     * in double quotes so they are processed as a single valued argument.
+     */
+    protected String wrapValue(String value) {
+        if (value != null) {
+            return "\"" + value + "\"";
+        }
+        return value;
     }
 
     /**
