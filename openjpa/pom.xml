@@ -107,6 +107,24 @@
             <groupId>org.apache.openjpa</groupId>
             <artifactId>openjpa-jdbc</artifactId>
             <version>${pom.version}</version>
+            <!-- 
+                 Need to exclude jaxb depends, so the following will not
+                 get included in the aggregate JAR by the shade plugin:
+                     javax.xml.bind:jaxb-api:jar:2.0
+                     javax.xml.bind:jsr173_api:jar:1.0
+                     javax.activation:activation:jar:1.1
+                     com.sun.xml.bind:jaxb-impl:jar:2.0.5
+            -->
+            <exclusions>
+                <exclusion>
+                    <groupId>javax.xml.bind</groupId>
+                    <artifactId>jaxb-api</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>com.sun.xml.bind</groupId>
+                    <artifactId>jaxb-impl</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
         <dependency>
             <groupId>org.apache.openjpa</groupId>
