@@ -34,6 +34,21 @@
 
     <build>
         <plugins>
+            <!--
+                 Need to disable source plugin here, as it overwrites the shade
+                 plugin created sources jar.
+            -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-source-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>attach-sources</id>
+                        <phase>none</phase>
+                    </execution>
+                </executions>
+            </plugin>
+            <!-- Create our aggregate all JAR -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-shade-plugin</artifactId>
@@ -47,13 +62,26 @@
                             <createDependencyReducedPom>true</createDependencyReducedPom>
                             <createSourcesJar>true</createSourcesJar>
                             <keepDependenciesWithProvidedScope>true</keepDependenciesWithProvidedScope>
+                            <!-- 
+                                 Have to do this again here, as these settings
+                                 from shaded openjpa.jar get lost in the shading
+                            -->
                             <transformers>
+                                <!-- Need to concatinate the services resources:
+                                 org.apache.openjpa.lib.conf.ProductDerivation
+                                 javax.persistence.spi.PersistenceProvider
+                                 org.apache.openjpa.kernel.exps.ExpressionParser
+                                -->
+                                <transformer implementation="org.apache.maven.plugins.shade.resource.ServicesResourceTransformer"/>
+                                <!-- Need to add some MANIFEST.MF metadata -->
                                 <transformer implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
                                     <manifestEntries>
                                         <Main-Class>org.apache.openjpa.conf.OpenJPAVersion</Main-Class>
                                         <Premain-Class>org.apache.openjpa.enhance.PCEnhancerAgent</Premain-Class>
                                         <Agent-Class>org.apache.openjpa.enhance.InstrumentationFactory</Agent-Class>
                                         <Can-Redefine-Classes>true</Can-Redefine-Classes>
+                                        <Can-Retransform-Classes>true</Can-Retransform-Classes>
+                                        <Implementation-Title>Apache OpenJPA Aggregate JAR with dependencies</Implementation-Title>
                                         <Specification-Title>JSR-220 Java Persistence</Specification-Title>
                                         <Specification-Vendor>Sun Microsystems, Inc.</Specification-Vendor>
                                         <Specification-Version>1.0</Specification-Version>
@@ -66,6 +94,7 @@
             </plugin>
         </plugins>
     </build>
+
     <dependencies>
         <!--
             Only include openjpa.jar and its required dependencies here, which
@@ -76,6 +105,8 @@
             <artifactId>openjpa</artifactId>
             <version>${pom.version}</version>
         </dependency>
+
+        <!-- Non-OpenJPA JARs to pull in -->
         <dependency>
             <groupId>net.sourceforge.serp</groupId>
             <artifactId>serp</artifactId>
