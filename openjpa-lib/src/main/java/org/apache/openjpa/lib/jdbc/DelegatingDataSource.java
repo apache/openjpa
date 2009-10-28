@@ -20,6 +20,7 @@ package org.apache.openjpa.lib.jdbc;
 
 import java.io.PrintWriter;
 import java.lang.reflect.Constructor;
+import java.lang.reflect.Method;
 import java.sql.Connection;
 import java.sql.SQLException;
 import javax.sql.DataSource;
@@ -134,7 +135,23 @@ public abstract class DelegatingDataSource implements DataSource, Closeable {
         throws SQLException {
         if (user == null && pass == null)
             return _ds.getConnection();
-        return _ds.getConnection(user, pass);
+        try {
+            return _ds.getConnection(user, pass);
+        } catch (UnsupportedOperationException ex) {
+            // OPENJPA-1354
+            // under some configuration _ds is Commons DBCP Basic/Poolable DataSource
+            // that does not support getConnection(user, password)
+            // see http://commons.apache.org/dbcp/apidocs/org/apache/commons/dbcp/BasicDataSource.html
+            // hence this workaround
+            try {
+                if (setBeanProperty(_ds, "setUsername", user)
+                 && setBeanProperty(_ds, "setPassword", pass))
+                    return _ds.getConnection();
+            } catch (Exception e) {
+                throw ex;
+            }
+        }
+        return null;
     }
 
     public void close() throws Exception {
@@ -152,5 +169,15 @@ public abstract class DelegatingDataSource implements DataSource, Closeable {
             return getDelegate();
         else
             return null;
+    }
+    
+    private boolean setBeanProperty(Object target, String method, Object val) {
+        try {
+            Method setter = target.getClass().getMethod(method, new Class[]{});
+            setter.invoke(target, val);
+            return true;
+        } catch (Throwable t) {
+            return false;
+        }
     }
 }
