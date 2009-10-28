@@ -25,6 +25,9 @@ import java.util.Set;
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
 
+import org.apache.openjpa.jdbc.conf.JDBCConfiguration;
+import org.apache.openjpa.jdbc.sql.DBDictionary;
+import org.apache.openjpa.jdbc.sql.OracleDictionary;
 import org.apache.openjpa.persistence.FetchPlan;
 import org.apache.openjpa.persistence.OpenJPAPersistence;
 import org.apache.openjpa.persistence.kernel.common.apps.State;
@@ -59,6 +62,11 @@ public class TestIndirectRecursion extends SingleEMFTestCase {
 
     public void setUp() {
         super.setUp(CLEAR_TABLES, State.class, Transition.class);
+        
+        DBDictionary dict = ((JDBCConfiguration) emf.getConfiguration()).getDBDictionaryInstance();
+        if (dict instanceof OracleDictionary) {
+            ((OracleDictionary) dict).useTriggersForAutoAssign = true;
+        }
     }
 
     public void testFetch() {
