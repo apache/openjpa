@@ -34,198 +34,141 @@
 
     <build>
         <plugins>
-            <plugin>
-                <!--
-                    Manually build an aggregate jar of all the other
-                    openjpa-* jars using ant. We cannot use the assembly
-                    plugin, since it doesn't provide support for appending
-                    multiple same-named files to each other (which is
-                    required for correctly aggregating services files).
-                -->
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-antrun-plugin</artifactId>
-                <executions>
-                    <execution>
-                        <id>build-single-jar</id>
-                        <phase>compile</phase>
-                        <configuration>
-                            <tasks>
-                                <unjar overwrite="false" dest="${basedir}/target/classes">
-                                    <fileset dir="${basedir}/..">
-                                        <include name="*/target/openjpa-*.jar" />
-                                        <exclude name="*/target/openjpa-examples-*.jar" />
-                                        <exclude name="*/target/openjpa-all-*.jar" />
-                                        <exclude name="**/*-tests.jar" />
-                                        <exclude name="**/*-sources.jar" />
-                                        <exclude name="**/*-javadoc.jar" />
-                                        <exclude name="openjpa-integration/**/target/openjpa-all-*.jar" />
-                                    </fileset>
-                                </unjar>
-
-                                <!--
-                                    need to manually concatinate the services 
-                                    resources so they are aggregated
-                                -->
-                                <macrodef name="aggregate-file">
-                                   <attribute name="servicename" />
-                                    <sequential>
-                                        <echo>Building service: @{servicename}</echo>
-                                        <concat destfile="${basedir}/target/classes/META-INF/services/@{servicename}">
-                                            <fileset dir="${basedir}/.." includes="*/src/main/resources/META-INF/services/@{servicename}" />
-                                        </concat>
-                                    </sequential>
-                                </macrodef>
-
-                                <aggregate-file servicename="org.apache.openjpa.lib.conf.ProductDerivation" />
-                                <aggregate-file servicename="javax.persistence.spi.PersistenceProvider" />
-                                <aggregate-file servicename="org.apache.openjpa.kernel.exps.ExpressionParser" />
-                            </tasks>
-                        </configuration>
-                        <goals>
-                            <goal>run</goal>
-                        </goals>
-                    </execution>
-                </executions>
-            </plugin>
-
             <!--
-                create enhancer pre-main and agent-main attributes
+                 Need to disable source plugin here, as it overwrites the shade
+                 plugin created sources jar.
             -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-jar-plugin</artifactId>
-                <configuration>
-                    <archive>
-                        <manifestFile>${project.build.outputDirectory}/META-INF/MANIFEST.MF</manifestFile>
-                        <manifest>
-                           <mainClass>org.apache.openjpa.conf.OpenJPAVersion</mainClass>
-                        </manifest>
-                        <manifestEntries>
-                            <Premain-Class>
-                                org.apache.openjpa.enhance.PCEnhancerAgent
-                            </Premain-Class>
-                            <Can-Redefine-Classes>true</Can-Redefine-Classes>
-                            <Agent-Class>
-                                org.apache.openjpa.enhance.InstrumentationFactory
-                            </Agent-Class>
-                            <Can-Redefine-Classes>true</Can-Redefine-Classes>                            
-                            <Can-Retransform-Classes>true</Can-Retransform-Classes>
-                        </manifestEntries>
-                    </archive>
-                </configuration>
-            </plugin>
-
-            <plugin>
-                <groupId>org.apache.felix</groupId>
-                <artifactId>maven-bundle-plugin</artifactId>
-                <extensions>true</extensions>
-                <configuration>
-                    <instructions>
-                        <Bundle-Name>${artifactId}</Bundle-Name>
-                        <Bundle-SymbolicName>${groupId}.${artifactId};singleton=true</Bundle-SymbolicName>
-                        <Bundle-DocURL>http://openjpa.apache.org/documentation.html</Bundle-DocURL>
-                        <Implementation-Title>Apache OpenJPA</Implementation-Title>
-                        <Implementation-Version>${project.version}</Implementation-Version>
-                        <Specification-Title>JSR-317 Java Persistence</Specification-Title>
-                        <Specification-Vendor>Sun Microsystems, Inc.</Specification-Vendor>
-                        <Specification-Version>2.0</Specification-Version>
-                        <!-- OSGi Bundle Metadata -->
-                        <Private-Package>org.openjpa.lib.ant*,org.apache.jdbc.ant*,META-INF*</Private-Package>
-                        <Export-Package>!META-INF*,!org.openjpa.lib.ant*,!org.apache.jdbc.ant*,org.apache.openjpa*</Export-Package>
-                        <Import-Package>com.ibm.*;resolution:=optional,org.postgresql.*;resolution:=optional,org.apache.tools.ant.*;resolution:=optional,org.apache.log4j.*;resolution:=optional,javax.activation.xa*;resolution:=optional,javax.jms.*;resolution:=optional,javax.transaction.*;resolution:=optional,javax.validation.*;resolution:=optional,javax.xml.bind.*;resolution:=optional,serp.*;resolution:=optional,*</Import-Package>
-                        <!-- Eclipse metadata -->
-                        <Eclipse-Autostart>false</Eclipse-Autostart>
-                        <Bundle-ClassPath>.</Bundle-ClassPath>
-                    </instructions>
-                    <unpackBundle>true</unpackBundle>
-                </configuration>
+                <artifactId>maven-source-plugin</artifactId>
                 <executions>
                     <execution>
-                        <id>bundle-manifest</id>
-                        <phase>process-classes</phase>
+                        <id>attach-sources</id>
+                        <phase>none</phase> 
+                    </execution>
+                </executions>
+            </plugin>
+            <!-- Create our aggregate JAR -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-shade-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <phase>package</phase>
                         <goals>
-                            <goal>manifest</goal>
+                            <goal>shade</goal>
                         </goals>
+                        <configuration>
+                            <createDependencyReducedPom>true</createDependencyReducedPom>
+                            <createSourcesJar>true</createSourcesJar>
+                            <keepDependenciesWithProvidedScope>true</keepDependenciesWithProvidedScope>
+                            <transformers>
+                                <!-- Need to concatinate the services resources:
+                                 org.apache.openjpa.lib.conf.ProductDerivation
+                                 javax.persistence.spi.PersistenceProvider
+                                 org.apache.openjpa.kernel.exps.ExpressionParser
+                                -->
+                                <transformer implementation="org.apache.maven.plugins.shade.resource.ServicesResourceTransformer"/>
+                                <!-- Need to add some MANIFEST.MF metadata -->
+                                <transformer implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
+                                    <manifestEntries>
+                                        <Main-Class>org.apache.openjpa.conf.OpenJPAVersion</Main-Class>
+                                        <Premain-Class>org.apache.openjpa.enhance.PCEnhancerAgent</Premain-Class>
+                                        <Agent-Class>org.apache.openjpa.enhance.InstrumentationFactory</Agent-Class>
+                                        <Can-Redefine-Classes>true</Can-Redefine-Classes>
+                                        <Can-Retransform-Classes>true</Can-Retransform-Classes>
+                                        <Implementation-Title>Apache OpenJPA Aggregate JAR</Implementation-Title>
+                                        <Specification-Title>JSR-317 Java Persistence</Specification-Title>
+                                        <Specification-Vendor>Sun Microsystems, Inc.</Specification-Vendor>
+                                        <Specification-Version>2.0</Specification-Version>
+                                    </manifestEntries>
+                                </transformer>
+                            </transformers>
+                        </configuration>
                     </execution>
                 </executions>
             </plugin>
         </plugins>
     </build>
+
     <dependencies>
+        <!-- JARs to include in aggregate JAR via maven-shade-plugin -->
         <dependency>
             <groupId>org.apache.openjpa</groupId>
             <artifactId>openjpa-lib</artifactId>
             <version>${pom.version}</version>
-            <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>org.apache.openjpa</groupId>
             <artifactId>openjpa-kernel</artifactId>
             <version>${pom.version}</version>
-            <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>org.apache.openjpa</groupId>
             <artifactId>openjpa-jdbc</artifactId>
             <version>${pom.version}</version>
-            <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>org.apache.openjpa</groupId>
             <artifactId>openjpa-persistence</artifactId>
             <version>${pom.version}</version>
-            <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>org.apache.openjpa</groupId>
             <artifactId>openjpa-persistence-jdbc</artifactId>
             <version>${pom.version}</version>
-            <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>org.apache.openjpa</groupId>
             <artifactId>openjpa-xmlstore</artifactId>
             <version>${pom.version}</version>
-            <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>org.apache.openjpa</groupId>
             <artifactId>openjpa-slice</artifactId>
             <version>${pom.version}</version>
-            <scope>provided</scope>
         </dependency>
+
+        <!-- JARs NOT included in aggregate JAR via maven-shade-plugin -->
         <dependency>
             <groupId>net.sourceforge.serp</groupId>
             <artifactId>serp</artifactId>
+            <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>commons-logging</groupId>
             <artifactId>commons-logging</artifactId>
+            <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>commons-lang</groupId>
             <artifactId>commons-lang</artifactId>
+            <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>commons-collections</groupId>
             <artifactId>commons-collections</artifactId>
+            <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>commons-pool</groupId>
             <artifactId>commons-pool</artifactId>
+            <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>org.apache.geronimo.specs</groupId>
             <artifactId>geronimo-jta_1.1_spec</artifactId>
+            <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>org.apache.geronimo.specs</groupId>
             <artifactId>geronimo-jpa_2.0_spec</artifactId>
+            <scope>provided</scope>
         </dependency>
-        <!-- optional dependencies -->
         <dependency>
             <groupId>org.apache.geronimo.specs</groupId>
             <artifactId>geronimo-jms_1.1_spec</artifactId>
+            <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>org.apache.geronimo.specs</groupId>
