@@ -70,7 +70,7 @@ public interface FetchConfiguration
 
 
     /**
-     * Return the context assiciated with this configuration;
+     * Return the context associated with this configuration;
      * may be null if it has not been set or this object has been serialized.
      */
     public StoreContext getContext();
@@ -168,7 +168,7 @@ public interface FetchConfiguration
      * will use when loading objects. Defaults to the
      * <code>openjpa.FetchGroups</code> setting.  This set is not thread safe.
      */
-    public Set getFetchGroups();
+    public Set<String> getFetchGroups();
 
     /**
      * Return true if the given fetch group has been added.
@@ -185,7 +185,7 @@ public interface FetchConfiguration
      * Adds <code>groups</code> to the set of fetch group names to
      * use when loading objects.
      */
-    public FetchConfiguration addFetchGroups(Collection groups);
+    public FetchConfiguration addFetchGroups(Collection<String> groups);
 
     /**
      * Remove the given fetch group.
@@ -196,7 +196,7 @@ public interface FetchConfiguration
      * Removes <code>groups</code> from the set of fetch group names
      * to use when loading objects.
      */
-    public FetchConfiguration removeFetchGroups(Collection groups);
+    public FetchConfiguration removeFetchGroups(Collection<String> groups);
 
     /**
      * Clears the set of fetch group names to use when loading
@@ -216,7 +216,7 @@ public interface FetchConfiguration
      * will use when loading objects. Defaults to the empty set.  This set is
      * not thread safe.
      */
-    public Set getFields();
+    public Set<String> getFields();
 
     /**
      * Return true if the given fully-qualified field has been added.
@@ -233,7 +233,7 @@ public interface FetchConfiguration
      * Adds <code>fields</code> to the set of fully-qualified field names to
      * use when loading objects.
      */
-    public FetchConfiguration addFields(Collection fields);
+    public FetchConfiguration addFields(Collection<String> fields);
 
     /**
      * Remove the given fully-qualified field.
@@ -244,7 +244,7 @@ public interface FetchConfiguration
      * Removes <code>fields</code> from the set of fully-qualified field names
      * to use when loading objects.
      */
-    public FetchConfiguration removeFields(Collection fields);
+    public FetchConfiguration removeFields(Collection<String> fields);
 
     /**
      * Clears the set of field names to use when loading
@@ -344,7 +344,7 @@ public interface FetchConfiguration
     /**
      * Return a new result list for the current fetch configuration.
      */
-    public ResultList newResultList(ResultObjectProvider rop);
+    public ResultList<?> newResultList(ResultObjectProvider rop);
 
     /**
      * Sets an arbitrary query hint that may be utilized during
@@ -394,22 +394,22 @@ public interface FetchConfiguration
     /**
      * Root classes for recursive operations. This set is not thread safe.
      */
-    public Set getRootClasses();
+    public Set<Class<?>> getRootClasses();
 
     /**
      * Root classes for recursive operations.
      */
-    public FetchConfiguration setRootClasses(Collection classes);
+    public FetchConfiguration setRootClasses(Collection<Class<?>> classes);
 
     /**
      * Root instances for recursive operations. This set is not thread safe.
      */
-    public Set getRootInstances();
+    public Set<Object> getRootInstances();
 
     /**
      * Root instances for recursive operations.
      */
-    public FetchConfiguration setRootInstances(Collection roots);
+    public FetchConfiguration setRootInstances(Collection<?> roots);
 
     /**
      * Synchronize on internal lock if multithreaded is true.

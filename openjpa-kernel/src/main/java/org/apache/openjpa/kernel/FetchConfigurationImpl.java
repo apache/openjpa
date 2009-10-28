@@ -58,6 +58,7 @@ import org.apache.openjpa.util.UserException;
  * @author Pinaki Poddar
  * @nojavadoc
  */
+@SuppressWarnings("serial")
 public class FetchConfigurationImpl
     implements FetchConfiguration, Cloneable {
 
@@ -80,11 +81,11 @@ public class FetchConfigurationImpl
         public int lockMode = 0;
         public int readLockLevel = LOCK_NONE;
         public int writeLockLevel = LOCK_NONE;
-        public Set fetchGroups = null;
-        public Set fields = null;
-        public Set rootClasses;
-        public Set rootInstances;
-        public Map hints = null;
+        public Set<String> fetchGroups = null;
+        public Set<String> fields = null;
+        public Set<Class<?>> rootClasses;
+        public Set<Object> rootInstances;
+        public Map<String,Object> hints = null;
         public boolean fetchGroupContainsDefault = false;
         public boolean fetchGroupContainsAll = false;
         public boolean extendedPathLookup = false;
@@ -95,7 +96,7 @@ public class FetchConfigurationImpl
     private final ConfigurationState _state;
     private FetchConfigurationImpl _parent;
     private String _fromField;
-    private Class _fromType;
+    private Class<?> _fromType;
     private String _directRelationOwner;
     private boolean _load = true;
     private int _availableRecursion;
@@ -188,7 +189,7 @@ public class FetchConfigurationImpl
         if (this._state == null)
             return;
         if (this._state.hints == null)
-            this._state.hints = new HashMap();
+            this._state.hints = new HashMap<String,Object>();
         this._state.hints.putAll(from._state.hints);
     }
     
@@ -258,9 +259,9 @@ public class FetchConfigurationImpl
         return this;
     }
 
-    public Set getFetchGroups() {
-        return (_state.fetchGroups == null) ? Collections.EMPTY_SET 
-            : _state.fetchGroups;
+    public Set<String> getFetchGroups() {
+        if (_state.fetchGroups == null) return Collections.emptySet();
+        return _state.fetchGroups;
     }
 
     public boolean hasFetchGroup(String group) {
@@ -286,7 +287,7 @@ public class FetchConfigurationImpl
         lock();
         try {
             if (_state.fetchGroups == null)
-                _state.fetchGroups = new HashSet();
+                _state.fetchGroups = new HashSet<String>();
             _state.fetchGroups.add(name);
             if (FetchGroup.NAME_ALL.equals(name))
                 _state.fetchGroupContainsAll = true;
@@ -298,11 +299,11 @@ public class FetchConfigurationImpl
         return this;
     }
 
-    public FetchConfiguration addFetchGroups(Collection groups) {
+    public FetchConfiguration addFetchGroups(Collection<String> groups) {
         if (groups == null || groups.isEmpty())
             return this;
-        for (Iterator itr = groups.iterator(); itr.hasNext();)
-            addFetchGroup((String) itr.next());
+        for (String group : groups)
+            addFetchGroup(group);
         return this;
     }
 
@@ -322,12 +323,12 @@ public class FetchConfigurationImpl
         return this;
     }
 
-    public FetchConfiguration removeFetchGroups(Collection groups) {
+    public FetchConfiguration removeFetchGroups(Collection<String> groups) {
         lock();
         try {
             if (_state.fetchGroups != null && groups != null)
-                for (Object group : groups)
-                    removeFetchGroup(group.toString());
+                for (String group : groups)
+                    removeFetchGroup(group);
         } finally {
             unlock();
         }
@@ -356,8 +357,9 @@ public class FetchConfigurationImpl
         return this;
     }
 
-    public Set getFields() {
-        return (_state.fields == null) ? Collections.EMPTY_SET : _state.fields;
+    public Set<String> getFields() {
+        if (_state.fields == null) return Collections.emptySet();
+        return _state.fields;
     }
 
     public boolean hasField(String field) {
@@ -371,7 +373,7 @@ public class FetchConfigurationImpl
         lock();
         try {
             if (_state.fields == null)
-                _state.fields = new HashSet();
+                _state.fields = new HashSet<String>();
             _state.fields.add(field);
         } finally {
             unlock();
@@ -379,14 +381,14 @@ public class FetchConfigurationImpl
         return this;
     }
 
-    public FetchConfiguration addFields(Collection fields) {
+    public FetchConfiguration addFields(Collection<String> fields) {
         if (fields == null || fields.isEmpty())
             return this;
 
         lock();
         try {
             if (_state.fields == null)
-                _state.fields = new HashSet();
+                _state.fields = new HashSet<String>();
             _state.fields.addAll(fields);
         } finally {
             unlock();
@@ -405,7 +407,7 @@ public class FetchConfigurationImpl
         return this;
     }
 
-    public FetchConfiguration removeFields(Collection fields) {
+    public FetchConfiguration removeFields(Collection<String> fields) {
         lock();
         try {
             if (_state.fields != null)
@@ -425,6 +427,22 @@ public class FetchConfigurationImpl
             unlock();
         }
         return this;
+    }
+
+    public DataCacheRetrieveMode getCacheRetrieveMode() {
+        return _state.cacheRetrieveMode;
+    }
+
+    public DataCacheStoreMode getCacheStoreMode() {
+        return _state.cacheStoreMode;
+    }
+
+    public void setCacheRetrieveMode(DataCacheRetrieveMode mode) {
+        _state.cacheRetrieveMode = mode;
+    }
+
+    public void setCacheStoreMode(DataCacheStoreMode mode) {
+        _state.cacheStoreMode = mode;
     }
 
     public int getLockTimeout() {
@@ -554,7 +572,7 @@ public class FetchConfigurationImpl
         return this;
     }
 
-    public ResultList newResultList(ResultObjectProvider rop) {
+    public ResultList<?> newResultList(ResultObjectProvider rop) {
         if (rop instanceof ListResultObjectProvider)
             return new SimpleResultList(rop);
         if (_state.fetchBatchSize < 0)
@@ -589,7 +607,7 @@ public class FetchConfigurationImpl
         lock();
         try {
             if (_state.hints == null)
-                _state.hints = new HashMap();
+                _state.hints = new HashMap<String,Object>();
             _state.hints.put(name, value);
         } finally {
             unlock();
@@ -606,7 +624,7 @@ public class FetchConfigurationImpl
     
     public Map<String, Object> getHints() {
         if (_state.hints == null)
-            return (Map<String, Object>)Collections.EMPTY_MAP;
+            return Collections.emptyMap();
         Map<String, Object> result = new TreeMap<String, Object>();
         for (Object key : _state.hints.keySet()) {
             result.put(key.toString(), _state.hints.get(key));
@@ -614,19 +632,19 @@ public class FetchConfigurationImpl
         return result;
     }
 
-    public Set getRootClasses() {
-        return (_state.rootClasses == null) ? Collections.EMPTY_SET 
-            : _state.rootClasses;
+    public Set<Class<?>> getRootClasses() {
+        if (_state.rootClasses == null) return Collections.emptySet(); 
+        return _state.rootClasses;
     }
 
-    public FetchConfiguration setRootClasses(Collection classes) {
+    public FetchConfiguration setRootClasses(Collection<Class<?>> classes) {
         lock();
         try {
             if (_state.rootClasses != null)
                 _state.rootClasses.clear();
             if (classes != null && !classes.isEmpty()) {
                 if (_state.rootClasses == null)
-                    _state.rootClasses = new HashSet(classes);
+                    _state.rootClasses = new HashSet<Class<?>>(classes);
                 else 
                     _state.rootClasses.addAll(classes);
             }
@@ -636,21 +654,22 @@ public class FetchConfigurationImpl
         return this;
     }
 
-    public Set getRootInstances() {
-        return (_state.rootInstances == null) ? Collections.EMPTY_SET 
-            : _state.rootInstances;
+    public Set<Object> getRootInstances() {
+        if (_state.rootInstances == null) return Collections.emptySet(); 
+        return _state.rootInstances;
     }
 
-    public FetchConfiguration setRootInstances(Collection instances) {
+    public FetchConfiguration setRootInstances(Collection<?> instances) {
         lock();
         try {
             if (_state.rootInstances != null)
                 _state.rootInstances.clear();
             if (instances != null && !instances.isEmpty()) {
-                if (_state.rootInstances == null)
-                    _state.rootInstances = new HashSet(instances);
-                else 
+                if (_state.rootInstances == null) {
+                    _state.rootInstances = new HashSet<Object>(instances);
+                } else { 
                     _state.rootInstances.addAll(instances);
+                }
             }
         } finally {
             unlock();
@@ -676,7 +695,7 @@ public class FetchConfigurationImpl
         if (!includes(fm))
             return FETCH_NONE;
         
-        Class type = getRelationType(fm);
+        Class<?> type = getRelationType(fm);
         if (type == null)
             return FETCH_LOAD;
         if (_availableDepth == 0)
@@ -686,12 +705,13 @@ public class FetchConfigurationImpl
         // the field is in our fetch groups, so can't possibly not select
         if (_parent == null) 
             return FETCH_LOAD;
-
-        int rdepth = getAvailableRecursionDepth(fm, type, false);
+        
+        String fieldName = fm.getFullName(false);
+        int rdepth = getAvailableRecursionDepth(fm, type, fieldName, false);
         if (rdepth != FetchGroup.DEPTH_INFINITE && rdepth <= 0)
             return FETCH_NONE;
 
-        if (StringUtils.equals(_directRelationOwner, fm.getFullName()))
+        if (StringUtils.equals(_directRelationOwner, fieldName))
             return FETCH_REF;
         return FETCH_LOAD;
     }
@@ -701,7 +721,7 @@ public class FetchConfigurationImpl
     }
 
     public FetchConfiguration traverse(FieldMetaData fm) {
-        Class type = getRelationType(fm);
+        Class<?> type = getRelationType(fm);
         if (type == null)
             return this;
 
@@ -710,7 +730,7 @@ public class FetchConfigurationImpl
         clone._availableDepth = reduce(_availableDepth);
         clone._fromField = fm.getFullName(false);
         clone._fromType = type;
-        clone._availableRecursion = getAvailableRecursionDepth(fm, type, true);
+        clone._availableRecursion = getAvailableRecursionDepth(fm, type, fm.getFullName(false), true);
         if (StringUtils.equals(_directRelationOwner, fm.getFullName(false)))
             clone._load = false;
         else
@@ -752,12 +772,13 @@ public class FetchConfigurationImpl
      *
      * @param traverse whether we're traversing the field
      */
-    private int getAvailableRecursionDepth(FieldMetaData fm, Class type, 
+    private int getAvailableRecursionDepth(FieldMetaData fm, Class<?> type, String fromField,
         boolean traverse) {
         // see if there's a previous limit
         int avail = Integer.MIN_VALUE;
         for (FetchConfigurationImpl f = this; f != null; f = f._parent) {
-            if (ImplHelper.isAssignable(f._fromType, type)) {
+            if (StringUtils.equals(f._fromField, fromField) 
+                && ImplHelper.isAssignable(f._fromType, type)) {
                 avail = f._availableRecursion;
                 if (traverse)
                     avail = reduce(avail);
@@ -804,7 +825,7 @@ public class FetchConfigurationImpl
     /**
      * Return the relation type of the given field.
      */
-    private static Class getRelationType(FieldMetaData fm) {
+    private static Class<?> getRelationType(FieldMetaData fm) {
         if (fm.isDeclaredTypePC())
             return fm.getDeclaredType();
         if (fm.getElement().isDeclaredTypePC())
@@ -853,17 +874,17 @@ public class FetchConfigurationImpl
         return _fromField;
     }
 
-    Class getTraversedFromType() {
+    Class<?> getTraversedFromType() {
         return _fromType;
     }
 
-    List getPath() {
+    List<FetchConfigurationImpl> getPath() {
         if (isRoot())
-            return Collections.EMPTY_LIST;
-        return trackPath(new ArrayList());
+            return Collections.emptyList();
+        return trackPath(new ArrayList<FetchConfigurationImpl>());
     }
     
-    List trackPath(List path) {
+    List<FetchConfigurationImpl> trackPath(List<FetchConfigurationImpl> path) {
         if (_parent != null)
             _parent.trackPath(path);
         path.add(this);
@@ -875,34 +896,17 @@ public class FetchConfigurationImpl
             + " (" + _availableDepth + ")" + getPathString();
     }
     
-    private String getPathString()
-    {
-        List path = getPath();
+    private String getPathString() {
+        List<FetchConfigurationImpl> path = getPath();
         if (path.isEmpty())
             return "";
         StringBuffer buf = new StringBuffer().append (": ");
-        for (Iterator itr = path.iterator(); itr.hasNext();) {
-            buf.append(((FetchConfigurationImpl) itr.next()).
-                getTraversedFromField());
+        for (Iterator<FetchConfigurationImpl> itr = path.iterator(); itr.hasNext();) {
+            buf.append(itr.next().getTraversedFromField());
             if (itr.hasNext())
                 buf.append("->");
         }
         return buf.toString();
     }
 
-    public DataCacheRetrieveMode getCacheRetrieveMode() {
-        return _state.cacheRetrieveMode;
-    }
-
-    public DataCacheStoreMode getCacheStoreMode() {
-        return _state.cacheStoreMode;
-    }
-
-    public void setCacheRetrieveMode(DataCacheRetrieveMode mode) {
-        _state.cacheRetrieveMode = mode;
-    }
-
-    public void setCacheStoreMode(DataCacheStoreMode mode) {
-        _state.cacheStoreMode = mode;
-    }
 }
