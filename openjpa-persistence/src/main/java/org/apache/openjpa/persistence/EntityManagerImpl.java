@@ -486,10 +486,7 @@ public class EntityManagerImpl
     @SuppressWarnings("unchecked")
     public <T> T find(Class<T> cls, Object oid, LockModeType mode, Map<String, Object> properties) {
         assertNotCloseInvoked();
-        if (mode != null && mode != LockModeType.NONE) {
-            _broker.assertActiveTransaction();
-        }
-        processLockProperties(pushFetchPlan(), mode, properties);
+        configureCurrentFetchPlan(pushFetchPlan(), properties, mode, true);
         try {
             oid = _broker.newObjectId(cls, oid);
             return (T) _broker.find(oid, true, this);
@@ -749,16 +746,13 @@ public class EntityManagerImpl
         refresh(entity, null, properties);
     }
 
-    public void refresh(Object entity, LockModeType mode,
-        Map<String, Object> properties) {
+    public void refresh(Object entity, LockModeType mode, Map<String, Object> properties) {
         assertNotCloseInvoked();
         assertValidAttchedEntity(entity);
-        if (mode != null && mode != LockModeType.NONE) {
-            _broker.assertActiveTransaction();
-        }
+
         _broker.assertWriteOperation();
 
-        processLockProperties(pushFetchPlan(), mode, properties);
+        configureCurrentFetchPlan(pushFetchPlan(), properties, mode, true);
         try {
             _broker.refresh(entity, this);
         } finally {
@@ -1145,10 +1139,9 @@ public class EntityManagerImpl
         assertNotCloseInvoked();
         assertValidAttchedEntity(entity);
 
-        processLockProperties(pushFetchPlan(), mode, null);
+        configureCurrentFetchPlan(pushFetchPlan(), null, mode, false);
         try {
-            _broker.lock(entity, MixedLockLevelsHelper.toLockLevel(mode),
-                timeout, this);
+            _broker.lock(entity, MixedLockLevelsHelper.toLockLevel(mode),  timeout, this);
         } finally {
             popFetchPlan();
         }
@@ -1159,7 +1152,7 @@ public class EntityManagerImpl
         assertValidAttchedEntity(entity);
         _broker.assertActiveTransaction();
 
-        processLockProperties(pushFetchPlan(), mode, properties);
+        configureCurrentFetchPlan(pushFetchPlan(), properties, mode, false);
         try {
             _broker.lock(entity, MixedLockLevelsHelper.toLockLevel(mode),
                 _broker.getFetchConfiguration().getLockTimeout(), this);
@@ -1607,11 +1600,16 @@ public class EntityManagerImpl
      * Populate the given FetchPlan with the given properties. 
      * Optionally overrides the given lock mode.
      */
-    private void processLockProperties(FetchPlan fetch, LockModeType lock, Map<String, Object> properties) {
+    private void configureCurrentFetchPlan(FetchPlan fetch, Map<String, Object> properties, 
+            LockModeType lock, boolean requiresTxn) {
         // handle properties in map first
+        configureCurrentCacheModes(fetch, properties);
         fetch.addHints(properties);
         // override with the specific lockMode, if needed.
         if (lock != null && lock != LockModeType.NONE) {
+            if (requiresTxn) {
+                _broker.assertActiveTransaction();
+            }
             // Override read lock level
             LockModeType curReadLockMode = fetch.getReadLockMode();
             if (lock != curReadLockMode)
@@ -1619,16 +1617,22 @@ public class EntityManagerImpl
         }
     }
     
-    private void processFetchProperties(FetchPlan fetch, Map<String, Object> properties) {
+    private void configureCurrentCacheModes(FetchPlan fetch, Map<String, Object> properties) {
         if (properties == null)
             return;
-        CacheRetrieveMode rMode = JPAProperties.getCacheRetrieveMode(properties);
+        CacheRetrieveMode rMode = JPAProperties.get(CacheRetrieveMode.class, JPAProperties.CACHE_RETRIEVE_MODE, 
+                properties);
         if (rMode != null) {
-            fetch.setCacheRetrieveMode(DataCacheRetrieveMode.valueOf(rMode.toString()));
+            fetch.setCacheRetrieveMode(JPAProperties.convertValue(DataCacheRetrieveMode.class, 
+                    JPAProperties.CACHE_RETRIEVE_MODE, rMode));
+            properties.remove(JPAProperties.CACHE_RETRIEVE_MODE);
         }
-        CacheStoreMode sMode = JPAProperties.getCacheStoreMode(properties);
-        if (rMode != null) {
-            fetch.setCacheStoreMode(DataCacheStoreMode.valueOf(sMode.toString()));
+        CacheStoreMode sMode = JPAProperties.get(CacheStoreMode.class, JPAProperties.CACHE_STORE_MODE, 
+                properties);
+        if (sMode != null) {
+            fetch.setCacheStoreMode(JPAProperties.convertValue(DataCacheStoreMode.class, 
+                    JPAProperties.CACHE_STORE_MODE, sMode));
+            properties.remove(JPAProperties.CACHE_STORE_MODE);
         }
     }
 
@@ -1702,7 +1706,7 @@ public class EntityManagerImpl
      */
     Object convertUserValue(String key, Object value, Class<?> targetType) {
         if (JPAProperties.isValidKey(key)) 
-            return JPAProperties.convertValue(key, value);
+            return JPAProperties.convertValue(targetType, key, value);
         if (value instanceof String) {
             if ("null".equals(value)) {
                 return null;
