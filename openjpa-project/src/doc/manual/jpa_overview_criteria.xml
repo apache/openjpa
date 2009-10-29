@@ -40,7 +40,7 @@
     <para>
     JPA 2.0 Specification introduces a new API to define queries dynamically
     via construction of an object-based 
-    <classname>javax.persistence.QueryDefinition</classname> instance, rather
+    <classname>javax.persistence.CriteriaQuery</classname> instance, rather
     than string-based approach used in JPQL (Java Persistence Query Language).
     This dynamic query definition capability, referred as Criteria API, is 
     based on the abstract persistent schema of the entities, their embedded
@@ -51,68 +51,72 @@
     </para>
     
     <section>
-    	<title>Constructing a QueryDefinition</title>
+    	<title>Constructing a CriteriaQuery</title>
     	<para>
-    	The QueryBuilder interface is the factory for QueryDefinition. A
-    	QueryBuilder is obtained from either the EntityManagerFactory or 
-    	the EntityManager as follows:
+    	The CriteriaBuilder interface is the factory for CriteriaQuery. A
+    	CriteriaBuilder is obtained from either an EntityManagerFactory or 
+    	an EntityManager as follows:
     	<programlisting>
 EntityManager em = ... ; 
-QueryBuilder queryBuilder = em.getQueryBuilder();
-QueryDefinition qdef = queryBuilder.createQueryDefinition();
+CriteriaBuilder queryBuilder = em.getCriteriaBuilder();
+CriteriaQuery qdef = queryBuilder.createCriteriaQuery();
     	</programlisting>
     	The first step in constructing a query definition is specification of 
     	query roots.  Query roots specify the domain objects on which the query 
-    	is evaluated. Query root is an instance of the DomainObject interface. A
-    	query root is added to a QueryDefinition by 
+    	is evaluated. Query root is an instance of the Root&lt;T&gt; interface. A
+    	query root is added to a CriteriaQuery by 
     	<methodname>addRoot(Class c)</methodname> method.
     	<programlisting>
-    	DomainObject customer = qdef.addRoot(Customer.class);
-    	</programlisting>
-    	Often a query definition has a single root, so the 
-    	QueryBuilder interface allows to construct and add
-    	a root via a single method.
-    	<programlisting>
-DomainObject customer = queryBuilder.createQueryDefinition(Customer.class);    	
+    	Root&lt;Customer&gt; customer = qdef.from(Customer.class);
     	</programlisting>
     	A query domain can be further refined by joining to other domain objects.
     	For example, for the above query definition to operate over customers 
     	and their orders, use <methodname>join(String attribute)</methodname>:
 		<programlisting>
-DomainObject order = customer.join("orders");
+Root&lt;Order&gt; order = customer.join(customer.get(Customer_.orders));
 		</programlisting>  
+		where Customer_.orders represent a field of canonical metamodel class for Customer.
+		These canonical metamodel classes are generated during compilation by processing
+		the persistent annotation in the source code of Customer.java.
+		</para>
+		<para>
 		The condition of a query definition is set via 
 		<methodname>where(Predicate p)</methodname> where the argument 
 		designates a conditional predicate. Conditional predicates are often
 		composed of one or more comparisons between the attribute values of
 		the domain objects and some variable. For example, to select the
-		Customers whose name is <emphasis>John Doe</emphasis> and has 
+		Customer whose name is <emphasis>"John Doe"</emphasis> and has 
 		orders that are not yet delivered, you can build the predicate and set  
 		it to the query definition as:
 		<programlisting>
-qdef.where(customer.get("name").equal("John Doe")
-      .and(order.get("status").equal(OrderStatus.DELIVERED).not()));
+           qdef.where(customer.get(Customer_.name).equal("John Doe")
+               .and(order.get(Order_.status).equal(OrderStatus.DELIVERED).not()));
 		</programlisting>
 		The <methodname>select()</methodname> method defines the result of the
 		query. If left unspecified, the select projection is assumed to be the
 		root domain object. However, you can specify the selected projections
 		explicitly as a list:
 		<programlisting>
-qdef.select(customer.get("name"), order.get("status"));
+            qdef.select(customer.get(Customer_.name), order.get(Order_.status));
 		</programlisting>
-		An attribute of a domain object is specified by navigating via 
+    	</para>
+    	
+    	<para>
+    	An attribute of a domain object can also be specified by navigating via 
 		<methodname>get(String attr)</methodname>. The attribute 
 		<emphasis>should</emphasis> refer
 		to a valid persistent property of the receiving domain object, however
 		no such validation is enforced during the construction of the query 
 		definition. All validation is deferred until the query is actually executed.
+		On the other hand, using canonical metamodel for path navigate enforces
+		compile type checking. 
     	</para>
     </section> 
     
     <section>
-    <title>Executing a QueryDefinition</title>
+    <title>Executing a CriteriaQuery</title>
     <para>
-    A QueryDefinition is executed in a similar fashion of a string-based JPQL
+    A CriteriaQuery is executed in a similar fashion of a string-based JPQL
     query via the EntityManager and Query interfaces.
     <programlisting>
 EntityManager em = ...
@@ -126,10 +130,14 @@ List result = query.getResultList();
     </para>
     
     <para>
-    The JPA 2.0 Specification on Criteria API is evolving and hence for an
-    up-to-date version of the API, please consult the  
+    The JPA 2.0 Specification on Criteria API can be found at 
     <ulink url="http://jcp.org/aboutJava/communityprocess/pr/jsr317/index.html">
     public draft</ulink>.
+    </para>
+    <para>
+    
+    <ulink url="http://www.ibm.com/developerworks/java/library/j-typesafejpa/">A developerworks article</ulink>
+    explains details and further usage of Criteria API and its OpenJPA extensions.  
     </para>
     </section>
     
@@ -138,19 +146,80 @@ List result = query.getResultList();
     <para>
     Criteria API has provided an alternative means to string-based JPQL to 
     execute a query. However, JPA 2.0 Specification has not explicitly specified 
-    any equivalence between a dynamically constructed QueryDefinition and
-    a JPQL string. OpenJPA provides a mechanism to convert a QueryDefinition to
-    an equivalent JPQL query string via the extended OpenJPAQueryBuilder API.
+    any equivalence between a dynamically constructed CriteriaQuery and
+    a JPQL string. OpenJPA provides a mechanism to convert a CriteriaQuery to
+    an equivalent JPQL query string via the extended OpenJPACriteriaQuery API.
     <programlisting>
-    	public interface OpenJPAQueryBuilder extends QueryBuilder {
+    	public interface OpenJPACriteriaQuery extends CriteriaQuery {
 		/**
-	 	 * Gets equivalent JPQL String for the given QueryDefinition.
+	 	 * Gets equivalent JPQL String for the given CriteriaQuery.
  		*/
-		public String toJPQL(QueryDefinition qdef);
+		public String toCQL();
 	}
 	</programlisting>
     
     </para>
+    </section>
+    
+    <section>
+       <title>Generation of Canonical MetaModel classes</title>
+       <para>
+Annotation processing tool generates source code for a metamodel class given 
+the annotated source code of persistent entity. 
+This tool is invoked during compilation for JDK6 compiler if OpenJPA and JPA 
+libraries are specified in the compiler <code>-processorpath</code> option.
+    <programlisting>
+ $ javac -processorpath path/to/openjpa-all.jar mypackage/MyEntity.java
+    </programlisting>
+will generate source code for canonical meta-model class <code>mypackage.MyEntity_.java</code>.
+      </para>
+      
+      <para>
+The Annotation Processor recognizes the following options (none of them are mandatory):
+    <itemizedlist>
+        <listitem>
+			<para>
+              -Alog=TRACE|INFO|WARN|ERROR : The logging level. Default is <code>WARN</code>.
+            </para>
+        </listitem>
+        <listitem>
+			<para>
+             -Asource=&lt;n&gt; : where &lt;n&gt; denotes the integral number for Java source 
+             version of the generated code. Default is <code>6</code>.
+             </para>
+        </listitem>
+        <listitem>
+			<para>
+               -Anaming=class name : fully-qualified name of a class implementing 
+               <code>org.apache.openjpa.meta.MetaDataFactory</code> that determines
+the name of a meta-class given the name of the original persistent Java entity class. Defaults to
+<code>org.apache.openjpa.persistence.PersistenceMetaDataFactory</code> which appends a underscore character
+(<code>_</code>) to the original Java class name. 
+             </para>
+        </listitem>
+        <listitem>
+			<para>
+               -Aheader=&lt;url&gt; : A url whose content will appear as comment header to the generated file(s). 
+               Recognizes special value <code>ASL</code> for Apache Source License header as comment. 
+               By default, adds a OpenJPA proprietary text as comment block.
+             </para>
+        </listitem>
+        <listitem>
+			<para>
+              -Aout=dir : A directory in the local file system. The generated files will be written 
+              <emphasis>relative</emphasis> to this directory according to the package structure i.e. if <code>dir</code> 
+              is specified as <code>/myproject/generated-src</code> then the generated source code will be 
+              written to <code>/myproject/generated-src/mypackage/MyEntity_.java</code>.
+              If this option is not specified, then an attempt will be made to write the generated source file 
+              in the same directory of the source code of original class <code>mypackage.MyEntity</code>. 
+              The source code location for <code>mypackage.MyEntity</code> can only be determined for Sun JDK6 
+              and when <code>tools.jar</code> being available to the compiler classpath. If the source code 
+              location for the original class can not be determined, and the option is not specified, then the 
+              generated source code is written relative to the current directory according to the package structure.  
+             </para>
+        </listitem>
+    </itemizedlist>
+       </para>
     </section>
 
 </chapter>
