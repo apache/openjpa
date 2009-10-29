@@ -178,6 +178,10 @@ databaseName=${db.name}
                         <path id="agent.path">
                             <fileset dir="../../openjpa/target">
                                 <include name="*.jar" />
+                                <exclude name="*-sources.jar" />
+                                <exclude name="original-*.jar" />
+                                <exclude name="*-tests.jar" />
+                                <exclude name="*-javadoc.jar" />
                             </fileset>
                         </path>
                         <pathconvert dirsep="/" property="agent" refid="agent.path" />
