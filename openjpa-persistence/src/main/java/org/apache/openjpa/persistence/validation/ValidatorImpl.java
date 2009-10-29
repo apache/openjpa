@@ -36,13 +36,13 @@ import org.apache.openjpa.lib.conf.Configuration;
 import org.apache.openjpa.lib.log.Log;
 import org.apache.openjpa.lib.util.J2DoPrivHelper;
 import org.apache.openjpa.lib.util.Localizer;
+import org.apache.openjpa.persistence.JPAProperties;
 import org.apache.openjpa.validation.AbstractValidator;
 import org.apache.openjpa.validation.ValidationException;
 
 public class ValidatorImpl extends AbstractValidator {
     
-    private static final Localizer _loc = Localizer.forPackage(
-        ValidatorImpl.class);
+    private static final Localizer _loc = Localizer.forPackage(ValidatorImpl.class);
 
     private ValidatorFactory _validatorFactory = null;
     private Validator _validator = null;
@@ -51,27 +51,15 @@ public class ValidatorImpl extends AbstractValidator {
     private transient Log _log = null;
     
     // A map storing the validation groups to use for a particular event type
-    private Map<Integer, Class<?>[]> _validationGroups = 
-        new HashMap<Integer,Class<?>[]>();
+    private Map<Integer, Class<?>[]> _validationGroups = new HashMap<Integer,Class<?>[]>();
         
     // Lookup table for event to group property mapping 
-    private static HashMap<String, Integer> _vgMapping = 
-        new HashMap<String, Integer> ();
+    private static HashMap<String, Integer> _vgMapping = new HashMap<String, Integer> ();
             
-    public static final String VG_PRE_PERSIST = 
-        "javax.persistence.validation.group.pre-persist";
-    public static final String VG_PRE_REMOVE =
-        "javax.persistence.validation.group.pre-remove";
-    public static final String VG_PRE_UPDATE =
-        "javax.persistence.validation.group.pre-update";
-    
     static {
-        _vgMapping.put(VG_PRE_PERSIST,
-            LifecycleEvent.BEFORE_PERSIST);
-        _vgMapping.put(VG_PRE_REMOVE,
-            LifecycleEvent.BEFORE_DELETE);
-        _vgMapping.put(VG_PRE_UPDATE,
-            LifecycleEvent.BEFORE_UPDATE); 
+        _vgMapping.put(JPAProperties.VALIDATE_PRE_PERSIST, LifecycleEvent.BEFORE_PERSIST);
+        _vgMapping.put(JPAProperties.VALIDATE_PRE_REMOVE,  LifecycleEvent.BEFORE_DELETE);
+        _vgMapping.put(JPAProperties.VALIDATE_PRE_UPDATE,  LifecycleEvent.BEFORE_UPDATE); 
     }
 
     /**
@@ -149,12 +137,9 @@ public class ValidatorImpl extends AbstractValidator {
             }
 
             if (_conf != null) {
-                addValidationGroup(VG_PRE_PERSIST,
-                    _conf.getValidationGroupPrePersist());
-                addValidationGroup(VG_PRE_UPDATE,
-                    _conf.getValidationGroupPreUpdate());
-                addValidationGroup(VG_PRE_REMOVE,
-                    _conf.getValidationGroupPreRemove());
+                addValidationGroup(JPAProperties.VALIDATE_PRE_PERSIST, _conf.getValidationGroupPrePersist());
+                addValidationGroup(JPAProperties.VALIDATE_PRE_UPDATE,  _conf.getValidationGroupPreUpdate());
+                addValidationGroup(JPAProperties.VALIDATE_PRE_REMOVE,  _conf.getValidationGroupPreRemove());
             } else {
                 // add in default validation groups, which can be over-ridden later
                 addDefaultValidationGroups();
@@ -403,9 +388,7 @@ public class ValidatorImpl extends AbstractValidator {
     // the default validation group and pre-remove will not validate (no 
     // validation group)
     private void addDefaultValidationGroups() {
-        addValidationGroup(VG_PRE_PERSIST, 
-            javax.validation.groups.Default.class);
-        addValidationGroup(VG_PRE_UPDATE, 
-                javax.validation.groups.Default.class);
+        addValidationGroup(JPAProperties.VALIDATE_PRE_PERSIST, javax.validation.groups.Default.class);
+        addValidationGroup(JPAProperties.VALIDATE_PRE_UPDATE,  javax.validation.groups.Default.class);
     }
 }
