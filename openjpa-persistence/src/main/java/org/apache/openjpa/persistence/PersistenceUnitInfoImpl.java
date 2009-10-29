@@ -60,9 +60,6 @@ import org.apache.openjpa.util.ClassResolver;
 public class PersistenceUnitInfoImpl
     implements PersistenceUnitInfo, SourceTracker {
 
-    public static final String KEY_PROVIDER = "javax.persistence.provider";
-    public static final String VALIDATION_MODE =
-        "javax.persistence.validation.mode";
     public static final String PERSISTENCE_VERSION = "PersistenceVersion";
     
     /**
@@ -70,7 +67,7 @@ public class PersistenceUnitInfoImpl
      * SharedCacheMode maps to OpenJPA's DataCacheMode so we're using that
      * class' simple name as the property key.
      */
-    public static final String SHARED_CACHE_MODE=DataCacheMode.class.getSimpleName();  
+//    public static final String SHARED_CACHE_MODE=DataCacheMode.class.getSimpleName();  
 
     private static final Localizer s_loc = Localizer.forPackage
         (PersistenceUnitInfoImpl.class);
@@ -198,8 +195,9 @@ public class PersistenceUnitInfoImpl
     }
 
     public List<String> getMappingFileNames() {
-        return (_mappingFileNames == null)
-            ? (List<String>) Collections.EMPTY_LIST : _mappingFileNames;
+        if (_mappingFileNames == null)
+            return Collections.emptyList();
+        return _mappingFileNames;
     }
 
     public void addMappingFileName(String name) {
@@ -209,8 +207,9 @@ public class PersistenceUnitInfoImpl
     }
 
     public List<URL> getJarFileUrls() {
-        return (_jarFiles == null) ? (List<URL>) Collections.EMPTY_LIST 
-            : _jarFiles;
+        if (_jarFiles == null) 
+            return Collections.emptyList();
+        return _jarFiles;
     }
 
     public void addJarFile(URL jar) {
@@ -255,8 +254,9 @@ public class PersistenceUnitInfoImpl
     }
 
     public List<String> getManagedClassNames() {
-        return (_entityClassNames == null)
-            ? (List<String>) Collections.EMPTY_LIST : _entityClassNames;
+        if (_entityClassNames == null)
+            return Collections.emptyList();
+        return _entityClassNames;
     }
 
     public void addManagedClassName(String name) {
@@ -304,48 +304,28 @@ public class PersistenceUnitInfoImpl
         for (Object o : map.entrySet()) {
             key = ((Map.Entry) o).getKey();
             val = ((Map.Entry) o).getValue();
-            if (KEY_PROVIDER.equals(key))
+            if (JPAProperties.PROVIDER.equals(key))
                 setPersistenceProviderClassName((String) val);
-            else if ("javax.persistence.transactionType".equals(key)) {
-                PersistenceUnitTransactionType ttype;
-                if (val instanceof String) {
-                    ttype = Enum.valueOf(PersistenceUnitTransactionType.class, 
-                        (String) val);
-                }
-                else {
-                    ttype = (PersistenceUnitTransactionType) val;
-                }
-                setTransactionType(ttype);
-            } else if ("javax.persistence.jtaDataSource".equals(key)) {
+            else if (JPAProperties.TRANSACTION_TYPE.equals(key)) {
+                setTransactionType(JPAProperties.getEnumValue(PersistenceUnitTransactionType.class, 
+                        JPAProperties.TRANSACTION_TYPE, key));
+            } else if (JPAProperties.DATASOURCE_JTA.equals(key)) {
                 if (val instanceof String) {
                     setJtaDataSourceName((String) val);
-                }
-                else {
+                } else {
                     setJtaDataSource((DataSource) val);
                 }
-            } else if ("javax.persistence.nonJtaDataSource".equals(key)) {
+            } else if (JPAProperties.DATASOURCE_NONJTA.equals(key)) {
                 if (val instanceof String) {
                     setNonJtaDataSourceName((String) val);
-                }
-                else {
+                } else {
                     setNonJtaDataSource((DataSource) val);
                 }
-            } else if (VALIDATION_MODE.equals(key)) {
-                if (val instanceof String) {
-                    setValidationMode((String) val);
-                }
-                else {
-                    setValidationMode((ValidationMode) val);
-                }
-            } else if (SHARED_CACHE_MODE.equals(key)) { 
-               if(val instanceof String) { 
-                   setSharedCacheMode((String) val);
-               }
-               else {
-                   setSharedCacheMode((SharedCacheMode) val);
-               }
-            }
-            else {
+            } else if (JPAProperties.VALIDATE_MODE.equals(key)) {
+                setValidationMode(JPAProperties.getEnumValue(ValidationMode.class, JPAProperties.VALIDATE_MODE, val));
+            } else if (JPAProperties.CACHE_MODE.equals(key)) { 
+                setSharedCacheMode(JPAProperties.getEnumValue(SharedCacheMode.class, JPAProperties.CACHE_MODE, val));
+            } else {
                 _props.put(key, val);
             }
         }
@@ -366,49 +346,40 @@ public class PersistenceUnitInfoImpl
      * persistence unit info.
      */
     public static Map toOpenJPAProperties(PersistenceUnitInfo info) {
-        Map map = new HashMap();
+        Map map = new HashMap<String,Object>();
         Set<String> added = new HashSet<String>();
         if (info.getTransactionType() == PersistenceUnitTransactionType.JTA)
-            put(map, added, "TransactionMode", "managed");
+            replaceAsOpenJPAProperty(map, added, "TransactionMode", "managed");
 
         boolean hasJta = false;
         DataSource ds = info.getJtaDataSource();
         if (ds != null) {
-            put(map, added, "ConnectionFactory", ds);
-            put(map, added, "ConnectionFactoryMode", "managed");
+            replaceAsOpenJPAProperty(map, added, "ConnectionFactory", ds);
+            replaceAsOpenJPAProperty(map, added, "ConnectionFactoryMode", "managed");
             hasJta = true;
         } else if (info instanceof PersistenceUnitInfoImpl
             && ((PersistenceUnitInfoImpl) info).getJtaDataSourceName() != null){
-            put(map, added, "ConnectionFactoryName", ((PersistenceUnitInfoImpl)
-                info).getJtaDataSourceName());
-            put(map, added, "ConnectionFactoryMode", "managed");
+            replaceAsOpenJPAProperty(map, added, "ConnectionFactoryName", 
+                    ((PersistenceUnitInfoImpl)info).getJtaDataSourceName());
+            replaceAsOpenJPAProperty(map, added, "ConnectionFactoryMode", "managed");
             hasJta = true;
         }
 
         ds = info.getNonJtaDataSource();
         if (ds != null) {
-            if (!hasJta)
-                put(map, added, "ConnectionFactory", ds);
-            else
-                put(map, added, "ConnectionFactory2", ds);
+             replaceAsOpenJPAProperty(map, added, hasJta ? "ConnectionFactory2" : "ConnectionFactory", ds);
         } else if (info instanceof PersistenceUnitInfoImpl
-            && ((PersistenceUnitInfoImpl) info).getNonJtaDataSourceName()
-            != null) {
-            String nonJtaName = ((PersistenceUnitInfoImpl) info).
-                getNonJtaDataSourceName();
-            if (!hasJta)
-                put(map, added, "ConnectionFactoryName", nonJtaName);
-            else
-                put(map, added, "ConnectionFactory2Name", nonJtaName);
+            && ((PersistenceUnitInfoImpl) info).getNonJtaDataSourceName() != null) {
+            String nonJtaName = ((PersistenceUnitInfoImpl) info).getNonJtaDataSourceName();
+            replaceAsOpenJPAProperty(map, added, hasJta ? "ConnectionFactory2Name" : "ConnectionFactoryName", 
+                    nonJtaName);
         }
 
         if (info.getClassLoader() != null)
-            put(map, added, "ClassResolver", new ClassResolverImpl(
-                info.getClassLoader()));
+            replaceAsOpenJPAProperty(map, added, "ClassResolver", new ClassResolverImpl(info.getClassLoader()));
 
         Properties props = info.getProperties();
         if (props != null) {
-
             // remove any of the things that were set above
             for (String key : added) {
                 if (Configurations.containsProperty(key, props))
@@ -481,24 +452,28 @@ public class PersistenceUnitInfoImpl
         
         // always record provider name for product derivations to access
         if (info.getPersistenceProviderClassName() != null)
-            map.put(KEY_PROVIDER, info.getPersistenceProviderClassName());
+            map.put(JPAProperties.PROVIDER, info.getPersistenceProviderClassName());
         
         // convert validation-mode enum to a StringValue
         if (info.getValidationMode() != null)
-            map.put(VALIDATION_MODE, String.valueOf(info.getValidationMode()).toLowerCase());
+            map.put(JPAProperties.VALIDATE_MODE, info.getValidationMode());
 
         if (info.getPersistenceXMLSchemaVersion() != null) {
             map.put(PERSISTENCE_VERSION, info.getPersistenceXMLSchemaVersion());
         }
         
         if (info.getSharedCacheMode() != null) { 
-            put(map, added, SHARED_CACHE_MODE, info.getSharedCacheMode().toString());
+            map.put(JPAProperties.CACHE_MODE, info.getSharedCacheMode());
         }
         
         return map;
     }
 
-    private static void put(Map map, Set added, String key, Object val) {
+    /**
+     * Adds the given key-val to the given map after adding "openjpa." prefix to the key.
+     * Tracks this addition in the given set of added keys.
+     */
+    private static void replaceAsOpenJPAProperty(Map map, Set<String> added, String key, Object val) {
         map.put("openjpa." + key, val);
         added.add(key);
     }
@@ -565,10 +540,6 @@ public class PersistenceUnitInfoImpl
         return _validationMode;
     }
     
-    protected void setValidationMode(String mode) {
-        setValidationMode(Enum.valueOf(ValidationMode.class, mode.toUpperCase()));
-    }
-
     public void setValidationMode(ValidationMode mode) {
         _validationMode = mode;
     }
@@ -577,10 +548,6 @@ public class PersistenceUnitInfoImpl
         return _sharedCacheMode;
     }
     
-    public void setSharedCacheMode(String mode) { 
-        setSharedCacheMode(Enum.valueOf(SharedCacheMode.class, mode.toUpperCase()));
-    }
-
     public void setSharedCacheMode(SharedCacheMode mode) { 
         _sharedCacheMode = mode;
     }

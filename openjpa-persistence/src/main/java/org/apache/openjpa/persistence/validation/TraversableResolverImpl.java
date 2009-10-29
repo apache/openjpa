@@ -21,7 +21,6 @@ import java.lang.annotation.ElementType;
 import javax.persistence.spi.LoadState;
 import javax.validation.Path;
 import javax.validation.TraversableResolver;
-import javax.validation.ValidationException;
 import javax.validation.Path.Node;
 
 import org.apache.openjpa.persistence.OpenJPAEntityManagerFactory;

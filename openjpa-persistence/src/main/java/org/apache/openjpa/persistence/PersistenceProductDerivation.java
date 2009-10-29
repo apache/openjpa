@@ -37,6 +37,7 @@ import java.util.Set;
 
 import javax.persistence.spi.PersistenceUnitInfo;
 import javax.persistence.spi.PersistenceUnitTransactionType;
+import javax.persistence.SharedCacheMode;
 import javax.persistence.ValidationMode;
 
 import org.apache.commons.lang.StringUtils;
@@ -45,6 +46,7 @@ import org.apache.openjpa.conf.OpenJPAConfiguration;
 import org.apache.openjpa.conf.OpenJPAConfigurationImpl;
 import org.apache.openjpa.conf.OpenJPAProductDerivation;
 import org.apache.openjpa.conf.Specification;
+import org.apache.openjpa.datacache.DataCacheMode;
 import org.apache.openjpa.kernel.MixedLockLevels;
 import org.apache.openjpa.lib.conf.AbstractProductDerivation;
 import org.apache.openjpa.lib.conf.Configuration;
@@ -59,6 +61,7 @@ import org.apache.openjpa.lib.util.J2DoPrivHelper;
 import org.apache.openjpa.lib.util.Localizer;
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
+
 
 /**
  * Sets JPA specification defaults and parses JPA specification XML files.
@@ -116,15 +119,12 @@ public class PersistenceProductDerivation
             return false;
         
         OpenJPAConfigurationImpl conf = (OpenJPAConfigurationImpl) c;
-        conf.metaFactoryPlugin.setAlias(ALIAS_EJB.getName(),
-            PersistenceMetaDataFactory.class.getName());
-        conf.metaFactoryPlugin.setAlias(SPEC_JPA.getName(),
-            PersistenceMetaDataFactory.class.getName());
+        conf.metaFactoryPlugin.setAlias(ALIAS_EJB.getName(), PersistenceMetaDataFactory.class.getName());
+        conf.metaFactoryPlugin.setAlias(SPEC_JPA.getName(),  PersistenceMetaDataFactory.class.getName());
         
         conf.addValue(new EntityManagerFactoryValue());
         
-        conf.readLockLevel.setAlias("optimistic", String
-            .valueOf(MixedLockLevels.LOCK_OPTIMISTIC));
+        conf.readLockLevel.setAlias("optimistic", String.valueOf(MixedLockLevels.LOCK_OPTIMISTIC));
         conf.readLockLevel.setAlias("optimistic-force-increment", String
             .valueOf(MixedLockLevels.LOCK_OPTIMISTIC_FORCE_INCREMENT));
         conf.readLockLevel.setAlias("pessimistic-read", String
@@ -145,22 +145,64 @@ public class PersistenceProductDerivation
         conf.writeLockLevel.setAlias("pessimistic-force-increment", String
             .valueOf(MixedLockLevels.LOCK_PESSIMISTIC_FORCE_INCREMENT));
 
-        conf.lockManagerPlugin.setAlias("mixed",
-            "org.apache.openjpa.jdbc.kernel.MixedLockManager");
+        conf.lockManagerPlugin.setAlias("mixed", "org.apache.openjpa.jdbc.kernel.MixedLockManager");
 
+        configureBeanValidation(conf);
+        
+        conf.dataCacheMode = conf.addString(JPAProperties.CACHE_MODE);
+        conf.dataCacheMode.setDefault(DataCacheMode.UNSPECIFIED.toString());
+        conf.dataCacheMode.set(DataCacheMode.UNSPECIFIED.toString());
+
+        return true;
+    }
+    
+    /**
+     * Bean Validation configuration is unusual because its usage of enums and keys that
+     * do not have counterparts in kernel.
+     * Hence the plugins are defined in product derivation instead of the kernel's
+     * core configuration.
+     * 
+     * @param conf
+     */
+    private void configureBeanValidation(OpenJPAConfigurationImpl conf) {
+        // Validation defines/adds the following plugins to OpenJPA Configuration
+        conf.validationFactory         = conf.addObject(JPAProperties.VALIDATE_FACTORY); 
+        conf.validator                 = conf.addObject("Validator");
+        conf.validationMode            = conf.addString(JPAProperties.VALIDATE_MODE);
+        conf.validationGroupPrePersist = conf.addString(JPAProperties.VALIDATE_PRE_PERSIST);
+        conf.validationGroupPreUpdate  = conf.addString(JPAProperties.VALIDATE_PRE_UPDATE);
+        conf.validationGroupPreRemove  = conf.addString(JPAProperties.VALIDATE_PRE_REMOVE);
+        
+        conf.validationMode.setDynamic(true);
         String[] aliases = new String[] {
-            String.valueOf(ValidationMode.AUTO),
-            String.valueOf(ValidationMode.AUTO).toLowerCase(),
-            String.valueOf(ValidationMode.CALLBACK),
-            String.valueOf(ValidationMode.CALLBACK).toLowerCase(),
-            String.valueOf(ValidationMode.NONE),
-            String.valueOf(ValidationMode.NONE).toLowerCase()
+                String.valueOf(ValidationMode.AUTO),
+                String.valueOf(ValidationMode.AUTO).toLowerCase(),
+                String.valueOf(ValidationMode.CALLBACK),
+                String.valueOf(ValidationMode.CALLBACK).toLowerCase(),
+                String.valueOf(ValidationMode.NONE),
+                String.valueOf(ValidationMode.NONE).toLowerCase()
         };
         conf.validationMode.setAliases(aliases);
         conf.validationMode.setAliasListComprehensive(true);
         conf.validationMode.setDefault(aliases[0]);
 
-        return true;
+        conf.validationGroupPrePersist.setString(JPAProperties.VALIDATE_GROUP_DEFAULT);
+        conf.validationGroupPrePersist.setDefault("");
+        conf.validationGroupPrePersist.setDynamic(true);
+
+        conf.validationGroupPreUpdate.setString(JPAProperties.VALIDATE_GROUP_DEFAULT);
+        conf.validationGroupPreUpdate.setDefault("");
+        conf.validationGroupPreUpdate.setDynamic(true);
+
+        conf.validationGroupPreRemove.setDefault("");
+        conf.validationGroupPreRemove.setDynamic(true);
+
+        conf.validationFactory.setInstantiatingGetter("getValidationFactoryInstance");
+        conf.validationFactory.setDynamic(true);
+
+        conf.validator.setInstantiatingGetter("getValidatorInstance");
+        conf.validator.setDynamic(true);
+        conf.validator.makePrivate();
     }
 
     @Override
@@ -732,11 +774,12 @@ public class PersistenceProductDerivation
                         _info.setPersistenceProviderClassName(currentText());
                     break;
                 case 's' : // shared-cache-mode
-                    _info.setSharedCacheMode(currentText());
+                    _info.setSharedCacheMode(JPAProperties.getEnumValue(SharedCacheMode.class, 
+                            JPAProperties.CACHE_MODE, currentText()));
                     break;
                 case 'v': // validation-mode
-                    _info.setValidationMode(Enum.valueOf(ValidationMode.class,
-                        currentText()));
+                    _info.setValidationMode(JPAProperties.getEnumValue(ValidationMode.class,
+                        JPAProperties.VALIDATE_MODE, currentText()));
                     break;
             }
         }

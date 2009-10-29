@@ -30,24 +30,54 @@ import org.apache.openjpa.kernel.DataCacheStoreMode;
 /**
  * Enumerates configuration property keys defined in JPA 2.0 Specification.
  * <br>
- * Provides static utility functions to read their values from supplied
- * map of properties.
+ * Provides static utility functions to read their values from supplied map of properties.
  * <br>
- * Provides static utility functions to convert them to values that are
- * fit for consumption by OpenJPA implementation.  
+ * Provides static utility functions to convert them to values that are fit for OpenJPA implementation.  
  * <br>
  * @author Pinaki Poddar
  * @since 2.0.0
  *
  */
 public class JPAProperties {
-    public static final String DOT                 = "\\.";
+    private static final String REGEX_DOT           = "\\.";
     public static final String PREFIX              = "javax.persistence.";
-    public static final String LOCK_TIMEOUT        = PREFIX + "lock.timeout";
-    public static final String QUERY_TIMEOUT       = PREFIX + "query.timeout";
-    public static final String CACHE_STORE_MODE    = PREFIX + "cache.storeMode";
-    public static final String CACHE_RETRIEVE_MODE = PREFIX + "cache.retrieveMode";
     
+    public static final String PROVIDER            = PREFIX + "provider";
+    public static final String TRANSACTION_TYPE    = PREFIX + "transactionType";
+    
+    public static final String DATASOURCE          = PREFIX + "dataSource";
+    public static final String DATASOURCE_JTA      = PREFIX + "jtaDataSource";
+    public static final String DATASOURCE_NONJTA   = PREFIX + "nonJtaDataSource";
+    
+    public static final String JDBC_DRIVER          = PREFIX + "jdbc.driver";
+    public static final String JDBC_URL             = PREFIX + "jdbc.url";
+    public static final String JDBC_USER            = PREFIX + "jdbc.user";
+    public static final String JDBC_PASSWORD        = PREFIX + "jdbc.password";
+    
+    public static final String LOCK_SCOPE           = PREFIX + "lock.scope";
+    public static final String LOCK_TIMEOUT         = PREFIX + "lock.timeout";
+    
+    public static final String QUERY_TIMEOUT        = PREFIX + "query.timeout";
+    
+    public static final String CACHE_MODE           = PREFIX + "sharedCache.mode";
+    public static final String CACHE_STORE_MODE     = PREFIX + "cache.storeMode";
+    public static final String CACHE_RETRIEVE_MODE  = PREFIX + "cache.retrieveMode";
+    
+    public static final String VALIDATE_FACTORY     = PREFIX + "validation.factory";
+    public static final String VALIDATE_MODE        = PREFIX + "validation.mode";
+    public static final String VALIDATE_PRE_PERSIST = PREFIX + "validation.group.pre-persist";
+    public static final String VALIDATE_PRE_REMOVE  = PREFIX + "validation.group.pre-remove";
+    public static final String VALIDATE_PRE_UPDATE  = PREFIX + "validation.group.pre-update";
+    
+    public static final String VALIDATE_GROUP_DEFAULT = "javax.validation.groups.Default";
+    
+    /**
+     * Is the given key appears to be a valid JPA specification defined key?
+     * 
+     * @param key
+     * @return true if the given string merely prefixed with <code>javax.persistence.</code>.
+     * Does not really check all the keys defined in the specification.
+     */
     public static boolean isValidKey(String key) {
         return key != null && key.startsWith(PREFIX);
     }
@@ -58,13 +88,13 @@ public class JPAProperties {
      * 
      * @param key must begin with JPA property prefix <code>javax.persistence</code>
      * 
-     * @return null if the key is not a valid JPA property.
-     * Otherwise, concatenates each part of the string. Part of string is what appears between DOT character.
+     * @return concatenates each part of the string leaving out <code>javax.persistence.</code> prefix. 
+     * Part of string is what appears between DOT character.
      */
     public static String getBeanProperty(String key) {
         if (!isValidKey(key))
             throw new IllegalArgumentException("Invalid JPA property " + key);
-        String[] parts = key.split(DOT);
+        String[] parts = key.split(REGEX_DOT);
         StringBuilder buf = new StringBuilder();
         for (int i = 2; i < parts.length; i++) {
             buf.append(StringUtils.capitalize(parts[i]));
@@ -73,15 +103,15 @@ public class JPAProperties {
     }
     
     public static CacheRetrieveMode getCacheRetrieveMode(Map<String,Object> props) {
-        return get(CacheRetrieveMode.class, CacheRetrieveMode.values(), CACHE_RETRIEVE_MODE, props);
+        return getEnumValue(CacheRetrieveMode.class, CacheRetrieveMode.values(), CACHE_RETRIEVE_MODE, props);
     }
     
     static CacheStoreMode getCacheStoreMode(Map<String,Object> props) {
-        return get(CacheStoreMode.class, CacheStoreMode.values(), CACHE_STORE_MODE, props);
+        return getEnumValue(CacheStoreMode.class, CacheStoreMode.values(), CACHE_STORE_MODE, props);
     }
     
     static <E extends Enum<E>> E get(Class<E> type, String key, Map<String,Object> prop) {
-        return get(type, null, key, prop);
+        return getEnumValue(type, null, key, prop);
     }
     
     /**
@@ -102,6 +132,11 @@ public class JPAProperties {
         return value;
     }
     
+    
+    public static <E extends Enum<E>> E getEnumValue(Class<E> type, String key, Map<String,Object> prop) {
+        return getEnumValue(type, null, key, prop);
+    }
+    
     /**
      * Gets a enum value of the given type from the given properties looking up with the given key.
      * Converts the original value from a String or ordinal number, if necessary.
@@ -110,10 +145,17 @@ public class JPAProperties {
      * 
      * @return null if the key does not exist in the given properties.
      */
-    static <E extends Enum<E>> E get(Class<E> type, E[] values, String key, Map<String,Object> prop) {
+    public static <E extends Enum<E>> E getEnumValue(Class<E> type, E[] values, String key, Map<String,Object> prop) {
         if (prop == null)
             return null;
-        Object val = prop.get(key);
+        return getEnumValue(type, values, key, prop.get(key));
+    }
+    
+    public static <E extends Enum<E>> E  getEnumValue(Class<E> type, String key, Object val) {
+        return getEnumValue(type, null, key, val);
+    }
+    
+    public static <E extends Enum<E>> E  getEnumValue(Class<E> type, E[] values, String key, Object val) {
         if (val == null)
             return null;
         if (type.isInstance(val))

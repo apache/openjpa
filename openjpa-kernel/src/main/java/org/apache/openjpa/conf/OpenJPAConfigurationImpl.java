@@ -552,36 +552,7 @@ public class OpenJPAConfigurationImpl
         queryTimeout = addInt("javax.persistence.query.timeout");
         queryTimeout.setDefault("-1");
         queryTimeout.setDynamic(true);
-
-        // kernel can't access javax.persistence.ValidationMode enums here
-        // so the config will be done in PersistenceProductDerivation
-        validationMode = addString("javax.persistence.validation.mode");
-        validationMode.setDynamic(true);
-
-        String defValidationGroup = "javax.validation.groups.Default";
-        validationGroupPrePersist = addString("javax.persistence.validation.group.pre-persist");
-        validationGroupPrePersist.setString(defValidationGroup);
-        validationGroupPrePersist.setDefault("");
-        validationGroupPrePersist.setDynamic(true);
-
-        validationGroupPreUpdate = addString("javax.persistence.validation.group.pre-update");
-        validationGroupPreUpdate.setString(defValidationGroup);
-        validationGroupPreUpdate.setDefault("");
-        validationGroupPreUpdate.setDynamic(true);
-
-        validationGroupPreRemove = addString("javax.persistence.validation.group.pre-remove");
-        validationGroupPreRemove.setDefault("");
-        validationGroupPreRemove.setDynamic(true);
-
-        validationFactory = addObject("javax.persistence.validation.factory");
-        validationFactory.setInstantiatingGetter("getValidationFactoryInstance");
-        validationFactory.setDynamic(true);
-
-        validator = addObject("Validator");
-        validator.setInstantiatingGetter("getValidatorInstance");
-        validator.setDynamic(true);
-        validator.makePrivate();
-        
+      
         lifecycleEventManager = addPlugin("LifecycleEventManager", true);
         aliases = new String[] {
             "default", LifecycleEventManager.class.getName(),
@@ -638,9 +609,6 @@ public class OpenJPAConfigurationImpl
         writeBehindCallbackPlugin.setDefault(aliases[0]);
         writeBehindCallbackPlugin.setString(aliases[0]);
         
-        dataCacheMode = addString(DataCacheMode.class.getSimpleName());
-        dataCacheMode.setDefault(DataCacheMode.UNSPECIFIED.toString());
-        dataCacheMode.set(DataCacheMode.UNSPECIFIED.toString());
 
         if (derivations)
             ProductDerivations.beforeConfigurationLoad(this);

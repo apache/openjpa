@@ -62,9 +62,13 @@ public class StringValue extends Value {
     protected void setInternalString(String val) {
         set(val);
     }
-
+    
     protected void setInternalObject(Object obj) {
-        set((String) obj);
+        if (obj instanceof String) {
+            set((String) obj);
+        } else {
+            set(obj == null ? null : obj.toString());
+        }
     }
 }
 
