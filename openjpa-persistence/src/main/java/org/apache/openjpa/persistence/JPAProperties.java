@@ -85,7 +85,6 @@ public class JPAProperties {
     /**
      * Gets a bean-style property name from the given key.
      * 
-     * 
      * @param key must begin with JPA property prefix <code>javax.persistence</code>
      * 
      * @return concatenates each part of the string leaving out <code>javax.persistence.</code> prefix. 
@@ -102,14 +101,6 @@ public class JPAProperties {
         return buf.toString();
     }
     
-    public static CacheRetrieveMode getCacheRetrieveMode(Map<String,Object> props) {
-        return getEnumValue(CacheRetrieveMode.class, CacheRetrieveMode.values(), CACHE_RETRIEVE_MODE, props);
-    }
-    
-    static CacheStoreMode getCacheStoreMode(Map<String,Object> props) {
-        return getEnumValue(CacheStoreMode.class, CacheStoreMode.values(), CACHE_STORE_MODE, props);
-    }
-    
     static <E extends Enum<E>> E get(Class<E> type, String key, Map<String,Object> prop) {
         return getEnumValue(type, null, key, prop);
     }
@@ -119,17 +110,18 @@ public class JPAProperties {
      * 
      * @return the same value if the given key is not a valid JPA property key or the value is null.
      */
-    public static Object convertValue(String key, Object value) {
+    public static <T> T  convertValue(Class<T> resultType, String key, Object value) {
         if (value == null)
             return null;
         if (JPAProperties.isValidKey(key)) {
+            // works because enum values are identical String
             if (value instanceof CacheRetrieveMode) {
-                return DataCacheRetrieveMode.valueOf(value.toString());
+                return (T)DataCacheRetrieveMode.valueOf(value.toString());
             } else if (value instanceof CacheStoreMode) {
-                return DataCacheStoreMode.valueOf(value.toString());
+                return (T)DataCacheStoreMode.valueOf(value.toString());
             }
         }
-        return value;
+        return (T)value;
     }
     
     
