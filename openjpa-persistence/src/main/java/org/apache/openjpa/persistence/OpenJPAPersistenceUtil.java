@@ -106,7 +106,10 @@ public class OpenJPAPersistenceUtil {
     }
 
     /**
-     * Determines whether the attribute on the specified object is loaded.
+     * Determines whether the attribute on the specified object is loaded and
+     * is managed by one of the entity managers.  Use isManagedBy() to
+     * determine if an object is managed by a specific entity manager
+     * factory.
      * 
      * @return LoadState.LOADED - if the attribute is loaded.
      *         LoadState.NOT_LOADED - if the attribute is not loaded or any
@@ -116,23 +119,6 @@ public class OpenJPAPersistenceUtil {
      *         attribute.
      */
     public static LoadState isLoaded(Object obj, String attr) {
-        return isLoaded(null, obj, attr);
-    }
-
-    /**
-     * Determines whether the attribute on the specified object is loaded and
-     * is managed by one of the entity managers of the specified entity manager
-     * factory.
-     * 
-     * @return LoadState.LOADED - if the attribute is loaded.
-     *         LoadState.NOT_LOADED - if the attribute is not loaded or any
-     *         EAGER fetch attributes of the entity are not loaded.
-     *         LoadState.UNKNOWN - if the entity is not managed by this
-     *         provider or one of the entity managers of the specified 
-     *         entity manager factory, or if it does not contain the persistent
-     *         attribute.
-     */
-    public static LoadState isLoaded(OpenJPAEntityManagerFactory emf, Object obj, String attr) {
 
         if (obj == null) {
             return LoadState.UNKNOWN;
@@ -141,10 +127,6 @@ public class OpenJPAPersistenceUtil {
         // If the object has a state manager, call it directly.
         if (obj instanceof PersistenceCapable) {
             PersistenceCapable pc = (PersistenceCapable)obj;
-            if (emf != null) {
-                if (!OpenJPAPersistenceUtil.isManagedBy(emf, pc))
-                    return LoadState.UNKNOWN;
-            }
             StateManager sm = pc.pcGetStateManager();
             if (sm != null && sm instanceof OpenJPAStateManager) {
                 return isLoaded((OpenJPAStateManager)sm, attr, null);

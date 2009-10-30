@@ -34,14 +34,7 @@ import org.apache.openjpa.persistence.OpenJPAPersistenceUtil;
  */
 public class TraversableResolverImpl implements TraversableResolver {
 
-    // For OpenJPA created instance, we should have a reference to ourselves
-    private OpenJPAEntityManagerFactory emf = null;
-
     public TraversableResolverImpl() {
-    }
-
-    public TraversableResolverImpl(OpenJPAEntityManagerFactory emf) {
-        this.emf = emf;
     }
 
     /* (non-Javadoc) isReachable() is called by the Validator before accessing
@@ -59,8 +52,7 @@ public class TraversableResolverImpl implements TraversableResolver {
          * OpenJPA optimized version of the default provider implementation,
          * which doesn't ask all the providers on the classpath about the obj.
          */
-        if (OpenJPAPersistenceUtil.isLoaded(emf, traversableObject, 
-            traversableProperty.getName()) == LoadState.NOT_LOADED) {
+        if (OpenJPAPersistenceUtil.isLoaded(traversableObject, traversableProperty.getName()) == LoadState.NOT_LOADED) {
             return false;
         } else {
             // LoadState.LOADED or LoadState.UNKNOWN

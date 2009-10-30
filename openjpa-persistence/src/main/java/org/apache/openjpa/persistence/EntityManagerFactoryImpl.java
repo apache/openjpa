@@ -333,8 +333,7 @@ public class EntityManagerFactoryImpl
         if (entity == null) {
             return false;
         }
-        
-        return (OpenJPAPersistenceUtil.isLoaded(this, entity, attribute) ==
-            LoadState.LOADED);
-    }    
+        return (OpenJPAPersistenceUtil.isManagedBy(this, entity) &&
+                (OpenJPAPersistenceUtil.isLoaded(entity, attribute) == LoadState.LOADED));
+    }
 }
