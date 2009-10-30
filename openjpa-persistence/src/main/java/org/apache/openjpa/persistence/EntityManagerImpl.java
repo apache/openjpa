@@ -947,9 +947,9 @@ public class EntityManagerImpl
         return new ExtentImpl<T>(this, _broker.newExtent(cls, subclasses));
     }
 
+    @SuppressWarnings("unchecked")
     public <T> TypedQuery<T> createQuery(String query, Class<T> resultClass) {
-        return new QueryImpl(this, _ret, 
-            _broker.newQuery(JPQLParser.LANG_JPQL, query));
+        return createQuery(query).setResultClass(resultClass);
     }
     
     public OpenJPAQuery createQuery(String query) {
@@ -986,8 +986,9 @@ public class EntityManagerImpl
             q));
     }
     
+    @SuppressWarnings("unchecked")
     public <T> TypedQuery<T> createNamedQuery(String name, Class<T> resultClass) {
-        throw new UnsupportedOperationException();
+        return createNamedQuery(name).setResultClass(resultClass);
     }
 
     public OpenJPAQuery createNamedQuery(String name) {
