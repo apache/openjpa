@@ -27,7 +27,6 @@ import javax.persistence.spi.LoadState;
 
 import org.apache.openjpa.enhance.PersistenceCapable;
 import org.apache.openjpa.enhance.StateManager;
-import org.apache.openjpa.kernel.AbstractBrokerFactory;
 import org.apache.openjpa.kernel.Broker;
 import org.apache.openjpa.kernel.OpenJPAStateManager;
 import org.apache.openjpa.meta.FieldMetaData;
@@ -76,36 +75,32 @@ public class OpenJPAPersistenceUtil {
     }
 
     /**
-     * Determines whether the specified state manager is managed by a broker
-     * within the persistence unit of this utility instance.
+     * Determines whether the specified state manager is managed by an open
+     * broker within the persistence unit of the provided EMF instance.
+     * @param emf OpenJPAEntityManagerFactory
      * @param sm StateManager
      * @return true if this state manager is managed by a broker within
      * this persistence unit.
      */
     public static boolean isManagedBy(OpenJPAEntityManagerFactory emf, Object entity) {
+        // Assert a valid emf was provided, it is open, and the entity is PC
         if (emf == null || !emf.isOpen() || !ImplHelper.isManageable(entity)) {
             return false;
         }
-        Object abfobj = JPAFacadeHelper.toBrokerFactory(emf);
-        if (abfobj == null) {
+        // Assert the context is a broker
+        PersistenceCapable pc = (PersistenceCapable)entity;
+        if (!(pc.pcGetGenericContext() instanceof Broker)) {
             return false;
         }
-        if (abfobj instanceof AbstractBrokerFactory) {
-            AbstractBrokerFactory abf = (AbstractBrokerFactory)abfobj;
-            Collection<Broker> brokers = abf.getOpenBrokers();
-            if (brokers == null || brokers.size() == 0) {
-                return false;
-            }
-            // Cycle through all brokers managed by this factory.  
-            for (Broker broker : brokers) {
-                if (broker != null && !broker.isClosed()) {
-                    PersistenceCapable pc = (PersistenceCapable)entity;
-                    // Verify this broker is managing the entity
-                    if (pc.pcGetGenericContext() == broker) {
-                        return true;
-                    }
-                }
-            }
+        // Assert the broker is available and open
+        Broker broker = (Broker)pc.pcGetGenericContext();
+        if (broker == null || broker.isClosed()) {
+            return false;
+        }
+        // Assert the emf associated with the PC is the same as the provided emf
+        OpenJPAEntityManagerFactory eemf = JPAFacadeHelper.toEntityManagerFactory(broker.getBrokerFactory());
+        if (eemf == emf && eemf.isOpen()) {
+            return true;
         }
         return false;
     }
