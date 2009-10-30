@@ -20,9 +20,9 @@ package org.apache.openjpa.persistence;
 
 import java.util.Collection;
 import java.util.Map;
-import java.util.Set;
 
 import javax.persistence.LockModeType;
+import javax.persistence.PessimisticLockScope;
 
 import org.apache.openjpa.kernel.DataCacheRetrieveMode;
 import org.apache.openjpa.kernel.DataCacheStoreMode;
@@ -320,6 +320,16 @@ public interface FetchPlan {
      * limit.
      */
     public FetchPlan setLockTimeout(int timeout);
+
+    /**
+     * The lock scope to use for locking loaded objects.
+     */
+    public PessimisticLockScope getLockScope();
+
+    /**
+     * The lock scope to use for locking loaded objects.
+     */
+    public FetchPlan setLockScope(PessimisticLockScope scope);
 
     /**
      * The number of milliseconds to wait for a query, or -1 for no

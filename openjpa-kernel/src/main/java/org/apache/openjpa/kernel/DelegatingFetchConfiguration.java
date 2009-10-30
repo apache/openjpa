@@ -401,6 +401,23 @@ public class DelegatingFetchConfiguration
         }
     }
 
+    public int getLockScope() {
+        try {
+            return _fetch.getLockScope();
+        } catch (RuntimeException re) {
+            throw translate(re);
+        }
+    }
+
+    public FetchConfiguration setLockScope(int scope) {
+        try {
+            _fetch.setLockScope(scope);
+            return this;
+        } catch (RuntimeException re) {
+            throw translate(re);
+        }
+    }
+
     public int getReadLockLevel() {
         try {
             return _fetch.getReadLockLevel();

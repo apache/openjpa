@@ -61,8 +61,6 @@ import javax.persistence.FlushModeType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 
-import javax.persistence.Access;
-import javax.persistence.AccessType;
 import javax.persistence.Id;
 import javax.persistence.IdClass;
 import javax.persistence.Lob;
@@ -1772,7 +1770,9 @@ public class AnnotationPersistenceMetaDataParser
             meta.setLanguage(JPQLParser.LANG_JPQL);
             for (QueryHint hint : query.hints())
                 meta.addHint(hint.name(), hint.value());
-
+            if (query.lockMode() != null) {
+                meta.addHint("openjpa.FetchPlan.ReadLockMode", query.lockMode());
+            }
             meta.setSource(getSourceFile(), (el instanceof Class) ? el : null,
                 SourceTracker.SRC_ANNOTATIONS);
             if (isMetaDataMode())

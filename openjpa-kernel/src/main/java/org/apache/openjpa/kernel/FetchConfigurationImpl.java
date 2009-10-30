@@ -78,7 +78,7 @@ public class FetchConfigurationImpl
         public int flushQuery = 0;
         public int lockTimeout = -1;
         public int queryTimeout = -1;
-        public int lockMode = 0;
+        public int lockScope = LOCKSCOPE_NORMAL;
         public int readLockLevel = LOCK_NONE;
         public int writeLockLevel = LOCK_NONE;
         public Set<String> fetchGroups = null;
@@ -168,6 +168,7 @@ public class FetchConfigurationImpl
         setExtendedPathLookup(fetch.getExtendedPathLookup());
         setLockTimeout(fetch.getLockTimeout());
         setQueryTimeout(fetch.getQueryTimeout());
+        setLockScope(fetch.getLockScope());
         clearFetchGroups();
         addFetchGroups(fetch.getFetchGroups());
         clearFields();
@@ -482,6 +483,22 @@ public class FetchConfigurationImpl
         return this;
     }
 
+    public int getLockScope() {
+        return _state.lockScope;
+    }
+
+    public FetchConfiguration setLockScope(int scope) {
+        if (scope != DEFAULT
+                && scope != LockScopes.LOCKSCOPE_NORMAL
+                && scope != LockScopes.LOCKSCOPE_EXTENDED)
+                throw new IllegalArgumentException(_loc.get(
+                    "bad-lock-scope", new Integer(scope)).getMessage());
+        if (scope == DEFAULT )
+            _state.lockScope = LOCKSCOPE_NORMAL;
+        else
+            _state.lockScope = scope;
+        return this;
+    }
 
     public int getReadLockLevel() {
         String lockModeKey = "openjpa.FetchPlan.ReadLockMode";

@@ -31,15 +31,14 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 import java.util.Stack;
+
 import javax.persistence.CascadeType;
 import javax.persistence.GenerationType;
+import javax.persistence.LockModeType;
 
 import static javax.persistence.CascadeType.*;
 
 import org.apache.commons.lang.StringUtils;
-import org.xml.sax.Attributes;
-import org.xml.sax.Locator;
-import org.xml.sax.SAXException;
 import org.apache.openjpa.conf.OpenJPAConfiguration;
 import org.apache.openjpa.enhance.PersistenceCapable;
 import org.apache.openjpa.event.BeanLifecycleCallbacks;
@@ -61,7 +60,6 @@ import org.apache.openjpa.meta.FieldMetaData;
 import org.apache.openjpa.meta.JavaTypes;
 import org.apache.openjpa.meta.LifecycleMetaData;
 import org.apache.openjpa.meta.MetaDataContext;
-import org.apache.openjpa.meta.MetaDataDefaults;
 import org.apache.openjpa.meta.MetaDataFactory;
 import static org.apache.openjpa.meta.MetaDataModes.*;
 import org.apache.openjpa.meta.MetaDataRepository;
@@ -73,6 +71,9 @@ import static org.apache.openjpa.persistence.MetaDataTag.*;
 import static org.apache.openjpa.persistence.PersistenceStrategy.*;
 import org.apache.openjpa.util.ImplHelper;
 import org.apache.openjpa.util.MetaDataException;
+import org.xml.sax.Attributes;
+import org.xml.sax.Locator;
+import org.xml.sax.SAXException;
 
 import serp.util.Numbers;
 
@@ -1106,7 +1107,7 @@ public class XMLPersistenceMetaDataParser
         throws SAXException {
         FieldMetaData fmd = (FieldMetaData) currentElement();
         int typeCode = fmd.isElementCollection() ? fmd.getElement().getDeclaredTypeCode() : fmd.getDeclaredTypeCode();
-        Class type = fmd.isElementCollection() ? fmd.getElement().getDeclaredType() : fmd.getDeclaredType();
+        Class<?> type = fmd.isElementCollection() ? fmd.getElement().getDeclaredType() : fmd.getDeclaredType();
         if (typeCode != JavaTypes.STRING
             && type != char[].class
             && type != Character[].class
@@ -1651,12 +1652,10 @@ public class XMLPersistenceMetaDataParser
         meta.setDefiningType(_cls);
         meta.setQueryString(attrs.getValue("query"));
         meta.setLanguage(JPQLParser.LANG_JPQL);
-        /** TODO: Uncomment when orm.xsd defines lockmode
-        LockModeType lockMode =
-                 LockModeType.valueOf(attrs.getValue("lockMode"));
-        meta.addHint("openjpa.FetchPlan.ReadLockMode",
-            JPA2LockLevels.toLockLevel(lockMode));
-        **/
+        String lockModeStr = attrs.getValue("lock-mode");
+        if (lockModeStr != null) {
+            meta.addHint("openjpa.FetchPlan.ReadLockMode", LockModeType.valueOf(lockModeStr));
+        }
         Locator locator = getLocation().getLocator();
         if (locator != null) {
             meta.setLineNumber(Numbers.valueOf(locator.getLineNumber()));

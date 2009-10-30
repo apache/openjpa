@@ -36,7 +36,7 @@ import org.apache.openjpa.meta.FieldMetaData;
  * @author Pinaki Poddar
  */
 public interface FetchConfiguration
-    extends Serializable, Cloneable, LockLevels, QueryFlushModes {
+    extends Serializable, Cloneable, LockLevels, LockScopes, QueryFlushModes {
 
     /**
      * Constant to revert any setting back to its default value.
@@ -268,7 +268,21 @@ public interface FetchConfiguration
      * @since 0.3.1
      */
     public FetchConfiguration setLockTimeout(int timeout);
-    
+
+    /**
+     * The lock scope for next fetch.
+     *
+     * @since 2.0.0
+     */
+    public int getLockScope();
+
+    /**
+     * The lock scope for next fetch.
+     *
+     * @since 2.0.0
+     */
+    public FetchConfiguration setLockScope(int scope);
+
     /**
      * The number of milliseconds to wait for a query, or -1 for no
      * limit.

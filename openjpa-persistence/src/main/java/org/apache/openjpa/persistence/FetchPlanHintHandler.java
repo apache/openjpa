@@ -59,12 +59,17 @@ public class FetchPlanHintHandler extends AbstractHintHandler {
         }
         // Initialize javax.persistence to openjpa.FetchPlan hint mapping.
         javaxHintsMap.put(JPAProperties.LOCK_TIMEOUT,  PREFIX_FETCHPLAN + "LockTimeout");
+        javaxHintsMap.put(JPAProperties.LOCK_SCOPE,    PREFIX_FETCHPLAN + "LockScope");
         javaxHintsMap.put(JPAProperties.QUERY_TIMEOUT, PREFIX_FETCHPLAN + "QueryTimeout");
         // Initialize hint precedence order mapping from list.
         String[][] precedenceMapList = {
             { JPAProperties.LOCK_TIMEOUT,
               PREFIX_FETCHPLAN  + "LockTimeout",
               PREFIX_OPENJPA    + "LockTimeout" },
+
+            { JPAProperties.LOCK_SCOPE,
+              PREFIX_FETCHPLAN  + "LockScope",
+              PREFIX_OPENJPA    + "LockScope" },
 
             { JPAProperties.QUERY_TIMEOUT,
               PREFIX_FETCHPLAN  + "QueryTimeout",

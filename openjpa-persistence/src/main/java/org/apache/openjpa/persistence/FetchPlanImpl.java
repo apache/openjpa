@@ -25,6 +25,7 @@ import java.util.Iterator;
 import java.util.Map;
 
 import javax.persistence.LockModeType;
+import javax.persistence.PessimisticLockScope;
 
 import org.apache.openjpa.kernel.DataCacheRetrieveMode;
 import org.apache.openjpa.kernel.DataCacheStoreMode;
@@ -234,6 +235,15 @@ public class FetchPlanImpl
 
     public FetchPlan setLockTimeout(int timeout) {
         _fetch.setLockTimeout(timeout);
+        return this;
+    }
+
+    public PessimisticLockScope getLockScope() {
+        return LockScopesHelper.fromLockScope(_fetch.getLockScope());
+    }
+
+    public FetchPlan setLockScope(PessimisticLockScope scope) {
+        _fetch.setLockScope(LockScopesHelper.toLockScope(scope));
         return this;
     }
 
