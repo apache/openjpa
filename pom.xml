@@ -47,6 +47,7 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <checkstyle.config.location>../openjpa-project/checkstyle.xml</checkstyle.config.location>
         <derby.version>10.2.2.0</derby.version>
+        <hsqldb.version>1.8.0.10</hsqldb.version>
     </properties>
 
     <!--
@@ -530,7 +531,7 @@
             <dependency>
                 <groupId>hsqldb</groupId>
                 <artifactId>hsqldb</artifactId>
-                <version>1.8.0.1</version>
+                <version>${hsqldb.version}</version>
             </dependency>
             <dependency>
                 <groupId>jakarta-regexp</groupId>
