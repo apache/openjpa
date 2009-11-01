@@ -55,7 +55,7 @@ public class Book implements Serializable {
     
     @Id
     @Column(nullable = false)
-    @ManyToOne
+    @ManyToOne(cascade = CascadeType.MERGE)
     private Library library;
     
     private String author;

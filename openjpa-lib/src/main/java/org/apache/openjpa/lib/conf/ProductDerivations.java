@@ -60,7 +60,18 @@ public class ProductDerivations {
         l.addClassLoader(0, AccessController
             .doPrivileged(J2DoPrivHelper.getClassLoaderAction(ProductDerivations.class)));
         l.addClassLoader(1, AccessController.doPrivileged(J2DoPrivHelper.getContextClassLoaderAction()));
-        _derivationNames = Services.getImplementors(ProductDerivation.class, l);
+        //_derivationNames = Services.getImplementors(ProductDerivation.class, l);
+
+        _derivationNames = new String[4];
+        _derivationNames [0] = 
+        "com.ibm.ws.persistence.WsJpaProductDerivation"; 
+        _derivationNames [1] = 
+        "org.apache.openjpa.jdbc.conf.JDBCProductDerivation"; 
+        _derivationNames [2] = 
+        "org.apache.openjpa.persistence.PersistenceProductDerivation"; 
+        _derivationNames [3] = 
+        "org.apache.openjpa.persistence.jdbc.JDBCPersistenceProductDerivation";
+
         _derivationErrors = new Throwable[_derivationNames.length];
         List<ProductDerivation> derivations =
             new ArrayList<ProductDerivation>(_derivationNames.length);

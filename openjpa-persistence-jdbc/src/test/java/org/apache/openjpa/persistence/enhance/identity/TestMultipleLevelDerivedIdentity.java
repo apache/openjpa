@@ -50,6 +50,29 @@ public class TestMultipleLevelDerivedIdentity extends SingleEMFTestCase {
 		create();
 	}
 	
+	public void testMerge() {
+        EntityManager em = emf.createEntityManager();
+        
+        Library lib = new Library();
+        lib.setName("Congress Library");
+
+        Book book = new Book();
+        book.setName("Kite Runner");
+        book.setLibrary(lib);
+        em.merge(book);
+        em.getTransaction().begin();
+        em.getTransaction().commit();
+        em.clear();
+        try {
+            em.merge(book);
+            em.getTransaction().begin();
+            em.getTransaction().commit();
+        } catch (Exception e) {
+            e.printStackTrace();
+            fail("Fail to merge twice: " + e.getMessage());
+        }
+	}
+	
 	public void testPersist() {
 		create();
 	}

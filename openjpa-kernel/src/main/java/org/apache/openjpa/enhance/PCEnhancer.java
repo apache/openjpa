@@ -2069,8 +2069,13 @@ public class PCEnhancer {
         JumpInstruction ifnull1 = code.ifnull();
         code.aload().setLocal(pc);
         code.checkcast().setType(PersistenceCapable.class); 
-        code.invokeinterface().setMethod(PersistenceCapable.class,
-            PRE + "FetchObjectId", Object.class, null);
+        if (!pk.getTypeMetaData().isOpenJPAIdentity())
+            code.invokeinterface().setMethod(PersistenceCapable.class,
+                PRE + "FetchObjectId", Object.class, null);
+        else
+            code.invokeinterface().setMethod(PersistenceCapable.class,
+                PRE + "NewObjectIdInstance", Object.class, null);
+            
         int oid = code.getNextLocalsIndex();
         code.astore().setLocal(oid);
         code.aload().setLocal(oid);
