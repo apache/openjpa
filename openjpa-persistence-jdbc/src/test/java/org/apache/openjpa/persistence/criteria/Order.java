@@ -21,6 +21,7 @@ package org.apache.openjpa.persistence.criteria;
 import java.sql.Timestamp;
 import java.util.List;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
@@ -37,6 +38,7 @@ public class Order {
 
     private int quantity;
 	private double totalCost;
+	@Column(name="CNT")
 	private int count;
 	private String name;
 	

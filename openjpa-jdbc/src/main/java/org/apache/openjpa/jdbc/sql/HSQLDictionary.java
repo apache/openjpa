@@ -54,6 +54,7 @@ public class HSQLDictionary
     public HSQLDictionary() {
         platform = "HSQL";
         validationSQL = "CALL 1";
+        concatenateFunction = "CONCAT({0},{1})";
         closePoolSQL = "SHUTDOWN";
 
         supportsAutoAssign = true;
