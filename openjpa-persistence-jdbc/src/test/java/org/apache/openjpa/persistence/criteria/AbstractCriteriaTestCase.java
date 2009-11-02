@@ -36,6 +36,8 @@ import junit.framework.TestCase;
 import org.apache.openjpa.jdbc.conf.JDBCConfiguration;
 import org.apache.openjpa.jdbc.sql.DBDictionary;
 import org.apache.openjpa.jdbc.sql.DerbyDictionary;
+import org.apache.openjpa.jdbc.sql.HSQLDictionary;
+import org.apache.openjpa.jdbc.sql.OracleDictionary;
 import org.apache.openjpa.lib.jdbc.AbstractJDBCListener;
 import org.apache.openjpa.lib.jdbc.JDBCEvent;
 import org.apache.openjpa.lib.jdbc.JDBCListener;
@@ -90,10 +92,12 @@ public abstract class AbstractCriteriaTestCase extends TestCase {
     void setDictionary() {
         JDBCConfiguration conf = (JDBCConfiguration) getEntityManagerFactory().getConfiguration();
         dict = conf.getDBDictionaryInstance();
-        if (dict instanceof DerbyDictionary) {
+        if (dict instanceof DerbyDictionary || dict instanceof HSQLDictionary) {
             dict.requiresCastForComparisons = false;
             dict.requiresCastForMathFunctions = false;
-        }
+        } else if (dict instanceof OracleDictionary) {
+            dict.setJoinSyntax("sql92");
+        } 
     }
 
     /**
@@ -218,8 +222,8 @@ public abstract class AbstractCriteriaTestCase extends TestCase {
             if (!jSQL.get(i).equals(expectedSQL)) {
                 printSQL("SQL for JPQL", jSQL.get(i));
                 printSQL("Expected SQL", expectedSQL);
-                assertEquals(i + "-th Expected SQL and SQL for JPQL: " + jpql + " are different", expectedSQL, jSQL
-                    .get(i));
+                assertTrue(i + "-th Expected SQL and SQL for JPQL: " + jpql + " are different", 
+                    expectedSQL.equalsIgnoreCase(jSQL.get(i)));
             }
         }
     }
@@ -241,7 +245,7 @@ public abstract class AbstractCriteriaTestCase extends TestCase {
         if (jSql.indexOf("optimize for 1 row") != -1)
             jSql = jSql.substring(0, jSql.indexOf("optimize for 1 row")).trim();
 
-        if (!jSql.equals(expectedSQL)) {
+        if (!jSql.equalsIgnoreCase(expectedSQL)) {
             printSQL("SQL for JPQL", jSql);
             assertEquals(expectedSQL, jSql);
         }
