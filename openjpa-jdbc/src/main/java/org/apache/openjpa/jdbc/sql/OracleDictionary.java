@@ -34,6 +34,7 @@ import java.sql.Types;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -49,6 +50,7 @@ import org.apache.openjpa.jdbc.schema.Index;
 import org.apache.openjpa.jdbc.schema.PrimaryKey;
 import org.apache.openjpa.jdbc.schema.Sequence;
 import org.apache.openjpa.jdbc.schema.Table;
+import org.apache.openjpa.jdbc.schema.ForeignKey.FKMapKey;
 import org.apache.openjpa.lib.jdbc.DelegatingDatabaseMetaData;
 import org.apache.openjpa.lib.jdbc.DelegatingPreparedStatement;
 import org.apache.openjpa.lib.util.J2DoPrivHelper;
@@ -756,7 +758,7 @@ public class OracleDictionary
     }
 
     public ForeignKey[] getImportedKeys(DatabaseMetaData meta, String catalog,
-        String schemaName, String tableName, Connection conn)
+        String schemaName, String tableName, Connection conn, boolean partialKeys)
         throws SQLException {
         StringBuffer delAction = new StringBuffer("DECODE(t1.DELETE_RULE").
             append(", 'NO ACTION', ").append(meta.importedKeyNoAction).
@@ -805,9 +807,20 @@ public class OracleDictionary
                 setString(stmnt, idx++, tableName.toUpperCase(), null);
             setTimeouts(stmnt, conf, false);
             rs = stmnt.executeQuery();
-            List fkList = new ArrayList();
-            while (rs != null && rs.next())
-                fkList.add(newForeignKey(rs));
+            List<ForeignKey> fkList = new ArrayList<ForeignKey>();            
+            Map<FKMapKey, ForeignKey> fkMap = new HashMap<FKMapKey, ForeignKey>();
+
+            while (rs != null && rs.next()) {
+                ForeignKey nfk = newForeignKey(rs);
+                if (!partialKeys) {
+                    ForeignKey fk = combineForeignKey(fkMap, nfk);
+                    // Only add the fk to the import list if it is new
+                    if (fk != nfk) {
+                        continue;
+                    }
+                }
+                fkList.add(nfk);
+            }
             return (ForeignKey[]) fkList.toArray
                 (new ForeignKey[fkList.size()]);
         } finally {

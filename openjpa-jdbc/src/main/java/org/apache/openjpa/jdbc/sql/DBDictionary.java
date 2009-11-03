@@ -86,6 +86,7 @@ import org.apache.openjpa.jdbc.schema.SchemaGroup;
 import org.apache.openjpa.jdbc.schema.Sequence;
 import org.apache.openjpa.jdbc.schema.Table;
 import org.apache.openjpa.jdbc.schema.Unique;
+import org.apache.openjpa.jdbc.schema.ForeignKey.FKMapKey;
 import org.apache.openjpa.kernel.Filters;
 import org.apache.openjpa.kernel.OpenJPAStateManager;
 import org.apache.openjpa.kernel.Seq;
@@ -4118,6 +4119,16 @@ public class DBDictionary
     public ForeignKey[] getImportedKeys(DatabaseMetaData meta, String catalog,
         String schemaName, String tableName, Connection conn)
         throws SQLException {
+        return getImportedKeys(meta, catalog, schemaName, tableName, conn, true);
+    }
+
+    /**
+     * Reflect on the schema to return full foreign keys imported by the given
+     * table pattern.
+     */
+    public ForeignKey[] getImportedKeys(DatabaseMetaData meta, String catalog,
+        String schemaName, String tableName, Connection conn, boolean partialKeys)
+        throws SQLException {
         if (!supportsForeignKeys)
             return null;
         if (tableName == null && !supportsNullTableForGetImportedKeys)
@@ -4130,18 +4141,49 @@ public class DBDictionary
                 getSchemaNameForMetadata(schemaName),
                 getTableNameForMetadata(tableName));
 
-            List importedKeyList = new ArrayList();
-            while (keys != null && keys.next())
-                importedKeyList.add(newForeignKey(keys));
+            List<ForeignKey> importedKeyList = new ArrayList<ForeignKey>();
+            Map<FKMapKey, ForeignKey> fkMap = new HashMap<FKMapKey, ForeignKey>();
+
+            while (keys != null && keys.next()) {
+                ForeignKey nfk = newForeignKey(keys);
+                if (!partialKeys) {
+                    ForeignKey fk = combineForeignKey(fkMap, nfk);
+                    // If the key returned != new key, fk col was combined
+                    // with existing fk.
+                    if (fk != nfk) {
+                        continue;
+                    }
+                }
+                importedKeyList.add(nfk);
+            }
             return (ForeignKey[]) importedKeyList.toArray
                 (new ForeignKey[importedKeyList.size()]);
         } finally {
-            if (keys != null)
+            if (keys != null) {
                 try {
                     keys.close();
                 } catch (Exception e) {
                 }
+            }
         }
+    }
+    
+    /*
+     * Combines partial foreign keys into singular key
+     */
+    protected ForeignKey combineForeignKey(Map<FKMapKey, ForeignKey> fkMap,
+        ForeignKey fk) {
+        
+        FKMapKey fkmk = new FKMapKey(fk);
+        ForeignKey baseKey = fkMap.get(fkmk);
+        // Found the FK, add the additional column
+        if (baseKey != null) {
+            baseKey.addColumn(fk);
+            return baseKey;
+        }
+        // fkey is new
+        fkMap.put(fkmk, fk);
+        return fk;
     }
 
     /**

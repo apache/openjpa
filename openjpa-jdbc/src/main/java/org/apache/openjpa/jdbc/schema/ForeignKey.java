@@ -26,6 +26,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 
 import org.apache.commons.lang.ObjectUtils;
+import org.apache.commons.lang.StringUtils;
 import org.apache.openjpa.jdbc.sql.DBDictionary;
 import org.apache.openjpa.lib.log.Log;
 import org.apache.openjpa.lib.util.Localizer;
@@ -753,7 +754,7 @@ public class ForeignKey
             Schema schema = getTable().getSchema();
             ForeignKey[] fks = dbdict.getImportedKeys(conn.getMetaData(), 
                 conn.getCatalog(), schema.getName(), 
-                getTable().getName(), conn);
+                getTable().getName(), conn, false);
             for ( int i=0; i< fks.length; i++) {
                 Table localtable = schema.getTable(fks[i].getTableName());
                 Table pkTable = schema.getTable(
@@ -768,10 +769,33 @@ public class ForeignKey
                     fkTemp.setDeferred(fks[i].isDeferred());
                     fkTemp.setDeleteAction(fks[i].getDeleteAction());
                 }
-                if( ! fkTemp.containsColumn(
-                    localtable.getColumn(fks[i].getColumnName(), dbdict)))
-                fkTemp.join(localtable.getColumn(fks[i].getColumnName(), dbdict), 
-                    pkTable.getColumn(fks[i].getPrimaryKeyColumnName(), dbdict));
+                if (fks[i].getColumns() == null || fks[i].getColumns().length == 0) {
+                    // Singular column foreign key 
+                    if( ! fkTemp.containsColumn(
+                        localtable.getColumn(fks[i].getColumnName(), dbdict)))
+                    fkTemp.join(localtable.getColumn(fks[i].getColumnName(), dbdict), 
+                        pkTable.getColumn(fks[i].getPrimaryKeyColumnName(), dbdict));
+                } else {
+                    // Add the multi-column foreign key, joining local and pk columns in
+                    // the temporary key
+                    Column[] locCols = fks[i].getColumns();
+                    Column[] pkCols = fks[i].getPrimaryKeyColumns();
+                    // Column counts must match
+                    if (locCols != null && pkCols != null & 
+                        locCols.length != pkCols.length) {
+                        Log log = dbdict.getLog();
+                        if (log.isTraceEnabled()) {
+                            log.trace(_loc.get("fk-column-mismatch"));
+                        }
+                    }
+                    for (int j = 0; j < locCols.length; j++) {
+                        if( ! fkTemp.containsColumn(
+                            localtable.getColumn(locCols[j].getName(), dbdict))) {
+                            fkTemp.join(localtable.getColumn(locCols[j].getName(), dbdict), 
+                                pkTable.getColumn(pkCols[j].getName(), dbdict));
+                        }
+                    }
+                }
                 if( equalsForeignKey(fkTemp))
                 {
                     if(addFK)
@@ -790,5 +814,96 @@ public class ForeignKey
         }
         return retVal;
     }
+
+    /**
+     * Joins the column of a single column FK to this FK.
+     * @param fk
+     */
+    public void addColumn(ForeignKey fk) {
+        // Convert simple name based fk to a multi-column FK if necessary.
+        if (getColumns() == null || getColumns().length == 0) {
+            // If this FK is single column key, covert to a multi-column key
+            Column[] keyCols = createKeyColumns(this);
+            if (keyCols[0] != null && keyCols[1] != null) {
+                setPrimaryKeyColumnName(null);
+                setColumnName(null);
+                join(keyCols[0], keyCols[1]);
+            }
+        }
+        // Create the local and primary key columns from the fk and add them
+        // to this fk.
+        Column[] keyCols = createKeyColumns(fk);
+        if (keyCols[0] != null && keyCols[1] != null) {
+            join(keyCols[0], keyCols[1]);
+        }
+    }
     
+    /*
+     * Creates the local and primary key columns for a name-based fk. 
+     * @return Column[] element 0 is local column
+     *                  element 1 is the primary key in another table.
+     */
+    private static Column[] createKeyColumns(ForeignKey fk) {
+        Column fkCol = null;
+        if (!StringUtils.isEmpty(fk.getColumnName())) {
+            fkCol = new Column();
+            fkCol.setName(fk.getColumnName());
+            fkCol.setTableName(fk.getTableName());
+            fkCol.setSchemaName(fk.getSchemaName());
+        }
+        
+        Column pkCol = null;
+        if (!StringUtils.isEmpty(fk.getPrimaryKeyColumnName())) {
+            pkCol = new Column();
+            pkCol.setName(fk.getPrimaryKeyColumnName());
+            pkCol.setTableName(fk.getPrimaryKeyTableName());
+            pkCol.setSchemaName(fk.getPrimaryKeySchemaName());
+        }
+        return new Column[] { fkCol, pkCol };
+    }
+    
+    /*
+     * ForeignKey utility class which determines equality based upon the 
+     * non-column state of the keys.  
+     */
+    public static class FKMapKey {
+        
+        private ForeignKey _fk;
+
+        public FKMapKey(ForeignKey fk) {
+            _fk = fk;
+        }
+        public ForeignKey getFk() {
+            return _fk;
+        }
+
+        public int hashCode() {
+            return getFk().getName() != null ? getFk().getName().hashCode() : getFk().hashCode();
+        }
+        
+        public boolean equals(Object fkObj) {
+            if (fkObj == this) {
+                return true;
+            }
+            if (fkObj == null || !(fkObj instanceof FKMapKey)) {
+                return false;
+            }
+            ForeignKey fk = ((FKMapKey)fkObj).getFk();
+            if (getFk().getDeleteAction() != fk.getDeleteAction())
+                return false;
+            if (getFk().isDeferred() != fk.isDeferred())
+                return false;
+            if (!getFk().getName().equals(fk.getName())) {
+                return false;
+            }
+            // Assert PK table name and schema
+            if (!StringUtils.equals(getFk().getPrimaryKeySchemaName(), fk.getPrimaryKeySchemaName()) ||
+                !StringUtils.equals(getFk().getPrimaryKeyTableName(), fk.getPrimaryKeyTableName()) ||
+                !StringUtils.equals(getFk().getSchemaName(), fk.getSchemaName()) ||
+                !StringUtils.equals(getFk().getTableName(), fk.getTableName())) {
+                return false;
+            }
+            return true;
+        }
+    }
 }
