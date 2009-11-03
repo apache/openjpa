@@ -188,17 +188,17 @@ public abstract class AbstractCriteriaTestCase extends TestCase {
             return;
 
         for (int i = 0; i < jSQL.size(); i++) {
-            if (!jSQL.get(i).equals(cSQL.get(i))) {
+            if (!jSQL.get(i).equalsIgnoreCase(cSQL.get(i))) {
                 printSQL("Target SQL for JPQL", jSQL);
                 printSQL("Target SQL for CriteriaQuery", cSQL);
-                assertEquals(i + "-th SQL for JPQL and CriteriaQuery for " + jpql + " is different", jSQL.get(i), cSQL
-                    .get(i));
+                assertTrue(i + "-th SQL for JPQL and CriteriaQuery for " + jpql + " is different", 
+                        jSQL.get(i).equalsIgnoreCase(cSQL.get(i)));
             }
         }
 
         if (expectedSQL != null) {
-            assertEquals("SQL for JPQL and ExpectedSQL for " + jpql + " is different", jSQL.get(0), 
-                    expectedSQL);
+            assertTrue("SQL for JPQL " + jpql + " is different than expecetd " + expectedSQL, 
+                    jSQL.get(0).equalsIgnoreCase(expectedSQL));
             
         }
     }
@@ -222,7 +222,7 @@ public abstract class AbstractCriteriaTestCase extends TestCase {
             if (!jSQL.get(i).equals(expectedSQL)) {
                 printSQL("SQL for JPQL", jSQL.get(i));
                 printSQL("Expected SQL", expectedSQL);
-                assertTrue(i + "-th Expected SQL and SQL for JPQL: " + jpql + " are different", 
+                assertTrue(i + "-th SQL for JPQL: " + jpql + " are different than Expected SQL " + expectedSQL, 
                     expectedSQL.equalsIgnoreCase(jSQL.get(i)));
             }
         }
@@ -247,7 +247,8 @@ public abstract class AbstractCriteriaTestCase extends TestCase {
 
         if (!jSql.equalsIgnoreCase(expectedSQL)) {
             printSQL("SQL for JPQL", jSql);
-            assertEquals(expectedSQL, jSql);
+            assertTrue("SQL for JPQL " + jSql + " is different than expecetd " + expectedSQL,
+                    expectedSQL.equalsIgnoreCase(jSql));
         }
     }
 
