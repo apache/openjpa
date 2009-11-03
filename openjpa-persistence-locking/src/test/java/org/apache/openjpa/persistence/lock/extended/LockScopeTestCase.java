@@ -66,8 +66,11 @@ import org.apache.openjpa.persistence.test.SQLListenerTestCase;
  */
 public abstract class LockScopeTestCase extends SQLListenerTestCase {
     
+    protected final String Any              = ".*";
     protected final String Select           = "SELECT.*FROM.*";
     protected final String Where            = ".*WHERE.*";
+//    protected final String Join             = ".*(JOIN){1}.*";
+    protected final String NoJoin           = "(JOIN){0}";
     protected final String ForUpdateRex     = "FOR UPDATE.*";
     protected final String ForUpdateClause  = "(" + ForUpdateRex + ")";
     protected final String ForUpdate        = ForUpdateClause + "{1}";
@@ -149,7 +152,7 @@ public abstract class LockScopeTestCase extends SQLListenerTestCase {
             log.trace("\r\n" + toString(sql));
             return;
         }
-        assertAnySQLAnyOrder(expected);
+        assertAllSQLAnyOrder(expected);
     }
     
     protected void logStack(Throwable t) {

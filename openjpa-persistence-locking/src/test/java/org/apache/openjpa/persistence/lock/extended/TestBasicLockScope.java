@@ -32,6 +32,14 @@ import javax.persistence.EntityManager;
 public class TestBasicLockScope extends LockScopeTestCase {
 
     public void setUp() {
+        setSupportedDatabases(
+                org.apache.openjpa.jdbc.sql.DerbyDictionary.class,
+                org.apache.openjpa.jdbc.sql.OracleDictionary.class,
+                org.apache.openjpa.jdbc.sql.DB2Dictionary.class);
+        if (isTestsDisabled()) {
+            return;
+        }
+
         setUp(LSEBase.class
             , LSESecTbl.class
             , LSESngTblCon.class
@@ -269,7 +277,7 @@ public class TestBasicLockScope extends LockScopeTestCase {
                         case oracle:
                             // SELECT t0.version, t0.firstName, t1.lastName FROM LSESecTbl t0, LSESecTblDtl t1 
                             //      WHERE t0.id = ? AND t0.id = t1.LSESECTBL_ID [params=(int) 100]
-                            assertLockTestSQLs(Select + table1Name + ".*" + table2Name + Where + NoForUpdate);
+                            assertLockTestSQLs(Select + table1Name + Any + table2Name + Where + NoForUpdate);
                             break;
                         case derby:
                             // SELECT t0.version, t0.firstName, t1.lastName FROM LSESecTbl t0
@@ -294,9 +302,9 @@ public class TestBasicLockScope extends LockScopeTestCase {
                             // SELECT t0.version, t0.firstName, t1.lastName FROM LSESecTbl t0, LSESecTblDtl t1 
                             //      WHERE t0.id = ? AND t0.id = t1.LSESECTBL_ID FOR UPDATE [params=(int) 101]
                             // SELECT t0.version FROM LSESecTbl t0 WHERE t0.id = ? FOR UPDATE [params=(int) 101]
-                            assertLockTestSQLs(Select + table1Name + ".*" + table2Name + Where + ForUpdate);
+                            assertLockTestSQLs(Select + table1Name + Any + table2Name + Where + ForUpdate);
                             break;
-                        case derby:     //TODO: **Non-atomic lock, SecTblDtl NOT locked *********
+                        case derby:
                             // The database is unable to lock this query.  Each object matching the query will be 
                             //  locked individually after it is loaded; however, it is technically possible that
                             //  another transaction could modify the data before the lock is obtained.
@@ -304,9 +312,11 @@ public class TestBasicLockScope extends LockScopeTestCase {
                             //      INNER JOIN LSESecTblDtl t1 ON t0.id = t1.LSESECTBL_ID WHERE t0.id = ?
                             //      [params=(int) 101]
                             // SELECT t0.id FROM LSESecTbl t0 WHERE t0.id = ? FOR UPDATE WITH RR [params=(int) 101]
+                            // SELECT t0.id FROM LSESecTblDtl t0 WHERE t0.id = ? FOR UPDATE WITH RR [params=(int) 101]
                             // SELECT t0.version FROM LSESecTbl t0 WHERE t0.id = ? FOR UPDATE WITH RR [params=(int) 101]
                             assertLockTestSQLs(Select + joinTables + Where + NoForUpdate,
-                                    Select + table1Name + ".*" + Where + ForUpdate);
+                                    Select + NoJoin + Any + table1Name + Any + NoJoin + Where + ForUpdate,
+                                    Select + NoJoin + Any + table2Name + Any + NoJoin + Where + ForUpdate);
                             break;
                         default:
                             assertLockTestSQLs(Select + joinTables + Where + ForUpdate);
@@ -328,9 +338,9 @@ public class TestBasicLockScope extends LockScopeTestCase {
                             //      WHERE (t0.firstName LIKE ?) AND t0.id = t1.LSESECTBL_ID FOR UPDATE 
                             //      [params=(String) firstName%100]
                             // SELECT t0.version FROM LSESecTbl t0 WHERE t0.id = ? [params=(int) 100]
-                            assertLockTestSQLs(Select + table1Name + ".*" + table2Name + Where + ForUpdate);
+                            assertLockTestSQLs(Select + table1Name + Any + table2Name + Where + ForUpdate);
                             break;
-                        case derby:     //TODO: **Non-atomic lock, SecTblDtl NOT locked *********
+                        case derby:
                             // The database is unable to lock this query.  Each object matching the query will be 
                             //  locked individually after it is loaded; however, it is technically possible that
                             //  another transaction could modify the data before the lock is obtained.
@@ -338,9 +348,11 @@ public class TestBasicLockScope extends LockScopeTestCase {
                             //      INNER JOIN LSESecTblDtl t1 ON t0.id = t1.LSESECTBL_ID 
                             //      WHERE (t0.firstName LIKE ? ESCAPE '\') [params=(String) firstName%100]
                             // SELECT t0.id FROM LSESecTbl t0 WHERE t0.id = ? FOR UPDATE WITH RR [params=(int) 100]
+                            // SELECT t0.id FROM LSESecTblDtl t0 WHERE t0.id = ? FOR UPDATE WITH RR [params=(int) 100]
                             // SELECT t0.version FROM LSESecTbl t0 WHERE t0.id = ? [params=(int) 100]
                             assertLockTestSQLs(Select + joinTables + Where + NoForUpdate,
-                                    Select + table1Name + ".*" + Where + ForUpdate);
+                                    Select + NoJoin + Any + table1Name + Any + NoJoin + Where + ForUpdate,
+                                    Select + NoJoin + Any + table2Name + Any + NoJoin + Where + ForUpdate);
                             break;
                         default:
                             assertLockTestSQLs(Select + joinTables + Where + ForUpdate);
@@ -358,7 +370,7 @@ public class TestBasicLockScope extends LockScopeTestCase {
                         case oracle:
                             // SELECT t0.version, t0.firstName, t1.lastName FROM LSESecTbl t0, LSESecTblDtl t1 
                             //      WHERE t0.id = ? AND t0.id = t1.LSESECTBL_ID [params=(int) 101]
-                            assertLockTestSQLs(Select + table1Name + ".*" + table2Name + Where + NoForUpdate);
+                            assertLockTestSQLs(Select + table1Name + Any + table2Name + Where + NoForUpdate);
                             break;
                         case derby:
                             // SELECT t0.version, t0.firstName, t1.lastName FROM LSESecTbl t0
@@ -384,9 +396,9 @@ public class TestBasicLockScope extends LockScopeTestCase {
                             //      WHERE (t0.firstName LIKE ?) AND t0.id = t1.LSESECTBL_ID FOR UPDATE 
                             //      [params=(String) firstName%100]
                             // SELECT t0.version FROM LSESecTbl t0 WHERE t0.id = ? [params=(int) 100]
-                            assertLockTestSQLs(Select + table1Name + ".*" + table2Name + Where + ForUpdate);
+                            assertLockTestSQLs(Select + table1Name + Any + table2Name + Where + ForUpdate);
                             break;
-                        case derby:     //TODO: **Non-atomic lock, SecTblDtl NOT locked *********
+                        case derby:
                             // The database is unable to lock this query.  Each object matching the query will be 
                             //  locked individually after it is loaded; however, it is technically possible that
                             //  another transaction could modify the data before the lock is obtained.
@@ -394,9 +406,11 @@ public class TestBasicLockScope extends LockScopeTestCase {
                             //      INNER JOIN LSESecTblDtl t1 ON t0.id = t1.LSESECTBL_ID
                             //      WHERE (t0.firstName LIKE ? ESCAPE '\') [params=(String) firstName%100]
                             // SELECT t0.id FROM LSESecTbl t0 WHERE t0.id = ? FOR UPDATE WITH RR [params=(int) 100]
+                            // SELECT t0.id FROM LSESecTblDtl t0 WHERE t0.id = ? FOR UPDATE WITH RR [params=(int) 100]
                             // SELECT t0.version FROM LSESecTbl t0 WHERE t0.id = ? [params=(int) 100]
                             assertLockTestSQLs(Select + joinTables + Where + NoForUpdate,
-                                    Select + table1Name + ".*" + Where + ForUpdate);
+                                    Select + NoJoin + Any + table1Name + Any + NoJoin + Where + ForUpdate,
+                                    Select + NoJoin + Any + table2Name + Any + NoJoin + Where + ForUpdate);
                             break;
                         default:
                             assertLockTestSQLs(Select + joinTables + Where + ForUpdate);
@@ -414,7 +428,7 @@ public class TestBasicLockScope extends LockScopeTestCase {
                         case oracle:
                             // SELECT t0.version, t0.firstName, t1.lastName FROM LSESecTbl t0, LSESecTblDtl t1 
                             //      WHERE t0.id = ? AND t0.id = t1.LSESECTBL_ID [params=(int) 101]
-                            assertLockTestSQLs(Select + table1Name + ".*" + table2Name + Where + NoForUpdate);
+                            assertLockTestSQLs(Select + table1Name + Any + table2Name + Where + NoForUpdate);
                             break;
                         case derby:
                             // SELECT t0.version, t0.firstName, t1.lastName FROM LSESecTbl t0
@@ -659,7 +673,7 @@ public class TestBasicLockScope extends LockScopeTestCase {
                         case oracle:
                             // SELECT t0.id, t1.version, t1.firstName, t0.lastName FROM LSEJoinCon t0, LSEJoinAbs t1 
                             //      WHERE t0.id = ? AND t0.id = t1.id [params=(int) 400]
-                            assertLockTestSQLs(Select + table1Name + ".*" + table2Name + Where + NoForUpdate);
+                            assertLockTestSQLs(Select + table1Name + Any + table2Name + Where + NoForUpdate);
                             break;
                         case derby:
                             // SELECT t0.id, t1.version, t1.firstName, t0.lastName FROM LSEJoinCon t0
@@ -683,7 +697,7 @@ public class TestBasicLockScope extends LockScopeTestCase {
                             // SELECT t0.id, t1.version, t1.firstName, t0.lastName FROM LSEJoinCon t0, LSEJoinAbs t1 
                             //      WHERE t0.id = ? AND t0.id = t1.id FOR UPDATE [params=(int) 401]
                             // SELECT t0.version FROM LSEJoinAbs t0 WHERE t0.id = ? FOR UPDATE [params=(int) 401]
-                            assertLockTestSQLs(Select + table1Name + ".*" + table2Name + Where + ForUpdate);
+                            assertLockTestSQLs(Select + table1Name + Any + table2Name + Where + ForUpdate);
                             break;
                         case derby:     //TODO: **Non-atomic lock, LSEJoinCon NOT locked *********
                             // The database is unable to lock this query.  Each object matching the query will be 
@@ -695,7 +709,8 @@ public class TestBasicLockScope extends LockScopeTestCase {
                             // SELECT t0.version FROM LSEJoinAbs t0 WHERE t0.id = ? FOR UPDATE WITH RR
                             //      [params=(int) 401]
                             assertLockTestSQLs(Select + joinTables + Where + NoForUpdate,
-                                    Select + table2Name + ".*" + Where + ForUpdate);
+                                    // Select + NoJoin + table1Name + NoJoin + Where + ForUpdate,
+                                    Select + NoJoin + Any + table2Name + Any + NoJoin + Where + ForUpdate);
                             break;
                         default:
                             assertLockTestSQLs(Select + joinTables + Where + ForUpdate);
@@ -717,7 +732,7 @@ public class TestBasicLockScope extends LockScopeTestCase {
                             //      FROM LSEJoinCon t0, LSEJoinAbs t1 WHERE (t1.firstName LIKE ?) AND t0.id = t1.id 
                             //      FOR UPDATE [params=(String) firstName%400]
                             // SELECT t0.version FROM LSEJoinAbs t0 WHERE t0.id = ? [params=(int) 400]
-                            assertLockTestSQLs(Select + table1Name + ".*" + table2Name + Where + ForUpdate);
+                            assertLockTestSQLs(Select + table1Name + Any + table2Name + Where + ForUpdate);
                             break;
                         case derby:     //TODO: **Non-atomic lock, LSEJoinCon NOT locked *********
                             // The database is unable to lock this query.  Each object matching the query will be 
@@ -729,7 +744,8 @@ public class TestBasicLockScope extends LockScopeTestCase {
                             // SELECT t0.id FROM LSEJoinAbs t0 WHERE t0.id = ? FOR UPDATE WITH RR [params=(int) 400]
                             // SELECT t0.version FROM LSEJoinAbs t0 WHERE t0.id = ? [params=(int) 400]
                             assertLockTestSQLs(Select + joinTables + Where + NoForUpdate,
-                                    Select + table2Name + ".*" + Where + ForUpdate);
+                                    // Select + NoJoin + table1Name + NoJoin + Where + ForUpdate,
+                                    Select + NoJoin + Any + table2Name + Any + NoJoin + Where + ForUpdate);
                             break;
                         default:
                             assertLockTestSQLs(Select + joinTables + Where + ForUpdate);
@@ -747,7 +763,7 @@ public class TestBasicLockScope extends LockScopeTestCase {
                         case oracle:
                             // SELECT t0.id, t1.version, t1.firstName, t0.lastName FROM LSEJoinCon t0, LSEJoinAbs t1 
                             //      WHERE t0.id = ? AND t0.id = t1.id [params=(int) 401]
-                            assertLockTestSQLs(Select + table1Name + ".*" + table2Name + Where + NoForUpdate);
+                            assertLockTestSQLs(Select + table1Name + Any + table2Name + Where + NoForUpdate);
                             break;
                         case derby:
                             // SELECT t0.id, t1.version, t1.firstName, t0.lastName FROM LSEJoinCon t0
@@ -772,7 +788,7 @@ public class TestBasicLockScope extends LockScopeTestCase {
                             //      FROM LSEJoinCon t0, LSEJoinAbs t1 WHERE (t1.firstName LIKE ?) AND t0.id = t1.id 
                             //      FOR UPDATE [params=(String) firstName%400]
                             // SELECT t0.version FROM LSEJoinAbs t0 WHERE t0.id = ? [params=(int) 400]
-                            assertLockTestSQLs(Select + table1Name + ".*" + table2Name + Where + ForUpdate);
+                            assertLockTestSQLs(Select + table1Name + Any + table2Name + Where + ForUpdate);
                             break;
                         case derby:     //TODO: **Non-atomic lock, LSEJoinCon NOT locked *********
                             // The database is unable to lock this query.  Each object matching the query will be 
@@ -784,7 +800,8 @@ public class TestBasicLockScope extends LockScopeTestCase {
                             // SELECT t0.id FROM LSEJoinAbs t0 WHERE t0.id = ? FOR UPDATE WITH RR [params=(int) 400]
                             // SELECT t0.version FROM LSEJoinAbs t0 WHERE t0.id = ? [params=(int) 400]
                             assertLockTestSQLs(Select + joinTables + Where + NoForUpdate,
-                                    Select + table2Name + ".*" + Where + ForUpdate);
+                                    // Select + NoJoin + table1Name + NoJoin + Where + ForUpdate,
+                                    Select + NoJoin + Any + table2Name + Any + NoJoin + Where + ForUpdate);
                             break;
                         default:
                             assertLockTestSQLs(Select + joinTables + Where + ForUpdate);
@@ -802,7 +819,7 @@ public class TestBasicLockScope extends LockScopeTestCase {
                         case oracle:
                             // SELECT t0.id, t1.version, t1.firstName, t0.lastName FROM LSEJoinCon t0, LSEJoinAbs t1 
                             //      WHERE t0.id = ? AND t0.id = t1.id [params=(int) 401]
-                            assertLockTestSQLs(Select + table1Name + ".*" + table2Name + Where + NoForUpdate);
+                            assertLockTestSQLs(Select + table1Name + Any + table2Name + Where + NoForUpdate);
                             break;
                         case derby:
                             // SELECT t0.id, t1.version, t1.firstName, t0.lastName FROM LSEJoinCon t0
@@ -1036,7 +1053,7 @@ public class TestBasicLockScope extends LockScopeTestCase {
                             // SELECT t0.version, t0.firstName, t1.LSEELECOLEGR_ID, t1.element 
                             //      FROM LSEEleColEgr t0, LSEEleColEgr_collection t1 
                             //      WHERE t0.id = ? AND t0.id = t1.LSEELECOLEGR_ID(+) [params=(int) 600]
-                            assertLockTestSQLs(Select + table1Name + ".*" + table2Name + Where + "\\(\\+\\).*"
+                            assertLockTestSQLs(Select + table1Name + Any + table2Name + Where + "\\(\\+\\).*"
                                     + NoForUpdate);
                             break;
                         case derby:
@@ -1063,7 +1080,7 @@ public class TestBasicLockScope extends LockScopeTestCase {
                             //      FROM LSEEleColEgr t0, LSEEleColEgr_collection t1 
                             //      WHERE t0.id = ? AND t0.id = t1.LSEELECOLEGR_ID(+) FOR UPDATE [params=(int) 601]
                             // SELECT t0.version FROM LSEEleColEgr t0 WHERE t0.id = ? FOR UPDATE [params=(int) 601]
-                            assertLockTestSQLs(Select + table1Name + ".*" + table2Name + Where + "\\(\\+\\).*"
+                            assertLockTestSQLs(Select + table1Name + Any + table2Name + Where + "\\(\\+\\).*"
                                     + NoForUpdate);
                             break;
                         case derby:     // **Non-atomic lock, No need to lock LSEEleColEgr_collection *********
@@ -1079,7 +1096,7 @@ public class TestBasicLockScope extends LockScopeTestCase {
                             // SELECT t0.version FROM LSEEleColEgr t0 WHERE t0.id = ? FOR UPDATE WITH RR
                             //      [params=(int) 601]
                             assertLockTestSQLs(Select + joinTables + Where + NoForUpdate, 
-                                    Select + table1Name + ".*" + Where + ForUpdate);
+                                    Select + table1Name + Where + ForUpdate);
                             break;
                         default:
                             assertLockTestSQLs(Select + joinTables + Where + ForUpdate);
@@ -1109,7 +1126,7 @@ public class TestBasicLockScope extends LockScopeTestCase {
                             //      WHERE (t0.firstName LIKE ?) AND t0.id = t1.LSEELECOLEGR_ID ORDER BY t0.id ASC 
                             //      FOR UPDATE [params=(String) firstName%600]
                             // SELECT t0.version FROM LSEEleColEgr t0 WHERE t0.id = ? [params=(int) 600]
-                            assertLockTestSQLs(Select + table1Name + ".*" + table2Name + Where + ForUpdate);
+                            assertLockTestSQLs(Select + table1Name + Any + table2Name + Where + ForUpdate);
                             break;
                         case derby:     //**Non-atomic lock, No need to lock LSEEleColEgr_Collection *********
                             // The database is unable to lock this query.  Each object matching the query will be 
@@ -1122,7 +1139,7 @@ public class TestBasicLockScope extends LockScopeTestCase {
                             //      ORDER BY t0.id ASC [params=(String) firstName%600]
                             // SELECT t0.version FROM LSEEleColEgr t0 WHERE t0.id = ? [params=(int) 600]
                             assertLockTestSQLs(Select + joinTables + Where + NoForUpdate,
-                                    Select + table1Name + ".*" + Where + ForUpdate);
+                                    Select + table1Name + Where + ForUpdate);
                             break;
                         default:
                             assertLockTestSQLs(Select + joinTables + Where + ForUpdate);
@@ -1135,14 +1152,13 @@ public class TestBasicLockScope extends LockScopeTestCase {
                             // SELECT t0.version, t0.firstName, t1.LSEELECOLEGR_ID, t1.element FROM LSEEleColEgr t0
                             //      LEFT OUTER JOIN LSEEleColEgr_collection t1 ON t0.id = t1.LSEELECOLEGR_ID
                             //      WHERE t0.id = ?  [params=(int) 601]
-                            assertLockTestSQLs(Select + "LSEEleColEgr.*" + Where + DB2Lock,
-                                    Select + joinTables + Where + NoDB2Lock);
+                            assertLockTestSQLs(Select + joinTables + Where + NoDB2Lock);
                             break;
                         case oracle:
                             // SELECT t0.version, t0.firstName, t1.LSEELECOLEGR_ID, t1.element 
                             //      FROM LSEEleColEgr t0, LSEEleColEgr_collection t1 
                             //      WHERE t0.id = ? AND t0.id = t1.LSEELECOLEGR_ID(+) [params=(int) 601]
-                            assertLockTestSQLs(Select + table1Name + ".*" + table2Name + Where + "\\(\\+\\).*"
+                            assertLockTestSQLs(Select + table1Name + Any + table2Name + Where + "\\(\\+\\).*"
                                     + NoForUpdate);
                             break;
                         case derby:
@@ -1177,7 +1193,7 @@ public class TestBasicLockScope extends LockScopeTestCase {
                             //      WHERE (t0.firstName LIKE ?) AND t0.id = t1.LSEELECOLEGR_ID ORDER BY t0.id ASC 
                             //      FOR UPDATE [params=(String) firstName%600]
                             // SELECT t0.version FROM LSEEleColEgr t0 WHERE t0.id = ? [params=(int) 600]
-                            assertLockTestSQLs(Select + table1Name + ".*" + table2Name + Where + ForUpdate);
+                            assertLockTestSQLs(Select + table1Name + Any + table2Name + Where + ForUpdate);
                             break;
                         case derby:     // **Non-atomic lock, No need to lock LSEEleColEgr_collection *********   
                             // The database is unable to lock this query.  Each object matching the query will be 
@@ -1190,7 +1206,7 @@ public class TestBasicLockScope extends LockScopeTestCase {
                             //      ORDER BY t0.id ASC [params=(String) firstName%600]
                             // SELECT t0.version FROM LSEEleColEgr t0 WHERE t0.id = ? [params=(int) 600]
                             assertLockTestSQLs(Select + joinTables + Where + NoForUpdate, 
-                                    Select + table1Name + ".*" + Where + ForUpdate);
+                                    Select + table1Name + Where + ForUpdate);
                             break;
                         default:
                             assertLockTestSQLs(Select + joinTables + Where + ForUpdate);
@@ -1209,7 +1225,7 @@ public class TestBasicLockScope extends LockScopeTestCase {
                             // SELECT t0.version, t0.firstName, t1.LSEELECOLEGR_ID, t1.element 
                             //      FROM LSEEleColEgr t0, LSEEleColEgr_collection t1 
                             //      WHERE t0.id = ? AND t0.id = t1.LSEELECOLEGR_ID(+) [params=(int) 601]
-                            assertLockTestSQLs(Select + table1Name + ".*" + table2Name + Where + "\\(\\+\\).*"
+                            assertLockTestSQLs(Select + table1Name + Any + table2Name + Where + "\\(\\+\\).*"
                                     + NoForUpdate);
                             break;
                         case derby:

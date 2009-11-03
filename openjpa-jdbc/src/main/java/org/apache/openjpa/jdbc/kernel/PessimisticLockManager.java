@@ -22,11 +22,14 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.apache.openjpa.jdbc.meta.ClassMapping;
 import org.apache.openjpa.jdbc.sql.DBDictionary;
 import org.apache.openjpa.jdbc.sql.SQLBuffer;
 import org.apache.openjpa.jdbc.sql.SQLExceptions;
+import org.apache.openjpa.jdbc.sql.SQLFactory;
 import org.apache.openjpa.jdbc.sql.Select;
 import org.apache.openjpa.kernel.OpenJPAStateManager;
 import org.apache.openjpa.kernel.StoreContext;
@@ -48,7 +51,7 @@ public class PessimisticLockManager
     private static final Localizer _loc = Localizer.forPackage
         (PessimisticLockManager.class);
 
-    private JDBCStore _store;
+    protected JDBCStore _store;
 
     public PessimisticLockManager() {
         setVersionCheckOnReadLock(false);
@@ -119,24 +122,20 @@ public class PessimisticLockManager
 
         Object id = sm.getObjectId();
         ClassMapping mapping = (ClassMapping) sm.getMetaData();
-        while (mapping.getJoinablePCSuperclassMapping() != null)
-            mapping = mapping.getJoinablePCSuperclassMapping();
 
-        // select only the PK columns, since we just want to lock
-        Select select = _store.getSQLFactory().newSelect();
-        select.select(mapping.getPrimaryKeyColumns());
-        select.wherePrimaryKey(id, mapping, _store);
-        SQLBuffer sql = select.toSelect(true, fetch);
+        List<SQLBuffer> sqls = getLockRows(dict, id, mapping, fetch, _store.getSQLFactory()); 
 
         ensureStoreManagerTransaction();
         Connection conn = _store.getConnection();
         PreparedStatement stmnt = null;
         ResultSet rs = null;
         try {
-            stmnt = prepareStatement(conn, sql);
-            dict.setTimeouts(stmnt, fetch, true);
-            rs = executeQuery(conn, stmnt, sql);
-            checkLock(rs, sm, timeout);
+            for (SQLBuffer sql : sqls) {
+                stmnt = prepareStatement(conn, sql);
+                dict.setTimeouts(stmnt, fetch, true);
+                rs = executeQuery(conn, stmnt, sql);
+                checkLock(rs, sm, timeout);
+            }
         } catch (SQLException se) {
             throw SQLExceptions.getStoreSQLException(sm, se, dict,
                 level);
@@ -147,6 +146,19 @@ public class PessimisticLockManager
                 try { rs.close(); } catch (SQLException se) {}
             try { conn.close(); } catch (SQLException se) {}
         }
+    }
+
+    protected List<SQLBuffer> getLockRows(DBDictionary dict, Object id, ClassMapping mapping,
+            JDBCFetchConfiguration fetch, SQLFactory factory) {
+        while (mapping.getJoinablePCSuperclassMapping() != null)
+            mapping = mapping.getJoinablePCSuperclassMapping();
+        // select only the PK columns, since we just want to lock
+        Select select = factory.newSelect();
+        select.select(mapping.getPrimaryKeyColumns());
+        select.wherePrimaryKey(id, mapping, _store);
+        List<SQLBuffer> sqls = new ArrayList<SQLBuffer>();
+        sqls.add(select.toSelect(true, fetch));
+        return sqls;
     }
 
     /**

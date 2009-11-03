@@ -19,9 +19,16 @@
 package org.apache.openjpa.jdbc.kernel;
 
 import java.sql.SQLException;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 import org.apache.openjpa.jdbc.meta.ClassMapping;
+import org.apache.openjpa.jdbc.meta.FieldMapping;
+import org.apache.openjpa.jdbc.sql.DBDictionary;
+import org.apache.openjpa.jdbc.sql.SQLBuffer;
 import org.apache.openjpa.jdbc.sql.SQLExceptions;
+import org.apache.openjpa.jdbc.sql.SQLFactory;
 import org.apache.openjpa.jdbc.sql.Select;
 import org.apache.openjpa.kernel.MixedLockLevels;
 import org.apache.openjpa.kernel.OpenJPAStateManager;
@@ -72,6 +79,32 @@ public class MixedLockManager extends PessimisticLockManager {
             optimisticLockInternal(sm, level, timeout, sdata,
                 postLockVersionCheck);
         }
+    }
+
+    protected List<SQLBuffer> getLockRows(DBDictionary dict, Object id, ClassMapping mapping,
+            JDBCFetchConfiguration fetch, SQLFactory factory) {
+        List<SQLBuffer> sqls = super.getLockRows(dict, id, mapping, fetch, factory);
+        // 
+        if(!dict.supportsLockingWithMultipleTables) {
+            // look for columns mapped to secondary tables which need to be locked
+            Map<String,FieldMapping> colsMappedToSecTable = new HashMap<String,FieldMapping>();
+            FieldMapping fms[] = mapping.getFieldMappings();
+            for( FieldMapping fm : fms) {
+                String secTableName = fm.getMappingInfo().getTableName();
+                if( secTableName != null ) {
+                    colsMappedToSecTable.put(secTableName, fm);
+                }
+            }
+            for( String secTableName : colsMappedToSecTable.keySet()) {
+                FieldMapping fm = colsMappedToSecTable.get(secTableName);
+                // select only the PK columns, since we just want to lock
+                Select select = factory.newSelect();
+                select.select(fm.getColumns());
+                select.whereForeignKey(fm.getJoinForeignKey(), id, mapping, _store);
+                sqls.add(select.toSelect(true, fetch));
+            }
+        }
+        return sqls;
     }
 
     protected void optimisticLockInternal(OpenJPAStateManager sm, int level,

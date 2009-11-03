@@ -30,6 +30,14 @@ import javax.persistence.EntityManager;
 public class Test1x1LockScope extends LockScopeTestCase {
 
     public void setUp() {
+        setSupportedDatabases(
+                org.apache.openjpa.jdbc.sql.DerbyDictionary.class,
+                org.apache.openjpa.jdbc.sql.OracleDictionary.class,
+                org.apache.openjpa.jdbc.sql.DB2Dictionary.class);
+        if (isTestsDisabled()) {
+            return;
+        }
+
         setUp(LSE1x1Lf.class
             , LSE1x1LfLzy.class
             , LSE1x1LfJT.class
@@ -113,7 +121,7 @@ public class Test1x1LockScope extends LockScopeTestCase {
                             // SELECT t0.version, t0.firstName, t1.id, t1.version, t1.lastName 
                             //      FROM LSE1x1Lf t0, LSE1x1Rt t1 WHERE t0.id = ? AND t0.UNIRIGHT_ID = t1.id(+) 
                             //      [params=(int) 1111201]
-                            assertLockTestSQLs(Select + tableLfName + ".*" + tableRtName + Where + "\\(\\+\\).*"
+                            assertLockTestSQLs(Select + tableLfName + Any + tableRtName + Where + "\\(\\+\\).*"
                                     + NoForUpdate);
                             break;
                         case derby:
@@ -143,7 +151,7 @@ public class Test1x1LockScope extends LockScopeTestCase {
                             //      FOR UPDATE [params=(int) 1111202]
                             // SELECT t0.version FROM LSE1x1Rt t0 WHERE t0.id = ? FOR UPDATE [params=(int) 1121202]
                             // SELECT t0.version FROM LSE1x1Lf t0 WHERE t0.id = ? FOR UPDATE [params=(int) 1111202]
-                            assertLockTestSQLs(Select + tableLfName + ".*" + tableRtName + Where + "\\(\\+\\).*"
+                            assertLockTestSQLs(Select + tableLfName + Any + tableRtName + Where + "\\(\\+\\).*"
                                     + ForUpdate);
                             break;
                         case derby:     //TODO: **Non-atomic lock.
@@ -158,8 +166,8 @@ public class Test1x1LockScope extends LockScopeTestCase {
                             // SELECT t0.id FROM LSE1x1Lf t0 WHERE t0.id = ? FOR UPDATE WITH RR [params=(int) 1111202]
                             // SELECT t0.version FROM LSE1x1Lf t0 WHERE t0.id = ? FOR UPDATE WITH RR [params=(int) 1111202]
                             assertLockTestSQLs(Select + joinTables + Where + NoForUpdate,
-                                    Select + tableLfName + ".*" + Where + ForUpdate,
-                                    Select + tableRtName + ".*" + Where + ForUpdate
+                                    Select + NoJoin + Any + tableLfName + Any + NoJoin + Where + ForUpdate,
+                                    Select + NoJoin + Any + tableRtName + Any + NoJoin + Where + ForUpdate
                                     );
                             break;
                         default:
@@ -185,7 +193,7 @@ public class Test1x1LockScope extends LockScopeTestCase {
                             //      FOR UPDATE [params=(String) firstName%1111201]
                             // SELECT t0.version FROM LSE1x1Rt t0 WHERE t0.id = ? [params=(int) 1121201]
                             // SELECT t0.version FROM LSE1x1Lf t0 WHERE t0.id = ? [params=(int) 1111201]
-                            assertLockTestSQLs(Select + tableLfName + ".*" + tableRtName + Where + "\\(\\+\\).*"
+                            assertLockTestSQLs(Select + tableLfName + Any + tableRtName + Where + "\\(\\+\\).*"
                                     + ForUpdate);
                             break;
                         case derby:     //TODO: **Non-atomic lock.
@@ -200,8 +208,8 @@ public class Test1x1LockScope extends LockScopeTestCase {
                             // SELECT t0.id FROM LSE1x1Lf t0 WHERE t0.id = ? FOR UPDATE WITH RR [params=(int) 1111201]
                             // SELECT t0.version FROM LSE1x1Lf t0 WHERE t0.id = ? [params=(int) 1111201]
                             assertLockTestSQLs(Select + joinTables + Where + NoForUpdate,
-                                    Select + tableLfName + ".*" + Where + ForUpdate,
-                                    Select + tableRtName + ".*" + Where + ForUpdate
+                                    Select + NoJoin + Any + tableLfName + Any + NoJoin + Where + ForUpdate,
+                                    Select + NoJoin + Any + tableRtName + Any + NoJoin + Where + ForUpdate
                                     );
                             break;
                         default:
@@ -221,7 +229,7 @@ public class Test1x1LockScope extends LockScopeTestCase {
                             // SELECT t0.version, t0.firstName, t1.id, t1.version, t1.lastName 
                             //      FROM LSE1x1Lf t0, LSE1x1Rt t1 WHERE t0.id = ? AND t0.UNIRIGHT_ID = t1.id(+) 
                             //      [params=(int) 1111202]
-                            assertLockTestSQLs(Select + tableLfName + ".*" + tableRtName + Where + "\\(\\+\\).*"
+                            assertLockTestSQLs(Select + tableLfName + Any + tableRtName + Where + "\\(\\+\\).*"
                                     + NoForUpdate);
                             break;
                         case derby:
@@ -251,7 +259,7 @@ public class Test1x1LockScope extends LockScopeTestCase {
                             //      FOR UPDATE [params=(String) firstName%1111201]
                             // SELECT t0.version FROM LSE1x1Rt t0 WHERE t0.id = ? [params=(int) 1121201]
                             // SELECT t0.version FROM LSE1x1Lf t0 WHERE t0.id = ? [params=(int) 1111201]
-                            assertLockTestSQLs(Select + tableLfName + ".*" + tableRtName + Where + "\\(\\+\\).*"
+                            assertLockTestSQLs(Select + tableLfName + Any + tableRtName + Where + "\\(\\+\\).*"
                                     + ForUpdate);
                             break;
                         case derby:     //TODO: **Non-atomic lock.
@@ -266,8 +274,8 @@ public class Test1x1LockScope extends LockScopeTestCase {
                             // SELECT t0.id FROM LSE1x1Lf t0 WHERE t0.id = ? FOR UPDATE WITH RR [params=(int) 1111201]
                             // SELECT t0.version FROM LSE1x1Lf t0 WHERE t0.id = ? [params=(int) 1111201]
                             assertLockTestSQLs(Select + joinTables + Where + NoForUpdate,
-                                    Select + tableLfName + ".*" + Where + ForUpdate,
-                                    Select + tableRtName + ".*" + Where + ForUpdate
+                                    Select + NoJoin + Any + tableLfName + Any + NoJoin + Where + ForUpdate,
+                                    Select + NoJoin + Any + tableRtName + Any + NoJoin + Where + ForUpdate
                                     );
                             break;
                         default:
@@ -287,7 +295,7 @@ public class Test1x1LockScope extends LockScopeTestCase {
                             // SELECT t0.version, t0.firstName, t1.id, t1.version, t1.lastName 
                             //      FROM LSE1x1Lf t0, LSE1x1Rt t1 WHERE t0.id = ? AND t0.UNIRIGHT_ID = t1.id(+) 
                             //      [params=(int) 1111202]
-                            assertLockTestSQLs(Select + tableLfName + ".*" + tableRtName + Where + "\\(\\+\\).*"
+                            assertLockTestSQLs(Select + tableLfName + Any + tableRtName + Where + "\\(\\+\\).*"
                                     + NoForUpdate);
                             break;
                         case derby:
@@ -552,7 +560,7 @@ public class Test1x1LockScope extends LockScopeTestCase {
                             //      FROM LSE1x1LfJT t0, Uni1x1LfJT_Uni1x1RT t1, LSE1x1Rt t2 
                             //      WHERE t0.id = ? AND t0.id = t1.LSE1X1LFJT_ID AND t1.UNIRIGHTJT_ID = t2.id(+) 
                             //      [params=(int) 1112201]
-                            assertLockTestSQLs(Select + tableLfName + ".*" + tableJTName + ".*" + tableRtName + Where
+                            assertLockTestSQLs(Select + tableLfName + Any + tableJTName + Any + tableRtName + Where
                                     + "\\(\\+\\).*" + NoForUpdate);
                             break;
                         case derby:
@@ -583,7 +591,7 @@ public class Test1x1LockScope extends LockScopeTestCase {
                             //      FOR UPDATE [params=(int) 1112202]
                             // SELECT t0.version FROM LSE1x1Rt t0 WHERE t0.id = ? FOR UPDATE [params=(int) 1122202]
                             // SELECT t0.version FROM LSE1x1LfJT t0 WHERE t0.id = ? FOR UPDATE [params=(int) 1112202]
-                            assertLockTestSQLs(Select + tableLfName + ".*" + tableJTName + ".*" + tableRtName + Where
+                            assertLockTestSQLs(Select + tableLfName + Any + tableJTName + Any + tableRtName + Where
                                     + "\\(\\+\\).*" + ForUpdate);
                             break;
                         case derby:     //TODO: **Non-atomic lock, if jpa2/extended scope, LOCK Uni1x1LfJT_Uni1x1RT
@@ -600,8 +608,8 @@ public class Test1x1LockScope extends LockScopeTestCase {
                             // SELECT t0.id FROM LSE1x1LfJT t0 WHERE t0.id = ? FOR UPDATE WITH RR [params=(int) 1112202]
                             // SELECT t0.version FROM LSE1x1LfJT t0 WHERE t0.id = ? FOR UPDATE WITH RR [params=(int) 1112202]
                             assertLockTestSQLs(Select + joinTables + Where + NoForUpdate,
-                                    Select + tableLfName + ".*" + Where + ForUpdate,
-                                    Select + tableRtName + ".*" + Where + ForUpdate
+                                    Select + NoJoin + Any + tableLfName + Any + NoJoin + Where + ForUpdate,
+                                    Select + NoJoin + Any + tableRtName + Any + NoJoin + Where + ForUpdate
                                     );
                             break;
                         default:
@@ -628,7 +636,7 @@ public class Test1x1LockScope extends LockScopeTestCase {
                             //      AND t1.UNIRIGHTJT_ID = t2.id(+) FOR UPDATE [params=(String) firstName%1112201]
                             // SELECT t0.version FROM LSE1x1Rt t0 WHERE t0.id = ? [params=(int) 1122201]
                             // SELECT t0.version FROM LSE1x1LfJT t0 WHERE t0.id = ? [params=(int) 1112201]
-                            assertLockTestSQLs(Select + tableLfName + ".*" + tableJTName + ".*" + tableRtName + Where
+                            assertLockTestSQLs(Select + tableLfName + Any + tableJTName + Any + tableRtName + Where
                                     + "\\(\\+\\).*" + ForUpdate);
                             break;
                         case derby:     //TODO: **Non-atomic lock, if jpa2/extended scope, LOCK Uni1x1LfJT_Uni1x1RT
@@ -645,8 +653,8 @@ public class Test1x1LockScope extends LockScopeTestCase {
                             // SELECT t0.id FROM LSE1x1LfJT t0 WHERE t0.id = ? FOR UPDATE WITH RR [params=(int) 1112201]
                             // SELECT t0.version FROM LSE1x1LfJT t0 WHERE t0.id = ? [params=(int) 1112201]
                             assertLockTestSQLs(Select + joinTables + Where + NoForUpdate,
-                                    Select + tableLfName + ".*" + Where + ForUpdate,
-                                    Select + tableRtName + ".*" + Where + ForUpdate
+                                    Select + NoJoin + Any + tableLfName + Any + NoJoin + Where + ForUpdate,
+                                    Select + NoJoin + Any + tableRtName + Any + NoJoin + Where + ForUpdate
                                     );
                             break;
                         default:
@@ -668,7 +676,7 @@ public class Test1x1LockScope extends LockScopeTestCase {
                             //      FROM LSE1x1LfJT t0, Uni1x1LfJT_Uni1x1RT t1, LSE1x1Rt t2 
                             //      WHERE t0.id = ? AND t0.id = t1.LSE1X1LFJT_ID AND t1.UNIRIGHTJT_ID = t2.id(+) 
                             //      [params=(int) 1112202]
-                            assertLockTestSQLs(Select + tableLfName + ".*" + tableJTName + ".*" + tableRtName + Where
+                            assertLockTestSQLs(Select + tableLfName + Any + tableJTName + Any + tableRtName + Where
                                     + "\\(\\+\\).*" + NoForUpdate);
                             break;
                         case derby:
@@ -700,7 +708,7 @@ public class Test1x1LockScope extends LockScopeTestCase {
                             //      AND t1.UNIRIGHTJT_ID = t2.id(+) FOR UPDATE [params=(String) firstName%1112201]
                             // SELECT t0.version FROM LSE1x1Rt t0 WHERE t0.id = ? [params=(int) 1122201]
                             // SELECT t0.version FROM LSE1x1LfJT t0 WHERE t0.id = ? [params=(int) 1112201]
-                            assertLockTestSQLs(Select + tableLfName + ".*" + tableJTName + ".*" + tableRtName + Where
+                            assertLockTestSQLs(Select + tableLfName + Any + tableJTName + Any + tableRtName + Where
                                     + "\\(\\+\\).*" + ForUpdate);
                             break;
                         case derby:     //TODO: **Non-atomic lock, if jpa2/extended scope, LOCK Uni1x1LfJT_Uni1x1RT
@@ -717,8 +725,8 @@ public class Test1x1LockScope extends LockScopeTestCase {
                             // SELECT t0.id FROM LSE1x1LfJT t0 WHERE t0.id = ? FOR UPDATE WITH RR [params=(int) 1112201]
                             // SELECT t0.version FROM LSE1x1LfJT t0 WHERE t0.id = ? [params=(int) 1112201]
                             assertLockTestSQLs(Select + joinTables + Where + NoForUpdate,
-                                    Select + tableLfName + ".*" + Where + ForUpdate,
-                                    Select + tableRtName + ".*" + Where + ForUpdate
+                                    Select + NoJoin + Any + tableLfName + Any + NoJoin + Where + ForUpdate,
+                                    Select + NoJoin + Any + tableRtName + Any + NoJoin + Where + ForUpdate
                                     );
                             break;
                         default:
@@ -740,7 +748,7 @@ public class Test1x1LockScope extends LockScopeTestCase {
                             //      FROM LSE1x1LfJT t0, Uni1x1LfJT_Uni1x1RT t1, LSE1x1Rt t2 
                             //      WHERE t0.id = ? AND t0.id = t1.LSE1X1LFJT_ID AND t1.UNIRIGHTJT_ID = t2.id(+) 
                             //      [params=(int) 1112202]
-                            assertLockTestSQLs(Select + tableLfName + ".*" + tableJTName + ".*" + tableRtName + Where
+                            assertLockTestSQLs(Select + tableLfName + Any + tableJTName + Any + tableRtName + Where
                                     + "\\(\\+\\).*" + NoForUpdate);
                             break;
                         case derby:
