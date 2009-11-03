@@ -219,7 +219,7 @@ public abstract class AbstractCriteriaTestCase extends TestCase {
             return;
 
         for (int i = 0; i < jSQL.size(); i++) {
-            if (!jSQL.get(i).equals(expectedSQL)) {
+            if (!jSQL.get(i).equalsIgnoreCase(expectedSQL)) {
                 printSQL("SQL for JPQL", jSQL.get(i));
                 printSQL("Expected SQL", expectedSQL);
                 assertTrue(i + "-th SQL for JPQL: " + jpql + " are different than Expected SQL " + expectedSQL, 
