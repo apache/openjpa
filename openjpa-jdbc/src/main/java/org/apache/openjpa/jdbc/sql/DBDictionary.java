@@ -4746,11 +4746,13 @@ public class DBDictionary
                 throw new InternalException(_loc.get("stream-exception"));
             }
             Clob clob = res.getClob(1);
-            Writer writer = clob.setCharacterStream(1);
-            copy(reader, writer);
-            writer.close();
-            res.updateClob(1, clob);
-            res.updateRow();
+            if (clob != null) {
+                Writer writer = clob.setCharacterStream(1);
+                copy(reader, writer);
+                writer.close();
+                res.updateClob(1, clob);
+                res.updateRow();
+            }
 
         } catch (IOException ioe) {
             throw new StoreException(ioe);
