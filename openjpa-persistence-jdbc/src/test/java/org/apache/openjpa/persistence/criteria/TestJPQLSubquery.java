@@ -325,7 +325,7 @@ public class TestJPQLSubquery extends CriteriaTest {
     public void testSubqueries5a() {
         String jpql = "SELECT o FROM Order o WHERE o.name = SOME ("
             + "SELECT a.name FROM o.customer c JOIN c.accounts a)";
-        String expectedSQL = "SELECT t3.id, t3.count, t4.id, t4.accountNum, t5.id, t5.city, t5.country, t5.county, "
+        String expectedSQL = "SELECT t3.id, t3.cnt, t4.id, t4.accountNum, t5.id, t5.city, t5.country, t5.county, "
             + "t5.state, t5.street, t6.userid, t6.DTYPE, t6.age, t6.compName, t6.creditRating, t6.name, t5.zipCode, "
             + "t4.balanceOwed, t4.creditRating, t4.filledOrderCount, t4.firstName, t4.lastName, t4.name, t4.status, "
             + "t3.delivered, t3.name, t3.orderTs, t3.quantity, t3.totalCost "
@@ -383,7 +383,7 @@ public class TestJPQLSubquery extends CriteriaTest {
     public void testSubqueries6a() {
         String jpql = "SELECT o FROM Order o JOIN o.customer c WHERE o.name = "
             + "SOME (SELECT a.name FROM c.accounts a)";
-        String expectedSQL = "SELECT t0.id, t0.count, t4.id, t4.accountNum, t5.id, t5.city, t5.country, t5.county, "
+        String expectedSQL = "SELECT t0.id, t0.cnt, t4.id, t4.accountNum, t5.id, t5.city, t5.country, t5.county, "
             + "t5.state, t5.street, t6.userid, t6.DTYPE, t6.age, t6.compName, t6.creditRating, t6.name, t5.zipCode, "
             + "t4.balanceOwed, t4.creditRating, t4.filledOrderCount, t4.firstName, t4.lastName, t4.name, t4.status, "
             + "t0.delivered, t0.name, t0.orderTs, t0.quantity, t0.totalCost "
@@ -412,7 +412,7 @@ public class TestJPQLSubquery extends CriteriaTest {
     public void testSubqueries6b() {
         String jpql = "SELECT o FROM Order o JOIN o.customer c WHERE o.name = "
             + "SOME (SELECT a.county FROM c.address a)";
-        String expectedSQL = "SELECT t0.id, t0.count, t3.id, t3.accountNum, t4.id, t4.city, t4.country, t4.county, "
+        String expectedSQL = "SELECT t0.id, t0.cnt, t3.id, t3.accountNum, t4.id, t4.city, t4.country, t4.county, "
             + "t4.state, t4.street, t5.userid, t5.DTYPE, t5.age, t5.compName, t5.creditRating, t5.name, t4.zipCode, "
             + "t3.balanceOwed, t3.creditRating, t3.filledOrderCount, t3.firstName, t3.lastName, t3.name, t3.status, "
             + "t0.delivered, t0.name, t0.orderTs, t0.quantity, t0.totalCost "
@@ -441,7 +441,7 @@ public class TestJPQLSubquery extends CriteriaTest {
         String jpql = "SELECT o FROM Order o JOIN o.customer c WHERE 10000 < "
             + "ALL (SELECT u.age FROM c.address a JOIN a.user u)";
 
-        String expectedSQL = "SELECT t0.id, t0.count, t4.id, t4.accountNum, t5.id, t5.city, t5.country, t5.county, "
+        String expectedSQL = "SELECT t0.id, t0.cnt, t4.id, t4.accountNum, t5.id, t5.city, t5.country, t5.county, "
             + "t5.state, t5.street, t6.userid, t6.DTYPE, t6.age, t6.compName, t6.creditRating, t6.name, t5.zipCode, "
             + "t4.balanceOwed, t4.creditRating, t4.filledOrderCount, t4.firstName, t4.lastName, t4.name, t4.status, "
             + "t0.delivered, t0.name, t0.orderTs, t0.quantity, t0.totalCost "
@@ -471,7 +471,7 @@ public class TestJPQLSubquery extends CriteriaTest {
     public void testSubqueries6d() {
         String jpql = "SELECT o FROM Order o JOIN o.customer c JOIN c.address a WHERE 10000 < "
             + "ALL (SELECT u.age FROM c.address a1 JOIN a1.user u WHERE a.city = a1.city)";
-        String expectedSQL = "SELECT t2.id, t2.count, t5.id, t5.accountNum, t6.id, t6.city, t6.country, t6.county, "
+        String expectedSQL = "SELECT t2.id, t2.cnt, t5.id, t5.accountNum, t6.id, t6.city, t6.country, t6.county, "
             + "t6.state, t6.street, t7.userid, t7.DTYPE, t7.age, t7.compName, t7.creditRating, t7.name, t6.zipCode, "
             + "t5.balanceOwed, t5.creditRating, t5.filledOrderCount, t5.firstName, t5.lastName, t5.name, t5.status, "
             + "t2.delivered, t2.name, t2.orderTs, t2.quantity, t2.totalCost "
@@ -505,7 +505,7 @@ public class TestJPQLSubquery extends CriteriaTest {
         String jpql = "SELECT o FROM Order o JOIN o.customer c JOIN c.address a WHERE 10000 < "
             + "ALL (SELECT u.age FROM a.user u)";
 
-        String expectedSQL = "SELECT t0.id, t0.count, t5.id, t5.accountNum, t6.id, t6.city, t6.country, t6.county, "
+        String expectedSQL = "SELECT t0.id, t0.cnt, t5.id, t5.accountNum, t6.id, t6.city, t6.country, t6.county, "
             + "t6.state, t6.street, t7.userid, t7.DTYPE, t7.age, t7.compName, t7.creditRating, t7.name, t6.zipCode, "
             + "t5.balanceOwed, t5.creditRating, t5.filledOrderCount, t5.firstName, t5.lastName, t5.name, t5.status, "
             + "t0.delivered, t0.name, t0.orderTs, t0.quantity, t0.totalCost "
@@ -537,7 +537,7 @@ public class TestJPQLSubquery extends CriteriaTest {
         String jpql = "SELECT o FROM Order o JOIN o.customer c WHERE 10000 < "
             + "ALL (SELECT u.age FROM c.address.user u)";
 
-        String expectedSQL = "SELECT t0.id, t0.count, t5.id, t5.accountNum, t6.id, t6.city, t6.country, t6.county, "
+        String expectedSQL = "SELECT t0.id, t0.cnt, t5.id, t5.accountNum, t6.id, t6.city, t6.country, t6.county, "
             + "t6.state, t6.street, t7.userid, t7.DTYPE, t7.age, t7.compName, t7.creditRating, t7.name, t6.zipCode, "
             + "t5.balanceOwed, t5.creditRating, t5.filledOrderCount, t5.firstName, t5.lastName, t5.name, t5.status, "
             + "t0.delivered, t0.name, t0.orderTs, t0.quantity, t0.totalCost "
@@ -556,7 +556,7 @@ public class TestJPQLSubquery extends CriteriaTest {
         String jpql = "SELECT o FROM Order o JOIN o.customer c WHERE 10000 < "
             + "ALL (SELECT u.age FROM c.address a JOIN a.user u)";
 
-        String expectedSQL = "SELECT t0.id, t0.count, t4.id, t4.accountNum, t5.id, t5.city, t5.country, t5.county, "
+        String expectedSQL = "SELECT t0.id, t0.cnt, t4.id, t4.accountNum, t5.id, t5.city, t5.country, t5.county, "
             + "t5.state, t5.street, t6.userid, t6.DTYPE, t6.age, t6.compName, t6.creditRating, t6.name, t5.zipCode, "
             + "t4.balanceOwed, t4.creditRating, t4.filledOrderCount, t4.firstName, t4.lastName, t4.name, t4.status, "
             + "t0.delivered, t0.name, t0.orderTs, t0.quantity, t0.totalCost "
@@ -589,7 +589,7 @@ public class TestJPQLSubquery extends CriteriaTest {
     public void testSubqueries6h() {
         String jpql = "SELECT o FROM Order o JOIN o.customer.address a WHERE 10000 < "
             + "ALL (SELECT u.age FROM a.user u)";
-        String expectedSQL = "SELECT t0.id, t0.count, t1.id, t1.accountNum, t6.id, t6.city, t6.country, t6.county, "
+        String expectedSQL = "SELECT t0.id, t0.cnt, t1.id, t1.accountNum, t6.id, t6.city, t6.country, t6.county, "
             + "t6.state, t6.street, t7.userid, t7.DTYPE, t7.age, t7.compName, t7.creditRating, t7.name, t6.zipCode, "
             + "t1.balanceOwed, t1.creditRating, t1.filledOrderCount, t1.firstName, t1.lastName, t1.name, t1.status, "
             + "t0.delivered, t0.name, t0.orderTs, t0.quantity, t0.totalCost "
@@ -771,7 +771,7 @@ public class TestJPQLSubquery extends CriteriaTest {
         String expectedSQL = "SELECT t0.id FROM CR_ODR t0 WHERE (t0.id IN ("
             + "SELECT DISTINCT t2.id "
             + "FROM CR_ODR t1 JOIN CR_ODR t2 ON (1 = 1), CR_LI t3 WHERE (" 
-            + "t3.quantity > ? AND t2.cnt> ? AND t3.id = t2.id)))";
+            + "t3.quantity > ? AND t2.cnt > ? AND t3.id = t2.id)))";
 
         executeAndCompareSQL(jpql, expectedSQL);
 
@@ -1418,7 +1418,7 @@ public class TestJPQLSubquery extends CriteriaTest {
     public void testSubquery24() {
         String jpql = "select o from Order o where o.count > (select count(o) from Order o)";
 
-        String expectedSQL = "SELECT t0.id, t0.count, t2.id, t2.accountNum, t3.id, t3.city, t3.country, " + 
+        String expectedSQL = "SELECT t0.id, t0.cnt, t2.id, t2.accountNum, t3.id, t3.city, t3.country, " + 
         "t3.county, t3.state, t3.street, t4.userid, t4.DTYPE, t4.age, t4.compName, t4.creditRating, " + 
         "t4.name, t3.zipCode, t2.balanceOwed, t2.creditRating, t2.filledOrderCount, t2.firstName, " + 
         "t2.lastName, t2.name, t2.status, t0.delivered, t0.name, t0.orderTs, t0.quantity, " + 
@@ -1426,7 +1426,7 @@ public class TestJPQLSubquery extends CriteriaTest {
         "FROM CR_ODR t0 " + 
         "LEFT OUTER JOIN CR_CUST t2 ON t0.CUSTOMER_ID = t2.id " + 
         "LEFT OUTER JOIN CR_ADDR t3 ON t2.ADDRESS_ID = t3.id " + 
-        "LEFT OUTER JOIN CompUser t4 ON t3.id = t4.ADD_ID WHERE (t0.cnt> (" + 
+        "LEFT OUTER JOIN CompUser t4 ON t3.id = t4.ADD_ID WHERE (t0.cnt > (" + 
         "SELECT COUNT(t1.id) FROM CR_ODR t1))";
         executeAndCompareSQL(jpql, expectedSQL);
 
@@ -1445,7 +1445,7 @@ public class TestJPQLSubquery extends CriteriaTest {
     public void testSubquery25() {
         String jpql = "select o from Order o where o.count > (select count(o2) from Order o2)";
 
-        String expectedSQL = "SELECT t0.id, t0.count, t2.id, t2.accountNum, t3.id, t3.city, t3.country, " + 
+        String expectedSQL = "SELECT t0.id, t0.cnt, t2.id, t2.accountNum, t3.id, t3.city, t3.country, " + 
         "t3.county, t3.state, t3.street, t4.userid, t4.DTYPE, t4.age, t4.compName, t4.creditRating, " + 
         "t4.name, t3.zipCode, t2.balanceOwed, t2.creditRating, t2.filledOrderCount, t2.firstName, " + 
         "t2.lastName, t2.name, t2.status, t0.delivered, t0.name, t0.orderTs, t0.quantity, " + 
@@ -1453,7 +1453,7 @@ public class TestJPQLSubquery extends CriteriaTest {
         "FROM CR_ODR t0 " + 
         "LEFT OUTER JOIN CR_CUST t2 ON t0.CUSTOMER_ID = t2.id " + 
         "LEFT OUTER JOIN CR_ADDR t3 ON t2.ADDRESS_ID = t3.id " + 
-        "LEFT OUTER JOIN CompUser t4 ON t3.id = t4.ADD_ID WHERE (t0.cnt> (" + 
+        "LEFT OUTER JOIN CompUser t4 ON t3.id = t4.ADD_ID WHERE (t0.cnt > (" + 
         "SELECT COUNT(t1.id) FROM CR_ODR t1))";
         executeAndCompareSQL(jpql, expectedSQL);
 
@@ -1518,7 +1518,7 @@ public class TestJPQLSubquery extends CriteriaTest {
             + "FROM CR_CUST t1 LEFT OUTER JOIN CR_ADDR t3 ON t1.ADDRESS_ID = t3.id "
             + "LEFT OUTER JOIN CompUser t4 ON t3.id = t4.ADD_ID WHERE (NOT (EXISTS ("
             + "SELECT t0.id FROM CR_ACCT t0 WHERE (t0.CUSTOMER_ID = t1.id AND EXISTS ("
-            + "SELECT t2.id FROM CR_ODR t2 WHERE (t2.CUSTOMER_ID = t1.id AND t2.cnt= ?))))))";
+            + "SELECT t2.id FROM CR_ODR t2 WHERE (t2.CUSTOMER_ID = t1.id AND t2.cnt = ?))))))";
         
         executeAndCompareSQL(jpql, expectedSQL);
 
@@ -1639,7 +1639,7 @@ public class TestJPQLSubquery extends CriteriaTest {
     public void testPluralCorrelatedJoin3() {
         String jpql = "SELECT o FROM Order o JOIN o.customer c JOIN c.accounts a WHERE 10000 < "
             + "ANY (SELECT a1.balance FROM Account a1 WHERE a.owner = a1.owner)";
-        String expectedSQL = "SELECT t0.id, t0.count, t6.id, t6.accountNum, t7.id, t7.city, "
+        String expectedSQL = "SELECT t0.id, t0.cnt, t6.id, t6.accountNum, t7.id, t7.city, "
             + "t7.country, t7.county, t7.state, t7.street, t8.userid, t8.DTYPE, t8.age, "
             + "t8.compName, t8.creditRating, t8.name, t7.zipCode, t6.balanceOwed, "
             + "t6.creditRating, t6.filledOrderCount, t6.firstName, t6.lastName, t6.name, "
