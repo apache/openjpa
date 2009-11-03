@@ -771,7 +771,7 @@ public class TestJPQLSubquery extends CriteriaTest {
         String expectedSQL = "SELECT t0.id FROM CR_ODR t0 WHERE (t0.id IN ("
             + "SELECT DISTINCT t2.id "
             + "FROM CR_ODR t1 JOIN CR_ODR t2 ON (1 = 1), CR_LI t3 WHERE (" 
-            + "t3.quantity > ? AND t2.count > ? AND t3.id = t2.id)))";
+            + "t3.quantity > ? AND t2.cnt> ? AND t3.id = t2.id)))";
 
         executeAndCompareSQL(jpql, expectedSQL);
 
@@ -1426,7 +1426,7 @@ public class TestJPQLSubquery extends CriteriaTest {
         "FROM CR_ODR t0 " + 
         "LEFT OUTER JOIN CR_CUST t2 ON t0.CUSTOMER_ID = t2.id " + 
         "LEFT OUTER JOIN CR_ADDR t3 ON t2.ADDRESS_ID = t3.id " + 
-        "LEFT OUTER JOIN CompUser t4 ON t3.id = t4.ADD_ID WHERE (t0.count > (" + 
+        "LEFT OUTER JOIN CompUser t4 ON t3.id = t4.ADD_ID WHERE (t0.cnt> (" + 
         "SELECT COUNT(t1.id) FROM CR_ODR t1))";
         executeAndCompareSQL(jpql, expectedSQL);
 
@@ -1453,7 +1453,7 @@ public class TestJPQLSubquery extends CriteriaTest {
         "FROM CR_ODR t0 " + 
         "LEFT OUTER JOIN CR_CUST t2 ON t0.CUSTOMER_ID = t2.id " + 
         "LEFT OUTER JOIN CR_ADDR t3 ON t2.ADDRESS_ID = t3.id " + 
-        "LEFT OUTER JOIN CompUser t4 ON t3.id = t4.ADD_ID WHERE (t0.count > (" + 
+        "LEFT OUTER JOIN CompUser t4 ON t3.id = t4.ADD_ID WHERE (t0.cnt> (" + 
         "SELECT COUNT(t1.id) FROM CR_ODR t1))";
         executeAndCompareSQL(jpql, expectedSQL);
 
@@ -1518,7 +1518,7 @@ public class TestJPQLSubquery extends CriteriaTest {
             + "FROM CR_CUST t1 LEFT OUTER JOIN CR_ADDR t3 ON t1.ADDRESS_ID = t3.id "
             + "LEFT OUTER JOIN CompUser t4 ON t3.id = t4.ADD_ID WHERE (NOT (EXISTS ("
             + "SELECT t0.id FROM CR_ACCT t0 WHERE (t0.CUSTOMER_ID = t1.id AND EXISTS ("
-            + "SELECT t2.id FROM CR_ODR t2 WHERE (t2.CUSTOMER_ID = t1.id AND t2.count = ?))))))";
+            + "SELECT t2.id FROM CR_ODR t2 WHERE (t2.CUSTOMER_ID = t1.id AND t2.cnt= ?))))))";
         
         executeAndCompareSQL(jpql, expectedSQL);
 
