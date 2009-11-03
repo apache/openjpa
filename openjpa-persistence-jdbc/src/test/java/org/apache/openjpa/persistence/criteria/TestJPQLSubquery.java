@@ -296,7 +296,7 @@ public class TestJPQLSubquery extends CriteriaTest {
     public void testSubqueries5() {
         String jpql = "SELECT o FROM Order o WHERE 10000 < ALL ("
             + "SELECT a.balance FROM o.customer c JOIN c.accounts a)";
-        String expectedSQL = "SELECT t3.id, t3.count, t4.id, t4.accountNum, t5.id, t5.city, t5.country, t5.county, "
+        String expectedSQL = "SELECT t3.id, t3.cnt, t4.id, t4.accountNum, t5.id, t5.city, t5.country, t5.county, "
             + "t5.state, t5.street, t6.userid, t6.DTYPE, t6.age, t6.compName, t6.creditRating, t6.name, t5.zipCode, "
             + "t4.balanceOwed, t4.creditRating, t4.filledOrderCount, t4.firstName, t4.lastName, t4.name, t4.status, "
             + "t3.delivered, t3.name, t3.orderTs, t3.quantity, t3.totalCost " 
@@ -354,7 +354,7 @@ public class TestJPQLSubquery extends CriteriaTest {
     public void testSubqueries6() {
         String jpql = "SELECT o FROM Order o JOIN o.customer c WHERE 10000 < "
             + "ALL (SELECT a.balance FROM c.accounts a)";
-        String expectedSQL = "SELECT t0.id, t0.count, t4.id, t4.accountNum, t5.id, t5.city, t5.country, t5.county, "
+        String expectedSQL = "SELECT t0.id, t0.cnt, t4.id, t4.accountNum, t5.id, t5.city, t5.country, t5.county, "
             + "t5.state, t5.street, t6.userid, t6.DTYPE, t6.age, t6.compName, t6.creditRating, t6.name, t5.zipCode, "
             + "t4.balanceOwed, t4.creditRating, t4.filledOrderCount, t4.firstName, t4.lastName, t4.name, t4.status, "
             + "t0.delivered, t0.name, t0.orderTs, t0.quantity, t0.totalCost "
@@ -822,7 +822,7 @@ public class TestJPQLSubquery extends CriteriaTest {
             + " (select max(o2.customer.balanceOwed) from Order o2"
             + " where o.customer.id = o2.customer.id)";
 
-        String expectedSQL = "SELECT t0.id, t0.count, t1.id, t1.accountNum, t4.id, t4.city, t4.country, "
+        String expectedSQL = "SELECT t0.id, t0.cnt, t1.id, t1.accountNum, t4.id, t4.city, t4.country, "
             + "t4.county, t4.state, t4.street, t5.userid, t5.DTYPE, t5.age, t5.compName, t5.creditRating, t5.name, "
             + "t4.zipCode, t1.balanceOwed, t1.creditRating, t1.filledOrderCount, t1.firstName, t1.lastName, "
             + "t1.name, t1.status, t0.delivered, t0.name, t0.orderTs, t0.quantity, t0.totalCost "
