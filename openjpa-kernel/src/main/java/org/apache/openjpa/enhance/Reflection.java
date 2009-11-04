@@ -34,6 +34,7 @@ import org.apache.openjpa.lib.util.J2DoPrivHelper;
 import org.apache.openjpa.lib.util.Localizer;
 import org.apache.openjpa.lib.util.ReferenceMap;
 import org.apache.openjpa.lib.util.Reflectable;
+import org.apache.openjpa.lib.util.Localizer.Message;
 import org.apache.openjpa.lib.util.concurrent.ConcurrentReferenceHashMap;
 import org.apache.openjpa.util.GeneralException;
 import org.apache.openjpa.util.UserException;
@@ -282,7 +283,7 @@ public class Reflection {
         try {
             return field.get(target);
         } catch (Throwable t) {
-            throw wrapReflectionException(t);
+            throw wrapReflectionException(t, _loc.get("get-field", target, field));
         }
     }
     
@@ -327,9 +328,10 @@ public class Reflection {
     /**
      * Wrap the given reflection exception as a runtime exception.
      */
-    private static RuntimeException wrapReflectionException(Throwable t) {
+    private static RuntimeException wrapReflectionException(Throwable t, Message message) {
         if (t instanceof InvocationTargetException)
-            t = ((InvocationTargetException) t).getTargetException();    
+            t = ((InvocationTargetException) t).getTargetException();  
+        t.initCause(new IllegalArgumentException(message.getMessage()));
         if (t instanceof RuntimeException)
             return (RuntimeException) t;
         return new GeneralException(t);
@@ -345,7 +347,7 @@ public class Reflection {
         try {
             return field.getBoolean(target);
         } catch (Throwable t) {
-            throw wrapReflectionException(t);
+            throw wrapReflectionException(t, _loc.get("get-field", target, field));
         }
     }
 
@@ -359,7 +361,7 @@ public class Reflection {
         try {
             return field.getByte(target);
         } catch (Throwable t) {
-            throw wrapReflectionException(t);
+            throw wrapReflectionException(t, _loc.get("get-field", target, field));
         }
     }
 
@@ -373,7 +375,7 @@ public class Reflection {
         try {
             return field.getChar(target);
         } catch (Throwable t) {
-            throw wrapReflectionException(t);
+            throw wrapReflectionException(t, _loc.get("get-field", target, field));
         }
     }
 
@@ -387,7 +389,7 @@ public class Reflection {
         try {
             return field.getDouble(target);
         } catch (Throwable t) {
-            throw wrapReflectionException(t);
+            throw wrapReflectionException(t, _loc.get("get-field", target, field));
         }
     }
 
@@ -401,7 +403,7 @@ public class Reflection {
         try {
             return field.getFloat(target);
         } catch (Throwable t) {
-            throw wrapReflectionException(t);
+            throw wrapReflectionException(t, _loc.get("get-field", target, field));
         }
     }
 
@@ -415,7 +417,7 @@ public class Reflection {
         try {
             return field.getInt(target);
         } catch (Throwable t) {
-            throw wrapReflectionException(t);
+            throw wrapReflectionException(t, _loc.get("get-field", target, field));
         }
     }
 
@@ -429,7 +431,7 @@ public class Reflection {
         try {
             return field.getLong(target);
         } catch (Throwable t) {
-            throw wrapReflectionException(t);
+            throw wrapReflectionException(t, _loc.get("get-field", target, field));
         }
     }
 
@@ -443,7 +445,7 @@ public class Reflection {
         try {
             return field.getShort(target);
         } catch (Throwable t) {
-            throw wrapReflectionException(t);
+            throw wrapReflectionException(t, _loc.get("get-field", target, field));
         }
     }
 
@@ -457,7 +459,7 @@ public class Reflection {
         try {
             return getter.invoke(target, (Object[]) null);
         } catch (Throwable t) {
-            throw wrapReflectionException(t);
+            throw wrapReflectionException(t, _loc.get("get-method", target, getter));
         }
     }
 
@@ -535,7 +537,8 @@ public class Reflection {
         try {
             field.set(target, value);
         } catch (Throwable t) {
-            throw wrapReflectionException(t);
+            throw wrapReflectionException(t, _loc.get("set-field", new Object[]{target, field, value, 
+                    value == null ? "" : value.getClass()}));
         }
     }
 
@@ -549,7 +552,7 @@ public class Reflection {
         try {
             field.setBoolean(target, value);
         } catch (Throwable t) {
-            throw wrapReflectionException(t);
+            throw wrapReflectionException(t, _loc.get("set-field", new Object[]{target, field, value, "boolean"}));
         }
     }
 
@@ -563,7 +566,7 @@ public class Reflection {
         try {
             field.setByte(target, value);
         } catch (Throwable t) {
-            throw wrapReflectionException(t);
+            throw wrapReflectionException(t, _loc.get("set-field", new Object[]{target, field, value, "byte"}));
         }
     }
 
@@ -577,7 +580,7 @@ public class Reflection {
         try {
             field.setChar(target, value);
         } catch (Throwable t) {
-            throw wrapReflectionException(t);
+            throw wrapReflectionException(t, _loc.get("set-field", new Object[]{target, field, value, "char"}));
         }
     }
 
@@ -591,7 +594,7 @@ public class Reflection {
         try {
             field.setDouble(target, value);
         } catch (Throwable t) {
-            throw wrapReflectionException(t);
+            throw wrapReflectionException(t, _loc.get("set-field", new Object[]{target, field, value, "double"}));
         }
     }
 
@@ -605,7 +608,7 @@ public class Reflection {
         try {
             field.setFloat(target, value);
         } catch (Throwable t) {
-            throw wrapReflectionException(t);
+            throw wrapReflectionException(t, _loc.get("set-field", new Object[]{target, field, value, "float"}));
         }
     }
 
@@ -619,7 +622,7 @@ public class Reflection {
         try {
             field.setInt(target, value);
         } catch (Throwable t) {
-            throw wrapReflectionException(t);
+            throw wrapReflectionException(t, _loc.get("set-field", new Object[]{target, field, value, "int"}));
         }
     }
 
@@ -633,7 +636,7 @@ public class Reflection {
         try {
             field.setLong(target, value);
         } catch (Throwable t) {
-            throw wrapReflectionException(t);
+            throw wrapReflectionException(t, _loc.get("set-field", new Object[]{target, field, value, "long"}));
         }
     }
 
@@ -647,7 +650,7 @@ public class Reflection {
         try {
             field.setShort(target, value);
         } catch (Throwable t) {
-            throw wrapReflectionException(t);
+            throw wrapReflectionException(t, _loc.get("set-field", new Object[]{target, field, value, "short"}));
         }
     }
 
@@ -760,7 +763,8 @@ public class Reflection {
         try {
             setter.invoke(target, new Object[] { value });
         } catch (Throwable t) {
-            throw wrapReflectionException(t);
+            throw wrapReflectionException(t, _loc.get("set-method", new Object[]{target, setter, value, 
+                    value == null ? "" : value.getClass()}));
         }
     }
 
@@ -831,16 +835,16 @@ public class Reflection {
      * it is ignored.
      *   
      */
-    public static Set<String> getBeanStylePropertyNames(Class c) {
+    public static Set<String> getBeanStylePropertyNames(Class<?> c) {
         if (c == null)
-            return Collections.EMPTY_SET;
+            return Collections.emptySet();
         Set<String> result = beanPropertiesNameCache.get(c);
         if (result != null) {
             return result;
         }
         Method[] methods = c.getMethods();
         if (methods == null || methods.length < 2)
-            return Collections.EMPTY_SET;
+            return Collections.emptySet();
         result = new TreeSet<String>();
         for (Method m : methods) {
             if (m.getName().startsWith("get")) {
@@ -848,9 +852,9 @@ public class Reflection {
                     continue;
                 String prop = StringUtils.capitalize(m.getName()
                     .substring("get".length()));
-                Class rtype = m.getReturnType();
+                Class<?> rtype = m.getReturnType();
                 try {
-                  Method setter = c.getMethod("set"+prop, new Class[]{rtype});
+                  Method setter = c.getMethod("set"+prop, new Class<?>[]{rtype});
                   if (setter.getReturnType() == void.class || 
                       setter.getReturnType().isAssignableFrom(c))
                   result.add(prop);

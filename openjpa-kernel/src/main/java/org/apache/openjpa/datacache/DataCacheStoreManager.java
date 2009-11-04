@@ -387,8 +387,7 @@ public class DataCacheStoreManager
     public boolean load(OpenJPAStateManager sm, BitSet fields,
         FetchConfiguration fetch, int lockLevel, Object edata) {
         DataCache cache = _mgr.selectCache(sm);
-        if (cache == null || sm.isEmbedded() 
-            || _ctx.getFetchConfiguration().getCacheRetrieveMode() == DataCacheRetrieveMode.BYPASS)
+        if (cache == null || sm.isEmbedded() || bypass(_ctx.getFetchConfiguration(), StoreManager.FORCE_LOAD_NONE))
             return super.load(sm, fields, fetch, lockLevel, edata);
 
         DataCachePCData data = cache.get(sm.getObjectId());
@@ -410,11 +409,8 @@ public class DataCacheStoreManager
 
     public Collection<Object> loadAll(Collection<OpenJPAStateManager> sms, PCState state, int load,
     		FetchConfiguration fetch, Object edata) {
-    	if (isLocking(fetch) || 
-    	   (!isLocking(fetch) &&
-    		(load == StoreManager.FORCE_LOAD_REFRESH)
-    		&& !_ctx.getConfiguration().getRefreshFromDataCache())) {
-    	       return super.loadAll(sms, state, load, fetch, edata);
+    	if (bypass(fetch, load)) {
+    	    return super.loadAll(sms, state, load, fetch, edata);
     	}
 
         Map<OpenJPAStateManager, BitSet> unloaded = null;
@@ -528,7 +524,7 @@ public class DataCacheStoreManager
         }
         return failed;
     }
-
+    
     /**
      * Helper method to add an unloaded instance to the given map.
      */
@@ -688,6 +684,24 @@ public class DataCacheStoreManager
         if (_gen != null)
             return (DataCachePCData) _gen.generatePCData(sm.getObjectId(), meta);
         return new DataCachePCDataImpl(sm.fetchObjectId(), meta, _mgr.selectCache(sm).getName());
+    }
+
+    /**
+     * Affirms if a load operation must bypass the L2 cache.
+     * If lock is active, always bypass.
+     * 
+     */
+    boolean bypass(FetchConfiguration fetch, int load) {
+        // Order of checks are important
+        if (isLocking(fetch))
+            return true;
+        if (_ctx.getConfiguration().getRefreshFromDataCache()) 
+            return false;
+        if (fetch.getCacheRetrieveMode() == DataCacheRetrieveMode.BYPASS)
+            return true;
+        if (load == StoreManager.FORCE_LOAD_REFRESH)
+            return true;
+        return false;
     }
 
     /**

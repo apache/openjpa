@@ -18,6 +18,7 @@
  */
 package org.apache.openjpa.persistence;
 
+import java.util.HashMap;
 import java.util.Map;
 
 import javax.persistence.CacheRetrieveMode;
@@ -68,13 +69,29 @@ public class JPAProperties {
     public static final String VALIDATE_PRE_PERSIST = PREFIX + "validation.group.pre-persist";
     public static final String VALIDATE_PRE_REMOVE  = PREFIX + "validation.group.pre-remove";
     public static final String VALIDATE_PRE_UPDATE  = PREFIX + "validation.group.pre-update";
-    
     public static final String VALIDATE_GROUP_DEFAULT = "javax.validation.groups.Default";
+    
+    private static Map<String,String> _names = new HashMap<String, String>();
+    
+    /**
+     * Record the given kernel property key (which is a bean property name without any suffix)
+     * corresponding to the given original JPA/OpenJPA property used by the user to set the values.
+     */
+    static void record(String kernel, String user) {
+        _names.put(kernel, user);
+    }
+    
+    /**
+     * Gets the original JPA Property name corresponding to the kernel property key 
+     * (which is a bean property name without any suffix).
+     */
+    static String getUserName(String beanProperty) {
+        return _names.containsKey(beanProperty) ? _names.get(beanProperty) : beanProperty;
+    }
     
     /**
      * Is the given key appears to be a valid JPA specification defined key?
      * 
-     * @param key
      * @return true if the given string merely prefixed with <code>javax.persistence.</code>.
      * Does not really check all the keys defined in the specification.
      */
@@ -101,16 +118,12 @@ public class JPAProperties {
         return buf.toString();
     }
     
-    static <E extends Enum<E>> E get(Class<E> type, String key, Map<String,Object> prop) {
-        return getEnumValue(type, null, key, prop);
-    }
-    
     /**
      * Convert the given user value to a value consumable by OpenJPA kernel constructs.
      * 
      * @return the same value if the given key is not a valid JPA property key or the value is null.
      */
-    public static <T> T  convertValue(Class<T> resultType, String key, Object value) {
+    public static <T> T  convertToKenelValue(Class<T> resultType, String key, Object value) {
         if (value == null)
             return null;
         if (JPAProperties.isValidKey(key)) {
@@ -124,7 +137,29 @@ public class JPAProperties {
         return (T)value;
     }
     
+    /**
+     * Convert the given kernel value to a value visible to the user.
+     * 
+     * @return the same value if the given key is not a valid JPA property key or the value is null.
+     */
+    public static Object convertToUserValue(String key, Object value) {
+        if (value == null)
+            return null;
+        if (JPAProperties.isValidKey(key)) {
+            // works because enum values are identical String
+            if (value instanceof DataCacheRetrieveMode) {
+                return CacheRetrieveMode.valueOf(value.toString());
+            } else if (value instanceof DataCacheStoreMode) {
+                return CacheStoreMode.valueOf(value.toString());
+            }
+        }
+        return value;
+    }
     
+    /**
+     * Get the value of the given key from the given properties after converting it to the given
+     * enumerated value.
+     */
     public static <E extends Enum<E>> E getEnumValue(Class<E> type, String key, Map<String,Object> prop) {
         return getEnumValue(type, null, key, prop);
     }
@@ -140,14 +175,28 @@ public class JPAProperties {
     public static <E extends Enum<E>> E getEnumValue(Class<E> type, E[] values, String key, Map<String,Object> prop) {
         if (prop == null)
             return null;
-        return getEnumValue(type, values, key, prop.get(key));
+        return getEnumValue(type, values, prop.get(key));
     }
     
-    public static <E extends Enum<E>> E  getEnumValue(Class<E> type, String key, Object val) {
-        return getEnumValue(type, null, key, val);
+    /**
+     * Gets a enum value of the given type from the given value.
+     * Converts the original value from a String, if necessary.
+     * 
+     * @return null if the key does not exist in the given properties.
+     */
+    public static <E extends Enum<E>> E  getEnumValue(Class<E> type, Object val) {
+        return getEnumValue(type, null, val);
     }
     
-    public static <E extends Enum<E>> E  getEnumValue(Class<E> type, E[] values, String key, Object val) {
+    /**
+     * Gets a enum value of the given type from the given value.
+     * Converts the original value from a String or ordinal number, if necessary.
+     * Conversion from an integral number to enum value is only attempted if the allowed enum values
+     * are provided as non-null, non-empty array. 
+     * 
+     * @return null if the key does not exist in the given properties.
+     */
+    public static <E extends Enum<E>> E  getEnumValue(Class<E> type, E[] values, Object val) {
         if (val == null)
             return null;
         if (type.isInstance(val))

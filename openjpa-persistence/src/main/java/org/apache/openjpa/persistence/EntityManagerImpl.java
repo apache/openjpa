@@ -33,6 +33,7 @@ import java.lang.reflect.Method;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.EnumSet;
+import java.util.HashMap;
 import java.util.IdentityHashMap;
 import java.util.Map;
 import java.util.Set;
@@ -49,6 +50,7 @@ import javax.persistence.criteria.ParameterExpression;
 import javax.persistence.metamodel.Metamodel;
 
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.logging.LogFactory;
 import org.apache.openjpa.conf.Compatibility;
 import org.apache.openjpa.conf.OpenJPAConfiguration;
 import org.apache.openjpa.ee.ManagedRuntime;
@@ -105,11 +107,7 @@ public class EntityManagerImpl
     private DelegatingBroker _broker;
     private EntityManagerFactoryImpl _emf;
     private Map<FetchConfiguration,FetchPlan> _plans = new IdentityHashMap<FetchConfiguration,FetchPlan>(1);
-
     private RuntimeExceptionTranslator _ret = PersistenceExceptions.getRollbackTranslator(this);
-    
-    protected final String RETRIEVE_MODE_PROP = "javax.persistence.cache.retrieveMode";
-    protected final String STORE_MODE_PROP = "javax.persistence.cache.storeMode";
 
     public EntityManagerImpl() {
         // for Externalizable
@@ -732,10 +730,7 @@ public class EntityManagerImpl
     }
 
     public void refresh(Object entity) {
-        assertNotCloseInvoked();
-        assertValidAttchedEntity(entity);
-        _broker.assertWriteOperation();
-        _broker.refresh(entity, this);
+        refresh(entity, null, null);
     }
 
     public void refresh(Object entity, LockModeType mode) {
@@ -748,11 +743,19 @@ public class EntityManagerImpl
 
     public void refresh(Object entity, LockModeType mode, Map<String, Object> properties) {
         assertNotCloseInvoked();
-        assertValidAttchedEntity(entity);
+        assertValidAttchedEntity("refresh", entity);
 
         _broker.assertWriteOperation();
-
         configureCurrentFetchPlan(pushFetchPlan(), properties, mode, true);
+        DataCacheRetrieveMode rmode = getFetchPlan().getCacheRetrieveMode();
+        if (DataCacheRetrieveMode.USE.equals(rmode) || rmode == null) {
+            getFetchPlan().setCacheRetrieveMode(DataCacheRetrieveMode.BYPASS);
+            if (rmode != null) {
+                Log log = _broker.getConfiguration().getConfigurationLog();
+                log.warn(_loc.get("cache-retrieve-override", Exceptions.toString(entity)));
+            }
+                
+        }
         try {
             _broker.refresh(entity, this);
         } finally {
@@ -1121,7 +1124,7 @@ public class EntityManagerImpl
     public LockModeType getLockMode(Object entity) {
         assertNotCloseInvoked();
         _broker.assertActiveTransaction();
-        assertValidAttchedEntity(entity);
+        assertValidAttchedEntity("getLockMode", entity);
         return MixedLockLevelsHelper.fromLockLevel(
             _broker.getLockLevel(entity));
     }
@@ -1132,13 +1135,13 @@ public class EntityManagerImpl
 
     public void lock(Object entity) {
         assertNotCloseInvoked();
-        assertValidAttchedEntity(entity);
+        assertValidAttchedEntity("lock", entity);
         _broker.lock(entity, this);
     }
 
     public void lock(Object entity, LockModeType mode, int timeout) {
         assertNotCloseInvoked();
-        assertValidAttchedEntity(entity);
+        assertValidAttchedEntity("lock", entity);
 
         configureCurrentFetchPlan(pushFetchPlan(), null, mode, false);
         try {
@@ -1150,7 +1153,7 @@ public class EntityManagerImpl
 
     public void lock(Object entity, LockModeType mode, Map<String, Object> properties) {
         assertNotCloseInvoked();
-        assertValidAttchedEntity(entity);
+        assertValidAttchedEntity("lock", entity);
         _broker.assertActiveTransaction();
 
         configureCurrentFetchPlan(pushFetchPlan(), properties, mode, false);
@@ -1315,11 +1318,11 @@ public class EntityManagerImpl
      * Throw IllegalArgumentExceptionif if entity is not a valid entity or
      * if it is detached.
      */
-    void assertValidAttchedEntity(Object entity) {
+    void assertValidAttchedEntity(String call, Object entity) {
         OpenJPAStateManager sm = _broker.getStateManager(entity);
         if (sm == null || !sm.isPersistent() || sm.isDetached()) {
-            throw new IllegalArgumentException(_loc.get(
-                "invalid_entity_argument").getMessage());
+            throw new IllegalArgumentException(_loc.get("invalid_entity_argument", 
+                call, entity == null ? "null" : Exceptions.toString(entity)).getMessage());
         }
     }
 
@@ -1556,12 +1559,36 @@ public class EntityManagerImpl
         return createQuery(jpql);
     }
 
+    /**
+     * Get the properties used currently by this entity manager.
+     * The property keys and their values are harvested from kernel artifacts namely
+     * the Broker and FetchPlan by reflection.
+     * These property keys and values that denote the bean properties/values of the kernel artifacts
+     * are converted to the original keys/values that user used to set the properties.
+     *    
+     */
     public Map<String, Object> getProperties() {
-        Map props = _broker.getProperties();
+        Map<String,Object> props = _broker.getProperties();
         for (String s : _broker.getSupportedProperties()) {
-            Method getter = Reflection.findGetter(this.getClass(), getBeanPropertyName(s), false);
-            if (getter != null)
-                props.put(s, Reflection.get(this, getter));
+            String kernelKey = getBeanPropertyName(s);
+            Method getter = Reflection.findGetter(this.getClass(), kernelKey, false);
+            if (getter != null) {
+                String userKey = JPAProperties.getUserName(kernelKey);
+                Object kvalue  = Reflection.get(this, getter);
+                props.put(userKey.equals(kernelKey) ? s : userKey, JPAProperties.convertToUserValue(userKey, kvalue));
+            }
+        }
+        FetchPlan fetch = getFetchPlan();
+        Class<?> fetchType = fetch.getClass();
+        Set<String> fProperties = Reflection.getBeanStylePropertyNames(fetchType);
+        for (String s : fProperties) {
+            String kernelKey = getBeanPropertyName(s);
+            Method getter = Reflection.findGetter(fetchType, kernelKey, false);
+            if (getter != null) {
+                String userKey = JPAProperties.getUserName(kernelKey);
+                Object kvalue  = Reflection.get(fetch, getter);
+                props.put(userKey.equals(kernelKey) ? s : userKey, JPAProperties.convertToUserValue(userKey, kvalue));
+            }
         }
         return props;
     }
@@ -1621,17 +1648,17 @@ public class EntityManagerImpl
     private void configureCurrentCacheModes(FetchPlan fetch, Map<String, Object> properties) {
         if (properties == null)
             return;
-        CacheRetrieveMode rMode = JPAProperties.get(CacheRetrieveMode.class, JPAProperties.CACHE_RETRIEVE_MODE, 
-                properties);
+        CacheRetrieveMode rMode = JPAProperties.getEnumValue(CacheRetrieveMode.class, 
+                JPAProperties.CACHE_RETRIEVE_MODE, properties);
         if (rMode != null) {
-            fetch.setCacheRetrieveMode(JPAProperties.convertValue(DataCacheRetrieveMode.class, 
+            fetch.setCacheRetrieveMode(JPAProperties.convertToKenelValue(DataCacheRetrieveMode.class, 
                     JPAProperties.CACHE_RETRIEVE_MODE, rMode));
             properties.remove(JPAProperties.CACHE_RETRIEVE_MODE);
         }
-        CacheStoreMode sMode = JPAProperties.get(CacheStoreMode.class, JPAProperties.CACHE_STORE_MODE, 
-                properties);
+        CacheStoreMode sMode = JPAProperties.getEnumValue(CacheStoreMode.class, 
+                JPAProperties.CACHE_STORE_MODE, properties);
         if (sMode != null) {
-            fetch.setCacheStoreMode(JPAProperties.convertValue(DataCacheStoreMode.class, 
+            fetch.setCacheStoreMode(JPAProperties.convertToKenelValue(DataCacheStoreMode.class, 
                     JPAProperties.CACHE_STORE_MODE, sMode));
             properties.remove(JPAProperties.CACHE_STORE_MODE);
         }
@@ -1670,6 +1697,7 @@ public class EntityManagerImpl
      */
     private boolean setKernelProperty(Object target, String original, Object value) {
         String beanProp = getBeanPropertyName(original);
+        JPAProperties.record(beanProp, original);
         Class<?> kType  = null;
         Object   kValue = null;
         Method setter = Reflection.findSetter(target.getClass(), beanProp, false);
@@ -1694,20 +1722,25 @@ public class EntityManagerImpl
      * Extract a bean-style property name from the given string.
      * If the given string is <code>"a.b.xyz"</code> then returns <code>"xyz"</code> 
      */
-    String getBeanPropertyName(String s) {
-        if (JPAProperties.isValidKey(s)) {
-            return JPAProperties.getBeanProperty(s);
+    String getBeanPropertyName(String user) {
+        String result = user;
+        if (JPAProperties.isValidKey(user)) {
+            result = JPAProperties.getBeanProperty(user);
+        } else {
+            int dot = user.lastIndexOf('.');
+            if (dot != -1)
+                result = user.substring(dot+1);
         }
-        int dot = s.lastIndexOf('.');
-        return dot == -1 ? s : s.substring(dot+1);
+        return result; 
     }
+    
     
     /**
      * Convert the given value to a value consumable by OpenJPA kernel constructs.
      */
     Object convertUserValue(String key, Object value, Class<?> targetType) {
         if (JPAProperties.isValidKey(key)) 
-            return JPAProperties.convertValue(targetType, key, value);
+            return JPAProperties.convertToKenelValue(targetType, key, value);
         if (value instanceof String) {
             if ("null".equals(value)) {
                 return null;

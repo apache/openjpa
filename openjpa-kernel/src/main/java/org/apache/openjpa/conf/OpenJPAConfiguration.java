@@ -374,6 +374,8 @@ public interface OpenJPAConfiguration
      * The entities are never refreshed from DataCache if lock is being applied 
      * (e.g. in a pessimistic transaction) and hence this setting only refers 
      * to behavior when not locking.
+     * This flag can be used to overwrite RetrieveMode.BYPASS.
+     * By default, however, this falg is false. 
      * 
      * @since 1.2.0
      */

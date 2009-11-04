@@ -525,8 +525,7 @@ public class PersistenceProductDerivation
     /**
      * Return whether the given persistence unit uses an OpenJPA provider.
      */
-    private static boolean isOpenJPAPersistenceProvider
-        (PersistenceUnitInfo pinfo, ClassLoader loader) {
+    private static boolean isOpenJPAPersistenceProvider(PersistenceUnitInfo pinfo, ClassLoader loader) {
         String provider = pinfo.getPersistenceProviderClassName();
         if (StringUtils.isEmpty(provider) || PersistenceProviderImpl.class.getName().equals(provider))
             return true;
@@ -742,11 +741,7 @@ public class PersistenceProductDerivation
                 //      startPersistenceUnit()
                 // case 'property' for 'properties' is handled in startElement()
                 case 'c': // class
-                    if ("class".equals(name))
-                        _info.addManagedClassName(currentText());
-                    else // FIXME - caching
-                        throw new javax.persistence.PersistenceException(
-                            "Not implemented yet");
+                    _info.addManagedClassName(currentText());
                     break;
                 case 'e': // exclude-unlisted-classes
                     setExcludeUnlistedClasses(currentText());
@@ -754,8 +749,7 @@ public class PersistenceProductDerivation
                 case 'j':
                     if ("jta-data-source".equals(name))
                         _info.setJtaDataSourceName(currentText());
-                    else // jar-file
-                    {
+                    else { // jar-file 
                         try {
                             _info.addJarFileName(currentText());
                         } catch (IllegalArgumentException iae) {
@@ -774,12 +768,10 @@ public class PersistenceProductDerivation
                         _info.setPersistenceProviderClassName(currentText());
                     break;
                 case 's' : // shared-cache-mode
-                    _info.setSharedCacheMode(JPAProperties.getEnumValue(SharedCacheMode.class, 
-                            JPAProperties.CACHE_MODE, currentText()));
+                    _info.setSharedCacheMode(JPAProperties.getEnumValue(SharedCacheMode.class, currentText()));
                     break;
                 case 'v': // validation-mode
-                    _info.setValidationMode(JPAProperties.getEnumValue(ValidationMode.class,
-                        JPAProperties.VALIDATE_MODE, currentText()));
+                    _info.setValidationMode(JPAProperties.getEnumValue(ValidationMode.class, currentText()));
                     break;
             }
         }

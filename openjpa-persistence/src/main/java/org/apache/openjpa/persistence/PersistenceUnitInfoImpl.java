@@ -307,8 +307,7 @@ public class PersistenceUnitInfoImpl
             if (JPAProperties.PROVIDER.equals(key))
                 setPersistenceProviderClassName((String) val);
             else if (JPAProperties.TRANSACTION_TYPE.equals(key)) {
-                setTransactionType(JPAProperties.getEnumValue(PersistenceUnitTransactionType.class, 
-                        JPAProperties.TRANSACTION_TYPE, key));
+                setTransactionType(JPAProperties.getEnumValue(PersistenceUnitTransactionType.class, key));
             } else if (JPAProperties.DATASOURCE_JTA.equals(key)) {
                 if (val instanceof String) {
                     setJtaDataSourceName((String) val);
@@ -322,9 +321,9 @@ public class PersistenceUnitInfoImpl
                     setNonJtaDataSource((DataSource) val);
                 }
             } else if (JPAProperties.VALIDATE_MODE.equals(key)) {
-                setValidationMode(JPAProperties.getEnumValue(ValidationMode.class, JPAProperties.VALIDATE_MODE, val));
+                setValidationMode(JPAProperties.getEnumValue(ValidationMode.class, val));
             } else if (JPAProperties.CACHE_MODE.equals(key)) { 
-                setSharedCacheMode(JPAProperties.getEnumValue(SharedCacheMode.class, JPAProperties.CACHE_MODE, val));
+                setSharedCacheMode(JPAProperties.getEnumValue(SharedCacheMode.class, val));
             } else {
                 _props.put(key, val);
             }
