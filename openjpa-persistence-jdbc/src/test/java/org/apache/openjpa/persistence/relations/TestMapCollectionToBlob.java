@@ -20,9 +20,12 @@ package org.apache.openjpa.persistence.relations;
 
 import java.sql.Types;
 
+import org.apache.openjpa.jdbc.conf.JDBCConfiguration;
 import org.apache.openjpa.jdbc.meta.ClassMapping;
 import org.apache.openjpa.jdbc.meta.FieldMapping;
 import org.apache.openjpa.jdbc.meta.strats.HandlerFieldStrategy;
+import org.apache.openjpa.jdbc.meta.strats.MaxEmbeddedBlobFieldStrategy;
+import org.apache.openjpa.jdbc.sql.DBDictionary;
 import org.apache.openjpa.persistence.JPAFacadeHelper;
 import org.apache.openjpa.persistence.test.SingleEMTestCase;
 
@@ -37,8 +40,8 @@ public class TestMapCollectionToBlob
     public void testHandlerToHandlerMaps() {
         ClassMapping cm = (ClassMapping) JPAFacadeHelper.getMetaData(em,
             HandlerToHandlerMapInstance.class);
-        FieldMapping fm = cm.getFieldMapping("map");        
-        assertEquals(HandlerFieldStrategy.class, fm.getStrategy().getClass());
+        FieldMapping fm = cm.getFieldMapping("map");
+        assertEquals(getBlobFieldStrategy(), fm.getStrategy().getClass());
         assertEquals("NONSTD_MAPPING_MAP", fm.getTable().getName());
         assertEquals(fm.getTable().getColumn("MAP").getType(), Types.BLOB);
 
@@ -48,5 +51,17 @@ public class TestMapCollectionToBlob
         em.persist(o);
         em.getTransaction().commit();
         em.close();
+    }
+
+    /*
+     * Returns the strategy that is used for handling blob fields, based upon
+     * the configuration of the dictionary.
+     */
+    private Class<?> getBlobFieldStrategy() {
+        DBDictionary dict = ((JDBCConfiguration)(emf.getConfiguration())).getDBDictionaryInstance();
+        if (dict.maxEmbeddedBlobSize == -1) {
+            return HandlerFieldStrategy.class;
+        }
+        return MaxEmbeddedBlobFieldStrategy.class;
     }
 }
