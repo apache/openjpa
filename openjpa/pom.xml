@@ -62,6 +62,23 @@
                             <createDependencyReducedPom>true</createDependencyReducedPom>
                             <createSourcesJar>true</createSourcesJar>
                             <keepDependenciesWithProvidedScope>true</keepDependenciesWithProvidedScope>
+                            <promoteTransitiveDependencies>true</promoteTransitiveDependencies>
+                            <!--
+                                 Specify a subset of depends to include,
+                                 which must match the <dependencies> section.
+                            -->
+                            <artifactSet>
+                                <includes>
+                                    <include>org.apache.openjpa:openjpa-lib</include>
+                                    <include>org.apache.openjpa:openjpa-kernel</include>
+                                    <include>org.apache.openjpa:openjpa-jdbc</include>
+                                    <include>org.apache.openjpa:openjpa-persistence</include>
+                                    <include>org.apache.openjpa:openjpa-persistence-jdbc</include>
+                                    <include>org.apache.openjpa:openjpa-xmlstore</include>
+                                    <include>org.apache.openjpa:openjpa-slice</include>
+                                </includes>
+                            </artifactSet>
+                            <!-- OpenJPA unique META-INF setup -->
                             <transformers>
                                 <!-- Need to concatinate the services resources:
                                  org.apache.openjpa.lib.conf.ProductDerivation
@@ -108,13 +125,12 @@
             <artifactId>openjpa-jdbc</artifactId>
             <version>${pom.version}</version>
             <!--
-                 Need to exclude jaxb depends, so the following will not
-                 get included in the aggregate JAR by the shade plugin:
+                 Need to exclude jaxb, so the following will not get included
+                 as compile depends in the aggregate JAR by the shade plugin:
                      javax.xml.bind:jaxb-api:jar:2.0
                      javax.xml.bind:jsr173_api:jar:1.0
                      javax.activation:activation:jar:1.1
                      com.sun.xml.bind:jaxb-impl:jar:2.0.5
-            -->
             <exclusions>
                 <exclusion>
                     <groupId>javax.xml.bind</groupId>
@@ -125,7 +141,42 @@
                     <artifactId>jaxb-impl</artifactId>
                 </exclusion>
             </exclusions>
+            -->
         </dependency>
+        <!-- Need to manually add back optional openjpa-jdbc depends -->
+        <dependency>
+            <groupId>javax.xml.bind</groupId>
+            <artifactId>jaxb-api</artifactId>
+            <scope>compile</scope>
+            <optional>true</optional>
+            <exclusions>
+                <exclusion>
+                    <groupId>javax.xml.bind</groupId>
+                    <artifactId>jsr173_api</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>javax.activation</groupId>
+                    <artifactId>activation</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+        <dependency>
+            <groupId>com.sun.xml.bind</groupId>
+            <artifactId>jaxb-impl</artifactId>
+            <scope>compile</scope>
+            <optional>true</optional>
+            <exclusions>
+                <exclusion>
+                    <groupId>javax.xml.bind</groupId>
+                    <artifactId>jsr173_api</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>javax.activation</groupId>
+                    <artifactId>activation</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+        <!-- end optional openjpa-jdbc depends -->
         <dependency>
             <groupId>org.apache.openjpa</groupId>
             <artifactId>openjpa-persistence</artifactId>
@@ -145,48 +196,6 @@
             <groupId>org.apache.openjpa</groupId>
             <artifactId>openjpa-slice</artifactId>
             <version>${pom.version}</version>
-        </dependency>
-
-        <!-- JARs NOT included in aggregate JAR via maven-shade-plugin -->
-        <dependency>
-            <groupId>net.sourceforge.serp</groupId>
-            <artifactId>serp</artifactId>
-            <scope>provided</scope>
-        </dependency>
-        <dependency>
-            <groupId>commons-logging</groupId>
-            <artifactId>commons-logging</artifactId>
-            <scope>provided</scope>
-        </dependency>
-        <dependency>
-            <groupId>commons-lang</groupId>
-            <artifactId>commons-lang</artifactId>
-            <scope>provided</scope>
-        </dependency>
-        <dependency>
-            <groupId>commons-collections</groupId>
-            <artifactId>commons-collections</artifactId>
-            <scope>provided</scope>
-        </dependency>
-        <dependency>
-            <groupId>commons-pool</groupId>
-            <artifactId>commons-pool</artifactId>
-            <scope>provided</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.geronimo.specs</groupId>
-            <artifactId>geronimo-jms_1.1_spec</artifactId>
-            <scope>provided</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.geronimo.specs</groupId>
-            <artifactId>geronimo-jta_1.1_spec</artifactId>
-            <scope>provided</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.geronimo.specs</groupId>
-            <artifactId>geronimo-jpa_1.0_spec</artifactId>
-            <scope>provided</scope>
         </dependency>
     </dependencies>
 </project>
