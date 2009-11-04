@@ -62,6 +62,7 @@
                             <createDependencyReducedPom>true</createDependencyReducedPom>
                             <createSourcesJar>true</createSourcesJar>
                             <keepDependenciesWithProvidedScope>true</keepDependenciesWithProvidedScope>
+                            <promoteTransitiveDependencies>true</promoteTransitiveDependencies>
                             <!-- 
                                  Have to do this again here, as these settings
                                  from shaded openjpa.jar get lost in the shading
@@ -97,56 +98,47 @@
 
     <dependencies>
         <!--
-            Only include openjpa.jar and its required dependencies here, which
-            will be used by maven-shade-plugin to determine the inclusions.
+            Only include openjpa.jar here, as the maven-shade-plugin will
+            determine the transitive dependencies to include from it.
         -->
         <dependency>
             <groupId>org.apache.openjpa</groupId>
             <artifactId>openjpa</artifactId>
             <version>${pom.version}</version>
         </dependency>
-
-        <!-- Non-OpenJPA JARs to pull in -->
+        <!-- Need to manually add back optional openjpa-jdbc depends -->
         <dependency>
-            <groupId>net.sourceforge.serp</groupId>
-            <artifactId>serp</artifactId>
+            <groupId>javax.xml.bind</groupId>
+            <artifactId>jaxb-api</artifactId>
+            <scope>compile</scope>
+            <optional>true</optional>
+            <exclusions>
+                <exclusion>
+                    <groupId>javax.xml.bind</groupId>
+                    <artifactId>jsr173_api</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>javax.activation</groupId>
+                    <artifactId>activation</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
         <dependency>
-            <groupId>commons-logging</groupId>
-            <artifactId>commons-logging</artifactId>
+            <groupId>com.sun.xml.bind</groupId>
+            <artifactId>jaxb-impl</artifactId>
+            <scope>compile</scope>
+            <optional>true</optional>
+            <exclusions>
+                <exclusion>
+                    <groupId>javax.xml.bind</groupId>
+                    <artifactId>jsr173_api</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>javax.activation</groupId>
+                    <artifactId>activation</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
-        <dependency>
-            <groupId>commons-lang</groupId>
-            <artifactId>commons-lang</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>commons-collections</groupId>
-            <artifactId>commons-collections</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>commons-pool</groupId>
-            <artifactId>commons-pool</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.geronimo.specs</groupId>
-            <artifactId>geronimo-jta_1.1_spec</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.geronimo.specs</groupId>
-            <artifactId>geronimo-jpa_2.0_spec</artifactId>
-        </dependency>
-
-        <!-- optional runtime dependencies -->
-        <dependency>
-            <groupId>org.apache.geronimo.specs</groupId>
-            <artifactId>geronimo-jms_1.1_spec</artifactId>
-        </dependency>
-
-        <!-- excluded optional runtime dependencies
-        <dependency>
-            <groupId>org.apache.geronimo.specs</groupId>
-            <artifactId>geronimo-validation_1.0_spec</artifactId>
-        </dependency>
-        -->
+        <!-- end optional openjpa-jdbc depends -->
     </dependencies>
 </project>
