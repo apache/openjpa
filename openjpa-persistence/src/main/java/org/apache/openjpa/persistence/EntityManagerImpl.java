@@ -33,7 +33,6 @@ import java.lang.reflect.Method;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.EnumSet;
-import java.util.HashMap;
 import java.util.IdentityHashMap;
 import java.util.Map;
 import java.util.Set;
@@ -50,7 +49,6 @@ import javax.persistence.criteria.ParameterExpression;
 import javax.persistence.metamodel.Metamodel;
 
 import org.apache.commons.lang.StringUtils;
-import org.apache.commons.logging.LogFactory;
 import org.apache.openjpa.conf.Compatibility;
 import org.apache.openjpa.conf.OpenJPAConfiguration;
 import org.apache.openjpa.ee.ManagedRuntime;
@@ -1113,6 +1111,7 @@ public class EntityManagerImpl
     public void clear() {
         assertNotCloseInvoked();
         _broker.detachAll(this, false);
+        _plans.clear();
     }
 
     public Object getDelegate() {
@@ -1245,6 +1244,7 @@ public class EntityManagerImpl
     public void close() {
         assertNotCloseInvoked();
         _broker.close();
+        _plans.clear();
     }
 
     public boolean isOpen() {
@@ -1473,13 +1473,13 @@ public class EntityManagerImpl
             }
         }
 
-        protected Class resolveClass(ObjectStreamClass classDesc)
+        protected Class<?> resolveClass(ObjectStreamClass classDesc)
             throws IOException, ClassNotFoundException {
 
             String cname = classDesc.getName();
             if (cname.startsWith("[")) {
                 // An array
-                Class component;		// component class
+                Class<?> component;		// component class
                 int dcount;			    // dimension
                 for (dcount=1; cname.charAt(dcount)=='['; dcount++) ;
                 if (cname.charAt(dcount) == 'L') {
@@ -1505,7 +1505,7 @@ public class EntityManagerImpl
          * If this is a generated subclass, look up the corresponding Class
          * object via metadata.
          */
-        private Class lookupClass(String className)
+        private Class<?> lookupClass(String className)
             throws ClassNotFoundException {
             try {
                 return Class.forName(className);
