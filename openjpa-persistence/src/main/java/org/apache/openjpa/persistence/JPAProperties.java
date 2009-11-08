@@ -129,9 +129,9 @@ public class JPAProperties {
         if (JPAProperties.isValidKey(key)) {
             // works because enum values are identical String
             if (value instanceof CacheRetrieveMode) {
-                return (T)DataCacheRetrieveMode.valueOf(value.toString());
+                return (T)DataCacheRetrieveMode.valueOf(value.toString().trim().toUpperCase());
             } else if (value instanceof CacheStoreMode) {
-                return (T)DataCacheStoreMode.valueOf(value.toString());
+                return (T)DataCacheStoreMode.valueOf(value.toString().trim().toUpperCase());
             }
         }
         return (T)value;
@@ -148,9 +148,9 @@ public class JPAProperties {
         if (JPAProperties.isValidKey(key)) {
             // works because enum values are identical String
             if (value instanceof DataCacheRetrieveMode) {
-                return CacheRetrieveMode.valueOf(value.toString());
+                return CacheRetrieveMode.valueOf(value.toString().trim().toUpperCase());
             } else if (value instanceof DataCacheStoreMode) {
-                return CacheStoreMode.valueOf(value.toString());
+                return CacheStoreMode.valueOf(value.toString().trim().toUpperCase());
             }
         }
         return value;
@@ -202,7 +202,7 @@ public class JPAProperties {
         if (type.isInstance(val))
             return (E)val;
         if (val instanceof String) {
-            return Enum.valueOf(type, val.toString());
+            return Enum.valueOf(type, val.toString().trim().toUpperCase());
         }
         if (values != null && values.length > 0 && val instanceof Number) {
             return values[((Number)val).intValue()];
