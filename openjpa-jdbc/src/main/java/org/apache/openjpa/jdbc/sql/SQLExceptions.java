@@ -23,12 +23,10 @@ import java.util.LinkedList;
 import java.util.List;
 
 import org.apache.openjpa.conf.OpenJPAConfiguration;
-import org.apache.openjpa.kernel.LockLevels;
 import org.apache.openjpa.kernel.OpenJPAStateManager;
 import org.apache.openjpa.lib.util.Localizer.Message;
 import org.apache.openjpa.util.LockException;
 import org.apache.openjpa.util.OpenJPAException;
-import org.apache.openjpa.util.QueryException;
 import org.apache.openjpa.util.StoreException;
 
 /**
@@ -110,7 +108,7 @@ public class SQLExceptions {
         if (se == null)
             return EMPTY_EXCEPS;
 
-        List errs = new LinkedList();
+        List<SQLException> errs = new LinkedList<SQLException>();
         while (se != null && !errs.contains(se)) {
             errs.add(se);
             se = se.getNextException();
