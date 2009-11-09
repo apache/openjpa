@@ -18,7 +18,11 @@
  */
 package org.apache.openjpa.persistence.jdbc.query.cache;
 
+import java.util.Collections;
+
 import org.apache.openjpa.datacache.ConcurrentQueryCache;
+import org.apache.openjpa.datacache.QueryCache;
+import org.apache.openjpa.datacache.TypesChangedEvent;
 import org.apache.openjpa.datacache.AbstractQueryCache.EvictPolicy;
 import org.apache.openjpa.jdbc.conf.JDBCConfiguration;
 
@@ -57,6 +61,32 @@ public class TestQueryTimestampEviction extends AbstractQueryCacheTest {
         assertEquals(cacheSizeBeforeUpdate, cacheSizeAfterUpdate);
 
         this.recreateData = false;
+    }
+
+    /**
+     * This testcase was added for OPENJPA-1379. Prior to this fix, the main thread holds a lock on
+     * the QueryCache which it never released. As a result, thread t2 will never successfully obtain
+     * the writeLock().
+     * 
+     * The main thread holds the writeLock because setUp(..) calls deleteAllData() which eventually
+     * results in AbstractQueryCache.onTypesChanges(TypesChangedEvent) being called.
+     * 
+     * @throws Exception
+     */
+    public void testWriteLock() throws Exception {
+        final QueryCache qc = emf.getConfiguration().getDataCacheManagerInstance().getSystemQueryCache();
+        Thread t2 = new Thread() {
+            public void run() {
+                qc.writeLock();
+                qc.writeUnlock();
+            }
+        };
+        t2.start();
+        t2.join(5000);
+        
+        if (t2.getState().equals(java.lang.Thread.State.WAITING)) {
+            fail("The thread is still waiting on a writeLock()!");
+        }
     }
 }
 

@@ -94,9 +94,9 @@ public abstract class AbstractQueryCache
     }
 
     public void onTypesChanged(TypesChangedEvent ev) {
-        writeLock();
-        Collection keys = null;
         if (evictPolicy == EvictPolicy.DEFAULT) {
+            writeLock();
+            Collection keys = null;
             try {
                 if (hasListeners())
                     fireEvent(ev);
