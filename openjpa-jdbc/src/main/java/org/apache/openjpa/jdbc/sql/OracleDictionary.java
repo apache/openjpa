@@ -1161,9 +1161,12 @@ public class OracleDictionary
     
     public void insertClobForStreamingLoad(Row row, Column col, Object ob)
         throws SQLException {
-        if (ob == null)
+        if (ob == null) {
             col.setType(Types.OTHER);
-        row.setNull(col);
+            row.setNull(col);
+        } else {
+            row.setClob(col, getEmptyClob());
+        }
     }
 
     public int getBatchUpdateCount(PreparedStatement ps) throws SQLException {
@@ -1202,8 +1205,11 @@ public class OracleDictionary
     @Override
     public void insertBlobForStreamingLoad(Row row, Column col, 
         JDBCStore store, Object ob, Select sel) throws SQLException {
-        if (ob == null)
+        if (ob == null) {
             col.setType(Types.OTHER);
-        row.setNull(col);
-    }    
+            row.setNull(col);
+        } else {
+            row.setBlob(col, getEmptyBlob());
+        }
+    }
 }

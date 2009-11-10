@@ -1153,6 +1153,26 @@ Floats and doubles may lose precision when stored.
 CLOB columns cannot be used in queries.
                     </para>
                 </listitem>
+                <listitem>
+                    <para>
+The use of LOBs with persistent attributes of a streaming data type (ex. 
+<literal>java.io.InputStream</literal> or <literal>java.io.Reader</literal>) may 
+require the same connection to be used over the life of the transaction or 
+entity manager.  If the same connection is not used for persistent operations
+a <literal>java.io.IOException</literal> with message <literal>Closed Connection
+</literal> may result.  The OpenJPA property <literal>openjpa.ConnectionRetainMode</literal>
+can be used to control how OpenJPA uses datastore connections.  See 
+<xref linkend="ref_guide_dbsetup_retain"/> for details.
+            <example id="dbsupport_oracle_retain_connection">
+                <title>
+                    Property to retain connection over the lifetime of the entity manager
+                </title>
+<programlisting>
+openjpa.ConnectionRetainMode: always
+</programlisting> 
+            </example>
+                    </para>
+                </listitem>
             </itemizedlist>
         </section>
     </section>

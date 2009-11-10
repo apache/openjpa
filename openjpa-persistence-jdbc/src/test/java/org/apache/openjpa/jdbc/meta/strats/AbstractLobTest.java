@@ -49,7 +49,8 @@ public abstract class AbstractLobTest extends SingleEMFTestCase {
     public void setUp() throws Exception {
         super.setUp(getLobEntityClass(), CLEAR_TABLES,
             "openjpa.DataCache", "true",
-            "openjpa.RemoteCommitProvider", "sjvm");
+            "openjpa.RemoteCommitProvider", "sjvm",
+            "openjpa.ConnectionRetainMode", "transaction");
     }
 
     public boolean isDatabaseSupported() {
