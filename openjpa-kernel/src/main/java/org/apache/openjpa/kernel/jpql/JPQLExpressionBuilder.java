@@ -827,6 +827,8 @@ public class JPQLExpressionBuilder
         // which is the desired candidate
         if (ctx().schemaAlias == null)
             setCandidate(cmd, alias);
+        else  
+            addAccessPath(cmd);
 
         return exp;
     }

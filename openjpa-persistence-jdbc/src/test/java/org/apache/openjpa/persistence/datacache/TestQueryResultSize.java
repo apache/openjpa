@@ -19,20 +19,17 @@
 package org.apache.openjpa.persistence.datacache;
 
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+
 import javax.persistence.EntityManagerFactory;
-import org.apache.openjpa.datacache.*;
-import javax.persistence.*;
-import org.apache.openjpa.persistence.*;
 
-
-import org.apache.openjpa.persistence.datacache.common.apps.CacheObjectE;
-import org.apache.openjpa.persistence.common.utils.AbstractTestCase;
-
+import org.apache.openjpa.datacache.ConcurrentQueryCache;
 import org.apache.openjpa.persistence.OpenJPAEntityManager;
+import org.apache.openjpa.persistence.OpenJPAPersistence;
 import org.apache.openjpa.persistence.OpenJPAQuery;
+import org.apache.openjpa.persistence.common.utils.AbstractTestCase;
+import org.apache.openjpa.persistence.datacache.common.apps.CacheObjectE;
 
 public class TestQueryResultSize
     extends AbstractTestCase {
@@ -47,6 +44,8 @@ public class TestQueryResultSize
     public void setUp() {
         System.out.println("****Deleted Records "
             + deleteAll(CacheObjectE.class));
+        deleteAll(CascadeParent.class);
+        deleteAll(CascadeChild.class);
         Map propsMap = new HashMap();
         propsMap.put("openjpa.DataCache", "true");
         propsMap.put("openjpa.QueryCache", "true");
@@ -81,4 +80,36 @@ public class TestQueryResultSize
             pm.getEntityManagerFactory()).getQueryResultCache().getDelegate())).
             getCacheMap().size());
     }
+
+    public void testCrossJoinQueryCache() {
+        pm = (OpenJPAEntityManager) _pmf.createEntityManager();
+        // create
+        startTx(pm);
+        CascadeParent p = new CascadeParent();
+        p.setName("p1");
+        CascadeChild c = new CascadeChild();
+        c.setName("p1");
+        p.setChild(c);
+        pm.persist(p);
+        endTx(pm);
+
+        // query
+        String jpql = "select p.name, c.name from CascadeParent p, CascadeChild c where p.name = c.name "
+                + "and p.name = 'p1'";
+        javax.persistence.Query query = pm.createQuery(jpql);
+        List result1 = query.getResultList();
+        assertEquals(1, result1.size());
+
+        // update
+        startTx(pm);
+        c.setName("c1");
+        endTx(pm);
+
+        // query again
+        List result2 = query.getResultList();
+        assertEquals(0, result2.size());
+        endEm(pm);
+    }
+
+
 }

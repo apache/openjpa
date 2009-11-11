@@ -35,6 +35,7 @@ public class TestBulkJPQLAndDataCache
     public void setUp() throws Exception {
         setUp("openjpa.DataCache", "true",
             "openjpa.RemoteCommitProvider", "sjvm",
+            CLEAR_TABLES,
             AllFieldTypes.class, CascadeParent.class, CascadeChild.class);
 
         OpenJPAEntityManager em = emf.createEntityManager();

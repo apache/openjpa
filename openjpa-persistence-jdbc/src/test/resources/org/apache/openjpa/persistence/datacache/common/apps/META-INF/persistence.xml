@@ -22,6 +22,8 @@
 	<persistence-unit name="TestConv" transaction-type="RESOURCE_LOCAL">
 		<provider>org.apache.openjpa.persistence.PersistenceProviderImpl</provider>
 		
+		<class>org.apache.openjpa.persistence.datacache.CascadeChild</class>
+		<class>org.apache.openjpa.persistence.datacache.CascadeParent</class>
 		<class>org.apache.openjpa.persistence.datacache.common.apps.AppIdCacheObject</class>
 		<class>org.apache.openjpa.persistence.datacache.common.apps.AttachA</class>
 		<class>org.apache.openjpa.persistence.datacache.common.apps.AttachB</class>
