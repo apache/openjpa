@@ -62,6 +62,7 @@ import org.apache.openjpa.meta.ValueMetaData;
 import org.apache.openjpa.persistence.XMLPersistenceMetaDataParser;
 import org.apache.openjpa.util.InternalException;
 import org.apache.openjpa.util.MetaDataException;
+import org.apache.openjpa.util.UserException;
 import org.xml.sax.Attributes;
 import org.xml.sax.Locator;
 import org.xml.sax.SAXException;
@@ -781,11 +782,13 @@ public class XMLPersistenceMappingParser
      */
     private boolean startTable(Attributes attrs)
         throws SAXException {
+        ClassMapping mapping = (ClassMapping) currentElement();
+        if (mapping.isAbstract())
+            throw new UserException(_loc.get("table-not-allowed", mapping));
         String table = toTableName(attrs.getValue("schema"),
             attrs.getValue("name"));
         if (table != null)
-            ((ClassMapping) currentElement()).getMappingInfo().setTableName
-                (table);
+            mapping.getMappingInfo().setTableName(table);
         return true;
     }
 
