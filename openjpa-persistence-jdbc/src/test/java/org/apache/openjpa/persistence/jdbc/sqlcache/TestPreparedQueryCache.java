@@ -26,6 +26,7 @@ import java.util.List;
 import java.util.Properties;
 
 import javax.persistence.EntityManager;
+import javax.persistence.LockModeType;
 import javax.persistence.Query;
 
 import junit.framework.TestCase;
@@ -736,6 +737,24 @@ public class TestPreparedQueryCache extends TestCase {
         } catch (Exception e) {
             fail("Fail to execute again - Parameters are messed up:" + e.getMessage());
         }
+    }
+    
+    public void testPreparedQueryIgnoredWhenLockModeIsSet() {
+        String jpql = "select p from Author p";
+        EntityManager em = emf.createEntityManager();
+        
+        Query q1 = em.createQuery(jpql);
+        assertEquals(JPQLParser.LANG_JPQL, OpenJPAPersistence.cast(q1).getLanguage());
+        List<Author> authors1 = q1.getResultList();
+        
+        // do the same thing again, this time query should be cached
+        em.getTransaction().begin();
+        Query q2 = em.createQuery(jpql);
+        assertEquals(QueryLanguages.LANG_PREPARED_SQL, OpenJPAPersistence.cast(q2).getLanguage());
+        q2.setLockMode(LockModeType.OPTIMISTIC);
+        assertEquals(JPQLParser.LANG_JPQL, OpenJPAPersistence.cast(q2).getLanguage());
+        List<Author> authors2 = q2.getResultList();
+        em.getTransaction().rollback();
     }
     
     

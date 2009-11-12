@@ -372,8 +372,12 @@ public class QueryImpl<X> implements OpenJPAQuerySPI<X>, Serializable {
 		return QueryLanguages.LANG_SQL.equals(getLanguage());
 	}
 
+	/**
+	 * Asserts that this query is a JPQL or Criteria Query.
+	 */
 	void assertJPQLOrCriteriaQuery() {
-        if (!(JPQLParser.LANG_JPQL.equals(getLanguage()) || CriteriaBuilderImpl.LANG_CRITERIA.equals(getLanguage()))) {
+        String language = getLanguage();
+        if (!(JPQLParser.LANG_JPQL.equals(language) || CriteriaBuilderImpl.LANG_CRITERIA.equals(language))) {
             throw new IllegalStateException(_loc.get("not-jpql-or-criteria-query").getMessage());
         }
 	}
@@ -392,7 +396,16 @@ public class QueryImpl<X> implements OpenJPAQuerySPI<X>, Serializable {
         return _fetch.getReadLockMode();
     }
 
+    /**
+     * Sets lock mode on the given query.
+     * If the target query has been prepared and cached, then ignores the cached version.
+     * @see #ignorePreparedQuery()
+     */
     public TypedQuery<X> setLockMode(LockModeType lockMode) {
+        String language = getLanguage();
+        if (QueryLanguages.LANG_PREPARED_SQL.equals(language)) {
+            ignorePreparedQuery();
+        }
         assertJPQLOrCriteriaQuery();
        _fetch.setReadLockMode(lockMode);
        return this;
