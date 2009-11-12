@@ -261,6 +261,13 @@ public interface Broker
      * @since 0.2.5
      */
     public void removeTransactionListener(Object listener);
+    
+    /**
+     * Gets an umodifiable collection of currently registered lsteners.
+     * 
+     * @since 2.0.0
+     */
+    public Collection<Object> getTransactionListeners();
 
     /**
      * The callback mode for handling exceptions from transaction event

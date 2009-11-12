@@ -808,6 +808,10 @@ public class BrokerImpl
             endOperation();
         }
     }
+    
+    public Collection<Object> getTransactionListeners() {
+        return _transEventManager.getListeners();
+    }
 
     public int getTransactionListenerCallbackMode() {
         return _transCallbackMode;

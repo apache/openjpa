@@ -825,6 +825,14 @@ public class DelegatingBroker
             throw translate(re);
         }
     }
+    
+    public Collection<Object> getTransactionListeners() {
+        try {
+            return _broker.getTransactionListeners();
+        } catch (RuntimeException re) {
+            throw translate(re);
+        }
+    }
 
     public int getTransactionListenerCallbackMode() {
         try {
