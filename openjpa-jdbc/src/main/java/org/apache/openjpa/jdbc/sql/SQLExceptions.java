@@ -65,9 +65,25 @@ public class SQLExceptions {
     /**
      * Convert the specified exception into a {@link StoreException}.
      */
+    public static OpenJPAException getStore(SQLException se,
+        DBDictionary dict, int level) {
+        return getStore(se.getMessage(), se, dict, level);
+    }
+
+    /**
+     * Convert the specified exception into a {@link StoreException}.
+     */
     public static OpenJPAException getStore(SQLException se, Object failed,
         DBDictionary dict) {
-        return getStore(se.getMessage(), se, failed, dict);
+        return getStore(se.getMessage(), se, failed, dict, -1);
+    }
+
+    /**
+     * Convert the specified exception into a {@link StoreException}.
+     */
+    public static OpenJPAException getStore(SQLException se, Object failed,
+        DBDictionary dict, int level) {
+        return getStore(se.getMessage(), se, failed, dict, level);
     }
 
     /**
@@ -75,7 +91,15 @@ public class SQLExceptions {
      */
     public static OpenJPAException getStore(Message msg, SQLException se,
         DBDictionary dict) {
-        return getStore(msg.getMessage(), se, null, dict);
+        return getStore(msg.getMessage(), se, null, dict, -1);
+    }
+
+    /**
+     * Convert the specified exception into a {@link StoreException}.
+     */
+    public static OpenJPAException getStore(Message msg, SQLException se,
+        DBDictionary dict, int level) {
+        return getStore(msg.getMessage(), se, null, dict, level);
     }
 
     /**
@@ -83,7 +107,15 @@ public class SQLExceptions {
      */
     public static OpenJPAException getStore(String msg, SQLException se,
         DBDictionary dict) {
-        return getStore(msg, se, null, dict);
+        return getStore(msg, se, null, dict, -1);
+    }
+
+    /**
+     * Convert the specified exception into a {@link StoreException}.
+     */
+    public static OpenJPAException getStore(String msg, SQLException se,
+        DBDictionary dict, int level) {
+        return getStore(msg, se, null, dict, level);
     }
 
     /**
@@ -91,18 +123,29 @@ public class SQLExceptions {
      */
     public static OpenJPAException getStore(String msg, SQLException se,
         Object failed, DBDictionary dict) {
+        return getStore(msg, se, failed, dict, -1);
+    }
+
+    /**
+     * Convert the specified exception into a {@link StoreException}.
+     */
+    public static OpenJPAException getStore(String msg, SQLException se,
+        Object failed, DBDictionary dict, int level) {
         if (msg == null)
             msg = se.getClass().getName();
         SQLException[] ses = getSQLExceptions(se);
-        if (dict == null)
-            return new StoreException(msg).setFailedObject(failed).
-                setNestedThrowables(ses);
-        return dict.newStoreException(msg, ses, failed);
+        OpenJPAException storeEx = (dict == null) ? new StoreException(msg).setFailedObject(failed)
+                .setNestedThrowables(ses) : dict.newStoreException(msg, ses, failed);
+        if (level != -1 && storeEx.getSubtype() == StoreException.LOCK) {
+            LockException lockEx = (LockException) storeEx;
+            lockEx.setLockLevel(level);
+        }
+        return storeEx;
     }
     
     /**
-     * Returns an array of {@link SQLException} instances for the
-     * specified exception.
+     * Returns an array of {@link SQLException} instances for the specified
+     * exception.
      */
     private static SQLException[] getSQLExceptions(SQLException se) {
         if (se == null)
@@ -114,22 +157,5 @@ public class SQLExceptions {
             se = se.getNextException();
         }
         return (SQLException[]) errs.toArray(new SQLException[errs.size()]);
-    }
-    
-    public static OpenJPAException getStoreSQLException(OpenJPAStateManager sm,
-        SQLException se, DBDictionary dict, int level) {
-        return getStoreSQLException(sm.getContext().getConfiguration(), se,
-            dict, level);
-    }
-    
-    public static OpenJPAException getStoreSQLException(
-        OpenJPAConfiguration config, SQLException se, DBDictionary dict,
-        int level) {
-        OpenJPAException storeEx = SQLExceptions.getStore(se, dict);
-        if (storeEx.getSubtype() == StoreException.LOCK) {
-            LockException lockEx = (LockException) storeEx;
-            lockEx.setLockLevel(level);
-        }
-        return storeEx;
     }
 }

@@ -137,8 +137,7 @@ public class PessimisticLockManager
                 checkLock(rs, sm, timeout);
             }
         } catch (SQLException se) {
-            throw SQLExceptions.getStoreSQLException(sm, se, dict,
-                level);
+            throw SQLExceptions.getStore(se, dict, level);
         } finally {
             if (stmnt != null)
                 try { stmnt.close(); } catch (SQLException se) {}

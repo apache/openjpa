@@ -25,7 +25,13 @@ import java.io.ObjectOutput;
 
 import javax.persistence.Entity;
 import javax.persistence.Id;
+import javax.persistence.NamedQuery;
 import javax.persistence.Version;
+
+@NamedQuery(
+        name="findEmployeeById"
+        , query="SELECT c FROM LockEmployee c WHERE c.id = :id"
+        )
 
 @Entity
 public class LockEmployee implements Externalizable {

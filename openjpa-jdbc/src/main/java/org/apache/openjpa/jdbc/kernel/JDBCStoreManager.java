@@ -106,7 +106,7 @@ public class JDBCStoreManager
     private boolean _active = false;
 
     // track the pending statements so we can cancel them
-    private Set _stmnts = Collections.synchronizedSet(new HashSet());
+    private Set<Statement> _stmnts = Collections.synchronizedSet(new HashSet<Statement>());
 
     private static final Constructor<ClientConnection> clientConnectionImpl;
     private static final Constructor<RefCountConnection> refCountConnectionImpl;
@@ -293,8 +293,7 @@ public class JDBCStoreManager
         } catch (ClassNotFoundException cnfe) {
             throw new UserException(cnfe);
         } catch (SQLException se) {
-            throw SQLExceptions.getStoreSQLException(sm, se, _dict,
-                fetch.getReadLockLevel());
+            throw SQLExceptions.getStore(se, _dict, fetch.getReadLockLevel());
         }
     }
 
@@ -346,7 +345,7 @@ public class JDBCStoreManager
 
             // figure out what type of object this is; the state manager
             // only guarantees to provide a base class
-            Class type;
+            Class<?> type;
             if ((type = getType(res, mapping)) == null) {
                 if (res.getBaseMapping() != null)
                     mapping = res.getBaseMapping();
@@ -413,15 +412,15 @@ public class JDBCStoreManager
                 Object coll =  owner.fetchObject(fms[i].getIndex());
                 if (coll instanceof Map)
                     coll = ((Map)coll).values();
-                if (coll instanceof Collection && 
-                    ((Collection) coll).size() > 0) {
+                if (coll instanceof Collection<?> && 
+                    ((Collection<?>) coll).size() > 0) {
                     // Found eagerly loaded collection.
                     // Publisher (1) <==>  (M) Magazine
                     //    publisher has a EAGER OneToMany relation
                     //    magazine has a EAGER or LAZY ManyToOne publisher
                     // For each member (Magazine) in the collection, 
                     // set its inverse relation (Publisher).
-                    for (Iterator itr = ((Collection) coll).iterator();
+                    for (Iterator<?> itr = ((Collection<?>) coll).iterator();
                         itr.hasNext();) {
                         PersistenceCapable pc = (PersistenceCapable) itr.next();
 
@@ -485,7 +484,7 @@ public class JDBCStoreManager
      * This method is to provide override for non-JDBC or JDBC-like 
      * implementation of getting type from the result set.
      */
-    protected Class getType(Result res, ClassMapping mapping){
+    protected Class<?> getType(Result res, ClassMapping mapping){
         if (res == null)
             return mapping.getDescribedType();
         return null;
@@ -646,7 +645,7 @@ public class JDBCStoreManager
         } catch (ClassNotFoundException cnfe) {
             throw new StoreException(cnfe);
         } catch (SQLException se) {
-            throw SQLExceptions.getStore(se, _dict);
+            throw SQLExceptions.getStore(se, _dict, lockLevel);
         }
     }
 
@@ -682,15 +681,15 @@ public class JDBCStoreManager
         // we want to allow a different thread to be able to cancel the
         // outstanding statement on a different context
 
-        Collection stmnts;
+        Collection<Statement> stmnts;
         synchronized (_stmnts) {
             if (_stmnts.isEmpty())
                 return false;
-            stmnts = new ArrayList(_stmnts);
+            stmnts = new ArrayList<Statement>(_stmnts);
         }
 
         try {
-            for (Iterator itr = stmnts.iterator(); itr.hasNext();)
+            for (Iterator<Statement> itr = stmnts.iterator(); itr.hasNext();)
                 ((Statement) itr.next()).cancel();
             return true;
         } catch (SQLException se) {
@@ -724,13 +723,13 @@ public class JDBCStoreManager
         return true;
     }
 
-    public Class getManagedType(Object oid) {
+    public Class<?> getManagedType(Object oid) {
         if (oid instanceof Id)
             return ((Id) oid).getType();
         return null;
     }
 
-    public Class getDataStoreIdType(ClassMetaData meta) {
+    public Class<?> getDataStoreIdType(ClassMetaData meta) {
         return Id.class;
     }
 

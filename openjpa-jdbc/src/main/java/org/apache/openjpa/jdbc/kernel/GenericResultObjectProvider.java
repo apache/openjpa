@@ -49,7 +49,7 @@ public class GenericResultObjectProvider
      * @param fetch the fetch configuration, or null for default
      * @param res the result containing the data
      */
-    public GenericResultObjectProvider(Class pcClass,
+    public GenericResultObjectProvider(Class<?> pcClass,
         JDBCStore store, JDBCFetchConfiguration fetch, Result res) {
         this(store.getConfiguration().getMappingRepositoryInstance().getMapping
             (pcClass, store.getContext().getClassLoader(), true),
@@ -122,8 +122,7 @@ public class GenericResultObjectProvider
 
     public void handleCheckedException(Exception e) {
         if (e instanceof SQLException)
-            throw SQLExceptions.getStore((SQLException) e,
-                _store.getDBDictionary());
+            throw SQLExceptions.getStore((SQLException) e, _store.getDBDictionary(), _fetch.getReadLockLevel());
         throw new StoreException(e);
     }
 }

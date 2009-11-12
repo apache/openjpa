@@ -152,8 +152,7 @@ public abstract class SelectResultObjectProvider
 
     public void handleCheckedException(Exception e) {
         if (e instanceof SQLException)
-            throw SQLExceptions.getStore((SQLException) e,
-                _store.getDBDictionary());
+            throw SQLExceptions.getStore((SQLException) e, _store.getDBDictionary(), _fetch.getReadLockLevel());
         throw new StoreException(e);
     }
 }

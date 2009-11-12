@@ -33,7 +33,10 @@ import java.util.Map;
 
 import javax.persistence.EntityManager;
 import javax.persistence.LockModeType;
+import javax.persistence.Query;
 
+import org.apache.openjpa.jdbc.conf.JDBCConfiguration;
+import org.apache.openjpa.jdbc.conf.JDBCConfigurationImpl;
 import org.apache.openjpa.lib.log.Log;
 import org.apache.openjpa.persistence.OpenJPAEntityManager;
 import org.apache.openjpa.persistence.test.SQLListenerTestCase;
@@ -193,6 +196,8 @@ public abstract class SequencedActionsTest extends SQLListenerTestCase {
         FindWithLock,      // (int id, LockModeType lockType,
                            //      [String properties, Object value]*)
         FindObject,        // (Object obj, LockModeType lockType)
+        NamedQueryWithLock,// (String namedQuery, int id, LockModeType lockType,
+                           //      [String properties, Object value]*)
         Refresh,           // ([int id])
         RefreshWithLock,   // (int id, LockModeType lockType,
                            //      [String properties, Object value]*)
@@ -383,6 +388,39 @@ public abstract class SequencedActionsTest extends SQLListenerTestCase {
                     em.find((Class<?>)args[1], args[2],
                         (LockModeType) args[3]);
                     // log.trace("Employee=" + employee);
+                    break;
+                case NamedQueryWithLock:
+                    String namedQuery = "????";
+                    if (args.length > 1) {
+                        namedQuery = (String)args[1];
+                    }
+                    id = 1;
+                    if (args.length > 2) {
+                        id = (Integer)args[2];
+                    }
+                    lockMode = null;
+                    if (args.length > 3) {
+                        lockMode = (LockModeType)args[3];
+                    }
+                    Map<String, Object> queryProps = buildPropsMap(args, 4);
+                    //TypedQuery<LockEmployee> q = em.createNamedQuery(namedQuery, LockEmployee.class);
+                    Query q = em.createNamedQuery(namedQuery);
+                    if( lockMode != null) {
+                        q.setLockMode(lockMode);
+                    }
+                    if( queryProps != null) {
+                        for( String name : queryProps.keySet()) {
+                            q.setHint(name, queryProps.get(name));
+                        }
+                    }
+                    q.setParameter("id", id);
+                    employee = (LockEmployee)q.getSingleResult();
+                    log.trace("Employee=" + employee);
+                    if( employee != null ) {
+                        employees.put(id, employee);
+                    } else {
+                        employees.remove(id);
+                    }
                     break;
                 case Persist:
                     id = 1;
@@ -930,5 +968,22 @@ public abstract class SequencedActionsTest extends SQLListenerTestCase {
                     break;
             }
         }
+    }
+
+    protected enum DBType {
+        access, db2, derby, empress, foxpro, h2, hsql, informix, ingres, jdatastore, mysql, oracle, pointbase, postgres,
+        sqlserver, sybase
+    };
+
+    protected DBType getDBType(EntityManager em) {
+        JDBCConfigurationImpl conf = (JDBCConfigurationImpl) getConfiguration(em);
+        String dictClassName = getConfiguration(em).getDBDictionaryInstance().getClass().getName();
+        String db = conf.dbdictionaryPlugin.alias(dictClassName);
+        return DBType.valueOf(db);
+    }
+
+    @SuppressWarnings( { "unused", "deprecation" })
+    protected JDBCConfiguration getConfiguration(EntityManager em) {
+        return ((JDBCConfiguration) ((OpenJPAEntityManager) em).getConfiguration());
     }
 }
