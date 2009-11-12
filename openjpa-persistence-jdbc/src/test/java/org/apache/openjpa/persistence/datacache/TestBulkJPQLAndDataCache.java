@@ -35,6 +35,7 @@ public class TestBulkJPQLAndDataCache
     public void setUp() throws Exception {
         setUp("openjpa.DataCache", "true",
             "openjpa.RemoteCommitProvider", "sjvm",
+            CLEAR_TABLES, 
             AllFieldTypes.class, CascadeParent.class, CascadeChild.class);
 
         OpenJPAEntityManager em = emf.createEntityManager();
@@ -123,4 +124,35 @@ public class TestBulkJPQLAndDataCache
             getResultList().size());
         em.close();
     }
+    
+    public void testCrossJoinQueryCache() {
+        EntityManager em = (OpenJPAEntityManager) emf.createEntityManager();
+        // create
+        em.getTransaction().begin();
+        CascadeParent p = new CascadeParent();
+        p.setName("p1");
+        CascadeChild c = new CascadeChild();
+        c.setName("p1");
+        p.setChild(c);
+        em.persist(p);
+        em.getTransaction().commit();
+
+        // query
+        String jpql = "select p.name, c.name from CascadeParent p, CascadeChild c where p.name = c.name "
+                + "and p.name = 'p1'";
+        javax.persistence.Query query = em.createQuery(jpql);
+        List result1 = query.getResultList();
+        assertEquals(1, result1.size());
+
+        // update
+        em.getTransaction().begin();
+        c.setName("c1");
+        em.getTransaction().commit();
+
+        // query again
+        List result2 = query.getResultList();
+        assertEquals(0, result2.size());
+        em.close();
+    }
+    
 }
