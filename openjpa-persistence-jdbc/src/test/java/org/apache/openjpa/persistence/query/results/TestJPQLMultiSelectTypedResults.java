@@ -23,6 +23,7 @@ import java.text.DateFormat;
 import java.text.ParseException;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Locale;
 
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
@@ -46,7 +47,7 @@ public class TestJPQLMultiSelectTypedResults extends SingleEMFTestCase {
     private static final String[] ORDER_DATES =
         { "3/12/2008 1:00 PM", "10/01/2008 1:51 AM", "12/12/2008 10:01 AM", "5/21/2009 3:23 PM" };
 
-    DateFormat df = DateFormat.getInstance(); // uses SHORT dateformat by default
+    DateFormat df = DateFormat.getDateInstance(DateFormat.SHORT, Locale.US);
 
     public void setUp() throws Exception {
         setUp(CLEAR_TABLES, Order.class, Item.class, Shop.class, Producer.class,
