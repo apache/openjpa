@@ -635,6 +635,10 @@ class CriteriaQueryImpl<T> implements OpenJPACriteriaQuery<T>, AliasContext {
         if (_where != null) {
             _where.acceptVisit(visitor);
         }
+        if (_having != null) {
+            _having.acceptVisit(visitor);
+        }
+        
         if (_subqueries != null) {
             for (Subquery<?> subq : _subqueries) {
                 ((SubqueryImpl<?>)subq).getDelegate().collectParameters(visitor);
