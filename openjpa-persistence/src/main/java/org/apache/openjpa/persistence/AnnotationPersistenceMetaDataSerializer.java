@@ -845,6 +845,8 @@ public class AnnotationPersistenceMetaDataSerializer
      * Return the MetaDataTag for the given class meta data.
      */
     private static MetaDataTag getEntityTag(ClassMetaData meta) {
+        if (meta.isAbstract())
+            return MetaDataTag.MAPPED_SUPERCLASS;
         // @Embeddable classes can't declare Id fields
         if (meta.isEmbeddedOnly() && meta.getPrimaryKeyFields().length == 0)
             return MetaDataTag.EMBEDDABLE;
