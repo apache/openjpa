@@ -533,6 +533,8 @@ public class AnnotationPersistenceMappingParser
      * Set class table.
      */
     private void parseTable(ClassMapping cm, Table table) {
+        if (cm.isAbstract())
+            throw new UserException(_loc.get("table-not-allowed", cm));
         String tableName = toTableName(table.schema(), table.name(),
             DBDictionary.DBIdentifiers.TABLE_SCHEMA, DBDictionary.DBIdentifiers.TABLE_NAME);
         if (tableName != null) {
