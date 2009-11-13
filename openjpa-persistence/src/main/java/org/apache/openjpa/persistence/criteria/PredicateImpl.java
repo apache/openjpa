@@ -26,6 +26,7 @@ import javax.persistence.criteria.Expression;
 import javax.persistence.criteria.Predicate;
 
 import org.apache.openjpa.kernel.exps.ExpressionFactory;
+import org.apache.openjpa.kernel.exps.Literal;
 
 /**
  * Predicate is a expression that evaluates to true or false.
@@ -96,6 +97,10 @@ abstract class PredicateImpl extends ExpressionImpl<Boolean> implements Predicat
     public final BooleanOperator getOperator() {
         return _op;
     }
+    
+    public final boolean isEmpty() {
+        return _exps.isEmpty();
+    }
 
     /**
      * Is this predicate created by negating another predicate?
@@ -123,6 +128,9 @@ abstract class PredicateImpl extends ExpressionImpl<Boolean> implements Predicat
     
     @Override
     org.apache.openjpa.kernel.exps.Value toValue(ExpressionFactory factory, CriteriaQueryImpl<?> q) {
+        if (_exps.isEmpty()) {
+            return factory.newLiteral(_op == BooleanOperator.AND, Literal.TYPE_BOOLEAN);
+        }
         throw new AbstractMethodError(this.getClass().getName());
     }
     

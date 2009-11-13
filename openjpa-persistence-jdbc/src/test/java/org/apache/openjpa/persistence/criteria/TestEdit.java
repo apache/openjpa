@@ -198,12 +198,21 @@ public class TestEdit extends CriteriaTest {
         Root<Person> p = c.from(Person.class);
         c.where(cb.equal(p.get(Person_.name), cb.parameter(String.class, "p1")));
         
-        assertEquivalence(c, jpql, new String[]{"p1"}, new String[]{"XYZ"});
+        assertEquivalence(new QueryDecorator() {
+            public void decorate(Query q) {
+                q.setParameter("p1", "XYZ");
+            }
+        }, c, jpql);
         
         Predicate where = c.getRestriction();
         c.where(cb.and(where, cb.equal(p.get(Person_.name), cb.parameter(String.class, "p2"))));
         
-        assertEquivalence(c, editedjpql, new String[]{"p1", "p2"}, new String[]{"MNO", "ABC"});
+        assertEquivalence(new QueryDecorator() {
+            public void decorate(Query q) {
+                q.setParameter("p1", "MNO");
+                q.setParameter("p2", "ABC");
+            }
+        }, c, editedjpql);
     }
     
     public void testEditParameterizedPredicateReplaced() {
@@ -215,11 +224,20 @@ public class TestEdit extends CriteriaTest {
         c.where(cb.and(cb.equal(p.get(Person_.name), cb.parameter(String.class, "p1")),
                        cb.equal(p.get(Person_.name), cb.parameter(String.class, "p2"))));
         assertEquals(2,c.getParameters().size());
-        assertEquivalence(c, jpql, new String[]{"p1", "p2"}, new String[]{"XYZ", "ABC"});
+        assertEquivalence(new QueryDecorator() {
+            public void decorate(Query q) {
+                q.setParameter("p1", "XYZ");
+                q.setParameter("p2", "ABC");
+            }
+        }, c, jpql);
         
         c.where(cb.equal(p.get(Person_.name), cb.parameter(String.class, "p3")));
         
-        assertEquivalence(c, editedjpql, new String[]{"p3"}, new String[]{"MNO"});
+        assertEquivalence(new QueryDecorator() {
+            public void decorate(Query q) {
+                q.setParameter("p3", "MNO");
+            }
+        }, c, editedjpql);
     }
     
     public void testEditParameterizedPredicateRemoved() {
@@ -231,11 +249,20 @@ public class TestEdit extends CriteriaTest {
         c.where(cb.and(cb.equal(p.get(Person_.name), cb.parameter(String.class, "p1")),
                        cb.equal(p.get(Person_.name), cb.parameter(String.class, "p2"))));
         assertEquals(2,c.getParameters().size());
-        assertEquivalence(c, jpql, new String[]{"p1", "p2"}, new String[]{"XYZ", "ABC"});
+        assertEquivalence(new QueryDecorator() {
+            public void decorate(Query q) {
+                q.setParameter("p1", "XYZ");
+                q.setParameter("p2", "ABC");
+            }
+        }, c, jpql);
         
         c.where(cb.equal(p.get(Person_.name), cb.parameter(String.class, "p1")));
         
-        assertEquivalence(c, editedjpql, new String[]{"p1"}, new String[]{"MNO"});
+        assertEquivalence(new QueryDecorator() {
+            public void decorate(Query q) {
+                q.setParameter("p1", "MNO");
+            }
+        }, c, editedjpql);
     }
     
     public void testSerachWithinResult() {

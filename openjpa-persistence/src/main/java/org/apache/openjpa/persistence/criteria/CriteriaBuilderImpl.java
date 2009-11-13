@@ -39,6 +39,7 @@ import javax.persistence.criteria.ParameterExpression;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Selection;
 import javax.persistence.criteria.Subquery;
+import javax.persistence.criteria.Predicate.BooleanOperator;
 import javax.persistence.metamodel.Attribute;
 import javax.persistence.metamodel.ManagedType;
 import javax.persistence.metamodel.Metamodel;
@@ -328,7 +329,13 @@ public class CriteriaBuilderImpl implements OpenJPACriteriaBuilder, ExpressionPa
     }
 
     public Predicate isTrue(Expression<Boolean> x) {
-        return new Expressions.Equal(x, false);
+        if (x instanceof PredicateImpl) {
+            PredicateImpl predicate = (PredicateImpl)x; 
+            if (predicate.isEmpty()) {
+                return predicate.getOperator() == BooleanOperator.AND ? PredicateImpl.TRUE : PredicateImpl.FALSE;
+            }
+        }
+        return new Expressions.Equal(x, true);
     }
 
     public <K, M extends Map<K, ?>> Expression<Set<K>> keys(M map) {

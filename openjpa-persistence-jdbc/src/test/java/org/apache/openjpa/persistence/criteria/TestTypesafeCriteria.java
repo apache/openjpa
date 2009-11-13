@@ -1374,4 +1374,19 @@ public class TestTypesafeCriteria extends CriteriaTest {
         }, c, jpql);
     }
 
+    public void testEmptyAnd() {
+        CriteriaQuery<Order> c = cb.createQuery(Order.class);
+        Root<Order> order = c.from(Order.class);
+        c.where(cb.and(cb.not(cb.equal(order.get(Order_.customer).get(Customer_.name), "Robert E. Bissett")),
+                cb.isTrue(cb.conjunction())));
+        em.createQuery(c).getResultList();
+    }
+    
+    public void testEmptyOr() {
+        CriteriaQuery<Order> c = cb.createQuery(Order.class);
+        Root<Order> order = c.from(Order.class);
+        c.where(cb.and(cb.not(cb.equal(order.get(Order_.customer).get(Customer_.name), "Robert E. Bissett")),
+                cb.isTrue(cb.disjunction())));
+        em.createQuery(c).getResultList();
+    }
 }

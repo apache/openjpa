@@ -103,51 +103,41 @@ public abstract class AbstractCriteriaTestCase extends TestCase {
     /**
      * Executes the given CriteriaQuery and JPQL string and compare their respective SQLs for equality.
      */
-    void assertEquivalence(CriteriaQuery<?> c, String jpql, String expectedSQL) {
-        assertEquivalence(c, jpql, null, null, expectedSQL);
-    }
-
-    /**
-     * Executes the given CriteriaQuery and JPQL string and compare their respective SQLs for equality.
-     */
     void assertEquivalence(CriteriaQuery<?> c, String jpql) {
-        System.err.println("JPQL :" + jpql);
-        System.err.println("CJQL :" + ((CriteriaQueryImpl<?>)c).toCQL());
-        assertEquivalence(c, jpql, null, null, null);
-    }
-
-    /**
-     * Executes the given CriteriaQuery and JPQL string and compare their respective SQLs for equality. Sets the
-     * supplied parameters, if any.
-     */
-    void assertEquivalence(CriteriaQuery<?> c, String jpql, String[] paramNames, Object[] params) {
-        assertEquivalence(c, jpql, paramNames, params, null);
+        assertEquivalence(null, c, jpql, null);
     }
     
     /**
-     * Executes the given CriteriaQuery and JPQL string and compare their respective SQLs for equality. Sets the
-     * supplied parameters, if any.
+     * Executes the given CriteriaQuery and JPQL string and compare their respective SQLs for equality
+     * with the expected SQL.
      */
-    void assertEquivalence(CriteriaQuery<?> c, String jpql, String[] paramNames, Object[] params,
-        String expectedSQL) {
-        Query cQ = getEntityManager().createQuery(c);
-        Query jQ = getEntityManager().createQuery(jpql);
-        setParameters(cQ, paramNames, params);
-        setParameters(jQ, paramNames, params);
-
-        executeAndCompareSQL(jpql, cQ, jQ, expectedSQL);
+    void assertEquivalence(CriteriaQuery<?> c, String jpql, String expectedSQL) {
+        assertEquivalence(null, c, jpql, expectedSQL);
+    }
+    
+    /**
+     * Executes the given CriteriaQuery and JPQL string after decorating with the given decorator,
+     * and then compare their respective SQLs for equality.
+     */
+    void assertEquivalence(QueryDecorator decorator, CriteriaQuery<?> c, String jpql) {
+        assertEquivalence(decorator, c, jpql, null);
     }
 
     /**
-     * Executes the given CriteriaQuery and JPQL string and compare their respective SQLs for equality.
+     * Executes the given CriteriaQuery and JPQL string and compare their respective SQLs for equality. 
+     * Decorates the query with the given decorator before execution.
+     * supplied parameters, if any.
      */
-    void assertEquivalence(CriteriaQuery<?> c, String jpql, Object[] params) {
-        Query jQ = getEntityManager().createQuery(jpql);
+    void assertEquivalence(QueryDecorator decorator, CriteriaQuery<?> c, String jpql, String expectedSQL) {
+        System.err.println("JPQL:[" + jpql + "]");
+        System.err.println("CQL :[" + ((OpenJPACriteriaQuery<?>)c).toCQL());
         Query cQ = getEntityManager().createQuery(c);
-        setParameters(cQ, params);
-        setParameters(jQ, params);
-
-        executeAndCompareSQL(jpql, cQ, jQ, null);
+        Query jQ = getEntityManager().createQuery(jpql);
+        if (decorator != null) {
+            decorator.decorate(cQ);
+            decorator.decorate(jQ);
+        }
+        executeAndCompareSQL(jpql, cQ, jQ, expectedSQL);
     }
 
     /**
@@ -308,15 +298,6 @@ public abstract class AbstractCriteriaTestCase extends TestCase {
         }
     }
 
-    void setParameters(Query q, String[] paramNames, Object[] params) {
-        for (int i = 0; paramNames != null && i < paramNames.length; i++)
-            q.setParameter(paramNames[i], params[i]);
-    }
-
-    void setParameters(Query q, Object[] params) {
-        for (int i = 0; params != null && i < params.length; i++)
-            q.setParameter(i + 1, params[i]);
-    }
 
     /**
      * Execute the given query and return the generated SQL. If the query execution fail because the generated SQL is
@@ -404,5 +385,13 @@ public abstract class AbstractCriteriaTestCase extends TestCase {
         List<String> getSQLs() {
             return new ArrayList<String>(sqls);
         }
+    }
+    
+    /**
+     * Interface to decorate a query such as set parameter or range before execution.
+     *
+     */
+    public interface QueryDecorator {
+        void decorate(Query q);
     }
 }
