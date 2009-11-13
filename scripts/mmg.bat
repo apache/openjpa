@@ -40,7 +40,7 @@ set JAVAC=%JAVA_HOME%\bin\javac
 
 set M_REPO="C:\Documents and Settings\Administrator\.m2\repository"
 set SPEC=geronimo-jpa_2.0_spec
-set VERSION=1.0-EA2-SNAPSHOT
+set VERSION=1.0-EA9-SNAPSHOT
 set JPA_LIB=%M_REPO%\org\apache\geronimo\specs\%SPEC%\%VERSION%\%SPEC%-%VERSION%.jar
 
 set CLASSPATH=%JPA_LIB%
