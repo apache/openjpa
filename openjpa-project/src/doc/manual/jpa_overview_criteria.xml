@@ -169,13 +169,14 @@ the annotated source code of persistent entity.
 This tool is invoked during compilation for JDK6 compiler if OpenJPA and JPA 
 libraries are specified in the compiler <code>-processorpath</code> option.
     <programlisting>
- $ javac -processorpath path/to/openjpa-all.jar mypackage/MyEntity.java
+ $ javac -processor org.apache.openjpa.persistence.meta.AnnotationProcessor6 -processorpath path/to/openjpa-all.jar mypackage/MyEntity.java
     </programlisting>
 will generate source code for canonical meta-model class <code>mypackage.MyEntity_.java</code>.
       </para>
       
       <para>
-The Annotation Processor recognizes the following options (none of them are mandatory):
+The Annotation Processor recognizes the following options specified in the command-line with <code>-A</code> 
+(none of them are mandatory):
     <itemizedlist>
         <listitem>
 			<para>
