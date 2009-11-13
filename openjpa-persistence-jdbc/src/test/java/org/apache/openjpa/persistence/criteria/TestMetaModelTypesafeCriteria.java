@@ -22,6 +22,7 @@ import java.math.BigDecimal;
 import java.util.List;
 
 import javax.persistence.Parameter;
+import javax.persistence.Query;
 import javax.persistence.Tuple;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Expression;
@@ -334,7 +335,11 @@ public class TestMetaModelTypesafeCriteria extends CriteriaTest {
         q.multiselect(c).where(cb.equal(
             c.get(customer_.getSingularAttribute("status", Integer.class)), param));
 
-        assertEquivalence(q, jpql, new String[] { "stat" }, new Object[] { 1 });
+        assertEquivalence(new QueryDecorator() {
+            public void decorate(Query q) {
+                q.setParameter("stat", 1);
+            }
+        }, q, jpql);
     }
 
     public void testKeyExpressionInSelectList() {

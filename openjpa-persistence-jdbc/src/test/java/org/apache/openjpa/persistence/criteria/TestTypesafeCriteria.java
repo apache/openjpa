@@ -25,6 +25,7 @@ import java.util.List;
 import java.util.Map;
 
 import javax.persistence.Parameter;
+import javax.persistence.Query;
 import javax.persistence.Tuple;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Expression;
@@ -33,6 +34,7 @@ import javax.persistence.criteria.JoinType;
 import javax.persistence.criteria.ListJoin;
 import javax.persistence.criteria.MapJoin;
 import javax.persistence.criteria.ParameterExpression;
+import javax.persistence.criteria.Path;
 import javax.persistence.criteria.Root;
 import javax.persistence.criteria.Selection;
 import javax.persistence.criteria.SetJoin;
@@ -539,7 +541,11 @@ public class TestTypesafeCriteria extends CriteriaTest {
         Parameter<Integer> param = cb.parameter(Integer.class, "stat");
         q.select(c).where(cb.equal(c.get(Customer_.status), param));
 
-        assertEquivalence(q, jpql, new String[] { "stat" }, new Object[] { 1 });
+        assertEquivalence(new QueryDecorator() {
+            public void decorate(Query q) {
+                q.setParameter("stat", 1);
+            }
+        }, q, jpql);
     }
     
     public void testParameters2() {
@@ -552,8 +558,12 @@ public class TestTypesafeCriteria extends CriteriaTest {
         q.select(c).where(cb.and(cb.equal(c.get(Customer_.status), param1), 
                 cb.equal(c.get(Customer_.name), param2)));
 
-        assertEquivalence(q, jpql, new String[] { "stat", "name" },
-                new Object[] { 1, "test" });
+        assertEquivalence(new QueryDecorator() {
+            public void decorate(Query q) {
+                q.setParameter("stat", 1);
+                q.setParameter("name", "test");
+            }
+        }, q, jpql);
     }
     
     public void testParameters3() {
@@ -564,7 +574,11 @@ public class TestTypesafeCriteria extends CriteriaTest {
         Parameter<Integer> param = cb.parameter(Integer.class, "stat");
         q.select(c).where(cb.equal(c.get(Customer_.status), param));
         
-        assertEquivalence(q, jpql, new String[]{"stat"}, new Object[] { 1 });
+        assertEquivalence(new QueryDecorator() {
+            public void decorate(Query q) {
+                q.setParameter("stat", 1);
+            }
+        }, q, jpql);
     }
     
     public void testParameters4() {
@@ -576,8 +590,12 @@ public class TestTypesafeCriteria extends CriteriaTest {
         Parameter<String> param2 = cb.parameter(String.class, "name");
         q.select(c).where(cb.and(cb.equal(c.get(Customer_.status), param1), 
                 cb.equal(c.get(Customer_.name), param2)));
-        assertEquivalence(q, jpql, new String[]{"stat", "name"},
-                new Object[] { 1, "test" });
+        assertEquivalence(new QueryDecorator() {
+            public void decorate(Query q) {
+                q.setParameter("stat", 1);
+                q.setParameter("name", "test");
+            }
+        }, q, jpql);
     }
     
     public void testParameters5() {
@@ -588,10 +606,14 @@ public class TestTypesafeCriteria extends CriteriaTest {
         ParameterExpression<List> param1 = cb.parameter(List.class, "coll");
         q.where(c.get(Customer_.status).in(param1));
         q.select(c);
-        List vals = new ArrayList();
+        final List vals = new ArrayList();
         vals.add(1);
         vals.add(2);
-        assertEquivalence(q, jpql, new String[] {"coll"}, new Object[] {vals});
+        assertEquivalence(new QueryDecorator() {
+            public void decorate(Query q) {
+                q.setParameter("coll", vals);
+            }
+        }, q, jpql);
     }
     
     public void testSelectList1() {
@@ -1332,6 +1354,24 @@ public class TestTypesafeCriteria extends CriteriaTest {
             fail("Expected to fail on invalid alias");
         } catch (IllegalArgumentException e) {
         }
+    }
+    
+    public void testGroupByOnMaxResult() {
+        String jpql = "SELECT c.address.country, count(c) from Customer c GROUP BY c.address.country " +
+                      "HAVING COUNT(c.address.country)>3";
+        
+        CriteriaQuery<Object[]> c = cb.createQuery(Object[].class);
+        Root<Customer> customer = c.from(Customer.class);
+        Path<String> country = customer.get(Customer_.address).get(Address_.country);
+        c.multiselect(country, cb.count(customer))
+         .groupBy(country)
+         .having(cb.gt(cb.count(country), 3));
+        
+        assertEquivalence(new QueryDecorator(){
+            public void decorate(Query q) {
+                q.setMaxResults(20);
+            }
+        }, c, jpql);
     }
 
 }

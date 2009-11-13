@@ -23,6 +23,7 @@ import java.sql.Time;
 import java.sql.Timestamp;
 import java.util.List;
 
+import javax.persistence.Query;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Root;
 
@@ -103,7 +104,7 @@ public class TestDateStringConversion extends CriteriaTest {
         
         Date earlier = new Date(now - 1000);
         
-        String dateString = createJDBCEscapeString(earlier);
+        final String dateString = createJDBCEscapeString(earlier);
         String jpql = "select d from Dependent d where d.endDate >= :dateString ORDER BY d.endDate";
         CriteriaQuery<Dependent> c = cb.createQuery(Dependent.class);
         Root<Dependent> d = c.from(Dependent.class);
@@ -112,7 +113,12 @@ public class TestDateStringConversion extends CriteriaTest {
                 .as(Date.class)));
         c.orderBy(cb.asc(d.get(Dependent_.endDate)));
         
-        assertEquivalence(c, jpql, new String[]{"dateString"}, new Object[]{dateString});
+        assertEquivalence(new QueryDecorator() {
+            public void decorate(Query q) {
+                q.setParameter("dateString", dateString);
+            }
+        }, c, jpql);
+
     }
     
     String createJDBCEscapeString(Object time) {

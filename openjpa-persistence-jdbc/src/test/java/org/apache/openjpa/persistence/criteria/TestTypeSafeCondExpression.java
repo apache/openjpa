@@ -37,6 +37,7 @@
 package org.apache.openjpa.persistence.criteria;
 
 import javax.persistence.Parameter;
+import javax.persistence.Query;
 import javax.persistence.Tuple;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Expression;
@@ -44,6 +45,7 @@ import javax.persistence.criteria.ParameterExpression;
 import javax.persistence.criteria.Root;
 import javax.persistence.criteria.Subquery;
 
+import org.apache.openjpa.persistence.criteria.AbstractCriteriaTestCase.QueryDecorator;
 import org.apache.openjpa.persistence.test.DatabasePlatform;
 
 /**
@@ -163,7 +165,11 @@ public class TestTypeSafeCondExpression extends CriteriaTest {
         cq.where(cb.like(c.get(CompUser_.name), param, '|'));
         cq.select(c.get(CompUser_.name));
         
-        assertEquivalence(cq, query, new String[]{"name"}, new Object[] {"%|_%"});
+        assertEquivalence(new QueryDecorator() {
+            public void decorate(Query q) {
+                q.setParameter("name", "%|_%");
+            }
+        }, cq, query);
     }
 
     public void testNullExpression() {
@@ -501,8 +507,12 @@ public class TestTypeSafeCondExpression extends CriteriaTest {
         cq.where(e.type().in(param1, param2));
         cq.orderBy(cb.asc(e.get(CompUser_.name)));
         
-        assertEquivalence(cq, jpql, new String[]{"a","b"}, 
-             new Class[]{MaleUser.class,FemaleUser.class});
+        assertEquivalence(new QueryDecorator() {
+            public void decorate(Query q) {
+                q.setParameter("a", MaleUser.class);
+                q.setParameter("b", FemaleUser.class);
+            }
+        }, cq, jpql);
     }
 
     public void testTypeExpression2() {
@@ -516,7 +526,11 @@ public class TestTypeSafeCondExpression extends CriteriaTest {
         q.multiselect(e.type());
         q.where(cb.equal(e.type(), param1).not());
         
-        assertEquivalence(q, query, new String[]{"t"}, new Class[]{MaleUser.class});
+        assertEquivalence(new QueryDecorator() {
+            public void decorate(Query q) {
+                q.setParameter("t", MaleUser.class);
+            }
+        }, q, query);
     }
 
     public void testTypeExpression3() {

@@ -23,6 +23,7 @@ import java.util.Map;
 import java.util.Set;
 
 import javax.persistence.Parameter;
+import javax.persistence.Query;
 import javax.persistence.Tuple;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Expression;
@@ -1158,7 +1159,11 @@ public class TestEmbeddableCriteria extends EmbeddableDomainTestCase {
         q.multiselect(e, e.get(Embed_Embed_.intVal1), e.get(Embed_Embed_.embed).get(Embed_.intVal2));
         ParameterExpression<Embed_Embed> param1 = cb.parameter(Embed_Embed.class, "embed2");
         q.where(cb.isMember(param1, a.get(EntityA_Coll_Embed_Embed_.embeds)));
-        assertEquivalence(q, jpql, new String[]{"embed2"}, new Object[]{new Embed_Embed()});
+        assertEquivalence(new QueryDecorator() {
+            public void decorate(Query q) {
+                q.setParameter("embed2", new Embed_Embed());
+            }
+        }, q, jpql);
     }
     
     @AllowFailure(message="JPQL parse error")
@@ -1172,7 +1177,12 @@ public class TestEmbeddableCriteria extends EmbeddableDomainTestCase {
         q.multiselect(e, e.get(Embed_Embed_.intVal1), e.get(Embed_Embed_.embed).get(Embed_.intVal2));
         ParameterExpression<Embed_Embed> param1 = cb.parameter(Embed_Embed.class, "embed2");
         q.where(cb.isMember(param1, a.get(EntityA_Coll_Embed_Embed_.embeds)));
-        assertEquivalence(q, jpql, new String[]{"embed2"}, new Object[]{new Embed_Embed()});
+        
+        assertEquivalence(new QueryDecorator() {
+            public void decorate(Query q) {
+                q.setParameter("embed2", new Embed_Embed());
+            }
+        }, q, jpql);
     }
     
     @AllowFailure(message="JPQL parse error")
@@ -1186,7 +1196,11 @@ public class TestEmbeddableCriteria extends EmbeddableDomainTestCase {
         q.multiselect(e, e.get(Embed_Embed_.intVal1), e.get(Embed_Embed_.embed).get(Embed_.intVal2));
         Parameter<Embed_Embed> param1 = cb.parameter(Embed_Embed.class);
         //q.where(cb.equal(param1, e));
-        assertEquivalence(q, jpql, new String[]{"embed2"}, new Object[]{new Embed_Embed()});
+        assertEquivalence(new QueryDecorator() {
+            public void decorate(Query q) {
+                q.setParameter("embed2", new Embed_Embed());
+            }
+        }, q, jpql);
     }
 
     public void testEmbeddableQuery87() {
@@ -1489,7 +1503,11 @@ public class TestEmbeddableCriteria extends EmbeddableDomainTestCase {
         ParameterExpression<String> param1 = cb.parameter(String.class, "image");
         q.where(cb.equal(param1, cb.any(sq)));
         q.orderBy(cb.asc(i));
-        assertEquivalence(q, jpql, new String[]{"image"}, new String[]{"my photo"});
+        assertEquivalence(new QueryDecorator() {
+            public void decorate(Query q) {
+                q.setParameter("image", "my photo");
+            }
+        }, q, jpql);
     }
     
     public void testEmbeddableQuery112() {
@@ -1505,7 +1523,11 @@ public class TestEmbeddableCriteria extends EmbeddableDomainTestCase {
         ParameterExpression<String> param1 = cb.parameter(String.class, "image");
         q.where(cb.equal(param1, cb.any(sq)));
         q.orderBy(cb.asc(i));
-        assertEquivalence(q, jpql, new String[]{"image"}, new String[]{"my photo"});
+        assertEquivalence(new QueryDecorator() {
+            public void decorate(Query q) {
+                q.setParameter("image", "my photo");
+            }
+        }, q, jpql);
     }
     
     public void testEmbeddableQuery113() {
@@ -1522,7 +1544,11 @@ public class TestEmbeddableCriteria extends EmbeddableDomainTestCase {
         sq.where(cb.equal(param1, e.key()));
         q.where(cb.exists(sq));
         q.orderBy(cb.asc(i));
-        assertEquivalence(q, jpql, new String[]{"image"}, new String[]{"my photo"});
+        assertEquivalence(new QueryDecorator() {
+            public void decorate(Query q) {
+                q.setParameter("image", "my photo");
+            }
+        }, q, jpql);
     }
      
     public void testEmbeddableQuery114() {
@@ -1538,7 +1564,11 @@ public class TestEmbeddableCriteria extends EmbeddableDomainTestCase {
         ParameterExpression<String> param1 = cb.parameter(String.class, "image");
         q.where(cb.equal(param1, cb.any(sq)));
         q.orderBy(cb.asc(i));
-        assertEquivalence(q, jpql, new String[]{"image"}, new String[]{"my photo"});
+        assertEquivalence(new QueryDecorator() {
+            public void decorate(Query q) {
+                q.setParameter("image", "my photo");
+            }
+        }, q, jpql);
     }
     
     public void testEmbeddableQuery115() {
@@ -1555,7 +1585,11 @@ public class TestEmbeddableCriteria extends EmbeddableDomainTestCase {
         sq.where(cb.equal(param1, e.key()));
         q.where(cb.exists(sq));
         q.orderBy(cb.asc(i));
-        assertEquivalence(q, jpql, new String[]{"image"}, new String[]{"my photo"});
+        assertEquivalence(new QueryDecorator() {
+            public void decorate(Query q) {
+                q.setParameter("image", "my photo");
+            }
+        }, q, jpql);
     }
     
     public void testEmbeddableQuery116() {
@@ -1571,7 +1605,11 @@ public class TestEmbeddableCriteria extends EmbeddableDomainTestCase {
         ParameterExpression<String> param1 = cb.parameter(String.class, "image");
         q.where(cb.equal(param1, cb.any(sq)));
         q.orderBy(cb.asc(i));
-        assertEquivalence(q, jpql, new String[]{"image"}, new String[]{"my photo"});
+        assertEquivalence(new QueryDecorator() {
+            public void decorate(Query q) {
+                q.setParameter("image", "my photo");
+            }
+        }, q, jpql);
     }
     
     public void testEmbeddableQuery117() {
@@ -1588,7 +1626,11 @@ public class TestEmbeddableCriteria extends EmbeddableDomainTestCase {
         sq.where(cb.equal(param1, e.key()));
         q.where(cb.exists(sq));
         q.orderBy(cb.asc(i));
-        assertEquivalence(q, jpql, new String[]{"image"}, new String[]{"my photo"});
+        assertEquivalence(new QueryDecorator() {
+            public void decorate(Query q) {
+                q.setParameter("image", "my photo");
+            }
+        }, q, jpql);
     }
     
     public void testEmbeddableQuery118() {
@@ -1621,7 +1663,11 @@ public class TestEmbeddableCriteria extends EmbeddableDomainTestCase {
         sq.where(cb.equal(d.value().get(VicePresident_.id), 1));
         q.where(cb.equal(param1, sq));
         q.orderBy(cb.asc(c));
-        assertEquivalence(q, jpql, new String[]{"division"}, new Object[]{new Division()});
+        assertEquivalence(new QueryDecorator() {
+            public void decorate(Query q) {
+                q.setParameter("division", new Division());
+            }
+        }, q, jpql);
     }
     
     public void testEmbeddableQuery122() {
@@ -1638,7 +1684,11 @@ public class TestEmbeddableCriteria extends EmbeddableDomainTestCase {
         sq.select(d.key());
         q.where(cb.exists(sq));
         q.orderBy(cb.asc(c));
-        assertEquivalence(q, jpql, new String[]{"division"}, new Object[]{new Division()});
+        assertEquivalence(new QueryDecorator() {
+            public void decorate(Query q) {
+                q.setParameter("division", new Division());
+            }
+        }, q, jpql);
     }
     
     public void testEmbeddableQuery123() {
@@ -1655,7 +1705,11 @@ public class TestEmbeddableCriteria extends EmbeddableDomainTestCase {
         sq.where(cb.equal(d.key(), param1));
         q.where(cb.exists(sq));
         q.orderBy(cb.asc(c));
-        assertEquivalence(q, jpql, new String[]{"division"}, new Object[]{new Division()});
+        assertEquivalence(new QueryDecorator() {
+            public void decorate(Query q) {
+                q.setParameter("division", new Division());
+            }
+        }, q, jpql);
     }
     
     public void testEmbeddableQuery124() {
@@ -1672,7 +1726,11 @@ public class TestEmbeddableCriteria extends EmbeddableDomainTestCase {
         sq.where(cb.equal(d.value().get(VicePresident_.id), 3));
         q.where(cb.equal(param1, sq));
         q.orderBy(cb.asc(c));
-        assertEquivalence(q, jpql, new String[]{"division"}, new Object[]{new Division()});
+        assertEquivalence(new QueryDecorator() {
+            public void decorate(Query q) {
+                q.setParameter("division", new Division());
+            }
+        }, q, jpql);
     }
     
     public void testEmbeddableQuery125() {
@@ -1689,7 +1747,11 @@ public class TestEmbeddableCriteria extends EmbeddableDomainTestCase {
         sq.select(d.key());
         q.where(cb.exists(sq));
         q.orderBy(cb.asc(c));
-        assertEquivalence(q, jpql, new String[]{"k"}, new Object[]{new Division()});
+        assertEquivalence(new QueryDecorator() {
+            public void decorate(Query q) {
+                q.setParameter("k", new Division());
+            }
+        }, q, jpql);
     }
     
     public void testEmbeddableQuery126() {
@@ -1706,7 +1768,11 @@ public class TestEmbeddableCriteria extends EmbeddableDomainTestCase {
         sq.select(d.value());
         q.where(cb.exists(sq));
         q.orderBy(cb.asc(c));
-        assertEquivalence(q, jpql, new String[]{"k"}, new Object[]{new Division()});
+        assertEquivalence(new QueryDecorator() {
+            public void decorate(Query q) {
+                q.setParameter("k", new Division());
+            }
+        }, q, jpql);
     }
 
     public void testEmbeddableQuery127() {

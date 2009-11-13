@@ -34,6 +34,9 @@ import javax.persistence.criteria.Root;
 import javax.persistence.criteria.SetJoin;
 import javax.persistence.criteria.Subquery;
 
+import org.apache.openjpa.persistence.criteria.AbstractCriteriaTestCase.QueryDecorator;
+import org.apache.openjpa.persistence.embed.Division;
+
 /**
  * Tests type-strict version of Criteria API.
  * 
@@ -1499,10 +1502,13 @@ public class TestJPQLSubquery extends CriteriaTest {
         Predicate p4 = cb.lessThan(d.get(Dependent_.id).get(DependentId_.effDate), maxDate);
         
         q.where(cb.and(cb.and(cb.and(p1, p2), p3), p4));
-        
-        assertEquivalence(q, jpql, 
-            new String[]{"empid", "minDate", "maxDate"}, 
-            new Object[]{101L, new Date(100), new Date(100000)});
+        assertEquivalence(new QueryDecorator() {
+            public void decorate(Query q) {
+                q.setParameter("empid",   101L);
+                q.setParameter("minDate", new Date(100));
+                q.setParameter("maxDate", new Date(100000));
+            }
+        }, q, jpql);
     }
     
     public void testCorrelatedNestedSubquery1() {

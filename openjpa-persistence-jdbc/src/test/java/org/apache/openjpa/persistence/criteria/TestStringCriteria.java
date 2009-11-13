@@ -21,6 +21,7 @@ package org.apache.openjpa.persistence.criteria;
 import java.math.BigDecimal;
 import java.util.Collection;
 
+import javax.persistence.Query;
 import javax.persistence.Tuple;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Expression;
@@ -34,6 +35,7 @@ import javax.persistence.criteria.Root;
 import javax.persistence.criteria.SetJoin;
 import javax.persistence.criteria.Subquery;
 
+import org.apache.openjpa.persistence.criteria.AbstractCriteriaTestCase.QueryDecorator;
 import org.apache.openjpa.persistence.test.AllowFailure;
 
 public class TestStringCriteria extends CriteriaTest {
@@ -215,7 +217,11 @@ public class TestStringCriteria extends CriteriaTest {
         param.alias("stat");
         q.select(c).where(cb.equal(c.get("status"), param));
 
-        assertEquivalence(q, jpql, new String[] { "stat" }, new Object[] { 1 });
+        assertEquivalence(new QueryDecorator() {
+            public void decorate(Query q) {
+                q.setParameter("stat", 1);
+            }
+        }, q, jpql);
     }
 
     public void testSelectList() {
