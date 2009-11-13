@@ -99,6 +99,12 @@ public class SourceCode {
 		String pkgName = name.getPackageName();
 		if ("java.lang".equals(pkgName))
 			return false;
+		for (Import i : imports) {
+		    if (i.getClassName().hides(name)) {
+		        i.getClassName().useFullName();
+		        name.useFullName();
+		    }
+		}
 		return imports.add(new Import(name));
 	}
 	
@@ -584,6 +590,8 @@ public class SourceCode {
 		}
 		
 		public void write(PrintWriter out, int tab) {
+		    if (name.usingFullName())
+		        return;
 		    String pkg = name.getPackageName();
 		    if (pkg.length() == 0 || pkg.equals(getPackage().name))
 		        return;
@@ -596,6 +604,10 @@ public class SourceCode {
 				return name.equals(that.name);
 			}
 			return false;
+		}
+		
+		ClassName getClassName() {
+		    return name;
 		}
 	}
 	
@@ -729,6 +741,7 @@ public class SourceCode {
         public final String simpleName;
         public final String pkgName;
         private String  arrayMarker = BLANK;
+        private boolean useFullName = false;
         
 	    ClassName(String name) {
 	    	while (isArray(name)) {
@@ -769,10 +782,10 @@ public class SourceCode {
 	    }
 	    
 	    /**
-	     * Gets the simple name of this receiver.
+	     * Gets the full or simple name of this receiver based on useFullName flag.
 	     */
 	    public String toString() {
-	        return getSimpleName();
+	        return (useFullName ? fullName : simpleName) + arrayMarker;
 	    }
 	    
 	    /**
@@ -804,6 +817,19 @@ public class SourceCode {
 	    String getComponentName(String name) {
 	    	return (!isArray(name)) ? name : 
 	    		name.substring(0, name.length()-"[]".length());
+	    }
+	    
+	    boolean hides(ClassName other) {
+	        return this.getSimpleName().equals(other.getSimpleName())
+	            && !this.fullName.equals(other.fullName);
+	    }
+	    
+	    void useFullName() {
+	        useFullName = true;
+	    }
+	    
+	    boolean usingFullName() {
+	        return useFullName;
 	    }
 	    
 	}
