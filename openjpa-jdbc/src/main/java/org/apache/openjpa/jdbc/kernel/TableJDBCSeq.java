@@ -260,7 +260,7 @@ public class TableJDBCSeq
             // importTable() does not import unique constraints
             Unique[] uniques = _pkColumn.getTable().getUniques();
             for (Unique u : uniques) {
-            	copy.importUnique(u);
+            	copy.importUnique(u, _conf.getDBDictionaryInstance());
             }
             // we need to reset the table name in the column with the
             // fully qualified name for matching the table name from the

@@ -737,7 +737,7 @@ public class Table
     /**
      * Import a constraint; column names must match columns of this table.
      */
-    public Unique importUnique(Unique unq) {
+    public Unique importUnique(Unique unq, DBDictionary dict) {
         if (unq == null)
             return null;
 
@@ -747,6 +747,10 @@ public class Table
         Column[] cols = unq.getColumns();
         for (int i = 0; i < cols.length; i++)
             copy.addColumn(getColumn(cols[i].getName()));
+        if (dict != null && !dict.supportsNullUniqueConlumn) {
+            for (Column col : copy.getColumns())
+                col.setNotNull(true);
+        }
         return copy;
     }
 
