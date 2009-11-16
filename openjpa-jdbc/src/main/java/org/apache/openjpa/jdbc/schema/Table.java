@@ -376,6 +376,13 @@ public class Table
         return col;
     }
 
+    /**
+     * Add a name to this NameSet
+     */
+    public void addCorrectedColumnName(String name, boolean validate) {
+        addName(name, validate);
+    }
+
 
     /**
      * Remove the given column from the table.
@@ -815,16 +822,5 @@ public class Table
 
     public void setColNumber(int colNum) {
         _colNum = colNum;
-    }
-
-    /**
-    * Add a column to the subNames set to avoid naming conflict.
-    */
-    public void addSubColumn(String name) {
-        addSubName(name);
-    }
-
-    public void resetSubColumns() {
-        resetSubNames();
     }
 }
