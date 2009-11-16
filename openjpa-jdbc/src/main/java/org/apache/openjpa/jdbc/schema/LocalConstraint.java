@@ -21,7 +21,6 @@ package org.apache.openjpa.jdbc.schema;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.commons.lang.ObjectUtils;
 import org.apache.openjpa.lib.util.Localizer;
 import org.apache.openjpa.util.InvalidStateException;
 
@@ -32,13 +31,13 @@ import org.apache.openjpa.util.InvalidStateException;
  *
  * @author Abe White
  */
+@SuppressWarnings("serial")
 public abstract class LocalConstraint
     extends Constraint {
 
-    private static final Localizer _loc = Localizer.forPackage
-        (LocalConstraint.class);
+    private static final Localizer _loc = Localizer.forPackage(LocalConstraint.class);
 
-    private List _colList = null;
+    private List<Column> _colList = null;
     private Column[] _cols = null;
 
     /**
@@ -99,7 +98,7 @@ public abstract class LocalConstraint
                 col == null ? null : getTable()));
     	
         if (_colList == null)
-            _colList = new ArrayList(3);
+            _colList = new ArrayList<Column>(3);
         else if (_colList.contains(col))
             return;
 
@@ -124,7 +123,7 @@ public abstract class LocalConstraint
     }
 
     /**
-     * Return true if the pk includes the given column.
+     * Return true if this constraint includes the given column.
      */
     public boolean containsColumn(Column col) {
         if (col == null || _colList == null)
@@ -133,7 +132,7 @@ public abstract class LocalConstraint
     }
 
     /**
-     * Ref all columns in this constraint.
+     * Reference all columns in this constraint.
      */
     public void refColumns() {
         Column[] cols = getColumns();
@@ -142,7 +141,7 @@ public abstract class LocalConstraint
     }
 
     /**
-     * Deref all columns in this constraint.
+     * Dereference all columns in this constraint.
      */
     public void derefColumns() {
         Column[] cols = getColumns();
