@@ -144,7 +144,7 @@ public class SchemaGroup
                 tab.importIndex(idxs[j]);
             unqs = tables[i].getUniques();
             for (int j = 0; j < unqs.length; j++)
-                tab.importUnique(unqs[j], null);
+                tab.importUnique(unqs[j]);
         }
         return copy;
     }

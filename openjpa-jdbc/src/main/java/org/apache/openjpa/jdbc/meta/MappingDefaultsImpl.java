@@ -539,7 +539,9 @@ public class MappingDefaultsImpl
             else if (_dsIdName != null)
                 cols[i].setName(_dsIdName + i);
             correctName(table, cols[i]);
+            table.addSubColumn(cols[i].getName());
         }
+        table.resetSubColumns();
     }
 
     /**
@@ -551,9 +553,7 @@ public class MappingDefaultsImpl
             String name = col.getName();
             if (_removeHungarianNotation)
                 name = removeHungarianNotation(name);
-            String correctedName = dict.getValidColumnName(name, table);
-            col.setName(correctedName);
-            table.addCorrectedColumnName(correctedName, true);
+            col.setName(dict.getValidColumnName(name, table));
         }
     }
 
@@ -584,7 +584,9 @@ public class MappingDefaultsImpl
             } else if (_versName != null)
                 cols[i].setName(_versName + i);
             correctName(table, cols[i]);
+            table.addSubColumn(cols[i].getName());
         }
+        table.resetSubColumns();
     }
 
     public void populateColumns(Discriminator disc, Table table,
@@ -595,7 +597,9 @@ public class MappingDefaultsImpl
             else if (_discName != null)
                 cols[i].setName(_discName + i);
             correctName(table, cols[i]);
+            table.addSubColumn(cols[i].getName());
         }
+        table.resetSubColumns();
     }
 
     public void populateJoinColumn(ClassMapping cm, Table local, Table foreign,
@@ -620,8 +624,11 @@ public class MappingDefaultsImpl
 
     public void populateColumns(ValueMapping vm, String name, Table table,
         Column[] cols) {
-        for (int i = 0; i < cols.length; i++)
+        for (int i = 0; i < cols.length; i++) {
             correctName(table, cols[i]);
+            table.addSubColumn(cols[i].getName());
+        }
+        table.resetSubColumns();
     }
 
     public boolean populateOrderColumns(FieldMapping fm, Table table,
@@ -632,7 +639,9 @@ public class MappingDefaultsImpl
             else if (_orderName != null)
                 cols[i].setName(_orderName + i);
             correctName(table, cols[i]);
+            table.addSubColumn(cols[i].getName());
         }
+        table.resetSubColumns();
         return _orderLists && (JavaTypes.ARRAY == fm.getTypeCode()
             || List.class.isAssignableFrom(fm.getType()));
     }
@@ -645,7 +654,9 @@ public class MappingDefaultsImpl
             else if (_nullIndName != null)
                 cols[i].setName(_nullIndName + i);
             correctName(table, cols[i]);
+            table.addSubColumn(cols[i].getName());
         }
+        table.resetSubColumns();
         return _addNullInd;
     }
 
