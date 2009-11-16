@@ -751,8 +751,11 @@ public class TestPreparedQueryCache extends TestCase {
         em.getTransaction().begin();
         Query q2 = em.createQuery(jpql);
         assertEquals(QueryLanguages.LANG_PREPARED_SQL, OpenJPAPersistence.cast(q2).getLanguage());
+        LockModeType lmode1 = q2.getLockMode();
         q2.setLockMode(LockModeType.OPTIMISTIC);
+        LockModeType lmode2 = q2.getLockMode();
         assertEquals(JPQLParser.LANG_JPQL, OpenJPAPersistence.cast(q2).getLanguage());
+        assertFalse(lmode1.equals(lmode2));
         List<Author> authors2 = q2.getResultList();
         em.getTransaction().rollback();
     }

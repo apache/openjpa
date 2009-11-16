@@ -77,7 +77,6 @@ import org.apache.openjpa.util.UserException;
 @SuppressWarnings("serial")
 public class QueryImpl<X> implements OpenJPAQuerySPI<X>, Serializable {
 
-    private static final Object[] EMPTY_ARRAY = new Object[0];
     private static final Localizer _loc = Localizer.forPackage(QueryImpl.class);
 
 	private DelegatingQuery _query;
@@ -86,7 +85,6 @@ public class QueryImpl<X> implements OpenJPAQuerySPI<X>, Serializable {
 
     private Map<Parameter<?>, Object> _boundParams;
     private Map<Object, Parameter<?>> _declaredParams;
-    private Class<?> _paramKeyType;
 	private String _id;
     private transient ReentrantLock _lock = null;
 	private final HintHandler _hintHandler;
@@ -377,7 +375,11 @@ public class QueryImpl<X> implements OpenJPAQuerySPI<X>, Serializable {
 	 */
 	void assertJPQLOrCriteriaQuery() {
         String language = getLanguage();
-        if (!(JPQLParser.LANG_JPQL.equals(language) || CriteriaBuilderImpl.LANG_CRITERIA.equals(language))) {
+        if (JPQLParser.LANG_JPQL.equals(language) 
+         || QueryLanguages.LANG_PREPARED_SQL.equals(language)
+         || CriteriaBuilderImpl.LANG_CRITERIA.equals(language)) {
+            return;
+        } else {
             throw new IllegalStateException(_loc.get("not-jpql-or-criteria-query").getMessage());
         }
 	}
