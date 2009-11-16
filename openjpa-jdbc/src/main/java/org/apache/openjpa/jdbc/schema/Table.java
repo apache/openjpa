@@ -376,13 +376,6 @@ public class Table
         return col;
     }
 
-    /**
-     * Add a name to this NameSet
-     */
-    public void addCorrectedColumnName(String name, boolean validate) {
-        addName(name, validate);
-    }
-
 
     /**
      * Remove the given column from the table.
@@ -737,7 +730,7 @@ public class Table
     /**
      * Import a constraint; column names must match columns of this table.
      */
-    public Unique importUnique(Unique unq, DBDictionary dict) {
+    public Unique importUnique(Unique unq) {
         if (unq == null)
             return null;
 
@@ -747,10 +740,6 @@ public class Table
         Column[] cols = unq.getColumns();
         for (int i = 0; i < cols.length; i++)
             copy.addColumn(getColumn(cols[i].getName()));
-        if (dict != null && !dict.supportsNullUniqueConlumn) {
-            for (Column col : copy.getColumns())
-                col.setNotNull(true);
-        }
         return copy;
     }
 
@@ -826,5 +815,16 @@ public class Table
 
     public void setColNumber(int colNum) {
         _colNum = colNum;
+    }
+
+    /**
+    * Add a column to the subNames set to avoid naming conflict.
+    */
+    public void addSubColumn(String name) {
+        addSubName(name);
+    }
+
+    public void resetSubColumns() {
+        resetSubNames();
     }
 }

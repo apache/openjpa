@@ -24,7 +24,6 @@ package org.apache.openjpa.jdbc.schema;
  * @author Abe White
  * @author Pinaki Poddar
  */
-@SuppressWarnings("serial")
 public class Unique
     extends LocalConstraint {
 	
@@ -47,7 +46,26 @@ public class Unique
     }
     
     /**
-     * Return true if the structure of this constraint matches that of
+     * Adds the given column. 
+     * The added column is set to non-nullable because a unique constraint
+     * on the database requires that its constituent columns are NOT NULL. 
+     * @see Column#setNotNull(boolean)
+     */
+    public void addColumn(Column col) {
+    	super.addColumn(col);
+    	col.setNotNull(true);
+    }
+    
+    /**
+     * Set the name of the constraint. This method cannot be called if the
+     * constraint already belongs to a table. 
+     */
+    public void setName(String name) {
+        super.setName(name);
+    }
+    
+    /**
+     * Return true if the structure of this primary key matches that of
      * the given one (same table, same columns).
      */
     public boolean equalsUnique(Unique unq) {

@@ -24,7 +24,6 @@ package org.apache.openjpa.jdbc.schema;
  *
  * @author Abe White
  */
-@SuppressWarnings("serial")
 public abstract class Constraint
     extends ReferenceCounter {
 
@@ -181,6 +180,9 @@ public abstract class Constraint
     public String toString() {
         if (getName() != null)
             return getName();
-        return "<" + getClass().getSimpleName().toLowerCase() + ">";
+
+        String name = getClass().getName();
+        name = name.substring(name.lastIndexOf('.') + 1);
+        return "<" + name.toLowerCase() + ">";
     }
 }

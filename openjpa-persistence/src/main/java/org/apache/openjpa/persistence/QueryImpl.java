@@ -377,12 +377,9 @@ public class QueryImpl<X> implements OpenJPAQuerySPI<X>, Serializable {
 	 */
 	void assertJPQLOrCriteriaQuery() {
         String language = getLanguage();
-        if (JPQLParser.LANG_JPQL.equals(language) 
-         || QueryLanguages.LANG_PREPARED_SQL.equals(language)
-         || CriteriaBuilderImpl.LANG_CRITERIA.equals(language)) {
-            return;
+        if (!(JPQLParser.LANG_JPQL.equals(language) || CriteriaBuilderImpl.LANG_CRITERIA.equals(language))) {
+            throw new IllegalStateException(_loc.get("not-jpql-or-criteria-query").getMessage());
         }
-        throw new IllegalStateException(_loc.get("not-jpql-or-criteria-query").getMessage());
 	}
 
 	public OpenJPAQuery<X> closeAll() {

@@ -46,7 +46,6 @@ import org.apache.openjpa.jdbc.schema.SchemaGroup;
 import org.apache.openjpa.jdbc.schema.SchemaSerializer;
 import org.apache.openjpa.jdbc.schema.SchemaTool;
 import org.apache.openjpa.jdbc.schema.Table;
-import org.apache.openjpa.jdbc.schema.Unique;
 import org.apache.openjpa.jdbc.schema.XMLSchemaSerializer;
 import org.apache.openjpa.jdbc.sql.DBDictionary;
 import org.apache.openjpa.kernel.Seq;
@@ -754,7 +753,6 @@ public class MappingTool
         Schema[] schemas = _schema.getSchemas();
         Table[] tables;
         Column[] cols;
-        Unique[] unqs;
         for (int i = 0; i < schemas.length; i++) {
             tables = schemas[i].getTables();
             for (int j = 0; j < tables.length; j++) {
@@ -763,17 +761,8 @@ public class MappingTool
 
                 tables[j].getPrimaryKey().setLogical(false);
                 cols = tables[j].getPrimaryKey().getColumns();
-                for (int k = 0; k < cols.length; k++) {
+                for (int k = 0; k < cols.length; k++)
                     cols[k].setNotNull(true);
-                }
-                unqs = tables[j].getUniques();
-                if (!_dict.supportsNullUniqueConlumn) {
-                    for (Unique u : unqs) {
-                        for (Column c : u.getColumns()) {
-                            c.setNotNull(true);
-                        }
-                    }
-                }
             }
         }
     }

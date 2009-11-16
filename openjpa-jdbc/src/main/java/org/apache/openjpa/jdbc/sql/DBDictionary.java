@@ -187,7 +187,6 @@ public class DBDictionary
     public boolean supportsRestrictDeleteAction = true;
     public boolean supportsCascadeDeleteAction = true;
     public boolean supportsNullDeleteAction = true;
-    public boolean supportsNullUniqueConlumn = true;
     public boolean supportsDefaultDeleteAction = true;
     public boolean supportsRestrictUpdateAction = true;
     public boolean supportsCascadeUpdateAction = true;

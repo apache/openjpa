@@ -590,7 +590,7 @@ public class SchemaTool {
                 if (dbTable == null)
                     continue;
                 for (int k = 0; k < uniques.length; k++) {
-                    dbTable.importUnique(uniques[k], _dict);
+                    dbTable.importUnique(uniques[k]);
                 }
             }
         }
@@ -957,11 +957,7 @@ public class SchemaTool {
      */
     public boolean createTable(Table table)
         throws SQLException {
-        try {   
-            return executeSQL(_dict.getCreateTableSQL(table));
-        } catch (SQLException e) {
-            return false;
-        }
+        return executeSQL(_dict.getCreateTableSQL(table));
     }
 
     /**
