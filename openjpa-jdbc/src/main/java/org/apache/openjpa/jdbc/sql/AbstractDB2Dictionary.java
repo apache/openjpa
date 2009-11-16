@@ -69,6 +69,8 @@ public abstract class AbstractDB2Dictionary
         // the equivalent "X JOIN Y ON 1 = 1"
         crossJoinClause = "JOIN";
         requiresConditionForCrossJoin = true;
+        
+        supportsNullUniqueConlumn = false;
     }
 
     public void indexOf(SQLBuffer buf, FilterValue str, FilterValue find,
