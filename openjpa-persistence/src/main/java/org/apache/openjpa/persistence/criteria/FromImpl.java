@@ -175,53 +175,68 @@ class FromImpl<Z,X> extends PathImpl<Z,X> implements From<Z,X> {
         return join(attr, JoinType.INNER);
     }
 
-    public <W,Y> Join<W,Y> join(String attr, JoinType jt) {
-        assertJoinable();
-        return (Join<W,Y>)join(((ManagedType<X>)type).getSingularAttribute(attr), jt);
+    public <W,Y> Join<W,Y> join(String name, JoinType jt) {
+        assertJoinable(type);
+        ManagedType<X> mType = (ManagedType<X>)type;
+        Attribute<?, ?> attr = mType.getAttribute(name);
+        assertJoinable(attr.getDeclaringType());
+        if (attr instanceof SingularAttribute) {
+            return join((SingularAttribute)attr, jt);
+        } else if (attr instanceof ListAttribute) {
+            return join((ListAttribute)attr, jt);
+        } else if (attr instanceof SetAttribute) {
+            return join((SetAttribute)attr, jt);
+        } else if (attr instanceof CollectionAttribute) {
+            return join((CollectionAttribute)attr, jt);
+        } else if (attr instanceof MapAttribute) {
+            return join((MapAttribute)attr, jt);
+        } else {
+            throw new IllegalArgumentException(name);
+        }
     }
 
 
     public <W,Y> CollectionJoin<W, Y> joinCollection(String attr) {
-        assertJoinable();
+        assertJoinable(type);
         return (CollectionJoin<W,Y>)join(((ManagedType<X>)type).getCollection(attr), JoinType.INNER);
     }
 
     public <W,Y> CollectionJoin<W, Y> joinCollection(String attr, JoinType jt) {
-        assertJoinable();
+        assertJoinable(type);
         return (CollectionJoin<W,Y>)join(((ManagedType<X>)type).getCollection(attr), jt);
     }
 
     public <W,Y> ListJoin<W, Y> joinList(String attr) {
-        assertJoinable();
+        assertJoinable(type);
         return (ListJoin<W,Y>)join(((ManagedType<X>)type).getList(attr), JoinType.INNER);
     }
 
     public <W,Y> ListJoin<W,Y> joinList(String attr, JoinType jt) {
-        assertJoinable();
+        assertJoinable(type);
         return (ListJoin<W,Y>)join(((ManagedType<X>)type).getList(attr), jt);
     }
 
     public <W,K,V> MapJoin<W,K,V> joinMap(String attr) {
-        assertJoinable();
+        assertJoinable(type);
         return (MapJoin<W,K,V>)join(((ManagedType<X>)type).getMap(attr));
     }
 
     public <W,K,V> MapJoin<W,K,V>  joinMap(String attr, JoinType jt) {
-        assertJoinable();
+        assertJoinable(type);
         return (MapJoin<W,K,V>)join(((ManagedType<X>)type).getMap(attr));
     }
 
     public <W,Y> SetJoin<W, Y>  joinSet(String attr) {
-        assertJoinable();
+        assertJoinable(type);
         return (SetJoin<W, Y>)join(((ManagedType<X>)type).getSet(attr));
     }
 
     public <W,Y> SetJoin<W, Y>  joinSet(String attr, JoinType jt) {
-        assertJoinable();
+        assertJoinable(type);
         return (SetJoin<W, Y>)join(((ManagedType<X>)type).getSet(attr), jt);
     }
     
-    void assertJoinable() {
+    void assertJoinable(Type<?> type) {
         if (type.getPersistenceType() == PersistenceType.BASIC) {
             throw new IllegalArgumentException(this + " is a basic path and can not be navigated to ");
         }
@@ -258,7 +273,7 @@ class FromImpl<Z,X> extends PathImpl<Z,X> implements From<Z,X> {
     }
 
     public <X,Y> Fetch<X, Y> fetch(String name, JoinType jt) {
-        assertJoinable();
+        assertJoinable(type);
         Attribute<? super X,?> attr = ((ManagedType<X>)type).getAttribute(name);
         if (attr.isCollection()) {
             return fetch((PluralAttribute)attr, jt);
