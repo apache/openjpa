@@ -154,6 +154,18 @@ public class DBDictionaryFactory {
                         DBDictionary.class)));
             dict = (DBDictionary) AccessController.doPrivileged(
                 J2DoPrivHelper.newInstanceAction(c));
+        } catch (ClassNotFoundException cnfe) {
+            // if the dictionary was not found, make another attempt
+            // at loading the dictionary using the current thread.
+            try {
+                Class c = Thread.currentThread().getContextClassLoader().loadClass(dclass);
+                dict = (DBDictionary) AccessController.doPrivileged(
+                        J2DoPrivHelper.newInstanceAction(c));
+            } catch (Exception e) {
+                if (e instanceof PrivilegedActionException)
+                    e = ((PrivilegedActionException) e).getException();
+                throw new UserException(e).setFatal(true);
+            }
         } catch (Exception e) {
             if (e instanceof PrivilegedActionException)
                 e = ((PrivilegedActionException) e).getException();
