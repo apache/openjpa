@@ -594,7 +594,9 @@ class CriteriaQueryImpl<T> implements OpenJPACriteriaQuery<T>, AliasContext {
     
     protected boolean isDefaultProjection() {
         if (_selections == null) {
-            return getRoots().size() == 1 && getRoot().getModel().getJavaType() == _resultClass;
+            return getRoots().size() == 1 
+               && (getRoot().getModel().getJavaType() == _resultClass ||
+                   _resultClass == Object.class);
         } 
         if (_selections.size() != 1) {
             return false;

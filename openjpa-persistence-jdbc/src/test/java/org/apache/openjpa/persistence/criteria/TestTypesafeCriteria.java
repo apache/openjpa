@@ -39,6 +39,7 @@ import javax.persistence.criteria.Root;
 import javax.persistence.criteria.Selection;
 import javax.persistence.criteria.SetJoin;
 import javax.persistence.criteria.Subquery;
+import javax.persistence.metamodel.EntityType;
 
 import org.apache.openjpa.persistence.test.AllowFailure;
 
@@ -1388,5 +1389,20 @@ public class TestTypesafeCriteria extends CriteriaTest {
         c.where(cb.and(cb.not(cb.equal(order.get(Order_.customer).get(Customer_.name), "Robert E. Bissett")),
                 cb.isTrue(cb.disjunction())));
         em.createQuery(c).getResultList();
+    }
+    
+    public void testDefaultProjectionWithUntypedResult() {
+        CriteriaQuery cquery = cb.createQuery(); 
+        Root<Customer> customer = cquery.from(Customer.class);
+
+        //Get Metamodel from Root
+        EntityType<Customer> Customer_ = customer.getModel();
+
+        cquery.where(cb.equal(
+                customer.get(Customer_.getSingularAttribute("name", String.class)), 
+                cb.nullLiteral(String.class)));
+
+        Query q = em.createQuery(cquery);
+
     }
 }
