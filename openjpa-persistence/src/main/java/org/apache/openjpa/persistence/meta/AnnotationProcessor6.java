@@ -244,12 +244,10 @@ public class AnnotationProcessor6 extends AbstractProcessor {
             Set<? extends Element> members = handler.getPersistentMembers(e);
             
             for (Element m : members) {
-                TypeMirror decl = handler.getDeclaredType(m);
-                decl.getKind();
+                TypeMirror decl  = handler.getDeclaredType(m);
                 String fieldName = handler.getPersistentMemberName(m);
                 String fieldType = handler.getDeclaredTypeName(decl);
-                TypeCategory typeCategory = toMetaModelTypeCategory(decl, 
-                        fieldType);
+                TypeCategory typeCategory = toMetaModelTypeCategory(decl, fieldType);
                 String metaModelType = typeCategory.getMetaModelType();
                 SourceCode.Field modelField = null;
                 switch (typeCategory) {
@@ -261,15 +259,15 @@ public class AnnotationProcessor6 extends AbstractProcessor {
                 case COLLECTION:
                 case LIST:
                 case SET:
-                    TypeMirror param = handler.getTypeParameter(decl, 0);
+                    TypeMirror param   = handler.getTypeParameter(m, decl, 0, true);
                     String elementType = handler.getDeclaredTypeName(param);
                     modelField = modelClass.addField(fieldName, metaModelType);
                     modelField.addParameter(originalSimpleClass)
                               .addParameter(elementType);
                     break;
                 case MAP:
-                    TypeMirror key = handler.getTypeParameter(decl, 0);
-                    TypeMirror value = handler.getTypeParameter(decl, 1);
+                    TypeMirror key   = handler.getTypeParameter(m, decl, 0, false);
+                    TypeMirror value = handler.getTypeParameter(m, decl, 1, true);
                     String keyType = handler.getDeclaredTypeName(key);
                     String valueType = handler.getDeclaredTypeName(value);
                     modelField = modelClass.addField(fieldName, metaModelType);

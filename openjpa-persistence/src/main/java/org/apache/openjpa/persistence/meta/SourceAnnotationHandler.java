@@ -47,7 +47,11 @@ import static javax.persistence.AccessType.*;
 
 import javax.persistence.Embeddable;
 import javax.persistence.Entity;
+import javax.persistence.ManyToMany;
+import javax.persistence.ManyToOne;
 import javax.persistence.MappedSuperclass;
+import javax.persistence.OneToMany;
+import javax.persistence.OneToOne;
 import javax.persistence.Transient;
 import org.apache.openjpa.lib.util.Localizer;
 import org.apache.openjpa.meta.AccessCode;
@@ -65,6 +69,7 @@ public class SourceAnnotationHandler
     implements MetadataProcessor<TypeElement, Element> {
 	
 	private final ProcessingEnvironment processingEnv;
+	private final Types typeUtility;
 	private final CompileTimeLogger logger;
 	/**
      * Set of Inclusion Filters based on member type, access type or transient
@@ -81,8 +86,14 @@ public class SourceAnnotationHandler
     protected GetterFilter getterFilter = new GetterFilter();
     protected SetterFilter setterFilter = new SetterFilter();
     
-    private static Localizer _loc = Localizer.forPackage(
-    		SourceAnnotationHandler.class);
+    protected static List<Class<? extends Annotation>> mappingAnnos = new ArrayList<Class<? extends Annotation>>();
+    static {
+        mappingAnnos.add(OneToOne.class);
+        mappingAnnos.add(OneToMany.class);
+        mappingAnnos.add(ManyToOne.class);
+        mappingAnnos.add(ManyToMany.class);
+    }
+    private static Localizer _loc = Localizer.forPackage(SourceAnnotationHandler.class);
     
 	/**
 	 * Construct with JDK6 annotation processing environment.
@@ -92,6 +103,7 @@ public class SourceAnnotationHandler
         CompileTimeLogger logger) {
 		super();
 		this.processingEnv = processingEnv;
+		this.typeUtility   = processingEnv.getTypeUtils();
 		this.logger = logger;
 	}
 
@@ -187,15 +199,12 @@ public class SourceAnnotationHandler
     
     private int getImplicitAccessType(TypeElement type) {
         List<? extends Element> allMembers = type.getEnclosedElements();
-        Set<VariableElement> allFields = (Set<VariableElement>) 
-           filter(allMembers, fieldFilter, nonTransientFilter);
-        Set<ExecutableElement> allMethods = (Set<ExecutableElement>) 
-          filter(allMembers, methodFilter, nonTransientFilter);
+        Set<VariableElement> allFields = (Set<VariableElement>) filter(allMembers, fieldFilter, nonTransientFilter);
+        Set<ExecutableElement> allMethods = (Set<ExecutableElement>) filter(allMembers, methodFilter, 
+                nonTransientFilter);
 
-        Set<VariableElement> annotatedFields = filter(allFields, 
-            annotatedFilter);
-        Set<ExecutableElement> getters = filter(allMethods, getterFilter, 
-            annotatedFilter);
+        Set<VariableElement> annotatedFields = filter(allFields, annotatedFilter);
+        Set<ExecutableElement> getters = filter(allMethods, getterFilter, annotatedFilter);
         Set<ExecutableElement> setters = filter(allMethods, setterFilter);
         getters = matchGetterAndSetter(getters, setters);
         
@@ -242,9 +251,7 @@ public class SourceAnnotationHandler
      */
     private Set<ExecutableElement> matchGetterAndSetter(
         Set<ExecutableElement> getters,  Set<ExecutableElement> setters) {
-        Collection<ExecutableElement> unmatched =
-            new ArrayList<ExecutableElement>();
-        Types typeUtils = processingEnv.getTypeUtils();
+        Collection<ExecutableElement> unmatched =  new ArrayList<ExecutableElement>();
         
         for (ExecutableElement getter : getters) {
             String getterName = getter.getSimpleName().toString();
@@ -257,13 +264,12 @@ public class SourceAnnotationHandler
                                      .iterator().next().asType();
                 String actualSetterName = setter.getSimpleName().toString();
                 matched = actualSetterName.equals(expectedSetterName)
-                    && typeUtils.isSameType(setterArgType, getterReturnType);
+                       && typeUtility.isSameType(setterArgType, getterReturnType);
                 if (matched)
                     break;
             }
             if (!matched) {
-                logger.warn(_loc.get("getter-unmatched", getter, 
-                    getter.getEnclosingElement()));
+                logger.warn(_loc.get("getter-unmatched", getter, getter.getEnclosingElement()));
                 unmatched.add(getter);
             }
 
@@ -524,6 +530,17 @@ public class SourceAnnotationHandler
         }
     }
     
+    TypeMirror getTargetEntityType(Element e) {
+        for (Class<? extends Annotation> anno : mappingAnnos) {
+            Object target = getAnnotationValue(e, anno, "targetEntity");
+            if (target != null) {
+                return (TypeMirror)target;
+            }
+            
+        };
+        return null;
+    }
+    
     String getDeclaredTypeName(TypeMirror mirror) {
     	return getDeclaredTypeName(mirror, true);
     }
@@ -537,6 +554,8 @@ public class SourceAnnotationHandler
      * return <code>java.util.Set</code>.
      */
     String getDeclaredTypeName(TypeMirror mirror, boolean box) {
+        if (mirror == null || mirror.getKind() == TypeKind.NULL || mirror.getKind() == TypeKind.WILDCARD)
+            return "java.lang.Object";
     	if (mirror.getKind() == TypeKind.ARRAY) {
     		TypeMirror comp = ((ArrayType)mirror).getComponentType();
     		return getDeclaredTypeName(comp, false);
@@ -544,7 +563,7 @@ public class SourceAnnotationHandler
     	mirror = box ? box(mirror) : mirror;
     	if (isPrimitive(mirror))
     		return ((PrimitiveType)mirror).toString();
-    	Element elem = processingEnv.getTypeUtils().asElement(mirror);
+    	Element elem = typeUtility.asElement(mirror);
     	if (elem == null)
     	    throw new RuntimeException(_loc.get("mmg-no-type", mirror).getMessage());
         return elem.toString();
@@ -600,15 +619,23 @@ public class SourceAnnotationHandler
      * @return if the given type represents a parameterized type, then the
      *         indexed parameter type argument. Otherwise null.
      */
-    TypeMirror getTypeParameter(TypeMirror mirror, int index) {
+    TypeMirror getTypeParameter(Element e, TypeMirror mirror, int index, boolean checkTarget) {
         if (mirror.getKind() == TypeKind.ARRAY)
             return ((ArrayType)mirror).getComponentType();
     	if (mirror.getKind() != TypeKind.DECLARED)
     		return null;
-        List<? extends TypeMirror> params = ((DeclaredType)mirror)
-        	.getTypeArguments();
-        return (params == null || params.size() < index+1) 
-            ? null : params.get(index);
+    	if (checkTarget) {
+    	    TypeMirror target = getTargetEntityType(e);
+    	    if (target != null)
+    	        return target;
+    	}
+        List<? extends TypeMirror> params = ((DeclaredType)mirror).getTypeArguments();
+        TypeMirror param = (params == null || params.size() < index+1) 
+            ? typeUtility.getNullType() : params.get(index);
+        if (param.getKind() == TypeKind.NULL || param.getKind() == TypeKind.WILDCARD) {
+            logger.warn(_loc.get("generic-type-param", e, getDeclaredType(e), e.getEnclosingElement()));
+        }
+        return param;
     }
 
     public TypeElement getPersistentSupertype(TypeElement cls) {

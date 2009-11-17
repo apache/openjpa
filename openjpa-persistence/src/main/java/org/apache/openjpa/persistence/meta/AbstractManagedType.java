@@ -58,7 +58,7 @@ import org.apache.openjpa.meta.JavaTypes;
 public abstract class AbstractManagedType<X> extends Types.BaseType<X> 
     implements ManagedType<X> {
     
-    private static final Localizer _loc = Localizer.forPackage(Types.class);
+    private static final Localizer _loc = Localizer.forPackage(AbstractManagedType.class);
     public final MetamodelImpl model;
     public final ClassMetaData meta;
 
@@ -248,7 +248,7 @@ public abstract class AbstractManagedType<X> extends Types.BaseType<X>
                 new AttributeTypeFilter<X, Y>(type), 
                 singularAttributeFilter);
         if (result == null)
-            notFoundException("attr-not-found-single",name, type);
+            notFoundException("attr-not-found-single", name, type);
          
         return (SingularAttribute<? super X, Y>) result;
     }
@@ -317,7 +317,7 @@ public abstract class AbstractManagedType<X> extends Types.BaseType<X>
                 new ElementTypeFilter<X, E>(elementType),
                 new AttributeNameFilter<X>(name));
         if (result == null)
-            notFoundException("attr-not-found-coll",name, elementType);
+            notFoundException("attr-not-found-coll", name, elementType);
 
         return (CollectionAttribute<? super X, E>) result;
     }
@@ -729,12 +729,14 @@ public abstract class AbstractManagedType<X> extends Types.BaseType<X>
     // Exception handling
     // -------------------------------------------------------------------------
     private void notFoundException(String msg, String name, Class<?> t1) {
-        throw new IllegalArgumentException(msg + " Attribute " + name + " of type " + 
-                (t1 == null ? "any" : t1.getName()) + " not found in " + meta);
+        throw new IllegalArgumentException(
+            _loc.get(msg, name, (t1 == null ? "any" : t1.getName()), meta).getMessage());
     }
     
     private void notFoundException(String msg, String name, Class<?> t1, Class<?> t2) {
-        throw new IllegalArgumentException("Attribute " + name + " not found");
+        throw new IllegalArgumentException(
+            _loc.get(msg, new Object[]{name, (t1 == null ? "any" : t1.getName()), 
+                    (t2 == null ? "any" : t1.getName()), meta}).getMessage());
     }
     // --------------------------------------------------------------------------
     // Attribute filtering
