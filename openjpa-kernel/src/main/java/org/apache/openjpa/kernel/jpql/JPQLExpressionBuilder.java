@@ -1027,15 +1027,18 @@ public class JPQLExpressionBuilder
                 return eval(firstChild(node));
 
             case JJTNAMEDINPUTPARAMETER:
-                return getParameter(node.text, false, false);
+                return getParameter(onlyChild(node).text, false, false);
 
             case JJTPOSITIONALINPUTPARAMETER:
                 return getParameter(node.text, true, false);
 
             case JJTCOLLECTIONPARAMETER:
                 JPQLNode child = onlyChild(node);
+                boolean positional = child.id == JJTPOSITIONALINPUTPARAMETER;
+                if (!positional)
+                    child = onlyChild(child);
                 return getParameter(child.text, 
-                    child.id == JJTPOSITIONALINPUTPARAMETER, true);
+                    positional, true);
 
             case JJTOR: // x OR y
                 return factory.or(getExpression(left(node)),

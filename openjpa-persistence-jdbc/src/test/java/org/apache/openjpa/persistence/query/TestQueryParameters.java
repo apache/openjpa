@@ -59,6 +59,24 @@ public class TestQueryParameters extends SingleEMFTestCase {
         // do not close the factory
     }
     
+    public void testNamedParameterUsingReservedWord() {
+        String jpql = "select e from simple e WHERE e.id=:key and e.name=:value";
+        Query q = em.createQuery(jpql)
+                    .setParameter("key", 100)
+                    .setParameter("value", "XYZ");
+        
+        assertEquals(2, q.getParameters().size());
+        Parameter<?> param1 = q.getParameter("key");
+        Parameter<?> param2 = q.getParameter("value");
+        
+        assertEquals(100, q.getParameterValue("key"));
+        assertEquals(100, q.getParameterValue(param1));
+        assertEquals("XYZ", q.getParameterValue("value"));
+        assertEquals("XYZ", q.getParameterValue(param2));
+        
+        q.getResultList();
+    }
+    
     public void testPositionalParameterInJPQLQuery() {
         String jpql = "select e from simple e WHERE e.id=?1 and e.name=?2";
         Query q = em.createQuery(jpql)

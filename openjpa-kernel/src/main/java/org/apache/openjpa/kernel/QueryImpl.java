@@ -1732,7 +1732,7 @@ public class QueryImpl
         for (Object expected : paramTypes.keySet()) {
             if (!params.containsKey(expected))
             throw new UserException(_loc.get("unbound-params",
-                params.keySet()));
+                expected, params.keySet()));
         }
 
         Iterator itr = paramTypes.entrySet().iterator();

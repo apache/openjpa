@@ -1488,10 +1488,9 @@ void collection_valued_input_parameter() #COLLECTIONPARAMETER: { }
 }
 
 
-void named_input_parameter() #NAMEDINPUTPARAMETER :
-{ Token t; }
+void named_input_parameter() #NAMEDINPUTPARAMETER : { }
 {
-	":" t = <IDENTIFIER> { jjtThis.setToken (t); }
+	":" path_component()
 }
 
 
