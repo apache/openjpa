@@ -20,6 +20,8 @@
 package org.apache.openjpa.persistence.meta;
 
 import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 
 import javax.persistence.metamodel.Attribute;
@@ -309,6 +311,66 @@ public class TestMetamodel extends SingleEMFTestCase {
         ManagedType<ImplicitFieldAccessBase> e0 = model.entity(ImplicitFieldAccessBase.class);
         SingularAttribute<ImplicitFieldAccessBase,?> pInt = e0.getDeclaredSingularAttribute("primitiveInt");
         assertEquals(PersistentAttributeType.BASIC, pInt.getPersistentAttributeType());
+    }
+    
+    public void testNotFoundErrorMessage() {
+        IdentifiableType<ImplicitFieldAccessBase> e0 = model.entity(ImplicitFieldAccessBase.class);
+        String name = "unknown";
+        try {
+          Method[] getters = {
+            e0.getClass().getMethod("getAttribute",          new Class<?>[]{String.class}),
+            e0.getClass().getMethod("getCollection",         new Class<?>[]{String.class}),
+            e0.getClass().getMethod("getList",               new Class<?>[]{String.class}),
+            e0.getClass().getMethod("getSet",                new Class<?>[]{String.class}),
+            e0.getClass().getMethod("getSingularAttribute",  new Class<?>[]{String.class}),
+            
+            e0.getClass().getMethod("getDeclaredAttribute",  new Class<?>[]{String.class}),
+            e0.getClass().getMethod("getDeclaredCollection", new Class<?>[]{String.class}),
+            e0.getClass().getMethod("getDeclaredList",       new Class<?>[]{String.class}),
+            e0.getClass().getMethod("getDeclaredSet",        new Class<?>[]{String.class}),
+            e0.getClass().getMethod("getDeclaredSingularAttribute", new Class<?>[]{String.class}),
+            
+            e0.getClass().getMethod("getAttribute",          new Class<?>[]{String.class, Class.class}),
+            e0.getClass().getMethod("getCollection",         new Class<?>[]{String.class, Class.class}),
+            e0.getClass().getMethod("getList",               new Class<?>[]{String.class, Class.class}),
+            e0.getClass().getMethod("getSet",                new Class<?>[]{String.class, Class.class}),
+            e0.getClass().getMethod("getSingularAttribute",  new Class<?>[]{String.class, Class.class}),
+            
+            e0.getClass().getMethod("getDeclaredAttribute",  new Class<?>[]{String.class, Class.class}),
+            e0.getClass().getMethod("getDeclaredCollection", new Class<?>[]{String.class, Class.class}),
+            e0.getClass().getMethod("getDeclaredList",       new Class<?>[]{String.class, Class.class}),
+            e0.getClass().getMethod("getDeclaredSet",        new Class<?>[]{String.class, Class.class}),
+            e0.getClass().getMethod("getDeclaredSingularAttribute", new Class<?>[]{String.class, Class.class}),
+
+            e0.getClass().getMethod("getMap",          new Class<?>[]{String.class}),
+            e0.getClass().getMethod("getMap",          new Class<?>[]{String.class, Class.class, Class.class}),
+            e0.getClass().getMethod("getDeclaredMap",  new Class<?>[]{String.class}),
+            e0.getClass().getMethod("getDeclaredMap",  new Class<?>[]{String.class, Class.class, Class.class}),
+          };
+//                 e0.getClass().getMethod("getDeclaredVersion", new Class<?>[]{Class.class}),
+        
+        for (int i = 0; i < getters.length; i++) {
+            Object[] args;
+            if (i < 10) {
+                args = new Object[]{name};
+            } else if (i < 20) {
+                args = new Object[]{name, Object.class};
+            } else if (i%2 == 0) {
+                args = new Object[]{name};
+            } else {
+                args = new Object[]{name, Object.class, String.class};
+            }
+            try {
+                getters[i].invoke(e0, args);
+                fail();
+            }  catch (InvocationTargetException e) {
+               System.err.println("Expeceted:" + e.getTargetException());
+            }
+        }
+        } catch (Exception e) {
+            e.printStackTrace();
+            fail();
+        }
     }
     
     void assertFails(ManagedType<?> type, String name, boolean dec) {
