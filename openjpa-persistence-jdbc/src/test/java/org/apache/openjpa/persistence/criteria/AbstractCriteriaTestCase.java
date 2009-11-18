@@ -37,6 +37,7 @@ import org.apache.openjpa.jdbc.conf.JDBCConfiguration;
 import org.apache.openjpa.jdbc.sql.DBDictionary;
 import org.apache.openjpa.jdbc.sql.DerbyDictionary;
 import org.apache.openjpa.jdbc.sql.HSQLDictionary;
+import org.apache.openjpa.jdbc.sql.MySQLDictionary;
 import org.apache.openjpa.jdbc.sql.OracleDictionary;
 import org.apache.openjpa.lib.jdbc.AbstractJDBCListener;
 import org.apache.openjpa.lib.jdbc.JDBCEvent;
@@ -174,7 +175,7 @@ public abstract class AbstractCriteriaTestCase extends TestCase {
                 cSQL.size());
         }
 
-        if (!(dict instanceof DerbyDictionary))
+        if (!(dict instanceof DerbyDictionary || dict instanceof MySQLDictionary))
             return;
 
         for (int i = 0; i < jSQL.size(); i++) {
