@@ -303,8 +303,8 @@ class Expressions {
 
         @Override
         public Value toValue(ExpressionFactory factory, CriteriaQueryImpl<?> q) {
-            Value v = factory.count(Expressions.toValue(e, factory, q));
-            return _distinct ? factory.distinct(v) : v;
+            Value v = Expressions.toValue(e, factory, q);
+            return _distinct ? factory.count(factory.distinct(v)) : factory.count(v);
         }
         
         @Override
@@ -387,11 +387,14 @@ class Expressions {
         @Override
         public Value toValue(ExpressionFactory factory, CriteriaQueryImpl<?> q) {
             Value val = Expressions.toValue(e, factory, q);
+            Value result;
             if (val instanceof Literal && ((Literal)val).getParseType() == Literal.TYPE_COLLECTION)
-                return factory.newLiteral(((Collection)((Literal)val).getValue()).size(), 
+                result = factory.newLiteral(((Collection)((Literal)val).getValue()).size(), 
                     Literal.TYPE_NUMBER);
-                
-            return factory.size(val);
+            else
+                result = factory.size(val);
+            result.setImplicitType(Integer.class);
+            return result;
         }
         
         public StringBuilder asValue(AliasContext q) {

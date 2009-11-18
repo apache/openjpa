@@ -1403,6 +1403,30 @@ public class TestTypesafeCriteria extends CriteriaTest {
                 cb.nullLiteral(String.class)));
 
         Query q = em.createQuery(cquery);
-
+    }
+    
+    public void testCountDistinct() {
+        // JPQL Parser does not do well with the following 
+        String jpql = "select DISTINCT COUNT(a.name) from Account a";
+        
+        CriteriaQuery<Long> c = cb.createQuery(Long.class);
+        Root<Account> a = c.from(Account.class);
+        c.select(cb.countDistinct(a.get(Account_.name)));
+        
+        // hence we do not check equivalence against JPQL 
+        // assertEquivalence(c, jpql);
+        // but check against SQL
+        String expectedSQL = "SELECT COUNT(DISTINCT t0.name) FROM CR_ACCT t0";
+        executeAndCompareSQL(c, expectedSQL);
+    }
+    
+    public void testSizeReturnsInteger() {
+        String jpql = "select SIZE(c.accounts) from Customer c";
+        CriteriaQuery<Integer> c = cb.createQuery(Integer.class);
+        Root<Customer> customer = c.from(Customer.class);
+        c.select(cb.size(customer.get(Customer_.accounts)));
+        
+        assertEquivalence(c, jpql);
+        
     }
 }
