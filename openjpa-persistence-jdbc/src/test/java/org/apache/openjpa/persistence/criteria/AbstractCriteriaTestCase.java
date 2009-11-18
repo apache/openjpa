@@ -206,7 +206,7 @@ public abstract class AbstractCriteriaTestCase extends TestCase {
             fail("JPQL " + jpql + " failed to execute\r\n" + w);
         }
 
-        if (!(dict instanceof DerbyDictionary))
+        if (!(dict instanceof DerbyDictionary || dict instanceof MySQLDictionary))
             return;
 
         for (int i = 0; i < jSQL.size(); i++) {
@@ -229,7 +229,7 @@ public abstract class AbstractCriteriaTestCase extends TestCase {
             fail(w.toString());
         }
 
-        if (!(dict instanceof DerbyDictionary))
+        if (!(dict instanceof DerbyDictionary || dict instanceof MySQLDictionary))
             return;
 
         String jSql = jSQL.get(0).trim();

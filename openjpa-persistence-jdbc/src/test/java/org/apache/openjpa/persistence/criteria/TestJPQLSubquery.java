@@ -34,6 +34,7 @@ import javax.persistence.criteria.Root;
 import javax.persistence.criteria.SetJoin;
 import javax.persistence.criteria.Subquery;
 
+import org.apache.openjpa.jdbc.sql.DerbyDictionary;
 import org.apache.openjpa.persistence.criteria.AbstractCriteriaTestCase.QueryDecorator;
 import org.apache.openjpa.persistence.embed.Division;
 
@@ -771,9 +772,12 @@ public class TestJPQLSubquery extends CriteriaTest {
             + " (select distinct o.id from LineItem i, Order o"
             + " where i.quantity > 10 and o.count > 1000 and i.id = o.id)";
 
+        String crossJoin = (getDictionary() instanceof DerbyDictionary) 
+             ? "JOIN CR_ODR t2 ON (1 = 1)"
+             : "CROSS JOIN CR_ODR t2";
         String expectedSQL = "SELECT t0.id FROM CR_ODR t0 WHERE (t0.id IN ("
             + "SELECT DISTINCT t2.id "
-            + "FROM CR_ODR t1 JOIN CR_ODR t2 ON (1 = 1), CR_LI t3 WHERE (" 
+            + "FROM CR_ODR t1 " + crossJoin + ", CR_LI t3 WHERE (" 
             + "t3.quantity > ? AND t2.cnt > ? AND t3.id = t2.id)))";
 
         executeAndCompareSQL(jpql, expectedSQL);
@@ -1086,8 +1090,11 @@ public class TestJPQLSubquery extends CriteriaTest {
             + " where o1.quantity = "
             + " any(select o2.quantity from in(c.orders) o2)";
 
+        String crossJoin = getDictionary() instanceof DerbyDictionary
+            ? "JOIN CR_CUST t1 ON (1 = 1)"
+            : "CROSS JOIN CR_CUST t1";
         String expectedSQL = "SELECT t0.id, t1.name " + 
-        "FROM CR_ODR t0 JOIN CR_CUST t1 ON (1 = 1) WHERE (t0.quantity = ANY (" + 
+        "FROM CR_ODR t0 " + crossJoin + " WHERE (t0.quantity = ANY (" + 
         "SELECT t3.quantity FROM CR_ODR t2, CR_ODR t3 WHERE (t2.id = t3.id) AND (t1.id = t2.CUSTOMER_ID)))"; 
 
         executeAndCompareSQL(jpql, expectedSQL);
@@ -1182,8 +1189,11 @@ public class TestJPQLSubquery extends CriteriaTest {
             + " (select o.quantity*2 from LineItem i, Order o"
             + " where i.quantity > 10 and o.quantity > 1000 and i.id = "
             + "o.id)";
+        String crossJoin = (getDictionary() instanceof DerbyDictionary) 
+        ? "JOIN CR_ODR t2 ON (1 = 1)"
+        : "CROSS JOIN CR_ODR t2";
         String expectedSQL = "SELECT t0.id FROM CR_ODR t0 WHERE (t0.quantity > ("
-            + "SELECT (t2.quantity * ?) FROM CR_ODR t1 JOIN CR_ODR t2 ON (1 = 1), CR_LI t3 WHERE ("
+            + "SELECT (t2.quantity * ?) FROM CR_ODR t1 " + crossJoin + ", CR_LI t3 WHERE ("
             + "t3.quantity > ? AND t2.quantity > ? AND t3.id = t2.id)))";
         executeAndCompareSQL(jpql, expectedSQL);
 
@@ -1208,10 +1218,13 @@ public class TestJPQLSubquery extends CriteriaTest {
         String jpql = "select o.id from Order o where o.customer.name ="
             + " (select substring(o2.customer.name, 3) from Order o2"
             + " where o.customer.id = o2.customer.id)";
-
+        
+        String useCast = (getDictionary() instanceof DerbyDictionary) 
+        ? "SUBSTR(CAST((t3.name) AS VARCHAR(1000)), 3) "
+        : "SUBSTRING(t3.name, 3) ";
         String expectedSQL = "SELECT t0.id FROM CR_ODR t0 "
             + "INNER JOIN CR_CUST t1 ON t0.CUSTOMER_ID = t1.id WHERE (t1.name = ("
-            + "SELECT SUBSTR(CAST((t3.name) AS VARCHAR(1000)), 3) "
+            + "SELECT " + useCast
             + "FROM CR_ODR t2 INNER JOIN CR_CUST t3 ON t2.CUSTOMER_ID = t3.id "
             + "WHERE (t0.CUSTOMER_ID = t2.CUSTOMER_ID)))";
         executeAndCompareSQL(jpql, expectedSQL);
@@ -1280,10 +1293,12 @@ public class TestJPQLSubquery extends CriteriaTest {
         String jpql = "select o.id from Order o where o.customer.name in"
             + " (select CONCAT(o.customer.name, 'XX') from Order o"
             + " where o.quantity > 10)";
-
+        String useCast = getDictionary() instanceof DerbyDictionary
+           ? "(CAST(t1.name AS VARCHAR(1000)) || CAST(? AS VARCHAR(1000))) "
+           : "CONCAT(t1.name,?) ";
         String expectedSQL = "SELECT t2.id FROM CR_ODR t2 "
             + "INNER JOIN CR_CUST t3 ON t2.CUSTOMER_ID = t3.id WHERE (t3.name IN ("
-            + "SELECT (CAST(t1.name AS VARCHAR(1000)) || CAST(? AS VARCHAR(1000))) "
+            + "SELECT " + useCast 
             + "FROM CR_ODR t0 INNER JOIN CR_CUST t1 ON t0.CUSTOMER_ID = t1.id WHERE (t0.quantity > ?)))";
 
         executeAndCompareSQL(jpql, expectedSQL);
