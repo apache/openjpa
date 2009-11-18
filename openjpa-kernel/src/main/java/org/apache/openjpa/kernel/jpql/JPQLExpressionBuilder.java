@@ -810,7 +810,7 @@ public class JPQLExpressionBuilder
                 return eval(firstChild(node));
 
             case JJTNAMEDINPUTPARAMETER:
-                return getParameter(node.text, false);
+                return getParameter(onlyChild(node).text, false);
 
             case JJTPOSITIONALINPUTPARAMETER:
                 return getParameter(node.text, true);

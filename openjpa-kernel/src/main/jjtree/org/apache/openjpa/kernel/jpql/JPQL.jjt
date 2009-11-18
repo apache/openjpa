@@ -1237,10 +1237,9 @@ void input_parameter() : { }
 }
 
 
-void named_input_parameter() #NAMEDINPUTPARAMETER :
-{ Token t; }
+void named_input_parameter() #NAMEDINPUTPARAMETER :{ }
 {
-	":" t = <IDENTIFIER> { jjtThis.setToken (t); }
+	":" path_component()
 }
 
 
