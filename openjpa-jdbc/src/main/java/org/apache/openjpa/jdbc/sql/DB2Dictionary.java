@@ -122,6 +122,7 @@ public class DB2Dictionary
         supportsDeferredConstraints = false;
         supportsDefaultDeleteAction = false;
         supportsAlterTableWithDropColumn = false;
+        supportsLockingWithOrderClause = true;
 
         supportsNullTableForGetColumns = false;
         requiresCastForMathFunctions = true;
