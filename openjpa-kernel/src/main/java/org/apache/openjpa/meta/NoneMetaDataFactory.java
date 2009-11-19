@@ -128,6 +128,9 @@ public class NoneMetaDataFactory
     public void populate(ClassMetaData meta, int access) {
     }
 
+    public void populate(ClassMetaData meta, int access, boolean ignoreTransient) {
+    }
+
     public Member getBackingMember(FieldMetaData fmd) {
         return null;
     }

@@ -829,8 +829,10 @@ public class XMLPersistenceMetaDataParser
     @Override
     protected boolean startClass(String elem, Attributes attrs)
         throws SAXException {
+        boolean metaDataComplete = false;
         super.startClass(elem, attrs);
         if (isMetaDataComplete(attrs)) {
+            metaDataComplete = true;
         	setAnnotationParser(null);
         } else if (!_isXMLMappingMetaDataComplete){
         	resetAnnotationParser();
@@ -874,7 +876,13 @@ public class XMLPersistenceMetaDataParser
             // be UNKNOWN)
             if (accessCode == AccessCode.UNKNOWN)
                 accessCode = _access;
-            meta = repos.addMetaData(_cls, accessCode);
+            meta = repos.addMetaData(_cls, accessCode, metaDataComplete);
+            FieldMetaData[] fmds = meta.getFields();
+            if (metaDataComplete) {
+                for (int i = 0; i < fmds.length; i++) {
+                    fmds[i].setExplicit(true);
+                }
+            }
             meta.setEnvClassLoader(_envLoader);
             meta.setSourceMode(MODE_NONE);
 

@@ -19,13 +19,17 @@
 package org.apache.openjpa.persistence.embed;
 
 import javax.persistence.Embeddable;
+import javax.persistence.Transient;
 
+@Embeddable
 public class EmbedXml {
     // owned by BasicA via Embed4
     // can not contain a collection of basic types if BasicA contains 
     // a collection of Embed4 
     protected int intVal1;
     protected int intVal2;
+    
+    @Transient
     protected int intVal3;
     
     public int getIntVal1() {

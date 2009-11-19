@@ -145,11 +145,20 @@ public class PersistenceMetaDataDefaults
      * no strategy.
      */
     public static PersistenceStrategy getPersistenceStrategy
-        (FieldMetaData fmd, Member member) {
+    (FieldMetaData fmd, Member member) {
+        return getPersistenceStrategy(fmd, member, false);
+    }
+    
+    /**
+     * Return the code for the strategy of the given member. Return null if
+     * no strategy.
+     */
+    public static PersistenceStrategy getPersistenceStrategy
+        (FieldMetaData fmd, Member member, boolean ignoreTransient) {
         if (member == null)
             return null;
         AnnotatedElement el = (AnnotatedElement) member;
-        if ((AccessController.doPrivileged(J2DoPrivHelper
+        if (!ignoreTransient && (AccessController.doPrivileged(J2DoPrivHelper
             .isAnnotationPresentAction(el, Transient.class))).booleanValue())
             return TRANSIENT;
         if (fmd != null
@@ -248,13 +257,26 @@ public class PersistenceMetaDataDefaults
      */
     @Override
     public void populate(ClassMetaData meta, int access) {
+        populate(meta, access, false);
+    }
+    
+    /**
+     * Populates the given class metadata. The access style determines which
+     * field and/or getter method will contribute as the persistent property
+     * of the given class. If the given access is unknown, then the access
+     * type is to be determined at first. 
+     * 
+     * @see #determineAccessType(ClassMetaData)
+     */
+    @Override
+    public void populate(ClassMetaData meta, int access, boolean ignoreTransient) {
     	if (AccessCode.isUnknown(access)) {
     		access = determineAccessType(meta);
     	}
     	if (AccessCode.isUnknown(access)) {
     		error(meta, _loc.get("access-unknown", meta));
     	}
-        super.populate(meta, access);
+        super.populate(meta, access, ignoreTransient);
         meta.setDetachable(true);
         // do not call get*Fields as it will lock down the fields.
     }
@@ -425,7 +447,7 @@ public class PersistenceMetaDataDefaults
      * Gets the fields that are possible candidate for being persisted. The  
      * result depends on the current access style of the given class. 
      */
-    List<Field> getPersistentFields(ClassMetaData meta) {
+    List<Field> getPersistentFields(ClassMetaData meta, boolean ignoreTransient) {
     	boolean explicit = meta.isExplicitAccess();
     	boolean unknown  = AccessCode.isUnknown(meta);
     	boolean isField  = AccessCode.isField(meta);
@@ -434,7 +456,8 @@ public class PersistenceMetaDataDefaults
     		Field[] fields = AccessController.doPrivileged(J2DoPrivHelper.
                 getDeclaredFieldsAction(meta.getDescribedType()));
     		
-        	return filter(fields, fieldFilter, nonTransientFilter, 
+        	return filter(fields, fieldFilter, 
+        	    ignoreTransient ? null : nonTransientFilter, 
         		unknown || isField  ? null : annotatedFilter, 
         	    explicit ? (isField ? null : fieldAccessFilter) : null);
     	} 
@@ -445,7 +468,7 @@ public class PersistenceMetaDataDefaults
      * Gets the methods that are possible candidate for being persisted. The  
      * result depends on the current access style of the given class. 
      */
-    List<Method> getPersistentMethods(ClassMetaData meta) {
+    List<Method> getPersistentMethods(ClassMetaData meta, boolean ignoreTransient) {
     	boolean explicit = meta.isExplicitAccess();
     	boolean unknown  = AccessCode.isUnknown(meta.getAccessType());
     	boolean isProperty  = AccessCode.isProperty(meta.getAccessType());
@@ -455,7 +478,8 @@ public class PersistenceMetaDataDefaults
               J2DoPrivHelper.getDeclaredMethodsAction(meta.getDescribedType()));
         
     		List<Method> getters = filter(publicMethods, methodFilter, 
-                getterFilter, nonTransientFilter, 
+                getterFilter, 
+                ignoreTransient ? null : nonTransientFilter, 
         		unknown || isProperty ? null : annotatedFilter, 
                 explicit ? (isProperty ? null : propertyAccessFilter) : null);
     		List<Method> setters = filter(publicMethods, setterFilter);
@@ -475,10 +499,10 @@ public class PersistenceMetaDataDefaults
      * no access type set, this method will set it.
      */
     @Override
-    public List<Member> getPersistentMembers(ClassMetaData meta) {
+    public List<Member> getPersistentMembers(ClassMetaData meta, boolean ignoreTransient) {
     	List<Member> members = new ArrayList<Member>();
-    	List<Field> fields   = getPersistentFields(meta);
-    	List<Method> getters = getPersistentMethods(meta);
+    	List<Field> fields   = getPersistentFields(meta, ignoreTransient);
+    	List<Method> getters = getPersistentMethods(meta, ignoreTransient);
     	
     	boolean isMixed = !fields.isEmpty() && !getters.isEmpty();
     	boolean isEmpty = fields.isEmpty() && getters.isEmpty();
@@ -532,16 +556,21 @@ public class PersistenceMetaDataDefaults
     
     @Override
     protected List<String> getFieldAccessNames(ClassMetaData meta) {
-    	return toNames(getPersistentFields(meta));
+    	return toNames(getPersistentFields(meta, false));
     }
 
     @Override
     protected List<String> getPropertyAccessNames(ClassMetaData meta) {
-    	return toNames(getPersistentMethods(meta));
+    	return toNames(getPersistentMethods(meta, false));
     }
 
     protected boolean isDefaultPersistent(ClassMetaData meta, Member member,
         String name) {
+        return isDefaultPersistent(meta, member, name, false);
+    }
+    
+    protected boolean isDefaultPersistent(ClassMetaData meta, Member member,
+        String name, boolean ignoreTransient) {
         int mods = member.getModifiers();
         if (Modifier.isTransient(mods))
             return false;
@@ -581,7 +610,7 @@ public class PersistenceMetaDataDefaults
             }
         }
 
-        PersistenceStrategy strat = getPersistenceStrategy(null, member);
+        PersistenceStrategy strat = getPersistenceStrategy(null, member, ignoreTransient);
         if (strat == null || strat == PersistenceStrategy.TRANSIENT)
             return false;
         return true;

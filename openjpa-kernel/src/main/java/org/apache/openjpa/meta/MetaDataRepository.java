@@ -889,11 +889,22 @@ public class MetaDataRepository implements PCRegistry.RegisterClassListener, Con
      *            the access type to use in populating metadata
      */
     public ClassMetaData addMetaData(Class<?> cls, int access) {
+        return addMetaData(cls, access, false);
+    }
+    
+    /**
+     * Create a new metadata, populate it with default information, add it to the repository, and
+     * return it.
+     * 
+     * @param access
+     *            the access type to use in populating metadata
+     */
+    public ClassMetaData addMetaData(Class<?> cls, int access, boolean ignoreTransient) {
         if (cls == null || cls.isPrimitive())
             return null;
 
         ClassMetaData meta = newClassMetaData(cls);
-        _factory.getDefaults().populate(meta, access);
+        _factory.getDefaults().populate(meta, access, ignoreTransient);
 
         // synchronize on this rather than the map, because all other methods
         // that access _metas are synchronized on this

@@ -151,6 +151,10 @@ public abstract class AbstractMetaDataDefaults
     }
 
     public void populate(ClassMetaData meta, int access) {
+        populate(meta, access, false);
+    }
+    
+    public void populate(ClassMetaData meta, int access, boolean ignoreTransient) {
         if (meta.getDescribedType() == Object.class)
             return;
         meta.setAccessType(access);
@@ -161,7 +165,7 @@ public abstract class AbstractMetaDataDefaults
         if (!_pcRegistry || !populateFromPCRegistry(meta)) {
             if (log.isTraceEnabled())
                 log.trace(_loc.get("meta-reflect"));
-            populateFromReflection(meta);
+            populateFromReflection(meta, ignoreTransient);
         }
     }
 
@@ -197,15 +201,15 @@ public abstract class AbstractMetaDataDefaults
         }
     }
 
-    protected abstract List<Member> getPersistentMembers(ClassMetaData meta);
+    protected abstract List<Member> getPersistentMembers(ClassMetaData meta, boolean ignoreTransient);
     /**
      * Generate the given meta-data using reflection.
      * Adds FieldMetaData for each persistent state.
      * Delegate to concrete implementation to determine the persistent
      * members.
      */
-    private void populateFromReflection(ClassMetaData meta) {
-        List<Member> members = getPersistentMembers(meta);
+    private void populateFromReflection(ClassMetaData meta, boolean ignoreTransient) {
+        List<Member> members = getPersistentMembers(meta, ignoreTransient);
         boolean iface = meta.getDescribedType().isInterface();
         // If access is mixed or if the default is currently unknown, 
         // process all fields, otherwise only process members of the class  
@@ -220,7 +224,7 @@ public abstract class AbstractMetaDataDefaults
             if (name == null || isReservedFieldName(name))
                 continue;
 
-            def = isDefaultPersistent(meta, member, name);
+            def = isDefaultPersistent(meta, member, name, ignoreTransient);
             if (!def && _ignore)
                 continue;
 
@@ -311,7 +315,7 @@ public abstract class AbstractMetaDataDefaults
      * @param name the field name from {@link #getFieldName}
      */
     protected abstract boolean isDefaultPersistent(ClassMetaData meta,
-        Member member, String name);
+        Member member, String name, boolean ignoreTransient);
 
     /**
      * Gets the backing member of the given field. If the field has not been

@@ -81,6 +81,13 @@ public interface MetaDataDefaults
     public void populate(ClassMetaData meta, int access);
 
     /**
+     * Populate the given metadata with default settings.
+     *
+     * @param access access type constant from {@link ClassMetaData}
+     */
+    public void populate(ClassMetaData meta, int access, boolean ignoreTransient);
+
+    /**
      * Return the backing member for the given field metadata.
      */
     public Member getBackingMember(FieldMetaData field);
