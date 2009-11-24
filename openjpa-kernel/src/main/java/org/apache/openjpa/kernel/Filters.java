@@ -216,6 +216,8 @@ public class Filters {
      * an instance of the second.
      */
     public static boolean canConvert(Class<?> c1, Class<?> c2, boolean strict) {
+        if (c1 == c2)
+            return true;
         c1 = wrap(c1);
         c2 = wrap(c2);
         if (c2.isAssignableFrom(c1))
