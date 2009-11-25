@@ -87,7 +87,7 @@ public class QueryImpl<X> implements OpenJPAQuerySPI<X>, Serializable {
     private Map<Object, Parameter<?>> _declaredParams;
 	private String _id;
     private transient ReentrantLock _lock = null;
-	private final HintHandler _hintHandler;
+	private HintHandler _hintHandler;
 
 	/**
 	 * Constructor; supply factory exception translator and delegate.
@@ -100,7 +100,6 @@ public class QueryImpl<X> implements OpenJPAQuerySPI<X>, Serializable {
 			org.apache.openjpa.kernel.Query query) {
 		_em = em;
 		_query = new DelegatingQuery(query, ret);
-		_hintHandler = new HintHandler(this);
 		_lock = new ReentrantLock();
 	}
 
@@ -203,7 +202,7 @@ public class QueryImpl<X> implements OpenJPAQuerySPI<X>, Serializable {
 		return _query.getCandidateType();
 	}
 
-	public OpenJPAQuery setResultClass(Class cls) {
+	public OpenJPAQuery<X> setResultClass(Class cls) {
 		_em.assertNotCloseInvoked();
 		if (ImplHelper.isManagedType(_em.getConfiguration(), cls))
 			_query.setCandidateType(cls, true);
@@ -395,7 +394,7 @@ public class QueryImpl<X> implements OpenJPAQuerySPI<X>, Serializable {
 
     public LockModeType getLockMode() {
         assertJPQLOrCriteriaQuery();
-        return _fetch.getReadLockMode();
+        return getFetchPlan().getReadLockMode();
     }
 
     /**
@@ -409,7 +408,7 @@ public class QueryImpl<X> implements OpenJPAQuerySPI<X>, Serializable {
             ignorePreparedQuery();
         }
         assertJPQLOrCriteriaQuery();
-       _fetch.setReadLockMode(lockMode);
+       getFetchPlan().setReadLockMode(lockMode);
        return this;
     }
 
@@ -433,16 +432,24 @@ public class QueryImpl<X> implements OpenJPAQuerySPI<X>, Serializable {
 	 */
     //TODO: JPA 2.0 Hints that are not set to FetchConfiguration 
     public Map<String, Object> getHints() {
+        if (_hintHandler == null)
+            return Collections.emptyMap();
         return _hintHandler.getHints();
     }
 
     public OpenJPAQuery<X> setHint(String key, Object value) {
         _em.assertNotCloseInvoked();
+        if (_hintHandler == null) {
+            _hintHandler = new HintHandler(this);
+        }
         _hintHandler.setHint(key, value);
         return this;
     }
 
     public Set<String> getSupportedHints() {
+        if (_hintHandler == null) {
+            _hintHandler = new HintHandler(this);
+        }
         return _hintHandler.getSupportedHints();
     }
 
@@ -852,7 +859,7 @@ public class QueryImpl<X> implements OpenJPAQuerySPI<X>, Serializable {
         Parameter<?> param = getDeclaredParameters().get(name);
         if (param == null) {
             Set<ParameterExpression> exps = getDeclaredParameterKeys(ParameterExpression.class);
-            for (ParameterExpression e : exps) {
+            for (ParameterExpression<?> e : exps) {
                 if (name.equals(e.getName()))
                     return e;
             }
