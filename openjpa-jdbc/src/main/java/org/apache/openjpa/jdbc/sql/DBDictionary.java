@@ -2888,6 +2888,16 @@ public class DBDictionary
         boolean castrhs = false;
         Class lc = Filters.wrap(lhs.getType());
         Class rc = Filters.wrap(rhs.getType());
+        
+        // special case of comparison of two boolean constants
+        // because some databases do not like false = false or false = true
+        // but all databases understand 1 = 0 or 0 <> 1 etc.
+        if (lc == rc && lc == Boolean.class && lhs.isConstant() && rhs.isConstant()) {
+            String lvalue = Boolean.TRUE.equals(lhs.getValue()) ? "1" : "0";
+            String rvalue = Boolean.TRUE.equals(rhs.getValue()) ? "1" : "0";
+            buf.append(lvalue).append(op).append(rvalue);
+            return;
+        }
         int type = 0;
         if (requiresCastForComparisons && (lc != rc
             || (lhs.isConstant() && rhs.isConstant()))) {
