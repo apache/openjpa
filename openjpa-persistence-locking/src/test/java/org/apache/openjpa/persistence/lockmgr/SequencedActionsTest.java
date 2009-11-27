@@ -573,7 +573,8 @@ public abstract class SequencedActionsTest extends SQLListenerTestCase {
                         waitTime = (Integer) args[2];
                     }
                     if (waitTime < MinThreadWaitInMs / 2)
-                        waitTime = MinThreadWaitInMs / 2;                    
+                        waitTime = MinThreadWaitInMs / 2;
+                    log.trace(">> Started wait for " + waitTime + " ms");
                     if( waitThreadid != 0) {
                         thisThread.wait(waitTime);
                     } else {
@@ -581,6 +582,7 @@ public abstract class SequencedActionsTest extends SQLListenerTestCase {
                             wait(waitTime);
                         }
                     }
+                    log.trace("<< Ended wait");
                     break;
 
                 case EmployeeNotNull:
@@ -725,7 +727,7 @@ public abstract class SequencedActionsTest extends SQLListenerTestCase {
                         new ArrayList<TestThread>(threads);
                     while (proceedThread.size() > 0
                         && System.currentTimeMillis() < endTime) {
-                        for (Thread thread : proceedThread) {
+                        for (TestThread thread : proceedThread) {
                             if (thread.isAlive()) {
                                 log.trace(thread + " is still alive, wait" +
                                     " for 500ms and try again.");
@@ -739,6 +741,9 @@ public abstract class SequencedActionsTest extends SQLListenerTestCase {
                                 continue;
                             } else {
                                 deadThreads++;
+                                if(thread.assertError != null){
+                                    throw thread.assertError;
+                                }
                                 proceedThread.remove(thread);
                                 break;
                             }
@@ -823,8 +828,8 @@ public abstract class SequencedActionsTest extends SQLListenerTestCase {
                 logStack(ex);
             } catch (Error err) {
                 // only remember the first exception caught
-                if (thisThread.throwable == null) {
-                    thisThread.throwable = err;
+                if (thisThread.assertError == null) {
+                    thisThread.assertError = err;
                 }
                 log.trace("Caught exception and continue: " + err);
                 logStack(err);
@@ -852,11 +857,14 @@ public abstract class SequencedActionsTest extends SQLListenerTestCase {
                 }
             }
             em.close();
-            Throwable firstThrowable = thisThread.throwable;
-            if (firstThrowable != null) {
-                if( firstThrowable instanceof Error )
-                    throw (Error)firstThrowable;
+            if (thisThread.assertError != null) {
+                throw thisThread.assertError;
             }
+//            Throwable firstThrowable = thisThread.throwable;            
+//            if (firstThrowable != null) {
+//                if( firstThrowable instanceof Error )
+//                    throw (Error)firstThrowable;
+//            }
             log.trace("<<<< Sequenced Test: Threads=" + threadToRun + '/'
                 + numThreads);
         }
@@ -927,6 +935,7 @@ public abstract class SequencedActionsTest extends SQLListenerTestCase {
         private Map<Integer, LockEmployee> employees = null;
 
         public Throwable throwable = null;
+        public Error assertError = null;
         public boolean systemRolledback = false;
 
         public TestThread(int threadToRun, Object[][]... actions) {

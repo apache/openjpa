@@ -97,6 +97,10 @@ public class MergedResult
             _res[i].close();
     }
 
+    public void setLocking(boolean locking) {
+        _res[_idx].setLocking(locking);
+    }
+
     public boolean isLocking() {
         return _res[_idx].isLocking();
     }

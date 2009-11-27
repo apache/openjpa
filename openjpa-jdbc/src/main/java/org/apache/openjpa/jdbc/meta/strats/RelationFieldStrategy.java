@@ -30,6 +30,7 @@ import org.apache.openjpa.enhance.PersistenceCapable;
 import org.apache.openjpa.enhance.ReflectingPersistenceCapable;
 import org.apache.openjpa.jdbc.kernel.JDBCFetchConfiguration;
 import org.apache.openjpa.jdbc.kernel.JDBCStore;
+import org.apache.openjpa.jdbc.kernel.MixedLockManager;
 import org.apache.openjpa.jdbc.meta.ClassMapping;
 import org.apache.openjpa.jdbc.meta.Embeddable;
 import org.apache.openjpa.jdbc.meta.FieldMapping;
@@ -53,6 +54,7 @@ import org.apache.openjpa.jdbc.sql.SQLBuffer;
 import org.apache.openjpa.jdbc.sql.Select;
 import org.apache.openjpa.jdbc.sql.SelectExecutor;
 import org.apache.openjpa.jdbc.sql.Union;
+import org.apache.openjpa.kernel.LockManager;
 import org.apache.openjpa.kernel.OpenJPAStateManager;
 import org.apache.openjpa.lib.log.Log;
 import org.apache.openjpa.lib.util.Localizer;
@@ -65,6 +67,7 @@ import org.apache.openjpa.util.InternalException;
 import org.apache.openjpa.util.MetaDataException;
 import org.apache.openjpa.util.OpenJPAId;
 import org.apache.openjpa.util.UnsupportedException;
+
 import serp.util.Numbers;
 
 /**
@@ -699,8 +702,14 @@ public class RelationFieldStrategy
         	}
         }
 
-        sm.storeObject(field.getIndex(), res.load(cls, store, fetch,
-            eagerJoin(res.newJoins(), cls, false)));
+        boolean isLocked = res.isLocking();
+        try {
+            res.setLocking(store.getLockManager().skipRelationFieldLock());
+            sm.storeObject(field.getIndex(), res.load(cls, store, fetch,
+                    eagerJoin(res.newJoins(), cls, false)));
+        } finally {
+            res.setLocking(isLocked);
+        }
 
         // reset mapped by is needed for OneToOne bidirectional relations
         // having a mapped-by parent to correctly set the parent-child

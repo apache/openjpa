@@ -57,7 +57,7 @@ public abstract class AbstractLockManager
      */
     public void lockAll(Collection sms, int level, int timeout,
         Object context) {
-        for (Iterator itr = sms.iterator(); itr.hasNext();)
+        for (Iterator<?> itr = sms.iterator(); itr.hasNext();)
             lock((OpenJPAStateManager) itr.next(), level, timeout, context);
     }
 
@@ -76,8 +76,14 @@ public abstract class AbstractLockManager
     /**
      * Does nothing by default.
      */
-    public void close ()
-	{
+    public void close () {
 	}
+
+    /**
+     * Default not to skip relation field to maintain PessimisticLockManager semantics. 
+     */
+    public boolean skipRelationFieldLock() {
+        return false;
+    }
 }
 

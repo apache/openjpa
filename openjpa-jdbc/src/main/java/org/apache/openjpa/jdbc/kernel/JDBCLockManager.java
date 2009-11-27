@@ -46,4 +46,9 @@ public interface JDBCLockManager
      * produced by a FOR UPDATE select.
      */
     public void loadedForUpdate(OpenJPAStateManager sm);
+
+    /**
+     * Return true if locking is not desired for relation fields.
+     */
+    public boolean skipRelationFieldLock();
 }

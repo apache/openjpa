@@ -79,6 +79,11 @@ public interface Result
     public void close();
 
     /**
+     * Set to true if row locking has been issued for the row.  
+     */
+    public void setLocking(boolean locking);
+
+    /**
      * If true, then any results loaded from this Result
      * will be locked in the database.
      */

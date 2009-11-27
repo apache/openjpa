@@ -23,6 +23,7 @@ import java.math.BigDecimal;
 import java.sql.SQLException;
 import java.util.Comparator;
 
+import org.apache.openjpa.jdbc.kernel.JDBCFetchConfiguration;
 import org.apache.openjpa.jdbc.kernel.JDBCStore;
 import org.apache.openjpa.jdbc.meta.ClassMapping;
 import org.apache.openjpa.jdbc.meta.VersionMappingInfo;
@@ -34,6 +35,7 @@ import org.apache.openjpa.jdbc.sql.Result;
 import org.apache.openjpa.jdbc.sql.Row;
 import org.apache.openjpa.jdbc.sql.RowManager;
 import org.apache.openjpa.jdbc.sql.Select;
+import org.apache.openjpa.kernel.MixedLockLevels;
 import org.apache.openjpa.kernel.OpenJPAStateManager;
 import org.apache.openjpa.kernel.StoreManager;
 import org.apache.openjpa.lib.util.Localizer;
@@ -277,7 +279,13 @@ public abstract class ColumnVersionStrategy
         sel.select(cols);
         sel.wherePrimaryKey(sm.getObjectId(), vers.getClassMapping(), store);
 
-        Result res = sel.execute(store, null);
+        // No need to lock version field (i.e. optimistic), except when version update is required (e.g. refresh) 
+        JDBCFetchConfiguration fetch = store.getFetchConfiguration();
+        if (!updateVersion && fetch.getReadLockLevel() >= MixedLockLevels.LOCK_PESSIMISTIC_READ) {
+            fetch = (JDBCFetchConfiguration) fetch.clone();
+            fetch.setReadLockLevel(MixedLockLevels.LOCK_NONE);
+        }
+        Result res = sel.execute(store, fetch);
         try {
             if (!res.next())
                 return false;

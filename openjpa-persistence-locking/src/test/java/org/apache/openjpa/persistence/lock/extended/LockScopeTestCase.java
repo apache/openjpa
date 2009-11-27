@@ -68,6 +68,7 @@ public abstract class LockScopeTestCase extends SQLListenerTestCase {
     
     protected final String Any              = ".*";
     protected final String Select           = "SELECT.*FROM.*";
+    protected final String SelectVersion    = "SELECT.*version.*FROM.*";
     protected final String Where            = ".*WHERE.*";
 //    protected final String Join             = ".*(JOIN){1}.*";
     protected final String NoJoin           = "(JOIN){0}";
@@ -155,6 +156,15 @@ public abstract class LockScopeTestCase extends SQLListenerTestCase {
         assertAllSQLAnyOrder(expected);
     }
     
+    public void assertLockTestNoSQLs(String... expected) {
+        Log log = getDumpSQLLog(); 
+        if( log.isTraceEnabled()) {
+            log.trace("\r\n" + toString(sql));
+            return;
+        }
+        assertNoneSQLAnyOrder(expected);
+    }
+
     protected void logStack(Throwable t) {
         StringWriter str = new StringWriter();
         PrintWriter print = new PrintWriter(str);

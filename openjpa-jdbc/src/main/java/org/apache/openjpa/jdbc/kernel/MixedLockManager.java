@@ -128,4 +128,8 @@ public class MixedLockManager extends PessimisticLockManager {
             }
         }
     }
+
+    public boolean skipRelationFieldLock() {
+        return true;
+    }
 }
