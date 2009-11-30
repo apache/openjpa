@@ -136,11 +136,13 @@ public class Types {
          *  Return the identifiable type that corresponds to the most
          *  specific mapped superclass or entity extended by the entity 
          *  or mapped superclass. 
-         *  @return supertype of identifiable type or null if no such supertype
+         *  @return super type of identifiable type or null if no such super type
          */
         public IdentifiableType<? super X> getSupertype() {
-            return (IdentifiableType<? super X>) model.managedType(meta
-                .getPCSuperclassMetaData().getDescribedType());
+            ClassMetaData superMeta = meta.getPCSuperclassMetaData();
+            if (superMeta == null)
+                return null;
+            return (IdentifiableType<? super X>) model.managedType(superMeta.getDescribedType());
         }
 
         public boolean hasIdAttribute() {
