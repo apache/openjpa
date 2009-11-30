@@ -106,11 +106,11 @@
             <artifactId>openjpa</artifactId>
             <version>${pom.version}</version>
         </dependency>
-        <!-- Need to manually add back optional openjpa-jdbc depends -->
+
+        <!-- Optional openjpa-jdbc depends you may need...
         <dependency>
             <groupId>javax.xml.bind</groupId>
             <artifactId>jaxb-api</artifactId>
-            <scope>compile</scope>
             <optional>true</optional>
             <exclusions>
                 <exclusion>
@@ -126,7 +126,6 @@
         <dependency>
             <groupId>com.sun.xml.bind</groupId>
             <artifactId>jaxb-impl</artifactId>
-            <scope>compile</scope>
             <optional>true</optional>
             <exclusions>
                 <exclusion>
@@ -139,6 +138,14 @@
                 </exclusion>
             </exclusions>
         </dependency>
-        <!-- end optional openjpa-jdbc depends -->
+        end optional openjpa-jdbc depends -->
+
+        <!-- Optional Bean Validation depends
+        <dependency>
+            <groupId>org.apache.geronimo.specs</groupId>
+            <artifactId>geronimo-validation_1.0_spec</artifactId>
+            <optional>true</optional>
+        </dependency>
+        end optional validation depends -->
     </dependencies>
 </project>

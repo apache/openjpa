@@ -197,5 +197,12 @@
             <artifactId>openjpa-slice</artifactId>
             <version>${pom.version}</version>
         </dependency>
+        <!-- Need to manually add back optional validation depends -->
+        <dependency>
+            <groupId>org.apache.geronimo.specs</groupId>
+            <artifactId>geronimo-validation_1.0_spec</artifactId>
+            <optional>true</optional>
+        </dependency>
+        <!-- end optional validation depends -->
     </dependencies>
 </project>
