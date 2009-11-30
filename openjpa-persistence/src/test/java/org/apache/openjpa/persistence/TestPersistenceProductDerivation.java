@@ -55,10 +55,9 @@ public class TestPersistenceProductDerivation extends TestCase {
         super.setUp();
         String currentDir = System.getProperty("user.dir");
         
-        // openjpa-persistence/src/test/resources/second-persistence/
-        //   META-INF/persistence.xml
-        sourceFile = new File(currentDir + File.separator + "src" 
-            + File.separator  + "test" + File.separator + "resources"
+        // openjpa-persistence/target/test-classes/resources/second-persistence/META-INF/persistence.xml
+        sourceFile = new File(currentDir + File.separator 
+            + "target" + File.separator + "test-classes"
             + File.separator  + "second-persistence" + File.separator 
             + "META-INF" + File.separator + "persistence.xml");
         
