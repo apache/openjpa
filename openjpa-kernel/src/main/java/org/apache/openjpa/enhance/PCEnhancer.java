@@ -503,12 +503,12 @@ public class PCEnhancer {
             for (int i = 0; i < interfaces.length; i++) {
                 if (interfaces[i].getName().equals(PCTYPE.getName())) {
                     if (_log.isInfoEnabled())
-                        _log.info(_loc.get("pc-type", _managedType.getType()));
+                        _log.info(_loc.get("pc-type", _managedType.getType(), _managedType.getType().getClassLoader()));
                     return ENHANCE_NONE;
                 }
             }
             if (_log.isInfoEnabled())
-                _log.info(_loc.get("enhance-start", _managedType.getType()));
+                _log.info(_loc.get("enhance-start", _managedType.getType(), _managedType.getType().getClassLoader()));
 
 
             configureBCs();
@@ -537,7 +537,7 @@ public class PCEnhancer {
             }
 
             if (_log.isWarnEnabled())
-                _log.warn(_loc.get("pers-aware", _managedType.getType()));
+                _log.warn(_loc.get("pers-aware", _managedType.getType(), _managedType.getType().getClassLoader()));
             return ENHANCE_AWARE;
         } catch (OpenJPAException ke) {
             throw ke;

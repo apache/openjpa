@@ -679,7 +679,7 @@ public class MappingTool
         if (!validate || cls.isInterface() 
             || repos.getPersistenceAware(cls) != null)
             return null;
-        throw new MetaDataException(_loc.get("no-meta", cls));
+        throw new MetaDataException(_loc.get("no-meta", cls, cls.getClassLoader()));
     }
 
     /**
