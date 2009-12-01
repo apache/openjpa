@@ -24,6 +24,7 @@ import java.io.OutputStream;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.security.AccessController;
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
 import java.sql.PreparedStatement;
@@ -47,6 +48,7 @@ import org.apache.openjpa.kernel.Filters;
 import org.apache.openjpa.lib.jdbc.DelegatingConnection;
 import org.apache.openjpa.lib.jdbc.DelegatingPreparedStatement;
 import org.apache.openjpa.lib.util.ConcreteClassGenerator;
+import org.apache.openjpa.lib.util.J2DoPrivHelper;
 import org.apache.openjpa.lib.util.Localizer;
 import org.apache.openjpa.meta.JavaTypes;
 import org.apache.openjpa.util.InternalException;
@@ -56,7 +58,7 @@ import org.postgresql.largeobject.LargeObject;
 import org.postgresql.largeobject.LargeObjectManager;
 
 /**
- * Dictionary for Postgres.
+ * Dictionary for PostgreSQL.
  */
 public class PostgresDictionary
     extends DBDictionary {
@@ -66,6 +68,9 @@ public class PostgresDictionary
 
     private static Constructor<PostgresConnection> postgresConnectionImpl;
     private static Constructor<PostgresPreparedStatement> postgresPreparedStatementImpl;
+
+    private Method dbcpGetDelegate;
+    private Method connectionUnwrap;
 
     static {
         try {
@@ -385,8 +390,7 @@ public class PostgresDictionary
         DelegatingConnection conn = (DelegatingConnection)store
             .getConnection();
         conn.setAutoCommit(false);
-        LargeObjectManager lom = ((PGConnection)conn.getInnermostDelegate())
-        .getLargeObjectAPI();
+        LargeObjectManager lom = getLargeObjectManager(conn);
         if (rs.getInt(column) != -1) {
             LargeObject lo = lom.open(rs.getInt(column));
             return lo.getInputStream();
@@ -412,8 +416,7 @@ public class PostgresDictionary
             .getConnection();
             try {
                 conn.setAutoCommit(false);
-                PGConnection pgconn = (PGConnection)conn.getInnermostDelegate();
-                LargeObjectManager lom = pgconn.getLargeObjectAPI();
+                LargeObjectManager lom = getLargeObjectManager(conn);
                 // The create method is valid in versions previous to 8.3
                 // in 8.3 this method is deprecated, use createLO
                 int oid = lom.create();
@@ -451,9 +454,7 @@ public class PostgresDictionary
             int oid = res.getInt(1);
             if (oid != -1) {
                 conn.setAutoCommit(false);
-                PGConnection pgconn = (PGConnection)conn
-                    .getInnermostDelegate();
-                LargeObjectManager lom = pgconn.getLargeObjectAPI();
+                LargeObjectManager lom = getLargeObjectManager(conn);
                 if (ob != null) {
                     LargeObject lo = lom.open(oid, LargeObjectManager.WRITE);
                     OutputStream os = lo.getOutputStream();
@@ -466,9 +467,7 @@ public class PostgresDictionary
             } else {
                 if (ob != null) {
                     conn.setAutoCommit(false);
-                    PGConnection pgconn = (PGConnection)conn
-                        .getInnermostDelegate();
-                    LargeObjectManager lom = pgconn.getLargeObjectAPI();
+                    LargeObjectManager lom = getLargeObjectManager(conn);
                     oid = lom.create();
                     LargeObject lo = lom.open(oid, LargeObjectManager.WRITE);
                     OutputStream os = lo.getOutputStream();
@@ -514,9 +513,7 @@ public class PostgresDictionary
             int oid = res.getInt(1);
             if (oid != -1) {
                 conn.setAutoCommit(false);
-                PGConnection pgconn = (PGConnection)conn
-                    .getInnermostDelegate();
-                LargeObjectManager lom = pgconn.getLargeObjectAPI();
+                LargeObjectManager lom = getLargeObjectManager(conn);
                 lom.delete(oid);
             }
         } finally {
@@ -673,6 +670,75 @@ public class PostgresDictionary
             return "false";
         } else {
             return super.getPlaceholderValueString(col);
+        }
+    }
+
+    /**
+     * Get the native PostgreSQL Large Object Manager used for LOB handling.
+     */
+    protected LargeObjectManager getLargeObjectManager(DelegatingConnection conn) throws SQLException {
+        return getPGConnection(conn).getLargeObjectAPI();
+    }
+
+    /**
+     * Get the native PostgreSQL connection from the given connection.
+     * Various attempts of unwrapping are being performed.
+     */
+    protected PGConnection getPGConnection(DelegatingConnection conn) {
+        Connection innerConn = conn.getInnermostDelegate();
+        if (innerConn instanceof PGConnection) {
+            return (PGConnection) innerConn;
+        }
+        if (innerConn.getClass().getName().startsWith("org.apache.commons.dbcp")) {
+            return (PGConnection) getDbcpDelegate(innerConn);
+        }
+        return (PGConnection) unwrapConnection(conn, PGConnection.class);
+    }
+
+    /**
+     * Get the delegated connection from the given DBCP connection.
+     * 
+     * @param conn must be a DBCP connection
+     * @return connection the DBCP connection delegates to
+     */
+    protected Connection getDbcpDelegate(Connection conn) {
+        Connection delegate = null;
+        try {
+            if (dbcpGetDelegate == null) {
+                Class<?> dbcpConnectionClass =
+                    Class.forName("org.apache.commons.dbcp.DelegatingConnection", true, AccessController
+                        .doPrivileged(J2DoPrivHelper.getContextClassLoaderAction()));
+                
+                dbcpGetDelegate = dbcpConnectionClass.getMethod("getInnermostDelegate");
+            }
+            delegate = (Connection) dbcpGetDelegate.invoke(conn);
+        } catch (Exception e) {
+            throw new InternalException(_loc.get("dbcp-unwrap-failed"), e);
+        }
+        if (delegate == null) {
+            throw new InternalException(_loc.get("dbcp-unwrap-failed"));
+        }
+        return delegate;
+    }
+
+    /**
+     * Get (unwrap) the delegated connection from the given connection.
+     * Use reflection to attempt to unwrap a connection.
+     * Note: This is a JDBC 4 operation, so it requires a Java 6 environment 
+     * with a JDBC 4 driver or data source to have any chance of success.
+     * 
+     * @param conn a delegating connection
+     * @param connectionClass the expected type of delegated connection
+     * @return connection the given connection delegates to
+     */
+    private Connection unwrapConnection(Connection conn, Class<?> connectionClass) {
+        try {
+            if (connectionUnwrap == null) {
+                connectionUnwrap = Connection.class.getMethod("unwrap", Class.class);
+            }
+            return (Connection) connectionUnwrap.invoke(conn, connectionClass);
+        } catch (Exception e) {
+            throw new InternalException(_loc.get("connection-unwrap-failed"), e);
         }
     }
 

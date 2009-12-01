@@ -22,6 +22,8 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 
+import org.apache.openjpa.jdbc.sql.PostgresDictionary;
+
 /**
  * Defines all the abstract methods from AbstractLobTest to tests the
  * the LOB support with an InputStream.
@@ -31,6 +33,12 @@ import java.io.InputStream;
  */
 
 public class TestInputStreamLob extends AbstractLobTest {
+
+    @Override
+    public void setUp() throws Exception {
+        supportedDatabases.add(PostgresDictionary.class);
+        super.setUp();
+    }
 
     protected LobEntity newLobEntity(String s, int id) {
         InputStreamLobEntity isle = new InputStreamLobEntity();

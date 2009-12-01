@@ -20,17 +20,18 @@
 package org.apache.openjpa.jdbc.meta.strats;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
 
 import org.apache.openjpa.conf.OpenJPAConfiguration;
 import org.apache.openjpa.datacache.DataCachePCData;
-import org.apache.openjpa.jdbc.conf.JDBCConfiguration;
 import org.apache.openjpa.jdbc.sql.DBDictionary;
 import org.apache.openjpa.jdbc.sql.MySQLDictionary;
 import org.apache.openjpa.jdbc.sql.OracleDictionary;
-import org.apache.openjpa.jdbc.sql.PostgresDictionary;
 import org.apache.openjpa.jdbc.sql.SQLServerDictionary;
 import org.apache.openjpa.meta.ClassMetaData;
 import org.apache.openjpa.persistence.JPAFacadeHelper;
@@ -46,23 +47,20 @@ import org.apache.openjpa.persistence.test.SingleEMFTestCase;
 
 public abstract class AbstractLobTest extends SingleEMFTestCase {
 
+    protected List<Class<? extends DBDictionary>> supportedDatabases =
+        new ArrayList<Class<? extends DBDictionary>>
+            (Arrays.asList(MySQLDictionary.class, OracleDictionary.class, SQLServerDictionary.class));
+        
     public void setUp() throws Exception {
+        setSupportedDatabases(supportedDatabases.toArray(new Class<?>[] {}));
+        if (isTestsDisabled()) {
+            return;
+        }
+
         super.setUp(getLobEntityClass(), CLEAR_TABLES,
             "openjpa.DataCache", "true",
             "openjpa.RemoteCommitProvider", "sjvm",
             "openjpa.ConnectionRetainMode", "transaction");
-    }
-
-    public boolean isDatabaseSupported() {
-        DBDictionary dict = ((JDBCConfiguration) emf.getConfiguration())
-            .getDBDictionaryInstance();
-        if (dict instanceof MySQLDictionary ||
-            dict instanceof SQLServerDictionary ||
-            dict instanceof OracleDictionary ||
-            dict instanceof PostgresDictionary) {
-            return true;
-        }
-        return false;
     }
 
     public void insert(LobEntity le) {
@@ -74,12 +72,10 @@ public abstract class AbstractLobTest extends SingleEMFTestCase {
     }
 
     public void testInsert() {
-        if (!isDatabaseSupported()) return;
         insert(newLobEntity("oOOOOOo", 1));
     }
 
     public void testInsertAndSelect() throws IOException {
-        if (!isDatabaseSupported()) return;
         String s = "oooOOOooo";
         insert(newLobEntity(s, 1));
         EntityManager em = emf.createEntityManager();
@@ -94,7 +90,6 @@ public abstract class AbstractLobTest extends SingleEMFTestCase {
     }
 
     public void testInsertNull() {
-        if (!isDatabaseSupported()) return;
         insert(newLobEntity(null, 1));
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
@@ -105,7 +100,6 @@ public abstract class AbstractLobTest extends SingleEMFTestCase {
     }
 
     public void testUpdate() throws IOException {
-        if (!isDatabaseSupported()) return;
         insert(newLobEntity("oOOOOOo", 1));
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
@@ -123,7 +117,6 @@ public abstract class AbstractLobTest extends SingleEMFTestCase {
     }
 
     public void testUpdateWithNull() {
-        if (!isDatabaseSupported()) return;
         insert(newLobEntity("oOOOOOo", 1));
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
@@ -140,7 +133,6 @@ public abstract class AbstractLobTest extends SingleEMFTestCase {
     }
     
     public void testUpdateANullObjectWithoutNull() throws IOException {
-        if (!isDatabaseSupported()) return;
         insert(newLobEntity(null, 1));
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
@@ -158,7 +150,6 @@ public abstract class AbstractLobTest extends SingleEMFTestCase {
     }
     
     public void testDelete() {
-        if (!isDatabaseSupported()) return;
         insert(newLobEntity("oOOOOOo", 1));
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
@@ -175,7 +166,6 @@ public abstract class AbstractLobTest extends SingleEMFTestCase {
     }
     
     public void testLifeCycleInsertFlushModify() {
-        if (!isDatabaseSupported()) return;
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
         LobEntity le = newLobEntity("oOOOOOo", 1);
@@ -187,7 +177,6 @@ public abstract class AbstractLobTest extends SingleEMFTestCase {
     }
 
     public void testLifeCycleLoadFlushModifyFlush() {
-        if (!isDatabaseSupported()) return;
         insert(newLobEntity("oOOOOOo", 1));
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
@@ -201,7 +190,6 @@ public abstract class AbstractLobTest extends SingleEMFTestCase {
 
     public void testReadingMultipleTimesWithASingleConnection()
         throws IOException {
-        if (!isDatabaseSupported()) return;
         insert(newLobEntity("oOOOOOo", 1));
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
@@ -222,7 +210,6 @@ public abstract class AbstractLobTest extends SingleEMFTestCase {
     }
 
     public void testDataCache() {
-        if (!isDatabaseSupported()) return;
         OpenJPAEntityManager em = emf.createEntityManager();
 
         em.getTransaction().begin();
@@ -241,7 +228,6 @@ public abstract class AbstractLobTest extends SingleEMFTestCase {
     }
 
     public void testSetResetAndFlush() throws IOException {
-        if (!isDatabaseSupported()) return;
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
         LobEntity le = newLobEntity("oOOOOOo", 1);
@@ -259,7 +245,6 @@ public abstract class AbstractLobTest extends SingleEMFTestCase {
     }
 
     public void testSetFlushAndReset() throws IOException {
-        if (!isDatabaseSupported()) return;
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
         LobEntity le = newLobEntity("oOOOOOo", 1);
