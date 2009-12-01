@@ -826,9 +826,11 @@
                 <executions>
                     <execution>
                         <goals>
-                            <goal>test-jar</goal>
+                            <goal>jar</goal>
                         </goals>
                         <configuration>
+                            <classifier>test-base</classifier>
+                            <classesDirectory>${project.build.testOutputDirectory}</classesDirectory>
                             <includes>
                                 <!-- Note: Including entities in this jar will
                                      cause problems for any modules that need

@@ -763,7 +763,7 @@
             <groupId>org.apache.openjpa</groupId>
             <artifactId>openjpa-persistence-jdbc</artifactId>
             <version>${pom.version}</version>
-            <classifier>tests</classifier>
+            <classifier>test-base</classifier>
             <scope>test</scope>
         </dependency>
         <dependency>
