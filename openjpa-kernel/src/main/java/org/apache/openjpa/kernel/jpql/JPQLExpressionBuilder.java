@@ -22,9 +22,12 @@ import java.io.PrintStream;
 import java.io.Serializable;
 import java.lang.reflect.Field;
 import java.math.BigDecimal;
+import java.sql.Time;
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Date;
 import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -1367,13 +1370,13 @@ public class JPQLExpressionBuilder
                 return evalNot(not, factory.contains(val2, val1));
 
             case JJTCURRENTDATE:
-                return factory.getCurrentDate();
+                return factory.getCurrentDate(Date.class);
 
             case JJTCURRENTTIME:
-                return factory.getCurrentTime();
+                return factory.getCurrentTime(Time.class);
 
             case JJTCURRENTTIMESTAMP:
-                return factory.getCurrentTimestamp();
+                return factory.getCurrentTimestamp(Timestamp.class);
 
             case JJTSELECTEXTENSION:
                 assertQueryExtensions("SELECT");

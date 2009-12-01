@@ -792,7 +792,7 @@ class Expressions {
 
         @Override
         public Value toValue(ExpressionFactory factory, CriteriaQueryImpl<?> q) {
-            return factory.getCurrentDate();
+            return factory.getCurrentDate(getJavaType());
         }
         
         @Override
@@ -808,7 +808,7 @@ class Expressions {
 
         @Override
         public Value toValue(ExpressionFactory factory, CriteriaQueryImpl<?> q) {
-            return factory.getCurrentTime();
+            return factory.getCurrentTime(getJavaType());
         }
         
         @Override
@@ -824,7 +824,7 @@ class Expressions {
 
         @Override
         public Value toValue(ExpressionFactory factory, CriteriaQueryImpl<?> q) {
-            return factory.getCurrentTimestamp();
+            return factory.getCurrentTimestamp(getJavaType());
         }
         
         @Override

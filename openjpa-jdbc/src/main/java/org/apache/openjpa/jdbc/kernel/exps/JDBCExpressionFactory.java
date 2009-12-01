@@ -19,6 +19,7 @@
 package org.apache.openjpa.jdbc.kernel.exps;
 
 import java.io.Serializable;
+import java.util.Date;
 
 import org.apache.openjpa.jdbc.meta.ClassMapping;
 import org.apache.openjpa.jdbc.meta.JavaSQLTypes;
@@ -49,13 +50,8 @@ public class JDBCExpressionFactory
     implements ExpressionFactory, Serializable {
 
     private static final Val NULL = new Null();
-    private static final Val CURRENT_DATE = new CurrentDate(JavaSQLTypes.DATE);
-    private static final Val CURRENT_TIME = new CurrentDate(JavaSQLTypes.TIME);
-    private static final Val CURRENT_TIMESTAMP =
-        new CurrentDate(JavaSQLTypes.TIMESTAMP);
 
-    private static final Localizer _loc = Localizer.forPackage
-        (JDBCExpressionFactory.class);
+    private static final Localizer _loc = Localizer.forPackage(JDBCExpressionFactory.class);
 
     private final ClassMapping _type;
     private final SelectConstructor _cons = new SelectConstructor();
@@ -263,16 +259,16 @@ public class JDBCExpressionFactory
         return NULL;
     }
 
-    public Value getCurrentDate() {
-        return CURRENT_DATE;
+    public <T extends Date> Value getCurrentDate(Class<T> dateType) {
+        return new CurrentDate(dateType);
     }
 
-    public Value getCurrentTime() {
-        return CURRENT_TIME;
+    public <T extends Date> Value getCurrentTime(Class<T> dateType) {
+        return  new CurrentDate(dateType);
     }
 
-    public Value getCurrentTimestamp() {
-        return CURRENT_TIMESTAMP;
+    public <T extends Date> Value getCurrentTimestamp(Class<T> dateType) {
+        return  new CurrentDate(dateType);
     }
 
     public Parameter newParameter(Object name, Class type) {

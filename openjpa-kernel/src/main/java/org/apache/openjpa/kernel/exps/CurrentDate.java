@@ -29,16 +29,25 @@ import org.apache.openjpa.kernel.StoreContext;
  */
 class CurrentDate
     extends Val {
-
+    private final Class<? extends Date> _type;
+    
+    public CurrentDate(Class<? extends Date> type) {
+        _type = type;
+    }
+    
     public Class getType() {
-        return Date.class;
+        return _type;
     }
 
     public void setImplicitType(Class type) {
     }
 
-    protected Object eval(Object candidate, Object orig,
-        StoreContext ctx, Object[] params) {
-        return new Date();
+    protected Object eval(Object candidate, Object orig, StoreContext ctx, Object[] params) {
+        try {
+            _type.getConstructor(long.class).newInstance(System.currentTimeMillis());
+        } catch (Exception e) {
+            return new Date();
+        }
+        return null;
     }
 }

@@ -18,6 +18,10 @@
  */
 package org.apache.openjpa.kernel.exps;
 
+import java.sql.Time;
+import java.sql.Timestamp;
+import java.util.Date;
+
 import org.apache.openjpa.meta.ClassMetaData;
 
 /**
@@ -229,17 +233,17 @@ public interface ExpressionFactory {
     /**
      * Return a value representing the current date.
      */
-    public Value getCurrentDate();
+    public <T extends Date> Value getCurrentDate(Class<T> dateType);
 
     /**
      * Return a value representing the current time.
      */
-    public Value getCurrentTime();
+    public <T extends Date> Value getCurrentTime(Class<T> timeType);
 
     /**
      * Return a value representing the current timestamp.
      */
-    public Value getCurrentTimestamp();
+    public <T extends Date> Value getCurrentTimestamp(Class<T> timestampType);
 
     /**
      * Return a value representing a parameter for the given value. The

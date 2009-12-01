@@ -19,6 +19,7 @@
 package org.apache.openjpa.persistence.criteria;
 
 import java.math.BigDecimal;
+import java.sql.Time;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -27,6 +28,7 @@ import java.util.Map;
 import javax.persistence.Parameter;
 import javax.persistence.Query;
 import javax.persistence.Tuple;
+import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Expression;
 import javax.persistence.criteria.Join;
@@ -1455,5 +1457,24 @@ public class TestTypesafeCriteria extends CriteriaTest {
        Query q = em.createQuery(cquery);
 
        List result = q.getResultList();        
+    }
+    
+    public void testCurrentTimeReturnsSQLTypes() {
+        em.getTransaction().begin();
+        Product pc = new Product();
+        em.persist(pc);
+        em.getTransaction().commit();
+        
+        int pid = pc.getPid();
+        
+        CriteriaQuery<Time> cquery = cb.createQuery(Time.class);
+        Root<Product> product = cquery.from(Product.class);
+        cquery.select(cb.currentTime());
+        cquery.where(cb.equal(product.get(Product_.pid), pid));
+
+        TypedQuery<Time> tq = em.createQuery(cquery);
+        Object result = tq.getSingleResult();
+        assertTrue(result.getClass() + " not instance of Time", result instanceof Time);  
+        
     }
 }
