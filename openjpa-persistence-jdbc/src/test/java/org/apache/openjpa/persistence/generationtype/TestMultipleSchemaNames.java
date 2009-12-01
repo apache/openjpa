@@ -38,15 +38,13 @@ import org.apache.openjpa.persistence.test.SingleEMFTestCase;
 
 public class TestMultipleSchemaNames extends SingleEMFTestCase {
 
-    static private DBDictionary dict = null;
-    
     public void setUp() {
         // Need to skip tests on MySQL, Oracle and MS SQL Server
         // See createSchemas() comment at the bottom
         setUnsupportedDatabases(
-                org.apache.openjpa.jdbc.sql.MySQLDictionary.class,
-                org.apache.openjpa.jdbc.sql.OracleDictionary.class,
-                org.apache.openjpa.jdbc.sql.SQLServerDictionary.class);
+                MySQLDictionary.class,
+                OracleDictionary.class,
+                SQLServerDictionary.class);
         if (isTestsDisabled()) {
             // getLog().trace("TestMultipleSchemaNames() - Skipping all tests - Not supported on this DB");
             return;
@@ -419,13 +417,15 @@ public class TestMultipleSchemaNames extends SingleEMFTestCase {
      * we give up as they treat schemas in special ways.
      */
     private void createSchemas() {
+        OpenJPAEntityManagerFactorySPI tempEmf = createEMF();
+        DBDictionary dict = ((JDBCConfiguration) tempEmf.getConfiguration()).getDBDictionaryInstance();
         
         if (!(dict instanceof PostgresDictionary)) {
+            closeEMF(tempEmf);
             return;
         }
         
-        OpenJPAEntityManagerFactorySPI emf = createEMF();
-        OpenJPAEntityManagerSPI em = emf.createEntityManager();
+        OpenJPAEntityManagerSPI em = tempEmf.createEntityManager();
         String[] schemas =
             { "SCHEMA1", "SCHEMA2", "SCHEMA3", "SCHEMA3G", "SCHEMA4G" };
         for (String schema : schemas) {
@@ -438,7 +438,7 @@ public class TestMultipleSchemaNames extends SingleEMFTestCase {
                 em.getTransaction().rollback();
             }
         }
-        closeEMF(emf);
+        closeEMF(tempEmf);
     }
 
 } // end of TestMultipleSchemaNames
