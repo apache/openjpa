@@ -18,9 +18,13 @@
  */
 package org.apache.openjpa.jdbc.kernel.exps;
 
+import java.sql.SQLException;
+import java.sql.Time;
+import java.sql.Timestamp;
 import java.util.Date;
 
 import org.apache.openjpa.jdbc.meta.JavaSQLTypes;
+import org.apache.openjpa.jdbc.sql.Result;
 import org.apache.openjpa.jdbc.sql.SQLBuffer;
 import org.apache.openjpa.jdbc.sql.Select;
 import org.apache.openjpa.util.InternalException;
@@ -33,38 +37,49 @@ import org.apache.openjpa.util.InternalException;
 class CurrentDate
     extends Const {
 
-    private final int _type;
+    private final Class<? extends Date> _type;
 
-    public CurrentDate(int type) {
+    public CurrentDate(Class<? extends Date> type) {
         _type = type;
     }
 
-    public Class getType() {
-        return Date.class;
+    public Class<? extends Date> getType() {
+        return _type;
     }
 
     public void setImplicitType(Class type) {
     }
 
+    public Object load(ExpContext ctx, ExpState state, Result res) throws SQLException {
+        if (Timestamp.class.isAssignableFrom(_type)) {
+            return res.getTimestamp(this, null);
+        } else if (Time.class.isAssignableFrom(_type)) {
+            return res.getTime(this, null);
+        } else if (Date.class.isAssignableFrom(_type)) {
+            return res.getDate(this, null);
+        } else {
+            throw new InternalException();
+        }
+    }
+    
     public Object getValue(Object[] params) {
-        return new Date();
+        try {
+            _type.getConstructor(long.class).newInstance(System.currentTimeMillis());
+        } catch (Exception e) {
+            return new Date();
+        }
+        return null;
     }
 
-    public void appendTo(Select sel, ExpContext ctx, ExpState state, 
-        SQLBuffer sql, int index) {
-        switch (_type) {
-            case JavaSQLTypes.DATE:
-                sql.append(ctx.store.getDBDictionary().currentDateFunction);
-                break;
-            case JavaSQLTypes.TIME:
-                sql.append(ctx.store.getDBDictionary().currentTimeFunction);
-                break;
-            case JavaSQLTypes.TIMESTAMP:
-                sql.append(ctx.store.getDBDictionary().
-                    currentTimestampFunction);
-                break;
-            default:
-                throw new InternalException();
+    public void appendTo(Select sel, ExpContext ctx, ExpState state, SQLBuffer sql, int index) {
+        if (Timestamp.class.isAssignableFrom(_type)) {
+            sql.append(ctx.store.getDBDictionary().currentTimestampFunction);
+        } else if (Time.class.isAssignableFrom(_type)) {
+            sql.append(ctx.store.getDBDictionary().currentTimeFunction);
+        } else if (Date.class.isAssignableFrom(_type)) {
+            sql.append(ctx.store.getDBDictionary().currentDateFunction);
+        } else {
+            throw new InternalException();
         }
     }
 }
