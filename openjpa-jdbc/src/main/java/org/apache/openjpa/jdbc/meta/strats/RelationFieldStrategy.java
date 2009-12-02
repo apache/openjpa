@@ -996,7 +996,7 @@ public class RelationFieldStrategy
 
         ClassMapping relmapping = field.getTypeMapping();
         Joinable j = field.getTypeMapping().assertJoinable(col);
-        if (ImplHelper.isManageable(fieldVal))
+        if (ImplHelper.isManageable(fieldVal) && !field.getDefiningMetaData().useIdClassFromParent())
             fieldVal = store.getContext().getObjectId(fieldVal);
         if (fieldVal instanceof OpenJPAId)
             fieldVal = ((OpenJPAId) fieldVal).getIdObject();

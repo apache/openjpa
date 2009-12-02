@@ -605,6 +605,11 @@ public class TestMappedById extends SingleEMFTestCase {
         Person3 p0 = persons3.get("f_1");
         Person3 p1 = p.getMedical().getPatient();
         assertEquals(p, p1);
+        em.clear();
+        
+        MedicalHistory3 m = em.find(MedicalHistory3.class, new PersonId3("f_1", "l_1"));
+        MedicalHistory3 m0 = medicals3.get("f_1");
+        assertEquals(m, m0);
     }
 
     public void queryObj6() { 
@@ -665,6 +670,11 @@ public class TestMappedById extends SingleEMFTestCase {
         Person4 p0 = persons4.get("f_1");
         Person4 p1 = p.getMedical().getPatient();
         assertEquals(p1, p);
+        em.clear();
+        
+        MedicalHistory4 m = em.find(MedicalHistory4.class, new PersonId4("f_1", "l_1"));
+        MedicalHistory4 m0 = medicals4.get("f_1");
+        assertEquals(m, m0);
     }
 
     public void queryObj7() {
