@@ -35,24 +35,23 @@ import org.apache.openjpa.util.RuntimeExceptionTranslator;
  * @author Marc Prud'hommeaux
  * @nojavadoc
  */
-public class DelegatingResultList
-    implements ResultList {
+public class DelegatingResultList<T>
+    implements ResultList<T> {
 
-    private final ResultList _del;
+    private final ResultList<T> _del;
     private final RuntimeExceptionTranslator _trans;
 
     /**
      * Constructor; supply delegate.
      */
-    public DelegatingResultList(ResultList list) {
+    public DelegatingResultList(ResultList<T> list) {
         this(list, null);
     }
 
     /**
      * Constructor; supply delegate and exception translator.
      */
-    public DelegatingResultList(ResultList list,
-        RuntimeExceptionTranslator trans) {
+    public DelegatingResultList(ResultList<T> list, RuntimeExceptionTranslator trans) {
         _del = list;
         _trans = trans;
     }
@@ -60,16 +59,16 @@ public class DelegatingResultList
     /**
      * Return the direct delegate.
      */
-    public ResultList getDelegate() {
+    public ResultList<T> getDelegate() {
         return _del;
     }
 
     /**
      * Return the native delegate.
      */
-    public ResultList getInnermostDelegate() {
+    public ResultList<T> getInnermostDelegate() {
         return _del instanceof DelegatingResultList
-            ? ((DelegatingResultList) _del).getInnermostDelegate() : _del;
+            ? ((DelegatingResultList<T>) _del).getInnermostDelegate() : _del;
     }
 
     /**
@@ -171,7 +170,7 @@ public class DelegatingResultList
         }
     }
 
-    public Iterator iterator() {
+    public Iterator<T> iterator() {
         return listIterator();
     }
 
@@ -191,7 +190,7 @@ public class DelegatingResultList
         }
     }
 
-    public boolean add(Object o) {
+    public boolean add(T o) {
         try {
             return _del.add(o);
         } catch (RuntimeException re) {
@@ -207,7 +206,7 @@ public class DelegatingResultList
         }
     }
 
-    public boolean containsAll(Collection c) {
+    public boolean containsAll(Collection<?> c) {
         try {
             return _del.containsAll(c);
         } catch (RuntimeException re) {
@@ -215,7 +214,7 @@ public class DelegatingResultList
         }
     }
 
-    public boolean addAll(Collection c) {
+    public boolean addAll(Collection<? extends T> c) {
         try {
             return _del.addAll(c);
         } catch (RuntimeException re) {
@@ -223,7 +222,7 @@ public class DelegatingResultList
         }
     }
 
-    public boolean addAll(int index, Collection c) {
+    public boolean addAll(int index, Collection<? extends T> c) {
         try {
             return _del.addAll(index, c);
         } catch (RuntimeException re) {
@@ -231,7 +230,7 @@ public class DelegatingResultList
         }
     }
 
-    public boolean removeAll(Collection c) {
+    public boolean removeAll(Collection<?> c) {
         try {
             return _del.removeAll(c);
         } catch (RuntimeException re) {
@@ -239,7 +238,7 @@ public class DelegatingResultList
         }
     }
 
-    public boolean retainAll(Collection c) {
+    public boolean retainAll(Collection<?> c) {
         try {
             return _del.retainAll(c);
         } catch (RuntimeException re) {
@@ -255,7 +254,7 @@ public class DelegatingResultList
         }
     }
 
-    public Object get(int index) {
+    public T get(int index) {
         try {
             return _del.get(index);
         } catch (RuntimeException re) {
@@ -263,7 +262,7 @@ public class DelegatingResultList
         }
     }
 
-    public Object set(int index, Object element) {
+    public T set(int index, T element) {
         try {
             return _del.set(index, element);
         } catch (RuntimeException re) {
@@ -271,7 +270,7 @@ public class DelegatingResultList
         }
     }
 
-    public void add(int index, Object element) {
+    public void add(int index, T element) {
         try {
             _del.add(index, element);
         } catch (RuntimeException re) {
@@ -279,7 +278,7 @@ public class DelegatingResultList
         }
     }
 
-    public Object remove(int index) {
+    public T remove(int index) {
         try {
             return _del.remove(index);
         } catch (RuntimeException re) {
@@ -303,23 +302,23 @@ public class DelegatingResultList
         }
     }
 
-    public ListIterator listIterator() {
+    public ListIterator<T> listIterator() {
         try {
-            return new DelegatingListIterator(_del.listIterator());
+            return new DelegatingListIterator<T>(_del.listIterator());
         } catch (RuntimeException re) {
             throw translate(re);
         }
     }
 
-    public ListIterator listIterator(int index) {
+    public ListIterator<T> listIterator(int index) {
         try {
-            return new DelegatingListIterator(_del.listIterator(index));
+            return new DelegatingListIterator<T>(_del.listIterator(index));
         } catch (RuntimeException re) {
             throw translate(re);
         }
     }
 
-    public List subList(int fromIndex, int toIndex) {
+    public List<T> subList(int fromIndex, int toIndex) {
         try {
             return _del.subList(fromIndex, toIndex);
         } catch (RuntimeException re) {
@@ -338,31 +337,31 @@ public class DelegatingResultList
     /**
      * Delegating iterator that also performs exception translation.
      */
-    public class DelegatingListIterator
-        implements ListIterator {
+    public class DelegatingListIterator<T>
+        implements ListIterator<T> {
 
-        private final ListIterator _del;
+        private final ListIterator<T> _del;
 
         /**
          * Constructor; supply delegate.
          */
-        public DelegatingListIterator(ListIterator it) {
+        public DelegatingListIterator(ListIterator<T> it) {
             _del = it;
         }
 
         /**
          * Return the direct delegate.
          */
-        public ListIterator getDelegate() {
+        public ListIterator<T> getDelegate() {
             return _del;
         }
 
         /**
          * Return the native delegate.
          */
-        public ListIterator getInnermostDelegate() {
+        public ListIterator<T> getInnermostDelegate() {
             return _del instanceof DelegatingListIterator
-                ? ((DelegatingListIterator) _del).getInnermostDelegate() : _del;
+                ? ((DelegatingListIterator<T>) _del).getInnermostDelegate() : _del;
         }
 
         public int hashCode() {
@@ -377,8 +376,7 @@ public class DelegatingResultList
             if (other == this)
                 return true;
             if (other instanceof DelegatingListIterator)
-                other = ((DelegatingListIterator) other).
-                    getInnermostDelegate();
+                other = ((DelegatingListIterator) other).getInnermostDelegate();
             try {
                 return getInnermostDelegate().equals(other);
             } catch (RuntimeException re) {
@@ -394,7 +392,7 @@ public class DelegatingResultList
             }
         }
 
-        public Object next() {
+        public T next() {
             try {
                 return _del.next();
             } catch (RuntimeException re) {
@@ -410,7 +408,7 @@ public class DelegatingResultList
             }
         }
 
-        public Object previous() {
+        public T previous() {
             try {
                 return _del.previous();
             } catch (RuntimeException re) {
@@ -442,7 +440,7 @@ public class DelegatingResultList
             }
         }
 
-        public void set(Object o) {
+        public void set(T o) {
             try {
                 _del.set(o);
             } catch (RuntimeException re) {
@@ -450,7 +448,7 @@ public class DelegatingResultList
             }
         }
 
-        public void add(Object o) {
+        public void add(T o) {
             try {
                 _del.add(o);
             } catch (RuntimeException re) {
