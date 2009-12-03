@@ -1986,7 +1986,7 @@ public class DBDictionary
         // (SELECT 1 FROM TABLE t0 WHERE t0.ID = TABLE.ID); also, some
         // databases do not allow aliases in delete statements, which
         // also causes us to use a subselect
-        Set<String> selectedTables = getSelectTableAliases(sel);
+        Collection<String> selectedTables = getSelectTableAliases(sel);
         if (selectedTables.size() == 1 && supportsSubselect
             && allowsAliasInBulkClause) {
             SQLBuffer from;
@@ -2070,14 +2070,8 @@ public class DBDictionary
         return sql;
     }
     
-    Set<String> getSelectTableAliases(Select sel) {
-        Set<String> result = new HashSet<String>();
-        List<String> selects = sel.getIdentifierAliases();
-        for (String s : selects) {
-            String tableAlias = s.substring(0, s.indexOf('.'));
-            result.add(tableAlias);
-        }
-        return result;
+    protected Collection<String> getSelectTableAliases(Select sel) {
+        return sel.getTableAliases();
     }
 
     protected SQLBuffer getDeleteTargets(Select sel) {

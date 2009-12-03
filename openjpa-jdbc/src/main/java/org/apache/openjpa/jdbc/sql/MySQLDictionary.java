@@ -24,6 +24,10 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Types;
 import java.util.Arrays;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.openjpa.jdbc.kernel.JDBCFetchConfiguration;
@@ -382,5 +386,16 @@ public class MySQLDictionary
         if (hint != null)
             select += " " + hint;
         return select;
+    }
+    
+    @Override
+    protected Collection<String> getSelectTableAliases(Select sel) {
+        Set<String> result = new HashSet<String>();
+        List<String> selects = sel.getIdentifierAliases();
+        for (String s : selects) {
+            String tableAlias = s.substring(0, s.indexOf('.'));
+            result.add(tableAlias);
+        }
+        return result;
     }
 }
