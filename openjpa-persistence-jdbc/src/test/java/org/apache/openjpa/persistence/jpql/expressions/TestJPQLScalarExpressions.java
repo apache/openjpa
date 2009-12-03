@@ -249,22 +249,19 @@ public class TestJPQLScalarExpressions extends AbstractTestCase {
         assertEquals("the name is not Jacob", "Jacob", result3[0]);
         assertEquals("the credit rating is not 'POOR'", "POOR", result3[1]);
 
-        /*
-        // this jpql fail with NPE in Derby. It works with DB2 
         String update2 = "update CompUser c set c.creditRating = " +
             " CASE WHEN c.name ='Jacob' THEN " +
-            "org.apache.openjpa.persistence.common.apps.CompUser$
-            CreditRating.POOR" + 
+            "org.apache.openjpa.persistence.common.apps.CompUser$CreditRating.POOR" + 
             " WHEN c.name = 'Ugo' THEN " + 
-            "org.apache.openjpa.persistence.common.apps.CompUser$
-            CreditRating.GOOD " +
+            "org.apache.openjpa.persistence.common.apps.CompUser$CreditRating.GOOD " +
             " ELSE " + 
-            "org.apache.openjpa.persistence.common.apps.CompUser$
-            CreditRating.EXCELLENT " +
+            "org.apache.openjpa.persistence.common.apps.CompUser$CreditRating.EXCELLENT " +
             " END ";
-        */
+        int updateCount = em.createQuery(update2).executeUpdate();
+        assertEquals("the result is not 6", 6, updateCount);
         
-        String update2 = "update CompUser c set c.creditRating = " +
+        
+        String update3 = "update CompUser c set c.creditRating = " +
             " CASE WHEN c.age > 30 THEN " +
             "org.apache.openjpa.persistence.common.apps." +
             "CompUser$CreditRating.POOR" + 
@@ -275,7 +272,7 @@ public class TestJPQLScalarExpressions extends AbstractTestCase {
             "org.apache.openjpa.persistence.common.apps." +
             "CompUser$CreditRating.EXCELLENT " +
             " END "; 
-        int updateCount = em.createQuery(update2).executeUpdate();
+        updateCount = em.createQuery(update3).executeUpdate();
         assertEquals("the result is not 6", 6, updateCount);
         
         String query4 = "select e.name, e.creditRating from CompUser e " + 
@@ -300,7 +297,7 @@ public class TestJPQLScalarExpressions extends AbstractTestCase {
             ((org.apache.openjpa.persistence.common.apps.CompUser.CreditRating)
             result4[1]).name());
         
-        String update3 = "update CompUser c set c.creditRating = " +
+        String update4 = "update CompUser c set c.creditRating = " +
             " CASE c.age WHEN 35 THEN " +
             "org.apache.openjpa.persistence.common.apps." +
             "CompUser$CreditRating.POOR" + 
@@ -311,7 +308,7 @@ public class TestJPQLScalarExpressions extends AbstractTestCase {
             "org.apache.openjpa.persistence.common.apps." +
             "CompUser$CreditRating.EXCELLENT " +
             " END "; 
-        result = em.createQuery(update3).executeUpdate();
+        result = em.createQuery(update4).executeUpdate();
         assertEquals("the result is not 6", 6, result);
 
         // Derby fails but DB2 works 
