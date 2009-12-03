@@ -61,6 +61,7 @@ public class Employee {
     ContactInfo contactInfo;
     
     @ElementCollection
+    @CollectionTable(name="EMP_ATTROVER_jobInfos")
   	@AssociationOverride (
    		name="value.pm",
    		joinColumns=@JoinColumn(name="PROGRAM_MGR")

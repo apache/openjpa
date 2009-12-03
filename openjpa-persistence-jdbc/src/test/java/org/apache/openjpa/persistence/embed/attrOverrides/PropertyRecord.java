@@ -36,6 +36,7 @@ public class PropertyRecord {
         @AttributeOverride(name="value.tax", column=@Column(name="ASSESSMENT"))
     })
     @ElementCollection
+    @CollectionTable(name="PROPREC_ATTROVER_parcels")
     Map<Address, PropertyInfo> parcels = new HashMap<Address, PropertyInfo>();
     
     @Column(length = 10)

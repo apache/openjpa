@@ -27,6 +27,7 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -99,7 +100,7 @@ public class TestEmbeddable extends SQLListenerTestCase {
             EntityA_Embed_MappedToOneCascadeDelete.class, EntityB2.class, 
             Book.class, Listing.class, Seller.class,
             EntityA_Embed_Coll_Map.class, Embed_Coll_Map.class,
-            EntityA_Embed_Complex.class, CLEAR_TABLES);
+            EntityA_Embed_Complex.class, A.class, CLEAR_TABLES);
             sql.clear();
             DBDictionary dict = ((JDBCConfiguration)emf.getConfiguration()).getDBDictionaryInstance();
             if (dict.getClass().getName().indexOf("oracle") != -1) {
@@ -2956,5 +2957,36 @@ public class TestEmbeddable extends SQLListenerTestCase {
         assertEquals(6, findA.getEmbeds().size());
         em.close();
     }
+
+    /*
+     * test the default name for element collection table
+     */
+    public void testDefaultNameForElementCollection() {
+        getLog().trace("testDefaultNameForElementCollection() - entered");
+        EntityManager em = emf.createEntityManager();
+        EntityTransaction tran = em.getTransaction();
+        tran.begin(); 
+        A a = new A();
+        a.setId("1");
+        Embed embed = new Embed();
+        embed.setIntVal1(1);
+        embed.setIntVal2(2);
+        embed.setIntVal3(3);
+        Set embeds = new HashSet();
+        embeds.add(embed);
+        a.setEmbeds(embeds);
+        tran.commit();
+        em.close();
+        boolean found = false;
+        for (String sqlStr : sql) {
+            if (sqlStr.toUpperCase().indexOf("A_EMBEDS") != -1) {
+                found = true;
+                break;
+            } 
+        }
+        assertTrue(found);
+        
+    }
+    
     
 }

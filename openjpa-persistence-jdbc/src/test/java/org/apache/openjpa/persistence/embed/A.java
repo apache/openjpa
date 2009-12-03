@@ -16,43 +16,35 @@
  * specific language governing permissions and limitations
  * under the License.    
  */
-package org.apache.openjpa.persistence.criteria;
+package org.apache.openjpa.persistence.embed;
 
+import java.util.HashSet;
 import java.util.Set;
 
-import javax.persistence.CollectionTable;
-import javax.persistence.ElementCollection;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-import javax.persistence.Table;
+import javax.persistence.*;
 
 @Entity
-@Table(name="CR_PSN")
+@Table(name = "A_EMB")
+public class A implements java.io.Serializable {
 
-public class Person {
     @Id
-    @GeneratedValue
-    private int id;
-
-    private String name;
+    protected String id;
     
-	@ElementCollection
-	@CollectionTable(name="CR_PSN_NICKNAMES")
-	private Set<String> nickNames;
-	
-	protected Person() {
-	    this("?");
-	}
-	
-	public Person(String name) {
-	    setName(name);
-	}
+    String name;
+    
+    int value;
 
-    public int getId() {
+    @ElementCollection
+    protected Set<Embed> embeds = new HashSet();
+
+    public String getId() {
         return id;
     }
-
+    
+    public void setId(String id) {
+        this.id = id;
+    }
+    
     public String getName() {
         return name;
     }
@@ -60,16 +52,21 @@ public class Person {
     public void setName(String name) {
         this.name = name;
     }
+    
+    public int getValue() {
+        return value;
+    }
+    
+    public void setValue(int value) {
+        this.value = value;
+    }
+    
+    public Set<Embed> getEmbeds() {
+        return embeds;
+    }
 
-    public Set<String> getNickNames() {
-        return nickNames;
+    public void setEmbeds(Set<Embed> embeds) {
+        this.embeds = embeds;
     }
-    
-    public void setNickNames(Set<String> nickNames) {
-        this.nickNames = nickNames;
-    }
-    
-    public void addNickName(String nickName) {
-        nickNames.add(nickName);
-    }
-}
+}    
+   

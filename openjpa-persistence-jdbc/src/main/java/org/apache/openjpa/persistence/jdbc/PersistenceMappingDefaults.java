@@ -135,8 +135,12 @@ public class PersistenceMappingDefaults
         ClassMapping clm = fm.getDefiningMapping();
         Table table = getTable(clm);
         
-        String name = table.getName();
-
+        String name = null;
+        if (fm.isElementCollection()) 
+            name = clm.getTypeAlias();
+        else 
+            name = table.getName();
+        
         // if this is an assocation table, spec says to suffix with table of
         // the related type. spec doesn't cover other cases; we're going to
         // suffix with the field name
