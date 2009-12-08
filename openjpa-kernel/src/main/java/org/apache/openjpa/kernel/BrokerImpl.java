@@ -220,6 +220,7 @@ public class BrokerImpl
     private int _detachState = DETACH_LOADED;
     private boolean _detachedNew = true;
     private boolean _orderDirty = false;
+    private boolean _suppressBatchOLELogging = false;
 
     // status
     private int _flags = 0;
@@ -759,6 +760,23 @@ public class BrokerImpl
                 _transCallbackMode);
     }
 
+    /**
+     * Set whether this Broker will generate verbose optimistic lock exceptions when batching
+     * operations. Defaults to true.
+     * 
+     * @param b
+     */
+    public void setSuppressBatchOLELogging(boolean b) {
+        _suppressBatchOLELogging = b;
+    }
+    
+    /**
+     * Return whether this Broker will generate verbose optimistic lock exceptions when batching
+     * operations.
+     */
+    public boolean getSuppressBatchOLELogging() {
+        return _suppressBatchOLELogging;
+    }
     ///////////
     // Lookups
     ///////////
@@ -2157,8 +2175,13 @@ public class BrokerImpl
                     failed.add(f);
             }
         }
-        if (opt && !failed.isEmpty())
-            return new OptimisticException(failed, t);
+        if (opt && !failed.isEmpty()) {
+            if(_suppressBatchOLELogging == true){
+                return new OptimisticException(_loc.get("broker-suppressing-exceptions",t.length));
+            }else{
+                return new OptimisticException(failed, t);
+            }
+        }
         if (opt)
             return new OptimisticException(t);
         return new StoreException(_loc.get("rolled-back")).
