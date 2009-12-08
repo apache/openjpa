@@ -70,7 +70,8 @@ public class DetachManager
     private final boolean _failFast;
     private boolean _flushed = false;
     private boolean _flushBeforeDetach;
-    private boolean _cascadeWithDetach;    
+    private boolean _cascadeWithDetach; 
+    private boolean _reloadOnDetach;
 
     // if we're not detaching full, we need to track all detached objects;
     // if we are, then we use a special field manager for more efficient
@@ -95,7 +96,7 @@ public class DetachManager
         boolean setState = meta.getDetachedState() != null
             && !ClassMetaData.SYNTHETIC.equals(meta.getDetachedState());
         BitSet idxs = (setState) ? new BitSet(meta.getFields().length) : null;
-        preDetach(sm.getBroker(), sm, idxs);
+        preDetach(sm.getBroker(), sm, idxs, false, true);
 
         if (setState) {
             sm.getPersistenceCapable().pcSetDetachedState(getDetachedState
@@ -123,7 +124,7 @@ public class DetachManager
         flushDirty(sm);
 
         Broker broker = sm.getBroker();
-        preDetach(broker, sm, idxs);
+        preDetach(broker, sm, idxs, false, true);
 
         // write detached state object and state manager
         DetachOptions opts = broker.getConfiguration().
@@ -148,7 +149,8 @@ public class DetachManager
      * effect of this method
      */
     private static void preDetach(Broker broker, StateManagerImpl sm,
-        BitSet idxs) {
+        BitSet idxs, boolean full,
+        boolean reloadOnDetach) {
         // make sure the existing object has the right fields fetched; call
         // even if using currently-loaded fields for detach to make sure
         // version is set
@@ -160,8 +162,12 @@ public class DetachManager
         else if (detachMode == DETACH_ALL)
             loadMode = StateManagerImpl.LOAD_ALL;
         try {
-            sm.load(broker.getFetchConfiguration(), loadMode, exclude, null, 
-                false);
+            if (detachMode != DETACH_LOADED || 
+                    reloadOnDetach ||
+                    (!reloadOnDetach && !full)) {
+                sm.load(broker.getFetchConfiguration(), loadMode, exclude,
+                    null, false);
+            }
         } catch (ObjectNotFoundException onfe) {
             // consume the exception
         }
@@ -280,6 +286,7 @@ public class DetachManager
         Compatibility compatibility = 
             broker.getConfiguration().getCompatibilityInstance();
         _flushBeforeDetach = compatibility.getFlushBeforeDetach();
+        _reloadOnDetach = compatibility.getReloadOnDetach();
         _cascadeWithDetach = compatibility.getCascadeWithDetach();
         if (full) {
             _copy = false;
@@ -441,7 +448,8 @@ public class DetachManager
         }
         
         BitSet fields = new BitSet();
-        preDetach(_broker, sm, fields);
+        preDetach(_broker, sm, fields, _full,
+            _reloadOnDetach);
 
         // create and store new object before copy to avoid endless recursion
         PersistenceCapable pc = sm.getPersistenceCapable();
@@ -462,7 +470,9 @@ public class DetachManager
                 _opts.getAccessUnloaded(), _broker.getMultithreaded());
         if (_full) {
             _fullFM.setStateManager(sm);
-            _fullFM.detachVersion();
+            if (_copy || _reloadOnDetach) {
+                _fullFM.detachVersion();
+            }
             _fullFM.reproxy(detSM);
             _fullFM.setStateManager(null);
         } else {

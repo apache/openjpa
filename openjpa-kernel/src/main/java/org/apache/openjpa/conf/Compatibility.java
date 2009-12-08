@@ -65,6 +65,7 @@ public class Compatibility {
     private boolean _isAbstractMappingUniDirectional = false;
     private boolean _isNonDefaultMappingAllowed = false;
     private boolean _reorderMetaDataResolution = true;
+    private boolean _reloadOnDetach = false;
     
     /**
      * Whether to require exact identity value types when creating object
@@ -494,4 +495,31 @@ public class Compatibility {
         _reorderMetaDataResolution = reorderProcessBuffer;
     }
 
+    /**
+     * Whether OpenJPA should attempt to load fields when the DetachState
+     * option is set to loaded. This also determines whether a
+     * redundant copy of the version field is made. Beginning in 2.0
+     * it defaults to false.
+     * 
+     * @return the _reloadOnDetach
+     * 
+     * @since 1.2.2
+     */
+    public boolean getReloadOnDetach() {
+        return _reloadOnDetach;
+    }
+
+    /**
+     * Whether OpenJPA should attempt to load fields when the DetachState
+     * option is set to loaded. This also determines whether a
+     * redundant copy of the version field is made. Beginning in 2.0
+     * it defaults to false.
+     * 
+     * @param reloadOnDetach the _reloadOnDetach to set
+     * 
+     * @since 1.2.2
+     */
+    public void setReloadOnDetach(boolean reloadOnDetach) {
+        _reloadOnDetach = reloadOnDetach;
+    }       
 }
