@@ -56,6 +56,7 @@ public class Compatibility {
     private int _jpql = JPQL_WARN;
     private boolean _storeMapCollectionInEntityAsBlob = false;
     private boolean _flushBeforeDetach = true; 
+    private boolean _reloadOnDetach = true;
 
     /**
      * Whether to require exact identity value types when creating object
@@ -269,4 +270,29 @@ public class Compatibility {
         _flushBeforeDetach = beforeDetach;
     }
 
+    /**
+     * Whether OpenJPA should attempt to load fields when the DetachState
+     * option is set to loaded. This also determines whether a
+     * redundant copy of the version field is made. Defaults to true.
+     * 
+     * @return the _reloadOnDetach
+     * 
+     * @since 1.2.2
+     */
+    public boolean getReloadOnDetach() {
+        return _reloadOnDetach;
+    }
+
+    /**
+     * Whether OpenJPA should attempt to load fields when the DetachState
+     * option is set to loaded. This also determines whether a
+     * redundant copy of the version field is made. Defaults to true.
+     * 
+     * @param reloadOnDetach the _reloadOnDetach to set
+     * 
+     * @since 1.2.2
+     */
+    public void setReloadOnDetach(boolean reloadOnDetach) {
+        _reloadOnDetach = reloadOnDetach;
+    }   
 }
