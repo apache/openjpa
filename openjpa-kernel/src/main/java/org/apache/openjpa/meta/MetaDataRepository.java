@@ -401,7 +401,7 @@ public class MetaDataRepository implements PCRegistry.RegisterClassListener, Con
 
             // if cls is a generated interface, use the user interface
             // to locate metadata
-            if (cls != null && _implGen.isImplType(cls))
+            if (cls != null && _implGen != null && _implGen.isImplType(cls))
                 cls = _implGen.toManagedInterface(cls);
 
             ClassMetaData meta = getMetaDataInternal(cls, envLoader);
@@ -1473,9 +1473,9 @@ public class MetaDataRepository implements PCRegistry.RegisterClassListener, Con
         } catch (Exception e) {
             if ((_validate & VALIDATE_RUNTIME) != 0) {
                 if (_log.isWarnEnabled())
-                    _log.warn(_loc.get("bad-discover-class", name));
+                    _log.warn(_loc.get("bad-discover-class", name, loader));
             } else if (_log.isInfoEnabled())
-                _log.info(_loc.get("bad-discover-class", name));
+                _log.info(_loc.get("bad-discover-class", name, loader));
             if (_log.isTraceEnabled())
                 _log.trace(e);
         } catch (NoSuchMethodError nsme) {
@@ -1487,9 +1487,9 @@ public class MetaDataRepository implements PCRegistry.RegisterClassListener, Con
             // probably just means that the class is not yet enhanced.
             if ((_validate & VALIDATE_RUNTIME) != 0) {
                 if (_log.isWarnEnabled())
-                    _log.warn(_loc.get("bad-discover-class", name));
+                    _log.warn(_loc.get("bad-discover-class", name, loader));
             } else if (_log.isInfoEnabled())
-                _log.info(_loc.get("bad-discover-class", name));
+                _log.info(_loc.get("bad-discover-class", name, loader));
             if (_log.isTraceEnabled())
                 _log.trace(nsme);
         }
@@ -1657,9 +1657,14 @@ public class MetaDataRepository implements PCRegistry.RegisterClassListener, Con
      * 
      */
     void registerAlias(Class<?> cls) {
+        registerAlias(PCRegistry.getTypeAlias(cls), cls);
+    }
+    
+    public void registerAlias(String alias, Class<?> cls) {
+        if (alias == null)
+            return;
         try {
             lock();
-            String alias = PCRegistry.getTypeAlias(cls);
             if (alias != null) {
                 List<Class<?>> classes = _aliases.get(alias);
                 if (classes == null)
