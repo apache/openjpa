@@ -124,7 +124,6 @@ public class TestEmbeddable extends SingleEMFTestCase {
      *
      * @exception Exception
      */
-    @AllowFailure(value=true, message="See OPENJPA-1348")
     public void test_Entity01_Manual_Flush() { 
 
         // 
