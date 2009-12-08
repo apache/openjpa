@@ -20,24 +20,30 @@ package org.apache.openjpa.persistence;
 
 import java.lang.instrument.ClassFileTransformer;
 import java.lang.instrument.IllegalClassFormatException;
+import java.security.AccessController;
 import java.security.ProtectionDomain;
 import java.util.Map;
+
 import javax.persistence.EntityManager;
 import javax.persistence.spi.ClassTransformer;
 import javax.persistence.spi.PersistenceProvider;
 import javax.persistence.spi.PersistenceUnitInfo;
 
 import org.apache.openjpa.conf.BrokerValue;
+import org.apache.openjpa.conf.MetaDataRepositoryValue;
 import org.apache.openjpa.conf.OpenJPAConfiguration;
 import org.apache.openjpa.conf.OpenJPAConfigurationImpl;
 import org.apache.openjpa.enhance.PCClassFileTransformer;
+import org.apache.openjpa.kernel.AbstractBrokerFactory;
 import org.apache.openjpa.kernel.Bootstrap;
 import org.apache.openjpa.kernel.BrokerFactory;
 import org.apache.openjpa.lib.conf.Configuration;
 import org.apache.openjpa.lib.conf.ConfigurationProvider;
 import org.apache.openjpa.lib.conf.Configurations;
 import org.apache.openjpa.lib.log.Log;
+import org.apache.openjpa.lib.util.J2DoPrivHelper;
 import org.apache.openjpa.lib.util.Localizer;
+import org.apache.openjpa.lib.util.Options;
 import org.apache.openjpa.meta.MetaDataModes;
 import org.apache.openjpa.meta.MetaDataRepository;
 import org.apache.openjpa.util.ClassResolver;
@@ -79,6 +85,8 @@ public class PersistenceProviderImpl
                 return null;
 
             BrokerFactory factory = getBrokerFactory(cp, poolValue, null);
+            preloadMetaDataRepository(factory);
+            
             return JPAFacadeHelper.toEntityManagerFactory(factory);
         } catch (Exception e) {
             throw PersistenceExceptions.toPersistenceException(e);
@@ -153,6 +161,7 @@ public class PersistenceProviderImpl
                         _loc.get("transformer-registration-error", pui));
                 }
             }
+            preloadMetaDataRepository(factory);           
             return JPAFacadeHelper.toEntityManagerFactory(factory);
         } catch (Exception e) {
             throw PersistenceExceptions.toPersistenceException(e);
@@ -176,6 +185,30 @@ public class PersistenceProviderImpl
      */
     protected OpenJPAConfiguration newConfigurationImpl() {
         return new OpenJPAConfigurationImpl();
+    }
+
+    /**
+     * Private worker method that will call to the MetaDataRepository to preload if the provided
+     * BrokerFactory is configured to do so.
+     */
+    private void preloadMetaDataRepository(BrokerFactory factory){
+        // We need to wait to preload until after we get back a fully configured/instantiated
+        // BrokerFactory. This is because it is possible that someone has extended OpenJPA
+        // functions and they need to be allowed time to configure themselves before we go off and
+        // start instanting configurable objects (ie:openjpa.MetaDataRepository). Don't catch
+        // any exceptions here because we want to fail-fast.
+        OpenJPAConfiguration conf = factory.getConfiguration();
+        Options o = Configurations.parseProperties(Configurations.getProperties(conf.getMetaDataRepository()));
+        if (MetaDataRepository.needsPreload(o) == true) {
+            MetaDataRepository mdr = conf.getMetaDataRepositoryInstance(); 
+            mdr.setValidate(MetaDataRepository.VALIDATE_RUNTIME, true);
+            mdr.setResolve(MetaDataRepository.MODE_MAPPING_INIT, true);
+            
+            // Load persistent classes and hook in subclasser
+            ((AbstractBrokerFactory) factory).loadPersistentTypes((ClassLoader) AccessController
+                .doPrivileged(J2DoPrivHelper.getContextClassLoaderAction()));
+            mdr.preload();
+        }
     }
     
     /**

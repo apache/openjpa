@@ -256,7 +256,7 @@ public abstract class AbstractBrokerFactory
      * Load the configured persistent classes list. Performed automatically
      * whenever a broker is created.
      */
-    private void loadPersistentTypes(ClassLoader envLoader) {
+    public void loadPersistentTypes(ClassLoader envLoader) {
         // if we've loaded the persistent types and the class name list
         // is empty, then we can simply return. Note that there is a
         // potential threading scenario in which _persistentTypesLoaded is

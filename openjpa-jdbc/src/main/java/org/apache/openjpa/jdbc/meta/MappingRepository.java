@@ -143,7 +143,15 @@ public class MappingRepository
     /**
      * Representation of the database schema.
      */
-    public synchronized SchemaGroup getSchemaGroup() {
+    public SchemaGroup getSchemaGroup() {
+        if(_locking){
+            synchronized(this){
+                if (_schema == null)
+                    _schema = ((JDBCConfiguration) getConfiguration()).
+                        getSchemaFactoryInstance().readSchema();
+                return _schema;                
+            }
+        }
         if (_schema == null)
             _schema = ((JDBCConfiguration) getConfiguration()).
                 getSchemaFactoryInstance().readSchema();
@@ -153,33 +161,59 @@ public class MappingRepository
     /**
      * Representation of the database schema.
      */
-    public synchronized void setSchemaGroup(SchemaGroup schema) {
-        _schema = schema;
+    public void setSchemaGroup(SchemaGroup schema) {
+        if (_locking) {
+            synchronized (this) {
+                _schema = schema;
+            }
+        } else {
+            _schema = schema;
+        }
     }
 
     /**
      * Installs mapping strategies on components.
      */
-    public synchronized StrategyInstaller getStrategyInstaller() {
-        if (_installer == null)
-            _installer = new RuntimeStrategyInstaller(this);
-        return _installer;
+    public StrategyInstaller getStrategyInstaller() {
+        if (_locking) {
+            synchronized (this) {
+                if (_installer == null)
+                    _installer = new RuntimeStrategyInstaller(this);
+                return _installer;
+            }
+        } else {
+            if (_installer == null)
+                _installer = new RuntimeStrategyInstaller(this);
+            return _installer;
+        }
     }
 
     /**
      * Installs mapping strategies on components.
      */
-    public synchronized void setStrategyInstaller(StrategyInstaller installer) {
-        _installer = installer;
+    public void setStrategyInstaller(StrategyInstaller installer) {
+        if (_locking) {
+            synchronized (this) {
+                _installer = installer;
+            }
+        } else {
+            _installer = installer;
+        }
     }
 
     /**
      * Return the query result mapping for the given name.
      */
-    public synchronized QueryResultMapping getQueryResultMapping(Class cls,
+    public QueryResultMapping getQueryResultMapping(Class cls,
         String name, ClassLoader envLoader, boolean mustExist) {
-        QueryResultMapping res = getQueryResultMappingInternal(cls, name,
-            envLoader);
+        QueryResultMapping res = null;
+        if (_locking) {
+            synchronized (this) {
+                res = getQueryResultMappingInternal(cls, name, envLoader);
+            }
+        } else {
+            res = getQueryResultMappingInternal(cls, name, envLoader);
+        }
         if (res == null && mustExist)
             throw new MetaDataException(_loc.get("no-query-res", cls, name));
         return res;
@@ -219,26 +253,49 @@ public class MappingRepository
     /**
      * Return all cached query result mappings.
      */
-    public synchronized QueryResultMapping[] getQueryResultMappings() {
-        Collection values = _results.values();
-        return (QueryResultMapping[]) values.toArray
-            (new QueryResultMapping[values.size()]);
+    public QueryResultMapping[] getQueryResultMappings() {
+        if (_locking) {
+            synchronized (this) {
+                Collection values = _results.values();
+                return (QueryResultMapping[]) values.toArray(new QueryResultMapping[values.size()]);
+            }
+        } else {
+            Collection values = _results.values();
+            return (QueryResultMapping[]) values.toArray(new QueryResultMapping[values.size()]);
+        }
     }
 
     /**
      * Return the cached query result mapping with the given name, or null if
      * none.
      */
-    public synchronized QueryResultMapping getCachedQueryResultMapping
+    public QueryResultMapping getCachedQueryResultMapping
         (Class cls, String name) {
-        return (QueryResultMapping) _results.get(getQueryResultKey(cls, name));
+        if (_locking) {
+            synchronized (this) {
+                return (QueryResultMapping) _results.get(getQueryResultKey(cls, name));
+            }
+        } else {
+            return (QueryResultMapping) _results.get(getQueryResultKey(cls, name));
+        }
     }
 
     /**
      * Add a query result mapping.
      */
-    public synchronized QueryResultMapping addQueryResultMapping(Class cls,
+    public QueryResultMapping addQueryResultMapping(Class cls,
         String name) {
+        if (_locking) {
+            return addQueryResultMappingLocking(cls, name);
+        } else {
+            return addQueryResultMappingInternal(cls, name);
+        }
+    }
+    private synchronized QueryResultMapping addQueryResultMappingLocking(Class cls, String name) {
+        return addQueryResultMappingInternal(cls, name);
+    }
+
+    private QueryResultMapping addQueryResultMappingInternal(Class cls, String name) {
         QueryResultMapping res = new QueryResultMapping(name, this);
         res.setDefiningType(cls);
         _results.put(getQueryResultKey(res), res);
@@ -248,19 +305,33 @@ public class MappingRepository
     /**
      * Remove a query result mapping.
      */
-    public synchronized boolean removeQueryResultMapping
+    public boolean removeQueryResultMapping
         (QueryResultMapping res) {
-        return _results.remove(getQueryResultKey(res)) != null;
+        if (_locking) {
+            synchronized (this) {
+                return _results.remove(getQueryResultKey(res)) != null;
+            }
+        } else {
+            return _results.remove(getQueryResultKey(res)) != null;
+        }
     }
 
     /**
      * Remove a query result mapping.
      */
-    public synchronized boolean removeQueryResultMapping(Class cls,
+    public boolean removeQueryResultMapping(Class cls,
         String name) {
-        if (name == null)
-            return false;
-        return _results.remove(getQueryResultKey(cls, name)) != null;
+        if (_locking) {
+            synchronized (this) {
+                if (name == null)
+                    return false;
+                return _results.remove(getQueryResultKey(cls, name)) != null;
+            }
+        } else {
+            if (name == null)
+                return false;
+            return _results.remove(getQueryResultKey(cls, name)) != null;
+        }
     }
 
     /**
@@ -300,10 +371,18 @@ public class MappingRepository
             mustExist);
     }
 
-    public synchronized void clear() {
-        super.clear();
-        _schema = null;
-        _results.clear();
+    public void clear() {
+        if (_locking) {
+            synchronized (this) {
+                super.clear();
+                _schema = null;
+                _results.clear();
+            }
+        } else {
+            super.clear();
+            _schema = null;
+            _results.clear();
+        }
     }
 
     protected void prepareMapping(ClassMetaData meta) {
