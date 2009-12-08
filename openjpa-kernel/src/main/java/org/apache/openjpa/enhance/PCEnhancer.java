@@ -113,6 +113,8 @@ public class PCEnhancer {
     // Each enhanced class will return the value of this field via
     // public int getEnhancementContractVersion()
     public static final int ENHANCER_VERSION = 2;
+    
+    boolean _addVersionInitFlag = true;
 
     public static final int ENHANCE_NONE = 0;
     public static final int ENHANCE_AWARE = 2 << 0;
@@ -134,6 +136,8 @@ public class PCEnhancer {
     private static final String SUPER = PRE + "PCSuperclass";
     private static final Class OIDFSTYPE = FieldSupplier.class;
     private static final Class OIDFCTYPE = FieldConsumer.class;
+    
+    private static final String VERSION_INIT_STR =  PRE + "VersionInit";
 
     private static final Localizer _loc = Localizer.forPackage
         (PCEnhancer.class);
@@ -428,6 +432,7 @@ public class PCEnhancer {
      */
     public void setCreateSubclass(boolean subclass) {
         _subclass = subclass;
+        _addVersionInitFlag = false;
     }
 
     /**
@@ -1347,6 +1352,15 @@ public class PCEnhancer {
                     code.checkcast().setType(fmds[i].getDeclaredType());
 
                 addSetManagedValueCode(code, fmds[i]);
+                if(_addVersionInitFlag){
+                    if(fmds[i].isVersion()){
+                        // If this case is setting the version field
+                        // pcVersionInit = true;
+                        loadManagedInstance(code, false);
+                        code.constant().setValue(1);
+                        putfield(code, null, VERSION_INIT_STR, boolean.class);
+                    }
+                }
                 code.vreturn();
             }
 
@@ -2705,7 +2719,12 @@ public class PCEnhancer {
         _pc.declareField(PRE + "FieldTypes", Class[].class).setStatic(true);
         _pc.declareField(PRE + "FieldFlags", byte[].class).setStatic(true);
         _pc.declareField(SUPER, Class.class).setStatic(true);
-
+        if(_addVersionInitFlag && _meta.getVersionField()!=null){
+            // protected transient boolean pcVersionInit;
+            BCField field = _pc.declareField(VERSION_INIT_STR, boolean.class);
+            field.makeProtected();
+            field.setTransient(true);
+        }
         if (_meta.getPCSuperclass() == null || getCreateSubclass()) {
             BCField field = _pc.declareField(SM, SMTYPE);
             field.makeProtected();
@@ -3154,8 +3173,26 @@ public class PCEnhancer {
             ifins = ifDefaultValue(code, version);
             code.getstatic().setField(Boolean.class, "TRUE", Boolean.class);
             code.areturn();
-            ifins.setTarget(code.getstatic().setField(Boolean.class, "FALSE",
-                Boolean.class));
+            if (!_addVersionInitFlag){
+                // else return false;
+                ifins.setTarget(code.getstatic().setField(Boolean.class, "FALSE", Boolean.class));
+            }else{
+                FieldMetaData versionInit = _meta.getDeclaredField(VERSION_INIT_STR);
+                
+                // noop
+                ifins.setTarget(code.nop());
+                // if (pcVersionInit != false)
+                // return true
+                // else return false;
+                loadManagedInstance(code, false);
+                getfield(code, null, versionInit.getName());
+                ifins = ifDefaultValue(code, versionInit);
+                code.getstatic().setField(Boolean.class, "TRUE", Boolean.class);
+                code.areturn();
+                ifins.setTarget(code.nop());
+                code.getstatic().setField(Boolean.class, "FALSE", Boolean.class);
+                
+            }
             code.areturn();
             return false;
         }
@@ -3618,6 +3655,13 @@ public class PCEnhancer {
         loadManagedInstance(code, true);
         code.xload().setParam(firstParamOffset);
         addSetManagedValueCode(code, fmd);
+        if(fmd.isVersion()==true && _addVersionInitFlag){
+            // if we are setting the version, flip the versionInit flag to true
+            FieldMetaData v = _meta.addDeclaredField(VERSION_INIT_STR, boolean.class);
+            loadManagedInstance(code, true);
+            code.constant().setValue(1);
+            addSetManagedValueCode(code, v);   
+        }
         code.vreturn();
 
         // inst.pcStateManager.setting<fieldType>Field (inst,
