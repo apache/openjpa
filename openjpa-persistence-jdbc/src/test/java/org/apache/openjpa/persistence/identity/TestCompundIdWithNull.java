@@ -25,6 +25,8 @@ import javax.persistence.EntityManager;
 
 import org.apache.openjpa.persistence.OpenJPAEntityManager;
 import org.apache.openjpa.persistence.OpenJPAPersistence;
+import org.apache.openjpa.persistence.test.AllowFailure;
+import org.apache.openjpa.persistence.test.DatabasePlatform;
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
 
 /**
@@ -41,6 +43,9 @@ import org.apache.openjpa.persistence.test.SingleEMFTestCase;
  * @author Pinaki Poddar
  * @author Michael Vorburger
  */
+// Because we use DDL specific to Derby
+@DatabasePlatform("org.apache.derby.jdbc.EmbeddedDriver")
+
 public class TestCompundIdWithNull extends SingleEMFTestCase {
     private static boolean tablesCreated = false;
 	public void setUp() throws Exception {
@@ -48,6 +53,7 @@ public class TestCompundIdWithNull extends SingleEMFTestCase {
 	    super.setUp(SimpleCompoundIdTestEntity.class, ComplexCompoundIdTestEntity.class, TypeEntity.class);
 	    if (!tablesCreated) {
 	        createTables(emf.createEntityManager());
+	        tablesCreated = true;
 	    }
 	    
 	}
