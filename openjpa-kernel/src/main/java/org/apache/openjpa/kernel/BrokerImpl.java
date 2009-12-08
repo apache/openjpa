@@ -248,6 +248,7 @@ public class BrokerImpl
     private int _lifeCallbackMode = 0;
 
     private transient boolean _initializeWasInvoked = false;
+    private transient boolean _fromWriteBehindCallback = false;
     private LinkedList _fcs;
     
     // Set of supported property keys. The keys in this set correspond to bean-style setter methods
@@ -304,6 +305,13 @@ public class BrokerImpl
     public void initialize(AbstractBrokerFactory factory,
         DelegatingStoreManager sm, boolean managed, int connMode,
         boolean fromDeserialization) {
+        initialize(factory, sm, managed, connMode, fromDeserialization, false);
+    }
+    
+    public void initialize(AbstractBrokerFactory factory,
+        DelegatingStoreManager sm, boolean managed, int connMode,
+        boolean fromDeserialization, boolean fromWriteBehindCallback) {
+        _fromWriteBehindCallback = fromWriteBehindCallback;
         _initializeWasInvoked = true;
         _loader = AccessController.doPrivileged(
             J2DoPrivHelper.getContextClassLoaderAction());
@@ -4449,9 +4457,10 @@ public class BrokerImpl
         boolean assertThisContext) {
         if (ImplHelper.isManageable(obj)) {
             PersistenceCapable pc = ImplHelper.toPersistenceCapable(obj, _conf);
-            if (pc.pcGetGenericContext() == this)
+            BrokerImpl pcBroker = (BrokerImpl)pc.pcGetGenericContext();
+            if (pcBroker == this || isFromWriteBehindCallback())
                 return (StateManagerImpl) pc.pcGetStateManager();
-            if (assertThisContext && pc.pcGetGenericContext() != null)
+            if (assertThisContext && pcBroker != null)
                 throw new UserException(_loc.get("not-managed",
                     Exceptions.toString(obj))).setFailedObject(obj);
         }
@@ -4937,5 +4946,9 @@ public class BrokerImpl
         } finally {
             unlock();
         }
+    }
+    
+    public boolean isFromWriteBehindCallback() {
+        return _fromWriteBehindCallback;
     }
 }

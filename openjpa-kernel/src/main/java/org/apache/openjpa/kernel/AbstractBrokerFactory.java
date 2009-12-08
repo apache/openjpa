@@ -191,6 +191,11 @@ public abstract class AbstractBrokerFactory
     }
 
     public Broker newBroker(String user, String pass, boolean managed, int connRetainMode, boolean findExisting) {
+        return newBroker(user, pass, managed, connRetainMode, findExisting, false);
+    }
+    
+    public Broker newBroker(String user, String pass, boolean managed, int connRetainMode, boolean findExisting,
+        boolean writeBehindCallback) {
         try {
             assertOpen();
             makeReadOnly();
@@ -200,7 +205,7 @@ public abstract class AbstractBrokerFactory
                 broker = findBroker(user, pass, managed);
             if (broker == null) {
                 broker = newBrokerImpl(user, pass);
-                initializeBroker(managed, connRetainMode, broker, false);
+                initializeBroker(managed, connRetainMode, broker, false, writeBehindCallback);
             }
             return broker;
         } catch (OpenJPAException ke) {
@@ -211,12 +216,18 @@ public abstract class AbstractBrokerFactory
     }
 
     void initializeBroker(boolean managed, int connRetainMode, Broker broker, boolean fromDeserialization) {
+        initializeBroker(managed, connRetainMode, broker, fromDeserialization, false);
+    }    
+    
+    void initializeBroker(boolean managed, int connRetainMode, Broker broker, boolean fromDeserialization,
+        boolean fromWriteBehindCallback) {
         assertOpen();
         makeReadOnly();
         
         DelegatingStoreManager dsm = createDelegatingStoreManager();
 
-        ((BrokerImpl) broker).initialize(this, dsm, managed, connRetainMode, fromDeserialization);
+        ((BrokerImpl) broker).initialize(this, dsm, managed, connRetainMode, fromDeserialization,
+            fromWriteBehindCallback);
         if (!fromDeserialization)
             addListeners(broker);
 
@@ -873,7 +884,7 @@ public abstract class AbstractBrokerFactory
                           _conf.getConnectionPassword(), 
                           false, // WriteBehind broker is always unmanaged.
                           _conf.getConnectionRetainModeConstant(),
-                          false);
+                          false, true);
 
             // The Broker used by the WriteBehind cache should not be tracked
             // by the factory - we'll manually clean up when the factory is
