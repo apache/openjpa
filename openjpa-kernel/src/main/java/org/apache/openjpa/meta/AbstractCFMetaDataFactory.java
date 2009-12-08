@@ -625,7 +625,7 @@ public abstract class AbstractCFMetaDataFactory
     /**
      * Parse persistent type names.
      */
-    private Set parsePersistentTypeNames(ClassLoader loader)
+    protected Set<String> parsePersistentTypeNames(ClassLoader loader)
         throws IOException {
         ClassArgParser cparser = newClassArgParser();
         String[] clss;
