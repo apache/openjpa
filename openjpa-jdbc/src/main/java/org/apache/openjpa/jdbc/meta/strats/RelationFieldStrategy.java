@@ -601,7 +601,8 @@ public class RelationFieldStrategy
         else
             sm.setIntermediate(field.getIndex(), oid);
     }
-
+    
+    Map<JDBCStoreManager.SelectKey, Object[]> relationFieldUnionCache = null;
     public void load(final OpenJPAStateManager sm, final JDBCStore store,
         final JDBCFetchConfiguration fetch)
         throws SQLException {
@@ -628,9 +629,11 @@ public class RelationFieldStrategy
         if (!((JDBCStoreManager)store).isQuerySQLCacheOn())
             union = newUnion(sm, store, fetch, rels, subs, resJoins);
         else {
-            Map<JDBCStoreManager.SelectKey, Object[]> relationFieldUnionCache = 
-                ((JDBCStoreManager)store).getCacheMapFromQuerySQLCache(
-                RelationFieldStrategy.class);
+            if (relationFieldUnionCache == null) {
+                relationFieldUnionCache =
+                    ((JDBCStoreManager) store)
+                        .getCacheMapFromQuerySQLCache(RelationFieldStrategy.class);
+            }
             boolean found = true;
             JDBCFetchConfiguration fetchClone = new JDBCFetchConfigurationImpl();
             fetchClone.copy(fetch);
