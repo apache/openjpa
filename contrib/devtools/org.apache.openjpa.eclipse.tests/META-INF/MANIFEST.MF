@@ -1,0 +1,11 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: OpenJPA Eclipse Tools Test Fragment
+Bundle-SymbolicName: org.apache.openjpa.eclipse.tests
+Bundle-Version: 1.0.0.qualifier
+Fragment-Host: org.apache.openjpa.eclipse;bundle-version="1.0.0"
+Bundle-RequiredExecutionEnvironment: JavaSE-1.6
+Require-Bundle: org.apache.openjpa,
+ org.junit;bundle-version="3.8.2"
+Bundle-ClassPath: lib/commons-io-1.4.jar,
+ .

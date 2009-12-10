@@ -1,0 +1,50 @@
+
+These are some rough notes on what kind of doc should be written up on some e.g. Wiki page once this is accepted and published:
+
+* Installation
+
+* Usage
+
+* Configuration via .project:
+	<buildCommand>
+			<name>org.apache.openjpa.eclipse.OpenJPAEnhancerBuilder</name>
+			<arguments>
+				<dictionary>
+					<key>debugLogs</key>
+					<value>false</value>
+				</dictionary>
+				<dictionary>
+					<key>include1</key>
+					<value>**/*Entity.class</value>
+				</dictionary>
+				<dictionary>
+					<key>include2</key>
+					<value>**/*EntityRef.class</value>
+				</dictionary>
+
+* debugLogs true causes stuff to show up in the Error Log view, but it
+seems to slow things down and something goes wrong with the Progress view and the Monitor stuff,
+it doesn't update correctly anymore, and keeps running.  So only intended for investigating problems.
+
+* DOC: No support for persistence.xml, only based on @Entity Annotations
+
+*  see http://people.apache.org/~ppoddar/eclipse/
+
+* FAQ / Troubleshooting
+	* something like "-XX:PermSize=64m -XX:MaxPermSize=256m -Xms128m -Xmx512m" is typically needed...
+
+* OpenJPA documentation chapter on enhancement should reference this plug-in/doc?
+
+* Link from http://webspherepersistence.blogspot.com/2009/02/openjpa-enhancement.html
+
+* Known Limitations / Ideas for Extensions
+	* persistence.xml instead annotations
+	
+	* Builder must not run on / skip classes which are red / have other compilation issues.. (is there a .class file in these cases? apparently.. or is that a left-over?)
+	 
+	* Error Marker is on .class resource (normal..), how can we make it on the 'corresponding' (?) .java instead?
+	
+	* Adding supported enhancement flags (e.g. -addDefaultConstructor etc.) in a preference page. 
+
+
+Michael Vorburger, 3.12.2009

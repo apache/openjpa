@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project>
+	<modelVersion>4.0.0</modelVersion>
+	<groupId>org.apache.openjpa.eclipse</groupId>
+	<artifactId>org.apache.openjpa.eclipse.all</artifactId>
+	<version>1.0.0-SNAPSHOT</version>
+	<packaging>pom</packaging>
+	<properties>
+		<!-- <tycho-version>0.6.0-SNAPSHOT</tycho-version> -->
+		<tycho-version>0.5.0</tycho-version>
+ 	</properties>
+
+	<repositories>
+		<repository>
+			<id>galileo</id>
+			<layout>p2</layout>
+			<url>http://download.eclipse.org/releases/galileo</url>
+		</repository>
+		<repository>
+			<id>eclipse-3.5</id>
+			<layout>p2</layout>
+			<url>http://download.eclipse.org/eclipse/updates/3.5</url>
+		</repository>
+	</repositories>
+	<pluginRepositories>
+		<pluginRepository>
+			<id>sonatype-forge</id>
+			<url>http://repository.sonatype.org/content/groups/forge</url>
+			<releases>
+				<enabled>true</enabled>
+			</releases>
+			<snapshots>
+				<enabled>true</enabled>
+			</snapshots>
+		</pluginRepository>
+	</pluginRepositories>
+
+	<modules>
+		<module>org.apache.openjpa</module>
+		<module>org.apache.openjpa.eclipse</module>
+		<module>org.apache.openjpa.eclipse.tests</module>
+		<module>org.apache.openjpa.eclipse.feature</module>
+		<module>org.apache.openjpa.eclipse.site</module>
+	</modules>
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>org.codehaus.tycho</groupId>
+				<artifactId>tycho-maven-plugin</artifactId>
+				<version>${tycho-version}</version>
+				<extensions>true</extensions>
+			</plugin>
+			<plugin>
+				<groupId>org.codehaus.tycho</groupId>
+				<artifactId>target-platform-configuration</artifactId>
+				<version>${tycho-version}</version>
+				<configuration>
+					<resolver>p2</resolver>
+				</configuration>
+			</plugin>
+		</plugins>
+	</build>
+</project>

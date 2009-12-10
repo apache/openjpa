@@ -1,0 +1,16 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: OpenJPA Eclipse Plug-in
+Bundle-SymbolicName: org.apache.openjpa.eclipse; singleton:=true
+Bundle-Version: 1.0.0.qualifier
+Bundle-Activator: org.apache.openjpa.eclipse.Activator
+Require-Bundle: org.eclipse.ui,
+ org.eclipse.core.runtime,
+ org.eclipse.core.resources,
+ org.apache.openjpa,
+ org.eclipse.jdt.core;bundle-version="3.3",
+ org.eclipse.jdt.launching;bundle-version="3.3"
+Bundle-ClassPath: .
+Eclipse-LazyStart: true
+Bundle-RequiredExecutionEnvironment: JavaSE-1.6
+Import-Package: org.apache.commons.lang
