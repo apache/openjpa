@@ -115,5 +115,4 @@ public class ToggleNatureAction implements IObjectActionDelegate {
 		} catch (CoreException e) {
 		}
 	}
-
 }

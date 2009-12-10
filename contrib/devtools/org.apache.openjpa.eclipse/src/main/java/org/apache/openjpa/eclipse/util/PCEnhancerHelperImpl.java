@@ -90,8 +90,7 @@ public class PCEnhancerHelperImpl implements PCEnhancerHelper {
 		PCEnhancer delegate = new PCEnhancer(repos, bcls, meta);
 		int result = delegate.run();
 		if ((result != PCEnhancer.ENHANCE_NONE)
-		 && (result != PCEnhancer.ENHANCE_INTERFACE)) 
-		{
+		 && (result != PCEnhancer.ENHANCE_INTERFACE)) {
 			delegate.record();
 			return true;
 		} else {

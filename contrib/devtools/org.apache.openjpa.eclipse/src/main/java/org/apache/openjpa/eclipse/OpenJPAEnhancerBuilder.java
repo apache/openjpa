@@ -61,14 +61,16 @@ public class OpenJPAEnhancerBuilder extends IncrementalProjectBuilder {
 		private final PCEnhancerHelper enhancerHelper;
 		private final BuilderOptions opts;
 
-		public MyIncrementalBuildResourceDeltaVisitor(IProgressMonitor monitor, PCEnhancerHelper enhancerHelper, BuilderOptions opts) {
+		public MyIncrementalBuildResourceDeltaVisitor(IProgressMonitor monitor, PCEnhancerHelper enhancerHelper, 
+		        BuilderOptions opts) {
 			this.monitor = monitor;
 			this.enhancerHelper = enhancerHelper;
 			this.opts = opts;
 		}
 
 		public boolean visit(IResourceDelta delta) throws CoreException {
-			// better do NOT use monitor.worked() & monitor.subTask() here, as this is fast enough and any UI will only slow it down
+			// better do NOT use monitor.worked() & monitor.subTask() here, as this is fast enough and any UI will only 
+		    // slow it down
 			IResource resource = delta.getResource();
 			switch (delta.getKind()) {
 			// If Added or Changed, handle changed resource:
@@ -150,7 +152,8 @@ public class OpenJPAEnhancerBuilder extends IncrementalProjectBuilder {
 	
 		List<IResource> resources = visitor.getResourcesPotentiallyNeedingEnhancement();
 		if (!resources.isEmpty()) {
-			SubMonitor subMonitor = SubMonitor.convert(monitor, "OpenJPA Enhancement... (Full Build, actual bytecode work)", resources.size());
+			SubMonitor subMonitor = SubMonitor.convert(monitor, 
+			    "OpenJPA Enhancement... (Full Build, actual bytecode work)", resources.size());
 			try {
 				int actuallyEnhanced = 0;
 				startTime = System.currentTimeMillis();
@@ -179,7 +182,8 @@ public class OpenJPAEnhancerBuilder extends IncrementalProjectBuilder {
 		}
 	}
 
-	private void incrementalBuild(IResourceDelta delta, IProgressMonitor monitor, BuilderOptions opts) throws CoreException {
+	private void incrementalBuild(IResourceDelta delta, IProgressMonitor monitor, BuilderOptions opts) 
+	    throws CoreException {
 		monitor.subTask("OpenJPA Enhancement... (Incremental Build)");
 		try {
 			ClassLoader classLoader = ClassLoaderFromIProjectHelper.createClassLoader(getProject());
@@ -203,7 +207,8 @@ public class OpenJPAEnhancerBuilder extends IncrementalProjectBuilder {
 			
 			if (!opts.pathMatcher.match(iFile.getLocation().toString())) {
 				if (opts.isVerboseLoggingEnabled) {
-					LogUtil.logInfo("OpenJPA Enhancer skipped class because it did not match pattern " + fileNameForLog );
+					LogUtil.logInfo("OpenJPA Enhancer skipped class because it did not match pattern " 
+					    + fileNameForLog );
 				}
 				return false;
 			}
@@ -214,7 +219,8 @@ public class OpenJPAEnhancerBuilder extends IncrementalProjectBuilder {
 		}
 	}
 	
-	private boolean enhance(IResource resource, PCEnhancerHelper enhancerHelper, BuilderOptions opts) throws CoreException {
+	private boolean enhance(IResource resource, PCEnhancerHelper enhancerHelper, BuilderOptions opts) 
+	    throws CoreException {
 		IFile iFile = (IFile) resource;
 		String fileNameForLog = iFile.getFullPath().toString();
 		try {
@@ -229,7 +235,8 @@ public class OpenJPAEnhancerBuilder extends IncrementalProjectBuilder {
 			
 			return hasEnhanced;
 		} catch (Throwable e) {
-			String msg = "OpenJPA Enhancement Builder failed with message '" + e.toString() + "' for class: " + iFile.getLocation();
+			String msg = "OpenJPA Enhancement Builder failed with message '" + e.toString() + "' for class: " 
+			    + iFile.getLocation();
 			addMarkerAndThrowNewCoreException(iFile, msg, e);
 			return false;
 		}

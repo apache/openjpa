@@ -49,9 +49,10 @@ public class EclipseLogFactory implements LogFactory {
             	if (type == Log.WARN)
             		LogUtil.logWarn("OpenJPA Warning: " + message, t);
             	
-            	// Ignore other internal messages... could be made this configurable via Builder argument (like include pattern), if really needed 
+            	// Ignore other internal messages... could be made this configurable via Builder argument 
+            	// (like include pattern), if really needed 
             	// else
-            		// LogUtil.logInfo("OpenJPA Info: " + message, t);
+            	// LogUtil.logInfo("OpenJPA Info: " + message, t);
             }
         };
 	}

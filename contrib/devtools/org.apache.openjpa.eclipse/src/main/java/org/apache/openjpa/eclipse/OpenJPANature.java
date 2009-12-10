@@ -61,11 +61,6 @@ public class OpenJPANature implements IProjectNature {
 		project.setDescription(desc, null);
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see org.eclipse.core.resources.IProjectNature#deconfigure()
-	 */
 	public void deconfigure() throws CoreException {
 		IProjectDescription description = getProject().getDescription();
 		ICommand[] commands = description.getBuildSpec();
@@ -81,20 +76,10 @@ public class OpenJPANature implements IProjectNature {
 		}
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see org.eclipse.core.resources.IProjectNature#getProject()
-	 */
 	public IProject getProject() {
 		return project;
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see org.eclipse.core.resources.IProjectNature#setProject(org.eclipse.core.resources.IProject)
-	 */
 	public void setProject(IProject project) {
 		this.project = project;
 	}

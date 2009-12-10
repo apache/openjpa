@@ -29,9 +29,12 @@ import java.util.Map;
  * or more characters</li> <li>** matches zero or more 'directories' in a path</li> </ul>
  *
  * <p>Some examples:<br> <ul> <li><code>com/t?st.jsp</code> - matches <code>com/test.jsp</code> but also
- * <code>com/tast.jsp</code> or <code>com/txst.jsp</code></li> <li><code>com/*.jsp</code> - matches all
- * <code>.jsp</code> files in the <code>com</code> directory</li> <li><code>com/&#42;&#42;/test.jsp</code> - matches all
- * <code>test.jsp</code> files underneath the <code>com</code> path</li> <li><code>org/springframework/&#42;&#42;/*.jsp</code>
+ * <code>com/tast.jsp</code> or <code>com/txst.jsp</code></li> 
+ * <li><code>com/*.jsp</code> - matches all
+ * <code>.jsp</code> files in the <code>com</code> directory</li> 
+ * <li><code>com/&#42;&#42;/test.jsp</code> - matches all
+ * <code>test.jsp</code> files underneath the <code>com</code> path</li> 
+ * <li><code>org/springframework/&#42;&#42;/*.jsp</code>
  * - matches all <code>.jsp</code> files underneath the <code>org/springframework</code> path</li>
  * <li><code>org/&#42;&#42;/servlet/bla.jsp</code> - matches <code>org/springframework/servlet/bla.jsp</code> but also
  * <code>org/springframework/testing/servlet/bla.jsp</code> and <code>org/servlet/bla.jsp</code></li> </ul>
