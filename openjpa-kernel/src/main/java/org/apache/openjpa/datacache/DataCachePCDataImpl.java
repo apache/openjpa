@@ -44,6 +44,10 @@ public class DataCachePCDataImpl
 
     private final long _exp;
 
+    public DataCachePCDataImpl(Object oid, ClassMetaData meta) {
+        this(oid, meta, DataCache.NAME_DEFAULT);
+    }
+    
     /**
      * Constructor.
      */

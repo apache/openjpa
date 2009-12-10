@@ -20,6 +20,7 @@ package org.apache.openjpa.kernel;
 
 import java.util.BitSet;
 
+import org.apache.openjpa.datacache.DataCache;
 import org.apache.openjpa.meta.ClassMetaData;
 import org.apache.openjpa.meta.FieldMetaData;
 
@@ -42,6 +43,10 @@ public class PCDataImpl
     private Object _impl = null;
     private Object[] _fieldImpl = null;
 
+    public PCDataImpl(Object oid, ClassMetaData meta) {
+        this(oid, meta, DataCache.NAME_DEFAULT);
+    }
+    
     /**
      * Constructor.
      */
