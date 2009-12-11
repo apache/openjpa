@@ -22,6 +22,7 @@ import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Types;
 import java.util.Arrays;
@@ -29,6 +30,7 @@ import java.util.Arrays;
 import org.apache.commons.lang.StringUtils;
 import org.apache.openjpa.jdbc.schema.Column;
 import org.apache.openjpa.jdbc.schema.ForeignKey;
+import org.apache.openjpa.jdbc.schema.Index;
 import org.apache.openjpa.jdbc.schema.PrimaryKey;
 import org.apache.openjpa.jdbc.schema.Table;
 import org.apache.openjpa.jdbc.schema.Unique;
@@ -297,6 +299,33 @@ public class SybaseDictionary
         }        
         
         return new SybaseConnection(conn);
+    }
+
+    /**
+     * Create a new primary key from the information in the schema metadata.
+     */
+    protected PrimaryKey newPrimaryKey(ResultSet pkMeta)
+        throws SQLException {
+        PrimaryKey pk = new PrimaryKey();
+        pk.setSchemaName(pkMeta.getString("table_owner"));
+        pk.setTableName(pkMeta.getString("table_name"));
+        pk.setColumnName(pkMeta.getString("column_name"));
+        pk.setName(pkMeta.getString("index_name"));
+        return pk;
+    }
+
+    /**
+     * Create a new index from the information in the index metadata.
+     */
+    protected Index newIndex(ResultSet idxMeta)
+        throws SQLException {
+        Index idx = new Index();
+        idx.setSchemaName(idxMeta.getString("table_owner"));
+        idx.setTableName(idxMeta.getString("table_name"));
+        idx.setColumnName(idxMeta.getString("column_name"));
+        idx.setName(idxMeta.getString("index_name"));
+        idx.setUnique(!idxMeta.getBoolean("non_unique"));
+        return idx;
     }
 
     /**
