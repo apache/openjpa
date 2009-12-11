@@ -25,12 +25,14 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.persistence.EntityManager;
 import javax.persistence.Parameter;
 import javax.persistence.Query;
 import javax.persistence.Tuple;
 import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Expression;
+import javax.persistence.criteria.Fetch;
 import javax.persistence.criteria.Join;
 import javax.persistence.criteria.JoinType;
 import javax.persistence.criteria.ListJoin;
@@ -1476,5 +1478,29 @@ public class TestTypesafeCriteria extends CriteriaTest {
         Object result = tq.getSingleResult();
         assertTrue(result.getClass() + " not instance of Time", result instanceof Time);  
         
+    }
+    
+//    public void testInMemoryAccessPath() {
+//        em.getTransaction().begin();
+//        // must have new/dirty managed instances to exercise the code path
+//        em.persist(new Customer());
+//        CriteriaQuery<Customer> cquery = cb.createQuery(Customer.class);
+//        Root<Customer> customer = cquery.from(Customer.class);
+//        Fetch<Customer, Account> c = customer.fetch("accounts", JoinType.LEFT);
+//        cquery.where(cb.like(customer.<String>get("firstName"), "a%")).select(customer).distinct(true);
+//        TypedQuery<Customer> tquery = em.createQuery(cquery);
+//        tquery.setMaxResults(3);
+//        List<Customer> result = tquery.getResultList();
+//
+//    }
+    
+    public void testLiteralInProjection() {
+        String jpql = "select 'a' from Customer c where c.id=10";
+        
+        CriteriaQuery<String> cq = cb.createQuery(String.class);
+        Root<Customer> c = cq.from(Customer.class);
+        cq.select(cb.toString(cb.literal('a')));
+        cq.where(cb.equal(c.get(Customer_.id), 10));
+        assertEquivalence(cq, jpql);
     }
 }

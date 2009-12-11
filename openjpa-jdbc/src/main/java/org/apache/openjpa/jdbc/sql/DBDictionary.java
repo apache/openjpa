@@ -181,6 +181,7 @@ public class DBDictionary
     public int maxIndexNameLength = 128;
     public int maxIndexesPerTable = Integer.MAX_VALUE;
     public boolean supportsForeignKeys = true;
+    public boolean supportsParameterInSelect = true;
     public boolean supportsForeignKeysComposite = true;
     public boolean supportsUniqueConstraints = true;
     public boolean supportsDeferredConstraints = true;

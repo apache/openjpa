@@ -228,6 +228,9 @@ public class SelectConstructor
             Val resultVal;
             for (int i = 0; i < exps.projections.length; i++) {
                 resultVal = (Val) exps.projections[i];
+                if (!ctx.store.getDBDictionary().supportsParameterInSelect && resultVal instanceof Lit) {
+                    ((Lit)resultVal).setRaw(true);
+                }
                 // have to join through to related type for pc object 
                 // projections; this ensures that we have all our joins cached
                 state.projections[i] = resultVal.initialize(sel, ctx, 
