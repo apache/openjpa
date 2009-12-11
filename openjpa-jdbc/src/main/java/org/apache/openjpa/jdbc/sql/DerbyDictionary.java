@@ -60,6 +60,7 @@ public class DerbyDictionary
 
         allowsAliasInBulkClause = false;
         supportsDeferredConstraints = false;
+        supportsParameterInSelect = false;
         supportsSelectForUpdate = true;
         supportsDefaultDeleteAction = false;
         requiresCastForMathFunctions = true;
