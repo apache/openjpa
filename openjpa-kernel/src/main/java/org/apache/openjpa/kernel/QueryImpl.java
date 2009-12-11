@@ -29,21 +29,19 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.ListIterator;
 import java.util.Map;
+import java.util.concurrent.locks.ReentrantLock;
 
-import org.apache.commons.collections.map.LinkedMap;
 import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.openjpa.conf.OpenJPAConfiguration;
 import org.apache.openjpa.enhance.PersistenceCapable;
 import org.apache.openjpa.kernel.exps.AggregateListener;
-import org.apache.openjpa.kernel.exps.FilterListener;
 import org.apache.openjpa.kernel.exps.Constant;
+import org.apache.openjpa.kernel.exps.FilterListener;
 import org.apache.openjpa.kernel.exps.Literal;
-import org.apache.openjpa.kernel.exps.Parameter;
 import org.apache.openjpa.kernel.exps.Path;
 import org.apache.openjpa.kernel.exps.QueryExpressions;
 import org.apache.openjpa.kernel.exps.Val;
-import org.apache.openjpa.kernel.jpql.JPQLExpressionBuilder;
 import org.apache.openjpa.lib.log.Log;
 import org.apache.openjpa.lib.rop.EagerResultList;
 import org.apache.openjpa.lib.rop.MergedResultObjectProvider;
@@ -52,20 +50,21 @@ import org.apache.openjpa.lib.rop.ResultList;
 import org.apache.openjpa.lib.rop.ResultObjectProvider;
 import org.apache.openjpa.lib.util.J2DoPrivHelper;
 import org.apache.openjpa.lib.util.Localizer;
+import org.apache.openjpa.lib.util.OrderedMap;
 import org.apache.openjpa.lib.util.ReferenceHashSet;
-import java.util.concurrent.locks.ReentrantLock;
 import org.apache.openjpa.meta.ClassMetaData;
 import org.apache.openjpa.meta.FieldMetaData;
 import org.apache.openjpa.meta.JavaTypes;
 import org.apache.openjpa.meta.MetaDataRepository;
 import org.apache.openjpa.util.GeneralException;
+import org.apache.openjpa.util.ImplHelper;
 import org.apache.openjpa.util.InvalidStateException;
-import org.apache.openjpa.util.NonUniqueResultException;
 import org.apache.openjpa.util.NoResultException;
+import org.apache.openjpa.util.NonUniqueResultException;
 import org.apache.openjpa.util.OpenJPAException;
 import org.apache.openjpa.util.UnsupportedException;
 import org.apache.openjpa.util.UserException;
-import org.apache.openjpa.util.ImplHelper;
+
 import serp.util.Numbers;
 import serp.util.Strings;
 
@@ -75,6 +74,7 @@ import serp.util.Strings;
  * @author Abe White
  * @nojavadoc
  */
+@SuppressWarnings("serial")
 public class QueryImpl
     implements Query {
 
@@ -90,7 +90,7 @@ public class QueryImpl
     private ReentrantLock _lock;
 
     // unparsed state
-    private Class _class = null;
+    private Class<?> _class = null;
     private boolean _subclasses = true;
     private boolean _readOnly = false;
     private String _query = null;
@@ -102,31 +102,30 @@ public class QueryImpl
     private transient ResultPacker _packer = null;
 
     // candidates
-    private transient Collection _collection = null;
+    private transient Collection<?> _collection = null;
     private transient Extent _extent = null;
 
     // listeners
-    private Map _filtListeners = null;
-    private Map _aggListeners = null;
+    private Map<String,FilterListener> _filtListeners = null;
+    private Map<String,AggregateListener> _aggListeners = null;
 
     // configuration for loading objects
     private FetchConfiguration _fc = null;
     private boolean _ignoreChanges = false;
-    private Class _resultMappingScope = null;
+    private Class<?> _resultMappingScope = null;
     private String _resultMappingName = null;
 
     // these fields should only be used directly after we have a compilation,
     // because their values may be encoded in the query string
     private Boolean _unique = null;
-    private Class _resultClass = null;
+    private Class<?> _resultClass = null;
     private transient long _startIdx = 0;
     private transient long _endIdx = Long.MAX_VALUE;
     private transient boolean _rangeSet = false;
 
     // remember the list of all the results we have returned so we
     // can free their resources when close or closeAll is called
-    private transient final Collection _resultLists = new ReferenceHashSet
-        (ReferenceHashSet.WEAK);
+    private transient final Collection<ResultList<?>> _resultLists = new ReferenceHashSet(ReferenceHashSet.WEAK);
 
     /**
      * Construct a query managed by the given broker.
@@ -211,7 +210,7 @@ public class QueryImpl
             assertOpen();
             assertNotReadOnly();
             if (_filtListeners == null)
-                _filtListeners = new HashMap(5);
+                _filtListeners = new HashMap<String,FilterListener>(5);
             _filtListeners.put(listener.getTag(), listener);
         } finally {
             unlock();
@@ -230,9 +229,11 @@ public class QueryImpl
         }
     }
 
-    public Collection getFilterListeners() {
-        return (_filtListeners == null) ? Collections.EMPTY_LIST
-            : _filtListeners.values();
+    public Collection<FilterListener> getFilterListeners() {
+        if (_filtListeners == null) 
+            return Collections.emptyList();
+        else
+            return _filtListeners.values();
     }
 
     public FilterListener getFilterListener(String tag) {
@@ -260,7 +261,7 @@ public class QueryImpl
             assertOpen();
             assertNotReadOnly();
             if (_aggListeners == null)
-                _aggListeners = new HashMap(5);
+                _aggListeners = new HashMap<String,AggregateListener>(5);
             _aggListeners.put(listener.getTag(), listener);
         } finally {
             unlock();
@@ -279,9 +280,11 @@ public class QueryImpl
         }
     }
 
-    public Collection getAggregateListeners() {
-        return (_aggListeners == null) ? Collections.EMPTY_LIST
-            : _aggListeners.values();
+    public Collection<AggregateListener> getAggregateListeners() {
+        if (_aggListeners == null) 
+            return Collections.emptyList();
+        else
+            return _aggListeners.values();
     }
 
     public AggregateListener getAggregateListener(String tag) {
@@ -311,7 +314,7 @@ public class QueryImpl
         // in case the user has a reference to it and might use it)
         lock();
         try {
-            Class cls = getCandidateType();
+            Class<?> cls = getCandidateType();
             if (_extent == null && _collection == null && _broker != null
                 && cls != null) {
                 _extent = _broker.newExtent(cls, _subclasses);
@@ -361,12 +364,12 @@ public class QueryImpl
         }
     }
 
-    public Collection getCandidateCollection() {
+    public Collection<?> getCandidateCollection() {
         assertOpen();
         return _collection;
     }
 
-    public void setCandidateCollection(Collection candidateCollection) {
+    public void setCandidateCollection(Collection<?> candidateCollection) {
         if (!_storeQuery.supportsInMemoryExecution())
             throw new UnsupportedException(_loc.get("query-nosupport",
                 _language));
@@ -428,7 +431,7 @@ public class QueryImpl
         return _resultMappingScope;
     }
 
-    public void setResultMapping(Class scope, String name) {
+    public void setResultMapping(Class<?> scope, String name) {
         lock();
         try {
             assertOpen();
@@ -1170,13 +1173,12 @@ public class QueryImpl
     /**
      * Trace log that the query is executing.
      */
-    private void logExecution(int op, LinkedMap types, Object[] params) {
-        Map pmap = Collections.EMPTY_MAP;
+    private void logExecution(int op, OrderedMap<Object, Class<?>> types, Object[] params) {
+        OrderedMap<Object, Object> pmap = new OrderedMap<Object, Object>();
         if (params.length > 0) {
-            pmap = new HashMap((int) (params.length * 1.33 + 1));
             if (types != null && types.size() == params.length) {
                 int i = 0;
-                for (Iterator itr = types.keySet().iterator(); itr.hasNext();)
+                for (Iterator<Object> itr = types.keySet().iterator(); itr.hasNext();)
                     pmap.put(itr.next(), params[i++]);
             } else {
                 for (int i = 0; i < params.length; i++)
@@ -1189,7 +1191,7 @@ public class QueryImpl
     /**
      * Trace log that the query is executing.
      */
-    private void logExecution(int op, Map params) {
+    private void logExecution(int op, Map<?, ?> params) {
         String s = _query;
         if (StringUtils.isEmpty(s))
             s = toString();
@@ -1542,7 +1544,7 @@ public class QueryImpl
         }
     }
 
-    public LinkedMap getParameterTypes() {
+    public OrderedMap<Object,Class<?>> getParameterTypes() {
         lock();
         try {
             return compileForExecutor().getParameterTypes(_storeQuery);
@@ -1702,28 +1704,26 @@ public class QueryImpl
         if (!q.requiresParameterDeclarations() || !isParsedQuery())
             return;
 
-        LinkedMap paramTypes = ex.getParameterTypes(q);
+        OrderedMap<Object,Class<?>> paramTypes = ex.getParameterTypes(q);
         int typeCount = paramTypes.size();
         if (typeCount > params.length)
             throw new UserException(_loc.get("unbound-params",
                 paramTypes.keySet()));
 
-        Iterator itr = paramTypes.entrySet().iterator();
-        Map.Entry entry;
+        Iterator<Map.Entry<Object,Class<?>>> itr = paramTypes.entrySet().iterator();
+        Map.Entry<Object,Class<?>> entry;
         for (int i = 0; itr.hasNext(); i++) {
-            entry = (Map.Entry) itr.next();
-            if (((Class) entry.getValue()).isPrimitive() && params[i] == null)
-                throw new UserException(_loc.get("null-primitive-param",
-                    entry.getKey()));
+            entry = itr.next();
+            if (entry.getValue().isPrimitive() && params[i] == null)
+                throw new UserException(_loc.get("null-primitive-param", entry.getKey()));
         }
     }
     
-    protected void assertParameters(StoreQuery q, StoreQuery.Executor ex, 
-        Map params) {
+    protected void assertParameters(StoreQuery q, StoreQuery.Executor ex, Map params) {
         if (!q.requiresParameterDeclarations())
             return;
 
-        LinkedMap paramTypes = ex.getParameterTypes(q);
+        OrderedMap<Object,Class<?>> paramTypes = ex.getParameterTypes(q);
         for (Object actual : params.keySet()) {
             if (!paramTypes.containsKey(actual))
             throw new UserException(_loc.get("unbound-params",
@@ -1735,14 +1735,13 @@ public class QueryImpl
                 expected, params.keySet()));
         }
 
-        Iterator itr = paramTypes.entrySet().iterator();
-        Map.Entry entry;
+        Iterator<Map.Entry<Object, Class<?>>> itr = paramTypes.entrySet().iterator();
+        Map.Entry<Object, Class<?>> entry;
         for (int i = 0; itr.hasNext(); i++) {
-            entry = (Map.Entry) itr.next();
-            if (((Class) entry.getValue()).isPrimitive() 
+            entry = itr.next();
+            if (entry.getValue().isPrimitive() 
                 && params.get(entry.getKey()) == null)
-                throw new UserException(_loc.get("null-primitive-param",
-                    entry.getKey()));
+                throw new UserException(_loc.get("null-primitive-param", entry.getKey()));
         }
     }
 
@@ -1987,7 +1986,7 @@ public class QueryImpl
             return _executors[0].hasGrouping(q);
         }
 
-        public LinkedMap getParameterTypes(StoreQuery q) {
+        public OrderedMap<Object,Class<?>> getParameterTypes(StoreQuery q) {
             return _executors[0].getParameterTypes(q);
         }
         

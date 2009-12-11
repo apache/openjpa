@@ -27,7 +27,9 @@ import org.apache.openjpa.kernel.exps.AggregateListener;
 import org.apache.openjpa.kernel.exps.Constant;
 import org.apache.openjpa.kernel.exps.FilterListener;
 import org.apache.openjpa.kernel.exps.QueryExpressions;
+import org.apache.openjpa.kernel.exps.Value;
 import org.apache.openjpa.lib.rop.ResultObjectProvider;
+import org.apache.openjpa.lib.util.OrderedMap;
 import org.apache.openjpa.meta.ClassMetaData;
 import org.apache.openjpa.meta.FieldMetaData;
 
@@ -43,11 +45,11 @@ public interface StoreQuery
     extends QueryOperations, Serializable {
 
     // linkedmap doesn't allow a size of 0, so use 1
-    public static final LinkedMap EMPTY_PARAMS = new LinkedMap(1, 1F);
+    public static final OrderedMap<Object, Class<?>> EMPTY_PARAMS = new OrderedMap<Object, Class<?>>();
     public static final ClassMetaData[] EMPTY_METAS = new ClassMetaData[0];
     public static final String[] EMPTY_STRINGS = new String[0];
     public static final Object[] EMPTY_OBJECTS = new Object[0];
-    public static final Class[] EMPTY_CLASSES = new Class[0];
+    public static final Class<?>[] EMPTY_CLASSES = new Class[0];
     public static final boolean[] EMPTY_BOOLEANS = new boolean[0];
 
     /**
@@ -280,7 +282,7 @@ public interface StoreQuery
          * Return the expected types of the projections used by this query,
          * or an empty array if not a projection.
          */
-        public Class[] getProjectionTypes(StoreQuery q);
+        public Class<?>[] getProjectionTypes(StoreQuery q);
 
         /**
          * Return an array of all persistent classes used in this query, or
@@ -310,7 +312,7 @@ public interface StoreQuery
          * {@link Map#entrySet}'s {@link Iterator} must return values in the
          * order in which they were declared or used.
          */
-        public LinkedMap getParameterTypes(StoreQuery q);
+        public OrderedMap<Object, Class<?>> getParameterTypes(StoreQuery q);
         
         /**
          * Return an array from the given user parameter values.
@@ -324,12 +326,12 @@ public interface StoreQuery
          * 
          * @since 2.0.0
          */
-        public Object[] toParameterArray(StoreQuery q, Map userParams);
+        public Object[] toParameterArray(StoreQuery q, Map<?,?> userParams);
 
         /**
          * Returns the result class, if any.
          */
-        public Class getResultClass(StoreQuery q);
+        public Class<?> getResultClass(StoreQuery q);
         
         public ResultShape<?> getResultShape(StoreQuery q);
 
@@ -337,7 +339,7 @@ public interface StoreQuery
          * Return a map of {@link FieldMetaData} to update
          * {@link Constant}s, in cases where this query is for a bulk update.
 	 	 */
-		public Map getUpdates (StoreQuery q);
+		public Map<FieldMetaData,Value> getUpdates (StoreQuery q);
 		
         /**
          * Return the parsed query expressions for our candidate types.
