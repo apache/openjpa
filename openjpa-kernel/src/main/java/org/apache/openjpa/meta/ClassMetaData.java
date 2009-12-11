@@ -189,6 +189,8 @@ public class ClassMetaData
     private FetchGroup[] _customFGs = null;
     private boolean _intercepting = false;
 
+    private boolean _abstract = false;
+    
     /**
      * Constructor. Supply described type and repository.
      */
@@ -1871,7 +1873,9 @@ public class ClassMetaData
         if (_super != null) {
             // concrete superclass oids must match or be parent of ours
             ClassMetaData sup = getPCSuperclassMetaData();
-            if (!sup.getObjectIdType().isAssignableFrom(_objectId))
+            Class objectIdType = sup.getObjectIdType();
+            if (objectIdType != null &&
+            		!objectIdType.isAssignableFrom(_objectId))
                 throw new MetaDataException(_loc.get("id-classes",
                     new Object[]{ _type, _objectId, _super,
                         sup.getObjectIdType() }));
@@ -1900,7 +1904,8 @@ public class ClassMetaData
     private boolean hasConcretePCSuperclass() {
         if (_super == null)
             return false;
-        if (!Modifier.isAbstract(_super.getModifiers()))
+        if (!Modifier.isAbstract(_super.getModifiers()) && 
+        		(!getPCSuperclassMetaData().isAbstract()))
             return true;
         return getPCSuperclassMetaData().hasConcretePCSuperclass();
     }
@@ -2351,4 +2356,24 @@ public class ClassMetaData
 			return f1.getListingIndex () - f2.getListingIndex ();
 		}
 	}
+    
+    /**
+     * Returns true if the pcType modeled by this ClassMetaData
+     * object is abstract (ie, a MappedSuperclass in JPA terms.)
+     *
+     * @return
+     */
+    public boolean isAbstract() {
+        return _abstract;
+    }
+
+    /**
+     * Sets the value determining if the pcType modeled by this
+     * ClassMetaData object is abstract (ie, a MappedSuperclass in JPA terms.)
+     *
+     * @return
+     */
+    public void setAbstract(boolean flag) {
+        _abstract = flag;
+    }
 }
