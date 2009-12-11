@@ -84,7 +84,7 @@ public interface Query
     /**
      * Set a collection of candidates.
      */
-    public void setCandidateCollection(Collection coll);
+    public void setCandidateCollection(Collection<?> coll);
 
     /**
      * Compile the query.
@@ -99,7 +99,7 @@ public interface Query
     /**
      * Execute with parameter map.
      */
-    public Object execute(Map params);
+    public Object execute(Map<?,?> params);
 
     /**
      * Execute with parameter array.
@@ -116,7 +116,7 @@ public interface Query
     /**
      * Deletes all of the instances that are satisfied by the query.
      *
-     * @param parameters the poitional parameters for the query
+     * @param parameters the positional parameters for the query
      * @return the number of instances that were deleted
      */
     public long deleteAll(Object[] parameters);
@@ -127,7 +127,7 @@ public interface Query
      * @param parameterMap the named parameter map
      * @return the number of instances that were deleted
      */
-    public long deleteAll(Map parameterMap);
+    public long deleteAll(Map<?,?> parameterMap);
 
     /**
      * Performs an update of the instances that are satisfied by the query.
@@ -150,7 +150,7 @@ public interface Query
      * @param parameterMap the named parameter map
      * @return the number of instances that were update
      */
-    public long updateAll(Map parameterMap);
+    public long updateAll(Map<?,?> parameterMap);
 
     /**
      * Close all open query results.
@@ -172,7 +172,7 @@ public interface Query
      * @param params the named parameter map for the query invocation
      * @since 0.3.2
      */
-    public String[] getDataStoreActions(Map params);
+    public String[] getDataStoreActions(Map<?,?> params);
 
     /**
      * Assert that the query's broker is still open.

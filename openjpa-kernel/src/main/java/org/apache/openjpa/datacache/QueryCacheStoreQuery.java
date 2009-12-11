@@ -45,6 +45,7 @@ import org.apache.openjpa.kernel.exps.FilterListener;
 import org.apache.openjpa.kernel.exps.QueryExpressions;
 import org.apache.openjpa.lib.rop.ListResultObjectProvider;
 import org.apache.openjpa.lib.rop.ResultObjectProvider;
+import org.apache.openjpa.lib.util.OrderedMap;
 import org.apache.openjpa.meta.ClassMetaData;
 import org.apache.openjpa.meta.JavaTypes;
 import org.apache.openjpa.meta.MetaDataRepository;
@@ -467,7 +468,7 @@ public class QueryCacheStoreQuery
             return _ex.hasGrouping(unwrap(q));
         }
 
-        public LinkedMap getParameterTypes(StoreQuery q) {
+        public OrderedMap<Object, Class<?>> getParameterTypes(StoreQuery q) {
             return _ex.getParameterTypes(unwrap(q));
         }
         

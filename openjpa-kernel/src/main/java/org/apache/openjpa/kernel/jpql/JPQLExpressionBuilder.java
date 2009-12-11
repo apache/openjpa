@@ -58,6 +58,7 @@ import org.apache.openjpa.kernel.exps.Subquery;
 import org.apache.openjpa.kernel.exps.Value;
 import org.apache.openjpa.lib.log.Log;
 import org.apache.openjpa.lib.util.Localizer;
+import org.apache.openjpa.lib.util.OrderedMap;
 import org.apache.openjpa.lib.util.Localizer.Message;
 import org.apache.openjpa.meta.ClassMetaData;
 import org.apache.openjpa.meta.FieldMetaData;
@@ -89,7 +90,7 @@ public class JPQLExpressionBuilder
         (JPQLExpressionBuilder.class);
 
     private final Stack<Context> contexts = new Stack<Context>();
-    private LinkedMap parameterTypes;
+    private OrderedMap<Object, Class<?>> parameterTypes;
     private int aliasCount = 0;
     private boolean inAssignSubselectProjection = false;
 
@@ -1496,7 +1497,7 @@ public class JPQLExpressionBuilder
     
     
     public static void setImplicitTypes(Value val1, Value val2, 
-        Class<?> expected, Resolver resolver, LinkedMap parameterTypes,
+        Class<?> expected, Resolver resolver, OrderedMap<Object,Class<?>> parameterTypes,
         String currentQuery) {
         AbstractExpressionBuilder.setImplicitTypes(val1, val2, expected, 
             resolver);
@@ -1592,7 +1593,7 @@ public class JPQLExpressionBuilder
     private Parameter getParameter(String id, boolean positional, 
         boolean isCollectionValued) {
         if (parameterTypes == null)
-            parameterTypes = new LinkedMap(6);
+            parameterTypes = new OrderedMap<Object, Class<?>>();
         Object paramKey = positional ? Integer.parseInt(id) : id;
         if (!parameterTypes.containsKey(paramKey))
             parameterTypes.put(paramKey, TYPE_OBJECT);
@@ -1613,8 +1614,8 @@ public class JPQLExpressionBuilder
                 throw parseException(EX_USER, "bad-positional-parameter",
                     new Object[]{ id }, null);
         } else {
-            // otherwise the index is just the current size of the params
-            index = parameterTypes.indexOf(id);
+            // otherwise the index is just the current size of the parameters
+            index = parameterTypes.size()-1;
         }
         Parameter param = isCollectionValued 
             ? factory.newCollectionValuedParameter(paramKey, TYPE_OBJECT) 

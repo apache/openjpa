@@ -35,6 +35,7 @@ import org.apache.openjpa.lib.rop.ListResultObjectProvider;
 import org.apache.openjpa.lib.rop.RangeResultObjectProvider;
 import org.apache.openjpa.lib.rop.ResultObjectProvider;
 import org.apache.openjpa.lib.util.Localizer;
+import org.apache.openjpa.lib.util.OrderedMap;
 import org.apache.openjpa.meta.ClassMetaData;
 import org.apache.openjpa.util.Exceptions;
 import org.apache.openjpa.util.ImplHelper;
@@ -65,7 +66,7 @@ public class MethodStoreQuery
     private static final Localizer _loc = Localizer.forPackage
         (MethodStoreQuery.class);
 
-    private LinkedMap _params = null;
+    private OrderedMap<Object, Class<?>> _params = null;
 
     public void invalidateCompilation() {
         if (_params != null)
@@ -95,7 +96,7 @@ public class MethodStoreQuery
     /**
      * Parse the parameter declarations.
      */
-    private LinkedMap bindParameterTypes() {
+    private OrderedMap<Object, Class<?>> bindParameterTypes() {
         ctx.lock();
         try {
             if (_params != null)
@@ -106,7 +107,7 @@ public class MethodStoreQuery
 
             List decs = Filters.parseDeclaration(params, ',', "parameters");
             if (_params == null)
-                _params = new LinkedMap((int) (decs.size() / 2 * 1.33 + 1));
+                _params = new OrderedMap<Object, Class<?>>();
             String name;
             Class cls;
             for (int i = 0; i < decs.size(); i += 2) {
@@ -259,7 +260,7 @@ public class MethodStoreQuery
             _meth = meth;
         }
 
-        public LinkedMap getParameterTypes(StoreQuery q) {
+        public OrderedMap<Object, Class<?>> getParameterTypes(StoreQuery q) {
             return ((MethodStoreQuery) q).bindParameterTypes();
 		}
         
@@ -267,7 +268,7 @@ public class MethodStoreQuery
             if (userParams == null || userParams.isEmpty())
                 return StoreQuery.EMPTY_OBJECTS;
 
-            LinkedMap paramTypes = getParameterTypes(q);
+            OrderedMap<Object, Class<?>> paramTypes = getParameterTypes(q);
             Object[] arr = new Object[userParams.size()];
             int base = positionalParameterBase(userParams.keySet());
             for (Object key : paramTypes.keySet()) {

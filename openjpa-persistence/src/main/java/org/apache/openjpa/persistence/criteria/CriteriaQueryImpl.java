@@ -50,6 +50,7 @@ import org.apache.openjpa.kernel.exps.ExpressionFactory;
 import org.apache.openjpa.kernel.exps.QueryExpressions;
 import org.apache.openjpa.kernel.exps.Value;
 import org.apache.openjpa.lib.util.Localizer;
+import org.apache.openjpa.lib.util.OrderedMap;
 import org.apache.openjpa.persistence.meta.MetamodelImpl;
 import org.apache.openjpa.persistence.meta.Types;
 
@@ -73,7 +74,7 @@ class CriteriaQueryImpl<T> implements OpenJPACriteriaQuery<T>, AliasContext {
     private Set<Root<?>>        _roots;
     private PredicateImpl       _where;
     private List<Order>         _orders;
-    private LinkedMap           _params; /*<ParameterExpression<?>, Class<?>>*/ 
+    private OrderedMap<Object, Class<?>> _params; /*<ParameterExpression<?>, Class<?>>*/ 
     private Selection<? extends T> _selection;
     private List<Selection<?>>  _selections;
     private List<Expression<?>> _groups;
@@ -216,7 +217,7 @@ class CriteriaQueryImpl<T> implements OpenJPACriteriaQuery<T>, AliasContext {
      */
     void registerParameter(ParameterExpressionImpl<?> p) {
         if (_params == null)
-            _params = new LinkedMap/*<ParameterExpression<?>, Class<?>*/();
+            _params = new OrderedMap/*<ParameterExpression<?>, Class<?>*/();
         if (!_params.containsKey(p)) {
             p.setIndex(_params.size());
             _params.put(p, p.getJavaType());
@@ -401,7 +402,7 @@ class CriteriaQueryImpl<T> implements OpenJPACriteriaQuery<T>, AliasContext {
      * Return map where key is the parameter expression itself and value is the expected type.
      * Empty map if no parameter has been declared. 
      */
-    public LinkedMap getParameterTypes() {
+    public OrderedMap<Object, Class<?>> getParameterTypes() {
         collectParameters(new CriteriaExpressionVisitor.ParameterVisitor(this));
         return _params == null ? StoreQuery.EMPTY_PARAMS : _params;
     }

@@ -24,6 +24,7 @@ import org.apache.commons.collections.map.LinkedMap;
 import org.apache.openjpa.kernel.exps.AggregateListener;
 import org.apache.openjpa.kernel.exps.FilterListener;
 import org.apache.openjpa.kernel.exps.QueryExpressions;
+import org.apache.openjpa.lib.util.OrderedMap;
 import org.apache.openjpa.meta.ClassMetaData;
 import org.apache.openjpa.util.InternalException;
 import org.apache.openjpa.util.UnsupportedException;
@@ -185,7 +186,7 @@ public abstract class AbstractStoreQuery
             return false;
         }
 
-        public LinkedMap getParameterTypes(StoreQuery q) {
+        public OrderedMap<Object,Class<?>> getParameterTypes(StoreQuery q) {
             return EMPTY_PARAMS;
         }
 

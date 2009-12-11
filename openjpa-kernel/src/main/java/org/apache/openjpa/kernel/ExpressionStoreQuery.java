@@ -47,6 +47,7 @@ import org.apache.openjpa.lib.rop.ListResultObjectProvider;
 import org.apache.openjpa.lib.rop.RangeResultObjectProvider;
 import org.apache.openjpa.lib.rop.ResultObjectProvider;
 import org.apache.openjpa.lib.util.Localizer;
+import org.apache.openjpa.lib.util.OrderedMap;
 import org.apache.openjpa.meta.ClassMetaData;
 import org.apache.openjpa.meta.FieldMetaData;
 import org.apache.openjpa.meta.JavaTypes;
@@ -305,7 +306,7 @@ public class ExpressionStoreQuery
             if (val.isVariable())
                 return;
 
-            Class type;
+            Class<?> type;
             if (val instanceof Path) {
                 FieldMetaData fmd = ((Path) val).last();
                 type = (fmd == null) ? val.getType() : fmd.getDeclaredType();
@@ -350,7 +351,7 @@ public class ExpressionStoreQuery
                 q.getContext().getQueryString()));
         }
 
-        public final Class getResultClass(StoreQuery q) {
+        public final Class<?> getResultClass(StoreQuery q) {
             return assertQueryExpression().resultClass;
         }
         
@@ -370,7 +371,7 @@ public class ExpressionStoreQuery
             return assertQueryExpression().projectionAliases;
         }
         
-        public Class[] getProjectionTypes(StoreQuery q) {
+        public Class<?>[] getProjectionTypes(StoreQuery q) {
             return null;
         }
 
@@ -386,18 +387,18 @@ public class ExpressionStoreQuery
             return assertQueryExpression().grouping.length > 0;
         }
 
-        public final LinkedMap getParameterTypes(StoreQuery q) {
+        public final OrderedMap<Object,Class<?>> getParameterTypes(StoreQuery q) {
             return assertQueryExpression().parameterTypes;
         }
 
         /**
          * Creates a Object[] from the values of the given user parameters.
          */
-        public Object[] toParameterArray(StoreQuery q, Map userParams) {
+        public Object[] toParameterArray(StoreQuery q, Map<?,?> userParams) {
             if (userParams == null || userParams.isEmpty())
                 return StoreQuery.EMPTY_OBJECTS;
 
-            LinkedMap paramTypes = getParameterTypes(q);
+            OrderedMap<?,Class<?>> paramTypes = getParameterTypes(q);
             Object[] arr = new Object[userParams.size()];
             int base = positionalParameterBase(userParams.keySet());
             for (Object key : paramTypes.keySet()) {
@@ -463,7 +464,7 @@ public class ExpressionStoreQuery
             if (exps.length == 1)
                 return exps[0].accessPath;
 
-            List metas = null;
+            List<ClassMetaData> metas = null;
             for (int i = 0; i < exps.length; i++)
                 metas = Filters.addAccessPathMetaDatas(metas,
                     exps[i].accessPath);

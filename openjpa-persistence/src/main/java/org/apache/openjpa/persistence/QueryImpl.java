@@ -62,6 +62,7 @@ import org.apache.openjpa.kernel.jpql.JPQLParser;
 import org.apache.openjpa.lib.log.Log;
 import org.apache.openjpa.lib.rop.ResultList;
 import org.apache.openjpa.lib.util.Localizer;
+import org.apache.openjpa.lib.util.OrderedMap;
 import org.apache.openjpa.persistence.criteria.CriteriaBuilderImpl;
 import org.apache.openjpa.util.ImplHelper;
 import org.apache.openjpa.util.RuntimeExceptionTranslator;
@@ -968,10 +969,10 @@ public class QueryImpl<X> implements OpenJPAQuerySPI<X>, Serializable {
     public Map<Object, Parameter<?>> getDeclaredParameters() {
         if (_declaredParams == null) {
             _declaredParams = new HashMap<Object, Parameter<?>>();
-            LinkedMap paramTypes = _query.getParameterTypes();
+            OrderedMap<Object,Class<?>> paramTypes = _query.getParameterTypes();
             for (Object key : paramTypes.keySet()) {
                 Parameter<?> param = null;
-                Class<?> expectedValueType = (Class<?>)paramTypes.get(key);
+                Class<?> expectedValueType = paramTypes.get(key);
                 if (key instanceof Integer) {
                     param = new ParameterImpl((Integer)key, expectedValueType);
                 } else if (key instanceof String) {

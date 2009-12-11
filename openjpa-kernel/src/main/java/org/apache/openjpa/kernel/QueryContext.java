@@ -21,10 +21,11 @@ package org.apache.openjpa.kernel;
 import java.util.Collection;
 import java.util.Map;
 
-import org.apache.commons.collections.map.LinkedMap;
 import org.apache.openjpa.kernel.exps.AggregateListener;
 import org.apache.openjpa.kernel.exps.Constant;
 import org.apache.openjpa.kernel.exps.FilterListener;
+import org.apache.openjpa.kernel.exps.Value;
+import org.apache.openjpa.lib.util.OrderedMap;
 import org.apache.openjpa.meta.ClassMetaData;
 import org.apache.openjpa.meta.FieldMetaData;
 
@@ -75,13 +76,13 @@ public interface QueryContext {
      * Return the candidate collection, or <code>null</code> if an
      * extent was specified instead of a collection.
      */
-    public Collection getCandidateCollection();
+    public Collection<?> getCandidateCollection();
 
     /**
      * Return the class of the objects that this query will return,
      * or <code>null</code> if this information is not available / not relevant.
      */
-    public Class getCandidateType();
+    public Class<?> getCandidateType();
 
     /**
      * Whether query results will include subclasses of the candidate class.
@@ -91,7 +92,7 @@ public interface QueryContext {
     /**
      * Set the candidate type.
      */
-    public void setCandidateType(Class cls, boolean subs);
+    public void setCandidateType(Class<?> cls, boolean subs);
 
     /**
      * Whether the query has been marked read-only.
@@ -120,7 +121,7 @@ public interface QueryContext {
     /**
      * Scope of a mapping from the result data to its object representation.
      */
-    public Class getResultMappingScope();
+    public Class<?> getResultMappingScope();
 
     /**
      * Name of a mapping from the result data to its object representation.
@@ -131,20 +132,20 @@ public interface QueryContext {
      * Name and scope of a mapping from the result data to its object
      * representation.
      */
-    public void setResultMapping(Class scope, String name);
+    public void setResultMapping(Class<?> scope, String name);
 
     /**
      * Returns the result class that has been set through
      * {@link #setResultType}, or null if none.
      */
-    public Class getResultType();
+    public Class<?> getResultType();
 
     /**
      * Specify the type of object in which the result of evaluating this query.
      *
      * @since 0.3.0
      */
-    public void setResultType(Class cls);
+    public void setResultType(Class<?> cls);
 
     /**
      * Return the 0-based start index for the returned results.
@@ -182,13 +183,13 @@ public interface QueryContext {
      * map will iterate in the order that the parameters were declared or,
      * if they're implicit, used.
      */
-    public LinkedMap getParameterTypes();
+    public OrderedMap<Object,Class<?>> getParameterTypes();
 
     /**
      * If this query is a bulk update, return a map of the
      * {@link FieldMetaData}s to {@link Constant}s.
      */
-    public Map getUpdates();
+    public Map<FieldMetaData, Value> getUpdates();
 
     /**
      * Whether to ignore changes in the current transaction.
@@ -214,7 +215,7 @@ public interface QueryContext {
     /**
      * If this query is a projection, return the projection types.
      */
-    public Class[] getProjectionTypes();
+    public Class<?>[] getProjectionTypes();
 
     /**
      * Return true if the query is an aggregate.
@@ -244,12 +245,12 @@ public interface QueryContext {
     /**
      * The set of filter listeners.
      */
-    public Collection getFilterListeners();
+    public Collection<FilterListener> getFilterListeners();
 
     /**
      * The set of aggregate listeners.
      */
-    public Collection getAggregateListeners();
+    public Collection<AggregateListener> getAggregateListeners();
 
     /**
      * Helper method to delete the objects found by executing a query on
@@ -270,7 +271,7 @@ public interface QueryContext {
      * into account the query's candidate package, automatic imports, and
      * the given imports (if any). Returns null if the type cannot be found.
      */
-    public Class classForName(String name, String[] imports);
+    public Class<?> classForName(String name, String[] imports);
 
     /**
      * Synchronize on the query's internal lock.
