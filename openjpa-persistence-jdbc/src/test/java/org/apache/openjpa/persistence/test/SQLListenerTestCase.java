@@ -20,7 +20,6 @@ package org.apache.openjpa.persistence.test;
 
 import java.util.List;
 import java.util.ArrayList;
-import java.util.Map;
 
 import org.apache.openjpa.lib.jdbc.AbstractJDBCListener;
 import org.apache.openjpa.lib.jdbc.JDBCEvent;
@@ -34,6 +33,7 @@ import org.apache.openjpa.lib.jdbc.JDBCListener;
 public abstract class SQLListenerTestCase
     extends SingleEMFTestCase {
 
+    private static String _nl = System.getProperty("line.separator");
     protected List<String> sql = new ArrayList<String>();
     protected int sqlCount;
     
@@ -95,6 +95,47 @@ public abstract class SQLListenerTestCase
     }
     
     /**
+     * Confirm the list of expected SQL expressions have been executed in the
+     * order specified. I.e. additional SQL statements can be executed in
+     * between expected SQLs.
+     * 
+     * @param expected
+     *            SQL expressions. E.g., ("SELECT FOO .*", "UPDATE .*")
+     */
+    public void assertAllSQLInOrder(String... expected) {
+        assertSQLInOrder(false, expected);
+    }
+    
+    private void assertSQLInOrder(boolean exact, String... expected) {
+        boolean match = false;
+        int sqlSize = sql.size();
+        if (expected.length <= sqlSize) {
+            int hits = 0;
+            for (String executedSQL : sql) {
+                if (executedSQL.matches(expected[hits])) {
+                    if (++hits == expected.length)
+                        break;
+                }
+            }
+            match = hits == (exact ? sqlSize : expected.length);
+        }
+
+        if (!match) {
+            StringBuilder sb = new StringBuilder();
+            sb.append("Did not find SQL in expected order : ").append(_nl);
+            for (String s : expected) {
+                sb.append(s).append(_nl);
+            }
+
+            sb.append("SQL Statements issued : ");
+            for (String s : sql) {
+                sb.append(s).append(_nl);
+            }
+            fail(sb.toString());
+        }
+    }
+    
+    /**
      * Gets the number of SQL issued since last reset.
      */
     public int getSQLCount() {
@@ -122,4 +163,28 @@ public abstract class SQLListenerTestCase
             }
 		}
 	}
+    
+    public void assertSQLOrder(String... expected) {
+        int hits = 0;
+    
+        for (String executedSQL : sql) {
+            if (executedSQL.matches(expected[hits])) {
+                hits++;
+            }
+        }
+    
+        if (hits != expected.length) {
+            StringBuilder sb = new StringBuilder();
+            sb.append("Did not find SQL in expected order : ").append(_nl);
+            for (String s : expected) {
+                sb.append(s).append(_nl);
+            }
+    
+            sb.append("SQL Statements issued : ");
+            for (String s : sql) {
+                sb.append(s).append(_nl);
+            }
+            fail(sb.toString());
+        }
+    }
 }

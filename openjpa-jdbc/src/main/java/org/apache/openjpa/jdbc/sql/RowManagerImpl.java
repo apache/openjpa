@@ -22,7 +22,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -39,13 +39,13 @@ import org.apache.openjpa.util.InternalException;
 public class RowManagerImpl
     implements RowManager {
 
-    private Map _inserts = null;
-    private Map _updates = null;
-    private Map _deletes = null;
-    private Collection _secondaryUpdates = null;
-    private Collection _secondaryDeletes = null;
-    private Collection _allRowUpdates = null;
-    private Collection _allRowDeletes = null;
+ private Map<Key, PrimaryRow> _inserts = null;
+ private Map<Key, PrimaryRow> _updates = null;
+ private Map<Key, PrimaryRow> _deletes = null;
+ private Collection<SecondaryRow> _secondaryUpdates = null;
+ private Collection<SecondaryRow> _secondaryDeletes = null;
+ private Collection<Row> _allRowUpdates = null;
+ private Collection<Row> _allRowDeletes = null;
 
     // we maintain a list of the order of all primary rows if the user
     // wants to be able to fetch them in order
@@ -66,7 +66,7 @@ public class RowManagerImpl
      * @param order whether to keep track of the order in which rows are added
      */
     public RowManagerImpl(boolean order) {
-        _primaryOrder = (order) ? new ArrayList() : null;
+     _primaryOrder = (order) ? new ArrayList<PrimaryRow>() : null;
     }
 
     /**
@@ -80,61 +80,98 @@ public class RowManagerImpl
      * Return the ordered primary rows. Only available if ordering requested
      * on construction.
      */
-    public List getOrdered() {
-        return (_primaryOrder == null) ? Collections.EMPTY_LIST : _primaryOrder;
+    public List<PrimaryRow> getOrdered() {
+        if(_primaryOrder == null ) { 
+            return Collections.emptyList();
+        }
+        else { 
+            return _primaryOrder;
+        }
     }
 
     /**
      * Return all inserted primary rows.
      */
-    public Collection getInserts() {
-        return (_inserts == null) ? Collections.EMPTY_LIST : _inserts.values();
+    public Collection<PrimaryRow> getInserts() {
+        if(_inserts == null ) {
+             return Collections.emptyList();
+        }
+        else {
+            return _inserts.values();
+        }
     }
 
     /**
      * Return all updated primary rows.
      */
-    public Collection getUpdates() {
-        return (_updates == null) ? Collections.EMPTY_LIST : _updates.values();
+    public Collection<PrimaryRow> getUpdates() {
+        if(_updates == null ){ 
+            return Collections.emptyList();
+        }
+        else { 
+            return _updates.values();
+        }
     }
 
     /**
      * Return all deleted primary rows.
      */
-    public Collection getDeletes() {
-        return (_deletes == null) ? Collections.EMPTY_LIST : _deletes.values();
+    public Collection<PrimaryRow> getDeletes() {
+        if(_deletes == null) { 
+            return Collections.emptyList();
+        }
+        else {
+            return _deletes.values();
+        }
     }
 
     /**
      * Return all inserted and updated secondary rows.
      */
-    public Collection getSecondaryUpdates() {
-        return (_secondaryUpdates == null) ? Collections.EMPTY_LIST
-            : _secondaryUpdates;
+    public Collection<SecondaryRow> getSecondaryUpdates() {
+        if(_secondaryUpdates == null) { 
+            return Collections.emptyList();
+        }
+        else { 
+            return _secondaryUpdates;
+        }
     }
 
     /**
      * Return all deleted secondary rows.
      */
-    public Collection getSecondaryDeletes() {
-        return (_secondaryDeletes == null) ? Collections.EMPTY_LIST
-            : _secondaryDeletes;
+    public Collection<SecondaryRow> getSecondaryDeletes() {
+        if(_secondaryDeletes == null) { 
+            return Collections.emptyList();
+        }
+        else { 
+            return _secondaryDeletes;
+        }
     }
 
     /**
      * Return any 'all row' updates.
      */
-    public Collection getAllRowUpdates() {
-        return (_allRowUpdates == null) ? Collections.EMPTY_LIST
-            : _allRowUpdates;
+    public Collection<Row> getAllRowUpdates() {
+        if(_allRowUpdates == null) { 
+            return Collections.emptyList();
+        }
+        else { 
+            return _allRowUpdates;
+        }
     }
 
     /**
      * Return any 'all row' deletes.
      */
-    public Collection getAllRowDeletes() {
-        return (_allRowDeletes == null) ? Collections.EMPTY_LIST
-            : _allRowDeletes;
+    public Collection<Row> getAllRowDeletes() {
+        if(_allRowDeletes == null) { 
+            return Collections.emptyList();
+        }
+        else { 
+            return _allRowDeletes;
+        }    
+
     }
 
     public Row getSecondaryRow(Table table, int action) {
@@ -149,12 +186,12 @@ public class RowManagerImpl
         SecondaryRow srow = (SecondaryRow) row;
         if (srow.getAction() == Row.ACTION_DELETE) {
             if (_secondaryDeletes == null)
-                _secondaryDeletes = new ArrayList();
-            _secondaryDeletes.add(srow.clone());
+             _secondaryDeletes = new ArrayList<SecondaryRow>();
+            _secondaryDeletes.add((SecondaryRow) srow.clone());
         } else {
             if (_secondaryUpdates == null)
-                _secondaryUpdates = new ArrayList();
-            _secondaryUpdates.add(srow.clone());
+             _secondaryUpdates = new ArrayList<SecondaryRow>();
+            _secondaryUpdates.add((SecondaryRow) srow.clone());
         }
     }
 
@@ -169,12 +206,12 @@ public class RowManagerImpl
         switch (row.getAction()) {
             case Row.ACTION_UPDATE:
                 if (_allRowUpdates == null)
-                    _allRowUpdates = new ArrayList();
+                 _allRowUpdates = new ArrayList<Row>();
                 _allRowUpdates.add(row);
                 break;
             case Row.ACTION_DELETE:
                 if (_allRowDeletes == null)
-                    _allRowDeletes = new ArrayList();
+                 _allRowDeletes = new ArrayList<Row>();
                 _allRowDeletes.add(row);
                 break;
             default:
@@ -192,25 +229,25 @@ public class RowManagerImpl
             && _row != null && _row.getAction() == action)
             return _row;
 
-        Map map;
+        Map<Key, PrimaryRow> map;
         if (action == Row.ACTION_DELETE) {
             if (_deletes == null && create)
-                _deletes = new HashMap();
+             _deletes = new LinkedHashMap<Key, PrimaryRow>();
             map = _deletes;
         } else if (action == Row.ACTION_INSERT) {
             if (_inserts == null && create)
-                _inserts = new HashMap();
+             _inserts = new LinkedHashMap<Key, PrimaryRow>();
             map = _inserts;
         } else {
             if (_updates == null && create)
-                _updates = new HashMap();
+             _updates = new LinkedHashMap<Key, PrimaryRow>();
             map = _updates;
         }
         if (map == null)
             return null;
 
         _key = new Key(table, sm);
-        _row = (PrimaryRow) map.get(_key);
+        _row = map.get(_key);
 
         if (_row == null && create) {
             _row = new PrimaryRow(table, action, sm);
