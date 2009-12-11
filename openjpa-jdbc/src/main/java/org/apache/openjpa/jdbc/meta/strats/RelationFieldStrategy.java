@@ -704,7 +704,8 @@ public class RelationFieldStrategy
 
         boolean isLocked = res.isLocking();
         try {
-            res.setLocking(store.getLockManager().skipRelationFieldLock());
+            if (store.getLockManager() != null)
+                res.setLocking(store.getLockManager().skipRelationFieldLock());
             sm.storeObject(field.getIndex(), res.load(cls, store, fetch,
                     eagerJoin(res.newJoins(), cls, false)));
         } finally {
