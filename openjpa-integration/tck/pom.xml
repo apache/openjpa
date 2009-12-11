@@ -273,6 +273,7 @@ databaseName=${db.name}
     </profile>
     </profiles>
 
+    <!-- only used for old JPA 1.0 RI API, which we don't use anymore
     <repositories>
         <repository>
             <id>java.net</id>
@@ -281,9 +282,9 @@ databaseName=${db.name}
             <layout>legacy</layout>
         </repository>
     </repositories>
+    -->
 
     <dependencies>
-        <!--  Use early access version of JPA spec from Geronimo -->
         <dependency>
             <groupId>org.apache.geronimo.specs</groupId>
             <artifactId>geronimo-jpa_2.0_spec</artifactId>
