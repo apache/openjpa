@@ -22,8 +22,8 @@ Overview
    This distribution of Apache OpenJPA builds upon the prior releases which 
    provided a feature-rich implementation of the Java Persistence API (JPA 1.0)
    part of Java Community Process JSR-220 (Enterprise JavaBeans 3.0) by
-   includng some early-draft specification functionality from the Java
-   Community Process JSR-317 (JPA 2.0) Proposed Final Draft 2 on 09/22/2009.
+   implementing the specification functionality from the final Java
+   Community Process JSR-317 (JPA 2.0) release on 12/10/2009.
 
    Some of the key features included in this distribution:
      * TBD
@@ -67,8 +67,6 @@ Notices
 
    This product includes software developed at
    The Apache Software Foundation (http://www.apache.org/).
-
-   This is an implementation of an early-draft specification developed under the Java Community Process (JCP). The code is untested and presumed not to be a compatible implementation of the JSR-317 Java Persistence API, Version 2.0 specification.  We encourage you to migrate to an implementation of the JSR-317 Java Persistence API, Version 2.0 specification that has been tested and verified to be compatible as soon as such an implementation is available, and we encourage you to retain this notice in any implementation of JSR-317 Java Persistence API, Version 2.0 specification that you distribute.
 
    OpenJPA includes the persistence and orm schemas from the JPA specifications.
    Copyright 2005-2009 Sun Microsystems, Inc. All rights reserved.
