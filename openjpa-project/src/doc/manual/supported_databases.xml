@@ -1238,6 +1238,13 @@ PostgreSQL cannot store very low and very high dates.
 Empty string/char values are stored as NULL.
                     </para>
                 </listitem>
+                <listitem>
+                    <para>
+Persistent fields of type <classname>java.io.Reader</classname> are not
+supported when using
+<link linkend="ref_guide_streamsupport">LOB streaming</link>.
+                    </para>
+                </listitem>
             </itemizedlist>
         </section>
     </section>
