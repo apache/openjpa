@@ -30,6 +30,7 @@ import java.lang.reflect.Field;
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
 import org.apache.openjpa.persistence.OpenJPAEntityManager;
 import org.apache.openjpa.persistence.JPAFacadeHelper;
+import org.apache.openjpa.jdbc.kernel.A;
 import org.apache.openjpa.kernel.OpenJPAStateManager;
 import org.apache.openjpa.meta.ClassMetaData;
 import org.apache.openjpa.util.ImplHelper;
@@ -49,7 +50,7 @@ public abstract class AbstractUnenhancedClassTest
     //   * Java 5 without javaagent
 
     public void setUp() {
-        setUp(getUnenhancedClass(), getUnenhancedSubclass(), CLEAR_TABLES);
+        setUp(getUnenhancedClass(), getUnenhancedSubclass(), CLEAR_TABLES, "openjpa.Compatibility", "superclassDiscriminatorStrategyByDefault=false");
         // trigger class redefinition
         emf.createEntityManager().close();
     }
