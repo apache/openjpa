@@ -34,7 +34,7 @@
             nameFilter="*"
             id="org.apache.openjpa.eclipse.contribution1">
          <action
-               label="Add/Remove OpenJPA Builder"
+               label="Add/Remove Bytecode Enhancer"
                class="org.apache.openjpa.eclipse.ToggleNatureAction"
                menubarPath="additions"
                enablesFor="+"
@@ -52,6 +52,35 @@
       <persistent
             value="true">
       </persistent>
+   </extension>
+   
+   <extension
+         point="org.eclipse.ui.decorators">
+      <decorator
+            adaptable="true"
+            class="org.apache.openjpa.eclipse.ui.ProjectDecorator"
+            icon="icons/apache-feather-small.jpg"
+            id="org.apache.openjpa.eclipse.Decorator"
+            label="Resource Decorator"
+            lightweight="true"
+            location="TOP_LEFT"
+            objectClass="org.eclipse.core.resources.IProject"
+            state="true">
+         <enablement>
+            <and>
+               <objectClass name="org.eclipse.core.resources.IResource">
+               </objectClass>
+               <or>
+                  <objectClass
+                        name="org.eclipse.core.resources.IProject">
+                  </objectClass>
+                  <objectClass
+                        name="org.eclipse.core.resources.IFile">
+                  </objectClass>
+               </or>
+            </and>
+         </enablement>
+      </decorator> 
    </extension>
 
 </plugin>

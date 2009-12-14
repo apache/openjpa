@@ -10,4 +10,9 @@
   <artifactId>org.apache.openjpa.eclipse.feature</artifactId>
   <version>1.0.0</version>
   <packaging>eclipse-feature</packaging>
+  
+	<name>OpenJPA Bytecode Enhancer Feature</name>
+	<description>
+		OpenJPA Bytecode Enhancer as OSGi/Eclipse Feature
+	</description>
 </project>

@@ -10,4 +10,8 @@
   <artifactId>org.apache.openjpa.eclipse.site</artifactId>
   <version>1.0.0-SNAPSHOT</version>
   <packaging>eclipse-update-site</packaging>
+	<name>OpenJPA Bytecode Enhancer Plugin Update Site</name>
+	<description>
+		OpenJPA Bytecode Enhancer Plugin available as local update site.
+	</description>
 </project>

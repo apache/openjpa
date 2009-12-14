@@ -17,16 +17,17 @@
 package org.apache.openjpa.eclipse;
 
 import java.io.File;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-
 
 import org.apache.openjpa.eclipse.util.ClassLoaderFromIProjectHelper;
 import org.apache.openjpa.eclipse.util.LogUtil;
 import org.apache.openjpa.eclipse.util.PCEnhancerHelper;
 import org.apache.openjpa.eclipse.util.PCEnhancerHelperImpl;
 import org.apache.openjpa.eclipse.util.PathMatcherUtil;
+import org.apache.openjpa.lib.util.MultiClassLoader;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IMarker;
 import org.eclipse.core.resources.IProject;
@@ -41,6 +42,10 @@ import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.OperationCanceledException;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.SubMonitor;
+import org.eclipse.jdt.core.ElementChangedEvent;
+import org.eclipse.jdt.core.IElementChangedListener;
+import org.eclipse.jdt.core.IPackageFragmentRoot;
+import org.eclipse.jdt.core.JavaCore;
 
 /**
  * Builder for the OpenJPA PCEnhancer.
@@ -49,13 +54,20 @@ import org.eclipse.core.runtime.SubMonitor;
  * 
  * @author Eclipse PDE Example Wizard! ;-)
  * @author Michael Vorburger (MVO)
+ * @author Pinaki Poddar
  */
-public class OpenJPAEnhancerBuilder extends IncrementalProjectBuilder {
+public class OpenJPAEnhancerBuilder extends IncrementalProjectBuilder implements IElementChangedListener {
 
 	public static final String BUILDER_ID = "org.apache.openjpa.eclipse.OpenJPAEnhancerBuilder";
 
 	private static final String MARKER_TYPE = "org.apache.openjpa.eclipse.openJPAEnhancementProblem";
+    private static final Map<IProject,PCEnhancerHelper> _enhancers = new HashMap<IProject, PCEnhancerHelper>();
 
+    public OpenJPAEnhancerBuilder() {
+        super();
+        JavaCore.addElementChangedListener(this, ElementChangedEvent.POST_CHANGE);
+    }
+    
 	private class MyIncrementalBuildResourceDeltaVisitor implements IResourceDeltaVisitor {
 		private final IProgressMonitor monitor;
 		private final PCEnhancerHelper enhancerHelper;
@@ -69,8 +81,8 @@ public class OpenJPAEnhancerBuilder extends IncrementalProjectBuilder {
 		}
 
 		public boolean visit(IResourceDelta delta) throws CoreException {
-			// better do NOT use monitor.worked() & monitor.subTask() here, as this is fast enough and any UI will only 
-		    // slow it down
+			// better do NOT use monitor.worked() & monitor.subTask() here, as this is fast enough  
+		    // and any UI will only slow it down
 			IResource resource = delta.getResource();
 			switch (delta.getKind()) {
 			// If Added or Changed, handle changed resource:
@@ -186,8 +198,7 @@ public class OpenJPAEnhancerBuilder extends IncrementalProjectBuilder {
 	    throws CoreException {
 		monitor.subTask("OpenJPA Enhancement... (Incremental Build)");
 		try {
-			ClassLoader classLoader = ClassLoaderFromIProjectHelper.createClassLoader(getProject());
-			PCEnhancerHelper enhancerHelper = new PCEnhancerHelperImpl(classLoader);
+			PCEnhancerHelper enhancerHelper = getEnhancer(getProject());
 			delta.accept(new MyIncrementalBuildResourceDeltaVisitor(monitor, enhancerHelper, opts));
 		} finally {
 			monitor.done();
@@ -219,6 +230,29 @@ public class OpenJPAEnhancerBuilder extends IncrementalProjectBuilder {
 		}
 	}
 	
+    /**
+     * Gets the enhancer for the given user project. Creates if one does not exist for the given project.
+     */
+    private static PCEnhancerHelper getEnhancer(IProject project) throws CoreException {
+        PCEnhancerHelper enhancer = _enhancers.get(project);
+        if (enhancer == null) {
+            Activator.log("Creating enhancer for project " + project.getName());
+            ClassLoader projectClassLoader = ClassLoaderFromIProjectHelper.createClassLoader(project);
+            if (Activator.isUsingOpenJPA(project)) {
+                Activator.log("Project " + project.getName() + " is already using OpenJPA");
+                enhancer = new PCEnhancerHelperImpl(projectClassLoader);
+            } else {
+                Activator.log("Project " + project.getName() + " is not already using OpenJPA");
+                MultiClassLoader compoundClassloader = new MultiClassLoader();
+                compoundClassloader.addClassLoader(projectClassLoader);
+                compoundClassloader.addClassLoader(Activator.class.getClassLoader());
+                enhancer = new PCEnhancerHelperImpl(projectClassLoader);
+            }
+        }
+        return enhancer;
+    }
+
+	
 	private boolean enhance(IResource resource, PCEnhancerHelper enhancerHelper, BuilderOptions opts) 
 	    throws CoreException {
 		IFile iFile = (IFile) resource;
@@ -241,6 +275,30 @@ public class OpenJPAEnhancerBuilder extends IncrementalProjectBuilder {
 			return false;
 		}
 	}
+	
+    /**
+     * Callback notification on Java Model change determines if the user project's classpath has been changed.
+     * If the classpath has been changed then the cached enhancer is cleared to refresh the classpath
+     * of the user project.
+     */
+    public void elementChanged(ElementChangedEvent event) {
+        IResourceDelta[] rsrcs = event.getDelta().getResourceDeltas();
+        for (int i = 0; rsrcs != null && i < rsrcs.length; i++) {
+            if (isClasspath(rsrcs[i])) {
+                IProject project = rsrcs[i].getResource().getProject();
+                _enhancers.remove(project);
+            }
+        }
+    }
+    
+    /**
+     * Affirms if the given resource represents a classpath.
+     */
+    private boolean isClasspath(IResourceDelta resource) {
+        IPackageFragmentRoot path = (IPackageFragmentRoot)resource.getAdapter(IPackageFragmentRoot.class);
+        return path != null;
+    }
+
 
 	/**
 	 * Note that if full/verbose logging is enabled, which writes to that Error

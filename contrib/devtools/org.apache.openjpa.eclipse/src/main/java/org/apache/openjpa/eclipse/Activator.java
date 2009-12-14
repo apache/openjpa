@@ -16,7 +16,14 @@
 
 package org.apache.openjpa.eclipse;
 
+import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.Shell;
+import org.apache.openjpa.eclipse.ui.ProjectDecorator;
+import org.apache.openjpa.eclipse.util.ClassLoaderFromIProjectHelper;
+import org.eclipse.core.resources.IProject;
+import org.eclipse.core.runtime.Status;
 import org.eclipse.jface.resource.ImageDescriptor;
+import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.osgi.framework.BundleContext;
 
@@ -71,4 +78,39 @@ public class Activator extends AbstractUIPlugin {
 	public static ImageDescriptor getImageDescriptor(String path) {
 		return imageDescriptorFromPlugin(PLUGIN_ID, path);
 	}
+    
+    /**
+     * Is the project has independently using OpenJPA classes? 
+     */
+    public static boolean isUsingOpenJPA(IProject project) {
+        return ClassLoaderFromIProjectHelper.findClass("org.apache.openjpa.conf.OpenJPAVersion", project) != null;
+    }
+    
+    public static Display getDisplay() {
+        return PlatformUI.getWorkbench().getDisplay();
+    }
+
+    public static org.eclipse.swt.widgets.Shell getShell() {
+        Shell parent = getDisplay().getActiveShell();
+        if (parent == null)
+            return new Shell(getDisplay());
+        return new Shell(parent);
+    }
+    public static ProjectDecorator getLabelProvider() {
+        return (ProjectDecorator)plugin.getWorkbench().getDecoratorManager()
+                   .getBaseLabelProvider(ProjectDecorator.DECORATOR_ID);
+    }
+
+    
+    public static void log(String s) {
+        System.err.println(s);
+        Activator.getDefault().getLog().log(new Status(Status.OK, Activator.PLUGIN_ID, s));
+    }
+
+    public static void log(Throwable t) {
+        System.err.println(t.getMessage());
+        t.printStackTrace();
+        Activator.getDefault().getLog().log(new Status(Status.ERROR, Activator.PLUGIN_ID, t.getMessage(), t));
+    }
+
 }

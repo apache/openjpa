@@ -37,7 +37,7 @@ import serp.bytecode.BCClass;
 import serp.bytecode.Project;
 
 /**
- * OpenJPA Enhancer helper, for efficient invocation from an Eclipse builder.
+ * OpenJPA Enhancer for efficient invocation from an Eclipse builder.
  * 
  * @author Pinaki Poddar
  * @author Michael Vorburger (refactoring and extensions)
