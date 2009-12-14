@@ -145,6 +145,8 @@ public class MySQLDictionary
             "ZEROFILL" }));
 
         delimiter = "`";
+        
+        fixedSizeTypeNameSet.remove("NUMERIC");
     }
 
     public void connectedConfiguration(Connection conn) throws SQLException {
