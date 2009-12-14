@@ -57,6 +57,12 @@ public abstract class PersistenceTestCase
     protected static final Object CLEAR_TABLES = new Object();
 
     /**
+     * Marker object you pass to {@link #setUp} to indicate that the
+     * database table should be dropped and then recreated.
+     */
+    protected static final Object DROP_TABLES = new Object();
+
+    /**
      * The {@link TestResult} instance for the current test run.
      */
     protected TestResult testResult;
@@ -107,6 +113,10 @@ public abstract class PersistenceTestCase
                 map.put("openjpa.jdbc.SynchronizeMappings",
                     "buildSchema(ForeignKeys=true," 
                     + "SchemaAction='add,deleteTableContents')");
+            } else if (props[i] == DROP_TABLES) {
+                map.put("openjpa.jdbc.SynchronizeMappings",
+                    "buildSchema(ForeignKeys=true,"
+                    + "SchemaAction='drop,add')");
             } else if (props[i] instanceof Class)
                 types.add((Class) props[i]);
             else if (props[i] != null)
