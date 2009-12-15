@@ -21,6 +21,7 @@ package org.apache.openjpa.persistence.embed;
 import java.io.IOException;
 import java.sql.SQLException;
 import java.sql.Timestamp;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Collection;
@@ -2975,8 +2976,11 @@ public class TestEmbeddable extends SQLListenerTestCase {
         Set embeds = new HashSet();
         embeds.add(embed);
         a.setEmbeds(embeds);
+        Collection<Date> dates = new ArrayList<Date>();
+        dates.add(new Date());
+        a.setCollectionDate(dates);
+        em.persist(a);
         tran.commit();
-        em.close();
         boolean found = false;
         for (String sqlStr : sql) {
             if (sqlStr.toUpperCase().indexOf("A_EMBEDS") != -1) {
@@ -2986,7 +2990,13 @@ public class TestEmbeddable extends SQLListenerTestCase {
         }
         assertTrue(found);
         
+        found = false;
+        for (String sqlStr : sql) {
+            if (sqlStr.toUpperCase().indexOf("VALUE") != -1) {
+                found = true;
+                break;
+            } 
+        }
+        assertTrue(found);
     }
-    
-    
 }

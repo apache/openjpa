@@ -1480,9 +1480,12 @@ public class AnnotationPersistenceMappingParser
                 String.valueOf(cols.size()), "1"));
         if (cols.isEmpty()) {
             cols = Arrays.asList(new Column[]{ new Column() });
-            if (fm.isElementCollection())
-                fm.getElementMapping().getValueInfo().setColumns(cols);
-            else
+            if (fm.isElementCollection()) {
+                if (!fm.getElementMapping().getValueInfo().getColumns().isEmpty())
+                    cols = fm.getElementMapping().getValueInfo().getColumns();
+                else    
+                    fm.getElementMapping().getValueInfo().setColumns(cols);
+            } else
                 fm.getValueInfo().setColumns(cols);
         }
 

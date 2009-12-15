@@ -18,13 +18,15 @@
  */
 package org.apache.openjpa.persistence.embed;
 
+import java.util.Collection;
+import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
 
 import javax.persistence.*;
 
 @Entity
-@Table(name = "A_EMB")
+@Table(name = "A_EMBED")
 public class A implements java.io.Serializable {
 
     @Id
@@ -36,6 +38,14 @@ public class A implements java.io.Serializable {
 
     @ElementCollection
     protected Set<Embed> embeds = new HashSet();
+
+    @CollectionTable(name = "collectionTemporalOrderColumnTable", 
+            joinColumns = @JoinColumn(name = "parent_id"))
+    @ElementCollection(fetch = FetchType.EAGER)
+    @Column(name = "value")
+    @OrderColumn(name = "valueOrderColumn")
+    @Temporal(TemporalType.DATE)
+    private Collection<Date> collectionDate;
 
     public String getId() {
         return id;
@@ -68,5 +78,14 @@ public class A implements java.io.Serializable {
     public void setEmbeds(Set<Embed> embeds) {
         this.embeds = embeds;
     }
+    
+    public Collection<Date> getCollectionDate() {
+        return collectionDate;
+    }
+
+    public void setCollectionDate(Collection<Date> collectionDate) {
+        this.collectionDate = collectionDate;
+    }
+    
 }    
    
