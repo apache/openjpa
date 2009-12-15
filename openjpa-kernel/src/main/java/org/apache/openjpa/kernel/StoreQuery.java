@@ -45,7 +45,9 @@ public interface StoreQuery
     extends QueryOperations, Serializable {
 
     // linkedmap doesn't allow a size of 0, so use 1
-    public static final OrderedMap<Object, Class<?>> EMPTY_PARAMS = new OrderedMap<Object, Class<?>>();
+    // This is deprecated
+    public static final LinkedMap EMPTY_PARAMS = new LinkedMap(1);
+    public static final OrderedMap<Object, Class<?>> EMPTY_ORDERED_PARAMS = new OrderedMap<Object, Class<?>>();
     public static final ClassMetaData[] EMPTY_METAS = new ClassMetaData[0];
     public static final String[] EMPTY_STRINGS = new String[0];
     public static final Object[] EMPTY_OBJECTS = new Object[0];
@@ -312,7 +314,17 @@ public interface StoreQuery
          * {@link Map#entrySet}'s {@link Iterator} must return values in the
          * order in which they were declared or used.
          */
-        public OrderedMap<Object, Class<?>> getParameterTypes(StoreQuery q);
+        public OrderedMap<Object, Class<?>> getOrderedParameterTypes(StoreQuery q);
+        
+        /**
+         * Return a map of parameter names to types. The returned
+         * {@link Map#entrySet}'s {@link Iterator} must return values in the
+         * order in which they were declared or used.<br>
+         * 
+         * <B>Warning</B>: Deprecated. Use {@linkplain #getOrderedParameterTypes(StoreQuery)} instead.
+         */
+        @Deprecated
+        public LinkedMap getParameterTypes(StoreQuery q);
         
         /**
          * Return an array from the given user parameter values.

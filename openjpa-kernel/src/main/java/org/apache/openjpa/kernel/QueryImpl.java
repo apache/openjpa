@@ -31,6 +31,7 @@ import java.util.ListIterator;
 import java.util.Map;
 import java.util.concurrent.locks.ReentrantLock;
 
+import org.apache.commons.collections.map.LinkedMap;
 import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.openjpa.conf.OpenJPAConfiguration;
@@ -809,7 +810,7 @@ public class QueryImpl
 
                 assertParameters(_storeQuery, ex, params);
                 if (_log.isTraceEnabled())
-                    logExecution(operation, ex.getParameterTypes(_storeQuery),
+                    logExecution(operation, ex.getOrderedParameterTypes(_storeQuery),
                         params);
 
                 if (operation == OP_SELECT)
@@ -1544,14 +1545,26 @@ public class QueryImpl
         }
     }
 
-    public OrderedMap<Object,Class<?>> getParameterTypes() {
+    public OrderedMap<Object,Class<?>> getOrderedParameterTypes() {
         lock();
         try {
-            return compileForExecutor().getParameterTypes(_storeQuery);
+            return compileForExecutor().getOrderedParameterTypes(_storeQuery);
         } finally {
             unlock();
         }
     }
+    
+    public LinkedMap getParameterTypes() {
+        lock();
+        try {
+            LinkedMap wrap = new LinkedMap();
+            wrap.putAll(compileForExecutor().getOrderedParameterTypes(_storeQuery));
+            return wrap;
+        } finally {
+            unlock();
+        }
+    }
+
 
     public Map getUpdates() {
         lock();
@@ -1704,7 +1717,7 @@ public class QueryImpl
         if (!q.requiresParameterDeclarations() || !isParsedQuery())
             return;
 
-        OrderedMap<Object,Class<?>> paramTypes = ex.getParameterTypes(q);
+        OrderedMap<Object,Class<?>> paramTypes = ex.getOrderedParameterTypes(q);
         int typeCount = paramTypes.size();
         if (typeCount > params.length)
             throw new UserException(_loc.get("unbound-params",
@@ -1723,7 +1736,7 @@ public class QueryImpl
         if (!q.requiresParameterDeclarations())
             return;
 
-        OrderedMap<Object,Class<?>> paramTypes = ex.getParameterTypes(q);
+        OrderedMap<Object,Class<?>> paramTypes = ex.getOrderedParameterTypes(q);
         for (Object actual : params.keySet()) {
             if (!paramTypes.containsKey(actual))
             throw new UserException(_loc.get("unbound-params",
@@ -1986,7 +1999,11 @@ public class QueryImpl
             return _executors[0].hasGrouping(q);
         }
 
-        public OrderedMap<Object,Class<?>> getParameterTypes(StoreQuery q) {
+        public OrderedMap<Object,Class<?>> getOrderedParameterTypes(StoreQuery q) {
+            return _executors[0].getOrderedParameterTypes(q);
+        }
+        
+        public LinkedMap getParameterTypes(StoreQuery q) {
             return _executors[0].getParameterTypes(q);
         }
         
