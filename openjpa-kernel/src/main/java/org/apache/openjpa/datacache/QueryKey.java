@@ -266,7 +266,7 @@ public class QueryKey
         // Create a map for the given parameters, and convert the
         // parameter list into a map, using the query's parameter
         // declaration to determine ordering etc.
-        Map types = q.getParameterTypes();
+        Map types = q.getOrderedParameterTypes();
         Map map = new HashMap((int) (types.size() * 1.33 + 1));
         int idx = 0;
         for (Iterator iter = types.keySet().iterator(); iter.hasNext(); idx++)

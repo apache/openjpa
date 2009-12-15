@@ -103,7 +103,7 @@ public class MethodStoreQuery
                 return _params;
             String params = ctx.getParameterDeclaration();
             if (params == null)
-                return EMPTY_PARAMS;
+                return EMPTY_ORDERED_PARAMS;
 
             List decs = Filters.parseDeclaration(params, ',', "parameters");
             if (_params == null)
@@ -150,7 +150,7 @@ public class MethodStoreQuery
             if (params.length == 0)
                 paramMap = Collections.EMPTY_MAP;
             else {
-                Map paramTypes = q.getContext().getParameterTypes();
+                Map paramTypes = q.getContext().getOrderedParameterTypes();
                 paramMap = new HashMap((int) (params.length * 1.33 + 1));
                 int idx = 0;
                 for (Iterator itr = paramTypes.keySet().iterator();
@@ -260,7 +260,7 @@ public class MethodStoreQuery
             _meth = meth;
         }
 
-        public OrderedMap<Object, Class<?>> getParameterTypes(StoreQuery q) {
+        public OrderedMap<Object, Class<?>> getOrderedParameterTypes(StoreQuery q) {
             return ((MethodStoreQuery) q).bindParameterTypes();
 		}
         
@@ -268,7 +268,7 @@ public class MethodStoreQuery
             if (userParams == null || userParams.isEmpty())
                 return StoreQuery.EMPTY_OBJECTS;
 
-            OrderedMap<Object, Class<?>> paramTypes = getParameterTypes(q);
+            OrderedMap<Object, Class<?>> paramTypes = getOrderedParameterTypes(q);
             Object[] arr = new Object[userParams.size()];
             int base = positionalParameterBase(userParams.keySet());
             for (Object key : paramTypes.keySet()) {

@@ -387,7 +387,7 @@ public class ExpressionStoreQuery
             return assertQueryExpression().grouping.length > 0;
         }
 
-        public final OrderedMap<Object,Class<?>> getParameterTypes(StoreQuery q) {
+        public final OrderedMap<Object,Class<?>> getOrderedParameterTypes(StoreQuery q) {
             return assertQueryExpression().parameterTypes;
         }
 
@@ -398,7 +398,7 @@ public class ExpressionStoreQuery
             if (userParams == null || userParams.isEmpty())
                 return StoreQuery.EMPTY_OBJECTS;
 
-            OrderedMap<?,Class<?>> paramTypes = getParameterTypes(q);
+            OrderedMap<?,Class<?>> paramTypes = getOrderedParameterTypes(q);
             Object[] arr = new Object[userParams.size()];
             int base = positionalParameterBase(userParams.keySet());
             for (Object key : paramTypes.keySet()) {

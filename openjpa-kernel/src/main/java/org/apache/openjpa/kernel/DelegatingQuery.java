@@ -21,6 +21,7 @@ package org.apache.openjpa.kernel;
 import java.util.Collection;
 import java.util.Map;
 
+import org.apache.commons.collections.map.LinkedMap;
 import org.apache.openjpa.kernel.exps.AggregateListener;
 import org.apache.openjpa.kernel.exps.FilterListener;
 import org.apache.openjpa.lib.util.OrderedMap;
@@ -382,7 +383,15 @@ public class DelegatingQuery
         }
     }
 
-    public OrderedMap<Object,Class<?>> getParameterTypes() {
+    public OrderedMap<Object,Class<?>> getOrderedParameterTypes() {
+        try {
+            return _query.getOrderedParameterTypes();
+        } catch (RuntimeException re) {
+            throw translate(re);
+        }
+    }
+
+    public LinkedMap getParameterTypes() {
         try {
             return _query.getParameterTypes();
         } catch (RuntimeException re) {

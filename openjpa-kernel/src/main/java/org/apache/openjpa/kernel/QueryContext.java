@@ -21,6 +21,7 @@ package org.apache.openjpa.kernel;
 import java.util.Collection;
 import java.util.Map;
 
+import org.apache.commons.collections.map.LinkedMap;
 import org.apache.openjpa.kernel.exps.AggregateListener;
 import org.apache.openjpa.kernel.exps.Constant;
 import org.apache.openjpa.kernel.exps.FilterListener;
@@ -183,7 +184,15 @@ public interface QueryContext {
      * map will iterate in the order that the parameters were declared or,
      * if they're implicit, used.
      */
-    public OrderedMap<Object,Class<?>> getParameterTypes();
+    public OrderedMap<Object,Class<?>> getOrderedParameterTypes();
+    
+    /**
+     * Return a map of parameter name to type for this query. The returned
+     * map will iterate in the order that the parameters were declared or,
+     * if they're implicit, used.
+     */
+    @Deprecated
+    public LinkedMap getParameterTypes();
 
     /**
      * If this query is a bulk update, return a map of the

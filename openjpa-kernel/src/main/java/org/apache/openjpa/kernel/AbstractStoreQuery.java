@@ -24,8 +24,10 @@ import org.apache.commons.collections.map.LinkedMap;
 import org.apache.openjpa.kernel.exps.AggregateListener;
 import org.apache.openjpa.kernel.exps.FilterListener;
 import org.apache.openjpa.kernel.exps.QueryExpressions;
+import org.apache.openjpa.kernel.exps.Value;
 import org.apache.openjpa.lib.util.OrderedMap;
 import org.apache.openjpa.meta.ClassMetaData;
+import org.apache.openjpa.meta.FieldMetaData;
 import org.apache.openjpa.util.InternalException;
 import org.apache.openjpa.util.UnsupportedException;
 
@@ -35,6 +37,7 @@ import org.apache.openjpa.util.UnsupportedException;
  * @author Abe White
  * @since 0.4.0
  */
+@SuppressWarnings("serial")
 public abstract class AbstractStoreQuery
     implements StoreQuery {
 
@@ -166,7 +169,7 @@ public abstract class AbstractStoreQuery
             return EMPTY_STRINGS;
         }
 
-        public Class[] getProjectionTypes(StoreQuery q) {
+        public Class<?>[] getProjectionTypes(StoreQuery q) {
             return EMPTY_CLASSES;
         }
 
@@ -186,15 +189,21 @@ public abstract class AbstractStoreQuery
             return false;
         }
 
-        public OrderedMap<Object,Class<?>> getParameterTypes(StoreQuery q) {
-            return EMPTY_PARAMS;
+        public OrderedMap<Object,Class<?>> getOrderedParameterTypes(StoreQuery q) {
+            return EMPTY_ORDERED_PARAMS;
+        }
+        
+        public LinkedMap getParameterTypes(StoreQuery q) {
+            LinkedMap result = new LinkedMap();
+            result.putAll(getOrderedParameterTypes(q));
+            return result;
         }
 
-        public Class getResultClass(StoreQuery q) {
+        public Class<?> getResultClass(StoreQuery q) {
             return null;
         }
 
-        public Map getUpdates(StoreQuery q) {
+        public Map<FieldMetaData,Value> getUpdates(StoreQuery q) {
             return null;
         }
     }

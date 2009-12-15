@@ -468,7 +468,11 @@ public class QueryCacheStoreQuery
             return _ex.hasGrouping(unwrap(q));
         }
 
-        public OrderedMap<Object, Class<?>> getParameterTypes(StoreQuery q) {
+        public OrderedMap<Object, Class<?>> getOrderedParameterTypes(StoreQuery q) {
+            return _ex.getOrderedParameterTypes(unwrap(q));
+        }
+        
+        public LinkedMap getParameterTypes(StoreQuery q) {
             return _ex.getParameterTypes(unwrap(q));
         }
         

@@ -404,7 +404,7 @@ class CriteriaQueryImpl<T> implements OpenJPACriteriaQuery<T>, AliasContext {
      */
     public OrderedMap<Object, Class<?>> getParameterTypes() {
         collectParameters(new CriteriaExpressionVisitor.ParameterVisitor(this));
-        return _params == null ? StoreQuery.EMPTY_PARAMS : _params;
+        return _params == null ? StoreQuery.EMPTY_ORDERED_PARAMS : _params;
     }
     
     /**
