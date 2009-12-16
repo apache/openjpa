@@ -41,7 +41,6 @@ import org.apache.openjpa.kernel.StoreManager;
 import org.apache.openjpa.kernel.StoreQuery;
 import org.apache.openjpa.meta.ClassMetaData;
 import org.apache.openjpa.meta.MetaDataRepository;
-import org.apache.openjpa.util.OpenJPAId;
 import org.apache.openjpa.util.OptimisticException;
 
 /**
@@ -417,6 +416,23 @@ public class DataCacheStoreManager
         return true;
     }
 
+    /*
+     * The next two protected methods remove casting to OpenJPAId
+     * (see JIRA OPENJPA-1407).  This avoids a ClassCastException when the 
+     * loadAll method is called within openJPA dependent products like Kodo 
+     * whose state manager may not return an OpenJPAId.  The change was 
+     * implemented as calls to these two protected methods, so that a simple 
+     * OpenJPA test case might flag any regressions to this change, even 
+     * through OpenJPA itself is comfortable with the cast.
+    */
+    protected void addObjectIdToOIDList(List oidList, OpenJPAStateManager sm) {
+        oidList.add(sm.getObjectId());
+    }
+    
+    protected DataCachePCData getDataFromDataMap(Map dataMap, OpenJPAStateManager sm) {
+        return (DataCachePCData) dataMap.get(sm.getObjectId());
+    }
+
     public Collection loadAll(Collection sms, PCState state, int load,
     		FetchConfiguration fetch, Object edata) {
         if (isLocking(fetch))
@@ -458,15 +474,16 @@ public class DataCacheStoreManager
 
             for (itr=smList.iterator();itr.hasNext();) {
                 sm = (OpenJPAStateManager) itr.next();
-                oidList.add((OpenJPAId) sm.getObjectId());
+                // avoid cast to OpenJPAId
+                addObjectIdToOIDList(oidList,sm);
             }
             
             Map dataMap = cache.getAll(oidList);
 
             for (itr=smList.iterator();itr.hasNext();) {
                 sm = (OpenJPAStateManager) itr.next();
-                data = (DataCachePCData) dataMap.get(
-                        (OpenJPAId) sm.getObjectId());
+                // avoid cast to OpenJPAId
+                data = getDataFromDataMap(dataMap, sm);
 
                 if (sm.getManagedInstance() == null) {
                     if (data != null) {
