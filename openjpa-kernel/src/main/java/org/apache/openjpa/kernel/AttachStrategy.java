@@ -265,21 +265,27 @@ abstract class AttachStrategy
      * Return a managed, possibly hollow reference for the given detached
      * object.
      */
-    protected Object getReference(AttachManager manager, Object toAttach,
-        OpenJPAStateManager sm, ValueMetaData vmd) {
+    protected Object getReference(AttachManager manager, Object toAttach, OpenJPAStateManager sm, ValueMetaData vmd) {
         if (toAttach == null)
             return null;
 
-        if (manager.getBroker().isNew(toAttach)
-            || manager.getBroker().isPersistent(toAttach)) {
+        if (manager.getBroker().isNew(toAttach)) {
+            // Check if toAttach is already mapped to a managed instance
+            PersistenceCapable pc = manager.getAttachedCopy(toAttach);
+            if (pc != null) {
+                return pc;
+            } else {
+                return toAttach;
+            }
+        } else if (manager.getBroker().isPersistent(toAttach)) {
             return toAttach;
         } else if (manager.getBroker().isDetached(toAttach)) {
             Object oid = manager.getDetachedObjectId(toAttach);
-            if (oid != null)
+            if (oid != null) {
                 return manager.getBroker().find(oid, false, null);
+            }
         }
-        throw new UserException(_loc.get("cant-cascade-attach", vmd))
-            .setFailedObject(toAttach);
+        throw new UserException(_loc.get("cant-cascade-attach", vmd)).setFailedObject(toAttach);
     }
 
     /**
