@@ -437,7 +437,9 @@ public abstract class StoreCollectionFieldStrategy
             if (field.getOrderColumn() != null)
                 seq = res.getInt(field.getOrderColumn(), refJoins) + 1;
             res.setBaseMapping(null);
-            add(store, coll, loadElement(sm, store, fetch, res, dataJoins));
+            Object obj = loadElement(sm, store, fetch, res, dataJoins);
+            if (obj != null)
+                add(store, coll, obj);
             if (!res.next() || res.indexOf() != typeIdx) {
                 res.pushBack();
                 break;
