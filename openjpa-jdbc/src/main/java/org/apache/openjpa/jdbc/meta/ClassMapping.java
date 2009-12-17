@@ -172,6 +172,7 @@ public class ClassMapping
         FieldMapping fm;
         Joinable join;
         int pkIdx;
+        boolean isNullPK = true;
         for (int i = 0; i < pks.length; i++) {
             // we know that all pk column join mappings use primary key fields,
             // cause this mapping uses the oid as its primary key (we recursed
@@ -186,9 +187,11 @@ public class ClassMapping
                 vals[pkIdx] = join.getPrimaryKeyValue(res, join.getColumns(),
                     fk, store, joins);
                 res.endDataRequest();
-                if (vals[pkIdx] == null)
-                    return null;
+                isNullPK = isNullPK && vals[pkIdx] == null;
             }
+        }
+        if (isNullPK) {
+            return null;
         }
 
         // the oid data is loaded by the base type, but if discriminator data
