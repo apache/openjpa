@@ -68,6 +68,7 @@ public class PCPath
     private static final int UNBOUND_VAR = 2;
     private static final int UNACCESSED_VAR = 3;
     private static final int XPATH = 4;
+    private static final int OBJECT_PATH = 5;
 
     private static final Localizer _loc = Localizer.forPackage(PCPath.class);
 
@@ -384,6 +385,22 @@ public class PCPath
         _key = true;
     }
 
+    private void checkObjectPathInheritanceTypeJoined(PathExpState pstate) {
+        // if this mapping is in InheritanceType.JOINED,
+        // then add joins
+         ClassMapping base = _class;
+         while (base.getJoinablePCSuperclassMapping() != null)
+             base = base.getJoinablePCSuperclassMapping();
+         if (base != _class) {
+             ClassMapping from = _class;
+             ClassMapping to = base;
+             _type = OBJECT_PATH;
+             for (; from != null && from != to; from = from.getJoinablePCSuperclassMapping()) {
+                 pstate.joins = from.joinSuperclass(pstate.joins, false);
+             }
+         }
+    }
+
     public FieldMetaData last() {
         Action act = lastFieldAction();
         return (act == null) ? null : isXPath() ? _xmlfield :
@@ -500,6 +517,9 @@ public class PCPath
 
                 pstate.joins = pstate.joins.crossJoin(_candidate.getTable(),
                     rel.getTable());
+                if (!itr.hasNext() && isVariable()) {
+                    checkObjectPathInheritanceTypeJoined(pstate);
+                }
             } else {
                 // move past the previous field, if any
                 field = (FieldMapping) ((action.op == Action.GET_XPATH) ?
@@ -592,6 +612,7 @@ public class PCPath
             String subqAlias = findSubqAlias(sel);
             pstate.joins = pstate.joins.setSubselect(subqAlias);
             pstate.joins.setCorrelatedVariable(_schemaAlias);
+            checkObjectPathInheritanceTypeJoined(pstate);
         }
         
         return pstate;
@@ -618,7 +639,7 @@ public class PCPath
         if (sel.getParent() == null)
             return false;
         Iterator itr = (_actions == null) ? null : _actions.iterator();
-        boolean navigateFromRoot = false;
+
         boolean hasVar = false;
         boolean startsWithSubquery = false;
         while (itr != null && itr.hasNext()) {
@@ -795,7 +816,7 @@ public class PCPath
         sel.setSchemaAlias(_schemaAlias);
         ClassMapping mapping = getClassMapping(state);
         PathExpState pstate = (PathExpState) state;
-        if (mapping == null || !pstate.joinedRel)
+        if (_type != OBJECT_PATH && (mapping == null || !pstate.joinedRel))
             sel.select(getColumns(state), pstate.joins);
         else if (pks)
             sel.select(mapping.getPrimaryKeyColumns(), pstate.joins);
