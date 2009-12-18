@@ -40,6 +40,7 @@ public class Specification {
     private int    _major = 1;
     private String _minor = "0";
     private String _description = "";
+    private Compatibility _compatibility;
 
     private static Localizer _loc = Localizer.forPackage(Specification.class);
     
@@ -143,5 +144,22 @@ public class Specification {
             return new Object[] {name, version};
         return new Object[] {name, 
             version.substring(0,dot), version.substring(dot+1)};
+    }
+    
+    /**
+     * Associate a compatibility object with this Specification instance
+     * @param compatibility a Compatibility object with flags set in compliance
+     * with this Specification instance.
+     */
+    public void setCompatibility(Compatibility compatibility) {
+        _compatibility = compatibility;
+    }
+    
+    /**
+     * Return the compatibility object associated with this Specification instance.
+     * @return
+     */
+    public Compatibility getCompatibility() {
+        return _compatibility;
     }
 }

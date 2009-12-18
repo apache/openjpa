@@ -92,6 +92,20 @@ public class ObjectValue extends Value {
     }
 
     /**
+     * Configure the given object.
+     */
+    public Object configure(Object obj, Configuration conf) {
+        return configure(obj, conf, true);
+    }
+
+    /**
+     * Configure the given object.
+     */
+    public Object configure(Object obj, Configuration conf, boolean fatal) {
+        throw new UnsupportedOperationException();
+    }
+
+    /**
      * Allow subclasses to instantiate additional plugins. This method does
      * not perform configuration.
      */

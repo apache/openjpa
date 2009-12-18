@@ -1477,9 +1477,21 @@ public class OpenJPAConfigurationImpl
         compatibilityPlugin.setString(compatibility);
     }
 
+    /**
+     * If a Compatibility instance is associated with the Specification, 
+     * we will configure this Compatibility instance instead of instantiating a 
+     * new one so that the compatibility flags set in compliance with the 
+     * Specification can be preserved.
+     */
     public Compatibility getCompatibilityInstance() {
-        if (compatibilityPlugin.get() == null)
-            compatibilityPlugin.instantiate(Compatibility.class, this);
+        if (compatibilityPlugin.get() == null) {
+            Specification spec = getSpecificationInstance();
+            Compatibility comp = spec != null ? spec.getCompatibility() : null;
+            if (comp == null)
+                compatibilityPlugin.instantiate(Compatibility.class, this);
+            else 
+                compatibilityPlugin.configure(comp, this);
+        }
         return (Compatibility) compatibilityPlugin.get();
     }
     

@@ -861,6 +861,7 @@ extends AbstractCachedEMFTestCase {
                 });
         map.put("openjpa.jdbc.SynchronizeMappings", 
             "buildSchema(ForeignKeys=true,SchemaAction='drop,add')");
+        map.put("openjpa.Compatibility", "StrictIdentityValues=true");
 
         StringBuffer buf = new StringBuffer();
         for (Class<?> c : types) {

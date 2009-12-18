@@ -218,10 +218,12 @@ public class PersistenceProductDerivation
         conf.lockManagerPlugin.setString("mixed");
         conf.nontransactionalWrite.setDefault("true");
         conf.nontransactionalWrite.set(true);
-        int specVersion = ((OpenJPAConfiguration) c).getSpecificationInstance().getVersion();
+        Specification spec = ((OpenJPAConfiguration) c).getSpecificationInstance();
+        int specVersion = spec.getVersion();
         Compatibility compatibility = conf.getCompatibilityInstance();
+        spec.setCompatibility(compatibility);
         if (specVersion < 2) {
-             compatibility.setFlushBeforeDetach(true);
+            compatibility.setFlushBeforeDetach(true);
             compatibility.setCopyOnDetach(true);
             compatibility.setPrivatePersistentProperties(true);
             // Disable bean validation for spec level < 2 configurations

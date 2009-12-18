@@ -108,6 +108,18 @@ public class PluginValue extends ObjectValue {
         return obj;
     }
 
+    /**
+     * Configure the given object.
+     */
+    public Object configure(Object obj, Configuration conf, boolean fatal) {
+        Configurations.configureInstance(obj, conf, _props,
+            (fatal) ? getProperty() : null);
+        if (_singleton)
+            set(obj, true);
+        return obj;
+    }
+    
+
     public void set(Object obj, boolean derived) {
         if (!_singleton)
             throw new IllegalStateException(_loc.get("not-singleton",
