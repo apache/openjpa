@@ -610,6 +610,10 @@ public class TestMappedById extends SingleEMFTestCase {
         MedicalHistory3 m = em.find(MedicalHistory3.class, new PersonId3("f_1", "l_1"));
         MedicalHistory3 m0 = medicals3.get("f_1");
         assertEquals(m, m0);
+        
+        em.getTransaction().begin();
+        em.remove(m);
+        em.getTransaction().commit();
     }
 
     public void queryObj6() { 

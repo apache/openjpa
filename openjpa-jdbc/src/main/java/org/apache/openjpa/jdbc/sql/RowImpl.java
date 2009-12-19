@@ -183,7 +183,8 @@ public class RowImpl
         while (mapping.getTable() != getTable())
             mapping = mapping.getPCSuperclassMapping();
         Column[] cols = mapping.getPrimaryKeyColumns();
-        flushJoinValues(sm, cols, cols, io, set);
+        Object oid = mapping.useIdClassFromParent() ? sm.getObjectId() : null;
+        flushJoinValues(sm, oid, cols, cols, io, set);
     }
 
     public void setForeignKey(ForeignKey fk, OpenJPAStateManager sm)
@@ -219,7 +220,7 @@ public class RowImpl
     private void flushForeignKey(ForeignKey fk, ColumnIO io,
         OpenJPAStateManager sm, boolean set)
         throws SQLException {
-        flushJoinValues(sm, fk.getPrimaryKeyColumns(), fk.getColumns(),
+        flushJoinValues(sm, null, fk.getPrimaryKeyColumns(), fk.getColumns(),
             io, set);
         if (sm != null) {
             Column[] cols = fk.getConstantColumns();
@@ -250,7 +251,7 @@ public class RowImpl
      * @param set whether this should be flushed as an update or
      * as a where condition
      */
-    private void flushJoinValues(OpenJPAStateManager to, Column[] toCols,
+    private void flushJoinValues(OpenJPAStateManager to, Object oid, Column[] toCols,
         Column[] fromCols, ColumnIO io, boolean set)
         throws SQLException {
         if (to == null) {
@@ -278,8 +279,13 @@ public class RowImpl
             }
 
             join = toMapping.assertJoinable(toCols[i]);
-            val = join.getJoinValue(to, toCols[i], (JDBCStore) to.
-                getContext().getStoreManager().getInnermostDelegate());
+            if (oid != null)
+                val = join.getJoinValue(oid, toCols[i], (JDBCStore) to.
+                    getContext().getStoreManager().getInnermostDelegate());
+            else
+                val = join.getJoinValue(to, toCols[i], (JDBCStore) to.
+                    getContext().getStoreManager().getInnermostDelegate());
+                
             if (set && val == null) {
                 if (canSet(io, i, true))
                     setNull(fromCols[i]);
