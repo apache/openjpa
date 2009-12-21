@@ -32,4 +32,8 @@
     </persistence-unit>
     <persistence-unit name="encryption_plugin_default_pu" transaction-type="RESOURCE_LOCAL">
     </persistence-unit>
+    <!-- Added for OPENJPA-993 -->
+    <persistence-unit name="bad_provider">
+        <provider>void</provider>
+    </persistence-unit>    
 </persistence>
