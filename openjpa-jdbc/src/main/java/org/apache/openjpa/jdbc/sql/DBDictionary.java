@@ -247,6 +247,7 @@ public class DBDictionary
     public boolean supportsSelectFromFinalTable = false;
     public boolean supportsSimpleCaseExpression = true;
     public boolean supportsGeneralCaseExpression = true;
+    public boolean useWildCardForCount = false;
     
     /**
      * Some Databases append whitespace after the schema name 
@@ -1883,7 +1884,7 @@ public class DBDictionary
             // if the select has no identifier cols, use COUNT(*)
             List aliases = (!sel.isDistinct()) ? Collections.EMPTY_LIST
                 : sel.getIdentifierAliases();
-            if (aliases.isEmpty()) {
+            if (useWildCardForCount || aliases.isEmpty()) {
                 selectSQL.append("COUNT(*)");
                 return toSelect(selectSQL, null, from, where, null, null, null,
                     false, false, 0, Long.MAX_VALUE);
