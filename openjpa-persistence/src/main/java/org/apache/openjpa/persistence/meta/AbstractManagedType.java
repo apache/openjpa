@@ -151,6 +151,9 @@ public abstract class AbstractManagedType<X> extends Types.BaseType<X>
             case JavaTypes.OBJECT:
             case JavaTypes.OID:
             case JavaTypes.PC:
+            case JavaTypes.PC_UNTYPED:
+            case JavaTypes.INPUT_READER:
+            case JavaTypes.INPUT_STREAM:
                 attrs.add(new Members.SingularAttributeImpl(this, f));
                 break;
             case JavaTypes.ARRAY:
@@ -176,10 +179,6 @@ public abstract class AbstractManagedType<X> extends Types.BaseType<X>
                 throw new IllegalStateException(_loc.get("field-unrecognized",
                         f.getFullName(false), decCode).getMessage());
             }
-            // TODO: Account for the following codes
-            // case PC_UNTYPED = 27;
-            // case INPUT_STREAM = 30;
-            // case INPUT_READER = 31;
         }
         declaredAttributeFilter = new DeclaredAttributeFilter<X>(this);
         singularAttributeFilter = new SingularAttributeFilter<X>();
