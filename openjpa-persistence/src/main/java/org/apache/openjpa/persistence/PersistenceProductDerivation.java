@@ -93,6 +93,14 @@ public class PersistenceProductDerivation
 
     private HashMap<String, PUNameCollision> _puNameCollisions
         = new HashMap<String,PUNameCollision>();
+    
+    // Provider name to filter out PUs that don't belong to this derivation.
+    protected String _providerImplName;
+
+	public PersistenceProductDerivation() {
+		_providerImplName = PersistenceProviderImpl.class.getName();
+	}
+    
     public void putBrokerFactoryAliases(Map m) {
     }
 
@@ -331,8 +339,16 @@ public class PersistenceProductDerivation
     private List<String> getUnitNames(ConfigurationParser parser) {
         List<PersistenceUnitInfoImpl> units = parser.getResults();
         List<String> names = new ArrayList<String>();
-        for (PersistenceUnitInfoImpl unit : units)
-            names.add(unit.getPersistenceUnitName());
+        for (PersistenceUnitInfoImpl unit : units){
+        	String provider = unit.getPersistenceProviderClassName();
+			// Only add the PU name if the provider it is ours or not specified.
+			if (provider == null || provider.equals(_providerImplName)) {
+				names.add(unit.getPersistenceUnitName());
+			} else {
+				// Should trace something, but logging isn't configured yet.
+				// Swallow.
+			}
+        }
         return names;
     }
 

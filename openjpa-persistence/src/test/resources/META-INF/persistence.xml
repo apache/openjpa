@@ -43,4 +43,8 @@
     <persistence-unit name="exclude_true">
         <exclude-unlisted-classes>true</exclude-unlisted-classes>
     </persistence-unit>
+    <!-- Added for OPENJPA-993 -->
+    <persistence-unit name="bad_provider">
+        <provider>void</provider>
+    </persistence-unit>    
 </persistence>

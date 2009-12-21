@@ -111,6 +111,9 @@ public class TestPersistenceProductDerivation extends TestCase {
         List<String> actual = ppd.getAnchorsInResource("META-INF/persistence.xml");
         
         assertTrue(actual.containsAll(expectedPUs));
+        
+        // Added for OPENJPA-993
+        assertFalse(actual.contains("bad_provider"));
     }
     public void testEncryptionPluginConfiguration() throws Exception {
 		PersistenceProductDerivation ppd = new PersistenceProductDerivation();
