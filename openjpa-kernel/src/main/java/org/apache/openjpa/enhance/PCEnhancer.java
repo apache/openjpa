@@ -3658,6 +3658,7 @@ public class PCEnhancer {
         if(fmd.isVersion()==true && _addVersionInitFlag){
             // if we are setting the version, flip the versionInit flag to true
             FieldMetaData v = _meta.addDeclaredField(VERSION_INIT_STR, boolean.class);
+            v.setTransient(true);
             loadManagedInstance(code, true);
             code.constant().setValue(1);
             addSetManagedValueCode(code, v);   
