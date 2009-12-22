@@ -29,10 +29,7 @@ public abstract class AbstractDB2Dictionary
     public int varcharCastLength = 1000;
 
     public AbstractDB2Dictionary() {
-    	// http://publib.boulder.ibm.com/infocenter/db2luw/v9/index.jsp?topic=/com.ibm.db2.udb.apdv.java.doc
-    	//	/doc/rjvjdata.htm
-		// http://db.apache.org/derby/docs/10.3/ref/rrefsqlj12362.html
-    	numericTypeName = "DECIMAL";
+        numericTypeName = "DOUBLE";
         bitTypeName = "SMALLINT";
         smallintTypeName = "SMALLINT";
         tinyintTypeName = "SMALLINT";
@@ -72,9 +69,6 @@ public abstract class AbstractDB2Dictionary
         // the equivalent "X JOIN Y ON 1 = 1"
         crossJoinClause = "JOIN";
         requiresConditionForCrossJoin = true;
-        
-        // DB2 / Derby allows precision to be set on a DECIMAL column.
-        fixedSizeTypeNameSet.remove("DECIMAL");
     }
 
     public void indexOf(SQLBuffer buf, FilterValue str, FilterValue find,
