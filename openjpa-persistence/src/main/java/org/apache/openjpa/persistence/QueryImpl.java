@@ -56,6 +56,7 @@ import org.apache.openjpa.kernel.PreparedQueryCache;
 import org.apache.openjpa.kernel.QueryLanguages;
 import org.apache.openjpa.kernel.QueryOperations;
 import org.apache.openjpa.kernel.QueryStatistics;
+import org.apache.openjpa.kernel.DistinctResultList;
 import org.apache.openjpa.kernel.exps.AggregateListener;
 import org.apache.openjpa.kernel.exps.FilterListener;
 import org.apache.openjpa.kernel.jpql.JPQLParser;
@@ -67,6 +68,7 @@ import org.apache.openjpa.persistence.criteria.CriteriaBuilderImpl;
 import org.apache.openjpa.util.ImplHelper;
 import org.apache.openjpa.util.RuntimeExceptionTranslator;
 import org.apache.openjpa.util.UserException;
+
 
 /**
  * Implementation of {@link Query} interface.
@@ -300,11 +302,16 @@ public class QueryImpl<X> implements OpenJPAQuerySPI<X>, Serializable {
 		Object ob = execute();
 		if (ob instanceof List) {
 			List ret = (List) ob;
-			if (ret instanceof ResultList)
-                return new DelegatingResultList((ResultList) ret,
-                        PersistenceExceptions.getRollbackTranslator(_em));
-			else
+			if (ret instanceof ResultList) {
+			    RuntimeExceptionTranslator trans = PersistenceExceptions.getRollbackTranslator(_em);
+			    if (_query.isDistinct()) {
+			        return new DistinctResultList((ResultList) ret, trans);
+			    } else {
+			        return new DelegatingResultList((ResultList) ret, trans);
+			    }
+			} else {
 				return ret;
+			}
 		}
 
 		return Collections.singletonList(ob);

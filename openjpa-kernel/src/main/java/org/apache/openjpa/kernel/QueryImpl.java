@@ -119,6 +119,7 @@ public class QueryImpl
     // these fields should only be used directly after we have a compilation,
     // because their values may be encoded in the query string
     private Boolean _unique = null;
+    private boolean _distinct = false;
     private Class<?> _resultClass = null;
     private transient long _startIdx = 0;
     private transient long _endIdx = Long.MAX_VALUE;
@@ -468,6 +469,27 @@ public class QueryImpl
         } finally {
             unlock();
         }
+    }
+    
+    /**
+     * Sets this query to return distinct result.
+     */
+    public void setDistinct(boolean flag) {
+        lock();
+        try {
+            assertOpen();
+            // allowed modification: no read-only check
+            _distinct = flag;
+        } finally {
+            unlock();
+        }
+    }
+    
+    /**
+     * Affirms if this query will return distinct elements.
+     */
+    public boolean isDistinct() {
+        return _distinct;
     }
     
     /**
@@ -1360,6 +1382,8 @@ public class QueryImpl
         // compare dirty classes to the access path classes
         Class accClass;
         for (int i = 0; i < accessMetas.length; i++) {
+            if (accessMetas[i] == null)
+                continue;
             // shortcut if actual class is dirty
             accClass = accessMetas[i].getDescribedType();
             if (persisted.contains(accClass) || updated.contains(accClass)

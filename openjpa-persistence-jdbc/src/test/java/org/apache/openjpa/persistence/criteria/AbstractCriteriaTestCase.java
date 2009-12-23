@@ -182,7 +182,9 @@ public abstract class AbstractCriteriaTestCase extends TestCase {
             if (!jSQL.get(i).equalsIgnoreCase(cSQL.get(i))) {
                 printSQL("Target SQL for JPQL", jSQL);
                 printSQL("Target SQL for CriteriaQuery", cSQL);
-                assertTrue(i + "-th SQL for JPQL and CriteriaQuery for " + jpql + " is different", 
+                assertTrue(i + "-th SQL for JPQL and CriteriaQuery for " + jpql + " is different\r\n" +
+                        "JPQL = [" + jSQL.get(i) + "]\r\n" +
+                        "CSQL = [" + cSQL.get(i) + "]\r\n",
                         jSQL.get(i).equalsIgnoreCase(cSQL.get(i)));
             }
         }

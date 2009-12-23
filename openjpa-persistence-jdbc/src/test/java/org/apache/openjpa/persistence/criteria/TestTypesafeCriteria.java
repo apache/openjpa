@@ -21,15 +21,18 @@ package org.apache.openjpa.persistence.criteria;
 import java.math.BigDecimal;
 import java.sql.Time;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
-import javax.persistence.EntityManager;
 import javax.persistence.Parameter;
 import javax.persistence.Query;
 import javax.persistence.Tuple;
 import javax.persistence.TypedQuery;
+import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Expression;
 import javax.persistence.criteria.Fetch;
@@ -1503,4 +1506,29 @@ public class TestTypesafeCriteria extends CriteriaTest {
         cq.where(cb.equal(c.get(Customer_.id), 10));
         assertEquivalence(cq, jpql);
     }
+    
+    public void testBigDecimalConversion() {
+        String jpql = "select c.accountNum*10.32597 from Customer c where c.id=10";
+        
+        long accountNumber = 1234516279;
+        em.getTransaction().begin();
+        Customer customer = new Customer();
+        customer.setAccountNum(accountNumber);
+        em.persist(customer);
+        em.getTransaction().commit();
+        
+        long cid = customer.getId();
+        
+        CriteriaQuery<BigDecimal> cq = cb.createQuery(BigDecimal.class);
+        Root<Customer> c = cq.from(Customer.class);
+        cq.select(cb.toBigDecimal(cb.prod(c.get(Customer_.accountNum), new BigDecimal(10.32597))));
+        cq.where(cb.equal(c.get(Customer_.id), cid));
+        //assertEquivalence(cq, jpql);
+        
+        List<BigDecimal> result = em.createQuery(cq).getResultList();
+        assertFalse(result.isEmpty());
+        assertTrue(result.get(0) instanceof BigDecimal);
+    }
+    
+   
 }

@@ -168,8 +168,12 @@ class CriteriaExpressionBuilder {
     }
 
     protected void evalDistinct(QueryExpressions exps, ExpressionFactory factory, CriteriaQueryImpl<?> q) {
-        exps.distinct = q.isDistinct() ? QueryExpressions.DISTINCT_TRUE | QueryExpressions.DISTINCT_AUTO
+        if (q.hasFetchJoins()) {
+            exps.distinct = QueryExpressions.DISTINCT_FALSE;
+        } else {
+            exps.distinct = q.isDistinct() ? QueryExpressions.DISTINCT_TRUE | QueryExpressions.DISTINCT_AUTO
                 : QueryExpressions.DISTINCT_FALSE;
+        }
      }
 
     protected void evalCrossJoinRoots(QueryExpressions exps, ExpressionFactory factory, CriteriaQueryImpl<?> q) {
@@ -263,7 +267,7 @@ class CriteriaExpressionBuilder {
             selections = new ArrayList<Selection<?>>(1);
             selections.add(r);
         }
-        
+        boolean usingFetchJoin = q.hasFetchJoins();
         for (Selection<?> s : selections) {
             if (s.isCompoundSelection()) {
                 getProjections(exps, s.getCompoundSelectionItems(), projections, aliases, 
@@ -271,6 +275,8 @@ class CriteriaExpressionBuilder {
             } else {
                 Value val = (exp2Vals != null && exp2Vals.containsKey(s) 
                         ? exp2Vals.get(s) : ((ExpressionImpl<?>)s).toValue(factory, q));
+                if (q.isDistinct() && usingFetchJoin)
+                    val = factory.distinct(val);
                 String alias = s.getAlias();
                 val.setAlias(alias);
                 projections.add(val);

@@ -334,6 +334,23 @@ public class DelegatingQuery
             throw translate(re);
         }
     }
+    
+    public boolean isDistinct() {
+        try {
+            return _query.isDistinct();
+        } catch (RuntimeException re) {
+            throw translate(re);
+        }
+    }
+
+    public void setDistinct(boolean distinct) {
+        try {
+            _query.setDistinct(distinct);
+        } catch (RuntimeException re) {
+            throw translate(re);
+        }
+    }
+
 
     public Class getResultType() {
         try {
