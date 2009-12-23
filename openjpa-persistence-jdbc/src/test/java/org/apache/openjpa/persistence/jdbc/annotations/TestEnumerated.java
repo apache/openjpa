@@ -45,19 +45,19 @@ public class TestEnumerated
         FieldMapping fm = cls.getDeclaredFieldMapping("enumeration");
         assertNotNull(fm);
         assertEquals(FieldMapping.MANAGE_PERSISTENT, fm.getManagement());
-        assertEquals(JavaTypes.OBJECT, fm.getTypeCode());
+        assertEquals(JavaTypes.ENUM, fm.getTypeCode());
         assertEquals(JavaTypes.SHORT, fm.getColumns()[0].getJavaType());
 
         fm = cls.getDeclaredFieldMapping("ordinalEnumeration");
         assertNotNull(fm);
         assertEquals(FieldMapping.MANAGE_PERSISTENT, fm.getManagement());
-        assertEquals(JavaTypes.OBJECT, fm.getTypeCode());
+        assertEquals(JavaTypes.ENUM, fm.getTypeCode());
         assertEquals(JavaTypes.SHORT, fm.getColumns()[0].getJavaType());
 
         fm = cls.getDeclaredFieldMapping("stringEnumeration");
         assertNotNull(fm);
         assertEquals(FieldMapping.MANAGE_PERSISTENT, fm.getManagement());
-        assertEquals(JavaTypes.OBJECT, fm.getTypeCode());
+        assertEquals(JavaTypes.ENUM, fm.getTypeCode());
         assertEquals(JavaTypes.STRING, fm.getColumns()[0].getJavaType());
     }
 

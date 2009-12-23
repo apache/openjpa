@@ -83,10 +83,11 @@ public class JavaTypes {
     public static final int OID = 29;
     public static final int INPUT_STREAM = 30;
     public static final int INPUT_READER = 31;
+    public static final int ENUM = 32;
 
     private static final Localizer _loc = Localizer.forPackage(JavaTypes.class);
 
-    private static final Map _typeCodes = new HashMap();
+    private static final Map<Class<?>, Integer> _typeCodes = new HashMap<Class<?>, Integer>();
 
     static {
         _typeCodes.put(String.class, Numbers.valueOf(STRING));
@@ -116,7 +117,7 @@ public class JavaTypes {
      * Return the field metadata type code for the given class. First class
      * objects are not recognized in this method.
      */
-    public static int getTypeCode(Class type) {
+    public static int getTypeCode(Class<?> type) {
         if (type == null)
             return OBJECT;
 
@@ -164,6 +165,8 @@ public class JavaTypes {
             return INPUT_READER;
         if (type.isAssignableFrom (InputStream.class))
             return INPUT_STREAM;
+        if (Enum.class.isAssignableFrom(type))
+            return ENUM;
             
         return OBJECT;
     }
@@ -172,7 +175,7 @@ public class JavaTypes {
      * Check the given name against the same set of standard packages used
      * when parsing metadata.
      */
-    public static Class classForName(String name, ClassMetaData context) {
+    public static Class<?> classForName(String name, ClassMetaData context) {
         return classForName(name, context, null);
     }
 
@@ -180,8 +183,7 @@ public class JavaTypes {
      * Check the given name against the same set of standard packages used
      * when parsing metadata.
      */
-    public static Class classForName(String name, ClassMetaData context,
-        ClassLoader loader) {
+    public static Class<?> classForName(String name, ClassMetaData context, ClassLoader loader) {
         return classForName(name, context, context.getDescribedType(), null,
             loader);
     }
@@ -190,7 +192,7 @@ public class JavaTypes {
      * Check the given name against the same set of standard packages used
      * when parsing metadata.
      */
-    public static Class classForName(String name, ValueMetaData context) {
+    public static Class<?> classForName(String name, ValueMetaData context) {
         return classForName(name, context, null);
     }
 
@@ -198,8 +200,7 @@ public class JavaTypes {
      * Check the given name against the same set of standard packages used
      * when parsing metadata.
      */
-    public static Class classForName(String name, ValueMetaData context,
-        ClassLoader loader) {
+    public static Class<?> classForName(String name, ValueMetaData context, ClassLoader loader) {
         return classForName(name,
             context.getFieldMetaData().getDefiningMetaData(),
             context.getFieldMetaData().getDeclaringType(), context, loader);
@@ -209,24 +210,24 @@ public class JavaTypes {
      * Check the given name against the same set of standard packages used
      * when parsing metadata.
      */
-    private static Class classForName(String name, ClassMetaData meta,
-        Class dec, ValueMetaData vmd, ClassLoader loader) {
+    private static Class<?> classForName(String name, ClassMetaData meta, Class<?> dec, ValueMetaData vmd, 
+        ClassLoader loader) {
         // special case for PersistenceCapable and Object
         if ("PersistenceCapable".equals(name)
-            || "javax.jdo.PersistenceCapable".equals(name)) // backwards compat
+            || "javax.jdo.PersistenceCapable".equals(name)) // backwards compatibility
             return PersistenceCapable.class;
         if ("Object".equals(name))
             return Object.class;
 
         MetaDataRepository rep = meta.getRepository();
-        boolean runtime = (rep.getValidate() & rep.VALIDATE_RUNTIME) != 0;
+        boolean runtime = (rep.getValidate() & MetaDataRepository.VALIDATE_RUNTIME) != 0;
         if (loader == null)
             loader = rep.getConfiguration().getClassResolverInstance().
                 getClassLoader(dec, meta.getEnvClassLoader());
 
         // try the owner's package
         String pkg = Strings.getPackageName(dec);
-        Class cls = CFMetaDataParser.classForName(name, pkg, runtime, loader);
+        Class<?> cls = CFMetaDataParser.classForName(name, pkg, runtime, loader);
         if (cls == null && vmd != null) {
             // try against this value type's package too
             pkg = Strings.getPackageName(vmd.getDeclaredType());
@@ -382,7 +383,7 @@ public class JavaTypes {
      * Return true if the given unresolved typecode/type pair may represent a
      * persistent object.
      */
-    static boolean maybePC(int typeCode, Class type) {
+    static boolean maybePC(int typeCode, Class<?> type) {
         if (type == null)
             return false;
         switch (typeCode) {
@@ -401,7 +402,8 @@ public class JavaTypes {
     /**
      * Helper method to return the given array value as a collection.
      */
-    public static List toList(Object val, Class elem, boolean mutable) {
+    @SuppressWarnings("unchecked")
+    public static List toList(Object val, Class<?> elem, boolean mutable) {
         if (val == null)
             return null;
 
@@ -424,13 +426,13 @@ public class JavaTypes {
     /**
      * Helper method to return the given collection as an array.
      */
-    public static Object toArray(Collection coll, Class elem) {
+    public static Object toArray(Collection<?> coll, Class<?> elem) {
         if (coll == null)
             return null;
 
         Object array = Array.newInstance(elem, coll.size());
         int idx = 0;
-        for (Iterator itr = coll.iterator(); itr.hasNext(); idx++)
+        for (Iterator<?> itr = coll.iterator(); itr.hasNext(); idx++)
             Array.set(array, idx, itr.next ());
 		return array;
 	}

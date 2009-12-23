@@ -1532,6 +1532,8 @@ public class FieldMetaData
                 return new Character(val.charAt(0));
             case JavaTypes.STRING:
                 return val;
+            case JavaTypes.ENUM:
+                return Enum.valueOf((Class<? extends Enum>)getDeclaredType(), val);
         }
         throw new MetaDataException(_loc.get("bad-external-type", this));
     }

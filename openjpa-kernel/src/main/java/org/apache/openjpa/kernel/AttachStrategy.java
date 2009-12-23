@@ -173,6 +173,7 @@ abstract class AttachStrategy
             case JavaTypes.LOCALE:
             case JavaTypes.OBJECT:
             case JavaTypes.OID:
+            case JavaTypes.ENUM:
                 val = fetchObjectField(i);
                 if (val == null && !nullLoaded)
                     return false;
