@@ -112,7 +112,7 @@ public class TestJPQLSubquery extends SingleEMFTestCase {
             "LEFT OUTER JOIN CR_EMP t8 ON t0.SPOUSE_EMPID = t8.empId " +
             "LEFT OUTER JOIN CR_COMPUSER t3 ON t2.id = t3.ADD_ID " +
             "LEFT OUTER JOIN CR_DEPT t7 ON t6.DEPARTMENT_DEPTNO = t7.deptNo " +
-            "WHERE (CAST(t0.salary AS NUMERIC) > ALL (SELECT t1.salary " +
+            "WHERE (CAST(t0.salary AS DOUBLE) > ALL (SELECT t1.salary " +
             "FROM CR_MGR t1 WHERE (t1.DEPARTMENT_DEPTNO = t0.DEPARTMENT_DEPTNO)))";
         executeAndCompareSQL(jpql, expectedSQL);
     }
