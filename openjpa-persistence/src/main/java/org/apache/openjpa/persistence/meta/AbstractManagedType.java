@@ -175,6 +175,9 @@ public abstract class AbstractManagedType<X> extends Types.BaseType<X>
             case JavaTypes.MAP:
                 attrs.add(new Members.MapAttributeImpl(this, f));
                 break;
+            case JavaTypes.ENUM:
+                attrs.add(new Members.SingularAttributeImpl(this, f));
+                break;
             default:
                 throw new IllegalStateException(_loc.get("field-unrecognized",
                         f.getFullName(false), decCode).getMessage());
