@@ -1544,7 +1544,6 @@ public class EntityManagerImpl
         ((OpenJPACriteriaQuery<T>)criteriaQuery).compile(); 
         
         org.apache.openjpa.kernel.Query kernelQuery =_broker.newQuery(CriteriaBuilderImpl.LANG_CRITERIA, criteriaQuery);
-        kernelQuery.setDistinct(((OpenJPACriteriaQuery<T>)criteriaQuery).isDistinct());
         
         QueryImpl<T> facadeQuery = new QueryImpl<T>(this, _ret, kernelQuery);
         Set<ParameterExpression<?>> params = criteriaQuery.getParameters();

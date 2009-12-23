@@ -303,6 +303,8 @@ public interface StoreQuery
          * Return true if the compiled query is an aggregate.
          */
         public boolean isAggregate(StoreQuery q);
+        
+        public boolean isDistinct(StoreQuery q);
 
         /**
          * Whether the compiled query has grouping.
