@@ -126,13 +126,6 @@ public interface QueryContext {
      */
     public boolean isDistinct();
 
-    /**
-     * Specify that the query will return distinct instances.
-     *
-     * @since 2.0.0
-     */
-    public void setDistinct(boolean distinct);
-
 
     /**
      * Scope of a mapping from the result data to its object representation.

@@ -649,17 +649,6 @@ class CriteriaQueryImpl<T> implements OpenJPACriteriaQuery<T>, AliasContext {
         }
     }
     
-    boolean hasFetchJoins() {
-        Set<Root<?>> roots = getRoots();
-        if (roots == null || roots.isEmpty())
-            return false;
-        for (Root<?> root : roots) {
-            if (!root.getFetches().isEmpty())
-                return true;
-        }
-        return false;
-    }
-
     /**
      * Gets the string representation of the query.
      */

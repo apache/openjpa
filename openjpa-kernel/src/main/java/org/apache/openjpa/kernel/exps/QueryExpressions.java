@@ -105,6 +105,10 @@ public class QueryExpressions
                 ? Boolean.TRUE : Boolean.FALSE;
         return _aggregate.booleanValue();    
     }
+    
+    public boolean isDistinct() {
+        return distinct != DISTINCT_FALSE;
+    }
 
     /**
      * Add an update.

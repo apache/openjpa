@@ -464,6 +464,10 @@ public class QueryCacheStoreQuery
             return _ex.isAggregate(unwrap(q));
         }
 
+        public boolean isDistinct(StoreQuery q) {
+            return _ex.isDistinct(unwrap(q));
+        }
+
         public boolean hasGrouping(StoreQuery q) {
             return _ex.hasGrouping(unwrap(q));
         }

@@ -382,6 +382,10 @@ public class ExpressionStoreQuery
         public final boolean isAggregate(StoreQuery q) {
             return assertQueryExpression().isAggregate();
         }
+        
+        public final boolean isDistinct(StoreQuery q) {
+            return assertQueryExpression().isDistinct();
+        }
 
         public final boolean hasGrouping(StoreQuery q) {
             return assertQueryExpression().grouping.length > 0;

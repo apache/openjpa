@@ -119,7 +119,6 @@ public class QueryImpl
     // these fields should only be used directly after we have a compilation,
     // because their values may be encoded in the query string
     private Boolean _unique = null;
-    private boolean _distinct = false;
     private Class<?> _resultClass = null;
     private transient long _startIdx = 0;
     private transient long _endIdx = Long.MAX_VALUE;
@@ -469,27 +468,6 @@ public class QueryImpl
         } finally {
             unlock();
         }
-    }
-    
-    /**
-     * Sets this query to return distinct result.
-     */
-    public void setDistinct(boolean flag) {
-        lock();
-        try {
-            assertOpen();
-            // allowed modification: no read-only check
-            _distinct = flag;
-        } finally {
-            unlock();
-        }
-    }
-    
-    /**
-     * Affirms if this query will return distinct elements.
-     */
-    public boolean isDistinct() {
-        return _distinct;
     }
     
     /**
@@ -1548,6 +1526,16 @@ public class QueryImpl
             unlock();
         }
     }
+    
+    public boolean isDistinct() {
+        lock();
+        try {
+            return compileForExecutor().isDistinct(_storeQuery);
+        } finally {
+            unlock();
+        }
+    }
+
 
     public boolean hasGrouping() {
         lock();
@@ -2013,6 +2001,10 @@ public class QueryImpl
             throw new UnsupportedException(_loc.get("merged-aggregate",
                 q.getContext().getCandidateType(),
                 q.getContext().getQueryString()));
+        }
+        
+        public boolean isDistinct(StoreQuery q) {
+            return _executors[0].isDistinct(q);
         }
 
         public int getOperation(StoreQuery q) {

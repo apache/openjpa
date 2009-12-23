@@ -343,15 +343,6 @@ public class DelegatingQuery
         }
     }
 
-    public void setDistinct(boolean distinct) {
-        try {
-            _query.setDistinct(distinct);
-        } catch (RuntimeException re) {
-            throw translate(re);
-        }
-    }
-
-
     public Class getResultType() {
         try {
             return _query.getResultType();

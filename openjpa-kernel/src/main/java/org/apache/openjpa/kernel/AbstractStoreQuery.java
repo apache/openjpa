@@ -184,6 +184,10 @@ public abstract class AbstractStoreQuery
         public boolean isAggregate(StoreQuery q) {
             return false;
         }
+        
+        public boolean isDistinct(StoreQuery q) {
+            return false;
+        }
 
         public boolean hasGrouping(StoreQuery q) {
             return false;
