@@ -31,6 +31,8 @@ import java.io.ObjectStreamException;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
+import java.math.BigDecimal;
+import java.math.BigInteger;
 import java.security.AccessController;
 import java.security.PrivilegedActionException;
 import java.util.ArrayList;
@@ -2207,6 +2209,10 @@ public class PCEnhancer {
                     code.checkcast().setType(DateId.class);
                     code.invokevirtual().setMethod(DateId.class, "getId",
                         Date.class, null);
+                    if (pktype != Date.class) {
+                        // java.sql.Date.class
+                        code.checkcast().setType(pktype);
+                    }
                     break;
                 case JavaTypes.STRING:
                     code.aload().setLocal(oid);
@@ -2218,13 +2224,13 @@ public class PCEnhancer {
                     code.aload().setLocal(oid);
                     code.checkcast().setType(BigDecimalId.class);
                     code.invokevirtual().setMethod(BigDecimalId.class, "getId",
-                        BigDecimalId.class, null);
+                        BigDecimal.class, null);
                     break;
                 case JavaTypes.BIGINTEGER:
                     code.aload().setLocal(oid);
                     code.checkcast().setType(BigIntegerId.class);
                     code.invokevirtual().setMethod(BigIntegerId.class, "getId",
-                        BigIntegerId.class, null);
+                        BigInteger.class, null);
                     break;
                 default:
                     code.aload().setLocal(oid);
