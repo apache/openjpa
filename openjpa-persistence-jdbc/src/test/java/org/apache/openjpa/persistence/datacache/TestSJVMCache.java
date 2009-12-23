@@ -33,7 +33,8 @@ public class TestSJVMCache
         return new String[]{
             // the second cache is there solely to differentiate between
             // this PMF and the PMF created from confs2 below
-            "openjpa.DataCache", "true, true(Name=differentiatingProperty1)",
+            "openjpa.DataCache", "true",
+//            "openjpa.DataCache", "true, true(Name=differentiatingProperty1)",
             "openjpa.QueryCache", "true",
             "openjpa.RemoteCommitProvider", "sjvm",
             "openjpa.BrokerImpl", CacheTestBroker.class.getName(),
@@ -44,7 +45,8 @@ public class TestSJVMCache
         return new String[]{
             // the second cache is there solely to differentiate between
             // this PMF and the PMF created from confs above
-            "openjpa.DataCache", "true, true(Name=differentiatingProperty2)",
+            "openjpa.DataCache", "true",
+//            "openjpa.DataCache", "true, true(Name=differentiatingProperty2)",
             "openjpa.QueryCache", "true",
             "openjpa.RemoteCommitProvider", "sjvm",
             "openjpa.BrokerImpl", CacheTestBroker.class.getName(),
