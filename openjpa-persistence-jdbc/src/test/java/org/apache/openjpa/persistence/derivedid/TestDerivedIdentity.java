@@ -43,14 +43,14 @@ public class TestDerivedIdentity  extends SQLListenerTestCase {
         EntityManager em = emf.createEntityManager();
         
         for (int i = 0; i < 2; i++) {
-            long time = (long) (System.currentTimeMillis() / 1000)+i;
+            long time = (long) (System.currentTimeMillis() / 1000)+i*1317;
             BigDecimal did = new BigDecimal(time);            
             EBigDecimalID e1 = new EBigDecimalID(did);
             EDBigDecimalID e2 = new EDBigDecimalID(e1);
             em.persist(e1);
             em.persist(e2);
 
-            int time2 = (int) (System.currentTimeMillis() / 1000)+i;
+            int time2 = (int) (System.currentTimeMillis() / 1000)+i*7131;
             BigInteger iid = new BigInteger(Integer.toString(time2));
             EBigIntegerID e3 = new EBigIntegerID(iid);
             EDBigIntegerID e4 = new EDBigIntegerID(e3);
