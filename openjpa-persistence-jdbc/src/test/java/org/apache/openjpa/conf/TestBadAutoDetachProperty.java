@@ -18,15 +18,17 @@
  */
 package org.apache.openjpa.conf;
 
-import java.util.*;
+import java.util.HashMap;
 
-import javax.persistence.*;
+import javax.persistence.EntityManager;
+import javax.persistence.EntityManagerFactory;
+import javax.persistence.Persistence;
 import javax.persistence.PersistenceException;
 
-import junit.framework.*;
+import junit.framework.TestCase;
 
 import org.apache.openjpa.lib.util.ParseException;
-import org.apache.openjpa.persistence.*;
+import org.apache.openjpa.persistence.OpenJPAEntityManagerFactory;
 
 public class TestBadAutoDetachProperty extends TestCase {
     public void testEmptyValue() {
@@ -50,12 +52,20 @@ public class TestBadAutoDetachProperty extends TestCase {
             emf.close();
         } catch (PersistenceException e) {
             Throwable cause = e.getCause();
-            while (cause instanceof PersistenceException)
-                cause = ((PersistenceException) cause).getCause();
-            if (!(cause instanceof ParseException)) {
-                fail("Should have caught PersistenceException whose cause was "
-                        + "a ParseException. " + "Instead the cause was: "
-                        + cause);
+            if (cause != null) {
+                // Geronimo Persistence.class single provider semantics
+                while (cause instanceof PersistenceException)
+                    cause = ((PersistenceException) cause).getCause();
+                if (!(cause instanceof ParseException)) {
+                    fail("Should have caught PersistenceException whose cause was " + "a ParseException. "
+                            + "Instead the cause was: " + cause);
+                }
+            } else {
+                // Geronimo Persistence.class multiple providers semantics
+                String msg = e.getMessage();
+                if (msg.indexOf("org.apache.openjpa.lib.util.ParseException") == -1)
+                    fail("Should have caught PersistenceException whose cause was " + "a ParseException. "
+                            + "Instead the cause was: " + cause);
             }
         } catch (RuntimeException e) {
             fail("Should have caught a PersistenceException, instead caught: "
@@ -74,12 +84,20 @@ public class TestBadAutoDetachProperty extends TestCase {
             emf.close();
         } catch (PersistenceException e) {
             Throwable cause = e.getCause();
-            while (cause instanceof PersistenceException)
-                cause = ((PersistenceException) cause).getCause();
-            if (!(cause instanceof ParseException)) {
-                fail("Should have caught PersistenceException whose cause was "
-                        + "a ParseException. " + "Instead the cause was: "
-                        + cause);
+            if (cause != null) {
+                // Geronimo Persistence.class single provider semantics
+                while (cause instanceof PersistenceException)
+                    cause = ((PersistenceException) cause).getCause();
+                if (!(cause instanceof ParseException)) {
+                    fail("Should have caught PersistenceException whose cause was " + "a ParseException. "
+                            + "Instead the cause was: " + cause);
+                }
+            } else {
+                // Geronimo Persistence.class multiple providers semantics
+                String msg = e.getMessage();
+                if (msg.indexOf("org.apache.openjpa.lib.util.ParseException") == -1)
+                    fail("Should have caught PersistenceException whose cause was " + "a ParseException. "
+                            + "Instead the cause was: " + cause);
             }
         } catch (RuntimeException e) {
             fail("Should have caught a PersistenceException, instead caught: "
