@@ -2800,7 +2800,7 @@ em.persist(o1);
                 </primary>
             </indexterm>
             <para>
-Apart from handling LOBs in a standard JPA manner
+In addition to handling LOBs in a standard JPA manner
 (<classname>LOB</classname> annotation and <literal>lob</literal> XML element),
 OpenJPA supports LOB streaming. This feature
 makes it possible to stream large amounts of data into and out of persistent

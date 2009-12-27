@@ -1058,6 +1058,13 @@ the connection, or an exception will be thrown. Setting openjpa.FetchBatchSize
 to any value greater than zero will enable streaming result sets. 
                     </para>
                 </listitem>                
+                <listitem>
+                    <para>
+The use of <link linkend="ref_guide_streamsupport">LOB streaming</link> is limited.
+When reading LOB data from the database, the MySQL JDBC driver will actually
+load all the data in memory at the same time.
+                    </para>
+                </listitem>
             </itemizedlist>
         </section>
     </section>
