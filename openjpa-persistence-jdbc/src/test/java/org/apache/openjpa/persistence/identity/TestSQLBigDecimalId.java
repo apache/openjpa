@@ -74,8 +74,9 @@ public class TestSQLBigDecimalId
     
     }
     
-    @AllowFailure
     // This test currently allows failure because DB2 and Derby don't handle BigDecimals properly quite yet. 
+/**
+    @AllowFailure
     public void testQuery() {
         int data = 156;
         BigDecimal decimal = new BigDecimal(1234);
@@ -96,6 +97,7 @@ public class TestSQLBigDecimalId
         em.close();
 
     }
+*/
 
     public static void main(String[] args) {
         TestRunner.run(TestSQLBigDecimalId.class);
