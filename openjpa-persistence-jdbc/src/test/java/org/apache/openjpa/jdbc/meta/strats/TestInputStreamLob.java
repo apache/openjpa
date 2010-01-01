@@ -25,7 +25,7 @@ import java.io.InputStream;
 import org.apache.openjpa.jdbc.sql.PostgresDictionary;
 
 /**
- * Defines all the abstract methods from AbstractLobTest to tests the
+ * Defines all the abstract methods from AbstractLobTest to test
  * the LOB support with an InputStream.
  *
  * @author Ignacio Andreu
@@ -69,7 +69,7 @@ public class TestInputStreamLob extends AbstractLobTest {
     protected String getStreamContentAsString(Object o) throws IOException {
         InputStream is = (InputStream) o;
         String content = "";
-        byte[] bs = new byte[4];
+        byte[] bs = new byte[1024];
         int read = -1;
         do {
             read = is.read(bs);
