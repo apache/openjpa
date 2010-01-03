@@ -458,7 +458,8 @@ public class PostgresDictionary
                 if (ob != null) {
                     LargeObject lo = lom.open(oid, LargeObjectManager.WRITE);
                     OutputStream os = lo.getOutputStream();
-                    copy((InputStream)ob, os);
+                    long size = copy((InputStream) ob, os);
+                    lo.truncate((int) size);
                     lo.close();
                 } else {
                     lom.delete(oid);
