@@ -2501,7 +2501,7 @@ version is 8.3-603)
                   </listitem>
                   <listitem>
                       <para>
-SQLServer 2005
+SQL Server 2005
                       </para>
                   </listitem>
               </itemizedlist>
@@ -2823,6 +2823,11 @@ Oracle
                 <listitem>
                     <para>
 PostgreSQL
+                    </para>
+                </listitem>
+                <listitem>
+                    <para>
+SQL Server
                     </para>
                 </listitem>
             </itemizedlist>

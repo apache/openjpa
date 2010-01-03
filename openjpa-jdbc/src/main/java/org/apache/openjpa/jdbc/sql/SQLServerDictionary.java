@@ -16,21 +16,27 @@
  */
 package org.apache.openjpa.jdbc.sql;
 
+import java.io.InputStream;
+import java.io.Reader;
+import java.sql.Blob;
+import java.sql.Clob;
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Types;
 import java.util.Set;
 
+import org.apache.openjpa.jdbc.kernel.JDBCStore;
 import org.apache.openjpa.jdbc.kernel.exps.FilterValue;
-import org.apache.openjpa.kernel.Filters;
 import org.apache.openjpa.jdbc.schema.Column;
+import org.apache.openjpa.kernel.Filters;
 import org.apache.openjpa.lib.util.Localizer;
 import org.apache.openjpa.meta.JavaTypes;
 import org.apache.openjpa.util.StoreException;
 
 /**
- * Dictionary for MS SQLServer.
+ * Dictionary for Microsoft SQL Server.
  */
 public class SQLServerDictionary extends AbstractSQLServerDictionary {
 
@@ -277,4 +283,38 @@ public class SQLServerDictionary extends AbstractSQLServerDictionary {
         }
         return recoverable;
     }
+
+    /**
+     * Obtain an {@link InputStream} by using {@link ResultSet#getBlob(int)} and
+     * {@link Blob#getBinaryStream()}.
+     * Unfortunately this will load entire BLOB into memory.
+     * The alternative {@link ResultSet#getBinaryStream(int)} provides true streaming but
+     * the stream can be consumed only as long as {@link ResultSet} is open.
+     */
+    @Override
+    public InputStream getLOBStream(JDBCStore store, ResultSet rs, int column) throws SQLException {
+        Blob blob = rs.getBlob(column);
+        if (blob == null) {
+            return null;
+        }
+        return blob.getBinaryStream();
+    }
+
+    /**
+     * Obtain a {@link Reader} by using {@link ResultSet#getClob(int)} and
+     * {@link Clob#getCharacterStream()}.
+     * Unfortunately this will load entire CLOB into memory.
+     * The alternative {@link ResultSet#getCharacterStream(int)} provides true streaming but
+     * the stream can be consumed only as long as {@link ResultSet} is open.
+     */
+    @Override
+    public Reader getCharacterStream(ResultSet rs, int column) throws SQLException {
+        Clob clob = rs.getClob(column);
+        if (clob == null) {
+            return null;
+        }
+        return clob.getCharacterStream();
+    }
+
+    
 }

@@ -863,7 +863,7 @@ Using the Sun JDBC-ODBC bridge to connect is not supported.
         </title>
         <example id="example_props_sqlserver">
             <title>
-                Example properties for Microsoft SQLServer
+                Example properties for Microsoft SQL Server
             </title>
 <programlisting>
 openjpa.ConnectionDriverName: com.microsoft.sqlserver.jdbc.SQLServerDriver
@@ -936,6 +936,13 @@ SQL Server 2005 does not support native sequences. If you would like to use
 generated values with SQL Server you should use GenerationType.IDENTITY, 
 GenerationType.TABLE, or GenerationType.AUTO.
                     </para> 
+                </listitem>
+                <listitem>
+                    <para>
+The use of <link linkend="ref_guide_streamsupport">LOB streaming</link> is limited.
+When reading LOB data from the database, the Microsoft SQL Server driver will
+actually load all the data into memory at the same time.
+                    </para>
                 </listitem>
             </itemizedlist>
         </section>
@@ -1062,7 +1069,7 @@ to any value greater than zero will enable streaming result sets.
                     <para>
 The use of <link linkend="ref_guide_streamsupport">LOB streaming</link> is limited.
 When reading LOB data from the database, the MySQL JDBC driver will actually
-load all the data in memory at the same time.
+load all the data into memory at the same time.
                     </para>
                 </listitem>
             </itemizedlist>
