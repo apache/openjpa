@@ -407,7 +407,7 @@ public class JDBCStoreManager
         // Check if the owner has eagerly loaded ToMany relations.
         for (int i = 0; i < fms.length; i++) {
             if (res.getEager(fms[i]) != null) {
-                if (fms[i].isElementCollection() && !fms[i].getElement().isTypePC())
+                if (!fms[i].getElement().isTypePC())
                     continue;
                 Object coll =  owner.fetchObject(fms[i].getIndex());
                 if (coll instanceof Map)

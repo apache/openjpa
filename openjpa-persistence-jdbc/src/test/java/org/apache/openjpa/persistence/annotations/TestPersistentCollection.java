@@ -35,7 +35,8 @@ public class TestPersistentCollection extends SingleEMFTestCase {
 
     public void setUp() {
         setUp(PColl_EntityA.class, PColl_EmbedB.class, PColl_EntityC.class,
-                PColl_EntityA1.class, PColl_EntityB.class, CLEAR_TABLES);
+                PColl_EntityA1.class, PColl_EntityB.class, PColl_EntityStringEager.class,
+                PColl_EntityStringLazy.class, CLEAR_TABLES);
     }
 
     @SuppressWarnings("unchecked")
@@ -110,6 +111,58 @@ public class TestPersistentCollection extends SingleEMFTestCase {
             PColl_EntityC c1 = b1.getM2oC();
             assertEquals("b01", b1.getName());
             assertEquals(101, c1.getId());
+            assertEquals(1, a1.getId());
+            em.close();
+        } catch (Throwable t) {
+            fail(t.getMessage());
+        }
+    }    
+
+    public void testPersistentCollectionStringsLazy() {
+        try {
+            EntityManager em = emf.createEntityManager();
+
+            em.getTransaction().begin();
+
+            PColl_EntityStringLazy a = new PColl_EntityStringLazy();
+            a.setId(1);
+            a.getCollectionOfStrings().add("one");
+            em.persist(a);
+            em.getTransaction().commit();
+            em.close();
+            
+            em = emf.createEntityManager();
+            Query q = em.createQuery("SELECT o FROM PColl_EntityStringLazy o"); 
+            PColl_EntityStringLazy a1 = (PColl_EntityStringLazy)q.getSingleResult();
+            
+            assertEquals(1, a1.getCollectionOfStrings().size());
+            assertEquals("one", a1.getCollectionOfStrings().toArray()[0]);
+            assertEquals(1, a1.getId());
+            em.close();
+        } catch (Throwable t) {
+            fail(t.getMessage());
+        }
+    }    
+
+    public void testPersistentCollectionStringsEager() {
+        try {
+            EntityManager em = emf.createEntityManager();
+
+            em.getTransaction().begin();
+
+            PColl_EntityStringEager a = new PColl_EntityStringEager();
+            a.setId(1);
+            a.getCollectionOfStrings().add("one");
+            em.persist(a);
+            em.getTransaction().commit();
+            em.close();
+            
+            em = emf.createEntityManager();
+            Query q = em.createQuery("SELECT o FROM PColl_EntityStringEager o"); 
+            PColl_EntityStringEager a1 = (PColl_EntityStringEager)q.getSingleResult();
+            
+            assertEquals(1, a1.getCollectionOfStrings().size());
+            assertEquals("one", a1.getCollectionOfStrings().toArray()[0]);
             assertEquals(1, a1.getId());
             em.close();
         } catch (Throwable t) {
