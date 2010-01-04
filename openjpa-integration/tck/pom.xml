@@ -231,7 +231,7 @@ databaseName=${db.name}
                             <attribute name="buildfile" />
                             <attribute name="target" />
                             <sequential>
-                                <java classname="org.apache.tools.ant.launch.Launcher" fork="true" failonerror="true" dir="${tck.dir}/src" append="true" output="${tck.log}" timeout="7200000">
+                                <java classname="org.apache.tools.ant.launch.Launcher" fork="true" failonerror="false" dir="${tck.dir}/src" append="true" output="${tck.log}" timeout="7200000" resultproperty="tsant.result">
                                     <arg value="-emacs" />
                                     <arg value="-buildfile" />
                                     <arg value="@{buildfile}" />
@@ -266,9 +266,11 @@ databaseName=${db.name}
 
                         <!-- first initialize the database -->
                         <tsant buildfile="${tck.dir}/bin/initdb.xml" target="init.database" />
+                        <echo>TCK initdb.xml returned result=${tsant.result}</echo>
 
                         <!-- now run the TCK -->
                         <tsant buildfile="${tck.dir}/bin/build.xml" target="runclient" />
+                        <echo>TCK build.xml returned result=${tsant.result}</echo>
 
                         <!-- archive the results -->
                         <property name="tck.results.archive" value="${tck.base}/openjpa-tck-results.zip" />
@@ -371,7 +373,7 @@ databaseName=${db.name}
                   <phase>integration-test</phase>
                   <configuration>
                     <tasks>
-                        <echo>Running Sun JPA TCK</echo>
+                        <echo>Running Sun JPA 1.0b TCK</echo>
 
                         <property name="tck.zip" value="${settings.localRepository}/../privaterepos/jpa-1_0b-tck.zip" />
                          <available property="tck.available" file="${tck.zip}" />
@@ -411,6 +413,7 @@ databaseName=${db.name}
                         <property name="jpatck.pkg.dir" value="com" />
                         <property name="jpatck.test" value="" />
 
+                        <property name="jpatck.reports.dir" value="${tck.dir}/../reports" />
                         <property name="jpatck.work.dir" value="${tck.dir}/../work" />
                         <property name="tck.log" value="${tck.base}/openjpa-tck.log" />
 
@@ -443,7 +446,7 @@ openjpa.jdbc.SchemaFactory: native(ForeignKeys=true)
 
 jpa.home=${tck.dir}
 work.dir=${jpatck.work.dir}
-report.dir=${tck.dir}/../reports
+report.dir=${jpatck.reports.dir}
 jpa.classes=${cp.property}
 database.classes=${jpa.classes}
 # Need to specify java.* classes, both in Windows/UNIX locations as well as Mac.
@@ -537,8 +540,38 @@ databaseName=${db.name}
 
                         <!-- archive the results -->
                         <property name="tck.results.archive" value="${tck.base}/openjpa-tck-results.zip" />
-                        <zip destfile="${tck.results.archive}" basedir="${jpatck.work.dir}" />
+                        <zip destfile="${tck.results.archive}">
+                            <fileset dir="${jpatck.work.dir}" />
+                            <fileset dir="${jpatck.reports.dir}" />
+                        </zip>
                         <echo>Results archive at: ${tck.results.archive}</echo>
+
+                        <!-- Figure out the Passed/Failed counts -->
+                        <resourcecount property="count.passed">
+                          <tokens>
+                            <concat>
+                              <filterchain>
+                                <tokenfilter>
+                                  <containsstring contains="Passed."/>
+                                </tokenfilter>
+                              </filterchain>
+                              <fileset dir="${jpatck.reports.dir}" includes="summary.txt" />
+                            </concat>
+                          </tokens>
+                        </resourcecount>
+                        <resourcecount property="count.failed">
+                          <tokens>
+                            <concat>
+                              <filterchain>
+                                <tokenfilter>
+                                  <containsstring contains="Failed."/>
+                                </tokenfilter>
+                              </filterchain>
+                              <fileset dir="${jpatck.reports.dir}" includes="summary.txt" />
+                            </concat>
+                          </tokens>
+                        </resourcecount>
+                        <echo>TCK Results - Passed: ${count.passed}, Failed: ${count.failed}</echo>
 
                         <!--
                             The TCK's Java process doesn't actually fail when
@@ -549,9 +582,9 @@ databaseName=${db.name}
                         <condition property="jpatck.failed">
                             <contains string="${jpatck.results}" substring="Completed test run: not ok" />
                         </condition>
-                        <fail if="jpatck.failed">Some tests failed</fail>
+                        <fail if="jpatck.failed">${count.failed} tests failed</fail>
                         <!-- else -->
-                        <echo>JPA TCK Passed 100%!</echo>
+                        <echo>Pased JPA 1.0b TCK!</echo>
 
                     </tasks>
                   </configuration>
