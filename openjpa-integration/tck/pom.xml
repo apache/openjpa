@@ -22,12 +22,20 @@
     This build file is used to run the JPA TCK. It assumes that you have
     the TCK zip file located at:
 
-        ${user.home}/.m2/privaterepos/jpa-1_0b-tck.zip
+        For JPA 1.0 -
+            ${user.home}/.m2/privaterepos/jpa-1_0b-tck.zip
+        For JPA 2.0 -
+            ${user.home}/.m2/privaterepos/jpatck-2.0_09-Dec-2009.zip
 
     If you have that file in a different location, it can be specified with
     the "tck.zip" system property.
 
-    The TCK will only be run if you have the "tck-profile" enabled.
+    The TCK will only be run if you have one of the following profiles enabled:
+
+        For JPA 1.0 -
+            -Ptck-profile
+        For JPA 2.0 -
+            -Ptck2-profile
 
     To run a specific package of tests, use the "jpatck.pkg.dir" system
     property to specify the parent directory of the tests you want to run.
@@ -66,10 +74,225 @@
     </parent>
 
     <profiles>
-    <profile>
-    <id>tck-profile</id>
-    <build>
-        <plugins>
+      <profile>
+        <!-- JPA 2.0 TCK Profile -->
+        <id>tck2-profile</id>
+        <build>
+          <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-antrun-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>run-tck</id>
+                        <phase>integration-test</phase>
+                        <configuration>
+                        <tasks>
+                        <echo>Running Sun JPA 2.0 TCK</echo>
+
+                        <property name="tck.zip" value="${settings.localRepository}/../privaterepos/jpatck-2.0_09-Dec-2009.zip" />
+                         <available property="tck.available" file="${tck.zip}" />
+                        <fail unless="tck.available">The TCK file ${tck.zip} does not exist. This file must be downloaded separately in order to be able to run the JPA TCK</fail>
+
+                        <available property="tck.available" file="${tck.zip}" />
+                        <fail unless="tck.available">The TCK file specific in the "tck.zip" system property (${tck.zip}) does not exist. This file must be downloaded separately in order to be able to run the JPA TCK</fail>
+
+                        <property name="tck.base" value="${basedir}/target/tck" />
+                        <property name="tck.dir" value="${tck.base}/jpatck" />
+
+                        <delete dir="${tck.dir}" />
+
+                        <unzip overwrite="false" src="${tck.zip}" dest="${tck.base}" />
+
+                        <path id="cp">
+                            <path refid="maven.compile.classpath" />
+
+                            <!-- use official JPA API instead of GM's -->
+                            <fileset dir="${tck.dir}/lib">
+                                <include name="**/*.jar" />
+                            </fileset>
+                            <pathelement path="${java.class.path}" />
+                            <pathelement path="${db.jar}" />
+                        </path>
+                        <pathconvert property="cp.property" refid="cp" />
+
+                        <property name="db.name" value="derby" />
+                        <property name="db.driver" value="org.apache.derby.jdbc.EmbeddedDriver" />
+                        <property name="db.url" value="jdbc:derby:derby-database;create=true" />
+                        <property name="db.username" value="nousername" />
+                        <property name="db.password" value="nopassword" />
+
+                        <property name="openjpa.log.level" value="WARN" />
+
+                        <property name="jpatck.pkg.dir" value="com" />
+                        <property name="jpatck.test" value="" />
+
+                        <property name="jpatck.work.dir" value="${tck.dir}/../work" />
+                        <property name="tck.log" value="${tck.base}/openjpa-tck.log" />
+
+                        <property name="openjpa.properties" value="${tck.dir}/openjpa-provier.properties" />
+
+                        <!-- create the OpenJPA properties for the TCK run -->
+                        <echo append="false" file="${openjpa.properties}">
+javax.persistence.provider: org.apache.openjpa.persistence.PersistenceProviderImpl
+openjpa.ConnectionDriverName: ${db.driver}
+openjpa.ConnectionURL: ${db.url}
+openjpa.ConnectionUserName: ${db.username}
+openjpa.ConnectionPassword: ${db.password}
+openjpa.FetchBatchSize: -1
+openjpa.Compatibility: StrictIdentityValues=true
+openjpa.Sequence: time
+openjpa.Log: DefaultLevel=${openjpa.log.level}
+openjpa.jdbc.DBDictionary: StoreCharsAsNumbers=false
+openjpa.jdbc.SchemaFactory: native(ForeignKeys=true)
+                        </echo>
+
+                        <!-- Append OpenJPA-specific configuration -->
+                        <property name="jpatck.config" value="${tck.dir}/bin/ts.jte" />
+
+                        <echo append="false" file="${jpatck.config}.tmp">
+
+
+#########################################################################
+## OpenJPA specific properties follow
+#########################################################################
+
+jpa.home=${tck.dir}
+work.dir=${jpatck.work.dir}
+report.dir=${tck.dir}/../reports
+jpa.classes=${cp.property}
+database.classes=${jpa.classes}
+# Need to specify java.* classes, both in Windows/UNIX locations as well as Mac.
+# This includes a few different possible locations; only one of them needs to 
+# actually work for a given environment.
+sigTestClasspath=${JAVA_HOME}/lib/rt.jar${path.separator}${JAVA_HOME}/jre/lib/rt.jar${path.separator}${JAVA_HOME}/../Classes/classes.jar${path.separator}$${jpa.classes}
+persistence.unit.properties.file.full.path=${openjpa.properties}
+database.user=${db.username}
+database.passwd=${db.password}
+database.url=${db.url}
+database.driver=${db.driver}
+databaseName=${db.name}
+
+                        </echo>
+
+                        <!-- convert backslashes and known paths with spaces
+                            to get around a problem with the TCK testrunner 
+                            on windows -->
+                        <replace summary="yes" file="${jpatck.config}.tmp" replacefilterfile="windows-replacefilter.properties" />
+                        <concat append="true" destfile="${jpatck.config}">
+                            <fileset file="${jpatck.config}.tmp" />
+                        </concat>
+
+                        <path id="agent.path">
+                            <fileset dir="../../openjpa/target">
+                                <include name="*.jar" />
+                                <exclude name="*-sources.jar" />
+                                <exclude name="original-*.jar" />
+                                <exclude name="*-tests.jar" />
+                                <exclude name="*-javadoc.jar" />
+                            </fileset>
+                        </path>
+                        <pathconvert dirsep="/" property="agent" refid="agent.path" />
+                        <property name="agent.properties" value="" />
+                        <echo>AGENT: ${agent}${agent.properties}</echo>
+
+                        <!--
+                            Replace the existing javaagent argument (which
+                            uses Toplink's enhancer) with our own. Also, we
+                            need to specify the default MetaDataFactory in
+                            order to allow tests that don't have any
+                            persistent classes to work (like the SignatureTest)
+                        -->
+                        <replace file="${jpatck.config}">
+                            <replacefilter token="-javaagent:${jpa.home}/lib/toplink-essentials-agent.jar" value="-javaagent:${agent}${agent.properties} -Dopenjpa.MetaDataFactory=jpa(DefaultAccessType=PROPERTY)" />
+                        </replace>
+
+                        <!-- make a macro for the TCK harness launcher -->
+                        <macrodef name="tsant">
+                            <attribute name="buildfile" />
+                            <attribute name="target" />
+                            <sequential>
+                                <java classname="org.apache.tools.ant.launch.Launcher" fork="true" failonerror="true" dir="${tck.dir}/src" append="true" output="${tck.log}" timeout="7200000">
+                                    <arg value="-emacs" />
+                                    <arg value="-buildfile" />
+                                    <arg value="@{buildfile}" />
+                                    <arg value="-listener" />
+                                    <arg value="com.sun.ant.TSBuildListener" />
+                                    <arg value="-logger" />
+                                    <arg value="com.sun.ant.TSLogger" />
+                                    <arg value="@{target}" />
+
+                                    <env key="TS_HOME" value=".." />
+                                    <sysproperty key="ts.home" value=".." />
+
+                                    <env key="ANT_HOME" value="${tck.dir}/tools/ant" />
+                                    <sysproperty key="ant.home" value="${tck.dir}/tools/ant" />
+
+                                    <sysproperty key="pkg.dir" value="${jpatck.pkg.dir}" />
+                                    <!--
+                                    <sysproperty key="test" value="${jpatck.test}" />
+                                    -->
+
+                                    <classpath>
+                                        <path refid="cp" />
+                                        <fileset dir="${tck.dir}/tools/ant/lib">
+                                            <include name="**/*.jar" />
+                                        </fileset>
+                                    </classpath>
+                                </java>
+                            </sequential>
+                        </macrodef>
+
+                        <echo>Logging JPA 2.0 TCK output to ${tck.log}</echo>
+
+                        <!-- first initialize the database -->
+                        <tsant buildfile="${tck.dir}/bin/initdb.xml" target="init.database" />
+
+                        <!-- now run the TCK -->
+                        <tsant buildfile="${tck.dir}/bin/build.xml" target="runclient" />
+
+                        <!--
+                            The TCK's Java process doesn't actually fail when
+                            tests fail, so we need to parse the results file
+                            for a string indicating whether or not it passed.
+                        -->
+                        <loadfile property="jpatck.results" srcfile="${jpatck.work.dir}/jtData/log.txt" />
+                        <condition property="jpatck.failed">
+                            <contains string="${jpatck.results}" substring="Completed test run: not ok" />
+                        </condition>
+                        <fail if="jpatck.failed">Some tests failed</fail>
+
+                        <echo>JPA TCK Passed 100%!</echo>
+
+                        <property name="tck.results.archive" value="${tck.base}/openjpa-tck-results.zip" />
+                        <zip destfile="${tck.results.archive}" basedir="${jpatck.work.dir}" />
+                        <echo>Results archive at: ${tck.results.archive}</echo>
+
+                        </tasks>
+                        </configuration>
+                        <goals>
+                            <goal>run</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+          </plugins>
+        </build>
+        <!-- Just pull in openjpa-all, which will include all required deps -->
+        <dependencies>
+          <dependency>
+            <groupId>org.apache.openjpa</groupId>
+            <artifactId>openjpa-all</artifactId>
+            <version>${pom.version}</version>
+          </dependency>
+        </dependencies>
+      </profile>
+
+      <profile>
+        <!-- JPA 1.0b TCK Profile -->
+        <id>tck-profile</id>
+        <build>
+          <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-antrun-plugin</artifactId>
@@ -268,33 +491,34 @@ databaseName=${db.name}
                     </execution>
                 </executions>
             </plugin>
-        </plugins>
-    </build>
-    </profile>
-    </profiles>
-
-    <!-- only used for old JPA 1.0 RI API, which we don't use anymore
-    <repositories>
-        <repository>
+          </plugins>
+        </build>
+        <!-- only used for old JPA 1.0 RI API, which we don't use anymore
+        <repositories>
+          <repository>
             <id>java.net</id>
             <name>Java.net Maven Repository</name>
             <url>https://maven-repository.dev.java.net/nonav/repository</url>
             <layout>legacy</layout>
-        </repository>
-    </repositories>
-    -->
-
-    <dependencies>
-        <dependency>
+          </repository>
+        </repositories>
+        -->
+        <dependencies>
+          <dependency>
             <groupId>org.apache.geronimo.specs</groupId>
             <artifactId>geronimo-jpa_2.0_spec</artifactId>
             <scope>compile</scope>
-        </dependency>
-        <dependency>
+          </dependency>
+          <dependency>
             <groupId>org.apache.openjpa</groupId>
             <artifactId>openjpa-kernel</artifactId>
             <version>${pom.version}</version>
-        </dependency>
+          </dependency>
+        </dependencies>
+      </profile>
+    </profiles>
+
+    <dependencies>
         <dependency>
             <groupId>org.apache.derby</groupId>
             <artifactId>derby</artifactId>
