@@ -81,13 +81,32 @@
           <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-antrun-plugin</artifactId>
+                <artifactId>maven-enforcer-plugin</artifactId>
                 <executions>
                     <execution>
-                        <id>run-tck</id>
-                        <phase>integration-test</phase>
+                        <phase>validate</phase>
+                        <goals>
+                            <goal>enforce</goal>
+                        </goals>
                         <configuration>
-                        <tasks>
+                            <rules>
+                                <requireJavaVersion>
+                                    <version>[1.6,)</version>
+                                </requireJavaVersion>
+                            </rules>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+              <groupId>org.apache.maven.plugins</groupId>
+              <artifactId>maven-antrun-plugin</artifactId>
+              <executions>
+                <execution>
+                  <id>run-tck</id>
+                  <phase>integration-test</phase>
+                  <configuration>
+                    <tasks>
                         <echo>Running Sun JPA 2.0 TCK</echo>
 
                         <property name="tck.zip" value="${settings.localRepository}/../privaterepos/jpatck-2.0_09-Dec-2009.zip" />
@@ -127,6 +146,7 @@
                         <property name="jpatck.pkg.dir" value="com" />
                         <property name="jpatck.test" value="" />
 
+                        <property name="jpatck.reports.dir" value="${tck.dir}/../reports" />
                         <property name="jpatck.work.dir" value="${tck.dir}/../work" />
                         <property name="tck.log" value="${tck.base}/openjpa-tck.log" />
 
@@ -159,7 +179,7 @@ openjpa.jdbc.SchemaFactory: native(ForeignKeys=true)
 
 jpa.home=${tck.dir}
 work.dir=${jpatck.work.dir}
-report.dir=${tck.dir}/../reports
+report.dir=${jpatck.reports.dir}
 jpa.classes=${cp.property}
 database.classes=${jpa.classes}
 # Need to specify java.* classes, both in Windows/UNIX locations as well as Mac.
@@ -197,14 +217,13 @@ databaseName=${db.name}
                         <echo>AGENT: ${agent}${agent.properties}</echo>
 
                         <!--
-                            Replace the existing javaagent argument (which
-                            uses Toplink's enhancer) with our own. Also, we
-                            need to specify the default MetaDataFactory in
-                            order to allow tests that don't have any
+                            Add in a javaagent argument (optional in JPA2 TCK.)
+                            Also, we need to specify the default MetaDataFactory
+                            inorder to allow tests that don't have any
                             persistent classes to work (like the SignatureTest)
                         -->
                         <replace file="${jpatck.config}">
-                            <replacefilter token="-javaagent:${jpa.home}/lib/toplink-essentials-agent.jar" value="-javaagent:${agent}${agent.properties} -Dopenjpa.MetaDataFactory=jpa(DefaultAccessType=PROPERTY)" />
+                            <replacefilter token="${JAVA_HOME}/bin/java" value="${JAVA_HOME}/bin/java -javaagent:${agent}${agent.properties} -Dopenjpa.MetaDataFactory=jpa(DefaultAccessType=PROPERTY)" />
                         </replace>
 
                         <!-- make a macro for the TCK harness launcher -->
@@ -251,6 +270,41 @@ databaseName=${db.name}
                         <!-- now run the TCK -->
                         <tsant buildfile="${tck.dir}/bin/build.xml" target="runclient" />
 
+                        <!-- archive the results -->
+                        <property name="tck.results.archive" value="${tck.base}/openjpa-tck-results.zip" />
+                        <zip destfile="${tck.results.archive}">
+                            <fileset dir="${jpatck.work.dir}" />
+                            <fileset dir="${jpatck.reports.dir}" />
+                        </zip>
+                        <echo>Results archive at: ${tck.results.archive}</echo>
+
+                        <!-- Figure out the Passed/Failed counts -->
+                        <resourcecount property="count.passed">
+                          <tokens>
+                            <concat>
+                              <filterchain>
+                                <tokenfilter>
+                                  <containsstring contains="Passed."/>
+                                </tokenfilter>
+                              </filterchain>
+                              <fileset dir="${jpatck.reports.dir}" includes="summary.txt" />
+                            </concat>
+                          </tokens>
+                        </resourcecount>
+                        <resourcecount property="count.failed">
+                          <tokens>
+                            <concat>
+                              <filterchain>
+                                <tokenfilter>
+                                  <containsstring contains="Failed."/>
+                                </tokenfilter>
+                              </filterchain>
+                              <fileset dir="${jpatck.reports.dir}" includes="summary.txt" />
+                            </concat>
+                          </tokens>
+                        </resourcecount>
+                        <echo>TCK Results - Passed: ${count.passed}, Failed: ${count.failed}</echo>
+
                         <!--
                             The TCK's Java process doesn't actually fail when
                             tests fail, so we need to parse the results file
@@ -260,21 +314,17 @@ databaseName=${db.name}
                         <condition property="jpatck.failed">
                             <contains string="${jpatck.results}" substring="Completed test run: not ok" />
                         </condition>
-                        <fail if="jpatck.failed">Some tests failed</fail>
+                        <fail if="jpatck.failed">${count.failed} tests failed</fail>
+                        <!-- else -->
+                        <echo>Passed JPA 2.0 TCK!</echo>
 
-                        <echo>JPA TCK Passed 100%!</echo>
-
-                        <property name="tck.results.archive" value="${tck.base}/openjpa-tck-results.zip" />
-                        <zip destfile="${tck.results.archive}" basedir="${jpatck.work.dir}" />
-                        <echo>Results archive at: ${tck.results.archive}</echo>
-
-                        </tasks>
-                        </configuration>
-                        <goals>
-                            <goal>run</goal>
-                        </goals>
-                    </execution>
-                </executions>
+                    </tasks>
+                  </configuration>
+                  <goals>
+                    <goal>run</goal>
+                  </goals>
+                </execution>
+              </executions>
             </plugin>
           </plugins>
         </build>
@@ -295,13 +345,32 @@ databaseName=${db.name}
           <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-antrun-plugin</artifactId>
+                <artifactId>maven-enforcer-plugin</artifactId>
                 <executions>
                     <execution>
-                        <id>run-tck</id>
-                        <phase>integration-test</phase>
+                        <phase>validate</phase>
+                        <goals>
+                            <goal>enforce</goal>
+                        </goals>
                         <configuration>
-                        <tasks>
+                            <rules>
+                                <requireJavaVersion>
+                                    <version>[1.5,)</version>
+                                </requireJavaVersion>
+                            </rules>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+              <groupId>org.apache.maven.plugins</groupId>
+              <artifactId>maven-antrun-plugin</artifactId>
+              <executions>
+                <execution>
+                  <id>run-tck</id>
+                  <phase>integration-test</phase>
+                  <configuration>
+                    <tasks>
                         <echo>Running Sun JPA TCK</echo>
 
                         <property name="tck.zip" value="${settings.localRepository}/../privaterepos/jpa-1_0b-tck.zip" />
@@ -466,6 +535,11 @@ databaseName=${db.name}
                         <!-- now run the TCK -->
                         <tsant buildfile="${tck.dir}/bin/build.xml" target="runclient" />
 
+                        <!-- archive the results -->
+                        <property name="tck.results.archive" value="${tck.base}/openjpa-tck-results.zip" />
+                        <zip destfile="${tck.results.archive}" basedir="${jpatck.work.dir}" />
+                        <echo>Results archive at: ${tck.results.archive}</echo>
+
                         <!--
                             The TCK's Java process doesn't actually fail when
                             tests fail, so we need to parse the results file
@@ -476,20 +550,16 @@ databaseName=${db.name}
                             <contains string="${jpatck.results}" substring="Completed test run: not ok" />
                         </condition>
                         <fail if="jpatck.failed">Some tests failed</fail>
-
+                        <!-- else -->
                         <echo>JPA TCK Passed 100%!</echo>
 
-                        <property name="tck.results.archive" value="${tck.base}/openjpa-tck-results.zip" />
-                        <zip destfile="${tck.results.archive}" basedir="${jpatck.work.dir}" />
-                        <echo>Results archive at: ${tck.results.archive}</echo>
-
-                        </tasks>
-                        </configuration>
-                        <goals>
-                            <goal>run</goal>
-                        </goals>
-                    </execution>
-                </executions>
+                    </tasks>
+                  </configuration>
+                  <goals>
+                    <goal>run</goal>
+                  </goals>
+                </execution>
+              </executions>
             </plugin>
           </plugins>
         </build>
