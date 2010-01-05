@@ -551,7 +551,6 @@ databaseName=${db.name}
                         <property name="tck.results.archive" value="${tck.base}/openjpa-tck-results.zip" />
                         <zip destfile="${tck.results.archive}">
                             <fileset dir="${jpatck.work.dir}" />
-                            <fileset dir="${jpatck.reports.dir}" />
                         </zip>
                         <echo>Results archive at: ${tck.results.archive}</echo>
 
