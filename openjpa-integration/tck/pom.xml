@@ -123,16 +123,12 @@
 
                         <unzip overwrite="false" src="${tck.zip}" dest="${tck.base}" />
 
-                        <!-- FIXME - Make sure we're using the Geronimo Spec -->
+                        <!-- 
+                            Setup jpa.classes to only use the Maven artifacts
+                            that we specified as dependencies
+                        -->
                         <path id="cp">
                             <path refid="maven.compile.classpath" />
-
-                            <!-- use official JPA API instead of GM's -->
-                            <fileset dir="${tck.dir}/lib">
-                                <include name="**/*.jar" />
-                            </fileset>
-                            <pathelement path="${java.class.path}" />
-                            <pathelement path="${db.jar}" />
                         </path>
                         <pathconvert property="cp.property" refid="cp" />
 
@@ -147,8 +143,8 @@
                         <property name="jpatck.pkg.dir" value="com" />
                         <property name="jpatck.test" value="" />
 
-                        <property name="jpatck.reports.dir" value="${tck.dir}/../reports" />
-                        <property name="jpatck.work.dir" value="${tck.dir}/../work" />
+                        <property name="jpatck.reports.dir" value="${tck.base}/reports" />
+                        <property name="jpatck.work.dir" value="${tck.base}/work" />
                         <property name="tck.log" value="${tck.base}/openjpa-tck.log" />
 
                         <property name="openjpa.properties" value="${tck.dir}/openjpa-provier.properties" />
@@ -164,8 +160,14 @@ openjpa.FetchBatchSize: -1
 openjpa.Compatibility: StrictIdentityValues=true
 openjpa.Sequence: time
 openjpa.Log: DefaultLevel=${openjpa.log.level}
-openjpa.jdbc.DBDictionary: StoreCharsAsNumbers=false
+openjpa.jdbc.DBDictionary: StoreCharsAsNumbers=true
 openjpa.jdbc.SchemaFactory: native(ForeignKeys=true)
+openjpa.jdbc.SynchronizeMappings: buildSchema(ForeignKeys=true)
+                        </echo>
+
+                        <!-- create an empty DDL file for the TCK dbinit -->
+                        <echo append="false" file="${tck.dir}/sql/${db.name}/${db.name}.ddl.persistence.sql">
+;
                         </echo>
 
                         <!-- Append OpenJPA-specific configuration -->
@@ -182,7 +184,8 @@ jpa.home=${tck.dir}
 work.dir=${jpatck.work.dir}
 report.dir=${jpatck.reports.dir}
 jpa.classes=${cp.property}
-database.classes=${jpa.classes}
+# jpa.classes includes Derby, so only set database.classes for other DBs
+database.classes=
 # Need to specify java.* classes, both in Windows/UNIX locations as well as Mac.
 # This includes a few different possible locations; only one of them needs to 
 # actually work for a given environment.
@@ -225,7 +228,12 @@ databaseName=${db.name}
                             persistent classes to work (like the SignatureTest)
                         -->
                         <replace file="${jpatck.config}">
-                            <replacefilter token="-Ddeliverable.class=${deliverable.class}" value="-Ddeliverable.class=${deliverable.class} -javaagent:${agent}${agent.properties} -Dopenjpa.MetaDataFactory=jpa(DefaultAccessType=PROPERTY)" />
+                            <replacefilter token="-Ddeliverable.class=${deliverable.class}" value="-Ddeliverable.class=${deliverable.class} -javaagent:${agent}${agent.properties} -Dopenjpa.MetaDataFactory=jpa(DefaultAccessType=PROPERTY)"/>
+                        </replace>
+
+                        <!-- Fix path for java.security.policy -->
+                        <replace file="${jpatck.config}">
+                            <replacefilter token="-Djava.security.policy=${bin.dir}/harness.policy" value="-Djava.security.policy=${ts.home}/bin/harness.policy"/>
                         </replace>
 
                         <!-- make a macro for the TCK harness launcher -->
@@ -243,8 +251,8 @@ databaseName=${db.name}
                                     <arg value="com.sun.ant.TSLogger" />
                                     <arg value="@{target}" />
 
-                                    <env key="TS_HOME" value=".." />
-                                    <sysproperty key="ts.home" value=".." />
+                                    <env key="TS_HOME" value="${tck.dir}" />
+                                    <sysproperty key="ts.home" value="${tck.dir}" />
 
                                     <env key="ANT_HOME" value="${tck.dir}/tools/ant" />
                                     <sysproperty key="ant.home" value="${tck.dir}/tools/ant" />
@@ -257,6 +265,9 @@ databaseName=${db.name}
                                     <classpath>
                                         <path refid="cp" />
                                         <fileset dir="${tck.dir}/tools/ant/lib">
+                                            <include name="**/*.jar" />
+                                        </fileset>
+                                        <fileset dir="${tck.dir}/lib">
                                             <include name="**/*.jar" />
                                         </fileset>
                                     </classpath>
