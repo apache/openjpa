@@ -23,6 +23,7 @@ import java.io.Serializable;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.Version;
 
 @Entity
 public class Person implements Serializable {
@@ -35,6 +36,8 @@ public class Person implements Serializable {
     
     private String lastName;
 
+    private int version;
+    
     @Id
     @GeneratedValue
     public int getId() {
@@ -59,6 +62,14 @@ public class Person implements Serializable {
 
     public void setLastName(String lastName) {
         this.lastName = lastName;
+    }
+    
+    @Version
+    public int getVersion(){
+        return version;
+    }
+    public void setVersion(int v){
+        version = v;
     }
 
     @Override
