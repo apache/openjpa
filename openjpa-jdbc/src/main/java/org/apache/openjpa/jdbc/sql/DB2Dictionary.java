@@ -266,6 +266,7 @@ public class DB2Dictionary
         super.connectedConfiguration(conn);
 
         DatabaseMetaData metaData = conn.getMetaData();
+        setDefaultSchemaName(metaData.getUserName());
         String driverName = metaData.getDriverName();
         if (driverName != null && driverName.startsWith("IBM DB2"))
             driverVendor = VENDOR_IBM;

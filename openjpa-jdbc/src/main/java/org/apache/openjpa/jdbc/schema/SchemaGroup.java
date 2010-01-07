@@ -209,6 +209,14 @@ public class SchemaGroup
      * separator. Returns null if no table found.
      */
     public Table findTable(Schema inSchema, String name) {
+        return findTable(inSchema, name, null);
+    }
+    
+    /**
+     * Find the table with the given name in the group, using '.' as the catalog
+     * separator. Returns null if no table found.
+     */
+    public Table findTable(Schema inSchema, String name, String defaultSchemaName) {
         if (name == null)
             return null;
 
@@ -231,8 +239,14 @@ public class SchemaGroup
                 // We can't handle the case that one entity has schema name
                 // and other entity does not have schema name but both entities
                 // map to the same table.
+                boolean isDefaultSchema = inSchema.getName() == null && 
+                    defaultSchemaName != null && 
+                    defaultSchemaName.equalsIgnoreCase(schemas[i].getName());
+                boolean hasNoDefaultSchema = inSchema.getName() == null && 
+                    defaultSchemaName == null; 
+                
                 if (tab != null &&
-                        (schemas[i] == inSchema || inSchema.getName() == null))
+                    (schemas[i] == inSchema || isDefaultSchema || hasNoDefaultSchema)) 
                     return tab;
 
             }

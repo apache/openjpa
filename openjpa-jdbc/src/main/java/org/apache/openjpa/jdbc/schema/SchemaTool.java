@@ -472,11 +472,12 @@ public class SchemaTool {
         Column[] cols;
         Column col;
         String delim = _dict.getDelimiter();
+        String defaultSchemaName = _dict.getDefaultSchemaName();
         for (int i = 0; i < schemas.length; i++) {
             tabs = schemas[i].getTables();
             for (int j = 0; j < tabs.length; j++) {
                 cols = tabs[j].getColumns();
-                dbTable = db.findTable(schemas[i], tabs[j].getFullName());
+                dbTable = db.findTable(schemas[i], tabs[j].getFullName(), defaultSchemaName);
                 for (int k = 0; k < cols.length; k++) {
                     if (dbTable != null) {
                         String colName = cols[k].getName();

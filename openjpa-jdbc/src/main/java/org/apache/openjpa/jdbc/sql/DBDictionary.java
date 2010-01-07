@@ -362,6 +362,7 @@ public class DBDictionary
     public String delimiter = "\""; // This is public so it can be changed by a user with a property
     // Assume mixed case by default.
     protected String delimitedCase = SCHEMA_CASE_PRESERVE;
+    private String defaultSchemaName = null;
     
     public static enum DBIdentifiers {
         TABLE_NAME,
@@ -5211,5 +5212,13 @@ public class DBDictionary
     
     public Log getLog() { 
         return log;
+    }
+    
+    public void setDefaultSchemaName(String defaultSchemaName) {
+        this.defaultSchemaName = defaultSchemaName;
+    }
+
+    public String getDefaultSchemaName() {
+        return defaultSchemaName;
     }
 }
