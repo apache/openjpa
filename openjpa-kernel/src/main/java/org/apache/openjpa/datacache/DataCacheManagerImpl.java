@@ -160,19 +160,16 @@ public class DataCacheManagerImpl
      * @return TRUE or FALSE if  cache mode is configured. null otherwise.
      */
     private Boolean isCacheableByMode(ClassMetaData meta) { 
-        switch (DataCacheMode.valueOf(_conf.getDataCacheMode())) {
-          case ALL: // include everything, regardless of annotation or xml configuration
-              return true;
-          case NONE: // exclude everything, regardless of annotation of xml configuration
-              return false;
-          case ENABLE_SELECTIVE: // cache only those entities which were explicitly enabled
-              return Boolean.TRUE.equals(meta.getCacheEnabled());
-          case DISABLE_SELECTIVE: // exclude *only* the entities which are explicitly excluded 
-              return !Boolean.FALSE.equals(meta.getCacheEnabled());
-          case UNSPECIFIED:
-          default: // not determinable by mode 
-              return null; 
-      }
+        String mode = _conf.getDataCacheMode();
+        if (DataCacheMode.ALL.toString().equalsIgnoreCase(mode))
+            return true;
+        if (DataCacheMode.NONE.toString().equalsIgnoreCase(mode))
+            return false;
+        if (DataCacheMode.ENABLE_SELECTIVE.toString().equalsIgnoreCase(mode))
+            return Boolean.TRUE.equals(meta.getCacheEnabled());
+        if (DataCacheMode.DISABLE_SELECTIVE.toString().equalsIgnoreCase(mode))
+            return !Boolean.FALSE.equals(meta.getCacheEnabled());
+        return null;
     }
     
     /**
