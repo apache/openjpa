@@ -675,10 +675,10 @@ public class Configurations {
      * possible configuration prefix.
      */
     public static Object removeProperty(String partialKey, Map props) {
-        if (partialKey == null || props == null || props.isEmpty())
-            return null;
-        String fullKey = ProductDerivations.getConfigurationKey(partialKey, props);
-        return props.remove(fullKey);
+ 	if (containsProperty(partialKey, props))
+	    return props.remove(ProductDerivations.getConfigurationKey(partialKey, props));
+	else 
+	    return null;
     }
 
     /**
