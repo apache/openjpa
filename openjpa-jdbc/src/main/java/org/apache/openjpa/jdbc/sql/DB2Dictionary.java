@@ -26,6 +26,7 @@ import java.sql.DatabaseMetaData;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.sql.Types;
 import java.util.Arrays;
 import java.util.EnumSet;
@@ -266,7 +267,17 @@ public class DB2Dictionary
         super.connectedConfiguration(conn);
 
         DatabaseMetaData metaData = conn.getMetaData();
-        setDefaultSchemaName(metaData.getUserName());
+        String str = "VALUES CURRENT SCHEMA";
+        Statement stmnt = conn.createStatement();
+        ResultSet rs = stmnt.executeQuery(str);
+        if (rs.next()) {
+            String currSchema = rs.getString(1);
+            if (currSchema != null)
+                setDefaultSchemaName(currSchema.trim());
+        }
+        rs.close();
+        stmnt.close();
+
         String driverName = metaData.getDriverName();
         if (driverName != null && driverName.startsWith("IBM DB2"))
             driverVendor = VENDOR_IBM;
