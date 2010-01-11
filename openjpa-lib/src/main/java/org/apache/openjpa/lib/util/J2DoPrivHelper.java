@@ -988,9 +988,8 @@ public abstract class J2DoPrivHelper {
      *   
      * @return MultiClassLoader
      */
-    public static final PrivilegedAction<MultiClassLoader>
-        newMultiClassLoaderAction() {
-        return new PrivilegedAction<MultiClassLoader>() {
+    public static final PrivilegedAction<MultiClassLoader> newMultiClassLoaderAction() {
+        return new PrivilegedAction() {
             public MultiClassLoader run() {
                 return new MultiClassLoader();
             }

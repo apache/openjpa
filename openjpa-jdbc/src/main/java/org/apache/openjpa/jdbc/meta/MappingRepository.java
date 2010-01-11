@@ -104,8 +104,7 @@ import org.apache.openjpa.util.UserException;
  *
  * @author Abe White
  */
-public class MappingRepository
-    extends MetaDataRepository {
+public class MappingRepository extends MetaDataRepository {
 
     private static final Localizer _loc = Localizer.forPackage
         (MappingRepository.class);
@@ -150,56 +149,83 @@ public class MappingRepository
      * Representation of the database schema.
      */
     public SchemaGroup getSchemaGroup() {
-        if (_schema == null)
-            _schema = ((JDBCConfiguration) getConfiguration()).
-                getSchemaFactoryInstance().readSchema();
-        return _schema;
+        if (_locking) {
+            synchronized (this) {
+                if (_schema == null)
+                    _schema = ((JDBCConfiguration) getConfiguration()).getSchemaFactoryInstance().readSchema();
+                return _schema;
+            }
+        } else {
+            if (_schema == null)
+                _schema = ((JDBCConfiguration) getConfiguration()).getSchemaFactoryInstance().readSchema();
+            return _schema;
+        }
     }
 
     /**
      * Representation of the database schema.
      */
     public void setSchemaGroup(SchemaGroup schema) {
-        _schema = schema;
+        if (_locking) {
+            synchronized (this) {
+                _schema = schema;
+            }
+        } else {
+            _schema = schema;
+        }
     }
 
     /**
      * Installs mapping strategies on components.
      */
     public StrategyInstaller getStrategyInstaller() {
-        if (_installer == null)
-            _installer = new RuntimeStrategyInstaller(this);
-        return _installer;
+        if (_locking) {
+            synchronized (this) {
+                if (_installer == null)
+                    _installer = new RuntimeStrategyInstaller(this);
+                return _installer;
+            }
+        } else {
+            if (_installer == null)
+                _installer = new RuntimeStrategyInstaller(this);
+            return _installer;
+        }
     }
 
     /**
      * Installs mapping strategies on components.
      */
     public void setStrategyInstaller(StrategyInstaller installer) {
-        _installer = installer;
+        if (_locking) {
+            synchronized (this) {
+                _installer = installer;
+            }
+        } else {
+            _installer = installer;
+        }
     }
 
     /**
      * Return the query result mapping for the given name.
      */
-    public QueryResultMapping getQueryResultMapping(Class cls,
-        String name, ClassLoader envLoader, boolean mustExist) {
-        lock();
-        try {
-            QueryResultMapping res = getQueryResultMappingInternal(cls, name, envLoader);
-            if (res == null && mustExist)
-                throw new MetaDataException(_loc.get("no-query-res", cls, name));
-            return res;
-        } finally {
-            unlock();
+    public QueryResultMapping getQueryResultMapping(Class<?> cls, String name, ClassLoader loader, boolean mustExist) {
+        QueryResultMapping res = null;
+        if (_locking) {
+            synchronized (this) {
+                res = getQueryResultMappingInternal(cls, name, loader);
+            }
+        } else {
+            res = getQueryResultMappingInternal(cls, name, loader);
         }
+        if (res == null && mustExist)
+            throw new MetaDataException(_loc.get("no-query-res", cls, name));
+        return res;
     }
 
     /**
      * Returned the query result mapping with the given name.
      */
-    private QueryResultMapping getQueryResultMappingInternal(Class cls,
-        String name, ClassLoader envLoader) {
+    private QueryResultMapping getQueryResultMappingInternal(Class<?> cls, String name, ClassLoader envLoader) {
         if (name == null)
             return null;
 
@@ -229,13 +255,15 @@ public class MappingRepository
     /**
      * Return all cached query result mappings.
      */
-    public synchronized QueryResultMapping[] getQueryResultMappings() {
-        lock();
-        try {
+    public QueryResultMapping[] getQueryResultMappings() {
+        if (_locking) {
+            synchronized (this) {
+                Collection values = _results.values();
+                return (QueryResultMapping[]) values.toArray(new QueryResultMapping[values.size()]);
+            }
+        } else {
             Collection values = _results.values();
             return (QueryResultMapping[]) values.toArray(new QueryResultMapping[values.size()]);
-        } finally {
-            unlock();
         }
     }
 
@@ -243,57 +271,63 @@ public class MappingRepository
      * Return the cached query result mapping with the given name, or null if
      * none.
      */
-    public QueryResultMapping getCachedQueryResultMapping
-        (Class cls, String name) {
-        lock();
-        try {
+    public QueryResultMapping getCachedQueryResultMapping(Class cls, String name) {
+        if (_locking) {
+            synchronized (this) {
+                return (QueryResultMapping) _results.get(getQueryResultKey(cls, name));
+            }
+        } else {
             return (QueryResultMapping) _results.get(getQueryResultKey(cls, name));
-        } finally {
-            unlock();
         }
     }
 
     /**
      * Add a query result mapping.
      */
-    public QueryResultMapping addQueryResultMapping(Class cls,
-        String name) {
-        lock();
-        try {
-            QueryResultMapping res = new QueryResultMapping(name, this);
-            res.setDefiningType(cls);
-            _results.put(getQueryResultKey(res), res);
-            return res;
-        } finally {
-            unlock();
+    public QueryResultMapping addQueryResultMapping(Class cls, String name) {
+        if (_locking) {
+            synchronized (this) {
+                return addQueryResultMappingInternal(cls, name);
+            }
+        } else {
+            return addQueryResultMappingInternal(cls, name);
         }
+    }
+
+    private QueryResultMapping addQueryResultMappingInternal(Class cls, String name) {
+        QueryResultMapping res = new QueryResultMapping(name, this);
+        res.setDefiningType(cls);
+        _results.put(getQueryResultKey(res), res);
+        return res;
     }
 
     /**
      * Remove a query result mapping.
      */
-    public boolean removeQueryResultMapping
-        (QueryResultMapping res) {
-        lock();
-        try {
+    public boolean removeQueryResultMapping(QueryResultMapping res) {
+        if (_locking) {
+            synchronized (this) {
+                return _results.remove(getQueryResultKey(res)) != null;
+            }
+        } else {
             return _results.remove(getQueryResultKey(res)) != null;
-        } finally {
-            unlock();
         }
     }
 
     /**
      * Remove a query result mapping.
      */
-    public boolean removeQueryResultMapping(Class cls,
-        String name) {
-        lock();
-        try {
+    public boolean removeQueryResultMapping(Class cls, String name) {
+        if (_locking) {
+            synchronized (this) {
+                if (name == null)
+                    return false;
+                return _results.remove(getQueryResultKey(cls, name)) != null;
+            }
+        } else {
             if (name == null)
                 return false;
             return _results.remove(getQueryResultKey(cls, name)) != null;
-        } finally {
-            unlock();
         }
     }
 
@@ -334,14 +368,17 @@ public class MappingRepository
             mustExist);
     }
 
-    public synchronized void clear() {
-        lock();
-        try {
+    public void clear() {
+        if (_locking) {
+            synchronized (this) {
+                super.clear();
+                _schema = null;
+                _results.clear();
+            }
+        } else {
             super.clear();
             _schema = null;
             _results.clear();
-        } finally {
-            unlock();
         }
     }
 
@@ -1208,7 +1245,7 @@ public class MappingRepository
                 val, name), e);
         }
     }
-
+    
     /**
      * Determine the default handler to use for the given value. Does
      * not take into account the named handler, if any.
