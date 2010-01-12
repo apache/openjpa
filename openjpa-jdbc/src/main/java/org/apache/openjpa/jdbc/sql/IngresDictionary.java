@@ -210,7 +210,7 @@ public class IngresDictionary extends DBDictionary {
      */
     @Override
     protected String getSequencesSQL(String schemaName, String sequenceName) {
-        StringBuffer buf = new StringBuffer();
+        StringBuilder buf = new StringBuilder();
         buf.append(sequenceSQL);
         if (schemaName != null || sequenceName != null)
             buf.append(" WHERE ");

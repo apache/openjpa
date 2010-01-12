@@ -373,7 +373,7 @@ public class SQLStoreQuery
             tok.wordChars('0', '9');
             tok.wordChars('?', '?');
 
-            StringBuffer buf = new StringBuffer(sql.length());
+            StringBuilder buf = new StringBuilder(sql.length());
             for (int ttype; (ttype = tok.nextToken()) !=
                     StreamTokenizer.TT_EOF;) {
                 switch (ttype) {

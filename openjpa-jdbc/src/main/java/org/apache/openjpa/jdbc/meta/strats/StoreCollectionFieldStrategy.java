@@ -499,7 +499,7 @@ public abstract class StoreCollectionFieldStrategy
                 // we know we don't need a union
                 Select sel = store.getSQLFactory().newSelect();
                 sel.setAggregate(true);
-                StringBuffer sql = new StringBuffer();
+                StringBuilder sql = new StringBuilder();
                 sql.append("MAX(").
                     append(sel.getColumnAlias(field.getOrderColumn())).
                     append(")");

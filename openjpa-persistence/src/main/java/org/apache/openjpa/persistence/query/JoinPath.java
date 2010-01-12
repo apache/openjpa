@@ -49,7 +49,7 @@ public class JoinPath extends AbstractDomainObject implements DomainObject {
 		
 	@Override
 	public String asJoinable(AliasContext ctx) {
-		return new StringBuffer(getOperator().toString())
+		return new StringBuilder(getOperator().toString())
 		   .append(getParent().asProjection(ctx))
 		   .append(NAVIGATION)
 		   .append(getLastSegment())

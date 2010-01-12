@@ -266,7 +266,7 @@ public class ProductDerivations {
             loader = AccessController.doPrivileged(
                 J2DoPrivHelper.getContextClassLoaderAction());
         ConfigurationProvider provider = null;
-        StringBuffer errs = null;
+        StringBuilder errs = null;
         // most specific to least
         Throwable err = null;
         for (int i = _derivations.length - 1; i >= 0; i--) {
@@ -276,7 +276,7 @@ public class ProductDerivations {
                     return provider;
             } catch (Throwable t) {
                 err = t;
-                errs = (errs == null) ? new StringBuffer() : errs.append("\n");
+                errs = (errs == null) ? new StringBuilder() : errs.append("\n");
                 errs.append(_derivations[i].getClass().getName() + ":" + t);
             }
         }
@@ -301,7 +301,7 @@ public class ProductDerivations {
             loader = AccessController.doPrivileged(
                 J2DoPrivHelper.getContextClassLoaderAction());
         ConfigurationProvider provider = null;
-        StringBuffer errs = null;
+        StringBuilder errs = null;
         Throwable err = null;
         // most specific to least
         for (int i = _derivations.length - 1; i >= 0; i--) {
@@ -311,7 +311,7 @@ public class ProductDerivations {
                     return provider;
             } catch (Throwable t) {
                 err = t;
-                errs = (errs == null) ? new StringBuffer() : errs.append("\n");
+                errs = (errs == null) ? new StringBuilder() : errs.append("\n");
                 errs.append(_derivations[i].getClass().getName() + ":" + t);
             }
         }
@@ -348,7 +348,7 @@ public class ProductDerivations {
                 J2DoPrivHelper.getContextClassLoaderAction());
         
         ConfigurationProvider provider = null;
-        StringBuffer errs = null;
+        StringBuilder errs = null;
         String type = (globals) ? "globals" : "defaults";
         Throwable err = null;
         // most specific to least
@@ -360,7 +360,7 @@ public class ProductDerivations {
                    return provider;
             } catch (Throwable t) {
                 err = t;
-                errs = (errs == null) ? new StringBuffer() : errs.append("\n");
+                errs = (errs == null) ? new StringBuilder() : errs.append("\n");
                 errs.append(_derivations[i].getClass().getName() + ":" + t);
             }
         }
@@ -371,7 +371,7 @@ public class ProductDerivations {
     /**
      * Thrown proper exception for given errors.
      */
-    private static void reportErrors(StringBuffer errs, String resource,
+    private static void reportErrors(StringBuilder errs, String resource,
         Throwable nested) {
         if (errs == null)
             return;
@@ -392,7 +392,7 @@ public class ProductDerivations {
     public static List<String> getFullyQualifiedAnchorsInPropertiesLocation(
         final String propertiesLocation) {
         List<String> fqAnchors = new ArrayList<String>();
-        StringBuffer errs = null;
+        StringBuilder errs = null;
         Throwable err = null;
         for (int i = _derivations.length - 1; i >= 0; i--) {
             try {
@@ -423,7 +423,7 @@ public class ProductDerivations {
                 }
             } catch (Throwable t) {
                 err = t;
-                errs = (errs == null) ? new StringBuffer() : errs.append("\n");
+                errs = (errs == null) ? new StringBuilder() : errs.append("\n");
                 errs.append(_derivations[i].getClass().getName() + ":" + t);
             }
         }
@@ -484,7 +484,7 @@ public class ProductDerivations {
      * Return a message about the status of each product derivation.
      */
     private static String derivationErrorsToString() {
-        StringBuffer buf = new StringBuffer();
+        StringBuilder buf = new StringBuilder();
         buf.append("ProductDerivations: ").append(_derivationNames.length);
         for (int i = 0; i < _derivationNames.length; i++) {
             buf.append("\n").append(i + 1).append(". ").

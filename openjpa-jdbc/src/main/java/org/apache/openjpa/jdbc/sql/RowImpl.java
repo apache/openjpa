@@ -747,7 +747,7 @@ public class RowImpl
      * Return the SQL for a prepared statement update on this row.
      */
     private String getUpdateSQL(DBDictionary dict) {
-        StringBuffer buf = new StringBuffer();
+        StringBuilder buf = new StringBuilder();
         buf.append("UPDATE ").append(dict.getFullName(getTable(), false)).
             append(" SET ");
 
@@ -774,8 +774,8 @@ public class RowImpl
      * Return the SQL for a prepared statement insert on this row.
      */
     private String getInsertSQL(DBDictionary dict) {
-        StringBuffer buf = new StringBuffer();
-        StringBuffer vals = new StringBuffer();
+        StringBuilder buf = new StringBuilder();
+        StringBuilder vals = new StringBuilder();
         buf.append("INSERT INTO ").
             append(dict.getFullName(getTable(), false)).append(" (");
 
@@ -804,7 +804,7 @@ public class RowImpl
      * Return the SQL for a prepared statement delete on this row.
      */
     private String getDeleteSQL(DBDictionary dict) {
-        StringBuffer buf = new StringBuffer();
+        StringBuilder buf = new StringBuilder();
         buf.append("DELETE FROM ").
             append(dict.getFullName(getTable(), false));
         appendWhere(buf, dict);
@@ -814,7 +814,7 @@ public class RowImpl
     /**
      * Appends the where clause onto the given sql buffer.
      */
-    private void appendWhere(StringBuffer buf, DBDictionary dict) {
+    private void appendWhere(StringBuilder buf, DBDictionary dict) {
         boolean hasWhere = false;
         for (int i = 0; i < _cols.length; i++) {
             if (_vals[getWhereIndex(_cols[i])] == null)

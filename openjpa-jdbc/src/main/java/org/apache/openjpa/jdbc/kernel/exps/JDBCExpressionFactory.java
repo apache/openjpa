@@ -446,7 +446,7 @@ public class JDBCExpressionFactory
     private Value getLiteralRawString(Value val) {
         if (val instanceof Lit) {
             Lit lit = (Lit) val;
-            StringBuffer value = new StringBuffer();
+            StringBuilder value = new StringBuilder();
             int pType = lit.getParseType(); 
             if (pType == Literal.TYPE_SQ_STRING ||
                 pType == Literal.TYPE_STRING)

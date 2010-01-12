@@ -54,7 +54,7 @@ public final class CodeFormat implements Cloneable {
         if (tab == 0)
             _tab = "\t";
         else {
-            StringBuffer tabs = new StringBuffer(tab);
+            StringBuilder tabs = new StringBuilder(tab);
             for (int i = 0; i < tab; i++)
                 tabs.append(" ");
             _tab = tabs.toString();
@@ -167,7 +167,7 @@ public final class CodeFormat implements Cloneable {
         if (num == 1)
             return _sep;
 
-        StringBuffer buf = new StringBuffer(_sep.length() * num);
+        StringBuilder buf = new StringBuilder(_sep.length() * num);
         for (int i = 0; i < num; i++)
             buf.append(_sep);
         return buf.toString();
@@ -302,7 +302,7 @@ public final class CodeFormat implements Cloneable {
         if (tabLevel == 1)
             return _tab;
 
-        StringBuffer tabs = new StringBuffer(_tab.length() * tabLevel);
+        StringBuilder tabs = new StringBuilder(_tab.length() * tabLevel);
         for (int i = 0; i < tabLevel; i++)
             tabs.append(_tab);
         return tabs.toString();
@@ -313,7 +313,7 @@ public final class CodeFormat implements Cloneable {
      * Returns parametrized type string for given type(s).
      */
     public String getParametrizedType(String[] typenames) {
-        StringBuffer buf = new StringBuffer ();
+        StringBuilder buf = new StringBuilder();
         buf.append("<");
         for (int i = 0; i < typenames.length; i++) {
             if (i > 0)

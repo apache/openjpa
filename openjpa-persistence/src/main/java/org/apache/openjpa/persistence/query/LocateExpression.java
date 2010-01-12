@@ -55,7 +55,7 @@ public class LocateExpression extends BinaryOperatorExpression  {
 	public String asExpression(AliasContext ctx) {
         String start = _start == null ? EMPTY : COMMA +
                 ((Visitable)_start).asExpression(ctx);
-		return new StringBuffer(_op.toString())
+		return new StringBuilder(_op.toString())
 		    .append(OPEN_BRACE)
 		    .append(((Visitable)_e1).asExpression(ctx))
 		    .append(COMMA) 

@@ -373,7 +373,7 @@ public final class ObjectData
     }
 
     public String toString() {
-        StringBuffer buf = new StringBuffer();
+        StringBuilder buf = new StringBuilder();
         buf.append("Class: (" + _meta.getDescribedType().getName() + ")\n");
         buf.append("Object Id: (" + _oid + ")\n");
         buf.append("Version: (" + _version + ")\n");

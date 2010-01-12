@@ -1100,7 +1100,7 @@ public class ApplicationIdTool {
             append("b == null").closeParen().endl();
         code.tab(3).append("return \"null\";").endl(2);
 
-        code.tab(2).append("StringBuffer r = new StringBuffer").
+        code.tab(2).append("StringBuilder r = new StringBuilder").
             openParen(true).append("b.length * 2").closeParen().
             append(";").endl();
         code.tab(2).append("for").openParen(true).

@@ -916,7 +916,7 @@ public class ConfigurationImpl
     public static String toXMLName(String propName) {
         if (propName == null)
             return null;
-        StringBuffer buf = new StringBuffer();
+        StringBuilder buf = new StringBuilder();
         char c;
         for (int i = 0; i < propName.length(); i++) {
             c = propName.charAt(i);

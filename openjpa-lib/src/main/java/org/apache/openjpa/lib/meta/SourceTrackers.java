@@ -43,7 +43,7 @@ public class SourceTrackers {
      * be provided.
      */
     public static String getSourceLocationMessage(SourceTracker[] trackers) {
-        StringBuffer buf = new StringBuffer(20 * (trackers.length + 1));
+        StringBuilder buf = new StringBuilder(20 * (trackers.length + 1));
         buf.append(_loc.get("source-trackers-location-header")).append(SEP);
         String sourceFilePath;
         for (int i = 0; i < trackers.length; i++) {

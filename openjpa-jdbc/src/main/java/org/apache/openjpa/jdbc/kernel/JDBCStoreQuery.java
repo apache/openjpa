@@ -782,7 +782,7 @@ public class JDBCStoreQuery
 
         Val value2 = concatVal.getVal2();
         Object val2 = getValue(value2, ob, params, sm);
-        return new StringBuffer(100).append(val1).append(val2).toString();
+        return new StringBuilder(100).append(val1).append(val2).toString();
     }
 
     private Object handleSubstringVal(Object value, Object ob, Object[] params,

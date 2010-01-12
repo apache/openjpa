@@ -1772,7 +1772,7 @@ public class QueryImpl
 
 
     public String toString() {
-        StringBuffer buf = new StringBuffer(64);
+        StringBuilder buf = new StringBuilder(255);
         buf.append("Query: ").append(super.toString());
         buf.append("; candidate class: ").append(_class);
         buf.append("; query: ").append(_query);

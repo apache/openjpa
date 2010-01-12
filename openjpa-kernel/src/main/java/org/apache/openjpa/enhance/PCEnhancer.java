@@ -888,7 +888,7 @@ public class PCEnhancer {
             return;
 
         String sep = J2DoPrivHelper.getLineSeparator();
-        StringBuffer buf = new StringBuffer();
+        StringBuilder buf = new StringBuilder();
         for (Iterator itr = _violations.iterator(); itr.hasNext();) {
             buf.append(itr.next());
             if (itr.hasNext())

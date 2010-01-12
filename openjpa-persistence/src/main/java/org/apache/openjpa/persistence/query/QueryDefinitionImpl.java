@@ -354,7 +354,7 @@ public class QueryDefinitionImpl extends ExpressionImpl
 	@Override
 	public String asExpression(AliasContext ctx) {
 		ctx.push(this);
-		StringBuffer buffer = new StringBuffer();
+		StringBuilder buffer = new StringBuilder();
 		registerDomains(ctx);
 		String select = _distinct ? "SELECT DISTINCT " : "SELECT ";
         fillBuffer(select, buffer, ctx, getProjections(), Visit.PROJECTION);
@@ -371,7 +371,7 @@ public class QueryDefinitionImpl extends ExpressionImpl
 		return asExpression(ctx);
 	}
 	
-    public void fillBuffer(String header, StringBuffer buffer, AliasContext ctx,
+    public void fillBuffer(String header, StringBuilder buffer, AliasContext ctx,
 		List list, Visit visit) {
 		if (list == null || list.isEmpty())
 			return;
@@ -392,7 +392,7 @@ public class QueryDefinitionImpl extends ExpressionImpl
 		}
 	}
 	
-    public void fillBuffer(String header, StringBuffer buffer, AliasContext ctx,
+    public void fillBuffer(String header, StringBuilder buffer, AliasContext ctx,
 			Predicate p) {
 		if (p == null)
 			return;

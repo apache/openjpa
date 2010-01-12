@@ -316,12 +316,12 @@ public class LogFactoryImpl
          */
         protected String formatMessage(short level, String message,
             Throwable t) {
-            // we write to a StringBuffer and then flush it all at
+            // we write to a StringBuilder and then flush it all at
             // once as a single line, since some environments(e.g., JBoss)
             // override the System output stream to flush any calls
             // to write without regard to line breaks, making the
             // output incomprehensibe.
-            StringBuffer buf = new StringBuffer();
+            StringBuilder buf = new StringBuilder();
 
             buf.append(getOffset());
             buf.append("  ");

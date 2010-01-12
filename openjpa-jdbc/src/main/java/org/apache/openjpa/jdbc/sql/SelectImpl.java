@@ -715,7 +715,7 @@ public class SelectImpl
                 else if (join.getTable2() == table)
                     tableAlias = join.getAlias2();
                 if (tableAlias != null)
-                    return new StringBuffer(tableAlias).append(".").
+                    return new StringBuilder(tableAlias).append(".").
                         append(columnName).toString();
             }
         }
@@ -2147,7 +2147,7 @@ public class SelectImpl
         return false;
     }
 
-    public StringBuffer path() {
+    public StringBuilder path() {
         return null;
     }
 
@@ -2339,7 +2339,7 @@ public class SelectImpl
                 return this;
 
             PathJoinsImpl pj = new PathJoinsImpl();
-            pj.path = new StringBuffer(pre.path().toString());
+            pj.path = new StringBuilder(pre.path().toString());
             return pj;
         }
 
@@ -2500,7 +2500,7 @@ public class SelectImpl
             return false;
         }
 
-        public StringBuffer path() {
+        public StringBuilder path() {
             return null;
         }
 
@@ -2577,7 +2577,7 @@ public class SelectImpl
     private static class PathJoinsImpl
         implements PathJoins {
 
-        protected StringBuffer path = null;
+        protected StringBuilder path = null;
         protected String var = null;
         protected String correlatedVar = null;
         protected Context context = null;
@@ -2599,7 +2599,7 @@ public class SelectImpl
             return var != null || path != null;
         }
 
-        public StringBuffer path() {
+        public StringBuilder path() {
             return path;
         }
 
@@ -2683,7 +2683,7 @@ public class SelectImpl
         protected void append(String str) {
             if (str != null) {
                 if (path == null)
-                    path = new StringBuffer(str);
+                    path = new StringBuilder(str);
                 else
                     path.append('.').append(str);
             }
@@ -2971,7 +2971,7 @@ public class SelectImpl
             SelectJoins sj = new SelectJoins(sel);
             sj.var = var;
             if (path != null)
-                sj.path = new StringBuffer(path.toString());
+                sj.path = new StringBuilder(path.toString());
             if (_joins != null && !_joins.isEmpty())
                 sj._joins = new JoinSet(_joins);
             sj._outer = _outer;
@@ -3221,7 +3221,7 @@ interface PathJoins
     /**
      * Return the relation path traversed by these joins, or null if none.
      */
-    public StringBuffer path();
+    public StringBuilder path();
 
     /**
      * Return the set of {@link Join} elements, or null if none.

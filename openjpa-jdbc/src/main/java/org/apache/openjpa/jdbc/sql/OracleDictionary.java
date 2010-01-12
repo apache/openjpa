@@ -668,7 +668,7 @@ public class OracleDictionary
     public PrimaryKey[] getPrimaryKeys(DatabaseMetaData meta,
         String catalog, String schemaName, String tableName, Connection conn)
         throws SQLException {
-        StringBuffer buf = new StringBuffer();
+        StringBuilder buf = new StringBuilder();
         buf.append("SELECT t0.OWNER AS TABLE_SCHEM, ").
             append("t0.TABLE_NAME AS TABLE_NAME, ").
             append("t0.COLUMN_NAME AS COLUMN_NAME, ").
@@ -714,7 +714,7 @@ public class OracleDictionary
         String schemaName, String tableName, boolean unique, boolean approx,
         Connection conn)
         throws SQLException {
-        StringBuffer buf = new StringBuffer();
+        StringBuilder buf = new StringBuilder();
         buf.append("SELECT t0.INDEX_OWNER AS TABLE_SCHEM, ").
             append("t0.TABLE_NAME AS TABLE_NAME, ").
             append("DECODE(t1.UNIQUENESS, 'UNIQUE', 0, 'NONUNIQUE', 1) ").
@@ -760,7 +760,7 @@ public class OracleDictionary
     public ForeignKey[] getImportedKeys(DatabaseMetaData meta, String catalog,
         String schemaName, String tableName, Connection conn, boolean partialKeys)
         throws SQLException {
-        StringBuffer delAction = new StringBuffer("DECODE(t1.DELETE_RULE").
+        StringBuilder delAction = new StringBuilder("DECODE(t1.DELETE_RULE").
             append(", 'NO ACTION', ").append(meta.importedKeyNoAction).
             append(", 'RESTRICT', ").append(meta.importedKeyRestrict).
             append(", 'CASCADE', ").append(meta.importedKeyCascade).
@@ -768,7 +768,7 @@ public class OracleDictionary
             append(", 'SET DEFAULT', ").append(meta.importedKeySetDefault).
             append(")");
 
-        StringBuffer buf = new StringBuffer();
+        StringBuilder buf = new StringBuilder();
         buf.append("SELECT t2.OWNER AS PKTABLE_SCHEM, ").
             append("t2.TABLE_NAME AS PKTABLE_NAME, ").
             append("t2.COLUMN_NAME AS PKCOLUMN_NAME, ").
@@ -902,7 +902,7 @@ public class OracleDictionary
 
 
     protected String getSequencesSQL(String schemaName, String sequenceName) {
-        StringBuffer buf = new StringBuffer();
+        StringBuilder buf = new StringBuilder();
         buf.append("SELECT SEQUENCE_OWNER AS SEQUENCE_SCHEMA, ").
             append("SEQUENCE_NAME FROM ALL_SEQUENCES");
         if (schemaName != null || sequenceName != null)

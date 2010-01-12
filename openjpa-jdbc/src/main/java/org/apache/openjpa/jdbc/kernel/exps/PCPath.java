@@ -216,7 +216,7 @@ public class PCPath
     }
     
     public String getXPath() {
-        StringBuffer xpath = new StringBuffer();
+        StringBuilder xpath = new StringBuilder();
         Action action;
         Iterator itr = _actions.iterator();
         
@@ -248,7 +248,7 @@ public class PCPath
         if (_actions == null)
             return (_varName == null) ? "" : _varName + ".";
 
-        StringBuffer path = new StringBuffer();
+        StringBuilder path = new StringBuilder();
         Action action;
         for (Iterator itr = _actions.iterator(); itr.hasNext();) {
             action = (Action) itr.next();

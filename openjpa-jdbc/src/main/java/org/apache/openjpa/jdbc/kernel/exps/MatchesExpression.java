@@ -128,7 +128,7 @@ class MatchesExpression
     private static String replaceEscape(String str, String from, String to,
         String escape) {
         String[] parts = Strings.split(str, from, Integer.MAX_VALUE);
-        StringBuffer repbuf = new StringBuffer();
+        StringBuilder repbuf = new StringBuilder();
         for (int i = 0; i < parts.length; i++) {
             if (i > 0) {
                 // if the previous part ended with an escape character, then

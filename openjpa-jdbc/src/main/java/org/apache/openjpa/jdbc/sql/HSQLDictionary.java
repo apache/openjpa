@@ -134,7 +134,7 @@ public class HSQLDictionary
     }
 
     public String[] getCreateTableSQL(Table table) {
-        StringBuffer buf = new StringBuffer();
+        StringBuilder buf = new StringBuilder();
         buf.append("CREATE ");
         if (cacheTables)
             buf.append("CACHED ");
@@ -179,7 +179,7 @@ public class HSQLDictionary
     }
 
     protected String getSequencesSQL(String schemaName, String sequenceName) {
-        StringBuffer buf = new StringBuffer();
+        StringBuilder buf = new StringBuilder();
         buf.append("SELECT SEQUENCE_SCHEMA, SEQUENCE_NAME FROM ").
             append("INFORMATION_SCHEMA.SYSTEM_SEQUENCES");
         if (schemaName != null || sequenceName != null)

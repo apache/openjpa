@@ -118,7 +118,7 @@ public class H2Dictionary extends DBDictionary {
     }
 
     public String[] getCreateTableSQL(Table table) {
-        StringBuffer buf = new StringBuffer();
+        StringBuilder buf = new StringBuilder();
         buf.append("CREATE TABLE ").append(getFullName(table, false))
             .append(" (");
 
@@ -161,7 +161,7 @@ public class H2Dictionary extends DBDictionary {
     }
 
     protected String getSequencesSQL(String schemaName, String sequenceName) {
-        StringBuffer buf = new StringBuffer();
+        StringBuilder buf = new StringBuilder();
         buf.append("SELECT SEQUENCE_SCHEMA, SEQUENCE_NAME FROM ")
             .append("INFORMATION_SCHEMA.SEQUENCES");
         if (schemaName != null || sequenceName != null)

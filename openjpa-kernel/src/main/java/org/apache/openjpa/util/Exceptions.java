@@ -121,7 +121,7 @@ public class Exceptions {
      * Safely stringify the given objects.
      */
     public static String toString(Collection failed) {
-        StringBuffer buf = new StringBuffer();
+        StringBuilder buf = new StringBuilder();
         buf.append("[");
         for (Iterator itr = failed.iterator(); itr.hasNext();) {
             buf.append(Exceptions.toString(itr.next()));
@@ -137,7 +137,7 @@ public class Exceptions {
      */
     public static String toString(ExceptionInfo e) {
         int type = e.getType();
-        StringBuffer buf = new StringBuffer();
+        StringBuilder buf = new StringBuilder();
         buf.append("<").
             append(OpenJPAVersion.VERSION_ID).
             append(' ').

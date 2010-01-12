@@ -136,8 +136,8 @@ public class SQLFormatter {
         if (!multiLine) {
             return prettyPrintLine(sqlObject);
         } else {
-            StringBuffer sql = new StringBuffer(sqlObject.toString());
-            StringBuffer buf = new StringBuffer(sql.length());
+            StringBuilder sql = new StringBuilder(sqlObject.toString());
+            StringBuilder buf = new StringBuilder(sql.length());
 
             while (sql.length() > 0) {
                 String line = null;
@@ -183,9 +183,9 @@ public class SQLFormatter {
 
         int start = 0;
         int end = -1;
-        StringBuffer clause;
-        List<StringBuffer> clauses = new ArrayList<StringBuffer>();
-        clauses.add(new StringBuffer());
+        StringBuilder clause;
+        List<StringBuilder> clauses = new ArrayList<StringBuilder>();
+        clauses.add(new StringBuilder());
         for (int i = 0; i < separators.length; i++) {
             end = lowerCaseSql.indexOf(" " + separators[i].toLowerCase(),
                 start);
@@ -195,7 +195,7 @@ public class SQLFormatter {
             clause = clauses.get(clauses.size() - 1);
             clause.append(sql.substring(start, end));
 
-            clause = new StringBuffer();
+            clause = new StringBuilder();
             clauses.add(clause);
             clause.append(clauseIndent);
             clause.append(separators[i]);
@@ -206,8 +206,8 @@ public class SQLFormatter {
         clause = clauses.get(clauses.size() - 1);
         clause.append(sql.substring(start));
 
-        StringBuffer pp = new StringBuffer(sql.length());
-        for (Iterator<StringBuffer> iter = clauses.iterator(); iter.hasNext();){
+        StringBuilder pp = new StringBuilder(sql.length());
+        for (Iterator<StringBuilder> iter = clauses.iterator(); iter.hasNext();){
             pp.append(wrapLine(iter.next().toString()));
             if (iter.hasNext())
                 pp.append(newline);
@@ -217,7 +217,7 @@ public class SQLFormatter {
     }
 
     private String wrapLine(String line) {
-        StringBuffer lines = new StringBuffer(line.length());
+        StringBuilder lines = new StringBuilder(line.length());
 
         // ensure that any leading whitespace is preserved.
         for (int i = 0; i < line.length() &&

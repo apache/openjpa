@@ -296,7 +296,7 @@ public class DBDictionaryFactory {
     public static String toString(DatabaseMetaData meta)
         throws SQLException {
         String lineSep = J2DoPrivHelper.getLineSeparator();
-        StringBuffer buf = new StringBuffer();
+        StringBuilder buf = new StringBuilder(4096);
         try {
             buf.append("catalogSeparator: ")
                 .append(meta.getCatalogSeparator())

@@ -114,7 +114,7 @@ public class TypeLit
     }
 
     private String getDiscriminator(LitExpState lstate) {
-        StringBuffer disc = new StringBuffer(lstate.discValue.toString());
+        StringBuilder disc = new StringBuilder(lstate.discValue.toString());
         switch(lstate.disc.getJavaType()) {
         case JavaTypes.INT:
             return disc.toString();

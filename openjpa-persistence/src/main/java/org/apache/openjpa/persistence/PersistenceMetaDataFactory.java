@@ -434,11 +434,11 @@ public class PersistenceMetaDataFactory
      * Ensure all fields have declared a strategy.
      */
     private void validateStrategies(ClassMetaData meta) {
-        StringBuffer buf = null;
+        StringBuilder buf = null;
         for (FieldMetaData fmd : meta.getDeclaredFields()) {
             if (!fmd.isExplicit()) {
                 if (buf == null)
-                    buf = new StringBuffer();
+                    buf = new StringBuilder();
                 else
                     buf.append(", ");
                 buf.append(fmd);

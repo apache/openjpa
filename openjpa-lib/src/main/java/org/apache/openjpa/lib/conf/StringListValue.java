@@ -88,7 +88,7 @@ public class StringListValue extends Value {
         // canonical values.  Also, catch any bad aliases.
         boolean found;
         String iString;
-        StringBuffer retv = new StringBuffer();
+        StringBuilder retv = new StringBuilder();
         String[] vals = str.split(",", 0);
         
         for (int i = 0; i < vals.length; i++) {

@@ -106,7 +106,7 @@ public class PluginListValue extends ObjectValue {
         if (_names.length == 0)
             return null;
 
-        StringBuffer buf = new StringBuffer();
+        StringBuilder buf = new StringBuilder();
         for (int i = 0; i < _names.length; i++) {
             if (i > 0)
                 buf.append(", ");
@@ -136,7 +136,7 @@ public class PluginListValue extends ObjectValue {
         // split up the string; each element might be a class name, or a
         // class name with properties settings
         List<String> plugins = new ArrayList<String>();
-        StringBuffer plugin = new StringBuffer();
+        StringBuilder plugin = new StringBuilder();
         boolean inParen = false;
         char c;
         for (int i = 0; i < str.length(); i++) {
@@ -155,7 +155,7 @@ public class PluginListValue extends ObjectValue {
                         plugin.append(c);
                     else {
                         plugins.add(plugin.toString());
-                        plugin = new StringBuffer();
+                        plugin = new StringBuilder();
                     }
                     break;
                 default:

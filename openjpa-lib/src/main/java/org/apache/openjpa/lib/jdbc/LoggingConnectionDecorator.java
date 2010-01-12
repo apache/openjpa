@@ -1345,9 +1345,9 @@ public class LoggingConnectionDecorator implements ConnectionDecorator {
                     buf.append(_sql);
                 }
 
-                StringBuffer paramBuf = null;
+                StringBuilder paramBuf = null;
                 if (_params != null && !_params.isEmpty()) {
-                    paramBuf = new StringBuffer();
+                    paramBuf = new StringBuilder();
                     for (Iterator<String> itr = _params.iterator(); itr
                         .hasNext();) {
                         paramBuf.append(itr.next());
@@ -1928,9 +1928,9 @@ public class LoggingConnectionDecorator implements ConnectionDecorator {
                     buf.append(_sql);
                 }
 
-                StringBuffer paramBuf = null;
+                StringBuilder paramBuf = null;
                 if (_params != null && !_params.isEmpty()) {
-                    paramBuf = new StringBuffer();
+                    paramBuf = new StringBuilder();
                     for (Iterator<String> itr = _params.iterator(); itr
                         .hasNext();) {
                         paramBuf.append(itr.next());

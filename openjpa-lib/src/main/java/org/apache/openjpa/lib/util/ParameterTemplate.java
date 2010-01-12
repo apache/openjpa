@@ -199,14 +199,14 @@ public class ParameterTemplate {
         if (_buf.length() == 0 || _params.isEmpty())
             return _buf.toString();
 
-        StringBuffer copy = new StringBuffer();
-        StringBuffer param = null;
+        StringBuilder copy = new StringBuilder();
+        StringBuilder param = null;
         char ch, last = 0;
         for (int i = 0; i < _buf.length(); i++) {
             ch = _buf.charAt(i);
             if (last == '$' && ch == '{') {
                 copy.deleteCharAt(copy.length() - 1);
-                param = new StringBuffer();
+                param = new StringBuilder();
             } else if (ch == '}' && param != null) {
                 if (_params.containsKey(param.toString()))
                     copy.append(_params.get(param.toString()));

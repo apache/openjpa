@@ -363,7 +363,7 @@ public class MetamodelImpl implements Metamodel, Resolver {
         }
         ParameterizedType pType = (ParameterizedType)type;
         java.lang.reflect.Type[] args = pType.getActualTypeArguments();
-        StringBuffer tmp = new StringBuffer(pType.getRawType().toString());
+        StringBuilder tmp = new StringBuilder(pType.getRawType().toString());
         for (int i = 0; i < args.length; i++) {
             tmp.append((i == 0) ? "<" : ",");
             tmp.append(toTypeName(args[i]));

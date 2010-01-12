@@ -573,7 +573,7 @@ public class MetaDataRepository implements PCRegistry.RegisterClassListener, Con
      * Return a string representation of the given mode flags.
      */
     private static String toModeString(int mode) {
-        StringBuffer buf = new StringBuffer(31);
+        StringBuilder buf = new StringBuilder(31);
         if ((mode & MODE_META) != 0)
             buf.append("[META]");
         if ((mode & MODE_QUERY) != 0)

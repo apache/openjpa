@@ -1747,7 +1747,7 @@ public class DBDictionary
 
         String size = null;
         if (col.getSize() > 0) {
-            StringBuffer buf = new StringBuffer(10);
+            StringBuilder buf = new StringBuilder(10);
             buf.append("(").append(col.getSize());
             if (col.getDecimalDigits() > 0)
                 buf.append(", ").append(col.getDecimalDigits());
@@ -3176,7 +3176,7 @@ public class DBDictionary
         if (name == null || name.length() <= targetLength)
             return name;
 
-        StringBuffer nm = new StringBuffer(name);
+        StringBuilder nm = new StringBuilder(name);
         while (nm.length() > targetLength) {
             if (!stripVowel(nm)) {
                 // cut out the middle char
@@ -3191,7 +3191,8 @@ public class DBDictionary
      *
      * @return true if any vowels have been removed
      */
-    private static boolean stripVowel(StringBuffer name) {
+    //private static boolean stripVowel(StringBuffer name) {
+    private static boolean stripVowel(StringBuilder name) {
         if (name == null || name.length() == 0)
             return false;
 
@@ -3336,7 +3337,7 @@ public class DBDictionary
      * with columns. Indexes and constraints will be created separately.
      */
     public String[] getCreateTableSQL(Table table) {
-        StringBuffer buf = new StringBuffer();
+        StringBuilder buf = new StringBuilder();
         String tableName = checkNameLength(getFullName(table, false), 
                 maxTableNameLength, "long-table-name");
         buf.append("CREATE TABLE ").append(tableName);
@@ -3350,7 +3351,7 @@ public class DBDictionary
 
         // do this before getting the columns so we know how to handle
         // the last comma
-        StringBuffer endBuf = new StringBuffer();
+        StringBuilder endBuf = new StringBuilder();
         PrimaryKey pk = table.getPrimaryKey();
         String pkStr;
         if (pk != null) {
@@ -3390,7 +3391,8 @@ public class DBDictionary
         return batchFetchSize;
     }
 
-    protected StringBuffer comment(StringBuffer buf, String comment) {
+    //protected StringBuffer comment(StringBuffer buf, String comment) {
+    protected StringBuilder comment(StringBuilder buf, String comment) {
         return buf.append("-- ").append(comment);
     }
 
@@ -3414,7 +3416,7 @@ public class DBDictionary
         if (nextSequenceQuery == null)
             return null;
 
-        StringBuffer buf = new StringBuffer();
+        StringBuilder buf = new StringBuilder();
         buf.append("CREATE SEQUENCE ");
         String seqName = checkNameLength(getFullName(seq), maxTableNameLength, 
                 "long-seq-name");
@@ -3440,7 +3442,7 @@ public class DBDictionary
      * (&lt;col list&gt;)</code> by default.
      */
     public String[] getCreateIndexSQL(Index index) {
-        StringBuffer buf = new StringBuffer();
+        StringBuilder buf = new StringBuilder();
         buf.append("CREATE ");
         if (index.isUnique())
             buf.append("UNIQUE ");
@@ -3562,7 +3564,7 @@ public class DBDictionary
      * {@link #getAddColumnSQL}.
      */
     protected String getDeclareColumnSQL(Column col, boolean alter) {
-        StringBuffer buf = new StringBuffer();
+        StringBuilder buf = new StringBuilder();
         String columnName = checkNameLength(col.getName(), maxColumnNameLength, 
                 "long-column-name");
         buf.append(columnName).append(" ");
@@ -3601,7 +3603,7 @@ public class DBDictionary
         if (name != null && reservedWordSet.contains(name.toUpperCase()))
             name = null;
 
-        StringBuffer buf = new StringBuffer();
+        StringBuilder buf = new StringBuilder();
         if (name != null && CONS_NAME_BEFORE.equals(constraintNameMode))
             buf.append("CONSTRAINT ").append(name).append(" ");
         buf.append("PRIMARY KEY ");
@@ -3649,7 +3651,7 @@ public class DBDictionary
         String delAction = getActionName(delActionId);
         String upAction = getActionName(fk.getUpdateAction());
 
-        StringBuffer buf = new StringBuffer();
+        StringBuilder buf = new StringBuilder();
         if (fk.getName() != null
             && CONS_NAME_BEFORE.equals(constraintNameMode))
             buf.append("CONSTRAINT ").append(fk.getName()).append(" ");
@@ -3754,7 +3756,7 @@ public class DBDictionary
         if (!supportsUniqueConstraints
             || (unq.isDeferred() && !supportsDeferredUniqueConstraints()))
             return null;
-        StringBuffer buf = new StringBuffer();
+        StringBuilder buf = new StringBuilder();
         if (unq.getName() != null
             && CONS_NAME_BEFORE.equals(constraintNameMode))
             buf.append("CONSTRAINT ").append(checkNameLength(unq.getName(), 
@@ -4378,7 +4380,7 @@ public class DBDictionary
             // this assumes that tname is longer than extraChars
             tname = tname.substring(0, tname.length() - extraChars);
         }
-        StringBuffer buf = new StringBuffer(max);
+        StringBuilder buf = new StringBuilder(max);
         buf.append(tname).append("_").append(cname).append("_SEQ");
         return buf.toString();
     }

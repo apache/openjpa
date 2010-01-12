@@ -311,7 +311,7 @@ public class FormatPreservingProperties extends Properties {
                 || line.charAt(pos) == '#' || line.charAt(pos) == '!')
                 continue;
 
-            StringBuffer key = new StringBuffer();
+            StringBuilder key = new StringBuilder();
             while (pos < line.length() && !isSpace(c = line.charAt(pos++))
                 && c != '=' && c != ':') {
                 if (c == '\\') {
@@ -341,7 +341,7 @@ public class FormatPreservingProperties extends Properties {
                     pos++;
             }
 
-            StringBuffer element = new StringBuffer(line.length() - pos);
+            StringBuilder element = new StringBuilder(line.length() - pos);
 
             while (pos < line.length()) {
                 c = line.charAt(pos++);
@@ -385,7 +385,7 @@ public class FormatPreservingProperties extends Properties {
      * @param value the value we are appending to
      * @return the position after the reading is done
      */
-    private static int readEscape(String source, int pos, StringBuffer value) {
+    private static int readEscape(String source, int pos, StringBuilder value) {
         char c = source.charAt(pos++);
         switch (c) {
             case 'n':
@@ -485,7 +485,7 @@ public class FormatPreservingProperties extends Properties {
 
     private boolean writeProperty(String key, PrintWriter writer,
         boolean needsNewline) {
-        StringBuffer s = new StringBuffer();
+        StringBuilder s = new StringBuilder();
 
         if (key == null)
             return false;
@@ -517,7 +517,7 @@ public class FormatPreservingProperties extends Properties {
      * @param isKey if true, then the string is a Property key, otherwise
      * it is a value
      */
-    private static void formatValue(String str, StringBuffer buf,
+    private static void formatValue(String str, StringBuilder buf,
         boolean isKey) {
         if (isKey) {
             buf.setLength(0);
@@ -569,7 +569,7 @@ public class FormatPreservingProperties extends Properties {
      */
     private class PropertyLine implements Serializable {
 
-        private final StringBuffer line = new StringBuffer();
+        private final StringBuilder line = new StringBuilder();
         private String propertyKey;
         private String propertyValue;
 

@@ -450,7 +450,7 @@ public class SourceAnnotationHandler
     
     String toDetails(Element e) {
         TypeMirror mirror = e.asType();
-        return new StringBuffer(e.getKind().toString()).append(" ")
+        return new StringBuilder(e.getKind().toString()).append(" ")
                            .append(e.toString())
                            .append("Mirror ")
                            .append(mirror.getKind().toString())

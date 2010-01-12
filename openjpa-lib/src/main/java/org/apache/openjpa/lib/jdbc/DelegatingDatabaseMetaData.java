@@ -85,7 +85,7 @@ public abstract class DelegatingDatabaseMetaData implements DatabaseMetaData {
     }
 
     public String toString() {
-        StringBuffer buf = new StringBuffer("metadata ").append(hashCode());
+        StringBuilder buf = new StringBuilder("metadata ").append(hashCode());
         buf.append("[").append(_metaData.toString()).append("]");
         return buf.toString();
     }

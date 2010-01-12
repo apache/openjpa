@@ -398,7 +398,7 @@ public class PersistenceUnitInfoImpl
         Properties metaFactoryProps = new Properties();
         if (info.getManagedClassNames() != null 
             && !info.getManagedClassNames().isEmpty()) {
-            StringBuffer types = new StringBuffer();
+            StringBuilder types = new StringBuilder();
             for (String type : info.getManagedClassNames()) {
                 if (types.length() > 0)
                     types.append(';');
@@ -409,7 +409,7 @@ public class PersistenceUnitInfoImpl
         if (info.getJarFileUrls() != null && !info.getJarFileUrls().isEmpty()
             || (!info.excludeUnlistedClasses()
             && info.getPersistenceUnitRootUrl() != null)) {
-            StringBuffer jars = new StringBuffer();
+            StringBuilder jars = new StringBuilder();
             String file = null;
             if (!info.excludeUnlistedClasses()
                 && info.getPersistenceUnitRootUrl() != null) {
@@ -431,7 +431,7 @@ public class PersistenceUnitInfoImpl
         }
         if (info.getMappingFileNames() != null
             && !info.getMappingFileNames().isEmpty()) {
-            StringBuffer rsrcs = new StringBuffer();
+            StringBuilder rsrcs = new StringBuilder();
             for (String rsrc : info.getMappingFileNames()) {
                 if (rsrcs.length() > 0)
                     rsrcs.append(';');

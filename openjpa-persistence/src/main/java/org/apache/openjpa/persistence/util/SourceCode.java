@@ -190,7 +190,7 @@ public class SourceCode {
     public static String[] wrap(String longLine, int width) {
         String[] words = longLine.split("\\ ");
         List<String> lines = new ArrayList<String>();
-        StringBuffer line = new StringBuffer();
+        StringBuilder line = new StringBuilder();
         for (int i = 0; i < words.length; i++) {
             String w = words[i];
             if (line.length() + w.length() < width) {
@@ -680,7 +680,7 @@ public class SourceCode {
         }
         
         public Annotation addArgument(String key, String[] vs) {
-            StringBuffer tmp = new StringBuffer(BLOCK_DELIMITER.start);
+            StringBuilder tmp = new StringBuilder(BLOCK_DELIMITER.start);
             for (int i=0; i < vs.length; i++) {
                 tmp.append(quote(vs[i]));
                 tmp.append(i != vs.length-1 ? COMMA : BLANK);

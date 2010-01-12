@@ -194,7 +194,7 @@ public class SybaseDictionary
         if (!createIdentityColumn)
             return super.getCreateTableSQL(table);
 
-        StringBuffer buf = new StringBuffer();
+        StringBuilder buf = new StringBuilder();
         buf.append("CREATE TABLE ").append(getFullName(table, false)).
             append(" (");
 
@@ -231,7 +231,7 @@ public class SybaseDictionary
     }
 
     protected String getDeclareColumnSQL(Column col, boolean alter) {
-        StringBuffer buf = new StringBuffer();
+        StringBuilder buf = new StringBuilder();
         buf.append(col).append(" ");
         buf.append(getTypeName(col));
 

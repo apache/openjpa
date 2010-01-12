@@ -132,7 +132,7 @@ public class DataSourceLogs {
         if (startTime != -1)
             totalTime = System.currentTimeMillis() - startTime;
 
-        StringBuffer buf = new StringBuffer(25 + msg.length());
+        StringBuilder buf = new StringBuilder(25 + msg.length());
         buf.append("<t ").append(Thread.currentThread().hashCode());
         if (conn != null)
             buf.append(", ").append(conn);

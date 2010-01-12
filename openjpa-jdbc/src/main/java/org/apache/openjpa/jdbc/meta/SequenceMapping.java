@@ -161,7 +161,7 @@ public class SequenceMapping
     }
 
     @Override
-    protected void addStandardProperties(StringBuffer props) {
+    protected void addStandardProperties(StringBuilder props) {
         super.addStandardProperties(props);
         // Quotes are conditionally added to the following because the props
         // are eventually passed to the Configurations.parseProperties()

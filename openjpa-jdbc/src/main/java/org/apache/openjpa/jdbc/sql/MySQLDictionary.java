@@ -288,7 +288,7 @@ public class MySQLDictionary
         if (!optimizeMultiTableDeletes)
             return super.getDeleteTableContentsSQL(tables,conn);
         else {
-            StringBuffer buf = new StringBuffer(tables.length * 8);
+            StringBuilder buf = new StringBuilder(tables.length * 8);
             buf.append("DELETE FROM ");
             for (int i = 0; i < tables.length; i++) {
                 buf.append(tables[i].getFullName());

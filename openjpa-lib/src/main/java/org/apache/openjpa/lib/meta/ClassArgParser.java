@@ -338,14 +338,14 @@ public class ClassArgParser {
             // find the line with the package declaration
             in = new BufferedReader(new FileReader(file));
             String line;
-            StringBuffer pack = null;
+            StringBuilder pack = null;
             while ((line = in.readLine()) != null) {
                 line = line.trim();
                 if (line.startsWith("package ")) {
                     line = line.substring(8).trim();
 
                     // strip off anything beyond the package declaration
-                    pack = new StringBuffer();
+                    pack = new StringBuilder();
                     for (int i = 0; i < line.length(); i++) {
                         if (Character.isJavaIdentifierPart(line.charAt(i))
                             || line.charAt(i) == '.')
@@ -579,7 +579,7 @@ public class ClassArgParser {
      * Read the current text value until the next element.
      */
     private String readElementText(Reader in) throws IOException {
-        StringBuffer buf = null;
+        StringBuilder buf = null;
         int ch;
         while (true) {
             ch = in.read();
@@ -590,7 +590,7 @@ public class ClassArgParser {
             if (Character.isWhitespace((char) ch))
                 continue;
             if (buf == null)
-                buf = new StringBuffer();
+                buf = new StringBuilder();
             buf.append((char) ch);
         }
         return (buf == null) ? "" : buf.toString();
@@ -612,7 +612,7 @@ public class ClassArgParser {
      * Return the current attribute value.
      */
     private String readAttributeValue(Reader in) throws IOException {
-        StringBuffer buf = new StringBuffer();
+        StringBuilder buf = new StringBuilder();
         int ch;
         while (true) {
             ch = in.read();

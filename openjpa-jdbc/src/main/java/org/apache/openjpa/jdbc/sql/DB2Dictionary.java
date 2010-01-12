@@ -231,7 +231,7 @@ public class DB2Dictionary
     }
 
     protected String getSequencesSQL(String schemaName, String sequenceName) {
-        StringBuffer buf = new StringBuffer();
+        StringBuilder buf = new StringBuilder();
         buf.append(sequenceSQL);
         if (schemaName != null || sequenceName != null)
             buf.append(" WHERE ");
@@ -381,7 +381,7 @@ public class DB2Dictionary
         int isolationLevel;
         // For db2UDBV81OrEarlier and db2ISeriesV5R3OrEarlier:
         // "optimize for" clause appears before "for update" clause.
-        StringBuffer forUpdateString = new StringBuffer(getOptimizeClause(sel));
+        StringBuilder forUpdateString = new StringBuilder(getOptimizeClause(sel));
         // Determine the isolationLevel; the fetch
         // configuration data overrides the persistence.xml value
         if (fetch != null && fetch.getIsolation() != -1)
@@ -534,7 +534,7 @@ public class DB2Dictionary
 
     protected String getOptimizeClause(Select sel) {
         if (sel != null && sel.getExpectedResultCount() > 0) {
-            StringBuffer buf = new StringBuffer();
+            StringBuilder buf = new StringBuilder();
             buf.append(" ").append(optimizeClause).append(" ")
                 .append(String.valueOf(sel.getExpectedResultCount()))
                 .append(" ").append(rowClause);
@@ -569,7 +569,7 @@ public class DB2Dictionary
             getMethod("getSqlWarn", null);
             Method  getSqlErrdMethd = sqlca.getClass().
             getMethod("getSqlErrd", null);
-            StringBuffer errdStr = new StringBuffer();
+            StringBuilder errdStr = new StringBuilder();
 
             int[] errds = (int[]) getSqlErrdMethd.invoke(sqlca, new Object[]{});
             for (int i = 0; i < errds.length; i++)

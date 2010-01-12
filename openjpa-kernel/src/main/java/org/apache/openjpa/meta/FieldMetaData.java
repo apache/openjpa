@@ -1207,7 +1207,7 @@ public class FieldMetaData
      */
     public String getOrderDeclaration() {
         if (_orderDec == null && _orders != null) {
-            StringBuffer buf = new StringBuffer();
+            StringBuilder buf = new StringBuilder();
             for (int i = 0; i < _orders.length; i++) {
                 if (i > 0)
                     buf.append(", ");

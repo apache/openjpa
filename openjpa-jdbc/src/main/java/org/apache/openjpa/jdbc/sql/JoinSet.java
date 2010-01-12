@@ -345,7 +345,7 @@ class JoinSet {
     }
 
     public String toString() {
-        StringBuffer buf = new StringBuffer();
+        StringBuilder buf = new StringBuilder();
         buf.append("[");
         for (Iterator itr = iterator(); itr.hasNext();) {
             buf.append("<").append(itr.next()).append(">");

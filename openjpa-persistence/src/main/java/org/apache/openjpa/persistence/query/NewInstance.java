@@ -48,7 +48,7 @@ public class NewInstance extends AbstractVisitable
 	
 	
 	public String asProjection(AliasContext ctx) {
-        StringBuffer tmp = new StringBuffer("NEW ").append(_cls.getName())
+            StringBuilder tmp = new StringBuilder("NEW ").append(_cls.getName())
 		    .append("(");
 		if (_args == null || _args.isEmpty())
 			return tmp.append(")").toString();

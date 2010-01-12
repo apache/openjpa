@@ -50,7 +50,7 @@ class Concat
     protected Object eval(Object candidate, Object orig,
         StoreContext ctx, Object[] params) {
         Object str = _val.eval(candidate, orig, ctx, params);
-        StringBuffer cat = new StringBuffer(str.toString());
+        StringBuilder cat = new StringBuilder(str.toString());
 
         Object arg = _args.eval(candidate, orig, ctx, params);
         if (arg instanceof Object[]) {

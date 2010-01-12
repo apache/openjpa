@@ -623,7 +623,7 @@ public abstract class AbstractBrokerFactory
             if (log.isTraceEnabled()) {
                 Map<String,Object> props = _conf.toProperties(true);
                 String lineSep = J2DoPrivHelper.getLineSeparator();
-                StringBuffer buf = new StringBuffer();
+                StringBuilder buf = new StringBuilder();
                 Map.Entry<?,?> entry;
                 for (Iterator<Map.Entry<String,Object>> itr = props.entrySet().iterator(); itr.hasNext();) {
                     entry = itr.next();

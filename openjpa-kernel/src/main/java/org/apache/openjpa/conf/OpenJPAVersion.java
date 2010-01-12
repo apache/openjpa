@@ -99,7 +99,7 @@ public class OpenJPAVersion {
     }
 
     public String toString() {
-        StringBuffer buf = new StringBuffer(80 * 30);
+        StringBuilder buf = new StringBuilder(80 * 40);
         appendOpenJPABanner(buf);
         buf.append("\n");
 
@@ -124,7 +124,7 @@ public class OpenJPAVersion {
         return buf.toString();
     }
 
-    public void appendOpenJPABanner(StringBuffer buf) {
+    public void appendOpenJPABanner(StringBuilder buf) {
         buf.append(VENDOR_NAME).append(" ");
         buf.append(VERSION_NUMBER);
         buf.append("\n");
@@ -134,7 +134,7 @@ public class OpenJPAVersion {
         buf.append("\n");
     }
 
-    private StringBuffer appendProperty(String prop, StringBuffer buf) {
+    private StringBuilder appendProperty(String prop, StringBuilder buf) {
         return buf.append(prop).append(": ").append(
             AccessController.doPrivileged(J2DoPrivHelper
                 .getPropertyAction(prop)));

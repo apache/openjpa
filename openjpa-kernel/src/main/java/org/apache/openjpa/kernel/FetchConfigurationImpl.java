@@ -917,7 +917,7 @@ public class FetchConfigurationImpl
         List<FetchConfigurationImpl> path = getPath();
         if (path.isEmpty())
             return "";
-        StringBuffer buf = new StringBuffer().append (": ");
+        StringBuilder buf = new StringBuilder().append (": ");
         for (Iterator<FetchConfigurationImpl> itr = path.iterator(); itr.hasNext();) {
             buf.append(itr.next().getTraversedFromField());
             if (itr.hasNext())

@@ -36,7 +36,7 @@ public class ArrayExpression extends ExpressionImpl {
 
 	@Override
 	public String asExpression(AliasContext ctx) {
-		StringBuffer tmp = new StringBuffer(OPEN_BRACE);
+		StringBuilder tmp = new StringBuilder(OPEN_BRACE);
 		for (int i = 0; i < _values.length; i++) {
 			Object v = _values[i];
 			tmp.append((v instanceof Visitable ? 

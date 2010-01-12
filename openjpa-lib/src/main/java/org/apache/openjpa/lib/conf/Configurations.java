@@ -527,7 +527,7 @@ public class Configurations {
         if (map == null || map.isEmpty())
             return null;
 
-        StringBuffer buf = new StringBuffer();
+        StringBuilder buf = new StringBuilder();
         Map.Entry entry;
         String val;
         for (Iterator itr = map.entrySet().iterator(); itr.hasNext();) {
@@ -584,7 +584,7 @@ public class Configurations {
                     val = val.substring(1, val.length() - 1);
                 else if (val.startsWith("\"") || val.startsWith("'")) {
                     quote = val.charAt(0);
-                    StringBuffer buf = new StringBuffer(val.substring(1));
+                    StringBuilder buf = new StringBuilder(val.substring(1));
                     int quotIdx;
                     while (++i < props.length) {
                         buf.append(",");

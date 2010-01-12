@@ -668,7 +668,7 @@ public class Column
      * Useful for debugging.
      */
     public String getDescription() {
-        StringBuffer buf = new StringBuffer();
+        StringBuilder buf = new StringBuilder();
         buf.append("Full Name: ").append(getFullName()).append("\n");
         buf.append("Type: ").append(Schemas.getJDBCName(getType())).
             append("\n");

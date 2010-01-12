@@ -429,7 +429,7 @@ public class QueryKey
     }
 
     public String toString() {
-        StringBuffer buf = new StringBuffer(255);
+        StringBuilder buf = new StringBuilder(1024);
         buf.append(super.toString()).
             append("[query:[").append(_query).append("]").
             append(",access path:").append(_accessPathClassNames).

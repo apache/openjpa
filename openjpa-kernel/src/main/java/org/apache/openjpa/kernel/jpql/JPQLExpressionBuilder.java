@@ -327,7 +327,7 @@ public class JPQLExpressionBuilder
      * child, separated by the delimiter.
      */
     private static String assemble(JPQLNode node, String delimiter, int last) {
-        StringBuffer result = new StringBuffer();
+        StringBuilder result = new StringBuilder();
         JPQLNode[] parts = node.children;
         for (int i = 0; parts != null && i < parts.length - last; i++)
             result.append(result.length() > 0 ? delimiter : "").

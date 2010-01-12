@@ -240,7 +240,7 @@ public class StateComparisonVersionStrategy
          */
         public String getSQL() {
             Column[] cols = getTable().getColumns();
-            StringBuffer buf = new StringBuffer();
+            StringBuilder buf = new StringBuilder();
             boolean hasWhere = false;
             Object val;
             for (int i = 0; i < cols.length; i++) {
