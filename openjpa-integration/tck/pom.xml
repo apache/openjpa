@@ -167,11 +167,6 @@ openjpa.jdbc.SchemaFactory: native(ForeignKeys=true)
 openjpa.jdbc.SynchronizeMappings: buildSchema(ForeignKeys=true)
                         </echo>
 
-                        <!-- create an empty DDL file for the TCK dbinit -->
-                        <echo append="false" file="${tck.dir}/sql/${db.name}/${db.name}.ddl.persistence.sql">
-;
-                        </echo>
-
                         <!-- Append OpenJPA-specific configuration -->
                         <property name="jpatck.config" value="${tck.dir}/bin/ts.jte" />
 
