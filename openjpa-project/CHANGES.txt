@@ -105,6 +105,7 @@ Bug
     * [OPENJPA-1400] - Unable to persist a relationship to a detached Entity
     * [OPENJPA-1421] - Reduce lock contention in JDBCStoreManager
     * [OPENJPA-1441] - NPE when enhancing a Serializable, versioned class
+    * [OPENJPA-1457] - Remove Java.net maven repostiory from tck pom.xml
 
 Improvement
 
