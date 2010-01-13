@@ -1614,8 +1614,7 @@ public class JPQLExpressionBuilder
                 throw parseException(EX_USER, "bad-positional-parameter",
                     new Object[]{ id }, null);
         } else {
-            // otherwise the index is just the current size of the parameters
-            index = parameterTypes.size()-1;
+            index = parameterTypes.indexOf(id);
         }
         Parameter param = isCollectionValued 
             ? factory.newCollectionValuedParameter(paramKey, TYPE_OBJECT) 

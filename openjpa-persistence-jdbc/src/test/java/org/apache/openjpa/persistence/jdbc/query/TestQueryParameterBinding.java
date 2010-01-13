@@ -18,6 +18,8 @@
  */
 package org.apache.openjpa.persistence.jdbc.query;
 
+import java.util.List;
+
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
 
@@ -248,7 +250,20 @@ public class TestQueryParameterBinding extends SingleEMFTestCase {
 		
 		fail(q);
 	}
-	
+
+    public void testRepeatedNamedParameters() {
+        String JPQL_POSITIONAL =
+            JPQL + "WHERE p.p1 in (select max(p.p1) from Binder p where p.p1=:p1 AND p.p2=:p2 AND p.p3=:p3) "
+            + "AND p.p1=:p1 AND p.p2=:p2 AND p.p3=:p3";
+        Query q = em.createQuery(JPQL_POSITIONAL);
+        q.setParameter("p1",  INT_VALUE);
+        q.setParameter("p2",  STR_VALUE);
+        q.setParameter("p3",  DBL_VALUE);
+        List list = q.getResultList();
+        assertEquals(1, list.size());
+    }
+
+    
     void assertSetParameterFails(Query q, String name, Object v) {
         try {
             q.setParameter(name, v);

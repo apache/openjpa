@@ -52,7 +52,7 @@ public class OrderedMap<K, V> implements Map<K, V>, Serializable {
     public int indexOf(Object key) {
         int i = 0;
         for (K k : _del.keySet()) {
-            if (key == k)
+            if (key.equals(k))
                 return i;
             i++;
         }
