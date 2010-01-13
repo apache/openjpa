@@ -1,20 +1,16 @@
-                           Release Notes for OpenJPA 1.2.1
+                           Release Notes for OpenJPA 1.2.2
 
         * Overview
         * License
         * Prerequisites
         * Documentation
         * Getting Involved
-        * Bugs
-        * Improvements
-        * New Features
-        * Task
-        * Test
+        * JIRA Issues resolved
 
 Overview
 
-   These notes describe the difference between OpenJPA release 1.2.1 and the
-   preceding release: 1.2.0. 
+   These notes describe the difference between OpenJPA release 1.2.2 and the
+   preceding release: 1.2.1. 
 
    OpenJPA is a feature-rich implementation of the persistence part of Java
    Community Process JSR-220 (Enterprise JavaBeans 3.0), which is known as
@@ -81,83 +77,55 @@ Getting Involved
           freenode.net.
         * Bugs and other issues can be posted on the project JIRA.
 
-                          OpenJPA 1.2.1 Release Notes
+    JIRA Issues Resolved in this release
 Sub-task
 
-    * [OPENJPA-681] - Subquery generates SQL with syntax error
-    * [OPENJPA-708] - sub-sub-query generates SQL with syntax error
-    * [OPENJPA-744] - Extra SQL on LAZY/EAGER ManyToOne relation
-    * [OPENJPA-765] - Check for insertable or updateable before checking value 
-                      for null
-
+    * [OPENJPA-1023] - Message files contain windows EOL characters
+    * [OPENJPA-1210] - Specify derby timeouts via properties.
 Bug
 
-    * [OPENJPA-646] - JDK problems with defineClass and enum class types
-    * [OPENJPA-650] - Document openjpa.RuntimeUnenhancedClasses=unsupported/
-                      warn configuration property
-    * [OPENJPA-676] - Connection used for NativeSequences is not closed
-    * [OPENJPA-679] - java.lang.ArrayIndexOutOfBoundsException may occur when
-                      a relation field is annotated as a primary key and a foreign key
-    * [OPENJPA-685] - Problem enhancing test cases with Maven 2.0.9
-    * [OPENJPA-702] - MappingTool fails requires appropriate DESCSTAT parm 
-                      value on DB2 for z/OS
-    * [OPENJPA-710] - Unordered collection field adds ORDER BY clause
-    * [OPENJPA-711] - PDF manual lacks images
-    * [OPENJPA-713] - openjpa-1.2.0.jar file is 11 MB
-    * [OPENJPA-715] - OpenJpa does not generate IDs properly. "duplicate key 
-                      value in a unique or primary key constraint" while merging object tree.
-    * [OPENJPA-719] - GeneralException in PCEnhancer during class transform in 
-                      Turkish locale AppServer setting
-    * [OPENJPA-724] - Corrections for the manual
-    * [OPENJPA-727] - Image mapping-table.png missing in HTML manual
-    * [OPENJPA-731] - Bug on FetchType.EAGER when QuerySQLCache is turned on
-    * [OPENJPA-733] - Entity contains pseudo-attached embeddable after detach
-    * [OPENJPA-745] - Sybase by default silently truncates a string which is 
-                      longer than the column length without raising an exception
-    * [OPENJPA-755] - OpenJPA thows EntityExistsException trying persist a
-                      preexisting, detached entity
-    * [OPENJPA-762] - Batch execution fails for Oracle when batch limit set to
-                      -1 (unlimited batch size)
-    * [OPENJPA-777] - Exception is thrown during retrieval of an entity which 
-                      contains a persistent collection of embeddable
-    * [OPENJPA-811] - With Oracle, OpenJPA allows setting non-nullable field to null 
-    * [OPENJPA-835] - Loading nested toMany EAGER relation resuled in 
-                      PersistenceException
-    * [OPENJPA-838] - fix parameter setting problem when QuerySQLCache is on
-    * [OPENJPA-843] - Unnecessary version update on inverse-side of a 1-m 
-                      relationship
-    * [OPENJPA-853] - Informix cursor not open problem if synchronizeMapping 
-                      set true
-    * [OPENJPA-864] - Subquery problems with SYNTAX_DATABASE (Oracle)
-    * [OPENJPA-872] - Compound custom id in bidirectional many-to-one
-    * [OPENJPA-912] - Potential NPE in setInverseRelation
-    * [OPENJPA-917] - stored procedures throw InvalidStateException when using 
-                      getSingleResult() or getResultList()
-    * [OPENJPA-919] - JUnit for Bi-directional OneToOne with null relationships
-    * [OPENJPA-925] - Bidirectional OneToOne relation incorrectly set in 
-                      loadEagerJoin
+    * [OPENJPA-466] - Primary key constraint violated using (Oracle) sequence to generate ID in multithreaded app
+    * [OPENJPA-714] - "Encountered unmanaged object in persistent field" error while merging object tree
+    * [OPENJPA-732] - Updates to entities via Lifecycle callback methods
+    * [OPENJPA-873] - @MappedSuperClass Cause Null Pointer Exception in Class With IdClass
+    * [OPENJPA-896] - Several source files include Windows EoL chars
+    * [OPENJPA-1025] - AbstractResultList.subList throws UnsupportedOperationException
+    * [OPENJPA-1029] - SQLServerDictionary causes NumberFormatException if MS SQL Server JDBC driver is used
+    * [OPENJPA-1061] - Entities extending from a Mapped Superclass that defines the ID fields share the same ObjectID type parameter
+    * [OPENJPA-1067] - SetQueryTimeout(x) where x != 0 causes SQLException with DB2 on Z/OS
+    * [OPENJPA-1141] - NPE at org.apache.openjpa.jdbc.meta.MappingInfo.mergeJoinColumn(MappingInfo.java:1400)
+    * [OPENJPA-1156] - Path length issues on Windows
+    * [OPENJPA-1197] - NativeQueries fail with MySQL
+    * [OPENJPA-1308] - shouldn't always use CAST with UPPER and LOWER for DB2
+    * [OPENJPA-1326] - ReverseMappingTool and SchemaTool failing for Sybase
+    * [OPENJPA-1328] - Move cacheable class configuration to ClassMetaData
+    * [OPENJPA-1359] - SQLServer driver 2.0 works, but causes exception in SQLServerDictionary on the first connection
+    * [OPENJPA-1384] - ClassNotFoundException for custom DBDictionary used by EJB
+    * [OPENJPA-1397] - NULL in columns part of an @IdClass composite key leads to "disappearing" (null) returned objects
+    * [OPENJPA-1400] - Unable to persist a relationship to a detached Entity
+    * [OPENJPA-1421] - Reduce lock contention in JDBCStoreManager
+    * [OPENJPA-1441] - NPE when enhancing a Serializable, versioned class
+    * [OPENJPA-1457] - Remove Java.net maven repostiory from tck pom.xml
 
 Improvement
 
-    * [OPENJPA-686] - Openjpa manual needs to be updated for database 
-                      restriction on BigDecimal field on Sybase
-    * [OPENJPA-726] - Provide MD5Sums for latest downloads
-    * [OPENJPA-742] - Add line number and column number to QueryMetaData
-    * [OPENJPA-752] - ProxySetupStateManager.setProxyData routing through 
-                      PersistanceCapable caused "PersistenceException: null"
-    * [OPENJPA-772] - Proper maven pluginManagement and use ianal-maven-plugin
-                      for enforcing legal files
-    * [OPENJPA-779] - patch for eclipse .project and .classpath files...
-    * [OPENJPA-817] - Order of inserts lost when using ConstraintUpdateManager
-    * [OPENJPA-876] - Better test profiles for proprietary databases (DB2, 
-                      Oracle) and continuous build
-    * [OPENJPA-881] - Enable connection pooling for testcases.
-    * [OPENJPA-901] - Use hosted JAI artifacts as the default for the docbook build
+    * [OPENJPA-250] - Reduce synchronization bottlenecks in data cache, metadata repository, and lifecycle event manager
+    * [OPENJPA-975] - Oracle needs ability to not have an escape character for search strings.
+    * [OPENJPA-991] - Implement LockTimeout using db specific server-side lock timeout feature
+    * [OPENJPA-1045] - Add opt-in and opt-out configuration for L2 DataCache
+    * [OPENJPA-1136] - Add .gitignore for git users
+    * [OPENJPA-1171] - Use StringBuilder instead of StringBuffer in SQLBuffer
+    * [OPENJPA-1172] - Use java.util.concurrent.ConcurrentHashMap rather than a synchronized HashMap in ClassMapping.
+    * [OPENJPA-1414] - Performance improvements for detach
+    * [OPENJPA-1415] - Performance improvement by reduced logging of batched OLE
+
+Test
+    * [OPENJPA-1071] - Derby test suit speed-up
+    * [OPENJPA-1092] - enable test case for jpql
 
 Changes for previous releases
 
-OpenJPA 1.2.0 Changes: http://svn.apache.org/viewvc/openjpa/tags/1.1.0/openjpa-project/CHANGES.txt?view=markup
+OpenJPA 1.2.1 Changes: http://svn.apache.org/viewvc/openjpa/tags/1.2.1/openjpa-project/CHANGES.txt?view=co
 
-OpenJPA 1.1.0 Changes: http://svn.apache.org/viewvc/openjpa/tags/1.1.0/openjpa-project/CHANGES.txt?view=markup
+OpenJPA 1.2.0 Changes: http://svn.apache.org/viewvc/openjpa/tags/1.2.0/openjpa-project/CHANGES.txt?view=co
 
-OpenJPA 1.0.0 Changes: http://svn.apache.org/viewvc/openjpa/tags/1.0.0/openjpa-project/CHANGES.txt?view=markup

@@ -1926,6 +1926,22 @@ the query, this setting is primarily used when translating other query
 languages, such as JDOQL.  Defaults to <literal>"\\"</literal> 
 (a single backslash in Java speak).
                     </para>
+                </listitem>                
+                <listitem id="DBDictionary.RequiresSearchStringEscapeForLike">
+                    <para>
+                    <indexterm>
+                        <primary>
+                            SQL
+                        </primary>
+                        <secondary>
+                            RequiresSearchStringEscapeForLike
+                        </secondary>
+                    </indexterm>
+<literal>RequiresSearchStringEscapeForLike</literal>:
+When true, the database requires an escape string for queries that use
+<literal>LIKE</literal>.  The escape string can be specified using
+<literal>searchStringEscape</literal>.  Defaults to <literal>true</literal>.
+                    </para>
                 </listitem>
                 <listitem id="DBDictionary.SelectWords">
                     <para>
@@ -3583,7 +3599,13 @@ property accepts the following values:
                 <para>
 <literal>always</literal>: Each <classname>EntityManager</classname> obtains a
 single connection and uses it until the <classname>EntityManager</classname>
-closes.
+closes. Great care should be taken when using this property if the application 
+cannot close the EntityManager (ie container-managed EntityManagers in a JEE 
+Application Server). In this case the connection will remain open for an 
+undefined time and the application may not be able to recover from a terminated
+connection(ie if a TCP/IP timeout severs the connection to the database). 
+For this reason the <literal>always</literal> option should not be used with 
+container managed EntityManagers.
                 </para>
             </listitem>
             <listitem>

@@ -502,15 +502,19 @@ public class JDBCStoreManager
         if (sel == null) return null;
         return sel.execute(this, fetch, params);
     }
-
+    
+    Map<SelectKey, Select> selectImplCacheMap = null;
     private Select newSelect(OpenJPAStateManager sm,
         ClassMapping mapping, JDBCFetchConfiguration fetch, int subs,
         List params) {
         if (!_isQuerySQLCache) 
             return newSelect(sm, mapping, fetch, subs);       
            
-        Map<SelectKey, Select> selectImplCacheMap = 
-            getCacheMapFromQuerySQLCache(JDBCStoreManager.class);
+        if (selectImplCacheMap == null) {
+            selectImplCacheMap =
+                getCacheMapFromQuerySQLCache(JDBCStoreManager.class);
+        }
+         
         JDBCFetchConfiguration fetchClone = new JDBCFetchConfigurationImpl();
         fetchClone.copy(fetch);
         SelectKey selKey = new SelectKey(mapping, null, fetchClone);

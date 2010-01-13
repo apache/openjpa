@@ -300,10 +300,12 @@ public class DB2Dictionary
                 + "NAME AS SEQUENCE_NAME FROM SYSIBM.SYSSEQUENCES";
             sequenceSchemaSQL = "SCHEMA = ?";
             sequenceNameSQL = "NAME = ?";
-            if (maj == 8)
+            if (maj == 8) {
                 // DB2 Z/OS Version 8: no bigint support, hence map Java
                 // long to decimal
                 bigintTypeName = "DECIMAL(31,0)";
+            }
+            ignoreSQLExceptionOnSetQueryTimeout = true; 
             break;
         case db2ISeriesV5R3OrEarlier:
         case db2ISeriesV5R4OrLater:
@@ -393,7 +395,6 @@ public class DB2Dictionary
        return (databaseProductVersion.indexOf("DSN") != -1
             || databaseProductName.indexOf("DB2/") == -1)
             && maj >= 8;
-           
     }
 
     public boolean isDB2ISeriesV5R3OrEarlier() {
@@ -728,9 +729,36 @@ public class DB2Dictionary
      * @return a String with the correct CAST function syntax
      */
     public String getCastFunction(Val val, String func) {
-        if (val instanceof Lit || val instanceof Param)
-            if (func.indexOf("VARCHAR") == -1)
-                func = addCastAsString(func, "{0}", " AS VARCHAR(1000)");
+        if (val instanceof Lit || val instanceof Param) {
+            if (func.indexOf("VARCHAR") == -1) {
+                func = addCastAsString(func, "{0}", " AS VARCHAR(" + varcharCastLength + ")");
+            }
+        }
+        return func;
+    }
+    
+    /**
+     * Return the correct CAST function syntax
+     * 
+     * @param val operand of cast
+     * @param func original string
+     * @param col database column
+     * @return a String with the correct CAST function syntax
+     */
+    public String getCastFunction(Val val, String func, Column col) {
+        boolean doCast = false;
+        if (val instanceof Lit || val instanceof Param) {
+        	doCast = true;
+        }
+        // cast anything not already a VARCHAR to VARCHAR
+        if (col.getType() != Types.VARCHAR) {
+            doCast = true;
+        }
+        if (doCast == true) {
+            if (func.indexOf("VARCHAR") == -1) {
+                func = addCastAsString(func, "{0}", " AS VARCHAR(" + varcharCastLength + ")");
+            }
+        }
         return func;
     }
 

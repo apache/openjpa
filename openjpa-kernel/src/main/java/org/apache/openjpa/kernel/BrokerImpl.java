@@ -32,6 +32,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -219,6 +220,7 @@ public class BrokerImpl
     private int _detachState = DETACH_LOADED;
     private boolean _detachedNew = true;
     private boolean _orderDirty = false;
+    private boolean _suppressBatchOLELogging = false;
 
     // status
     private int _flags = 0;
@@ -758,6 +760,23 @@ public class BrokerImpl
                 _transCallbackMode);
     }
 
+    /**
+     * Set whether this Broker will generate verbose optimistic lock exceptions when batching
+     * operations. Defaults to true.
+     * 
+     * @param b
+     */
+    public void setSuppressBatchOLELogging(boolean b) {
+        _suppressBatchOLELogging = b;
+    }
+    
+    /**
+     * Return whether this Broker will generate verbose optimistic lock exceptions when batching
+     * operations.
+     */
+    public boolean getSuppressBatchOLELogging() {
+        return _suppressBatchOLELogging;
+    }
     ///////////
     // Lookups
     ///////////
@@ -1521,7 +1540,7 @@ public class BrokerImpl
                 _savepoints = new LinkedMap();
             } else {
                 if (_savepointCache == null)
-                    save.save(Collections.EMPTY_LIST);
+                    save.save(Collections.EMPTY_SET);
                 else {
                     save.save(_savepointCache);
                     _savepointCache.clear();
@@ -2156,8 +2175,13 @@ public class BrokerImpl
                     failed.add(f);
             }
         }
-        if (opt && !failed.isEmpty())
-            return new OptimisticException(failed, t);
+        if (opt && !failed.isEmpty()) {
+            if(_suppressBatchOLELogging == true){
+                return new OptimisticException(_loc.get("broker-suppressing-exceptions",t.length));
+            }else{
+                return new OptimisticException(failed, t);
+            }
+        }
         if (opt)
             return new OptimisticException(t);
         return new StoreException(_loc.get("rolled-back")).
@@ -2189,7 +2213,7 @@ public class BrokerImpl
         if (hasTransactionalObjects())
             transStates = _transCache;
         else
-            transStates = Collections.EMPTY_LIST;
+            transStates = Collections.EMPTY_SET;
 
         // fire after rollback/commit event
         Collection mobjs = null;
@@ -2264,7 +2288,7 @@ public class BrokerImpl
 
         // now clear trans cache; keep cleared version rather than
         // null to avoid having to re-create the set later; more efficient
-        if (transStates != Collections.EMPTY_LIST) {
+        if (transStates != Collections.EMPTY_SET) {
             _transCache = (TransactionalCache) transStates;
             _transCache.clear();
         }
@@ -3309,7 +3333,7 @@ public class BrokerImpl
             Object obj;
             StateManagerImpl sm;
             ClassMetaData meta;
-            Collection sms = new ArrayList(objs.size());
+            Collection sms = new LinkedHashSet(objs.size());
             List exceps = null;
             for (Iterator itr = objs.iterator(); itr.hasNext();) {
                 obj = itr.next();
@@ -3636,7 +3660,7 @@ public class BrokerImpl
         try {
             assertActiveTransaction();
 
-            Collection sms = new ArrayList(objs.size());
+            Collection sms = new LinkedHashSet(objs.size());
             Object obj;
             StateManagerImpl sm;
             for (Iterator itr = objs.iterator(); itr.hasNext();) {
@@ -3783,7 +3807,7 @@ public class BrokerImpl
      */
     protected Collection getTransactionalStates() {
         if (!hasTransactionalObjects())
-            return Collections.EMPTY_LIST;
+            return Collections.EMPTY_SET;
         return _transCache.copy();
     }
 
@@ -3802,7 +3826,7 @@ public class BrokerImpl
      */
     protected Collection getDirtyStates() {
         if (!hasTransactionalObjects())
-            return Collections.EMPTY_LIST;
+            return Collections.EMPTY_SET;
 
         return _transCache.copyDirty();
     }
@@ -3813,8 +3837,8 @@ public class BrokerImpl
      */
     protected Collection getPendingTransactionalStates() {
         if (_pending == null)
-            return Collections.EMPTY_LIST;
-        return new ArrayList(_pending);
+            return Collections.EMPTY_SET;
+        return new LinkedHashSet(_pending);
     }
 
     /**
@@ -4035,19 +4059,19 @@ public class BrokerImpl
 
     public Collection getPersistedTypes() {
         if (_persistedClss == null || _persistedClss.isEmpty())
-            return Collections.EMPTY_LIST;
+            return Collections.EMPTY_SET;
         return Collections.unmodifiableCollection(_persistedClss);
     }
 
     public Collection getUpdatedTypes() {
         if (_updatedClss == null || _updatedClss.isEmpty())
-            return Collections.EMPTY_LIST;
+            return Collections.EMPTY_SET;
         return Collections.unmodifiableCollection(_updatedClss);
     }
 
     public Collection getDeletedTypes() {
         if (_deletedClss == null || _deletedClss.isEmpty())
-            return Collections.EMPTY_LIST;
+            return Collections.EMPTY_SET;
         return Collections.unmodifiableCollection(_deletedClss);
     }
 
@@ -4502,12 +4526,12 @@ public class BrokerImpl
          */
         public Collection copy() {
             if (isEmpty())
-                return Collections.EMPTY_LIST;
+                return Collections.EMPTY_SET;
 
             // size may not be entirely accurate due to refs expiring, so
             // manually copy each object; doesn't matter this way if size too
             // big by some
-            List copy = new ArrayList(size());
+            Set copy = new LinkedHashSet(size());
             if (_dirty != null)
                 for (Iterator itr = _dirty.iterator(); itr.hasNext();)
                     copy.add(itr.next());
@@ -4522,8 +4546,8 @@ public class BrokerImpl
          */
         public Collection copyDirty() {
             if (_dirty == null || _dirty.isEmpty())
-                return Collections.EMPTY_LIST;
-            return new ArrayList(_dirty);
+                return Collections.EMPTY_SET;
+            return new LinkedHashSet(_dirty);
         }
 
         /**

@@ -126,7 +126,7 @@ public class OpenJPAConfigurationImpl
     public BooleanValue multithreaded;
     public StringValue mapping;
     public PluginValue metaFactoryPlugin;
-    public ObjectValue metaRepositoryPlugin;
+    public MetaDataRepositoryValue metaRepositoryPlugin;
     public ObjectValue lockManagerPlugin;
     public ObjectValue inverseManagerPlugin;
     public ObjectValue savepointManagerPlugin;
@@ -303,7 +303,7 @@ public class OpenJPAConfigurationImpl
         mapping = addString("Mapping");
         metaFactoryPlugin = addPlugin("MetaDataFactory", false);
 
-        metaRepositoryPlugin = (ObjectValue)
+        metaRepositoryPlugin = (MetaDataRepositoryValue)
             addValue(new MetaDataRepositoryValue());
 
         connectionFactory = addObject("ConnectionFactory");

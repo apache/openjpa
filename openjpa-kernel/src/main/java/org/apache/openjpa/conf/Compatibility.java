@@ -55,7 +55,9 @@ public class Compatibility {
     private boolean _nonOptimisticVersionCheck = false;
     private int _jpql = JPQL_WARN;
     private boolean _storeMapCollectionInEntityAsBlob = false;
-    private boolean _flushBeforeDetach = true; 
+    private boolean _flushBeforeDetach = true;
+    private boolean _reorderMetaDataResolution = false;
+    private boolean _reloadOnDetach = true;
 
     /**
      * Whether to require exact identity value types when creating object
@@ -268,5 +270,54 @@ public class Compatibility {
     public void setFlushBeforeDetach(boolean beforeDetach) {
         _flushBeforeDetach = beforeDetach;
     }
+    
+    
+    /**
+     * Whether OpenJPA should reorder entities in MetaDataRepository.processBuffer() to ensure that the MetaData for 
+     * entities with foreign keys in their identity are processed after the entities they depend on.
+     * 
+     * @return true if the reordering should be performed, false if not.
+     */
+    public boolean getReorderMetaDataResolution() {
+    	return _reorderMetaDataResolution;
+    }
+    
+    /**
+     * Whether OpenJPA should reorder entities in MetaDataRepository.processBuffer() to ensure that the MetaData for 
+     * entities with foreign keys in their identity are processed after the entities they depend on.
+     * 
+     * @param reorderProcessBuffer true if the reordering should be performed, false if not.
+     */
+    public void setReorderMetaDataResolution(boolean reorderProcessBuffer) {
+        _reorderMetaDataResolution = reorderProcessBuffer;
+    }
+
+    /**
+     * Whether OpenJPA should attempt to load fields when the DetachState
+     * option is set to loaded. This also determines whether a
+     * redundant copy of the version field is made. Defaults to true.
+     * 
+     * @return the _reloadOnDetach
+     * 
+     * @since 1.2.2
+     */
+    public boolean getReloadOnDetach() {
+        return _reloadOnDetach;
+    }
+
+    /**
+     * Whether OpenJPA should attempt to load fields when the DetachState
+     * option is set to loaded. This also determines whether a
+     * redundant copy of the version field is made. Defaults to true.
+     * 
+     * @param reloadOnDetach the _reloadOnDetach to set
+     * 
+     * @since 1.2.2
+     */
+    public void setReloadOnDetach(boolean reloadOnDetach) {
+        _reloadOnDetach = reloadOnDetach;
+    }   
+
+    
 
 }

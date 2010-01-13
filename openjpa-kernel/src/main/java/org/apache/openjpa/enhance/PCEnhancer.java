@@ -113,6 +113,8 @@ public class PCEnhancer {
     // Each enhanced class will return the value of this field via
     // public int getEnhancementContractVersion()
     public static final int ENHANCER_VERSION = 2;
+    
+    boolean _addVersionInitFlag = true;
 
     public static final int ENHANCE_NONE = 0;
     public static final int ENHANCE_AWARE = 2 << 0;
@@ -134,6 +136,8 @@ public class PCEnhancer {
     private static final String SUPER = PRE + "PCSuperclass";
     private static final Class OIDFSTYPE = FieldSupplier.class;
     private static final Class OIDFCTYPE = FieldConsumer.class;
+    
+    private static final String VERSION_INIT_STR =  PRE + "VersionInit";
 
     private static final Localizer _loc = Localizer.forPackage
         (PCEnhancer.class);
@@ -151,12 +155,12 @@ public class PCEnhancer {
             try {
                 auxEnhancers.add(AccessController.doPrivileged(
                     J2DoPrivHelper.newInstanceAction(classes[i])));
-		    } catch (Throwable t) {
+            } catch (Throwable t) {
                 // aux enhancer may rely on non-existant spec classes, etc
-		    }
-		}
-    	_auxEnhancers = (AuxiliaryEnhancer[]) auxEnhancers.toArray
-            (new AuxiliaryEnhancer[auxEnhancers.size()]);
+            }
+        }
+        _auxEnhancers = (AuxiliaryEnhancer[]) auxEnhancers.toArray
+        (new AuxiliaryEnhancer[auxEnhancers.size()]);
     }
 
     private BCClass _pc;
@@ -428,6 +432,7 @@ public class PCEnhancer {
      */
     public void setCreateSubclass(boolean subclass) {
         _subclass = subclass;
+        _addVersionInitFlag = false;
     }
 
     /**
@@ -1093,8 +1098,13 @@ public class PCEnhancer {
             addCopyKeyFieldsToObjectIdMethod(false);
             addCopyKeyFieldsFromObjectIdMethod(true);
             addCopyKeyFieldsFromObjectIdMethod(false);
+            if (_meta.hasAbstractPKField() == true) {
+                addGetIDOwningClass();
+            }
             addNewObjectIdInstanceMethod(true);
             addNewObjectIdInstanceMethod(false);
+        } else if (_meta.hasPKFieldsFromAbstractClass()) {
+            addGetIDOwningClass();
         }
     }
 
@@ -1342,6 +1352,16 @@ public class PCEnhancer {
                     code.checkcast().setType(fmds[i].getDeclaredType());
 
                 addSetManagedValueCode(code, fmds[i]);
+                
+                if(_addVersionInitFlag){
+                    if(fmds[i].isVersion()){
+                        // If this case is setting the version field
+                        // pcVersionInit = true;
+                        loadManagedInstance(code, false);
+                        code.constant().setValue(1);
+                        putfield(code, null, VERSION_INIT_STR, boolean.class);
+                    }
+                }
                 code.vreturn();
             }
 
@@ -2486,14 +2506,28 @@ public class PCEnhancer {
             // new ObjectId (cls, oid)
             code.anew().setType(ObjectId.class);
             code.dup();
-            code.classconstant().setClass(getType(_meta));
+            if (_meta.hasAbstractPKField() == false) {
+                code.classconstant().setClass(getType(_meta));
+            } else {
+                code.aload().setThis();
+                code.invokevirtual().setMethod(
+                        PRE + "GetIDOwningClass", Class.class, null);
+            }
         }
 
         // new <oid class> ();
         code.anew().setType(oidType);
         code.dup();
         if (_meta.isOpenJPAIdentity() || (obj && usesClsString == Boolean.TRUE))
-            code.classconstant().setClass(getType(_meta));
+        {
+            if (_meta.hasAbstractPKField() == false) {
+                code.classconstant().setClass(getType(_meta));
+            } else {
+                code.aload().setThis();
+                code.invokevirtual().setMethod(
+                    PRE + "GetIDOwningClass", Class.class, null);
+            }
+        }
         if (obj) {
             code.aload().setParam(0);
             code.checkcast().setType(String.class);
@@ -2520,6 +2554,18 @@ public class PCEnhancer {
         if (!_meta.isOpenJPAIdentity() && _meta.isObjectIdTypeShared())
             code.invokespecial().setMethod(ObjectId.class, "<init>",
                 void.class, new Class[]{ Class.class, Object.class });
+        code.areturn();
+
+        code.calculateMaxStack();
+        code.calculateMaxLocals();
+    }
+
+    private void addGetIDOwningClass() throws NoSuchMethodException {
+        BCMethod method = _pc.declareMethod(PRE + "GetIDOwningClass",
+            Class.class, null);
+        Code code = method.getCode(true);
+
+        code.classconstant().setClass(getType(_meta));
         code.areturn();
 
         code.calculateMaxStack();
@@ -2674,7 +2720,12 @@ public class PCEnhancer {
         _pc.declareField(PRE + "FieldTypes", Class[].class).setStatic(true);
         _pc.declareField(PRE + "FieldFlags", byte[].class).setStatic(true);
         _pc.declareField(SUPER, Class.class).setStatic(true);
-
+        if (_addVersionInitFlag && _meta.getVersionField() != null) {
+            // protected transient boolean pcVersionInit;
+            BCField field = _pc.declareField(VERSION_INIT_STR, boolean.class);
+            field.makeProtected();
+            field.setTransient(true);
+        }
         if (_meta.getPCSuperclass() == null || getCreateSubclass()) {
             BCField field = _pc.declareField(SM, SMTYPE);
             field.makeProtected();
@@ -3123,8 +3174,25 @@ public class PCEnhancer {
             ifins = ifDefaultValue(code, version);
             code.getstatic().setField(Boolean.class, "TRUE", Boolean.class);
             code.areturn();
-            ifins.setTarget(code.getstatic().setField(Boolean.class, "FALSE",
-                Boolean.class));
+            if (!_addVersionInitFlag){
+                // else return false;
+                ifins.setTarget(code.getstatic().setField(Boolean.class, "FALSE", Boolean.class));
+            }else{
+                FieldMetaData versionInit = _meta.getDeclaredField(VERSION_INIT_STR);
+                // noop
+                ifins.setTarget(code.nop());
+                // if (pcVersionInit)
+                // return true
+                // else return false;
+                loadManagedInstance(code, false);
+                getfield(code, null, versionInit.getName());
+                ifins = ifDefaultValue(code, versionInit);
+                code.getstatic().setField(Boolean.class, "TRUE", Boolean.class);
+                code.areturn();
+                ifins.setTarget(code.nop());
+                code.getstatic().setField(Boolean.class, "FALSE", Boolean.class);
+                
+            }
             code.areturn();
             return false;
         }
@@ -3587,6 +3655,14 @@ public class PCEnhancer {
         loadManagedInstance(code, true);
         code.xload().setParam(firstParamOffset);
         addSetManagedValueCode(code, fmd);
+        if(fmd.isVersion()==true && _addVersionInitFlag){
+            // if we are setting the version, flip the versionInit flag to true
+            FieldMetaData v = _meta.addDeclaredField(VERSION_INIT_STR, boolean.class);
+            v.setTransient(true);
+            loadManagedInstance(code, true);
+            code.constant().setValue(1);
+            addSetManagedValueCode(code, v);   
+        }
         code.vreturn();
 
         // inst.pcStateManager.setting<fieldType>Field (inst,
@@ -4193,6 +4269,7 @@ public class PCEnhancer {
         } else {
             // regular enhancement + property access
             Method meth = (Method) fmd.getBackingMember();
+
             code.invokevirtual().setMethod(PRE + meth.getName(),
                 meth.getReturnType(), meth.getParameterTypes());
         }

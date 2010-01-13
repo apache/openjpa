@@ -232,12 +232,14 @@ public class DBDictionary
     public boolean requiresTargetForDelete = false;
     public boolean allowsAliasInBulkClause = true;
     public boolean supportsMultipleNontransactionalResultSets = true;
+    public boolean requiresSearchStringEscapeForLike = true;
     public String searchStringEscape = "\\";
     public boolean requiresCastForMathFunctions = false;
     public boolean requiresCastForComparisons = false;
     public boolean supportsModOperator = false;
     public boolean supportsXMLColumn = false;
     public boolean reportsSuccessNoInfoOnBatchUpdates = false;
+    public boolean supportsCaseConversionForLob = false;
     
     /**
      * Some Databases append whitespace after the schema name 
@@ -341,6 +343,18 @@ public class DBDictionary
     protected final Set systemTableSet = new HashSet();
     protected final Set fixedSizeTypeNameSet = new HashSet();
     protected final Set typeModifierSet = new HashSet();
+    
+    /**
+     * Some JDBC drivers - ie DB2 type 2 on Z/OS throw exceptions on
+     * setQueryTimeout when provided specific input values.
+     * To remain consistent with earlier versions of the driver we should ignore
+     * the exception.
+     * 
+     * This variable will be removed in future releases when we can handle the
+     * exception properly.
+     */ 
+    @Deprecated
+    public boolean ignoreSQLExceptionOnSetQueryTimeout = false; 
 
     /**
      * If a native query begins with any of the values found here then it will
@@ -4386,6 +4400,19 @@ public class DBDictionary
      */
     public String getCastFunction(Val val, String func) {
         return func;
+    }
+
+    /**
+     * Return the correct CAST function syntax.  This should be overriden by subclasses
+     * that need access to the Column information.
+     * 
+     * @param val operand of cast
+     * @param func original string
+     * @param col database column
+     * @return a String with the correct CAST function syntax
+     */
+    public String getCastFunction(Val val, String func, Column col) {
+    	return getCastFunction (val, func);
     }
     
     /**

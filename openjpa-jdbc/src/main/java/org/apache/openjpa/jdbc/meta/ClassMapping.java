@@ -22,13 +22,12 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 
 import org.apache.openjpa.enhance.PersistenceCapable;
 import org.apache.openjpa.enhance.Reflection;
@@ -88,7 +87,7 @@ public class ClassMapping
     private ClassMapping[] _assignMaps = null;
 
     // maps columns to joinables
-    private final Map _joinables = Collections.synchronizedMap(new HashMap());
+    private final Map _joinables = new ConcurrentHashMap();
 
     /**
      * Constructor. Supply described type and owning repository.
@@ -173,6 +172,7 @@ public class ClassMapping
         FieldMapping fm;
         Joinable join;
         int pkIdx;
+        boolean isNullPK = true;
         for (int i = 0; i < pks.length; i++) {
             // we know that all pk column join mappings use primary key fields,
             // cause this mapping uses the oid as its primary key (we recursed
@@ -187,9 +187,11 @@ public class ClassMapping
                 vals[pkIdx] = join.getPrimaryKeyValue(res, join.getColumns(),
                     fk, store, joins);
                 res.endDataRequest();
-                if (vals[pkIdx] == null)
-                    return null;
+                isNullPK = isNullPK && vals[pkIdx] == null;
             }
+        }
+        if (isNullPK) {
+            return null;
         }
 
         // the oid data is loaded by the base type, but if discriminator data

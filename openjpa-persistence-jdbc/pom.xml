@@ -31,7 +31,7 @@
     <parent>
         <groupId>org.apache.openjpa</groupId>
         <artifactId>openjpa-parent</artifactId>
-        <version>1.2.1</version>
+        <version>1.2.2</version>
     </parent>
     <properties>
         <openjpa.loglevel>INFO</openjpa.loglevel>
@@ -44,6 +44,8 @@
         <dbcp.minIdle>2</dbcp.minIdle>
         <dbcp.maxWait>10000</dbcp.maxWait>
         <dbcp.args>MaxActive=${dbcp.maxActive},MaxIdle=${dbcp.maxIdle},MinIdle=${dbcp.minIdle},MaxWait=${dbcp.maxWait}</dbcp.args>
+        <derby.locks.waitTimeout>6</derby.locks.waitTimeout>        
+        <derby.locks.deadlockTimeout>5</derby.locks.deadlockTimeout>
     </properties>
     <profiles>
 
@@ -97,7 +99,7 @@
                 <dependency>
                     <groupId>mysql</groupId>
                     <artifactId>mysql-connector-java</artifactId>
-                    <version>5.1.5</version>
+                    <version>5.1.6</version>
                 </dependency>
             </dependencies>
             <properties>
@@ -449,7 +451,6 @@
                         <exclude>org/apache/openjpa/persistence/xml/TestPersistenceUnitWithoutXSD.java</exclude>
 
                         <!-- exclude new tests that aren't passing yet -->
-                        <exclude>org/apache/openjpa/persistence/jpql/clauses/TestEJBQueryInterface.java</exclude>
                         <exclude>org/apache/openjpa/persistence/kernel/TestInitialValueFetching.java</exclude>
                         <exclude>org/apache/openjpa/persistence/kernel/TestOpenResultsCommit.java</exclude>
                         <exclude>org/apache/openjpa/persistence/query/TestQuotedNumbersInFilters2.java</exclude>
@@ -614,6 +615,14 @@
                         <property>
                             <name>derby.stream.error.file</name>
                             <value>target/derby.log</value>
+                        </property>
+                        <property>
+                            <name>derby.locks.deadlockTimeout</name>
+                            <value>${derby.locks.deadlockTimeout}</value>
+                        </property>
+                        <property>
+                            <name>derby.locks.waitTimeout</name>
+                            <value>${derby.locks.waitTimeout}</value>
                         </property>
                         <property>
                             <name>openjpa.ConnectionProperties</name>

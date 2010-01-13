@@ -20,6 +20,7 @@ package org.apache.openjpa.meta;
 
 import java.io.Serializable;
 import java.security.AccessController;
+import java.security.PrivilegedActionException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -37,8 +38,8 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.openjpa.conf.OpenJPAConfiguration;
 import org.apache.openjpa.enhance.DynamicPersistenceCapable;
 import org.apache.openjpa.enhance.PCRegistry;
-import org.apache.openjpa.enhance.PCRegistry.RegisterClassListener;
 import org.apache.openjpa.enhance.PersistenceCapable;
+import org.apache.openjpa.enhance.PCRegistry.RegisterClassListener;
 import org.apache.openjpa.event.LifecycleEventManager;
 import org.apache.openjpa.lib.conf.Configurable;
 import org.apache.openjpa.lib.conf.Configuration;
@@ -46,11 +47,14 @@ import org.apache.openjpa.lib.log.Log;
 import org.apache.openjpa.lib.util.Closeable;
 import org.apache.openjpa.lib.util.J2DoPrivHelper;
 import org.apache.openjpa.lib.util.Localizer;
+import org.apache.openjpa.lib.util.MultiClassLoader;
+import org.apache.openjpa.lib.util.Options;
 import org.apache.openjpa.lib.util.StringDistance;
 import org.apache.openjpa.util.ImplHelper;
 import org.apache.openjpa.util.InternalException;
 import org.apache.openjpa.util.MetaDataException;
 import org.apache.openjpa.util.OpenJPAId;
+
 import serp.util.Strings;
 
 /**
@@ -63,6 +67,8 @@ import serp.util.Strings;
 public class MetaDataRepository
     implements PCRegistry.RegisterClassListener, Configurable, Closeable, 
     MetaDataModes, Serializable {
+    
+    protected boolean _locking = true;
 
     /**
      * Constant to not validate any metadata.
@@ -105,18 +111,18 @@ public class MetaDataRepository
 
     // cache of parsed metadata, oid class to class, and interface class
     // to metadatas
-    private final Map _metas = new HashMap();
-    private final Map _oids = Collections.synchronizedMap(new HashMap());
-    private final Map _impls = Collections.synchronizedMap(new HashMap());
-    private final Map _ifaces = Collections.synchronizedMap(new HashMap());
-    private final Map _queries = new HashMap();
-    private final Map _seqs = new HashMap();
-    private final Map _aliases = Collections.synchronizedMap(new HashMap());
-    private final Map _pawares = Collections.synchronizedMap(new HashMap());
-    private final Map _nonMapped = Collections.synchronizedMap(new HashMap());
+	private Map _metas = new HashMap();
+	private Map _oids = Collections.synchronizedMap(new HashMap());
+	private Map _impls = Collections.synchronizedMap(new HashMap());
+	private Map _ifaces = Collections.synchronizedMap(new HashMap());
+	private Map _queries = new HashMap();
+	private Map _seqs = new HashMap();
+	private Map _aliases = Collections.synchronizedMap(new HashMap());
+	private Map _pawares = Collections.synchronizedMap(new HashMap());
+	private Map _nonMapped = Collections.synchronizedMap(new HashMap());
     
     // map of classes to lists of their subclasses
-    private final Map _subs = Collections.synchronizedMap(new HashMap());
+	private Map _subs = Collections.synchronizedMap(new HashMap());
 
     // xml mapping
     protected final XMLMetaData[] EMPTY_XMLMETAS;
@@ -146,6 +152,11 @@ public class MetaDataRepository
     private LifecycleEventManager.ListenerList _listeners =
         new LifecycleEventManager.ListenerList(3);
 
+    private boolean _reorderMetaDataResolution = false;
+    protected boolean _preload = false;
+    protected boolean _preloadComplete = false;
+    private static final String PRELOAD_STR = "Preload";
+    
     /**
      * Default constructor.  Configure via {@link Configurable}.
      */
@@ -273,6 +284,70 @@ public class MetaDataRepository
     }
 
     /**
+     * Sets whether this repository will load all MetaData for all known persistent classes at
+     * initialization and remove all locking. Defaults to false.
+     */
+    public void setPreload(boolean p) {
+        _preload = p;
+    }
+
+    /**
+     * Returns a boolean indicating whether this repository will load all MetaData for all known
+     * persistent classes at initialization.
+     */
+    public boolean getPreload() {
+        return _preload;
+    }   
+    
+     /**
+     * If the openjpa.MetaDataRepository plugin value Preload=true is set, this method will load all
+     * MetaData for all persistent classes and will remove locking from this class.
+     * <p>
+     * 
+     */
+    public synchronized void preload() {
+        if (_preload == false) {
+            return;
+        }
+        // If pooling EMFs, this method may be invoked more than once. Only perform this work once.
+        if (_preloadComplete == true) {
+            return;
+        }
+
+        MultiClassLoader multi = AccessController.doPrivileged(J2DoPrivHelper.newMultiClassLoaderAction());
+        multi.addClassLoader(AccessController.doPrivileged(J2DoPrivHelper.getContextClassLoaderAction()));
+        multi.addClassLoader(AccessController.doPrivileged(J2DoPrivHelper
+            .getClassLoaderAction(MetaDataRepository.class)));
+
+        Set<String> classes = getPersistentTypeNames(false, multi);
+        if (classes == null || classes.size() == 0) {
+            throw new MetaDataException(_loc.get("repos-initializeEager-none"));
+        }
+        if (_log.isTraceEnabled() == true) {
+            _log.trace(_loc.get("repos-initializeEager-found", classes));
+        }
+
+        List<Class> loaded = new ArrayList<Class>();
+        for (String c : classes) {
+            try {
+                Class<?> cls = AccessController.doPrivileged((J2DoPrivHelper.getForNameAction(c, true, multi)));
+                loaded.add(cls);
+                // This call may be unnecessary?
+                _factory.load(cls, MODE_ALL, multi);
+            } catch (PrivilegedActionException pae) {
+                throw new MetaDataException(_loc.get("repos-initializeEager-error"), pae);
+            }
+        }
+        resolveAll(multi);
+        
+        // Hook in this class as a listener and process registered classes list to populate _aliases list.
+        PCRegistry.addRegisterClassListener(this);
+        processRegisteredClasses(multi);
+        _locking = false;
+        _preloadComplete = true;
+    }
+    
+    /**
      * Return the metadata for the given class.
      *
      * @param cls the class to retrieve metadata for
@@ -280,7 +355,17 @@ public class MetaDataRepository
      * @param mustExist if true, throws a {@link MetaDataException}
      * if no metadata is found
      */
-    public synchronized ClassMetaData getMetaData(Class cls,
+    public ClassMetaData getMetaData(Class cls, ClassLoader envLoader, boolean mustExist) {
+        if (_locking) {
+            return getMetaDataLocking(cls, envLoader, mustExist);
+        } else {
+            return getMetaDataInternal(cls, envLoader, mustExist);
+        }
+    }
+    private synchronized ClassMetaData getMetaDataLocking(Class cls, ClassLoader envLoader, boolean mustExist) {
+        return getMetaDataInternal(cls, envLoader, mustExist);
+    }
+    private ClassMetaData getMetaDataInternal(Class cls,
         ClassLoader envLoader, boolean mustExist) {
         if (cls != null &&
             DynamicPersistenceCapable.class.isAssignableFrom(cls))
@@ -401,14 +486,24 @@ public class MetaDataRepository
      * @since 1.1.0
      */
     public Collection getAliasNames() {
-        Collection aliases = new HashSet();
+        if (_locking) {
+            return getAliasNamesLocking();
+        } else {
+            return getAliasNamesInternal();
+        }
+    }
+
+    private Collection getAliasNamesLocking() {
         synchronized (_aliases) {
-            for (Iterator iter = _aliases.entrySet().iterator();
-                iter.hasNext(); ) {
-                Map.Entry e = (Map.Entry) iter.next();
-                if (e.getValue() != null)
-                    aliases.add(e.getKey());
-            }
+            return getAliasNamesInternal();
+        }
+    }
+    private final Collection getAliasNamesInternal() {
+        Collection aliases = new HashSet();
+        for (Iterator iter = _aliases.entrySet().iterator(); iter.hasNext();) {
+            Map.Entry e = (Map.Entry) iter.next();
+            if (e.getValue() != null)
+                aliases.add(e.getKey());
         }
         return aliases;
     }
@@ -735,13 +830,29 @@ public class MetaDataRepository
                 buffer.clear();
             }
         }
+        
+        // Check if process buffer reordering for PCTypes that have relationships to other PCTypes in their identity 
+        // should be performed.
+        if (_reorderMetaDataResolution) {
+        	processed = resolveFKInPKDependenciesOrdering(processed);
+        }
         return processed;
     }
 
     /**
      * Return all the metadata instances currently in the repository.
      */
-    public synchronized ClassMetaData[] getMetaDatas() {
+    public ClassMetaData[] getMetaDatas() {
+        if (_locking) {
+            return getMetaDatasLocking();
+        } else {
+            return getMetaDatasInternal();
+        }
+    }
+    private synchronized ClassMetaData[] getMetaDatasLocking() {
+        return getMetaDatasInternal();
+    }
+    private ClassMetaData[] getMetaDatasInternal() {
         // prevent concurrent mod errors when resolving one metadata
         // introduces others
         ClassMetaData[] metas = (ClassMetaData[]) _metas.values().
@@ -795,12 +906,21 @@ public class MetaDataRepository
 
         // synchronize on this rather than the map, because all other methods
         // that access _metas are synchronized on this
-        synchronized (this) {
-            if (_pawares.containsKey(cls))
-                throw new MetaDataException(_loc.get("pc-and-aware", cls));
-            _metas.put(cls, meta);
+        if (_locking) {
+            metasPutLocking(cls, meta);
+        } else {
+            metasPutInternal(cls, meta);
         }
+            
         return meta;
+    }
+    private synchronized void metasPutLocking(Class cls, ClassMetaData meta){
+        metasPutInternal(cls, meta);
+    }
+    private void metasPutInternal(Class cls, ClassMetaData meta){
+        if (_pawares.containsKey(cls))
+            throw new MetaDataException(_loc.get("pc-and-aware", cls));
+        _metas.put(cls, meta);
     }
     
     /**
@@ -919,7 +1039,17 @@ public class MetaDataRepository
      *
      * @return true if removed, false if not in this repository
      */
-    public synchronized boolean removeMetaData(Class cls) {
+    public boolean removeMetaData(Class cls) {
+        if(_locking){
+            return removeMetaDataLocking(cls);
+        }else{
+            return removeMetaDataInternal(cls);
+        }
+    }
+    private synchronized boolean removeMetaDataLocking(Class cls) {
+        return removeMetaDataInternal(cls);
+    }
+    private boolean removeMetaDataInternal(Class cls) {
         if (cls == null)
             return false;
         if (_metas.remove(cls) != null) {
@@ -935,24 +1065,42 @@ public class MetaDataRepository
      * Add the given metadata as declared interface implementation.
      */
     void addDeclaredInterfaceImpl(ClassMetaData meta, Class iface) {
-        synchronized (_impls) {
-            Collection vals = (Collection) _impls.get(iface);
-            
-            // check to see if the superclass already declares to avoid dups
-            if (vals != null) {
-                ClassMetaData sup = meta.getPCSuperclassMetaData();
-                for (; sup != null; sup = sup.getPCSuperclassMetaData())
-                    if (vals.contains(sup.getDescribedType()))
-                        return;
-            }
-            addToCollection(_impls, iface, meta.getDescribedType(), false);
+        if (_locking) {
+            addDeclaredInterfaceImplLocking(meta, iface);
+        } else {
+            addDeclaredInterfaceImplInternal(meta, iface);
         }
     }
-
+    void addDeclaredInterfaceImplLocking(ClassMetaData meta, Class iface) {
+        synchronized (_impls) {
+            addDeclaredInterfaceImplInternal(meta, iface);
+        }
+    }
+    private void addDeclaredInterfaceImplInternal(ClassMetaData meta, Class iface) {
+        Collection vals = (Collection) _impls.get(iface);
+        // check to see if the superclass already declares to avoid dups
+        if (vals != null) {
+            ClassMetaData sup = meta.getPCSuperclassMetaData();
+            for (; sup != null; sup = sup.getPCSuperclassMetaData())
+                if (vals.contains(sup.getDescribedType()))
+                    return;
+        }
+        addToCollection(_impls, iface, meta.getDescribedType(), false);
+    }
     /**
      * Set the implementation for the given managed interface.
      */
-    synchronized void setInterfaceImpl(ClassMetaData meta, Class impl) {
+    void setInterfaceImpl(ClassMetaData meta, Class impl) {
+        if(_locking){
+            setInterfaceImplLocking(meta, impl);
+        }else{
+            setInterfaceImplInternal(meta, impl);
+        }
+    }
+    private synchronized void setInterfaceImplLocking(ClassMetaData meta, Class impl) {
+        setInterfaceImplInternal(meta, impl);
+    }
+    private void setInterfaceImplInternal(ClassMetaData meta, Class impl) {
         if (!meta.isManagedInterface())
             throw new MetaDataException(_loc.get("not-managed-interface", 
                 meta, impl));
@@ -1088,19 +1236,12 @@ public class MetaDataRepository
         // get impls of given interface / abstract class
         loadRegisteredClassMetaData(envLoader);
         Collection vals = (Collection) _impls.get(cls);
-        ClassMetaData meta;
         Collection mapped = null;
         if (vals != null) {
-            synchronized (vals) {
-                for (Iterator itr = vals.iterator(); itr.hasNext();) {
-                    meta = getMetaData((Class) itr.next(), envLoader, true);
-                    if (meta.isMapped()
-                        || meta.getMappedPCSubclassMetaDatas().length > 0) {
-                        if (mapped == null)
-                            mapped = new ArrayList(vals.size());
-                        mapped.add(meta);
-                    }
-                }
+            if (_locking) {
+                mapped = getImplementorMetaDatasLocking(vals, envLoader, mustExist);
+            } else {
+                mapped = getImplementorMetaDatasInternal(vals, envLoader, mustExist);
             }
         }
 
@@ -1110,6 +1251,22 @@ public class MetaDataRepository
             return EMPTY_METAS;
         return (ClassMetaData[]) mapped.toArray(newClassMetaDataArray
             (mapped.size()));
+    }
+    private Collection getImplementorMetaDatasLocking(Collection<Class> classes, ClassLoader envLoader, boolean mustExist) {
+        synchronized (classes) {
+            return getImplementorMetaDatasInternal(classes, envLoader, mustExist);
+        }
+    }
+    private Collection getImplementorMetaDatasInternal(Collection<Class> classes, ClassLoader envLoader, boolean mustExist) {
+        Collection mapped = new ArrayList(classes.size());
+        ClassMetaData meta = null;
+        for (Iterator itr = classes.iterator(); itr.hasNext();) {
+            meta = getMetaData((Class) itr.next(), envLoader, true);
+            if (meta.isMapped() || meta.getMappedPCSubclassMetaDatas().length > 0) {
+                mapped.add(meta);
+            }
+        }
+        return mapped;
     }
      
     /**
@@ -1127,12 +1284,21 @@ public class MetaDataRepository
      * @return empty array if no class has been registered as pers-aware
      */
     public NonPersistentMetaData[] getPersistenceAwares() {
+        if (_locking) {
+            return getPersistenceAwaresLocking();
+        } else {
+            return getPersistenceAwaresInternal();
+        }
+    }
+    private NonPersistentMetaData[] getPersistenceAwaresLocking() {
         synchronized (_pawares) {
+            return getPersistenceAwaresInternal();
+        }
+    }
+    private NonPersistentMetaData[] getPersistenceAwaresInternal() {
             if (_pawares.isEmpty())
                 return EMPTY_NON_PERSISTENT;
-            return (NonPersistentMetaData[])_pawares.values().toArray
-                (new NonPersistentMetaData[_pawares.size()]);
-        }
+        return (NonPersistentMetaData[]) _pawares.values().toArray(new NonPersistentMetaData[_pawares.size()]);
     }
 
     /**
@@ -1143,17 +1309,26 @@ public class MetaDataRepository
     public NonPersistentMetaData addPersistenceAware(Class cls) {
     	if (cls == null)
     		return null;
-        synchronized(this) {
+        if (_locking) {
+            return addPersistenceAwareLocking(cls);
+        } else {
+            return addPersistenceAwareInternal(cls);
+        }
+    }
+
+    private synchronized NonPersistentMetaData addPersistenceAwareLocking(Class cls) {
+        return addPersistenceAwareInternal(cls);
+    }
+
+    private NonPersistentMetaData addPersistenceAwareInternal(Class cls) {
             if (_pawares.containsKey(cls))
                 return (NonPersistentMetaData)_pawares.get(cls);
             if (getCachedMetaData(cls) != null)
                 throw new MetaDataException(_loc.get("pc-and-aware", cls));
-            NonPersistentMetaData meta = new NonPersistentMetaData(cls, this,
-                NonPersistentMetaData.TYPE_PERSISTENCE_AWARE);
+        NonPersistentMetaData meta = new NonPersistentMetaData(cls, this, NonPersistentMetaData.TYPE_PERSISTENCE_AWARE);
             _pawares.put(cls, meta);
             return meta;
     	}
-    }
 
     /**
      * Remove a persitence-aware class from the repository
@@ -1180,12 +1355,21 @@ public class MetaDataRepository
      * @return empty array if no non-mapped interface has been registered.
      */
     public NonPersistentMetaData[] getNonMappedInterfaces() {
+        if(_locking){
+            return getNonMappedInterfacesLocking();   
+        }else{
+            return getNonMappedInterfacesInternal();
+        }
+    }
+    private NonPersistentMetaData[] getNonMappedInterfacesLocking() {
         synchronized (_nonMapped) {
+            return getNonMappedInterfacesInternal();
+        }
+    }
+    private NonPersistentMetaData[] getNonMappedInterfacesInternal() {
             if (_nonMapped.isEmpty())
                 return EMPTY_NON_PERSISTENT;
-            return (NonPersistentMetaData[])_nonMapped.values().toArray
-                (new NonPersistentMetaData[_nonMapped.size()]);
-        }
+        return (NonPersistentMetaData[]) _nonMapped.values().toArray(new NonPersistentMetaData[_nonMapped.size()]);
     }
 
     /**
@@ -1198,7 +1382,17 @@ public class MetaDataRepository
     		return null;
         if (!iface.isInterface())
             throw new MetaDataException(_loc.get("not-non-mapped", iface));
-        synchronized(this) {
+        if(_locking){
+            return addNonMappedInterfaceLocking(iface);
+        }else{
+            return addNonMappedInterfaceInternal(iface); 
+        }
+    }
+    private synchronized NonPersistentMetaData addNonMappedInterfaceLocking(Class iface) {
+        return addNonMappedInterfaceInternal(iface);
+    }
+    
+    private NonPersistentMetaData addNonMappedInterfaceInternal(Class iface) {
             if (_nonMapped.containsKey(iface))
                 return (NonPersistentMetaData)_nonMapped.get(iface);
             if (getCachedMetaData(iface) != null)
@@ -1208,7 +1402,6 @@ public class MetaDataRepository
             _nonMapped.put(iface, meta);
             return meta;
     	}
-    }
 
     /**
      * Remove a non-mapped interface from the repository
@@ -1223,10 +1416,21 @@ public class MetaDataRepository
      * Clear the cache of parsed metadata. This method also clears the
      * internal {@link MetaDataFactory MetaDataFactory}'s cache.
      */
-    public synchronized void clear() {
+    public void clear() {
         if (_log.isTraceEnabled())
             _log.trace(_loc.get("clear-repos", this));
-
+        
+        if (_locking) {
+            clearLocking();
+        } else {
+            clearInternal();
+        }
+    }
+    private synchronized void clearLocking(){
+        clearInternal();
+    }
+    private void clearInternal(){
+        // Recreating these datastructures is probably faster than calling clear. Future change?
         _metas.clear();
         _oids.clear();
         _subs.clear();
@@ -1239,7 +1443,6 @@ public class MetaDataRepository
         _pawares.clear();
         _nonMapped.clear();
     }
-
     /**
      * Return the set of configured persistent classes, or null if the user
      * did not configure any.
@@ -1248,8 +1451,18 @@ public class MetaDataRepository
      * in the classpath if no classes are configured explicitly
      * @param envLoader the class loader to use, or null for default
      */
-    public synchronized Set getPersistentTypeNames(boolean devpath,
+    public Set getPersistentTypeNames(boolean devpath,
         ClassLoader envLoader) {
+        if (_locking) {
+            return getPersistentTypeNamesLocking(devpath, envLoader);
+        } else {
+            return getPersistentTypeNamesInternal(devpath, envLoader);
+        }
+    }
+    private synchronized Set getPersistentTypeNamesLocking(boolean devpath, ClassLoader envLoader) {
+        return getPersistentTypeNamesInternal(devpath, envLoader);
+    }
+    private Set getPersistentTypeNamesInternal(boolean devpath, ClassLoader envLoader) {
         return _factory.getPersistentTypeNames(devpath, envLoader);
     }
 
@@ -1265,15 +1478,26 @@ public class MetaDataRepository
      * @param envLoader the class loader to use, or null for default
      * @return the loaded classes, or empty collection if none
      */
-    public synchronized Collection loadPersistentTypes(boolean devpath,
+    public Collection loadPersistentTypes(boolean devpath,
         ClassLoader envLoader) {
+        if (_locking) {
+            return loadPersistentTypesLocking(devpath, envLoader);
+        } else {
+            return loadPersistentTypesInternal(devpath, envLoader);
+        }
+    }
+
+    private synchronized Collection loadPersistentTypesLocking(boolean devpath, ClassLoader envLoader) {
+        return loadPersistentTypesInternal(devpath, envLoader);
+    }
+
+    private Collection loadPersistentTypesInternal(boolean devpath, ClassLoader envLoader) {
         Set names = getPersistentTypeNames(devpath, envLoader);
         if (names == null || names.isEmpty())
             return Collections.EMPTY_LIST;
 
         // attempt to load classes so that they get processed
-        ClassLoader clsLoader = _conf.getClassResolverInstance().
-            getClassLoader(getClass(), envLoader);
+        ClassLoader clsLoader = _conf.getClassResolverInstance().getClassLoader(getClass(), envLoader);
         List classes = new ArrayList(names.size());
         Class cls;
         for (Iterator itr = names.iterator(); itr.hasNext();) {
@@ -1341,7 +1565,11 @@ public class MetaDataRepository
     public void register(Class cls) {
         // buffer registered classes until an oid metadata request is made,
         // at which point we'll parse everything in the buffer
+        if (_locking) {
         synchronized (_registered) {
+                _registered.add(cls);
+            }
+        } else {
             _registered.add(cls);
         }
     }
@@ -1371,7 +1599,12 @@ public class MetaDataRepository
         // copy into new collection to avoid concurrent mod errors on reentrant
         // registrations
         Class[] reg;
-        synchronized (_registered) {
+        if (_locking) {
+            synchronized (_registered) {
+                reg = (Class[]) _registered.toArray(new Class[_registered.size()]);
+                _registered.clear();
+            }
+        } else {
             reg = (Class[]) _registered.toArray(new Class[_registered.size()]);
             _registered.clear();
         }
@@ -1400,7 +1633,11 @@ public class MetaDataRepository
             }
         }
         if (failed != null) {
-            synchronized (_registered) {
+            if(_locking){
+                synchronized (_registered) {
+                    _registered.addAll(failed);
+                }
+            }else{
                 _registered.addAll(failed);
             }
         }
@@ -1420,16 +1657,10 @@ public class MetaDataRepository
         // update subclass lists; synchronize on this because accessing _metas
         // requires it
         Class leastDerived = cls;
-        synchronized (this) {
-            ClassMetaData meta;
-            for (Class anc = cls;
-                (anc = PCRegistry.getPersistentSuperclass(anc)) != null;) {
-                addToCollection(_subs, anc, cls, true);
-                meta = (ClassMetaData) _metas.get(anc);
-                if (meta != null)
-                    meta.clearSubclassCache();
-                leastDerived = anc;
-            }
+        if (_locking) {
+        	leastDerived = calcualteLeastDerivedLocking(cls);
+        } else {
+            leastDerived = calcualteLeastDerivedInternal(cls);
         }
 
         // update oid mappings if this is a base concrete class
@@ -1459,25 +1690,67 @@ public class MetaDataRepository
 
         // update mappings from interfaces and non-pc superclasses to
         // pc implementing types
-        synchronized (_impls) {
+        if (_locking) {
+            synchronized (_impls) {
+                updateImpls(cls, leastDerived, cls);
+            }
+        } else {
             updateImpls(cls, leastDerived, cls);
         }
 
         // set alias for class
         String alias = PCRegistry.getTypeAlias(cls);
         if (alias != null) {
-            synchronized (_aliases) {
-                List classList = (List) _aliases.get(alias);
-                if (classList == null) {
-                    classList = new ArrayList(3);
-                    _aliases.put(alias, classList);
-                }
-                if (!classList.contains(cls))
-                    classList.add(cls);
+            if(_locking){
+                setAliasForClassLocking(alias, cls);
+            }else{
+                setAliasForClassInternal(alias, cls);
             }
         }
     }
-
+    /**
+     * Private worker method for use by processRegisterClasses.
+     */
+    private void setAliasForClassLocking(String alias, Class cls){
+        synchronized(_aliases){
+            setAliasForClassInternal(alias, cls);
+        }
+    }
+    /**
+     * Private worker method for use by processRegisterClasses.
+     */
+    private void setAliasForClassInternal(String alias, Class cls){
+        List classList = (List) _aliases.get(alias);
+        if (classList == null) {
+            classList = new ArrayList(3);
+            _aliases.put(alias, classList);
+        }
+        if (!classList.contains(cls))
+            classList.add(cls);
+    }
+    /**
+     * Private worker method for use by processRegisterClasses.
+     */
+    private synchronized Class calcualteLeastDerivedLocking(Class cls){
+        return calcualteLeastDerivedInternal(cls);
+    }
+    /**
+     * Private worker method for use by processRegisterClasses.
+     */
+    private Class calcualteLeastDerivedInternal(Class cls){
+        Class leastDerived = cls;
+        ClassMetaData meta;
+        for (Class anc = cls; (anc = PCRegistry.getPersistentSuperclass(anc)) != null;) {
+            addToCollection(_subs, anc, cls, true);
+            meta = (ClassMetaData) _metas.get(anc);
+            if (meta != null)
+                meta.clearSubclassCache();
+            leastDerived = anc;
+        }
+        
+        return leastDerived;
+    }
+    
     /**
      * Update the list of implementations of base classes and interfaces.
      */
@@ -1527,7 +1800,18 @@ public class MetaDataRepository
      */
     private void addToCollection(Map map, Class key, Class value,
         boolean inheritance) {
+        if(_locking){
+            addToCollectionLocking(map, key, value, inheritance);
+        }else{
+            addToCollectionInternal(map, key, value, inheritance);
+        }
+    }
+    private void addToCollectionLocking(Map map, Class key, Class value, boolean inheritance) {
         synchronized (map) {
+            addToCollectionInternal(map, key, value, inheritance);
+        }
+    }
+    private void addToCollectionInternal(Map map, Class key, Class value, boolean inheritance) {
             Collection coll = (Collection) map.get(key);
             if (coll == null) {
                 if (inheritance) {
@@ -1540,7 +1824,6 @@ public class MetaDataRepository
             }
             coll.add(value);
         }
-    }
 
     ///////////////////////////////
     // Configurable implementation
@@ -1549,6 +1832,7 @@ public class MetaDataRepository
     public void setConfiguration(Configuration conf) {
         _conf = (OpenJPAConfiguration) conf;
         _log = _conf.getLog(OpenJPAConfiguration.LOG_METADATA);
+        _reorderMetaDataResolution = _conf.getCompatibilityInstance().getReorderMetaDataResolution();
     }
 
     public void startConfiguration() {
@@ -1558,6 +1842,16 @@ public class MetaDataRepository
         initializeMetaDataFactory();
         if (_implGen == null)
             _implGen = new InterfaceImplGenerator(this);
+        if (_preload == true) {
+            _oids = new HashMap();
+            _impls = new HashMap();
+            _ifaces = new HashMap();
+            _aliases = new HashMap();
+            _pawares = new HashMap();
+            _nonMapped = new HashMap();
+            _subs = new HashMap();
+            // Wait till we're done loading MetaData to remove lock.
+        }            
     }
 
     private void initializeMetaDataFactory() {
@@ -1576,8 +1870,20 @@ public class MetaDataRepository
     /**
      * Return query metadata for the given class, name, and classloader.
      */
-    public synchronized QueryMetaData getQueryMetaData(Class cls, String name,
+    public QueryMetaData getQueryMetaData(Class cls, String name,
         ClassLoader envLoader, boolean mustExist) {
+        if(_locking){
+            return getQueryMetaDataLocking(cls, name, envLoader, mustExist);
+        }else{
+            return getQueryMetaDataInternal(cls, name, envLoader, mustExist);
+        }
+    }
+    private synchronized QueryMetaData getQueryMetaDataLocking(Class cls, String name, ClassLoader envLoader,
+        boolean mustExist) {
+        return getQueryMetaDataInternal(cls, name, envLoader, mustExist);
+    }
+
+    private QueryMetaData getQueryMetaDataInternal(Class cls, String name, ClassLoader envLoader, boolean mustExist) {
         QueryMetaData meta = getQueryMetaDataInternal(cls, name, envLoader);
         if (meta == null) {
             // load all the metadatas for all the known classes so that
@@ -1588,12 +1894,10 @@ public class MetaDataRepository
 
         if (meta == null && mustExist) {
             if (cls == null) {
-                throw new MetaDataException(_loc.get
-                    ("no-named-query-null-class", 
-                        getPersistentTypeNames(false, envLoader), name));
+                throw new MetaDataException(_loc.get("no-named-query-null-class", getPersistentTypeNames(false,
+                    envLoader), name));
             } else {
-                throw new MetaDataException(_loc.get("no-named-query",
-                    cls, name));
+                throw new MetaDataException(_loc.get("no-named-query", cls, name));
             }
         }
 
@@ -1646,26 +1950,45 @@ public class MetaDataRepository
     /**
      * Return the cached query metadata.
      */
-    public synchronized QueryMetaData[] getQueryMetaDatas() {
-        return (QueryMetaData[]) _queries.values().toArray
-            (new QueryMetaData[_queries.size()]);
+    public QueryMetaData[] getQueryMetaDatas() {
+        if (_locking) {
+            synchronized (this) {
+                return (QueryMetaData[]) _queries.values().toArray(new QueryMetaData[_queries.size()]);
+            }
+        } else {
+            return (QueryMetaData[]) _queries.values().toArray(new QueryMetaData[_queries.size()]);
+        }
     }
 
     /**
      * Return the cached query metadata for the given name.
      */
-    public synchronized QueryMetaData getCachedQueryMetaData(Class cls,
+    public QueryMetaData getCachedQueryMetaData(Class cls,
         String name) {
-        return (QueryMetaData) _queries.get(getQueryKey(cls, name));
+        if (_locking) {
+            synchronized (this) {
+                return (QueryMetaData) _queries.get(getQueryKey(cls, name));
+            }
+        } else {
+            return (QueryMetaData) _queries.get(getQueryKey(cls, name));
+        }
     }
 
     /**
      * Add a new query metadata to the repository and return it.
      */
-    public synchronized QueryMetaData addQueryMetaData(Class cls, String name) {
-        QueryMetaData meta = newQueryMetaData(cls, name);
-        _queries.put(getQueryKey(meta), meta);
-        return meta;
+    public QueryMetaData addQueryMetaData(Class cls, String name) {
+        if (_locking) {
+            synchronized (this) {
+                QueryMetaData meta = newQueryMetaData(cls, name);
+                _queries.put(getQueryKey(meta), meta);
+                return meta;
+            }
+        }else{
+            QueryMetaData meta = newQueryMetaData(cls, name);
+            _queries.put(getQueryKey(meta), meta);
+            return meta;   
+        }
     }
 
     /**
@@ -1680,19 +2003,35 @@ public class MetaDataRepository
     /**
      * Remove the given query metadata from the repository.
      */
-    public synchronized boolean removeQueryMetaData(QueryMetaData meta) {
-        if (meta == null)
-            return false;
-        return _queries.remove(getQueryKey(meta)) != null;
+    public  boolean removeQueryMetaData(QueryMetaData meta) {
+        if(_locking){
+            synchronized (this) {
+                if (meta == null)
+                    return false;
+                return _queries.remove(getQueryKey(meta)) != null;
+            }
+        }else{
+            if (meta == null)
+                return false;
+            return _queries.remove(getQueryKey(meta)) != null;
+        }
     }
 
     /**
      * Remove query metadata for the given class name if in the repository.
      */
-    public synchronized boolean removeQueryMetaData(Class cls, String name) {
-        if (name == null)
-            return false;
-        return _queries.remove(getQueryKey(cls, name)) != null;
+    public boolean removeQueryMetaData(Class cls, String name) {
+        if (_locking) {
+            synchronized (this) {
+                if (name == null)
+                    return false;
+                return _queries.remove(getQueryKey(cls, name)) != null;
+            }
+        } else {
+            if (name == null)
+                return false;
+            return _queries.remove(getQueryKey(cls, name)) != null;
+        }
     }
 
     /**
@@ -1724,7 +2063,19 @@ public class MetaDataRepository
     /**
      * Return sequence metadata for the given name and classloader.
      */
-    public synchronized SequenceMetaData getSequenceMetaData(String name,
+    public SequenceMetaData getSequenceMetaData(String name,
+        ClassLoader envLoader, boolean mustExist) {
+        if(_locking){
+            return getSequenceMetaDataLocking(name, envLoader, mustExist);
+        }else{
+            return getSequenceMetaDataInternal(name, envLoader, mustExist);
+        }
+    }
+    private synchronized SequenceMetaData getSequenceMetaDataLocking(String name,
+        ClassLoader envLoader, boolean mustExist) {
+        return getSequenceMetaDataInternal(name, envLoader, mustExist);
+    }
+    private SequenceMetaData getSequenceMetaDataInternal(String name,
         ClassLoader envLoader, boolean mustExist) {
         SequenceMetaData meta = getSequenceMetaDataInternal(name, envLoader);
         if (meta == null && SequenceMetaData.NAME_SYSTEM.equals(name)) {
@@ -1797,26 +2148,44 @@ public class MetaDataRepository
     /**
      * Return the cached sequence metadata.
      */
-    public synchronized SequenceMetaData[] getSequenceMetaDatas() {
-        return (SequenceMetaData[]) _seqs.values().toArray
-            (new SequenceMetaData[_seqs.size()]);
+    public SequenceMetaData[] getSequenceMetaDatas() {
+        if (_locking) {
+            synchronized (this) {
+                return (SequenceMetaData[]) _seqs.values().toArray(new SequenceMetaData[_seqs.size()]);
+            }
+        } else {
+            return (SequenceMetaData[]) _seqs.values().toArray(new SequenceMetaData[_seqs.size()]);
+        }
     }
 
     /**
      * Return the cached a sequence metadata for the given name.
      */
-    public synchronized SequenceMetaData getCachedSequenceMetaData(
-        String name) {
-        return (SequenceMetaData) _seqs.get(name);
+    public SequenceMetaData getCachedSequenceMetaData(String name) {
+        if (_locking) {
+            synchronized (this) {
+                return (SequenceMetaData) _seqs.get(name);
+            }
+        } else {
+            return (SequenceMetaData) _seqs.get(name);
+        }
     }
 
     /**
      * Add a new sequence metadata to the repository and return it.
      */
-    public synchronized SequenceMetaData addSequenceMetaData(String name) {
-        SequenceMetaData meta = newSequenceMetaData(name);
-        _seqs.put(name, meta);
-        return meta;
+    public SequenceMetaData addSequenceMetaData(String name) {
+        if (_locking) {
+            synchronized (this) {
+                SequenceMetaData meta = newSequenceMetaData(name);
+                _seqs.put(name, meta);
+                return meta;
+            }
+        } else {
+            SequenceMetaData meta = newSequenceMetaData(name);
+            _seqs.put(name, meta);
+            return meta;
+        }
     }
 
     /**
@@ -1829,44 +2198,76 @@ public class MetaDataRepository
     /**
      * Remove the given sequence metadata from the repository.
      */
-    public synchronized boolean removeSequenceMetaData(SequenceMetaData meta) {
-        if (meta == null)
-            return false;
-        return _seqs.remove(meta.getName()) != null;
+    public boolean removeSequenceMetaData(SequenceMetaData meta) {
+        if (_locking) {
+            synchronized (this) {
+                if (meta == null)
+                    return false;
+                return _seqs.remove(meta.getName()) != null;
+            }
+        } else {
+            if (meta == null)
+                return false;
+            return _seqs.remove(meta.getName()) != null;
+        }
     }
 
     /**
      * Remove sequence metadata for the name if in the repository.
      */
-    public synchronized boolean removeSequenceMetaData(String name) {
-        if (name == null)
-            return false;
-        return _seqs.remove(name) != null;
+    public boolean removeSequenceMetaData(String name) {
+        if (_locking) {
+            synchronized (this) {
+                if (name == null)
+                    return false;
+                return _seqs.remove(name) != null;
+            }
+        }else{
+            if (name == null)
+                return false;
+            return _seqs.remove(name) != null;
+        }
     }
 
     /**
      * Add the given system lifecycle listener.
      */
-    public synchronized void addSystemListener(Object listener) {
-        // copy to avoid issues with ListenerList and avoid unncessary
-        // locking on the list during runtime
-        LifecycleEventManager.ListenerList listeners = new
-            LifecycleEventManager.ListenerList(_listeners);
-        listeners.add(listener);
-        _listeners = listeners;
+    public void addSystemListener(Object listener) {
+        if (_locking) {
+            synchronized (this) {
+                // copy to avoid issues with ListenerList and avoid unncessary
+                // locking on the list during runtime
+                LifecycleEventManager.ListenerList listeners = new LifecycleEventManager.ListenerList(_listeners);
+                listeners.add(listener);
+                _listeners = listeners;
+            }
+        } else {
+            LifecycleEventManager.ListenerList listeners = new LifecycleEventManager.ListenerList(_listeners);
+            listeners.add(listener);
+            _listeners = listeners;
+        }
     }
 
     /**
      * Remove the given system lifecycle listener.
      */
-    public synchronized boolean removeSystemListener(Object listener) {
+    public boolean removeSystemListener(Object listener) {
+        if (_locking) {
+            return removeSystemListenerLocking(listener);
+        } else {
+            return removeSystemListenerInternal(listener);
+        }
+    }
+    private synchronized boolean removeSystemListenerLocking(Object listener) {
+        return removeSystemListenerInternal(listener);
+    }
+    private boolean removeSystemListenerInternal(Object listener) {
         if (!_listeners.contains(listener))
             return false;
 
         // copy to avoid issues with ListenerList and avoid unncessary
         // locking on the list during runtime
-        LifecycleEventManager.ListenerList listeners = new
-            LifecycleEventManager.ListenerList(_listeners);
+        LifecycleEventManager.ListenerList listeners = new LifecycleEventManager.ListenerList(_listeners);
         listeners.remove(listener);
         _listeners = listeners;
         return true;
@@ -1882,7 +2283,17 @@ public class MetaDataRepository
     /**
      * Free the resources used by this repository. Closes all user sequences.
      */
-    public synchronized void close() {
+    public void close() {
+        if(_locking){
+            closeLocking();
+        }else{
+            closeInternal();
+        }
+    }
+    private synchronized void closeLocking() {
+        closeInternal();
+    }
+    private void closeInternal() {
         SequenceMetaData[] smds = getSequenceMetaDatas();
         for (int i = 0; i < smds.length; i++)
             smds[i].close();
@@ -1922,7 +2333,17 @@ public class MetaDataRepository
      * @param fmd
      * @return XML metadata
      */
-    public synchronized XMLMetaData getXMLMetaData(FieldMetaData fmd) {
+    public XMLMetaData getXMLMetaData(FieldMetaData fmd) {
+        if(_locking){
+            return getXMLMetaDataLocking(fmd);
+        }else{
+            return getXMLMetaDataInternal(fmd);
+        }
+    }
+    private synchronized XMLMetaData getXMLMetaDataLocking(FieldMetaData fmd) {
+        return getXMLMetaDataInternal(fmd);
+    }
+    private XMLMetaData getXMLMetaDataInternal(FieldMetaData fmd) {
         Class cls = fmd.getDeclaredType();
         // check if cached before
         XMLMetaData xmlmeta = (XMLClassMetaData) _xmlmetas.get(cls);
@@ -1948,7 +2369,11 @@ public class MetaDataRepository
         
         // synchronize on this rather than the map, because all other methods
         // that access _xmlmetas are synchronized on this
+        if(_locking){
         synchronized (this) {
+                    _xmlmetas.put(type, meta);
+                }
+        }else{
             _xmlmetas.put(type, meta);
         }
         return meta;
@@ -1982,5 +2407,205 @@ public class MetaDataRepository
      */
     public XMLFieldMetaData newXMLFieldMetaData(Class type, String name) {
         return new XMLFieldMetaData(type, name);
+    }
+    
+    /**
+     * This helper method returns true if Options paramater has the property Preload
+     * set to true.
+     */
+    public static boolean needsPreload(Options o) {
+        if (o.getBooleanProperty(PRELOAD_STR) == true) {
+            return true;
+        }
+        return false;
+    }
+
+    /**
+     * Analyzes the list of ClassMetaData in the supplied list for any which has foreign keys to other ClassMetaData 
+     * instances in its identity (in other words, PCTypes which have primary keys that are foreign keys to other
+     * tables), and returns a list arranged so that a ClassMetaData that depends on another ClassMetaData appears
+     * after it in the list.
+     *
+     * @param cmdList - List of ClassMetaData to examine
+     * @return - List of ClassMetaData, with ClassMetaData dependees moved after the last identified dependent 
+     *           ClassMetaData, if any move is necessary.
+     */
+    private List<ClassMetaData> resolveFKInPKDependenciesOrdering(List<ClassMetaData> cmdList) {
+        HashMap<ClassMetaData, CMDDependencyNode> nodeMap = new HashMap<ClassMetaData, CMDDependencyNode>();
+        HashSet<CMDDependencyNode> nodesWithDependenciesSet = new HashSet<CMDDependencyNode>();
+        ArrayList<CMDDependencyNode> nodeList = new ArrayList<CMDDependencyNode>(cmdList.size());
+        
+        // Initial analysis of ClassMetaData objects -- Populate the linked list with objects in the same order of 
+        // appearance in the original list. Identify CMDs whose identities have a FK to another CMD, and catalog that 
+        // dependency.
+        for (ClassMetaData cmd : cmdList) {
+            // Add this node to the list
+            CMDDependencyNode node = nodeMap.get(cmd);
+            if (node == null) {
+                node = new CMDDependencyNode(cmd);
+                nodeMap.put(cmd, node);
+            }
+            nodeList.add(node);
+            
+            // Examine its primary key fields, flag any references to another PCType that is defined in cmdList as a 
+            // dependency
+            FieldMetaData[] fmdArr = cmd.getPrimaryKeyFields();
+            for (FieldMetaData fmd : fmdArr) {
+                ValueMetaData vmd = fmd.getValue();
+                if (vmd.isTypePC()) {
+                    ClassMetaData targetCMD = vmd.getDeclaredTypeMetaData();
+
+                    // Only process entries which are in the cmdList, as we don't want to be adding anything new.
+                    if (!cmdList.contains(targetCMD)) {
+                        continue;
+                    }
+
+                    // Register the dependency
+                    CMDDependencyNode targetNode = null;
+                    if ((targetNode = nodeMap.get(targetCMD)) == null) {
+                        targetNode = new CMDDependencyNode(targetCMD);
+                        nodeMap.put(targetCMD, targetNode);
+                    }
+                    node.registerDependentNode(targetNode);
+                    nodesWithDependenciesSet.add(node);
+                }
+            }
+        }
+        
+        // Analysis is complete. For each CMD that has an identity foreign key dependency on another CMD, ensure that it
+        // appears later in the list then the CMD it is dependent on. If it appears earlier, move it immediately after 
+        // the CMD. If there are multiple CMDs the identity is dependent on, move it after the last dependency in
+        // the linked list.
+        for (CMDDependencyNode node : nodesWithDependenciesSet) {
+            // Check if there is a cycle (dependencies or subdependencies that create a cycle in the graph. If one is 
+            // detected, then this algorithm cannot be used to reorder the CMD list.  Emit a warning, and return the 
+            // original list.
+            if (node.checkForCycle()) {
+                if (_log.isWarnEnabled()) {
+                    _log.warn(_loc.get("cmd-discover-cycle", node.getCmd().getResourceName()));
+                }
+                return cmdList;
+            }
+ 
+            int nodeIndex = nodeList.indexOf(node);
+            Set<CMDDependencyNode> dependencies = node.getDependsOnSet();       
+            
+            // If the current node has a dependency that appears later in the list, then this node needs
+            // to be moved to the point immediately after that dependency.
+            CMDDependencyNode moveAfter = null;
+            int moveAfterIndex = -1;
+            for (CMDDependencyNode depNode : dependencies) {               
+                int dependencyIndex = nodeList.indexOf(depNode);
+                if ((nodeIndex < dependencyIndex) && (moveAfterIndex < dependencyIndex)) {
+                    moveAfter = depNode;
+                    moveAfterIndex = dependencyIndex;
+                }
+            }
+            if (moveAfter != null) {
+                nodeList.remove(nodeIndex);
+                nodeList.add(nodeList.indexOf(moveAfter) + 1, node);
+            }      
+        }
+        
+        // Sorting is complete, build the return list.  Clear the dependsOnSet for the GC.
+        ArrayList<ClassMetaData> returnList = new ArrayList<ClassMetaData>();
+        for (CMDDependencyNode current : nodeList) {
+            returnList.add(current.getCmd());
+            current.getDependsOnSet().clear();
+        }
+        
+        return returnList;
+    }
+
+    /**
+     * Linked list node class for managing any foreign keys in the identity of a ClassMetaData instance.
+     * 
+     */
+    private class CMDDependencyNode {
+        private ClassMetaData cmd;
+
+        // Marker for quick determination if this node has dependencies
+        private boolean hasDependencies = false;
+
+        // List of ClassMetaData objects this ClassMetaData depends on
+        private HashSet<CMDDependencyNode> dependsOnSet = new HashSet<CMDDependencyNode>();
+
+        /**
+         * Inner class constructor
+         */
+        CMDDependencyNode(ClassMetaData cmd) {
+            this.cmd = cmd;
+        }
+
+        /**
+         * Returns the ClassMetaData instance referenced by this node.
+         */
+        public ClassMetaData getCmd() {
+            return cmd;
+        }
+
+        /**
+         * 
+         * @return true if this node's ClassMetaData has a FK in its identity that refers to another ClassMetaData; 
+         *         false if it does not.
+         */
+        public boolean getHasDependencies() {
+            return hasDependencies;
+        }
+
+        /**
+         * Registers a ClassMetaData modelled by a CMDDependencyNode as a dependency of this ClassMetaData.
+         * 
+         */
+        public void registerDependentNode(CMDDependencyNode node) {
+            getDependsOnSet().add(node);
+            hasDependencies = true;
+        }
+
+        /**
+         * Returns a Set containing all of the CMDDependencyNode instances that this node has a FK in identity 
+         * dependency on.
+         * 
+         */
+        public Set<CMDDependencyNode> getDependsOnSet() {
+            return dependsOnSet;
+        }
+
+        /**
+         * Checks all dependencies, and sub-dependencies, for any cycles in the dependency graph.
+         * 
+         * @return true if a cycle was discovered, false if not.
+         */
+        public boolean checkForCycle() {
+            java.util.Stack<CMDDependencyNode> visitStack = new java.util.Stack<CMDDependencyNode>();
+            return internalCheckForCycle(visitStack);
+        }
+
+        /**
+         * Internal implementation of the cycle detection.
+         * 
+         * @param visitStack
+         * @return true if a cycle is detected, false if no cycle was detected.
+         */
+        private boolean internalCheckForCycle(java.util.Stack<CMDDependencyNode> visitStack) {
+            if (visitStack.contains(this)) {
+                return true;
+            }
+            visitStack.push(this);
+
+            try {
+                for (CMDDependencyNode node : dependsOnSet) {
+                    if (node.getHasDependencies()) {
+                        if (node.internalCheckForCycle(visitStack) == true) {
+                            return true;
+                        }
+                    }
+                }
+            } finally {
+                visitStack.pop();
+            }
+            
+            return false;
+        }
     }
 }
