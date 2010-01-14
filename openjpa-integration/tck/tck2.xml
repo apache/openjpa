@@ -66,6 +66,8 @@
         <unzip overwrite="true" src="${tck_patches.zip}" dest="${tck.base}" />
         <copy overwrite="true"
             file="${tck.dir}/bin/ts.jte" tofile="${tck.dir}/bin/ts.jte.orig" />
+        <copy overwrite="true"
+            file="${tck.dir}/bin/ts.jtx" tofile="${tck.dir}/bin/ts.jtx.orig" />
         <!-- Pluggability tests using Toplink needs this dir created -->
         <mkdir dir="${tck.dir}/domains/domain1/logs" />
     </target>
@@ -282,10 +284,19 @@ databaseName=${db.name}
             <param name="cp.property" value="${OPENJPA_CLASSPATH}" />
         </antcall>
 
-        <!-- HACK - Need to exclude Pluggability tests from a normal run,
+        <!-- Need to exclude Pluggability tests from a normal run,
             due to the need for Toplink.
         -->
-        <delete dir="${tck.dir}/src/com/sun/ts/tests/pluggability" />
+        <echo append="false" file="${tck.dir}/bin/ts.jtx">
+
+## exclude pluggability tests for normal OpenJPA runs
+com/sun/ts/tests/pluggability/contracts/Client.java#createContainerEntityManagerFactory_from_standalone
+com/sun/ts/tests/pluggability/contracts/Client.java#getManagedClassNames_from_standalone
+com/sun/ts/tests/pluggability/contracts/Client.java#getPersistenceProviderClassName_from_standalone
+com/sun/ts/tests/pluggability/contracts/Client.java#getPersistenceUnitName_from_standalone
+com/sun/ts/tests/pluggability/contracts/Client.java#getTransactionType_from_standalone
+
+        </echo>
 
         <!-- backup our updated ts.jte for later debugging -->
         <copy overwrite="true"
@@ -329,6 +340,10 @@ databaseName=${db.name}
         <!-- backup our updated ts.jte for later debugging -->
         <copy overwrite="true"
             file="${tck.dir}/bin/ts.jte" tofile="${tck.base}/ts.jte.pluggability" />
+
+        <!-- Restore any exclude file that was provided in the zip file -->
+        <copy overwrite="true"
+            file="${tck.dir}/bin/ts.jtx.orig" tofile="${tck.dir}/bin/ts.jtx" />
 
         <!-- first initialize the database -->
         <echo>Calling TCK initdb.xml</echo>
