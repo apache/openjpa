@@ -232,7 +232,7 @@ databaseName=${db.name}
     <!--
         Macro to determine how many tests passed/failed
     -->
-    <macrodef name="results">
+    <macrodef name="results.count">
         <!-- Figure out the Passed/Failed counts -->
         <sequential>
         <resourcecount property="count.passed">
@@ -374,13 +374,14 @@ databaseName=${db.name}
             tests fail, so we need to parse the results file
             for a string indicating whether or not it passed.
         -->
+        <results.count />
         <loadfile property="jpatck.results" srcfile="${tck.work}/jtData/log.txt" />
         <condition property="jpatck.failed">
             <contains string="${jpatck.results}" substring="Completed test run: not ok" />
         </condition>
-        <fail if="jpatck.failed">Test Results:  FAILED ${count.failed} tests!</fail>
+        <fail if="jpatck.failed">Test Results (${results.name}):  FAILED ${count.failed} tests!</fail>
         <!-- else -->
-        <echo>Test Results:  PASSED!</echo>
+        <echo>Test Results (${results.name}):  PASSED!</echo>
     </target>
 
 </project>
