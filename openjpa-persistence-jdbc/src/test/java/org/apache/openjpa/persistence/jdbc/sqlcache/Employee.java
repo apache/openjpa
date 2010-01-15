@@ -24,6 +24,8 @@ import javax.persistence.*;
 @Table(name="EMPLOYEE_PQC")
 
 public class Employee {
+    public enum Category {PERMANENT, CONTRACTOR, TEMP};
+    
 	@Id
 	@GeneratedValue
 	private long id;
@@ -37,6 +39,11 @@ public class Employee {
 	private Address address;
 	
 	private boolean isManager;
+	
+	private Category status;
+	
+	@Enumerated(EnumType.ORDINAL)
+	private Category hireStatus;
 
 	public boolean isManager() {
         return isManager;
@@ -73,5 +80,21 @@ public class Employee {
 	public long getId() {
 		return id;
 	}
+	
+    public Category getHireStatus() {
+        return hireStatus;
+    }
+    
+    public Category setHireStatus(Category status) {
+        return hireStatus;
+    }
+    
+    public Category getCurrentStatus() {
+        return status;
+    }
+    
+    public Category getCurrentStatus(Category status) {
+        return status;
+    }
 
 }

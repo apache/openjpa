@@ -271,8 +271,16 @@ public class PreparedQueryImpl implements PreparedQuery {
                 setCollectionValuedParameter(result, (Collection)val, indices, 
                     key);
             } else {
-                for (int j : indices)
+                for (int j : indices) {
+                    if (val instanceof Enum) {
+                        if (_template.get(j) instanceof Integer) {
+                            val = ((Enum)val).ordinal();
+                        } else {
+                            val = ((Enum)val).name();
+                        }
+                    } 
                     result.put(j, val);
+                }
             }
         }
         return result;

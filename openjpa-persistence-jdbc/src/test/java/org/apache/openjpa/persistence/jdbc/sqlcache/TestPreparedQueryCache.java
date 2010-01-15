@@ -28,6 +28,7 @@ import java.util.Properties;
 import javax.persistence.EntityManager;
 import javax.persistence.LockModeType;
 import javax.persistence.Query;
+import javax.persistence.TypedQuery;
 
 import junit.framework.TestCase;
 
@@ -44,6 +45,7 @@ import org.apache.openjpa.persistence.OpenJPAEntityManagerFactorySPI;
 import org.apache.openjpa.persistence.OpenJPAEntityManagerSPI;
 import org.apache.openjpa.persistence.OpenJPAPersistence;
 import org.apache.openjpa.persistence.OpenJPAQuery;
+import org.apache.openjpa.persistence.jdbc.sqlcache.Employee.Category;
 
 /**
  * Tests correctness and performance of queries with and without Prepared Query Cacheing.
@@ -757,6 +759,24 @@ public class TestPreparedQueryCache extends TestCase {
         assertEquals(JPQLParser.LANG_JPQL, OpenJPAPersistence.cast(q2).getLanguage());
         assertFalse(lmode1.equals(lmode2));
         List<Author> authors2 = q2.getResultList();
+        em.getTransaction().rollback();
+    }
+    
+    public void testEnumParameter() {
+        String jpql = "select e from Employee e where e.status=:current and e.hireStatus=:hire";
+        EntityManager em = emf.createEntityManager();
+        
+        TypedQuery<Employee> q1 = em.createQuery(jpql, Employee.class);
+        assertEquals(JPQLParser.LANG_JPQL, OpenJPAPersistence.cast(q1).getLanguage());
+        List<Employee> emps = q1.setParameter("current", Category.PERMANENT)
+                                .setParameter("hire", Category.CONTRACTOR).getResultList();
+        
+        // do the same thing again, this time query should be cached
+        em.getTransaction().begin();
+        TypedQuery<Employee> q2 = em.createQuery(jpql, Employee.class);
+        assertEquals(QueryLanguages.LANG_PREPARED_SQL, OpenJPAPersistence.cast(q2).getLanguage());
+        List<Employee> emps2 = q2.setParameter("current", Category.PERMANENT)
+                            .setParameter("hire", Category.CONTRACTOR).getResultList();
         em.getTransaction().rollback();
     }
     
