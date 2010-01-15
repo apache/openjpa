@@ -64,7 +64,8 @@ public class TestUpdateWithSubSelect extends SQLListenerTestCase {
         assertEquals(1,sql.size());
         String sqlString = sql.get(0).toUpperCase().trim();
         assertTrue(sqlString.startsWith("UPDATE"));
-        assertTrue(sqlString.indexOf("JOIN") != -1);
+        // assert JOIN condition
+        assertTrue(sqlString.indexOf("T0.ADDRESS_ID = T1.ID") != -1);
     }
 
 }

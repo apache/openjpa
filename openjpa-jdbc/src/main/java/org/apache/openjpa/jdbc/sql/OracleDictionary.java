@@ -897,7 +897,7 @@ public class OracleDictionary
     @Override
     public int getJDBCType(int metaTypeCode, boolean lob, int precis, 
         int scale, boolean xml) {        
-        return getJDBCType(metaTypeCode, lob && !xml, precis, scale);        
+        return getJDBCType(metaTypeCode, lob || xml, precis, scale);        
     }
 
 

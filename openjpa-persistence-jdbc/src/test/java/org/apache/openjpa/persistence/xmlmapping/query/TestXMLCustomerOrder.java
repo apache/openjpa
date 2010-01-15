@@ -63,7 +63,7 @@ public class TestXMLCustomerOrder
 
     public void setUp() {
         setUp(Customer.class, Customer.CustomerKey.class, Order.class,
-            EAddress.class, CLEAR_TABLES);
+            EAddress.class, DROP_TABLES);  // test create table DDL for XML column
 
         // skip test if dictionary has no support for XML column type
         setTestsDisabled(!dictionarySupportsXMLColumn());
