@@ -21,6 +21,7 @@ package org.apache.openjpa.jdbc.meta.strats;
 import java.sql.*;
 import java.util.*;
 
+import org.apache.openjpa.jdbc.identifier.DBIdentifier;
 import org.apache.openjpa.jdbc.kernel.*;
 import org.apache.openjpa.jdbc.meta.*;
 import org.apache.openjpa.jdbc.schema.*;
@@ -110,8 +111,8 @@ public class HandlerHandlerMapTableFieldStrategy
         _kio = new ColumnIO();
         List columns = key.getValueInfo().getColumns(); 
         DBDictionary dict = field.getMappingRepository().getDBDictionary();
-        String colName = dict.getValidColumnName("key", field.getTable());
-        _kcols = HandlerStrategies.map(key, colName, _kio, adapt);
+        DBIdentifier colName = dict.getValidColumnName(DBIdentifier.newColumn("key"), field.getTable());
+        _kcols = HandlerStrategies.map(key, colName.getName(), _kio, adapt);
 
         _vio = new ColumnIO();
         _vcols = HandlerStrategies.map(val, "value", _vio, adapt);

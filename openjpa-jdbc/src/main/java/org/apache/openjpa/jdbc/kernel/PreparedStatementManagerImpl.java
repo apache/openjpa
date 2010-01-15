@@ -29,6 +29,8 @@ import java.util.LinkedList;
 import java.util.List;
 
 import org.apache.openjpa.jdbc.conf.JDBCConfiguration;
+import org.apache.openjpa.jdbc.identifier.DBIdentifier;
+import org.apache.openjpa.jdbc.identifier.DBIdentifier.DBIdentifierType;
 import org.apache.openjpa.jdbc.meta.ClassMapping;
 import org.apache.openjpa.jdbc.meta.FieldMapping;
 import org.apache.openjpa.jdbc.schema.Column;
@@ -167,10 +169,10 @@ public class PreparedStatementManagerImpl
      * from the result set associated with the stmnt. If not, a separate 
      * sql to select the key will be issued from DBDictionary. 
      */
-    protected List populateAutoAssignCols(PreparedStatement stmnt, 
-        Column[] autoAssign, String[] autoAssignColNames, RowImpl row) 
+    protected List<Object> populateAutoAssignCols(PreparedStatement stmnt, 
+        Column[] autoAssign, DBIdentifier[] autoAssignColNames, RowImpl row) 
         throws SQLException {
-        List vals = null;
+        List<Object> vals = null;
         if (_dict.supportsGetGeneratedKeys) {
             // set auto assign values to id col
             vals = getGeneratedKeys(stmnt, autoAssignColNames);
@@ -179,8 +181,21 @@ public class PreparedStatementManagerImpl
         return vals;
     }
 
+    protected List<Object> populateAutoAssignCols(PreparedStatement stmnt, 
+        Column[] autoAssign, String[] autoAssignColNames, RowImpl row) 
+        throws SQLException {
+        return populateAutoAssignCols(stmnt, autoAssign, 
+            DBIdentifier.toArray(autoAssignColNames, DBIdentifierType.COLUMN), row);
+    }
+    
     protected void setObjectId(List vals, Column[] autoAssign,
         String[] autoAssignColNames, RowImpl row) 
+        throws SQLException{
+        setObjectId(vals, autoAssign, DBIdentifier.toArray(autoAssignColNames, DBIdentifierType.COLUMN), row);
+    }
+    
+    protected void setObjectId(List vals, Column[] autoAssign,
+        DBIdentifier[] autoAssignColNames, RowImpl row) 
         throws SQLException{
         OpenJPAStateManager sm = row.getPrimaryKey();
         ClassMapping mapping = (ClassMapping) sm.getMetaData();
@@ -202,8 +217,14 @@ public class PreparedStatementManagerImpl
      * This method will only be called when the database supports
      * getGeneratedKeys.
      */
-    protected List getGeneratedKeys(PreparedStatement stmnt, 
+    protected List<Object> getGeneratedKeys(PreparedStatement stmnt, 
         String[] autoAssignColNames) 
+        throws SQLException {
+        return getGeneratedKeys(stmnt, DBIdentifier.toArray(autoAssignColNames, DBIdentifierType.COLUMN));
+    }
+
+    protected List<Object> getGeneratedKeys(PreparedStatement stmnt, 
+        DBIdentifier[] autoAssignColNames) 
         throws SQLException {
         ResultSet rs = stmnt.getGeneratedKeys();
         List<Object> vals = new ArrayList<Object>();
@@ -222,14 +243,22 @@ public class PreparedStatementManagerImpl
         return autoAssign;
     }
 
+    /**
+     * @deprecated
+     */
     protected String[] getAutoAssignColNames(Column[] autoAssign, RowImpl row) {
-        String[] autoAssignColNames = null;
+        DBIdentifier[] names =  getAutoAssignColIdentifiers(autoAssign, row);
+        return DBIdentifier.toStringArray(names);
+    }
+
+    protected DBIdentifier[] getAutoAssignColIdentifiers(Column[] autoAssign, RowImpl row) {
+        DBIdentifier[] autoAssignColNames = null;
         if (autoAssign != null && autoAssign.length > 0
             && row.getPrimaryKey() != null) {
-            autoAssignColNames = new String[autoAssign.length];
+            autoAssignColNames = new DBIdentifier[autoAssign.length];
             for (int i = 0; i < autoAssign.length; i++)
-                autoAssignColNames[i] =
-                    _dict.convertSchemaCase(autoAssign[i].getName());
+                autoAssignColNames[i] = autoAssign[i].getIdentifier();
+//                    _dict.convertSchemaCase(.getName());
         }
         return autoAssignColNames;
     }

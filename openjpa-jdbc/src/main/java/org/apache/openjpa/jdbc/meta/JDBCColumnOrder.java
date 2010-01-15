@@ -20,6 +20,7 @@ package org.apache.openjpa.jdbc.meta;
 
 import java.util.Comparator;
 
+import org.apache.openjpa.jdbc.identifier.DBIdentifier;
 import org.apache.openjpa.jdbc.schema.Column;
 import org.apache.openjpa.jdbc.schema.ColumnIO;
 import org.apache.openjpa.jdbc.sql.Joins;
@@ -30,6 +31,7 @@ import org.apache.openjpa.jdbc.sql.Select;
  *
  * @author Abe White
  */
+@SuppressWarnings("serial")
 class JDBCColumnOrder
     implements JDBCOrder {
 
@@ -64,15 +66,22 @@ class JDBCColumnOrder
         _io = io;
     }
 
+    /**
+     * @deprecated
+     */
     public String getName() {
         return (_col == null) ? "" : _col.getName();
+    }
+
+    public DBIdentifier getIdentifier() {
+        return (_col == null) ? DBIdentifier.newColumn("") : _col.getIdentifier();
     }
 
     public boolean isAscending() {
         return true;
     }
 
-    public Comparator getComparator() {
+    public Comparator<?> getComparator() {
         return null;
     }
 

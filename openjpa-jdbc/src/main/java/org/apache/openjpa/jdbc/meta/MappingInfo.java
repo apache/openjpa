@@ -26,6 +26,9 @@ import java.util.List;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.openjpa.jdbc.conf.JDBCConfiguration;
+import org.apache.openjpa.jdbc.identifier.Normalizer;
+import org.apache.openjpa.jdbc.identifier.DBIdentifier;
+import org.apache.openjpa.jdbc.identifier.QualifiedDBIdentifier;
 import org.apache.openjpa.jdbc.schema.Column;
 import org.apache.openjpa.jdbc.schema.ColumnIO;
 import org.apache.openjpa.jdbc.schema.ForeignKey;
@@ -51,6 +54,7 @@ import serp.util.Strings;
  *
  * @author Abe White
  */
+@SuppressWarnings("serial")
 public abstract class MappingInfo
     implements Serializable {
 
@@ -64,7 +68,7 @@ public abstract class MappingInfo
         (MappingInfo.class);
 
     private String _strategy = null;
-    private List _cols = null;
+    private List<Column> _cols = null;
     private Index _idx = null;
     private Unique _unq = null;
     private ForeignKey _fk = null;
@@ -92,19 +96,30 @@ public abstract class MappingInfo
     /**
      * Raw column data.
      */
-    public List getColumns() {
-        return (_cols == null) ? Collections.EMPTY_LIST : _cols;
+    public List<Column> getColumns() {
+        if (_cols == null) {
+            return Collections.emptyList();
+        }
+        return _cols;
     }
     
     /**
      * Gets the columns whose table name matches the given table name. 
+     * @deprecated
      */
-    public List getColumns(String tableName) {
+    public List<Column> getColumns(String tableName) {
+        return getColumns(DBIdentifier.newTable(tableName));
+    }
+
+    /**
+     * Gets the columns whose table name matches the given table name. 
+     */
+    public List<Column> getColumns(DBIdentifier tableName) {
         if (_cols == null) 
-        	return Collections.EMPTY_LIST;
-        List result = new ArrayList();
-        for (Object col : _cols) {
-        	if (StringUtils.equals(((Column)col).getTableName(), 
+        	return Collections.emptyList();
+        List<Column> result = new ArrayList<Column>();
+        for (Column col : _cols) {
+        	if (DBIdentifier.equal(col.getTableIdentifier(), 
         			tableName)) 
         		result.add(col);
         }
@@ -114,7 +129,7 @@ public abstract class MappingInfo
     /**
      * Raw column data.
      */
-    public void setColumns(List cols) {
+    public void setColumns(List<Column> cols) {
         _cols = cols;
     }
 
@@ -321,12 +336,12 @@ public abstract class MappingInfo
                 _canFK = info.canForeignKey();
         }
         _implicitRelation = info.isImplicitRelation();
-        List cols = getColumns();
-        List icols = info.getColumns();
+        List<Column> cols = getColumns();
+        List<Column> icols = info.getColumns();
         if (!icols.isEmpty() && (cols.isEmpty()
             || cols.size() == icols.size())) {
             if (cols.isEmpty())
-                cols = new ArrayList(icols.size());
+                cols = new ArrayList<Column>(icols.size());
             for (int i = 0; i < icols.size(); i++) {
                 if (cols.size() == i)
                     cols.add(new Column());
@@ -448,7 +463,7 @@ public abstract class MappingInfo
             Column col;
             for (int i = 0; !join && i < _cols.size(); i++) {
                 col = (Column) _cols.get(i);
-                if (col.getTarget() != null)
+                if (!DBIdentifier.isNull(col.getTargetIdentifier()))
                     join = true;
             }
         }
@@ -469,43 +484,48 @@ public abstract class MappingInfo
      * @param schemaName default schema if known, or null
      * @param given given table name
      * @param adapt whether we can alter the schema or mappings
+     * @deprecated
      */
     public Table createTable(MetaDataContext context, TableDefaults def,
         String schemaName, String given, boolean adapt) {
+        return createTable(context, def, DBIdentifier.newSchema(schemaName), 
+            DBIdentifier.newTable(given), adapt);
+    }
+
+    public Table createTable(MetaDataContext context, TableDefaults def,
+        DBIdentifier schemaName, DBIdentifier given, boolean adapt) {
         MappingRepository repos = (MappingRepository) context.getRepository();
-        if (given == null && (def == null || (!adapt
+        if (DBIdentifier.isNull(given) && (def == null || (!adapt
             && !repos.getMappingDefaults().defaultMissingInfo())))
             throw new MetaDataException(_loc.get("no-table", context));
 
-        if (schemaName == null)
-            schemaName = Schemas.getNewTableSchema((JDBCConfiguration)
+        if (DBIdentifier.isNull(schemaName))
+            schemaName = Schemas.getNewTableSchemaIdentifier((JDBCConfiguration)
                 repos.getConfiguration());
 
         // if no given and adapting or defaulting missing info, use template
         SchemaGroup group = repos.getSchemaGroup();
         Schema schema = null;
-        if (given == null) {
+        if (DBIdentifier.isNull(given)) {
             schema = group.getSchema(schemaName);
             if (schema == null)
                 schema = group.addSchema(schemaName);
-            given = def.get(schema);
+            given = def.getIdentifier(schema);
         }
 
-        String fullName;
-        String sep = repos.getDBDictionary().catalogSeparator;
-        int dotIdx = given.lastIndexOf(sep);
-        if (dotIdx == -1)
-            fullName = (schemaName == null) ? given : schemaName + sep + given;
-        else {
-            fullName = given;
+        QualifiedDBIdentifier path = QualifiedDBIdentifier.getPath(given);
+        if (DBIdentifier.isNull(path.getSchemaName())) {
+            if (!DBIdentifier.isNull(schemaName)) {
+                path.setSchemaName(schemaName);
+            }
+        } else {
+            schemaName = path.getSchemaName();
             schema = null;
-            schemaName = given.substring(0, dotIdx);
-            given = given.substring(dotIdx + 1);
         }
 
         // look for named table using full name and findTable, which allows
         // the dynamic schema factory to create the table if needed
-        Table table = group.findTable(fullName);
+        Table table = group.findTable(path);
         if (table != null)
             return table;
         if (!adapt)
@@ -543,7 +563,7 @@ public abstract class MappingInfo
         // mapping, or none at all if we're adapting.  can't just given one of
         // n columns because we don't know which of the n columns the info
         // applies to
-        List given = getColumns();
+        List<Column> given = getColumns();
         
         if (context instanceof FieldMapping && ((FieldMapping)context).hasMapsIdCols())
             given = ((FieldMapping)context).getValueInfo().getMapsIdColumns();
@@ -553,7 +573,7 @@ public abstract class MappingInfo
         if ((!given.isEmpty() || (!adapt && !fill))
             && given.size() != tmplates.length) {
         	// also consider when this info has columns from multiple tables
-        	given = getColumns(table.getName());
+        	given = getColumns(table.getIdentifier());
         	if ((!adapt && !fill) && given.size() != tmplates.length) {
         		// try default table
         		given = getColumns("");
@@ -577,7 +597,7 @@ public abstract class MappingInfo
         return cols;
     }
     
-    boolean canMerge(List given, Column[] templates, boolean adapt,
+    boolean canMerge(List<Column> given, Column[] templates, boolean adapt,
             boolean fill) {
     	return !((!given.isEmpty() || (!adapt && !fill)) 
     			&& given.size() != templates.length);
@@ -627,8 +647,8 @@ public abstract class MappingInfo
         assertTable(context, table);
 
         // if not adapting must provide column name at a minimum
-        String colName = (given == null) ? null : given.getName();
-        if (colName == null && !adapt && !fill)
+        DBIdentifier colName = (given == null) ? DBIdentifier.NULL : given.getIdentifier();
+        if (DBIdentifier.isNull(colName) && !adapt && !fill)
             throw new MetaDataException(_loc.get(prefix + "-no-col-name",
                 context));
 
@@ -638,15 +658,15 @@ public abstract class MappingInfo
         // determine the column name based on given info, or template if none;
         // also make sure that if the user gave a column name, he didn't try
         // to put the column in an unexpected table
-        if (colName == null)
-            colName = tmplate.getName();
-        int dotIdx = colName.lastIndexOf(dict.catalogSeparator);
-        if (dotIdx == 0)
-            colName = colName.substring(1);
-        else if (dotIdx != -1) {
-            findTable(context, colName.substring(0, dotIdx), table,
+        if (DBIdentifier.isNull(colName))
+            colName = tmplate.getIdentifier();
+        QualifiedDBIdentifier path = QualifiedDBIdentifier.getPath(colName);
+        if (path.isUnqualifiedColumn()) {
+            colName = path.getIdentifier();
+        } else if (!DBIdentifier.isNull(path.getObjectTableName())) {
+            findTable(context, path.getObjectTableName(), table,
                 null, null);
-            colName = colName.substring(dotIdx + 1);
+            colName = path.getUnqualifiedName();
         }
 
         // find existing column
@@ -658,8 +678,8 @@ public abstract class MappingInfo
             // should seldom if ever occur as long as the database dictionaries
             // are kept up-to-date. 
             // 
-            if ((colName.length() > dict.maxColumnNameLength) || 
-               dict.getInvalidColumnWordSet().contains(colName.toUpperCase()) &&
+            if ((colName.getName().length() > dict.maxColumnNameLength) || 
+               dict.getInvalidColumnWordSet().contains(DBIdentifier.toUpper(colName).getName()) &&
               !(table.getClass().getName().contains("DynamicTable"))) {
                 colName=dict.getValidColumnName(colName, new Table());
                 col = table.getColumn(colName);
@@ -814,7 +834,7 @@ public abstract class MappingInfo
      * @param rel if we're finding the target table of a join, the
      * joined-to type; allows us to also look in its superclass tables
      */
-    private static Table findTable(MetaDataContext context, String name,
+    private static Table findTable(MetaDataContext context, DBIdentifier name,
         Table expected, Table inverse, ClassMapping rel) {
         // is this the expected table?
         if (expected == null && rel != null)
@@ -837,15 +857,15 @@ public abstract class MappingInfo
 
         // none of the possible tables
         throw new MetaDataException(_loc.get("col-wrong-table", context,
-            expected, name));
+            expected, name.getName()));
     }
 
     /**
      * Return whether the given name matches the given table.
      */
-    private static boolean isTableName(String name, Table table) {
-        return name.equalsIgnoreCase(table.getName())
-            || name.equalsIgnoreCase(table.getFullName());
+    private static boolean isTableName(DBIdentifier name, Table table) {
+        return DBIdentifier.equal(name, table.getIdentifier())
+            || DBIdentifier.equal(name, table.getFullIdentifier());
     }
 
     /**
@@ -910,10 +930,10 @@ public abstract class MappingInfo
         if (_idx == null && (tmplate == null || (!adapt && !fill)))
             return null;
 
-        String name = null;
+        DBIdentifier name = DBIdentifier.NULL;
         boolean unq;
         if (_idx != null) {
-            name = _idx.getName();
+            name = _idx.getIdentifier();
             unq = _idx.isUnique();
             // preserve multiple columns if they are specified in the index
             if (_idx.getColumns() != null && _idx.getColumns().length > 1)
@@ -922,11 +942,11 @@ public abstract class MappingInfo
             unq = tmplate.isUnique();
 
         // if no name provided by user info, make one
-        if (name == null) {
+        if (DBIdentifier.isNull(name)) {
             if (tmplate != null)
-                name = tmplate.getName();
+                name = tmplate.getIdentifier();
             else {
-                name = cols[0].getName();
+                name = cols[0].getIdentifier();
                 name = repos.getDBDictionary().getValidIndexName(name, table);
             }
         }
@@ -1009,13 +1029,13 @@ public abstract class MappingInfo
         if (!adapt && !fill && _unq == null)
             return null;
 
-        String name;
+        DBIdentifier name = DBIdentifier.NULL;
         boolean deferred;
         if (_unq != null) {
-            name = _unq.getName();
+            name = _unq.getIdentifier();
             deferred = _unq.isDeferred();
         } else {
-            name = tmplate.getName();
+            name = tmplate.getIdentifier();
             deferred = tmplate.isDeferred();
         }
 
@@ -1027,8 +1047,8 @@ public abstract class MappingInfo
             deferred = false;
         }
         
-        if (StringUtils.isEmpty(name)) {
-        	name = cols[0].getName();
+        if (DBIdentifier.isEmpty(name)) {
+        	name = cols[0].getIdentifier();
         	name = repos.getDBDictionary().getValidUniqueName(name, table);
         }
         
@@ -1054,7 +1074,7 @@ public abstract class MappingInfo
      * @param adapt whether we can modify the existing mapping or schema
      */
     protected ForeignKey createForeignKey(MetaDataContext context,
-        String prefix, List given, ForeignKeyDefaults def, Table table,
+        String prefix, List<Column> given, ForeignKeyDefaults def, Table table,
         ClassMapping cls, ClassMapping rel, boolean inversable, boolean adapt) {
         assertTable(context, table);
         if (prefix == null)
@@ -1116,10 +1136,10 @@ public abstract class MappingInfo
         if (exist != null) {
             // make existing key logical?
             if (!_canFK) {
-                if (exist.getDeleteAction() != exist.ACTION_NONE && !adapt)
+                if (exist.getDeleteAction() != ForeignKey.ACTION_NONE && !adapt)
                     throw new MetaDataException(_loc.get(prefix
                         + "-fk-exists", context));
-                exist.setDeleteAction(exist.ACTION_NONE);
+                exist.setDeleteAction(ForeignKey.ACTION_NONE);
             }
 
             if (_fk != null && _fk.isDeferred() && !exist.isDeferred()) {
@@ -1140,7 +1160,7 @@ public abstract class MappingInfo
             return exist;
         }
 
-        String name = null;
+        DBIdentifier name = DBIdentifier.NULL;
         int delAction = ForeignKey.ACTION_NONE;
         int upAction = ForeignKey.ACTION_NONE;
         boolean deferred = false;
@@ -1149,22 +1169,22 @@ public abstract class MappingInfo
             : def.get(local, foreign, _join == JOIN_INVERSE);
         if (_fk != null && (tmplate == null || (!adapt && !fill))) {
             // if not adapting or no template info use given data
-            name = _fk.getName();
+            name = _fk.getIdentifier();
             delAction = _fk.getDeleteAction();
             upAction = _fk.getUpdateAction();
             deferred = _fk.isDeferred();
         } else if (_canFK && (adapt || fill)) {
             if (_fk == null && tmplate != null) {
                 // no user given info; use template data
-                name = tmplate.getName();
+                name = tmplate.getIdentifier();
                 delAction = tmplate.getDeleteAction();
                 upAction = tmplate.getUpdateAction();
                 deferred = tmplate.isDeferred();
             } else if (_fk != null && tmplate != null) {
                 // merge user and template data, always letting user info win
-                name = _fk.getName();
-                if (name == null && tmplate.getName() != null)
-                    name = tmplate.getName();
+                name = _fk.getIdentifier();
+                if (DBIdentifier.isNull(name) && !DBIdentifier.isNull(tmplate.getIdentifier()))
+                    name = tmplate.getIdentifier();
                 delAction = _fk.getDeleteAction();
                 if (delAction == ForeignKey.ACTION_NONE)
                     delAction = tmplate.getDeleteAction();
@@ -1216,7 +1236,7 @@ public abstract class MappingInfo
      * Use the join information to populate our internal column I/O data.
      */
     private void setIOFromJoins(ForeignKey fk, Object[][] joins) {
-        List cols = getColumns();
+        List<Column> cols = getColumns();
         _io = null;
         if (cols.isEmpty())
             return;
@@ -1255,7 +1275,7 @@ public abstract class MappingInfo
      */
     private Object[][] createJoins(MetaDataContext context,
         String prefix, Table table, ClassMapping cls, ClassMapping rel,
-        List given, ForeignKeyDefaults def, boolean inversable, boolean adapt) {
+        List<Column> given, ForeignKeyDefaults def, boolean inversable, boolean adapt) {
         MappingRepository repos = (MappingRepository) context.getRepository();
         boolean fill = repos.getMappingDefaults().defaultMissingInfo();
         Object[][] joins;
@@ -1271,7 +1291,7 @@ public abstract class MappingInfo
             Column tmplate;
             for (int i = 0; i < targets.length; i++) {
                 tmplate = new Column();
-                tmplate.setName(targets[i].getName());
+                tmplate.setIdentifier(targets[i].getIdentifier());
                 tmplate.setJavaType(targets[i].getJavaType());
                 tmplate.setType(targets[i].getType());
                 tmplate.setTypeName(targets[i].getTypeName());
@@ -1328,16 +1348,16 @@ public abstract class MappingInfo
         ClassMapping rel, ForeignKeyDefaults def, boolean inversable,
         boolean adapt, boolean fill) {
         // default to the primary key column name if this is a pk join
-        String name = given.getName();
-        if (name == null && given != null
+        DBIdentifier name = given.getIdentifier();
+        if (DBIdentifier.isNull(name) && given != null
             && given.getFlag(Column.FLAG_PK_JOIN) && cls != null) {
             Column[] pks = cls.getPrimaryKeyColumns();
             if (pks.length == 1)
-                name = pks[0].getName();
+                name = pks[0].getIdentifier();
         }
 
         // if we can't adapt, then the user must at least give a column name
-        if (name == null && !adapt && !fill)
+        if (DBIdentifier.isNull(name) && !adapt && !fill)
             throw new MetaDataException(_loc.get(prefix + "-no-fkcol-name",
                 context));
 
@@ -1347,18 +1367,16 @@ public abstract class MappingInfo
         Table foreign = rel.getTable();
         boolean fullName = false;
         boolean inverse = false;
-        if (name != null) {
-            int dotIdx = name.lastIndexOf('.');
-            if (dotIdx != -1) {
-                // allow use of '.' without prefix to mean "use expected
-                // foreign table"
-                if (dotIdx == 0)
+        if (!DBIdentifier.isNull(name)) {
+            QualifiedDBIdentifier path = QualifiedDBIdentifier.getPath(name);
+            if (!DBIdentifier.isNull(path.getObjectTableName())) {
+                if (DBIdentifier.isEmpty(path.getObjectTableName()))
                     local = foreign;
                 else
-                    local = findTable(context, name.substring(0, dotIdx),
+                    local = findTable(context, path.getObjectTableName(),
                         local, foreign, null);
                 fullName = true;
-                name = name.substring(dotIdx + 1);
+                name = path.getIdentifier().getUnqualifiedName();
 
                 // if inverse join, then swap local and foreign tables
                 if (local != table) {
@@ -1375,28 +1393,27 @@ public abstract class MappingInfo
         }
 
         // determine target
-        String targetName = given.getTarget();
+        DBIdentifier targetName = given.getTargetIdentifier();
         Object target = null;
         Table ttable = null;
         boolean constant = false;
         boolean fullTarget = false;
-        if (targetName == null && given.getTargetField() != null) {
+        if (DBIdentifier.isNull(targetName) && given.getTargetField() != null) {
             ClassMapping tcls = (inverse) ? cls : rel;
             String fieldName = given.getTargetField();
-            int dotIdx = fieldName.lastIndexOf('.');
-            fullTarget = dotIdx != -1;
+            String[] names = Normalizer.splitName(fieldName);
+            fullTarget = names.length > 1;
 
-            if (dotIdx == 0) {
+            if (names.length > 1 && StringUtils.isEmpty(names[0])) {
                 // allow use of '.' without prefix to mean "use expected local
                 // cls"; but if we already inversed no need to switch again
                 if (!inverse)
                     tcls = cls;
-                fieldName = fieldName.substring(1);
-            } else if (dotIdx > 0) {
+                fieldName = names[1];
+            } else if (names.length > 1) {
                 // must be class + field name
-                tcls = findClassMapping(context, fieldName.substring
-                    (0, dotIdx), cls, rel);
-                fieldName = fieldName.substring(dotIdx + 1);
+                tcls = findClassMapping(context, names[0], cls, rel);
+                fieldName = names[1];
             }
             if (tcls == null)
                 throw new MetaDataException(_loc.get(prefix
@@ -1412,39 +1429,40 @@ public abstract class MappingInfo
                     + "-fktargetfield-cols", context, fieldName, name));
             ttable = (field.getJoinForeignKey() != null) ? field.getTable()
                 : field.getDefiningMapping().getTable();
-            targetName = field.getColumns()[0].getName();
-        } else if (targetName != null) {
-            if (targetName.charAt(0) == '\'') {
+            targetName = field.getColumns()[0].getIdentifier();
+        } else if (!DBIdentifier.isNull(targetName)) {
+            String targetNameStr = targetName.getName();
+            if (targetNameStr.charAt(0) == '\'') {
                 constant = true;
-                target = targetName.substring(1, targetName.length() - 1);
-            } else if (targetName.charAt(0) == '-'
-                || targetName.charAt(0) == '.'
-                || Character.isDigit(targetName.charAt(0))) {
+                target = targetNameStr.substring(1, targetNameStr.length() - 1);
+            } else if (targetNameStr.charAt(0) == '-'
+                || targetNameStr.charAt(0) == '.'
+                || Character.isDigit(targetNameStr.charAt(0))) {
                 constant = true;
                 try {
-                    if (targetName.indexOf('.') == -1)
-                        target = new Integer(targetName);
+                    if (targetNameStr.indexOf('.') == -1)
+                        target = new Integer(targetNameStr);
                     else
-                        target = new Double(targetName);
+                        target = new Double(targetNameStr);
                 } catch (RuntimeException re) {
                     throw new MetaDataException(_loc.get(prefix
                         + "-bad-fkconst", context, targetName, name));
                 }
-            } else if ("null".equalsIgnoreCase(targetName))
+            } else if ("null".equalsIgnoreCase(targetNameStr))
                 constant = true;
             else {
-                int dotIdx = targetName.lastIndexOf('.');
-                fullTarget = dotIdx != -1;
-                if (dotIdx == 0) {
+                QualifiedDBIdentifier path = QualifiedDBIdentifier.getPath(targetName); 
+                fullTarget = (!DBIdentifier.isNull(path.getObjectTableName()));
+                if (!DBIdentifier.isNull(path.getObjectTableName()) && 
+                    DBIdentifier.isEmpty(path.getObjectTableName())) {
                     // allow use of '.' without prefix to mean "use expected
                     // local table", but ignore if we're already inversed
                     if (!inverse)
                         ttable = local;
-                    targetName = targetName.substring(1);
-                } else if (dotIdx != -1) {
-                    ttable = findTable(context, targetName.substring(0,
-                        dotIdx), foreign, local, (inverse) ? cls : rel);
-                    targetName = targetName.substring(dotIdx + 1);
+                    targetName = path.getIdentifier().getUnqualifiedName();
+                } else if (!DBIdentifier.isNull(path.getObjectTableName())) {
+                    ttable = findTable(context, path.getObjectTableName(), foreign, local, (inverse) ? cls : rel);
+                    targetName = path.getIdentifier().getUnqualifiedName();
                 }
             }
         }
@@ -1468,7 +1486,7 @@ public abstract class MappingInfo
         // in the column name, but not in the column target, or if the user
         // gives no column name but a full target name
         inverse = inverse || local != table || (local == foreign
-            && ((fullName && !fullTarget) || (name == null && fullTarget)));
+            && ((fullName && !fullTarget) || (DBIdentifier.isNull(name) && fullTarget)));
         if (!inversable && !constant && inverse) {
             if (local == foreign)
                 throw new MetaDataException(_loc.get(prefix
@@ -1476,11 +1494,11 @@ public abstract class MappingInfo
             throw new MetaDataException(_loc.get(prefix + "-bad-fk-inverse",
                 context, local, table));
         }
-        if (name == null && constant)
+        if (DBIdentifier.isNull(name) && constant)
             throw new MetaDataException(_loc.get(prefix
                 + "-no-fkcol-name-adapt", context));
 
-        if (name == null && targetName == null) {
+        if (DBIdentifier.isNull(name) && DBIdentifier.isNull(targetName)) {
             // if no name or target is provided and there's more than one likely
             // join possibility, too ambiguous
             PrimaryKey pk = foreign.getPrimaryKey();
@@ -1489,13 +1507,13 @@ public abstract class MappingInfo
                     + "-no-fkcol-name-adapt", context));
 
             // assume target is pk column
-            targetName = pk.getColumns()[0].getName();
-        } else if (name != null && targetName == null) {
+            targetName = pk.getColumns()[0].getIdentifier();
+        } else if (!DBIdentifier.isNull(name) && DBIdentifier.isNull(targetName)) {
             // if one primary key column use it for target; if multiple joins
             // look for a foreign column with same name as local column
             PrimaryKey pk = foreign.getPrimaryKey();
             if (joins.length == 1 && pk != null && pk.getColumns().length == 1) {
-                targetName = pk.getColumns()[0].getName();
+                targetName = pk.getColumns()[0].getIdentifier();
             }
             else if (foreign.getColumn(name) != null) {
                 targetName = name;
@@ -1509,15 +1527,15 @@ public abstract class MappingInfo
         // find the target column, and create template for local column based
         // on it
         Column tmplate = new Column();
-        tmplate.setName(name);
+        tmplate.setIdentifier(name);
         if (!constant) {
             Column tcol = foreign.getColumn(targetName);
             if (tcol == null)
                 throw new MetaDataException(_loc.get(prefix + "-bad-fktarget",
                     new Object[]{ context, targetName, name, foreign }));
 
-            if (name == null)
-                tmplate.setName(tcol.getName());
+            if (DBIdentifier.isNull(name))
+                tmplate.setIdentifier(tcol.getIdentifier());
             tmplate.setJavaType(tcol.getJavaType());
             tmplate.setType(tcol.getType());
             tmplate.setTypeName(tcol.getTypeName());
@@ -1535,8 +1553,8 @@ public abstract class MappingInfo
         if (def != null)
             def.populate(local, foreign, tmplate, target, inverse, idx,
                 joins.length);
-        if (name != null)
-            tmplate.setName(name);
+        if (!DBIdentifier.isNull(name))
+            tmplate.setIdentifier(name);
 
         // create or merge local column
         Column col = mergeColumn(context, prefix, tmplate, true, given, local,
@@ -1589,7 +1607,7 @@ public abstract class MappingInfo
         if (cols == null || cols.length == 0)
             _cols = null;
         else {
-            _cols = new ArrayList(cols.length);
+            _cols = new ArrayList<Column>(cols.length);
             Column col;
             for (int i = 0; i < cols.length; i++) {
                 col = syncColumn(context, cols[i], cols.length,
@@ -1621,7 +1639,7 @@ public abstract class MappingInfo
 
         _canIdx = true;
         _idx = new Index();
-        _idx.setName(idx.getName());
+        _idx.setIdentifier(idx.getIdentifier());
         _idx.setUnique(idx.isUnique());
         if (idx.getColumns() != null && idx.getColumns().length > 1)
             _idx.setColumns(idx.getColumns());
@@ -1638,7 +1656,7 @@ public abstract class MappingInfo
 
         _canUnq = true;
         _unq = new Unique();
-        _unq.setName(unq.getName());
+        _unq.setIdentifier(unq.getIdentifier());
         _unq.setDeferred(unq.isDeferred());
     }
     
@@ -1665,7 +1683,7 @@ public abstract class MappingInfo
         else {
             _canFK = true;
             _fk = new ForeignKey();
-            _fk.setName(fk.getName());
+            _fk.setIdentifier(fk.getIdentifier());
             _fk.setDeleteAction(fk.getDeleteAction());
             _fk.setUpdateAction(fk.getUpdateAction());
             _fk.setDeferred(fk.isDeferred());
@@ -1679,7 +1697,7 @@ public abstract class MappingInfo
         Object[] cpks = fk.getPrimaryKeyConstants();
 
         int size = cols.length + ccols.length + cpkCols.length;
-        _cols = new ArrayList(size);
+        _cols = new ArrayList<Column>(size);
         Column col;
         for (int i = 0; i < cols.length; i++) {
             col = syncColumn(context, cols[i], size, false, local,
@@ -1725,27 +1743,28 @@ public abstract class MappingInfo
             getDBDictionary();
         Column copy = new Column();
         if (col.getTable() != colTable || inverse)
-            copy.setName(dict.getFullName(col.getTable(), true)
-                + dict.catalogSeparator + col.getName());
+            copy.setIdentifier(QualifiedDBIdentifier.newPath(dict.getFullIdentifier(col.getTable(), true),
+                col.getIdentifier()));
         else
-            copy.setName(col.getName());
+            copy.setIdentifier(col.getIdentifier());
 
         // set target if not default
         if (target != null) {
             if (target == NULL)
-                copy.setTarget("null");
+                copy.setTargetIdentifier(DBIdentifier.newColumn("null"));
             else if (target instanceof Column) {
                 Column tcol = (Column) target;
                 if ((!inverse && tcol.getTable() != targetTable)
                     || (inverse && tcol.getTable() != colTable))
-                    copy.setTarget(dict.getFullName(tcol.getTable(), true)
-                        + dict.catalogSeparator + tcol.getName());
+                    copy.setTargetIdentifier(
+                        QualifiedDBIdentifier.newPath(dict.getFullIdentifier(tcol.getTable(), true),
+                        tcol.getIdentifier()));
                 else if (!defaultTarget(col, tcol, num))
-                    copy.setTarget(tcol.getName());
+                    copy.setTargetIdentifier(tcol.getIdentifier());
             } else if (target instanceof Number)
-                copy.setTarget(target.toString());
+                copy.setTargetIdentifier(DBIdentifier.newConstant(target.toString()));
             else
-                copy.setTarget("'" + target + "'");
+                copy.setTargetIdentifier(DBIdentifier.newConstant("'" + target + "'"));
         } else if (num > 1)
             copy.setTargetField(col.getTargetField());
 
@@ -1839,7 +1858,7 @@ public abstract class MappingInfo
      */
     private static boolean defaultTarget(Column col, Column targetCol,
         int num) {
-        if (col.getName().equals(targetCol.getName()))
+        if (col.getIdentifier().equals(targetCol.getIdentifier()))
             return true;
         if (num > 1)
             return false;
@@ -1857,8 +1876,10 @@ public abstract class MappingInfo
 
         /**
          * Return the default table name.
+         * @deprecated
          */
         public String get(Schema schema);
+        public DBIdentifier getIdentifier(Schema schema);
     }
 
     /**

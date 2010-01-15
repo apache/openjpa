@@ -30,6 +30,7 @@ import java.util.Map;
 
 import org.apache.openjpa.conf.OpenJPAConfiguration;
 import org.apache.openjpa.jdbc.conf.JDBCConfiguration;
+import org.apache.openjpa.jdbc.identifier.DBIdentifier;
 import org.apache.openjpa.jdbc.meta.strats.BlobValueHandler;
 import org.apache.openjpa.jdbc.meta.strats.ByteArrayValueHandler;
 import org.apache.openjpa.jdbc.meta.strats.CharArrayStreamValueHandler;
@@ -112,7 +113,8 @@ public class MappingRepository extends MetaDataRepository {
     private transient DBDictionary _dict = null;
     private transient MappingDefaults _defaults = null;
     
-    private Map _results = new HashMap(); // object->queryresultmapping
+    // object->queryresultmapping
+    private Map<Object, QueryResultMapping> _results = new HashMap<Object, QueryResultMapping>(); 
     private SchemaGroup _schema = null;
     private StrategyInstaller _installer = null;
 
@@ -344,11 +346,11 @@ public class MappingRepository extends MetaDataRepository {
      * Return a unique key for the given class / name. The class argument
      * can be null.
      */
-    private static Object getQueryResultKey(Class cls, String name) {
+    private static Object getQueryResultKey(Class<?> cls, String name) {
         return getQueryKey(cls, name);
     }
 
-    public ClassMapping getMapping(Class cls, ClassLoader envLoader,
+    public ClassMapping getMapping(Class<?> cls, ClassLoader envLoader,
         boolean mustExist) {
         return (ClassMapping) super.getMetaData(cls, envLoader, mustExist);
     }
@@ -362,7 +364,7 @@ public class MappingRepository extends MetaDataRepository {
         return (ClassMapping) super.getMetaData(oid, envLoader, mustExist);
     }
 
-    public ClassMapping[] getImplementorMappings(Class cls,
+    public ClassMapping[] getImplementorMappings(Class<?> cls,
         ClassLoader envLoader, boolean mustExist) {
         return (ClassMapping[]) super.getImplementorMetaDatas(cls, envLoader,
             mustExist);
@@ -415,7 +417,7 @@ public class MappingRepository extends MetaDataRepository {
         mapping.resolveNonRelationMappings();
     }
 
-    protected ClassMetaData newClassMetaData(Class type) {
+    protected ClassMetaData newClassMetaData(Class<?> type) {
         return new ClassMapping(type, this);
     }
 
@@ -423,7 +425,7 @@ public class MappingRepository extends MetaDataRepository {
         return new ClassMapping[length];
     }
 
-    protected FieldMetaData newFieldMetaData(String name, Class type,
+    protected FieldMetaData newFieldMetaData(String name, Class<?> type,
         ClassMetaData owner) {
         return new FieldMapping(name, type, (ClassMapping) owner);
     }
@@ -530,7 +532,7 @@ public class MappingRepository extends MetaDataRepository {
 
         String props = Configurations.getProperties(name);
         name = Configurations.getClassName(name);
-        Class strat = null;
+        Class<?> strat = null;
 
         // base and vertical strategies use same alias; differentiate on join
         if (FullClassStrategy.ALIAS.equals(name))
@@ -575,7 +577,7 @@ public class MappingRepository extends MetaDataRepository {
         String props = Configurations.getProperties(name);
         name = Configurations.getClassName(name);
         try {
-            Class c = JavaTypes.classForName(name, field,
+            Class<?> c = JavaTypes.classForName(name, field,
                 AccessController.doPrivileged(
                     J2DoPrivHelper.getClassLoaderAction(FieldStrategy.class)));
             if (FieldStrategy.class.isAssignableFrom(c)) {
@@ -636,7 +638,7 @@ public class MappingRepository extends MetaDataRepository {
 
         String props = Configurations.getProperties(name);
         name = Configurations.getClassName(name);
-        Class strat = null;
+        Class<?> strat = null;
 
         if (ClassNameDiscriminatorStrategy.ALIAS.equals(name))
             strat = ClassNameDiscriminatorStrategy.class;
@@ -698,7 +700,7 @@ public class MappingRepository extends MetaDataRepository {
 
         String props = Configurations.getProperties(name);
         name = Configurations.getClassName(name);
-        Class strat = null;
+        Class<?> strat = null;
 
         if (NumberVersionStrategy.ALIAS.equals(name))
             strat = NumberVersionStrategy.class;
@@ -729,7 +731,7 @@ public class MappingRepository extends MetaDataRepository {
     /**
      * Instantiate the given version strategy.
      */
-    protected VersionStrategy instantiateVersionStrategy(Class strat,
+    protected VersionStrategy instantiateVersionStrategy(Class<?> strat,
         Version version, String props) {
         try {
             VersionStrategy strategy = (VersionStrategy)
@@ -824,7 +826,7 @@ public class MappingRepository extends MetaDataRepository {
     protected FieldStrategy defaultStrategy(FieldMapping field,
         boolean installHandlers, boolean adapting) {
         // not persistent?
-        if (field.getManagement() != field.MANAGE_PERSISTENT
+        if (field.getManagement() != FieldMetaData.MANAGE_PERSISTENT
             || field.isVersion())
             return NoneFieldStrategy.getInstance();
         if (field.getDefiningMapping().getStrategy() ==
@@ -1038,7 +1040,7 @@ public class MappingRepository extends MetaDataRepository {
         // an association table
         FieldMappingInfo info = field.getMappingInfo();
         ValueMapping elem = field.getElementMapping();
-        boolean useInverseKeyMapping = info.getTableName() == null && info.getColumns().isEmpty()
+        boolean useInverseKeyMapping = DBIdentifier.isNull(info.getTableIdentifier()) && info.getColumns().isEmpty()
             && !elem.getValueInfo().getColumns().isEmpty();
         
         // JPA 2.0: non-default mapping: uni-/1-M/JoinColumn ==> foreign key strategy
@@ -1157,7 +1159,7 @@ public class MappingRepository extends MetaDataRepository {
     }
     
     public boolean hasJoinTable(FieldMapping field) {
-        boolean hasJoinTable = field.getMappingInfo().getTableName() != null ? true : false;
+        boolean hasJoinTable = !DBIdentifier.isNull(field.getMappingInfo().getTableIdentifier()) ? true : false;
         return hasJoinTable;
     }
 
@@ -1179,7 +1181,7 @@ public class MappingRepository extends MetaDataRepository {
     /**
      * Check the given value against mapped strategies.
      */
-    private Object mappedStrategy(ValueMapping val, Class type,
+    private Object mappedStrategy(ValueMapping val, Class<?> type,
         boolean adapting) {
         if (type == null || type == Object.class)
             return null;
@@ -1200,7 +1202,7 @@ public class MappingRepository extends MetaDataRepository {
         String props = Configurations.getProperties(name);
         name = Configurations.getClassName(name);
         try {
-            Class c = JavaTypes.classForName(name, val,
+            Class<?> c = JavaTypes.classForName(name, val,
                 AccessController.doPrivileged(
                     J2DoPrivHelper.getClassLoaderAction(FieldStrategy.class)));
             Object o = AccessController.doPrivileged(
@@ -1227,7 +1229,7 @@ public class MappingRepository extends MetaDataRepository {
         String props = Configurations.getProperties(name);
         name = Configurations.getClassName(name);
         try {
-            Class c = JavaTypes.classForName(name, val,
+            Class<?> c = JavaTypes.classForName(name, val,
                 AccessController.doPrivileged(
                     J2DoPrivHelper.getClassLoaderAction(ValueHandler.class)));
             if (ValueHandler.class.isAssignableFrom(c)) {
@@ -1344,7 +1346,7 @@ public class MappingRepository extends MetaDataRepository {
      * Checks for hints as to whether the given column is a CLOB.
      */
     private boolean isClob(ValueMapping val, boolean warn) {
-        List cols = val.getValueInfo().getColumns();
+        List<Column> cols = val.getValueInfo().getColumns();
         if (cols.size() != 1)
             return false;
 
@@ -1511,12 +1513,12 @@ public class MappingRepository extends MetaDataRepository {
                 // persistent subclasses may not have been resolved yet.  
                 // run through the persistent types to see if any of them 
                 // or their superclass is a subclass of this class.
-                Collection classes = loadPersistentTypes(false, 
+                Collection<Class<?>> classes = loadPersistentTypes(false, 
                         mapping.getEnvClassLoader());
-                Class cls;
-                for (Iterator itr = classes.iterator(); itr.hasNext();) {
-                    cls = (Class) itr.next();
-                    Class supcl = cls.getSuperclass();
+                Class<?> cls;
+                for (Iterator<Class<?>> itr = classes.iterator(); itr.hasNext();) {
+                    cls = itr.next();
+                    Class<?> supcl = cls.getSuperclass();
                     while (supcl != null && 
                            !supcl.getClass().equals(java.lang.Object.class)) {
                         if (!supcl.isInterface() &&

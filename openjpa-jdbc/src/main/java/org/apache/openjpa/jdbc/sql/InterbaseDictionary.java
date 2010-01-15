@@ -20,9 +20,11 @@ package org.apache.openjpa.jdbc.sql;
 
 import java.sql.Types;
 
+import org.apache.openjpa.jdbc.identifier.DBIdentifier;
 import org.apache.openjpa.jdbc.kernel.exps.FilterValue;
 import org.apache.openjpa.jdbc.schema.Column;
 import org.apache.openjpa.jdbc.schema.Index;
+import org.apache.openjpa.lib.identifier.IdentifierUtil;
 import org.apache.openjpa.lib.util.Localizer;
 import org.apache.openjpa.util.StoreException;
 
@@ -65,16 +67,33 @@ public class InterbaseDictionary
         stringLengthFunction = null;
     }
 
+    @Override
     protected String getTableNameForMetadata(String tableName) {
-        return (tableName == null) ? "%"
-            : super.getTableNameForMetadata(tableName);
+        return getTableNameForMetadata(DBIdentifier.newTable(tableName));
     }
 
+    @Override
+    protected String getTableNameForMetadata(DBIdentifier tableName) {
+        if (DBIdentifier.isNull(tableName)) {
+            return IdentifierUtil.PERCENT;
+        }
+        return super.getTableNameForMetadata(tableName);
+    }
+
+    @Override
     protected String getColumnNameForMetadata(String columnName) {
-        return (columnName == null) ? "%"
-            : super.getColumnNameForMetadata(columnName);
+        return getColumnNameForMetadata(DBIdentifier.newColumn(columnName));
     }
 
+    @Override
+    protected String getColumnNameForMetadata(DBIdentifier columnName) {
+        if (DBIdentifier.isNull(columnName)) {
+            return IdentifierUtil.PERCENT;
+        }
+        return super.getColumnNameForMetadata(columnName);
+    }
+
+    @Override
     protected String appendSize(Column col, String typeName) {
         if (col.isPrimaryKey() && col.getType() == Types.VARCHAR) {
             // reduce size of varchar primary key cols proportional to the
@@ -98,21 +117,24 @@ public class InterbaseDictionary
         return super.appendSize(col, typeName);
     }
 
+    @Override
     public void indexOf(SQLBuffer buf, FilterValue str, FilterValue find,
         FilterValue start) {
         throw new StoreException(_loc.get("indexof-not-supported", platform));
     }
 
+    @Override
     public void substring(SQLBuffer buf, FilterValue str, FilterValue start,
         FilterValue end) {
         throw new StoreException(_loc.get("substring-not-supported",
             platform));
     }
 
+    @Override
     public String[] getDropColumnSQL(Column column) {
         // Interbase uses "ALTER TABLE DROP <COLUMN_NAME>" rather than the
         // usual "ALTER TABLE DROP COLUMN <COLUMN_NAME>"
         return new String[]{ "ALTER TABLE "
-            + getFullName(column.getTable(), false) + " DROP " + column };
+            + getFullName(column.getTable(), false) + " DROP " + getColumnDBName(column) };
     }
 }

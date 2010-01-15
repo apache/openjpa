@@ -52,6 +52,8 @@ import org.apache.openjpa.kernel.Seq;
 import org.apache.openjpa.lib.conf.Configurations;
 import org.apache.openjpa.lib.log.Log;
 import org.apache.openjpa.lib.meta.ClassArgParser;
+import org.apache.openjpa.lib.meta.MetaDataSerializer;
+import org.apache.openjpa.lib.meta.SourceTracker;
 import org.apache.openjpa.lib.util.Files;
 import org.apache.openjpa.lib.util.J2DoPrivHelper;
 import org.apache.openjpa.lib.util.Localizer;
@@ -62,6 +64,7 @@ import org.apache.openjpa.meta.FieldMetaData;
 import org.apache.openjpa.meta.JavaTypes;
 import org.apache.openjpa.meta.MetaDataFactory;
 import org.apache.openjpa.meta.MetaDataModes;
+import org.apache.openjpa.meta.MetaDataRepository;
 import org.apache.openjpa.meta.QueryMetaData;
 import org.apache.openjpa.meta.SequenceMetaData;
 import org.apache.openjpa.meta.ValueStrategies;
@@ -123,8 +126,8 @@ public class MappingTool
     private Writer _schemaWriter = null;
 
     // buffer metadatas to be dropped
-    private Set _dropCls = null;
-    private Set _dropMap = null;
+    private Set<Class<?>> _dropCls = null;
+    private Set<ClassMapping> _dropMap = null;
     private boolean _flush = false;
     private boolean _flushSchema = false;
 
@@ -377,7 +380,7 @@ public class MappingTool
         if (_repos == null) {
             _repos = _conf.newMappingRepositoryInstance();
             _repos.setSchemaGroup(getSchemaGroup());
-            _repos.setValidate(_repos.VALIDATE_UNENHANCED, false);
+            _repos.setValidate(MetaDataRepository.VALIDATE_UNENHANCED, false);
         }
         return _repos;
     }
@@ -467,7 +470,7 @@ public class MappingTool
 
         try {
             if (_dropCls != null && !_dropCls.isEmpty()) {
-                Class[] cls = (Class[]) _dropCls.toArray
+                Class<?>[] cls = (Class[]) _dropCls.toArray
                     (new Class[_dropCls.size()]);
                 if (!io.drop(cls, _mode, null))
                     _log.warn(_loc.get("bad-drop", _dropCls));
@@ -508,7 +511,7 @@ public class MappingTool
                     // serialize the planned schema to the stream
                     SchemaSerializer ser = new XMLSchemaSerializer(_conf);
                     ser.addAll(getSchemaGroup());
-                    ser.serialize(_schemaWriter, ser.PRETTY);
+                    ser.serialize(_schemaWriter, MetaDataSerializer.PRETTY);
                     _schemaWriter.flush();
                 }
             }
@@ -517,21 +520,21 @@ public class MappingTool
 
             QueryMetaData[] queries = repos.getQueryMetaDatas();
             SequenceMetaData[] seqs = repos.getSequenceMetaDatas();
-            Map output = null;
+            Map<File, String> output = null;
 
             // if we're outputting to stream, set all metas to same file so
             // they get placed in single string
             if (_mappingWriter != null) {
-                output = new HashMap();
+                output = new HashMap<File, String>();
                 File tmp = new File("openjpatmp");
                 for (int i = 0; i < mappings.length; i++)
-                    mappings[i].setSource(tmp, mappings[i].SRC_OTHER);
+                    mappings[i].setSource(tmp, SourceTracker.SRC_OTHER);
                 for (int i = 0; i < queries.length; i++)
                     queries[i].setSource(tmp, queries[i].getSourceScope(),
-                        queries[i].SRC_OTHER);
+                        SourceTracker.SRC_OTHER);
                 for (int i = 0; i < seqs.length; i++)
                     seqs[i].setSource(tmp, seqs[i].getSourceScope(),
-                        seqs[i].SRC_OTHER);
+                        SourceTracker.SRC_OTHER);
             }
 
             // store
@@ -541,9 +544,9 @@ public class MappingTool
             // write to stream
             if (_mappingWriter != null) {
                 PrintWriter out = new PrintWriter(_mappingWriter);
-                for (Iterator itr = output.values().iterator();
+                for (Iterator<String> itr = output.values().iterator();
                     itr.hasNext();)
-                    out.println((String) itr.next());
+                    out.println(itr.next());
                 out.flush();
             }
         }
@@ -634,7 +637,7 @@ public class MappingTool
     /**
      * Run the configured action on the given instance.
      */
-    public void run(Class cls) {
+    public void run(Class<?> cls) {
         if (ACTION_ADD.equals(_action)) {
             if (_meta)
                 addMeta(cls);
@@ -653,7 +656,7 @@ public class MappingTool
     /**
      * Add the mapping for the given instance.
      */
-    private void add(Class cls) {
+    private void add(Class<?> cls) {
         if (cls == null)
             return;
 
@@ -669,7 +672,7 @@ public class MappingTool
      * Return the mapping for the given type, or null if the type is
      * persistence-aware.
      */
-    private static ClassMapping getMapping(MappingRepository repos, Class cls,
+    private static ClassMapping getMapping(MappingRepository repos, Class<?> cls,
         boolean validate) {
         // this will parse all possible metadata rsrcs looking for cls, so
         // will detect if p-aware
@@ -685,7 +688,7 @@ public class MappingTool
     /**
      * Create a metadata for the given instance.
      */
-    private void addMeta(Class cls) {
+    private void addMeta(Class<?> cls) {
         if (cls == null)
             return;
 
@@ -710,7 +713,7 @@ public class MappingTool
     /**
      * Refresh or add the mapping for the given instance.
      */
-    private void refresh(Class cls) {
+    private void refresh(Class<?> cls) {
         if (cls == null)
             return;
 
@@ -725,7 +728,7 @@ public class MappingTool
     /**
      * Validate the mappings for the given class and its fields.
      */
-    private void validate(Class cls) {
+    private void validate(Class<?> cls) {
         if (cls == null)
             return;
 
@@ -739,7 +742,7 @@ public class MappingTool
     /**
      * Create the schema using the mapping for the given instance.
      */
-    private void buildSchema(Class cls) {
+    private void buildSchema(Class<?> cls) {
         if (cls == null)
             return;
 
@@ -770,12 +773,12 @@ public class MappingTool
     /**
      * Drop mapping for given class.
      */
-    private void drop(Class cls) {
+    private void drop(Class<?> cls) {
         if (cls == null)
             return;
 
         if (_dropCls == null)
-            _dropCls = new HashSet();
+            _dropCls = new HashSet<Class<?>>();
         _dropCls.add(cls);
         if (!contains(_schemaActions,SchemaTool.ACTION_DROP))
             return;
@@ -791,7 +794,7 @@ public class MappingTool
         if (mapping != null) {
             _flushSchema = true;
             if (_dropMap == null)
-                _dropMap = new HashSet();
+                _dropMap = new HashSet<ClassMapping>();
             _dropMap.add(mapping);
         } else
             _log.warn(_loc.get("no-drop-meta", cls));
@@ -1003,7 +1006,7 @@ public class MappingTool
 
         // collect the classes to act on
         Log log = conf.getLog(OpenJPAConfiguration.LOG_TOOL);
-        Collection classes = null;
+        Collection<Class<?>> classes = null;
         if (args.length == 0) {
             if (ACTION_IMPORT.equals(flags.action))
                 return false;
@@ -1011,18 +1014,18 @@ public class MappingTool
             classes = conf.getMappingRepositoryInstance().
                 loadPersistentTypes(true, loader);
         } else {
-            classes = new HashSet();
+            classes = new HashSet<Class<?>>();
             ClassArgParser classParser = conf.getMetaDataRepositoryInstance().
                 getMetaDataFactory().newClassArgParser();
             classParser.setClassLoader(loader);
-            Class[] parsed;
+            Class<?>[] parsed;
             for (int i = 0; args != null && i < args.length; i++) {
                 parsed = classParser.parseTypes(args[i]);
                 classes.addAll(Arrays.asList(parsed));
             }
         }
 
-        Class[] act = (Class[]) classes.toArray(new Class[classes.size()]);
+        Class<?>[] act = (Class[]) classes.toArray(new Class[classes.size()]);
         if (ACTION_EXPORT.equals(flags.action)) {
             // run exports until the first export succeeds
             ImportExport[] instances = newImportExports();
@@ -1081,7 +1084,7 @@ public class MappingTool
      */
     private static ImportExport[] newImportExports() {
         try {
-            Class[] types = Services.getImplementorClasses(ImportExport.class);
+            Class<?>[] types = Services.getImplementorClasses(ImportExport.class);
             ImportExport[] instances = new ImportExport[types.length];
             for (int i = 0; i < types.length; i++)
                 instances[i] = (ImportExport) AccessController.doPrivileged(
@@ -1129,14 +1132,14 @@ public class MappingTool
         /**
          * Import mappings for the given classes based on the given arguments.
          */
-        public boolean importMappings(JDBCConfiguration conf, Class[] act,
+        public boolean importMappings(JDBCConfiguration conf, Class<?>[] act,
             String[] args, boolean meta, Log log, ClassLoader loader)
             throws IOException;
 
         /**
          * Export mappings for the given classes based on the given arguments.
          */
-        public boolean exportMappings(JDBCConfiguration conf, Class[] act,
+        public boolean exportMappings(JDBCConfiguration conf, Class<?>[] act,
             boolean meta, Log log, Writer writer)
             throws IOException;
     }

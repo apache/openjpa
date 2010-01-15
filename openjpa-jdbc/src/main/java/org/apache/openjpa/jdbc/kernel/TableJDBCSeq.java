@@ -31,6 +31,10 @@ import javax.transaction.NotSupportedException;
 import org.apache.commons.lang.StringUtils;
 import org.apache.openjpa.jdbc.conf.JDBCConfiguration;
 import org.apache.openjpa.jdbc.conf.JDBCConfigurationImpl;
+import org.apache.openjpa.jdbc.identifier.Normalizer;
+import org.apache.openjpa.jdbc.identifier.DBIdentifier;
+import org.apache.openjpa.jdbc.identifier.QualifiedDBIdentifier;
+import org.apache.openjpa.jdbc.identifier.DBIdentifier.DBIdentifierType;
 import org.apache.openjpa.jdbc.meta.ClassMapping;
 import org.apache.openjpa.jdbc.schema.Column;
 import org.apache.openjpa.jdbc.schema.PrimaryKey;
@@ -46,6 +50,7 @@ import org.apache.openjpa.jdbc.sql.SQLBuffer;
 import org.apache.openjpa.lib.conf.Configurable;
 import org.apache.openjpa.lib.conf.Configuration;
 import org.apache.openjpa.lib.conf.Configurations;
+import org.apache.openjpa.lib.identifier.IdentifierUtil;
 import org.apache.openjpa.lib.log.Log;
 import org.apache.openjpa.lib.util.Localizer;
 import org.apache.openjpa.lib.util.Options;
@@ -54,7 +59,6 @@ import org.apache.openjpa.util.InvalidStateException;
 import org.apache.openjpa.util.UserException;
 
 import serp.util.Numbers;
-import serp.util.Strings;
 
 ////////////////////////////////////////////////////////////
 // NOTE: Do not change property names; see SequenceMetaData
@@ -88,11 +92,11 @@ public class TableJDBCSeq
     private final HashMap<ClassMapping, Status> _stat =
         new HashMap<ClassMapping, Status>();
 
-    private String _table = DEFAULT_TABLE;
-    private String _seqColumnName = "SEQUENCE_VALUE";
-    private String _pkColumnName = "ID";
-    private String[] _uniqueColumnNames;
-    private String _uniqueConstraintName;
+    private DBIdentifier _table = DBIdentifier.newTable(DEFAULT_TABLE);
+    private DBIdentifier _seqColumnName = DBIdentifier.newColumn("SEQUENCE_VALUE");
+    private DBIdentifier _pkColumnName = DBIdentifier.newColumn("ID");
+    private DBIdentifier[] _uniqueColumnNames;
+    private DBIdentifier _uniqueConstraintName = DBIdentifier.NULL;
 
     private Column _seqColumn = null;
     private Column _pkColumn = null;
@@ -106,7 +110,7 @@ public class TableJDBCSeq
      * will be used.
      */
     public String getTable() {
-        return _table;
+        return _table.getName();
     }
 
     /**
@@ -118,7 +122,10 @@ public class TableJDBCSeq
      * will be used.
      */
     public void setTable(String name) {
-        _table = name;
+        // Split the name into its individual parts
+        String[] names = Normalizer.splitName(name);
+        // Join the name back together.  This will delimit as appropriate.
+        _table = DBIdentifier.newTable(Normalizer.joinNames(names));
     }
 
     /**
@@ -134,7 +141,7 @@ public class TableJDBCSeq
      * to <code>SEQUENCE_VALUE</code>.
      */
     public String getSequenceColumn() {
-        return _seqColumnName;
+        return _seqColumnName.getName();
     }
 
     /**
@@ -142,7 +149,7 @@ public class TableJDBCSeq
      * to <code>SEQUENCE_VALUE</code>.
      */
     public void setSequenceColumn(String sequenceColumn) {
-        _seqColumnName = sequenceColumn;
+        _seqColumnName = DBIdentifier.newColumn(sequenceColumn);
     }
 
     /**
@@ -150,6 +157,10 @@ public class TableJDBCSeq
      * <code>ID</code>.
      */
     public String getPrimaryKeyColumn() {
+        return _pkColumnName.getName();
+    }
+
+    public DBIdentifier getPrimaryKeyColumnIdentifier() {
         return _pkColumnName;
     }
 
@@ -158,7 +169,7 @@ public class TableJDBCSeq
      * <code>ID</code>.
      */
     public void setPrimaryKeyColumn(String primaryKeyColumn) {
-        _pkColumnName = primaryKeyColumn;
+        _pkColumnName = DBIdentifier.newColumn(primaryKeyColumn);
     }
 
     /**
@@ -186,7 +197,7 @@ public class TableJDBCSeq
      * GeneratedValue.TABLE strategy to start with. 
      * @return an initial number
      */
-    public int getInitialValue() {        
+    public int getInitialValue() {
         return _intValue;
     }
 
@@ -206,11 +217,11 @@ public class TableJDBCSeq
      */
     public void setUniqueColumns(String columnNames) {
     	_uniqueColumnNames = (StringUtils.isEmpty(columnNames)) 
-    		? null : StringUtils.split(columnNames, '|');
+    		? null : DBIdentifier.split(columnNames, DBIdentifierType.COLUMN, IdentifierUtil.BAR);
     }
     
     public String getUniqueColumns() {
-    	return StringUtils.join(_uniqueColumnNames, '|');
+    	return Normalizer.joinNames(DBIdentifier.toStringArray(_uniqueColumnNames), IdentifierUtil.BAR);
     }
 
     /**
@@ -245,16 +256,20 @@ public class TableJDBCSeq
         
         Schema[] schemas = group.getSchemas();
         for (int i = 0; i < schemas.length; i++) {
-            String schemaName = Strings.getPackageName(_table);
-            if (schemaName.length() == 0)
-                schemaName = Schemas.getNewTableSchema(_conf);
-            if (schemaName == null)
-                schemaName = schemas[i].getName();
+            QualifiedDBIdentifier path = QualifiedDBIdentifier.getPath(_table);
+            DBIdentifier schemaName = path.getSchemaName();
+            if (DBIdentifier.isEmpty(schemaName)) {
+                schemaName = Schemas.getNewTableSchemaIdentifier(_conf);
+            }
+            if (DBIdentifier.isNull(schemaName)) {
+                schemaName = schemas[i].getIdentifier();
+            }
 
             // create table in this group
             Schema schema = group.getSchema(schemaName);
-            if (schema == null)
+            if (schema == null) {
                 schema = group.addSchema(schemaName);
+            }
             
             Table copy = schema.importTable(_pkColumn.getTable());
             // importTable() does not import unique constraints
@@ -265,8 +280,7 @@ public class TableJDBCSeq
             // we need to reset the table name in the column with the
             // fully qualified name for matching the table name from the
             // Column.
-            _pkColumn.resetTableName(schemaName + "."
-                    + _pkColumn.getTableName());
+            _pkColumn.resetTableIdentifier(QualifiedDBIdentifier.newPath(schemaName, _pkColumn.getTableIdentifier()));
             // some databases require to create an index for the sequence table
             _conf.getDBDictionaryInstance().createIndexIfNecessary(schema,
                     _table, _pkColumn);
@@ -351,7 +365,7 @@ public class TableJDBCSeq
     protected Column addPrimaryKeyColumn(Table table) {
         DBDictionary dict = _conf.getDBDictionaryInstance();
         Column pkColumn = table.addColumn(dict.getValidColumnName
-            (getPrimaryKeyColumn(), table));
+            (getPrimaryKeyColumnIdentifier(), table));
         pkColumn.setType(dict.getPreferredType(Types.TINYINT));
         pkColumn.setJavaType(JavaTypes.INT);
         return pkColumn;
@@ -368,20 +382,20 @@ public class TableJDBCSeq
      * Creates the object-level representation of the sequence table.
      */
     private void buildTable() {
-        String tableName = null;
-        String schemaName = "";
-        if (StringUtils.contains(_table,'.')) {
-            String[] tableParts = StringUtils.split(_table, '.');
-            // TODO: do we need to check for length? Could we have xxx. or .xxx?
-            schemaName = tableParts[0];
-            tableName = tableParts[1];
+        DBIdentifier tableName = DBIdentifier.NULL;
+        DBIdentifier schemaName = DBIdentifier.NULL;
+        QualifiedDBIdentifier path = QualifiedDBIdentifier.getPath(_table);
+        if (!DBIdentifier.isEmpty(path.getSchemaName())) {
+            schemaName = path.getSchemaName();
+            tableName = path.getUnqualifiedName();
         }
         else {
             tableName = _table;
         }
         
-        if (schemaName.length() == 0)
-            schemaName = Schemas.getNewTableSchema(_conf);
+        if (DBIdentifier.isEmpty(schemaName)) {
+            schemaName = Schemas.getNewTableSchemaIdentifier(_conf);
+        }
 
         SchemaGroup group = new SchemaGroup();
         Schema schema = group.addSchema(schemaName);
@@ -398,17 +412,17 @@ public class TableJDBCSeq
         _seqColumn.setJavaType(JavaTypes.LONG);
         
         if (_uniqueColumnNames != null) {
-            String uniqueName = _uniqueConstraintName;
-            if (StringUtils.isEmpty(uniqueName)) {
-                uniqueName = dict.getValidUniqueName("UNQ", table);
+            DBIdentifier uniqueName = _uniqueConstraintName;
+            if (DBIdentifier.isEmpty(uniqueName)) {
+                uniqueName = dict.getValidUniqueName(DBIdentifier.newConstraint("UNQ"), table);
             }
     		Unique u = table.addUnique(uniqueName);
-    		for (String columnName : _uniqueColumnNames) {
+    		for (DBIdentifier columnName : _uniqueColumnNames) {
     			if (!table.containsColumn(columnName, _conf.getDBDictionaryInstance()))
                     throw new UserException(_loc.get("unique-missing-column",
-                            columnName, table.getName(),
+                            columnName, table.getIdentifier(),
                             table.getColumnNames()));
-    			Column col = table.getColumn(columnName, _conf.getDBDictionaryInstance());
+    			Column col = table.getColumn(columnName);
     			u.addColumn(col);
     		}
         }
@@ -469,7 +483,7 @@ public class TableJDBCSeq
                 getClass(), mapping));
 
         DBDictionary dict = _conf.getDBDictionaryInstance();
-        String tableName = resolveTableName(mapping, _pkColumn.getTable());
+        DBIdentifier tableName = resolveTableIdentifier(mapping, _pkColumn.getTable());
         SQLBuffer insert = new SQLBuffer(dict).append("INSERT INTO ").
             append(tableName).append(" (").
             append(_pkColumn).append(", ").append(_seqColumn).
@@ -519,7 +533,7 @@ public class TableJDBCSeq
         SQLBuffer sel = new SQLBuffer(dict).append(_seqColumn);
         SQLBuffer where = new SQLBuffer(dict).append(_pkColumn).append(" = ").
             appendValue(pk, _pkColumn);
-        String tableName = resolveTableName(mapping, _seqColumn.getTable());
+        DBIdentifier tableName = resolveTableIdentifier(mapping, _seqColumn.getTable());
         SQLBuffer tables = new SQLBuffer(dict).append(tableName);
 
         SQLBuffer select = dict.toSelect(sel, null, tables, where, null, null,
@@ -577,7 +591,7 @@ public class TableJDBCSeq
 
                 // update the value
                 upd = new SQLBuffer(dict);
-                String tableName = resolveTableName(mapping,
+                DBIdentifier tableName = resolveTableIdentifier(mapping,
                         _seqColumn.getTable());
                 upd.append("UPDATE ").append(tableName).
                     append(" SET ").append(_seqColumn).append(" = ").
@@ -612,19 +626,32 @@ public class TableJDBCSeq
      * 
      * @param class
      *            mapping to get the schema name
+     * @deprecated
      */
     public String resolveTableName(ClassMapping mapping, Table table) {
-        String sName = mapping.getTable().getSchemaName();
-        String tableName;
-        if (sName == null)
-            tableName = table.getFullName();
-        else if (table.getSchemaName() != null)
-            tableName = table.getFullName();
-        else
-            tableName = sName + "." + table.getName();
+        return resolveTableIdentifier(mapping, table).getName();
+    }
+
+    /**
+     * Resolve a fully qualified table name
+     * 
+     * @param class
+     *            mapping to get the schema name
+     */
+    public DBIdentifier resolveTableIdentifier(ClassMapping mapping, Table table) {
+        DBIdentifier sName = mapping.getTable().getSchemaIdentifier();
+        DBIdentifier tableName = DBIdentifier.NULL;
+        if (DBIdentifier.isNull(sName)) {
+            tableName = table.getFullIdentifier();
+        } else if (!DBIdentifier.isNull(table.getSchemaIdentifier())) {
+            tableName = table.getFullIdentifier();
+        } else {
+            tableName = QualifiedDBIdentifier.newPath(sName, table.getIdentifier());
+        }
         return tableName;
     }
 
+    
     /**
      * Creates the sequence table in the DB.
      */
@@ -763,6 +790,7 @@ public class TableJDBCSeq
     /**
      * Helper struct to hold status information.
      */
+    @SuppressWarnings("serial")
     protected static class Status
         implements Serializable {
 
@@ -809,11 +837,19 @@ public class TableJDBCSeq
         return dict.getLong(rs, 1);
     }
 
-    public void setUniqueConstraintName(String _uniqueConstraintName) {
-        this._uniqueConstraintName = _uniqueConstraintName;
+    public void setUniqueConstraintName(String uniqueConstraintName) {
+        _uniqueConstraintName = DBIdentifier.newConstraint(uniqueConstraintName);
+    }
+
+    public void setUniqueConstraintName(DBIdentifier uniqueConstraintName) {
+        _uniqueConstraintName = uniqueConstraintName;
     }
 
     public String getUniqueConstraintName() {
+        return _uniqueConstraintName.getName();
+    }
+
+    public DBIdentifier getUniqueConstraintIdentifier() {
         return _uniqueConstraintName;
     }
 

@@ -142,12 +142,6 @@ public class AnnotationPersistenceMetaDataParser
     private static final Map<Class<?>, MetaDataTag> _tags =
         new HashMap<Class<?>, MetaDataTag>();
 
-    // The following is needed for input into the delimitString() method
-    protected static enum DBIdentifiers {
-        SEQUENCE_GEN_SEQ_NAME,
-        SEQUENCE_GEN_SCHEMA
-    }
-
     static {
         _tags.put(Access.class, ACCESS);
         _tags.put(Cacheable.class, CACHEABLE);
@@ -1706,11 +1700,15 @@ public class AnnotationPersistenceMetaDataParser
 
         // create new sequence
         meta = getRepository().addSequenceMetaData(name);
-        String seq = delimitString(gen.sequenceName(), DBIdentifiers.SEQUENCE_GEN_SEQ_NAME);
+        String seq = gen.sequenceName();
+        // Do not normalize the sequence name if it appears to be a plugin 
+        if (seq.indexOf('(') == -1){
+            seq = normalizeSequenceName(seq);
+        }
         int initial = gen.initialValue();
         int allocate = gen.allocationSize();
-        String schema = delimitString(gen.schema(), DBIdentifiers.SEQUENCE_GEN_SCHEMA);
-        String catalog = gen.catalog();
+        String schema = normalizeSchemaName(gen.schema());
+        String catalog = normalizeCatalogName(gen.catalog());
         // don't allow initial of 0 b/c looks like def value
         if (initial == 0)
             initial = 1;
@@ -1898,8 +1896,16 @@ public class AnnotationPersistenceMetaDataParser
 		}
 	}
 
-    protected String delimitString(String name, DBIdentifiers type) {
-        return name;
+    protected String normalizeSequenceName(String seqName) {
+        return seqName;
+    }
+
+    protected String normalizeSchemaName(String schName) {
+        return schName;
+    }
+
+    protected String normalizeCatalogName(String catName) {
+        return catName;
     }
 }
 

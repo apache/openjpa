@@ -20,23 +20,23 @@ package org.apache.openjpa.jdbc.meta.strats;
 
 import java.sql.SQLException;
 
+import org.apache.openjpa.jdbc.identifier.DBIdentifier;
 import org.apache.openjpa.jdbc.kernel.JDBCFetchConfiguration;
 import org.apache.openjpa.jdbc.kernel.JDBCStore;
 import org.apache.openjpa.jdbc.meta.ClassMapping;
-import org.apache.openjpa.jdbc.meta.FieldMapping;
 import org.apache.openjpa.jdbc.meta.RelationId;
 import org.apache.openjpa.jdbc.meta.ValueHandler;
 import org.apache.openjpa.jdbc.meta.ValueMapping;
 import org.apache.openjpa.jdbc.meta.ValueMappingInfo;
 import org.apache.openjpa.jdbc.schema.Column;
 import org.apache.openjpa.jdbc.schema.ColumnIO;
+import org.apache.openjpa.jdbc.sql.DBDictionary;
 import org.apache.openjpa.jdbc.sql.Joins;
 import org.apache.openjpa.jdbc.sql.Result;
 import org.apache.openjpa.jdbc.sql.Row;
 import org.apache.openjpa.kernel.OpenJPAStateManager;
 import org.apache.openjpa.lib.util.Localizer;
 import org.apache.openjpa.util.InvalidStateException;
-import org.apache.openjpa.util.UserException;
 
 /**
  * Utility methods for strategies using value handlers.
@@ -58,9 +58,11 @@ public class HandlerStrategies {
         vinfo.assertNoJoin(vm, true);
         vinfo.assertNoForeignKey(vm, !adapt);
 
-        Column[] cols = vm.getHandler().map(vm, name, io, adapt);
+        DBDictionary dict = vm.getMappingRepository().getDBDictionary();
+        DBIdentifier colName = DBIdentifier.newColumn(name, dict != null ? dict.delimitAll() : false);
+        Column[] cols = vm.getHandler().map(vm, colName.getName(), io, adapt);
         if (cols.length > 0 && cols[0].getTable() == null) {
-            cols = vinfo.getColumns(vm, name, cols,
+            cols = vinfo.getColumns(vm, colName, cols,
                 vm.getFieldMapping().getTable(), adapt);
             if (vinfo.isImplicitRelation())
             	for (int i = 0; i < cols.length; i++)
@@ -77,7 +79,7 @@ public class HandlerStrategies {
                 }
             }
         }
-        vm.mapConstraints(name, adapt);
+        vm.mapConstraints(colName, adapt);
         return cols;
     }
 

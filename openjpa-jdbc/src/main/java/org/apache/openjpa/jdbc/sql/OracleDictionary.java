@@ -40,6 +40,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.apache.openjpa.jdbc.identifier.DBIdentifier;
 import org.apache.openjpa.jdbc.kernel.JDBCFetchConfiguration;
 import org.apache.openjpa.jdbc.kernel.JDBCStore;
 import org.apache.openjpa.jdbc.kernel.exps.FilterValue;
@@ -195,12 +196,14 @@ public class OracleDictionary
         requiresSearchStringEscapeForLike = false;
     }
 
+    @Override
     public void endConfiguration() {
         super.endConfiguration();
         if (useTriggersForAutoAssign)
             supportsAutoAssign = true;
     }
 
+    @Override
     public void connectedConfiguration(Connection conn)
         throws SQLException {
         super.connectedConfiguration(conn);
@@ -292,6 +295,7 @@ public class OracleDictionary
         }
     }
 
+    @Override
     public boolean supportsLocking(Select sel) {
         if (!super.supportsLocking(sel))
             return false;
@@ -299,6 +303,7 @@ public class OracleDictionary
             sel.getEndIndex(), sel.isDistinct(), sel.getOrdering());
     }
 
+    @Override
     protected SQLBuffer getSelects(Select sel, boolean distinctIdentifiers,
         boolean forUpdate) {
         // if range doesn't require a subselect can use super
@@ -337,6 +342,7 @@ public class OracleDictionary
         return selectSQL;
     }
 
+    @Override
     public boolean canOuterJoin(int syntax, ForeignKey fk) {
         if (!super.canOuterJoin(syntax, fk))
             return false;
@@ -349,6 +355,7 @@ public class OracleDictionary
         return true;
     }
 
+    @Override
     public SQLBuffer toNativeJoin(Join join) {
         if (join.getType() != Join.TYPE_OUTER)
             return toTraditionalJoin(join);
@@ -386,6 +393,7 @@ public class OracleDictionary
         return buf;
     }
 
+    @Override
     protected SQLBuffer toSelect(SQLBuffer select, JDBCFetchConfiguration fetch,
         SQLBuffer tables, SQLBuffer where, SQLBuffer group,
         SQLBuffer having, SQLBuffer order,
@@ -395,6 +403,7 @@ public class OracleDictionary
             distinct, forUpdate, start, end, sel);
     }
 
+    @Override
     protected SQLBuffer toSelect(SQLBuffer select, JDBCFetchConfiguration fetch,
         SQLBuffer tables, SQLBuffer where, SQLBuffer group,
         SQLBuffer having, SQLBuffer order,
@@ -478,7 +487,7 @@ public class OracleDictionary
         // special handling to configure them correctly; see:
         // http://www.oracle.com/technology/sample_code/tech/java/
         // sqlj_jdbc/files/9i_jdbc/NCHARsupport4UnicodeSample/Readme.html
-        String typeName = (col == null) ? null : col.getTypeName();
+        String typeName = (col == null) ? null : col.getTypeIdentifier().getName();
         if (useSetFormOfUseForUnicode && typeName != null &&
             (typeName.toLowerCase().startsWith("nvarchar") ||
                 typeName.toLowerCase().startsWith("nchar") ||
@@ -534,20 +543,21 @@ public class OracleDictionary
         super.setString(stmnt, idx, val, col);
     }
 
+    @Override
     public void setNull(PreparedStatement stmnt, int idx, int colType,
         Column col)
         throws SQLException {
         if ((colType == Types.CLOB || colType == Types.BLOB) && col.isNotNull())
-            throw new UserException(_loc.get("null-blob-in-not-nullable", col
-                .getFullName()));
+            throw new UserException(_loc.get("null-blob-in-not-nullable", toDBName(col
+                .getFullDBIdentifier())));
         if (colType == Types.BLOB && _driverBehavior == BEHAVE_ORACLE)
             stmnt.setBlob(idx, getEmptyBlob());
         else if (colType == Types.CLOB && _driverBehavior == BEHAVE_ORACLE
             && !col.isXML())
             stmnt.setClob(idx, getEmptyClob());
         else if ((colType == Types.STRUCT || colType == Types.OTHER)
-            && col != null && col.getTypeName() != null)
-            stmnt.setNull(idx, Types.STRUCT, col.getTypeName());
+            && col != null && !DBIdentifier.isNull(col.getTypeIdentifier()))
+            stmnt.setNull(idx, Types.STRUCT, col.getTypeIdentifier().getName());
             // some versions of the Oracle JDBC driver will fail if calling
             // setNull with DATE; see bug #1171
         else if (colType == Types.DATE)
@@ -559,6 +569,7 @@ public class OracleDictionary
             super.setNull(stmnt, idx, colType, col);
     }
 
+    @Override
     public String getClobString(ResultSet rs, int column)
         throws SQLException {
         if (_driverBehavior != BEHAVE_ORACLE)
@@ -585,6 +596,7 @@ public class OracleDictionary
         return clob.getSubString(1, (int) clob.length());
     }
 
+    @Override
     public Timestamp getTimestamp(ResultSet rs, int column, Calendar cal)
         throws SQLException {
         if (cal == null) {
@@ -606,6 +618,7 @@ public class OracleDictionary
         return ts;
     }
 
+    @Override
     public Object getObject(ResultSet rs, int column, Map map)
         throws SQLException {
         // recent oracle drivers return oracle-specific types for timestamps
@@ -642,31 +655,53 @@ public class OracleDictionary
     public Column[] getColumns(DatabaseMetaData meta, String catalog,
         String schemaName, String tableName, String columnName, Connection conn)
         throws SQLException {
+        return getColumns(meta, 
+            DBIdentifier.newCatalog(catalog), 
+            DBIdentifier.newSchema(schemaName), 
+            DBIdentifier.newTable(tableName), 
+            DBIdentifier.newColumn(columnName),conn);
+    }
+
+    public Column[] getColumns(DatabaseMetaData meta, DBIdentifier catalog,
+        DBIdentifier schemaName, DBIdentifier tableName, DBIdentifier columnName, Connection conn)
+        throws SQLException {
         Column[] cols = super.getColumns(meta, catalog, schemaName, tableName,
             columnName, conn);
 
         for (int i = 0; cols != null && i < cols.length; i++) {
-            if (cols[i].getTypeName() == null)
+            String typeName = cols[i].getTypeIdentifier().getName();
+            if (typeName == null)
                 continue;
-            if (cols[i].getTypeName().toUpperCase().startsWith("TIMESTAMP"))
+            if (typeName.toUpperCase().startsWith("TIMESTAMP"))
                 cols[i].setType(Types.TIMESTAMP);
-            else if ("BLOB".equalsIgnoreCase(cols[i].getTypeName()))
+            else if ("BLOB".equalsIgnoreCase(typeName))
                 cols[i].setType(Types.BLOB);
-            else if ("CLOB".equalsIgnoreCase(cols[i].getTypeName())
-                || "NCLOB".equalsIgnoreCase(cols[i].getTypeName()))
+            else if ("CLOB".equalsIgnoreCase(typeName)
+                || "NCLOB".equalsIgnoreCase(typeName))
                 cols[i].setType(Types.CLOB);
-            else if ("FLOAT".equalsIgnoreCase(cols[i].getTypeName()))
+            else if ("FLOAT".equalsIgnoreCase(typeName))
                 cols[i].setType(Types.FLOAT);
-            else if ("NVARCHAR".equalsIgnoreCase(cols[i].getTypeName()))
+            else if ("NVARCHAR".equalsIgnoreCase(typeName))
                 cols[i].setType(Types.VARCHAR);
-            else if ("NCHAR".equalsIgnoreCase(cols[i].getTypeName()))
+            else if ("NCHAR".equalsIgnoreCase(typeName))
                 cols[i].setType(Types.CHAR);
         }
         return cols;
     }
 
+    @Override
     public PrimaryKey[] getPrimaryKeys(DatabaseMetaData meta,
         String catalog, String schemaName, String tableName, Connection conn)
+        throws SQLException {
+        return getPrimaryKeys(meta,
+            DBIdentifier.newCatalog(catalog), 
+            DBIdentifier.newSchema(schemaName), 
+            DBIdentifier.newTable(tableName), conn);
+    }
+
+    @Override
+    public PrimaryKey[] getPrimaryKeys(DatabaseMetaData meta,
+        DBIdentifier catalog, DBIdentifier schemaName, DBIdentifier tableName, Connection conn)
         throws SQLException {
         StringBuilder buf = new StringBuilder();
         buf.append("SELECT t0.OWNER AS TABLE_SCHEM, ").
@@ -677,19 +712,19 @@ public class OracleDictionary
             append("WHERE t0.OWNER = t1.OWNER ").
             append("AND t0.CONSTRAINT_NAME = t1.CONSTRAINT_NAME ").
             append("AND t1.CONSTRAINT_TYPE = 'P'");
-        if (schemaName != null)
+        if (!DBIdentifier.isNull(schemaName))
             buf.append(" AND t0.OWNER = ?");
-        if (tableName != null)
+        if (!DBIdentifier.isNull(tableName))
             buf.append(" AND t0.TABLE_NAME = ?");
 
         PreparedStatement stmnt = conn.prepareStatement(buf.toString());
         ResultSet rs = null;
         try {
             int idx = 1;
-            if (schemaName != null)
-                setString(stmnt, idx++, schemaName.toUpperCase(), null);
-            if (tableName != null)
-                setString(stmnt, idx++, tableName.toUpperCase(), null);
+            if (!DBIdentifier.isNull(schemaName))
+                setString(stmnt, idx++, convertSchemaCase(schemaName), null);
+            if (!DBIdentifier.isNull(tableName))
+                setString(stmnt, idx++, convertSchemaCase(tableName), null);
             setTimeouts(stmnt, conf, false);
             rs = stmnt.executeQuery();
             List pkList = new ArrayList();
@@ -710,8 +745,20 @@ public class OracleDictionary
         }
     }
 
+    @Override
     public Index[] getIndexInfo(DatabaseMetaData meta, String catalog,
         String schemaName, String tableName, boolean unique, boolean approx,
+        Connection conn)
+        throws SQLException {
+        return getIndexInfo(meta,
+            DBIdentifier.newCatalog(catalog), 
+            DBIdentifier.newSchema(schemaName), 
+            DBIdentifier.newTable(tableName), unique, approx, conn);
+    }
+
+    @Override
+    public Index[] getIndexInfo(DatabaseMetaData meta, DBIdentifier catalog,
+        DBIdentifier schemaName, DBIdentifier tableName, boolean unique, boolean approx,
         Connection conn)
         throws SQLException {
         StringBuilder buf = new StringBuilder();
@@ -724,19 +771,19 @@ public class OracleDictionary
             append("FROM ALL_IND_COLUMNS t0, ALL_INDEXES t1 ").
             append("WHERE t0.INDEX_OWNER = t1.OWNER ").
             append("AND t0.INDEX_NAME = t1.INDEX_NAME");
-        if (schemaName != null)
+        if (!DBIdentifier.isNull(schemaName))
             buf.append(" AND t0.TABLE_OWNER = ?");
-        if (tableName != null)
+        if (!DBIdentifier.isNull(tableName))
             buf.append(" AND t0.TABLE_NAME = ?");
 
         PreparedStatement stmnt = conn.prepareStatement(buf.toString());
         ResultSet rs = null;
         try {
             int idx = 1;
-            if (schemaName != null)
-                setString(stmnt, idx++, schemaName.toUpperCase(), null);
-            if (tableName != null)
-                setString(stmnt, idx++, tableName.toUpperCase(), null);
+            if (!DBIdentifier.isNull(schemaName))
+                setString(stmnt, idx++, convertSchemaCase(schemaName), null);
+            if (!DBIdentifier.isNull(tableName))
+                setString(stmnt, idx++, convertSchemaCase(tableName), null);
 
             setTimeouts(stmnt, conf, false);
             rs = stmnt.executeQuery();
@@ -757,8 +804,19 @@ public class OracleDictionary
         }
     }
 
+    @Override
     public ForeignKey[] getImportedKeys(DatabaseMetaData meta, String catalog,
         String schemaName, String tableName, Connection conn, boolean partialKeys)
+        throws SQLException {
+        return getImportedKeys(meta,
+            DBIdentifier.newCatalog(catalog), 
+            DBIdentifier.newSchema(schemaName), 
+            DBIdentifier.newTable(tableName), conn, partialKeys);
+    }
+    
+    @Override
+    public ForeignKey[] getImportedKeys(DatabaseMetaData meta, DBIdentifier catalog,
+        DBIdentifier schemaName, DBIdentifier tableName, Connection conn, boolean partialKeys)
         throws SQLException {
         StringBuilder delAction = new StringBuilder("DECODE(t1.DELETE_RULE").
             append(", 'NO ACTION', ").append(meta.importedKeyNoAction).
@@ -791,9 +849,9 @@ public class OracleDictionary
             append("AND t1.R_OWNER = t2.OWNER ").
             append("AND t1.R_CONSTRAINT_NAME = t2.CONSTRAINT_NAME ").
             append("AND t0.POSITION = t2.POSITION");
-        if (schemaName != null)
+        if (!DBIdentifier.isNull(schemaName))
             buf.append(" AND t0.OWNER = ?");
-        if (tableName != null)
+        if (!DBIdentifier.isNull(tableName))
             buf.append(" AND t0.TABLE_NAME = ?");
         buf.append(" ORDER BY t2.OWNER, t2.TABLE_NAME, t0.POSITION");
 
@@ -801,10 +859,10 @@ public class OracleDictionary
         ResultSet rs = null;
         try {
             int idx = 1;
-            if (schemaName != null)
-                setString(stmnt, idx++, schemaName.toUpperCase(), null);
-            if (tableName != null)
-                setString(stmnt, idx++, tableName.toUpperCase(), null);
+            if (!DBIdentifier.isNull(schemaName))
+                setString(stmnt, idx++, convertSchemaCase(schemaName), null);
+            if (!DBIdentifier.isNull(tableName))
+                setString(stmnt, idx++, convertSchemaCase(tableName), null);
             setTimeouts(stmnt, conf, false);
             rs = stmnt.executeQuery();
             List<ForeignKey> fkList = new ArrayList<ForeignKey>();            
@@ -836,6 +894,7 @@ public class OracleDictionary
         }
     }
 
+    @Override
     public String[] getCreateTableSQL(Table table) {
         // only override if we are simulating auto-incremenet with triggers
         String[] create = super.getCreateTableSQL(table);
@@ -867,9 +926,9 @@ public class OracleDictionary
             // create the trigger that will insert new values into
             // the table whenever a row is created
             seqs.add("CREATE OR REPLACE TRIGGER " + trig
-                + " BEFORE INSERT ON " + table.getName()
+                + " BEFORE INSERT ON " + toDBName(table.getIdentifier())
                 + " FOR EACH ROW BEGIN SELECT " + seq + ".nextval INTO "
-                + ":new." + cols[i].getName() + " FROM DUAL; "
+                + ":new." + toDBName(cols[i].getIdentifier()) + " FROM DUAL; "
                 + "END " + trig + ";");
         }
         if (seqs == null)
@@ -883,6 +942,7 @@ public class OracleDictionary
         return sql;
     }
 
+    @Override
     public String[] getCreateSequenceSQL(Sequence seq) {
         String[] sql = super.getCreateSequenceSQL(seq);
         if (seq.getAllocate() > 1)
@@ -900,35 +960,49 @@ public class OracleDictionary
         return getJDBCType(metaTypeCode, lob || xml, precis, scale);        
     }
 
-
+    @Override
     protected String getSequencesSQL(String schemaName, String sequenceName) {
+        return getSequencesSQL(DBIdentifier.newSchema(schemaName), DBIdentifier.newSequence(sequenceName));
+    }
+
+    @Override
+    protected String getSequencesSQL(DBIdentifier schemaName, DBIdentifier sequenceName) {
         StringBuilder buf = new StringBuilder();
         buf.append("SELECT SEQUENCE_OWNER AS SEQUENCE_SCHEMA, ").
             append("SEQUENCE_NAME FROM ALL_SEQUENCES");
-        if (schemaName != null || sequenceName != null)
+        if (!DBIdentifier.isNull(schemaName) || !DBIdentifier.isNull(sequenceName))
             buf.append(" WHERE ");
-        if (schemaName != null) {
+        if (!DBIdentifier.isNull(schemaName)) {
             buf.append("SEQUENCE_OWNER = ?");
-            if (sequenceName != null)
+            if (!DBIdentifier.isNull(sequenceName))
                 buf.append(" AND ");
         }
-        if (sequenceName != null)
+        if (!DBIdentifier.isNull(sequenceName))
             buf.append("SEQUENCE_NAME = ?");
         return buf.toString();
     }
 
     public boolean isSystemSequence(String name, String schema,
         boolean targetSchema) {
+        return isSystemSequence(DBIdentifier.newSequence(name),
+            DBIdentifier.newSchema(schema), targetSchema);
+    }
+
+    @Override
+    public boolean isSystemSequence(DBIdentifier name, DBIdentifier schema,
+        boolean targetSchema) {
         if (super.isSystemSequence(name, schema, targetSchema))
             return true;
 
         // filter out generated sequences used for auto-assign
+        String strName = DBIdentifier.isNull(name) ? "" : name.getName();
         return (autoAssignSequenceName != null
-            && name.equalsIgnoreCase(autoAssignSequenceName))
+            && strName.equalsIgnoreCase(autoAssignSequenceName))
             || (autoAssignSequenceName == null
-            && name.toUpperCase().startsWith("ST_"));
+            && strName.toUpperCase().startsWith("ST_"));
     }
 
+    @Override
     public Object getGeneratedKey(Column col, Connection conn)
         throws SQLException {
         if (!useTriggersForAutoAssign)
@@ -971,17 +1045,19 @@ public class OracleDictionary
      */
     protected String getOpenJPA3GeneratedKeySequenceName(Column col) {
         Table table = col.getTable();
-        return makeNameValid("SEQ_" + table.getName(), table.getSchema().
-            getSchemaGroup(), maxTableNameLength, NAME_ANY);
+        DBIdentifier sName = DBIdentifier.preCombine(table.getIdentifier(), "SEQ");
+        return toDBName(getNamingUtil().makeIdentifierValid(sName, table.getSchema().
+            getSchemaGroup(), maxTableNameLength, true));
     }
 
     /**
      * Returns a OpenJPA 3-compatible name for an auto-assign trigger.
      */
     protected String getOpenJPA3GeneratedKeyTriggerName(Column col) {
-        Table table = col.getTable();
-        return makeNameValid("TRIG_" + table.getName(), table.getSchema().
-            getSchemaGroup(), maxTableNameLength, NAME_ANY);
+        Table table = col.getTable();        
+        DBIdentifier sName = DBIdentifier.preCombine(table.getIdentifier(), "TRIG");
+        return toDBName(getNamingUtil().makeIdentifierValid(sName, table.getSchema().
+            getSchemaGroup(), maxTableNameLength, true));
     }
 
     /**
@@ -990,6 +1066,7 @@ public class OracleDictionary
      * vendor-specific class; for example Weblogic wraps oracle thin driver
      * lobs in its own interfaces with the same methods.
      */
+    @Override
     public void putBytes(Blob blob, byte[] data)
         throws SQLException {
         if (blob == null)
@@ -1011,6 +1088,7 @@ public class OracleDictionary
      * vendor-specific class; for example Weblogic wraps oracle thin driver
      * lobs in its own interfaces with the same methods.
      */
+    @Override
     public void putString(Clob clob, String data)
         throws SQLException {
         if (_putString == null) {
@@ -1030,6 +1108,7 @@ public class OracleDictionary
      * vendor-specific class; for example Weblogic wraps oracle thin driver
      * lobs in its own interfaces with the same methods.
      */
+    @Override
     public void putChars(Clob clob, char[] data)
         throws SQLException {
         if (_putChars == null) {

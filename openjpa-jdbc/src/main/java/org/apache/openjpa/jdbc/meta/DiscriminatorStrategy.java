@@ -58,7 +58,7 @@ public interface DiscriminatorStrategy
     /**
      * Return the class for the current result row.
      */
-    public Class getClass(JDBCStore store, ClassMapping base, Result result)
+    public Class<?> getClass(JDBCStore store, ClassMapping base, Result result)
         throws SQLException, ClassNotFoundException;
 
     /**

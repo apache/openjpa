@@ -24,6 +24,8 @@ import java.util.Map;
 import java.util.Properties;
 
 import org.apache.openjpa.jdbc.conf.JDBCConfiguration;
+import org.apache.openjpa.jdbc.identifier.Normalizer;
+import org.apache.openjpa.jdbc.identifier.DBIdentifier;
 import org.apache.openjpa.jdbc.meta.strats.UntypedPCValueHandler;
 import org.apache.openjpa.jdbc.meta.strats.EnumValueHandler;
 import org.apache.openjpa.jdbc.schema.Column;
@@ -36,7 +38,8 @@ import org.apache.openjpa.jdbc.sql.DBDictionary;
 import org.apache.openjpa.lib.conf.Configurable;
 import org.apache.openjpa.lib.conf.Configuration;
 import org.apache.openjpa.lib.conf.Configurations;
-import org.apache.openjpa.lib.util.JavaVersions;
+import org.apache.openjpa.lib.identifier.Identifier;
+import org.apache.openjpa.lib.identifier.IdentifierUtil;
 import org.apache.openjpa.meta.JavaTypes;
 import serp.util.Strings;
 
@@ -66,11 +69,11 @@ public class MappingDefaultsImpl
     private boolean _addNullInd = false;
     private boolean _ordinalEnum = false;
     private boolean _stringifyUnmapped = false;
-    private String _dsIdName = null;
-    private String _versName = null;
-    private String _discName = null;
-    private String _orderName = null;
-    private String _nullIndName = null;
+    private DBIdentifier _dsIdName = DBIdentifier.NULL;
+    private DBIdentifier _versName = DBIdentifier.NULL;
+    private DBIdentifier _discName = DBIdentifier.NULL;
+    private DBIdentifier _orderName = DBIdentifier.NULL;
+    private DBIdentifier _nullIndName = DBIdentifier.NULL;
     private boolean _removeHungarianNotation = false;
 
     public boolean isRemoveHungarianNotation() {
@@ -333,83 +336,133 @@ public class MappingDefaultsImpl
     /**
      * Default base name for datastore identity columns, or null to the
      * mapping's built-in name.
+     * @deprecated
      */
     public String getDataStoreIdColumnName() {
-        return _dsIdName;
+        return getDataStoreIdColumnIdentifier().getName();
+    }
+
+    public DBIdentifier getDataStoreIdColumnIdentifier() {
+        return _dsIdName == null ? DBIdentifier.NULL : _dsIdName;
     }
 
     /**
      * Default base name for datastore identity columns, or null to the
      * mapping's built-in name.
+     * @deprecated
      */
     public void setDataStoreIdColumnName(String dsIdName) {
+        setDataStoreIdColumnIdentifier(DBIdentifier.newColumn(dsIdName));
+    }
+
+    public void setDataStoreIdColumnIdentifier(DBIdentifier dsIdName) {
         _dsIdName = dsIdName;
     }
 
     /**
      * Default base name for version identity columns, or null to the mapping's
      * built-in name.
+     * @deprecated
      */
     public String getVersionColumnName() {
-        return _versName;
+        return getVersionColumnIdentifier().getName();
+    }
+
+    public DBIdentifier getVersionColumnIdentifier() {
+        return _versName == null ? DBIdentifier.NULL : _versName;
     }
 
     /**
      * Default base name for version identity columns, or null to the mapping's
      * built-in name.
+     * @deprecated
      */
     public void setVersionColumnName(String versName) {
+        setVersionColumnIdentifier(DBIdentifier.newColumn(versName));
+    }
+
+    public void setVersionColumnIdentifier(DBIdentifier versName) {
         _versName = versName;
     }
 
     /**
      * Default base name for discriminator columns, or null to the mapping's
      * built-in name.
+     * @deprecated
      */
     public String getDiscriminatorColumnName() {
-        return _discName;
+        return getDiscriminatorColumnIdentifier().getName();
+    }
+
+    public DBIdentifier getDiscriminatorColumnIdentifier() {
+        return _discName == null ? DBIdentifier.NULL : _discName;
     }
 
     /**
      * Default base name for discriminator columns, or null to the mapping's
      * built-in name.
+     * @deprecated
      */
     public void setDiscriminatorColumnName(String discName) {
+        setDiscriminatorColumnIdentifier(DBIdentifier.newColumn(discName));
+    }
+
+    public void setDiscriminatorColumnIdentifier(DBIdentifier discName) {
         _discName = discName;
     }
 
     /**
      * Default base name for order columns, or null to the mapping's
      * built-in name.
+     * @deprecated
      */
     public String getOrderColumnName() {
-        return _orderName;
+        return getOrderColumnIdentifier().getName();
+    }
+
+    public DBIdentifier getOrderColumnIdentifier() {
+        return _orderName == null ? DBIdentifier.NULL : _orderName;
     }
 
     /**
      * Default base name for order columns, or null to the mapping's
      * built-in name.
+     * @deprecated
      */
     public void setOrderColumnName(String orderName) {
+        setOrderColumnIdentifier(DBIdentifier.newColumn(orderName));
+    }
+
+    public void setOrderColumnIdentifier(DBIdentifier orderName) {
         _orderName = orderName;
     }
 
     /**
      * Default base name for null indicator columns, or null to the mapping's
      * built-in name.
+     * @deprecated
      */
     public String getNullIndicatorColumnName() {
-        return _nullIndName;
+        return getNullIndicatorColumnIdentifier().getName();
+    }
+
+    public DBIdentifier getNullIndicatorColumnIdentifier() {
+        return _nullIndName == null ? DBIdentifier.NULL : _nullIndName;
     }
 
     /**
      * Default base name for null indicator columns, or null to the mapping's
      * built-in name.
+     * @deprecated
      */
     public void setNullIndicatorColumnName(String nullIndName) {
+        setNullIndicatorColumnIdentifier(DBIdentifier.newColumn(nullIndName));
+    }
+    
+    public void setNullIndicatorColumnIdentifier(DBIdentifier nullIndName) {
         _nullIndName = nullIndName;
     }
-
+    
     public boolean defaultMissingInfo() {
         return _defMissing;
     }
@@ -451,7 +504,7 @@ public class MappingDefaultsImpl
         return null;
     }
 
-    public Object getStrategy(ValueMapping vm, Class type, boolean adapt) {
+    public Object getStrategy(ValueMapping vm, Class<?> type, boolean adapt) {
         Object ret = _fieldMap.get(type.getName());
         if (ret != null)
             return ret;
@@ -511,33 +564,39 @@ public class MappingDefaultsImpl
 
     public String getTableName(ClassMapping cls, Schema schema) {
         String name = Strings.getClassName(cls.getDescribedType()).
-            replace('$', '_');
+            replace(IdentifierUtil.DOLLAR_CHAR, IdentifierUtil.UNDERSCORE_CHAR);
         if (!_defMissing)
             name = dict.getValidTableName(name, schema);
         return name;
     }
 
+    public DBIdentifier getTableIdentifier(ClassMapping cls, Schema schema) {
+        return DBIdentifier.newTable(getTableName(cls, schema));
+    }
+
     public String getTableName(FieldMapping fm, Schema schema) {
-        String name = fm.getName();
+        return getTableIdentifier(fm, schema).getName();
+    }
+
+    public DBIdentifier getTableIdentifier(FieldMapping fm, Schema schema) {
+        DBIdentifier sName = DBIdentifier.newTable(fm.getName());
         Table table = fm.getDefiningMapping().getTable();
         if (table != null) {
-            String tableName = table.getName();
-            if (tableName.length() > 5)
-                tableName = tableName.substring(0, 5);
-            name = tableName + "_" + name;
+            DBIdentifier tableName = DBIdentifier.truncate(table.getIdentifier(),5);
+            sName = DBIdentifier.append(tableName, fm.getName());
         }
         if (!_defMissing)
-            name = dict.getValidTableName(name, schema);
-        return name;
+            sName = dict.getValidTableName(sName, schema);
+        return sName;
     }
 
     public void populateDataStoreIdColumns(ClassMapping cls, Table table,
         Column[] cols) {
         for (int i = 0; i < cols.length; i++) {
-            if (_dsIdName != null && cols.length == 1)
-                cols[i].setName(_dsIdName);
-            else if (_dsIdName != null)
-                cols[i].setName(_dsIdName + i);
+            if (!DBIdentifier.isNull(_dsIdName) && cols.length == 1)
+                cols[i].setIdentifier(_dsIdName);
+            else if (!DBIdentifier.isNull(_dsIdName))
+                cols[i].setIdentifier(DBIdentifier.append(_dsIdName, Integer.toString(i)));
             correctName(table, cols[i]);
         }
     }
@@ -548,41 +607,31 @@ public class MappingDefaultsImpl
     protected void correctName(Table table, Column col) {
         if (!_defMissing || _removeHungarianNotation)
         {
-            String name = col.getName();
+            DBIdentifier name = col.getIdentifier();
             if (_removeHungarianNotation)
-                name = removeHungarianNotation(name);
-            String correctedName = dict.getValidColumnName(name, table);
-            col.setName(correctedName);
+                name = DBIdentifier.removeHungarianNotation(name);
+            DBIdentifier correctedName = dict.getValidColumnName(name, table);
+            col.setIdentifier(correctedName);
             table.addCorrectedColumnName(correctedName, true);
         }
     }
 
     protected String removeHungarianNotation(String columnName) {
-        char[] name = columnName.toCharArray();
-        int newStart = 0;
-
-        for (int i = 0; i < name.length; i++) {
-            if (Character.isUpperCase(name[i]))
-            {
-                newStart = i;
-                break;
-            }
-        }
-
-        return columnName.substring(newStart);
+        return Normalizer.removeHungarianNotation(columnName);
     }
 
     public void populateColumns(Version vers, Table table, Column[] cols) {
         for (int i = 0; i < cols.length; i++) {
-            if (_versName != null && cols.length == 1)
-                cols[i].setName(_versName);
-            else if (_versName != null) {
-                if (i == 0)
-                    cols[i].setName(_versName);
-                else
-                    cols[i].setName(_versName + "_" + i);
-            } else if (_versName != null)
-                cols[i].setName(_versName + i);
+            if (!DBIdentifier.isNull(_versName) && cols.length == 1)
+                cols[i].setIdentifier(_versName);
+            else if (!DBIdentifier.isNull(_versName)) {
+                if (i == 0) {
+                    cols[i].setIdentifier(_versName);
+                } else {
+                    cols[i].setIdentifier(DBIdentifier.append(_versName, Integer.toString(i)));
+                }
+            } else if (!DBIdentifier.isNull(_versName))
+                cols[i].setIdentifier(DBIdentifier.append(_versName, Integer.toString(i)));
             correctName(table, cols[i]);
         }
     }
@@ -590,10 +639,10 @@ public class MappingDefaultsImpl
     public void populateColumns(Discriminator disc, Table table,
         Column[] cols) {
         for (int i = 0; i < cols.length; i++) {
-            if (_discName != null && cols.length == 1)
-                cols[i].setName(_discName);
-            else if (_discName != null)
-                cols[i].setName(_discName + i);
+            if (!DBIdentifier.isNull(_discName) && cols.length == 1)
+                cols[i].setIdentifier(_discName);
+            else if (!DBIdentifier.isNull(_discName))
+                cols[i].setIdentifier(DBIdentifier.append(_discName, Integer.toString(i)));
             correctName(table, cols[i]);
         }
     }
@@ -608,17 +657,32 @@ public class MappingDefaultsImpl
         correctName(local, col);
     }
 
+    /**
+     * @deprecated
+     */
     public void populateForeignKeyColumn(ValueMapping vm, String name,
         Table local, Table foreign, Column col, Object target, boolean inverse,
         int pos, int cols) {
+        populateForeignKeyColumn(vm, DBIdentifier.newColumn(name), local, foreign, col,
+            target, inverse, pos, cols);
+    }
+
+    public void populateForeignKeyColumn(ValueMapping vm, DBIdentifier name,
+        Table local, Table foreign, Column col, Object target, boolean inverse,
+        int pos, int cols) {
         if (cols == 1)
-            col.setName(name);
+            col.setIdentifier(name);
         else if (target instanceof Column)
-            col.setName(name + "_" + ((Column) target).getName());
+            col.setIdentifier(DBIdentifier.combine(name,((Column) target).getIdentifier().getName()));
         correctName(local, col);
     }
 
     public void populateColumns(ValueMapping vm, String name, Table table,
+        Column[] cols) {
+        populateColumns(vm, DBIdentifier.newColumn(name), table, cols);
+    }
+
+    public void populateColumns(ValueMapping vm, DBIdentifier name, Table table,
         Column[] cols) {
         for (int i = 0; i < cols.length; i++)
             correctName(table, cols[i]);
@@ -627,23 +691,31 @@ public class MappingDefaultsImpl
     public boolean populateOrderColumns(FieldMapping fm, Table table,
         Column[] cols) {
         for (int i = 0; i < cols.length; i++) {
-            if (_orderName != null && cols.length == 1)
-                cols[i].setName(_orderName);
-            else if (_orderName != null)
-                cols[i].setName(_orderName + i);
+            if (!DBIdentifier.isNull(_orderName) && cols.length == 1)
+                cols[i].setIdentifier(_orderName);
+            else if (!DBIdentifier.isNull(_orderName))
+                cols[i].setIdentifier(DBIdentifier.append(_orderName, Integer.toString(i)));
             correctName(table, cols[i]);
         }
         return _orderLists && (JavaTypes.ARRAY == fm.getTypeCode()
             || List.class.isAssignableFrom(fm.getType()));
     }
 
+    /**
+     * @deprecated
+     */
     public boolean populateNullIndicatorColumns(ValueMapping vm, String name,
         Table table, Column[] cols) {
+        return populateNullIndicatorColumns(vm, DBIdentifier.newColumn(name), table, cols);
+    }
+
+    public boolean populateNullIndicatorColumns(ValueMapping vm, DBIdentifier name,
+        Table table, Column[] cols) {
         for (int i = 0; i < cols.length; i++) {
-            if (_nullIndName != null && cols.length == 1)
-                cols[i].setName(_nullIndName);
-            else if (_nullIndName != null)
-                cols[i].setName(_nullIndName + i);
+            if (!DBIdentifier.isNull(_nullIndName) && cols.length == 1)
+                cols[i].setIdentifier(_nullIndName);
+            else if (!DBIdentifier.isNull(_nullIndName))
+                cols[i].setIdentifier(DBIdentifier.append(_nullIndName, Integer.toString(i)));
             correctName(table, cols[i]);
         }
         return _addNullInd;
@@ -669,7 +741,15 @@ public class MappingDefaultsImpl
         return fk;
     }
 
+    /**
+     * @deprecated
+     */
     public ForeignKey getForeignKey(ValueMapping vm, String name, Table local,
+        Table foreign, boolean inverse) {
+        return getForeignKey(vm, DBIdentifier.newForeignKey(name), local, foreign, inverse);
+    }
+        
+    public ForeignKey getForeignKey(ValueMapping vm, DBIdentifier name, Table local,
         Table foreign, boolean inverse) {
         if (_fkAction == ForeignKey.ACTION_NONE)
             return null;
@@ -687,7 +767,7 @@ public class MappingDefaultsImpl
             return null;
 
         Index idx = new Index();
-        idx.setName(getIndexName(null, table, cols));
+        idx.setIdentifier(getIndexName(DBIdentifier.NULL, table, cols));
         return idx;
     }
 
@@ -703,20 +783,34 @@ public class MappingDefaultsImpl
 
     /**
      * Generate an index name.
+     * @deprecated
      */
     protected String getIndexName(String name, Table table, Column[] cols) {
-        // always use dict for index names because no spec mandates them
-        // based on defaults
-        if (name == null)
-            name = cols[0].getName();
-
-        if (_removeHungarianNotation)
-            name = removeHungarianNotation(name);
-
-        return dict.getValidIndexName(name, table);
+        return getIndexName(DBIdentifier.newIndex(name), table, cols).getName();
     }
 
+    protected DBIdentifier getIndexName(DBIdentifier name, Table table, Column[] cols) {
+        // always use dict for index names because no spec mandates them
+        // based on defaults
+        DBIdentifier sName = name;
+        if (DBIdentifier.isNull(sName))
+            sName = cols[0].getIdentifier();
+
+        if (_removeHungarianNotation)
+            sName = DBIdentifier.removeHungarianNotation(sName);
+
+        return dict.getValidIndexName(sName, table);
+    }
+
+    /**
+     * @deprecated
+     */
     public Index getIndex(ValueMapping vm, String name, Table table,
+        Column[] cols) {
+        return getIndex(vm, DBIdentifier.newIndex(name), table, cols);
+    }
+
+    public Index getIndex(ValueMapping vm, DBIdentifier name, Table table,
         Column[] cols) {
         if (!_indexFK || vm.getForeignKey() == null
             || !vm.getForeignKey().isLogical())
@@ -725,7 +819,7 @@ public class MappingDefaultsImpl
             return null;
 
         Index idx = new Index();
-        idx.setName(getIndexName(name, table, cols));
+        idx.setIdentifier(getIndexName(name, table, cols));
         return idx;
     }
 
@@ -733,7 +827,7 @@ public class MappingDefaultsImpl
         if (!_indexVers)
             return null;
         Index idx = new Index();
-        idx.setName(getIndexName(_versName, table, cols));
+        idx.setIdentifier(getIndexName(_versName, table, cols));
         return idx;
     }
 
@@ -741,7 +835,7 @@ public class MappingDefaultsImpl
         if (!_indexDisc)
             return null;
         Index idx = new Index();
-        idx.setName(getIndexName(_discName, table, cols));
+        idx.setIdentifier(getIndexName(_discName, table, cols));
         return idx;
     }
 
@@ -749,13 +843,28 @@ public class MappingDefaultsImpl
         return null;
     }
 
+    /**
+     * @deprecated
+     */
     public Unique getUnique(ValueMapping vm, String name, Table table,
         Column[] cols) {
         return null;
     }
 
+    public Unique getUnique(ValueMapping vm, DBIdentifier name, Table table,
+        Column[] cols) {
+        return null;
+    }
+
+    /**
+     * @deprecated
+     */
     public String getPrimaryKeyName(ClassMapping cm, Table table) {
         return null;
+    }
+
+    public DBIdentifier getPrimaryKeyIdentifier(ClassMapping cm, Table table) {
+        return DBIdentifier.NULL;
     }
 
     public void installPrimaryKey(FieldMapping fm, Table table) {

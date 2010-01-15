@@ -38,6 +38,7 @@ import java.util.Date;
 import java.util.Locale;
 import java.util.Map;
 
+import org.apache.openjpa.jdbc.identifier.DBIdentifier;
 import org.apache.openjpa.jdbc.kernel.JDBCStore;
 import org.apache.openjpa.jdbc.meta.JavaSQLTypes;
 import org.apache.openjpa.jdbc.schema.Column;
@@ -505,8 +506,8 @@ public class ResultSetResult
         throws SQLException {
         try {
           String s1 = obj.toString();
-          s1 = _dict.stripDelimiters(s1);
-          return getResultSet().findColumn(s1);
+          DBIdentifier sName = DBIdentifier.newColumn(obj.toString());
+          return getResultSet().findColumn(_dict.convertSchemaCase(sName));
         } catch (SQLException se) {
             return 0;
         }

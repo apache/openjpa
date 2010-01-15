@@ -18,6 +18,8 @@
  */
 package org.apache.openjpa.persistence.jdbc;
 
+import org.apache.openjpa.jdbc.identifier.Normalizer;
+import org.apache.openjpa.jdbc.identifier.DBIdentifier;
 import org.apache.openjpa.jdbc.meta.ClassMapping;
 import org.apache.openjpa.jdbc.meta.Discriminator;
 import org.apache.openjpa.jdbc.meta.FieldMapping;
@@ -131,15 +133,20 @@ public class PersistenceMappingDefaults
 
     @Override
     public String getTableName(FieldMapping fm, Schema schema) {
+        return getTableIdentifier(fm, schema).getName();
+    }
+
+    @Override
+    public DBIdentifier getTableIdentifier(FieldMapping fm, Schema schema) {
         // base name is table of defining type + '_'
         ClassMapping clm = fm.getDefiningMapping();
         Table table = getTable(clm);
         
-        String name = null;
+        DBIdentifier sName = DBIdentifier.NULL;
         if (fm.isElementCollection()) 
-            name = clm.getTypeAlias();
+            sName = DBIdentifier.newTable(clm.getTypeAlias());
         else 
-            name = table.getName();
+            sName = table.getIdentifier();
         
         // if this is an assocation table, spec says to suffix with table of
         // the related type. spec doesn't cover other cases; we're going to
@@ -147,17 +154,17 @@ public class PersistenceMappingDefaults
         ClassMapping rel = fm.getElementMapping().getTypeMapping();
         boolean assoc = rel != null && rel.getTable() != null
             && fm.getTypeCode() != JavaTypes.MAP;
-        String name2 = null;
+        DBIdentifier sName2 = DBIdentifier.NULL;
         if (assoc) {
-            name2 = rel.getTable().getName();
+            sName2 = rel.getTable().getIdentifier();
         }
         else {
-            name2 = fm.getName();
+            sName2 = DBIdentifier.newTable(fm.getName().replace('$', '_'));
         }
         
-        name = dict.combineNames(name, name2);
+        sName = DBIdentifier.combine(sName, sName2.getName());
         
-        return name.replace('$', '_');
+        return sName;
     }
     
     private Table getTable(ClassMapping clm) {
@@ -184,26 +191,33 @@ public class PersistenceMappingDefaults
         // if this is a bidi relation, prefix with inverse field name, else
         // prefix with owning entity name
         FieldMapping[] inverses = fm.getInverseMappings();
-        String name;
+        DBIdentifier sName = DBIdentifier.NULL;
         if (inverses.length > 0)
-            name = inverses[0].getName();
+            sName = DBIdentifier.newColumn(inverses[0].getName());
         else
-            name = fm.getDefiningMapping().getTypeAlias();
-        String targetName = ((Column) target).getName();
-        String tempName = null;
-        if ((name.length() + targetName.length()) >= dict.maxColumnNameLength)
-            tempName = name.substring(0, dict.maxColumnNameLength
+            sName = DBIdentifier.newColumn(fm.getDefiningMapping().getTypeAlias());
+        DBIdentifier targetName = ((Column) target).getIdentifier();
+        DBIdentifier tempName = DBIdentifier.NULL;
+        if ((sName.length() + targetName.length()) >= dict.maxColumnNameLength)
+            tempName = DBIdentifier.truncate(sName, dict.maxColumnNameLength
                     - targetName.length() - 1);
         // suffix with '_' + target column
-        if (tempName == null)
-            tempName = name;
-        name = dict.combineNames(tempName, targetName);
-        name = dict.getValidColumnName(name, foreign);
-        col.setName(name);
+        if (DBIdentifier.isNull(tempName))
+            tempName = sName;
+        sName = DBIdentifier.combine(tempName, targetName.getName());
+        sName = dict.getValidColumnName(sName, foreign);
+        col.setIdentifier(sName);
     }
 
     @Override
     public void populateForeignKeyColumn(ValueMapping vm, String name,
+        Table local, Table foreign, Column col, Object target, boolean inverse,
+        int pos, int cols) {
+         populateForeignKeyColumn(vm, DBIdentifier.newColumn(name), local,
+            foreign, col, target, inverse, pos, cols);
+    }
+
+    public void populateForeignKeyColumn(ValueMapping vm, DBIdentifier sName,
         Table local, Table foreign, Column col, Object target, boolean inverse,
         int pos, int cols) {
         boolean elem = vm == vm.getFieldMapping().getElement()
@@ -218,19 +232,19 @@ public class PersistenceMappingDefaults
         // otherwise jpa always uses <field>_<pkcol> for column name, even
         // when only one col
         if (target instanceof Column) {
-            if (name == null) {
-                name = col.getName();
+            if (DBIdentifier.isNull(sName)) {
+                sName = col.getIdentifier();
             } else {
                 if (elem)
-                    name = vm.getFieldMapping().getName();
+                    sName = DBIdentifier.newColumn(vm.getFieldMapping().getName());
                 if (isRemoveHungarianNotation())
-                    name = removeHungarianNotation(name);
-                name = dict.combineNames(name, ((Column)target).getName());
+                    sName = DBIdentifier.newColumn(Normalizer.removeHungarianNotation(sName.getName()));
+                sName = sName.combine(sName, ((Column)target).getIdentifier().getName());
 
                 // No need to check for uniqueness.
-                name = dict.getValidColumnName(name, local, false);
+                sName = dict.getValidColumnName(sName, local, false);
             }
-            col.setName(name);
+            col.setIdentifier(sName);
         }
     }
 
@@ -239,7 +253,7 @@ public class PersistenceMappingDefaults
         // check for version field and use its name as column name
         FieldMapping fm = vers.getClassMapping().getVersionFieldMapping();
         if (fm != null && cols.length == 1)
-            cols[0].setName(fm.getName());
+            cols[0].setIdentifier(DBIdentifier.newColumn(fm.getName()));
         else
             super.populateColumns(vers, table, cols);
     }

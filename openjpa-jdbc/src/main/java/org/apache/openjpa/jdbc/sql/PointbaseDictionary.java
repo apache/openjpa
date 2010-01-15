@@ -23,6 +23,8 @@ import java.sql.DatabaseMetaData;
 import java.sql.SQLException;
 import java.sql.Types;
 
+import org.apache.openjpa.jdbc.identifier.DBIdentifier;
+import org.apache.openjpa.jdbc.identifier.DBIdentifier.DBIdentifierType;
 import org.apache.openjpa.jdbc.kernel.exps.FilterValue;
 import org.apache.openjpa.jdbc.schema.Column;
 import org.apache.openjpa.jdbc.schema.Index;
@@ -72,21 +74,32 @@ public class PointbaseDictionary
         }
     }
 
+    @Override
     public Column[] getColumns(DatabaseMetaData meta, String catalog,
         String schemaName, String tableName, String columnName, Connection conn)
+        throws SQLException {
+        return getColumns(meta, DBIdentifier.newCatalog(catalog), DBIdentifier.newSchema(schemaName),
+            DBIdentifier.newTable(tableName), DBIdentifier.newColumn(columnName), conn);
+    }
+
+    @Override
+    public Column[] getColumns(DatabaseMetaData meta, DBIdentifier catalog,
+        DBIdentifier schemaName, DBIdentifier tableName, DBIdentifier columnName, Connection conn)
         throws SQLException {
         Column[] cols = super.getColumns(meta, catalog, schemaName, tableName,
             columnName, conn);
 
         // pointbase reports the type for a CLOB field as VARCHAR: override it
         for (int i = 0; cols != null && i < cols.length; i++)
-            if (cols[i].getTypeName().toUpperCase().startsWith("CLOB"))
+            if (cols[i].getTypeIdentifier().getName().toUpperCase().startsWith("CLOB"))
                 cols[i].setType(Types.CLOB);
         return cols;
     }
 
+    @Override
     public String getFullName(Index index) {
-        return getFullName(index.getTable(), false) + "." + index.getName();
+        return toDBName(getNamingUtil().append(DBIdentifierType.INDEX, 
+            getFullIdentifier(index.getTable(), false), index.getIdentifier()));
     }
 
     public void substring(SQLBuffer buf, FilterValue str, FilterValue start,

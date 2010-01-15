@@ -27,6 +27,7 @@ import org.apache.openjpa.kernel.*;
 import org.apache.openjpa.util.*;
 import org.apache.openjpa.enhance.PersistenceCapable;
 import org.apache.openjpa.jdbc.meta.*;
+import org.apache.openjpa.jdbc.identifier.DBIdentifier;
 import org.apache.openjpa.jdbc.kernel.*;
 import org.apache.openjpa.jdbc.schema.*;
 import org.apache.openjpa.jdbc.sql.*;
@@ -164,7 +165,7 @@ public class HandlerRelationMapTableFieldStrategy
         _kio = new ColumnIO();
         DBDictionary dict = field.getMappingRepository().getDBDictionary();
         _kcols = HandlerStrategies.map(key, 
-            dict.getValidColumnName("key", field.getTable()), _kio, adapt);
+            dict.getValidColumnName(DBIdentifier.newColumn("key"), field.getTable()).getName(), _kio, adapt);
 
         field.mapPrimaryKey(adapt);
     }

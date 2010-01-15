@@ -281,7 +281,7 @@ public class ClassMapping
         Joinable join = getJoinable(col);
         if (join == null)
             throw new MetaDataException(_loc.get("no-joinable",
-                col.getFullName()));
+                col.getQualifiedPath().toString()));
         return join;
     }
 

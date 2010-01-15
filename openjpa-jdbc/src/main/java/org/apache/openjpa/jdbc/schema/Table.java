@@ -26,8 +26,13 @@ import java.util.Map;
 import java.util.TreeMap;
 import java.util.LinkedHashMap;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.openjpa.jdbc.identifier.Normalizer;
+import org.apache.openjpa.jdbc.identifier.DBIdentifier;
+import org.apache.openjpa.jdbc.identifier.DBIdentifierUtilImpl;
+import org.apache.openjpa.jdbc.identifier.QualifiedDBIdentifier;
+import org.apache.openjpa.jdbc.identifier.DBIdentifier.DBIdentifierType;
 import org.apache.openjpa.jdbc.sql.DBDictionary;
+import org.apache.openjpa.lib.identifier.IdentifierUtil;
 import org.apache.openjpa.lib.meta.SourceTracker;
 
 /**
@@ -36,16 +41,17 @@ import org.apache.openjpa.lib.meta.SourceTracker;
  * @author Abe White
  * @author Stephen Kim
  */
+@SuppressWarnings("serial")
 public class Table
     extends NameSet
-    implements Comparable, SourceTracker {
+    implements Comparable<Object>, SourceTracker {
 
-    private String _name = null;
-    private String _schemaName = null;
-    private Map _colMap = null;
-    private Map _idxMap = null;
-    private Collection _fkList = null;
-    private Collection _unqList = null;
+    private DBIdentifier _name = DBIdentifier.NULL;
+    private DBIdentifier _schemaName = DBIdentifier.NULL;
+    private Map<DBIdentifier, Column> _colMap = null;
+    private Map<DBIdentifier, Index> _idxMap = null;
+    private Collection<ForeignKey> _fkList = null;
+    private Collection<Unique> _unqList = null;
     private Schema _schema = null;
     private PrimaryKey _pk = null;
 
@@ -54,7 +60,6 @@ public class Table
     private int _srcType = SRC_OTHER;
 
     // cache
-    private String _fullName = null;
     private Column[] _cols = null;
     private Column[] _autoAssign = null;
     private Column[] _rels = null;
@@ -65,6 +70,7 @@ public class Table
     private int _lineNum = 0;  
     private int _colNum = 0;
     private boolean _isAssociation = false;
+    private QualifiedDBIdentifier _fullPath = null;
 
     /**
      * Default constructor.
@@ -77,12 +83,17 @@ public class Table
      *
      * @param name the table name
      * @param schema the table schema
+     * @deprecated
      */
     public Table(String name, Schema schema) {
-        setName(name);
+        this(DBIdentifier.newTable(name), schema);
+    }
+
+    public Table(DBIdentifier name, Schema schema) {
+        setIdentifier(name);
         addName(name, true);
         if (schema != null)
-            setSchemaName(schema.getName());
+            setSchemaIdentifier(schema.getIdentifier());
         _schema = schema;
     }
 
@@ -113,8 +124,8 @@ public class Table
         for (int i = 0; i < cols.length; i++)
             removeColumn(cols[i]);
         _schema = null;
-        _schemaName = null;
-        _fullName = null;
+        _schemaName = DBIdentifier.NULL;
+        _fullPath = null;
     }
 
     /**
@@ -126,53 +137,78 @@ public class Table
 
     /**
      * The table's schema name.
+     * @deprecated
      */
     public String getSchemaName() {
-        return _schemaName;
+        return getSchemaIdentifier().getName();
+    }
+
+    public DBIdentifier getSchemaIdentifier() {
+        return _schemaName == null ? DBIdentifier.NULL : _schemaName;
     }
 
     /**
      * The table's schema name. You can only call this method on tables
      * whose schema object is not set.
+     * @deprecated
      */
     public void setSchemaName(String name) {
+        setSchemaIdentifier(DBIdentifier.newSchema(name));
+    }
+
+    public void setSchemaIdentifier(DBIdentifier name) {
         if (getSchema() != null)
             throw new IllegalStateException();
         _schemaName = name;
-        _fullName = null;
+        _fullPath = null;
     }
 
     /**
      * Return the name of the table.
+     * @deprecated
      */
     public String getName() {
-        return _name;
+        return getIdentifier().getName();
+    }
+    
+    public DBIdentifier getIdentifier() {
+        return _name == null ? DBIdentifier.NULL : _name;
     }
 
     /**
      * Set the name of the table. This method can only be called on tables
      * that are not part of a schema.
+     * @deprecated
      */
     public void setName(String name) {
+        setIdentifier(DBIdentifier.newTable(name));
+    }
+
+    public void setIdentifier(DBIdentifier name) {
         if (getSchema() != null)
             throw new IllegalStateException();
         _name = name;
-        _fullName = null;
+        _fullPath = null;
     }
 
     /**
      * Return the table name, including schema, using '.' as the
      * catalog separator.
+     * @deprecated
      */
     public String getFullName() {
-        if (_fullName == null) {
-            Schema schema = getSchema();
-            if (schema == null || schema.getName() == null)
-                _fullName = getName();
-            else
-                _fullName = schema.getName() + "." + getName();
+        return getFullIdentifier().getName();
+    }
+    
+    public QualifiedDBIdentifier getQualifiedPath() {
+        if (_fullPath  == null) {
+            _fullPath = QualifiedDBIdentifier.newPath(_schemaName, _name );
         }
-        return _fullName;
+        return _fullPath;
+    }
+    
+    public DBIdentifier getFullIdentifier() {
+        return getQualifiedPath().getIdentifier();
     }
 
     public File getSourceFile() {
@@ -193,7 +229,7 @@ public class Table
     }
 
     public String getResourceName() {
-        return getFullName();
+        return getFullIdentifier().getName();
     }
 
     /**
@@ -205,7 +241,7 @@ public class Table
                 _cols = Schemas.EMPTY_COLUMNS;
             else {
                 Column[] cols = new Column[_colMap.size()];
-                Iterator itr = _colMap.values().iterator();
+                Iterator<Column> itr = _colMap.values().iterator();
                 for (int i = 0; itr.hasNext(); i++) {
                     cols[i] = (Column) itr.next();
                     cols[i].setIndex(i);
@@ -224,12 +260,12 @@ public class Table
             if (_colMap == null)
                 _autoAssign = Schemas.EMPTY_COLUMNS;
             else {
-                Collection autos = null;
+                Collection<Column> autos = null;
                 Column[] cols = getColumns();
                 for (int i = 0; i < cols.length; i++) {
                     if (cols[i].isAutoAssigned()) {
                         if (autos == null)
-                            autos = new ArrayList(3);
+                            autos = new ArrayList<Column>(3);
                         autos.add(cols[i]);
                     }
                 }
@@ -248,12 +284,12 @@ public class Table
             if (_colMap == null)
                 _rels = Schemas.EMPTY_COLUMNS;
             else {
-                Collection rels = null;
+                Collection<Column> rels = null;
                 Column[] cols = getColumns();
                 for (int i = 0; i < cols.length; i++) {
                     if (cols[i].isRelationId()) {
                         if (rels == null)
-                            rels = new ArrayList(3);
+                            rels = new ArrayList<Column>(3);
                         rels.add(cols[i]);
                     }
                 }
@@ -265,47 +301,40 @@ public class Table
     }
 
     public String[] getColumnNames() {
-        return _colMap == null ? new String[0] : 
-            (String[])_colMap.keySet().toArray(new String[_colMap.size()]);
+        if (_colMap == null) {
+            return new String[0];
+        }
+        DBIdentifier[] sNames = (DBIdentifier[])_colMap.keySet().toArray(new DBIdentifier[_colMap.size()]); 
+        return DBIdentifier.toStringArray(sNames);
     }
     
     /**
      * Return the column with the given name, or null if none.
+     * @deprecated
      */
     public Column getColumn(String name) {
-        return getColumn(name, null);
+        return getColumn(DBIdentifier.newIdentifier(name, DBIdentifierType.COLUMN, true));
     }
 
-    /**
-     * Return the column with the given name, or null if none.
-     * @param dict the current database dictionary or null.
-     */
-    public Column getColumn(String name, DBDictionary dict) {
-        if (name == null || _colMap == null)
+    public Column getColumn(DBIdentifier name) {
+        if (DBIdentifier.isNull(name) || _colMap == null)
             return null;
-        Column col = (Column)_colMap.get(name.toUpperCase());
-        if (col == null) {
-            String delim = null;
-            if (dict != null) {
-                delim = dict.getDelimiter();
-            }
-            else {
-                delim = "\"";
-            }
-            String delimName = delim + name + delim;
-            col = (Column) _colMap.get(delimName.toUpperCase());
-        }
-        
-        return col;
+        return _colMap.get(DBIdentifier.toUpper(name));
     }
+
     
     /**
      * Affirms if this table contains the column of the given name without any 
      * side-effect. 
      * @see Table#getColumn(String) can have side-effect of creating a column
      * for dynamic table implementation.
+     * @deprecated
      */
     public boolean containsColumn(String name) {
+        return containsColumn(DBIdentifier.newColumn(name), null);
+    }
+    
+    public boolean containsColumn(DBIdentifier name) {
         return containsColumn(name, null);
     }
 
@@ -315,53 +344,58 @@ public class Table
      * @param dict the current database dictionary or null.
      * @see Table#getColumn(String) can have side-effect of creating a column
      * for dynamic table implementation.
+     * @deprecated
      */
     public boolean containsColumn(String name, DBDictionary dict) {
         if (name == null || _colMap == null) {
             return false;
         }
-        if (_colMap.containsKey(name.toUpperCase())) {
-            return true;
+        return containsColumn(DBIdentifier.newIdentifier(name, DBIdentifierType.COLUMN, true));
+    }
+
+    public boolean containsColumn(DBIdentifier name, DBDictionary dict) {
+        if (DBIdentifier.isNull(name) || _colMap == null) {
+            return false;
         }
-        
-        String delim = null;
-        if (dict != null) {
-            delim = dict.getDelimiter();
-        }
-        else {
-            delim = "\"";
-        }
-        String delimName = delim + name + delim;
-        if (_colMap.containsKey(delimName.toUpperCase())) {
-            return true;
-        }
-        
-        return false;
+        DBIdentifier sName = DBIdentifier.toUpper(name);
+        return _colMap.containsKey(sName);
     }
 
     /**
      * Add a column to the table.
+     * @deprecated
      */
     public Column addColumn(String name) {
+        return addColumn(DBIdentifier.newColumn(name));
+    }
+
+    public Column addColumn(DBIdentifier name) {
         addName(name, true);
         Schema schema = getSchema();
         Column col;
-        if (schema != null && schema.getSchemaGroup() != null)
+        if (schema != null && schema.getSchemaGroup() != null) {
             col = schema.getSchemaGroup().newColumn(name, this);
-        else
+        } else {
             col = new Column(name, this);
+        }
         if (_colMap == null)
-            _colMap = new LinkedHashMap();
-        _colMap.put(name.toUpperCase(), col);
+            _colMap = new LinkedHashMap<DBIdentifier, Column>();
+        DBIdentifier sName = DBIdentifier.toUpper(name);
+        _colMap.put(sName, col);
         _cols = null;
         return col;
     }
 
 
     /**
-     * Add a colum with a shortened (i.e., validated) name to the table
+     * Add a column with a shortened (i.e., validated) name to the table
+     * @deprecated
      */
     public Column addColumn(String name, String validName) {
+        return addColumn(DBIdentifier.newColumn(name), DBIdentifier.newColumn(validName));
+    }
+
+    public Column addColumn(DBIdentifier name, DBIdentifier validName) {
         addName(name, true);
         Schema schema = getSchema();
         Column col;
@@ -370,16 +404,22 @@ public class Table
         else
             col = new Column(validName, this);
         if (_colMap == null)
-            _colMap = new LinkedHashMap();
-        _colMap.put(name.toUpperCase(), col);
+            _colMap = new LinkedHashMap<DBIdentifier, Column>();
+        DBIdentifier sName = DBIdentifier.toUpper(name);
+        _colMap.put(sName, col);
         _cols = null;
         return col;
     }
 
     /**
      * Add a name to this NameSet
+     * @deprecated
      */
     public void addCorrectedColumnName(String name, boolean validate) {
+        addName(DBIdentifier.newColumn(name), validate);
+    }
+
+    public void addCorrectedColumnName(DBIdentifier name, boolean validate) {
         addName(name, validate);
     }
 
@@ -393,12 +433,13 @@ public class Table
         if (col == null || _colMap == null)
             return false;
 
-        Column cur = (Column) _colMap.get(col.getName().toUpperCase());
+        DBIdentifier sName = DBIdentifier.toUpper(col.getIdentifier());
+        Column cur = (Column) _colMap.get(sName);
         if (!col.equals(cur))
             return false;
 
-        removeName(col.getName());
-        _colMap.remove(col.getName().toUpperCase());
+        removeName(sName);
+        _colMap.remove(sName);
         _cols = null;
         if (col.isAutoAssigned())
             _autoAssign = null;
@@ -415,9 +456,9 @@ public class Table
         if (col == null)
             return null;
 
-        Column copy = addColumn(col.getName());
+        Column copy = addColumn(col.getIdentifier());
         copy.setType(col.getType());
-        copy.setTypeName(col.getTypeName());
+        copy.setTypeIdentifier(col.getTypeIdentifier());
         copy.setJavaType(col.getJavaType());
         copy.setNotNull(col.isNotNull());
         copy.setDefaultString(col.getDefaultString());
@@ -438,13 +479,18 @@ public class Table
      * Set the primary key for the table.
      */
     public PrimaryKey addPrimaryKey() {
-        return addPrimaryKey(null);
+        return addPrimaryKey(DBIdentifier.NULL);
     }
 
     /**
      * Set the primary key for the table.
+     * @deprecated
      */
     public PrimaryKey addPrimaryKey(String name) {
+        return addPrimaryKey(DBIdentifier.newConstraint(name));
+    }
+
+    public PrimaryKey addPrimaryKey(DBIdentifier name) {
         Schema schema = getSchema();
         if (schema != null && schema.getSchemaGroup() != null) {
             schema.getSchemaGroup().addName(name, false);
@@ -464,7 +510,7 @@ public class Table
         if (rem) {
             Schema schema = getSchema();
             if (schema != null && schema.getSchemaGroup() != null)
-                schema.getSchemaGroup().removeName(_pk.getName());
+                schema.getSchemaGroup().removeName(_pk.getIdentifier());
             _pk.remove();
         }
         _pk = null;
@@ -478,23 +524,30 @@ public class Table
         if (pk == null)
             return null;
 
-        PrimaryKey copy = addPrimaryKey(pk.getName());
+        PrimaryKey copy = addPrimaryKey(pk.getIdentifier());
         copy.setLogical(pk.isLogical());
         Column[] cols = pk.getColumns();
         for (int i = 0; i < cols.length; i++)
-            copy.addColumn(getColumn(cols[i].getName()));
+            copy.addColumn(getColumn(cols[i].getIdentifier()));
         return copy;
     }
 
     /**
      * Return the foreign key with the given name. If multiple foreign keys
      * have the name, the first match is returned.
+     * @deprecated
      */
     public ForeignKey getForeignKey(String name) {
+        return getForeignKey(DBIdentifier.newForeignKey(name));
+    }
+
+    public ForeignKey getForeignKey(DBIdentifier name) {
         ForeignKey[] fks = getForeignKeys();
-        for (int i = 0; i < fks.length; i++)
-            if (StringUtils.equalsIgnoreCase(name, fks[i].getName()))
+        for (int i = 0; i < fks.length; i++) {
+            if (name.equals(fks[i].getIdentifier())) {
                 return fks[i];
+            }
+        }
         return null;
     }
 
@@ -507,7 +560,7 @@ public class Table
                 _fks = Schemas.EMPTY_FOREIGN_KEYS;
             else {
                 ForeignKey[] fks = new ForeignKey[_fkList.size()];
-                Iterator itr = _fkList.iterator();
+                Iterator<ForeignKey> itr = _fkList.iterator();
                 for (int i = 0; itr.hasNext(); i++) {
                     fks[i] = (ForeignKey) itr.next();
                     fks[i].setIndex(i);
@@ -522,13 +575,18 @@ public class Table
      * Add a foreign key to the table.
      */
     public ForeignKey addForeignKey() {
-        return addForeignKey(null);
+        return addForeignKey(DBIdentifier.NULL);
     }
 
     /**
      * Add a foreign key to the table. Duplicate key names are not allowed.
+     * @deprecated
      */
     public ForeignKey addForeignKey(String name) {
+        return addForeignKey(DBIdentifier.newForeignKey(name));
+    }
+
+    public ForeignKey addForeignKey(DBIdentifier name) {
         Schema schema = getSchema();
         ForeignKey fk;
         if (schema != null && schema.getSchemaGroup() != null) {
@@ -537,7 +595,7 @@ public class Table
         } else
             fk = new ForeignKey(name, this);
         if (_fkList == null)
-            _fkList = new ArrayList(3);
+            _fkList = new ArrayList<ForeignKey>(3);
         _fkList.add(fk);
         _fks = null;
         return fk;
@@ -557,7 +615,7 @@ public class Table
 
         Schema schema = getSchema();
         if (schema != null && schema.getSchemaGroup() != null)
-            schema.getSchemaGroup().removeName(fk.getName());
+            schema.getSchemaGroup().removeName(fk.getIdentifier());
         _fks = null;
         fk.remove();
         return true;
@@ -570,7 +628,7 @@ public class Table
         if (fk == null)
             return null;
 
-        ForeignKey copy = addForeignKey(fk.getName());
+        ForeignKey copy = addForeignKey(fk.getIdentifier());
         copy.setDeleteAction(fk.getDeleteAction());
 
         Schema schema = getSchema();
@@ -582,12 +640,12 @@ public class Table
 
             Column[] cols = fk.getColumns();
             for (int i = 0; i < cols.length; i++)
-                copy.join(getColumn(cols[i].getName()),
-                    joined.getColumn(pks[i].getName()));
+                copy.join(getColumn(cols[i].getIdentifier()),
+                    joined.getColumn(pks[i].getIdentifier()));
 
             cols = fk.getConstantColumns();
             for (int i = 0; i < cols.length; i++)
-                copy.joinConstant(getColumn(cols[i].getName()),
+                copy.joinConstant(getColumn(cols[i].getIdentifier()),
                     fk.getPrimaryKeyConstant(cols[i]));
 
             pks = fk.getConstantPrimaryKeyColumns();
@@ -595,7 +653,7 @@ public class Table
                 joined = schema.getSchemaGroup().findTable(pks[0].getTable());
             for (int i = 0; i < pks.length; i++)
                 copy.joinConstant(fk.getConstant(pks[i]),
-                    joined.getColumn(pks[i].getName()));
+                    joined.getColumn(pks[i].getIdentifier()));
         }
         return copy;
     }
@@ -612,17 +670,31 @@ public class Table
 
     /**
      * Return the index with the given name, or null if none.
+     * @deprecated
      */
     public Index getIndex(String name) {
         if (name == null || _idxMap == null)
             return null;
-        return (Index) _idxMap.get(name.toUpperCase());
+        return getIndex(DBIdentifier.newIdentifier(name, DBIdentifierType.INDEX, true));
+    }
+
+    public Index getIndex(DBIdentifier name) {
+        if (name == null || _idxMap == null)
+            return null;
+        
+        DBIdentifier sName = DBIdentifier.toUpper(name);
+        return (Index) _idxMap.get(sName);
     }
 
     /**
      * Add an index to the table.
+     * @deprecated
      */
     public Index addIndex(String name) {
+        return addIndex(DBIdentifier.newIndex(name));
+    }
+
+    public Index addIndex(DBIdentifier name) {
         Schema schema = getSchema();
         Index idx;
         if (schema != null && schema.getSchemaGroup() != null) {
@@ -631,8 +703,9 @@ public class Table
         } else
             idx = new Index(name, this);
         if (_idxMap == null)
-            _idxMap = new TreeMap();
-        _idxMap.put(name.toUpperCase(), idx);
+            _idxMap = new TreeMap<DBIdentifier, Index>();
+        DBIdentifier sName = DBIdentifier.toUpper(name);
+        _idxMap.put(sName, idx);
         _idxs = null;
         return idx;
     }
@@ -646,14 +719,15 @@ public class Table
         if (idx == null || _idxMap == null)
             return false;
 
-        Index cur = (Index) _idxMap.get(idx.getName().toUpperCase());
+        DBIdentifier sName = DBIdentifier.toUpper(idx.getIdentifier());
+        Index cur = (Index) _idxMap.get(sName);
         if (!idx.equals(cur))
             return false;
 
-        _idxMap.remove(idx.getName().toUpperCase());
+        _idxMap.remove(sName);
         Schema schema = getSchema();
         if (schema != null && schema.getSchemaGroup() != null)
-            schema.getSchemaGroup().removeName(idx.getName());
+            schema.getSchemaGroup().removeName(idx.getIdentifier());
         idx.remove();
         _idxs = null;
         return true;
@@ -666,12 +740,12 @@ public class Table
         if (idx == null)
             return null;
 
-        Index copy = addIndex(idx.getName());
+        Index copy = addIndex(idx.getIdentifier());
         copy.setUnique(idx.isUnique());
 
         Column[] cols = idx.getColumns();
         for (int i = 0; i < cols.length; i++)
-            copy.addColumn(getColumn(cols[i].getName()));
+            copy.addColumn(getColumn(cols[i].getIdentifier()));
         return copy;
     }
 
@@ -687,19 +761,29 @@ public class Table
 
     /**
      * Return the unique constraint with the given name, or null if none.
+     * @deprecated
      */
     public Unique getUnique(String name) {
+        return getUnique(DBIdentifier.newConstraint(name));
+    }
+
+    public Unique getUnique(DBIdentifier name) {
         Unique[] unqs = getUniques();
         for (int i = 0; i < unqs.length; i++)
-            if (StringUtils.equalsIgnoreCase(name, unqs[i].getName()))
+            if (DBIdentifier.equal(name, unqs[i].getIdentifier()))
                 return unqs[i];
         return null;
     }
 
     /**
      * Add a unique constraint to the table.
+     * @deprecated
      */
     public Unique addUnique(String name) {
+        return addUnique(DBIdentifier.newConstraint(name));
+    }
+
+    public Unique addUnique(DBIdentifier name) {
         Schema schema = getSchema();
         Unique unq;
         if (schema != null && schema.getSchemaGroup() != null) {
@@ -708,7 +792,7 @@ public class Table
         } else
             unq = new Unique(name, this);
         if (_unqList == null)
-            _unqList = new ArrayList(3);
+            _unqList = new ArrayList<Unique>(3);
         _unqList.add(unq);
         _unqs = null;
         return unq;
@@ -728,7 +812,7 @@ public class Table
 
         Schema schema = getSchema();
         if (schema != null && schema.getSchemaGroup() != null)
-            schema.getSchemaGroup().removeName(unq.getName());
+            schema.getSchemaGroup().removeName(unq.getIdentifier());
         _unqs = null;
         unq.remove();
         return true;
@@ -741,12 +825,12 @@ public class Table
         if (unq == null)
             return null;
 
-        Unique copy = addUnique(unq.getName());
+        Unique copy = addUnique(unq.getIdentifier());
         copy.setDeferred(unq.isDeferred());
 
         Column[] cols = unq.getColumns();
         for (int i = 0; i < cols.length; i++)
-            copy.addColumn(getColumn(cols[i].getName()));
+            copy.addColumn(getColumn(cols[i].getIdentifier()));
         return copy;
     }
 
@@ -781,23 +865,23 @@ public class Table
     }
 
     public int compareTo(Object other) {
-        String name = getFullName();
-        String otherName = ((Table) other).getFullName();
-        if (name == null && otherName == null)
+        DBIdentifier name = getFullIdentifier();
+        DBIdentifier otherName = ((Table) other).getFullIdentifier();
+        if (DBIdentifier.isNull(name) && DBIdentifier.isNull(otherName))
             return 0;
-        if (name == null)
+        if (DBIdentifier.isNull(name))
             return 1;
-        if (otherName == null)
+        if (DBIdentifier.isNull(otherName))
             return -1;
         return name.compareTo(otherName);
     }
 
     public String toString() {
-        return getFullName();
+        return getFullIdentifier().getName();
     }
 
     public boolean hasComment() {
-        return _comment != null && !_comment.equalsIgnoreCase(_name);
+        return _comment != null && !_comment.equalsIgnoreCase(_name.getName());
     }
 
     public String getComment() {

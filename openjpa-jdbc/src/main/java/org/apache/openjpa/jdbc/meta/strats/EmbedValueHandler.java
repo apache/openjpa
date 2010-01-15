@@ -23,6 +23,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.openjpa.enhance.PersistenceCapable;
+import org.apache.openjpa.jdbc.identifier.DBIdentifier;
 import org.apache.openjpa.jdbc.kernel.JDBCFetchConfiguration;
 import org.apache.openjpa.jdbc.kernel.JDBCStore;
 import org.apache.openjpa.jdbc.meta.ClassMapping;
@@ -33,6 +34,7 @@ import org.apache.openjpa.jdbc.meta.ValueMapping;
 import org.apache.openjpa.jdbc.meta.ValueMappingImpl;
 import org.apache.openjpa.jdbc.schema.Column;
 import org.apache.openjpa.jdbc.schema.ColumnIO;
+import org.apache.openjpa.jdbc.sql.DBDictionary;
 import org.apache.openjpa.kernel.ObjectIdStateManager;
 import org.apache.openjpa.kernel.OpenJPAStateManager;
 import org.apache.openjpa.kernel.StateManagerImpl;
@@ -53,8 +55,19 @@ public abstract class EmbedValueHandler
 
     /**
      * Maps embedded value and gathers columns and arguments into given lists.
+     * @deprecated
      */
     protected void map(ValueMapping vm, String name, ColumnIO io,
+        boolean adapt, List cols, List args) {
+        DBDictionary dict = vm.getMappingRepository().getDBDictionary();
+        DBIdentifier colName = DBIdentifier.newColumn(name, dict != null ? dict.delimitAll() : false);
+        map(vm, colName, io, adapt, cols, args);
+    }
+
+    /**
+     * Maps embedded value and gathers columns and arguments into given lists.
+     */    
+    protected void map(ValueMapping vm, DBIdentifier name, ColumnIO io,
         boolean adapt, List cols, List args) {
         // have to resolve embedded value to collect its columns
         vm.getEmbeddedMapping().resolve(vm.MODE_META | vm.MODE_MAPPING);

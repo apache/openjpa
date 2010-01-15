@@ -18,6 +18,7 @@
  */
 package org.apache.openjpa.jdbc.meta;
 
+import org.apache.openjpa.jdbc.identifier.DBIdentifier;
 import org.apache.openjpa.jdbc.sql.Joins;
 import org.apache.openjpa.jdbc.sql.Select;
 import org.apache.openjpa.meta.Order;
@@ -43,4 +44,7 @@ interface JDBCOrder
      * we're selecting
      */
     public void order(Select sel, ClassMapping elem, Joins joins);
+    
+    public DBIdentifier getIdentifier();
+
 }

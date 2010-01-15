@@ -20,6 +20,7 @@ package org.apache.openjpa.jdbc.meta.strats;
 
 import java.sql.SQLException;
 
+import org.apache.openjpa.jdbc.identifier.DBIdentifier;
 import org.apache.openjpa.jdbc.kernel.JDBCFetchConfiguration;
 import org.apache.openjpa.jdbc.kernel.JDBCStore;
 import org.apache.openjpa.jdbc.meta.Embeddable;
@@ -30,6 +31,7 @@ import org.apache.openjpa.jdbc.schema.Column;
 import org.apache.openjpa.jdbc.schema.ColumnIO;
 import org.apache.openjpa.jdbc.schema.ForeignKey;
 import org.apache.openjpa.jdbc.schema.PrimaryKey;
+import org.apache.openjpa.jdbc.sql.DBDictionary;
 import org.apache.openjpa.jdbc.sql.Joins;
 import org.apache.openjpa.jdbc.sql.Result;
 import org.apache.openjpa.jdbc.sql.Row;
@@ -71,19 +73,22 @@ public class StringFieldStrategy
         vinfo.assertNoJoin(field, true);
         vinfo.assertNoForeignKey(field, !adapt);
 
+        DBDictionary dict = field.getMappingRepository().getDBDictionary();
+        DBIdentifier fieldName = DBIdentifier.newColumn(field.getName(), dict != null ? dict.delimitAll() : false);
+
         // get value columns
         Column tmpCol = new Column();
-        tmpCol.setName(field.getName());
+        tmpCol.setIdentifier(fieldName);
         tmpCol.setJavaType(field.getTypeCode());
 
-        Column[] cols = vinfo.getColumns(field, field.getName(),
+        Column[] cols = vinfo.getColumns(field, fieldName,
             new Column[]{ tmpCol }, field.getTable(), adapt);
         if (field.getValueStrategy() == ValueStrategies.AUTOASSIGN)
             cols[0].setAutoAssigned(true);
 
         field.setColumns(cols);
         field.setColumnIO(vinfo.getColumnIO());
-        field.mapConstraints(field.getName(), adapt);
+        field.mapConstraints(fieldName, adapt);
 
         // add primary key columns to table pk if logical
         field.mapPrimaryKey(adapt);

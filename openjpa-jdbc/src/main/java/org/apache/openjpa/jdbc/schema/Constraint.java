@@ -18,21 +18,25 @@
  */
 package org.apache.openjpa.jdbc.schema;
 
+import org.apache.openjpa.jdbc.identifier.DBIdentifier;
+import org.apache.openjpa.jdbc.identifier.QualifiedDBIdentifier;
+
 /**
  * A table constraint. This class is closely aligned with the constraint
  * information available from {@link java.sql.DatabaseMetaData}.
  *
  * @author Abe White
  */
+@SuppressWarnings("serial")
 public abstract class Constraint
     extends ReferenceCounter {
 
-    private String _name = null;
-    private String _fullName = null;
+    private DBIdentifier _name = DBIdentifier.NULL;
+    private QualifiedDBIdentifier _fullPath = null;
     private Table _table = null;
-    private String _tableName = null;
-    private String _schemaName = null;
-    private String _columnName = null;
+    private DBIdentifier _tableName = DBIdentifier.NULL;
+    private DBIdentifier _schemaName = DBIdentifier.NULL;
+    private DBIdentifier _columnName = DBIdentifier.NULL;
     private boolean _deferred = false;
 
     /**
@@ -46,12 +50,17 @@ public abstract class Constraint
      *
      * @param name the name of the constraint, or null if none
      * @param table the local table of the constraint
+     * @deprecated
      */
     Constraint(String name, Table table) {
-        setName(name);
+        this(DBIdentifier.newConstant(name), table);
+    }
+
+    Constraint(DBIdentifier name, Table table) {
+        setIdentifier(name);
         if (table != null) {
-            setTableName(table.getName());
-            setSchemaName(table.getSchemaName());
+            setTableIdentifier(table.getIdentifier());
+            setSchemaIdentifier(table.getSchemaIdentifier());
         }
         _table = table;
     }
@@ -73,34 +82,55 @@ public abstract class Constraint
 
     /**
      * Return the column's table name.
+     * @deprecated
      */
     public String getTableName() {
-        return _tableName;
+        return getTableIdentifier().getName();
+    }
+
+    public DBIdentifier getTableIdentifier() {
+        return _tableName == null ? DBIdentifier.NULL : _tableName;
     }
 
     /**
      * Set the column's table name. You can only call this method on
      * columns whose table object is not set.
+     * @deprecated
      */
     public void setTableName(String name) {
-        if (getTable() != null)
-            throw new IllegalStateException();
-        _tableName = name;
-        _fullName = null;
+        setTableIdentifier(DBIdentifier.newTable(name));
     }
 
+      public void setTableIdentifier(DBIdentifier name) {
+          if (getTable() != null)
+              throw new IllegalStateException();
+          _tableName = name;
+          _fullPath = null;
+      }
+
+    
     /**
      * Return the column table's schema name.
+     * @deprecated
      */
     public String getSchemaName() {
-        return _schemaName;
+        return getSchemaIdentifier().getName();
+    }
+
+    public DBIdentifier getSchemaIdentifier() {
+        return _schemaName == null ? DBIdentifier.NULL : _schemaName;
     }
 
     /**
      * Set the column table's schema name. You can only call this method on
-     * columns whose tbale object is not set.
+     * columns whose table object is not set.
+     * @deprecated
      */
     public void setSchemaName(String schema) {
+        setSchemaIdentifier(DBIdentifier.newSchema(schema));
+    }
+
+    public void setSchemaIdentifier(DBIdentifier schema) {
         if (getTable() != null)
             throw new IllegalStateException();
         _schemaName = schema;
@@ -108,16 +138,26 @@ public abstract class Constraint
 
     /**
      * Return the column's name.
+     * @deprecated
      */
     public String getColumnName() {
-        return _columnName;
+        return getColumnIdentifier().getName();
+    }
+
+    public DBIdentifier getColumnIdentifier() {
+        return _columnName == null ? DBIdentifier.NULL : _columnName;
     }
 
     /**
      * Set the column's name. You can only call this method on
      * columns whose table object is not set.
+     * @deprecated
      */
     public void setColumnName(String name) {
+        setColumnIdentifier(DBIdentifier.newColumn(name));
+    }
+
+    public void setColumnIdentifier(DBIdentifier name) {
         if (getTable() != null)
             throw new IllegalStateException();
         _columnName = name;
@@ -125,38 +165,53 @@ public abstract class Constraint
 
     /**
      * Return the name of the constraint.
+     * @deprecated
      */
     public String getName() {
-        return _name;
+        return getIdentifier().getName();
     }
+    
+    public DBIdentifier getIdentifier() {
+        return _name == null ? DBIdentifier.NULL : _name;
+    }
+
 
     /**
      * Set the name of the constraint. This method cannot be called if the
      * constraint already belongs to a table.
+     * @deprecated
      */
     public void setName(String name) {
+        setIdentifier(DBIdentifier.newConstraint(name));
+    }
+
+    public void setIdentifier(DBIdentifier name) {
         if (getTable() != null)
             throw new IllegalStateException();
         _name = name;
-        _fullName = null;
+        _fullPath = null;
     }
 
     /**
      * Return the full name of the constraint.
+     * @deprecated
      */
     public String getFullName() {
-        if (_fullName == null) {
-            String name = getName();
-            if (name == null)
-                return null;
-            String tname = getTableName();
-            if (tname == null)
-                return name;
-            _fullName = tname + "." + name;
-        }
-        return _fullName;
+        return getFullIdentifier().getName();
     }
 
+    public QualifiedDBIdentifier getQualifiedPath() {
+        if (_fullPath == null) {
+            _fullPath = QualifiedDBIdentifier.newPath(getTableIdentifier(), getIdentifier());
+        }
+        return _fullPath;
+    }
+
+    public DBIdentifier getFullIdentifier() {
+        return getQualifiedPath().getIdentifier();
+    }
+    
+    
     /**
      * Return whether this constraint is a logical constraint only; i.e.
      * if it does not exist in the database.
@@ -178,8 +233,8 @@ public abstract class Constraint
     }
 
     public String toString() {
-        if (getName() != null)
-            return getName();
+        if (!getIdentifier().isNull())
+            return getIdentifier().getName();
 
         String name = getClass().getName();
         name = name.substring(name.lastIndexOf('.') + 1);

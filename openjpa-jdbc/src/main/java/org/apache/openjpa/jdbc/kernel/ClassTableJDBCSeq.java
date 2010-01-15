@@ -50,7 +50,7 @@ public class ClassTableJDBCSeq
     private static final Localizer _loc = Localizer.forPackage
         (ClassTableJDBCSeq.class);
 
-    private final Map _stats = new HashMap();
+    private final Map<String, Status> _stats = new HashMap<String, Status>();
     private boolean _ignore = false;
     private boolean _aliases = false;
 
@@ -113,7 +113,7 @@ public class ClassTableJDBCSeq
     protected Column addPrimaryKeyColumn(Table table) {
         DBDictionary dict = getConfiguration().getDBDictionaryInstance();
         Column pkColumn = table.addColumn(dict.getValidColumnName(
-            getPrimaryKeyColumn(), table));
+            getPrimaryKeyColumnIdentifier(), table));
         pkColumn.setType(dict.getPreferredType(Types.VARCHAR));
         pkColumn.setJavaType(JavaTypes.STRING);
         pkColumn.setSize(dict.characterColumnSize);
@@ -223,7 +223,7 @@ public class ClassTableJDBCSeq
             ClassArgParser cap = conf.getMetaDataRepositoryInstance()
                 .getMetaDataFactory().newClassArgParser();
             cap.setClassLoader(loader);
-            Class cls = cap.parseTypes(args[0])[0];
+            Class<?> cls = cap.parseTypes(args[0])[0];
 
             if (repos == null)
                 repos = conf.getMappingRepositoryInstance();

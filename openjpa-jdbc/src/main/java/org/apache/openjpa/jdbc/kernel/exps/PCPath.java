@@ -979,7 +979,7 @@ public class PCPath
         // if select is null, it means we are not aliasing columns
         // (e.g., during a bulk update)
         if (sel == null)
-            sql.append(col.getName());
+            sql.append(col.getIdentifier());
         else if (_type == XPATH)
             // if this is an xpath, append xpath string
             sql.append(getXPath());

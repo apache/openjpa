@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+ Licensed to the Apache Software Foundation (ASF) under one
+ or more contributor license agreements.  See the NOTICE file
+ distributed with this work for additional information
+ regarding copyright ownership.  The ASF licenses this file
+ to you under the Apache License, Version 2.0 (the
+ "License"); you may not use this file except in compliance
+ with the License.  You may obtain a copy of the License at
+ 
+ http://www.apache.org/licenses/LICENSE-2.0
+ 
+ Unless required by applicable law or agreed to in writing,
+ software distributed under the License is distributed on an
+ "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ KIND, either express or implied.  See the License for the
+ specific language governing permissions and limitations
+ under the License.   
+-->
+<entity-mappings xmlns="http://java.sun.com/xml/ns/persistence/orm" 
+xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+xsi:schemaLocation="http://java.sun.com/xml/ns/persistence/orm
+                    http://java.sun.com/xml/ns/persistence/orm_2_0.xsd" 
+version="2.0">
+	<entity class="org.apache.openjpa.persistence.delimited.identifiers.xml.EntityH">
+		<table name="&quot;entity h&quot;" schema="&quot;delim xml&quot;"/>
+		<secondary-table name="&quot;h sec join table&quot;" schema="&quot;delim xml&quot;">
+			<primary-key-join-column name="&quot;entity h&quot;" referenced-column-name="&quot;h id&quot;"/>
+		</secondary-table>
+		<attributes>
+			<id name="id">
+				<column name="&quot;h id&quot;"/>
+			</id>
+			<basic name="name"/>
+			<basic name="secName">
+				<column name="&quot;h sec join table&quot;"/>
+			</basic>
+			
+			<one-to-one name="entityI2">
+				<join-column name="&quot;enti2 id&quot;" referenced-column-name="&quot;entityI2 id&quot;"
+					table="&quot;join column&quot;"/>
+			</one-to-one>
+			
+			<many-to-many name="entityIs">
+				<join-table name="&quot;h i&quot;" schema="&quot;delim xml&quot;"/>
+			</many-to-many>
+			
+			<many-to-many name="map">
+				<map-key-join-column name="&quot;map_ei3&quot;" referenced-column-name="&quot;entityI3 id&quot;"/>
+				<join-table name="&quot;map3 join table&quot;" schema="&quot;delim xml&quot;"/>
+			</many-to-many>
+			
+			<many-to-many name="map2">
+				<map-key-join-column name="&quot;map ei4&quot;" referenced-column-name="&quot;entityI4 id&quot;"
+					table="&quot;map key join column&quot;"/>
+				<join-table name="&quot;map4 join table&quot;" schema="&quot;delim xml&quot;"/>
+			</many-to-many>
+		</attributes>
+	</entity>	
+	
+	<entity class="org.apache.openjpa.persistence.delimited.identifiers.xml.EntityI">
+		<table name="&quot;entity i&quot;" schema="&quot;delim xml&quot;"/>
+		<attributes>
+			<id name="id"/>
+			<many-to-many name="entityHs" mapped-by="entityIs"/>
+		</attributes>
+	</entity>
+	
+	<entity class="org.apache.openjpa.persistence.delimited.identifiers.xml.EntityI2">
+		<table name="&quot;entity i2&quot;" schema="&quot;delim xml&quot;"/>
+		<attributes>
+			<id name="id">
+				<column name="&quot;entityI2 id&quot;"/>
+			</id>
+			<basic name="name"/>
+			<one-to-one name="entityI3">
+				<primary-key-join-column/>
+			</one-to-one>
+		</attributes>
+	</entity>
+	
+	<entity class="org.apache.openjpa.persistence.delimited.identifiers.xml.EntityI3">
+		<table name="&quot;entity i3&quot;" schema="&quot;delim xml&quot;"/>
+		<attributes>
+			<id name="id">
+				<column name="&quot;entityI3 id&quot;"/>
+			</id>
+			<basic name="name"/>
+		</attributes>
+	</entity>
+	
+	<entity class="org.apache.openjpa.persistence.delimited.identifiers.xml.EntityI4">
+		<table name="&quot;entity i4&quot;" schema="&quot;delim xml&quot;"/>
+		<attributes>
+			<id name="id">
+				<column name="&quot;entityI4 id&quot;"/>
+			</id>
+			<basic name="name"/>
+		</attributes>
+	</entity>
+	
+	
+
+</entity-mappings>

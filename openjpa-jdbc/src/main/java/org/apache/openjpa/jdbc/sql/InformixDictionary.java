@@ -29,6 +29,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Set;
 
+import org.apache.openjpa.jdbc.identifier.DBIdentifier.DBIdentifierType;
 import org.apache.openjpa.jdbc.kernel.exps.FilterValue;
 import org.apache.openjpa.jdbc.schema.Column;
 import org.apache.openjpa.jdbc.schema.ForeignKey;
@@ -154,6 +155,7 @@ public class InformixDictionary
         trimSchemaName = true;
     }
 
+    @Override
     public void connectedConfiguration(Connection conn)
         throws SQLException {
         super.connectedConfiguration(conn);
@@ -185,6 +187,7 @@ public class InformixDictionary
         }
     }
 
+    @Override
     public Column[] getColumns(DatabaseMetaData meta, String catalog,
         String schemaName, String tableName, String columnName, Connection conn)
         throws SQLException {
@@ -198,30 +201,34 @@ public class InformixDictionary
         return cols;
     }
 
+    @Override
     public Column newColumn(ResultSet colMeta)
         throws SQLException {
         Column col = super.newColumn(colMeta);
         if (swapSchemaAndCatalog)
-            col.setSchemaName(colMeta.getString("TABLE_CAT"));
+            col.setSchemaIdentifier(fromDBName(colMeta.getString("TABLE_CAT"), DBIdentifierType.CATALOG));
         return col;
     }
 
+    @Override
     public PrimaryKey newPrimaryKey(ResultSet pkMeta)
         throws SQLException {
         PrimaryKey pk = super.newPrimaryKey(pkMeta);
         if (swapSchemaAndCatalog)
-            pk.setSchemaName(pkMeta.getString("TABLE_CAT"));
+            pk.setSchemaIdentifier(fromDBName(pkMeta.getString("TABLE_CAT"), DBIdentifierType.CATALOG));
         return pk;
     }
 
+    @Override
     public Index newIndex(ResultSet idxMeta)
         throws SQLException {
         Index idx = super.newIndex(idxMeta);
         if (swapSchemaAndCatalog)
-            idx.setSchemaName(idxMeta.getString("TABLE_CAT"));
+            idx.setSchemaIdentifier(fromDBName(idxMeta.getString("TABLE_CAT"), DBIdentifierType.CATALOG));
         return idx;
     }
 
+    @Override
     public void setBoolean(PreparedStatement stmnt, int idx, boolean val,
         Column col)
         throws SQLException {
@@ -230,12 +237,14 @@ public class InformixDictionary
         stmnt.setString(idx, val ? "t" : "f");
     }
 
+    @Override
     public String[] getCreateTableSQL(Table table) {
         String[] create = super.getCreateTableSQL(table);
         create[0] = create[0] + " LOCK MODE ROW";
         return create;
     }
 
+    @Override
     public String[] getAddPrimaryKeySQL(PrimaryKey pk) {
         String pksql = getPrimaryKeyConstraintSQL(pk);
         if (pksql == null)
@@ -244,6 +253,7 @@ public class InformixDictionary
             + getFullName(pk.getTable(), false) + " ADD CONSTRAINT " + pksql };
     }
 
+    @Override
     public String[] getAddForeignKeySQL(ForeignKey fk) {
         String fksql = getForeignKeyConstraintSQL(fk);
         if (fksql == null)
@@ -252,12 +262,14 @@ public class InformixDictionary
             + getFullName(fk.getTable(), false) + " ADD CONSTRAINT " + fksql };
     }
 
+    @Override
     public boolean supportsRandomAccessResultSet(Select sel,
         boolean forUpdate) {
         return !forUpdate && !sel.isLob()
             && super.supportsRandomAccessResultSet(sel, forUpdate);
     }
 
+    @Override
     public Connection decorate(Connection conn)
         throws SQLException {
         conn = super.decorate(conn);
@@ -303,12 +315,14 @@ public class InformixDictionary
         return conn;
     }
 
+    @Override
     public void indexOf(SQLBuffer buf, FilterValue str, FilterValue find,
         FilterValue start) {
         throw new UnsupportedException(_loc.get("function-not-supported",
                 getClass(), "LOCATE"));
     }
 
+    @Override
     public boolean needsToCreateIndex(Index idx, Table table) {
        // Informix will automatically create a unique index for the 
        // primary key, so don't create another index again
@@ -325,6 +339,7 @@ public class InformixDictionary
     /**
      * Return DB specific schemaCase 
      */
+    @Override
     public String getSchemaCase(){
         return schemaCase;
     }

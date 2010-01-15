@@ -18,12 +18,15 @@
  */
 package org.apache.openjpa.jdbc.schema;
 
+import org.apache.openjpa.jdbc.identifier.DBIdentifier;
+
 /**
  * Represents a unique constraint. It can also represent a partial constraint.
  *
  * @author Abe White
  * @author Pinaki Poddar
  */
+@SuppressWarnings("serial")
 public class Unique
     extends LocalConstraint {
 	
@@ -36,8 +39,13 @@ public class Unique
      * 
      * @param name the name of the constraint, if any
      * @param table the table of the constraint
+     * @deprecated
      */
     public Unique(String name, Table table) {
+        super(name, table);
+    }
+
+    public Unique(DBIdentifier name, Table table) {
         super(name, table);
     }
 
@@ -59,9 +67,14 @@ public class Unique
     /**
      * Set the name of the constraint. This method cannot be called if the
      * constraint already belongs to a table. 
+     * @deprecated
      */
     public void setName(String name) {
         super.setName(name);
+    }
+
+    public void setIdentifier(DBIdentifier name) {
+        super.setIdentifier(name);
     }
     
     /**

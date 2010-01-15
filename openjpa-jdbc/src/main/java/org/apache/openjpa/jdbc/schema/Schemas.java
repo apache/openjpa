@@ -21,7 +21,10 @@ package org.apache.openjpa.jdbc.schema;
 import java.sql.Types;
 import java.util.Date;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.openjpa.jdbc.conf.JDBCConfiguration;
+import org.apache.openjpa.jdbc.identifier.Normalizer;
+import org.apache.openjpa.jdbc.identifier.DBIdentifier;
 
 /**
  * Helper class to deal with schemas.
@@ -40,20 +43,24 @@ public class Schemas {
     /**
      * Return the schema name that should be used for new tables, or null if
      * none.
+     * @deprecated
      */
     public static String getNewTableSchema(JDBCConfiguration conf) {
+        return getNewTableSchemaIdentifier(conf).getName();
+    }
+
+    public static DBIdentifier getNewTableSchemaIdentifier(JDBCConfiguration conf) {
         if (conf.getSchema() != null)
-            return conf.getSchema();
+            return DBIdentifier.newSchema(conf.getSchema());
 
         String[] schemas = conf.getSchemasList();
         if (schemas.length == 0)
-            return null;
-        int dotIdx = schemas[0].lastIndexOf('.');
-        if (dotIdx == 0)
-            return null;
-        if (dotIdx == -1)
-            return schemas[0];
-        return schemas[0].substring(0, dotIdx);
+            return DBIdentifier.NULL;
+        String[] names = Normalizer.splitName(schemas[0]);
+        if (names.length == 0 || StringUtils.isEmpty(names[0])) {
+            return DBIdentifier.NULL;
+        }
+        return DBIdentifier.newSchema(names[0]);
     }
 
     /**
@@ -190,7 +197,7 @@ public class Schemas {
     /**
      * Return the java type for the given SQL type from {@link Types}.
      */
-    public static Class getJavaType(int type, int size, int decimals) {
+    public static Class<?> getJavaType(int type, int size, int decimals) {
         switch (type) {
             case Types.CHAR:
                 if (size == 1)

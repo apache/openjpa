@@ -62,7 +62,7 @@ public class EntityA {
     
     @ElementCollection
     @OrderColumn(name="order col")
-    @CollectionTable(name="collection delim set", schema="delim id2")
+    @CollectionTable(name="delim set", schema="delim id2")
     private Set<String> collectionDelimSet = new HashSet<String>();
     
     @ElementCollection

@@ -27,6 +27,8 @@ import java.text.MessageFormat;
 import org.apache.openjpa.conf.OpenJPAConfiguration;
 import org.apache.openjpa.jdbc.conf.JDBCConfiguration;
 import org.apache.openjpa.jdbc.conf.JDBCConfigurationImpl;
+import org.apache.openjpa.jdbc.identifier.DBIdentifier;
+import org.apache.openjpa.jdbc.identifier.QualifiedDBIdentifier;
 import org.apache.openjpa.jdbc.meta.ClassMapping;
 import org.apache.openjpa.jdbc.schema.Schema;
 import org.apache.openjpa.jdbc.schema.SchemaGroup;
@@ -69,7 +71,7 @@ public class NativeJDBCSeq
     private static Localizer _loc = Localizer.forPackage(NativeJDBCSeq.class);
 
     private JDBCConfiguration _conf = null;
-    private String _seqName = "OPENJPA_SEQUENCE";
+    private DBIdentifier _seqName = DBIdentifier.newSequence("OPENJPA_SEQUENCE");
     private int _increment = 1;
     private int _initial = 1;
     private int _allocate = 0;
@@ -78,23 +80,24 @@ public class NativeJDBCSeq
 
     // for deprecated auto-configuration support
     private String _format = null;
-    private String _tableName = "DUAL";
+    private DBIdentifier _tableName = DBIdentifier.newTable("DUAL");
     private boolean _subTable = false;
 
-    private String _schema = null;
+    private DBIdentifier _schema = DBIdentifier.NULL;
         
     /**
      * The sequence name. Defaults to <code>OPENJPA_SEQUENCE</code>.
      */
+    // @GETTER
     public String getSequence() {
-        return _seqName;
+        return _seqName.getName();
     }
 
     /**
      * The sequence name. Defaults to <code>OPENJPA_SEQUENCE</code>.
      */
     public void setSequence(String seqName) {
-        _seqName = seqName;
+        _seqName = DBIdentifier.newSequence(seqName);
     }
 
     /**
@@ -153,7 +156,7 @@ public class NativeJDBCSeq
      */
     @Deprecated
     public void setTableName(String table) {
-        _tableName = table;
+        _tableName = DBIdentifier.newTable(table);
     }
 
     /**
@@ -168,14 +171,15 @@ public class NativeJDBCSeq
     @Override
     public void addSchema(ClassMapping mapping, SchemaGroup group) {
         // sequence already exists?
-        if (group.isKnownSequence(_seqName))
+        QualifiedDBIdentifier path = QualifiedDBIdentifier.getPath(_seqName);
+        if (group.isKnownSequence(path))
             return;
 
-        String schemaName = getSchema();
-        if (schemaName == null || schemaName.length() == 0) {
-            schemaName = Strings.getPackageName(_seqName);
-            if (schemaName.length() == 0)
-                schemaName = Schemas.getNewTableSchema(_conf);
+        DBIdentifier schemaName = getSchemaIdentifier();
+        if (DBIdentifier.isEmpty(schemaName)) {
+            schemaName = path.getSchemaName();
+            if (DBIdentifier.isEmpty(schemaName))
+                schemaName = Schemas.getNewTableSchemaIdentifier(_conf);
         }
 
         // create table in this group
@@ -183,8 +187,6 @@ public class NativeJDBCSeq
         if (schema == null)
             schema = group.addSchema(schemaName);
         schema.importSequence(_seq);
-        // TODO: temp until a more global name solution is implemented
-        schema.addDelimSequenceName(_conf.getDBDictionaryInstance().addDelimiters(_seqName), _seq);
     }
 
     @Override
@@ -208,8 +210,8 @@ public class NativeJDBCSeq
             if (_format == null)
                 throw new MetaDataException(_loc.get("no-seq-sql", _seqName));
         }
-        if (_tableName == null)
-            _tableName = "DUAL";
+        if (DBIdentifier.isNull(_tableName))
+            _tableName = DBIdentifier.newTable("DUAL");
 
         String name = dict.getFullName(_seq);
         Object[] subs = (_subTable) ? new Object[]{ name, _tableName }
@@ -234,17 +236,18 @@ public class NativeJDBCSeq
      * Creates the sequence object.
      */
     private void buildSequence() {
-        String seqName = Strings.getClassName(_seqName);
+        QualifiedDBIdentifier path = QualifiedDBIdentifier.getPath(_seqName);
+        DBIdentifier seqName = path.getIdentifier();
         // JPA 2 added schema as a configurable attribute on  
         // sequence generator.  OpenJPA <= 1.x allowed this via
         // schema.sequence on the sequence name.  Specifying a schema
         // name on the annotation or in the orm will override the old 
         // behavior.
-        String schemaName = _schema;
-        if (schemaName == null || schemaName.length() == 0) {
-            schemaName = Strings.getPackageName(_seqName);
-            if (schemaName.length() == 0)
-                schemaName = Schemas.getNewTableSchema(_conf);
+        DBIdentifier schemaName = _schema;
+        if (DBIdentifier.isEmpty(schemaName)) {
+            schemaName = path.getSchemaName();
+            if (DBIdentifier.isEmpty(schemaName))
+                schemaName = Schemas.getNewTableSchemaIdentifier(_conf);
         }
 
         // build the sequence in one of the designated schemas
@@ -252,8 +255,6 @@ public class NativeJDBCSeq
         Schema schema = group.addSchema(schemaName);
 
         _seq = schema.addSequence(seqName);
-        // TODO: temp until a global name solution is implemented
-        schema.addDelimSequenceName(_conf.getDBDictionaryInstance().addDelimiters(seqName), _seq);
         _seq.setInitialValue(_initial);
         _seq.setIncrement(_increment);
         _seq.setAllocate(_allocate);
@@ -402,11 +403,22 @@ public class NativeJDBCSeq
         return true;
     }
 
-    public void setSchema(String _schema) {
-        this._schema = _schema;
+    /**
+     * @deprecated
+     */
+    public void setSchema(String schema) {
+        _schema = DBIdentifier.newSchema(schema);
     }
 
+    /**
+     * @deprecated
+     */
     public String getSchema() {
+        return _schema.getName();
+    }
+
+    public DBIdentifier getSchemaIdentifier() {
         return _schema;
     }
+
 }

@@ -22,22 +22,22 @@ import java.io.Serializable;
 import java.util.Map;
 import java.util.TreeMap;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.openjpa.jdbc.identifier.DBIdentifier;
+import org.apache.openjpa.jdbc.identifier.DBIdentifier.DBIdentifierType;
 
 /**
  * Represents a database schema.
  *
  * @author Abe White
  */
+@SuppressWarnings("serial")
 public class Schema
-    implements Comparable, Serializable {
+    implements Comparable<Schema>, Serializable {
 
-    private String _name = null;
+    private DBIdentifier _name = DBIdentifier.NULL;
     private SchemaGroup _group = null;
-    private Map _tableMap = null;
-    private Map _seqMap = null;
-    // TODO: temp until a more global solution is implemented
-    private Map<String, Sequence> _delimSeqMap = null;
+    private Map<DBIdentifier, Table> _tableMap = null;
+    private Map<DBIdentifier, Sequence> _seqMap = null;
 
     // cache
     private Table[] _tables = null;
@@ -54,9 +54,14 @@ public class Schema
      *
      * @param name the schema name, if any
      * @param group the schema's owning group
+     * @deprecated
      */
     public Schema(String name, SchemaGroup group) {
-        setName(name);
+        this(DBIdentifier.newSchema(name), group);
+    }
+
+    public Schema(DBIdentifier name, SchemaGroup group) {
+        setIdentifier(name);
         _group = group;
     }
 
@@ -83,21 +88,31 @@ public class Schema
 
     /**
      * Return the name of the schema, or null if none.
+     * @deprecated
      */
     public String getName() {
+        return getIdentifier().getName();
+    }
+
+    public DBIdentifier getIdentifier() {
         return _name;
     }
 
     /**
      * Set the name of the schema. This method can only be used for schemas
      * not attached to a group.
+     * @deprecated
      */
     public void setName(String name) {
-        if (getSchemaGroup() != null)
-            throw new IllegalStateException();
-        _name = StringUtils.trimToNull(name);
+        setIdentifier(DBIdentifier.trimToNull(DBIdentifier.newSchema(name)));
     }
 
+    public void setIdentifier(DBIdentifier name) {
+        if (getSchemaGroup() != null)
+            throw new IllegalStateException();
+        _name = DBIdentifier.trimToNull(name);
+    }
+    
     /**
      * Return the schema's tables.
      */
@@ -110,35 +125,56 @@ public class Schema
 
     /**
      * Return the table with the given name, or null if none.
+     * @deprecated
      */
     public Table getTable(String name) {
         if (name == null || _tableMap == null)
             return null;
-        return (Table) _tableMap.get(name.toUpperCase());
+        return getTable(DBIdentifier.newIdentifier(name, DBIdentifierType.TABLE, true));
+    }
+
+    public Table getTable(DBIdentifier name) {
+        if (DBIdentifier.isNull(name) || _tableMap == null)
+            return null;
+        DBIdentifier sName = DBIdentifier.toUpper(name);
+        return (Table) _tableMap.get(sName);
     }
 
     /**
      * Add a table to the schema.
+     * @deprecated
      */
     public Table addTable(String name) {
+        return addTable(DBIdentifier.newTable(name));
+    }
+    
+    public Table addTable(DBIdentifier name) {
         SchemaGroup group = getSchemaGroup();
         Table tab;
+        name = name.getUnqualifiedName();
         if (group != null) {
             group.addName(name, true);
             tab = group.newTable(name, this);
         } else
             tab = new Table(name, this);
         if (_tableMap == null)
-            _tableMap = new TreeMap();
-        _tableMap.put(name.toUpperCase(), tab);
+            _tableMap = new TreeMap<DBIdentifier, Table>();
+        DBIdentifier sName = DBIdentifier.toUpper(name);
+        _tableMap.put(sName, tab);
         _tables = null;
         return tab;
     }
+    
 
     /**
      * Add a table with a shortened (i.e., validated) name to the schema
+     * @deprecated
      */
     public Table addTable(String name, String validName) {
+        return addTable(DBIdentifier.newTable(name), DBIdentifier.newTable(validName));
+    }
+
+    public Table addTable(DBIdentifier name, DBIdentifier validName) {
         SchemaGroup group = getSchemaGroup();
         Table tab;
         if (group != null) {
@@ -147,8 +183,9 @@ public class Schema
         } else
             tab = new Table(validName, this);
         if (_tableMap == null)
-            _tableMap = new TreeMap();
-        _tableMap.put(name.toUpperCase(), tab);
+            _tableMap = new TreeMap<DBIdentifier, Table>();
+        DBIdentifier sName = DBIdentifier.toUpper(name);
+        _tableMap.put(sName, tab);
         _tables = null;
         return tab;
     }
@@ -162,15 +199,16 @@ public class Schema
         if (tab == null || _tableMap == null)
             return false;
 
-        Table cur = (Table) _tableMap.get(tab.getName().toUpperCase());
+        DBIdentifier sName = DBIdentifier.toUpper(tab.getIdentifier());
+        Table cur = (Table) _tableMap.get(sName);
         if (!cur.equals(tab))
             return false;
 
-        _tableMap.remove(tab.getName().toUpperCase());
+        _tableMap.remove(sName);
         _tables = null;
         SchemaGroup group = getSchemaGroup();
         if (group != null)
-            group.removeName(tab.getName());
+            group.removeName(tab.getIdentifier());
         tab.remove();
         return true;
     }
@@ -183,7 +221,7 @@ public class Schema
         if (table == null)
             return null;
 
-        Table copy = addTable(table.getName());
+        Table copy = addTable(table.getIdentifier());
         Column[] cols = table.getColumns();
         for (int i = 0; i < cols.length; i++)
             copy.importColumn(cols[i]);
@@ -204,22 +242,32 @@ public class Schema
 
     /**
      * Return the sequence with the given name, or null if none.
+     * @deprecated
      */
     public Sequence getSequence(String name) {
         if (name == null || _seqMap == null)
             return null;
-        // TODO: temp until a more global solution is implemented
-        Sequence seq = (Sequence) _seqMap.get(name.toUpperCase());
-        if (seq == null && _delimSeqMap != null) {
-            seq = _delimSeqMap.get(name.toUpperCase());
-        }
+        return getSequence(DBIdentifier.newIdentifier(name, DBIdentifierType.SEQUENCE, true));
+    }
+
+    public Sequence getSequence(DBIdentifier name) {
+        if (DBIdentifier.isNull(name) || _seqMap == null)
+            return null;
+        
+        DBIdentifier sName = DBIdentifier.toUpper(name);
+        Sequence seq = (Sequence) _seqMap.get(sName);
         return seq;
     }
 
     /**
      * Add a sequence to the schema.
+     * @deprecated
      */
     public Sequence addSequence(String name) {
+        return addSequence(DBIdentifier.newIdentifier(name, DBIdentifierType.SEQUENCE, true));
+    }
+
+    public Sequence addSequence(DBIdentifier name) {
         SchemaGroup group = getSchemaGroup();
         Sequence seq;
         if (group != null) {
@@ -228,21 +276,12 @@ public class Schema
         } else
             seq = new Sequence(name, this);
         if (_seqMap == null)
-            _seqMap = new TreeMap();
-        _seqMap.put(name.toUpperCase(), seq);
+            _seqMap = new TreeMap<DBIdentifier, Sequence>();
+        
+        DBIdentifier sName = DBIdentifier.toUpper(name);
+        _seqMap.put(sName, seq);
         _seqs = null;
         return seq;
-    }
-    
-    public void addDelimSequenceName(String name, Sequence seq) {
-        SchemaGroup group = getSchemaGroup();
-        if (group != null) {
-            group.addName(name, true);
-        }
-        if (_delimSeqMap == null) {
-            _delimSeqMap = new TreeMap<String, Sequence>();
-        }
-        _delimSeqMap.put(name.toUpperCase(), seq);
     }
 
     /**
@@ -254,15 +293,16 @@ public class Schema
         if (seq == null || _seqMap == null)
             return false;
 
-        Sequence cur = (Sequence) _seqMap.get(seq.getName().toUpperCase());
+        DBIdentifier sName = DBIdentifier.toUpper(seq.getIdentifier());
+        Sequence cur = (Sequence) _seqMap.get(sName);
         if (!cur.equals(seq))
             return false;
 
-        _seqMap.remove(seq.getName().toUpperCase());
+        _seqMap.remove(sName);
         _seqs = null;
         SchemaGroup group = getSchemaGroup();
         if (group != null)
-            group.removeName(seq.getName());
+            group.removeName(seq.getIdentifier());
         seq.remove();
         return true;
     }
@@ -274,26 +314,27 @@ public class Schema
         if (seq == null)
             return null;
 
-        Sequence copy = addSequence(seq.getName());
+        Sequence copy = addSequence(seq.getIdentifier());
         copy.setInitialValue(seq.getInitialValue());
         copy.setIncrement(seq.getIncrement());
         copy.setAllocate(seq.getAllocate());
         return copy;
     }
 
-    public int compareTo(Object other) {
-        String name = getName();
-        String otherName = ((Schema) other).getName();
-        if (name == null && otherName == null)
+    public int compareTo(Schema other) {
+        DBIdentifier name = getIdentifier();
+        DBIdentifier otherName = ((Schema) other).getIdentifier();
+        if (DBIdentifier.isNull(name) && DBIdentifier.isNull(otherName)) {
             return 0;
-        if (name == null)
+        }
+        if (DBIdentifier.isNull(name))
             return 1;
-        if (otherName == null)
+        if (DBIdentifier.isNull(otherName))
             return -1;
         return name.compareTo(otherName);
     }
 
     public String toString() {
-        return getName();
+        return getIdentifier().getName();
     }
 }

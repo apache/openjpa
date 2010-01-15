@@ -100,7 +100,7 @@ import serp.bytecode.Project;
 import serp.util.Strings;
 
 /**
- * Reverse-maps a schema into class mappings and the assiciated java
+ * Reverse-maps a schema into class mappings and the associated java
  * code. Generates a Java code files for persistent classes and associated
  * identity classes and metadata.
  *

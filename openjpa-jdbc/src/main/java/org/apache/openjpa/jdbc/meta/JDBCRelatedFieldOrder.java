@@ -20,6 +20,7 @@ package org.apache.openjpa.jdbc.meta;
 
 import java.util.Comparator;
 
+import org.apache.openjpa.jdbc.identifier.DBIdentifier;
 import org.apache.openjpa.jdbc.sql.Joins;
 import org.apache.openjpa.jdbc.sql.Select;
 import org.apache.openjpa.lib.util.Localizer;
@@ -30,6 +31,7 @@ import org.apache.openjpa.util.MetaDataException;
  *
  * @author Abe White
  */
+@SuppressWarnings("serial")
 class JDBCRelatedFieldOrder
     implements JDBCOrder {
 
@@ -49,15 +51,22 @@ class JDBCRelatedFieldOrder
         _asc = asc;
     }
 
+    /**
+     * @deprecated
+     */
     public String getName() {
         return _fm.getName();
+    }
+
+    public DBIdentifier getIdentifier() {
+        return DBIdentifier.newColumn(_fm.getName());
     }
 
     public boolean isAscending() {
         return _asc;
     }
 
-    public Comparator getComparator() {
+    public Comparator<?> getComparator() {
         return null;
     }
 

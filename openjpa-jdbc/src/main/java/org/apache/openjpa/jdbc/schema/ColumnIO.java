@@ -27,6 +27,7 @@ import java.io.Serializable;
  *
  * @author Abe White
  */
+@SuppressWarnings("serial")
 public class ColumnIO
     implements Serializable {
 

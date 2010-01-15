@@ -21,7 +21,7 @@ package org.apache.openjpa.jdbc.schema;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.commons.lang.ObjectUtils;
+import org.apache.openjpa.jdbc.identifier.DBIdentifier;
 import org.apache.openjpa.lib.util.Localizer;
 import org.apache.openjpa.util.InvalidStateException;
 
@@ -32,13 +32,14 @@ import org.apache.openjpa.util.InvalidStateException;
  *
  * @author Abe White
  */
+@SuppressWarnings("serial")
 public abstract class LocalConstraint
     extends Constraint {
 
     private static final Localizer _loc = Localizer.forPackage
         (LocalConstraint.class);
 
-    private List _colList = null;
+    private List<Column> _colList = null;
     private Column[] _cols = null;
 
     /**
@@ -52,12 +53,16 @@ public abstract class LocalConstraint
      *
      * @param name the name of the constraint, if any
      * @param table the table of the constraint
+     * @deprecated
      */
     public LocalConstraint(String name, Table table) {
         super(name, table);
     }
 
-    /**
+    public LocalConstraint(DBIdentifier name, Table table) {
+        super(name, table);
+    }
+/**
      * Called when the constraint is removed from its table.
      */
     void remove() {
@@ -99,7 +104,7 @@ public abstract class LocalConstraint
                 col == null ? null : getTable()));
     	
         if (_colList == null)
-            _colList = new ArrayList(3);
+            _colList = new ArrayList<Column>(3);
         else if (_colList.contains(col))
             return;
 
@@ -168,7 +173,7 @@ public abstract class LocalConstraint
      */
     private static boolean hasColumn(Column[] cols, Column col) {
         for (int i = 0; i < cols.length; i++)
-            if (cols[i].getFullName().equalsIgnoreCase(col.getFullName()))
+            if (cols[i].getQualifiedPath().equals(col.getQualifiedPath()))
                 return true;
         return false;
     }

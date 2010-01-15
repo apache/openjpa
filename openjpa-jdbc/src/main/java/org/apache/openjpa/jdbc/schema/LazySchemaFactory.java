@@ -23,9 +23,13 @@ import java.sql.DatabaseMetaData;
 import java.sql.SQLException;
 
 import org.apache.openjpa.jdbc.conf.JDBCConfiguration;
+import org.apache.openjpa.jdbc.identifier.DBIdentifier;
+import org.apache.openjpa.jdbc.identifier.DBIdentifierUtil;
+import org.apache.openjpa.jdbc.identifier.QualifiedDBIdentifier;
 import org.apache.openjpa.jdbc.sql.SQLExceptions;
 import org.apache.openjpa.lib.conf.Configurable;
 import org.apache.openjpa.lib.conf.Configuration;
+import org.apache.openjpa.lib.identifier.IdentifierRule;
 
 /**
  * Factory that uses database metadata to construct the system schema.
@@ -35,6 +39,7 @@ import org.apache.openjpa.lib.conf.Configuration;
  *
  * @author Abe White
  */
+@SuppressWarnings("serial")
 public class LazySchemaFactory
     extends SchemaGroup
     implements SchemaFactory, Configurable {
@@ -80,19 +85,49 @@ public class LazySchemaFactory
         // nothing to do
     }
 
+    /**
+     * @deprecated
+     */
     public Table findTable(String name) {
         if (name == null)
             return null;
+        return findTable(DBIdentifier.newTable(name));
+    }
 
-        Table table = super.findTable(name);
+    public Table findTable(DBIdentifier name) {
+        if (name == null)
+            return null;
+        return findTable(QualifiedDBIdentifier.getPath(name));
+    }
+
+    public Table findTable(QualifiedDBIdentifier path) {
+        if (path == null)
+            return null;
+
+        Table table = super.findTable(path);
         if (table != null)
             return table;
 
-        generateSchemaObject(name, true);
-        return super.findTable(name);
+        generateSchemaObject(path, true);
+        return super.findTable(path);
     }
 
+    /**
+     * @deprecated
+     */
     public Sequence findSequence(String name) {
+        if (name == null)
+            return null;
+        return findSequence(DBIdentifier.newSequence(name));
+    }
+
+    public Sequence findSequence(DBIdentifier name) {
+        if (name == null)
+            return null;
+        return findSequence(QualifiedDBIdentifier.getPath(name));
+    }
+        
+    public Sequence findSequence(QualifiedDBIdentifier name) {
         if (name == null)
             return null;
 
@@ -107,24 +142,10 @@ public class LazySchemaFactory
     /**
      * Generate the table or sequence with the given name.
      */
-    private void generateSchemaObject(String name, boolean isTable) {
+    private void generateSchemaObject(QualifiedDBIdentifier name, boolean isTable) {
         // if full name, split
-        String schemaName = null;
-        String objectName = name;
-
-        // look for the standard schema separator...
-        int dotIdx = name.indexOf('.');
-        // ... or the dictionary schema separator
-        if (dotIdx == -1) {
-            String sep = _conf.getDBDictionaryInstance().catalogSeparator;
-            if (!".".equals(sep))
-                dotIdx = name.indexOf(sep);
-        }
-
-        if (dotIdx != -1) {
-            schemaName = name.substring(0, dotIdx);
-            objectName = name.substring(dotIdx + 1);
-        }
+        DBIdentifier schemaName = name.getSchemaName();
+        DBIdentifier objectName = name.getIdentifier();
 
         // we share a single connection across all schemas, so synch
         // on the schema group
@@ -149,18 +170,18 @@ public class LazySchemaFactory
 
                     if (table != null) {
                         if (_pks)
-                            _gen.generatePrimaryKeys(table.getSchemaName(),
-                                table.getName(), _conn, _meta);
+                            _gen.generatePrimaryKeys(table.getSchemaIdentifier(),
+                                table.getIdentifier(), _conn, _meta);
                         if (_indexes)
-                            _gen.generateIndexes(table.getSchemaName(),
-                                table.getName(), _conn, _meta);
+                            _gen.generateIndexes(table.getSchemaIdentifier(),
+                                table.getIdentifier(), _conn, _meta);
 
                         // generate foreign keys from the table; this might
                         // end up re-calling this getTable method if the foreign
                         // key links to a table that hasn't been loaded yet
                         if (_fks)
-                            _gen.generateForeignKeys(table.getSchemaName(),
-                                table.getName(), _conn, _meta);
+                            _gen.generateForeignKeys(table.getSchemaIdentifier(),
+                                table.getIdentifier(), _conn, _meta);
                     }
                 } else
                     _gen.generateSequences(schemaName, objectName, _conn,

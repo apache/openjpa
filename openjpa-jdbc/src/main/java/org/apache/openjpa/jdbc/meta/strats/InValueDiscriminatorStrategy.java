@@ -20,11 +20,13 @@ package org.apache.openjpa.jdbc.meta.strats;
 
 import java.sql.SQLException;
 
+import org.apache.openjpa.jdbc.identifier.DBIdentifier;
 import org.apache.openjpa.jdbc.kernel.JDBCStore;
 import org.apache.openjpa.jdbc.meta.ClassMapping;
 import org.apache.openjpa.jdbc.meta.DiscriminatorMappingInfo;
 import org.apache.openjpa.jdbc.schema.Column;
 import org.apache.openjpa.jdbc.schema.Index;
+import org.apache.openjpa.jdbc.sql.DBDictionary;
 import org.apache.openjpa.jdbc.sql.Joins;
 import org.apache.openjpa.jdbc.sql.Result;
 import org.apache.openjpa.jdbc.sql.Row;
@@ -79,7 +81,9 @@ public abstract class InValueDiscriminatorStrategy
 
         Column tmplate = new Column();
         tmplate.setJavaType(getJavaType());
-        tmplate.setName("typ");
+        DBDictionary dict = cls.getMappingRepository().getDBDictionary();
+        DBIdentifier typName = DBIdentifier.newColumn("typ", dict != null ? dict.delimitAll() : false);
+        tmplate.setIdentifier(typName);
 
         Column[] cols = info.getColumns(disc, new Column[]{ tmplate }, adapt);
         disc.setColumns(cols);

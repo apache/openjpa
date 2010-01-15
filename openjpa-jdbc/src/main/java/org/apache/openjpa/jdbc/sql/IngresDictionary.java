@@ -23,6 +23,7 @@ import java.sql.DatabaseMetaData;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
+import org.apache.openjpa.jdbc.identifier.DBIdentifier;
 import org.apache.openjpa.jdbc.kernel.exps.FilterValue;
 import org.apache.openjpa.jdbc.schema.Sequence;
 
@@ -210,16 +211,21 @@ public class IngresDictionary extends DBDictionary {
      */
     @Override
     protected String getSequencesSQL(String schemaName, String sequenceName) {
+        return getSequencesSQL(DBIdentifier.newSchema(schemaName), DBIdentifier.newSequence(sequenceName));
+    }
+
+    @Override
+    protected String getSequencesSQL(DBIdentifier schemaName, DBIdentifier sequenceName) {
         StringBuilder buf = new StringBuilder();
         buf.append(sequenceSQL);
-        if (schemaName != null || sequenceName != null)
+        if (!DBIdentifier.isNull(schemaName) || !DBIdentifier.isNull(sequenceName))
             buf.append(" WHERE ");
-        if (schemaName != null) {
+        if (!DBIdentifier.isNull(schemaName)) {
             buf.append(sequenceSchemaSQL);
             if (sequenceName != null)
                 buf.append(" AND ");
         }
-        if (sequenceName != null)
+        if (!DBIdentifier.isNull(sequenceName))
             buf.append(sequenceNameSQL);
         return buf.toString();
     }
@@ -232,7 +238,7 @@ public class IngresDictionary extends DBDictionary {
     @Override
     protected Sequence newSequence(ResultSet sequenceMeta) throws SQLException {
         Sequence seq = super.newSequence(sequenceMeta);
-        seq.setName(seq.getName().trim());
+        seq.setIdentifier(DBIdentifier.trim(seq.getIdentifier()));
         return seq;
     }
     
@@ -257,6 +263,7 @@ public class IngresDictionary extends DBDictionary {
      *            start at the beginning
      */
 
+    @Override
     public void indexOf(SQLBuffer buf, FilterValue str, FilterValue find,
         FilterValue start) {
         buf.append("(POSITION((");
@@ -284,6 +291,7 @@ public class IngresDictionary extends DBDictionary {
      *  org.apache.openjpa.jdbc.kernel.exps.FilterValue, 
      *  org.apache.openjpa.jdbc.kernel.exps.FilterValue)
      */
+    @Override
     public void substring(SQLBuffer buf, FilterValue str, FilterValue start,
         FilterValue end) {
         buf.append(substringFunctionName).append("(");

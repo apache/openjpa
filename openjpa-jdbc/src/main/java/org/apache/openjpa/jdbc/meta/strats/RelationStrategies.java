@@ -20,6 +20,7 @@ package org.apache.openjpa.jdbc.meta.strats;
 
 import java.util.List;
 
+import org.apache.openjpa.jdbc.identifier.DBIdentifier;
 import org.apache.openjpa.jdbc.kernel.JDBCStore;
 import org.apache.openjpa.jdbc.meta.ClassMapping;
 import org.apache.openjpa.jdbc.meta.FieldMapping;
@@ -104,6 +105,11 @@ public class RelationStrategies {
      */
     public static void mapRelationToUnmappedPC(ValueMapping vm,
         String name, boolean adapt) {
+        mapRelationToUnmappedPC(vm, DBIdentifier.newColumn(name), adapt);
+    }
+
+    public static void mapRelationToUnmappedPC(ValueMapping vm,
+        DBIdentifier name, boolean adapt) {
         if (vm.getTypeMapping().getIdentityType() == ClassMapping.ID_UNKNOWN)
             throw new MetaDataException(_loc.get("rel-to-unknownid", vm));
 
@@ -119,11 +125,11 @@ public class RelationStrategies {
      * class relation.
      */
     private static Column[] newUnmappedPCTemplateColumns(ValueMapping vm,
-        String name) {
+        DBIdentifier name) {
         ClassMapping rel = vm.getTypeMapping();
         if (rel.getIdentityType() == ClassMapping.ID_DATASTORE) {
             Column col = new Column();
-            col.setName(name);
+            col.setIdentifier(name);
             col.setJavaType(JavaTypes.LONG);
             col.setRelationId(true);
             return new Column[]{ col };
@@ -134,11 +140,15 @@ public class RelationStrategies {
         for (int i = 0; i < pks.length; i++) {
             cols[i] = mapPrimaryKey(vm, pks[i]);
             if (cols.length == 1)
-                cols[i].setName(name);
-            else if (cols[i].getName() == null)
-                cols[i].setName(name + "_" + pks[i].getName());
-            else
-                cols[i].setName(name + "_" + cols[i].getName());
+                cols[i].setIdentifier(name);
+            else if (DBIdentifier.isNull(cols[i].getIdentifier())) {
+                DBIdentifier sName = DBIdentifier.combine(cols[i].getIdentifier(), pks[i].getName());
+                cols[i].setIdentifier(sName);
+            }
+            else {
+                DBIdentifier sName = DBIdentifier.combine(cols[i].getIdentifier(), cols[i].getName());
+                cols[i].setIdentifier(sName);
+            }
             cols[i].setTargetField(pks[i].getName());
             cols[i].setRelationId(true);
         }
@@ -193,7 +203,7 @@ public class RelationStrategies {
         }
 
         if (tmplate != null) {
-            col.setName(tmplate.getName());
+            col.setIdentifier(tmplate.getIdentifier());
             col.setType(tmplate.getType());
             col.setTypeName(tmplate.getTypeName());
             col.setSize(tmplate.getSize());

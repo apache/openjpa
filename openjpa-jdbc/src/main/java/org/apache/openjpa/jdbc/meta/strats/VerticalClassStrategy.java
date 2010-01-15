@@ -20,6 +20,7 @@ package org.apache.openjpa.jdbc.meta.strats;
 
 import java.sql.SQLException;
 
+import org.apache.openjpa.jdbc.identifier.DBIdentifier;
 import org.apache.openjpa.jdbc.kernel.JDBCFetchConfiguration;
 import org.apache.openjpa.jdbc.kernel.JDBCStore;
 import org.apache.openjpa.jdbc.meta.ClassMapping;
@@ -79,10 +80,10 @@ public class VerticalClassStrategy
         // add a primary key if we don't have one already
         PrimaryKey pk = table.getPrimaryKey();
         if (pk == null) {
-            String pkname = null;
+            DBIdentifier pkname = DBIdentifier.NULL;
             if (adapt)
                 pkname = cls.getMappingRepository().getMappingDefaults().
-                    getPrimaryKeyName(cls, table);
+                    getPrimaryKeyIdentifier(cls, table);
             pk = table.addPrimaryKey(pkname);
             pk.setLogical(!adapt);
             pk.setColumns(pkCols);

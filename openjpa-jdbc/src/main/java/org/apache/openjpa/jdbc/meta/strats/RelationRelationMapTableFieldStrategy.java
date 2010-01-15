@@ -27,6 +27,7 @@ import org.apache.openjpa.kernel.*;
 import org.apache.openjpa.util.*;
 import org.apache.openjpa.enhance.PersistenceCapable;
 import org.apache.openjpa.jdbc.meta.*;
+import org.apache.openjpa.jdbc.identifier.DBIdentifier;
 import org.apache.openjpa.jdbc.kernel.*;
 import org.apache.openjpa.jdbc.schema.*;
 import org.apache.openjpa.jdbc.sql.*;
@@ -201,14 +202,14 @@ public class RelationRelationMapTableFieldStrategy
             throw new MetaDataException(_loc.get("not-relation", val));
         FieldMapping mapped = field.getMappedByMapping();
         DBDictionary dict = field.getMappingRepository().getDBDictionary();
-        String keyName = null;
+        DBIdentifier keyName = null;
         if (field.isUni1ToMFK() || (!field.isBiMTo1JT() && mapped != null)) { 
             handleMappedByForeignKey(adapt);
-            keyName = dict.getValidColumnName("vkey", field.getTable());
+            keyName = dict.getValidColumnName(DBIdentifier.newColumn("vkey"), field.getTable());
         } else if (field.isBiMTo1JT() || mapped == null) { 
             field.mapJoin(adapt, true);
-            mapTypeJoin(val, "value", adapt);
-            keyName = dict.getValidColumnName("key", field.getTable());
+            mapTypeJoin(val, DBIdentifier.newColumn("value"), adapt);
+            keyName = dict.getValidColumnName(DBIdentifier.newColumn("key"), field.getTable());
         }
         mapTypeJoin(key, keyName, adapt);
 
@@ -218,7 +219,7 @@ public class RelationRelationMapTableFieldStrategy
     /**
      * Map the given value's join to its persistent type.
      */
-    private void mapTypeJoin(ValueMapping vm, String name, boolean adapt) {
+    private void mapTypeJoin(ValueMapping vm, DBIdentifier name, boolean adapt) {
         if (vm.getTypeMapping().isMapped()) {
             ValueMappingInfo vinfo = vm.getValueInfo();
             ForeignKey fk = vinfo.getTypeJoin(vm, name, false, adapt);

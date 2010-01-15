@@ -39,10 +39,13 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.openjpa.conf.OpenJPAConfiguration;
 import org.apache.openjpa.jdbc.conf.JDBCConfiguration;
 import org.apache.openjpa.jdbc.conf.JDBCConfigurationImpl;
+import org.apache.openjpa.jdbc.identifier.DBIdentifier;
 import org.apache.openjpa.jdbc.sql.DBDictionary;
 import org.apache.openjpa.jdbc.sql.SQLExceptions;
 import org.apache.openjpa.lib.conf.Configurations;
+import org.apache.openjpa.lib.identifier.IdentifierUtil;
 import org.apache.openjpa.lib.log.Log;
+import org.apache.openjpa.lib.meta.MetaDataSerializer;
 import org.apache.openjpa.lib.util.Files;
 import org.apache.openjpa.lib.util.Localizer;
 import org.apache.openjpa.lib.util.Options;
@@ -416,7 +419,7 @@ public class SchemaTool {
         throws SQLException {
         SchemaGroup group = getSchemaGroup();
         Schema[] schemas = group.getSchemas();
-        Collection tables = new LinkedHashSet();
+        Collection<Table> tables = new LinkedHashSet<Table>();
         for (int i = 0; i < schemas.length; i++) {
             Table[] ts = schemas[i].getTables();
             for (int j = 0; j < ts.length; j++)
@@ -451,14 +454,14 @@ public class SchemaTool {
             for (int i = 0; i < schemas.length; i++) {
                 seqs = schemas[i].getSequences();
                 for (int j = 0; j < seqs.length; j++) {
-                    if (db.findSequence(schemas[i], seqs[j].getFullName()) !=
+                    if (db.findSequence(schemas[i], seqs[j].getQualifiedPath()) !=
                             null)
                         continue;
 
                     if (createSequence(seqs[j])) {
-                        schema = db.getSchema(seqs[j].getSchemaName());
+                        schema = db.getSchema(seqs[j].getSchemaIdentifier());
                         if (schema == null)
-                            schema = db.addSchema(seqs[j].getSchemaName());
+                            schema = db.addSchema(seqs[j].getSchemaIdentifier());
                         schema.importSequence(seqs[j]);
                     } else
                         _log.warn(_loc.get("add-seq", seqs[j]));
@@ -471,31 +474,23 @@ public class SchemaTool {
         Table dbTable;
         Column[] cols;
         Column col;
-        String delim = _dict.getDelimiter();
-        String defaultSchemaName = _dict.getDefaultSchemaName();
+        DBIdentifier defaultSchemaName = DBIdentifier.newSchema(_dict.getDefaultSchemaName());
         for (int i = 0; i < schemas.length; i++) {
             tabs = schemas[i].getTables();
             for (int j = 0; j < tabs.length; j++) {
                 cols = tabs[j].getColumns();
-                dbTable = db.findTable(schemas[i], tabs[j].getFullName(), defaultSchemaName);
+                dbTable = db.findTable(schemas[i], tabs[j].getQualifiedPath(), defaultSchemaName);
                 for (int k = 0; k < cols.length; k++) {
                     if (dbTable != null) {
-                        String colName = cols[k].getName();
-                        boolean delimCol = false;
-                        if (colName.startsWith(delim) 
-                                && colName.endsWith(delim)) {
-                            colName = colName.substring(1, colName.length()-1);
-                            delimCol = true;
-                        }
-                        col = dbTable.getColumn(colName, _dict);
+                        DBIdentifier colName = cols[k].getIdentifier();
+                        col = dbTable.getColumn(colName);
                         if (col == null) {
                             if (addColumn(cols[k]))
                                 dbTable.importColumn(cols[k]);
                             else
                                 _log.warn(_loc.get("add-col", cols[k],
                                     tabs[j]));
-                        // TODO: Find a way to compare these with delimCol
-                        } else if (!delimCol && !cols[k].equalsColumn(col)) {
+                        } else if (!cols[k].equalsColumn(col)) {
                             _log.warn(_loc.get("bad-col", new Object[]{
                                 col, dbTable, col.getDescription(),
                                 cols[k].getDescription() }));
@@ -512,7 +507,7 @@ public class SchemaTool {
                 tabs = schemas[i].getTables();
                 for (int j = 0; j < tabs.length; j++) {
                     pk = tabs[j].getPrimaryKey();
-                    dbTable = db.findTable(schemas[i], tabs[j].getFullName());
+                    dbTable = db.findTable(schemas[i], tabs[j].getQualifiedPath());
                     if (pk != null && !pk.isLogical() && dbTable != null) {
                         if (dbTable.getPrimaryKey() == null
                             && addPrimaryKey(pk))
@@ -528,18 +523,18 @@ public class SchemaTool {
         }
 
         // tables
-        Set newTables = new HashSet();
+        Set<Table> newTables = new HashSet<Table>();
         for (int i = 0; i < schemas.length; i++) {
             tabs = schemas[i].getTables();
             for (int j = 0; j < tabs.length; j++) {
-                if (db.findTable(schemas[i], tabs[j].getFullName()) != null)
+                if (db.findTable(schemas[i], tabs[j].getQualifiedPath()) != null)
                     continue;
 
                 if (createTable(tabs[j])) {
                     newTables.add(tabs[j]);
-                    schema = db.getSchema(tabs[j].getSchemaName());
+                    schema = db.getSchema(tabs[j].getSchemaIdentifier());
                     if (schema == null)
-                        schema = db.addSchema(tabs[j].getSchemaName());
+                        schema = db.addSchema(tabs[j].getSchemaIdentifier());
                     schema.importTable(tabs[j]);
                 } else
                     _log.warn(_loc.get("add-table", tabs[j]));
@@ -558,7 +553,7 @@ public class SchemaTool {
                     continue;
 
                 idxs = tabs[j].getIndexes();
-                dbTable = db.findTable(schemas[i], tabs[j].getFullName());
+                dbTable = db.findTable(schemas[i], tabs[j].getQualifiedPath());
                 for (int k = 0; k < idxs.length; k++) {
                     if (dbTable != null) {
                         idx = findIndex(dbTable, idxs[k]);
@@ -608,7 +603,7 @@ public class SchemaTool {
                     continue;
 
                 fks = tabs[j].getForeignKeys();
-                dbTable = db.findTable(schemas[i],tabs[j].getFullName());
+                dbTable = db.findTable(schemas[i],tabs[j].getQualifiedPath());
                 for (int k = 0; k < fks.length; k++) {
                     if (!fks[k].isLogical() && dbTable != null) {
                         fk = findForeignKey(dbTable, fks[k]);
@@ -715,7 +710,7 @@ public class SchemaTool {
         // columns
         Column[] cols;
         Column col;
-        Collection drops = new LinkedList();
+        Collection<Table> drops = new LinkedList<Table>();
         for (int i = 0; i < schemas.length; i++) {
             tabs = schemas[i].getTables();
             for (int j = 0; j < tabs.length; j++) {
@@ -725,7 +720,7 @@ public class SchemaTool {
                 reposTable = repos.findTable(tabs[j]);
                 if (reposTable != null) {
                     for (int k = 0; k < cols.length; k++) {
-                        col = reposTable.getColumn(cols[k].getName(), _dict);
+                        col = reposTable.getColumn(cols[k].getIdentifier());
                         if (col == null || !cols[k].equalsColumn(col)) {
                             if (tabs[j].getColumns().length == 1)
                                 drops.add(tabs[j]);
@@ -782,7 +777,7 @@ public class SchemaTool {
         // calculate tables to drop; we can only drop tables if we're sure
         // the user listed the entire table definition in the stuff they want
         // dropped; else they might just want to drop a few columns
-        Collection drops = new LinkedList();
+        Collection<Table> drops = new LinkedList<Table>();
         Table[] tabs;
         Table dbTable;
         Column[] dbCols;
@@ -798,7 +793,7 @@ public class SchemaTool {
 
                 dbCols = dbTable.getColumns();
                 for (int k = 0; k < dbCols.length; k++)
-                    if (tabs[j].getColumn(dbCols[k].getName(), _dict) == null)
+                    if (tabs[j].getColumn(dbCols[k].getIdentifier()) == null)
                         continue tables;
 
                 drops.add(tabs[j]);
@@ -838,8 +833,8 @@ public class SchemaTool {
 
             // also drop imported foreign keys for tables that will be dropped
             Table tab;
-            for (Iterator itr = drops.iterator(); itr.hasNext();) {
-                tab = (Table) itr.next();
+            for (Iterator<Table> itr = drops.iterator(); itr.hasNext();) {
+                tab = itr.next();
                 dbTable = db.findTable(tab);
                 if (dbTable == null)
                     continue;
@@ -870,7 +865,7 @@ public class SchemaTool {
                 for (int k = 0; k < cols.length; k++) {
                     col = null;
                     if (dbTable != null)
-                        col = dbTable.getColumn(cols[k].getName(), _dict);
+                        col = dbTable.getColumn(cols[k].getIdentifier());
                     if (dbTable == null || col == null)
                         continue;
 
@@ -890,8 +885,8 @@ public class SchemaTool {
      */
     private boolean isDroppable(Table table) {
         return _openjpaTables
-            || (!table.getName().toUpperCase().startsWith("OPENJPA_")
-            && !table.getName().toUpperCase().startsWith("JDO_")); // legacy
+            || (!DBIdentifier.toUpper(table.getIdentifier()).getName().startsWith("OPENJPA_")
+            && !DBIdentifier.toUpper(table.getIdentifier()).getName().startsWith("JDO_")); // legacy
     }
 
     /**
@@ -899,8 +894,8 @@ public class SchemaTool {
      */
     private boolean isDroppable(Sequence seq) {
         return _openjpaTables
-            || (!seq.getName().toUpperCase().startsWith("OPENJPA_")
-            && !seq.getName().toUpperCase().startsWith("JDO_")); // legacy
+            || (!DBIdentifier.toUpper(seq.getIdentifier()).getName().startsWith("OPENJPA_")
+            && !DBIdentifier.toUpper(seq.getIdentifier()).getName().startsWith("JDO_")); // legacy
     }
 
     /**
@@ -933,15 +928,15 @@ public class SchemaTool {
      * Remove the given collection of tables from the database schema. Orders
      * the removals according to foreign key constraints on the tables.
      */
-    private void dropTables(Collection tables, SchemaGroup change)
+    private void dropTables(Collection<Table> tables, SchemaGroup change)
         throws SQLException {
         if (tables.isEmpty())
             return;
 
         Table table;
         Table changeTable;
-        for (Iterator itr = tables.iterator(); itr.hasNext();) {
-            table = (Table) itr.next();
+        for (Iterator<Table> itr = tables.iterator(); itr.hasNext();) {
+            table = itr.next();
             if (dropTable(table)) {
                 changeTable = change.findTable(table);
                 if (changeTable != null)
@@ -1128,22 +1123,24 @@ public class SchemaTool {
                 // group; some may not exist yet, which is OK; we just need
                 // to make sure we can detect the changes to the ones that
                 // do exist
-                Collection tables = new LinkedList();
+                Collection<DBIdentifier> tables = new LinkedList<DBIdentifier>();
                 SchemaGroup group = assertSchemaGroup();
                 Schema[] schemas = group.getSchemas();
                 Table[] tabs;
                 for (int i = 0; i < schemas.length; i++) {
                     tabs = schemas[i].getTables();
                     for (int j = 0; j < tabs.length; j++) {
-                        if (tabs[j].getSchemaName() == null)
-                            tables.add("." + tabs[j].getName());
-                        else
-                            tables.add(tabs[j].getFullName());
+                        if (DBIdentifier.isNull(tabs[j].getSchemaIdentifier())) {
+                            tables.add(tabs[j].getIdentifier());
+                        } else {
+                            DBIdentifier sName = tabs[j].getFullIdentifier();
+                            tables.add(sName);
+                        }
                     }
                 }
                 if (!tables.isEmpty())
-                    gen.generateSchemas((String[]) tables.toArray
-                        (new String[tables.size()]));
+                    gen.generateSchemas((DBIdentifier[]) tables.toArray
+                        (new DBIdentifier[tables.size()]));
             }
             _db = gen.getSchemaGroup();
         }
@@ -1448,7 +1445,7 @@ public class SchemaTool {
             log.info(_loc.get("sch-reflect-write"));
             SchemaSerializer ser = new XMLSchemaSerializer(conf);
             ser.addAll(gen.getSchemaGroup());
-            ser.serialize(flags.writer, ser.PRETTY);
+            ser.serialize(flags.writer, MetaDataSerializer.PRETTY);
             return true;
         }
 
@@ -1486,7 +1483,7 @@ public class SchemaTool {
             log.info(_loc.get("tool-export-write"));
             SchemaSerializer ser = new XMLSchemaSerializer(conf);
             ser.addAll(schema);
-            ser.serialize(flags.writer, ser.PRETTY);
+            ser.serialize(flags.writer, MetaDataSerializer.PRETTY);
             return true;
         }
 

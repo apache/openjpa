@@ -28,6 +28,7 @@ import java.util.Arrays;
 import java.util.Locale;
 
 import org.apache.commons.lang.StringUtils;
+import org.apache.openjpa.jdbc.identifier.DBIdentifier;
 import org.apache.openjpa.jdbc.kernel.exps.FilterValue;
 import org.apache.openjpa.jdbc.schema.Column;
 import org.apache.openjpa.jdbc.schema.PrimaryKey;
@@ -87,6 +88,7 @@ public class H2Dictionary extends DBDictionary {
             }));
     }
 
+    @Override
     public int getJDBCType(int metaTypeCode, boolean lob) {
         int type = super.getJDBCType(metaTypeCode, lob);
         switch (type) {
@@ -98,18 +100,22 @@ public class H2Dictionary extends DBDictionary {
         return type;
     }
 
+    @Override
     public int getPreferredType(int type) {
         return super.getPreferredType(type);
     }
 
+    @Override
     public String[] getAddPrimaryKeySQL(PrimaryKey pk) {
         return new String[0];
     }
 
+    @Override
     public String[] getDropPrimaryKeySQL(PrimaryKey pk) {
         return new String[0];
     }
 
+    @Override
     public String[] getAddColumnSQL(Column column) {
         return new String[] { 
             "ALTER TABLE " + getFullName(column.getTable(), false) 
@@ -117,6 +123,7 @@ public class H2Dictionary extends DBDictionary {
         };
     }
 
+    @Override
     public String[] getCreateTableSQL(Table table) {
         StringBuilder buf = new StringBuilder();
         buf.append("CREATE TABLE ").append(getFullName(table, false))
@@ -149,6 +156,7 @@ public class H2Dictionary extends DBDictionary {
         return new String[] { buf.toString() };
     }
 
+    @Override
     protected String getPrimaryKeyConstraintSQL(PrimaryKey pk) {
         Column[] cols = pk.getColumns();
         if (cols.length == 1 && cols[0].isAutoAssigned())
@@ -160,30 +168,53 @@ public class H2Dictionary extends DBDictionary {
         return name.toUpperCase(Locale.ENGLISH).startsWith("SYSTEM_");
     }
 
+    public boolean isSystemIndex(DBIdentifier name, Table table) {
+        if (DBIdentifier.isNull(name)) {
+            return false;
+        }
+        return name.getName().toUpperCase(Locale.ENGLISH).startsWith("SYSTEM_");
+    }
+    
+    @Override
     protected String getSequencesSQL(String schemaName, String sequenceName) {
+        return getSequencesSQL(DBIdentifier.newSchema(schemaName), DBIdentifier.newSequence(sequenceName));
+    }
+
+    @Override
+    protected String getSequencesSQL(DBIdentifier schemaName, DBIdentifier sequenceName) {
         StringBuilder buf = new StringBuilder();
         buf.append("SELECT SEQUENCE_SCHEMA, SEQUENCE_NAME FROM ")
             .append("INFORMATION_SCHEMA.SEQUENCES");
-        if (schemaName != null || sequenceName != null)
+        if (!DBIdentifier.isNull(schemaName) || !DBIdentifier.isNull(sequenceName))
             buf.append(" WHERE ");
-        if (schemaName != null) {
+        if (!DBIdentifier.isNull(schemaName)) {
             buf.append("SEQUENCE_SCHEMA = ?");
-            if (sequenceName != null)
+            if (!DBIdentifier.isNull(sequenceName))
                 buf.append(" AND ");
         }
-        if (sequenceName != null)
+        if (!DBIdentifier.isNull(sequenceName))
             buf.append("SEQUENCE_NAME = ?");
         return buf.toString();
     }
 
+    @Override
     public Column[] getColumns(DatabaseMetaData meta, String catalog,
         String schemaName, String tableName, String columnName, Connection conn)
+        throws SQLException {
+        return getColumns(meta, DBIdentifier.newCatalog(catalog), DBIdentifier.newSchema(schemaName),
+            DBIdentifier.newTable(tableName), DBIdentifier.newColumn(columnName), conn);
+    }
+
+    @Override
+    public Column[] getColumns(DatabaseMetaData meta, DBIdentifier catalog,
+        DBIdentifier schemaName, DBIdentifier tableName, DBIdentifier columnName, Connection conn)
         throws SQLException {
         Column[] cols = super.getColumns(meta, catalog, schemaName, tableName, 
             columnName, conn);
         return cols;
     }
 
+    @Override
     protected void appendSelectRange(SQLBuffer buf, long start, long end,
         boolean subselect) {
         if (end != Long.MAX_VALUE)
@@ -192,6 +223,7 @@ public class H2Dictionary extends DBDictionary {
             buf.append(" OFFSET ").appendValue(start);
     }
 
+    @Override
     public void indexOf(SQLBuffer buf, FilterValue str, FilterValue find,
         FilterValue start) {
         buf.append("(POSITION(");

@@ -25,6 +25,7 @@ import java.sql.SQLException;
 import java.sql.Types;
 import java.util.Arrays;
 
+import org.apache.openjpa.jdbc.identifier.DBIdentifier.DBIdentifierType;
 import org.apache.openjpa.jdbc.kernel.exps.FilterValue;
 import org.apache.openjpa.jdbc.schema.Column;
 import org.apache.openjpa.jdbc.schema.Index;
@@ -93,7 +94,8 @@ public abstract class AbstractSQLServerDictionary
     }
 
     public String getFullName(Index idx) {
-        return getFullName(idx.getTable(), false) + "." + idx.getName();
+        return toDBName(getNamingUtil().append(DBIdentifierType.INDEX,
+            getFullIdentifier(idx.getTable(), false),idx.getIdentifier()));
     }
 
     public void setNull(PreparedStatement stmnt, int idx, int colType,

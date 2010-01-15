@@ -29,6 +29,7 @@ import java.sql.Types;
 import java.util.Arrays;
 
 import org.apache.commons.lang.StringUtils;
+import org.apache.openjpa.jdbc.identifier.DBIdentifier.DBIdentifierType;
 import org.apache.openjpa.jdbc.schema.Column;
 import org.apache.openjpa.jdbc.schema.ForeignKey;
 import org.apache.openjpa.jdbc.schema.Index;
@@ -164,6 +165,7 @@ public class SybaseDictionary
         supportsCascadeUpdateAction = false;
     }
 
+    @Override
     public int getJDBCType(int metaTypeCode, boolean lob) {
         switch (metaTypeCode) {
             // the default mapping for BYTE is a TINYINT, but Sybase's TINYINT
@@ -176,6 +178,7 @@ public class SybaseDictionary
         }
     }
 
+    @Override
     public void setBigInteger(PreparedStatement stmnt, int idx, BigInteger val,
         Column col)
         throws SQLException {
@@ -185,11 +188,13 @@ public class SybaseDictionary
         setObject(stmnt, idx, new BigDecimal(val), Types.BIGINT, col);
     }
 
+    @Override
     public String[] getAddForeignKeySQL(ForeignKey fk) {
         // Sybase has problems with adding foriegn keys via ALTER TABLE command
         return new String[0];
     }
 
+    @Override
     public String[] getCreateTableSQL(Table table) {
         if (!createIdentityColumn)
             return super.getCreateTableSQL(table);
@@ -230,9 +235,10 @@ public class SybaseDictionary
         return new String[]{ buf.toString() };
     }
 
+    @Override
     protected String getDeclareColumnSQL(Column col, boolean alter) {
         StringBuilder buf = new StringBuilder();
-        buf.append(col).append(" ");
+        buf.append(getColumnDBName(col)).append(" ");
         buf.append(getTypeName(col));
 
         // can't add constraints to a column we're adding after table
@@ -255,13 +261,15 @@ public class SybaseDictionary
         return buf.toString();
     }
 
+    @Override
     public String[] getDropColumnSQL(Column column) {
         // Sybase uses "ALTER TABLE DROP <COLUMN_NAME>" rather than the
         // usual "ALTER TABLE DROP COLUMN <COLUMN_NAME>"
         return new String[]{ "ALTER TABLE "
-            + getFullName(column.getTable(), false) + " DROP " + column };
+            + getFullName(column.getTable(), false) + " DROP " + getColumnDBName(column) };
     }
 
+    @Override
     public void refSchemaComponents(Table table) {
         // note that we use getColumns() rather than getting the column by name
         // because under some circumstances this method is called under the
@@ -269,10 +277,11 @@ public class SybaseDictionary
         // that column
         Column[] cols = table.getColumns();
         for (int i = 0; i < cols.length; i++)
-            if (identityColumnName.equalsIgnoreCase(cols[i].getName()))
+            if (identityColumnName.equalsIgnoreCase(cols[i].getIdentifier().getName()))
                 cols[i].ref();
     }
 
+    @Override
     public void endConfiguration() {
         super.endConfiguration();
 
@@ -286,6 +295,7 @@ public class SybaseDictionary
         }
     }
 
+    @Override
     public Connection decorate(Connection conn)
         throws SQLException {
         conn = super.decorate(conn);
@@ -320,10 +330,10 @@ public class SybaseDictionary
     protected PrimaryKey newPrimaryKey(ResultSet pkMeta)
         throws SQLException {
         PrimaryKey pk = new PrimaryKey();
-        pk.setSchemaName(pkMeta.getString("table_owner"));
-        pk.setTableName(pkMeta.getString("table_name"));
-        pk.setColumnName(pkMeta.getString("column_name"));
-        pk.setName(pkMeta.getString("index_name"));
+        pk.setSchemaIdentifier(fromDBName(pkMeta.getString("table_owner"), DBIdentifierType.SCHEMA));
+        pk.setTableIdentifier(fromDBName(pkMeta.getString("table_name"), DBIdentifierType.TABLE));
+        pk.setColumnIdentifier(fromDBName(pkMeta.getString("column_name"), DBIdentifierType.COLUMN));
+        pk.setIdentifier(fromDBName(pkMeta.getString("index_name"), DBIdentifierType.CONSTRAINT));
         return pk;
     }
 
@@ -333,10 +343,10 @@ public class SybaseDictionary
     protected Index newIndex(ResultSet idxMeta)
         throws SQLException {
         Index idx = new Index();
-        idx.setSchemaName(idxMeta.getString("table_owner"));
-        idx.setTableName(idxMeta.getString("table_name"));
-        idx.setColumnName(idxMeta.getString("column_name"));
-        idx.setName(idxMeta.getString("index_name"));
+        idx.setSchemaIdentifier(fromDBName(idxMeta.getString("table_owner"), DBIdentifierType.SCHEMA));
+        idx.setTableIdentifier(fromDBName(idxMeta.getString("table_name"), DBIdentifierType.TABLE));
+        idx.setColumnIdentifier(fromDBName(idxMeta.getString("column_name"), DBIdentifierType.COLUMN));
+        idx.setIdentifier(fromDBName(idxMeta.getString("index_name"), DBIdentifierType.INDEX));
         idx.setUnique(!idxMeta.getBoolean("non_unique"));
         return idx;
     }

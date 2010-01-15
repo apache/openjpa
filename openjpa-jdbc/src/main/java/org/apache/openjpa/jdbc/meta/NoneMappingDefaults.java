@@ -18,6 +18,7 @@
  */
 package org.apache.openjpa.jdbc.meta;
 
+import org.apache.openjpa.jdbc.identifier.DBIdentifier;
 import org.apache.openjpa.jdbc.schema.Column;
 import org.apache.openjpa.jdbc.schema.ForeignKey;
 import org.apache.openjpa.jdbc.schema.Index;
@@ -63,7 +64,7 @@ public class NoneMappingDefaults
         return null;
     }
 
-    public Object getStrategy(ValueMapping vm, Class type, boolean adapt) {
+    public Object getStrategy(ValueMapping vm, Class<?> type, boolean adapt) {
         return null;
     }
 
@@ -98,11 +99,17 @@ public class NoneMappingDefaults
         Column col, Object target, int pos, int cols) {
     }
 
+    /**
+     * @deprecated
+     */
     public void populateForeignKeyColumn(ValueMapping vm, String name,
         Table local, Table foreign, Column col, Object target, boolean inverse,
         int pos, int cols) {
     }
 
+    /**
+     * @deprecated
+     */
     public void populateColumns(ValueMapping vm, String name, Table table,
         Column[] cols) {
     }
@@ -112,6 +119,9 @@ public class NoneMappingDefaults
         return false;
     }
 
+    /**
+     * @deprecated
+     */
     public boolean populateNullIndicatorColumns(ValueMapping vm, String name,
         Table table, Column[] cols) {
         return false;
@@ -127,6 +137,9 @@ public class NoneMappingDefaults
         return null;
     }
 
+    /**
+     * @deprecated
+     */
     public ForeignKey getForeignKey(ValueMapping vm, String name, Table local,
         Table foreign, boolean inverse) {
         return null;
@@ -163,5 +176,46 @@ public class NoneMappingDefaults
     }
 
     public void installPrimaryKey(FieldMapping fm, Table table) {
+    }
+
+    public ForeignKey getForeignKey(ValueMapping vm, DBIdentifier name, Table local,
+        Table foreign, boolean inverse) {
+        return null;
+    }
+
+    public Index getIndex(ValueMapping vm, DBIdentifier name, Table table,
+        Column[] cols) {
+        return null;
+    }
+
+    public Unique getUnique(ValueMapping vm, DBIdentifier name, Table table,
+        Column[] cols) {
+        return null;
+    }
+
+    public void populateColumns(ValueMapping vm, DBIdentifier name, Table table,
+        Column[] cols) {
+    }
+
+    public void populateForeignKeyColumn(ValueMapping vm, DBIdentifier name,
+        Table local, Table foreign, Column col, Object target, boolean inverse,
+        int pos, int cols) {
+    }
+
+    public boolean populateNullIndicatorColumns(ValueMapping vm, DBIdentifier name,
+        Table table, Column[] cols) {
+        return false;
+    }
+
+    public DBIdentifier getTableIdentifier(ClassMapping cls, Schema defaultSchema) {
+        return DBIdentifier.newTable(getTableName(cls, defaultSchema));
+    }
+
+    public DBIdentifier getTableIdentifier(FieldMapping fm, Schema defaultSchema) {
+        return DBIdentifier.newTable(getTableName(fm, defaultSchema));
+    }
+
+    public DBIdentifier getPrimaryKeyIdentifier(ClassMapping cm, Table table) {
+        return DBIdentifier.NULL;
     }
 }

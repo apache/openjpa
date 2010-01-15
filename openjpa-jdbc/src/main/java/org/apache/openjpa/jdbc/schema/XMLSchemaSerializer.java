@@ -50,8 +50,8 @@ public class XMLSchemaSerializer
     private static final Localizer _loc = Localizer.forPackage
         (XMLSchemaSerializer.class);
 
-    private final Collection _tables = new TreeSet();
-    private final Collection _seqs = new TreeSet();
+    private final Collection<Table> _tables = new TreeSet<Table>();
+    private final Collection<Sequence> _seqs = new TreeSet<Sequence>();
 
     /**
      * Constructor. Supply configuration.
@@ -140,7 +140,7 @@ public class XMLSchemaSerializer
             return _tables;
         if (_tables.isEmpty())
             return _seqs;
-        List all = new ArrayList(_seqs.size() + _tables.size());
+        List<Object> all = new ArrayList<Object>(_seqs.size() + _tables.size());
         all.addAll(_seqs);
         all.addAll(_tables);
         return all;
@@ -180,7 +180,7 @@ public class XMLSchemaSerializer
     /**
      * Serializes the given objects together into the current schema.
      */
-    private void serializeSchema(String name, Collection objs)
+    private void serializeSchema(String name, Collection<?> objs)
         throws SAXException {
         if (objs.isEmpty())
             return;
@@ -194,7 +194,7 @@ public class XMLSchemaSerializer
 
         // tables and seqs
         Object obj;
-        for (Iterator itr = objs.iterator(); itr.hasNext();) {
+        for (Iterator<?> itr = objs.iterator(); itr.hasNext();) {
             obj = itr.next();
             if (obj instanceof Table)
                 serializeTable((Table) obj);

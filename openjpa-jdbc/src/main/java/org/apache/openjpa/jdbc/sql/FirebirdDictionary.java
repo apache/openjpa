@@ -29,12 +29,14 @@ import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.apache.openjpa.jdbc.identifier.DBIdentifier;
 import org.apache.openjpa.jdbc.kernel.exps.FilterValue;
 import org.apache.openjpa.jdbc.schema.Column;
 import org.apache.openjpa.jdbc.schema.ForeignKey;
 import org.apache.openjpa.jdbc.schema.Index;
 import org.apache.openjpa.jdbc.schema.Sequence;
 import org.apache.openjpa.jdbc.schema.Unique;
+import org.apache.openjpa.lib.identifier.IdentifierUtil;
 import org.apache.openjpa.lib.util.Localizer;
 import org.apache.openjpa.util.UnsupportedException;
 
@@ -285,8 +287,15 @@ public class FirebirdDictionary
      */
     @Override
     protected String getTableNameForMetadata(String tableName) {
-        return (tableName == null) ? "%" : super
-            .getTableNameForMetadata(tableName);
+        return (tableName == null) ? IdentifierUtil.PERCENT : 
+            getTableNameForMetadata(DBIdentifier.newTable(tableName));
+    }
+
+    protected String getTableNameForMetadata(DBIdentifier tableName) {
+        if (DBIdentifier.isNull(tableName)) {
+            return IdentifierUtil.PERCENT;
+        }
+        return super.getTableNameForMetadata(tableName);
     }
 
     /**
@@ -306,7 +315,7 @@ public class FirebirdDictionary
     @Override
     public String[] getDropColumnSQL(Column column) {
         return new String[] { "ALTER TABLE "
-            + getFullName(column.getTable(), false) + " DROP " + column };
+            + getFullName(column.getTable(), false) + " DROP " + getColumnDBName(column) };
     }
 
     /**
@@ -338,6 +347,11 @@ public class FirebirdDictionary
      */
     @Override
     protected String getSequencesSQL(String schemaName, String sequenceName) {
+        return getSequencesSQL(DBIdentifier.newSchema(schemaName), DBIdentifier.newSequence(sequenceName));
+    }
+
+    @Override
+    protected String getSequencesSQL(DBIdentifier schemaName, DBIdentifier sequenceName) {
         StringBuilder buf = new StringBuilder(sequenceSQL);
         if (sequenceName != null)
             buf.append(sequenceNameSQL);
@@ -354,7 +368,7 @@ public class FirebirdDictionary
     @Override
     protected Sequence newSequence(ResultSet sequenceMeta) throws SQLException {
         Sequence seq = super.newSequence(sequenceMeta);
-        seq.setName(seq.getName().trim());
+        seq.setIdentifier(DBIdentifier.trim(seq.getIdentifier()));
         return seq;
     }
 

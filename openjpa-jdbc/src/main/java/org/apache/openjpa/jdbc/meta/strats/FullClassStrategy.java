@@ -20,6 +20,7 @@ package org.apache.openjpa.jdbc.meta.strats;
 
 import java.sql.SQLException;
 
+import org.apache.openjpa.jdbc.identifier.DBIdentifier;
 import org.apache.openjpa.jdbc.kernel.JDBCFetchConfiguration;
 import org.apache.openjpa.jdbc.kernel.JDBCStore;
 import org.apache.openjpa.jdbc.meta.ClassMapping;
@@ -27,6 +28,7 @@ import org.apache.openjpa.jdbc.meta.ClassMappingInfo;
 import org.apache.openjpa.jdbc.schema.Column;
 import org.apache.openjpa.jdbc.schema.PrimaryKey;
 import org.apache.openjpa.jdbc.schema.Table;
+import org.apache.openjpa.jdbc.sql.DBDictionary;
 import org.apache.openjpa.jdbc.sql.Row;
 import org.apache.openjpa.jdbc.sql.RowManager;
 import org.apache.openjpa.jdbc.sql.Select;
@@ -74,7 +76,9 @@ public class FullClassStrategy
         Column[] pkCols = null;
         if (cls.getIdentityType() == cls.ID_DATASTORE) {
             Column id = new Column();
-            id.setName("id");
+            DBDictionary dict = cls.getMappingRepository().getDBDictionary();
+            DBIdentifier idName = DBIdentifier.newColumn("id", dict != null ? dict.delimitAll() : false);
+            id.setIdentifier(idName);
             id.setJavaType(JavaTypes.LONG);
             id.setComment("datastore id");
             if (cls.getIdentityStrategy() == ValueStrategies.AUTOASSIGN)
@@ -90,10 +94,10 @@ public class FullClassStrategy
         // add a primary key if we don't have one already
         PrimaryKey pk = table.getPrimaryKey();
         if (pk == null) {
-            String pkname = null;
+            DBIdentifier pkname = DBIdentifier.NULL;
             if (adapt)
                 pkname = cls.getMappingRepository().getMappingDefaults().
-                    getPrimaryKeyName(cls, table);
+                    getPrimaryKeyIdentifier(cls, table);
             pk = table.addPrimaryKey(pkname);
             pk.setLogical(!adapt);
             if (pkCols != null)

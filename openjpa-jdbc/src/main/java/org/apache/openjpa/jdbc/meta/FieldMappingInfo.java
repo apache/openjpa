@@ -22,8 +22,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-import org.apache.openjpa.conf.Compatibility;
-import org.apache.openjpa.jdbc.meta.strats.MapTableFieldStrategy;
+import org.apache.openjpa.jdbc.identifier.DBIdentifier;
 import org.apache.openjpa.jdbc.schema.Column;
 import org.apache.openjpa.jdbc.schema.ColumnIO;
 import org.apache.openjpa.jdbc.schema.ForeignKey;
@@ -47,6 +46,7 @@ import org.apache.openjpa.util.MetaDataException;
  * @author Abe White
  * @author Pinaki Poddar
  */
+@SuppressWarnings("serial")
 public class FieldMappingInfo
     extends MappingInfo
     implements Commentable {
@@ -54,7 +54,7 @@ public class FieldMappingInfo
     private static final Localizer _loc = Localizer.forPackage
         (FieldMappingInfo.class);
 
-    private String _tableName = null;
+    private DBIdentifier _tableName = DBIdentifier.NULL;
     private boolean _outer = false;
     private Column _orderCol = null;
     private boolean _canOrderCol = true;
@@ -63,15 +63,25 @@ public class FieldMappingInfo
 
     /**
      * The user-supplied name of the table for this field.
+     * @deprecated
      */
     public String getTableName() {
-        return _tableName;
+        return getTableIdentifier().getName();
+    }
+
+    public DBIdentifier getTableIdentifier() {
+        return _tableName == null ? DBIdentifier.NULL : _tableName;
     }
 
     /**
      * The user-supplied name of the table for this field.
+     * @deprecated
      */
     public void setTableName(String tableName) {
+        setTableIdentifier(DBIdentifier.newTable(tableName));
+    }
+
+    public void setTableIdentifier(DBIdentifier tableName) {
         _tableName = tableName;
     }
 
@@ -124,19 +134,19 @@ public class FieldMappingInfo
      */
     public Table getTable(final FieldMapping field, boolean create,
         boolean adapt) {
-        if (_tableName == null && !create)
+        if (DBIdentifier.isNull(_tableName) && !create)
             return null;
 
         Table table = field.getDefiningMapping().getTable();
-        String schemaName = (table == null) ? null 
-            : table.getSchema().getName();
+        DBIdentifier schemaName = (table == null) ? DBIdentifier.NULL 
+            : table.getSchema().getIdentifier();
 
         // if we have no join columns defined, there may be class-level join
         // information with a more fully-qualified name for our table
-        String tableName = _tableName;
-        if (tableName != null && getColumns().isEmpty())
+        DBIdentifier tableName = _tableName;
+        if (!DBIdentifier.isNull(tableName) && getColumns().isEmpty())
             tableName = field.getDefiningMapping().getMappingInfo().
-                getSecondaryTableName(tableName);
+                getSecondaryTableIdentifier(tableName);
 
         return createTable(field, new TableDefaults() {
             public String get(Schema schema) {
@@ -145,13 +155,18 @@ public class FieldMappingInfo
                 return field.getMappingRepository().getMappingDefaults().
                     getTableName(field, schema);
             }
+            public DBIdentifier getIdentifier(Schema schema) {
+                // TODO Auto-generated method stub
+                return field.getMappingRepository().getMappingDefaults().
+                    getTableIdentifier(field, schema);
+            }
         }, schemaName, tableName, adapt);
     }
 
     public ForeignKey getJoinForeignKey (final FieldMapping field, Table table,
         boolean adapt) {
         if (field.isUni1ToMFK()) {
-            List cols = field.getElementMapping().getValueInfo().getColumns();
+            List<Column> cols = field.getElementMapping().getValueInfo().getColumns();
             return getJoin(field, table, adapt, cols);
         }
         return null;
@@ -168,7 +183,7 @@ public class FieldMappingInfo
     }
     
     public ForeignKey getJoin(final FieldMapping field, Table table,
-            boolean adapt, List cols) {
+            boolean adapt, List<Column> cols) {
         if (cols.isEmpty()) {
         	ClassMapping mapping;
         	if (field.isEmbedded() && 
@@ -251,7 +266,7 @@ public class FieldMappingInfo
             Column[] uniqueColumns = new Column[templateColumns.length];
             Table table = getTable(field, true, adapt);
             for (int i=0; i<uniqueColumns.length; i++) {
-                String columnName = templateColumns[i].getName();
+                DBIdentifier columnName = templateColumns[i].getIdentifier();
                 Column uniqueColumn = table.getColumn(columnName);
                 uniqueColumns[i] = uniqueColumn;
             }
@@ -302,12 +317,15 @@ public class FieldMappingInfo
         Column tmplate = new Column();
         // Compatibility option determines what should be used for
         // the default order column name
+        boolean delimit = field.getMappingRepository().getDBDictionary().delimitAll();
         if (field.getMappingRepository().getConfiguration()
             .getCompatibilityInstance().getUseJPA2DefaultOrderColumnName()) {
             // Use the same strategy as column to build the field name
-            tmplate.setName(field.getName() + "_ORDER");            
-        } else {        
-            tmplate.setName("ordr");
+            DBIdentifier sName = DBIdentifier.newColumn(field.getName(), delimit);
+            sName = DBIdentifier.append(sName,"_ORDER");
+            tmplate.setIdentifier(sName);
+        } else {
+            tmplate.setIdentifier(DBIdentifier.newColumn("ordr", delimit));
         }
         
         tmplate.setJavaType(JavaTypes.INT);
@@ -337,7 +355,7 @@ public class FieldMappingInfo
 
         if (field.getJoinForeignKey() != null)
             _tableName = field.getMappingRepository().getDBDictionary().
-                getFullName(field.getTable(), true);
+                getFullIdentifier(field.getTable(), true);
 
         ClassMapping def = field.getDefiningMapping();
         setColumnIO(field.getJoinColumnIO());
@@ -391,7 +409,7 @@ public class FieldMappingInfo
         _joinTableUniques = new ArrayList<Unique>();
         for (Unique unique:unqs) {
         	Unique copy = new Unique();
-        	copy.setName(unique.getName());
+        	copy.setIdentifier(unique.getIdentifier());
         	copy.setDeferred(unique.isDeferred());
         	_joinTableUniques.add(unique);
         }
@@ -399,13 +417,13 @@ public class FieldMappingInfo
 
 
     public boolean hasSchemaComponents() {
-        return super.hasSchemaComponents() || _tableName != null
+        return super.hasSchemaComponents() || !DBIdentifier.isNull(_tableName)
             || _orderCol != null;
     }
 
     protected void clear(boolean canFlags) {
         super.clear(canFlags);
-        _tableName = null;
+        _tableName = DBIdentifier.NULL;
         _orderCol = null;
         if (canFlags)
             _canOrderCol = true;
@@ -417,8 +435,8 @@ public class FieldMappingInfo
             return;
 
         FieldMappingInfo finfo = (FieldMappingInfo) info;
-        if (_tableName == null)
-            _tableName = finfo.getTableName();
+        if (DBIdentifier.isNull(_tableName))
+            _tableName = finfo.getTableIdentifier();
         if (!_outer)
             _outer = finfo.isJoinOuter();
         if (_canOrderCol && _orderCol == null)

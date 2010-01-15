@@ -688,7 +688,7 @@ public class SelectImpl
      * Return the alias for the given column.
      */
     private String getColumnAlias(Column col, PathJoins pj) {
-        return getColumnAlias(col.getName(), col.getTable(), pj);
+        return getColumnAlias(col.getIdentifier().getName(), col.getTable(), pj);
     }
 
     public String getColumnAlias(String col, Table table) {
@@ -703,7 +703,6 @@ public class SelectImpl
      * Return the alias for the give column
      */
     public String getColumnAlias(Column col, Object path) {
-        String columnName = col.getName();
         Table table = col.getTable();
         String tableAlias = null;
         Iterator itr = getJoinIterator();
@@ -716,19 +715,19 @@ public class SelectImpl
                     tableAlias = join.getAlias2();
                 if (tableAlias != null)
                     return new StringBuilder(tableAlias).append(".").
-                        append(columnName).toString();
+                        append(_dict.getNamingUtil().toDBName(col.getIdentifier())).toString();
             }
         }
         throw new InternalException("Can not resolve alias for field: " +
-            path.toString() + " mapped to column: " + columnName +
-            " table: "+table.getName());
+            path.toString() + " mapped to column: " + col.getIdentifier().getName() +
+            " table: "+table.getIdentifier().getName());
     }
 
     /**
      * Return the alias for the given column.
      */
     private String getColumnAlias(String col, Table table, PathJoins pj) {
-        return getTableAlias(table, pj).append(col).toString();
+        return getTableAlias(table, pj).append(_dict.getNamingUtil().toDBName(col)).toString();
     }
     
     private StringBuilder getTableAlias(Table table, PathJoins pj) {
@@ -1987,7 +1986,7 @@ public class SelectImpl
             return -1;
 
         Integer i = null;
-        Object key = table.getFullName();
+        Object key = table.getFullIdentifier().getName();
         if (pj != null && pj.path() != null)
             key = new Key(pj.path().toString(), key);
 

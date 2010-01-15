@@ -29,10 +29,10 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.sql.Types;
 import java.util.Arrays;
-import java.util.EnumSet;
 import java.util.Set;
 import java.util.StringTokenizer;
 
+import org.apache.openjpa.jdbc.identifier.DBIdentifier;
 import org.apache.openjpa.jdbc.kernel.JDBCFetchConfiguration;
 import org.apache.openjpa.jdbc.kernel.exps.FilterValue;
 import org.apache.openjpa.jdbc.kernel.exps.Lit;
@@ -230,17 +230,24 @@ public class DB2Dictionary
         return sql;
     }
 
+    @Override
     protected String getSequencesSQL(String schemaName, String sequenceName) {
+        return getSequencesSQL(DBIdentifier.newSchema(schemaName), 
+            DBIdentifier.newSequence(sequenceName));
+    }
+
+    @Override
+    protected String getSequencesSQL(DBIdentifier schemaName, DBIdentifier sequenceName) {
         StringBuilder buf = new StringBuilder();
         buf.append(sequenceSQL);
-        if (schemaName != null || sequenceName != null)
+        if (!DBIdentifier.isNull(schemaName) || !DBIdentifier.isNull(sequenceName))
             buf.append(" WHERE ");
-        if (schemaName != null) {
+        if (!DBIdentifier.isNull(schemaName)) {
             buf.append(sequenceSchemaSQL);
-            if (sequenceName != null)
+            if (!DBIdentifier.isNull(sequenceName))
                 buf.append(" AND ");
         }
-        if (sequenceName != null)
+        if (!DBIdentifier.isNull(sequenceName))
             buf.append(sequenceNameSQL);
         return buf.toString();
     }
@@ -381,7 +388,7 @@ public class DB2Dictionary
         int isolationLevel;
         // For db2UDBV81OrEarlier and db2ISeriesV5R3OrEarlier:
         // "optimize for" clause appears before "for update" clause.
-        StringBuilder forUpdateString = new StringBuilder(getOptimizeClause(sel));
+        StringBuffer forUpdateString = new StringBuffer(getOptimizeClause(sel));
         // Determine the isolationLevel; the fetch
         // configuration data overrides the persistence.xml value
         if (fetch != null && fetch.getIsolation() != -1)
@@ -889,12 +896,18 @@ public class DB2Dictionary
      * Create an index if necessary for some database tables
      */
     public void createIndexIfNecessary(Schema schema, String table,
+        Column pkColumn) {
+        createIndexIfNecessary(schema, DBIdentifier.newTable(table), 
+            pkColumn);
+    }
+
+    public void createIndexIfNecessary(Schema schema, DBIdentifier table,
             Column pkColumn) {
         if (isDB2ZOSV8xOrLater()) {
             // build the index for the sequence tables
             // the index name will be the fully qualified table name + _IDX
             Table tab = schema.getTable(table);
-            Index idx = tab.addIndex(tab.getFullName() + "_IDX");
+            Index idx = tab.addIndex(DBIdentifier.append(tab.getFullIdentifier(), "IDX"));
             idx.setUnique(true);
             idx.addColumn(pkColumn);
         }
@@ -961,7 +974,8 @@ public class DB2Dictionary
         // for DB2, if the column was defined as CHAR for BIT DATA, then
         // we want to use the setBytes in stead of the setBinaryStream
         if (useSetBytesForBlobs 
-                || (col.getTypeName() != null && col.getTypeName().contains("BIT DATA"))) {
+                || (!DBIdentifier.isNull(col.getTypeIdentifier()) && 
+                col.getTypeIdentifier().getName().contains("BIT DATA"))) {
             stmnt.setBytes(idx, val);
         } else {
             setBinaryStream(stmnt, idx, new ByteArrayInputStream(val), val.length, col);

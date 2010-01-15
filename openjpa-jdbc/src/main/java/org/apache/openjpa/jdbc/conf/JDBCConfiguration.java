@@ -21,6 +21,7 @@ package org.apache.openjpa.jdbc.conf;
 import javax.sql.DataSource;
 
 import org.apache.openjpa.conf.OpenJPAConfiguration;
+import org.apache.openjpa.jdbc.identifier.DBIdentifierUtil;
 import org.apache.openjpa.jdbc.kernel.EagerFetchModes;
 import org.apache.openjpa.jdbc.kernel.LRSSizes;
 import org.apache.openjpa.jdbc.kernel.UpdateManager;
@@ -31,6 +32,7 @@ import org.apache.openjpa.jdbc.schema.SchemaFactory;
 import org.apache.openjpa.jdbc.sql.DBDictionary;
 import org.apache.openjpa.jdbc.sql.SQLFactory;
 import org.apache.openjpa.kernel.StoreContext;
+import org.apache.openjpa.lib.identifier.IdentifierUtil;
 import org.apache.openjpa.lib.jdbc.ConnectionDecorator;
 import org.apache.openjpa.lib.jdbc.JDBCEvent;
 import org.apache.openjpa.lib.jdbc.JDBCListener;
@@ -592,7 +594,7 @@ public interface JDBCConfiguration
      * Return the non-enlisted data source to use. If there is a valid
      * non-xa connection factory configured, then it will be returned. Its
      * default user name and password on calls to
-     * {@link DataSource#getConnection} will be the specificed connection 2
+     * {@link DataSource#getConnection} will be the specified connection 2
      * user name and password. If those are null and the given context is
      * non-null, its user name password will be used instead. If the context
      * is null too, then the user name and password used to retrieve the first
@@ -602,4 +604,23 @@ public interface JDBCConfiguration
      * @see #getDataSource
      */
     public DataSource getDataSource2(StoreContext ctx);
+    
+    /**
+     * Gets the String constant that matches the {@link IdentifierUtil}
+     * @return String-based name of the {@link IdentifierUtil}
+     */
+    public String getIdentifierUtil();
+
+    /**
+     * Gets the {@link DBIdentifierUtil}
+     * @return DBIdentifierUtil
+     */
+    public DBIdentifierUtil getIdentifierUtilInstance();
+    
+    /**
+     * Sets the {@link DBIdentifierUtil}
+     * @param util instance of the identifier utility
+     */
+    public void setIdentifierUtil(DBIdentifierUtil util);
+
 }

@@ -94,6 +94,7 @@
                 <include name="**/inheritance/serializable/*.class" />
                 <!--  include files from orm.xml -->
                 <include name="**/xml/*.class" />
+				<exclude name="**/persistence/delimited/identifiers/xml/*.class"/>
                 <exclude name="**/Test*.class" />
             </fileset>
             <config log="DefaultLevel=${openjpa.loglevel}" />
@@ -104,6 +105,16 @@
             <classpath refid="cp" />
             <fileset dir="${project.build.testOutputDirectory}">
 				<include name="**/persistence/property/AccessModsEntity.class"/>
+            </fileset>
+            <config log="DefaultLevel=${openjpa.loglevel}" />
+        </openjpac>
+		<!-- Enhance delimited identifiers XML-based entities separately -->
+        <openjpac>
+            <config propertiesFile="${project.build.testOutputDirectory}/META-INF/delim_persistence.xml" />
+            <classpath refid="cp" />
+            <fileset dir="${project.build.testOutputDirectory}">
+				<include name="**/persistence/delimited/identifiers/xml/*.class"/>
+				<exclude name="**/persistence/delimited/identifiers/xml/Test*.class"/>
             </fileset>
             <config log="DefaultLevel=${openjpa.loglevel}" />
         </openjpac>

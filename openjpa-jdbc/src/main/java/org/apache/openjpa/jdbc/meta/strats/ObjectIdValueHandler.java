@@ -22,12 +22,14 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.openjpa.jdbc.identifier.DBIdentifier;
 import org.apache.openjpa.jdbc.kernel.JDBCStore;
 import org.apache.openjpa.jdbc.meta.ClassMapping;
 import org.apache.openjpa.jdbc.meta.FieldMapping;
 import org.apache.openjpa.jdbc.meta.ValueMapping;
 import org.apache.openjpa.jdbc.schema.Column;
 import org.apache.openjpa.jdbc.schema.ColumnIO;
+import org.apache.openjpa.jdbc.sql.DBDictionary;
 import org.apache.openjpa.kernel.ObjectIdStateManager;
 import org.apache.openjpa.kernel.OpenJPAStateManager;
 import org.apache.openjpa.util.InternalException;
@@ -44,7 +46,17 @@ public class ObjectIdValueHandler
 
     private Object[] _args = null;
 
+    /**
+     * @deprecated
+     */
     public Column[] map(ValueMapping vm, String name, ColumnIO io,
+        boolean adapt) {
+        DBDictionary dict = vm.getMappingRepository().getDBDictionary();
+        DBIdentifier colName = DBIdentifier.newColumn(name, dict != null ? dict.delimitAll() : false);
+        return map(vm, colName, io, adapt);
+    }
+
+    public Column[] map(ValueMapping vm, DBIdentifier name, ColumnIO io,
         boolean adapt) {
         List cols = new ArrayList();
         List args = new ArrayList();
@@ -85,7 +97,7 @@ public class ObjectIdValueHandler
     
     private void setMapsIdCols(List cols, ClassMapping cm) {
         for (int i = 0; i < cols.size(); i++) {
-            String refColName = ((Column)cols.get(i)).getTarget();
+            DBIdentifier refColName = ((Column)cols.get(i)).getTargetIdentifier();
             FieldMapping fm = getReferenceField(cm, refColName);
             if (fm != null) {
                 List colList1 = new ArrayList();
@@ -104,7 +116,7 @@ public class ObjectIdValueHandler
         }
             
         for (int i = 0; i < cols.size(); i++) {
-            String refColName = ((Column)cols.get(i)).getTarget();
+            DBIdentifier refColName = ((Column)cols.get(i)).getTargetIdentifier();
             if (isReferenceField(fm, refColName)) {
                 List colList1 = new ArrayList();
                 colList1.add(cols.get(i));
@@ -114,7 +126,7 @@ public class ObjectIdValueHandler
         }
     }
     
-    private FieldMapping getReferenceField(ClassMapping cm, String refColName) {
+    private FieldMapping getReferenceField(ClassMapping cm, DBIdentifier refColName) {
         FieldMapping[] fmds = cm.getFieldMappings();
         for (int i = 0; i < fmds.length; i++) {
             if (isReferenceField(fmds[i], refColName))
@@ -123,13 +135,13 @@ public class ObjectIdValueHandler
         return null;
     }
     
-    private boolean isReferenceField(FieldMapping fm, String refColName) {
+    private boolean isReferenceField(FieldMapping fm, DBIdentifier refColName) {
         List cols = fm.getValueInfo().getColumns();
         if (cols.size() == 0) {
             if (fm.getName().equals(refColName))
                 return true;                
         } else {
-            if (((Column)cols.get(0)).getName().equals(refColName))
+            if (((Column)cols.get(0)).getIdentifier().equals(refColName))
                 return true;
         } 
         return false;

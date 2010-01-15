@@ -18,6 +18,7 @@
  */
 package org.apache.openjpa.persistence.delimited.identifiers;
 
+import javax.persistence.Column;
 import javax.persistence.ColumnResult;
 import javax.persistence.DiscriminatorColumn;
 import javax.persistence.Entity;
@@ -28,7 +29,7 @@ import javax.persistence.Inheritance;
 import javax.persistence.SqlResultSetMapping;
 import javax.persistence.Table;
 
-@SqlResultSetMapping(name="CarResultSet",
+@SqlResultSetMapping(name="AnnoCarResultSet",
     entities={@EntityResult(entityClass=Car2.class,
         fields={
         @FieldResult(name="model", column="car model"),

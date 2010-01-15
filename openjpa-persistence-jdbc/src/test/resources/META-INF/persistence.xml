@@ -53,6 +53,7 @@
         <mapping-file>org/apache/openjpa/persistence/detach/detach-orm.xml</mapping-file>
         <mapping-file>org/apache/openjpa/persistence/enhance/identity/mapsId-orm.xml</mapping-file>
         <mapping-file>org/apache/openjpa/persistence/entity/orm.xml</mapping-file>
+        
         <properties>
             <property name="openjpa.jdbc.SynchronizeMappings"
                 value="buildSchema(ForeignKeys=true)"/>
@@ -276,5 +277,44 @@
                 value="buildSchema"/>
         </properties>
     </persistence-unit>
+    
+    <persistence-unit name="delimited-identifiers-xml">
+    	<mapping-file>META-INF/delimited-identifiers-xml-orm.xml</mapping-file>
+    	<properties>
+            <property name="openjpa.jdbc.SynchronizeMappings"
+                  value="buildSchema"/>
+        </properties>
+	</persistence-unit>
+	
+	<persistence-unit name="delimited-identifiers-seq-gen-xml">
+    	<mapping-file>META-INF/delimited-identifiers-seq-gen-xml-orm.xml</mapping-file>
+    	<properties>
+            <property name="openjpa.jdbc.SynchronizeMappings"
+                  value="buildSchema"/>
+        </properties>
+	</persistence-unit>
+	
+	<persistence-unit name="delimited-identifiers-inheritance-xml">
+    	<mapping-file>META-INF/delimited-identifiers-inheritance-xml-orm.xml</mapping-file>
+    	<properties>
+            <property name="openjpa.jdbc.SynchronizeMappings"
+                  value="buildSchema"/>
+        </properties>
+	</persistence-unit>
+	
+	<persistence-unit name="delimited-identifiers-joins-xml">
+    	<mapping-file>META-INF/delimited-identifiers-joins-orm.xml</mapping-file>
+    	<properties>
+            <property name="openjpa.jdbc.SynchronizeMappings"
+                  value="buildSchema"/>
+        </properties>
+	</persistence-unit>
+	
+	<persistence-unit name="delimited-identifiers-result-set-xml">
+    	<mapping-file>META-INF/delimited-identifiers-result-set-orm.xml</mapping-file>
+    	<properties>
+            <property name="openjpa.jdbc.SynchronizeMappings"
+                  value="buildSchema"/>
+        </properties>
+	</persistence-unit>
 </persistence>
-

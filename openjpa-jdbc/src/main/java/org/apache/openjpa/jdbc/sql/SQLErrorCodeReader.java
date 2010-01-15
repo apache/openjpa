@@ -41,7 +41,7 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
 /**
- * Parses XML content of SQL Error State codes to populate errro codes for
+ * Parses XML content of SQL Error State codes to populate error codes for
  * a given Database Dictionary.
  * 
  * @author Pinaki Poddar

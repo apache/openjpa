@@ -21,6 +21,7 @@ package org.apache.openjpa.jdbc.meta;
 import java.util.Collections;
 import java.util.List;
 
+import org.apache.openjpa.jdbc.identifier.DBIdentifier;
 import org.apache.openjpa.jdbc.schema.Column;
 import org.apache.openjpa.jdbc.schema.ColumnIO;
 import org.apache.openjpa.jdbc.schema.ForeignKey;
@@ -40,6 +41,7 @@ import org.apache.openjpa.util.MetaDataException;
  *
  * @author Abe White
  */
+@SuppressWarnings("serial")
 public class ValueMappingInfo
     extends MappingInfo {
 
@@ -48,7 +50,7 @@ public class ValueMappingInfo
 
     private boolean _criteria = false;
     private boolean _canNull = true;
-    private List _mapsIdCols = null;
+    private List<Column> _mapsIdCols = null;
 
     /**
      * Whether to use class criteria when joining to related type.
@@ -83,8 +85,14 @@ public class ValueMappingInfo
      *
      * @param name base name for value mapping
      * @param inversable whether an inverse join is allowed
+     * @deprecated
      */
     public ForeignKey getTypeJoin(final ValueMapping val, final String name,
+        boolean inversable, boolean adapt) {
+        return getTypeJoin(val, DBIdentifier.newForeignKey(name), inversable, adapt);
+    }
+
+    public ForeignKey getTypeJoin(final ValueMapping val, final DBIdentifier name,
         boolean inversable, boolean adapt) {
         ClassMapping rel = val.getTypeMapping();
         if (rel == null)
@@ -123,9 +131,15 @@ public class ValueMappingInfo
     
     /**
      * Return the join from the related type to this value.
+     * @deprecated
      */
     public ForeignKey getInverseTypeJoin(final ValueMapping val,
         final String name, boolean adapt) {
+        return getInverseTypeJoin(val, DBIdentifier.newForeignKey(name), adapt);
+    }
+
+    public ForeignKey getInverseTypeJoin(final ValueMapping val,
+        final DBIdentifier name, boolean adapt) {
         ClassMapping rel = val.getTypeMapping();
         if (rel == null || rel.getTable() == null)
             return null;
@@ -149,8 +163,14 @@ public class ValueMappingInfo
 
     /**
      * Return the columns for this value, based on the given templates.
+     * @deprecated
      */
     public Column[] getColumns(ValueMapping val, String name,
+        Column[] tmplates, Table table, boolean adapt) {
+        return getColumns(val, DBIdentifier.newColumn(name), tmplates, table, adapt);
+    }
+
+    public Column[] getColumns(ValueMapping val, DBIdentifier name,
         Column[] tmplates, Table table, boolean adapt) {
         orderColumnsByTargetField(val, tmplates, adapt);
         val.getMappingRepository().getMappingDefaults().populateColumns
@@ -166,7 +186,7 @@ public class ValueMappingInfo
         boolean adapt) {
         if (tmplates.length < 2 || tmplates[0].getTargetField() == null)
             return;
-        List cols = getColumns();
+        List<Column> cols = getColumns();
         if (cols.isEmpty() || cols.size() != tmplates.length)
             return;
 
@@ -200,8 +220,13 @@ public class ValueMappingInfo
 
     /**
      * Return a unique constraint for the given columns, or null if none.
+     * @deprecated
      */
     public Unique getUnique(ValueMapping val, String name, boolean adapt) {
+        return getUnique(val, DBIdentifier.newConstraint(name), adapt);
+    }
+
+    public Unique getUnique(ValueMapping val, DBIdentifier name, boolean adapt) {
         Column[] cols = val.getColumns();
         if (cols.length == 0)
             return null;
@@ -213,8 +238,13 @@ public class ValueMappingInfo
 
     /**
      * Return an index for the given columns, or null if none.
+     * @deprecated
      */
     public Index getIndex(ValueMapping val, String name, boolean adapt) {
+        return getIndex(val, DBIdentifier.newIndex(name), adapt);
+    }
+
+    public Index getIndex(ValueMapping val, DBIdentifier name, boolean adapt) {
         Column[] cols = val.getColumns();
         if (cols.length == 0)
             return null;
@@ -226,8 +256,14 @@ public class ValueMappingInfo
 
     /**
      * Return the null indicator column for this value, or null if none.
+     * @deprecated
      */
     public Column getNullIndicatorColumn(ValueMapping val, String name,
+        Table table, boolean adapt) {
+        return getNullIndicatorColumn(val, DBIdentifier.newColumn(name), table, adapt);
+    }
+
+    public Column getNullIndicatorColumn(ValueMapping val, DBIdentifier name,
         Table table, boolean adapt) {
         // reset IO
         setColumnIO(null);
@@ -237,14 +273,15 @@ public class ValueMappingInfo
             return null;
 
         // extract given null-ind column
-        List cols = getColumns();
+        List<Column> cols = getColumns();
         Column given = (cols.isEmpty()) ? null : (Column) cols.get(0);
         MappingDefaults def = val.getMappingRepository().getMappingDefaults();
         if (given == null && (!adapt && !def.defaultMissingInfo()))
             return null;
 
         Column tmplate = new Column();
-        tmplate.setName(name + "_null");
+        DBIdentifier sName = DBIdentifier.append(name, "_null");
+        tmplate.setIdentifier(sName);
         tmplate.setJavaType(JavaTypes.INT);
         if (!def.populateNullIndicatorColumns(val, name, table, new Column[]
             { tmplate }) && given == null)
@@ -258,17 +295,17 @@ public class ValueMappingInfo
             setColumnIO(io);
         }
 
-        if (given != null && given.getName() != null) {
+        if (given != null && !DBIdentifier.isNull(given.getIdentifier())) {
             // test if given column name is actually a field name, in which
             // case we use its column as the null indicator column
             ClassMapping embed = val.getEmbeddedMapping();
             FieldMapping efm = (embed == null) ? null
-                : embed.getFieldMapping(given.getName());
+                : embed.getFieldMapping(given.getIdentifier().getName());
             if (efm != null && efm.getColumns().length > 0)
-                given.setName(efm.getColumns()[0].getName());
+                given.setIdentifier(efm.getColumns()[0].getIdentifier());
         }
-        boolean compat = given == null || given.getName() == null
-            || table == null || !table.isNameTaken(given.getName());
+        boolean compat = given == null || DBIdentifier.isNull(given.getIdentifier())
+            || table == null || !table.isNameTaken(given.getIdentifier());
 
         return mergeColumn(val, "null-ind", tmplate, compat, given,
             table, adapt, def.defaultMissingInfo());
@@ -295,7 +332,7 @@ public class ValueMappingInfo
                 setJoinDirection(JOIN_FORWARD);
             } else {
                 foreign = val.getTypeMapping().getTable();
-                setJoinDirection((val.getJoinDirection() == val.JOIN_FORWARD)
+                setJoinDirection((val.getJoinDirection() == ValueMapping.JOIN_FORWARD)
                     ? JOIN_FORWARD : JOIN_INVERSE);
             }
             syncForeignKey(val, val.getForeignKey(), local, foreign);
@@ -337,14 +374,17 @@ public class ValueMappingInfo
     /**
      * Raw column data.
      */
-    public List getMapsIdColumns() {
-        return (_mapsIdCols == null) ? Collections.EMPTY_LIST : _mapsIdCols;
+    public List<Column> getMapsIdColumns() {
+        if (_mapsIdCols == null) {
+            return Collections.emptyList();
+        }
+        return  _mapsIdCols;
     }
     
     /**
      * Raw column data.
      */
-    public void setMapsIdColumns(List cols) {
+    public void setMapsIdColumns(List<Column> cols) {
         _mapsIdCols = cols;
     }
 }

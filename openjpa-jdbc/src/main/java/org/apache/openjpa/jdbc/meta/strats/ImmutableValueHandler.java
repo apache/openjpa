@@ -18,12 +18,14 @@
  */
 package org.apache.openjpa.jdbc.meta.strats;
 
+import org.apache.openjpa.jdbc.identifier.DBIdentifier;
 import org.apache.openjpa.jdbc.kernel.JDBCStore;
 import org.apache.openjpa.jdbc.meta.FieldMapping;
 import org.apache.openjpa.jdbc.meta.JavaSQLTypes;
 import org.apache.openjpa.jdbc.meta.ValueMapping;
 import org.apache.openjpa.jdbc.schema.Column;
 import org.apache.openjpa.jdbc.schema.ColumnIO;
+import org.apache.openjpa.jdbc.sql.DBDictionary;
 import org.apache.openjpa.meta.JavaTypes;
 
 /**
@@ -44,10 +46,20 @@ public class ImmutableValueHandler
         return _instance;
     }
 
+    /**
+     * @deprecated
+     */
     public Column[] map(ValueMapping vm, String name, ColumnIO io,
         boolean adapt) {
+        DBDictionary dict = vm.getMappingRepository().getDBDictionary();
+        DBIdentifier colName = DBIdentifier.newColumn(name, dict != null ? dict.delimitAll() : false);
+        return map(vm, colName, io, adapt);
+    }
+
+    public Column[] map(ValueMapping vm, DBIdentifier name, ColumnIO io,
+        boolean adapt) {
         Column col = new Column();
-        col.setName(name);
+        col.setIdentifier(name);
         if (vm.getTypeCode() == JavaTypes.DATE)
             col.setJavaType(JavaSQLTypes.getDateTypeCode(vm.getType()));
         else

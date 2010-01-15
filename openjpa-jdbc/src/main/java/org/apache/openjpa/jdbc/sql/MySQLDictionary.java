@@ -30,6 +30,7 @@ import java.util.List;
 import java.util.Set;
 
 import org.apache.commons.lang.StringUtils;
+import org.apache.openjpa.jdbc.identifier.DBIdentifier;
 import org.apache.openjpa.jdbc.kernel.JDBCFetchConfiguration;
 import org.apache.openjpa.jdbc.kernel.JDBCStore;
 import org.apache.openjpa.jdbc.kernel.exps.FilterValue;
@@ -47,6 +48,8 @@ public class MySQLDictionary
 
     public static final String SELECT_HINT = "openjpa.hint.MySQLSelectHint";
 
+    public static final String DELIMITER_BACK_TICK = "`";
+    
     /**
      * The MySQL table type to use when creating tables; defaults to innodb.
      */
@@ -144,11 +147,13 @@ public class MySQLDictionary
         typeModifierSet.addAll(Arrays.asList(new String[] { "UNSIGNED",
             "ZEROFILL" }));
 
-        delimiter = "`";
+        setLeadingDelimiter(DELIMITER_BACK_TICK);
+        setTrailingDelimiter(DELIMITER_BACK_TICK);
         
         fixedSizeTypeNameSet.remove("NUMERIC");
     }
 
+    @Override
     public void connectedConfiguration(Connection conn) throws SQLException {
         super.connectedConfiguration(conn);
 
@@ -184,6 +189,7 @@ public class MySQLDictionary
             driverDeserializesBlobs = true;
     }
 
+    @Override
     public Connection decorate(Connection conn)  throws SQLException {
         conn = super.decorate(conn);
         String driver = conf.getConnectionDriverName();
@@ -222,6 +228,7 @@ public class MySQLDictionary
         return new int[]{maj, min};
     }
 
+    @Override
     public String[] getCreateTableSQL(Table table) {
         String[] sql = super.getCreateTableSQL(table);
         if (!StringUtils.isEmpty(tableType))
@@ -229,6 +236,7 @@ public class MySQLDictionary
         return sql;
     }
 
+    @Override
     public String[] getDropIndexSQL(Index index) {
         return new String[]{ "DROP INDEX " + getFullName(index) + " ON "
             + getFullName(index.getTable(), false) };
@@ -239,7 +247,7 @@ public class MySQLDictionary
      */
     @Override
     public String[] getDropPrimaryKeySQL(PrimaryKey pk) {
-        if (pk.getName() == null)
+        if (DBIdentifier.isNull(pk.getIdentifier()))
             return new String[0];
         return new String[]{ "ALTER TABLE "
             + getFullName(pk.getTable(), false)
@@ -252,19 +260,20 @@ public class MySQLDictionary
      */
     @Override
     public String[] getDropForeignKeySQL(ForeignKey fk, Connection conn) {
-        if (fk.getName() == null) {
-            String fkName = fk.loadNameFromDB(this,conn);
+        if (DBIdentifier.isNull(fk.getIdentifier())) {
+            DBIdentifier fkName = fk.loadIdentifierFromDB(this,conn);
             String[] retVal = (fkName == null) ?  new String[0] :
                 new String[]{ "ALTER TABLE "
                 + getFullName(fk.getTable(), false)
-                + " DROP FOREIGN KEY " + fkName };
+                + " DROP FOREIGN KEY " + toDBName(fkName) };
             return retVal;   
         }
         return new String[]{ "ALTER TABLE "
             + getFullName(fk.getTable(), false)
-            + " DROP FOREIGN KEY " + fk.getName() };
+            + " DROP FOREIGN KEY " + toDBName(fk.getIdentifier()) };
     }
 
+    @Override
     public String[] getAddPrimaryKeySQL(PrimaryKey pk) {
         String[] sql = super.getAddPrimaryKeySQL(pk);
 
@@ -274,8 +283,8 @@ public class MySQLDictionary
         String[] ret = new String[cols.length + sql.length];
         for (int i = 0; i < cols.length; i++) {
             ret[i] = "ALTER TABLE " + getFullName(cols[i].getTable(), false)
-                + " CHANGE " + cols[i].getName()
-                + " " + cols[i].getName() // name twice
+                + " CHANGE " + toDBName(cols[i].getIdentifier())
+                + " " + toDBName(cols[i].getIdentifier()) // name twice
                 + " " + getTypeName(cols[i]) + " NOT NULL";
         }
 
@@ -283,6 +292,7 @@ public class MySQLDictionary
         return ret;
     }
     
+    @Override
     public String[] getDeleteTableContentsSQL(Table[] tables,Connection conn) {
         // mysql >= 4 supports more-optimal delete syntax
         if (!optimizeMultiTableDeletes)
@@ -291,7 +301,7 @@ public class MySQLDictionary
             StringBuilder buf = new StringBuilder(tables.length * 8);
             buf.append("DELETE FROM ");
             for (int i = 0; i < tables.length; i++) {
-                buf.append(tables[i].getFullName());
+                buf.append(toDBName(tables[i].getFullIdentifier()));
                 if (i < tables.length - 1)
                     buf.append(", ");
             }
@@ -299,6 +309,7 @@ public class MySQLDictionary
         }
     }
 
+    @Override
     protected void appendSelectRange(SQLBuffer buf, long start, long end,
         boolean subselect) {
         buf.append(" LIMIT ").appendValue(start).append(", ");
@@ -308,6 +319,7 @@ public class MySQLDictionary
             buf.appendValue(end - start);
     }
 
+    @Override
     protected Column newColumn(ResultSet colMeta)
         throws SQLException {
         Column col = super.newColumn(colMeta);
@@ -316,6 +328,7 @@ public class MySQLDictionary
         return col;
     }
 
+    @Override
     public Object getBlobObject(ResultSet rs, int column, JDBCStore store)
         throws SQLException {
         // if the user has set a get-blob strategy explicitly or the driver
@@ -328,6 +341,7 @@ public class MySQLDictionary
         return rs.getObject(column);
     }
 
+    @Override
     public int getPreferredType(int type) {
         if (type == Types.CLOB && !useClobs)
             return Types.LONGVARCHAR;
@@ -344,6 +358,7 @@ public class MySQLDictionary
      * @param lhsxml indicates whether the left operand maps to XML
      * @param rhsxml indicates whether the right operand maps to XML
      */
+    @Override
     public void appendXmlComparison(SQLBuffer buf, String op, FilterValue lhs,
         FilterValue rhs, boolean lhsxml, boolean rhsxml) {
         super.appendXmlComparison(buf, op, lhs, rhs, lhsxml, rhsxml);
@@ -372,6 +387,7 @@ public class MySQLDictionary
         buf.append("')");
     }
     
+    @Override
     public int getBatchFetchSize(int batchFetchSize) {
         return Integer.MIN_VALUE;
     }

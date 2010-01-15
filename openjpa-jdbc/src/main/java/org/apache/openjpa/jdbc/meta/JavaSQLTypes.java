@@ -68,7 +68,7 @@ public class JavaSQLTypes
     /**
      * Return the proper date typecode.
      */
-    public static int getDateTypeCode(Class dtype) {
+    public static int getDateTypeCode(Class<?> dtype) {
         if (dtype == java.util.Date.class)
             return DATE;
         if (dtype == java.sql.Date.class)

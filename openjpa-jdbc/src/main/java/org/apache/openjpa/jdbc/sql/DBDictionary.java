@@ -65,6 +65,12 @@ import javax.sql.DataSource;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.openjpa.jdbc.conf.JDBCConfiguration;
+import org.apache.openjpa.jdbc.identifier.ColumnDefIdentifierRule;
+import org.apache.openjpa.jdbc.identifier.Normalizer;
+import org.apache.openjpa.jdbc.identifier.DBIdentifier;
+import org.apache.openjpa.jdbc.identifier.DBIdentifierRule;
+import org.apache.openjpa.jdbc.identifier.DBIdentifierUtil;
+import org.apache.openjpa.jdbc.identifier.DBIdentifier.DBIdentifierType;
 import org.apache.openjpa.jdbc.kernel.JDBCFetchConfiguration;
 import org.apache.openjpa.jdbc.kernel.JDBCStore;
 import org.apache.openjpa.jdbc.kernel.exps.ExpContext;
@@ -93,6 +99,9 @@ import org.apache.openjpa.kernel.Seq;
 import org.apache.openjpa.kernel.exps.Path;
 import org.apache.openjpa.lib.conf.Configurable;
 import org.apache.openjpa.lib.conf.Configuration;
+import org.apache.openjpa.lib.identifier.IdentifierConfiguration;
+import org.apache.openjpa.lib.identifier.IdentifierRule;
+import org.apache.openjpa.lib.identifier.IdentifierUtil;
 import org.apache.openjpa.lib.jdbc.ConnectionDecorator;
 import org.apache.openjpa.lib.jdbc.LoggingConnectionDecorator;
 import org.apache.openjpa.lib.log.Log;
@@ -125,14 +134,14 @@ import serp.util.Strings;
  */
 public class DBDictionary
     implements Configurable, ConnectionDecorator, JoinSyntaxes,
-    LoggingConnectionDecorator.SQLWarningHandler {
+    LoggingConnectionDecorator.SQLWarningHandler, IdentifierConfiguration {
 
     public static final String VENDOR_OTHER = "other";
     public static final String VENDOR_DATADIRECT = "datadirect";
 
-    public static final String SCHEMA_CASE_UPPER = "upper";
-    public static final String SCHEMA_CASE_LOWER = "lower";
-    public static final String SCHEMA_CASE_PRESERVE = "preserve";
+    public static final String SCHEMA_CASE_UPPER = IdentifierUtil.CASE_UPPER;
+    public static final String SCHEMA_CASE_LOWER = IdentifierUtil.CASE_LOWER;
+    public static final String SCHEMA_CASE_PRESERVE = IdentifierUtil.CASE_PRESERVE;
 
     public static final String CONS_NAME_BEFORE = "before";
     public static final String CONS_NAME_MID = "mid";
@@ -153,9 +162,9 @@ public class DBDictionary
     protected static final int DECI = MILLI * 100;
     protected static final int SEC = MILLI * 1000;
 
-    protected static final int NAME_ANY = 0;
-    protected static final int NAME_TABLE = 1;
-    protected static final int NAME_SEQUENCE = 2;
+    protected static final int NAME_ANY = DBIdentifierUtil.ANY;
+    protected static final int NAME_TABLE = DBIdentifierUtil.TABLE;
+    protected static final int NAME_SEQUENCE = DBIdentifierUtil.SEQUENCE;
     
     protected static final int UNLIMITED = -1;
     protected static final int NO_BATCH = 0;
@@ -172,7 +181,6 @@ public class DBDictionary
     // schema data
     public String platform = "Generic";
     public String driverVendor = null;
-    public String catalogSeparator = ".";
     public boolean createPrimaryKeys = true;
     public String constraintNameMode = CONS_NAME_BEFORE;
     public int maxTableNameLength = 128;
@@ -347,79 +355,29 @@ public class DBDictionary
     protected Log log = null;
     protected boolean connected = false;
     protected boolean isJDBC3 = false;
-    protected final Set reservedWordSet = new HashSet();
+    protected final Set<String> reservedWordSet = new HashSet<String>();
     // reservedWordSet subset that CANNOT be used as valid column names
     // (i.e., without surrounding them with double-quotes)
     protected Set<String> invalidColumnWordSet = new HashSet<String>();
-    protected final Set systemSchemaSet = new HashSet();
-    protected final Set systemTableSet = new HashSet();
-    protected final Set fixedSizeTypeNameSet = new HashSet();
-    protected final Set typeModifierSet = new HashSet();
-    
-    private boolean delimitIds = false;
-    // Specifies whether or not the specific DB and version supports delimited ids
-    public boolean supportsDelimitedIds = true;
-    public String delimiter = "\""; // This is public so it can be changed by a user with a property
-    // Assume mixed case by default.
-    protected String delimitedCase = SCHEMA_CASE_PRESERVE;
+    protected final Set<String> systemSchemaSet = new HashSet<String>();
+    protected final Set<String> systemTableSet = new HashSet<String>();
+    protected final Set<String> fixedSizeTypeNameSet = new HashSet<String>();
+    protected final Set<String> typeModifierSet = new HashSet<String>();
+
+    // NamingConfiguration properties
+    private boolean delimitIdentifiers = false;
+    public boolean supportsDelimitedIdentifiers = true;
+    public String leadingDelimiter = "\"";
+    public String trailingDelimiter = "\"";
+    public String nameConcatenator = "_";
+    public String delimitedCase = SCHEMA_CASE_PRESERVE;
+    public String catalogSeparator = ".";
     private String defaultSchemaName = null;
-    
-    public static enum DBIdentifiers {
-        TABLE_NAME,
-        TABLE_SCHEMA,
-        TABLE_CATALOG,
-        COLLECTION_TABLE_NAME,
-        COLLECTION_TABLE_SCHEMA,
-        SECONDARY_TABLE_NAME,
-        SECONDARY_TABLE_SCHEMA,
-        SECONDARY_TABLE_CATALOG,
-        TABLE_GEN_TABLE,
-        TABLE_GEN_SCHEMA,
-        TABLE_GEN_PK_COLUMN,
-        TABLE_GEN_VALUE_COLUMN,
-        COLUMN_NAME,
-        COLUMN_COLUMN_DEFINITION,
-        COLUMN_TABLE,
-        MAP_KEY_COLUMN_NAME,
-        MAP_KEY_COLUMN_COLUMN_DEFINITION,
-        MAP_KEY_COLUMN_TABLE,
-        JOIN_TABLE_NAME,
-        JOIN_TABLE_SCHEMA,
-        PRIMARY_KEY_JOIN_COLUMN_NAME,
-        PRIMARY_KEY_JOIN_COLUMN_REFERENCED_COLUMN_NAME,
-        PRIMARY_KEY_JOIN_COLUMN_COLUMN_DEFINITION,
-        JOIN_COLUMN_NAME,
-        JOIN_COLUMN_REFERENCED_COLUMN_NAME,
-        JOIN_COLUMN_COLUMN_DEFINITION,
-        JOIN_COLUMN_TABLE,
-        MAP_KEY_JOIN_COLUMN_NAME,
-        MAP_KEY_JOIN_COLUMN_REFERENCED_COLUMN_NAME,
-        MAP_KEY_JOIN_COLUMN_COLUMN_DEFINITION,
-        MAP_KEY_JOIN_COLUMN_TABLE,
-        DISCRIMINATOR_COLUMN_NAME,
-        DISCRIMINATOR_COLUMN_COLUMN_DEFINITION,
-        FIELD_RESULT_COLUMN,
-        COLUMN_REUSLT_NAME,
-        SEQUENCE_GEN_SEQ_NAME,
-        SEQUENCE_GEN_SCHEMA,
-        UNIQUE_CONSTRAINT_NAME,
-        UNIQUE_CONSTRAINT_COLUMN_NAMES,
-        ORDER_COLUMN_NAME,
-        ORDER_COLUMN_COLUMN_DEFINITION
-        
-    }
-    
-    // This is to temporarily disable support for columnDefinition elements until support is implemented.
-    protected EnumSet<DBIdentifiers> unsupportedDelimitedIds =
-        EnumSet.of(DBIdentifiers.COLUMN_COLUMN_DEFINITION,
-            DBIdentifiers.DISCRIMINATOR_COLUMN_COLUMN_DEFINITION,
-            DBIdentifiers.JOIN_COLUMN_COLUMN_DEFINITION,
-            DBIdentifiers.MAP_KEY_COLUMN_COLUMN_DEFINITION,
-            DBIdentifiers.MAP_KEY_JOIN_COLUMN_COLUMN_DEFINITION,
-            DBIdentifiers.PRIMARY_KEY_JOIN_COLUMN_COLUMN_DEFINITION); 
-    
-//    protected EnumSet<DBIdentifiers> unsupportedDelimitedIds =
-//        EnumSet.noneOf(DBIdentifiers.class);
+       
+    // Naming utility and naming rules
+    private DBIdentifierUtil namingUtil = null;
+    private Map<String, IdentifierRule> namingRules = new HashMap<String, IdentifierRule>();
+    private IdentifierRule defaultNamingRule = null;  // cached for performance
     
     /**
      * If a native query begins with any of the values found here then it will
@@ -484,9 +442,8 @@ public class DBDictionary
                         conn.getTransactionIsolation()}));
             }
             
-            // While we have the metaData, set some values from it
-            setSupportsDelimitedIds(metaData);
-            setDelimitedCase(metaData);
+            // Configure the naming utility
+            configureNamingUtil(metaData);
 
             // Auto-detect generated keys retrieval support
             // unless user specified it.
@@ -500,6 +457,28 @@ public class DBDictionary
             }
         }
         connected = true;
+    }
+    
+    private void configureNamingUtil(DatabaseMetaData metaData) {
+        // Get the naming utility from the configuration
+        setSupportsDelimitedIdentifiers(metaData);
+        setDelimitedCase(metaData);
+    }
+
+    /**
+     * Configures the naming rules for this dictionary.  Subclasses should 
+     * override this method, providing their own naming rules.
+     */
+    protected void configureNamingRules() {
+        // Add the default naming rule
+        DBIdentifierRule defRule = new DBIdentifierRule(DBIdentifierType.DEFAULT, reservedWordSet);
+        namingRules.put(defRule.getName(), defRule);
+        // Disable delimiting of column definition.  DB platforms are very
+        // picky about delimiters in column definitions. Base column types
+        // do not require delimiters and will cause failures if delimited.
+        DBIdentifierRule cdRule = new ColumnDefIdentifierRule();
+        cdRule.setCanDelimit(false);
+        namingRules.put(cdRule.getName(), cdRule);
     }
 
     //////////////////////
@@ -1641,8 +1620,8 @@ public class DBDictionary
      * from {@link Types}.
      */
     public String getTypeName(Column col) {
-        if (!StringUtils.isEmpty(col.getTypeName()))
-            return appendSize(col, col.getTypeName());
+        if (!DBIdentifier.isEmpty(col.getTypeIdentifier()))
+            return appendSize(col, toDBName(col.getTypeIdentifier()));
 
         if (col.isAutoAssigned() && autoAssignTypeName != null)
             return appendSize(col, autoAssignTypeName);
@@ -2079,19 +2058,20 @@ public class DBDictionary
 
     protected SQLBuffer getDeleteTargets(Select sel) {
       SQLBuffer deleteTargets = new SQLBuffer(this);
-      Collection aliases = sel.getTableAliases();
+      Collection<String> aliases = sel.getTableAliases();
       // Assumes aliases are of the form "TABLENAME t0"
-      for (Iterator itr = aliases.iterator(); itr.hasNext();) {
-        String tableAlias = itr.next().toString();
-        int spaceIndex = tableAlias.indexOf(' ');
-        if (spaceIndex > 0 && spaceIndex < tableAlias.length() - 1) {
+      // or "\"TABLE NAME\" t0"
+      for (Iterator<String> itr = aliases.iterator(); itr.hasNext();) {
+        String tableAlias = itr.next();
+        String[] names = Normalizer.splitName(tableAlias, IdentifierUtil.SPACE);
+        if (names.length > 1) {
           if (allowsAliasInBulkClause) {
-            deleteTargets.append(tableAlias.substring(spaceIndex + 1));
+            deleteTargets.append(names[1]);
           } else {
-            deleteTargets.append(tableAlias.substring(0, spaceIndex));
+            deleteTargets.append(toDBName(DBIdentifier.newTable(names[0])));
           }
         } else {
-          deleteTargets.append(tableAlias);
+          deleteTargets.append(toDBName(DBIdentifier.newTable(tableAlias)));
         }
         if (itr.hasNext())
           deleteTargets.append(", ");
@@ -2130,7 +2110,7 @@ public class DBDictionary
             if (allowAlias) {
               sql.append(sel.getColumnAlias(col));
             } else {
-              sql.append(col.getName());  
+              sql.append(toDBName(col.getIdentifier()));
             }            
             sql.append(" = ");
 
@@ -2159,7 +2139,7 @@ public class DBDictionary
                 Map.Entry e = (Map.Entry) iter.next();
                 Column col = (Column) e.getKey();
                 String val = (String) e.getValue();
-                sql.append(", ").append(col.getName())
+                sql.append(", ").append(toDBName(col.getIdentifier()))
                     .append(" = ").append(val);
             }
         }
@@ -2189,7 +2169,8 @@ public class DBDictionary
                 restrictConstraints.add(fks[j]);
             }
             
-            deleteSQL.add("DELETE FROM " + tables[i].getFullName());
+            deleteSQL.add("DELETE FROM " + 
+                toDBName(tables[i].getFullIdentifier()));
         }
         
         for(ForeignKey fk : restrictConstraints) {
@@ -2662,6 +2643,9 @@ public class DBDictionary
         Object alias;
         for (int i = 0; i < aliases.size(); i++) {
             alias = aliases.get(i);
+            if (alias instanceof String) {
+                alias = getNamingUtil().convertAlias((String)alias);
+            }
             appendSelect(selectSQL, alias, sel, i);
             if (i < aliases.size() - 1)
                 selectSQL.append(", ");
@@ -3000,39 +2984,55 @@ public class DBDictionary
     }
 
     /**
+     * Returns the name of the column using database specific delimiters.
+     */
+    public DBIdentifier getColumnIdentifier(Column column) {
+        if (column == null) {
+            return DBIdentifier.NULL;
+        }
+        return column.getIdentifier();
+    }
+    
+    public String getColumnDBName(Column column) {
+        return toDBName(getColumnIdentifier(column));
+    }
+
+    /**
      * Returns the full name of the table, including the schema (delimited
      * by {@link #catalogSeparator}).
      */
-    public String getFullName(Table table, boolean logical) {
-        if (!useSchemaName || table.getSchemaName() == null)
-            return table.getName();
-        if (logical || ".".equals(catalogSeparator))
-            return table.getFullName();
-        return table.getSchemaName() + catalogSeparator + table.getName();
+    public DBIdentifier getFullIdentifier(Table table, boolean logical) {
+        if (!useSchemaName || DBIdentifier.isNull(table.getSchemaIdentifier()))
+            return table.getIdentifier();
+        return table.getFullIdentifier();
     }
-
+        
+    public String getFullName(Table table, boolean logical) {
+        if (!useSchemaName || DBIdentifier.isNull(table.getSchemaIdentifier()))
+            return toDBName(table.getIdentifier());
+        return toDBName(table.getFullIdentifier());
+    }
+    
     /**
      * Returns the full name of the index, including the schema (delimited
      * by the result of {@link #catalogSeparator}).
      */
+
     public String getFullName(Index index) {
-        if (!useSchemaName || index.getSchemaName() == null)
-            return index.getName();
-        if (".".equals(catalogSeparator))
-            return index.getFullName();
-        return index.getSchemaName() + catalogSeparator + index.getName();
+        if (!useSchemaName || DBIdentifier.isNull(index.getSchemaIdentifier()))
+            return toDBName(index.getIdentifier());
+        return toDBName(index.getFullIdentifier());
     }
 
     /**
      * Returns the full name of the sequence, including the schema (delimited
      * by the result of {@link #catalogSeparator}).
      */
+
     public String getFullName(Sequence seq) {
-        if (!useSchemaName || seq.getSchemaName() == null)
-            return seq.getName();
-        if (".".equals(catalogSeparator))
-            return seq.getFullName();
-        return seq.getSchemaName() + catalogSeparator + seq.getName();
+        if (!useSchemaName || DBIdentifier.isNull(seq.getSchemaIdentifier()))
+            return toDBName(seq.getIdentifier());
+        return toDBName(seq.getFullIdentifier());
     }
 
     /**
@@ -3050,23 +3050,45 @@ public class DBDictionary
     /**
      * Make any necessary changes to the given table name to make it valid for
      * the current DB.
+     * @deprecated
      */
     public String getValidTableName(String name, Schema schema) {
-        while (name.startsWith("_"))
-            name = name.substring(1);
-        return makeNameValid(name, schema.getSchemaGroup(),
-            maxTableNameLength, NAME_TABLE);
+        return getValidTableName(DBIdentifier.newTable(name), schema).getName();
+    }
+    
+    /**
+     * Make any necessary changes to the given table name to make it valid for
+     * the current DB.
+     */
+    public DBIdentifier getValidTableName(DBIdentifier name, Schema schema) {
+        return namingUtil.getValidTableIdentifier(name, schema, maxTableNameLength);
+    }
+
+    /**
+     * Make any necessary changes to the given sequence name to make it valid
+     * for the current DB.
+     * @deprecated
+     */
+    public String getValidSequenceName(String name, Schema schema) {
+        return getValidSequenceName(DBIdentifier.newSequence(name), schema).getName();
     }
 
     /**
      * Make any necessary changes to the given sequence name to make it valid
      * for the current DB.
      */
-    public String getValidSequenceName(String name, Schema schema) {
-        while (name.startsWith("_"))
-            name = name.substring(1);
-        return makeNameValid("S_" + name, schema.getSchemaGroup(),
-            maxTableNameLength, NAME_SEQUENCE);
+    public DBIdentifier getValidSequenceName(DBIdentifier name, Schema schema) {
+        return namingUtil.getValidSequenceIdentifier(name, schema, maxTableNameLength);
+    }
+
+    /**
+     * Make any necessary changes to the given column name to make it valid
+     * for the current DB.  The column name will be made unique for the
+     * specified table.
+     * @deprecated
+     */
+    public String getValidColumnName(String name, Table table) {
+        return getValidColumnName(DBIdentifier.newColumn(name), table, true).getName();
     }
 
     /**
@@ -3074,7 +3096,7 @@ public class DBDictionary
      * for the current DB.  The column name will be made unique for the
      * specified table.
      */
-    public String getValidColumnName(String name, Table table) {
+    public DBIdentifier getValidColumnName(DBIdentifier name, Table table) {
         return getValidColumnName(name, table, true);
     }
 
@@ -3082,12 +3104,21 @@ public class DBDictionary
      * Make any necessary changes to the given column name to make it valid
      * for the current DB.  If checkForUniqueness is true, the column name will 
      * be made unique for the specified table.
+     * @deprecated
      */
     public String getValidColumnName(String name, Table table,
         boolean checkForUniqueness) {
-        while (name.startsWith("_"))
-            name = name.substring(1);
-        return makeNameValid(name, table, maxColumnNameLength, NAME_ANY,
+        return getValidColumnName(DBIdentifier.newColumn(name), table, checkForUniqueness).toString();
+    }
+
+    /**
+     * Make any necessary changes to the given column name to make it valid
+     * for the current DB.  If checkForUniqueness is true, the column name will 
+     * be made unique for the specified table.
+     */
+    public DBIdentifier getValidColumnName(DBIdentifier name, Table table,
+        boolean checkForUniqueness) {
+        return getNamingUtil().getValidColumnIdentifier(name, table, maxColumnNameLength, 
             checkForUniqueness);
     }
 
@@ -3105,74 +3136,64 @@ public class DBDictionary
     /**
      * Make any necessary changes to the given foreign key name to make it
      * valid for the current DB.
+     * @deprecated
      */
     public String getValidForeignKeyName(String name, Table table,
         Table toTable) {
-        while (name.startsWith("_"))
-            name = name.substring(1);
-        String tableName = table.getName();
-        int len = Math.min(tableName.length(), 7);
-        name = "F_" + shorten(tableName, len) + "_" + name;
-        return makeNameValid(name, table.getSchema().getSchemaGroup(),
-            maxConstraintNameLength, NAME_ANY);
+        return getValidForeignKeyName(DBIdentifier.newForeignKey(name), table,
+            toTable).getName();
+    }
+
+    /**
+     * Make any necessary changes to the given foreign key name to make it
+     * valid for the current DB.
+     */
+    public DBIdentifier getValidForeignKeyName(DBIdentifier name, Table table,
+        Table toTable) {
+        return namingUtil.getValidForeignKeyIdentifier(name, table, toTable, maxConstraintNameLength);
+    }
+
+    /**
+     * Make any necessary changes to the given index name to make it valid
+     * for the current DB.
+     * @deprecated
+     */
+    public String getValidIndexName(String name, Table table) {
+        return getValidIndexName(DBIdentifier.newIndex(name), table).getName();
     }
 
     /**
      * Make any necessary changes to the given index name to make it valid
      * for the current DB.
      */
-    public String getValidIndexName(String name, Table table) {
-        while (name.startsWith("_"))
-            name = name.substring(1);
-        String tableName = table.getName();
-        int len = Math.min(tableName.length(), 7);
-        String shortTableName = shorten(tableName, len);
-        name = combineNames("I", shortTableName, name);
-        
-        return makeNameValid(name, table.getSchema().getSchemaGroup(),
-            maxIndexNameLength, NAME_ANY);
+    public DBIdentifier getValidIndexName(DBIdentifier name, Table table) {
+        return getNamingUtil().getValidIndexIdentifier(name, table, maxIndexNameLength);
+    }
+
+    /**
+     * Make any necessary changes to the given unique constraint name to make
+     * it valid for the current DB.
+     * @deprecated
+     */
+    public String getValidUniqueName(String name, Table table) {
+        return getValidUniqueName(DBIdentifier.newConstraint(name), table).getName();
     }
 
     /**
      * Make any necessary changes to the given unique constraint name to make
      * it valid for the current DB.
      */
-    public String getValidUniqueName(String name, Table table) {
-        while (name.startsWith("_"))
-            name = name.substring(1);
-        String tableName = table.getName();
-        int len = Math.min(tableName.length(), 7);
-        name = combineNames("U", shorten(tableName, len), name);
-        return makeNameValid(name, table.getSchema().getSchemaGroup(),
-            maxConstraintNameLength, NAME_ANY);
+    public DBIdentifier getValidUniqueName(DBIdentifier name, Table table) {
+        return namingUtil.getValidUniqueIdentifier(name, table, maxConstraintNameLength);
     }
     
-    public boolean isDelimited(String name) {
-        return (name.startsWith(getDelimiter()) 
-                && name.endsWith(getDelimiter()));
-    }
-    
-    public String stripDelimiters(String name) {
-        String delimiter = getDelimiter();
-        int delimLen = delimiter.length();
-        if (isDelimited(name)) {
-            return name.substring(delimLen, name.length() - delimLen);
-        }
-        return name;
-    }
-    
-    public String addDelimiters(String name) {
-        String delimiter = getDelimiter();
-        return delimiter + name + delimiter;
-    }
-
     /**
      * Shorten the specified name to the specified target name. This will
      * be done by first stripping out the vowels, and then removing
      * characters from the middle of the word until it reaches the target
      * length.
      */
-    protected static String shorten(String name, int targetLength) {
+    public static String shorten(String name, int targetLength) {
         if (name == null || name.length() <= targetLength)
             return name;
 
@@ -3187,11 +3208,10 @@ public class DBDictionary
     }
 
     /**
-     * Remove vowels from the specified StringBuffer.
+     * Remove vowels from the specified StringBuilder.
      *
      * @return true if any vowels have been removed
      */
-    //private static boolean stripVowel(StringBuffer name) {
     private static boolean stripVowel(StringBuilder name) {
         if (name == null || name.length() == 0)
             return false;
@@ -3214,8 +3234,22 @@ public class DBDictionary
      * character is replace with '0', then '1', etc.
      * Note that the given max len may be 0 if the database metadata is
      * incomplete.
+     * @deprecated
      */
     protected String makeNameValid(String name, NameSet set, int maxLen,
+        int nameType) {
+        return makeNameValid(name, set, maxLen, nameType, true);
+    }
+
+    /**
+     * Shortens the given name to the given maximum length, then checks that
+     * it is not a reserved word. If it is reserved, appends a "0". If
+     * the name conflicts with an existing schema component, the last
+     * character is replace with '0', then '1', etc.
+     * Note that the given max len may be 0 if the database metadata is
+     * incomplete.
+     */
+    protected DBIdentifier makeNameValid(DBIdentifier name, NameSet set, int maxLen,
         int nameType) {
         return makeNameValid(name, set, maxLen, nameType, true);
     }
@@ -3234,102 +3268,26 @@ public class DBDictionary
      */
     protected String makeNameValid(String name, NameSet set, int maxLen,
         int nameType, boolean checkForUniqueness) {
-        boolean delimited = false;
-        String delimiter = getDelimiter();
-        if (name.startsWith(delimiter) && name.endsWith(delimiter)) {
-            delimited = true;
-        }
-        if (maxLen < 1)
-            maxLen = 255;
-        if (name.length() > maxLen)
-            name = removeEndingChars(name, name.length() - maxLen, 
-                delimited, delimiter);
-        if (reservedWordSet.contains(name.toUpperCase())) {
-            if (name.length() == maxLen)
-                name = removeEndingChars(name, 1, delimited, delimiter);
-            name = addCharsToEnd(name, "0", delimited, delimiter);
-        }
-
-        // now make sure the name is unique
-        if (set != null && checkForUniqueness) {
-            outer:
-            for (int version = 1, chars = 1; true; version++) {
-                // for table names, we check for the table itself in case the
-                // name set is lazy about schema reflection
-                switch (nameType) {
-                    case NAME_TABLE:
-                        if (!((SchemaGroup) set).isKnownTable(name))
-                            break outer;
-                        break;
-                    case NAME_SEQUENCE:
-                        if (!((SchemaGroup) set).isKnownSequence(name))
-                            break outer;
-                        break;
-                    default:
-                        if (!set.isNameTaken(name))
-                            break outer;
-                }
-
-                // a single char for the version is probably enough, but might
-                // as well be general about it...
-                if (version > 1)
-                    name = removeEndingChars(name, chars, delimited, delimiter);
-                if (version >= Math.pow(10, chars))
-                    chars++;
-                if (name.length() + chars > maxLen)
-                    name = removeEndingChars(name, 
-                        name.length() + chars - maxLen, 
-                        delimited, delimiter);
-                name = addCharsToEnd(name, new Integer(version).toString(), 
-                    delimited, delimiter);
-            }
-        }
-        
-        if (delimited) {
-            String delimCase = getDelimitedCase();
-            if (delimCase.equals(SCHEMA_CASE_LOWER)) {
-                return name.toLowerCase();
-            }
-            else if (delimCase.equals(SCHEMA_CASE_UPPER)) {
-                return name.toUpperCase();
-            }
-            else {
-                return name;
-            }
-        }
-        return name.toUpperCase();
+        return namingUtil.makeNameValid(name, set,
+            maxLen, nameType, checkForUniqueness).toString();
     }
-    
-    private String removeEndingChars(String name, 
-        int charsToRemove,
-        boolean delimited, 
-        String delimiter) {
-        if (delimited) {
-            name = name.substring(0, name.length() - delimiter.length());
-            name = name.substring(0, name.length() - charsToRemove);
-            name = name + delimiter;
-        }
-        else {
-            name = name.substring(0, name.length() - charsToRemove);
-        }
-        
-        return name;
-    }
-    
-    private String addCharsToEnd(String name,
-        String charsToAdd,
-        boolean delimited,
-        String delimiter) {
-        if (delimited) {
-            name = name.substring(0, name.length() - delimiter.length());
-            name = name + charsToAdd;
-            name = name + delimiter;
-        }
-        else {
-            name = name + charsToAdd;
-        }
-        
-        return name;
+
+    /**
+     * Shortens the given name to the given maximum length, then checks that
+     * it is not a reserved word. If it is reserved, appends a "0". If
+     * the name conflicts with an existing schema component and uniqueness
+     * checking is enabled, the last character is replace with '0', then 
+     * '1', etc. 
+     * Note that the given max len may be 0 if the database metadata is 
+     * incomplete.
+     * 
+     * Note: If the name is delimited, make sure the ending delimiter is
+     * not stripped off.
+     */
+    protected DBIdentifier makeNameValid(DBIdentifier name, NameSet set, int maxLen,
+        int nameType, boolean checkForUniqueness) {
+        return namingUtil.makeIdentifierValid(name, set,
+            maxLen, checkForUniqueness);
     }
 
     /**
@@ -3391,7 +3349,6 @@ public class DBDictionary
         return batchFetchSize;
     }
 
-    //protected StringBuffer comment(StringBuffer buf, String comment) {
     protected StringBuilder comment(StringBuilder buf, String comment) {
         return buf.append("-- ").append(comment);
     }
@@ -3446,11 +3403,11 @@ public class DBDictionary
         buf.append("CREATE ");
         if (index.isUnique())
             buf.append("UNIQUE ");
-        String indexName = checkNameLength(index.getName(), maxIndexNameLength, 
+        String indexName = checkNameLength(toDBName(index.getIdentifier()), maxIndexNameLength, 
                 "long-index-name");
         buf.append("INDEX ").append(indexName);
         buf.append(" ON ").append(getFullName(index.getTable(), false));
-        buf.append(" (").append(Strings.join(index.getColumns(), ", ")).
+        buf.append(" (").append(namingUtil.appendColumns(index.getColumns())).
             append(")");
 
         return new String[]{ buf.toString() };
@@ -3516,11 +3473,11 @@ public class DBDictionary
      * &lt;pk name&gt;</code> by default.
      */
     public String[] getDropPrimaryKeySQL(PrimaryKey pk) {
-        if (pk.getName() == null)
+        if (DBIdentifier.isNull(pk.getIdentifier()))
             return new String[0];
         return new String[]{ "ALTER TABLE "
             + getFullName(pk.getTable(), false)
-            + " DROP CONSTRAINT " + pk.getName() };
+            + " DROP CONSTRAINT " + toDBName(pk.getIdentifier()) };
     }
 
     /**
@@ -3544,18 +3501,18 @@ public class DBDictionary
      * &lt;fk name&gt;</code> by default.
      */
     public String[] getDropForeignKeySQL(ForeignKey fk, Connection conn) {
-        if (fk.getName() == null) {
+        if (DBIdentifier.isNull(fk.getIdentifier())) {
             String[] retVal;
-            String fkName = fk.loadNameFromDB(this,conn);
+            DBIdentifier fkName = fk.loadIdentifierFromDB(this,conn);
             retVal = (fkName == null) ?  new String[0] :
                 new String[]{ "ALTER TABLE "
                 + getFullName(fk.getTable(), false)
-                + " DROP CONSTRAINT " + fkName };
-            return retVal;   
+                + " DROP CONSTRAINT " + toDBName(fkName) };
+            return retVal;
         }
         return new String[]{ "ALTER TABLE "
             + getFullName(fk.getTable(), false)
-            + " DROP CONSTRAINT " + fk.getName() };
+            + " DROP CONSTRAINT " + toDBName(fk.getIdentifier()) };
     }
 
     /**
@@ -3565,7 +3522,7 @@ public class DBDictionary
      */
     protected String getDeclareColumnSQL(Column col, boolean alter) {
         StringBuilder buf = new StringBuilder();
-        String columnName = checkNameLength(col.getName(), maxColumnNameLength, 
+        String columnName = checkNameLength(toDBName(col.getIdentifier()), maxColumnNameLength, 
                 "long-column-name");
         buf.append(columnName).append(" ");
         buf.append(getTypeName(col));
@@ -3599,7 +3556,7 @@ public class DBDictionary
         if (!createPrimaryKeys)
             return null;
 
-        String name = pk.getName();
+        String name = toDBName(pk.getIdentifier());
         if (name != null && reservedWordSet.contains(name.toUpperCase()))
             name = null;
 
@@ -3609,7 +3566,7 @@ public class DBDictionary
         buf.append("PRIMARY KEY ");
         if (name != null && CONS_NAME_MID.equals(constraintNameMode))
             buf.append(name).append(" ");
-        buf.append("(").append(Strings.join(pk.getColumns(), ", ")).
+        buf.append("(").append(namingUtil.appendColumns(pk.getColumns())).
             append(")");
         if (name != null && CONS_NAME_AFTER.equals(constraintNameMode))
             buf.append(" CONSTRAINT ").append(name);
@@ -3652,16 +3609,16 @@ public class DBDictionary
         String upAction = getActionName(fk.getUpdateAction());
 
         StringBuilder buf = new StringBuilder();
-        if (fk.getName() != null
+        if (!DBIdentifier.isNull(fk.getIdentifier())
             && CONS_NAME_BEFORE.equals(constraintNameMode))
-            buf.append("CONSTRAINT ").append(fk.getName()).append(" ");
+            buf.append("CONSTRAINT ").append(toDBName(fk.getIdentifier())).append(" ");
         buf.append("FOREIGN KEY ");
-        if (fk.getName() != null && CONS_NAME_MID.equals(constraintNameMode))
-            buf.append(fk.getName()).append(" ");
-        buf.append("(").append(Strings.join(locals, ", ")).append(")");
+        if (!DBIdentifier.isNull(fk.getIdentifier()) && CONS_NAME_MID.equals(constraintNameMode))
+            buf.append(toDBName(fk.getIdentifier())).append(" ");
+        buf.append("(").append(namingUtil.appendColumns(locals)).append(")");
         buf.append(" REFERENCES ");
         buf.append(getFullName(foreigns[0].getTable(), false));
-        buf.append(" (").append(Strings.join(foreigns, ", ")).append(")");
+        buf.append(" (").append(namingUtil.appendColumns(foreigns)).append(")");
         if (delAction != null)
             buf.append(" ON DELETE ").append(delAction);
         if (upAction != null)
@@ -3670,9 +3627,9 @@ public class DBDictionary
             buf.append(" INITIALLY DEFERRED");
         if (supportsDeferredForeignKeyConstraints())
             buf.append(" DEFERRABLE");
-        if (fk.getName() != null
+        if (!DBIdentifier.isNull(fk.getIdentifier())
             && CONS_NAME_AFTER.equals(constraintNameMode))
-            buf.append(" CONSTRAINT ").append(fk.getName());
+            buf.append(" CONSTRAINT ").append(toDBName(fk.getIdentifier()));
         return buf.toString();
     }
 
@@ -3757,22 +3714,22 @@ public class DBDictionary
             || (unq.isDeferred() && !supportsDeferredUniqueConstraints()))
             return null;
         StringBuilder buf = new StringBuilder();
-        if (unq.getName() != null
+        if (!DBIdentifier.isNull(unq.getIdentifier())
             && CONS_NAME_BEFORE.equals(constraintNameMode))
-            buf.append("CONSTRAINT ").append(checkNameLength(unq.getName(), 
+            buf.append("CONSTRAINT ").append(checkNameLength(toDBName(unq.getIdentifier()), 
                 maxConstraintNameLength, "long-constraint-name")).append(" ");
         buf.append("UNIQUE ");
-        if (unq.getName() != null && CONS_NAME_MID.equals(constraintNameMode))
-            buf.append(unq.getName()).append(" ");
-        buf.append("(").append(Strings.join(unq.getColumns(), ", ")).
+        if (!DBIdentifier.isNull(unq.getIdentifier()) && CONS_NAME_MID.equals(constraintNameMode))
+            buf.append(toDBName(unq.getIdentifier())).append(" ");
+        buf.append("(").append(namingUtil.appendColumns(unq.getColumns())).
             append(")");
         if (unq.isDeferred())
             buf.append(" INITIALLY DEFERRED");
         if (supportsDeferredUniqueConstraints())
             buf.append(" DEFERRABLE");
-        if (unq.getName() != null
+        if (!DBIdentifier.isNull(unq.getIdentifier())
             && CONS_NAME_AFTER.equals(constraintNameMode))
-            buf.append(" CONSTRAINT ").append(unq.getName());
+            buf.append(" CONSTRAINT ").append(toDBName(unq.getIdentifier()));
         return buf.toString();
     }
 
@@ -3802,13 +3759,35 @@ public class DBDictionary
      * @param schema the table schema; may be null
      * @param targetSchema if true, then the given schema was listed by
      * the user as one of his schemas
+     * @deprecated
      */
     public boolean isSystemTable(String name, String schema,
         boolean targetSchema) {
-        if (systemTableSet.contains(name.toUpperCase()))
+        return isSystemTable(DBIdentifier.newTable(name),
+            DBIdentifier.newSchema(schema), targetSchema);
+    }
+
+    /**
+     * This method is used to filter system tables from database metadata.
+     * Return true if the given table name represents a system table that
+     * should not appear in the schema definition. By default, returns
+     * true only if the given table is in the internal list of system tables,
+     * or if the given schema is in the list of system schemas and is not
+     * the target schema.
+     *
+     * @param name the table name
+     * @param schema the table schema; may be null
+     * @param targetSchema if true, then the given schema was listed by
+     * the user as one of his schemas
+     */
+    public boolean isSystemTable(DBIdentifier name, DBIdentifier schema,
+        boolean targetSchema) {
+        DBIdentifier sName = DBIdentifier.toUpper(name);
+        if (systemTableSet.contains(sName.getName()))
             return true;
+        DBIdentifier schName = DBIdentifier.toUpper(schema);
         return !targetSchema && schema != null
-            && systemSchemaSet.contains(schema.toUpperCase());
+            && systemSchemaSet.contains(schName.getName());
     }
 
     /**
@@ -3818,8 +3797,21 @@ public class DBDictionary
      *
      * @param name the index name
      * @param table the index table
+     * @deprecated
      */
     public boolean isSystemIndex(String name, Table table) {
+        return false;
+    }
+    
+    /**
+     * This method is used to filter system indexes from database metadata.
+     * Return true if the given index name represents a system index that
+     * should not appear in the schema definition. Returns false by default.
+     *
+     * @param name the index name
+     * @param table the index table
+     */
+    public boolean isSystemIndex(DBIdentifier name, Table table) {
         return false;
     }
 
@@ -3833,23 +3825,56 @@ public class DBDictionary
      * @param schema the table schema; may be null
      * @param targetSchema if true, then the given schema was listed by
      * the user as one of his schemas
+     * @deprecated
      */
     public boolean isSystemSequence(String name, String schema,
         boolean targetSchema) {
-        return !targetSchema && schema != null
-            && systemSchemaSet.contains(schema.toUpperCase());
+        return isSystemSequence(DBIdentifier.newSequence(name), 
+            DBIdentifier.newSchema(schema), targetSchema);
+    }
+
+    /**
+     * This method is used to filter system sequences from database metadata.
+     * Return true if the given sequence represents a system sequence that
+     * should not appear in the schema definition. Returns true if system
+     * schema by default.
+     *
+     * @param name the table name
+     * @param schema the table schema; may be null
+     * @param targetSchema if true, then the given schema was listed by
+     * the user as one of his schemas
+     */
+    public boolean isSystemSequence(DBIdentifier name, DBIdentifier schema,
+        boolean targetSchema) {
+        return !targetSchema && !DBIdentifier.isNull(schema)
+            && systemSchemaSet.contains(DBIdentifier.toUpper(schema).getName());
     }
 
     /**
      * Reflect on the schema to find tables matching the given name pattern.
+     * @deprecated
      */
     public Table[] getTables(DatabaseMetaData meta, String catalog,
         String schemaName, String tableName, Connection conn)
         throws SQLException {
+        return getTables(meta, DBIdentifier.newCatalog(catalog), DBIdentifier.newSchema(schemaName),
+            DBIdentifier.newTable(tableName), conn);
+    }
+
+    
+    /**
+     * Reflect on the schema to find tables matching the given name pattern.
+     */
+    public Table[] getTables(DatabaseMetaData meta, DBIdentifier sqlCatalog,
+        DBIdentifier sqlSchemaName, DBIdentifier sqlTableName, Connection conn)
+        throws SQLException {
+                
+        String schemaName = DBIdentifier.isNull(sqlSchemaName) ? null : sqlSchemaName.getName();
         if (!supportsSchemaForGetTables)
             schemaName = null;
-        else
-            schemaName = getSchemaNameForMetadata(schemaName);
+        else {
+            schemaName = getSchemaNameForMetadata(sqlSchemaName);
+        }
 
         String[] types = Strings.split(tableTypes, ",", 0);
         for (int i = 0; i < types.length; i++)
@@ -3858,8 +3883,8 @@ public class DBDictionary
         beforeMetadataOperation(conn);
         ResultSet tables = null;
         try {
-            tables = meta.getTables(getCatalogNameForMetadata(catalog),
-                schemaName, getTableNameForMetadata(tableName), types);
+            tables = meta.getTables(getCatalogNameForMetadata(sqlCatalog),
+                schemaName, getTableNameForMetadata(sqlTableName), types);
             List tableList = new ArrayList();
             while (tables != null && tables.next())
                 tableList.add(newTable(tables));
@@ -3879,7 +3904,7 @@ public class DBDictionary
     protected Table newTable(ResultSet tableMeta)
         throws SQLException {
         Table t = new Table();
-        t.setName(tableMeta.getString("TABLE_NAME"));
+        t.setIdentifier(fromDBName(tableMeta.getString("TABLE_NAME"), DBIdentifierType.TABLE));
         return t;
     }
 
@@ -3887,9 +3912,18 @@ public class DBDictionary
      * Reflect on the schema to find sequences matching the given name pattern.
      * Returns an empty array by default, as there is no standard way to
      * retrieve a list of sequences.
+     * @deprecated
      */
     public Sequence[] getSequences(DatabaseMetaData meta, String catalog,
         String schemaName, String sequenceName, Connection conn)
+        throws SQLException {
+        return getSequences(meta, DBIdentifier.newCatalog(catalog), DBIdentifier.newSchema(schemaName),
+            DBIdentifier.newSequence(sequenceName), conn);
+        
+    }
+
+    public Sequence[] getSequences(DatabaseMetaData meta, DBIdentifier catalog,
+        DBIdentifier schemaName, DBIdentifier sequenceName, Connection conn)
         throws SQLException {
         String str = getSequencesSQL(schemaName, sequenceName);
         if (str == null)
@@ -3899,10 +3933,10 @@ public class DBDictionary
         ResultSet rs = null;
         try {
             int idx = 1;
-            if (schemaName != null)
-                stmnt.setString(idx++, schemaName.toUpperCase());
-            if (sequenceName != null)
-                stmnt.setString(idx++, sequenceName);
+            if (!DBIdentifier.isNull(schemaName))
+                stmnt.setString(idx++, DBIdentifier.toUpper(schemaName).getName());
+            if (!DBIdentifier.isNull(sequenceName))
+                stmnt.setString(idx++, sequenceName.getName());
             setQueryTimeout(stmnt, conf.getQueryTimeout());
             rs = executeQuery(conn, stmnt, str);
             return getSequence(rs);            
@@ -3926,38 +3960,62 @@ public class DBDictionary
     protected Sequence newSequence(ResultSet sequenceMeta)
         throws SQLException {
         Sequence seq = new Sequence();
-        seq.setSchemaName(sequenceMeta.getString("SEQUENCE_SCHEMA"));
-        seq.setName(sequenceMeta.getString("SEQUENCE_NAME"));
+        seq.setSchemaIdentifier(fromDBName(sequenceMeta.getString("SEQUENCE_SCHEMA"), DBIdentifierType.SCHEMA));
+        seq.setIdentifier(fromDBName(sequenceMeta.getString("SEQUENCE_NAME"), DBIdentifierType.SEQUENCE));
         return seq;
     }
 
     /**
      * Return the SQL needed to select the list of sequences.
+     * @deprecated
      */
     protected String getSequencesSQL(String schemaName, String sequenceName) {
+        return null;
+    }
+
+    protected String getSequencesSQL(DBIdentifier schemaName, DBIdentifier sequenceName) {
         return null;
     }
 
     /**
      * Reflect on the schema to find columns matching the given table and
      * column patterns.
+     * @deprecated
      */
     public Column[] getColumns(DatabaseMetaData meta, String catalog,
         String schemaName, String tableName, String columnName, Connection conn)
         throws SQLException {
-        if (tableName == null && !supportsNullTableForGetColumns)
-            return null;
+        return getColumns(meta, DBIdentifier.newCatalog(catalog),
+            DBIdentifier.newSchema(schemaName),
+            DBIdentifier.newTable(tableName),
+            DBIdentifier.newColumn(columnName),
+            conn);
+    }
 
+    /**
+     * Reflect on the schema to find columns matching the given table and
+     * column patterns.
+     */
+    public Column[] getColumns(DatabaseMetaData meta, DBIdentifier catalog,
+        DBIdentifier schemaName, DBIdentifier tableName, DBIdentifier columnName, Connection conn)
+        throws SQLException {
+        if (DBIdentifier.isNull(tableName) && !supportsNullTableForGetColumns)
+            return null;
+        
+        String sqlSchemaName = null;
+        if (!DBIdentifier.isNull(schemaName)) {
+            sqlSchemaName = schemaName.getName();
+        }
         if (!supportsSchemaForGetColumns)
-            schemaName = null;
+            sqlSchemaName = null;
         else
-            schemaName = getSchemaNameForMetadata(schemaName);
+            sqlSchemaName = getSchemaNameForMetadata(schemaName);
 
         beforeMetadataOperation(conn);
         ResultSet cols = null;
         try {
             cols = meta.getColumns(getCatalogNameForMetadata(catalog),
-                schemaName, getTableNameForMetadata(tableName),
+                sqlSchemaName, getTableNameForMetadata(tableName),
                 getColumnNameForMetadata(columnName));
 
             List columnList = new ArrayList();
@@ -3980,11 +4038,11 @@ public class DBDictionary
     protected Column newColumn(ResultSet colMeta)
         throws SQLException {
         Column c = new Column();
-        c.setSchemaName(colMeta.getString("TABLE_SCHEM"));
-        c.setTableName(colMeta.getString("TABLE_NAME"));
-        c.setName(colMeta.getString("COLUMN_NAME"));
+        c.setSchemaIdentifier(fromDBName(colMeta.getString("TABLE_SCHEM"), DBIdentifierType.SCHEMA));
+        c.setTableIdentifier(fromDBName(colMeta.getString("TABLE_NAME"), DBIdentifierType.TABLE));
+        c.setIdentifier(fromDBName(colMeta.getString("COLUMN_NAME"), DBIdentifierType.COLUMN));
         c.setType(colMeta.getInt("DATA_TYPE"));
-        c.setTypeName(colMeta.getString("TYPE_NAME"));
+        c.setTypeIdentifier(fromDBName(colMeta.getString("TYPE_NAME"), DBIdentifierType.COLUMN_DEFINITION));
         c.setSize(colMeta.getInt("COLUMN_SIZE"));
         c.setDecimalDigits(colMeta.getInt("DECIMAL_DIGITS"));
         c.setNotNull(colMeta.getInt("NULLABLE")
@@ -3998,9 +4056,20 @@ public class DBDictionary
 
     /**
      * Reflect on the schema to find primary keys for the given table pattern.
+     * @deprecated
      */
     public PrimaryKey[] getPrimaryKeys(DatabaseMetaData meta,
         String catalog, String schemaName, String tableName, Connection conn)
+        throws SQLException {
+        return getPrimaryKeys(meta, DBIdentifier.newCatalog(catalog), DBIdentifier.newSchema(schemaName),
+            DBIdentifier.newTable(tableName), conn);
+    }
+
+    /**
+     * Reflect on the schema to find primary keys for the given table pattern.
+     */
+    public PrimaryKey[] getPrimaryKeys(DatabaseMetaData meta,
+        DBIdentifier catalog, DBIdentifier schemaName, DBIdentifier tableName, Connection conn)
         throws SQLException {
         if (useGetBestRowIdentifierForPrimaryKeys)
             return getPrimaryKeysFromBestRowIdentifier(meta, catalog,
@@ -4011,10 +4080,21 @@ public class DBDictionary
 
     /**
      * Reflect on the schema to find primary keys for the given table pattern.
+     * @deprecated
      */
     protected PrimaryKey[] getPrimaryKeysFromGetPrimaryKeys
         (DatabaseMetaData meta, String catalog, String schemaName,
             String tableName, Connection conn)
+    throws SQLException {
+        return getPrimaryKeysFromGetPrimaryKeys(meta, DBIdentifier.newCatalog(catalog),
+            DBIdentifier.newSchema(schemaName), DBIdentifier.newTable(tableName), conn);
+    }
+    /**
+     * Reflect on the schema to find primary keys for the given table pattern.
+     */
+    protected PrimaryKey[] getPrimaryKeysFromGetPrimaryKeys
+        (DatabaseMetaData meta, DBIdentifier catalog, DBIdentifier schemaName,
+            DBIdentifier tableName, Connection conn)
         throws SQLException {
         if (tableName == null && !supportsNullTableForGetPrimaryKeys)
             return null;
@@ -4046,19 +4126,30 @@ public class DBDictionary
     protected PrimaryKey newPrimaryKey(ResultSet pkMeta)
         throws SQLException {
         PrimaryKey pk = new PrimaryKey();
-        pk.setSchemaName(pkMeta.getString("TABLE_SCHEM"));
-        pk.setTableName(pkMeta.getString("TABLE_NAME"));
-        pk.setColumnName(pkMeta.getString("COLUMN_NAME"));
-        pk.setName(pkMeta.getString("PK_NAME"));
+        pk.setSchemaIdentifier(fromDBName(pkMeta.getString("TABLE_SCHEM"), DBIdentifierType.SCHEMA));
+        pk.setTableIdentifier(fromDBName(pkMeta.getString("TABLE_NAME"), DBIdentifierType.TABLE));
+        pk.setColumnIdentifier(fromDBName(pkMeta.getString("COLUMN_NAME"), DBIdentifierType.COLUMN));
+        pk.setIdentifier(fromDBName(pkMeta.getString("PK_NAME"), DBIdentifierType.CONSTRAINT));
         return pk;
+    }
+
+    /**
+     * Reflect on the schema to find primary keys for the given table pattern.
+     * @deprecated
+     */
+    protected PrimaryKey[] getPrimaryKeysFromBestRowIdentifier
+        (DatabaseMetaData meta, String catalog, String schemaName,
+            String tableName, Connection conn) throws SQLException {
+        return getPrimaryKeysFromBestRowIdentifier(meta, DBIdentifier.newCatalog(catalog),
+            DBIdentifier.newSchema(schemaName), DBIdentifier.newTable(tableName), conn);
     }
 
     /**
      * Reflect on the schema to find primary keys for the given table pattern.
      */
     protected PrimaryKey[] getPrimaryKeysFromBestRowIdentifier
-        (DatabaseMetaData meta, String catalog, String schemaName,
-            String tableName, Connection conn)
+        (DatabaseMetaData meta, DBIdentifier catalog, DBIdentifier schemaName,
+            DBIdentifier tableName, Connection conn)
         throws SQLException {
         if (tableName == null)
             return null;
@@ -4066,15 +4157,15 @@ public class DBDictionary
         beforeMetadataOperation(conn);
         ResultSet pks = null;
         try {
-            pks = meta.getBestRowIdentifier(catalog, schemaName,
-                tableName, 0, false);
+            pks = meta.getBestRowIdentifier(toDBName(catalog), toDBName(schemaName),
+                toDBName(tableName), 0, false);
 
             List pkList = new ArrayList();
             while (pks != null && pks.next()) {
                 PrimaryKey pk = new PrimaryKey();
-                pk.setSchemaName(schemaName);
-                pk.setTableName(tableName);
-                pk.setColumnName(pks.getString("COLUMN_NAME"));
+                pk.setSchemaIdentifier(schemaName);
+                pk.setTableIdentifier(tableName);
+                pk.setColumnIdentifier(fromDBName(pks.getString("COLUMN_NAME"), DBIdentifierType.COLUMN));
                 pkList.add(pk);
             }
             return (PrimaryKey[]) pkList.toArray
@@ -4090,9 +4181,22 @@ public class DBDictionary
 
     /**
      * Reflect on the schema to find indexes matching the given table pattern.
+     * @deprecated
      */
     public Index[] getIndexInfo(DatabaseMetaData meta, String catalog,
         String schemaName, String tableName, boolean unique,
+        boolean approx, Connection conn)
+        throws SQLException {
+        return getIndexInfo(meta, DBIdentifier.newCatalog(catalog), 
+            DBIdentifier.newSchema(schemaName), DBIdentifier.newTable(tableName), unique,
+            approx, conn);
+    }
+
+    /**
+     * Reflect on the schema to find indexes matching the given table pattern.
+     */
+    public Index[] getIndexInfo(DatabaseMetaData meta, DBIdentifier catalog,
+        DBIdentifier schemaName, DBIdentifier tableName, boolean unique,
         boolean approx, Connection conn)
         throws SQLException {
         if (tableName == null && !supportsNullTableForGetIndexInfo)
@@ -4124,10 +4228,10 @@ public class DBDictionary
     protected Index newIndex(ResultSet idxMeta)
         throws SQLException {
         Index idx = new Index();
-        idx.setSchemaName(idxMeta.getString("TABLE_SCHEM"));
-        idx.setTableName(idxMeta.getString("TABLE_NAME"));
-        idx.setColumnName(idxMeta.getString("COLUMN_NAME"));
-        idx.setName(idxMeta.getString("INDEX_NAME"));
+        idx.setSchemaIdentifier(fromDBName(idxMeta.getString("TABLE_SCHEM"), DBIdentifierType.SCHEMA));
+        idx.setTableIdentifier(fromDBName(idxMeta.getString("TABLE_NAME"), DBIdentifierType.TABLE));
+        idx.setColumnIdentifier(fromDBName(idxMeta.getString("COLUMN_NAME"), DBIdentifierType.COLUMN));
+        idx.setIdentifier(fromDBName(idxMeta.getString("INDEX_NAME"), DBIdentifierType.INDEX));
         idx.setUnique(!idxMeta.getBoolean("NON_UNIQUE"));
         return idx;
     }
@@ -4135,6 +4239,7 @@ public class DBDictionary
     /**
      * Reflect on the schema to return foreign keys imported by the given
      * table pattern.
+     * @deprecated
      */
     public ForeignKey[] getImportedKeys(DatabaseMetaData meta, String catalog,
         String schemaName, String tableName, Connection conn)
@@ -4143,11 +4248,33 @@ public class DBDictionary
     }
 
     /**
+     * Reflect on the schema to return foreign keys imported by the given
+     * table pattern.
+     */
+    public ForeignKey[] getImportedKeys(DatabaseMetaData meta, DBIdentifier catalog,
+        DBIdentifier schemaName, DBIdentifier tableName, Connection conn)
+        throws SQLException {
+        return getImportedKeys(meta, catalog, schemaName, tableName, conn, true);
+    }
+
+    /**
+     * Reflect on the schema to return full foreign keys imported by the given
+     * table pattern.
+     * @deprecated
+     */
+    public ForeignKey[] getImportedKeys(DatabaseMetaData meta, String catalog,
+        String schemaName, String tableName, Connection conn, boolean partialKeys) 
+        throws SQLException {
+        return getImportedKeys(meta, DBIdentifier.newCatalog(catalog), 
+            DBIdentifier.newSchema(schemaName), DBIdentifier.newTable(tableName), conn, partialKeys);
+    }
+    
+    /**
      * Reflect on the schema to return full foreign keys imported by the given
      * table pattern.
      */
-    public ForeignKey[] getImportedKeys(DatabaseMetaData meta, String catalog,
-        String schemaName, String tableName, Connection conn, boolean partialKeys)
+    public ForeignKey[] getImportedKeys(DatabaseMetaData meta, DBIdentifier catalog,
+        DBIdentifier schemaName, DBIdentifier tableName, Connection conn, boolean partialKeys)
         throws SQLException {
         if (!supportsForeignKeys)
             return null;
@@ -4212,13 +4339,13 @@ public class DBDictionary
     protected ForeignKey newForeignKey(ResultSet fkMeta)
         throws SQLException {
         ForeignKey fk = new ForeignKey();
-        fk.setSchemaName(fkMeta.getString("FKTABLE_SCHEM"));
-        fk.setTableName(fkMeta.getString("FKTABLE_NAME"));
-        fk.setColumnName(fkMeta.getString("FKCOLUMN_NAME"));
-        fk.setName(fkMeta.getString("FK_NAME"));
-        fk.setPrimaryKeySchemaName(fkMeta.getString("PKTABLE_SCHEM"));
-        fk.setPrimaryKeyTableName(fkMeta.getString("PKTABLE_NAME"));
-        fk.setPrimaryKeyColumnName(fkMeta.getString("PKCOLUMN_NAME"));
+        fk.setSchemaIdentifier(fromDBName(fkMeta.getString("FKTABLE_SCHEM"), DBIdentifierType.SCHEMA));
+        fk.setTableIdentifier(fromDBName(fkMeta.getString("FKTABLE_NAME"), DBIdentifierType.TABLE));
+        fk.setColumnIdentifier(fromDBName(fkMeta.getString("FKCOLUMN_NAME"), DBIdentifierType.COLUMN));
+        fk.setIdentifier(fromDBName(fkMeta.getString("FK_NAME"), DBIdentifierType.FOREIGN_KEY));
+        fk.setPrimaryKeySchemaIdentifier(fromDBName(fkMeta.getString("PKTABLE_SCHEM"), DBIdentifierType.SCHEMA));
+        fk.setPrimaryKeyTableIdentifier(fromDBName(fkMeta.getString("PKTABLE_NAME"), DBIdentifierType.TABLE));
+        fk.setPrimaryKeyColumnIdentifier(fromDBName(fkMeta.getString("PKCOLUMN_NAME"), DBIdentifierType.COLUMN));
         fk.setKeySequence(fkMeta.getShort("KEY_SEQ"));
         fk.setDeferred(fkMeta.getShort("DEFERRABILITY")
             == DatabaseMetaData.importedKeyInitiallyDeferred);
@@ -4246,7 +4373,15 @@ public class DBDictionary
      * from {@link DatabaseMetaData}.
      */
     protected String getTableNameForMetadata(String tableName) {
-        return convertSchemaCase(tableName);
+        return convertSchemaCase(DBIdentifier.newTable(tableName));
+    }
+
+    /**
+     * Returns the table name that will be used for obtaining information
+     * from {@link DatabaseMetaData}.
+     */
+    protected String getTableNameForMetadata(DBIdentifier tableName) {
+        return convertSchemaCase(tableName.getUnqualifiedName());
     }
 
     /**
@@ -4256,6 +4391,16 @@ public class DBDictionary
     protected String getSchemaNameForMetadata(String schemaName) {
         if (schemaName == null)
             schemaName = conf.getSchema();
+        return convertSchemaCase(DBIdentifier.newSchema(schemaName));
+    }
+
+    /**
+     * Returns the schema name that will be used for obtaining information
+     * from {@link DatabaseMetaData}.
+     */
+    protected String getSchemaNameForMetadata(DBIdentifier schemaName) {
+        if (DBIdentifier.isNull(schemaName))
+            schemaName = DBIdentifier.newSchema(conf.getSchema());
         return convertSchemaCase(schemaName);
     }
 
@@ -4264,6 +4409,14 @@ public class DBDictionary
      * from {@link DatabaseMetaData}.
      */
     protected String getCatalogNameForMetadata(String catalogName) {
+        return convertSchemaCase(DBIdentifier.newCatalog(catalogName));
+    }
+
+    /**
+     * Returns the catalog name that will be used for obtaining information
+     * from {@link DatabaseMetaData}.
+     */
+    protected String getCatalogNameForMetadata(DBIdentifier catalogName) {
         return convertSchemaCase(catalogName);
     }
 
@@ -4272,6 +4425,14 @@ public class DBDictionary
      * from {@link DatabaseMetaData}.
      */
     protected String getColumnNameForMetadata(String columnName) {
+        return convertSchemaCase(DBIdentifier.newColumn(columnName));
+    }
+
+    /**
+     * Returns the column name that will be used for obtaining information
+     * from {@link DatabaseMetaData}.
+     */
+    protected String getColumnNameForMetadata(DBIdentifier columnName) {
         return convertSchemaCase(columnName);
     }
 
@@ -4280,28 +4441,15 @@ public class DBDictionary
      * be able to understand.
      */
     public String convertSchemaCase(String objectName) {
-        if (objectName == null)
-            return null;
+        return convertSchemaCase(DBIdentifier.newIdentifier(objectName, DBIdentifierType.DEFAULT, false));
+    }
 
-        // Handle delimited string differently. Return unquoted name.
-        if (isDelimitIds() || isDelimited(objectName)) {
-            String delimCase = getDelimitedCase();
-            if (SCHEMA_CASE_UPPER.equals(delimCase)) {
-                objectName.toUpperCase();
-            }
-            else if (SCHEMA_CASE_LOWER.equals(delimCase)) {
-                objectName.toLowerCase();
-            }
-            
-            return stripDelimiters(objectName);
-        }
-        
-        String scase = getSchemaCase();
-        if (SCHEMA_CASE_LOWER.equals(scase))
-            return objectName.toLowerCase();
-        if (SCHEMA_CASE_PRESERVE.equals(scase))
-            return objectName;
-        return objectName.toUpperCase();
+    /**
+     * Convert the specified schema name to a name that the database will
+     * be able to understand.
+     */
+    public String convertSchemaCase(DBIdentifier objectName) {
+        return toDBName(namingUtil.convertSchemaCase(objectName), false);
     }
     
     /**
@@ -4346,7 +4494,7 @@ public class DBDictionary
         if (query.indexOf('{') != -1) // only if the token is in the string
         {
             query = MessageFormat.format(query, new Object[]{
-                col.getName(), getFullName(col.getTable(), false),
+                toDBName(col.getIdentifier()), getFullName(col.getTable(), false),
                 getGeneratedKeySequenceName(col),
             });
         }
@@ -4371,18 +4519,7 @@ public class DBDictionary
      * to be used for auto-assign support.
      */
     protected String getGeneratedKeySequenceName(Column col) {
-        String tname = col.getTableName();
-        String cname = col.getName();
-        int max = maxAutoAssignNameLength;
-        int extraChars = -max + tname.length() + 1 // <tname> + '_'
-            + cname.length() + 4; // <cname> + '_SEQ'
-        if (extraChars > 0) {
-            // this assumes that tname is longer than extraChars
-            tname = tname.substring(0, tname.length() - extraChars);
-        }
-        StringBuilder buf = new StringBuilder(max);
-        buf.append(tname).append("_").append(cname).append("_SEQ");
-        return buf.toString();
+        return toDBName(namingUtil.getGeneratedKeySequenceName(col, maxAutoAssignNameLength));
     }
 
     ///////////////////////////////
@@ -4392,6 +4529,11 @@ public class DBDictionary
     public void setConfiguration(Configuration conf) {
         this.conf = (JDBCConfiguration) conf;
         this.log = this.conf.getLog(JDBCConfiguration.LOG_JDBC);
+
+        // Create the naming utility
+        namingUtil = this.conf.getIdentifierUtilInstance();
+        namingUtil.setIdentifierConfiguration(this);
+        configureNamingRules();
 
         // warn about unsupported dicts
         if (log.isWarnEnabled() && !isSupported())
@@ -4735,7 +4877,11 @@ public class DBDictionary
      * @return
      */
     public String getVersionColumn(Column column, String tableAlias) {
-        return column.toString();
+        return getVersionColumn(column, DBIdentifier.newTable(tableAlias)).toString();
+    }
+
+    public DBIdentifier getVersionColumn(Column column, DBIdentifier tableAlias) {
+        return column.getIdentifier();
     }
     
     public void insertBlobForStreamingLoad(Row row, Column col, 
@@ -4879,9 +5025,14 @@ public class DBDictionary
     
     /**
      * Create an index if necessary for some database tables
+     * @deprecated
      */
     public void createIndexIfNecessary(Schema schema, String table,
             Column pkColumn) {
+    }
+
+    public void createIndexIfNecessary(Schema schema, DBIdentifier table,
+        Column pkColumn) {
     }
     
     /**
@@ -5011,7 +5162,7 @@ public class DBDictionary
     }
 
     /**
-     * Return batched statements update succes count
+     * Return batched statements update success count
      * @param ps A PreparedStatement
      * @return return update count
      */
@@ -5042,68 +5193,6 @@ public class DBDictionary
                     length));
         return name;
     }
-    
-    public String delimitString(String name, DBIdentifiers type) {
-        if (StringUtils.isEmpty(name) || type == null) {
-            return name;
-        }
-        
-        if (!getSupportsDelimitedIds()) {
-            // TODO: log (or maybe log in the method itself; so maybe
-            // merge with next if stmt
-            return name;
-        }
-        
-        if (!isDelimitIds()) {
-            return convertQuotes(name);
-        }
-        // TODO: merge with if stmt above (maybe not, may want to log this)
-        if (!supportsDelimitedId(type)) {
-            // TODO: log
-            return name;
-        }
-        return addDelimiters(name);
-    }
-    
-    public void delimitArray(String[] names, DBIdentifiers type) {
-//        String[] delimNames = new String[names.length];
-        for (int i = 0; i < names.length; i++) {
-            names[i] = delimitString(names[i], type);
-        }
-    }
-    
-    private String convertQuotes(String name) {
-        if (name.startsWith("\"") && name.endsWith("\"")) {
-            return getDelimiter() + name.substring(1, name.length() - 1) + getDelimiter();
-        }
-        
-        return name;
-    }
-
-    /**
-     * @return the unsupportedDelimitedIds
-     */
-    protected EnumSet<DBIdentifiers> getUnsupportedDelimitedIds() {
-        return unsupportedDelimitedIds;
-    }
-    
-    protected boolean supportsDelimitedId(DBIdentifiers type) {
-        if (getUnsupportedDelimitedIds().contains(type)) {
-            return false;
-        }
-        return true;
-    }
-
-    /**
-     * @return the delimiter
-     */
-    public String getDelimiter() {
-        return delimiter;
-    }
-    
-    protected String getDelimitedCase() {
-        return delimitedCase;
-    }
 
     protected void setDelimitedCase(DatabaseMetaData metaData) {
         try {
@@ -5117,41 +5206,45 @@ public class DBDictionary
                 delimitedCase = SCHEMA_CASE_LOWER;
             }
         } catch (SQLException e) {
-            // TODO log this
+            getLog().warn("cannot-determine-identifier-case");
+            if (getLog().isTraceEnabled()) {
+                getLog().trace(e.toString(), e);
+            }
         }
     }
     
     /**
      * @return the supportsDelimitedIds
      */
-    public boolean getSupportsDelimitedIds() {
-        return supportsDelimitedIds;
+    public boolean getSupportsDelimitedIdentifiers() {
+        return supportsDelimitedIdentifiers;
     }
 
     /**
      * @param supportsDelimitedIds the supportsDelimitedIds to set
      */
-    public void setSupportsDelimitedIds(DatabaseMetaData metaData) {
+    public void setSupportsDelimitedIdentifiers(DatabaseMetaData metaData) {
         try {
-            supportsDelimitedIds = 
+            supportsDelimitedIdentifiers = 
                 metaData.supportsMixedCaseQuotedIdentifiers();
         } catch (SQLException e) {
-            // TODO log this, or should we throw an exception?
+            supportsDelimitedIdentifiers = false;
+            getLog().warn(_loc.get("unknown-delim-support", e));
         }
     }
 
     /**
      * @return the delimitIds
      */
-    public boolean isDelimitIds() {
-        return delimitIds;
+    public boolean getDelimitIdentifiers() {
+        return delimitIdentifiers;
     }
 
     /**
      * @param delimitIds the delimitIds to set
      */
-    public void setDelimitIds(boolean delimitIds) {
-        this.delimitIds = delimitIds;
+    public void setDelimitIdentifiers(boolean delimitIds) {
+        delimitIdentifiers = delimitIds;
     }
     
     /**
@@ -5181,39 +5274,84 @@ public class DBDictionary
     public void setXMLTypeEncoding(String encoding) {
         xmlTypeEncoding = encoding;
     }
-    
-    /**
-     * Combine a number of names into 1 name with each part separated by an underscore ("_").
-     * If a name part is delimited, remove the delimiters.
-     * @param names
-     * @return combined name
-     */
-    public String combineNames(String... names) {
-        boolean delimited = false;
-        String combined = null;
-        for (int i = 0; i < names.length; i++) {
-            String name = names[i];
-            if (isDelimited(name)) {
-                delimited = true;
-                name = stripDelimiters(name);
-            }
-            if (i == 0) {
-                combined = name;
-            }
-            else {
-                combined = combined + "_" + name;
-            }
-        }
-        
-        if (delimited) {
-            combined = addDelimiters(combined);
-        }
-        
-        return combined;
-    }
-    
+
     public Log getLog() { 
         return log;
+    }
+
+    public boolean delimitAll() {
+        return delimitIdentifiers;
+    }
+
+    public String getLeadingDelimiter() {
+        return leadingDelimiter;
+    }
+
+    public void setLeadingDelimiter(String delim) {
+        leadingDelimiter = delim;
+    }
+
+    public String getIdentifierDelimiter() {
+        return catalogSeparator;
+    }
+
+    public String getIdentifierConcatenator() {
+        return nameConcatenator;
+    }
+    
+    public String getTrailingDelimiter() {
+        return trailingDelimiter;
+    }
+
+    public void setTrailingDelimiter(String delim) {
+        trailingDelimiter = delim;
+    }
+
+    public IdentifierRule getDefaultIdentifierRule() {
+        if (defaultNamingRule == null) {
+            defaultNamingRule = namingRules.get(DBIdentifierType.DEFAULT.name());
+        }
+        return defaultNamingRule;
+    }
+
+    public <T> IdentifierRule getIdentifierRule(T t) {
+        if (t.equals(DBIdentifierType.DEFAULT.name())) {
+            return getDefaultIdentifierRule();
+        }
+        IdentifierRule nrule = namingRules.get(t);
+        if (nrule == null) {
+            return getDefaultIdentifierRule();
+        }
+        return nrule;
+    }
+
+    @SuppressWarnings("unchecked")
+    public Map<String, IdentifierRule> getIdentifierRules() {
+        return namingRules;
+    }
+
+    /**
+     * Returns the naming utility used by this dictionary instance
+     * @return
+     */
+    public DBIdentifierUtil getNamingUtil() {
+        return namingUtil;
+    }
+    
+    public String getDelimitedCase() {
+        return delimitedCase;
+    }
+
+    public String toDBName(DBIdentifier name) {
+        return getNamingUtil().toDBName(name);
+    }
+
+    public String toDBName(DBIdentifier name, boolean delimit) {
+        return getNamingUtil().toDBName(name, delimit);
+    }
+
+    public DBIdentifier fromDBName(String name, DBIdentifierType id) {
+        return getNamingUtil().fromDBName(name, id);
     }
     
     public void setDefaultSchemaName(String defaultSchemaName) {

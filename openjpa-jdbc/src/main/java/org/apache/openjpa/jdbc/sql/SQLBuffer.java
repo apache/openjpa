@@ -30,6 +30,7 @@ import java.util.Iterator;
 import java.util.List;
 
 import org.apache.commons.lang.ObjectUtils;
+import org.apache.openjpa.jdbc.identifier.DBIdentifier;
 import org.apache.openjpa.jdbc.kernel.JDBCFetchConfiguration;
 import org.apache.openjpa.jdbc.kernel.exps.Val;
 import org.apache.openjpa.jdbc.schema.Column;
@@ -182,6 +183,11 @@ public final class SQLBuffer
             }
         }
     }
+    
+    public SQLBuffer append(DBIdentifier name) {
+        _sql.append(_dict.toDBName(name));
+        return this;
+    }
 
     public SQLBuffer append(Table table) {
         _sql.append(_dict.getFullName(table, false));
@@ -194,7 +200,7 @@ public final class SQLBuffer
     }
 
     public SQLBuffer append(Column col) {
-        _sql.append(col.getName());
+        _sql.append(_dict.getColumnDBName(col));
         return this;
     }
 

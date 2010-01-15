@@ -758,7 +758,7 @@ public class RowImpl
 
             if (hasVal)
                 buf.append(", ");
-            buf.append(_cols[i]);
+            buf.append(dict.getColumnDBName(_cols[i]));
             if (_types[i] == RAW)
                 buf.append(" = ").append(_vals[i]);
             else
@@ -788,7 +788,7 @@ public class RowImpl
                 buf.append(", ");
                 vals.append(", ");
             }
-            buf.append(_cols[i]);
+            buf.append(dict.getColumnDBName(_cols[i]));
             if (_types[i] == RAW)
                 vals.append(_vals[i]);
             else
@@ -827,16 +827,16 @@ public class RowImpl
 
             // Get platform specific version column name
             if (_cols[i].getVersionStrategy() != null)
-               buf.append(dict.getVersionColumn(_cols[i], _cols[i]
-                   .getTableName())).append(" = ?");
+               buf.append(dict.toDBName(dict.getVersionColumn(_cols[i], _cols[i]
+                   .getTableIdentifier()))).append(" = ?");
             // sqlserver seems to have problems using null parameters in the
             // where clause
             else if (_vals[getWhereIndex(_cols[i])] == NULL)
-                buf.append(_cols[i]).append(" IS NULL");
+                buf.append(dict.getColumnDBName(_cols[i])).append(" IS NULL");
             else if (_types[i] == RAW)
-                buf.append(_cols[i]).append(" = ").append(_vals[i]);
+                buf.append(dict.getColumnDBName(_cols[i])).append(" = ").append(_vals[i]);
             else
-                buf.append(_cols[i]).append(" = ?");
+                buf.append(dict.getColumnDBName(_cols[i])).append(" = ?");
             hasWhere = true;
         }
     }

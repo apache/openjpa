@@ -23,6 +23,7 @@ import java.util.List;
 
 import org.apache.openjpa.enhance.PersistenceCapable;
 import org.apache.openjpa.enhance.Reflection;
+import org.apache.openjpa.jdbc.identifier.DBIdentifier;
 import org.apache.openjpa.jdbc.kernel.JDBCFetchConfiguration;
 import org.apache.openjpa.jdbc.kernel.JDBCStore;
 import org.apache.openjpa.jdbc.meta.strats.NoneFieldStrategy;
@@ -58,6 +59,7 @@ import org.apache.openjpa.util.ObjectId;
  *
  * @author Abe White
  */
+@SuppressWarnings("serial")
 public class FieldMapping
     extends FieldMetaData
     implements ValueMapping, FieldStrategy {
@@ -98,7 +100,7 @@ public class FieldMapping
     /**
      * Constructor.
      */
-    public FieldMapping(String name, Class type, ClassMapping owner) {
+    public FieldMapping(String name, Class<?> type, ClassMapping owner) {
         super(name, type, owner);
         _info = owner.getMappingRepository().newMappingInfo(this);
         _val = (ValueMapping) getValue();
@@ -623,7 +625,7 @@ public class FieldMapping
 
     private void setPKValueFromMappedByIdField(OpenJPAStateManager sm) {
         if (sm instanceof StateManagerImpl) {
-            List mappedByIdFields = ((StateManagerImpl)sm).
+            List<FieldMetaData> mappedByIdFields = ((StateManagerImpl)sm).
                 getMappedByIdFields();
             if (mappedByIdFields == null)
                 return;
@@ -1161,7 +1163,14 @@ public class FieldMapping
         _val.setPolymorphic(poly);
     }
 
+    /**
+     * @deprecated
+     */
     public void mapConstraints(String name, boolean adapt) {
+        _val.mapConstraints(name, adapt);
+    }
+
+    public void mapConstraints(DBIdentifier name, boolean adapt) {
         _val.mapConstraints(name, adapt);
     }
 
@@ -1326,7 +1335,7 @@ public class FieldMapping
             if (mapped != null) {
                 FieldMappingInfo info = getMappingInfo();
                 FieldMappingInfo mappedInfo = mapped.getMappingInfo();
-                info.setTableName(mappedInfo.getTableName());
+                info.setTableIdentifier(mappedInfo.getTableIdentifier());
                 info.setColumns(mapped.getElementMapping().getValueInfo().getColumns());
                 getElementMapping().getValueInfo().setColumns(
                     mappedInfo.getColumns());

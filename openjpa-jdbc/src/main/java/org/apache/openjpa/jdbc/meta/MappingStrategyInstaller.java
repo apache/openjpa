@@ -18,6 +18,8 @@
  */
 package org.apache.openjpa.jdbc.meta;
 
+import org.apache.openjpa.meta.MetaDataModes;
+
 /**
  * Installer used during mapping that attempts to use the given mapping
  * information (if any), and fails if it does not work.
@@ -26,6 +28,7 @@ package org.apache.openjpa.jdbc.meta;
  * @nojavadoc
  * @since 0.4.0
  */
+@SuppressWarnings("serial")
 public class MappingStrategyInstaller
     extends StrategyInstaller {
 
@@ -45,7 +48,7 @@ public class MappingStrategyInstaller
         if (strat == null)
             strat = repos.defaultStrategy(cls, true);
         cls.setStrategy(strat, Boolean.TRUE);
-        cls.setSourceMode(cls.MODE_MAPPING, true);
+        cls.setSourceMode(MetaDataModes.MODE_MAPPING, true);
     }
 
     public void installStrategy(FieldMapping field) {

@@ -28,9 +28,9 @@ import java.util.Set;
 
 import org.apache.openjpa.enhance.PersistenceCapable;
 import org.apache.openjpa.enhance.ReflectingPersistenceCapable;
+import org.apache.openjpa.jdbc.identifier.DBIdentifier;
 import org.apache.openjpa.jdbc.kernel.JDBCFetchConfiguration;
 import org.apache.openjpa.jdbc.kernel.JDBCStore;
-import org.apache.openjpa.jdbc.kernel.MixedLockManager;
 import org.apache.openjpa.jdbc.meta.ClassMapping;
 import org.apache.openjpa.jdbc.meta.Embeddable;
 import org.apache.openjpa.jdbc.meta.FieldMapping;
@@ -144,15 +144,15 @@ public class RelationFieldStrategy
         // around an inverse key: check to see if we're mapped as a secondary
         // table join but we're in the table of the related type, and if so
         // switch our join mapping info to our value mapping info
-        String tableName = field.getMappingInfo().getTableName();
+        DBIdentifier tableName = field.getMappingInfo().getTableIdentifier();
         Table table = field.getTypeMapping().getTable();
         ValueMappingInfo vinfo = field.getValueInfo();
-        if (tableName != null && table != null
-            && (tableName.equalsIgnoreCase(table.getName())
-            || tableName.equalsIgnoreCase(table.getFullName()))) {
+        if (!DBIdentifier.isNull(tableName) && table != null
+            && (tableName.equals(table.getIdentifier())
+            || tableName.equals(table.getFullIdentifier()))) {
             vinfo.setJoinDirection(MappingInfo.JOIN_INVERSE);
             vinfo.setColumns(field.getMappingInfo().getColumns());
-            field.getMappingInfo().setTableName(null);
+            field.getMappingInfo().setTableIdentifier(DBIdentifier.NULL);
             field.getMappingInfo().setColumns(null);
         }
         
@@ -981,7 +981,7 @@ public class RelationFieldStrategy
             if (gfk != null)
                 tcol = gfk.getColumn(tcol);
             if (tfk == null)
-                tfk = new ForeignKey(null, tcol.getTable());
+                tfk = new ForeignKey(DBIdentifier.NULL, tcol.getTable());
             tfk.join(tcol, fk.getPrimaryKeyColumn(cols[i]));
         }
         return tfk;

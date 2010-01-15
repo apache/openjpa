@@ -23,6 +23,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.openjpa.jdbc.identifier.DBIdentifier;
 import org.apache.openjpa.jdbc.meta.ClassMapping;
 import org.apache.openjpa.jdbc.meta.FieldMapping;
 import org.apache.openjpa.jdbc.sql.DBDictionary;
@@ -87,15 +88,15 @@ public class MixedLockManager extends PessimisticLockManager {
         // 
         if(!dict.supportsLockingWithMultipleTables) {
             // look for columns mapped to secondary tables which need to be locked
-            Map<String,FieldMapping> colsMappedToSecTable = new HashMap<String,FieldMapping>();
+            Map<DBIdentifier,FieldMapping> colsMappedToSecTable = new HashMap<DBIdentifier,FieldMapping>();
             FieldMapping fms[] = mapping.getFieldMappings();
             for( FieldMapping fm : fms) {
-                String secTableName = fm.getMappingInfo().getTableName();
-                if( secTableName != null ) {
+                DBIdentifier secTableName = fm.getMappingInfo().getTableIdentifier();
+                if(!DBIdentifier.isNull(secTableName)) {
                     colsMappedToSecTable.put(secTableName, fm);
                 }
             }
-            for( String secTableName : colsMappedToSecTable.keySet()) {
+            for( DBIdentifier secTableName : colsMappedToSecTable.keySet()) {
                 FieldMapping fm = colsMappedToSecTable.get(secTableName);
                 // select only the PK columns, since we just want to lock
                 Select select = factory.newSelect();

@@ -23,11 +23,13 @@ import java.io.CharArrayWriter;
 import java.io.IOException;
 import java.io.Reader;
 
+import org.apache.openjpa.jdbc.identifier.DBIdentifier;
 import org.apache.openjpa.jdbc.kernel.JDBCStore;
 import org.apache.openjpa.jdbc.meta.JavaSQLTypes;
 import org.apache.openjpa.jdbc.meta.ValueMapping;
 import org.apache.openjpa.jdbc.schema.Column;
 import org.apache.openjpa.jdbc.schema.ColumnIO;
+import org.apache.openjpa.jdbc.sql.DBDictionary;
 import org.apache.openjpa.jdbc.sql.Sized;
 import org.apache.openjpa.util.StoreException;
 
@@ -49,10 +51,20 @@ public class CharArrayStreamValueHandler
         return _instance;
     }
 
+    /**
+     * @deprecated
+     */
     public Column[] map(ValueMapping vm, String name, ColumnIO io,
         boolean adapt) {
+        DBDictionary dict = vm.getMappingRepository().getDBDictionary();
+        DBIdentifier colName = DBIdentifier.newColumn(name, dict != null ? dict.delimitAll() : false);
+        return map(vm, colName, io, adapt);
+    }
+
+    public Column[] map(ValueMapping vm, DBIdentifier name, ColumnIO io,
+        boolean adapt) {
         Column col = new Column();
-        col.setName(name);
+        col.setIdentifier(name);
         col.setJavaType(JavaSQLTypes.CHAR_STREAM);
         col.setSize(-1);
         return new Column[]{ col };

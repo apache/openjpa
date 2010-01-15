@@ -26,7 +26,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.openjpa.jdbc.identifier.DBIdentifier;
 import org.apache.openjpa.jdbc.meta.strats.NoneVersionStrategy;
 import org.apache.openjpa.jdbc.meta.strats.SuperclassVersionStrategy;
 import org.apache.openjpa.jdbc.schema.Column;
@@ -69,21 +69,21 @@ public class VersionMappingInfo
     public Column[] getMultiTableColumns(Version vers, Column[] templates,
             boolean adapt) {
     	Table primaryTable = vers.getClassMapping().getTable();
-    	List<String> secondaryTableNames = Arrays.asList(vers
-                .getClassMapping().getMappingInfo().getSecondaryTableNames());
+    	List<DBIdentifier> secondaryTableNames = Arrays.asList(vers
+                .getClassMapping().getMappingInfo().getSecondaryTableIdentifiers());
         Map<Table, List<Column>> assign = new LinkedHashMap<Table,
                 List<Column>>();
     	for (Column col : templates) {
-    	    String tableName = col.getTableName();
+    	    DBIdentifier tableName = col.getTableIdentifier();
     	    Table table;
-    		if (StringUtils.isEmpty(tableName) 
-    		  || tableName.equals(primaryTable.getName())) {
+    		if (DBIdentifier.isEmpty(tableName) 
+    		  || tableName.equals(primaryTable.getIdentifier())) {
     			table = primaryTable;
     		} else if (secondaryTableNames.contains(tableName)) {
     			table = primaryTable.getSchema().getTable(tableName);
     		} else {
                 throw new UserException(_loc.get("bad-version-column-table",
-    					col.getName(), tableName));
+    					col.getIdentifier().toString(), tableName));
     		}
     		if (!assign.containsKey(table))
     			assign.put(table, new ArrayList<Column>());
@@ -147,9 +147,9 @@ public class VersionMappingInfo
     boolean spansMultipleTables(Column[] cols) {
     	if (cols == null || cols.length <= 1) 
     		return false;
-    	Set<String> tables = new HashSet<String>();
+    	Set<DBIdentifier> tables = new HashSet<DBIdentifier>();
     	for (Column col : cols)
-    		if (tables.add(col.getTableName()) && tables.size() > 1)
+    		if (tables.add(col.getTableIdentifier()) && tables.size() > 1)
     			return true;
     	return false;
     }
@@ -159,10 +159,10 @@ public class VersionMappingInfo
      */
     private Table getSingleTable(Version version, Column[] cols) {
     	if (cols == null || cols.length == 0 
-    	 || StringUtils.isEmpty(cols[0].getTableName()))
+    	 || DBIdentifier.isEmpty(cols[0].getTableIdentifier()))
     		return version.getClassMapping().getTable();
     	return version.getClassMapping().getTable().getSchema()
-    		.getTable(cols[0].getTableName());
+    		.getTable(cols[0].getTableIdentifier());
     }
 
 

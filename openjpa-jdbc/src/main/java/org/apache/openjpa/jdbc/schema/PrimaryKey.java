@@ -18,6 +18,8 @@
  */
 package org.apache.openjpa.jdbc.schema;
 
+import org.apache.openjpa.jdbc.identifier.DBIdentifier;
+
 /**
  * Represents a table primary key. It can also represent a partial key,
  * aligning with the key information available from
@@ -25,6 +27,7 @@ package org.apache.openjpa.jdbc.schema;
  *
  * @author Abe White
  */
+@SuppressWarnings("serial")
 public class PrimaryKey
     extends LocalConstraint {
 
@@ -41,8 +44,13 @@ public class PrimaryKey
      *
      * @param name the name of the primary key, if any
      * @param table the table of the primary key
+     * @deprecated
      */
     public PrimaryKey(String name, Table table) {
+        super(name, table);
+    }
+
+    public PrimaryKey(DBIdentifier name, Table table) {
         super(name, table);
     }
 

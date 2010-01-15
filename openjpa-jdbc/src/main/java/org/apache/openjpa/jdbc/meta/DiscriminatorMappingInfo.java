@@ -28,9 +28,7 @@ import org.apache.openjpa.jdbc.schema.Column;
 import org.apache.openjpa.jdbc.schema.Index;
 import org.apache.openjpa.jdbc.schema.SchemaGroup;
 import org.apache.openjpa.jdbc.schema.Table;
-import org.apache.openjpa.lib.util.Localizer;
 import org.apache.openjpa.meta.JavaTypes;
-import org.apache.openjpa.util.MetaDataException;
 
 /**
  * Information about the mapping from a discriminator to the schema, in
@@ -40,11 +38,9 @@ import org.apache.openjpa.util.MetaDataException;
  *
  * @author Abe White
  */
+@SuppressWarnings("serial")
 public class DiscriminatorMappingInfo
     extends MappingInfo {
-
-    private static final Localizer _loc = Localizer.forPackage
-        (DiscriminatorMappingInfo.class);
 
     private String _value = null;
     

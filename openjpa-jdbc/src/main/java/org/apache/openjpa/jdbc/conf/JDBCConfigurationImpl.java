@@ -24,6 +24,7 @@ import javax.sql.DataSource;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.openjpa.conf.OpenJPAConfigurationImpl;
+import org.apache.openjpa.jdbc.identifier.DBIdentifierUtil;
 import org.apache.openjpa.jdbc.kernel.BatchingConstraintUpdateManager;
 import org.apache.openjpa.jdbc.kernel.BatchingOperationOrderUpdateManager;
 import org.apache.openjpa.jdbc.kernel.EagerFetchModes;
@@ -47,6 +48,7 @@ import org.apache.openjpa.lib.conf.PluginValue;
 import org.apache.openjpa.lib.conf.ProductDerivations;
 import org.apache.openjpa.lib.conf.StringListValue;
 import org.apache.openjpa.lib.conf.StringValue;
+import org.apache.openjpa.lib.identifier.IdentifierUtil;
 import org.apache.openjpa.lib.jdbc.ConnectionDecorator;
 import org.apache.openjpa.lib.jdbc.DecoratingDataSource;
 import org.apache.openjpa.lib.jdbc.JDBCListener;
@@ -82,6 +84,7 @@ public class JDBCConfigurationImpl
     public ObjectValue mappingDefaultsPlugin;
     public PluginValue driverDataSourcePlugin;
     public MappingFactoryValue mappingFactoryPlugin;
+    public ObjectValue identifierUtilPlugin;
 
     // used internally
     private String firstUser = null;
@@ -331,6 +334,15 @@ public class JDBCConfigurationImpl
         finderCachePlugin.setDynamic(true);
         finderCachePlugin.setInstantiatingGetter("getFinderCacheInstance");
 
+        identifierUtilPlugin = addPlugin("jdbc.IdentifierUtil", true);
+        aliases = new String[] { 
+            "default", "org.apache.openjpa.jdbc.identifier.DBIdentifierUtilImpl" };
+        identifierUtilPlugin.setAliases(aliases);
+        identifierUtilPlugin.setDefault(aliases[0]);
+        identifierUtilPlugin.setString(aliases[0]);
+        identifierUtilPlugin.setInstantiatingGetter("getIdentifierUtilInstance");
+
+        
         // this static initializer is to get past a weird
         // ClassCircularityError that happens only under IBM's
         // JDK 1.3.1 on Linux from within the JRun ClassLoader;
@@ -899,4 +911,19 @@ public class JDBCConfigurationImpl
                 return true; 
         return false;
     }
+    
+    public String getIdentifierUtil() {
+        return identifierUtilPlugin.getString();
+    }
+
+    public DBIdentifierUtil getIdentifierUtilInstance() {
+        if (identifierUtilPlugin.get() == null)
+            identifierUtilPlugin.instantiate(DBIdentifierUtil.class, this);
+        return (DBIdentifierUtil) identifierUtilPlugin.get();
+    }
+
+    public void setIdentifierUtil(DBIdentifierUtil util) {
+        identifierUtilPlugin.set(util);
+    }
+
 }

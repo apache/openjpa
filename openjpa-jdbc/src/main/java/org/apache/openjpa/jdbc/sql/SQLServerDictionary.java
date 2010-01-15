@@ -27,6 +27,7 @@ import java.sql.SQLException;
 import java.sql.Types;
 import java.util.Set;
 
+import org.apache.openjpa.jdbc.identifier.DBIdentifier;
 import org.apache.openjpa.jdbc.kernel.JDBCStore;
 import org.apache.openjpa.jdbc.kernel.exps.FilterValue;
 import org.apache.openjpa.jdbc.schema.Column;
@@ -34,6 +35,7 @@ import org.apache.openjpa.kernel.Filters;
 import org.apache.openjpa.lib.util.Localizer;
 import org.apache.openjpa.meta.JavaTypes;
 import org.apache.openjpa.util.StoreException;
+
 
 /**
  * Dictionary for Microsoft SQL Server.
@@ -139,12 +141,23 @@ public class SQLServerDictionary extends AbstractSQLServerDictionary {
     public Column[] getColumns(DatabaseMetaData meta, String catalog,
         String schemaName, String tableName, String columnName, Connection conn)
         throws SQLException {
+        return getColumns(meta, DBIdentifier.newCatalog(catalog),
+            DBIdentifier.newSchema(schemaName),
+            DBIdentifier.newTable(tableName),
+            DBIdentifier.newColumn(columnName),
+            conn);
+    }
+
+    public Column[] getColumns(DatabaseMetaData meta, DBIdentifier catalog,
+        DBIdentifier schemaName, DBIdentifier tableName, DBIdentifier columnName, Connection conn)
+        throws SQLException {
+
         Column[] cols = super.getColumns(meta, catalog, schemaName, tableName,
             columnName, conn);
 
         // for opta driver, which reports nvarchar as unknown type
         for (int i = 0; cols != null && i < cols.length; i++) {
-            String typeName = cols[i].getTypeName();
+            String typeName = cols[i].getTypeIdentifier().getName();
             if (typeName == null)
                 continue;
 

@@ -65,7 +65,11 @@ public class AccessDictionary
         maxIndexesPerTable = 32;
 
         substringFunctionName = "MID";
-    }
+        
+        setLeadingDelimiter("[");
+        setTrailingDelimiter("]");
+    }    
+    
 
     public void setLong(PreparedStatement stmnt, int idx, long val, Column col)
         throws SQLException {

@@ -18,7 +18,7 @@
  */
 package org.apache.openjpa.jdbc.schema;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.openjpa.jdbc.identifier.DBIdentifier;
 
 /**
  * Represents a database index. Can also represent a partial index,
@@ -27,6 +27,7 @@ import org.apache.commons.lang.StringUtils;
  * @author Abe White
  * @author Stephen Kim
  */
+@SuppressWarnings("serial")
 public class Index
     extends LocalConstraint {
 
@@ -43,8 +44,13 @@ public class Index
      *
      * @param name the name of the index
      * @param table the table of the index
+     * @deprecated
      */
     public Index(String name, Table table) {
+        super(name, table);
+    }
+
+    public Index(DBIdentifier name, Table table) {
         super(name, table);
     }
 
@@ -67,6 +73,17 @@ public class Index
     }
 
     /**
+     * @deprecated
+     */
+    public String getFullName() {
+        return getFullIdentifier().getName();
+    }
+
+    public DBIdentifier getFullIdentifier() {
+        return getQualifiedPath().getIdentifier();
+    }
+
+    /**
      * Indexes are equal if they have the same name, the same columns, and
      * are both unique/not unique.
      */
@@ -78,7 +95,7 @@ public class Index
 
         if (isUnique() != idx.isUnique())
             return false;
-        if (!StringUtils.equalsIgnoreCase(getFullName(), idx.getFullName()))
+        if (!getQualifiedPath().equals(idx.getQualifiedPath()))
             return false;
         return equalsLocalConstraint(idx);
     }

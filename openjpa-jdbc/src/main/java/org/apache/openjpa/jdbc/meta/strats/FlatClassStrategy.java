@@ -18,6 +18,7 @@
  */
 package org.apache.openjpa.jdbc.meta.strats;
 
+import org.apache.openjpa.jdbc.identifier.DBIdentifier;
 import org.apache.openjpa.jdbc.meta.ClassMapping;
 import org.apache.openjpa.jdbc.meta.ClassMappingInfo;
 import org.apache.openjpa.jdbc.schema.Table;
@@ -49,9 +50,9 @@ public class FlatClassStrategy
         ClassMappingInfo info = cls.getMappingInfo();
         info.assertNoSchemaComponents(cls, true);
 
-        if (info.getTableName() != null) {
-            Table table = info.createTable(cls, null, info.getSchemaName(),
-                info.getTableName(), false);
+        if (!DBIdentifier.isNull(info.getTableIdentifier())) {
+            Table table = info.createTable(cls, null, info.getSchemaIdentifier(),
+                info.getTableIdentifier(), false);
             if (table != sup.getTable())
                 throw new MetaDataException(_loc.get("flat-table", cls,
                     table.getFullName(), sup.getTable().getFullName()));

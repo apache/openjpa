@@ -20,6 +20,10 @@ package org.apache.openjpa.jdbc.schema;
 
 import java.io.File;
 
+import org.apache.openjpa.jdbc.identifier.Normalizer;
+import org.apache.openjpa.jdbc.identifier.DBIdentifier;
+import org.apache.openjpa.jdbc.identifier.QualifiedDBIdentifier;
+import org.apache.openjpa.lib.identifier.IdentifierUtil;
 import org.apache.openjpa.lib.meta.SourceTracker;
 
 /**
@@ -27,20 +31,21 @@ import org.apache.openjpa.lib.meta.SourceTracker;
  *
  * @author Abe White
  */
+@SuppressWarnings("serial")
 public class Sequence
     extends ReferenceCounter
-    implements Comparable, SourceTracker {
+    implements Comparable<Sequence>, SourceTracker {
 
-    private String _name = null;
-    private String _fullName = null;
+    private DBIdentifier _name = DBIdentifier.NULL;
     private Schema _schema = null;
-    private String _schemaName = null;
+    private DBIdentifier _schemaName = DBIdentifier.NULL;
     private int _initial = 1;
     private int _increment = 1;
     private int _cache = 0;
     private int _lineNum = 0;  
     private int _colNum = 0;  
-
+    private QualifiedDBIdentifier _fullPath = null;
+    
     // keep track of source
     private File _source = null;
     private int _srcType = SRC_OTHER;
@@ -56,11 +61,16 @@ public class Sequence
      *
      * @param name the sequence name
      * @param schema the sequence schema
+     * @deprecated
      */
     public Sequence(String name, Schema schema) {
-        setName(name);
+        this(DBIdentifier.newSequence(name), schema);
+    }
+
+    public Sequence(DBIdentifier name, Schema schema) {
+        setIdentifier(name);
         if (schema != null)
-            setSchemaName(schema.getName());
+            setSchemaIdentifier(schema.getIdentifier());
         _schema = schema;
     }
 
@@ -69,7 +79,7 @@ public class Sequence
      */
     void remove() {
         _schema = null;
-        _fullName = null;
+        _fullPath = null;
     }
 
     /**
@@ -83,51 +93,75 @@ public class Sequence
      * The sequence's schema name.
      */
     public String getSchemaName() {
-        return _schemaName;
+        return getSchemaIdentifier().getName();
+    }
+    
+    public DBIdentifier getSchemaIdentifier() {
+        return _schemaName == null ? DBIdentifier.NULL : _schemaName;
     }
 
     /**
      * The sequence's schema name. You can only call this method on sequences
      * whose schema object is not set.
+     * @deprecated
      */
     public void setSchemaName(String name) {
+        setSchemaIdentifier(DBIdentifier.newSchema(name));
+    }
+
+    public void setSchemaIdentifier(DBIdentifier name) {
         if (getSchema() != null)
             throw new IllegalStateException();
         _schemaName = name;
-        _fullName = null;
+        _fullPath = null;
     }
 
     /**
      * Return the name of the sequence.
+     * @deprecated
      */
     public String getName() {
-        return _name;
+        return getIdentifier().getName();
+    }
+
+    public DBIdentifier getIdentifier() {
+        return _name == null ? DBIdentifier.NULL : _name;
     }
 
     /**
      * Set the name of the sequence. This method can only be called on
      * sequences that are not part of a schema.
+     * @deprecated
      */
     public void setName(String name) {
+        setIdentifier(DBIdentifier.newSequence(name));
+    }
+
+    public void setIdentifier(DBIdentifier name) {
         if (getSchema() != null)
             throw new IllegalStateException();
         _name = name;
-        _fullName = null;
+        _fullPath = null;
     }
 
     /**
      * Return the sequence name, including schema, using '.' as the
      * catalog separator.
+     * @deprecated
      */
     public String getFullName() {
-        if (_fullName == null) {
-            Schema schema = getSchema();
-            if (schema == null || schema.getName() == null)
-                _fullName = getName();
-            else
-                _fullName = schema.getName() + "." + getName();
+        return getFullIdentifier().getName();
+    }
+
+    public DBIdentifier getFullIdentifier() {
+        return getQualifiedPath().getIdentifier();
+    }
+
+    public QualifiedDBIdentifier getQualifiedPath() {
+        if (_fullPath  == null) {
+            _fullPath = QualifiedDBIdentifier.newPath(_schemaName, _name );
         }
-        return _fullName;
+        return _fullPath;
     }
 
     /**
@@ -190,23 +224,24 @@ public class Sequence
     }
 
     public String getResourceName() {
-        return getFullName();
+        return getFullIdentifier().getName();
     }
 
-    public int compareTo(Object other) {
-        String name = getFullName();
-        String otherName = ((Sequence) other).getFullName();
-        if (name == null && otherName == null)
+    public int compareTo(Sequence other) {
+        DBIdentifier name = getIdentifier();
+        DBIdentifier otherName = other.getIdentifier();
+        if (DBIdentifier.isNull(name) && DBIdentifier.isNull(otherName)) {
             return 0;
-        if (name == null)
+        }
+        if (DBIdentifier.isNull(name))
             return 1;
-        if (otherName == null)
+        if (DBIdentifier.isNull(otherName))
             return -1;
         return name.compareTo(otherName);
     }
 
     public String toString() {
-        return getFullName();
+        return getFullIdentifier().getName();
     }
     
     public int getLineNumber() {
@@ -224,4 +259,5 @@ public class Sequence
     public void setColNumber(int colNum) {
         _colNum = colNum;
     }
+
 }

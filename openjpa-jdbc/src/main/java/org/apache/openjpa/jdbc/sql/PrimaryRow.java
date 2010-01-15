@@ -342,7 +342,7 @@ public class PrimaryRow
             		super.setObject(col, val, metaType, overrideDefault);
             	} else if (!isDefaultValue(val)) {
             		throw new InvalidStateException(_loc.get("diff-values",
-            				new Object[]{ col.getFullName(),
+            				new Object[]{ col.getFullDBIdentifier().getName(),
                             (prev == null) ? null : prev.getClass(), prev,
                             (val == null) ? null : val.getClass(), val })).
             				setFatal(true);

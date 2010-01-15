@@ -21,6 +21,9 @@ package org.apache.openjpa.jdbc.schema;
 import java.sql.Types;
 
 import org.apache.openjpa.jdbc.conf.JDBCConfiguration;
+import org.apache.openjpa.jdbc.identifier.Normalizer;
+import org.apache.openjpa.jdbc.identifier.DBIdentifier;
+import org.apache.openjpa.jdbc.identifier.QualifiedDBIdentifier;
 import org.apache.openjpa.jdbc.sql.DBDictionary;
 import org.apache.openjpa.lib.conf.Configurable;
 import org.apache.openjpa.lib.conf.Configuration;
@@ -34,17 +37,18 @@ import org.apache.openjpa.lib.conf.Configuration;
  *
  * @author Abe White
  */
+@SuppressWarnings("serial")
 public class DynamicSchemaFactory
     extends SchemaGroup
     implements SchemaFactory, Configurable {
 
     private transient DBDictionary _dict = null;
-    private String _schema = null;
+    private DBIdentifier _schema = DBIdentifier.NULL;
 
     public void setConfiguration(Configuration conf) {
         JDBCConfiguration jconf = (JDBCConfiguration) conf;
         _dict = jconf.getDBDictionaryInstance();
-        _schema = jconf.getSchema();
+        _schema = DBIdentifier.newSchema(jconf.getSchema());
     }
 
     public void startConfiguration() {
@@ -69,45 +73,67 @@ public class DynamicSchemaFactory
         return super.findTable(name) != null;
     }
 
+    public boolean isKnownTable(QualifiedDBIdentifier path) {
+        return super.findTable(path) != null;
+    }
+
     public Table findTable(String name) {
+        return super.findTable(name);
+    }
+
+    public Table findTable(DBIdentifier name) {
         if (name == null)
             return null;
 
-        Table table = super.findTable(name);
+        QualifiedDBIdentifier path = QualifiedDBIdentifier.getPath(name);
+        return findTable(path);
+    }
+
+    public Table findTable(QualifiedDBIdentifier path) {
+        if (DBIdentifier.isNull(path))
+            return null;
+
+        Table table = super.findTable(path);
         if (table != null)
             return table;
 
         // if full name, split
-        String schemaName = null;
-        String tableName = name;
-        int dotIdx = name.lastIndexOf('.');
-        if (dotIdx != -1) {
-            schemaName = name.substring(0, dotIdx);
-            tableName = name.substring(dotIdx + 1);
-        } else
+        DBIdentifier schemaName = DBIdentifier.NULL;
+        DBIdentifier tableName = path.getUnqualifiedName();
+        if (!DBIdentifier.isNull(path.getSchemaName())) {
+            schemaName = path.getSchemaName();
+        } else {
             schemaName = _schema;
+        }
 
         Schema schema = getSchema(schemaName);
         if (schema == null) {
             schema = addSchema(schemaName);
-            // TODO: temp until a more global name scheme is implemented
-            addDelimSchemaName(_dict.addDelimiters(schemaName), schema);
         }
 
         // Ensure only valid table name(s) are added to the schema
-        if (tableName.length() > _dict.maxTableNameLength) {
+        if (tableName.getName().length() > _dict.maxTableNameLength) {
             return schema.addTable(tableName, 
                 _dict.getValidTableName(tableName, getSchema(schemaName)));
         }
 
         return schema.addTable(tableName);
     }
+    
+    
+//    protected Table newTable(String name, Schema schema) {
+//        return new DynamicTable(name, schema);
+//    }
 
-    protected Table newTable(String name, Schema schema) {
+    protected Table newTable(DBIdentifier name, Schema schema) {
         return new DynamicTable(name, schema);
     }
 
-    protected Column newColumn(String name, Table table) {
+//    protected Column newColumn(String name, Table table) {
+//        return new DynamicColumn(name, table);
+//    }
+
+    protected Column newColumn(DBIdentifier name, Table table) {
         return new DynamicColumn(name, table);
     }
 
@@ -121,21 +147,42 @@ public class DynamicSchemaFactory
             super(name, schema);
         }
 
+        public DynamicTable(DBIdentifier name, Schema schema) {
+            super(name, schema);
+        }
+
+        /**
+         * @deprecated
+         */
         public Column getColumn(String name) {
             return getColumn(name, null);
         }
 
+        public Column getColumn(DBIdentifier name) {
+            return getColumn(name, null);
+        }
+
+        /**
+         * @deprecated
+         */
         public Column getColumn(String name, DBDictionary dict) {
             if (name == null)
                 return null;
+            return getColumn(DBIdentifier.newColumn(name), dict);
+        }
 
-            Column col = super.getColumn(name, dict);
+        public Column getColumn(DBIdentifier name, DBDictionary dict) {
+            if (DBIdentifier.isNull(name))
+                return null;
+
+            Column col = super.getColumn(name);
             if (col != null)
                 return col;
 
             // Ensure only valid column name(s) are added to the table
-            if ((name.length() > _dict.maxColumnNameLength) ||
-                _dict.getInvalidColumnWordSet().contains(name.toUpperCase())) {
+            if ((name.getName().length() > _dict.maxColumnNameLength) ||
+                _dict.getInvalidColumnWordSet().contains(
+                    DBIdentifier.toUpper(name).getName())) {
                 return addColumn(name, 
                     _dict.getValidColumnName(name, this));
             }
@@ -150,7 +197,14 @@ public class DynamicSchemaFactory
     private class DynamicColumn
         extends Column {
 
+        /**
+         * @deprecated
+         */
         public DynamicColumn(String name, Table table) {
+            super(name, table);
+        }
+
+        public DynamicColumn(DBIdentifier name, Table table) {
             super(name, table);
         }
 
@@ -164,7 +218,7 @@ public class DynamicSchemaFactory
             setType(type);
             setSize(size);
             if (typeName != null)
-                setTypeName(typeName);
+                setTypeIdentifier(DBIdentifier.newColumnDefinition(typeName));
             if (decimals >= 0)
                 setDecimalDigits(decimals);
             return true;

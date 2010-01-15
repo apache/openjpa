@@ -33,7 +33,6 @@ import org.apache.openjpa.jdbc.sql.Select;
 import org.apache.openjpa.kernel.OpenJPAStateManager;
 import org.apache.openjpa.lib.log.Log;
 import org.apache.openjpa.lib.util.Localizer;
-import org.apache.openjpa.meta.JavaTypes;
 import org.apache.openjpa.meta.MetaDataContext;
 import org.apache.openjpa.meta.MetaDataModes;
 import org.apache.openjpa.meta.MetaDataRepository;
@@ -44,6 +43,7 @@ import org.apache.openjpa.util.InternalException;
  *
  * @author Abe White
  */
+@SuppressWarnings("serial")
 public class Discriminator
     implements DiscriminatorStrategy, MetaDataContext, MetaDataModes {
 
@@ -393,7 +393,7 @@ public class Discriminator
         assertStrategy().loadSubclasses(store);
     }
 
-    public Class getClass(JDBCStore store, ClassMapping base, Result result)
+    public Class<?> getClass(JDBCStore store, ClassMapping base, Result result)
         throws SQLException, ClassNotFoundException {
         return assertStrategy().getClass(store, base, result);
     }

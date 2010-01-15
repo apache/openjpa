@@ -38,6 +38,7 @@ import java.util.Arrays;
 import java.util.Date;
 import java.util.Map;
 
+import org.apache.openjpa.jdbc.identifier.DBIdentifier;
 import org.apache.openjpa.jdbc.kernel.JDBCFetchConfiguration;
 import org.apache.openjpa.jdbc.kernel.JDBCStore;
 import org.apache.openjpa.jdbc.kernel.exps.FilterValue;
@@ -209,6 +210,7 @@ public class PostgresDictionary
         }));
     }
 
+    @Override
     public Date getDate(ResultSet rs, int column)
         throws SQLException {
         try {
@@ -234,6 +236,7 @@ public class PostgresDictionary
         }
     }
 
+    @Override
     public byte getByte(ResultSet rs, int column)
         throws SQLException {
         // postgres does not perform automatic conversions, so attempting to
@@ -246,6 +249,7 @@ public class PostgresDictionary
         }
     }
 
+    @Override
     public short getShort(ResultSet rs, int column)
         throws SQLException {
         // postgres does not perform automatic conversions, so attempting to
@@ -258,6 +262,7 @@ public class PostgresDictionary
         }
     }
 
+    @Override
     public int getInt(ResultSet rs, int column)
         throws SQLException {
         // postgres does not perform automatic conversions, so attempting to
@@ -270,6 +275,7 @@ public class PostgresDictionary
         }
     }
 
+    @Override
     public long getLong(ResultSet rs, int column)
         throws SQLException {
         // postgres does not perform automatic conversions, so attempting to
@@ -282,6 +288,7 @@ public class PostgresDictionary
         }
     }
 
+    @Override
     public void setBoolean(PreparedStatement stmnt, int idx, boolean val,
         Column col)
         throws SQLException {
@@ -293,6 +300,7 @@ public class PostgresDictionary
     /**
      * Handle XML and bytea/oid columns in a PostgreSQL way.
      */
+    @Override
     public void setNull(PreparedStatement stmnt, int idx, int colType,
         Column col)
         throws SQLException {
@@ -307,6 +315,7 @@ public class PostgresDictionary
         stmnt.setNull(idx, colType);
     }
 
+    @Override
     protected void appendSelectRange(SQLBuffer buf, long start, long end,
         boolean subselect) {
         if (end != Long.MAX_VALUE)
@@ -315,6 +324,7 @@ public class PostgresDictionary
             buf.append(" OFFSET ").appendValue(start);
     }
 
+    @Override
     public void indexOf(SQLBuffer buf, FilterValue str, FilterValue find,
         FilterValue start) {
         buf.append("(POSITION(");
@@ -332,6 +342,7 @@ public class PostgresDictionary
         buf.append(")");
     }
 
+    @Override
     public String[] getCreateSequenceSQL(Sequence seq) {
         String[] sql = super.getCreateSequenceSQL(seq);
         if (seq.getAllocate() > 1)
@@ -339,17 +350,22 @@ public class PostgresDictionary
         return sql;
     }
 
+    @Override
     protected boolean supportsDeferredUniqueConstraints() {
         // Postgres only supports deferred foreign key constraints.
         return false;
     }
 
     protected String getSequencesSQL(String schemaName, String sequenceName) {
-        if (schemaName == null && sequenceName == null)
+        return getSequencesSQL(DBIdentifier.newSchema(schemaName), DBIdentifier.newSequence(sequenceName));
+    }
+
+    protected String getSequencesSQL(DBIdentifier schemaName, DBIdentifier sequenceName) {
+        if (DBIdentifier.isNull(schemaName) && DBIdentifier.isNull(sequenceName))
             return allSequencesSQL;
-        else if (schemaName == null)
+        else if (DBIdentifier.isNull(schemaName))
             return namedSequencesFromAllSchemasSQL;
-        else if (sequenceName == null)
+        else if (DBIdentifier.isNull(sequenceName))
             return allSequencesFromOneSchemaSQL;
         else
             return namedSequenceFromOneSchemaSQL;
@@ -357,27 +373,44 @@ public class PostgresDictionary
 
     public boolean isSystemSequence(String name, String schema,
         boolean targetSchema) {
+        return isSystemSequence(DBIdentifier.newTable(name), DBIdentifier.newSchema(schema), targetSchema);
+    }
+
+    public boolean isSystemSequence(DBIdentifier name, DBIdentifier schema,
+        boolean targetSchema) {
         if (super.isSystemSequence(name, schema, targetSchema))
             return true;
 
         // filter out generated sequences used for bigserial cols, which are
         // of the form <table>_<col>_seq
-        int idx = name.indexOf('_');
-        return idx != -1 && idx != name.length() - 4
-            && name.toUpperCase().endsWith("_SEQ");
+        String strName = DBIdentifier.isNull(name) ? null : name.getName();
+        int idx = strName.indexOf('_');
+        return idx != -1 && idx != strName.length() - 4
+            && strName.toUpperCase().endsWith("_SEQ");
     }
 
     public boolean isSystemTable(String name, String schema,
         boolean targetSchema) {
+        return isSystemTable(DBIdentifier.newTable(name), DBIdentifier.newSchema(schema), targetSchema);
+    }
+
+    public boolean isSystemTable(DBIdentifier name, DBIdentifier schema,
+        boolean targetSchema) {
         // names starting with "pg_" are reserved for Postgresql internal use
+        String strName = DBIdentifier.isNull(name) ? null : name.getName();
         return super.isSystemTable(name, schema, targetSchema)
-            || (name != null && name.toLowerCase().startsWith("pg_"));
+            || (strName != null && strName.toLowerCase().startsWith("pg_"));
     }
 
     public boolean isSystemIndex(String name, Table table) {
+        return isSystemIndex(DBIdentifier.newIndex(name), table);
+    }
+
+    public boolean isSystemIndex(DBIdentifier name, Table table) {
         // names starting with "pg_" are reserved for Postgresql internal use
+        String strName = DBIdentifier.isNull(name) ? null : name.getName();
         return super.isSystemIndex(name, table)
-            || (name != null && name.toLowerCase().startsWith("pg_"));
+            || (strName != null && strName.toLowerCase().startsWith("pg_"));
     }
 
     public Connection decorate(Connection conn)

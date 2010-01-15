@@ -20,10 +20,12 @@ package org.apache.openjpa.jdbc.meta.strats;
 
 import java.lang.reflect.Method;
 
+import org.apache.openjpa.jdbc.identifier.DBIdentifier;
 import org.apache.openjpa.jdbc.kernel.JDBCStore;
 import org.apache.openjpa.jdbc.meta.ValueMapping;
 import org.apache.openjpa.jdbc.schema.Column;
 import org.apache.openjpa.jdbc.schema.ColumnIO;
+import org.apache.openjpa.jdbc.sql.DBDictionary;
 import org.apache.openjpa.meta.JavaTypes;
 import org.apache.openjpa.util.MetaDataException;
 
@@ -52,7 +54,17 @@ public class EnumValueHandler
         _ordinal = ordinal;
     }
 
+    /**
+     * @deprecated
+     */
     public Column[] map(ValueMapping vm, String name, ColumnIO io,
+        boolean adapt) {
+        DBDictionary dict = vm.getMappingRepository().getDBDictionary();
+        DBIdentifier colName = DBIdentifier.newColumn(name, dict != null ? dict.delimitAll() : false);
+        return map(vm, colName, io, adapt);
+    }
+    
+    public Column[] map(ValueMapping vm, DBIdentifier name, ColumnIO io,
         boolean adapt) {
         // all enum classes have a static method called 'values()'
         // that returns an array of all the enum values
@@ -64,7 +76,7 @@ public class EnumValueHandler
         }
 
         Column col = new Column();
-        col.setName(name);
+        col.setIdentifier(name);
         if (_ordinal)
             col.setJavaType(JavaTypes.SHORT);
         else {

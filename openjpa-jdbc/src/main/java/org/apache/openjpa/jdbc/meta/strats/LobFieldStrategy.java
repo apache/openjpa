@@ -23,11 +23,13 @@ import java.io.Reader;
 import java.sql.SQLException;
 import java.sql.Types;
 
+import org.apache.openjpa.jdbc.identifier.DBIdentifier;
 import org.apache.openjpa.jdbc.kernel.JDBCFetchConfiguration;
 import org.apache.openjpa.jdbc.kernel.JDBCStore;
 import org.apache.openjpa.jdbc.meta.FieldMapping;
 import org.apache.openjpa.jdbc.meta.ValueMappingInfo;
 import org.apache.openjpa.jdbc.schema.Column;
+import org.apache.openjpa.jdbc.sql.DBDictionary;
 import org.apache.openjpa.jdbc.sql.PostgresDictionary;
 import org.apache.openjpa.jdbc.sql.Result;
 import org.apache.openjpa.jdbc.sql.Row;
@@ -58,19 +60,22 @@ public class LobFieldStrategy extends AbstractFieldStrategy {
         ValueMappingInfo vinfo = field.getValueInfo();
         vinfo.assertNoJoin(field, true);
         vinfo.assertNoForeignKey(field, !adapt);
+        DBDictionary dict = field.getMappingRepository().getDBDictionary();
+        DBIdentifier fieldName = DBIdentifier.newColumn(field.getName(), dict != null ? dict.delimitAll() : false);
+
         Column tmpCol = new Column();
-        tmpCol.setName(field.getName());
+        tmpCol.setIdentifier(fieldName);
         tmpCol.setType(fieldType);
         tmpCol.setJavaType(field.getTypeCode());
         
         tmpCol.setSize(-1);
 
-        Column[] cols = vinfo.getColumns(field, field.getName(),
+        Column[] cols = vinfo.getColumns(field, fieldName,
             new Column[]{ tmpCol }, field.getTable(), adapt);
 
         field.setColumns(cols);
         field.setColumnIO(vinfo.getColumnIO());
-        field.mapConstraints(field.getName(), adapt);
+        field.mapConstraints(fieldName, adapt);
         field.mapPrimaryKey(adapt);
     }
 

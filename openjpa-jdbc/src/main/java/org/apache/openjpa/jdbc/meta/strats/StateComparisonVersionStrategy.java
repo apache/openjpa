@@ -22,16 +22,19 @@ import java.sql.SQLException;
 import java.util.BitSet;
 import java.util.Collection;
 
+import org.apache.openjpa.jdbc.identifier.Normalizer;
 import org.apache.openjpa.jdbc.kernel.JDBCStore;
 import org.apache.openjpa.jdbc.meta.ClassMapping;
 import org.apache.openjpa.jdbc.meta.FieldMapping;
 import org.apache.openjpa.jdbc.schema.Column;
 import org.apache.openjpa.jdbc.schema.Table;
+import org.apache.openjpa.jdbc.sql.DBDictionary;
 import org.apache.openjpa.jdbc.sql.Row;
 import org.apache.openjpa.jdbc.sql.RowImpl;
 import org.apache.openjpa.jdbc.sql.RowManager;
 import org.apache.openjpa.kernel.OpenJPAStateManager;
 import org.apache.openjpa.kernel.StoreManager;
+import org.apache.openjpa.lib.identifier.IdentifierConfiguration;
 import org.apache.openjpa.lib.util.Localizer;
 import org.apache.openjpa.util.ArrayStateImage;
 import org.apache.openjpa.util.InternalException;
@@ -238,7 +241,7 @@ public class StateComparisonVersionStrategy
          * WHERE clause of an UPDATE to test whether the current database
          * record matches our stored version.
          */
-        public String getSQL() {
+        public String getSQL(DBDictionary dict) {
             Column[] cols = getTable().getColumns();
             StringBuilder buf = new StringBuilder();
             boolean hasWhere = false;
@@ -251,9 +254,9 @@ public class StateComparisonVersionStrategy
                 if (hasWhere)
                     buf.append(" AND ");
                 if (val == NULL)
-                    buf.append(cols[i]).append(" IS NULL");
+                    buf.append(dict.getColumnDBName(cols[i]) + " IS NULL");
                 else
-                    buf.append(cols[i]).append(" = ?");
+                    buf.append(dict.getColumnDBName(cols[i]) + " = ?");
                 hasWhere = true;
             }
             return buf.toString();

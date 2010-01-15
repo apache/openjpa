@@ -41,6 +41,7 @@ import org.apache.openjpa.util.MetaDataException;
  *
  * @author Abe White
  */
+@SuppressWarnings("serial")
 public class DelegatingJoinable
     implements Joinable {
 
@@ -68,7 +69,7 @@ public class DelegatingJoinable
             _cols[i] = fk.getColumn(pks[i]);
             if (_cols[i] == null)
                 throw new MetaDataException(_loc.get("incomplete-join",
-                    pks[i].getFullName()));
+                    pks[i].getFullDBIdentifier()));
         }
     }
 
@@ -84,7 +85,7 @@ public class DelegatingJoinable
         _cols = cols;
         if (cols.length != join.getColumns().length)
             throw new MetaDataException(_loc.get("bad-remap",
-                join.getColumns()[0].getFullName()));
+                join.getColumns()[0].getFullDBIdentifier()));
     }
 
     public int getFieldIndex() {

@@ -34,8 +34,11 @@ import java.util.Map;
 import java.util.Set;
 import javax.sql.DataSource;
 
-import org.apache.commons.lang.StringUtils;
 import org.apache.openjpa.jdbc.conf.JDBCConfiguration;
+import org.apache.openjpa.jdbc.identifier.Normalizer;
+import org.apache.openjpa.jdbc.identifier.DBIdentifier;
+import org.apache.openjpa.jdbc.identifier.QualifiedDBIdentifier;
+import org.apache.openjpa.jdbc.identifier.DBIdentifier.DBIdentifierType;
 import org.apache.openjpa.jdbc.sql.DBDictionary;
 import org.apache.openjpa.lib.log.Log;
 import org.apache.openjpa.lib.util.Localizer;
@@ -65,7 +68,7 @@ public class SchemaGenerator {
     private boolean _openjpaTables = true;
     private SchemaGroup _group = null;
 
-    private List _listeners = null;
+    private List<Listener> _listeners = null;
     private int _schemaObjects = 0;
 
     /**
@@ -85,7 +88,20 @@ public class SchemaGenerator {
         _dict = conf.getDBDictionaryInstance();
 
         // create a table of allowed schema and tables to reflect on
-        _allowed = parseSchemasList(conf.getSchemasList());
+        String[] schemaArray = conf.getSchemasList();
+        DBIdentifier[] names = new DBIdentifier[schemaArray == null ? 0 : schemaArray.length];
+        for (int i = 0; i < names.length; i++) {
+            String[] splitName = Normalizer.splitName(schemaArray[i]);
+            if (splitName == null || splitName.length == 0) {
+                continue;
+            }
+            if (splitName.length == 1) {
+                names[i] = DBIdentifier.newSchema(schemaArray[i]);
+            } else {
+                names[i] = QualifiedDBIdentifier.newTable(schemaArray[i]);
+            }
+        }
+        _allowed = parseSchemasList(names);
     }
 
     /**
@@ -95,34 +111,25 @@ public class SchemaGenerator {
      * null if no args are given. If no tables are given for a particular
      * schema, maps the schema name to null.
      */
-    private static Object[][] parseSchemasList(String[] args) {
+    private static Object[][] parseSchemasList(DBIdentifier[] args) {
         if (args == null || args.length == 0)
             return null;
 
-        Map schemas = new HashMap();
-        String schema, table;
-        int dotIdx;
-        Collection tables;
+        Map<DBIdentifier, Collection<DBIdentifier>> schemas = new HashMap<DBIdentifier, Collection<DBIdentifier>>();
+        DBIdentifier schema = DBIdentifier.NULL, table = DBIdentifier.NULL;
+        Collection<DBIdentifier> tables = null;
         for (int i = 0; i < args.length; i++) {
-            dotIdx = args[i].indexOf('.');
-            if (dotIdx == -1) {
-                schema = args[i];
-                table = null;
-            } else if (dotIdx == 0) {
-                schema = null;
-                table = args[i].substring(1);
-            } else {
-                schema = args[i].substring(0, dotIdx);
-                table = args[i].substring(dotIdx + 1);
-            }
+            QualifiedDBIdentifier path = QualifiedDBIdentifier.getPath(args[i]);
+            schema = path.getSchemaName();
+            table = path.getIdentifier();
 
             // if just a schema name, map schema to null
-            if (table == null && !schemas.containsKey(schema))
+            if (DBIdentifier.isNull(table) && !schemas.containsKey(schema))
                 schemas.put(schema, null);
-            else if (table != null) {
-                tables = (Collection) schemas.get(schema);
+            else if (!DBIdentifier.isNull(table)) {
+                tables = schemas.get(schema);
                 if (tables == null) {
-                    tables = new LinkedList();
+                    tables = new LinkedList<DBIdentifier>();
                     schemas.put(schema, tables);
                 }
                 tables.add(table);
@@ -130,15 +137,16 @@ public class SchemaGenerator {
         }
 
         Object[][] parsed = new Object[schemas.size()][2];
-        Map.Entry entry;
+        Map.Entry<DBIdentifier, Collection<DBIdentifier>> entry;
         int idx = 0;
-        for (Iterator itr = schemas.entrySet().iterator(); itr.hasNext();) {
-            entry = (Map.Entry) itr.next();
-            tables = (Collection) entry.getValue();
+        for (Iterator<Map.Entry<DBIdentifier, Collection<DBIdentifier>>> itr = schemas.entrySet().iterator(); 
+            itr.hasNext();) {
+            entry = itr.next();
+            tables = entry.getValue();
 
             parsed[idx][0] = entry.getKey();
             if (tables != null)
-                parsed[idx][1] = tables.toArray(new String[tables.size()]);
+                parsed[idx][1] = tables.toArray(new DBIdentifier[tables.size()]);
             idx++;
         }
         return parsed;
@@ -240,16 +248,24 @@ public class SchemaGenerator {
     public void generateSchemas()
         throws SQLException {
         fireGenerationEvent(_loc.get("generating-schemas"));
-        generateSchemas(null);
+        generateSchemas((DBIdentifier[])null);
     }
 
+    /**
+     * @deprecated
+     */
+    public void generateSchemas(String[] schemasAndTables)
+        throws SQLException {        
+        generateSchemas(DBIdentifier.toArray(schemasAndTables, DBIdentifierType.TABLE));
+    }
+    
     /**
      * Generate the schemas and/or tables named in the given strings.
      * This method calls {@link #generateIndexes},
      * {@link #generatePrimaryKeys}, and {@link #generateForeignKeys}
      * automatically.
      */
-    public void generateSchemas(String[] schemasAndTables)
+    public void generateSchemas(DBIdentifier[] schemasAndTables)
         throws SQLException {
         fireGenerationEvent(_loc.get("generating-schemas"));
 
@@ -260,10 +276,10 @@ public class SchemaGenerator {
             schemaMap = parseSchemasList(schemasAndTables);
 
         if (schemaMap == null) {
-            generateSchema(null, null);
+            generateSchema(DBIdentifier.NULL, (DBIdentifier[])null);
 
             // estimate the number of schema objects we will need to visit
-            // in order to estimate progresss total for any listeners
+            // in order to estimate progress total for any listeners
             int numTables = getTables(null).size();
             _schemaObjects += numTables
                 + (_pks ? numTables : 0)
@@ -271,28 +287,28 @@ public class SchemaGenerator {
                 + (_fks ? numTables : 0);
 
             if (_pks)
-                generatePrimaryKeys(null, null);
+                generatePrimaryKeys(DBIdentifier.NULL, null);
             if (_indexes)
-                generateIndexes(null, null);
+                generateIndexes(DBIdentifier.NULL, null);
             if (_fks)
-                generateForeignKeys(null, null);
+                generateForeignKeys(DBIdentifier.NULL, null);
             return;
         }
 
         // generate all schemas and tables
         for (int i = 0; i < schemaMap.length; i++)
-            generateSchema((String) schemaMap[i][0],
-                (String[]) schemaMap[i][1]);
+            generateSchema((DBIdentifier) schemaMap[i][0],
+                (DBIdentifier[]) schemaMap[i][1]);
 
         // generate pks, indexes, fks
-        String schemaName;
-        String[] tableNames;
+        DBIdentifier schemaName = DBIdentifier.NULL;
+        DBIdentifier[] tableNames;
         for (int i = 0; i < schemaMap.length; i++) {
-            schemaName = (String) schemaMap[i][0];
-            tableNames = (String[]) schemaMap[i][1];
+            schemaName = (DBIdentifier) schemaMap[i][0];
+            tableNames = (DBIdentifier[]) schemaMap[i][1];
 
             // estimate the number of schema objects we will need to visit
-            // in order to estimate progresss total for any listeners
+            // in order to estimate progress total for any listeners
             int numTables = (tableNames != null) ? tableNames.length
                 : getTables(schemaName).size();
             _schemaObjects += numTables
@@ -310,6 +326,17 @@ public class SchemaGenerator {
     }
 
     /**
+     * @param name
+     * @param tableNames
+     * @deprecated
+     */
+    public void generateSchema(String name, String[] tableNames)
+        throws SQLException {
+        generateSchema(DBIdentifier.newSchema(name),
+            DBIdentifier.toArray(tableNames, DBIdentifierType.TABLE));
+    }
+
+    /**
      * Add a fully-constructed {@link Schema} matching the given database
      * schema to the current group. No foreign keys are generated because
      * some keys might span schemas. You must call
@@ -320,7 +347,7 @@ public class SchemaGenerator {
      * @param tableNames a list of tables to generate in the schema, or null
      * to generate all tables
      */
-    public void generateSchema(String name, String[] tableNames)
+    public void generateSchema(DBIdentifier name, DBIdentifier[] tableNames)
         throws SQLException {
         fireGenerationEvent(_loc.get("generating-schema", name));
 
@@ -329,13 +356,13 @@ public class SchemaGenerator {
         DatabaseMetaData meta = conn.getMetaData();
         try {
             if (tableNames == null)
-                generateTables(name, null, conn, meta);
+                generateTables(name, DBIdentifier.NULL, conn, meta);
             else
                 for (int i = 0; i < tableNames.length; i++)
                     generateTables(name, tableNames[i], conn, meta);
 
             if (_seqs)
-                generateSequences(name, null, conn, meta);
+                generateSequences(name, DBIdentifier.NULL, conn, meta);
         } finally {
             // some databases require a commit after metadata to release locks
             try {
@@ -355,8 +382,23 @@ public class SchemaGenerator {
      * only be called after all schemas are generated. The schema name and
      * tables array can be null to indicate that indexes should be generated
      * for all schemas and/or tables.
+     * @deprecated
      */
     public void generatePrimaryKeys(String schemaName, String[] tableNames)
+        throws SQLException {
+        generatePrimaryKeys(DBIdentifier.newSchema(schemaName),
+            DBIdentifier.toArray(tableNames, DBIdentifierType.TABLE));
+    }
+
+    
+    /**
+     * Generate primary key information for the given schema. This method
+     * must be called in addition to {@link #generateSchema}. It should
+     * only be called after all schemas are generated. The schema name and
+     * tables array can be null to indicate that indexes should be generated
+     * for all schemas and/or tables.
+     */
+    public void generatePrimaryKeys(DBIdentifier schemaName, DBIdentifier[] tableNames)
         throws SQLException {
         fireGenerationEvent(_loc.get("generating-all-primaries", schemaName));
 
@@ -387,8 +429,22 @@ public class SchemaGenerator {
      * only be called after all schemas are generated. The schema name and
      * tables array can be null to indicate that indexes should be generated
      * for all schemas and/or tables.
+     * @deprecated
      */
-    public void generateIndexes(String schemaName, String[] tableNames)
+    public void generateIndexes(String schemaName, String[] tableNames) 
+        throws SQLException {
+        generateIndexes(DBIdentifier.newSchema(schemaName),
+            DBIdentifier.toArray(tableNames, DBIdentifierType.TABLE));
+    }
+
+    /**
+     * Generate index information for the given schema. This method
+     * must be called in addition to {@link #generateSchema}. It should
+     * only be called after all schemas are generated. The schema name and
+     * tables array can be null to indicate that indexes should be generated
+     * for all schemas and/or tables.
+     */
+    public void generateIndexes(DBIdentifier schemaName, DBIdentifier[] tableNames)
         throws SQLException {
         fireGenerationEvent(_loc.get("generating-all-indexes", schemaName));
 
@@ -419,8 +475,23 @@ public class SchemaGenerator {
      * only be called after all schemas are generated. The schema name and
      * tables array can be null to indicate that indexes should be generated
      * for all schemas and/or tables.
+     * @deprecated
      */
     public void generateForeignKeys(String schemaName, String[] tableNames)
+        throws SQLException {
+        generateForeignKeys(DBIdentifier.newSchema(schemaName),
+            DBIdentifier.toArray(tableNames, DBIdentifierType.TABLE));
+    }
+
+    
+    /**
+     * Generate foreign key information for the given schema. This method
+     * must be called in addition to {@link #generateSchema}. It should
+     * only be called after all schemas are generated. The schema name and
+     * tables array can be null to indicate that indexes should be generated
+     * for all schemas and/or tables.
+     */
+    public void generateForeignKeys(DBIdentifier schemaName, DBIdentifier[] tableNames)
         throws SQLException {
         fireGenerationEvent(_loc.get("generating-all-foreigns", schemaName));
 
@@ -446,9 +517,19 @@ public class SchemaGenerator {
     }
 
     /**
-     * Adds all tables matching the given name pattern to the schema.
+     * @deprecated
      */
     public void generateTables(String schemaName, String tableName,
+        Connection conn, DatabaseMetaData meta) 
+        throws SQLException {
+        generateTables(DBIdentifier.newSchema(schemaName),
+            DBIdentifier.newTable(tableName), conn, meta);
+    }
+
+    /**
+     * Adds all tables matching the given name pattern to the schema.
+     */
+    public void generateTables(DBIdentifier schemaName, DBIdentifier tableName,
         Connection conn, DatabaseMetaData meta)
         throws SQLException {
         fireGenerationEvent(_loc.get("generating-columns", schemaName,
@@ -456,43 +537,47 @@ public class SchemaGenerator {
         if (_log.isTraceEnabled())
             _log.trace(_loc.get("gen-tables", schemaName, tableName));
 
-        Column[] cols = _dict.getColumns(meta, conn.getCatalog(), schemaName,
+        Column[] cols = _dict.getColumns(meta, 
+            DBIdentifier.newCatalog(conn.getCatalog()), schemaName,
             tableName, null, conn);
 
         // when we want to get all the columns for all tables, we need to build
         // a list of tables to verify because some databases (e.g., Postgres)
         // will include indexes in the list of columns, and there is no way to
         // distinguish the indexes from proper columns
-        Set tableNames = null;
-        if (tableName == null || "%".equals(tableName)) {
-            Table[] tables = _dict.getTables(meta, conn.getCatalog(),
+        Set<DBIdentifier> tableNames = null;
+        if (DBIdentifier.isNull(tableName) || "%".equals(tableName.getName())) {
+            Table[] tables = _dict.getTables(meta, DBIdentifier.newCatalog(conn.getCatalog()),
                 schemaName, tableName, conn);
-            tableNames = new HashSet();
+            tableNames = new HashSet<DBIdentifier>();
             for (int i = 0; tables != null && i < tables.length; i++) {
-                if (cols == null)
-                    tableNames.add(tables[i].getName());
-                else
-                    tableNames.add(tables[i].getName().toUpperCase());
+                if (cols == null) {
+                    tableNames.add(tables[i].getIdentifier());
+                }
+                else {
+                    DBIdentifier sName = DBIdentifier.toUpper(tables[i].getIdentifier());
+                    tableNames.add(sName);
+                }
             }
         }
 
         // if database can't handle null table name, recurse on each known name
-        if (cols == null && tableName == null) {
-            for (Iterator itr = tableNames.iterator(); itr.hasNext();)
-                generateTables(schemaName, (String) itr.next(), conn, meta);
+        if (cols == null && DBIdentifier.isNull(tableName)) {
+            for (Iterator<DBIdentifier> itr = tableNames.iterator(); itr.hasNext();)
+                generateTables(schemaName, itr.next(), conn, meta);
             return;
         }
 
         SchemaGroup group = getSchemaGroup();
         Schema schema;
         Table table;
-        String tableSchema;
+        DBIdentifier tableSchema = DBIdentifier.NULL;
         for (int i = 0; cols != null && i < cols.length; i++) {
-            if (tableName == null || tableName.equals("%")) {
-                tableName = cols[i].getTableName();
+            if (DBIdentifier.isNull(tableName) || tableName.equals("%")) {
+                tableName = cols[i].getTableIdentifier();
             }
-            if (schemaName == null) {
-                tableSchema = StringUtils.trimToNull(cols[i].getSchemaName());
+            if (DBIdentifier.isNull(schemaName)) {
+                tableSchema = DBIdentifier.trimToNull(cols[i].getSchemaIdentifier());
             }
             else {
                 tableSchema = schemaName;
@@ -500,15 +585,16 @@ public class SchemaGenerator {
             
             // ignore special tables
             if (!_openjpaTables &&
-                (tableName.toUpperCase().startsWith("OPENJPA_")
-                    || tableName.toUpperCase().startsWith("JDO_"))) // legacy
+                (tableName.getName().toUpperCase().startsWith("OPENJPA_")
+                    || tableName.getName().toUpperCase().startsWith("JDO_"))) // legacy
                 continue;
-            if (_dict.isSystemTable(tableName, tableSchema, schemaName != null))
+            if (_dict.isSystemTable(tableName, tableSchema, !DBIdentifier.isNull(schemaName)))
                 continue;
 
             // ignore tables not in list, or not allowed by schemas property
+            
             if (tableNames != null
-                && !tableNames.contains(tableName.toUpperCase()))
+                && !tableNames.contains(DBIdentifier.toUpper(tableName)))
                 continue;
             if (!isAllowedTable(tableSchema, tableName))
                 continue;
@@ -525,9 +611,9 @@ public class SchemaGenerator {
             }
 
             if (_log.isTraceEnabled())
-                _log.trace(_loc.get("gen-column", cols[i].getName(), table));
+                _log.trace(_loc.get("gen-column", cols[i].getIdentifier(), table));
 
-            if (table.getColumn(cols[i].getName(), _dict) == null) {
+            if (table.getColumn(cols[i].getIdentifier()) == null) {
                 table.importColumn(cols[i]);
             }
         }
@@ -536,30 +622,30 @@ public class SchemaGenerator {
     /**
      * Return whether the given table is allowed by the user's schema list.
      */
-    private boolean isAllowedTable(String schema, String table) {
+    private boolean isAllowedTable(DBIdentifier schema, DBIdentifier table) {
         if (_allowed == null)
             return true;
 
         // do case-insensitive comparison on allowed table and schema names
-        String[] tables;
-        String[] anySchemaTables = null;
+        DBIdentifier[] tables;
+        DBIdentifier[] anySchemaTables = null;
         for (int i = 0; i < _allowed.length; i++) {
             if (_allowed[i][0] == null) {
-                anySchemaTables = (String[]) _allowed[i][1];
+                anySchemaTables = (DBIdentifier[]) _allowed[i][1];
                 if (schema == null)
                     break;
                 continue;
             }
-            if (!StringUtils.equalsIgnoreCase(schema, (String) _allowed[i][0]))
+            if (!schema.equals((DBIdentifier) _allowed[i][0]))
                 continue;
 
             if (table == null)
                 return true;
-            tables = (String[]) _allowed[i][1];
+            tables = (DBIdentifier[]) _allowed[i][1];
             if (tables == null)
                 return true;
             for (int j = 0; j < tables.length; j++)
-                if (StringUtils.equalsIgnoreCase(table, tables[j]))
+                if (table.equals(tables[j]))
                     return true;
         }
 
@@ -567,7 +653,7 @@ public class SchemaGenerator {
             if (table == null)
                 return true;
             for (int i = 0; i < anySchemaTables.length; i++)
-                if (StringUtils.equalsIgnoreCase(table, anySchemaTables[i]))
+                if (table.equals(anySchemaTables[i]))
                     return true;
         }
         return false;
@@ -575,8 +661,16 @@ public class SchemaGenerator {
 
     /**
      * Generates table primary keys.
+     * @deprecated
      */
     public void generatePrimaryKeys(String schemaName, String tableName,
+        Connection conn, DatabaseMetaData meta)
+        throws SQLException {
+        generatePrimaryKeys(DBIdentifier.newSchema(schemaName), DBIdentifier.newTable(tableName),
+            conn, meta);
+    }
+
+    public void generatePrimaryKeys(DBIdentifier schemaName, DBIdentifier tableName,
         Connection conn, DatabaseMetaData meta)
         throws SQLException {
         fireGenerationEvent(_loc.get("generating-primary",
@@ -586,53 +680,63 @@ public class SchemaGenerator {
 
         // if looking for a non-existant table, just return
         SchemaGroup group = getSchemaGroup();
-        if (tableName != null && group.findTable(tableName) == null)
+        if (tableName != null && !tableName.isNull() && 
+                group.findTable(QualifiedDBIdentifier.getPath(tableName)) == null)
             return;
 
         // if the database can't use a table name wildcard, recurse on each
         // concrete table in the requested schema(s)
-        PrimaryKey[] pks = _dict.getPrimaryKeys(meta, conn.getCatalog(),
+        PrimaryKey[] pks = _dict.getPrimaryKeys(meta, 
+            DBIdentifier.newCatalog(conn.getCatalog()),
             schemaName, tableName, conn);
         Table table;
         if (pks == null && tableName == null) {
-            Collection tables = getTables(schemaName);
-            for (Iterator itr = tables.iterator(); itr.hasNext();) {
+            Collection<Table> tables = getTables(schemaName);
+            for (Iterator<Table> itr = tables.iterator(); itr.hasNext();) {
                 table = (Table) itr.next();
-                generatePrimaryKeys(table.getSchemaName(),
-                    table.getName(), conn, meta);
+                generatePrimaryKeys(table.getSchemaIdentifier(),
+                    table.getIdentifier(), conn, meta);
             }
             return;
         }
 
         Schema schema;
         PrimaryKey pk;
-        String name;
-        String colName;
+        DBIdentifier name = DBIdentifier.NULL;
+        DBIdentifier colName = DBIdentifier.NULL;
         for (int i = 0; pks != null && i < pks.length; i++) {
-            schemaName = StringUtils.trimToNull(pks[i].getSchemaName());
+            schemaName = DBIdentifier.trimToNull(schemaName);
             schema = group.getSchema(schemaName);
             if (schema == null)
                 continue;
-            table = schema.getTable(pks[i].getTableName());
+            table = schema.getTable(pks[i].getTableIdentifier());
             if (table == null)
                 continue;
 
-            colName = pks[i].getColumnName();
-            name = pks[i].getName();
+            colName = pks[i].getColumnIdentifier();
+            name = pks[i].getIdentifier();
             if (_log.isTraceEnabled())
                 _log.trace(_loc.get("gen-pk", name, table, colName));
 
             pk = table.getPrimaryKey();
             if (pk == null)
                 pk = table.addPrimaryKey(name);
-            pk.addColumn(table.getColumn(colName, _dict));
+            pk.addColumn(table.getColumn(colName));
         }
     }
 
     /**
      * Generates table indexes.
+     * @deprecated
      */
     public void generateIndexes(String schemaName, String tableName,
+        Connection conn, DatabaseMetaData meta)
+        throws SQLException {
+        generateIndexes(DBIdentifier.newSchema(schemaName), DBIdentifier.newTable(tableName),
+            conn, meta);
+    }
+
+    public void generateIndexes(DBIdentifier schemaName, DBIdentifier tableName,
         Connection conn, DatabaseMetaData meta)
         throws SQLException {
         fireGenerationEvent(_loc.get("generating-indexes",
@@ -642,52 +746,52 @@ public class SchemaGenerator {
 
         // if looking for a non-existant table, just return
         SchemaGroup group = getSchemaGroup();
-        if (tableName != null && group.findTable(tableName) == null)
+        if (tableName != null && group.findTable(QualifiedDBIdentifier.getPath(tableName)) == null)
             return;
 
         // if the database can't use a table name wildcard, recurse on each
         // concrete table in the requested schema(s)
-        Index[] idxs = _dict.getIndexInfo(meta, conn.getCatalog(),
+        Index[] idxs = _dict.getIndexInfo(meta, DBIdentifier.newCatalog(conn.getCatalog()),
             schemaName, tableName, false, true, conn);
         Table table;
         if (idxs == null && tableName == null) {
-            Collection tables = getTables(schemaName);
-            for (Iterator itr = tables.iterator(); itr.hasNext();) {
-                table = (Table) itr.next();
-                generateIndexes(table.getSchemaName(),
-                    table.getName(), conn, meta);
+            Collection<Table> tables = getTables(schemaName);
+            for (Iterator<Table> itr = tables.iterator(); itr.hasNext();) {
+                table = itr.next();
+                generateIndexes(table.getSchemaIdentifier(),
+                    table.getIdentifier(), conn, meta);
             }
             return;
         }
 
         Schema schema;
         Index idx;
-        String name;
-        String colName;
-        String pkName;
+        DBIdentifier name = DBIdentifier.NULL;
+        DBIdentifier colName = DBIdentifier.NULL;
+        DBIdentifier pkName = DBIdentifier.NULL;
         for (int i = 0; idxs != null && i < idxs.length; i++) {
-            schemaName = StringUtils.trimToNull(idxs[i].getSchemaName());
+            schemaName = DBIdentifier.trimToNull(idxs[i].getSchemaIdentifier());
             schema = group.getSchema(schemaName);
             if (schema == null)
                 continue;
-            table = schema.getTable(idxs[i].getTableName());
+            table = schema.getTable(idxs[i].getTableIdentifier());
             if (table == null)
                 continue;
 
             if (table.getPrimaryKey() != null)
-                pkName = table.getPrimaryKey().getName();
+                pkName = table.getPrimaryKey().getIdentifier();
             else
                 pkName = null;
 
             // statistics don't have names; skip them
-            name = idxs[i].getName();
-            if (StringUtils.isEmpty(name)
-                || (pkName != null && name.equalsIgnoreCase(pkName))
+            name = idxs[i].getIdentifier();
+            if (DBIdentifier.isEmpty(name)
+                || (pkName != null && name.equals(pkName))
                 || _dict.isSystemIndex(name, table))
                 continue;
 
-            colName = idxs[i].getColumnName();
-            if (table.getColumn(colName, _dict) == null)
+            colName = idxs[i].getColumnIdentifier();
+            if (table.getColumn(colName) == null)
                 continue;
 
             if (_log.isTraceEnabled())
@@ -699,7 +803,7 @@ public class SchemaGenerator {
                 idx = table.addIndex(name);
                 idx.setUnique(idxs[i].isUnique());
             }
-            idx.addColumn(table.getColumn(colName, _dict));
+            idx.addColumn(table.getColumn(colName));
         }
     }
 
@@ -709,6 +813,13 @@ public class SchemaGenerator {
     public void generateForeignKeys(String schemaName, String tableName,
         Connection conn, DatabaseMetaData meta)
         throws SQLException {
+        generateForeignKeys(DBIdentifier.newSchema(schemaName), DBIdentifier.newTable(tableName),
+            conn, meta);
+    }
+
+    public void generateForeignKeys(DBIdentifier schemaName, DBIdentifier tableName,
+        Connection conn, DatabaseMetaData meta)
+        throws SQLException {
         fireGenerationEvent(_loc.get("generating-foreign",
             schemaName, tableName));
         if (_log.isTraceEnabled())
@@ -716,20 +827,20 @@ public class SchemaGenerator {
 
         // if looking for a non-existant table, just return
         SchemaGroup group = getSchemaGroup();
-        if (tableName != null && group.findTable(tableName) == null)
+        if (!DBIdentifier.isNull(tableName) && group.findTable(QualifiedDBIdentifier.getPath(tableName)) == null)
             return;
 
         // if the database can't use a table name wildcard, recurse on each
         // concrete table in the requested schema(s)
-        ForeignKey[] fks = _dict.getImportedKeys(meta, conn.getCatalog(),
+        ForeignKey[] fks = _dict.getImportedKeys(meta, DBIdentifier.newCatalog(conn.getCatalog()),
             schemaName, tableName, conn);
         Table table;
-        if (fks == null && tableName == null) {
-            Collection tables = getTables(schemaName);
-            for (Iterator itr = tables.iterator(); itr.hasNext();) {
-                table = (Table) itr.next();
-                generateForeignKeys(table.getSchemaName(),
-                    table.getName(), conn, meta);
+        if (fks == null && DBIdentifier.isNull(tableName)) {
+            Collection<Table> tables = getTables(schemaName);
+            for (Iterator<Table> itr = tables.iterator(); itr.hasNext();) {
+                table = itr.next();
+                generateForeignKeys(table.getSchemaIdentifier(),
+                    table.getIdentifier(), conn, meta);
             }
             return;
         }
@@ -737,26 +848,26 @@ public class SchemaGenerator {
         Schema schema;
         Table pkTable;
         ForeignKey fk;
-        String name;
-        String pkSchemaName;
-        String pkTableName;
-        String pkColName;
-        String fkColName;
+        DBIdentifier name = DBIdentifier.NULL;
+        DBIdentifier pkSchemaName = DBIdentifier.NULL;
+        DBIdentifier pkTableName = DBIdentifier.NULL;
+        DBIdentifier pkColName = DBIdentifier.NULL;
+        DBIdentifier fkColName = DBIdentifier.NULL;
         int seq;
         boolean seqWas0 = false; // some drivers incorrectly start at 0
-        Collection invalids = null;
+        Collection<ForeignKey> invalids = null;
         for (int i = 0; fks != null && i < fks.length; i++) {
-            schemaName = StringUtils.trimToNull(fks[i].getSchemaName());
+            schemaName = DBIdentifier.trimToNull(fks[i].getSchemaIdentifier());
             schema = group.getSchema(schemaName);
             if (schema == null)
                 continue;
-            table = schema.getTable(fks[i].getTableName());
+            table = schema.getTable(fks[i].getTableIdentifier());
             if (table == null)
                 continue;
 
-            name = fks[i].getName();
-            fkColName = fks[i].getColumnName();
-            pkColName = fks[i].getPrimaryKeyColumnName();
+            name = fks[i].getIdentifier();
+            fkColName = fks[i].getColumnIdentifier();
+            pkColName = fks[i].getPrimaryKeyColumnIdentifier();
             seq = fks[i].getKeySequence();
             if (seq == 0)
                 seqWas0 = true;
@@ -764,18 +875,16 @@ public class SchemaGenerator {
                 seq++;
 
             // find pk table
-            pkSchemaName = fks[i].getPrimaryKeySchemaName();
+            pkSchemaName = fks[i].getPrimaryKeySchemaIdentifier();
             if(_dict.getTrimSchemaName()) {
-                pkSchemaName= StringUtils.trimToNull(pkSchemaName);
+                pkSchemaName= DBIdentifier.trimToNull(pkSchemaName);
             }
-            pkTableName = fks[i].getPrimaryKeyTableName();
+            pkTableName = fks[i].getPrimaryKeyTableIdentifier();
             if (_log.isTraceEnabled())
                 _log.trace(_loc.get("gen-fk", new Object[]{ name, table,
                     fkColName, pkTableName, pkColName, seq + "" }));
 
-            if (!StringUtils.isEmpty(pkSchemaName))
-                pkTableName = pkSchemaName + "." + pkTableName;
-            pkTable = group.findTable(pkTableName);
+            pkTable = group.findTable(QualifiedDBIdentifier.newPath(pkSchemaName, pkTableName));
             if (pkTable == null)
                 throw new SQLException(_loc.get("gen-nofktable",
                     table, pkTableName).getMessage());
@@ -799,18 +908,18 @@ public class SchemaGenerator {
 
             if (invalids == null || !invalids.contains(fk)) {
                 try {
-                    Column fkCol = table.getColumn(fkColName, _dict);
+                    Column fkCol = table.getColumn(fkColName);
                     if (fkCol == null) {
                         throw new IllegalArgumentException(_loc.get(
-                            "no-column", fkColName, table.getName())
+                            "no-column", fkColName, table.getIdentifier())
                             .getMessage());
                     }
-                    fk.join(fkCol, pkTable.getColumn(pkColName, _dict));
+                    fk.join(fkCol, pkTable.getColumn(pkColName));
                 } catch (IllegalArgumentException iae) {
                     if (_log.isWarnEnabled())
                         _log.warn(_loc.get("bad-join", iae.toString()));
                     if (invalids == null)
-                        invalids = new HashSet();
+                        invalids = new HashSet<ForeignKey>();
                     invalids.add(fk);
                 }
             }
@@ -818,8 +927,8 @@ public class SchemaGenerator {
 
         // remove invalid fks
         if (invalids != null) {
-            for (Iterator itr = invalids.iterator(); itr.hasNext();) {
-                fk = (ForeignKey) itr.next();
+            for (Iterator<ForeignKey> itr = invalids.iterator(); itr.hasNext();) {
+                fk = itr.next();
                 fk.getTable().removeForeignKey(fk);
             }
         }
@@ -827,8 +936,16 @@ public class SchemaGenerator {
 
     /**
      * Adds all sequences matching the given name pattern to the schema.
+     * @deprecated
      */
     public void generateSequences(String schemaName, String sequenceName,
+        Connection conn, DatabaseMetaData meta)
+        throws SQLException {
+        generateSequences(DBIdentifier.newSchema(schemaName), 
+            DBIdentifier.newSequence(sequenceName), conn, meta);
+    }
+    
+    public void generateSequences(DBIdentifier schemaName, DBIdentifier sequenceName,
         Connection conn, DatabaseMetaData meta)
         throws SQLException {
         fireGenerationEvent(_loc.get("generating-sequences", schemaName));
@@ -837,20 +954,21 @@ public class SchemaGenerator {
 
         // since all the sequences are generated under the default schema
         // therefore, we can use the null schemaname to search
-        Sequence[] seqs = _dict.getSequences(meta, conn.getCatalog(),
-            null, sequenceName, conn);
+        Sequence[] seqs = _dict.getSequences(meta, DBIdentifier.newCatalog(conn.getCatalog()),
+            DBIdentifier.NULL, sequenceName, conn);
 
         SchemaGroup group = getSchemaGroup();
         Schema schema;
-        String sequenceSchema;
+        DBIdentifier sequenceSchema = DBIdentifier.NULL;
         for (int i = 0; seqs != null && i < seqs.length; i++) {
-            sequenceName = seqs[i].getName();
-            sequenceSchema = StringUtils.trimToNull(seqs[i].getSchemaName());
+            sequenceName = seqs[i].getIdentifier();
+            sequenceSchema = DBIdentifier.trimToNull(seqs[i].getSchemaIdentifier());
 
             // ignore special tables
+            String seqUpper = DBIdentifier.toUpper(sequenceName).getName();
             if (!_openjpaTables &&
-                (sequenceName.toUpperCase().startsWith("OPENJPA_")
-                    || sequenceName.toUpperCase().startsWith("JDO_"))) // legacy
+                (seqUpper.startsWith("OPENJPA_")
+                    || seqUpper.startsWith("JDO_"))) // legacy
                 continue;
             if (_dict.isSystemSequence(sequenceName, sequenceSchema,
                 schemaName != null))
@@ -860,26 +978,11 @@ public class SchemaGenerator {
 
             schema = group.getSchema(sequenceSchema);
             if (schema == null) {
-                // TODO: temp until a more global name solution is implemented
-                schema = group.getSchema(_dict.addDelimiters(sequenceSchema));
-//                schema = group.getSchema(_dict.delimitString(sequenceSchema, 
-//                    DBDictionary.DBIdentifiers.SEQUENCE_GEN_SCHEMA));
-            }
-            if (schema == null) {
                 schema = group.addSchema(sequenceSchema);
-                // TODO: temp until a more global solution is implemented
-//                group.addDelimSchemaName(_dict.delimitString(sequenceSchema, 
-//                    DBDictionary.DBIdentifiers.SEQUENCE_GEN_SCHEMA), schema);
-                group.addDelimSchemaName(_dict.addDelimiters(sequenceSchema), schema);
             }
             if (schema.getSequence(sequenceName) == null) {
-                Sequence seq = schema.addSequence(sequenceName);
-                // TODO: temp until a more global solution is implemented
-//                schema.addDelimSequenceName(_dict.delimitString(sequenceName, 
-//                    DBDictionary.DBIdentifiers.SEQUENCE_GEN_SEQ_NAME), seq);
-                schema.addDelimSequenceName(_dict.addDelimiters(sequenceName), seq);
+                schema.addSequence(sequenceName);
             }
-                
         }
     }
 
@@ -895,8 +998,8 @@ public class SchemaGenerator {
             return;
 
         Event e = new Event(schemaObject, _schemaObjects);
-        for (Iterator i = _listeners.iterator(); i.hasNext();) {
-            Listener l = (Listener) i.next();
+        for (Iterator<Listener> i = _listeners.iterator(); i.hasNext();) {
+            Listener l = i.next();
             if (!l.schemaObjectGenerated(e))
                 throw new SQLException(_loc.get("refresh-cancelled")
                     .getMessage());
@@ -910,7 +1013,7 @@ public class SchemaGenerator {
      */
     public void addListener(Listener l) {
         if (_listeners == null)
-            _listeners = new LinkedList();
+            _listeners = new LinkedList<Listener>();
         _listeners.add(l);
     }
 
@@ -928,17 +1031,17 @@ public class SchemaGenerator {
      * Return all tables for the given schema name, or all tables in
      * the schema group if null is given.
      */
-    private Collection getTables(String schemaName) {
+    private Collection<Table> getTables(DBIdentifier schemaName) {
         SchemaGroup group = getSchemaGroup();
-        if (schemaName != null) {
+        if (!DBIdentifier.isNull(schemaName)) {
             Schema schema = group.getSchema(schemaName);
             if (schema == null)
-                return Collections.EMPTY_LIST;
+                return Collections.emptyList();
             return Arrays.asList(schema.getTables());
         }
 
         Schema[] schemas = group.getSchemas();
-        Collection tables = new LinkedList();
+        Collection<Table> tables = new LinkedList<Table>();
         for (int i = 0; i < schemas.length; i++)
             tables.addAll(Arrays.asList(schemas[i].getTables()));
         return tables;
@@ -955,6 +1058,7 @@ public class SchemaGenerator {
     /**
      * An event corresponding to the generation of a schema object.
      */
+    @SuppressWarnings("serial")
     public class Event
         extends EventObject {
 

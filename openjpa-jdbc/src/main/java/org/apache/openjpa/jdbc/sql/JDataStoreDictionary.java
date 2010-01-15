@@ -67,6 +67,7 @@ public class JDataStoreDictionary
         searchStringEscape = "";
     }
 
+    @Override
     public void substring(SQLBuffer buf, FilterValue str, FilterValue start,
         FilterValue end) {
         buf.append("SUBSTRING(");
@@ -85,6 +86,7 @@ public class JDataStoreDictionary
         buf.append(")))");
     }
 
+    @Override
     public void indexOf(SQLBuffer buf, FilterValue str, FilterValue find,
         FilterValue start) {
         buf.append("(POSITION(");
@@ -102,6 +104,7 @@ public class JDataStoreDictionary
         buf.append(")");
     }
 
+    @Override
     public OpenJPAException newStoreException(String msg, SQLException[] causes,
         Object failed) {
         OpenJPAException ke = super.newStoreException(msg, causes, failed);

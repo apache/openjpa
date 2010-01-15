@@ -52,8 +52,7 @@ public class TestDelimIdResultSetAnnotations
             org.apache.openjpa.persistence.delimited.identifiers.Chevrolet.class,
             org.apache.openjpa.persistence.delimited.identifiers.Car2.class,
             org.apache.openjpa.persistence.delimited.identifiers.Pontiac2.class,
-            org.apache.openjpa.persistence.delimited.identifiers.Chevrolet2.class
-            );
+            org.apache.openjpa.persistence.delimited.identifiers.Chevrolet2.class);
         assertNotNull(emf);
         
         em = emf.createEntityManager();
@@ -100,10 +99,10 @@ public class TestDelimIdResultSetAnnotations
     
     private void resultSetQuery() {
         String query = 
-            "SELECT c.id, c.\"car model\", c.\"car color\", " +
+            "SELECT c.\"id\", c.\"car model\", c.\"car color\", " +
             "c.\"discr col\", c.\"model year\" " +
             "FROM \"Car\" c ";
-        Query q = em.createNativeQuery(query,"CarResultSet");
+        Query q = em.createNativeQuery(query,"AnnoCarResultSet");
         List<Object[]> results = (List<Object[]>)q.getResultList();
         assertEquals(2,results.size());
         

@@ -25,6 +25,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Types;
 
+import org.apache.openjpa.jdbc.identifier.DBIdentifier;
 import org.apache.openjpa.jdbc.schema.Column;
 import org.apache.openjpa.jdbc.schema.Index;
 import org.apache.openjpa.jdbc.schema.PrimaryKey;
@@ -83,6 +84,7 @@ public class FoxProDictionary
         characterColumnSize = 240;
     }
 
+    @Override
     public String getString(ResultSet rs, int column)
         throws SQLException {
         // foxpro doesn't auto-truncate values.
@@ -92,6 +94,7 @@ public class FoxProDictionary
         return str;
     }
 
+    @Override
     public void setNull(PreparedStatement stmnt, int idx, int colType,
         Column col)
         throws SQLException {
@@ -108,6 +111,7 @@ public class FoxProDictionary
         }
     }
 
+    @Override
     protected String appendSize(Column col, String typeName) {
         // foxpro does not like unsized column declarations.
         if (col.getSize() == 0) {
@@ -119,18 +123,29 @@ public class FoxProDictionary
         return super.appendSize(col, typeName);
     }
 
+    @Override
     protected String getPrimaryKeyConstraintSQL(PrimaryKey pk) {
         // this foxpro driver combination does not support primary keys
         return null;
     }
 
+    @Override
     public String[] getCreateIndexSQL(Index index) {
         // foxpro JDBC access does not allow the creation of indexes
         return new String[0];
     }
 
+    @Override
     public Column[] getColumns(DatabaseMetaData meta, String catalog,
         String schemaName, String tableName, String columnName, Connection conn)
+        throws SQLException {
+        return getColumns(meta, DBIdentifier.newCatalog(catalog), DBIdentifier.newSchema(schemaName),
+            DBIdentifier.newTable(tableName), DBIdentifier.newColumn(columnName), conn);
+    }
+    
+    @Override
+    public Column[] getColumns(DatabaseMetaData meta, DBIdentifier catalog,
+        DBIdentifier schemaName, DBIdentifier tableName, DBIdentifier columnName, Connection conn)
         throws SQLException {
         try {
             Column[] cols = super.getColumns(meta, catalog, schemaName,
@@ -140,7 +155,7 @@ public class FoxProDictionary
                 if (cols[i].getType() == 11)
                     cols[i].setType(Types.TIMESTAMP);
                     // MEMO maps to LONGVARCHAR during reverse analysis
-                else if ("MEMO".equals(cols[i].getTypeName()))
+                else if ("MEMO".equals(cols[i].getTypeIdentifier().getName()))
                     cols[i].setType(Types.CLOB);
             }
             return cols;
@@ -153,8 +168,17 @@ public class FoxProDictionary
         }
     }
 
+    @Override
     public PrimaryKey[] getPrimaryKeys(DatabaseMetaData meta, String catalog,
         String schemaName, String tableName, Connection conn)
+        throws SQLException {
+        // this combination does not reliably return PK information
+        return null;
+    }
+
+    @Override
+    public PrimaryKey[] getPrimaryKeys(DatabaseMetaData meta, DBIdentifier catalog,
+        DBIdentifier schemaName, DBIdentifier tableName, Connection conn)
         throws SQLException {
         // this combination does not reliably return PK information
         return null;

@@ -30,6 +30,9 @@ import java.sql.Types;
 
 import org.apache.openjpa.jdbc.conf.JDBCConfiguration;
 import org.apache.openjpa.jdbc.conf.JDBCConfigurationImpl;
+import org.apache.openjpa.jdbc.identifier.Normalizer;
+import org.apache.openjpa.jdbc.identifier.DBIdentifier;
+import org.apache.openjpa.jdbc.identifier.QualifiedDBIdentifier;
 import org.apache.openjpa.jdbc.sql.DBDictionary;
 import org.apache.openjpa.jdbc.sql.SQLBuffer;
 import org.apache.openjpa.jdbc.sql.SQLExceptions;
@@ -37,6 +40,7 @@ import org.apache.openjpa.lib.conf.Configurable;
 import org.apache.openjpa.lib.conf.Configuration;
 import org.apache.openjpa.lib.conf.Configurations;
 import org.apache.openjpa.lib.log.Log;
+import org.apache.openjpa.lib.meta.MetaDataSerializer;
 import org.apache.openjpa.lib.util.Localizer;
 import org.apache.openjpa.lib.util.Options;
 import org.apache.openjpa.meta.JavaTypes;
@@ -62,9 +66,9 @@ public class TableSchemaFactory
 
     private JDBCConfiguration _conf = null;
     private Log _log = null;
-    private String _table = "OPENJPA_SCHEMA";
-    private String _pkColumnName = "ID";
-    private String _schemaColumnName = "SCHEMA_DEF";
+    private DBIdentifier _table = DBIdentifier.newTable("OPENJPA_SCHEMA");
+    private DBIdentifier _pkColumnName = DBIdentifier.newColumn("ID");
+    private DBIdentifier _schemaColumnName = DBIdentifier.newColumn("SCHEMA_DEF");
     private Column _pkColumn = null;
     private Column _schemaColumn = null;
 
@@ -73,7 +77,7 @@ public class TableSchemaFactory
      * <code>OPENJPA_SCHEMA</code>.
      */
     public String getTable() {
-        return _table;
+        return _table.getName();
     }
 
     /**
@@ -81,7 +85,7 @@ public class TableSchemaFactory
      * <code>OPENJPA_SCHEMA</code>.
      */
     public void setTable(String name) {
-        _table = name;
+        _table = DBIdentifier.newTable(name);
     }
 
     /**
@@ -97,7 +101,7 @@ public class TableSchemaFactory
      * Defaults to <code>ID</code>.
      */
     public void setPrimaryKeyColumn(String name) {
-        _pkColumnName = name;
+        _pkColumnName = DBIdentifier.newColumn(name);
     }
 
     /**
@@ -105,7 +109,7 @@ public class TableSchemaFactory
      * Defaults to <code>ID</code>.
      */
     public String getPrimaryKeyColumn() {
-        return _pkColumnName;
+        return _pkColumnName.getName();
     }
 
     /**
@@ -113,7 +117,7 @@ public class TableSchemaFactory
      * Defaults to <code>SCHEMA_DEF</code>.
      */
     public void setSchemaColumn(String name) {
-        _schemaColumnName = name;
+        _schemaColumnName = DBIdentifier.newColumn(name);
     }
 
     /**
@@ -121,7 +125,7 @@ public class TableSchemaFactory
      * Defaults to <code>SCHEMA_DEF</code>.
      */
     public String getSchemaColumn() {
-        return _schemaColumnName;
+        return _schemaColumnName.getName();
     }
 
     public JDBCConfiguration getConfiguration() {
@@ -139,7 +143,7 @@ public class TableSchemaFactory
     public void endConfiguration() {
         buildTable();
     }
-
+    
     public synchronized SchemaGroup readSchema() {
         String schema = null;
         try {
@@ -154,7 +158,7 @@ public class TableSchemaFactory
         XMLSchemaParser parser = new XMLSchemaParser(_conf);
         try {
             parser.parse(new StringReader(schema),
-                _schemaColumn.getFullName());
+                _schemaColumn.getQualifiedPath().toString());
         } catch (IOException ioe) {
             throw new GeneralException(ioe);
         }
@@ -166,7 +170,7 @@ public class TableSchemaFactory
         ser.addAll(schema);
         Writer writer = new StringWriter();
         try {
-            ser.serialize(writer, ser.COMPACT);
+            ser.serialize(writer, MetaDataSerializer.COMPACT);
         } catch (IOException ioe) {
             throw new GeneralException(ioe);
         }
@@ -232,7 +236,8 @@ public class TableSchemaFactory
             DBDictionary dict = _conf.getDBDictionaryInstance();
             stmnt = conn.prepareStatement("INSERT INTO "
                 + dict.getFullName(_pkColumn.getTable(), false)
-                + " (" + _pkColumn + ", " + _schemaColumn + ") VALUES (?, ?)");
+                + " (" + dict.getColumnDBName(_pkColumn) + ", " + 
+                dict.getColumnDBName(_schemaColumn) + ") VALUES (?, ?)");
             dict.setInt(stmnt, 1, 1, _pkColumn);
             dict.setNull(stmnt, 2, _schemaColumn.getType(), _schemaColumn);
             dict.setTimeouts(stmnt, _conf, true);
@@ -328,11 +333,12 @@ public class TableSchemaFactory
         String update;
         if (embedded)
             update = "UPDATE " + dict.getFullName(_pkColumn.getTable(), false)
-                + " SET " + _schemaColumn + " = ?  WHERE " + _pkColumn + " = ?";
+                + " SET " + dict.getColumnDBName(_schemaColumn) + " = ?  WHERE " +
+                dict.getColumnIdentifier(_pkColumn) + " = ?";
         else
-            update = "SELECT " + _schemaColumn + " FROM "
+            update = "SELECT " + dict.getColumnDBName(_schemaColumn) + " FROM "
                 + dict.getFullName(_pkColumn.getTable(), false)
-                + " WHERE " + _pkColumn + " = ?";
+                + " WHERE " + dict.getColumnDBName(_pkColumn) + " = ?";
 
         Connection conn = getConnection();
         PreparedStatement stmnt = null;
@@ -392,10 +398,11 @@ public class TableSchemaFactory
      * Creates the object-level representation of the sequence table.
      */
     private void buildTable() {
-        String tableName = Strings.getClassName(_table);
-        String schemaName = Strings.getPackageName(_table);
-        if (schemaName.length() == 0)
-            schemaName = Schemas.getNewTableSchema(_conf);
+        QualifiedDBIdentifier path = QualifiedDBIdentifier.getPath(_table);
+        DBIdentifier tableName = path.getIdentifier();
+        DBIdentifier schemaName = path.getSchemaName();
+        if (DBIdentifier.isEmpty(schemaName))
+            schemaName = Schemas.getNewTableSchemaIdentifier(_conf);
 
         // build the table in one of the designated schemas
         SchemaGroup group = new SchemaGroup();

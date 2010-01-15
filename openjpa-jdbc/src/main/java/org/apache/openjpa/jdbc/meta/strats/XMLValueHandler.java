@@ -28,10 +28,12 @@ import javax.xml.bind.Marshaller;
 import javax.xml.bind.Unmarshaller;
 import javax.xml.transform.stream.StreamSource;
 
+import org.apache.openjpa.jdbc.identifier.DBIdentifier;
 import org.apache.openjpa.jdbc.kernel.JDBCStore;
 import org.apache.openjpa.jdbc.meta.ValueMapping;
 import org.apache.openjpa.jdbc.schema.Column;
 import org.apache.openjpa.jdbc.schema.ColumnIO;
+import org.apache.openjpa.jdbc.sql.DBDictionary;
 import org.apache.openjpa.meta.JavaTypes;
 import org.apache.openjpa.util.InternalException;
 
@@ -45,14 +47,24 @@ public class XMLValueHandler
     extends AbstractValueHandler {
     private static final String PROXY_SUFFIX = "$proxy";
 
+    /**
+     * @deprecated
+     */
     public Column[] map(ValueMapping vm, String name, ColumnIO io,
         boolean adapt) {
+        DBDictionary dict = vm.getMappingRepository().getDBDictionary();
+        DBIdentifier colName = DBIdentifier.newColumn(name, dict != null ? dict.delimitAll() : false);
+        return map(vm, colName, io, adapt);
+    }
+
+    public Column[] map(ValueMapping vm, DBIdentifier name, ColumnIO io,
+        boolean adapt) {
         Column col = new Column();
-        col.setName(name);
+        col.setIdentifier(name);
         col.setJavaType(JavaTypes.STRING);
         col.setSize(-1);
-        col.setTypeName(vm.getMappingRepository().getDBDictionary()
-            .xmlTypeName);
+        col.setTypeIdentifier(DBIdentifier.newColumnDefinition(vm.getMappingRepository().getDBDictionary()
+            .xmlTypeName));
         col.setXML(true);
         return new Column[]{ col };
     }

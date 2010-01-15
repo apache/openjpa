@@ -67,6 +67,7 @@ import org.apache.openjpa.meta.Order;
 import org.apache.openjpa.meta.QueryMetaData;
 import org.apache.openjpa.meta.SequenceMetaData;
 import org.apache.openjpa.meta.ValueMetaData;
+
 import static org.apache.openjpa.persistence.MetaDataTag.*;
 import static org.apache.openjpa.persistence.PersistenceStrategy.*;
 import org.apache.openjpa.util.ImplHelper;
@@ -107,6 +108,12 @@ public class XMLPersistenceMetaDataParser
     protected static final String ELEM_PU_DEF = "persistence-unit-defaults";
     protected static final String ELEM_XML_MAP_META_COMPLETE = "xml-mapping-metadata-complete";
     protected static final String ELEM_DELIM_IDS = "delimited-identifiers";
+    
+    // The following is needed for input into the delimitString() method
+    protected static enum localDBIdentifiers {
+        SEQUENCE_GEN_SEQ_NAME,
+        SEQUENCE_GEN_SCHEMA
+    }    
 
     private static final Map<String, Object> _elems =
         new HashMap<String, Object>();
@@ -1008,12 +1015,16 @@ public class XMLPersistenceMetaDataParser
 
         meta = getRepository().addSequenceMetaData(name);
         String seq = attrs.getValue("sequence-name");
+        // Do not normalize the sequence name if it appears to be a plugin 
+        if (seq.indexOf('(') == -1){
+            seq = normalizeSequenceName(seq);
+        }
         String val = attrs.getValue("initial-value");
         int initial = val == null ? 1 : Integer.parseInt(val);
         val = attrs.getValue("allocation-size");
         int allocate = val == null ? 50 : Integer.parseInt(val);
-        String schema = attrs.getValue("schema");
-        String catalog = attrs.getValue("catalog");
+        String schema = normalizeSchemaName(attrs.getValue("schema"));
+        String catalog = normalizeCatalogName(attrs.getValue("catalog"));
 
         String clsName, props;
         if (seq == null || seq.indexOf('(') == -1) {
@@ -2108,5 +2119,17 @@ public class XMLPersistenceMetaDataParser
 
     protected boolean startDelimitedIdentifiers() {
         return false;
+    }
+    
+    protected String normalizeSequenceName(String seqName) {
+        return seqName;
+    }
+
+    protected String normalizeSchemaName(String schName) {
+        return schName;
+    }
+
+    protected String normalizeCatalogName(String catName) {
+        return catName;
     }
 }

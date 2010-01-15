@@ -21,6 +21,7 @@ package org.apache.openjpa.jdbc.meta;
 import java.io.Serializable;
 import java.sql.SQLException;
 
+import org.apache.openjpa.jdbc.identifier.DBIdentifier;
 import org.apache.openjpa.jdbc.schema.Column;
 import org.apache.openjpa.jdbc.schema.ColumnIO;
 import org.apache.openjpa.jdbc.schema.ForeignKey;
@@ -249,8 +250,16 @@ public interface ValueMapping
      * Map indexes and constraints for this value, using the current
      * {@link ValueMappingInfo}. The foreign key or columns of this value
      * must be set before calling this method.
+     * @deprecated
      */
     public void mapConstraints(String name, boolean adapt);
+
+    /**
+     * Map indexes and constraints for this value, using the current
+     * {@link ValueMappingInfo}. The foreign key or columns of this value
+     * must be set before calling this method.
+     */
+    public void mapConstraints(DBIdentifier name, boolean adapt);
 
     /**
      * Clear mapping information, including strategy.

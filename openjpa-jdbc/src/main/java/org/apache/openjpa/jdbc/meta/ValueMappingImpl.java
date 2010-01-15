@@ -22,6 +22,7 @@ import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.apache.openjpa.jdbc.identifier.DBIdentifier;
 import org.apache.openjpa.jdbc.schema.Column;
 import org.apache.openjpa.jdbc.schema.ColumnIO;
 import org.apache.openjpa.jdbc.schema.ForeignKey;
@@ -45,6 +46,7 @@ import org.apache.openjpa.util.MetaDataException;
  * @author Abe White
  * @since 0.4.0
  */
+@SuppressWarnings("serial")
 public class ValueMappingImpl
     extends ValueMetaDataImpl
     implements ValueMapping {
@@ -59,7 +61,7 @@ public class ValueMappingImpl
     private Column[] _cols = Schemas.EMPTY_COLUMNS;
     private ColumnIO _io = null;
     private ForeignKey _fk = null;
-    private Map _targetFKs = null;
+    private Map<ClassMapping,ForeignKey> _targetFKs = null;
     private Index _idx = null;
     private Unique _unq = null;
     private int _join = JOIN_FORWARD;
@@ -188,7 +190,7 @@ public class ValueMappingImpl
                 if (cachedFK != null)
                     return (ForeignKey) cachedFK;
             } else
-                _targetFKs = new HashMap();
+                _targetFKs = new HashMap<ClassMapping, ForeignKey>();
 
             ForeignKey newfk = (_join == JOIN_FORWARD)
                 ? newForwardForeignKey(target) : newInverseForeignKey(target);
@@ -220,12 +222,12 @@ public class ValueMappingImpl
                     cols[i].getTargetField());
             else if (_fk != null)
                 tcols[i] = getEquivalentColumn(_fk.getPrimaryKeyColumn
-                    (cols[i]).getName(), target, true);
-            else if (cols[i].getTarget() != null)
-                tcols[i] = getEquivalentColumn(cols[i].getTarget(), target,
+                    (cols[i]).getIdentifier(), target, true);
+            else if (!DBIdentifier.isNull(cols[i].getTargetIdentifier()))
+                tcols[i] = getEquivalentColumn(cols[i].getTargetIdentifier(), target,
                     true);
             else
-                tcols[i] = getEquivalentColumn(cols[i].getName(), target,
+                tcols[i] = getEquivalentColumn(cols[i].getIdentifier(), target,
                     false);
         }
 
@@ -239,7 +241,7 @@ public class ValueMappingImpl
             cols = _fk.getConstantPrimaryKeyColumns();
             for (int i = 0; i < cols.length; i++)
                 newfk.joinConstant(_fk.getPrimaryKeyConstant(cols[i]),
-                    getEquivalentColumn(cols[i].getName(), target, true));
+                    getEquivalentColumn(cols[i].getIdentifier(), target, true));
         }
         return newfk;
     }
@@ -267,7 +269,7 @@ public class ValueMappingImpl
     /**
      * Return the given mapping's equivalent of the given column.
      */
-    private Column getEquivalentColumn(String colName, ClassMapping target,
+    private Column getEquivalentColumn(DBIdentifier colName, ClassMapping target,
         boolean explicit) {
         // if there was no explicit target, use single pk column
         if (!explicit) {
@@ -433,11 +435,18 @@ public class ValueMappingImpl
             embed.refSchemaComponents();
     }
 
+    /**
+     * @deprecated
+     */
     public void mapConstraints(String name, boolean adapt) {
+        mapConstraints(DBIdentifier.newConstraint(name), adapt);
+    }
+
+    public void mapConstraints(DBIdentifier name, boolean adapt) {
         _unq = _info.getUnique(this, name, adapt);
         _idx = _info.getIndex(this, name, adapt);
     }
-
+    
     public void clearMapping() {
         _handler = null;
         _cols = Schemas.EMPTY_COLUMNS;

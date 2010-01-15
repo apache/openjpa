@@ -23,6 +23,7 @@ import java.math.BigDecimal;
 import java.sql.SQLException;
 import java.util.Comparator;
 
+import org.apache.openjpa.jdbc.identifier.DBIdentifier;
 import org.apache.openjpa.jdbc.kernel.JDBCFetchConfiguration;
 import org.apache.openjpa.jdbc.kernel.JDBCStore;
 import org.apache.openjpa.jdbc.meta.ClassMapping;
@@ -31,6 +32,7 @@ import org.apache.openjpa.jdbc.schema.Column;
 import org.apache.openjpa.jdbc.schema.ColumnIO;
 import org.apache.openjpa.jdbc.schema.ForeignKey;
 import org.apache.openjpa.jdbc.schema.Index;
+import org.apache.openjpa.jdbc.sql.DBDictionary;
 import org.apache.openjpa.jdbc.sql.Result;
 import org.apache.openjpa.jdbc.sql.Row;
 import org.apache.openjpa.jdbc.sql.RowManager;
@@ -147,12 +149,12 @@ public abstract class ColumnVersionStrategy
         	for (int i = 0; i < info.getColumns().size(); i++) {
                 templates[i] = new Column();
         		Column infoColumn = (Column)info.getColumns().get(i);
-        		templates[i].setTableName(infoColumn.getTableName());
+        		templates[i].setTableIdentifier(infoColumn.getTableIdentifier());
         		templates[i].setType(infoColumn.getType());
         		templates[i].setSize(infoColumn.getSize());
                 templates[i].setDecimalDigits(infoColumn.getDecimalDigits());
         		templates[i].setJavaType(getJavaType(i));
-        		templates[i].setName(infoColumn.getName());
+        		templates[i].setIdentifier(infoColumn.getIdentifier());
         	}
         	Column[] cols = info.getColumns(vers, templates, adapt);
         	for (int i = 0; i < cols.length; i++)
@@ -162,7 +164,9 @@ public abstract class ColumnVersionStrategy
         } else {
            Column tmplate = new Column();
            tmplate.setJavaType(getJavaType());
-           tmplate.setName("versn");
+           DBDictionary dict = vers.getMappingRepository().getDBDictionary();
+           DBIdentifier versName = DBIdentifier.newColumn("versn", dict != null ? dict.delimitAll() : false);
+           tmplate.setIdentifier(versName);
 
            Column[] cols = info.getColumns(vers, new Column[]{ tmplate },
                    adapt);

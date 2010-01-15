@@ -135,7 +135,8 @@ public class EmpressDictionary
         // empress wants dropped columns in the form: ALTER TABLE foo
         // DELETE columnToDrop
         return new String[]{ "ALTER TABLE "
-            + getFullName(column.getTable(), false) + " DELETE " + column };
+            + getFullName(column.getTable(), false) + " DELETE " + 
+            getColumnDBName(column) };
     }
 
     public void setFloat(PreparedStatement stmnt, int idx, float val,

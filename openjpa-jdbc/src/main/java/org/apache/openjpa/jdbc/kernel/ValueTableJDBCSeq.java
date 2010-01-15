@@ -78,7 +78,7 @@ public class ValueTableJDBCSeq
     protected Column addPrimaryKeyColumn(Table table) {
         DBDictionary dict = getConfiguration().getDBDictionaryInstance();
         Column pkColumn = table.addColumn(dict.getValidColumnName
-            (getPrimaryKeyColumn(), table));
+            (getPrimaryKeyColumnIdentifier(), table));
         pkColumn.setType(dict.getPreferredType(Types.VARCHAR));
         pkColumn.setJavaType(JavaTypes.STRING);
         pkColumn.setSize(dict.characterColumnSize);

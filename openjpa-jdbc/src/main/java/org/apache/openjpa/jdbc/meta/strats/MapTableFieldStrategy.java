@@ -24,6 +24,7 @@ import java.util.Map;
 
 import org.apache.openjpa.enhance.PersistenceCapable;
 import org.apache.openjpa.enhance.ReflectingPersistenceCapable;
+import org.apache.openjpa.jdbc.identifier.DBIdentifier;
 import org.apache.openjpa.jdbc.kernel.JDBCFetchConfiguration;
 import org.apache.openjpa.jdbc.kernel.JDBCStore;
 import org.apache.openjpa.jdbc.meta.ClassMapping;
@@ -241,7 +242,7 @@ public abstract class MapTableFieldStrategy
             val.getValueInfo().setColumns(field.getValueInfo().getColumns());
             if (val.getTypeMapping().isMapped()) {
                 ValueMappingInfo vinfo = val.getValueInfo();
-                ForeignKey fk = vinfo.getTypeJoin(val, null, false, adapt);
+                ForeignKey fk = vinfo.getTypeJoin(val, DBIdentifier.NULL, false, adapt);
                 val.setForeignKey(fk);
                 val.setColumnIO(vinfo.getColumnIO());
             } else

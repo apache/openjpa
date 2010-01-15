@@ -20,6 +20,7 @@ package org.apache.openjpa.jdbc.meta;
 
 import java.util.Comparator;
 
+import org.apache.openjpa.jdbc.identifier.DBIdentifier;
 import org.apache.openjpa.jdbc.sql.Joins;
 import org.apache.openjpa.jdbc.sql.Select;
 import org.apache.openjpa.meta.Order;
@@ -30,11 +31,13 @@ import org.apache.openjpa.meta.Order;
  *
  * @author Abe White
  */
+@SuppressWarnings("serial")
 class JDBCValueOrder
     implements JDBCOrder {
 
     private final FieldMapping _fm;
     private final boolean _asc;
+    private static final DBIdentifier SQL_ELEMENT = DBIdentifier.newColumn(Order.ELEMENT);
 
     public JDBCValueOrder(FieldMapping fm, boolean asc) {
         _fm = fm;
@@ -45,11 +48,15 @@ class JDBCValueOrder
         return Order.ELEMENT;
     }
 
+    public DBIdentifier getIdentifier() {
+        return SQL_ELEMENT;
+    }
+
     public boolean isAscending() {
         return _asc;
     }
 
-    public Comparator getComparator() {
+    public Comparator<?> getComparator() {
         return null;
     }
 

@@ -107,7 +107,7 @@ public interface ClassStrategy
     /**
      * Implement this method to customize loading from a {@link Result}
      * into an instance. Return true if this mapping handles the
-     * load; false if normal loading should procede after calling this method.
+     * load; false if normal loading should proceed after calling this method.
      */
     public boolean customLoad(OpenJPAStateManager sm, JDBCStore store,
         JDBCFetchConfiguration fetch, Result result)
