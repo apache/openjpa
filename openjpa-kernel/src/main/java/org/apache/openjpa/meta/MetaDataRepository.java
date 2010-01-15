@@ -1566,9 +1566,11 @@ public class MetaDataRepository implements PCRegistry.RegisterClassListener, Con
         if (_locking) {
             synchronized (_registered) {
                 _registered.add(cls);
+                registerAlias(cls);
             }
         } else {
             _registered.add(cls);
+            registerAlias(cls);
         }
     }
 

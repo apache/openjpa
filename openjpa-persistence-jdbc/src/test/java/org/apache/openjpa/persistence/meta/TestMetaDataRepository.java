@@ -44,7 +44,7 @@ public class TestMetaDataRepository extends AbstractPersistenceTestCase {
     public void testPreloadBasic() {
         OpenJPAEntityManagerFactorySPI emf = null;
         try {
-            emf = createNamedEMF(PU_NAME, "openjpa.MetaDataRepository", "Preload=true,NoLock=true");
+            emf = createNamedEMF(PU_NAME, "openjpa.MetaDataRepository", "Preload=true");
             MetaDataRepository mdr = emf.getConfiguration().getMetaDataRepositoryInstance();
 
             // Check that there is cached metadata in the repo
