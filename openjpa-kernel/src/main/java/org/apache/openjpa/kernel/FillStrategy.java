@@ -120,8 +120,23 @@ public interface FillStrategy<T> {
             try {
                 return cls.getConstructor(types);
             } catch (Exception e) {
-                throw new RuntimeException(_loc.get("fill-ctor-none", cls, Arrays.toString(types)).getMessage());
+                Constructor<?>[] constructors = cls.getConstructors();
+                for (Constructor<?> cons : constructors) {
+                    Class<?>[] paramTypes = cons.getParameterTypes();
+                    boolean match = false;
+                    if (paramTypes.length == types.length) {
+                        for (int i = 0; i < paramTypes.length; i++) {
+                            match = paramTypes[i].isAssignableFrom(Filters.wrap(types[i]));
+                            if (!match)
+                                break;
+                            }
+                        }
+                        if (match) {
+                            return (Constructor<X>)cons;
+                        }
+                }
             }
+            throw new RuntimeException(_loc.get("fill-ctor-none", cls, Arrays.toString(types)).getMessage());
         }
         
         public T fill(Object[] values, Class<?>[] types, String[] aliases) {
