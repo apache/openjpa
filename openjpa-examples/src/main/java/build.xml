@@ -32,7 +32,7 @@
 
     <target name="usagewarning">
         <fail>
-Please traverse to a sub-directory, like hellojpa, and run "ant" from there.
+Please traverse to a sub-directory and run "ant" from there.
         </fail>
     </target>
 

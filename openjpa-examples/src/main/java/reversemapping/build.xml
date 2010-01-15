@@ -43,27 +43,12 @@
         description="Pre-compilation phase">
     </target>
 
-    <target name="initialize-db" unless="initialize-db-skip"
+    <target name="initialize-db" depends="init,clean" unless="initialize-db-skip"
         description="Drop then re-create the database">
-        <!-- first make sure the database is empty -->
-        <sql src="schema/dropdb.sql"
-            driver="${dbdriver}" url="${dburl}"
-            userid="${dbuser}" password="${dbpass}"
-            onerror="continue" classpathref="classpath"/>
-
-        <!-- build the database -->
-        <sql
-            driver="${dbdriver}" url="${dburl}"
-            userid="${dbuser}" password="${dbpass}" classpathref="classpath">
-            <transaction src="schema/ToursDB_schema.sql"/>
-            <transaction src="schema/loadCOUNTRIES.sql"/>
-            <transaction src="schema/loadCITIES.sql"/>
-            <transaction src="schema/loadAIRLINES.sql"/>
-            <transaction src="schema/loadFLIGHTS1.sql"/>
-            <transaction src="schema/loadFLIGHTS2.sql"/>
-            <transaction src="schema/loadFLIGHTAVAILABILITY1.sql"/>
-            <transaction src="schema/loadFLIGHTAVAILABILITY2.sql"/>
-        </sql>
+        <exec executable="ant${platform.script.ext}">
+            <arg line="-f db.xml"/>
+        </exec>
+        <sleep seconds="5"/>
     </target>
 
     <target name="reverse-map-schema" depends="initialize-db"
