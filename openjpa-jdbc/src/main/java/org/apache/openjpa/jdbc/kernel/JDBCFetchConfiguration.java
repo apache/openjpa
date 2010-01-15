@@ -119,7 +119,7 @@ public interface JDBCFetchConfiguration
      *
      * @since 0.4.0.0
      */
-    public Set getJoins();
+    public Set<String> getJoins();
 
     /**
      * Return true if the given fully-qualified join has been added.
@@ -144,7 +144,7 @@ public interface JDBCFetchConfiguration
      *
      * @since 0.4.0.0
      */
-    public JDBCFetchConfiguration addJoins(Collection fields);
+    public JDBCFetchConfiguration addJoins(Collection<String> fields);
 
     /**
      * Removes <code>field</code> to the set of fully-qualified field names to
@@ -160,7 +160,7 @@ public interface JDBCFetchConfiguration
      *
      * @since 0.4.0.0
      */
-    public JDBCFetchConfiguration removeJoins(Collection fields);
+    public JDBCFetchConfiguration removeJoins(Collection<String> fields);
 
     /**
      * Clears the set of field names to join when loading data.
@@ -215,7 +215,7 @@ public interface JDBCFetchConfiguration
      *
      * @since 1.0.3
      */
-    public Set getFetchInnerJoins();
+    public Set<String> getFetchInnerJoins();
 
     /**
      * Return true if the given fully-qualified inner fetch join has been added.
@@ -240,5 +240,5 @@ public interface JDBCFetchConfiguration
      *
      * @since 1.0.3
      */
-    public JDBCFetchConfiguration addFetchInnerJoins(Collection fields);
+    public JDBCFetchConfiguration addFetchInnerJoins(Collection<String> fields);
 }

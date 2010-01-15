@@ -18,23 +18,18 @@
  */
 package org.apache.openjpa.persistence;
 
-import static org.apache.openjpa.kernel.QueryHints.HINT_IGNORE_PREPARED_QUERY;
-import static org.apache.openjpa.kernel.QueryHints
-                    .HINT_INVALIDATE_PREPARED_QUERY;
-import static org.apache.openjpa.kernel.QueryHints.HINT_RESULT_COUNT;
-
-import java.lang.reflect.Modifier;
 import java.util.Collections;
-import java.util.Comparator;
+import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
-import java.util.TreeSet;
 
 import org.apache.openjpa.conf.OpenJPAConfiguration;
 import org.apache.openjpa.enhance.Reflection;
 import org.apache.openjpa.kernel.FetchConfiguration;
 import org.apache.openjpa.kernel.Filters;
+import org.apache.openjpa.kernel.QueryHints;
 import org.apache.openjpa.kernel.exps.AggregateListener;
 import org.apache.openjpa.kernel.exps.FilterListener;
 import org.apache.openjpa.lib.conf.ProductDerivation;
@@ -97,41 +92,21 @@ import org.apache.openjpa.lib.util.StringDistance;
  * 
  * @nojavadoc
  */
-public class HintHandler extends FetchPlanHintHandler {
+public class HintHandler  {
+  protected final QueryImpl<?> owner;
 
-    private static final Localizer _loc = Localizer.forPackage(
-        HintHandler.class);
+    private static final Localizer _loc = Localizer.forPackage(HintHandler.class);
+    protected static Set<String> _supportedHints = ProductDerivations.getSupportedQueryHints();
 
-    private final QueryImpl owner;
+    protected static final String PREFIX_OPENJPA = "openjpa.";
+    protected static final String PREFIX_JDBC = PREFIX_OPENJPA + "jdbc.";
+    protected static final String PREFIX_FETCHPLAN = PREFIX_OPENJPA + "FetchPlan.";
     private Map<String, Object> _hints;
-    private static Set<String> _supportedKeys;
-    private static Set<String> _supportedPrefixes;
+
     
-    // These keys are directly handled in {@link QueryImpl} class.
-    // Declaring a public static final String variable in this class will 
-    // make it register as a supported hint key
-    // if you do not want that then annotate as {@link Reflectable(false)}.
-    public static final String HINT_SUBCLASSES = "openjpa.Subclasses";
-    public static final String HINT_FILTER_LISTENER = "openjpa.FilterListener";
-    public static final String HINT_FILTER_LISTENERS = 
-        "openjpa.FilterListeners";
-    public static final String HINT_AGGREGATE_LISTENER = 
-        "openjpa.AggregateListener";
-    public static final String HINT_AGGREGATE_LISTENERS = 
-        "openjpa.AggregateListeners";
-    
-    HintHandler(QueryImpl impl) {
-        super((FetchPlanImpl)impl.getFetchPlan());
+    HintHandler(QueryImpl<?> impl) {
+        super();
         owner = impl;
-    }
-    
-    /**
-     * Gets all the recorded hint keys and their values.
-     */
-    @SuppressWarnings("unchecked")
-    public Map<String, Object> getHints() {
-        return _hints == null ? Collections.EMPTY_MAP 
-            : Collections.unmodifiableMap(_hints);
     }
     
     /**
@@ -141,162 +116,148 @@ public class HintHandler extends FetchPlanHintHandler {
      *         null (i.e. MAY BE) if the key is recognized, but not supported.
      *         TRUE if the key is supported.
      */
-    private Boolean record(String hint, Object value) {
+    protected Boolean record(String hint, Object value) {
         if (hint == null)
             return Boolean.FALSE;
-        if (isSupported(hint)) {
+        if (_supportedHints.contains(hint)) {
             if (_hints == null)
                 _hints = new TreeMap<String, Object>();
             _hints.put(hint, value);
             return Boolean.TRUE;
         }
-        
-        Log log = owner.getDelegate().getBroker().getConfiguration()
-            .getLog(OpenJPAConfiguration.LOG_RUNTIME);
-        String possible = StringDistance.getClosestLevenshteinDistance(hint, 
-            getSupportedHints());
-        if (log.isWarnEnabled())
-            log.warn(_loc.get("bad-query-hint", hint, possible));
-        return (isKnownHintPrefix(hint)) ? null : Boolean.FALSE;
-    }
-    
-    /**
-     * Gets all the supported hint keys. The set of supported hint keys is
-     * statically determined by collecting hint keys from the ProductDerivations
-     * and reflecting upon some of the known classes.
-     */
-    public Set<String> getSupportedHints() {
-        if (_supportedKeys == null) {
-            _supportedKeys = new TreeSet<String>();
-            _supportedPrefixes = new TreeSet<String>();
-            
-            _supportedKeys.addAll(Reflection.getFieldValues(
-                org.apache.openjpa.kernel.QueryHints.class, 
-                Modifier.PUBLIC | Modifier.STATIC | Modifier.FINAL, 
-                String.class));
-
-            _supportedKeys.addAll(addPrefix(PREFIX_FETCHPLAN, 
-                Reflection.getBeanStylePropertyNames(
-                      owner.getFetchPlan().getClass())));
-
-            _supportedKeys.addAll(javaxHintsMap.keySet());
-
-            _supportedKeys.addAll(Reflection.getFieldValues(
-                HintHandler.class, 
-                Modifier.PUBLIC | Modifier.STATIC | Modifier.FINAL, 
-                String.class));
-
-            _supportedKeys.addAll(ProductDerivations.getSupportedQueryHints());
-            
-            for (String key : _supportedKeys) {
-                _supportedPrefixes.add(getPrefixOf(key));
-            }
+        if (isKnownPrefix(hint)) {
+            Log log = owner.getDelegate().getBroker().getConfiguration().getLog(OpenJPAConfiguration.LOG_RUNTIME);
+            String possible = StringDistance.getClosestLevenshteinDistance(hint, getSupportedHints());
+            if (log.isWarnEnabled())
+                log.warn(_loc.get("bad-query-hint", hint, possible));
+            return null; // possible but not registered
         }
-        return _supportedKeys;
-    }
-    
-    /**
-     * Add a hint key to the set of supported hint keys.
-     */
-    public void addHintKey(String key) {
-        getSupportedHints().add(key);
-        _supportedPrefixes.add(getPrefixOf(key));
-    }
-    
-    public Set<String> getKnownPrefixes() {
-        getSupportedHints();
-        return _supportedPrefixes;
-    }
-    
-    /**
-     * Affirms the given key matches one of the supported keys.
-     */
-    private boolean isSupported(String key) {
-        return getSupportedHints().contains(key);
-    }
-    
-    private boolean isKnownHintPrefix(String key) {
-        String prefix = getPrefixOf(key);
-        return getKnownPrefixes().contains(prefix);
+        return Boolean.FALSE; // not possible
     }
 
     public void setHint(String key, Object value) {
-        owner.lock();
-        try {
-            Boolean record = record(key, value);
-            if (record == Boolean.FALSE)
-                return;
-            FetchPlan plan = owner.getFetchPlan();
-            if (record == null) {
-                plan.setHint(key, value);
-                return;
-            }
-            // request to throw IllegalArgumentException, if needed.
-            if (setHint(key, value, true))
-                plan.addHint(key, value);
-        } finally {
-            owner.unlock();
+        Boolean status = record(key, value);
+        if (Boolean.FALSE.equals(status))
+            return;
+        FetchPlan plan = owner.getFetchPlan();
+        if (status == null) {
+            plan.setHint(key, value);
+            return;
         }
-    }
-    
-    protected boolean setHintInternal(String key, Object value,
-        boolean validateThrowException) {
+        
         ClassLoader loader = owner.getDelegate().getBroker().getClassLoader();
-        FetchPlan fPlan = owner.getFetchPlan();
-        boolean objectSet = true;
-        if (HINT_SUBCLASSES.equals(key)) {
+        if (QueryHints.HINT_SUBCLASSES.equals(key)) {
             if (value instanceof String)
                 value = Boolean.valueOf((String) value);
             owner.setSubclasses(((Boolean) value).booleanValue());
-        } else if (HINT_FILTER_LISTENER.equals(key))
-            owner.addFilterListener(Filters.hintToFilterListener(value, 
-                loader));
-        else if (HINT_FILTER_LISTENERS.equals(key)) {
+        } else if (QueryHints.HINT_FILTER_LISTENER.equals(key)) {
+            owner.addFilterListener(Filters.hintToFilterListener(value, loader));
+        } else if (QueryHints.HINT_FILTER_LISTENERS.equals(key)) {
             FilterListener[] arr = Filters.hintToFilterListeners(value, loader);
             for (int i = 0; i < arr.length; i++)
                 owner.addFilterListener(arr[i]);
-        } else if (HINT_AGGREGATE_LISTENER.equals(key))
-            owner.addAggregateListener(Filters.hintToAggregateListener(value,
-                loader));
-        else if (HINT_AGGREGATE_LISTENERS.equals(key)) {
-            AggregateListener[] arr = Filters.hintToAggregateListeners(value,
-                loader);
-            for (int i = 0; i < arr.length; i++)
+        } else if (QueryHints.HINT_AGGREGATE_LISTENER.equals(key)) {
+            owner.addAggregateListener(Filters.hintToAggregateListener(value, loader));
+        } else if (QueryHints.HINT_AGGREGATE_LISTENERS.equals(key)) {
+            AggregateListener[] arr = Filters.hintToAggregateListeners(value, loader);
+            for (int i = 0; i < arr.length; i++) {
                 owner.addAggregateListener(arr[i]);
-        } else if (HINT_RESULT_COUNT.equals(key)) {
+            }
+        } else if (QueryHints.HINT_RESULT_COUNT.equals(key)) {
             int v = (Integer) Filters.convert(value, Integer.class);
-            if (v < 0)
-                throw new ArgumentException(_loc.get("bad-query-hint-value",
-                    key, value), null, null, false);
-            fPlan.setHint(key, v);
-            objectSet = false;
-        } else if (HINT_INVALIDATE_PREPARED_QUERY.equals(key)) {
-            fPlan.setHint(key, Filters.convert(value, Boolean.class));
+            if (v < 0) {
+                throw new IllegalArgumentException(_loc.get("bad-query-hint-value", key, value).toString());
+            }
+            plan.setHint(key, v);
+        } else if (QueryHints.HINT_INVALIDATE_PREPARED_QUERY.equals(key)) {
+            plan.setHint(key, Filters.convert(value, Boolean.class));
             owner.invalidatePreparedQuery();
-            objectSet = false;
-        } else if (HINT_IGNORE_PREPARED_QUERY.equals(key)) {
-            fPlan.setHint(key, Filters.convert(value, Boolean.class));
+        } else if (QueryHints.HINT_IGNORE_PREPARED_QUERY.equals(key)) {
+            plan.setHint(key, Filters.convert(value, Boolean.class));
             owner.ignorePreparedQuery();
-            objectSet = false;
         } else { // default 
-            fPlan.setHint(key, value);
-            objectSet = false;
+            plan.setHint(key, value);
         }
-        return objectSet;
+    }
+    
+    /**
+     * Affirms if the given key starts with any of the known prefix.
+     * @param key
+     * @return
+     */
+    protected boolean isKnownPrefix(String key) {
+        if (key == null)
+            return false;
+        for (String prefix : ProductDerivations.getConfigurationPrefixes()) {
+            if (key.startsWith(prefix))
+                return true;
+        }
+        return false;
     }
 
-    protected String hintToKey(String key) {
-        // Let superclass performs key transformation when fPlan.setHint() 
-        // is called.
-        return key;
+    
+    
+//    protected boolean hasPrecedent(String key) {
+//        boolean hasPrecedent = true;
+//        String[] list = precedenceMap.get(key);
+//        if (list != null) {
+//            for (String hint : list) {
+//                if (hint.equals(key))
+//                    break;
+//                // stop if a higher precedence hint has already defined 
+//                if (getHints().containsKey(hint)) {
+//                    hasPrecedent = false;
+//                    break;
+//                }
+//            }
+//        }
+//        return hasPrecedent;
+//    }
+
+//    private Integer toLockLevel(Object value) {
+//        Object origValue = value;
+//        if (value instanceof String) {
+//            // to accommodate alias name input in relationship with enum values
+//            //  e.g. "optimistic-force-increment" == LockModeType.OPTIMISTIC_FORCE_INCREMENT
+//            String strValue = ((String) value).toUpperCase().replace('-', '_');
+//            value = Enum.valueOf(LockModeType.class, strValue);
+//        }
+//        if (value instanceof LockModeType)
+//            value = MixedLockLevelsHelper.toLockLevel((LockModeType) value);
+//
+//        Integer intValue = null;
+//        if (value instanceof Integer)
+//            intValue = (Integer) value;
+//        if (intValue == null
+//            || (intValue != MixedLockLevels.LOCK_NONE
+//                && intValue != MixedLockLevels.LOCK_READ
+//                && intValue != MixedLockLevels.LOCK_OPTIMISTIC
+//                && intValue != MixedLockLevels.LOCK_WRITE
+//                && intValue != MixedLockLevels.LOCK_OPTIMISTIC_FORCE_INCREMENT
+//                && intValue != MixedLockLevels.LOCK_PESSIMISTIC_READ
+//                && intValue != MixedLockLevels.LOCK_PESSIMISTIC_WRITE
+//                && intValue != MixedLockLevels.LOCK_PESSIMISTIC_FORCE_INCREMENT)
+//                )
+//            throw new IllegalArgumentException(_loc.get("bad-lock-level", origValue).getMessage());
+//        return intValue;
+//    }
+    
+    /**
+     * Gets all the supported hint keys. The set of supported hint keys is
+     * statically determined by collecting hint keys from the ProductDerivations.
+     */
+    public Set<String> getSupportedHints() {
+        return _supportedHints;
+    }
+    
+    /**
+     * Gets all the recorded hint keys and their values.
+     */
+    public Map<String, Object> getHints() {
+        if (_hints == null)
+            return Collections.emptyMap();
+        return Collections.unmodifiableMap(_hints);
     }
 
-    private Set<String> addPrefix(String prefix, Set<String> original) {
-        Set<String> result = new TreeSet<String>();
-        String join = prefix.endsWith(DOT) ? BLANK : DOT;
-        for (String o : original)
-            result.add(prefix + join + o);
-        return result;
-    }
 }
 

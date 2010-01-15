@@ -19,6 +19,7 @@
 package org.apache.openjpa.kernel;
 
 import java.io.Serializable;
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -29,7 +30,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.TreeMap;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.openjpa.conf.OpenJPAConfiguration;
@@ -62,8 +62,65 @@ import org.apache.openjpa.util.UserException;
 public class FetchConfigurationImpl
     implements FetchConfiguration, Cloneable {
 
-    private static final Localizer _loc = Localizer.forPackage
-        (FetchConfigurationImpl.class);
+    private static final Localizer _loc = Localizer.forPackage(FetchConfigurationImpl.class);
+    private static Map<String, Method> _hintSetters = new HashMap<String, Method>();
+    
+    /** 
+     * Registers hint keys that have a corresponding setter method.
+     * The hint keys are registered in <code>openjpa.FetchPlan</code> and <code>openjpa</code> as prefix.
+     * Also some keys are registered in <code>javax.persistence</code> namespace.
+     */
+    static {
+            String[] prefixes = {"openjpa.FetchPlan", "openjpa"};
+            Class<?> target = FetchConfiguration.class;
+            populateHintSetter(target, "ExtendedPathLookup", boolean.class, prefixes);
+            populateHintSetter(target, "FetchBatchSize", int.class, prefixes);
+            populateHintSetter(target, "FlushBeforeQueries", int.class, prefixes);
+            populateHintSetter(target, "LockScope", int.class, prefixes);
+            populateHintSetter(target, "LockTimeout", int.class, prefixes);
+            populateHintSetter(target, "setLockTimeout", "timeout", int.class, "javax.persistence.lock");
+            populateHintSetter(target, "MaxFetchDepth", int.class, prefixes);
+            populateHintSetter(target, "QueryTimeout", int.class, prefixes);
+            populateHintSetter(target, "setQueryTimeout", "timeout", int.class, "javax.persistence.query");
+            populateHintSetter(target, "ReadLockLevel", int.class, prefixes);
+            populateHintSetter(target, "setReadLockLevel", "ReadLockMode", int.class, prefixes);
+            populateHintSetter(target, "WriteLockLevel", int.class, prefixes);
+            populateHintSetter(target, "setWriteLockLevel", "WriteLockMode", int.class, prefixes);
+    }
+    
+    /**
+     * Populate static registry of hints.
+     *  
+     * @param target The name of the target class that will receive this hint. 
+     * @param hint the simple name of the hint without a prefix. 
+     * @param type the value argument type of the target setter method. 
+     * @param prefixes the prefixes will be added to the simple hint name. 
+     */
+    protected static void populateHintSetter(Class<?> target, String hint, Class<?> type, String...prefixes) {
+        populateHintSetter(target, "set" + hint, hint, type, prefixes);
+    }
+    
+    /**
+     * Populate static registry of hints.
+     *  
+     * @param target The name of the target class that will receive this hint. 
+     * @param method The name of the method in the target class that will receive this hint. 
+     * @param hint the simple name of the hint without a prefix. 
+     * @param type the value argument type of the target setter method. 
+     * @param prefixes the prefixes will be added to the simple hint name. 
+     */
+    protected static void populateHintSetter(Class<?> target, String method, String hint, Class<?> type, 
+            String...prefixes) {
+        try {
+            Method setter = target.getMethod(method, type);
+            for (String prefix : prefixes) {
+                _hintSetters.put(prefix + "." + hint, setter);
+            }
+        } catch (Exception e) {
+            // should not reach
+            throw new InternalException("setter for " + hint + " with argument " + type + " does not exist");
+        }
+    }
 
     /**
      * Configurable state shared throughout a traversal chain.
@@ -90,7 +147,7 @@ public class FetchConfigurationImpl
         public boolean fetchGroupContainsAll = false;
         public boolean extendedPathLookup = false;
         public DataCacheRetrieveMode cacheRetrieveMode;
-        public DataCacheStoreMode cacheStoreMode;
+        public DataCacheStoreMode cacheStoreMode;        
     }
 
     private final ConfigurationState _state;
@@ -101,7 +158,6 @@ public class FetchConfigurationImpl
     private boolean _load = true;
     private int _availableRecursion;
     private int _availableDepth;
-    private FetchConfigurationHintHandler _hintHandler;
 
     public FetchConfigurationImpl() {
         this(null);
@@ -110,7 +166,6 @@ public class FetchConfigurationImpl
     protected FetchConfigurationImpl(ConfigurationState state) {
         _state = (state == null) ? new ConfigurationState() : state;
         _availableDepth = _state.maxFetchDepth;
-        _hintHandler = new FetchConfigurationHintHandler(this);
     } 
 
     public StoreContext getContext() {
@@ -501,16 +556,6 @@ public class FetchConfigurationImpl
     }
 
     public int getReadLockLevel() {
-        String lockModeKey = "openjpa.FetchPlan.ReadLockMode";
-        String deferLockModeKey = lockModeKey + ".Defer";
-        Integer value = (Integer)getHint(deferLockModeKey);
-        if (value != null) {
-            if (isActiveTransaction()) {
-                removeHint(deferLockModeKey);
-                setReadLockLevel(value);
-            } else
-                return value;
-        }
         return _state.readLockLevel;
     }
 
@@ -546,16 +591,6 @@ public class FetchConfigurationImpl
     }
 
     public int getWriteLockLevel() {
-        String lockModeKey = "openjpa.FetchPlan.WriteLockMode";
-        String deferLockModeKey = lockModeKey + ".Defer";
-        Integer value = (Integer)getHint(deferLockModeKey);
-        if (value != null) {
-            if (isActiveTransaction()) {
-                removeHint(deferLockModeKey);
-                setWriteLockLevel(value);
-            } else
-                return value;
-        }
         return _state.writeLockLevel;
     }
 
@@ -610,17 +645,93 @@ public class FetchConfigurationImpl
     private boolean isActiveTransaction() {
         return (_state.ctx != null && _state.ctx.isActive());
     }
-
-    public void setHint(String name, Object value) {
-        setHint(name, value, false);
+    
+    /**
+     * Gets the current hints set on this receiver. 
+     * The values designate the actual value specified by the caller and not the values
+     * that may have been actually set on the state variables of this receiver.
+     * 
+     */
+    public Map<String,Object> getHints() {
+        if (_state.hints == null)
+            return Collections.emptyMap();
+        return Collections.unmodifiableMap(_state.hints);
     }
-
-    public void setHint(String name, Object value, boolean validThrowException) {
-        if (_hintHandler.setHint(name, value, validThrowException))
-            addHint(name, value);
+    
+    /**
+     * Affirms if the given key is set as a hint.
+     */
+    public boolean isHintSet(String key) {
+        return _state.hints != null && _state.hints.containsKey(key);
     }
-
-    public void addHint(String name, Object value) {
+    
+    /**
+     * Removes the given keys and their hint value.
+     */
+    public void removeHint(String...keys) {
+        if (keys == null || _state.hints == null )
+            return;
+        for (String key : keys) {
+            _state.hints.remove(key);
+        }
+    }
+    
+    public Collection<String> getSupportedHints() {
+        return _hintSetters.keySet();
+    }
+    
+    /**
+     * Same as <code>setHint(key, value, value)</code>.
+     * 
+     * @see #setHint(String, Object, Object)
+     */
+    public void setHint(String key, Object value) {
+        setHint(key, value, value);
+    }
+    
+    /**
+     * Sets the hint to the given value.
+     * If the key corresponds to a known key, then that value is set via the setter method.
+     * Otherwise it is put into opaque hints map.  
+     * <br>
+     * In either case, the original value is put in the hints map.
+     * So essential difference between setting a value directly by a setter and via a hint is the memory
+     * of this original value.
+     * <br>
+     * The other important difference is setting lock levels. Setting of lock level via setter method needs
+     * active transaction. But setting via hint does not. 
+     * @param key a hint key. If it is one of the statically registered hint key then the setter is called.
+     * @param value to be set. The given value type must match the argument type of the setter, if one exists.
+     * @param original value as specified by the caller. This value is put in the hints map.
+     * 
+     * @exception IllegalArgumentException if the given value is not acceptable by the setter method, if one
+     * exists corresponds the given hint key.
+     */
+    public void setHint(String key, Object value, Object original) {
+        if (key == null)
+            return;
+        if (_hintSetters.containsKey(key)) {
+            Method setter = _hintSetters.get(key);
+            String methodName = setter.getName();
+            try {
+                if ("setReadLockLevel".equals(methodName) && !isActiveTransaction()) {
+                    _state.readLockLevel = (Integer)value;
+                } else if ("setWriteLockLevel".equals(methodName) && !isActiveTransaction()) {
+                    _state.writeLockLevel = (Integer)value;
+                } else {
+                    setter.invoke(this, value);
+                }
+            } catch (Exception e) {
+                if (e instanceof IllegalArgumentException)
+                    throw (IllegalArgumentException)e;
+                throw new IllegalArgumentException(_loc.get("bad-hint-value", key, toString(value), 
+                        toString(original)).getMessage(), e);
+            }
+        }
+        addHint(key, original);
+    }
+    
+    private void addHint(String name, Object value) {
         lock();
         try {
             if (_state.hints == null)
@@ -639,16 +750,6 @@ public class FetchConfigurationImpl
         return (_state.hints == null) ? null : _state.hints.remove(name);
     }
     
-    public Map<String, Object> getHints() {
-        if (_state.hints == null)
-            return Collections.emptyMap();
-        Map<String, Object> result = new TreeMap<String, Object>();
-        for (Object key : _state.hints.keySet()) {
-            result.put(key.toString(), _state.hints.get(key));
-        }
-        return result;
-    }
-
     public Set<Class<?>> getRootClasses() {
         if (_state.rootClasses == null) return Collections.emptySet(); 
         return _state.rootClasses;
@@ -926,4 +1027,7 @@ public class FetchConfigurationImpl
         return buf.toString();
     }
 
+    protected String toString(Object o) {
+        return o == null ? "null" : o.toString() + "[" + o.getClass().getName() + "]";
+    }
 }

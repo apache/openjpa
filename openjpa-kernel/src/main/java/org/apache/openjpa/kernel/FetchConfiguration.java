@@ -361,49 +361,58 @@ public interface FetchConfiguration
     public ResultList<?> newResultList(ResultObjectProvider rop);
 
     /**
-     * Sets an arbitrary query hint that may be utilized during
-     * execution. The hint may be datastore-specific.
+     * Sets an arbitrary query hint that may be utilized during execution. 
+     * The hint may be specific to a particular database. A hint, if known 
+     * to this receiver, may have a corresponding setter method, then the hint sets the value.
+     * Otherwise the hint is stored opaquely by the receiver.
      *
      * @param name the name of the hint
-     * @param value the value of the hint
-     * @since 0.4.0
-     */
-    public void setHint(String name, Object value);
-
-    /**
-     * Sets an arbitrary query hint that may be utilized during
-     * execution. The hint may be datastore-specific.
-     *
-     * @param name the name of the hint
-     * @param value the value of the hint
+     * @param value the value of the hint. If the hint has a corresponding setter, then
+     * the type of value must be same as the setter argument. 
+     * @param original the value of the hint as specified by the user. 
+     * 
      * @since 2.0.0
      */
-    public void setHint(String name, Object value, boolean validate);
+    public void setHint(String name, Object value, Object original);
+    
+    /**
+     * Sets an arbitrary query hint that may be utilized during execution. 
+     * The hint may be specific to a particular database. A hint, if known 
+     * to this receiver, may have a corresponding setter method, then the hint sets the value.
+     * Otherwise the hint is stored opaquely by the receiver.
+     * <br>
+     * This is same as calling {@linkplain #setHint(String, Object, Object)} with the third
+     * argument being the same as the second.
+     *
+     * @param name the name of the hint
+     * @param value the value of the hint. If the hint has a corresponding setter, then
+     * the type of value must be same as the setter argument. 
+     * 
+     * @since 2.0.0
+     */
+    public void setHint(String key, Object value);
 
     /**
-     * Returns the hint for the specific key, or null if the hint
-     * is not specified.
+     * Get the hint value for the specific key as originally set by the caller, or null if the hint is not specified.
      *
 	 * @param name the hint name
 	 * @since 0.4.0
 	 */
-	public Object getHint (String name);
+	public Object getHint (String key);
 	
-    /**
-     * Adds the hint and the associated value to the list.
-     *
-     * @param name the name of the hint
-     * @param value the value of the hint
-     * @since 2.0.0
-     */
-    public void addHint(String name, Object value);
-
 	/**
-     * Returns an immutable view of the currently active hints and their values.
+     * Get an immutable view of the currently active hints and their values.
+	 * The values are as specified by the user.
 	 * 
 	 * @since 2.0.0
 	 */
 	public Map<String, Object> getHints();
+	
+	/**
+	 * Affirm if the given hint has been set in this receiver.
+	 * 
+	 */
+	public boolean isHintSet(String key);
 
     /**
      * Root classes for recursive operations. This set is not thread safe.

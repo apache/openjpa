@@ -19,13 +19,18 @@
 package org.apache.openjpa.persistence.jdbc;
 
 import java.security.AccessController;
+import java.util.Collections;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 
 import org.apache.openjpa.conf.OpenJPAConfiguration;
 import org.apache.openjpa.conf.OpenJPAProductDerivation;
 import org.apache.openjpa.conf.Specification;
 import org.apache.openjpa.jdbc.conf.JDBCConfigurationImpl;
 import org.apache.openjpa.jdbc.kernel.JDBCStoreManager;
+import org.apache.openjpa.jdbc.sql.MySQLDictionary;
+import org.apache.openjpa.jdbc.sql.OracleDictionary;
 import org.apache.openjpa.lib.conf.AbstractProductDerivation;
 import org.apache.openjpa.lib.conf.Configuration;
 import org.apache.openjpa.lib.util.J2DoPrivHelper;
@@ -41,6 +46,7 @@ import org.apache.openjpa.persistence.PersistenceProductDerivation;
 public class JDBCPersistenceProductDerivation 
     extends AbstractProductDerivation 
     implements OpenJPAProductDerivation {
+    
     
     public void putBrokerFactoryAliases(Map m) {
     }
@@ -100,5 +106,31 @@ public class JDBCPersistenceProductDerivation
         conf.mappingDefaultsPlugin.setDefault(jpa.getName());
         conf.mappingDefaultsPlugin.setString(jpa.getName());
         return true;
+    } 
+    
+    /**
+     * Hint keys correspond to some (not all) bean-style mutable property name in JDBCFetchConfiguration.
+     * The fully qualified key is prefixed with <code>openjpa.jdbc</code>.
+     */
+    private static Set<String> _hints = new HashSet<String>();
+    static {
+        _hints.add("openjpa.FetchPlan.EagerFetchMode");
+        _hints.add("openjpa.FetchPlan.FetchDirection");
+        _hints.add("openjpa.FetchPlan.TransactionIsolation");
+        _hints.add("openjpa.FetchPlan.JoinSyntax");
+        _hints.add("openjpa.FetchPlan.LRSSize");
+        _hints.add("openjpa.FetchPlan.ResultSetType");
+        _hints.add("openjpa.FetchPlan.SubclassFetchMode");
+        
+        _hints.add(MySQLDictionary.SELECT_HINT);
+        _hints.add(OracleDictionary.SELECT_HINT);
+        
+        _hints = Collections.unmodifiableSet(_hints);
     }
+
+    @Override
+    public Set<String> getSupportedQueryHints() {
+        return _hints;
+    }
+
 }

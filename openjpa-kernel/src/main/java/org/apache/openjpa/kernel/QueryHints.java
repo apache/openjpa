@@ -22,12 +22,20 @@ package org.apache.openjpa.kernel;
  * Standard query hint keys.
  */
 public interface QueryHints {
+    // These keys are directly handled in {@link QueryImpl} class.
+    // Declaring a public static final String variable in this class will 
+    // make it register as a supported hint key
+    // if you do not want that then annotate as {@link Reflectable(false)}.
+    public static final String HINT_SUBCLASSES          = "openjpa.Subclasses";
+    public static final String HINT_FILTER_LISTENER     = "openjpa.FilterListener";
+    public static final String HINT_FILTER_LISTENERS    = "openjpa.FilterListeners";
+    public static final String HINT_AGGREGATE_LISTENER  = "openjpa.AggregateListener";
+    public static final String HINT_AGGREGATE_LISTENERS = "openjpa.AggregateListeners";
     
     /** 
      * Hint to specify the number of rows to optimize for.
      */
-    public static final String HINT_RESULT_COUNT =
-        "openjpa.hint.OptimizeResultCount";
+    public static final String HINT_RESULT_COUNT = "openjpa.hint.OptimizeResultCount";
     
     /**
      * Hints to signal that the JPQL/SQL query string contains a parameter

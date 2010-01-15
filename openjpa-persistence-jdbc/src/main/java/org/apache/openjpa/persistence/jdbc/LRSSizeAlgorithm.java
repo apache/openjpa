@@ -19,6 +19,8 @@
 package org.apache.openjpa.persistence.jdbc;
 
 import org.apache.openjpa.jdbc.kernel.LRSSizes;
+import org.apache.openjpa.kernel.FetchConfiguration;
+import org.apache.openjpa.persistence.OpenJPAEnum;
 
 /**
  * Algorithm to use for computing the size of an LRS relation.
@@ -26,18 +28,20 @@ import org.apache.openjpa.jdbc.kernel.LRSSizes;
  * @since 1.0.0
  * @published
  */
-public enum LRSSizeAlgorithm {
-    UNKNOWN(LRSSizes.SIZE_UNKNOWN),
-    LAST(LRSSizes.SIZE_LAST),
-    QUERY(LRSSizes.SIZE_QUERY);
+public enum LRSSizeAlgorithm implements OpenJPAEnum<Enum<?>> {
+    UNKNOWN(LRSSizes.SIZE_UNKNOWN, "unknown"),
+    LAST(LRSSizes.SIZE_LAST, "last"),
+    QUERY(LRSSizes.SIZE_QUERY, "query");
 
     private final int lrsConstant;
-
-    private LRSSizeAlgorithm(int value) {
+    private final String[] _names;
+    
+    private LRSSizeAlgorithm(int value, String...aliases) {
         lrsConstant = value;
+        _names = aliases;
     }
 
-    int toKernelConstant() {
+    public int toKernelConstant() {
         return lrsConstant;
     }
 
@@ -56,4 +60,30 @@ public enum LRSSizeAlgorithm {
                 throw new IllegalArgumentException(kernelConstant + "");
         }
     }
+
+    public int convertToKernelConstant(String s) {
+        return LRSSizeAlgorithm.toKernelConstantFromString(s);
+    }
+    
+    public int convertToKernelConstant(int i) {
+        try {
+            if (i == FetchConfiguration.DEFAULT)
+                return i;
+            return LRSSizeAlgorithm.values()[i].ordinal();
+        } catch (ArrayIndexOutOfBoundsException e) {
+            throw new IllegalArgumentException(i + " is invalid value for LRSSize Algorithm");
+        }
+    }
+    
+    public static int toKernelConstantFromString(String s) {
+        for (LRSSizeAlgorithm level : LRSSizeAlgorithm.values()) {
+            for (String name : level._names) {
+                if (name.equalsIgnoreCase(s) || String.valueOf(level.toKernelConstant()).equals(s))
+                    return level.toKernelConstant();
+            }
+        }
+        throw new IllegalArgumentException(s + " is not a valid name for " + IsolationLevel.class.getName());
+    }
+
+
 }

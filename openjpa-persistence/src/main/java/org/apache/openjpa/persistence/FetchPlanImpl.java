@@ -21,7 +21,9 @@ package org.apache.openjpa.persistence;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 
 import javax.persistence.LockModeType;
@@ -31,6 +33,7 @@ import org.apache.openjpa.kernel.DataCacheRetrieveMode;
 import org.apache.openjpa.kernel.DataCacheStoreMode;
 import org.apache.openjpa.kernel.DelegatingFetchConfiguration;
 import org.apache.openjpa.kernel.FetchConfiguration;
+import org.apache.openjpa.kernel.QueryFlushModes;
 
 /**
  * Implements FetchPlan via delegation to FetchConfiguration.
@@ -44,23 +47,82 @@ public class FetchPlanImpl
 	implements FetchPlan {
 
     private final DelegatingFetchConfiguration _fetch;
-    private FetchPlanHintHandler _hintHandler;
+    
+    /**
+     * Structure holds ranking of equivalent hint keys. Each entry value is a list of other keys that are higher rank
+     * than the entry key.   
+     */
+    protected static Map<String, List<String>> _precedence = new HashMap<String, List<String>>();
+    
+    /**
+     * Structure holds one or more converters for a user-specified hint value. 
+     */
+    protected static Map<String,HintValueConverter[]> _hints = new HashMap<String,HintValueConverter[]>();
+    
+    /**
+     * Statically registers supported hint keys with their ranking and converters. 
+     */
+    static {
+        registerHint(new String[]{"openjpa.FetchPlan.ExtendedPathLookup"}, 
+                new HintValueConverter.StringToBoolean());
+        registerHint(new String[]{"openjpa.FetchBatchSize", "openjpa.FetchPlan.FetchBatchSize"}, 
+                new HintValueConverter.StringToInteger());
+        registerHint(new String[]{"openjpa.MaxFetchDepth", "openjpa.FetchPlan.MaxFetchDepth"}, 
+                new HintValueConverter.StringToInteger());
+        registerHint(new String[]{"openjpa.LockTimeout", "openjpa.FetchPlan.LockTimeout", 
+                "javax.persistence.lock.timeout"}, new HintValueConverter.StringToInteger());
+        registerHint(new String[]{"openjpa.QueryTimeout", "openjpa.FetchPlan.QueryTimeout", 
+                "javax.persistence.query.timeout"}, new HintValueConverter.StringToInteger());
+        registerHint(new String[]{"openjpa.FlushBeforeQueries", "openjpa.FetchPlan.FlushBeforeQueries"}, 
+                new HintValueConverter.StringToInteger(
+                   new String[] {"0", "1", "2"},
+                   new int[]{QueryFlushModes.FLUSH_TRUE, QueryFlushModes.FLUSH_FALSE, 
+                           QueryFlushModes.FLUSH_WITH_CONNECTION}));
+        registerHint(new String[]{"openjpa.ReadLockMode", "openjpa.FetchPlan.ReadLockMode"},
+                new MixedLockLevelsHelper());
+        registerHint(new String[]{"openjpa.ReadLockLevel", "openjpa.FetchPlan.ReadLockLevel"},
+                new MixedLockLevelsHelper());
+        registerHint(new String[]{"openjpa.WriteLockMode", "openjpa.FetchPlan.WriteLockMode"}, 
+                new MixedLockLevelsHelper());
+        registerHint(new String[]{"openjpa.WriteLockLevel", "openjpa.FetchPlan.WriteLockLevel"}, 
+                new MixedLockLevelsHelper());
+    }
+    
+    /**
+     * Registers a hint key with its value converters. 
+     * 
+     * @param keys a set of keys in increasing order of ranking. Can not be null or empty.
+     * 
+     * @param converters array of converters that are attempts in order to convert a user-specified hint value
+     * to a value that is consumable by the kernel.
+     */
+    protected static void registerHint(String[] keys, HintValueConverter... converters) {
+        for (String key : keys) {
+            _hints.put(key, converters);
+        }
+        if (keys.length > 1) {
+            for (int i = 0; i < keys.length-1; i++) {
+                List<String> list = new ArrayList<String>(keys.length-i-1);
+                for (int j = i+1; j < keys.length; j++) {
+                    list.add(keys[j]);
+                }
+                _precedence.put(keys[i], list);
+            }
+        }
+    }
     
     /**
      * Constructor; supply delegate.
      */
     public FetchPlanImpl(FetchConfiguration fetch) {
         _fetch = newDelegatingFetchConfiguration(fetch);
-        _hintHandler = new FetchPlanHintHandler(this);
     }
 
     /**
      * Create a new exception-translating delegating fetch configuration.
      */
-    protected DelegatingFetchConfiguration newDelegatingFetchConfiguration
-        (FetchConfiguration fetch) {
-        return new DelegatingFetchConfiguration(fetch,
-            PersistenceExceptions.TRANSLATOR);
+    protected DelegatingFetchConfiguration newDelegatingFetchConfiguration(FetchConfiguration fetch) {
+        return new DelegatingFetchConfiguration(fetch, PersistenceExceptions.TRANSLATOR);
     }
 
     /**
@@ -287,23 +349,30 @@ public class FetchPlanImpl
         return _fetch.getHint(key);
     }
     
-    public void addHint(String key, Object value) {
-        _fetch.addHint(key, value);
-    }
-
+    /**
+     * Sets the hint after converting the value appropriately.
+     * If a higher ranking equivalent hint is already set, then bypasses this hint. 
+     */
     public void setHint(String key, Object value) {
-        setHint(key, value, true);
+        if (!isRecognizedHint(key))
+            return;
+        if (_precedence.containsKey(key)) {
+            List<String> higherKeys = _precedence.get(key);
+            for (String higherKey : higherKeys) {
+                if (_fetch.isHintSet(higherKey))
+                    return;
+            }
+        }
+        Object newValue = convertHintValue(key, value); 
+        _fetch.setHint(key, newValue, value);
     }
 
-    public void setHint(String key, Object value, boolean validThrowException) {
-        if( _hintHandler.setHint(key, value, validThrowException) )
-            _fetch.addHint(key, value);
-    }
-
-    public void addHints(Map<String, Object> hints) {
-        if (hints != null && hints.size() > 0) {
-            for (String name : hints.keySet())
-                setHint(name, hints.get(name), false);
+    public void setHints(Map<String, Object> hints) {
+        if (hints == null || hints.isEmpty()) {
+            return;
+        }
+        for (Map.Entry<String,Object> hint : hints.entrySet()) {
+            setHint(hint.getKey(), hint.getValue());
         }
     }
     
@@ -339,5 +408,37 @@ public class FetchPlanImpl
     public FetchPlan setCacheRetrieveMode(DataCacheRetrieveMode mode) {
         _fetch.setCacheRetrieveMode(mode);
         return this;
+    }
+
+    Object convertHintValue(String key, Object value) {
+        if (value == null)
+            return null;
+        HintValueConverter[] converters = _hints.get(key);
+        if (converters == null)
+            return value;
+        for (HintValueConverter converter : converters) {
+            if (converter.canConvert(value.getClass())) {
+                return converter.convert(value);
+            }
+        }
+        return value;
+    }
+    
+    boolean isRecognizedHint(String key) {
+        if (key == null)
+            return false;
+        if (_hints.containsKey(key))
+            return true;
+        return key.startsWith("openjpa.");
+    }
+    
+    boolean intersects(Collection<String> keys, Collection<String> b) {
+        if (keys == null || keys.isEmpty() || b == null || b.isEmpty())
+            return false;
+        for (String key : keys) {
+            if (b.contains(key))
+                return true;
+        }
+        return false;
     }
 }
