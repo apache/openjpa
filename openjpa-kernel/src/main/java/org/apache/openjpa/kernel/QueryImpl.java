@@ -126,7 +126,8 @@ public class QueryImpl
 
     // remember the list of all the results we have returned so we
     // can free their resources when close or closeAll is called
-    private transient final Collection<ResultList<?>> _resultLists = new ReferenceHashSet(ReferenceHashSet.WEAK);
+    private transient final Collection<RemoveOnCloseResultList> _resultLists = 
+        new ReferenceHashSet(ReferenceHashSet.WEAK);
 
     /**
      * Construct a query managed by the given broker.
@@ -1239,7 +1240,7 @@ public class QueryImpl
         boolean detach = (_broker.getAutoDetach() &
             AutoDetach.DETACH_NONTXREAD) > 0 && !_broker.isActive();
         boolean lrs = range.lrs && !ex.isAggregate(q) && !ex.hasGrouping(q);
-        ResultList res = (!detach && lrs) ? _fc.newResultList(rop)
+        ResultList<?> res = (!detach && lrs) ? _fc.newResultList(rop)
             : new EagerResultList(rop);
         res.setUserObject(new Object[]{rop,ex});
         _resultLists.add(decorateResultList(res));
@@ -1249,7 +1250,7 @@ public class QueryImpl
     /**
      * Optionally decorate the native result.
      */
-    protected ResultList decorateResultList(ResultList res) {
+    protected RemoveOnCloseResultList decorateResultList(ResultList<?> res) {
         return new RemoveOnCloseResultList(res);
     }
 
@@ -1260,7 +1261,7 @@ public class QueryImpl
         if (_packer != null)
             return _packer;
 
-        Class resultClass = (_resultClass != null) ? _resultClass
+        Class<?> resultClass = (_resultClass != null) ? _resultClass
             : ex.getResultClass(q);
         if (resultClass == null)
             return null;
@@ -1279,7 +1280,7 @@ public class QueryImpl
                 // into some result class
                 _packer = new ResultPacker(_class, getAlias(), resultClass);
             } else if (resultClass != null) { // projection
-                Class[] types = ex.getProjectionTypes(q);
+                Class<?>[] types = ex.getProjectionTypes(q);
                 _packer = new ResultPacker(types, aliases, resultClass);
             }
         }
@@ -1346,9 +1347,9 @@ public class QueryImpl
 
     public static boolean isAccessPathDirty(Broker broker,
         ClassMetaData[] accessMetas) {
-        Collection persisted = broker.getPersistedTypes();
-        Collection updated = broker.getUpdatedTypes();
-        Collection deleted = broker.getDeletedTypes();
+        Collection<Class<?>> persisted = broker.getPersistedTypes();
+        Collection<Class<?>> updated = broker.getUpdatedTypes();
+        Collection<Class<?>> deleted = broker.getDeletedTypes();
         if (persisted.isEmpty() && updated.isEmpty() && deleted.isEmpty())
             return false;
 
@@ -1358,7 +1359,7 @@ public class QueryImpl
             return true;
 
         // compare dirty classes to the access path classes
-        Class accClass;
+        Class<?> accClass;
         for (int i = 0; i < accessMetas.length; i++) {
             if (accessMetas[i] == null)
                 continue;
@@ -1369,14 +1370,14 @@ public class QueryImpl
                 return true;
 
             // check for dirty subclass
-            for (Iterator dirty = persisted.iterator(); dirty.hasNext();)
-                if (accClass.isAssignableFrom((Class) dirty.next()))
+            for (Iterator<Class<?>> dirty = persisted.iterator(); dirty.hasNext();)
+                if (accClass.isAssignableFrom(dirty.next()))
                     return true;
-            for (Iterator dirty = updated.iterator(); dirty.hasNext();)
-                if (accClass.isAssignableFrom((Class) dirty.next()))
+            for (Iterator<Class<?>> dirty = updated.iterator(); dirty.hasNext();)
+                if (accClass.isAssignableFrom(dirty.next()))
                     return true;
-            for (Iterator dirty = deleted.iterator(); dirty.hasNext();)
-                if (accClass.isAssignableFrom((Class) dirty.next()))
+            for (Iterator<Class<?>> dirty = deleted.iterator(); dirty.hasNext();)
+                if (accClass.isAssignableFrom(dirty.next()))
                     return true;
         }
 
@@ -1401,8 +1402,8 @@ public class QueryImpl
             assertOpen();
 
             RemoveOnCloseResultList res;
-            for (Iterator itr = _resultLists.iterator(); itr.hasNext();) {
-                res = (RemoveOnCloseResultList) itr.next();
+            for (Iterator<RemoveOnCloseResultList> itr = _resultLists.iterator(); itr.hasNext();) {
+                res = itr.next();
                 if (force || res.isProviderOpen())
                     res.close(false);
             }
@@ -1470,9 +1471,9 @@ public class QueryImpl
             // don't share mutable objects
             _fc.copy(q._fc);
             if (q._filtListeners != null)
-                _filtListeners = new HashMap(q._filtListeners);
+                _filtListeners = new HashMap<String,FilterListener>(q._filtListeners);
             if (q._aggListeners != null)
-                _aggListeners = new HashMap(q._aggListeners);
+                _aggListeners = new HashMap<String,AggregateListener>(q._aggListeners);
             return true;
         } finally {
             unlock();
@@ -1500,7 +1501,7 @@ public class QueryImpl
         }
     }
 
-    public Class[] getProjectionTypes() {
+    public Class<?>[] getProjectionTypes() {
         lock();
         try {
             return compileForExecutor().getProjectionTypes(_storeQuery);

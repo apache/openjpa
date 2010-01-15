@@ -20,13 +20,16 @@ package org.apache.openjpa.persistence.jdbc;
 
 import java.sql.ResultSet;
 
+import org.apache.openjpa.kernel.FetchConfiguration;
+import org.apache.openjpa.persistence.OpenJPAEnum;
+
 /**
  * Type of result set to use.
  *
  * @since 1.0.0
  * @published
  */
-public enum ResultSetType {
+public enum ResultSetType implements OpenJPAEnum<ResultSetType>{
     FORWARD_ONLY(ResultSet.TYPE_FORWARD_ONLY),
     SCROLL_INSENSITIVE(ResultSet.TYPE_SCROLL_INSENSITIVE),
     SCROLL_SENSITIVE(ResultSet.TYPE_SCROLL_SENSITIVE);
@@ -37,7 +40,7 @@ public enum ResultSetType {
         resultSetConstant = value;
     }
 
-    int toKernelConstant() {
+    public int toKernelConstant() {
         return resultSetConstant;
     }
 
@@ -55,5 +58,27 @@ public enum ResultSetType {
             default:
                 throw new IllegalArgumentException(kernelConstant + "");
         }
+    }
+    
+    public int convertToKernelConstant(String s) {
+        return ResultSetType.toKernelConstantFromString(s);
+    }
+    
+    public int convertToKernelConstant(int i) {
+        if (i == FetchConfiguration.DEFAULT)
+            return i;
+        for (ResultSetType level : ResultSetType.values()) {
+            if (level.resultSetConstant == i)
+                return i;
+        }
+        throw new IllegalArgumentException(i + " is invalid value for ResultSetType");
+    }
+    
+    public static int toKernelConstantFromString(String s) {
+        for (ResultSetType level : ResultSetType.values()) {
+            if (level.name().equalsIgnoreCase(s) || String.valueOf(level.toKernelConstant()).equals(s))
+                return level.toKernelConstant();
+        }
+        throw new IllegalArgumentException(s + " is not a valid name for " + ResultSetType.class.getName());
     }
 }

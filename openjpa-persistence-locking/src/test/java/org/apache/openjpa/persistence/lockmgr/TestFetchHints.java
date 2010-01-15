@@ -72,7 +72,6 @@ import org.apache.openjpa.persistence.jdbc.ResultSetType;
  *   openjpa.FlushBeforeQueries
  *   openjpa.LockTimeout
  *   openjpa.MaxFetchDepth
- *   openjpa.QueryCacheEnabled
  *   openjpa.QueryTimeout
  *   openjpa.ReadLockLevel
  *   openjpa.WriteLockLevel
@@ -110,8 +109,8 @@ public class TestFetchHints extends SequencedActionsTest {
         fetchBatchSizeHintTest(fPlan, fConfig, hintName, 100, 100);
 
         try {
-            fPlan.setHint(hintName, "xxxxx", false);
-            fPlan.setHint(hintName, "xxxxx", true);
+            fPlan.setHint(hintName, "xxxxx");
+            fPlan.setHint(hintName, "xxxxx");
             fail("Expecting a IllegalArgumentException.");
         } catch (Exception e) {
             assertTrue("Caught expected exception",
@@ -119,7 +118,7 @@ public class TestFetchHints extends SequencedActionsTest {
         }
         try {
             fPlan.setFetchBatchSize(999);
-            fPlan.setHint(hintName, FetchConfiguration.DEFAULT, true);
+            fPlan.setHint(hintName, FetchConfiguration.DEFAULT);
             assertEquals(fPlan.getFetchBatchSize(), -1);
         } catch (Exception e) {
             fail("Unexpected " + e.getClass().getName());
@@ -145,8 +144,8 @@ public class TestFetchHints extends SequencedActionsTest {
         fetchBatchSizeHintTest(fPlan, fConfig, hintName, 500, 500);
 
         try {
-            fPlan.setHint(hintName, "xxxxx", false);
-            fPlan.setHint(hintName, "yyyyy", true);
+            fPlan.setHint(hintName, "xxxxx");
+            fPlan.setHint(hintName, "yyyyy");
             fail("Expecting a IllegalArgumentException.");
         } catch (Exception e) {
             assertTrue("Caught expected exception",
@@ -154,7 +153,7 @@ public class TestFetchHints extends SequencedActionsTest {
         }
         try {
             fPlan.setFetchBatchSize(999);
-            fPlan.setHint(hintName, FetchConfiguration.DEFAULT, true);
+            fPlan.setHint(hintName, FetchConfiguration.DEFAULT);
             assertEquals(fPlan.getFetchBatchSize(), -1);
         } catch (Exception e) {
             fail("Unexpected " + e.getClass().getName());
@@ -166,7 +165,7 @@ public class TestFetchHints extends SequencedActionsTest {
         JDBCFetchConfigurationImpl fConfig, String hint, Object value,
         int expected) {
         fConfig.setFetchBatchSize(999);
-        fPlan.setHint(hint, value, false);
+        fPlan.setHint(hint, value);
         Object getValue = fPlan.getHint(hint);
         assertEquals(value.getClass(), getValue.getClass());
         assertEquals(value, getValue);
@@ -208,24 +207,24 @@ public class TestFetchHints extends SequencedActionsTest {
             FetchMode.JOIN, EagerFetchModes.EAGER_JOIN);
 
         try {
-            fPlan.setHint(hintName, "xxxxx", false);
-            fPlan.setHint(hintName, "yyyyy", true);
+            fPlan.setHint(hintName, "xxxxx");
+            fPlan.setHint(hintName, "yyyyy");
             fail("Expecting a IllegalArgumentException.");
         } catch (Exception e) {
             assertTrue("Caught expected exception",
                 IllegalArgumentException.class.isAssignableFrom(e.getClass()));
         }
         try {
-            fPlan.setHint(hintName, "12345", false);
-            fPlan.setHint(hintName, "67890", true);
+            fPlan.setHint(hintName, "12345");
+            fPlan.setHint(hintName, "67890");
             fail("Expecting a IllegalArgumentException.");
         } catch (Exception e) {
             assertTrue("Caught expected exception",
                 IllegalArgumentException.class.isAssignableFrom(e.getClass()));
         }
         try {
-            fPlan.setHint(hintName, -2, false);
-            fPlan.setHint(hintName, -3, true);
+            fPlan.setHint(hintName, -2);
+            fPlan.setHint(hintName, -3);
             fail("Expecting a IllegalArgumentException.");
         } catch (Exception e) {
             assertTrue("Caught expected exception",
@@ -268,31 +267,31 @@ public class TestFetchHints extends SequencedActionsTest {
             EagerFetchModes.EAGER_JOIN);
 
         try {
-            fPlan.setHint(hintName, "xxxxx", false);
-            fPlan.setHint(hintName, "yyyyy", true);
+            fPlan.setHint(hintName, "xxxxx");
+            fPlan.setHint(hintName, "yyyyy");
             fail("Expecting a IllegalArgumentException.");
         } catch (Exception e) {
             assertTrue("Caught expected exception",
                 IllegalArgumentException.class.isAssignableFrom(e.getClass()));
         }
         try {
-            fPlan.setHint(hintName, "12345", false);
-            fPlan.setHint(hintName, "67890", true);
+            fPlan.setHint(hintName, "12345");
+            fPlan.setHint(hintName, "67890");
             fail("Expecting a IllegalArgumentException.");
         } catch (Exception e) {
             assertTrue("Caught expected exception",
                 IllegalArgumentException.class.isAssignableFrom(e.getClass()));
         }
         try {
-            fPlan.setHint(hintName, -1, false);
-            fPlan.setHint(hintName, -2, true);
+            fPlan.setHint(hintName, -1);
+            fPlan.setHint(hintName, -2);
             fail("Expecting a IllegalArgumentException.");
         } catch (Exception e) {
             assertTrue("Caught expected exception",
                 IllegalArgumentException.class.isAssignableFrom(e.getClass()));
         }
         try {
-            fPlan.setHint(hintName, FetchConfiguration.DEFAULT, true);
+            fPlan.setHint(hintName, FetchConfiguration.DEFAULT);
             assertEquals(fPlan.getEagerFetchMode(), FetchMode.PARALLEL);
         } catch (Exception e) {
               fail("Unexpected " + e.getClass().getName());
@@ -347,24 +346,24 @@ public class TestFetchHints extends SequencedActionsTest {
             JoinSyntax.DATABASE, JoinSyntaxes.SYNTAX_DATABASE);
 
         try {
-            fPlan.setHint(hintName, "xxxxx", false);
-            fPlan.setHint(hintName, "yyyyy", true);
+            fPlan.setHint(hintName, "xxxxx");
+            fPlan.setHint(hintName, "yyyyy");
             fail("Expecting a IllegalArgumentException.");
         } catch (Exception e) {
             assertTrue("Caught expected exception",
                 IllegalArgumentException.class.isAssignableFrom(e.getClass()));
         }
         try {
-            fPlan.setHint(hintName, "12345", false);
-            fPlan.setHint(hintName, "67890", true);
+            fPlan.setHint(hintName, "12345");
+            fPlan.setHint(hintName, "67890");
             fail("Expecting a IllegalArgumentException.");
         } catch (Exception e) {
             assertTrue("Caught expected exception",
                 IllegalArgumentException.class.isAssignableFrom(e.getClass()));
         }
         try {
-            fPlan.setHint(hintName, -1, false);
-            fPlan.setHint(hintName, -2, true);
+            fPlan.setHint(hintName, -1);
+            fPlan.setHint(hintName, -2);
             fail("Expecting a IllegalArgumentException.");
         } catch (Exception e) {
             assertTrue("Caught expected exception",
@@ -406,31 +405,31 @@ public class TestFetchHints extends SequencedActionsTest {
             JoinSyntaxes.SYNTAX_DATABASE);
 
         try {
-            fPlan.setHint(hintName, "xxxxx", false);
-            fPlan.setHint(hintName, "yyyyy", true);
+            fPlan.setHint(hintName, "xxxxx");
+            fPlan.setHint(hintName, "yyyyy");
             fail("Expecting a IllegalArgumentException.");
         } catch (Exception e) {
             assertTrue("Caught expected exception",
                 IllegalArgumentException.class.isAssignableFrom(e.getClass()));
         }
         try {
-            fPlan.setHint(hintName, "12345", false);
-            fPlan.setHint(hintName, "67890", true);
+            fPlan.setHint(hintName, "12345");
+            fPlan.setHint(hintName, "67890");
             fail("Expecting a IllegalArgumentException.");
         } catch (Exception e) {
             assertTrue("Caught expected exception",
                 IllegalArgumentException.class.isAssignableFrom(e.getClass()));
         }
         try {
-            fPlan.setHint(hintName, -1, false);
-            fPlan.setHint(hintName, -2, true);
+            fPlan.setHint(hintName, -1);
+            fPlan.setHint(hintName, -2);
             fail("Expecting a IllegalArgumentException.");
         } catch (Exception e) {
             assertTrue("Caught expected exception",
                 IllegalArgumentException.class.isAssignableFrom(e.getClass()));
         }
         try {
-            fPlan.setHint(hintName, FetchConfiguration.DEFAULT, true);
+            fPlan.setHint(hintName, FetchConfiguration.DEFAULT);
             assertEquals(fConfig.getJoinSyntax(),
                 ((JDBCConfiguration) fConfig.getContext().getConfiguration())
                     .getDBDictionaryInstance().joinSyntax);
@@ -488,24 +487,24 @@ public class TestFetchHints extends SequencedActionsTest {
             ResultSet.FETCH_UNKNOWN);
 
         try {
-            fPlan.setHint(hintName, "xxxxx", false);
-            fPlan.setHint(hintName, "yyyyy", true);
+            fPlan.setHint(hintName, "xxxxx");
+            fPlan.setHint(hintName, "yyyyy");
             fail("Expecting a IllegalArgumentException.");
         } catch (Exception e) {
             assertTrue("Caught expected exception",
                 IllegalArgumentException.class.isAssignableFrom(e.getClass()));
         }
         try {
-            fPlan.setHint(hintName, "12345", false);
-            fPlan.setHint(hintName, "67890", true);
+            fPlan.setHint(hintName, "12345");
+            fPlan.setHint(hintName, "67890");
             fail("Expecting a IllegalArgumentException.");
         } catch (Exception e) {
             assertTrue("Caught expected exception",
                 IllegalArgumentException.class.isAssignableFrom(e.getClass()));
         }
         try {
-            fPlan.setHint(hintName, -1, false);
-            fPlan.setHint(hintName, -2, true);
+            fPlan.setHint(hintName, -1);
+            fPlan.setHint(hintName, -2);
             fail("Expecting a IllegalArgumentException.");
         } catch (Exception e) {
             assertTrue("Caught expected exception",
@@ -548,31 +547,31 @@ public class TestFetchHints extends SequencedActionsTest {
             ResultSet.FETCH_UNKNOWN);
 
         try {
-            fPlan.setHint(hintName, "xxxxx", false);
-            fPlan.setHint(hintName, "yyyyy", true);
+            fPlan.setHint(hintName, "xxxxx");
+            fPlan.setHint(hintName, "yyyyy");
             fail("Expecting a IllegalArgumentException.");
         } catch (Exception e) {
             assertTrue("Caught expected exception",
                 IllegalArgumentException.class.isAssignableFrom(e.getClass()));
         }
         try {
-            fPlan.setHint(hintName, "12345", false);
-            fPlan.setHint(hintName, "67890", true);
+            fPlan.setHint(hintName, "12345");
+            fPlan.setHint(hintName, "67890");
             fail("Expecting a IllegalArgumentException.");
         } catch (Exception e) {
             assertTrue("Caught expected exception",
                 IllegalArgumentException.class.isAssignableFrom(e.getClass()));
         }
         try {
-            fPlan.setHint(hintName, -1, false);
-            fPlan.setHint(hintName, -2, true);
+            fPlan.setHint(hintName, -1);
+            fPlan.setHint(hintName, -2);
             fail("Expecting a IllegalArgumentException.");
         } catch (Exception e) {
             assertTrue("Caught expected exception",
                 IllegalArgumentException.class.isAssignableFrom(e.getClass()));
         }
         try {
-            fPlan.setHint(hintName, FetchConfiguration.DEFAULT, true);
+            fPlan.setHint(hintName, FetchConfiguration.DEFAULT);
             assertEquals(fConfig.getFetchDirection(), ResultSet.FETCH_FORWARD);
         } catch (Exception e) {
             fail("Unexpected " + e.getClass().getName());
@@ -665,29 +664,30 @@ public class TestFetchHints extends SequencedActionsTest {
         }
 
         try {
-            fPlan.setHint(hintName, "xxxxx", false);
-            fPlan.setHint(hintName, "yyyyy", true);
+            fPlan.setHint(hintName, "xxxxx");
+            fPlan.setHint(hintName, "yyyyy");
             fail("Expecting a IllegalArgumentException.");
         } catch (Exception e) {
             assertTrue("Caught expected exception",
                 IllegalArgumentException.class.isAssignableFrom(e.getClass()));
         }
         try {
-            fPlan.setHint(hintName, "12345", false);
-            fPlan.setHint(hintName, "67890", true);
+            fPlan.setHint(hintName, "12345");
+            fPlan.setHint(hintName, "67890");
             fail("Expecting a a IllegalArgumentException.");
         } catch (Exception e) {
             assertTrue("Caught expected exception",
                 IllegalArgumentException.class.isAssignableFrom(e.getClass()));
         }
-        try {
-            fPlan.setHint(hintName, -1, false);
-            fPlan.setHint(hintName, -1, true);
-            fail("Expecting a a IllegalArgumentException.");
-        } catch (Exception e) {
-            assertTrue("Caught expected exception",
-                IllegalArgumentException.class.isAssignableFrom(e.getClass()));
-        }
+        // Is not -1 is valid value for transaction isolation level?
+//        try {
+//            fPlan.setHint(hintName, -1);
+//            fPlan.setHint(hintName, -1);
+//            fail("Expecting a a IllegalArgumentException.");
+//        } catch (Exception e) {
+//            assertTrue("Caught expected exception",
+//                IllegalArgumentException.class.isAssignableFrom(e.getClass()));
+//        }
         em.close();
     }
 
@@ -756,31 +756,31 @@ public class TestFetchHints extends SequencedActionsTest {
                 Connection.TRANSACTION_SERIALIZABLE);
         }
         try {
-            fPlan.setHint(hintName, "xxxxx", false);
-            fPlan.setHint(hintName, "yyyyy", true);
+            fPlan.setHint(hintName, "xxxxx");
+            fPlan.setHint(hintName, "yyyyy");
             fail("Expecting a IllegalArgumentException.");
         } catch (Exception e) {
             assertTrue("Caught expected exception",
                 IllegalArgumentException.class.isAssignableFrom(e.getClass()));
         }
         try {
-            fPlan.setHint(hintName, "12345", false);
-            fPlan.setHint(hintName, "67890", true);
+            fPlan.setHint(hintName, "12345");
+            fPlan.setHint(hintName, "67890");
             fail("Expecting a a IllegalArgumentException.");
         } catch (Exception e) {
             assertTrue("Caught expected exception",
                 IllegalArgumentException.class.isAssignableFrom(e.getClass()));
         }
         try {
-            fPlan.setHint(hintName, -2, false);
-            fPlan.setHint(hintName, -3, true);
+            fPlan.setHint(hintName, -2);
+            fPlan.setHint(hintName, -3);
             fail("Expecting a a IllegalArgumentException.");
         } catch (Exception e) {
             assertTrue("Caught expected exception",
                 IllegalArgumentException.class.isAssignableFrom(e.getClass()));
         }
         try {
-            fPlan.setHint(hintName, FetchConfiguration.DEFAULT, true);
+            fPlan.setHint(hintName, FetchConfiguration.DEFAULT);
             assertEquals(IsolationLevel.DEFAULT, fPlan.getIsolation());
             assertEquals(-1, fConfig.getIsolation());
         } catch (Exception e) {
@@ -835,27 +835,27 @@ public class TestFetchHints extends SequencedActionsTest {
             LRSSizeAlgorithm.UNKNOWN, LRSSizes.SIZE_UNKNOWN);
 
         try {
-            fPlan.setHint(hintName, "xxxxx", false);
-            fPlan.setHint(hintName, "yyyyy", true);
+            fPlan.setHint(hintName, "xxxxx");
+            fPlan.setHint(hintName, "yyyyy");
             fail("Expecting a a IllegalArgumentException.");
         } catch (Exception e) {
             assertTrue("Caught expected exception",
                 IllegalArgumentException.class.isAssignableFrom(e.getClass()));
         }
         try {
-            fPlan.setHint(hintName, "12345", false);
-            fPlan.setHint(hintName, "67890", true);
+            fPlan.setHint(hintName, "12345");
+            fPlan.setHint(hintName, "67890");
             fail("Expecting a a IllegalArgumentException.");
         } catch (Exception e) {
             assertTrue("Caught expected exception",
                 IllegalArgumentException.class.isAssignableFrom(e.getClass()));
         }
         try {
-            fPlan.setHint(hintName, -1, false);
-            fPlan.setHint(hintName, -2, true);
+            fPlan.setHint(hintName, -1);
+            fPlan.setHint(hintName, -2);
             fail("Expecting a a IllegalArgumentException.");
         } catch (Exception e) {
-            assertTrue("Caught expected exception",
+            assertTrue("Caught unexpected exception " + e,
                 IllegalArgumentException.class.isAssignableFrom(e.getClass()));
         }
         em.close();
@@ -893,35 +893,36 @@ public class TestFetchHints extends SequencedActionsTest {
             LRSSizeAlgorithm.UNKNOWN, LRSSizes.SIZE_UNKNOWN);
 
         try {
-            fPlan.setHint(hintName, "xxxxx", false);
-            fPlan.setHint(hintName, "yyyyy", true);
+            fPlan.setHint(hintName, "xxxxx");
+            fPlan.setHint(hintName, "yyyyy");
             fail("Expecting a a IllegalArgumentException.");
         } catch (Exception e) {
             assertTrue("Caught expected exception",
                 IllegalArgumentException.class.isAssignableFrom(e.getClass()));
         }
         try {
-            fPlan.setHint(hintName, "12345", false);
-            fPlan.setHint(hintName, "67890", true);
+            fPlan.setHint(hintName, "12345");
+            fPlan.setHint(hintName, "67890");
             fail("Expecting a a IllegalArgumentException.");
         } catch (Exception e) {
             assertTrue("Caught expected exception",
                 IllegalArgumentException.class.isAssignableFrom(e.getClass()));
         }
         try {
-            fPlan.setHint(hintName, -1, false);
-            fPlan.setHint(hintName, -2, true);
+            fPlan.setHint(hintName, -1);
+            fPlan.setHint(hintName, -2);
             fail("Expecting a a IllegalArgumentException.");
         } catch (Exception e) {
             assertTrue("Caught expected exception",
                 IllegalArgumentException.class.isAssignableFrom(e.getClass()));
         }
         try {
-            fPlan.setHint(hintName, FetchConfiguration.DEFAULT, true);
+            fPlan.setHint(hintName, FetchConfiguration.DEFAULT);
             assertEquals(LRSSizeAlgorithm.QUERY, fPlan.getLRSSizeAlgorithm());
             assertEquals(LRSSizes.SIZE_QUERY, fPlan.getLRSSize());
             assertEquals(LRSSizes.SIZE_QUERY, fConfig.getLRSSize());
         } catch (Exception e) {
+            e.printStackTrace();
             fail("Unexpected " + e.getClass().getName());
         }
         em.close();
@@ -959,35 +960,36 @@ public class TestFetchHints extends SequencedActionsTest {
             LRSSizeAlgorithm.UNKNOWN, LRSSizes.SIZE_UNKNOWN);
 
         try {
-            fPlan.setHint(hintName, "xxxxx", false);
-            fPlan.setHint(hintName, "yyyyy", true);
+            fPlan.setHint(hintName, "xxxxx");
+            fPlan.setHint(hintName, "yyyyy");
             fail("Expecting a a IllegalArgumentException.");
         } catch (Exception e) {
             assertTrue("Caught expected exception",
                 IllegalArgumentException.class.isAssignableFrom(e.getClass()));
         }
         try {
-            fPlan.setHint(hintName, "12345", false);
-            fPlan.setHint(hintName, "67890", true);
+            fPlan.setHint(hintName, "12345");
+            fPlan.setHint(hintName, "67890");
             fail("Expecting a a IllegalArgumentException.");
         } catch (Exception e) {
             assertTrue("Caught expected exception",
                 IllegalArgumentException.class.isAssignableFrom(e.getClass()));
         }
         try {
-            fPlan.setHint(hintName, -1, false);
-            fPlan.setHint(hintName, -2, true);
+            fPlan.setHint(hintName, -1);
+            fPlan.setHint(hintName, -2);
             fail("Expecting a a IllegalArgumentException.");
         } catch (Exception e) {
             assertTrue("Caught expected exception",
                 IllegalArgumentException.class.isAssignableFrom(e.getClass()));
         }
         try {
-            fPlan.setHint(hintName, FetchConfiguration.DEFAULT, true);
+            fPlan.setHint(hintName, FetchConfiguration.DEFAULT);
             assertEquals(LRSSizeAlgorithm.QUERY, fPlan.getLRSSizeAlgorithm());
             assertEquals(LRSSizes.SIZE_QUERY, fPlan.getLRSSize());
             assertEquals(LRSSizes.SIZE_QUERY, fConfig.getLRSSize());
         } catch (Exception e) {
+            e.printStackTrace();
             fail("Unexpected " + e.getClass().getName());
         }
         em.close();
@@ -1024,15 +1026,15 @@ public class TestFetchHints extends SequencedActionsTest {
         maxFetchDepthHintTest(fPlan, fConfig, hintName, 500, 500);
 
         try {
-            fPlan.setHint(hintName, "xxxxx", false);
-            fPlan.setHint(hintName, "yyyyy", true);
+            fPlan.setHint(hintName, "xxxxx");
+            fPlan.setHint(hintName, "yyyyy");
             fail("Expecting a a IllegalArgumentException.");
         } catch (Exception e) {
             assertTrue("Caught expected exception",
                 IllegalArgumentException.class.isAssignableFrom(e.getClass()));
         }
         try {
-            fPlan.setHint(hintName, FetchConfiguration.DEFAULT, true);
+            fPlan.setHint(hintName, FetchConfiguration.DEFAULT);
             assertEquals(-1, fPlan.getMaxFetchDepth());
             assertEquals(-1, fConfig.getMaxFetchDepth());
         } catch (IllegalArgumentException e) {
@@ -1059,15 +1061,15 @@ public class TestFetchHints extends SequencedActionsTest {
         maxFetchDepthHintTest(fPlan, fConfig, hintName, 100, 100);
 
         try {
-            fPlan.setHint(hintName, "xxxxx", false);
-            fPlan.setHint(hintName, "yyyyy", true);
+            fPlan.setHint(hintName, "xxxxx");
+            fPlan.setHint(hintName, "yyyyy");
             fail("Expecting a a IllegalArgumentException.");
         } catch (Exception e) {
             assertTrue("Caught expected exception",
                 IllegalArgumentException.class.isAssignableFrom(e.getClass()));
         }
         try {
-            fPlan.setHint(hintName, FetchConfiguration.DEFAULT, true);
+            fPlan.setHint(hintName, FetchConfiguration.DEFAULT);
             assertEquals(-1, fPlan.getMaxFetchDepth());
             assertEquals(-1, fConfig.getMaxFetchDepth());
         } catch (Exception e) {
@@ -1107,23 +1109,23 @@ public class TestFetchHints extends SequencedActionsTest {
         lockTimeoutHintTest(fPlan, fConfig, hintName, 100, 100);
 
         try {
-            fPlan.setHint(hintName, "xxxxx", false);
-            fPlan.setHint(hintName, "yyyyy", true);
+            fPlan.setHint(hintName, "xxxxx");
+            fPlan.setHint(hintName, "yyyyy");
             fail("Expecting a a IllegalArgumentException.");
         } catch (Exception e) {
             assertTrue("Caught expected exception",
                 IllegalArgumentException.class.isAssignableFrom(e.getClass()));
         }
         try {
-            fPlan.setHint(hintName, -2, false);
-            fPlan.setHint(hintName, -3, true);
+            fPlan.setHint(hintName, -2);
+            fPlan.setHint(hintName, -3);
             fail("Expecting a a IllegalArgumentException.");
         } catch (Exception e) {
             assertTrue("Caught expected exception",
                 IllegalArgumentException.class.isAssignableFrom(e.getClass()));
         }
         try {
-            fPlan.setHint(hintName, FetchConfiguration.DEFAULT, true);
+            fPlan.setHint(hintName, FetchConfiguration.DEFAULT);
             int defTimeout = fConfig.getContext().getConfiguration()
                 .getLockTimeout();
             assertEquals(defTimeout, fPlan.getLockTimeout());
@@ -1154,23 +1156,23 @@ public class TestFetchHints extends SequencedActionsTest {
         lockTimeoutHintTest(fPlan, fConfig, hintName, 1500, 1500);
 
         try {
-            fPlan.setHint(hintName, "xxxxx", false);
-            fPlan.setHint(hintName, "yyyyy", true);
+            fPlan.setHint(hintName, "xxxxx");
+            fPlan.setHint(hintName, "yyyyy");
             fail("Expecting a a IllegalArgumentException.");
         } catch (Exception e) {
             assertTrue("Caught expected exception",
                 IllegalArgumentException.class.isAssignableFrom(e.getClass()));
         }
         try {
-            fPlan.setHint(hintName, -2, false);
-            fPlan.setHint(hintName, -3, true);
+            fPlan.setHint(hintName, -2);
+            fPlan.setHint(hintName, -3);
             fail("Expecting a a IllegalArgumentException.");
         } catch (Exception e) {
             assertTrue("Caught expected exception",
                 IllegalArgumentException.class.isAssignableFrom(e.getClass()));
         }
         try {
-            fPlan.setHint(hintName, FetchConfiguration.DEFAULT, true);
+            fPlan.setHint(hintName, FetchConfiguration.DEFAULT);
             int defTimeout = fConfig.getContext().getConfiguration()
                 .getLockTimeout();
             assertEquals(defTimeout, fPlan.getLockTimeout());
@@ -1201,23 +1203,23 @@ public class TestFetchHints extends SequencedActionsTest {
         lockTimeoutHintTest(fPlan, fConfig, hintName, 2000, 2000);
 
         try {
-            fPlan.setHint(hintName, "xxxxx", false);
-            fPlan.setHint(hintName, "yyyyy", true);
+            fPlan.setHint(hintName, "xxxxx");
+            fPlan.setHint(hintName, "yyyyy");
             fail("Expecting a a IllegalArgumentException.");
         } catch (Exception e) {
             assertTrue("Caught expected exception",
                 IllegalArgumentException.class.isAssignableFrom(e.getClass()));
         }
         try {
-            fPlan.setHint(hintName, -2, false);
-            fPlan.setHint(hintName, -3, true);
+            fPlan.setHint(hintName, -2);
+            fPlan.setHint(hintName, -3);
             fail("Expecting a a IllegalArgumentException.");
         } catch (Exception e) {
             assertTrue("Caught expected exception",
                 IllegalArgumentException.class.isAssignableFrom(e.getClass()));
         }
         try {
-            fPlan.setHint(hintName, FetchConfiguration.DEFAULT, true);
+            fPlan.setHint(hintName, FetchConfiguration.DEFAULT);
             int defTimeout = fConfig.getContext().getConfiguration()
                 .getLockTimeout();
             assertEquals(defTimeout, fPlan.getLockTimeout());
@@ -1259,23 +1261,23 @@ public class TestFetchHints extends SequencedActionsTest {
         queryTimeoutHintTest(fPlan, fConfig, hintName, 100, 100);
 
         try {
-            fPlan.setHint(hintName, "xxxxx", false);
-            fPlan.setHint(hintName, "yyyyy", true);
+            fPlan.setHint(hintName, "xxxxx");
+            fPlan.setHint(hintName, "yyyyy");
             fail("Expecting a a IllegalArgumentException.");
         } catch (Exception e) {
             assertTrue("Caught expected exception",
                 IllegalArgumentException.class.isAssignableFrom(e.getClass()));
         }
         try {
-            fPlan.setHint(hintName, -2, false);
-            fPlan.setHint(hintName, -3, true);
+            fPlan.setHint(hintName, -2);
+            fPlan.setHint(hintName, -3);
             fail("Expecting a a IllegalArgumentException.");
         } catch (Exception e) {
             assertTrue("Caught expected exception",
                 IllegalArgumentException.class.isAssignableFrom(e.getClass()));
         }
         try {
-            fPlan.setHint(hintName, FetchConfiguration.DEFAULT, true);
+            fPlan.setHint(hintName, FetchConfiguration.DEFAULT);
             int defTimeout = fConfig.getContext().getConfiguration()
                 .getQueryTimeout();
             assertEquals(defTimeout, fPlan.getQueryTimeout());
@@ -1306,23 +1308,23 @@ public class TestFetchHints extends SequencedActionsTest {
         queryTimeoutHintTest(fPlan, fConfig, hintName, 1500, 1500);
 
         try {
-            fPlan.setHint(hintName, "xxxxx", false);
-            fPlan.setHint(hintName, "yyyyy", true);
+            fPlan.setHint(hintName, "xxxxx");
+            fPlan.setHint(hintName, "yyyyy");
             fail("Expecting a a IllegalArgumentException.");
         } catch (Exception e) {
             assertTrue("Caught expected exception",
                 IllegalArgumentException.class.isAssignableFrom(e.getClass()));
         }
         try {
-            fPlan.setHint(hintName, -2, false);
-            fPlan.setHint(hintName, -3, true);
+            fPlan.setHint(hintName, -2);
+            fPlan.setHint(hintName, -3);
             fail("Expecting a a IllegalArgumentException.");
         } catch (Exception e) {
             assertTrue("Caught expected exception",
                 IllegalArgumentException.class.isAssignableFrom(e.getClass()));
         }
         try {
-            fPlan.setHint(hintName, FetchConfiguration.DEFAULT, true);
+            fPlan.setHint(hintName, FetchConfiguration.DEFAULT);
             int defTimeout = fConfig.getContext().getConfiguration()
                 .getQueryTimeout();
             assertEquals(defTimeout, fPlan.getQueryTimeout());
@@ -1353,23 +1355,23 @@ public class TestFetchHints extends SequencedActionsTest {
         queryTimeoutHintTest(fPlan, fConfig, hintName, 2000, 2000);
 
         try {
-            fPlan.setHint(hintName, "xxxxx", false);
-            fPlan.setHint(hintName, "yyyyy", true);
+            fPlan.setHint(hintName, "xxxxx");
+            fPlan.setHint(hintName, "yyyyy");
             fail("Expecting a a IllegalArgumentException.");
         } catch (Exception e) {
             assertTrue("Caught expected exception",
                 IllegalArgumentException.class.isAssignableFrom(e.getClass()));
         }
         try {
-            fPlan.setHint(hintName, -2, false);
-            fPlan.setHint(hintName, -3, true);
+            fPlan.setHint(hintName, -2);
+            fPlan.setHint(hintName, -3);
             fail("Expecting a a IllegalArgumentException.");
         } catch (Exception e) {
             assertTrue("Caught expected exception",
                 IllegalArgumentException.class.isAssignableFrom(e.getClass()));
         }
         try {
-            fPlan.setHint(hintName, FetchConfiguration.DEFAULT, true);
+            fPlan.setHint(hintName, FetchConfiguration.DEFAULT);
             int defTimeout = fConfig.getContext().getConfiguration()
                 .getQueryTimeout();
             assertEquals(defTimeout, fPlan.getQueryTimeout());
@@ -1426,27 +1428,27 @@ public class TestFetchHints extends SequencedActionsTest {
             ResultSet.TYPE_SCROLL_INSENSITIVE);
 
         try {
-            fPlan.setHint(hintName, "xxxxx", false);
-            fPlan.setHint(hintName, "yyyyy", true);
+            fPlan.setHint(hintName, "xxxxx");
+            fPlan.setHint(hintName, "yyyyy");
             fail("Expecting a a IllegalArgumentException.");
         } catch (Exception e) {
             assertTrue("Caught expected exception",
                 IllegalArgumentException.class.isAssignableFrom(e.getClass()));
         }
         try {
-            fPlan.setHint(hintName, "12345", false);
-            fPlan.setHint(hintName, "67890", true);
+            fPlan.setHint(hintName, "12345");
+            fPlan.setHint(hintName, "67890");
             fail("Expecting a a IllegalArgumentException.");
         } catch (Exception e) {
             assertTrue("Caught expected exception",
                 IllegalArgumentException.class.isAssignableFrom(e.getClass()));
         }
         try {
-            fPlan.setHint(hintName, -1, false);
-            fPlan.setHint(hintName, -2, true);
+            fPlan.setHint(hintName, -1);
+            fPlan.setHint(hintName, -2);
             fail("Expecting a a IllegalArgumentException.");
         } catch (Exception e) {
-            assertTrue("Caught expected exception",
+            assertTrue("Caught unexpected exception " + e,
                 IllegalArgumentException.class.isAssignableFrom(e.getClass()));
         }
         em.close();
@@ -1487,31 +1489,31 @@ public class TestFetchHints extends SequencedActionsTest {
             ResultSet.TYPE_SCROLL_INSENSITIVE);
 
         try {
-            fPlan.setHint(hintName, "xxxxx", false);
-            fPlan.setHint(hintName, "yyyyy", true);
+            fPlan.setHint(hintName, "xxxxx");
+            fPlan.setHint(hintName, "yyyyy");
             fail("Expecting a a IllegalArgumentException.");
         } catch (Exception e) {
             assertTrue("Caught expected exception",
                 IllegalArgumentException.class.isAssignableFrom(e.getClass()));
         }
         try {
-            fPlan.setHint(hintName, "12345", false);
-            fPlan.setHint(hintName, "67890", true);
+            fPlan.setHint(hintName, "12345");
+            fPlan.setHint(hintName, "67890");
             fail("Expecting a a IllegalArgumentException.");
         } catch (Exception e) {
             assertTrue("Caught expected exception",
                 IllegalArgumentException.class.isAssignableFrom(e.getClass()));
         }
         try {
-            fPlan.setHint(hintName, -1, false);
-            fPlan.setHint(hintName, -2, true);
+            fPlan.setHint(hintName, -1);
+            fPlan.setHint(hintName, -2);
             fail("Expecting a a IllegalArgumentException.");
         } catch (Exception e) {
             assertTrue("Caught expected exception",
                 IllegalArgumentException.class.isAssignableFrom(e.getClass()));
         }
         try {
-            fPlan.setHint(hintName, FetchConfiguration.DEFAULT, true);
+            fPlan.setHint(hintName, FetchConfiguration.DEFAULT);
             assertEquals(ResultSet.TYPE_FORWARD_ONLY, fConfig
                 .getResultSetType());
         } catch (Exception e) {
@@ -1565,24 +1567,24 @@ public class TestFetchHints extends SequencedActionsTest {
             FetchMode.JOIN, EagerFetchModes.EAGER_JOIN);
 
         try {
-            fPlan.setHint(hintName, "xxxxx", false);
-            fPlan.setHint(hintName, "yyyyy", true);
+            fPlan.setHint(hintName, "xxxxx");
+            fPlan.setHint(hintName, "yyyyy");
             fail("Expecting a a IllegalArgumentException.");
         } catch (Exception e) {
             assertTrue("Caught expected exception",
                 IllegalArgumentException.class.isAssignableFrom(e.getClass()));
         }
         try {
-            fPlan.setHint(hintName, "12345", false);
-            fPlan.setHint(hintName, "67890", true);
+            fPlan.setHint(hintName, "12345");
+            fPlan.setHint(hintName, "67890");
             fail("Expecting a a IllegalArgumentException.");
         } catch (Exception e) {
             assertTrue("Caught expected exception",
                 IllegalArgumentException.class.isAssignableFrom(e.getClass()));
         }
         try {
-            fPlan.setHint(hintName, -1, false);
-            fPlan.setHint(hintName, -2, true);
+            fPlan.setHint(hintName, -1);
+            fPlan.setHint(hintName, -2);
             fail("Expecting a a IllegalArgumentException.");
         } catch (Exception e) {
             assertTrue("Caught expected exception",
@@ -1625,31 +1627,31 @@ public class TestFetchHints extends SequencedActionsTest {
             EagerFetchModes.EAGER_JOIN);
 
         try {
-            fPlan.setHint(hintName, "xxxxx", false);
-            fPlan.setHint(hintName, "yyyyy", true);
+            fPlan.setHint(hintName, "xxxxx");
+            fPlan.setHint(hintName, "yyyyy");
             fail("Expecting a a IllegalArgumentException.");
         } catch (Exception e) {
             assertTrue("Caught expected exception",
                 IllegalArgumentException.class.isAssignableFrom(e.getClass()));
         }
         try {
-            fPlan.setHint(hintName, "12345", false);
-            fPlan.setHint(hintName, "67890", true);
+            fPlan.setHint(hintName, "12345");
+            fPlan.setHint(hintName, "67890");
             fail("Expecting a a IllegalArgumentException.");
         } catch (Exception e) {
             assertTrue("Caught expected exception",
                 IllegalArgumentException.class.isAssignableFrom(e.getClass()));
         }
         try {
-            fPlan.setHint(hintName, -1, false);
-            fPlan.setHint(hintName, -2, true);
+            fPlan.setHint(hintName, -1);
+            fPlan.setHint(hintName, -2);
             fail("Expecting a a IllegalArgumentException.");
         } catch (Exception e) {
             assertTrue("Caught expected exception",
                 IllegalArgumentException.class.isAssignableFrom(e.getClass()));
         }
         try {
-            fPlan.setHint(hintName, FetchConfiguration.DEFAULT, true);
+            fPlan.setHint(hintName, FetchConfiguration.DEFAULT);
             assertEquals(EagerFetchModes.EAGER_JOIN, fConfig
                 .getSubclassFetchMode());
         } catch (Exception e) {
@@ -1699,31 +1701,31 @@ public class TestFetchHints extends SequencedActionsTest {
             QueryFlushModes.FLUSH_WITH_CONNECTION);
 
         try {
-            fPlan.setHint(hintName, "xxxxx", false);
-            fPlan.setHint(hintName, "yyyyy", true);
+            fPlan.setHint(hintName, "xxxxx");
+            fPlan.setHint(hintName, "yyyyy");
             fail("Expecting a a IllegalArgumentException.");
         } catch (Exception e) {
             assertTrue("Caught expected exception",
                 IllegalArgumentException.class.isAssignableFrom(e.getClass()));
         }
         try {
-            fPlan.setHint(hintName, "12345", false);
-            fPlan.setHint(hintName, "67890", true);
+            fPlan.setHint(hintName, "12345");
+            fPlan.setHint(hintName, "67890");
             fail("Expecting a a IllegalArgumentException.");
         } catch (Exception e) {
             assertTrue("Caught expected exception",
                 IllegalArgumentException.class.isAssignableFrom(e.getClass()));
         }
         try {
-            fPlan.setHint(hintName, -1, false);
-            fPlan.setHint(hintName, -2, true);
+            fPlan.setHint(hintName, -1);
+            fPlan.setHint(hintName, -2);
             fail("Expecting a a IllegalArgumentException.");
         } catch (Exception e) {
             assertTrue("Caught expected exception",
                 IllegalArgumentException.class.isAssignableFrom(e.getClass()));
         }
         try {
-            fPlan.setHint(hintName, FetchConfiguration.DEFAULT, true);
+            fPlan.setHint(hintName, FetchConfiguration.DEFAULT);
             fConfig.getFlushBeforeQueries();
             assertEquals(QueryFlushModes.FLUSH_TRUE, fConfig
                 .getFlushBeforeQueries());
@@ -1821,31 +1823,31 @@ public class TestFetchHints extends SequencedActionsTest {
             MixedLockLevels.LOCK_PESSIMISTIC_FORCE_INCREMENT);
 
         try {
-            fPlan.setHint(hintName, "xxxxx", false);
-            fPlan.setHint(hintName, "yyyyy", true);
+            fPlan.setHint(hintName, "xxxxx");
+            fPlan.setHint(hintName, "yyyyy");
             fail("Expecting a a IllegalArgumentException.");
         } catch (Exception e) {
             assertTrue("Caught expected exception",
                 IllegalArgumentException.class.isAssignableFrom(e.getClass()));
         }
         try {
-            fPlan.setHint(hintName, "12345", false);
-            fPlan.setHint(hintName, "67890", true);
+            fPlan.setHint(hintName, "12345");
+            fPlan.setHint(hintName, "67890");
             fail("Expecting a a IllegalArgumentException.");
         } catch (Exception e) {
             assertTrue("Caught expected exception",
                 IllegalArgumentException.class.isAssignableFrom(e.getClass()));
         }
         try {
-            fPlan.setHint(hintName, -1, false);
-            fPlan.setHint(hintName, -2, true);
+            fPlan.setHint(hintName, -1);
+            fPlan.setHint(hintName, -2);
             fail("Expecting a a IllegalArgumentException.");
         } catch (Exception e) {
             assertTrue("Caught expected exception",
                 IllegalArgumentException.class.isAssignableFrom(e.getClass()));
         }
         try {
-            fPlan.setHint(hintName, FetchConfiguration.DEFAULT, true);
+            fPlan.setHint(hintName, FetchConfiguration.DEFAULT);
             assertEquals(MixedLockLevels.LOCK_READ, fConfig.getReadLockLevel());
         } catch (Exception e) {
             fail("Unexpected " + e.getClass().getName());
@@ -1943,31 +1945,31 @@ public class TestFetchHints extends SequencedActionsTest {
             MixedLockLevels.LOCK_PESSIMISTIC_FORCE_INCREMENT);
 
         try {
-            fPlan.setHint(hintName, "xxxxx", false);
-            fPlan.setHint(hintName, "yyyyy", true);
+            fPlan.setHint(hintName, "xxxxx");
+            fPlan.setHint(hintName, "yyyyy");
             fail("Expecting a a IllegalArgumentException.");
         } catch (Exception e) {
             assertTrue("Caught expected exception",
                 IllegalArgumentException.class.isAssignableFrom(e.getClass()));
         }
         try {
-            fPlan.setHint(hintName, "12345", false);
-            fPlan.setHint(hintName, "67890", true);
+            fPlan.setHint(hintName, "12345");
+            fPlan.setHint(hintName, "67890");
             fail("Expecting a a IllegalArgumentException.");
         } catch (Exception e) {
             assertTrue("Caught expected exception",
                 IllegalArgumentException.class.isAssignableFrom(e.getClass()));
         }
         try {
-            fPlan.setHint(hintName, -1, false);
-            fPlan.setHint(hintName, -2, true);
+            fPlan.setHint(hintName, -1);
+            fPlan.setHint(hintName, -2);
             fail("Expecting a a IllegalArgumentException.");
         } catch (Exception e) {
             assertTrue("Caught expected exception",
                 IllegalArgumentException.class.isAssignableFrom(e.getClass()));
         }
         try {
-            fPlan.setHint(hintName, FetchConfiguration.DEFAULT, true);
+            fPlan.setHint(hintName, FetchConfiguration.DEFAULT);
             assertEquals(MixedLockLevels.LOCK_WRITE, fConfig
                 .getWriteLockLevel());
         } catch (Exception e) {
@@ -2089,24 +2091,24 @@ public class TestFetchHints extends SequencedActionsTest {
             MixedLockLevels.LOCK_PESSIMISTIC_FORCE_INCREMENT);
 
         try {
-            fPlan.setHint(hintName, "xxxxx", false);
-            fPlan.setHint(hintName, "yyyyy", true);
+            fPlan.setHint(hintName, "xxxxx");
+            fPlan.setHint(hintName, "yyyyy");
             fail("Expecting a a IllegalArgumentException.");
         } catch (Exception e) {
             assertTrue("Caught expected exception",
                 IllegalArgumentException.class.isAssignableFrom(e.getClass()));
         }
         try {
-            fPlan.setHint(hintName, "12345", false);
-            fPlan.setHint(hintName, "67890", true);
+            fPlan.setHint(hintName, "12345");
+            fPlan.setHint(hintName, "67890");
             fail("Expecting a a IllegalArgumentException.");
         } catch (Exception e) {
             assertTrue("Caught expected exception",
                 IllegalArgumentException.class.isAssignableFrom(e.getClass()));
         }
         try {
-            fPlan.setHint(hintName, -1, false);
-            fPlan.setHint(hintName, -2, true);
+            fPlan.setHint(hintName, -1);
+            fPlan.setHint(hintName, -2);
             fail("Expecting a a IllegalArgumentException.");
         } catch (Exception e) {
             assertTrue("Caught expected exception",
@@ -2229,24 +2231,24 @@ public class TestFetchHints extends SequencedActionsTest {
             MixedLockLevels.LOCK_PESSIMISTIC_FORCE_INCREMENT);
 
         try {
-            fPlan.setHint(hintName, "xxxxx", false);
-            fPlan.setHint(hintName, "yyyyy", true);
+            fPlan.setHint(hintName, "xxxxx");
+            fPlan.setHint(hintName, "yyyyy");
             fail("Expecting a a IllegalArgumentException.");
         } catch (Exception e) {
             assertTrue("Caught expected exception",
                 IllegalArgumentException.class.isAssignableFrom(e.getClass()));
         }
         try {
-            fPlan.setHint(hintName, "12345", false);
-            fPlan.setHint(hintName, "67890", true);
+            fPlan.setHint(hintName, "12345");
+            fPlan.setHint(hintName, "67890");
             fail("Expecting a a IllegalArgumentException.");
         } catch (Exception e) {
             assertTrue("Caught expected exception",
                 IllegalArgumentException.class.isAssignableFrom(e.getClass()));
         }
         try {
-            fPlan.setHint(hintName, -1, false);
-            fPlan.setHint(hintName, -2, true);
+            fPlan.setHint(hintName, -1);
+            fPlan.setHint(hintName, -2);
             fail("Expecting a a IllegalArgumentException.");
         } catch (Exception e) {
             assertTrue("Caught expected exception",
@@ -2279,36 +2281,36 @@ public class TestFetchHints extends SequencedActionsTest {
         EntityManager em = emf.createEntityManager();
         OpenJPAEntityManager oem = (OpenJPAEntityManager)em.getDelegate();
 
-        similarLockTimeoutHintsTest(oem, 333,
+        similarLockTimeoutHintsTest(oem, JavaxLockTimeout, 333,
             JavaxLockTimeout, 333,
             OpenJPALockTimeout, 111,
             FetchPlanLockTimeout, 222);
-        similarLockTimeoutHintsTest(oem, 333,
+        similarLockTimeoutHintsTest(oem, JavaxLockTimeout, 333,
             OpenJPALockTimeout, 111,
             FetchPlanLockTimeout, 222,
             JavaxLockTimeout, 333);
-        similarLockTimeoutHintsTest(oem, 333,
+        similarLockTimeoutHintsTest(oem, JavaxLockTimeout, 333,
             JavaxLockTimeout, 333,
             FetchPlanLockTimeout, 222,
             OpenJPALockTimeout, 111);
-        similarLockTimeoutHintsTest(oem, 222,
+        similarLockTimeoutHintsTest(oem, FetchPlanLockTimeout, 222,
             OpenJPALockTimeout, 111,
             FetchPlanLockTimeout, 222);
-        similarLockTimeoutHintsTest(oem, 222,
+        similarLockTimeoutHintsTest(oem, FetchPlanLockTimeout, 222,
             FetchPlanLockTimeout, 222,
             OpenJPALockTimeout, 111);
-        similarLockTimeoutHintsTest(oem, 111,
+        similarLockTimeoutHintsTest(oem, OpenJPALockTimeout, 111,
             OpenJPALockTimeout, 111);
-        similarLockTimeoutHintsTest(oem, 222,
+        similarLockTimeoutHintsTest(oem, FetchPlanLockTimeout, 222,
             FetchPlanLockTimeout, 222);
-        similarLockTimeoutHintsTest(oem, 333,
+        similarLockTimeoutHintsTest(oem, JavaxLockTimeout, 333,
             JavaxLockTimeout, 333);
 
         em.close();
     }
 
     @SuppressWarnings("deprecation")
-    private void similarLockTimeoutHintsTest(OpenJPAEntityManager oem,
+    private void similarLockTimeoutHintsTest(OpenJPAEntityManager oem, String winner, 
         Object expected, Object... hintNvalues) {
         JDBCFetchPlan fPlan = (JDBCFetchPlan) oem.pushFetchPlan();
         JDBCFetchConfigurationImpl fConfig = (JDBCFetchConfigurationImpl) fPlan
@@ -2321,8 +2323,10 @@ public class TestFetchHints extends SequencedActionsTest {
             String hintName = (String)hintNvalues[i];
             Object expectedValue = hintNvalues[i+1];
             Object getValue = fPlan.getHint(hintName);
-            assertEquals(expectedValue.getClass(), getValue.getClass());
-            assertEquals(expectedValue, getValue);
+            if (hintName.equals(winner)) {
+                assertEquals(expectedValue.getClass(), getValue.getClass());
+                assertEquals(expectedValue, getValue);
+            } 
         }
         assertEquals(expected, fPlan.getLockTimeout());
         assertEquals(expected, fConfig.getLockTimeout());
@@ -2341,36 +2345,36 @@ public class TestFetchHints extends SequencedActionsTest {
         EntityManager em = emf.createEntityManager();
         OpenJPAEntityManager oem = (OpenJPAEntityManager)em.getDelegate();
 
-        similarQueryTimeoutHintsTest(oem, 333,
+        similarQueryTimeoutHintsTest(oem, JavaxQueryTimeout, 333, 
             JavaxQueryTimeout, 333,
             OpenJPAQueryTimeout, 111,
             FetchPlanQueryTimeout, 222);
-        similarQueryTimeoutHintsTest(oem, 333,
+        similarQueryTimeoutHintsTest(oem, JavaxQueryTimeout, 333, 
             OpenJPAQueryTimeout, 111,
             FetchPlanQueryTimeout, 222,
             JavaxQueryTimeout, 333);
-        similarQueryTimeoutHintsTest(oem, 333,
+        similarQueryTimeoutHintsTest(oem, JavaxQueryTimeout, 333, 
             JavaxQueryTimeout, 333,
             FetchPlanQueryTimeout, 222,
             OpenJPAQueryTimeout, 111);
-        similarQueryTimeoutHintsTest(oem, 222,
+        similarQueryTimeoutHintsTest(oem, FetchPlanQueryTimeout, 222, 
             OpenJPAQueryTimeout, 111,
             FetchPlanQueryTimeout, 222);
-        similarQueryTimeoutHintsTest(oem, 222,
+        similarQueryTimeoutHintsTest(oem, FetchPlanQueryTimeout, 222, 
             FetchPlanQueryTimeout, 222,
             OpenJPAQueryTimeout, 111);
-        similarQueryTimeoutHintsTest(oem, 111,
+        similarQueryTimeoutHintsTest(oem, OpenJPAQueryTimeout, 111, 
             OpenJPAQueryTimeout, 111);
-        similarQueryTimeoutHintsTest(oem, 222,
+        similarQueryTimeoutHintsTest(oem, FetchPlanQueryTimeout, 222, 
             FetchPlanQueryTimeout, 222);
-        similarQueryTimeoutHintsTest(oem, 333,
+        similarQueryTimeoutHintsTest(oem, JavaxQueryTimeout, 333, 
             JavaxQueryTimeout, 333);
 
         em.close();
     }
 
     @SuppressWarnings("deprecation")
-    private void similarQueryTimeoutHintsTest(OpenJPAEntityManager oem,
+    private void similarQueryTimeoutHintsTest(OpenJPAEntityManager oem, String winner, 
         Object expected, Object... hintNvalues) {
         JDBCFetchPlan fPlan = (JDBCFetchPlan) oem.pushFetchPlan();
         JDBCFetchConfigurationImpl fConfig = (JDBCFetchConfigurationImpl) fPlan
@@ -2383,8 +2387,10 @@ public class TestFetchHints extends SequencedActionsTest {
             String hintName = (String)hintNvalues[i];
             Object expectedValue = hintNvalues[i+1];
             Object getValue = fPlan.getHint(hintName);
-            assertEquals(expectedValue.getClass(), getValue.getClass());
-            assertEquals(expectedValue, getValue);
+            if (hintName.equals(winner)) {
+                assertEquals(expectedValue.getClass(), getValue.getClass());
+                assertEquals(expectedValue, getValue);
+            }
         }
         assertEquals(expected, fPlan.getQueryTimeout());
         assertEquals(expected, fConfig.getQueryTimeout());
@@ -2404,8 +2410,6 @@ public class TestFetchHints extends SequencedActionsTest {
         fPlan.setHint("unrecognized.prop.name", "unrecognized.prop.value");
         assertEquals(null, fPlan.getHint("unrecognized.prop.name"));
 
-        fPlan.addHints(null);
-        fPlan.addHints(new HashMap<String,Object>());
 
         OpenJPAConfiguration conf = oem.getConfiguration();
         if (conf instanceof JDBCConfiguration
@@ -2416,16 +2420,13 @@ public class TestFetchHints extends SequencedActionsTest {
                 fail("Expecting a a IllegalArgumentException.");
             } catch (Exception e) {
                 assertTrue("Caught expected exception",
-                    IllegalArgumentException.class.isAssignableFrom(e
-                        .getClass()));
+                    IllegalArgumentException.class.isAssignableFrom(e.getClass()));
             }
         }
 
         try {
-            fPlan.setHint("openjpa.FetchPlan.Isolation", new Integer(13),
-                false);
-            fPlan.setHint("openjpa.FetchPlan.Isolation", new Integer(14),
-                true);
+            fPlan.setHint("openjpa.FetchPlan.Isolation", new Integer(13));
+            fPlan.setHint("openjpa.FetchPlan.Isolation", new Integer(14));
             fail("Expecting a IllegalArgumentException.");
         } catch (Exception e) {
             assertTrue("Caught expected exception",

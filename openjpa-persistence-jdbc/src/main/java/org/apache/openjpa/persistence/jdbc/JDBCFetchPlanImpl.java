@@ -18,14 +18,21 @@
  */
 package org.apache.openjpa.persistence.jdbc;
 
+import java.sql.ResultSet;
 import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
+
 import javax.persistence.LockModeType;
 
 import org.apache.openjpa.jdbc.kernel.DelegatingJDBCFetchConfiguration;
+import org.apache.openjpa.jdbc.kernel.EagerFetchModes;
 import org.apache.openjpa.jdbc.kernel.JDBCFetchConfiguration;
+import org.apache.openjpa.jdbc.sql.JoinSyntaxes;
 import org.apache.openjpa.kernel.DelegatingFetchConfiguration;
 import org.apache.openjpa.kernel.FetchConfiguration;
 import org.apache.openjpa.persistence.FetchPlanImpl;
+import org.apache.openjpa.persistence.HintValueConverter;
 import org.apache.openjpa.persistence.PersistenceExceptions;
 
 /**
@@ -40,6 +47,49 @@ public class JDBCFetchPlanImpl
     implements JDBCFetchPlan {
 
     private DelegatingJDBCFetchConfiguration _fetch;
+    static {
+        registerHint(new String[]{"openjpa.FetchPlan.EagerFetchMode", "openjpa.jdbc.EagerFetchMode"},
+            new HintValueConverter.StringToInteger(new String[]{"none", "0", "join", "1", "parallel", "2"}, 
+                new int[]{EagerFetchModes.EAGER_NONE, EagerFetchModes.EAGER_NONE, 
+                          EagerFetchModes.EAGER_JOIN, EagerFetchModes.EAGER_JOIN,
+                          EagerFetchModes.EAGER_PARALLEL,EagerFetchModes.EAGER_PARALLEL}),
+            new HintValueConverter.EnumToInteger(FetchMode.class, 
+                new int[]{EagerFetchModes.EAGER_NONE, EagerFetchModes.EAGER_JOIN, EagerFetchModes.EAGER_PARALLEL}));
+        registerHint(new String[]{"openjpa.JoinSyntax", "openjpa.jdbc.JoinSyntax","openjpa.FetchPlan.JoinSyntax"}, 
+            new HintValueConverter.EnumToInteger(JoinSyntax.class,
+                new int[]{JoinSyntaxes.SYNTAX_SQL92, JoinSyntaxes.SYNTAX_TRADITIONAL, JoinSyntaxes.SYNTAX_DATABASE}),
+            new HintValueConverter.StringToInteger(new String[]{"sql92", "0", "traditional", "1", "database", "2"}, 
+                new int[]{JoinSyntaxes.SYNTAX_SQL92, JoinSyntaxes.SYNTAX_SQL92, 
+                    JoinSyntaxes.SYNTAX_TRADITIONAL, JoinSyntaxes.SYNTAX_TRADITIONAL,
+                    JoinSyntaxes.SYNTAX_DATABASE, JoinSyntaxes.SYNTAX_DATABASE}));
+        registerHint(new String[]{"openjpa.FetchDirection", "openjpa.jdbc.FetchDirection",
+                "openjpa.FetchPlan.FetchDirection"}, 
+                new HintValueConverter.EnumToInteger(FetchDirection.class,
+                    new int[]{ResultSet.FETCH_FORWARD, ResultSet.FETCH_REVERSE, ResultSet.FETCH_UNKNOWN}),    
+                new HintValueConverter.StringToInteger(new String[]{"forward", String.valueOf(ResultSet.FETCH_FORWARD), 
+                                                       "reverse", String.valueOf(ResultSet.FETCH_REVERSE), 
+                                                       "unknown", String.valueOf(ResultSet.FETCH_UNKNOWN)}, 
+                    new int[]{ResultSet.FETCH_FORWARD, ResultSet.FETCH_FORWARD, 
+                        ResultSet.FETCH_REVERSE, ResultSet.FETCH_REVERSE,
+                        ResultSet.FETCH_UNKNOWN, ResultSet.FETCH_UNKNOWN}));
+        registerHint(new String[]{"openjpa.FetchPlan.Isolation", "openjpa.jdbc.TransactionIsolation"}, 
+                new HintValueConverter.OpenJPAEnumToInteger(IsolationLevel.DEFAULT));    
+        registerHint(new String[]{"openjpa.FetchPlan.LRSSizeAlgorithm", "openjpa.FetchPlan.LRSSize",
+        "openjpa.jdbc.LRSSize"}, 
+        new HintValueConverter.OpenJPAEnumToInteger(LRSSizeAlgorithm.QUERY));
+        registerHint(new String[]{"openjpa.FetchPlan.ResultSetType", "openjpa.jdbc.ResultSetType"}, 
+                new HintValueConverter.OpenJPAEnumToInteger(ResultSetType.FORWARD_ONLY));
+        registerHint(new String[]{"openjpa.FetchPlan.SubclassFetchMode", "openjpa.jdbc.SubclassFetchMode"}, 
+                new HintValueConverter.OpenJPAEnumToInteger(FetchMode.NONE));
+        
+//        "openjpa.FetchPlan.FetchDirection"
+//        _hints.add("openjpa.FetchPlan.LockScope");
+//        _hints.add("openjpa.FetchPlan.LockTimeout");
+//        _hints.add("openjpa.FetchPlan.MaxFetchDepth");
+//        _hints.add("openjpa.FetchPlan.QueryTimeout");
+//        _hints.add("openjpa.FetchPlan.ReadLockMode");
+//        _hints.add("openjpa.FetchPlan.WriteLockMode");
+    }
 
     /**
      * Constructor; supply delegate.

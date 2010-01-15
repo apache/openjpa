@@ -484,25 +484,25 @@ public class DelegatingFetchConfiguration
         }
     }
     
-    public void setHint(String name, Object value, boolean validate) {
+    public void setHint(String name, Object value, Object original) {
         try {
-            _fetch.setHint(name, value, validate);
+            _fetch.setHint(name, value, original);
         } catch (RuntimeException re) {
             throw translate(re);
         }
     }
 
-    public Object getHint(String name) {
+    public boolean isHintSet(String key) {
         try {
-            return _fetch.getHint(name);
+            return _fetch.isHintSet(key);
         } catch (RuntimeException re) {
             throw translate(re);
         }
     }
     
-    public void addHint(String name, Object value) {
+    public Object getHint(String name) {
         try {
-            _fetch.addHint(name, value);
+            return _fetch.getHint(name);
         } catch (RuntimeException re) {
             throw translate(re);
         }
@@ -515,7 +515,7 @@ public class DelegatingFetchConfiguration
             throw translate(re);
         }
     }
-
+    
     public int requiresFetch(FieldMetaData fmd) {
         try {
             return _fetch.requiresFetch(fmd);

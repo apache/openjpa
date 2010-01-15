@@ -18,14 +18,18 @@
  */
 package org.apache.openjpa.jdbc.conf;
 
+import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
 import org.apache.openjpa.conf.BrokerFactoryValue;
 import org.apache.openjpa.conf.OpenJPAProductDerivation;
 import org.apache.openjpa.jdbc.kernel.JDBCBrokerFactory;
+import org.apache.openjpa.jdbc.kernel.JDBCFetchConfiguration;
 import org.apache.openjpa.jdbc.sql.MySQLDictionary;
 import org.apache.openjpa.jdbc.sql.OracleDictionary;
 import org.apache.openjpa.lib.conf.AbstractProductDerivation;
@@ -37,14 +41,8 @@ import org.apache.openjpa.lib.conf.ConfigurationProvider;
 public class JDBCProductDerivation extends AbstractProductDerivation
     implements OpenJPAProductDerivation {
 
-    private static Set<String> supportedQueryHints = new HashSet<String>(2);
-
-    static {
-        supportedQueryHints.add(MySQLDictionary.SELECT_HINT);
-        supportedQueryHints.add(OracleDictionary.SELECT_HINT);
-        supportedQueryHints = Collections.unmodifiableSet(supportedQueryHints);
-    }
-
+    public static final String PREFIX = "openjpa.jdbc"; 
+    
     public void putBrokerFactoryAliases(Map m) {
         m.put("jdbc", JDBCBrokerFactory.class.getName());
     }
@@ -62,8 +60,28 @@ public class JDBCProductDerivation extends AbstractProductDerivation
         return false;
     }
     
+    /**
+     * Hint keys correspond to some (not all) bean-style mutable property name in JDBCFetchConfiguration.
+     * The fully qualified key is prefixed with <code>openjpa.jdbc</code>.
+     */
+    private static Set<String> _hints = new HashSet<String>();
+    static {
+        _hints.add(PREFIX + ".EagerFetchMode");
+        _hints.add(PREFIX + ".FetchDirection");
+        _hints.add(PREFIX + ".TransactionIsolation");
+        _hints.add(PREFIX + ".JoinSyntax");
+        _hints.add(PREFIX + ".LRSSize");
+        _hints.add(PREFIX + ".ResultSetType");
+        _hints.add(PREFIX + ".SubclassFetchMode");
+        
+        _hints.add(MySQLDictionary.SELECT_HINT);
+        _hints.add(OracleDictionary.SELECT_HINT);
+        
+        _hints = Collections.unmodifiableSet(_hints);
+    }
+
     @Override
     public Set<String> getSupportedQueryHints() {
-        return supportedQueryHints;
+        return _hints;
     }
 }

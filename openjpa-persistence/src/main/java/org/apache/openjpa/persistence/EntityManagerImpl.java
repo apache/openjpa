@@ -1633,7 +1633,10 @@ public class EntityManagerImpl
             LockModeType lock, boolean requiresTxn) {
         // handle properties in map first
         configureCurrentCacheModes(fetch, properties);
-        fetch.addHints(properties);
+        if (properties != null) {
+            for (Map.Entry<String, Object> entry : properties.entrySet())
+                fetch.setHint(entry.getKey(), entry.getValue());
+        }
         // override with the specific lockMode, if needed.
         if (lock != null && lock != LockModeType.NONE) {
             if (requiresTxn) {

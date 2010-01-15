@@ -19,6 +19,8 @@
 package org.apache.openjpa.persistence.jdbc;
 
 import org.apache.openjpa.jdbc.kernel.EagerFetchModes;
+import org.apache.openjpa.kernel.FetchConfiguration;
+import org.apache.openjpa.persistence.OpenJPAEnum;
 
 /**
  * Type of fetching to employ.
@@ -27,18 +29,20 @@ import org.apache.openjpa.jdbc.kernel.EagerFetchModes;
  * @since 0.4.0
  * @published
  */
-public enum FetchMode {
-    NONE(EagerFetchModes.EAGER_NONE),
-    JOIN(EagerFetchModes.EAGER_JOIN),
-    PARALLEL(EagerFetchModes.EAGER_PARALLEL);
+public enum FetchMode implements OpenJPAEnum<FetchMode>{
+    NONE(EagerFetchModes.EAGER_NONE, "none"),
+    JOIN(EagerFetchModes.EAGER_JOIN, "join"),
+    PARALLEL(EagerFetchModes.EAGER_PARALLEL, "parallel");
 
     private final int eagerFetchConstant;
-
-    private FetchMode(int value) {
+    private final String[] _names;
+    
+    private FetchMode(int value, String... names) {
         eagerFetchConstant = value;
+        _names = names;
     }
 
-    int toKernelConstant() {
+    public int toKernelConstant() {
         return eagerFetchConstant;
     }
 
@@ -56,5 +60,28 @@ public enum FetchMode {
             default:
                 throw new IllegalArgumentException(kernelConstant + "");
         }
+    }
+    
+    public int convertToKernelConstant(String s) {
+        return FetchMode.toKernelConstantFromString(s);
+    }
+    
+    public int convertToKernelConstant(int i) {
+        if (i == FetchConfiguration.DEFAULT)
+            return i;
+        for (FetchMode mode : FetchMode.values()) {
+            if (mode.eagerFetchConstant == i)
+                return i;
+        }
+        throw new IllegalArgumentException(i + " is invalid value for FetchMode");
+    }
+    
+    public static int toKernelConstantFromString(String s) {
+        for (FetchMode level : FetchMode.values()) {
+            for (String name : level._names)
+               if (name.equalsIgnoreCase(s) || String.valueOf(level.toKernelConstant()).equals(s))
+                   return level.toKernelConstant();
+        }
+        throw new IllegalArgumentException(s + " is not a valid name for " + FetchMode.class.getName());
     }
 }

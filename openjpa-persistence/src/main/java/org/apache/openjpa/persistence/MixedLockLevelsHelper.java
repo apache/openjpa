@@ -20,6 +20,7 @@ package org.apache.openjpa.persistence;
 
 import javax.persistence.LockModeType;
 
+import org.apache.openjpa.kernel.FetchConfiguration;
 import org.apache.openjpa.kernel.MixedLockLevels;
 
 /**
@@ -29,7 +30,7 @@ import org.apache.openjpa.kernel.MixedLockLevels;
  * @author Albert Lee
  * @since 2.0.0
  */
-public class MixedLockLevelsHelper {
+public class MixedLockLevelsHelper implements HintValueConverter {
     /**
      * Translates javax.persistence LockModeType to internal lock level.
      */
@@ -50,6 +51,24 @@ public class MixedLockLevelsHelper {
             return MixedLockLevels.LOCK_PESSIMISTIC_WRITE;
         return MixedLockLevels.LOCK_PESSIMISTIC_FORCE_INCREMENT;
     }
+    
+    public static int toLockLevel(int mode) {
+        switch (mode) {
+        case MixedLockLevels.LOCK_OPTIMISTIC:
+        case MixedLockLevels.LOCK_OPTIMISTIC_FORCE_INCREMENT:
+        case MixedLockLevels.LOCK_PESSIMISTIC_FORCE_INCREMENT:
+        case MixedLockLevels.LOCK_PESSIMISTIC_READ:
+        case MixedLockLevels.LOCK_PESSIMISTIC_WRITE:
+        case MixedLockLevels.LOCK_NONE:
+        case MixedLockLevels.LOCK_READ:
+        case MixedLockLevels.LOCK_WRITE:
+        case FetchConfiguration.DEFAULT:
+            return mode;
+         default:
+             throw new IllegalArgumentException("Unknown lock level " + mode);
+        }
+    }
+
 
     /**
      * Translates internal lock level to javax.persistence LockModeType.
@@ -70,5 +89,31 @@ public class MixedLockLevelsHelper {
         if (level < MixedLockLevels.LOCK_PESSIMISTIC_FORCE_INCREMENT)
             return LockModeType.PESSIMISTIC_WRITE;
         return LockModeType.PESSIMISTIC_FORCE_INCREMENT;
+    }
+
+    public boolean canConvert(Class<?> type) {
+        return type == LockModeType.class || type == String.class || type == Integer.class || type == int.class;
+    }
+
+    public Object convert(Object original) {
+        if (original instanceof LockModeType)
+            return MixedLockLevelsHelper.toLockLevel((LockModeType)original);
+        if (original instanceof String) {
+            try {
+                int value = Integer.parseInt(original.toString());
+                return MixedLockLevelsHelper.toLockLevel(value);
+            } catch (NumberFormatException nfe) {
+                if ("none".equalsIgnoreCase(original.toString())) {
+                    return MixedLockLevels.LOCK_NONE;
+                }
+                return MixedLockLevelsHelper.toLockLevel(
+                        LockModeType.valueOf(original.toString().toUpperCase().replace('-', '_')));
+            }
+        }
+        if (original instanceof Integer) {
+            return MixedLockLevelsHelper.toLockLevel((Integer)original);
+        }
+        
+        throw new IllegalArgumentException("can not convert " + original + " of " + original.getClass());
     }
 }

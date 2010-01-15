@@ -29,16 +29,17 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Enumeration;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.MissingResourceException;
 import java.util.Set;
 
-import javax.persistence.spi.PersistenceUnitInfo;
-import javax.persistence.spi.PersistenceUnitTransactionType;
 import javax.persistence.SharedCacheMode;
 import javax.persistence.ValidationMode;
+import javax.persistence.spi.PersistenceUnitInfo;
+import javax.persistence.spi.PersistenceUnitTransactionType;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.openjpa.conf.Compatibility;
@@ -48,6 +49,7 @@ import org.apache.openjpa.conf.OpenJPAProductDerivation;
 import org.apache.openjpa.conf.Specification;
 import org.apache.openjpa.datacache.DataCacheMode;
 import org.apache.openjpa.kernel.MixedLockLevels;
+import org.apache.openjpa.kernel.QueryHints;
 import org.apache.openjpa.lib.conf.AbstractProductDerivation;
 import org.apache.openjpa.lib.conf.Configuration;
 import org.apache.openjpa.lib.conf.ConfigurationProvider;
@@ -94,9 +96,55 @@ public class PersistenceProductDerivation
     private HashMap<String, PUNameCollision> _puNameCollisions
         = new HashMap<String,PUNameCollision>();
     
+    public static final String PREFIX = "javax.persistence"; 
+    
+    private static Set<String> _hints = new HashSet<String>();
+    
     // Provider name to filter out PUs that don't belong to this derivation.
     protected String _providerImplName;
 
+    static {
+        _hints.add("javax.persistence.lock.timeout");
+        _hints.add("javax.persistence.query.timeout");
+        
+        _hints.add("openjpa.FetchPlan.ExtendedPathLookup");
+        _hints.add("openjpa.FetchBatchSize"); 
+        _hints.add("openjpa.FetchPlan.FetchBatchSize");
+        _hints.add("openjpa.MaxFetchDepth"); 
+        _hints.add("openjpa.FetchPlan.MaxFetchDepth");
+        _hints.add("openjpa.LockTimeout");
+        _hints.add("openjpa.FetchPlan.LockTimeout");
+        _hints.add("openjpa.QueryTimeout");
+        _hints.add("openjpa.FetchPlan.QueryTimeout");
+        _hints.add("openjpa.FlushBeforeQueries");
+        _hints.add("openjpa.FetchPlan.FlushBeforeQueries");
+        _hints.add("openjpa.ReadLockLevel");
+        _hints.add("openjpa.FetchPlan.ReadLockLevel");
+        _hints.add("openjpa.WriteLockLevel");
+        _hints.add("openjpa.FetchPlan.WriteLockLevel");
+        _hints.add("openjpa.FetchPlan.FetchBatchSize");
+        _hints.add("openjpa.FetchPlan.LockScope");
+        _hints.add("openjpa.FetchPlan.LockTimeout");
+        _hints.add("openjpa.FetchPlan.MaxFetchDepth");
+        _hints.add("openjpa.FetchPlan.QueryTimeout");
+        _hints.add("openjpa.FetchPlan.ReadLockMode");
+        _hints.add("openjpa.FetchPlan.WriteLockMode");
+        _hints.add(QueryHints.HINT_AGGREGATE_LISTENER);
+        _hints.add(QueryHints.HINT_AGGREGATE_LISTENERS);
+        _hints.add(QueryHints.HINT_FILTER_LISTENER);
+        _hints.add(QueryHints.HINT_FILTER_LISTENERS);
+        _hints.add(QueryHints.HINT_IGNORE_FINDER);
+        _hints.add(QueryHints.HINT_IGNORE_PREPARED_QUERY);
+        _hints.add(QueryHints.HINT_INVALIDATE_FINDER);
+        _hints.add(QueryHints.HINT_INVALIDATE_PREPARED_QUERY);
+        _hints.add(QueryHints.HINT_PARAM_MARKER_IN_QUERY);
+        _hints.add(QueryHints.HINT_RECACHE_FINDER);
+        _hints.add(QueryHints.HINT_RESULT_COUNT);
+        _hints.add(QueryHints.HINT_SUBCLASSES);
+
+        _hints = Collections.unmodifiableSet(_hints);
+    }
+    
 	public PersistenceProductDerivation() {
 		_providerImplName = PersistenceProviderImpl.class.getName();
 	}
@@ -110,7 +158,12 @@ public class PersistenceProductDerivation
     
     @Override
     public String getConfigurationPrefix() {
-        return "javax.persistence";
+        return PREFIX;
+    }
+    
+    @Override
+    public Set<String> getSupportedQueryHints() {
+        return _hints;
     }
 
     @Override
