@@ -61,6 +61,7 @@ public class AutomaticManagedRuntime extends AbstractManagedRuntime
         "java:comp/pm/TransactionManager", // orion & oracle
         "java:comp/TransactionManager", // generic
         "java:pm/TransactionManager", // borland
+        "java:appserver/TransactionManager", // GlassFish
     };
     private static final String [] METHODS = new String[]{
         "com.arjuna.jta.JTA_TransactionManager.transactionManager", // hp
