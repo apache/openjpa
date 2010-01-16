@@ -26,7 +26,7 @@ import org.apache.openjpa.persistence.Persistent;
 import org.apache.openjpa.persistence.jdbc.Strategy;
 
 @Entity
-@Table(name="TORDER")
+@Table(name="TORDERXML")
 public class Order {
     @Id 
     int oid;

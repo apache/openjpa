@@ -15,8 +15,8 @@
 -- specific language governing permissions and limitations
 -- under the License.    
 
-SELECT t0.shipAddress, t0.oid FROM TORDER t0 ORDER BY t0.oid ASC
-SELECT t0.oid, t1.oid FROM TORDER t0 CROSS JOIN TORDER t1 WHERE (ExtractValue(t0.shipAddress,'/*/City') = ExtractValue(t1.shipAddress,'/*/City')) ORDER BY t0.oid ASC
-SELECT t0.oid, t0.version, t0.amount, t0.CUSTOMER_COUNTRYCODE, t0.CUSTOMER_ID, t0.delivered, t0.shipAddress FROM TORDER t0 CROSS JOIN TCUSTOMER t1 WHERE (ExtractValue(t0.shipAddress,'/*/City') = t1.city)
-SELECT t0.oid, t0.version, t0.amount, t0.CUSTOMER_COUNTRYCODE, t0.CUSTOMER_ID, t0.delivered, t0.shipAddress FROM TORDER t0 WHERE (ExtractValue(t0.shipAddress,'/*/City') = ?)
-SELECT t0.oid, t0.version, t0.amount, t0.CUSTOMER_COUNTRYCODE, t0.CUSTOMER_ID, t0.delivered, t0.shipAddress FROM TORDER t0 WHERE (? = ExtractValue(t0.shipAddress,'/*/City'))
+SELECT t0.shipAddress, t0.oid FROM TORDERXML t0 ORDER BY t0.oid ASC
+SELECT t0.oid, t1.oid FROM TORDERXML t0 CROSS JOIN TORDERXML t1 WHERE (ExtractValue(t0.shipAddress,'/*/City') = ExtractValue(t1.shipAddress,'/*/City')) ORDER BY t0.oid ASC
+SELECT t0.oid, t0.version, t0.amount, t0.CUSTOMER_COUNTRYCODE, t0.CUSTOMER_ID, t0.delivered, t0.shipAddress FROM TORDERXML t0 CROSS JOIN TCUSTOMER t1 WHERE (ExtractValue(t0.shipAddress,'/*/City') = t1.city)
+SELECT t0.oid, t0.version, t0.amount, t0.CUSTOMER_COUNTRYCODE, t0.CUSTOMER_ID, t0.delivered, t0.shipAddress FROM TORDERXML t0 WHERE (ExtractValue(t0.shipAddress,'/*/City') = ?)
+SELECT t0.oid, t0.version, t0.amount, t0.CUSTOMER_COUNTRYCODE, t0.CUSTOMER_ID, t0.delivered, t0.shipAddress FROM TORDERXML t0 WHERE (? = ExtractValue(t0.shipAddress,'/*/City'))
