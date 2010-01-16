@@ -1,8 +1,0 @@
-package com.odcgroup.test;
-
-public class TestClass {
-
-	public String toString() {
-		return "This class is totally useless";
-	}
-}

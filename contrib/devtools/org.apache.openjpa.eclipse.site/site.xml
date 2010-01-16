@@ -1,7 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<site>
-   <feature url="features/org.apache.openjpa.eclipse.feature_1.0.0.qualifier.jar" id="org.apache.openjpa.eclipse.feature" version="1.0.0.qualifier">
-      <category name="org.apache.openjpa.eclipse"/>
-   </feature>
-   <category-def name="org.apache.openjpa.eclipse" label="OpenJPA Eclipse Tools"/>
-</site>
