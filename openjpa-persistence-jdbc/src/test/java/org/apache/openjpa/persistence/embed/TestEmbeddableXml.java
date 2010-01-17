@@ -39,7 +39,7 @@ import org.apache.openjpa.persistence.test.SingleEMFTestCase;
 public class TestEmbeddableXml extends SingleEMFTestCase {
    
     public int numEmbeddables = 1;
-    public int numBasicTypes = 1;
+    public int numBasicTypes = 10;
     public int ID = 1;
     public int deptId = 1;
     public int empId = 1;
@@ -156,6 +156,14 @@ public class TestEmbeddableXml extends SingleEMFTestCase {
         EntityManager em = emf.createEntityManager();
         EntityA_Coll_StringXml a = em.find(EntityA_Coll_StringXml.class, ID);
         checkEntityA_Coll_StringXml(a);
+        
+        Query q = em.createNativeQuery("select count(*) from EntityA_Coll_StringXml_nickNames");
+        Object obj = q.getSingleResult();
+        // ensure that multiple rows are inserted into the table (the column is not serialized)
+        assertEquals(numBasicTypes, obj);          
+        
+        
+        
         em.close();
     }
 

@@ -1569,6 +1569,7 @@ public class XMLPersistenceMetaDataParser
         if (val != null)
             fmd.setInDefaultFetchGroup("EAGER".equals(val));
         fmd.setElementCollection(true);
+        fmd.setSerialized(false);
         if (JavaTypes.maybePC(fmd.getElement()) && !fmd.getElement().getDeclaredType().isEnum()) {
             fmd.getElement().setEmbedded(true);
             if (fmd.getElement().getEmbeddedMetaData() == null)
