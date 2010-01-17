@@ -37,6 +37,7 @@ import org.apache.openjpa.jdbc.meta.FieldMapping;
 import org.apache.openjpa.jdbc.meta.FieldStrategy;
 import org.apache.openjpa.jdbc.meta.Joinable;
 import org.apache.openjpa.jdbc.meta.MappingInfo;
+import org.apache.openjpa.jdbc.meta.ValueHandler;
 import org.apache.openjpa.jdbc.meta.ValueMapping;
 import org.apache.openjpa.jdbc.meta.ValueMappingImpl;
 import org.apache.openjpa.jdbc.meta.ValueMappingInfo;
@@ -65,6 +66,7 @@ import org.apache.openjpa.util.ApplicationIds;
 import org.apache.openjpa.util.ImplHelper;
 import org.apache.openjpa.util.InternalException;
 import org.apache.openjpa.util.MetaDataException;
+import org.apache.openjpa.util.ObjectId;
 import org.apache.openjpa.util.OpenJPAId;
 import org.apache.openjpa.util.UnsupportedException;
 
@@ -994,6 +996,8 @@ public class RelationFieldStrategy
         col = field.getForeignKey().getPrimaryKeyColumn(col);
         if (col == null)
             throw new InternalException();
+        
+        Object savedFieldVal = fieldVal;
 
         ClassMapping relmapping = field.getTypeMapping();
         Joinable j = field.getTypeMapping().assertJoinable(col);
@@ -1006,6 +1010,9 @@ public class RelationFieldStrategy
             Object[] pks = ApplicationIds.toPKValues(fieldVal, relmapping);
             fieldVal = pks[relmapping.getField(j.getFieldIndex()).
                 getPrimaryKeyIndex()];
+        } else if (relmapping.getObjectIdType() == ObjectId.class && 
+            relmapping.getPrimaryKeyFieldMappings()[0].getValueMapping().isEmbedded()) {
+            return j.getJoinValue(savedFieldVal, col, store);
         }
         return j.getJoinValue(fieldVal, col, store);
     }

@@ -87,7 +87,8 @@ public class TestMappedById extends SingleEMFTestCase {
             Person4.class, PersonId4.class, MedicalHistory4.class,
             Dependent3.class, Employee3.class, DependentId3.class, 
             Parent3.class, Dependent4.class, Employee4.class, PhoneNumber.class,
-            BeneContact.class, BeneContactId.class, Beneficiary.class);
+            BeneContact.class, BeneContactId.class, Beneficiary.class,
+            Dependent5.class, Employee5.class, EmployeeId5.class);
     }
 
     /**
@@ -186,6 +187,24 @@ public class TestMappedById extends SingleEMFTestCase {
         em.close();
     }
     
+    public void testEmbeddedIdContainedInIdClass() {
+        EntityManager em = emf.createEntityManager();
+        EmployeeId5 eId1 = new EmployeeId5("Java", "Duke");
+        Employee5 employee1 = new Employee5(eId1);
+        Dependent5 dep1 = new Dependent5("1", employee1);
+
+        em.persist(dep1);
+        em.persist(employee1);
+
+        em.getTransaction().begin();
+        em.flush();
+        em.getTransaction().commit();
+        em.clear();
+        
+        DependentId5 depId1 = new DependentId5("1", eId1);
+        Dependent5 newDep = em.find(Dependent5.class, depId1);
+        assertNotNull(newDep);
+    }
     
     public void createObj1() {
         EntityManager em = emf.createEntityManager();
