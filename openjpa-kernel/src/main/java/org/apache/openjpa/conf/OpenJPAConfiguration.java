@@ -18,6 +18,7 @@
  */
 package org.apache.openjpa.conf;
 
+import java.net.URL;
 import java.util.Collection;
 import java.util.Map;
 
@@ -1849,5 +1850,20 @@ public interface OpenJPAConfiguration
      * @since 2.0.0
      */
     public String getDataCacheMode();
+    
+    /**
+     * Set the persistent unit root url
+     * 
+     * @param the persistent unit root url
+     * @since 2.0.0
+     */
+    public void setPuRootUrl(URL url);
+    
+    /**
+     * Return the persistent unit rool URL
+     * @return URL
+     * @since 2.0.0
+     */
+    public URL getPuRootUrl();
 }
 

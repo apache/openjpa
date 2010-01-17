@@ -183,6 +183,7 @@ public class PersistenceProviderImpl
             }
             // Create appropriate LifecycleEventManager
             OpenJPAConfiguration conf = factory.getConfiguration();
+            conf.setPuRootUrl(pui.getPersistenceUnitRootUrl());
             _log = conf.getLog(OpenJPAConfiguration.LOG_RUNTIME);
             loadValidator(_log, conf);
             
