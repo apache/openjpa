@@ -27,13 +27,13 @@ import org.apache.openjpa.persistence.StoreCacheImpl;
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
 import org.apache.openjpa.util.UserException;
 
-public class TestPartionedDataCache extends SingleEMFTestCase {
+public class TestPartitionedDataCache extends SingleEMFTestCase {
     public void setUp() {
         super.setUp("openjpa.DataCache", "partitioned(PartitionType=concurrent,partitions="+
                 "'(name=a,cacheSize=100),(name=b,cacheSize=200)')",
                     "openjpa.RemoteCommitProvider", "sjvm",
         "openjpa.DataCacheManager", 
-        "DistributionPolicy=org.apache.openjpa.persistence.datacache.TestPartionedDataCache$TestPolicy");
+        "DistributionPolicy=org.apache.openjpa.persistence.datacache.TestPartitionedDataCache$TestPolicy");
     }
     
     public void testPropertyParsing() {
