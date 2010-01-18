@@ -138,17 +138,7 @@ public class ConcurrentDataCache
         // unlikely that this method will be called in a performance intensive
         // environment. In any event applications can revert to the old behavior
         // by simply calling removeAll().
-        CacheMap orig = _cache;
-        _cache = newCacheMap(); 
-        for (Object o : orig.values()) {
-            Class<?> curClass = ((DataCachePCData) o).getType();
-            if (subs) {
-                if (cls == curClass || (cls != null && cls.isAssignableFrom(curClass))) {
-                    orig.remove(((DataCachePCData) o).getId());
-                }
-            }
-        }
-        _cache.putAll(orig, false);
+        _cache.clear();
     }
 
     protected void clearInternal() {
