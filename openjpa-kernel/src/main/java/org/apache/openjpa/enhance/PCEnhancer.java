@@ -501,16 +501,18 @@ public class PCEnhancer {
                 return ENHANCE_INTERFACE;
 
             // check if already enhanced
-            Class[] interfaces = _managedType.getDeclaredInterfaceTypes();
-            for (int i = 0; i < interfaces.length; i++) {
-                if (interfaces[i].getName().equals(PCTYPE.getName())) {
-                    if (_log.isInfoEnabled())
-                        _log.info(_loc.get("pc-type", _managedType.getType(), _managedType.getType().getClassLoader()));
+            ClassLoader loader = _managedType.getType().getClassLoader();
+            for (Class<?> iface : _managedType.getDeclaredInterfaceTypes()) {
+                if (iface.getName().equals(PCTYPE.getName())) {
+                    if (_log.isTraceEnabled()) {
+                        _log.trace(_loc.get("pc-type", _managedType.getType(), loader));
+                    }
                     return ENHANCE_NONE;
                 }
             }
-            if (_log.isInfoEnabled())
-                _log.info(_loc.get("enhance-start", _managedType.getType(), _managedType.getType().getClassLoader()));
+            if (_log.isTraceEnabled()) {
+                _log.trace(_loc.get("enhance-start", _managedType.getType(), loader));
+            }
 
 
             configureBCs();
@@ -539,7 +541,7 @@ public class PCEnhancer {
             }
 
             if (_log.isWarnEnabled())
-                _log.warn(_loc.get("pers-aware", _managedType.getType(), _managedType.getType().getClassLoader()));
+                _log.warn(_loc.get("pers-aware", _managedType.getType(), loader));
             return ENHANCE_AWARE;
         } catch (OpenJPAException ke) {
             throw ke;
