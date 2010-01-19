@@ -52,7 +52,8 @@ public class TestDelimIdResultSetAnnotations
             org.apache.openjpa.persistence.delimited.identifiers.Chevrolet.class,
             org.apache.openjpa.persistence.delimited.identifiers.Car2.class,
             org.apache.openjpa.persistence.delimited.identifiers.Pontiac2.class,
-            org.apache.openjpa.persistence.delimited.identifiers.Chevrolet2.class);
+            org.apache.openjpa.persistence.delimited.identifiers.Chevrolet2.class,
+            DROP_TABLES);
         assertNotNull(emf);
         
         em = emf.createEntityManager();

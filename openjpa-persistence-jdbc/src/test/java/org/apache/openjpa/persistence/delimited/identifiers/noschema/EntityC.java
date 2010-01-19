@@ -36,36 +36,36 @@ import javax.persistence.SecondaryTable;
 import javax.persistence.Table;
 
 @Entity
-@Table(name="\"entity c\"")
-@SecondaryTable(name="\"sec join table\"",
-    pkJoinColumns=@PrimaryKeyJoinColumn(name="\"entity c\"",
-        referencedColumnName="\"c id\""))
+@Table(name="\"nsentity c\"")
+@SecondaryTable(name="\"nssec join table\"",
+    pkJoinColumns=@PrimaryKeyJoinColumn(name="\"nsentity c\"",
+        referencedColumnName="\"nsc id\""))
 public class EntityC {
     @Id
-    @Column(name="\"c id\"")
+    @Column(name="\"nsc id\"")
     private int id;
     private String name;
     
-    @Column(table="\"sec join table\"")
+    @Column(table="\"nssec join table\"")
     private String secName;
     
     @ManyToMany
-    @JoinTable(name="\"c d\"")
+    @JoinTable(name="\"nsc d\"")
     private Collection<EntityD> entityDs = new HashSet<EntityD>();
     
     @OneToOne
-    @JoinColumn(name="\"entd2 id\"", referencedColumnName="\"entityD2 id\"")
+    @JoinColumn(name="\"nsentd2 id\"", referencedColumnName="\"nsentityD2 id\"")
     private EntityD2 entityD2;
     
     @ManyToMany
-    @JoinTable(name="\"map join table\"")
-    @MapKeyJoinColumn(name="map_ed3", referencedColumnName="\"entityD3 id\"")
+    @JoinTable(name="\"nsm ndjtab\"")
+    @MapKeyJoinColumn(name="nsmap_ed3", referencedColumnName="\"nsentityD3 id\"")
     Map<EntityD3,EntityD4> map = new HashMap<EntityD3,EntityD4>();
     
     @ManyToMany
-    @JoinTable(name="\"map2 join table\"")
-    @MapKeyJoinColumn(name="\"map ed4\"", 
-        referencedColumnName="\"entityD4 id\"")
+    @JoinTable(name="\"nsm2 ndjtbl\"")
+    @MapKeyJoinColumn(name="\"nsmap ed4\"", 
+        referencedColumnName="\"nsentityD4 id\"")
     Map<EntityD4,EntityD3> map2 = new HashMap<EntityD4,EntityD3>();
     
     public EntityC() {}

@@ -22,7 +22,6 @@ import java.util.List;
 
 import javax.persistence.Query;
 
-import org.apache.openjpa.jdbc.conf.JDBCConfiguration;
 import org.apache.openjpa.persistence.OpenJPAEntityManager;
 import org.apache.openjpa.persistence.OpenJPAEntityManagerFactorySPI;
 import org.apache.openjpa.persistence.test.SQLListenerTestCase;

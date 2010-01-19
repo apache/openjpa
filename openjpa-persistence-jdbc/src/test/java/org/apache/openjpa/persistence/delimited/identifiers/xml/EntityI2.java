@@ -22,7 +22,7 @@ public class EntityI2 {
     private int id;
     private String name;
     
-    private EntityI3 entityI3;
+    private EntityI3 eI3;
     
     public EntityI2() {}
     
@@ -62,13 +62,13 @@ public class EntityI2 {
      * @return the entityI3
      */
     public EntityI3 getEntityI3() {
-        return entityI3;
+        return eI3;
     }
 
     /**
      * @param entityI3 the entityI3 to set
      */
     public void setEntityI3(EntityI3 entityI3) {
-        this.entityI3 = entityI3;
+        this.eI3 = entityI3;
     }
 }

@@ -58,12 +58,12 @@ public class EntityC {
     private EntityD2 entityD2;
     
     @ManyToMany
-    @JoinTable(name="\"map join table\"", schema="\"delim id\"")
+    @JoinTable(name="\"m jtbl\"", schema="\"delim id\"")
     @MapKeyJoinColumn(name="map_ed3", referencedColumnName="\"entityD3 id\"")
     Map<EntityD3,EntityD4> map = new HashMap<EntityD3,EntityD4>();
     
     @ManyToMany
-    @JoinTable(name="\"map2 join table\"", schema="\"delim id\"")
+    @JoinTable(name="\"m2 jtbl\"", schema="\"delim id\"")
     @MapKeyJoinColumn(name="\"map ed4\"", 
         referencedColumnName="\"entityD4 id\"")
     Map<EntityD4,EntityD3> map2 = new HashMap<EntityD4,EntityD3>();

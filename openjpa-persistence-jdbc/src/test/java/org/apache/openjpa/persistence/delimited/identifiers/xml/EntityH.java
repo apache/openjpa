@@ -29,9 +29,9 @@ public class EntityH {
     
     private String secName;
     
-    private Collection<EntityI> entityIs = new HashSet<EntityI>();
+    private Collection<EntityI> eIs = new HashSet<EntityI>();
     
-    private EntityI2 entityI2;
+    private EntityI2 eI2;
     
     Map<EntityI3,EntityI4> map = new HashMap<EntityI3,EntityI4>();
     
@@ -86,31 +86,31 @@ public class EntityH {
     }
     
     public Collection<EntityI> getEntityIs() {
-        return entityIs;
+        return eIs;
     }
     /**
      * @param entityIs the entityIs to set
      */
     public void setEntityIs(Collection<EntityI> entityIs) {
-        this.entityIs = entityIs;
+        this.eIs = entityIs;
     }
     
     public void addEntityI(EntityI entityI) {
-        entityIs.add(entityI);
+        eIs.add(entityI);
     }
 
     /**
      * @return the entityI2
      */
     public EntityI2 getEntityI2() {
-        return entityI2;
+        return eI2;
     }
 
     /**
      * @param entityI2 the entityI2 to set
      */
     public void setEntityI2(EntityI2 entityI2) {
-        this.entityI2 = entityI2;
+        this.eI2 = entityI2;
     }
 
     /**

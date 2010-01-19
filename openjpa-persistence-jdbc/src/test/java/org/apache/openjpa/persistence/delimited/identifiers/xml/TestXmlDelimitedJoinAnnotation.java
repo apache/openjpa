@@ -120,7 +120,7 @@ public class TestXmlDelimitedJoinAnnotation extends SQLListenerTestCase {
     private void queryJoinTable() {
         String query =
             "SELECT h " +
-            "FROM EntityH h JOIN h.entityIs i " +
+            "FROM EntityH h JOIN h.eIs i " +
             "WHERE i.name = 'ei'";
         Query q = em.createQuery(query);
         List<EntityH> results = (List<EntityH>)q.getResultList();
@@ -130,7 +130,7 @@ public class TestXmlDelimitedJoinAnnotation extends SQLListenerTestCase {
     private void queryJoinColumn() {
         String query = 
             "SELECT h " +
-            "FROM EntityH h JOIN h.entityI2 i2 " +
+            "FROM EntityH h JOIN h.eI2 i2 " +
             "WHERE i2.name = 'ei2'";
         Query q = em.createQuery(query);
         List<EntityH> results = (List<EntityH>)q.getResultList();

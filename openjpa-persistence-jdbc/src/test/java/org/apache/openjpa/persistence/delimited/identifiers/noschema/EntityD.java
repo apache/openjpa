@@ -27,7 +27,7 @@ import javax.persistence.ManyToMany;
 import javax.persistence.Table;
 
 @Entity
-@Table(name="\"entity d\"")
+@Table(name="\"nsentity d\"")
 public class EntityD {
     @Id
     private int id;

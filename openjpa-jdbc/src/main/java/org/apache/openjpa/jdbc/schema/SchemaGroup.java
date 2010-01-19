@@ -306,7 +306,7 @@ public class SchemaGroup
      * given sequence that may have come from another schema group.
      */
     public Sequence findSequence(Sequence seq) {
-        return findSequence(QualifiedDBIdentifier.getPath(seq.getIdentifier()));
+        return findSequence(seq.getQualifiedPath());
     }
 
     /**

@@ -65,7 +65,7 @@ public class EntityH {
     @ManyToMany
     @JoinTable(name="map4 join table", schema="delim id2")
     @MapKeyJoinColumn(name="map ei4", 
-        referencedColumnName="entityI4 id", table="map key join column")
+        referencedColumnName="entityI4 id", table="mk j col")
     Map<EntityI4,EntityI3> map2 = new HashMap<EntityI4,EntityI3>();
 
     public EntityH() {}

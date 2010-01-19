@@ -53,8 +53,8 @@ public class TestManualDelimIdResultSetAnnotations
             org.apache.openjpa.persistence.delimited.identifiers.Cat.class,
             org.apache.openjpa.persistence.delimited.identifiers.Animal2.class,
             org.apache.openjpa.persistence.delimited.identifiers.Dog2.class,
-            org.apache.openjpa.persistence.delimited.identifiers.Cat2.class
-            );
+            org.apache.openjpa.persistence.delimited.identifiers.Cat2.class,
+            DROP_TABLES);
         assertNotNull(emf);
         
         em = emf.createEntityManager();

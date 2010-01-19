@@ -71,7 +71,7 @@ public class EntityA {
     private Map<String, String> collectionMap = new HashMap<String, String>();
     
     @ElementCollection
-    @MapKeyColumn(name="map key", columnDefinition="varchar(20)", table="map key table")
+    @MapKeyColumn(name="map key", columnDefinition="varchar(20)", table="m ktbl")
     private Map<String, String> delimCollectionMap = 
         new HashMap<String, String>();
     

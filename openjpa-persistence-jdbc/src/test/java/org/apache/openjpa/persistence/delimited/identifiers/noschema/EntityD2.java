@@ -26,10 +26,10 @@ import javax.persistence.PrimaryKeyJoinColumn;
 import javax.persistence.Table;
 
 @Entity
-@Table(name="\"entity d2\"")
+@Table(name="\"nsentity d2\"")
 public class EntityD2 {
     @Id
-    @Column(name="\"entityD2 id\"")
+    @Column(name="\"nsentityD2 id\"")
     private int id;
     private String name;
     

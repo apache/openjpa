@@ -24,10 +24,10 @@ import javax.persistence.Id;
 import javax.persistence.Table;
 
 @Entity
-@Table(name="\"entity d3\"")
+@Table(name="\"nsentity d3\"")
 public class EntityD3 {
     @Id
-    @Column(name="\"entityD3 id\"")
+    @Column(name="\"nsentityD3 id\"")
     int id;
     String name;
     

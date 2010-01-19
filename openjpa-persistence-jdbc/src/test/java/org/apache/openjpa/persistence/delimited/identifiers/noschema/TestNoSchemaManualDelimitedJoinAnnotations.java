@@ -30,8 +30,6 @@ import org.apache.openjpa.persistence.OpenJPAEntityManager;
 import org.apache.openjpa.persistence.test.AllowFailure;
 import org.apache.openjpa.persistence.test.SQLListenerTestCase;
 
-@AllowFailure(message="Temporarily allowing this test to fail until cleanup " +
-    "order issues are resolved.")
 public class TestNoSchemaManualDelimitedJoinAnnotations extends SQLListenerTestCase {
     OpenJPAEntityManager em;
     int id = 0;
@@ -46,14 +44,10 @@ public class TestNoSchemaManualDelimitedJoinAnnotations extends SQLListenerTestC
     @Override
     public void setUp() throws Exception {
         
-        // TODO: Delimiter support is currently limited to database that use
-        // double quote as a delimiter.
-        // Also Disabling DB2 until a SQLCODE -204 issue during the cleanup phase 
-        // is resolved.
-        setUnsupportedDatabases(MySQLDictionary.class, DB2Dictionary.class);
+        setUnsupportedDatabases(MySQLDictionary.class);
         if (isTestsDisabled())
             return;
-
+        
         super.setUp(
             org.apache.openjpa.persistence.delimited.identifiers.noschema.EntityC.class,
             org.apache.openjpa.persistence.delimited.identifiers.noschema.EntityD.class,

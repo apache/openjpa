@@ -24,7 +24,7 @@ import java.util.HashSet;
 public class EntityI {
     private int id;
     private String name;
-    private Collection<EntityH> entityHs = new HashSet<EntityH>();
+    private Collection<EntityH> eHs = new HashSet<EntityH>();
     
     public EntityI() {}
     
@@ -64,17 +64,17 @@ public class EntityI {
      * @return the entityHs
      */
     public Collection<EntityH> getEntityHs() {
-        return entityHs;
+        return eHs;
     }
 
     /**
      * @param entityHs the entityHs to set
      */
     public void setEntityHs(Collection<EntityH> entityHs) {
-        this.entityHs = entityHs;
+        this.eHs = entityHs;
     }
     
     public void addEntityH(EntityH entityH) {
-        entityHs.add(entityH);
+        eHs.add(entityH);
     }
 }

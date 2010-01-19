@@ -18,7 +18,6 @@
  */
 package org.apache.openjpa.persistence.delimited.identifiers;
 
-import javax.persistence.Column;
 import javax.persistence.ColumnResult;
 import javax.persistence.DiscriminatorColumn;
 import javax.persistence.Entity;

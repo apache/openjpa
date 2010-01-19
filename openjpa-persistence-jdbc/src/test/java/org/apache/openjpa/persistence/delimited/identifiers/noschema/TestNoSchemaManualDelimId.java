@@ -32,23 +32,17 @@ import org.apache.openjpa.persistence.OpenJPAEntityManager;
 import org.apache.openjpa.persistence.test.AllowFailure;
 import org.apache.openjpa.persistence.test.SQLListenerTestCase;
 
-@AllowFailure(message="Temporarily allowing this test to fail until cleanup " +
-    "order issues are resolved.")
 public class TestNoSchemaManualDelimId extends SQLListenerTestCase {
     OpenJPAEntityManager em;
     EntityF entityF;
     
     @Override
     public void setUp() throws Exception {
-        
-        // TODO: Delimiter support is currently limited to database that use
-        // double quote as a delimiter.
-        // Also Disabling DB2 until a SQLCODE -204 issue during the cleanup phase 
-        // is resolved.
-        setUnsupportedDatabases(MySQLDictionary.class, DB2Dictionary.class);
+
+        setUnsupportedDatabases(MySQLDictionary.class);
         if (isTestsDisabled())
             return;
-        
+
         super.setUp(
             org.apache.openjpa.persistence.delimited.identifiers.noschema.EntityF.class,
             DROP_TABLES);
@@ -124,7 +118,7 @@ public class TestNoSchemaManualDelimId extends SQLListenerTestCase {
     private void queryCollection() {
         String query =
             "SELECT DISTINCT f " +
-            "FROM EntityF f, IN(f.collectionDelimSet) s " +
+            "FROM EntityF f, IN(f.nscds) s " +
             "WHERE s = 'aaa'";
         Query q = em.createQuery(query);
         List<EntityF> results = (List<EntityF>)q.getResultList();

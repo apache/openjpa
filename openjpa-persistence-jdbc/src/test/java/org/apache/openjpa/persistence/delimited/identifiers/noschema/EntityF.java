@@ -37,47 +37,47 @@ import javax.persistence.TableGenerator;
 import javax.persistence.UniqueConstraint;
 
 @Entity
-@Table(name="\"primary entityF\"",
+@Table(name="\"nsprimary entityF\"",
     uniqueConstraints=
-        @UniqueConstraint(columnNames={"\"f name\"", "f_nonDelimName"}))
-@SecondaryTable(name="\"secondary entityF\"",
+        @UniqueConstraint(columnNames={"\"nsf name\"", "nsf_nonDelimName"}))
+@SecondaryTable(name="\"nssecondary entityF\"",
     uniqueConstraints=
-        @UniqueConstraint(name="\"sec_unq\"", 
-            columnNames={"\"secondary name\""}))         
+        @UniqueConstraint(name="\"nssec_unq\"", 
+            columnNames={"\"nssecondary name\""}))         
 public class EntityF {
-    @TableGenerator(name = "f_id_gen", table = "\"f_id_gen\"", 
-        pkColumnName = "\"gen_pk\"", valueColumnName = "\"gen_value\"")
+    @TableGenerator(name = "f_id_gen", table = "\"nsf_id_gen\"", 
+        pkColumnName = "\"nsgen_pk\"", valueColumnName = "\"nsgen_value\"")
     @GeneratedValue(strategy = GenerationType.TABLE, generator = "f_id_gen")
     @Id
     private int id;
     // Note: Delimited columnDefinition is not supported on some DBs
     // TODO: copy into a separate entity and conditionally run a different test
-    @Column(name="\"f name\"", columnDefinition="varchar(15)")
+    @Column(name="\"nsf name\"", columnDefinition="varchar(15)")
     private String name;
-    @Column(name="f_nonDelimName")
+    @Column(name="nsf_nonDelimName")
     private String nonDelimName;
-    @Column(name="\"secondary name\"", table="\"secondary entityF\"")
+    @Column(name="\"nssecondary name\"", table="\"nssecondary entityF\"")
     private String secName;
     
     @ElementCollection
     // CollectionTable with default name generation
     @CollectionTable
-    private Set<String> collectionSet = new HashSet<String>();
+    private Set<String> nscs = new HashSet<String>();
     
     @ElementCollection
-    @CollectionTable(name="\"collectionDelimSet\"")
-    private Set<String> collectionDelimSet = new HashSet<String>();
+    @CollectionTable(name="\"nscDelSet\"")
+    private Set<String> nscds = new HashSet<String>();
     
     @ElementCollection
     // MapKeyColumn with default name generation
     @MapKeyColumn
-    private Map<String, String> collectionMap = new HashMap<String, String>();
+    private Map<String, String> nscollMap = new HashMap<String, String>();
     
     @ElementCollection
     // Note: Delimited column definition is not supported on some DBs, so
     // it is not delimited here
     // TODO: create a separate entity and conditionally run the test on a supported DB
-    @MapKeyColumn(name="\"mapKey\"", columnDefinition="varchar(20)", table="\"delim collection map\"")
+    @MapKeyColumn(name="\"nsmap Key\"", columnDefinition="varchar(20)", table="\"nsd c map\"")
     private Map<String, String> delimCollectionMap = 
         new HashMap<String, String>();
     
@@ -142,54 +142,54 @@ public class EntityF {
      * @return the collectionSet
      */
     public Set<String> getCollectionSet() {
-        return collectionSet;
+        return nscs;
     }
 
     /**
      * @param collectionSet the collectionSet to set
      */
     public void setCollectionSet(Set<String> collectionSet) {
-        this.collectionSet = collectionSet;
+        this.nscs = collectionSet;
     }
     
     public void addCollectionSet(String item) {
-        collectionSet.add(item);
+        nscs.add(item);
     }
 
     /**
      * @return the collectionNamedSet
      */
     public Set<String> getCollectionDelimSet() {
-        return collectionDelimSet;
+        return nscds;
     }
 
     /**
      * @param collectionNamedSet the collectionNamedSet to set
      */
     public void setCollectionDelimSet(Set<String> collectionDelimSet) {
-        this.collectionDelimSet = collectionDelimSet;
+        this.nscds = collectionDelimSet;
     } 
     
     public void addCollectionDelimSet(String item) {
-        this.collectionDelimSet.add(item);
+        this.nscds.add(item);
     }
 
     /**
      * @return the collectionMap
      */
     public Map<String, String> getCollectionMap() {
-        return collectionMap;
+        return nscollMap;
     }
 
     /**
      * @param collectionMap the collectionMap to set
      */
     public void setCollectionMap(Map<String, String> collectionMap) {
-        this.collectionMap = collectionMap;
+        this.nscollMap = collectionMap;
     }
 
     public void addCollectionMap(String key, String value) {
-        collectionMap.put(key, value);
+        nscollMap.put(key, value);
     }
 
     /**

@@ -28,7 +28,7 @@ version="2.0">
 			<id name="id">
 				<generated-value strategy="SEQUENCE" generator="xml-seq-gen"/>
 				<sequence-generator name="xml-seq-gen" sequence-name="&quot;xml seq gen&quot;"
-					schema="&quot;delim xml&quot;"/>
+					schema="&quot;delim xml seq&quot;"/>
 			</id>
 			<basic name="name">
 				<column name="&quot;b name&quot;"/>

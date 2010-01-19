@@ -27,7 +27,7 @@ import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 
 @Entity
-@Table(name="\"primary entityE\"")
+@Table(name="\"nsprimary entityE\"")
 public class EntityE {
     @Id
     @SequenceGenerator(name="entityE_seq_gen_name", 
@@ -35,7 +35,7 @@ public class EntityE {
     @GeneratedValue(strategy=GenerationType.SEQUENCE, 
         generator="entityE_seq_gen_name")
     private int id;
-    @Column(name="e_name")
+    @Column(name="nse_name")
     private String name;
     
     public EntityE(String name) {

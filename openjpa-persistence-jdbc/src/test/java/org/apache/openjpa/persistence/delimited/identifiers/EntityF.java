@@ -63,7 +63,7 @@ public class EntityF {
     @ElementCollection
     // CollectionTable with default name generation
     @CollectionTable
-    private Set<String> collectionSet = new HashSet<String>();
+    private Set<String> cSet = new HashSet<String>();
     
     @ElementCollection
     @CollectionTable(name="\"collectionDelimSet\"", schema="\"delim id\"")
@@ -71,15 +71,15 @@ public class EntityF {
     
     @ElementCollection
     // MapKeyColumn with default name generation
-    @MapKeyColumn
-    private Map<String, String> collectionMap = new HashMap<String, String>();
+    @MapKeyColumn    
+    private Map<String, String> cMap = new HashMap<String, String>();
     
     @ElementCollection
     // Note: Delimited column definition is not supported on some DBs, so
     // it is not delimited here
     // TODO: create a separate entity and conditionally run the test on a supported DB
-    @MapKeyColumn(name="\"mapKey\"", columnDefinition="varchar(20)", table="\"delim collection map\"")
-    private Map<String, String> delimCollectionMap = 
+    @MapKeyColumn(name="\"mapKey\"", columnDefinition="varchar(20)", table="\"d colmap\"")
+    private Map<String, String> dcMap = 
         new HashMap<String, String>();
     
     public EntityF(String name) {
@@ -143,18 +143,18 @@ public class EntityF {
      * @return the collectionSet
      */
     public Set<String> getCollectionSet() {
-        return collectionSet;
+        return cSet;
     }
 
     /**
      * @param collectionSet the collectionSet to set
      */
     public void setCollectionSet(Set<String> collectionSet) {
-        this.collectionSet = collectionSet;
+        this.cSet = collectionSet;
     }
     
     public void addCollectionSet(String item) {
-        collectionSet.add(item);
+        cSet.add(item);
     }
 
     /**
@@ -179,35 +179,35 @@ public class EntityF {
      * @return the collectionMap
      */
     public Map<String, String> getCollectionMap() {
-        return collectionMap;
+        return cMap;
     }
 
     /**
      * @param collectionMap the collectionMap to set
      */
     public void setCollectionMap(Map<String, String> collectionMap) {
-        this.collectionMap = collectionMap;
+        this.cMap = collectionMap;
     }
 
     public void addCollectionMap(String key, String value) {
-        collectionMap.put(key, value);
+        cMap.put(key, value);
     }
 
     /**
      * @return the delimCollectionMap
      */
     public Map<String, String> getDelimCollectionMap() {
-        return delimCollectionMap;
+        return dcMap;
     }
 
     /**
      * @param delimCollectionMap the delimCollectionMap to set
      */
     public void setDelimCollectionMap(Map<String, String> delimCollectionMap) {
-        this.delimCollectionMap = delimCollectionMap;
+        this.dcMap = delimCollectionMap;
     }
     
     public void addDelimCollectionMap(String key, String value) {
-        delimCollectionMap.put(key, value);
+        dcMap.put(key, value);
     }
 }
