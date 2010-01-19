@@ -373,6 +373,7 @@ public class DBDictionary
     public String delimitedCase = SCHEMA_CASE_PRESERVE;
     public String catalogSeparator = ".";
     private String defaultSchemaName = null;
+    private String conversionKey = null;
        
     // Naming utility and naming rules
     private DBIdentifierUtil namingUtil = null;
@@ -5360,5 +5361,13 @@ public class DBDictionary
 
     public String getDefaultSchemaName() {
         return defaultSchemaName;
+    }
+    
+    public String getConversionKey() {
+        if (conversionKey == null) {
+            conversionKey = getLeadingDelimiter() + getIdentifierDelimiter() +
+            getTrailingDelimiter();
+        }
+        return conversionKey;
     }
 }

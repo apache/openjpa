@@ -86,4 +86,13 @@ public interface IdentifierConfiguration {
      * @return upper, lower, or preserve
      */
     public String getSchemaCase();
+    
+    /**
+     * Returns a key that can be used to determine whether conversion
+     * should take place.  Id configurations should create a key unique
+     * to their configuration.  The typical key is:
+     * leading delimiter (") + name separator(.) + trailing delimiter(")
+     * @return
+     */
+    public String getConversionKey();
 }

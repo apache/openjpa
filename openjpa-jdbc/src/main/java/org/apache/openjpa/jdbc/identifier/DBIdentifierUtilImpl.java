@@ -419,6 +419,10 @@ public class DBIdentifierUtilImpl extends IdentifierUtilImpl implements DBIdenti
      * Converts a column alias to use the appropriate delimiters
      */
     public String convertAlias(String alias) {
+        if (!needsConversion(getIdentifierConfiguration())) {
+            return alias;
+        }
+
         String[] names = Normalizer.splitName(alias);
         if (names.length <= 1) {
             // Nothing to split

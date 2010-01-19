@@ -503,10 +503,8 @@ public class IdentifierUtilImpl implements IdentifierUtil, Configurable {
     }    
 
 
-    private boolean needsConversion(IdentifierConfiguration config) {
-        return !(config.getLeadingDelimiter().equals(getIdentifierConfiguration().getLeadingDelimiter()) &&
-                 config.getTrailingDelimiter().equals(getIdentifierConfiguration().getTrailingDelimiter()) &&
-                 config.getIdentifierDelimiter().equals(getIdentifierConfiguration().getIdentifierDelimiter()));
+    protected boolean needsConversion(IdentifierConfiguration config) {
+        return !(config.getConversionKey().equals(getIdentifierConfiguration().getConversionKey()));
     }
 
     private IdentifierRule[] getNamingRules(String[] rules) {

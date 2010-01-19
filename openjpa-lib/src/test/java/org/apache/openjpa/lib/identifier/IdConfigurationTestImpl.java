@@ -28,7 +28,8 @@ import org.apache.openjpa.lib.identifier.IdentifierUtil;
 public class IdConfigurationTestImpl implements IdentifierConfiguration {
 
     Map<String, IdentifierRule> _rules = new HashMap<String, IdentifierRule>();
-    
+    private final String conversionKey = getLeadingDelimiter() + getIdentifierDelimiter() + getTrailingDelimiter();
+
     public IdConfigurationTestImpl() {
         _rules.put("DEFAULT", _defRule);
     }
@@ -84,4 +85,7 @@ public class IdConfigurationTestImpl implements IdentifierConfiguration {
         return true;
     }
 
+    public String getConversionKey() {
+        return conversionKey;
+    }
 }

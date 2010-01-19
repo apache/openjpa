@@ -29,6 +29,7 @@ public class DefaultIdentifierConfiguration implements IdentifierConfiguration {
 
     private DBIdentifierRule normalizingRule = new DBIdentifierRule();
     private Map<String, IdentifierRule> normalizingRules = new HashMap<String, IdentifierRule>();
+    private final String conversionKey = getLeadingDelimiter() + getIdentifierDelimiter() + getTrailingDelimiter();
 
     public DefaultIdentifierConfiguration() {
         normalizingRules.put(IdentifierRule.DEFAULT_RULE, normalizingRule);
@@ -77,5 +78,9 @@ public class DefaultIdentifierConfiguration implements IdentifierConfiguration {
 
     public boolean getSupportsDelimitedIdentifiers() {
         return true;
+    }
+    
+    public String getConversionKey() {
+        return conversionKey;
     }
 }
