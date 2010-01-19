@@ -22,8 +22,6 @@ import java.net.URL;
 import java.util.Collection;
 import java.util.Map;
 
-import javax.persistence.spi.PersistenceUnitInfo;
-
 import org.apache.openjpa.datacache.DataCache;
 import org.apache.openjpa.datacache.DataCacheManager;
 import org.apache.openjpa.datacache.DataCacheMode;
