@@ -495,23 +495,24 @@ public class PCEnhancer {
      * @return <code>ENHANCE_*</code> constant
      */
     public int run() {
+        Class<?> type = _managedType.getType();
         try {
             // if managed interface, skip
             if (_pc.isInterface())
                 return ENHANCE_INTERFACE;
 
             // check if already enhanced
-            ClassLoader loader = _managedType.getType().getClassLoader();
+            ClassLoader loader = AccessController.doPrivileged(J2DoPrivHelper.getClassLoaderAction(type));
             for (Class<?> iface : _managedType.getDeclaredInterfaceTypes()) {
                 if (iface.getName().equals(PCTYPE.getName())) {
                     if (_log.isTraceEnabled()) {
-                        _log.trace(_loc.get("pc-type", _managedType.getType(), loader));
+                        _log.trace(_loc.get("pc-type", type, loader));
                     }
                     return ENHANCE_NONE;
                 }
             }
             if (_log.isTraceEnabled()) {
-                _log.trace(_loc.get("enhance-start", _managedType.getType(), loader));
+                _log.trace(_loc.get("enhance-start", type, loader));
             }
 
 
@@ -541,13 +542,13 @@ public class PCEnhancer {
             }
 
             if (_log.isWarnEnabled())
-                _log.warn(_loc.get("pers-aware", _managedType.getType(), loader));
+                _log.warn(_loc.get("pers-aware", type, loader));
             return ENHANCE_AWARE;
         } catch (OpenJPAException ke) {
             throw ke;
         } catch (Exception e) {
             throw new GeneralException(_loc.get("enhance-error",
-                _managedType.getType().getName(), e.getMessage()), e);
+                type.getName(), e.getMessage()), e);
         }
     }
 
