@@ -22,6 +22,8 @@ import java.net.URL;
 import java.util.Collection;
 import java.util.Map;
 
+import javax.persistence.spi.PersistenceUnitInfo;
+
 import org.apache.openjpa.datacache.DataCache;
 import org.apache.openjpa.datacache.DataCacheManager;
 import org.apache.openjpa.datacache.DataCacheMode;
@@ -1852,18 +1854,20 @@ public interface OpenJPAConfiguration
     public String getDataCacheMode();
     
     /**
-     * Set the persistent unit root url
+     * Set the persistent unit root url.
+     * 
+     * @see PersistenceUnitInfo#getPersistenceUnitRootUrl()
      * 
      * @param the persistent unit root url
      * @since 2.0.0
      */
-    public void setPuRootUrl(URL url);
+    public void setPersistenceUnitRootUrl(URL url);
     
     /**
      * Return the persistent unit rool URL
      * @return URL
      * @since 2.0.0
      */
-    public URL getPuRootUrl();
+    public URL getPersistenceUnitRootUrl();
 }
 

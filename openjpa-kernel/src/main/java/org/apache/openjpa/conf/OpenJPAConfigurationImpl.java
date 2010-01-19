@@ -1772,7 +1772,7 @@ public class OpenJPAConfigurationImpl
         return dataCacheMode.getString();
     }
     
-    public void setPuRootUrl(URL url) {
+    public void setPersistenceUnitRootUrl(URL url) {
         this._puRootUrl = url;
     }
     
