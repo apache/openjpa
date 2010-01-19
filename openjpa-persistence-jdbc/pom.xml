@@ -34,6 +34,7 @@
         <version>2.0.0-SNAPSHOT</version>
     </parent>
     <properties>
+        <openjpa.loglevel>INFO</openjpa.loglevel>
         <dbcp.maxActive>10</dbcp.maxActive>
         <dbcp.maxIdle>5</dbcp.maxIdle>
         <dbcp.minIdle>2</dbcp.minIdle>
