@@ -36,6 +36,7 @@
     <description>OpenJPA Persistence Locking Tests</description>
 
     <properties>
+        <openjpa.loglevel>INFO</openjpa.loglevel>
         <dbcp.maxActive>10</dbcp.maxActive>
         <dbcp.maxIdle>5</dbcp.maxIdle>
         <dbcp.minIdle>2</dbcp.minIdle>
@@ -44,6 +45,10 @@
         <!-- have to use a larger waitTimeout to avoid lockmgr test failures -->
         <derby.locks.waitTimeout>60</derby.locks.waitTimeout>
         <derby.locks.deadlockTimeout>5</derby.locks.deadlockTimeout>
+        <!-- @AllowFailure options:  ignore = silently skip test,
+             log = execute test and log results but don't fail the test,
+             anything else allows the test to execute normally
+        -->
         <tests.openjpa.allowfailure>ignore</tests.openjpa.allowfailure>
     </properties>
     <profiles>
