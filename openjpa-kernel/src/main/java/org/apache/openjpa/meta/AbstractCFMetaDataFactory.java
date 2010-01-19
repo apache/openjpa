@@ -753,7 +753,7 @@ public abstract class AbstractCFMetaDataFactory
                         log.trace(_loc.get("scanning-resource", rsrc));
                     mitr = new ResourceMetaDataIterator(rsrc, loader);
                     
-                    URL puUrl  = repos.getConfiguration().getPuRootUrl();
+                    URL puUrl  = repos.getConfiguration().getPersistenceUnitRootUrl();
                     String puUrlString = puUrl == null ? null : puUrl.toString();
                     if (log.isTraceEnabled())
                         log.trace(_loc.get("pu-root-url", puUrlString));

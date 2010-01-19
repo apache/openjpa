@@ -1776,7 +1776,7 @@ public class OpenJPAConfigurationImpl
         this._puRootUrl = url;
     }
     
-    public URL getPuRootUrl() {
+    public URL getPersistenceUnitRootUrl() {
         return _puRootUrl;
     }
     
