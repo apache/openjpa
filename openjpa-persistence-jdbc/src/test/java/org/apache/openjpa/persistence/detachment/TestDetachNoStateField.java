@@ -28,7 +28,7 @@ public class TestDetachNoStateField extends SingleEMFTestCase {
 
     @Override
     protected void setUp(Object... props) {
-        super.setUp(CLEAR_TABLES, "openjpa.DetachState", "loaded(DetachedStateField=false)",
+        super.setUp(DROP_TABLES, "openjpa.DetachState", "loaded(DetachedStateField=false)",
             NoDetachedStateEntityPropertyAccess.class, NoDetachedStateEntityFieldAccess.class);
         loadDB();
     }
@@ -78,9 +78,9 @@ public class TestDetachNoStateField extends SingleEMFTestCase {
     void loadDB() {
         OpenJPAEntityManagerSPI em = emf.createEntityManager();
         em.getTransaction().begin();
-        em.createNativeQuery("INSERT INTO NoDetachedStateEntityPropertyAccess (ID,VERSION) VALUES (1,0)")
+        em.createNativeQuery("INSERT INTO PropertyAccessNoDetachedState (ID,VERSION) VALUES (1,0)")
             .executeUpdate();
-        em.createNativeQuery("INSERT INTO NoDetachedStateEntityFieldAccess (ID,VERSION) VALUES (1,0)")
+        em.createNativeQuery("INSERT INTO FieldAccessNoDetachedState (ID,VERSION) VALUES (1,0)")
             .executeUpdate();
         em.getTransaction().commit();
         em.close();

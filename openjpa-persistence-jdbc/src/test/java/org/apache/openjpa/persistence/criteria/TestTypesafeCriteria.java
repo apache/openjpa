@@ -19,23 +19,20 @@
 package org.apache.openjpa.persistence.criteria;
 
 import java.math.BigDecimal;
+import java.sql.Date;
 import java.sql.Time;
+import java.sql.Timestamp;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import javax.persistence.Parameter;
 import javax.persistence.Query;
 import javax.persistence.Tuple;
 import javax.persistence.TypedQuery;
-import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Expression;
-import javax.persistence.criteria.Fetch;
 import javax.persistence.criteria.Join;
 import javax.persistence.criteria.JoinType;
 import javax.persistence.criteria.ListJoin;
@@ -49,6 +46,7 @@ import javax.persistence.criteria.Subquery;
 import javax.persistence.metamodel.EntityType;
 import javax.persistence.metamodel.Metamodel;
 
+import org.apache.openjpa.jdbc.sql.OracleDictionary;
 import org.apache.openjpa.persistence.test.AllowFailure;
 
 /**
@@ -1463,8 +1461,12 @@ public class TestTypesafeCriteria extends CriteriaTest {
 
        List result = q.getResultList();        
     }
-    
+
     public void testCurrentTimeReturnsSQLTypes() {
+        if (getDictionary() instanceof OracleDictionary) {
+            // Oracle does not have CURRENT_TIME function, nor does it support DB generated identity
+            return;
+        }
         em.getTransaction().begin();
         Product pc = new Product();
         em.persist(pc);
@@ -1480,6 +1482,44 @@ public class TestTypesafeCriteria extends CriteriaTest {
         TypedQuery<Time> tq = em.createQuery(cquery);
         Object result = tq.getSingleResult();
         assertTrue(result.getClass() + " not instance of Time", result instanceof Time);  
+        
+    }    
+
+    public void testCurrentDateReturnsSQLTypes() {
+        em.getTransaction().begin();
+        Order pc = new Order();
+        em.persist(pc);
+        em.getTransaction().commit();
+        
+        int oid = pc.getId();
+        
+        CriteriaQuery<Date> cquery = cb.createQuery(Date.class);
+        Root<Order> order = cquery.from(Order.class);
+        cquery.select(cb.currentDate());
+        cquery.where(cb.equal(order.get(Order_.id), oid));
+
+        TypedQuery<Date> tq = em.createQuery(cquery);
+        Object result = tq.getSingleResult();
+        assertTrue(result.getClass() + " not instance of Date", result instanceof Date);  
+
+    }
+
+    public void testCurrentTimestampReturnsSQLTypes() {
+        em.getTransaction().begin();
+        Order pc = new Order();
+        em.persist(pc);
+        em.getTransaction().commit();
+
+        int oid = pc.getId();
+
+        CriteriaQuery<Timestamp> cquery = cb.createQuery(Timestamp.class);
+        Root<Order> order = cquery.from(Order.class);
+        cquery.select(cb.currentTimestamp());
+        cquery.where(cb.equal(order.get(Order_.id), oid));
+
+        TypedQuery<Timestamp> tq = em.createQuery(cquery);
+        Object result = tq.getSingleResult();
+        assertTrue(result.getClass() + " not instance of Timestamp", result instanceof Timestamp);  
         
     }
     

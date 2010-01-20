@@ -24,9 +24,11 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.ManyToOne;
+import javax.persistence.Table;
 import javax.persistence.Version;
 
 @Entity
+@Table(name="FieldAccessNoDetachedState")
 public class NoDetachedStateEntityFieldAccess {
 	@Id
 	@GeneratedValue(strategy=GenerationType.AUTO)
