@@ -27,6 +27,7 @@ import javax.persistence.Persistence;
 import org.apache.openjpa.conf.OpenJPAConfiguration;
 import org.apache.openjpa.enhance.TestEnhancementWithMultiplePUs;
 import org.apache.openjpa.jdbc.schema.DataSourceFactory;
+import org.apache.openjpa.jdbc.sql.DerbyDictionary;
 import org.apache.openjpa.persistence.OpenJPAEntityManagerFactorySPI;
 import org.apache.openjpa.persistence.OpenJPAPersistence;
 import org.apache.openjpa.persistence.common.utils.AbstractTestCase;
@@ -49,10 +50,7 @@ import junit.framework.TestCase;
  * 
  */
 
-// Specifies that the test runs only if the driver is available in the 
-// execution classpath
 @DatabasePlatform("org.apache.derby.jdbc.EmbeddedDriver")
-
 public class TestEquivalentConfiguration extends SingleEMFTestCase {
     private EntityManagerFactory emf;
 
@@ -97,6 +95,13 @@ public class TestEquivalentConfiguration extends SingleEMFTestCase {
      */
     @Override
     public void setUp() throws Exception {
+        // Only run on Derby
+        setSupportedDatabases(
+            org.apache.openjpa.jdbc.sql.DerbyDictionary.class);
+        if (isTestsDisabled()) {
+            return;
+        }
+
         _system = backup();
         clear(_system);
     }

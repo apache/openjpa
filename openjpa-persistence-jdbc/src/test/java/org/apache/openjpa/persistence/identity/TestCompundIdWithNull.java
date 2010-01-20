@@ -23,6 +23,7 @@ import java.util.List;
 
 import javax.persistence.EntityManager;
 
+import org.apache.openjpa.jdbc.sql.DerbyDictionary;
 import org.apache.openjpa.persistence.OpenJPAEntityManager;
 import org.apache.openjpa.persistence.OpenJPAPersistence;
 import org.apache.openjpa.persistence.test.AllowFailure;
@@ -43,22 +44,28 @@ import org.apache.openjpa.persistence.test.SingleEMFTestCase;
  * @author Pinaki Poddar
  * @author Michael Vorburger
  */
-// Because we use DDL specific to Derby
-@DatabasePlatform("org.apache.derby.jdbc.EmbeddedDriver")
 
+@DatabasePlatform("org.apache.derby.jdbc.EmbeddedDriver")
 public class TestCompundIdWithNull extends SingleEMFTestCase {
     private static boolean tablesCreated = false;
-	public void setUp() throws Exception {
-	    // do not use CLEAR_TABLES or DROP_TABLES
-	    super.setUp(SimpleCompoundIdTestEntity.class, ComplexCompoundIdTestEntity.class, TypeEntity.class);
-	    if (!tablesCreated) {
-	        createTables(emf.createEntityManager());
-	        tablesCreated = true;
-	    }
-	    
-	}
+
+    public void setUp() throws Exception {
+        // Only run on Derby because we use DDL specific to Derby
+        setSupportedDatabases(
+            org.apache.openjpa.jdbc.sql.DerbyDictionary.class);
+        if (isTestsDisabled()) {
+            return;
+        }
+
+        // do not use CLEAR_TABLES or DROP_TABLES
+        super.setUp(SimpleCompoundIdTestEntity.class, ComplexCompoundIdTestEntity.class, TypeEntity.class);
+        if (!tablesCreated) {
+            createTables(emf.createEntityManager());
+            tablesCreated = true;
+        }
+    }
 	
-	public void testSimpleCompoundIdTestEntity() throws Exception  {
+    public void testSimpleCompoundIdTestEntity() throws Exception  {
 			EntityManager em = emf.createEntityManager();
 			String jpql = "SELECT o FROM SimpleCompoundIdTestEntity o ORDER BY o.secondId";
 			List<SimpleCompoundIdTestEntity> list = em.createQuery(jpql,SimpleCompoundIdTestEntity.class)

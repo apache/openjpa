@@ -22,6 +22,7 @@ import javax.persistence.EntityManager;
 import javax.persistence.PersistenceException;
 import javax.persistence.Query;
 
+import org.apache.openjpa.jdbc.sql.OracleDictionary;
 import org.apache.openjpa.persistence.OpenJPAEntityManagerFactorySPI;
 import org.apache.openjpa.persistence.OpenJPAEntityManagerSPI;
 import org.apache.openjpa.persistence.test.DatabasePlatform;
@@ -46,7 +47,14 @@ import org.apache.openjpa.persistence.test.SingleEMFTestCase;
 @DatabasePlatform("oracle.jdbc.driver.OracleDriver")
 public class TestAutoIncrement extends SingleEMFTestCase {
 
-	public void setUp() throws Exception {
+    public void setUp() throws Exception {
+        // Only run on Oracle
+        setSupportedDatabases(
+            org.apache.openjpa.jdbc.sql.OracleDictionary.class);
+        if (isTestsDisabled()) {
+            return;
+        }
+
         if ("testAutoIncrementIdentityWithNamedSequence".equals(getName())) {
             String sequence = "autoIncrementSequence";
             createSequence(sequence);
@@ -58,7 +66,7 @@ public class TestAutoIncrement extends SingleEMFTestCase {
 					"openjpa.jdbc.DBDictionary",
                     "oracle(UseTriggersForAutoAssign=true)");
 		}
-	}
+    }
 
     public void testAutoIncrementIdentityWithNamedSequence() {
 		EntityManager em = emf.createEntityManager();
