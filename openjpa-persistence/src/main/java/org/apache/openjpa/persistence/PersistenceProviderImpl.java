@@ -93,17 +93,12 @@ public class PersistenceProviderImpl
             _log = conf.getLog(OpenJPAConfiguration.LOG_RUNTIME);            
             pd.checkPuNameCollisions(_log,name);
             
-            // add enhancer
-            loadAgent(factory);
+            loadAgent(_log, conf);
             
+            // TODO - Can this be moved back to BrokerImpl.initialize()?
             // Create appropriate LifecycleEventManager
-            loadValidator(factory);
+            loadValidator(_log, conf);
             
-            // We need to wait to preload until after we get back a fully configured/instantiated
-            // BrokerFactory. This is because it is possible that someone has extended OpenJPA
-            // functions and they need to be allowed time to configure themselves before we go off and
-            // start instanting configurable objects (ie:openjpa.MetaDataRepository). Don't catch
-            // any exceptions here because we want to fail-fast.
             preloadMetaDataRepository(factory);
             
             return JPAFacadeHelper.toEntityManagerFactory(factory);
@@ -186,17 +181,18 @@ public class PersistenceProviderImpl
                     log.warn(_loc.get("transformer-registration-error", pui));
                 }
             }
-
             // Create appropriate LifecycleEventManager
-            loadValidator(factory);
+            OpenJPAConfiguration conf = factory.getConfiguration();
+            conf.setPersistenceUnitRootUrl(pui.getPersistenceUnitRootUrl());
+            _log = conf.getLog(OpenJPAConfiguration.LOG_RUNTIME);
+            loadValidator(_log, conf);
             
             // We need to wait to preload until after we get back a fully configured/instantiated
             // BrokerFactory. This is because it is possible that someone has extended OpenJPA
             // functions and they need to be allowed time to configure themselves before we go off and
             // start instanting configurable objects (ie:openjpa.MetaDataRepository). Don't catch
             // any exceptions here because we want to fail-fast.
-            preloadMetaDataRepository(factory);
-            
+            preloadMetaDataRepository(factory);           
             return JPAFacadeHelper.toEntityManagerFactory(factory);
         } catch (Exception e) {
             throw PersistenceExceptions.toPersistenceException(e);
@@ -238,7 +234,7 @@ public class PersistenceProviderImpl
         // We need to wait to preload until after we get back a fully configured/instantiated
         // BrokerFactory. This is because it is possible that someone has extended OpenJPA
         // functions and they need to be allowed time to configure themselves before we go off and
-        // start instantiating configurable objects (ie:openjpa.MetaDataRepository). Don't catch
+        // start instanting configurable objects (ie:openjpa.MetaDataRepository). Don't catch
         // any exceptions here because we want to fail-fast.
         OpenJPAConfiguration conf = factory.getConfiguration();
         Options o = Configurations.parseProperties(Configurations.getProperties(conf.getMetaDataRepository()));
@@ -289,14 +285,11 @@ public class PersistenceProviderImpl
     /**
      * This private worker method will attempt load the PCEnhancerAgent.
      */
-    private void loadAgent(BrokerFactory factory) {
-        OpenJPAConfiguration conf = factory.getConfiguration();
-        Log log = conf.getLog(OpenJPAConfiguration.LOG_RUNTIME);
-
+    private void loadAgent(Log log, OpenJPAConfiguration conf) {
         if (conf.getDynamicEnhancementAgent() == true) {
             boolean res = PCEnhancerAgent.loadDynamicAgent(log);
-            if (log.isInfoEnabled() && res == true ){
-                log.info(_loc.get("dynamic-agent"));
+            if(_log.isInfoEnabled() && res == true ){
+                _log.info(_loc.get("dynamic-agent"));
             }
         }
     }
@@ -309,13 +302,10 @@ public class PersistenceProviderImpl
      * @param conf
      * @throws if validation setup failed and was required by the config
      */
-    private void loadValidator(BrokerFactory factory) {
-        OpenJPAConfiguration conf = factory.getConfiguration();
-        Log log = conf.getLog(OpenJPAConfiguration.LOG_RUNTIME);
-
+    private void loadValidator(Log log, OpenJPAConfiguration conf) {
         if ((ValidationUtils.setupValidation(conf) == true) &&
-                log.isInfoEnabled()) {
-            log.info(_loc.get("vlem-creation-info"));
+                _log.isInfoEnabled()) {
+            _log.info(_loc.get("vlem-creation-info"));
         }
     }
 
