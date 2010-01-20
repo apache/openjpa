@@ -99,77 +99,6 @@
         </build>
         </profile>
 
-        <!-- Default profile for testing with embedded Apache Derby -->
-        <profile>
-            <!--
-                Optionally, you can override the following properties:
-                    -Dderby.version=10.2.2.0
-            -->
-            <id>test-derby</id>
-            <activation>
-                <activeByDefault>true</activeByDefault>
-                <property>
-                    <name>test-derby</name>
-                </property>
-            </activation>
-            <dependencies>
-                <dependency>
-                    <groupId>org.apache.derby</groupId>
-                    <artifactId>derby</artifactId>
-                    <version>${derby.version}</version>
-                    <scope>test</scope>
-                </dependency>
-            </dependencies>
-            <properties>
-                <connection.driver.name>org.apache.derby.jdbc.EmbeddedDriver</connection.driver.name>
-                <connection.url>jdbc:derby:target/database/openjpa-derby-database;create=true</connection.url>
-                <connection.username />
-                <connection.password />
-            </properties>
-        </profile>
-
-        <!-- Profile for testing with Apache Derby network server -->
-        <profile>
-            <!--
-                Example Derby Network Server profile.
-                You must manually start a Derby network server instance and
-                also set the following properties:
-                    -Dopenjpa.derbynet.url=jdbc:derby://<HOST>:<PORT>/<DBNAME>;\
-                    	create=true
-
-                Optionally, you can override the following properties:
-                    -Dopenjpa.derbynet.driver=org.apache.derby.jdbc.ClientXADataSource
-                    -Dopenjpa.derbynet.username=
-                    -Dopenjpa.derbynet.password=
-                    -Dderby.version=10.2.2.0
-            -->
-            <id>test-derbynet</id>
-            <activation>
-                <property>
-                    <name>test-derbynet</name>
-                </property>
-            </activation>
-            <dependencies>
-                <dependency>
-                    <groupId>org.apache.derby</groupId>
-                    <artifactId>derbyclient</artifactId>
-                    <version>${derby.version}</version>
-                    <scope>test</scope>
-                </dependency>
-            </dependencies>
-            <properties>
-                <openjpa.derbynet.url>jdbc:derby://localhost:1527/openjpa20;create=true;traceDirectory=target;traceFile=derby.log</openjpa.derbynet.url>
-                <openjpa.derbynet.driver>org.apache.derby.jdbc.ClientDriver</openjpa.derbynet.driver>
-                <!-- Note: commons-dbcp requires dummy values for uid/pwd -->
-                <openjpa.derbynet.username>uid</openjpa.derbynet.username>
-                <openjpa.derbynet.password>pwd</openjpa.derbynet.password>
-                <connection.driver.name>${openjpa.derbynet.driver}</connection.driver.name>
-                <connection.url>${openjpa.derbynet.url}</connection.url>
-                <connection.username>${openjpa.derbynet.username}</connection.username>
-                <connection.password>${openjpa.derbynet.password}</connection.password>
-            </properties>
-        </profile>
-
         <!-- Profile for testing with HSQL DB -->
         <profile>
             <id>test-hsqldb</id>
@@ -1061,6 +990,14 @@
                         <property>
                             <name>derby.locks.waitTimeout</name>
                             <value>${derby.locks.waitTimeout}</value>
+                        </property>
+                        <property>
+                            <name>derby.storage.pageCacheSize</name>
+                            <value>10000</value>
+                        </property>
+                        <property>
+                            <name>derby.storage.initialPages</name>
+                            <value>10</value>
                         </property>
                         <property>
                             <name>openjpa.ConnectionProperties</name>
