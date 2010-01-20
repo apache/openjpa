@@ -39,10 +39,6 @@ public class TestNoSchemaManualDelimId extends SQLListenerTestCase {
     @Override
     public void setUp() throws Exception {
 
-        setUnsupportedDatabases(MySQLDictionary.class);
-        if (isTestsDisabled())
-            return;
-
         super.setUp(
             org.apache.openjpa.persistence.delimited.identifiers.noschema.EntityF.class,
             DROP_TABLES);

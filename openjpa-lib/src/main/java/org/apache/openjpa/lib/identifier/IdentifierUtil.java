@@ -99,6 +99,13 @@ public interface IdentifierUtil {
      * @param the rule to use for removing delimiters
      * @param name the name from which to remove delimiters
      */
+    public String removeDelimiters(IdentifierConfiguration config, String rule, String name);
+
+    /**
+     * Remove delimiters from a delimited name 
+     * @param the rule to use for removing delimiters
+     * @param name the name from which to remove delimiters
+     */
     public String removeDelimiters(IdentifierRule rule, String name);
     
     /**

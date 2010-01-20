@@ -31,11 +31,11 @@ import javax.persistence.Table;
 public class EntityE {
     @Id
     @SequenceGenerator(name="entityE_seq_gen_name", 
-        sequenceName="\"entityE_seq_gen\"")
+        sequenceName="\"entityE seq gen\"")
     @GeneratedValue(strategy=GenerationType.SEQUENCE, 
         generator="entityE_seq_gen_name")
     private int id;
-    @Column(name="nse_name")
+    @Column(name="nse name")
     private String name;
     
     public EntityE(String name) {

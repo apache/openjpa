@@ -34,9 +34,9 @@ public class TestIdentifiers extends AbstractTestCase {
         IdentifierUtil nu = new IdentifierUtilImpl(defConfig);
         
         // Test basic name conversion with single name converter
-        String n0 = "`TABLE`";
+        String n0 = "\"TABLE\"";
         String cn0 = nu.convert(newConfig, "DEFAULT", n0);
-        assertEquals("\"TABLE\"", cn0);
+        assertEquals("`TABLE`", cn0);
         
         // Test basic name conversion with single name converter - no 
         // conversion
@@ -45,13 +45,13 @@ public class TestIdentifiers extends AbstractTestCase {
         assertEquals("TABLE", cn1);
 
         // Test basic name separator conversion with compound name converter
-        String n2 = "TABLE:SCHEMA";
+        String n2 = "TABLE.SCHEMA";
         String cn2 = nu.convertFull(newConfig, "DEFAULT", n2);
-        assertEquals("TABLE.SCHEMA", cn2);
+        assertEquals("TABLE:SCHEMA", cn2);
 
-        String n3 = "`TABLE`:`SCHEMA`";
+        String n3 = "\"TABLE\".\"SCHEMA\"";
         String cn3 = nu.convertFull(newConfig, "DEFAULT", n3);
-        assertEquals("\"TABLE\".\"SCHEMA\"", cn3);
+        assertEquals("`TABLE`:`SCHEMA`", cn3);
     }
     
     

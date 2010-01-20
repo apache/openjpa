@@ -42,11 +42,11 @@ import javax.persistence.UniqueConstraint;
         @UniqueConstraint(columnNames={"\"nsf name\"", "nsf_nonDelimName"}))
 @SecondaryTable(name="\"nssecondary entityF\"",
     uniqueConstraints=
-        @UniqueConstraint(name="\"nssec_unq\"", 
+        @UniqueConstraint(name="\"nssec unq\"", 
             columnNames={"\"nssecondary name\""}))         
 public class EntityF {
-    @TableGenerator(name = "f_id_gen", table = "\"nsf_id_gen\"", 
-        pkColumnName = "\"nsgen_pk\"", valueColumnName = "\"nsgen_value\"")
+    @TableGenerator(name = "f_id_gen", table = "\"nsf id gen\"", 
+        pkColumnName = "\"nsgen pk\"", valueColumnName = "\"nsgen value\"")
     @GeneratedValue(strategy = GenerationType.TABLE, generator = "f_id_gen")
     @Id
     private int id;
@@ -65,7 +65,7 @@ public class EntityF {
     private Set<String> nscs = new HashSet<String>();
     
     @ElementCollection
-    @CollectionTable(name="\"nscDelSet\"")
+    @CollectionTable(name="\"nsc DelSet\"")
     private Set<String> nscds = new HashSet<String>();
     
     @ElementCollection

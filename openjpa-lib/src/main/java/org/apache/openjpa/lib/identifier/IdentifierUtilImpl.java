@@ -52,62 +52,80 @@ public class IdentifierUtilImpl implements IdentifierUtil, Configurable {
         return _config;
     }    
 
-    public String combineNames(IdentifierRule rule, IdentifierRule[] rules, String[] names) {
+    public String combineNames(String rule, String name1, String name2) {
+        return combineNames(getNamingRule(rule), name1, name2);
+    }
+
+    public String combineNames(String rule, String[] names) {
+        return combineNames(getNamingRule(rule), names);
+    }
+
+    public String combineNames(IdentifierConfiguration config, String rule, String[] names) {
+        return combineNames(config, getNamingRule(rule), names);
+    }
+
+    public String combineNames(IdentifierRule rule, 
+        IdentifierRule[] rules, String[] names) {
+        return combineNames(_config, rule, rules, names);
+    }
+
+    public String combineNames(IdentifierConfiguration config, IdentifierRule rule, 
+        IdentifierRule[] rules, String[] names) {
         boolean delimited = false;
         String combined = null;
         for (int i = 0; i < names.length; i++) {
             String name = names[i];
             if (isDelimited(rules[i], name)) {
                 delimited = true;
-                name = removeDelimiters(rules[i], name);
+                name = removeDelimiters(config, rules[i], name);
             }
             if (i == 0) {
                 combined = name;
             }
             else {
-                combined = combined + _config.getIdentifierConcatenator() + name;
+                combined = combined + config.getIdentifierConcatenator() + name;
             }
         }
         
         if (delimited) {
-            combined = delimit(rule, combined.toString()).toString();
+            combined = delimit(config, rule, combined.toString()).toString();
         }
         
         return combined;
     }
     
-    public String combineNames(IdentifierRule rule, String name1, String name2) {
+    public String combineNames(IdentifierConfiguration config, IdentifierRule rule, String name1, String name2) {
         boolean delimit = false;
         if (isDelimited(rule, name1)) {
-            name1 = removeDelimiters(rule, name1);
+            name1 = removeDelimiters(config, rule, name1);
             delimit = true;
         }
         if (isDelimited(rule, name2)) {
-            name2 = removeDelimiters(rule, name2);
+            name2 = removeDelimiters(config, rule, name2);
             delimit = true;
         }
-        String name = name1 + _config.getIdentifierConcatenator() + name2;
-        return delimit(rule, name, delimit).toString();
+        String name = name1 + config.getIdentifierConcatenator() + name2;
+        return delimit(config, rule, name, delimit).toString();
     }
 
-    public String combineNames(IdentifierRule namingRule, String[] names) {
+    public String combineNames(IdentifierConfiguration config, IdentifierRule namingRule, String[] names) {
         boolean delimited = false;
         String combined = null;
         for (int i = 0; i < names.length; i++) {
             String name = names[i];
-            if (isDelimited(namingRule, name)) {
+            if (isDelimited(config, namingRule, name)) {
                 delimited = true;
-                name = removeDelimiters(namingRule, name);
+                name = removeDelimiters(config, namingRule, name);
             }
             if (i == 0) {
                 combined = name;
             }
             else {
-                combined = combined + _config.getIdentifierConcatenator() + name;
+                combined = combined + config.getIdentifierConcatenator() + name;
             }
         }
         if (delimited) {
-            combined = delimit(namingRule, combined.toString()).toString();
+            combined = delimit(config, namingRule, combined.toString()).toString();
         }
         
         return combined;
@@ -188,10 +206,14 @@ public class IdentifierUtilImpl implements IdentifierUtil, Configurable {
         return combinedName.toString();
     }
 
+    public String[] splitName(IdentifierConfiguration config, IdentifierRule nrule, String name) {
+        return splitName(nrule, name, config.getIdentifierDelimiter());
+    }
+
     public String[] splitName(IdentifierRule nrule, String name) {
         return splitName(nrule, name, _config.getIdentifierDelimiter());
     }
-    
+
     
     /**
      * Splits names using single naming rule and appropriate separators
@@ -272,6 +294,10 @@ public class IdentifierUtilImpl implements IdentifierUtil, Configurable {
                name.endsWith(DOUBLE_QUOTE);
     }
 
+    public String delimit(IdentifierConfiguration config, IdentifierRule rule, String name) {
+        return delimit(config, rule, name, false);
+    }
+
     
     public String delimit(IdentifierRule rule, String name) {
         return delimit(_config, rule, name, false);
@@ -304,8 +330,19 @@ public class IdentifierUtilImpl implements IdentifierUtil, Configurable {
             name.endsWith(config.getTrailingDelimiter());
     }
 
+    public String removeDelimiters(IdentifierConfiguration config, String rule,
+        String name) {
+        return removeDelimiters(_config, getNamingRule(rule), name, _config.getLeadingDelimiter(),
+            _config.getTrailingDelimiter());
+    }
+
     public String removeDelimiters(IdentifierRule rule, String name) {
-        return removeDelimiters(rule, name, _config.getLeadingDelimiter(),
+        return removeDelimiters(_config, rule, name, _config.getLeadingDelimiter(),
+            _config.getTrailingDelimiter());
+    }
+
+    public String removeDelimiters(IdentifierConfiguration config, IdentifierRule rule, String name) {
+        return removeDelimiters(config, rule, name, _config.getLeadingDelimiter(),
             _config.getTrailingDelimiter());
     }
 
@@ -345,12 +382,12 @@ public class IdentifierUtilImpl implements IdentifierUtil, Configurable {
     }
     
 
-    protected String removeDelimiters(IdentifierRule rule, String name, String leading,
+    protected String removeDelimiters(IdentifierConfiguration config, IdentifierRule rule, String name, String leading,
         String trailing) {
         if (name == null) {
             return null;
         }
-        if (isDelimited(rule, name)) {
+        if (isDelimited(config, rule, name)) {
             String id = name.substring(leading.length(),
                 (name.length() - trailing.length()));
             return id;
@@ -402,8 +439,12 @@ public class IdentifierUtilImpl implements IdentifierUtil, Configurable {
         return requiresDelimiters(getNamingRule(rule), name);
     }
 
+    public String[] splitName(IdentifierConfiguration config, String rule, String name) {
+        return splitName(config, getNamingRule(rule), name);
+    }
+
     public String[] splitName(String rule, String name) {
-        return splitName(getNamingRule(rule), name);
+        return splitName(_config, getNamingRule(rule), name);
     }
 
     public String joinNames(String[] rules, String[] names) {
@@ -412,14 +453,6 @@ public class IdentifierUtilImpl implements IdentifierUtil, Configurable {
     
     private IdentifierRule getNamingRule(String rule) {
         return _config.getIdentifierRule(rule);
-    }
-    
-    public String combineNames(String rule, String name1, String name2) {
-        return combineNames(getNamingRule(rule), name1, name2);
-    }
-
-    public String combineNames(String rule, String[] names) {
-        return combineNames(getNamingRule(rule), names);
     }
     
     public String appendNames(String rule, String name1, String name2) {
@@ -456,7 +489,7 @@ public class IdentifierUtilImpl implements IdentifierUtil, Configurable {
     public String[] splitName(String nrule, String name, String nameDelim) {
         return splitName(getNamingRule(nrule), name, nameDelim);
     }
-        
+
     public String convert(IdentifierConfiguration config, String rule, String name) {
         // Already using same delimiter, no need to convert
         if (!needsConversion(config)) {
@@ -465,11 +498,11 @@ public class IdentifierUtilImpl implements IdentifierUtil, Configurable {
         // Otherwise, remove delimiters and add appropriate delimiters
         IdentifierRule orule = getIdentifierConfiguration().getIdentifierRule(rule);
         IdentifierRule nrule = config.getIdentifierRule(rule);
-        boolean delimit = isDelimited(orule, name);
+        boolean delimit = isDelimited(config, orule, name);
         if (delimit) {
-            name = removeDelimiters(orule, name, config.getLeadingDelimiter(), 
+            name = removeDelimiters(config, orule, name, config.getLeadingDelimiter(), 
                 config.getTrailingDelimiter());
-            return delimit(config, nrule, name, delimit).toString();
+            return delimit(getIdentifierConfiguration(), nrule, name, delimit).toString();
         }
         return name;
     }
@@ -479,13 +512,18 @@ public class IdentifierUtilImpl implements IdentifierUtil, Configurable {
             return fullName;
         }
         // Split
-        String[] names = splitName(rule, fullName);
+        String[] names = splitName(config, rule, fullName);
         // Convert
         for (int i = 0; i < names.length; i++) {
             names[i] = convert(config, rule, names[i]);
         }
-        // Join
-        return joinNames(config, config.getIdentifierRule(rule), names, config.getIdentifierDelimiter());
+        // If a single part name, return it.
+        if (names.length == 1) {
+            return names[0];
+        }
+        // Join if multiple names
+        return joinNames(getIdentifierConfiguration(), config.getIdentifierRule(rule), names, 
+            getIdentifierConfiguration().getIdentifierDelimiter());
     }    
 
     public String combineFull(IdentifierConfiguration config, String rule, String fullName) {
@@ -493,7 +531,7 @@ public class IdentifierUtilImpl implements IdentifierUtil, Configurable {
             return fullName;
         }
         // Split
-        String[] names = splitName(rule, fullName);
+        String[] names = splitName(config, rule, fullName);
         // Convert
         for (int i = 0; i < names.length; i++) {
             names[i] = convert(config, rule, names[i]);
@@ -543,4 +581,11 @@ public class IdentifierUtilImpl implements IdentifierUtil, Configurable {
         return name.contains(delim);
     }
 
+    public String combineNames(IdentifierRule rule, String[] names) {
+        return combineNames(_config, rule, names);
+    }
+
+    public String combineNames(IdentifierRule rule, String name1, String name2) {
+        return combineNames(_config, rule, name1, name2);
+    }
 }

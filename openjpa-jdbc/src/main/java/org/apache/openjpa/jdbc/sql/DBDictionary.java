@@ -5227,7 +5227,9 @@ public class DBDictionary
     public void setSupportsDelimitedIdentifiers(DatabaseMetaData metaData) {
         try {
             supportsDelimitedIdentifiers = 
-                metaData.supportsMixedCaseQuotedIdentifiers();
+                metaData.supportsMixedCaseQuotedIdentifiers() ||
+                metaData.storesLowerCaseQuotedIdentifiers() ||
+                metaData.storesUpperCaseQuotedIdentifiers();
         } catch (SQLException e) {
             supportsDelimitedIdentifiers = false;
             getLog().warn(_loc.get("unknown-delim-support", e));
