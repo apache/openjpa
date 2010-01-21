@@ -98,10 +98,6 @@ public class TestEquivalentConfiguration extends SingleEMFTestCase {
         // Only run on Derby
         setSupportedDatabases(
             org.apache.openjpa.jdbc.sql.DerbyDictionary.class);
-        if (isTestsDisabled()) {
-            return;
-        }
-
         _system = backup();
         clear(_system);
     }
