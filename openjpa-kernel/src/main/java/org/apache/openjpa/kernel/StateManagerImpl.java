@@ -3053,10 +3053,8 @@ public class StateManagerImpl
             // make sure version information has been set; version info must
             // always be set after the first state load or set (which is why
             // we do this even if no fields were loaded -- could be that this
-            // method is being called after a field is set)... some instances
-            // might not have version info, in which case this gets called
-            // multiple times; that should be ok too
-            if (_loadVersion == null) {
+            // method is being called after a field is set)
+            if (_loadVersion == null && (_meta == null || _meta.getVersionField() != null)) {
                 syncVersion(sdata);
                 ret = ret || _loadVersion != null;
             }
