@@ -50,6 +50,8 @@
              anything else allows the test to execute normally
         -->
         <tests.openjpa.allowfailure>ignore</tests.openjpa.allowfailure>
+        <!-- set this =** on cmdline to skip all tests -->
+        <surefire.excludes.locking />
     </properties>
     <profiles>
 
@@ -73,6 +75,9 @@
                             <includes>
                                 <include>org/apache/openjpa/persistence/enhance/DynamicEnhancementSuite.java</include>
                             </includes>
+                            <excludes>
+                                <exclude>${surefire.excludes.locking}</exclude>
+                            </excludes>
                             <systemProperties>
                                 <property>
                                     <name>openjpa.Log</name>
@@ -752,6 +757,7 @@
                             exclude classes that end with 'Test'; these are not test cases per OpenJPA standards
                         -->
                         <exclude>org/apache/openjpa/**/*Test.java</exclude>
+                        <exclude>${surefire.excludes.locking}</exclude>
                     </excludes>
                     <systemProperties>
                         <property>
