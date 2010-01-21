@@ -963,7 +963,7 @@ public class EntityManagerImpl
             String qid = query;
             PreparedQuery pq = JPQLParser.LANG_JPQL.equals(language)
                 ? getPreparedQuery(qid) : null;
-            org.apache.openjpa.kernel.Query q = (pq == null)
+            org.apache.openjpa.kernel.Query q = (pq == null || !pq.isInitialized())
                 ? _broker.newQuery(language, query)
                 : _broker.newQuery(pq.getLanguage(), pq);
             // have to validate JPQL according to spec
@@ -1003,7 +1003,7 @@ public class EntityManagerImpl
             
             PreparedQuery pq = JPQLParser.LANG_JPQL.equals(meta.getLanguage())
                 ? getPreparedQuery(qid) : null;
-            org.apache.openjpa.kernel.Query del = (pq == null)
+            org.apache.openjpa.kernel.Query del = (pq == null || !pq.isInitialized())
                 ? _broker.newQuery(meta.getLanguage(), meta.getQueryString())
                 : _broker.newQuery(pq.getLanguage(), pq);
             

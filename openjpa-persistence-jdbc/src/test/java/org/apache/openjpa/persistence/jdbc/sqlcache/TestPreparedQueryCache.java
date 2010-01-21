@@ -41,6 +41,7 @@ import org.apache.openjpa.kernel.jpql.JPQLParser;
 import org.apache.openjpa.lib.jdbc.AbstractJDBCListener;
 import org.apache.openjpa.lib.jdbc.JDBCEvent;
 import org.apache.openjpa.lib.jdbc.JDBCListener;
+import org.apache.openjpa.persistence.OpenJPAEntityManager;
 import org.apache.openjpa.persistence.OpenJPAEntityManagerFactorySPI;
 import org.apache.openjpa.persistence.OpenJPAEntityManagerSPI;
 import org.apache.openjpa.persistence.OpenJPAPersistence;
@@ -780,6 +781,32 @@ public class TestPreparedQueryCache extends TestCase {
         em.getTransaction().rollback();
     }
     
+    public void testMultithreadedAccess() {
+        OpenJPAEntityManager em1 = emf.createEntityManager();
+        String jpql = "select p from Author p where p.name=:name";
+        int N = 5;
+        Thread[] threads =  new Thread[N];
+        QueryThread[] qts = new QueryThread[N];
+        for (int i = 0; i < N; i++) {
+            OpenJPAEntityManager emt = emf.createEntityManager();
+            qts[i] = new QueryThread(emt, jpql);
+            threads[i] = new Thread(qts[i]);
+            threads[i].setDaemon(true);
+        }
+        for (Thread t : threads) {
+            t.start(); 
+        }
+        for (int i = 0; i < N; i++) {
+            try {
+              threads[i].join();
+              assertFalse(qts[i].isFailed());
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+                fail();
+            }
+        }
+    }
+    
     
     PreparedQueryCache getPreparedQueryCache() {
         return emf.getConfiguration().getQuerySQLCacheInstance();
@@ -966,6 +993,37 @@ public class TestPreparedQueryCache extends TestCase {
         List<String> getSQLs() {
             return new ArrayList<String>(sqls);
         }
+    }
+    
+    public static class QueryThread implements Runnable {
+        private final OpenJPAEntityManager em;
+        private final String jpql;
+        private boolean failed = false;
+        public QueryThread(OpenJPAEntityManager em, String jpql) {
+            super();
+            this.em = em;
+            this.jpql = jpql;
+        }
+        
+        public void run() {
+            try {
+                for (int i = 0; i < 10 && !failed; i++) {
+                    OpenJPAQuery q = em.createQuery(jpql);
+                    q.setParameter("name", "Author-"+i);
+                    q.getResultList();
+                    if (i > 1) 
+                        assertEquals(QueryLanguages.LANG_PREPARED_SQL, q.getLanguage());
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+                failed = true;
+            }
+        }
+        
+        public boolean isFailed() {
+            return failed;
+        }
+        
     }
 
 }
