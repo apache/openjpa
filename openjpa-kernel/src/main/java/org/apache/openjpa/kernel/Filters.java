@@ -974,5 +974,19 @@ public class Filters {
              || Time.class.isAssignableFrom(c) 
              || Timestamp.class.isAssignableFrom(c));
     }
+    
+    public static Object getDefaultForNull(Class<?> nType) {
+        if (nType == Long.class) 
+            return new Long(0);
+        if (nType == Integer.class)
+            return new Integer(0);
+        if (nType == Double.class) 
+            return new Double(0.0);
+        if (nType == Float.class) 
+            return new Float(0.0);
+        if (nType == Short.class) 
+            return new Short((short)0);
+        return null;
+    }
 
 }
