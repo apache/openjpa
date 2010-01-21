@@ -43,7 +43,7 @@ import javax.persistence.UniqueConstraint;
 @SecondaryTable(name="\"nssecondary entityF\"",
     uniqueConstraints=
         @UniqueConstraint(name="\"nssec unq\"", 
-            columnNames={"\"nssecondary name\""}))         
+            columnNames={"\"nssecondary name\""}))
 public class EntityF {
     @TableGenerator(name = "f_id_gen", table = "\"nsf id gen\"", 
         pkColumnName = "\"nsgen pk\"", valueColumnName = "\"nsgen value\"")

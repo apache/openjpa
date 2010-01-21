@@ -3961,8 +3961,10 @@ public class DBDictionary
     protected Sequence newSequence(ResultSet sequenceMeta)
         throws SQLException {
         Sequence seq = new Sequence();
-        seq.setSchemaIdentifier(fromDBName(sequenceMeta.getString("SEQUENCE_SCHEMA"), DBIdentifierType.SCHEMA));
-        seq.setIdentifier(fromDBName(sequenceMeta.getString("SEQUENCE_NAME"), DBIdentifierType.SEQUENCE));
+        seq.setSchemaIdentifier(fromDBName(StringUtils.stripEnd(sequenceMeta.getString("SEQUENCE_SCHEMA"), null),
+            DBIdentifierType.SCHEMA));
+        seq.setIdentifier(fromDBName(StringUtils.stripEnd(sequenceMeta.getString("SEQUENCE_NAME"), null),
+            DBIdentifierType.SEQUENCE));
         return seq;
     }
 
