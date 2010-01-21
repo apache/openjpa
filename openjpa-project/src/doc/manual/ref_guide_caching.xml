@@ -571,8 +571,8 @@ argument, treats null argument as <classname>java.lang.Object</classname>
             <para>
 In addition to the data cache, the <literal>org.apache.openjpa.datacache
 </literal> package defines service provider interfaces for a query cache. The
-query cache is enabled by default when the data cache is enabled. The query
-cache stores the object ids returned by query executions. When you run a query,
+query cache is disabled by default and needs to be enabled separately from the data cache. 
+The query cache stores the object ids returned by query executions. When you run a query,
 OpenJPA assembles a key based on the query properties and the parameters used at
 execution time, and checks for a cached query result. If one is found, the
 object ids in the cached result are looked up, and the resultant
@@ -613,11 +613,11 @@ cache also has a backing soft reference map. The <literal>SoftReferenceSize
                     Query Cache Size
                 </title>
 <programlisting>
-&lt;property name="openjpa.QueryCache" value="CacheSize=1000, SoftReferenceSize=100"/&gt;
+&lt;property name="openjpa.QueryCache" value="true(CacheSize=1000, SoftReferenceSize=100)"/&gt;
 </programlisting>
             </example>
             <para>
-To disable the query cache completely, set the <literal>openjpa.QueryCache
+To disable the query cache (default), set the <literal>openjpa.QueryCache
 </literal> property to <literal>false</literal>:
             </para>
             <example id="ref_guide_cache_disablequery">
@@ -632,7 +632,7 @@ To disable the query cache completely, set the <literal>openjpa.QueryCache
 Query Cache's default behaviour on eviction is to evict all the queries from
 the cache if any of the entities that are in the access path of the query are 
 modified. Scanning through the whole query cache to evict the queries upon an 
-entity update slows down the entity updation. 
+entity update slows down the entity update action. 
 
 The configurable eviction policy "timestamp" is to track the timestamp of the
 query and the timestamp of last update for each entity class and compare the 
@@ -648,7 +648,7 @@ here is an example:
                     Query Cache Eviction Policy
                 </title>
 <programlisting>
-&lt;property name="openjpa.QueryCache" value="EvictPolicy='timestamp'"/&gt;
+&lt;property name="openjpa.QueryCache" value="true(EvictPolicy='timestamp')"/&gt;
 </programlisting>
             </example>
             <para>
@@ -852,9 +852,9 @@ oq.getFetchPlan().setQueryResultCacheEnabled(true);
             <para>
 The provided data cache classes can be easily extended to add additional
 functionality. If you are adding new behavior, you should extend <classname>
-org.apache.openjpa.datacache.DataCacheImpl</classname>. To use your own storage
+org.apache.openjpa.datacache.ConcurrentDataCache</classname>. To use your own storage
 mechanism, extend <classname>org.apache.openjpa.datacache.AbstractDataCache
-</classname>, or implement <classname>org.apache.openjpa.datacache.DataCache
+</classname> (preferred), or implement <classname>org.apache.openjpa.datacache.DataCache
 </classname> directly. If you want to implement a distributed cache that uses an
 unsupported method for communications, create an implementation of <classname>
 org.apache.openjpa.event.RemoteCommitProvider</classname>. This process is
@@ -863,9 +863,9 @@ described in greater detail in
             </para>
             <para>
 The query cache is just as easy to extend. Add functionality by extending the
-default <classname>org.apache.openjpa.datacache.QueryCacheImpl</classname>.
+default <classname>org.apache.openjpa.datacache.ConcurrentQueryCache</classname>.
 Implement your own storage mechanism for query results by extending <classname>
-org.apache.openjpa.datacache.AbstractQueryCache</classname> or implementing the
+org.apache.openjpa.datacache.AbstractQueryCache</classname> (preferred) or implementing the
 <classname>org.apache.openjpa.datacache.QueryCache</classname> interface
 directly.
             </para>

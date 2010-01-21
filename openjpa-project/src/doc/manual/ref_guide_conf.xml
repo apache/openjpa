@@ -2780,9 +2780,7 @@ mutable second class objects. See
 QueryCache</literal>
             </para>
             <para>
-<emphasis role="bold">Default: </emphasis><literal>true</literal>, when the data
-cache (see <xref linkend="openjpa.DataCache"/>) is also enabled, <literal>
-false</literal> otherwise.
+<emphasis role="bold">Default: </emphasis><literal>false</literal>
             </para>
             <para>
 <emphasis role="bold">Description:</emphasis> A plugin string (see

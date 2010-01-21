@@ -28,7 +28,6 @@ import org.apache.openjpa.datacache.ConcurrentDataCache;
 import org.apache.openjpa.datacache.ConcurrentQueryCache;
 import org.apache.openjpa.datacache.DataCacheManager;
 import org.apache.openjpa.datacache.DataCacheManagerImpl;
-import org.apache.openjpa.datacache.DataCacheMode;
 import org.apache.openjpa.datacache.PartitionedDataCache;
 import org.apache.openjpa.ee.ManagedRuntime;
 import org.apache.openjpa.enhance.RuntimeUnenhancedClassesModes;
@@ -252,11 +251,11 @@ public class OpenJPAConfigurationImpl
         dataCacheTimeout.set(-1);
         dataCacheTimeout.setDynamic(true);
 
-        queryCachePlugin = addPlugin("QueryCache", true);
+        queryCachePlugin = addPlugin("QueryCache", false);
         aliases = new String[] { 
+            "false", null, 
             "true", ConcurrentQueryCache.class.getName(),
             "concurrent", ConcurrentQueryCache.class.getName(), 
-            "false", null, 
         };
         queryCachePlugin.setAliases(aliases);
         queryCachePlugin.setDefault(aliases[0]);

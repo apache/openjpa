@@ -965,6 +965,9 @@
 
                         <!-- TestEJBTransactionalClass tests nothing -->
                         <exclude>org/apache/openjpa/persistence/kernel/TestEJBTransactionalClass.java</exclude>
+                        
+                        <!-- Exclude WriteBehind testcases until they are deleted... -->
+                        <exclude>org/apache/openjpa/jdbc/writebehind/**/Test*.java</exclude>
                     </excludes>
                     <systemProperties>
                         <property>

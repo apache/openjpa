@@ -34,6 +34,7 @@ public class TestBulkJPQLAndDataCache
 
     public void setUp() throws Exception {
         setUp("openjpa.DataCache", "true",
+            "openjpa.QueryCache", "true",
             "openjpa.RemoteCommitProvider", "sjvm",
             CLEAR_TABLES,
             AllFieldTypes.class, CascadeParent.class, CascadeChild.class);

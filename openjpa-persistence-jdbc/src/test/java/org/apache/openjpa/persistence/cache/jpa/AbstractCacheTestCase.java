@@ -64,6 +64,7 @@ public abstract class AbstractCacheTestCase extends AbstractPersistenceTestCase 
         OpenJPAEntityManagerFactorySPI emf =
             (OpenJPAEntityManagerFactorySPI) OpenJPAPersistence.createEntityManagerFactory(puName,
                 "META-INF/caching-persistence.xml", getPropertiesMap("openjpa.DataCache", "true",
+                    "openjpa.QueryCache", "true",
                     "openjpa.RemoteCommitProvider", "sjvm", persistentTypes, 
                     "openjpa.jdbc.JDBCListeners", new JDBCListener [] { getListener() } ));
         return emf;

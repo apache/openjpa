@@ -30,8 +30,7 @@ public class TestQueryTimestampEviction extends AbstractQueryCacheTest {
     public void setUp() throws Exception {
         super.setUp(
                 "openjpa.DataCache", "true",
-                "openjpa.QueryCache",
-                "CacheSize=1000, EvictPolicy='timestamp'",
+                "openjpa.QueryCache", "true(CacheSize=1000, EvictPolicy='timestamp')",
                 "openjpa.RemoteCommitProvider", "sjvm");
     }
 

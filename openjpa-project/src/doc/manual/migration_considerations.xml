@@ -281,6 +281,38 @@
                                 See OPENJPA-1203 for more details.
 			</para>
 		</section>
+            <section id="querycache">
+                <title>
+                openjpa.QueryCache default   
+                </title>
+                <para>
+                    In previous releases, the default value for the openjpa.QueryCache property was 
+                    <literal>true</literal> when the openjpa.DataCache was enabled.  Depending on application
+                    characteristics, this default QueryCache enablement actually could negate much of the potential
+                    gains achieved by using the DataCache.  Thus, the default value for the openjpa.QueryCache
+                    property will now by <emphasis><literal>false</literal></emphasis>.
+                </para>
+                <para>
+                    To re-enable the default QueryCache behavior, you just need to include the following property
+                    into your persistence.xml configuration.
+                    
+                    <programlisting>
+                    &lt;property name="openjpa.QueryCache" value="true"/&gt;
+                    </programlisting>
+                </para>
+                <para>
+                    If your configuration had previously enabled the QueryCache explicitly, then you might have to 
+                    include the <literal>true</literal> value into your configuration (if you relied on the previous 
+                    default).  Otherwise, your current QueryCache enablement will continue to work.
+                    
+                    <programlisting>
+                    &lt;property name="openjpa.QueryCache" value="true(CacheSize=1000, SoftReferenceSize=100)"/&gt;
+                    </programlisting>
+                </para>
+                <para>
+                    See OPENJPA-1469 and sub-tasks for more details.
+                </para>
+            </section>
         </section>
     </section>
 </appendix>
