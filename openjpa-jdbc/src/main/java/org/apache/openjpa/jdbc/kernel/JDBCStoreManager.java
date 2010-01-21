@@ -369,8 +369,7 @@ public class JDBCStoreManager
                 Object mappedByObject = info.result.getMappedByValue();
                 if (mappedByFieldMapping != null && mappedByObject != null)
                     if (mappedByObject instanceof OpenJPAId &&
-                        mapping.getExtraFieldDataIndex(mappedByFieldMapping.
-                        getIndex()) != -1)
+                        mapping.getExtraFieldDataIndex(mappedByFieldMapping.getIndex()) != -1) {
                         // The inverse relation can not be set since
                         // we are eagerly loading this sm for
                         // a sm owner that is still in the process of 
@@ -379,10 +378,15 @@ public class JDBCStoreManager
                         // The inverse relation is set later by
                         // setInverseRelation() when the sm owner is fully
                         // initialized.
-                        sm.setIntermediate(mappedByFieldMapping.getIndex(),
-                            mappedByObject);
-                    else
+                        int index = mappedByFieldMapping.getIndex();
+                        if (sm.getLoaded().get(index)) {
+                            sm.setImplData(index, mappedByObject);
+                        } else {
+                            sm.setIntermediate(index, mappedByObject);
+                        }
+                    } else {
                         setMappedBy(sm, mappedByFieldMapping, mappedByObject);
+                    }
             }
             // load the selected mappings into the given state manager
             if (res != null) {
