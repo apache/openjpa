@@ -24,7 +24,7 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <artifactId>openjpa</artifactId>
-    <packaging>jar</packaging>
+    <packaging>bundle</packaging>
     <name>OpenJPA Aggregate Jar</name>
     <parent>
         <groupId>org.apache.openjpa</groupId>
@@ -104,6 +104,49 @@
                         </configuration>
                     </execution>
                 </executions>
+            </plugin>
+
+            <!-- extract the shaded jar so a bundle can be created -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-antrun-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>run</goal>
+                        </goals>
+                        <configuration>
+                            <tasks>
+                                <unzip src="${project.build.directory}/${pom.artifactId}-${pom.version}.jar" dest="${project.build.directory}/classes"/>
+                            </tasks>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+
+            <!-- create an OSGi bundle -->
+            <plugin>
+                <groupId>org.apache.felix</groupId>
+                <artifactId>maven-bundle-plugin</artifactId>
+                <extensions>true</extensions>
+                <configuration>
+                    <instructions>
+                        <!-- OSGi Bundle Metadata -->
+                        <Bundle-DocURL>${project.url}</Bundle-DocURL>
+                        <Private-Package />
+                        <Export-Package>org.apache.openjpa.*;version=${pom.version}</Export-Package>
+                        <Import-Package>com.ibm.*;resolution:=optional,org.postg
+resql.*;resolution:=optional,org.apache.tools.ant.*;resolution:=optional,org.apa
+che.log4j.*;resolution:=optional,javax.activation.xa*;resolution:=optional,javax
+.jms.*;resolution:=optional,javax.transaction.*;resolution:=optional,javax.valid
+ation.*;resolution:=optional,javax.xml.bind.*;resolution:=optional,serp.*;resolu
+tion:=optional,*</Import-Package>
+                        <!-- Eclipse metadata -->
+                        <Eclipse-Autostart>false</Eclipse-Autostart>
+                        <Bundle-ClassPath>.</Bundle-ClassPath>
+                    </instructions>
+                </configuration>
             </plugin>
         </plugins>
     </build>
