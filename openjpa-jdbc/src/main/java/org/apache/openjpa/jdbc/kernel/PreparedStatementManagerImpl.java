@@ -243,22 +243,14 @@ public class PreparedStatementManagerImpl
         return autoAssign;
     }
 
-    /**
-     * @deprecated
-     */
     protected String[] getAutoAssignColNames(Column[] autoAssign, RowImpl row) {
-        DBIdentifier[] names =  getAutoAssignColIdentifiers(autoAssign, row);
-        return DBIdentifier.toStringArray(names);
-    }
-
-    protected DBIdentifier[] getAutoAssignColIdentifiers(Column[] autoAssign, RowImpl row) {
-        DBIdentifier[] autoAssignColNames = null;
+        String[] autoAssignColNames = null;
         if (autoAssign != null && autoAssign.length > 0
             && row.getPrimaryKey() != null) {
-            autoAssignColNames = new DBIdentifier[autoAssign.length];
+            autoAssignColNames = new String[autoAssign.length];
             for (int i = 0; i < autoAssign.length; i++)
-                autoAssignColNames[i] = autoAssign[i].getIdentifier();
-//                    _dict.convertSchemaCase(.getName());
+                autoAssignColNames[i] =
+                    _dict.convertSchemaCase(autoAssign[i].getIdentifier());
         }
         return autoAssignColNames;
     }
