@@ -18,7 +18,6 @@
  */
 package org.apache.openjpa.conf;
 
-import java.net.URL;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Map;
@@ -178,7 +177,7 @@ public class OpenJPAConfigurationImpl
     private Collection<String> supportedOptions = new HashSet<String>(33);
     private final StoreFacadeTypeRegistry _storeFacadeRegistry = new StoreFacadeTypeRegistry();
     private BrokerFactoryEventManager _brokerFactoryEventManager = new BrokerFactoryEventManager(this);
-    private URL _puRootUrl;    
+        
 
     /**
      * Default constructor. Attempts to load global properties.
@@ -1695,14 +1694,5 @@ public class OpenJPAConfigurationImpl
     public String getDataCacheMode() {
         return dataCacheMode.getString();
     }
-    
-    public void setPersistenceUnitRootUrl(URL url) {
-        this._puRootUrl = url;
-    }
-    
-    public URL getPersistenceUnitRootUrl() {
-        return _puRootUrl;
-    }
-    
 }
 

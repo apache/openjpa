@@ -752,28 +752,8 @@ public abstract class AbstractCFMetaDataFactory
                     if (log.isTraceEnabled())
                         log.trace(_loc.get("scanning-resource", rsrc));
                     mitr = new ResourceMetaDataIterator(rsrc, loader);
-                    
-                    URL puUrl  = repos.getConfiguration().getPersistenceUnitRootUrl();
-                    String puUrlString = puUrl == null ? null : puUrl.toString();
-                    if (log.isTraceEnabled())
-                        log.trace(_loc.get("pu-root-url", puUrlString));
-                    
-                    List<URL> urls = new ArrayList<URL>(3);
                     while (mitr.hasNext()) {
                         url = (URL) mitr.next();
-                        String urlString = url.toString();
-                        if (log.isTraceEnabled())
-                            log.trace(_loc.get("resource-url", urlString));
-                        if (puUrlString != null) {
-                            if (urlString.indexOf(puUrlString) != -1)
-                                urls.add(url);
-                        } else 
-                            urls.add(url);
-                    }
-                    mitr.close();
-                    
-                    for (Object obj : urls) {
-                        url = (URL) obj;
                         clss = cparser.parseTypeNames(new URLMetaDataIterator
                             (url));
                         List<String> newNames = Arrays.asList(clss);
@@ -783,6 +763,7 @@ public abstract class AbstractCFMetaDataFactory
                         names.addAll(newNames);
                         mapPersistentTypeNames(url, clss);
                     }
+                    mitr.close();
                 }
             }
         }

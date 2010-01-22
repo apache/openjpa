@@ -187,11 +187,6 @@ public class PersistenceProviderImpl
                 }
             }
 
-            OpenJPAConfiguration conf = factory.getConfiguration();
-            // OPENJPA-1460 Fix scope visibility of orm.xml when it is packaged in both ear file and war file
-            conf.setPersistenceUnitRootUrl(pui.getPersistenceUnitRootUrl());
-            _log = conf.getLog(OpenJPAConfiguration.LOG_RUNTIME);
-
             // Create appropriate LifecycleEventManager
             loadValidator(factory);
             
