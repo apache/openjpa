@@ -63,10 +63,6 @@ import org.apache.openjpa.util.InvalidStateException;
 import org.apache.openjpa.util.MetaDataException;
 import org.apache.openjpa.util.OpenJPAException;
 import org.apache.openjpa.util.UserException;
-import org.apache.openjpa.writebehind.WriteBehindCache;
-import org.apache.openjpa.writebehind.WriteBehindCallback;
-import org.apache.openjpa.writebehind.WriteBehindConfigurationException;
-import org.apache.openjpa.writebehind.WriteBehindStoreManager;
 
 /**
  * Abstract implementation of the {@link BrokerFactory}
@@ -117,8 +113,6 @@ public abstract class AbstractBrokerFactory
     // and later identified
     private Object _poolKey;   
     
-    private WriteBehindCallback _writeBehindCallback; 
-
     /**
      * Return an internal factory pool key for the given configuration.
      *
@@ -163,8 +157,6 @@ public abstract class AbstractBrokerFactory
             	_conf.isConnectionFactoryModeManaged(),
                 _conf.getConnectionRetainModeConstant(), false).close(); 
         }
-
-        initWriteBehindCallback();        
     }
 
     /**
@@ -189,13 +181,8 @@ public abstract class AbstractBrokerFactory
     public Broker newBroker(String user, String pass, boolean managed, int connRetainMode) {
         return newBroker(user, pass, managed, connRetainMode, true);
     }
-
-    public Broker newBroker(String user, String pass, boolean managed, int connRetainMode, boolean findExisting) {
-        return newBroker(user, pass, managed, connRetainMode, findExisting, false);
-    }
     
-    public Broker newBroker(String user, String pass, boolean managed, int connRetainMode, boolean findExisting,
-        boolean writeBehindCallback) {
+    public Broker newBroker(String user, String pass, boolean managed, int connRetainMode, boolean findExisting) {
         try {
             assertOpen();
             makeReadOnly();
@@ -205,7 +192,7 @@ public abstract class AbstractBrokerFactory
                 broker = findBroker(user, pass, managed);
             if (broker == null) {
                 broker = newBrokerImpl(user, pass);
-                initializeBroker(managed, connRetainMode, broker, false, writeBehindCallback);
+                initializeBroker(managed, connRetainMode, broker, false);
             }
             return broker;
         } catch (OpenJPAException ke) {
@@ -216,18 +203,12 @@ public abstract class AbstractBrokerFactory
     }
 
     void initializeBroker(boolean managed, int connRetainMode, Broker broker, boolean fromDeserialization) {
-        initializeBroker(managed, connRetainMode, broker, fromDeserialization, false);
-    }    
-    
-    void initializeBroker(boolean managed, int connRetainMode, Broker broker, boolean fromDeserialization,
-        boolean fromWriteBehindCallback) {
         assertOpen();
         makeReadOnly();
         
         DelegatingStoreManager dsm = createDelegatingStoreManager();
 
-        ((BrokerImpl) broker).initialize(this, dsm, managed, connRetainMode, fromDeserialization,
-            fromWriteBehindCallback);
+        ((BrokerImpl) broker).initialize(this, dsm, managed, connRetainMode, fromDeserialization);
         if (!fromDeserialization)
             addListeners(broker);
 
@@ -377,10 +358,6 @@ public abstract class AbstractBrokerFactory
     public void close() {
         lock();
 
-        if(_writeBehindCallback != null) {
-            _writeBehindCallback.close();
-        }
-        
         try {
             assertOpen();
             assertNoActiveTransaction();
@@ -828,11 +805,7 @@ public abstract class AbstractBrokerFactory
     /**
      * <P>
      * Create a DelegatingStoreManager for use with a Broker created by this factory.
-     * </P>
-     * <P>
-     * If a DataCache has been enabled a DataCacheStoreManager will be returned. If a WriteBehind cache is also enabled 
-     * the DataCacheStoreManager will  delegate to a WriteBehindStoreManager. If no WriteBehindCache is in use the 
-     * DataCache will delegate to a StoreManager returned by newStoreManager(). 
+     * If a DataCache has been enabled a DataCacheStoreManager will be returned.
      * </P>
      * <P>
      * If no DataCache is in use an ROPStoreManager will be returned. 
@@ -849,54 +822,11 @@ public abstract class AbstractBrokerFactory
         StoreManager sm = newStoreManager();
         DelegatingStoreManager dsm = null;
         if (_conf.getDataCacheManagerInstance().getSystemDataCache() != null) {
-            WriteBehindCache wbCache = _conf.getWriteBehindCacheManagerInstance().getSystemWriteBehindCache();
-            if (wbCache != null) {
-                dsm = new DataCacheStoreManager(new WriteBehindStoreManager(sm, wbCache));
-            } else {
-                dsm = new DataCacheStoreManager(sm);
-            }
+            dsm = new DataCacheStoreManager(sm);
         }
         dsm = new ROPStoreManager((dsm == null) ? sm : dsm);
         
         return dsm;
-    }
-    
-    protected void initWriteBehindCallback() { 
-        WriteBehindCache cache = _conf.getWriteBehindCacheManagerInstance().getSystemWriteBehindCache();
-        if (cache != null) {
-            // Verify we are not missing one or more of the following required
-            // WriteBehind configuration parameters:
-            //   - openjpa.DataCache
-            //   - openjpa.WriteBehindCallback
-            if (_conf.getDataCacheManagerInstance().getSystemDataCache() == null) {
-                throw new WriteBehindConfigurationException(
-                    _loc.get("writebehind-cfg-err",
-                    "openjpa.DataCache").getMessage());
-            }
-            if (_conf.getWriteBehindCallbackInstance() == null ) {
-                throw new WriteBehindConfigurationException(
-                    _loc.get("writebehind-cfg-err",
-                    "openjpa.WriteBehindCallback").getMessage());
-            }
-    
-            Broker broker =
-                newBroker(_conf.getConnectionUserName(), 
-                          _conf.getConnectionPassword(), 
-                          false, // WriteBehind broker is always unmanaged.
-                          _conf.getConnectionRetainModeConstant(),
-                          false, true);
-
-            // The Broker used by the WriteBehind cache should not be tracked
-            // by the factory - we'll manually clean up when the factory is
-            // closed.
-            _transactional.remove(broker);
-            _brokers.remove(broker);
-            
-            _writeBehindCallback = _conf.getWriteBehindCallbackInstance();
-            _writeBehindCallback.initialize(broker, cache);
-
-            new Thread(_writeBehindCallback).start();
-        }
     }
 }
 
