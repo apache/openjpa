@@ -1,7 +1,7 @@
 <html>
-<title>Release Notes for Apache OpenJPA 2.0.0 Milestone 4</title>
+<title>Release Notes for Apache OpenJPA 2.0.0 Beta</title>
 <body>
-<h1>Release Notes for Apache OpenJPA 2.0.0 Milestone 4</h1>
+<h1>Release Notes for Apache OpenJPA 2.0.0 Beta</h1>
 <p>
 <ul>
   <li><a href="#Overview">Overview</a></li>
@@ -12,7 +12,7 @@
   <li><a href="#Notice">Notice</a></li>
   <li><a href="#ReleaseNotes">Release Notes</a></li>
   <ul>
-    <li><a href="#200M4">2.0.0 Milestone 4</a></li>
+    <li><a href="#200beta">2.0.0 Beta</a></li>
     <li><a href="#200M3">2.0.0 Milestone 3</a></li>
     <li><a href="#200M2">2.0.0 Milestone 2</a></li>
     <li><a href="#200M1">2.0.0 Milestone 1</a></li>
@@ -27,18 +27,25 @@
 <P>This distribution of Apache OpenJPA builds upon the prior releases which 
 provided a feature-rich implementation of the Java Persistence API (JPA 1.0)
 part of Java Community Process JSR-220 (Enterprise JavaBeans 3.0) by
-includng some early-draft specification functionality from the Java
-Community Process JSR-317 (JPA 2.0) Proposed Final Draft 2 on 09/22/2009.
+implementing the specification functionality from the final Java
+Community Process JSR-317 (JPA 2.0) release on 12/10/2009 and passes
+the JPA 2.0 TCK.
 </P>
 
 <p> Some of the key features included in this distribution:
 <ul>
-<li>TBD</li>
+<li>Passes the Sun JPA 2.0 TCK</li>
+<li>Implements the final JSR-317 JPA 2.0 specification APIs</li>
+<li>Supports the final JSR-303 Bean Validation 1.0 specification APIs</li>
+<li>Extended lock scope support</li>
+<li>Support for CacheRetrieve/StoreMode properties on find/refresh methods</li>
+<li>Updated find/refresh methods to support entity manager level properties</li>
+<li>Reworked support for delimited identifiers</li>
 </ul>
 </p>
 
-<p>This Milestone 4 distribution is based upon the contributions provided in
-development iterations 12 through XXX, as defined in the JPA 2.0 Roadmap at:
+<p>This Beta distribution is based upon the contributions provided in
+development iterations 12 through 14, as defined in the JPA 2.0 Roadmap at:
 <a href="http://openjpa.apache.org/jpa-20-roadmap.html">http://openjpa.apache.org/jpa-20-roadmap.html</a></p>
 
 <p>The JPA 2.0 Roadmap contains a complete list of implemented features and
@@ -104,13 +111,11 @@ under the License.</p>
 in each release of OpenJPA.</P>
 
 <h2><a name="Notice"></a>Notice</h2>
-<p>Copyright 2006-2009 Apache Software Foundation
+<p>Copyright 2006,2010 The Apache Software Foundation
 <BR>This product includes software developed at The Apache Software Foundation (http://www.apache.org/).</p>
-<P>This is an implementation of an early-draft specification developed under the Java Community Process (JCP). The code is untested and presumed not to be a compatible implementation of the JSR-317 Java Persistence API, Version 2.0 specification.  We encourage you to migrate to an implementation of the JSR-317 Java Persistence API, Version 2.0 specification that has been tested and verified to be compatible as soon as such an implementation is available, and we encourage you to retain this notice in any implementation of JSR-317 Java Persistence API, Version 2.0 specification that you distribute.</p>
-<P>OpenJPA includes the persistence and orm schemas from the JPA specifications.
+<P>Apache OpenJPA includes the persistence and orm schemas from the JPA specifications.
 <BR>Copyright 2005-2009 Sun Microsystems, Inc. All rights reserved.
-<BR>OpenJPA elects to include this software in this distribution under the
-CDDL license.
+<BR>Apache OpenJPA elects to include this software in this distribution under the CDDL license.
 <BR>You can obtain a copy of the License at:
 <a href="https://glassfish.dev.java.net/public/CDDL+GPL.html">https://glassfish.dev.java.net/public/CDDL+GPL.html</a>
 <BR>The source code is available at:
@@ -121,8 +126,172 @@ CDDL license.
 <hr>
 <h2><a name="ReleaseNotes">Release Notes</h2>
 
-<h3><a name="200M4">OpenJPA 2.0.0 Milestone 4</h3>
-<h4>TBD</h4>
+<h3><a name="200beta">OpenJPA 2.0.0 Beta</h3>
+<h4>Sub-task</h4>
+<ul>
+<li>[<a href='https://issues.apache.org/jira/browse/OPENJPA-1103'>OPENJPA-1103</a>] -         Remove early-access disclaimer from the NOTICE files once the spec is released
+</li>
+<li>[<a href='https://issues.apache.org/jira/browse/OPENJPA-1115'>OPENJPA-1115</a>] -         Finish support for delimited identifiers
+</li>
+<li>[<a href='https://issues.apache.org/jira/browse/OPENJPA-1347'>OPENJPA-1347</a>] -         Upgrade to Validation API 1.0.0.GA
+</li>
+<li>[<a href='https://issues.apache.org/jira/browse/OPENJPA-1353'>OPENJPA-1353</a>] -         Add legal info to the docs
+</li>
+<li>[<a href='https://issues.apache.org/jira/browse/OPENJPA-1358'>OPENJPA-1358</a>] -         Support CacheRetrieve/StoreMode properties for find()/refresh() operation
+</li>
+<li>[<a href='https://issues.apache.org/jira/browse/OPENJPA-1404'>OPENJPA-1404</a>] -         Add find method that accepts properties to entity manager
+</li>
+<li>[<a href='https://issues.apache.org/jira/browse/OPENJPA-1453'>OPENJPA-1453</a>] -         Add support for testing with final JPA 2.0 TCK
+</li>
+<li>[<a href='https://issues.apache.org/jira/browse/OPENJPA-1476'>OPENJPA-1476</a>] -         Turn off QueryCache by default
+</li>
+</ul>
+
+<h4>Bug</h4>
+<ul>
+<li>[<a href='https://issues.apache.org/jira/browse/OPENJPA-123'>OPENJPA-123</a>] -         Test framework should allow tests that are expected to fail to be checked in
+</li>
+<li>[<a href='https://issues.apache.org/jira/browse/OPENJPA-459'>OPENJPA-459</a>] -         Problem with bulk updates in mySQL
+</li>
+<li>[<a href='https://issues.apache.org/jira/browse/OPENJPA-859'>OPENJPA-859</a>] -         OpenJPA requires all persistent fields to be specified on an XML defined entity
+</li>
+<li>[<a href='https://issues.apache.org/jira/browse/OPENJPA-993'>OPENJPA-993</a>] -         PCEnhancer can't execute if a non-OpenJPA PU is found
+</li>
+<li>[<a href='https://issues.apache.org/jira/browse/OPENJPA-1046'>OPENJPA-1046</a>] -         Unique Constraint on MappedSupperClass causes NullPointerException
+</li>
+<li>[<a href='https://issues.apache.org/jira/browse/OPENJPA-1224'>OPENJPA-1224</a>] -         OpenJPA MySQL BigDecimal ignoring Precision/Scale column Annotation when generating tables 
+</li>
+<li>[<a href='https://issues.apache.org/jira/browse/OPENJPA-1263'>OPENJPA-1263</a>] -         TestReaderLob.testUpdateWithNull() fails on MySQL
+</li>
+<li>[<a href='https://issues.apache.org/jira/browse/OPENJPA-1294'>OPENJPA-1294</a>] -         Nested JDBC calls fail for certain database
+</li>
+<li>[<a href='https://issues.apache.org/jira/browse/OPENJPA-1308'>OPENJPA-1308</a>] -         shouldn't always use CAST with UPPER and LOWER for DB2
+</li>
+<li>[<a href='https://issues.apache.org/jira/browse/OPENJPA-1321'>OPENJPA-1321</a>] -         Documentation inaccuracies
+</li>
+<li>[<a href='https://issues.apache.org/jira/browse/OPENJPA-1341'>OPENJPA-1341</a>] -         PostRemove not invoked after database record was deleted
+</li>
+<li>[<a href='https://issues.apache.org/jira/browse/OPENJPA-1344'>OPENJPA-1344</a>] -         Query [get|set]LockMode &amp; Em getLockMode not throwing correct exceptions
+</li>
+<li>[<a href='https://issues.apache.org/jira/browse/OPENJPA-1349'>OPENJPA-1349</a>] -         Compatibility options are not set appropriately for spec level when emf is created by JEE container
+</li>
+<li>[<a href='https://issues.apache.org/jira/browse/OPENJPA-1354'>OPENJPA-1354</a>] -         Configuring DBCP connection pool with connection properties breaks when user/pasword is specifed and javax.* configuration is set to DBCP Driver
+</li>
+<li>[<a href='https://issues.apache.org/jira/browse/OPENJPA-1355'>OPENJPA-1355</a>] -         Recent snaphot versions of openjpa have problem with postgresPreparedStatementImpl constructor making Postgres impossible to use
+</li>
+<li>[<a href='https://issues.apache.org/jira/browse/OPENJPA-1379'>OPENJPA-1379</a>] -         Locking problem when using timestamp QueryCache eviction policy.
+</li>
+<li>[<a href='https://issues.apache.org/jira/browse/OPENJPA-1381'>OPENJPA-1381</a>] -         IllegalStateException on query method call after named query is created twice.
+</li>
+<li>[<a href='https://issues.apache.org/jira/browse/OPENJPA-1385'>OPENJPA-1385</a>] -         Parameter in having clause of Criteria query not recognized
+</li>
+<li>[<a href='https://issues.apache.org/jira/browse/OPENJPA-1386'>OPENJPA-1386</a>] -         Metamodel Generator does not handle field types that can hide another
+</li>
+<li>[<a href='https://issues.apache.org/jira/browse/OPENJPA-1387'>OPENJPA-1387</a>] -         Unique colums automatically defined as non-nullable
+</li>
+<li>[<a href='https://issues.apache.org/jira/browse/OPENJPA-1390'>OPENJPA-1390</a>] -         Criteria API untyped join(String attr) implies any attribute not a singular attribute
+</li>
+<li>[<a href='https://issues.apache.org/jira/browse/OPENJPA-1391'>OPENJPA-1391</a>] -         Handle generic/unspecified  type arguments for persistent fields during metamodel generation
+</li>
+<li>[<a href='https://issues.apache.org/jira/browse/OPENJPA-1392'>OPENJPA-1392</a>] -         CriteriaBuilder.size() must return Integer as value
+</li>
+<li>[<a href='https://issues.apache.org/jira/browse/OPENJPA-1393'>OPENJPA-1393</a>] -         CriteriaBuilder.countDistinct() does not return correct result
+</li>
+<li>[<a href='https://issues.apache.org/jira/browse/OPENJPA-1400'>OPENJPA-1400</a>] -         Unable to persist a relationship to a detached Entity 
+</li>
+<li>[<a href='https://issues.apache.org/jira/browse/OPENJPA-1409'>OPENJPA-1409</a>] -         Improve type preservation for currentDate/Time  expression in queries
+</li>
+<li>[<a href='https://issues.apache.org/jira/browse/OPENJPA-1419'>OPENJPA-1419</a>] -         Access path metadata set incorrectly for fetch joins in Criteria Query
+</li>
+<li>[<a href='https://issues.apache.org/jira/browse/OPENJPA-1425'>OPENJPA-1425</a>] -         Literal value in projection can not be parameterized for all databases
+</li>
+<li>[<a href='https://issues.apache.org/jira/browse/OPENJPA-1439'>OPENJPA-1439</a>] -         Metamodel instantiation fails on InputStream properties
+</li>
+<li>[<a href='https://issues.apache.org/jira/browse/OPENJPA-1441'>OPENJPA-1441</a>] -         NPE when enhancing a Serializable, versioned class
+</li>
+<li>[<a href='https://issues.apache.org/jira/browse/OPENJPA-1444'>OPENJPA-1444</a>] -         Criteria Query with fetch joins does not return correct DISTINCT result
+</li>
+<li>[<a href='https://issues.apache.org/jira/browse/OPENJPA-1445'>OPENJPA-1445</a>] -         Support Enum as external value
+</li>
+<li>[<a href='https://issues.apache.org/jira/browse/OPENJPA-1452'>OPENJPA-1452</a>] -         OpenJPA 2.0.0-M3 attempts to mutate unmodifiable map in Glassfish
+</li>
+<li>[<a href='https://issues.apache.org/jira/browse/OPENJPA-1463'>OPENJPA-1463</a>] -         JPQL new operator arguments should be more flexible in matching constructor arguments
+</li>
+<li>[<a href='https://issues.apache.org/jira/browse/OPENJPA-1464'>OPENJPA-1464</a>] -         PreparedQuery fails with enum query parameter
+</li>
+<li>[<a href='https://issues.apache.org/jira/browse/OPENJPA-1478'>OPENJPA-1478</a>] -         OpenJPA is no longer available as an OSGi bundle
+</li>
+</ul>
+
+<h4>Improvement</h4>
+<ul>
+<li>[<a href='https://issues.apache.org/jira/browse/OPENJPA-250'>OPENJPA-250</a>] -         Reduce synchronization bottlenecks in data cache, metadata repository, and lifecycle event manager
+</li>
+<li>[<a href='https://issues.apache.org/jira/browse/OPENJPA-709'>OPENJPA-709</a>] -         Better naming for unique constraints
+</li>
+<li>[<a href='https://issues.apache.org/jira/browse/OPENJPA-716'>OPENJPA-716</a>] -         Improve the documentation about Streaming LOB Support
+</li>
+<li>[<a href='https://issues.apache.org/jira/browse/OPENJPA-839'>OPENJPA-839</a>] -         change pom.xml to publish sources as well.
+</li>
+<li>[<a href='https://issues.apache.org/jira/browse/OPENJPA-1085'>OPENJPA-1085</a>] -         Add toString() method to PCState classes
+</li>
+<li>[<a href='https://issues.apache.org/jira/browse/OPENJPA-1172'>OPENJPA-1172</a>] -         Use java.util.concurrent.ConcurrentHashMap rather than a synchronized HashMap in ClassMapping.
+</li>
+<li>[<a href='https://issues.apache.org/jira/browse/OPENJPA-1356'>OPENJPA-1356</a>] -         Use maven-enforcer-plugin to verify proper Java and Maven levels
+</li>
+<li>[<a href='https://issues.apache.org/jira/browse/OPENJPA-1363'>OPENJPA-1363</a>] -         Upgrade to latest commons-pool maintenance release
+</li>
+<li>[<a href='https://issues.apache.org/jira/browse/OPENJPA-1366'>OPENJPA-1366</a>] -         Remove need for an EMF from OpenJPAPersistenceUtil and TraversableResolverImpl
+</li>
+<li>[<a href='https://issues.apache.org/jira/browse/OPENJPA-1368'>OPENJPA-1368</a>] -         Upgrade to HSQLDB 1.8.0.10 and in-memory db for unit tests
+</li>
+<li>[<a href='https://issues.apache.org/jira/browse/OPENJPA-1415'>OPENJPA-1415</a>] -         Performance improvement by reduced logging of batched OLE
+</li>
+<li>[<a href='https://issues.apache.org/jira/browse/OPENJPA-1440'>OPENJPA-1440</a>] -         Allow COUNT(*) instead of COUNT(t0.id) for simple queries as an option
+</li>
+<li>[<a href='https://issues.apache.org/jira/browse/OPENJPA-1456'>OPENJPA-1456</a>] -         Replace StringBuffer usage with StringBuilder
+</li>
+<li>[<a href='https://issues.apache.org/jira/browse/OPENJPA-1468'>OPENJPA-1468</a>] -         Upgrade build to use final Bean Validation spec API from Geronimo
+</li>
+</ul>
+
+<h4>New Feature</h4>
+<ul>
+<li>[<a href='https://issues.apache.org/jira/browse/OPENJPA-773'>OPENJPA-773</a>] -         Upgrade to JPA 2
+</li>
+<li>[<a href='https://issues.apache.org/jira/browse/OPENJPA-1181'>OPENJPA-1181</a>] -         Metamodel Generation must be more selective and controllable
+</li>
+<li>[<a href='https://issues.apache.org/jira/browse/OPENJPA-1276'>OPENJPA-1276</a>] -         Support CQL for Criteria Query
+</li>
+<li>[<a href='https://issues.apache.org/jira/browse/OPENJPA-1332'>OPENJPA-1332</a>] -         Allow configuration property to be declared for internal usage only
+</li>
+<li>[<a href='https://issues.apache.org/jira/browse/OPENJPA-1334'>OPENJPA-1334</a>] -         Support instance level distribution policy for named cache partitions
+</li>
+<li>[<a href='https://issues.apache.org/jira/browse/OPENJPA-1337'>OPENJPA-1337</a>] -         OpenJPA 2.0 iteration 12 primary task
+</li>
+<li>[<a href='https://issues.apache.org/jira/browse/OPENJPA-1357'>OPENJPA-1357</a>] -         Support CacheRetrieve/StoreMode properties for find()/refresh() operation
+</li>
+<li>[<a href='https://issues.apache.org/jira/browse/OPENJPA-1373'>OPENJPA-1373</a>] -         OpenJPA 2.0 iteration 13 primary task
+</li>
+<li>[<a href='https://issues.apache.org/jira/browse/OPENJPA-1426'>OPENJPA-1426</a>] -         OpenJPA 2.0 iteration 14 primary task
+</li>
+</ul>
+
+<h4>Task</h4>
+<ul>
+<li>[<a href='https://issues.apache.org/jira/browse/OPENJPA-1183'>OPENJPA-1183</a>] -         Ergonomics of metamodel generation process
+</li>
+<li>[<a href='https://issues.apache.org/jira/browse/OPENJPA-1290'>OPENJPA-1290</a>] -         Document Criteria API
+</li>
+</ul>
+
+<h4>Test</h4>
+<ul>
+<li>[<a href='https://issues.apache.org/jira/browse/OPENJPA-1153'>OPENJPA-1153</a>] -         Test suite speed-up outside SingleEMFTestCase
+</li>
+<li>[<a href='https://issues.apache.org/jira/browse/OPENJPA-1342'>OPENJPA-1342</a>] -         Build a mechanics to test JTA transaction semantics within JSE 
+</li>
+</ul>
 
 <hr>
 <h3><a name="200M3">OpenJPA 2.0.0 Milestone 3</h3>
