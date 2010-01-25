@@ -418,16 +418,7 @@ databaseName=${db.name}
             </plugin>
           </plugins>
         </build>
-        <!-- only used for old JPA 1.0 RI API, which we don't use anymore
-        <repositories>
-          <repository>
-            <id>java.net</id>
-            <name>Java.net Maven Repository</name>
-            <url>https://maven-repository.dev.java.net/nonav/repository</url>
-            <layout>legacy</layout>
-          </repository>
-        </repositories>
-        -->
+
         <dependencies>
           <dependency>
             <groupId>org.apache.geronimo.specs</groupId>
