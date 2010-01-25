@@ -1,5 +1,5 @@
 Apache OpenJPA Examples
-Copyright © 2005-2009, The Apache Software Foundation.
+Copyright © 2006,2010 The Apache Software Foundation.
 Licensed under ASL 2.0 - http://www.apache.org/licenses/LICENSE-2.0
 --------------------------------------------------------------------------------
 
