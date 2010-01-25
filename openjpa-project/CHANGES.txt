@@ -71,6 +71,7 @@ License
 Notices
 -------
    Copyright 2006,2010 The Apache Software Foundation
+   Apache, the Apache feather logo and OpenJPA are trademarks of The Apache Software Foundation.
 
    This product includes software developed at
    The Apache Software Foundation (http://www.apache.org/).
