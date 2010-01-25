@@ -1,4 +1,4 @@
-                           OpenJPA 2.0.0 Milestone 4
+                           Apache OpenJPA 2.0.0 Beta
                            -------------------------
 
 Content
@@ -26,11 +26,11 @@ Overview
    Community Process JSR-317 (JPA 2.0) release on 12/10/2009.
 
    Some of the key features included in this distribution:
-     * TBD
+     * Passes JPA 2.0 TCK
 
 
-   This Milestone 4 distribution is based upon the contributions provided in
-   development iterations 12 through XXX, as defined in the JPA 2.0 Roadmap at:
+   This Beta distribution is based upon the contributions provided in
+   development iterations 12 through 14, as defined in the JPA 2.0 Roadmap at:
        http://openjpa.apache.org/jpa-20-roadmap.html
 
    The JPA 2.0 Roadmap contains a complete list of implemented features and
@@ -63,7 +63,7 @@ License
 
 Notices
 -------
-   Copyright 2006-2009 Apache Software Foundation
+   Copyright 2006-2010 Apache Software Foundation
 
    This product includes software developed at
    The Apache Software Foundation (http://www.apache.org/).
@@ -119,14 +119,14 @@ Getting Involved
         * Bugs and other issues can be posted on the project JIRA.
 
 
-Included Changes in OpenJPA Milestone 4
----------------------------------------
+Included Changes in OpenJPA 2.0.0 Beta
+--------------------------------------
 
     * TBD
 
 
-Included Changes in OpenJPA Milestone 3
----------------------------------------
+Included Changes in OpenJPA 2.0.0 Milestone 3
+---------------------------------------------
 
 Sub-task
 --------
