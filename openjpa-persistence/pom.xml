@@ -73,6 +73,19 @@
                             </excludes>
                         </configuration>
                     </plugin>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-jar-plugin</artifactId>
+                        <executions>
+                            <execution>
+                                <id>attach-tests</id>
+                                <phase>verify</phase>
+                                <goals>
+                                    <goal>test-jar</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
                 </plugins>
             </build>
         </profile>
@@ -86,28 +99,21 @@
             </activation>
             <id>jdk6-compiler</id>
             <build>
-                <!--
                 <plugins>
                     <plugin>
                         <groupId>org.apache.maven.plugins</groupId>
-                        <artifactId>maven-antrun-plugin</artifactId>
+                        <artifactId>maven-jar-plugin</artifactId>
                         <executions>
                             <execution>
-                                <phase>process-classes</phase>
-                                <configuration>
-                                    <tasks>
-                                        <echo file="${basedir}/src/main/resources/META-INF/services/javax.annotation.processing.Processor"
-                                        message="org.apache.openjpa.persistence.meta.AnnotationProcessor6"/>
-                                    </tasks>
-                                </configuration>
+                                <id>attach-tests</id>
+                                <phase>verify</phase>
                                 <goals>
-                                    <goal>run</goal>
+                                    <goal>test-jar</goal>
                                 </goals>
                             </execution>
                         </executions>
                     </plugin>
                 </plugins>
-                -->
             </build>
         </profile>
     </profiles>
