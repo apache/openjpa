@@ -1,5 +1,5 @@
-                           OpenJPA 2.0.0 Milestone 4
-                           -------------------------
+                         Apache OpenJPA 2.0.0-SNAPSHOT
+                         -----------------------------
 
 Content
 -------
@@ -23,14 +23,18 @@ Overview
    provided a feature-rich implementation of the Java Persistence API (JPA 1.0)
    part of Java Community Process JSR-220 (Enterprise JavaBeans 3.0) by
    implementing the specification functionality from the final Java
-   Community Process JSR-317 (JPA 2.0) release on 12/10/2009.
+   Community Process JSR-317 (JPA 2.0) release on 12/10/2009 and passes
+   the Sun JPA 2.0 TCK.
 
    Some of the key features included in this distribution:
-     * TBD
+     * Passes the Sun JPA 2.0 TCK
+     * Implements the final JSR-317 JPA 2.0 specification APIs
+     * Supports the final JSR-303 Bean Validation 1.0 specification APIs
+     * . . .
 
 
-   This Milestone 4 distribution is based upon the contributions provided in
-   development iterations 12 through XXX, as defined in the JPA 2.0 Roadmap at:
+   This SNAPSHOT distribution is based upon the contributions provided in
+   development iterations after the Beta, as defined in the JPA 2.0 Roadmap at:
        http://openjpa.apache.org/jpa-20-roadmap.html
 
    The JPA 2.0 Roadmap contains a complete list of implemented features and
@@ -63,7 +67,8 @@ License
 
 Notices
 -------
-   Copyright 2006-2009 Apache Software Foundation
+   Copyright 2006,2010 The Apache Software Foundation.
+   Apache, the Apache feather logo and OpenJPA are trademarks of The Apache Software Foundation.
 
    This product includes software developed at
    The Apache Software Foundation (http://www.apache.org/).
@@ -119,14 +124,106 @@ Getting Involved
         * Bugs and other issues can be posted on the project JIRA.
 
 
-Included Changes in OpenJPA Milestone 4
----------------------------------------
-
+Included Changes in OpenJPA 2.0.0-SNAPSHOT
+------------------------------------------
     * TBD
 
 
-Included Changes in OpenJPA Milestone 3
----------------------------------------
+Included Changes in OpenJPA 2.0.0 Beta
+--------------------------------------
+
+Sub-task
+--------
+    * [OPENJPA-1103] - Remove early-access disclaimer from the NOTICE files once the spec is released
+    * [OPENJPA-1115] - Finish support for delimited identifiers
+    * [OPENJPA-1347] - Upgrade to Validation API 1.0.0.GA
+    * [OPENJPA-1353] - Add legal info to the docs
+    * [OPENJPA-1358] - Support CacheRetrieve/StoreMode properties for find()/refresh() operation
+    * [OPENJPA-1404] - Add find method that accepts properties to entity manager
+    * [OPENJPA-1453] - Add support for testing with final JPA 2.0 TCK
+    * [OPENJPA-1476] - Turn off QueryCache by default
+
+Bug
+---
+    * [OPENJPA-123] - Test framework should allow tests that are expected to fail to be checked in
+    * [OPENJPA-459] - Problem with bulk updates in mySQL
+    * [OPENJPA-859] - OpenJPA requires all persistent fields to be specified on an XML defined entity
+    * [OPENJPA-993] - PCEnhancer can't execute if a non-OpenJPA PU is found
+    * [OPENJPA-1046] - Unique Constraint on MappedSupperClass causes NullPointerException
+    * [OPENJPA-1224] - OpenJPA MySQL BigDecimal ignoring Precision/Scale column Annotation when generating tables
+    * [OPENJPA-1263] - TestReaderLob.testUpdateWithNull() fails on MySQL
+    * [OPENJPA-1294] - Nested JDBC calls fail for certain database
+    * [OPENJPA-1308] - shouldn't always use CAST with UPPER and LOWER for DB2
+    * [OPENJPA-1321] - Documentation inaccuracies
+    * [OPENJPA-1341] - PostRemove not invoked after database record was deleted
+    * [OPENJPA-1344] - Query [get|set]LockMode & Em getLockMode not throwing correct exceptions
+    * [OPENJPA-1349] - Compatibility options are not set appropriately for spec level when emf is created by JEE container
+    * [OPENJPA-1354] - Configuring DBCP connection pool with connection properties breaks when user/pasword is specifed and javax.* configuration is set to DBCP Driver
+    * [OPENJPA-1355] - Recent snaphot versions of openjpa have problem with postgresPreparedStatementImpl constructor making Postgres impossible to use
+    * [OPENJPA-1379] - Locking problem when using timestamp QueryCache eviction policy.
+    * [OPENJPA-1381] - IllegalStateException on query method call after named query is created twice.
+    * [OPENJPA-1385] - Parameter in having clause of Criteria query not recognized
+    * [OPENJPA-1386] - Metamodel Generator does not handle field types that can hide another
+    * [OPENJPA-1387] - Unique colums automatically defined as non-nullable
+    * [OPENJPA-1390] - Criteria API untyped join(String attr) implies any attribute not a singular attribute
+    * [OPENJPA-1391] - Handle generic/unspecified type arguments for persistent fields during metamodel generation
+    * [OPENJPA-1392] - CriteriaBuilder.size() must return Integer as value
+    * [OPENJPA-1393] - CriteriaBuilder.countDistinct() does not return correct result
+    * [OPENJPA-1400] - Unable to persist a relationship to a detached Entity
+    * [OPENJPA-1409] - Improve type preservation for currentDate/Time expression in queries
+    * [OPENJPA-1419] - Access path metadata set incorrectly for fetch joins in Criteria Query
+    * [OPENJPA-1425] - Literal value in projection can not be parameterized for all databases
+    * [OPENJPA-1439] - Metamodel instantiation fails on InputStream properties
+    * [OPENJPA-1441] - NPE when enhancing a Serializable, versioned class
+    * [OPENJPA-1444] - Criteria Query with fetch joins does not return correct DISTINCT result
+    * [OPENJPA-1445] - Support Enum as external value
+    * [OPENJPA-1452] - OpenJPA 2.0.0-M3 attempts to mutate unmodifiable map in Glassfish
+    * [OPENJPA-1463] - JPQL new operator arguments should be more flexible in matching constructor arguments
+    * [OPENJPA-1464] - PreparedQuery fails with enum query parameter
+    * [OPENJPA-1478] - OpenJPA is no longer available as an OSGi bundle
+
+Improvement
+-----------
+    * [OPENJPA-250] - Reduce synchronization bottlenecks in data cache, metadata repository, and lifecycle event manager
+    * [OPENJPA-709] - Better naming for unique constraints
+    * [OPENJPA-716] - Improve the documentation about Streaming LOB Support
+    * [OPENJPA-839] - change pom.xml to publish sources as well.
+    * [OPENJPA-1085] - Add toString() method to PCState classes
+    * [OPENJPA-1172] - Use java.util.concurrent.ConcurrentHashMap rather than a synchronized HashMap in ClassMapping.
+    * [OPENJPA-1356] - Use maven-enforcer-plugin to verify proper Java and Maven levels
+    * [OPENJPA-1363] - Upgrade to latest commons-pool maintenance release
+    * [OPENJPA-1366] - Remove need for an EMF from OpenJPAPersistenceUtil and TraversableResolverImpl
+    * [OPENJPA-1368] - Upgrade to HSQLDB 1.8.0.10 and in-memory db for unit tests
+    * [OPENJPA-1415] - Performance improvement by reduced logging of batched OLE
+    * [OPENJPA-1440] - Allow COUNT(*) instead of COUNT(t0.id) for simple queries as an option
+    * [OPENJPA-1456] - Replace StringBuffer usage with StringBuilder
+    * [OPENJPA-1468] - Upgrade build to use final Bean Validation spec API from Geronimo
+
+New Feature
+-----------
+    * [OPENJPA-773] - Upgrade to JPA 2
+    * [OPENJPA-1181] - Metamodel Generation must be more selective and controllable
+    * [OPENJPA-1276] - Support CQL for Criteria Query
+    * [OPENJPA-1332] - Allow configuration property to be declared for internal usage only
+    * [OPENJPA-1334] - Support instance level distribution policy for named cache partitions
+    * [OPENJPA-1337] - OpenJPA 2.0 iteration 12 primary task
+    * [OPENJPA-1357] - Support CacheRetrieve/StoreMode properties for find()/refresh() operation
+    * [OPENJPA-1373] - OpenJPA 2.0 iteration 13 primary task
+    * [OPENJPA-1426] - OpenJPA 2.0 iteration 14 primary task
+
+Task
+----
+    * [OPENJPA-1183] - Ergonomics of metamodel generation process
+    * [OPENJPA-1290] - Document Criteria API
+
+Test
+----
+    * [OPENJPA-1153] - Test suite speed-up outside SingleEMFTestCase
+    * [OPENJPA-1342] - Build a mechanics to test JTA transaction semantics within JSE
+
+
+Included Changes in OpenJPA 2.0.0 Milestone 3
+---------------------------------------------
 
 Sub-task
 --------

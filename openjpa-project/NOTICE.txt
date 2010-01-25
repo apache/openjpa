@@ -1,4 +1,6 @@
 
+Apache, the Apache feather logo and OpenJPA are trademarks of The Apache Software Foundation.
+
 Apache OpenJPA Aggregate Jar with Dependencies
 Copyright 2006,2010 The Apache Software Foundation
 
