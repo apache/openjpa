@@ -612,7 +612,7 @@
             <dependency>
                 <groupId>org.apache.geronimo.specs</groupId>
                 <artifactId>geronimo-validation_1.0_spec</artifactId>
-                <version>1.0-SNAPSHOT</version>
+                <version>1.0</version>
             </dependency>            
             <dependency>
                 <groupId>org.apache.derby</groupId>
@@ -1025,4 +1025,23 @@
         <developerConnection>scm:svn:https://svn.apache.org/repos/asf/openjpa/trunk</developerConnection>
         <url>http://svn.apache.org/repos/asf/openjpa/trunk</url>
     </scm>
+
+    <!-- added so the build can find geronimo-validation_1.0_spec-1.0 -->
+    <repositories>
+        <repository>
+            <id>apache.nexus.staging</id>
+            <name>Apache Staging Repository</name>
+            <layout>default</layout>
+            <url>https://repository.apache.org/content/repositories/staging/</url>
+            <snapshots>
+                <enabled>false</enabled>
+            </snapshots>
+            <releases>
+                <enabled>true</enabled>
+                <updatePolicy>always</updatePolicy>
+                <checksumPolicy>warn</checksumPolicy>
+            </releases>
+        </repository>
+    </repositories>
+
 </project>
