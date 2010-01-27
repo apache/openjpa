@@ -949,7 +949,6 @@
                     </execution>
                 </executions>
             </plugin>
-            <!-- moved to modules as this causes release builds to break
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-jar-plugin</artifactId>
@@ -963,7 +962,6 @@
                     </execution>
                 </executions>
             </plugin>
-            -->
         </plugins>
     </build>
 
